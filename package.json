@@ -1,0 +1,10 @@
+{
+  "name": "node-taglib-sharp",
+  "version": "0.1.0",
+  "license": "LGPL-2.1-or-later",
+  "dependencies": {},
+  "devDependencies": {
+    "tslint": "^5.13.1",
+    "typescript": "^3.3.3333"
+  }
+}
