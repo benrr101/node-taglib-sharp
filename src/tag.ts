@@ -1,3 +1,5 @@
+import {IPicture} from "./picture";
+
 export enum TagTypes {
     /**
      * @summary No tag types.

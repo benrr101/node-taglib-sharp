@@ -4,6 +4,7 @@
   "license": "LGPL-2.1-or-later",
   "dependencies": {},
   "devDependencies": {
+    "@types/node": "^11.10.4",
     "tslint": "^5.13.1",
     "typescript": "^3.3.3333"
   }
