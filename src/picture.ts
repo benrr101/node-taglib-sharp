@@ -209,6 +209,8 @@ export class Picture implements IPicture {
 
     // #region Constructors
 
+    private constructor() {}
+
     public static FromPath(filepath: string): Picture {
         if (!filepath) {
             throw new Error("Argument null exception: path not provided");
@@ -223,6 +225,144 @@ export class Picture implements IPicture {
 
         return picture;
 
+    }
+
+    public static FromData(data: Buffer): Picture {
+        if (!data) {
+            throw new Error("Argument null exception: data not provided");
+        }
+
+        const picture = new Picture();
+        picture.data = ;
+
+        const ext = Picture.getExtensionFromData(data);
+        picture.mimeType = Picture.getMimeTypeFromExtension(ext);
+        if (ext) {
+            picture.type = PictureType.FrontCover;
+            picture.filename = picture.description = "cover" + ext;
+        } else {
+            picture.type = PictureType.NotAPicture;
+            picture.filename = "UnknownType";
+        }
+
+        return picture;
+    }
+
+    public static FromFileAbstraction(abstraction: IFileAbstraction): Picture {
+        if (!abstraction) {
+            throw new Error("Argument null exception: file abstraction not provided");
+        }
+
+        const picture = new Picture();
+        picture.data = ;
+        picture.filename = abstraction.Name;
+        picture.description = abstraction.Name;
+
+        if (picture.filename && picture.filename.indexOf(".") >= 0) {
+            picture.mimeType = Picture.getMimeTypeFromExtension(picture.filename);
+            picture.type = picture.mimeType.startsWith("image/") ? PictureType.FrontCover : PictureType.NotAPicture;
+        } else {
+            const ext = Picture.getExtensionFromData(picture.data);
+            picture.mimeType = Picture.getMimeTypeFromExtension(ext);
+            if (ext) {
+                picture.type = PictureType.FrontCover;
+                picture.filename = picture.description = "cover" + ext;
+            } else {
+                picture.type = PictureType.NotAPicture;
+                picture.filename = "UnknownType";
+            }
+        }
+
+        return picture;
+    }
+
+    public static FromPicture(original: IPicture): Picture {
+        const picture = new Picture();
+        picture.mimeType = original.mimeType;
+        picture.type = original.type;
+        picture.filename = original.filename;
+        picture.description = original.description;
+        picture.data = original.data;
+
+        return picture;
+    }
+
+    // #endregion
+
+    // #region Public Properties
+
+    public mimeType: string;
+
+    public type: PictureType;
+
+    public filename: string;
+
+    public description: string;
+
+    public data: Buffer;
+
+    // #endregion
+
+    // #region Public Static Methods
+
+    public static getExtensionFromData(data: Buffer): string|null {
+        let ext = null;
+
+        // No picture unless it is corrupted, can fit in a file of less than 4 bytes
+        if (data.length >= 4) {
+            if (data[1] === 0x50 && data[2] === 0x4E && data[3] === 0x47) {
+                // PNG
+                ext = ".png";
+            } else if (data[0] === 0x47 && data[1] === 0x49 && data[2] === 0x47) {
+                // GIF
+                ext = ".gif";
+            } else if (data[0] === 0x42 && data[1] === 0x4D) {
+                // BM
+                ext = ".bmp";
+            } else if (data[0] === 0xFF && data[1] === 0xD8 && data[2] === 0xFF && data[3] == 0xE0) {
+                ext = ".jpg";
+            }
+        }
+
+        return ext;
+    }
+
+    public static getExtensionFromMimeType(mime: string): string|null {
+        let ext: string = null;
+
+        for (let i = 1; i < this._lutExtensionMime.length; i += 2) {
+            if (this._lutExtensionMime[i] === mime) {
+                ext = this._lutExtensionMime[i - 1];
+                break;
+            }
+        }
+
+        return ext;
+    }
+
+    public static getMimeTypeFromExtension(name: string): string|null {
+        let mimeType: string = "application/octet-stream";
+
+        if (!name || name.length === 0)  {
+            return mimeType;
+        }
+
+        let ext = path.extname(name);
+        if (!ext || ext.length === 0) {
+            ext = name;
+        } else {
+            ext = ext.substring(1);
+        }
+        ext = ext.substring(1);
+
+        for (let i = 0; i < this._lutExtensionMime.length; i += 2) {
+            if (this._lutExtensionMime[i] === ext) {
+                mimeType = this._lutExtensionMime[i + 1];
+                break;
+            }
+        }
+
+        return mimeType;
     }
 
     // #endregion
