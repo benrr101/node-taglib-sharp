@@ -1,3 +1,8 @@
+import * as BigInt from "big-integer";
+import * as IConv from "iconv-lite";
+
+const AB2B = require("arraybuffer-to-buffer");
+
 /**
  * @summary Specifies the text encoding used when converting between a {@link string} and a
  *          {@link ByteVector}.
@@ -116,6 +121,14 @@ export class ByteVector {
     private static readonly _td2: ReadOnlyByteVector = new ReadOnlyByteVector(2);
 
     /**
+     * Contains the last generic UTF16 encoding read. Defaults to UTF16-LE
+     * @description When reading a collection of UTF16 strings, sometimes only the first one will
+     *              contain the BOM. In that case, this field will inform the file what encoding to
+     *              use for the second string.
+     */
+    private static _lastUtf16IConvFunc: (data: Buffer) => string = (d: Buffer) => IConv.decode(d, "utf16-le");
+
+    /**
      * Specified whether or not to use a broken Latin-1 behavior
      */
     private static _useBrokenLatin1: boolean;
@@ -142,7 +155,52 @@ export class ByteVector {
         return ByteVector.fromByteArray(original._data);
     }
 
-    public static withSize(size: number, fill: number = 0x0): ByteVector {
+    public static fromInt(value: number, mostSignificantByteFirst: boolean = true): ByteVector {
+        return ByteVector.getByteVectorFromInteger(value, true, 4, mostSignificantByteFirst);
+    }
+
+    public static fromLong(value: BigInt.BigInteger, mostSignificantByteFirst: boolean = true): ByteVector {
+        if (value === undefined || value === null) {
+            throw new Error("Argument null exception: value is null");
+        }
+        if (value.gt(BigInt("9223372036854775807")) || value.lt(BigInt("-9223372036854775808"))) {
+            throw new Error("Argument out of range: value is too large to fit in a signed long");
+        }
+
+        // Step 1: Get exactly 16 hex digits from the bigint
+        const digits = value.toArray(16);
+        while (digits.value.length < 16) {
+            digits.value.unshift(0);
+        }
+
+        // Step 2: Reform the digits into bytes
+        const byteArray = new Uint8Array(8);
+        for (let i = 0; i < 8; i++) {
+            const inputOffset = i * 2;
+            const byte = digits.value[inputOffset] * 16 + digits.value[inputOffset + 1];
+            const outputOffset = mostSignificantByteFirst ? i : 8 - i - 1;
+            byteArray[outputOffset] = byte;
+        }
+
+        // Step 2.1: If negative, solve for 2's complement
+        if (digits.isNegative) {
+            let carry = 1;
+            for (let i = 7; i <= 0; i--) {
+                let byte = byteArray[i] ^ 0xFF + 1;
+                carry = byte & 0xF00;
+                byte = byte & 0xFF;
+                byteArray[i] = byte;
+            }
+        }
+
+        return ByteVector.fromByteArray(byteArray);
+    }
+
+    public static fromShort(value: number, mostSignificantByteFirst: boolean = true): ByteVector {
+        return ByteVector.getByteVectorFromInteger(value, true, 2, mostSignificantByteFirst);
+    }
+
+    public static fromSize(size: number, fill: number = 0x0): ByteVector {
         if (!Number.isInteger(size) || size < 0) {
             throw new Error("Argument out of range exception: ByteVector size is invalid uint");
         }
@@ -155,6 +213,44 @@ export class ByteVector {
         vector._data.fill(fill);
 
         return vector;
+    }
+
+    public static fromString(text: string, type: StringType, length:): ByteVector {
+
+    }
+
+    public static fromUInt(value: number, mostSignificantByteFirst: boolean = true): ByteVector {
+        return ByteVector.getByteVectorFromInteger(value, false, 4, mostSignificantByteFirst);
+    }
+
+    public static fromULong(value: BigInt.BigInteger, mostSignificantByteFirst: boolean = true): ByteVector {
+        if (value === undefined || value === null) {
+            throw new Error("Argument null exception: value is null");
+        }
+        if (value.gt(BigInt("18446744073709551615")) || value.lt(0)) {
+            throw new Error("Argument out of range: value is too large to fit in an unsigned long");
+        }
+
+        // Step 1: Get exactly 16 hex digits from the bigint
+        const digits = value.toArray(16);
+        while (digits.value.length < 16) {
+            digits.value.unshift(0);
+        }
+
+        // Step 2: Reform the digits into bytes
+        const byteArray = new Uint8Array(8);
+        for (let i = 0; i < 8; i++) {
+            const inputOffset = i * 2;
+            const byte = digits.value[inputOffset] * 16 + digits.value[inputOffset + 1];
+            const outputOffset = mostSignificantByteFirst ? i : 8 - i - 1;
+            byteArray[outputOffset] = byte;
+        }
+
+        return ByteVector.fromByteArray(byteArray);
+    }
+
+    public static fromUShort(value: number, mostSignificantByteFirst: boolean = true): ByteVector {
+        return ByteVector.getByteVectorFromInteger(value, false, 2, mostSignificantByteFirst);
     }
 
     // #endregion
@@ -195,19 +291,109 @@ export class ByteVector {
 
     // #region Public Methods
 
-    public mid(startIndex: number, length: number = this._data.length - startIndex): ByteVector {
-        if (!Number.isInteger(startIndex) || startIndex < 0 || startIndex > this.length) {
-            throw new Error("Argument out of range exception: startIndex is invalid");
-        }
-        if (!Number.isInteger(length) || length < 0 || startIndex + length > this.length) {
-            throw new Error("Argument out of range exception: length is invalid");
+    public addByteArray(data: Uint8Array) {
+        if (this.isReadOnly) {
+            throw new Error("Not supported: Cannot edit readonly byte vectors");
         }
 
-        if (length === 0) {
-            return ByteVector.withSize(0);
+        if (data) {
+            const oldData = this._data;
+            this._data = new Uint8Array(oldData.length + data.length);
+            this._data.set(oldData);
+            this._data.set(data, oldData.length);
+        }
+    }
+
+    public addByteVector(data: ByteVector): void {
+        this.addByteArray(data._data);
+    }
+
+    public containsAt(
+        pattern: ByteVector,
+        offset: number = 0,
+        patternOffset: number = 0,
+        patternLength: number = Number.MAX_SAFE_INTEGER
+    ): boolean {
+        if (!pattern) {
+            throw new Error("Argument null exception: pattern is null");
+        }
+        if (!Number.isInteger(offset)) {
+            throw new Error("Argument out of range exception: offset is invalid");
+        }
+        if (!Number.isInteger(patternOffset)) {
+            throw new Error("Argument out of range exception: patternOffset is invalid");
+        }
+        if (!Number.isInteger(patternLength)) {
+            throw new Error("Argument out of range exception: patternLength is invalid");
         }
 
-        return ByteVector.fromByteArray(this._data.subarray(startIndex, startIndex + length));
+        if (pattern.length < patternLength) {
+            patternLength = pattern.length;
+        }
+
+        // Do some sanity checking -- all of these things are needed for the search to be valid
+        if (
+            patternLength > this.length ||
+            offset >= this.length ||
+            patternOffset >= pattern.length ||
+            patternLength <= 0 ||
+            offset < 0
+        ) {
+            return false;
+        }
+
+        // Loop through looking for a mismatch
+        for (let i = 0; i < patternLength - patternOffset; i++) {
+            if (this._data[i + offset] !== pattern._data[i + patternOffset]) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    public compareTo(other: ByteVector): number {
+        if (!other) {
+            throw new Error("Argument null exception: other is null");
+        }
+
+        let diff = this.length - other.length;
+
+        for (let i = 0; diff === 0 && i < this.length; i++) {
+            diff = this.get(i) - other.get(i);
+        }
+
+        return diff;
+    }
+
+    public endsWith(pattern: ByteVector): boolean {
+        if (!pattern) {
+            throw new Error("Argument null exception: pattern is null");
+        }
+
+        return this.containsAt(pattern, this.length - pattern.length);
+    }
+
+    public endsWithPartialMatch(pattern: ByteVector): number {
+        if (!pattern) {
+            throw new Error("Argument null exception: pattern is null");
+        }
+
+        if (pattern.length > this.length) {
+            return -1;
+        }
+
+        const startIndex = this.length - pattern.length;
+
+        // Try to match the last n-1bytes from the vector (where n is the pattern size)
+        // continue trying to match n-2, n-3...1 bytes
+        for (let i = 1; i < pattern.length; i++) {
+            if (this.containsAt(pattern, startIndex)) {
+                return startIndex + i;
+            }
+        }
+
+        return -1;
     }
 
     public find(pattern: ByteVector, offset: number = 0, byteAlign: number = 1): number {
@@ -261,6 +447,102 @@ export class ByteVector {
         return -1;
     }
 
+    public get(index: number): number {
+        if (!Number.isInteger(index)) {
+            throw new Error("Argument out of range exception: index is invalid");
+        }
+        return this._data[index];
+    }
+
+    public insertByteArray(index: number, other: Uint8Array): void {
+        if (this.isReadOnly) {
+            throw new Error("Not supported: Cannot edit readonly byte vectors");
+        }
+        if (!Number.isInteger(index) || index < 0) {
+            throw new Error("Argument out of range: index is invalid");
+        }
+
+        if (other) {
+            const oldData = this._data;
+            this._data = new Uint8Array(oldData.length + other.length);
+
+            if (index > 0) {
+                this._data.set(oldData.subarray(0, index), 0);
+            }
+            this._data.set(other, index);
+            if (index < oldData.length) {
+                this._data.set(oldData.subarray(index), index + other.length);
+            }
+        }
+    }
+
+    public insertByteVector(other: ByteVector): void {
+        this.addByteArray(other._data);
+    }
+
+    public mid(startIndex: number, length: number = this._data.length - startIndex): ByteVector {
+        if (!Number.isInteger(startIndex) || startIndex < 0 || startIndex > this.length) {
+            throw new Error("Argument out of range exception: startIndex is invalid");
+        }
+        if (!Number.isInteger(length) || length < 0 || startIndex + length > this.length) {
+            throw new Error("Argument out of range exception: length is invalid");
+        }
+
+        if (length === 0) {
+            return ByteVector.fromSize(0);
+        }
+
+        return ByteVector.fromByteArray(this._data.subarray(startIndex, startIndex + length));
+    }
+
+    public removeRange(index: number, count: number) {
+        if (this.isReadOnly) {
+            throw new Error("Not supported: Cannot edit readonly byte vectors");
+        }
+        if (!Number.isInteger(index) || index < 0 || index >= this.length) {
+            throw new Error("Argument out of range: index is invalid");
+        }
+        if (!Number.isInteger(count) || count < 0) {
+            throw new Error("Argument out of range: padding is invalid");
+        }
+
+        if (index + count > this.length) {
+            count = this.length - index;
+        }
+
+        const oldData = this._data;
+        this._data = new Uint8Array(oldData.length - count);
+        if (index > 0) {
+            this._data.set(oldData.subarray(0, index), 0);
+        }
+        if (index < oldData.length) {
+            this._data.set(oldData.subarray(index + count), index);
+        }
+    }
+
+    public resize(size: number, padding: number = 0x0): ByteVector {
+        if (this.isReadOnly) {
+            throw new Error("Not supported: Cannot edit readonly byte vectors");
+        }
+        if (!Number.isInteger(size) || size < 0) {
+            throw new Error("Argument out of range: size is invalid");
+        }
+        if (!Number.isInteger(padding) || padding > 255 || padding < 0) {
+            throw new Error("Argument out of range: padding is invalid");
+        }
+
+        if (this.length > size) {
+            this.removeRange(size, this.length - size);
+        }
+
+        const oldData = this._data;
+        this._data = new Uint8Array(size);
+        this._data.set(oldData);
+        this._data.fill(padding, oldData.length);
+
+        return this;
+    }
+
     public rFind(pattern: ByteVector, offset: number = 0, byteAlign: number = 1): number {
         if (!pattern) {
             throw new Error("Argument null exception: pattern is null");
@@ -300,218 +582,299 @@ export class ByteVector {
         return -1;
     }
 
-    public containsAt(
-        pattern: ByteVector,
-        offset: number = 0,
-        patternOffset: number = 0,
-        patternLength: number = Number.MAX_SAFE_INTEGER
-    ): boolean {
-        if (!pattern) {
-            throw new Error("Argument null exception: pattern is null");
-        }
-        if (!Number.isInteger(offset)) {
-            throw new Error("Argument out of range exception: offset is invalid");
-        }
-        if (!Number.isInteger(patternOffset)) {
-            throw new Error("Argument out of range exception: patternOffset is invalid");
-        }
-        if (!Number.isInteger(patternLength)) {
-            throw new Error("Argument out of range exception: patternLength is invalid");
-        }
-
-        if (pattern.length < patternLength) {
-            patternLength = pattern.length;
-        }
-
-        // Do some sanity checking -- all of these things are needed for the search to be valid
-        if (
-            patternLength > this.length ||
-            offset >= this.length ||
-            patternOffset >= pattern.length ||
-            patternLength <= 0 ||
-            offset < 0
-        ) {
-            return false;
-        }
-
-        // Loop through looking for a mismatch
-        for (let i = 0; i < patternLength - patternOffset; i++) {
-            if (this._data[i + offset] !== pattern._data[i + patternOffset]) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    public endsWith(pattern: ByteVector): boolean {
-        if (!pattern) {
-            throw new Error("Argument null exception: pattern is null");
-        }
-
-        return this.containsAt(pattern, this.length - pattern.length);
-    }
-
-    public endsWithPartialMatch(pattern: ByteVector): number {
-        if (!pattern) {
-            throw new Error("Argument null exception: pattern is null");
-        }
-
-        if (pattern.length > this.length) {
-            return -1;
-        }
-
-        const startIndex = this.length - pattern.length;
-
-        // Try to match the last n-1bytes from the vector (where n is the pattern size)
-        // continue trying to match n-2, n-3...1 bytes
-        for (let i = 1; i < pattern.length; i++) {
-            if (this.containsAt(pattern, startIndex)) {
-                return startIndex + i;
-            }
-        }
-
-        return -1;
-    }
-
-    public addByteVector(data: ByteVector): void {
-        this.addByteArray(data._data);
-    }
-
-    public addByteArray(data: Uint8Array) {
-        if (this.isReadOnly) {
-            throw new Error("Not supported: Cannot edit readonly byte vectors");
-        }
-
-        if (data) {
-            const oldData = this._data;
-            this._data = new Uint8Array(oldData.length + data.length);
-            this._data.set(oldData);
-            this._data.set(data, oldData.length);
-        }
-    }
-
-    public insertByteVector(other: ByteVector): void {
-        this.addByteArray(other._data);
-    }
-
-    public insertByteArray(index: number, other: Uint8Array): void {
-        if (this.isReadOnly) {
-            throw new Error("Not supported: Cannot edit readonly byte vectors");
-        }
-        if (!Number.isInteger(index) || index < 0) {
-            throw new Error("Argument out of range: index is invalid");
-        }
-
-        if (other) {
-            const oldData = this._data;
-            this._data = new Uint8Array(oldData.length + other.length);
-
-            if (index > 0) {
-                this._data.set(oldData.subarray(0, index), 0);
-            }
-            this._data.set(other, index);
-            if (index < oldData.length) {
-                this._data.set(oldData.subarray(index), index + other.length);
-            }
-        }
-    }
-
-    public resize(size: number, padding: number = 0x0): ByteVector {
-        if (this.isReadOnly) {
-            throw new Error("Not supported: Cannot edit readonly byte vectors");
-        }
-        if (!Number.isInteger(size) || size < 0) {
-            throw new Error("Argument out of range: size is invalid");
-        }
-        if (!Number.isInteger(padding) || padding > 255 || padding < 0) {
-            throw new Error("Argument out of range: padding is invalid");
-        }
-
-        if (this.length > size) {
-            this.removeRange(size, this.length - size);
-        }
-
-        const oldData = this._data;
-        this._data = new Uint8Array(size);
-        this._data.set(oldData);
-        this._data.fill(padding, oldData.length);
-
-        return this;
-    }
-
-    public removeRange(index: number, count: number) {
-        if (this.isReadOnly) {
-            throw new Error("Not supported: Cannot edit readonly byte vectors");
-        }
-        if (!Number.isInteger(index) || index < 0 || index >= this.length) {
-            throw new Error("Argument out of range: index is invalid");
-        }
-        if (!Number.isInteger(count) || count < 0) {
-            throw new Error("Argument out of range: padding is invalid");
-        }
-
-        if (index + count > this.length) {
-            count = this.length - index;
-        }
-
-        const oldData = this._data;
-        this._data = new Uint8Array(oldData.length - count);
-        if (index > 0) {
-            this._data.set(oldData.subarray(0, index), 0);
-        }
-        if (index < oldData.length) {
-            this._data.set(oldData.subarray(index + count), index);
-        }
-    }
-
-    public get(index: number): number {
-        if (!Number.isInteger(index)) {
-            throw new Error("Argument out of range exception: index is invalid");
-        }
-        return this._data[index];
-    }
-
     // #endregion
 
     // #region Conversions
 
+    public toDouble(mostSignificantByteFirst: boolean = true): number {
+        const dv = new DataView(this.getSizedArray(8, mostSignificantByteFirst).buffer);
+        return dv.getFloat64(0);
+    }
+
+    public toFloat(mostSignificantByteFirst: boolean = true): number {
+        const dv = new DataView(this.getSizedArray(4, mostSignificantByteFirst).buffer);
+        return dv.getFloat32(0);
+    }
+
     public toInt(mostSignificantByteFirst: boolean = true): number {
-        return this.toNumber(4, true, mostSignificantByteFirst);
+        const dv = new DataView(this.getSizedArray(4, mostSignificantByteFirst).buffer);
+        return dv.getInt32(0);
+    }
+
+    public toLong(mostSignificantByteFirst: boolean = true): BigInt.BigInteger {
+        // The theory here is to get the unsigned value first, then if the number is negative, we
+        // we calculate the two's complement and return that * -1
+        const uLong = this.toULong(mostSignificantByteFirst);
+        const highestOrderBit = BigInt("0x8000000000000000");
+
+        if (uLong.and(highestOrderBit).isZero()) {
+            // Number is positive, no need to calculate two's complement
+            return uLong;
+        }
+
+        // Number is negative, need to calculate two's complement
+        const allBits = BigInt("0xFFFFFFFFFFFFFFFF");
+        return uLong.xor(allBits).add(1).and(allBits).times(-1);
     }
 
     public toUint(mostSignificantByteFirst: boolean = true): number {
-        return this.toNumber(4, false, mostSignificantByteFirst);
+        const dv = new DataView(this.getSizedArray(4, mostSignificantByteFirst).buffer);
+        return dv.getUint32(0);
+    }
+
+    public toULong(mostSignificantByteFirst: boolean = true): BigInt.BigInteger {
+        const sizedArray = this.getSizedArray(8, mostSignificantByteFirst);
+
+        // Convert the bytes into a string first
+        let str = "";
+        for (const element of sizedArray) {
+            str += element.toString(16).padStart(2, "0");
+        }
+        return BigInt(str, 16);
     }
 
     public toShort(mostSignificantByteFirst: boolean = true): number {
-        return this.toNumber(2, true, mostSignificantByteFirst);
+        const dv = new DataView(this.getSizedArray(2, mostSignificantByteFirst).buffer);
+        return dv.getInt16(0);
+    }
+
+    public toString(count: number, type: StringType = StringType.UTF8, offset: number = 0): string {
+        if (!Number.isInteger(offset) || offset < 0 || offset > this.length) {
+            throw new Error("Argument out of range exception: offset is invalid");
+        }
+        if (!Number.isInteger(count) || count < 0 || count + offset > this.length) {
+            throw new Error("Argument out of range exception: count is invalid");
+        }
+
+        const bom = type === StringType.UTF16 && this.length - offset > 1 ? this.mid(offset, 2) : null;
+        const buffer = AB2B(this.mid(offset, count)._data.buffer);
+        return ByteVector.getIConvDecode(type, bom)(buffer);
+
+        // NOTE: Original .NET implementation had explicit BOM stripping, which is unnecessary when
+        //       we use IConv.
+    }
+
+    public toStrings(type: StringType, offset: number, count: number = Number.MAX_SAFE_INTEGER) {
+        if (!Number.isInteger(offset) || offset < 0 || offset > this.length) {
+            throw new Error("Argument out of range exception: offset is invalid");
+        }
+        if (!Number.isInteger(count) || count < 0) {
+            throw new Error("Argument out of range exception: count is invalid");
+        }
+
+        const chunk = 0;
+        let position = offset;
+
+        const list: string[] = [];
+        const separator = ByteVector.getTextDelimiter(type);
+        const align = separator.length;
+
+        while (chunk < count && position < this.length) {
+            const start = position;
+            if (chunk + 1 === count) {
+                position = offset + count;
+            } else {
+                position = this.find(separator, start, align);
+                if (position < 0) {
+                    position = this.length;
+                }
+            }
+
+            const length = position - start;
+
+            if (length === 0) {
+                list.push("");
+            } else {
+                list.push(this.toString(type, start, length));
+            }
+
+            position += align;
+        }
+
+        return list;
     }
 
     public toUShort(mostSignificantByteFirst: boolean = true): number {
-        return this.toNumber(2, false, mostSignificantByteFirst);
+        const dv = new DataView(this.getSizedArray(2, mostSignificantByteFirst).buffer);
+        return dv.getUint16(0);
     }
 
-    public toLong(mostSignificantByteFirst: boolean = true): number {
-        return this.toNumber(8, true, mostSignificantByteFirst);
-    }
+    // #endregion
 
-    public toULong(mostSignificantByteFirst: boolean = true): number {
-        return this.toNumber(8, false, mostSignificantByteFirst);
-    }
+    // #region Operator-Like Methods
 
-    private toNumber(size: number, signed: boolean, mostSignificatnByteFirst: boolean): number {
-        const last = this.length > size ? size - 1 : this.length - 1;
-        let sum = 0;
-        for (let i = 0; i <= last; i++) {
-            const offset = mostSignificatnByteFirst ? last - i : i;
-            sum |= this._data[i] << (offset * 8);
-        }
-
-        if (!signed) {
-            sum >>>= 0;
-        }
+    public static add(first: ByteVector, second: ByteVector): ByteVector {
+        const sum = ByteVector.fromByteVector(first);
+        sum.addByteVector(second);
         return sum;
+    }
+
+    public static equal(first: ByteVector, second: ByteVector): boolean {
+        const fnull = !first;
+        const snull = !second;
+        if (fnull && snull) {
+            // Since (f|s)null could be true with `undefined` OR `null`, we'll just let === decide it for us
+            return fnull === snull;
+        }
+
+        if (fnull || snull) {
+            return false;
+        }
+
+        return first.compareTo(second) === 0;
+    }
+
+    public static notEqual(first: ByteVector, second: ByteVector): boolean {
+        return !ByteVector.equal(first, second);
+    }
+
+    public static greaterThan(first: ByteVector, second: ByteVector): boolean {
+        if (!first) {
+            throw new Error("Argument null exception: first is null");
+        }
+        if (!second) {
+            throw new Error("Argument null exception: second is null");
+        }
+
+        return first.compareTo(second) > 0;
+    }
+
+    public static greaterThanEqual(first: ByteVector, second: ByteVector): boolean {
+        if (!first) {
+            throw new Error("Argument null exception: first is null");
+        }
+        if (!second) {
+            throw new Error("Argument null exception: second is null");
+        }
+
+        return first.compareTo(second) >= 0;
+    }
+
+    public static lessThan(first: ByteVector, second: ByteVector): boolean {
+        if (!first) {
+            throw new Error("Argument null exception: first is null");
+        }
+        if (!second) {
+            throw new Error("Argument null exception: second is null");
+        }
+
+        return first.compareTo(second) < 0;
+    }
+
+    public static lessThanEqual(first: ByteVector, second: ByteVector): boolean {
+        if (!first) {
+            throw new Error("Argument null exception: first is null");
+        }
+        if (!second) {
+            throw new Error("Argument null exception: second is null");
+        }
+
+        return first.compareTo(second) <= 0;
+    }
+
+    // #endregion
+
+    // #region Private Helpers
+
+    private static getByteVectorFromInteger(
+        value: number,
+        signed: boolean,
+        count: number,
+        mostSignificantByteFirst: boolean
+    ): ByteVector {
+        if (!Number.isInteger(value) || !Number.isSafeInteger(value)) {
+            throw new Error("Argument out of range: value is not a valid integer");
+        }
+        if (!signed && value < 0) {
+            throw new Error("Argument out of range: value is not a valid unsigned integer");
+        }
+
+        // Look for overflows
+        let overflowValue = value;
+        if (signed && value < 0) {
+            // We'll use the 2's complement value to determine if the value is an overflow
+            overflowValue = (overflowValue ^ 0xFFFFFFFF) + 1;
+        }
+        let bitMask = 0;
+        for (let i = 0; i < 4; i++) {
+            bitMask |= ((i < count) ? 0x00 : 0xFF) << (i * 8);
+        }
+        if ((overflowValue & bitMask) > 0) {
+            throw new Error(`Argument out of range: value overflows a ${count} byte integer`);
+        }
+
+        const bytes = new Uint8Array();
+        for (let i = 0; i < count; i++) {
+            const offset = mostSignificantByteFirst ? count - i : i;
+            bytes[offset] = (value >> (offset * 8) & 0xFF);
+        }
+
+        return ByteVector.fromByteArray(bytes);
+    }
+
+    private static getIConvDecode(type: StringType, bom: ByteVector): (data: Buffer) => string {
+        switch (type) {
+            case StringType.UTF16:
+                // If we have a BOM, return the appropriate encoding.  Otherwise, assume we're
+                // reading from a string that was already identified. In that case, we'll use
+                // the last used encoding.
+                if (bom) {
+                    if (bom.get(0) === 0xFF && bom.get(1) === 0xFE) {
+                        ByteVector._lastUtf16IConvFunc = (data: Buffer) => IConv.decode(data, "utf16-le");
+                    } else if ( bom.get(0) === 0xFE && bom.get(1) === 0xFF) {
+                        ByteVector._lastUtf16IConvFunc = (data: Buffer) => IConv.decode(data, "utf16-be");
+                    }
+                }
+                return ByteVector._lastUtf16IConvFunc;
+            case StringType.UTF16BE:
+                return (data: Buffer) => IConv.decode(data, "utf16-be");
+            case StringType.UTF8:
+                return (data: Buffer) => IConv.decode(data, "utf8");
+            case StringType.UTF16LE:
+                return (data: Buffer) => IConv.decode(data, "utf16-le");
+        }
+
+        // If we're using broken latin1, we're going to use windows-1250.
+        // NOTE: the original .NET implementation uses Encoding.Default in this case. On a win10
+        //       machine Encoding.Default => windows-1252. Since that is the same as latin1
+        //       (ISO-8859-1) and we return that if we aren't using UTF, I don't see the purpose of
+        //       using it as the "broken" latin1 implementation. However, Encoding.Default can
+        //       change from system to system. So if using windows-1250 is not the right "broken"
+        //       latin1, we'll need to fix this.
+        if (ByteVector._useBrokenLatin1) {
+            return (data: Buffer) => IConv.decode(data, "1250");
+        }
+
+        return (data: Buffer) => {
+            try {
+                return IConv.decode(data, "latin1");
+            } catch {
+                return IConv.decode(data, "utf8");
+            }
+        };
+    }
+
+    private static getIConvEncode(type: StringType, bom: ByteVector): (s: string) => Buffer {
+        switch
+    }
+
+    private static getTextDelimiter(type: StringType): ReadOnlyByteVector {
+        return type === StringType.UTF16 || type === StringType.UTF16BE || type === StringType.UTF16LE
+            ? ByteVector._td2
+            ? ByteVector._td1;
+    }
+
+    private getSizedArray(size: number, mostSignificantByteFirst: boolean): Uint8Array {
+        const last = this.length > size ? size - 1 : this.length - 1;
+        const pad = size - (last + 1);
+
+        const output = new Uint8Array(size);
+        for (let i = 0; i <= last; i++) {
+            const outIndex = pad + (mostSignificantByteFirst ? i : last - i);
+            output[outIndex] = this._data[i];
+        }
+
+        return output;
     }
 
     // #endregion

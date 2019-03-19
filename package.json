@@ -2,7 +2,11 @@
   "name": "node-taglib-sharp",
   "version": "0.1.0",
   "license": "LGPL-2.1-or-later",
-  "dependencies": {},
+  "dependencies": {
+    "arraybuffer-to-buffer": "^0.0.5",
+    "big-integer": "^1.6.42",
+    "iconv-lite": "^0.4.24"
+  },
   "devDependencies": {
     "@types/node": "^11.10.4",
     "tslint": "^5.13.1",
