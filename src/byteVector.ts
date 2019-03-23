@@ -3,6 +3,22 @@ import * as IConv from "iconv-lite";
 
 const AB2B = require("arraybuffer-to-buffer");
 
+private class IConvEncoding {
+    private readonly  _encoding: string;
+
+    constructor(encoding: string) {
+        this._encoding = encoding;
+    }
+
+    public decode(data: Buffer): string {
+        return IConv.decode(data, this._encoding);
+    }
+
+    public encode(text: string): Uint8Array {
+        return IConv.encode(text, this._encoding);
+    }
+}
+
 /**
  * @summary Specifies the text encoding used when converting between a {@link string} and a
  *          {@link ByteVector}.
@@ -126,7 +142,7 @@ export class ByteVector {
      *              contain the BOM. In that case, this field will inform the file what encoding to
      *              use for the second string.
      */
-    private static _lastUtf16IConvFunc: (data: Buffer) => string = (d: Buffer) => IConv.decode(d, "utf16-le");
+    private static _lastUtf16IConvFunc: IConvEncoding = new IConvEncoding("utf16-le");
 
     /**
      * Specified whether or not to use a broken Latin-1 behavior
@@ -196,6 +212,14 @@ export class ByteVector {
         return ByteVector.fromByteArray(byteArray);
     }
 
+    public static fromPath(path: string): ByteVector {
+        if (!path) {
+            throw new Error("Argument null exception: Path was not provided");
+        }
+
+        return
+    }
+
     public static fromShort(value: number, mostSignificantByteFirst: boolean = true): ByteVector {
         return ByteVector.getByteVectorFromInteger(value, true, 2, mostSignificantByteFirst);
     }
@@ -215,8 +239,49 @@ export class ByteVector {
         return vector;
     }
 
-    public static fromString(text: string, type: StringType, length:): ByteVector {
+    public static fromStream(stream: NodeJS.ReadableStream): ByteVector {
+        if (!stream.readable) {
+            throw new Error("Invalid operations exception: Stream is not readable");
+        }
+        stream.setEncoding(""); // TODO: Verify that we can "unset" the encoding
 
+        const output = new ByteVector();
+        output._data = new Uint8Array(0);
+
+        let bytes: Buffer;
+        do {
+            bytes = <Buffer> stream.read(4096);
+            output.addByteArray(bytes);
+        } while (bytes);
+
+        return output;
+    }
+
+    public static fromString(
+        text: string,
+        type: StringType = StringType.UTF8,
+        length: number = Number.MAX_SAFE_INTEGER
+    ): ByteVector {
+        const vector = new ByteVector();
+        vector._data = new Uint8Array(0);
+
+        if (length < 0) {
+            throw new Error("Argument out of range exception: length is invalid");
+        }
+
+        if (type === StringType.UTF16) {
+            vector.addByteArray(new Uint8Array([0xff, 0xfe]));
+        }
+
+        if (!text) {
+            return vector;
+        }
+
+        if (text.length > length) {
+            text = text.substr(0, length);
+        }
+        const textBytes = ByteVector.getIConvEncoding(type, vector).encode(text);
+        vector.addByteArray(textBytes);
     }
 
     public static fromUInt(value: number, mostSignificantByteFirst: boolean = true): ByteVector {
@@ -648,7 +713,7 @@ export class ByteVector {
 
         const bom = type === StringType.UTF16 && this.length - offset > 1 ? this.mid(offset, 2) : null;
         const buffer = AB2B(this.mid(offset, count)._data.buffer);
-        return ByteVector.getIConvDecode(type, bom)(buffer);
+        return ByteVector.getIConvEncoding(type, bom).decode(buffer);
 
         // NOTE: Original .NET implementation had explicit BOM stripping, which is unnecessary when
         //       we use IConv.
@@ -812,7 +877,7 @@ export class ByteVector {
         return ByteVector.fromByteArray(bytes);
     }
 
-    private static getIConvDecode(type: StringType, bom: ByteVector): (data: Buffer) => string {
+    private static getIConvEncoding(type: StringType, bom: ByteVector): IConvEncoding {
         switch (type) {
             case StringType.UTF16:
                 // If we have a BOM, return the appropriate encoding.  Otherwise, assume we're
@@ -820,18 +885,18 @@ export class ByteVector {
                 // the last used encoding.
                 if (bom) {
                     if (bom.get(0) === 0xFF && bom.get(1) === 0xFE) {
-                        ByteVector._lastUtf16IConvFunc = (data: Buffer) => IConv.decode(data, "utf16-le");
+                        ByteVector._lastUtf16IConvFunc = new IConvEncoding("utf16-le");
                     } else if ( bom.get(0) === 0xFE && bom.get(1) === 0xFF) {
-                        ByteVector._lastUtf16IConvFunc = (data: Buffer) => IConv.decode(data, "utf16-be");
+                        ByteVector._lastUtf16IConvFunc = new IConvEncoding("utf16-be");
                     }
                 }
                 return ByteVector._lastUtf16IConvFunc;
             case StringType.UTF16BE:
-                return (data: Buffer) => IConv.decode(data, "utf16-be");
+                return new IConvEncoding("utf16-be");
             case StringType.UTF8:
-                return (data: Buffer) => IConv.decode(data, "utf8");
+                return new IConvEncoding("utf8");
             case StringType.UTF16LE:
-                return (data: Buffer) => IConv.decode(data, "utf16-le");
+                return new IConvEncoding("utf16-le");
         }
 
         // If we're using broken latin1, we're going to use windows-1250.
@@ -842,20 +907,10 @@ export class ByteVector {
         //       change from system to system. So if using windows-1250 is not the right "broken"
         //       latin1, we'll need to fix this.
         if (ByteVector._useBrokenLatin1) {
-            return (data: Buffer) => IConv.decode(data, "1250");
+            return new IConvEncoding("1250");
         }
 
-        return (data: Buffer) => {
-            try {
-                return IConv.decode(data, "latin1");
-            } catch {
-                return IConv.decode(data, "utf8");
-            }
-        };
-    }
-
-    private static getIConvEncode(type: StringType, bom: ByteVector): (s: string) => Buffer {
-        switch
+        return new IConvEncoding("latin1");
     }
 
     private static getTextDelimiter(type: StringType): ReadOnlyByteVector {
