@@ -1,6 +1,9 @@
 import * as BigInt from "big-integer";
 import * as IConv from "iconv-lite";
 
+import {ReadOnlyByteVector} from "./readOnlyByteVector";
+
+// TODO: Assess if this is needed
 const AB2B = require("arraybuffer-to-buffer");
 
 private class IConvEncoding {
@@ -129,12 +132,12 @@ export class ByteVector {
     /**
      * Contains a one byte text delimiter
      */
-    private static readonly _td1: ReadOnlyByteVector = new ReadOnlyByteVector(1);
+    private static readonly _td1: ReadOnlyByteVector = ReadOnlyByteVector.fromSize(1);
 
     /**
      * Contains a two byte text delimiter
      */
-    private static readonly _td2: ReadOnlyByteVector = new ReadOnlyByteVector(2);
+    private static readonly _td2: ReadOnlyByteVector = ReadOnlyByteVector.fromSize(2);
 
     /**
      * Contains the last generic UTF16 encoding read. Defaults to UTF16-LE
@@ -152,14 +155,15 @@ export class ByteVector {
     /**
      * Contains the internal byte list
      */
-    private _data: Uint8Array;
+    protected _data: Uint8Array;
 
     // #endregion
 
     // #region Constructors
 
-    private constructor() { }
+    protected constructor() { }
 
+    // TODO: Extend to support length that's less than the full length
     public static fromByteArray(data: Uint8Array): ByteVector {
         const vector = new ByteVector();
         vector._data = new Uint8Array(data.length);
