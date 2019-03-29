@@ -352,7 +352,19 @@ export class ByteVector {
 
     public get data(): Uint8Array { return this._data; }
 
+    public get hashCode(): number { return this.checksum; }
+
     public get isEmpty(): boolean { return !this._data || this._data.length === 0; }
+
+    /**
+     * Whether or not the current instance has a fixed size.
+     */
+    public get isFixedSize(): boolean { return false; }
+
+    /**
+     * Whether or not the current instance is readonly.
+     */
+    public get isReadOnly(): boolean { return false; }
 
     public get length(): number { return this._data.length; }
 
@@ -517,10 +529,43 @@ export class ByteVector {
     }
 
     public get(index: number): number {
-        if (!Number.isInteger(index)) {
+        if (!Number.isInteger(index) || index > this._data.length) {
             throw new Error("Argument out of range exception: index is invalid");
         }
         return this._data[index];
+    }
+
+    /**
+     * Gets the index of the first occurence of the specified value.
+     * @param item A byte to find within the current instance.
+     * @returns An integer containing the first index at which the value was found, or -1 if it
+     *          was not found/
+     */
+    public indexOf(item: number): number {
+        return this._data.indexOf(item);
+    }
+
+    public insertByte(index: number, byte: number): void {
+        if (this.isReadOnly) {
+            throw new Error("Not supported: Cannot edit readonly byte vectors");
+        }
+        if (!Number.isInteger(index) || index < 0) {
+            throw new Error("Argument out of range: index is invalid");
+        }
+        if (!Number.isInteger(byte) || byte < 0 || byte > 0xFF) {
+            throw new Error("Argument out of range: byte is invalid");
+        }
+
+        const oldData = this._data;
+        this._data = new Uint8Array(oldData.length + 1);
+
+        if (index > 0) {
+            this._data.set(oldData.subarray(0, index), 0);
+        }
+        this._data[index] = byte;
+        if (index < oldData.length) {
+            this._data.set(oldData.subarray(index), index + 1);
+        }
     }
 
     public insertByteArray(index: number, other: Uint8Array): void {
@@ -530,18 +575,19 @@ export class ByteVector {
         if (!Number.isInteger(index) || index < 0) {
             throw new Error("Argument out of range: index is invalid");
         }
+        if (!other) {
+            throw new Error("Argument null exception: other is null");
+        }
 
-        if (other) {
-            const oldData = this._data;
-            this._data = new Uint8Array(oldData.length + other.length);
+        const oldData = this._data;
+        this._data = new Uint8Array(oldData.length + other.length);
 
-            if (index > 0) {
-                this._data.set(oldData.subarray(0, index), 0);
-            }
-            this._data.set(other, index);
-            if (index < oldData.length) {
-                this._data.set(oldData.subarray(index), index + other.length);
-            }
+        if (index > 0) {
+            this._data.set(oldData.subarray(0, index), 0);
+        }
+        this._data.set(other, index);
+        if (index < oldData.length) {
+            this._data.set(oldData.subarray(index), index + other.length);
         }
     }
 
@@ -562,6 +608,24 @@ export class ByteVector {
         }
 
         return ByteVector.fromByteArray(this._data.subarray(startIndex, startIndex + length));
+    }
+
+    public reomveByte(index: number) {
+        if (this.isReadOnly) {
+            throw new Error("Not supported: Cannot edit readonly byte vectors");
+        }
+        if (!Number.isInteger(index) || index < 0 || index >= this.length) {
+            throw new Error("Argument out of range: index is invalid");
+        }
+
+        const oldData = this._data;
+        this._data = new Uint8Array(oldData.length - 1);
+        if (index > 0) {
+            this._data.set(oldData.subarray(0, index), 0);
+        }
+        if (index < oldData.length) {
+            this._data.set(oldData.subarray(index + 1), index);
+        }
     }
 
     public removeRange(index: number, count: number) {
@@ -649,6 +713,24 @@ export class ByteVector {
         }
 
         return -1;
+    }
+
+    /**
+     * Sets the value at a specified index
+     * @param index Index to set the value of
+     * @param value Value to set at the index. Must be a valid integer between 0x0 and 0xff
+     */
+    public set(index: number, value: number): void {
+        if (!Number.isInteger(index) || index > this._data.length) {
+            throw new Error("Argument out of range exception: index is invalid");
+        }
+        if (!Number.isInteger(value) || value < 0 || value > 0xff) {
+            throw new Error("Argument out of range exception: value is not a valid byte");
+        }
+        if (this.isReadOnly) {
+            throw new Error("Invalid operation exception: Cannot edit readonly objects");
+        }
+        this._data[index] = value;
     }
 
     // #endregion
