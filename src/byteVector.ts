@@ -1,12 +1,13 @@
 import * as BigInt from "big-integer";
 import * as IConv from "iconv-lite";
+import * as fs from "fs";
 
 import {ReadOnlyByteVector} from "./readOnlyByteVector";
 
 // TODO: Assess if this is needed
 const AB2B = require("arraybuffer-to-buffer");
 
-private class IConvEncoding {
+class IConvEncoding {
     private readonly  _encoding: string;
 
     constructor(encoding: string) {
@@ -221,7 +222,12 @@ export class ByteVector {
             throw new Error("Argument null exception: Path was not provided");
         }
 
-        return
+        const stream = fs.createReadStream(path);
+        try {
+            return ByteVector.fromStream(stream);
+        } finally {
+            stream.destroy();
+        }
     }
 
     public static fromShort(value: number, mostSignificantByteFirst: boolean = true): ByteVector {
@@ -357,11 +363,6 @@ export class ByteVector {
     public get isEmpty(): boolean { return !this._data || this._data.length === 0; }
 
     /**
-     * Whether or not the current instance has a fixed size.
-     */
-    public get isFixedSize(): boolean { return false; }
-
-    /**
      * Whether or not the current instance is readonly.
      */
     public get isReadOnly(): boolean { return false; }
@@ -372,7 +373,19 @@ export class ByteVector {
 
     // #region Public Methods
 
-    public addByteArray(data: Uint8Array) {
+    public addByte(byte: number): void {
+        if (this.isReadOnly) {
+            throw new Error("Not supported: Cannot edit readonly byte vectors");
+        }
+
+        if (!Number.isInteger(byte) || byte < 0 || byte > 0xFF) {
+            throw new Error("Argument out of range: byte is not a valid byte");
+        }
+
+        this.addByteArray(new Uint8Array([byte]));
+    }
+
+    public addByteArray(data: Uint8Array): void {
         if (this.isReadOnly) {
             throw new Error("Not supported: Cannot edit readonly byte vectors");
         }
@@ -387,6 +400,17 @@ export class ByteVector {
 
     public addByteVector(data: ByteVector): void {
         this.addByteArray(data._data);
+    }
+
+    public clear(): void {
+        if (this.isReadOnly) {
+            throw new Error("Invalid Operation Exception: Cannot edit readonly objects");
+        }
+        this._data = new Uint8Array(0);
+    }
+
+    public contains(byte: number): boolean {
+        return this._data.indexOf(byte) >= 0;
     }
 
     public containsAt(
@@ -610,7 +634,7 @@ export class ByteVector {
         return ByteVector.fromByteArray(this._data.subarray(startIndex, startIndex + length));
     }
 
-    public reomveByte(index: number) {
+    public reomveAtIndex(index: number) {
         if (this.isReadOnly) {
             throw new Error("Not supported: Cannot edit readonly byte vectors");
         }
@@ -1002,7 +1026,7 @@ export class ByteVector {
     private static getTextDelimiter(type: StringType): ReadOnlyByteVector {
         return type === StringType.UTF16 || type === StringType.UTF16BE || type === StringType.UTF16LE
             ? ByteVector._td2
-            ? ByteVector._td1;
+            : ByteVector._td1;
     }
 
     private getSizedArray(size: number, mostSignificantByteFirst: boolean): Uint8Array {

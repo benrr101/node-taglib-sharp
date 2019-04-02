@@ -62,5 +62,4 @@ export class ReadOnlyByteVector extends ByteVector {
     // #endregion
 
     public get isReadOnly(): boolean { return true; }
-    public get isFixedSize(): boolean { return true; }
 }
