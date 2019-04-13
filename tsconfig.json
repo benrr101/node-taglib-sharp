@@ -1,15 +1,14 @@
 {
   "compilerOptions": {
+    "experimentalDecorators": true,
     "inlineSources": true,
     "module": "commonjs",
     "noImplicitAny": true,
     "sourceMap": true,
-    "outDir": "dist",
     "baseUrl": ".",
     "paths": {
       "*": ["node_modules/*"]
     },
     "target": "es6"
-  },
-  "include": ["src/**/*"]
+  }
 }
