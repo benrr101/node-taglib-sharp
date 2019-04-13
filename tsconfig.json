@@ -4,11 +4,16 @@
     "inlineSources": true,
     "module": "commonjs",
     "noImplicitAny": true,
+    "outDir": "./dist",
     "sourceMap": true,
     "baseUrl": ".",
     "paths": {
       "*": ["node_modules/*"]
     },
     "target": "es6"
-  }
+  },
+  "include": [
+    "./src/**/*",
+    "./test/**/*"
+  ]
 }

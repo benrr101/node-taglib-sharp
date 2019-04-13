@@ -3,8 +3,7 @@
   "version": "0.1.0",
   "license": "LGPL-2.1-or-later",
   "scripts": {
-    "build-src": "tsc -p ./src/",
-    "build-test": "tsc -p ./test/"
+    "build": "tsc -p ./"
   },
   "dependencies": {
     "arraybuffer-to-buffer": "^0.0.5",
@@ -16,6 +15,6 @@
     "mocha": "^6.1.2",
     "mocha-typescript": "^1.1.17",
     "tslint": "^5.13.1",
-    "typescript": "^3.3.3333"
+    "typescript": "^3.4.3"
   }
 }

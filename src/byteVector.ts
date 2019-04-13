@@ -2,8 +2,6 @@ import * as BigInt from "big-integer";
 import * as IConv from "iconv-lite";
 import * as fs from "fs";
 
-import {ReadOnlyByteVector} from "./readOnlyByteVector";
-
 // TODO: Assess if this is needed
 const AB2B = require("arraybuffer-to-buffer");
 
@@ -133,12 +131,12 @@ export class ByteVector {
     /**
      * Contains a one byte text delimiter
      */
-    private static readonly _td1: ReadOnlyByteVector = ReadOnlyByteVector.fromSize(1);
+    private static readonly _td1: ByteVector = ByteVector.fromSize(1, undefined, true);
 
     /**
      * Contains a two byte text delimiter
      */
-    private static readonly _td2: ReadOnlyByteVector = ReadOnlyByteVector.fromSize(2);
+    private static readonly _td2: ByteVector = ByteVector.fromSize(2, undefined, true);
 
     /**
      * Contains the last generic UTF16 encoding read. Defaults to UTF16-LE
@@ -156,7 +154,12 @@ export class ByteVector {
     /**
      * Contains the internal byte list
      */
-    protected _data: Uint8Array;
+    private _data: Uint8Array;
+
+    /**
+     * Whether or not this byte vector is readonly
+     */
+    private _isReadOnly: boolean;
 
     // #endregion
 
@@ -165,22 +168,31 @@ export class ByteVector {
     protected constructor() { }
 
     // TODO: Extend to support length that's less than the full length
-    public static fromByteArray(data: Uint8Array): ByteVector {
+    public static fromByteArray(data: Uint8Array, isReadOnly: boolean = false): ByteVector {
         const vector = new ByteVector();
         vector._data = new Uint8Array(data.length);
         vector._data.set(data);
+        vector._isReadOnly = isReadOnly;
         return vector;
     }
 
-    public static fromByteVector(original: ByteVector): ByteVector {
-        return ByteVector.fromByteArray(original._data);
+    public static fromByteVector(original: ByteVector, isReadOnly: boolean = false): ByteVector {
+        return ByteVector.fromByteArray(original._data, isReadOnly);
     }
 
-    public static fromInt(value: number, mostSignificantByteFirst: boolean = true): ByteVector {
-        return ByteVector.getByteVectorFromInteger(value, true, 4, mostSignificantByteFirst);
+    public static fromInt(
+        value: number,
+        mostSignificantByteFirst: boolean = true,
+        isReadOnly: boolean = false
+    ): ByteVector {
+        return ByteVector.getByteVectorFromInteger(value, true, 4, mostSignificantByteFirst, isReadOnly);
     }
 
-    public static fromLong(value: BigInt.BigInteger, mostSignificantByteFirst: boolean = true): ByteVector {
+    public static fromLong(
+        value: BigInt.BigInteger,
+        mostSignificantByteFirst: boolean = true,
+        isReadOnly: boolean = false
+    ): ByteVector {
         if (value === undefined || value === null) {
             throw new Error("Argument null exception: value is null");
         }
@@ -214,27 +226,35 @@ export class ByteVector {
             }
         }
 
-        return ByteVector.fromByteArray(byteArray);
+        return ByteVector.fromByteArray(byteArray, isReadOnly);
     }
 
-    public static fromPath(path: string): ByteVector {
+    public static fromPath(path: string, isReadOnly: boolean): ByteVector {
         if (!path) {
             throw new Error("Argument null exception: Path was not provided");
         }
 
         const stream = fs.createReadStream(path);
         try {
-            return ByteVector.fromStream(stream);
+            return ByteVector.fromStream(stream, isReadOnly);
         } finally {
             stream.destroy();
         }
     }
 
-    public static fromShort(value: number, mostSignificantByteFirst: boolean = true): ByteVector {
-        return ByteVector.getByteVectorFromInteger(value, true, 2, mostSignificantByteFirst);
+    public static fromShort(
+        value: number,
+        mostSignificantByteFirst: boolean = true,
+        isReadOnly: boolean = false
+    ): ByteVector {
+        return ByteVector.getByteVectorFromInteger(value, true, 2, mostSignificantByteFirst, isReadOnly);
     }
 
-    public static fromSize(size: number, fill: number = 0x0): ByteVector {
+    public static fromSize(
+        size: number,
+        fill: number = 0x0,
+        isReadOnly: boolean = false
+    ): ByteVector {
         if (!Number.isInteger(size) || size < 0) {
             throw new Error("Argument out of range exception: ByteVector size is invalid uint");
         }
@@ -246,10 +266,12 @@ export class ByteVector {
         vector._data = new Uint8Array(size);
         vector._data.fill(fill);
 
+        vector._isReadOnly = isReadOnly;
+
         return vector;
     }
 
-    public static fromStream(stream: NodeJS.ReadableStream): ByteVector {
+    public static fromStream(stream: NodeJS.ReadableStream, isReadOnly: boolean = false): ByteVector {
         if (!stream.readable) {
             throw new Error("Invalid operations exception: Stream is not readable");
         }
@@ -263,6 +285,8 @@ export class ByteVector {
             bytes = <Buffer> stream.read(4096);
             output.addByteArray(bytes);
         } while (bytes);
+
+        output._isReadOnly = isReadOnly;
 
         return output;
     }
@@ -294,11 +318,19 @@ export class ByteVector {
         vector.addByteArray(textBytes);
     }
 
-    public static fromUInt(value: number, mostSignificantByteFirst: boolean = true): ByteVector {
-        return ByteVector.getByteVectorFromInteger(value, false, 4, mostSignificantByteFirst);
+    public static fromUInt(
+        value: number,
+        mostSignificantByteFirst: boolean = true,
+        isReadOnly: boolean = false
+    ): ByteVector {
+        return ByteVector.getByteVectorFromInteger(value, false, 4, mostSignificantByteFirst, isReadOnly);
     }
 
-    public static fromULong(value: BigInt.BigInteger, mostSignificantByteFirst: boolean = true): ByteVector {
+    public static fromULong(
+        value: BigInt.BigInteger,
+        mostSignificantByteFirst: boolean = true,
+        isReadOnly: boolean = false
+    ): ByteVector {
         if (value === undefined || value === null) {
             throw new Error("Argument null exception: value is null");
         }
@@ -321,11 +353,15 @@ export class ByteVector {
             byteArray[outputOffset] = byte;
         }
 
-        return ByteVector.fromByteArray(byteArray);
+        return ByteVector.fromByteArray(byteArray, isReadOnly);
     }
 
-    public static fromUShort(value: number, mostSignificantByteFirst: boolean = true): ByteVector {
-        return ByteVector.getByteVectorFromInteger(value, false, 2, mostSignificantByteFirst);
+    public static fromUShort(
+        value: number,
+        mostSignificantByteFirst: boolean = true,
+        isReadOnly: boolean = false
+    ): ByteVector {
+        return ByteVector.getByteVectorFromInteger(value, false, 2, mostSignificantByteFirst, isReadOnly);
     }
 
     // #endregion
@@ -365,7 +401,7 @@ export class ByteVector {
     /**
      * Whether or not the current instance is readonly.
      */
-    public get isReadOnly(): boolean { return false; }
+    public get isReadOnly(): boolean { return this._isReadOnly; }
 
     public get length(): number { return this._data.length; }
 
@@ -374,7 +410,7 @@ export class ByteVector {
     // #region Public Methods
 
     public addByte(byte: number): void {
-        if (this.isReadOnly) {
+        if (this._isReadOnly) {
             throw new Error("Not supported: Cannot edit readonly byte vectors");
         }
 
@@ -386,7 +422,7 @@ export class ByteVector {
     }
 
     public addByteArray(data: Uint8Array): void {
-        if (this.isReadOnly) {
+        if (this._isReadOnly) {
             throw new Error("Not supported: Cannot edit readonly byte vectors");
         }
 
@@ -403,7 +439,7 @@ export class ByteVector {
     }
 
     public clear(): void {
-        if (this.isReadOnly) {
+        if (this._isReadOnly) {
             throw new Error("Invalid Operation Exception: Cannot edit readonly objects");
         }
         this._data = new Uint8Array(0);
@@ -570,7 +606,7 @@ export class ByteVector {
     }
 
     public insertByte(index: number, byte: number): void {
-        if (this.isReadOnly) {
+        if (this._isReadOnly) {
             throw new Error("Not supported: Cannot edit readonly byte vectors");
         }
         if (!Number.isInteger(index) || index < 0) {
@@ -593,7 +629,7 @@ export class ByteVector {
     }
 
     public insertByteArray(index: number, other: Uint8Array): void {
-        if (this.isReadOnly) {
+        if (this._isReadOnly) {
             throw new Error("Not supported: Cannot edit readonly byte vectors");
         }
         if (!Number.isInteger(index) || index < 0) {
@@ -635,7 +671,7 @@ export class ByteVector {
     }
 
     public reomveAtIndex(index: number) {
-        if (this.isReadOnly) {
+        if (this._isReadOnly) {
             throw new Error("Not supported: Cannot edit readonly byte vectors");
         }
         if (!Number.isInteger(index) || index < 0 || index >= this.length) {
@@ -653,7 +689,7 @@ export class ByteVector {
     }
 
     public removeRange(index: number, count: number) {
-        if (this.isReadOnly) {
+        if (this._isReadOnly) {
             throw new Error("Not supported: Cannot edit readonly byte vectors");
         }
         if (!Number.isInteger(index) || index < 0 || index >= this.length) {
@@ -678,7 +714,7 @@ export class ByteVector {
     }
 
     public resize(size: number, padding: number = 0x0): ByteVector {
-        if (this.isReadOnly) {
+        if (this._isReadOnly) {
             throw new Error("Not supported: Cannot edit readonly byte vectors");
         }
         if (!Number.isInteger(size) || size < 0) {
@@ -751,7 +787,7 @@ export class ByteVector {
         if (!Number.isInteger(value) || value < 0 || value > 0xff) {
             throw new Error("Argument out of range exception: value is not a valid byte");
         }
-        if (this.isReadOnly) {
+        if (this._isReadOnly) {
             throw new Error("Invalid operation exception: Cannot edit readonly objects");
         }
         this._data[index] = value;
@@ -955,7 +991,8 @@ export class ByteVector {
         value: number,
         signed: boolean,
         count: number,
-        mostSignificantByteFirst: boolean
+        mostSignificantByteFirst: boolean,
+        isReadOnly: boolean
     ): ByteVector {
         if (!Number.isInteger(value) || !Number.isSafeInteger(value)) {
             throw new Error("Argument out of range: value is not a valid integer");
@@ -984,7 +1021,7 @@ export class ByteVector {
             bytes[offset] = (value >> (offset * 8) & 0xFF);
         }
 
-        return ByteVector.fromByteArray(bytes);
+        return ByteVector.fromByteArray(bytes, isReadOnly);
     }
 
     private static getIConvEncoding(type: StringType, bom: ByteVector): IConvEncoding {
@@ -1023,7 +1060,7 @@ export class ByteVector {
         return new IConvEncoding("latin1");
     }
 
-    private static getTextDelimiter(type: StringType): ReadOnlyByteVector {
+    private static getTextDelimiter(type: StringType): ByteVector {
         return type === StringType.UTF16 || type === StringType.UTF16BE || type === StringType.UTF16LE
             ? ByteVector._td2
             : ByteVector._td1;
