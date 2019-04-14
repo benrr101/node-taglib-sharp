@@ -169,6 +169,10 @@ export class ByteVector {
 
     // TODO: Extend to support length that's less than the full length
     public static fromByteArray(data: Uint8Array, isReadOnly: boolean = false): ByteVector {
+        if (!data) {
+            throw new Error("Argument Null Exception: data was not provided");
+        }
+
         const vector = new ByteVector();
         vector._data = new Uint8Array(data.length);
         vector._data.set(data);

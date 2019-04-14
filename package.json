@@ -12,6 +12,8 @@
   },
   "devDependencies": {
     "@types/node": "^11.10.4",
+    "@types/chai": "^4.1.7",
+    "chai": "^4.2.0",
     "mocha": "^6.1.2",
     "mocha-typescript": "^1.1.17",
     "tslint": "^5.13.1",
