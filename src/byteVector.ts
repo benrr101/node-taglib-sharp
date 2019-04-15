@@ -129,6 +129,21 @@ export class ByteVector {
     ]);
 
     /**
+     * Contains useful values when doing validation of different sized integers
+     */
+    private static readonly _maxInts: Array<{mask: number, max: number, min: number}> = [
+        undefined,
+        undefined,
+        {mask: 0xFFFF, max: 0x7FFF, min: -0x8000},                                      // short
+        undefined,
+        {mask: 0xFFFFFFFF, max: 0x7FFFFFFF, min: -0x80000000},                          // int
+        undefined,
+        undefined,
+        undefined,
+        {mask: 0xFFFFFFFFFFFFFFFF, max: 0x7FFFFFFFFFFFFFFF, min: -0x8000000000000000}   // long
+    ];
+
+    /**
      * Contains a one byte text delimiter
      */
     private static readonly _td1: ByteVector = ByteVector.fromSize(1, undefined, true);
@@ -165,7 +180,7 @@ export class ByteVector {
 
     // #region Constructors
 
-    protected constructor() { }
+    private constructor() { }
 
     // TODO: Extend to support length that's less than the full length
     public static fromByteArray(data: Uint8Array, isReadOnly: boolean = false): ByteVector {
@@ -181,6 +196,9 @@ export class ByteVector {
     }
 
     public static fromByteVector(original: ByteVector, isReadOnly: boolean = false): ByteVector {
+        if (!original) {
+            throw new Error("Argument null exception: original was not provided");
+        }
         return ByteVector.fromByteArray(original._data, isReadOnly);
     }
 
@@ -1006,23 +1024,14 @@ export class ByteVector {
         }
 
         // Look for overflows
-        let overflowValue = value;
-        if (signed && value < 0) {
-            // We'll use the 2's complement value to determine if the value is an overflow
-            overflowValue = (overflowValue ^ 0xFFFFFFFF) + 1;
-        }
-        let bitMask = 0;
-        for (let i = 0; i < 4; i++) {
-            bitMask |= ((i < count) ? 0x00 : 0xFF) << (i * 8);
-        }
-        if ((overflowValue & bitMask) > 0) {
+        if (value > ByteVector._maxInts[count].max || value < ByteVector._maxInts[count].min) {
             throw new Error(`Argument out of range: value overflows a ${count} byte integer`);
         }
 
-        const bytes = new Uint8Array();
+        const bytes = new Uint8Array(count);
         for (let i = 0; i < count; i++) {
-            const offset = mostSignificantByteFirst ? count - i : i;
-            bytes[offset] = (value >> (offset * 8) & 0xFF);
+            const offset = mostSignificantByteFirst ? count - i - 1 : i;
+            bytes[offset] = (value >> (i * 8) & 0xFF);
         }
 
         return ByteVector.fromByteArray(bytes, isReadOnly);
