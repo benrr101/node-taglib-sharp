@@ -223,6 +223,7 @@ export class ByteVector {
         }
 
         // Step 1: Get exactly 16 hex digits from the bigint
+        // TODO: This can likely be reduced to a single loop
         const digits = value.toArray(16);
         while (digits.value.length < 16) {
             digits.value.unshift(0);

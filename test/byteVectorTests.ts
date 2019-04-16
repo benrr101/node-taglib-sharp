@@ -1,4 +1,5 @@
 import * as chai from "chai";
+import * as BigInt from "big-integer";
 import {suite, test, slow, timeout} from "mocha-typescript";
 
 import {ByteVector} from "../src/byteVector";
@@ -59,6 +60,7 @@ const assert = chai.assert;
         assert.deepEqual(bv.data, data);
     }
 }
+
 @suite(timeout(3000), slow(1000)) class ByteVectorTestsFromByteVector {
     @test
     public NoVector() {
@@ -106,6 +108,8 @@ const assert = chai.assert;
     @test
     public BadInteger() {
         // Arrange, Act, Assert
+        assert.throws(() => { ByteVector.fromInt(undefined); });
+        assert.throws(() => { ByteVector.fromInt(null); });
         assert.throws(() => { ByteVector.fromInt(0.1); });
         assert.throws(() => { ByteVector.fromInt(Number.MAX_SAFE_INTEGER + 1); });
     }
@@ -138,7 +142,67 @@ const assert = chai.assert;
     }
 
     @test
-    public Positive_BigEndian() {
+    public Positive1Byte_BigEndian() {
+        ByteVectorTestsFromInt.TestInt(
+            0x12,
+            [0x00, 0x00, 0x00, 0x12],
+            false,
+            undefined
+        );
+    }
+
+    @test
+    public Positive1Byte_LittleEndian() {
+        ByteVectorTestsFromInt.TestInt(
+            0x12,
+            [0x12, 0x00, 0x00, 0x00],
+            false,
+            false
+        );
+    }
+
+    @test
+    public Positive2Byte_BigEndian() {
+        ByteVectorTestsFromInt.TestInt(
+            0x1234,
+            [0x00, 0x00, 0x12, 0x34],
+            false,
+            undefined
+        );
+    }
+
+    @test
+    public Positive2Byte_LittleEndian() {
+        ByteVectorTestsFromInt.TestInt(
+            0x1234,
+            [0x34, 0x12, 0x00, 0x00],
+            false,
+            false
+        );
+    }
+
+    @test
+    public Positive3Byte_BigEndian() {
+        ByteVectorTestsFromInt.TestInt(
+            0x123456,
+            [0x00, 0x12, 0x34, 0x56],
+            false,
+            undefined
+        );
+    }
+
+    @test
+    public Positive3Byte_LittleEndian() {
+        ByteVectorTestsFromInt.TestInt(
+            0x123456,
+            [0x56, 0x34, 0x12, 0x00],
+            false,
+            false
+        );
+    }
+
+    @test
+    public Positive4Byte_BigEndian() {
         ByteVectorTestsFromInt.TestInt(
             0x12345678,
             [0x12, 0x34, 0x56, 0x78],
@@ -148,7 +212,7 @@ const assert = chai.assert;
     }
 
     @test
-    public Positive_LittleEndian() {
+    public Positive4Byte_LittleEndian() {
         ByteVectorTestsFromInt.TestInt(
             0x12345678,
             [0x78, 0x56, 0x34, 0x12],
@@ -158,7 +222,67 @@ const assert = chai.assert;
     }
 
     @test
-    public Negative_BigEndian() {
+    public Negative1Byte_BigEndian() {
+        ByteVectorTestsFromInt.TestInt(
+            -0x12,
+            [0xFF, 0xFF, 0xFF, 0xEE],
+            false,
+            undefined
+        );
+    }
+
+    @test
+    public Negative1Byte_LittleEndian() {
+        ByteVectorTestsFromInt.TestInt(
+            -0x12,
+            [0xEE, 0xFF, 0xFF, 0xFF],
+            false,
+            false
+        );
+    }
+
+    @test
+    public Negative2Byte_BigEndian() {
+        ByteVectorTestsFromInt.TestInt(
+            -0x1234,
+            [0xFF, 0xFF, 0xED, 0xCC],
+            false,
+            undefined
+        );
+    }
+
+    @test
+    public Negative2Byte_LittleEndian() {
+        ByteVectorTestsFromInt.TestInt(
+            -0x1234,
+            [0xCC, 0xED, 0xFF, 0xFF],
+            false,
+            false
+        );
+    }
+
+    @test
+    public Negative3Byte_BigEndian() {
+        ByteVectorTestsFromInt.TestInt(
+            -0x123456,
+            [0xFF, 0xED, 0xCB, 0xAA],
+            false,
+            undefined
+        );
+    }
+
+    @test
+    public Negative3Byte_LittleEndian() {
+        ByteVectorTestsFromInt.TestInt(
+            -0x123456,
+            [0xAA, 0xCB, 0xED, 0xFF],
+            false,
+            false
+        );
+    }
+
+    @test
+    public Negative4Byte_BigEndian() {
         ByteVectorTestsFromInt.TestInt(
             -0x12345678,
             [0xED, 0xCB, 0xA9, 0x88],
@@ -168,7 +292,7 @@ const assert = chai.assert;
     }
 
     @test
-    public Negative_LittlesEndian() {
+    public Negative4Byte_LittleEndian() {
         ByteVectorTestsFromInt.TestInt(
             -0x12345678,
             [0x88, 0xA9, 0xCB, 0xED],
@@ -184,6 +308,194 @@ const assert = chai.assert;
         // Assert
         assert.isOk(bv);
         assert.strictEqual(bv.length, 4);
+        assert.isFalse(bv.isEmpty);
+        assert.strictEqual(bv.isReadOnly, isReadOnly);
+        assert.deepEqual(bv.data, new Uint8Array(expectedData));
+    }
+}
+
+@suite(timeout(3000), slow(1000)) class ByteVectorTestsFromLong {
+    @test
+    public BadValue() {
+        // Arrange, Act, Assert
+        assert.throws(() => { ByteVector.fromLong(undefined); });
+        assert.throws(() => { ByteVector.fromLong(null); });
+    }
+
+    @test
+    public Overflow() {
+        // Arrange, Act, Assert
+        assert.throws(() => { ByteVector.fromLong(BigInt("9223372036854775808")); });
+        assert.throws(() => { ByteVector.fromLong(BigInt("-9223372036854775809")); });
+    }
+
+    @test
+    public Positive1Byte_BigEndian() {
+        ByteVectorTestsFromLong.TestLong(
+            BigInt("0x12"),
+            [0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x12],
+            false,
+            undefined
+        );
+    }
+
+    @test
+    public Positive1Byte_LittleEndian() {
+        ByteVectorTestsFromLong.TestLong(
+            BigInt("0x12"),
+            [0x12, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00],
+            false,
+            false
+        );
+    }
+
+    @test
+    public Positive2Byte_BigEndian() {
+        ByteVectorTestsFromLong.TestLong(
+            BigInt("0x1234"),
+            [0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x12, 0x34],
+            false,
+            undefined
+        );
+    }
+
+    @test
+    public Positive2Byte_LittleEndian() {
+        ByteVectorTestsFromLong.TestLong(
+            BigInt("0x1234"),
+            [0x34, 0x12, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00],
+            false,
+            false
+        );
+    }
+
+    @test
+    public Positive3Byte_BigEndian() {
+        ByteVectorTestsFromLong.TestLong(
+            BigInt("0x123456"),
+            [0x00, 0x00, 0x00, 0x00, 0x00, 0x12, 0x34, 0x56],
+            false,
+            undefined
+        );
+    }
+
+    @test
+    public Positive3Byte_LittleEndian() {
+        ByteVectorTestsFromLong.TestLong(
+            BigInt("0x123456"),
+            [0x56, 0x34, 0x12, 0x00, 0x00, 0x00, 0x00, 0x00],
+            false,
+            false
+        );
+    }
+
+    @test
+    public Positive4Byte_BigEndian() {
+        ByteVectorTestsFromLong.TestLong(
+            BigInt("0x12345678"),
+            [0x00, 0x00, 0x00, 0x00, 0x12, 0x34, 0x56, 0x78],
+            false,
+            undefined
+        );
+    }
+
+    @test
+    public Positive4Byte_LittleEndian() {
+        ByteVectorTestsFromLong.TestLong(
+            BigInt("0x12345678"),
+            [0x78, 0x56, 0x34, 0x12, 0x00, 0x00, 0x00, 0x00],
+            false,
+            false
+        );
+    }
+
+    @test
+    public Positive5Byte_BigEndian() {
+        ByteVectorTestsFromLong.TestLong(
+            BigInt("0x123456789A"),
+            [0x00, 0x00, 0x00, 0x12, 0x34, 0x56, 0x78, 0x9A],
+            false,
+            undefined
+        );
+    }
+
+    @test
+    public Positive5Byte_LittleEndian() {
+        ByteVectorTestsFromLong.TestLong(
+            BigInt("0x123456789A"),
+            [0x9A, 0x78, 0x56, 0x34, 0x12, 0x00, 0x00, 0x00],
+            false,
+            false
+        );
+    }
+
+    @test
+    public Positive6Byte_BigEndian() {
+        ByteVectorTestsFromLong.TestLong(
+            BigInt("0x123456789ABC"),
+            [0x00, 0x00, 0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC],
+            false,
+            undefined
+        );
+    }
+
+    @test
+    public Positive6Byte_LittleEndian() {
+        ByteVectorTestsFromLong.TestLong(
+            BigInt("0x123456789ABC"),
+            [0xBC, 0x9A, 0x78, 0x56, 0x34, 0x12, 0x00, 0x00],
+            false,
+            false
+        );
+    }
+
+    @test
+    public Positive7Byte_BigEndian() {
+        ByteVectorTestsFromLong.TestLong(
+            BigInt("0x123456789ABCDE"),
+            [0x00, 0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC, 0xDE],
+            false,
+            undefined
+        );
+    }
+
+    @test
+    public Positive7Byte_LittleEndian() {
+        ByteVectorTestsFromLong.TestLong(
+            BigInt("0x123456789ABCDE"),
+            [0xDE, 0xBC, 0x9A, 0x78, 0x56, 0x34, 0x12, 0x00],
+            false,
+            false
+        );
+    }
+
+    @test
+    public Positive8Byte_BigEndian() {
+        ByteVectorTestsFromLong.TestLong(
+            BigInt("123456789ABCDEF0", 16),
+            [0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC, 0xDE, 0xF0],
+            false,
+            undefined
+        );
+    }
+
+    @test
+    public Positive8Byte_LittleEndian() {
+        ByteVectorTestsFromLong.TestLong(
+            BigInt("123456789ABCDEF0", 16),
+            [0xF0, 0xDE, 0xBC, 0x9A, 0x78, 0x56, 0x34, 0x12],
+            false,
+            false
+        );
+    }
+
+    private static TestLong(value: BigInt.BigInteger, expectedData: number[], isReadOnly: boolean, bigEndian: boolean): void {
+        // Arrange, Act
+        const bv = ByteVector.fromLong(value, bigEndian);
+
+        // Assert
+        assert.isOk(bv);
+        assert.strictEqual(bv.length, 8);
         assert.isFalse(bv.isEmpty);
         assert.strictEqual(bv.isReadOnly, isReadOnly);
         assert.deepEqual(bv.data, new Uint8Array(expectedData));
