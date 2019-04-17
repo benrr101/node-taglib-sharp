@@ -257,12 +257,9 @@ export class ByteVector {
             throw new Error("Argument null exception: Path was not provided");
         }
 
-        const stream = fs.createReadStream(path);
-        try {
-            return ByteVector.fromStream(stream, isReadOnly);
-        } finally {
-            stream.destroy();
-        }
+        // NOTE: We are doing this with read file b/c it removes the headache of working with streams
+        const fileBuffer = fs.readFileSync(path);
+        return ByteVector.fromByteArray(fileBuffer, isReadOnly);
     }
 
     public static fromShort(
@@ -278,7 +275,7 @@ export class ByteVector {
         fill: number = 0x0,
         isReadOnly: boolean = false
     ): ByteVector {
-        if (!Number.isInteger(size) || size < 0) {
+        if (!Number.isInteger(size) || size < 0 || !Number.isSafeInteger(size)) {
             throw new Error("Argument out of range exception: ByteVector size is invalid uint");
         }
         if (!Number.isInteger(fill) || fill < 0 || fill > 0xff) {
@@ -303,6 +300,7 @@ export class ByteVector {
         const output = new ByteVector();
         output._data = new Uint8Array(0);
 
+        // TODO: Rework this to concat the chunks together
         let bytes: Buffer;
         do {
             bytes = <Buffer> stream.read(4096);
@@ -317,15 +315,18 @@ export class ByteVector {
     public static fromString(
         text: string,
         type: StringType = StringType.UTF8,
-        length: number = Number.MAX_SAFE_INTEGER
+        length: number = Number.MAX_SAFE_INTEGER,
+        isReadOnly: boolean = false
     ): ByteVector {
-        const vector = new ByteVector();
-        vector._data = new Uint8Array(0);
-
-        if (length < 0) {
+        if (text === undefined || text === null) {
+            throw new Error("Argument null exception: text is invalid");
+        }
+        if (!Number.isInteger(length) || !Number.isSafeInteger(length) || length < 0) {
             throw new Error("Argument out of range exception: length is invalid");
         }
 
+        const vector = new ByteVector();
+        vector._data = new Uint8Array(0);
         if (type === StringType.UTF16) {
             vector.addByteArray(new Uint8Array([0xff, 0xfe]));
         }
@@ -339,6 +340,9 @@ export class ByteVector {
         }
         const textBytes = ByteVector.getIConvEncoding(type, vector).encode(text);
         vector.addByteArray(textBytes);
+
+        vector._isReadOnly = isReadOnly;
+        return vector;
     }
 
     public static fromUInt(

@@ -3,7 +3,7 @@ import * as BigInt from "big-integer";
 import {suite, test, slow, timeout} from "mocha-typescript";
 
 import TestConstants from "./testConstants";
-import {ByteVector} from "../src/byteVector";
+import {ByteVector, StringType} from "../src/byteVector";
 
 const assert = chai.assert;
 
@@ -127,7 +127,7 @@ const assert = chai.assert;
         ByteVectorTestsFromInt.TestInt(
             0x0,
             [0x0, 0x0, 0x0, 0x0],
-            false,
+            undefined,
             undefined
         );
     }
@@ -137,7 +137,7 @@ const assert = chai.assert;
         ByteVectorTestsFromInt.TestInt(
             0x0,
             [0x0, 0x0, 0x0, 0x0],
-            false,
+            undefined,
             false
         );
     }
@@ -147,7 +147,7 @@ const assert = chai.assert;
         ByteVectorTestsFromInt.TestInt(
             0x12,
             [0x00, 0x00, 0x00, 0x12],
-            false,
+            undefined,
             undefined
         );
     }
@@ -157,7 +157,7 @@ const assert = chai.assert;
         ByteVectorTestsFromInt.TestInt(
             0x12,
             [0x12, 0x00, 0x00, 0x00],
-            false,
+            undefined,
             false
         );
     }
@@ -167,7 +167,7 @@ const assert = chai.assert;
         ByteVectorTestsFromInt.TestInt(
             0x1234,
             [0x00, 0x00, 0x12, 0x34],
-            false,
+            undefined,
             undefined
         );
     }
@@ -177,7 +177,7 @@ const assert = chai.assert;
         ByteVectorTestsFromInt.TestInt(
             0x1234,
             [0x34, 0x12, 0x00, 0x00],
-            false,
+            undefined,
             false
         );
     }
@@ -187,7 +187,7 @@ const assert = chai.assert;
         ByteVectorTestsFromInt.TestInt(
             0x123456,
             [0x00, 0x12, 0x34, 0x56],
-            false,
+            undefined,
             undefined
         );
     }
@@ -197,7 +197,7 @@ const assert = chai.assert;
         ByteVectorTestsFromInt.TestInt(
             0x123456,
             [0x56, 0x34, 0x12, 0x00],
-            false,
+            undefined,
             false
         );
     }
@@ -207,7 +207,7 @@ const assert = chai.assert;
         ByteVectorTestsFromInt.TestInt(
             0x12345678,
             [0x12, 0x34, 0x56, 0x78],
-            false,
+            undefined,
             undefined
         );
     }
@@ -217,7 +217,7 @@ const assert = chai.assert;
         ByteVectorTestsFromInt.TestInt(
             0x12345678,
             [0x78, 0x56, 0x34, 0x12],
-            false,
+            undefined,
             false
         );
     }
@@ -227,7 +227,7 @@ const assert = chai.assert;
         ByteVectorTestsFromInt.TestInt(
             -0x12,
             [0xFF, 0xFF, 0xFF, 0xEE],
-            false,
+            undefined,
             undefined
         );
     }
@@ -237,7 +237,7 @@ const assert = chai.assert;
         ByteVectorTestsFromInt.TestInt(
             -0x12,
             [0xEE, 0xFF, 0xFF, 0xFF],
-            false,
+            undefined,
             false
         );
     }
@@ -247,7 +247,7 @@ const assert = chai.assert;
         ByteVectorTestsFromInt.TestInt(
             -0x1234,
             [0xFF, 0xFF, 0xED, 0xCC],
-            false,
+            undefined,
             undefined
         );
     }
@@ -257,7 +257,7 @@ const assert = chai.assert;
         ByteVectorTestsFromInt.TestInt(
             -0x1234,
             [0xCC, 0xED, 0xFF, 0xFF],
-            false,
+            undefined,
             false
         );
     }
@@ -267,7 +267,7 @@ const assert = chai.assert;
         ByteVectorTestsFromInt.TestInt(
             -0x123456,
             [0xFF, 0xED, 0xCB, 0xAA],
-            false,
+            undefined,
             undefined
         );
     }
@@ -277,7 +277,7 @@ const assert = chai.assert;
         ByteVectorTestsFromInt.TestInt(
             -0x123456,
             [0xAA, 0xCB, 0xED, 0xFF],
-            false,
+            undefined,
             false
         );
     }
@@ -287,7 +287,7 @@ const assert = chai.assert;
         ByteVectorTestsFromInt.TestInt(
             -0x12345678,
             [0xED, 0xCB, 0xA9, 0x88],
-            false,
+            undefined,
             undefined
         );
     }
@@ -297,7 +297,7 @@ const assert = chai.assert;
         ByteVectorTestsFromInt.TestInt(
             -0x12345678,
             [0x88, 0xA9, 0xCB, 0xED],
-            false,
+            undefined,
             false
         );
     }
@@ -320,7 +320,11 @@ const assert = chai.assert;
         assert.isOk(bv);
         assert.strictEqual(bv.length, 4);
         assert.isFalse(bv.isEmpty);
-        assert.strictEqual(bv.isReadOnly, isReadOnly);
+        if (isReadOnly !== undefined) {
+            assert.strictEqual(bv.isReadOnly, isReadOnly);
+        } else {
+            assert.isFalse(bv.isReadOnly);
+        }
         assert.deepEqual(bv.data, new Uint8Array(expectedData));
     }
 }
@@ -345,7 +349,7 @@ const assert = chai.assert;
         ByteVectorTestsFromLong.TestLong(
             BigInt("0x12"),
             [0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x12],
-            false,
+            undefined,
             undefined
         );
     }
@@ -355,7 +359,7 @@ const assert = chai.assert;
         ByteVectorTestsFromLong.TestLong(
             BigInt("0x12"),
             [0x12, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00],
-            false,
+            undefined,
             false
         );
     }
@@ -365,7 +369,7 @@ const assert = chai.assert;
         ByteVectorTestsFromLong.TestLong(
             BigInt("0x1234"),
             [0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x12, 0x34],
-            false,
+            undefined,
             undefined
         );
     }
@@ -375,7 +379,7 @@ const assert = chai.assert;
         ByteVectorTestsFromLong.TestLong(
             BigInt("0x1234"),
             [0x34, 0x12, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00],
-            false,
+            undefined,
             false
         );
     }
@@ -385,7 +389,7 @@ const assert = chai.assert;
         ByteVectorTestsFromLong.TestLong(
             BigInt("0x123456"),
             [0x00, 0x00, 0x00, 0x00, 0x00, 0x12, 0x34, 0x56],
-            false,
+            undefined,
             undefined
         );
     }
@@ -395,7 +399,7 @@ const assert = chai.assert;
         ByteVectorTestsFromLong.TestLong(
             BigInt("0x123456"),
             [0x56, 0x34, 0x12, 0x00, 0x00, 0x00, 0x00, 0x00],
-            false,
+            undefined,
             false
         );
     }
@@ -405,7 +409,7 @@ const assert = chai.assert;
         ByteVectorTestsFromLong.TestLong(
             BigInt("0x12345678"),
             [0x00, 0x00, 0x00, 0x00, 0x12, 0x34, 0x56, 0x78],
-            false,
+            undefined,
             undefined
         );
     }
@@ -415,7 +419,7 @@ const assert = chai.assert;
         ByteVectorTestsFromLong.TestLong(
             BigInt("0x12345678"),
             [0x78, 0x56, 0x34, 0x12, 0x00, 0x00, 0x00, 0x00],
-            false,
+            undefined,
             false
         );
     }
@@ -425,7 +429,7 @@ const assert = chai.assert;
         ByteVectorTestsFromLong.TestLong(
             BigInt("0x123456789A"),
             [0x00, 0x00, 0x00, 0x12, 0x34, 0x56, 0x78, 0x9A],
-            false,
+            undefined,
             undefined
         );
     }
@@ -435,7 +439,7 @@ const assert = chai.assert;
         ByteVectorTestsFromLong.TestLong(
             BigInt("0x123456789A"),
             [0x9A, 0x78, 0x56, 0x34, 0x12, 0x00, 0x00, 0x00],
-            false,
+            undefined,
             false
         );
     }
@@ -445,7 +449,7 @@ const assert = chai.assert;
         ByteVectorTestsFromLong.TestLong(
             BigInt("0x123456789ABC"),
             [0x00, 0x00, 0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC],
-            false,
+            undefined,
             undefined
         );
     }
@@ -455,7 +459,7 @@ const assert = chai.assert;
         ByteVectorTestsFromLong.TestLong(
             BigInt("0x123456789ABC"),
             [0xBC, 0x9A, 0x78, 0x56, 0x34, 0x12, 0x00, 0x00],
-            false,
+            undefined,
             false
         );
     }
@@ -465,7 +469,7 @@ const assert = chai.assert;
         ByteVectorTestsFromLong.TestLong(
             BigInt("0x123456789ABCDE"),
             [0x00, 0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC, 0xDE],
-            false,
+            undefined,
             undefined
         );
     }
@@ -475,7 +479,7 @@ const assert = chai.assert;
         ByteVectorTestsFromLong.TestLong(
             BigInt("0x123456789ABCDE"),
             [0xDE, 0xBC, 0x9A, 0x78, 0x56, 0x34, 0x12, 0x00],
-            false,
+            undefined,
             false
         );
     }
@@ -485,7 +489,7 @@ const assert = chai.assert;
         ByteVectorTestsFromLong.TestLong(
             BigInt("123456789ABCDEF0", 16),
             [0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC, 0xDE, 0xF0],
-            false,
+            undefined,
             undefined
         );
     }
@@ -495,7 +499,7 @@ const assert = chai.assert;
         ByteVectorTestsFromLong.TestLong(
             BigInt("123456789ABCDEF0", 16),
             [0xF0, 0xDE, 0xBC, 0x9A, 0x78, 0x56, 0x34, 0x12],
-            false,
+            undefined,
             false
         );
     }
@@ -505,7 +509,7 @@ const assert = chai.assert;
         ByteVectorTestsFromLong.TestLong(
             BigInt(0),
             [0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00],
-            false,
+            undefined,
             undefined
         );
     }
@@ -515,7 +519,7 @@ const assert = chai.assert;
         ByteVectorTestsFromLong.TestLong(
             BigInt(0),
             [0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00],
-            false,
+            undefined,
             true
         );
     }
@@ -543,7 +547,11 @@ const assert = chai.assert;
         assert.isOk(bv);
         assert.strictEqual(bv.length, 8);
         assert.isFalse(bv.isEmpty);
-        assert.strictEqual(bv.isReadOnly, isReadOnly);
+        if (isReadOnly !== undefined) {
+            assert.strictEqual(bv.isReadOnly, isReadOnly);
+        } else {
+            assert.isFalse(bv.isReadOnly);
+        }
         assert.deepEqual(bv.data, new Uint8Array(expectedData));
     }
 }
@@ -581,5 +589,268 @@ const assert = chai.assert;
         assert.isFalse(bv.isEmpty);
         assert.isTrue(bv.isReadOnly);
         assert.deepEqual(bv.data, new Uint8Array(TestConstants.testFileContents));
+    }
+}
+
+@suite(timeout(3000), slow(1000)) class ByteVectorTestsFromShort {
+    @test
+    public BadIntShort() {
+        // Arrange, Act, Assert
+        assert.throws(() => { ByteVector.fromShort(undefined); });
+        assert.throws(() => { ByteVector.fromShort(null); });
+        assert.throws(() => { ByteVector.fromShort(0.1); });
+        assert.throws(() => { ByteVector.fromShort(Number.MAX_SAFE_INTEGER + 1); });
+    }
+
+    @test
+    public Overflow() {
+        // Arrange, Act, Assert
+        assert.throws(() => { ByteVector.fromShort(0x1000000); });
+        assert.throws(() => { ByteVector.fromShort(-0x1000000); });
+    }
+
+    @test
+    public Zero_BigEndian() {
+        ByteVectorTestsFromShort.TestShort(
+            0x0,
+            [0x0, 0x0],
+            undefined,
+            undefined
+        );
+    }
+
+    @test
+    public Zero_LittleEndian() {
+        ByteVectorTestsFromShort.TestShort(
+            0x0,
+            [0x0, 0x0],
+            undefined,
+            false
+        );
+    }
+
+    @test
+    public Positive1Byte_BigEndian() {
+        ByteVectorTestsFromShort.TestShort(
+            0x12,
+            [0x00, 0x12],
+            undefined,
+            undefined
+        );
+    }
+
+    @test
+    public Positive1Byte_LittleEndian() {
+        ByteVectorTestsFromShort.TestShort(
+            0x12,
+            [0x12, 0x00],
+            undefined,
+            false
+        );
+    }
+
+    @test
+    public Positive2Byte_BigEndian() {
+        ByteVectorTestsFromShort.TestShort(
+            0x1234,
+            [0x12, 0x34],
+            undefined,
+            undefined
+        );
+    }
+
+    @test
+    public Positive2Byte_LittleEndian() {
+        ByteVectorTestsFromShort.TestShort(
+            0x1234,
+            [0x34, 0x12],
+            undefined,
+            false
+        );
+    }
+
+    @test
+    public Negative1Byte_BigEndian() {
+        ByteVectorTestsFromShort.TestShort(
+            -0x12,
+            [0xFF, 0xEE],
+            undefined,
+            undefined
+        );
+    }
+
+    @test
+    public Negative1Byte_LittleEndian() {
+        ByteVectorTestsFromShort.TestShort(
+            -0x12,
+            [0xEE, 0xFF],
+            undefined,
+            false
+        );
+    }
+
+    @test
+    public Negative2Byte_BigEndian() {
+        ByteVectorTestsFromShort.TestShort(
+            -0x1234,
+            [0xED, 0xCC],
+            undefined,
+            undefined
+        );
+    }
+
+    @test
+    public Negative2Byte_LittleEndian() {
+        ByteVectorTestsFromShort.TestShort(
+            -0x1234,
+            [0xCC, 0xED],
+            undefined,
+            false
+        );
+    }
+
+    @test
+    public ReadOnly() {
+        ByteVectorTestsFromShort.TestShort(
+            0x0,
+            [0x0, 0x0],
+            true,
+            undefined
+        );
+    }
+
+    private static TestShort(value: number, expectedData: number[], isReadOnly: boolean, bigEndian: boolean): void {
+        // Arrange, Act
+        const bv = ByteVector.fromShort(value, bigEndian, isReadOnly);
+
+        // Assert
+        assert.isOk(bv);
+        assert.strictEqual(bv.length, 2);
+        assert.isFalse(bv.isEmpty);
+        if (isReadOnly !== undefined) {
+            assert.strictEqual(bv.isReadOnly, isReadOnly);
+        } else {
+            assert.isFalse(bv.isReadOnly);
+        }
+        assert.deepEqual(bv.data, new Uint8Array(expectedData));
+    }
+}
+
+@suite(timeout(3000), slow(1000)) class ByteVectorTestsFromSize {
+    @test
+    public BadSize() {
+        // Arrange, Act, Assert
+        assert.throws(() => { ByteVector.fromSize(undefined); });
+        assert.throws(() => { ByteVector.fromSize(null); });
+        assert.throws(() => { ByteVector.fromSize(0.1); });
+        assert.throws(() => { ByteVector.fromSize(Number.MAX_SAFE_INTEGER + 1); });
+        assert.throws(() => { ByteVector.fromSize(-1); });
+    }
+
+    @test
+    public BadFillValue() {
+        // Arrange, Act, Assert
+        assert.throws(() => { ByteVector.fromSize(1, 0.1); });
+        assert.throws(() => { ByteVector.fromSize(1, -1); });
+        assert.throws(() => { ByteVector.fromSize(1, 0xfff); });
+    }
+
+    @test
+    public ZeroSize() {
+        // Arrange, Act
+        const bv = ByteVector.fromSize(0);
+
+        // Assert
+        assert.isOk(bv);
+        assert.strictEqual(bv.length, 0);
+        assert.isTrue(bv.isEmpty);
+        assert.isFalse(bv.isReadOnly);
+        assert.deepEqual(bv.data, new Uint8Array());
+    }
+
+    @test
+    public WithoutFill() {
+        // Arrange, Act
+        const bv = ByteVector.fromSize(4);
+
+        // Assert
+        assert.isOk(bv);
+        assert.strictEqual(bv.length, 4);
+        assert.isFalse(bv.isEmpty);
+        assert.isFalse(bv.isReadOnly);
+        assert.deepEqual(bv.data, new Uint8Array([0x00, 0x00, 0x00, 0x00]));
+    }
+
+    @test
+    public WithFill() {
+        // Arrange, Act
+        const bv = ByteVector.fromSize(4, 0xEE);
+
+        // Assert
+        assert.isOk(bv);
+        assert.strictEqual(bv.length, 4);
+        assert.isFalse(bv.isEmpty);
+        assert.isFalse(bv.isReadOnly);
+        assert.deepEqual(bv.data, new Uint8Array([0xEE, 0xEE, 0xEE, 0xEE]));
+    }
+
+    @test
+    public ReadOnly() {
+        // Arrange, Act
+        const bv = ByteVector.fromSize(4, undefined, true);
+
+        // Assert
+        assert.isOk(bv);
+        assert.strictEqual(bv.length, 4);
+        assert.isFalse(bv.isEmpty);
+        assert.isTrue(bv.isReadOnly);
+        assert.deepEqual(bv.data, new Uint8Array([0x00, 0x00, 0x00, 0x00]));
+    }
+}
+
+// @TODO!
+@suite(timeout(3000), slow(1000)) class ByteVectorTestsFromStream {}
+
+@suite(timeout(3000), slow(1000)) class ByteVectorTestsFromString {
+    @test
+    public InvalidText() {
+        // Arrange, Act, Assert
+        assert.throws(() => { ByteVector.fromString(undefined); });
+        assert.throws(() => { ByteVector.fromString(null); });
+    }
+
+    @test
+    public InvalidLength() {
+        // Arrange, Act, Assert
+        assert.throws(() => { ByteVector.fromString("", undefined, 0.1); });
+        assert.throws(() => { ByteVector.fromString("", undefined, Number.MAX_SAFE_INTEGER + 1); });
+        assert.throws(() => { ByteVector.fromString("", undefined, -1); });
+    }
+
+    @test
+    public Utf8Full() {
+        ByteVectorTestsFromString.TestString(
+            TestConstants.testStrings.UTF8.str,
+            TestConstants.testStrings.UTF8.bytes,
+            undefined,
+            undefined,
+            undefined
+        );
+    }
+
+    private static TestString(s: string, d: number[], st: StringType, l: number, isReadOnly: boolean) {
+        // Arrange, Act
+        const bv = ByteVector.fromString(s, st, l, isReadOnly);
+
+        // Assert
+        assert.isOk(bv);
+        // assert.strictEqual(bv.length, d.length);
+        assert.isFalse(bv.isEmpty);
+        if (isReadOnly !== undefined) {
+            assert.strictEqual(bv.isReadOnly, isReadOnly);
+        } else {
+            assert.isFalse(bv.isReadOnly);
+        }
+        assert.deepEqual(bv.data, new Uint8Array(d));
     }
 }
