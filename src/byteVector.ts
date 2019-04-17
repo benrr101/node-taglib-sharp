@@ -252,7 +252,7 @@ export class ByteVector {
         return ByteVector.fromByteArray(byteArray, isReadOnly);
     }
 
-    public static fromPath(path: string, isReadOnly: boolean): ByteVector {
+    public static fromPath(path: string, isReadOnly: boolean = false): ByteVector {
         if (!path) {
             throw new Error("Argument null exception: Path was not provided");
         }

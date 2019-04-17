@@ -2,6 +2,7 @@ import * as chai from "chai";
 import * as BigInt from "big-integer";
 import {suite, test, slow, timeout} from "mocha-typescript";
 
+import TestConstants from "./testConstants";
 import {ByteVector} from "../src/byteVector";
 
 const assert = chai.assert;
@@ -301,9 +302,19 @@ const assert = chai.assert;
         );
     }
 
+    @test
+    public ReadOnly() {
+        ByteVectorTestsFromInt.TestInt(
+            0,
+            [0x00, 0x00, 0x00, 0x00],
+            true,
+            undefined
+        );
+    }
+
     private static TestInt(value: number, expectedData: number[], isReadOnly: boolean, bigEndian: boolean): void {
         // Arrange, Act
-        const bv = ByteVector.fromInt(value, bigEndian);
+        const bv = ByteVector.fromInt(value, bigEndian, isReadOnly);
 
         // Assert
         assert.isOk(bv);
@@ -489,9 +500,44 @@ const assert = chai.assert;
         );
     }
 
-    private static TestLong(value: BigInt.BigInteger, expectedData: number[], isReadOnly: boolean, bigEndian: boolean): void {
+    @test
+    public Zero_BigEndian() {
+        ByteVectorTestsFromLong.TestLong(
+            BigInt(0),
+            [0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00],
+            false,
+            undefined
+        );
+    }
+
+    @test
+    public Zero_LittleEndian() {
+        ByteVectorTestsFromLong.TestLong(
+            BigInt(0),
+            [0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00],
+            false,
+            true
+        );
+    }
+
+    @test
+    public ReadOnly() {
+        ByteVectorTestsFromLong.TestLong(
+            BigInt(0),
+            [0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00],
+            true,
+            undefined
+        );
+    }
+
+    private static TestLong(
+        value: BigInt.BigInteger,
+        expectedData: number[],
+        isReadOnly: boolean,
+        bigEndian: boolean
+    ): void {
         // Arrange, Act
-        const bv = ByteVector.fromLong(value, bigEndian);
+        const bv = ByteVector.fromLong(value, bigEndian, isReadOnly);
 
         // Assert
         assert.isOk(bv);
@@ -499,5 +545,41 @@ const assert = chai.assert;
         assert.isFalse(bv.isEmpty);
         assert.strictEqual(bv.isReadOnly, isReadOnly);
         assert.deepEqual(bv.data, new Uint8Array(expectedData));
+    }
+}
+
+@suite(timeout(3000), slow(1000)) class ByteVectorTestsFromPath {
+    @test
+    public NoPath() {
+        // Arrange, Act, Assert
+        assert.throws(() => { ByteVector.fromPath(undefined); });
+        assert.throws(() => { ByteVector.fromPath(null); });
+        assert.throws(() => { ByteVector.fromPath(""); });
+    }
+
+    @test
+    public WithPath() {
+        // Arrange, Act
+        const bv = ByteVector.fromPath(TestConstants.testFilePath);
+
+        // Assert
+        assert.isOk(bv);
+        assert.strictEqual(bv.length, TestConstants.testFileContents.length);
+        assert.isFalse(bv.isEmpty);
+        assert.isFalse(bv.isReadOnly);
+        assert.deepEqual(bv.data, new Uint8Array(TestConstants.testFileContents));
+    }
+
+    @test
+    public ReadOnly() {
+        // Arrange, Act
+        const bv = ByteVector.fromPath(TestConstants.testFilePath, true);
+
+        // Assert
+        assert.isOk(bv);
+        assert.strictEqual(bv.length, TestConstants.testFileContents.length);
+        assert.isFalse(bv.isEmpty);
+        assert.isTrue(bv.isReadOnly);
+        assert.deepEqual(bv.data, new Uint8Array(TestConstants.testFileContents));
     }
 }
