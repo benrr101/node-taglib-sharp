@@ -1,6 +1,6 @@
 import * as chai from "chai";
 import * as BigInt from "big-integer";
-import {suite, test, slow, timeout} from "mocha-typescript";
+import {slow, suite, test, timeout} from "mocha-typescript";
 
 import TestConstants from "./testConstants";
 import {ByteVector, StringType} from "../src/byteVector";
@@ -827,20 +827,56 @@ const assert = chai.assert;
         assert.throws(() => { ByteVector.fromString("", undefined, -1); });
     }
 
+    // @test
+    // public Utf8Full() {
+    //     ByteVectorTestsFromString.TestString(
+    //         TestConstants.testStrings.Utf8.str,
+    //         TestConstants.testStrings.Utf8.bytes,
+    //         undefined,
+    //         undefined,
+    //         undefined
+    //     );
+    // }
+    //
+    // @test
+    // public Utf8Partial() {
+    //     ByteVectorTestsFromString.TestString(
+    //         TestConstants.testStrings.Utf8.str,
+    //         TestConstants.testStrings.Utf8.bytes.slice(0, 9),
+    //         undefined,
+    //         6,
+    //         undefined
+    //     );
+    // }
+
     @test
-    public Utf8Full() {
+    public Utf16LittleEndianFull() {
         ByteVectorTestsFromString.TestString(
-            TestConstants.testStrings.UTF8.str,
-            TestConstants.testStrings.UTF8.bytes,
-            undefined,
+            TestConstants.testStrings.Utf16Le.str,
+            TestConstants.testStrings.Utf16Be.bytes,
+            StringType.UTF16BE,
             undefined,
             undefined
         );
     }
 
-    private static TestString(s: string, d: number[], st: StringType, l: number, isReadOnly: boolean) {
+    // @test
+    // public Utf16LittleEndialPartial() {
+    //     ByteVectorTestsFromString.TestString(
+    //         TestConstants.testStrings.Utf16Le.str,
+    //         TestConstants.testStrings.Utf16Le.bytes.slice(0, 14),
+    //         StringType.UTF16
+    //     )
+    // }
+
+    private static TestString(
+        str: string,
+        expectedData: number[],
+        stringType: StringType,
+        inputLength: number,
+        isReadOnly: boolean) {
         // Arrange, Act
-        const bv = ByteVector.fromString(s, st, l, isReadOnly);
+        const bv = ByteVector.fromString(str, stringType, inputLength, isReadOnly);
 
         // Assert
         assert.isOk(bv);
@@ -851,6 +887,6 @@ const assert = chai.assert;
         } else {
             assert.isFalse(bv.isReadOnly);
         }
-        assert.deepEqual(bv.data, new Uint8Array(d));
+        assert.deepEqual(bv.data, new Uint8Array(expectedData));
     }
 }
