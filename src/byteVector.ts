@@ -6,18 +6,18 @@ import * as fs from "fs";
 const AB2B = require("arraybuffer-to-buffer");
 
 class IConvEncoding {
-    private readonly  _encoding: string;
+    public readonly encoding: string;
 
     constructor(encoding: string) {
-        this._encoding = encoding;
+        this.encoding = encoding;
     }
 
     public decode(data: Buffer): string {
-        return IConv.decode(data, this._encoding);
+        return IConv.decode(data, this.encoding);
     }
 
     public encode(text: string): Uint8Array {
-        return IConv.encode(text, this._encoding);
+        return IConv.encode(text, this.encoding);
     }
 }
 
@@ -162,11 +162,6 @@ export class ByteVector {
     private static _lastUtf16IConvFunc: IConvEncoding = new IConvEncoding("utf16-le");
 
     /**
-     * Specified whether or not to use a broken Latin-1 behavior
-     */
-    private static _useBrokenLatin1: boolean;
-
-    /**
      * Contains the internal byte list
      */
     private _data: Uint8Array;
@@ -222,31 +217,29 @@ export class ByteVector {
             throw new Error("Argument out of range: value is too large to fit in a signed long");
         }
 
-        // Step 1: Get exactly 16 hex digits from the bigint
-        // TODO: This can likely be reduced to a single loop
         const digits = value.toArray(16);
-        while (digits.value.length < 16) {
-            digits.value.unshift(0);
-        }
-
-        // Step 2: Reform the digits into bytes
         const byteArray = new Uint8Array(8);
+        let carry = 1;
         for (let i = 0; i < 8; i++) {
-            const inputOffset = i * 2;
-            const byte = digits.value[inputOffset] * 16 + digits.value[inputOffset + 1];
-            const outputOffset = mostSignificantByteFirst ? i : 8 - i - 1;
-            byteArray[outputOffset] = byte;
-        }
+            // Get the digits in the position
+            const onesIndex = digits.value.length - i * 2 - 1;
+            const tensIndex = digits.value.length - i * 2 - 2;
+            const onesDigit = onesIndex < 0 ? 0 : digits.value[onesIndex];
+            const tensDigit = tensIndex < 0 ? 0 : digits.value[tensIndex];
 
-        // Step 2.1: If negative, solve for 2's complement
-        if (digits.isNegative) {
-            let carry = 1;
-            for (let i = 7; i <= 0; i--) {
-                let byte = byteArray[i] ^ 0xFF + 1;
-                carry = byte & 0xF00;
-                byte = byte & 0xFF;
-                byteArray[i] = byte;
+            // Calculate a byte value for it
+            let byteValue = tensDigit * 16 + onesDigit;
+
+            // If the number is negative, calculate 2's complement
+            if (digits.isNegative) {
+                const complement = (byteValue ^ 0xFF) + carry;
+                carry = (complement & 0x100) >> 8;
+                byteValue = complement & 0xFF;
             }
+
+            // Store the byte value in the correct output position
+            const outputIndex = mostSignificantByteFirst ? byteArray.length - 1 - i : i;
+            byteArray[outputIndex] = byteValue;
         }
 
         return ByteVector.fromByteArray(byteArray, isReadOnly);
@@ -318,20 +311,23 @@ export class ByteVector {
         length: number = Number.MAX_SAFE_INTEGER,
         isReadOnly: boolean = false
     ): ByteVector {
-        if (text === undefined || text === null) {
-            throw new Error("Argument null exception: text is invalid");
-        }
         if (!Number.isInteger(length) || !Number.isSafeInteger(length) || length < 0) {
             throw new Error("Argument out of range exception: length is invalid");
         }
 
         const vector = new ByteVector();
         vector._data = new Uint8Array(0);
+
+        // If we're doing UTF16 w/o specifying an endian-ness, inject a BOM which also coerces
+        // the converter to use UTF16LE
         if (type === StringType.UTF16) {
             vector.addByteArray(new Uint8Array([0xff, 0xfe]));
         }
 
+        // NOTE: This mirrors the behavior from the original .NET implementation where empty
+        //       strings return an empty ByteVector (possibly with UTF16LE BOM)
         if (!text) {
+            vector._isReadOnly = isReadOnly;
             return vector;
         }
 
@@ -365,19 +361,19 @@ export class ByteVector {
             throw new Error("Argument out of range: value is too large to fit in an unsigned long");
         }
 
-        // Step 1: Get exactly 16 hex digits from the bigint
         const digits = value.toArray(16);
-        while (digits.value.length < 16) {
-            digits.value.unshift(0);
-        }
-
-        // Step 2: Reform the digits into bytes
         const byteArray = new Uint8Array(8);
         for (let i = 0; i < 8; i++) {
-            const inputOffset = i * 2;
-            const byte = digits.value[inputOffset] * 16 + digits.value[inputOffset + 1];
-            const outputOffset = mostSignificantByteFirst ? i : 8 - i - 1;
-            byteArray[outputOffset] = byte;
+            // Get the digits in the position
+            const onesIndex = digits.value.length - i * 2 - 1;
+            const tensIndex = digits.value.length - i * 2 - 2;
+            const onesDigit = onesIndex < 0 ? 0 : digits.value[onesIndex];
+            const tensDigit = tensIndex < 0 ? 0 : digits.value[tensIndex];
+            const outputIndex = mostSignificantByteFirst ? byteArray.length - 1 - i : i;
+
+            // Store the byte value in the correct output position
+
+            byteArray[outputIndex] = tensDigit * 16 + onesDigit;
         }
 
         return ByteVector.fromByteArray(byteArray, isReadOnly);
@@ -395,21 +391,10 @@ export class ByteVector {
 
     // #region Properties
 
-    /**
-     * @property useBrokenLatin1Behavior Gets and sets whether or not to use a broken behavior for
-     *           Latin-1 strings, common to ID3v1 and ID3v2 tags.
-     *           {@code true} if the broken behavior is to be used. Otherwise {@code false}
-     * @description Many media players and taggers incorrectly treat Latin-1 fields as "default
-     *              encoding" fields. As such, a tag may end up with Windows-1250 encoded text.
-     *              While this problem would be apparent when moving a file from one computer to
-     *              another, it would not be apparent on the original machine. By setting this
-     *              property to {@code true}, your program will behave like Windows Media Player
-     *              and others, who read tags with this broken behavior.
-     *              Please note that TagLib# stores tag data in Unicode formats at every possible
-     *              instance to avoid these problems in tags it has written.
-     */
-    public static get useBrokenLatin1Behavior(): boolean { return ByteVector._useBrokenLatin1; }
-    public static set useBrokenLatin1Behavior(value: boolean) { ByteVector._useBrokenLatin1 = value; }
+    public static get lastUtf16Encoding(): string { return ByteVector._lastUtf16IConvFunc.encoding; }
+    public static set lastUtf16Encoding(encoding: string) {
+        ByteVector._lastUtf16IConvFunc = new IConvEncoding(encoding);
+    }
 
     public get checksum(): number {
         let sum = 0;
@@ -1064,17 +1049,12 @@ export class ByteVector {
                 return new IConvEncoding("utf16-le");
         }
 
-        // If we're using broken latin1, we're going to use windows-1250.
-        // NOTE: the original .NET implementation uses Encoding.Default in this case. On a win10
-        //       machine Encoding.Default => windows-1252. Since that is the same as latin1
-        //       (ISO-8859-1) and we return that if we aren't using UTF, I don't see the purpose of
-        //       using it as the "broken" latin1 implementation. However, Encoding.Default can
-        //       change from system to system. So if using windows-1250 is not the right "broken"
-        //       latin1, we'll need to fix this.
-        if (ByteVector._useBrokenLatin1) {
-            return new IConvEncoding("1250");
-        }
-
+        // NOTE: The original .NET implementation has the notion of "broken" latin behavior that
+        //       uses Encoding.Default. I have removed it in this port because 1) this behavior is
+        //       not used anywhere in the library, 2) Encoding.Default could be anything depending
+        //       on the machine's region, 3) in .NET Core this is always UTF8.
+        //       If it turns out we need support for other non unicode encodings, we'll want to
+        //       revisit this.
         return new IConvEncoding("latin1");
     }
 
