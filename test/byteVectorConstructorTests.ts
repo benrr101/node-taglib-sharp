@@ -1,11 +1,18 @@
-import * as chai from "chai";
 import * as BigInt from "big-integer";
+import * as Chai from "chai";
+import * as ChaiAsPromised from "chai-as-promised";
+import * as StreamBuffers from "stream-buffers";
 import {slow, suite, test, timeout} from "mocha-typescript";
 
 import TestConstants from "./testConstants";
 import {ByteVector, StringType} from "../src/byteVector";
 
-const assert = chai.assert;
+const AB2B = require("arraybuffer-to-buffer");
+
+// Setup chai
+Chai.use(ChaiAsPromised);
+const assert = Chai.assert;
+
 
 @suite(timeout(3000), slow(1000)) class ByteVectorTestsFromByteArray {
     @test
@@ -119,6 +126,7 @@ const assert = chai.assert;
     public Overflow() {
         // Arrange, Act, Assert
         assert.throws(() => { ByteVector.fromInt(0x10000000000); });
+        assert.throws(() => { ByteVector.fromInt(0xFFFFFFFF); });
         assert.throws(() => { ByteVector.fromInt(-0x10000000000); });
     }
 
@@ -968,8 +976,73 @@ const assert = chai.assert;
     }
 }
 
-// @TODO!
-@suite(timeout(3000), slow(1000)) class ByteVectorTestsFromStream {}
+@suite(timeout(3000), slow(1000)) class ByteVectorTestsFromStream {
+    @test
+    public async NoStream() {
+        await Promise.all([
+            assert.isRejected(ByteVector.fromStream(undefined)),
+            assert.isRejected(ByteVector.fromStream(null))
+        ]);
+    }
+
+    @test
+    public async Empty() {
+        // Arrange - Create a stream with no data in it
+        const stream = new StreamBuffers.ReadableStreamBuffer();
+
+        // Act - Get the promise, end the stream with no data in it, await the promise
+        const bvPromise = ByteVector.fromStream(stream);
+        stream.stop();
+        const bv = await bvPromise;
+
+        // Assert
+        assert.isOk(bv);
+        assert.strictEqual(bv.length, 0);
+        assert.isTrue(bv.isEmpty);
+        assert.isFalse(bv.isReadOnly);
+        assert.deepEqual(bv.data, new Uint8Array([]));
+    }
+
+    @test
+    public async ReadWrite() {
+        // Arrange - Create a stream with some data in it
+        const stream = new StreamBuffers.ReadableStreamBuffer();
+        const bytes = new Uint8Array(TestConstants.testFileContents);
+        stream.put(AB2B(bytes.buffer));
+
+        // Act - Get the promise, end the stream, await the promise
+        const bvPromise = ByteVector.fromStream(stream);
+        stream.stop();
+        const bv = await bvPromise;
+
+        // Assert
+        assert.isOk(bv);
+        assert.strictEqual(bv.length, bytes.length);
+        assert.isFalse(bv.isEmpty);
+        assert.isFalse(bv.isReadOnly);
+        assert.deepEqual(bv.data, bytes);
+    }
+
+    @test
+    public async ReadOnly() {
+        // Arrange - Create a stream with some data in it
+        const stream = new StreamBuffers.ReadableStreamBuffer();
+        const bytes = new Uint8Array(TestConstants.testFileContents);
+        stream.put(AB2B(bytes.buffer));
+
+        // Act - Get the promise, end the stream, await the promise
+        const bvPromise = ByteVector.fromStream(stream, true);
+        stream.stop();
+        const bv = await bvPromise;
+
+        // Assert
+        assert.isOk(bv);
+        assert.strictEqual(bv.length, bytes.length);
+        assert.isFalse(bv.isEmpty);
+        assert.isTrue(bv.isReadOnly);
+        assert.deepEqual(bv.data, bytes);
+    }
+}
 
 @suite(timeout(3000), slow(1000)) class ByteVectorTestsFromString {
     @test
@@ -1181,6 +1254,17 @@ const assert = chai.assert;
         ByteVector.lastUtf16Encoding = originalLastEncoding;
     }
 
+    @test
+    public ReadOnly() {
+        ByteVectorTestsFromString.TestString(
+            "",
+            [],
+            StringType.Latin1,
+            undefined,
+            true
+        );
+    }
+
     private static TestString(
         str: string,
         expectedData: number[],
@@ -1315,6 +1399,26 @@ const assert = chai.assert;
         ByteVectorTestsFromUInt.TestUInt(
             0x12345678,
             [0x78, 0x56, 0x34, 0x12],
+            undefined,
+            false
+        );
+    }
+
+    @test
+    public UnsignedRange_BigEndian() {
+        ByteVectorTestsFromUInt.TestUInt(
+            0xFFFFFFFF,
+            [0xFF, 0xFF, 0xFF, 0xFF],
+            undefined,
+            undefined
+        );
+    }
+
+    @test
+    public UnsignedRange_LittleEndian() {
+        ByteVectorTestsFromUInt.TestUInt(
+            0xFFFFFFFF,
+            [0xFF, 0xFF, 0xFF, 0xFF],
             undefined,
             false
         );
@@ -1523,6 +1627,26 @@ const assert = chai.assert;
     }
 
     @test
+    public UnsignedRange_BigEndian() {
+        ByteVectorTestsFromULong.TestULong(
+            BigInt("FFFFFFFFFFFFFFFF", 16),
+            [0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF],
+            undefined,
+            undefined
+        );
+    }
+
+    @test
+    public UnsignedRange_LittleEndian() {
+        ByteVectorTestsFromULong.TestULong(
+            BigInt("FFFFFFFFFFFFFFFF", 16),
+            [0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF],
+            undefined,
+            false
+        );
+    }
+
+    @test
     public Zero_BigEndian() {
         ByteVectorTestsFromULong.TestULong(
             BigInt(0),
@@ -1646,6 +1770,26 @@ const assert = chai.assert;
         ByteVectorTestsFromUShort.TestUShort(
             0x1234,
             [0x34, 0x12],
+            undefined,
+            false
+        );
+    }
+
+    @test
+    public UnsignedRange_BigEndian() {
+        ByteVectorTestsFromUShort.TestUShort(
+            0xFFFF,
+            [0xFF, 0xFF],
+            undefined,
+            undefined
+        );
+    }
+
+    @test
+    public UnsignedRange_LittleEndian() {
+        ByteVectorTestsFromUShort.TestUShort(
+            0xFFFF,
+            [0xFF, 0xFF],
             undefined,
             false
         );

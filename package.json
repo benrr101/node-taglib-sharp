@@ -11,12 +11,17 @@
     "iconv-lite": "^0.4.24"
   },
   "devDependencies": {
-    "@types/node": "^11.10.4",
     "@types/chai": "^4.1.7",
+    "@types/chai-as-promised": "^7.1.0",
+    "@types/node": "^11.10.4",
+    "@types/stream-buffers": "^3.0.2",
     "chai": "^4.2.0",
+    "chai-as-promised": "^7.1.1",
     "mocha": "^6.1.2",
     "mocha-typescript": "^1.1.17",
+    "stream-buffers": "^3.0.2",
     "tslint": "^5.13.1",
+    "typemoq": "^2.1.0",
     "typescript": "^3.4.3"
   }
 }

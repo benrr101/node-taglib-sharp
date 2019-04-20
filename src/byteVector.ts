@@ -177,6 +177,11 @@ export class ByteVector {
 
     private constructor() { }
 
+    /**
+     * Creates a {@see ByteVector} from a {@see Uint8Array}
+     * @param data Uint8Array of the bytes to put in the ByteVector
+     * @param isReadOnly If `true` then the ByteVector will be read only
+     */
     // TODO: Extend to support length that's less than the full length
     public static fromByteArray(data: Uint8Array, isReadOnly: boolean = false): ByteVector {
         if (!data) {
@@ -190,6 +195,11 @@ export class ByteVector {
         return vector;
     }
 
+    /**
+     * Creates a {@see ByteVector} as a copy of another ByteVector.
+     * @param original Data from this ByteVector will be copied into the new one
+     * @param isReadOnly If `true` then the ByteVector will be read only
+     */
     public static fromByteVector(original: ByteVector, isReadOnly: boolean = false): ByteVector {
         if (!original) {
             throw new Error("Argument null exception: original was not provided");
@@ -197,6 +207,14 @@ export class ByteVector {
         return ByteVector.fromByteArray(original._data, isReadOnly);
     }
 
+    /**
+     * Creates a 4 byte {@see ByteVector} with a signed 32-bit integer as the data
+     * @param value Signed 32-bit integer to use as the data. Must be a safe integer, storable in 4
+     *        bytes, cannot be a floating point number.
+     * @param mostSignificantByteFirst If `true`, {@param value} will be stored in big endian
+     *        format. If `false`, {@param value} will be stored in little endian format
+     * @param isReadOnly If `true` then the ByteVector will be read only
+     */
     public static fromInt(
         value: number,
         mostSignificantByteFirst: boolean = true,
@@ -205,6 +223,14 @@ export class ByteVector {
         return ByteVector.getByteVectorFromInteger(value, true, 4, mostSignificantByteFirst, isReadOnly);
     }
 
+    /**
+     * Creates an 8 byte {@see ByteVector} with a signed 64-bit integer as the data
+     * @param value Signed 64-bit integer to use as the data. Since JavaScript does not support
+     *        longs, we are using BigInts. Must be storable in 8 bytes.
+     * @param mostSignificantByteFirst If `true`, {@param value} will be stored in big endian
+     *        format. If `false`, {@param value} will be stored in little endian format
+     * @param isReadOnly If `true` then the ByteVector will be read only
+     */
     public static fromLong(
         value: BigInt.BigInteger,
         mostSignificantByteFirst: boolean = true,
@@ -245,6 +271,11 @@ export class ByteVector {
         return ByteVector.fromByteArray(byteArray, isReadOnly);
     }
 
+    /**
+     * Creates a {@see ByteVector} using the contents of a file as the data
+     * @param path Path to the file to store in the ByteVector
+     * @param isReadOnly If `true` then the ByteVector will be read only
+     */
     public static fromPath(path: string, isReadOnly: boolean = false): ByteVector {
         if (!path) {
             throw new Error("Argument null exception: Path was not provided");
@@ -255,6 +286,14 @@ export class ByteVector {
         return ByteVector.fromByteArray(fileBuffer, isReadOnly);
     }
 
+    /**
+     * Creates a 2 byte {@see ByteVector} with a signed 16-bit integer as the data
+     * @param value Signed 16-bit integer to use as the data. Must be a safe integer, storable in 2
+     *        bytes, cannot be a floating point number.
+     * @param mostSignificantByteFirst If `true`, {@param value} will be stored in big endian
+     *        format. If `false`, {@param value} will be stored in little endian format
+     * @param isReadOnly If `true` then the ByteVector will be read only
+     */
     public static fromShort(
         value: number,
         mostSignificantByteFirst: boolean = true,
@@ -263,6 +302,13 @@ export class ByteVector {
         return ByteVector.getByteVectorFromInteger(value, true, 2, mostSignificantByteFirst, isReadOnly);
     }
 
+    /**
+     * Creates a {@see ByteVector} of a given length with a given value for all the elements
+     * @param size Length of the ByteVector. Must be a positive safe integer, cannot be a float
+     * @param fill Byte value to initialize all elements to. Must be a positive 8-bit integer,
+     *        cannot be floating point
+     * @param isReadOnly If `true` then the ByteVector will be read only
+     */
     public static fromSize(
         size: number,
         fill: number = 0x0,
@@ -284,27 +330,43 @@ export class ByteVector {
         return vector;
     }
 
-    public static fromStream(stream: NodeJS.ReadableStream, isReadOnly: boolean = false): ByteVector {
-        if (!stream.readable) {
-            throw new Error("Invalid operations exception: Stream is not readable");
-        }
-        stream.setEncoding(""); // TODO: Verify that we can "unset" the encoding
+    /**
+     * Creates {@see ByteVector} with the contents of a stream as the data. The stream will be read
+     * to the end before the ByteVector is returned.
+     * @param readStream Readable stream that will be read in entirity.
+     * @param isReadOnly If `true` then the ByteVector will be read only
+     */
+    public static fromStream(readStream: NodeJS.ReadableStream, isReadOnly: boolean = false): Promise<ByteVector> {
+        return new Promise<ByteVector>((complete, fail) => {
+            if (!readStream) {
+                 fail(new Error("Null argument exception: Stream was not provided"));
+            }
 
-        const output = new ByteVector();
-        output._data = new Uint8Array(0);
+            // Setup the output
+            const output = new ByteVector();
+            output._data = new Uint8Array(0);
 
-        // TODO: Rework this to concat the chunks together
-        let bytes: Buffer;
-        do {
-            bytes = <Buffer> stream.read(4096);
-            output.addByteArray(bytes);
-        } while (bytes);
-
-        output._isReadOnly = isReadOnly;
-
-        return output;
+            // Setup the events to read the stream
+            readStream.on("readable", () => {
+                const bytes = <Buffer> readStream.read();
+                output.addByteArray(bytes);
+            });
+            readStream.on("end", () => {
+                output._isReadOnly = isReadOnly;
+                complete(output);
+            });
+        });
     }
 
+    /**
+     * Creates {@see ByteVector} with the byte representation of a string as the data.
+     * @param text String to store in the ByteVector
+     * @param type StringType to use to encode the string. If {@see StringType.UTF16} is used, the
+     *        string will be encoded as UTF16-LE.
+     * @param length Number of characters from the string to store in the ByteVector. Must be a
+     *        positive safe-integer, cannot be floating point.
+     * @param isReadOnly If `true` then the ByteVector will be read only
+     */
     public static fromString(
         text: string,
         type: StringType = StringType.UTF8,
@@ -341,6 +403,14 @@ export class ByteVector {
         return vector;
     }
 
+    /**
+     * Creates a 4 byte {@see ByteVector} with a positive 32-bit integer as the data
+     * @param value Positive 32-bit integer to use as the data. Must be a positive safe integer,
+     *        storable in 4 bytes, cannot be a floating point number.
+     * @param mostSignificantByteFirst If `true`, {@param value} will be stored in big endian
+     *        format. If `false`, {@param value} will be stored in little endian format
+     * @param isReadOnly If `true` then the ByteVector will be read only
+     */
     public static fromUInt(
         value: number,
         mostSignificantByteFirst: boolean = true,
@@ -349,6 +419,14 @@ export class ByteVector {
         return ByteVector.getByteVectorFromInteger(value, false, 4, mostSignificantByteFirst, isReadOnly);
     }
 
+    /**
+     * Creates an 8 byte {@see ByteVector} with a positive 64-bit integer as the data
+     * @param value Positive 64-bit integer to use as the data. Since JavaScript does not support
+     *        longs, we are using BigInts. Must be storable in 8 bytes.
+     * @param mostSignificantByteFirst If `true`, {@param value} will be stored in big endian
+     *        format. If `false`, {@param value} will be stored in little endian format
+     * @param isReadOnly If `true` then the ByteVector will be read only
+     */
     public static fromULong(
         value: BigInt.BigInteger,
         mostSignificantByteFirst: boolean = true,
@@ -379,6 +457,14 @@ export class ByteVector {
         return ByteVector.fromByteArray(byteArray, isReadOnly);
     }
 
+    /**
+     * Creates a 2 byte {@see ByteVector} with a positive 32-bit integer as the data
+     * @param value Positive 32-bit integer to use as the data. Must be a positive safe integer,
+     *        storable in 4 bytes, cannot be a floating point number.
+     * @param mostSignificantByteFirst If `true`, {@param value} will be stored in big endian
+     *        format. If `false`, {@param value} will be stored in little endian format
+     * @param isReadOnly If `true` then the ByteVector will be read only
+     */
     public static fromUShort(
         value: number,
         mostSignificantByteFirst: boolean = true,
@@ -1009,13 +1095,13 @@ export class ByteVector {
         if (!Number.isInteger(value) || !Number.isSafeInteger(value)) {
             throw new Error("Argument out of range: value is not a valid integer");
         }
-        if (!signed && value < 0) {
-            throw new Error("Argument out of range: value is not a valid unsigned integer");
-        }
 
         // Look for overflows
-        if (value > ByteVector._maxInts[count].max || value < ByteVector._maxInts[count].min) {
-            throw new Error(`Argument out of range: value overflows a ${count} byte integer`);
+        if (signed && (value > ByteVector._maxInts[count].max || value < ByteVector._maxInts[count].min)) {
+            throw new Error(`Argument out of range: value overflows a signed ${count} byte integer`);
+        }
+        if (!signed && (value > ByteVector._maxInts[count].mask || value < 0)) {
+            throw new Error(`Argument out of range: value overflows an unsigned ${count} byte integer`);
         }
 
         const bytes = new Uint8Array(count);
