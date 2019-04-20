@@ -533,6 +533,10 @@ export class ByteVector {
     }
 
     public addByteVector(data: ByteVector): void {
+        if (!data) {
+            return;
+        }
+
         this.addByteArray(data._data);
     }
 

@@ -13,7 +13,6 @@ const AB2B = require("arraybuffer-to-buffer");
 Chai.use(ChaiAsPromised);
 const assert = Chai.assert;
 
-
 @suite(timeout(3000), slow(1000)) class ByteVectorTestsFromByteArray {
     @test
     public NoData() {
