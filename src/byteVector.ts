@@ -507,6 +507,10 @@ export class ByteVector {
 
     // #region Public Methods
 
+    /**
+     * Adds a single byte to the end of the {@see ByteVector}
+     * @param byte Value to add to the end of the ByteVector. Must be positive integer <=0xFF.
+     */
     public addByte(byte: number): void {
         if (this._isReadOnly) {
             throw new Error("Not supported: Cannot edit readonly byte vectors");
@@ -519,6 +523,10 @@ export class ByteVector {
         this.addByteArray(new Uint8Array([byte]));
     }
 
+    /**
+     * Adds an array of bytes to the end of the {@see ByteVector}
+     * @param data Array of bytes to add to the end of the ByteVector
+     */
     public addByteArray(data: Uint8Array): void {
         if (this._isReadOnly) {
             throw new Error("Not supported: Cannot edit readonly byte vectors");
@@ -532,6 +540,10 @@ export class ByteVector {
         }
     }
 
+    /**
+     * Adds a {@see ByteVector} to the end of this ByteVector
+     * @param data ByteVector to add to the end of this ByteVector
+     */
     public addByteVector(data: ByteVector): void {
         if (!data) {
             return;
@@ -540,6 +552,11 @@ export class ByteVector {
         this.addByteArray(data._data);
     }
 
+    /**
+     * Removes all elements from this {@see ByteVector}
+     * @description NOTE: This method replaces the internal byte array with a new one. Any
+     *              existing references to {@see ByteVector.data} will remain unchanged.
+     */
     public clear(): void {
         if (this._isReadOnly) {
             throw new Error("Invalid Operation Exception: Cannot edit readonly objects");
@@ -707,11 +724,17 @@ export class ByteVector {
         return this._data.indexOf(item);
     }
 
+    /**
+     * Inserts a single byte at the given index of this {@see ByteVector}, increasing the length of
+     * the ByteVector by one.
+     * @param index Index into this ByteVector at which the value will be inserted.
+     * @param byte Value to insert into the ByteVector. Must be a positive integer <=0xFF
+     */
     public insertByte(index: number, byte: number): void {
         if (this._isReadOnly) {
             throw new Error("Not supported: Cannot edit readonly byte vectors");
         }
-        if (!Number.isInteger(index) || index < 0) {
+        if (!Number.isInteger(index) || index < 0 || index > this.length) {
             throw new Error("Argument out of range: index is invalid");
         }
         if (!Number.isInteger(byte) || byte < 0 || byte > 0xFF) {
@@ -730,15 +753,24 @@ export class ByteVector {
         }
     }
 
+    /**
+     * Inserts an array of bytes into this {@see ByteVector} at the given index, increasing the
+     * length of this ByteVector by the length of the byte array.
+     * @param index Index into this ByteVector at which the bytes will be inserted.
+     * @param other Array of bytes to insert into the ByteVector.
+     */
     public insertByteArray(index: number, other: Uint8Array): void {
         if (this._isReadOnly) {
             throw new Error("Not supported: Cannot edit readonly byte vectors");
         }
-        if (!Number.isInteger(index) || index < 0) {
+        if (!Number.isInteger(index) || index < 0 || index > this.length) {
             throw new Error("Argument out of range: index is invalid");
         }
         if (!other) {
-            throw new Error("Argument null exception: other is null");
+            throw new Error("Argument null: other was not provided");
+        }
+        if (other.length === 0 ) {
+            return;
         }
 
         const oldData = this._data;
@@ -753,8 +785,18 @@ export class ByteVector {
         }
     }
 
-    public insertByteVector(other: ByteVector): void {
-        this.addByteArray(other._data);
+    /**
+     * Inserts another ByteVector into this {@see ByteVector} at the given index, increasing the
+     * length of this ByteVector by the length of the ByteVector.
+     * @param index Index into this ByteVector at which the ByteVector will be inserted.
+     * @param other ByteVector to insert into this ByteVector.
+     */
+    public insertByteVector(index: number, other: ByteVector): void {
+        if (!other) {
+            throw new Error("Argument null: other was not provided");
+        }
+
+        this.insertByteArray(index, other._data);
     }
 
     public mid(startIndex: number, length: number = this._data.length - startIndex): ByteVector {
@@ -772,7 +814,11 @@ export class ByteVector {
         return ByteVector.fromByteArray(this._data.subarray(startIndex, startIndex + length));
     }
 
-    public reomveAtIndex(index: number) {
+    /**
+     * Removes a single byte from this {@ByteVector}
+     * @param index Index that will be removed from the ByteVector
+     */
+    public removeAtIndex(index: number) {
         if (this._isReadOnly) {
             throw new Error("Not supported: Cannot edit readonly byte vectors");
         }
@@ -790,6 +836,11 @@ export class ByteVector {
         }
     }
 
+    /**
+     * Removes a range of bytes from this {@ByteVector}
+     * @param index Index into this ByteVector where the range to remove begins
+     * @param count Number of bytes to remove from this ByteVector
+     */
     public removeRange(index: number, count: number) {
         if (this._isReadOnly) {
             throw new Error("Not supported: Cannot edit readonly byte vectors");
@@ -798,7 +849,7 @@ export class ByteVector {
             throw new Error("Argument out of range: index is invalid");
         }
         if (!Number.isInteger(count) || count < 0) {
-            throw new Error("Argument out of range: padding is invalid");
+            throw new Error("Argument out of range: count is invalid");
         }
 
         if (index + count > this.length) {
@@ -883,14 +934,14 @@ export class ByteVector {
      * @param value Value to set at the index. Must be a valid integer between 0x0 and 0xff
      */
     public set(index: number, value: number): void {
+        if (this._isReadOnly) {
+            throw new Error("Invalid operation exception: Cannot edit readonly objects");
+        }
         if (!Number.isInteger(index) || index > this._data.length) {
             throw new Error("Argument out of range exception: index is invalid");
         }
         if (!Number.isInteger(value) || value < 0 || value > 0xff) {
             throw new Error("Argument out of range exception: value is not a valid byte");
-        }
-        if (this._isReadOnly) {
-            throw new Error("Invalid operation exception: Cannot edit readonly objects");
         }
         this._data[index] = value;
     }
