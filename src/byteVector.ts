@@ -349,7 +349,9 @@ export class ByteVector {
             // Setup the events to read the stream
             readStream.on("readable", () => {
                 const bytes = <Buffer> readStream.read();
-                output.addByteArray(bytes);
+                if (bytes) {
+                    output.addByteArray(bytes);
+                }
             });
             readStream.on("end", () => {
                 output._isReadOnly = isReadOnly;
@@ -531,13 +533,17 @@ export class ByteVector {
         if (this._isReadOnly) {
             throw new Error("Not supported: Cannot edit readonly byte vectors");
         }
-
-        if (data) {
-            const oldData = this._data;
-            this._data = new Uint8Array(oldData.length + data.length);
-            this._data.set(oldData);
-            this._data.set(data, oldData.length);
+        if (data === undefined || data === null) {
+            throw new Error("Argument null: data not provided");
         }
+        if (data.length === 0) {
+            return;
+        }
+
+        const oldData = this._data;
+        this._data = new Uint8Array(oldData.length + data.length);
+        this._data.set(oldData);
+        this._data.set(data, oldData.length);
     }
 
     /**
@@ -545,8 +551,8 @@ export class ByteVector {
      * @param data ByteVector to add to the end of this ByteVector
      */
     public addByteVector(data: ByteVector): void {
-        if (!data) {
-            return;
+        if (data === undefined || data === null) {
+            throw new Error("Argument null: data not provided");
         }
 
         this.addByteArray(data._data);
@@ -1067,31 +1073,60 @@ export class ByteVector {
 
     // #region Operator-Like Methods
 
+    /**
+     * Creates a new {@see ByteVector} that contains the contents of {@param first} concatenated
+     * with {@param second}. This operation can be thought of as `first + second`. Note: Regardless
+     * of the value of {@see ByteVector.isReadOnly}, the created ByteVector will always be
+     * read/write.
+     * @param first ByteVector to which {@param second} will be added
+     * @param second ByteVector which will be added to {@param first}
+     */
     public static add(first: ByteVector, second: ByteVector): ByteVector {
-        const sum = ByteVector.fromByteVector(first);
-        sum.addByteVector(second);
+        const sum = ByteVector.fromByteVector(first);   // Will throw on null/undefined
+        sum.addByteVector(second);                      // Will throw on null/undefined
         return sum;
     }
 
+    /**
+     * Returns `true` if the contents of the two {@see ByteVector}s are identical, returns `false`
+     * otherwise
+     * @param first ByteVector to compare with {@param second}
+     * @param second ByteVector to compare with {@param first}
+     */
     public static equal(first: ByteVector, second: ByteVector): boolean {
         const fnull = !first;
         const snull = !second;
         if (fnull && snull) {
             // Since (f|s)null could be true with `undefined` OR `null`, we'll just let === decide it for us
-            return fnull === snull;
+            return first === second;
         }
 
         if (fnull || snull) {
+            // If only one is null/undefined, then they are not equal
             return false;
         }
 
         return first.compareTo(second) === 0;
     }
 
+    /**
+     * Returns `false` if the contents of the two {@see ByteVector}s are identical, returns `true`
+     * otherwise
+     * @param first ByteVector to compare with {@param second}
+     * @param second ByteVector to compare with {@param first}
+     */
     public static notEqual(first: ByteVector, second: ByteVector): boolean {
         return !ByteVector.equal(first, second);
     }
 
+    /**
+     * Returns `true` if {@param first} is greater than {@see second}. This is true if
+     * {@param first} is longer than {@param second} or if the first element in {@param first}
+     * that is different than the element at the same position in {@param second} is greater than.
+     * Returns `false` if the two {@see ByteVector}s are identical.
+     * @param first ByteVector to compare with {@param second}
+     * @param second ByteVector to compare with {@param first}
+     */
     public static greaterThan(first: ByteVector, second: ByteVector): boolean {
         if (!first) {
             throw new Error("Argument null exception: first is null");
@@ -1103,6 +1138,14 @@ export class ByteVector {
         return first.compareTo(second) > 0;
     }
 
+    /**
+     * Returns `true` if {@param first} is greater than {@see second}. This is true if
+     * {@param first} is longer than {@param second} or if the first element in {@param first}
+     * that is different than the element at the same position in {@param second} is greater than.
+     * Returns `true` if the two {@see ByteVector}s are identical.
+     * @param first ByteVector to compare with {@param second}
+     * @param second ByteVector to compare with {@param first}
+     */
     public static greaterThanEqual(first: ByteVector, second: ByteVector): boolean {
         if (!first) {
             throw new Error("Argument null exception: first is null");
@@ -1114,6 +1157,14 @@ export class ByteVector {
         return first.compareTo(second) >= 0;
     }
 
+    /**
+     * Returns `true` if {@param first} is less than {@see second}. This is true if
+     * {@param first} is shorter than {@param second} or if the first element in {@param first}
+     * that is different than the element at the same position in {@param second} is less than.
+     * Returns `false` if the two {@see ByteVector}s are identical.
+     * @param first ByteVector to compare with {@param second}
+     * @param second ByteVector to compare with {@param first}
+     */
     public static lessThan(first: ByteVector, second: ByteVector): boolean {
         if (!first) {
             throw new Error("Argument null exception: first is null");
@@ -1125,6 +1176,14 @@ export class ByteVector {
         return first.compareTo(second) < 0;
     }
 
+    /**
+     * Returns `true` if {@param first} is less than {@see second}. This is true if
+     * {@param first} is shorter than {@param second} or if the first element in {@param first}
+     * that is different than the element at the same position in {@param second} is less than.
+     * Returns `true` if the two {@see ByteVector}s are identical.
+     * @param first ByteVector to compare with {@param second}
+     * @param second ByteVector to compare with {@param first}
+     */
     public static lessThanEqual(first: ByteVector, second: ByteVector): boolean {
         if (!first) {
             throw new Error("Argument null exception: first is null");

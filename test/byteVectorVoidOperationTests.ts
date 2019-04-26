@@ -74,13 +74,21 @@ const assert = Chai.assert;
     }
 
     @test
+    public InvalidByteArray() {
+        // Arrange
+        const bv = ByteVector.fromSize(1, 0x0, true);
+
+        // Act, Assert
+        assert.throws(() => { bv.addByteArray(null); });
+        assert.throws(() => { bv.addByteArray(undefined); });
+    }
+
+    @test
     public AddEmptyToEmpty() {
         // Arrange - Create ByteVector that is empty
         const bv = ByteVector.fromSize(0);
 
         // Act - Add nothing to it
-        bv.addByteArray(null);
-        bv.addByteArray(undefined);
         bv.addByteArray(new Uint8Array());
 
         // Assert - ByteVector should contain the new byte
@@ -123,8 +131,6 @@ const assert = Chai.assert;
         const bv = ByteVector.fromSize(1);
 
         // Act - Add nothing to it
-        bv.addByteArray(null);
-        bv.addByteArray(undefined);
         bv.addByteArray(new Uint8Array());
 
         // Assert - ByteVector should contain the new byte
@@ -176,13 +182,21 @@ const assert = Chai.assert;
     }
 
     @test
+    public InvalidByteVector() {
+        // Arrange
+        const bv = ByteVector.fromSize(1, 0x0, true);
+
+        // Act, Assert
+        assert.throws(() => { bv.addByteVector(null); });
+        assert.throws(() => { bv.addByteVector(undefined); });
+    }
+
+    @test
     public AddEmptyToEmpty() {
         // Arrange - Create ByteVector that is empty
         const bv = ByteVector.fromSize(0);
 
         // Act - Add nothing to it
-        bv.addByteVector(null);
-        bv.addByteVector(undefined);
         bv.addByteVector(ByteVector.fromSize(0));
 
         // Assert - ByteVector should contain the new byte
