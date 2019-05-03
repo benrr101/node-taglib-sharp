@@ -492,10 +492,16 @@ export class ByteVector {
         return sum;
     }
 
+    /**
+     * Array of bytes currently stored in the current instance
+     */
     public get data(): Uint8Array { return this._data; }
 
     public get hashCode(): number { return this.checksum; }
 
+    /**
+     * Whether or not the current instance has 0 bytes stored
+     */
     public get isEmpty(): boolean { return !this._data || this._data.length === 0; }
 
     /**
@@ -503,6 +509,9 @@ export class ByteVector {
      */
     public get isReadOnly(): boolean { return this._isReadOnly; }
 
+    /**
+     * Number of bytes currently in this ByteVector
+     */
     public get length(): number { return this._data.length; }
 
     // #endregion
@@ -956,26 +965,66 @@ export class ByteVector {
 
     // #region Conversions
 
+    /**
+     * Converts the first eight bytes of the current instance to a double-precision floating-point
+     * value.
+     * @param mostSignificantByteFirst If `true` the most significant byte appears first (big
+     *        endian format).
+     * @throws Error If there are less than eight bytes in the current instance.
+     * @returns A double value containing the value read from the current instance.
+     */
     public toDouble(mostSignificantByteFirst: boolean = true): number {
-        const dv = new DataView(this.getSizedArray(8, mostSignificantByteFirst).buffer);
+        // NOTE: This is the behavior from the .NET implementation, due to BitConverter behavior
+        if (this.length < 8) {
+            throw new Error("Invalid operation: Cannot convert a byte vector of <8 bytes to double");
+        }
+        const array = this.getSizedArray(8, mostSignificantByteFirst);
+        const dv = new DataView(array.buffer);
         return dv.getFloat64(0);
     }
 
+    /**
+     * Converts the first four bytes of the current instance to a single-precision floating-point
+     * value.
+     * @param mostSignificantByteFirst If `true` the most significant byte appears first (big
+     *        endian format).
+     * @throws Error If there are less than four bytes in the current instance
+     * @returns A float value containing the value read from the current instance.
+     */
     public toFloat(mostSignificantByteFirst: boolean = true): number {
+        // NOTE: This is the behavior from the .NET implementation, due to BitConverter behavior
+        if (this.length < 4) {
+            throw new Error("Invalid operation: Cannot convert a byte vector of <4 bytes to float");
+        }
         const dv = new DataView(this.getSizedArray(4, mostSignificantByteFirst).buffer);
         return dv.getFloat32(0);
     }
 
+    /**
+     * Converts the first four bytes of the current instance to a signed integer. If the current
+     * instance is less than four bytes, the most significant bytes will be filled with 0x00.
+     * @param mostSignificantByteFirst If `true` the most significant byte appears first (big
+     *        endian format)
+     * @returns A signed integer value containing the value read from the current instance
+     */
     public toInt(mostSignificantByteFirst: boolean = true): number {
         const dv = new DataView(this.getSizedArray(4, mostSignificantByteFirst).buffer);
         return dv.getInt32(0);
     }
 
+    /**
+     * Converts the first eight bytes of the current instance to a signed long. If the current
+     * instance is less than eight bytes, the most significant bytes will be filled with 0x00.
+     * @param mostSignificantByteFirst If `true` the most significant byte appears first (big
+     *        endian format)
+     * @returns A signed long value containing the value read from the current instance,
+     *          represented as a {@see BigInt} due to JavaScript's 32-bit integer limitation
+     */
     public toLong(mostSignificantByteFirst: boolean = true): BigInt.BigInteger {
         // The theory here is to get the unsigned value first, then if the number is negative, we
         // we calculate the two's complement and return that * -1
         const uLong = this.toULong(mostSignificantByteFirst);
-        const highestOrderBit = BigInt("0x8000000000000000");
+        const highestOrderBit = BigInt("8000000000000000", 16);
 
         if (uLong.and(highestOrderBit).isZero()) {
             // Number is positive, no need to calculate two's complement
@@ -983,31 +1032,30 @@ export class ByteVector {
         }
 
         // Number is negative, need to calculate two's complement
-        const allBits = BigInt("0xFFFFFFFFFFFFFFFF");
+        const allBits = BigInt("FFFFFFFFFFFFFFFF", 16);
         return uLong.xor(allBits).add(1).and(allBits).times(-1);
     }
 
-    public toUint(mostSignificantByteFirst: boolean = true): number {
-        const dv = new DataView(this.getSizedArray(4, mostSignificantByteFirst).buffer);
-        return dv.getUint32(0);
-    }
-
-    public toULong(mostSignificantByteFirst: boolean = true): BigInt.BigInteger {
-        const sizedArray = this.getSizedArray(8, mostSignificantByteFirst);
-
-        // Convert the bytes into a string first
-        let str = "";
-        for (const element of sizedArray) {
-            str += element.toString(16).padStart(2, "0");
-        }
-        return BigInt(str, 16);
-    }
-
+    /**
+     * Converts the first two bytes of the current instance to a signed short. If the current
+     * instance is less than two bytes, the most significant bytes will be filled with 0x00.
+     * @param mostSignificantByteFirst If `true` the most significant byte appears first (big
+     *        endian format)
+     * @returns A signed short value containing the value read from the current instance
+     */
     public toShort(mostSignificantByteFirst: boolean = true): number {
         const dv = new DataView(this.getSizedArray(2, mostSignificantByteFirst).buffer);
         return dv.getInt16(0);
     }
 
+    /**
+     * Converts a portion of the current instance to a string using a specified encoding
+     * @param count Integer value specifying the number of *bytes* to convert.
+     * @param type Value indicating the encoding to use when converting to a string.
+     * @param offset Value specifying the index into the current instance at which to start
+     *        converting.
+     * @returns string String containing the converted bytes
+     */
     public toString(count: number, type: StringType = StringType.UTF8, offset: number = 0): string {
         if (!Number.isInteger(offset) || offset < 0 || offset > this.length) {
             throw new Error("Argument out of range exception: offset is invalid");
@@ -1024,6 +1072,19 @@ export class ByteVector {
         //       we use IConv.
     }
 
+    /**
+     * Converts the current instance into an array of strings starting at the specified offset and
+     * using the specified encoding, assuming the values are `null` separated and limiting it to a
+     * specified number of items.
+     * @param type A {@see StringType} value indicating the encoding to use when converting
+     * @param offset Value specifying the index into the current instance at which to start
+     *        converting.
+     * @param count Value specifying a limit to the number of strings to create. Once the limit has
+     *        been reached, the last string will be filled by the remainder of the data
+     * @returns string[] Array of strings containing the converted text.
+     * @desc I'm not actually sure if this works as defined, but it behaves the same as the
+     *       original .NET implementation, so that's good enough for now.
+     */
     public toStrings(type: StringType, offset: number, count: number = Number.MAX_SAFE_INTEGER) {
         if (!Number.isInteger(offset) || offset < 0 || offset > this.length) {
             throw new Error("Argument out of range exception: offset is invalid");
@@ -1055,7 +1116,7 @@ export class ByteVector {
             if (length === 0) {
                 list.push("");
             } else {
-                list.push(this.toString(type, start, length));
+                list.push(this.toString(length, type, start));
             }
 
             position += align;
@@ -1064,6 +1125,44 @@ export class ByteVector {
         return list;
     }
 
+    /**
+     * Converts the first four bytes of the current instance to an unsigned integer. If the current
+     * instance is less than four bytes, the most significant bytes will be filled with 0x00.
+     * @param mostSignificantByteFirst If `true` the most significant byte appears first (big
+     *        endian format)
+     * @returns An unsigned integer value containing the value read from the current instance
+     */
+    public toUInt(mostSignificantByteFirst: boolean = true): number {
+        const dv = new DataView(this.getSizedArray(4, mostSignificantByteFirst).buffer);
+        return dv.getUint32(0);
+    }
+
+    /**
+     * Converts the first eight bytes of the current instance to an unsigned long. If the current
+     * instance is less than eight bytes, the most significant bytes will be filled with 0x00.
+     * @param mostSignificantByteFirst If `true` the most significant byte appears first (big
+     *        endian format)
+     * @returns An unsigned short value containing the value read from the current instance,
+     *          represented as a {@see BigInt} due to JavaScript's 32-bit integer limitation
+     */
+    public toULong(mostSignificantByteFirst: boolean = true): BigInt.BigInteger {
+        const sizedArray = this.getSizedArray(8, mostSignificantByteFirst);
+
+        // Convert the bytes into a string first
+        let str = "";
+        for (const element of sizedArray) {
+            str += element.toString(16).padStart(2, "0");
+        }
+        return BigInt(str, 16);
+    }
+
+    /**
+     * Converts the first two bytes of the current instance to an unsigned short. If the current
+     * instance is less than two bytes, the most significant bytes will be filled with 0x00.
+     * @param mostSignificantByteFirst If `true` the most significant byte appears first (big
+     *        endian format)
+     * @returns An unsigned short value containing the value read from the current instance
+     */
     public toUShort(mostSignificantByteFirst: boolean = true): number {
         const dv = new DataView(this.getSizedArray(2, mostSignificantByteFirst).buffer);
         return dv.getUint16(0);
