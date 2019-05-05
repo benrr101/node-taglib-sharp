@@ -26,7 +26,7 @@ export interface IFileAbstraction {
      */
     writeStream: Stream;
 
-    closeStream(stream: NodeJS.ReadableStream | NodeJS.WritableStream): void;
+    closeStream(stream: Stream): void;
 }
 
 export class LocalFileAbstraction implements IFileAbstraction {

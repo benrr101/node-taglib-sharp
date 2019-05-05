@@ -103,7 +103,7 @@ export enum TagTypes {
 }
 
 export abstract class Tag {
-    public abstract TagTypes: TagTypes;
+    public abstract tagTypes: TagTypes;
 
     public get title(): string { return null; }
     public set title(value: string) { }

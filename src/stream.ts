@@ -23,4 +23,12 @@ export class Stream {
         const fd = fs.openSync(path, "r+");
         return new Stream(fd);
     }
+
+    public read(buffer: fs.BinaryData, bufferOffset: number, length: number): number {
+        return fs.readSync(this._fd, buffer, bufferOffset, length, this._position);
+    }
+
+    public write(buffer: fs.BinaryData, bufferOffset: number, length: number): number {
+        return fs.writeSync(this._fd, buffer, bufferOffset, length, this._position);
+    }
 }
