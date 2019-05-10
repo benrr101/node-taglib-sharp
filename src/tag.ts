@@ -189,7 +189,7 @@ export abstract class Tag {
     public get musicBrainzReleaseGroupId(): string { return null; }
     public set musicBrainzReleaseGroupId(value: string) { }
 
-    public get musicBrainzRelaseId(): string { return null; }
+    public get musicBrainzReleaseId(): string { return null; }
     public set musicBrainzReleaseId(value: string) { }
 
     public get musicBrainzReleaseArtistId(): string { return null; }
@@ -220,16 +220,16 @@ export abstract class Tag {
     public set replayGainTrackGain(value: number) { }
 
     public get replayGainTrackPeak(): number { return NaN; }
-    public set replaygainTrackPeak(value: number) { }
+    public set replayGainTrackPeak(value: number) { }
 
     public get replayGainAlbumGain(): number { return NaN; }
     public set replayGainAlbumGain(value: number) { }
 
     public get replayGainAlbumPeak(): number { return NaN; }
-    public set replaygainAlbumPeak(value: number) { }
+    public set replayGainAlbumPeak(value: number) { }
 
     public get initialKey(): string { return null; }
-    public set initialKey(value: number) { }
+    public set initialKey(value: string) { }
 
     public get remixedBy(): string { return null; }
     public set remixedBy(value: string) { }

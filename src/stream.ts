@@ -52,6 +52,12 @@ export class Stream {
 
     // #endregion
 
+    // #region Public Methods
+
+    public close(): void {
+        fs.closeSync(this._fd);
+    }
+
     public read(buffer: fs.BinaryData, bufferOffset: number, length: number): number {
         const bytes = fs.readSync(this._fd, buffer, bufferOffset, length, this._position);
         this._position += bytes;
@@ -90,8 +96,11 @@ export class Stream {
         if (!this._canWrite) {
             throw new Error("Invalid operation: this stream is a read-only stream");
         }
+        // @TODO: When file is extended, change the length
         const bytes = fs.writeSync(this._fd, buffer, bufferOffset, length, this._position);
         this._position += bytes;
         return bytes;
     }
+
+    // #endregion
 }

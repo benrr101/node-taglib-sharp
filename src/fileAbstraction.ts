@@ -47,9 +47,22 @@ export class LocalFileAbstraction implements IFileAbstraction {
         this._name = path;
     }
 
-    public get name(): string { return this._name; }
+    public get name(): string {
+        return this._name;
+    }
 
-    public get readStream(): Stream { return Stream.createAsRead(this._name); }
+    public get readStream(): Stream {
+        return Stream.createAsRead(this._name);
+    }
 
-    public get writeStream(): Stream { return Stream.createAsReadWrite(this._name); }
+    public get writeStream(): Stream {
+        return Stream.createAsReadWrite(this._name);
+    }
+
+    public closeStream(stream: Stream): void {
+        if (!stream) {
+            throw new Error("Argument null: stream was not provided");
+        }
+        stream.close();
+    }
 }
