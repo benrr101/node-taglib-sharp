@@ -518,6 +518,12 @@ export class ByteVector {
 
     // #region Public Methods
 
+    public static getTextDelimiter(type: StringType): ByteVector {
+        return type === StringType.UTF16 || type === StringType.UTF16BE || type === StringType.UTF16LE
+            ? ByteVector._td2
+            : ByteVector._td1;
+    }
+
     /**
      * Adds a single byte to the end of the {@see ByteVector}
      * @param byte Value to add to the end of the ByteVector. Must be positive integer <=0xFF.
@@ -961,6 +967,16 @@ export class ByteVector {
         this._data[index] = value;
     }
 
+    /**
+     * Checks whether or not a pattern appears at the beginning of the current instance.
+     * @param pattern ByteVector containing the pattern to check for in the current instance.
+     * @returns `true` if the pattern was found at the beginning of the current instance, `false`
+     *     otherwise.
+     */
+    public startsWith(pattern: ByteVector) {
+        return this.containsAt(pattern, 0);
+    }
+
     // #endregion
 
     // #region Conversions
@@ -1355,12 +1371,6 @@ export class ByteVector {
         //       If it turns out we need support for other non unicode encodings, we'll want to
         //       revisit this.
         return new IConvEncoding("latin1");
-    }
-
-    private static getTextDelimiter(type: StringType): ByteVector {
-        return type === StringType.UTF16 || type === StringType.UTF16BE || type === StringType.UTF16LE
-            ? ByteVector._td2
-            : ByteVector._td1;
     }
 
     private getSizedArray(size: number, mostSignificantByteFirst: boolean): Uint8Array {
