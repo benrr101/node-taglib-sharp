@@ -1,5 +1,7 @@
 // import * as path from "path";
 //
+import {ByteVector} from "./byteVector";
+
 export enum PictureType {
     /**
      * @summary The picture is of a type other than those specified.
@@ -121,7 +123,7 @@ export interface IPicture {
 
     description: string;
 
-    data: Buffer;
+    data: ByteVector;
 }
 //
 // export class Picture implements IPicture {

@@ -1,7 +1,10 @@
+import * as dateFormat from "dateformat";
+
 import {ApeFooter, ApeFooterFlags} from "./apeFooter";
-import {ApeItem} from "./apeItem";
-import {ByteVector} from "../byteVector";
-import {Tag} from "../tag";
+import {ApeItem, ApeItemType} from "./apeItem";
+import {ByteVector, StringType} from "../byteVector";
+import {IPicture, Picture, PictureType} from "../picture";
+import {Tag, TagTypes} from "../tag";
 import {ArrayUtils, Guards} from "../utils";
 
 /**
@@ -128,7 +131,8 @@ export default class ApeTag extends Tag {
      */
     public getItem(key: string): ApeItem {
         Guards.notNullOrUndefined(key, "key");
-        return this._items.find((i) => i.key.toUpperCase() === key.toUpperCase());
+        const upperKey = key.toUpperCase();
+        return this._items.find((i) => i.key.toUpperCase() === upperKey);
     }
 
     /**
@@ -144,7 +148,10 @@ export default class ApeTag extends Tag {
      * Renders the current instance as a raw APEv2 tag.
      */
     public render(): ByteVector {
-        const data = this._items.reduce((bv, e) => { bv.addByteVector(e.render()); return bv; }, ByteVector.fromSize(0));
+        const data = this._items.reduce(
+            (bv, e) => { bv.addByteVector(e.render()); return bv; },
+            ByteVector.fromSize(0)
+        );
 
         this._footer.itemCount = this._items.length;
         this._footer.tagSize = (data.length + ApeFooter.size);
@@ -161,7 +168,8 @@ export default class ApeTag extends Tag {
      */
     public removeItem(key: string): void {
         Guards.notNullOrUndefined(key, "key");
-        ArrayUtils.remove<ApeItem>(this._items, (e) => e.key.toUpperCase() === key.toUpperCase());
+        const keyUpper = key.toUpperCase();
+        ArrayUtils.remove<ApeItem>(this._items, (e) => e.key.toUpperCase() === keyUpper);
     }
 
     /**
@@ -239,6 +247,349 @@ export default class ApeTag extends Tag {
         } else {
             this._items.push(item);
         }
+    }
+
+    // #endregion
+
+    // #region Tag
+
+    public get tagTypes(): TagTypes { return TagTypes.Ape; }
+
+    public get title(): string { return this.getItemAsString("Title"); }
+    public set title(value: string) { this.setSingleStringValue("Title", value); }
+
+    public get titleSort(): string { return this.getItemAsString("TitleSort"); }
+    public set titleSort(value: string) { this.setSingleStringValue("TitleSort", value);  }
+
+    public get subtitle(): string { return this.getItemAsString("Subtitle"); }
+    public set subtitle(value: string) { this.setSingleStringValue("Subtitle", value); }
+
+    public get description(): string { return this.getItemAsString("Description"); }
+    public set description(value: string) { this.setSingleStringValue("Description", value); }
+
+    public get performers(): string[] { return this.getItemAsStrings("Artist"); }
+    public set performers(value: string[]) { this.setMultipleStringValue("Artist", value); }
+
+    public get performersSort(): string[] { return this.getItemAsStrings("ArtistSort"); }
+    public set performersSort(value: string[]) { this.setMultipleStringValue("ArtistSort", value); }
+
+    public get performersRole(): string[] { return this.getItemAsStrings("PerformersRole"); }
+    public set performersRole(value: string[]) { this.setMultipleStringValue("PerformersRoles", value); }
+
+    /**
+     * Gets the artist who is credited in the creation of the entire album or collection containing
+     * the media described by the current instance.
+     * This property is implemented using the "Album Artist" item. "AlbumArtist" is used as a
+     * backup property if the first does not exist.
+     */
+    public get albumArtists(): string[] {
+        let list = this.getItemAsStrings("Album Artist");
+        if (list.length === 0) {
+            list = this.getItemAsStrings("AlbumArtist");
+        }
+        return list;
+    }
+    /**
+     * Sets the artist who is credited in the creation of the entire album or collection containing
+     * the media described by the current instance.
+     * The "Album Artist" item will always be used to store the value, if the older "AlbumArtist"
+     * exists, it will also be used to store the value.
+     */
+    public set albumArtists(value: string[]) {
+        this.setMultipleStringValue("Album Artist", value);
+        if (this.hasItem("AlbumArtist")) {
+            this.setMultipleStringValue("AlbumArtist", value);
+        }
+    }
+
+    public get albumArtistsSort(): string[] { return this.getItemAsStrings("AlbumArtistSort"); }
+    public set albumArtistsSort(value: string[]) { this.setMultipleStringValue("AlbumArtistSort", value); }
+
+    public get composers(): string[] { return this.getItemAsStrings("Composer"); }
+    public set composers(value: string[]) { this.setMultipleStringValue("Composer", value); }
+
+    public get composersSort(): string[] { return this.getItemAsStrings("ComposerSort"); }
+    public set composersSort(value: string[]) { this.setMultipleStringValue("ComposerSort", value); }
+
+    public get album(): string { return this.getItemAsString("Album"); }
+    public set album(value: string) { this.setSingleStringValue("Album", value); }
+
+    public get albumSort(): string { return this.getItemAsString("AlbumSort"); }
+    public set albumSort(value: string) { this.setSingleStringValue("AlbumSort", value); }
+
+    public get comment(): string { return this.getItemAsString("Comment"); }
+    public set comment(value: string) { this.setSingleStringValue("Comment", value); }
+
+    public get genres(): string[] { return this.getItemAsStrings("Genre"); }
+    public set genres(value: string[]) { this.setMultipleStringValue("Genre", value); }
+
+    public get year(): number {
+        const text = this.getItemAsString("Year");
+        if (!text) { return 0; }
+
+        const num = parseInt(text.substring(0, 4), 10);
+        return Number.isNaN(num) ? 0 : num;
+    }
+    public set year(value: number) { this.setNumericValue("Year", value, 0); }
+
+    public get track(): number { return this.getItemAsUInt("Track", 0); }
+    public set track(value: number) { this.setNumericValue("Track", value, this.trackCount); }
+
+    public get trackCount(): number { return this.getItemAsUInt("Track", 1); }
+    public set trackCount(value: number) { this.setNumericValue("Track", this.track, value); }
+
+    public get disc(): number { return this.getItemAsUInt("Disc", 0); }
+    public set disc(value: number) { this.setNumericValue("Disc", value, this.discCount); }
+
+    public get discCount(): number { return this.getItemAsUInt("Disc", 1); }
+    public set discCount(value: number) { this.setNumericValue("Disc", value, this.discCount); }
+
+    public get lyrics(): string { return this.getItemAsString("Lyrics"); }
+    public set lyrics(value: string) { this.setSingleStringValue("Lyrics", value); }
+
+    public get grouping(): string { return this.getItemAsString("Grouping"); }
+    public set grouping(value: string) { this.setSingleStringValue("Grouping", value); }
+
+    public get beatsPerMinute(): number {
+        const text = this.getItemAsString("BPM");
+        if (!text) { return 0; }
+        const num = parseFloat(text);
+        return Number.isNaN(num) ? 0 : Math.round(num);
+    }
+    public set beatsPerMinute(value: number) { this.setNumericValue("BPM", value, 0); }
+
+    public get conductor(): string { return this.getItemAsString("Conductor"); }
+    public set conductor(value: string) { this.setSingleStringValue("Conductor", value); }
+
+    public get copyright(): string { return this.getItemAsString("Copyright"); }
+    public set copyright(value: string) { this.setSingleStringValue("Copyright", value); }
+
+    public get dateTagged(): Date {
+        const val = this.getItemAsString("DateTagged");
+        if (val ) {
+            const date = new Date(val);
+            if (!Number.isNaN(date.valueOf())) {
+                return date;
+            }
+        }
+
+        return undefined;
+    }
+    public set dateTagged(value: Date) {
+        let str;
+        if (value) {
+            str = dateFormat(value, "yyyy-mm-dd HH:MM:ss");
+        }
+        this.setSingleStringValue("DateTagged", str);
+    }
+
+    public get musicBrainzArtistId(): string { return this.getItemAsString("MUSICBRAINZ_ARTISTID"); }
+    public set musicBrainzArtistId(value: string) { this.setSingleStringValue("MUSICBRAINZ_ARTISTID", value); }
+
+    public get musicBrainzReleaseGroupId(): string { return this.getItemAsString("MUSICBRAINZ_RELEASEGROUPID"); }
+    public set musicBrainzReleaseGroupId(value: string) {
+        this.setSingleStringValue("MUSICBRAINZ_RELEASEGROUPID", value);
+    }
+
+    public get musicBrainzReleaseId(): string { return this.getItemAsString("MUSICBRAINZ_ALBUMID"); }
+    public set musicBrainzReleaseId(value: string) { this.setSingleStringValue("MUSICBRAINZ_ALBUMID", value); }
+
+    public get musicBrainzReleaseArtistId(): string { return this.getItemAsString("MUSICBRAINZ_ALBUMARTISTID"); }
+    public set musicBrainzReleaseArtistId(value: string) {
+        this.setSingleStringValue("MUSICBRAINZ_ALBUMARTISTID", value);
+    }
+
+    public get musicBrainzTrackId(): string { return this.getItemAsString("MUSICBRAINZ_TRACKID"); }
+    public set musicBrainzTrackId(value: string) { this.setSingleStringValue("MUSICBRAINZ_TRACKID", value); }
+
+    public get musicBrainzDiscId(): string { return this.getItemAsString("MUSICBRAINZ_DISCID"); }
+    public set musicBrainzDiscId(value: string) { this.setSingleStringValue("MUSICBRAINZ_DISCID", value); }
+
+    public get musicIpId(): string { return this.getItemAsString("MUSICIP_PUID"); }
+    public set musicIpId(value: string) { this.setSingleStringValue("MUSICIP_PUID", value); }
+
+    public get amazonId(): string { return this.getItemAsString("ASIN"); }
+    public set amazonId(value: string) { this.setSingleStringValue("ASIN", value); }
+
+    public get musicBrainzReleaseStatus(): string { return this.getItemAsString("MUSICBRAINZ_ALBUMSTATUS"); }
+    public set musicBrainzReleaseStatus(value: string) { this.setSingleStringValue("MUSICBRAINZ_ALBUMSTATUS", value); }
+
+    public get musicBrainzReleaseType(): string { return this.getItemAsString("MUSICBRAINS_ALBUMTYPE"); }
+    public set musicBrainzReleaseType(value: string) { this.setSingleStringValue("MUSICBRAINZ_ALBUMTYPE", value); }
+
+    public get musicBrainzReleaseCountry(): string { return this.getItemAsString("RELEASECOUNTRY"); }
+    public set musicBrainzReleaseCountry(value: string) { this.setSingleStringValue("RELEASECOUNTRY", value); }
+
+    public get replayGainTrackGain(): number {
+        let text = this.getItemAsString("REPLAYGAIN_TRACK_GAIN");
+        if (!text) { return NaN; }
+        if (text.toLowerCase().endsWith("db")) {
+            text = text.substring(0, text.length - 2).trim();
+        }
+        return parseFloat(text);
+    }
+    public set replayGainTrackGain(value: number) {
+        if (Number.isNaN(value)) {
+            this.removeItem("REPLAYGAIN_TRACK_GAIN");
+        } else {
+            const text = `${value.toFixed(2)} dB`;
+            this.setSingleStringValue("REPLAYGAIN_TRACK_GAIN", text);
+        }
+    }
+
+    public get replayGainTrackPeak(): number {
+        let text = this.getItemAsString("REPLAYGAIN_TRACK_PEAK");
+        if (!text) { return NaN; }
+        if (text.toLowerCase().endsWith("db")) {
+            text = text.substring(0, text.length - 2).trim();
+        }
+        return parseFloat(text);
+    }
+    public set replayGainTrackPeak(value: number) {
+        if (Number.isNaN(value)) {
+            this.removeItem("REPLAYGAIN_TRACK_PEAK");
+        } else {
+            const text = `${value.toFixed(6)} dB`;
+            this.setSingleStringValue("REPLAYGAIN_TRACK_PEAK", text);
+        }
+    }
+
+    public get replayGainAlbumGain(): number {
+        let text = this.getItemAsString("REPLAYGAIN_ALBUM_GAIN");
+        if (!text) { return NaN; }
+        if (text.toLowerCase().endsWith("db")) {
+            text = text.substring(0, text.length - 2).trim();
+        }
+        return parseFloat(text);
+    }
+    public set replayGainAlbumGain(value: number) {
+        if (Number.isNaN(value)) {
+            this.removeItem("REPLAYGAIN_ALBUM_GAIN");
+        } else {
+            const text = `${value.toFixed(2)} dB`;
+            this.setSingleStringValue("REPLAYGAIN_ALBUM_GAIN", text);
+        }
+    }
+
+    public get replayGainAlbumPeak(): number {
+        let text = this.getItemAsString("REPLAYGAIN_ALBUM_PEAK");
+        if (!text) { return NaN; }
+        if (text.toLowerCase().endsWith("db")) {
+            text = text.substring(0, text.length - 2).trim();
+        }
+        return parseFloat(text);
+    }
+    public set replayGainAlbumPeak(value: number) {
+        if (Number.isNaN(value)) {
+            this.removeItem("REPLAYGAIN_ALBUM_PEAK");
+        } else {
+            const text = `${value.toFixed(6)} dB`;
+            this.setSingleStringValue("REPLAYGAIN_ALBUM_PEAK", text);
+        }
+    }
+
+    public get pictures(): IPicture[] {
+        const pictures = [];
+        for (const item of this._items) {
+            if (!item || item.type !== ApeItemType.Binary) { continue; }
+
+            const keyLower = item.key.toLowerCase();
+            const typeIndex = ApeTag._pictureItemNames.findIndex((e) => e.toLowerCase() === keyLower);
+            if (typeIndex < 0) { continue; }
+
+            const index = item.value.find(ByteVector.getTextDelimiter(StringType.UTF8));
+            if (index < 0) { continue; }
+
+            const pic = new Picture(item.value.mid(index + 1));
+            pic.description = item.value.toString(StringType.UTF8, 0, index);
+            pic.type = typeIndex < ApeTag._pictureItemNames.length - 1 ? typeIndex : PictureType.NotAPicture;
+
+            pictures.push(pic);
+        }
+    }
+    public set pictures(value: IPicture[]) {
+        for (const itemName of ApeTag._pictureItemNames) {
+            this.removeItem(itemName);
+        }
+
+        if (!value || value.length === 0) { return; }
+
+        for (const pic of value) {
+            let type = pic.type;
+            if (type >= ApeTag._pictureItemNames.length) {
+                type = ApeTag._pictureItemNames.length - 1;
+            }
+
+            const name = ApeTag._pictureItemNames[type];
+            if (this.getItem(name)) { continue; }
+
+            const data = ByteVector.fromString(pic.description, StringType.UTF8);
+            data.addByteVector(ByteVector.getTextDelimiter(StringType.UTF8));
+            data.addByteVector(pic.data);
+
+            this.setItem(ApeItem.fromBinaryData(name, data));
+        }
+    }
+
+    public get isEmpty(): boolean { return this._items.length === 0; }
+
+    public clear(): void {
+        this._items.splice(0, this._items.length);
+    }
+
+    public copyTo(target: Tag, overwrite: boolean): void {
+        Guards.truthy(target, "target");
+
+        // @TODO: Does this need to be an & check
+        const apeTarget = <ApeTag> target;
+        if (target.tagTypes !== TagTypes.Ape || apeTarget._items === undefined) {
+            super.copyTo(target, overwrite);
+            return;
+        }
+
+        for (const item of this._items) {
+            if (!overwrite && apeTarget.getItem(item.key)) { continue; }
+            apeTarget.setItem(ApeItem.fromApeItem(item));
+        }
+    }
+
+    // #endregion
+
+    // #region Private Methods
+
+    private getItemIndex(key: string): number {
+        const keyUpper = key.toUpperCase();
+        return this._items.findIndex((e) => e.key.toUpperCase() === keyUpper);
+    }
+
+    private getItemAsString(key: string): string {
+        const item = this.getItem(key);
+        return item ? item.toString() : undefined;
+    }
+
+    private getItemAsStrings(key: string): string[] {
+        const item = this.getItem(key);
+        return item ? item.toStringArray() : [];
+    }
+
+    private getItemAsUInt(key: string, index: number) {
+        Guards.uint(index, "index");
+
+        const text = this.getItemAsString(key);
+        if (!text) {
+            return 0;
+        }
+
+        const values = text.split("/", index + 2);
+        if (values.length < index + 1) {
+            return 0;
+        }
+        const num = parseInt(values[index], 10);
+        if (Number.isNaN(num)) {
+            return 0;
+        }
+
+        return num;
     }
 
     // #endregion

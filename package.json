@@ -8,11 +8,13 @@
   "dependencies": {
     "arraybuffer-to-buffer": "^0.0.5",
     "big-integer": "^1.6.42",
+    "dateformat": "^3.0.3",
     "iconv-lite": "^0.4.24"
   },
   "devDependencies": {
     "@types/chai": "^4.1.7",
     "@types/chai-as-promised": "^7.1.0",
+    "@types/dateformat": "^3.0.0",
     "@types/node": "^11.10.4",
     "@types/stream-buffers": "^3.0.2",
     "chai": "^4.2.0",
