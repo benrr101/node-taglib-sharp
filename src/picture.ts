@@ -1,5 +1,5 @@
-// import * as path from "path";
-//
+import * as path from "path";
+
 import {ByteVector} from "./byteVector";
 
 export enum PictureType {
@@ -125,247 +125,247 @@ export interface IPicture {
 
     data: ByteVector;
 }
-//
-// export class Picture implements IPicture {
-//     // #region Constants
-//
-//     private static readonly _lutExtensionMime: string[] = [
-//         "aac", "audio/aac", // AAC audio file
-//         "abw", "application/x-abiword", // AbiWord document
-//         "arc", "application/octet-stream", // Archive document (multiple files embedded)
-//         "avi", "video/x-msvideo", // AVI: Audio Video Interleave
-//         "azw", "application/vnd.amazon.ebook", // Amazon Kindle eBook format
-//         "bin", "application/octet-stream", // Any kind of binary data
-//         "bmp", "image/bmp", // BMP image data
-//         "bmp", "image/x-windows-bmp", // BMP image data
-//         "bm", "image/bmp", // BMP image data
-//         "bz", "application/x-bzip", // BZip archive
-//         "bz2", "application/x-bzip2", // BZip2 archive
-//         "csh", "application/x-csh", // C-Shell script
-//         "css", "text/css", // Cascading Style Sheets (CSS)
-//         "csv", "text/csv", // Comma-separated values (CSV)
-//         "doc", "application/msword", // Microsoft Word
-//         "eot", "application/vnd.ms-fontobject", // MS Embedded OpenType fonts
-//         "epub", "application/epub+zip", // Electronic publication (EPUB)
-//         "gif", "image/gif", // Graphics Interchange Format (GIF)
-//         "htm", "text/html", // HyperText Markup Language (HTML)text / html
-//         "html", "text/html", // HyperText Markup Language (HTML)text / html
-//         "ico", "image/x-icon", // Icon format
-//         "ics", "text/calendar", // iCalendar format
-//         "jar", "application/java-archive", // Java Archive (JAR)
-//         "jpg", "image/jpeg", // JPEG images
-//         "jpeg", "image/jpeg", // JPEG images
-//         "js", "application/javascript", // JavaScript (ECMAScript)
-//         "json", "application/json", // JSON format
-//         "mid", "audio/midi", // Musical Instrument Digital Interface (MIDI)
-//         "midi", "audio/midi", // Musical Instrument Digital Interface (MIDI)
-//         "mp3", "audio/mpeg",
-//         "mp1", "audio/mpeg",
-//         "mp2", "audio/mpeg",
-//         "mpg", "video/mpeg",
-//         "mpeg", "video/mpeg", // MPEG Video
-//         "m4a", "audio/mp4",
-//         "mp4", "video/mp4",
-//         "m4v", "video/mp4",
-//         "mpkg", "application/vnd.apple.installer+xml", // Apple Installer Package
-//         "odp", "application/vnd.oasis.opendocument.presentation", // OpenDocuemnt presentation document
-//         "ods", "application/vnd.oasis.opendocument.spreadsheet", // OpenDocuemnt spreadsheet document
-//         "odt", "application/vnd.oasis.opendocument.text", // OpenDocument text document
-//         "oga", "audio/ogg", // OGG audio
-//         "ogg", "audio/ogg",
-//         "ogx", "application/ogg", // OGG
-//         "ogv", "video/ogg",
-//         "otf", "font/otf", // OpenType font
-//         "png", "image/png", // Portable Network Graphics
-//         "pdf", "application/pdf", // Adobe Portable Document Format (PDF)
-//         "ppt", "application/vnd.ms-powerpoint", // Microsoft PowerPoint
-//         "rar", "application/x-rar-compressed", // RAR archive
-//         "rtf", "application/rtf", // Rich Text Format (RTF)
-//         "sh", "application/x-sh", // Bourne shell script
-//         "svg", "image/svg+xml", // Scalable Vector Graphics (SVG)
-//         "swf", "application/x-shockwave-flash", // Small web format (SWF) or Adobe Flash document
-//         "tar", "application/x-tar", // Tape Archive (TAR)
-//         "tif", "image/tiff", //  Tagged Image File Format(TIFF)
-//         "tiff", "image/tiff", //  Tagged Image File Format(TIFF)
-//         "ts", "video/vnd.dlna.mpeg-tts", // Typescript file
-//         "ttf", "font/ttf", // TrueType Font
-//         "vsd", "application/vnd.visio", // Microsoft Visio
-//         "wav", "audio/x-wav", // Waveform Audio Format
-//         "weba", "audio/webm", // WEBM audio
-//         "webm", "video/webm", // WEBM video
-//         "webp", "image/webp", // WEBP image
-//         "woff", "font/woff", // Web Open Font Format (WOFF)
-//         "woff2", "font/woff2", // Web Open Font Format (WOFF)
-//         "xhtml", "application/xhtml+xml", // XHTML
-//         "xls", "application/vnd.ms", // excel application
-//         "xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", // excel 2007 application
-//         "xml", "application/xml", // XML
-//         "xul", "application/vnd.mozilla.xul+xml", // XUL
-//         "zip", "application/zip", // ZIP archive
-//         "3gp", "video/3gpp", // 3GPP audio/video container
-//         "3g2", "video/3gpp2", // 3GPP2 audio/video container
-//         "7z", "application/x-7z-compressed", // 7-zip archive
-//     ];
-//
-//     // #endregion
-//
-//     // #region Constructors
-//
-//     private constructor() {}
-//
-//     public static FromPath(filepath: string): Picture {
-//         if (!filepath) {
-//             throw new Error("Argument null exception: path not provided");
-//         }
-//
-//         const picture = new Picture();
-//         picture.data = ;
-//         picture.filename = path.basename(filepath);
-//         picture.description = picture.filename;
-//         picture.mimeType = Picture.getMimeTypeFromExtension(picture.filename);
-//         picture.type = picture.mimeType.startsWith("image/") ? PictureType.FrontCover : PictureType.NotAPicture;
-//
-//         return picture;
-//
-//     }
-//
-//     public static FromData(data: Buffer): Picture {
-//         if (!data) {
-//             throw new Error("Argument null exception: data not provided");
-//         }
-//
-//         const picture = new Picture();
-//         picture.data = ;
-//
-//         const ext = Picture.getExtensionFromData(data);
-//         picture.mimeType = Picture.getMimeTypeFromExtension(ext);
-//         if (ext) {
-//             picture.type = PictureType.FrontCover;
-//             picture.filename = picture.description = "cover" + ext;
-//         } else {
-//             picture.type = PictureType.NotAPicture;
-//             picture.filename = "UnknownType";
-//         }
-//
-//         return picture;
-//     }
-//
-//     public static FromFileAbstraction(abstraction: IFileAbstraction): Picture {
-//         if (!abstraction) {
-//             throw new Error("Argument null exception: file abstraction not provided");
-//         }
-//
-//         const picture = new Picture();
-//         picture.data = ;
-//         picture.filename = abstraction.Name;
-//         picture.description = abstraction.Name;
-//
-//         if (picture.filename && picture.filename.indexOf(".") >= 0) {
-//             picture.mimeType = Picture.getMimeTypeFromExtension(picture.filename);
-//             picture.type = picture.mimeType.startsWith("image/") ? PictureType.FrontCover : PictureType.NotAPicture;
-//         } else {
-//             const ext = Picture.getExtensionFromData(picture.data);
-//             picture.mimeType = Picture.getMimeTypeFromExtension(ext);
-//             if (ext) {
-//                 picture.type = PictureType.FrontCover;
-//                 picture.filename = picture.description = "cover" + ext;
-//             } else {
-//                 picture.type = PictureType.NotAPicture;
-//                 picture.filename = "UnknownType";
-//             }
-//         }
-//
-//         return picture;
-//     }
-//
-//     public static FromPicture(original: IPicture): Picture {
-//         const picture = new Picture();
-//         picture.mimeType = original.mimeType;
-//         picture.type = original.type;
-//         picture.filename = original.filename;
-//         picture.description = original.description;
-//         picture.data = original.data;
-//
-//         return picture;
-//     }
-//
-//     // #endregion
-//
-//     // #region Public Properties
-//
-//     public mimeType: string;
-//
-//     public type: PictureType;
-//
-//     public filename: string;
-//
-//     public description: string;
-//
-//     public data: Buffer;
-//
-//     // #endregion
-//
-//     // #region Public Static Methods
-//
-//     public static getExtensionFromData(data: Buffer): string|null {
-//         let ext = null;
-//
-//         // No picture unless it is corrupted, can fit in a file of less than 4 bytes
-//         if (data.length >= 4) {
-//             if (data[1] === 0x50 && data[2] === 0x4E && data[3] === 0x47) {
-//                 // PNG
-//                 ext = ".png";
-//             } else if (data[0] === 0x47 && data[1] === 0x49 && data[2] === 0x47) {
-//                 // GIF
-//                 ext = ".gif";
-//             } else if (data[0] === 0x42 && data[1] === 0x4D) {
-//                 // BM
-//                 ext = ".bmp";
-//             } else if (data[0] === 0xFF && data[1] === 0xD8 && data[2] === 0xFF && data[3] == 0xE0) {
-//                 ext = ".jpg";
-//             }
-//         }
-//
-//         return ext;
-//     }
-//
-//     public static getExtensionFromMimeType(mime: string): string|null {
-//         let ext: string = null;
-//
-//         for (let i = 1; i < this._lutExtensionMime.length; i += 2) {
-//             if (this._lutExtensionMime[i] === mime) {
-//                 ext = this._lutExtensionMime[i - 1];
-//                 break;
-//             }
-//         }
-//
-//         return ext;
-//     }
-//
-//     public static getMimeTypeFromExtension(name: string): string|null {
-//         let mimeType: string = "application/octet-stream";
-//
-//         if (!name || name.length === 0)  {
-//             return mimeType;
-//         }
-//
-//         let ext = path.extname(name);
-//         if (!ext || ext.length === 0) {
-//             ext = name;
-//         } else {
-//             ext = ext.substring(1);
-//         }
-//         ext = ext.substring(1);
-//
-//         for (let i = 0; i < this._lutExtensionMime.length; i += 2) {
-//             if (this._lutExtensionMime[i] === ext) {
-//                 mimeType = this._lutExtensionMime[i + 1];
-//                 break;
-//             }
-//         }
-//
-//         return mimeType;
-//     }
-//
-//     // #endregion
-// }
+
+export class Picture implements IPicture {
+    // #region Constants
+
+    private static readonly _lutExtensionMime: string[] = [
+        "aac", "audio/aac", // AAC audio file
+        "abw", "application/x-abiword", // AbiWord document
+        "arc", "application/octet-stream", // Archive document (multiple files embedded)
+        "avi", "video/x-msvideo", // AVI: Audio Video Interleave
+        "azw", "application/vnd.amazon.ebook", // Amazon Kindle eBook format
+        "bin", "application/octet-stream", // Any kind of binary data
+        "bmp", "image/bmp", // BMP image data
+        "bmp", "image/x-windows-bmp", // BMP image data
+        "bm", "image/bmp", // BMP image data
+        "bz", "application/x-bzip", // BZip archive
+        "bz2", "application/x-bzip2", // BZip2 archive
+        "csh", "application/x-csh", // C-Shell script
+        "css", "text/css", // Cascading Style Sheets (CSS)
+        "csv", "text/csv", // Comma-separated values (CSV)
+        "doc", "application/msword", // Microsoft Word
+        "eot", "application/vnd.ms-fontobject", // MS Embedded OpenType fonts
+        "epub", "application/epub+zip", // Electronic publication (EPUB)
+        "gif", "image/gif", // Graphics Interchange Format (GIF)
+        "htm", "text/html", // HyperText Markup Language (HTML)text / html
+        "html", "text/html", // HyperText Markup Language (HTML)text / html
+        "ico", "image/x-icon", // Icon format
+        "ics", "text/calendar", // iCalendar format
+        "jar", "application/java-archive", // Java Archive (JAR)
+        "jpg", "image/jpeg", // JPEG images
+        "jpeg", "image/jpeg", // JPEG images
+        "js", "application/javascript", // JavaScript (ECMAScript)
+        "json", "application/json", // JSON format
+        "mid", "audio/midi", // Musical Instrument Digital Interface (MIDI)
+        "midi", "audio/midi", // Musical Instrument Digital Interface (MIDI)
+        "mp3", "audio/mpeg",
+        "mp1", "audio/mpeg",
+        "mp2", "audio/mpeg",
+        "mpg", "video/mpeg",
+        "mpeg", "video/mpeg", // MPEG Video
+        "m4a", "audio/mp4",
+        "mp4", "video/mp4",
+        "m4v", "video/mp4",
+        "mpkg", "application/vnd.apple.installer+xml", // Apple Installer Package
+        "odp", "application/vnd.oasis.opendocument.presentation", // OpenDocuemnt presentation document
+        "ods", "application/vnd.oasis.opendocument.spreadsheet", // OpenDocuemnt spreadsheet document
+        "odt", "application/vnd.oasis.opendocument.text", // OpenDocument text document
+        "oga", "audio/ogg", // OGG audio
+        "ogg", "audio/ogg",
+        "ogx", "application/ogg", // OGG
+        "ogv", "video/ogg",
+        "otf", "font/otf", // OpenType font
+        "png", "image/png", // Portable Network Graphics
+        "pdf", "application/pdf", // Adobe Portable Document Format (PDF)
+        "ppt", "application/vnd.ms-powerpoint", // Microsoft PowerPoint
+        "rar", "application/x-rar-compressed", // RAR archive
+        "rtf", "application/rtf", // Rich Text Format (RTF)
+        "sh", "application/x-sh", // Bourne shell script
+        "svg", "image/svg+xml", // Scalable Vector Graphics (SVG)
+        "swf", "application/x-shockwave-flash", // Small web format (SWF) or Adobe Flash document
+        "tar", "application/x-tar", // Tape Archive (TAR)
+        "tif", "image/tiff", //  Tagged Image File Format(TIFF)
+        "tiff", "image/tiff", //  Tagged Image File Format(TIFF)
+        "ts", "video/vnd.dlna.mpeg-tts", // Typescript file
+        "ttf", "font/ttf", // TrueType Font
+        "vsd", "application/vnd.visio", // Microsoft Visio
+        "wav", "audio/x-wav", // Waveform Audio Format
+        "weba", "audio/webm", // WEBM audio
+        "webm", "video/webm", // WEBM video
+        "webp", "image/webp", // WEBP image
+        "woff", "font/woff", // Web Open Font Format (WOFF)
+        "woff2", "font/woff2", // Web Open Font Format (WOFF)
+        "xhtml", "application/xhtml+xml", // XHTML
+        "xls", "application/vnd.ms", // excel application
+        "xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", // excel 2007 application
+        "xml", "application/xml", // XML
+        "xul", "application/vnd.mozilla.xul+xml", // XUL
+        "zip", "application/zip", // ZIP archive
+        "3gp", "video/3gpp", // 3GPP audio/video container
+        "3g2", "video/3gpp2", // 3GPP2 audio/video container
+        "7z", "application/x-7z-compressed", // 7-zip archive
+    ];
+
+    // #endregion
+
+    // #region Constructors
+
+    private constructor() {}
+
+    public static FromPath(filepath: string): Picture {
+        if (!filepath) {
+            throw new Error("Argument null exception: path not provided");
+        }
+
+        const picture = new Picture();
+        picture.data = ;
+        picture.filename = path.basename(filepath);
+        picture.description = picture.filename;
+        picture.mimeType = Picture.getMimeTypeFromExtension(picture.filename);
+        picture.type = picture.mimeType.startsWith("image/") ? PictureType.FrontCover : PictureType.NotAPicture;
+
+        return picture;
+
+    }
+
+    public static FromData(data: Buffer): Picture {
+        if (!data) {
+            throw new Error("Argument null exception: data not provided");
+        }
+
+        const picture = new Picture();
+        picture.data = ;
+
+        const ext = Picture.getExtensionFromData(data);
+        picture.mimeType = Picture.getMimeTypeFromExtension(ext);
+        if (ext) {
+            picture.type = PictureType.FrontCover;
+            picture.filename = picture.description = "cover" + ext;
+        } else {
+            picture.type = PictureType.NotAPicture;
+            picture.filename = "UnknownType";
+        }
+
+        return picture;
+    }
+
+    public static FromFileAbstraction(abstraction: IFileAbstraction): Picture {
+        if (!abstraction) {
+            throw new Error("Argument null exception: file abstraction not provided");
+        }
+
+        const picture = new Picture();
+        picture.data = ;
+        picture.filename = abstraction.Name;
+        picture.description = abstraction.Name;
+
+        if (picture.filename && picture.filename.indexOf(".") >= 0) {
+            picture.mimeType = Picture.getMimeTypeFromExtension(picture.filename);
+            picture.type = picture.mimeType.startsWith("image/") ? PictureType.FrontCover : PictureType.NotAPicture;
+        } else {
+            const ext = Picture.getExtensionFromData(picture.data);
+            picture.mimeType = Picture.getMimeTypeFromExtension(ext);
+            if (ext) {
+                picture.type = PictureType.FrontCover;
+                picture.filename = picture.description = "cover" + ext;
+            } else {
+                picture.type = PictureType.NotAPicture;
+                picture.filename = "UnknownType";
+            }
+        }
+
+        return picture;
+    }
+
+    public static FromPicture(original: IPicture): Picture {
+        const picture = new Picture();
+        picture.mimeType = original.mimeType;
+        picture.type = original.type;
+        picture.filename = original.filename;
+        picture.description = original.description;
+        picture.data = original.data;
+
+        return picture;
+    }
+
+    // #endregion
+
+    // #region Public Properties
+
+    public mimeType: string;
+
+    public type: PictureType;
+
+    public filename: string;
+
+    public description: string;
+
+    public data: ByteVector;
+
+    // #endregion
+
+    // #region Public Static Methods
+
+    public static getExtensionFromData(data: Buffer): string|null {
+        let ext = null;
+
+        // No picture unless it is corrupted, can fit in a file of less than 4 bytes
+        if (data.length >= 4) {
+            if (data[1] === 0x50 && data[2] === 0x4E && data[3] === 0x47) {
+                // PNG
+                ext = ".png";
+            } else if (data[0] === 0x47 && data[1] === 0x49 && data[2] === 0x47) {
+                // GIF
+                ext = ".gif";
+            } else if (data[0] === 0x42 && data[1] === 0x4D) {
+                // BM
+                ext = ".bmp";
+            } else if (data[0] === 0xFF && data[1] === 0xD8 && data[2] === 0xFF && data[3] == 0xE0) {
+                ext = ".jpg";
+            }
+        }
+
+        return ext;
+    }
+
+    public static getExtensionFromMimeType(mime: string): string|null {
+        let ext: string = null;
+
+        for (let i = 1; i < this._lutExtensionMime.length; i += 2) {
+            if (this._lutExtensionMime[i] === mime) {
+                ext = this._lutExtensionMime[i - 1];
+                break;
+            }
+        }
+
+        return ext;
+    }
+
+    public static getMimeTypeFromExtension(name: string): string|null {
+        let mimeType: string = "application/octet-stream";
+
+        if (!name || name.length === 0)  {
+            return mimeType;
+        }
+
+        let ext = path.extname(name);
+        if (!ext || ext.length === 0) {
+            ext = name;
+        } else {
+            ext = ext.substring(1);
+        }
+        ext = ext.substring(1);
+
+        for (let i = 0; i < this._lutExtensionMime.length; i += 2) {
+            if (this._lutExtensionMime[i] === ext) {
+                mimeType = this._lutExtensionMime[i + 1];
+                break;
+            }
+        }
+
+        return mimeType;
+    }
+
+    // #endregion
+}

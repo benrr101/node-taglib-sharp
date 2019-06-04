@@ -1,4 +1,6 @@
+import ApeTag from "../ape/apeTag"
 import CombinedTag from "../combinedTag";
+import {ApeFooter} from "../ape/apeFooter";
 import {File, ReadStyle} from "../file";
 import {Tag, TagTypes} from "../tag";
 import {ByteVector} from "../byteVector";

@@ -1,6 +1,8 @@
 import * as BigInt from "big-integer";
 import * as IConv from "iconv-lite";
 import * as fs from "fs";
+import {Guards} from "./utils";
+import {Stream} from "./stream";
 
 // TODO: Assess if this is needed
 const AB2B = require("arraybuffer-to-buffer");
@@ -177,20 +179,29 @@ export class ByteVector {
 
     private constructor() { }
 
+    public static empty(): ByteVector {
+        return this.fromSize(0);
+    }
+
     /**
      * Creates a {@see ByteVector} from a {@see Uint8Array}
      * @param data Uint8Array of the bytes to put in the ByteVector
+     * @param length Number of bytes to read
      * @param isReadOnly If `true` then the ByteVector will be read only
      */
-    // TODO: Extend to support length that's less than the full length
-    public static fromByteArray(data: Uint8Array, isReadOnly: boolean = false): ByteVector {
+    public static fromByteArray(data: Uint8Array, length: number = data.length, isReadOnly: boolean = false): ByteVector {
         if (!data) {
             throw new Error("Argument Null Exception: data was not provided");
         }
+        if (!Number.isSafeInteger(length) || length < 0 || length > data.length) {
+            throw new Error(
+                "Argument out of range: length must be a positive integer less than the length of the byte array"
+            );
+        }
 
         const vector = new ByteVector();
-        vector._data = new Uint8Array(data.length);
-        vector._data.set(data);
+        vector._data = new Uint8Array(length);
+        vector._data.set(data.slice(0, length - 1));
         vector._isReadOnly = isReadOnly;
         return vector;
     }
@@ -221,6 +232,33 @@ export class ByteVector {
         isReadOnly: boolean = false
     ): ByteVector {
         return ByteVector.getByteVectorFromInteger(value, true, 4, mostSignificantByteFirst, isReadOnly);
+    }
+
+    /**
+     * Creates a ByteVector using the contents of an TagLibSharp-node stream as the contents.
+     * @param stream TagLibSharp-node internal stream object
+     * @param isReadOnly Whether or not the bytevector is readonly
+     */
+    public static fromInternalStream(stream: Stream, isReadOnly: boolean = false): ByteVector {
+        Guards.truthy(stream, "stream");
+
+        const vector = ByteVector.empty();
+        const bytes = new Uint8Array(4096);
+        let totalBytesRead = 0;
+
+        while (true) {
+            const bytesRead = stream.read(bytes, 0, bytes.length);
+            vector.addByteArray(bytes);
+            totalBytesRead += bytesRead;
+
+            if (bytesRead < bytes.length) {
+                vector.resize(totalBytesRead);
+                break;
+            }
+        }
+
+        vector._isReadOnly = isReadOnly;
+        return vector;
     }
 
     /**
