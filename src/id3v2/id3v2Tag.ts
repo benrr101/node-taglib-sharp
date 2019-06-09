@@ -22,7 +22,7 @@ export default class Id3v2Tag extends Tag {
     }
 
     public getFramesByClassType<TFrame extends Frame>(type: FrameClassType): TFrame[] {
-        return this._frameList.filter((f) => f.frameClassType === type)
+        return this._frameList.filter((f) => f && f.frameClassType === type)
             .map((f) => <TFrame> f);
     }
 }

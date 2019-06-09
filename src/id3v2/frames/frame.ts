@@ -6,7 +6,9 @@ import {Id3v2FrameFlags, Id3v2FrameHeader} from "./frameHeader";
 import {Guards} from "../../utils";
 
 export enum FrameClassType {
-    AttachmentFrame
+    AttachmentFrame,
+    CommentsFrame,
+    MusicCdIdentiferFrame
 }
 
 export abstract class Frame {
@@ -25,6 +27,7 @@ export abstract class Frame {
     // #region Constructors
 
     protected constructor(header: Id3v2FrameHeader) {
+        Guards.truthy(header, "header");
         this._header = header;
     }
 
