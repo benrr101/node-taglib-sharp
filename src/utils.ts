@@ -1,8 +1,9 @@
+import * as BigInt from "big-integer"
 
 export class Guards {
     public static byte(value: number, name: string): void {
         if (!Number.isSafeInteger(value) || value < 0 || value > 0xFF) {
-            throw new Error(`Argument out of range: ${name} must be a safe, positive integer <256`);
+            throw new Error(`Argument out of range: ${name} must be a safe, positive, 8-bit integer`);
         }
     }
 
@@ -14,7 +15,7 @@ export class Guards {
 
     public static short(value: number, name: string): void {
         if (!Number.isSafeInteger(value) || value > 32767 || value < -32768) {
-            throw new Error(`Argument out of range: ${name} must be an integer that fits in 16 bits`);
+            throw new Error(`Argument out of range: ${name} must be a 16-bit integer`);
         }
     }
 
@@ -26,7 +27,14 @@ export class Guards {
 
     public static uint(value: number, name: string): void {
         if (!Number.isSafeInteger(value) || value < 0) {
-            throw new Error(`Argument out of range: ${name} must be a safe, positive integer.`);
+            throw new Error(`Argument out of range: ${name} must be a safe, positive, 32-bit integer`);
+        }
+    }
+
+    public static ulong(value: BigInt.BigInteger, name: string): void {
+        Guards.truthy(value, name);
+        if (value.gt(BigInt("18446744073709551615")) || value.lt(0)) {
+            throw new Error(`Argument out of range: ${name} is not a valid unsigned 64-bit ingeger`);
         }
     }
 }
