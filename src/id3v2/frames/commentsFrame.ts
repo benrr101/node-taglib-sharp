@@ -56,7 +56,7 @@ export default class CommentsFrame extends Frame {
      * @param header Header of the frame found at {@paramref data} in the data
      * @param version ID3v2 version the raw frame is encoded with. Must be positive 8-bit integer.
      */
-    public static fromOffsetRawHeader(data: ByteVector, offset: number, header: Id3v2FrameHeader, version: number): CommentsFrame {
+    public static fromOffsetRawData(data: ByteVector, offset: number, header: Id3v2FrameHeader, version: number): CommentsFrame {
         Guards.truthy(data, "data");
         Guards.uint(offset, "offset");
         Guards.truthy(header, "header");
@@ -73,7 +73,7 @@ export default class CommentsFrame extends Frame {
      * @param data Raw representation of the new frame
      * @param version ID3v2 version the raw frame is encoded with, must be a positive 8-bit integer
      */
-    public static fromRawHeader(data: ByteVector, version: number): CommentsFrame {
+    public static fromRawData(data: ByteVector, version: number): CommentsFrame {
         Guards.truthy(data, "data");
         Guards.byte(version, "version");
 
