@@ -1006,6 +1006,39 @@ export class ByteVector {
     }
 
     /**
+     * Splits this byte vector into a list of byte vectors using a separator
+     * @param separator Object to use to split this byte vector
+     * @param byteAlign Byte align to use when splitting. in order to split when a pattern is
+     *     encountered, the index at which it is found must be divisible by this value.
+     * @param max Maximum number of objects to return or 0 to not limit the number. If that number
+     *     is reached, the last value will contain the remainder of the file even if it contains
+     *     more instances of {@paramref separator}.
+     * @returns ByteVector[] The split contents of the current instance
+     */
+    public split(separator: ByteVector, byteAlign: number = 1, max: number = 0): ByteVector[] {
+        Guards.truthy(separator, "separator");
+        if (!Number.isSafeInteger(byteAlign) || byteAlign < 1) {
+            throw new Error("Argument out of range: byteAlign must be at least 1")
+        }
+
+        const list: ByteVector[] = [];
+        let previousOffset = 0;
+
+        for (let offset = this.find(separator, 0, byteAlign);
+             offset !== -1 && (max < 1 || max > this.length + 1);
+             offset = this.find(separator, offset + separator.length, byteAlign)) {
+            list.push(this.mid(previousOffset, offset - previousOffset));
+            previousOffset = offset + separator.length;
+        }
+
+        if (previousOffset < this.length) {
+            list.push(this.mid(previousOffset, this.length - previousOffset));
+        }
+
+        return list;
+    }
+
+    /**
      * Checks whether or not a pattern appears at the beginning of the current instance.
      * @param pattern ByteVector containing the pattern to check for in the current instance.
      * @returns `true` if the pattern was found at the beginning of the current instance, `false`

@@ -10,7 +10,8 @@ export enum FrameClassType {
     CommentsFrame,
     MusicCdIdentiferFrame,
     PlayCountFrame,
-    PopularimeterFrame
+    PopularimeterFrame,
+    PrivateFrame
 }
 
 export abstract class Frame {

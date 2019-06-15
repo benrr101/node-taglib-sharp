@@ -36,6 +36,11 @@ export default class PopularimeterFrame extends Frame {
         header: Id3v2FrameHeader,
         version: number
     ): PopularimeterFrame {
+        Guards.truthy(data, "data");
+        Guards.uint(offset, "offset");
+        Guards.truthy(header, "header");
+        Guards.byte(version, "version");
+
         const frame = new PopularimeterFrame(header);
         frame.setData(data, offset, version, false);
         return frame;
