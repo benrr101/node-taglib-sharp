@@ -11,7 +11,8 @@ export enum FrameClassType {
     MusicCdIdentiferFrame,
     PlayCountFrame,
     PopularimeterFrame,
-    PrivateFrame
+    PrivateFrame,
+    SynchronizedLyricsFrame
 }
 
 export abstract class Frame {
