@@ -12,6 +12,7 @@ export enum FrameClassType {
     PlayCountFrame,
     PopularimeterFrame,
     PrivateFrame,
+    RelativeVolumeFrame,
     SynchronizedLyricsFrame
 }
 

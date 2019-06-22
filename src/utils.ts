@@ -1,6 +1,12 @@
 import * as BigInt from "big-integer"
 
 export class Guards {
+    public static between(value: number, minValue: number, maxValue: number, name: string): void {
+        if (value < minValue || value > maxValue) {
+            throw new Error(`Argument out of range: ${name} must be between ${minValue} and ${maxValue}`);
+        }
+    }
+
     public static byte(value: number, name: string): void {
         if (!Number.isSafeInteger(value) || value < 0 || value > 0xFF) {
             throw new Error(`Argument out of range: ${name} must be a safe, positive, 8-bit integer`);
