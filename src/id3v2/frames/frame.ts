@@ -13,7 +13,8 @@ export enum FrameClassType {
     PopularimeterFrame,
     PrivateFrame,
     RelativeVolumeFrame,
-    SynchronizedLyricsFrame
+    SynchronizedLyricsFrame,
+    TermsOfUseFrame
 }
 
 export abstract class Frame {
