@@ -1,4 +1,4 @@
-import {StringType} from "../byteVector";
+import {ByteVector, StringType} from "../byteVector";
 import {Tag} from "../tag";
 import {Frame, FrameClassType} from "./frames/frame";
 import {Guards} from "../utils";
@@ -22,7 +22,15 @@ export default class Id3v2Tag extends Tag {
     }
 
     public getFramesByClassType<TFrame extends Frame>(type: FrameClassType): TFrame[] {
+        // @TODO: Add guards
         return this._frameList.filter((f) => f && f.frameClassType === type)
             .map((f) => <TFrame> f);
+    }
+
+    public getFramesByIdentifier<TFrame extends Frame>(type: FrameClassType, ident: ByteVector): TFrame[] {
+        // @TODO: Add guards
+        return this._frameList.filter((f) => {
+            return f && f.frameClassType === type && ByteVector.equal(f.frameId, ident);
+        }).map((f) => <TFrame> f);
     }
 }

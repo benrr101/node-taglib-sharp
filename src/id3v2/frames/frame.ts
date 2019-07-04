@@ -14,15 +14,14 @@ export enum FrameClassType {
     PrivateFrame,
     RelativeVolumeFrame,
     SynchronizedLyricsFrame,
-    TermsOfUseFrame
+    TermsOfUseFrame,
+    TextInformationFrame,
+    UserTextInformationFrame,
 }
 
 export abstract class Frame {
     // #region Member Variables
 
-    /**
-     * Contains the frame's header.
-     */
     protected _header: Id3v2FrameHeader;
 
     private _encryptionId: number;

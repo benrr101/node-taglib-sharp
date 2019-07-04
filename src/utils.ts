@@ -45,6 +45,18 @@ export class Guards {
     }
 }
 
+export class StringComparison {
+    public static CaseInsensitive(a: string, b: string): boolean {
+        Guards.notNullOrUndefined(a, "a");
+        Guards.notNullOrUndefined(b, "b");
+        return a.toUpperCase() === b.toUpperCase();
+    }
+
+    public static CaseSensitive(a: string, b: string): boolean {
+        return a === b;
+    }
+}
+
 export class ArrayUtils {
     public static remove<T>(array: T[], callbackFn: (e: T, i: number) => boolean): void {
         let i = this.length;

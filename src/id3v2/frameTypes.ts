@@ -2,7 +2,7 @@ import {ByteVector, StringType} from "../byteVector";
 
 /**
  * @summary Provides references to different frame types used by the library.
- * @description his class is used to severely reduce the number of times these types are created in
+ * @description This class is used to severely reduce the number of times these types are created in
  *     {@see Id3v2Tag}, greatly improving the speed at which warm files are read. It is, however,
  *     not necessary for external users to use this class. While the library may use
  *     `getTextAsString(FrameType.TIT2);` an external user could use `tag.getTextAsString("TIT2");`
