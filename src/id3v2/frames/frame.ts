@@ -16,6 +16,9 @@ export enum FrameClassType {
     SynchronizedLyricsFrame,
     TermsOfUseFrame,
     TextInformationFrame,
+    UniqueFileIdentifierFrame,
+    UnknownFrame,
+    UnsynchronizedLyricsFrame,
     UserTextInformationFrame,
 }
 

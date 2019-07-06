@@ -115,7 +115,7 @@ export default class PopularimeterFrame extends Frame {
     // #endregion
 
     /**
-     * Gets a popularimeter frame frrom a specified tag, optionally creating it if it does not
+     * Gets a popularimeter frame from a specified tag, optionally creating it if it does not
      * exist.
      * @param tag Object to search in
      * @param user User email to use to match the frame in the {@paramref tag}

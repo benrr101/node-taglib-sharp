@@ -1,4 +1,4 @@
-import * as BigInt from "big-integer"
+import * as BigInt from "big-integer";
 
 export class Guards {
     public static between(value: number, minValue: number, maxValue: number, name: string): void {

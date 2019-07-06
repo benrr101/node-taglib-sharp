@@ -179,6 +179,45 @@ export class ByteVector {
 
     private constructor() { }
 
+    /**
+     * Creates a {@see ByteVector} from a collection of byte vectors. This method is better to use
+     * when a known quantity of byte vectors will be concatenated together, since doing multiple
+     * calls to {@see ByteVector.addByteVector} results in the entire byte vector being copied for
+     * each call.
+     * @param vectors ByteVectors or byte arrays to concatenate together into a new {@see ByteVector}
+     * @returns ByteVector Single byte vector with the contents of the byte vectors in
+     *     {@paramref vectors} concatenated together
+     */
+    // @TODO Remove usages of .addX when this can be substituted
+    public static concatenate(... vectors: Array<Uint8Array|ByteVector|number>): ByteVector {
+        // Get the length of the vector we need to create
+        const totalLength = vectors.reduce((p, bv) => p + (<any> bv).length || 1, 0);
+
+        // Create a single big vector and copy the contents into it
+        const result = ByteVector.fromSize(totalLength);
+        let currentPosition = 0;
+        for (const v of vectors) {
+            if ((<any> v).length === undefined) {
+                // We were given a single byte
+                const byte = <number> v;
+                Guards.byte(byte, "Byte values");
+                result.data[currentPosition] = byte;
+                currentPosition += 1;
+            } else {
+                // We were given an array of bytes
+                const vector = <Uint8Array|ByteVector> v;
+                for (let i = 0; i < vector.length; i++) {
+                    result.data[currentPosition + i] = (<any> vector).get
+                        ? (<ByteVector> vector).get(i)
+                        : (<Uint8Array> vector)[i];
+                }
+                currentPosition += vector.length;
+            }
+        }
+
+        return result;
+    }
+
     public static empty(): ByteVector {
         return this.fromSize(0);
     }
@@ -189,7 +228,11 @@ export class ByteVector {
      * @param length Number of bytes to read
      * @param isReadOnly If `true` then the ByteVector will be read only
      */
-    public static fromByteArray(data: Uint8Array, length: number = data.length, isReadOnly: boolean = false): ByteVector {
+    public static fromByteArray(
+        data: Uint8Array,
+        length: number = data.length,
+        isReadOnly: boolean = false
+    ): ByteVector {
         if (!data) {
             throw new Error("Argument Null Exception: data was not provided");
         }
@@ -215,7 +258,7 @@ export class ByteVector {
         if (!original) {
             throw new Error("Argument null exception: original was not provided");
         }
-        return ByteVector.fromByteArray(original._data, isReadOnly);
+        return ByteVector.fromByteArray(original._data, original.length, isReadOnly);
     }
 
     /**
@@ -306,7 +349,7 @@ export class ByteVector {
             byteArray[outputIndex] = byteValue;
         }
 
-        return ByteVector.fromByteArray(byteArray, isReadOnly);
+        return ByteVector.fromByteArray(byteArray, byteArray.length, isReadOnly);
     }
 
     /**
@@ -321,7 +364,7 @@ export class ByteVector {
 
         // NOTE: We are doing this with read file b/c it removes the headache of working with streams
         const fileBuffer = fs.readFileSync(path);
-        return ByteVector.fromByteArray(fileBuffer, isReadOnly);
+        return ByteVector.fromByteArray(fileBuffer, fileBuffer.length, isReadOnly);
     }
 
     /**
@@ -494,7 +537,7 @@ export class ByteVector {
             byteArray[outputIndex] = tensDigit * 16 + onesDigit;
         }
 
-        return ByteVector.fromByteArray(byteArray, isReadOnly);
+        return ByteVector.fromByteArray(byteArray, byteArray.length, isReadOnly);
     }
 
     /**
@@ -1018,7 +1061,7 @@ export class ByteVector {
     public split(separator: ByteVector, byteAlign: number = 1, max: number = 0): ByteVector[] {
         Guards.truthy(separator, "separator");
         if (!Number.isSafeInteger(byteAlign) || byteAlign < 1) {
-            throw new Error("Argument out of range: byteAlign must be at least 1")
+            throw new Error("Argument out of range: byteAlign must be at least 1");
         }
 
         const list: ByteVector[] = [];
