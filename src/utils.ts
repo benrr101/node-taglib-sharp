@@ -25,7 +25,7 @@ export class Guards {
         }
     }
 
-    public static truthy(value: object, name: string): void {
+    public static truthy(value: object|string, name: string): void {
         if (!value) {
             throw new Error(`Argument null: ${name} was not provided`);
         }

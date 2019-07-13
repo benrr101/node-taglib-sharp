@@ -19,7 +19,9 @@ export enum FrameClassType {
     UniqueFileIdentifierFrame,
     UnknownFrame,
     UnsynchronizedLyricsFrame,
+    UrlLinkFrame,
     UserTextInformationFrame,
+    UserUrlLinkFrame
 }
 
 export abstract class Frame {
