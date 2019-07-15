@@ -599,6 +599,12 @@ export class ByteVector {
 
     // #region Public Methods
 
+    public *[Symbol.iterator](): Iterator<number> {
+        for (const b of this._data) {
+            yield b;
+        }
+    }
+
     public static getTextDelimiter(type: StringType): ByteVector {
         return type === StringType.UTF16 || type === StringType.UTF16BE || type === StringType.UTF16LE
             ? ByteVector._td2
@@ -667,6 +673,7 @@ export class ByteVector {
     }
 
     public contains(byte: number): boolean {
+        Guards.byte(byte, "byte");
         return this._data.indexOf(byte) >= 0;
     }
 

@@ -56,6 +56,7 @@ export default class AttachmentFrame extends Frame implements ILazy, IPicture {
      * @param header Header of the frame found at {@paramref offset} in the data
      * @param version ID3v2 version the raw frame is encoded in
      */
+    // @TODO Standardize on fromOffsetRawData
     public static fromDataWithHeader(
         data: ByteVector,
         offset: number,
