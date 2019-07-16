@@ -8,6 +8,7 @@ import {Guards} from "../../utils";
 export enum FrameClassType {
     AttachmentFrame,
     CommentsFrame,
+    EventTimeCodeFrame,
     MusicCdIdentiferFrame,
     PlayCountFrame,
     PopularimeterFrame,

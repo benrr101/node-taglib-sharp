@@ -3,7 +3,7 @@ import {ByteVector, StringType} from "../byteVector";
 import {Tag} from "../tag";
 import {Frame, FrameClassType} from "./frames/frame";
 import {Guards} from "../utils";
-
+import ExtendedHeader from "./extendedHeader";
 
 export default class Id3v2Tag extends Tag {
     private static _defaultEncoding: StringType = StringType.UTF8;

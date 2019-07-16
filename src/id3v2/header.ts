@@ -1,10 +1,10 @@
+import CorruptFileError from "../corruptFileError";
 import Footer from "./footer";
 import HeaderFlags from "./headerFlags";
 import Id3v2Tag from "./id3v2Tag";
 import SyncData from "./syncData";
 import {ByteVector} from "../byteVector";
 import {Guards} from "../utils";
-import CorruptFileError from "../corruptFileError";
 
 export default class Header {
     private static readonly _size: number = 10;

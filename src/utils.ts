@@ -13,6 +13,12 @@ export class Guards {
         }
     }
 
+    public static int(value: number, name: string): void {
+        if (!Number.isSafeInteger(value)) {
+            throw new Error(`Argument out of range: ${name} must be a 32-bit integer`);
+        }
+    }
+
     public static notNullOrUndefined(value: any, name: string): void {
         if (value === undefined || value === null) {
             throw new Error(`Argument null: ${name} was not provided`);

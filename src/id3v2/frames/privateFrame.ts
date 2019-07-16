@@ -1,10 +1,10 @@
+import CorruptFileError from "../../corruptFileError";
 import Id3v2Tag from "../id3v2Tag";
 import FrameTypes from "../frameTypes";
 import {ByteVector, StringType} from "../../byteVector";
 import {Frame, FrameClassType} from "./frame";
 import {Id3v2FrameHeader} from "./frameHeader";
 import {Guards} from "../../utils";
-import CorruptFileError from "../../corruptFileError";
 
 /**
  * This class extends {@see frame} implementing support for ID3v2 private (PRIV) frames.
