@@ -132,7 +132,7 @@ export default class UniqueFileIdentifierFrame extends Frame {
 
     /** @inheritDoc */
     protected renderFields(version: number): ByteVector {
-        return ByteVector.fromByteVectors(
+        return ByteVector.concatenate(
             ByteVector.fromString(this.owner, StringType.Latin1),
             ByteVector.getTextDelimiter(StringType.Latin1),
             this.identifier

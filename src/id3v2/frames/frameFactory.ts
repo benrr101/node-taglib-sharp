@@ -19,6 +19,7 @@ import TermsOfUseFrame from "./termsOfUseFrame";
 import PrivateFrame from "./privateFrame";
 import {UrlLinkFrame, UserUrlLinkFrame} from "./urlLinkFrame";
 import EventTimeCodeFrame from "./eventTimeCodeFrame";
+import {NotImplementedError} from "../../errors";
 
 const customFrameCreators: Array<(data: ByteVector, offset: number, header: Id3v2FrameHeader, version: number) => Frame>
     = [];
@@ -104,12 +105,12 @@ export default {
 
         // TODO: Support compression
         if ((header.flags & Id3v2FrameFlags.Compression) > 0) {
-            throw new Error("Compression is not implemented");
+            throw new NotImplementedError("Compression is not supported");
         }
 
         // TODO: Support encryption
         if ((header.flags & Id3v2FrameFlags.Encryption) > 0) {
-            throw new Error("Encryption is not supported");
+            throw new NotImplementedError("Encryption is not supported");
         }
 
         // Try to find a custom creator

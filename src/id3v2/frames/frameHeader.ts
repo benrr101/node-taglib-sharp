@@ -1,7 +1,7 @@
-import CorruptFileError from "../../corruptFileError";
 import FrameType from "../frameTypes";
 import SyncData from "../syncData";
 import {ByteVector, StringType} from "../../byteVector";
+import {CorruptFileError, NotImplementedError} from "../../errors";
 import {Guards} from "../../utils";
 
 export enum Id3v2FrameFlags {
@@ -450,7 +450,7 @@ export class Id3v2FrameHeader {
         const id = this.convertId(this._frameId, version, true);
 
         if (!id) {
-            throw new Error("Not implemented.");
+            throw new NotImplementedError();
         }
         data.addByteVector(id);
 
@@ -474,7 +474,7 @@ export class Id3v2FrameHeader {
                 break;
 
             default:
-                throw new Error("Not implemented exception: Unsuppoted tag version.");
+                throw new NotImplementedError("Unsuppoted tag version.");
         }
 
         return data;

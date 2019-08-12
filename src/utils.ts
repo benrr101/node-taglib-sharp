@@ -73,3 +73,7 @@ export class ArrayUtils {
         }
     }
 }
+
+export class NumberUtils {
+
+}

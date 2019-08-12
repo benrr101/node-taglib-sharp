@@ -1,8 +1,8 @@
 import * as BigInt from "big-integer";
-import CorruptFileError from "../../corruptFileError";
 import FrameTypes from "../frameTypes";
 import Id3v2Tag from "../id3v2Tag";
 import {ByteVector, StringType} from "../../byteVector";
+import {CorruptFileError} from "../../errors";
 import {Frame, FrameClassType} from "./frame";
 import {Id3v2FrameHeader} from "./frameHeader";
 import {Guards} from "../../utils";

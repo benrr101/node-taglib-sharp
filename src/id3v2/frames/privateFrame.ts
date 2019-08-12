@@ -1,7 +1,7 @@
-import CorruptFileError from "../../corruptFileError";
 import Id3v2Tag from "../id3v2Tag";
 import FrameTypes from "../frameTypes";
 import {ByteVector, StringType} from "../../byteVector";
+import {CorruptFileError, NotImplementedError} from "../../errors";
 import {Frame, FrameClassType} from "./frame";
 import {Id3v2FrameHeader} from "./frameHeader";
 import {Guards} from "../../utils";
@@ -145,7 +145,7 @@ export default class PrivateFrame extends Frame {
     protected renderFields(version: number): ByteVector {
         Guards.byte(version, "version");
         if (version < 3) {
-            throw new Error("Not implemented.");
+            throw new NotImplementedError();
         }
 
         const v = ByteVector.fromString(this.owner, StringType.Latin1);

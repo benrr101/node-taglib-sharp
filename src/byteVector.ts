@@ -1460,7 +1460,7 @@ export class ByteVector {
             bytes[offset] = (value >> (i * 8) & 0xFF);
         }
 
-        return ByteVector.fromByteArray(bytes, isReadOnly);
+        return ByteVector.fromByteArray(bytes, undefined, isReadOnly);
     }
 
     private static getIConvEncoding(type: StringType, bom: ByteVector): IConvEncoding {

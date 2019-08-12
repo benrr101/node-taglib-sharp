@@ -1,9 +1,10 @@
-import CorruptFileError from "../../corruptFileError";
 import Id3v2Tag from "../id3v2Tag";
 import SyncData from "../syncData";
 import {ByteVector, StringType} from "../../byteVector";
+import {CorruptFileError} from "../../errors";
 import {Id3v2FrameFlags, Id3v2FrameHeader} from "./frameHeader";
 import {Guards} from "../../utils";
+import {NotImplementedError} from "../../errors";
 
 export enum FrameClassType {
     AttachmentFrame,
@@ -164,11 +165,11 @@ export abstract class Frame {
         }
         // @FIXME: Implement compression
         if ((this.flags & Id3v2FrameFlags.Desynchronized) !== 0) {
-            throw new Error("Not implemented: Compression is not yet supported");
+            throw new NotImplementedError("Compression is not yet supported");
         }
         // @FIXME: Implement encryption
         if ((this.flags & Id3v2FrameFlags.Encryption) !== 0) {
-            throw new Error("Not implemented: Encryption is not yet supported");
+            throw new NotImplementedError("Encryption is not yet supported");
         }
         if ((this.flags & Id3v2FrameFlags.Desynchronized) !== 0) {
             SyncData.unsyncByteVector(fieldData);
@@ -253,12 +254,12 @@ export abstract class Frame {
 
         // @FIXME: Implement encryption
         if ((this.flags & Id3v2FrameFlags.Encryption) !== 0) {
-            throw new Error("Not implemented: Encryption is not supported");
+            throw new NotImplementedError("Encryption is not supported");
         }
 
         // @FIXME: Implement complression
         if ((this.flags & Id3v2FrameFlags.Compression) !== 0) {
-            throw new Error("Not implemented: Compression is not supported");
+            throw new NotImplementedError("Compression is not supported");
         }
 
         return data;

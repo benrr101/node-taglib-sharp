@@ -1,8 +1,8 @@
-import CorruptFileError from "../../corruptFileError";
 import FrameType from "../frameTypes";
 import Id3v2Tag from "../id3v2Tag";
 import ILazy from "../../iLazy";
 import {ByteVector, StringType} from "../../byteVector";
+import {CorruptFileError} from "../../errors";
 import {IFileAbstraction} from "../../fileAbstraction";
 import {Frame, FrameClassType} from "./frame";
 import {Id3v2FrameHeader} from "./frameHeader";
