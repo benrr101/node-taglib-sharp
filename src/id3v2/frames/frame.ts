@@ -1,3 +1,4 @@
+import FrameFactory from "./frameFactory";
 import Id3v2Tag from "../id3v2Tag";
 import SyncData from "../syncData";
 import {ByteVector, StringType} from "../../byteVector";
@@ -126,6 +127,20 @@ export abstract class Frame {
 
     // #endregion
 
+    /**
+     * Creates a deep copy of the current instance.
+     * This method is implemented by rendering the current instance as an ID3v2.4 frame and using
+     * {@see FrameFactory.createFrame} to create a new frame. As such, this method should be
+     * overridden by child classes.
+     */
+    public clone(): Frame {
+        return FrameFactory.createFrame(this.render(4), undefined, 0, 4, false).frame;
+    }
+
+    /**
+     * Renders the current instance, encoded in a specified ID3v2 version.
+     * @param version Version of ID3v2 to use when encoding the current instance
+     */
     public render(version: number) {
         Guards.byte(version, "version");
 

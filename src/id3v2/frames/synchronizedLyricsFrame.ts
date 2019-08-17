@@ -33,6 +33,13 @@ export class SynchronizedText {
         this.text = text;
         this.time = time;
     }
+
+    /**
+     * Creates a copy of this instance.
+     */
+    public clone(): SynchronizedText {
+        return new SynchronizedText(this.time, this.text);
+    }
 }
 
 /**
@@ -273,6 +280,19 @@ export class SynchronizedLyricsFrame extends Frame {
         }
 
         return bestFrame;
+    }
+
+    /** @inheritDoc */
+    public clone(): Frame {
+        const frame = SynchronizedLyricsFrame.fromInfo(
+            this.description,
+            this._language,
+            this.textType,
+            this.textEncoding
+        );
+        frame.format = this.format;
+        frame._text = this._text.map((i) => i.clone());
+        return frame;
     }
 
     // #endregion

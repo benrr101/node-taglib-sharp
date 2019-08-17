@@ -33,10 +33,10 @@ import {Guards} from "../../utils";
  *   for the publisher.
  */
 export class UrlLinkFrame extends Frame {
-    private _encoding: StringType = StringType.Latin1;
-    private _rawData: ByteVector;
-    private _rawVersion: number;
-    private _textFields: string[] = [];
+    protected _encoding: StringType = StringType.Latin1;
+    protected _rawData: ByteVector;
+    protected _rawVersion: number;
+    protected _textFields: string[] = [];
 
     // #region Constructors
 
@@ -157,6 +157,17 @@ export class UrlLinkFrame extends Frame {
         // Create new frame
         frame = UrlLinkFrame.fromIdentity(ident);
         tag.addFrame(frame);
+        return frame;
+    }
+
+    /** @inheritDoc */
+    public clone(): Frame {
+        const frame = UrlLinkFrame.fromIdentity(this.frameId);
+        frame._textFields = this._textFields.slice();
+        if (this._rawData) {
+            frame._rawData = ByteVector.fromByteVector(this._rawData);
+        }
+        frame._rawVersion = this._rawVersion;
         return frame;
     }
 
@@ -378,6 +389,18 @@ export class UserUrlLinkFrame extends UrlLinkFrame {
         // Create new frame
         frame = UserUrlLinkFrame.fromDescription(description);
         tag.addFrame(frame);
+        return frame;
+    }
+
+    /** @inheritDoc */
+    public clone(): Frame {
+        const frame = UserUrlLinkFrame.fromDescription(null);
+        frame._encoding = this._encoding;
+        frame._textFields = this._textFields.slice();
+        if (this._rawData) {
+            frame._rawData = ByteVector.fromByteVector(this._rawData);
+        }
+        frame._rawVersion = this._rawVersion;
         return frame;
     }
 

@@ -125,6 +125,14 @@ export default class EventTimeCodeFrame extends Frame {
     }
 
     /** @inheritDoc */
+    public clone(): Frame {
+        const frame = new EventTimeCodeFrame(this._header);
+        frame.timestampFormat = this.timestampFormat;
+        frame.events = this.events.map((i) => i.clone());
+        return frame;
+    }
+
+    /** @inheritDoc */
     protected parseFields(data: ByteVector, version: number): void {
         Guards.truthy(data, "data");
         Guards.byte(version, "version");

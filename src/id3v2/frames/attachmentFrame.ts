@@ -252,6 +252,29 @@ export default class AttachmentFrame extends Frame implements ILazy, IPicture {
 
     // #region Public Methods
 
+    /** @inheritDoc */
+    public clone(): Frame {
+        if (this._file) {
+            this.load();
+        }
+
+        const frame = new AttachmentFrame(new Id3v2FrameHeader(FrameType.APIC, 4));
+        frame._encoding = this._encoding;
+        frame._mimeType = this._mimeType;
+        frame.type = this._type;
+        frame._filename = this._filename;
+        frame._rawVersion = this._rawVersion;
+
+        if (this._data) {
+            frame._data = ByteVector.fromByteVector(this._data);
+        }
+        if (this._rawData) {
+            frame._data = ByteVector.fromByteVector(this._rawData);
+        }
+
+        return frame;
+    }
+
     /**
      * Get a specified attachment frame from the specified tag, optionally creating it if it does
      * not exist.

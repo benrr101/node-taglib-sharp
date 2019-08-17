@@ -176,6 +176,13 @@ export default class TermsOfUseFrame extends Frame {
         return bestFrame;
     }
 
+    /** @inheritDoc */
+    public clone(): Frame {
+        const frame = TermsOfUseFrame.fromLanguageAndEncoding(this._language, this.textEncoding);
+        frame.text = this.text;
+        return frame;
+    }
+
     /**
      * Returns a string representation of the frame.
      */

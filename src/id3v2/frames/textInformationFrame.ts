@@ -129,10 +129,10 @@ import {Guards, StringComparison} from "../../utils";
  */
 export class TextInformationFrame extends Frame {
     protected _encoding: StringType = Id3v2Tag.defaultEncoding;
-    private _rawData: ByteVector;
-    private _rawEncoding: StringType = StringType.Latin1;
-    private _rawVersion: number;
-    private _textFields: string[] = [];
+    protected _rawEncoding: StringType = StringType.Latin1;
+    protected _rawData: ByteVector;
+    protected _rawVersion: number;
+    protected _textFields: string[] = [];
 
     // #region Constructors
 
@@ -268,6 +268,17 @@ export class TextInformationFrame extends Frame {
         // Create new frame
         frame = TextInformationFrame.fromIdentifier(ident, encoding);
         tag.addFrame(frame);
+        return frame;
+    }
+
+    /** @inheritDoc */
+    public clone(): Frame {
+        const frame = TextInformationFrame.fromIdentifier(this.frameId, this._encoding);
+        frame._textFields = this._textFields.slice();
+        if (this._rawData) {
+            frame._rawData = ByteVector.fromByteVector(this._rawData);
+        }
+        frame._rawVersion = this._rawVersion;
         return frame;
     }
 
@@ -623,6 +634,17 @@ export class UserTextInformationFrame extends TextInformationFrame {
         // Create a new frame
         frame = UserTextInformationFrame.fromDescription(description, type);
         tag.addFrame(frame);
+        return frame;
+    }
+
+    /** @inheritDoc */
+    public clone(): Frame {
+        const frame = UserTextInformationFrame.fromDescription(undefined, this._encoding);
+        frame._textFields = this._textFields.slice();
+        if (this._rawData) {
+            frame._rawData = ByteVector.fromByteVector(this._rawData);
+        }
+        frame._rawVersion = this._rawVersion;
         return frame;
     }
 

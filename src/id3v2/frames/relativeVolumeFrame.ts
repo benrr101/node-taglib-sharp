@@ -176,6 +176,15 @@ export class RelativeVolumeFrame extends Frame {
 
     // #region Public Methods
 
+    /** @inheritDoc */
+    public clone(): Frame {
+        const frame = RelativeVolumeFrame.fromIdentification(this.identification);
+        for (let i = 0; i < 9; i++) {
+            frame._channels[i] = this._channels[i];
+        }
+        return frame;
+    }
+
     /**
      * Gets a specified volume adjustment frame from the speicifed tag, optionally creating it if
      * it does not exist.

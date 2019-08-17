@@ -23,4 +23,11 @@ export default class EventTimeCode {
 
     public get eventType(): EventType { return this._eventType; }
     public set eventType(value: EventType) { this._eventType = value; }
+
+    /**
+     * Creates a copy of this instance
+     */
+    public clone(): EventTimeCode {
+        return new EventTimeCode(this.eventType, this.time);
+    }
 }

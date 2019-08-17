@@ -120,6 +120,15 @@ export default class UniqueFileIdentifierFrame extends Frame {
     }
 
     /** @inheritDoc */
+    public clone(): Frame {
+        const frame = new UniqueFileIdentifierFrame(new Id3v2FrameHeader(FrameTypes.UFID, 4));
+        if (this.identifier) {
+            frame.identifier = ByteVector.fromByteVector(this.identifier);
+        }
+        return frame;
+    }
+
+    /** @inheritDoc */
     protected parseFields(data: ByteVector, version: number): void {
         const fields = data.split(ByteVector.getTextDelimiter(StringType.Latin1));
         if (fields.length !== 2) {

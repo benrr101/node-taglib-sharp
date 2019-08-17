@@ -139,6 +139,14 @@ export default class PopularimeterFrame extends Frame {
     }
 
     /** @inheritDoc */
+    public clone(): Frame {
+        const frame = new PopularimeterFrame(new Id3v2FrameHeader(FrameTypes.POPM, 4));
+        frame.playCount = this.playCount;
+        frame.rating = this.rating;
+        return frame;
+    }
+
+    /** @inheritDoc */
     protected parseFields(data: ByteVector, version: number): void {
         const delim = ByteVector.getTextDelimiter(StringType.Latin1);
 

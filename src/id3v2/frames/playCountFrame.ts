@@ -100,6 +100,13 @@ export default class PlayCountFrame extends Frame {
     }
 
     /** @inheritDoc */
+    public clone(): Frame {
+        const frame = new PlayCountFrame(new Id3v2FrameHeader(FrameTypes.PCNT, 4));
+        frame.playCount = this.playCount;
+        return frame;
+    }
+
+    /** @inheritDoc */
     protected parseFields(data: ByteVector, version: number) {
         this.playCount = data.toULong();
     }

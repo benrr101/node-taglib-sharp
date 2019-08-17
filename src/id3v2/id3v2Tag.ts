@@ -25,7 +25,8 @@ export default class Id3v2Tag extends Tag {
     private static _defaultVersion: number = 3;
     private static _forceDefaultEncoding: boolean = false;
     private static _forceDefaultVersion: boolean = false;
-    private static _language: string = undefined;       // @TODO: Use the os-locale module to supply a lazily loaded "default" locale
+    private static _language: string = undefined;       // @TODO: Use the os-locale module to supply a
+                                                        // lazily loaded "default" locale
     private static _useNumericGenres: boolean = true;   // @TODO: DO WE HAVE TO???
 
     private _extendedHeader: ExtendedHeader;
@@ -999,7 +1000,7 @@ export default class Id3v2Tag extends Tag {
         let tdat: TextInformationFrame;
         let time: TextInformationFrame;
 
-        while(frameDataPosition < frameDataEndPosition) {
+        while (frameDataPosition < frameDataEndPosition) {
             let frame: Frame;
 
             try {
@@ -1147,7 +1148,7 @@ export default class Id3v2Tag extends Tag {
 
         // TXXX frames support multi-value strings, join them up and return only the text from the
         // frame
-        const result = frame ? frame.text.join(";");        // TODO: Consider escaping ';' before joining?
+        const result = frame ? frame.text.join(";") : undefined;        // TODO: Consider escaping ';' before joining?
         return result || undefined;
     }
 
@@ -1178,7 +1179,7 @@ export default class Id3v2Tag extends Tag {
         }
     }
 
-    private setUfidText(owner: string, text: string): string {
+    private setUfidText(owner: string, text: string): void {
         // Get the UFID frame, create if necessary
         const frame = UniqueFileIdentifierFrame.get(this, owner, true);
 

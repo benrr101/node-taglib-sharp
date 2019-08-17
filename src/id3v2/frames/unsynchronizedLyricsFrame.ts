@@ -199,6 +199,13 @@ export default class UnsynchronizedLyricsFrame extends Frame {
         return bestFrame;
     }
 
+    /** @inheritDoc */
+    public clone(): Frame {
+        const frame = UnsynchronizedLyricsFrame.fromData(this._description, this._language, this.textEncoding);
+        frame._text = this._text;
+        return frame;
+    }
+
     public toString(): string {
         return this.text;
     }

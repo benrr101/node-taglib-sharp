@@ -83,6 +83,15 @@ export default class MusicCdIdentifierFrame extends Frame {
         return mcdiFrame;
     }
 
+    /** @inheritDoc */
+    public clone(): Frame {
+        const frame = new MusicCdIdentifierFrame(new Id3v2FrameHeader(FrameTypes.MCDI, 4));
+        if (this.data) {
+            frame.data = ByteVector.fromByteVector(this.data);
+        }
+        return frame;
+    }
+
     /**
      * Populates the values in the current instance.
      * @param data ByteVector containing the extracted field data.

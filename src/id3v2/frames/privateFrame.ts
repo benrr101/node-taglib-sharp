@@ -126,6 +126,15 @@ export default class PrivateFrame extends Frame {
     }
 
     /** @inheritDoc */
+    public clone(): Frame {
+        const frame = PrivateFrame.fromOwner(this.owner);
+        if (this.privateData) {
+            frame.privateData = ByteVector.fromByteVector(this.privateData);
+        }
+        return frame;
+    }
+
+    /** @inheritDoc */
     protected parseFields(data: ByteVector, version: number): void {
         Guards.truthy(data, "data");
         Guards.byte(version, "version");

@@ -219,6 +219,13 @@ export default class CommentsFrame extends Frame {
         return bestFrame;
     }
 
+    /** @inheritDoc */
+    public clone(): Frame {
+        const frame = CommentsFrame.fromDescription(this._description, this._language, this._textEncoding);
+        frame._text = this._text;
+        return frame;
+    }
+
     /**
      * Gets a string representation of the current instance.
      * @returns string String with the comment text
