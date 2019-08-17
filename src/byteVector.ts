@@ -1193,7 +1193,7 @@ export class ByteVector {
      *        converting.
      * @returns string String containing the converted bytes
      */
-    public toString(count: number, type: StringType = StringType.UTF8, offset: number = 0): string {
+    public toString(count: number = this.length, type: StringType = StringType.UTF8, offset: number = 0): string {
         if (!Number.isInteger(offset) || offset < 0 || offset > this.length) {
             throw new Error("Argument out of range exception: offset is invalid");
         }

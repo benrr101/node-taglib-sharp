@@ -105,16 +105,16 @@ export enum TagTypes {
 export abstract class Tag {
     public abstract tagTypes: TagTypes;
 
-    public get title(): string { return null; }
+    public get title(): string { return undefined; }
     public set title(value: string) { }
 
-    public get titleSort(): string { return null; }
+    public get titleSort(): string { return undefined; }
     public set titleSort(value: string) { }
 
-    public get subtitle(): string { return null; }
+    public get subtitle(): string { return undefined; }
     public set subtitle(value: string) { }
 
-    public get description(): string { return null; }
+    public get description(): string { return undefined; }
     public set description(value: string) { }
 
     public get performers(): string[] { return []; }
@@ -138,16 +138,16 @@ export abstract class Tag {
     public get composersSort(): string[] { return[]; }
     public set composersSort(value: string[]) { }
 
-    public get album(): string { return null; }
+    public get album(): string { return undefined; }
     public set album(value: string) { }
 
-    public get albumSort(): string { return null; }
+    public get albumSort(): string { return undefined; }
     public set albumSort(value: string) { }
 
-    public get comment(): string { return null; }
+    public get comment(): string { return undefined; }
     public set comment(value: string) { }
 
-    public get genres(): string[] { return null; }
+    public get genres(): string[] { return undefined; }
     public set genres(value: string[]) { }
 
     public get year(): number { return 0; }
@@ -165,55 +165,55 @@ export abstract class Tag {
     public get discCount(): number { return 0; }
     public set discCount(value: number) { }
 
-    public get lyrics(): string { return null; }
+    public get lyrics(): string { return undefined; }
     public set lyrics(value: string) { }
 
-    public get grouping(): string { return null; }
+    public get grouping(): string { return undefined; }
     public set grouping(value: string) { }
 
     public get beatsPerMinute(): number { return 0; }
     public set beatsPerMinute(value: number) { }
 
-    public get conductor(): string { return null}
+    public get conductor(): string { return undefined}
     public set conductor(value: string) { }
 
-    public get copyright(): string { return null; }
+    public get copyright(): string { return undefined; }
     public set copyright(value: string) { }
 
-    public get dateTagged(): Date|null { return null; }
-    public set dateTagged(value: Date|null) { }
+    public get dateTagged(): Date|undefined { return undefined; }
+    public set dateTagged(value: Date|undefined) { }
 
-    public get musicBrainzArtistId(): string { return null; }
+    public get musicBrainzArtistId(): string { return undefined; }
     public set musicBrainzArtistId(value: string) { }
 
-    public get musicBrainzReleaseGroupId(): string { return null; }
+    public get musicBrainzReleaseGroupId(): string { return undefined; }
     public set musicBrainzReleaseGroupId(value: string) { }
 
-    public get musicBrainzReleaseId(): string { return null; }
+    public get musicBrainzReleaseId(): string { return undefined; }
     public set musicBrainzReleaseId(value: string) { }
 
-    public get musicBrainzReleaseArtistId(): string { return null; }
+    public get musicBrainzReleaseArtistId(): string { return undefined; }
     public set musicBrainzReleaseArtistId(value: string) { }
 
-    public get musicBrainzTrackId(): string { return null; }
+    public get musicBrainzTrackId(): string { return undefined; }
     public set musicBrainzTrackId(value: string) { }
 
-    public get musicBrainzDiscId(): string { return null; }
+    public get musicBrainzDiscId(): string { return undefined; }
     public set musicBrainzDiscId(value: string) { }
 
-    public get musicIpId(): string { return null; }
+    public get musicIpId(): string { return undefined; }
     public set musicIpId(value: string) { }
 
-    public get amazonId(): string { return null; }
+    public get amazonId(): string { return undefined; }
     public set amazonId(value: string) { }
 
-    public get musicBrainzReleaseStatus(): string { return null; }
+    public get musicBrainzReleaseStatus(): string { return undefined; }
     public set musicBrainzReleaseStatus(value: string) { }
 
-    public get musicBrainzReleaseType(): string { return null; }
+    public get musicBrainzReleaseType(): string { return undefined; }
     public set musicBrainzReleaseType(value: string) { }
 
-    public get musicBrainzReleaseCountry(): string { return null; }
+    public get musicBrainzReleaseCountry(): string { return undefined; }
     public set musicBrainzReleaseCountry(value: string) { }
 
     public get replayGainTrackGain(): number { return NaN; }
@@ -228,16 +228,16 @@ export abstract class Tag {
     public get replayGainAlbumPeak(): number { return NaN; }
     public set replayGainAlbumPeak(value: number) { }
 
-    public get initialKey(): string { return null; }
+    public get initialKey(): string { return undefined; }
     public set initialKey(value: string) { }
 
-    public get remixedBy(): string { return null; }
+    public get remixedBy(): string { return undefined; }
     public set remixedBy(value: string) { }
 
-    public get publisher(): string { return null; }
+    public get publisher(): string { return undefined; }
     public set publisher(value: string) { }
 
-    public get isrc(): string { return null; }
+    public get isrc(): string { return undefined; }
     public set isrc(value: string) { }
 
     public get pictures(): IPicture[] { return []; }
@@ -269,13 +269,13 @@ export abstract class Tag {
 
     protected static firstInGroup(group: string[]) {
         return !group || group.length === 0
-            ? null
+            ? undefined
             : group[0];
     }
 
     protected static joinGroup(group: string[]) {
         return !group || group.length === 0
-            ? null
+            ? undefined
             : group.join("; ");
     }
 
