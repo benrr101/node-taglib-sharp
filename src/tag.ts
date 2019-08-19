@@ -265,7 +265,7 @@ export abstract class Tag {
 
     public get joinedComposers(): string { return Tag.joinGroup(this.composers); }
 
-    public get joinedGenres(): string { return joinGroup(this.genres); }
+    public get joinedGenres(): string { return Tag.joinGroup(this.genres); }
 
     protected static firstInGroup(group: string[]) {
         return !group || group.length === 0

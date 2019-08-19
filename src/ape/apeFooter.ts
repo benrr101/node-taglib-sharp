@@ -1,5 +1,5 @@
-import CorruptFileError from "../corruptFileError";
 import {ByteVector, StringType} from "../byteVector";
+import {CorruptFileError} from "../errors";
 import {Guards} from "../utils";
 
 /**

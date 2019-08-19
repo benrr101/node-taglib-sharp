@@ -1,6 +1,7 @@
 import * as path from "path";
 
 import {ByteVector} from "./byteVector";
+import {IFileAbstraction} from "./fileAbstraction";
 
 export enum PictureType {
     /**
@@ -213,14 +214,15 @@ export class Picture implements IPicture {
 
     private constructor() {}
 
-    public static FromPath(filepath: string): Picture {
-        if (!filepath) {
+    public static fromPath(filePath: string): Picture {
+        if (!filePath) {
             throw new Error("Argument null exception: path not provided");
         }
 
         const picture = new Picture();
-        picture.data = ;
-        picture.filename = path.basename(filepath);
+
+        picture.data = ByteVector.fromPath(filePath);
+        picture.filename = path.basename(filePath);
         picture.description = picture.filename;
         picture.mimeType = Picture.getMimeTypeFromExtension(picture.filename);
         picture.type = picture.mimeType.startsWith("image/") ? PictureType.FrontCover : PictureType.NotAPicture;
@@ -229,13 +231,13 @@ export class Picture implements IPicture {
 
     }
 
-    public static FromData(data: Buffer): Picture {
+    public static fromData(data: ByteVector): Picture {
         if (!data) {
             throw new Error("Argument null exception: data not provided");
         }
 
         const picture = new Picture();
-        picture.data = ;
+        picture.data = ByteVector.fromByteVector(data);
 
         const ext = Picture.getExtensionFromData(data);
         picture.mimeType = Picture.getMimeTypeFromExtension(ext);
@@ -250,15 +252,15 @@ export class Picture implements IPicture {
         return picture;
     }
 
-    public static FromFileAbstraction(abstraction: IFileAbstraction): Picture {
+    public static fromFileAbstraction(abstraction: IFileAbstraction): Picture {
         if (!abstraction) {
             throw new Error("Argument null exception: file abstraction not provided");
         }
 
         const picture = new Picture();
-        picture.data = ;
-        picture.filename = abstraction.Name;
-        picture.description = abstraction.Name;
+        picture.data = ByteVector.fromFileAbstraction(abstraction, false);
+        picture.filename = abstraction.name;
+        picture.description = abstraction.name;
 
         if (picture.filename && picture.filename.indexOf(".") >= 0) {
             picture.mimeType = Picture.getMimeTypeFromExtension(picture.filename);
@@ -278,7 +280,7 @@ export class Picture implements IPicture {
         return picture;
     }
 
-    public static FromPicture(original: IPicture): Picture {
+    public static fromPicture(original: IPicture): Picture {
         const picture = new Picture();
         picture.mimeType = original.mimeType;
         picture.type = original.type;
@@ -307,21 +309,21 @@ export class Picture implements IPicture {
 
     // #region Public Static Methods
 
-    public static getExtensionFromData(data: Buffer): string|null {
+    public static getExtensionFromData(data: ByteVector): string|null {
         let ext = null;
 
         // No picture unless it is corrupted, can fit in a file of less than 4 bytes
         if (data.length >= 4) {
-            if (data[1] === 0x50 && data[2] === 0x4E && data[3] === 0x47) {
+            if (data.get(1) === 0x50 && data.get(2) === 0x4E && data.get(3) === 0x47) {
                 // PNG
                 ext = ".png";
-            } else if (data[0] === 0x47 && data[1] === 0x49 && data[2] === 0x47) {
+            } else if (data.get(0) === 0x47 && data.get(1) === 0x49 && data.get(2) === 0x47) {
                 // GIF
                 ext = ".gif";
-            } else if (data[0] === 0x42 && data[1] === 0x4D) {
+            } else if (data.get(0) === 0x42 && data.get(1) === 0x4D) {
                 // BM
                 ext = ".bmp";
-            } else if (data[0] === 0xFF && data[1] === 0xD8 && data[2] === 0xFF && data[3] == 0xE0) {
+            } else if (data.get(0) === 0xFF && data.get(1) === 0xD8 && data.get(2) === 0xFF && data.get(3) === 0xE0) {
                 ext = ".jpg";
             }
         }

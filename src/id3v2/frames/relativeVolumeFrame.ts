@@ -68,7 +68,6 @@ class ChannelData {
 
     public get peakVolume(): number { return this._peakVolume; }
     public set peakVolume(value: number) {
-        Guards.double(value, "value");
         this._peakVolume = value;
         this._peakVolumeIndex = BigInt(value).multiply(512);
     }

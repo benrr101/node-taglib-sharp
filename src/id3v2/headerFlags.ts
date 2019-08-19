@@ -1,4 +1,4 @@
-export default enum HeaderFlags {
+export enum HeaderFlags {
     /**
      * The header contains no flags.
      */

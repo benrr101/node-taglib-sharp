@@ -533,7 +533,7 @@ export abstract class File {
         let readPosition = start + length;
         let writePosition = start;
         let buffer = ByteVector.fromSize(1);
-        while(buffer.length !== 0) {
+        while (buffer.length !== 0) {
             this._fileStream.position = readPosition;
             buffer = this.readBlock(bufferLength);
             readPosition += buffer.length;
@@ -603,7 +603,7 @@ export abstract class File {
 
                 readSize = Math.min(bufferOffset, File._bufferSize);
                 bufferOffset -= readSize;
-                if (readSize + pattern.length > file._bufferSize) {
+                if (readSize + pattern.length > File._bufferSize) {
                     bufferOffset += pattern.length;
                 }
 

@@ -1,5 +1,5 @@
-import CorruptFileError from "../corruptFileError";
 import {ByteVector, StringType} from "../byteVector";
+import {CorruptFileError} from "../errors";
 import {ILosslessAudioCodec, MediaTypes} from "../iCodec";
 import {Guards} from "../utils";
 

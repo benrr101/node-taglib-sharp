@@ -3,6 +3,7 @@ import * as IConv from "iconv-lite";
 import * as fs from "fs";
 import {Guards} from "./utils";
 import {Stream} from "./stream";
+import {IFileAbstraction} from "./fileAbstraction";
 
 // TODO: Assess if this is needed
 const AB2B = require("arraybuffer-to-buffer");
@@ -259,6 +260,20 @@ export class ByteVector {
             throw new Error("Argument null exception: original was not provided");
         }
         return ByteVector.fromByteArray(original._data, original.length, isReadOnly);
+    }
+
+    /**
+     * Creates a new instance by reading in the contents of a specified file abstraction.
+     * @param abstraction File abstraction to read
+     * @param isReadOnly Whether or not the resulting ByteVector is readonly
+     */
+    public static fromFileAbstraction(abstraction: IFileAbstraction, isReadOnly: boolean = false): ByteVector {
+        Guards.truthy(abstraction, "abstraction");
+
+        const stream = abstraction.readStream;
+        const output = this.fromInternalStream(stream, isReadOnly);
+        abstraction.closeStream(stream);
+        return output;
     }
 
     /**

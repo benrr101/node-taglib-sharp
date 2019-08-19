@@ -57,7 +57,7 @@ const assert = Chai.assert;
     public ReadOnly() {
         // Arrange, Act
         const data = new Uint8Array([0x0, 0x1, 0x2, 0x3, 0x4]);
-        const bv = ByteVector.fromByteArray(data, true);
+        const bv = ByteVector.fromByteArray(data, undefined, true);
 
         // Assert
         assert.isOk(bv);

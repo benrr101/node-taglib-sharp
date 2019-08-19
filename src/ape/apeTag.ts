@@ -500,12 +500,14 @@ export default class ApeTag extends Tag {
             const index = item.value.find(ByteVector.getTextDelimiter(StringType.UTF8));
             if (index < 0) { continue; }
 
-            const pic = new Picture(item.value.mid(index + 1));
+            const pic = Picture.fromData(item.value.mid(index + 1));
             pic.description = item.value.toString(StringType.UTF8, 0, index);
             pic.type = typeIndex < ApeTag._pictureItemNames.length - 1 ? typeIndex : PictureType.NotAPicture;
 
             pictures.push(pic);
         }
+
+        return pictures;
     }
     public set pictures(value: IPicture[]) {
         for (const itemName of ApeTag._pictureItemNames) {

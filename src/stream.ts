@@ -14,8 +14,8 @@ export enum SeekOrigin {
 export class Stream {
     private readonly _canWrite: boolean;
     private readonly _fd: number;
+    private _length: number;
     private _position: number;
-    // @TODO: Add length
 
     // #region Constructors
 
@@ -23,6 +23,7 @@ export class Stream {
         this._canWrite = canWrite;
         this._fd = fd;
         this._position = 0;
+        this._length = fs.fstatSync(fd).size;
     }
 
     public static createAsRead(path: string): Stream {
@@ -40,6 +41,8 @@ export class Stream {
     // #region Properties
 
     public get canWrite(): boolean { return this._canWrite; }
+
+    public get length(): number { return this._length; }
 
     public get position(): number { return this._position; }
     public set position(position: number) {
@@ -90,15 +93,22 @@ export class Stream {
         }
 
         fs.ftruncateSync(this._fd, length);
+        this._length = length;
     }
 
     public write(buffer: fs.BinaryData, bufferOffset: number, length: number): number {
         if (!this._canWrite) {
             throw new Error("Invalid operation: this stream is a read-only stream");
         }
-        // @TODO: When file is extended, change the length
+        const origLength = this._length;
+
         const bytes = fs.writeSync(this._fd, buffer, bufferOffset, length, this._position);
         this._position += bytes;
+
+        // If we wrote past the old end of the file, then the file has increased in size
+        if (this._position > origLength) {
+            this._length = this._position;
+        }
         return bytes;
     }
 

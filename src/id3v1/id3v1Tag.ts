@@ -1,6 +1,6 @@
-import CorruptFileError from "../corruptFileError";
 import Genres from "../genres";
 import {ByteVector, StringType} from "../byteVector";
+import {CorruptFileError} from "../errors";
 import {File, FileAccessMode} from "../file";
 import {Tag, TagTypes} from "../tag";
 import {Guards} from "../utils";
@@ -197,10 +197,10 @@ export default class Id3v1Tag extends Tag {
     // #region Private Helpers
 
     private parse(data: ByteVector): void {
-        this._title = this.parseString(data.mid(3, 30));
-        this._artist = this.parseString(data.mid(33, 30));
-        this._album = this.parseString(data.mid(63, 30));
-        this._year = this.parseString(data.mid(93, 4));
+        this._title = Id3v1Tag.parseString(data.mid(3, 30));
+        this._artist = Id3v1Tag.parseString(data.mid(33, 30));
+        this._album = Id3v1Tag.parseString(data.mid(63, 30));
+        this._year = Id3v1Tag.parseString(data.mid(93, 4));
 
         // Check for ID3v1.1
         // NOTE: ID3v1 does not support "track zero", this is not a bug in TagLib. Since a zeroed
@@ -208,16 +208,16 @@ export default class Id3v1Tag extends Tag {
         //     string, a value of zero must be assumed to be just that.
         if (data.get(125) === 0 && data.get(126) !== 0) {
             // ID3v1.1 detected
-            this._comment = this.parseString(data.mid(97, 28));
+            this._comment = Id3v1Tag.parseString(data.mid(97, 28));
             this._track = data.get(126);
         } else {
-            this._comment = this.parseString(data.mid(97, 30));
+            this._comment = Id3v1Tag.parseString(data.mid(97, 30));
         }
 
         this._genre = data.get(127);
     }
 
-    private parseString(data: ByteVector): string {
+    private static parseString(data: ByteVector): string {
         Guards.truthy(data, "data");
 
         const output = data.toString(StringType.Latin1).trim();

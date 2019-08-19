@@ -1,9 +1,9 @@
-import CorruptFileError from "../corruptFileError";
 import Header from "./header";
-import HeaderFlags from "./headerFlags";
 import Id3v2Tag from "./id3v2Tag";
 import SyncData from "./syncData";
 import {ByteVector} from "../byteVector";
+import {CorruptFileError} from "../errors";
+import {HeaderFlags} from "./headerFlags";
 import {Guards} from "../utils";
 
 export default class Footer {
