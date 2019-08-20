@@ -54,6 +54,20 @@ const assert = Chai.assert;
     }
 
     @test
+    public WithLength() {
+        // Arrange, Act
+        const data = new Uint8Array([0x0, 0x1, 0x2, 0x3, 0x4]);
+        const bv = ByteVector.fromByteArray(data, 3);
+
+        // Assert
+        assert.isOk(bv);
+        assert.strictEqual(bv.length, 3);
+        assert.isFalse(bv.isEmpty);
+        assert.isFalse(bv.isReadOnly);
+        assert.deepEqual(bv.data, data.slice(0, 3));
+    }
+
+    @test
     public ReadOnly() {
         // Arrange, Act
         const data = new Uint8Array([0x0, 0x1, 0x2, 0x3, 0x4]);

@@ -245,7 +245,7 @@ export class ByteVector {
 
         const vector = new ByteVector();
         vector._data = new Uint8Array(length);
-        vector._data.set(data.slice(0, length - 1));
+        vector._data.set(data.slice(0, length));
         vector._isReadOnly = isReadOnly;
         return vector;
     }
