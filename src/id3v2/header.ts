@@ -1,5 +1,4 @@
-import Footer from "./footer";
-import Id3v2Tag from "./id3v2Tag";
+import Id3v2TagSettings from "./id3v2TagSettings";
 import SyncData from "./syncData";
 import {ByteVector} from "../byteVector";
 import {CorruptFileError} from "../errors";
@@ -7,7 +6,6 @@ import {HeaderFlags} from "./headerFlags";
 import {Guards} from "../utils";
 
 export default class Header {
-    private static readonly _size: number = 10;
     private static readonly _fileIdentifier: ByteVector = ByteVector.fromString("ID3", undefined, undefined, true);
     private _flags: HeaderFlags;
     private _majorVersion: number;
@@ -20,7 +18,7 @@ export default class Header {
      */
     public constructor(data: ByteVector) {
         Guards.truthy(data, "data");
-        if (data.length < Header.size) {
+        if (data.length < Id3v2TagSettings.headerSize) {
             throw new CorruptFileError("Provided data is smaller than object size");
         }
         if (!data.startsWith(Header.fileIdentifier)) {
@@ -58,18 +56,13 @@ export default class Header {
     public static get fileIdentifier(): ByteVector { return Header._fileIdentifier; }
 
     /**
-     * Size of an ID3v2 header.
-     */
-    public static get size(): number { return Header._size; }
-
-    /**
      * Gets the complete size of the tag described by the current instance including the header
      * and footer.
      */
     public get completeTagSize(): number {
         return (this._flags & HeaderFlags.FooterPresent) > 0
-            ? this.tagSize + Header.size + Footer.size
-            : this.tagSize + Header.size;
+            ? this.tagSize + Id3v2TagSettings.headerSize + Id3v2TagSettings.footerSize
+            : this.tagSize + Id3v2TagSettings.headerSize;
     }
 
     /**
@@ -99,7 +92,7 @@ export default class Header {
      */
     public get majorVersion(): number {
         return this._majorVersion === 0
-            ? Id3v2Tag.defaultVersion
+            ? Id3v2TagSettings.defaultVersion
             : this._majorVersion;
     }
     /**

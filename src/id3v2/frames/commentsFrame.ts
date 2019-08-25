@@ -1,5 +1,5 @@
 import FrameTypes from "../frameTypes";
-import Id3v2Tag from "../id3v2Tag";
+import Id3v2TagSettings from "../id3v2TagSettings";
 import {ByteVector, StringType} from "../../byteVector";
 import {CorruptFileError} from "../../errors";
 import {Frame, FrameClassType} from "./frame";
@@ -18,7 +18,7 @@ export default class CommentsFrame extends Frame {
     private _description: string;
     private _language: string;
     private _text: string;
-    private _textEncoding: StringType = Id3v2Tag.defaultEncoding;
+    private _textEncoding: StringType = Id3v2TagSettings.defaultEncoding;
 
     // #region
 
@@ -35,7 +35,7 @@ export default class CommentsFrame extends Frame {
     public static fromDescription(
         description: string,
         language?: string,
-        encoding: StringType = Id3v2Tag.defaultEncoding
+        encoding: StringType = Id3v2TagSettings.defaultEncoding
     ): CommentsFrame {
         Guards.notNullOrUndefined(description, "description");
 
@@ -56,7 +56,12 @@ export default class CommentsFrame extends Frame {
      * @param header Header of the frame found at {@paramref data} in the data
      * @param version ID3v2 version the raw frame is encoded with. Must be positive 8-bit integer.
      */
-    public static fromOffsetRawData(data: ByteVector, offset: number, header: Id3v2FrameHeader, version: number): CommentsFrame {
+    public static fromOffsetRawData(
+        data: ByteVector,
+        offset: number,
+        header: Id3v2FrameHeader,
+        version: number
+    ): CommentsFrame {
         Guards.truthy(data, "data");
         Guards.uint(offset, "offset");
         Guards.truthy(header, "header");
@@ -138,32 +143,39 @@ export default class CommentsFrame extends Frame {
     // #endregion
 
     /**
-     * Gets a specified comments frame from the specified tag, optionally creating it if it does
-     * not exist.
-     * @param tag Object to search for comments frame
+     * Gets a comment frame that matched the provided parameters from the list of frames
+     * @param frames Frames to search for best matching frame
      * @param description Description of the comments frame to match
      * @param language Optional, ISO-639-2 language code to match
-     * @param create Whether or not to create and add a new frame to the tag if a match is not
-     *     found
      * @returns CommentsFrame Object containing the matching frame or `undefined` if a match was
-     *     not found and {@paramref create} is `false`.
+     *     not found
      */
-    public static get(tag: Id3v2Tag, description: string, language: string, create: boolean): CommentsFrame {
-        Guards.truthy(tag, "tag");
+    public static find(frames: CommentsFrame[], description: string, language?: string): CommentsFrame {
+        Guards.truthy(frames, "frames");
 
-        const commentFrames = tag.getFramesByClassType<CommentsFrame>(FrameClassType.CommentsFrame);
-        let commentFrame = commentFrames.find((f) => {
+        return frames.find((f) => {
             if (f.description !== description) { return false; }
             if (language && f.language !== language) { return false; }
             return true;
         });
+    }
 
-        if (commentFrame || !create) { return commentFrame; }
+    /**
+     * Gets all comment frames that match the provided parameters from the list of frames
+     * @param frames Frames to search
+     * @param description Description of the comments frame to match
+     * @param language Optional, ISO-639-2 language code to match
+     * @returns CommentsFrame[] Array of comments frames that match the provided parameters or an
+     *     empty array if none were found
+     */
+    public static findAll(frames: CommentsFrame[], description: string, language?: string): CommentsFrame[] {
+        Guards.truthy(frames, "frames");
 
-        // Create a new frame
-        commentFrame = CommentsFrame.fromDescription(description, language);
-        tag.addFrame(commentFrame);
-        return commentFrame;
+        return frames.filter((f) => {
+            if (f.description !== description) { return false; }
+            if (language && f.language !== language) { return false; }
+            return true;
+        });
     }
 
     /**
@@ -174,12 +186,12 @@ export default class CommentsFrame extends Frame {
      * * The first frame with a matching language
      * * The first frame with a matching description
      * * The first frame
-     * @param tag Object to search
+     * @param frames Frames to search for best matching frame
      * @param description Description to match
      * @param language ISO-639-2 language code to match
      */
-    public static getPreferred(tag: Id3v2Tag, description: string, language: string): CommentsFrame {
-        Guards.truthy(tag, "tag");
+    public static findPreferred(frames: CommentsFrame[], description: string, language?: string): CommentsFrame {
+        Guards.truthy(frames, "frames");
 
         // Original .NET comments:
         // This is weird, so bear with me. The best thing we can have is something straightforward
@@ -194,7 +206,7 @@ export default class CommentsFrame extends Frame {
         let bestValue = -1;
         let bestFrame: CommentsFrame;
 
-        for (const frame of tag.getFramesByClassType<CommentsFrame>(FrameClassType.CommentsFrame)) {
+        for (const frame of frames) {
             if (skipItunes && frame.description.startsWith("iTun")) {
                 continue;
             }

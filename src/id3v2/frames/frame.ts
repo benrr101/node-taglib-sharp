@@ -1,5 +1,4 @@
-import FrameFactory from "./frameFactory";
-import Id3v2Tag from "../id3v2Tag";
+import Id3v2TagSettings from "../id3v2TagSettings";
 import SyncData from "../syncData";
 import {ByteVector, StringType} from "../../byteVector";
 import {CorruptFileError} from "../../errors";
@@ -133,9 +132,8 @@ export abstract class Frame {
      * {@see FrameFactory.createFrame} to create a new frame. As such, this method should be
      * overridden by child classes.
      */
-    public clone(): Frame {
-        return FrameFactory.createFrame(this.render(4), undefined, 0, 4, false).frame;
-    }
+    public abstract clone(): Frame;
+      //  return FrameFactory.createFrame(this.render(4), undefined, 0, 4, false).frame;
 
     /**
      * Renders the current instance, encoded in a specified ID3v2 version.
@@ -212,8 +210,8 @@ export abstract class Frame {
     protected static correctEncoding(type: StringType, version: number): StringType {
         Guards.byte(version, "version");
 
-        if (Id3v2Tag.forceDefaultEncoding) {
-            type = Id3v2Tag.defaultEncoding;
+        if (Id3v2TagSettings.forceDefaultEncoding) {
+            type = Id3v2TagSettings.defaultEncoding;
         }
 
         return version < 4 && type === StringType.UTF8

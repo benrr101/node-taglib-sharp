@@ -1,4 +1,3 @@
-import Id3v2Tag from "../id3v2Tag";
 import FrameTypes from "../frameTypes";
 import {ByteVector, StringType} from "../../byteVector";
 import {Frame, FrameClassType} from "./frame";
@@ -96,27 +95,15 @@ export default class UniqueFileIdentifierFrame extends Frame {
     // #region Methods
 
     /**
-     * Gets a unique file identifier frame from a specified tag, optionally creating it if it does not
-     * exist.
-     * @param tag Object to search in
+     * Gets a unique file identifier frame from a list of frames
+     * @param frames List of frames to search
      * @param owner Owner to match
-     * @param create Whether or not to create an add a new frame to the tag if a match is not found
      * @returns PopularimeterFrame Frame containing the matching user, `undefined` if a match was
-     *     not found and {@paramref create} is `false`. A new frame is returned if
-     *     {@paramref create} is `true`.
+     *     not found
      */
-    public static get(tag: Id3v2Tag, owner: string, create: boolean): UniqueFileIdentifierFrame {
-        Guards.truthy(tag, "tag");
-
-        const frames = tag.getFramesByClassType<UniqueFileIdentifierFrame>(FrameClassType.UniqueFileIdentifierFrame);
-        let frame = frames.find((f) => f.owner === owner);
-
-        if (frame || !create) { return frame; }
-
-        // Create new frame
-        frame = UniqueFileIdentifierFrame.create(owner, undefined);
-        tag.addFrame(frame);
-        return frame;
+    public static find(frames: UniqueFileIdentifierFrame[], owner: string): UniqueFileIdentifierFrame {
+        Guards.truthy(frames, "frames");
+        return frames.find((f) => f.owner === owner);
     }
 
     /** @inheritDoc */

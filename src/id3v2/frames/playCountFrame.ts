@@ -1,6 +1,5 @@
 import * as BigInt from "big-integer";
 import FrameTypes from "../frameTypes";
-import Id3v2Tag from "../id3v2Tag";
 import {ByteVector} from "../../byteVector";
 import {Frame, FrameClassType} from "./frame";
 import {Id3v2FrameHeader} from "./frameHeader";
@@ -77,27 +76,6 @@ export default class PlayCountFrame extends Frame {
     }
 
     // #endregion
-
-    /**
-     * Gets a play count frame from a specified tag, optionally creating it if it does not exist.
-     * @param tag Object to search in
-     * @param create Whether or not to create an add a new frame to the tag if a match is not found
-     * @returns PlayCountFrame containing the matching frame or the frame that was created if
-     *     {@paramref create} is `true`
-     */
-    public static get(tag: Id3v2Tag, create: boolean): PlayCountFrame {
-        Guards.truthy(tag, "tag");
-
-        const playCountFrames = tag.getFramesByClassType<PlayCountFrame>(FrameClassType.PlayCountFrame);
-        let playCountFrame = playCountFrames.find(() => true);
-
-        if (playCountFrame || !create) { return playCountFrame; }
-
-        // Create new frame
-        playCountFrame = PlayCountFrame.fromEmpty();
-        tag.addFrame(playCountFrame);
-        return playCountFrame;
-    }
 
     /** @inheritDoc */
     public clone(): Frame {

@@ -19,15 +19,11 @@ import {Tag, TagTypes} from "../tag";
 import {TextInformationFrame, UserTextInformationFrame} from "./frames/textInformationFrame";
 import {UrlLinkFrame} from "./frames/urlLinkFrame";
 import {Guards} from "../utils";
+import Id3v2TagSettings from "./id3v2TagSettings";
 
 export default class Id3v2Tag extends Tag {
-    private static _defaultEncoding: StringType = StringType.UTF8;
-    private static _defaultVersion: number = 3;
-    private static _forceDefaultEncoding: boolean = false;
-    private static _forceDefaultVersion: boolean = false;
     private static _language: string = undefined;       // @TODO: Use the os-locale module to supply a
                                                         // lazily loaded "default" locale
-    private static _useNumericGenres: boolean = true;   // @TODO: DO WE HAVE TO???
 
     private _extendedHeader: ExtendedHeader;
     private _frameList: Frame[] = [];
@@ -41,59 +37,6 @@ export default class Id3v2Tag extends Tag {
     // #endregion
 
     // #region Properties
-
-    /**
-     * Gets the encoding to use when creating new frames.
-     */
-    public static get defaultEncoding(): StringType { return this._defaultEncoding; }
-    /**
-     * Sets the encoding to use when creating new frames.
-     * @param value Encoding to use when creating new frames
-     */
-    public static set defaultEncoding(value: StringType) { this._defaultEncoding = value; }
-
-    /**
-     * Gets the default version to use when creating new tags.
-     * If {@see forceDefaultEncoding} is `true` then all tags will be rendered with this version.
-     */
-    public static get defaultVersion(): number { return Id3v2Tag._defaultVersion; }
-    /**
-     * Sets the default version to use when creating new tags.
-     * If {@see forceDefaultEncoding} is `true` then all tags will be rendered with this version.
-     * @param value ID3v2 version to use. Must be 2, 3, or 4. The default for this library is 3
-     */
-    public static set defaultVersion(value: number) {
-        Guards.byte(value, "value");
-        Guards.between(value, 2, 4, "value");
-        Id3v2Tag._defaultVersion = value;
-    }
-
-    /**
-     * Gets whether or not to render all frames with the default encoding rather than their
-     * original encoding.
-     */
-    public static get forceDefaultEncoding(): boolean { return Id3v2Tag._forceDefaultEncoding; }
-    /**
-     * Sets whether or not to render all frames with the default encoding rather than their
-     * original encoding.
-     * @param value If `true` frames will be rendered using {@see defaultEncoding} rather than
-     *     their original encoding.
-     */
-    public static set forceDefaultEncoding(value: boolean) { Id3v2Tag._forceDefaultEncoding = value; }
-
-    /**
-     * Gets whether or not to save all tags in the default version rather than their original
-     * version.
-     */
-    public static get forceDefaultVersion(): boolean { return this._forceDefaultVersion; }
-    /**
-     * Sets whether or not to save all tags in the default version rather than their original
-     * version.
-     * @param value If `true`, tags will be saved in the version defined in {@see defaultVersion}
-     *     rather than their original format, with the exception of tags with footers which will
-     *     always be saved in version 4
-     */
-    public static set forceDefaultVersion(value: boolean) { this._forceDefaultVersion = value; }
 
     /**
      * Gets the ISO-639-2 language code to use when searching for and storing language specific
@@ -111,22 +54,6 @@ export default class Id3v2Tag extends Tag {
             ? "   "
             : value.substr(0, 3);
     }
-
-    /**
-     * Gets whether or not to use ID3v1 style numeric genres when possible.
-     * If `true`, the library will try looking up the numeric genre code when storing the value.
-     * for ID3v2.2 and ID3v2.3 "Rock" would be stored as "(17)" and for ID3v2.4, it would be
-     * stored as "17".
-     */
-    public static get useNumericGenres(): boolean { return this._useNumericGenres; }
-    /**
-     * Sets whether or not to use ID3v1 style numeric genres when possible.
-     * If `true`, the library will try looking up the numeric genre code when storing the value.
-     * for ID3v2.2 and ID3v2.3 "Rock" would be stored as "(17)" and for ID3v2.4, it would be
-     * stored as "17".
-     * @param value Whether or not to use genres with numeric values when values when possible
-     */
-    public static set useNumericGenres(value: boolean) { this._useNumericGenres = value; }
 
     /**
      * Gets the header flags applied to the current instance.
@@ -167,8 +94,8 @@ export default class Id3v2Tag extends Tag {
      * Gets the ID3v2 version for the current instance.
      */
     public get version(): number {
-        return Id3v2Tag.forceDefaultVersion
-            ? Id3v2Tag.defaultVersion
+        return Id3v2TagSettings.forceDefaultVersion
+            ? Id3v2TagSettings.defaultVersion
             : this._header.majorVersion;
     }
     /**
@@ -291,20 +218,32 @@ export default class Id3v2Tag extends Tag {
 
     /** @inheritDoc via COMM frame */
     get comment(): string {
-        const f = CommentsFrame.getPreferred(this, "", Id3v2Tag.language);
+        const frames = this.getFramesByClassType<CommentsFrame>(FrameClassType.CommentsFrame);
+        const f = CommentsFrame.findPreferred(frames, "", Id3v2Tag.language);
         return f ? f.toString() : undefined;
     }
     /** @inheritDoc via COMM frame */
     set comment(value: string) {
-        let frame: CommentsFrame;
+        const commentFrames = this.getFramesByClassType<CommentsFrame>(FrameClassType.CommentsFrame);
+
+        // Delete the "" comment frames that are in this language
+        // @TODO: Verify that only the frames in this language should be deleted
         if (!value) {
-            frame = CommentsFrame.getPreferred(this, "", Id3v2Tag.language);
-            while (frame) {
-                this.removeFrame(frame);
-                frame = CommentsFrame.getPreferred(this, "", Id3v2Tag.language);
+            const matchingFrames = CommentsFrame.findAll(commentFrames, "", Id3v2Tag.language);
+            for (const f of matchingFrames) {
+                this.removeFrame(f);
             }
             return;
         }
+
+        // Create or update the preferred comments frame
+        let frame = CommentsFrame.findPreferred(commentFrames, "", Id3v2Tag.language);
+        if (!frame) {
+            frame = CommentsFrame.fromDescription("", Id3v2Tag.language);
+            this.addFrame(frame);
+        }
+
+        frame.text = value;
     }
 
     /** @inheritDoc via TCON frame */
@@ -329,7 +268,7 @@ export default class Id3v2Tag extends Tag {
     }
     /** @inheritDoc via TCON frame */
     set genres(value: string[]) {
-        if (!value || !Id3v2Tag.useNumericGenres) {
+        if (!value || !Id3v2TagSettings.useNumericGenres) {
             this.setTextFrame(FrameTypes.TCON, ...value);
             return;
         }
@@ -394,25 +333,32 @@ export default class Id3v2Tag extends Tag {
 
     /** @inheritDoc via USLT frame */
     get lyrics(): string {
-        const frame = UnsynchronizedLyricsFrame.getPreferred(this, "", Id3v2Tag.language);
+        const frames = this.getFramesByClassType<UnsynchronizedLyricsFrame>(FrameClassType.UnsynchronizedLyricsFrame);
+        const frame = UnsynchronizedLyricsFrame.findPreferred(frames, "", Id3v2Tag.language);
         return frame ? frame.toString() : undefined;
     }
     /** @inheritDoc via USLT frame */
     set lyrics(value: string) {
-        let frame: UnsynchronizedLyricsFrame;
-        if (!value) {
-            frame = UnsynchronizedLyricsFrame.getPreferred(this, "", Id3v2Tag.language);
-            while (frame) {
-                this.removeFrame(frame);
-                frame = UnsynchronizedLyricsFrame.getPreferred(this, "", Id3v2Tag.language);
-            }
+        const frames = this.getFramesByClassType<UnsynchronizedLyricsFrame>(FrameClassType.UnsynchronizedLyricsFrame);
 
+        // Delete all unsynchronized lyrics frames in this language
+        // @TODO: Verify that deleting only this language is the correct behavior
+        if (!value) {
+            const matchFrames = UnsynchronizedLyricsFrame.findAll(frames, "", Id3v2Tag.language);
+            for (const f of matchFrames) {
+                this.removeFrame(f);
+            }
             return;
         }
 
-        frame = UnsynchronizedLyricsFrame.get(this, "", Id3v2Tag.language, true);
+        // Find or create the appropriate unsynchronized lyrics frame
+        let frame = UnsynchronizedLyricsFrame.find(frames, "", Id3v2Tag.language);
+        if (!frame) {
+            frame = UnsynchronizedLyricsFrame.fromData("", Id3v2Tag.language);
+            this.addFrame(frame);
+        }
         frame.text = value;
-        frame.textEncoding = Id3v2Tag.defaultEncoding;
+        frame.textEncoding = Id3v2TagSettings.defaultEncoding;
     }
 
     /** @inheritDoc via TIT1 frame */
@@ -728,9 +674,14 @@ export default class Id3v2Tag extends Tag {
     public getTextAsString(ident: ByteVector): string {
         Guards.truthy(ident, "ident");
 
-        const frame = ident.get(0) === "W".codePointAt(0)
-            ? UrlLinkFrame.get(this, ident, false)
-            : TextInformationFrame.getTextInformationFrame(this, ident, false);
+        let frame: Frame;
+        if (ident.get(0) === "W".codePointAt(0)) {
+            const frames = this.getFramesByClassType<UrlLinkFrame>(FrameClassType.UrlLinkFrame);
+            frame = UrlLinkFrame.findUrlLinkFrame(frames, ident);
+        } else {
+            const frames = this.getFramesByClassType<TextInformationFrame>(FrameClassType.TextInformationFrame);
+            frame = TextInformationFrame.findTextInformationFrame(frames, ident);
+        }
 
         const result = frame ? frame.toString() : undefined;
         return result || undefined;
@@ -943,13 +894,25 @@ export default class Id3v2Tag extends Tag {
         }
 
         if (ident.get(0) === "W".codePointAt(0)) {
-            const urlFrame = UrlLinkFrame.get(this, ident, true);
+            const frames = this.getFramesByClassType<UrlLinkFrame>(FrameClassType.UrlLinkFrame);
+            let urlFrame = UrlLinkFrame.findUrlLinkFrame(frames, ident);
+            if (!urlFrame) {
+                urlFrame = UrlLinkFrame.fromIdentity(ident);
+                this.addFrame(urlFrame);
+            }
+
             urlFrame.text = text;
-            urlFrame.textEncoding = Id3v2Tag.defaultEncoding;
+            urlFrame.textEncoding = Id3v2TagSettings.defaultEncoding;
         } else {
-            const frame = TextInformationFrame.getTextInformationFrame(this, ident, true);
+            const frames = this.getFramesByClassType<TextInformationFrame>(FrameClassType.TextInformationFrame);
+            let frame = TextInformationFrame.findTextInformationFrame(frames, ident);
+            if (!frame) {
+                frame = TextInformationFrame.fromIdentifier(ident);
+                this.addFrame(frame);
+            }
+
             frame.text = text;
-            frame.textEncoding = Id3v2Tag.defaultEncoding;
+            frame.textEncoding = Id3v2TagSettings.defaultEncoding;
         }
     }
 
@@ -1086,25 +1049,26 @@ export default class Id3v2Tag extends Tag {
 
         file.mode = FileAccessMode.Read;
 
-        if (position > file.length - Header.size) {
+        if (position > file.length - Id3v2TagSettings.headerSize) {
             throw new Error("Argument out of range: position must be less than the length of the file");
         }
 
         file.seek(position);
 
-        this._header = new Header(file.readBlock(Header.size));
+        this._header = new Header(file.readBlock(Id3v2TagSettings.headerSize));
 
         // If the tag size is 0, then this is an invalid tag. Tags must contain at least one frame.
         if (this._header.tagSize === 0) {
             return;
         }
 
-        position += Header.size;
+        position += Id3v2TagSettings.headerSize;
         this.parse(undefined, file, position, style);
     }
 
     private getTextAsArray(ident: ByteVector): string[] {
-        const frame = TextInformationFrame.getTextInformationFrame(this, ident, false);
+        const frames = this.getFramesByClassType<TextInformationFrame>(FrameClassType.TextInformationFrame);
+        const frame = TextInformationFrame.findTextInformationFrame(frames, ident);
         return frame ? frame.text : [];
     }
 
@@ -1129,7 +1093,8 @@ export default class Id3v2Tag extends Tag {
 
     private getUfidText(owner: string): string {
         // Get the UFID frame, frame will be undefined if nonexistent
-        const frame = UniqueFileIdentifierFrame.get(this, owner, false);
+        const frames = this.getFramesByClassType<UniqueFileIdentifierFrame>(FrameClassType.UniqueFileIdentifierFrame);
+        const frame = UniqueFileIdentifierFrame.find(frames, owner);
 
         // If the frame existed, frame.identifier is a bytevector, get a string
         const result = frame ? frame.identifier.toString() : undefined;
@@ -1138,11 +1103,11 @@ export default class Id3v2Tag extends Tag {
 
     private getUserTextAsString(description: string, caseSensitive: boolean = true): string {
         // Gets the TXXX frame, frame will be undefined if nonexistant
-        const frame = UserTextInformationFrame.getUserTextInformationFrame(
-            this,
+        const frames = this.getFramesByClassType<UserTextInformationFrame>(FrameClassType.UserTextInformationFrame);
+        const frame = UserTextInformationFrame.findUserTextInformationFrame(
+            frames,
             description,
-            false,
-            Id3v2Tag.defaultEncoding,
+            Id3v2TagSettings.defaultEncoding,
             caseSensitive
         );
 
@@ -1181,31 +1146,35 @@ export default class Id3v2Tag extends Tag {
 
     private setUfidText(owner: string, text: string): void {
         // Get the UFID frame, create if necessary
-        const frame = UniqueFileIdentifierFrame.get(this, owner, true);
+        const frames = this.getFramesByClassType<UniqueFileIdentifierFrame>(FrameClassType.UniqueFileIdentifierFrame);
+        let frame = UniqueFileIdentifierFrame.find(frames, owner);
 
         // If we have a real string, convert to bytevector and apply to frame
-        if (text) {
-            const identifier = ByteVector.fromString(text, StringType.UTF8);
-            frame.identifier = identifier;
-        } else {
+        if (!text && frame) {
             // String was falsy, remove the frame to prevent empties
             this.removeFrame(frame);
+        } else {
+            const identifier = ByteVector.fromString(text, StringType.UTF8);
+            frame = UniqueFileIdentifierFrame.create(owner, identifier);
+            this.addFrame(frame);
         }
     }
 
     private setUserTextAsString(description: string, text: string, caseSensitive: boolean = true): void {
         // Get the TXXX frame, create a new one if needed
-        const frame = UserTextInformationFrame.getUserTextInformationFrame(
-            this,
+        const frames = this.getFramesByClassType<UserTextInformationFrame>(FrameClassType.UserTextInformationFrame);
+        let frame = UserTextInformationFrame.findUserTextInformationFrame(
+            frames,
             description,
-            true,
-            Id3v2Tag.defaultEncoding,
+            Id3v2TagSettings.defaultEncoding,
             caseSensitive);
 
-        if (!text) {
+        if (!text && frame) {
             this.removeFrame(frame);
         } else {
+            frame = UserTextInformationFrame.fromDescription(description, Id3v2TagSettings.defaultEncoding);
             frame.text = text.split(";");
+            this.addFrame(frame);
         }
     }
 

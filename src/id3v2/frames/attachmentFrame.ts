@@ -1,5 +1,5 @@
 import FrameType from "../frameTypes";
-import Id3v2Tag from "../id3v2Tag";
+import Id3v2TagSettings from "../id3v2TagSettings";
 import ILazy from "../../iLazy";
 import {ByteVector, StringType} from "../../byteVector";
 import {CorruptFileError} from "../../errors";
@@ -15,7 +15,7 @@ export default class AttachmentFrame extends Frame implements ILazy, IPicture {
 
     private _data: ByteVector;
     private _description: string;
-    private _encoding: StringType = Id3v2Tag.defaultEncoding;
+    private _encoding: StringType = Id3v2TagSettings.defaultEncoding;
     private _file: IFileAbstraction;
     private _filename: string;
     private _mimeType: string;
@@ -278,35 +278,23 @@ export default class AttachmentFrame extends Frame implements ILazy, IPicture {
     /**
      * Get a specified attachment frame from the specified tag, optionally creating it if it does
      * not exist.
-     * @param tag Object in which to search
-     * @param create Whether or not to create and add a new frame to the tag if a match is not found
+     * @param frames List of attachment frames to search
      * @param description Description to match
      * @param type Picture type to match
      * @returns Matching frame or `undefined` if a match wasn't found and {@paramref create} is
      *     `false`
      */
-    public static get(
-        tag: Id3v2Tag,
-        create: boolean,
+    public static find(
+        frames: AttachmentFrame[],
         description?: string,
         type: PictureType = PictureType.Other
     ): AttachmentFrame {
-        let attachmentFrame = tag.getFramesByClassType<AttachmentFrame>(FrameClassType.AttachmentFrame)
-            .find((f) => {
+        Guards.truthy(frames, "frames");
+        return frames.find((f) => {
                 if (f.description && f.description !== description) { return false; }
                 if (type !== PictureType.Other && f.type !== type) { return false; }
                 return true;
             });
-        if (attachmentFrame) { return attachmentFrame; }
-        if (!create) { return undefined; }
-
-        // Create a new frame
-        attachmentFrame = new AttachmentFrame(new Id3v2FrameHeader(FrameType.APIC, 4));
-        attachmentFrame.description = description;
-        attachmentFrame.type = type;
-
-        tag.addFrame(attachmentFrame);
-        return attachmentFrame;
     }
 
     /**

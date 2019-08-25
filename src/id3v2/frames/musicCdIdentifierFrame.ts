@@ -1,5 +1,4 @@
 import FrameTypes from "../frameTypes";
-import Id3v2Tag from "../id3v2Tag";
 import {ByteVector} from "../../byteVector";
 import {Frame, FrameClassType} from "./frame";
 import {Id3v2FrameHeader} from "./frameHeader";
@@ -63,24 +62,6 @@ export default class MusicCdIdentifierFrame extends Frame {
         const frame = new MusicCdIdentifierFrame(new Id3v2FrameHeader(FrameTypes.MCDI, 4));
         frame.setData(data, 0, version, true);
         return frame;
-    }
-
-    /**
-     * Gets a music CD identifier frame from a specified tag, optionally creating it if it does
-     * not exist.
-     * @param tag Object to search for music CD identifier frame
-     * @param create Whether or not to create and add new frame to the tag if a match is not found
-     */
-    public static get(tag: Id3v2Tag, create: boolean): MusicCdIdentifierFrame {
-        Guards.truthy(tag, "tag");
-
-        const mcdiFrames = tag.getFramesByClassType<MusicCdIdentifierFrame>(FrameClassType.MusicCdIdentiferFrame);
-        if (mcdiFrames[0] || !create) { return mcdiFrames[0]; }
-
-        // Create a new frame
-        const mcdiFrame = new MusicCdIdentifierFrame(new Id3v2FrameHeader(FrameTypes.MCDI, 4));
-        tag.addFrame(mcdiFrame);
-        return mcdiFrame;
     }
 
     /** @inheritDoc */

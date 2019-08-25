@@ -1,5 +1,5 @@
 import FrameTypes from "../frameTypes";
-import Id3v2Tag from "../id3v2Tag";
+import Id3v2TagSettings from "../id3v2TagSettings";
 import {ByteVector, StringType} from "../../byteVector";
 import {CorruptFileError} from "../../errors";
 import {Frame, FrameClassType} from "./frame";
@@ -51,7 +51,7 @@ export class SynchronizedLyricsFrame extends Frame {
     private _format: TimestampFormat = TimestampFormat.Unknown;
     private _language: string;
     private _text: SynchronizedText[];
-    private _textEncoding: StringType = Id3v2Tag.defaultEncoding;
+    private _textEncoding: StringType = Id3v2TagSettings.defaultEncoding;
     private _textType: SynchronizedTextType = SynchronizedTextType.Other;
 
     // #region Constructors
@@ -72,7 +72,7 @@ export class SynchronizedLyricsFrame extends Frame {
         description: string,
         language: string,
         textType: SynchronizedTextType,
-        encoding: StringType = Id3v2Tag.defaultEncoding
+        encoding: StringType = Id3v2TagSettings.defaultEncoding
     ): SynchronizedLyricsFrame {
         const frame = new SynchronizedLyricsFrame(new Id3v2FrameHeader(FrameTypes.SYLT, 4));
         frame.textEncoding = encoding;
@@ -195,47 +195,31 @@ export class SynchronizedLyricsFrame extends Frame {
     // #region Public Methods
 
     /**
-     * Gets a specified lyrics frame from the specified tag, optionally creating it if it does not
-     * exist.
-     * @param tag Object to search in
+     * Gets a specified lyrics frame from a list of synchronized lyrics frames
+     * @param frames List of frames to search
      * @param description Description to match
      * @param language ISO-639-2 language code to match
      * @param textType Text type to match
-     * @param create Whether or not to create and add a new frame to the tag if a match is not
-     *     found
      * @returns SynchronizedLyricsFrame Frame containing the matching user, `undefined` if a match
-     *     was not found and {@paramref create} is `false`. A new frame is returned if
-     *     {@paramref create} is `true`.
+     *     was not found
      */
-    public static get(
-        tag: Id3v2Tag,
+    public static find(
+        frames: SynchronizedLyricsFrame[],
         description: string,
         language: string,
-        textType: SynchronizedTextType,
-        create: boolean
+        textType: SynchronizedTextType
     ) {
-        Guards.truthy(tag, "tag");
-
-        const slFrames = tag.getFramesByClassType<SynchronizedLyricsFrame>(FrameClassType.SynchronizedLyricsFrame);
-        let slFrame = slFrames.find((f) => {
+        Guards.truthy(frames, "frames");
+        return frames.find((f) => {
             if (f.description !== description) { return false; }
             if (language && f.language !== language) { return false; }
             if (f.textType !== textType) { return false; }
             return true;
         });
-
-        if (slFrame || !create) {
-            return slFrame;
-        }
-
-        // Create a new frame
-        slFrame = SynchronizedLyricsFrame.fromInfo(description, language, textType);
-        tag.addFrame(slFrame);
-        return slFrame;
     }
 
     /**
-     * Gets a synchronized lyrics frame from the specified tag, trying to match the description and
+     * Gets a synchronized lyrics frame from the specified list, trying to match the description and
      * language but accepting an incomplete match.
      * This method tries matching with the following order of precedence:
      * * The first frame with a matching description, language, and type.
@@ -244,20 +228,24 @@ export class SynchronizedLyricsFrame extends Frame {
      * * The first frame with a matching description.
      * * The first frame with a matching type.
      * * The first frame.
-     * @param tag Object to search in
+     * @param frames List of frames to search for the best match
      * @param description Description to match
      * @param language ISO-639-2 language code to match
      * @param textType Text type to match
      * @returns SynchronizedLyricsFrame The matching frame or `undefined` if a match was not found
      */
-    public static getPreferred(tag: Id3v2Tag, description: string, language: string, textType: SynchronizedTextType) {
-        Guards.truthy(tag, "tag");
+    public static findPreferred(
+        frames: SynchronizedLyricsFrame[],
+        description: string,
+        language: string,
+        textType: SynchronizedTextType
+    ) {
+        Guards.truthy(frames, "frames");
 
         let bestValue = -1;
         let bestFrame: SynchronizedLyricsFrame;
 
-        const slFrames = tag.getFramesByClassType<SynchronizedLyricsFrame>(FrameClassType.SynchronizedLyricsFrame);
-        for (const slFrame of slFrames) {
+        for (const slFrame of frames) {
             let value = 0;
             if (slFrame.language === language) {
                 value += 4;

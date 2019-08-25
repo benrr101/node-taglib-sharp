@@ -1,6 +1,5 @@
 import * as BigInt from "big-integer";
 import FrameTypes from "../frameTypes";
-import Id3v2Tag from "../id3v2Tag";
 import {ByteVector, StringType} from "../../byteVector";
 import {Frame, FrameClassType} from "./frame";
 import {Id3v2FrameHeader} from "./frameHeader";
@@ -185,29 +184,15 @@ export class RelativeVolumeFrame extends Frame {
     }
 
     /**
-     * Gets a specified volume adjustment frame from the speicifed tag, optionally creating it if
-     * it does not exist.
-     * @param tag Object to search in
+     * Gets a specified volume adjustment frame from the list of relative volume frames
+     * @param frames List of frames to search
      * @param identification Identification to match
-     * @param create Whether or not to create and add a new frame to the tag if a match is not found
-     * @returns RelativeVolumeFrame Frame containing the matching user, `undefined` if a match was
-     *     not found and {@paramref create} is `false`. A new frame is returned if
-     *     {@paramref create} is `true`.
+     * @returns RelativeVolumeFrame Frame containing the matching user or `undefined` if a match was
+     *     not found
      */
-    public static get(tag: Id3v2Tag, identification: string, create: boolean): RelativeVolumeFrame {
-        Guards.truthy(tag, "tag");
-
-        const rvFrames = tag.getFramesByClassType<RelativeVolumeFrame>(FrameClassType.RelativeVolumeFrame);
-        let rvFrame = rvFrames.find((f) => f.identification === identification);
-
-        if (rvFrame || !create) {
-            return rvFrame;
-        }
-
-        // Create new frame
-        rvFrame = RelativeVolumeFrame.fromIdentification(identification);
-        tag.addFrame(rvFrame);
-        return rvFrame;
+    public static find(frames: RelativeVolumeFrame[], identification: string): RelativeVolumeFrame {
+        Guards.truthy(frames, "frame");
+        return frames.find((f) => f.identification === identification);
     }
 
     /**

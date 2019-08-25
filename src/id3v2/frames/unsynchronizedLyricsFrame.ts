@@ -1,5 +1,5 @@
 import FrameTypes from "../frameTypes";
-import Id3v2Tag from "../id3v2Tag";
+import Id3v2TagSettings from "../id3v2TagSettings";
 import {ByteVector, StringType} from "../../byteVector";
 import {CorruptFileError} from "../../errors";
 import {Frame, FrameClassType} from "./frame";
@@ -10,7 +10,7 @@ export default class UnsynchronizedLyricsFrame extends Frame {
     private _description: string;
     private _language: string;
     private _text: string;
-    private _textEncoding: StringType = Id3v2Tag.defaultEncoding;
+    private _textEncoding: StringType = Id3v2TagSettings.defaultEncoding;
 
     // #region Constructors
 
@@ -27,7 +27,7 @@ export default class UnsynchronizedLyricsFrame extends Frame {
     public static fromData(
         description: string,
         language?: string,
-        encoding: StringType = Id3v2Tag.defaultEncoding
+        encoding: StringType = Id3v2TagSettings.defaultEncoding
     ): UnsynchronizedLyricsFrame {
         const frame = new UnsynchronizedLyricsFrame(new Id3v2FrameHeader(FrameTypes.USLT, 4));
         frame.textEncoding = encoding;
@@ -122,61 +122,68 @@ export default class UnsynchronizedLyricsFrame extends Frame {
     // #region Public Methods
 
     /**
-     * Gets a popularimeter frame from a specified tag, optionally creating it if it does not
-     * exist.
-     * @param tag Object to search in
+     * Gets a unsynchronized lyrics frame from a list of frames that matches the provided
+     * parameters
+     * @param frames List of frames to search
      * @param description Description to match
-     * @param language: ISO-639-2 language code to match
-     * @param create Whether or not to create an add a new frame to the tag if a match is not found
-     * @returns PopularimeterFrame Frame containing the matching user, `undefined` if a match was
-     *     not found and {@paramref create} is `false`. A new frame is returned if
-     *     {@paramref create} is `true`.
+     * @param language Optionally, ISO-639-2 language code to match
+     * @returns UnsynchronizedLyricsFrame Frame that matches provided parameters, `undefined` if a
+     *     match was not found
      */
-    public static get(
-        tag: Id3v2Tag,
+    public static find(
+        frames: UnsynchronizedLyricsFrame[],
         description: string,
-        language: string,
-        create: boolean
+        language: string
     ): UnsynchronizedLyricsFrame {
-        Guards.truthy(tag, "tag");
-
-        const frames = tag.getFramesByClassType<UnsynchronizedLyricsFrame>(FrameClassType.UnsynchronizedLyricsFrame);
-        let frame = frames.find((f) => {
+        Guards.truthy(frames, "frames");
+        return frames.find((f) => {
             if (f.description !== description) { return false; }
             if (language && f.language !== language) { return false; }
             return true;
         });
-
-        if (frame || !create) {
-            return frame;
-        }
-
-        // Create a new frame
-        frame = UnsynchronizedLyricsFrame.fromData(description, language);
-        tag.addFrame(frame);
-        return frame;
     }
 
     /**
-     * Gets a specified unsynchronized frame from the specified tag, trying to match the
+     * Gets all unsynchronized lyrics frames that match the provided parameters from a list of
+     * frames
+     * @param frames List of frames to search
+     * @param description Description to match
+     * @param language Optionally, ISO-639-2 language code to match
+     * @returns UnsynchronizedLyricsFrame[] List of frames matching provided parameters, empty
+     *     array if no matches were found
+     */
+    public static findAll(
+        frames: UnsynchronizedLyricsFrame[],
+        description: string,
+        language: string
+    ): UnsynchronizedLyricsFrame[] {
+        Guards.truthy(frames, "frames");
+        return frames.filter((f) => {
+            if (f.description !== description) { return false; }
+            if (language && f.language !== language) { return false; }
+            return true;
+        });
+    }
+
+    /**
+     * Gets a specified unsynchronized frame from the list of frames, trying to match the
      * description and language but, failing a perfect match, accepting an incomplete match.
      * The method tries matching with the following order of precedence:
      * * First frame with a matching description and language
      * * First frame with a matching language
      * * First frame with a matching description
      * * First frame
-     * @param tag Object to search in
+     * @param frames List of frames to search
      * @param description Description to match
      * @param language ISO-639-2 language code to match
      */
-    public static getPreferred(
-        tag: Id3v2Tag,
+    public static findPreferred(
+        frames: UnsynchronizedLyricsFrame[],
         description: string,
         language: string
     ): UnsynchronizedLyricsFrame {
-        Guards.truthy(tag, "tag");
+        Guards.truthy(frames, "frames");
 
-        const frames = tag.getFramesByClassType<UnsynchronizedLyricsFrame>(FrameClassType.UnsynchronizedLyricsFrame);
         let bestValue = -1;
         let bestFrame;
         for (const f of frames) {

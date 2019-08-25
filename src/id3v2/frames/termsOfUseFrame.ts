@@ -1,5 +1,5 @@
 import FrameTypes from "../frameTypes";
-import Id3v2Tag from "../id3v2Tag";
+import Id3v2TagSettings from "../id3v2TagSettings";
 import {ByteVector, StringType} from "../../byteVector";
 import {CorruptFileError} from "../../errors";
 import {Frame, FrameClassType} from "./frame";
@@ -9,7 +9,7 @@ import {Guards} from "../../utils";
 export default class TermsOfUseFrame extends Frame {
     private _language: string;
     private _text: string;
-    private _textEncoding: StringType = Id3v2Tag.defaultEncoding;
+    private _textEncoding: StringType = Id3v2TagSettings.defaultEncoding;
 
     // #region Constructors
 
@@ -126,45 +126,30 @@ export default class TermsOfUseFrame extends Frame {
     // #region Public Methods
 
     /**
-     * Gets a specified terms of use frame from the specified tag, optionally creating it if it
-     * does not exist.
-     * @param tag Object to search in
+     * Gets a specified terms of use frame from the list of frames
+     * @param frames List of frames to search
      * @param language Optionally, the ISO-639-2 language code to match
-     * @param create Whether or not to create and add a new frame to the tag if a match is not
-     *     found
-     * @returns TermsOfUseFrame A matching frame if found or {@paramref create} is `true` of
-     *     `undefined` if a matching frame is not found and {@paramref create} is `false`
+     * @returns TermsOfUseFrame A matching frame if found or `undefined` if a matching frame was
+     *     not found
      */
-    public static get(tag: Id3v2Tag, language: string, create: boolean): TermsOfUseFrame {
-        Guards.truthy(tag, "tag");
-
-        const touFrames = tag.getFramesByClassType<TermsOfUseFrame>(FrameClassType.TermsOfUseFrame);
-        let touFrame = touFrames.find((f) => !language || f.language === language);
-
-        if (touFrame || !create) {
-            return touFrame;
-        }
-
-        // Create a new frame
-        touFrame = TermsOfUseFrame.fromLanguage(language);
-        tag.addFrame(touFrame);
-        return touFrame;
+    public static get(frames: TermsOfUseFrame[], language: string): TermsOfUseFrame {
+        Guards.truthy(frames, "frames");
+        return frames.find((f) => !language || f.language === language);
     }
 
     /**
-     * Gets a specified terms of use frame from the specified tag, trying to match the language but
+     * Gets a specified terms of use frame from the list of frames, trying to match the language but
      * accepting one with a different language if a match was not found.
-     * @param tag Object to search in
+     * @param frames List of frames to search
      * @param language ISO-639-2 language code to match
      * @returns TermsOfUseFrame Frame containing the matching frame or `undefined` if a match was
-     *     not found.
+     *     not found
      */
-    public static getPreferred(tag: Id3v2Tag, language: string) {
-        Guards.truthy(tag, "tag");
+    public static getPreferred(frames: TermsOfUseFrame[], language: string) {
+        Guards.truthy(frames, "frames");
 
         let bestFrame: TermsOfUseFrame;
-        const touFrames = tag.getFramesByClassType<TermsOfUseFrame>(FrameClassType.TermsOfUseFrame);
-        for (const f of touFrames) {
+        for (const f of frames) {
             if (f.language === language) {
                 return f;
             }

@@ -3,7 +3,8 @@
   "version": "0.1.0",
   "license": "LGPL-2.1-or-later",
   "scripts": {
-    "build": "tsc -p ./"
+    "build": "tsc -p ./",
+    "madge": "node node_modules/madge/bin/cli.js --warning --circular --extension ts ./"
   },
   "dependencies": {
     "arraybuffer-to-buffer": "^0.0.5",
@@ -20,6 +21,7 @@
     "@types/stream-buffers": "^3.0.2",
     "chai": "^4.2.0",
     "chai-as-promised": "^7.1.1",
+    "madge": "^3.4.4",
     "mocha": "^6.1.2",
     "mocha-typescript": "^1.1.17",
     "stream-buffers": "^3.0.2",

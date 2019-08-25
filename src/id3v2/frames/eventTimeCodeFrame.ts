@@ -1,6 +1,5 @@
 import EventTimeCode from "./eventTimeCode";
 import FrameTypes from "../frameTypes";
-import Id3v2Tag from "../id3v2Tag";
 import {ByteVector} from "../../byteVector";
 import {Frame, FrameClassType} from "./frame";
 import {Id3v2FrameFlags, Id3v2FrameHeader} from "./frameHeader";
@@ -98,31 +97,6 @@ export default class EventTimeCodeFrame extends Frame {
     // #endregion
 
     // #region Methods
-
-    /**
-     * Get a specified frame from the specified tag, optionally creating it if it does not exist.
-     * @param tag Object to search in
-     * @param create Whether or not to create and add a new frame to the tag if a match is not
-     *     found
-     * @returns EventTimeCodeFrame Matching frame or `undefined` if a match was not found and
-     *     {@paramref create} is `false`. The newly created frame if a match was not found and
-     *     {@paramref create} is `true`.
-     */
-    public static get(tag: Id3v2Tag, create: boolean): EventTimeCodeFrame {
-        Guards.truthy(tag, "tag");
-
-        const frames = tag.getFramesByClassType<EventTimeCodeFrame>(FrameClassType.EventTimeCodeFrame);
-        const frame = frames.find(() => true);
-
-        if (frame || !create) {
-            return frame;
-        }
-
-        // Create new frame
-        const newFrame = EventTimeCodeFrame.fromEmpty();
-        tag.addFrame(newFrame);
-        return newFrame;
-    }
 
     /** @inheritDoc */
     public clone(): Frame {

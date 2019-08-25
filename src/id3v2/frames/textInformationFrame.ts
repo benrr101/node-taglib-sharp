@@ -1,6 +1,6 @@
 import FrameTypes from "../frameTypes";
 import Genres from "../../genres";
-import Id3v2Tag from "../id3v2Tag";
+import Id3v2TagSettings from "../id3v2TagSettings";
 import {ByteVector, StringType} from "../../byteVector";
 import {Frame, FrameClassType} from "./frame";
 import {Id3v2FrameHeader} from "./frameHeader";
@@ -128,7 +128,7 @@ import {Guards, StringComparison} from "../../utils";
  *   (TIT2) for sorting purposes.
  */
 export class TextInformationFrame extends Frame {
-    protected _encoding: StringType = Id3v2Tag.defaultEncoding;
+    protected _encoding: StringType = Id3v2TagSettings.defaultEncoding;
     protected _rawEncoding: StringType = StringType.Latin1;
     protected _rawData: ByteVector;
     protected _rawVersion: number;
@@ -148,7 +148,7 @@ export class TextInformationFrame extends Frame {
      */
     public static fromIdentifier(
         ident: ByteVector,
-        encoding: StringType = Id3v2Tag.defaultEncoding
+        encoding: StringType = Id3v2TagSettings.defaultEncoding
     ): TextInformationFrame {
         const frame = new TextInformationFrame(new Id3v2FrameHeader(ident, 4));
         frame._encoding = encoding;
@@ -235,40 +235,26 @@ export class TextInformationFrame extends Frame {
 
     /**
      * Gets a {@see TextInformationFrame} object of a specified type from a specified type from a
-     * specified tag, optionally creating and adding one with a specified encoding if none is
-     * found.
-     * @param tag Object to search in
+     * list of text information frames.
+     * @param frames List of frames to search
      * @param ident Frame identifier to search for
      * @param encoding Encoding to use if a new frame is created. Defaults to
      *     {@see Id3v2Tag.defaultEncoding} if not provided
-     * @param create Whether or not to create a new frame if an existing frame was not found
      * @returns TextInformationFrame Matching frame if it exists in {@paramref tag}, `undefined` if
-     *     a matching frame was not found and {@paramref create} is `false`, or a new frame if a
-     *     matching frame was not found and {@paramref create} is `true`.
+     *     a matching frame was not found
      */
-    public static getTextInformationFrame(
-        tag: Id3v2Tag,
+    public static findTextInformationFrame(
+        frames: TextInformationFrame[],
         ident: ByteVector,
-        create: boolean,
-        encoding: StringType = Id3v2Tag.defaultEncoding
+        encoding: StringType = Id3v2TagSettings.defaultEncoding
     ): TextInformationFrame {
-        Guards.truthy(tag, "tag");
+        Guards.truthy(frames, "tag");
         Guards.truthy(ident, "ident");
         if (ident.length !== 4) {
             throw new Error("Argument out of range: Identifier must be four bytes long");
         }
 
-        let frame = tag.getFramesByIdentifier<TextInformationFrame>(FrameClassType.TextInformationFrame, ident)
-            .find((f) => true);
-
-        if (frame || !create) {
-            return frame;
-        }
-
-        // Create new frame
-        frame = TextInformationFrame.fromIdentifier(ident, encoding);
-        tag.addFrame(frame);
-        return frame;
+        return frames.find((f) => ByteVector.equal(f.frameId, ident));
     }
 
     /** @inheritDoc */
@@ -427,7 +413,7 @@ export class TextInformationFrame extends Frame {
 
     /** @inheritDoc */
     protected renderFields(version: number): ByteVector {
-        if (!this._rawData && this._rawVersion === version && this._rawEncoding === Id3v2Tag.defaultEncoding) {
+        if (!this._rawData && this._rawVersion === version && this._rawEncoding === Id3v2TagSettings.defaultEncoding) {
             return this._rawData;
         }
 
@@ -499,7 +485,7 @@ export class UserTextInformationFrame extends TextInformationFrame {
      */
     public static fromDescription(
         description: string,
-        encoding: StringType = Id3v2Tag.defaultEncoding
+        encoding: StringType = Id3v2TagSettings.defaultEncoding
     ): UserTextInformationFrame {
         const frame = new UserTextInformationFrame(new Id3v2FrameHeader(FrameTypes.TXXX, 4));
         frame._encoding = encoding;
@@ -600,41 +586,27 @@ export class UserTextInformationFrame extends TextInformationFrame {
     // #region Public Methods
 
     /**
-     * Gets a user text information frame frrom a specified tag, optionally creating it if it does
-     * not exist.
-     * @param tag Object to search in
+     * Gets a user text information frame from a specified tag
+     * @param frames Object to search in
      * @param description Description to use to match the frame in the {@paramref tag}
-     * @param create Whether or not to create an add a new frame to the tag if a match is not found
      * @param type Encoding to use to encode the value of this frame.
      * @param caseSensitive Whether or not to search for the frame case-sensitively.
      * @returns UserTextInformationFrame Frame containing the matching user, `undefined` if a match
-     *     was not found and {@paramref create} is `false`. A new frame is returned if
-     *     {@paramref create} is `true`.
+     *     was not found
      */
-    public static getUserTextInformationFrame(
-        tag: Id3v2Tag,
+    public static findUserTextInformationFrame(
+        frames: UserTextInformationFrame[],
         description: string,
-        create: boolean = false,
-        type: StringType = Id3v2Tag.defaultEncoding,
+        type: StringType = Id3v2TagSettings.defaultEncoding,
         caseSensitive: boolean = true
     ): UserTextInformationFrame {
-        Guards.truthy(tag, "tag");
+        Guards.truthy(frames, "frames");
 
         const comparison = caseSensitive ? StringComparison.CaseSensitive : StringComparison.CaseInsensitive;
-        const frames = tag.getFramesByIdentifier<UserTextInformationFrame>(
-            FrameClassType.UserTextInformationFrame,
-            FrameTypes.TXXX
-        );
-        let frame = frames.find((f) => comparison(f.description, description));
-
-        if (frame || !create) {
-            return frame;
-        }
-
-        // Create a new frame
-        frame = UserTextInformationFrame.fromDescription(description, type);
-        tag.addFrame(frame);
-        return frame;
+        return frames.find((f) => {
+            return ByteVector.equal(f.frameId, FrameTypes.TXXX)
+                && comparison(f.description, description);
+        });
     }
 
     /** @inheritDoc */

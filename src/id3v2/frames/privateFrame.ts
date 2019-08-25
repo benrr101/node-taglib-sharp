@@ -1,4 +1,3 @@
-import Id3v2Tag from "../id3v2Tag";
 import FrameTypes from "../frameTypes";
 import {ByteVector, StringType} from "../../byteVector";
 import {CorruptFileError, NotImplementedError} from "../../errors";
@@ -97,32 +96,16 @@ export default class PrivateFrame extends Frame {
     // #endregion
 
     /**
-     * Get a specified private frame from the specified tag, optionally creating it if it does not
-     * exist.
-     * @param tag Object to search in
+     * Get a specified private frame from the list of private frames that matches the provided
+     * parameters.
+     * @param frames List of frames to search
      * @param owner Owner to match when searching
-     * @param create Whether or not to create and add a new frame to the tag if a match is not
-     *     found
-     * @returns PrivateFrame Matching frame or `undefined` if a match was not found and
-     *     {@paramref create} is `false`. The newly created frame if a match was not found and
-     *     {@paramref create} is `true`.
+     * @returns PrivateFrame Matching frame or `undefined` if a match was not found
      */
-    public static get(tag: Id3v2Tag, owner: string, create: boolean): PrivateFrame {
-        Guards.truthy(tag, "tag");
+    public static find(frames: PrivateFrame[], owner: string): PrivateFrame {
+        Guards.truthy(frames, "frames");
 
-        const privateFrames = tag.getFramesByClassType<PrivateFrame>(FrameClassType.PrivateFrame);
-        let privateFrame = privateFrames.find((f) => {
-            if (f.owner === owner) { return true; }
-        });
-
-        if (privateFrame || !create) {
-            return privateFrame;
-        }
-
-        // Create a new frame
-        privateFrame = PrivateFrame.fromOwner(owner);
-        tag.addFrame(privateFrame);
-        return privateFrame;
+        return frames.find((f) => f.owner === owner);
     }
 
     /** @inheritDoc */

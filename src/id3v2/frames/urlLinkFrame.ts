@@ -1,5 +1,4 @@
 import FrameTypes from "../frameTypes";
-import Id3v2Tag from "../id3v2Tag";
 import {ByteVector, StringType} from "../../byteVector";
 import {Frame, FrameClassType} from "./frame";
 import {Id3v2FrameHeader} from "./frameHeader";
@@ -132,32 +131,20 @@ export class UrlLinkFrame extends Frame {
     // #region Methods
 
     /**
-     * Gets a frame from a specified tag, optionally creating it if it does not exist.
-     * @param tag Object to search in
+     * Gets a frame from a list of frames
+     * @param frames Object to search in
      * @param ident Frame identifier to search for. Must be 4 bytes
-     * @param create Whether or not to create an add a new frame to the tag if a match is not found
      * @returns PopularimeterFrame Frame containing the matching user, `undefined` if a match was
-     *     not found and {@paramref create} is `false`. A new frame is returned if
-     *     {@paramref create} is `true`.
+     *     not found
      */
-    public static get(tag: Id3v2Tag, ident: ByteVector, create: boolean): UrlLinkFrame {
-        Guards.truthy(tag, "tag");
+    public static findUrlLinkFrame(frames: UrlLinkFrame[], ident: ByteVector): UrlLinkFrame {
+        Guards.truthy(frames, "frames");
         Guards.truthy(ident, "ident");
         if (ident.length !== 4) {
             throw new Error("Identifier must be 4 bytes long.");
         }
 
-        const frames = tag.getFramesByIdentifier<UrlLinkFrame>(FrameClassType.UrlLinkFrame, ident);
-        let frame = frames.find(() => true);
-
-        if (frame || !create) {
-            return frame;
-        }
-
-        // Create new frame
-        frame = UrlLinkFrame.fromIdentity(ident);
-        tag.addFrame(frame);
-        return frame;
+        return frames.find((f) => ByteVector.equal(f.frameId, ident));
     }
 
     /** @inheritDoc */
@@ -367,29 +354,17 @@ export class UserUrlLinkFrame extends UrlLinkFrame {
     // #region Methods
 
     /**
-     * Gets a frame from a specified tag, optionally creating it if it does not exist.
-     * @param tag Object to search in
+     * Gets a frame from a list of frames.
+     * @param frames List of frames to search
      * @param description Description of the frame to match
-     * @param create Whether or not to create an add a new frame to the tag if a match is not found
      * @returns UserUrlLinkFrame Frame containing the matching user, `undefined` if a match was not
-     *     found and {@paramref create} is `false`. A new frame is returned if
-     *     {@paramref create} is `true`.
+     *     found
      */
-    public static getUserFrame(tag: Id3v2Tag, description: string, create: boolean): UserUrlLinkFrame {
-        Guards.truthy(tag, "tag");
+    public static findUserUrlLinkFrame(frames: UserUrlLinkFrame[], description: string): UserUrlLinkFrame {
+        Guards.truthy(frames, "frames");
         Guards.truthy(description, "description");
 
-        const frames = tag.getFramesByClassType<UserUrlLinkFrame>(FrameClassType.UserUrlLinkFrame);
-        let frame = frames.find((f) => f.description === description);
-
-        if (frame || !create) {
-            return frame;
-        }
-
-        // Create new frame
-        frame = UserUrlLinkFrame.fromDescription(description);
-        tag.addFrame(frame);
-        return frame;
+        return frames.find((f) => f.description === description);
     }
 
     /** @inheritDoc */

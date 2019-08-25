@@ -1,5 +1,4 @@
-import Header from "./header";
-import Id3v2Tag from "./id3v2Tag";
+import Id3v2TagSettings from "./id3v2TagSettings";
 import SyncData from "./syncData";
 import {ByteVector} from "../byteVector";
 import {CorruptFileError} from "../errors";
@@ -8,7 +7,6 @@ import {Guards} from "../utils";
 
 export default class Footer {
     private static readonly _fileIdentifier: ByteVector = ByteVector.fromString("3DI", undefined, undefined, true);
-    private static readonly _size: number = 10;
     private _flags: HeaderFlags;
     private _majorVersion: number;
     private _revisionNumber: number;
@@ -22,7 +20,7 @@ export default class Footer {
      */
     public static fromData(data: ByteVector): Footer {
         Guards.truthy(data, "data");
-        if (data.length < Footer.size) {
+        if (data.length < Id3v2TagSettings.footerSize) {
             throw new CorruptFileError("Provided data is smaller than object size.");
         }
         if (!data.startsWith(Footer.fileIdentifier)) {
@@ -55,20 +53,6 @@ export default class Footer {
         return footer;
     }
 
-    /**
-     * Constructs and initializes a new instance by reading it from the {@see Header} used for the
-     * same tag.
-     * @param header Header to copy values from
-     */
-    public static fromHeader(header: Header): Footer {
-        const footer = new Footer();
-        footer._majorVersion = header.majorVersion;
-        footer._revisionNumber = header.revisionNumber;
-        footer._flags = header.flags | HeaderFlags.FooterPresent;
-        footer._tagSize = header.tagSize;
-        return footer;
-    }
-
     // #region Properties
 
     /**
@@ -77,16 +61,11 @@ export default class Footer {
     public static get fileIdentifier(): ByteVector { return this._fileIdentifier; }
 
     /**
-     * Size of an ID3v2 footer in bytes.
-     */
-    public static get size(): number { return this._size; }
-
-    /**
      * Gets the complete size of the tag described by the current instance including the header
      * and footer.
      */
     public get completeTagSize(): number {
-        return this.tagSize + Header.size + Footer.size;
+        return this.tagSize + Id3v2TagSettings.headerSize + Id3v2TagSettings.footerSize;
     }
 
     /**
@@ -116,7 +95,7 @@ export default class Footer {
      */
     public get majorVersion(): number {
         return this._majorVersion === 0
-            ? Id3v2Tag.defaultVersion
+            ? Id3v2TagSettings.defaultVersion
             : this._majorVersion;
     }
     /**

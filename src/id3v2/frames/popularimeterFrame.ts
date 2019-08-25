@@ -1,6 +1,5 @@
 import * as BigInt from "big-integer";
 import FrameTypes from "../frameTypes";
-import Id3v2Tag from "../id3v2Tag";
 import {ByteVector, StringType} from "../../byteVector";
 import {CorruptFileError} from "../../errors";
 import {Frame, FrameClassType} from "./frame";
@@ -115,27 +114,15 @@ export default class PopularimeterFrame extends Frame {
     // #endregion
 
     /**
-     * Gets a popularimeter frame from a specified tag, optionally creating it if it does not
-     * exist.
-     * @param tag Object to search in
+     * Gets a popularimeter frame from a specified tag that matches the given parameters
+     * @param frames List of frames to search
      * @param user User email to use to match the frame in the {@paramref tag}
-     * @param create Whether or not to create an add a new frame to the tag if a match is not found
-     * @returns PopularimeterFrame Frame containing the matching user, `undefined` if a match was
-     *     not found and {@paramref create} is `false`. A new frame is returned if
-     *     {@paramref create} is `true`.
+     * @returns PopularimeterFrame Frame containing the matching user or `undefined` if a match was
+     *     not found
      */
-    public static get(tag: Id3v2Tag, user: string, create: boolean): PopularimeterFrame {
-        Guards.truthy(tag, "tag");
-
-        const popFrames = tag.getFramesByClassType<PopularimeterFrame>(FrameClassType.PopularimeterFrame);
-        let popFrame = popFrames.find((f) => f.user === user);
-
-        if (popFrame || !create) { return popFrame; }
-
-        // Create new frame
-        popFrame = PopularimeterFrame.fromUser(user);
-        tag.addFrame(popFrame);
-        return popFrame;
+    public static find(frames: PopularimeterFrame[], user: string): PopularimeterFrame {
+        Guards.truthy(frames, "frames");
+        return frames.find((f) => f.user === user);
     }
 
     /** @inheritDoc */
