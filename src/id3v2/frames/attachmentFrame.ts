@@ -7,7 +7,7 @@ import {IFileAbstraction} from "../../fileAbstraction";
 import {Frame, FrameClassType} from "./frame";
 import {Id3v2FrameHeader} from "./frameHeader";
 import {IPicture, Picture, PictureType} from "../../picture";
-import {SeekOrigin, Stream} from "../../stream";
+import {IStream, SeekOrigin} from "../../stream";
 import {Guards} from "../../utils";
 
 export default class AttachmentFrame extends Frame implements ILazy, IPicture {
@@ -34,17 +34,32 @@ export default class AttachmentFrame extends Frame implements ILazy, IPicture {
     }
 
     /**
-     * Constructs and initializes a new attachment frame by reading its raw data in a specified
-     * Id3v2 version.
-     * @param data ByteVector starting with the raw representation of the new frame
-     * @param version ID3v2 version the raw frame is encoded with.
+     * Constructs a new attachment frame from a file. The content will be lazily loaded.
+     * @param abstraction Abstraction of the file to read.
+     * @param offset Position into the file where the picture is located
+     * @param size Size in bytes of the picture. Use -1 to read all bytes of the file
+     * @param header Header of the frame found at {@paramref offset} in the data
      */
-    public static fromData(data: ByteVector, version: number): AttachmentFrame {
-        Guards.truthy(data, "data");
-        Guards.byte(version, "version");
+    public static fromFile(
+        abstraction: IFileAbstraction,
+        offset: number,
+        size: number,
+        header: Id3v2FrameHeader
+    ): AttachmentFrame {
+        Guards.truthy(abstraction, "abstraction");
+        Guards.uint(offset, "offset");
+        Guards.int(size, "size");
+        Guards.truthy(header, "header");
 
-        const frame = new AttachmentFrame(new Id3v2FrameHeader(data, version));
-        frame.setData(data, 0, version, true);
+        if (size < 0 && size !== -1) {
+            throw new Error("Argument out of range: size must be positive 32-bit integer or -1");
+        }
+
+        const frame = new AttachmentFrame(header);
+        frame._file = abstraction;
+        frame._streamOffset = offset;
+        frame._streamSize = size;
+        frame._rawVersion = header.version;
         return frame;
     }
 
@@ -54,51 +69,18 @@ export default class AttachmentFrame extends Frame implements ILazy, IPicture {
      * @param data ByteVector containing the raw representation of the new frame
      * @param offset Index into {@paramref data} where the frame actually begins
      * @param header Header of the frame found at {@paramref offset} in the data
-     * @param version ID3v2 version the raw frame is encoded in
      */
-    // @TODO Standardize on fromOffsetRawData
-    public static fromDataWithHeader(
+    public static fromOffsetRawData(
         data: ByteVector,
         offset: number,
-        header: Id3v2FrameHeader,
-        version: number
+        header: Id3v2FrameHeader
     ): AttachmentFrame {
         Guards.truthy(data, "data");
         Guards.uint(offset, "offset");
         Guards.truthy(header, "header");
-        Guards.byte(version, "version");
 
         const frame = new AttachmentFrame(header);
-        frame.setData(data, offset, version, false);
-        return frame;
-    }
-
-    /**
-     * Constructs a new attachment frame from a file. The content will be lazily loaded.
-     * @param abstraction Abstraction of the file to read.
-     * @param offset Position into the file where the picture is located
-     * @param size Size in bytes of the picture. Use -1 to read all bytes of the file
-     * @param header Header of the frame found at {@paramref offset} in the data
-     * @param version ID3v2 version the raw frame is encoded with
-     */
-    public static fromStatic(
-        abstraction: IFileAbstraction,
-        offset: number,
-        size: number,
-        header: Id3v2FrameHeader,
-        version: number
-    ): AttachmentFrame {
-        Guards.truthy(abstraction, "abstraction");
-        Guards.uint(offset, "offset");
-        Guards.uint(size, "size");
-        Guards.truthy(header, "header");
-        Guards.byte(version, "version");
-
-        const frame = new AttachmentFrame(header);
-        frame._file = abstraction;
-        frame._streamOffset = offset;
-        frame._streamSize = size;
-        frame._rawVersion = version;
+        frame.setData(data, offset, false);
         return frame;
     }
 
@@ -120,6 +102,21 @@ export default class AttachmentFrame extends Frame implements ILazy, IPicture {
         frame._filename = picture.filename;
         frame._description = picture.description;
         frame._data = picture.data;
+        return frame;
+    }
+
+    /**
+     * Constructs and initializes a new attachment frame by reading its raw data in a specified
+     * Id3v2 version.
+     * @param data ByteVector starting with the raw representation of the new frame
+     * @param version ID3v2 version the raw frame is encoded with.
+     */
+    public static fromRawData(data: ByteVector, version: number): AttachmentFrame {
+        Guards.truthy(data, "data");
+        Guards.byte(version, "version");
+
+        const frame = new AttachmentFrame(new Id3v2FrameHeader(data, version));
+        frame.setData(data, 0, true);
         return frame;
     }
 
@@ -307,7 +304,7 @@ export default class AttachmentFrame extends Frame implements ILazy, IPicture {
         }
 
         // Load the picture from the stream
-        let stream: Stream;
+        let stream: IStream;
         let data: ByteVector;
 
         try {
@@ -344,8 +341,10 @@ export default class AttachmentFrame extends Frame implements ILazy, IPicture {
             this._file = undefined;
         }
 
-        // Decode the raw data if required using FielData
-        this._rawData = this.fieldData(data, -Id3v2FrameHeader.getSize(this._rawVersion), this._rawVersion);
+        // Decode the raw data if required using FieldData
+        // NOTE: It probably seems weird to set the offset to a negative, but it's because we're
+        //    loading the bytes from a file which won't have a frame header
+        this._rawData = this.fieldData(data, -Id3v2FrameHeader.getSize(this._rawVersion));
 
         // Get the actual data
         this.parseRawData();
@@ -456,7 +455,7 @@ export default class AttachmentFrame extends Frame implements ILazy, IPicture {
         this._encoding = this._data.get(pos++);
         const delim = ByteVector.getTextDelimiter(this._encoding);
 
-        if (this._header.frameId === FrameType.APIC) {
+        if (ByteVector.equal(this._header.frameId, FrameType.APIC)) {
             // Retrieve an ID3v2 attached picture
             if (this._rawVersion > 2) {
                 offset = this._data.find(ByteVector.getTextDelimiter(StringType.Latin1), pos);
@@ -475,7 +474,7 @@ export default class AttachmentFrame extends Frame implements ILazy, IPicture {
 
             this.type = this._data.get(pos++);
             offset = this._data.find(delim, pos, delim.length);
-        } else if (this._header.frameId === FrameType.GEOB) {
+        } else if (ByteVector.equal(this._header.frameId, FrameType.GEOB)) {
             // Retrieve and ID3v2 general encapsulated object
             offset = this._data.find(ByteVector.getTextDelimiter(StringType.Latin1), pos);
             if (offset < pos) {

@@ -36,16 +36,14 @@ export default class MusicCdIdentifierFrame extends Frame {
      * @param offset Offset into {@paramref data} where the frame actually begins. Must be a
      *     positive, safe integer
      * @param header Header of the frame found at {@paramref offset} in the data
-     * @param version ID3v2 version the raw frame is encoded with. Must be positive 8-bit integer
      */
-    public static fromOffsetRawHeader(data: ByteVector, offset: number, header: Id3v2FrameHeader, version: number) {
+    public static fromOffsetRawHeader(data: ByteVector, offset: number, header: Id3v2FrameHeader) {
         Guards.truthy(data, "data");
         Guards.uint(offset, "offset");
         Guards.truthy(header, "header");
-        Guards.byte(version, "version");
 
         const frame = new MusicCdIdentifierFrame(header);
-        frame.setData(data, offset, version, false);
+        frame.setData(data, offset, false);
         return frame;
     }
 
@@ -60,7 +58,7 @@ export default class MusicCdIdentifierFrame extends Frame {
         Guards.byte(version, "version");
 
         const frame = new MusicCdIdentifierFrame(new Id3v2FrameHeader(FrameTypes.MCDI, 4));
-        frame.setData(data, 0, version, true);
+        frame.setData(data, 0, true);
         return frame;
     }
 

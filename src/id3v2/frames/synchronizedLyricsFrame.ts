@@ -89,16 +89,14 @@ export class SynchronizedLyricsFrame extends Frame {
      * @param offset Offset into {@paramref data} where the frame begins. Must be unsigned, safe
      *     integer
      * @param header Header of the frame found at {@paramref offset} in {@paramref data}
-     * @param version ID3v2 version the raw frame is encoded with. Must be unsigned 8-bit integer
      */
-    public static fromOffsetRawData(data: ByteVector, offset: number, header: Id3v2FrameHeader, version: number) {
+    public static fromOffsetRawData(data: ByteVector, offset: number, header: Id3v2FrameHeader) {
         Guards.truthy(data, "data");
         Guards.uint(offset, "offset");
         Guards.truthy(header, "header");
-        Guards.byte(version, "version");
 
         const frame = new SynchronizedLyricsFrame(header);
-        frame.setData(data, offset, version, false);
+        frame.setData(data, offset, false);
         return frame;
     }
 
@@ -113,7 +111,7 @@ export class SynchronizedLyricsFrame extends Frame {
         Guards.byte(version, "version");
 
         const frame = new SynchronizedLyricsFrame(new Id3v2FrameHeader(data, version));
-        frame.setData(data, 0, version, true);
+        frame.setData(data, 0, true);
         return frame;
     }
 

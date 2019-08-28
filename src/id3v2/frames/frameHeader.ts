@@ -307,6 +307,8 @@ export class Id3v2FrameHeader {
         ]
     ];
 
+    private readonly _version: number;
+
     private _flags: Id3v2FrameFlags;
     private _frameId: ByteVector;
     private _frameSize: number;
@@ -335,10 +337,12 @@ export class Id3v2FrameHeader {
             throw new CorruptFileError("Data must contain at least a frame ID");
         }
 
+        this._version = version;
+
         switch (version) {
             case 2:
                 // Set frame ID -- first 3 bytes
-                this._frameId = this.convertId(data.mid(0, 3), version, false);
+                this._frameId = this.convertId(data.mid(0, 3), this._version, false);
 
                 // If the full header information was not passed in, do not continue to the steps
                 // to parse the frame size and flags.
@@ -351,7 +355,7 @@ export class Id3v2FrameHeader {
 
             case 3:
                 // Set the frame ID -- first 4 bytes
-                this._frameId = this.convertId(data.mid(0, 4), version, false);
+                this._frameId = this.convertId(data.mid(0, 4), this._version, false);
 
                 // If the full header information was not passed in, do not continue to the steps
                 // to parse the frame size and flags.
@@ -427,6 +431,11 @@ export class Id3v2FrameHeader {
         Guards.uint(value, "value");
         this._frameSize = value;
     }
+
+    /**
+     * Gets the ID3v2 version this frame is encoded with
+     */
+    public get version(): number { return this._version; }
 
     // #endregion
 

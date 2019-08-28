@@ -1,17 +1,31 @@
 import * as fs from "fs";
 
-// @TODO: Extract an interface to make it feasible to unit test this
-
 export enum SeekOrigin {
     Begin,
     Current,
     End
 }
 
+export interface IStream {
+    readonly canWrite: boolean;
+    readonly length: number;
+    position: number;
+
+    close(): void;
+
+    read(buffer: Uint8Array, bufferOffset: number, length: number): number;
+
+    seek(offset: number, origin: SeekOrigin): void;
+
+    setLength(length: number): void;
+
+    write(buffer: fs.BinaryData, bufferOffset: number, length: number): number;
+}
+
 /**
  * Wrapper around the Node.js internal file descriptors to mock behavior like .NET Streams
  */
-export class Stream {
+export class Stream implements IStream {
     private readonly _canWrite: boolean;
     private readonly _fd: number;
     private _length: number;
@@ -61,7 +75,7 @@ export class Stream {
         fs.closeSync(this._fd);
     }
 
-    public read(buffer: fs.BinaryData, bufferOffset: number, length: number): number {
+    public read(buffer: Uint8Array, bufferOffset: number, length: number): number {
         const bytes = fs.readSync(this._fd, buffer, bufferOffset, length, this._position);
         this._position += bytes;
         return bytes;

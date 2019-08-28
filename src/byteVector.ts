@@ -1,9 +1,9 @@
 import * as BigInt from "big-integer";
 import * as IConv from "iconv-lite";
 import * as fs from "fs";
-import {Guards} from "./utils";
-import {Stream} from "./stream";
 import {IFileAbstraction} from "./fileAbstraction";
+import {IStream} from "./stream";
+import {Guards} from "./utils";
 
 // TODO: Assess if this is needed
 const AB2B = require("arraybuffer-to-buffer");
@@ -234,13 +234,10 @@ export class ByteVector {
         length: number = data.length,
         isReadOnly: boolean = false
     ): ByteVector {
-        if (!data) {
-            throw new Error("Argument Null Exception: data was not provided");
-        }
-        if (!Number.isSafeInteger(length) || length < 0 || length > data.length) {
-            throw new Error(
-                "Argument out of range: length must be a positive integer less than the length of the byte array"
-            );
+        Guards.truthy(data, "data");
+        Guards.uint(length, "length");
+        if (length > data.length) {
+            throw new Error("Argument out of range: length must be less than or equal to the length of the byte array");
         }
 
         const vector = new ByteVector();
@@ -297,7 +294,7 @@ export class ByteVector {
      * @param stream TagLibSharp-node internal stream object
      * @param isReadOnly Whether or not the bytevector is readonly
      */
-    public static fromInternalStream(stream: Stream, isReadOnly: boolean = false): ByteVector {
+    public static fromInternalStream(stream: IStream, isReadOnly: boolean = false): ByteVector {
         Guards.truthy(stream, "stream");
 
         const vector = ByteVector.empty();
@@ -471,6 +468,7 @@ export class ByteVector {
         length: number = Number.MAX_SAFE_INTEGER,
         isReadOnly: boolean = false
     ): ByteVector {
+        Guards.notNullOrUndefined(text, "text");
         if (!Number.isInteger(length) || !Number.isSafeInteger(length) || length < 0) {
             throw new Error("Argument out of range exception: length is invalid");
         }

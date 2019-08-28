@@ -27,16 +27,14 @@ export default class PlayCountFrame extends Frame {
     public static fromOffsetRawHeader(
         data: ByteVector,
         offset: number,
-        header: Id3v2FrameHeader,
-        version: number
+        header: Id3v2FrameHeader
     ): PlayCountFrame {
         Guards.truthy(data, "data");
         Guards.uint(offset, "offset");
         Guards.truthy(header, "header");
-        Guards.byte(version, "version");
 
         const frame = new PlayCountFrame(header);
-        frame.setData(data, offset, version, false);
+        frame.setData(data, offset, false);
         return frame;
     }
 
@@ -51,7 +49,7 @@ export default class PlayCountFrame extends Frame {
         Guards.byte(version, "version");
 
         const frame = new PlayCountFrame(new Id3v2FrameHeader(data, version));
-        frame.setData(data, 0, version, true);
+        frame.setData(data, 0, true);
         return frame;
     }
 

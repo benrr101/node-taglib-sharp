@@ -205,7 +205,8 @@ export abstract class Frame {
      * @param type Value containing the original encoding
      * @param version Value containing the ID3v2 version to be encoded.
      * @returns StringType Value containing the correct encoding to use, based on
-     *     {@see Id3v2Tag.ForceDefaultEncoding} and what is supported by {@paramref version}
+     *     {@see Id3v2TagSettings.forceDefaultEncoding} and what is supported by
+     *     {@paramref version}
      */
     protected static correctEncoding(type: StringType, version: number): StringType {
         Guards.byte(version, "version");
@@ -225,10 +226,9 @@ export abstract class Frame {
      * grouping ID.
      * @param frameData Raw frame data
      * @param offset Index at which the data is contained
-     * @param version ID3v2 version of the data
      */
-    protected fieldData(frameData: ByteVector, offset: number, version: number): ByteVector {
-        let dataOffset = offset + Id3v2FrameHeader.getSize(version);
+    protected fieldData(frameData: ByteVector, offset: number): ByteVector {
+        let dataOffset = offset + Id3v2FrameHeader.getSize(this._header.version);
         let dataLength = this.size;
 
         if ((this.flags & (Id3v2FrameFlags.Compression | Id3v2FrameFlags.DataLengthIndicator)) !== 0) {
@@ -260,9 +260,7 @@ export abstract class Frame {
         const data = frameData.mid(dataOffset, dataLength);
 
         if ((this.flags & Id3v2FrameFlags.Desynchronized) !== 0) {
-            const beforeLength = data.length;
             SyncData.resyncByteVector(data);
-            dataLength -= data.length - beforeLength;
         }
 
         // @FIXME: Implement encryption
@@ -270,7 +268,7 @@ export abstract class Frame {
             throw new NotImplementedError("Encryption is not supported");
         }
 
-        // @FIXME: Implement complression
+        // @FIXME: Implement compression
         if ((this.flags & Id3v2FrameFlags.Compression) !== 0) {
             throw new NotImplementedError("Compression is not supported");
         }
@@ -296,14 +294,13 @@ export abstract class Frame {
      * header.
      * @param data Raw ID3v2 frame
      * @param offset Offset in {@paramref data} at which the frame begins.
-     * @param version ID3v2 version of the raw frame contained in {@paramref data}
      * @param readHeader Whether or not to read the reader into the current instance.
      */
-    protected setData(data: ByteVector, offset: number, version: number, readHeader: boolean): void {
+    protected setData(data: ByteVector, offset: number, readHeader: boolean): void {
         if (readHeader) {
-            this._header = new Id3v2FrameHeader(data, version);
+            this._header = new Id3v2FrameHeader(data, this._header.version);
         }
-        this.parseFields(this.fieldData(data, offset, version), version);
+        this.parseFields(this.fieldData(data, offset), this._header.version);
     }
 
     // #endregion

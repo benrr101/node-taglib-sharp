@@ -137,12 +137,11 @@ export default {
                 ByteVector.equal(header.frameId, FrameTypes.GEOB)
             ) {
                 return {
-                    frame: AttachmentFrame.fromStatic(
+                    frame: AttachmentFrame.fromFile(
                         file.fileAbstraction,
                         filePosition,
                         offset - filePosition,
-                        header,
-                        version
+                        header
                     ),
                     offset: offset
                 };
@@ -183,7 +182,7 @@ export default {
             ByteVector.equal(header.frameId, FrameTypes.GEOB)
         ) {
             // Attached picture (frames 4.14)
-            func = AttachmentFrame.fromDataWithHeader;
+            func = AttachmentFrame.fromOffsetRawData;
         } else if (ByteVector.equal(header.frameId, FrameTypes.PCNT)) {
             // Play count (frames 4.16)
             func = PlayCountFrame.fromOffsetRawHeader;

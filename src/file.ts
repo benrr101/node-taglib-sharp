@@ -3,7 +3,7 @@ import * as path from "path";
 import Properties from "./properties";
 import {ByteVector} from "./byteVector";
 import {IFileAbstraction, LocalFileAbstraction} from "./fileAbstraction";
-import {SeekOrigin, Stream} from "./stream";
+import {IStream, SeekOrigin} from "./stream";
 import {Tag, TagTypes} from "./tag";
 
 /**
@@ -93,7 +93,7 @@ export abstract class File {
     protected _tagTypesOnDisk: TagTypes = TagTypes.None;
 
     private _corruptionReasons: string[] = [];
-    private _fileStream: Stream;
+    private _fileStream: IStream;
     private _mimeType: string;
 
     // #endregion

@@ -1,4 +1,4 @@
-import {Stream} from "./stream";
+import {IStream, Stream} from "./stream";
 
 export interface IFileAbstraction {
     /**
@@ -15,7 +15,7 @@ export interface IFileAbstraction {
      *   If the stream is to be reused after this point, {@see closeStream} should be implemented
      *   in a way to keep it open.
      */
-    readStream: Stream;
+    readStream: IStream;
 
     /**
      * Writable, seekable stream fo the file referenced by the current instance.
@@ -24,9 +24,9 @@ export interface IFileAbstraction {
      *   stream is to be reused after this point, {@see closeStream} should be implemented in a way
      *   to keep it open
      */
-    writeStream: Stream;
+    writeStream: IStream;
 
-    closeStream(stream: Stream): void;
+    closeStream(stream: IStream): void;
 }
 
 export class LocalFileAbstraction implements IFileAbstraction {
@@ -51,15 +51,15 @@ export class LocalFileAbstraction implements IFileAbstraction {
         return this._name;
     }
 
-    public get readStream(): Stream {
+    public get readStream(): IStream {
         return Stream.createAsRead(this._name);
     }
 
-    public get writeStream(): Stream {
+    public get writeStream(): IStream {
         return Stream.createAsReadWrite(this._name);
     }
 
-    public closeStream(stream: Stream): void {
+    public closeStream(stream: IStream): void {
         if (!stream) {
             throw new Error("Argument null: stream was not provided");
         }
