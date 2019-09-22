@@ -3,10 +3,10 @@ import * as ChaiAsPromised from "chai-as-promised";
 import {slow, suite, test, timeout} from "mocha-typescript";
 
 import Header from "../../src/id3v2/header";
-import {ByteVector} from "../../src/byteVector";
-import TestConstants from "../testConstants";
-import {HeaderFlags} from "../../src/id3v2/headerFlags";
 import Id3v2TagSettings from "../../src/id3v2/id3v2TagSettings";
+import TestConstants from "../testConstants";
+import {ByteVector} from "../../src/byteVector";
+import {HeaderFlags} from "../../src/id3v2/headerFlags";
 
 // Setup chai
 Chai.use(ChaiAsPromised);
