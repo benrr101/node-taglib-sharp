@@ -13,6 +13,56 @@ const AB2B = require("arraybuffer-to-buffer");
 Chai.use(ChaiAsPromised);
 const assert = Chai.assert;
 
+@suite(timeout(3000), slow(1000)) class ByteVectorTestsConcatenate {
+    private testArray = new Uint8Array([0x80, 0x08, 0x50]);
+
+    @test
+    public noData() {
+        // Act
+        const bv = ByteVector.concatenate();
+
+        // Assert
+        assert.ok(bv);
+        assert.equal(bv.length, 0);
+    }
+
+    @test
+    public oneByte() {
+        // Act
+        const bv = ByteVector.concatenate(0x08);
+
+        // Assert
+        assert.ok(bv);
+        assert.equal(bv.length, 1);
+        assert.equal(bv.get(0), 0x08)
+    }
+
+    @test
+    public twoBytes() {
+        // Act
+        const bv = ByteVector.concatenate(0x80, 0x08);
+
+        // Assert
+        assert.ok(bv);
+        assert.equal(bv.length, 2);
+        assert.equal(bv.get(0), 0x80);
+        assert.equal(bv.get(1), 0x08);
+    }
+
+    @test
+    public oneArray() {
+        // Act
+        const bv = ByteVector.concatenate(this.testArray);
+
+        // Assert
+        assert.ok(bv);
+        assert.equal(bv.length, this.testArray.length);
+        for (let i = 0; i < bv.length; i++) {
+            assert.equal(bv.get(i), this.testArray[i]);
+        }
+    }
+}
+
 @suite(timeout(3000), slow(1000)) class ByteVectorTestsFromByteArray {
     @test
     public NoData() {

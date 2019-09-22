@@ -310,23 +310,6 @@ export default class AttachmentFrame extends Frame implements ILazy, IPicture {
         try {
             if (this._streamSize === 0) {
                 data = ByteVector.empty();
-            } else if (this._streamSize > 0) {
-                stream = this._file.readStream;
-                stream.seek(this._streamOffset, SeekOrigin.Begin);
-
-                let count = 0;
-                let read = 0;
-                let needed = this._streamSize;
-                const buffer = new Uint8Array(needed);
-
-                do {
-                    count = stream.read(buffer, read, needed);
-
-                    read += count;
-                    needed -= count;
-                } while (needed > 0 && count !== 0);
-
-                data = ByteVector.fromByteArray(buffer, read);
             } else {
                 stream = this._file.readStream;
                 stream.seek(this._streamOffset, SeekOrigin.Begin);

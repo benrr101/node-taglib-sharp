@@ -29,7 +29,8 @@ export default class Header {
         this._revisionNumber = data.get(4);
         this._flags = data.get(5);
 
-        if (this._majorVersion === 2 && (this._flags & 127) > 0) {
+        // Make sure flags provided are legal
+        if (this._majorVersion === 2 && (this._flags & 63) != 0) {
             throw new CorruptFileError("Invalid flags set on version 2 tag");
         }
         if (this._majorVersion === 3 && (this._flags & 15) > 0) {
@@ -39,12 +40,12 @@ export default class Header {
             throw new CorruptFileError("Invalid flags set on version 4 tag");
         }
 
+        // Make sure the bytes for the size of the tag are legal
         for (let i = 6; i < 10; i++) {
             if (data.get(i) >= 128) {
-                throw new CorruptFileError("One of the bytes in the header was greater than the allowed 128");
+                throw new CorruptFileError("One of the bytes in the tag size was greater than the allowed 128");
             }
         }
-
         this.tagSize = SyncData.toUint(data.mid(6, 4));
     }
 
@@ -139,11 +140,15 @@ export default class Header {
     public get tagSize(): number { return this._tagSize; }
     /**
      * Sets the complete size of the tag described by the current instance, minus the header
-     * footer.
-     * @param value Size of the tag in bytes. Must be an unsigned 32-bit integer
+     * footer. NOTE THIS MUST BE AN 28-BIT UNSIGNED INTEGER.
+     * @param value Size of the tag in bytes. Must be an unsigned 28-bit integer
      */
     public set tagSize(value: number) {
         Guards.uint(value, "value");
+        if ((value & 0xF0000000) != 0) {
+            throw new Error("Argument out of range: value must be a 28-bit unsigned integer");
+        }
+
         this._tagSize = value;
     }
 

@@ -14,7 +14,7 @@ export default class BitStream {
         this._bits = new Array<boolean>(56);    // 7 bytes, 8 bits/byte = 56 bits
         for (let i = 0; i < buffer.length; i++) {
             for (let j = 0; j < 8; j++) {
-                this._bits[i * 8 + j] = (buffer[i] & (1 << (7 - j))) > 0;
+                this._bits[i * 8 + j] = (buffer[i] & (1 << (7 - j))) != 0;
             }
         }
 

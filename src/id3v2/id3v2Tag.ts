@@ -764,10 +764,10 @@ export default class Id3v2Tag extends Tag {
         // tag's header. The "tag data" (everything that is included in Header.tagSize) includes
         // the extended header, frames and padding, but does not include the tag's header or footer
 
-        const hasFooter = (this._header.flags & HeaderFlags.FooterPresent) > 0;
-        const unsyncAtFrameLevel = (this._header.flags & HeaderFlags.Unsynchronication) > 0
+        const hasFooter = (this._header.flags & HeaderFlags.FooterPresent) != 0;
+        const unsyncAtFrameLevel = (this._header.flags & HeaderFlags.Unsynchronication) != 0
             && this.version >= 4;
-        const unsyncAtTagLevel = (this._header.flags & HeaderFlags.Unsynchronication) > 0
+        const unsyncAtTagLevel = (this._header.flags & HeaderFlags.Unsynchronication) != 0
             && this.version < 4;
 
         this._header.majorVersion = hasFooter ? 4 : this.version;
@@ -782,7 +782,7 @@ export default class Id3v2Tag extends Tag {
             if (unsyncAtFrameLevel) {
                 frame.flags |= Id3v2FrameFlags.Desynchronized;
             }
-            if ((frame.flags & Id3v2FrameFlags.TagAlterPreservation) > 0 ) {
+            if ((frame.flags & Id3v2FrameFlags.TagAlterPreservation) != 0 ) {
                 continue;
             }
 
@@ -924,15 +924,15 @@ export default class Id3v2Tag extends Tag {
         // If the entire tag is marked as unsynchronized, and this tag is version ID3v2.3 or lower,
         // resynchronize it.
         const fullTagUnsync = this._header.majorVersion < 4
-            && (this._header.flags & HeaderFlags.Unsynchronication) > 0;
+            && (this._header.flags & HeaderFlags.Unsynchronication) != 0;
 
         // Avoid loading all the ID3 tag if PictureLazy is enabled and size is significant enough
         // (ID3v2.4 and later only)
         if (data && (
             fullTagUnsync ||
             this._header.tagSize < 1024 ||
-            (style & ReadStyle.PictureLazy) > 0 ||
-            (this._header.flags & HeaderFlags.ExtendedHeader) > 0
+            (style & ReadStyle.PictureLazy) != 0 ||
+            (this._header.flags & HeaderFlags.ExtendedHeader) != 0
         )) {
             file.seek(position);
             data = file.readBlock(this._header.tagSize);
@@ -947,7 +947,7 @@ export default class Id3v2Tag extends Tag {
             + frameDataPosition - Id3v2FrameHeader.getSize(this._header.majorVersion);
 
         // Check for the extended header
-        if ((this._header.flags & HeaderFlags.ExtendedHeader) > 0) {
+        if ((this._header.flags & HeaderFlags.ExtendedHeader) != 0) {
             this._extendedHeader = ExtendedHeader.fromData(data, this._header.majorVersion);
 
             if (this._extendedHeader.size <= data.length) {

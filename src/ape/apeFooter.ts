@@ -72,7 +72,7 @@ export class ApeFooter {
      * and footer.
      */
     public get completeTagSize(): number {
-        return this._tagSize + ((this._flags & ApeFooterFlags.HeaderPresent) > 0 ? ApeFooter.size : 0);
+        return this._tagSize + ((this._flags & ApeFooterFlags.HeaderPresent) != 0 ? ApeFooter.size : 0);
     }
 
     /**
@@ -132,7 +132,7 @@ export class ApeFooter {
      * Renders the current instance as an APE tag header.
      */
     public renderHeader(): ByteVector {
-        return (this._flags & ApeFooterFlags.HeaderPresent) > 0
+        return (this._flags & ApeFooterFlags.HeaderPresent) != 0
             ? this.render(true)
             : ByteVector.fromSize(0);
     }
@@ -155,7 +155,7 @@ export class ApeFooter {
 
         // Render and add the flags
         let flags = 0;
-        if ((this._flags & ApeFooterFlags.HeaderPresent) > 0) {
+        if ((this._flags & ApeFooterFlags.HeaderPresent) != 0) {
             flags |= ApeFooterFlags.HeaderPresent;
         }
 

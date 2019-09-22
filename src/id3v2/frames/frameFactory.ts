@@ -104,7 +104,7 @@ export default {
         }
 
         // TODO: Support compression
-        if ((header.flags & Id3v2FrameFlags.Compression) > 0) {
+        if ((header.flags & Id3v2FrameFlags.Compression) != 0) {
             throw new NotImplementedError("Compression is not supported");
         }
 

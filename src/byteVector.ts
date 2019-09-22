@@ -181,18 +181,26 @@ export class ByteVector {
     private constructor() { }
 
     /**
-     * Creates a {@see ByteVector} from a collection of byte vectors. This method is better to use
-     * when a known quantity of byte vectors will be concatenated together, since doing multiple
-     * calls to {@see ByteVector.addByteVector} results in the entire byte vector being copied for
-     * each call.
-     * @param vectors ByteVectors or byte arrays to concatenate together into a new {@see ByteVector}
+     * Creates a {@see ByteVector} from a collection of bytes, byte arrays, and byte vectors. This
+     * method is better to use when a known quantity of byte vectors will be concatenated together,
+     * since doing multiple calls to {@see ByteVector.addByteVector} results in the entire byte
+     * vector being copied for each call.
+     * @param vectors ByteVectors, byte arrays, or straight bytes to concatenate together into a
+     *     new {@see ByteVector}
      * @returns ByteVector Single byte vector with the contents of the byte vectors in
      *     {@paramref vectors} concatenated together
      */
     // @TODO Remove usages of .addX when this can be substituted
     public static concatenate(... vectors: Array<Uint8Array|ByteVector|number>): ByteVector {
         // Get the length of the vector we need to create
-        const totalLength = vectors.reduce((p, bv) => p + (<any> bv).length || 1, 0);
+        var totalLength = 0;
+        for (const vector of vectors) {
+            if (typeof(vector) === "number") {
+                totalLength++;
+            } else {
+                totalLength += (<Uint8Array|ByteVector> vector).length;
+            }
+        }
 
         // Create a single big vector and copy the contents into it
         const result = ByteVector.fromSize(totalLength);
@@ -290,7 +298,8 @@ export class ByteVector {
     }
 
     /**
-     * Creates a ByteVector using the contents of an TagLibSharp-node stream as the contents.
+     * Creates a ByteVector using the contents of an TagLibSharp-node stream as the contents. This
+     * method reads from the current offset of the stream, not the beginning of the stream
      * @param stream TagLibSharp-node internal stream object
      * @param isReadOnly Whether or not the bytevector is readonly
      */

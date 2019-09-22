@@ -12,6 +12,7 @@ import Id3v2TagSettings from "../../src/id3v2/id3v2TagSettings";
 import {ByteVector} from "../../src/byteVector";
 import {Id3v2FrameHeader} from "../../src/id3v2/frames/frameHeader";
 import {IFileAbstraction} from "../../src/fileAbstraction";
+import TestStream from "../utilities/testStream";
 
 // Setup chai
 Chai.use(ChaiAsPromised);
@@ -33,28 +34,26 @@ const rawHeader = ByteVector.concatenate(
     TestConstants.testByteVector
 );
 
+const testHeader = new Id3v2FrameHeader(FrameTypes.APIC, 3);
+
 @suite(timeout(3000), slow(1000)) class AttachmentFrameFromFileTests {
     @test
     public falsyAbstraction() {
-        // Arrange
-        const header = new Id3v2FrameHeader(FrameTypes.APIC, 3);
-
         // Act/Assert
-        assert.throws(() => { AttachmentFrame.fromFile(undefined, 0, 10, header); });
-        assert.throws(() => { AttachmentFrame.fromFile(null, 0, 10, header); });
+        assert.throws(() => { AttachmentFrame.fromFile(undefined, 0, 10, testHeader); });
+        assert.throws(() => { AttachmentFrame.fromFile(null, 0, 10, testHeader); });
     }
 
     @test
     public illegalOffset() {
         // Arrange
         const mockAbstraction = TypeMoq.Mock.ofType<IFileAbstraction>();
-        const header = new Id3v2FrameHeader(FrameTypes.APIC, 3);
 
         // Act/Assert
-        assert.throws(() => { AttachmentFrame.fromFile(mockAbstraction.object, -1, 10, header); });
-        assert.throws(() => { AttachmentFrame.fromFile(mockAbstraction.object, 1.5, 10, header); });
+        assert.throws(() => { AttachmentFrame.fromFile(mockAbstraction.object, -1, 10, testHeader); });
+        assert.throws(() => { AttachmentFrame.fromFile(mockAbstraction.object, 1.5, 10, testHeader); });
         assert.throws(() => {
-            AttachmentFrame.fromFile(mockAbstraction.object, Number.MAX_SAFE_INTEGER + 1, 10, header);
+            AttachmentFrame.fromFile(mockAbstraction.object, Number.MAX_SAFE_INTEGER + 1, 10, testHeader);
         });
     }
 
@@ -62,13 +61,12 @@ const rawHeader = ByteVector.concatenate(
     public illegalSize() {
         // Arrange
         const mockAbstraction = TypeMoq.Mock.ofType<IFileAbstraction>();
-        const header = new Id3v2FrameHeader(FrameTypes.APIC, 3);
 
         // Act/Assert
-        assert.throws(() => { AttachmentFrame.fromFile(mockAbstraction.object, 0, -10, header); });
-        assert.throws(() => { AttachmentFrame.fromFile(mockAbstraction.object, 0, 1.5, header); });
+        assert.throws(() => { AttachmentFrame.fromFile(mockAbstraction.object, 0, -10, testHeader); });
+        assert.throws(() => { AttachmentFrame.fromFile(mockAbstraction.object, 0, 1.5, testHeader); });
         assert.throws(() => {
-            AttachmentFrame.fromFile(mockAbstraction.object, 0, Number.MAX_SAFE_INTEGER + 1, header);
+            AttachmentFrame.fromFile(mockAbstraction.object, 0, Number.MAX_SAFE_INTEGER + 1, testHeader);
         });
     }
 
@@ -82,46 +80,34 @@ const rawHeader = ByteVector.concatenate(
         assert.throws(() => { AttachmentFrame.fromFile(mockAbstraction.object, 0, 10, null); });
     }
 
-    // @test
-    // public validParams_readFullFile() {
-    //     // Arrange
-    //     const mockAbstraction = TypeMoq.Mock.ofType<IFileAbstraction>();
-    //     mockAbstraction.setup((fa) => fa.readStream)
-    //         .returns(() => new TestStream(testConstants.testByteVector, false));
-    //     const header = new Id3v2FrameHeader(FrameTypes.APIC, 3);
-    //
-    //     // Act
-    //     const result = AttachmentFrame.fromFile(mockAbstraction.object, 0, -1, header);
-    //
-    //     // Assert
-    //     assert.ok(result);
-    //     assert.isTrue(ByteVector.equal(result.frameId, FrameTypes.APIC));
-    //
-    //     assert.strictEqual(result.data, )
-    // }
+    @test
+    public validParams() {
+        // Arrange
+        const mockAbstraction = TypeMoq.Mock.ofType<IFileAbstraction>();
+
+        // Act
+        const frame = AttachmentFrame.fromFile(mockAbstraction.object, 0, -1, testHeader);
+
+        // Assert - Make sure file wasn't read yet
+        mockAbstraction.verify((fa) => fa.readStream, TypeMoq.Times.never());
+    }
 }
 
 @suite(timeout(3000), slow(1000)) class AttachmentFrameOffsetRawDataTests {
     @test
     public falsyData() {
-        // Arrange
-        const header = new Id3v2FrameHeader(FrameTypes.APIC, 3);
-
         // Act/Assert
-        assert.throws(() => { AttachmentFrame.fromOffsetRawData(undefined, 0, header); });
-        assert.throws(() => { AttachmentFrame.fromOffsetRawData(null, 0, header); });
+        assert.throws(() => { AttachmentFrame.fromOffsetRawData(undefined, 0, testHeader); });
+        assert.throws(() => { AttachmentFrame.fromOffsetRawData(null, 0, testHeader); });
     }
 
     @test
     public invalidOffset() {
-        // Arrange
-        const header = new Id3v2FrameHeader(FrameTypes.APIC, 3);
-
         // Act/Assert
-        assert.throws(() => { AttachmentFrame.fromOffsetRawData(TestConstants.testByteVector, -1, header); });
-        assert.throws(() => { AttachmentFrame.fromOffsetRawData(TestConstants.testByteVector, 1.5, header); });
+        assert.throws(() => { AttachmentFrame.fromOffsetRawData(TestConstants.testByteVector, -1, testHeader); });
+        assert.throws(() => { AttachmentFrame.fromOffsetRawData(TestConstants.testByteVector, 1.5, testHeader); });
         assert.throws(() => {
-            AttachmentFrame.fromOffsetRawData(TestConstants.testByteVector, Number.MAX_SAFE_INTEGER + 1, header);
+            AttachmentFrame.fromOffsetRawData(TestConstants.testByteVector, Number.MAX_SAFE_INTEGER + 1, testHeader);
         });
     }
 
@@ -130,6 +116,18 @@ const rawHeader = ByteVector.concatenate(
         // Act/Assert
         assert.throws(() => { AttachmentFrame.fromOffsetRawData(TestConstants.testByteVector, 0, undefined); });
         assert.throws(() => { AttachmentFrame.fromOffsetRawData(TestConstants.testByteVector, 0, null); });
+    }
+
+    @test
+    public dataTooShort() {
+        // Act/Assert
+        // @TODO
+    }
+
+    @test
+    public validParams() {
+        // Arrange
+        // @TODO
     }
 }
 
