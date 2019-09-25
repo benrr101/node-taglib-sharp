@@ -76,6 +76,7 @@ export default class Header {
      *     current instance.
      */
     public set flags(value: HeaderFlags) {
+        // @TODO: Does it make sense to check for flags for major version <4?
         const version3Flags = HeaderFlags.ExtendedHeader | HeaderFlags.ExperimentalIndicator;
         if ((value & version3Flags) > 0 && this.majorVersion < 3) {
             throw new Error("Feature only supported in version 2.3+");
@@ -106,6 +107,7 @@ export default class Header {
         Guards.byte(value, "value");
         Guards.between(value, 2, 4, "value");
 
+        // @TODO: do we need to support setting to versions <4?
         if (value < 3) {
             this._flags &= ~(HeaderFlags.ExtendedHeader | HeaderFlags.ExperimentalIndicator);
         }

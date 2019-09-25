@@ -12,13 +12,11 @@ export default class Footer {
     private _revisionNumber: number;
     private _tagSize: number;
 
-    private constructor() {}
-
     /**
      * Constructs and initializes a new instance by reading it from raw footer data.
      * @param data Raw data to build the instance from
      */
-    public static fromData(data: ByteVector): Footer {
+    public constructor(data: ByteVector) {
         Guards.truthy(data, "data");
         if (data.length < Id3v2TagSettings.footerSize) {
             throw new CorruptFileError("Provided data is smaller than object size.");
@@ -27,18 +25,18 @@ export default class Footer {
             throw new CorruptFileError("Provided data does not start with the file identifier");
         }
 
-        const footer = new Footer();
-        footer._majorVersion = data.get(3);
-        footer._revisionNumber = data.get(4);
-        footer._flags = data.get(5);
+        this._majorVersion = data.get(3);
+        this._revisionNumber = data.get(4);
+        this._flags = data.get(5);
 
-        if (footer._majorVersion === 2 && (footer._flags & 127) != 0) {
+        // TODO: Is there any point to supporting footers on versions less than 4?
+        if (this._majorVersion === 2 && (this._flags & 127) != 0) {
             throw new CorruptFileError("Invalid flags set on version 2 tag");
         }
-        if (footer._majorVersion === 3 && (footer._flags & 15) != 0) {
+        if (this._majorVersion === 3 && (this._flags & 15) != 0) {
             throw new CorruptFileError("Invalid flags set on version 3 tag");
         }
-        if (footer._majorVersion === 4 && (footer._flags & 7) != 0) {
+        if (this._majorVersion === 4 && (this._flags & 7) != 0) {
             throw new CorruptFileError("Invalid flags set on version 4 tag");
         }
 
@@ -48,9 +46,7 @@ export default class Footer {
             }
         }
 
-        footer.tagSize = SyncData.toUint(data.mid(6, 4));
-
-        return footer;
+        this.tagSize = SyncData.toUint(data.mid(6, 4));
     }
 
     // #region Properties
@@ -136,11 +132,15 @@ export default class Footer {
     public get tagSize(): number { return this._tagSize; }
     /**
      * Sets the complete size of the tag described by the current instance, minus the header
-     * footer.
-     * @param value Size of the tag in bytes. Must be an unsigned 32-bit integer
+     * footer. NOTE THIS MUST BE AN 28-BIT UNSIGNED INTEGER.
+     * @param value Size of the tag in bytes. Must be an unsigned 28-bit integer
      */
     public set tagSize(value: number) {
         Guards.uint(value, "value");
+        if ((value & 0xF0000000) != 0) {
+            throw new Error("Argument out of range: value must be a 28-bit unsigned integer");
+        }
+
         this._tagSize = value;
     }
 

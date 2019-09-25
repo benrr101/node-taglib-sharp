@@ -56,8 +56,8 @@ export default {
     /**
      * Decodes synchronized integer data into an unsigned integer.
      * @param data ByteVector containing the number to decode. Only the first 4 bytes of this value
-     *     will be used.
-     * @returns number Value containing the decoded number.
+     *     will be used
+     * @returns number Value containing the decoded number
      */
     toUint: (data: ByteVector): number => {
         Guards.notNullOrUndefined(data, "data");
