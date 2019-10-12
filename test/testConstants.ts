@@ -43,4 +43,7 @@ export default class TestConstants {
     };
 
     public static testByteVector: ByteVector = ByteVector.fromString("foobarbaz");
+
+    public static syncedUint = 0x2040810;
+    public static syncedUintBytes = ByteVector.fromSize(4, 0x10);
 }

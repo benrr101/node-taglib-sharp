@@ -48,6 +48,7 @@ export class UrlLinkFrame extends Frame {
      * @param ident Identity of the frame to construct
      */
     public static fromIdentity(ident: ByteVector): UrlLinkFrame {
+        Guards.truthy(ident, "ident");
         return new UrlLinkFrame(new Id3v2FrameHeader(ident, 4));
     }
 
@@ -87,7 +88,6 @@ export class UrlLinkFrame extends Frame {
         frame.setData(data, 0, true);
         return frame;
     }
-
 
     // #endregion
 
@@ -131,10 +131,10 @@ export class UrlLinkFrame extends Frame {
     // #region Methods
 
     /**
-     * Gets a frame from a list of frames
+     * Gets the first frame that matches the provided type
      * @param frames Object to search in
      * @param ident Frame identifier to search for. Must be 4 bytes
-     * @returns PopularimeterFrame Frame containing the matching user, `undefined` if a match was
+     * @returns UrlLinkFrame Frame containing the matching frameId, `undefined` if a match was
      *     not found
      */
     public static findUrlLinkFrame(frames: UrlLinkFrame[], ident: ByteVector): UrlLinkFrame {
@@ -148,7 +148,7 @@ export class UrlLinkFrame extends Frame {
     }
 
     /** @inheritDoc */
-    public clone(): Frame {
+    public clone(): UrlLinkFrame {
         const frame = UrlLinkFrame.fromIdentity(this.frameId);
         frame._textFields = this._textFields.slice();
         if (this._rawData) {
@@ -368,7 +368,7 @@ export class UserUrlLinkFrame extends UrlLinkFrame {
     }
 
     /** @inheritDoc */
-    public clone(): Frame {
+    public clone(): UserUrlLinkFrame {
         const frame = UserUrlLinkFrame.fromDescription(null);
         frame._encoding = this._encoding;
         frame._textFields = this._textFields.slice();

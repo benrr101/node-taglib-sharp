@@ -4,6 +4,7 @@ import {slow, suite, test, timeout} from "mocha-typescript";
 
 import Footer from "../../src/id3v2/footer";
 import Id3v2TagSettings from "../../src/id3v2/id3v2TagSettings";
+import TestConstants from "../testConstants";
 import {ByteVector} from "../../src/byteVector";
 import {HeaderFlags} from "../../src/id3v2/headerFlags";
 
@@ -17,7 +18,7 @@ const getTestFooter = (majorVersion: number, minorVersion: number, flags: Header
         majorVersion,
         minorVersion,
         flags,
-        0x10, 0x10, 0x10, 0x10
+        TestConstants.syncedUintBytes
     );
     return new Footer(data);
 };
@@ -91,7 +92,7 @@ class TagFooterConstructorTests {
             majorVersion,
             minorVersion,
             flags,
-            0x10, 0x10, 0x10, 0x10
+            TestConstants.syncedUintBytes
         );
 
         // Act
@@ -101,7 +102,7 @@ class TagFooterConstructorTests {
         assert.equal(output.flags, flags);
         assert.equal(output.majorVersion, majorVersion);
         assert.equal(output.revisionNumber, minorVersion);
-        assert.equal(output.tagSize, 0x2040810);
+        assert.equal(output.tagSize, TestConstants.syncedUint);
     }
 }
 
@@ -228,7 +229,7 @@ class TagFooterRenderTests {
             majorVersion,
             minorVersion,
             flags,
-            0x10, 0x10, 0x10, 0x10
+            TestConstants.syncedUintBytes
         );
         const footer = new Footer(testData);
 

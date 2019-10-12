@@ -3,15 +3,12 @@ import * as ChaiAsPromised from "chai-as-promised";
 import {slow, suite, test, timeout} from "mocha-typescript";
 
 import SyncData from "../../src/id3v2/syncData";
+import TestConstants from "../testConstants";
 import {ByteVector} from "../../src/byteVector";
 
 // Setup chai
 Chai.use(ChaiAsPromised);
 const assert = Chai.assert;
-
-// Test Constants
-const syncedUint = 0x2040810;
-const syncedUintBytes = ByteVector.fromSize(4, 0x10);
 
 @suite(timeout(3000), slow(1000))
 class SyncDataTests {
@@ -27,10 +24,10 @@ class SyncDataTests {
     @test
     public fromUint_Successful() {
         // Act
-        const output = SyncData.fromUint(syncedUint);
+        const output = SyncData.fromUint(TestConstants.syncedUint);
 
         // Assert
-        assert.isTrue(ByteVector.equal(output, syncedUintBytes));
+        assert.isTrue(ByteVector.equal(output, TestConstants.syncedUintBytes));
     }
 
     @test
@@ -70,7 +67,7 @@ class SyncDataTests {
         const output = SyncData.toUint(input);
 
         // Assert
-        assert.equal(output, syncedUint);
+        assert.equal(output, TestConstants.syncedUint);
     }
 
     @test
@@ -82,7 +79,7 @@ class SyncDataTests {
         const output = SyncData.toUint(input);
 
         // Assert
-        assert.equal(output, syncedUint);
+        assert.equal(output, TestConstants.syncedUint);
     }
 
     @test
