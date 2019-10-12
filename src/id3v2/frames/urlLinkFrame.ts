@@ -314,11 +314,13 @@ export class UserUrlLinkFrame extends UrlLinkFrame {
      * There should only be one frame with a matching description per tag.
      */
     public set description(value: string) {
+        const normalizedValue = value || undefined;
+
         let text = super.text;
         if (text.length > 0) {
-            text[0] = value;
+            text[0] = normalizedValue;
         } else {
-            text = [value];
+            text = [normalizedValue];
         }
         super.text = text;
     }
