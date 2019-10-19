@@ -121,6 +121,8 @@ export abstract class Frame {
 
     /**
      * Gets the size of the current instance as it was last stored on disk.
+     * NOTE: This value is not used outside of reading a frame from disk, so newly created frames
+     *     should not have this value set.
      */
     public get size(): number { return this._header.frameSize; }
 

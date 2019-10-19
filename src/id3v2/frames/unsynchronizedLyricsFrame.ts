@@ -93,7 +93,7 @@ export default class UnsynchronizedLyricsFrame extends Frame {
     /**
      * Gets the ISO-639-2 language code for the contents of this instance.
      */
-    public get language(): string { return this._language && this._language.length > 2 ? this._language : "XXX"; }
+    public get language(): string { return (this._language && this._language.length === 3) ? this._language : "XXX"; }
     /**
      * Sets the ISO-639-2 language code for the contents of this instance.
      */
@@ -122,8 +122,8 @@ export default class UnsynchronizedLyricsFrame extends Frame {
     // #region Public Methods
 
     /**
-     * Gets a unsynchronized lyrics frame from a list of frames that matches the provided
-     * parameters
+     * Gets the first unsynchronized lyrics frame from a list of frames that matches the provided
+     * parameters.
      * @param frames List of frames to search
      * @param description Description to match
      * @param language Optionally, ISO-639-2 language code to match

@@ -386,7 +386,7 @@ class UserUrlLinkMethodTests {
         assert.isTrue(ByteVector.equal(result.frameId, frame.frameId));
         assert.strictEqual(result.description, frame.description);
         assert.deepEqual(result.text, frame.text);
-        assert.deepEqual(result.textEncoding, frame.textEncoding);
+        assert.strictEqual(result.textEncoding, frame.textEncoding);
     }
 
     @test
