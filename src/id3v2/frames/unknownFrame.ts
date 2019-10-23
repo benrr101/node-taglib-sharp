@@ -17,7 +17,15 @@ export default class UnknownFrame extends Frame {
      * @param data Contents of the frame
      */
     public static fromData(type: ByteVector, data?: ByteVector): UnknownFrame {
-        return new UnknownFrame(new Id3v2FrameHeader(type, 4));
+        Guards.truthy(type, "type");
+
+        const frame = new UnknownFrame(new Id3v2FrameHeader(type, 4));
+        if (data) {
+            frame.data = data;
+        } else {
+            frame.data = undefined;
+        }
+        return frame;
     }
 
     /**
