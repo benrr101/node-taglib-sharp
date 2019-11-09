@@ -2,10 +2,11 @@ import * as Chai from "chai";
 import * as ChaiAsPromised from "chai-as-promised";
 import {slow, suite, test, timeout} from "mocha-typescript";
 
+import FrameConstructorTests from "./frameConstructorTests";
 import FrameTypes from "../../src/id3v2/frameTypes";
 import UnknownFrame from "../../src/id3v2/frames/unknownFrame";
 import {ByteVector} from "../../src/byteVector";
-import {FrameClassType} from "../../src/id3v2/frames/frame";
+import {Frame, FrameClassType} from "../../src/id3v2/frames/frame";
 import {Id3v2FrameHeader} from "../../src/id3v2/frames/frameHeader";
 
 // Setup chai
@@ -13,7 +14,15 @@ Chai.use(ChaiAsPromised);
 const assert = Chai.assert;
 
 @suite(timeout(3000), slow(1000))
-class UnknownFrameConstructorsTests {
+class UnknownFrameConstructorsTests extends FrameConstructorTests{
+    public get fromOffsetRawData(): (d: ByteVector, o: number, h: Id3v2FrameHeader) => Frame {
+        return UnknownFrame.fromOffsetRawData;
+    }
+
+    public get fromRawData(): (d: ByteVector, v: number) => Frame {
+        return UnknownFrame.fromRawData;
+    }
+
     @test
     public fromData_falsyType_throws() {
         // Act/Assert
@@ -68,38 +77,6 @@ class UnknownFrameConstructorsTests {
     }
 
     @test
-    public fromOffsetRawData_falsyData_throws() {
-        // Arrange
-        const header = new Id3v2FrameHeader(FrameTypes.WXXX, 4);
-
-        // Act/Assert
-        assert.throws(() => { UnknownFrame.fromOffsetRawData(undefined, 1, header); });
-        assert.throws(() => { UnknownFrame.fromOffsetRawData(null, 1, header); });
-    }
-
-    @test
-    public fromOffsetRawData_invalidOffset_throws() {
-        // Arrange
-        const data = ByteVector.fromSize(0);
-        const header = new Id3v2FrameHeader(FrameTypes.WXXX, 4);
-
-        // Act/Assert
-        assert.throws(() => { UnknownFrame.fromOffsetRawData(data, -1, header); });
-        assert.throws(() => { UnknownFrame.fromOffsetRawData(data, 1.23, header); });
-        assert.throws(() => { UnknownFrame.fromOffsetRawData(data, Number.MAX_SAFE_INTEGER + 1, header); });
-    }
-
-    @test
-    public fromOffsetData_falsyHeader_throws() {
-        // Arrange
-        const data = ByteVector.fromSize(0);
-
-        // Act/Assert
-        assert.throws(() => { UnknownFrame.fromOffsetRawData(data, 1, undefined); });
-        assert.throws(() => { UnknownFrame.fromOffsetRawData(data, 1, null); });
-    }
-
-    @test
     public fromOffsetData_validParams_returnsFrame() {
         // Arrange
         const header = new Id3v2FrameHeader(FrameTypes.WXXX, 4);
@@ -119,24 +96,6 @@ class UnknownFrameConstructorsTests {
         assert.isTrue(ByteVector.equal(frame.frameId, FrameTypes.WXXX));
 
         assert.isTrue(ByteVector.equal(frame.data, ByteVector.fromString("foo bar baz")));
-    }
-
-    @test
-    public fromRawData_falsyData_throws() {
-        // Act/Assert
-        assert.throws(() => { UnknownFrame.fromRawData(null, 4); });
-        assert.throws(() => { UnknownFrame.fromRawData(undefined, 4); });
-    }
-
-    @test
-    public fromRawData_invalidVersion_throws() {
-        // Arrange
-        const data = ByteVector.empty();
-
-        // Act/Assert
-        assert.throws(() => { UnknownFrame.fromRawData(data, -1); });
-        assert.throws(() => { UnknownFrame.fromRawData(data, 1.23); });
-        assert.throws(() => { UnknownFrame.fromRawData(data, Number.MAX_SAFE_INTEGER + 1); });
     }
 
     @test

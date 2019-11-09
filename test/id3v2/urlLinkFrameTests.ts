@@ -2,10 +2,11 @@ import * as Chai from "chai";
 import * as ChaiAsPromised from "chai-as-promised";
 import {slow, suite, test, timeout} from "mocha-typescript";
 
+import FrameConstructorTests from "./frameConstructorTests";
 import FrameTypes from "../../src/id3v2/frameTypes";
 import TestConstants from "../testConstants";
 import {ByteVector, StringType} from "../../src/byteVector";
-import {FrameClassType} from "../../src/id3v2/frames/frame";
+import {Frame, FrameClassType} from "../../src/id3v2/frames/frame";
 import {Id3v2FrameFlags, Id3v2FrameHeader} from "../../src/id3v2/frames/frameHeader";
 import {UrlLinkFrame} from "../../src/id3v2/frames/urlLinkFrame";
 
@@ -31,7 +32,15 @@ const getTestUrlLinkFrame = (): UrlLinkFrame => {
 };
 
 @suite(timeout(3000), slow(1000))
-class UrlLinkFrameConstructorTests {
+class UrlLinkFrameConstructorTests extends FrameConstructorTests {
+    public get fromOffsetRawData(): (d: ByteVector, o: number, h: Id3v2FrameHeader) => Frame {
+        return UrlLinkFrame.fromOffsetRawData;
+    }
+
+    public get fromRawData(): (d: ByteVector, v: number) => Frame {
+        return UrlLinkFrame.fromRawData;
+    }
+
     @test
     public fromIdentity_falsyIdentity() {
         // Act/Assert
@@ -56,38 +65,6 @@ class UrlLinkFrameConstructorTests {
 
         assert.deepEqual(output.text, []);
         assert.equal(output.textEncoding, StringType.Latin1);
-    }
-
-    @test
-    public fromOffsetRawData_falsyData() {
-        // Arrange
-        const header = new Id3v2FrameHeader(FrameTypes.WCOM, 4);
-
-        // Act/Assert
-        assert.throws(() => { UrlLinkFrame.fromOffsetRawData(null, 2, header); });
-        assert.throws(() => { UrlLinkFrame.fromOffsetRawData(undefined, 2, header); });
-    }
-
-    @test
-    public fromOffsetRawData_invalidVersion() {
-        // Arrange
-        const data = ByteVector.empty();
-        const header = new Id3v2FrameHeader(FrameTypes.WCOM, 4);
-
-        // Act/Assert
-        assert.throws(() => { UrlLinkFrame.fromOffsetRawData(data, -1, header); });
-        assert.throws(() => { UrlLinkFrame.fromOffsetRawData(data, 1.5, header); });
-        assert.throws(() => { UrlLinkFrame.fromOffsetRawData(data, 0x100, header); });
-    }
-
-    @test
-    public fromOffsetRawData_falsyHeader() {
-        // Arrange
-        const data = ByteVector.empty();
-
-        // Act/Assert
-        assert.throws(() => { UrlLinkFrame.fromOffsetRawData(data, 2, undefined); });
-        assert.throws(() => { UrlLinkFrame.fromOffsetRawData(data, 2, null); });
     }
 
     @test
@@ -156,24 +133,6 @@ class UrlLinkFrameConstructorTests {
 
         assert.deepEqual(output.text, ["foo", "bar"]);
         assert.equal(output.textEncoding, StringType.Latin1);
-    }
-
-    @test
-    public fromRawData_falsyData() {
-        // Act/Assert
-        assert.throws(() => { UrlLinkFrame.fromRawData(null, 2); });
-        assert.throws(() => { UrlLinkFrame.fromRawData(undefined, 2); });
-    }
-
-    @test
-    public fromRawData_invalidVersion() {
-        // Arrange
-        const data = ByteVector.empty();
-
-        // Act/Assert
-        assert.throws(() => { UrlLinkFrame.fromRawData(data, -1); });
-        assert.throws(() => { UrlLinkFrame.fromRawData(data, 1.5); });
-        assert.throws(() => { UrlLinkFrame.fromRawData(data, 0x100); });
     }
 
     @test

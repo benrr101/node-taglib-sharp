@@ -2,10 +2,11 @@ import * as Chai from "chai";
 import * as ChaiAsPromised from "chai-as-promised";
 import {slow, suite, test, timeout} from "mocha-typescript";
 
+import FrameConstructorTests from "./frameConstructorTests";
 import FrameTypes from "../../src/id3v2/frameTypes";
 import TestConstants from "../testConstants";
 import {ByteVector, StringType} from "../../src/byteVector";
-import {FrameClassType} from "../../src/id3v2/frames/frame";
+import {Frame, FrameClassType} from "../../src/id3v2/frames/frame";
 import {Id3v2FrameFlags, Id3v2FrameHeader} from "../../src/id3v2/frames/frameHeader";
 import {UserUrlLinkFrame} from "../../src/id3v2/frames/urlLinkFrame";
 
@@ -31,37 +32,13 @@ const getTestUserUrlLinkFrame = (): UserUrlLinkFrame => {
 };
 
 @suite(timeout(3000), slow(1000))
-class UserUrlLinkFrameConstructorTests {
-    @test
-    public fromOffsetRawData_falsyData() {
-        // Arrange
-        const header = new Id3v2FrameHeader(FrameTypes.WCOM, 4);
-
-        // Act/Assert
-        assert.throws(() => { UserUrlLinkFrame.fromOffsetRawData(null, 2, header); });
-        assert.throws(() => { UserUrlLinkFrame.fromOffsetRawData(undefined, 2, header); });
+class UserUrlLinkFrameConstructorTests extends FrameConstructorTests {
+    public get fromOffsetRawData(): (d: ByteVector, o: number, h: Id3v2FrameHeader) => Frame {
+        return UserUrlLinkFrame.fromOffsetRawData;
     }
 
-    @test
-    public fromOffsetRawData_invalidVersion() {
-        // Arrange
-        const data = ByteVector.empty();
-        const header = new Id3v2FrameHeader(FrameTypes.WCOM, 4);
-
-        // Act/Assert
-        assert.throws(() => { UserUrlLinkFrame.fromOffsetRawData(data, -1, header); });
-        assert.throws(() => { UserUrlLinkFrame.fromOffsetRawData(data, 1.5, header); });
-        assert.throws(() => { UserUrlLinkFrame.fromOffsetRawData(data, 0x100, header); });
-    }
-
-    @test
-    public fromOffsetRawData_falsyHeader() {
-        // Arrange
-        const data = ByteVector.empty();
-
-        // Act/Assert
-        assert.throws(() => { UserUrlLinkFrame.fromOffsetRawData(data, 2, undefined); });
-        assert.throws(() => { UserUrlLinkFrame.fromOffsetRawData(data, 2, null); });
+    public get fromRawData(): (d: ByteVector, v: number) => Frame {
+        return UserUrlLinkFrame.fromRawData;
     }
 
     @test
@@ -97,24 +74,6 @@ class UserUrlLinkFrameConstructorTests {
         assert.strictEqual(output.description, "foo");
         assert.deepEqual(output.text, ["bar"]);
         assert.equal(output.textEncoding, StringType.Latin1);
-    }
-
-    @test
-    public fromRawData_falsyData() {
-        // Act/Assert
-        assert.throws(() => { UserUrlLinkFrame.fromRawData(null, 2); });
-        assert.throws(() => { UserUrlLinkFrame.fromRawData(undefined, 2); });
-    }
-
-    @test
-    public fromRawData_invalidVersion() {
-        // Arrange
-        const data = ByteVector.empty();
-
-        // Act/Assert
-        assert.throws(() => { UserUrlLinkFrame.fromRawData(data, -1); });
-        assert.throws(() => { UserUrlLinkFrame.fromRawData(data, 1.5); });
-        assert.throws(() => { UserUrlLinkFrame.fromRawData(data, 0x100); });
     }
 
     @test

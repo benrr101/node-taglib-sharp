@@ -19,11 +19,15 @@ export default class UniqueFileIdentifierFrame extends Frame {
 
     /**
      * Constructs and initializes a new instance using the provided information
-     * @param owner Owner of the new frame
-     * @param identifier Identifier for the new frame
+     * @param owner Owner of the new frame. Should be an email or url to the database where this
+     *     unique identifier is applicable
+     * @param identifier Unique identifier to store in the frame. Must be no more than 64 bytes
      */
-    public static create(owner: string, identifier: ByteVector): UniqueFileIdentifierFrame {
+    public static fromData(owner: string, identifier: ByteVector): UniqueFileIdentifierFrame {
         Guards.notNullOrUndefined(owner, "owner");
+        if (identifier && identifier.length > 64) {
+            throw new Error("Argument out of range: Identifier cannot be longer than 64 bytes");
+        }
 
         const frame = new UniqueFileIdentifierFrame(new Id3v2FrameHeader(FrameTypes.UFID, 4));
         frame._owner = owner;
@@ -76,8 +80,7 @@ export default class UniqueFileIdentifierFrame extends Frame {
     public get frameClassType(): FrameClassType { return FrameClassType.UniqueFileIdentifierFrame; }
 
     /**
-     * Gets the owner of the current instance.
-     * There should only be one frame with this owner per tag.
+     * Gets the owner of this unique ID.
      */
     public get owner(): string { return this._owner; }
 
@@ -88,7 +91,13 @@ export default class UniqueFileIdentifierFrame extends Frame {
     /**
      * Sets the identifier data stored in the current instance.
      */
-    public set identifier(value: ByteVector) { this._identifier = value; }
+    public set identifier(value: ByteVector) {
+        Guards.truthy(value, "value");
+        if (value.length > 64) {
+            throw new Error("Argument out of range: value must be no more than 64 characters");
+        }
+        this._identifier = value;
+    }
 
     // #endregion
 
@@ -109,7 +118,8 @@ export default class UniqueFileIdentifierFrame extends Frame {
     /** @inheritDoc */
     public clone(): Frame {
         const frame = new UniqueFileIdentifierFrame(new Id3v2FrameHeader(FrameTypes.UFID, 4));
-        if (this.identifier) {
+        frame._owner = this._owner;
+        if (this._identifier) {
             frame.identifier = ByteVector.fromByteVector(this.identifier);
         }
         return frame;
@@ -122,7 +132,7 @@ export default class UniqueFileIdentifierFrame extends Frame {
             return;
         }
 
-        this._owner = fields[0].toString(StringType.Latin1);
+        this._owner = fields[0].toString(undefined, StringType.Latin1);
         this._identifier = fields[1];
     }
 

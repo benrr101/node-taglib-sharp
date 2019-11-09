@@ -1155,7 +1155,7 @@ export default class Id3v2Tag extends Tag {
             this.removeFrame(frame);
         } else {
             const identifier = ByteVector.fromString(text, StringType.UTF8);
-            frame = UniqueFileIdentifierFrame.create(owner, identifier);
+            frame = UniqueFileIdentifierFrame.fromData(owner, identifier);
             this.addFrame(frame);
         }
     }

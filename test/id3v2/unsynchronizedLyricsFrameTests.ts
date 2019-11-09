@@ -2,10 +2,11 @@ import * as Chai from "chai";
 import * as ChaiAsPromised from "chai-as-promised";
 import {slow, suite, test, timeout} from "mocha-typescript";
 
+import FrameConstructorTests from "./frameConstructorTests";
 import FrameTypes from "../../src/id3v2/frameTypes";
 import UnsynchronizedLyricsFrame from "../../src/id3v2/frames/unsynchronizedLyricsFrame";
 import {ByteVector, StringType} from "../../src/byteVector";
-import {FrameClassType} from "../../src/id3v2/frames/frame";
+import {Frame, FrameClassType} from "../../src/id3v2/frames/frame";
 import {Id3v2FrameHeader} from "../../src/id3v2/frames/frameHeader";
 
 // Setup chai
@@ -32,7 +33,15 @@ const getTestUnsynchronizedLyricsFrame = (): UnsynchronizedLyricsFrame => {
 };
 
 @suite(timeout(3000), slow(1000))
-class UnsynchronizedLyricsFrameConstructorsTests {
+class UnsynchronizedLyricsFrameConstructorsTests extends FrameConstructorTests {
+    public get fromOffsetRawData(): (d: ByteVector, o: number, h: Id3v2FrameHeader) => Frame {
+        return UnsynchronizedLyricsFrame.fromOffsetRawData;
+    }
+
+    public get fromRawData(): (d: ByteVector, v: number) => Frame {
+        return UnsynchronizedLyricsFrame.fromRawData;
+    }
+
     @test
     public fromData() {
         // Arrange
@@ -52,42 +61,6 @@ class UnsynchronizedLyricsFrameConstructorsTests {
         assert.strictEqual(result.language, language);
         assert.strictEqual(result.text, "");
         assert.strictEqual(result.textEncoding, encoding);
-    }
-
-    @test
-    public fromOffsetRawData_invalidData_throws() {
-        // Arrange
-        const header = new Id3v2FrameHeader(FrameTypes.USLT, 4);
-        const dataTooShort = ByteVector.empty();
-
-        // Act/Assert
-        assert.throws(() => { UnsynchronizedLyricsFrame.fromOffsetRawData(null, 0, header); });
-        assert.throws(() => { UnsynchronizedLyricsFrame.fromOffsetRawData(undefined, 0, header); });
-        assert.throws(() => { UnsynchronizedLyricsFrame.fromOffsetRawData(dataTooShort, 0, header); });
-    }
-
-    @test
-    public fromOffsetRawData_invalidOffset_throws() {
-        // Arrange
-        const data = ByteVector.empty();
-        const header = new Id3v2FrameHeader(FrameTypes.USLT, 4);
-
-        // Act/Assert
-        assert.throws(() => { UnsynchronizedLyricsFrame.fromOffsetRawData(data, -1, header); });
-        assert.throws(() => { UnsynchronizedLyricsFrame.fromOffsetRawData(data, 1.23, header); });
-        assert.throws(() => {
-            UnsynchronizedLyricsFrame.fromOffsetRawData(data, Number.MAX_SAFE_INTEGER + 1, header);
-        });
-    }
-
-    @test
-    public fromOffsetRawData_invalidHeader_throws() {
-        // Arrange
-        const data = ByteVector.empty();
-
-        // Act/Assert
-        assert.throws(() => { UnsynchronizedLyricsFrame.fromOffsetRawData(data, 0, null); });
-        assert.throws(() => { UnsynchronizedLyricsFrame.fromOffsetRawData(data, 0, undefined); });
     }
 
     @test
@@ -144,24 +117,6 @@ class UnsynchronizedLyricsFrameConstructorsTests {
         assert.strictEqual(frame.language, "eng");
         assert.strictEqual(frame.text, "bar");
         assert.strictEqual(frame.textEncoding, StringType.Latin1);
-    }
-
-    @test
-    public fromRawData_invalidData_throws() {
-        // Act/Assert
-        assert.throws(() => { UnsynchronizedLyricsFrame.fromRawData(null, 0); });
-        assert.throws(() => { UnsynchronizedLyricsFrame.fromRawData(undefined, 0); });
-    }
-
-    @test
-    public fromRawData_invalidVersion_throws() {
-        // Arrange
-        const data = ByteVector.empty();
-
-        // Act/Assert
-        assert.throws(() => { UnsynchronizedLyricsFrame.fromRawData(data, -1); });
-        assert.throws(() => { UnsynchronizedLyricsFrame.fromRawData(data, 1.23); });
-        assert.throws(() => { UnsynchronizedLyricsFrame.fromRawData(data, 0x100); });
     }
 
     @test
