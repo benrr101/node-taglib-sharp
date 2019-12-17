@@ -14,7 +14,7 @@ Chai.use(ChaiAsPromised);
 const assert = Chai.assert;
 
 @suite(timeout(3000), slow(1000))
-class UnknownFrameConstructorsTests extends FrameConstructorTests{
+class UnknownFrameConstructorTests extends FrameConstructorTests {
     public get fromOffsetRawData(): (d: ByteVector, o: number, h: Id3v2FrameHeader) => Frame {
         return UnknownFrame.fromOffsetRawData;
     }
@@ -137,11 +137,11 @@ class UnknownFrameMethodTests {
         const result = <UnknownFrame> frame.clone();
 
         // Assert
-        assert.ok(frame);
-        assert.strictEqual(frame.frameClassType, FrameClassType.UnknownFrame);
-        assert.isTrue(ByteVector.equal(frame.frameId, FrameTypes.WXXX));
+        assert.ok(result);
+        assert.strictEqual(result.frameClassType, FrameClassType.UnknownFrame);
+        assert.isTrue(ByteVector.equal(result.frameId, FrameTypes.WXXX));
 
-        assert.isTrue(ByteVector.equal(frame.data, result.data));
+        assert.isTrue(ByteVector.equal(result.data, result.data));
     }
 
     @test

@@ -128,6 +128,9 @@ import {Guards, StringComparison} from "../../utils";
  *   (TIT2) for sorting purposes.
  */
 export class TextInformationFrame extends Frame {
+    private static COVER_STRING = "Cover";
+    private static REMIX_STRING = "Remix";
+
     protected _encoding: StringType = Id3v2TagSettings.defaultEncoding;
     protected _rawEncoding: StringType = StringType.Latin1;
     protected _rawData: ByteVector;
@@ -227,7 +230,13 @@ export class TextInformationFrame extends Frame {
      * Sets the text encoding to use when rendering the current instance.
      * This value will be overridden if {@see Id3v2Tag.forceDefaultEncoding} is `true`.
      */
-    public set textEncoding(value: StringType) { this._encoding = value; }
+    public set textEncoding(value: StringType) {
+        if (this._rawEncoding) {
+            this._rawEncoding = value;
+        } else {
+            this._encoding = value;
+        }
+    }
 
     // #endregion
 
@@ -238,17 +247,14 @@ export class TextInformationFrame extends Frame {
      * list of text information frames.
      * @param frames List of frames to search
      * @param ident Frame identifier to search for
-     * @param encoding Encoding to use if a new frame is created. Defaults to
-     *     {@see Id3v2Tag.defaultEncoding} if not provided
      * @returns TextInformationFrame Matching frame if it exists in {@paramref tag}, `undefined` if
      *     a matching frame was not found
      */
     public static findTextInformationFrame(
         frames: TextInformationFrame[],
-        ident: ByteVector,
-        encoding: StringType = Id3v2TagSettings.defaultEncoding
+        ident: ByteVector
     ): TextInformationFrame {
-        Guards.truthy(frames, "tag");
+        Guards.truthy(frames, "frames");
         Guards.truthy(ident, "ident");
         if (ident.length !== 4) {
             throw new Error("Argument out of range: Identifier must be four bytes long");
@@ -330,7 +336,7 @@ export class TextInformationFrame extends Frame {
     /**
      * Performs the actual parsing of the raw data.
      * Because of the high parsing cost and relatively low usage of the class {@see parseFields}
-     * only stores the field data so it can be parsed on demand. Whenver a property or method is
+     * only stores the field data so it can be parsed on demand. Whenever a property or method is
      * called which requires the data, this method is called, and only on the first call does it
      * actually parse the data.
      */
@@ -351,7 +357,7 @@ export class TextInformationFrame extends Frame {
         if (this._rawVersion > 3 || ByteVector.equal(this.frameId, FrameTypes.TXXX)) {
             fieldList.push(... data.toStrings(this._encoding, 1));
         } else if (data.length > 1 && !ByteVector.equal(data.mid(1, delim.length), delim)) {
-            let value = data.toString(this._encoding, 1, data.length - 1);
+            let value = data.toString(data.length - 1, this._encoding, 1);
 
             // Truncate values containing NULL bytes
             const nullIndex = value.indexOf("\x00");
@@ -359,7 +365,7 @@ export class TextInformationFrame extends Frame {
                 value = value.substring(0, nullIndex);
             }
 
-            const stdFrameTypes = [
+            const splitFrameTypes = [
                 FrameTypes.TCOM,
                 FrameTypes.TEXT,
                 FrameTypes.TMCL,
@@ -373,31 +379,62 @@ export class TextInformationFrame extends Frame {
                 FrameTypes.TPE3,
                 FrameTypes.TPE4
             ];
-            if (stdFrameTypes.some((ft) => ByteVector.equal(ft, this.frameId))) {
+            if (splitFrameTypes.some((ft) => ByteVector.equal(ft, this.frameId))) {
+                // Some frames are designed to be split into multiple parts by a /
                 fieldList.push(... value.split("/"));
             } else if (ByteVector.equal(this.frameId, FrameTypes.TCON)) {
-                while (value.length > 1 && value[0] === "(") {
-                    const closing = value.indexOf(")");
-                    if (closing < 0) {
-                        break;
+                // TCON can take various formats. The ID3v2.3 docs specify it can be:
+                // * (xx) - where xx is a number from the ID3v1 genre list
+                // * (xx)yyy - where xx is a number from the ID3v1 genre list and yyy is a
+                //     "refinement" of the genre
+                // * genrename - just a genre name
+                // * (RX) - a remix
+                // * (CR) - a cover
+                // * (( - used to escape a '(' in a refinement/genre name
+                // * Any combination of the above
+
+                // Although this could probably be expressed with a ridiculous regex, we're just
+                // going to do it with a single iteration over the value
+                const buffer = [];
+                let index = 0;
+                let insideParen = false;
+                while (index < value.length) {
+                    if (value[index] === "(") {
+                        if (index < value.length - 1 && value[index + 1] === "(") {
+                            // This is an escaped paren
+                            buffer.push("(");
+                            index++;
+                        } else {
+                            // We opened a parenthesis block
+                            insideParen = true;
+
+                            // If there are bytes in the buffer, add them to the field list
+                            TextInformationFrame.addBufferToFieldList(buffer, fieldList);
+                        }
+                    } else if (value[index] === ")" && insideParen) {
+                        // We just closed a parenthesis block, store the string
+                        if (buffer.length === 2 && buffer[0] === "R" && buffer[1] === "X") {
+                            fieldList.push(TextInformationFrame.REMIX_STRING);
+                        } else if (buffer.length === 2 && buffer[0] === "C" && buffer[1] === "R") {
+                            fieldList.push(TextInformationFrame.COVER_STRING);
+                        } else {
+                            fieldList.push(buffer.join(""));
+                        }
+
+                        buffer.length = 0;
+                        insideParen = false;
+                    } else {
+                        // Some other character
+                        buffer.push(value[index]);
                     }
 
-                    const number = value.substring(1, closing);
-                    fieldList.push(number);
-
-                    value = value.substring(closing + 1).replace(/^[/ ]*/, "");
-
-                    const text = Genres.indexToAudio(number);
-                    if (text && value.startsWith(text)) {
-                        value = value.substring(text.length).replace(/^[/ ]*/, "");
-                    }
+                    index++;
                 }
 
-                if (value.length > 0) {
-                    fieldList.push(... value.split(/[/;]/));
-                }
+                // Clear the buffer
+                TextInformationFrame.addBufferToFieldList(buffer, fieldList);
             } else {
-                fieldList.push(... value);
+                fieldList.push(value);
             }
         }
 
@@ -413,7 +450,7 @@ export class TextInformationFrame extends Frame {
 
     /** @inheritDoc */
     protected renderFields(version: number): ByteVector {
-        if (!this._rawData && this._rawVersion === version && this._rawEncoding === Id3v2TagSettings.defaultEncoding) {
+        if (this._rawData && this._rawVersion === version && this._rawEncoding === Id3v2TagSettings.defaultEncoding) {
             return this._rawData;
         }
 
@@ -445,20 +482,19 @@ export class TextInformationFrame extends Frame {
                 }
             }
         } else if (ByteVector.equal(this.frameId, FrameTypes.TCON)) {
-            let prevValueIndexed = true;
             let data = "";
             for (const s of text) {
-                if (!prevValueIndexed) {
-                    data += `;${s}`;
-                    continue;
-                }
-
-                const id = parseInt(s, 10);
-                prevValueIndexed = Number.isNaN(id);
-                if (prevValueIndexed) {
-                    data += `(${id})`;
+                if (s === TextInformationFrame.COVER_STRING) {
+                    data += "(CR)";
+                } else if (s === TextInformationFrame.REMIX_STRING) {
+                    data += "(RX)";
                 } else {
-                    data += s;
+                    const id = parseInt(s, 10);
+                    if (!Number.isNaN(id)) {
+                        data += `(${id})`;
+                    } else {
+                        data += s.replace("(", "((");
+                    }
                 }
             }
 
@@ -466,9 +502,33 @@ export class TextInformationFrame extends Frame {
         } else {
             v.addByteVector(ByteVector.fromString(text.join("/"), encoding));
         }
+
+        return v;
     }
 
     // #endregion
+
+    private static addBufferToFieldList(buffer: string[], previousStrings: string[]): void {
+        if (buffer.length === 0) {
+            return;
+        }
+
+        const output = buffer.join("");
+
+        // Attempt to convert the string to a genre number
+        const genreNumber = Genres.audioToIndex(output);
+        if (genreNumber === 255) {
+            // String isn't a genre, so it should be stored
+            previousStrings.push(output);
+        } else {
+            // String is a genre, only store it if the genre number isn't stored in the previous strings
+            if (previousStrings.length === 0 || previousStrings[previousStrings.length - 1] !== genreNumber.toString(10)) {
+                previousStrings.push(output);
+            }
+        }
+
+        buffer.length = 0;
+    }
 }
 
 export class UserTextInformationFrame extends TextInformationFrame {

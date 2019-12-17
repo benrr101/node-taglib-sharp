@@ -85,7 +85,7 @@ const audioGenres = [
     "National Folk",
     "Swing",
     "Fusion",
-    "Bebob",
+    "Bebop",
     "Latin",
     "Revival",
     "Celtic",
