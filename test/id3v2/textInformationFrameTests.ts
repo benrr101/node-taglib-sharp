@@ -461,7 +461,10 @@ class TextInformationFrameMethodTests {
         const data = ByteVector.concatenate(
             header.render(3),
             StringType.Latin1,
-            ByteVector.fromString("SomeGenre(32)(32)Classical(CR)(RX)Whoa here's some cra((z)y string", StringType.Latin1)
+            ByteVector.fromString(
+                "SomeGenre(32)(32)Classical(CR)(RX)Whoa here's some cra((z)y string",
+                StringType.Latin1
+            )
         );
         const frame = TextInformationFrame.fromRawData(data, 3);
         const _ = frame.text; // Force a read

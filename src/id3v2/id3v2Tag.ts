@@ -1104,12 +1104,7 @@ export default class Id3v2Tag extends Tag {
     private getUserTextAsString(description: string, caseSensitive: boolean = true): string {
         // Gets the TXXX frame, frame will be undefined if nonexistant
         const frames = this.getFramesByClassType<UserTextInformationFrame>(FrameClassType.UserTextInformationFrame);
-        const frame = UserTextInformationFrame.findUserTextInformationFrame(
-            frames,
-            description,
-            Id3v2TagSettings.defaultEncoding,
-            caseSensitive
-        );
+        const frame = UserTextInformationFrame.findUserTextInformationFrame(frames, description, caseSensitive);
 
         // TXXX frames support multi-value strings, join them up and return only the text from the
         // frame
@@ -1163,11 +1158,7 @@ export default class Id3v2Tag extends Tag {
     private setUserTextAsString(description: string, text: string, caseSensitive: boolean = true): void {
         // Get the TXXX frame, create a new one if needed
         const frames = this.getFramesByClassType<UserTextInformationFrame>(FrameClassType.UserTextInformationFrame);
-        let frame = UserTextInformationFrame.findUserTextInformationFrame(
-            frames,
-            description,
-            Id3v2TagSettings.defaultEncoding,
-            caseSensitive);
+        let frame = UserTextInformationFrame.findUserTextInformationFrame(frames, description, caseSensitive);
 
         if (!text && frame) {
             this.removeFrame(frame);

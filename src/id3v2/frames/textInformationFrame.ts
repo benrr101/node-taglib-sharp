@@ -649,7 +649,6 @@ export class UserTextInformationFrame extends TextInformationFrame {
      * Gets a user text information frame from a specified tag
      * @param frames Object to search in
      * @param description Description to use to match the frame in the {@paramref tag}
-     * @param type Encoding to use to encode the value of this frame.
      * @param caseSensitive Whether or not to search for the frame case-sensitively.
      * @returns UserTextInformationFrame Frame containing the matching user, `undefined` if a match
      *     was not found
@@ -657,16 +656,12 @@ export class UserTextInformationFrame extends TextInformationFrame {
     public static findUserTextInformationFrame(
         frames: UserTextInformationFrame[],
         description: string,
-        type: StringType = Id3v2TagSettings.defaultEncoding,
         caseSensitive: boolean = true
     ): UserTextInformationFrame {
         Guards.truthy(frames, "frames");
 
         const comparison = caseSensitive ? StringComparison.CaseSensitive : StringComparison.CaseInsensitive;
-        return frames.find((f) => {
-            return ByteVector.equal(f.frameId, FrameTypes.TXXX)
-                && comparison(f.description, description);
-        });
+        return frames.find((f) => comparison(f.description, description));
     }
 
     /** @inheritDoc */
