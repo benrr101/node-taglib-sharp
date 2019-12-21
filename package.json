@@ -4,7 +4,8 @@
   "license": "LGPL-2.1-or-later",
   "scripts": {
     "build": "tsc -p ./",
-    "madge": "node node_modules/madge/bin/cli.js --warning --circular --extension ts ./"
+    "madge": "node node_modules/madge/bin/cli.js --warning --circular --extension ts ./",
+    "test": "mocha --require ts-node/register ./test/**/*.ts"
   },
   "dependencies": {
     "arraybuffer-to-buffer": "^0.0.5",
@@ -25,6 +26,7 @@
     "mocha": "^6.1.2",
     "mocha-typescript": "^1.1.17",
     "stream-buffers": "^3.0.2",
+    "ts-node": "^8.5.4",
     "tslint": "^5.13.1",
     "typemoq": "^2.1.0",
     "typescript": "^3.4.3"
