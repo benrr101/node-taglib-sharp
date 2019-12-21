@@ -244,13 +244,12 @@ export default class CommentsFrame extends Frame {
     }
 
     protected parseFields(data: ByteVector, version: number): void {
-        Guards.byte(version, "version");
         if (data.length < 4) {
             throw new CorruptFileError("Not enough bytes in field");
         }
 
         this.textEncoding = data.get(0);
-        this._language = data.toString(StringType.Latin1, 1, 3);
+        this._language = data.toString(3, StringType.Latin1, 1);
 
         // Instead of splitting into two strings, in the format [{desc}\0{value}], try splitting
         // into three strings in case of a misformatted [{desc}\0{value}\0].
