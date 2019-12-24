@@ -4,6 +4,7 @@ import {slow, suite, test, timeout} from "mocha-typescript";
 
 import CommentsFrame from "../../src/id3v2/frames/commentsFrame";
 import FrameConstructorTests from "./frameConstructorTests";
+import FramePropertiesTests from "./framePropertiesTests";
 import FrameTypes from "../../src/id3v2/frameTypes";
 import Id3v2TagSettings from "../../src/id3v2/id3v2TagSettings";
 import {ByteVector, StringType} from "../../src/byteVector";
@@ -13,6 +14,21 @@ import {Id3v2FrameHeader} from "../../src/id3v2/frames/frameHeader";
 // Setup Chai
 Chai.use(ChaiAsPromised);
 const assert = Chai.assert;
+
+function getTestFrame(): CommentsFrame {
+    const header = new Id3v2FrameHeader(FrameTypes.COMM, 4);
+    header.frameSize = 11;
+    const data = ByteVector.concatenate(
+        header.render(4),
+        StringType.Latin1,
+        ByteVector.fromString("eng", StringType.Latin1),
+        ByteVector.fromString("foo", StringType.Latin1),
+        ByteVector.getTextDelimiter(StringType.Latin1),
+        ByteVector.fromString("bar", StringType.Latin1)
+    );
+
+    return CommentsFrame.fromRawData(data, 4);
+}
 
 @suite(timeout(3000), slow(1000))
 class CommentsFrameConstructorTests extends FrameConstructorTests {
@@ -275,5 +291,171 @@ class CommentsFrameConstructorTests extends FrameConstructorTests {
         assert.strictEqual(frame.language, expectedLang);
         assert.strictEqual(frame.textEncoding, expectedEncoding);
         assert.strictEqual(frame.text, expectedText);
+    }
+}
+
+@suite(timeout(3000), slow(1000))
+class CommentsFramePropertiesTests extends FramePropertiesTests {
+    @test
+    public description() {
+        const frame = getTestFrame();
+
+        const set = (v: string) => { frame.description = v; };
+        const get = () => frame.description;
+        this.propertyRoundTrip(set, get, "fux");
+        this.propertyNormalized(set, get, undefined, "");
+        this.propertyNormalized(set, get, null, "");
+    }
+
+    @test
+    public language() {
+        const frame = getTestFrame();
+
+        const set = (v: string) => { frame.language = v; };
+        const get = () => frame.language;
+        this.propertyRoundTrip(set, get, "jpn");
+        this.propertyNormalized(set, get, undefined, "XXX");
+        this.propertyNormalized(set, get, null, "XXX");
+        this.propertyNormalized(set, get, "ab", "XXX");
+        this.propertyNormalized(set, get, "abcd", "abc");
+    }
+
+    @test
+    public text() {
+        const frame = getTestFrame();
+
+        const set = (v: string) => { frame.text = v; };
+        const get = () => frame.text;
+        this.propertyRoundTrip(set, get, "fux");
+        this.propertyNormalized(set, get, undefined, "");
+        this.propertyNormalized(set, get, null, "");
+    }
+
+    @test
+    public textEncoding() {
+        const frame = getTestFrame();
+
+        this.propertyRoundTrip((v) => { frame.textEncoding = v; }, () => frame.textEncoding, StringType.UTF16);
+    }
+}
+
+@suite(timeout(3000), slow(1000))
+class CommentsFrameMethodTests {
+    @test
+    public find_falsyFrames() {
+        // Act/Assert
+        assert.throws(() => { CommentsFrame.find(undefined, "fux"); });
+        assert.throws(() => { CommentsFrame.find(null, "fux"); });
+    }
+
+    @test
+    public find_frameDoesNotExist() {
+        // Arrange
+        const frames = [
+            CommentsFrame.fromDescription("fux", "jpn"),    // nothing matches
+            CommentsFrame.fromDescription("bux", "jpn"),    // desc matches, not language
+            CommentsFrame.fromDescription("qux", "eng")     // language matches, not desc
+        ];
+
+        // Act
+        const output = CommentsFrame.find(frames, "bux", "eng");
+
+        // Assert
+        assert.isUndefined(output);
+    }
+
+    @test
+    public find_frameExistsWithoutLanguage() {
+        // Arrange
+        const frames = [
+            CommentsFrame.fromDescription("fux", "jpn"),    // nothing matches
+            CommentsFrame.fromDescription("bux", "jpn"),    // desc matches, not language
+            CommentsFrame.fromDescription("qux", "jpn")     // desc does not match
+        ];
+
+        // Act
+        const output = CommentsFrame.find(frames, "bux");
+
+        // Assert
+        assert.isOk(output);
+        assert.strictEqual(output, frames[1]);
+    }
+
+    @test
+    public find_frameExistsWithLanguage() {
+        // Arrange
+        const frames = [
+            CommentsFrame.fromDescription("fux", "jpn"),    // nothing matches
+            CommentsFrame.fromDescription("bux", "jpn"),    // desc matches, not language
+            CommentsFrame.fromDescription("qux", "eng"),    // language matches, not desc
+            CommentsFrame.fromDescription("bux", "eng")     // everything matches
+        ];
+
+        // Act
+        const output = CommentsFrame.find(frames, "bux", "eng");
+
+        // Assert
+        assert.isOk(output);
+        assert.strictEqual(output, frames[3]);
+    }
+
+    @test
+    public findAll_falsyFrames() {
+        // Act/Assert
+        assert.throws(() => { CommentsFrame.findAll(undefined, "fux"); });
+        assert.throws(() => { CommentsFrame.findAll(null, "fux"); });
+    }
+
+    @test
+    public findAll_frameDoesNotExist() {
+        // Arrange
+        const frames = [
+            CommentsFrame.fromDescription("fux", "jpn"),
+            CommentsFrame.fromDescription("bux", "jpn"),
+            CommentsFrame.fromDescription("qux", "eng")
+        ];
+
+        // Act
+        const output = CommentsFrame.findAll(frames, "fux", "eng");
+
+        // Assert
+        assert.isArray(output);
+        assert.isEmpty(output);
+    }
+
+    @test
+    public findAll_frameExistsWithoutLanguage() {
+        // Arrange
+        const frames = [
+            CommentsFrame.fromDescription("fux", "jpn"),
+            CommentsFrame.fromDescription("bux", "jpn"),
+            CommentsFrame.fromDescription("bux", "eng"),
+            CommentsFrame.fromDescription("qux", "eng")
+        ];
+
+        // Act
+        const output = CommentsFrame.findAll(frames, "bux");
+
+        // Assert
+        assert.isArray(output);
+        assert.sameMembers(output, [frames[1], frames[2]]);
+    }
+
+    @test
+    public findAll_frameExistsWithLanguage() {
+        // Arrange
+        const frames = [
+            CommentsFrame.fromDescription("fux", "jpn"),
+            CommentsFrame.fromDescription("bux", "jpn"),
+            CommentsFrame.fromDescription("bux", "eng"),
+            CommentsFrame.fromDescription("qux", "eng")
+        ];
+
+        // Act
+        const output = CommentsFrame.findAll(frames, "bux", "eng");
+
+        // Assert
+        assert.isArray(output);
+        assert.sameMembers(output, [frames[2]]);
     }
 }

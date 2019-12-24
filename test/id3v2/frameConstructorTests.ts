@@ -1,6 +1,6 @@
 import * as Chai from "chai";
 import * as ChaiAsPromised from "chai-as-promised";
-import {slow, suite, test, timeout} from "mocha-typescript";
+import {test} from "mocha-typescript";
 
 import {ByteVector} from "../../src/byteVector";
 import {Frame} from "../../src/id3v2/frames/frame";
