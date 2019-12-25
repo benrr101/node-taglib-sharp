@@ -20,21 +20,15 @@ export default class TermsOfUseFrame extends Frame {
     /**
      * Constructs and initializes a new instance with a specified language.
      * @param language ISO-639-2 language code for the new frame
+     * @param textEncoding Optional, text encoding to use when rendering the new frame. If not
+     *     provided defaults to {@see Id3v2TagSettings.defaultEncoding}
      */
-    public static fromLanguage(language: string): TermsOfUseFrame {
+    public static fromFields(
+        language: string,
+        textEncoding: StringType = Id3v2TagSettings.defaultEncoding
+    ): TermsOfUseFrame {
         const f = new TermsOfUseFrame(new Id3v2FrameHeader(FrameTypes.USER, 4));
-        f._language = language;
-        return f;
-    }
-
-    /**
-     * Constructs and initializes a new instance with a specified language and encoding.
-     * @param language ISO-639-2 language code for the new frame
-     * @param encoding Text encoding to use when rendering the new frame
-     */
-    public static fromLanguageAndEncoding(language: string, encoding: StringType): TermsOfUseFrame {
-        const f = new TermsOfUseFrame(new Id3v2FrameHeader(FrameTypes.USER, 4));
-        f.textEncoding = encoding;
+        f.textEncoding = textEncoding;
         f._language = language;
         return f;
     }
@@ -129,7 +123,7 @@ export default class TermsOfUseFrame extends Frame {
      * @returns TermsOfUseFrame A matching frame if found or `undefined` if a matching frame was
      *     not found
      */
-    public static get(frames: TermsOfUseFrame[], language: string): TermsOfUseFrame {
+    public static find(frames: TermsOfUseFrame[], language?: string): TermsOfUseFrame {
         Guards.truthy(frames, "frames");
         return frames.find((f) => !language || f.language === language);
     }
@@ -142,7 +136,7 @@ export default class TermsOfUseFrame extends Frame {
      * @returns TermsOfUseFrame Frame containing the matching frame or `undefined` if a match was
      *     not found
      */
-    public static getPreferred(frames: TermsOfUseFrame[], language: string) {
+    public static findPreferred(frames: TermsOfUseFrame[], language: string) {
         Guards.truthy(frames, "frames");
 
         let bestFrame: TermsOfUseFrame;
@@ -160,7 +154,7 @@ export default class TermsOfUseFrame extends Frame {
 
     /** @inheritDoc */
     public clone(): Frame {
-        const frame = TermsOfUseFrame.fromLanguageAndEncoding(this._language, this.textEncoding);
+        const frame = TermsOfUseFrame.fromFields(this._language, this.textEncoding);
         frame.text = this.text;
         return frame;
     }
