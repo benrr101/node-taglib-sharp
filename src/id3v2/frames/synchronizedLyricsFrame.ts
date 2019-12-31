@@ -40,6 +40,14 @@ export class SynchronizedText {
     public clone(): SynchronizedText {
         return new SynchronizedText(this.time, this.text);
     }
+
+    public render(encoding: StringType): ByteVector {
+        return ByteVector.concatenate(
+            ByteVector.fromString(this.text, encoding),
+            ByteVector.getTextDelimiter(encoding),
+            ByteVector.fromUInt(this.time)
+        );
+    }
 }
 
 /**
@@ -50,7 +58,7 @@ export class SynchronizedLyricsFrame extends Frame {
     private _description: string;
     private _format: TimestampFormat = TimestampFormat.Unknown;
     private _language: string;
-    private _text: SynchronizedText[];
+    private _text: SynchronizedText[] = [];
     private _textEncoding: StringType = Id3v2TagSettings.defaultEncoding;
     private _textType: SynchronizedTextType = SynchronizedTextType.Other;
 
@@ -150,10 +158,11 @@ export class SynchronizedLyricsFrame extends Frame {
     public get language(): string { return this._language; }
     /**
      * Sets the ISO-639-2 language code stored in the current instance.
-     * There should only be one frame with a matching description, type, and ISO-639=2 language
+     * There should only be one frame with a matching description, type, and ISO-639-2 language
      * code per tag.
      * @param value ISO-639-2 language code stored in the current instance
      */
+    // @TODO: Should this be normalized like other ISO-639-2 fields?
     public set language(value: string) { this._language = value; }
 
     /**
@@ -285,9 +294,6 @@ export class SynchronizedLyricsFrame extends Frame {
 
     /** @inheritDoc */
     protected parseFields(data: ByteVector, version: number): void {
-        Guards.truthy(data, "data");
-        Guards.byte(version, "version");
-
         if (data.length < 6) {
             throw new CorruptFileError("Not enough bytes in field");
         }
@@ -336,22 +342,16 @@ export class SynchronizedLyricsFrame extends Frame {
         Guards.byte(version, "version");
 
         const encoding = SynchronizedLyricsFrame.correctEncoding(this.textEncoding, version);
-        const delim = ByteVector.getTextDelimiter(encoding);
+        const renderedText = this.text.map((t) => t.render(encoding));
 
-        const v = ByteVector.empty();
-        v.addByte(encoding);
-        v.addByteVector(ByteVector.fromString(this.language, StringType.Latin1));
-        v.addByte(this.format);
-        v.addByte(this.textType);
-        v.addByteVector(ByteVector.fromString(this.description, encoding));
-        v.addByteVector(delim);
-
-        for (const t of this.text) {
-            v.addByteVector(ByteVector.fromString(t.text, encoding));
-            v.addByteVector(delim);
-            v.addByteVector(ByteVector.fromUInt(t.time));
-        }
-
-        return v;
+        return ByteVector.concatenate(
+            encoding,
+            ByteVector.fromString(this.language, StringType.Latin1),
+            this.format,
+            this.textType,
+            ByteVector.fromString(this.description, encoding),
+            ByteVector.getTextDelimiter(encoding),
+            ... renderedText
+        );
     }
 }
