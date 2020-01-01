@@ -205,16 +205,16 @@ export class SynchronizedLyricsFrame extends Frame {
      * Gets a specified lyrics frame from a list of synchronized lyrics frames
      * @param frames List of frames to search
      * @param description Description to match
-     * @param language ISO-639-2 language code to match
      * @param textType Text type to match
+     * @param language Optionally, ISO-639-2 language code to match
      * @returns SynchronizedLyricsFrame Frame containing the matching user, `undefined` if a match
      *     was not found
      */
     public static find(
         frames: SynchronizedLyricsFrame[],
         description: string,
-        language: string,
-        textType: SynchronizedTextType
+        textType: SynchronizedTextType,
+        language?: string
     ) {
         Guards.truthy(frames, "frames");
         return frames.find((f) => {
@@ -339,8 +339,6 @@ export class SynchronizedLyricsFrame extends Frame {
 
     /** @inheritDoc */
     protected renderFields(version: number): ByteVector {
-        Guards.byte(version, "version");
-
         const encoding = SynchronizedLyricsFrame.correctEncoding(this.textEncoding, version);
         const renderedText = this.text.map((t) => t.render(encoding));
 

@@ -12,7 +12,7 @@ export default abstract class FramePropertiesTests {
         const output = get();
 
         // Assert
-        assert.strictEqual(output, val);
+        assert.deepStrictEqual(output, val);
     }
 
     protected propertyNormalized<T>(set: (v: T) => void, get: () => T, input: T, output: T) {
@@ -21,6 +21,6 @@ export default abstract class FramePropertiesTests {
         const result = get();
 
         // Assert
-        assert.strictEqual(result, output);
+        assert.deepStrictEqual(result, output);
     }
 }
