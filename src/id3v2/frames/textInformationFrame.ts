@@ -132,7 +132,6 @@ export class TextInformationFrame extends Frame {
     private static REMIX_STRING = "Remix";
 
     protected _encoding: StringType = Id3v2TagSettings.defaultEncoding;
-    protected _rawEncoding: StringType = StringType.Latin1;
     protected _rawData: ByteVector;
     protected _rawVersion: number;
     protected _textFields: string[] = [];
@@ -215,7 +214,7 @@ export class TextInformationFrame extends Frame {
      * Sets the text contained in the current instance.
      */
     public set text(value: string[]) {
-        this._rawData = undefined;
+        this.parseRawData();
         this._textFields = value ? value.slice() : [];
     }
 
@@ -231,11 +230,8 @@ export class TextInformationFrame extends Frame {
      * This value will be overridden if {@see Id3v2Tag.forceDefaultEncoding} is `true`.
      */
     public set textEncoding(value: StringType) {
-        if (this._rawEncoding) {
-            this._rawEncoding = value;
-        } else {
-            this._encoding = value;
-        }
+        this.parseRawData();
+        this._encoding = value;
     }
 
     // #endregion
@@ -328,9 +324,6 @@ export class TextInformationFrame extends Frame {
     protected parseFields(data: ByteVector, version: number): void {
         this._rawData = data;
         this._rawVersion = version;
-
-        // Read the string data type (first byte of the field data)
-        this._rawEncoding = data.get(0);
     }
 
     /**
@@ -450,7 +443,7 @@ export class TextInformationFrame extends Frame {
 
     /** @inheritDoc */
     protected renderFields(version: number): ByteVector {
-        if (this._rawData && this._rawVersion === version && this._rawEncoding === Id3v2TagSettings.defaultEncoding) {
+        if (this._rawData && this._rawVersion === version) {
             return this._rawData;
         }
 
