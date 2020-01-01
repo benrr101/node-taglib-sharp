@@ -4,7 +4,7 @@
   "license": "LGPL-2.1-or-later",
   "scripts": {
     "build": "tsc -p ./",
-    "coverage": "nyc mocha",
+    "coverage": "nyc report --reporter=text-lcov | coveralls",
     "madge": "node node_modules/madge/bin/cli.js --warning --circular --extension ts ./",
     "test": "mocha"
   },
