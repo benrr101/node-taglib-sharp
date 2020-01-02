@@ -71,6 +71,22 @@ class EventTimeCodeTests extends FramePropertiesTests {
         // Act/Assert
         this.propertyRoundTrip((v) => { output.eventType = v; }, () => output.eventType, EventType.IntroEnd);
     }
+
+    @test
+    public render() {
+        // Arrange
+        const etc = new EventTimeCode(EventType.KeyChange, 123);
+
+        // Act
+        const output = etc.render();
+
+        // Assert
+        const expected = ByteVector.concatenate(
+            EventType.KeyChange,
+            ByteVector.fromInt(123)
+        );
+        assert.isTrue(ByteVector.equal(output, expected));
+    }
 }
 
 @suite(timeout(3000), slow(1000))
@@ -118,6 +134,67 @@ class EventTimeCodeFrameConstructorTests extends FrameConstructorTests {
         this.assertFrame(frame, [], TimestampFormat.AbsoluteMilliseconds);
     }
 
+    @test
+    public fromRawData_withEvents() {
+        // Arrange
+        const header = new Id3v2FrameHeader(FrameTypes.ETCO, 4);
+        header.frameSize = 11;
+        const event1 = new EventTimeCode(EventType.Profanity, 123);
+        const event2 = new EventTimeCode(EventType.KeyChange, 456);
+        const data = ByteVector.concatenate(
+            header.render(4),
+            TimestampFormat.AbsoluteMilliseconds,
+            event1.render(),
+            event2.render()
+        );
+
+        // Act
+        const frame = EventTimeCodeFrame.fromRawData(data, 4);
+
+        // Assert
+        this.assertFrame(frame, [event1, event2], TimestampFormat.AbsoluteMilliseconds);
+    }
+
+    @test
+    public fromOffsetRawData_noEvents() {
+        // Arrange
+        const header = new Id3v2FrameHeader(FrameTypes.ETCO, 4);
+        header.frameSize = 1;
+        const data = ByteVector.concatenate(
+            header.render(4),
+            0x00, 0x00,
+            TimestampFormat.AbsoluteMilliseconds
+        );
+
+        // Act
+        const frame = EventTimeCodeFrame.fromOffsetRawData(data, 2, header);
+
+        // Assert
+        this.assertFrame(frame, [], TimestampFormat.AbsoluteMilliseconds);
+    }
+
+    @test
+    public fromOffsetRawData_withEvents() {
+        // Arrange
+        const header = new Id3v2FrameHeader(FrameTypes.ETCO, 4);
+        header.frameSize = 11;
+        const event1 = new EventTimeCode(EventType.Profanity, 123);
+        const event2 = new EventTimeCode(EventType.KeyChange, 456);
+        const data = ByteVector.concatenate(
+            header.render(4),
+            0x00, 0x00,
+            TimestampFormat.AbsoluteMilliseconds,
+            event1.render(),
+            event2.render()
+        );
+
+        // Act
+        const frame = EventTimeCodeFrame.fromOffsetRawData(data, 2, header);
+
+        // Assert
+        this.assertFrame(frame, [event1, event2], TimestampFormat.AbsoluteMilliseconds);
+    }
+
     private assertFrame(frame: EventTimeCodeFrame, e: EventTimeCode[], t: TimestampFormat) {
         assert.isOk(frame);
         assert.strictEqual(frame.frameClassType, FrameClassType.EventTimeCodeFrame);
@@ -129,3 +206,85 @@ class EventTimeCodeFrameConstructorTests extends FrameConstructorTests {
     }
 }
 
+@suite(timeout(3000), slow(1000))
+class EventTimeCodeFramePropertyTests extends FramePropertiesTests {
+    @test
+    public events() {
+        // Arrange
+        const frame = EventTimeCodeFrame.fromTimestampFormat(TimestampFormat.AbsoluteMilliseconds);
+        const set = (v: EventTimeCode[]) => { frame.events = v; };
+        const get = () => frame.events;
+
+        // Act / Assert
+        this.propertyRoundTrip(set, get, [new EventTimeCode(EventType.Profanity, 123)]);
+        this.propertyRoundTrip(set, get, []);
+        this.propertyNormalized(set, get, undefined, []);
+        this.propertyNormalized(set, get, null, []);
+    }
+
+    @test
+    public timeStampFormat() {
+        // Arrange
+        const frame = EventTimeCodeFrame.fromTimestampFormat(TimestampFormat.AbsoluteMilliseconds);
+
+        // Act / Assert
+        this.propertyRoundTrip(
+            (v) => { frame.timestampFormat = v; },
+            () => frame.timestampFormat,
+            TimestampFormat.AbsoluteMpegFrames);
+    }
+}
+
+@suite(timeout(3000), slow(1000))
+class EventTimeCodeFrameMethodTests {
+    @test
+    public clone() {
+        // Arrange
+        const frame = EventTimeCodeFrame.fromTimestampFormat(TimestampFormat.AbsoluteMilliseconds);
+        const event1 = new EventTimeCode(EventType.Profanity, 123);
+        const event2 = new EventTimeCode(EventType.ProfanityEnd, 456);
+        frame.events = [event1, event2];
+
+        // Act
+        const output = <EventTimeCodeFrame> frame.clone();
+
+        // Assert
+        assert.isOk(output);
+        assert.strictEqual(output.frameClassType, FrameClassType.EventTimeCodeFrame);
+        assert.isTrue(ByteVector.equal(output.frameId, FrameTypes.ETCO));
+        assert.isTrue((output.flags | Id3v2FrameFlags.FileAlterPreservation) > 0);
+
+        assert.deepStrictEqual(output.events, frame.events);
+        assert.strictEqual(output.timestampFormat, frame.timestampFormat);
+    }
+
+    @test
+    public render() {
+        // Arrange
+        const header = new Id3v2FrameHeader(FrameTypes.ETCO, 4);
+        header.frameSize = 11;
+        const event2 = new EventTimeCode(EventType.KeyChange, 456);
+        const event1 = new EventTimeCode(EventType.Profanity, 123);
+        const data = ByteVector.concatenate(
+            header.render(4),
+            TimestampFormat.AbsoluteMilliseconds,
+            event2.render(),    // Force events to be sorted
+            event1.render()
+        );
+        const frame = EventTimeCodeFrame.fromRawData(data, 4);
+
+        // Act
+        const output = frame.render(4);
+
+        // Assert
+        const expected = ByteVector.concatenate(
+            header.render(4),
+            TimestampFormat.AbsoluteMilliseconds,
+            event1.render(),
+            event2.render()
+        );
+
+        assert.isOk(output);
+        assert.isTrue(ByteVector.equal(output, expected));
+    }
+}

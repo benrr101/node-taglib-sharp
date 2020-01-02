@@ -34,6 +34,14 @@ export class EventTimeCode {
     public clone(): EventTimeCode {
         return new EventTimeCode(this.eventType, this.time);
     }
+
+    public render(): ByteVector {
+        // @TODO: Do we need to store 0 time as one byte 0? It's in the docs like that
+        return ByteVector.concatenate(
+            this.eventType,
+            ByteVector.fromInt(this.time)
+        );
+    }
 }
 
 export class EventTimeCodeFrame extends Frame {
@@ -114,7 +122,7 @@ export class EventTimeCodeFrame extends Frame {
      * Gets the event this frame contains. Each {@see EventTimeCode} represents a single event at a
      * certain point in time.
      */
-    public get events(): EventTimeCode[] { return this._events; }
+    public get events(): EventTimeCode[] { return this._events || []; }
     /**
      * Sets the event this frame contains
      */
@@ -163,15 +171,14 @@ export class EventTimeCodeFrame extends Frame {
 
     /** @inheritDoc */
     protected renderFields(version: number): ByteVector {
-        const data: Array<ByteVector|number> = [this.timestampFormat];
+        // Docs state event codes must be sorted chronologically
+        const events = this.events.sort((a, b) => a.time - b.time)
+            .map((e) => e.render());
 
-        for (const event of this.events) {
-            const timeData = ByteVector.fromInt(event.time);
-            data.push(event.eventType);
-            data.push(timeData);
-        }
-
-        return ByteVector.concatenate(... data);
+        return ByteVector.concatenate(
+            this.timestampFormat,
+            ... events
+        );
     }
 
     // #endregion
