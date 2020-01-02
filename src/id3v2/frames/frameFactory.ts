@@ -17,8 +17,8 @@ import PopularimeterFrame from "./popularimeterFrame";
 import UnknownFrame from "./unknownFrame";
 import TermsOfUseFrame from "./termsOfUseFrame";
 import PrivateFrame from "./privateFrame";
+import {EventTimeCodeFrame} from "./eventTimeCodeFrame";
 import {UrlLinkFrame, UserUrlLinkFrame} from "./urlLinkFrame";
-import EventTimeCodeFrame from "./eventTimeCodeFrame";
 import {NotImplementedError} from "../../errors";
 
 const customFrameCreators: Array<(data: ByteVector, offset: number, header: Id3v2FrameHeader, version: number) => Frame>

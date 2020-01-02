@@ -1,14 +1,44 @@
-import EventTimeCode from "./eventTimeCode";
 import FrameTypes from "../frameTypes";
 import {ByteVector} from "../../byteVector";
 import {Frame, FrameClassType} from "./frame";
 import {Id3v2FrameFlags, Id3v2FrameHeader} from "./frameHeader";
 import {Guards} from "../../utils";
-import {TimestampFormat} from "../utilTypes";
+import {EventType, TimestampFormat} from "../utilTypes";
 
-export default class EventTimeCodeFrame extends Frame {
-    private _events: EventTimeCode[];
-    private _timestampFormat: TimestampFormat;
+export class EventTimeCode {
+    private _time: number;
+    private _eventType: EventType;
+
+    public constructor(eventType: EventType, time: number) {
+        Guards.int(time, "time");
+        this._eventType = eventType;
+        this._time = time;
+    }
+
+    public static fromEmpty(): EventTimeCode {
+        return new EventTimeCode(EventType.Padding, 0);
+    }
+
+    public get time(): number { return this._time; }
+    public set time(value: number) {
+        Guards.int(value, "value");
+        this._time = value;
+    }
+
+    public get eventType(): EventType { return this._eventType; }
+    public set eventType(value: EventType) { this._eventType = value; }
+
+    /**
+     * Creates a copy of this instance
+     */
+    public clone(): EventTimeCode {
+        return new EventTimeCode(this.eventType, this.time);
+    }
+}
+
+export class EventTimeCodeFrame extends Frame {
+    private _events: EventTimeCode[] = [];
+    private _timestampFormat: TimestampFormat = TimestampFormat.Unknown;
 
     // #region Constructors
 
@@ -113,21 +143,17 @@ export default class EventTimeCodeFrame extends Frame {
 
     /** @inheritDoc */
     protected parseFields(data: ByteVector, version: number): void {
-        Guards.truthy(data, "data");
-        Guards.byte(version, "version");
-
         this._events = [];
         this._timestampFormat = data.get(0);
 
-        const incomingEventsData = data.mid(1);
-        for (let i = 0; i < incomingEventsData.length; i += 5) {
-            const eventType = incomingEventsData.get(i);
+        for (let i = 1; i < data.length; i += 5) {
+            const eventType = data.get(i);
 
             const timestampData = ByteVector.concatenate(
-                incomingEventsData.get(i + 1),
-                incomingEventsData.get(i + 2),
-                incomingEventsData.get(i + 3),
-                incomingEventsData.get(i + 4)
+                data.get(i + 1),
+                data.get(i + 2),
+                data.get(i + 3),
+                data.get(i + 4)
             );
             const timestamp = timestampData.toInt();
 
