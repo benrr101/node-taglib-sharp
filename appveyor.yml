@@ -9,7 +9,7 @@ build_script:
   - npm run build
 
 test_script:
-  - npm run test
+  - npm run test-with-coverage
 
 after_test:
-  - npm run coverage
+  - nyc report --reporter=text-lcov | coveralls
