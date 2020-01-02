@@ -5,6 +5,7 @@
   "scripts": {
     "build": "tsc -p ./",
     "madge": "node node_modules/madge/bin/cli.js --warning --circular --extension ts ./",
+    "publish-coverage": "nyc report --reporter=text-lcov | coveralls",
     "test": "mocha",
     "test-with-coverage": "nyc mocha"
   },
