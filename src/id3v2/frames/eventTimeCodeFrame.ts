@@ -1,14 +1,52 @@
-import EventTimeCode from "./eventTimeCode";
 import FrameTypes from "../frameTypes";
 import {ByteVector} from "../../byteVector";
 import {Frame, FrameClassType} from "./frame";
 import {Id3v2FrameFlags, Id3v2FrameHeader} from "./frameHeader";
 import {Guards} from "../../utils";
-import {TimestampFormat} from "../utilTypes";
+import {EventType, TimestampFormat} from "../utilTypes";
 
-export default class EventTimeCodeFrame extends Frame {
-    private _events: EventTimeCode[];
-    private _timestampFormat: TimestampFormat;
+export class EventTimeCode {
+    private _time: number;
+    private _eventType: EventType;
+
+    public constructor(eventType: EventType, time: number) {
+        Guards.int(time, "time");
+        this._eventType = eventType;
+        this._time = time;
+    }
+
+    public static fromEmpty(): EventTimeCode {
+        return new EventTimeCode(EventType.Padding, 0);
+    }
+
+    public get time(): number { return this._time; }
+    public set time(value: number) {
+        Guards.int(value, "value");
+        this._time = value;
+    }
+
+    public get eventType(): EventType { return this._eventType; }
+    public set eventType(value: EventType) { this._eventType = value; }
+
+    /**
+     * Creates a copy of this instance
+     */
+    public clone(): EventTimeCode {
+        return new EventTimeCode(this.eventType, this.time);
+    }
+
+    public render(): ByteVector {
+        // @TODO: Do we need to store 0 time as one byte 0? It's in the docs like that
+        return ByteVector.concatenate(
+            this.eventType,
+            ByteVector.fromInt(this.time)
+        );
+    }
+}
+
+export class EventTimeCodeFrame extends Frame {
+    private _events: EventTimeCode[] = [];
+    private _timestampFormat: TimestampFormat = TimestampFormat.Unknown;
 
     // #region Constructors
 
@@ -84,7 +122,7 @@ export default class EventTimeCodeFrame extends Frame {
      * Gets the event this frame contains. Each {@see EventTimeCode} represents a single event at a
      * certain point in time.
      */
-    public get events(): EventTimeCode[] { return this._events; }
+    public get events(): EventTimeCode[] { return this._events || []; }
     /**
      * Sets the event this frame contains
      */
@@ -113,21 +151,17 @@ export default class EventTimeCodeFrame extends Frame {
 
     /** @inheritDoc */
     protected parseFields(data: ByteVector, version: number): void {
-        Guards.truthy(data, "data");
-        Guards.byte(version, "version");
-
         this._events = [];
         this._timestampFormat = data.get(0);
 
-        const incomingEventsData = data.mid(1);
-        for (let i = 0; i < incomingEventsData.length; i += 5) {
-            const eventType = incomingEventsData.get(i);
+        for (let i = 1; i < data.length; i += 5) {
+            const eventType = data.get(i);
 
             const timestampData = ByteVector.concatenate(
-                incomingEventsData.get(i + 1),
-                incomingEventsData.get(i + 2),
-                incomingEventsData.get(i + 3),
-                incomingEventsData.get(i + 4)
+                data.get(i + 1),
+                data.get(i + 2),
+                data.get(i + 3),
+                data.get(i + 4)
             );
             const timestamp = timestampData.toInt();
 
@@ -137,15 +171,14 @@ export default class EventTimeCodeFrame extends Frame {
 
     /** @inheritDoc */
     protected renderFields(version: number): ByteVector {
-        const data: Array<ByteVector|number> = [this.timestampFormat];
+        // Docs state event codes must be sorted chronologically
+        const events = this.events.sort((a, b) => a.time - b.time)
+            .map((e) => e.render());
 
-        for (const event of this.events) {
-            const timeData = ByteVector.fromInt(event.time);
-            data.push(event.eventType);
-            data.push(timeData);
-        }
-
-        return ByteVector.concatenate(... data);
+        return ByteVector.concatenate(
+            this.timestampFormat,
+            ... events
+        );
     }
 
     // #endregion
