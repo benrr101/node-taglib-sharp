@@ -27,6 +27,7 @@ export default class PrivateFrame extends Frame {
     public static fromOwner(owner: string): PrivateFrame {
         const frame = new PrivateFrame(new Id3v2FrameHeader(FrameTypes.PRIV, 4));
         frame._owner = owner;
+        frame._privateData = ByteVector.empty();
         return frame;
     }
 
@@ -108,38 +109,31 @@ export default class PrivateFrame extends Frame {
     /** @inheritDoc */
     public clone(): Frame {
         const frame = PrivateFrame.fromOwner(this.owner);
-        if (this.privateData) {
-            frame.privateData = ByteVector.fromByteVector(this.privateData);
-        }
+        frame.privateData = ByteVector.fromByteVector(this.privateData);
         return frame;
     }
 
     /** @inheritDoc */
     protected parseFields(data: ByteVector, version: number): void {
-        Guards.truthy(data, "data");
-        Guards.byte(version, "version");
-
         if (data.length < 1) {
             throw new CorruptFileError("A private frame must contain at least 1 byte");
         }
 
         const l = data.split(ByteVector.getTextDelimiter(StringType.Latin1), 1, 2);
-        if (l.length === 2) {
-            this._owner = l[0].toString(l[0].length, StringType.Latin1);
-            this.privateData = l[1];
-        }
+        this._owner = l[0].toString(l[0].length, StringType.Latin1);
+        this._privateData = l.length === 2 ? l[1] : ByteVector.empty();
     }
 
     /** @inheritDoc */
     protected renderFields(version: number): ByteVector {
-        Guards.byte(version, "version");
         if (version < 3) {
             throw new NotImplementedError();
         }
 
-        const v = ByteVector.fromString(this.owner, StringType.Latin1);
-        v.addByteVector(ByteVector.getTextDelimiter(StringType.Latin1));
-        v.addByteVector(this.privateData);
-        return v;
+        return ByteVector.concatenate(
+            ByteVector.fromString(this.owner, StringType.Latin1),
+            ByteVector.getTextDelimiter(StringType.Latin1),
+            this._privateData
+        );
     }
 }

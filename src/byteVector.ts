@@ -1097,7 +1097,7 @@ export class ByteVector {
         let previousOffset = 0;
 
         for (let offset = this.find(separator, 0, byteAlign);
-             offset !== -1 && (max < 1 || max > this.length + 1);
+             offset !== -1 && (max < 1 || max > list.length + 1);
              offset = this.find(separator, offset + separator.length, byteAlign)) {
             list.push(this.mid(previousOffset, offset - previousOffset));
             previousOffset = offset + separator.length;

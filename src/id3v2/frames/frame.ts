@@ -135,7 +135,6 @@ export abstract class Frame {
      * overridden by child classes.
      */
     public abstract clone(): Frame;
-      //  return FrameFactory.createFrame(this.render(4), undefined, 0, 4, false).frame;
 
     /**
      * Renders the current instance, encoded in a specified ID3v2 version.
