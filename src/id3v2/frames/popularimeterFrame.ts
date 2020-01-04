@@ -84,7 +84,9 @@ export default class PopularimeterFrame extends Frame {
      * @param value Play count of the current instance
      */
     public set playCount(value: BigInt.BigInteger) {
-        Guards.ulong(value, "value");
+        if (value !== undefined) {
+            Guards.ulong(value, "value");
+        }
         this._playCount = value;
     }
 
@@ -127,7 +129,7 @@ export default class PopularimeterFrame extends Frame {
 
     /** @inheritDoc */
     public clone(): Frame {
-        const frame = new PopularimeterFrame(new Id3v2FrameHeader(FrameTypes.POPM, 4));
+        const frame = PopularimeterFrame.fromUser(this.user);
         frame.playCount = this.playCount;
         frame.rating = this.rating;
         return frame;
@@ -137,29 +139,49 @@ export default class PopularimeterFrame extends Frame {
     protected parseFields(data: ByteVector, version: number): void {
         const delim = ByteVector.getTextDelimiter(StringType.Latin1);
 
-        const index = data.find(delim);
-        if (index < 0) {
+        const delimIndex = data.find(delim);
+        if (delimIndex < 0) {
             throw new CorruptFileError("Popularimeter frame does not contain a text delimeter");
         }
-        if (index + 2 > data.length) {
-            throw new CorruptFileError("Popularimeter frame is too short");
+
+        const bytesAfterOwner = data.length - delimIndex - 1;
+        if (bytesAfterOwner < 1) {
+            throw new CorruptFileError("Popularimeter frame is missing rating");
+        }
+        if (bytesAfterOwner > 1 && bytesAfterOwner < 5) {
+            throw new CorruptFileError("Popularimeter frame with play count must have at least 4 bytes of play count");
         }
 
-        this._user = data.toString(index, StringType.Latin1, 0);
-        this.rating = data.get(index + 1);
-        this.playCount = data.mid(index + 2).toULong();
+        this._user = data.toString(delimIndex, StringType.Latin1, 0);
+        this._rating = data.get(delimIndex + 1);
+
+        // Play count may be omitted
+        if (bytesAfterOwner > 1) {
+            this._playCount = data.mid(delimIndex + 2).toULong();
+        }
     }
 
     /** @inheritDoc */
     protected renderFields(version: number): ByteVector {
-        const data = ByteVector.fromULong(this.playCount);
-        while (data.length > 0 && data.get(0) === 0x0) {
-            data.removeAtIndex(0);
+        const data = ByteVector.concatenate(
+            ByteVector.fromString(this._user, StringType.Latin1),
+            ByteVector.getTextDelimiter(StringType.Latin1),
+            this.rating
+        );
+
+        // Only include personal play count if it's desired
+        if (this.playCount !== undefined) {
+            const playCountData = ByteVector.fromULong(this.playCount);
+
+            // Remove zero bytes from beginning of play count, leaving at least 4 bytes
+            let firstNonZeroIndex = 0;
+            while (playCountData.get(firstNonZeroIndex) === 0x00 && firstNonZeroIndex < playCountData.length - 4) {
+                firstNonZeroIndex++;
+            }
+
+            data.addByteVector(playCountData.mid(firstNonZeroIndex));
         }
 
-        data.insertByte(0, this.rating);
-        data.insertByte(0, 0);
-        data.insertByteVector(0, ByteVector.fromString(this._user, StringType.Latin1));
         return data;
     }
 }

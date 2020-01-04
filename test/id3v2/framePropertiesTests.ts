@@ -23,4 +23,9 @@ export default abstract class FramePropertiesTests {
         // Assert
         assert.deepStrictEqual(result, output);
     }
+
+    protected propertyThrows<T>(set: (v: T) => void, input: T) {
+        // Act
+        assert.throws(() => { set(input); });
+    }
 }
