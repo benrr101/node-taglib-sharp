@@ -12,19 +12,6 @@ import {Guards} from "../../utils";
 export default class MusicCdIdentifierFrame extends Frame {
     private _data: ByteVector;
 
-    /**
-     * Gets the identifier data stored in the current instance
-     */
-    public get data(): ByteVector { return this._data; }
-    /**
-     * Sets the identifier data stored in the current instance
-     * @param value ByteVector containing the identifier stored in the current instance
-     */
-    public set data(value: ByteVector) { this._data = value; }
-
-    /** @inheritDoc */
-    public get frameClassType(): FrameClassType { return FrameClassType.MusicCdIdentiferFrame; }
-
     private constructor(header: Id3v2FrameHeader) {
         super(header);
     }
@@ -37,7 +24,7 @@ export default class MusicCdIdentifierFrame extends Frame {
      *     positive, safe integer
      * @param header Header of the frame found at {@paramref offset} in the data
      */
-    public static fromOffsetRawHeader(data: ByteVector, offset: number, header: Id3v2FrameHeader) {
+    public static fromOffsetRawData(data: ByteVector, offset: number, header: Id3v2FrameHeader) {
         Guards.truthy(data, "data");
         Guards.uint(offset, "offset");
         Guards.truthy(header, "header");
@@ -53,7 +40,7 @@ export default class MusicCdIdentifierFrame extends Frame {
      * @param data ByteVector object starting with the raw representation of the new frame
      * @param version The ID3v2 version the raw frame is encoded in. Must be positive 8-bit integer
      */
-    public static fromRawHeader(data: ByteVector, version: number): MusicCdIdentifierFrame {
+    public static fromRawData(data: ByteVector, version: number): MusicCdIdentifierFrame {
         Guards.truthy(data, "data");
         Guards.byte(version, "version");
 
@@ -61,6 +48,19 @@ export default class MusicCdIdentifierFrame extends Frame {
         frame.setData(data, 0, true);
         return frame;
     }
+
+    /** @inheritDoc */
+    public get frameClassType(): FrameClassType { return FrameClassType.MusicCdIdentiferFrame; }
+
+    /**
+     * Gets the identifier data stored in the current instance
+     */
+    public get data(): ByteVector { return this._data; }
+    /**
+     * Sets the identifier data stored in the current instance
+     * @param value ByteVector containing the identifier stored in the current instance
+     */
+    public set data(value: ByteVector) { this._data = value; }
 
     /** @inheritDoc */
     public clone(): Frame {

@@ -5,8 +5,8 @@ import * as ChaiAsPromised from "chai-as-promised";
 Chai.use(ChaiAsPromised);
 const assert = Chai.assert;
 
-export default abstract class FramePropertiesTests {
-    protected propertyRoundTrip<T>(set: (v: T) => void, get: () => T, val: T) {
+export default class FramePropertiesTests {
+    public static propertyRoundTrip<T>(set: (v: T) => void, get: () => T, val: T) {
         // Act
         set(val);
         const output = get();
@@ -15,7 +15,7 @@ export default abstract class FramePropertiesTests {
         assert.deepStrictEqual(output, val);
     }
 
-    protected propertyNormalized<T>(set: (v: T) => void, get: () => T, input: T, output: T) {
+    public static propertyNormalized<T>(set: (v: T) => void, get: () => T, input: T, output: T) {
         // Act
         set(input);
         const result = get();
@@ -24,7 +24,7 @@ export default abstract class FramePropertiesTests {
         assert.deepStrictEqual(result, output);
     }
 
-    protected propertyThrows<T>(set: (v: T) => void, input: T) {
+    public static propertyThrows<T>(set: (v: T) => void, input: T) {
         // Act
         assert.throws(() => { set(input); });
     }
