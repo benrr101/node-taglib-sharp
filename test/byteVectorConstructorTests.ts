@@ -13,7 +13,8 @@ const AB2B = require("arraybuffer-to-buffer");
 Chai.use(ChaiAsPromised);
 const assert = Chai.assert;
 
-@suite(timeout(3000), slow(1000)) class ByteVectorTestsConcatenate {
+@suite(timeout(3000), slow(1000))
+class ByteVector_Concatenate {
     private testArray = new Uint8Array([0x80, 0x08, 0x50]);
 
     @test
@@ -34,7 +35,7 @@ const assert = Chai.assert;
         // Assert
         assert.ok(bv);
         assert.equal(bv.length, 1);
-        assert.equal(bv.get(0), 0x08)
+        assert.equal(bv.get(0), 0x08);
     }
 
     @test
@@ -63,7 +64,8 @@ const assert = Chai.assert;
     }
 }
 
-@suite(timeout(3000), slow(1000)) class ByteVectorTestsFromByteArray {
+@suite(timeout(3000), slow(1000))
+class ByteVector_FromByteArray {
     @test
     public NoData() {
         // Arrange, Act, Assert
@@ -132,7 +134,8 @@ const assert = Chai.assert;
     }
 }
 
-@suite(timeout(3000), slow(1000)) class ByteVectorTestsFromByteVector {
+@suite(timeout(3000), slow(1000))
+class ByteVector_FromByteVector {
     @test
     public NoVector() {
         // Arrange, Act, Assert
@@ -175,7 +178,8 @@ const assert = Chai.assert;
     }
 }
 
-@suite(timeout(3000), slow(1000)) class ByteVectorTestsFromInt {
+@suite(timeout(3000), slow(1000))
+class ByteVector_FromInt {
     @test
     public BadInteger() {
         // Arrange, Act, Assert
@@ -195,7 +199,7 @@ const assert = Chai.assert;
 
     @test
     public Zero_BigEndian() {
-        ByteVectorTestsFromInt.TestInt(
+        ByteVector_FromInt.TestInt(
             0x0,
             [0x0, 0x0, 0x0, 0x0],
             undefined,
@@ -205,7 +209,7 @@ const assert = Chai.assert;
 
     @test
     public Zero_LittleEndian() {
-        ByteVectorTestsFromInt.TestInt(
+        ByteVector_FromInt.TestInt(
             0x0,
             [0x0, 0x0, 0x0, 0x0],
             undefined,
@@ -215,7 +219,7 @@ const assert = Chai.assert;
 
     @test
     public Positive1Byte_BigEndian() {
-        ByteVectorTestsFromInt.TestInt(
+        ByteVector_FromInt.TestInt(
             0x12,
             [0x00, 0x00, 0x00, 0x12],
             undefined,
@@ -225,7 +229,7 @@ const assert = Chai.assert;
 
     @test
     public Positive1Byte_LittleEndian() {
-        ByteVectorTestsFromInt.TestInt(
+        ByteVector_FromInt.TestInt(
             0x12,
             [0x12, 0x00, 0x00, 0x00],
             undefined,
@@ -235,7 +239,7 @@ const assert = Chai.assert;
 
     @test
     public Positive2Byte_BigEndian() {
-        ByteVectorTestsFromInt.TestInt(
+        ByteVector_FromInt.TestInt(
             0x1234,
             [0x00, 0x00, 0x12, 0x34],
             undefined,
@@ -245,7 +249,7 @@ const assert = Chai.assert;
 
     @test
     public Positive2Byte_LittleEndian() {
-        ByteVectorTestsFromInt.TestInt(
+        ByteVector_FromInt.TestInt(
             0x1234,
             [0x34, 0x12, 0x00, 0x00],
             undefined,
@@ -255,7 +259,7 @@ const assert = Chai.assert;
 
     @test
     public Positive3Byte_BigEndian() {
-        ByteVectorTestsFromInt.TestInt(
+        ByteVector_FromInt.TestInt(
             0x123456,
             [0x00, 0x12, 0x34, 0x56],
             undefined,
@@ -265,7 +269,7 @@ const assert = Chai.assert;
 
     @test
     public Positive3Byte_LittleEndian() {
-        ByteVectorTestsFromInt.TestInt(
+        ByteVector_FromInt.TestInt(
             0x123456,
             [0x56, 0x34, 0x12, 0x00],
             undefined,
@@ -275,7 +279,7 @@ const assert = Chai.assert;
 
     @test
     public Positive4Byte_BigEndian() {
-        ByteVectorTestsFromInt.TestInt(
+        ByteVector_FromInt.TestInt(
             0x12345678,
             [0x12, 0x34, 0x56, 0x78],
             undefined,
@@ -285,7 +289,7 @@ const assert = Chai.assert;
 
     @test
     public Positive4Byte_LittleEndian() {
-        ByteVectorTestsFromInt.TestInt(
+        ByteVector_FromInt.TestInt(
             0x12345678,
             [0x78, 0x56, 0x34, 0x12],
             undefined,
@@ -295,7 +299,7 @@ const assert = Chai.assert;
 
     @test
     public Negative1Byte_BigEndian() {
-        ByteVectorTestsFromInt.TestInt(
+        ByteVector_FromInt.TestInt(
             -0x12,
             [0xFF, 0xFF, 0xFF, 0xEE],
             undefined,
@@ -305,7 +309,7 @@ const assert = Chai.assert;
 
     @test
     public Negative1Byte_LittleEndian() {
-        ByteVectorTestsFromInt.TestInt(
+        ByteVector_FromInt.TestInt(
             -0x12,
             [0xEE, 0xFF, 0xFF, 0xFF],
             undefined,
@@ -315,7 +319,7 @@ const assert = Chai.assert;
 
     @test
     public Negative2Byte_BigEndian() {
-        ByteVectorTestsFromInt.TestInt(
+        ByteVector_FromInt.TestInt(
             -0x1234,
             [0xFF, 0xFF, 0xED, 0xCC],
             undefined,
@@ -325,7 +329,7 @@ const assert = Chai.assert;
 
     @test
     public Negative2Byte_LittleEndian() {
-        ByteVectorTestsFromInt.TestInt(
+        ByteVector_FromInt.TestInt(
             -0x1234,
             [0xCC, 0xED, 0xFF, 0xFF],
             undefined,
@@ -335,7 +339,7 @@ const assert = Chai.assert;
 
     @test
     public Negative3Byte_BigEndian() {
-        ByteVectorTestsFromInt.TestInt(
+        ByteVector_FromInt.TestInt(
             -0x123456,
             [0xFF, 0xED, 0xCB, 0xAA],
             undefined,
@@ -345,7 +349,7 @@ const assert = Chai.assert;
 
     @test
     public Negative3Byte_LittleEndian() {
-        ByteVectorTestsFromInt.TestInt(
+        ByteVector_FromInt.TestInt(
             -0x123456,
             [0xAA, 0xCB, 0xED, 0xFF],
             undefined,
@@ -355,7 +359,7 @@ const assert = Chai.assert;
 
     @test
     public Negative4Byte_BigEndian() {
-        ByteVectorTestsFromInt.TestInt(
+        ByteVector_FromInt.TestInt(
             -0x12345678,
             [0xED, 0xCB, 0xA9, 0x88],
             undefined,
@@ -365,7 +369,7 @@ const assert = Chai.assert;
 
     @test
     public Negative4Byte_LittleEndian() {
-        ByteVectorTestsFromInt.TestInt(
+        ByteVector_FromInt.TestInt(
             -0x12345678,
             [0x88, 0xA9, 0xCB, 0xED],
             undefined,
@@ -375,7 +379,7 @@ const assert = Chai.assert;
 
     @test
     public ReadOnly() {
-        ByteVectorTestsFromInt.TestInt(
+        ByteVector_FromInt.TestInt(
             0,
             [0x00, 0x00, 0x00, 0x00],
             true,
@@ -400,7 +404,8 @@ const assert = Chai.assert;
     }
 }
 
-@suite(timeout(3000), slow(1000)) class ByteVectorTestsFromLong {
+@suite(timeout(3000), slow(1000))
+class ByteVector_FromLong {
     @test
     public BadValue() {
         // Arrange, Act, Assert
@@ -417,7 +422,7 @@ const assert = Chai.assert;
 
     @test
     public Positive1Byte_BigEndian() {
-        ByteVectorTestsFromLong.TestLong(
+        ByteVector_FromLong.TestLong(
             BigInt("0x12"),
             [0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x12],
             undefined,
@@ -427,7 +432,7 @@ const assert = Chai.assert;
 
     @test
     public Positive1Byte_LittleEndian() {
-        ByteVectorTestsFromLong.TestLong(
+        ByteVector_FromLong.TestLong(
             BigInt("0x12"),
             [0x12, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00],
             undefined,
@@ -437,7 +442,7 @@ const assert = Chai.assert;
 
     @test
     public Positive2Byte_BigEndian() {
-        ByteVectorTestsFromLong.TestLong(
+        ByteVector_FromLong.TestLong(
             BigInt("0x1234"),
             [0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x12, 0x34],
             undefined,
@@ -447,7 +452,7 @@ const assert = Chai.assert;
 
     @test
     public Positive2Byte_LittleEndian() {
-        ByteVectorTestsFromLong.TestLong(
+        ByteVector_FromLong.TestLong(
             BigInt("0x1234"),
             [0x34, 0x12, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00],
             undefined,
@@ -457,7 +462,7 @@ const assert = Chai.assert;
 
     @test
     public Positive3Byte_BigEndian() {
-        ByteVectorTestsFromLong.TestLong(
+        ByteVector_FromLong.TestLong(
             BigInt("0x123456"),
             [0x00, 0x00, 0x00, 0x00, 0x00, 0x12, 0x34, 0x56],
             undefined,
@@ -467,7 +472,7 @@ const assert = Chai.assert;
 
     @test
     public Positive3Byte_LittleEndian() {
-        ByteVectorTestsFromLong.TestLong(
+        ByteVector_FromLong.TestLong(
             BigInt("0x123456"),
             [0x56, 0x34, 0x12, 0x00, 0x00, 0x00, 0x00, 0x00],
             undefined,
@@ -477,7 +482,7 @@ const assert = Chai.assert;
 
     @test
     public Positive4Byte_BigEndian() {
-        ByteVectorTestsFromLong.TestLong(
+        ByteVector_FromLong.TestLong(
             BigInt("0x12345678"),
             [0x00, 0x00, 0x00, 0x00, 0x12, 0x34, 0x56, 0x78],
             undefined,
@@ -487,7 +492,7 @@ const assert = Chai.assert;
 
     @test
     public Positive4Byte_LittleEndian() {
-        ByteVectorTestsFromLong.TestLong(
+        ByteVector_FromLong.TestLong(
             BigInt("0x12345678"),
             [0x78, 0x56, 0x34, 0x12, 0x00, 0x00, 0x00, 0x00],
             undefined,
@@ -497,7 +502,7 @@ const assert = Chai.assert;
 
     @test
     public Positive5Byte_BigEndian() {
-        ByteVectorTestsFromLong.TestLong(
+        ByteVector_FromLong.TestLong(
             BigInt("0x123456789A"),
             [0x00, 0x00, 0x00, 0x12, 0x34, 0x56, 0x78, 0x9A],
             undefined,
@@ -507,7 +512,7 @@ const assert = Chai.assert;
 
     @test
     public Positive5Byte_LittleEndian() {
-        ByteVectorTestsFromLong.TestLong(
+        ByteVector_FromLong.TestLong(
             BigInt("0x123456789A"),
             [0x9A, 0x78, 0x56, 0x34, 0x12, 0x00, 0x00, 0x00],
             undefined,
@@ -517,7 +522,7 @@ const assert = Chai.assert;
 
     @test
     public Positive6Byte_BigEndian() {
-        ByteVectorTestsFromLong.TestLong(
+        ByteVector_FromLong.TestLong(
             BigInt("0x123456789ABC"),
             [0x00, 0x00, 0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC],
             undefined,
@@ -527,7 +532,7 @@ const assert = Chai.assert;
 
     @test
     public Positive6Byte_LittleEndian() {
-        ByteVectorTestsFromLong.TestLong(
+        ByteVector_FromLong.TestLong(
             BigInt("0x123456789ABC"),
             [0xBC, 0x9A, 0x78, 0x56, 0x34, 0x12, 0x00, 0x00],
             undefined,
@@ -537,7 +542,7 @@ const assert = Chai.assert;
 
     @test
     public Positive7Byte_BigEndian() {
-        ByteVectorTestsFromLong.TestLong(
+        ByteVector_FromLong.TestLong(
             BigInt("0x123456789ABCDE"),
             [0x00, 0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC, 0xDE],
             undefined,
@@ -547,7 +552,7 @@ const assert = Chai.assert;
 
     @test
     public Positive7Byte_LittleEndian() {
-        ByteVectorTestsFromLong.TestLong(
+        ByteVector_FromLong.TestLong(
             BigInt("0x123456789ABCDE"),
             [0xDE, 0xBC, 0x9A, 0x78, 0x56, 0x34, 0x12, 0x00],
             undefined,
@@ -557,7 +562,7 @@ const assert = Chai.assert;
 
     @test
     public Positive8Byte_BigEndian() {
-        ByteVectorTestsFromLong.TestLong(
+        ByteVector_FromLong.TestLong(
             BigInt("123456789ABCDEF0", 16),
             [0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC, 0xDE, 0xF0],
             undefined,
@@ -567,7 +572,7 @@ const assert = Chai.assert;
 
     @test
     public Positive8Byte_LittleEndian() {
-        ByteVectorTestsFromLong.TestLong(
+        ByteVector_FromLong.TestLong(
             BigInt("123456789ABCDEF0", 16),
             [0xF0, 0xDE, 0xBC, 0x9A, 0x78, 0x56, 0x34, 0x12],
             undefined,
@@ -577,7 +582,7 @@ const assert = Chai.assert;
 
     @test
     public Negative1Byte_BigEndian() {
-        ByteVectorTestsFromLong.TestLong(
+        ByteVector_FromLong.TestLong(
             BigInt("-12", 16),
             [0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xEE],
             undefined,
@@ -587,7 +592,7 @@ const assert = Chai.assert;
 
     @test
     public Negative1Byte_LittleEndian() {
-        ByteVectorTestsFromLong.TestLong(
+        ByteVector_FromLong.TestLong(
             BigInt("-12", 16),
             [0xEE, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF],
             undefined,
@@ -597,7 +602,7 @@ const assert = Chai.assert;
 
     @test
     public Negative2Byte_BigEndian() {
-        ByteVectorTestsFromLong.TestLong(
+        ByteVector_FromLong.TestLong(
             BigInt("-1234", 16),
             [0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xED, 0xCC],
             undefined,
@@ -607,7 +612,7 @@ const assert = Chai.assert;
 
     @test
     public Negative2Byte_LittleEndian() {
-        ByteVectorTestsFromLong.TestLong(
+        ByteVector_FromLong.TestLong(
             BigInt("-1234", 16),
             [0xCC, 0xED, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF],
             undefined,
@@ -617,7 +622,7 @@ const assert = Chai.assert;
 
     @test
     public Negative3Byte_BigEndian() {
-        ByteVectorTestsFromLong.TestLong(
+        ByteVector_FromLong.TestLong(
             BigInt("-123456", 16),
             [0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xED, 0xCB, 0xAA],
             undefined,
@@ -627,7 +632,7 @@ const assert = Chai.assert;
 
     @test
     public Negative3Byte_LittleEndian() {
-        ByteVectorTestsFromLong.TestLong(
+        ByteVector_FromLong.TestLong(
             BigInt("-123456", 16),
             [0xAA, 0xCB, 0xED, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF],
             undefined,
@@ -637,7 +642,7 @@ const assert = Chai.assert;
 
     @test
     public Negative4Byte_BigEndian() {
-        ByteVectorTestsFromLong.TestLong(
+        ByteVector_FromLong.TestLong(
             BigInt("-12345678", 16),
             [0xFF, 0xFF, 0xFF, 0xFF, 0xED, 0xCB, 0xA9, 0x88],
             undefined,
@@ -647,7 +652,7 @@ const assert = Chai.assert;
 
     @test
     public Negative4Byte_LittleEndian() {
-        ByteVectorTestsFromLong.TestLong(
+        ByteVector_FromLong.TestLong(
             BigInt("-12345678", 16),
             [0x88, 0xA9, 0xCB, 0xED, 0xFF, 0xFF, 0xFF, 0xFF],
             undefined,
@@ -657,7 +662,7 @@ const assert = Chai.assert;
 
     @test
     public Negative5Byte_BigEndian() {
-        ByteVectorTestsFromLong.TestLong(
+        ByteVector_FromLong.TestLong(
             BigInt("-123456789A", 16),
             [0xFF, 0xFF, 0xFF, 0xED, 0xCB, 0xA9, 0x87, 0x66],
             undefined,
@@ -667,7 +672,7 @@ const assert = Chai.assert;
 
     @test
     public Negative5Byte_LittleEndian() {
-        ByteVectorTestsFromLong.TestLong(
+        ByteVector_FromLong.TestLong(
             BigInt("-123456789A", 16),
             [0x66, 0x87, 0xA9, 0xCB, 0xED, 0xFF, 0xFF, 0xFF],
             undefined,
@@ -677,7 +682,7 @@ const assert = Chai.assert;
 
     @test
     public Negative6Byte_BigEndian() {
-        ByteVectorTestsFromLong.TestLong(
+        ByteVector_FromLong.TestLong(
             BigInt("-123456789ABC", 16),
             [0xFF, 0xFF, 0xED, 0xCB, 0xA9, 0x87, 0x65, 0x44],
             undefined,
@@ -687,7 +692,7 @@ const assert = Chai.assert;
 
     @test
     public Negative6Byte_LittleEndian() {
-        ByteVectorTestsFromLong.TestLong(
+        ByteVector_FromLong.TestLong(
             BigInt("-123456789ABC", 16),
             [0x44, 0x65, 0x87, 0xA9, 0xCB, 0xED, 0xFF, 0xFF],
             undefined,
@@ -697,7 +702,7 @@ const assert = Chai.assert;
 
     @test
     public Negative7Byte_BigEndian() {
-        ByteVectorTestsFromLong.TestLong(
+        ByteVector_FromLong.TestLong(
             BigInt("-123456789ABCDE", 16),
             [0xFF, 0xED, 0xCB, 0xA9, 0x87, 0x65, 0x43, 0x22],
             undefined,
@@ -707,7 +712,7 @@ const assert = Chai.assert;
 
     @test
     public Negative7Byte_LittleEndian() {
-        ByteVectorTestsFromLong.TestLong(
+        ByteVector_FromLong.TestLong(
             BigInt("-123456789ABCDE", 16),
             [0x22, 0x43, 0x65, 0x87, 0xA9, 0xCB, 0xED, 0xFF],
             undefined,
@@ -717,7 +722,7 @@ const assert = Chai.assert;
 
     @test
     public Negative8Byte_BigEndian() {
-        ByteVectorTestsFromLong.TestLong(
+        ByteVector_FromLong.TestLong(
             BigInt("-123456789ABCDEF0", 16),
             [0xED, 0xCB, 0xA9, 0x87, 0x65, 0x43, 0x21, 0x10],
             undefined,
@@ -727,7 +732,7 @@ const assert = Chai.assert;
 
     @test
     public Negative8Byte_LittleEndian() {
-        ByteVectorTestsFromLong.TestLong(
+        ByteVector_FromLong.TestLong(
             BigInt("-123456789ABCDEF0", 16),
             [0x10, 0x21, 0x43, 0x65, 0x87, 0xA9, 0xCB, 0xED],
             undefined,
@@ -737,7 +742,7 @@ const assert = Chai.assert;
 
     @test
     public Zero_BigEndian() {
-        ByteVectorTestsFromLong.TestLong(
+        ByteVector_FromLong.TestLong(
             BigInt(0),
             [0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00],
             undefined,
@@ -747,7 +752,7 @@ const assert = Chai.assert;
 
     @test
     public Zero_LittleEndian() {
-        ByteVectorTestsFromLong.TestLong(
+        ByteVector_FromLong.TestLong(
             BigInt(0),
             [0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00],
             undefined,
@@ -757,7 +762,7 @@ const assert = Chai.assert;
 
     @test
     public ReadOnly() {
-        ByteVectorTestsFromLong.TestLong(
+        ByteVector_FromLong.TestLong(
             BigInt(0),
             [0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00],
             true,
@@ -787,7 +792,8 @@ const assert = Chai.assert;
     }
 }
 
-@suite(timeout(3000), slow(1000)) class ByteVectorTestsFromPath {
+@suite(timeout(3000), slow(1000))
+class ByteVector_FromPath {
     @test
     public NoPath() {
         // Arrange, Act, Assert
@@ -823,7 +829,8 @@ const assert = Chai.assert;
     }
 }
 
-@suite(timeout(3000), slow(1000)) class ByteVectorTestsFromShort {
+@suite(timeout(3000), slow(1000))
+class ByteVector_FromShort {
     @test
     public BadIntShort() {
         // Arrange, Act, Assert
@@ -842,7 +849,7 @@ const assert = Chai.assert;
 
     @test
     public Zero_BigEndian() {
-        ByteVectorTestsFromShort.TestShort(
+        ByteVector_FromShort.TestShort(
             0x0,
             [0x0, 0x0],
             undefined,
@@ -852,7 +859,7 @@ const assert = Chai.assert;
 
     @test
     public Zero_LittleEndian() {
-        ByteVectorTestsFromShort.TestShort(
+        ByteVector_FromShort.TestShort(
             0x0,
             [0x0, 0x0],
             undefined,
@@ -862,7 +869,7 @@ const assert = Chai.assert;
 
     @test
     public Positive1Byte_BigEndian() {
-        ByteVectorTestsFromShort.TestShort(
+        ByteVector_FromShort.TestShort(
             0x12,
             [0x00, 0x12],
             undefined,
@@ -872,7 +879,7 @@ const assert = Chai.assert;
 
     @test
     public Positive1Byte_LittleEndian() {
-        ByteVectorTestsFromShort.TestShort(
+        ByteVector_FromShort.TestShort(
             0x12,
             [0x12, 0x00],
             undefined,
@@ -882,7 +889,7 @@ const assert = Chai.assert;
 
     @test
     public Positive2Byte_BigEndian() {
-        ByteVectorTestsFromShort.TestShort(
+        ByteVector_FromShort.TestShort(
             0x1234,
             [0x12, 0x34],
             undefined,
@@ -892,7 +899,7 @@ const assert = Chai.assert;
 
     @test
     public Positive2Byte_LittleEndian() {
-        ByteVectorTestsFromShort.TestShort(
+        ByteVector_FromShort.TestShort(
             0x1234,
             [0x34, 0x12],
             undefined,
@@ -902,7 +909,7 @@ const assert = Chai.assert;
 
     @test
     public Negative1Byte_BigEndian() {
-        ByteVectorTestsFromShort.TestShort(
+        ByteVector_FromShort.TestShort(
             -0x12,
             [0xFF, 0xEE],
             undefined,
@@ -912,7 +919,7 @@ const assert = Chai.assert;
 
     @test
     public Negative1Byte_LittleEndian() {
-        ByteVectorTestsFromShort.TestShort(
+        ByteVector_FromShort.TestShort(
             -0x12,
             [0xEE, 0xFF],
             undefined,
@@ -922,7 +929,7 @@ const assert = Chai.assert;
 
     @test
     public Negative2Byte_BigEndian() {
-        ByteVectorTestsFromShort.TestShort(
+        ByteVector_FromShort.TestShort(
             -0x1234,
             [0xED, 0xCC],
             undefined,
@@ -932,7 +939,7 @@ const assert = Chai.assert;
 
     @test
     public Negative2Byte_LittleEndian() {
-        ByteVectorTestsFromShort.TestShort(
+        ByteVector_FromShort.TestShort(
             -0x1234,
             [0xCC, 0xED],
             undefined,
@@ -942,7 +949,7 @@ const assert = Chai.assert;
 
     @test
     public ReadOnly() {
-        ByteVectorTestsFromShort.TestShort(
+        ByteVector_FromShort.TestShort(
             0x0,
             [0x0, 0x0],
             true,
@@ -967,7 +974,8 @@ const assert = Chai.assert;
     }
 }
 
-@suite(timeout(3000), slow(1000)) class ByteVectorTestsFromSize {
+@suite(timeout(3000), slow(1000))
+class ByteVector_FromSize {
     @test
     public BadSize() {
         // Arrange, Act, Assert
@@ -1039,7 +1047,8 @@ const assert = Chai.assert;
     }
 }
 
-@suite(timeout(3000), slow(1000)) class ByteVectorTestsFromStream {
+@suite(timeout(3000), slow(1000))
+class ByteVector_FromStream {
     @test
     public async NoStream() {
         await Promise.all([
@@ -1107,7 +1116,8 @@ const assert = Chai.assert;
     }
 }
 
-@suite(timeout(3000), slow(1000)) class ByteVectorTestsFromString {
+@suite(timeout(3000), slow(1000))
+class ByteVector_FromString {
     @test
     public InvalidLength() {
         // Arrange, Act, Assert
@@ -1118,7 +1128,7 @@ const assert = Chai.assert;
 
     @test
     public Utf8Full() {
-        ByteVectorTestsFromString.TestString(
+        ByteVector_FromString.TestString(
             TestConstants.testStrings.UTF8.str,
             TestConstants.testStrings.UTF8.bytes,
             undefined,
@@ -1129,7 +1139,7 @@ const assert = Chai.assert;
 
     @test
     public Utf8Partial() {
-        ByteVectorTestsFromString.TestString(
+        ByteVector_FromString.TestString(
             TestConstants.testStrings.UTF8.str,
             TestConstants.testStrings.UTF8.bytes.slice(0, 9),
             undefined,
@@ -1140,7 +1150,7 @@ const assert = Chai.assert;
 
     @test
     public Utf8Empty() {
-        ByteVectorTestsFromString.TestString(
+        ByteVector_FromString.TestString(
             "",
             [],
             undefined,
@@ -1152,7 +1162,7 @@ const assert = Chai.assert;
     @test
     public Utf16LittleEndianFull() {
         const originalLastUtf16Encoding = ByteVector.lastUtf16Encoding;
-        ByteVectorTestsFromString.TestString(
+        ByteVector_FromString.TestString(
             TestConstants.testStrings.UTF16LE.str,
             TestConstants.testStrings.UTF16LE.bytes,
             StringType.UTF16LE,
@@ -1165,7 +1175,7 @@ const assert = Chai.assert;
     @test
     public Utf16LittleEndianPartial() {
         const originalLastUtf16Encoding = ByteVector.lastUtf16Encoding;
-        ByteVectorTestsFromString.TestString(
+        ByteVector_FromString.TestString(
             TestConstants.testStrings.UTF16LE.str,
             TestConstants.testStrings.UTF16LE.bytes.slice(0, 12),
             StringType.UTF16LE,
@@ -1178,7 +1188,7 @@ const assert = Chai.assert;
     @test
     public Utf16LittleEndianEmpty() {
         const originalLastUtf16Encoding = ByteVector.lastUtf16Encoding;
-        ByteVectorTestsFromString.TestString(
+        ByteVector_FromString.TestString(
             "",
             [],
             StringType.UTF16LE,
@@ -1191,7 +1201,7 @@ const assert = Chai.assert;
     @test
     public Utf16BigEndianFull() {
         const originalLastUtf16Encoding = ByteVector.lastUtf16Encoding;
-        ByteVectorTestsFromString.TestString(
+        ByteVector_FromString.TestString(
             TestConstants.testStrings.UTF16BE.str,
             TestConstants.testStrings.UTF16BE.bytes,
             StringType.UTF16BE,
@@ -1204,7 +1214,7 @@ const assert = Chai.assert;
     @test
     public Utf16BigEndianPartial() {
         const originalLastUtf16Encoding = ByteVector.lastUtf16Encoding;
-        ByteVectorTestsFromString.TestString(
+        ByteVector_FromString.TestString(
             TestConstants.testStrings.UTF16BE.str,
             TestConstants.testStrings.UTF16BE.bytes.slice(0, 12),
             StringType.UTF16BE,
@@ -1217,7 +1227,7 @@ const assert = Chai.assert;
     @test
     public Utf16BigEndianEmpty() {
         const originalLastUtf16Encoding = ByteVector.lastUtf16Encoding;
-        ByteVectorTestsFromString.TestString(
+        ByteVector_FromString.TestString(
             "",
             [],
             StringType.UTF16BE,
@@ -1229,7 +1239,7 @@ const assert = Chai.assert;
 
     @test
     public Latin1Full() {
-        ByteVectorTestsFromString.TestString(
+        ByteVector_FromString.TestString(
             TestConstants.testStrings.Latin1.str,
             TestConstants.testStrings.Latin1.bytes,
             StringType.Latin1,
@@ -1240,7 +1250,7 @@ const assert = Chai.assert;
 
     @test
     public Latin1Partial() {
-        ByteVectorTestsFromString.TestString(
+        ByteVector_FromString.TestString(
             TestConstants.testStrings.Latin1.str,
             TestConstants.testStrings.Latin1.bytes.slice(0, 6),
             StringType.Latin1,
@@ -1251,7 +1261,7 @@ const assert = Chai.assert;
 
     @test
     public Latin1Empty() {
-        ByteVectorTestsFromString.TestString(
+        ByteVector_FromString.TestString(
             "",
             [],
             StringType.Latin1,
@@ -1266,7 +1276,7 @@ const assert = Chai.assert;
         const originalLastEncoding = ByteVector.lastUtf16Encoding;
         ByteVector.lastUtf16Encoding = "something bogus";
 
-        ByteVectorTestsFromString.TestString(
+        ByteVector_FromString.TestString(
             TestConstants.testStrings.UTF16LEWithBOM.str,
             TestConstants.testStrings.UTF16LEWithBOM.bytes,
             StringType.UTF16,
@@ -1285,7 +1295,7 @@ const assert = Chai.assert;
         const originalLastEncoding = ByteVector.lastUtf16Encoding;
         ByteVector.lastUtf16Encoding = "something bogus";
 
-        ByteVectorTestsFromString.TestString(
+        ByteVector_FromString.TestString(
             TestConstants.testStrings.UTF16LEWithBOM.str,
             TestConstants.testStrings.UTF16LEWithBOM.bytes.slice(0, 14),
             StringType.UTF16,
@@ -1304,7 +1314,7 @@ const assert = Chai.assert;
         const originalLastEncoding = ByteVector.lastUtf16Encoding;
         ByteVector.lastUtf16Encoding = "something bogus";
 
-        ByteVectorTestsFromString.TestString(
+        ByteVector_FromString.TestString(
             "",
             TestConstants.testStrings.UTF16LEWithBOM.bytes.slice(0, 2),
             StringType.UTF16,
@@ -1319,7 +1329,7 @@ const assert = Chai.assert;
 
     @test
     public ReadOnly() {
-        ByteVectorTestsFromString.TestString(
+        ByteVector_FromString.TestString(
             "",
             [],
             StringType.Latin1,
@@ -1350,7 +1360,8 @@ const assert = Chai.assert;
     }
 }
 
-@suite(timeout(3000), slow(1000)) class ByteVectorTestsFromUInt {
+@suite(timeout(3000), slow(1000))
+class ByteVector_FromUInt {
     @test
     public BadInteger() {
         // Arrange, Act, Assert
@@ -1369,7 +1380,7 @@ const assert = Chai.assert;
 
     @test
     public Zero_BigEndian() {
-        ByteVectorTestsFromUInt.TestUInt(
+        ByteVector_FromUInt.TestUInt(
             0x0,
             [0x0, 0x0, 0x0, 0x0],
             undefined,
@@ -1379,7 +1390,7 @@ const assert = Chai.assert;
 
     @test
     public Zero_LittleEndian() {
-        ByteVectorTestsFromUInt.TestUInt(
+        ByteVector_FromUInt.TestUInt(
             0x0,
             [0x0, 0x0, 0x0, 0x0],
             undefined,
@@ -1389,7 +1400,7 @@ const assert = Chai.assert;
 
     @test
     public Positive1Byte_BigEndian() {
-        ByteVectorTestsFromUInt.TestUInt(
+        ByteVector_FromUInt.TestUInt(
             0x12,
             [0x00, 0x00, 0x00, 0x12],
             undefined,
@@ -1399,7 +1410,7 @@ const assert = Chai.assert;
 
     @test
     public Positive1Byte_LittleEndian() {
-        ByteVectorTestsFromUInt.TestUInt(
+        ByteVector_FromUInt.TestUInt(
             0x12,
             [0x12, 0x00, 0x00, 0x00],
             undefined,
@@ -1409,7 +1420,7 @@ const assert = Chai.assert;
 
     @test
     public Positive2Byte_BigEndian() {
-        ByteVectorTestsFromUInt.TestUInt(
+        ByteVector_FromUInt.TestUInt(
             0x1234,
             [0x00, 0x00, 0x12, 0x34],
             undefined,
@@ -1419,7 +1430,7 @@ const assert = Chai.assert;
 
     @test
     public Positive2Byte_LittleEndian() {
-        ByteVectorTestsFromUInt.TestUInt(
+        ByteVector_FromUInt.TestUInt(
             0x1234,
             [0x34, 0x12, 0x00, 0x00],
             undefined,
@@ -1429,7 +1440,7 @@ const assert = Chai.assert;
 
     @test
     public Positive3Byte_BigEndian() {
-        ByteVectorTestsFromUInt.TestUInt(
+        ByteVector_FromUInt.TestUInt(
             0x123456,
             [0x00, 0x12, 0x34, 0x56],
             undefined,
@@ -1439,7 +1450,7 @@ const assert = Chai.assert;
 
     @test
     public Positive3Byte_LittleEndian() {
-        ByteVectorTestsFromUInt.TestUInt(
+        ByteVector_FromUInt.TestUInt(
             0x123456,
             [0x56, 0x34, 0x12, 0x00],
             undefined,
@@ -1449,7 +1460,7 @@ const assert = Chai.assert;
 
     @test
     public Positive4Byte_BigEndian() {
-        ByteVectorTestsFromUInt.TestUInt(
+        ByteVector_FromUInt.TestUInt(
             0x12345678,
             [0x12, 0x34, 0x56, 0x78],
             undefined,
@@ -1459,7 +1470,7 @@ const assert = Chai.assert;
 
     @test
     public Positive4Byte_LittleEndian() {
-        ByteVectorTestsFromUInt.TestUInt(
+        ByteVector_FromUInt.TestUInt(
             0x12345678,
             [0x78, 0x56, 0x34, 0x12],
             undefined,
@@ -1469,7 +1480,7 @@ const assert = Chai.assert;
 
     @test
     public UnsignedRange_BigEndian() {
-        ByteVectorTestsFromUInt.TestUInt(
+        ByteVector_FromUInt.TestUInt(
             0xFFFFFFFF,
             [0xFF, 0xFF, 0xFF, 0xFF],
             undefined,
@@ -1479,7 +1490,7 @@ const assert = Chai.assert;
 
     @test
     public UnsignedRange_LittleEndian() {
-        ByteVectorTestsFromUInt.TestUInt(
+        ByteVector_FromUInt.TestUInt(
             0xFFFFFFFF,
             [0xFF, 0xFF, 0xFF, 0xFF],
             undefined,
@@ -1489,7 +1500,7 @@ const assert = Chai.assert;
 
     @test
     public ReadOnly() {
-        ByteVectorTestsFromUInt.TestUInt(
+        ByteVector_FromUInt.TestUInt(
             0,
             [0x00, 0x00, 0x00, 0x00],
             true,
@@ -1514,7 +1525,8 @@ const assert = Chai.assert;
     }
 }
 
-@suite(timeout(3000), slow(1000)) class ByteVectorTestsFromULong {
+@suite(timeout(3000), slow(1000))
+class ByteVector_FromULong {
     @test
     public BadValue() {
         // Arrange, Act, Assert
@@ -1531,7 +1543,7 @@ const assert = Chai.assert;
 
     @test
     public Positive1Byte_BigEndian() {
-        ByteVectorTestsFromULong.TestULong(
+        ByteVector_FromULong.TestULong(
             BigInt("0x12"),
             [0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x12],
             undefined,
@@ -1541,7 +1553,7 @@ const assert = Chai.assert;
 
     @test
     public Positive1Byte_LittleEndian() {
-        ByteVectorTestsFromULong.TestULong(
+        ByteVector_FromULong.TestULong(
             BigInt("0x12"),
             [0x12, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00],
             undefined,
@@ -1551,7 +1563,7 @@ const assert = Chai.assert;
 
     @test
     public Positive2Byte_BigEndian() {
-        ByteVectorTestsFromULong.TestULong(
+        ByteVector_FromULong.TestULong(
             BigInt("0x1234"),
             [0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x12, 0x34],
             undefined,
@@ -1561,7 +1573,7 @@ const assert = Chai.assert;
 
     @test
     public Positive2Byte_LittleEndian() {
-        ByteVectorTestsFromULong.TestULong(
+        ByteVector_FromULong.TestULong(
             BigInt("0x1234"),
             [0x34, 0x12, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00],
             undefined,
@@ -1571,7 +1583,7 @@ const assert = Chai.assert;
 
     @test
     public Positive3Byte_BigEndian() {
-        ByteVectorTestsFromULong.TestULong(
+        ByteVector_FromULong.TestULong(
             BigInt("0x123456"),
             [0x00, 0x00, 0x00, 0x00, 0x00, 0x12, 0x34, 0x56],
             undefined,
@@ -1581,7 +1593,7 @@ const assert = Chai.assert;
 
     @test
     public Positive3Byte_LittleEndian() {
-        ByteVectorTestsFromULong.TestULong(
+        ByteVector_FromULong.TestULong(
             BigInt("0x123456"),
             [0x56, 0x34, 0x12, 0x00, 0x00, 0x00, 0x00, 0x00],
             undefined,
@@ -1591,7 +1603,7 @@ const assert = Chai.assert;
 
     @test
     public Positive4Byte_BigEndian() {
-        ByteVectorTestsFromULong.TestULong(
+        ByteVector_FromULong.TestULong(
             BigInt("0x12345678"),
             [0x00, 0x00, 0x00, 0x00, 0x12, 0x34, 0x56, 0x78],
             undefined,
@@ -1601,7 +1613,7 @@ const assert = Chai.assert;
 
     @test
     public Positive4Byte_LittleEndian() {
-        ByteVectorTestsFromULong.TestULong(
+        ByteVector_FromULong.TestULong(
             BigInt("0x12345678"),
             [0x78, 0x56, 0x34, 0x12, 0x00, 0x00, 0x00, 0x00],
             undefined,
@@ -1611,7 +1623,7 @@ const assert = Chai.assert;
 
     @test
     public Positive5Byte_BigEndian() {
-        ByteVectorTestsFromULong.TestULong(
+        ByteVector_FromULong.TestULong(
             BigInt("0x123456789A"),
             [0x00, 0x00, 0x00, 0x12, 0x34, 0x56, 0x78, 0x9A],
             undefined,
@@ -1621,7 +1633,7 @@ const assert = Chai.assert;
 
     @test
     public Positive5Byte_LittleEndian() {
-        ByteVectorTestsFromULong.TestULong(
+        ByteVector_FromULong.TestULong(
             BigInt("0x123456789A"),
             [0x9A, 0x78, 0x56, 0x34, 0x12, 0x00, 0x00, 0x00],
             undefined,
@@ -1631,7 +1643,7 @@ const assert = Chai.assert;
 
     @test
     public Positive6Byte_BigEndian() {
-        ByteVectorTestsFromULong.TestULong(
+        ByteVector_FromULong.TestULong(
             BigInt("0x123456789ABC"),
             [0x00, 0x00, 0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC],
             undefined,
@@ -1641,7 +1653,7 @@ const assert = Chai.assert;
 
     @test
     public Positive6Byte_LittleEndian() {
-        ByteVectorTestsFromULong.TestULong(
+        ByteVector_FromULong.TestULong(
             BigInt("0x123456789ABC"),
             [0xBC, 0x9A, 0x78, 0x56, 0x34, 0x12, 0x00, 0x00],
             undefined,
@@ -1651,7 +1663,7 @@ const assert = Chai.assert;
 
     @test
     public Positive7Byte_BigEndian() {
-        ByteVectorTestsFromULong.TestULong(
+        ByteVector_FromULong.TestULong(
             BigInt("0x123456789ABCDE"),
             [0x00, 0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC, 0xDE],
             undefined,
@@ -1661,7 +1673,7 @@ const assert = Chai.assert;
 
     @test
     public Positive7Byte_LittleEndian() {
-        ByteVectorTestsFromULong.TestULong(
+        ByteVector_FromULong.TestULong(
             BigInt("0x123456789ABCDE"),
             [0xDE, 0xBC, 0x9A, 0x78, 0x56, 0x34, 0x12, 0x00],
             undefined,
@@ -1671,7 +1683,7 @@ const assert = Chai.assert;
 
     @test
     public Positive8Byte_BigEndian() {
-        ByteVectorTestsFromULong.TestULong(
+        ByteVector_FromULong.TestULong(
             BigInt("123456789ABCDEF0", 16),
             [0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC, 0xDE, 0xF0],
             undefined,
@@ -1681,7 +1693,7 @@ const assert = Chai.assert;
 
     @test
     public Positive8Byte_LittleEndian() {
-        ByteVectorTestsFromULong.TestULong(
+        ByteVector_FromULong.TestULong(
             BigInt("123456789ABCDEF0", 16),
             [0xF0, 0xDE, 0xBC, 0x9A, 0x78, 0x56, 0x34, 0x12],
             undefined,
@@ -1691,7 +1703,7 @@ const assert = Chai.assert;
 
     @test
     public UnsignedRange_BigEndian() {
-        ByteVectorTestsFromULong.TestULong(
+        ByteVector_FromULong.TestULong(
             BigInt("FFFFFFFFFFFFFFFF", 16),
             [0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF],
             undefined,
@@ -1701,7 +1713,7 @@ const assert = Chai.assert;
 
     @test
     public UnsignedRange_LittleEndian() {
-        ByteVectorTestsFromULong.TestULong(
+        ByteVector_FromULong.TestULong(
             BigInt("FFFFFFFFFFFFFFFF", 16),
             [0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF],
             undefined,
@@ -1711,7 +1723,7 @@ const assert = Chai.assert;
 
     @test
     public Zero_BigEndian() {
-        ByteVectorTestsFromULong.TestULong(
+        ByteVector_FromULong.TestULong(
             BigInt(0),
             [0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00],
             undefined,
@@ -1721,7 +1733,7 @@ const assert = Chai.assert;
 
     @test
     public Zero_LittleEndian() {
-        ByteVectorTestsFromULong.TestULong(
+        ByteVector_FromULong.TestULong(
             BigInt(0),
             [0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00],
             undefined,
@@ -1731,7 +1743,7 @@ const assert = Chai.assert;
 
     @test
     public ReadOnly() {
-        ByteVectorTestsFromULong.TestULong(
+        ByteVector_FromULong.TestULong(
             BigInt(0),
             [0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00],
             true,
@@ -1761,7 +1773,8 @@ const assert = Chai.assert;
     }
 }
 
-@suite(timeout(3000), slow(1000)) class ByteVectorTestsFromUShort {
+@suite(timeout(3000), slow(1000))
+class ByteVector_FromUShort {
     @test
     public BadShort() {
         // Arrange, Act, Assert
@@ -1780,7 +1793,7 @@ const assert = Chai.assert;
 
     @test
     public Zero_BigEndian() {
-        ByteVectorTestsFromUShort.TestUShort(
+        ByteVector_FromUShort.TestUShort(
             0x0,
             [0x0, 0x0],
             undefined,
@@ -1790,7 +1803,7 @@ const assert = Chai.assert;
 
     @test
     public Zero_LittleEndian() {
-        ByteVectorTestsFromUShort.TestUShort(
+        ByteVector_FromUShort.TestUShort(
             0x0,
             [0x0, 0x0],
             undefined,
@@ -1800,7 +1813,7 @@ const assert = Chai.assert;
 
     @test
     public Positive1Byte_BigEndian() {
-        ByteVectorTestsFromUShort.TestUShort(
+        ByteVector_FromUShort.TestUShort(
             0x12,
             [0x00, 0x12],
             undefined,
@@ -1810,7 +1823,7 @@ const assert = Chai.assert;
 
     @test
     public Positive1Byte_LittleEndian() {
-        ByteVectorTestsFromUShort.TestUShort(
+        ByteVector_FromUShort.TestUShort(
             0x12,
             [0x12, 0x00],
             undefined,
@@ -1820,7 +1833,7 @@ const assert = Chai.assert;
 
     @test
     public Positive2Byte_BigEndian() {
-        ByteVectorTestsFromUShort.TestUShort(
+        ByteVector_FromUShort.TestUShort(
             0x1234,
             [0x12, 0x34],
             undefined,
@@ -1830,7 +1843,7 @@ const assert = Chai.assert;
 
     @test
     public Positive2Byte_LittleEndian() {
-        ByteVectorTestsFromUShort.TestUShort(
+        ByteVector_FromUShort.TestUShort(
             0x1234,
             [0x34, 0x12],
             undefined,
@@ -1840,7 +1853,7 @@ const assert = Chai.assert;
 
     @test
     public UnsignedRange_BigEndian() {
-        ByteVectorTestsFromUShort.TestUShort(
+        ByteVector_FromUShort.TestUShort(
             0xFFFF,
             [0xFF, 0xFF],
             undefined,
@@ -1850,7 +1863,7 @@ const assert = Chai.assert;
 
     @test
     public UnsignedRange_LittleEndian() {
-        ByteVectorTestsFromUShort.TestUShort(
+        ByteVector_FromUShort.TestUShort(
             0xFFFF,
             [0xFF, 0xFF],
             undefined,
@@ -1860,7 +1873,7 @@ const assert = Chai.assert;
 
     @test
     public ReadOnly() {
-        ByteVectorTestsFromUShort.TestUShort(
+        ByteVector_FromUShort.TestUShort(
             0x0,
             [0x0, 0x0],
             true,

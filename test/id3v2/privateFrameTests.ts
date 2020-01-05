@@ -2,10 +2,10 @@ import * as Chai from "chai";
 import * as ChaiAsPromised from "chai-as-promised";
 import {slow, suite, test, timeout} from "mocha-typescript";
 
-import ConstructorTests from "./frameConstructorTests";
+import FrameConstructorTests from "./frameConstructorTests";
+import FramePropertyTests from "./framePropertyTests";
 import FrameTypes from "../../src/id3v2/frameTypes";
 import PrivateFrame from "../../src/id3v2/frames/privateFrame";
-import PropertyTests from "./framePropertiesTests";
 import {ByteVector, StringType} from "../../src/byteVector";
 import {Frame, FrameClassType} from "../../src/id3v2/frames/frame";
 import {Id3v2FrameHeader} from "../../src/id3v2/frames/frameHeader";
@@ -15,7 +15,7 @@ Chai.use(ChaiAsPromised);
 const assert = Chai.assert;
 
 @suite(timeout(3000), slow(1000))
-class PrivateFrameConstructorTests extends ConstructorTests {
+class Id3v2_PrivateFrame_ConstructorTests extends FrameConstructorTests {
     public get fromOffsetRawData(): (d: ByteVector, o: number, h: Id3v2FrameHeader) => Frame {
         return PrivateFrame.fromOffsetRawData;
     }
@@ -113,14 +113,14 @@ class PrivateFrameConstructorTests extends ConstructorTests {
 }
 
 @suite(timeout(3000), slow(1000))
-class PrivateFramePropertyTests extends PropertyTests {
+class Id3v2_PrivateFrame_PropertyTests {
     @test
     public privateData() {
         // Arrange
         const frame = PrivateFrame.fromOwner("fux");
 
         // Act / Assert
-        this.propertyRoundTrip(
+        FramePropertyTests.propertyRoundTrip(
            (v) => { frame.privateData = v; },
            () => frame.privateData,
             ByteVector.fromString("bux")
@@ -129,7 +129,7 @@ class PrivateFramePropertyTests extends PropertyTests {
 }
 
 @suite(timeout(3000), slow(1000))
-class PrivateFrameMethodTests {
+class Id3v2_PrivateFrame_MethodTests {
     @test
     public find_noFrames() {
         // Arrange

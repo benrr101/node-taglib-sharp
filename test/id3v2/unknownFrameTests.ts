@@ -14,7 +14,7 @@ Chai.use(ChaiAsPromised);
 const assert = Chai.assert;
 
 @suite(timeout(3000), slow(1000))
-class UnknownFrameConstructorTests extends FrameConstructorTests {
+class Id3v2_UnknownFrame_ConstructorTests extends FrameConstructorTests {
     public get fromOffsetRawData(): (d: ByteVector, o: number, h: Id3v2FrameHeader) => Frame {
         return UnknownFrame.fromOffsetRawData;
     }
@@ -36,13 +36,10 @@ class UnknownFrameConstructorTests extends FrameConstructorTests {
         const frameType = FrameTypes.WXXX;
 
         // Act
-        const result = UnknownFrame.fromData(frameType, undefined);
+        const frame = UnknownFrame.fromData(frameType, undefined);
 
         // Assert
-        assert.ok(result);
-        assert.strictEqual(result.frameClassType, FrameClassType.UnknownFrame);
-        assert.isTrue(ByteVector.equal(result.frameId, frameType));
-        assert.isUndefined(result.data);
+        this.assertFrame(frame, FrameTypes.WXXX, undefined);
     }
 
     @test
@@ -51,13 +48,10 @@ class UnknownFrameConstructorTests extends FrameConstructorTests {
         const frameType = FrameTypes.WXXX;
 
         // Act
-        const result = UnknownFrame.fromData(frameType, null);
+        const frame = UnknownFrame.fromData(frameType, null);
 
         // Assert
-        assert.ok(result);
-        assert.strictEqual(result.frameClassType, FrameClassType.UnknownFrame);
-        assert.isTrue(ByteVector.equal(result.frameId, frameType));
-        assert.isUndefined(result.data);
+        this.assertFrame(frame, FrameTypes.WXXX, undefined);
     }
 
     @test
@@ -67,13 +61,10 @@ class UnknownFrameConstructorTests extends FrameConstructorTests {
         const data = ByteVector.fromString("fux qux quxx");
 
         // Act
-        const result = UnknownFrame.fromData(frameType, data);
+        const frame = UnknownFrame.fromData(frameType, data);
 
         // Assert
-        assert.ok(result);
-        assert.strictEqual(result.frameClassType, FrameClassType.UnknownFrame);
-        assert.isTrue(ByteVector.equal(result.frameId, frameType));
-        assert.isTrue(ByteVector.equal(result.data, data));
+        this.assertFrame(frame, FrameTypes.WXXX, data);
     }
 
     @test
@@ -91,11 +82,7 @@ class UnknownFrameConstructorTests extends FrameConstructorTests {
         const frame = UnknownFrame.fromOffsetRawData(data, 2, header);
 
         // Assert
-        assert.ok(frame);
-        assert.strictEqual(frame.frameClassType, FrameClassType.UnknownFrame);
-        assert.isTrue(ByteVector.equal(frame.frameId, FrameTypes.WXXX));
-
-        assert.isTrue(ByteVector.equal(frame.data, ByteVector.fromString("foo bar baz")));
+        this.assertFrame(frame, FrameTypes.WXXX, ByteVector.fromString("foo bar baz"));
     }
 
     @test
@@ -112,16 +99,24 @@ class UnknownFrameConstructorTests extends FrameConstructorTests {
         const frame = UnknownFrame.fromRawData(data, 4);
 
         // Assert
+        this.assertFrame(frame, FrameTypes.WXXX, ByteVector.fromString("foo bar baz"));
+    }
+
+    private assertFrame(frame: UnknownFrame, ft: ByteVector, d: ByteVector) {
         assert.ok(frame);
         assert.strictEqual(frame.frameClassType, FrameClassType.UnknownFrame);
-        assert.isTrue(ByteVector.equal(frame.frameId, FrameTypes.WXXX));
+        assert.isTrue(ByteVector.equal(frame.frameId, ft));
 
-        assert.isTrue(ByteVector.equal(frame.data, ByteVector.fromString("foo bar baz")));
+        if (d !== undefined) {
+            assert.isTrue(ByteVector.equal(frame.data, d));
+        } else {
+            assert.isUndefined(frame.data);
+        }
     }
 }
 
 @suite(timeout(3000), slow(1000))
-class UnknownFrameMethodTests {
+class Id3v2_UnknownFrame_MethodTests {
     @test
     public clone_returnsCopy() {
         // Arrange

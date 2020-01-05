@@ -2,10 +2,10 @@ import * as Chai from "chai";
 import * as ChaiAsPromised from "chai-as-promised";
 import {slow, suite, test, timeout} from "mocha-typescript";
 
-import ConstructorTests from "./frameConstructorTests";
+import FrameConstructorTests from "./frameConstructorTests";
+import FramePropertyTests from "./framePropertyTests";
 import FrameTypes from "../../src/id3v2/frameTypes";
 import Id3v2TagSettings from "../../src/id3v2/id3v2TagSettings";
-import PropertiesTests from "./framePropertiesTests";
 import {ByteVector, StringType} from "../../src/byteVector";
 import {Frame, FrameClassType} from "../../src/id3v2/frames/frame";
 import {Id3v2FrameHeader} from "../../src/id3v2/frames/frameHeader";
@@ -47,7 +47,7 @@ class SynchronizedTextTests {
 }
 
 @suite(timeout(3000), slow(1000))
-class SynchronizedLyricsFrameConstructorTests extends ConstructorTests {
+class Id3v2_SynchronizedLyricsFrame_ConstructorTests extends FrameConstructorTests {
     public get fromOffsetRawData(): (d: ByteVector, o: number, h: Id3v2FrameHeader) => Frame {
         return SynchronizedLyricsFrame.fromOffsetRawData;
     }
@@ -339,7 +339,7 @@ class SynchronizedLyricsFrameConstructorTests extends ConstructorTests {
 }
 
 @suite(timeout(3000), slow(1000))
-class SynchronizedLyricsFramePropertyTests extends PropertiesTests {
+class Id3v2_SynchronizedLyricsFrame_PropertyTests {
     @test
     public description() {
         // Arrange
@@ -348,8 +348,8 @@ class SynchronizedLyricsFramePropertyTests extends PropertiesTests {
         const get = () => frame.description;
 
         // Act / Assert
-        this.propertyRoundTrip(set, get, "fux" );
-        this.propertyRoundTrip(set, get, undefined);
+        FramePropertyTests.propertyRoundTrip(set, get, "fux" );
+        FramePropertyTests.propertyRoundTrip(set, get, undefined);
     }
 
     @test
@@ -358,7 +358,11 @@ class SynchronizedLyricsFramePropertyTests extends PropertiesTests {
         const frame = SynchronizedLyricsFrame.fromInfo("foo", "bar", SynchronizedTextType.Chord);
 
         // Act / Assert
-        this.propertyRoundTrip((v) => { frame.format = v; }, () => frame.format, TimestampFormat.AbsoluteMilliseconds);
+        FramePropertyTests.propertyRoundTrip(
+            (v) => { frame.format = v; },
+            () => frame.format,
+            TimestampFormat.AbsoluteMilliseconds
+        );
     }
 
     @test
@@ -369,9 +373,9 @@ class SynchronizedLyricsFramePropertyTests extends PropertiesTests {
         const get = () => frame.language;
 
         // Act / Assert
-        this.propertyRoundTrip(set, get, "fux");
-        this.propertyRoundTrip(set, get, "shoe");
-        this.propertyRoundTrip(set, get, "ab");
+        FramePropertyTests.propertyRoundTrip(set, get, "fux");
+        FramePropertyTests.propertyRoundTrip(set, get, "shoe");
+        FramePropertyTests.propertyRoundTrip(set, get, "ab");
     }
 
     @test
@@ -383,9 +387,9 @@ class SynchronizedLyricsFramePropertyTests extends PropertiesTests {
         const value = [new SynchronizedText(123, "foo")];
 
         // Act / Assert
-        this.propertyRoundTrip(set, get, value);
-        this.propertyNormalized(set, get, undefined, []);
-        this.propertyNormalized(set, get, null, []);
+        FramePropertyTests.propertyRoundTrip(set, get, value);
+        FramePropertyTests.propertyNormalized(set, get, undefined, []);
+        FramePropertyTests.propertyNormalized(set, get, null, []);
     }
 
     @test
@@ -394,7 +398,11 @@ class SynchronizedLyricsFramePropertyTests extends PropertiesTests {
         const frame = SynchronizedLyricsFrame.fromInfo("foo", "bar", SynchronizedTextType.Chord);
 
         // Act / Assert
-        this.propertyRoundTrip((v) => { frame.textEncoding = v; }, () => frame.textEncoding, StringType.UTF16BE);
+        FramePropertyTests.propertyRoundTrip(
+            (v) => { frame.textEncoding = v; },
+            () => frame.textEncoding,
+            StringType.UTF16BE
+        );
     }
 
     @test
@@ -403,12 +411,16 @@ class SynchronizedLyricsFramePropertyTests extends PropertiesTests {
         const frame = SynchronizedLyricsFrame.fromInfo("foo", "bar", SynchronizedTextType.Chord);
 
         // Act / Assert
-        this.propertyRoundTrip((v) => { frame.textType = v; }, () => frame.textType, SynchronizedTextType.Trivia);
+        FramePropertyTests.propertyRoundTrip(
+            (v) => { frame.textType = v; },
+            () => frame.textType,
+            SynchronizedTextType.Trivia
+        );
     }
 }
 
 @suite(timeout(3000), slow(1000))
-class SynchronizedLyricsFrameMethodTests {
+class Id3v2_SynchronizedLyricsFrame_MethodTests {
     @test
     public find_falsyFrames() {
         // Act / Assert

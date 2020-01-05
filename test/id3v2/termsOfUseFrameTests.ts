@@ -3,7 +3,7 @@ import * as ChaiAsPromised from "chai-as-promised";
 import {slow, suite, test, timeout} from "mocha-typescript";
 
 import FrameConstructorTests from "./frameConstructorTests";
-import FramePropertiesTests from "./framePropertiesTests";
+import FramePropertyTests from "./framePropertyTests";
 import FrameTypes from "../../src/id3v2/frameTypes";
 import Id3v2TagSettings from "../../src/id3v2/id3v2TagSettings";
 import TermsOfUseFrame from "../../src/id3v2/frames/termsOfUseFrame";
@@ -17,7 +17,7 @@ Chai.use(ChaiAsPromised);
 const assert = Chai.assert;
 
 @suite(timeout(3000), slow(1000))
-class TermsOfUseFrameConstructorsTests extends FrameConstructorTests {
+class Id3v2_TermsOfUseFrame_ConstructorTests extends FrameConstructorTests {
     public get fromOffsetRawData(): (d: ByteVector, o: number, h: Id3v2FrameHeader) => Frame {
         return TermsOfUseFrame.fromOffsetRawData;
     }
@@ -124,7 +124,7 @@ class TermsOfUseFrameConstructorsTests extends FrameConstructorTests {
 }
 
 @suite(timeout(3000), slow(1000))
-class TermsOfUseFramePropertyTests extends FramePropertiesTests {
+class Id3v2_TermsOfUseFrame_PropertyTests {
     @test
     public language() {
         // Arrange
@@ -133,37 +133,41 @@ class TermsOfUseFramePropertyTests extends FramePropertiesTests {
 
         // Act/Assert
         const frame = TermsOfUseFrame.fromFields("eng");
-        this.propertyNormalized(set, get, "fu", "XXX");
-        this.propertyNormalized(set, get, "fuxx", "fux");
-        this.propertyNormalized(set, get, undefined, "XXX");
-        this.propertyNormalized(set, get, null, "XXX");
-        this.propertyRoundTrip(set, get, "fux");
+        FramePropertyTests.propertyNormalized(set, get, "fu", "XXX");
+        FramePropertyTests.propertyNormalized(set, get, "fuxx", "fux");
+        FramePropertyTests.propertyNormalized(set, get, undefined, "XXX");
+        FramePropertyTests.propertyNormalized(set, get, null, "XXX");
+        FramePropertyTests.propertyRoundTrip(set, get, "fux");
     }
 
     @test
     public text() {
         const frame = TermsOfUseFrame.fromFields("eng");
-        this.propertyRoundTrip((v) => { frame.text = v; }, () => frame.text, "fux");
-        this.propertyRoundTrip((v) => { frame.text = v; }, () => frame.text, undefined);
+        FramePropertyTests.propertyRoundTrip((v) => { frame.text = v; }, () => frame.text, "fux");
+        FramePropertyTests.propertyRoundTrip((v) => { frame.text = v; }, () => frame.text, undefined);
     }
 
     @test
     public textEncoding() {
         const frame = TermsOfUseFrame.fromFields("eng", StringType.Latin1);
-        this.propertyRoundTrip((v) => { frame.textEncoding = v; }, () => frame.textEncoding, StringType.UTF16);
+        FramePropertyTests.propertyRoundTrip(
+            (v) => { frame.textEncoding = v; },
+            () => frame.textEncoding,
+            StringType.UTF16
+        );
     }
 }
 
 @suite(timeout(3000), slow(1000))
-class TermsOfUseFrameMethodTests {
+class Id3v2_TermsOfUseFrame_MethodTests {
     @test
-    public get_falsyFrames() {
+    public find_falsyFrames() {
         // Act/Assert
         assert.throws(() => { TermsOfUseFrame.find(undefined); });
     }
 
     @test
-    public get_noFrames() {
+    public find_noFrames() {
         // Act
         const output = TermsOfUseFrame.find([]);
 
@@ -172,7 +176,7 @@ class TermsOfUseFrameMethodTests {
     }
 
     @test
-    public get_matchWithFrames_returnsFirst() {
+    public find_matchWithFrames_returnsFirst() {
         // Arrange
         const frames = [
             TermsOfUseFrame.fromFields("eng"),
@@ -188,7 +192,7 @@ class TermsOfUseFrameMethodTests {
     }
 
     @test
-    public get_matchWithFramesWithLanguage() {
+    public find_matchWithFramesWithLanguage() {
         // Arrange
         const frames = [
             TermsOfUseFrame.fromFields("eng"),
@@ -204,13 +208,13 @@ class TermsOfUseFrameMethodTests {
     }
 
     @test
-    public getPreferred_falsyFrames() {
+    public findPreferred_falsyFrames() {
         // Act/Assert
         assert.throws(() => TermsOfUseFrame.findPreferred(undefined, "eng"));
     }
 
     @test
-    public getPreferred_noFrames() {
+    public findPreferred_noFrames() {
         // Act
         const output = TermsOfUseFrame.findPreferred([], "eng");
 
@@ -219,7 +223,7 @@ class TermsOfUseFrameMethodTests {
     }
 
     @test
-    public getPrefeerred_nonExactMatch() {
+    public findPreferred_nonExactMatch() {
         // Arrange
         const frames = [
             TermsOfUseFrame.fromFields("eng"),
@@ -235,7 +239,7 @@ class TermsOfUseFrameMethodTests {
     }
 
     @test
-    public getPreferred_exactMatch() {
+    public findPreferred_exactMatch() {
         // Arrange
         const frames = [
             TermsOfUseFrame.fromFields("eng"),

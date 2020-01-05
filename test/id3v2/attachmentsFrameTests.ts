@@ -12,7 +12,6 @@ import Id3v2TagSettings from "../../src/id3v2/id3v2TagSettings";
 import {ByteVector} from "../../src/byteVector";
 import {Id3v2FrameHeader} from "../../src/id3v2/frames/frameHeader";
 import {IFileAbstraction} from "../../src/fileAbstraction";
-import TestStream from "../utilities/testStream";
 
 // Setup chai
 Chai.use(ChaiAsPromised);
@@ -36,7 +35,8 @@ const rawHeader = ByteVector.concatenate(
 
 const testHeader = new Id3v2FrameHeader(FrameTypes.APIC, 3);
 
-@suite(timeout(3000), slow(1000)) class AttachmentFrameFromFileTests {
+@suite(timeout(3000), slow(1000))
+class Id3v2_AttachmentFrame_FromFileTests {
     @test
     public falsyAbstraction() {
         // Act/Assert
@@ -93,7 +93,8 @@ const testHeader = new Id3v2FrameHeader(FrameTypes.APIC, 3);
     }
 }
 
-@suite(timeout(3000), slow(1000)) class AttachmentFrameOffsetRawDataTests {
+@suite(timeout(3000), slow(1000))
+class Id3v2_AttachmentFrame_OffsetRawDataTests {
     @test
     public falsyData() {
         // Act/Assert
@@ -131,7 +132,8 @@ const testHeader = new Id3v2FrameHeader(FrameTypes.APIC, 3);
     }
 }
 
-@suite(timeout(3000), slow(1000)) class AttachmentFrameFromPictureTests {
+@suite(timeout(3000), slow(1000))
+class Id3v2_AttachmentFrame_FromPictureTests {
     @test
     public falsyPicture() {
         // Act/Assert
@@ -166,7 +168,8 @@ const testHeader = new Id3v2FrameHeader(FrameTypes.APIC, 3);
     }
 }
 
-@suite(timeout(3000), slow(1000)) class AttachmentFrameRawDataTests {
+@suite(timeout(3000), slow(1000))
+class Id3v2_AttachmentFrame_FromRawDataTests {
     @test
     public falsyData() {
         // Act/Assert

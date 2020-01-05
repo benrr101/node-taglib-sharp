@@ -8,7 +8,8 @@ import {ByteVector} from "../src/byteVector";
 Chai.use(ChaiAsPromised);
 const assert = Chai.assert;
 
-@suite(timeout(3000), slow(1000)) class ByteVectorAddTests {
+@suite(timeout(3000), slow(1000))
+class ByteVector_AddTests {
     @test
     public InvalidParameters() {
         // Arrange
@@ -103,7 +104,8 @@ const assert = Chai.assert;
     }
 }
 
-@suite(timeout(3000), slow(1000)) class ByteVectorEqualTests {
+@suite(timeout(3000), slow(1000))
+class ByteVector_EqualTests {
     @test
     public BothNullUndefined() {
         // Arrange, Act, Assert
@@ -151,7 +153,8 @@ const assert = Chai.assert;
     }
 }
 
-@suite(timeout(3000), slow(1000)) class ByteVectorNotEqualTests {
+@suite(timeout(3000), slow(1000))
+class ByteVector_NotEqualTests {
     @test
     public BothNullUndefined() {
         // Arrange, Act, Assert
@@ -199,7 +202,8 @@ const assert = Chai.assert;
     }
 }
 
-@suite(timeout(3000), slow(1000)) class ByteVectorGreaterThanTests {
+@suite(timeout(3000), slow(1000))
+class ByteVector_GreaterThanTests {
     @test
     public InvalidParameters() {
         // Arrange
@@ -248,7 +252,8 @@ const assert = Chai.assert;
     }
 }
 
-@suite(timeout(3000), slow(1000)) class ByteVectorGreaterThanEqualTests {
+@suite(timeout(3000), slow(1000))
+class ByteVector_GreaterThanEqualTests {
     @test
     public InvalidParameters() {
         // Arrange
@@ -297,7 +302,8 @@ const assert = Chai.assert;
     }
 }
 
-@suite(timeout(3000), slow(1000)) class ByteVectorLessThanTests {
+@suite(timeout(3000), slow(1000))
+class ByteVector_LessThanTests {
     @test
     public InvalidParameters() {
         // Arrange
@@ -346,7 +352,8 @@ const assert = Chai.assert;
     }
 }
 
-@suite(timeout(3000), slow(1000)) class ByteVectorLessThanEqualTests {
+@suite(timeout(3000), slow(1000))
+class ByteVector_LessThanEqualTests {
     @test
     public InvalidParameters() {
         // Arrange

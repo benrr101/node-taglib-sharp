@@ -8,7 +8,8 @@ import {ByteVector} from "../src/byteVector";
 Chai.use(ChaiAsPromised);
 const assert = Chai.assert;
 
-@suite(timeout(3000), slow(1000)) class AddByteTests {
+@suite(timeout(3000), slow(1000))
+class ByteVector_AddByteTests {
     @test
     public ReadOnly() {
         // Arrange - Create readonly ByteVector
@@ -61,7 +62,8 @@ const assert = Chai.assert;
     }
 }
 
-@suite(timeout(3000), slow(1000)) class AddByteArrayTests {
+@suite(timeout(3000), slow(1000))
+class ByteVector_AddByteArrayTests {
     @test
     public ReadOnly() {
         // Arrange - Create readonly ByteVector
@@ -168,7 +170,8 @@ const assert = Chai.assert;
     }
 }
 
-@suite(timeout(3000), slow(1000)) class AddByteVectorTests {
+@suite(timeout(3000), slow(1000))
+class ByteVector_AddByteVectorTests {
     @test
     public ReadOnly() {
         // Arrange - Create readonly ByteVector
@@ -266,7 +269,8 @@ const assert = Chai.assert;
     }
 }
 
-@suite(timeout(3000), slow(1000)) class ClearTests {
+@suite(timeout(3000), slow(1000))
+class ByteVector_ClearTests {
     @test
     public ReadOnly() {
         // Arrange - Create readonly bytevector
@@ -308,7 +312,8 @@ const assert = Chai.assert;
     }
 }
 
-@suite(timeout(3000), slow(1000)) class InsertByteTests {
+@suite(timeout(3000), slow(1000))
+class ByteVector_InsertByteTests {
     @test
     public ReadOnly() {
         // Arrange
@@ -409,7 +414,8 @@ const assert = Chai.assert;
     }
 }
 
-@suite(timeout(3000), slow(1000)) class InsertByteArrayTests {
+@suite(timeout(3000), slow(1000))
+class ByteVector_InsertByteArrayTests {
     @test
     public ReadOnly() {
         // Arrange
@@ -523,7 +529,8 @@ const assert = Chai.assert;
     }
 }
 
-@suite(timeout(3000), slow(1000)) class InsertByteVectorTests {
+@suite(timeout(3000), slow(1000))
+class ByteVector_InsertByteVectorTests {
     private static readonly vectorToAdd: ByteVector = ByteVector.fromByteArray(
         new Uint8Array([0xAA, 0xBB])
     );
@@ -534,7 +541,7 @@ const assert = Chai.assert;
         const bv = ByteVector.fromSize(1, 0x00, true);
 
         // Act, Assert
-        assert.throws(() => { bv.insertByteVector(0, InsertByteVectorTests.vectorToAdd); });
+        assert.throws(() => { bv.insertByteVector(0, ByteVector_InsertByteVectorTests.vectorToAdd); });
 
         assert.isTrue(bv.isReadOnly);
         assert.isFalse(bv.isEmpty);
@@ -548,9 +555,9 @@ const assert = Chai.assert;
         const bv = ByteVector.fromSize(1, 0x00);
 
         // Act, Assert
-        assert.throws(() => { bv.insertByteVector(0.1, InsertByteVectorTests.vectorToAdd); });
-        assert.throws(() => { bv.insertByteVector(-1, InsertByteVectorTests.vectorToAdd); });
-        assert.throws(() => { bv.insertByteVector(2, InsertByteVectorTests.vectorToAdd); });
+        assert.throws(() => { bv.insertByteVector(0.1, ByteVector_InsertByteVectorTests.vectorToAdd); });
+        assert.throws(() => { bv.insertByteVector(-1, ByteVector_InsertByteVectorTests.vectorToAdd); });
+        assert.throws(() => { bv.insertByteVector(2, ByteVector_InsertByteVectorTests.vectorToAdd); });
 
         assert.isFalse(bv.isReadOnly);
         assert.isFalse(bv.isEmpty);
@@ -593,7 +600,7 @@ const assert = Chai.assert;
         const bv = ByteVector.fromSize(0);
 
         // Act
-        bv.insertByteVector(0, InsertByteVectorTests.vectorToAdd);
+        bv.insertByteVector(0, ByteVector_InsertByteVectorTests.vectorToAdd);
 
         // Assert
         assert.isFalse(bv.isEmpty);
@@ -607,7 +614,7 @@ const assert = Chai.assert;
         const bv = ByteVector.fromByteArray(new Uint8Array([0x01, 0x02, 0x03, 0x04]));
 
         // Act
-        bv.insertByteVector(0, InsertByteVectorTests.vectorToAdd);
+        bv.insertByteVector(0, ByteVector_InsertByteVectorTests.vectorToAdd);
 
         // Assert
         assert.strictEqual(bv.length, 6);
@@ -620,7 +627,7 @@ const assert = Chai.assert;
         const bv = ByteVector.fromByteArray(new Uint8Array([0x01, 0x02, 0x03, 0x04]));
 
         // Act
-        bv.insertByteVector(bv.length, InsertByteVectorTests.vectorToAdd);
+        bv.insertByteVector(bv.length, ByteVector_InsertByteVectorTests.vectorToAdd);
 
         // Assert
         assert.strictEqual(bv.length, 6);
@@ -633,7 +640,7 @@ const assert = Chai.assert;
         const bv = ByteVector.fromByteArray(new Uint8Array([0x01, 0x02, 0x03, 0x04]));
 
         // Act
-        bv.insertByteVector(2, InsertByteVectorTests.vectorToAdd);
+        bv.insertByteVector(2, ByteVector_InsertByteVectorTests.vectorToAdd);
 
         // Assert
         assert.strictEqual(bv.length, 6);
@@ -641,7 +648,8 @@ const assert = Chai.assert;
     }
 }
 
-@suite(timeout(3000), slow(1000)) class RemoveAtIndexTests {
+@suite(timeout(3000), slow(1000))
+class ByteVector_RemoveAtIndexTests {
     @test
     public ReadOnly() {
         // Arrange
@@ -712,7 +720,8 @@ const assert = Chai.assert;
     }
 }
 
-@suite(timeout(3000), slow(1000)) class RemoveRangeTests {
+@suite(timeout(3000), slow(1000))
+class ByteVector_RemoveRangeTests {
     @test
     public ReadOnly() {
         // Arrange
@@ -798,7 +807,8 @@ const assert = Chai.assert;
     }
 }
 
-@suite(timeout(3000), slow(1000)) class SetTests {
+@suite(timeout(3000), slow(1000))
+class ByteVector_SetTests {
     @test
     public ReadOnly() {
         // Arrange

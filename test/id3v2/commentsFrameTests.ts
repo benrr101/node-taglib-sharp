@@ -4,7 +4,7 @@ import {slow, suite, test, timeout} from "mocha-typescript";
 
 import CommentsFrame from "../../src/id3v2/frames/commentsFrame";
 import FrameConstructorTests from "./frameConstructorTests";
-import FramePropertiesTests from "./framePropertiesTests";
+import FramePropertyTests from "./framePropertyTests";
 import FrameTypes from "../../src/id3v2/frameTypes";
 import Id3v2TagSettings from "../../src/id3v2/id3v2TagSettings";
 import {ByteVector, StringType} from "../../src/byteVector";
@@ -31,7 +31,7 @@ function getTestFrame(): CommentsFrame {
 }
 
 @suite(timeout(3000), slow(1000))
-class CommentsFrameConstructorTests extends FrameConstructorTests {
+class Id3v2_CommentsFrame_ConstructorTests extends FrameConstructorTests {
     public get fromOffsetRawData(): (d: ByteVector, o: number, h: Id3v2FrameHeader) => Frame {
         return CommentsFrame.fromOffsetRawData;
     }
@@ -56,7 +56,7 @@ class CommentsFrameConstructorTests extends FrameConstructorTests {
         const frame = CommentsFrame.fromDescription(description);
 
         // Assert
-        CommentsFrameConstructorTests.validateFrame(frame, description, "XXX", Id3v2TagSettings.defaultEncoding, "");
+        this.validateFrame(frame, description, "XXX", Id3v2TagSettings.defaultEncoding, "");
     }
 
     @test
@@ -69,7 +69,7 @@ class CommentsFrameConstructorTests extends FrameConstructorTests {
         const frame = CommentsFrame.fromDescription(description, language);
 
         // Assert
-        CommentsFrameConstructorTests.validateFrame(frame, description, language, Id3v2TagSettings.defaultEncoding, "");
+        this.validateFrame(frame, description, language, Id3v2TagSettings.defaultEncoding, "");
     }
 
     @test
@@ -83,7 +83,7 @@ class CommentsFrameConstructorTests extends FrameConstructorTests {
         const frame = CommentsFrame.fromDescription(description, language, encoding);
 
         // Assert
-        CommentsFrameConstructorTests.validateFrame(frame, description, language, encoding, "");
+        this.validateFrame(frame, description, language, encoding, "");
     }
 
     @test
@@ -117,7 +117,7 @@ class CommentsFrameConstructorTests extends FrameConstructorTests {
         const frame = CommentsFrame.fromOffsetRawData(data, 2, header);
 
         // Assert
-        CommentsFrameConstructorTests.validateFrame(frame, "", "eng", StringType.Latin1, "");
+        this.validateFrame(frame, "", "eng", StringType.Latin1, "");
     }
 
     @test
@@ -137,7 +137,7 @@ class CommentsFrameConstructorTests extends FrameConstructorTests {
         const frame = CommentsFrame.fromOffsetRawData(data, 2, header);
 
         // Assert
-        CommentsFrameConstructorTests.validateFrame(frame, "", "eng", StringType.Latin1, "fux");
+        this.validateFrame(frame, "", "eng", StringType.Latin1, "fux");
     }
 
     @test
@@ -159,7 +159,7 @@ class CommentsFrameConstructorTests extends FrameConstructorTests {
         const frame = CommentsFrame.fromOffsetRawData(data, 2, header);
 
         // Assert
-        CommentsFrameConstructorTests.validateFrame(frame, "fux", "eng", StringType.Latin1, "bux");
+        this.validateFrame(frame, "fux", "eng", StringType.Latin1, "bux");
     }
 
     @test
@@ -181,7 +181,7 @@ class CommentsFrameConstructorTests extends FrameConstructorTests {
         const frame = CommentsFrame.fromOffsetRawData(data, 2, header);
 
         // Assert
-        CommentsFrameConstructorTests.validateFrame(frame, "fux", "eng", StringType.Latin1, "bux");
+        this.validateFrame(frame, "fux", "eng", StringType.Latin1, "bux");
     }
 
     @test
@@ -213,7 +213,7 @@ class CommentsFrameConstructorTests extends FrameConstructorTests {
         const frame = CommentsFrame.fromRawData(data, 4);
 
         // Assert
-        CommentsFrameConstructorTests.validateFrame(frame, "", "eng", StringType.Latin1, "");
+        this.validateFrame(frame, "", "eng", StringType.Latin1, "");
     }
 
     @test
@@ -232,7 +232,7 @@ class CommentsFrameConstructorTests extends FrameConstructorTests {
         const frame = CommentsFrame.fromRawData(data, 4);
 
         // Assert
-        CommentsFrameConstructorTests.validateFrame(frame, "", "eng", StringType.Latin1, "fux");
+        this.validateFrame(frame, "", "eng", StringType.Latin1, "fux");
     }
 
     @test
@@ -252,7 +252,7 @@ class CommentsFrameConstructorTests extends FrameConstructorTests {
         const frame = CommentsFrame.fromRawData(data, 4);
 
         // Assert
-        CommentsFrameConstructorTests.validateFrame(frame, "fux", "eng", StringType.Latin1, "bux");
+        this.validateFrame(frame, "fux", "eng", StringType.Latin1, "bux");
     }
 
     @test
@@ -273,10 +273,10 @@ class CommentsFrameConstructorTests extends FrameConstructorTests {
         const frame = CommentsFrame.fromRawData(data, 4);
 
         // Assert
-        CommentsFrameConstructorTests.validateFrame(frame, "fux", "eng", StringType.Latin1, "bux");
+        this.validateFrame(frame, "fux", "eng", StringType.Latin1, "bux");
     }
 
-    private static validateFrame(
+    private validateFrame(
         frame: CommentsFrame,
         expectedDesc: string,
         expectedLang: string,
@@ -295,16 +295,16 @@ class CommentsFrameConstructorTests extends FrameConstructorTests {
 }
 
 @suite(timeout(3000), slow(1000))
-class CommentsFramePropertiesTests extends FramePropertiesTests {
+class Id3v2_CommentsFrame_PropertyTests {
     @test
     public description() {
         const frame = getTestFrame();
 
         const set = (v: string) => { frame.description = v; };
         const get = () => frame.description;
-        this.propertyRoundTrip(set, get, "fux");
-        this.propertyNormalized(set, get, undefined, "");
-        this.propertyNormalized(set, get, null, "");
+        FramePropertyTests.propertyRoundTrip(set, get, "fux");
+        FramePropertyTests.propertyNormalized(set, get, undefined, "");
+        FramePropertyTests.propertyNormalized(set, get, null, "");
     }
 
     @test
@@ -313,11 +313,11 @@ class CommentsFramePropertiesTests extends FramePropertiesTests {
 
         const set = (v: string) => { frame.language = v; };
         const get = () => frame.language;
-        this.propertyRoundTrip(set, get, "jpn");
-        this.propertyNormalized(set, get, undefined, "XXX");
-        this.propertyNormalized(set, get, null, "XXX");
-        this.propertyNormalized(set, get, "ab", "XXX");
-        this.propertyNormalized(set, get, "abcd", "abc");
+        FramePropertyTests.propertyRoundTrip(set, get, "jpn");
+        FramePropertyTests.propertyNormalized(set, get, undefined, "XXX");
+        FramePropertyTests.propertyNormalized(set, get, null, "XXX");
+        FramePropertyTests.propertyNormalized(set, get, "ab", "XXX");
+        FramePropertyTests.propertyNormalized(set, get, "abcd", "abc");
     }
 
     @test
@@ -326,21 +326,25 @@ class CommentsFramePropertiesTests extends FramePropertiesTests {
 
         const set = (v: string) => { frame.text = v; };
         const get = () => frame.text;
-        this.propertyRoundTrip(set, get, "fux");
-        this.propertyNormalized(set, get, undefined, "");
-        this.propertyNormalized(set, get, null, "");
+        FramePropertyTests.propertyRoundTrip(set, get, "fux");
+        FramePropertyTests.propertyNormalized(set, get, undefined, "");
+        FramePropertyTests.propertyNormalized(set, get, null, "");
     }
 
     @test
     public textEncoding() {
         const frame = getTestFrame();
 
-        this.propertyRoundTrip((v) => { frame.textEncoding = v; }, () => frame.textEncoding, StringType.UTF16);
+        FramePropertyTests.propertyRoundTrip(
+            (v) => { frame.textEncoding = v; },
+            () => frame.textEncoding,
+            StringType.UTF16
+        );
     }
 }
 
 @suite(timeout(3000), slow(1000))
-class CommentsFrameMethodTests {
+class Id3v2_CommentsFrame_MethodTests {
     @test
     public find_falsyFrames() {
         // Act/Assert

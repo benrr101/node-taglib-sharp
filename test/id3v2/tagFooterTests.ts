@@ -24,12 +24,12 @@ const getTestFooter = (majorVersion: number, minorVersion: number, flags: Header
 };
 
 @suite(timeout(3000), slow(1000))
-class TagFooterConstructorTests {
+class Id3v2_TagFooterConstructorTests {
     @test
     public falsyData() {
         // Act/Assert
-        assert.throws(() => { new Footer(null); });
-        assert.throws(() => { new Footer(undefined); });
+        assert.throws(() => { const _ = new Footer(null); });
+        assert.throws(() => { const _ = new Footer(undefined); });
     }
 
     @test
@@ -38,7 +38,7 @@ class TagFooterConstructorTests {
         const data = ByteVector.fromSize(1);
 
         // Act/Assert
-        assert.throws(() => { new Footer(data); });
+        assert.throws(() => { const _ = new Footer(data); });
     }
 
     @test
@@ -47,7 +47,7 @@ class TagFooterConstructorTests {
         const data = ByteVector.fromSize(10);
 
         // Act/Assert
-        assert.throws(() => { new Footer(data); });
+        assert.throws(() => { const _ = new Footer(data); });
     }
 
     @test
@@ -59,7 +59,7 @@ class TagFooterConstructorTests {
         );
 
         // Act/Assert
-        assert.throws(() => { new Footer(data); });
+        assert.throws(() => { const _ = new Footer(data); });
     }
 
     @test
@@ -75,10 +75,10 @@ class TagFooterConstructorTests {
         const testData4 = ByteVector.concatenate(testData, 0x00, 0x00, 0x00, 0x80);
 
         // Act/Assert
-        assert.throws(() => { const q = new Footer(testData1); });
-        assert.throws(() => { const q = new Footer(testData2); });
-        assert.throws(() => { const q = new Footer(testData3); });
-        assert.throws(() => { const q = new Footer(testData4); });
+        assert.throws(() => { const _ = new Footer(testData1); });
+        assert.throws(() => { const _ = new Footer(testData2); });
+        assert.throws(() => { const _ = new Footer(testData3); });
+        assert.throws(() => { const _ = new Footer(testData4); });
     }
 
     @test
@@ -204,7 +204,7 @@ class TagFooterPropertyTests {
     }
 
     @test
-    publicsetTagSize_validValue() {
+    public publicsetTagSize_validValue() {
         // Arrange
         const footer = getTestFooter(4, 0, HeaderFlags.None);
 

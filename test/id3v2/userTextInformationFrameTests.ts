@@ -2,7 +2,7 @@ import * as Chai from "chai";
 import * as ChaiAsPromised from "chai-as-promised";
 import {slow, suite, test, timeout} from "mocha-typescript";
 
-import ConstructorTests from "./frameConstructorTests";
+import FrameConstructorTests from "./frameConstructorTests";
 import FrameTypes from "../../src/id3v2/frameTypes";
 import Id3v2TagSettings from "../../src/id3v2/id3v2TagSettings";
 import {UserTextInformationFrame} from "../../src/id3v2/frames/textInformationFrame";
@@ -29,7 +29,7 @@ function getTestFrame(): UserTextInformationFrame {
 }
 
 @suite(timeout(3000), slow(1000))
-class UserInformationFrameConstructorTests extends ConstructorTests {
+class Id3v2_UserInformationFrame_ConstructorTests extends FrameConstructorTests {
     public get fromOffsetRawData(): (d: ByteVector, o: number, h: Id3v2FrameHeader) => Frame {
         return UserTextInformationFrame.fromOffsetRawData;
     }
@@ -44,7 +44,7 @@ class UserInformationFrameConstructorTests extends ConstructorTests {
         const frame = UserTextInformationFrame.fromDescription("foo");
 
         // Assert
-        UserInformationFrameConstructorTests.assertFrame(frame, "foo", [], Id3v2TagSettings.defaultEncoding);
+        this.assertFrame(frame, "foo", [], Id3v2TagSettings.defaultEncoding);
     }
 
     @test
@@ -53,7 +53,7 @@ class UserInformationFrameConstructorTests extends ConstructorTests {
         const frame = UserTextInformationFrame.fromDescription("foo", StringType.UTF16);
 
         // Assert
-        UserInformationFrameConstructorTests.assertFrame(frame, "foo", [], StringType.UTF16);
+        this.assertFrame(frame, "foo", [], StringType.UTF16);
     }
 
     @test
@@ -74,7 +74,7 @@ class UserInformationFrameConstructorTests extends ConstructorTests {
         const frame = UserTextInformationFrame.fromOffsetRawData(data, 2, header);
 
         // Assert
-        UserInformationFrameConstructorTests.assertFrame(frame, "foo", ["bar"], StringType.Latin1);
+        this.assertFrame(frame, "foo", ["bar"], StringType.Latin1);
     }
 
     @test
@@ -94,10 +94,10 @@ class UserInformationFrameConstructorTests extends ConstructorTests {
         const frame = UserTextInformationFrame.fromRawData(data, 4);
 
         // Assert
-        UserInformationFrameConstructorTests.assertFrame(frame, "foo", ["bar"], StringType.Latin1);
+        this.assertFrame(frame, "foo", ["bar"], StringType.Latin1);
     }
 
-    private static assertFrame(
+    private assertFrame(
         frame: UserTextInformationFrame,
         description: string,
         text: string[],
@@ -115,7 +115,7 @@ class UserInformationFrameConstructorTests extends ConstructorTests {
 }
 
 @suite(timeout(3000), slow(1000))
-class UserInformationFramePropertiesTests {
+class Id3v2_UserInformationFrame_PropertyTests {
     @test
     public setDescription() {
         // Arrange
@@ -158,7 +158,7 @@ class UserInformationFramePropertiesTests {
 }
 
 @suite(timeout(3000), slow(1000))
-class UserTextInformationFrameMethodTests {
+class Id3v2_UserTextInformationFrame_MethodTests {
     @test
     public findUserTextInformationFrame_falsyFrames() {
         // Act/Assert

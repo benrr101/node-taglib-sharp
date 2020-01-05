@@ -8,6 +8,7 @@ import UnsynchronizedLyricsFrame from "../../src/id3v2/frames/unsynchronizedLyri
 import {ByteVector, StringType} from "../../src/byteVector";
 import {Frame, FrameClassType} from "../../src/id3v2/frames/frame";
 import {Id3v2FrameHeader} from "../../src/id3v2/frames/frameHeader";
+import FramePropertyTests from "./framePropertyTests";
 
 // Setup chai
 Chai.use(ChaiAsPromised);
@@ -33,7 +34,7 @@ const getTestUnsynchronizedLyricsFrame = (): UnsynchronizedLyricsFrame => {
 };
 
 @suite(timeout(3000), slow(1000))
-class UnsynchronizedLyricsFrameConstructorsTests extends FrameConstructorTests {
+class Id3v2_UnsynchronizedLyricsFrame_ConstructorTests extends FrameConstructorTests {
     public get fromOffsetRawData(): (d: ByteVector, o: number, h: Id3v2FrameHeader) => Frame {
         return UnsynchronizedLyricsFrame.fromOffsetRawData;
     }
@@ -50,17 +51,10 @@ class UnsynchronizedLyricsFrameConstructorsTests extends FrameConstructorTests {
         const description = "foo";
 
         // Act
-        const result = UnsynchronizedLyricsFrame.fromData(description, language, encoding);
+        const frame = UnsynchronizedLyricsFrame.fromData(description, language, encoding);
 
         // Assert
-        assert.isOk(result);
-        assert.equal(result.frameClassType, FrameClassType.UnsynchronizedLyricsFrame);
-        assert.isTrue(ByteVector.equal(result.frameId, FrameTypes.USLT));
-
-        assert.strictEqual(result.description, description);
-        assert.strictEqual(result.language, language);
-        assert.strictEqual(result.text, "");
-        assert.strictEqual(result.textEncoding, encoding);
+        this.assertFrame(frame, description, language, "", encoding);
     }
 
     @test
@@ -80,14 +74,7 @@ class UnsynchronizedLyricsFrameConstructorsTests extends FrameConstructorTests {
         const frame = UnsynchronizedLyricsFrame.fromOffsetRawData(data, 2, header);
 
         // Assert
-        assert.isOk(frame);
-        assert.equal(frame.frameClassType, FrameClassType.UnsynchronizedLyricsFrame);
-        assert.isTrue(ByteVector.equal(frame.frameId, FrameTypes.USLT));
-
-        assert.strictEqual(frame.description, "");
-        assert.strictEqual(frame.language, "eng");
-        assert.strictEqual(frame.text, "foo");
-        assert.strictEqual(frame.textEncoding, StringType.Latin1);
+        this.assertFrame(frame, "", "eng", "foo", StringType.Latin1);
     }
 
     @test
@@ -109,14 +96,7 @@ class UnsynchronizedLyricsFrameConstructorsTests extends FrameConstructorTests {
         const frame = UnsynchronizedLyricsFrame.fromOffsetRawData(data, 2, header);
 
         // Assert
-        assert.isOk(frame);
-        assert.equal(frame.frameClassType, FrameClassType.UnsynchronizedLyricsFrame);
-        assert.isTrue(ByteVector.equal(frame.frameId, FrameTypes.USLT));
-
-        assert.strictEqual(frame.description, "foo");
-        assert.strictEqual(frame.language, "eng");
-        assert.strictEqual(frame.text, "bar");
-        assert.strictEqual(frame.textEncoding, StringType.Latin1);
+        this.assertFrame(frame, "foo", "eng", "bar", StringType.Latin1);
     }
 
     @test
@@ -135,14 +115,7 @@ class UnsynchronizedLyricsFrameConstructorsTests extends FrameConstructorTests {
         const frame = UnsynchronizedLyricsFrame.fromRawData(data, 4);
 
         // Assert
-        assert.isOk(frame);
-        assert.equal(frame.frameClassType, FrameClassType.UnsynchronizedLyricsFrame);
-        assert.isTrue(ByteVector.equal(frame.frameId, FrameTypes.USLT));
-
-        assert.strictEqual(frame.description, "");
-        assert.strictEqual(frame.language, "eng");
-        assert.strictEqual(frame.text, "foo");
-        assert.strictEqual(frame.textEncoding, StringType.Latin1);
+        this.assertFrame(frame, "", "eng", "foo", StringType.Latin1);
     }
 
     @test
@@ -163,166 +136,80 @@ class UnsynchronizedLyricsFrameConstructorsTests extends FrameConstructorTests {
         const frame = UnsynchronizedLyricsFrame.fromRawData(data, 4);
 
         // Assert
+        this.assertFrame(frame, "foo", "eng", "bar", StringType.Latin1);
+    }
+
+    private assertFrame(frame: UnsynchronizedLyricsFrame, d: string, l: string, t: string, te: StringType) {
         assert.isOk(frame);
         assert.equal(frame.frameClassType, FrameClassType.UnsynchronizedLyricsFrame);
         assert.isTrue(ByteVector.equal(frame.frameId, FrameTypes.USLT));
 
-        assert.strictEqual(frame.description, "foo");
-        assert.strictEqual(frame.language, "eng");
-        assert.strictEqual(frame.text, "bar");
-        assert.strictEqual(frame.textEncoding, StringType.Latin1);
+        assert.strictEqual(frame.description, d);
+        assert.strictEqual(frame.language, l);
+        assert.strictEqual(frame.text, t);
+        assert.strictEqual(frame.textEncoding, te);
     }
 }
 
 @suite(timeout(3000), slow(1000))
-class UnsynchronizedLyricsFramePropertiesTests {
+class Id3v2_UnsynchronizedLyricsFrame_PropertyTests {
     @test
-    public setDescription_undefined() {
+    public description() {
         // Arrange
         const frame = getTestUnsynchronizedLyricsFrame();
+        const set = (v: string) => { frame.description = v; };
+        const get = () => frame.description;
 
-        // Act
-        frame.description = undefined;
-
-        // Assert
-        assert.strictEqual(frame.description, "");
+        // Act / Assert
+        FramePropertyTests.propertyRoundTrip(set, get, "fux");
+        FramePropertyTests.propertyNormalized(set, get, undefined, "");
+        FramePropertyTests.propertyNormalized(set, get, null, "");
     }
 
     @test
-    public setDescription_null() {
+    public language() {
         // Arrange
         const frame = getTestUnsynchronizedLyricsFrame();
+        const set = (v: string) => { frame.language = v; };
+        const get = () => frame.language;
 
-        // Act
-        frame.description = null;
-
-        // Assert
-        assert.strictEqual(frame.description, "");
+        // Act / assert
+        FramePropertyTests.propertyRoundTrip(set, get, "ABC");
+        FramePropertyTests.propertyNormalized(set, get, undefined, "XXX");
+        FramePropertyTests.propertyNormalized(set, get, null, "XXX");
+        FramePropertyTests.propertyNormalized(set, get, "AB", "XXX");
+        FramePropertyTests.propertyNormalized(set, get, "ABCD", "XXX");
     }
 
     @test
-    public setDescription_value() {
+    public text() {
         // Arrange
         const frame = getTestUnsynchronizedLyricsFrame();
+        const set = (v: string) => { frame.text = v; };
+        const get = () => frame.text;
 
-        // Act
-        frame.description = "fux";
-
-        // Assert
-        assert.strictEqual(frame.description, "fux");
+        // Act / Assert
+        FramePropertyTests.propertyRoundTrip(set, get, "fux qux quxx");
+        FramePropertyTests.propertyNormalized(set, get, undefined, "");
+        FramePropertyTests.propertyNormalized(set, get, null, "");
     }
 
     @test
-    public setLanguage_undefined_returnsXXX() {
+    public textEncoding() {
         // Arrange
         const frame = getTestUnsynchronizedLyricsFrame();
 
-        // Act
-        frame.language = undefined;
-
-        // Assert
-        assert.strictEqual(frame.language, "XXX");
-    }
-
-    @test
-    public setLanguage_null_returnsXXX() {
-        // Arrange
-        const frame = getTestUnsynchronizedLyricsFrame();
-
-        // Act
-        frame.language = null;
-
-        // Assert
-        assert.strictEqual(frame.language, "XXX");
-    }
-
-    @test
-    public setLanguage_tooShort_returnsXXX() {
-        // Arrange
-        const frame = getTestUnsynchronizedLyricsFrame();
-
-        // Act
-        frame.language = "AB";
-
-        // Assert
-        assert.strictEqual(frame.language, "XXX");
-    }
-
-    @test
-    public setLanguage_tooLong_returnsXXX() {
-        // Arrange
-        const frame = getTestUnsynchronizedLyricsFrame();
-
-        // Act
-        frame.language = "ABCD";
-
-        // Assert
-        assert.strictEqual(frame.language, "XXX");
-    }
-
-    @test
-    public setLanguage_justRight_returnsValue() {
-        // Arrange
-        const frame = getTestUnsynchronizedLyricsFrame();
-
-        // Act
-        frame.language = "ABC";
-
-        // Assert
-        assert.strictEqual(frame.language, "ABC");
-    }
-
-    @test
-    public setText_undefined() {
-        // Arrange
-        const frame = getTestUnsynchronizedLyricsFrame();
-
-        // Act
-        frame.text = undefined;
-
-        // Assert
-        assert.strictEqual(frame.text, "");
-    }
-
-    @test
-    public setText_null() {
-        // Arrange
-        const frame = getTestUnsynchronizedLyricsFrame();
-
-        // Act
-        frame.text = null;
-
-        // Assert
-        assert.strictEqual(frame.text, "");
-    }
-
-    @test
-    public setText_values() {
-        // Arrange
-        const frame = getTestUnsynchronizedLyricsFrame();
-
-        // Act
-        frame.text = "fux qux quxx";
-
-        // Assert
-        assert.strictEqual(frame.text, "fux qux quxx");
-    }
-
-    @test
-    public setTextEncoding() {
-        // Arrange
-        const frame = getTestUnsynchronizedLyricsFrame();
-
-        // Act
-        frame.textEncoding = StringType.UTF16;
-
-        // Assert
-        assert.strictEqual(StringType.UTF16, frame.textEncoding);
+        // Act / Assert
+        FramePropertyTests.propertyRoundTrip(
+            (v) => { frame.textEncoding = v; },
+            () => frame.textEncoding,
+            StringType.UTF16BE
+        );
     }
 }
 
 @suite(timeout(3000), slow(1000))
-class UnsynchronizedLyricsFrameMethodTests {
+class Id3v2_UnsynchronizedLyricsFrame_MethodTests {
     @test
     public find_falsyFrames_throws() {
         // Act/Assert

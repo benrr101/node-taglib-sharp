@@ -2,7 +2,8 @@ import * as Chai from "chai";
 import * as ChaiAsPromised from "chai-as-promised";
 import {slow, suite, test, timeout} from "mocha-typescript";
 
-import ConstructorTests from "./frameConstructorTests";
+import FrameConstructorTests from "./frameConstructorTests";
+import FramePropertyTests from "./framePropertyTests";
 import FrameTypes from "../../src/id3v2/frameTypes";
 import Id3v2TagSettings from "../../src/id3v2/id3v2TagSettings";
 import {TextInformationFrame} from "../../src/id3v2/frames/textInformationFrame";
@@ -29,7 +30,7 @@ function getTestFrame(): TextInformationFrame {
 }
 
 @suite(timeout(3000), slow(1000))
-class TextInformationFrameConstructorTests extends ConstructorTests {
+class Id3v2_TextInformationFrame_ConstructorTests extends FrameConstructorTests {
     public get fromOffsetRawData(): (d: ByteVector, o: number, h: Id3v2FrameHeader) => Frame {
         return TextInformationFrame.fromOffsetRawData;
     }
@@ -60,7 +61,7 @@ class TextInformationFrameConstructorTests extends ConstructorTests {
         const frame = TextInformationFrame.fromIdentifier(FrameTypes.TCOP, StringType.Latin1);
 
         // Assert
-        TextInformationFrameConstructorTests.assertFrame(frame, FrameTypes.TCOP, []);
+        this.assertFrame(frame, FrameTypes.TCOP, []);
     }
 
     @test
@@ -77,7 +78,7 @@ class TextInformationFrameConstructorTests extends ConstructorTests {
         const frame = TextInformationFrame.fromRawData(data, 3);
 
         // Assert
-        TextInformationFrameConstructorTests.assertFrame(frame, FrameTypes.TCOP, []);
+        this.assertFrame(frame, FrameTypes.TCOP, []);
     }
 
     @test
@@ -95,7 +96,7 @@ class TextInformationFrameConstructorTests extends ConstructorTests {
         const frame = TextInformationFrame.fromRawData(data, 3);
 
         // Assert
-        TextInformationFrameConstructorTests.assertFrame(frame, FrameTypes.TCOP, []);
+        this.assertFrame(frame, FrameTypes.TCOP, []);
     }
 
     @test
@@ -116,7 +117,7 @@ class TextInformationFrameConstructorTests extends ConstructorTests {
         const frame = TextInformationFrame.fromRawData(data, 4);
 
         // Assert
-        TextInformationFrameConstructorTests.assertFrame(frame, FrameTypes.TCOP, ["fux", "bux"]);
+        this.assertFrame(frame, FrameTypes.TCOP, ["fux", "bux"]);
     }
 
     @test
@@ -137,7 +138,7 @@ class TextInformationFrameConstructorTests extends ConstructorTests {
         const frame = TextInformationFrame.fromRawData(data, 4);
 
         // Assert
-        TextInformationFrameConstructorTests.assertFrame(frame, FrameTypes.TXXX, ["fux", "bux"]);
+        this.assertFrame(frame, FrameTypes.TXXX, ["fux", "bux"]);
     }
 
     @test
@@ -155,7 +156,7 @@ class TextInformationFrameConstructorTests extends ConstructorTests {
         const frame = TextInformationFrame.fromRawData(data, 3);
 
         // Assert
-        TextInformationFrameConstructorTests.assertFrame(frame, FrameTypes.TCOM, ["fux", "bux"]);
+        this.assertFrame(frame, FrameTypes.TCOM, ["fux", "bux"]);
     }
 
     @test
@@ -174,7 +175,7 @@ class TextInformationFrameConstructorTests extends ConstructorTests {
         const frame = TextInformationFrame.fromRawData(data, 3);
 
         // Assert
-        TextInformationFrameConstructorTests.assertFrame(frame, FrameTypes.TCON, [
+        this.assertFrame(frame, FrameTypes.TCON, [
             "SomeGenre",
             "32",
             "32",
@@ -203,10 +204,10 @@ class TextInformationFrameConstructorTests extends ConstructorTests {
         const frame = TextInformationFrame.fromOffsetRawData(data, 2, header);
 
         // Assert
-        TextInformationFrameConstructorTests.assertFrame(frame, FrameTypes.TCOP, ["fux", "bux"]);
+        this.assertFrame(frame, FrameTypes.TCOP, ["fux", "bux"]);
     }
 
-    private static assertFrame(frame: TextInformationFrame, frameId: ByteVector, text: string[]): void {
+    private assertFrame(frame: TextInformationFrame, frameId: ByteVector, text: string[]): void {
         assert.isOk(frame);
         assert.strictEqual(frame.frameClassType, FrameClassType.TextInformationFrame);
         assert.isTrue(ByteVector.equal(frame.frameId, frameId));
@@ -218,7 +219,7 @@ class TextInformationFrameConstructorTests extends ConstructorTests {
 }
 
 @suite(timeout(3000), slow(1000))
-class TextInformationFramePropertyTests {
+class Id3v2_TextInformationFrame_PropertyTests {
     @test
     public getText() {
         // Arrange
@@ -234,15 +235,12 @@ class TextInformationFramePropertyTests {
     }
 
     @test
-    public setText() {
+    public settext() {
         // Arrange
         const frame = getTestFrame();
 
-        // Act
-        frame.text = ["bux", "fux"];
-
-        // Assert
-        assert.deepStrictEqual(frame.text, ["bux", "fux"]);
+        // Act / Assert
+        FramePropertyTests.propertyRoundTrip((v) => { frame.text = v; }, () => frame.text, ["bux", "fux"]);
     }
 
     @test
@@ -250,11 +248,12 @@ class TextInformationFramePropertyTests {
         // Arrange
         const frame = getTestFrame();
 
-        // Act
-        frame.textEncoding = StringType.UTF16BE;
-
-        // Assert
-        assert.strictEqual(frame.textEncoding, StringType.UTF16BE);
+        // Act / Assert
+        FramePropertyTests.propertyRoundTrip(
+            (v) => { frame.textEncoding = v; },
+            () => frame.textEncoding,
+            StringType.UTF16BE
+        );
     }
 
     @test
@@ -263,16 +262,17 @@ class TextInformationFramePropertyTests {
         const frame = getTestFrame();
         const _ = frame.text;   // Force a read
 
-        // Act
-        frame.textEncoding = StringType.UTF16BE;
-
-        // Assert
-        assert.strictEqual(frame.textEncoding, StringType.UTF16BE);
+        // Act / Assert
+        FramePropertyTests.propertyRoundTrip(
+            (v) => { frame.textEncoding = v; },
+            () => frame.textEncoding,
+            StringType.UTF16BE
+        );
     }
 }
 
 @suite(timeout(3000), slow(1000))
-class TextInformationFrameMethodTests {
+class Id3v2_TextInformationFrame_MethodTests {
     @test
     public clone_returnsCopy() {
         // Arrange

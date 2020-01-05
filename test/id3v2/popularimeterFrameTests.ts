@@ -1,12 +1,12 @@
+import * as BigInt from "big-integer";
 import * as Chai from "chai";
 import * as ChaiAsPromised from "chai-as-promised";
 import {slow, suite, test, timeout} from "mocha-typescript";
 
-import * as BigInt from "big-integer";
-import ConstructorTests from "./frameConstructorTests";
+import FrameConstructorTests from "./frameConstructorTests";
+import FramePropertyTests from "./framePropertyTests";
 import FrameTypes from "../../src/id3v2/frameTypes";
 import PopularimeterFrame from "../../src/id3v2/frames/popularimeterFrame";
-import PropertyTests from "./framePropertiesTests";
 import {ByteVector, StringType} from "../../src/byteVector";
 import {Frame, FrameClassType} from "../../src/id3v2/frames/frame";
 import {Id3v2FrameHeader} from "../../src/id3v2/frames/frameHeader";
@@ -16,7 +16,7 @@ Chai.use(ChaiAsPromised);
 const assert = Chai.assert;
 
 @suite(timeout(3000), slow(1000))
-class PopularimeterFrameConstructorTests extends ConstructorTests {
+class Id3v2_PopularimeterFrame_ConstructorTests extends FrameConstructorTests {
     public get fromOffsetRawData(): (d: ByteVector, o: number, h: Id3v2FrameHeader) => Frame {
         return PopularimeterFrame.fromOffsetRawData;
     }
@@ -178,7 +178,7 @@ class PopularimeterFrameConstructorTests extends ConstructorTests {
 }
 
 @suite(timeout(3000), slow(1000))
-class PopularimeterFramePropertyTests extends PropertyTests {
+class Id3v2_PopularimeterFrame_PropertyTests {
     @test
     public playCount() {
         // Arrange
@@ -187,10 +187,10 @@ class PopularimeterFramePropertyTests extends PropertyTests {
         const get = () => frame.playCount;
 
         // Act
-        this.propertyRoundTrip(set, get, BigInt(1234));
-        this.propertyRoundTrip(set, get, undefined);
-        this.propertyThrows(set, null);
-        this.propertyThrows(set, BigInt(-1));
+        FramePropertyTests.propertyRoundTrip(set, get, BigInt(1234));
+        FramePropertyTests.propertyRoundTrip(set, get, undefined);
+        FramePropertyTests.propertyThrows(set, null);
+        FramePropertyTests.propertyThrows(set, BigInt(-1));
     }
 
     @test
@@ -201,10 +201,10 @@ class PopularimeterFramePropertyTests extends PropertyTests {
         const get = () => frame.rating;
 
         // Act
-        this.propertyRoundTrip(set, get, 5);
-        this.propertyThrows(set, -1);
-        this.propertyThrows(set, 1.23);
-        this.propertyThrows(set, 0x100);
+        FramePropertyTests.propertyRoundTrip(set, get, 5);
+        FramePropertyTests.propertyThrows(set, -1);
+        FramePropertyTests.propertyThrows(set, 1.23);
+        FramePropertyTests.propertyThrows(set, 0x100);
     }
 
     @test
@@ -215,14 +215,14 @@ class PopularimeterFramePropertyTests extends PropertyTests {
         const get = () => frame.user;
 
         // Act
-        this.propertyRoundTrip(set, get, "bux");
-        this.propertyNormalized(set, get, undefined, "");
-        this.propertyNormalized(set, get, null, "");
+        FramePropertyTests.propertyRoundTrip(set, get, "bux");
+        FramePropertyTests.propertyNormalized(set, get, undefined, "");
+        FramePropertyTests.propertyNormalized(set, get, null, "");
     }
 }
 
 @suite(timeout(3000), slow(1000))
-class PopularimeterFrameMethodTests {
+class Id3v2_PopularimeterFrame_MethodTests {
     @test
     public find_falsyFrames() {
         // Act / Assert

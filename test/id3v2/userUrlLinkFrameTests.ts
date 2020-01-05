@@ -32,7 +32,7 @@ const getTestUserUrlLinkFrame = (): UserUrlLinkFrame => {
 };
 
 @suite(timeout(3000), slow(1000))
-class UserUrlLinkFrameConstructorTests extends FrameConstructorTests {
+class Id3v2_UserUrlLinkFrame_ConstructorTests extends FrameConstructorTests {
     public get fromOffsetRawData(): (d: ByteVector, o: number, h: Id3v2FrameHeader) => Frame {
         return UserUrlLinkFrame.fromOffsetRawData;
     }
@@ -108,15 +108,11 @@ class UserUrlLinkFrameConstructorTests extends FrameConstructorTests {
 }
 
 @suite(timeout(3000), slow(1000))
-class UserUrlLinkFramePropertyTests {
+class Id3v2_UserUrlLinkFrame_PropertyTests {
     @test
     public getDescription_emptyText_returnsUndefined() {
         // Arrange
-        const data = ByteVector.concatenate(
-            FrameTypes.WXXX,            // - Frame ID
-            0x00, 0x00, 0x00, 0x00,     // - Frame size
-            0x00, 0x00,                 // - Frame flags
-        );
+        const data = new Id3v2FrameHeader(FrameTypes.WXXX, 4).render(4);
         const frame = UserUrlLinkFrame.fromRawData(data, 4);
 
         // Act
@@ -259,7 +255,7 @@ class UserUrlLinkFramePropertyTests {
 }
 
 @suite(timeout(3000), slow(1000))
-class UserUrlLinkMethodTests {
+class Id3v2_UserUrlLink_MethodTests {
     @test
     public findUserUrlLinkFrame_falsyFrames_throws(): void {
         // Act/Assert

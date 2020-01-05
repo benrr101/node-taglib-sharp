@@ -3,20 +3,21 @@ import * as ChaiAsPromised from "chai-as-promised";
 import {slow, suite, test, timeout} from "mocha-typescript";
 
 import FrameConstructorTests from "./frameConstructorTests";
-import FramePropertiesTests from "./framePropertiesTests";
+import FramePropertyTests from "./framePropertyTests";
 import FrameTypes from "../../src/id3v2/frameTypes";
 import {ByteVector} from "../../src/byteVector";
 import {EventTimeCode, EventTimeCodeFrame} from "../../src/id3v2/frames/eventTimeCodeFrame";
 import {Frame, FrameClassType} from "../../src/id3v2/frames/frame";
 import {Id3v2FrameFlags, Id3v2FrameHeader} from "../../src/id3v2/frames/frameHeader";
 import {EventType, TimestampFormat} from "../../src/id3v2/utilTypes";
+import framePropertyTests from "./framePropertyTests";
 
 // Setup Chai
 Chai.use(ChaiAsPromised);
 const assert = Chai.assert;
 
 @suite(timeout(3000), slow(1000))
-class EventTimeCodeTests extends FramePropertiesTests {
+class EventTimeCodeTests {
     @test
     public constructor_invalidTime() {
         // Act/Assert
@@ -60,7 +61,7 @@ class EventTimeCodeTests extends FramePropertiesTests {
         const output = EventTimeCode.fromEmpty();
 
         // Act/Assert
-        this.propertyRoundTrip((v) => { output.time = v; }, () => output.time, 123);
+        FramePropertyTests.propertyRoundTrip((v) => { output.time = v; }, () => output.time, 123);
     }
 
     @test
@@ -69,7 +70,11 @@ class EventTimeCodeTests extends FramePropertiesTests {
         const output = EventTimeCode.fromEmpty();
 
         // Act/Assert
-        this.propertyRoundTrip((v) => { output.eventType = v; }, () => output.eventType, EventType.IntroEnd);
+        FramePropertyTests.propertyRoundTrip(
+            (v) => { output.eventType = v; },
+            () => output.eventType,
+            EventType.IntroEnd
+        );
     }
 
     @test
@@ -207,7 +212,7 @@ class EventTimeCodeFrameConstructorTests extends FrameConstructorTests {
 }
 
 @suite(timeout(3000), slow(1000))
-class EventTimeCodeFramePropertyTests extends FramePropertiesTests {
+class EventTimeCodeFramePropertyTests {
     @test
     public events() {
         // Arrange
@@ -216,10 +221,10 @@ class EventTimeCodeFramePropertyTests extends FramePropertiesTests {
         const get = () => frame.events;
 
         // Act / Assert
-        this.propertyRoundTrip(set, get, [new EventTimeCode(EventType.Profanity, 123)]);
-        this.propertyRoundTrip(set, get, []);
-        this.propertyNormalized(set, get, undefined, []);
-        this.propertyNormalized(set, get, null, []);
+        FramePropertyTests.propertyRoundTrip(set, get, [new EventTimeCode(EventType.Profanity, 123)]);
+        FramePropertyTests.propertyRoundTrip(set, get, []);
+        framePropertyTests.propertyNormalized(set, get, undefined, []);
+        FramePropertyTests.propertyNormalized(set, get, null, []);
     }
 
     @test
@@ -228,10 +233,11 @@ class EventTimeCodeFramePropertyTests extends FramePropertiesTests {
         const frame = EventTimeCodeFrame.fromTimestampFormat(TimestampFormat.AbsoluteMilliseconds);
 
         // Act / Assert
-        this.propertyRoundTrip(
+        FramePropertyTests.propertyRoundTrip(
             (v) => { frame.timestampFormat = v; },
             () => frame.timestampFormat,
-            TimestampFormat.AbsoluteMpegFrames);
+            TimestampFormat.AbsoluteMpegFrames
+        );
     }
 }
 
