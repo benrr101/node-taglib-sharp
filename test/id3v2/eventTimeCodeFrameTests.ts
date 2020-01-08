@@ -16,7 +16,7 @@ Chai.use(ChaiAsPromised);
 const assert = Chai.assert;
 
 @suite(timeout(3000), slow(1000))
-class EventTimeCodeTests extends FramePropertiesTests {
+class EventTimeCodeTests {
     @test
     public constructor_invalidTime() {
         // Act/Assert
@@ -60,7 +60,7 @@ class EventTimeCodeTests extends FramePropertiesTests {
         const output = EventTimeCode.fromEmpty();
 
         // Act/Assert
-        this.propertyRoundTrip((v) => { output.time = v; }, () => output.time, 123);
+        FramePropertiesTests.propertyRoundTrip((v) => { output.time = v; }, () => output.time, 123);
     }
 
     @test
@@ -69,7 +69,7 @@ class EventTimeCodeTests extends FramePropertiesTests {
         const output = EventTimeCode.fromEmpty();
 
         // Act/Assert
-        this.propertyRoundTrip((v) => { output.eventType = v; }, () => output.eventType, EventType.IntroEnd);
+        FramePropertiesTests.propertyRoundTrip((v) => { output.eventType = v; }, () => output.eventType, EventType.IntroEnd);
     }
 
     @test
@@ -216,10 +216,10 @@ class EventTimeCodeFramePropertyTests extends FramePropertiesTests {
         const get = () => frame.events;
 
         // Act / Assert
-        this.propertyRoundTrip(set, get, [new EventTimeCode(EventType.Profanity, 123)]);
-        this.propertyRoundTrip(set, get, []);
-        this.propertyNormalized(set, get, undefined, []);
-        this.propertyNormalized(set, get, null, []);
+        FramePropertiesTests.propertyRoundTrip(set, get, [new EventTimeCode(EventType.Profanity, 123)]);
+        FramePropertiesTests.propertyRoundTrip(set, get, []);
+        FramePropertiesTests.propertyNormalized(set, get, undefined, []);
+        FramePropertiesTests.propertyNormalized(set, get, null, []);
     }
 
     @test
@@ -228,7 +228,7 @@ class EventTimeCodeFramePropertyTests extends FramePropertiesTests {
         const frame = EventTimeCodeFrame.fromTimestampFormat(TimestampFormat.AbsoluteMilliseconds);
 
         // Act / Assert
-        this.propertyRoundTrip(
+        FramePropertiesTests.propertyRoundTrip(
             (v) => { frame.timestampFormat = v; },
             () => frame.timestampFormat,
             TimestampFormat.AbsoluteMpegFrames);

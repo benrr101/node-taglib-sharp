@@ -113,14 +113,14 @@ class PrivateFrameConstructorTests extends ConstructorTests {
 }
 
 @suite(timeout(3000), slow(1000))
-class PrivateFramePropertyTests extends PropertyTests {
+class PrivateFramePropertyTests {
     @test
     public privateData() {
         // Arrange
         const frame = PrivateFrame.fromOwner("fux");
 
         // Act / Assert
-        this.propertyRoundTrip(
+        PropertyTests.propertyRoundTrip(
            (v) => { frame.privateData = v; },
            () => frame.privateData,
             ByteVector.fromString("bux")

@@ -295,16 +295,16 @@ class CommentsFrameConstructorTests extends FrameConstructorTests {
 }
 
 @suite(timeout(3000), slow(1000))
-class CommentsFramePropertiesTests extends FramePropertiesTests {
+class CommentsFramePropertiesTests {
     @test
     public description() {
         const frame = getTestFrame();
 
         const set = (v: string) => { frame.description = v; };
         const get = () => frame.description;
-        this.propertyRoundTrip(set, get, "fux");
-        this.propertyNormalized(set, get, undefined, "");
-        this.propertyNormalized(set, get, null, "");
+        FramePropertiesTests.propertyRoundTrip(set, get, "fux");
+        FramePropertiesTests.propertyNormalized(set, get, undefined, "");
+        FramePropertiesTests.propertyNormalized(set, get, null, "");
     }
 
     @test
@@ -313,11 +313,11 @@ class CommentsFramePropertiesTests extends FramePropertiesTests {
 
         const set = (v: string) => { frame.language = v; };
         const get = () => frame.language;
-        this.propertyRoundTrip(set, get, "jpn");
-        this.propertyNormalized(set, get, undefined, "XXX");
-        this.propertyNormalized(set, get, null, "XXX");
-        this.propertyNormalized(set, get, "ab", "XXX");
-        this.propertyNormalized(set, get, "abcd", "abc");
+        FramePropertiesTests.propertyRoundTrip(set, get, "jpn");
+        FramePropertiesTests.propertyNormalized(set, get, undefined, "XXX");
+        FramePropertiesTests.propertyNormalized(set, get, null, "XXX");
+        FramePropertiesTests.propertyNormalized(set, get, "ab", "XXX");
+        FramePropertiesTests.propertyNormalized(set, get, "abcd", "abc");
     }
 
     @test
@@ -326,16 +326,16 @@ class CommentsFramePropertiesTests extends FramePropertiesTests {
 
         const set = (v: string) => { frame.text = v; };
         const get = () => frame.text;
-        this.propertyRoundTrip(set, get, "fux");
-        this.propertyNormalized(set, get, undefined, "");
-        this.propertyNormalized(set, get, null, "");
+        FramePropertiesTests.propertyRoundTrip(set, get, "fux");
+        FramePropertiesTests.propertyNormalized(set, get, undefined, "");
+        FramePropertiesTests.propertyNormalized(set, get, null, "");
     }
 
     @test
     public textEncoding() {
         const frame = getTestFrame();
 
-        this.propertyRoundTrip((v) => { frame.textEncoding = v; }, () => frame.textEncoding, StringType.UTF16);
+        FramePropertiesTests.propertyRoundTrip((v) => { frame.textEncoding = v; }, () => frame.textEncoding, StringType.UTF16);
     }
 }
 

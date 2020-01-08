@@ -187,10 +187,10 @@ class PopularimeterFramePropertyTests extends PropertyTests {
         const get = () => frame.playCount;
 
         // Act
-        this.propertyRoundTrip(set, get, BigInt(1234));
-        this.propertyRoundTrip(set, get, undefined);
-        this.propertyThrows(set, null);
-        this.propertyThrows(set, BigInt(-1));
+        PropertyTests.propertyRoundTrip(set, get, BigInt(1234));
+        PropertyTests.propertyRoundTrip(set, get, undefined);
+        PropertyTests.propertyThrows(set, null);
+        PropertyTests.propertyThrows(set, BigInt(-1));
     }
 
     @test
@@ -201,10 +201,10 @@ class PopularimeterFramePropertyTests extends PropertyTests {
         const get = () => frame.rating;
 
         // Act
-        this.propertyRoundTrip(set, get, 5);
-        this.propertyThrows(set, -1);
-        this.propertyThrows(set, 1.23);
-        this.propertyThrows(set, 0x100);
+        PropertyTests.propertyRoundTrip(set, get, 5);
+        PropertyTests.propertyThrows(set, -1);
+        PropertyTests.propertyThrows(set, 1.23);
+        PropertyTests.propertyThrows(set, 0x100);
     }
 
     @test
@@ -215,9 +215,9 @@ class PopularimeterFramePropertyTests extends PropertyTests {
         const get = () => frame.user;
 
         // Act
-        this.propertyRoundTrip(set, get, "bux");
-        this.propertyNormalized(set, get, undefined, "");
-        this.propertyNormalized(set, get, null, "");
+        PropertyTests.propertyRoundTrip(set, get, "bux");
+        PropertyTests.propertyNormalized(set, get, undefined, "");
+        PropertyTests.propertyNormalized(set, get, null, "");
     }
 }
 

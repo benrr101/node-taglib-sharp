@@ -124,7 +124,7 @@ class TermsOfUseFrameConstructorsTests extends FrameConstructorTests {
 }
 
 @suite(timeout(3000), slow(1000))
-class TermsOfUseFramePropertyTests extends FramePropertiesTests {
+class TermsOfUseFramePropertyTests {
     @test
     public language() {
         // Arrange
@@ -133,24 +133,28 @@ class TermsOfUseFramePropertyTests extends FramePropertiesTests {
 
         // Act/Assert
         const frame = TermsOfUseFrame.fromFields("eng");
-        this.propertyNormalized(set, get, "fu", "XXX");
-        this.propertyNormalized(set, get, "fuxx", "fux");
-        this.propertyNormalized(set, get, undefined, "XXX");
-        this.propertyNormalized(set, get, null, "XXX");
-        this.propertyRoundTrip(set, get, "fux");
+        FramePropertiesTests.propertyNormalized(set, get, "fu", "XXX");
+        FramePropertiesTests.propertyNormalized(set, get, "fuxx", "fux");
+        FramePropertiesTests.propertyNormalized(set, get, undefined, "XXX");
+        FramePropertiesTests.propertyNormalized(set, get, null, "XXX");
+        FramePropertiesTests.propertyRoundTrip(set, get, "fux");
     }
 
     @test
     public text() {
         const frame = TermsOfUseFrame.fromFields("eng");
-        this.propertyRoundTrip((v) => { frame.text = v; }, () => frame.text, "fux");
-        this.propertyRoundTrip((v) => { frame.text = v; }, () => frame.text, undefined);
+        FramePropertiesTests.propertyRoundTrip((v) => { frame.text = v; }, () => frame.text, "fux");
+        FramePropertiesTests.propertyRoundTrip((v) => { frame.text = v; }, () => frame.text, undefined);
     }
 
     @test
     public textEncoding() {
         const frame = TermsOfUseFrame.fromFields("eng", StringType.Latin1);
-        this.propertyRoundTrip((v) => { frame.textEncoding = v; }, () => frame.textEncoding, StringType.UTF16);
+        FramePropertiesTests.propertyRoundTrip(
+            (v) => { frame.textEncoding = v; },
+            () => frame.textEncoding,
+            StringType.UTF16
+        );
     }
 }
 
