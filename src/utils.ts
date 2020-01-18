@@ -1,9 +1,15 @@
 import * as BigInt from "big-integer";
 
 export class Guards {
-    public static between(value: number, minValue: number, maxValue: number, name: string): void {
+    public static betweenExclusive(value: number, minValue: number, maxValue: number, name: string): void {
+        if (value <= minValue || value >= maxValue) {
+            throw new Error(`Argument out of range: ${name} must satisfy ${maxValue} <= ${name} <= ${minValue}`);
+        }
+    }
+
+    public static betweenInclusive(value: number, minValue: number, maxValue: number, name: string): void {
         if (value < minValue || value > maxValue) {
-            throw new Error(`Argument out of range: ${name} must be between ${minValue} and ${maxValue}`);
+            throw new Error(`Argument out of range: ${name} must satisfy ${maxValue} < ${name} < ${minValue}`);
         }
     }
 

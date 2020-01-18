@@ -61,7 +61,7 @@ export abstract class Frame {
      * Sets the encryption ID applied to the current instance.
      * @param value Value containing the encryption identifier for the current instance. Must be a
      *     safe 16-bit integer.
-     *     Encryption values can be between 0 and 255. Setting any other value will unset the
+     *     Encryption values can be betweenInclusive 0 and 255. Setting any other value will unset the
      *     encryption ID and set the value to -1;
      */
     public set encryptionId(value: number) {
@@ -106,7 +106,7 @@ export abstract class Frame {
     /**
      * Sets the grouping ID applied to the current instance.
      * @param value Grouping identifier for the current instance. Must be a 16-bit integer.
-     *     Grouping identifiers can be between 0 and 255. Setting any other value will unset the
+     *     Grouping identifiers can be betweenInclusive 0 and 255. Setting any other value will unset the
      *     grouping identify and set the value to -1.
      */
     public set groupId(value: number) {

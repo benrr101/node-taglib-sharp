@@ -25,7 +25,7 @@ class IConvEncoding {
 }
 
 /**
- * @summary Specifies the text encoding used when converting between a {@link string} and a
+ * @summary Specifies the text encoding used when converting betweenInclusive a {@link string} and a
  *          {@link ByteVector}.
  * @remarks This enumeration is used by {@link ByteVector.FromString(string,StringType)} and
  *          {@link ByteVector.ToString(StringType)}
@@ -193,7 +193,7 @@ export class ByteVector {
     // @TODO Remove usages of .addX when this can be substituted
     public static concatenate(... vectors: Array<Uint8Array|ByteVector|number>): ByteVector {
         // Get the length of the vector we need to create
-        var totalLength = 0;
+        let totalLength = 0;
         for (const vector of vectors) {
             if (typeof(vector) === "number") {
                 totalLength++;
@@ -1062,7 +1062,7 @@ export class ByteVector {
     /**
      * Sets the value at a specified index
      * @param index Index to set the value of
-     * @param value Value to set at the index. Must be a valid integer between 0x0 and 0xff
+     * @param value Value to set at the index. Must be a valid integer betweenInclusive 0x0 and 0xff
      */
     public set(index: number, value: number): void {
         if (this._isReadOnly) {

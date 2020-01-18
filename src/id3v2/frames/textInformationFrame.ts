@@ -52,11 +52,11 @@ import {Guards, StringComparison} from "../../utils";
  *   original recording, if for example the music in the file should be a cover of a previously
  *   released song.
  * * TCOM - The "composer" frame is intended for the name of the composer.
- * * TMCL - The "musician credits list" frame is intended as a mapping between instruments and the
+ * * TMCL - The "musician credits list" frame is intended as a mapping betweenInclusive instruments and the
  *   musician who played it. Every odd field is an instrument and every even is an artst of a comma
  *   delimited list of artists.
  * * TIPL - The "Involved people list" frame is very similar to the musician credits list, but maps
- *   between functions, like producer, and names.
+ *   betweenInclusive functions, like producer, and names.
  * * TENC - The "Encoded by" frame contains the name of the person or organization that encoded the
  *   audio file. This field may contain a copyright message, if the audio file is also copyrighted
  *   by the encoder.

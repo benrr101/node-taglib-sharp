@@ -388,7 +388,7 @@ export abstract class File {
                 }
 
                 // Ensure that we always rewind the stream a little so we never have a partial
-                // match where our data exists between the end of read A and the start of read B.
+                // match where our data exists betweenInclusive the end of read A and the start of read B.
                 bufferOffset += File._bufferSize - pattern.length;
                 if (before != null && before.length > pattern.length) {
                     bufferOffset -= before.length - pattern.length;

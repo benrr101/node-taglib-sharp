@@ -120,7 +120,7 @@ export default class CombinedTag extends Tag {
      * @description This is typically useful for movies, although the instrument played by each
      *     artist in a music file may be of relevance.
      *     It is highly important to match each role to the performers. This means that a role may
-     *     be `null\undefined` to keep a match between performers[i] and performersRole[i].
+     *     be `null\undefined` to keep a match betweenInclusive performers[i] and performersRole[i].
      */
     public get performersRole(): string[] { return this.getFirstArray((t) => t.performersRole); }
     /**

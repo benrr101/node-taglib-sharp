@@ -35,7 +35,7 @@ export default class Id3v2TagSettings {
      */
     public static set defaultVersion(value: number) {
         Guards.byte(value, "value");
-        Guards.between(value, 2, 4, "value");
+        Guards.betweenInclusive(value, 2, 4, "value");
         Id3v2TagSettings._defaultVersion = value;
     }
 

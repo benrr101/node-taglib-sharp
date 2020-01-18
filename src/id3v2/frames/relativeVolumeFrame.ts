@@ -55,41 +55,111 @@ export enum ChannelType {
     Subwoofer = 0x08
 }
 
-class ChannelData {
-    private _peakVolume: number;
-    private _peakVolumeIndex: BigInt.BigInteger;
+export class ChannelData {
+    private _channel: ChannelType;
+    private _peakBits: number;
+    private _peakVolume: BigInt.BigInteger;
     private _volumeAdjustment: number;
-    private _volumeAdjustmentIndex: number;
+
+    public constructor(channel: ChannelType) {
+        this._channel = channel;
+    }
+
+    public static fromData(bytes: ByteVector): ChannelData {
+        Guards.truthy(bytes, "bytes");
+
+        const channelType = bytes.get(0);
+        const channelData = new ChannelData(channelType);
+        channelData._volumeAdjustment = bytes.mid(1, 2).toShort();
+        channelData._peakBits = bytes.get(3);
+
+        const peakByteCount = Math.ceil(channelData._peakBits / 8);
+        const peakBytes = bytes.mid(4);
+        const zeroes = ByteVector.fromSize(peakByteCount - peakBytes.length, 0x00);
+        peakBytes.insertByteVector(0, zeroes);
+        channelData._peakVolume = peakBytes.toULong();
+
+        return channelData;
+    }
+
+    public get channelType(): ChannelType { return this._channel; }
 
     public get isSet(): boolean {
-        return this._volumeAdjustmentIndex !== 0 || !this._peakVolumeIndex.isZero();
+        const volumeAdjustSet = !!this._volumeAdjustment;
+        const peakSet = !!this._peakVolume && !this._peakVolume.isZero();
+        return volumeAdjustSet || peakSet;
     }
 
-    public get peakVolume(): number { return this._peakVolume; }
-    public set peakVolume(value: number) {
+    /**
+     * Number of bits used to express the peak volume.
+     */
+    public get peakBits(): number { return this._peakBits; }
+    /**
+     * Number of bits used to express the peak volume.
+     * @param value Bits used to express the peak volume. Must be an integer betweenInclusive 1 and 64
+     */
+    public set peakBits(value: number) {
+        Guards.byte(value, "value");
+        Guards.betweenInclusive(value, 1, 64, "value");
+        this._peakBits = value;
+    }
+
+    /**
+     * Value of the peak sample in the file. It's unclear exactly how this works, but the ID3v2.4
+     * documentation explains this value as betweenInclusive 0 and 255 - but can be expressed using any
+     * number of bits ({@see peakBits}).
+     */
+    public get peakVolume(): BigInt.BigInteger { return this._peakVolume; }
+    /**
+     * Value of the peak sample in the file. It's unclear exactly how this works, but the ID3v2.4
+     * documentation explains this value as betweenInclusive 0 and 255 - but can be expressed using any
+     * number of bits ({@see peakBits}).
+     * @param value Peak volume value. Must fit in the number of bits set in {@see peakBits}
+     */
+    public set peakVolume(value: BigInt.BigInteger) {
+        if (!this.peakBits) {
+            throw new Error("Peak bits must be set before setting peak volume");
+        }
+        if (value.isNegative()) {
+            throw new Error("Argument out of range: value must be positive");
+        }
+        if (value.gt(BigInt(2).pow(this.peakBits).minus(1))) {
+            throw new Error("Argument out of range: value must fit within number of bits defined by peakBits");
+        }
         this._peakVolume = value;
-        this._peakVolumeIndex = BigInt(value).multiply(512);
     }
 
-    public get peakVolumeIndex(): BigInt.BigInteger { return this._peakVolumeIndex; }
-    public set peakVolumeIndex(value: BigInt.BigInteger) {
-        Guards.ulong(value, "value");
-        this._peakVolumeIndex = value;
-        this._peakVolume = <any> value / 512;   // @TODO: Not sure this works as expected due to bigint division
-    }
-
-    public get volumeAdjustment(): number { return this._volumeAdjustment; }
+    /**
+     * Volume adjustment of the track in dB.
+     */
+    public get volumeAdjustment(): number { return this._volumeAdjustment / 512; }
+    /**
+     * Volume adjustment of the track in dB. This value is expressed as a fixed-precision value
+     * betweenInclusive -64 and 64. Don't worry about the math, we'll do it for you.
+     * @param value Volume adjustment. Must be betweenInclusive -64 and 64.
+     */
     public set volumeAdjustment(value: number) {
-        Guards.between(value, -64, 64, "value");
-        this._volumeAdjustment = value;
-        this._volumeAdjustmentIndex = Math.floor(value * 512);
+        Guards.int(value, "value");
+        Guards.betweenExclusive(value, -64, 64, "value");
+        this._volumeAdjustment = Math.floor(value * 512);
     }
 
-    public get volumeAdjustmentIndex(): number { return this._volumeAdjustmentIndex; }
-    public set volumeAdjustmentIndex(value: number) {
-        Guards.short(value, "value");
-        this._volumeAdjustmentIndex = value;
-        this._volumeAdjustment = value / 512.0;
+    public render(): ByteVector {
+        if (!this.isSet) {
+            return ByteVector.empty();
+        }
+
+        // NOTE: According to the docs, peak volume is to be stored in as few bytes as possible for
+        // the number of bits used to encode it. For instance, 1-8 bits peak volume must be stored
+        // in 1 byte, 8-16 in 2 bytes, etc.
+
+        const peakByteCount = Math.ceil(this._peakBits / 8);
+        return ByteVector.concatenate(
+            this._channel,
+            ByteVector.fromShort(this._volumeAdjustment),
+            this._peakBits,
+            ByteVector.fromULong(this._peakVolume).mid(8 - peakByteCount)
+        );
     }
 }
 
@@ -101,6 +171,9 @@ export class RelativeVolumeFrame extends Frame {
 
     private constructor(header: Id3v2FrameHeader) {
         super(header);
+        for (let i = 0; i < 9; i++) {
+            this._channels[i] = new ChannelData(i);
+        }
     }
 
     /**
@@ -193,38 +266,37 @@ export class RelativeVolumeFrame extends Frame {
     }
 
     /**
-     * Gets the peak volume for a specified channel
+     * Gets the number of bits used to encode the peak volume
      * @param type Which channel to get the value for
      */
-    public getPeakVolume(type: ChannelType): number {
-        return this._channels[type].peakVolume;
+    public getPeakBits(type: ChannelType): number {
+        return this._channels[type].peakBits;
     }
 
     /**
-     * Gets the peak volume index for a specified channel. The peak volume index is simply the peak
-     * volume multiplied by 512.
+     * Gets the peak volume for a specified channel
      * @param type Which channel to get the value for
      */
-    public getPeakVolumeIndex(type: ChannelType): BigInt.BigInteger {
-        return this._channels[type].peakVolumeIndex;
+    public getPeakVolume(type: ChannelType): BigInt.BigInteger {
+        return this._channels[type].peakVolume;
     }
 
     /**
      * Gets the volume adjustment for the specified channel.
      * @param type Which channel to get the value for
-     * @returns number Volume adjustment for the channel, can be between -64 and +64 decibels
+     * @returns number Volume adjustment for the channel, can be betweenInclusive -64 and +64 decibels
      */
     public getVolumeAdjustment(type: ChannelType): number {
         return this._channels[type].volumeAdjustment;
     }
 
     /**
-     * Gets the volume adjustment index for a specified channel.
-     * The volume adjustment index is simply the volume adjustment multiplied by 512.
-     * @param type Which channel to get the value for
+     * Sets the number of bits used to encode peak volume for a specified channel.
+     * @param type Which channel to set the value for
+     * @param value Peak volume
      */
-    public getVolumeAdjustmentIndex(type: ChannelType): number {
-        return this._channels[type].volumeAdjustmentIndex;
+    public setPeakBits(type: ChannelType, value: number) {
+        this._channels[type].peakBits = value;
     }
 
     /**
@@ -232,38 +304,17 @@ export class RelativeVolumeFrame extends Frame {
      * @param type Which channel to set the value for
      * @param value Peak volume
      */
-    public setPeakVolume(type: ChannelType, value: number): void {
+    public setPeakVolume(type: ChannelType, value: BigInt.BigInteger): void {
         this._channels[type].peakVolume = value;
-    }
-
-    /**
-     * Sets the peak volume index for a specified channel. The peak volume index is simply the peak
-     * volume multiplied by 512.
-     * @param type Which channel to set the value for
-     * @param index Peak volume index
-     */
-    public setPeakVolumeIndex(type: ChannelType, index: BigInt.BigInteger): void {
-        this._channels[type].peakVolumeIndex = index;
     }
 
     /**
      * Sets the volume adjustment in decibels for the specified channel.
      * @param type Which channel to set the value for
-     * @param value Volume adjustment in decibels. Must be between -64 and +64
+     * @param value Volume adjustment in decibels. Must be betweenInclusive -64 and +64
      */
     public setVolumeAdjustment(type: ChannelType, value: number): void {
         this._channels[type].volumeAdjustment = value;
-    }
-
-    /**
-     * Sets the volume adjustment index for a specified channel.
-     * The volume adjustment index is simply the volume adjustment multiplied by 512.
-     * @param type Which channel to set the value of
-     * @param index Volume adjustment index (volume adjustment multiplied by 512), must be a 16-bit
-     *     integer.
-     */
-    public setVolumeAdjustmentIndex(type: ChannelType, index: number): void {
-        this._channels[type].volumeAdjustmentIndex = index;
     }
 
     /**
@@ -279,29 +330,26 @@ export class RelativeVolumeFrame extends Frame {
 
     /** @inheritDoc */
     protected parseFields(data: ByteVector, version: number): void {
-        Guards.byte(version, "version");
-
-        let pos = data.find(ByteVector.getTextDelimiter(StringType.Latin1));
-        if (pos < 0) {
+        const identifierEndIndex = data.find(ByteVector.getTextDelimiter(StringType.Latin1));
+        if (identifierEndIndex < 0) {
             return;
         }
 
-        this._identification = data.toString(StringType.Latin1, 0, pos++);
+        this._identification = data.toString(identifierEndIndex, StringType.Latin1);
 
-        // Each channel is at least 4 bytes
-        while (pos <= data.length - 4) {
-            const type = data.get(pos++);
-            this._channels[type].volumeAdjustmentIndex = data.mid(pos, 2).toUShort();
-            pos += 2;
+        let pos = identifierEndIndex + 1;
+        while (pos < data.length) {
+            const dataLength = 4 + Math.ceil(data.get(pos + 3) / 8);
+            const dataBytes = data.mid(pos, dataLength);
 
-            const bytes = RelativeVolumeFrame.bitsToBytes(data.get(pos++));
-
-            if (data.length < pos + bytes) {
+            // If we're at the end of the vector, we'll just end processing
+            if (dataBytes.length !== dataLength) {
                 break;
             }
 
-            this._channels[type].peakVolumeIndex = data.mid(pos, bytes).toULong();
-            pos += bytes;
+            const channelData = ChannelData.fromData(dataBytes);
+            this._channels[channelData.channelType] = channelData;
+            pos += dataLength;
         }
     }
 
@@ -311,35 +359,14 @@ export class RelativeVolumeFrame extends Frame {
         data.addByteVector(ByteVector.getTextDelimiter(StringType.Latin1));
 
         for (let i = 0; i < 9; i++) {
-            if (!this._channels[i].isSet) {
+            if (!this._channels[i] || !this._channels[i].isSet) {
                 continue;
             }
 
-            data.addByte(i);
-            data.addByteVector(ByteVector.fromUShort(this._channels[i].volumeAdjustmentIndex));
-
-            let bits = 0;
-            for (let j = 0; j < 64; j++) {
-                if (!this._channels[i].peakVolumeIndex.and(1 << j).isZero()) {
-                    bits = j + 1;
-                }
-            }
-
-            data.addByte(bits);
-
-            if (bits > 0) {
-                const ulongBytes = ByteVector.fromULong(this._channels[i].peakVolumeIndex);
-                data.addByteVector(ulongBytes.mid(8 - RelativeVolumeFrame.bitsToBytes(bits)));
-            }
+            data.addByteVector(this._channels[i].render());
         }
 
         return data;
-    }
-
-    private static bitsToBytes(i: number) {
-        return i % 8 === 0
-            ? i / 8
-            : (i - i % 8) / 8 + 1;
     }
 
     // #endregion
