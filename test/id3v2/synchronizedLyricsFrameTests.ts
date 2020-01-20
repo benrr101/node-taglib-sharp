@@ -17,7 +17,7 @@ Chai.use(ChaiAsPromised);
 const assert = Chai.assert;
 
 @suite(timeout(3000), slow(1000))
-class SynchronizedTextTests {
+class Id3v2_SynchronizedTextTests {
     @test
     public synchronizedText_construct() {
         // Act

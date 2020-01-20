@@ -24,7 +24,7 @@ const getTestFooter = (majorVersion: number, minorVersion: number, flags: Header
 };
 
 @suite(timeout(3000), slow(1000))
-class Id3v2_TagFooterConstructorTests {
+class Id3v2_TagFooter_ConstructorTests {
     @test
     public falsyData() {
         // Act/Assert
@@ -107,7 +107,7 @@ class Id3v2_TagFooterConstructorTests {
 }
 
 @suite(timeout(3000), slow(1000))
-class TagFooterPropertyTests {
+class Id3v2_TagFooter_PropertyTests {
     @test
     public getCompleteTagSize() {
         // Arrange
@@ -217,7 +217,7 @@ class TagFooterPropertyTests {
 }
 
 @suite(timeout(3000), slow(1000))
-class TagFooterRenderTests {
+class Id3v2_TagFooter_RenderTests {
     @test
     public render() {
         // Arrange

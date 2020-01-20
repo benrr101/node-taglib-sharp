@@ -24,7 +24,7 @@ const getTestHeader = (majorVersion: number, minorVersion: number, flags: Header
 };
 
 @suite(timeout(3000), slow(1000))
-class Id3v2_TagHeaderConstructorTests {
+class Id3v2_TagHeader_ConstructorTests {
     @test
     public falsyData() {
         // Act/Assert
@@ -137,7 +137,7 @@ class Id3v2_TagHeaderConstructorTests {
 }
 
 @suite(timeout(3000), slow(1000))
-class TagHeaderPropertyTests {
+class Id3v2_TagHeader_PropertyTests {
     @test
     public getFileIdentifier() {
         // Act
@@ -326,7 +326,7 @@ class TagHeaderPropertyTests {
 }
 
 @suite(timeout(3000), slow(1000))
-class TagHeaderRenderTests {
+class Id3v2_TagHeader_RenderTests {
     @test
     public render() {
         // Arrange
