@@ -101,11 +101,11 @@ export default class Header {
      * Sets the major version of the tag described by the current instance.
      * When the version is set, unsupported header flags will automatically be removed from the
      * tag.
-     * @param value ID3v2 version of tag. Must be a positive 8-bit integer between 2 and 4.
+     * @param value ID3v2 version of tag. Must be a positive 8-bit integer betweenInclusive 2 and 4.
      */
     public set majorVersion(value: number) {
         Guards.byte(value, "value");
-        Guards.between(value, 2, 4, "value");
+        Guards.betweenInclusive(value, 2, 4, "value");
 
         // @TODO: do we need to support setting to versions <4?
         if (value < 3) {

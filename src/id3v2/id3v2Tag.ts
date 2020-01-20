@@ -104,7 +104,7 @@ export default class Id3v2Tag extends Tag {
      */
     public set version(value: number) {
         Guards.byte(value, "value");
-        Guards.between(value, 2, 4, "value");
+        Guards.betweenInclusive(value, 2, 4, "value");
         this._header.majorVersion = value;
     }
 

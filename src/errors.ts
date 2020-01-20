@@ -10,6 +10,6 @@ export class NotImplementedError extends Error {
     public static isNotImplementedError: boolean = true;
 
     public constructor(message?: string) {
-        super(`Not implemented${message ? ": message" : ""}`);
+        super(`Not implemented${message ? `: ${message}` : ""}`);
     }
 }
