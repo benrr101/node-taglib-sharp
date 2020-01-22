@@ -185,7 +185,7 @@ export default {
             func = AttachmentFrame.fromOffsetRawData;
         } else if (ByteVector.equal(header.frameId, FrameTypes.PCNT)) {
             // Play count (frames 4.16)
-            func = PlayCountFrame.fromOffsetRawHeader;
+            func = PlayCountFrame.fromOffsetRawData;
         } else if (ByteVector.equal(header.frameId, FrameTypes.POPM)) {
             // Popularimeter (frames 4.17)
             func = PopularimeterFrame.fromOffsetRawData;

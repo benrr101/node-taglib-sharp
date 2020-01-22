@@ -13,6 +13,7 @@ export default class PlayCountFrame extends Frame {
 
     private constructor(header: Id3v2FrameHeader) {
         super(header);
+        this._playCount = BigInt.zero;
     }
 
     // #region Constructors
@@ -24,7 +25,7 @@ export default class PlayCountFrame extends Frame {
         return new PlayCountFrame(new Id3v2FrameHeader(FrameTypes.PCNT, 4));
     }
 
-    public static fromOffsetRawHeader(
+    public static fromOffsetRawData(
         data: ByteVector,
         offset: number,
         header: Id3v2FrameHeader
@@ -44,7 +45,7 @@ export default class PlayCountFrame extends Frame {
      * @param data ByteVector starting with the raw representation of the new frame
      * @param version ID3v2 veersion the raw frame is encoded in, must be a positive 8-bit integer
      */
-    public static fromRawHeader(data: ByteVector, version: number): PlayCountFrame {
+    public static fromRawData(data: ByteVector, version: number): PlayCountFrame {
         Guards.truthy(data, "data");
         Guards.byte(version, "version");
 

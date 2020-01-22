@@ -462,4 +462,126 @@ class Id3v2_CommentsFrame_MethodTests {
         assert.isArray(output);
         assert.sameMembers(output, [frames[2]]);
     }
+
+    @test
+    public findPreferred_noFrames_returnsUndefined() {
+        // Arrange
+        const frames: CommentsFrame[] = [];
+
+        // Act
+        const output = CommentsFrame.findPreferred(frames, "fux", "eng");
+
+        // Assert
+        assert.isUndefined(output);
+    }
+
+    @test
+    public findPreferred_firstFrameMatch() {
+        // Arrange
+        const frames = [
+            CommentsFrame.fromDescription("fux", "eng")
+        ];
+
+        // Act
+        const output = CommentsFrame.findPreferred(frames, "bux", "jpn");
+
+        // Assert
+        assert.isOk(output);
+        assert.strictEqual(output, frames[0]);
+    }
+
+    @test
+    public findPreferred_languageMatch() {
+        // Arrange
+        const frames = [
+            CommentsFrame.fromDescription("fux", "eng"),
+            CommentsFrame.fromDescription("bux", "eng"),
+            CommentsFrame.fromDescription("fux", "jpn"),
+        ];
+
+        // Act
+        const output = CommentsFrame.findPreferred(frames, "bux", "jpn");
+
+        // Assert
+        assert.isOk(output);
+        assert.strictEqual(output, frames[2]);
+    }
+
+    @test
+    public findPreferred_descriptionMatch() {
+        // Arrange
+        const frames = [
+            CommentsFrame.fromDescription("fux", "eng"),
+            CommentsFrame.fromDescription("bux", "eng"),
+        ];
+
+        // Act
+        const output = CommentsFrame.findPreferred(frames, "bux", "jpn");
+
+        // Assert
+        assert.isOk(output);
+        assert.strictEqual(output, frames[1]);
+    }
+
+    @test
+    public findPreferred_perfectMatch() {
+        // Arrange
+        const frames = [
+            CommentsFrame.fromDescription("fux", "eng"),
+            CommentsFrame.fromDescription("fux", "jpn"),
+            CommentsFrame.fromDescription("bux", "eng"),
+            CommentsFrame.fromDescription("bux", "jpn"),
+        ];
+
+        // Act
+        const output = CommentsFrame.findPreferred(frames, "bux", "jpn");
+
+        // Assert
+        assert.isOk(output);
+        assert.strictEqual(output, frames[3]);
+    }
+
+    @test
+    public clone() {
+        // Arrange
+        const frame = CommentsFrame.fromDescription("fux", "bux", StringType.UTF16BE);
+        frame.text = "qux";
+
+        // Act
+        const output = <CommentsFrame> frame.clone();
+
+        // Assert
+        assert.isOk(output);
+        assert.equal(output.frameClassType, FrameClassType.CommentsFrame);
+        assert.isTrue(ByteVector.equal(output.frameId, FrameTypes.COMM));
+
+        assert.strictEqual(output.description, frame.description);
+        assert.strictEqual(output.language, frame.language);
+        assert.strictEqual(output.textEncoding, frame.textEncoding);
+        assert.strictEqual(output.text, frame.text);
+    }
+
+    @test
+    public render() {
+        // Arrange
+        const header = new Id3v2FrameHeader(FrameTypes.COMM, 4);
+        header.frameSize = 11;
+        const data = ByteVector.concatenate(
+            header.render(4),
+            StringType.Latin1,
+            ByteVector.fromString("eng", StringType.Latin1),
+            ByteVector.fromString("fux", StringType.Latin1),
+            ByteVector.getTextDelimiter(StringType.Latin1),
+            ByteVector.fromString("bux", StringType.Latin1)
+        );
+        const frame = CommentsFrame.fromRawData(data, 4);
+
+        // Act
+        const output = frame.render(4);
+
+        // Assert
+        assert.isOk(output);
+        assert.isTrue(ByteVector.equal(output, data));
+
+    }
 }

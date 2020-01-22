@@ -270,10 +270,9 @@ export default class CommentsFrame extends Frame {
     }
 
     protected renderFields(version: number): ByteVector {
-        Guards.byte(version, "version");
         const encoding = Frame.correctEncoding(this.textEncoding, version);
         const v = ByteVector.empty();
-        v.addByte(version);
+        v.addByte(encoding);
         v.addByteVector(ByteVector.fromString(this.language, StringType.Latin1));
         v.addByteVector(ByteVector.fromString(this.description, encoding));
         v.addByteVector(ByteVector.getTextDelimiter(encoding));
