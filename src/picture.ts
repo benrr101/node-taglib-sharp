@@ -280,17 +280,6 @@ export class Picture implements IPicture {
         return picture;
     }
 
-    public static fromPicture(original: IPicture): Picture {
-        const picture = new Picture();
-        picture.mimeType = original.mimeType;
-        picture.type = original.type;
-        picture.filename = original.filename;
-        picture.description = original.description;
-        picture.data = original.data;
-
-        return picture;
-    }
-
     // #endregion
 
     // #region Public Properties
@@ -309,8 +298,8 @@ export class Picture implements IPicture {
 
     // #region Public Static Methods
 
-    public static getExtensionFromData(data: ByteVector): string|null {
-        let ext = null;
+    public static getExtensionFromData(data: ByteVector): string {
+        let ext;
 
         // No picture unless it is corrupted, can fit in a file of less than 4 bytes
         if (data.length >= 4) {
