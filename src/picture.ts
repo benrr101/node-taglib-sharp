@@ -2,6 +2,7 @@ import * as path from "path";
 
 import {ByteVector} from "./byteVector";
 import {IFileAbstraction} from "./fileAbstraction";
+import {Guards} from "./utils";
 
 export enum PictureType {
     /**
@@ -131,12 +132,12 @@ export class Picture implements IPicture {
     // #region Constants
 
     private static readonly _lutExtensionMime: string[] = [
+        "bin", "application/octet-stream", // Any kind of binary data - placed at top to act as default
         "aac", "audio/aac", // AAC audio file
         "abw", "application/x-abiword", // AbiWord document
         "arc", "application/octet-stream", // Archive document (multiple files embedded)
         "avi", "video/x-msvideo", // AVI: Audio Video Interleave
         "azw", "application/vnd.amazon.ebook", // Amazon Kindle eBook format
-        "bin", "application/octet-stream", // Any kind of binary data
         "bmp", "image/bmp", // BMP image data
         "bmp", "image/x-windows-bmp", // BMP image data
         "bm", "image/bmp", // BMP image data
@@ -160,7 +161,7 @@ export class Picture implements IPicture {
         "json", "application/json", // JSON format
         "mid", "audio/midi", // Musical Instrument Digital Interface (MIDI)
         "midi", "audio/midi", // Musical Instrument Digital Interface (MIDI)
-        "mp3", "audio/mpeg",
+        "mp3", "audio/mpeg", // MPEG audio, mp3 is first since it's most likely
         "mp1", "audio/mpeg",
         "mp2", "audio/mpeg",
         "mpg", "video/mpeg",
@@ -298,21 +299,25 @@ export class Picture implements IPicture {
 
     // #region Public Static Methods
 
+    /**
+     * Retrieve a mimetype from raw file data by reading the first few bytes of the file. Less
+     * accurate than {@see getExtensionFromMimeType} since this is limited to image file types.
+     * @param data Bytes of the file to read to identify the extension
+     * @returns string Extension of the file with dot at the beginning based on the first few bytes
+     *     of the data. If the extension cannot be determined, `undefined` is returned
+     */
     public static getExtensionFromData(data: ByteVector): string {
-        let ext;
+        let ext: string;
 
         // No picture unless it is corrupted, can fit in a file of less than 4 bytes
-        if (data.length >= 4) {
+        if (!data || data.length >= 4) {
             if (data.get(1) === 0x50 && data.get(2) === 0x4E && data.get(3) === 0x47) {
-                // PNG
                 ext = ".png";
-            } else if (data.get(0) === 0x47 && data.get(1) === 0x49 && data.get(2) === 0x47) {
-                // GIF
+            } else if (data.get(0) === 0x47 && data.get(1) === 0x49 && data.get(2) === 0x46) {
                 ext = ".gif";
             } else if (data.get(0) === 0x42 && data.get(1) === 0x4D) {
-                // BM
                 ext = ".bmp";
-            } else if (data.get(0) === 0xFF && data.get(1) === 0xD8 && data.get(2) === 0xFF && data.get(3) === 0xE0) {
+            } else if (data.get(0) === 0xFF && data.get(1) === 0xD8) {
                 ext = ".jpg";
             }
         }
@@ -320,33 +325,45 @@ export class Picture implements IPicture {
         return ext;
     }
 
-    public static getExtensionFromMimeType(mime: string): string|null {
-        let ext: string = null;
+    /**
+     * Gets the file extension for a specific mimetype.
+     * @param mime Mimetype to lookup the extension for
+     * @returns string Extension of the file based on the mimetype with a dot at the beginning. If
+     *     the extension cannot be determined, `undefined` is returned
+     */
+    public static getExtensionFromMimeType(mime: string): string {
+        let ext: string;
 
-        for (let i = 1; i < this._lutExtensionMime.length; i += 2) {
-            if (this._lutExtensionMime[i] === mime) {
-                ext = this._lutExtensionMime[i - 1];
+        for (let i = 0; i < this._lutExtensionMime.length; i += 2) {
+            if (this._lutExtensionMime[i + 1] === mime) {
+                ext = this._lutExtensionMime[i];
                 break;
             }
         }
 
-        return ext;
+        return ext ? `.${ext}` : ext;
     }
 
-    public static getMimeTypeFromExtension(name: string): string|null {
+    /**
+     * Gets the mimetype of a file based on its extension. If the mimetype cannot be determined, it
+     * is assumed to be a basic binary file.
+     * @param name Filename with extension or just the extension of the file
+     * @returns string Mimetype of the file based on the extension. If mimetype cannot be
+     *     determined, application/octet-stream is returned.
+     */
+    public static getMimeTypeFromExtension(name: string): string {
         let mimeType: string = "application/octet-stream";
 
-        if (!name || name.length === 0)  {
+        if (!name)  {
             return mimeType;
         }
 
         let ext = path.extname(name);
-        if (!ext || ext.length === 0) {
+        if (!ext) {
             ext = name;
         } else {
             ext = ext.substring(1);
         }
-        ext = ext.substring(1);
 
         for (let i = 0; i < this._lutExtensionMime.length; i += 2) {
             if (this._lutExtensionMime[i] === ext) {
