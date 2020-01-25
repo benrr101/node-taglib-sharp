@@ -30,7 +30,7 @@ export default class TestStream implements IStream {
     public read(buffer: Uint8Array, bufferOffset: number, length: number): number {
         let bytesRead = 0;
         while (bytesRead < length && this._position + bytesRead < this._data.length) {
-            buffer[bufferOffset + bytesRead] = this._data.get(this._position);
+            buffer[bufferOffset + bytesRead] = this._data.get(this._position + bytesRead);
             bytesRead++;
         }
 
