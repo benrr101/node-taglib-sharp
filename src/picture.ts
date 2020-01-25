@@ -225,7 +225,7 @@ export class Picture implements IPicture {
         picture.data = ByteVector.fromPath(filePath);
         picture.filename = path.basename(filePath);
         picture.description = picture.filename;
-        picture.mimeType = Picture.getMimeTypeFromExtension(picture.filename);
+        picture.mimeType = Picture.getMimeTypeFromFilename(picture.filename);
         picture.type = picture.mimeType.startsWith("image/") ? PictureType.FrontCover : PictureType.NotAPicture;
 
         return picture;
@@ -241,7 +241,7 @@ export class Picture implements IPicture {
         picture.data = ByteVector.fromByteVector(data);
 
         const ext = Picture.getExtensionFromData(data);
-        picture.mimeType = Picture.getMimeTypeFromExtension(ext);
+        picture.mimeType = Picture.getMimeTypeFromFilename(ext);
         if (ext) {
             picture.type = PictureType.FrontCover;
             picture.filename = picture.description = "cover" + ext;
@@ -264,11 +264,11 @@ export class Picture implements IPicture {
         picture.description = abstraction.name;
 
         if (picture.filename && picture.filename.indexOf(".") >= 0) {
-            picture.mimeType = Picture.getMimeTypeFromExtension(picture.filename);
+            picture.mimeType = Picture.getMimeTypeFromFilename(picture.filename);
             picture.type = picture.mimeType.startsWith("image/") ? PictureType.FrontCover : PictureType.NotAPicture;
         } else {
             const ext = Picture.getExtensionFromData(picture.data);
-            picture.mimeType = Picture.getMimeTypeFromExtension(ext);
+            picture.mimeType = Picture.getMimeTypeFromFilename(ext);
             if (ext) {
                 picture.type = PictureType.FrontCover;
                 picture.filename = picture.description = "cover" + ext;
@@ -351,7 +351,7 @@ export class Picture implements IPicture {
      * @returns string Mimetype of the file based on the extension. If mimetype cannot be
      *     determined, application/octet-stream is returned.
      */
-    public static getMimeTypeFromExtension(name: string): string {
+    public static getMimeTypeFromFilename(name: string): string {
         let mimeType: string = "application/octet-stream";
 
         if (!name)  {
@@ -360,7 +360,7 @@ export class Picture implements IPicture {
 
         let ext = path.extname(name);
         if (!ext) {
-            ext = name;
+            ext = name.startsWith(".") ? name.substring(1) : name;
         } else {
             ext = ext.substring(1);
         }

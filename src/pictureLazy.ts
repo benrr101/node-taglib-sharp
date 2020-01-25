@@ -47,7 +47,7 @@ export default class PictureLazy implements IPicture, ILazy {
             picture._type = PictureType.NotAPicture;
             picture._filename = "UnknownType";
         }
-        picture._mimeType = Picture.getMimeTypeFromExtension(extension);
+        picture._mimeType = Picture.getMimeTypeFromFilename(picture._filename);
 
         return picture;
     }
@@ -74,7 +74,7 @@ export default class PictureLazy implements IPicture, ILazy {
         picture._description = file.name;
 
         if (picture._filename && picture._filename.indexOf(".") > -1) {
-            picture._mimeType = Picture.getMimeTypeFromExtension(picture._filename);
+            picture._mimeType = Picture.getMimeTypeFromFilename(picture._filename);
             picture._type = picture._mimeType.startsWith("image/") ? PictureType.FrontCover : PictureType.NotAPicture;
         }
 
@@ -92,7 +92,7 @@ export default class PictureLazy implements IPicture, ILazy {
         picture._file = new LocalFileAbstraction(path);
         picture._filename = Path.basename(path);
         picture._description = picture._filename;
-        picture._mimeType = Picture.getMimeTypeFromExtension(picture._filename);
+        picture._mimeType = Picture.getMimeTypeFromFilename(picture._filename);
         picture._type = picture._mimeType.startsWith("image/") ? PictureType.FrontCover : PictureType.NotAPicture;
 
         return picture;
@@ -193,7 +193,7 @@ export default class PictureLazy implements IPicture, ILazy {
         // Retrieve remaining properties from data (if required)
         if (!this._mimeType) {
             const ext = Picture.getExtensionFromData(this._data);
-            this._mimeType = Picture.getMimeTypeFromExtension(ext);
+            this._mimeType = Picture.getMimeTypeFromFilename(ext);
             if (ext) {
                 this._type = PictureType.FrontCover;
                 if (!this._filename) {

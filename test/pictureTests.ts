@@ -123,36 +123,45 @@ class Picture_StaticMethodTests {
     }
 
     @test
-    public getMimeTypeFromExtension_extensionNotGiven() {
+    public getMimeTypeFromFilename_extensionNotGiven() {
         // Act
-        const output = Picture.getMimeTypeFromExtension("");
+        const output = Picture.getMimeTypeFromFilename("");
 
         // Assert
         assert.strictEqual(output, "application/octet-stream");
     }
 
     @test
-    public getMimeTypeFromExtension_noExtension() {
+    public getMimeTypeFromFilename_justExtensionWithoutDot() {
         // Act
-        const output = Picture.getMimeTypeFromExtension("gif");
+        const output = Picture.getMimeTypeFromFilename("gif");
 
         // Assert
         assert.strictEqual(output, "image/gif");
     }
 
     @test
-    public getMimeTypeFromExtension_matchFound() {
+    public getMimeTypeFromFilename_justExtensionWithDot() {
         // Act
-        const output = Picture.getMimeTypeFromExtension("/foo/bar/baz.jpg");
+        const output = Picture.getMimeTypeFromFilename(".gif");
+
+        // Assert
+        assert.strictEqual(output, "image/gif");
+    }
+
+    @test
+    public getMimeTypeFromFilename_matchFound() {
+        // Act
+        const output = Picture.getMimeTypeFromFilename("/foo/bar/baz.jpg");
 
         // Assert
         assert.strictEqual(output, "image/jpeg");
     }
 
     @test
-    public getMimeTypeFromExtension_noMatchFound() {
+    public getMimeTypeFromFilename_noMatchFound() {
         // Act
-        const output = Picture.getMimeTypeFromExtension("/foo/bar/baz.qqq");
+        const output = Picture.getMimeTypeFromFilename("/foo/bar/baz.qqq");
 
         // Assert
         assert.strictEqual(output, "application/octet-stream");
