@@ -20,6 +20,7 @@ import PrivateFrame from "./privateFrame";
 import {EventTimeCodeFrame} from "./eventTimeCodeFrame";
 import {UrlLinkFrame, UserUrlLinkFrame} from "./urlLinkFrame";
 import {NotImplementedError} from "../../errors";
+import PictureLazy from "../../pictureLazy";
 
 const customFrameCreators: Array<(data: ByteVector, offset: number, header: Id3v2FrameHeader, version: number) => Frame>
     = [];
@@ -136,13 +137,9 @@ export default {
                 ByteVector.equal(header.frameId, FrameTypes.APIC) ||
                 ByteVector.equal(header.frameId, FrameTypes.GEOB)
             ) {
+                const picture = PictureLazy.fromFile(file.fileAbstraction, filePosition, offset - filePosition);
                 return {
-                    frame: AttachmentFrame.fromFile(
-                        file.fileAbstraction,
-                        filePosition,
-                        offset - filePosition,
-                        header
-                    ),
+                    frame: AttachmentFrame.fromPicture(picture),
                     offset: offset
                 };
             }
