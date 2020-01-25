@@ -451,7 +451,7 @@ export default class AttachmentFrame extends Frame implements ILazy, IPicture {
                 pos = offset = 1;
             } else {
                 const ext = this._data.mid(pos, 3);
-                this._mimeType = Picture.getMimeTypeFromExtension(ext.toString(StringType.UTF8));
+                this._mimeType = Picture.getMimeTypeFromFilename(ext.toString(StringType.UTF8));
                 pos += 3;
             }
 
