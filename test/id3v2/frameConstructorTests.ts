@@ -5,7 +5,7 @@ import {test} from "mocha-typescript";
 import {ByteVector} from "../../src/byteVector";
 import {Frame} from "../../src/id3v2/frames/frame";
 import {Id3v2FrameHeader} from "../../src/id3v2/frames/frameHeader";
-import FrameTypes from "../../src/id3v2/frameTypes";
+import FrameTypes from "../../src/id3v2/frameIdentifiers";
 
 // Setup chai
 Chai.use(ChaiAsPromised);

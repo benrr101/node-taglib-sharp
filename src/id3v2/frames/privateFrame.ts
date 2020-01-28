@@ -1,4 +1,4 @@
-import FrameTypes from "../frameTypes";
+import FrameTypes from "../frameIdentifiers";
 import {ByteVector, StringType} from "../../byteVector";
 import {CorruptFileError, NotImplementedError} from "../../errors";
 import {Frame, FrameClassType} from "./frame";

@@ -1,4 +1,4 @@
-import FrameTypes from "../frameTypes";
+import FrameTypes from "../frameIdentifiers";
 import {ByteVector} from "../../byteVector";
 import {Id3v2FrameFlags, Id3v2FrameHeader} from "./frameHeader";
 import {File} from "../../file";

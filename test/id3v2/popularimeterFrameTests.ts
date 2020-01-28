@@ -5,7 +5,7 @@ import {slow, suite, test, timeout} from "mocha-typescript";
 
 import FrameConstructorTests from "./frameConstructorTests";
 import FramePropertyTests from "./framePropertyTests";
-import FrameTypes from "../../src/id3v2/frameTypes";
+import FrameTypes from "../../src/id3v2/frameIdentifiers";
 import PopularimeterFrame from "../../src/id3v2/frames/popularimeterFrame";
 import {ByteVector, StringType} from "../../src/byteVector";
 import {Frame, FrameClassType} from "../../src/id3v2/frames/frame";

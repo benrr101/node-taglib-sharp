@@ -1,5 +1,5 @@
 import * as BigInt from "big-integer";
-import FrameTypes from "../frameTypes";
+import FrameTypes from "../frameIdentifiers";
 import {ByteVector, StringType} from "../../byteVector";
 import {Frame, FrameClassType} from "./frame";
 import {Id3v2FrameHeader} from "./frameHeader";

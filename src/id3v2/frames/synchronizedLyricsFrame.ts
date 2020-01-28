@@ -1,4 +1,4 @@
-import FrameTypes from "../frameTypes";
+import FrameTypes from "../frameIdentifiers";
 import Id3v2TagSettings from "../id3v2TagSettings";
 import {ByteVector, StringType} from "../../byteVector";
 import {CorruptFileError} from "../../errors";
