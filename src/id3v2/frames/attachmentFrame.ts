@@ -1,8 +1,8 @@
-import FrameType from "../frameIdentifiers";
 import Id3v2TagSettings from "../id3v2TagSettings";
 import {ByteVector, StringType} from "../../byteVector";
 import {CorruptFileError} from "../../errors";
 import {Frame, FrameClassType} from "./frame";
+import {FrameIdentifiers} from "../frameIdentifiers";
 import {Id3v2FrameHeader} from "./frameHeader";
 import {IPicture, Picture, PictureType} from "../../picture";
 import {Guards} from "../../utils";
@@ -58,7 +58,7 @@ export default class AttachmentFrame extends Frame {
         Guards.truthy(picture, "picture");
 
         // In this case we will assume the frame is an APIC until the picture is parsed
-        const frame = new AttachmentFrame(new Id3v2FrameHeader(FrameType.APIC, 4));
+        const frame = new AttachmentFrame(new Id3v2FrameHeader(FrameIdentifiers.APIC, 4));
         frame._rawPicture = picture;
         return frame;
     }

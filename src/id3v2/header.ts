@@ -30,7 +30,7 @@ export default class Header {
         this._flags = data.get(5);
 
         // Make sure flags provided are legal
-        if (this._majorVersion === 2 && (this._flags & 63) != 0) {
+        if (this._majorVersion === 2 && (this._flags & 63) !== 0) {
             throw new CorruptFileError("Invalid flags set on version 2 tag");
         }
         if (this._majorVersion === 3 && (this._flags & 15) > 0) {
@@ -147,7 +147,7 @@ export default class Header {
      */
     public set tagSize(value: number) {
         Guards.uint(value, "value");
-        if ((value & 0xF0000000) != 0) {
+        if ((value & 0xF0000000) !== 0) {
             throw new Error("Argument out of range: value must be a 28-bit unsigned integer");
         }
 
