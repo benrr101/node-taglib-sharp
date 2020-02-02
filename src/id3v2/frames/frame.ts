@@ -5,6 +5,7 @@ import {CorruptFileError} from "../../errors";
 import {Id3v2FrameFlags, Id3v2FrameHeader} from "./frameHeader";
 import {Guards} from "../../utils";
 import {NotImplementedError} from "../../errors";
+import {FrameIdentifier} from "../frameIdentifiers";
 
 export enum FrameClassType {
     AttachmentFrame,
@@ -89,9 +90,9 @@ export abstract class Frame {
 
     /**
      * Gets the frame ID for the current instance.
-     * @returns ByteVector Object containing the four-byte ID3v2.4 frame header for this frame
+     * @returns FrameIdentifier Object representing of the identifier of the frame
      */
-    public get frameId(): ByteVector { return this._header.frameId; }
+    public get frameId(): FrameIdentifier { return this._header.frameId; }
 
     /**
      * Gets the grouping ID applied to the current instance.
@@ -227,9 +228,10 @@ export abstract class Frame {
      * grouping ID.
      * @param frameData Raw frame data
      * @param offset Index at which the data is contained
+     * @param version Version of the ID3v2 tag the data was originally encoded with
      */
-    protected fieldData(frameData: ByteVector, offset: number): ByteVector {
-        let dataOffset = offset + Id3v2FrameHeader.getSize(this._header.version);
+    protected fieldData(frameData: ByteVector, offset: number, version: number): ByteVector {
+        let dataOffset = offset + Id3v2FrameHeader.getSize(version);
         let dataLength = this.size;
 
         if ((this.flags & (Id3v2FrameFlags.Compression | Id3v2FrameFlags.DataLengthIndicator)) !== 0) {
@@ -296,12 +298,13 @@ export abstract class Frame {
      * @param data Raw ID3v2 frame
      * @param offset Offset in {@paramref data} at which the frame begins.
      * @param readHeader Whether or not to read the reader into the current instance.
+     * @param version Version of the ID3v2 tag the data was encoded with
      */
-    protected setData(data: ByteVector, offset: number, readHeader: boolean): void {
+    protected setData(data: ByteVector, offset: number, readHeader: boolean, version: number): void {
         if (readHeader) {
-            this._header = new Id3v2FrameHeader(data, this._header.version);
+            this._header = Id3v2FrameHeader.fromData(data, version);
         }
-        this.parseFields(this.fieldData(data, offset), this._header.version);
+        this.parseFields(this.fieldData(data, offset, version), version);
     }
 
     // #endregion

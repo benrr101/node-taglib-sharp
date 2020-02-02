@@ -1,7 +1,7 @@
-import FrameTypes from "../frameIdentifiers";
 import {ByteVector} from "../../byteVector";
 import {Frame, FrameClassType} from "./frame";
 import {Id3v2FrameFlags, Id3v2FrameHeader} from "./frameHeader";
+import {FrameIdentifiers} from "../frameIdentifiers";
 import {Guards} from "../../utils";
 import {EventType, TimestampFormat} from "../utilTypes";
 
@@ -58,7 +58,7 @@ export class EventTimeCodeFrame extends Frame {
      * Constructs and initializes a new instance without contents
      */
     public static fromEmpty(): EventTimeCodeFrame {
-        const frame = new EventTimeCodeFrame(new Id3v2FrameHeader(FrameTypes.ETCO, 4));
+        const frame = new EventTimeCodeFrame(new Id3v2FrameHeader(FrameIdentifiers.ETCO));
         frame.flags = Id3v2FrameFlags.FileAlterPreservation;
         return frame;
     }
@@ -68,7 +68,7 @@ export class EventTimeCodeFrame extends Frame {
      * @param timestampFormat Timestamp format for the event codes stored in this frame
      */
     public static fromTimestampFormat(timestampFormat: TimestampFormat): EventTimeCodeFrame {
-        const frame = new EventTimeCodeFrame(new Id3v2FrameHeader(FrameTypes.ETCO, 4));
+        const frame = new EventTimeCodeFrame(new Id3v2FrameHeader(FrameIdentifiers.ETCO));
         frame.flags = Id3v2FrameFlags.FileAlterPreservation;
         frame.timestampFormat = timestampFormat;
         return frame;
@@ -81,18 +81,21 @@ export class EventTimeCodeFrame extends Frame {
      * @param offset What offset in {@paramref data} the frame actually begins. Must be positive,
      *     safe integer
      * @param header Header of the frame found at {@paramref data} in the data
+     * @param version ID3v2 version the frame was originally encoded with
      */
     public static fromOffsetRawData(
         data: ByteVector,
         offset: number,
-        header: Id3v2FrameHeader
+        header: Id3v2FrameHeader,
+        version: number
     ) {
         Guards.truthy(data, "data");
         Guards.uint(offset, "offset");
         Guards.truthy(header, "header");
+        Guards.byte(version, "version");
 
         const frame = new EventTimeCodeFrame(header);
-        frame.setData(data, offset, false);
+        frame.setData(data, offset, false, version);
         return frame;
     }
 
@@ -106,8 +109,8 @@ export class EventTimeCodeFrame extends Frame {
         Guards.truthy(data, "data");
         Guards.byte(version, "version");
 
-        const frame = new EventTimeCodeFrame(new Id3v2FrameHeader(data, version));
-        frame.setData(data, 0, true);
+        const frame = new EventTimeCodeFrame(Id3v2FrameHeader.fromData(data, version));
+        frame.setData(data, 0, true, version);
         return frame;
     }
 

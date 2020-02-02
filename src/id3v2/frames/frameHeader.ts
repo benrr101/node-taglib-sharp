@@ -56,7 +56,15 @@ export class Id3v2FrameHeader {
     private _frameId: FrameIdentifier;
     private _frameSize: number;
 
-    public constructor(id: FrameIdentifier, flags: Id3v2FrameFlags, frameSize: number) {
+    /**
+     * Constructs and initializes a new instance by prociding the data for the frame header.
+     * @param id Identifier of the frame
+     * @param flags Flags to assign to the frame (if omitted, defaults to
+     *     {@see Id3v2FrameFlags.None})
+     * @param frameSize Size of the frame in bytes, excluding the size of the header (if omitted,
+     *     defaults to 0)
+     */
+    public constructor(id: FrameIdentifier, flags: Id3v2FrameFlags = Id3v2FrameFlags.None, frameSize: number = 0) {
         Guards.truthy(id, "id");
         Guards.uint(frameSize, "frameSize");
 

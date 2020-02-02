@@ -2,8 +2,8 @@ import Id3v2TagSettings from "../id3v2TagSettings";
 import {ByteVector, StringType} from "../../byteVector";
 import {CorruptFileError} from "../../errors";
 import {Frame, FrameClassType} from "./frame";
-import {FrameIdentifiers} from "../frameIdentifiers";
 import {Id3v2FrameHeader} from "./frameHeader";
+import {FrameIdentifiers} from "../frameIdentifiers";
 import {IPicture, Picture, PictureType} from "../../picture";
 import {Guards} from "../../utils";
 
@@ -30,18 +30,21 @@ export default class AttachmentFrame extends Frame {
      * @param data ByteVector containing the raw representation of the new frame
      * @param offset Index into {@paramref data} where the frame actually begins
      * @param header Header of the frame found at {@paramref offset} in the data
+     * @param version ID3v2 version the frame was originally encoded with
      */
     public static fromOffsetRawData(
         data: ByteVector,
         offset: number,
-        header: Id3v2FrameHeader
+        header: Id3v2FrameHeader,
+        version: number
     ): AttachmentFrame {
         Guards.truthy(data, "data");
         Guards.uint(offset, "offset");
         Guards.truthy(header, "header");
+        Guards.byte(version, "version");
 
         const frame = new AttachmentFrame(header);
-        frame.setData(data, offset, false);
+        frame.setData(data, offset, false, version);
         return frame;
     }
 
@@ -73,8 +76,8 @@ export default class AttachmentFrame extends Frame {
         Guards.truthy(data, "data");
         Guards.byte(version, "version");
 
-        const frame = new AttachmentFrame(new Id3v2FrameHeader(data, version));
-        frame.setData(data, 0, true);
+        const frame = new AttachmentFrame(Id3v2FrameHeader.fromData(data, version));
+        frame.setData(data, 0, true, version);
         return frame;
     }
 
@@ -159,8 +162,9 @@ export default class AttachmentFrame extends Frame {
     /**
      * Sets the text encoding to use when storing the current instance.
      * @param value Text encoding to use when storing the current instance.
-     *     This encoding is overridden when rendering if {@see Id3v2Tag.ForceDefaultEncoding} is
-     *     `true` or the render version does not support it.
+     *     This encoding is overridden when rendering if
+     *     {@see Id3v2TagSettings.forceDefaultEncoding} is `true` or the render version does not
+     *     support it.
      */
     public set textEncoding(value: StringType) {
         this.parseFromRaw();
@@ -184,8 +188,8 @@ export default class AttachmentFrame extends Frame {
 
         // Change the frame type depending if this is a picture or a general object
         const frameId = value === PictureType.NotAPicture
-            ? FrameType.GEOB
-            : FrameType.APIC;
+            ? FrameIdentifiers.GEOB
+            : FrameIdentifiers.APIC;
         if (this._header.frameId !== frameId) {
             this._header = new Id3v2FrameHeader(frameId, 4);
         }
@@ -275,7 +279,7 @@ export default class AttachmentFrame extends Frame {
         const encoding = AttachmentFrame.correctEncoding(this.textEncoding, version);
         const data = ByteVector.empty();
 
-        if (this._header.frameId === FrameType.APIC) {
+        if (this.frameId === FrameIdentifiers.APIC) {
             // Render an ID3v2 attached picture
             data.addByte(encoding);
 
@@ -290,7 +294,7 @@ export default class AttachmentFrame extends Frame {
             data.addByte(this._type);
             data.addByteVector(ByteVector.fromString(this.description, encoding));
             data.addByteVector(ByteVector.getTextDelimiter(encoding));
-        } else if (this._header.frameId === FrameType.GEOB) {
+        } else if (this.frameId === FrameIdentifiers.GEOB) {
             // Make an ID3v2 general encapsulated object
             data.addByte(encoding);
 
@@ -334,7 +338,7 @@ export default class AttachmentFrame extends Frame {
         const delim = ByteVector.getTextDelimiter(this._encoding);
 
         let descriptionEndIndex;
-        if (ByteVector.equal(this.frameId, FrameType.APIC)) {
+        if (this.frameId === FrameIdentifiers.APIC) {
             // Retrieve an ID3v2 attached picture
             if (this._rawVersion > 2) {
                 // Text encoding      $xx
@@ -373,7 +377,7 @@ export default class AttachmentFrame extends Frame {
             }
 
             this._data = data.mid(descriptionEndIndex + delim.length);
-        } else if (ByteVector.equal(this.frameId, FrameType.GEOB)) {
+        } else if (this.frameId === FrameIdentifiers.GEOB) {
             // Retrieve an ID3v2 generic encapsulated object
             // Text encoding          $xx
             // MIME type              <text string> $00
@@ -418,7 +422,7 @@ export default class AttachmentFrame extends Frame {
 
         // Switch the frame ID if we discovered the attachment isn't an image
         if (this._type === PictureType.NotAPicture) {
-            this._header.frameId = FrameType.GEOB;
+            this._header.frameId = FrameIdentifiers.GEOB;
         }
     }
 }

@@ -30,13 +30,13 @@ export default class Footer {
         this._flags = data.get(5);
 
         // TODO: Is there any point to supporting footers on versions less than 4?
-        if (this._majorVersion === 2 && (this._flags & 127) != 0) {
+        if (this._majorVersion === 2 && (this._flags & 127) !== 0) {
             throw new CorruptFileError("Invalid flags set on version 2 tag");
         }
-        if (this._majorVersion === 3 && (this._flags & 15) != 0) {
+        if (this._majorVersion === 3 && (this._flags & 15) !== 0) {
             throw new CorruptFileError("Invalid flags set on version 3 tag");
         }
-        if (this._majorVersion === 4 && (this._flags & 7) != 0) {
+        if (this._majorVersion === 4 && (this._flags & 7) !== 0) {
             throw new CorruptFileError("Invalid flags set on version 4 tag");
         }
 
@@ -75,11 +75,11 @@ export default class Footer {
      */
     public set flags(value: HeaderFlags) {
         const version3Flags = HeaderFlags.ExtendedHeader | HeaderFlags.ExperimentalIndicator;
-        if ((value & version3Flags) != 0 && this.majorVersion < 3) {
+        if ((value & version3Flags) !== 0 && this.majorVersion < 3) {
             throw new Error("Feature only supported in version 2.3+");
         }
         const version4Flags = HeaderFlags.FooterPresent;
-        if ((value & version4Flags) != 0 && this.majorVersion < 4) {
+        if ((value & version4Flags) !== 0 && this.majorVersion < 4) {
             throw new Error("Feature only supported in version 2.4+");
         }
 
@@ -137,7 +137,7 @@ export default class Footer {
      */
     public set tagSize(value: number) {
         Guards.uint(value, "value");
-        if ((value & 0xF0000000) != 0) {
+        if ((value & 0xF0000000) !== 0) {
             throw new Error("Argument out of range: value must be a 28-bit unsigned integer");
         }
 
