@@ -1,9 +1,9 @@
 import * as BigInt from "big-integer";
-import FrameTypes from "../frameIdentifiers";
 import {ByteVector, StringType} from "../../byteVector";
 import {CorruptFileError} from "../../errors";
 import {Frame, FrameClassType} from "./frame";
 import {Id3v2FrameHeader} from "./frameHeader";
+import {FrameIdentifiers} from "../frameIdentifiers";
 import {Guards} from "../../utils";
 
 /**
@@ -27,18 +27,21 @@ export default class PopularimeterFrame extends Frame {
      * @param offset What offset in {@paramref data} the frame actually begins. Must be positive,
      *     safe integer
      * @param header Header of the frame found at {@paramref data} in the data
+     * @param version ID3v2 version the frame was originally encoded with
      */
     public static fromOffsetRawData(
         data: ByteVector,
         offset: number,
-        header: Id3v2FrameHeader
+        header: Id3v2FrameHeader,
+        version: number
     ): PopularimeterFrame {
         Guards.truthy(data, "data");
         Guards.uint(offset, "offset");
         Guards.truthy(header, "header");
+        Guards.byte(version, "version");
 
         const frame = new PopularimeterFrame(header);
-        frame.setData(data, offset, false);
+        frame.setData(data, offset, false, version);
         return frame;
     }
 
@@ -52,8 +55,8 @@ export default class PopularimeterFrame extends Frame {
         Guards.truthy(data, "data");
         Guards.byte(version, "version");
 
-        const frame = new PopularimeterFrame(new Id3v2FrameHeader(data, version));
-        frame.setData(data, 0, true);
+        const frame = new PopularimeterFrame(Id3v2FrameHeader.fromData(data, version));
+        frame.setData(data, 0, true, version);
         return frame;
     }
 
@@ -63,7 +66,7 @@ export default class PopularimeterFrame extends Frame {
      * @param user Email of the user that gave the rating
      */
     public static fromUser(user: string): PopularimeterFrame {
-        const frame = new PopularimeterFrame(new Id3v2FrameHeader(FrameTypes.POPM, 4));
+        const frame = new PopularimeterFrame(new Id3v2FrameHeader(FrameIdentifiers.POPM));
         frame.user = user;
         return frame;
     }

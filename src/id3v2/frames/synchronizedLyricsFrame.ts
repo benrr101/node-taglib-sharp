@@ -1,9 +1,9 @@
-import FrameTypes from "../frameIdentifiers";
 import Id3v2TagSettings from "../id3v2TagSettings";
 import {ByteVector, StringType} from "../../byteVector";
 import {CorruptFileError} from "../../errors";
 import {Frame, FrameClassType} from "./frame";
 import {Id3v2FrameHeader} from "./frameHeader";
+import {FrameIdentifiers} from "../frameIdentifiers";
 import {Guards} from "../../utils";
 import {SynchronizedTextType, TimestampFormat} from "../utilTypes";
 
@@ -82,7 +82,7 @@ export class SynchronizedLyricsFrame extends Frame {
         textType: SynchronizedTextType,
         encoding: StringType = Id3v2TagSettings.defaultEncoding
     ): SynchronizedLyricsFrame {
-        const frame = new SynchronizedLyricsFrame(new Id3v2FrameHeader(FrameTypes.SYLT, 4));
+        const frame = new SynchronizedLyricsFrame(new Id3v2FrameHeader(FrameIdentifiers.SYLT));
         frame.textEncoding = encoding;
         frame._language = language;
         frame.description = description;
@@ -97,14 +97,15 @@ export class SynchronizedLyricsFrame extends Frame {
      * @param offset Offset into {@paramref data} where the frame begins. Must be unsigned, safe
      *     integer
      * @param header Header of the frame found at {@paramref offset} in {@paramref data}
+     * @param version ID3v2 version the frame was originally encoded with
      */
-    public static fromOffsetRawData(data: ByteVector, offset: number, header: Id3v2FrameHeader) {
+    public static fromOffsetRawData(data: ByteVector, offset: number, header: Id3v2FrameHeader, version: number) {
         Guards.truthy(data, "data");
         Guards.uint(offset, "offset");
         Guards.truthy(header, "header");
 
         const frame = new SynchronizedLyricsFrame(header);
-        frame.setData(data, offset, false);
+        frame.setData(data, offset, false, version);
         return frame;
     }
 
@@ -118,8 +119,8 @@ export class SynchronizedLyricsFrame extends Frame {
         Guards.truthy(data, "data");
         Guards.byte(version, "version");
 
-        const frame = new SynchronizedLyricsFrame(new Id3v2FrameHeader(data, version));
-        frame.setData(data, 0, true);
+        const frame = new SynchronizedLyricsFrame(Id3v2FrameHeader.fromData(data, version));
+        frame.setData(data, 0, true, version);
         return frame;
     }
 

@@ -1,9 +1,9 @@
-import FrameTypes from "../frameIdentifiers";
 import Genres from "../../genres";
 import Id3v2TagSettings from "../id3v2TagSettings";
 import {ByteVector, StringType} from "../../byteVector";
 import {Frame, FrameClassType} from "./frame";
 import {Id3v2FrameHeader} from "./frameHeader";
+import {FrameIdentifier, FrameIdentifiers} from "../frameIdentifiers";
 import {Guards, StringComparison} from "../../utils";
 
 /**
@@ -144,15 +144,15 @@ export class TextInformationFrame extends Frame {
 
     /**
      * Constructs and initializes a new instance with a specified identifier
-     * @param ident Byte vector containing the identifier for the frame
+     * @param identifier Byte vector containing the identifier for the frame
      * @param encoding Optionally, the encoding to use for the new instance. If omitted, defaults
      *     to {@see Id3v2Tag.defaultEncoding}
      */
     public static fromIdentifier(
-        ident: ByteVector,
+        identifier: FrameIdentifier,
         encoding: StringType = Id3v2TagSettings.defaultEncoding
     ): TextInformationFrame {
-        const frame = new TextInformationFrame(new Id3v2FrameHeader(ident, 4));
+        const frame = new TextInformationFrame(new Id3v2FrameHeader(identifier));
         frame._encoding = encoding;
         return frame;
     }
@@ -164,18 +164,20 @@ export class TextInformationFrame extends Frame {
      * @param offset What offset in {@paramref data} the frame actually begins. Must be positive,
      *     safe integer
      * @param header Header of the frame found at {@paramref data} in the data
+     * @param version ID3v2 version the frame was originally encoded with
      */
     public static fromOffsetRawData(
         data: ByteVector,
         offset: number,
-        header: Id3v2FrameHeader
+        header: Id3v2FrameHeader,
+        version: number
     ): TextInformationFrame {
         Guards.truthy(data, "data");
         Guards.uint(offset, "offset");
         Guards.truthy(header, "header");
 
         const frame = new TextInformationFrame(header);
-        frame.setData(data, offset, false);
+        frame.setData(data, offset, false, version);
         return frame;
     }
 
@@ -189,8 +191,8 @@ export class TextInformationFrame extends Frame {
         Guards.truthy(data, "data");
         Guards.byte(version, "version");
 
-        const frame = new TextInformationFrame(new Id3v2FrameHeader(data, version));
-        frame.setData(data, 0, true);
+        const frame = new TextInformationFrame(Id3v2FrameHeader.fromData(data, version));
+        frame.setData(data, 0, true, version);
         return frame;
     }
 
@@ -248,15 +250,12 @@ export class TextInformationFrame extends Frame {
      */
     public static findTextInformationFrame(
         frames: TextInformationFrame[],
-        ident: ByteVector
+        ident: FrameIdentifier
     ): TextInformationFrame {
         Guards.truthy(frames, "frames");
         Guards.truthy(ident, "ident");
-        if (ident.length !== 4) {
-            throw new Error("Argument out of range: Identifier must be four bytes long");
-        }
 
-        return frames.find((f) => ByteVector.equal(f.frameId, ident));
+        return frames.find((f) => f.frameId === ident);
     }
 
     /** @inheritDoc */
@@ -279,7 +278,7 @@ export class TextInformationFrame extends Frame {
     public render(version: number): ByteVector {
         Guards.byte(version, "version");
 
-        if (version !== 3 || this.frameId !== FrameTypes.TDRC) {
+        if (version !== 3 || this.frameId !== FrameIdentifiers.TDRC) {
             return super.render(version);
         }
 
@@ -289,11 +288,11 @@ export class TextInformationFrame extends Frame {
         }
 
         const output = ByteVector.empty();
-        let frame = new TextInformationFrame(new Id3v2FrameHeader(FrameTypes.TYER, this._encoding));
+        let frame = new TextInformationFrame(new Id3v2FrameHeader(FrameIdentifiers.TYER));
         frame.text = [text.substring(0, 4)];
         output.addByteVector(frame.render(version));
 
-        frame = new TextInformationFrame(new Id3v2FrameHeader(FrameTypes.TDAT, this._encoding));
+        frame = new TextInformationFrame(new Id3v2FrameHeader(FrameIdentifiers.TDAT));
         frame.text = [text.substring(5, 7) + text.substring(8, 10)];
         output.addByteVector(frame.render(version));
 
@@ -301,7 +300,7 @@ export class TextInformationFrame extends Frame {
             return output;
         }
 
-        frame = new TextInformationFrame(new Id3v2FrameHeader(FrameTypes.TIME, this._encoding));
+        frame = new TextInformationFrame(new Id3v2FrameHeader(FrameIdentifiers.TIME));
         frame.text = [text.substring(11, 13) + text.substring(14, 16)];
         output.addByteVector(frame.render(version));
 
@@ -347,7 +346,7 @@ export class TextInformationFrame extends Frame {
         const fieldList = [];
         const delim = ByteVector.getTextDelimiter(this._encoding);
 
-        if (this._rawVersion > 3 || ByteVector.equal(this.frameId, FrameTypes.TXXX)) {
+        if (this._rawVersion > 3 || this.frameId === FrameIdentifiers.TXXX) {
             fieldList.push(... data.toStrings(this._encoding, 1));
         } else if (data.length > 1 && !ByteVector.equal(data.mid(1, delim.length), delim)) {
             let value = data.toString(data.length - 1, this._encoding, 1);
@@ -359,23 +358,23 @@ export class TextInformationFrame extends Frame {
             }
 
             const splitFrameTypes = [
-                FrameTypes.TCOM,
-                FrameTypes.TEXT,
-                FrameTypes.TMCL,
-                FrameTypes.TOLY,
-                FrameTypes.TOPE,
-                FrameTypes.TSOC,
-                FrameTypes.TSOP,
-                FrameTypes.TSO2,
-                FrameTypes.TPE1,
-                FrameTypes.TPE2,
-                FrameTypes.TPE3,
-                FrameTypes.TPE4
+                FrameIdentifiers.TCOM,
+                FrameIdentifiers.TEXT,
+                FrameIdentifiers.TMCL,
+                FrameIdentifiers.TOLY,
+                FrameIdentifiers.TOPE,
+                FrameIdentifiers.TSOC,
+                FrameIdentifiers.TSOP,
+                FrameIdentifiers.TSO2,
+                FrameIdentifiers.TPE1,
+                FrameIdentifiers.TPE2,
+                FrameIdentifiers.TPE3,
+                FrameIdentifiers.TPE4
             ];
-            if (splitFrameTypes.some((ft) => ByteVector.equal(ft, this.frameId))) {
+            if (splitFrameTypes.some((ft) => ft === this.frameId)) {
                 // Some frames are designed to be split into multiple parts by a /
                 fieldList.push(... value.split("/"));
-            } else if (ByteVector.equal(this.frameId, FrameTypes.TCON)) {
+            } else if (this.frameId === FrameIdentifiers.TCON) {
                 // TCON can take various formats. The ID3v2.3 docs specify it can be:
                 // * (xx) - where xx is a number from the ID3v1 genre list
                 // * (xx)yyy - where xx is a number from the ID3v1 genre list and yyy is a
@@ -453,7 +452,7 @@ export class TextInformationFrame extends Frame {
 
         v.addByte(encoding);
 
-        const isTxxx = ByteVector.equal(this.frameId, FrameTypes.TXXX);
+        const isTxxx = this.frameId === FrameIdentifiers.TXXX;
         if (version > 3 || isTxxx) {
             if (isTxxx) {
                 if (text.length === 0) {
@@ -474,7 +473,7 @@ export class TextInformationFrame extends Frame {
                     v.addByteVector(ByteVector.fromString(text[i], encoding));
                 }
             }
-        } else if (ByteVector.equal(this.frameId, FrameTypes.TCON)) {
+        } else if (this.frameId === FrameIdentifiers.TCON) {
             let data = "";
             for (const s of text) {
                 if (s === TextInformationFrame.COVER_STRING) {
@@ -515,7 +514,10 @@ export class TextInformationFrame extends Frame {
             previousStrings.push(output);
         } else {
             // String is a genre, only store it if the genre number isn't stored in the previous strings
-            if (previousStrings.length === 0 || previousStrings[previousStrings.length - 1] !== genreNumber.toString(10)) {
+            if (
+                previousStrings.length === 0 ||
+                previousStrings[previousStrings.length - 1] !== genreNumber.toString(10)
+            ) {
                 previousStrings.push(output);
             }
         }
@@ -540,7 +542,7 @@ export class UserTextInformationFrame extends TextInformationFrame {
         description: string,
         encoding: StringType = Id3v2TagSettings.defaultEncoding
     ): UserTextInformationFrame {
-        const frame = new UserTextInformationFrame(new Id3v2FrameHeader(FrameTypes.TXXX, 4));
+        const frame = new UserTextInformationFrame(new Id3v2FrameHeader(FrameIdentifiers.TXXX));
         frame._encoding = encoding;
         frame.description = description;
         return frame;
@@ -553,18 +555,21 @@ export class UserTextInformationFrame extends TextInformationFrame {
      * @param offset What offset in {@paramref data} the frame actually begins. Must be positive,
      *     safe integer
      * @param header Header of the frame found at {@paramref data} in the data
+     * @param version ID3v2 version the frame was originally encoded with
      */
     public static fromOffsetRawData(
         data: ByteVector,
         offset: number,
-        header: Id3v2FrameHeader
+        header: Id3v2FrameHeader,
+        version: number
     ): UserTextInformationFrame {
         Guards.truthy(data, "data");
         Guards.uint(offset, "offset");
         Guards.truthy(header, "header");
+        Guards.byte(version, "version");
 
         const frame = new UserTextInformationFrame(header);
-        frame.setData(data, offset, false);
+        frame.setData(data, offset, false, version);
         return frame;
     }
 
@@ -578,8 +583,8 @@ export class UserTextInformationFrame extends TextInformationFrame {
         Guards.truthy(data, "data");
         Guards.byte(version, "version");
 
-        const frame = new UserTextInformationFrame(new Id3v2FrameHeader(data, version));
-        frame.setData(data, 0, true);
+        const frame = new UserTextInformationFrame(Id3v2FrameHeader.fromData(data, version));
+        frame.setData(data, 0, true, version);
         return frame;
     }
 

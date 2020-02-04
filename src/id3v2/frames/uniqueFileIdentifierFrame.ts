@@ -1,7 +1,7 @@
-import FrameTypes from "../frameIdentifiers";
 import {ByteVector, StringType} from "../../byteVector";
 import {Frame, FrameClassType} from "./frame";
 import {Id3v2FrameHeader} from "./frameHeader";
+import {FrameIdentifiers} from "../frameIdentifiers";
 import {Guards} from "../../utils";
 
 /**
@@ -29,7 +29,7 @@ export default class UniqueFileIdentifierFrame extends Frame {
             throw new Error("Argument out of range: Identifier cannot be longer than 64 bytes");
         }
 
-        const frame = new UniqueFileIdentifierFrame(new Id3v2FrameHeader(FrameTypes.UFID, 4));
+        const frame = new UniqueFileIdentifierFrame(new Id3v2FrameHeader(FrameIdentifiers.UFID));
         frame._owner = owner;
         frame._identifier = identifier;
         return frame;
@@ -42,18 +42,20 @@ export default class UniqueFileIdentifierFrame extends Frame {
      * @param offset What offset in {@paramref data} the frame actually begins. Must be positive,
      *     safe integer
      * @param header Header of the frame found at {@paramref data} in the data
+     * @param version ID3v2 version the frame was originally encoded with
      */
     public static fromOffsetRawData(
         data: ByteVector,
         offset: number,
-        header: Id3v2FrameHeader
+        header: Id3v2FrameHeader,
+        version: number
     ): UniqueFileIdentifierFrame {
         Guards.truthy(data, "data");
         Guards.uint(offset, "offset");
         Guards.truthy(header, "header");
 
         const frame = new UniqueFileIdentifierFrame(header);
-        frame.setData(data, offset, false);
+        frame.setData(data, offset, false, version);
         return frame;
     }
 
@@ -67,8 +69,8 @@ export default class UniqueFileIdentifierFrame extends Frame {
         Guards.truthy(data, "data");
         Guards.byte(version, "version");
 
-        const frame = new UniqueFileIdentifierFrame(new Id3v2FrameHeader(data, version));
-        frame.setData(data, 0, true);
+        const frame = new UniqueFileIdentifierFrame(Id3v2FrameHeader.fromData(data, version));
+        frame.setData(data, 0, true, version);
         return frame;
     }
 
@@ -117,7 +119,7 @@ export default class UniqueFileIdentifierFrame extends Frame {
 
     /** @inheritDoc */
     public clone(): Frame {
-        const frame = new UniqueFileIdentifierFrame(new Id3v2FrameHeader(FrameTypes.UFID, 4));
+        const frame = new UniqueFileIdentifierFrame(new Id3v2FrameHeader(FrameIdentifiers.UFID, 4));
         frame._owner = this._owner;
         if (this._identifier) {
             frame.identifier = ByteVector.fromByteVector(this.identifier);
