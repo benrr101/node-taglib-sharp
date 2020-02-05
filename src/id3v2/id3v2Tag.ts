@@ -608,7 +608,7 @@ export default class Id3v2Tag extends Tag {
                 match.removeFrames(ident);
             } else {
                 for (const f of match._frameList) {
-                    if (ByteVector.equal(f.frameId, ident)) {
+                    if (f.frameId === ident) {
                         copy = false;
                         break;
                     }
@@ -617,7 +617,7 @@ export default class Id3v2Tag extends Tag {
 
             let i = 0;
             while (i < frames.length) {
-                if (ByteVector.equal(frames[i].frameId, ident)) {
+                if (frames[i].frameId === ident) {
                     if (copy) {
                         match._frameList.push(frames[i].clone());
                     }
@@ -654,16 +654,12 @@ export default class Id3v2Tag extends Tag {
      * @param ident Identifier of the frame
      * @returns TFrame[] Array of frames with the desired frame identifier
      */
-    public getFramesByIdentifier<TFrame extends Frame>(type: FrameClassType, ident: ByteVector): TFrame[] {
+    public getFramesByIdentifier<TFrame extends Frame>(type: FrameClassType, ident: FrameIdentifier): TFrame[] {
         Guards.notNullOrUndefined(type, "type");
         Guards.truthy(ident, "ident");
-        if (ident.length !== 4) {
-            throw new Error("Argument out of range: ident must be 4 characters");
-        }
 
-        return this._frameList.filter((f) => {
-            return f && f.frameClassType === type && ByteVector.equal(f.frameId, ident);
-        }).map((f) => <TFrame> f);
+        return this._frameList.filter((f) => f && f.frameClassType === type && f.frameId === ident)
+            .map((f) => <TFrame> f);
     }
 
     /**
@@ -672,11 +668,11 @@ export default class Id3v2Tag extends Tag {
      * @param ident Frame identifier of the text information frame to get the value from
      * @returns string Text of the specified frame, or `undefined` if no value was found
      */
-    public getTextAsString(ident: ByteVector): string {
+    public getTextAsString(ident: FrameIdentifier): string {
         Guards.truthy(ident, "ident");
 
         let frame: Frame;
-        if (ident.get(0) === "W".codePointAt(0)) {
+        if (ident.isUrlFrame) {
             const frames = this.getFramesByClassType<UrlLinkFrame>(FrameClassType.UrlLinkFrame);
             frame = UrlLinkFrame.findUrlLinkFrame(frames, ident);
         } else {
@@ -705,14 +701,11 @@ export default class Id3v2Tag extends Tag {
      * Removes all frames with a specified identifier from the current instance.
      * @param ident Identifier of the frames to remove
      */
-    public removeFrames(ident: ByteVector): void {
+    public removeFrames(ident: FrameIdentifier): void {
         Guards.truthy(ident, "ident");
-        if (ident.length !== 4) {
-            throw new Error("Argument out of range: ident must be 4 characters");
-        }
 
         for (let i = this._frameList.length - 1; i >= 0; i--) {
-            if (ByteVector.equal(this._frameList[i].frameId, ident)) {
+            if (this._frameList[i].frameId === ident) {
                 this._frameList.splice(i, 1);
             }
         }
@@ -765,10 +758,10 @@ export default class Id3v2Tag extends Tag {
         // tag's header. The "tag data" (everything that is included in Header.tagSize) includes
         // the extended header, frames and padding, but does not include the tag's header or footer
 
-        const hasFooter = (this._header.flags & HeaderFlags.FooterPresent) != 0;
-        const unsyncAtFrameLevel = (this._header.flags & HeaderFlags.Unsynchronication) != 0
+        const hasFooter = (this._header.flags & HeaderFlags.FooterPresent) !== 0;
+        const unsyncAtFrameLevel = (this._header.flags & HeaderFlags.Unsynchronication) !== 0
             && this.version >= 4;
-        const unsyncAtTagLevel = (this._header.flags & HeaderFlags.Unsynchronication) != 0
+        const unsyncAtTagLevel = (this._header.flags & HeaderFlags.Unsynchronication) !== 0
             && this.version < 4;
 
         this._header.majorVersion = hasFooter ? 4 : this.version;
@@ -783,7 +776,7 @@ export default class Id3v2Tag extends Tag {
             if (unsyncAtFrameLevel) {
                 frame.flags |= Id3v2FrameFlags.Desynchronized;
             }
-            if ((frame.flags & Id3v2FrameFlags.TagAlterPreservation) != 0 ) {
+            if ((frame.flags & Id3v2FrameFlags.TagAlterPreservation) !== 0 ) {
                 continue;
             }
 
@@ -847,14 +840,11 @@ export default class Id3v2Tag extends Tag {
      * @param minPlaces Mininum number of digits to use to display the {@paramref numerator}, if
      *     the numerator has less than this number of digits, it will be filled with leading zeroes.
      */
-    public setNumberFrame(ident: ByteVector, numerator: number, denominator: number, minPlaces: number = 1): void {
+    public setNumberFrame(ident: FrameIdentifier, numerator: number, denominator: number, minPlaces: number = 1): void {
         Guards.truthy(ident, "ident");
         Guards.uint(numerator, "value");
         Guards.uint(denominator, "count");
         Guards.byte(minPlaces, "minPlaces");
-        if (ident.length !== 4) {
-            throw new Error("Argument out of range: ident must be 4 characters");
-        }
 
         if (numerator === 0 && denominator === 0) {
             this.removeFrames(ident);
@@ -891,7 +881,7 @@ export default class Id3v2Tag extends Tag {
             return;
         }
 
-        if (ident.get(0) === "W".codePointAt(0)) {
+        if (ident.isUrlFrame) {
             const frames = this.getFramesByClassType<UrlLinkFrame>(FrameClassType.UrlLinkFrame);
             let urlFrame = UrlLinkFrame.findUrlLinkFrame(frames, ident);
             if (!urlFrame) {
@@ -999,13 +989,13 @@ export default class Id3v2Tag extends Tag {
             }
 
             // Load up the first instance of each for post-processing
-            if (!tdrc && ByteVector.equal(frame.frameId, FrameIdentifiers.TDRC)) {
+            if (!tdrc && frame.frameId === FrameIdentifiers.TDRC) {
                 tdrc = <TextInformationFrame> frame;
-            } else if (!tyer && ByteVector.equal(frame.frameId, FrameIdentifiers.TYER)) {
+            } else if (!tyer && frame.frameId === FrameIdentifiers.TYER) {
                 tyer = <TextInformationFrame> frame;
-            } else if (!tdat && ByteVector.equal(frame.frameId, FrameIdentifiers.TDAT)) {
+            } else if (!tdat && frame.frameId === FrameIdentifiers.TDAT) {
                 tdat = <TextInformationFrame> frame;
-            } else if (!time && ByteVector.equal(frame.frameId, FrameIdentifiers.TIME)) {
+            } else if (!time && frame.frameId === FrameIdentifiers.TIME) {
                 time = <TextInformationFrame> frame;
             }
         }
@@ -1116,7 +1106,7 @@ export default class Id3v2Tag extends Tag {
         let swapping: Frame;
         for (let i = 0; i < this._frameList.length; i++) {
             if (!swapping) {
-                if (ByteVector.equal(this._frameList[i].frameId, type)) {
+                if (this._frameList[i].frameId === type) {
                     swapping = frame;
                 } else {
                     continue;

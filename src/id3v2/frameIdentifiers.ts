@@ -35,6 +35,20 @@ export class FrameIdentifier {
             : undefined;
     }
 
+    public get isTextFrame(): boolean {
+        const T = "T".codePointAt(0);
+        return (this.versionTable[2] && this.versionTable[2].get(0) === T)
+            || (this.versionTable[3] && this.versionTable[3].get(0) === T)
+            || (this.versionTable[4] && this.versionTable[4].get(0) === T);
+    }
+
+    public get isUrlFrame(): boolean {
+        const W = "W".codePointAt(0);
+        return (this.versionTable[2] && this.versionTable[2].get(0) === W)
+            || (this.versionTable[3] && this.versionTable[3].get(0) === W)
+            || (this.versionTable[4] && this.versionTable[4].get(0) === W);
+    }
+
     public render(version: number): ByteVector {
         Guards.byte(version, "version");
         Guards.betweenInclusive(version, 2, 4, "version");
