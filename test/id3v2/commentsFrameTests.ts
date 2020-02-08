@@ -5,10 +5,10 @@ import {slow, suite, test, timeout} from "mocha-typescript";
 import CommentsFrame from "../../src/id3v2/frames/commentsFrame";
 import FrameConstructorTests from "./frameConstructorTests";
 import FramePropertyTests from "./framePropertyTests";
-import FrameTypes from "../../src/id3v2/frameIdentifiers";
 import Id3v2TagSettings from "../../src/id3v2/id3v2TagSettings";
 import {ByteVector, StringType} from "../../src/byteVector";
 import {Frame, FrameClassType} from "../../src/id3v2/frames/frame";
+import {FrameIdentifiers} from "../../src/id3v2/frameIdentifiers";
 import {Id3v2FrameHeader} from "../../src/id3v2/frames/frameHeader";
 
 // Setup Chai
@@ -16,7 +16,7 @@ Chai.use(ChaiAsPromised);
 const assert = Chai.assert;
 
 function getTestFrame(): CommentsFrame {
-    const header = new Id3v2FrameHeader(FrameTypes.COMM, 4);
+    const header = new Id3v2FrameHeader(FrameIdentifiers.COMM);
     header.frameSize = 11;
     const data = ByteVector.concatenate(
         header.render(4),
@@ -32,7 +32,7 @@ function getTestFrame(): CommentsFrame {
 
 @suite(timeout(3000), slow(1000))
 class Id3v2_CommentsFrame_ConstructorTests extends FrameConstructorTests {
-    public get fromOffsetRawData(): (d: ByteVector, o: number, h: Id3v2FrameHeader) => Frame {
+    public get fromOffsetRawData(): (d: ByteVector, o: number, h: Id3v2FrameHeader, v: number) => Frame {
         return CommentsFrame.fromOffsetRawData;
     }
 
@@ -89,7 +89,7 @@ class Id3v2_CommentsFrame_ConstructorTests extends FrameConstructorTests {
     @test
     public fromOffsetRawData_tooFewBytes_throws() {
         // Arrange
-        const header = new Id3v2FrameHeader(FrameTypes.COMM, 4);
+        const header = new Id3v2FrameHeader(FrameIdentifiers.COMM);
         header.frameSize = 1;
         const data = ByteVector.concatenate(
             header.render(4),
@@ -98,13 +98,13 @@ class Id3v2_CommentsFrame_ConstructorTests extends FrameConstructorTests {
         );
 
         // Act/Assert
-        assert.throws(() => { CommentsFrame.fromOffsetRawData(data, 2, header); });
+        assert.throws(() => { CommentsFrame.fromOffsetRawData(data, 2, header, 4); });
     }
 
     @test
     public fromOffsetRawData_noData_returnsEmptyFrame() {
         // Arrange
-        const header = new Id3v2FrameHeader(FrameTypes.COMM, 4);
+        const header = new Id3v2FrameHeader(FrameIdentifiers.COMM);
         header.frameSize = 4;
         const data = ByteVector.concatenate(
             header.render(4),
@@ -114,7 +114,7 @@ class Id3v2_CommentsFrame_ConstructorTests extends FrameConstructorTests {
         );
 
         // Act
-        const frame = CommentsFrame.fromOffsetRawData(data, 2, header);
+        const frame = CommentsFrame.fromOffsetRawData(data, 2, header, 4);
 
         // Assert
         this.validateFrame(frame, "", "eng", StringType.Latin1, "");
@@ -123,7 +123,7 @@ class Id3v2_CommentsFrame_ConstructorTests extends FrameConstructorTests {
     @test
     public fromOffsetRawData_oneData_returnsFrameWithoutDescription() {
         // Arrange
-        const header = new Id3v2FrameHeader(FrameTypes.COMM, 4);
+        const header = new Id3v2FrameHeader(FrameIdentifiers.COMM);
         header.frameSize = 7;
         const data = ByteVector.concatenate(
             header.render(4),
@@ -134,7 +134,7 @@ class Id3v2_CommentsFrame_ConstructorTests extends FrameConstructorTests {
         );
 
         // Act
-        const frame = CommentsFrame.fromOffsetRawData(data, 2, header);
+        const frame = CommentsFrame.fromOffsetRawData(data, 2, header, 4);
 
         // Assert
         this.validateFrame(frame, "", "eng", StringType.Latin1, "fux");
@@ -143,7 +143,7 @@ class Id3v2_CommentsFrame_ConstructorTests extends FrameConstructorTests {
     @test
     public fromOffsetRawData_twoData_returnsFrameWithDescriptionAndText() {
         // Arrange
-        const header = new Id3v2FrameHeader(FrameTypes.COMM, 4);
+        const header = new Id3v2FrameHeader(FrameIdentifiers.COMM);
         header.frameSize = 11;
         const data = ByteVector.concatenate(
             header.render(4),
@@ -156,7 +156,7 @@ class Id3v2_CommentsFrame_ConstructorTests extends FrameConstructorTests {
         );
 
         // Act
-        const frame = CommentsFrame.fromOffsetRawData(data, 2, header);
+        const frame = CommentsFrame.fromOffsetRawData(data, 2, header, 4);
 
         // Assert
         this.validateFrame(frame, "fux", "eng", StringType.Latin1, "bux");
@@ -164,7 +164,7 @@ class Id3v2_CommentsFrame_ConstructorTests extends FrameConstructorTests {
 
     @test
     public fromOffsetRawData_threeData_returnsFrameWithDescriptionAndText() {
-        const header = new Id3v2FrameHeader(FrameTypes.COMM, 4);
+        const header = new Id3v2FrameHeader(FrameIdentifiers.COMM);
         header.frameSize = 12;
         const data = ByteVector.concatenate(
             header.render(4),
@@ -178,7 +178,7 @@ class Id3v2_CommentsFrame_ConstructorTests extends FrameConstructorTests {
         );
 
         // Act
-        const frame = CommentsFrame.fromOffsetRawData(data, 2, header);
+        const frame = CommentsFrame.fromOffsetRawData(data, 2, header, 4);
 
         // Assert
         this.validateFrame(frame, "fux", "eng", StringType.Latin1, "bux");
@@ -187,7 +187,7 @@ class Id3v2_CommentsFrame_ConstructorTests extends FrameConstructorTests {
     @test
     public fromRawData_tooFewBytes_throws() {
         // Arrange
-        const header = new Id3v2FrameHeader(FrameTypes.COMM, 4);
+        const header = new Id3v2FrameHeader(FrameIdentifiers.COMM);
         header.frameSize = 1;
         const data = ByteVector.concatenate(
             header.render(4),
@@ -201,7 +201,7 @@ class Id3v2_CommentsFrame_ConstructorTests extends FrameConstructorTests {
     @test
     public fromRawData_noData_returnsEmptyFrame() {
         // Arrange
-        const header = new Id3v2FrameHeader(FrameTypes.COMM, 4);
+        const header = new Id3v2FrameHeader(FrameIdentifiers.COMM);
         header.frameSize = 4;
         const data = ByteVector.concatenate(
             header.render(4),
@@ -219,7 +219,7 @@ class Id3v2_CommentsFrame_ConstructorTests extends FrameConstructorTests {
     @test
     public fromRawData_oneData_returnsFrameWithoutDescription() {
         // Arrange
-        const header = new Id3v2FrameHeader(FrameTypes.COMM, 4);
+        const header = new Id3v2FrameHeader(FrameIdentifiers.COMM);
         header.frameSize = 7;
         const data = ByteVector.concatenate(
             header.render(4),
@@ -237,7 +237,7 @@ class Id3v2_CommentsFrame_ConstructorTests extends FrameConstructorTests {
 
     @test
     public fromRawData_twoData_returnsFrameWithDescriptionAndText() {
-        const header = new Id3v2FrameHeader(FrameTypes.COMM, 4);
+        const header = new Id3v2FrameHeader(FrameIdentifiers.COMM);
         header.frameSize = 11;
         const data = ByteVector.concatenate(
             header.render(4),
@@ -257,7 +257,7 @@ class Id3v2_CommentsFrame_ConstructorTests extends FrameConstructorTests {
 
     @test
     public fromRawData_threeData_returnsFrameWithDescriptionAndText() {
-        const header = new Id3v2FrameHeader(FrameTypes.COMM, 4);
+        const header = new Id3v2FrameHeader(FrameIdentifiers.COMM);
         header.frameSize = 12;
         const data = ByteVector.concatenate(
             header.render(4),
@@ -285,7 +285,7 @@ class Id3v2_CommentsFrame_ConstructorTests extends FrameConstructorTests {
     ) {
         assert.isOk(frame);
         assert.equal(frame.frameClassType, FrameClassType.CommentsFrame);
-        assert.isTrue(ByteVector.equal(frame.frameId, FrameTypes.COMM));
+        assert.strictEqual(frame.frameId, FrameIdentifiers.COMM);
 
         assert.strictEqual(frame.description, expectedDesc);
         assert.strictEqual(frame.language, expectedLang);
@@ -553,7 +553,7 @@ class Id3v2_CommentsFrame_MethodTests {
         // Assert
         assert.isOk(output);
         assert.equal(output.frameClassType, FrameClassType.CommentsFrame);
-        assert.isTrue(ByteVector.equal(output.frameId, FrameTypes.COMM));
+        assert.strictEqual(output.frameId, FrameIdentifiers.COMM);
 
         assert.strictEqual(output.description, frame.description);
         assert.strictEqual(output.language, frame.language);
@@ -564,7 +564,7 @@ class Id3v2_CommentsFrame_MethodTests {
     @test
     public render() {
         // Arrange
-        const header = new Id3v2FrameHeader(FrameTypes.COMM, 4);
+        const header = new Id3v2FrameHeader(FrameIdentifiers.COMM);
         header.frameSize = 11;
         const data = ByteVector.concatenate(
             header.render(4),

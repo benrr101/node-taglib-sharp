@@ -4,13 +4,12 @@ import {slow, suite, test, timeout} from "mocha-typescript";
 
 import FrameConstructorTests from "./frameConstructorTests";
 import FramePropertyTests from "./framePropertyTests";
-import FrameTypes from "../../src/id3v2/frameIdentifiers";
 import Id3v2TagSettings from "../../src/id3v2/id3v2TagSettings";
 import TermsOfUseFrame from "../../src/id3v2/frames/termsOfUseFrame";
 import {ByteVector, StringType} from "../../src/byteVector";
 import {Frame, FrameClassType} from "../../src/id3v2/frames/frame";
 import {Id3v2FrameHeader} from "../../src/id3v2/frames/frameHeader";
-
+import {FrameIdentifiers} from "../../src/id3v2/frameIdentifiers";
 
 // Setup chai
 Chai.use(ChaiAsPromised);
@@ -18,7 +17,7 @@ const assert = Chai.assert;
 
 @suite(timeout(3000), slow(1000))
 class Id3v2_TermsOfUseFrame_ConstructorTests extends FrameConstructorTests {
-    public get fromOffsetRawData(): (d: ByteVector, o: number, h: Id3v2FrameHeader) => Frame {
+    public get fromOffsetRawData(): (d: ByteVector, o: number, h: Id3v2FrameHeader, v: number) => Frame {
         return TermsOfUseFrame.fromOffsetRawData;
     }
 
@@ -47,7 +46,7 @@ class Id3v2_TermsOfUseFrame_ConstructorTests extends FrameConstructorTests {
     @test
     public fromOffsetRawData_notEnoughBytes() {
         // Arrange
-        const header = new Id3v2FrameHeader(FrameTypes.USER, 4);
+        const header = new Id3v2FrameHeader(FrameIdentifiers.USER);
         header.frameSize = 2;
         const data = ByteVector.concatenate(
             header.render(4),
@@ -56,13 +55,13 @@ class Id3v2_TermsOfUseFrame_ConstructorTests extends FrameConstructorTests {
         );
 
         // Act / Assert
-        assert.throws(() => { TermsOfUseFrame.fromOffsetRawData(data, 2, header); });
+        assert.throws(() => { TermsOfUseFrame.fromOffsetRawData(data, 2, header, 4); });
     }
 
     @test
     public fromOffsetRawData_enoughData() {
         // Arrange
-        const header = new Id3v2FrameHeader(FrameTypes.USER, 4);
+        const header = new Id3v2FrameHeader(FrameIdentifiers.USER);
         header.frameSize = 10;
         const data = ByteVector.concatenate(
             header.render(4),
@@ -73,7 +72,7 @@ class Id3v2_TermsOfUseFrame_ConstructorTests extends FrameConstructorTests {
         );
 
         // Act
-        const output = TermsOfUseFrame.fromOffsetRawData(data, 2, header);
+        const output = TermsOfUseFrame.fromOffsetRawData(data, 2, header, 4);
 
         // Assert
         this.assertFrame(output, "fux", "buxqux", StringType.Latin1);
@@ -82,7 +81,7 @@ class Id3v2_TermsOfUseFrame_ConstructorTests extends FrameConstructorTests {
     @test
     public fromRawData_notEnoughBytes() {
         // Arrange
-        const header = new Id3v2FrameHeader(FrameTypes.USER, 4);
+        const header = new Id3v2FrameHeader(FrameIdentifiers.USER);
         header.frameSize = 2;
         const data = ByteVector.concatenate(
             header.render(4),
@@ -96,7 +95,7 @@ class Id3v2_TermsOfUseFrame_ConstructorTests extends FrameConstructorTests {
     @test
     public fromRawData_enoughData() {
         // Arrange
-        const header = new Id3v2FrameHeader(FrameTypes.USER, 4);
+        const header = new Id3v2FrameHeader(FrameIdentifiers.USER);
         header.frameSize = 10;
         const data = ByteVector.concatenate(
             header.render(4),
@@ -115,7 +114,7 @@ class Id3v2_TermsOfUseFrame_ConstructorTests extends FrameConstructorTests {
     private assertFrame(frame: TermsOfUseFrame, language: string, text: string, textEncoding: StringType) {
         assert.isOk(frame);
         assert.strictEqual(frame.frameClassType, FrameClassType.TermsOfUseFrame);
-        assert.isTrue(ByteVector.equal(frame.frameId, FrameTypes.USER));
+        assert.strictEqual(frame.frameId, FrameIdentifiers.USER);
 
         assert.strictEqual(frame.language, language);
         assert.strictEqual(frame.text, text);
@@ -266,7 +265,7 @@ class Id3v2_TermsOfUseFrame_MethodTests {
         // Assert
         assert.isOk(output);
         assert.strictEqual(output.frameClassType, frame.frameClassType);
-        assert.isTrue(ByteVector.equal(output.frameId, frame.frameId));
+        assert.strictEqual(output.frameId, frame.frameId);
 
         assert.strictEqual(output.language, frame.language);
         assert.strictEqual(output.text, frame.text);
@@ -276,7 +275,7 @@ class Id3v2_TermsOfUseFrame_MethodTests {
     @test
     public render() {
         // Arrange
-        const header = new Id3v2FrameHeader(FrameTypes.USER, 4);
+        const header = new Id3v2FrameHeader(FrameIdentifiers.SYLT);
         header.frameSize = 10;
         const data = ByteVector.concatenate(
             header.render(4),

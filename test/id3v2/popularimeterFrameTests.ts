@@ -5,11 +5,11 @@ import {slow, suite, test, timeout} from "mocha-typescript";
 
 import FrameConstructorTests from "./frameConstructorTests";
 import FramePropertyTests from "./framePropertyTests";
-import FrameTypes from "../../src/id3v2/frameIdentifiers";
 import PopularimeterFrame from "../../src/id3v2/frames/popularimeterFrame";
 import {ByteVector, StringType} from "../../src/byteVector";
 import {Frame, FrameClassType} from "../../src/id3v2/frames/frame";
 import {Id3v2FrameHeader} from "../../src/id3v2/frames/frameHeader";
+import {FrameIdentifiers} from "../../src/id3v2/frameIdentifiers";
 
 // Setup chai
 Chai.use(ChaiAsPromised);
@@ -17,7 +17,7 @@ const assert = Chai.assert;
 
 @suite(timeout(3000), slow(1000))
 class Id3v2_PopularimeterFrame_ConstructorTests extends FrameConstructorTests {
-    public get fromOffsetRawData(): (d: ByteVector, o: number, h: Id3v2FrameHeader) => Frame {
+    public get fromOffsetRawData(): (d: ByteVector, o: number, h: Id3v2FrameHeader, v: number) => Frame {
         return PopularimeterFrame.fromOffsetRawData;
     }
 
@@ -37,7 +37,7 @@ class Id3v2_PopularimeterFrame_ConstructorTests extends FrameConstructorTests {
     @test
     public fromRawData_noDelimiter() {
         // Arrange
-        const header = new Id3v2FrameHeader(FrameTypes.POPM, 4);
+        const header = new Id3v2FrameHeader(FrameIdentifiers.POPM);
         header.frameSize = 3;
         const data = ByteVector.concatenate(
             header.render(4),
@@ -51,7 +51,7 @@ class Id3v2_PopularimeterFrame_ConstructorTests extends FrameConstructorTests {
     @test
     public fromRawData_tooShort() {
         // Arrange
-        const header = new Id3v2FrameHeader(FrameTypes.POPM, 4);
+        const header = new Id3v2FrameHeader(FrameIdentifiers.POPM);
         header.frameSize = 3;
         const data = ByteVector.concatenate(
             header.render(4),
@@ -66,7 +66,7 @@ class Id3v2_PopularimeterFrame_ConstructorTests extends FrameConstructorTests {
     @test
     public fromRawData_noPlayCount() {
         // Arrange
-        const header = new Id3v2FrameHeader(FrameTypes.POPM, 4);
+        const header = new Id3v2FrameHeader(FrameIdentifiers.POPM);
         header.frameSize = 9;
         const data = ByteVector.concatenate(
             header.render(4),
@@ -85,7 +85,7 @@ class Id3v2_PopularimeterFrame_ConstructorTests extends FrameConstructorTests {
     @test
     public fromRawData_invalidPlayCountBytes() {
         // Arrange
-        const header = new Id3v2FrameHeader(FrameTypes.POPM, 4);
+        const header = new Id3v2FrameHeader(FrameIdentifiers.POPM);
         header.frameSize = 9;
         const data = ByteVector.concatenate(
             header.render(4),
@@ -102,7 +102,7 @@ class Id3v2_PopularimeterFrame_ConstructorTests extends FrameConstructorTests {
     @test
     public fromRawData_intSizedPlayCount() {
         // Arrange
-        const header = new Id3v2FrameHeader(FrameTypes.POPM, 4);
+        const header = new Id3v2FrameHeader(FrameIdentifiers.POPM);
         header.frameSize = 9;
         const data = ByteVector.concatenate(
             header.render(4),
@@ -122,7 +122,7 @@ class Id3v2_PopularimeterFrame_ConstructorTests extends FrameConstructorTests {
     @test
     public fromRawData_longSizedPlayCount() {
         // Arrange
-        const header = new Id3v2FrameHeader(FrameTypes.POPM, 4);
+        const header = new Id3v2FrameHeader(FrameIdentifiers.POPM);
         header.frameSize = 13;
         const data = ByteVector.concatenate(
             header.render(4),
@@ -142,7 +142,7 @@ class Id3v2_PopularimeterFrame_ConstructorTests extends FrameConstructorTests {
     @test
     public fromOffsetRawData_longSizedPlayCount() {
         // Arrange
-        const header = new Id3v2FrameHeader(FrameTypes.POPM, 4);
+        const header = new Id3v2FrameHeader(FrameIdentifiers.POPM);
         header.frameSize = 13;
         const data = ByteVector.concatenate(
             header.render(4),
@@ -154,7 +154,7 @@ class Id3v2_PopularimeterFrame_ConstructorTests extends FrameConstructorTests {
         );
 
         // Act
-        const frame = PopularimeterFrame.fromOffsetRawData(data, 2, header);
+        const frame = PopularimeterFrame.fromOffsetRawData(data, 2, header, 4);
 
         // Assert
         this.assertFrame(frame, "fux", BigInt(1234), 0x05);
@@ -163,7 +163,7 @@ class Id3v2_PopularimeterFrame_ConstructorTests extends FrameConstructorTests {
     private assertFrame(frame: PopularimeterFrame, u: string, p: BigInt.BigInteger, r: number) {
         assert.isOk(frame);
         assert.strictEqual(frame.frameClassType, FrameClassType.PopularimeterFrame);
-        assert.isTrue(ByteVector.equal(frame.frameId, FrameTypes.POPM));
+        assert.strictEqual(frame.frameId, FrameIdentifiers.POPM);
 
         if (p === undefined) {
             assert.isUndefined(frame.playCount);
@@ -282,7 +282,7 @@ class Id3v2_PopularimeterFrame_MethodTests {
         // Assert
         assert.isOk(output);
         assert.strictEqual(output.frameClassType, FrameClassType.PopularimeterFrame);
-        assert.isTrue(ByteVector.equal(output.frameId, FrameTypes.POPM));
+        assert.strictEqual(output.frameId, FrameIdentifiers.POPM);
 
         assert.isOk(output.playCount);
         assert.isTrue(frame.playCount.equals(output.playCount));
@@ -294,7 +294,7 @@ class Id3v2_PopularimeterFrame_MethodTests {
     @test
     public render_noPlayCount() {
         // Arrange
-        const header = new Id3v2FrameHeader(FrameTypes.POPM, 4);
+        const header = new Id3v2FrameHeader(FrameIdentifiers.POPM);
         header.frameSize = 5;
         const data = ByteVector.concatenate(
             header.render(4),
@@ -315,7 +315,7 @@ class Id3v2_PopularimeterFrame_MethodTests {
     @test
     public render_intPlayCount() {
         // Arrange
-        const header = new Id3v2FrameHeader(FrameTypes.POPM, 4);
+        const header = new Id3v2FrameHeader(FrameIdentifiers.POPM);
         header.frameSize = 9;
         const data = ByteVector.concatenate(
             header.render(4),
@@ -337,7 +337,7 @@ class Id3v2_PopularimeterFrame_MethodTests {
     @test
     public render_intermediateSizePlayCount() {
         // Arrange
-        const header = new Id3v2FrameHeader(FrameTypes.POPM, 4);
+        const header = new Id3v2FrameHeader(FrameIdentifiers.POPM);
         header.frameSize = 10;
         const data = ByteVector.concatenate(
             header.render(4),
@@ -359,7 +359,7 @@ class Id3v2_PopularimeterFrame_MethodTests {
     @test
     public render_longPlayCount() {
         // Arrange
-        const header = new Id3v2FrameHeader(FrameTypes.POPM, 4);
+        const header = new Id3v2FrameHeader(FrameIdentifiers.POPM);
         header.frameSize = 13;
         const data = ByteVector.concatenate(
             header.render(4),

@@ -27,7 +27,7 @@ export class FrameIdentifier {
         this.versionTable[4] = v4
             ? ByteVector.fromString(v4, StringType.Latin1, undefined, true)
             : undefined;
-        this.versionTable[4] = v3
+        this.versionTable[3] = v3
             ? (v3 === v4 ? this.versionTable[4] : ByteVector.fromString(v3, StringType.Latin1, undefined, true))
             : undefined;
         this.versionTable[2] = v2
@@ -57,7 +57,7 @@ export class FrameIdentifier {
             throw new Error(`Frame ${newest} is not supported in ID3v2 version ${version}`);
         }
 
-        return this.versionTable[version];
+        return ByteVector.fromByteVector(this.versionTable[version]);
     }
 }
 
@@ -192,6 +192,7 @@ export const FrameIdentifiers: {[key: string]: FrameIdentifier} = {
     REV:  uniqueFrameIdentifiers.RVRB,
     RVA:  uniqueFrameIdentifiers.RVA2,
     RVA2: uniqueFrameIdentifiers.RVA2,
+    RVAD: uniqueFrameIdentifiers.RVA2,
     RVRB: uniqueFrameIdentifiers.RVRB,
     SEEK: uniqueFrameIdentifiers.SEEK,
     SIGN: uniqueFrameIdentifiers.SIGN,

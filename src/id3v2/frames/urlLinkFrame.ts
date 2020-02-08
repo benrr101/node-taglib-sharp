@@ -180,30 +180,38 @@ export class UrlLinkFrame extends Frame {
         this._rawData = undefined;
 
         const fieldList = [];
-        const delim = ByteVector.getTextDelimiter(this._encoding);
-        if (this.frameId !== FrameIdentifiers.WXXX) {
-            fieldList.push(... data.toStrings(StringType.Latin1, 0));
-        } else if (data.length > 1 && !ByteVector.equal(data.mid(0, delim.length), delim)) {
-            let value = data.toString(StringType.Latin1, 1, data.length - 1);
+        let index = 0;
+        if (this.frameId === FrameIdentifiers.WXXX) {
+            // Text Encoding    $xx
+            // Description      <text string according to encoding> $00 (00)
+            // URL              <text string>
+            const encoding = <StringType> data.get(0);
+            const delim = ByteVector.getTextDelimiter(encoding);
+            const delimIndex = data.find(delim, 1, delim.length);
 
-            // Do a fast removal of end bytes
-            if (value.length > 1 && value[value.length - 1] === "\0") {
-                for (let i = value.length - 1; i >= 0; i--) {
-                    if (value[i] !== "\0") {
-                        value = value.substr(0, i + 1);
-                        break;
-                    }
-                }
+            if (delimIndex >= 0) {
+                const description = data.toString(delimIndex - 1, encoding, 1);
+                fieldList.push(description);
+                index += delimIndex - 1;
             }
 
-            fieldList.push(value);
+            index += 1;
         }
 
-        // Bad tags may have one or more null characters at the end of a string, resulting in empty
-        // strings at the end of the field list. Strip them off.
-        while (fieldList.length !== 0 && !fieldList[fieldList.length - 1]) {
-            fieldList.pop();
+        // Read the url from the data
+        let url = data.toString(data.length - index, StringType.Latin1, index);
+
+        // Do a fast removal of end bytes
+        if (url.length > 1 && url[url.length - 1] === "\0") {
+            for (let i = url.length - 1; i >= 0; i--) {
+                if (url[i] !== "\0") {
+                    url = url.substr(0, i + 1);
+                    break;
+                }
+            }
         }
+
+        fieldList.push(url);
         this._textFields = fieldList;
     }
 

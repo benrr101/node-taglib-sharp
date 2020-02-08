@@ -194,6 +194,4 @@ export default {
             offset: offset
         };
     }
-
-
 };
