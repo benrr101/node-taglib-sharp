@@ -4,11 +4,11 @@ import {slow, suite, test, timeout} from "mocha-typescript";
 
 import FrameConstructorTests from "./frameConstructorTests";
 import FramePropertyTests from "./framePropertyTests";
-import FrameTypes from "../../src/id3v2/frameTypes";
 import UniqueFileIdentifierFrame from "../../src/id3v2/frames/uniqueFileIdentifierFrame";
 import {ByteVector, StringType} from "../../src/byteVector";
 import {Frame, FrameClassType} from "../../src/id3v2/frames/frame";
 import {Id3v2FrameHeader} from "../../src/id3v2/frames/frameHeader";
+import {FrameIdentifiers} from "../../src/id3v2/frameIdentifiers";
 
 // Setup chai
 Chai.use(ChaiAsPromised);
@@ -20,7 +20,7 @@ const testOwner = "http://github.com/benrr101/node-taglib-sharp";
 
 @suite(timeout(3000), slow(1000))
 class Id3v2_UniqueFileIdentifierFrame_ConstructorTests extends FrameConstructorTests {
-    public get fromOffsetRawData(): (d: ByteVector, o: number, h: Id3v2FrameHeader) => Frame {
+    public get fromOffsetRawData(): (d: ByteVector, o: number, h: Id3v2FrameHeader, v: number) => Frame {
         return UniqueFileIdentifierFrame.fromOffsetRawData;
     }
 
@@ -63,7 +63,7 @@ class Id3v2_UniqueFileIdentifierFrame_ConstructorTests extends FrameConstructorT
     @test
     public fromOffsetRawData_tooFewFields_returnsEmptyFrame() {
         // Arrange
-        const header = new Id3v2FrameHeader(FrameTypes.UFID, 4);
+        const header = new Id3v2FrameHeader(FrameIdentifiers.UFID);
         header.frameSize = 9;
         const data = ByteVector.concatenate(
             header.render(4),
@@ -72,7 +72,7 @@ class Id3v2_UniqueFileIdentifierFrame_ConstructorTests extends FrameConstructorT
         );
 
         // Act
-        const frame = UniqueFileIdentifierFrame.fromOffsetRawData(data, 2, header);
+        const frame = UniqueFileIdentifierFrame.fromOffsetRawData(data, 2, header, 4);
 
         // Assert
         this.assertFrame(frame, undefined, undefined);
@@ -81,7 +81,7 @@ class Id3v2_UniqueFileIdentifierFrame_ConstructorTests extends FrameConstructorT
     @test
     public fromOffsetRawData_tooManyFields_returnsEmptyFrame() {
         // Arrange
-        const header = new Id3v2FrameHeader(FrameTypes.UFID, 4);
+        const header = new Id3v2FrameHeader(FrameIdentifiers.UFID);
         header.frameSize = 29;
         const data = ByteVector.concatenate(
             header.render(4),
@@ -95,7 +95,7 @@ class Id3v2_UniqueFileIdentifierFrame_ConstructorTests extends FrameConstructorT
         );
 
         // Act
-        const frame = UniqueFileIdentifierFrame.fromOffsetRawData(data, 2, header);
+        const frame = UniqueFileIdentifierFrame.fromOffsetRawData(data, 2, header, 4);
 
         // Assert
         this.assertFrame(frame, undefined, undefined);
@@ -104,7 +104,7 @@ class Id3v2_UniqueFileIdentifierFrame_ConstructorTests extends FrameConstructorT
     @test
     public fromOffsetRawData_validData_returnsFrame() {
         // Arrange
-        const header = new Id3v2FrameHeader(FrameTypes.UFID, 4);
+        const header = new Id3v2FrameHeader(FrameIdentifiers.UFID);
         header.frameSize = 54;
         const data = ByteVector.concatenate(
             header.render(4),
@@ -115,7 +115,7 @@ class Id3v2_UniqueFileIdentifierFrame_ConstructorTests extends FrameConstructorT
         );
 
         // Act
-        const frame = UniqueFileIdentifierFrame.fromOffsetRawData(data, 2, header);
+        const frame = UniqueFileIdentifierFrame.fromOffsetRawData(data, 2, header, 4);
 
         // Assert
         this.assertFrame(frame, testOwner, testIdentifier);
@@ -124,7 +124,7 @@ class Id3v2_UniqueFileIdentifierFrame_ConstructorTests extends FrameConstructorT
     @test
     public fromRawData_tooFewFields_returnsEmptyFrame() {
         // Arrange
-        const header = new Id3v2FrameHeader(FrameTypes.UFID, 4);
+        const header = new Id3v2FrameHeader(FrameIdentifiers.UFID);
         header.frameSize = 9;
         const data = ByteVector.concatenate(
             header.render(4),
@@ -141,7 +141,7 @@ class Id3v2_UniqueFileIdentifierFrame_ConstructorTests extends FrameConstructorT
     @test
     public fromRawData_tooManyFields_returnsEmptyFrame() {
         // Arrange
-        const header = new Id3v2FrameHeader(FrameTypes.UFID, 4);
+        const header = new Id3v2FrameHeader(FrameIdentifiers.UFID);
         header.frameSize = 29;
         const data = ByteVector.concatenate(
             header.render(4),
@@ -163,7 +163,7 @@ class Id3v2_UniqueFileIdentifierFrame_ConstructorTests extends FrameConstructorT
     @test
     public fromRawData_validData_returnsFrame() {
         // Arrange
-        const header = new Id3v2FrameHeader(FrameTypes.UFID, 4);
+        const header = new Id3v2FrameHeader(FrameIdentifiers.UFID);
         header.frameSize = 54;
         const data = ByteVector.concatenate(
             header.render(4),
@@ -182,7 +182,7 @@ class Id3v2_UniqueFileIdentifierFrame_ConstructorTests extends FrameConstructorT
     private assertFrame(frame: UniqueFileIdentifierFrame, o: string, i: ByteVector) {
         assert.isOk(frame);
         assert.strictEqual(frame.frameClassType, FrameClassType.UniqueFileIdentifierFrame);
-        assert.isTrue(ByteVector.equal(frame.frameId, FrameTypes.UFID));
+        assert.strictEqual(frame.frameId, FrameIdentifiers.UFID);
 
         assert.strictEqual(frame.owner, o);
 
@@ -260,8 +260,8 @@ class Id3v2_UniqueFileIdentifierFrame_MethodTests {
 
         // Assert
         assert.isOk(clone);
-        assert.equal(clone.frameClassType, FrameClassType.UniqueFileIdentifierFrame);
-        assert.isTrue(ByteVector.equal(clone.frameId, FrameTypes.UFID));
+        assert.strictEqual(clone.frameClassType, FrameClassType.UniqueFileIdentifierFrame);
+        assert.strictEqual(clone.frameId, FrameIdentifiers.UFID);
 
         assert.strictEqual(clone.identifier, frame.identifier);
         assert.strictEqual(clone.owner, frame.owner);
@@ -277,8 +277,8 @@ class Id3v2_UniqueFileIdentifierFrame_MethodTests {
 
         // Assert
         assert.isOk(clone);
-        assert.equal(clone.frameClassType, FrameClassType.UniqueFileIdentifierFrame);
-        assert.isTrue(ByteVector.equal(clone.frameId, FrameTypes.UFID));
+        assert.strictEqual(clone.frameClassType, FrameClassType.UniqueFileIdentifierFrame);
+        assert.strictEqual(clone.frameId, FrameIdentifiers.UFID);
 
         assert.isTrue(ByteVector.equal(clone.identifier, frame.identifier));
         assert.strictEqual(clone.owner, frame.owner);
@@ -287,7 +287,7 @@ class Id3v2_UniqueFileIdentifierFrame_MethodTests {
     @test
     public render_returnsByteVector() {
         // Arrange
-        const header = new Id3v2FrameHeader(FrameTypes.UFID, 4);
+        const header = new Id3v2FrameHeader(FrameIdentifiers.UFID);
         header.frameSize = 54;
         const data = ByteVector.concatenate(
             header.render(4),

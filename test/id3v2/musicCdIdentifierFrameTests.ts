@@ -4,11 +4,11 @@ import {slow, suite, test, timeout} from "mocha-typescript";
 
 import FrameConstructorTests from "./frameConstructorTests";
 import FramePropertyTests from "./framePropertyTests";
-import FrameTypes from "../../src/id3v2/frameTypes";
 import MusicCdIdentifierFrame from "../../src/id3v2/frames/musicCdIdentifierFrame";
 import {ByteVector, StringType} from "../../src/byteVector";
 import {Frame, FrameClassType} from "../../src/id3v2/frames/frame";
 import {Id3v2FrameHeader} from "../../src/id3v2/frames/frameHeader";
+import {FrameIdentifiers} from "../../src/id3v2/frameIdentifiers";
 
 // Setup Chai
 Chai.use(ChaiAsPromised);
@@ -16,7 +16,7 @@ const assert = Chai.assert;
 
 @suite(timeout(3000), slow(1000))
 class Id3v2_MusicCdIdentifierFrameTests extends FrameConstructorTests {
-    public get fromOffsetRawData(): (d: ByteVector, o: number, h: Id3v2FrameHeader) => Frame {
+    public get fromOffsetRawData(): (d: ByteVector, o: number, h: Id3v2FrameHeader, v: number) => Frame {
         return MusicCdIdentifierFrame.fromOffsetRawData;
     }
 
@@ -27,7 +27,7 @@ class Id3v2_MusicCdIdentifierFrameTests extends FrameConstructorTests {
     @test
     public fromRawData_validParameters() {
         // Arrange
-        const header = new Id3v2FrameHeader(FrameTypes.MCDI, 4);
+        const header = new Id3v2FrameHeader(FrameIdentifiers.MCDI);
         header.frameSize = 9;
         const data = ByteVector.concatenate(
             header.render(4),
@@ -44,7 +44,7 @@ class Id3v2_MusicCdIdentifierFrameTests extends FrameConstructorTests {
     @test
     public fromOffsetRawData_validParameters() {
         // Arrange
-        const header = new Id3v2FrameHeader(FrameTypes.MCDI, 4);
+        const header = new Id3v2FrameHeader(FrameIdentifiers.MCDI);
         header.frameSize = 9;
         const data = ByteVector.concatenate(
             header.render(4),
@@ -53,7 +53,7 @@ class Id3v2_MusicCdIdentifierFrameTests extends FrameConstructorTests {
         );
 
         // Act
-        const frame = MusicCdIdentifierFrame.fromOffsetRawData(data, 2, header);
+        const frame = MusicCdIdentifierFrame.fromOffsetRawData(data, 2, header, 4);
 
         // Assert
         this.assertFrame(frame, ByteVector.fromString("12345abcd", StringType.Latin1));
@@ -85,7 +85,7 @@ class Id3v2_MusicCdIdentifierFrameTests extends FrameConstructorTests {
     @test
     public clone_withoutData() {
         // Arrange
-        const header = new Id3v2FrameHeader(FrameTypes.MCDI, 4);
+        const header = new Id3v2FrameHeader(FrameIdentifiers.MCDI);
         header.frameSize = 0;
         const frame = MusicCdIdentifierFrame.fromRawData(header.render(4), 4);
 
@@ -99,7 +99,7 @@ class Id3v2_MusicCdIdentifierFrameTests extends FrameConstructorTests {
     @test
     public render_withData() {
         // Arrange
-        const header = new Id3v2FrameHeader(FrameTypes.MCDI, 4);
+        const header = new Id3v2FrameHeader(FrameIdentifiers.MCDI);
         header.frameSize = 9;
         const data = ByteVector.concatenate(
             header.render(4),
@@ -117,7 +117,7 @@ class Id3v2_MusicCdIdentifierFrameTests extends FrameConstructorTests {
     @test
     public render_withoutData() {
         // Arrange
-        const header = new Id3v2FrameHeader(FrameTypes.MCDI, 4);
+        const header = new Id3v2FrameHeader(FrameIdentifiers.MCDI);
         header.frameSize = 0;
         const frame = MusicCdIdentifierFrame.fromRawData(header.render(4), 4);
 
@@ -131,13 +131,13 @@ class Id3v2_MusicCdIdentifierFrameTests extends FrameConstructorTests {
     private assertFrame(frame: MusicCdIdentifierFrame, d: ByteVector) {
         assert.isOk(frame);
         assert.strictEqual(frame.frameClassType, FrameClassType.MusicCdIdentiferFrame);
-        assert.isTrue(ByteVector.equal(frame.frameId, FrameTypes.MCDI));
+        assert.strictEqual(frame.frameId, FrameIdentifiers.MCDI);
 
         assert.isTrue(ByteVector.equal(frame.data, d));
     }
 
     private getTestFrame() {
-        const header = new Id3v2FrameHeader(FrameTypes.MCDI, 4);
+        const header = new Id3v2FrameHeader(FrameIdentifiers.MCDI);
         header.frameSize = 9;
         const data = ByteVector.concatenate(
             header.render(4),

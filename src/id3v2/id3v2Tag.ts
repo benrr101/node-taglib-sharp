@@ -1,17 +1,19 @@
 import * as DateFormat from "dateformat";
+
 import AttachmentFrame from "./frames/attachmentFrame";
 import CommentsFrame from "./frames/commentsFrame";
 import ExtendedHeader from "./extendedHeader";
 import FrameFactory from "./frames/frameFactory";
-import FrameTypes from "./frameTypes";
 import Genres from "../genres";
 import Header from "./header";
+import Id3v2TagSettings from "./id3v2TagSettings";
 import SyncData from "./syncData";
 import UniqueFileIdentifierFrame from "./frames/uniqueFileIdentifierFrame";
 import UnsynchronizedLyricsFrame from "./frames/unsynchronizedLyricsFrame";
 import {ByteVector, StringType} from "../byteVector";
 import {File, FileAccessMode, ReadStyle} from "../file";
 import {Frame, FrameClassType} from "./frames/frame";
+import {FrameIdentifier, FrameIdentifiers} from "./frameIdentifiers";
 import {Id3v2FrameFlags, Id3v2FrameHeader} from "./frames/frameHeader";
 import {HeaderFlags} from "./headerFlags";
 import {IPicture} from "../picture";
@@ -19,7 +21,6 @@ import {Tag, TagTypes} from "../tag";
 import {TextInformationFrame, UserTextInformationFrame} from "./frames/textInformationFrame";
 import {UrlLinkFrame} from "./frames/urlLinkFrame";
 import {Guards} from "../utils";
-import Id3v2TagSettings from "./id3v2TagSettings";
 
 export default class Id3v2Tag extends Tag {
     private static _language: string = undefined;       // @TODO: Use the os-locale module to supply a
@@ -77,7 +78,7 @@ export default class Id3v2Tag extends Tag {
      * feature of the Apple iPod and iTunes products.
      */
     public get isCompilation(): boolean {
-        const val = this.getTextAsString(FrameTypes.TCMP);
+        const val = this.getTextAsString(FrameIdentifiers.TCMP);
         return val && val !== "0";
     }
     /**
@@ -87,7 +88,7 @@ export default class Id3v2Tag extends Tag {
      * @param value Whether or not the album described by the current instance is a compilation
      */
     public set isCompilation(value: boolean) {
-        this.setTextFrame(FrameTypes.TCMP, value ? "1" : undefined);
+        this.setTextFrame(FrameIdentifiers.TCMP, value ? "1" : undefined);
     }
 
     /**
@@ -117,22 +118,22 @@ export default class Id3v2Tag extends Tag {
      * @inheritDoc
      * From TIT2 frame
      */
-    public get title(): string { return this.getTextAsString(FrameTypes.TIT2); }
+    public get title(): string { return this.getTextAsString(FrameIdentifiers.TIT2); }
     /**
      * @inheritDoc
      * Stored in TIT2 frame
      */
-    public set title(value: string) { this.setTextFrame(FrameTypes.TIT2, value); }
+    public set title(value: string) { this.setTextFrame(FrameIdentifiers.TIT2, value); }
 
     /** @inheritDoc via TSOT frame */
-    get titleSort(): string { return this.getTextAsString(FrameTypes.TSOT); }
+    get titleSort(): string { return this.getTextAsString(FrameIdentifiers.TSOT); }
     /** @inheritDoc via TSOT frame */
-    set titleSort(value: string) { this.setTextFrame(FrameTypes.TSOT, value); }
+    set titleSort(value: string) { this.setTextFrame(FrameIdentifiers.TSOT, value); }
 
     /** @inheritDoc via TIT3 frame */
-    get subtitle(): string { return this.getTextAsString(FrameTypes.TIT3); }
+    get subtitle(): string { return this.getTextAsString(FrameIdentifiers.TIT3); }
     /** @inheritDoc via TIT3 frame */
-    set subtitle(value: string) { this.setTextFrame(FrameTypes.TIT3, value); }
+    set subtitle(value: string) { this.setTextFrame(FrameIdentifiers.TIT3, value); }
 
     /** @inheritDoc via user text frame "description" */
     get description(): string { return this.getUserTextAsString("Description"); }
@@ -140,14 +141,14 @@ export default class Id3v2Tag extends Tag {
     set description(value: string) { this.setUserTextAsString("Description", value); }
 
     /** @inheritDoc via TPE1 frame */
-    get performers(): string[] { return this.getTextAsArray(FrameTypes.TPE1); }
+    get performers(): string[] { return this.getTextAsArray(FrameIdentifiers.TPE1); }
     /** @inheritDoc via TPE1 frame */
-    set performers(value: string[]) { this.setTextFrame(FrameTypes.TPE1, ...value); }
+    set performers(value: string[]) { this.setTextFrame(FrameIdentifiers.TPE1, ...value); }
 
     /** @inheritDoc via TSOP frame */
-    get performersSort(): string[] { return this.getTextAsArray(FrameTypes.TSOP); }
+    get performersSort(): string[] { return this.getTextAsArray(FrameIdentifiers.TSOP); }
     /** @inheritDoc via TSOP frame */
-    set performersSort(value: string[]) { this.setTextFrame(FrameTypes.TSOP, ...value); }
+    set performersSort(value: string[]) { this.setTextFrame(FrameIdentifiers.TSOP, ...value); }
 
     /** @inheritDoc via TMCL frame */
     get performersRole(): string[] {
@@ -157,7 +158,7 @@ export default class Id3v2Tag extends Tag {
         if (!perfRef) { return []; }
 
         // Map the instruments to the performers
-        const map = this.getTextAsArray(FrameTypes.TMCL);
+        const map = this.getTextAsArray(FrameIdentifiers.TMCL);
         this._performersRole = [];
         for (let i = 0; i + 1 < map.length; i += 2) {
             const inst = map[i];
@@ -187,34 +188,34 @@ export default class Id3v2Tag extends Tag {
     set performersRole(value: string[]) { this._performersRole = value || []; }
 
     /** @inheritDoc via TSO2 frame */
-    get albumArtists(): string[] { return this.getTextAsArray(FrameTypes.TSO2); }
+    get albumArtists(): string[] { return this.getTextAsArray(FrameIdentifiers.TSO2); }
     /** @inheritDoc via TSO2 frame */
-    set albumArtists(value: string[]) { this.setTextFrame(FrameTypes.TSO2, ...value); }
+    set albumArtists(value: string[]) { this.setTextFrame(FrameIdentifiers.TSO2, ...value); }
 
     /** @inheritDoc via TPE2 frame */
-    get albumArtistsSort(): string[] { return this.getTextAsArray(FrameTypes.TPE2); }
+    get albumArtistsSort(): string[] { return this.getTextAsArray(FrameIdentifiers.TPE2); }
     /** @inheritDoc via TPE2 frame */
-    set albumArtistsSort(value: string[]) { this.setTextFrame(FrameTypes.TPE2, ...value); }
+    set albumArtistsSort(value: string[]) { this.setTextFrame(FrameIdentifiers.TPE2, ...value); }
 
     /** @inheritDoc via TCOM frame */
-    get composers(): string[] { return this.getTextAsArray(FrameTypes.TCOM); }
+    get composers(): string[] { return this.getTextAsArray(FrameIdentifiers.TCOM); }
     /** @inheritDoc via TCOM frame */
-    set composers(value: string[]) { this.setTextFrame(FrameTypes.TCOM, ...value); }
+    set composers(value: string[]) { this.setTextFrame(FrameIdentifiers.TCOM, ...value); }
 
     /** @inheritDoc via TSOC frame */
-    get composersSort(): string[] { return this.getTextAsArray(FrameTypes.TSOC); }
+    get composersSort(): string[] { return this.getTextAsArray(FrameIdentifiers.TSOC); }
     /** @inheritDoc via TSOC frame */
-    set composersSort(value: string[]) { this.setTextFrame(FrameTypes.TSOC, ...value); }
+    set composersSort(value: string[]) { this.setTextFrame(FrameIdentifiers.TSOC, ...value); }
 
     /** @inheritDoc via TALB frame */
-    get album(): string { return this.getTextAsString(FrameTypes.TALB); }
+    get album(): string { return this.getTextAsString(FrameIdentifiers.TALB); }
     /** @inheritDoc via TALB frame */
-    set album(value: string) { this.setTextFrame(FrameTypes.TALB, value); }
+    set album(value: string) { this.setTextFrame(FrameIdentifiers.TALB, value); }
 
     /** @inheritDoc via TSOA frame */
-    get albumSort(): string { return this.getTextAsString(FrameTypes.TSOA); }
+    get albumSort(): string { return this.getTextAsString(FrameIdentifiers.TSOA); }
     /** @inheritDoc via TSOA fram */
-    set albumSort(value: string) { this.setTextFrame(FrameTypes.TSOA, value); }
+    set albumSort(value: string) { this.setTextFrame(FrameIdentifiers.TSOA, value); }
 
     /** @inheritDoc via COMM frame */
     get comment(): string {
@@ -248,7 +249,7 @@ export default class Id3v2Tag extends Tag {
 
     /** @inheritDoc via TCON frame */
     get genres(): string[] {
-        const text = this.getTextAsArray(FrameTypes.TCON);
+        const text = this.getTextAsArray(FrameIdentifiers.TCON);
         if (text.length === 0) { return text; }
 
         const list = [];
@@ -269,7 +270,7 @@ export default class Id3v2Tag extends Tag {
     /** @inheritDoc via TCON frame */
     set genres(value: string[]) {
         if (!value || !Id3v2TagSettings.useNumericGenres) {
-            this.setTextFrame(FrameTypes.TCON, ...value);
+            this.setTextFrame(FrameIdentifiers.TCON, ...value);
             return;
         }
 
@@ -282,12 +283,12 @@ export default class Id3v2Tag extends Tag {
             }
         }
 
-        this.setTextFrame(FrameTypes.TCON, ...value);
+        this.setTextFrame(FrameIdentifiers.TCON, ...value);
     }
 
     /** @inheritDoc via TDRC frame */
     get year(): number {
-        const text = this.getTextAsString(FrameTypes.TDRC);
+        const text = this.getTextAsString(FrameIdentifiers.TDRC);
         if (!text || text.length < 4) { return 0; }
 
         const year = Number.parseInt(text.substr(0, 4), 10);
@@ -308,28 +309,28 @@ export default class Id3v2Tag extends Tag {
         if (value > 9999) {
             value = 0;
         }
-        this.setNumberFrame(FrameTypes.TDRC, value, 0);
+        this.setNumberFrame(FrameIdentifiers.TDRC, value, 0);
     }
 
     /** @inheritDoc via TRCK frame */
-    get track(): number { return this.getTextAsUint32(FrameTypes.TRCK, 0); }
+    get track(): number { return this.getTextAsUint32(FrameIdentifiers.TRCK, 0); }
     /** @inheritDoc via TRCK frame */
-    set track(value: number) { this.setNumberFrame(FrameTypes.TRCK, value, this.trackCount, 2); }
+    set track(value: number) { this.setNumberFrame(FrameIdentifiers.TRCK, value, this.trackCount, 2); }
 
     /** @inheritDoc via TRCK frame */
-    get trackCount(): number { return this.getTextAsUint32(FrameTypes.TRCK, 1); }
+    get trackCount(): number { return this.getTextAsUint32(FrameIdentifiers.TRCK, 1); }
     /** @inheritDoc via TRCK frame */
-    set trackCount(value: number) { this.setNumberFrame(FrameTypes.TRCK, this.track, value); }
+    set trackCount(value: number) { this.setNumberFrame(FrameIdentifiers.TRCK, this.track, value); }
 
     /** @inheritDoc via TPOS frame */
-    get disc(): number { return this.getTextAsUint32(FrameTypes.TPOS, 0); }
+    get disc(): number { return this.getTextAsUint32(FrameIdentifiers.TPOS, 0); }
     /** @inheritDoc via TPOS frame */
-    set disc(value: number) { this.setNumberFrame(FrameTypes.TPOS, value, this.discCount); }
+    set disc(value: number) { this.setNumberFrame(FrameIdentifiers.TPOS, value, this.discCount); }
 
     /** @inheritDoc via TPOS frame */
-    get discCount(): number { return this.getTextAsUint32(FrameTypes.TPOS, 1); }
+    get discCount(): number { return this.getTextAsUint32(FrameIdentifiers.TPOS, 1); }
     /** @inheritDoc via TPOS frame */
-    set discCount(value: number) { this.setNumberFrame(FrameTypes.TPOS, this.disc, value); }
+    set discCount(value: number) { this.setNumberFrame(FrameIdentifiers.TPOS, this.disc, value); }
 
     /** @inheritDoc via USLT frame */
     get lyrics(): string {
@@ -362,33 +363,33 @@ export default class Id3v2Tag extends Tag {
     }
 
     /** @inheritDoc via TIT1 frame */
-    get grouping(): string { return this.getTextAsString(FrameTypes.TIT1); }
+    get grouping(): string { return this.getTextAsString(FrameIdentifiers.TIT1); }
     /** @inheritDoc via TIT1 frame */
-    set grouping(value: string) { this.setTextFrame(FrameTypes.TIT1, value); }
+    set grouping(value: string) { this.setTextFrame(FrameIdentifiers.TIT1, value); }
 
     /** @inheritDoc via TBPM frame */
     get beatsPerMinute(): number {
-        const text = this.getTextAsString(FrameTypes.TBPM);
+        const text = this.getTextAsString(FrameIdentifiers.TBPM);
         if (!text) { return 0; }
         const num = Number.parseFloat(text);
         return Number.isNaN(num) || num < 0.0 ? 0 : Math.round(num);
     }
     /** @inheritDoc via TBPM frame */
-    set beatsPerMinute(value: number) { this.setNumberFrame(FrameTypes.TBPM, value, 0); }
+    set beatsPerMinute(value: number) { this.setNumberFrame(FrameIdentifiers.TBPM, value, 0); }
 
     /** @inheritDoc via TPE3 frame */
-    get conductor(): string { return this.getTextAsString(FrameTypes.TPE3); }
+    get conductor(): string { return this.getTextAsString(FrameIdentifiers.TPE3); }
     /** @inheritDoc via TPE3 frame */
-    set conductor(value: string) { this.setTextFrame(FrameTypes.TPE3, value); }
+    set conductor(value: string) { this.setTextFrame(FrameIdentifiers.TPE3, value); }
 
     /** @inheritDoc via TCOP frame */
-    get copyright(): string { return this.getTextAsString(FrameTypes.TCOP); }
+    get copyright(): string { return this.getTextAsString(FrameIdentifiers.TCOP); }
     /** @inheritDoc via TCOP frame */
-    set copyright(value: string) { this.setTextFrame(FrameTypes.TCOP, value); }
+    set copyright(value: string) { this.setTextFrame(FrameIdentifiers.TCOP, value); }
 
     /** @inheritDoc via TDTG frame */
     get dateTagged(): Date | undefined {
-        const strValue = this.getTextAsString(FrameTypes.TDTG);
+        const strValue = this.getTextAsString(FrameIdentifiers.TDTG);
         if (!strValue) { return undefined; }
         const dateValue = new Date(strValue);
         return isNaN(dateValue.getTime()) ? undefined : dateValue;
@@ -400,7 +401,7 @@ export default class Id3v2Tag extends Tag {
             strValue = DateFormat(value, "yyyy-mm-dd HH:MM:ss");
             strValue = strValue.replace(" ", "T");
         }
-        this.setTextFrame(FrameTypes.TDTG, strValue);
+        this.setTextFrame(FrameIdentifiers.TDTG, strValue);
     }
 
     /** @inheritDoc via TXXX:MusicBrainz Artist Id frame */
@@ -531,24 +532,24 @@ export default class Id3v2Tag extends Tag {
     }
 
     /** @inheritDoc via TKEY frame */
-    get initialKey(): string { return this.getTextAsString(FrameTypes.TKEY); }
+    get initialKey(): string { return this.getTextAsString(FrameIdentifiers.TKEY); }
     /** @inheritDoc via TKEY frame */
-    set initialKey(value: string) { this.setTextFrame(FrameTypes.TKEY, value); }
+    set initialKey(value: string) { this.setTextFrame(FrameIdentifiers.TKEY, value); }
 
     /** @inheritDoc via TPE4 frame */
-    get remixedBy(): string { return this.getTextAsString(FrameTypes.TPE4); }
+    get remixedBy(): string { return this.getTextAsString(FrameIdentifiers.TPE4); }
     /** @inheritDoc via TPE4 frame */
-    set remixedBy(value: string) { this.setTextFrame(FrameTypes.TPE4, value); }
+    set remixedBy(value: string) { this.setTextFrame(FrameIdentifiers.TPE4, value); }
 
     /** @inheritDoc via TPUB frame */
-    get publisher(): string { return this.getTextAsString(FrameTypes.TPUB); }
+    get publisher(): string { return this.getTextAsString(FrameIdentifiers.TPUB); }
     /** @inheritDoc via TPUB frame */
-    set publisher(value: string) { this.setTextFrame(FrameTypes.TPUB, value); }
+    set publisher(value: string) { this.setTextFrame(FrameIdentifiers.TPUB, value); }
 
     /** @inheritDoc via TSRC frame */
-    get isrc(): string { return this.getTextAsString(FrameTypes.TSRC); }
+    get isrc(): string { return this.getTextAsString(FrameIdentifiers.TSRC); }
     /** @inheritDoc via TSRC frame */
-    set isrc(value: string) { this.setTextFrame(FrameTypes.TSRC, value); }
+    set isrc(value: string) { this.setTextFrame(FrameIdentifiers.TSRC, value); }
 
     /** @inheritDoc via APIC frame */
     get pictures(): IPicture[] {
@@ -556,8 +557,8 @@ export default class Id3v2Tag extends Tag {
     }
     /** @inheritDoc via APIC frame */
     set pictures(value: IPicture[]) {
-        this.removeFrames(FrameTypes.APIC);
-        this.removeFrames(FrameTypes.GEOB);
+        this.removeFrames(FrameIdentifiers.APIC);
+        this.removeFrames(FrameIdentifiers.GEOB);
 
         if (!value || value.length === 0) { return; }
 
@@ -607,7 +608,7 @@ export default class Id3v2Tag extends Tag {
                 match.removeFrames(ident);
             } else {
                 for (const f of match._frameList) {
-                    if (ByteVector.equal(f.frameId, ident)) {
+                    if (f.frameId === ident) {
                         copy = false;
                         break;
                     }
@@ -616,7 +617,7 @@ export default class Id3v2Tag extends Tag {
 
             let i = 0;
             while (i < frames.length) {
-                if (ByteVector.equal(frames[i].frameId, ident)) {
+                if (frames[i].frameId === ident) {
                     if (copy) {
                         match._frameList.push(frames[i].clone());
                     }
@@ -653,16 +654,12 @@ export default class Id3v2Tag extends Tag {
      * @param ident Identifier of the frame
      * @returns TFrame[] Array of frames with the desired frame identifier
      */
-    public getFramesByIdentifier<TFrame extends Frame>(type: FrameClassType, ident: ByteVector): TFrame[] {
+    public getFramesByIdentifier<TFrame extends Frame>(type: FrameClassType, ident: FrameIdentifier): TFrame[] {
         Guards.notNullOrUndefined(type, "type");
         Guards.truthy(ident, "ident");
-        if (ident.length !== 4) {
-            throw new Error("Argument out of range: ident must be 4 characters");
-        }
 
-        return this._frameList.filter((f) => {
-            return f && f.frameClassType === type && ByteVector.equal(f.frameId, ident);
-        }).map((f) => <TFrame> f);
+        return this._frameList.filter((f) => f && f.frameClassType === type && f.frameId === ident)
+            .map((f) => <TFrame> f);
     }
 
     /**
@@ -671,11 +668,11 @@ export default class Id3v2Tag extends Tag {
      * @param ident Frame identifier of the text information frame to get the value from
      * @returns string Text of the specified frame, or `undefined` if no value was found
      */
-    public getTextAsString(ident: ByteVector): string {
+    public getTextAsString(ident: FrameIdentifier): string {
         Guards.truthy(ident, "ident");
 
         let frame: Frame;
-        if (ident.get(0) === "W".codePointAt(0)) {
+        if (ident.isUrlFrame) {
             const frames = this.getFramesByClassType<UrlLinkFrame>(FrameClassType.UrlLinkFrame);
             frame = UrlLinkFrame.findUrlLinkFrame(frames, ident);
         } else {
@@ -704,14 +701,11 @@ export default class Id3v2Tag extends Tag {
      * Removes all frames with a specified identifier from the current instance.
      * @param ident Identifier of the frames to remove
      */
-    public removeFrames(ident: ByteVector): void {
+    public removeFrames(ident: FrameIdentifier): void {
         Guards.truthy(ident, "ident");
-        if (ident.length !== 4) {
-            throw new Error("Argument out of range: ident must be 4 characters");
-        }
 
         for (let i = this._frameList.length - 1; i >= 0; i--) {
-            if (ByteVector.equal(this._frameList[i].frameId, ident)) {
+            if (this._frameList[i].frameId === ident) {
                 this._frameList.splice(i, 1);
             }
         }
@@ -758,16 +752,16 @@ export default class Id3v2Tag extends Tag {
             }
         }
 
-        this.setTextFrame(FrameTypes.TMCL, ...ret);
+        this.setTextFrame(FrameIdentifiers.TMCL, ...ret);
 
         // We need to render the "tag data" first so that we have to correct size to render in the
         // tag's header. The "tag data" (everything that is included in Header.tagSize) includes
         // the extended header, frames and padding, but does not include the tag's header or footer
 
-        const hasFooter = (this._header.flags & HeaderFlags.FooterPresent) != 0;
-        const unsyncAtFrameLevel = (this._header.flags & HeaderFlags.Unsynchronication) != 0
+        const hasFooter = (this._header.flags & HeaderFlags.FooterPresent) !== 0;
+        const unsyncAtFrameLevel = (this._header.flags & HeaderFlags.Unsynchronication) !== 0
             && this.version >= 4;
-        const unsyncAtTagLevel = (this._header.flags & HeaderFlags.Unsynchronication) != 0
+        const unsyncAtTagLevel = (this._header.flags & HeaderFlags.Unsynchronication) !== 0
             && this.version < 4;
 
         this._header.majorVersion = hasFooter ? 4 : this.version;
@@ -782,7 +776,7 @@ export default class Id3v2Tag extends Tag {
             if (unsyncAtFrameLevel) {
                 frame.flags |= Id3v2FrameFlags.Desynchronized;
             }
-            if ((frame.flags & Id3v2FrameFlags.TagAlterPreservation) != 0 ) {
+            if ((frame.flags & Id3v2FrameFlags.TagAlterPreservation) !== 0 ) {
                 continue;
             }
 
@@ -846,14 +840,11 @@ export default class Id3v2Tag extends Tag {
      * @param minPlaces Mininum number of digits to use to display the {@paramref numerator}, if
      *     the numerator has less than this number of digits, it will be filled with leading zeroes.
      */
-    public setNumberFrame(ident: ByteVector, numerator: number, denominator: number, minPlaces: number = 1): void {
+    public setNumberFrame(ident: FrameIdentifier, numerator: number, denominator: number, minPlaces: number = 1): void {
         Guards.truthy(ident, "ident");
         Guards.uint(numerator, "value");
         Guards.uint(denominator, "count");
         Guards.byte(minPlaces, "minPlaces");
-        if (ident.length !== 4) {
-            throw new Error("Argument out of range: ident must be 4 characters");
-        }
 
         if (numerator === 0 && denominator === 0) {
             this.removeFrames(ident);
@@ -871,11 +862,8 @@ export default class Id3v2Tag extends Tag {
      * @param text Text to set for the specified frame or `undefined`/`null`/`""` to remove all
      *     frames with that identifier.
      */
-    public setTextFrame(ident: ByteVector, ...text: string[]): void {
+    public setTextFrame(ident: FrameIdentifier, ...text: string[]): void {
         Guards.truthy(ident, "ident");
-        if (ident.length !== 4) {
-            throw new Error("Argument out of range: ident must be 4 characters");
-        }
 
         // Check if all the elements provided are empty. If they are, remove the frame.
         let empty = true;
@@ -893,7 +881,7 @@ export default class Id3v2Tag extends Tag {
             return;
         }
 
-        if (ident.get(0) === "W".codePointAt(0)) {
+        if (ident.isUrlFrame) {
             const frames = this.getFramesByClassType<UrlLinkFrame>(FrameClassType.UrlLinkFrame);
             let urlFrame = UrlLinkFrame.findUrlLinkFrame(frames, ident);
             if (!urlFrame) {
@@ -924,15 +912,15 @@ export default class Id3v2Tag extends Tag {
         // If the entire tag is marked as unsynchronized, and this tag is version ID3v2.3 or lower,
         // resynchronize it.
         const fullTagUnsync = this._header.majorVersion < 4
-            && (this._header.flags & HeaderFlags.Unsynchronication) != 0;
+            && (this._header.flags & HeaderFlags.Unsynchronication) !== 0;
 
         // Avoid loading all the ID3 tag if PictureLazy is enabled and size is significant enough
         // (ID3v2.4 and later only)
         if (data && (
             fullTagUnsync ||
             this._header.tagSize < 1024 ||
-            (style & ReadStyle.PictureLazy) != 0 ||
-            (this._header.flags & HeaderFlags.ExtendedHeader) != 0
+            (style & ReadStyle.PictureLazy) !== 0 ||
+            (this._header.flags & HeaderFlags.ExtendedHeader) !== 0
         )) {
             file.seek(position);
             data = file.readBlock(this._header.tagSize);
@@ -947,7 +935,7 @@ export default class Id3v2Tag extends Tag {
             + frameDataPosition - Id3v2FrameHeader.getSize(this._header.majorVersion);
 
         // Check for the extended header
-        if ((this._header.flags & HeaderFlags.ExtendedHeader) != 0) {
+        if ((this._header.flags & HeaderFlags.ExtendedHeader) !== 0) {
             this._extendedHeader = ExtendedHeader.fromData(data, this._header.majorVersion);
 
             if (this._extendedHeader.size <= data.length) {
@@ -1001,13 +989,13 @@ export default class Id3v2Tag extends Tag {
             }
 
             // Load up the first instance of each for post-processing
-            if (!tdrc && ByteVector.equal(frame.frameId, FrameTypes.TDRC)) {
+            if (!tdrc && frame.frameId === FrameIdentifiers.TDRC) {
                 tdrc = <TextInformationFrame> frame;
-            } else if (!tyer && ByteVector.equal(frame.frameId, FrameTypes.TYER)) {
+            } else if (!tyer && frame.frameId === FrameIdentifiers.TYER) {
                 tyer = <TextInformationFrame> frame;
-            } else if (!tdat && ByteVector.equal(frame.frameId, FrameTypes.TDAT)) {
+            } else if (!tdat && frame.frameId === FrameIdentifiers.TDAT) {
                 tdat = <TextInformationFrame> frame;
-            } else if (!time && ByteVector.equal(frame.frameId, FrameTypes.TIME)) {
+            } else if (!time && frame.frameId === FrameIdentifiers.TIME) {
                 time = <TextInformationFrame> frame;
             }
         }
@@ -1035,7 +1023,7 @@ export default class Id3v2Tag extends Tag {
                         tdrcText += `T${timeText.substr(0, 2)}:${timeText.substr(2, 2)}`;
                     }
 
-                    this.removeFrames(FrameTypes.TDAT);
+                    this.removeFrames(FrameIdentifiers.TDAT);
                 }
             }
 
@@ -1066,13 +1054,13 @@ export default class Id3v2Tag extends Tag {
         this.parse(undefined, file, position, style);
     }
 
-    private getTextAsArray(ident: ByteVector): string[] {
+    private getTextAsArray(ident: FrameIdentifier): string[] {
         const frames = this.getFramesByClassType<TextInformationFrame>(FrameClassType.TextInformationFrame);
         const frame = TextInformationFrame.findTextInformationFrame(frames, ident);
         return frame ? frame.text : [];
     }
 
-    private getTextAsUint32(ident: ByteVector, index: number): number {
+    private getTextAsUint32(ident: FrameIdentifier, index: number): number {
         const text = this.getTextAsString(ident);
         if (text === null || text === undefined) {
             return 0;
@@ -1118,7 +1106,7 @@ export default class Id3v2Tag extends Tag {
         let swapping: Frame;
         for (let i = 0; i < this._frameList.length; i++) {
             if (!swapping) {
-                if (ByteVector.equal(this._frameList[i].frameId, type)) {
+                if (this._frameList[i].frameId === type) {
                     swapping = frame;
                 } else {
                     continue;

@@ -4,19 +4,19 @@ import {slow, suite, test, timeout} from "mocha-typescript";
 
 import FrameConstructorTests from "./frameConstructorTests";
 import FramePropertyTests from "./framePropertyTests";
-import FrameTypes from "../../src/id3v2/frameTypes";
 import Id3v2TagSettings from "../../src/id3v2/id3v2TagSettings";
 import {TextInformationFrame} from "../../src/id3v2/frames/textInformationFrame";
 import {ByteVector, StringType} from "../../src/byteVector";
 import {Frame, FrameClassType} from "../../src/id3v2/frames/frame";
 import {Id3v2FrameHeader} from "../../src/id3v2/frames/frameHeader";
+import {FrameIdentifier, FrameIdentifiers} from "../../src/id3v2/frameIdentifiers";
 
 // Setup chai
 Chai.use(ChaiAsPromised);
 const assert = Chai.assert;
 
 function getTestFrame(): TextInformationFrame {
-    const header = new Id3v2FrameHeader(FrameTypes.TCOP, 4);
+    const header = new Id3v2FrameHeader(FrameIdentifiers.TCOP);
     header.frameSize = 8;
     const data = ByteVector.concatenate(
         header.render(4),
@@ -31,7 +31,7 @@ function getTestFrame(): TextInformationFrame {
 
 @suite(timeout(3000), slow(1000))
 class Id3v2_TextInformationFrame_ConstructorTests extends FrameConstructorTests {
-    public get fromOffsetRawData(): (d: ByteVector, o: number, h: Id3v2FrameHeader) => Frame {
+    public get fromOffsetRawData(): (d: ByteVector, o: number, h: Id3v2FrameHeader, v: number) => Frame {
         return TextInformationFrame.fromOffsetRawData;
     }
 
@@ -42,12 +42,12 @@ class Id3v2_TextInformationFrame_ConstructorTests extends FrameConstructorTests 
     @test
     public fromIdentifier_noEncoding_returnsFrameWithDefaultEncoding() {
         // Act
-        const frame = TextInformationFrame.fromIdentifier(FrameTypes.TCOP);
+        const frame = TextInformationFrame.fromIdentifier(FrameIdentifiers.TCOP);
 
         // Assert
         assert.isOk(frame);
         assert.strictEqual(frame.frameClassType, FrameClassType.TextInformationFrame);
-        assert.isTrue(ByteVector.equal(frame.frameId, FrameTypes.TCOP));
+        assert.strictEqual(frame.frameId, FrameIdentifiers.TCOP);
 
         assert.isOk(frame.text);
         assert.isArray(frame.text);
@@ -58,16 +58,16 @@ class Id3v2_TextInformationFrame_ConstructorTests extends FrameConstructorTests 
     @test
     public fromIdentifier_withEncoding_returnsFrameWithProvidedEncoding() {
         // Act
-        const frame = TextInformationFrame.fromIdentifier(FrameTypes.TCOP, StringType.Latin1);
+        const frame = TextInformationFrame.fromIdentifier(FrameIdentifiers.TCOP, StringType.Latin1);
 
         // Assert
-        this.assertFrame(frame, FrameTypes.TCOP, []);
+        this.assertFrame(frame, FrameIdentifiers.TCOP, []);
     }
 
     @test
     public fromRawData_emptyFrameByLength_returnsEmptyFrame() {
         // Arrange
-        const header = new Id3v2FrameHeader(FrameTypes.TCOP, 3);
+        const header = new Id3v2FrameHeader(FrameIdentifiers.TCOP);
         header.frameSize = 1;
         const data = ByteVector.concatenate(
             header.render(3),
@@ -78,13 +78,13 @@ class Id3v2_TextInformationFrame_ConstructorTests extends FrameConstructorTests 
         const frame = TextInformationFrame.fromRawData(data, 3);
 
         // Assert
-        this.assertFrame(frame, FrameTypes.TCOP, []);
+        this.assertFrame(frame, FrameIdentifiers.TCOP, []);
     }
 
     @test
     public fromRawData_emptyFrameByContents_returnsEmptyFrame() {
         // Arrange
-        const header = new Id3v2FrameHeader(FrameTypes.TCOP, 3);
+        const header = new Id3v2FrameHeader(FrameIdentifiers.TCOP);
         header.frameSize = 3;
         const data = ByteVector.concatenate(
             header.render(3),
@@ -96,13 +96,13 @@ class Id3v2_TextInformationFrame_ConstructorTests extends FrameConstructorTests 
         const frame = TextInformationFrame.fromRawData(data, 3);
 
         // Assert
-        this.assertFrame(frame, FrameTypes.TCOP, []);
+        this.assertFrame(frame, FrameIdentifiers.TCOP, []);
     }
 
     @test
     public fromRawData_v4NotTxxx_returnsFrameSplitByDelimiter() {
         // Arrange
-        const header = new Id3v2FrameHeader(FrameTypes.TCOP, 4);
+        const header = new Id3v2FrameHeader(FrameIdentifiers.TCOP);
         header.frameSize = 11;
         const data = ByteVector.concatenate(
             header.render(4),
@@ -117,13 +117,13 @@ class Id3v2_TextInformationFrame_ConstructorTests extends FrameConstructorTests 
         const frame = TextInformationFrame.fromRawData(data, 4);
 
         // Assert
-        this.assertFrame(frame, FrameTypes.TCOP, ["fux", "bux"]);
+        this.assertFrame(frame, FrameIdentifiers.TCOP, ["fux", "bux"]);
     }
 
     @test
     public fromRawData_txxx_returnsFrameSplitByDelimiter() {
         // Arrange
-        const header = new Id3v2FrameHeader(FrameTypes.TXXX, 3);
+        const header = new Id3v2FrameHeader(FrameIdentifiers.TXXX);
         header.frameSize = 11;
         const data = ByteVector.concatenate(
             header.render(4),
@@ -138,13 +138,13 @@ class Id3v2_TextInformationFrame_ConstructorTests extends FrameConstructorTests 
         const frame = TextInformationFrame.fromRawData(data, 4);
 
         // Assert
-        this.assertFrame(frame, FrameTypes.TXXX, ["fux", "bux"]);
+        this.assertFrame(frame, FrameIdentifiers.TXXX, ["fux", "bux"]);
     }
 
     @test
     public fromRawData_v3SplitType_returnsFrameSplitBySlash() {
         // Arrange
-        const header = new Id3v2FrameHeader(FrameTypes.TCOM, 3);
+        const header = new Id3v2FrameHeader(FrameIdentifiers.TCOM);
         header.frameSize = 8;
         const data = ByteVector.concatenate(
             header.render(3),
@@ -156,14 +156,14 @@ class Id3v2_TextInformationFrame_ConstructorTests extends FrameConstructorTests 
         const frame = TextInformationFrame.fromRawData(data, 3);
 
         // Assert
-        this.assertFrame(frame, FrameTypes.TCOM, ["fux", "bux"]);
+        this.assertFrame(frame, FrameIdentifiers.TCOM, ["fux", "bux"]);
     }
 
     @test
     public fromRawData_v3Tcon_returnsListOfStrings() {
         // Arrange
         // - Let's get crazy and try to handle all the cases at once
-        const header = new Id3v2FrameHeader(FrameTypes.TCON, 3);
+        const header = new Id3v2FrameHeader(FrameIdentifiers.TCON);
         header.frameSize = 67;
         const data = ByteVector.concatenate(
             header.render(3),
@@ -175,7 +175,7 @@ class Id3v2_TextInformationFrame_ConstructorTests extends FrameConstructorTests 
         const frame = TextInformationFrame.fromRawData(data, 3);
 
         // Assert
-        this.assertFrame(frame, FrameTypes.TCON, [
+        this.assertFrame(frame, FrameIdentifiers.TCON, [
             "SomeGenre",
             "32",
             "32",
@@ -188,7 +188,7 @@ class Id3v2_TextInformationFrame_ConstructorTests extends FrameConstructorTests 
     @test
     public fromOffsetRawData_v4_returnsFrameSplitByDelimiter() {
         // Arrange
-        const header = new Id3v2FrameHeader(FrameTypes.TCOP, 4);
+        const header = new Id3v2FrameHeader(FrameIdentifiers.TCOP);
         header.frameSize = 11;
         const data = ByteVector.concatenate(
             header.render(4),
@@ -201,16 +201,16 @@ class Id3v2_TextInformationFrame_ConstructorTests extends FrameConstructorTests 
         );
 
         // Act
-        const frame = TextInformationFrame.fromOffsetRawData(data, 2, header);
+        const frame = TextInformationFrame.fromOffsetRawData(data, 2, header, 4);
 
         // Assert
-        this.assertFrame(frame, FrameTypes.TCOP, ["fux", "bux"]);
+        this.assertFrame(frame, FrameIdentifiers.TCOP, ["fux", "bux"]);
     }
 
-    private assertFrame(frame: TextInformationFrame, frameId: ByteVector, text: string[]): void {
+    private assertFrame(frame: TextInformationFrame, frameId: FrameIdentifier, text: string[]): void {
         assert.isOk(frame);
         assert.strictEqual(frame.frameClassType, FrameClassType.TextInformationFrame);
-        assert.isTrue(ByteVector.equal(frame.frameId, frameId));
+        assert.strictEqual(frame.frameId, frameId);
 
         assert.isOk(frame.text);
         assert.deepStrictEqual(frame.text, text);
@@ -284,7 +284,7 @@ class Id3v2_TextInformationFrame_MethodTests {
         // Assert
         assert.ok(output);
         assert.strictEqual(output.frameClassType, FrameClassType.TextInformationFrame);
-        assert.isTrue(ByteVector.equal(frame.frameId, FrameTypes.TCOP));
+        assert.strictEqual(frame.frameId, FrameIdentifiers.TCOP);
 
         assert.deepStrictEqual(frame.text, output.text);
         assert.strictEqual(frame.textEncoding, output.textEncoding);
@@ -293,8 +293,8 @@ class Id3v2_TextInformationFrame_MethodTests {
     @test
     public find_falsyFrames() {
         // Act
-        assert.throws(() => { TextInformationFrame.findTextInformationFrame(null, FrameTypes.TCOP); });
-        assert.throws(() => { TextInformationFrame.findTextInformationFrame(undefined, FrameTypes.TCOP); });
+        assert.throws(() => { TextInformationFrame.findTextInformationFrame(null, FrameIdentifiers.TCOP); });
+        assert.throws(() => { TextInformationFrame.findTextInformationFrame(undefined, FrameIdentifiers.TCOP); });
     }
 
     @test
@@ -302,20 +302,18 @@ class Id3v2_TextInformationFrame_MethodTests {
         // Act
         assert.throws(() => { TextInformationFrame.findTextInformationFrame([], null); });
         assert.throws(() => { TextInformationFrame.findTextInformationFrame([], undefined); });
-        assert.throws(() => { TextInformationFrame.findTextInformationFrame([], ByteVector.empty()); });
-        assert.throws(() => { TextInformationFrame.findTextInformationFrame([], ByteVector.fromSize(5)); });
     }
 
     @test
     public find_frameExists() {
         // Arrange
         const frames = [
-            TextInformationFrame.fromIdentifier(FrameTypes.TCOP),
-            TextInformationFrame.fromIdentifier(FrameTypes.TCOM)
+            TextInformationFrame.fromIdentifier(FrameIdentifiers.TCOP),
+            TextInformationFrame.fromIdentifier(FrameIdentifiers.TCOM)
         ];
 
         // Act
-        const output = TextInformationFrame.findTextInformationFrame(frames, FrameTypes.TCOM);
+        const output = TextInformationFrame.findTextInformationFrame(frames, FrameIdentifiers.TCOM);
 
         // Assert
         assert.isOk(output);
@@ -326,12 +324,12 @@ class Id3v2_TextInformationFrame_MethodTests {
     public find_frameDoesNotExist() {
         // Arrange
         const frames = [
-            TextInformationFrame.fromIdentifier(FrameTypes.TCOP),
-            TextInformationFrame.fromIdentifier(FrameTypes.TCOM)
+            TextInformationFrame.fromIdentifier(FrameIdentifiers.TCOP),
+            TextInformationFrame.fromIdentifier(FrameIdentifiers.TCOM)
         ];
 
         // Act
-        const output = TextInformationFrame.findTextInformationFrame(frames, FrameTypes.TALB);
+        const output = TextInformationFrame.findTextInformationFrame(frames, FrameIdentifiers.TALB);
 
         // Assert
         assert.isUndefined(output);
@@ -351,7 +349,7 @@ class Id3v2_TextInformationFrame_MethodTests {
     @test
     public render_notRead_returnsRawData() {
         // Arrange
-        const header = new Id3v2FrameHeader(FrameTypes.TCOP, 4);
+        const header = new Id3v2FrameHeader(FrameIdentifiers.TCOP);
         header.frameSize = 8;
         const data = ByteVector.concatenate(
             header.render(4),
@@ -373,7 +371,7 @@ class Id3v2_TextInformationFrame_MethodTests {
     @test
     public render_readV4NotTxxx() {
         // Arrange
-        const header = new Id3v2FrameHeader(FrameTypes.TCOP, 4);
+        const header = new Id3v2FrameHeader(FrameIdentifiers.TCOP);
         header.frameSize = 8;
         const data = ByteVector.concatenate(
             header.render(4),
@@ -396,7 +394,7 @@ class Id3v2_TextInformationFrame_MethodTests {
     @test
     public render_readV3IsTxxxEmpty() {
         // Arrange
-        let header = new Id3v2FrameHeader(FrameTypes.TXXX, 3);
+        let header = new Id3v2FrameHeader(FrameIdentifiers.TXXX);
         header.frameSize = 1;
         const data = ByteVector.concatenate(
             header.render(3),
@@ -411,7 +409,7 @@ class Id3v2_TextInformationFrame_MethodTests {
         // Assert
         assert.ok(output);
 
-        header = new Id3v2FrameHeader(FrameTypes.TXXX, 3);
+        header = new Id3v2FrameHeader(FrameIdentifiers.TXXX);
         header.frameSize = 3;
         const expected = ByteVector.concatenate(
             header.render(3),
@@ -425,7 +423,7 @@ class Id3v2_TextInformationFrame_MethodTests {
     @test
     public render_readV3IsTxxxSingleValue() {
         // Arrange
-        let header = new Id3v2FrameHeader(FrameTypes.TXXX, 3);
+        let header = new Id3v2FrameHeader(FrameIdentifiers.TXXX);
         header.frameSize = 4;
         const data = ByteVector.concatenate(
             header.render(3),
@@ -441,7 +439,7 @@ class Id3v2_TextInformationFrame_MethodTests {
         // Assert
         assert.ok(output);
 
-        header = new Id3v2FrameHeader(FrameTypes.TXXX, 3);
+        header = new Id3v2FrameHeader(FrameIdentifiers.TXXX);
         header.frameSize = 11;
         const expected = ByteVector.concatenate(
             header.render(3),
@@ -456,7 +454,7 @@ class Id3v2_TextInformationFrame_MethodTests {
     @test
     public render_readV3Tcon() {
         // Arrange
-        let header = new Id3v2FrameHeader(FrameTypes.TCON, 3);
+        let header = new Id3v2FrameHeader(FrameIdentifiers.TCON);
         header.frameSize = 67;
         const data = ByteVector.concatenate(
             header.render(3),
@@ -475,7 +473,7 @@ class Id3v2_TextInformationFrame_MethodTests {
         // Assert
         assert.ok(output);
 
-        header = new Id3v2FrameHeader(FrameTypes.TCON, 3);
+        header = new Id3v2FrameHeader(FrameIdentifiers.TCON);
         header.frameSize = 58;
         const expected = ByteVector.concatenate(
             header.render(3),
@@ -489,7 +487,7 @@ class Id3v2_TextInformationFrame_MethodTests {
     @test
     public render_readV3WithSplit() {
         // Arrange
-        const header = new Id3v2FrameHeader(FrameTypes.TCOP, 3);
+        const header = new Id3v2FrameHeader(FrameIdentifiers.TCOP);
         header.frameSize = 8;
         const data = ByteVector.concatenate(
             header.render(3),
@@ -510,7 +508,7 @@ class Id3v2_TextInformationFrame_MethodTests {
     @test
     public render_readV3WithoutSplit() {
         // Arrange
-        const header = new Id3v2FrameHeader(FrameTypes.TCOP, 3);
+        const header = new Id3v2FrameHeader(FrameIdentifiers.TCOP);
         header.frameSize = 4;
         const data = ByteVector.concatenate(
             header.render(3),

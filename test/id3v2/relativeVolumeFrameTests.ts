@@ -5,11 +5,11 @@ import {slow, suite, test, timeout} from "mocha-typescript";
 
 import ConstructorTests from "./frameConstructorTests";
 import FramePropertyTests from "./framePropertyTests";
-import FrameTypes from "../../src/id3v2/frameTypes";
 import {ChannelData, ChannelType, RelativeVolumeFrame} from "../../src/id3v2/frames/relativeVolumeFrame";
 import {ByteVector, StringType} from "../../src/byteVector";
 import {Frame, FrameClassType} from "../../src/id3v2/frames/frame";
 import {Id3v2FrameHeader} from "../../src/id3v2/frames/frameHeader";
+import {FrameIdentifiers} from "../../src/id3v2/frameIdentifiers";
 
 // Setup chai
 Chai.use(ChaiAsPromised);
@@ -283,7 +283,7 @@ class Id3v2_RelativeVolumeChannelData {
 
 @suite(timeout(3000), slow(1000))
 class Id3v2_RelativeVolumeFrame_ConstructorTests extends ConstructorTests {
-    public get fromOffsetRawData(): (d: ByteVector, o: number, h: Id3v2FrameHeader) => Frame {
+    public get fromOffsetRawData(): (d: ByteVector, o: number, h: Id3v2FrameHeader, v: number) => Frame {
         return RelativeVolumeFrame.fromOffsetRawData;
     }
 
@@ -303,7 +303,7 @@ class Id3v2_RelativeVolumeFrame_ConstructorTests extends ConstructorTests {
     @test
     public fromRawData_noDelimiter_emptyFrame() {
         // Arrange
-        const header = new Id3v2FrameHeader(FrameTypes.RVA2, 4);
+        const header = new Id3v2FrameHeader(FrameIdentifiers.RVA2);
         header.frameSize = 3;
         const data = ByteVector.concatenate(
             header.render(4),
@@ -320,7 +320,7 @@ class Id3v2_RelativeVolumeFrame_ConstructorTests extends ConstructorTests {
     @test
     public fromRawData_withChannelData_hasChannelData() {
         // Arrange
-        const header = new Id3v2FrameHeader(FrameTypes.RVA2, 4);
+        const header = new Id3v2FrameHeader(FrameIdentifiers.RVA2);
         header.frameSize = 15;
 
         const channel1 = new ChannelData(ChannelType.Subwoofer);
@@ -351,7 +351,7 @@ class Id3v2_RelativeVolumeFrame_ConstructorTests extends ConstructorTests {
     @test
     public fromOffsetRawData_withChannelData_hasChannelData() {
         // Arrange
-        const header = new Id3v2FrameHeader(FrameTypes.RVA2, 4);
+        const header = new Id3v2FrameHeader(FrameIdentifiers.RVA2);
         header.frameSize = 15;
 
         const channel1 = new ChannelData(ChannelType.Subwoofer);
@@ -374,7 +374,7 @@ class Id3v2_RelativeVolumeFrame_ConstructorTests extends ConstructorTests {
         );
 
         // Act
-        const frame = RelativeVolumeFrame.fromOffsetRawData(data, 2, header);
+        const frame = RelativeVolumeFrame.fromOffsetRawData(data, 2, header, 4);
 
         // Assert
         this.assertFrame(frame, [channel2, channel1], "foo");
@@ -383,7 +383,7 @@ class Id3v2_RelativeVolumeFrame_ConstructorTests extends ConstructorTests {
     private assertFrame(frame: RelativeVolumeFrame, c: ChannelData[], i: string) {
         assert.isOk(frame);
         assert.strictEqual(frame.frameClassType, FrameClassType.RelativeVolumeFrame);
-        assert.isTrue(ByteVector.equal(frame.frameId, FrameTypes.RVA2));
+        assert.strictEqual(frame.frameId, FrameIdentifiers.RVA2);
 
         assert.deepStrictEqual(frame.channels, c);
         assert.strictEqual(frame.identification, i);
@@ -474,7 +474,7 @@ class Id3v2_RelativeVolumeFrameMethodTests {
     @test
     public render() {
         // Arrange
-        const header = new Id3v2FrameHeader(FrameTypes.RVA2, 4);
+        const header = new Id3v2FrameHeader(FrameIdentifiers.RVA2);
         header.frameSize = 15;
 
         const channel1 = new ChannelData(ChannelType.Subwoofer);

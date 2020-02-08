@@ -5,11 +5,11 @@ import {slow, suite, test, timeout} from "mocha-typescript";
 
 import FrameConstructorTests from "./frameConstructorTests";
 import FramePropertyTests from "./framePropertyTests";
-import FrameTypes from "../../src/id3v2/frameTypes";
 import PlayCountFrame from "../../src/id3v2/frames/playCountFrame";
-import {ByteVector, StringType} from "../../src/byteVector";
+import {ByteVector} from "../../src/byteVector";
 import {Frame, FrameClassType} from "../../src/id3v2/frames/frame";
 import {Id3v2FrameHeader} from "../../src/id3v2/frames/frameHeader";
+import {FrameIdentifiers} from "../../src/id3v2/frameIdentifiers";
 
 // Setup chai
 Chai.use(ChaiAsPromised);
@@ -17,7 +17,7 @@ const assert = Chai.assert;
 
 @suite(timeout(3000), slow(1000))
 class Id3v2_PlayCountFrame_ConstructorTests extends FrameConstructorTests {
-    public get fromOffsetRawData(): (d: ByteVector, o: number, h: Id3v2FrameHeader) => Frame {
+    public get fromOffsetRawData(): (d: ByteVector, o: number, h: Id3v2FrameHeader, v: number) => Frame {
         return PlayCountFrame.fromOffsetRawData;
     }
 
@@ -37,7 +37,7 @@ class Id3v2_PlayCountFrame_ConstructorTests extends FrameConstructorTests {
     @test
     public fromRawData_fourBytePlayCount() {
         // Arrange
-        const header = new Id3v2FrameHeader(FrameTypes.PCNT, 4);
+        const header = new Id3v2FrameHeader(FrameIdentifiers.PCNT);
         header.frameSize = 4;
         const data = ByteVector.concatenate(
             header.render(4),
@@ -51,9 +51,10 @@ class Id3v2_PlayCountFrame_ConstructorTests extends FrameConstructorTests {
         this.assertFrame(frame, 1234);
     }
 
+    @test
     public fromRawData_sixBytePlayCount() {
         // Arrange
-        const header = new Id3v2FrameHeader(FrameTypes.PCNT, 4);
+        const header = new Id3v2FrameHeader(FrameIdentifiers.PCNT);
         header.frameSize = 6;
         const data = ByteVector.concatenate(
             header.render(4),
@@ -70,7 +71,7 @@ class Id3v2_PlayCountFrame_ConstructorTests extends FrameConstructorTests {
     @test
     public fromRawData_eightBytePlayCount() {
         // Arrange
-        const header = new Id3v2FrameHeader(FrameTypes.PCNT, 4);
+        const header = new Id3v2FrameHeader(FrameIdentifiers.PCNT);
         header.frameSize = 8;
         const data = ByteVector.concatenate(
             header.render(4),
@@ -87,7 +88,7 @@ class Id3v2_PlayCountFrame_ConstructorTests extends FrameConstructorTests {
     @test
     public fromOffsetRawData_twoBytePlayCount() {
         // Arrange
-        const header = new Id3v2FrameHeader(FrameTypes.PCNT, 4);
+        const header = new Id3v2FrameHeader(FrameIdentifiers.PCNT);
         header.frameSize = 8;
         const data = ByteVector.concatenate(
             header.render(4),
@@ -96,7 +97,7 @@ class Id3v2_PlayCountFrame_ConstructorTests extends FrameConstructorTests {
         );
 
         // Act
-        const frame = PlayCountFrame.fromOffsetRawData(data, 2, header);
+        const frame = PlayCountFrame.fromOffsetRawData(data, 2, header, 4);
 
         // Assert
         this.assertFrame(frame, BigInt("4294967296"));
@@ -105,7 +106,7 @@ class Id3v2_PlayCountFrame_ConstructorTests extends FrameConstructorTests {
     private assertFrame(frame: PlayCountFrame, p: BigInt.BigNumber) {
         assert.isOk(frame);
         assert.strictEqual(frame.frameClassType, FrameClassType.PlayCountFrame);
-        assert.isTrue(ByteVector.equal(frame.frameId, FrameTypes.PCNT));
+        assert.strictEqual(frame.frameId, FrameIdentifiers.PCNT);
 
         assert.isTrue(frame.playCount.eq(p));
     }
@@ -142,7 +143,7 @@ class Id3v2_PlayCountFrame_MethodTests {
         // Assert
         assert.isOk(output);
         assert.strictEqual(output.frameClassType, FrameClassType.PlayCountFrame);
-        assert.isTrue(ByteVector.equal(output.frameId, FrameTypes.PCNT));
+        assert.strictEqual(output.frameId, FrameIdentifiers.PCNT);
 
         assert.isTrue(output.playCount.eq(frame.playCount));
     }
@@ -150,7 +151,7 @@ class Id3v2_PlayCountFrame_MethodTests {
     @test
     public render_intPlayCount() {
         // Arrange
-        const header = new Id3v2FrameHeader(FrameTypes.PCNT, 4);
+        const header = new Id3v2FrameHeader(FrameIdentifiers.PCNT);
         header.frameSize = 4;
         const data = ByteVector.concatenate(
             header.render(4),
@@ -169,7 +170,7 @@ class Id3v2_PlayCountFrame_MethodTests {
     @test
     public render_sixBytePlayCount() {
         // Arrange
-        const header = new Id3v2FrameHeader(FrameTypes.PCNT, 4);
+        const header = new Id3v2FrameHeader(FrameIdentifiers.PCNT);
         header.frameSize = 6;
         const data = ByteVector.concatenate(
             header.render(4),
@@ -188,7 +189,7 @@ class Id3v2_PlayCountFrame_MethodTests {
     @test
     public render_longBytePlayCount() {
         // Arrange
-        const header = new Id3v2FrameHeader(FrameTypes.PCNT, 4);
+        const header = new Id3v2FrameHeader(FrameIdentifiers.PCNT);
         header.frameSize = 8;
         const data = ByteVector.concatenate(
             header.render(4),

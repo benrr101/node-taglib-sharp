@@ -1,8 +1,8 @@
 import * as BigInt from "big-integer";
-import FrameTypes from "../frameTypes";
 import {ByteVector, StringType} from "../../byteVector";
 import {Frame, FrameClassType} from "./frame";
 import {Id3v2FrameHeader} from "./frameHeader";
+import {FrameIdentifiers} from "../frameIdentifiers";
 import {Guards} from "../../utils";
 
 /**
@@ -56,7 +56,7 @@ export enum ChannelType {
 }
 
 export class ChannelData {
-    private _channel: ChannelType;
+    private readonly _channel: ChannelType;
     private _peakBits: number;
     private _peakVolume: BigInt.BigInteger;
     private _volumeAdjustment: number;
@@ -181,7 +181,7 @@ export class RelativeVolumeFrame extends Frame {
      * @param identification Identification ot use for the new frame
      */
     public static fromIdentification(identification: string): RelativeVolumeFrame {
-        const frame = new RelativeVolumeFrame(new Id3v2FrameHeader(FrameTypes.RVA2, 4));
+        const frame = new RelativeVolumeFrame(new Id3v2FrameHeader(FrameIdentifiers.RVA2));
         frame._identification = identification;
         return frame;
     }
@@ -193,18 +193,21 @@ export class RelativeVolumeFrame extends Frame {
      * @param offset Offset into {@paramref data} where the frame actually begins. Must be a
      *     positive, 32-bit integer
      * @param header Header of the frame found at {@paramref offset} in {@paramref data}
+     * @param version ID3v2 version the frame was originally encoded with
      */
     public static fromOffsetRawData(
         data: ByteVector,
         offset: number,
-        header: Id3v2FrameHeader
+        header: Id3v2FrameHeader,
+        version: number
     ): RelativeVolumeFrame {
         Guards.truthy(data, "data");
         Guards.uint(offset, "offset");
         Guards.truthy(header, "header");
+        Guards.byte(version, "version");
 
         const frame = new RelativeVolumeFrame(header);
-        frame.setData(data, offset, false);
+        frame.setData(data, offset, false, version);
         return frame;
     }
 
@@ -218,8 +221,8 @@ export class RelativeVolumeFrame extends Frame {
         Guards.truthy(data, "data");
         Guards.byte(version, "version");
 
-        const frame = new RelativeVolumeFrame(new Id3v2FrameHeader(data, version));
-        frame.setData(data, 0, true);
+        const frame = new RelativeVolumeFrame(Id3v2FrameHeader.fromData(data, version));
+        frame.setData(data, 0, true, version);
         return frame;
     }
 

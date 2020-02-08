@@ -4,11 +4,11 @@ import {slow, suite, test, timeout} from "mocha-typescript";
 
 import FrameConstructorTests from "./frameConstructorTests";
 import FramePropertyTests from "./framePropertyTests";
-import FrameTypes from "../../src/id3v2/frameTypes";
 import Id3v2TagSettings from "../../src/id3v2/id3v2TagSettings";
 import {ByteVector, StringType} from "../../src/byteVector";
 import {Frame, FrameClassType} from "../../src/id3v2/frames/frame";
 import {Id3v2FrameHeader} from "../../src/id3v2/frames/frameHeader";
+import {FrameIdentifiers} from "../../src/id3v2/frameIdentifiers";
 import {SynchronizedLyricsFrame, SynchronizedText} from "../../src/id3v2/frames/synchronizedLyricsFrame";
 import {SynchronizedTextType, TimestampFormat} from "../../src/id3v2/utilTypes";
 
@@ -48,7 +48,7 @@ class Id3v2_SynchronizedTextTests {
 
 @suite(timeout(3000), slow(1000))
 class Id3v2_SynchronizedLyricsFrame_ConstructorTests extends FrameConstructorTests {
-    public get fromOffsetRawData(): (d: ByteVector, o: number, h: Id3v2FrameHeader) => Frame {
+    public get fromOffsetRawData(): (d: ByteVector, o: number, h: Id3v2FrameHeader, v: number) => Frame {
         return SynchronizedLyricsFrame.fromOffsetRawData;
     }
 
@@ -104,7 +104,7 @@ class Id3v2_SynchronizedLyricsFrame_ConstructorTests extends FrameConstructorTes
     @test
     public fromRawData_notEnoughBytes() {
         // Arrange
-        const header = new Id3v2FrameHeader(FrameTypes.SYLT, 4);
+        const header = new Id3v2FrameHeader(FrameIdentifiers.SYLT);
         header.frameSize = 5;
         const data = ByteVector.concatenate(
             header.render(4),
@@ -118,7 +118,7 @@ class Id3v2_SynchronizedLyricsFrame_ConstructorTests extends FrameConstructorTes
     @test
     public fromRawData_missingDelimiter() {
         // Arrange
-        const header = new Id3v2FrameHeader(FrameTypes.SYLT, 4);
+        const header = new Id3v2FrameHeader(FrameIdentifiers.SYLT);
         header.frameSize = 10;
         const data = ByteVector.concatenate(
             header.render(4),
@@ -133,7 +133,7 @@ class Id3v2_SynchronizedLyricsFrame_ConstructorTests extends FrameConstructorTes
     @test
     public fromRawData_noDelimiterForSynchronizedText() {
         // Arrange
-        const header = new Id3v2FrameHeader(FrameTypes.SYLT, 4);
+        const header = new Id3v2FrameHeader(FrameIdentifiers.SYLT);
         header.frameSize = 16;
         const data = ByteVector.concatenate(
             header.render(4),
@@ -152,7 +152,7 @@ class Id3v2_SynchronizedLyricsFrame_ConstructorTests extends FrameConstructorTes
     @test
     public fromRawData_incompleteSynchronizedText() {
         // Arrange
-        const header = new Id3v2FrameHeader(FrameTypes.SYLT, 4);
+        const header = new Id3v2FrameHeader(FrameIdentifiers.SYLT);
         header.frameSize = 34;
         const content1 = new SynchronizedText(123, "qux");
         const content2 = new SynchronizedText(456, "zux");
@@ -186,7 +186,7 @@ class Id3v2_SynchronizedLyricsFrame_ConstructorTests extends FrameConstructorTes
     @test
     public fromRawData_noData() {
         // Arrange
-        const header = new Id3v2FrameHeader(FrameTypes.SYLT, 4);
+        const header = new Id3v2FrameHeader(FrameIdentifiers.SYLT);
         header.frameSize = 14;
         const data = ByteVector.concatenate(
             header.render(4),
@@ -216,7 +216,7 @@ class Id3v2_SynchronizedLyricsFrame_ConstructorTests extends FrameConstructorTes
     @test
     public fromRawData_singleData() {
         // Arrange
-        const header = new Id3v2FrameHeader(FrameTypes.SYLT, 4);
+        const header = new Id3v2FrameHeader(FrameIdentifiers.SYLT);
         header.frameSize = 26;
         const content1 = new SynchronizedText(123, "qux");
         const data = ByteVector.concatenate(
@@ -248,7 +248,7 @@ class Id3v2_SynchronizedLyricsFrame_ConstructorTests extends FrameConstructorTes
     @test
     public fromRawData_multipleData() {
         // Arrange
-        const header = new Id3v2FrameHeader(FrameTypes.SYLT, 4);
+        const header = new Id3v2FrameHeader(FrameIdentifiers.SYLT);
         header.frameSize = 38;
         const content1 = new SynchronizedText(123, "qux");
         const content2 = new SynchronizedText(456, "zux");
@@ -282,7 +282,7 @@ class Id3v2_SynchronizedLyricsFrame_ConstructorTests extends FrameConstructorTes
     @test
     public fromOffsetRawData_multipleData() {
         // Arrange
-        const header = new Id3v2FrameHeader(FrameTypes.SYLT, 4);
+        const header = new Id3v2FrameHeader(FrameIdentifiers.SYLT);
         header.frameSize = 38;
         const content1 = new SynchronizedText(123, "qux");
         const content2 = new SynchronizedText(456, "zux");
@@ -300,7 +300,7 @@ class Id3v2_SynchronizedLyricsFrame_ConstructorTests extends FrameConstructorTes
         );
 
         // Act
-        const frame = SynchronizedLyricsFrame.fromOffsetRawData(data, 2, header);
+        const frame = SynchronizedLyricsFrame.fromOffsetRawData(data, 2, header, 4);
 
         // Assert
         this.assertFrame(
@@ -325,7 +325,7 @@ class Id3v2_SynchronizedLyricsFrame_ConstructorTests extends FrameConstructorTes
     ) {
         assert.isOk(frame);
         assert.strictEqual(frame.frameClassType, FrameClassType.SynchronizedLyricsFrame);
-        assert.isTrue(ByteVector.equal(frame.frameId, FrameTypes.SYLT));
+        assert.strictEqual(frame.frameId, FrameIdentifiers.SYLT);
 
         assert.strictEqual(frame.description, d);
         assert.strictEqual(frame.format, f);
@@ -617,7 +617,7 @@ class Id3v2_SynchronizedLyricsFrame_MethodTests {
         assert.isOk(output);
         assert.notStrictEqual(output, frame);
         assert.strictEqual(output.frameClassType, FrameClassType.SynchronizedLyricsFrame);
-        assert.isTrue(ByteVector.equal(frame.frameId, FrameTypes.SYLT));
+        assert.strictEqual(frame.frameId, FrameIdentifiers.SYLT);
 
         assert.strictEqual(output.description, frame.description);
         assert.strictEqual(output.format, frame.format);
@@ -632,7 +632,7 @@ class Id3v2_SynchronizedLyricsFrame_MethodTests {
     @test
     public render() {
         // Arrange
-        const header = new Id3v2FrameHeader(FrameTypes.SYLT, 4);
+        const header = new Id3v2FrameHeader(FrameIdentifiers.SYLT);
         header.frameSize = 38;
         const content1 = new SynchronizedText(123, "qux");
         const content2 = new SynchronizedText(456, "zux");

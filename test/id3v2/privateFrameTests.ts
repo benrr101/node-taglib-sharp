@@ -4,11 +4,11 @@ import {slow, suite, test, timeout} from "mocha-typescript";
 
 import FrameConstructorTests from "./frameConstructorTests";
 import FramePropertyTests from "./framePropertyTests";
-import FrameTypes from "../../src/id3v2/frameTypes";
 import PrivateFrame from "../../src/id3v2/frames/privateFrame";
 import {ByteVector, StringType} from "../../src/byteVector";
 import {Frame, FrameClassType} from "../../src/id3v2/frames/frame";
 import {Id3v2FrameHeader} from "../../src/id3v2/frames/frameHeader";
+import {FrameIdentifiers} from "../../src/id3v2/frameIdentifiers";
 
 // Setup chai
 Chai.use(ChaiAsPromised);
@@ -16,7 +16,7 @@ const assert = Chai.assert;
 
 @suite(timeout(3000), slow(1000))
 class Id3v2_PrivateFrame_ConstructorTests extends FrameConstructorTests {
-    public get fromOffsetRawData(): (d: ByteVector, o: number, h: Id3v2FrameHeader) => Frame {
+    public get fromOffsetRawData(): (d: ByteVector, o: number, h: Id3v2FrameHeader, v: number) => Frame {
         return PrivateFrame.fromOffsetRawData;
     }
 
@@ -36,7 +36,7 @@ class Id3v2_PrivateFrame_ConstructorTests extends FrameConstructorTests {
     @test
     public fromRawData_tooFewBytes() {
         // Arrange
-        const header = new Id3v2FrameHeader(FrameTypes.PRIV, 4);
+        const header = new Id3v2FrameHeader(FrameIdentifiers.PRIV);
         header.frameSize = 0;
         const data = ByteVector.concatenate(
             header.render(4)
@@ -49,7 +49,7 @@ class Id3v2_PrivateFrame_ConstructorTests extends FrameConstructorTests {
     @test
     public fromRawData_owner() {
         // Arrange
-        const header = new Id3v2FrameHeader(FrameTypes.PRIV, 4);
+        const header = new Id3v2FrameHeader(FrameIdentifiers.PRIV);
         header.frameSize = 4;
         const data = ByteVector.concatenate(
             header.render(4),
@@ -66,7 +66,7 @@ class Id3v2_PrivateFrame_ConstructorTests extends FrameConstructorTests {
     @test
     public fromRawData_ownerAndData() {
         // Arrange
-        const header = new Id3v2FrameHeader(FrameTypes.PRIV, 4);
+        const header = new Id3v2FrameHeader(FrameIdentifiers.PRIV);
         header.frameSize = 9;
         const data = ByteVector.concatenate(
             header.render(4),
@@ -85,7 +85,7 @@ class Id3v2_PrivateFrame_ConstructorTests extends FrameConstructorTests {
     @test
     public fromOffsetRawData_ownerAndData() {
         // Arrange
-        const header = new Id3v2FrameHeader(FrameTypes.PRIV, 4);
+        const header = new Id3v2FrameHeader(FrameIdentifiers.PRIV);
         header.frameSize = 8;
         const data = ByteVector.concatenate(
             header.render(4),
@@ -96,7 +96,7 @@ class Id3v2_PrivateFrame_ConstructorTests extends FrameConstructorTests {
         );
 
         // Act
-        const frame = PrivateFrame.fromOffsetRawData(data, 2, header);
+        const frame = PrivateFrame.fromOffsetRawData(data, 2, header,  4);
 
         // Assert
         this.assertFrame(frame, "fux", ByteVector.fromByteArray(new Uint8Array([0x01, 0x02, 0x03, 0x04])));
@@ -105,7 +105,7 @@ class Id3v2_PrivateFrame_ConstructorTests extends FrameConstructorTests {
     private assertFrame(frame: PrivateFrame, o: string, d: ByteVector) {
         assert.isOk(frame);
         assert.strictEqual(frame.frameClassType, FrameClassType.PrivateFrame);
-        assert.isTrue(ByteVector.equal(frame.frameId, FrameTypes.PRIV));
+        assert.strictEqual(frame.frameId, FrameIdentifiers.PRIV);
 
         assert.strictEqual(frame.owner, o);
         assert.isTrue(ByteVector.equal(frame.privateData, d));
@@ -184,7 +184,7 @@ class Id3v2_PrivateFrame_MethodTests {
         assert.notEqual(frame, output);
 
         assert.strictEqual(output.frameClassType, FrameClassType.PrivateFrame);
-        assert.isTrue(ByteVector.equal(output.frameId, FrameTypes.PRIV));
+        assert.strictEqual(output.frameId, FrameIdentifiers.PRIV);
 
         assert.strictEqual(output.owner, frame.owner);
         assert.notEqual(output.privateData, frame.privateData);
@@ -194,7 +194,7 @@ class Id3v2_PrivateFrame_MethodTests {
     @test
     public render_v4() {
         // Arrange
-        const header = new Id3v2FrameHeader(FrameTypes.PRIV, 4);
+        const header = new Id3v2FrameHeader(FrameIdentifiers.PRIV);
         header.frameSize = 8;
         const data = ByteVector.concatenate(
             header.render(4),
@@ -215,7 +215,7 @@ class Id3v2_PrivateFrame_MethodTests {
     @test
     public render_v2_throws() {
         // Arrange
-        const header = new Id3v2FrameHeader(FrameTypes.PRIV, 4);
+        const header = new Id3v2FrameHeader(FrameIdentifiers.PRIV);
         header.frameSize = 9;
         const data = ByteVector.concatenate(
             header.render(4),

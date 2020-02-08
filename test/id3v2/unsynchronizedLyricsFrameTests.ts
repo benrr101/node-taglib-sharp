@@ -3,19 +3,19 @@ import * as ChaiAsPromised from "chai-as-promised";
 import {slow, suite, test, timeout} from "mocha-typescript";
 
 import FrameConstructorTests from "./frameConstructorTests";
-import FrameTypes from "../../src/id3v2/frameTypes";
+import FramePropertyTests from "./framePropertyTests";
 import UnsynchronizedLyricsFrame from "../../src/id3v2/frames/unsynchronizedLyricsFrame";
 import {ByteVector, StringType} from "../../src/byteVector";
 import {Frame, FrameClassType} from "../../src/id3v2/frames/frame";
 import {Id3v2FrameHeader} from "../../src/id3v2/frames/frameHeader";
-import FramePropertyTests from "./framePropertyTests";
+import {FrameIdentifiers} from "../../src/id3v2/frameIdentifiers";
 
 // Setup chai
 Chai.use(ChaiAsPromised);
 const assert = Chai.assert;
 
 const getTestFrameData = (): ByteVector => {
-    const header = new Id3v2FrameHeader(FrameTypes.USLT, 4);
+    const header = new Id3v2FrameHeader(FrameIdentifiers.USLT);
     header.frameSize = 11;
 
     return ByteVector.concatenate(
@@ -35,7 +35,7 @@ const getTestUnsynchronizedLyricsFrame = (): UnsynchronizedLyricsFrame => {
 
 @suite(timeout(3000), slow(1000))
 class Id3v2_UnsynchronizedLyricsFrame_ConstructorTests extends FrameConstructorTests {
-    public get fromOffsetRawData(): (d: ByteVector, o: number, h: Id3v2FrameHeader) => Frame {
+    public get fromOffsetRawData(): (d: ByteVector, o: number, h: Id3v2FrameHeader, v: number) => Frame {
         return UnsynchronizedLyricsFrame.fromOffsetRawData;
     }
 
@@ -60,7 +60,7 @@ class Id3v2_UnsynchronizedLyricsFrame_ConstructorTests extends FrameConstructorT
     @test
     public fromOffsetRawData_missingDescription_returnsValidFrame() {
         // Arrange
-        const header = new Id3v2FrameHeader(FrameTypes.USLT, 4);
+        const header = new Id3v2FrameHeader(FrameIdentifiers.USLT);
         header.frameSize = 7;
         const data = ByteVector.concatenate(
             0x00, 0x00,                                     // Offset bytes
@@ -71,7 +71,7 @@ class Id3v2_UnsynchronizedLyricsFrame_ConstructorTests extends FrameConstructorT
         );
 
         // Act
-        const frame = UnsynchronizedLyricsFrame.fromOffsetRawData(data, 2, header);
+        const frame = UnsynchronizedLyricsFrame.fromOffsetRawData(data, 2, header, 4);
 
         // Assert
         this.assertFrame(frame, "", "eng", "foo", StringType.Latin1);
@@ -80,7 +80,7 @@ class Id3v2_UnsynchronizedLyricsFrame_ConstructorTests extends FrameConstructorT
     @test
     public fromOffsetRawData_withDescription_returnsValidFrame() {
         // Arrange
-        const header = new Id3v2FrameHeader(FrameTypes.USLT, 4);
+        const header = new Id3v2FrameHeader(FrameIdentifiers.USLT);
         header.frameSize = 11;
         const data = ByteVector.concatenate(
             0x00, 0x00,                                     // Offset bytes
@@ -93,7 +93,7 @@ class Id3v2_UnsynchronizedLyricsFrame_ConstructorTests extends FrameConstructorT
         );
 
         // Act
-        const frame = UnsynchronizedLyricsFrame.fromOffsetRawData(data, 2, header);
+        const frame = UnsynchronizedLyricsFrame.fromOffsetRawData(data, 2, header, 4);
 
         // Assert
         this.assertFrame(frame, "foo", "eng", "bar", StringType.Latin1);
@@ -102,7 +102,7 @@ class Id3v2_UnsynchronizedLyricsFrame_ConstructorTests extends FrameConstructorT
     @test
     public fromRawData_missingDescription_returnsValidFrame() {
         // Arrange
-        const header = new Id3v2FrameHeader(FrameTypes.USLT, 4);
+        const header = new Id3v2FrameHeader(FrameIdentifiers.USLT);
         header.frameSize = 7;
         const data = ByteVector.concatenate(
             header.render(4),                               // Header
@@ -121,7 +121,7 @@ class Id3v2_UnsynchronizedLyricsFrame_ConstructorTests extends FrameConstructorT
     @test
     public fromRawData_withDescription_returnsValidFrame() {
         // Arrange
-        const header = new Id3v2FrameHeader(FrameTypes.USLT, 4);
+        const header = new Id3v2FrameHeader(FrameIdentifiers.USLT);
         header.frameSize = 11;
         const data = ByteVector.concatenate(
             header.render(4),                               // Header
@@ -141,8 +141,8 @@ class Id3v2_UnsynchronizedLyricsFrame_ConstructorTests extends FrameConstructorT
 
     private assertFrame(frame: UnsynchronizedLyricsFrame, d: string, l: string, t: string, te: StringType) {
         assert.isOk(frame);
-        assert.equal(frame.frameClassType, FrameClassType.UnsynchronizedLyricsFrame);
-        assert.isTrue(ByteVector.equal(frame.frameId, FrameTypes.USLT));
+        assert.strictEqual(frame.frameClassType, FrameClassType.UnsynchronizedLyricsFrame);
+        assert.strictEqual(frame.frameId, FrameIdentifiers.USLT);
 
         assert.strictEqual(frame.description, d);
         assert.strictEqual(frame.language, l);
@@ -491,8 +491,8 @@ class Id3v2_UnsynchronizedLyricsFrame_MethodTests {
 
         // Assert
         assert.ok(result);
-        assert.equal(result.frameClassType, FrameClassType.UnsynchronizedLyricsFrame);
-        assert.isTrue(ByteVector.equal(result.frameId, FrameTypes.USLT));
+        assert.strictEqual(result.frameClassType, FrameClassType.UnsynchronizedLyricsFrame);
+        assert.strictEqual(result.frameId, FrameIdentifiers.USLT);
 
         assert.strictEqual(result.description, frame.description);
         assert.strictEqual(result.language, frame.language);

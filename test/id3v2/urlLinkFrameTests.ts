@@ -3,24 +3,25 @@ import * as ChaiAsPromised from "chai-as-promised";
 import {slow, suite, test, timeout} from "mocha-typescript";
 
 import FrameConstructorTests from "./frameConstructorTests";
-import FrameTypes from "../../src/id3v2/frameTypes";
+import FramePropertyTests from "./framePropertyTests";
 import TestConstants from "../testConstants";
 import {ByteVector, StringType} from "../../src/byteVector";
 import {Frame, FrameClassType} from "../../src/id3v2/frames/frame";
 import {Id3v2FrameHeader} from "../../src/id3v2/frames/frameHeader";
+import {FrameIdentifier, FrameIdentifiers} from "../../src/id3v2/frameIdentifiers";
 import {UrlLinkFrame} from "../../src/id3v2/frames/urlLinkFrame";
-import FramePropertyTests from "./framePropertyTests";
 
 // Setup chai
 Chai.use(ChaiAsPromised);
 const assert = Chai.assert;
 
 const getTestFrameData = (): ByteVector => {
-    const header = new Id3v2FrameHeader(FrameTypes.WCOM, 4);
-    header.frameSize = 7;
+    const header = new Id3v2FrameHeader(FrameIdentifiers.WXXX);
+    header.frameSize = 8;
 
     return ByteVector.concatenate(
         header.render(4),
+        StringType.Latin1,
         ByteVector.fromString("foo", StringType.Latin1, undefined, true),
         ByteVector.getTextDelimiter(StringType.Latin1),
         ByteVector.fromString("bar", StringType.Latin1, undefined, true)
@@ -34,7 +35,7 @@ const getTestUrlLinkFrame = (): UrlLinkFrame => {
 
 @suite(timeout(3000), slow(1000))
 class Id3v2_UrlLinkFrame_ConstructorTests extends FrameConstructorTests {
-    public get fromOffsetRawData(): (d: ByteVector, o: number, h: Id3v2FrameHeader) => Frame {
+    public get fromOffsetRawData(): (d: ByteVector, o: number, h: Id3v2FrameHeader, v: number) => Frame {
         return UrlLinkFrame.fromOffsetRawData;
     }
 
@@ -52,16 +53,16 @@ class Id3v2_UrlLinkFrame_ConstructorTests extends FrameConstructorTests {
     @test
     public fromIdentity_validIdentity() {
         // Act
-        const output = UrlLinkFrame.fromIdentity(FrameTypes.WCOM);
+        const output = UrlLinkFrame.fromIdentity(FrameIdentifiers.WCOM);
 
         // Assert
-        this.assertFrame(output, FrameTypes.WCOM, [], StringType.Latin1);
+        this.assertFrame(output, FrameIdentifiers.WCOM, [], StringType.Latin1);
     }
 
     @test
     public fromOffsetRawData_notUserFrame() {
         // Arrange
-        const header = new Id3v2FrameHeader(FrameTypes.WCOM, 4);
+        const header = new Id3v2FrameHeader(FrameIdentifiers.WCOM);
         header.frameSize = TestConstants.syncedUint;
         const data = ByteVector.concatenate(
             header.render(4),
@@ -71,36 +72,37 @@ class Id3v2_UrlLinkFrame_ConstructorTests extends FrameConstructorTests {
         );
 
         // Act
-        const output = UrlLinkFrame.fromOffsetRawData(data, 2, header);
+        const output = UrlLinkFrame.fromOffsetRawData(data, 2, header, 4);
 
         // Assert
-        this.assertFrame(output, FrameTypes.WCOM, ["foobar"], StringType.Latin1);
+        this.assertFrame(output, FrameIdentifiers.WCOM, ["foobar"], StringType.Latin1);
     }
 
     @test
     public fromOffsetRawData_userFrame() {
         // Arrange
-        const header = new Id3v2FrameHeader(FrameTypes.WXXX, 4);
-        header.frameSize = 7;
+        const header = new Id3v2FrameHeader(FrameIdentifiers.WXXX);
+        header.frameSize = 12;
         const data = ByteVector.concatenate(
             header.render(4),
             0x00, 0x00,
-            ByteVector.fromString("foo", StringType.Latin1, undefined, true),
-            ByteVector.getTextDelimiter(StringType.Latin1),
-            ByteVector.fromString("bar", StringType.Latin1, undefined, true)
+            StringType.UTF16BE,
+            ByteVector.fromString("foo", StringType.UTF16BE, undefined, true),
+            ByteVector.getTextDelimiter(StringType.UTF16BE),
+            ByteVector.fromString("bar", StringType.Latin1)
         );
 
         // Act
-        const output = UrlLinkFrame.fromOffsetRawData(data, 2, header);
+        const output = UrlLinkFrame.fromOffsetRawData(data, 2, header, 4);
 
         // Assert
-        this.assertFrame(output, FrameTypes.WXXX, ["foo", "bar"], StringType.Latin1);
+        this.assertFrame(output, FrameIdentifiers.WXXX, ["foo", "bar"], StringType.Latin1);
     }
 
     @test
     public fromRawData_notUserFrame() {
         // Arrange
-        const header = new Id3v2FrameHeader(FrameTypes.WCOM, 4);
+        const header = new Id3v2FrameHeader(FrameIdentifiers.WCOM);
         header.frameSize = 8;
         const data = ByteVector.concatenate(
             header.render(4),
@@ -113,32 +115,33 @@ class Id3v2_UrlLinkFrame_ConstructorTests extends FrameConstructorTests {
         const output = UrlLinkFrame.fromRawData(data, 4);
 
         // Assert
-        this.assertFrame(output, FrameTypes.WCOM, ["foobar"], StringType.Latin1);
+        this.assertFrame(output, FrameIdentifiers.WCOM, ["foobar"], StringType.Latin1);
     }
 
     @test
     public fromRawData_userFrame() {
         // Arrange
-        const header = new Id3v2FrameHeader(FrameTypes.WXXX, 4);
-        header.frameSize = 7;
+        const header = new Id3v2FrameHeader(FrameIdentifiers.WXXX);
+        header.frameSize = 12;
         const data = ByteVector.concatenate(
             header.render(4),
-            ByteVector.fromString("foo", StringType.Latin1, undefined, true),
-            ByteVector.getTextDelimiter(StringType.Latin1),
-            ByteVector.fromString("bar", StringType.Latin1, undefined, true)
+            StringType.UTF16BE,
+            ByteVector.fromString("foo", StringType.UTF16BE),
+            ByteVector.getTextDelimiter(StringType.UTF16BE),
+            ByteVector.fromString("bar", StringType.Latin1)
         );
 
         // Act
         const output = UrlLinkFrame.fromRawData(data, 4);
 
         // Assert
-        this.assertFrame(output, FrameTypes.WXXX, ["foo", "bar"], StringType.Latin1);
+        this.assertFrame(output, FrameIdentifiers.WXXX, ["foo", "bar"], StringType.Latin1);
     }
 
-    private assertFrame(frame: UrlLinkFrame, ft: ByteVector, t: string[], te: StringType) {
+    private assertFrame(frame: UrlLinkFrame, ft: FrameIdentifier, t: string[], te: StringType) {
         assert.ok(frame);
-        assert.equal(frame.frameClassType, FrameClassType.UrlLinkFrame);
-        assert.isTrue(ByteVector.equal(frame.frameId, ft));
+        assert.strictEqual(frame.frameClassType, FrameClassType.UrlLinkFrame);
+        assert.strictEqual(frame.frameId, ft);
 
         assert.deepEqual(frame.text, t);
         assert.equal(frame.textEncoding, te);
@@ -210,8 +213,8 @@ class Id3v2_UrlLinkFrame_MethodTests {
     @test
     public findUrlLinkFrame_falsyFrames_throws(): void {
         // Act/Assert
-        assert.throws(() => { UrlLinkFrame.findUrlLinkFrame(null, FrameTypes.WCOM); });
-        assert.throws(() => { UrlLinkFrame.findUrlLinkFrame(undefined, FrameTypes.WCOM); });
+        assert.throws(() => { UrlLinkFrame.findUrlLinkFrame(null, FrameIdentifiers.WCOM); });
+        assert.throws(() => { UrlLinkFrame.findUrlLinkFrame(undefined, FrameIdentifiers.WCOM); });
     }
 
     @test
@@ -225,22 +228,12 @@ class Id3v2_UrlLinkFrame_MethodTests {
     }
 
     @test
-    public findUrlLinkFrame_invalidIdentity_throws() {
-        // Arrange
-        const frames = [getTestUrlLinkFrame()];
-
-        // Act/Assert
-        assert.throws(() => { UrlLinkFrame.findUrlLinkFrame(frames, ByteVector.empty()); });
-        assert.throws(() => { UrlLinkFrame.findUrlLinkFrame(frames, ByteVector.fromSize(5)); });
-    }
-
-    @test
     public findUrlLinkFrame_emptyFrames_returnsUndefined() {
         // Arrange
         const frames: UrlLinkFrame[] = [];
 
         // Act
-        const result = UrlLinkFrame.findUrlLinkFrame(frames, FrameTypes.WCOM);
+        const result = UrlLinkFrame.findUrlLinkFrame(frames, FrameIdentifiers.WCOM);
 
         // Assert
         assert.isUndefined(result);
@@ -249,10 +242,10 @@ class Id3v2_UrlLinkFrame_MethodTests {
     @test
     public findUrlLinkFrame_noMatch_returnsUndefined() {
         // Arrange
-        const frames = [getTestUrlLinkFrame(), getTestUrlLinkFrame()]; // Type is WCOM
+        const frames = [getTestUrlLinkFrame(), getTestUrlLinkFrame()]; // Type is WXXX
 
         // Act
-        const result = UrlLinkFrame.findUrlLinkFrame(frames, FrameTypes.WXXX);
+        const result = UrlLinkFrame.findUrlLinkFrame(frames, FrameIdentifiers.WCOM);
 
         // Assert
         assert.isUndefined(result);
@@ -266,7 +259,7 @@ class Id3v2_UrlLinkFrame_MethodTests {
         const frames = [frame1, frame2];
 
         // Act
-        const result = UrlLinkFrame.findUrlLinkFrame(frames, FrameTypes.WCOM);
+        const result = UrlLinkFrame.findUrlLinkFrame(frames, FrameIdentifiers.WXXX);
 
         // Assert
         assert.equal(result, frame1);
@@ -282,7 +275,7 @@ class Id3v2_UrlLinkFrame_MethodTests {
 
         // Assert
         assert.isOk(result);
-        assert.isTrue(ByteVector.equal(result.frameId, frame.frameId));
+        assert.strictEqual(result.frameId, frame.frameId);
         assert.deepEqual(result.text, frame.text);
         assert.deepEqual(result.textEncoding, frame.textEncoding);
     }
@@ -291,14 +284,14 @@ class Id3v2_UrlLinkFrame_MethodTests {
     public clone_withoutRawData_returnsClone() {
         // Arrange
         const frame = getTestUrlLinkFrame();
-        const text = frame.text;    // Force reading raw data, and trashing it
+        const _ = frame.text;    // Force reading raw data, and trashing it
 
         // Act
         const result = frame.clone();
 
         // Assert
         assert.isOk(result);
-        assert.isTrue(ByteVector.equal(result.frameId, frame.frameId));
+        assert.strictEqual(result.frameId, frame.frameId);
         assert.deepEqual(result.text, frame.text);
         assert.deepEqual(result.textEncoding, frame.textEncoding);
     }

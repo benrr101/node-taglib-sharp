@@ -3,19 +3,19 @@ import * as ChaiAsPromised from "chai-as-promised";
 import {slow, suite, test, timeout} from "mocha-typescript";
 
 import FrameConstructorTests from "./frameConstructorTests";
-import FrameTypes from "../../src/id3v2/frameTypes";
 import Id3v2TagSettings from "../../src/id3v2/id3v2TagSettings";
 import {UserTextInformationFrame} from "../../src/id3v2/frames/textInformationFrame";
 import {ByteVector, StringType} from "../../src/byteVector";
 import {Frame, FrameClassType} from "../../src/id3v2/frames/frame";
 import {Id3v2FrameHeader} from "../../src/id3v2/frames/frameHeader";
+import {FrameIdentifiers} from "../../src/id3v2/frameIdentifiers";
 
 // Setup chai
 Chai.use(ChaiAsPromised);
 const assert = Chai.assert;
 
 function getTestFrame(): UserTextInformationFrame {
-    const header = new Id3v2FrameHeader(FrameTypes.TXXX, 4);
+    const header = new Id3v2FrameHeader(FrameIdentifiers.TXXX);
     header.frameSize = 8;
     const data = ByteVector.concatenate(
         header.render(4),
@@ -30,7 +30,7 @@ function getTestFrame(): UserTextInformationFrame {
 
 @suite(timeout(3000), slow(1000))
 class Id3v2_UserInformationFrame_ConstructorTests extends FrameConstructorTests {
-    public get fromOffsetRawData(): (d: ByteVector, o: number, h: Id3v2FrameHeader) => Frame {
+    public get fromOffsetRawData(): (d: ByteVector, o: number, h: Id3v2FrameHeader, v: number) => Frame {
         return UserTextInformationFrame.fromOffsetRawData;
     }
 
@@ -59,7 +59,7 @@ class Id3v2_UserInformationFrame_ConstructorTests extends FrameConstructorTests 
     @test
     public fromOffsetRawData_returnsFrame() {
         // Assert
-        const header = new Id3v2FrameHeader(FrameTypes.TXXX, 4);
+        const header = new Id3v2FrameHeader(FrameIdentifiers.TXXX);
         header.frameSize = 8;
         const data = ByteVector.concatenate(
             header.render(4),
@@ -71,7 +71,7 @@ class Id3v2_UserInformationFrame_ConstructorTests extends FrameConstructorTests 
         );
 
         // Act
-        const frame = UserTextInformationFrame.fromOffsetRawData(data, 2, header);
+        const frame = UserTextInformationFrame.fromOffsetRawData(data, 2, header, 4);
 
         // Assert
         this.assertFrame(frame, "foo", ["bar"], StringType.Latin1);
@@ -80,7 +80,7 @@ class Id3v2_UserInformationFrame_ConstructorTests extends FrameConstructorTests 
     @test
     public fromRawData_returnsFrame() {
         // Assert
-        const header = new Id3v2FrameHeader(FrameTypes.TXXX, 4);
+        const header = new Id3v2FrameHeader(FrameIdentifiers.TXXX);
         header.frameSize = 8;
         const data = ByteVector.concatenate(
             header.render(4),
@@ -105,7 +105,7 @@ class Id3v2_UserInformationFrame_ConstructorTests extends FrameConstructorTests 
     ) {
         assert.isOk(frame);
         assert.strictEqual(frame.frameClassType, FrameClassType.UserTextInformationFrame);
-        assert.isTrue(ByteVector.equal(frame.frameId, FrameTypes.TXXX));
+        assert.strictEqual(frame.frameId, FrameIdentifiers.TXXX);
 
         assert.isOk(frame.text);
         assert.strictEqual(frame.description, description);
@@ -239,7 +239,7 @@ class Id3v2_UserTextInformationFrame_MethodTests {
         // Assert
         assert.ok(output);
         assert.strictEqual(output.frameClassType, FrameClassType.UserTextInformationFrame);
-        assert.isTrue(ByteVector.equal(frame.frameId, FrameTypes.TXXX));
+        assert.strictEqual(frame.frameId, FrameIdentifiers.TXXX);
 
         assert.strictEqual(frame.description, output.description);
         assert.deepStrictEqual(frame.text, output.text);

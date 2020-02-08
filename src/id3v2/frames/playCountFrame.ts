@@ -1,8 +1,8 @@
 import * as BigInt from "big-integer";
-import FrameTypes from "../frameTypes";
 import {ByteVector} from "../../byteVector";
 import {Frame, FrameClassType} from "./frame";
 import {Id3v2FrameHeader} from "./frameHeader";
+import {FrameIdentifiers} from "../frameIdentifiers";
 import {Guards} from "../../utils";
 
 /**
@@ -22,20 +22,31 @@ export default class PlayCountFrame extends Frame {
      * Constructs and initializes a new instance with a count of zero
      */
     public static fromEmpty(): PlayCountFrame {
-        return new PlayCountFrame(new Id3v2FrameHeader(FrameTypes.PCNT, 4));
+        return new PlayCountFrame(new Id3v2FrameHeader(FrameIdentifiers.PCNT));
     }
 
+    /**
+     * Constructs and initializes a new instance of frame by reading its raw data in a specified
+     * ID3v2 version starting at a specified offset.
+     * @param data Raw representation of the new frame.
+     * @param offset Offset into {@paramref data} where the frame actually begins. Must be a
+     *     positive, safe integer
+     * @param header Header of the frame found at {@paramref offset} in the data
+     * @param version ID3v2 version the frame was originally encoded with
+     */
     public static fromOffsetRawData(
         data: ByteVector,
         offset: number,
-        header: Id3v2FrameHeader
+        header: Id3v2FrameHeader,
+        version: number
     ): PlayCountFrame {
         Guards.truthy(data, "data");
         Guards.uint(offset, "offset");
         Guards.truthy(header, "header");
+        Guards.byte(version, "version");
 
         const frame = new PlayCountFrame(header);
-        frame.setData(data, offset, false);
+        frame.setData(data, offset, false, version);
         return frame;
     }
 
@@ -43,14 +54,14 @@ export default class PlayCountFrame extends Frame {
      * Constructs and initializes a new instance by reading its raw data in a specified ID3v2
      * version
      * @param data ByteVector starting with the raw representation of the new frame
-     * @param version ID3v2 veersion the raw frame is encoded in, must be a positive 8-bit integer
+     * @param version ID3v2 version the raw frame is encoded in, must be a positive 8-bit integer
      */
     public static fromRawData(data: ByteVector, version: number): PlayCountFrame {
         Guards.truthy(data, "data");
         Guards.byte(version, "version");
 
-        const frame = new PlayCountFrame(new Id3v2FrameHeader(data, version));
-        frame.setData(data, 0, true);
+        const frame = new PlayCountFrame(Id3v2FrameHeader.fromData(data, version));
+        frame.setData(data, 0, true, version);
         return frame;
     }
 
@@ -78,7 +89,7 @@ export default class PlayCountFrame extends Frame {
 
     /** @inheritDoc */
     public clone(): Frame {
-        const frame = new PlayCountFrame(new Id3v2FrameHeader(FrameTypes.PCNT, 4));
+        const frame = new PlayCountFrame(new Id3v2FrameHeader(FrameIdentifiers.PCNT));
         frame.playCount = this.playCount;
         return frame;
     }

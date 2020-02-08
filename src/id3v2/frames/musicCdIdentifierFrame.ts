@@ -1,7 +1,7 @@
-import FrameTypes from "../frameTypes";
 import {ByteVector} from "../../byteVector";
 import {Frame, FrameClassType} from "./frame";
 import {Id3v2FrameHeader} from "./frameHeader";
+import {FrameIdentifiers} from "../frameIdentifiers";
 import {Guards} from "../../utils";
 
 /**
@@ -23,14 +23,16 @@ export default class MusicCdIdentifierFrame extends Frame {
      * @param offset Offset into {@paramref data} where the frame actually begins. Must be a
      *     positive, safe integer
      * @param header Header of the frame found at {@paramref offset} in the data
+     * @param version ID3v2 version the frame was originally encoded with
      */
-    public static fromOffsetRawData(data: ByteVector, offset: number, header: Id3v2FrameHeader) {
+    public static fromOffsetRawData(data: ByteVector, offset: number, header: Id3v2FrameHeader, version: number) {
         Guards.truthy(data, "data");
         Guards.uint(offset, "offset");
         Guards.truthy(header, "header");
+        Guards.byte(version, "version");
 
         const frame = new MusicCdIdentifierFrame(header);
-        frame.setData(data, offset, false);
+        frame.setData(data, offset, false, version);
         return frame;
     }
 
@@ -44,8 +46,8 @@ export default class MusicCdIdentifierFrame extends Frame {
         Guards.truthy(data, "data");
         Guards.byte(version, "version");
 
-        const frame = new MusicCdIdentifierFrame(new Id3v2FrameHeader(FrameTypes.MCDI, 4));
-        frame.setData(data, 0, true);
+        const frame = new MusicCdIdentifierFrame(Id3v2FrameHeader.fromData(data, version));
+        frame.setData(data, 0, true, version);
         return frame;
     }
 
@@ -64,7 +66,7 @@ export default class MusicCdIdentifierFrame extends Frame {
 
     /** @inheritDoc */
     public clone(): Frame {
-        const frame = new MusicCdIdentifierFrame(new Id3v2FrameHeader(FrameTypes.MCDI, 4));
+        const frame = new MusicCdIdentifierFrame(new Id3v2FrameHeader(FrameIdentifiers.MCDI));
         if (this.data) {
             frame.data = ByteVector.fromByteVector(this.data);
         }
