@@ -1,9 +1,9 @@
-import FrameTypes from "../frameTypes";
 import Id3v2TagSettings from "../id3v2TagSettings";
 import {ByteVector, StringType} from "../../byteVector";
 import {CorruptFileError} from "../../errors";
 import {Frame, FrameClassType} from "./frame";
 import {Id3v2FrameHeader} from "./frameHeader";
+import {FrameIdentifiers} from "../frameIdentifiers";
 import {Guards} from "../../utils";
 import {SynchronizedTextType, TimestampFormat} from "../utilTypes";
 
@@ -40,6 +40,14 @@ export class SynchronizedText {
     public clone(): SynchronizedText {
         return new SynchronizedText(this.time, this.text);
     }
+
+    public render(encoding: StringType): ByteVector {
+        return ByteVector.concatenate(
+            ByteVector.fromString(this.text, encoding),
+            ByteVector.getTextDelimiter(encoding),
+            ByteVector.fromUInt(this.time)
+        );
+    }
 }
 
 /**
@@ -50,7 +58,7 @@ export class SynchronizedLyricsFrame extends Frame {
     private _description: string;
     private _format: TimestampFormat = TimestampFormat.Unknown;
     private _language: string;
-    private _text: SynchronizedText[];
+    private _text: SynchronizedText[] = [];
     private _textEncoding: StringType = Id3v2TagSettings.defaultEncoding;
     private _textType: SynchronizedTextType = SynchronizedTextType.Other;
 
@@ -74,7 +82,7 @@ export class SynchronizedLyricsFrame extends Frame {
         textType: SynchronizedTextType,
         encoding: StringType = Id3v2TagSettings.defaultEncoding
     ): SynchronizedLyricsFrame {
-        const frame = new SynchronizedLyricsFrame(new Id3v2FrameHeader(FrameTypes.SYLT, 4));
+        const frame = new SynchronizedLyricsFrame(new Id3v2FrameHeader(FrameIdentifiers.SYLT));
         frame.textEncoding = encoding;
         frame._language = language;
         frame.description = description;
@@ -89,14 +97,15 @@ export class SynchronizedLyricsFrame extends Frame {
      * @param offset Offset into {@paramref data} where the frame begins. Must be unsigned, safe
      *     integer
      * @param header Header of the frame found at {@paramref offset} in {@paramref data}
+     * @param version ID3v2 version the frame was originally encoded with
      */
-    public static fromOffsetRawData(data: ByteVector, offset: number, header: Id3v2FrameHeader) {
+    public static fromOffsetRawData(data: ByteVector, offset: number, header: Id3v2FrameHeader, version: number) {
         Guards.truthy(data, "data");
         Guards.uint(offset, "offset");
         Guards.truthy(header, "header");
 
         const frame = new SynchronizedLyricsFrame(header);
-        frame.setData(data, offset, false);
+        frame.setData(data, offset, false, version);
         return frame;
     }
 
@@ -110,8 +119,8 @@ export class SynchronizedLyricsFrame extends Frame {
         Guards.truthy(data, "data");
         Guards.byte(version, "version");
 
-        const frame = new SynchronizedLyricsFrame(new Id3v2FrameHeader(data, version));
-        frame.setData(data, 0, true);
+        const frame = new SynchronizedLyricsFrame(Id3v2FrameHeader.fromData(data, version));
+        frame.setData(data, 0, true, version);
         return frame;
     }
 
@@ -150,10 +159,11 @@ export class SynchronizedLyricsFrame extends Frame {
     public get language(): string { return this._language; }
     /**
      * Sets the ISO-639-2 language code stored in the current instance.
-     * There should only be one frame with a matching description, type, and ISO-639=2 language
+     * There should only be one frame with a matching description, type, and ISO-639-2 language
      * code per tag.
      * @param value ISO-639-2 language code stored in the current instance
      */
+    // @TODO: Should this be normalized like other ISO-639-2 fields?
     public set language(value: string) { this._language = value; }
 
     /**
@@ -196,16 +206,16 @@ export class SynchronizedLyricsFrame extends Frame {
      * Gets a specified lyrics frame from a list of synchronized lyrics frames
      * @param frames List of frames to search
      * @param description Description to match
-     * @param language ISO-639-2 language code to match
      * @param textType Text type to match
+     * @param language Optionally, ISO-639-2 language code to match
      * @returns SynchronizedLyricsFrame Frame containing the matching user, `undefined` if a match
      *     was not found
      */
     public static find(
         frames: SynchronizedLyricsFrame[],
         description: string,
-        language: string,
-        textType: SynchronizedTextType
+        textType: SynchronizedTextType,
+        language?: string
     ) {
         Guards.truthy(frames, "frames");
         return frames.find((f) => {
@@ -285,9 +295,6 @@ export class SynchronizedLyricsFrame extends Frame {
 
     /** @inheritDoc */
     protected parseFields(data: ByteVector, version: number): void {
-        Guards.truthy(data, "data");
-        Guards.byte(version, "version");
-
         if (data.length < 6) {
             throw new CorruptFileError("Not enough bytes in field");
         }
@@ -333,25 +340,17 @@ export class SynchronizedLyricsFrame extends Frame {
 
     /** @inheritDoc */
     protected renderFields(version: number): ByteVector {
-        Guards.byte(version, "version");
-
         const encoding = SynchronizedLyricsFrame.correctEncoding(this.textEncoding, version);
-        const delim = ByteVector.getTextDelimiter(encoding);
+        const renderedText = this.text.map((t) => t.render(encoding));
 
-        const v = ByteVector.empty();
-        v.addByte(encoding);
-        v.addByteVector(ByteVector.fromString(this.language, StringType.Latin1));
-        v.addByte(this.format);
-        v.addByte(this.textType);
-        v.addByteVector(ByteVector.fromString(this.description, encoding));
-        v.addByteVector(delim);
-
-        for (const t of this.text) {
-            v.addByteVector(ByteVector.fromString(t.text, encoding));
-            v.addByteVector(delim);
-            v.addByteVector(ByteVector.fromUInt(t.time));
-        }
-
-        return v;
+        return ByteVector.concatenate(
+            encoding,
+            ByteVector.fromString(this.language, StringType.Latin1),
+            this.format,
+            this.textType,
+            ByteVector.fromString(this.description, encoding),
+            ByteVector.getTextDelimiter(encoding),
+            ... renderedText
+        );
     }
 }

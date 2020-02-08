@@ -30,7 +30,7 @@ export default class Header {
         this._flags = data.get(5);
 
         // Make sure flags provided are legal
-        if (this._majorVersion === 2 && (this._flags & 63) != 0) {
+        if (this._majorVersion === 2 && (this._flags & 63) !== 0) {
             throw new CorruptFileError("Invalid flags set on version 2 tag");
         }
         if (this._majorVersion === 3 && (this._flags & 15) > 0) {
@@ -101,11 +101,11 @@ export default class Header {
      * Sets the major version of the tag described by the current instance.
      * When the version is set, unsupported header flags will automatically be removed from the
      * tag.
-     * @param value ID3v2 version of tag. Must be a positive 8-bit integer between 2 and 4.
+     * @param value ID3v2 version of tag. Must be a positive 8-bit integer betweenInclusive 2 and 4.
      */
     public set majorVersion(value: number) {
         Guards.byte(value, "value");
-        Guards.between(value, 2, 4, "value");
+        Guards.betweenInclusive(value, 2, 4, "value");
 
         // @TODO: do we need to support setting to versions <4?
         if (value < 3) {
@@ -147,7 +147,7 @@ export default class Header {
      */
     public set tagSize(value: number) {
         Guards.uint(value, "value");
-        if ((value & 0xF0000000) != 0) {
+        if ((value & 0xF0000000) !== 0) {
             throw new Error("Argument out of range: value must be a 28-bit unsigned integer");
         }
 

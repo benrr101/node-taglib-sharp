@@ -163,7 +163,7 @@ export default class Id3v1Tag extends Tag {
     }
     /**
      * @inheritDoc
-     * @description Only values between 1 and 9999 will be stored. All other values will result in
+     * @description Only values betweenInclusive 1 and 9999 will be stored. All other values will result in
      *     the property being zeroed.
      */
     public set year(value: number) {
@@ -174,7 +174,7 @@ export default class Id3v1Tag extends Tag {
     public get track(): number { return this._track; }
     /**
      * @inheritDoc
-     * @description Only values between 1 and 255 will be stored. All other values will result in
+     * @description Only values betweenInclusive 1 and 255 will be stored. All other values will result in
      *     the property being zeroed.
      */
     public set track(value: number) {

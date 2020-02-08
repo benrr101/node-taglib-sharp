@@ -11,7 +11,7 @@ Chai.use(ChaiAsPromised);
 const assert = Chai.assert;
 
 @suite(timeout(3000), slow(1000))
-class SyncDataTests {
+class Id3v2_SyncDataTests {
     @test
     public fromUint_InvalidValues() {
         // Act/Assert
@@ -49,7 +49,7 @@ class SyncDataTests {
     @test
     public toUint_TooFewBytes() {
         // Arrange
-        const input = ByteVector.fromSize(2, 0x10)
+        const input = ByteVector.fromSize(2, 0x10);
 
         // Act
         const output = SyncData.toUint(input);

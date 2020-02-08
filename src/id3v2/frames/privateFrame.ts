@@ -1,8 +1,8 @@
-import FrameTypes from "../frameTypes";
 import {ByteVector, StringType} from "../../byteVector";
 import {CorruptFileError, NotImplementedError} from "../../errors";
 import {Frame, FrameClassType} from "./frame";
 import {Id3v2FrameHeader} from "./frameHeader";
+import {FrameIdentifiers} from "../frameIdentifiers";
 import {Guards} from "../../utils";
 
 /**
@@ -25,8 +25,9 @@ export default class PrivateFrame extends Frame {
      * @param owner Owner of the private frame
      */
     public static fromOwner(owner: string): PrivateFrame {
-        const frame = new PrivateFrame(new Id3v2FrameHeader(FrameTypes.PRIV, 4));
+        const frame = new PrivateFrame(new Id3v2FrameHeader(FrameIdentifiers.PRIV));
         frame._owner = owner;
+        frame._privateData = ByteVector.empty();
         return frame;
     }
 
@@ -37,18 +38,21 @@ export default class PrivateFrame extends Frame {
      * @param offset What offset in {@paramref data} the frame actually begins. Must be positive,
      *     safe integer
      * @param header Header of the frame found at {@paramref data} in the data
+     * @param version ID3v2 version the frame was originally encoded with
      */
     public static fromOffsetRawData(
         data: ByteVector,
         offset: number,
-        header: Id3v2FrameHeader
+        header: Id3v2FrameHeader,
+        version: number
     ): PrivateFrame {
         Guards.truthy(data, "data");
         Guards.uint(offset, "offset");
         Guards.truthy(header, "header");
+        Guards.byte(version,  "version");
 
         const frame = new PrivateFrame(header);
-        frame.setData(data, offset, false);
+        frame.setData(data, offset, false, version);
         return frame;
     }
 
@@ -62,8 +66,8 @@ export default class PrivateFrame extends Frame {
         Guards.truthy(data, "data");
         Guards.byte(version, "version");
 
-        const frame = new PrivateFrame(new Id3v2FrameHeader(data, version));
-        frame.setData(data, 0, true);
+        const frame = new PrivateFrame(Id3v2FrameHeader.fromData(data, version));
+        frame.setData(data, 0, true, version);
         return frame;
     }
 
@@ -108,38 +112,31 @@ export default class PrivateFrame extends Frame {
     /** @inheritDoc */
     public clone(): Frame {
         const frame = PrivateFrame.fromOwner(this.owner);
-        if (this.privateData) {
-            frame.privateData = ByteVector.fromByteVector(this.privateData);
-        }
+        frame.privateData = ByteVector.fromByteVector(this.privateData);
         return frame;
     }
 
     /** @inheritDoc */
     protected parseFields(data: ByteVector, version: number): void {
-        Guards.truthy(data, "data");
-        Guards.byte(version, "version");
-
         if (data.length < 1) {
             throw new CorruptFileError("A private frame must contain at least 1 byte");
         }
 
         const l = data.split(ByteVector.getTextDelimiter(StringType.Latin1), 1, 2);
-        if (l.length === 2) {
-            this._owner = l[0].toString(l[0].length, StringType.Latin1);
-            this.privateData = l[1];
-        }
+        this._owner = l[0].toString(l[0].length, StringType.Latin1);
+        this._privateData = l.length === 2 ? l[1] : ByteVector.empty();
     }
 
     /** @inheritDoc */
     protected renderFields(version: number): ByteVector {
-        Guards.byte(version, "version");
         if (version < 3) {
             throw new NotImplementedError();
         }
 
-        const v = ByteVector.fromString(this.owner, StringType.Latin1);
-        v.addByteVector(ByteVector.getTextDelimiter(StringType.Latin1));
-        v.addByteVector(this.privateData);
-        return v;
+        return ByteVector.concatenate(
+            ByteVector.fromString(this.owner, StringType.Latin1),
+            ByteVector.getTextDelimiter(StringType.Latin1),
+            this._privateData
+        );
     }
 }

@@ -1,28 +1,30 @@
-import FrameTypes from "../frameTypes";
-import {ByteVector} from "../../byteVector";
-import {Id3v2FrameFlags, Id3v2FrameHeader} from "./frameHeader";
-import {File} from "../../file";
-import {Guards} from "../../utils";
 import AttachmentFrame from "./attachmentFrame";
-import {TextInformationFrame, UserTextInformationFrame} from "./textInformationFrame";
-import {Frame} from "./frame";
-import UniqueFileIdentifierFrame from "./uniqueFileIdentifierFrame";
-import MusicCdIdentifierFrame from "./musicCdIdentifierFrame";
-import UnsynchronizedLyricsFrame from "./unsynchronizedLyricsFrame";
-import {SynchronizedLyricsFrame} from "./synchronizedLyricsFrame";
 import CommentsFrame from "./commentsFrame";
-import {RelativeVolumeFrame} from "./relativeVolumeFrame";
+import MusicCdIdentifierFrame from "./musicCdIdentifierFrame";
+import PictureLazy from "../../pictureLazy";
 import PlayCountFrame from "./playCountFrame";
 import PopularimeterFrame from "./popularimeterFrame";
-import UnknownFrame from "./unknownFrame";
-import TermsOfUseFrame from "./termsOfUseFrame";
 import PrivateFrame from "./privateFrame";
-import {UrlLinkFrame, UserUrlLinkFrame} from "./urlLinkFrame";
-import EventTimeCodeFrame from "./eventTimeCodeFrame";
+import TermsOfUseFrame from "./termsOfUseFrame";
+import UniqueFileIdentifierFrame from "./uniqueFileIdentifierFrame";
+import UnknownFrame from "./unknownFrame";
+import UnsynchronizedLyricsFrame from "./unsynchronizedLyricsFrame";
+import {ByteVector} from "../../byteVector";
 import {NotImplementedError} from "../../errors";
+import {EventTimeCodeFrame} from "./eventTimeCodeFrame";
+import {File} from "../../file";
+import {Frame} from "./frame";
+import {Id3v2FrameFlags, Id3v2FrameHeader} from "./frameHeader";
+import {FrameIdentifiers} from "../frameIdentifiers";
+import {RelativeVolumeFrame} from "./relativeVolumeFrame";
+import {SynchronizedLyricsFrame} from "./synchronizedLyricsFrame";
+import {TextInformationFrame, UserTextInformationFrame} from "./textInformationFrame";
+import {UrlLinkFrame, UserUrlLinkFrame} from "./urlLinkFrame";
+import {Guards} from "../../utils";
 
-const customFrameCreators: Array<(data: ByteVector, offset: number, header: Id3v2FrameHeader, version: number) => Frame>
-    = [];
+export type FrameCreator = (data: ByteVector, offset: number, header: Id3v2FrameHeader, version: number) => Frame;
+
+const customFrameCreators: FrameCreator[] = [];
 
 /**
  * Performs the necessary operations to determine and create the correct child classes of
@@ -82,20 +84,11 @@ export default {
             return undefined;
         }
 
-        const header = new Id3v2FrameHeader(data.mid(position, frameHeaderSize), version);
+        const header = Id3v2FrameHeader.fromData(data.mid(position, frameHeaderSize), version);
         const filePosition = offset + frameHeaderSize;
         offset += header.frameSize + frameHeaderSize;
 
-        // Filter out illegal frames
-        if (!header.frameId) {
-            throw new Error("No frame ID found, frame is invalid");
-        }
-        for (const b of header.frameId) {
-            // (b<A || b>Z) && (b<0 || b>9)
-            if ((b < 65 || b > 90) && (b < 48 || b > 57)) {
-                return undefined;
-            }
-        }
+        // Illegal frames are filtered out when creating the frame header
 
         // Mark the frame as unsynchronized if the entire tag is already unsynchronized
         // @TODO Standardize on "Desynchronized"
@@ -104,7 +97,7 @@ export default {
         }
 
         // TODO: Support compression
-        if ((header.flags & Id3v2FrameFlags.Compression) != 0) {
+        if ((header.flags & Id3v2FrameFlags.Compression) !== 0) {
             throw new NotImplementedError("Compression is not supported");
         }
 
@@ -132,17 +125,10 @@ export default {
         if (file) {
             // Attached picture (frames 4.14)
             // General encapsulated object (frames 4.15)
-            if (
-                ByteVector.equal(header.frameId, FrameTypes.APIC) ||
-                ByteVector.equal(header.frameId, FrameTypes.GEOB)
-            ) {
+            if (header.frameId === FrameIdentifiers.APIC || header.frameId === FrameIdentifiers.GEOB) {
+                const picture = PictureLazy.fromFile(file.fileAbstraction, filePosition, offset - filePosition);
                 return {
-                    frame: AttachmentFrame.fromFile(
-                        file.fileAbstraction,
-                        filePosition,
-                        offset - filePosition,
-                        header
-                    ),
+                    frame: AttachmentFrame.fromPicture(picture),
                     offset: offset
                 };
             }
@@ -153,55 +139,52 @@ export default {
         }
 
         let func: any = UnknownFrame.fromOffsetRawData;
-        if (ByteVector.equal(header.frameId, FrameTypes.TXXX)) {
+        if (header.frameId === FrameIdentifiers.TXXX) {
             // User text identification frame
             func = UserTextInformationFrame.fromOffsetRawData;
-        } else if (header.frameId.get(0) === 84) {
+        } else if (header.frameId.isTextFrame) {
             // Text identifiacation frame (frames 4.2) Starts with T
             func = TextInformationFrame.fromOffsetRawData;
-        } else if (ByteVector.equal(header.frameId, FrameTypes.UFID)) {
+        } else if (header.frameId === FrameIdentifiers.UFID) {
             // Unique file identifier (frames 4.1)
             func = UniqueFileIdentifierFrame.fromOffsetRawData;
-        } else if (ByteVector.equal(header.frameId, FrameTypes.MCDI)) {
+        } else if (header.frameId === FrameIdentifiers.MCDI) {
             // Music CD identifier (frames 4.5)
-            func = MusicCdIdentifierFrame.fromOffsetRawHeader;
-        } else if (ByteVector.equal(header.frameId, FrameTypes.USLT)) {
+            func = MusicCdIdentifierFrame.fromOffsetRawData;
+        } else if (header.frameId === FrameIdentifiers.USLT) {
             // Unsynchronized lyrics (frames 4.8)
             func = UnsynchronizedLyricsFrame.fromOffsetRawData;
-        } else if (ByteVector.equal(header.frameId, FrameTypes.SYLT)) {
+        } else if (header.frameId === FrameIdentifiers.SYLT) {
             // Synchronized lyrics (frames 4.8)
             func = SynchronizedLyricsFrame.fromOffsetRawData;
-        } else if (ByteVector.equal(header.frameId, FrameTypes.COMM)) {
+        } else if (header.frameId === FrameIdentifiers.COMM) {
             // Comments (frames 4.10)
             func = CommentsFrame.fromOffsetRawData;
-        } else if (ByteVector.equal(header.frameId, FrameTypes.RVA2)) {
+        } else if (header.frameId === FrameIdentifiers.RVA2) {
             // Relative volume adjustment (frames 4.11)
             func = RelativeVolumeFrame.fromOffsetRawData;
-        } else if (
-            ByteVector.equal(header.frameId, FrameTypes.APIC) ||
-            ByteVector.equal(header.frameId, FrameTypes.GEOB)
-        ) {
+        } else if (header.frameId === FrameIdentifiers.APIC || header.frameId === FrameIdentifiers.GEOB) {
             // Attached picture (frames 4.14)
             func = AttachmentFrame.fromOffsetRawData;
-        } else if (ByteVector.equal(header.frameId, FrameTypes.PCNT)) {
+        } else if (header.frameId === FrameIdentifiers.PCNT) {
             // Play count (frames 4.16)
-            func = PlayCountFrame.fromOffsetRawHeader;
-        } else if (ByteVector.equal(header.frameId, FrameTypes.POPM)) {
+            func = PlayCountFrame.fromOffsetRawData;
+        } else if (header.frameId === FrameIdentifiers.POPM) {
             // Popularimeter (frames 4.17)
             func = PopularimeterFrame.fromOffsetRawData;
-        } else if (ByteVector.equal(header.frameId, FrameTypes.USER)) {
+        } else if (header.frameId === FrameIdentifiers.USER) {
             // Terms of Use (frames 4.22)
             func = TermsOfUseFrame.fromOffsetRawData;
-        } else if (ByteVector.equal(header.frameId, FrameTypes.PRIV)) {
+        } else if (header.frameId === FrameIdentifiers.PRIV) {
             // Private (frames 4.27)
             func = PrivateFrame.fromOffsetRawData;
-        } else if (ByteVector.equal(header.frameId, FrameTypes.WXXX)) {
+        } else if (header.frameId === FrameIdentifiers.WXXX) {
             // User URL link
             func = UserUrlLinkFrame.fromOffsetRawData;
-        } else if (header.frameId.get(0) === 87) {
+        } else if (header.frameId.isUrlFrame) {
             // URL link (frame 4.3.1) starts with 'W'
             func = UrlLinkFrame.fromOffsetRawData;
-        } else if (ByteVector.equal(header.frameId, FrameTypes.ETCO)) {
+        } else if (header.frameId === FrameIdentifiers.ETCO) {
             // Event timing codes (frames 4.6)
             func = EventTimeCodeFrame.fromOffsetRawData;
         }
@@ -211,6 +194,4 @@ export default {
             offset: offset
         };
     }
-
-
 };

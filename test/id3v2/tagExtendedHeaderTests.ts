@@ -10,7 +10,7 @@ Chai.use(ChaiAsPromised);
 const assert = Chai.assert;
 
 @suite(timeout(3000), slow(1000))
-class extendedHeaderTests {
+class Id3v2_TagExtendedHeaderTests {
     @test
     public fromData_falsyData() {
         // Act/Assert

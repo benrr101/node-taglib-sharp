@@ -1,9 +1,9 @@
-import FrameTypes from "../frameTypes";
 import Id3v2TagSettings from "../id3v2TagSettings";
 import {ByteVector, StringType} from "../../byteVector";
 import {CorruptFileError} from "../../errors";
 import {Frame, FrameClassType} from "./frame";
 import {Id3v2FrameHeader} from "./frameHeader";
+import {FrameIdentifiers} from "../frameIdentifiers";
 import {Guards} from "../../utils";
 
 export default class TermsOfUseFrame extends Frame {
@@ -20,21 +20,15 @@ export default class TermsOfUseFrame extends Frame {
     /**
      * Constructs and initializes a new instance with a specified language.
      * @param language ISO-639-2 language code for the new frame
+     * @param textEncoding Optional, text encoding to use when rendering the new frame. If not
+     *     provided defaults to {@see Id3v2TagSettings.defaultEncoding}
      */
-    public static fromLanguage(language: string): TermsOfUseFrame {
-        const f = new TermsOfUseFrame(new Id3v2FrameHeader(FrameTypes.USER, 4));
-        f._language = language;
-        return f;
-    }
-
-    /**
-     * Constructs and initializes a new instance with a specified language and encoding.
-     * @param language ISO-639-2 language code for the new frame
-     * @param encoding Text encoding to use when rendering the new frame
-     */
-    public static fromLanguageAndEncoding(language: string, encoding: StringType): TermsOfUseFrame {
-        const f = new TermsOfUseFrame(new Id3v2FrameHeader(FrameTypes.USER, 4));
-        f.textEncoding = encoding;
+    public static fromFields(
+        language: string,
+        textEncoding: StringType = Id3v2TagSettings.defaultEncoding
+    ): TermsOfUseFrame {
+        const f = new TermsOfUseFrame(new Id3v2FrameHeader(FrameIdentifiers.USER));
+        f.textEncoding = textEncoding;
         f._language = language;
         return f;
     }
@@ -46,18 +40,21 @@ export default class TermsOfUseFrame extends Frame {
      * @param offset What offset in {@paramref data} the frame actually begins. Must be positive,
      *     safe integer
      * @param header Header of the frame found at {@paramref data} in the data
+     * @param version ID3v2 version the frame was originally encoded with
      */
     public static fromOffsetRawData(
         data: ByteVector,
         offset: number,
-        header: Id3v2FrameHeader
+        header: Id3v2FrameHeader,
+        version: number
     ): TermsOfUseFrame {
         Guards.truthy(data, "data");
         Guards.uint(offset, "offset");
         Guards.truthy(header, "header");
+        Guards.byte(version, "version");
 
         const frame = new TermsOfUseFrame(header);
-        frame.setData(data, offset, false);
+        frame.setData(data, offset, false, version);
         return frame;
     }
 
@@ -71,8 +68,8 @@ export default class TermsOfUseFrame extends Frame {
         Guards.truthy(data, "data");
         Guards.byte(version, "version");
 
-        const frame = new TermsOfUseFrame(new Id3v2FrameHeader(data, version));
-        frame.setData(data, 0, true);
+        const frame = new TermsOfUseFrame(Id3v2FrameHeader.fromData(data, version));
+        frame.setData(data, 0, true, version);
         return frame;
     }
 
@@ -129,7 +126,7 @@ export default class TermsOfUseFrame extends Frame {
      * @returns TermsOfUseFrame A matching frame if found or `undefined` if a matching frame was
      *     not found
      */
-    public static get(frames: TermsOfUseFrame[], language: string): TermsOfUseFrame {
+    public static find(frames: TermsOfUseFrame[], language?: string): TermsOfUseFrame {
         Guards.truthy(frames, "frames");
         return frames.find((f) => !language || f.language === language);
     }
@@ -142,7 +139,7 @@ export default class TermsOfUseFrame extends Frame {
      * @returns TermsOfUseFrame Frame containing the matching frame or `undefined` if a match was
      *     not found
      */
-    public static getPreferred(frames: TermsOfUseFrame[], language: string) {
+    public static findPreferred(frames: TermsOfUseFrame[], language: string) {
         Guards.truthy(frames, "frames");
 
         let bestFrame: TermsOfUseFrame;
@@ -160,7 +157,7 @@ export default class TermsOfUseFrame extends Frame {
 
     /** @inheritDoc */
     public clone(): Frame {
-        const frame = TermsOfUseFrame.fromLanguageAndEncoding(this._language, this.textEncoding);
+        const frame = TermsOfUseFrame.fromFields(this._language, this.textEncoding);
         frame.text = this.text;
         return frame;
     }

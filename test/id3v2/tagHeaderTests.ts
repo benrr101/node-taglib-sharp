@@ -24,12 +24,12 @@ const getTestHeader = (majorVersion: number, minorVersion: number, flags: Header
 };
 
 @suite(timeout(3000), slow(1000))
-class TagHeaderConstructorTests {
+class Id3v2_TagHeader_ConstructorTests {
     @test
     public falsyData() {
         // Act/Assert
-        assert.throws(() => { const q = new Header(null); });
-        assert.throws(() => { const q = new Header(undefined); });
+        assert.throws(() => { const _ = new Header(null); });
+        assert.throws(() => { const _ = new Header(undefined); });
     }
 
     @test
@@ -39,14 +39,14 @@ class TagHeaderConstructorTests {
         const data1 = ByteVector.fromSize(1);
 
         // Act/Assert
-        assert.throws(() => { const q = new Header(data0); });
-        assert.throws(() => { const q = new Header(data1); });
+        assert.throws(() => { const _ = new Header(data0); });
+        assert.throws(() => { const _ = new Header(data1); });
     }
 
     @test
     public invalidStartOfData() {
         // Act/Assert
-        assert.throws(() => { const q = new Header(TestConstants.testByteVector); });
+        assert.throws(() => { const _ = new Header(TestConstants.testByteVector); });
     }
 
     @test
@@ -60,7 +60,7 @@ class TagHeaderConstructorTests {
         );
 
         // Act/Assert
-        assert.throws(() => { const q = new Header(testData); });
+        assert.throws(() => { const _ = new Header(testData); });
     }
 
     @test
@@ -74,7 +74,7 @@ class TagHeaderConstructorTests {
         );
 
         // Act/Assert
-        assert.throws(() => { const q = new Header(testData); });
+        assert.throws(() => { const _ = new Header(testData); });
     }
 
     @test
@@ -88,7 +88,7 @@ class TagHeaderConstructorTests {
         );
 
         // Act/Assert
-        assert.throws(() => { const q = new Header(testData); });
+        assert.throws(() => { const _ = new Header(testData); });
     }
 
     @test
@@ -105,10 +105,10 @@ class TagHeaderConstructorTests {
         const testData4 = ByteVector.concatenate(testData, 0x00, 0x00, 0x00, 0x80);
 
         // Act/Assert
-        assert.throws(() => {const q = new Header(testData1); });
-        assert.throws(() => {const q = new Header(testData2); });
-        assert.throws(() => {const q = new Header(testData3); });
-        assert.throws(() => {const q = new Header(testData4); });
+        assert.throws(() => {const _ = new Header(testData1); });
+        assert.throws(() => {const _ = new Header(testData2); });
+        assert.throws(() => {const _ = new Header(testData3); });
+        assert.throws(() => {const _ = new Header(testData4); });
     }
 
     @test
@@ -137,7 +137,7 @@ class TagHeaderConstructorTests {
 }
 
 @suite(timeout(3000), slow(1000))
-class TagHeaderPropertyTests {
+class Id3v2_TagHeader_PropertyTests {
     @test
     public getFileIdentifier() {
         // Act
@@ -260,7 +260,7 @@ class TagHeaderPropertyTests {
         header.majorVersion = 2;
 
         // Assert
-        assert.equal(header.majorVersion, 2)
+        assert.equal(header.majorVersion, 2);
         assert.equal(header.flags & flags, 0);
     }
 
@@ -313,7 +313,7 @@ class TagHeaderPropertyTests {
     }
 
     @test
-    publicsetTagSize_validValue() {
+    public setTagSize_validValue() {
         // Arrange
         const header = getTestHeader(4, 0, HeaderFlags.None);
 
@@ -326,7 +326,7 @@ class TagHeaderPropertyTests {
 }
 
 @suite(timeout(3000), slow(1000))
-class TagHeaderRenderTests {
+class Id3v2_TagHeader_RenderTests {
     @test
     public render() {
         // Arrange
