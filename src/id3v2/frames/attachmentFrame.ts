@@ -355,7 +355,7 @@ export default class AttachmentFrame extends Frame {
 
                 this._type = data.get(mimeTypeEndIndex + 1);
 
-                descriptionEndIndex = data.find(delim, mimeTypeEndIndex + 1);
+                descriptionEndIndex = data.find(delim, mimeTypeEndIndex + 1, delim.length);
                 const descriptionLength = descriptionEndIndex - mimeTypeLength - 1;
                 this._description = data.toString(
                     descriptionLength,
@@ -371,7 +371,7 @@ export default class AttachmentFrame extends Frame {
                 const imageFormat = data.toString(3, StringType.Latin1, 1);
                 this._mimeType = Picture.getMimeTypeFromFilename(imageFormat);
 
-                descriptionEndIndex = data.find(delim, 5);
+                descriptionEndIndex = data.find(delim, 5, delim.length);
                 const descriptionLength = descriptionEndIndex - 5;
                 this._description = data.toString(descriptionLength, this._encoding, 5);
             }
