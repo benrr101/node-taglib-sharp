@@ -16,12 +16,13 @@ const assert = Chai.assert;
 
 const getTestFrameData = (): ByteVector => {
     const header = new Id3v2FrameHeader(FrameIdentifiers.WXXX);
-    header.frameSize = 7;
+    header.frameSize = 12;
 
     return ByteVector.concatenate(
         header.render(4),
-        ByteVector.fromString("foo", StringType.Latin1, undefined, true),
-        ByteVector.getTextDelimiter(StringType.Latin1),
+        StringType.UTF16BE,
+        ByteVector.fromString("foo", StringType.UTF16BE, undefined, true),
+        ByteVector.getTextDelimiter(StringType.UTF16BE),
         ByteVector.fromString("bar", StringType.Latin1, undefined, true)
     );
 };
@@ -45,14 +46,11 @@ class Id3v2_UserUrlLinkFrame_ConstructorTests extends FrameConstructorTests {
     public fromOffsetRawData_userFrame() {
         // Arrange
         const header = new Id3v2FrameHeader(FrameIdentifiers.WXXX);
-        header.frameSize = 7;
-
-        // Offset bytes
-        // Header
-        // Data (2x strings w/divider)
+        header.frameSize = 8;
         const data = ByteVector.concatenate(
             0x00, 0x00,
             header.render(4),
+            StringType.Latin1,
             ByteVector.fromString("foo", StringType.Latin1, undefined, true),
             ByteVector.getTextDelimiter(StringType.Latin1),
             ByteVector.fromString("bar", StringType.Latin1, undefined, true)
@@ -75,10 +73,10 @@ class Id3v2_UserUrlLinkFrame_ConstructorTests extends FrameConstructorTests {
     public fromRawData_userFrame() {
         // Arrange
         const header = new Id3v2FrameHeader(FrameIdentifiers.WXXX);
-        header.frameSize = 7;
+        header.frameSize = 8;
         const data = ByteVector.concatenate(
             header.render(4),
-            0x00, 0x00,                                                         // - Frame flags
+            StringType.Latin1,
             ByteVector.fromString("foo", StringType.Latin1, undefined, true),   // - String 1
             ByteVector.getTextDelimiter(StringType.Latin1),                     // - String separator
             ByteVector.fromString("bar", StringType.Latin1, undefined, true)    // - String 2

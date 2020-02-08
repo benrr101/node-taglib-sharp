@@ -181,7 +181,7 @@ export class UrlLinkFrame extends Frame {
 
         const fieldList = [];
         let index = 0;
-        if (this.frameId === FrameIdentifiers.WXXX) {
+        if (this.frameId === FrameIdentifiers.WXXX && data.length > 0) {
             // Text Encoding    $xx
             // Description      <text string according to encoding> $00 (00)
             // URL              <text string>
@@ -192,26 +192,29 @@ export class UrlLinkFrame extends Frame {
             if (delimIndex >= 0) {
                 const description = data.toString(delimIndex - 1, encoding, 1);
                 fieldList.push(description);
-                index += delimIndex - 1;
+                index += delimIndex - 1 + delim.length;
             }
 
             index += 1;
         }
 
-        // Read the url from the data
-        let url = data.toString(data.length - index, StringType.Latin1, index);
+        if (index < data.length) {
 
-        // Do a fast removal of end bytes
-        if (url.length > 1 && url[url.length - 1] === "\0") {
-            for (let i = url.length - 1; i >= 0; i--) {
-                if (url[i] !== "\0") {
-                    url = url.substr(0, i + 1);
-                    break;
+            // Read the url from the data
+            let url = data.toString(data.length - index, StringType.Latin1, index);
+
+            // Do a fast removal of end bytes
+            if (url.length > 1 && url[url.length - 1] === "\0") {
+                for (let i = url.length - 1; i >= 0; i--) {
+                    if (url[i] !== "\0") {
+                        url = url.substr(0, i + 1);
+                        break;
+                    }
                 }
             }
-        }
 
-        fieldList.push(url);
+            fieldList.push(url);
+        }
         this._textFields = fieldList;
     }
 

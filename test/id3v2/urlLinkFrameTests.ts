@@ -16,11 +16,12 @@ Chai.use(ChaiAsPromised);
 const assert = Chai.assert;
 
 const getTestFrameData = (): ByteVector => {
-    const header = new Id3v2FrameHeader(FrameIdentifiers.WCOM);
-    header.frameSize = 7;
+    const header = new Id3v2FrameHeader(FrameIdentifiers.WXXX);
+    header.frameSize = 8;
 
     return ByteVector.concatenate(
         header.render(4),
+        StringType.Latin1,
         ByteVector.fromString("foo", StringType.Latin1, undefined, true),
         ByteVector.getTextDelimiter(StringType.Latin1),
         ByteVector.fromString("bar", StringType.Latin1, undefined, true)
@@ -81,7 +82,7 @@ class Id3v2_UrlLinkFrame_ConstructorTests extends FrameConstructorTests {
     public fromOffsetRawData_userFrame() {
         // Arrange
         const header = new Id3v2FrameHeader(FrameIdentifiers.WXXX);
-        header.frameSize = 4;
+        header.frameSize = 12;
         const data = ByteVector.concatenate(
             header.render(4),
             0x00, 0x00,
@@ -121,11 +122,13 @@ class Id3v2_UrlLinkFrame_ConstructorTests extends FrameConstructorTests {
     public fromRawData_userFrame() {
         // Arrange
         const header = new Id3v2FrameHeader(FrameIdentifiers.WXXX);
-        header.frameSize = 4;
+        header.frameSize = 12;
         const data = ByteVector.concatenate(
             header.render(4),
             StringType.UTF16BE,
-            ByteVector.fromString("foo", StringType.UTF16BE, undefined, true)
+            ByteVector.fromString("foo", StringType.UTF16BE),
+            ByteVector.getTextDelimiter(StringType.UTF16BE),
+            ByteVector.fromString("bar", StringType.Latin1)
         );
 
         // Act
@@ -239,10 +242,10 @@ class Id3v2_UrlLinkFrame_MethodTests {
     @test
     public findUrlLinkFrame_noMatch_returnsUndefined() {
         // Arrange
-        const frames = [getTestUrlLinkFrame(), getTestUrlLinkFrame()]; // Type is WCOM
+        const frames = [getTestUrlLinkFrame(), getTestUrlLinkFrame()]; // Type is WXXX
 
         // Act
-        const result = UrlLinkFrame.findUrlLinkFrame(frames, FrameIdentifiers.WXXX);
+        const result = UrlLinkFrame.findUrlLinkFrame(frames, FrameIdentifiers.WCOM);
 
         // Assert
         assert.isUndefined(result);
@@ -256,7 +259,7 @@ class Id3v2_UrlLinkFrame_MethodTests {
         const frames = [frame1, frame2];
 
         // Act
-        const result = UrlLinkFrame.findUrlLinkFrame(frames, FrameIdentifiers.WCOM);
+        const result = UrlLinkFrame.findUrlLinkFrame(frames, FrameIdentifiers.WXXX);
 
         // Assert
         assert.equal(result, frame1);
