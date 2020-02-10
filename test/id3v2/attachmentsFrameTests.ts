@@ -107,11 +107,12 @@ class Id3v2_AttachmentFrame_ConstructorTests extends FrameConstructorTests {
         // Arrange
         const testData = ByteVector.fromString("fuxbuxqux", StringType.Latin1);
         const header = new Id3v2FrameHeader(FrameIdentifiers.APIC);
-        header.frameSize = 40;
+        header.frameSize = 41;
         const data = ByteVector.concatenate(
             header.render(4),
             StringType.UTF16BE,
             ByteVector.fromString("image/gif", StringType.Latin1),
+            ByteVector.getTextDelimiter(StringType.Latin1),
             PictureType.Artist,
             ByteVector.fromString("foobarbaz", StringType.UTF16BE),
             ByteVector.getTextDelimiter(StringType.UTF16BE),
@@ -196,7 +197,7 @@ class Id3v2_AttachmentFrame_ConstructorTests extends FrameConstructorTests {
             "image.gif",
             "image/gif",
             StringType.UTF16BE,
-            PictureType.Artist
+            undefined
         );
     }
 
@@ -205,12 +206,13 @@ class Id3v2_AttachmentFrame_ConstructorTests extends FrameConstructorTests {
         // Arrange
         const testData = ByteVector.fromString("fuxbuxqux", StringType.Latin1);
         const header = new Id3v2FrameHeader(FrameIdentifiers.APIC);
-        header.frameSize = 40;
+        header.frameSize = 41;
         const data = ByteVector.concatenate(
             header.render(4),
             0x00, 0x00,
             StringType.UTF16BE,
             ByteVector.fromString("image/gif", StringType.Latin1),
+            ByteVector.getTextDelimiter(StringType.Latin1),
             PictureType.Artist,
             ByteVector.fromString("foobarbaz", StringType.UTF16BE),
             ByteVector.getTextDelimiter(StringType.UTF16BE),
@@ -245,7 +247,6 @@ class Id3v2_AttachmentFrame_ConstructorTests extends FrameConstructorTests {
     ) {
         assert.isOk(frame);
         assert.equal(frame.frameClassType, FrameClassType.AttachmentFrame);
-        assert.strictEqual(frame.frameId, ft);
 
         assert.isTrue(ByteVector.equal(frame.data, d));
         assert.strictEqual(frame.description, desc);
@@ -253,6 +254,8 @@ class Id3v2_AttachmentFrame_ConstructorTests extends FrameConstructorTests {
         assert.strictEqual(frame.mimeType, mt);
         assert.strictEqual(frame.textEncoding, te);
         assert.strictEqual(frame.type, t);
+
+        assert.strictEqual(frame.frameId, ft);
     }
 }
 

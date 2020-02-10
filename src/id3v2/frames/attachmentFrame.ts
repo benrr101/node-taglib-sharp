@@ -355,12 +355,12 @@ export default class AttachmentFrame extends Frame {
 
                 this._type = data.get(mimeTypeEndIndex + 1);
 
-                descriptionEndIndex = data.find(delim, mimeTypeEndIndex + 1, delim.length);
-                const descriptionLength = descriptionEndIndex - mimeTypeLength - 1;
+                descriptionEndIndex = data.find(delim, mimeTypeEndIndex + 2, delim.length);
+                const descriptionLength = descriptionEndIndex - mimeTypeEndIndex - 1;
                 this._description = data.toString(
                     descriptionLength,
                     this._encoding,
-                    mimeTypeEndIndex + 1
+                    mimeTypeEndIndex + 2
                 );
             } else {
                 // Text encoding      $xx
@@ -370,6 +370,8 @@ export default class AttachmentFrame extends Frame {
                 // Picture data       <binary data>
                 const imageFormat = data.toString(3, StringType.Latin1, 1);
                 this._mimeType = Picture.getMimeTypeFromFilename(imageFormat);
+
+                this._type = data.get(4);
 
                 descriptionEndIndex = data.find(delim, 5, delim.length);
                 const descriptionLength = descriptionEndIndex - 5;
