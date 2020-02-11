@@ -191,7 +191,7 @@ export default class AttachmentFrame extends Frame {
             ? FrameIdentifiers.GEOB
             : FrameIdentifiers.APIC;
         if (this._header.frameId !== frameId) {
-            this._header = new Id3v2FrameHeader(frameId, 4);
+            this._header = new Id3v2FrameHeader(frameId);
         }
 
         this._type = value;
@@ -211,6 +211,7 @@ export default class AttachmentFrame extends Frame {
             frame._rawVersion = this._rawVersion;
         } else {
             frame._data = ByteVector.fromByteVector(this._data);
+            frame._description = this._description;
             frame._encoding = this._encoding;
             frame._filename = this._filename;
             frame._mimeType = this._mimeType;
@@ -237,7 +238,7 @@ export default class AttachmentFrame extends Frame {
     ): AttachmentFrame {
         Guards.truthy(frames, "frames");
         return frames.find((f) => {
-                if (f.description && f.description !== description) { return false; }
+                if (description && f.description !== description) { return false; }
                 if (type !== PictureType.Other && f.type !== type) { return false; }
                 return true;
             });
