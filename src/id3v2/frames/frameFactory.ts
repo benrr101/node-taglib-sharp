@@ -66,6 +66,7 @@ export default {
      */
     createFrame: (data: ByteVector, file: File, offset: number, version: number, alreadyUnsynced: boolean):
         {frame: Frame, offset: number} => {
+        Guards.uint(offset, "offset");
         Guards.byte(version, "version");
 
         let position = 0;
