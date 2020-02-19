@@ -97,7 +97,7 @@ export default class TermsOfUseFrame extends Frame {
     /**
      * Gets the text of the terms of use
      */
-    public get text(): string { return this._text; }
+    public get text(): string { return this._text || ""; }
     /**
      * Sets the text of the terms of use
      */

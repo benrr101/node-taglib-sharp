@@ -67,7 +67,7 @@ export default class PopularimeterFrame extends Frame {
      */
     public static fromUser(user: string): PopularimeterFrame {
         const frame = new PopularimeterFrame(new Id3v2FrameHeader(FrameIdentifiers.POPM));
-        frame.user = user;
+        frame._user = user;
         return frame;
     }
 
@@ -96,7 +96,7 @@ export default class PopularimeterFrame extends Frame {
     /**
      * Gets the rating of the current instance
      */
-    public get rating(): number { return this._rating; }
+    public get rating(): number { return this._rating || 0; }
     /**
      * Sets the rating of the current instance
      * @param value Rating of the current instance, must be a 8-bit unsigned integer.

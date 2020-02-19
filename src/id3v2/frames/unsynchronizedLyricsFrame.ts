@@ -246,9 +246,9 @@ export default class UnsynchronizedLyricsFrame extends Frame {
         return ByteVector.concatenate(
             encoding,
             ByteVector.fromString(this.language, StringType.Latin1),
-            ByteVector.fromString(this._description, encoding),
+            ByteVector.fromString(this.description, encoding),
             ByteVector.getTextDelimiter(encoding),
-            ByteVector.fromString(this._text, encoding)
+            ByteVector.fromString(this.text, encoding)
         );
     }
 

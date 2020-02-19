@@ -72,6 +72,10 @@ export default {
         let position = 0;
         const frameHeaderSize = Id3v2FrameHeader.getSize(version);
 
+        if (!data && !file) {
+            throw new Error("Argument exception: data or file must be provided");
+        }
+
         if (!data) {
             file.seek(offset);
             data = file.readBlock(frameHeaderSize);
@@ -103,7 +107,7 @@ export default {
         }
 
         // TODO: Support encryption
-        if ((header.flags & Id3v2FrameFlags.Encryption) > 0) {
+        if ((header.flags & Id3v2FrameFlags.Encryption) !== 0) {
             throw new NotImplementedError("Encryption is not supported");
         }
 
@@ -139,7 +143,7 @@ export default {
             data.addByteVector(file.readBlock(offset - filePosition));
         }
 
-        let func: any = UnknownFrame.fromOffsetRawData;
+        let func;
         if (header.frameId === FrameIdentifiers.TXXX) {
             // User text identification frame
             func = UserTextInformationFrame.fromOffsetRawData;
@@ -188,6 +192,9 @@ export default {
         } else if (header.frameId === FrameIdentifiers.ETCO) {
             // Event timing codes (frames 4.6)
             func = EventTimeCodeFrame.fromOffsetRawData;
+        } else {
+            // Return unknown
+            func = UnknownFrame.fromOffsetRawData;
         }
 
         return {

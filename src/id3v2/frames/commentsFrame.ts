@@ -280,7 +280,7 @@ export default class CommentsFrame extends Frame {
         v.addByteVector(ByteVector.fromString(this.language, StringType.Latin1));
         v.addByteVector(ByteVector.fromString(this.description, encoding));
         v.addByteVector(ByteVector.getTextDelimiter(encoding));
-        v.addByteVector(ByteVector.fromString(this._text, encoding));
+        v.addByteVector(ByteVector.fromString(this.text, encoding));
         return v;
     }
 }
