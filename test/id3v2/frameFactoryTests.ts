@@ -1,8 +1,9 @@
 import * as Chai from "chai";
 import * as ChaiAsPromised from "chai-as-promised";
+import * as TypeMoq from "typemoq";
 import {slow, suite, test, timeout} from "mocha-typescript";
 
-import FrameFactory from "../../src/id3v2/frames/frameFactory";
+import FrameFactory, {FrameCreator} from "../../src/id3v2/frames/frameFactory";
 import {ByteVector, StringType} from "../../src/byteVector";
 import TestFile from "../utilities/testFile";
 import {Frame, FrameClassType} from "../../src/id3v2/frames/frame";
@@ -440,6 +441,86 @@ class FrameFactoryTests {
         // Assert
         this.validateOutput(output, FrameClassType.AttachmentFrame, data.length);
 
+    }
+
+    @test
+    public createFrame_fromeFile_nonLazy() {
+        // Arrange
+        const data = PlayCountFrame.fromEmpty().render(4);
+        const file = TestFile.getFile(data);
+
+        // Act
+        const output = FrameFactory.createFrame(undefined, file, 0, 4, false);
+
+        // Assert
+        this.validateOutput(output, FrameClassType.PlayCountFrame, data.length);
+    }
+
+    @test
+    public createFrame_fromData_customFrameCreatorMatch() {
+        try {
+            // Arrange
+            const frame = PlayCountFrame.fromEmpty();
+            const data = frame.render(4);
+            const mockCreator = TypeMoq.Mock.ofType<FrameCreator>();
+            mockCreator.setup(
+                (c) => c(TypeMoq.It.isAny(), TypeMoq.It.isValue(0), TypeMoq.It.isAny(), TypeMoq.It.isValue(4))
+            ).returns(() => frame);
+
+            // Act
+            FrameFactory.addFrameCreator(mockCreator.object);
+            const output = FrameFactory.createFrame(data, undefined, 0, 4, false);
+
+            // Assert
+            assert.isOk(output);
+            assert.strictEqual(output.frame, frame);
+            assert.strictEqual(output.offset, data.length);
+
+            mockCreator.verify(
+                (c) => c(
+                    TypeMoq.It.is<ByteVector>((d) => ByteVector.equal(d, data)),
+                    TypeMoq.It.isValue(0),
+                    TypeMoq.It.isAny(),
+                    TypeMoq.It.isValue(4)
+                ),
+                TypeMoq.Times.once()
+            );
+        } finally {
+            FrameFactory.clearFrameCreators();
+        }
+    }
+
+    @test
+    public createFrame_fromData_customFrameCreatorNoMatch() {
+        try {
+            // Arrange
+            const frame = PlayCountFrame.fromEmpty();
+            const data = frame.render(4);
+            const mockCreator = TypeMoq.Mock.ofType<FrameCreator>();
+            mockCreator.setup(
+                (c) => c(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())
+            ).returns(() => undefined);
+
+            // Act
+            FrameFactory.addFrameCreator(mockCreator.object);
+            const output = FrameFactory.createFrame(data, undefined, 0, 4, false);
+
+            // Assert
+            this.validateOutput(output, FrameClassType.PlayCountFrame, data.length);
+            assert.notStrictEqual(output.frame, frame);
+
+            mockCreator.verify(
+                (c) => c(
+                    TypeMoq.It.is<ByteVector>((d) => ByteVector.equal(d, data)),
+                    TypeMoq.It.isValue(0),
+                    TypeMoq.It.isAny(),
+                    TypeMoq.It.isValue(4)
+                ),
+                TypeMoq.Times.once()
+            );
+        } finally {
+            FrameFactory.clearFrameCreators();
+        }
     }
 
     private validateOutput(output: {frame: Frame, offset: number}, fct: FrameClassType, o: number) {

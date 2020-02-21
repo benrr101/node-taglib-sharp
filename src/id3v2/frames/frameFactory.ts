@@ -24,7 +24,7 @@ import {Guards} from "../../utils";
 
 export type FrameCreator = (data: ByteVector, offset: number, header: Id3v2FrameHeader, version: number) => Frame;
 
-const customFrameCreators: FrameCreator[] = [];
+let customFrameCreators: FrameCreator[] = [];
 
 /**
  * Performs the necessary operations to determine and create the correct child classes of
@@ -44,10 +44,17 @@ export default {
      *     * version: number ID3v2 version the raw frame data is stored in (should be byte)
      *     * returns Frame if method was able to match the frame, falsy otherwise
      */
-    addFrameCreator: (creator: (data: ByteVector, offset: number, header: Id3v2FrameHeader, vrsion: number) => Frame):
+    addFrameCreator: (creator: FrameCreator):
         void => {
         Guards.truthy(creator, "creator");
         customFrameCreators.unshift(creator);
+    },
+
+    /**
+     * Removes all custom frame creators
+     */
+    clearFrameCreators: (): void => {
+        customFrameCreators = [];
     },
 
     /**
@@ -113,6 +120,7 @@ export default {
 
         // Try to find a custom creator
         for (const creator of customFrameCreators) {
+            // @TODO: If we're reading from a file, data will only ever contain the header
             const frame = creator(data, position, header, version);
             if (frame) {
                 return {
