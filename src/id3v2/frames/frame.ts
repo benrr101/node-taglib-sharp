@@ -1,4 +1,4 @@
-import Id3v2TagSettings from "../id3v2TagSettings";
+import Id3v2Settings from "../id3v2Settings";
 import SyncData from "../syncData";
 import {ByteVector, StringType} from "../../byteVector";
 import {CorruptFileError} from "../../errors";
@@ -207,14 +207,14 @@ export abstract class Frame {
      * @param type Value containing the original encoding
      * @param version Value containing the ID3v2 version to be encoded.
      * @returns StringType Value containing the correct encoding to use, based on
-     *     {@see Id3v2TagSettings.forceDefaultEncoding} and what is supported by
+     *     {@see Id3v2Settings.forceDefaultEncoding} and what is supported by
      *     {@paramref version}
      */
     protected static correctEncoding(type: StringType, version: number): StringType {
         Guards.byte(version, "version");
 
-        if (Id3v2TagSettings.forceDefaultEncoding) {
-            type = Id3v2TagSettings.defaultEncoding;
+        if (Id3v2Settings.forceDefaultEncoding) {
+            type = Id3v2Settings.defaultEncoding;
         }
 
         return version < 4 && type === StringType.UTF8

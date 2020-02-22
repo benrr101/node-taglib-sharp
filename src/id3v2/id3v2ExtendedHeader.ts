@@ -2,7 +2,7 @@ import SyncData from "./syncData";
 import {ByteVector} from "../byteVector";
 import {Guards} from "../utils";
 
-export default class ExtendedHeader {
+export default class Id3v2ExtendedHeader {
     private _size: number;
 
     private constructor() {}
@@ -12,11 +12,11 @@ export default class ExtendedHeader {
      * @param data Raw extended header structure
      * @param version ID3v2 version. Must be an unsigned 8-bit integer.
      */
-    public static fromData(data: ByteVector, version: number): ExtendedHeader {
+    public static fromData(data: ByteVector, version: number): Id3v2ExtendedHeader {
         Guards.truthy(data, "data");
         Guards.byte(version, "version");
 
-        const header = new ExtendedHeader();
+        const header = new Id3v2ExtendedHeader();
         header.parse(data, version);
         return header;
     }
@@ -24,8 +24,8 @@ export default class ExtendedHeader {
     /**
      * Constructs and initializes a new instance with no contents.
      */
-    public static fromEmpty(): ExtendedHeader {
-        return new ExtendedHeader();
+    public static fromEmpty(): Id3v2ExtendedHeader {
+        return new Id3v2ExtendedHeader();
     }
 
     /**

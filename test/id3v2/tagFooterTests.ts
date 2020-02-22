@@ -2,25 +2,25 @@ import * as Chai from "chai";
 import * as ChaiAsPromised from "chai-as-promised";
 import {slow, suite, test, timeout} from "mocha-typescript";
 
-import Footer from "../../src/id3v2/footer";
-import Id3v2TagSettings from "../../src/id3v2/id3v2TagSettings";
+import Id3v2TagFooter from "../../src/id3v2/id3v2TagFooter";
+import Id3v2Settings from "../../src/id3v2/id3v2Settings";
 import TestConstants from "../testConstants";
 import {ByteVector} from "../../src/byteVector";
-import {HeaderFlags} from "../../src/id3v2/headerFlags";
+import {Id3v2TagHeaderFlags} from "../../src/id3v2/id3v2TagHeader";
 
 // Setup chai
 Chai.use(ChaiAsPromised);
 const assert = Chai.assert;
 
-const getTestFooter = (majorVersion: number, minorVersion: number, flags: HeaderFlags): Footer => {
+const getTestFooter = (majorVersion: number, minorVersion: number, flags: Id3v2TagHeaderFlags): Id3v2TagFooter => {
     const data = ByteVector.concatenate(
-        Footer.fileIdentifier,
+        Id3v2TagFooter.fileIdentifier,
         majorVersion,
         minorVersion,
         flags,
         TestConstants.syncedUintBytes
     );
-    return new Footer(data);
+    return new Id3v2TagFooter(data);
 };
 
 @suite(timeout(3000), slow(1000))
@@ -28,8 +28,8 @@ class Id3v2_TagFooter_ConstructorTests {
     @test
     public falsyData() {
         // Act/Assert
-        assert.throws(() => { const _ = new Footer(null); });
-        assert.throws(() => { const _ = new Footer(undefined); });
+        assert.throws(() => { const _ = new Id3v2TagFooter(null); });
+        assert.throws(() => { const _ = new Id3v2TagFooter(undefined); });
     }
 
     @test
@@ -38,7 +38,7 @@ class Id3v2_TagFooter_ConstructorTests {
         const data = ByteVector.fromSize(1);
 
         // Act/Assert
-        assert.throws(() => { const _ = new Footer(data); });
+        assert.throws(() => { const _ = new Id3v2TagFooter(data); });
     }
 
     @test
@@ -47,26 +47,26 @@ class Id3v2_TagFooter_ConstructorTests {
         const data = ByteVector.fromSize(10);
 
         // Act/Assert
-        assert.throws(() => { const _ = new Footer(data); });
+        assert.throws(() => { const _ = new Id3v2TagFooter(data); });
     }
 
     @test
     public invalidFlags_version4() {
         // Arrange
         const data = ByteVector.concatenate(
-            Footer.fileIdentifier,
+            Id3v2TagFooter.fileIdentifier,
             0x04, 0x00, 0x07
         );
 
         // Act/Assert
-        assert.throws(() => { const _ = new Footer(data); });
+        assert.throws(() => { const _ = new Id3v2TagFooter(data); });
     }
 
     @test
     public invalidTagSizeBytes() {
         // Arrange
         const testData = ByteVector.concatenate(
-            Footer.fileIdentifier,
+            Id3v2TagFooter.fileIdentifier,
             0x04, 0x00, 0x00
         );
         const testData1 = ByteVector.concatenate(testData, 0x80, 0x00, 0x00, 0x00);
@@ -75,10 +75,10 @@ class Id3v2_TagFooter_ConstructorTests {
         const testData4 = ByteVector.concatenate(testData, 0x00, 0x00, 0x00, 0x80);
 
         // Act/Assert
-        assert.throws(() => { const _ = new Footer(testData1); });
-        assert.throws(() => { const _ = new Footer(testData2); });
-        assert.throws(() => { const _ = new Footer(testData3); });
-        assert.throws(() => { const _ = new Footer(testData4); });
+        assert.throws(() => { const _ = new Id3v2TagFooter(testData1); });
+        assert.throws(() => { const _ = new Id3v2TagFooter(testData2); });
+        assert.throws(() => { const _ = new Id3v2TagFooter(testData3); });
+        assert.throws(() => { const _ = new Id3v2TagFooter(testData4); });
     }
 
     @test
@@ -88,7 +88,7 @@ class Id3v2_TagFooter_ConstructorTests {
         const minorVersion = 0x00;
         const flags = 0xE0;
         const testData = ByteVector.concatenate(
-            Footer.fileIdentifier,
+            Id3v2TagFooter.fileIdentifier,
             majorVersion,
             minorVersion,
             flags,
@@ -96,7 +96,7 @@ class Id3v2_TagFooter_ConstructorTests {
         );
 
         // Act
-        const output = new Footer(testData);
+        const output = new Id3v2TagFooter(testData);
 
         // Assert
         assert.equal(output.flags, flags);
@@ -111,43 +111,43 @@ class Id3v2_TagFooter_PropertyTests {
     @test
     public getCompleteTagSize() {
         // Arrange
-        const footer = getTestFooter(4, 0, HeaderFlags.None);
+        const footer = getTestFooter(4, 0, Id3v2TagHeaderFlags.None);
 
         // Act
         const output = footer.completeTagSize;
 
         // Assert
-        assert.equal(output, footer.tagSize + Id3v2TagSettings.headerSize + Id3v2TagSettings.footerSize);
+        assert.equal(output, footer.tagSize + Id3v2Settings.headerSize + Id3v2Settings.footerSize);
     }
 
     @test
     public setFlags_validFlags() {
         // Arrange
-        const footer = getTestFooter(4, 0, HeaderFlags.None);
+        const footer = getTestFooter(4, 0, Id3v2TagHeaderFlags.None);
 
         // Act
-        footer.flags = HeaderFlags.FooterPresent;
+        footer.flags = Id3v2TagHeaderFlags.FooterPresent;
 
         // Assert
-        assert.equal(footer.flags, HeaderFlags.FooterPresent);
+        assert.equal(footer.flags, Id3v2TagHeaderFlags.FooterPresent);
     }
 
     @test
     public getMajorVersion_zero() {
         // Arrange
-        const footer = getTestFooter(0, 0, HeaderFlags.None);
+        const footer = getTestFooter(0, 0, Id3v2TagHeaderFlags.None);
 
         // Act
         const output = footer.majorVersion;
 
         // Assert
-        assert.equal(output, Id3v2TagSettings.defaultVersion);
+        assert.equal(output, Id3v2Settings.defaultVersion);
     }
 
     @test
     public getMajorVersion_nonZero() {
         // Arrange
-        const footer = getTestFooter(4, 0, HeaderFlags.None);
+        const footer = getTestFooter(4, 0, Id3v2TagHeaderFlags.None);
 
         // Act
         const output = footer.majorVersion;
@@ -159,7 +159,7 @@ class Id3v2_TagFooter_PropertyTests {
     @test
     public setMajorVersion_invalidValues() {
         // Arrange
-        const footer = getTestFooter(4, 0, HeaderFlags.None);
+        const footer = getTestFooter(4, 0, Id3v2TagHeaderFlags.None);
 
         // Act/Assert
         assert.throws(() => { footer.majorVersion = -1; });
@@ -172,7 +172,7 @@ class Id3v2_TagFooter_PropertyTests {
     @test
     public setRevisionNumber_invalidValue() {
         // Arrange
-        const footer = getTestFooter(4, 0, HeaderFlags.None);
+        const footer = getTestFooter(4, 0, Id3v2TagHeaderFlags.None);
 
         // Act/Assert
         assert.throws(() => { footer.revisionNumber = -1; });
@@ -183,7 +183,7 @@ class Id3v2_TagFooter_PropertyTests {
     @test
     public setRevisionNumber_validValue() {
         // Arrange
-        const footer = getTestFooter(4, 0, HeaderFlags.None);
+        const footer = getTestFooter(4, 0, Id3v2TagHeaderFlags.None);
 
         // Act
         footer.revisionNumber = 2;
@@ -195,7 +195,7 @@ class Id3v2_TagFooter_PropertyTests {
     @test
     public setTagSize_invalidValues() {
         // Arrange
-        const footer = getTestFooter(4, 0, HeaderFlags.None);
+        const footer = getTestFooter(4, 0, Id3v2TagHeaderFlags.None);
 
         // Act/Assert
         assert.throws(() => { footer.tagSize = -1; });
@@ -206,7 +206,7 @@ class Id3v2_TagFooter_PropertyTests {
     @test
     public publicsetTagSize_validValue() {
         // Arrange
-        const footer = getTestFooter(4, 0, HeaderFlags.None);
+        const footer = getTestFooter(4, 0, Id3v2TagHeaderFlags.None);
 
         // Act
         footer.tagSize = 0x1234;
@@ -225,13 +225,13 @@ class Id3v2_TagFooter_RenderTests {
         const minorVersion = 0x00;
         const flags = 0xE0;
         const testData = ByteVector.concatenate(
-            Footer.fileIdentifier,
+            Id3v2TagFooter.fileIdentifier,
             majorVersion,
             minorVersion,
             flags,
             TestConstants.syncedUintBytes
         );
-        const footer = new Footer(testData);
+        const footer = new Id3v2TagFooter(testData);
 
         // Act
         const output = footer.render();

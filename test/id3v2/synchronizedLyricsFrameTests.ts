@@ -4,7 +4,7 @@ import {slow, suite, test, timeout} from "mocha-typescript";
 
 import FrameConstructorTests from "./frameConstructorTests";
 import FramePropertyTests from "./framePropertyTests";
-import Id3v2TagSettings from "../../src/id3v2/id3v2TagSettings";
+import Id3v2Settings from "../../src/id3v2/id3v2Settings";
 import {ByteVector, StringType} from "../../src/byteVector";
 import {Frame, FrameClassType} from "../../src/id3v2/frames/frame";
 import {Id3v2FrameHeader} from "../../src/id3v2/frames/frameHeader";
@@ -73,7 +73,7 @@ class Id3v2_SynchronizedLyricsFrame_ConstructorTests extends FrameConstructorTes
             TimestampFormat.Unknown,
             language,
             [],
-            Id3v2TagSettings.defaultEncoding,
+            Id3v2Settings.defaultEncoding,
             textType
         );
     }

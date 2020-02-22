@@ -1,4 +1,4 @@
-import Id3v2TagSettings from "../id3v2TagSettings";
+import Id3v2Settings from "../id3v2Settings";
 import {ByteVector, StringType} from "../../byteVector";
 import {CorruptFileError} from "../../errors";
 import {Frame, FrameClassType} from "./frame";
@@ -18,7 +18,7 @@ export default class CommentsFrame extends Frame {
     private _description: string;
     private _language: string;
     private _text: string;
-    private _textEncoding: StringType = Id3v2TagSettings.defaultEncoding;
+    private _textEncoding: StringType = Id3v2Settings.defaultEncoding;
 
     // #region
 
@@ -35,7 +35,7 @@ export default class CommentsFrame extends Frame {
     public static fromDescription(
         description: string,
         language?: string,
-        encoding: StringType = Id3v2TagSettings.defaultEncoding
+        encoding: StringType = Id3v2Settings.defaultEncoding
     ): CommentsFrame {
         Guards.notNullOrUndefined(description, "description");
 

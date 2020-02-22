@@ -10,7 +10,7 @@ import {Frame, FrameClassType} from "../../src/id3v2/frames/frame";
 import {Id3v2FrameHeader} from "../../src/id3v2/frames/frameHeader";
 import {FrameIdentifier, FrameIdentifiers} from "../../src/id3v2/frameIdentifiers";
 import {IPicture, PictureType} from "../../src/picture";
-import Id3v2TagSettings from "../../src/id3v2/id3v2TagSettings";
+import Id3v2Settings from "../../src/id3v2/id3v2Settings";
 import FramePropertyTests from "./framePropertyTests";
 
 // Setup chai
@@ -68,7 +68,7 @@ class Id3v2_AttachmentFrame_ConstructorTests extends FrameConstructorTests {
             "fux",
             "bux",
             "application/octet-stream",
-            Id3v2TagSettings.defaultEncoding,
+            Id3v2Settings.defaultEncoding,
             PictureType.FrontCover
         );
     }
@@ -95,7 +95,7 @@ class Id3v2_AttachmentFrame_ConstructorTests extends FrameConstructorTests {
             "fux",
             "bux",
             "application/octet-stream",
-            Id3v2TagSettings.defaultEncoding,
+            Id3v2Settings.defaultEncoding,
             PictureType.NotAPicture
         );
     }

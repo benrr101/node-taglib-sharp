@@ -4,7 +4,7 @@ import {slow, suite, test, timeout} from "mocha-typescript";
 
 import FrameConstructorTests from "./frameConstructorTests";
 import FramePropertyTests from "./framePropertyTests";
-import Id3v2TagSettings from "../../src/id3v2/id3v2TagSettings";
+import Id3v2Settings from "../../src/id3v2/id3v2Settings";
 import TermsOfUseFrame from "../../src/id3v2/frames/termsOfUseFrame";
 import {ByteVector, StringType} from "../../src/byteVector";
 import {Frame, FrameClassType} from "../../src/id3v2/frames/frame";
@@ -31,7 +31,7 @@ class Id3v2_TermsOfUseFrame_ConstructorTests extends FrameConstructorTests {
         const output = TermsOfUseFrame.fromFields("fux");
 
         // Assert
-        this.assertFrame(output, "fux", "", Id3v2TagSettings.defaultEncoding);
+        this.assertFrame(output, "fux", "", Id3v2Settings.defaultEncoding);
     }
 
     @test

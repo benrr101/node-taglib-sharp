@@ -1,4 +1,4 @@
-import Id3v2TagSettings from "../id3v2TagSettings";
+import Id3v2Settings from "../id3v2Settings";
 import {ByteVector, StringType} from "../../byteVector";
 import {CorruptFileError} from "../../errors";
 import {Frame, FrameClassType} from "./frame";
@@ -10,7 +10,7 @@ import {Guards} from "../../utils";
 export default class AttachmentFrame extends Frame {
     private _data: ByteVector;
     private _description: string;
-    private _encoding: StringType = Id3v2TagSettings.defaultEncoding;
+    private _encoding: StringType = Id3v2Settings.defaultEncoding;
     private _filename: string;
     private _mimeType: string;
     private _rawPicture: IPicture;
@@ -163,7 +163,7 @@ export default class AttachmentFrame extends Frame {
      * Sets the text encoding to use when storing the current instance.
      * @param value Text encoding to use when storing the current instance.
      *     This encoding is overridden when rendering if
-     *     {@see Id3v2TagSettings.forceDefaultEncoding} is `true` or the render version does not
+     *     {@see Id3v2Settings.forceDefaultEncoding} is `true` or the render version does not
      *     support it.
      */
     public set textEncoding(value: StringType) {
@@ -421,7 +421,7 @@ export default class AttachmentFrame extends Frame {
         this._mimeType = picture.mimeType;
         this._type = picture.type;
 
-        this._encoding = Id3v2TagSettings.defaultEncoding;
+        this._encoding = Id3v2Settings.defaultEncoding;
 
         // Switch the frame ID if we discovered the attachment isn't an image
         if (this._type === PictureType.NotAPicture) {

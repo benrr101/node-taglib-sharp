@@ -1,5 +1,5 @@
 import Genres from "../../genres";
-import Id3v2TagSettings from "../id3v2TagSettings";
+import Id3v2Settings from "../id3v2Settings";
 import {ByteVector, StringType} from "../../byteVector";
 import {Frame, FrameClassType} from "./frame";
 import {Id3v2FrameHeader} from "./frameHeader";
@@ -131,7 +131,7 @@ export class TextInformationFrame extends Frame {
     private static COVER_STRING = "Cover";
     private static REMIX_STRING = "Remix";
 
-    protected _encoding: StringType = Id3v2TagSettings.defaultEncoding;
+    protected _encoding: StringType = Id3v2Settings.defaultEncoding;
     protected _rawData: ByteVector;
     protected _rawVersion: number;
     protected _textFields: string[] = [];
@@ -150,7 +150,7 @@ export class TextInformationFrame extends Frame {
      */
     public static fromIdentifier(
         identifier: FrameIdentifier,
-        encoding: StringType = Id3v2TagSettings.defaultEncoding
+        encoding: StringType = Id3v2Settings.defaultEncoding
     ): TextInformationFrame {
         const frame = new TextInformationFrame(new Id3v2FrameHeader(identifier));
         frame._encoding = encoding;
@@ -540,7 +540,7 @@ export class UserTextInformationFrame extends TextInformationFrame {
      */
     public static fromDescription(
         description: string,
-        encoding: StringType = Id3v2TagSettings.defaultEncoding
+        encoding: StringType = Id3v2Settings.defaultEncoding
     ): UserTextInformationFrame {
         const frame = new UserTextInformationFrame(new Id3v2FrameHeader(FrameIdentifiers.TXXX));
         frame._encoding = encoding;

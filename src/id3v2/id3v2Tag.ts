@@ -2,11 +2,10 @@ import * as DateFormat from "dateformat";
 
 import AttachmentFrame from "./frames/attachmentFrame";
 import CommentsFrame from "./frames/commentsFrame";
-import ExtendedHeader from "./extendedHeader";
+import Id3v2ExtendedHeader from "./id3v2ExtendedHeader";
 import FrameFactory from "./frames/frameFactory";
 import Genres from "../genres";
-import Header from "./header";
-import Id3v2TagSettings from "./id3v2TagSettings";
+import Id3v2Settings from "./id3v2Settings";
 import SyncData from "./syncData";
 import UniqueFileIdentifierFrame from "./frames/uniqueFileIdentifierFrame";
 import UnsynchronizedLyricsFrame from "./frames/unsynchronizedLyricsFrame";
@@ -15,25 +14,80 @@ import {File, FileAccessMode, ReadStyle} from "../file";
 import {Frame, FrameClassType} from "./frames/frame";
 import {FrameIdentifier, FrameIdentifiers} from "./frameIdentifiers";
 import {Id3v2FrameFlags, Id3v2FrameHeader} from "./frames/frameHeader";
-import {HeaderFlags} from "./headerFlags";
+import {Id3v2TagHeader, Id3v2TagHeaderFlags} from "./id3v2TagHeader";
 import {IPicture} from "../picture";
 import {Tag, TagTypes} from "../tag";
 import {TextInformationFrame, UserTextInformationFrame} from "./frames/textInformationFrame";
 import {UrlLinkFrame} from "./frames/urlLinkFrame";
 import {Guards} from "../utils";
+import {CorruptFileError} from "../errors";
 
 export default class Id3v2Tag extends Tag {
     private static _language: string = undefined;       // @TODO: Use the os-locale module to supply a
                                                         // lazily loaded "default" locale
 
-    private _extendedHeader: ExtendedHeader;
+    private _extendedHeader: Id3v2ExtendedHeader;
     private _frameList: Frame[] = [];
-    private _header: Header;
+    private _header: Id3v2TagHeader;
     private _performersRole: string[];
 
     // #region Constructors
 
+    /**
+     * Constructs an empty ID3v2 tag
+     */
+    public constructor() {
+        super();
+    }
 
+    /**
+     * Constructs and initializes a new Tag by reading the contents from a specified position in
+     * the provided file.
+     * @param file File from which the contents of the new instance is to be read
+     * @param position Offset into the file where the tag should be read from
+     * @param style How the data is to be read into the current instance
+     * @returns Id3v2Tag Tag with the data from the file read into it
+     */
+    public static fromFile(file: File, position: number, style: ReadStyle): Id3v2Tag {
+        Guards.truthy(file, "file");
+        Guards.uint(position, "position");
+        if (position > file.length - Id3v2Settings.headerSize) {
+            throw new Error("Argument out of range: position must be within size of the file");
+        }
+
+        file.mode = FileAccessMode.Read;
+        const tag = new Id3v2Tag();
+        tag.read(file, position, style);
+        return tag;
+    }
+
+    /**
+     * Constructs and initializes a new Tag by reading the contents from a specified
+     * {@see ByteVector} object.
+     * @param data Tag data to read into a tag object
+     * @returns Id3v2Tag Tag with the data from the byte vector read into it
+     */
+    public static fromData(data: ByteVector): Id3v2Tag {
+        Guards.truthy(data, "data");
+        if (data.length < Id3v2Settings.headerSize) {
+            throw new CorruptFileError("Provided data does not contain enough bytes for an ID3v2 tag header");
+        }
+
+        const header = new Id3v2TagHeader(data);
+
+        // If the tag size is 0, then this is an invalid tag. Tags must contain at least one frame
+        const tag = new Id3v2Tag();
+        if (header.tagSize === 0) {
+            return tag;
+        }
+
+        if (data.length - Id3v2Settings.headerSize < header.tagSize) {
+            throw new CorruptFileError("Provided data does not enough tag data");
+        }
+
+        tag.parse(data.mid(Id3v2Settings.headerSize, header.tagSize), undefined, 0, ReadStyle.None);
+        return tag;
+    }
 
     // #endregion
 
@@ -59,13 +113,13 @@ export default class Id3v2Tag extends Tag {
     /**
      * Gets the header flags applied to the current instance.
      */
-    public get flags(): HeaderFlags { return this._header.flags; }
+    public get flags(): Id3v2TagHeaderFlags { return this._header.flags; }
     /**
      * Sets the header flags applied to the current instance
-     * @param value Bitwise combined {@see HeaderFlags} value contiaining flags applied to the
+     * @param value Bitwise combined {@see Id3v2TagHeaderFlags} value contiaining flags applied to the
      *     current instance.
      */
-    public set flags(value: HeaderFlags) { this._header.flags = value; }
+    public set flags(value: Id3v2TagHeaderFlags) { this._header.flags = value; }
 
     /**
      * Gets all frames contained in the current instance.
@@ -95,8 +149,8 @@ export default class Id3v2Tag extends Tag {
      * Gets the ID3v2 version for the current instance.
      */
     public get version(): number {
-        return Id3v2TagSettings.forceDefaultVersion
-            ? Id3v2TagSettings.defaultVersion
+        return Id3v2Settings.forceDefaultVersion
+            ? Id3v2Settings.defaultVersion
             : this._header.majorVersion;
     }
     /**
@@ -269,7 +323,7 @@ export default class Id3v2Tag extends Tag {
     }
     /** @inheritDoc via TCON frame */
     set genres(value: string[]) {
-        if (!value || !Id3v2TagSettings.useNumericGenres) {
+        if (!value || !Id3v2Settings.useNumericGenres) {
             this.setTextFrame(FrameIdentifiers.TCON, ...value);
             return;
         }
@@ -359,7 +413,7 @@ export default class Id3v2Tag extends Tag {
             this.addFrame(frame);
         }
         frame.text = value;
-        frame.textEncoding = Id3v2TagSettings.defaultEncoding;
+        frame.textEncoding = Id3v2Settings.defaultEncoding;
     }
 
     /** @inheritDoc via TIT1 frame */
@@ -758,10 +812,10 @@ export default class Id3v2Tag extends Tag {
         // tag's header. The "tag data" (everything that is included in Header.tagSize) includes
         // the extended header, frames and padding, but does not include the tag's header or footer
 
-        const hasFooter = (this._header.flags & HeaderFlags.FooterPresent) !== 0;
-        const unsyncAtFrameLevel = (this._header.flags & HeaderFlags.Unsynchronication) !== 0
+        const hasFooter = (this._header.flags & Id3v2TagHeaderFlags.FooterPresent) !== 0;
+        const unsyncAtFrameLevel = (this._header.flags & Id3v2TagHeaderFlags.Unsynchronication) !== 0
             && this.version >= 4;
-        const unsyncAtTagLevel = (this._header.flags & HeaderFlags.Unsynchronication) !== 0
+        const unsyncAtTagLevel = (this._header.flags & Id3v2TagHeaderFlags.Unsynchronication) !== 0
             && this.version < 4;
 
         this._header.majorVersion = hasFooter ? 4 : this.version;
@@ -769,7 +823,7 @@ export default class Id3v2Tag extends Tag {
         const tagData = ByteVector.empty();
 
         // TODO: Render the extended header
-        this._header.flags &= ~HeaderFlags.ExtendedHeader;
+        this._header.flags &= ~Id3v2TagHeaderFlags.ExtendedHeader;
 
         // Loop through the frames rendering them and adding them to tag data
         for (const frame of this._frameList) {
@@ -890,7 +944,7 @@ export default class Id3v2Tag extends Tag {
             }
 
             urlFrame.text = text;
-            urlFrame.textEncoding = Id3v2TagSettings.defaultEncoding;
+            urlFrame.textEncoding = Id3v2Settings.defaultEncoding;
         } else {
             const frames = this.getFramesByClassType<TextInformationFrame>(FrameClassType.TextInformationFrame);
             let frame = TextInformationFrame.findTextInformationFrame(frames, ident);
@@ -900,7 +954,7 @@ export default class Id3v2Tag extends Tag {
             }
 
             frame.text = text;
-            frame.textEncoding = Id3v2TagSettings.defaultEncoding;
+            frame.textEncoding = Id3v2Settings.defaultEncoding;
         }
     }
 
@@ -912,7 +966,7 @@ export default class Id3v2Tag extends Tag {
         // If the entire tag is marked as unsynchronized, and this tag is version ID3v2.3 or lower,
         // resynchronize it.
         const fullTagUnsync = this._header.majorVersion < 4
-            && (this._header.flags & HeaderFlags.Unsynchronication) !== 0;
+            && (this._header.flags & Id3v2TagHeaderFlags.Unsynchronication) !== 0;
 
         // Avoid loading all the ID3 tag if PictureLazy is enabled and size is significant enough
         // (ID3v2.4 and later only)
@@ -920,7 +974,7 @@ export default class Id3v2Tag extends Tag {
             fullTagUnsync ||
             this._header.tagSize < 1024 ||
             (style & ReadStyle.PictureLazy) !== 0 ||
-            (this._header.flags & HeaderFlags.ExtendedHeader) !== 0
+            (this._header.flags & Id3v2TagHeaderFlags.ExtendedHeader) !== 0
         )) {
             file.seek(position);
             data = file.readBlock(this._header.tagSize);
@@ -935,8 +989,8 @@ export default class Id3v2Tag extends Tag {
             + frameDataPosition - Id3v2FrameHeader.getSize(this._header.majorVersion);
 
         // Check for the extended header
-        if ((this._header.flags & HeaderFlags.ExtendedHeader) !== 0) {
-            this._extendedHeader = ExtendedHeader.fromData(data, this._header.majorVersion);
+        if ((this._header.flags & Id3v2TagHeaderFlags.ExtendedHeader) !== 0) {
+            this._extendedHeader = Id3v2ExtendedHeader.fromData(data, this._header.majorVersion);
 
             if (this._extendedHeader.size <= data.length) {
                 frameDataPosition += this._extendedHeader.size;
@@ -1037,20 +1091,20 @@ export default class Id3v2Tag extends Tag {
 
         file.mode = FileAccessMode.Read;
 
-        if (position > file.length - Id3v2TagSettings.headerSize) {
+        if (position > file.length - Id3v2Settings.headerSize) {
             throw new Error("Argument out of range: position must be less than the length of the file");
         }
 
         file.seek(position);
 
-        this._header = new Header(file.readBlock(Id3v2TagSettings.headerSize));
+        this._header = new Id3v2TagHeader(file.readBlock(Id3v2Settings.headerSize));
 
         // If the tag size is 0, then this is an invalid tag. Tags must contain at least one frame.
         if (this._header.tagSize === 0) {
             return;
         }
 
-        position += Id3v2TagSettings.headerSize;
+        position += Id3v2Settings.headerSize;
         this.parse(undefined, file, position, style);
     }
 
@@ -1151,7 +1205,7 @@ export default class Id3v2Tag extends Tag {
         if (!text && frame) {
             this.removeFrame(frame);
         } else {
-            frame = UserTextInformationFrame.fromDescription(description, Id3v2TagSettings.defaultEncoding);
+            frame = UserTextInformationFrame.fromDescription(description, Id3v2Settings.defaultEncoding);
             frame.text = text.split(";");
             this.addFrame(frame);
         }

@@ -1,7 +1,7 @@
 import {StringType} from "../byteVector";
 import {Guards} from "../utils";
 
-export default class Id3v2TagSettings {
+export default class Id3v2Settings {
     private static _defaultEncoding: StringType = StringType.UTF8;
     private static _defaultVersion: number = 3;
     private static _forceDefaultEncoding: boolean = false;
@@ -27,7 +27,7 @@ export default class Id3v2TagSettings {
      * Gets the default version to use when creating new tags.
      * If {@see forceDefaultEncoding} is `true` then all tags will be rendered with this version.
      */
-    public static get defaultVersion(): number { return Id3v2TagSettings._defaultVersion; }
+    public static get defaultVersion(): number { return Id3v2Settings._defaultVersion; }
     /**
      * Sets the default version to use when creating new tags.
      * If {@see forceDefaultEncoding} is `true` then all tags will be rendered with this version.
@@ -36,7 +36,7 @@ export default class Id3v2TagSettings {
     public static set defaultVersion(value: number) {
         Guards.byte(value, "value");
         Guards.betweenInclusive(value, 2, 4, "value");
-        Id3v2TagSettings._defaultVersion = value;
+        Id3v2Settings._defaultVersion = value;
     }
 
     /**
@@ -48,14 +48,14 @@ export default class Id3v2TagSettings {
      * Gets whether or not to render all frames with the default encoding rather than their
      * original encoding.
      */
-    public static get forceDefaultEncoding(): boolean { return Id3v2TagSettings._forceDefaultEncoding; }
+    public static get forceDefaultEncoding(): boolean { return Id3v2Settings._forceDefaultEncoding; }
     /**
      * Sets whether or not to render all frames with the default encoding rather than their
      * original encoding.
      * @param value If `true` frames will be rendered using {@see defaultEncoding} rather than
      *     their original encoding.
      */
-    public static set forceDefaultEncoding(value: boolean) { Id3v2TagSettings._forceDefaultEncoding = value; }
+    public static set forceDefaultEncoding(value: boolean) { Id3v2Settings._forceDefaultEncoding = value; }
 
     /**
      * Gets whether or not to save all tags in the default version rather than their original
