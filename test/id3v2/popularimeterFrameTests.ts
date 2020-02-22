@@ -31,7 +31,7 @@ class Id3v2_PopularimeterFrame_ConstructorTests extends FrameConstructorTests {
         const frame = PopularimeterFrame.fromUser("fux");
 
         // Assert
-        this.assertFrame(frame, "fux", undefined, undefined);
+        this.assertFrame(frame, "fux", undefined, 0);
     }
 
     @test

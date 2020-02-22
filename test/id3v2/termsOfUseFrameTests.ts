@@ -31,7 +31,7 @@ class Id3v2_TermsOfUseFrame_ConstructorTests extends FrameConstructorTests {
         const output = TermsOfUseFrame.fromFields("fux");
 
         // Assert
-        this.assertFrame(output, "fux", undefined, Id3v2TagSettings.defaultEncoding);
+        this.assertFrame(output, "fux", "", Id3v2TagSettings.defaultEncoding);
     }
 
     @test
@@ -40,7 +40,7 @@ class Id3v2_TermsOfUseFrame_ConstructorTests extends FrameConstructorTests {
         const output = TermsOfUseFrame.fromFields("fux", StringType.UTF16BE);
 
         // Assert
-        this.assertFrame(output, "fux", undefined, StringType.UTF16BE);
+        this.assertFrame(output, "fux", "", StringType.UTF16BE);
     }
 
     @test
@@ -141,9 +141,14 @@ class Id3v2_TermsOfUseFrame_PropertyTests {
 
     @test
     public text() {
+        // Arrange
+        const set = (v: string) => { frame.text = v; };
+        const get = () => frame.text;
+
         const frame = TermsOfUseFrame.fromFields("eng");
-        FramePropertyTests.propertyRoundTrip((v) => { frame.text = v; }, () => frame.text, "fux");
-        FramePropertyTests.propertyRoundTrip((v) => { frame.text = v; }, () => frame.text, undefined);
+        FramePropertyTests.propertyRoundTrip(set, get, "fux");
+        FramePropertyTests.propertyNormalized(set, get, undefined, "");
+        FramePropertyTests.propertyNormalized(set, get, null, "");
     }
 
     @test
