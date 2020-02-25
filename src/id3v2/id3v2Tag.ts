@@ -10,6 +10,7 @@ import SyncData from "./syncData";
 import UniqueFileIdentifierFrame from "./frames/uniqueFileIdentifierFrame";
 import UnsynchronizedLyricsFrame from "./frames/unsynchronizedLyricsFrame";
 import {ByteVector, StringType} from "../byteVector";
+import {CorruptFileError} from "../errors";
 import {File, FileAccessMode, ReadStyle} from "../file";
 import {Frame, FrameClassType} from "./frames/frame";
 import {FrameIdentifier, FrameIdentifiers} from "./frameIdentifiers";
@@ -20,7 +21,6 @@ import {Tag, TagTypes} from "../tag";
 import {TextInformationFrame, UserTextInformationFrame} from "./frames/textInformationFrame";
 import {UrlLinkFrame} from "./frames/urlLinkFrame";
 import {Guards} from "../utils";
-import {CorruptFileError} from "../errors";
 
 export default class Id3v2Tag extends Tag {
     private static _language: string = undefined;       // @TODO: Use the os-locale module to supply a
@@ -55,7 +55,6 @@ export default class Id3v2Tag extends Tag {
             throw new Error("Argument out of range: position must be within size of the file");
         }
 
-        file.mode = FileAccessMode.Read;
         const tag = new Id3v2Tag();
         tag.read(file, position, style);
         return tag;
@@ -73,19 +72,19 @@ export default class Id3v2Tag extends Tag {
             throw new CorruptFileError("Provided data does not contain enough bytes for an ID3v2 tag header");
         }
 
-        const header = new Id3v2TagHeader(data);
+        const tag = new Id3v2Tag();
+        tag._header = new Id3v2TagHeader(data);
 
         // If the tag size is 0, then this is an invalid tag. Tags must contain at least one frame
-        const tag = new Id3v2Tag();
-        if (header.tagSize === 0) {
+        if (tag._header.tagSize === 0) {
             return tag;
         }
 
-        if (data.length - Id3v2Settings.headerSize < header.tagSize) {
+        if (data.length - Id3v2Settings.headerSize < tag._header.tagSize) {
             throw new CorruptFileError("Provided data does not enough tag data");
         }
 
-        tag.parse(data.mid(Id3v2Settings.headerSize, header.tagSize), undefined, 0, ReadStyle.None);
+        tag.parse(data.mid(Id3v2Settings.headerSize, tag._header.tagSize), undefined, 0, ReadStyle.None);
         return tag;
     }
 
@@ -970,7 +969,7 @@ export default class Id3v2Tag extends Tag {
 
         // Avoid loading all the ID3 tag if PictureLazy is enabled and size is significant enough
         // (ID3v2.4 and later only)
-        if (data && (
+        if (file && (
             fullTagUnsync ||
             this._header.tagSize < 1024 ||
             (style & ReadStyle.PictureLazy) !== 0 ||
@@ -985,8 +984,7 @@ export default class Id3v2Tag extends Tag {
         }
 
         let frameDataPosition = data ? 0 : position;
-        let frameDataEndPosition = (data ? data.length : this._header.tagSize)
-            + frameDataPosition - Id3v2FrameHeader.getSize(this._header.majorVersion);
+        let frameDataEndPosition = (data ? data.length : this._header.tagSize) + frameDataPosition;
 
         // Check for the extended header
         if ((this._header.flags & Id3v2TagHeaderFlags.ExtendedHeader) !== 0) {
@@ -1016,18 +1014,22 @@ export default class Id3v2Tag extends Tag {
                     this._header.majorVersion,
                     fullTagUnsync
                 );
+
+                // If the frame factory returned undefined, that means we've hit the end of frames
+                if (!frameRead) {
+                    break;
+                }
+
+                // We found a frame, deconstruct the read result
                 frame = frameRead.frame;
                 frameDataPosition = frameRead.offset;
             } catch (e) {
                 if (!e.hasOwnProperty("isNotImplementedError") && !e.hasOwnProperty("isCorruptFileError")) {
                     throw e;
                 } else {
+                    // @TODO: In this case, we're actually entering an infinite loop. Add a catch for exceptions in the frame factory
                     continue;
                 }
-            }
-
-            if (!frame) {
-                break;
             }
 
             // Only add frames that contain data
@@ -1086,9 +1088,6 @@ export default class Id3v2Tag extends Tag {
     }
 
     protected read(file: File, position: number, style: ReadStyle): void {
-        Guards.truthy(file, "file");
-        Guards.uint(position, "position");
-
         file.mode = FileAccessMode.Read;
 
         if (position > file.length - Id3v2Settings.headerSize) {
@@ -1152,33 +1151,6 @@ export default class Id3v2Tag extends Tag {
         // frame
         const result = frame ? frame.text.join(";") : undefined;        // TODO: Consider escaping ';' before joining?
         return result || undefined;
-    }
-
-    private makeFirstOfType(frame: Frame): void {
-        const type = frame.frameId;
-
-        let swapping: Frame;
-        for (let i = 0; i < this._frameList.length; i++) {
-            if (!swapping) {
-                if (this._frameList[i].frameId === type) {
-                    swapping = frame;
-                } else {
-                    continue;
-                }
-            }
-
-            const tmp = this._frameList[i];
-            this._frameList[i] = swapping;
-            swapping = tmp;
-
-            if (swapping === frame) {
-                return;
-            }
-        }
-
-        if (swapping) {
-            this._frameList.push(swapping);
-        }
     }
 
     private setUfidText(owner: string, text: string): void {

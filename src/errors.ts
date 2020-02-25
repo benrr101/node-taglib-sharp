@@ -4,6 +4,10 @@ export class CorruptFileError extends Error {
     public constructor(msg?: string) {
         super(msg);
     }
+
+    public static errorIs(e: Error): boolean {
+        return e.hasOwnProperty("isCorruptFileError");
+    }
 }
 
 export class NotImplementedError extends Error {
@@ -11,5 +15,9 @@ export class NotImplementedError extends Error {
 
     public constructor(message?: string) {
         super(`Not implemented${message ? `: ${message}` : ""}`);
+    }
+
+    public static errorIs(e: Error): boolean {
+        return e.hasOwnProperty("isNotImplementedError");
     }
 }

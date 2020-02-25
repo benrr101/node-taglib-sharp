@@ -33,7 +33,7 @@ export default {
      * @param data Object to resynchronize
      */
     resyncByteVector: (data: ByteVector): void => {
-        Guards.notNullOrUndefined(data, "data");
+        Guards.truthy(data, "data");
 
         let i = 0;
         let j = 0;
