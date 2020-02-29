@@ -14,7 +14,7 @@ import {CorruptFileError} from "../errors";
 import {File, FileAccessMode, ReadStyle} from "../file";
 import {Frame, FrameClassType} from "./frames/frame";
 import {FrameIdentifier, FrameIdentifiers} from "./frameIdentifiers";
-import {Id3v2FrameFlags, Id3v2FrameHeader} from "./frames/frameHeader";
+import {Id3v2FrameFlags} from "./frames/frameHeader";
 import {Id3v2TagHeader, Id3v2TagHeaderFlags} from "./id3v2TagHeader";
 import {IPicture} from "../picture";
 import {Tag, TagTypes} from "../tag";
@@ -339,29 +339,66 @@ export default class Id3v2Tag extends Tag {
         this.setTextFrame(FrameIdentifiers.TCON, ...value);
     }
 
-    /** @inheritDoc via TDRC frame */
+    /**
+     * @inheritDoc
+     * If a TDRC frame exists, the year will be read from that. If a TDRC frame doesn't exist and a
+     * TYER or TYE frame exists, the year will be read from that. Failing both cases, 0 will be
+     * returned.
+     */
     get year(): number {
-        const text = this.getTextAsString(FrameIdentifiers.TDRC);
-        if (!text || text.length < 4) { return 0; }
-
-        const year = Number.parseInt(text.substr(0, 4), 10);
-        // @TODO: Check places where we use this pattern... .parseInt doesn't parse the whole string if it started with
-        //     good data
-        if (Number.isNaN(year) || year < 0) {
-            return 0;
+        // @TODO: get it from TDRC if it exists, get it from TYER failing that
+        // Case 1: We have a TDRC frame (v2.4), preferentially use that
+        const tdrcText = this.getTextAsString(FrameIdentifiers.TDRC);
+        if (tdrcText && tdrcText.length > 4) {
+            // @TODO: Check places where we use this pattern... .parseInt doesn't parse the whole string if it started
+            //  with good data
+            return Number.parseInt(tdrcText.substr(0, 4), 10);
         }
 
-        return year;
+        // Case 2: We have a TYER frame (v2.3/v2.2)
+        const tyerText = this.getTextAsString(FrameIdentifiers.TYER);
+        if (tyerText && tyerText.length > 4) {
+            // @TODO: Check places where we use this pattern... .parseInt doesn't parse the whole string if it started
+            //  with good data
+            return Number.parseInt(tdrcText.substr(0, 4), 10);
+        }
+
+        // Case 3: Neither, return 0
+        return 0;
     }
     /**
-     * @inheritDoc via TDRC frame
+     * @inheritDoc
      * NOTE: values >9999will remove the frame
      */
     set year(value: number) {
         Guards.uint(value, "value");
+
+        // Case 0: Frame should be deleted
         if (value > 9999) {
             value = 0;
         }
+
+        // Case 1: We have a TDRC frame (v2.4), preferentially replace contents with year
+        const tdrcFrames = this.getFramesByIdentifier<TextInformationFrame>(
+            FrameClassType.TextInformationFrame,
+            FrameIdentifiers.TDRC
+        );
+        if (tdrcFrames.length > 0) {
+            this.setNumberFrame(FrameIdentifiers.TDRC, value, 0);
+            return;
+        }
+
+        // Case 2: We have a TYER/TYE frame (v2.3/v2.2)
+        const tyerFrames = this.getFramesByIdentifier<TextInformationFrame>(
+            FrameClassType.TextInformationFrame,
+            FrameIdentifiers.TYER
+        );
+        if (tyerFrames.length > 0) {
+            this.setNumberFrame(FrameIdentifiers.TYER, value, 0);
+            return;
+        }
+
+        // Case 3: We have neither type of frame, create a TDRC frame
         this.setNumberFrame(FrameIdentifiers.TDRC, value, 0);
     }
 
@@ -622,9 +659,6 @@ export default class Id3v2Tag extends Tag {
 
     /** @inheritDoc */
     public get isEmpty(): boolean { return this._frameList.length === 0; }
-
-
-    // #endregion
 
     // #endregion
 
@@ -996,94 +1030,30 @@ export default class Id3v2Tag extends Tag {
             }
         }
 
-        // Parse the frames. TDRC, TDAT, and TIME will be needed for post-processing, so check for
-        // for them as they are loaded
-        let tdrc: TextInformationFrame;
-        let tyer: TextInformationFrame;
-        let tdat: TextInformationFrame;
-        let time: TextInformationFrame;
-
+        // Parse the frames
         while (frameDataPosition < frameDataEndPosition) {
-            let frame: Frame;
+            const frameRead = FrameFactory.createFrame(
+                data,
+                file,
+                frameDataPosition,
+                this._header.majorVersion,
+                fullTagUnsync
+            );
 
-            try {
-                const frameRead = FrameFactory.createFrame(
-                    data,
-                    file,
-                    frameDataPosition,
-                    this._header.majorVersion,
-                    fullTagUnsync
-                );
-
-                // If the frame factory returned undefined, that means we've hit the end of frames
-                if (!frameRead) {
-                    break;
-                }
-
-                // We found a frame, deconstruct the read result
-                frame = frameRead.frame;
-                frameDataPosition = frameRead.offset;
-            } catch (e) {
-                if (!e.hasOwnProperty("isNotImplementedError") && !e.hasOwnProperty("isCorruptFileError")) {
-                    throw e;
-                } else {
-                    // @TODO: In this case, we're actually entering an infinite loop. Add a catch for exceptions in the frame factory
-                    continue;
-                }
+            // If the frame factory returned undefined, that means we've hit the end of frames
+            if (!frameRead) {
+                break;
             }
+
+            // We found a frame, deconstruct the read result
+            const frame = frameRead.frame;
+            frameDataPosition = frameRead.offset;
 
             // Only add frames that contain data
-            if (frame.size === 0) {
+            if (!frame || frame.size === 0) {
                 continue;
             }
-
             this.addFrame(frame);
-
-            // If the tag is version 4, no post-processing needed
-            if (this._header.majorVersion === 4) {
-                continue;
-            }
-
-            // Load up the first instance of each for post-processing
-            if (!tdrc && frame.frameId === FrameIdentifiers.TDRC) {
-                tdrc = <TextInformationFrame> frame;
-            } else if (!tyer && frame.frameId === FrameIdentifiers.TYER) {
-                tyer = <TextInformationFrame> frame;
-            } else if (!tdat && frame.frameId === FrameIdentifiers.TDAT) {
-                tdat = <TextInformationFrame> frame;
-            } else if (!time && frame.frameId === FrameIdentifiers.TIME) {
-                time = <TextInformationFrame> frame;
-            }
-        }
-
-        // Try to fill out the data/time of the TDRC frame. Can't do that if no TDRC frame exists,
-        // or if there is no TDAT frame, or if TDRC already has the date.
-        if (!tdrc || !tdat || tdrc.toString().length !== 4) {
-            return;
-        }
-
-        // Start with the year already in TDRC, then add the TDAT and TIME if available
-        let tdrcText = tdrc.toString();
-
-        // Add the data
-        if (tdat) {
-            const tdatText = tdat.toString();
-            if (tdatText.length === 4) {
-                tdrcText += `-${tdatText.substr(0, 2)}-${tdatText.substr(2, 2)}`;
-
-                // Add the time
-                if (time) {
-                    const timeText = time.toString();
-
-                    if (timeText.length === 4) {
-                        tdrcText += `T${timeText.substr(0, 2)}:${timeText.substr(2, 2)}`;
-                    }
-
-                    this.removeFrames(FrameIdentifiers.TDAT);
-                }
-            }
-
-            tdrc.text = [tdrcText.toString()];
         }
     }
 

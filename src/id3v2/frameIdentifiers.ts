@@ -1,5 +1,6 @@
 import {ByteVector, StringType} from "../byteVector";
 import {Guards} from "../utils";
+import {Frame} from "./frames/frame";
 
 /**
  * @summary Represents the identifier of a frame, depending on the version this may be 3 or 4
@@ -99,7 +100,7 @@ const uniqueFrameIdentifiers: {[key: string]: FrameIdentifier} = {
     TDEN: new FrameIdentifier("TDEN", undefined, undefined), // Encoding time
     TDLY: new FrameIdentifier("TDLY", "TDLY", "TDY"), // Playlist delay
     TDOR: new FrameIdentifier("TDOR", "TORY", "TOR"), // Original release time
-    TDRC: new FrameIdentifier("TDRC", "TYER", "TYE"), // Recording time (v2.4/v2.3) / Year (v2.2)
+    TDRC: new FrameIdentifier("TDRC", undefined, undefined), // Recording time
     TDRL: new FrameIdentifier("TDRL", undefined, undefined), // Release time
     TDTG: new FrameIdentifier("TDTG", undefined, undefined), // Tagging time
     TENC: new FrameIdentifier("TENC", "TENC", "TEN"), // Encoded by
@@ -140,6 +141,7 @@ const uniqueFrameIdentifiers: {[key: string]: FrameIdentifier} = {
     TSSE: new FrameIdentifier("TSSE", "TSSE", "TSS"), // Software/hardware and setting used for encoding
     TSST: new FrameIdentifier("TSST", undefined, undefined), // Set subtitle
     TXXX: new FrameIdentifier("TXXX", "TXXX", "TXX"), // User defined text information frame
+    TYER: new FrameIdentifier(undefined, "TYER", "TYE"), // Year
     UFID: new FrameIdentifier("UFID", "UFID", "UFI"), // Unique file identifer
     USER: new FrameIdentifier("USER", "USER", undefined), // Terms of use
     USLT: new FrameIdentifier("USLT", "USLT", "ULT"), // Unsynchronised lyric/text transcription

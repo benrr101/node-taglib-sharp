@@ -115,14 +115,29 @@ class Id3v2_Tag_ConstructorTests {
         assert.isFalse(emptyFrameFound);
     }
 
-    // @test
-    // public fromData_fullyUnsynchronized() {
-    //     // Arrange
-    //     const data = ByteVector.concatenate(
-    //         getTestTagHeader(3, Id3v2TagHeaderFlags.Unsynchronication, ),
-    //
-    //     )
-    // }
+    @test
+    public fromData_extendedHeader() {
+        // Arrange
+        const frame1 = PlayCountFrame.fromEmpty().render(4);
+        const data = ByteVector.concatenate(
+            getTestTagHeader(4, Id3v2TagHeaderFlags.ExtendedHeader, frame1.length + 10),
+            SyncData.fromUint(10),
+            0x01,
+            0x00,
+            0x00, 0x00, 0x00, 0x00,
+            frame1
+        );
+
+        // Act
+        const tag = id3v2Tag.fromData(data);
+
+        // Assert
+        assert.isOk(tag);
+
+        // - Right frames
+        assert.strictEqual(tag.frames.length, 1);
+        assert.strictEqual(tag.frames[0].frameClassType, FrameClassType.PlayCountFrame);
+    }
 
     @test
     public fromFile_falsyFile() {
