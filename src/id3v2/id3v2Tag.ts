@@ -1059,11 +1059,6 @@ export default class Id3v2Tag extends Tag {
 
     protected read(file: File, position: number, style: ReadStyle): void {
         file.mode = FileAccessMode.Read;
-
-        if (position > file.length - Id3v2Settings.headerSize) {
-            throw new Error("Argument out of range: position must be less than the length of the file");
-        }
-
         file.seek(position);
 
         this._header = new Id3v2TagHeader(file.readBlock(Id3v2Settings.headerSize));
