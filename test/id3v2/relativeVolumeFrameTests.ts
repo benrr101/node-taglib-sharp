@@ -4,7 +4,7 @@ import * as ChaiAsPromised from "chai-as-promised";
 import {slow, suite, test, timeout} from "mocha-typescript";
 
 import ConstructorTests from "./frameConstructorTests";
-import FramePropertyTests from "./framePropertyTests";
+import PropertyTests from "../utilities/propertyTests";
 import {ChannelData, ChannelType, RelativeVolumeFrame} from "../../src/id3v2/frames/relativeVolumeFrame";
 import {ByteVector, StringType} from "../../src/byteVector";
 import {Frame, FrameClassType} from "../../src/id3v2/frames/frame";
@@ -437,7 +437,7 @@ class Id3v2_RelativeVolumeFrameMethodTests {
         const frame = RelativeVolumeFrame.fromIdentification("foo");
 
         // Act / Assert
-        FramePropertyTests.propertyRoundTrip(
+        PropertyTests.propertyRoundTrip(
             (v) => { frame.setPeakBits(ChannelType.Subwoofer, v); },
             () => frame.getPeakBits(ChannelType.Subwoofer),
             8
@@ -451,7 +451,7 @@ class Id3v2_RelativeVolumeFrameMethodTests {
         frame.setPeakBits(ChannelType.Subwoofer, 16);
 
         // Act / Assert
-        FramePropertyTests.propertyRoundTrip(
+        PropertyTests.propertyRoundTrip(
             (v) => { frame.setPeakVolume(ChannelType.Subwoofer, v); },
             () => frame.getPeakVolume(ChannelType.Subwoofer),
             BigInt(123)
@@ -464,7 +464,7 @@ class Id3v2_RelativeVolumeFrameMethodTests {
         const frame = RelativeVolumeFrame.fromIdentification("foo");
 
         // Act / Assert
-        FramePropertyTests.propertyRoundTrip(
+        PropertyTests.propertyRoundTrip(
             (v) => { frame.setVolumeAdjustment(ChannelType.Subwoofer, v); },
             () => frame.getVolumeAdjustment(ChannelType.Subwoofer),
             8

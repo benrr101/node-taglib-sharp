@@ -91,4 +91,6 @@ export default class Id3v2Settings {
      * @param value Whether or not to use genres with numeric values when values when possible
      */
     public static set useNumericGenres(value: boolean) { this._useNumericGenres = value; }
+
+    // @TODO: Add flag for disabling iTunes-only frames
 }

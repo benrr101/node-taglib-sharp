@@ -134,7 +134,9 @@ const uniqueFrameIdentifiers: {[key: string]: FrameIdentifier} = {
     TRSN: new FrameIdentifier("TRSN", "TRSN", undefined), // Internet radio station name
     TRSO: new FrameIdentifier("TRSO", "TRSO", undefined), // Internet radio station owner
     TSIZ: new FrameIdentifier(undefined, "TSIZ", "TSI"), // Size
+    TSO2: new FrameIdentifier("TSO2", "TSO2", undefined), // iTunes only "Album Artist Sort"
     TSOA: new FrameIdentifier("TSOA", undefined, undefined), // Album sort order
+    TSOC: new FrameIdentifier("TSOC", "TSOC", undefined), // iTunes only "Composer Sort"
     TSOP: new FrameIdentifier("TSOP", undefined, undefined), // Performer sort order
     TSOT: new FrameIdentifier("TSOT", undefined, undefined), // Title sort order
     TSRC: new FrameIdentifier("TSRC", "TSRC", "TRC"), // ISRC (International standard recording code)
@@ -276,7 +278,9 @@ export const FrameIdentifiers: {[key: string]: FrameIdentifier} = {
     TRSO: uniqueFrameIdentifiers.TRSO,
     TSI:  uniqueFrameIdentifiers.TSIZ,
     TSIZ: uniqueFrameIdentifiers.TSIZ,
+    TSO2: uniqueFrameIdentifiers.TSO2,
     TSOA: uniqueFrameIdentifiers.TSOA,
+    TSOC: uniqueFrameIdentifiers.TSOC,
     TSOP: uniqueFrameIdentifiers.TSOP,
     TSOT: uniqueFrameIdentifiers.TSOT,
     TSRC: uniqueFrameIdentifiers.TSRC,

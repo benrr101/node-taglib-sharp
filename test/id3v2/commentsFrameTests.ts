@@ -4,7 +4,7 @@ import {slow, suite, test, timeout} from "mocha-typescript";
 
 import CommentsFrame from "../../src/id3v2/frames/commentsFrame";
 import FrameConstructorTests from "./frameConstructorTests";
-import FramePropertyTests from "./framePropertyTests";
+import PropertyTests from "../utilities/propertyTests";
 import Id3v2Settings from "../../src/id3v2/id3v2Settings";
 import {ByteVector, StringType} from "../../src/byteVector";
 import {Frame, FrameClassType} from "../../src/id3v2/frames/frame";
@@ -302,9 +302,9 @@ class Id3v2_CommentsFrame_PropertyTests {
 
         const set = (v: string) => { frame.description = v; };
         const get = () => frame.description;
-        FramePropertyTests.propertyRoundTrip(set, get, "fux");
-        FramePropertyTests.propertyNormalized(set, get, undefined, "");
-        FramePropertyTests.propertyNormalized(set, get, null, "");
+        PropertyTests.propertyRoundTrip(set, get, "fux");
+        PropertyTests.propertyNormalized(set, get, undefined, "");
+        PropertyTests.propertyNormalized(set, get, null, "");
     }
 
     @test
@@ -313,11 +313,11 @@ class Id3v2_CommentsFrame_PropertyTests {
 
         const set = (v: string) => { frame.language = v; };
         const get = () => frame.language;
-        FramePropertyTests.propertyRoundTrip(set, get, "jpn");
-        FramePropertyTests.propertyNormalized(set, get, undefined, "XXX");
-        FramePropertyTests.propertyNormalized(set, get, null, "XXX");
-        FramePropertyTests.propertyNormalized(set, get, "ab", "XXX");
-        FramePropertyTests.propertyNormalized(set, get, "abcd", "abc");
+        PropertyTests.propertyRoundTrip(set, get, "jpn");
+        PropertyTests.propertyNormalized(set, get, undefined, "XXX");
+        PropertyTests.propertyNormalized(set, get, null, "XXX");
+        PropertyTests.propertyNormalized(set, get, "ab", "XXX");
+        PropertyTests.propertyNormalized(set, get, "abcd", "abc");
     }
 
     @test
@@ -326,16 +326,16 @@ class Id3v2_CommentsFrame_PropertyTests {
 
         const set = (v: string) => { frame.text = v; };
         const get = () => frame.text;
-        FramePropertyTests.propertyRoundTrip(set, get, "fux");
-        FramePropertyTests.propertyNormalized(set, get, undefined, "");
-        FramePropertyTests.propertyNormalized(set, get, null, "");
+        PropertyTests.propertyRoundTrip(set, get, "fux");
+        PropertyTests.propertyNormalized(set, get, undefined, "");
+        PropertyTests.propertyNormalized(set, get, null, "");
     }
 
     @test
     public textEncoding() {
         const frame = getTestFrame();
 
-        FramePropertyTests.propertyRoundTrip(
+        PropertyTests.propertyRoundTrip(
             (v) => { frame.textEncoding = v; },
             () => frame.textEncoding,
             StringType.UTF16

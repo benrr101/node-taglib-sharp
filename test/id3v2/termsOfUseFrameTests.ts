@@ -3,7 +3,7 @@ import * as ChaiAsPromised from "chai-as-promised";
 import {slow, suite, test, timeout} from "mocha-typescript";
 
 import FrameConstructorTests from "./frameConstructorTests";
-import FramePropertyTests from "./framePropertyTests";
+import PropertyTests from "../utilities/propertyTests";
 import Id3v2Settings from "../../src/id3v2/id3v2Settings";
 import TermsOfUseFrame from "../../src/id3v2/frames/termsOfUseFrame";
 import {ByteVector, StringType} from "../../src/byteVector";
@@ -132,11 +132,11 @@ class Id3v2_TermsOfUseFrame_PropertyTests {
 
         // Act/Assert
         const frame = TermsOfUseFrame.fromFields("eng");
-        FramePropertyTests.propertyNormalized(set, get, "fu", "XXX");
-        FramePropertyTests.propertyNormalized(set, get, "fuxx", "fux");
-        FramePropertyTests.propertyNormalized(set, get, undefined, "XXX");
-        FramePropertyTests.propertyNormalized(set, get, null, "XXX");
-        FramePropertyTests.propertyRoundTrip(set, get, "fux");
+        PropertyTests.propertyNormalized(set, get, "fu", "XXX");
+        PropertyTests.propertyNormalized(set, get, "fuxx", "fux");
+        PropertyTests.propertyNormalized(set, get, undefined, "XXX");
+        PropertyTests.propertyNormalized(set, get, null, "XXX");
+        PropertyTests.propertyRoundTrip(set, get, "fux");
     }
 
     @test
@@ -146,15 +146,15 @@ class Id3v2_TermsOfUseFrame_PropertyTests {
         const get = () => frame.text;
 
         const frame = TermsOfUseFrame.fromFields("eng");
-        FramePropertyTests.propertyRoundTrip(set, get, "fux");
-        FramePropertyTests.propertyNormalized(set, get, undefined, "");
-        FramePropertyTests.propertyNormalized(set, get, null, "");
+        PropertyTests.propertyRoundTrip(set, get, "fux");
+        PropertyTests.propertyNormalized(set, get, undefined, "");
+        PropertyTests.propertyNormalized(set, get, null, "");
     }
 
     @test
     public textEncoding() {
         const frame = TermsOfUseFrame.fromFields("eng", StringType.Latin1);
-        FramePropertyTests.propertyRoundTrip(
+        PropertyTests.propertyRoundTrip(
             (v) => { frame.textEncoding = v; },
             () => frame.textEncoding,
             StringType.UTF16

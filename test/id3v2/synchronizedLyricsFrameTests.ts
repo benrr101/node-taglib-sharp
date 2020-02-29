@@ -3,7 +3,7 @@ import * as ChaiAsPromised from "chai-as-promised";
 import {slow, suite, test, timeout} from "mocha-typescript";
 
 import FrameConstructorTests from "./frameConstructorTests";
-import FramePropertyTests from "./framePropertyTests";
+import PropertyTests from "../utilities/propertyTests";
 import Id3v2Settings from "../../src/id3v2/id3v2Settings";
 import {ByteVector, StringType} from "../../src/byteVector";
 import {Frame, FrameClassType} from "../../src/id3v2/frames/frame";
@@ -348,8 +348,8 @@ class Id3v2_SynchronizedLyricsFrame_PropertyTests {
         const get = () => frame.description;
 
         // Act / Assert
-        FramePropertyTests.propertyRoundTrip(set, get, "fux" );
-        FramePropertyTests.propertyRoundTrip(set, get, undefined);
+        PropertyTests.propertyRoundTrip(set, get, "fux" );
+        PropertyTests.propertyRoundTrip(set, get, undefined);
     }
 
     @test
@@ -358,7 +358,7 @@ class Id3v2_SynchronizedLyricsFrame_PropertyTests {
         const frame = SynchronizedLyricsFrame.fromInfo("foo", "bar", SynchronizedTextType.Chord);
 
         // Act / Assert
-        FramePropertyTests.propertyRoundTrip(
+        PropertyTests.propertyRoundTrip(
             (v) => { frame.format = v; },
             () => frame.format,
             TimestampFormat.AbsoluteMilliseconds
@@ -373,9 +373,9 @@ class Id3v2_SynchronizedLyricsFrame_PropertyTests {
         const get = () => frame.language;
 
         // Act / Assert
-        FramePropertyTests.propertyRoundTrip(set, get, "fux");
-        FramePropertyTests.propertyRoundTrip(set, get, "shoe");
-        FramePropertyTests.propertyRoundTrip(set, get, "ab");
+        PropertyTests.propertyRoundTrip(set, get, "fux");
+        PropertyTests.propertyRoundTrip(set, get, "shoe");
+        PropertyTests.propertyRoundTrip(set, get, "ab");
     }
 
     @test
@@ -387,9 +387,9 @@ class Id3v2_SynchronizedLyricsFrame_PropertyTests {
         const value = [new SynchronizedText(123, "foo")];
 
         // Act / Assert
-        FramePropertyTests.propertyRoundTrip(set, get, value);
-        FramePropertyTests.propertyNormalized(set, get, undefined, []);
-        FramePropertyTests.propertyNormalized(set, get, null, []);
+        PropertyTests.propertyRoundTrip(set, get, value);
+        PropertyTests.propertyNormalized(set, get, undefined, []);
+        PropertyTests.propertyNormalized(set, get, null, []);
     }
 
     @test
@@ -398,7 +398,7 @@ class Id3v2_SynchronizedLyricsFrame_PropertyTests {
         const frame = SynchronizedLyricsFrame.fromInfo("foo", "bar", SynchronizedTextType.Chord);
 
         // Act / Assert
-        FramePropertyTests.propertyRoundTrip(
+        PropertyTests.propertyRoundTrip(
             (v) => { frame.textEncoding = v; },
             () => frame.textEncoding,
             StringType.UTF16BE
@@ -411,7 +411,7 @@ class Id3v2_SynchronizedLyricsFrame_PropertyTests {
         const frame = SynchronizedLyricsFrame.fromInfo("foo", "bar", SynchronizedTextType.Chord);
 
         // Act / Assert
-        FramePropertyTests.propertyRoundTrip(
+        PropertyTests.propertyRoundTrip(
             (v) => { frame.textType = v; },
             () => frame.textType,
             SynchronizedTextType.Trivia

@@ -3,7 +3,7 @@ import * as ChaiAsPromised from "chai-as-promised";
 import {slow, suite, test, timeout} from "mocha-typescript";
 
 import FrameConstructorTests from "./frameConstructorTests";
-import FramePropertyTests from "./framePropertyTests";
+import PropertyTests from "../utilities/propertyTests";
 import PrivateFrame from "../../src/id3v2/frames/privateFrame";
 import {ByteVector, StringType} from "../../src/byteVector";
 import {Frame, FrameClassType} from "../../src/id3v2/frames/frame";
@@ -120,7 +120,7 @@ class Id3v2_PrivateFrame_PropertyTests {
         const frame = PrivateFrame.fromOwner("fux");
 
         // Act / Assert
-        FramePropertyTests.propertyRoundTrip(
+        PropertyTests.propertyRoundTrip(
            (v) => { frame.privateData = v; },
            () => frame.privateData,
             ByteVector.fromString("bux")

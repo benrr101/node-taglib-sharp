@@ -115,7 +115,7 @@ export default class Id3v2Tag extends Tag {
     public get flags(): Id3v2TagHeaderFlags { return this._header.flags; }
     /**
      * Sets the header flags applied to the current instance
-     * @param value Bitwise combined {@see Id3v2TagHeaderFlags} value contiaining flags applied to the
+     * @param value Bitwise combined {@see Id3v2TagHeaderFlags} value containing flags applied to the
      *     current instance.
      */
     public set flags(value: Id3v2TagHeaderFlags) { this._header.flags = value; }
@@ -132,7 +132,7 @@ export default class Id3v2Tag extends Tag {
      */
     public get isCompilation(): boolean {
         const val = this.getTextAsString(FrameIdentifiers.TCMP);
-        return val && val !== "0";
+        return !!val && val !== "0";
     }
     /**
      * Gets whether or not the album described by the current instance is a compilation.
@@ -168,13 +168,11 @@ export default class Id3v2Tag extends Tag {
     public get tagTypes(): TagTypes { return TagTypes.Id3v2; }
 
     /**
-     * @inheritDoc
-     * From TIT2 frame
+     * @inheritDoc via TIT2 frame
      */
     public get title(): string { return this.getTextAsString(FrameIdentifiers.TIT2); }
     /**
-     * @inheritDoc
-     * Stored in TIT2 frame
+     * @inheritDoc via TIT2 frame
      */
     public set title(value: string) { this.setTextFrame(FrameIdentifiers.TIT2, value); }
 
@@ -241,14 +239,14 @@ export default class Id3v2Tag extends Tag {
     set performersRole(value: string[]) { this._performersRole = value || []; }
 
     /** @inheritDoc via TSO2 frame */
-    get albumArtists(): string[] { return this.getTextAsArray(FrameIdentifiers.TSO2); }
+    get albumArtists(): string[] { return this.getTextAsArray(FrameIdentifiers.TPE2); }
     /** @inheritDoc via TSO2 frame */
-    set albumArtists(value: string[]) { this.setTextFrame(FrameIdentifiers.TSO2, ...value); }
+    set albumArtists(value: string[]) { this.setTextFrame(FrameIdentifiers.TPE2, ...value); }
 
     /** @inheritDoc via TPE2 frame */
-    get albumArtistsSort(): string[] { return this.getTextAsArray(FrameIdentifiers.TPE2); }
+    get albumArtistsSort(): string[] { return this.getTextAsArray(FrameIdentifiers.TSO2); }
     /** @inheritDoc via TPE2 frame */
-    set albumArtistsSort(value: string[]) { this.setTextFrame(FrameIdentifiers.TPE2, ...value); }
+    set albumArtistsSort(value: string[]) { this.setTextFrame(FrameIdentifiers.TSO2, ...value); }
 
     /** @inheritDoc via TCOM frame */
     get composers(): string[] { return this.getTextAsArray(FrameIdentifiers.TCOM); }

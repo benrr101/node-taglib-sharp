@@ -11,7 +11,7 @@ import {Id3v2FrameHeader} from "../../src/id3v2/frames/frameHeader";
 import {FrameIdentifier, FrameIdentifiers} from "../../src/id3v2/frameIdentifiers";
 import {IPicture, PictureType} from "../../src/picture";
 import Id3v2Settings from "../../src/id3v2/id3v2Settings";
-import FramePropertyTests from "./framePropertyTests";
+import PropertyTests from "../utilities/propertyTests";
 
 // Setup chai
 Chai.use(ChaiAsPromised);
@@ -282,9 +282,9 @@ class Id3v2_AttachmentFrame_PropertyTests {
         const set = (v: ByteVector) => { frame.data = v; };
 
         // Act / Assert
-        FramePropertyTests.propertyRoundTrip(set, get, ByteVector.fromString("xyz", StringType.Latin1));
-        FramePropertyTests.propertyNormalized(set, get, undefined, ByteVector.empty());
-        FramePropertyTests.propertyNormalized(set, get, null, ByteVector.empty());
+        PropertyTests.propertyRoundTrip(set, get, ByteVector.fromString("xyz", StringType.Latin1));
+        PropertyTests.propertyNormalized(set, get, undefined, ByteVector.empty());
+        PropertyTests.propertyNormalized(set, get, null, ByteVector.empty());
     }
 
     @test
@@ -295,9 +295,9 @@ class Id3v2_AttachmentFrame_PropertyTests {
         const set = (v: string) => { frame.description = v; };
 
         // Act / Assert
-        FramePropertyTests.propertyRoundTrip(set, get, "its funky enough");
-        FramePropertyTests.propertyNormalized(set, get, undefined, "");
-        FramePropertyTests.propertyNormalized(set, get, null, "");
+        PropertyTests.propertyRoundTrip(set, get, "its funky enough");
+        PropertyTests.propertyNormalized(set, get, undefined, "");
+        PropertyTests.propertyNormalized(set, get, null, "");
     }
 
     @test
@@ -308,9 +308,9 @@ class Id3v2_AttachmentFrame_PropertyTests {
         const set = (v: string) => { frame.filename = v; };
 
         // Act / Assert
-        FramePropertyTests.propertyRoundTrip(set, get, "the choice is yours (revisited)");
-        FramePropertyTests.propertyRoundTrip(set, get, undefined);
-        FramePropertyTests.propertyRoundTrip(set, get, null);
+        PropertyTests.propertyRoundTrip(set, get, "the choice is yours (revisited)");
+        PropertyTests.propertyRoundTrip(set, get, undefined);
+        PropertyTests.propertyRoundTrip(set, get, null);
     }
 
     @test
@@ -321,9 +321,9 @@ class Id3v2_AttachmentFrame_PropertyTests {
         const set = (v: string) => { frame.mimeType = v; };
 
         // Act / Assert
-        FramePropertyTests.propertyRoundTrip(set, get, "chief rocka");
-        FramePropertyTests.propertyNormalized(set, get, undefined, "");
-        FramePropertyTests.propertyNormalized(set, get, null, "");
+        PropertyTests.propertyRoundTrip(set, get, "chief rocka");
+        PropertyTests.propertyNormalized(set, get, undefined, "");
+        PropertyTests.propertyNormalized(set, get, null, "");
     }
 
     @test
@@ -332,7 +332,7 @@ class Id3v2_AttachmentFrame_PropertyTests {
         const frame = getTestFrame();
 
         // Act / Assert
-        FramePropertyTests.propertyRoundTrip(
+        PropertyTests.propertyRoundTrip(
             (v) => { frame.textEncoding = v; },
             () => frame.textEncoding,
             StringType.UTF8
@@ -345,7 +345,7 @@ class Id3v2_AttachmentFrame_PropertyTests {
         const frame = getTestFrame();
 
         // Act / Assert
-        FramePropertyTests.propertyRoundTrip(
+        PropertyTests.propertyRoundTrip(
             (v) => { frame.type = v; },
             () => frame.type,
             PictureType.BackCover
@@ -359,7 +359,7 @@ class Id3v2_AttachmentFrame_PropertyTests {
         const frame = getTestFrame();
 
         // Act / Assert
-        FramePropertyTests.propertyRoundTrip(
+        PropertyTests.propertyRoundTrip(
             (v) => { frame.type = v; },
             () => frame.type,
             PictureType.NotAPicture
@@ -375,9 +375,9 @@ class Id3v2_AttachmentFrame_PropertyTests {
         const get = () => frame.type;
 
         // Act
-        FramePropertyTests.propertyRoundTrip(set, get, PictureType.NotAPicture);
+        PropertyTests.propertyRoundTrip(set, get, PictureType.NotAPicture);
         assert.strictEqual(frame.frameId, FrameIdentifiers.GEOB);
-        FramePropertyTests.propertyRoundTrip(set, get, PictureType.BackCover);
+        PropertyTests.propertyRoundTrip(set, get, PictureType.BackCover);
         assert.strictEqual(frame.frameId, FrameIdentifiers.APIC);
     }
 }

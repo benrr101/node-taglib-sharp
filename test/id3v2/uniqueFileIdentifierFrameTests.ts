@@ -3,7 +3,7 @@ import * as ChaiAsPromised from "chai-as-promised";
 import {slow, suite, test, timeout} from "mocha-typescript";
 
 import FrameConstructorTests from "./frameConstructorTests";
-import FramePropertyTests from "./framePropertyTests";
+import PropertyTests from "../utilities/propertyTests";
 import UniqueFileIdentifierFrame from "../../src/id3v2/frames/uniqueFileIdentifierFrame";
 import {ByteVector, StringType} from "../../src/byteVector";
 import {Frame, FrameClassType} from "../../src/id3v2/frames/frame";
@@ -202,7 +202,7 @@ class Id3v2_UniqueFileIdentifierFrame_PropertyTests {
         const frame = UniqueFileIdentifierFrame.fromData("fuxqux", ByteVector.fromSize(1));
 
         // Act/Assert
-        FramePropertyTests.propertyThrows((v) => { frame.identifier = v; }, ByteVector.fromSize(65));
+        PropertyTests.propertyThrows((v) => { frame.identifier = v; }, ByteVector.fromSize(65));
     }
 
     @test
@@ -212,7 +212,7 @@ class Id3v2_UniqueFileIdentifierFrame_PropertyTests {
         const identifier = ByteVector.fromString("quxx");
 
         // Act / Assert
-        FramePropertyTests.propertyRoundTrip((v) => { frame.identifier = v; }, () => frame.identifier, identifier);
+        PropertyTests.propertyRoundTrip((v) => { frame.identifier = v; }, () => frame.identifier, identifier);
     }
 }
 

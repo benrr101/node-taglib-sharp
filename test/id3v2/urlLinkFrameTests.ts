@@ -3,7 +3,7 @@ import * as ChaiAsPromised from "chai-as-promised";
 import {slow, suite, test, timeout} from "mocha-typescript";
 
 import FrameConstructorTests from "./frameConstructorTests";
-import FramePropertyTests from "./framePropertyTests";
+import PropertyTests from "../utilities/propertyTests";
 import TestConstants from "../testConstants";
 import {ByteVector, StringType} from "../../src/byteVector";
 import {Frame, FrameClassType} from "../../src/id3v2/frames/frame";
@@ -171,8 +171,8 @@ class Id3v2_UrlLinkFrame_PropertyTests {
         const get = () => frame.text;
 
         // Act / Assert
-        FramePropertyTests.propertyNormalized(set, get, undefined, []);
-        FramePropertyTests.propertyNormalized(set, get, null, []);
+        PropertyTests.propertyNormalized(set, get, undefined, []);
+        PropertyTests.propertyNormalized(set, get, null, []);
     }
 
     @test

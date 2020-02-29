@@ -14,7 +14,10 @@ import PlayCountFrame from "../../src/id3v2/frames/playCountFrame";
 import UniqueFileIdentifierFrame from "../../src/id3v2/frames/uniqueFileIdentifierFrame";
 import UnknownFrame from "../../src/id3v2/frames/unknownFrame";
 import {FrameClassType} from "../../src/id3v2/frames/frame";
-import {FrameIdentifiers} from "../../src/id3v2/frameIdentifiers";
+import {FrameIdentifier, FrameIdentifiers} from "../../src/id3v2/frameIdentifiers";
+import PropertyTests from "../utilities/propertyTests";
+import {TextInformationFrame, UserTextInformationFrame} from "../../src/id3v2/frames/textInformationFrame";
+import {TagTypes} from "../../src/tag";
 
 // Setup Chai
 Chai.use(ChaiAsPromised);
@@ -90,6 +93,7 @@ class Id3v2_Tag_ConstructorTests {
 
         // Assert
         assert.isOk(tag);
+        assert.strictEqual(tag.tagTypes, TagTypes.Id3v2);
 
         let frame1Found = false;
         let frame2Found = false;
@@ -134,6 +138,7 @@ class Id3v2_Tag_ConstructorTests {
 
         // Assert
         assert.isOk(tag);
+        assert.strictEqual(tag.tagTypes, TagTypes.Id3v2);
 
         // - Right frames
         assert.strictEqual(tag.frames.length, 1);
@@ -155,6 +160,7 @@ class Id3v2_Tag_ConstructorTests {
 
         // Assert
         assert.isOk(tag);
+        assert.strictEqual(tag.tagTypes, TagTypes.Id3v2);
 
         // - Right frames
         assert.strictEqual(tag.frames.length, 1);
@@ -200,6 +206,7 @@ class Id3v2_Tag_ConstructorTests {
 
         // Assert
         assert.isOk(output);
+        assert.strictEqual(output.tagTypes, TagTypes.Id3v2);
     }
 
     @test
@@ -222,6 +229,7 @@ class Id3v2_Tag_ConstructorTests {
 
         // Assert
         assert.isOk(tag);
+        assert.strictEqual(tag.tagTypes, TagTypes.Id3v2);
 
         let frame1Found = false;
         let frame2Found = false;
@@ -246,5 +254,219 @@ class Id3v2_Tag_ConstructorTests {
         assert.isTrue(frame1Found);
         assert.isTrue(frame2Found);
         assert.isFalse(emptyFrameFound);
+    }
+}
+
+@suite(slow(1000), timeout(3000))
+class Id3v2_Tag_PropertyTests {
+    @test
+    public flags() {
+        // Arrange
+        const tag = new Id3v2Tag();
+
+        // Act / Assert
+        PropertyTests.propertyRoundTrip(
+            (v) => { tag.flags = v; },
+            () => tag.flags,
+            Id3v2TagHeaderFlags.ExperimentalIndicator
+        );
+    }
+
+    @test
+    public isCompilation() {
+        // Arrange
+        const tag = new Id3v2Tag();
+        const get = () => tag.isCompilation;
+        const set = (v: boolean) => { tag.isCompilation = v; };
+
+        // Act / Assert
+        assert.isFalse(tag.isCompilation);
+
+        PropertyTests.propertyRoundTrip(set, get, true);
+        assert.strictEqual(tag.frames.length, 1);
+        assert.strictEqual(tag.frames[0].frameClassType, FrameClassType.TextInformationFrame);
+        assert.strictEqual(tag.frames[0].frameId, FrameIdentifiers.TCMP);
+        assert.deepStrictEqual((<TextInformationFrame> tag.frames[0]).text, ["1"]);
+
+        PropertyTests.propertyRoundTrip(set, get, false);
+        assert.strictEqual(tag.frames.length, 0);
+
+        tag.setTextFrame(FrameIdentifiers.TCMP, "0");
+        assert.strictEqual(tag.isCompilation, false);
+    }
+
+    @test
+    public version() {
+        // TODO: Need to figure out what to do if header doesn't exist
+    }
+
+    @test
+    public title() {
+        this.testTextFrameProperty(
+            (t, v) => { t.title = v; },
+            (t) => t.title,
+            FrameIdentifiers.TIT2
+        );
+    }
+
+    @test
+    public titleSort() {
+        this.testTextFrameProperty(
+            (t, v) => { t.titleSort = v; },
+            (t) => t.titleSort,
+            FrameIdentifiers.TSOT
+        );
+    }
+
+    @test
+    public subtitle() {
+        this.testTextFrameProperty(
+            (t, v) => { t.subtitle = v; },
+            (t) => t.subtitle,
+            FrameIdentifiers.TIT3
+        );
+    }
+
+    @test
+    public description() {
+        // Arrange
+        const tag = new Id3v2Tag();
+        const set = (v: string) => { tag.description = v; };
+        const get = () => tag.description;
+
+        // Act / Assert
+        assert.isUndefined(tag.description);
+
+        PropertyTests.propertyRoundTrip(set, get, "foo");
+        assert.strictEqual(tag.frames.length, 1);
+        assert.strictEqual(tag.frames[0].frameClassType, FrameClassType.UserTextInformationFrame);
+        assert.strictEqual((<UserTextInformationFrame> tag.frames[0]).description, "Description");
+        assert.deepStrictEqual((<UserTextInformationFrame> tag.frames[0]).text, ["foo"]);
+
+        PropertyTests.propertyRoundTrip(set, get, undefined);
+        assert.strictEqual(tag.frames.length, 0);
+    }
+
+    @test
+    public performers() {
+        this.testArrayTextFrameProperty(
+            (t, v) => { t.performers = v; },
+            (t) => t.performers,
+            FrameIdentifiers.TPE1
+        );
+    }
+
+    @test
+    public performersSort() {
+        this.testArrayTextFrameProperty(
+            (t, v) => { t.performersSort = v; },
+            (t) => t.performersSort,
+            FrameIdentifiers.TSOP
+        );
+    }
+
+    @test
+    public performersRole() {
+        // TODO: Write test
+    }
+
+    @test
+    public albumArtists() {
+        this.testArrayTextFrameProperty(
+            (t, v) => { t.albumArtists = v; },
+            (t) => t.albumArtists,
+            FrameIdentifiers.TPE2
+        );
+    }
+
+    @test
+    public albumArtistsSort() {
+        this.testArrayTextFrameProperty(
+            (t, v) => { t.albumArtistsSort = v; },
+            (t) => t.albumArtistsSort,
+            FrameIdentifiers.TSO2
+        );
+    }
+
+    @test
+    public composers() {
+        this.testArrayTextFrameProperty(
+            (t, v) => { t.composers = v; },
+            (t) => t.composers,
+            FrameIdentifiers.TCOM
+        );
+    }
+
+    @test
+    public composersSort() {
+        this.testArrayTextFrameProperty(
+            (t, v) => { t.composersSort = v; },
+            (t) => t.composersSort,
+            FrameIdentifiers.TSOC
+        );
+    }
+
+    @test
+    public album() {
+        this.testTextFrameProperty(
+            (t, v) => { t.album = v; },
+            (t) => t.album,
+            FrameIdentifiers.TALB
+        );
+    }
+
+    @test
+    public albumSort() {
+        this.testTextFrameProperty(
+            (t, v) => { t.albumSort = v; },
+            (t) => t.albumSort,
+            FrameIdentifiers.TSOA
+        );
+    }
+
+    private testTextFrameProperty(
+        set: (t: Id3v2Tag, v: string) => void,
+        get: (t: Id3v2Tag) => string,
+        fId: FrameIdentifier
+    ) {
+        // Arrange
+        const tag = new Id3v2Tag();
+        const setProp = (v: string) => set(tag, v);
+        const getProp = () => get(tag);
+
+        // Act / Assert
+        assert.isUndefined(getProp());
+
+        PropertyTests.propertyRoundTrip(setProp, getProp, "foo");
+        assert.strictEqual(tag.frames.length, 1);
+        assert.strictEqual(tag.frames[0].frameClassType, FrameClassType.TextInformationFrame);
+        assert.strictEqual(tag.frames[0].frameId, fId);
+        assert.deepStrictEqual((<TextInformationFrame> tag.frames[0]).text, ["foo"]);
+
+        PropertyTests.propertyRoundTrip(setProp, getProp, undefined);
+        assert.strictEqual(tag.frames.length, 0);
+    }
+
+    private testArrayTextFrameProperty(
+        set: (t: Id3v2Tag, v: string[]) => void,
+        get: (t: Id3v2Tag) => string[],
+        fId: FrameIdentifier
+    ) {
+        // Arrange
+        const tag = new Id3v2Tag();
+        const setProp = (v: string[]) => set(tag, v);
+        const getProp = () => get(tag);
+
+        // Act / Assert
+        assert.deepStrictEqual(getProp(), []);
+
+        PropertyTests.propertyRoundTrip(setProp, getProp, ["foo", "bar", "baz"]);
+        assert.strictEqual(tag.frames.length, 1);
+        assert.strictEqual(tag.frames[0].frameClassType, FrameClassType.TextInformationFrame);
+        assert.strictEqual(tag.frames[0].frameId, fId);
+        assert.deepStrictEqual((<TextInformationFrame> tag.frames[0]).text, ["foo", "bar", "baz"]);
+
+        PropertyTests.propertyRoundTrip(setProp, getProp, []);
+        assert.strictEqual(tag.frames.length, 0);
     }
 }

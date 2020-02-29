@@ -3,7 +3,7 @@ import * as ChaiAsPromised from "chai-as-promised";
 import {slow, suite, test, timeout} from "mocha-typescript";
 
 import FrameConstructorTests from "./frameConstructorTests";
-import FramePropertyTests from "./framePropertyTests";
+import PropertyTests from "../utilities/propertyTests";
 import Id3v2Settings from "../../src/id3v2/id3v2Settings";
 import {TextInformationFrame} from "../../src/id3v2/frames/textInformationFrame";
 import {ByteVector, StringType} from "../../src/byteVector";
@@ -240,7 +240,7 @@ class Id3v2_TextInformationFrame_PropertyTests {
         const frame = getTestFrame();
 
         // Act / Assert
-        FramePropertyTests.propertyRoundTrip((v) => { frame.text = v; }, () => frame.text, ["bux", "fux"]);
+        PropertyTests.propertyRoundTrip((v) => { frame.text = v; }, () => frame.text, ["bux", "fux"]);
     }
 
     @test
@@ -249,7 +249,7 @@ class Id3v2_TextInformationFrame_PropertyTests {
         const frame = getTestFrame();
 
         // Act / Assert
-        FramePropertyTests.propertyRoundTrip(
+        PropertyTests.propertyRoundTrip(
             (v) => { frame.textEncoding = v; },
             () => frame.textEncoding,
             StringType.UTF16BE
@@ -263,7 +263,7 @@ class Id3v2_TextInformationFrame_PropertyTests {
         const _ = frame.text;   // Force a read
 
         // Act / Assert
-        FramePropertyTests.propertyRoundTrip(
+        PropertyTests.propertyRoundTrip(
             (v) => { frame.textEncoding = v; },
             () => frame.textEncoding,
             StringType.UTF16BE
