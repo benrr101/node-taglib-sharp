@@ -279,12 +279,8 @@ export default class Id3v2Tag extends Tag {
         const commentFrames = this.getFramesByClassType<CommentsFrame>(FrameClassType.CommentsFrame);
 
         // Delete the "" comment frames that are in this language
-        // @TODO: Verify that only the frames in this language should be deleted
         if (!value) {
-            const matchingFrames = CommentsFrame.findAll(commentFrames, "", Id3v2Tag.language);
-            for (const f of matchingFrames) {
-                this.removeFrame(f);
-            }
+            this.removeFrames(FrameIdentifiers.COMM);
             return;
         }
 
@@ -433,10 +429,7 @@ export default class Id3v2Tag extends Tag {
         // Delete all unsynchronized lyrics frames in this language
         // @TODO: Verify that deleting only this language is the correct behavior
         if (!value) {
-            const matchFrames = UnsynchronizedLyricsFrame.findAll(frames, "", Id3v2Tag.language);
-            for (const f of matchFrames) {
-                this.removeFrame(f);
-            }
+            this.removeFrames(FrameIdentifiers.USLT);
             return;
         }
 
@@ -937,7 +930,7 @@ export default class Id3v2Tag extends Tag {
             const formattedNumerator = numerator.toString().padStart(minPlaces, "0");
             this.setTextFrame(ident, `${formattedNumerator}/${denominator}`);
         } else {
-            this.setTextFrame(ident, numerator.toString());
+            this.setTextFrame(ident, numerator.toString().padStart(minPlaces, "0"));
         }
     }
 
