@@ -7,7 +7,10 @@ import {FrameIdentifiers} from "../frameIdentifiers";
 import {IPicture, Picture, PictureType} from "../../picture";
 import {Guards} from "../../utils";
 
-export default class AttachmentFrame extends Frame {
+export default class AttachmentFrame extends Frame implements IPicture {
+    // NOTE: It probably doesn't look necessary to implement IPicture, but it makes converting a
+    //     frame to a picture so much easier, which we need in the Id3v2Tag class.
+
     private _data: ByteVector;
     private _description: string;
     private _encoding: StringType = Id3v2Settings.defaultEncoding;

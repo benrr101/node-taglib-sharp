@@ -1,6 +1,5 @@
 import {ByteVector, StringType} from "../byteVector";
 import {Guards} from "../utils";
-import {Frame} from "./frames/frame";
 
 /**
  * @summary Represents the identifier of a frame, depending on the version this may be 3 or 4
@@ -236,7 +235,7 @@ export const FrameIdentifiers: {[key: string]: FrameIdentifier} = {
     TIT2: uniqueFrameIdentifiers.TIT2,
     TIT3: uniqueFrameIdentifiers.TIT3,
     TKE:  uniqueFrameIdentifiers.TKEY,
-    TKYE: uniqueFrameIdentifiers.TKEY,
+    TKEY: uniqueFrameIdentifiers.TKEY,
     TLA:  uniqueFrameIdentifiers.TLAN,
     TLAN: uniqueFrameIdentifiers.TLAN,
     TLE:  uniqueFrameIdentifiers.TLEN,

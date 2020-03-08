@@ -36,8 +36,14 @@ export default class Id3v2Tag extends Tag {
     /**
      * Constructs an empty ID3v2 tag
      */
-    public constructor() {
+    private constructor() {
         super();
+    }
+
+    public static fromEmpty(): Id3v2Tag {
+        const tag = new Id3v2Tag();
+
+        return tag;
     }
 
     /**
@@ -194,7 +200,10 @@ export default class Id3v2Tag extends Tag {
     /** @inheritDoc via TPE1 frame */
     get performers(): string[] { return this.getTextAsArray(FrameIdentifiers.TPE1); }
     /** @inheritDoc via TPE1 frame */
-    set performers(value: string[]) { this.setTextFrame(FrameIdentifiers.TPE1, ...value); }
+    set performers(value: string[]) {
+        this.setTextFrame(FrameIdentifiers.TPE1, ...value);
+        this._performersRole = [];
+    }
 
     /** @inheritDoc via TSOP frame */
     get performersSort(): string[] { return this.getTextAsArray(FrameIdentifiers.TSOP); }
@@ -203,40 +212,54 @@ export default class Id3v2Tag extends Tag {
 
     /** @inheritDoc via TMCL frame */
     get performersRole(): string[] {
-        if (this._performersRole) { return this._performersRole; }
+        // Use the temporary storage if it exists
+        if (this._performersRole !== undefined && this._performersRole.length > 0) {
+            return this._performersRole;
+        }
 
-        const perfRef = this.performers;
-        if (!perfRef) { return []; }
+        // If there aren't any performers, just return a blank list
+        if (this.performers === undefined || this.performers.length === 0) {
+            return [];
+        }
 
-        // Map the instruments to the performers
-        const map = this.getTextAsArray(FrameIdentifiers.TMCL);
-        this._performersRole = [];
-        for (let i = 0; i + 1 < map.length; i += 2) {
-            const inst = map[i];
-            const perfs = map[i + 1];
-            if (!inst || !perfs) { continue; }
+        // We're going to basically flip the format of the TMCL frame.
+        // TMCL frames look like:
+        //   [ "instrument", "artist1,artist2", ... ]
+        // We want:
+        //   { "artist1": ["instrument", ...], "artist2": ["instrument", ...], ...}
+        const map = this.performers.reduce((o: any, v: string) => {
+            o[v] = [];
+            return o;
+        }, {});
 
-            const perfList = perfs.split(",");
-            for (const iperf of perfList) {
-                if (!iperf) { continue; }
+        const frameData = this.getTextAsArray(FrameIdentifiers.TMCL);
+        for (let i = 0; i + 1 < frameData.length; i += 2) {
+            const instrument = frameData[i];
+            const performers = frameData[i + 1];
+            if (!instrument || !performers) {
+                continue;
+            }
 
-                const perf = iperf.trim();
-                if (!perf) { continue; }
-
-                for (let j = 0; j < perfRef.length; j++) {
-                    if (perfRef[j] === perf) {
-                        this._performersRole[j] = this._performersRole[j]
-                            ? this._performersRole[j] + "; " + inst
-                            : inst;
-                    }
+            const performersList = performers.split(",");
+            for (const performer of performersList) {
+                if (!map[performer]) {
+                    continue;
                 }
+
+                map[performer].push(instrument);
             }
         }
 
+        // Collapse the instrument lists and return that
+        this._performersRole = Object.values(map).map((e: string[]) => e.length > 0 ? e.join(";") : undefined);
         return this._performersRole;
     }
     /** @inheritDoc via TMCL frame */
-    set performersRole(value: string[]) { this._performersRole = value || []; }
+    set performersRole(value: string[]) {
+        // TODO: We shoud really just write this out to the frame instead of this temporary storage
+        this.removeFrames(FrameIdentifiers.TMCL);
+        this._performersRole = value ? value.slice(0) : [];
+    }
 
     /** @inheritDoc via TSO2 frame */
     get albumArtists(): string[] { return this.getTextAsArray(FrameIdentifiers.TPE2); }
@@ -340,10 +363,9 @@ export default class Id3v2Tag extends Tag {
      * returned.
      */
     get year(): number {
-        // @TODO: get it from TDRC if it exists, get it from TYER failing that
         // Case 1: We have a TDRC frame (v2.4), preferentially use that
         const tdrcText = this.getTextAsString(FrameIdentifiers.TDRC);
-        if (tdrcText && tdrcText.length > 4) {
+        if (tdrcText && tdrcText.length >= 4) {
             // @TODO: Check places where we use this pattern... .parseInt doesn't parse the whole string if it started
             //  with good data
             return Number.parseInt(tdrcText.substr(0, 4), 10);
@@ -351,7 +373,7 @@ export default class Id3v2Tag extends Tag {
 
         // Case 2: We have a TYER frame (v2.3/v2.2)
         const tyerText = this.getTextAsString(FrameIdentifiers.TYER);
-        if (tyerText && tyerText.length > 4) {
+        if (tyerText && tyerText.length >= 4) {
             // @TODO: Check places where we use this pattern... .parseInt doesn't parse the whole string if it started
             //  with good data
             return Number.parseInt(tdrcText.substr(0, 4), 10);
@@ -362,14 +384,16 @@ export default class Id3v2Tag extends Tag {
     }
     /**
      * @inheritDoc
-     * NOTE: values >9999will remove the frame
+     * NOTE: values >9999 will remove the frame
      */
     set year(value: number) {
         Guards.uint(value, "value");
 
         // Case 0: Frame should be deleted
         if (value > 9999) {
-            value = 0;
+            this.removeFrames(FrameIdentifiers.TDRC);
+            this.removeFrames(FrameIdentifiers.TYER);
+            return;
         }
 
         // Case 1: We have a TDRC frame (v2.4), preferentially replace contents with year
@@ -508,7 +532,7 @@ export default class Id3v2Tag extends Tag {
     /** @inheritDoc via UFID:http://musicbrainz.org frame */
     get musicBrainzTrackId(): string { return this.getUfidText("http://musicbrainz.org"); }
     /** @inheritDoc via UFID:http://musicbrainz.org frame */
-    set musicBrainzTrackId(value: string) { this.setUfidText("http://musicBrainz.org", value); }
+    set musicBrainzTrackId(value: string) { this.setUfidText("http://musicbrainz.org", value); }
 
     /** @inheritDoc via TXXX:MusicBrainz Disc Id frame */
     get musicBrainzDiscId(): string { return this.getUserTextAsString("MusicBrainz Disc Id"); }
@@ -533,7 +557,7 @@ export default class Id3v2Tag extends Tag {
     /** @inheritDoc via TXXX:MusicBrainz Album Type frame */
     get musicBrainzReleaseType(): string { return this.getUserTextAsString("MusicBrainz Album Type"); }
     /** @inheritDoc via TXXX:MusicBrainz Album Type frame */
-    set musicBrainzReleaseType(value: string) { this.setUserTextAsString("MusicBrainz Album Album Type", value); }
+    set musicBrainzReleaseType(value: string) { this.setUserTextAsString("MusicBrainz Album Type", value); }
 
     /** @inheritDoc via TXXX:MusicBrainz Album Release Country frame */
     get musicBrainzReleaseCountry(): string { return this.getUserTextAsString("MusicBrainz Album Release Country"); }
@@ -554,7 +578,7 @@ export default class Id3v2Tag extends Tag {
     }
     /** @inheritDoc via TXXX:REPLAY_GAIN_TRACK_GAIN frame */
     set replayGainTrackGain(value: number) {
-        if (Number.isNaN(value)) {
+        if (value === undefined || value === null || Number.isNaN(value)) {
             this.setUserTextAsString("REPLAYGAIN_TRACK_GAIN", undefined, false);
         } else {
             const text = `${value.toFixed(2).toString()} dB`;
@@ -569,7 +593,7 @@ export default class Id3v2Tag extends Tag {
     }
     /** @inheritDoc via TXXX:REPLAYGAIN_TRACK_PEAK frame */
     set replayGainTrackPeak(value: number) {
-        if (Number.isNaN(value)) {
+        if (value === undefined || value === null || Number.isNaN(value)) {
             this.setUserTextAsString("REPLAYGAIN_TRACK_PEAK", undefined, false);
         } else {
             const text = value.toFixed(6).toString();
@@ -589,7 +613,7 @@ export default class Id3v2Tag extends Tag {
     }
     /** @inheritDoc via TXXX:REPLAYGAIN_ALBUM_GAIN frame */
     set replayGainAlbumGain(value: number) {
-        if (Number.isNaN(value)) {
+        if (value === undefined || value === null || Number.isNaN(value)) {
             this.setUserTextAsString("REPLAYGAIN_ALBUM_GAIN", undefined, false);
         } else {
             const text = `${value.toFixed(2).toString()} dB`;
@@ -604,11 +628,11 @@ export default class Id3v2Tag extends Tag {
     }
     /** @inheritDoc via TXXX:REPLAYGAIN_ALBUM_PEAK frame */
     set replayGainAlbumPeak(value: number) {
-        if (Number.isNaN(value)) {
-            this.setUserTextAsString("REPLAYGAIN_TRACK_PEAK", undefined, false);
+        if (value === undefined || value === null || Number.isNaN(value)) {
+            this.setUserTextAsString("REPLAYGAIN_ALBUM_PEAK", undefined, false);
         } else {
             const text = value.toFixed(6).toString();
-            this.setUserTextAsString("REPLAYGAIN_TRACK_PEAK", text, false);
+            this.setUserTextAsString("REPLAYGAIN_ALBUM_PEAK", text, false);
         }
     }
 

@@ -1,6 +1,5 @@
 import {ByteVector} from "../../src/byteVector";
 import * as TypeMoq from "typemoq";
-import {SeekOrigin} from "../../src/stream";
 import {File} from "../../src/file";
 
 export default {
