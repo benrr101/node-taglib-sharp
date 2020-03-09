@@ -21,6 +21,7 @@ import {Tag, TagTypes} from "../tag";
 import {TextInformationFrame, UserTextInformationFrame} from "./frames/textInformationFrame";
 import {UrlLinkFrame} from "./frames/urlLinkFrame";
 import {Guards} from "../utils";
+import Id3v2TagFooter from "./id3v2TagFooter";
 
 export default class Id3v2Tag extends Tag {
     private static _language: string = undefined;       // @TODO: Use the os-locale module to supply a
@@ -42,7 +43,7 @@ export default class Id3v2Tag extends Tag {
 
     public static fromEmpty(): Id3v2Tag {
         const tag = new Id3v2Tag();
-
+        tag._header = new Id3v2TagHeader();
         return tag;
     }
 
@@ -79,7 +80,7 @@ export default class Id3v2Tag extends Tag {
         }
 
         const tag = new Id3v2Tag();
-        tag._header = new Id3v2TagHeader(data);
+        tag._header = Id3v2TagHeader.fromData(data);
 
         // If the tag size is 0, then this is an invalid tag. Tags must contain at least one frame
         if (tag._header.tagSize === 0) {
@@ -154,18 +155,68 @@ export default class Id3v2Tag extends Tag {
      * Gets the ID3v2 version for the current instance.
      */
     public get version(): number {
-        return Id3v2Settings.forceDefaultVersion
-            ? Id3v2Settings.defaultVersion
-            : this._header.majorVersion;
+        return this._header.majorVersion;
     }
     /**
      * Sets the ID3v2 version for the current instance.
      * @param value ID3v2 version for the current instance. Must be 2, 3, or 4.
      */
     public set version(value: number) {
-        Guards.byte(value, "value");
-        Guards.betweenInclusive(value, 2, 4, "value");
+        const originalVersion = this._header.majorVersion;
         this._header.majorVersion = value;
+
+        // Migrate any incompatible frames that have direct migrations
+        if (value === 4 && (originalVersion === 2 || originalVersion === 3)) {
+            // * TYER, etc -> TDRC
+            const tyerFrames = this.getFramesByIdentifier<TextInformationFrame>(
+                FrameClassType.TextInformationFrame,
+                FrameIdentifiers.TYER
+            );
+            const tdatFrames = this.getFramesByIdentifier<TextInformationFrame>(
+                FrameClassType.TextInformationFrame,
+                FrameIdentifiers.TDAT
+            );
+            const timeFrames = this.getFramesByIdentifier<TextInformationFrame>(
+                FrameClassType.TextInformationFrame,
+                FrameIdentifiers.TIME
+            );
+            if (tyerFrames.length > 0) {
+                this.removeFrames(FrameIdentifiers.TYER);
+                this.removeFrames(FrameIdentifiers.TDAT);
+                this.removeFrames(FrameIdentifiers.TIME);
+
+                let tdrcText = tyerFrames[0].text[0];
+                if (tdatFrames.length > 0) {
+                    const tdatText = tdatFrames[0].text[0];
+                    tdrcText += `-${tdatText.substr(0, 2)}-${tdatText.substr(2, 2)}`;
+                    if (timeFrames.length > 0) {
+                        const timeText = timeFrames[0].text[0];
+                        tdrcText += `T${timeText}`;
+                    }
+                }
+
+                this.setTextFrame(FrameIdentifiers.TDRC, tdrcText);
+            }
+        } else if (originalVersion === 4 && (value === 2 || value === 3)) {
+            // * TDRC -> TYER, etc
+            const tdrcFrames = this.getFramesByIdentifier<TextInformationFrame>(
+                FrameClassType.TextInformationFrame,
+                FrameIdentifiers.TDRC
+            );
+            if (tdrcFrames.length > 0) {
+                const tdrcText = tdrcFrames[0].text[0];
+                this.removeFrames(FrameIdentifiers.TDRC);
+                this.setTextFrame(FrameIdentifiers.TYER, tdrcText.substr(0, 4));
+
+                if (tdrcText.length >= 10) {
+                    this.setTextFrame(FrameIdentifiers.TDAT, tdrcText.substr(6, 5).replace("-", ""));
+                }
+
+                if (tdrcText.length === 19) {
+                    this.setTextFrame(FrameIdentifiers.TIME, tdrcText.substr(11, 8));
+                }
+            }
+        }
     }
 
     // #region Tag Implementations
@@ -376,7 +427,7 @@ export default class Id3v2Tag extends Tag {
         if (tyerText && tyerText.length >= 4) {
             // @TODO: Check places where we use this pattern... .parseInt doesn't parse the whole string if it started
             //  with good data
-            return Number.parseInt(tdrcText.substr(0, 4), 10);
+            return Number.parseInt(tyerText.substr(0, 4), 10);
         }
 
         // Case 3: Neither, return 0
@@ -740,10 +791,10 @@ export default class Id3v2Tag extends Tag {
      * @returns TFrame[] Array of frames with the specified class type
      */
     public getFramesByClassType<TFrame extends Frame>(type: FrameClassType): TFrame[] {
+        // TODO: Can we access static properties from TFrame? if so, can we use that to get the frame class type?
         Guards.notNullOrUndefined(type, "type");
 
-        return this._frameList.filter((f) => f && f.frameClassType === type)
-            .map((f) => <TFrame> f);
+        return <TFrame[]> this._frameList.filter((f) => f && f.frameClassType === type);
     }
 
     /**
@@ -760,8 +811,7 @@ export default class Id3v2Tag extends Tag {
         Guards.notNullOrUndefined(type, "type");
         Guards.truthy(ident, "ident");
 
-        return this._frameList.filter((f) => f && f.frameClassType === type && f.frameId === ident)
-            .map((f) => <TFrame> f);
+        return <TFrame[]> this._frameList.filter((f) => f && f.frameClassType === type && f.frameId === ident);
     }
 
     /**
@@ -823,8 +873,8 @@ export default class Id3v2Tag extends Tag {
      */
     public render(): ByteVector {
         // Convert the perfmers role to the TMCL frame
-        const ret: string[] = undefined;
         if (this._performersRole) {
+            const ret: string[] = undefined;
             const map: {[key: string]: string} = {};
             for (let i = 0; i < this._performersRole.length; i++) {
                 const insts = this._performersRole[i];
@@ -852,9 +902,9 @@ export default class Id3v2Tag extends Tag {
                 ret.push(key);
                 ret.push(map[key]);
             }
-        }
 
-        this.setTextFrame(FrameIdentifiers.TMCL, ...ret);
+            this.setTextFrame(FrameIdentifiers.TMCL, ...ret);
+        }
 
         // We need to render the "tag data" first so that we have to correct size to render in the
         // tag's header. The "tag data" (everything that is included in Header.tagSize) includes
@@ -903,6 +953,13 @@ export default class Id3v2Tag extends Tag {
                 ? this._header.tagSize - tagData.length
                 : 1024;
             tagData.addByteVector(ByteVector.fromSize(size));
+        }
+
+        // Set the tag size and add the header/footer
+        this._header.tagSize = tagData.length;
+        tagData.insertByteVector(0, this._header.render());
+        if (hasFooter) {
+            tagData.addByteVector(Id3v2TagFooter.fromHeader(this._header).render());
         }
 
         return tagData;
@@ -1076,7 +1133,7 @@ export default class Id3v2Tag extends Tag {
         file.mode = FileAccessMode.Read;
         file.seek(position);
 
-        this._header = new Id3v2TagHeader(file.readBlock(Id3v2Settings.headerSize));
+        this._header = Id3v2TagHeader.fromData(file.readBlock(Id3v2Settings.headerSize));
 
         // If the tag size is 0, then this is an invalid tag. Tags must contain at least one frame.
         if (this._header.tagSize === 0) {

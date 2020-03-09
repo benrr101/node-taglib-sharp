@@ -179,7 +179,7 @@ export abstract class Frame {
             frontData.addByte(this._encryptionId);
         }
         // @FIXME: Implement compression
-        if ((this.flags & Id3v2FrameFlags.Desynchronized) !== 0) {
+        if ((this.flags & Id3v2FrameFlags.Compression) !== 0) {
             throw new NotImplementedError("Compression is not yet supported");
         }
         // @FIXME: Implement encryption

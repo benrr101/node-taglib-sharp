@@ -2,21 +2,21 @@ import Id3v2Settings from "./id3v2Settings";
 import SyncData from "./syncData";
 import {ByteVector} from "../byteVector";
 import {CorruptFileError} from "../errors";
-import {Id3v2TagHeaderFlags} from "./id3v2TagHeader";
+import {Id3v2TagHeader, Id3v2TagHeaderFlags} from "./id3v2TagHeader";
 import {Guards} from "../utils";
 
 export default class Id3v2TagFooter {
     private static readonly _fileIdentifier: ByteVector = ByteVector.fromString("3DI", undefined, undefined, true);
-    private _flags: Id3v2TagHeaderFlags;
-    private _majorVersion: number;
-    private _revisionNumber: number;
-    private _tagSize: number;
+    private _flags: Id3v2TagHeaderFlags = Id3v2TagHeaderFlags.FooterPresent;
+    private _majorVersion: number = 0;
+    private _revisionNumber: number = 0;
+    private _tagSize: number = 0;
 
     /**
      * Constructs and initializes a new instance by reading it from raw footer data.
      * @param data Raw data to build the instance from
      */
-    public constructor(data: ByteVector) {
+    public static fromData(data: ByteVector): Id3v2TagFooter {
         Guards.truthy(data, "data");
         if (data.length < Id3v2Settings.footerSize) {
             throw new CorruptFileError("Provided data is smaller than object size.");
@@ -25,18 +25,19 @@ export default class Id3v2TagFooter {
             throw new CorruptFileError("Provided data does not start with the file identifier");
         }
 
-        this._majorVersion = data.get(3);
-        this._revisionNumber = data.get(4);
-        this._flags = data.get(5);
+        const footer = new Id3v2TagFooter();
+        footer._majorVersion = data.get(3);
+        footer._revisionNumber = data.get(4);
+        footer._flags = data.get(5);
 
         // TODO: Is there any point to supporting footers on versions less than 4?
-        if (this._majorVersion === 2 && (this._flags & 127) !== 0) {
+        if (footer._majorVersion === 2 && (footer._flags & 127) !== 0) {
             throw new CorruptFileError("Invalid flags set on version 2 tag");
         }
-        if (this._majorVersion === 3 && (this._flags & 15) !== 0) {
+        if (footer._majorVersion === 3 && (footer._flags & 15) !== 0) {
             throw new CorruptFileError("Invalid flags set on version 3 tag");
         }
-        if (this._majorVersion === 4 && (this._flags & 7) !== 0) {
+        if (footer._majorVersion === 4 && (footer._flags & 7) !== 0) {
             throw new CorruptFileError("Invalid flags set on version 4 tag");
         }
 
@@ -46,7 +47,26 @@ export default class Id3v2TagFooter {
             }
         }
 
-        this.tagSize = SyncData.toUint(data.mid(6, 4));
+        footer.tagSize = SyncData.toUint(data.mid(6, 4));
+
+        return footer;
+    }
+
+    /**
+     * Constructs and initializes a new footer based on the contents of the header used for the
+     * same tag.
+     * @param header Header from which to base the new footer
+     */
+    public static fromHeader(header: Id3v2TagHeader): Id3v2TagFooter {
+        Guards.truthy(header, "header");
+
+        const footer = new Id3v2TagFooter();
+        footer._majorVersion = header.majorVersion;
+        footer._revisionNumber = header.revisionNumber;
+        footer._flags = header.flags | Id3v2TagHeaderFlags.FooterPresent;
+        footer._tagSize = header.tagSize;
+
+        return footer;
     }
 
     // #region Properties

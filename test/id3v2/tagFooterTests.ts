@@ -20,38 +20,38 @@ const getTestFooter = (majorVersion: number, minorVersion: number, flags: Id3v2T
         flags,
         TestConstants.syncedUintBytes
     );
-    return new Id3v2TagFooter(data);
+    return Id3v2TagFooter.fromData(data);
 };
 
 @suite(timeout(3000), slow(1000))
 class Id3v2_TagFooter_ConstructorTests {
     @test
-    public falsyData() {
+    public fromData_falsyData() {
         // Act/Assert
-        assert.throws(() => { const _ = new Id3v2TagFooter(null); });
-        assert.throws(() => { const _ = new Id3v2TagFooter(undefined); });
+        assert.throws(() => { const _ = Id3v2TagFooter.fromData(null); });
+        assert.throws(() => { const _ = Id3v2TagFooter.fromData(undefined); });
     }
 
     @test
-    public invalidDataLength() {
+    public fromData_invalidDataLength() {
         // Arrange
         const data = ByteVector.fromSize(1);
 
         // Act/Assert
-        assert.throws(() => { const _ = new Id3v2TagFooter(data); });
+        assert.throws(() => { const _ = Id3v2TagFooter.fromData(data); });
     }
 
     @test
-    public missingIdentifier() {
+    public fromData_missingIdentifier() {
         // Arrange
         const data = ByteVector.fromSize(10);
 
         // Act/Assert
-        assert.throws(() => { const _ = new Id3v2TagFooter(data); });
+        assert.throws(() => { const _ = Id3v2TagFooter.fromData(data); });
     }
 
     @test
-    public invalidFlags_version4() {
+    public fromData_invalidFlags_version4() {
         // Arrange
         const data = ByteVector.concatenate(
             Id3v2TagFooter.fileIdentifier,
@@ -59,11 +59,11 @@ class Id3v2_TagFooter_ConstructorTests {
         );
 
         // Act/Assert
-        assert.throws(() => { const _ = new Id3v2TagFooter(data); });
+        assert.throws(() => { const _ = Id3v2TagFooter.fromData(data); });
     }
 
     @test
-    public invalidTagSizeBytes() {
+    public fromData_invalidTagSizeBytes() {
         // Arrange
         const testData = ByteVector.concatenate(
             Id3v2TagFooter.fileIdentifier,
@@ -75,14 +75,14 @@ class Id3v2_TagFooter_ConstructorTests {
         const testData4 = ByteVector.concatenate(testData, 0x00, 0x00, 0x00, 0x80);
 
         // Act/Assert
-        assert.throws(() => { const _ = new Id3v2TagFooter(testData1); });
-        assert.throws(() => { const _ = new Id3v2TagFooter(testData2); });
-        assert.throws(() => { const _ = new Id3v2TagFooter(testData3); });
-        assert.throws(() => { const _ = new Id3v2TagFooter(testData4); });
+        assert.throws(() => { const _ = Id3v2TagFooter.fromData(testData1); });
+        assert.throws(() => { const _ = Id3v2TagFooter.fromData(testData2); });
+        assert.throws(() => { const _ = Id3v2TagFooter.fromData(testData3); });
+        assert.throws(() => { const _ = Id3v2TagFooter.fromData(testData4); });
     }
 
     @test
-    public validParams() {
+    public fromData_validParams() {
         // Arrange
         const majorVersion = 0x04;
         const minorVersion = 0x00;
@@ -96,7 +96,7 @@ class Id3v2_TagFooter_ConstructorTests {
         );
 
         // Act
-        const output = new Id3v2TagFooter(testData);
+        const output = Id3v2TagFooter.fromData(testData);
 
         // Assert
         assert.equal(output.flags, flags);
@@ -231,7 +231,7 @@ class Id3v2_TagFooter_RenderTests {
             flags,
             TestConstants.syncedUintBytes
         );
-        const footer = new Id3v2TagFooter(testData);
+        const footer = Id3v2TagFooter.fromData(testData);
 
         // Act
         const output = footer.render();

@@ -38,16 +38,16 @@ export class Id3v2TagHeader {
         undefined,
         true
     );
-    private _flags: Id3v2TagHeaderFlags;
-    private _majorVersion: number;
-    private _revisionNumber: number;
-    private _tagSize: number;
+    private _flags: Id3v2TagHeaderFlags = Id3v2TagHeaderFlags.None;
+    private _majorVersion: number = 0;
+    private _revisionNumber: number = 0;
+    private _tagSize: number = 0;
 
     /**
      * Constructs and initializes a new instance by reading it from the raw header data.
      * @param data Object containing the raw data to build the new instance from.
      */
-    public constructor(data: ByteVector) {
+    public static fromData(data: ByteVector): Id3v2TagHeader {
         Guards.truthy(data, "data");
         if (data.length < Id3v2Settings.headerSize) {
             throw new CorruptFileError("Provided data is smaller than object size");
@@ -56,18 +56,19 @@ export class Id3v2TagHeader {
             throw new CorruptFileError("Provided data does not start with the file identifier");
         }
 
-        this._majorVersion = data.get(3);
-        this._revisionNumber = data.get(4);
-        this._flags = data.get(5);
+        const header = new Id3v2TagHeader();
+        header._majorVersion = data.get(3);
+        header._revisionNumber = data.get(4);
+        header._flags = data.get(5);
 
         // Make sure flags provided are legal
-        if (this._majorVersion === 2 && (this._flags & 63) !== 0) {
+        if (header._majorVersion === 2 && (header._flags & 63) !== 0) {
             throw new CorruptFileError("Invalid flags set on version 2 tag");
         }
-        if (this._majorVersion === 3 && (this._flags & 15) > 0) {
+        if (header._majorVersion === 3 && (header._flags & 15) > 0) {
             throw new CorruptFileError("Invalid flags set on version 3 tag");
         }
-        if (this._majorVersion === 4 && (this._flags & 7) > 0) {
+        if (header._majorVersion === 4 && (header._flags & 7) > 0) {
             throw new CorruptFileError("Invalid flags set on version 4 tag");
         }
 
@@ -77,7 +78,9 @@ export class Id3v2TagHeader {
                 throw new CorruptFileError("One of the bytes in the tag size was greater than the allowed 128");
             }
         }
-        this.tagSize = SyncData.toUint(data.mid(6, 4));
+        header.tagSize = SyncData.toUint(data.mid(6, 4));
+
+        return header;
     }
 
     // #region Properties
@@ -124,7 +127,7 @@ export class Id3v2TagHeader {
      * Gets the major version of the tag described by the current instance.
      */
     public get majorVersion(): number {
-        return this._majorVersion === 0
+        return this._majorVersion === 0 || Id3v2Settings.forceDefaultVersion
             ? Id3v2Settings.defaultVersion
             : this._majorVersion;
     }

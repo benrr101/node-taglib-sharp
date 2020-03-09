@@ -1,3 +1,4 @@
+import * as BigInt from "big-integer";
 import * as Chai from "chai";
 import * as ChaiAsPromised from "chai-as-promised";
 import * as TypeMoq from "typemoq";
@@ -8,7 +9,7 @@ import SyncData from "../../src/id3v2/syncData";
 import TestFile from "../utilities/testFile";
 import {ByteVector, StringType} from "../../src/byteVector";
 import {File, ReadStyle} from "../../src/file";
-import {Id3v2TagHeaderFlags} from "../../src/id3v2/id3v2TagHeader";
+import {Id3v2TagHeader, Id3v2TagHeaderFlags} from "../../src/id3v2/id3v2TagHeader";
 import PlayCountFrame from "../../src/id3v2/frames/playCountFrame";
 import UniqueFileIdentifierFrame from "../../src/id3v2/frames/uniqueFileIdentifierFrame";
 import UnknownFrame from "../../src/id3v2/frames/unknownFrame";
@@ -21,6 +22,9 @@ import CommentsFrame from "../../src/id3v2/frames/commentsFrame";
 import Id3v2Settings from "../../src/id3v2/id3v2Settings";
 import UnsynchronizedLyricsFrame from "../../src/id3v2/frames/unsynchronizedLyricsFrame";
 import {IPicture} from "../../src/picture";
+import {UrlLinkFrame} from "../../src/id3v2/frames/urlLinkFrame";
+import Id3v2TagFooter from "../../src/id3v2/id3v2TagFooter";
+import {Id3v2FrameFlags} from "../../src/id3v2/frames/frameHeader";
 
 // Setup Chai
 Chai.use(ChaiAsPromised);
@@ -299,8 +303,31 @@ class Id3v2_Tag_PropertyTests {
     }
 
     @test
-    public version() {
-        // TODO: Need to figure out what to do if header doesn't exist
+    public version_invalidValue() {
+        // Arrange
+        const tag = Id3v2Tag.fromEmpty();
+        const set = (v: number) => { tag.version = v; };
+
+        // Act / Assert
+        PropertyTests.propertyThrows(set, -1);
+        PropertyTests.propertyThrows(set, 1.23);
+        PropertyTests.propertyThrows(set, 0);
+        PropertyTests.propertyThrows(set, 5);
+        PropertyTests.propertyThrows(set, 1);
+    }
+
+    @test
+    public version_validValue() {
+        // Arrange
+        const tag = Id3v2Tag.fromEmpty();
+        const set = (v: number) => { tag.version = v; };
+        const get = () => tag.version;
+
+        // Act / Assert
+        Id3v2Settings.forceDefaultVersion = false;
+        PropertyTests.propertyRoundTrip(set, get, 2);
+        PropertyTests.propertyRoundTrip(set, get, 3);
+        PropertyTests.propertyRoundTrip(set, get, 4);
     }
 
     @test
@@ -1448,5 +1475,448 @@ class Id3v2_Tag_PropertyTests {
 
         PropertyTests.propertyRoundTrip(setProp, getProp, undefined);
         assert.strictEqual(tag.frames.length, 0);
+    }
+}
+
+@suite(slow(1000), timeout(3000))
+class Id3v2_Tag_MethodTests {
+    @test
+    public clear() {
+        // Arrange
+        const tag = Id3v2Tag.fromEmpty();
+        tag.frames.push(PlayCountFrame.fromEmpty());
+        tag.frames.push(PlayCountFrame.fromEmpty());
+
+        // Act
+        tag.clear();
+
+        // Assert
+        assert.isOk(tag.frames);
+        assert.isEmpty(tag.frames);
+    }
+
+    @test
+    public copyTo_invalidDestination() {
+        // Arrange
+        const source = Id3v2Tag.fromEmpty();
+
+        // Act / Assert
+        assert.throws(() => { source.copyTo(undefined, true); });
+        assert.throws(() => { source.copyTo(null, true); });
+        // TODO: Add a test for wrong tag type when we have more tag types.
+    }
+
+    @test
+    public copyTo_noOverwrite() {
+        // Arrange
+        const source = Id3v2Tag.fromEmpty();
+        const sFrame1 = PlayCountFrame.fromEmpty();
+        sFrame1.playCount = BigInt(123);
+        const sFrame2 = TextInformationFrame.fromIdentifier(FrameIdentifiers.TCOM);
+        sFrame2.text = ["foo", "bar"];
+        source.frames.push(sFrame1, sFrame2);
+
+        const dest = Id3v2Tag.fromEmpty();
+        const dFrame1 = TextInformationFrame.fromIdentifier(FrameIdentifiers.TCOM);
+        dest.frames.push(dFrame1);
+
+        // Act
+        source.copyTo(dest, false);
+
+        // Assert
+        assert.strictEqual(source.frames.length, 2);
+        assert.sameMembers(source.frames, [sFrame1, sFrame2]);
+
+        assert.strictEqual(dest.frames.length, 2);
+        assert.notOwnInclude(dest.frames, sFrame1);
+        assert.notOwnInclude(dest.frames, sFrame2);
+        assert.ownInclude(dest.frames, dFrame1);
+
+        const dPcnt = dest.getFramesByIdentifier<PlayCountFrame>(
+            FrameClassType.PlayCountFrame,
+            FrameIdentifiers.PCNT
+        )[0];
+        assert.isTrue(dPcnt.playCount.eq(sFrame1.playCount));
+    }
+
+    @test
+    public copyTo_overwrite() {
+        // Arrange
+        const source = Id3v2Tag.fromEmpty();
+        const sFrame1 = PlayCountFrame.fromEmpty();
+        sFrame1.playCount = BigInt(123);
+        const sFrame2 = TextInformationFrame.fromIdentifier(FrameIdentifiers.TCOM);
+        sFrame2.text = ["foo", "bar"];
+        source.frames.push(sFrame1, sFrame2);
+
+        const dest = Id3v2Tag.fromEmpty();
+        const dFrame1 = TextInformationFrame.fromIdentifier(FrameIdentifiers.TCOM);
+        dest.frames.push(dFrame1);
+
+        // Act
+        source.copyTo(dest, true);
+
+        // Assert
+        assert.strictEqual(source.frames.length, 2);
+        assert.sameMembers(source.frames, [sFrame1, sFrame2]);
+
+        assert.strictEqual(dest.frames.length, 2);
+        assert.notOwnInclude(dest.frames, sFrame1);
+        assert.notOwnInclude(dest.frames, sFrame2);
+
+        const dTcom = dest.getFramesByIdentifier<TextInformationFrame>(
+            FrameClassType.TextInformationFrame,
+            FrameIdentifiers.TCOM
+        )[0];
+        assert.deepStrictEqual(dTcom.text, ["foo", "bar"]);
+
+        const dPcnt = dest.getFramesByIdentifier<PlayCountFrame>(
+            FrameClassType.PlayCountFrame,
+            FrameIdentifiers.PCNT
+        )[0];
+        assert.isTrue(dPcnt.playCount.eq(sFrame1.playCount));
+    }
+
+    @test
+    public getFramesByClassType_invalidClassType() {
+        // Arrange
+        const tag = Id3v2Tag.fromEmpty();
+
+        // Act / Assert
+        assert.throws(() => { tag.getFramesByClassType<TextInformationFrame>(undefined); });
+        assert.throws(() => { tag.getFramesByClassType<TextInformationFrame>(null); });
+    }
+
+    @test
+    public getFramesByClassType_hasMatches() {
+        // Arrange
+        const tag = Id3v2Tag.fromEmpty();
+        const frame1 = TextInformationFrame.fromIdentifier(FrameIdentifiers.TCOM);
+        const frame2 = TextInformationFrame.fromIdentifier(FrameIdentifiers.TCON);
+        const frame3 = PlayCountFrame.fromEmpty();
+        tag.frames.push(frame1, frame2, frame3);
+
+        // Act
+        const result = tag.getFramesByClassType<TextInformationFrame>(FrameClassType.TextInformationFrame);
+
+        // Assert
+        assert.isArray(result);
+        assert.strictEqual(result.length, 2);
+        assert.sameMembers(result, [frame1, frame2]);
+    }
+
+    @test
+    public getFramesByClassType_noMatches() {
+        // Arrange
+        const tag = Id3v2Tag.fromEmpty();
+        tag.frames.push(PlayCountFrame.fromEmpty());
+
+        // Act
+        const result = tag.getFramesByClassType<TextInformationFrame>(FrameClassType.TextInformationFrame);
+
+        // Assert
+        assert.isArray(result);
+        assert.isEmpty(result);
+    }
+
+    @test
+    public getFramesByIdentifier_invalidClassType() {
+        // Arrange
+        const tag = Id3v2Tag.fromEmpty();
+
+        // Act / Assert
+        assert.throws(() => { tag.getFramesByIdentifier<TextInformationFrame>(undefined, FrameIdentifiers.TCOM); });
+        assert.throws(() => { tag.getFramesByIdentifier<TextInformationFrame>(null, FrameIdentifiers.TCOM); });
+    }
+
+    @test
+    public getFramesByIdentifier_invalidIdentifier() {
+        // Arrange
+        const tag = Id3v2Tag.fromEmpty();
+        const classType = FrameClassType.TextInformationFrame;
+
+        // Act / Assert
+        assert.throws(() => { tag.getFramesByIdentifier<TextInformationFrame>(classType, undefined); });
+        assert.throws(() => { tag.getFramesByIdentifier<TextInformationFrame>(classType, null); });
+    }
+
+    @test
+    public getFramesByIdentifier_hasMatches() {
+        // Arrange
+        const tag = Id3v2Tag.fromEmpty();
+        const frame1 = TextInformationFrame.fromIdentifier(FrameIdentifiers.TCOM);
+        const frame2 = TextInformationFrame.fromIdentifier(FrameIdentifiers.TCOM);
+        const frame3 = TextInformationFrame.fromIdentifier(FrameIdentifiers.TCON);
+        tag.frames.push(frame1, frame2, frame3);
+
+        // Act
+        const result = tag.getFramesByIdentifier<TextInformationFrame>(
+            FrameClassType.TextInformationFrame,
+            FrameIdentifiers.TCOM
+        );
+
+        // Assert
+        assert.isArray(result);
+        assert.strictEqual(result.length, 2);
+        assert.sameMembers(result, [frame1, frame2]);
+    }
+
+    @test
+    public getFramesByIdentifier_noMatches() {
+        // Arrange
+        const tag = Id3v2Tag.fromEmpty();
+        tag.frames.push(TextInformationFrame.fromIdentifier(FrameIdentifiers.TCON));
+
+        // Act
+        const result = tag.getFramesByIdentifier<TextInformationFrame>(
+            FrameClassType.TextInformationFrame,
+            FrameIdentifiers.TCOM
+        );
+
+        // Assert
+        assert.isArray(result);
+        assert.isEmpty(result);
+    }
+
+    @test
+    public getTextAsString_invalidIdentity() {
+        // Arrange
+        const tag = Id3v2Tag.fromEmpty();
+
+        // Act / Assert
+        assert.throws(() => { tag.getTextAsString(undefined); });
+        assert.throws(() => { tag.getTextAsString(null); });
+    }
+
+    @test
+    public getTextAsString_urlFrame() {
+        // Arrange
+        const tag = Id3v2Tag.fromEmpty();
+        const frame1 = TextInformationFrame.fromIdentifier(FrameIdentifiers.TCOM);
+        const frame2 = UrlLinkFrame.fromIdentity(FrameIdentifiers.WCOM);
+        frame2.text = ["foo"];
+        const frame3 = UrlLinkFrame.fromIdentity(FrameIdentifiers.WCOM);
+        frame3.text = ["bar"];
+        tag.frames.push(frame1, frame2, frame3);
+
+        // Act
+        const result = tag.getTextAsString(FrameIdentifiers.WCOM);
+
+        // Assert
+        assert.strictEqual(result, "foo");
+    }
+
+    @test
+    public getTextAsString_textFrame() {
+        // Arrange
+        const tag = Id3v2Tag.fromEmpty();
+        const frame1 = UrlLinkFrame.fromIdentity(FrameIdentifiers.WCOM);
+        const frame2 = TextInformationFrame.fromIdentifier(FrameIdentifiers.TCOM);
+        frame2.text = ["foo"];
+        const frame3 = TextInformationFrame.fromIdentifier(FrameIdentifiers.TCOM);
+        frame3.text = ["bar"];
+        tag.frames.push(frame1, frame2, frame3);
+
+        // Act
+        const result = tag.getTextAsString(FrameIdentifiers.TCOM);
+
+        // Assert
+        assert.strictEqual(result, "foo");
+    }
+
+    @test
+    public getTextAsString_noMatches() {
+        // Arrange
+        const tag = Id3v2Tag.fromEmpty();
+        const frame1 = UrlLinkFrame.fromIdentity(FrameIdentifiers.WCOM);
+        tag.frames.push(frame1);
+
+        // Act
+        const result = tag.getTextAsString(FrameIdentifiers.TCOM);
+
+        // Assert
+        assert.isUndefined(result);
+    }
+
+    @test
+    public removeFrame_invalidFrame() {
+        // Arrange
+        const tag = Id3v2Tag.fromEmpty();
+
+        // Act / Assert
+        assert.throws(() => tag.removeFrame(undefined));
+        assert.throws(() => tag.removeFrame(null));
+    }
+
+    @test
+    public removeFrame_frameExists() {
+        // Arrange
+        const tag = Id3v2Tag.fromEmpty();
+        const frame = PlayCountFrame.fromEmpty();
+        tag.frames.push(frame);
+
+        // Act
+        tag.removeFrame(frame);
+
+        // Assert
+        assert.isEmpty(tag.frames);
+    }
+
+    @test
+    public removeFrame_frameDoesNotExist() {
+        // Arrange
+        const tag = Id3v2Tag.fromEmpty();
+        const frame1 = PlayCountFrame.fromEmpty();
+        const frame2 = TextInformationFrame.fromIdentifier(FrameIdentifiers.TCOM);
+        tag.frames.push(frame2);
+
+        // Act
+        tag.removeFrame(frame1);
+
+        // Assert
+        assert.strictEqual(tag.frames.length, 1);
+        assert.deepStrictEqual(tag.frames, [frame2]);
+    }
+
+    @test
+    public render_v4_noFooter() {
+        // Arrange
+        const tag = Id3v2Tag.fromEmpty();
+        tag.version = 4;
+
+        const frame1 = TextInformationFrame.fromIdentifier(FrameIdentifiers.TCOM);
+        const frame1Data = frame1.render(4);
+        const frame2 = TextInformationFrame.fromIdentifier(FrameIdentifiers.TCON);
+        const frame2Data = frame2.render(4);
+        tag.frames.push(frame1, frame2);
+
+        // Act
+        const output = tag.render();
+
+        // Assert
+        const header = new Id3v2TagHeader();
+        header.tagSize = 1024 + frame1Data.length + frame2Data.length;
+        header.majorVersion = 4;
+        const expected = ByteVector.concatenate(
+            header.render(),
+            frame1Data,
+            frame2Data,
+            ByteVector.fromSize(1024, 0x00)
+        );
+
+        assert.isTrue(ByteVector.equal(output, expected));
+    }
+
+    @test
+    public render_v4_hasFooter() {
+        // Arrange
+        const tag = Id3v2Tag.fromEmpty();
+        tag.version = 4;
+        tag.flags = Id3v2TagHeaderFlags.FooterPresent;
+
+        const frame1 = TextInformationFrame.fromIdentifier(FrameIdentifiers.TCOM);
+        const frame1Data = frame1.render(4);
+        const frame2 = TextInformationFrame.fromIdentifier(FrameIdentifiers.TCON);
+        const frame2Data = frame2.render(4);
+        tag.frames.push(frame1, frame2);
+
+        // Act
+        const output = tag.render();
+
+        // Assert
+        const header = new Id3v2TagHeader();
+        header.tagSize = frame1Data.length + frame2Data.length;
+        header.majorVersion = 4;
+        header.flags = Id3v2TagHeaderFlags.FooterPresent;
+        const expected = ByteVector.concatenate(
+            header.render(),
+            frame1Data,
+            frame2Data,
+            Id3v2TagFooter.fromHeader(header).render()
+        );
+
+        assert.isTrue(ByteVector.equal(output, expected));
+    }
+
+    @test
+    public render_v4_unsyncAtFrameLevel() {
+        // Arrange
+        const tag = Id3v2Tag.fromEmpty();
+        tag.version = 4;
+        tag.flags = Id3v2TagHeaderFlags.Unsynchronication;
+
+        const frame1 = TextInformationFrame.fromIdentifier(FrameIdentifiers.TCOM);
+        const frame2 = TextInformationFrame.fromIdentifier(FrameIdentifiers.TCON);
+        tag.frames.push(frame1, frame2);
+
+        // Act
+        const output = tag.render();
+
+        // Assert
+        frame1.flags |= Id3v2FrameFlags.Desynchronized;
+        frame2.flags |= Id3v2FrameFlags.Desynchronized;
+        const frame1Data = frame1.render(4);
+        const frame2Data = frame2.render(4);
+
+        const header = new Id3v2TagHeader();
+        header.tagSize = 1024 + frame1Data.length + frame2Data.length;
+        header.flags = Id3v2TagHeaderFlags.Unsynchronication;
+        header.majorVersion = 4;
+
+        const expected = ByteVector.concatenate(
+            header.render(),
+            frame1Data,
+            frame2Data,
+            ByteVector.fromSize(1024, 0x00)
+        );
+
+        assert.isTrue(ByteVector.equal(output, expected));
+    }
+
+    @test
+    public render_v3_unsyncAtTagLevel() {
+        // Arrange
+        const tag = Id3v2Tag.fromEmpty();
+        tag.version = 3;
+        tag.flags = Id3v2TagHeaderFlags.Unsynchronication;
+
+        const frame1 = TextInformationFrame.fromIdentifier(FrameIdentifiers.TCOM);
+        const frame1Data = frame1.render(3);
+        const frame2 = TextInformationFrame.fromIdentifier(FrameIdentifiers.TCON);
+        const frame2Data = frame2.render(3);
+        tag.frames.push(frame1, frame2);
+
+        // Act
+        const output = tag.render();
+
+        // Assert
+        const frameData = ByteVector.concatenate(frame1Data, frame2Data);
+        SyncData.unsyncByteVector(frameData);
+
+        const header = new Id3v2TagHeader();
+        header.flags = Id3v2TagHeaderFlags.Unsynchronication;
+        header.tagSize = 1024 + frameData.length;
+        header.majorVersion = 3;
+
+        const expected = ByteVector.concatenate(
+            header.render(),
+            frameData,
+            ByteVector.fromSize(1024, 0x00)
+        );
+
+        assert.isTrue(ByteVector.equal(output, expected));
+    }
+
+    @test
+    public render_v4_unsupportedFrameForVersion() {
+        // Arrange
+        const tag = Id3v2Tag.fromEmpty();
+        tag.version = 4;
+
+        const frame1 = TextInformationFrame.fromIdentifier(FrameIdentifiers.TYER);
+        tag.frames.push(frame1);
+
+        // Act / Assert
+        assert.throws(() => { const _ = tag.render(); });
     }
 }

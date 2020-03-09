@@ -19,7 +19,7 @@ const getTestHeader = (majorVersion: number, minorVersion: number, flags: Id3v2T
         flags,
         0x10, 0x10, 0x10, 0x10
     );
-    return new Id3v2TagHeader(data);
+    return Id3v2TagHeader.fromData(data);
 };
 
 @suite(timeout(3000), slow(1000))
@@ -27,8 +27,8 @@ class Id3v2_TagHeader_ConstructorTests {
     @test
     public falsyData() {
         // Act/Assert
-        assert.throws(() => { const _ = new Id3v2TagHeader(null); });
-        assert.throws(() => { const _ = new Id3v2TagHeader(undefined); });
+        assert.throws(() => { const _ = Id3v2TagHeader.fromData(null); });
+        assert.throws(() => { const _ = Id3v2TagHeader.fromData(undefined); });
     }
 
     @test
@@ -38,14 +38,14 @@ class Id3v2_TagHeader_ConstructorTests {
         const data1 = ByteVector.fromSize(1);
 
         // Act/Assert
-        assert.throws(() => { const _ = new Id3v2TagHeader(data0); });
-        assert.throws(() => { const _ = new Id3v2TagHeader(data1); });
+        assert.throws(() => { const _ = Id3v2TagHeader.fromData(data0); });
+        assert.throws(() => { const _ = Id3v2TagHeader.fromData(data1); });
     }
 
     @test
     public invalidStartOfData() {
         // Act/Assert
-        assert.throws(() => { const _ = new Id3v2TagHeader(TestConstants.testByteVector); });
+        assert.throws(() => { const _ = Id3v2TagHeader.fromData(TestConstants.testByteVector); });
     }
 
     @test
@@ -59,7 +59,7 @@ class Id3v2_TagHeader_ConstructorTests {
         );
 
         // Act/Assert
-        assert.throws(() => { const _ = new Id3v2TagHeader(testData); });
+        assert.throws(() => { const _ = Id3v2TagHeader.fromData(testData); });
     }
 
     @test
@@ -73,7 +73,7 @@ class Id3v2_TagHeader_ConstructorTests {
         );
 
         // Act/Assert
-        assert.throws(() => { const _ = new Id3v2TagHeader(testData); });
+        assert.throws(() => { const _ = Id3v2TagHeader.fromData(testData); });
     }
 
     @test
@@ -87,7 +87,7 @@ class Id3v2_TagHeader_ConstructorTests {
         );
 
         // Act/Assert
-        assert.throws(() => { const _ = new Id3v2TagHeader(testData); });
+        assert.throws(() => { const _ = Id3v2TagHeader.fromData(testData); });
     }
 
     @test
@@ -104,10 +104,10 @@ class Id3v2_TagHeader_ConstructorTests {
         const testData4 = ByteVector.concatenate(testData, 0x00, 0x00, 0x00, 0x80);
 
         // Act/Assert
-        assert.throws(() => {const _ = new Id3v2TagHeader(testData1); });
-        assert.throws(() => {const _ = new Id3v2TagHeader(testData2); });
-        assert.throws(() => {const _ = new Id3v2TagHeader(testData3); });
-        assert.throws(() => {const _ = new Id3v2TagHeader(testData4); });
+        assert.throws(() => {const _ = Id3v2TagHeader.fromData(testData1); });
+        assert.throws(() => {const _ = Id3v2TagHeader.fromData(testData2); });
+        assert.throws(() => {const _ = Id3v2TagHeader.fromData(testData3); });
+        assert.throws(() => {const _ = Id3v2TagHeader.fromData(testData4); });
     }
 
     @test
@@ -125,7 +125,7 @@ class Id3v2_TagHeader_ConstructorTests {
         );
 
         // Act
-        const output = new Id3v2TagHeader(testData);
+        const output = Id3v2TagHeader.fromData(testData);
 
         // Assert
         assert.equal(output.flags, flags);
@@ -237,6 +237,26 @@ class Id3v2_TagHeader_PropertyTests {
     }
 
     @test
+    public getMajorVersion_forcedDefault() {
+        // Arrange
+        const header = getTestHeader(4, 0, Id3v2TagHeaderFlags.None);
+
+        const initialForceValue = Id3v2Settings.forceDefaultVersion;
+        try {
+            Id3v2Settings.forceDefaultVersion = true;
+
+            // Act
+            const output = header.majorVersion;
+
+            // Assert
+            assert.strictEqual(output, Id3v2Settings.defaultVersion);
+        } finally {
+            // Cleanup
+            Id3v2Settings.forceDefaultVersion = initialForceValue;
+        }
+    }
+
+    @test
     public setMajorVersion_invalidValues() {
         // Arrange
         const header = getTestHeader(4, 0, Id3v2TagHeaderFlags.None);
@@ -341,7 +361,7 @@ class Id3v2_TagHeader_RenderTests {
             flags,
             0x10, 0x10, 0x10, 0x10
         );
-        const header = new Id3v2TagHeader(testData);
+        const header = Id3v2TagHeader.fromData(testData);
 
         // Act
         const output = header.render();
