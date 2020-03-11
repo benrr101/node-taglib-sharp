@@ -1919,4 +1919,212 @@ class Id3v2_Tag_MethodTests {
         // Act / Assert
         assert.throws(() => { const _ = tag.render(); });
     }
+
+    @test
+    public replaceFrame_invalidFrames() {
+        // Arrange
+        const tag = Id3v2Tag.fromEmpty();
+        const frame = PlayCountFrame.fromEmpty();
+
+        // Act / Assert
+        assert.throws(() => { tag.replaceFrame(undefined, frame); });
+        assert.throws(() => { tag.replaceFrame(null, frame); });
+        assert.throws(() => { tag.replaceFrame(frame, undefined); });
+        assert.throws(() => { tag.replaceFrame(frame, null); });
+    }
+
+    @test
+    public replaceFrame_sameFrame() {
+        // Arrange
+        const tag = Id3v2Tag.fromEmpty();
+        const frame = PlayCountFrame.fromEmpty();
+
+        // Act
+        tag.replaceFrame(frame, frame);
+
+        // Assert
+        assert.strictEqual(tag.frames.length, 0);
+    }
+
+    @test
+    public replaceFrame_frameExists() {
+        // Arrange
+        const tag = Id3v2Tag.fromEmpty();
+        const oldFrame = PlayCountFrame.fromEmpty();
+        const newFrame = TextInformationFrame.fromIdentifier(FrameIdentifiers.TCOM);
+
+        tag.frames.push(oldFrame);
+
+        // Act
+        tag.replaceFrame(oldFrame, newFrame);
+
+        // Assert
+        assert.sameMembers(tag.frames, [newFrame]);
+    }
+
+    @test
+    public replaceFrame_frameDoesNotExist() {
+        // Arrange
+        const tag = Id3v2Tag.fromEmpty();
+        const oldFrame = PlayCountFrame.fromEmpty();
+        const newFrame = TextInformationFrame.fromIdentifier(FrameIdentifiers.TCOM);
+        const otherFrame = PlayCountFrame.fromEmpty();
+
+        tag.frames.push(otherFrame);
+
+        // Act
+        tag.replaceFrame(oldFrame, newFrame);
+
+        // Assert
+        assert.sameMembers(tag.frames, [otherFrame, newFrame]);
+    }
+
+    @test
+    public setNumberFrame_invalidArgs() {
+        // Arrange
+        const tag = Id3v2Tag.fromEmpty();
+        const identifier = FrameIdentifiers.TCOM;
+
+        // Act / Assert
+        assert.throws(() => { tag.setNumberFrame(undefined, 1, 1, 1); });
+        assert.throws(() => { tag.setNumberFrame(null, 1, 1, 1); });
+
+        assert.throws(() => { tag.setNumberFrame(identifier, -1, 1, 1); });
+        assert.throws(() => { tag.setNumberFrame(identifier, 1.23, 1, 1); });
+        assert.throws(() => { tag.setNumberFrame(identifier, Number.MAX_SAFE_INTEGER + 1, 1, 1); });
+
+        assert.throws(() => { tag.setNumberFrame(identifier, 1, -1, 1); });
+        assert.throws(() => { tag.setNumberFrame(identifier, 1, 1.23, 1); });
+        assert.throws(() => { tag.setNumberFrame(identifier, 1, Number.MAX_SAFE_INTEGER + 1, 1); });
+
+        assert.throws(() => { tag.setNumberFrame(identifier, 1, 1, -1); });
+        assert.throws(() => { tag.setNumberFrame(identifier, 1, 1, 1.23); });
+        assert.throws(() => { tag.setNumberFrame(identifier, 1, 1, 0x100); });
+    }
+
+    @test
+    public setNumberFrame_removesFrame() {
+        // Arrange
+        const tag = Id3v2Tag.fromEmpty();
+        const frame = TextInformationFrame.fromIdentifier(FrameIdentifiers.TRCK);
+        tag.frames.push(frame);
+
+        // Act
+        tag.setNumberFrame(FrameIdentifiers.TRCK, 0, 0, 1);
+
+        // Assert
+        assert.isEmpty(tag.frames);
+    }
+
+    @test
+    public setNumberFrame_noDenominator() {
+        // Arrange
+        const tag = Id3v2Tag.fromEmpty();
+
+        // Act
+        tag.setNumberFrame(FrameIdentifiers.TRCK, 123, 0, 4);
+
+        // Assert
+        assert.strictEqual(tag.frames.length, 1);
+        assert.strictEqual(tag.frames[0].frameId, FrameIdentifiers.TRCK);
+        assert.deepStrictEqual((<TextInformationFrame> tag.frames[0]).text, ["0123"]);
+    }
+
+    @test
+    public setNumberFrame_withDenominator() {
+        // Arrange
+        const tag = Id3v2Tag.fromEmpty();
+
+        // Act
+        tag.setNumberFrame(FrameIdentifiers.TRCK, 123, 234, 4);
+
+        // Assert
+        assert.strictEqual(tag.frames.length, 1);
+        assert.strictEqual(tag.frames[0].frameId, FrameIdentifiers.TRCK);
+        assert.deepStrictEqual((<TextInformationFrame> tag.frames[0]).text, ["0123/234"]);
+    }
+
+    @test
+    public setTextFrame_invalidArgs() {
+        // Arrange
+        const tag = Id3v2Tag.fromEmpty();
+
+        // Act / Assert
+        assert.throws(() => { tag.setTextFrame(undefined, "foo"); });
+        assert.throws(() => { tag.setTextFrame(null, "foo"); });
+    }
+
+    @test
+    public setTextFrame_removesFrame() {
+        // Arrange
+        const tag = Id3v2Tag.fromEmpty();
+        const frame = TextInformationFrame.fromIdentifier(FrameIdentifiers.TCOM);
+        tag.frames.push(frame);
+
+        // Act
+        tag.setTextFrame(FrameIdentifiers.TCOM, undefined, undefined, undefined);
+
+        // Assert
+        assert.strictEqual(tag.frames.length, 0);
+    }
+
+    @test
+    public setTextFrame_urlFrameNoMatch() {
+        // Arrange
+        const tag = Id3v2Tag.fromEmpty();
+
+        // Act
+        tag.setTextFrame(FrameIdentifiers.WCOM, "foo", "bar");
+
+        // Assert
+        assert.strictEqual(tag.frames.length, 1);
+        assert.strictEqual(tag.frames[0].frameId, FrameIdentifiers.WCOM);
+        assert.deepStrictEqual((<UrlLinkFrame> tag.frames[0]).text, ["foo", "bar"]);
+    }
+
+    @test
+    public setTextFrame_urlFrameWithMatch() {
+        // Arrange
+        const tag = Id3v2Tag.fromEmpty();
+        const frame = UrlLinkFrame.fromIdentity(FrameIdentifiers.WCOM);
+        frame.text = ["fux", "qux"];
+
+        // Act
+        tag.setTextFrame(FrameIdentifiers.WCOM, "foo", "bar");
+
+        // Assert
+        assert.strictEqual(tag.frames.length, 1);
+        assert.strictEqual(tag.frames[0].frameId, FrameIdentifiers.WCOM);
+        assert.deepStrictEqual((<UrlLinkFrame> tag.frames[0]).text, ["foo", "bar"]);
+    }
+
+    @test
+    public setTextFrame_textFrameNoMatch() {
+        // Arrange
+        const tag = Id3v2Tag.fromEmpty();
+
+        // Act
+        tag.setTextFrame(FrameIdentifiers.TCOM, "foo", "bar");
+
+        // Assert
+        assert.strictEqual(tag.frames.length, 1);
+        assert.strictEqual(tag.frames[0].frameId, FrameIdentifiers.TCOM);
+        assert.deepStrictEqual((<TextInformationFrame> tag.frames[0]).text, ["foo", "bar"]);
+    }
+
+    @test
+    public setTextFrame_textFrameWithMatch() {
+        // Arrange
+        const tag = Id3v2Tag.fromEmpty();
+        const frame = TextInformationFrame.fromIdentifier(FrameIdentifiers.TCOM);
+        frame.text = ["fux", "qux"];
+
+        // Act
+        tag.setTextFrame(FrameIdentifiers.TCOM, "foo", "bar");
+
+        // Assert
+        assert.strictEqual(tag.frames.length, 1);
+        assert.strictEqual(tag.frames[0].frameId, FrameIdentifiers.TCOM);
+        assert.deepStrictEqual((<TextInformationFrame> tag.frames[0]).text, ["foo", "bar"]);
+    }
 }
