@@ -64,7 +64,7 @@ export default class AttachmentFrame extends Frame implements IPicture {
         Guards.truthy(picture, "picture");
 
         // In this case we will assume the frame is an APIC until the picture is parsed
-        const frame = new AttachmentFrame(new Id3v2FrameHeader(FrameIdentifiers.APIC, 4));
+        const frame = new AttachmentFrame(new Id3v2FrameHeader(FrameIdentifiers.APIC));
         frame._rawPicture = picture;
         return frame;
     }
@@ -206,7 +206,7 @@ export default class AttachmentFrame extends Frame implements IPicture {
 
     /** @inheritDoc */
     public clone(): Frame {
-        const frame = new AttachmentFrame(new Id3v2FrameHeader(this.frameId, 4));
+        const frame = new AttachmentFrame(new Id3v2FrameHeader(this.frameId));
         if (this._rawPicture) {
             frame._rawPicture = this._rawPicture;
         } else if (this._rawData) {
@@ -274,12 +274,6 @@ export default class AttachmentFrame extends Frame implements IPicture {
     protected renderFields(version: number) {
         this.parseFromRaw();
 
-        // Bypass processing if we haven't changed the data. Raw data is cleared when we touch any
-        // fields inside this frame.
-        if (this._rawData && this._rawVersion === version) {
-            return this._rawData;
-        }
-
         const encoding = AttachmentFrame.correctEncoding(this.textEncoding, version);
         const data = ByteVector.empty();
 
@@ -288,8 +282,9 @@ export default class AttachmentFrame extends Frame implements IPicture {
             data.addByte(encoding);
 
             if (version === 2) {
-                const ext = Picture.getExtensionFromMimeType(this.mimeType);
-                data.addByteVector(ByteVector.fromString(ext && ext.length === 3 ? ext.toUpperCase() : "XXX"));
+                let ext = Picture.getExtensionFromMimeType(this.mimeType);
+                ext = ext && ext.length >= 3 ? ext.substring(ext.length - 3).toUpperCase() : "XXX";
+                data.addByteVector(ByteVector.fromString(ext));
             } else {
                 data.addByteVector(ByteVector.fromString(this.mimeType, StringType.Latin1));
                 data.addByteVector(ByteVector.getTextDelimiter(StringType.Latin1));

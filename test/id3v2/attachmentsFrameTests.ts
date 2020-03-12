@@ -5,26 +5,35 @@ import {slow, suite, test, timeout} from "mocha-typescript";
 
 import AttachmentFrame from "../../src/id3v2/frames/attachmentFrame";
 import FrameConstructorTests from "./frameConstructorTests";
+import Id3v2Settings from "../../src/id3v2/id3v2Settings";
+import PropertyTests from "../utilities/propertyTests";
 import {ByteVector, StringType} from "../../src/byteVector";
 import {Frame, FrameClassType} from "../../src/id3v2/frames/frame";
 import {Id3v2FrameHeader} from "../../src/id3v2/frames/frameHeader";
 import {FrameIdentifier, FrameIdentifiers} from "../../src/id3v2/frameIdentifiers";
 import {IPicture, PictureType} from "../../src/picture";
-import Id3v2Settings from "../../src/id3v2/id3v2Settings";
-import PropertyTests from "../utilities/propertyTests";
 
 // Setup chai
 Chai.use(ChaiAsPromised);
 const assert = Chai.assert;
 
 function getTestFrame() {
-    const data = ByteVector.fromString("foobarbaz");
+    return getCustomTestFrame(
+        ByteVector.fromString("foobarbaz"),
+        "fux",
+        "bux",
+        "application/octet-stream",
+        PictureType.FrontCover
+    );
+}
+
+function getCustomTestFrame(data: ByteVector, desc: string, filename: string, mimeType: string, type: PictureType) {
     const mockPicture = TypeMoq.Mock.ofType<IPicture>();
     mockPicture.setup((p) => p.data).returns(() => data);
-    mockPicture.setup((p) => p.description).returns(() => "fux");
-    mockPicture.setup((p) => p.filename).returns(() => "bux");
-    mockPicture.setup((p) => p.mimeType).returns(() => "application/octet-stream");
-    mockPicture.setup((p) => p.type).returns(() => PictureType.FrontCover);
+    mockPicture.setup((p) => p.description).returns(() => desc);
+    mockPicture.setup((p) => p.filename).returns(() => filename);
+    mockPicture.setup((p) => p.mimeType).returns(() => mimeType);
+    mockPicture.setup((p) => p.type).returns(() => type);
 
     return AttachmentFrame.fromPicture(mockPicture.object);
 }
@@ -113,6 +122,20 @@ class Id3v2_AttachmentFrame_ConstructorTests extends FrameConstructorTests {
         // Act / Assert
         const frame = AttachmentFrame.fromRawData(data, 4);
         assert.throws(() => { const _ = frame.type; });
+    }
+
+    @test
+    public fromRawData_dataTooShort() {
+        // Arrange
+        const header = new Id3v2FrameHeader(FrameIdentifiers.APIC);
+        header.frameSize = 3;
+        const data = ByteVector.concatenate(
+            header.render(4),
+            ByteVector.fromSize(3, 0x00)
+        );
+
+        // Act / Assert
+        assert.throws(() => { const _ = AttachmentFrame.fromRawData(data, 4); });
     }
 
     @test
@@ -575,5 +598,176 @@ class Id3v2_AttachmentFrame_MethodTests {
 
         // Assert
         assert.strictEqual(output, frame1);
+    }
+
+    @test
+    public render_apicV2InvalidMimeType_correctsEncoding() {
+        // Arrange
+        const data = ByteVector.fromString("fuxbuxqux");
+        const frame = getCustomTestFrame(data, "foo", "bar", "this/isnot/amimetype", PictureType.FrontCover);
+
+        // Act
+        const output = frame.render(2);
+
+        // Assert
+        const header = new Id3v2FrameHeader(FrameIdentifiers.APIC);
+        header.frameSize = 24;
+        const expected = ByteVector.concatenate(
+            header.render(2),
+            StringType.UTF16,
+            ByteVector.fromString("XXX"),
+            PictureType.FrontCover,
+            ByteVector.fromString("foo", StringType.UTF16),
+            ByteVector.getTextDelimiter(StringType.UTF16),
+            data
+        );
+        assert.isTrue(ByteVector.equal(output, expected));
+    }
+
+    @test
+    public render_apicV2ValidMimeType_correctsEncoding() {
+        // Arrange
+        const data = ByteVector.fromString("fuxbuxqux");
+        const frame = getCustomTestFrame(data, "foo", "bar", "image/gif", PictureType.FrontCover);
+
+        // Act
+        const output = frame.render(2);
+
+        // Assert
+        const header = new Id3v2FrameHeader(FrameIdentifiers.APIC);
+        header.frameSize = 24;
+        const expected = ByteVector.concatenate(
+            header.render(2),
+            StringType.UTF16,
+            ByteVector.fromString("GIF"),
+            PictureType.FrontCover,
+            ByteVector.fromString("foo", StringType.UTF16),
+            ByteVector.getTextDelimiter(StringType.UTF16),
+            data
+        );
+        assert.isTrue(ByteVector.equal(output, expected));
+    }
+
+    @test
+    public render_apicV4() {
+        // Arrange
+        const data = ByteVector.fromString("fuxbuxqux");
+        const frame = getCustomTestFrame(data, "foo", "bar", "image/gif", PictureType.FrontCover);
+
+        // Act
+        const output = frame.render(4);
+
+        // Assert
+        const header = new Id3v2FrameHeader(FrameIdentifiers.APIC);
+        header.frameSize = 25;
+        const expected = ByteVector.concatenate(
+            header.render(4),
+            Id3v2Settings.defaultEncoding,
+            ByteVector.fromString("image/gif"),
+            ByteVector.getTextDelimiter(StringType.Latin1),
+            PictureType.FrontCover,
+            ByteVector.fromString("foo", StringType.Latin1),
+            ByteVector.getTextDelimiter(StringType.Latin1),
+            data
+        );
+        assert.isTrue(ByteVector.equal(output, expected));
+    }
+
+    @test
+    public render_geobNoMimeType() {
+        // Arrange
+        const data = ByteVector.fromString("fuxbuxqux");
+        const frame = getCustomTestFrame(data, undefined, undefined, undefined, PictureType.NotAPicture);
+
+        // Act
+        const output = frame.render(4);
+
+        // Assert
+        const header = new Id3v2FrameHeader(FrameIdentifiers.GEOB);
+        header.frameSize = 13;
+        const expected = ByteVector.concatenate(
+            header.render(4),
+            Id3v2Settings.defaultEncoding,
+            ByteVector.getTextDelimiter(Id3v2Settings.defaultEncoding),
+            ByteVector.getTextDelimiter(Id3v2Settings.defaultEncoding),
+            ByteVector.getTextDelimiter(Id3v2Settings.defaultEncoding),
+            data
+        );
+        assert.isTrue(ByteVector.equal(output, expected));
+    }
+
+    @test
+    public render_geobWithMimeType() {
+        // Arrange
+        const data = ByteVector.fromString("fuxbuxqux");
+        const frame = getCustomTestFrame(data, undefined, undefined, "image/gif", PictureType.NotAPicture);
+
+        // Act
+        const output = frame.render(4);
+
+        // Assert
+        const header = new Id3v2FrameHeader(FrameIdentifiers.GEOB);
+        header.frameSize = 22;
+        const expected = ByteVector.concatenate(
+            header.render(4),
+            Id3v2Settings.defaultEncoding,
+            ByteVector.fromString("image/gif", Id3v2Settings.defaultEncoding),
+            ByteVector.getTextDelimiter(Id3v2Settings.defaultEncoding),
+            ByteVector.getTextDelimiter(Id3v2Settings.defaultEncoding),
+            ByteVector.getTextDelimiter(Id3v2Settings.defaultEncoding),
+            data
+        );
+        assert.isTrue(ByteVector.equal(output, expected));
+    }
+
+    @test
+    public render_geobWithMimeTypeAndFileName() {
+        // Arrange
+        const data = ByteVector.fromString("fuxbuxqux");
+        const frame = getCustomTestFrame(data, undefined, "file.gif", "image/gif", PictureType.NotAPicture);
+
+        // Act
+        const output = frame.render(4);
+
+        // Assert
+        const header = new Id3v2FrameHeader(FrameIdentifiers.GEOB);
+        header.frameSize = 30;
+        const expected = ByteVector.concatenate(
+            header.render(4),
+            Id3v2Settings.defaultEncoding,
+            ByteVector.fromString("image/gif", StringType.Latin1),
+            ByteVector.getTextDelimiter(StringType.Latin1),
+            ByteVector.fromString("file.gif", Id3v2Settings.defaultEncoding),
+            ByteVector.getTextDelimiter(Id3v2Settings.defaultEncoding),
+            ByteVector.getTextDelimiter(Id3v2Settings.defaultEncoding),
+            data
+        );
+        assert.isTrue(ByteVector.equal(output, expected));
+    }
+
+    @test
+    public render_geobWithMimeTypeAndFileNameAndDescription() {
+        // Arrange
+        const data = ByteVector.fromString("fuxbuxqux");
+        const frame = getCustomTestFrame(data, "foobarbaz", "file.gif", "image/gif", PictureType.NotAPicture);
+
+        // Act
+        const output = frame.render(4);
+
+        // Assert
+        const header = new Id3v2FrameHeader(FrameIdentifiers.GEOB);
+        header.frameSize = 39;
+        const expected = ByteVector.concatenate(
+            header.render(4),
+            Id3v2Settings.defaultEncoding,
+            ByteVector.fromString("image/gif", StringType.Latin1),
+            ByteVector.getTextDelimiter(StringType.Latin1),
+            ByteVector.fromString("file.gif", Id3v2Settings.defaultEncoding),
+            ByteVector.getTextDelimiter(Id3v2Settings.defaultEncoding),
+            ByteVector.fromString("foobarbaz", Id3v2Settings.defaultEncoding),
+            ByteVector.getTextDelimiter(Id3v2Settings.defaultEncoding),
+            data
+        );
+        assert.isTrue(ByteVector.equal(output, expected));
     }
 }
