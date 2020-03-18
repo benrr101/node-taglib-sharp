@@ -240,6 +240,7 @@ export class UrlLinkFrame extends Frame {
                 }
             }
         }
+        // @TODO: is this correct formatting?
         v.addByteVector(ByteVector.fromString(text.join("/"), StringType.Latin1));
 
         return v;

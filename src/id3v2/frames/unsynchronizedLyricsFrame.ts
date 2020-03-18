@@ -1,4 +1,4 @@
-import Id3v2TagSettings from "../id3v2TagSettings";
+import Id3v2Settings from "../id3v2Settings";
 import {ByteVector, StringType} from "../../byteVector";
 import {CorruptFileError} from "../../errors";
 import {Frame, FrameClassType} from "./frame";
@@ -10,7 +10,7 @@ export default class UnsynchronizedLyricsFrame extends Frame {
     private _description: string;
     private _language: string;
     private _text: string;
-    private _textEncoding: StringType = Id3v2TagSettings.defaultEncoding;
+    private _textEncoding: StringType = Id3v2Settings.defaultEncoding;
 
     // #region Constructors
 
@@ -27,7 +27,7 @@ export default class UnsynchronizedLyricsFrame extends Frame {
     public static fromData(
         description: string,
         language?: string,
-        encoding: StringType = Id3v2TagSettings.defaultEncoding
+        encoding: StringType = Id3v2Settings.defaultEncoding
     ): UnsynchronizedLyricsFrame {
         const frame = new UnsynchronizedLyricsFrame(new Id3v2FrameHeader(FrameIdentifiers.USLT));
         frame.textEncoding = encoding;
@@ -246,9 +246,9 @@ export default class UnsynchronizedLyricsFrame extends Frame {
         return ByteVector.concatenate(
             encoding,
             ByteVector.fromString(this.language, StringType.Latin1),
-            ByteVector.fromString(this._description, encoding),
+            ByteVector.fromString(this.description, encoding),
             ByteVector.getTextDelimiter(encoding),
-            ByteVector.fromString(this._text, encoding)
+            ByteVector.fromString(this.text, encoding)
         );
     }
 

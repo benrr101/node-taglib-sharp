@@ -365,6 +365,8 @@ export class Picture implements IPicture {
             ext = ext.substring(1);
         }
 
+        ext = ext.toLowerCase();
+
         for (let i = 0; i < this._lutExtensionMime.length; i += 2) {
             if (this._lutExtensionMime[i] === ext) {
                 mimeType = this._lutExtensionMime[i + 1];

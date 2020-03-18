@@ -3,7 +3,7 @@ import * as ChaiAsPromised from "chai-as-promised";
 import {slow, suite, test, timeout} from "mocha-typescript";
 
 import FrameConstructorTests from "./frameConstructorTests";
-import FramePropertyTests from "./framePropertyTests";
+import PropertyTests from "../utilities/propertyTests";
 import MusicCdIdentifierFrame from "../../src/id3v2/frames/musicCdIdentifierFrame";
 import {ByteVector, StringType} from "../../src/byteVector";
 import {Frame, FrameClassType} from "../../src/id3v2/frames/frame";
@@ -66,7 +66,7 @@ class Id3v2_MusicCdIdentifierFrameTests extends FrameConstructorTests {
         const data = ByteVector.fromString("fuxbuxqux", StringType.Latin1);
 
         // Act / Assert
-        FramePropertyTests.propertyRoundTrip((v) => { frame.data = v; }, () => frame.data, data);
+        PropertyTests.propertyRoundTrip((v) => { frame.data = v; }, () => frame.data, data);
     }
 
     @test

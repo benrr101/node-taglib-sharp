@@ -3,14 +3,14 @@ import * as ChaiAsPromised from "chai-as-promised";
 import {slow, suite, test, timeout} from "mocha-typescript";
 
 import FrameConstructorTests from "./frameConstructorTests";
-import FramePropertyTests from "./framePropertyTests";
+import PropertyTests from "../utilities/propertyTests";
 import {ByteVector} from "../../src/byteVector";
 import {EventTimeCode, EventTimeCodeFrame} from "../../src/id3v2/frames/eventTimeCodeFrame";
 import {Frame, FrameClassType} from "../../src/id3v2/frames/frame";
 import {Id3v2FrameFlags, Id3v2FrameHeader} from "../../src/id3v2/frames/frameHeader";
 import {FrameIdentifiers} from "../../src/id3v2/frameIdentifiers";
 import {EventType, TimestampFormat} from "../../src/id3v2/utilTypes";
-import framePropertyTests from "./framePropertyTests";
+import framePropertyTests from "../utilities/propertyTests";
 
 // Setup Chai
 Chai.use(ChaiAsPromised);
@@ -61,7 +61,7 @@ class Id3v2_EventTimeCodeTests {
         const output = EventTimeCode.fromEmpty();
 
         // Act/Assert
-        FramePropertyTests.propertyRoundTrip((v) => { output.time = v; }, () => output.time, 123);
+        PropertyTests.propertyRoundTrip((v) => { output.time = v; }, () => output.time, 123);
     }
 
     @test
@@ -70,7 +70,7 @@ class Id3v2_EventTimeCodeTests {
         const output = EventTimeCode.fromEmpty();
 
         // Act/Assert
-        FramePropertyTests.propertyRoundTrip(
+        PropertyTests.propertyRoundTrip(
             (v) => { output.eventType = v; },
             () => output.eventType,
             EventType.IntroEnd
@@ -221,10 +221,10 @@ class Id3v2_EventTimeCodeFrame_PropertyTests {
         const get = () => frame.events;
 
         // Act / Assert
-        FramePropertyTests.propertyRoundTrip(set, get, [new EventTimeCode(EventType.Profanity, 123)]);
-        FramePropertyTests.propertyRoundTrip(set, get, []);
+        PropertyTests.propertyRoundTrip(set, get, [new EventTimeCode(EventType.Profanity, 123)]);
+        PropertyTests.propertyRoundTrip(set, get, []);
         framePropertyTests.propertyNormalized(set, get, undefined, []);
-        FramePropertyTests.propertyNormalized(set, get, null, []);
+        PropertyTests.propertyNormalized(set, get, null, []);
     }
 
     @test
@@ -233,7 +233,7 @@ class Id3v2_EventTimeCodeFrame_PropertyTests {
         const frame = EventTimeCodeFrame.fromTimestampFormat(TimestampFormat.AbsoluteMilliseconds);
 
         // Act / Assert
-        FramePropertyTests.propertyRoundTrip(
+        PropertyTests.propertyRoundTrip(
             (v) => { frame.timestampFormat = v; },
             () => frame.timestampFormat,
             TimestampFormat.AbsoluteMpegFrames

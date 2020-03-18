@@ -1,4 +1,4 @@
-import Id3v2TagSettings from "../id3v2TagSettings";
+import Id3v2Settings from "../id3v2Settings";
 import {ByteVector, StringType} from "../../byteVector";
 import {CorruptFileError} from "../../errors";
 import {Frame, FrameClassType} from "./frame";
@@ -59,7 +59,7 @@ export class SynchronizedLyricsFrame extends Frame {
     private _format: TimestampFormat = TimestampFormat.Unknown;
     private _language: string;
     private _text: SynchronizedText[] = [];
-    private _textEncoding: StringType = Id3v2TagSettings.defaultEncoding;
+    private _textEncoding: StringType = Id3v2Settings.defaultEncoding;
     private _textType: SynchronizedTextType = SynchronizedTextType.Other;
 
     // #region Constructors
@@ -80,7 +80,7 @@ export class SynchronizedLyricsFrame extends Frame {
         description: string,
         language: string,
         textType: SynchronizedTextType,
-        encoding: StringType = Id3v2TagSettings.defaultEncoding
+        encoding: StringType = Id3v2Settings.defaultEncoding
     ): SynchronizedLyricsFrame {
         const frame = new SynchronizedLyricsFrame(new Id3v2FrameHeader(FrameIdentifiers.SYLT));
         frame.textEncoding = encoding;

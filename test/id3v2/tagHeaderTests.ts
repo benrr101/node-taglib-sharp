@@ -2,25 +2,24 @@ import * as Chai from "chai";
 import * as ChaiAsPromised from "chai-as-promised";
 import {slow, suite, test, timeout} from "mocha-typescript";
 
-import Header from "../../src/id3v2/header";
-import Id3v2TagSettings from "../../src/id3v2/id3v2TagSettings";
+import Id3v2Settings from "../../src/id3v2/id3v2Settings";
 import TestConstants from "../testConstants";
 import {ByteVector} from "../../src/byteVector";
-import {HeaderFlags} from "../../src/id3v2/headerFlags";
+import {Id3v2TagHeader, Id3v2TagHeaderFlags} from "../../src/id3v2/id3v2TagHeader";
 
 // Setup chai
 Chai.use(ChaiAsPromised);
 const assert = Chai.assert;
 
-const getTestHeader = (majorVersion: number, minorVersion: number, flags: HeaderFlags): Header => {
+const getTestHeader = (majorVersion: number, minorVersion: number, flags: Id3v2TagHeaderFlags): Id3v2TagHeader => {
     const data = ByteVector.concatenate(
-        Header.fileIdentifier,
+        Id3v2TagHeader.fileIdentifier,
         majorVersion,
         minorVersion,
         flags,
         0x10, 0x10, 0x10, 0x10
     );
-    return new Header(data);
+    return Id3v2TagHeader.fromData(data);
 };
 
 @suite(timeout(3000), slow(1000))
@@ -28,8 +27,8 @@ class Id3v2_TagHeader_ConstructorTests {
     @test
     public falsyData() {
         // Act/Assert
-        assert.throws(() => { const _ = new Header(null); });
-        assert.throws(() => { const _ = new Header(undefined); });
+        assert.throws(() => { const _ = Id3v2TagHeader.fromData(null); });
+        assert.throws(() => { const _ = Id3v2TagHeader.fromData(undefined); });
     }
 
     @test
@@ -39,63 +38,63 @@ class Id3v2_TagHeader_ConstructorTests {
         const data1 = ByteVector.fromSize(1);
 
         // Act/Assert
-        assert.throws(() => { const _ = new Header(data0); });
-        assert.throws(() => { const _ = new Header(data1); });
+        assert.throws(() => { const _ = Id3v2TagHeader.fromData(data0); });
+        assert.throws(() => { const _ = Id3v2TagHeader.fromData(data1); });
     }
 
     @test
     public invalidStartOfData() {
         // Act/Assert
-        assert.throws(() => { const _ = new Header(TestConstants.testByteVector); });
+        assert.throws(() => { const _ = Id3v2TagHeader.fromData(TestConstants.testByteVector); });
     }
 
     @test
     public invalidFlagsForVersion2() {
         // Arrange
         const testData = ByteVector.concatenate(
-            Header.fileIdentifier,
+            Id3v2TagHeader.fileIdentifier,
             0x02, 0x00,
             0xFF,
             0x00, 0x00, 0x00, 0x00
         );
 
         // Act/Assert
-        assert.throws(() => { const _ = new Header(testData); });
+        assert.throws(() => { const _ = Id3v2TagHeader.fromData(testData); });
     }
 
     @test
     public invalidFlagsForVersion3() {
         // Arrange
         const testData = ByteVector.concatenate(
-            Header.fileIdentifier,
+            Id3v2TagHeader.fileIdentifier,
             0x03, 0x00,
             0xFF,
             0x00, 0x00, 0x00, 0x00
         );
 
         // Act/Assert
-        assert.throws(() => { const _ = new Header(testData); });
+        assert.throws(() => { const _ = Id3v2TagHeader.fromData(testData); });
     }
 
     @test
     public invalidFlagsForVersion4() {
         // Arrange
         const testData = ByteVector.concatenate(
-            Header.fileIdentifier,
+            Id3v2TagHeader.fileIdentifier,
             0x04, 0x00,
             0xFF,
             0x00, 0x00, 0x00, 0x00
         );
 
         // Act/Assert
-        assert.throws(() => { const _ = new Header(testData); });
+        assert.throws(() => { const _ = Id3v2TagHeader.fromData(testData); });
     }
 
     @test
     public invalidTagSizeBytes() {
         // Arrange
         const testData = ByteVector.concatenate(
-            Header.fileIdentifier,
+            Id3v2TagHeader.fileIdentifier,
             0x04, 0x00,
             0x00
         );
@@ -105,10 +104,10 @@ class Id3v2_TagHeader_ConstructorTests {
         const testData4 = ByteVector.concatenate(testData, 0x00, 0x00, 0x00, 0x80);
 
         // Act/Assert
-        assert.throws(() => {const _ = new Header(testData1); });
-        assert.throws(() => {const _ = new Header(testData2); });
-        assert.throws(() => {const _ = new Header(testData3); });
-        assert.throws(() => {const _ = new Header(testData4); });
+        assert.throws(() => {const _ = Id3v2TagHeader.fromData(testData1); });
+        assert.throws(() => {const _ = Id3v2TagHeader.fromData(testData2); });
+        assert.throws(() => {const _ = Id3v2TagHeader.fromData(testData3); });
+        assert.throws(() => {const _ = Id3v2TagHeader.fromData(testData4); });
     }
 
     @test
@@ -118,7 +117,7 @@ class Id3v2_TagHeader_ConstructorTests {
         const minorVersion = 0x00;
         const flags = 0xE0;
         const testData = ByteVector.concatenate(
-            Header.fileIdentifier,
+            Id3v2TagHeader.fileIdentifier,
             majorVersion,
             minorVersion,
             flags,
@@ -126,7 +125,7 @@ class Id3v2_TagHeader_ConstructorTests {
         );
 
         // Act
-        const output = new Header(testData);
+        const output = Id3v2TagHeader.fromData(testData);
 
         // Assert
         assert.equal(output.flags, flags);
@@ -141,7 +140,7 @@ class Id3v2_TagHeader_PropertyTests {
     @test
     public getFileIdentifier() {
         // Act
-        const output = Header.fileIdentifier;
+        const output = Id3v2TagHeader.fileIdentifier;
 
         // Assert
         assert.ok(output);
@@ -150,85 +149,85 @@ class Id3v2_TagHeader_PropertyTests {
     @test
     public getCompleteTagSize_withFooter() {
         // Arrange
-        const header = getTestHeader(4, 0, HeaderFlags.FooterPresent);
+        const header = getTestHeader(4, 0, Id3v2TagHeaderFlags.FooterPresent);
 
         // Act
         const totalSize = header.completeTagSize;
 
         // Assert
-        assert.equal(totalSize, header.tagSize + Id3v2TagSettings.headerSize + Id3v2TagSettings.footerSize);
+        assert.equal(totalSize, header.tagSize + Id3v2Settings.headerSize + Id3v2Settings.footerSize);
     }
 
     @test
     public getCompleteTagSize_noFooter() {
         // Arrange
-        const header = getTestHeader(4, 0, HeaderFlags.None);
+        const header = getTestHeader(4, 0, Id3v2TagHeaderFlags.None);
 
         // Act
         const totalSize = header.completeTagSize;
 
         // Assert
-        assert.equal(totalSize, header.tagSize + Id3v2TagSettings.headerSize);
+        assert.equal(totalSize, header.tagSize + Id3v2Settings.headerSize);
     }
 
     @test
     public setFlags_version2InvalidFlags() {
         // Arrange
-        const header = getTestHeader(2, 0, HeaderFlags.None);
+        const header = getTestHeader(2, 0, Id3v2TagHeaderFlags.None);
 
         // Act
-        const set1 = () => { header.flags = HeaderFlags.ExtendedHeader; };
-        const set2 = () => { header.flags = HeaderFlags.ExperimentalIndicator; };
-        const set3 = () => { header.flags = HeaderFlags.FooterPresent; };
+        const set1 = () => { header.flags = Id3v2TagHeaderFlags.ExtendedHeader; };
+        const set2 = () => { header.flags = Id3v2TagHeaderFlags.ExperimentalIndicator; };
+        const set3 = () => { header.flags = Id3v2TagHeaderFlags.FooterPresent; };
 
         // Assert
         assert.throws(set1);
         assert.throws(set2);
         assert.throws(set3);
-        assert.equal(header.flags, HeaderFlags.None);
+        assert.equal(header.flags, Id3v2TagHeaderFlags.None);
     }
 
     @test
     public setFlags_version3InvalidFlags() {
         // Arrange
-        const header = getTestHeader(3, 0, HeaderFlags.None);
+        const header = getTestHeader(3, 0, Id3v2TagHeaderFlags.None);
 
         // Act
-        const set = () => { header.flags = HeaderFlags.FooterPresent; };
+        const set = () => { header.flags = Id3v2TagHeaderFlags.FooterPresent; };
 
         // Assert
         assert.throws(set);
-        assert.equal(header.flags, HeaderFlags.None);
+        assert.equal(header.flags, Id3v2TagHeaderFlags.None);
     }
 
     @test
     public setFlags_validFlags() {
         // Arrange
-        const header = getTestHeader(4, 0, HeaderFlags.None);
+        const header = getTestHeader(4, 0, Id3v2TagHeaderFlags.None);
 
         // Act
-        header.flags = HeaderFlags.FooterPresent;
+        header.flags = Id3v2TagHeaderFlags.FooterPresent;
 
         // Assert
-        assert.equal(header.flags, HeaderFlags.FooterPresent);
+        assert.equal(header.flags, Id3v2TagHeaderFlags.FooterPresent);
     }
 
     @test
     public getMajorVersion_zero() {
         // Arrange
-        const header = getTestHeader(0, 0, HeaderFlags.None);
+        const header = getTestHeader(0, 0, Id3v2TagHeaderFlags.None);
 
         // Act
         const output = header.majorVersion;
 
         // Assert
-        assert.equal(output, Id3v2TagSettings.defaultVersion);
+        assert.equal(output, Id3v2Settings.defaultVersion);
     }
 
     @test
     public getMajorVersion_nonZero() {
         // Arrange
-        const header = getTestHeader(4, 0, HeaderFlags.None);
+        const header = getTestHeader(4, 0, Id3v2TagHeaderFlags.None);
 
         // Act
         const output = header.majorVersion;
@@ -238,9 +237,29 @@ class Id3v2_TagHeader_PropertyTests {
     }
 
     @test
+    public getMajorVersion_forcedDefault() {
+        // Arrange
+        const header = getTestHeader(4, 0, Id3v2TagHeaderFlags.None);
+
+        const initialForceValue = Id3v2Settings.forceDefaultVersion;
+        try {
+            Id3v2Settings.forceDefaultVersion = true;
+
+            // Act
+            const output = header.majorVersion;
+
+            // Assert
+            assert.strictEqual(output, Id3v2Settings.defaultVersion);
+        } finally {
+            // Cleanup
+            Id3v2Settings.forceDefaultVersion = initialForceValue;
+        }
+    }
+
+    @test
     public setMajorVersion_invalidValues() {
         // Arrange
-        const header = getTestHeader(4, 0, HeaderFlags.None);
+        const header = getTestHeader(4, 0, Id3v2TagHeaderFlags.None);
 
         // Act/Assert
         assert.throws(() => { header.majorVersion = -1; });
@@ -253,7 +272,9 @@ class Id3v2_TagHeader_PropertyTests {
     @test
     public setMajorVersion_2_unsets3And4Flags() {
         // Arrange
-        const flags = HeaderFlags.ExtendedHeader | HeaderFlags.ExperimentalIndicator | HeaderFlags.FooterPresent;
+        const flags = Id3v2TagHeaderFlags.ExtendedHeader |
+            Id3v2TagHeaderFlags.ExperimentalIndicator |
+            Id3v2TagHeaderFlags.FooterPresent;
         const header = getTestHeader(4, 0, flags);
 
         // Act
@@ -267,7 +288,7 @@ class Id3v2_TagHeader_PropertyTests {
     @test
     public setMajorVersion3_unsets4Flags() {
         // Arrange
-        const flags = HeaderFlags.FooterPresent;
+        const flags = Id3v2TagHeaderFlags.FooterPresent;
         const header = getTestHeader(4, 0, flags);
 
         // Act
@@ -281,7 +302,7 @@ class Id3v2_TagHeader_PropertyTests {
     @test
     public setRevisionNumber_invalidValue() {
         // Arrange
-        const header = getTestHeader(4, 0, HeaderFlags.None);
+        const header = getTestHeader(4, 0, Id3v2TagHeaderFlags.None);
 
         // Act/Assert
         assert.throws(() => { header.revisionNumber = -1; });
@@ -292,7 +313,7 @@ class Id3v2_TagHeader_PropertyTests {
     @test
     public setRevisionNumber_validValue() {
         // Arrange
-        const header = getTestHeader(4, 0, HeaderFlags.None);
+        const header = getTestHeader(4, 0, Id3v2TagHeaderFlags.None);
 
         // Act
         header.revisionNumber = 2;
@@ -304,7 +325,7 @@ class Id3v2_TagHeader_PropertyTests {
     @test
     public setTagSize_invalidValues() {
         // Arrange
-        const header = getTestHeader(4, 0, HeaderFlags.None);
+        const header = getTestHeader(4, 0, Id3v2TagHeaderFlags.None);
 
         // Act/Assert
         assert.throws(() => { header.tagSize = -1; });
@@ -315,7 +336,7 @@ class Id3v2_TagHeader_PropertyTests {
     @test
     public setTagSize_validValue() {
         // Arrange
-        const header = getTestHeader(4, 0, HeaderFlags.None);
+        const header = getTestHeader(4, 0, Id3v2TagHeaderFlags.None);
 
         // Act
         header.tagSize = 0x1234;
@@ -334,13 +355,13 @@ class Id3v2_TagHeader_RenderTests {
         const minorVersion = 0x00;
         const flags = 0xE0;
         const testData = ByteVector.concatenate(
-            Header.fileIdentifier,
+            Id3v2TagHeader.fileIdentifier,
             majorVersion,
             minorVersion,
             flags,
             0x10, 0x10, 0x10, 0x10
         );
-        const header = new Header(testData);
+        const header = Id3v2TagHeader.fromData(testData);
 
         // Act
         const output = header.render();

@@ -4,7 +4,7 @@ import * as ChaiAsPromised from "chai-as-promised";
 import {slow, suite, test, timeout} from "mocha-typescript";
 
 import FrameConstructorTests from "./frameConstructorTests";
-import FramePropertyTests from "./framePropertyTests";
+import PropertyTests from "../utilities/propertyTests";
 import PlayCountFrame from "../../src/id3v2/frames/playCountFrame";
 import {ByteVector} from "../../src/byteVector";
 import {Frame, FrameClassType} from "../../src/id3v2/frames/frame";
@@ -122,10 +122,10 @@ class Id3v2_PlayCountFrame_PropertyTests {
         const get = () => frame.playCount;
 
         // Act / Assert
-        FramePropertyTests.propertyThrows(set, BigInt(-1));
-        FramePropertyTests.propertyThrows(set, BigInt("18446744073709551616", 10));
-        FramePropertyTests.propertyRoundTrip(set, get, BigInt(100));
-        FramePropertyTests.propertyRoundTrip(set, get, BigInt("68719476721", 10));
+        PropertyTests.propertyThrows(set, BigInt(-1));
+        PropertyTests.propertyThrows(set, BigInt("18446744073709551616", 10));
+        PropertyTests.propertyRoundTrip(set, get, BigInt(100));
+        PropertyTests.propertyRoundTrip(set, get, BigInt("68719476721", 10));
     }
 }
 

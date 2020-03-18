@@ -5,7 +5,7 @@ import * as ChaiAsPromised from "chai-as-promised";
 Chai.use(ChaiAsPromised);
 const assert = Chai.assert;
 
-export default class FramePropertyTests {
+export default class PropertyTests {
     public static propertyRoundTrip<T>(set: (v: T) => void, get: () => T, val: T) {
         // Act
         set(val);

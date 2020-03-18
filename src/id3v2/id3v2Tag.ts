@@ -2,38 +2,98 @@ import * as DateFormat from "dateformat";
 
 import AttachmentFrame from "./frames/attachmentFrame";
 import CommentsFrame from "./frames/commentsFrame";
-import ExtendedHeader from "./extendedHeader";
+import Id3v2ExtendedHeader from "./id3v2ExtendedHeader";
 import FrameFactory from "./frames/frameFactory";
 import Genres from "../genres";
-import Header from "./header";
-import Id3v2TagSettings from "./id3v2TagSettings";
+import Id3v2Settings from "./id3v2Settings";
 import SyncData from "./syncData";
 import UniqueFileIdentifierFrame from "./frames/uniqueFileIdentifierFrame";
 import UnsynchronizedLyricsFrame from "./frames/unsynchronizedLyricsFrame";
 import {ByteVector, StringType} from "../byteVector";
+import {CorruptFileError} from "../errors";
 import {File, FileAccessMode, ReadStyle} from "../file";
 import {Frame, FrameClassType} from "./frames/frame";
 import {FrameIdentifier, FrameIdentifiers} from "./frameIdentifiers";
-import {Id3v2FrameFlags, Id3v2FrameHeader} from "./frames/frameHeader";
-import {HeaderFlags} from "./headerFlags";
+import {Id3v2FrameFlags} from "./frames/frameHeader";
+import {Id3v2TagHeader, Id3v2TagHeaderFlags} from "./id3v2TagHeader";
 import {IPicture} from "../picture";
 import {Tag, TagTypes} from "../tag";
 import {TextInformationFrame, UserTextInformationFrame} from "./frames/textInformationFrame";
 import {UrlLinkFrame} from "./frames/urlLinkFrame";
 import {Guards} from "../utils";
+import Id3v2TagFooter from "./id3v2TagFooter";
 
 export default class Id3v2Tag extends Tag {
     private static _language: string = undefined;       // @TODO: Use the os-locale module to supply a
                                                         // lazily loaded "default" locale
 
-    private _extendedHeader: ExtendedHeader;
+    private _extendedHeader: Id3v2ExtendedHeader;
     private _frameList: Frame[] = [];
-    private _header: Header;
+    private _header: Id3v2TagHeader;
     private _performersRole: string[];
 
     // #region Constructors
 
+    /**
+     * Constructs an empty ID3v2 tag
+     */
+    private constructor() {
+        super();
+    }
 
+    public static fromEmpty(): Id3v2Tag {
+        const tag = new Id3v2Tag();
+        tag._header = new Id3v2TagHeader();
+        return tag;
+    }
+
+    /**
+     * Constructs and initializes a new Tag by reading the contents from a specified position in
+     * the provided file.
+     * @param file File from which the contents of the new instance is to be read
+     * @param position Offset into the file where the tag should be read from
+     * @param style How the data is to be read into the current instance
+     * @returns Id3v2Tag Tag with the data from the file read into it
+     */
+    public static fromFile(file: File, position: number, style: ReadStyle): Id3v2Tag {
+        Guards.truthy(file, "file");
+        Guards.uint(position, "position");
+        if (position > file.length - Id3v2Settings.headerSize) {
+            throw new Error("Argument out of range: position must be within size of the file");
+        }
+
+        const tag = new Id3v2Tag();
+        tag.read(file, position, style);
+        return tag;
+    }
+
+    /**
+     * Constructs and initializes a new Tag by reading the contents from a specified
+     * {@see ByteVector} object.
+     * @param data Tag data to read into a tag object
+     * @returns Id3v2Tag Tag with the data from the byte vector read into it
+     */
+    public static fromData(data: ByteVector): Id3v2Tag {
+        Guards.truthy(data, "data");
+        if (data.length < Id3v2Settings.headerSize) {
+            throw new CorruptFileError("Provided data does not contain enough bytes for an ID3v2 tag header");
+        }
+
+        const tag = new Id3v2Tag();
+        tag._header = Id3v2TagHeader.fromData(data);
+
+        // If the tag size is 0, then this is an invalid tag. Tags must contain at least one frame
+        if (tag._header.tagSize === 0) {
+            return tag;
+        }
+
+        if (data.length - Id3v2Settings.headerSize < tag._header.tagSize) {
+            throw new CorruptFileError("Provided data does not enough tag data");
+        }
+
+        tag.parse(data.mid(Id3v2Settings.headerSize, tag._header.tagSize), undefined, 0, ReadStyle.None);
+        return tag;
+    }
 
     // #endregion
 
@@ -59,13 +119,13 @@ export default class Id3v2Tag extends Tag {
     /**
      * Gets the header flags applied to the current instance.
      */
-    public get flags(): HeaderFlags { return this._header.flags; }
+    public get flags(): Id3v2TagHeaderFlags { return this._header.flags; }
     /**
      * Sets the header flags applied to the current instance
-     * @param value Bitwise combined {@see HeaderFlags} value contiaining flags applied to the
+     * @param value Bitwise combined {@see Id3v2TagHeaderFlags} value containing flags applied to the
      *     current instance.
      */
-    public set flags(value: HeaderFlags) { this._header.flags = value; }
+    public set flags(value: Id3v2TagHeaderFlags) { this._header.flags = value; }
 
     /**
      * Gets all frames contained in the current instance.
@@ -79,7 +139,7 @@ export default class Id3v2Tag extends Tag {
      */
     public get isCompilation(): boolean {
         const val = this.getTextAsString(FrameIdentifiers.TCMP);
-        return val && val !== "0";
+        return !!val && val !== "0";
     }
     /**
      * Gets whether or not the album described by the current instance is a compilation.
@@ -95,18 +155,68 @@ export default class Id3v2Tag extends Tag {
      * Gets the ID3v2 version for the current instance.
      */
     public get version(): number {
-        return Id3v2TagSettings.forceDefaultVersion
-            ? Id3v2TagSettings.defaultVersion
-            : this._header.majorVersion;
+        return this._header.majorVersion;
     }
     /**
      * Sets the ID3v2 version for the current instance.
      * @param value ID3v2 version for the current instance. Must be 2, 3, or 4.
      */
     public set version(value: number) {
-        Guards.byte(value, "value");
-        Guards.betweenInclusive(value, 2, 4, "value");
+        const originalVersion = this._header.majorVersion;
         this._header.majorVersion = value;
+
+        // Migrate any incompatible frames that have direct migrations
+        if (value === 4 && (originalVersion === 2 || originalVersion === 3)) {
+            // * TYER, etc -> TDRC
+            const tyerFrames = this.getFramesByIdentifier<TextInformationFrame>(
+                FrameClassType.TextInformationFrame,
+                FrameIdentifiers.TYER
+            );
+            const tdatFrames = this.getFramesByIdentifier<TextInformationFrame>(
+                FrameClassType.TextInformationFrame,
+                FrameIdentifiers.TDAT
+            );
+            const timeFrames = this.getFramesByIdentifier<TextInformationFrame>(
+                FrameClassType.TextInformationFrame,
+                FrameIdentifiers.TIME
+            );
+            if (tyerFrames.length > 0) {
+                this.removeFrames(FrameIdentifiers.TYER);
+                this.removeFrames(FrameIdentifiers.TDAT);
+                this.removeFrames(FrameIdentifiers.TIME);
+
+                let tdrcText = tyerFrames[0].text[0];
+                if (tdatFrames.length > 0) {
+                    const tdatText = tdatFrames[0].text[0];
+                    tdrcText += `-${tdatText.substr(0, 2)}-${tdatText.substr(2, 2)}`;
+                    if (timeFrames.length > 0) {
+                        const timeText = timeFrames[0].text[0];
+                        tdrcText += `T${timeText}`;
+                    }
+                }
+
+                this.setTextFrame(FrameIdentifiers.TDRC, tdrcText);
+            }
+        } else if (originalVersion === 4 && (value === 2 || value === 3)) {
+            // * TDRC -> TYER, etc
+            const tdrcFrames = this.getFramesByIdentifier<TextInformationFrame>(
+                FrameClassType.TextInformationFrame,
+                FrameIdentifiers.TDRC
+            );
+            if (tdrcFrames.length > 0) {
+                const tdrcText = tdrcFrames[0].text[0];
+                this.removeFrames(FrameIdentifiers.TDRC);
+                this.setTextFrame(FrameIdentifiers.TYER, tdrcText.substr(0, 4));
+
+                if (tdrcText.length >= 10) {
+                    this.setTextFrame(FrameIdentifiers.TDAT, tdrcText.substr(6, 5).replace("-", ""));
+                }
+
+                if (tdrcText.length === 19) {
+                    this.setTextFrame(FrameIdentifiers.TIME, tdrcText.substr(11, 8));
+                }
+            }
+        }
     }
 
     // #region Tag Implementations
@@ -115,13 +225,11 @@ export default class Id3v2Tag extends Tag {
     public get tagTypes(): TagTypes { return TagTypes.Id3v2; }
 
     /**
-     * @inheritDoc
-     * From TIT2 frame
+     * @inheritDoc via TIT2 frame
      */
     public get title(): string { return this.getTextAsString(FrameIdentifiers.TIT2); }
     /**
-     * @inheritDoc
-     * Stored in TIT2 frame
+     * @inheritDoc via TIT2 frame
      */
     public set title(value: string) { this.setTextFrame(FrameIdentifiers.TIT2, value); }
 
@@ -143,7 +251,10 @@ export default class Id3v2Tag extends Tag {
     /** @inheritDoc via TPE1 frame */
     get performers(): string[] { return this.getTextAsArray(FrameIdentifiers.TPE1); }
     /** @inheritDoc via TPE1 frame */
-    set performers(value: string[]) { this.setTextFrame(FrameIdentifiers.TPE1, ...value); }
+    set performers(value: string[]) {
+        this.setTextFrame(FrameIdentifiers.TPE1, ...value);
+        this._performersRole = [];
+    }
 
     /** @inheritDoc via TSOP frame */
     get performersSort(): string[] { return this.getTextAsArray(FrameIdentifiers.TSOP); }
@@ -152,50 +263,64 @@ export default class Id3v2Tag extends Tag {
 
     /** @inheritDoc via TMCL frame */
     get performersRole(): string[] {
-        if (this._performersRole) { return this._performersRole; }
+        // Use the temporary storage if it exists
+        if (this._performersRole !== undefined && this._performersRole.length > 0) {
+            return this._performersRole;
+        }
 
-        const perfRef = this.performers;
-        if (!perfRef) { return []; }
+        // If there aren't any performers, just return a blank list
+        if (this.performers === undefined || this.performers.length === 0) {
+            return [];
+        }
 
-        // Map the instruments to the performers
-        const map = this.getTextAsArray(FrameIdentifiers.TMCL);
-        this._performersRole = [];
-        for (let i = 0; i + 1 < map.length; i += 2) {
-            const inst = map[i];
-            const perfs = map[i + 1];
-            if (!inst || !perfs) { continue; }
+        // We're going to basically flip the format of the TMCL frame.
+        // TMCL frames look like:
+        //   [ "instrument", "artist1,artist2", ... ]
+        // We want:
+        //   { "artist1": ["instrument", ...], "artist2": ["instrument", ...], ...}
+        const map = this.performers.reduce((o: any, v: string) => {
+            o[v] = [];
+            return o;
+        }, {});
 
-            const perfList = perfs.split(",");
-            for (const iperf of perfList) {
-                if (!iperf) { continue; }
+        const frameData = this.getTextAsArray(FrameIdentifiers.TMCL);
+        for (let i = 0; i + 1 < frameData.length; i += 2) {
+            const instrument = frameData[i];
+            const performers = frameData[i + 1];
+            if (!instrument || !performers) {
+                continue;
+            }
 
-                const perf = iperf.trim();
-                if (!perf) { continue; }
-
-                for (let j = 0; j < perfRef.length; j++) {
-                    if (perfRef[j] === perf) {
-                        this._performersRole[j] = this._performersRole[j]
-                            ? this._performersRole[j] + "; " + inst
-                            : inst;
-                    }
+            const performersList = performers.split(",");
+            for (const performer of performersList) {
+                if (!map[performer]) {
+                    continue;
                 }
+
+                map[performer].push(instrument);
             }
         }
 
+        // Collapse the instrument lists and return that
+        this._performersRole = Object.values(map).map((e: string[]) => e.length > 0 ? e.join(";") : undefined);
         return this._performersRole;
     }
     /** @inheritDoc via TMCL frame */
-    set performersRole(value: string[]) { this._performersRole = value || []; }
+    set performersRole(value: string[]) {
+        // TODO: We shoud really just write this out to the frame instead of this temporary storage
+        this.removeFrames(FrameIdentifiers.TMCL);
+        this._performersRole = value ? value.slice(0) : [];
+    }
 
     /** @inheritDoc via TSO2 frame */
-    get albumArtists(): string[] { return this.getTextAsArray(FrameIdentifiers.TSO2); }
+    get albumArtists(): string[] { return this.getTextAsArray(FrameIdentifiers.TPE2); }
     /** @inheritDoc via TSO2 frame */
-    set albumArtists(value: string[]) { this.setTextFrame(FrameIdentifiers.TSO2, ...value); }
+    set albumArtists(value: string[]) { this.setTextFrame(FrameIdentifiers.TPE2, ...value); }
 
     /** @inheritDoc via TPE2 frame */
-    get albumArtistsSort(): string[] { return this.getTextAsArray(FrameIdentifiers.TPE2); }
+    get albumArtistsSort(): string[] { return this.getTextAsArray(FrameIdentifiers.TSO2); }
     /** @inheritDoc via TPE2 frame */
-    set albumArtistsSort(value: string[]) { this.setTextFrame(FrameIdentifiers.TPE2, ...value); }
+    set albumArtistsSort(value: string[]) { this.setTextFrame(FrameIdentifiers.TSO2, ...value); }
 
     /** @inheritDoc via TCOM frame */
     get composers(): string[] { return this.getTextAsArray(FrameIdentifiers.TCOM); }
@@ -228,12 +353,8 @@ export default class Id3v2Tag extends Tag {
         const commentFrames = this.getFramesByClassType<CommentsFrame>(FrameClassType.CommentsFrame);
 
         // Delete the "" comment frames that are in this language
-        // @TODO: Verify that only the frames in this language should be deleted
         if (!value) {
-            const matchingFrames = CommentsFrame.findAll(commentFrames, "", Id3v2Tag.language);
-            for (const f of matchingFrames) {
-                this.removeFrame(f);
-            }
+            this.removeFrames(FrameIdentifiers.COMM);
             return;
         }
 
@@ -269,7 +390,7 @@ export default class Id3v2Tag extends Tag {
     }
     /** @inheritDoc via TCON frame */
     set genres(value: string[]) {
-        if (!value || !Id3v2TagSettings.useNumericGenres) {
+        if (!value || !Id3v2Settings.useNumericGenres) {
             this.setTextFrame(FrameIdentifiers.TCON, ...value);
             return;
         }
@@ -286,29 +407,67 @@ export default class Id3v2Tag extends Tag {
         this.setTextFrame(FrameIdentifiers.TCON, ...value);
     }
 
-    /** @inheritDoc via TDRC frame */
+    /**
+     * @inheritDoc
+     * If a TDRC frame exists, the year will be read from that. If a TDRC frame doesn't exist and a
+     * TYER or TYE frame exists, the year will be read from that. Failing both cases, 0 will be
+     * returned.
+     */
     get year(): number {
-        const text = this.getTextAsString(FrameIdentifiers.TDRC);
-        if (!text || text.length < 4) { return 0; }
-
-        const year = Number.parseInt(text.substr(0, 4), 10);
-        // @TODO: Check places where we use this pattern... .parseInt doesn't parse the whole string if it started with
-        //     good data
-        if (Number.isNaN(year) || year < 0) {
-            return 0;
+        // Case 1: We have a TDRC frame (v2.4), preferentially use that
+        const tdrcText = this.getTextAsString(FrameIdentifiers.TDRC);
+        if (tdrcText && tdrcText.length >= 4) {
+            // @TODO: Check places where we use this pattern... .parseInt doesn't parse the whole string if it started
+            //  with good data
+            return Number.parseInt(tdrcText.substr(0, 4), 10);
         }
 
-        return year;
+        // Case 2: We have a TYER frame (v2.3/v2.2)
+        const tyerText = this.getTextAsString(FrameIdentifiers.TYER);
+        if (tyerText && tyerText.length >= 4) {
+            // @TODO: Check places where we use this pattern... .parseInt doesn't parse the whole string if it started
+            //  with good data
+            return Number.parseInt(tyerText.substr(0, 4), 10);
+        }
+
+        // Case 3: Neither, return 0
+        return 0;
     }
     /**
-     * @inheritDoc via TDRC frame
-     * NOTE: values >9999will remove the frame
+     * @inheritDoc
+     * NOTE: values >9999 will remove the frame
      */
     set year(value: number) {
         Guards.uint(value, "value");
+
+        // Case 0: Frame should be deleted
         if (value > 9999) {
-            value = 0;
+            this.removeFrames(FrameIdentifiers.TDRC);
+            this.removeFrames(FrameIdentifiers.TYER);
+            return;
         }
+
+        // Case 1: We have a TDRC frame (v2.4), preferentially replace contents with year
+        const tdrcFrames = this.getFramesByIdentifier<TextInformationFrame>(
+            FrameClassType.TextInformationFrame,
+            FrameIdentifiers.TDRC
+        );
+        if (tdrcFrames.length > 0) {
+            this.setNumberFrame(FrameIdentifiers.TDRC, value, 0);
+            return;
+        }
+
+        // Case 2: We have a TYER/TYE frame (v2.3/v2.2)
+        const tyerFrames = this.getFramesByIdentifier<TextInformationFrame>(
+            FrameClassType.TextInformationFrame,
+            FrameIdentifiers.TYER
+        );
+        if (tyerFrames.length > 0) {
+            this.setNumberFrame(FrameIdentifiers.TYER, value, 0);
+            return;
+        }
+
+        // Case 3: We have neither type of frame, create a TDRC frame
         this.setNumberFrame(FrameIdentifiers.TDRC, value, 0);
     }
 
@@ -345,10 +504,7 @@ export default class Id3v2Tag extends Tag {
         // Delete all unsynchronized lyrics frames in this language
         // @TODO: Verify that deleting only this language is the correct behavior
         if (!value) {
-            const matchFrames = UnsynchronizedLyricsFrame.findAll(frames, "", Id3v2Tag.language);
-            for (const f of matchFrames) {
-                this.removeFrame(f);
-            }
+            this.removeFrames(FrameIdentifiers.USLT);
             return;
         }
 
@@ -359,7 +515,7 @@ export default class Id3v2Tag extends Tag {
             this.addFrame(frame);
         }
         frame.text = value;
-        frame.textEncoding = Id3v2TagSettings.defaultEncoding;
+        frame.textEncoding = Id3v2Settings.defaultEncoding;
     }
 
     /** @inheritDoc via TIT1 frame */
@@ -427,7 +583,7 @@ export default class Id3v2Tag extends Tag {
     /** @inheritDoc via UFID:http://musicbrainz.org frame */
     get musicBrainzTrackId(): string { return this.getUfidText("http://musicbrainz.org"); }
     /** @inheritDoc via UFID:http://musicbrainz.org frame */
-    set musicBrainzTrackId(value: string) { this.setUfidText("http://musicBrainz.org", value); }
+    set musicBrainzTrackId(value: string) { this.setUfidText("http://musicbrainz.org", value); }
 
     /** @inheritDoc via TXXX:MusicBrainz Disc Id frame */
     get musicBrainzDiscId(): string { return this.getUserTextAsString("MusicBrainz Disc Id"); }
@@ -452,7 +608,7 @@ export default class Id3v2Tag extends Tag {
     /** @inheritDoc via TXXX:MusicBrainz Album Type frame */
     get musicBrainzReleaseType(): string { return this.getUserTextAsString("MusicBrainz Album Type"); }
     /** @inheritDoc via TXXX:MusicBrainz Album Type frame */
-    set musicBrainzReleaseType(value: string) { this.setUserTextAsString("MusicBrainz Album Album Type", value); }
+    set musicBrainzReleaseType(value: string) { this.setUserTextAsString("MusicBrainz Album Type", value); }
 
     /** @inheritDoc via TXXX:MusicBrainz Album Release Country frame */
     get musicBrainzReleaseCountry(): string { return this.getUserTextAsString("MusicBrainz Album Release Country"); }
@@ -473,7 +629,7 @@ export default class Id3v2Tag extends Tag {
     }
     /** @inheritDoc via TXXX:REPLAY_GAIN_TRACK_GAIN frame */
     set replayGainTrackGain(value: number) {
-        if (Number.isNaN(value)) {
+        if (value === undefined || value === null || Number.isNaN(value)) {
             this.setUserTextAsString("REPLAYGAIN_TRACK_GAIN", undefined, false);
         } else {
             const text = `${value.toFixed(2).toString()} dB`;
@@ -488,7 +644,7 @@ export default class Id3v2Tag extends Tag {
     }
     /** @inheritDoc via TXXX:REPLAYGAIN_TRACK_PEAK frame */
     set replayGainTrackPeak(value: number) {
-        if (Number.isNaN(value)) {
+        if (value === undefined || value === null || Number.isNaN(value)) {
             this.setUserTextAsString("REPLAYGAIN_TRACK_PEAK", undefined, false);
         } else {
             const text = value.toFixed(6).toString();
@@ -508,7 +664,7 @@ export default class Id3v2Tag extends Tag {
     }
     /** @inheritDoc via TXXX:REPLAYGAIN_ALBUM_GAIN frame */
     set replayGainAlbumGain(value: number) {
-        if (Number.isNaN(value)) {
+        if (value === undefined || value === null || Number.isNaN(value)) {
             this.setUserTextAsString("REPLAYGAIN_ALBUM_GAIN", undefined, false);
         } else {
             const text = `${value.toFixed(2).toString()} dB`;
@@ -523,11 +679,11 @@ export default class Id3v2Tag extends Tag {
     }
     /** @inheritDoc via TXXX:REPLAYGAIN_ALBUM_PEAK frame */
     set replayGainAlbumPeak(value: number) {
-        if (Number.isNaN(value)) {
-            this.setUserTextAsString("REPLAYGAIN_TRACK_PEAK", undefined, false);
+        if (value === undefined || value === null || Number.isNaN(value)) {
+            this.setUserTextAsString("REPLAYGAIN_ALBUM_PEAK", undefined, false);
         } else {
             const text = value.toFixed(6).toString();
-            this.setUserTextAsString("REPLAYGAIN_TRACK_PEAK", text, false);
+            this.setUserTextAsString("REPLAYGAIN_ALBUM_PEAK", text, false);
         }
     }
 
@@ -569,9 +725,6 @@ export default class Id3v2Tag extends Tag {
 
     /** @inheritDoc */
     public get isEmpty(): boolean { return this._frameList.length === 0; }
-
-
-    // #endregion
 
     // #endregion
 
@@ -638,10 +791,10 @@ export default class Id3v2Tag extends Tag {
      * @returns TFrame[] Array of frames with the specified class type
      */
     public getFramesByClassType<TFrame extends Frame>(type: FrameClassType): TFrame[] {
+        // TODO: Can we access static properties from TFrame? if so, can we use that to get the frame class type?
         Guards.notNullOrUndefined(type, "type");
 
-        return this._frameList.filter((f) => f && f.frameClassType === type)
-            .map((f) => <TFrame> f);
+        return <TFrame[]> this._frameList.filter((f) => f && f.frameClassType === type);
     }
 
     /**
@@ -658,8 +811,7 @@ export default class Id3v2Tag extends Tag {
         Guards.notNullOrUndefined(type, "type");
         Guards.truthy(ident, "ident");
 
-        return this._frameList.filter((f) => f && f.frameClassType === type && f.frameId === ident)
-            .map((f) => <TFrame> f);
+        return <TFrame[]> this._frameList.filter((f) => f && f.frameClassType === type && f.frameId === ident);
     }
 
     /**
@@ -721,8 +873,8 @@ export default class Id3v2Tag extends Tag {
      */
     public render(): ByteVector {
         // Convert the perfmers role to the TMCL frame
-        const ret: string[] = undefined;
         if (this._performersRole) {
+            const ret: string[] = undefined;
             const map: {[key: string]: string} = {};
             for (let i = 0; i < this._performersRole.length; i++) {
                 const insts = this._performersRole[i];
@@ -750,18 +902,18 @@ export default class Id3v2Tag extends Tag {
                 ret.push(key);
                 ret.push(map[key]);
             }
-        }
 
-        this.setTextFrame(FrameIdentifiers.TMCL, ...ret);
+            this.setTextFrame(FrameIdentifiers.TMCL, ...ret);
+        }
 
         // We need to render the "tag data" first so that we have to correct size to render in the
         // tag's header. The "tag data" (everything that is included in Header.tagSize) includes
         // the extended header, frames and padding, but does not include the tag's header or footer
 
-        const hasFooter = (this._header.flags & HeaderFlags.FooterPresent) !== 0;
-        const unsyncAtFrameLevel = (this._header.flags & HeaderFlags.Unsynchronication) !== 0
+        const hasFooter = (this._header.flags & Id3v2TagHeaderFlags.FooterPresent) !== 0;
+        const unsyncAtFrameLevel = (this._header.flags & Id3v2TagHeaderFlags.Unsynchronication) !== 0
             && this.version >= 4;
-        const unsyncAtTagLevel = (this._header.flags & HeaderFlags.Unsynchronication) !== 0
+        const unsyncAtTagLevel = (this._header.flags & Id3v2TagHeaderFlags.Unsynchronication) !== 0
             && this.version < 4;
 
         this._header.majorVersion = hasFooter ? 4 : this.version;
@@ -769,7 +921,7 @@ export default class Id3v2Tag extends Tag {
         const tagData = ByteVector.empty();
 
         // TODO: Render the extended header
-        this._header.flags &= ~HeaderFlags.ExtendedHeader;
+        this._header.flags &= ~Id3v2TagHeaderFlags.ExtendedHeader;
 
         // Loop through the frames rendering them and adding them to tag data
         for (const frame of this._frameList) {
@@ -801,6 +953,13 @@ export default class Id3v2Tag extends Tag {
                 ? this._header.tagSize - tagData.length
                 : 1024;
             tagData.addByteVector(ByteVector.fromSize(size));
+        }
+
+        // Set the tag size and add the header/footer
+        this._header.tagSize = tagData.length;
+        tagData.insertByteVector(0, this._header.render());
+        if (hasFooter) {
+            tagData.addByteVector(Id3v2TagFooter.fromHeader(this._header).render());
         }
 
         return tagData;
@@ -852,7 +1011,7 @@ export default class Id3v2Tag extends Tag {
             const formattedNumerator = numerator.toString().padStart(minPlaces, "0");
             this.setTextFrame(ident, `${formattedNumerator}/${denominator}`);
         } else {
-            this.setTextFrame(ident, numerator.toString());
+            this.setTextFrame(ident, numerator.toString().padStart(minPlaces, "0"));
         }
     }
 
@@ -890,7 +1049,7 @@ export default class Id3v2Tag extends Tag {
             }
 
             urlFrame.text = text;
-            urlFrame.textEncoding = Id3v2TagSettings.defaultEncoding;
+            urlFrame.textEncoding = Id3v2Settings.defaultEncoding;
         } else {
             const frames = this.getFramesByClassType<TextInformationFrame>(FrameClassType.TextInformationFrame);
             let frame = TextInformationFrame.findTextInformationFrame(frames, ident);
@@ -900,7 +1059,7 @@ export default class Id3v2Tag extends Tag {
             }
 
             frame.text = text;
-            frame.textEncoding = Id3v2TagSettings.defaultEncoding;
+            frame.textEncoding = Id3v2Settings.defaultEncoding;
         }
     }
 
@@ -912,15 +1071,15 @@ export default class Id3v2Tag extends Tag {
         // If the entire tag is marked as unsynchronized, and this tag is version ID3v2.3 or lower,
         // resynchronize it.
         const fullTagUnsync = this._header.majorVersion < 4
-            && (this._header.flags & HeaderFlags.Unsynchronication) !== 0;
+            && (this._header.flags & Id3v2TagHeaderFlags.Unsynchronication) !== 0;
 
         // Avoid loading all the ID3 tag if PictureLazy is enabled and size is significant enough
         // (ID3v2.4 and later only)
-        if (data && (
+        if (file && (
             fullTagUnsync ||
             this._header.tagSize < 1024 ||
             (style & ReadStyle.PictureLazy) !== 0 ||
-            (this._header.flags & HeaderFlags.ExtendedHeader) !== 0
+            (this._header.flags & Id3v2TagHeaderFlags.ExtendedHeader) !== 0
         )) {
             file.seek(position);
             data = file.readBlock(this._header.tagSize);
@@ -931,12 +1090,11 @@ export default class Id3v2Tag extends Tag {
         }
 
         let frameDataPosition = data ? 0 : position;
-        let frameDataEndPosition = (data ? data.length : this._header.tagSize)
-            + frameDataPosition - Id3v2FrameHeader.getSize(this._header.majorVersion);
+        let frameDataEndPosition = (data ? data.length : this._header.tagSize) + frameDataPosition;
 
         // Check for the extended header
-        if ((this._header.flags & HeaderFlags.ExtendedHeader) !== 0) {
-            this._extendedHeader = ExtendedHeader.fromData(data, this._header.majorVersion);
+        if ((this._header.flags & Id3v2TagHeaderFlags.ExtendedHeader) !== 0) {
+            this._extendedHeader = Id3v2ExtendedHeader.fromData(data, this._header.majorVersion);
 
             if (this._extendedHeader.size <= data.length) {
                 frameDataPosition += this._extendedHeader.size;
@@ -944,113 +1102,45 @@ export default class Id3v2Tag extends Tag {
             }
         }
 
-        // Parse the frames. TDRC, TDAT, and TIME will be needed for post-processing, so check for
-        // for them as they are loaded
-        let tdrc: TextInformationFrame;
-        let tyer: TextInformationFrame;
-        let tdat: TextInformationFrame;
-        let time: TextInformationFrame;
-
+        // Parse the frames
         while (frameDataPosition < frameDataEndPosition) {
-            let frame: Frame;
+            const frameRead = FrameFactory.createFrame(
+                data,
+                file,
+                frameDataPosition,
+                this._header.majorVersion,
+                fullTagUnsync
+            );
 
-            try {
-                const frameRead = FrameFactory.createFrame(
-                    data,
-                    file,
-                    frameDataPosition,
-                    this._header.majorVersion,
-                    fullTagUnsync
-                );
-                frame = frameRead.frame;
-                frameDataPosition = frameRead.offset;
-            } catch (e) {
-                if (!e.hasOwnProperty("isNotImplementedError") && !e.hasOwnProperty("isCorruptFileError")) {
-                    throw e;
-                } else {
-                    continue;
-                }
-            }
-
-            if (!frame) {
+            // If the frame factory returned undefined, that means we've hit the end of frames
+            if (!frameRead) {
                 break;
             }
 
+            // We found a frame, deconstruct the read result
+            const frame = frameRead.frame;
+            frameDataPosition = frameRead.offset;
+
             // Only add frames that contain data
-            if (frame.size === 0) {
+            if (!frame || frame.size === 0) {
                 continue;
             }
-
             this.addFrame(frame);
-
-            // If the tag is version 4, no post-processing needed
-            if (this._header.majorVersion === 4) {
-                continue;
-            }
-
-            // Load up the first instance of each for post-processing
-            if (!tdrc && frame.frameId === FrameIdentifiers.TDRC) {
-                tdrc = <TextInformationFrame> frame;
-            } else if (!tyer && frame.frameId === FrameIdentifiers.TYER) {
-                tyer = <TextInformationFrame> frame;
-            } else if (!tdat && frame.frameId === FrameIdentifiers.TDAT) {
-                tdat = <TextInformationFrame> frame;
-            } else if (!time && frame.frameId === FrameIdentifiers.TIME) {
-                time = <TextInformationFrame> frame;
-            }
-        }
-
-        // Try to fill out the data/time of the TDRC frame. Can't do that if no TDRC frame exists,
-        // or if there is no TDAT frame, or if TDRC already has the date.
-        if (!tdrc || !tdat || tdrc.toString().length !== 4) {
-            return;
-        }
-
-        // Start with the year already in TDRC, then add the TDAT and TIME if available
-        let tdrcText = tdrc.toString();
-
-        // Add the data
-        if (tdat) {
-            const tdatText = tdat.toString();
-            if (tdatText.length === 4) {
-                tdrcText += `-${tdatText.substr(0, 2)}-${tdatText.substr(2, 2)}`;
-
-                // Add the time
-                if (time) {
-                    const timeText = time.toString();
-
-                    if (timeText.length === 4) {
-                        tdrcText += `T${timeText.substr(0, 2)}:${timeText.substr(2, 2)}`;
-                    }
-
-                    this.removeFrames(FrameIdentifiers.TDAT);
-                }
-            }
-
-            tdrc.text = [tdrcText.toString()];
         }
     }
 
     protected read(file: File, position: number, style: ReadStyle): void {
-        Guards.truthy(file, "file");
-        Guards.uint(position, "position");
-
         file.mode = FileAccessMode.Read;
-
-        if (position > file.length - Id3v2TagSettings.headerSize) {
-            throw new Error("Argument out of range: position must be less than the length of the file");
-        }
-
         file.seek(position);
 
-        this._header = new Header(file.readBlock(Id3v2TagSettings.headerSize));
+        this._header = Id3v2TagHeader.fromData(file.readBlock(Id3v2Settings.headerSize));
 
         // If the tag size is 0, then this is an invalid tag. Tags must contain at least one frame.
         if (this._header.tagSize === 0) {
             return;
         }
 
-        position += Id3v2TagSettings.headerSize;
+        position += Id3v2Settings.headerSize;
         this.parse(undefined, file, position, style);
     }
 
@@ -1100,33 +1190,6 @@ export default class Id3v2Tag extends Tag {
         return result || undefined;
     }
 
-    private makeFirstOfType(frame: Frame): void {
-        const type = frame.frameId;
-
-        let swapping: Frame;
-        for (let i = 0; i < this._frameList.length; i++) {
-            if (!swapping) {
-                if (this._frameList[i].frameId === type) {
-                    swapping = frame;
-                } else {
-                    continue;
-                }
-            }
-
-            const tmp = this._frameList[i];
-            this._frameList[i] = swapping;
-            swapping = tmp;
-
-            if (swapping === frame) {
-                return;
-            }
-        }
-
-        if (swapping) {
-            this._frameList.push(swapping);
-        }
-    }
-
     private setUfidText(owner: string, text: string): void {
         // Get the UFID frame, create if necessary
         const frames = this.getFramesByClassType<UniqueFileIdentifierFrame>(FrameClassType.UniqueFileIdentifierFrame);
@@ -1151,7 +1214,7 @@ export default class Id3v2Tag extends Tag {
         if (!text && frame) {
             this.removeFrame(frame);
         } else {
-            frame = UserTextInformationFrame.fromDescription(description, Id3v2TagSettings.defaultEncoding);
+            frame = UserTextInformationFrame.fromDescription(description, Id3v2Settings.defaultEncoding);
             frame.text = text.split(";");
             this.addFrame(frame);
         }

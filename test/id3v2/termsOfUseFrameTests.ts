@@ -3,8 +3,8 @@ import * as ChaiAsPromised from "chai-as-promised";
 import {slow, suite, test, timeout} from "mocha-typescript";
 
 import FrameConstructorTests from "./frameConstructorTests";
-import FramePropertyTests from "./framePropertyTests";
-import Id3v2TagSettings from "../../src/id3v2/id3v2TagSettings";
+import PropertyTests from "../utilities/propertyTests";
+import Id3v2Settings from "../../src/id3v2/id3v2Settings";
 import TermsOfUseFrame from "../../src/id3v2/frames/termsOfUseFrame";
 import {ByteVector, StringType} from "../../src/byteVector";
 import {Frame, FrameClassType} from "../../src/id3v2/frames/frame";
@@ -31,7 +31,7 @@ class Id3v2_TermsOfUseFrame_ConstructorTests extends FrameConstructorTests {
         const output = TermsOfUseFrame.fromFields("fux");
 
         // Assert
-        this.assertFrame(output, "fux", undefined, Id3v2TagSettings.defaultEncoding);
+        this.assertFrame(output, "fux", "", Id3v2Settings.defaultEncoding);
     }
 
     @test
@@ -40,7 +40,7 @@ class Id3v2_TermsOfUseFrame_ConstructorTests extends FrameConstructorTests {
         const output = TermsOfUseFrame.fromFields("fux", StringType.UTF16BE);
 
         // Assert
-        this.assertFrame(output, "fux", undefined, StringType.UTF16BE);
+        this.assertFrame(output, "fux", "", StringType.UTF16BE);
     }
 
     @test
@@ -132,24 +132,29 @@ class Id3v2_TermsOfUseFrame_PropertyTests {
 
         // Act/Assert
         const frame = TermsOfUseFrame.fromFields("eng");
-        FramePropertyTests.propertyNormalized(set, get, "fu", "XXX");
-        FramePropertyTests.propertyNormalized(set, get, "fuxx", "fux");
-        FramePropertyTests.propertyNormalized(set, get, undefined, "XXX");
-        FramePropertyTests.propertyNormalized(set, get, null, "XXX");
-        FramePropertyTests.propertyRoundTrip(set, get, "fux");
+        PropertyTests.propertyNormalized(set, get, "fu", "XXX");
+        PropertyTests.propertyNormalized(set, get, "fuxx", "fux");
+        PropertyTests.propertyNormalized(set, get, undefined, "XXX");
+        PropertyTests.propertyNormalized(set, get, null, "XXX");
+        PropertyTests.propertyRoundTrip(set, get, "fux");
     }
 
     @test
     public text() {
+        // Arrange
+        const set = (v: string) => { frame.text = v; };
+        const get = () => frame.text;
+
         const frame = TermsOfUseFrame.fromFields("eng");
-        FramePropertyTests.propertyRoundTrip((v) => { frame.text = v; }, () => frame.text, "fux");
-        FramePropertyTests.propertyRoundTrip((v) => { frame.text = v; }, () => frame.text, undefined);
+        PropertyTests.propertyRoundTrip(set, get, "fux");
+        PropertyTests.propertyNormalized(set, get, undefined, "");
+        PropertyTests.propertyNormalized(set, get, null, "");
     }
 
     @test
     public textEncoding() {
         const frame = TermsOfUseFrame.fromFields("eng", StringType.Latin1);
-        FramePropertyTests.propertyRoundTrip(
+        PropertyTests.propertyRoundTrip(
             (v) => { frame.textEncoding = v; },
             () => frame.textEncoding,
             StringType.UTF16

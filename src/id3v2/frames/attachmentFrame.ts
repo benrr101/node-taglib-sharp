@@ -1,4 +1,4 @@
-import Id3v2TagSettings from "../id3v2TagSettings";
+import Id3v2Settings from "../id3v2Settings";
 import {ByteVector, StringType} from "../../byteVector";
 import {CorruptFileError} from "../../errors";
 import {Frame, FrameClassType} from "./frame";
@@ -7,10 +7,13 @@ import {FrameIdentifiers} from "../frameIdentifiers";
 import {IPicture, Picture, PictureType} from "../../picture";
 import {Guards} from "../../utils";
 
-export default class AttachmentFrame extends Frame {
+export default class AttachmentFrame extends Frame implements IPicture {
+    // NOTE: It probably doesn't look necessary to implement IPicture, but it makes converting a
+    //     frame to a picture so much easier, which we need in the Id3v2Tag class.
+
     private _data: ByteVector;
     private _description: string;
-    private _encoding: StringType = Id3v2TagSettings.defaultEncoding;
+    private _encoding: StringType = Id3v2Settings.defaultEncoding;
     private _filename: string;
     private _mimeType: string;
     private _rawPicture: IPicture;
@@ -61,7 +64,7 @@ export default class AttachmentFrame extends Frame {
         Guards.truthy(picture, "picture");
 
         // In this case we will assume the frame is an APIC until the picture is parsed
-        const frame = new AttachmentFrame(new Id3v2FrameHeader(FrameIdentifiers.APIC, 4));
+        const frame = new AttachmentFrame(new Id3v2FrameHeader(FrameIdentifiers.APIC));
         frame._rawPicture = picture;
         return frame;
     }
@@ -163,7 +166,7 @@ export default class AttachmentFrame extends Frame {
      * Sets the text encoding to use when storing the current instance.
      * @param value Text encoding to use when storing the current instance.
      *     This encoding is overridden when rendering if
-     *     {@see Id3v2TagSettings.forceDefaultEncoding} is `true` or the render version does not
+     *     {@see Id3v2Settings.forceDefaultEncoding} is `true` or the render version does not
      *     support it.
      */
     public set textEncoding(value: StringType) {
@@ -191,7 +194,7 @@ export default class AttachmentFrame extends Frame {
             ? FrameIdentifiers.GEOB
             : FrameIdentifiers.APIC;
         if (this._header.frameId !== frameId) {
-            this._header = new Id3v2FrameHeader(frameId, 4);
+            this._header = new Id3v2FrameHeader(frameId);
         }
 
         this._type = value;
@@ -203,7 +206,7 @@ export default class AttachmentFrame extends Frame {
 
     /** @inheritDoc */
     public clone(): Frame {
-        const frame = new AttachmentFrame(new Id3v2FrameHeader(this.frameId, 4));
+        const frame = new AttachmentFrame(new Id3v2FrameHeader(this.frameId));
         if (this._rawPicture) {
             frame._rawPicture = this._rawPicture;
         } else if (this._rawData) {
@@ -211,6 +214,7 @@ export default class AttachmentFrame extends Frame {
             frame._rawVersion = this._rawVersion;
         } else {
             frame._data = ByteVector.fromByteVector(this._data);
+            frame._description = this._description;
             frame._encoding = this._encoding;
             frame._filename = this._filename;
             frame._mimeType = this._mimeType;
@@ -237,7 +241,7 @@ export default class AttachmentFrame extends Frame {
     ): AttachmentFrame {
         Guards.truthy(frames, "frames");
         return frames.find((f) => {
-                if (f.description && f.description !== description) { return false; }
+                if (description && f.description !== description) { return false; }
                 if (type !== PictureType.Other && f.type !== type) { return false; }
                 return true;
             });
@@ -270,12 +274,6 @@ export default class AttachmentFrame extends Frame {
     protected renderFields(version: number) {
         this.parseFromRaw();
 
-        // Bypass processing if we haven't changed the data. Raw data is cleared when we touch any
-        // fields inside this frame.
-        if (this._rawData && this._rawVersion === version) {
-            return this._rawData;
-        }
-
         const encoding = AttachmentFrame.correctEncoding(this.textEncoding, version);
         const data = ByteVector.empty();
 
@@ -284,8 +282,9 @@ export default class AttachmentFrame extends Frame {
             data.addByte(encoding);
 
             if (version === 2) {
-                const ext = Picture.getExtensionFromMimeType(this.mimeType);
-                data.addByteVector(ByteVector.fromString(ext && ext.length === 3 ? ext.toUpperCase() : "XXX"));
+                let ext = Picture.getExtensionFromMimeType(this.mimeType);
+                ext = ext && ext.length >= 3 ? ext.substring(ext.length - 3).toUpperCase() : "XXX";
+                data.addByteVector(ByteVector.fromString(ext));
             } else {
                 data.addByteVector(ByteVector.fromString(this.mimeType, StringType.Latin1));
                 data.addByteVector(ByteVector.getTextDelimiter(StringType.Latin1));
@@ -355,12 +354,12 @@ export default class AttachmentFrame extends Frame {
 
                 this._type = data.get(mimeTypeEndIndex + 1);
 
-                descriptionEndIndex = data.find(delim, mimeTypeEndIndex + 1);
-                const descriptionLength = descriptionEndIndex - mimeTypeLength - 1;
+                descriptionEndIndex = data.find(delim, mimeTypeEndIndex + 2, delim.length);
+                const descriptionLength = descriptionEndIndex - mimeTypeEndIndex - 1;
                 this._description = data.toString(
                     descriptionLength,
                     this._encoding,
-                    mimeTypeEndIndex + 1
+                    mimeTypeEndIndex + 2
                 );
             } else {
                 // Text encoding      $xx
@@ -371,7 +370,9 @@ export default class AttachmentFrame extends Frame {
                 const imageFormat = data.toString(3, StringType.Latin1, 1);
                 this._mimeType = Picture.getMimeTypeFromFilename(imageFormat);
 
-                descriptionEndIndex = data.find(delim, 5);
+                this._type = data.get(4);
+
+                descriptionEndIndex = data.find(delim, 5, delim.length);
                 const descriptionLength = descriptionEndIndex - 5;
                 this._description = data.toString(descriptionLength, this._encoding, 5);
             }
@@ -418,7 +419,7 @@ export default class AttachmentFrame extends Frame {
         this._mimeType = picture.mimeType;
         this._type = picture.type;
 
-        this._encoding = Id3v2TagSettings.defaultEncoding;
+        this._encoding = Id3v2Settings.defaultEncoding;
 
         // Switch the frame ID if we discovered the attachment isn't an image
         if (this._type === PictureType.NotAPicture) {

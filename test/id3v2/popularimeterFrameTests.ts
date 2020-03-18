@@ -4,7 +4,7 @@ import * as ChaiAsPromised from "chai-as-promised";
 import {slow, suite, test, timeout} from "mocha-typescript";
 
 import FrameConstructorTests from "./frameConstructorTests";
-import FramePropertyTests from "./framePropertyTests";
+import PropertyTests from "../utilities/propertyTests";
 import PopularimeterFrame from "../../src/id3v2/frames/popularimeterFrame";
 import {ByteVector, StringType} from "../../src/byteVector";
 import {Frame, FrameClassType} from "../../src/id3v2/frames/frame";
@@ -31,7 +31,7 @@ class Id3v2_PopularimeterFrame_ConstructorTests extends FrameConstructorTests {
         const frame = PopularimeterFrame.fromUser("fux");
 
         // Assert
-        this.assertFrame(frame, "fux", undefined, undefined);
+        this.assertFrame(frame, "fux", undefined, 0);
     }
 
     @test
@@ -187,10 +187,10 @@ class Id3v2_PopularimeterFrame_PropertyTests {
         const get = () => frame.playCount;
 
         // Act
-        FramePropertyTests.propertyRoundTrip(set, get, BigInt(1234));
-        FramePropertyTests.propertyRoundTrip(set, get, undefined);
-        FramePropertyTests.propertyThrows(set, null);
-        FramePropertyTests.propertyThrows(set, BigInt(-1));
+        PropertyTests.propertyRoundTrip(set, get, BigInt(1234));
+        PropertyTests.propertyRoundTrip(set, get, undefined);
+        PropertyTests.propertyThrows(set, null);
+        PropertyTests.propertyThrows(set, BigInt(-1));
     }
 
     @test
@@ -201,10 +201,10 @@ class Id3v2_PopularimeterFrame_PropertyTests {
         const get = () => frame.rating;
 
         // Act
-        FramePropertyTests.propertyRoundTrip(set, get, 5);
-        FramePropertyTests.propertyThrows(set, -1);
-        FramePropertyTests.propertyThrows(set, 1.23);
-        FramePropertyTests.propertyThrows(set, 0x100);
+        PropertyTests.propertyRoundTrip(set, get, 5);
+        PropertyTests.propertyThrows(set, -1);
+        PropertyTests.propertyThrows(set, 1.23);
+        PropertyTests.propertyThrows(set, 0x100);
     }
 
     @test
@@ -215,9 +215,9 @@ class Id3v2_PopularimeterFrame_PropertyTests {
         const get = () => frame.user;
 
         // Act
-        FramePropertyTests.propertyRoundTrip(set, get, "bux");
-        FramePropertyTests.propertyNormalized(set, get, undefined, "");
-        FramePropertyTests.propertyNormalized(set, get, null, "");
+        PropertyTests.propertyRoundTrip(set, get, "bux");
+        PropertyTests.propertyNormalized(set, get, undefined, "");
+        PropertyTests.propertyNormalized(set, get, null, "");
     }
 }
 

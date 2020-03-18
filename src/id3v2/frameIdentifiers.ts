@@ -99,7 +99,7 @@ const uniqueFrameIdentifiers: {[key: string]: FrameIdentifier} = {
     TDEN: new FrameIdentifier("TDEN", undefined, undefined), // Encoding time
     TDLY: new FrameIdentifier("TDLY", "TDLY", "TDY"), // Playlist delay
     TDOR: new FrameIdentifier("TDOR", "TORY", "TOR"), // Original release time
-    TDRC: new FrameIdentifier("TDRC", "TYER", "TYE"), // Recording time (v2.4/v2.3) / Year (v2.2)
+    TDRC: new FrameIdentifier("TDRC", undefined, undefined), // Recording time
     TDRL: new FrameIdentifier("TDRL", undefined, undefined), // Release time
     TDTG: new FrameIdentifier("TDTG", undefined, undefined), // Tagging time
     TENC: new FrameIdentifier("TENC", "TENC", "TEN"), // Encoded by
@@ -133,13 +133,16 @@ const uniqueFrameIdentifiers: {[key: string]: FrameIdentifier} = {
     TRSN: new FrameIdentifier("TRSN", "TRSN", undefined), // Internet radio station name
     TRSO: new FrameIdentifier("TRSO", "TRSO", undefined), // Internet radio station owner
     TSIZ: new FrameIdentifier(undefined, "TSIZ", "TSI"), // Size
+    TSO2: new FrameIdentifier("TSO2", "TSO2", undefined), // iTunes only "Album Artist Sort"
     TSOA: new FrameIdentifier("TSOA", undefined, undefined), // Album sort order
+    TSOC: new FrameIdentifier("TSOC", "TSOC", undefined), // iTunes only "Composer Sort"
     TSOP: new FrameIdentifier("TSOP", undefined, undefined), // Performer sort order
     TSOT: new FrameIdentifier("TSOT", undefined, undefined), // Title sort order
     TSRC: new FrameIdentifier("TSRC", "TSRC", "TRC"), // ISRC (International standard recording code)
     TSSE: new FrameIdentifier("TSSE", "TSSE", "TSS"), // Software/hardware and setting used for encoding
     TSST: new FrameIdentifier("TSST", undefined, undefined), // Set subtitle
     TXXX: new FrameIdentifier("TXXX", "TXXX", "TXX"), // User defined text information frame
+    TYER: new FrameIdentifier(undefined, "TYER", "TYE"), // Year
     UFID: new FrameIdentifier("UFID", "UFID", "UFI"), // Unique file identifer
     USER: new FrameIdentifier("USER", "USER", undefined), // Terms of use
     USLT: new FrameIdentifier("USLT", "USLT", "ULT"), // Unsynchronised lyric/text transcription
@@ -232,7 +235,7 @@ export const FrameIdentifiers: {[key: string]: FrameIdentifier} = {
     TIT2: uniqueFrameIdentifiers.TIT2,
     TIT3: uniqueFrameIdentifiers.TIT3,
     TKE:  uniqueFrameIdentifiers.TKEY,
-    TKYE: uniqueFrameIdentifiers.TKEY,
+    TKEY: uniqueFrameIdentifiers.TKEY,
     TLA:  uniqueFrameIdentifiers.TLAN,
     TLAN: uniqueFrameIdentifiers.TLAN,
     TLE:  uniqueFrameIdentifiers.TLEN,
@@ -274,7 +277,9 @@ export const FrameIdentifiers: {[key: string]: FrameIdentifier} = {
     TRSO: uniqueFrameIdentifiers.TRSO,
     TSI:  uniqueFrameIdentifiers.TSIZ,
     TSIZ: uniqueFrameIdentifiers.TSIZ,
+    TSO2: uniqueFrameIdentifiers.TSO2,
     TSOA: uniqueFrameIdentifiers.TSOA,
+    TSOC: uniqueFrameIdentifiers.TSOC,
     TSOP: uniqueFrameIdentifiers.TSOP,
     TSOT: uniqueFrameIdentifiers.TSOT,
     TSRC: uniqueFrameIdentifiers.TSRC,
@@ -287,8 +292,8 @@ export const FrameIdentifiers: {[key: string]: FrameIdentifier} = {
     TXT:  uniqueFrameIdentifiers.TEXT,
     TXX:  uniqueFrameIdentifiers.TXXX,
     TXXX: uniqueFrameIdentifiers.TXXX,
-    TYE:  uniqueFrameIdentifiers.TDRC,
-    TYER: uniqueFrameIdentifiers.TDRC,
+    TYE:  uniqueFrameIdentifiers.TYER,
+    TYER: uniqueFrameIdentifiers.TYER,
     UFI:  uniqueFrameIdentifiers.UFID,
     UFID: uniqueFrameIdentifiers.UFID,
     ULT:  uniqueFrameIdentifiers.USLT,

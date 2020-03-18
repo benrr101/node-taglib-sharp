@@ -3,8 +3,8 @@ import * as ChaiAsPromised from "chai-as-promised";
 import {slow, suite, test, timeout} from "mocha-typescript";
 
 import FrameConstructorTests from "./frameConstructorTests";
-import FramePropertyTests from "./framePropertyTests";
-import Id3v2TagSettings from "../../src/id3v2/id3v2TagSettings";
+import PropertyTests from "../utilities/propertyTests";
+import Id3v2Settings from "../../src/id3v2/id3v2Settings";
 import {TextInformationFrame} from "../../src/id3v2/frames/textInformationFrame";
 import {ByteVector, StringType} from "../../src/byteVector";
 import {Frame, FrameClassType} from "../../src/id3v2/frames/frame";
@@ -52,7 +52,7 @@ class Id3v2_TextInformationFrame_ConstructorTests extends FrameConstructorTests 
         assert.isOk(frame.text);
         assert.isArray(frame.text);
         assert.isEmpty(frame.text);
-        assert.strictEqual(frame.textEncoding, Id3v2TagSettings.defaultEncoding);
+        assert.strictEqual(frame.textEncoding, Id3v2Settings.defaultEncoding);
     }
 
     @test
@@ -240,7 +240,7 @@ class Id3v2_TextInformationFrame_PropertyTests {
         const frame = getTestFrame();
 
         // Act / Assert
-        FramePropertyTests.propertyRoundTrip((v) => { frame.text = v; }, () => frame.text, ["bux", "fux"]);
+        PropertyTests.propertyRoundTrip((v) => { frame.text = v; }, () => frame.text, ["bux", "fux"]);
     }
 
     @test
@@ -249,7 +249,7 @@ class Id3v2_TextInformationFrame_PropertyTests {
         const frame = getTestFrame();
 
         // Act / Assert
-        FramePropertyTests.propertyRoundTrip(
+        PropertyTests.propertyRoundTrip(
             (v) => { frame.textEncoding = v; },
             () => frame.textEncoding,
             StringType.UTF16BE
@@ -263,7 +263,7 @@ class Id3v2_TextInformationFrame_PropertyTests {
         const _ = frame.text;   // Force a read
 
         // Act / Assert
-        FramePropertyTests.propertyRoundTrip(
+        PropertyTests.propertyRoundTrip(
             (v) => { frame.textEncoding = v; },
             () => frame.textEncoding,
             StringType.UTF16BE
@@ -353,7 +353,7 @@ class Id3v2_TextInformationFrame_MethodTests {
         header.frameSize = 8;
         const data = ByteVector.concatenate(
             header.render(4),
-            Id3v2TagSettings.defaultEncoding,
+            Id3v2Settings.defaultEncoding,
             ByteVector.fromString("fux", StringType.Latin1),
             ByteVector.getTextDelimiter(StringType.Latin1),
             ByteVector.fromString("bux", StringType.Latin1),
@@ -375,7 +375,7 @@ class Id3v2_TextInformationFrame_MethodTests {
         header.frameSize = 8;
         const data = ByteVector.concatenate(
             header.render(4),
-            Id3v2TagSettings.defaultEncoding,
+            Id3v2Settings.defaultEncoding,
             ByteVector.fromString("fux", StringType.Latin1),
             ByteVector.getTextDelimiter(StringType.Latin1),
             ByteVector.fromString("bux", StringType.Latin1),

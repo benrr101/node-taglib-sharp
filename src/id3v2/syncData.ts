@@ -33,7 +33,7 @@ export default {
      * @param data Object to resynchronize
      */
     resyncByteVector: (data: ByteVector): void => {
-        Guards.notNullOrUndefined(data, "data");
+        Guards.truthy(data, "data");
 
         let i = 0;
         let j = 0;
@@ -42,12 +42,12 @@ export default {
                 data.set(j, data.get(i));
             }
 
-            i += (data.get(i) === 0xFF && data.get(i + 1) === 0) ? 2 : 1;
+            i += (data.get(i) === 0xFF && data.get(i + 1) === 0x00) ? 2 : 1;
             j ++;
         }
 
         if (i < data.length) {
-            data.set(data.get(j++), data.get(i + 1));
+            data.set(j++, data.get(i++));
         }
 
         data.resize(j);

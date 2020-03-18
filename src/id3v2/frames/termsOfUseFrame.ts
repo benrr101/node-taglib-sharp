@@ -1,4 +1,4 @@
-import Id3v2TagSettings from "../id3v2TagSettings";
+import Id3v2Settings from "../id3v2Settings";
 import {ByteVector, StringType} from "../../byteVector";
 import {CorruptFileError} from "../../errors";
 import {Frame, FrameClassType} from "./frame";
@@ -9,7 +9,7 @@ import {Guards} from "../../utils";
 export default class TermsOfUseFrame extends Frame {
     private _language: string;
     private _text: string;
-    private _textEncoding: StringType = Id3v2TagSettings.defaultEncoding;
+    private _textEncoding: StringType = Id3v2Settings.defaultEncoding;
 
     // #region Constructors
 
@@ -21,11 +21,11 @@ export default class TermsOfUseFrame extends Frame {
      * Constructs and initializes a new instance with a specified language.
      * @param language ISO-639-2 language code for the new frame
      * @param textEncoding Optional, text encoding to use when rendering the new frame. If not
-     *     provided defaults to {@see Id3v2TagSettings.defaultEncoding}
+     *     provided defaults to {@see Id3v2Settings.defaultEncoding}
      */
     public static fromFields(
         language: string,
-        textEncoding: StringType = Id3v2TagSettings.defaultEncoding
+        textEncoding: StringType = Id3v2Settings.defaultEncoding
     ): TermsOfUseFrame {
         const f = new TermsOfUseFrame(new Id3v2FrameHeader(FrameIdentifiers.USER));
         f.textEncoding = textEncoding;
@@ -97,7 +97,7 @@ export default class TermsOfUseFrame extends Frame {
     /**
      * Gets the text of the terms of use
      */
-    public get text(): string { return this._text; }
+    public get text(): string { return this._text || ""; }
     /**
      * Sets the text of the terms of use
      */

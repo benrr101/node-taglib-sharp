@@ -119,7 +119,7 @@ export default class UniqueFileIdentifierFrame extends Frame {
 
     /** @inheritDoc */
     public clone(): Frame {
-        const frame = new UniqueFileIdentifierFrame(new Id3v2FrameHeader(FrameIdentifiers.UFID, 4));
+        const frame = new UniqueFileIdentifierFrame(new Id3v2FrameHeader(FrameIdentifiers.UFID));
         frame._owner = this._owner;
         if (this._identifier) {
             frame.identifier = ByteVector.fromByteVector(this.identifier);

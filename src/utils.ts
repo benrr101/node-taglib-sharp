@@ -31,6 +31,13 @@ export class Guards {
         }
     }
 
+    public static optionalByte(value: number | undefined, name: string): void {
+        if (value === undefined) {
+            return;
+        }
+        Guards.byte(value, name);
+    }
+
     public static short(value: number, name: string): void {
         if (!Number.isSafeInteger(value) || value > 32767 || value < -32768) {
             throw new Error(`Argument out of range: ${name} must be a 16-bit integer`);
