@@ -40,7 +40,6 @@ export abstract class Frame {
     // #region Constructors
 
     protected constructor(header: Id3v2FrameHeader) {
-        Guards.truthy(header, "header");
         this._header = header;
     }
 
@@ -50,25 +49,23 @@ export abstract class Frame {
 
     /**
      * Gets the encryption ID applied to the current instance.
-     * @returns number Value containing the encryption identifer for the current instance or -1 if
-     *     not set.
+     * @returns number Value containing the encryption identifer for the current instance or
+     *     `undefined` if not set.
      */
-    public get encryptionId(): number {
+    public get encryptionId(): number | undefined {
         return (this.flags & Id3v2FrameFlags.Encryption) !== 0
             ? this._encryptionId
-            : -1;
+            : undefined;
     }
     /**
      * Sets the encryption ID applied to the current instance.
-     * @param value Value containing the encryption identifier for the current instance. Must be a
-     *     safe 16-bit integer.
-     *     Encryption values can be betweenInclusive 0 and 255. Setting any other value will unset the
-     *     encryption ID and set the value to -1;
+     * @param value Value containing the encryption identifier for the current instance. Must be an
+     *     8-bit unsigned integer. Setting to `undefined` will remove the encryption header and ID
      */
-    public set encryptionId(value: number) {
-        Guards.short(value, "value");
-        if (value >= 0x00 && value <= 0xFF) {
-            this._encryptionId = value;
+    public set encryptionId(value: number | undefined) {
+        Guards.optionalByte(value, "value");
+        this._encryptionId = value;
+        if (value !== undefined) {
             this.flags |= Id3v2FrameFlags.Encryption;
         } else {
             this.flags &= ~Id3v2FrameFlags.Encryption;
@@ -96,24 +93,23 @@ export abstract class Frame {
 
     /**
      * Gets the grouping ID applied to the current instance.
-     * @returns number Value containing the grouping identifier for the current instance, of -1 if
-     *     not set.
+     * @returns number Value containing the grouping identifier for the current instance, or
+     *     `undefined` if not set.
      */
-    public get groupId(): number {
+    public get groupId(): number | undefined {
         return (this.flags & Id3v2FrameFlags.GroupingIdentity) !== 0
             ? this._groupId
-            : -1;
+            : undefined;
     }
     /**
      * Sets the grouping ID applied to the current instance.
-     * @param value Grouping identifier for the current instance. Must be a 16-bit integer.
-     *     Grouping identifiers can be betweenInclusive 0 and 255. Setting any other value will unset the
-     *     grouping identify and set the value to -1.
+     * @param value Grouping identifier for the current instance. Must be a 8-bit unsigned integer.
+     *     Setting to `undefined` will remove the grouping identity header and ID
      */
-    public set groupId(value: number) {
-        Guards.short(value, "value");
-        if (value >= 0x00 && value <= 0xFF) {
-            this._groupId = value;
+    public set groupId(value: number | undefined) {
+        Guards.optionalByte(value, "value");
+        this._groupId = value;
+        if (value !== undefined) {
             this.flags |= Id3v2FrameFlags.GroupingIdentity;
         } else {
             this.flags &= ~Id3v2FrameFlags.GroupingIdentity;
@@ -194,10 +190,10 @@ export abstract class Frame {
         }
 
         this._header.frameSize = fieldData.length;
-        const headerData = this._header.render(version);
-        headerData.addByteVector(fieldData);
-
-        return headerData;
+        return ByteVector.concatenate(
+            this._header.render(version),
+            fieldData
+        );
     }
 
     // #region Protected Methods
@@ -240,7 +236,7 @@ export abstract class Frame {
         }
 
         if ((this.flags & Id3v2FrameFlags.GroupingIdentity) !== 0) {
-            if (frameData.length >= dataOffset) {
+            if (frameData.length <= dataOffset) {
                 throw new CorruptFileError("Frame data incomplete");
             }
             this.groupId = frameData.get(dataOffset++);
@@ -248,7 +244,7 @@ export abstract class Frame {
         }
 
         if ((this.flags & Id3v2FrameFlags.Encryption) !== 0) {
-            if (frameData.length >= dataOffset) {
+            if (frameData.length <= dataOffset) {
                 throw new CorruptFileError("Frame data incomplete");
             }
             this._encryptionId = frameData.get(dataOffset++);

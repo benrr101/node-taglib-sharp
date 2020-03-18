@@ -69,8 +69,8 @@ export class Id3v2FrameHeader {
         Guards.uint(frameSize, "frameSize");
 
         this._frameId = id;
-        this._flags = flags;
         this._frameSize = frameSize;
+        this.flags = flags; // Force the compression/encryption checks
     }
 
     /**
