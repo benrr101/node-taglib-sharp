@@ -227,6 +227,9 @@ export class ByteVector {
         return result;
     }
 
+    /**
+     * Creates an empty {@see ByteVector}
+     */
     public static empty(): ByteVector {
         return this.fromSize(0);
     }
@@ -638,13 +641,8 @@ export class ByteVector {
      * @param byte Value to add to the end of the ByteVector. Must be positive integer <=0xFF.
      */
     public addByte(byte: number): void {
-        if (this._isReadOnly) {
-            throw new Error("Not supported: Cannot edit readonly byte vectors");
-        }
-
-        if (!Number.isInteger(byte) || byte < 0 || byte > 0xFF) {
-            throw new Error("Argument out of range: byte is not a valid byte");
-        }
+        this.throwIfReadOnly();
+        Guards.byte(byte, "byte");
 
         this.addByteArray(new Uint8Array([byte]));
     }
@@ -654,12 +652,9 @@ export class ByteVector {
      * @param data Array of bytes to add to the end of the ByteVector
      */
     public addByteArray(data: Uint8Array): void {
-        if (this._isReadOnly) {
-            throw new Error("Not supported: Cannot edit readonly byte vectors");
-        }
-        if (data === undefined || data === null) {
-            throw new Error("Argument null: data not provided");
-        }
+        this.throwIfReadOnly();
+        Guards.truthy(data, "data");
+
         if (data.length === 0) {
             return;
         }
@@ -675,9 +670,8 @@ export class ByteVector {
      * @param data ByteVector to add to the end of this ByteVector
      */
     public addByteVector(data: ByteVector): void {
-        if (data === undefined || data === null) {
-            throw new Error("Argument null: data not provided");
-        }
+        this.throwIfReadOnly();
+        Guards.truthy(data, "data");
 
         this.addByteArray(data._data);
     }
@@ -688,39 +682,30 @@ export class ByteVector {
      *              existing references to {@see ByteVector.data} will remain unchanged.
      */
     public clear(): void {
-        if (this._isReadOnly) {
-            throw new Error("Invalid Operation Exception: Cannot edit readonly objects");
-        }
+        this.throwIfReadOnly();
         this._data = new Uint8Array(0);
     }
 
-    public contains(byte: number): boolean {
-        Guards.byte(byte, "byte");
-        return this._data.indexOf(byte) >= 0;
-    }
-
+    /**
+     * Determines if {@paramref pattern} exists at a certain {@paramref offset} in this byte vector.
+     * @param pattern ByteVector to search for at in this byte vector
+     * @param offset Position in this byte vector to search for the pattern. If omitted, defaults
+     *     to `0`
+     * @param patternOffset Position in {@paramref pattern} to begin matching. If omitted, defaults
+     *     to `0`
+     * @param patternLength Bytes of {@paramref pattern} to match. If omitted, defaults to all bytes
+     *     in the pattern minus the offset
+     */
     public containsAt(
         pattern: ByteVector,
         offset: number = 0,
         patternOffset: number = 0,
-        patternLength: number = Number.MAX_SAFE_INTEGER
+        patternLength: number = pattern.length - patternOffset
     ): boolean {
-        if (!pattern) {
-            throw new Error("Argument null exception: pattern is null");
-        }
-        if (!Number.isInteger(offset)) {
-            throw new Error("Argument out of range exception: offset is invalid");
-        }
-        if (!Number.isInteger(patternOffset)) {
-            throw new Error("Argument out of range exception: patternOffset is invalid");
-        }
-        if (!Number.isInteger(patternLength)) {
-            throw new Error("Argument out of range exception: patternLength is invalid");
-        }
-
-        if (pattern.length < patternLength) {
-            patternLength = pattern.length;
-        }
+        Guards.truthy(pattern, "pattern");
+        Guards.int(offset, "offset");
+        Guards.int(patternOffset, "patternOffset");
+        Guards.int(patternLength, "patternLength");
 
         // Do some sanity checking -- all of these things are needed for the search to be valid
         if (
@@ -743,10 +728,12 @@ export class ByteVector {
         return true;
     }
 
+    /**
+     * Compares this byte vector to a different byte vector. Returns a numeric value
+     * @param other ByteVector to compare to this byte vector
+     */
     public compareTo(other: ByteVector): number {
-        if (!other) {
-            throw new Error("Argument null exception: other is null");
-        }
+        Guards.truthy(other, "other");
 
         let diff = this.length - other.length;
 
@@ -757,18 +744,23 @@ export class ByteVector {
         return diff;
     }
 
+    /**
+     * Determines whether or not this byte vector ends with the provided {@paramref pattern}.
+     * @param pattern ByteVector to look for at the end of this byte vector
+     */
     public endsWith(pattern: ByteVector): boolean {
-        if (!pattern) {
-            throw new Error("Argument null exception: pattern is null");
-        }
-
+        Guards.truthy(pattern, "pattern");
         return this.containsAt(pattern, this.length - pattern.length);
     }
 
+    /**
+     * Determines whether or not this byte vector ends with a part of the {@paramref pattern}.
+     * NOTE: if this byte vector ends with {@paramref pattern} perfectly, it must end with n-1 or
+     * less bytes
+     * @param pattern ByteVector to look for at the end of this byte vector
+     */
     public endsWithPartialMatch(pattern: ByteVector): number {
-        if (!pattern) {
-            throw new Error("Argument null exception: pattern is null");
-        }
+        Guards.truthy(pattern, "pattern");
 
         if (pattern.length > this.length) {
             return -1;
@@ -779,7 +771,7 @@ export class ByteVector {
         // Try to match the last n-1bytes from the vector (where n is the pattern size)
         // continue trying to match n-2, n-3...1 bytes
         for (let i = 1; i < pattern.length; i++) {
-            if (this.containsAt(pattern, startIndex)) {
+            if (this.containsAt(pattern, startIndex + i, 0, pattern.length - i)) {
                 return startIndex + i;
             }
         }
@@ -787,16 +779,22 @@ export class ByteVector {
         return -1;
     }
 
+    /**
+     * Searches this instance for the {@paramref pattern}. Returns the index of the first instance
+     * of the pattern, or `-1` if it was not found. Providing a {@paramref byteAlign} requires the
+     * pattern to appear at an index that is a multiple of the byteAlign parameter.
+     * Example: searching "abcd" for "ab" with byteAlign 1 will return 0. Searching "abcd" for
+     * "ab" with byteAlign 2 will return 1. Searching "00ab" for "ab" with byteAlign 2 will return
+     * 2. Searching "0abc" with byteAlign 2 will return -1.
+     * @param pattern Pattern of bytes to search this instance for
+     * @param offset Optional, offset into this instance to start searching
+     * @param byteAlign Optional, byte alignment the pattern much align to
+     */
     public find(pattern: ByteVector, offset: number = 0, byteAlign: number = 1): number {
-        if (!pattern) {
-            throw new Error("Argument null exception: pattern is null");
-        }
-        if (!Number.isInteger(offset) || offset < 0) {
-            throw new Error("Argument out of range exception: offset is invalid");
-        }
-        if (!Number.isInteger(byteAlign) || byteAlign < 1) {
-            throw new Error("Argument out of range exception: byteAlign is invalid");
-        }
+        Guards.truthy(pattern, "pattern");
+        Guards.uint(offset, "offset");
+        Guards.uint(byteAlign, "byteAlign");
+        Guards.greaterThanInclusive(byteAlign, 1, "byteAlign");
 
         if (pattern.length > this.length - offset) {
             return -1;
@@ -838,10 +836,13 @@ export class ByteVector {
         return -1;
     }
 
+    /**
+     * Gets the byte at the given {@paramref index}
+     * @param index Index into the byte vector to return
+     */
     public get(index: number): number {
-        if (!Number.isInteger(index) || index > this._data.length) {
-            throw new Error("Argument out of range exception: index is invalid");
-        }
+        Guards.uint(index, "index");
+        Guards.lessThanInclusive(index, this.length - 1, "index");
         return this._data[index];
     }
 
@@ -862,15 +863,10 @@ export class ByteVector {
      * @param byte Value to insert into the ByteVector. Must be a positive integer <=0xFF
      */
     public insertByte(index: number, byte: number): void {
-        if (this._isReadOnly) {
-            throw new Error("Not supported: Cannot edit readonly byte vectors");
-        }
-        if (!Number.isInteger(index) || index < 0 || index > this.length) {
-            throw new Error("Argument out of range: index is invalid");
-        }
-        if (!Number.isInteger(byte) || byte < 0 || byte > 0xFF) {
-            throw new Error("Argument out of range: byte is invalid");
-        }
+        this.throwIfReadOnly();
+        Guards.uint(index, "index");
+        Guards.lessThanInclusive(index, this.length, "index");
+        Guards.byte(byte, "byte");
 
         const oldData = this._data;
         this._data = new Uint8Array(oldData.length + 1);
@@ -891,15 +887,11 @@ export class ByteVector {
      * @param other Array of bytes to insert into the ByteVector.
      */
     public insertByteArray(index: number, other: Uint8Array): void {
-        if (this._isReadOnly) {
-            throw new Error("Not supported: Cannot edit readonly byte vectors");
-        }
-        if (!Number.isInteger(index) || index < 0 || index > this.length) {
-            throw new Error("Argument out of range: index is invalid");
-        }
-        if (!other) {
-            throw new Error("Argument null: other was not provided");
-        }
+        this.throwIfReadOnly();
+        Guards.uint(index, "index");
+        Guards.lessThanInclusive(index, this.length, "index");
+        Guards.truthy(other, "other");
+
         if (other.length === 0 ) {
             return;
         }
@@ -923,24 +915,27 @@ export class ByteVector {
      * @param other ByteVector to insert into this ByteVector.
      */
     public insertByteVector(index: number, other: ByteVector): void {
-        if (!other) {
-            throw new Error("Argument null: other was not provided");
-        }
-
+        Guards.truthy(other, "other");
         this.insertByteArray(index, other._data);
     }
 
+    /**
+     * Returns a subarray of the current instance. This operation returns a new instance and does
+     * not alter the current instance.
+     * @param startIndex Index into the array to begin
+     * @param length Number of elements from the array to include. If omitted, defaults to the
+     *     remainder of the array
+     */
     public mid(startIndex: number, length: number = this._data.length - startIndex): ByteVector {
-        if (!Number.isInteger(startIndex) || startIndex < 0 || startIndex > this.length) {
-            throw new Error("Argument out of range exception: startIndex is invalid");
-        }
-        if (!Number.isInteger(length) || length < 0 || startIndex + length > this.length) {
-            throw new Error("Argument out of range exception: length is invalid");
-        }
+        Guards.uint(startIndex, "startIndex");
+        Guards.uint(length, "length");
 
         if (length === 0) {
             return ByteVector.fromSize(0);
         }
+
+        Guards.lessThanInclusive(startIndex, this.length - 1, "startIndex");
+        Guards.lessThanInclusive(length, this.length - startIndex, "length");
 
         return ByteVector.fromByteArray(this._data.subarray(startIndex, startIndex + length));
     }
@@ -950,12 +945,9 @@ export class ByteVector {
      * @param index Index that will be removed from the ByteVector
      */
     public removeAtIndex(index: number) {
-        if (this._isReadOnly) {
-            throw new Error("Not supported: Cannot edit readonly byte vectors");
-        }
-        if (!Number.isInteger(index) || index < 0 || index >= this.length) {
-            throw new Error("Argument out of range: index is invalid");
-        }
+        this.throwIfReadOnly();
+        Guards.uint(index, "index");
+        Guards.lessThanInclusive(index, this.length - 1, "index");
 
         const oldData = this._data;
         this._data = new Uint8Array(oldData.length - 1);
@@ -973,15 +965,10 @@ export class ByteVector {
      * @param count Number of bytes to remove from this ByteVector
      */
     public removeRange(index: number, count: number) {
-        if (this._isReadOnly) {
-            throw new Error("Not supported: Cannot edit readonly byte vectors");
-        }
-        if (!Number.isInteger(index) || index < 0 || index >= this.length) {
-            throw new Error("Argument out of range: index is invalid");
-        }
-        if (!Number.isInteger(count) || count < 0) {
-            throw new Error("Argument out of range: count is invalid");
-        }
+        this.throwIfReadOnly();
+        Guards.uint(index, "index");
+        Guards.lessThanInclusive(index, this.length - 1, "index");
+        Guards.uint(count, "count");
 
         if (index + count > this.length) {
             count = this.length - index;
@@ -997,39 +984,49 @@ export class ByteVector {
         }
     }
 
+    /**
+     * Resizes this instance to the length specified in {@paramref size}. If the desired size is
+     * longer than the current length, it will be filled with the byte value in
+     * {@paramref padding}. If the desired size is shorter than the current length, bytes will be
+     * removed.
+     * @param size Length of the byte vector after resizing. Must be unsigned 32-bit integer
+     * @param padding Byte to fill any excess space created after resizing
+     */
     public resize(size: number, padding: number = 0x0): ByteVector {
-        if (this._isReadOnly) {
-            throw new Error("Not supported: Cannot edit readonly byte vectors");
-        }
-        if (!Number.isInteger(size) || size < 0) {
-            throw new Error("Argument out of range: size is invalid");
-        }
-        if (!Number.isInteger(padding) || padding > 255 || padding < 0) {
-            throw new Error("Argument out of range: padding is invalid");
-        }
+        this.throwIfReadOnly();
+        Guards.uint(size, "size");
+        Guards.byte(padding, "padding");
 
         if (this.length > size) {
             this.removeRange(size, this.length - size);
+        } else if (this.length < size) {
+            const oldData = this._data;
+            this._data = new Uint8Array(size);
+            this._data.set(oldData);
+            this._data.fill(padding, oldData.length);
         }
-
-        const oldData = this._data;
-        this._data = new Uint8Array(size);
-        this._data.set(oldData);
-        this._data.fill(padding, oldData.length);
+        // Do nothing on same size
 
         return this;
     }
 
+    /**
+     * Finds a byte vector by searching from the end of this instance and working towards the
+     * beginning of this instance. Returns the index of the first instance of the pattern, or `-1`
+     * if it was not found. Providing a {@paramref byteAlign} requires the pattern to appear at an
+     * index that is a multiple of the byteAlign parameter.
+     * Example: searching "abcd" for "ab" with byteAlign 1 will return 0. Searching "abcd" for
+     * "ab" with byteAlign 2 will return 1. Searching "00ab" for "ab" with byteAlign 2 will return
+     * 2. Searching "0abc" with byteAlign 2 will return -1.
+     * @param pattern Pattern of bytes to search this instance for
+     * @param offset Optional, offset into this instance to start searching
+     * @param byteAlign Optional, byte alignment the pattern much align to
+     */
     public rFind(pattern: ByteVector, offset: number = 0, byteAlign: number = 1): number {
-        if (!pattern) {
-            throw new Error("Argument null exception: pattern is null");
-        }
-        if (!Number.isInteger(offset) || offset < 0) {
-            throw new Error("Argument out of range exception: offset is invalid");
-        }
-        if (!Number.isInteger(byteAlign) || byteAlign < 1) {
-            throw new Error("Argument out of range exception: byteAlign is invalid");
-        }
+        Guards.truthy(pattern, "pattern");
+        Guards.uint(offset, "offset");
+        Guards.uint(byteAlign, "byteAlign");
+        Guards.greaterThanInclusive(byteAlign, 1, "byteAlign");
 
         if (pattern.length === 0 || pattern.length > this.length - offset) {
             return -1;
@@ -1050,7 +1047,10 @@ export class ByteVector {
         firstOccurrence.fill(pattern.length);
 
         for (let i = pattern.length - 1; i > 0; --i) {
-            i -= firstOccurrence[pattern._data[i]];
+            firstOccurrence[pattern.get(i)] = i;
+        }
+
+        for (let i = this.length - offset - pattern.length; i >= 0; i -= firstOccurrence[this.get(i)]) {
             if ((offset - i) % byteAlign === 0 && this.containsAt(pattern, i)) {
                 return i;
             }
@@ -1065,15 +1065,10 @@ export class ByteVector {
      * @param value Value to set at the index. Must be a valid integer betweenInclusive 0x0 and 0xff
      */
     public set(index: number, value: number): void {
-        if (this._isReadOnly) {
-            throw new Error("Invalid operation exception: Cannot edit readonly objects");
-        }
-        if (!Number.isInteger(index) || index > this._data.length) {
-            throw new Error("Argument out of range exception: index is invalid");
-        }
-        if (!Number.isInteger(value) || value < 0 || value > 0xff) {
-            throw new Error("Argument out of range exception: value is not a valid byte");
-        }
+        this.throwIfReadOnly();
+        Guards.uint(index, "index");
+        Guards.lessThanInclusive(index, this.length, "index");
+        Guards.byte(value, "value");
         this._data[index] = value;
     }
 
@@ -1089,16 +1084,18 @@ export class ByteVector {
      */
     public split(separator: ByteVector, byteAlign: number = 1, max: number = 0): ByteVector[] {
         Guards.truthy(separator, "separator");
-        if (!Number.isSafeInteger(byteAlign) || byteAlign < 1) {
-            throw new Error("Argument out of range: byteAlign must be at least 1");
-        }
+        Guards.uint(byteAlign, "byteAlign");
+        Guards.greaterThanInclusive(byteAlign, 1, "byteAlign");
+        Guards.uint(max, "max");
 
         const list: ByteVector[] = [];
         let previousOffset = 0;
 
-        for (let offset = this.find(separator, 0, byteAlign);
-             offset !== -1 && (max < 1 || max > list.length + 1);
-             offset = this.find(separator, offset + separator.length, byteAlign)) {
+        for (
+            let offset = this.find(separator, 0, byteAlign);
+            offset !== -1 && (max < 1 || max > list.length + 1);
+            offset = this.find(separator, offset + separator.length, byteAlign)
+        ) {
             list.push(this.mid(previousOffset, offset - previousOffset));
             previousOffset = offset + separator.length;
         }
@@ -1527,6 +1524,12 @@ export class ByteVector {
         }
 
         return output;
+    }
+
+    private throwIfReadOnly() {
+        if (this._isReadOnly) {
+            throw new Error("Not supported: Cannot edit readonly byte vectors");
+        }
     }
 
     // #endregion

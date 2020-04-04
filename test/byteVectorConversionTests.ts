@@ -8,16 +8,76 @@ import {ByteVector, StringType} from "../src/byteVector";
 const assert = Chai.assert;
 
 @suite(timeout(3000), slow(1000))
-class ByteVector_ToDoubleTests {
-    private static readonly PositiveBV = ByteVector.fromByteArray(  // 56.12
+class ByteVector_ConversionTests {
+    private readonly doublePositiveBV = ByteVector.fromByteArray(  // 56.12
         new Uint8Array([0x8F, 0xC2, 0xF5, 0x28, 0x5C, 0x0F, 0x4C, 0x40, 0xAA])
     );
-    private static readonly NegativeBV = ByteVector.fromByteArray(  // -12.34
+    private readonly doubleNegativeBV = ByteVector.fromByteArray(  // -12.34
         new Uint8Array([0xAE, 0x47, 0xE1, 0x7A, 0x14, 0xAE, 0x28, 0xC0, 0xAA])
+    );
+    private readonly floatPositiveBV = ByteVector.fromByteArray(  // 56.12
+        new Uint8Array([0xE1, 0x7A, 0x60, 0x42, 0xAA])
+    );
+    private readonly floatNegativeBV = ByteVector.fromByteArray(  // -12.34
+        new Uint8Array([0xA4, 0x70, 0x45, 0xC1, 0xAA])
+    );
+    private readonly intNegativeCompleteBV = ByteVector.fromByteArray(
+        new Uint8Array([0xFE, 0xFD, 0xFC, 0xFC, 0xAA])
+    );
+    private readonly intNegativeIncompleteBV = ByteVector.fromByteArray(
+        new Uint8Array([0xFC, 0xFD])
+    );
+    private readonly intPositiveCompleteBV = ByteVector.fromByteArray(
+        new Uint8Array([0x01, 0x02, 0x03, 0x04, 0xAA])
+    );
+    private readonly intPositiveIncompleteBV = ByteVector.fromByteArray(
+        new Uint8Array([0x01, 0x02])
+    );
+    private readonly longNegativeCompleteBV = ByteVector.fromByteArray(
+        new Uint8Array([0xFE, 0xFD, 0xFC, 0xFB, 0xFA, 0xF9, 0xF8, 0xF8, 0xAA])
+    );
+    private readonly longNegativeIncompleteBV = ByteVector.fromByteArray(
+        new Uint8Array([0xFE, 0xFD, 0xFC, 0xFC])
+    );
+    private readonly longPositiveCompleteBV = ByteVector.fromByteArray(
+        new Uint8Array([0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0xAA])
+    );
+    private readonly longPositiveIncompleteBV = ByteVector.fromByteArray(
+        new Uint8Array([0x01, 0x02, 0x03, 0x04])
+    );
+    private readonly shortNegativeCompleteBV = ByteVector.fromByteArray(
+        new Uint8Array([0xFE, 0xFD, 0xAA])
+    );
+    private readonly shortNegativeIncompleteBV = ByteVector.fromByteArray(
+        new Uint8Array([0xFC])
+    );
+    private readonly shortPositiveCompleteBV = ByteVector.fromByteArray(
+        new Uint8Array([0x01, 0x02, 0xAA])
+    );
+    private readonly shortPositiveIncompleteBV = ByteVector.fromByteArray(
+        new Uint8Array([0x01])
+    );
+    private readonly uintPositiveCompleteBV = ByteVector.fromByteArray(
+        new Uint8Array([0x01, 0x02, 0x03, 0x04, 0xAA])
+    );
+    private readonly uintPositiveIncompleteBV = ByteVector.fromByteArray(
+        new Uint8Array([0x01, 0x02])
+    );
+    private readonly ulongPositiveCompleteBV = ByteVector.fromByteArray(
+        new Uint8Array([0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0xAA])
+    );
+    private readonly ulongPositiveIncompleteBV = ByteVector.fromByteArray(
+        new Uint8Array([0x01, 0x02, 0x03, 0x04])
+    );
+    private readonly ushortPositiveCompleteBV = ByteVector.fromByteArray(
+        new Uint8Array([0x01, 0x02, 0xAA])
+    );
+    private readonly ushortPositiveIncompleteBV = ByteVector.fromByteArray(
+        new Uint8Array([0x01])
     );
 
     @test
-    public InvalidSize() {
+    public toDouble_invalidSize() {
         assert.throws(() => { ByteVector.fromSize(0).toDouble(); });
         assert.throws(() => { ByteVector.fromSize(1).toDouble(); });
         assert.throws(() => { ByteVector.fromSize(2).toDouble(); });
@@ -29,61 +89,51 @@ class ByteVector_ToDoubleTests {
     }
 
     @test
-    public Zero_Complete() {
+    public toDouble_zero_complete() {
         const float = ByteVector.fromByteArray(new Uint8Array([0x00, 0x00, 0x00, 0x00])).toFloat();
         assert.strictEqual(float, 0);
     }
 
     @test
-    public PositiveBigEndian() {
-        const double = ByteVector_ToDoubleTests.PositiveBV.toDouble();
+    public toDouble_positiveBigEndian() {
+        const double = this.doublePositiveBV.toDouble();
         assert.closeTo(double, -9.5397675953257207e-233, 0.000000000001e-233);
     }
 
     @test
-    public PositiveLittleEndian() {
-        const double = ByteVector_ToDoubleTests.PositiveBV.toDouble(false);
+    public toDouble_positiveLittleEndian() {
+        const double = this.doublePositiveBV.toDouble(false);
         assert.closeTo(double, 56.12, 0.01);
     }
 
     @test
-    public NegativeBigEndian() {
-        const double = ByteVector_ToDoubleTests.NegativeBV.toDouble();
+    public toDouble_negativeBigEndian() {
+        const double = this.doubleNegativeBV.toDouble();
         assert.closeTo(double, -9.6037214055410557e-86, 0.00000000001e-86);
     }
 
     @test
-    public NegativeLittleEndian() {
-        const double = ByteVector_ToDoubleTests.NegativeBV.toDouble(false);
+    public toDouble_negativeLittleEndian() {
+        const double = this.doubleNegativeBV.toDouble(false);
         assert.closeTo(double, -12.34, 0.01);
     }
 
     @test
-    public DoubleRangeBigEndian() {
+    public toDouble_doubleRangeBigEndian() {
         const double = ByteVector.fromByteArray(new Uint8Array([0x7F, 0xEF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF]))
             .toDouble();
         assert.closeTo(double, 1.7976931348623157e308, 0.000000000001e308);
     }
 
     @test
-    public DoubleRangeLittleEndian() {
+    public toDouble_doubleRangeLittleEndian() {
         const double = ByteVector.fromByteArray(new Uint8Array([0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xEF, 0x7F]))
             .toDouble(false);
         assert.closeTo(double, 1.7976931348623157e308, 0.000000000001e308);
     }
-}
-
-@suite(timeout(3000), slow(1000))
-class ByteVector_ToFloatTests {
-    private static readonly PositiveBV = ByteVector.fromByteArray(  // 56.12
-        new Uint8Array([0xE1, 0x7A, 0x60, 0x42, 0xAA])
-    );
-    private static readonly NegativeBV = ByteVector.fromByteArray(  // -12.34
-        new Uint8Array([0xA4, 0x70, 0x45, 0xC1, 0xAA])
-    );
 
     @test
-    public InvalidSize() {
+    public toFloat_invalidSize() {
         assert.throws(() => { ByteVector.fromSize(0).toFloat(); });
         assert.throws(() => { ByteVector.fromSize(1).toFloat(); });
         assert.throws(() => { ByteVector.fromSize(2).toFloat(); });
@@ -91,141 +141,109 @@ class ByteVector_ToFloatTests {
     }
 
     @test
-    public Zero_Complete() {
+    public toFloat_zero_complete() {
         const float = ByteVector.fromByteArray(new Uint8Array([0x00, 0x00, 0x00, 0x00])).toFloat();
         assert.strictEqual(float, 0);
     }
 
     @test
-    public PositiveBigEndian() {
-        const float = ByteVector_ToFloatTests.PositiveBV.toFloat();
+    public toFloat_positiveBigEndian() {
+        const float = this.floatPositiveBV.toFloat();
         assert.closeTo(float, -2.88663883e20, 0.00000001e20);
     }
 
     @test
-    public PositiveLittleEndian() {
-        const float = ByteVector_ToFloatTests.PositiveBV.toFloat(false);
+    public toFloat_positiveLittleEndian() {
+        const float = this.floatPositiveBV.toFloat(false);
         assert.closeTo(float, 56.12, 0.01);
     }
 
     @test
-    public NegativeBigEndian() {
-        const float = ByteVector_ToFloatTests.NegativeBV.toFloat();
+    public toFloat_negativeBigEndian() {
+        const float = this.floatNegativeBV.toFloat();
         assert.closeTo(float, -5.21007881e-17, 0.00000001e-17);
     }
 
     @test
-    public NegativeLittleEndian() {
-        const float = ByteVector_ToFloatTests.NegativeBV.toFloat(false);
+    public toFloat_negativeLittleEndian() {
+        const float = this.floatNegativeBV.toFloat(false);
         assert.closeTo(float, -12.34, 0.01);
     }
-}
-
-@suite(timeout(3000), slow(1000))
-class ByteVector_ToIntTests {
-    private static readonly NegativeCompleteBV = ByteVector.fromByteArray(
-        new Uint8Array([0xFE, 0xFD, 0xFC, 0xFC, 0xAA])
-    );
-    private static readonly NegativeIncompleteBV = ByteVector.fromByteArray(
-        new Uint8Array([0xFC, 0xFD])
-    );
-    private static readonly PositiveCompleteBV = ByteVector.fromByteArray(
-        new Uint8Array([0x01, 0x02, 0x03, 0x04, 0xAA])
-    );
-    private static readonly PositiveIncompleteBV = ByteVector.fromByteArray(
-        new Uint8Array([0x01, 0x02])
-    );
 
     @test
-    public Empty() {
+    public toInt_empty() {
         const int = ByteVector.fromSize(0).toInt();
         assert.strictEqual(int, 0);
     }
 
     @test
-    public Zero_Complete() {
+    public toInt_zero_complete() {
         const int = ByteVector.fromByteArray(new Uint8Array([0x0, 0x0, 0x0, 0x0, 0xAA])).toInt();
         assert.strictEqual(int, 0);
     }
 
     @test
-    public Zero_Incomplete() {
+    public toInt_zero_incomplete() {
         const int = ByteVector.fromByteArray(new Uint8Array([0x0, 0x0])).toInt();
         assert.strictEqual(int, 0);
     }
 
     @test
-    public PositiveBigEndian_Complete() {
-        const int = ByteVector_ToIntTests.PositiveCompleteBV.toInt();
+    public toInt_positiveBigEndian_complete() {
+        const int = this.intPositiveCompleteBV.toInt();
         assert.strictEqual(int, 0x01020304);
     }
 
     @test
-    public PositiveBigEndian_Incomplete() {
-        const int = ByteVector_ToIntTests.PositiveIncompleteBV.toInt();
+    public toInt_positiveBigEndian_incomplete() {
+        const int = this.intPositiveIncompleteBV.toInt();
         assert.strictEqual(int, 0x00000102);
     }
 
     @test
-    public PositiveLittleEndian_Complete() {
-        const int = ByteVector_ToIntTests.PositiveCompleteBV.toInt(false);
+    public toInt_positiveLittleEndian_complete() {
+        const int = this.intPositiveCompleteBV.toInt(false);
         assert.strictEqual(int, 0x04030201);
     }
 
     @test
-    public PositiveLittleEndian_Incomplete() {
-        const int = ByteVector_ToIntTests.PositiveIncompleteBV.toInt(false);
+    public toInt_positiveLittleEndian_incomplete() {
+        const int = this.intPositiveIncompleteBV.toInt(false);
         assert.strictEqual(int, 0x00000201);
     }
 
     @test
-    public NegativeBigEndian_Complete() {
-        const int = ByteVector_ToIntTests.NegativeCompleteBV.toInt();
+    public toInt_negativeBigEndian_complete() {
+        const int = this.intNegativeCompleteBV.toInt();
         assert.strictEqual(int, -0x01020304);
     }
 
     @test
-    public NegativeBigEndian_Incomplete() {
-        const int = ByteVector_ToIntTests.NegativeIncompleteBV.toInt();
+    public toInt_negativeBigEndian_incomplete() {
+        const int = this.intNegativeIncompleteBV.toInt();
         assert.strictEqual(int, 0x0000FCFD);
     }
 
     @test
-    public NegativeLittleEndian_Complete() {
-        const int = ByteVector_ToIntTests.NegativeCompleteBV.toInt(false);
+    public toInt_negativeLittleEndian_complete() {
+        const int = this.intNegativeCompleteBV.toInt(false);
         assert.strictEqual(int, -0x03030202);
     }
 
     @test
-    public NegativeLittleEndian_Incomplete() {
-        const int = ByteVector_ToIntTests.NegativeIncompleteBV.toInt(false);
+    public toInt_negativeLittleEndian_incomplete() {
+        const int = this.intNegativeIncompleteBV.toInt(false);
         assert.strictEqual(int, 0x0000FDFC);
     }
-}
-
-@suite(timeout(3000), slow(1000))
-class ByteVector_ToLongTests {
-    private static readonly NegativeCompleteBV = ByteVector.fromByteArray(
-        new Uint8Array([0xFE, 0xFD, 0xFC, 0xFB, 0xFA, 0xF9, 0xF8, 0xF8, 0xAA])
-    );
-    private static readonly NegativeIncompleteBV = ByteVector.fromByteArray(
-        new Uint8Array([0xFE, 0xFD, 0xFC, 0xFC])
-    );
-    private static readonly PositiveCompleteBV = ByteVector.fromByteArray(
-        new Uint8Array([0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0xAA])
-    );
-    private static readonly PositiveIncompleteBV = ByteVector.fromByteArray(
-        new Uint8Array([0x01, 0x02, 0x03, 0x04])
-    );
 
     @test
-    public Empty() {
+    public toLong_empty() {
         const long = ByteVector.fromSize(0).toLong();
         assert.isTrue(long.equals(BigInt(0)));
     }
 
     @test
-    public Zero_Complete() {
+    public toLong_zero_complete() {
         const long = ByteVector.fromByteArray(
             new Uint8Array([0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xAA])
         ).toLong();
@@ -233,7 +251,7 @@ class ByteVector_ToLongTests {
     }
 
     @test
-    public Zero_Incomplete() {
+    public toLong_zero_incomplete() {
         const long = ByteVector.fromByteArray(
             new Uint8Array([0x00, 0x00, 0x00, 0x00])
         ).toLong();
@@ -241,140 +259,121 @@ class ByteVector_ToLongTests {
     }
 
     @test
-    public PositiveBigEndian_Complete() {
-        const long = ByteVector_ToLongTests.PositiveCompleteBV.toLong();
+    public toLong_positiveBigEndian_complete() {
+        const long = this.longPositiveCompleteBV.toLong();
         assert.isTrue(long.equals(BigInt("0102030405060708", 16)));
     }
 
     @test
-    public PositiveBigEndian_Incomplete() {
-        const long = ByteVector_ToLongTests.PositiveIncompleteBV.toLong();
+    public toLong_positiveBigEndian_incomplete() {
+        const long = this.longPositiveIncompleteBV.toLong();
         assert.isTrue(long.equals(BigInt("01020304", 16)));
     }
 
     @test
-    public PositiveLittleEndian_Complete() {
-        const long = ByteVector_ToLongTests.PositiveCompleteBV.toLong(false);
+    public toLong_positiveLittleEndian_complete() {
+        const long = this.longPositiveCompleteBV.toLong(false);
         assert.isTrue(long.equals(BigInt("0807060504030201", 16)));
     }
 
     @test
-    public PositiveLittleEndian_Incomplete() {
-        const long = ByteVector_ToLongTests.PositiveIncompleteBV.toLong(false);
+    public toLong_positiveLittleEndian_incomplete() {
+        const long = this.longPositiveIncompleteBV.toLong(false);
         assert.isTrue(long.equals(BigInt("04030201", 16)));
     }
 
     @test
-    public NegativeBigEndian_Complete() {
-        const long = ByteVector_ToLongTests.NegativeCompleteBV.toLong();
+    public toLong_negativeBigEndian_complete() {
+        const long = this.longNegativeCompleteBV.toLong();
         assert.isTrue(long.equals(BigInt("-0102030405060708", 16)));
     }
 
     @test
-    public NegativeBigEndian_Incomplete() {
-        const long = ByteVector_ToLongTests.NegativeIncompleteBV.toLong();
+    public toLong_negativeBigEndian_incomplete() {
+        const long = this.longNegativeIncompleteBV.toLong();
         assert.isTrue(long.equals(BigInt("FEFDFCFC", 16)));
     }
 
     @test
-    public NegativeLittleEndian_Complete() {
-        const long = ByteVector_ToLongTests.NegativeCompleteBV.toLong(false);
+    public toLong_negativeLittleEndian_complete() {
+        const long = this.longNegativeCompleteBV.toLong(false);
         assert.isTrue(long.equals(BigInt("-0707060504030202", 16)));
     }
 
     @test
-    public NegativeLittleEndian_Incomplete() {
-        const long = ByteVector_ToLongTests.NegativeIncompleteBV.toLong(false);
+    public toLong_negativeLittleEndian_incomplete() {
+        const long = this.longNegativeIncompleteBV.toLong(false);
         assert.isTrue(long.equals(BigInt("FCFCFDFE", 16)));
     }
-}
-
-@suite(timeout(3000), slow(1000))
-class ByteVector_ToShortTests {
-    private static readonly NegativeCompleteBV = ByteVector.fromByteArray(
-        new Uint8Array([0xFE, 0xFD, 0xAA])
-    );
-    private static readonly NegativeIncompleteBV = ByteVector.fromByteArray(
-        new Uint8Array([0xFC])
-    );
-    private static readonly PositiveCompleteBV = ByteVector.fromByteArray(
-        new Uint8Array([0x01, 0x02, 0xAA])
-    );
-    private static readonly PositiveIncompleteBV = ByteVector.fromByteArray(
-        new Uint8Array([0x01])
-    );
 
     @test
-    public Empty() {
+    public toShort_empty() {
         const int = ByteVector.fromSize(0).toShort();
         assert.strictEqual(int, 0);
     }
 
     @test
-    public Zero_Complete() {
+    public toShort_zero_complete() {
         const int = ByteVector.fromByteArray(new Uint8Array([0x0, 0x0, 0x0, 0x0, 0xAA])).toShort();
         assert.strictEqual(int, 0);
     }
 
     @test
-    public Zero_Incomplete() {
+    public toShort_zero_incomplete() {
         const int = ByteVector.fromByteArray(new Uint8Array([0x0, 0x0])).toShort();
         assert.strictEqual(int, 0);
     }
 
     @test
-    public PositiveBigEndian_Complete() {
-        const int = ByteVector_ToShortTests.PositiveCompleteBV.toShort();
+    public toShort_positiveBigEndian_complete() {
+        const int = this.shortPositiveCompleteBV.toShort();
         assert.strictEqual(int, 0x0102);
     }
 
     @test
-    public PositiveBigEndian_Incomplete() {
-        const int = ByteVector_ToShortTests.PositiveIncompleteBV.toShort();
+    public toShort_positiveBigEndian_incomplete() {
+        const int = this.shortPositiveIncompleteBV.toShort();
         assert.strictEqual(int, 0x01);
     }
 
     @test
-    public PositiveLittleEndian_Complete() {
-        const int = ByteVector_ToShortTests.PositiveCompleteBV.toShort(false);
+    public toShort_positiveLittleEndian_complete() {
+        const int = this.shortPositiveCompleteBV.toShort(false);
         assert.strictEqual(int, 0x0201);
     }
 
     @test
-    public PositiveLittleEndian_Incomplete() {
-        const int = ByteVector_ToShortTests.PositiveIncompleteBV.toShort(false);
+    public toShort_positiveLittleEndian_incomplete() {
+        const int = this.shortPositiveIncompleteBV.toShort(false);
         assert.strictEqual(int, 0x01);
     }
 
     @test
-    public NegativeBigEndian_Complete() {
-        const int = ByteVector_ToShortTests.NegativeCompleteBV.toShort();
+    public toShort_negativeBigEndian_complete() {
+        const int = this.shortNegativeCompleteBV.toShort();
         assert.strictEqual(int, -0x0103);
     }
 
     @test
-    public NegativeBigEndian_Incomplete() {
-        const int = ByteVector_ToShortTests.NegativeIncompleteBV.toShort();
+    public toShort_negativeBigEndian_incomplete() {
+        const int = this.shortNegativeIncompleteBV.toShort();
         assert.strictEqual(int, 0x00FC);
     }
 
     @test
-    public NegativeLittleEndian_Complete() {
-        const int = ByteVector_ToShortTests.NegativeCompleteBV.toShort(false);
+    public toShort_negativeLittleEndian_complete() {
+        const int = this.shortNegativeCompleteBV.toShort(false);
         assert.strictEqual(int, -0x0202);
     }
 
     @test
-    public NegativeLittleEndian_Incomplete() {
-        const int = ByteVector_ToShortTests.NegativeIncompleteBV.toShort(false);
+    public toShort_negativeLittleEndian_incomplete() {
+        const int = this.shortNegativeIncompleteBV.toShort(false);
         assert.strictEqual(int, 0x00FC);
     }
-}
 
-@suite(timeout(3000), slow(1000))
-class ByteVector_ToStringTests {
     @test
-    public InvalidOffset() {
+    public toString_invalidOffset() {
         // Arrange, Act, Assert
         assert.throws(() => { ByteVector.fromSize(0).toString(0.1); });
         assert.throws(() => { ByteVector.fromSize(0).toString(-1); });
@@ -382,7 +381,7 @@ class ByteVector_ToStringTests {
     }
 
     @test
-    public InvalidCount() {
+    public toString_invalidCount() {
         // Arrange, Act, Assert
         assert.throws(() => { ByteVector.fromSize(1).toString(0, undefined, 0.1); });
         assert.throws(() => { ByteVector.fromSize(1).toString(0, undefined, -1); });
@@ -390,14 +389,14 @@ class ByteVector_ToStringTests {
     }
 
     @test
-    public Utf8Full() {
+    public toString_utf8Full() {
         const str = ByteVector.fromString(TestConstants.testStrings.UTF8.str)
             .toString(TestConstants.testStrings.UTF8.bytes.length);
         assert.strictEqual(str, TestConstants.testStrings.UTF8.str);
     }
 
     @test
-    public Utf8Partial() {
+    public toString_utf8Partial() {
         const str = ByteVector.fromString(TestConstants.testStrings.UTF8.str + TestConstants.testStrings.UTF8.str)
             .toString(
                 TestConstants.testStrings.UTF8.bytes.length,
@@ -408,13 +407,13 @@ class ByteVector_ToStringTests {
     }
 
     @test
-    public Utf8Empty() {
+    public toString_utf8Empty() {
         const str = ByteVector.fromSize(0).toString(0);
         assert.strictEqual(str, "");
     }
 
     @test
-    public Utf16LittleEndianFull() {
+    public toString_utf16LittleEndianFull() {
         const originalLastUtf16Encoding = ByteVector.lastUtf16Encoding;
         const str = ByteVector.fromString(TestConstants.testStrings.UTF16LE.str, StringType.UTF16LE)
             .toString(TestConstants.testStrings.UTF16LE.bytes.length, StringType.UTF16LE);
@@ -423,12 +422,12 @@ class ByteVector_ToStringTests {
     }
 
     @test
-    public Utf16LittleEndianPartial() {
+    public toString_utf16LittleEndianPartial() {
         const originalLastUtf16Encoding = ByteVector.lastUtf16Encoding;
         const str = ByteVector.fromString(
             TestConstants.testStrings.UTF16LE.str + TestConstants.testStrings.UTF16LE.str,
             StringType.UTF16LE
-            )
+        )
             .toString(
                 TestConstants.testStrings.UTF16LE.bytes.length,
                 StringType.UTF16LE,
@@ -439,13 +438,13 @@ class ByteVector_ToStringTests {
     }
 
     @test
-    public Utf16LittleEndianEmpty() {
+    public toString_utf16LittleEndianEmpty() {
         const str = ByteVector.fromSize(0).toString(0, StringType.UTF16LE);
         assert.strictEqual(str, "");
     }
 
     @test
-    public Utf16BigEndianFull() {
+    public toString_utf16BigEndianFull() {
         const originalLastUtf16Encoding = ByteVector.lastUtf16Encoding;
         const str = ByteVector.fromString(TestConstants.testStrings.UTF16BE.str, StringType.UTF16BE)
             .toString(TestConstants.testStrings.UTF16BE.bytes.length, StringType.UTF16BE);
@@ -454,7 +453,7 @@ class ByteVector_ToStringTests {
     }
 
     @test
-    public Utf16BigEndianPartial() {
+    public toString_utf16BigEndianPartial() {
         const originalLastUtf16Encoding = ByteVector.lastUtf16Encoding;
         const str = ByteVector.fromString(
             TestConstants.testStrings.UTF16BE.str + TestConstants.testStrings.UTF16BE.str,
@@ -470,24 +469,24 @@ class ByteVector_ToStringTests {
     }
 
     @test
-    public Utf16BigEndianEmpty() {
+    public toString_utf16BigEndianEmpty() {
         const str = ByteVector.fromSize(0).toString(0, StringType.UTF16BE);
         assert.strictEqual(str, "");
     }
 
     @test
-    public Latin1Full() {
+    public toString_latin1Full() {
         const str = ByteVector.fromString(TestConstants.testStrings.Latin1.str, StringType.Latin1)
             .toString(TestConstants.testStrings.Latin1.bytes.length, StringType.Latin1);
         assert.strictEqual(str, TestConstants.testStrings.Latin1.str);
     }
 
     @test
-    public Latin1Partial() {
+    public toString_latin1Partial() {
         const str = ByteVector.fromString(
             TestConstants.testStrings.Latin1.str + TestConstants.testStrings.Latin1.str,
-                StringType.Latin1
-            )
+            StringType.Latin1
+        )
             .toString(
                 TestConstants.testStrings.Latin1.bytes.length,
                 StringType.Latin1,
@@ -497,66 +496,69 @@ class ByteVector_ToStringTests {
     }
 
     @test
-    public Latin1Empty() {
+    public toString_latin1Empty() {
         const str = ByteVector.fromSize(0).toString(0, StringType.Latin1);
         assert.strictEqual(str, "");
     }
 
     @test
-    public Utf16Full() {
+    public toString_utf16Full() {
         // This test will change the last used utf16 encoding, so we'll restore it afterward
         const originalLastEncoding = ByteVector.lastUtf16Encoding;
         ByteVector.lastUtf16Encoding = "something bogus";
 
-        const str = ByteVector.fromString(TestConstants.testStrings.UTF16LEWithBOM.str, StringType.UTF16)
-            .toString(TestConstants.testStrings.UTF16LEWithBOM.bytes.length, StringType.UTF16);
-        assert.strictEqual(str, TestConstants.testStrings.UTF16LEWithBOM.str);
-        assert.strictEqual(ByteVector.lastUtf16Encoding, "utf16-le");
-
-        // Cleanup
-        ByteVector.lastUtf16Encoding = originalLastEncoding;
+        try {
+            const str = ByteVector.fromString(TestConstants.testStrings.UTF16LEWithBOM.str, StringType.UTF16)
+                .toString(TestConstants.testStrings.UTF16LEWithBOM.bytes.length, StringType.UTF16);
+            assert.strictEqual(str, TestConstants.testStrings.UTF16LEWithBOM.str);
+            assert.strictEqual(ByteVector.lastUtf16Encoding, "utf16-le");
+        } finally {
+            // Cleanup
+            ByteVector.lastUtf16Encoding = originalLastEncoding;
+        }
     }
 
     @test
-    public Utf16Partial() {
+    public toString_utf16Partial() {
         // This test will change the last used utf16 encoding, so we'll restore it afterward
         const originalLastEncoding = ByteVector.lastUtf16Encoding;
         ByteVector.lastUtf16Encoding = "something bogus";
 
-        const str = ByteVector.fromString(
+        try {
+            const str = ByteVector.fromString(
                 TestConstants.testStrings.UTF16LEWithBOM.str,
                 StringType.UTF16
             )
-            .toString(
-                TestConstants.testStrings.UTF16LEWithBOM.bytes.length,
-                StringType.UTF16
-            );
-        assert.strictEqual(str, TestConstants.testStrings.UTF16LEWithBOM.str);
-        assert.strictEqual(ByteVector.lastUtf16Encoding, "utf16-le");
-
-        // Cleanup
-        ByteVector.lastUtf16Encoding = originalLastEncoding;
+                .toString(
+                    TestConstants.testStrings.UTF16LEWithBOM.bytes.length,
+                    StringType.UTF16
+                );
+            assert.strictEqual(str, TestConstants.testStrings.UTF16LEWithBOM.str);
+            assert.strictEqual(ByteVector.lastUtf16Encoding, "utf16-le");
+        } finally {
+            // Cleanup
+            ByteVector.lastUtf16Encoding = originalLastEncoding;
+        }
     }
 
     @test
-    public Utf16Empty() {
+    public toString_utf16Empty() {
         // This test will change the last used utf16 encoding, so we'll restore it afterward
         const originalLastEncoding = ByteVector.lastUtf16Encoding;
         ByteVector.lastUtf16Encoding = "utf16-le";
 
-        const str = ByteVector.fromSize(0).toString(0, StringType.UTF16);
-        assert.strictEqual(str, "");
-        assert.strictEqual(ByteVector.lastUtf16Encoding, "utf16-le");
-
-        // Cleanup
-        ByteVector.lastUtf16Encoding = originalLastEncoding;
+        try {
+            const str = ByteVector.fromSize(0).toString(0, StringType.UTF16);
+            assert.strictEqual(str, "");
+            assert.strictEqual(ByteVector.lastUtf16Encoding, "utf16-le");
+        } finally {
+            // Cleanup
+            ByteVector.lastUtf16Encoding = originalLastEncoding;
+        }
     }
-}
 
-@suite(timeout(3000), slow(1000))
-class ByteVector_ToStringsTests {
     @test
-    public InvalidOffset() {
+    public toStrings_invalidOffset() {
         // Arrange, Act, Assert
         assert.throws(() => { ByteVector.fromSize(0).toString(0.1); });
         assert.throws(() => { ByteVector.fromSize(0).toString(-1); });
@@ -564,15 +566,15 @@ class ByteVector_ToStringsTests {
     }
 
     @test
-    public InvalidCount() {
+    public toStrings_invalidCount() {
         // Arrange, Act, Assert
         assert.throws(() => { ByteVector.fromSize(1).toString(0, undefined, 0.1); });
         assert.throws(() => { ByteVector.fromSize(1).toString(0, undefined, -1); });
     }
 
     @test
-    public Utf8Single() {
-        ByteVector_ToStringsTests.TestString(
+    public toStrings_utf8Single() {
+        this.testStrings(
             "\0\0" + TestConstants.testStrings.UTF8.str,
             StringType.UTF8,
             2,
@@ -582,8 +584,8 @@ class ByteVector_ToStringsTests {
     }
 
     @test
-    public Utf8Multiple() {
-        ByteVector_ToStringsTests.TestString(
+    public toStrings_utf8Multiple() {
+        this.testStrings(
             TestConstants.testStrings.UTF8.str + "\0\0" + TestConstants.testStrings.UTF8.str,
             StringType.UTF8,
             0,
@@ -593,8 +595,8 @@ class ByteVector_ToStringsTests {
     }
 
     @test
-    public Utf16LittleEndianSingle() {
-        ByteVector_ToStringsTests.TestString(
+    public toStrings_utf16LittleEndianSingle() {
+        this.testStrings(
             "\0\0" + TestConstants.testStrings.UTF16LE.str,
             StringType.UTF16LE,
             2,
@@ -604,8 +606,8 @@ class ByteVector_ToStringsTests {
     }
 
     @test
-    public Ut16LittleEndianMultiple() {
-        ByteVector_ToStringsTests.TestString(
+    public toStrings_ut16LittleEndianMultiple() {
+        this.testStrings(
             TestConstants.testStrings.UTF16LE.str + "\0\0" + TestConstants.testStrings.UTF16LE.str,
             StringType.UTF16LE,
             0,
@@ -615,8 +617,8 @@ class ByteVector_ToStringsTests {
     }
 
     @test
-    public Utf16BigEndianSingle() {
-        ByteVector_ToStringsTests.TestString(
+    public toStrings_utf16BigEndianSingle() {
+        this.testStrings(
             "\0\0" + TestConstants.testStrings.UTF16BE.str,
             StringType.UTF16BE,
             2,
@@ -626,8 +628,8 @@ class ByteVector_ToStringsTests {
     }
 
     @test
-    public Ut16BigEndianMultiple() {
-        ByteVector_ToStringsTests.TestString(
+    public toStrings_ut16BigEndianMultiple() {
+        this.testStrings(
             TestConstants.testStrings.UTF16BE.str + "\0\0" + TestConstants.testStrings.UTF16BE.str,
             StringType.UTF16BE,
             0,
@@ -637,44 +639,198 @@ class ByteVector_ToStringsTests {
     }
 
     @test
-    public Utf16Single() {
+    public toStrings_utf16Single() {
         // This test will change the last used utf16 encoding, so we'll restore it afterward
         const originalLastEncoding = ByteVector.lastUtf16Encoding;
         ByteVector.lastUtf16Encoding = "utf16-le";
 
-        ByteVector_ToStringsTests.TestString(
-            "\0\0" + TestConstants.testStrings.UTF16LEWithBOM.str,
-            StringType.UTF16,
-            2,
-            undefined,
-            ["", "", TestConstants.testStrings.UTF16LEWithBOM.str]
-        );
-        assert.strictEqual(ByteVector.lastUtf16Encoding, "utf16-le");
-
-        // Cleanup
-        ByteVector.lastUtf16Encoding = originalLastEncoding;
+        try {
+            this.testStrings(
+                "\0\0" + TestConstants.testStrings.UTF16LEWithBOM.str,
+                StringType.UTF16,
+                2,
+                undefined,
+                ["", "", TestConstants.testStrings.UTF16LEWithBOM.str]
+            );
+            assert.strictEqual(ByteVector.lastUtf16Encoding, "utf16-le");
+        } finally {
+            // Cleanup
+            ByteVector.lastUtf16Encoding = originalLastEncoding;
+        }
     }
 
     @test
-    public Utf16Multiple() {
+    public toStrings_utf16Multiple() {
         // This test will change the last used utf16 encoding, so we'll restore it afterward
         const originalLastEncoding = ByteVector.lastUtf16Encoding;
         ByteVector.lastUtf16Encoding = "utf16-le";
 
-        ByteVector_ToStringsTests.TestString(
-            TestConstants.testStrings.UTF16LEWithBOM.str + "\0\0" + TestConstants.testStrings.UTF16LEWithBOM.str,
-            StringType.UTF16,
-            0,
-            undefined,
-            [TestConstants.testStrings.UTF16LEWithBOM.str, "", TestConstants.testStrings.UTF16LEWithBOM.str]
-        );
-        assert.strictEqual(ByteVector.lastUtf16Encoding, "utf16-le");
-
-        // Cleanup
-        ByteVector.lastUtf16Encoding = originalLastEncoding;
+        try {
+            this.testStrings(
+                TestConstants.testStrings.UTF16LEWithBOM.str + "\0\0" + TestConstants.testStrings.UTF16LEWithBOM.str,
+                StringType.UTF16,
+                0,
+                undefined,
+                [TestConstants.testStrings.UTF16LEWithBOM.str, "", TestConstants.testStrings.UTF16LEWithBOM.str]
+            );
+            assert.strictEqual(ByteVector.lastUtf16Encoding, "utf16-le");
+        } finally {
+            // Cleanup
+            ByteVector.lastUtf16Encoding = originalLastEncoding;
+        }
     }
 
-    private static TestString(
+    @test
+    public toUInt_empty() {
+        const int = ByteVector.fromSize(0).toUInt();
+        assert.strictEqual(int, 0);
+    }
+
+    @test
+    public toUInt_zero_complete() {
+        const int = ByteVector.fromByteArray(new Uint8Array([0x0, 0x0, 0x0, 0x0, 0xAA])).toUInt();
+        assert.strictEqual(int, 0);
+    }
+
+    @test
+    public toUInt_zero_incomplete() {
+        const int = ByteVector.fromByteArray(new Uint8Array([0x0, 0x0])).toUInt();
+        assert.strictEqual(int, 0);
+    }
+
+    @test
+    public toUInt_positiveBigEndian_complete() {
+        const int = this.uintPositiveCompleteBV.toUInt();
+        assert.strictEqual(int, 0x01020304);
+    }
+
+    @test
+    public toUInt_positiveBigEndian_incomplete() {
+        const int = this.uintPositiveIncompleteBV.toUInt();
+        assert.strictEqual(int, 0x00000102);
+    }
+
+    @test
+    public toUInt_positiveLittleEndian_complete() {
+        const int = this.uintPositiveCompleteBV.toUInt(false);
+        assert.strictEqual(int, 0x04030201);
+    }
+
+    @test
+    public toUInt_positiveLittleEndian_incomplete() {
+        const int = this.uintPositiveIncompleteBV.toUInt(false);
+        assert.strictEqual(int, 0x00000201);
+    }
+
+    @test
+    public toUInt_unsignedRange_complete() {
+        const int = ByteVector.fromByteArray(new Uint8Array([0xFF, 0xFF, 0xFF, 0xFF])).toUInt();
+        assert.strictEqual(int, 0xFFFFFFFF);
+    }
+
+    @test
+    public toULong_empty() {
+        const long = ByteVector.fromSize(0).toULong();
+        assert.isTrue(long.equals(BigInt(0)));
+    }
+
+    @test
+    public toULong_zero_complete() {
+        const long = ByteVector.fromByteArray(
+            new Uint8Array([0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xAA])
+        ).toULong();
+        assert.isTrue(long.equals(BigInt(0)));
+    }
+
+    @test
+    public toULong_zero_incomplete() {
+        const long = ByteVector.fromByteArray(
+            new Uint8Array([0x00, 0x00, 0x00, 0x00])
+        ).toULong();
+        assert.isTrue(long.equals(BigInt(0)));
+    }
+
+    @test
+    public toULong_positiveBigEndian_complete() {
+        const long = this.ulongPositiveCompleteBV.toULong();
+        assert.isTrue(long.equals(BigInt("0102030405060708", 16)));
+    }
+
+    @test
+    public toULong_positiveBigEndian_incomplete() {
+        const long = this.ulongPositiveIncompleteBV.toULong();
+        assert.isTrue(long.equals(BigInt("01020304", 16)));
+    }
+
+    @test
+    public toULong_positiveLittleEndian_complete() {
+        const long = this.ulongPositiveCompleteBV.toULong(false);
+        assert.isTrue(long.equals(BigInt("0807060504030201", 16)));
+    }
+
+    @test
+    public toULong_positiveLittleEndian_incomplete() {
+        const long = this.ulongPositiveIncompleteBV.toULong(false);
+        assert.isTrue(long.equals(BigInt("04030201", 16)));
+    }
+
+    @test
+    public toULong_unsignedRange_complete() {
+        const long = ByteVector.fromByteArray(
+            new Uint8Array([0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF])
+        ).toULong();
+        assert.isTrue(long.equals(BigInt("FFFFFFFFFFFFFFFF", 16)));
+    }
+
+    @test
+    public toUSong_empty() {
+        const int = ByteVector.fromSize(0).toUShort();
+        assert.strictEqual(int, 0);
+    }
+
+    @test
+    public toUSong_zero_complete() {
+        const int = ByteVector.fromByteArray(new Uint8Array([0x0, 0x0, 0x0, 0x0, 0xAA])).toUShort();
+        assert.strictEqual(int, 0);
+    }
+
+    @test
+    public toUSong_zero_incomplete() {
+        const int = ByteVector.fromByteArray(new Uint8Array([0x0, 0x0])).toUShort();
+        assert.strictEqual(int, 0);
+    }
+
+    @test
+    public toUSong_positiveBigEndian_complete() {
+        const int = this.ushortPositiveCompleteBV.toUShort();
+        assert.strictEqual(int, 0x0102);
+    }
+
+    @test
+    public toUSong_positiveBigEndian_incomplete() {
+        const int = this.ushortPositiveIncompleteBV.toUShort();
+        assert.strictEqual(int, 0x01);
+    }
+
+    @test
+    public toUSong_positiveLittleEndian_complete() {
+        const int = this.ushortPositiveCompleteBV.toUShort(false);
+        assert.strictEqual(int, 0x0201);
+    }
+
+    @test
+    public toUSong_positiveLittleEndian_incomplete() {
+        const int = this.ushortPositiveIncompleteBV.toUShort(false);
+        assert.strictEqual(int, 0x01);
+    }
+
+    @test
+    public toUSong_unsignedRange_complete() {
+        const short = ByteVector.fromByteArray(new Uint8Array([0xFF, 0xFF])).toUShort();
+        assert.strictEqual(short, 0xFFFF);
+    }
+
+    private testStrings(
         textInput: string,
         stringType: StringType,
         offset: number,
@@ -689,185 +845,5 @@ class ByteVector_ToStringsTests {
 
         // Assert
         assert.deepEqual(strs, expected);
-    }
-}
-
-@suite(timeout(3000), slow(1000))
-class ByteVector_ToUIntTests {
-    private static readonly PositiveCompleteBV = ByteVector.fromByteArray(
-        new Uint8Array([0x01, 0x02, 0x03, 0x04, 0xAA])
-    );
-    private static readonly PositiveIncompleteBV = ByteVector.fromByteArray(
-        new Uint8Array([0x01, 0x02])
-    );
-
-    @test
-    public Empty() {
-        const int = ByteVector.fromSize(0).toUInt();
-        assert.strictEqual(int, 0);
-    }
-
-    @test
-    public Zero_Complete() {
-        const int = ByteVector.fromByteArray(new Uint8Array([0x0, 0x0, 0x0, 0x0, 0xAA])).toUInt();
-        assert.strictEqual(int, 0);
-    }
-
-    @test
-    public Zero_Incomplete() {
-        const int = ByteVector.fromByteArray(new Uint8Array([0x0, 0x0])).toUInt();
-        assert.strictEqual(int, 0);
-    }
-
-    @test
-    public PositiveBigEndian_Complete() {
-        const int = ByteVector_ToUIntTests.PositiveCompleteBV.toUInt();
-        assert.strictEqual(int, 0x01020304);
-    }
-
-    @test
-    public PositiveBigEndian_Incomplete() {
-        const int = ByteVector_ToUIntTests.PositiveIncompleteBV.toUInt();
-        assert.strictEqual(int, 0x00000102);
-    }
-
-    @test
-    public PositiveLittleEndian_Complete() {
-        const int = ByteVector_ToUIntTests.PositiveCompleteBV.toUInt(false);
-        assert.strictEqual(int, 0x04030201);
-    }
-
-    @test
-    public PositiveLittleEndian_Incomplete() {
-        const int = ByteVector_ToUIntTests.PositiveIncompleteBV.toUInt(false);
-        assert.strictEqual(int, 0x00000201);
-    }
-
-    @test
-    public UnsignedRange_Complete() {
-        const int = ByteVector.fromByteArray(new Uint8Array([0xFF, 0xFF, 0xFF, 0xFF])).toUInt();
-        assert.strictEqual(int, 0xFFFFFFFF);
-    }
-}
-
-@suite(timeout(3000), slow(1000))
-class ByteVector_ToULongTests {
-    private static readonly PositiveCompleteBV = ByteVector.fromByteArray(
-        new Uint8Array([0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0xAA])
-    );
-    private static readonly PositiveIncompleteBV = ByteVector.fromByteArray(
-        new Uint8Array([0x01, 0x02, 0x03, 0x04])
-    );
-
-    @test
-    public Empty() {
-        const long = ByteVector.fromSize(0).toULong();
-        assert.isTrue(long.equals(BigInt(0)));
-    }
-
-    @test
-    public Zero_Complete() {
-        const long = ByteVector.fromByteArray(
-            new Uint8Array([0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xAA])
-        ).toULong();
-        assert.isTrue(long.equals(BigInt(0)));
-    }
-
-    @test
-    public Zero_Incomplete() {
-        const long = ByteVector.fromByteArray(
-            new Uint8Array([0x00, 0x00, 0x00, 0x00])
-        ).toULong();
-        assert.isTrue(long.equals(BigInt(0)));
-    }
-
-    @test
-    public PositiveBigEndian_Complete() {
-        const long = ByteVector_ToULongTests.PositiveCompleteBV.toULong();
-        assert.isTrue(long.equals(BigInt("0102030405060708", 16)));
-    }
-
-    @test
-    public PositiveBigEndian_Incomplete() {
-        const long = ByteVector_ToULongTests.PositiveIncompleteBV.toULong();
-        assert.isTrue(long.equals(BigInt("01020304", 16)));
-    }
-
-    @test
-    public PositiveLittleEndian_Complete() {
-        const long = ByteVector_ToULongTests.PositiveCompleteBV.toULong(false);
-        assert.isTrue(long.equals(BigInt("0807060504030201", 16)));
-    }
-
-    @test
-    public PositiveLittleEndian_Incomplete() {
-        const long = ByteVector_ToULongTests.PositiveIncompleteBV.toULong(false);
-        assert.isTrue(long.equals(BigInt("04030201", 16)));
-    }
-
-    @test
-    public UnsignedRange_Complete() {
-        const long = ByteVector.fromByteArray(
-            new Uint8Array([0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF])
-        ).toULong();
-        assert.isTrue(long.equals(BigInt("FFFFFFFFFFFFFFFF", 16)));
-    }
-}
-
-@suite(timeout(3000), slow(1000))
-class ByteVector_ToUShortTests {
-    private static readonly PositiveCompleteBV = ByteVector.fromByteArray(
-        new Uint8Array([0x01, 0x02, 0xAA])
-    );
-    private static readonly PositiveIncompleteBV = ByteVector.fromByteArray(
-        new Uint8Array([0x01])
-    );
-
-    @test
-    public Empty() {
-        const int = ByteVector.fromSize(0).toUShort();
-        assert.strictEqual(int, 0);
-    }
-
-    @test
-    public Zero_Complete() {
-        const int = ByteVector.fromByteArray(new Uint8Array([0x0, 0x0, 0x0, 0x0, 0xAA])).toUShort();
-        assert.strictEqual(int, 0);
-    }
-
-    @test
-    public Zero_Incomplete() {
-        const int = ByteVector.fromByteArray(new Uint8Array([0x0, 0x0])).toUShort();
-        assert.strictEqual(int, 0);
-    }
-
-    @test
-    public PositiveBigEndian_Complete() {
-        const int = ByteVector_ToUShortTests.PositiveCompleteBV.toUShort();
-        assert.strictEqual(int, 0x0102);
-    }
-
-    @test
-    public PositiveBigEndian_Incomplete() {
-        const int = ByteVector_ToUShortTests.PositiveIncompleteBV.toUShort();
-        assert.strictEqual(int, 0x01);
-    }
-
-    @test
-    public PositiveLittleEndian_Complete() {
-        const int = ByteVector_ToUShortTests.PositiveCompleteBV.toUShort(false);
-        assert.strictEqual(int, 0x0201);
-    }
-
-    @test
-    public PositiveLittleEndian_Incomplete() {
-        const int = ByteVector_ToUShortTests.PositiveIncompleteBV.toUShort(false);
-        assert.strictEqual(int, 0x01);
-    }
-
-    @test
-    public UnsignedRange_Complete() {
-        const short = ByteVector.fromByteArray(new Uint8Array([0xFF, 0xFF])).toUShort();
-        assert.strictEqual(short, 0xFFFF);
     }
 }

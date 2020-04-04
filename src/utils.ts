@@ -19,9 +19,21 @@ export class Guards {
         }
     }
 
+    public static greaterThanInclusive(value: number, lowerBound: number, name: string) {
+        if (value < lowerBound) {
+            throw new Error(`Argument out of range: ${name} must greater than ${lowerBound}`);
+        }
+    }
+
     public static int(value: number, name: string): void {
         if (!Number.isSafeInteger(value)) {
             throw new Error(`Argument out of range: ${name} must be a 32-bit integer`);
+        }
+    }
+
+    public static lessThanInclusive(value: number, upperBound: number, name: string) {
+        if (value > upperBound) {
+            throw new Error(`Argument out of range: ${name} must be less than ${upperBound}`);
         }
     }
 
