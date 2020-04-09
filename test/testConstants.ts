@@ -1,8 +1,18 @@
+import * as Path from "path";
+import {v4 as Uuidv4} from "uuid";
+
 import {ByteVector} from "../src/byteVector";
 
 export default class TestConstants {
-    public static testFilePath: string = "./test/resources/testFile.txt";
+    public static testFileFolderPath: string = "./test/resources/";
+    public static testFilePath: string = Path.join(TestConstants.testFileFolderPath, "testFile.txt");
     public static testFileContents: number[] = [0x31, 0x32, 0x33, 0x34, 0x35, 0x61, 0x62, 0x63, 0x64, 0x65];
+    public static testFileContentsStr: string = "12345abcde";
+
+    public static getTestFilePath: () => string = () => {
+        const fileUid: string = Uuidv4();
+        return Path.join(TestConstants.testFileFolderPath, `testFile_${fileUid}.txt`);
+    }
 
     public static testStrings: {[key: string]: {bytes: number[], str: string}} = {
         Latin1: {

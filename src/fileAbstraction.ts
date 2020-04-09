@@ -1,4 +1,5 @@
 import {IStream, Stream} from "./stream";
+import {Guards} from "./utils";
 
 export interface IFileAbstraction {
     /**
@@ -41,6 +42,7 @@ export class LocalFileAbstraction implements IFileAbstraction {
      * @throws Error Thrown if {@param path} is falsey
      */
     public constructor(path: string) {
+        Guards.truthy(path, "path");
         if (!path) {
             throw new Error("Argument null: path was not provided");
         }
