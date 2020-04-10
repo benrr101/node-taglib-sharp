@@ -5,8 +5,8 @@ import {slow, suite, test, timeout} from "mocha-typescript";
 
 import PropertyTests from "./utilities/propertyTests";
 import TestConstants from "./testConstants";
+import {ByteVector} from "../src/byteVector";
 import {SeekOrigin, Stream} from "../src/stream";
-import testFile from "./utilities/testFile";
 
 // Setup chai
 Chai.use(ChaiAsPromised);
@@ -352,6 +352,109 @@ class StreamTests {
 
             const stats = fs.statSync(testFilePath);
             assert.strictEqual(stats.size, newLength);
+        };
+        this.testWithFile(testAction, true);
+    }
+
+    @test
+    public write_readOnly() {
+        const testAction = (testFilePath: string, stream: Stream) => {
+            // Arrange
+            const contents = new Uint8Array([0x01, 0x02, 0x03]);
+
+            // Act / Assert
+            assert.throws(() => { stream.write(contents, 0, 1); });
+        };
+        this.testWithFile(testAction, false);
+    }
+
+    @test
+    public write_writeAtBeginning() {
+        const testAction = (testFilePath: string, stream: Stream) => {
+            // Arrange
+            const buffer = new Uint8Array([0x01, 0x02, 0x03]);
+
+            // Act
+            stream.write(buffer, 0, 3);
+
+            // Assert
+            assert.strictEqual(stream.length, testFilePath.length);
+            assert.strictEqual(stream.position, 3);
+
+            const contents = fs.readFileSync(testFilePath);
+            const expected = ByteVector.fromString(testFilePath);
+            expected.set(0, 0x01);
+            expected.set(1, 0x02);
+            expected.set(2, 0x03);
+            assert.deepStrictEqual(contents, expected.data);
+        };
+        this.testWithFile(testAction, true);
+    }
+
+    @test
+    public write_writeInMiddle() {
+        const testAction = (testFilePath: string, stream: Stream) => {
+            // Arrange
+            const buffer = new Uint8Array([0x01, 0x02, 0x03]);
+            stream.position = 3;
+
+            // Act
+            stream.write(buffer, 0, 3);
+
+            // Assert
+            assert.strictEqual(stream.length, testFilePath.length);
+            assert.strictEqual(stream.position, 6);
+
+            const contents = fs.readFileSync(testFilePath);
+            const expected = ByteVector.fromString(testFilePath);
+            expected.set(3, 0x01);
+            expected.set(4, 0x02);
+            expected.set(5, 0x03);
+            assert.deepStrictEqual(contents, expected.data);
+        };
+        this.testWithFile(testAction, true);
+    }
+
+    @test
+    public write_writeAtEnd() {
+        const testAction = (testFilePath: string, stream: Stream) => {
+            // Arrange
+            const buffer = new Uint8Array([0x01, 0x02, 0x03]);
+            stream.position = stream.length;
+
+            // Act
+            stream.write(buffer, 0, 3);
+
+            // Assert
+            assert.strictEqual(stream.length, testFilePath.length + 3);
+            assert.strictEqual(stream.position, testFilePath.length + 3);
+
+            const contents = fs.readFileSync(testFilePath);
+            const expected = ByteVector.fromString(testFilePath);
+            expected.addByteArray(buffer);
+            assert.deepStrictEqual(contents, expected.data);
+        };
+        this.testWithFile(testAction, true);
+    }
+
+    @test
+    public write_partialBuffer() {
+        const testAction = (testFilePath: string, stream: Stream) => {
+            // Arrange
+            const buffer = new Uint8Array([0x01, 0x02, 0x03, 0x04]);
+
+            // Act
+            stream.write(buffer, 1, 2);
+
+            // Assert
+            assert.strictEqual(stream.length, testFilePath.length);
+            assert.strictEqual(stream.position, 2);
+
+            const contents = fs.readFileSync(testFilePath);
+            const expected = ByteVector.fromString(testFilePath);
+            expected.set(0, 0x02);
+            expected.set(1, 0x03);
+            assert.deepStrictEqual(contents, expected.data);
         };
         this.testWithFile(testAction, true);
     }
