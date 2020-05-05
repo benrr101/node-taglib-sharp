@@ -1,10 +1,9 @@
-import * as path from "path";
-
 import Properties from "./properties";
 import {ByteVector} from "./byteVector";
 import {IFileAbstraction, LocalFileAbstraction} from "./fileAbstraction";
 import {IStream, SeekOrigin} from "./stream";
 import {Tag, TagTypes} from "./tag";
+import {FileUtils, Guards} from "./utils";
 
 /**
  * Specifies the options to use when reading the media. Can be treated as flags.
@@ -83,25 +82,23 @@ export type FileTypeConstructor = new (abstraction: IFileAbstraction, style: Rea
 export abstract class File {
     // #region Member Variables
 
-    private static readonly _bufferSize: number = 1024;
-    private static readonly _fileTypes: {[mimeType: string]: FileTypeConstructor} = {};
-    private static readonly _fileTypeResolvers: FileTypeResolver[] = [];
+    private static readonly _bufferSize: number = 64;
+    private static _fileTypes: {[mimeType: string]: FileTypeConstructor} = {};
+    private static _fileTypeResolvers: FileTypeResolver[] = [];
 
     protected _fileAbstraction: IFileAbstraction;
+    protected _fileStream: IStream; // Not intended to be used by implementing classes
     protected _invariantEndPosition: number = -1;
     protected _invariantStartPosition: number = -1;
     protected _tagTypesOnDisk: TagTypes = TagTypes.None;
 
     private _corruptionReasons: string[] = [];
-    private _fileStream: IStream;
     private _mimeType: string;
 
     // #endregion
 
     protected constructor(file: IFileAbstraction | string) {
-        if (!file) {
-            throw new Error("Argument null: file not provided");
-        }
+        Guards.truthy(file, "file");
         this._fileAbstraction = typeof(file) === "string"
             ? <IFileAbstraction> new LocalFileAbstraction(file)
             : <IFileAbstraction> file;
@@ -144,9 +141,11 @@ export abstract class File {
     }
 
     private static createInternal(abstraction: IFileAbstraction, mimeType: string, propertiesStyle: ReadStyle): File {
+        Guards.truthy(abstraction, "abstraction");
+
         // Step 1) Calculate the MimeType based on the extension of the file if it was not provided
         if (!mimeType) {
-            const ext = path.extname(abstraction.name);
+            const ext = FileUtils.getExtension(abstraction.name);
             mimeType = `taglib/${ext.toLowerCase()}`;
         }
 
@@ -161,7 +160,7 @@ export abstract class File {
         // Step 3) Use the lookup table of MimeTypes => types and attempt to instantiate it
         const fileType = File._fileTypes[mimeType];
         if (!fileType) {
-            throw new Error(`Unsupported format: mimetype for ${abstraction} (${mimeType}) is not supported`);
+            throw new Error(`Unsupported format: mimetype for ${abstraction.name} (${mimeType}) is not supported`);
         }
         return new fileType(abstraction, propertiesStyle);
     }
@@ -225,7 +224,7 @@ export abstract class File {
         if (!this._fileStream) {
             return FileAccessMode.Closed;
         }
-        if (!this._fileStream.canWrite) {
+        if (this._fileStream.canWrite) {
             return FileAccessMode.Write;
         }
         return FileAccessMode.Read;
@@ -249,7 +248,7 @@ export abstract class File {
             this._fileAbstraction.closeStream(this._fileStream);
         }
 
-        this._fileStream = null;
+        this._fileStream = undefined;
 
         // Open a new stream that corresponds to the access mode requested
         if (val === FileAccessMode.Read) {
@@ -310,13 +309,9 @@ export abstract class File {
      *     {@param mimeType}, it will be forcefully overridden. If `false`, an {@see Error} will be
      *     thrown if a subclass already registered to the MimeType.}
      */
-    public static AddFileType(mimeType: string, constructor: FileTypeConstructor, override: boolean = false): void {
-        if (!mimeType) {
-            throw new Error("Argument null: mimeType was not provided");
-        }
-        if (!constructor) {
-            throw new Error("Argument null: constructor was not provided");
-        }
+    public static addFileType(mimeType: string, constructor: FileTypeConstructor, override: boolean = false): void {
+        Guards.truthy(mimeType, "mimeType");
+        Guards.truthy(constructor, "constructor");
         if (!override && File._fileTypes[mimeType]) {
             throw new Error(`Invalid operation: MimeType ${mimeType} already has a file type associated with it`);
         }
@@ -328,11 +323,17 @@ export abstract class File {
      * @param resolver Function to handle resolving a subclass of {@see File} from an
      *     {@see IFileAbstraction}
      */
-    public static AddFileTypeResolver(resolver: FileTypeResolver): void {
-        if (!resolver) {
-            throw new Error("Argument null: resolver was not provided");
-        }
+    public static addFileTypeResolver(resolver: FileTypeResolver): void {
+        Guards.truthy(resolver, "resolver");
         File._fileTypeResolvers.unshift(resolver);
+    }
+
+    /**
+     * Used for clearing all the types and resolvers during unit testing
+     */
+    public static clearFileTypesAndResolvers() {
+        File._fileTypeResolvers = [];
+        File._fileTypes = {};
     }
 
     /**
@@ -353,12 +354,8 @@ export abstract class File {
      * @returns Index at which the value was found. If not found, `-1` is returned.
      */
     public find(pattern: ByteVector, startPosition: number = 0, before?: ByteVector): number {
-        if (!pattern) {
-            throw new Error("Argument null: pattern was not provided");
-        }
-        if (!Number.isSafeInteger(startPosition) || startPosition < 0) {
-            throw new Error("Argument out of range: startPosition is not a positive, safe integer");
-        }
+        Guards.truthy(pattern, "pattern");
+        Guards.uint(startPosition, "startPosition");
 
         this.mode = FileAccessMode.Read;
 
@@ -376,7 +373,7 @@ export abstract class File {
             let buffer = this.readBlock(File._bufferSize);
             for (buffer; buffer.length > 0; buffer = this.readBlock(File._bufferSize)) {
                 const location = buffer.find(pattern);
-                if (!before) {
+                if (before) {
                     const beforeLocation = buffer.find(before);
                     if (beforeLocation < location) {
                         return -1;
@@ -438,35 +435,58 @@ export abstract class File {
      *     replace is not a safe, positive number
      */
     public insert(data: ByteVector, start: number, replace: number = 0): void {
-        if (!data) {
-            throw new Error("Argument null: data was not provided");
+        Guards.truthy(data, "data");
+        Guards.uint(start, "start");
+        Guards.uint(replace, "replace");
+
+        this.mode = FileAccessMode.Write;
+        this._fileStream.position = start;
+
+        if (data.length === replace) {
+            // Case 1: We're writing the same number of bytes as we're replacing
+            // Simply overwrite the block
+            this.writeBlock(data);
+            return;
         }
-        if (!Number.isSafeInteger(start) || start < 0) {
-            throw new Error("Argument out of range: start must be a safe, positive integer");
-        }
-        if (!Number.isSafeInteger(replace) || replace < 0) {
-            throw new Error("Argument out of range: replace must be a safe, positive integer");
+        if (data.length < replace) {
+            // Case 2: We're writing less bytes than we are replacing
+            // Write the block and then remove the rest of it
+            this.writeBlock(data);
+            this.removeBlock(start + data.length, replace - data.length);
+            return;
         }
 
-        this.insertInternal(data, data.length, start, replace);
-    }
+        // Case 3: We're writing more bytes than we're replacing
+        // We need to write out as much as we're replacing, then shuffle the rest to the end
 
-    /**
-     * Inserts a specified block-size into the file represented by the current instance, at a
-     * specified location. Former data at this location is not overwritten and may then contain
-     * random content. This method is useful to reserve some space in the file.
-     * @param size Number of bytes of the block to be inserted. Must be safe, positive integer.
-     * @param start Index into the file at which to insert the data. Must be safe positive integer.
-     */
-    public insertBlank(size: number, start: number): void {
-        if (!Number.isSafeInteger(start) || start < 0) {
-            throw new Error("Argument out of range: start must be a safe, positive integer");
-        }
-        if (!Number.isSafeInteger(size) || size < 0) {
-            throw new Error("Argument out of range: size must be a safe, positive integer");
+        // Step 1: Write the number of bytes to replace
+        this._fileStream.write(data.data, 0, replace);
+
+        // Step 2: Resize the file to fit all the new bytes
+        const bytesToAdd = data.length - replace;
+        this._fileStream.setLength(this._fileStream.length + bytesToAdd);
+
+        // Step 3: Shuffle bytes to the end
+        const buffer = new Uint8Array(File.bufferSize);
+        const stopShufflingIndex = start + replace + bytesToAdd;
+        let shuffleIndex = this._fileStream.length;
+        while (shuffleIndex > stopShufflingIndex + bytesToAdd) {
+            const bytesToReplace = Math.min(shuffleIndex - stopShufflingIndex, File.bufferSize);
+
+            // Fill up the buffer
+            this._fileStream.seek(shuffleIndex - bytesToReplace - bytesToAdd, SeekOrigin.Begin);
+            this._fileStream.read(buffer, 0, bytesToReplace);
+
+            // Write the buffer back
+            this._fileStream.seek(shuffleIndex - bytesToReplace, SeekOrigin.Begin);
+            this._fileStream.write(buffer, 0, bytesToReplace);
+
+            shuffleIndex -= bytesToReplace;
         }
 
-        this.insertInternal(undefined, size, start, 0);
+        // Step 4: Write the remainder of the data
+        this._fileStream.seek(start + replace, SeekOrigin.Begin);
+        this._fileStream.write(data.data, replace, data.length - replace);
     }
 
     /**
@@ -486,11 +506,9 @@ export abstract class File {
      * @throws Error Thrown when {@param length} is not a positive, safe integer.
      */
     public readBlock(length: number): ByteVector {
-        if (!Number.isSafeInteger(length) || length < 0) {
-            throw new Error("Argument out of range: length must be a positive, safe integer");
-        }
+        Guards.uint(length, "length");
         if (length === 0) {
-            return ByteVector.fromSize(0);
+            return ByteVector.empty();
         }
 
         this.mode = FileAccessMode.Read;
@@ -505,7 +523,7 @@ export abstract class File {
             needed -= count;
         } while (needed > 0 && count !== 0);
 
-        return ByteVector.fromByteArray(buffer);
+        return ByteVector.fromByteArray(buffer, read);
     }
 
     /**
@@ -642,9 +660,7 @@ export abstract class File {
      * @throws Error Thrown when {@param data} is not provided.
      */
     public writeBlock(data: ByteVector): void {
-        if (!data) {
-            throw new Error("Argument null: data was not provided");
-        }
+        Guards.truthy(data, "data");
 
         this.mode = FileAccessMode.Write;
 
@@ -679,106 +695,6 @@ export abstract class File {
         this.mode = FileAccessMode.Write;
         this._fileStream.setLength(length);
         this.mode = oldMode;
-    }
-
-    /**
-     * Inserts a specified block into the file represented by the current instance at a specified
-     * location.
-     * @param data Data to insert into the file. If falsy, no data is written to the file and the
-     *     block is just inserted without overwriting the former data at the given location.
-     * @param size Size of the block to insert in bytes
-     * @param start Index into the file at which to insert the data.
-     * @param replace Number of bytes to replace. Typically this is the original size of the data
-     *     block so that a new block will replace the old one.
-     */
-    private insertInternal(data: ByteVector, size: number, start: number, replace: number): void {
-        this.mode = FileAccessMode.Write;
-
-        if (size === replace) {
-            if (data) {
-                this._fileStream.position = start;
-                this.writeBlock(data);
-            }
-            return;
-        }
-        if (size < replace) {
-            if (data) {
-                this._fileStream.position = start;
-                this.writeBlock(data);
-            }
-            this.removeBlock(start + size, replace - size);
-            return;
-        }
-
-        // NOTE: I'm not 100% sure that this behaves the same in node land, but I'll preserve the
-        // notes and implementation from the original .NET implementation (which looks to be based
-        // on the original *original* TagLib implementation). If we need to revisit, we can do that
-        // later.
-
-        // Woohoo!  Faster (about 20%) than id3lib at last. I had to get hardcore and avoid
-        // TagLib's high level API for rendering just copying parts of the file that don't contain
-        // tag data.
-        //
-        // Now I'll explain the steps in this ugliness:
-        //
-        // First, make sure that we're working with a buffer that is longer or equal than the
-        // *difference* in the tag sizes, and that is a multiple of buffer_size. We want to avoid
-        // overwriting parts that aren't yet in memory, so this is necessary.
-
-        let bufferLength = size - replace;
-        const mod = bufferLength % File._bufferSize;
-        if (mod !== 0) {
-            bufferLength += File._bufferSize - mod;
-        }
-
-        // Set where to start the reading and writing
-        let readPosition = start + replace;
-        let writePosition = start;
-
-        // This is basically a special case of the loop below. Here we're just doing the same steps
-        // as below, but since we aren't using the same buffer size -- instead we're using the tag
-        // size -- this has to be handled as a special case. We're also using File.writeBlock()
-        // just for the tag. That's a bit slower than using char*'s so, we're only doing it here.
-        this._fileStream.position = readPosition;
-        const aboutToOverwrite: Uint8Array = this.readBlock(bufferLength).data;
-        readPosition += bufferLength;
-
-        if (data) {
-            this._fileStream.position = writePosition;
-            this.writeBlock(data);
-        } else if (start + size > this.length) {
-            this._fileStream.setLength(start + size);
-        }
-        writePosition += size;
-
-        const buffer: Uint8Array = new Uint8Array(aboutToOverwrite);
-
-        // Ok here's the main loop. We want to loop until the read fails, which means we hit the
-        // end of the file.
-        while (bufferLength !== 0) {
-            // Seek to the current read position and read the data that we're about to overwrite.
-            // Appropriately increment the readPosition.
-            this._fileStream.position = readPosition;
-            const bytesToRead = Math.min(bufferLength, aboutToOverwrite.length);
-            const bytesRead = this._fileStream.read(aboutToOverwrite, 0, bytesToRead);
-            readPosition += bufferLength;
-
-            // Seek to the write position and write our buffer. Increment the write position.
-            this._fileStream.position = writePosition;
-            const bytesToWrite = Math.min(bufferLength, buffer.length);
-            this._fileStream.write(buffer, 0, bytesToWrite);
-            writePosition += bufferLength;
-
-            // Make the current buffer the data that we read in the beginning
-            // NOTE: This is basically Array.copy, but javascript doesn't have that??
-            for (let i = 0; i < bytesRead; i++) {
-                buffer[i] = aboutToOverwrite[i];
-            }
-
-            // Again, we need this for the last write. We don't want to write garbage to the end of
-            // the file, so we need to set the buffer size to the amound that we actually read.
-            bufferLength = bytesRead;
-        }
     }
 
     // #endregion

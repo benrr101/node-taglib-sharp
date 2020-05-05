@@ -2,7 +2,7 @@ import * as path from "path";
 
 import {ByteVector} from "./byteVector";
 import {IFileAbstraction} from "./fileAbstraction";
-import {Guards} from "./utils";
+import {FileUtils} from "./utils";
 
 export enum PictureType {
     /**
@@ -358,15 +358,7 @@ export class Picture implements IPicture {
             return mimeType;
         }
 
-        let ext = path.extname(name);
-        if (!ext) {
-            ext = name.startsWith(".") ? name.substring(1) : name;
-        } else {
-            ext = ext.substring(1);
-        }
-
-        ext = ext.toLowerCase();
-
+        const ext = FileUtils.getExtension(name);
         for (let i = 0; i < this._lutExtensionMime.length; i += 2) {
             if (this._lutExtensionMime[i] === ext) {
                 mimeType = this._lutExtensionMime[i + 1];
