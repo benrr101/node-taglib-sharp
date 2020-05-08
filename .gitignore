@@ -84,3 +84,6 @@ fabric.properties
 
 # Ignore build output
 dist/**
+
+# Files created during test
+test/resources/testFile_*

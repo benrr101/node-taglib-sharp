@@ -1,5 +1,7 @@
 import * as fs from "fs";
 
+import {Guards} from "./utils";
+
 export enum SeekOrigin {
     Begin,
     Current,
@@ -7,18 +9,61 @@ export enum SeekOrigin {
 }
 
 export interface IStream {
+    /**
+     * Whether or not the stream can be written to
+     */
     readonly canWrite: boolean;
+
+    /**
+     * Number of bytes currently stored in file this stream connects to
+     */
     readonly length: number;
+
+    /**
+     * Position within the stream
+     */
     position: number;
 
+    /**
+     * Closes the stream
+     */
     close(): void;
 
-    read(buffer: Uint8Array, bufferOffset: number, length: number): number;
+    /**
+     * Reads a block of bytes from the current stream and writes the data to a buffer.
+     * @param buffer When this method returns, contains the specified byte array with the values
+     *     between {@paramref offset} and ({@paramref offset} + {@paramref length} - 1) replaced by
+     *     the characters read from the current stream
+     * @param offset Zero-based byte offset in {@paramref buffer} at which to begin storing data
+     *     from the current stream
+     * @param length The maximum number of bytes to read
+     * @returns number Total number of bytes written to the buffer. This can be less than the
+     *     number of bytes requested if that number of bytes are not currently available or zero if
+     *     the end of the stream is reached before any bytes are read
+     */
+    read(buffer: Uint8Array, offset: number, length: number): number;
 
+    /**
+     * Sets the position within the current stream to the specified value.
+     * @param offset New positioon within the stream. this is relative to the {@paramref origin}
+     *     paramter and can be positive or negative
+     * @param origin Seek reference point {@see SeekOrigin}
+     */
     seek(offset: number, origin: SeekOrigin): void;
 
+    /**
+     * Sets the length of the current current stream to the specified value.
+     * @param length Number of bytes to set the length of the stream to
+     */
     setLength(length: number): void;
 
+    /**
+     * Writes a block of bytes to the current stream using data read from a buffer.
+     * @param buffer Buffer to write data from
+     * @param bufferOffset Zero-based byte offset in {@paramref buffer} at which to begin copying
+     *    bytes to the current stream
+     * @param length Maximum number of bytes to write
+     */
     write(buffer: fs.BinaryData, bufferOffset: number, length: number): number;
 }
 
@@ -54,16 +99,18 @@ export class Stream implements IStream {
 
     // #region Properties
 
+    /** @inheritDoc */
     public get canWrite(): boolean { return this._canWrite; }
 
+    /** @inheritDoc */
     public get length(): number { return this._length; }
 
+    /** @inheritDoc */
     public get position(): number { return this._position; }
+    /** @inheritDoc */
     public set position(position: number) {
-        // @TODO: Make sure seek position is valid for the file
-        if (!Number.isSafeInteger(position) || position < 0) {
-            throw new Error("Argument out of range: position must be a positive, safe integer");
-        }
+        Guards.uint(position, "position");
+        Guards.lessThanInclusive(position, this.length, "position");
         this._position = position;
     }
 
@@ -71,21 +118,20 @@ export class Stream implements IStream {
 
     // #region Public Methods
 
+    /** @inheritDoc */
     public close(): void {
         fs.closeSync(this._fd);
     }
 
+    /** @inheritDoc */
     public read(buffer: Uint8Array, bufferOffset: number, length: number): number {
         const bytes = fs.readSync(this._fd, buffer, bufferOffset, length, this._position);
         this._position += bytes;
         return bytes;
     }
 
+    /** @inheritDoc */
     public seek(offset: number, origin: SeekOrigin) {
-        if (!Number.isSafeInteger(offset) || offset < 0) {
-            throw new Error("Argument out of range: offset must be a safe, positive integer");
-        }
-
         switch (origin) {
             case SeekOrigin.Begin:
                 this.position = offset;
@@ -94,22 +140,30 @@ export class Stream implements IStream {
                 this.position = this.position + offset;
                 break;
             case SeekOrigin.End:
-                // @TODO: Add support for end
+                this.position = this.length + offset;
+                break;
         }
     }
 
+    /** @inheritDoc */
     public setLength(length: number): void {
+        Guards.uint(length, "length");
         if (!this._canWrite) {
             throw new Error("Invalid operation: this stream is a read-only stream");
         }
-        if (!Number.isSafeInteger(length) || length < 0) {
-            throw new Error("Argument out of range: length must be a safe, positive integer");
+
+        if (length === this._length) {
+            return;
         }
 
         fs.ftruncateSync(this._fd, length);
         this._length = length;
+        if (this._position > this._length) {
+            this._position = this._length;
+        }
     }
 
+    /** @inheritDoc */
     public write(buffer: fs.BinaryData, bufferOffset: number, length: number): number {
         if (!this._canWrite) {
             throw new Error("Invalid operation: this stream is a read-only stream");

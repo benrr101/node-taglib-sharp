@@ -23,6 +23,7 @@
     "@types/dateformat": "^3.0.0",
     "@types/node": "^11.10.4",
     "@types/stream-buffers": "^3.0.2",
+    "@types/uuid": "^7.0.2",
     "chai": "^4.2.0",
     "chai-as-promised": "^7.1.1",
     "coveralls": "^3.0.9",
@@ -35,6 +36,7 @@
     "ts-node": "^8.5.4",
     "tslint": "^5.13.1",
     "typemoq": "^2.1.0",
-    "typescript": "^3.4.3"
+    "typescript": "^3.4.3",
+    "uuid": "^7.0.2"
   }
 }

@@ -9,9 +9,9 @@ Chai.use(ChaiAsPromised);
 const assert = Chai.assert;
 
 @suite(timeout(3000), slow(1000))
-class ByteVector_AddTests {
+class ByteVector_StaticMethodTests {
     @test
-    public InvalidParameters() {
+    public add_invalidParameters() {
         // Arrange
         const bv = ByteVector.fromSize(1, 0x00);
 
@@ -25,7 +25,7 @@ class ByteVector_AddTests {
     }
 
     @test
-    public AddEmptyAndEmpty() {
+    public add_addEmptyAndEmpty() {
         // Arrange
         const bv = ByteVector.fromSize(0);
 
@@ -42,7 +42,7 @@ class ByteVector_AddTests {
     }
 
     @test
-    public AddSomethingAndEmpty() {
+    public add_addSomethingAndEmpty() {
         // Arrange
         const something = ByteVector.fromSize(1, 0x00);
         const empty = ByteVector.fromSize(0);
@@ -61,7 +61,7 @@ class ByteVector_AddTests {
     }
 
     @test
-    public AddEmptyAndSomething() {
+    public add_addEmptyAndSomething() {
         // Arrange
         const something = ByteVector.fromSize(1, 0x00);
         const empty = ByteVector.fromSize(0);
@@ -80,7 +80,7 @@ class ByteVector_AddTests {
     }
 
     @test
-    public AddSomethingAndSomething() {
+    public equal_add_addSomethingAndSomething() {
         // Arrange
         const bv1 = ByteVector.fromByteArray(new Uint8Array([0x01, 0x02]));
         const bv2 = ByteVector.fromByteArray(new Uint8Array([0x03, 0x04]));
@@ -102,26 +102,23 @@ class ByteVector_AddTests {
         assert.strictEqual(result2.length, 4);
         assert.deepEqual(result2.data, new Uint8Array([0x03, 0x04, 0x01, 0x02]));
     }
-}
 
-@suite(timeout(3000), slow(1000))
-class ByteVector_EqualTests {
     @test
-    public BothNullUndefined() {
+    public equal_bothNullUndefined() {
         // Arrange, Act, Assert
         assert.isTrue(ByteVector.equal(undefined, undefined));
         assert.isTrue(ByteVector.equal(null, null));
     }
 
     @test
-    public MixedNullUndefined() {
+    public equal_mixedNullUndefined() {
         // Arrange, Act, Assert
         assert.isFalse(ByteVector.equal(undefined, null));
         assert.isFalse(ByteVector.equal(null, undefined));
     }
 
     @test
-    public MixedFalsySomething() {
+    public equal_mixedFalsySomething() {
         // Arrange
         const bv = ByteVector.fromSize(1);
 
@@ -133,7 +130,7 @@ class ByteVector_EqualTests {
     }
 
     @test
-    public Equal() {
+    public equal_equal() {
         // Arrange
         const bv1 = ByteVector.fromByteArray(new Uint8Array([0x01, 0x02]));
         const bv2 = ByteVector.fromByteArray(new Uint8Array([0x01, 0x02]));
@@ -143,7 +140,7 @@ class ByteVector_EqualTests {
     }
 
     @test
-    public NotEqual() {
+    public equal_notEqual() {
         // Arrange
         const bv1 = ByteVector.fromByteArray(new Uint8Array([0x01, 0x02]));
         const bv2 = ByteVector.fromByteArray(new Uint8Array([0x03, 0x04]));
@@ -151,26 +148,23 @@ class ByteVector_EqualTests {
         // Act, Assert
         assert.isFalse(ByteVector.equal(bv1, bv2));
     }
-}
 
-@suite(timeout(3000), slow(1000))
-class ByteVector_NotEqualTests {
     @test
-    public BothNullUndefined() {
+    public notEqual_bothNullUndefined() {
         // Arrange, Act, Assert
         assert.isFalse(ByteVector.notEqual(undefined, undefined));
         assert.isFalse(ByteVector.notEqual(null, null));
     }
 
     @test
-    public MixedNullUndefined() {
+    public notEqual_mixedNullUndefined() {
         // Arrange, Act, Assert
         assert.isTrue(ByteVector.notEqual(undefined, null));
         assert.isTrue(ByteVector.notEqual(null, undefined));
     }
 
     @test
-    public MixedFalsySomething() {
+    public notEqual_mixedFalsySomething() {
         // Arrange
         const bv = ByteVector.fromSize(1);
 
@@ -182,7 +176,7 @@ class ByteVector_NotEqualTests {
     }
 
     @test
-    public Equal() {
+    public notEqual_equal() {
         // Arrange
         const bv1 = ByteVector.fromByteArray(new Uint8Array([0x01, 0x02]));
         const bv2 = ByteVector.fromByteArray(new Uint8Array([0x01, 0x02]));
@@ -192,7 +186,7 @@ class ByteVector_NotEqualTests {
     }
 
     @test
-    public NotEqual() {
+    public notEqual_notEqual() {
         // Arrange
         const bv1 = ByteVector.fromByteArray(new Uint8Array([0x01, 0x02]));
         const bv2 = ByteVector.fromByteArray(new Uint8Array([0x03, 0x04]));
@@ -200,12 +194,9 @@ class ByteVector_NotEqualTests {
         // Act, Assert
         assert.isTrue(ByteVector.notEqual(bv1, bv2));
     }
-}
 
-@suite(timeout(3000), slow(1000))
-class ByteVector_GreaterThanTests {
     @test
-    public InvalidParameters() {
+    public greaterThan_invalidParameters() {
         // Arrange
         const bv = ByteVector.fromSize(0);
 
@@ -219,7 +210,7 @@ class ByteVector_GreaterThanTests {
     }
 
     @test
-    public GreaterThan() {
+    public greaterThan_greaterThan() {
         // Arrange
         const bv1 = ByteVector.fromByteArray(new Uint8Array([0x01, 0x03]));
         const bv2 = ByteVector.fromByteArray(new Uint8Array([0x01, 0x02]));
@@ -230,7 +221,7 @@ class ByteVector_GreaterThanTests {
     }
 
     @test
-    public LessThan() {
+    public greaterThan_lessThan() {
         // Arrange
         const bv1 = ByteVector.fromByteArray(new Uint8Array([0x01, 0x00]));
         const bv2 = ByteVector.fromByteArray(new Uint8Array([0x01, 0x02]));
@@ -241,7 +232,7 @@ class ByteVector_GreaterThanTests {
     }
 
     @test
-    public Equal() {
+    public greaterThan_equal() {
         // Arrange
         const bv1 = ByteVector.fromByteArray(new Uint8Array([0x01, 0x02]));
         const bv2 = ByteVector.fromByteArray(new Uint8Array([0x01, 0x02]));
@@ -250,12 +241,9 @@ class ByteVector_GreaterThanTests {
         assert.isFalse(ByteVector.greaterThan(bv1, bv2));   // bv1 > bv2 -> false
         assert.isFalse(ByteVector.greaterThan(bv2, bv1));   // bv2 > bv1 -> false
     }
-}
 
-@suite(timeout(3000), slow(1000))
-class ByteVector_GreaterThanEqualTests {
     @test
-    public InvalidParameters() {
+    public greaterThanEqual_invalidParameters() {
         // Arrange
         const bv = ByteVector.fromSize(0);
 
@@ -269,7 +257,7 @@ class ByteVector_GreaterThanEqualTests {
     }
 
     @test
-    public GreaterThan() {
+    public greaterThanEqual_greaterThan() {
         // Arrange
         const bv1 = ByteVector.fromByteArray(new Uint8Array([0x01, 0x03]));
         const bv2 = ByteVector.fromByteArray(new Uint8Array([0x01, 0x02]));
@@ -280,7 +268,7 @@ class ByteVector_GreaterThanEqualTests {
     }
 
     @test
-    public LessThan() {
+    public greaterThanEqual_lessThan() {
         // Arrange
         const bv1 = ByteVector.fromByteArray(new Uint8Array([0x01, 0x00]));
         const bv2 = ByteVector.fromByteArray(new Uint8Array([0x01, 0x02]));
@@ -291,7 +279,7 @@ class ByteVector_GreaterThanEqualTests {
     }
 
     @test
-    public Equal() {
+    public greaterThanEqual_equal() {
         // Arrange
         const bv1 = ByteVector.fromByteArray(new Uint8Array([0x01, 0x02]));
         const bv2 = ByteVector.fromByteArray(new Uint8Array([0x01, 0x02]));
@@ -300,12 +288,9 @@ class ByteVector_GreaterThanEqualTests {
         assert.isTrue(ByteVector.greaterThanEqual(bv1, bv2));   // bv1 > bv2 -> true
         assert.isTrue(ByteVector.greaterThanEqual(bv2, bv1));   // bv2 > bv1 -> true
     }
-}
 
-@suite(timeout(3000), slow(1000))
-class ByteVector_LessThanTests {
     @test
-    public InvalidParameters() {
+    public lessThan_invalidParameters() {
         // Arrange
         const bv = ByteVector.fromSize(0);
 
@@ -319,7 +304,7 @@ class ByteVector_LessThanTests {
     }
 
     @test
-    public GreaterThan() {
+    public lessThan_greaterThan() {
         // Arrange
         const bv1 = ByteVector.fromByteArray(new Uint8Array([0x01, 0x03]));
         const bv2 = ByteVector.fromByteArray(new Uint8Array([0x01, 0x02]));
@@ -330,7 +315,7 @@ class ByteVector_LessThanTests {
     }
 
     @test
-    public LessThan() {
+    public lessThan_lessThan() {
         // Arrange
         const bv1 = ByteVector.fromByteArray(new Uint8Array([0x01, 0x00]));
         const bv2 = ByteVector.fromByteArray(new Uint8Array([0x01, 0x02]));
@@ -341,7 +326,7 @@ class ByteVector_LessThanTests {
     }
 
     @test
-    public Equal() {
+    public lessThan_equal() {
         // Arrange
         const bv1 = ByteVector.fromByteArray(new Uint8Array([0x01, 0x02]));
         const bv2 = ByteVector.fromByteArray(new Uint8Array([0x01, 0x02]));
@@ -350,12 +335,9 @@ class ByteVector_LessThanTests {
         assert.isFalse(ByteVector.lessThan(bv1, bv2));   // bv1 < bv2 -> false
         assert.isFalse(ByteVector.lessThan(bv2, bv1));   // bv2 < bv1 -> false
     }
-}
 
-@suite(timeout(3000), slow(1000))
-class ByteVector_LessThanEqualTests {
     @test
-    public InvalidParameters() {
+    public lessThanEqual_invalidParameters() {
         // Arrange
         const bv = ByteVector.fromSize(0);
 
@@ -369,7 +351,7 @@ class ByteVector_LessThanEqualTests {
     }
 
     @test
-    public GreaterThan() {
+    public lessThanEqual_greaterThan() {
         // Arrange
         const bv1 = ByteVector.fromByteArray(new Uint8Array([0x01, 0x03]));
         const bv2 = ByteVector.fromByteArray(new Uint8Array([0x01, 0x02]));
@@ -380,7 +362,7 @@ class ByteVector_LessThanEqualTests {
     }
 
     @test
-    public LessThan() {
+    public lessThanEqual_lessThan() {
         // Arrange
         const bv1 = ByteVector.fromByteArray(new Uint8Array([0x01, 0x00]));
         const bv2 = ByteVector.fromByteArray(new Uint8Array([0x01, 0x02]));
@@ -391,7 +373,7 @@ class ByteVector_LessThanEqualTests {
     }
 
     @test
-    public Equal() {
+    public lessThanEqual_equal() {
         // Arrange
         const bv1 = ByteVector.fromByteArray(new Uint8Array([0x01, 0x02]));
         const bv2 = ByteVector.fromByteArray(new Uint8Array([0x01, 0x02]));

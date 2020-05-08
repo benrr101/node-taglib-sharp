@@ -2,13 +2,15 @@ import * as fs from "fs";
 import {ByteVector} from "../../src/byteVector";
 import {IStream, SeekOrigin} from "../../src/stream";
 
+const AB2B = require("arraybuffer-to-buffer");
+
 export default class TestStream implements IStream {
-    private readonly _data: ByteVector;
     private readonly _isWritable: boolean;
+    private _data: ByteVector;
     private _position: number;
 
     public constructor(bytesToReturn: ByteVector, isWritable: boolean) {
-        this._data = bytesToReturn;
+        this._data = ByteVector.fromByteVector(bytesToReturn);
         this._position = 0;
         this._isWritable = isWritable;
     }
@@ -17,12 +19,17 @@ export default class TestStream implements IStream {
         return this._isWritable;
     }
 
+    public get data(): ByteVector { return this._data; }
+
     public get length(): number {
         return this._data.length;
     }
 
     public get position(): number {
         return this._position;
+    }
+    public set position(value: number) {
+        this._position = value;
     }
 
     public close(): void { /* no op */ }
@@ -53,11 +60,28 @@ export default class TestStream implements IStream {
     }
 
     public setLength(length: number): void {
-        throw new Error("Not Implemented");
+        if (this.length < length) {
+            // Extend
+            this._data.addByteVector(ByteVector.fromSize(length - this.length));
+        } else if (this.length > length) {
+            // Shrink
+            this._data = this._data.mid(0, length);
+        }
+        this._position = Math.max(this.length, this._position);
     }
 
     public write(buffer: fs.BinaryData, bufferOffset: number, length: number): number {
-        throw new Error("Not Implemented");
+        if (!this._isWritable) {
+            throw new Error("Invalid operation: this stream is a read-only stream");
+        }
+
+        const bytesToWrite = ByteVector.fromByteArray(AB2B(buffer.buffer.slice(bufferOffset, length)));
+        if (this._position < this._data.length) {
+            this._data.removeRange(this._position, bytesToWrite.length);
+        }
+        this._data.insertByteVector(this._position, bytesToWrite);
+
+        return length;
     }
 
 }

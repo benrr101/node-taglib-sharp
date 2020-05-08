@@ -1,4 +1,5 @@
 import * as BigInt from "big-integer";
+import * as Path from "path";
 
 export class Guards {
     public static betweenExclusive(value: number, minValue: number, maxValue: number, name: string): void {
@@ -19,9 +20,21 @@ export class Guards {
         }
     }
 
+    public static greaterThanInclusive(value: number, lowerBound: number, name: string) {
+        if (value < lowerBound) {
+            throw new Error(`Argument out of range: ${name} must greater than ${lowerBound}`);
+        }
+    }
+
     public static int(value: number, name: string): void {
         if (!Number.isSafeInteger(value)) {
             throw new Error(`Argument out of range: ${name} must be a 32-bit integer`);
+        }
+    }
+
+    public static lessThanInclusive(value: number, upperBound: number, name: string) {
+        if (value > upperBound) {
+            throw new Error(`Argument out of range: ${name} must be less than ${upperBound}`);
         }
     }
 
@@ -73,6 +86,19 @@ export class StringComparison {
 
     public static CaseSensitive(a: string, b: string): boolean {
         return a === b;
+    }
+}
+
+export class FileUtils {
+    public static getExtension(name: string) {
+        let ext = Path.extname(name);
+        if (!ext) {
+            ext = name.startsWith(".") ? name.substring(1) : name;
+        } else {
+            ext = ext.substring(1);
+        }
+
+        return ext.toLowerCase();
     }
 }
 

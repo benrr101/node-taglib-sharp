@@ -1,5 +1,10 @@
 import {IStream, Stream} from "./stream";
+import {Guards} from "./utils";
 
+/**
+ * This interface provides abstracted access to a file. It permits access to non-standard file
+ * systems and data retrieval methods.
+ */
 export interface IFileAbstraction {
     /**
      * Name or identifier used by the implementation
@@ -26,9 +31,18 @@ export interface IFileAbstraction {
      */
     writeStream: IStream;
 
+    /**
+     * Closes a stream created by the current instance.
+     * @param stream Stream created by the current instance.
+     */
     closeStream(stream: IStream): void;
 }
 
+/**
+ * This class implements {@see IFileAbstraction} to provide support for accessing the local/
+ * standard file.
+ * This class is used as the standard file abstraction throughout the library.
+ */
 export class LocalFileAbstraction implements IFileAbstraction {
     /**
      * Contains the name used to open the file
@@ -41,28 +55,28 @@ export class LocalFileAbstraction implements IFileAbstraction {
      * @throws Error Thrown if {@param path} is falsey
      */
     public constructor(path: string) {
-        if (!path) {
-            throw new Error("Argument null: path was not provided");
-        }
+        Guards.truthy(path, "path");
         this._name = path;
     }
 
+    /** @inheritDoc */
     public get name(): string {
         return this._name;
     }
 
+    /** @inheritDoc */
     public get readStream(): IStream {
         return Stream.createAsRead(this._name);
     }
 
+    /** @inheritDoc */
     public get writeStream(): IStream {
         return Stream.createAsReadWrite(this._name);
     }
 
+    /** @inheritDoc */
     public closeStream(stream: IStream): void {
-        if (!stream) {
-            throw new Error("Argument null: stream was not provided");
-        }
+        Guards.truthy(stream, "stream");
         stream.close();
     }
 }
