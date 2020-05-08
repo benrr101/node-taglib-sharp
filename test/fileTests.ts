@@ -456,7 +456,7 @@ class FileTests {
             f.insert(this.pattern1, this.length2 / 2, this.pattern1.length);
             assert.strictEqual(f.find(this.pattern1), this.length2 / 2);
 
-            f.insert(this.pattern1, 30);
+            f.insert(this.pattern1, 30, this.pattern1.length);
             assert.strictEqual(f.find(this.pattern1), 30);
 
             assert.strictEqual(f.find(this.pattern1, 2), 30);
@@ -491,6 +491,195 @@ class FileTests {
         this.testWithMemoryStream(testAction, this.length3);
     }
 
+    @test
+    public find_tooBig() {
+        const testAction = (f: TestFile) => {
+            // Arrange
+            const bytes = ByteVector.fromSize(File.bufferSize + 1);
+
+            // Act / Assert
+            assert.strictEqual(f.find(bytes), -1);
+        };
+        this.testWithMemoryStream(testAction, this.length1);
+    }
+
+    @test
+    public insert_insertLessThanReplace() {
+        const testAction = (f: TestFile) => {
+            // Act
+            f.insert(this.pattern1, 2, this.pattern1.length + 1);
+
+            // Assert
+            assert.strictEqual(f.find(this.pattern1), 2);
+            assert.strictEqual(f.length, this.length1 - 1);
+        };
+        this.testWithMemoryStream(testAction, this.length1);
+    }
+
+    @test
+    public markAsCorrupt_fileBecomesCorrupt() {
+        const testAction = (f: TestFile) => {
+            // Act
+            f.markAsCorrupt("foobarbaz");
+
+            // Assert
+            assert.isTrue(f.isPossiblyCorrupt);
+            assert.isNotNull(f.corruptionReasons);
+            assert.strictEqual(f.corruptionReasons.length, 1);
+            assert.sameDeepMembers(f.corruptionReasons, ["foobarbaz"]);
+        };
+        this.testWithMemoryStream(testAction, 10);
+    }
+
+    @test
+    public readBlock_lengthIsZero() {
+        const testAction = (f: TestFile) => {
+            // Act
+            const result = f.readBlock(0);
+
+            // Assert
+            assert.strictEqual(result.length, 0);
+        };
+        this.testWithMemoryStream(testAction, this.length1);
+    }
+
+    @test
+    public rFind_file1() {
+        const testAction = (f: TestFile, d: ByteVector) => {
+            // Act / Assert
+            assert.strictEqual(f.rFind(ByteVector.fromString("U")), d.data.lastIndexOf("U".charCodeAt(0)));
+
+            assert.strictEqual(f.rFind(this.pattern1), -1);
+            assert.strictEqual(f.rFind(this.pattern1, 9), -1);
+
+            f.insert(this.pattern1, 10, this.pattern1.length); // Insert closer to beginning
+            assert.strictEqual(f.rFind(this.pattern1), 10);
+
+            f.insert(this.pattern1, this.length1 / 2, this.pattern1.length); // Insert somewhere in the middle
+            assert.strictEqual(f.rFind(this.pattern1), this.length1 / 2);
+
+            f.insert(this.pattern1, this.length1 - 10, this.pattern1.length); // Insert closer to end
+            assert.strictEqual(f.rFind(this.pattern1), this.length1 - 10);
+        };
+        this.testWithMemoryStream(testAction, this.length1);
+    }
+
+    @test
+    public rFind_file2() {
+        const testAction = (f: TestFile, d: ByteVector) => {
+            // Act / Assert
+            assert.strictEqual(f.rFind(ByteVector.fromString("M")), d.data.lastIndexOf("M".charCodeAt(0)));
+
+            assert.strictEqual(f.rFind(this.pattern1), -1);
+            assert.strictEqual(f.rFind(this.pattern1, 3), -1);
+
+            f.insert(this.pattern1, 30);
+            assert.strictEqual(f.rFind(this.pattern1), 30);
+
+            f.insert(this.pattern1, this.length2 / 2, this.pattern1.length);
+            assert.strictEqual(f.rFind(this.pattern1), this.length2 / 2);
+
+            f.insert(this.pattern1, this.length2 - 30, this.pattern1.length);
+            assert.strictEqual(f.rFind(this.pattern1), this.length2 - 30);
+
+            assert.strictEqual(f.rFind(this.pattern1, 2), this.length2 - 30);
+            assert.strictEqual(f.rFind(this.pattern1, 31), this.length2 / 2);
+            assert.strictEqual(f.rFind(this.pattern1, this.length2 / 2 + 3), 30);
+        };
+        this.testWithMemoryStream(testAction, this.length2);
+    }
+
+    @test
+    public rFind_file3() {
+        const testAction = (f: TestFile) => {
+            // Act / Assert
+            assert.strictEqual(f.rFind(this.pattern1), -1);
+            assert.strictEqual(f.rFind(this.pattern1, 13), -1);
+
+            const bufferCross1 = File.bufferSize - Math.floor(this.pattern1.length / 2);
+            const bufferCross2 = 2 * File.bufferSize - Math.floor(this.pattern1.length / 2);
+
+            f.insert(this.pattern1, bufferCross1, this.pattern1.length);
+            assert.strictEqual(f.rFind(this.pattern1), bufferCross1);
+            assert.strictEqual(f.rFind(this.pattern1, bufferCross1 + this.pattern1.length), bufferCross1);
+
+            f.insert(this.pattern1, bufferCross2, this.pattern1.length);
+            assert.strictEqual(f.rFind(this.pattern1), bufferCross2);
+
+            const bufferCross3 = File.bufferSize - 1;
+            f.insert(this.pattern3, bufferCross3 - 1, this.pattern3.length);
+            f.insert(this.pattern3, bufferCross3, this.pattern3.length);
+            assert.strictEqual(f.rFind(this.pattern3), bufferCross3);
+        };
+        this.testWithMemoryStream(testAction, this.length3);
+    }
+
+    @test
+    public removeBlock_invalidParams() {
+        const testAction = (f: TestFile) => {
+            // Act / Assert
+            assert.throws(() => f.removeBlock(-1, 0));
+            assert.throws(() => f.removeBlock(1.23, 0));
+            assert.throws(() => f.removeBlock(Number.MAX_SAFE_INTEGER + 1, 0));
+            assert.throws(() => f.removeBlock(0, 1.23));
+            assert.throws(() => f.removeBlock(0, Number.MAX_SAFE_INTEGER + 1));
+            assert.throws(() => f.removeBlock(0, Number.MIN_SAFE_INTEGER - 1));
+        };
+        this.testWithMemoryStream(testAction, 10);
+    }
+
+    @test
+    public removeBlock_nothingToDo() {
+        const testAction = (f: TestFile, d: ByteVector) => {
+            // Act
+            f.removeBlock(0, 0);
+            f.removeBlock(0, -1);
+
+            // Assert
+            // - Mode shouldn't have changed
+            assert.strictEqual(f.mode, FileAccessMode.Closed);
+
+            // - Open the stream to verify it's contents didn't change
+            f.mode = FileAccessMode.Read;
+            assert.isTrue(ByteVector.equal((<TestStream> f.stream).data, d));
+        };
+        this.testWithMemoryStream(testAction, 10);
+    }
+
+    @test
+    public seek_closedAccess() {
+        const testAction = (f: TestFile) => {
+            // Arrange - get the test stream
+            f.mode = FileAccessMode.Read;
+            const stream = <TestStream> f.stream;
+            f.mode = FileAccessMode.Closed;
+
+            // Act
+            f.seek(123);
+
+            // Assert
+            assert.strictEqual(f.mode, FileAccessMode.Closed);
+            assert.strictEqual(stream.position, 0);
+        };
+        this.testWithMemoryStream(testAction, 10);
+    }
+
+    @test
+    public seek_validSeek() {
+        const testAction = (f: TestFile) => {
+            // Arrange - get the test stream
+            f.mode = FileAccessMode.Read;
+            const stream = <TestStream> f.stream;
+
+            // Act
+            f.seek(5);
+
+            // Assert
+            assert.strictEqual(stream.position, 5);
+        };
+        this.testWithMemoryStream(testAction, 10);
+    }
+
     private testWithMockAbstraction(testAction: (f: File, a: TypeMoq.IMock<IFileAbstraction>) => void) {
         // Arrange
         const testResolver = TypeMoq.Mock.ofType<FileTypeResolver>();
@@ -523,7 +712,7 @@ class FileTests {
         }
     }
 
-    private testWithMemoryStream(testAction: (f: File) => void, length: number) {
+    private testWithMemoryStream(testAction: (f: File, inputData: ByteVector) => void, length: number) {
         // Arrange
         const testResolver = TypeMoq.Mock.ofType<FileTypeResolver>();
         testResolver.setup((r) => r(
@@ -548,7 +737,7 @@ class FileTests {
         const file = File.createFromAbstraction(mockAbstraction.object);
 
         try {
-            testAction(file);
+            testAction(file, data);
         } finally {
             // Cleanup
             File.clearFileTypesAndResolvers();
@@ -557,7 +746,7 @@ class FileTests {
 }
 
 class TestFile extends File {
-    constructor(abstraction: IFileAbstraction, style?: ReadStyle) {
+    constructor(abstraction: IFileAbstraction) {
         super(abstraction);
     }
 

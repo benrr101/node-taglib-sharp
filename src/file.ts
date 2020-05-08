@@ -82,7 +82,7 @@ export type FileTypeConstructor = new (abstraction: IFileAbstraction, style: Rea
 export abstract class File {
     // #region Member Variables
 
-    private static readonly _bufferSize: number = 64;
+    private static readonly _bufferSize: number = 1024;
     private static _fileTypes: {[mimeType: string]: FileTypeConstructor} = {};
     private static _fileTypeResolvers: FileTypeResolver[] = [];
 
@@ -345,7 +345,7 @@ export abstract class File {
 
     /**
      * Searches forward through a file for a specified pattern, starting at a specified offset.
-     * @param pattern Pattern to search for in the current instance.
+     * @param pattern Pattern to search for in the current instance. Must be smaller than the
      * @param startPosition Seek position to start searching. Must be positive, safe integer.
      * @param before Optional pattern that the searched for pattern must appear before. If this
      *     pattern is found first, `-1` is returned.
@@ -387,7 +387,7 @@ export abstract class File {
                 // Ensure that we always rewind the stream a little so we never have a partial
                 // match where our data exists betweenInclusive the end of read A and the start of read B.
                 bufferOffset += File._bufferSize - pattern.length;
-                if (before != null && before.length > pattern.length) {
+                if (before && before.length > pattern.length) {
                     bufferOffset -= before.length - pattern.length;
                 }
                 this._fileStream.position = bufferOffset;
@@ -534,12 +534,8 @@ export abstract class File {
      *     integer.
      */
     public removeBlock(start: number, length: number): void {
-        if (!Number.isSafeInteger(start) || start < 0) {
-            throw new Error("Argument out of range: start must be a safe, positive integer.");
-        }
-        if (!Number.isSafeInteger(length)) {
-            throw new Error("Argument out of range: length must be a safe integer.");
-        }
+        Guards.uint(start, "start");
+        Guards.int(length, "length");
 
         if (length <= 0) {
             return;
@@ -573,8 +569,9 @@ export abstract class File {
     public abstract removeTags(types: TagTypes): void;
 
     /**
-     * Searched backwards through a file for a specified patterh, starting at a specified offset
-     * @param pattern Pattern to search for in the current instance.
+     * Searched backwards through a file for a specified patterh, starting at a specified offset.
+     * @param pattern Pattern to search for in the current instance. Must be shorter than the
+     *     {@see bufferSize}
      * @param startPosition Seek position from which to start searching.
      * @param after Pattern that the searched for pattern must appear after. If this pattern is
      *     found first, `-1` is returned.
@@ -583,12 +580,8 @@ export abstract class File {
      * @returns Index at which the value wa found. If not found, `-1` is returned.
      */
     public rFind(pattern: ByteVector, startPosition: number = 0, after?: ByteVector): number {
-        if (!pattern) {
-            throw new Error("Argument null: pattern was not provided");
-        }
-        if (!Number.isSafeInteger(startPosition) || startPosition < 0) {
-            throw new Error("Argument out of range: startPosition must be a safe, positive integer");
-        }
+        Guards.truthy(pattern, "pattern");
+        Guards.uint(startPosition, "startPosition");
 
         this.mode = FileAccessMode.Read;
 

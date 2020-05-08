@@ -10,7 +10,7 @@ export default class TestStream implements IStream {
     private _position: number;
 
     public constructor(bytesToReturn: ByteVector, isWritable: boolean) {
-        this._data = bytesToReturn;
+        this._data = ByteVector.fromByteVector(bytesToReturn);
         this._position = 0;
         this._isWritable = isWritable;
     }
@@ -18,6 +18,8 @@ export default class TestStream implements IStream {
     public get canWrite(): boolean {
         return this._isWritable;
     }
+
+    public get data(): ByteVector { return this._data; }
 
     public get length(): number {
         return this._data.length;
@@ -73,11 +75,9 @@ export default class TestStream implements IStream {
             throw new Error("Invalid operation: this stream is a read-only stream");
         }
 
-        let bytesToWrite = ByteVector.fromByteArray(AB2B(buffer));
-        bytesToWrite = bytesToWrite.mid(bufferOffset, length);
-
+        const bytesToWrite = ByteVector.fromByteArray(AB2B(buffer.buffer.slice(bufferOffset, length)));
         if (this._position < this._data.length) {
-            this._data.removeRange(this._position, buffer.byteLength);
+            this._data.removeRange(this._position, bytesToWrite.length);
         }
         this._data.insertByteVector(this._position, bytesToWrite);
 
