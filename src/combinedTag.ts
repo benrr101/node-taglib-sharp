@@ -606,7 +606,37 @@ export default class CombinedTag extends Tag {
         }
     }
 
-    // #region Private Helpers
+    /**
+     * Sets the child tags to combine in the current instance
+     * @param tags Tags to combine, falsy tags will be ignored
+     */
+    public setTags(... tags: Tag[]): void {
+        this._tags.splice(0, tags.length);
+
+        const truthyTags = tags.filter((t) => !!t);
+        this._tags.push(... truthyTags);
+    }
+
+    // #region Protected/Private Methods
+
+    protected addTagInternal(tag: Tag) {
+        this._tags.push(tag);
+    }
+
+    protected clearTags(): void {
+        this._tags.splice(0, this._tags.length);
+    }
+
+    protected insertTag(index: number, tag: Tag): void {
+        this._tags.splice(index, 0, tag);
+    }
+
+    protected removeTag(tag: Tag) {
+        const index = this._tags.indexOf(tag);
+        if (index >= 0) {
+            this._tags.splice(index, 1);
+        }
+    }
 
     private getFirstArray<T>(propertyFn: (t: Tag) => T[]): T[] {
         const tagWithProperty = this._tags.find((t) => {
