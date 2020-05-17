@@ -39,8 +39,7 @@ function getTestTagHeader(version: number, flags: Id3v2TagHeaderFlags, tagSize: 
     );
 }
 
-@suite(slow(1000), timeout(3000))
-class Id3v2_Tag_ConstructorTests {
+@suite class Id3v2_Tag_ConstructorTests {
     @test
     public fromData_falsyData() {
         // Act / Assert
@@ -264,8 +263,7 @@ class Id3v2_Tag_ConstructorTests {
     }
 }
 
-@suite(slow(1000), timeout(3000))
-class Id3v2_Tag_PropertyTests {
+@suite class Id3v2_Tag_PropertyTests {
     @test
     public flags() {
         // Arrange
@@ -1478,8 +1476,7 @@ class Id3v2_Tag_PropertyTests {
     }
 }
 
-@suite(slow(1000), timeout(3000))
-class Id3v2_Tag_MethodTests {
+@suite class Id3v2_Tag_MethodTests {
     @test
     public clear() {
         // Arrange

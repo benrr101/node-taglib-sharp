@@ -16,8 +16,7 @@ import {SynchronizedTextType, TimestampFormat} from "../../src/id3v2/utilTypes";
 Chai.use(ChaiAsPromised);
 const assert = Chai.assert;
 
-@suite(timeout(3000), slow(1000))
-class Id3v2_SynchronizedTextTests {
+@suite class Id3v2_SynchronizedTextTests {
     @test
     public synchronizedText_construct() {
         // Act
@@ -46,8 +45,7 @@ class Id3v2_SynchronizedTextTests {
     }
 }
 
-@suite(timeout(3000), slow(1000))
-class Id3v2_SynchronizedLyricsFrame_ConstructorTests extends FrameConstructorTests {
+@suite class Id3v2_SynchronizedLyricsFrame_ConstructorTests extends FrameConstructorTests {
     public get fromOffsetRawData(): (d: ByteVector, o: number, h: Id3v2FrameHeader, v: number) => Frame {
         return SynchronizedLyricsFrame.fromOffsetRawData;
     }
@@ -338,8 +336,7 @@ class Id3v2_SynchronizedLyricsFrame_ConstructorTests extends FrameConstructorTes
     }
 }
 
-@suite(timeout(3000), slow(1000))
-class Id3v2_SynchronizedLyricsFrame_PropertyTests {
+@suite class Id3v2_SynchronizedLyricsFrame_PropertyTests {
     @test
     public description() {
         // Arrange
@@ -419,8 +416,7 @@ class Id3v2_SynchronizedLyricsFrame_PropertyTests {
     }
 }
 
-@suite(timeout(3000), slow(1000))
-class Id3v2_SynchronizedLyricsFrame_MethodTests {
+@suite class Id3v2_SynchronizedLyricsFrame_MethodTests {
     @test
     public find_falsyFrames() {
         // Act / Assert

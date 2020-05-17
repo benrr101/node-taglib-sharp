@@ -13,8 +13,7 @@ import {PictureType} from "../src/picture";
 Chai.use(ChaiAsPromised);
 const assert = Chai.assert;
 
-@suite(timeout(3000), slow(1000))
-class PictureLazy_Tests {
+@suite class PictureLazy_Tests {
     @test
     public fromData_falsyData() {
         // Act / Assert

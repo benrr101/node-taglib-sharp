@@ -16,8 +16,7 @@ const AB2B = require("arraybuffer-to-buffer");
 Chai.use(ChaiAsPromised);
 const assert = Chai.assert;
 
-@suite(timeout(3000), slow(1000))
-class ByteVector_ConstructorTests {
+@suite class ByteVector_ConstructorTests {
     private testArray = new Uint8Array([0x80, 0x08, 0x50]);
     private testByteVector = ByteVector.fromByteArray(this.testArray);
 

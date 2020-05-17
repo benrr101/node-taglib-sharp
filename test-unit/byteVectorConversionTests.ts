@@ -7,8 +7,7 @@ import {ByteVector, StringType} from "../src/byteVector";
 
 const assert = Chai.assert;
 
-@suite(timeout(3000), slow(1000))
-class ByteVector_ConversionTests {
+@suite class ByteVector_ConversionTests {
     private readonly doublePositiveBV = ByteVector.fromByteArray(  // 56.12
         new Uint8Array([0x8F, 0xC2, 0xF5, 0x28, 0x5C, 0x0F, 0x4C, 0x40, 0xAA])
     );

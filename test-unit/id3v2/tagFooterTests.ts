@@ -23,8 +23,7 @@ const getTestFooter = (majorVersion: number, minorVersion: number, flags: Id3v2T
     return Id3v2TagFooter.fromData(data);
 };
 
-@suite(timeout(3000), slow(1000))
-class Id3v2_TagFooter_ConstructorTests {
+@suite class Id3v2_TagFooter_ConstructorTests {
     @test
     public fromData_falsyData() {
         // Act/Assert
@@ -106,8 +105,7 @@ class Id3v2_TagFooter_ConstructorTests {
     }
 }
 
-@suite(timeout(3000), slow(1000))
-class Id3v2_TagFooter_PropertyTests {
+@suite class Id3v2_TagFooter_PropertyTests {
     @test
     public getCompleteTagSize() {
         // Arrange
@@ -216,8 +214,7 @@ class Id3v2_TagFooter_PropertyTests {
     }
 }
 
-@suite(timeout(3000), slow(1000))
-class Id3v2_TagFooter_RenderTests {
+@suite class Id3v2_TagFooter_RenderTests {
     @test
     public render() {
         // Arrange

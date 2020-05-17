@@ -29,8 +29,7 @@ function getTestFrame(): TextInformationFrame {
     return TextInformationFrame.fromRawData(data, 4);
 }
 
-@suite(timeout(3000), slow(1000))
-class Id3v2_TextInformationFrame_ConstructorTests extends FrameConstructorTests {
+@suite class Id3v2_TextInformationFrame_ConstructorTests extends FrameConstructorTests {
     public get fromOffsetRawData(): (d: ByteVector, o: number, h: Id3v2FrameHeader, v: number) => Frame {
         return TextInformationFrame.fromOffsetRawData;
     }
@@ -218,8 +217,7 @@ class Id3v2_TextInformationFrame_ConstructorTests extends FrameConstructorTests 
     }
 }
 
-@suite(timeout(3000), slow(1000))
-class Id3v2_TextInformationFrame_PropertyTests {
+@suite class Id3v2_TextInformationFrame_PropertyTests {
     @test
     public getText() {
         // Arrange
@@ -271,8 +269,7 @@ class Id3v2_TextInformationFrame_PropertyTests {
     }
 }
 
-@suite(timeout(3000), slow(1000))
-class Id3v2_TextInformationFrame_MethodTests {
+@suite class Id3v2_TextInformationFrame_MethodTests {
     @test
     public clone_returnsCopy() {
         // Arrange

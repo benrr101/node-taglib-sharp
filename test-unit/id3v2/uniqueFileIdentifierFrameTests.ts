@@ -18,8 +18,7 @@ const assert = Chai.assert;
 const testIdentifier = ByteVector.fromString("foobarbaz");
 const testOwner = "http://github.com/benrr101/node-taglib-sharp";
 
-@suite(timeout(3000), slow(1000))
-class Id3v2_UniqueFileIdentifierFrame_ConstructorTests extends FrameConstructorTests {
+@suite class Id3v2_UniqueFileIdentifierFrame_ConstructorTests extends FrameConstructorTests {
     public get fromOffsetRawData(): (d: ByteVector, o: number, h: Id3v2FrameHeader, v: number) => Frame {
         return UniqueFileIdentifierFrame.fromOffsetRawData;
     }
@@ -194,8 +193,7 @@ class Id3v2_UniqueFileIdentifierFrame_ConstructorTests extends FrameConstructorT
     }
 }
 
-@suite(timeout(3000), slow(1000))
-class Id3v2_UniqueFileIdentifierFrame_PropertyTests {
+@suite class Id3v2_UniqueFileIdentifierFrame_PropertyTests {
     @test
     public setIdentifier_tooLong_throws() {
         // Arrange
@@ -216,8 +214,7 @@ class Id3v2_UniqueFileIdentifierFrame_PropertyTests {
     }
 }
 
-@suite(timeout(3000), slow(1000))
-class Id3v2_UniqueFileIdentifierFrame_MethodTests {
+@suite class Id3v2_UniqueFileIdentifierFrame_MethodTests {
     @test
     public find_falsyFrames_throws() {
         // Act/Assert

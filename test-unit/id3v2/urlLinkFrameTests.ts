@@ -33,8 +33,7 @@ const getTestUrlLinkFrame = (): UrlLinkFrame => {
     return UrlLinkFrame.fromRawData(frameData, 4);
 };
 
-@suite(timeout(3000), slow(1000))
-class Id3v2_UrlLinkFrame_ConstructorTests extends FrameConstructorTests {
+@suite class Id3v2_UrlLinkFrame_ConstructorTests extends FrameConstructorTests {
     public get fromOffsetRawData(): (d: ByteVector, o: number, h: Id3v2FrameHeader, v: number) => Frame {
         return UrlLinkFrame.fromOffsetRawData;
     }
@@ -148,8 +147,7 @@ class Id3v2_UrlLinkFrame_ConstructorTests extends FrameConstructorTests {
     }
 }
 
-@suite(timeout(3000), slow(1000))
-class Id3v2_UrlLinkFrame_PropertyTests {
+@suite class Id3v2_UrlLinkFrame_PropertyTests {
     @test
     public getText_outputIsClone() {
         // Arrange
@@ -208,8 +206,7 @@ class Id3v2_UrlLinkFrame_PropertyTests {
     }
 }
 
-@suite(timeout(3000), slow(1000))
-class Id3v2_UrlLinkFrame_MethodTests {
+@suite class Id3v2_UrlLinkFrame_MethodTests {
     @test
     public findUrlLinkFrame_falsyFrames_throws(): void {
         // Act/Assert

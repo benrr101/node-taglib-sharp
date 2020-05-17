@@ -17,8 +17,7 @@ import {ByteVector} from "../src/byteVector";
 Chai.use(ChaiAsPromised);
 const assert = Chai.assert;
 
-@suite(slow(1000), timeout(3000))
-class FileTests {
+@suite class FileTests {
     private static readonly chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     private readonly pattern1 = ByteVector.fromString("efg");
     private readonly pattern3 = ByteVector.fromString("bbbbba");

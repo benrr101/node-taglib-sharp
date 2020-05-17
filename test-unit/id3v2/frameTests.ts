@@ -44,8 +44,7 @@ class TestFrame extends Frame {
     }
 }
 
-@suite(timeout(3000), slow(1000))
-class FrameTests {
+@suite class FrameTests {
     // NOTE: We're mostly ignoring test cases that were already covered by concrete frame classes
 
     @test

@@ -13,8 +13,7 @@ import {FrameIdentifier, FrameIdentifiers} from "../../src/id3v2/frameIdentifier
 Chai.use(ChaiAsPromised);
 const assert = Chai.assert;
 
-@suite(timeout(3000), slow(1000))
-class Id3v2_UnknownFrame_ConstructorTests extends FrameConstructorTests {
+@suite class Id3v2_UnknownFrame_ConstructorTests extends FrameConstructorTests {
     public get fromOffsetRawData(): (d: ByteVector, o: number, h: Id3v2FrameHeader, v: number) => Frame {
         return UnknownFrame.fromOffsetRawData;
     }
@@ -115,8 +114,7 @@ class Id3v2_UnknownFrame_ConstructorTests extends FrameConstructorTests {
     }
 }
 
-@suite(timeout(3000), slow(1000))
-class Id3v2_UnknownFrame_MethodTests {
+@suite class Id3v2_UnknownFrame_MethodTests {
     @test
     public clone_returnsCopy() {
         // Arrange

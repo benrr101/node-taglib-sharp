@@ -9,8 +9,7 @@ import {FrameIdentifier, FrameIdentifiers} from "../../src/id3v2/frameIdentifier
 Chai.use(ChaiAsPromised);
 const assert = Chai.assert;
 
-@suite(timeout(3000), slow(1000))
-class FrameIdentifierTests {
+@suite class FrameIdentifierTests {
     @test
     public isTextFrame_v2StartsWithT() {
         // Arrange

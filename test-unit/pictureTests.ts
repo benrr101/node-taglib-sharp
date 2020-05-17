@@ -9,8 +9,7 @@ import {Picture} from "../src/picture";
 Chai.use(ChaiAsPromised);
 const assert = Chai.assert;
 
-@suite(timeout(3000), slow(1000))
-class Picture_StaticMethodTests {
+@suite class Picture_StaticMethodTests {
     @test
     public getExtensionFromData_noMatch() {
         // Arrange

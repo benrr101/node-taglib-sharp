@@ -16,8 +16,7 @@ import framePropertyTests from "../utilities/propertyTests";
 Chai.use(ChaiAsPromised);
 const assert = Chai.assert;
 
-@suite(timeout(3000), slow(1000))
-class Id3v2_EventTimeCodeTests {
+@suite class Id3v2_EventTimeCodeTests {
     @test
     public constructor_invalidTime() {
         // Act/Assert
@@ -94,8 +93,7 @@ class Id3v2_EventTimeCodeTests {
     }
 }
 
-@suite(timeout(3000), slow(1000))
-class Id3v2_EventTimeCodeFrame_ConstructorTests extends FrameConstructorTests {
+@suite class Id3v2_EventTimeCodeFrame_ConstructorTests extends FrameConstructorTests {
     public get fromOffsetRawData(): (d: ByteVector, o: number, h: Id3v2FrameHeader, v: number) => Frame {
         return EventTimeCodeFrame.fromOffsetRawData;
     }
@@ -211,8 +209,7 @@ class Id3v2_EventTimeCodeFrame_ConstructorTests extends FrameConstructorTests {
     }
 }
 
-@suite(timeout(3000), slow(1000))
-class Id3v2_EventTimeCodeFrame_PropertyTests {
+@suite class Id3v2_EventTimeCodeFrame_PropertyTests {
     @test
     public events() {
         // Arrange
@@ -241,8 +238,7 @@ class Id3v2_EventTimeCodeFrame_PropertyTests {
     }
 }
 
-@suite(timeout(3000), slow(1000))
-class Id3v2_EventTimeCodeFrame_MethodTests {
+@suite class Id3v2_EventTimeCodeFrame_MethodTests {
     @test
     public clone() {
         // Arrange

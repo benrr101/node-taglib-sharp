@@ -8,8 +8,7 @@ import {ByteVector} from "../src/byteVector";
 Chai.use(ChaiAsPromised);
 const assert = Chai.assert;
 
-@suite(timeout(3000), slow(1000))
-class ByteVector_VoidMethodTests {
+@suite class ByteVector_VoidMethodTests {
     private readonly vectorToAdd: ByteVector = ByteVector.fromByteArray(
         new Uint8Array([0xAA, 0xBB])
     );

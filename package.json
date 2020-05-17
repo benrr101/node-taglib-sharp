@@ -6,8 +6,8 @@
     "build": "tsc -p ./",
     "madge": "node node_modules/madge/bin/cli.js --warning --circular --extension ts ./",
     "publish-coverage": "nyc report --reporter=text-lcov | coveralls",
-    "test": "mocha",
-    "test-with-coverage": "nyc mocha"
+    "test-unit": "mocha test-unit",
+    "test-unit-with-coverage": "nyc mocha test-unit"
   },
   "dependencies": {
     "arraybuffer-to-buffer": "^0.0.5",

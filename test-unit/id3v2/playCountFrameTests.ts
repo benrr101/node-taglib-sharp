@@ -15,8 +15,7 @@ import {FrameIdentifiers} from "../../src/id3v2/frameIdentifiers";
 Chai.use(ChaiAsPromised);
 const assert = Chai.assert;
 
-@suite(timeout(3000), slow(1000))
-class Id3v2_PlayCountFrame_ConstructorTests extends FrameConstructorTests {
+@suite class Id3v2_PlayCountFrame_ConstructorTests extends FrameConstructorTests {
     public get fromOffsetRawData(): (d: ByteVector, o: number, h: Id3v2FrameHeader, v: number) => Frame {
         return PlayCountFrame.fromOffsetRawData;
     }
@@ -112,8 +111,7 @@ class Id3v2_PlayCountFrame_ConstructorTests extends FrameConstructorTests {
     }
 }
 
-@suite(timeout(3000), slow(1000))
-class Id3v2_PlayCountFrame_PropertyTests {
+@suite class Id3v2_PlayCountFrame_PropertyTests {
     @test
     public playCount() {
         // Arrange
@@ -129,8 +127,7 @@ class Id3v2_PlayCountFrame_PropertyTests {
     }
 }
 
-@suite(timeout(3000), slow(1000))
-class Id3v2_PlayCountFrame_MethodTests {
+@suite class Id3v2_PlayCountFrame_MethodTests {
     @test
     public clone() {
         // Arrange

@@ -10,8 +10,7 @@ import {ByteVector} from "../../src/byteVector";
 Chai.use(ChaiAsPromised);
 const assert = Chai.assert;
 
-@suite(timeout(3000), slow(1000))
-class Id3v2_SyncDataTests {
+@suite class Id3v2_SyncDataTests {
     @test
     public fromUint_InvalidValues() {
         // Act/Assert

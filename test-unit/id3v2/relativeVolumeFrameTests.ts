@@ -15,8 +15,7 @@ import {FrameIdentifiers} from "../../src/id3v2/frameIdentifiers";
 Chai.use(ChaiAsPromised);
 const assert = Chai.assert;
 
-@suite(timeout(3000), slow(1000))
-class Id3v2_RelativeVolumeChannelData {
+@suite class Id3v2_RelativeVolumeChannelData {
     @test
     public peakBits_setInvalidValues() {
         // Arrange
@@ -281,8 +280,7 @@ class Id3v2_RelativeVolumeChannelData {
     }
 }
 
-@suite(timeout(3000), slow(1000))
-class Id3v2_RelativeVolumeFrame_ConstructorTests extends ConstructorTests {
+@suite class Id3v2_RelativeVolumeFrame_ConstructorTests extends ConstructorTests {
     public get fromOffsetRawData(): (d: ByteVector, o: number, h: Id3v2FrameHeader, v: number) => Frame {
         return RelativeVolumeFrame.fromOffsetRawData;
     }
@@ -390,8 +388,7 @@ class Id3v2_RelativeVolumeFrame_ConstructorTests extends ConstructorTests {
     }
 }
 
-@suite(timeout(3000), slow(1000))
-class Id3v2_RelativeVolumeFrameMethodTests {
+@suite class Id3v2_RelativeVolumeFrameMethodTests {
     @test
     public find_falsyFrames() {
         // Act / Assert

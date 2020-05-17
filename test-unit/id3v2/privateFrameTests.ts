@@ -14,8 +14,7 @@ import {FrameIdentifiers} from "../../src/id3v2/frameIdentifiers";
 Chai.use(ChaiAsPromised);
 const assert = Chai.assert;
 
-@suite(timeout(3000), slow(1000))
-class Id3v2_PrivateFrame_ConstructorTests extends FrameConstructorTests {
+@suite class Id3v2_PrivateFrame_ConstructorTests extends FrameConstructorTests {
     public get fromOffsetRawData(): (d: ByteVector, o: number, h: Id3v2FrameHeader, v: number) => Frame {
         return PrivateFrame.fromOffsetRawData;
     }
@@ -112,8 +111,7 @@ class Id3v2_PrivateFrame_ConstructorTests extends FrameConstructorTests {
     }
 }
 
-@suite(timeout(3000), slow(1000))
-class Id3v2_PrivateFrame_PropertyTests {
+@suite class Id3v2_PrivateFrame_PropertyTests {
     @test
     public privateData() {
         // Arrange
@@ -128,8 +126,7 @@ class Id3v2_PrivateFrame_PropertyTests {
     }
 }
 
-@suite(timeout(3000), slow(1000))
-class Id3v2_PrivateFrame_MethodTests {
+@suite class Id3v2_PrivateFrame_MethodTests {
     @test
     public find_noFrames() {
         // Arrange

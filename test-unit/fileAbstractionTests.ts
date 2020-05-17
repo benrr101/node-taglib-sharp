@@ -11,8 +11,7 @@ import {IStream} from "../src/stream";
 Chai.use(ChaiAsPromised);
 const assert = Chai.assert;
 
-@suite(slow(1000), timeout(3000))
-class LocalFileAbstractionTests {
+@suite class LocalFileAbstractionTests {
     @test
     public constructor_test() {
         // Act

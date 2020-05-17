@@ -28,8 +28,7 @@ import {EventTimeCodeFrame} from "../../src/id3v2/frames/eventTimeCodeFrame";
 Chai.use(ChaiAsPromised);
 const assert = Chai.assert;
 
-@suite(slow(1000), timeout(3000))
-class FrameFactoryTests {
+@suite class FrameFactoryTests {
     @test
     public createFrame_invalidVersion() {
         // Arrange

@@ -33,8 +33,7 @@ const getTestUnsynchronizedLyricsFrame = (): UnsynchronizedLyricsFrame => {
     return UnsynchronizedLyricsFrame.fromRawData(frameData, 4);
 };
 
-@suite(timeout(3000), slow(1000))
-class Id3v2_UnsynchronizedLyricsFrame_ConstructorTests extends FrameConstructorTests {
+@suite class Id3v2_UnsynchronizedLyricsFrame_ConstructorTests extends FrameConstructorTests {
     public get fromOffsetRawData(): (d: ByteVector, o: number, h: Id3v2FrameHeader, v: number) => Frame {
         return UnsynchronizedLyricsFrame.fromOffsetRawData;
     }
@@ -151,8 +150,7 @@ class Id3v2_UnsynchronizedLyricsFrame_ConstructorTests extends FrameConstructorT
     }
 }
 
-@suite(timeout(3000), slow(1000))
-class Id3v2_UnsynchronizedLyricsFrame_PropertyTests {
+@suite class Id3v2_UnsynchronizedLyricsFrame_PropertyTests {
     @test
     public description() {
         // Arrange
@@ -208,8 +206,7 @@ class Id3v2_UnsynchronizedLyricsFrame_PropertyTests {
     }
 }
 
-@suite(timeout(3000), slow(1000))
-class Id3v2_UnsynchronizedLyricsFrame_MethodTests {
+@suite class Id3v2_UnsynchronizedLyricsFrame_MethodTests {
     @test
     public find_falsyFrames_throws() {
         // Act/Assert

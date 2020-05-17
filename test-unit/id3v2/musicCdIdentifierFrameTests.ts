@@ -14,8 +14,7 @@ import {FrameIdentifiers} from "../../src/id3v2/frameIdentifiers";
 Chai.use(ChaiAsPromised);
 const assert = Chai.assert;
 
-@suite(timeout(3000), slow(1000))
-class Id3v2_MusicCdIdentifierFrameTests extends FrameConstructorTests {
+@suite class Id3v2_MusicCdIdentifierFrameTests extends FrameConstructorTests {
     public get fromOffsetRawData(): (d: ByteVector, o: number, h: Id3v2FrameHeader, v: number) => Frame {
         return MusicCdIdentifierFrame.fromOffsetRawData;
     }

@@ -38,8 +38,7 @@ function getCustomTestFrame(data: ByteVector, desc: string, filename: string, mi
     return AttachmentFrame.fromPicture(mockPicture.object);
 }
 
-@suite(timeout(3000), slow(1000))
-class Id3v2_AttachmentFrame_ConstructorTests extends FrameConstructorTests {
+@suite class Id3v2_AttachmentFrame_ConstructorTests extends FrameConstructorTests {
     get fromOffsetRawData(): (d: ByteVector, o: number, h: Id3v2FrameHeader, v: number) => Frame {
         return AttachmentFrame.fromOffsetRawData;
     }
@@ -295,8 +294,7 @@ class Id3v2_AttachmentFrame_ConstructorTests extends FrameConstructorTests {
     }
 }
 
-@suite(slow(1000), timeout(3000))
-class Id3v2_AttachmentFrame_PropertyTests {
+@suite class Id3v2_AttachmentFrame_PropertyTests {
     @test
     public data() {
         // Arrange
@@ -405,8 +403,7 @@ class Id3v2_AttachmentFrame_PropertyTests {
     }
 }
 
-@suite(slow(1000), timeout(3000))
-class Id3v2_AttachmentFrame_MethodTests {
+@suite class Id3v2_AttachmentFrame_MethodTests {
     @test
     public clone_fromPictureUnread() {
         // Arrange

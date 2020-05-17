@@ -8,8 +8,7 @@ import {ByteVector} from "../src/byteVector";
 Chai.use(ChaiAsPromised);
 const assert = Chai.assert;
 
-@suite(timeout(3000), slow(1000))
-class ByteVector_StaticMethodTests {
+@suite class ByteVector_StaticMethodTests {
     @test
     public add_invalidParameters() {
         // Arrange

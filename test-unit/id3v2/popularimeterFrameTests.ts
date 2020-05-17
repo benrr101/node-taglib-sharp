@@ -15,8 +15,7 @@ import {FrameIdentifiers} from "../../src/id3v2/frameIdentifiers";
 Chai.use(ChaiAsPromised);
 const assert = Chai.assert;
 
-@suite(timeout(3000), slow(1000))
-class Id3v2_PopularimeterFrame_ConstructorTests extends FrameConstructorTests {
+@suite class Id3v2_PopularimeterFrame_ConstructorTests extends FrameConstructorTests {
     public get fromOffsetRawData(): (d: ByteVector, o: number, h: Id3v2FrameHeader, v: number) => Frame {
         return PopularimeterFrame.fromOffsetRawData;
     }
@@ -177,8 +176,7 @@ class Id3v2_PopularimeterFrame_ConstructorTests extends FrameConstructorTests {
     }
 }
 
-@suite(timeout(3000), slow(1000))
-class Id3v2_PopularimeterFrame_PropertyTests {
+@suite class Id3v2_PopularimeterFrame_PropertyTests {
     @test
     public playCount() {
         // Arrange
@@ -221,8 +219,7 @@ class Id3v2_PopularimeterFrame_PropertyTests {
     }
 }
 
-@suite(timeout(3000), slow(1000))
-class Id3v2_PopularimeterFrame_MethodTests {
+@suite class Id3v2_PopularimeterFrame_MethodTests {
     @test
     public find_falsyFrames() {
         // Act / Assert

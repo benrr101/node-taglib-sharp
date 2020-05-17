@@ -12,8 +12,7 @@ import {SeekOrigin, Stream} from "../src/stream";
 Chai.use(ChaiAsPromised);
 const assert = Chai.assert;
 
-@suite(slow(1000), timeout(3000))
-class StreamTests {
+@suite class StreamTests {
     @test
     public createAsRead() {
         // Act
