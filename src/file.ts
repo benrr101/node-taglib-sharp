@@ -329,11 +329,20 @@ export abstract class File {
     }
 
     /**
-     * Used for clearing all the types and resolvers during unit testing
+     * Used for removing a file type constructor during unit testing
      */
-    public static clearFileTypesAndResolvers() {
-        File._fileTypeResolvers = [];
-        File._fileTypes = {};
+    public static removeFileType(mimeType: string) {
+        delete File._fileTypes[mimeType];
+    }
+
+    /**
+     * Used for removing a file type resolver during unit testing
+     */
+    public static removeFileTypeResolver(resolver: FileTypeResolver) {
+        const index = File._fileTypeResolvers.indexOf(resolver);
+        if (index >= 0) {
+            File._fileTypeResolvers.splice(index, 1);
+        }
     }
 
     /**

@@ -79,7 +79,7 @@ class FileTests {
             ), TypeMoq.Times.once());
         } finally {
             // Cleanup
-            File.clearFileTypesAndResolvers();
+            File.removeFileTypeResolver(testResolver.object);
         }
     }
 
@@ -114,7 +114,7 @@ class FileTests {
             assert.strictEqual(file.tagTypesOnDisk, TagTypes.None);
         } finally {
             // Cleanup
-            File.clearFileTypesAndResolvers();
+            File.removeFileType("taglib/qux");
         }
     }
 
@@ -166,7 +166,7 @@ class FileTests {
             ), TypeMoq.Times.once());
         } finally {
             // Cleanup
-            File.clearFileTypesAndResolvers();
+            File.removeFileTypeResolver(testResolver.object);
         }
     }
 
@@ -198,7 +198,7 @@ class FileTests {
             assert.strictEqual(file.tagTypesOnDisk, TagTypes.None);
         } finally {
             // Cleanup
-            File.clearFileTypesAndResolvers();
+            File.removeFileType("foo/bar");
         }
     }
 
@@ -220,7 +220,8 @@ class FileTests {
             assert.throws(() => File.createFromPath(TestConstants.testFilePath, "foo/bar"));
         } finally {
             // Cleanup
-            File.clearFileTypesAndResolvers();
+            File.removeFileTypeResolver(testResolver.object);
+            File.removeFileType("foobar/baz");
         }
     }
 
@@ -392,7 +393,7 @@ class FileTests {
             // Act / Assert
             assert.throws(() => File.addFileType("foo/bar", TestFile, false));
         } finally {
-            File.clearFileTypesAndResolvers();
+            File.removeFileType("foo/bar");
         }
     }
 
@@ -708,7 +709,7 @@ class FileTests {
             testAction(file, mockAbstraction);
         } finally {
             // Cleanup
-            File.clearFileTypesAndResolvers();
+            File.removeFileTypeResolver(testResolver.object);
         }
     }
 
@@ -740,7 +741,7 @@ class FileTests {
             testAction(file, data);
         } finally {
             // Cleanup
-            File.clearFileTypesAndResolvers();
+            File.removeFileTypeResolver(testResolver.object);
         }
     }
 }

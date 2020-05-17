@@ -86,4 +86,4 @@ fabric.properties
 dist/**
 
 # Files created during test
-test/resources/testFile_*
+test-unit/resources/testFile_*

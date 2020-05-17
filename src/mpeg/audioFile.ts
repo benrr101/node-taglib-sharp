@@ -3,7 +3,7 @@ import NonContainerFile from "../nonContainer/nonContainerFile";
 import Properties from "../properties";
 import {AudioHeader} from "./audioHeader";
 import {CorruptFileError} from "../errors";
-import {ReadStyle} from "../file";
+import {File, ReadStyle} from "../file";
 import {IFileAbstraction} from "../fileAbstraction";
 import {Tag, TagTypes} from "../tag";
 
@@ -67,5 +67,23 @@ export default class AudioFile extends NonContainerFile {
     }
 }
 
-// @TODO: Register this file type with the file resolver
+// Register the file type
+const mimeTypes = [
+    "taglib/mp3",
+    "audio/x-mp3",
+    "application/x-id3",
+    "audio/mpeg",
+    "audio/x-mpeg",
+    "audio/x-mpeg-3",
+    "audio/mpeg3",
+    "audio/mp3",
+    "taglib/m2a",
+    "taglib/mp2",
+    "taglib/mp1",
+    "audio/x-mp2",
+    "audio/x-mp1"
+];
+for (const mimeType of mimeTypes) {
+    File.addFileType(mimeType, AudioFile);
+}
 
