@@ -9,7 +9,7 @@ build_script:
   - npm run build
 
 test_script:
-  - npm run test-with-coverage
+  - npm run test-unit-with-coverage
 
 after_test:
   - npm run publish-coverage
