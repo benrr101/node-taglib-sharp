@@ -415,6 +415,10 @@ export class TextInformationFrame extends Frame {
 
                         buffer.length = 0;
                         insideParen = false;
+                    } else if (value[index] === ";" && !insideParen) {
+                        // We just hit a delimiter for the genre, store the string
+                        fieldList.push(buffer.join(""));
+                        buffer.length = 0;
                     } else {
                         // Some other character
                         buffer.push(value[index]);

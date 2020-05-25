@@ -1,6 +1,6 @@
 import * as Chai from "chai";
 import * as ChaiAsPromised from "chai-as-promised";
-import {slow, suite, test, timeout} from "mocha-typescript";
+import {suite, test} from "mocha-typescript";
 
 import FrameConstructorTests from "./frameConstructorTests";
 import PropertyTests from "../utilities/propertyTests";
@@ -163,11 +163,11 @@ function getTestFrame(): TextInformationFrame {
         // Arrange
         // - Let's get crazy and try to handle all the cases at once
         const header = new Id3v2FrameHeader(FrameIdentifiers.TCON);
-        header.frameSize = 67;
+        header.frameSize = 82;
         const data = ByteVector.concatenate(
             header.render(3),
             StringType.Latin1,
-            ByteVector.fromString("SomeGenre(32)(32)Classical(CR)(RX)Whoa here's some cra((z)y string")
+            ByteVector.fromString("SomeGenre(32)(32)Classical(CR)(RX)Whoa here's some cra((z)y string;here's another")
         );
 
         // Act
@@ -180,7 +180,8 @@ function getTestFrame(): TextInformationFrame {
             "32",
             "Cover",
             "Remix",
-            "Whoa here's some cra(z)y string"
+            "Whoa here's some cra(z)y string",
+            "here's another"
         ]);
     }
 
