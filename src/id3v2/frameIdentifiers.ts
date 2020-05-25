@@ -308,6 +308,7 @@ export const FrameIdentifiers: {[key: string]: FrameIdentifier} = {
     WCP:  uniqueFrameIdentifiers.WCOP,
     WOAF: uniqueFrameIdentifiers.WOAF,
     WOAR: uniqueFrameIdentifiers.WOAR,
+    WOAS: uniqueFrameIdentifiers.WOAS,
     WORS: uniqueFrameIdentifiers.WORS,
     WPAY: uniqueFrameIdentifiers.WPAY,
     WPB:  uniqueFrameIdentifiers.WPUB,

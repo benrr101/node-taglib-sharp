@@ -9,7 +9,7 @@ export {LocalFileAbstraction} from "./fileAbstraction";
 export {default as CombinedTag} from "./combinedTag";
 export {default as Genres} from "./genres";
 export {ICodec, IAudioCodec, ILosslessAudioCodec, IVideoCodec, IPhotoCodec, MediaTypes} from "./iCodec";
-export {IPicture, PictureType} from "./picture";
+export {IPicture, Picture, PictureType} from "./picture";
 export {default as PictureLazy} from "./pictureLazy";
 export {default as Properties} from "./properties";
 export {Tag, TagTypes} from "./tag";

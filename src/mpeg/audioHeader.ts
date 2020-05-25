@@ -1,6 +1,3 @@
-/**
- * Indicates the MPEG version of a file or stream.
- */
 import {IAudioCodec, MediaTypes} from "../iCodec";
 import {Guards} from "../utils";
 import {File} from "../file";
@@ -9,6 +6,9 @@ import {CorruptFileError} from "../errors";
 import XingHeader from "./xingHeader";
 import VbriHeader from "./vbriHeader";
 
+/**
+ * Indicates the MPEG version of a file or stream.
+ */
 export enum MpegVersion {
     /** Unknown version */
     Unknown = -1,
@@ -174,7 +174,7 @@ export class AudioHeader implements IAudioCodec {
 
         const index1 = this.version === MpegVersion.Version1 ? 0 : 1;
         const index2 = this.audioLayer > 0 ? this.audioLayer - 1 : 0;
-        const index3 = (this._flags >> 10) & 0x0f;
+        const index3 = (this._flags >> 12) & 0x0f;
         return AudioHeader.bitrates[index1][index2][index3];
     }
 
@@ -187,13 +187,13 @@ export class AudioHeader implements IAudioCodec {
     public get audioFrameLength(): number {
         const audioLayer = this.audioLayer;
         if (audioLayer === 1) {
-            return 48000 * this.audioBitrate / this.audioSampleRate + (this.isPadded ? 4 : 0);
+            return Math.floor(48000 * this.audioBitrate / this.audioSampleRate) + (this.isPadded ? 4 : 0);
         }
         if (audioLayer === 2 || this.version === MpegVersion.Version1) {
-            return 144000 * this.audioBitrate / this.audioSampleRate + (this.isPadded ? 1 : 0);
+            return Math.floor(144000 * this.audioBitrate / this.audioSampleRate) + (this.isPadded ? 1 : 0);
         }
         if (audioLayer === 3) {
-            return 72000 * this.audioBitrate / this.audioSampleRate + (this.isPadded ? 1 : 0);
+            return Math.floor(72000 * this.audioBitrate / this.audioSampleRate) + (this.isPadded ? 1 : 0);
         }
         return 0;
     }
@@ -264,9 +264,9 @@ export class AudioHeader implements IAudioCodec {
             // bitrate file
 
             // Round off to upper integer value
-            const frames = Math.floor(this._streamLength + this.audioFrameLength - 1) / this.audioFrameLength;
+            const frames = Math.floor((this._streamLength + this.audioFrameLength - 1) / this.audioFrameLength);
             const durationSeconds = (this.audioFrameLength * frames) / (this.audioBitrate * 125);
-            this._durationMilliseconds = durationSeconds / 1000;
+            this._durationMilliseconds = durationSeconds * 1000;
         }
 
         return this._durationMilliseconds;

@@ -10,7 +10,7 @@ export default class CombinedTag extends Tag {
      */
     public constructor(tags?: Tag[]) {
         super();
-        this.tags = tags;
+        this._tags = tags ? tags.slice(0) : [];
     }
 
     // #region Properties

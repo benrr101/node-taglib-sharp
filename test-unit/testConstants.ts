@@ -56,17 +56,4 @@ export default class TestConstants {
 
     public static syncedUint = 0x2040810;
     public static syncedUintBytes = ByteVector.fromSize(4, 0x10);
-
-    public static getCorruptFilePath: (fileName: string) => string = (fileName: string )=> {
-        return Path.join(TestConstants.testFileFolderPath, "corruptSamples", fileName);
-    }
-
-    public static getSampleFilePath: (fileName: string) => string = (fileName: string) => {
-        return Path.join(TestConstants.testFileFolderPath, "samples", fileName);
-    }
-
-    public static getTempFilePath: (fileName: string) => string = (fileName: string) => {
-        const fileUid: string = Uuidv4();
-        return Path.join(TestConstants.testFileFolderPath, `${fileUid}_${fileName}`);
-    }
 }
