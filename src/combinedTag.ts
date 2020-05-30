@@ -276,13 +276,13 @@ export default class CombinedTag extends Tag {
      * current instance.
      * Returns the first non-null/non-undefined value from the child tags.
      */
-    public get discCount(): number { return this.getFirstValue((t) => t.disc); }
+    public get discCount(): number { return this.getFirstValue((t) => t.discCount); }
     /**
      * Sets the number of the discs in the boxed set containing the media represented by the
      * current instance. Must be a positive integer positive integer.
      * Sets the value on all child tags
      */
-    public set discCount(val: number) { this.setAllUint((t, v) => { t.disc = v; }, val); }
+    public set discCount(val: number) { this.setAllUint((t, v) => { t.discCount = v; }, val); }
 
     /**
      * Gets the lyrics or script of the media represented by the current instance.
@@ -661,14 +661,14 @@ export default class CombinedTag extends Tag {
             throw new Error("Argument out of range: value must be a positive integer");
         }
         this._tags.forEach((t) => {
-           if (!!t) { return; }
+           if (!t) { return; }
            propertyFn(t, val);
         });
     }
 
     private setAllValues<T>(propertyFn: (t: Tag, val: T) => void, val: T): void {
         this._tags.forEach((t) => {
-            if (!!t) { return; }
+            if (!t) { return; }
             propertyFn(t, val);
         });
     }

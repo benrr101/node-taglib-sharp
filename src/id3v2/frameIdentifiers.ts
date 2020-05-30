@@ -1,4 +1,5 @@
 import {ByteVector, StringType} from "../byteVector";
+import {NotSupportedError} from "../errors";
 import {Guards} from "../utils";
 
 /**
@@ -54,10 +55,15 @@ export class FrameIdentifier {
         Guards.betweenInclusive(version, 2, 4, "version");
         if (!this.versionTable[version]) {
             const newest = this.versionTable[4] || this.versionTable[3] || this.versionTable[2];
-            throw new Error(`Frame ${newest} is not supported in ID3v2 version ${version}`);
+            throw new NotSupportedError(`Frame ${newest} is not supported in ID3v2 version ${version}`);
         }
 
         return ByteVector.fromByteVector(this.versionTable[version]);
+    }
+
+    public toString(): string {
+        const newest = this.versionTable[4] || this.versionTable[3] || this.versionTable[2];
+        return newest.toString();
     }
 }
 
@@ -123,8 +129,8 @@ const uniqueFrameIdentifiers: {[key: string]: FrameIdentifier} = {
     TOWN: new FrameIdentifier("TOWN", "TOWN", undefined), // File owner/licensee
     TPE1: new FrameIdentifier("TPE1", "TPE1", "TP1"), // Lead performer(s)/soloist(s)
     TPE2: new FrameIdentifier("TPE2", "TPE2", "TP2"), // Band/orchestra/accompaniment
-    TPE3: new FrameIdentifier("TPE3", "TEP3", "TP3"), // Counductor/performer refinement
-    TPE4: new FrameIdentifier("TPE4", "TEP4", "TP4"), // Interpreted, remixed, or otherwise modified by
+    TPE3: new FrameIdentifier("TPE3", "TPE3", "TP3"), // Counductor/performer refinement
+    TPE4: new FrameIdentifier("TPE4", "TPE4", "TP4"), // Interpreted, remixed, or otherwise modified by
     TPOS: new FrameIdentifier("TPOS", "TPOS", "TPA"), // Part of a set
     TPRO: new FrameIdentifier("TPRO", undefined, undefined), // Produced notice
     TPUB: new FrameIdentifier("TPUB", "TPUB", "TPB"), // Publisher

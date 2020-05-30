@@ -478,22 +478,49 @@ export class TextInformationFrame extends Frame {
                 }
             }
         } else if (this.frameId === FrameIdentifiers.TCON) {
-            let data = "";
+            // @TODO: This doesn't correctly render multiple numeric genres *sigh*
+            const encodedGenres: Array<{encodedGenre: string, canBeRefined: boolean, hasRefinement: boolean}> = [];
+
             for (const s of text) {
+                // Encode the genre into the proper format
+                let encodedGenre;
+                let canBeRefined = false;
                 if (s === TextInformationFrame.COVER_STRING) {
-                    data += "(CR)";
+                    encodedGenre = "(CR)";
+                    canBeRefined = true;
                 } else if (s === TextInformationFrame.REMIX_STRING) {
-                    data += "(RX)";
+                    encodedGenre = "(RX)";
+                    canBeRefined = true;
                 } else {
                     const id = parseInt(s, 10);
                     if (!Number.isNaN(id)) {
-                        data += `(${id})`;
+                        encodedGenre = `(${id})`;
+                        canBeRefined = true;
                     } else {
-                        data += s.replace("(", "((");
+                        encodedGenre = s.replace("(", "((");
                     }
+                }
+
+                // If is a refinement , add to the last encoded genres
+                if (
+                    encodedGenres.length > 0 &&
+                    encodedGenres[encodedGenres.length - 1].canBeRefined &&
+                    !encodedGenres[encodedGenres.length - 1].hasRefinement &&
+                    !canBeRefined
+                ) {
+                    // The previous
+                    encodedGenres[encodedGenres.length - 1].encodedGenre += encodedGenre;
+                    encodedGenres[encodedGenres.length - 1].hasRefinement = true;
+                } else {
+                    encodedGenres.push({
+                        canBeRefined: canBeRefined,
+                        encodedGenre: encodedGenre,
+                        hasRefinement: false,
+                    });
                 }
             }
 
+            const data = encodedGenres.map((eg) => eg.encodedGenre).join(";");
             v.addByteVector(ByteVector.fromString(data, encoding));
         } else {
             v.addByteVector(ByteVector.fromString(text.join("/"), encoding));

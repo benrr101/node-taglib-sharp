@@ -1,5 +1,5 @@
-import {assert} from "chai";
 import * as fs from "fs";
+import {assert} from "chai";
 
 import ILazy from "../../src/iLazy";
 import TestConstants from "./testConstants";
@@ -216,6 +216,7 @@ export class StandardFileTests {
 
             const dateTagged = (new Date(2017, 9, 12, 22, 47, 42)).getTime();
             assert.strictEqual(tag.dateTagged.getTime(), dateTagged);
+            // @TODO: This doesn't correctly handle what happens if the field isn't supported on the version of the tag
         }
     }
 

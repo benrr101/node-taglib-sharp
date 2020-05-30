@@ -6,6 +6,7 @@ export default class Id3v2Settings {
     private static _defaultVersion: number = 3;
     private static _forceDefaultEncoding: boolean = false;
     private static _forceDefaultVersion: boolean = false;
+    private static _strictFramesForVersion: boolean = false;
     private static _useNumericGenres: boolean = true;           // @TODO: DO WE HAVE TO???
 
     /**
@@ -91,6 +92,23 @@ export default class Id3v2Settings {
      * @param value Whether or not to use genres with numeric values when values when possible
      */
     public static set useNumericGenres(value: boolean) { this._useNumericGenres = value; }
+
+    /**
+     * Gets whether or not attempting to write a frame that is unsupported in the desired version
+     * will throw an error.
+     * If `true` writing a frame that is not supported in the desired version will throw an error
+     * during the render process. If `false` if a frame is not supported in the desired version it
+     * will be omitted from rendering and no error will be thrown.
+     */
+    public static get strictFrameForVersion(): boolean { return this._strictFramesForVersion; }
+    /**
+     * Sets whether or not attempting to write a frame that is unsupported in the desired version
+     * will throw an error.
+     * If `true` writing a frame that is not supported in the desired version will throw an error
+     * during the render process. If `false` if a frame is not supported in the desired version it
+     * will be omitted from rendering and no error will be thrown.
+     */
+    public static set strictFrameForVersion(value: boolean) { this._strictFramesForVersion = value; }
 
     // @TODO: Add flag for disabling iTunes-only frames
 }
