@@ -479,7 +479,7 @@ export abstract class File {
         const buffer = new Uint8Array(File.bufferSize);
         const stopShufflingIndex = start + replace + bytesToAdd;
         let shuffleIndex = this._fileStream.length;
-        while (shuffleIndex > stopShufflingIndex + bytesToAdd) {
+        while (shuffleIndex > stopShufflingIndex) {
             const bytesToReplace = Math.min(shuffleIndex - stopShufflingIndex, File.bufferSize);
 
             // Fill up the buffer

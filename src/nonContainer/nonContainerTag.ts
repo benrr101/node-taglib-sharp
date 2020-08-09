@@ -127,9 +127,14 @@ export default class NonContainerTag extends CombinedTag {
      *     end - Position in the file where tags at the end of the file begin
      */
     public write(): { start: number, end: number} {
+        // NOTE: As nice as it would be to do this in an object initialization block, we need to
+        //     write the start tag first then the end tag. Otherwise we'll get the wrong position
+        //     for the end of the media.
+        const start = this.startTag.write();
+        const end = this.endTag.write();
         return {
-            end: this.endTag.write(),
-            start: this.startTag.write()
+            end: end,
+            start: start
         };
     }
 

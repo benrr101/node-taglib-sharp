@@ -6,6 +6,8 @@ import {Id3v2FrameHeader} from "./frameHeader";
 import {FrameIdentifiers} from "../frameIdentifiers";
 import {IPicture, Picture, PictureType} from "../../picture";
 import {Guards} from "../../utils";
+import {IFileAbstraction} from "../../fileAbstraction";
+import PictureLazy from "../../pictureLazy";
 
 export default class AttachmentFrame extends Frame implements IPicture {
     // NOTE: It probably doesn't look necessary to implement IPicture, but it makes converting a
@@ -16,8 +18,8 @@ export default class AttachmentFrame extends Frame implements IPicture {
     private _encoding: StringType = Id3v2Settings.defaultEncoding;
     private _filename: string;
     private _mimeType: string;
-    private _rawPicture: IPicture;
     private _rawData: ByteVector;
+    private _rawPicture: IPicture;
     private _rawVersion: number;
     private _type: PictureType;
 
@@ -63,9 +65,39 @@ export default class AttachmentFrame extends Frame implements IPicture {
     public static fromPicture(picture: IPicture): AttachmentFrame {
         Guards.truthy(picture, "picture");
 
-        // In this case we will assume the frame is an APIC until the picture is parsed
-        const frame = new AttachmentFrame(new Id3v2FrameHeader(FrameIdentifiers.APIC));
+        // NOTE: We assume the frame is an APIC frame of size 1 until we parse it and find out
+        //     otherwise.
+        const frame = new AttachmentFrame(new Id3v2FrameHeader(FrameIdentifiers.APIC, undefined, 1));
         frame._rawPicture = picture;
+        return frame;
+    }
+
+    /**
+     * Constructs and initializes a new attachment frame by populating it with the contents of a
+     * section of a file. This constructor is only meant to be used by the {@see FrameFactory}
+     * class. All loading is done lazily.
+     * @param file File to load frame data from
+     * @param header ID3v2 frame header that defines the frame
+     * @param frameStart Index into the file where the frame starts
+     * @param size Length of the frame data
+     * @param version ID3v2 version the frame was originally encoded with
+     */
+    // @TODO: Make lazy loading optional
+    public static fromFile(
+        file: IFileAbstraction,
+        header: Id3v2FrameHeader,
+        frameStart: number,
+        size: number,
+        version: number
+    ): AttachmentFrame {
+        Guards.truthy(file, "file");
+        Guards.truthy(header, "header");
+        Guards.uint(frameStart, "frameStart");
+        Guards.uint(size, "size");
+
+        const frame = new AttachmentFrame(header);
+        frame._rawPicture = PictureLazy.fromFile(file, frameStart, size);
+        frame._rawVersion = version;
         return frame;
     }
 
@@ -323,7 +355,13 @@ export default class AttachmentFrame extends Frame implements IPicture {
         if (this._rawData) {
             this.parseFromRawData();
         } else if (this._rawPicture) {
-            this.parseFromRawPicture();
+            if (this._rawVersion !== undefined) {
+                this._rawData = this._rawPicture.data;
+                this._rawPicture = undefined;
+                this.parseFromRawData();
+            } else {
+                this.parseFromRawPicture();
+            }
         }
     }
 
@@ -392,15 +430,16 @@ export default class AttachmentFrame extends Frame implements IPicture {
             const mimeTypeLength = mimeTypeEndIndex - 1;
             this._mimeType = data.toString(mimeTypeLength, StringType.Latin1, 1);
 
-            const filenameEndIndex = data.find(delim, mimeTypeEndIndex + 1);
+            const filenameEndIndex = data.find(delim, mimeTypeEndIndex + 1, delim.length);
             const filenameLength = filenameEndIndex - mimeTypeEndIndex - 1;
             this._filename = data.toString(filenameLength, this._encoding, mimeTypeEndIndex + 1);
 
-            descriptionEndIndex = data.find(delim, filenameEndIndex + delim.length);
+            descriptionEndIndex = data.find(delim, filenameEndIndex + delim.length, delim.length);
             const descriptionLength = descriptionEndIndex - filenameEndIndex - delim.length;
             this._description = data.toString(descriptionLength, this._encoding, filenameEndIndex + delim.length);
 
             this._data = data.mid(descriptionEndIndex + delim.length);
+            this._type = PictureType.NotAPicture;
         } else {
             // Unsupported
             throw new Error("Unsupported: AttachmentFrame cannot be used for frame IDs other than GEOB or APIC");
@@ -418,6 +457,7 @@ export default class AttachmentFrame extends Frame implements IPicture {
         this._filename = picture.filename;
         this._mimeType = picture.mimeType;
         this._type = picture.type;
+        this._header.frameSize = this._data.length;
 
         this._encoding = Id3v2Settings.defaultEncoding;
 
