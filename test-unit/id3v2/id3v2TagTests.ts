@@ -1905,16 +1905,48 @@ function getTestTagHeader(version: number, flags: Id3v2TagHeaderFlags, tagSize: 
     }
 
     @test
-    public render_v4_unsupportedFrameForVersion() {
+    public render_v4_unsupportedFrameForVersion_disallowedViaSettings() {
         // Arrange
         const tag = Id3v2Tag.fromEmpty();
         tag.version = 4;
 
+        const originalSetting = Id3v2Settings.strictFrameForVersion;
+        Id3v2Settings.strictFrameForVersion = true;
+
         const frame1 = TextInformationFrame.fromIdentifier(FrameIdentifiers.TYER);
         tag.frames.push(frame1);
 
-        // Act / Assert
-        assert.throws(() => { const _ = tag.render(); });
+        try {
+            // Act / Assert
+            assert.throws(() => { const _ = tag.render(); });
+        } finally {
+            Id3v2Settings.strictFrameForVersion = originalSetting;
+        }
+    }
+
+    @test
+    public render_v4_unsupportedFrameForVersion_allowedViaSettings() {
+        // Arrange
+        const tag = Id3v2Tag.fromEmpty();
+        tag.version = 4;
+
+        const originalSetting = Id3v2Settings.strictFrameForVersion;
+        Id3v2Settings.strictFrameForVersion = false;
+
+        const frame1 = TextInformationFrame.fromIdentifier(FrameIdentifiers.TYER);
+        tag.frames.push(frame1);
+
+        try {
+            // Act
+            const bytes = tag.render();
+            const rehydratedTag = Id3v2Tag.fromData(bytes);
+
+            // Assert
+            assert.strictEqual(rehydratedTag.version, 4);
+            assert.strictEqual(rehydratedTag.frames.length, 0);
+        } finally {
+            Id3v2Settings.strictFrameForVersion = originalSetting;
+        }
     }
 
     @test
