@@ -3,7 +3,6 @@ import * as DateFormat from "dateformat";
 import AttachmentFrame from "./frames/attachmentFrame";
 import CommentsFrame from "./frames/commentsFrame";
 import FrameFactory from "./frames/frameFactory";
-import Genres from "../genres";
 import Id3v2ExtendedHeader from "./id3v2ExtendedHeader";
 import Id3v2TagFooter from "./id3v2TagFooter";
 import Id3v2Settings from "./id3v2Settings";
@@ -370,23 +369,7 @@ export default class Id3v2Tag extends Tag {
 
     /** @inheritDoc via TCON frame */
     get genres(): string[] {
-        const text = this.getTextAsArray(FrameIdentifiers.TCON);
-        if (text.length === 0) { return text; }
-
-        const list = [];
-        for (const genre of text) {
-            if (!genre) { continue; }
-
-            // The string may just be a genre number
-            const genreFromIndex = Genres.indexToAudio(genre);
-            if (genreFromIndex) {
-                list.push(genreFromIndex);
-            } else {
-                list.push(genre);
-            }
-        }
-
-        return list;
+        return this.getTextAsArray(FrameIdentifiers.TCON);
     }
     /** @inheritDoc via TCON frame */
     set genres(value: string[]) {
@@ -396,15 +379,7 @@ export default class Id3v2Tag extends Tag {
         }
 
         // Clone the array so changes made won't affect the passed array
-        value = value.slice();
-        for (let i = 0; i < value.length; i++) {
-            const index = Genres.audioToIndex(value[i]);
-            if (index !== 255) {
-                value[i] = index.toString();
-            }
-        }
-
-        this.setTextFrame(FrameIdentifiers.TCON, ...value);
+        this.setTextFrame(FrameIdentifiers.TCON, ...value.slice());
     }
 
     /**

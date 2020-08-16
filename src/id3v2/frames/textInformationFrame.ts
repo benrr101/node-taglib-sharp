@@ -4,7 +4,7 @@ import {ByteVector, StringType} from "../../byteVector";
 import {Frame, FrameClassType} from "./frame";
 import {Id3v2FrameHeader} from "./frameHeader";
 import {FrameIdentifier, FrameIdentifiers} from "../frameIdentifiers";
-import {Guards, StringComparison} from "../../utils";
+import {Guards, StringComparison, StringUtils} from "../../utils";
 
 /**
  * This class provides support for ID3v2 text information frames (section 4.2) covering `T000` to
@@ -128,8 +128,24 @@ import {Guards, StringComparison} from "../../utils";
  *   (TIT2) for sorting purposes.
  */
 export class TextInformationFrame extends Frame {
+    private static COVER_ABBREV = "CR";
     private static COVER_STRING = "Cover";
+    private static REMIX_ABBREV = "RX";
     private static REMIX_STRING = "Remix";
+    private static SPLIT_FRAME_TYPES = [
+        FrameIdentifiers.TCOM,
+        FrameIdentifiers.TEXT,
+        FrameIdentifiers.TMCL,
+        FrameIdentifiers.TOLY,
+        FrameIdentifiers.TOPE,
+        FrameIdentifiers.TSOC,
+        FrameIdentifiers.TSOP,
+        FrameIdentifiers.TSO2,
+        FrameIdentifiers.TPE1,
+        FrameIdentifiers.TPE2,
+        FrameIdentifiers.TPE3,
+        FrameIdentifiers.TPE4
+    ];
 
     protected _encoding: StringType = Id3v2Settings.defaultEncoding;
     protected _rawData: ByteVector;
@@ -346,8 +362,25 @@ export class TextInformationFrame extends Frame {
         const fieldList = [];
         const delim = ByteVector.getTextDelimiter(this._encoding);
 
-        if (this._rawVersion > 3 || this.frameId === FrameIdentifiers.TXXX) {
-            fieldList.push(... data.toStrings(this._encoding, 1));
+        if (this._rawVersion > 3 && this.frameId === FrameIdentifiers.TCON) {
+            // TCON on ID3v2.4 is encoded as a separate field for each genre. Fields can either be
+            // the old numeric ID3v1 genres (no parenthesis) or free text. RX/CR can also be used.
+            // This way is **much** better...
+            const genres = data.toStrings(this._encoding, 1);
+            const textGenres = genres.map((g) => {
+                switch (g) {
+                    case TextInformationFrame.COVER_ABBREV:
+                        return TextInformationFrame.COVER_STRING;
+                    case TextInformationFrame.REMIX_ABBREV:
+                        return TextInformationFrame.REMIX_STRING;
+                    default:
+                        const textGenre = Genres.indexToAudio(g, false);
+                        return textGenre || g;
+                }
+            });
+            fieldList.push(...textGenres);
+        } else if (this._rawVersion > 3 || this.frameId === FrameIdentifiers.TXXX) {
+            fieldList.push(...data.toStrings(this._encoding, 1));
         } else if (data.length > 1 && !ByteVector.equal(data.mid(1, delim.length), delim)) {
             let value = data.toString(data.length - 1, this._encoding, 1);
 
@@ -357,78 +390,61 @@ export class TextInformationFrame extends Frame {
                 value = value.substring(0, nullIndex);
             }
 
-            const splitFrameTypes = [
-                FrameIdentifiers.TCOM,
-                FrameIdentifiers.TEXT,
-                FrameIdentifiers.TMCL,
-                FrameIdentifiers.TOLY,
-                FrameIdentifiers.TOPE,
-                FrameIdentifiers.TSOC,
-                FrameIdentifiers.TSOP,
-                FrameIdentifiers.TSO2,
-                FrameIdentifiers.TPE1,
-                FrameIdentifiers.TPE2,
-                FrameIdentifiers.TPE3,
-                FrameIdentifiers.TPE4
-            ];
-            if (splitFrameTypes.some((ft) => ft === this.frameId)) {
+            if (TextInformationFrame.SPLIT_FRAME_TYPES.some((ft) => ft === this.frameId)) {
                 // Some frames are designed to be split into multiple parts by a /
                 fieldList.push(... value.split("/"));
             } else if (this.frameId === FrameIdentifiers.TCON) {
-                // TCON can take various formats. The ID3v2.3 docs specify it can be:
+                // TCON in ID3v2.2 and ID3v2.3 is specified as
                 // * (xx) - where xx is a number from the ID3v1 genre list
-                // * (xx)yyy - where xx is a number from the ID3v1 genre list and yyy is a
-                //     "refinement" of the genre
-                // * genrename - just a genre name
-                // * (RX) - a remix
-                // * (CR) - a cover
-                // * (( - used to escape a '(' in a refinement/genre name
-                // * Any combination of the above
+                // * (xx)yy - where xx is a number from the ID3v1 genre list and yyy is a
+                //   "refinement" of the genre
+                // * (RX) - "Remix"
+                // * (CR) - "Cover"
+                // * (( - used to escape a "(" in a refinement/genre name
 
-                // Although this could probably be expressed with a ridiculous regex, we're just
-                // going to do it with a single iteration over the value
-                const buffer = [];
-                let index = 0;
-                let insideParen = false;
-                while (index < value.length) {
-                    if (value[index] === "(") {
-                        if (index < value.length - 1 && value[index + 1] === "(") {
-                            // This is an escaped paren
-                            buffer.push("(");
-                            index++;
-                        } else {
-                            // We opened a parenthesis block
-                            insideParen = true;
+                // NOTE: This encoding has and inherent flaw around how multiple genres should be
+                //    encoded. Since multiple genres are already an edge case, I'm just going to
+                //    say yolo to this whole block of code copied over from the .NET implementation
 
-                            // If there are bytes in the buffer, add them to the field list
-                            TextInformationFrame.addBufferToFieldList(buffer, fieldList);
-                        }
-                    } else if (value[index] === ")" && insideParen) {
-                        // We just closed a parenthesis block, store the string
-                        if (buffer.length === 2 && buffer[0] === "R" && buffer[1] === "X") {
-                            fieldList.push(TextInformationFrame.REMIX_STRING);
-                        } else if (buffer.length === 2 && buffer[0] === "C" && buffer[1] === "R") {
-                            fieldList.push(TextInformationFrame.COVER_STRING);
-                        } else {
-                            fieldList.push(buffer.join(""));
-                        }
-
-                        buffer.length = 0;
-                        insideParen = false;
-                    } else if (value[index] === ";" && !insideParen) {
-                        // We just hit a delimiter for the genre, store the string
-                        fieldList.push(buffer.join(""));
-                        buffer.length = 0;
-                    } else {
-                        // Some other character
-                        buffer.push(value[index]);
+                while (value.length > 1 && value[0] === "(") {
+                    const closing = value.indexOf(")");
+                    if (closing < 0) {
+                        break;
                     }
 
-                    index++;
+                    const number = value.substr(1, closing - 1);
+
+                    let text: string;
+                    if (number === TextInformationFrame.COVER_ABBREV) {
+                        text = TextInformationFrame.COVER_STRING;
+                    } else if (number === TextInformationFrame.REMIX_ABBREV) {
+                        text = TextInformationFrame.REMIX_STRING;
+                    } else {
+                        text = Genres.indexToAudio(number, true);
+                    }
+
+                    if (!text) {
+                        // Number in parenthesis was not a numeric genre but part of a larger bit
+                        // of text?
+                        break;
+                    }
+
+                    // Number in parenthesis was a numeric genre
+                    fieldList.push(text);
+                    value = StringUtils.trimStart(value.substr(closing + 1), "/ ");
+
+                    // Ignore genre if the same genre appears after the numeric genre
+                    if (value.startsWith(text)) {
+                        value = StringUtils.trimStart(value.substr(text.length), "/ ");
+                    }
                 }
 
-                // Clear the buffer
-                TextInformationFrame.addBufferToFieldList(buffer, fieldList);
+                // Split the remaining genre value by dividers
+                // NOTE: Nowhere in the spec is this specified!
+                if (value.length > 0) {
+                    const splitValues = value.split(/[\/;]/).map((v) => v.replace(/\(\(/, "("));
+                    fieldList.push(...splitValues);
+                }
             } else {
                 fieldList.push(value);
             }
@@ -456,6 +472,16 @@ export class TextInformationFrame extends Frame {
 
         v.addByte(encoding);
 
+        // Pre-process ID3v2.4 TCON frames
+        if (version > 3 && this.frameId === FrameIdentifiers.TCON && Id3v2Settings.useNumericGenres) {
+            // For ID3v2.4, we should encode any genres that can be numeric as numeric by
+            // themselves. This then gets encoded the same as any other ID3v2.4 text frame.
+            text = text.map((g) => {
+                const numericGenre = Genres.audioToIndex(g);
+                return numericGenre === 255 ? g : numericGenre.toString();
+            });
+        }
+
         const isTxxx = this.frameId === FrameIdentifiers.TXXX;
         if (version > 3 || isTxxx) {
             if (isTxxx) {
@@ -478,6 +504,9 @@ export class TextInformationFrame extends Frame {
                 }
             }
         } else if (this.frameId === FrameIdentifiers.TCON) {
+            // @TODO
+            if ()
+
             // @TODO: This doesn't correctly render multiple numeric genres *sigh*
             const encodedGenres: Array<{encodedGenre: string, canBeRefined: boolean, hasRefinement: boolean}> = [];
 
@@ -530,31 +559,6 @@ export class TextInformationFrame extends Frame {
     }
 
     // #endregion
-
-    private static addBufferToFieldList(buffer: string[], previousStrings: string[]): void {
-        if (buffer.length === 0) {
-            return;
-        }
-
-        const output = buffer.join("");
-
-        // Attempt to convert the string to a genre number
-        const genreNumber = Genres.audioToIndex(output);
-        if (genreNumber === 255) {
-            // String isn't a genre, so it should be stored
-            previousStrings.push(output);
-        } else {
-            // String is a genre, only store it if the genre number isn't stored in the previous strings
-            if (
-                previousStrings.length === 0 ||
-                previousStrings[previousStrings.length - 1] !== genreNumber.toString(10)
-            ) {
-                previousStrings.push(output);
-            }
-        }
-
-        buffer.length = 0;
-    }
 }
 
 export class UserTextInformationFrame extends TextInformationFrame {

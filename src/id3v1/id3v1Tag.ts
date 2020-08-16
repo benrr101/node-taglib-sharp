@@ -142,7 +142,7 @@ export default class Id3v1Tag extends Tag {
 
     /** @inheritDoc */
     public get genres(): string[] {
-        const genreName = Genres.indexToAudio(this._genre);
+        const genreName = Genres.indexToAudio(this._genre, false);
         return genreName ? [genreName] : [];
     }
     /**

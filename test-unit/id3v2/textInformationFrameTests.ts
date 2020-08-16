@@ -163,11 +163,11 @@ function getTestFrame(): TextInformationFrame {
         // Arrange
         // - Let's get crazy and try to handle all the cases at once
         const header = new Id3v2FrameHeader(FrameIdentifiers.TCON);
-        header.frameSize = 82;
+        header.frameSize = 69; // nice
         const data = ByteVector.concatenate(
             header.render(3),
             StringType.Latin1,
-            ByteVector.fromString("SomeGenre(32)(32)Classical(CR)(RX)Whoa here's some cra((z)y string;here's another")
+            ByteVector.fromString("(32)Classical(CR)(RX)Whoa here's some cra((z)y string;here's another")
         );
 
         // Act
@@ -175,13 +175,35 @@ function getTestFrame(): TextInformationFrame {
 
         // Assert
         this.assertFrame(frame, FrameIdentifiers.TCON, [
-            "SomeGenre",
-            "32",
-            "32",
+            "Classical",
             "Cover",
             "Remix",
             "Whoa here's some cra(z)y string",
             "here's another"
+        ]);
+    }
+
+    @test
+    public fromRawData_v4Tcon_returnsListOfStrings() {
+        // Arrange
+        const header = new Id3v2FrameHeader(FrameIdentifiers.TCON);
+        header.frameSize = 19;
+        const data = ByteVector.concatenate(
+            header.render(4),
+            StringType.Latin1,
+            ByteVector.fromString("32"), ByteVector.getTextDelimiter(StringType.Latin1),
+            ByteVector.fromString("(32)"), ByteVector.getTextDelimiter(StringType.Latin1),
+            ByteVector.fromString("some genre")
+        );
+
+        // Act
+        const frame = TextInformationFrame.fromRawData(data, 4);
+
+        // Assert
+        this.assertFrame(frame, FrameIdentifiers.TCON, [
+            "Classical",
+            "(32)",
+            "some genre"
         ]);
     }
 
@@ -480,6 +502,11 @@ function getTestFrame(): TextInformationFrame {
         );
 
         assert.isTrue(ByteVector.equal(output, expected));
+    }
+
+    @test
+    public render_readV4Tcon() {
+
     }
 
     @test

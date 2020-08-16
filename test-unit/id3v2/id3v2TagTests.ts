@@ -605,7 +605,7 @@ function getTestTagHeader(version: number, flags: Id3v2TagHeaderFlags, tagSize: 
         // Arrange
         const tag = Id3v2Tag.fromEmpty();
         const frame = TextInformationFrame.fromIdentifier(FrameIdentifiers.TCON);
-        frame.text = ["32", "foo"];
+        frame.text = ["Classical", "foo"];
         tag.addFrame(frame);
 
         // Act
@@ -627,7 +627,7 @@ function getTestTagHeader(version: number, flags: Id3v2TagHeaderFlags, tagSize: 
         assert.strictEqual(tag.frames.length, 1);
         assert.strictEqual(tag.frames[0].frameClassType, FrameClassType.TextInformationFrame);
         assert.strictEqual(tag.frames[0].frameId, FrameIdentifiers.TCON);
-        assert.deepStrictEqual((<TextInformationFrame> tag.frames[0]).text, ["32", "foo"]);
+        assert.deepStrictEqual((<TextInformationFrame> tag.frames[0]).text, ["Classical", "foo"]);
     }
 
     @test
@@ -645,7 +645,7 @@ function getTestTagHeader(version: number, flags: Id3v2TagHeaderFlags, tagSize: 
         assert.strictEqual(tag.frames.length, 1);
         assert.strictEqual(tag.frames[0].frameClassType, FrameClassType.TextInformationFrame);
         assert.strictEqual(tag.frames[0].frameId, FrameIdentifiers.TCON);
-        assert.deepStrictEqual((<TextInformationFrame> tag.frames[0]).text, ["32", "foo"]);
+        assert.deepStrictEqual((<TextInformationFrame> tag.frames[0]).text, ["Classical", "foo"]);
     }
 
     @test

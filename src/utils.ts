@@ -116,3 +116,12 @@ export class ArrayUtils {
 export class NumberUtils {
 
 }
+
+export class StringUtils {
+    public static trimStart(trimee: string, chars: string) {
+        while (trimee.length > 0 && chars.indexOf(trimee[0]) > -1) {
+            trimee = trimee.substr(0);
+        }
+        return trimee;
+    }
+}
