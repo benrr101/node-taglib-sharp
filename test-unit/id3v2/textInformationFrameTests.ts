@@ -472,41 +472,194 @@ function getTestFrame(): TextInformationFrame {
     }
 
     @test
-    public render_readV3Tcon() {
-        // Arrange
-        let header = new Id3v2FrameHeader(FrameIdentifiers.TCON);
-        header.frameSize = 67;
-        const data = ByteVector.concatenate(
-            header.render(3),
-            StringType.Latin1,
-            ByteVector.fromString(
-                "SomeGenre(32)(32)Classical(CR)(RX)Whoa here's some cra((z)y string",
-                StringType.Latin1
-            )
-        );
-        const frame = TextInformationFrame.fromRawData(data, 3);
-        const _ = frame.text; // Force a read
+    public render_readV3Tcon_numericGenresEnabled() {
+        // Ensure numeric genres are enabled
+        const oldNumericGenresValue = Id3v2Settings.useNumericGenres;
+        Id3v2Settings.useNumericGenres = true;
 
-        // Act
-        const output = frame.render(3);
+        try {
+            // Arrange
+            let header = new Id3v2FrameHeader(FrameIdentifiers.TCON);
+            header.frameSize = 68;
+            const data = ByteVector.concatenate(
+                header.render(3),
+                StringType.Latin1,
+                ByteVector.fromString(
+                    "(32)Classical(CR)(32)(RX)SomeGenre;Whoa here's some cra((z)y string",
+                    StringType.Latin1
+                )
+            );
+            const frame = TextInformationFrame.fromRawData(data, 3);
+            const _ = frame.text; // Force a read
 
-        // Assert
-        assert.ok(output);
+            // Act
+            const output = frame.render(3);
 
-        header = new Id3v2FrameHeader(FrameIdentifiers.TCON);
-        header.frameSize = 58;
-        const expected = ByteVector.concatenate(
-            header.render(3),
-            StringType.Latin1,
-            ByteVector.fromString("SomeGenre(32)(32)(CR)(RX)Whoa here's some cra((z)y string", StringType.Latin1)
-        );
+            // Assert
+            assert.ok(output);
 
-        assert.isTrue(ByteVector.equal(output, expected));
+            header = new Id3v2FrameHeader(FrameIdentifiers.TCON);
+            header.frameSize = 59;
+            const expected = ByteVector.concatenate(
+                header.render(3),
+                StringType.Latin1,
+                ByteVector.fromString("(32)(CR)(32)(RX)SomeGenre;Whoa here's some cra((z)y string", StringType.Latin1)
+            );
+
+            assert.isTrue(ByteVector.equal(output, expected));
+        } finally {
+            // Cleanup - Reset numeric genres setting
+            Id3v2Settings.useNumericGenres = oldNumericGenresValue;
+        }
     }
 
     @test
-    public render_readV4Tcon() {
+    public render_readV3Tcon_numericGenresDisabled() {
+        // Disable numeric genres
+        const oldNumericGenresValue = Id3v2Settings.useNumericGenres;
+        Id3v2Settings.useNumericGenres = false;
 
+        try {
+            // Arrange
+            let header = new Id3v2FrameHeader(FrameIdentifiers.TCON);
+            header.frameSize = 68;
+            const data = ByteVector.concatenate(
+                header.render(3),
+                StringType.Latin1,
+                ByteVector.fromString(
+                    "(32)Classical(CR)(32)(RX)SomeGenre;Whoa here's some cra((z)y string",
+                    StringType.Latin1
+                )
+            );
+            const frame = TextInformationFrame.fromRawData(data, 3);
+            const _ = frame.text; // Force a read
+
+            // Act
+            const output = frame.render(3);
+
+            // Assert
+            assert.ok(output);
+
+            header = new Id3v2FrameHeader(FrameIdentifiers.TCON);
+            header.frameSize = 71;
+            const expected = ByteVector.concatenate(
+                header.render(3),
+                StringType.Latin1,
+                ByteVector.fromString(
+                    "(CR)(RX)Classical;Classical;SomeGenre;Whoa here's some cra((z)y string",
+                    StringType.Latin1
+                )
+            );
+
+            assert.isTrue(ByteVector.equal(output, expected));
+        } finally {
+            // Cleanup: Reset numeric genres setting
+            Id3v2Settings.useNumericGenres = oldNumericGenresValue;
+        }
+    }
+
+    @test
+    public render_readV4Tcon_numericGenresEnabled() {
+        // Ensure numeric genres are enabled
+        const oldNumericGenresValue = Id3v2Settings.useNumericGenres;
+        Id3v2Settings.useNumericGenres = true;
+
+        try {
+            // Arrange
+            let header = new Id3v2FrameHeader(FrameIdentifiers.TCON);
+            header.frameSize = 68;
+            const data = ByteVector.concatenate(
+                header.render(3),
+                StringType.Latin1,
+                ByteVector.fromString(
+                    "(32)Classical(CR)(32)(RX)SomeGenre;Whoa here's some cra((z)y string",
+                    StringType.Latin1
+                )
+            );
+            const frame = TextInformationFrame.fromRawData(data, 3);
+            const _ = frame.text; // Force a read
+
+            // Act
+            const output = frame.render(4);
+
+            // Assert
+            assert.ok(output);
+
+            header = new Id3v2FrameHeader(FrameIdentifiers.TCON);
+            header.frameSize = 54;
+            const expected = ByteVector.concatenate(
+                header.render(4),
+                StringType.Latin1,
+                ByteVector.fromString("32", StringType.Latin1),
+                ByteVector.getTextDelimiter(StringType.Latin1),
+                ByteVector.fromString("CR", StringType.Latin1),
+                ByteVector.getTextDelimiter(StringType.Latin1),
+                ByteVector.fromString("32", StringType.Latin1),
+                ByteVector.getTextDelimiter(StringType.Latin1),
+                ByteVector.fromString("RX", StringType.Latin1),
+                ByteVector.getTextDelimiter(StringType.Latin1),
+                ByteVector.fromString("SomeGenre", StringType.Latin1),
+                ByteVector.getTextDelimiter(StringType.Latin1),
+                ByteVector.fromString("Whoa here's some cra(z)y string", StringType.Latin1)
+            );
+
+            assert.isTrue(ByteVector.equal(output, expected));
+        } finally {
+            // Cleanup - Reset numeric genres setting
+            Id3v2Settings.useNumericGenres = oldNumericGenresValue;
+        }
+    }
+
+    @test
+    public render_readV4Tcon_numericGenresDisabled() {
+        // Ensure numeric genres are disabled
+        const oldNumericGenresValue = Id3v2Settings.useNumericGenres;
+        Id3v2Settings.useNumericGenres = false;
+
+        try {
+            // Arrange
+            let header = new Id3v2FrameHeader(FrameIdentifiers.TCON);
+            header.frameSize = 68;
+            const data = ByteVector.concatenate(
+                header.render(3),
+                StringType.Latin1,
+                ByteVector.fromString(
+                    "(32)Classical(CR)(32)(RX)SomeGenre;Whoa here's some cra((z)y string",
+                    StringType.Latin1
+                )
+            );
+            const frame = TextInformationFrame.fromRawData(data, 3);
+            const _ = frame.text; // Force a read
+
+            // Act
+            const output = frame.render(4);
+
+            // Assert
+            assert.ok(output);
+
+            header = new Id3v2FrameHeader(FrameIdentifiers.TCON);
+            header.frameSize = 68;
+            const expected = ByteVector.concatenate(
+                header.render(4),
+                StringType.Latin1,
+                ByteVector.fromString("Classical", StringType.Latin1),
+                ByteVector.getTextDelimiter(StringType.Latin1),
+                ByteVector.fromString("CR", StringType.Latin1),
+                ByteVector.getTextDelimiter(StringType.Latin1),
+                ByteVector.fromString("Classical", StringType.Latin1),
+                ByteVector.getTextDelimiter(StringType.Latin1),
+                ByteVector.fromString("RX", StringType.Latin1),
+                ByteVector.getTextDelimiter(StringType.Latin1),
+                ByteVector.fromString("SomeGenre", StringType.Latin1),
+                ByteVector.getTextDelimiter(StringType.Latin1),
+                ByteVector.fromString("Whoa here's some cra(z)y string", StringType.Latin1)
+            );
+
+            assert.isTrue(ByteVector.equal(output, expected));
+        } finally {
+            // Cleanup - Reset numeric genres setting
+            Id3v2Settings.useNumericGenres = oldNumericGenresValue;
+        }
     }
 
     @test

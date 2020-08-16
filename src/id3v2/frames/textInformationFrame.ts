@@ -473,15 +473,27 @@ export class TextInformationFrame extends Frame {
         v.addByte(encoding);
 
         // Pre-process ID3v2.4 TCON frames
-        if (version > 3 && this.frameId === FrameIdentifiers.TCON && Id3v2Settings.useNumericGenres) {
+        if (version > 3 && this.frameId === FrameIdentifiers.TCON) {
             // For ID3v2.4, we should encode any genres that can be numeric as numeric by
-            // themselves. This then gets encoded the same as any other ID3v2.4 text frame.
+            // themselves. This then gets encoded the same as any other ID3v2.4 text frame (ie,
+            // with delimiters in between values)
             text = text.map((g) => {
-                const numericGenre = Genres.audioToIndex(g);
-                return numericGenre === 255 ? g : numericGenre.toString();
+                switch (g) {
+                    case TextInformationFrame.COVER_STRING:
+                        return TextInformationFrame.COVER_ABBREV;
+                    case TextInformationFrame.REMIX_STRING:
+                        return TextInformationFrame.REMIX_ABBREV;
+                    default:
+                        if (Id3v2Settings.useNumericGenres) {
+                            const numericGenre = Genres.audioToIndex(g);
+                            return numericGenre === 255 ? g : numericGenre.toString();
+                        }
+                        return g;
+                }
             });
         }
 
+        // Main processing
         const isTxxx = this.frameId === FrameIdentifiers.TXXX;
         if (version > 3 || isTxxx) {
             if (isTxxx) {
@@ -504,54 +516,39 @@ export class TextInformationFrame extends Frame {
                 }
             }
         } else if (this.frameId === FrameIdentifiers.TCON) {
-            // @TODO
-            if ()
-
-            // @TODO: This doesn't correctly render multiple numeric genres *sigh*
-            const encodedGenres: Array<{encodedGenre: string, canBeRefined: boolean, hasRefinement: boolean}> = [];
-
+            // ID3v2.2 and ID3v2.3 TCON frames are going to be written with numeric genres first
+            // (if enabled) and multiple text-based genres separated by ;.
+            // NOTE: This doesn't follow the actual conventions for ID3v2.2/3 but nobody does this
+            //    correctly. This implementation will at least work with MinimServer
+            //    https://forum.minimserver.com/showthread.php?tid=2575
+            const numericGenres = [];
+            const textGenres = [];
             for (const s of text) {
-                // Encode the genre into the proper format
-                let encodedGenre;
-                let canBeRefined = false;
-                if (s === TextInformationFrame.COVER_STRING) {
-                    encodedGenre = "(CR)";
-                    canBeRefined = true;
-                } else if (s === TextInformationFrame.REMIX_STRING) {
-                    encodedGenre = "(RX)";
-                    canBeRefined = true;
-                } else {
-                    const id = parseInt(s, 10);
-                    if (!Number.isNaN(id)) {
-                        encodedGenre = `(${id})`;
-                        canBeRefined = true;
-                    } else {
-                        encodedGenre = s.replace("(", "((");
-                    }
-                }
-
-                // If is a refinement , add to the last encoded genres
-                if (
-                    encodedGenres.length > 0 &&
-                    encodedGenres[encodedGenres.length - 1].canBeRefined &&
-                    !encodedGenres[encodedGenres.length - 1].hasRefinement &&
-                    !canBeRefined
-                ) {
-                    // The previous
-                    encodedGenres[encodedGenres.length - 1].encodedGenre += encodedGenre;
-                    encodedGenres[encodedGenres.length - 1].hasRefinement = true;
-                } else {
-                    encodedGenres.push({
-                        canBeRefined: canBeRefined,
-                        encodedGenre: encodedGenre,
-                        hasRefinement: false,
-                    });
+                switch (s) {
+                    case TextInformationFrame.COVER_STRING:
+                        numericGenres.push(`(${TextInformationFrame.COVER_ABBREV})`);
+                        break;
+                    case TextInformationFrame.REMIX_STRING:
+                        numericGenres.push(`(${TextInformationFrame.REMIX_ABBREV})`);
+                        break;
+                    default:
+                        if (Id3v2Settings.useNumericGenres) {
+                            const numericGenre = Genres.audioToIndex(s);
+                            if (numericGenre !== 255) {
+                                numericGenres.push(`(${numericGenre})`);
+                                break;
+                            }
+                        }
+                        textGenres.push(s.replace(/\(/, "(("));
+                        break;
                 }
             }
 
-            const data = encodedGenres.map((eg) => eg.encodedGenre).join(";");
-            v.addByteVector(ByteVector.fromString(data, encoding));
+            // Put the entire string together
+            const genreString = `${numericGenres.join("")}${textGenres.join(";")}`;
+            v.addByteVector(ByteVector.fromString(genreString, this._encoding));
         } else {
+            // Fields that have slashes in them and fields that don't
             v.addByteVector(ByteVector.fromString(text.join("/"), encoding));
         }
 
