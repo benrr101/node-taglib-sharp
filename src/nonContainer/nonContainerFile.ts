@@ -141,6 +141,7 @@ export default abstract class NonContainerFile extends BaseFile {
                 ? this.length
                 : this._tag.readEnd(propertiesStyle);
             this._tagTypesOnDisk |= this.endTag.tagTypes;
+            this.readEnd(this._invariantEndPosition, propertiesStyle);
 
             // Read the audio properties
             this._properties = (propertiesStyle & ReadStyle.Average) !== 0

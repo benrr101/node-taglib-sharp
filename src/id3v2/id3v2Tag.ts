@@ -1193,8 +1193,11 @@ export default class Id3v2Tag extends Tag {
         const frames = this.getFramesByClassType<UserTextInformationFrame>(FrameClassType.UserTextInformationFrame);
         let frame = UserTextInformationFrame.findUserTextInformationFrame(frames, description, caseSensitive);
 
-        if (!text && frame) {
-            this.removeFrame(frame);
+        if (!text) {
+            // Remove the frame if it exists, otherwise do nothing
+            if (frame) {
+                this.removeFrame(frame);
+            }
         } else {
             frame = UserTextInformationFrame.fromDescription(description, Id3v2Settings.defaultEncoding);
             frame.text = text.split(";");

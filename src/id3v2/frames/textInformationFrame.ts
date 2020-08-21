@@ -546,7 +546,7 @@ export class TextInformationFrame extends Frame {
 
             // Put the entire string together
             const genreString = `${numericGenres.join("")}${textGenres.join(";")}`;
-            v.addByteVector(ByteVector.fromString(genreString, this._encoding));
+            v.addByteVector(ByteVector.fromString(genreString, encoding));
         } else {
             // Fields that have slashes in them and fields that don't
             v.addByteVector(ByteVector.fromString(text.join("/"), encoding));

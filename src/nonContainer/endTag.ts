@@ -1,5 +1,6 @@
 import CombinedTag from "../combinedTag";
 import Id3v2Settings from "../id3v2/id3v2Settings";
+import Id3v1Tag from "../id3v1/id3v1Tag";
 import Id3v2Tag from "../id3v2/id3v2Tag";
 import Id3v2TagFooter from "../id3v2/id3v2TagFooter";
 import {ByteVector} from "../byteVector";
@@ -14,14 +15,14 @@ import {Guards} from "../utils";
  * file.
  * This class is used by {@see NonContainerFile} to read all tags appearing at the end of the file
  * but could be used by other classes. It currently supports ID3v1, ID3v2, and APE tags.
- * @TODO: JK, NO IT ONLY SUPPORT ID3v2 SO FAR
+ * @TODO: JK, NO IT DON'T SUPPORT APE YET
  */
 export default class EndTag extends CombinedTag {
     private readonly _file: File;
     private readonly _readSize: number = Math.max(
         /* @TODO: APE footer */
         Id3v2Settings.footerSize,
-        /* @TODO: Id2v1 tag size */
+        Id3v1Tag.size
     );
 
     public constructor(file: File) {
@@ -133,7 +134,8 @@ export default class EndTag extends CombinedTag {
                 // @TODO: Add APE
                 case TagTypes.Id3v2:
                     return (<Id3v2Tag> t).render();
-                // @TODO: Add Id3v1
+                case TagTypes.Id3v1:
+                    return (<Id3v1Tag> t).render();
             }
         });
         return ByteVector.concatenate(... tagData);
@@ -168,6 +170,9 @@ export default class EndTag extends CombinedTag {
                 // TODO: Add APE support
                 case TagTypes.Id3v2:
                     tag = Id3v2Tag.fromFile(this._file, readResult.tagStarted, style);
+                    break;
+                case TagTypes.Id3v1:
+                    tag = Id3v1Tag.fromFile(this._file, readResult.tagStarted);
                     break;
             }
 
@@ -209,7 +214,14 @@ export default class EndTag extends CombinedTag {
                 };
             }
 
-            // @TODO: Try to find ID3v1 footer
+            // Try to find ID3v1 footer
+            if (data.startsWith(Id3v1Tag.fileIdentifier)) {
+                position -= Id3v1Tag.size;
+                return {
+                    tagStarted: position,
+                    tagType: TagTypes.Id3v1
+                };
+            }
         } catch (e) {
             if (!CorruptFileError.errorIs(e)) {
                 throw e;

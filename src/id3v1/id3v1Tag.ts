@@ -220,7 +220,7 @@ export default class Id3v1Tag extends Tag {
     private static parseString(data: ByteVector): string {
         Guards.truthy(data, "data");
 
-        const output = data.toString(StringType.Latin1).trim();
+        const output = data.toString(undefined, StringType.Latin1).trim();
         const i = output.indexOf("\0");
         return i >= 0
             ? output.substring(0, i)

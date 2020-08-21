@@ -36,7 +36,7 @@ export default class AudioFile extends NonContainerFile {
             case TagTypes.Id3v1:
                 return this.endTag.addTag(type, this.tag);
             case TagTypes.Id3v2:
-                return this.endTag.addTag(type, this.tag);
+                return this.startTag.addTag(type, this.tag);
             case TagTypes.Ape:
                 return this.endTag.addTag(type, this.tag);
             default:
@@ -46,6 +46,11 @@ export default class AudioFile extends NonContainerFile {
 
     protected readEnd(end: number, propertiesStyle: ReadStyle): void {
         // Make sure we have Id3v1 and Id3v2 tags
+        // @TODO: This is a kinda sleazy way of adding a ID3v2 tag if we didn't read one at the start
+        // NOTE: The reason for adding the ID3v1 and ID3v2 tags is because this library is meant to
+        //    be tag type agnostic if desired. That means, a user should be able to just add
+        //    whatever fields they want and it goes into the right tag. Since ID3v1 doesn't support
+        //    many fields, we need to create an ID3v2 tag to ensure all fields can be written to.
         this.getTag(TagTypes.Id3v1, true);
         this.getTag(TagTypes.Id3v2, true);
     }
