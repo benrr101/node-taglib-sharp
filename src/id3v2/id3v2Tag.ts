@@ -442,8 +442,13 @@ export default class Id3v2Tag extends Tag {
             return;
         }
 
-        // Case 3: We have neither type of frame, create a TDRC frame
-        this.setNumberFrame(FrameIdentifiers.TDRC, value, 0);
+        // Case 3: We have neither type of frame, create the frame for the version of tag on disk
+        if (this.version > 3) {
+            this.setNumberFrame(FrameIdentifiers.TDRC, value, 0);
+        } else {
+            this.setNumberFrame(FrameIdentifiers.TYER, value, 0);
+        }
+
     }
 
     /** @inheritDoc via TRCK frame */

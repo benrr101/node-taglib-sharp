@@ -736,9 +736,10 @@ function getTestTagHeader(version: number, flags: Id3v2TagHeaderFlags, tagSize: 
     }
 
     @test
-    public year_noExistingFrame() {
+    public year_v4noExistingFrame() {
         // Arrange
         const tag = Id3v2Tag.fromEmpty();
+        tag.version = 4;
 
         // Act / Assert
         assert.strictEqual(tag.year, 0);
@@ -747,6 +748,26 @@ function getTestTagHeader(version: number, flags: Id3v2TagHeaderFlags, tagSize: 
         assert.strictEqual(tag.year, 1234);
         assert.strictEqual(tag.frames.length, 1);
         assert.strictEqual(tag.frames[0].frameId, FrameIdentifiers.TDRC);
+        assert.deepStrictEqual((<TextInformationFrame> tag.frames[0]).text, ["1234"]);
+
+        tag.year = 99999;
+        assert.strictEqual(tag.year, 0);
+        assert.strictEqual(tag.frames.length, 0);
+    }
+
+    @test
+    public year_v3noExistingFrame() {
+        // Arrange
+        const tag = Id3v2Tag.fromEmpty();
+        tag.version = 3;
+
+        // Act / Assert
+        assert.strictEqual(tag.year, 0);
+
+        tag.year = 1234;
+        assert.strictEqual(tag.year, 1234);
+        assert.strictEqual(tag.frames.length, 1);
+        assert.strictEqual(tag.frames[0].frameId, FrameIdentifiers.TYER);
         assert.deepStrictEqual((<TextInformationFrame> tag.frames[0]).text, ["1234"]);
 
         tag.year = 99999;
