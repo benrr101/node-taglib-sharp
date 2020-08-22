@@ -48,12 +48,6 @@ const assert = Chai.assert;
     }
 
     @test
-    public writeStandardPicturesLazy() {
-        const tmpFilePath = TestConstants.getTempFilePath(Id3v1_FileTests.tmpFileName);
-        StandardFileTests.writeStandardPictures(Id3v1_FileTests.sampleFilePath, tmpFilePath, ReadStyle.PictureLazy);
-    }
-
-    @test
     public writeStandardTags() {
         const tmpFilePath = TestConstants.getTempFilePath(Id3v1_FileTests.tmpFileName);
         StandardFileTests.writeStandardTags(Id3v1_FileTests.sampleFilePath, tmpFilePath);
