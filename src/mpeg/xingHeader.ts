@@ -1,6 +1,6 @@
-import {ChannelMode, MpegVersion} from "./audioHeader";
 import {ByteVector} from "../byteVector";
 import {CorruptFileError} from "../errors";
+import {ChannelMode, MpegVersion} from "./mpegEnums";
 import {Guards} from "../utils";
 
 /**

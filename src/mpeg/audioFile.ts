@@ -26,7 +26,6 @@ export default class AudioFile extends NonContainerFile {
      *     found and none was created, `undefined` is returned.
      */
     public getTag(type: TagTypes, create: boolean): Tag {
-        // @TODO: Not sure about this
         const t = (<NonContainerTag> this.tag).getTag(type);
         if (t || !create) {
             return t;
@@ -72,6 +71,7 @@ export default class AudioFile extends NonContainerFile {
     }
 }
 
+////////////////////////////////////////////////////////////////////////////
 // Register the file type
 const mimeTypes = [
     "taglib/mp3",
@@ -91,4 +91,3 @@ const mimeTypes = [
 for (const mimeType of mimeTypes) {
     File.addFileType(mimeType, AudioFile);
 }
-
