@@ -11,7 +11,7 @@ import {TagTypes} from "../tag";
  * number of tags at their beginning or end.
  * When extending this class, {@see NonContainerFile.readStart},
  *
- * {@see NonContainerFile.readEnd}, and {@see NonContainerFile.readProperties} should overridden
+ * {@see NonContainerFile.readEnd}, and {@see NonContainerFile.readProperties} should be overridden
  * and read the format specific information from the file.
  * The file is read upon construction in the following manner:
  * 1. The file is opened for reading

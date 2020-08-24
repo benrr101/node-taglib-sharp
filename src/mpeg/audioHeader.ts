@@ -131,16 +131,25 @@ export class AudioHeader implements IAudioCodec {
 
     /** @inheritDoc IAudioCodec.audioBitrate */
     public get audioBitrate(): number {
-        const totalSeconds = this._durationMilliseconds / 1000;
-        if (this._xingHeader.totalSize > 0 && this._xingHeader.totalFrames > 0 && this._durationMilliseconds > 0) {
-            return Math.round(this._xingHeader.totalSize * 8 / totalSeconds / 1000);
+        // NOTE: Although it would be *amazing* to store `this.durationMilliseconds / 1000` in a
+        //    variable, we can't b/c it causes a stack overflow. Oh well.
+        if (
+            this._xingHeader.totalSize > 0 &&
+            this._xingHeader.totalFrames > 0 &&
+            this.durationMilliseconds / 1000 > 0
+        ) {
+            return Math.round(this._xingHeader.totalSize * 8 / (this.durationMilliseconds / 1000) / 1000);
         }
-        if (this._vbriHeader.totalSize > 0 && this._vbriHeader.totalFrames > 0 && this._durationMilliseconds > 0) {
-            return Math.round(this._vbriHeader.totalSize * 8 / totalSeconds / 1000);
+        if (
+            this._vbriHeader.totalSize > 0 &&
+            this._vbriHeader.totalFrames > 0 &&
+            this.durationMilliseconds / 1000 > 0
+        ) {
+            return Math.round(this._vbriHeader.totalSize * 8 / (this.durationMilliseconds / 1000) / 1000);
         }
 
         const index1 = this.version === MpegVersion.Version1 ? 0 : 1;
-        const index2 = this.audioLayer > 0 ? this.audioLayer - 1 : 0;
+        const index2 = this.audioLayer - 1;
         const index3 = (this._flags >> 12) & 0x0f;
         return AudioHeader.bitrates[index1][index2][index3];
     }
@@ -221,11 +230,13 @@ export class AudioHeader implements IAudioCodec {
         if (this._xingHeader.totalFrames > 0) {
             // Read the length and the bitrate from the Xing header
             const timePerFrameSeconds = AudioHeader.blockSize[this.version][this.audioLayer] / this.audioSampleRate;
-            this._durationMilliseconds = timePerFrameSeconds * this._xingHeader.totalFrames;
+            const durationSeconds = timePerFrameSeconds * this._xingHeader.totalFrames;
+            this._durationMilliseconds = durationSeconds * 1000;
         } else if (this._vbriHeader.totalFrames > 0) {
             // Read the length and the bitrate from the VBRI header
             const timePerFrameSeconds = AudioHeader.blockSize[this.version][this.audioLayer] / this.audioSampleRate;
-            this._durationMilliseconds = Math.round(timePerFrameSeconds * this._vbriHeader.totalFrames);
+            const durationSeconds = Math.round(timePerFrameSeconds * this._vbriHeader.totalFrames);
+            this._durationMilliseconds = durationSeconds * 1000;
         } else if (this.audioFrameLength > 0 && this.audioBitrate > 0) {
             // Since there was no valid Xing or VBRI header found, we hope that we're in a constant
             // bitrate file
