@@ -310,6 +310,37 @@ const assert = Chai.assert;
     }
 
     @test
+    public audioLayer_layer1() {
+        // Test 1: 00
+        const flags1 = 0xFFF9FFFF;
+        const header1 = AudioHeader.fromInfo(flags1, 0, XingHeader.unknown, VbriHeader.unknown);
+        assert.strictEqual(header1.audioLayer, 1);
+
+        // Test 2: 11
+        const flags2 = 0xFFFFFFFF;
+        const header2 = AudioHeader.fromInfo(flags2, 0, XingHeader.unknown, VbriHeader.unknown);
+        assert.strictEqual(header2.audioLayer, 1);
+    }
+
+    @test
+    public audioLayer_layer2() {
+        const flags = 0xFFFDFFFF;
+        const header = AudioHeader.fromInfo(flags, 0, XingHeader.unknown, VbriHeader.unknown);
+
+        // Act / Assert
+        assert.strictEqual(header.audioLayer, 2);
+    }
+
+    @test
+    public audioLayer_layer3() {
+        const flags = 0xFFFBFFFF;
+        const header = AudioHeader.fromInfo(flags, 0, XingHeader.unknown, VbriHeader.unknown);
+
+        // Act / Assert
+        assert.strictEqual(header.audioLayer, 3);
+    }
+
+    @test
     public channels() {
         // Test 1: Stereo
         const header1 = AudioHeader.fromInfo(0xFFFFFF3F, 0, XingHeader.unknown, VbriHeader.unknown);
@@ -330,5 +361,82 @@ const assert = Chai.assert;
         const header4 = AudioHeader.fromInfo(0xFFFFFFFF, 0, XingHeader.unknown, VbriHeader.unknown);
         assert.strictEqual(header4.channelMode, ChannelMode.SingleChannel);
         assert.strictEqual(header4.audioChannels, 1);
+    }
+
+    @test
+    public isCopyrighted() {
+        // Test 1: 00 => false
+        const header1 = AudioHeader.fromInfo(0xFFFFFFE7, 0, XingHeader.unknown, VbriHeader.unknown);
+        assert.isFalse(header1.isCopyrighted);
+
+        // Test 2: 01 => true
+        const header2 = AudioHeader.fromInfo(0xFFFFFFEF, 0, XingHeader.unknown, VbriHeader.unknown);
+        assert.isTrue(header2.isCopyrighted);
+    }
+
+    @test
+    public isOriginal() {
+        // Test 1: 00 => false
+        const header1 = AudioHeader.fromInfo(0xFFFFFFF3, 0, XingHeader.unknown, VbriHeader.unknown);
+        assert.isFalse(header1.isOriginal);
+
+        // Test 2: 01 => true
+        const header2 = AudioHeader.fromInfo(0xFFFFFFFF, 0, XingHeader.unknown, VbriHeader.unknown);
+        assert.isTrue(header2.isOriginal);
+    }
+
+    @test
+    public isPadded() {
+        // Test 1: 0 => false
+        const header1 = AudioHeader.fromInfo(0xFFFFFFF3, 0, XingHeader.unknown, VbriHeader.unknown);
+        assert.isFalse(header1.isOriginal);
+
+        // Test 2: 1 => true
+        const header2 = AudioHeader.fromInfo(0xFFFFFFFF, 0, XingHeader.unknown, VbriHeader.unknown);
+        assert.isTrue(header2.isOriginal);
+    }
+
+    @test
+    public isProtected() {
+        // Test 1: 0 => true
+        const header1 = AudioHeader.fromInfo(0xFFFEFFFF, 0, XingHeader.unknown, VbriHeader.unknown);
+        assert.isTrue(header1.isProtected);
+
+        // Test 2: 1 => false
+        const header2 = AudioHeader.fromInfo(0xFFFFFFFF, 0, XingHeader.unknown, VbriHeader.unknown);
+        assert.isFalse(header2.isProtected);
+    }
+
+    @test
+    public version_version1() {
+        // Test 1: 01
+        const flags1 = 0xFFFEFFFF;
+        const header1 = AudioHeader.fromInfo(flags1, 0, XingHeader.unknown, VbriHeader.unknown);
+        assert.strictEqual(header1.version, MpegVersion.Version1);
+
+        // Test 2: 11
+        const flags2 = 0xFFFFFFFF;
+        const header2 = AudioHeader.fromInfo(flags2, 0, XingHeader.unknown, VbriHeader.unknown);
+        assert.strictEqual(header2.version, MpegVersion.Version1);
+    }
+
+    @test
+    public version_version2() {
+        // Arrange
+        const flags = 0xFFF7FFFF;
+        const header = AudioHeader.fromInfo(flags, 0, XingHeader.unknown, VbriHeader.unknown);
+
+        // Act / Assert
+        assert.strictEqual(header.version, MpegVersion.Version2);
+    }
+
+    @test
+    public version_version25() {
+        // Arrange
+        const flags = 0xFFE7FFFF;
+        const header = AudioHeader.fromInfo(flags, 0, XingHeader.unknown, VbriHeader.unknown);
+
+        // Act / Assert
+        assert.strictEqual(header.version, MpegVersion.Version25);
     }
 }

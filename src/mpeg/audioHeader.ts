@@ -266,7 +266,7 @@ export class AudioHeader implements IAudioCodec {
     public get isPadded(): boolean { return ((this._flags >> 9) & 1) === 1; }
 
     /**
-     * Gets whether the audio represented by the current instance is protected.
+     * Gets whether the audio represented by the current instance is protected by CRC.
      */
     public get isProtected(): boolean { return ((this._flags >> 16) & 1) === 0; }
 
