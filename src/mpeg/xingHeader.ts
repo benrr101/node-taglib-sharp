@@ -27,16 +27,16 @@ export default class XingHeader {
 
     /**
      * Constructs a new instance with a specified frame count and size.
-     * @param frame Frame count of the audio
+     * @param frames Frame count of the audio
      * @param size Stream size of the audio
      */
-    public static fromInfo(frame: number, size: number): XingHeader {
-        Guards.uint(frame, "frame");
+    public static fromInfo(frames: number, size: number): XingHeader {
+        Guards.uint(frames, "frames");
         Guards.uint(size, "size");
 
         const header = new XingHeader();
         header._isPresent = false;
-        header._totalFrames = frame;
+        header._totalFrames = frames;
         header._totalSize = size;
         return header;
     }
