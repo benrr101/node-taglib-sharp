@@ -1,18 +1,24 @@
 import * as Chai from "chai";
 import * as ChaiAsPromised from "chai-as-promised";
+import * as TypeMoq from "typemoq";
+import TestFile from "../utilities/testFile";
 import {suite, test} from "mocha-typescript";
 
 import VbriHeader from "../../src/mpeg/vbriHeader";
 import XingHeader from "../../src/mpeg/xingHeader";
 import {AudioHeader} from "../../src/mpeg/audioHeader";
+import {ByteVector} from "../../src/byteVector";
+import {File} from "../../src/file";
+import {MediaTypes} from "../../src/iCodec";
 import {ChannelMode, MpegVersion} from "../../src/mpeg/mpegEnums";
-import {MediaTypes} from "../../src";
 
 // Setup chai
 Chai.use(ChaiAsPromised);
 const assert = Chai.assert;
 
 @suite class MpegAudioHeaderTests_ConstructorTests {
+    private mockFile = TypeMoq.Mock.ofType<File>().object;
+
     @test
     public unknownHeader() {
         // Act
@@ -124,7 +130,157 @@ const assert = Chai.assert;
         assert.strictEqual(header.xingHeader, XingHeader.unknown);
     }
 
-    // @TODO: fromData
+    @test
+    public fromData_invalidArguments() {
+        // Arrange
+        const data = ByteVector.empty();
+
+        // Act / Assert
+        assert.throws(() => { AudioHeader.fromData(undefined, this.mockFile, 1); });
+        assert.throws(() => { AudioHeader.fromData(null, this.mockFile, 1); });
+        assert.throws(() => { AudioHeader.fromData(data, undefined, 1); });
+        assert.throws(() => { AudioHeader.fromData(data, null, 1); });
+        assert.throws(() => { AudioHeader.fromData(data, this.mockFile, -1); });
+        assert.throws(() => { AudioHeader.fromData(data, this.mockFile, 1.23); });
+        assert.throws(() => { AudioHeader.fromData(data, this.mockFile, Number.MAX_SAFE_INTEGER + 1); });
+    }
+
+    @test
+    public fromData_headerTooShort() {
+        // Arrange
+        const data = ByteVector.fromSize(2);
+
+        // Act / Assert
+        assert.throws(() => { AudioHeader.fromData(data, this.mockFile, 1); });
+    }
+
+    @test
+    public fromData_headerDoesNotStartWithSyncByte() {
+        // Arrange
+        const data = ByteVector.fromSize(4);
+        data.set(0, 0xEE);
+
+        // Act / Assert
+        assert.throws(() => { AudioHeader.fromData(data, this.mockFile, 1); });
+    }
+
+    @test
+    public fromData_secondByteDoesNotMatchMpegSync() {
+        // Arrange
+        const data1 = ByteVector.fromSize(4);
+        data1.set(0, 0xFF);
+        data1.set(1, 0x10);
+        const data2 = ByteVector.fromSize(4);
+        data2.set(0, 0xFF);
+        data2.set(1, 0xE8);
+
+        // Act / Assert
+        assert.throws(() => { AudioHeader.fromData(data1, this.mockFile, 1); });
+        assert.throws(() => { AudioHeader.fromData(data2, this.mockFile, 1); });
+    }
+
+    @test
+    public fromData_invalidBitrate() {
+        // Arrange
+        const data = ByteVector.fromSize(4);
+        data.set(0, 0xFF);
+        data.set(1, 0xF2);
+        data.set(2, 0xF0);
+
+        // Act / Assert
+        assert.throws(() => { AudioHeader.fromData(data, this.mockFile, 1); });
+    }
+
+    @test
+    public fromData_invalidSampleRate() {
+        // Arrange
+        const data = ByteVector.fromSize(4);
+        data.set(0, 0xFF);
+        data.set(1, 0xF2);
+        data.set(2, 0xEC);
+
+        // Act / Assert
+        assert.throws(() => { AudioHeader.fromData(data, this.mockFile, 1); });
+    }
+
+    @test
+    public fromData_noVbrheaders() {
+        // Arrange - MPEG2, Layer2, 64kbps, 22050kHz - padded
+        const data = ByteVector.fromUInt(0xFFF48200, true);
+        data.addByteVector(ByteVector.fromSize(100));
+        const mockFile = TestFile.getFile(data);
+
+        // Act
+        const header = AudioHeader.fromData(data, mockFile, 0);
+
+        // Assert
+        this.assertHeader(
+            header,
+            2,
+            2,
+            418,
+            2,
+            22050,
+            ChannelMode.Stereo,
+            "MPEG Version 2 Audio, Layer 2",
+            0,
+            false,
+            false,
+            true,
+            true,
+            MediaTypes.Audio,
+            MpegVersion.Version2
+        );
+        assert.strictEqual(header.xingHeader, XingHeader.unknown);
+        assert.strictEqual(header.vbriHeader, VbriHeader.unknown);
+    }
+
+    @test
+    public fromData_hasXingHeader() {
+        // Arrange - MPEG2, Layer2, 64kbps, 22050kHz, Stereo, padded
+        const mpegHeader = ByteVector.fromUInt(0xFFF48200, true);
+        const data = ByteVector.concatenate(
+            ByteVector.fromSize(1),
+            mpegHeader,
+            ByteVector.fromSize(17),
+            ByteVector.concatenate(
+                XingHeader.fileIdentifier,
+                0x00, 0x00, 0x00, 0x03,
+                ByteVector.fromUInt(12),
+                ByteVector.fromUInt(23)
+            )
+        );
+        const mockFile = TestFile.getFile(data);
+
+        // Act
+        const header = AudioHeader.fromData(mpegHeader, mockFile, 1);
+
+        // Assert
+        this.assertHeader(
+            header,
+            64,
+            2,
+            418,
+            2,
+            22050,
+            ChannelMode.Stereo,
+            "MPEG Version 2 Audio, Layer 2",
+            0,
+            false,
+            false,
+            true,
+            true,
+            MediaTypes.Audio,
+            MpegVersion.Version2
+        );
+        assert.isOk(header.xingHeader);
+        assert.notEqual(header.xingHeader, XingHeader.unknown);
+        assert.strictEqual(header.xingHeader.totalFrames, 123);
+        assert.strictEqual(header.xingHeader.totalSize, 234);
+        assert.isTrue(header.xingHeader.isPresent);
+
+        assert.strictEqual(header.vbriHeader, VbriHeader.unknown);
+    }
 
     private assertHeader(
         header: AudioHeader,
@@ -143,6 +299,8 @@ const assert = Chai.assert;
         mediaTypes: MediaTypes,
         version: MpegVersion
     ) {
+        assert.ok(header);
+
         assert.strictEqual(header.audioBitrate, bitrate);
         assert.strictEqual(header.audioChannels, channels);
         assert.strictEqual(header.audioFrameLength, frameLength);

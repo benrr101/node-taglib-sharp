@@ -8,7 +8,8 @@ import {ChannelMode, MpegVersion} from "./mpegEnums";
 import {Guards} from "../utils";
 
 /**
- * Provides information about an MPEG audio stream.
+ * Provides information about an MPEG audio stream. For more information and definition of the
+ * header, see http://www.mpgedit.org/mpgedit/mpeg_format/mpeghdr.htm
  */
 export class AudioHeader implements IAudioCodec {
     public static readonly Unknown: AudioHeader = AudioHeader.fromInfo(0, 0, XingHeader.unknown, VbriHeader.unknown);
@@ -54,11 +55,13 @@ export class AudioHeader implements IAudioCodec {
      * specified file.
      * @param data The header data to read
      * @param file File to read the Xing/VBRI header from
-     * @param position Position at which the header begins
+     * @param position Position into {@paramref file} where the header begins, must be a positive
+     *     8-bit integer.
      */
     public static fromData(data: ByteVector, file: File, position: number) {
         Guards.truthy(data, "data");
         Guards.truthy(file, "file");
+        Guards.uint(position, "position");
 
         const header = new AudioHeader();
         header._durationMilliseconds = 0;
