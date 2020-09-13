@@ -10,7 +10,7 @@ import {ChannelMode, MpegVersion} from "../../src/mpeg/mpegEnums";
 Chai.use(ChaiAsPromised);
 const assert = Chai.assert;
 
-@suite class XingHeaderTests {
+@suite class MpegXingHeaderTests {
     @test
     public fromInfo_invalidParameters() {
         // Act / Assert

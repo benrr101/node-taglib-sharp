@@ -284,7 +284,7 @@ export class AudioHeader implements IAudioCodec {
         this._streamLength = value;
 
         // Force the recalculation of duration if it depends on the stream length.
-        if (this._xingHeader.totalFrames === 0 || this._vbriHeader.totalFrames === 0) {
+        if (this._xingHeader.totalFrames === 0 && this._vbriHeader.totalFrames === 0) {
             this._durationMilliseconds = 0;
         }
     }
@@ -331,8 +331,8 @@ export class AudioHeader implements IAudioCodec {
      */
     public static find(file: File, position: number, length: number = -1): { header: AudioHeader, success: boolean} {
         Guards.truthy(file, "file");
-        Guards.int(length, "length");
         Guards.int(position, "position");
+        Guards.int(length, "length");
 
         const end = position + length;
 
