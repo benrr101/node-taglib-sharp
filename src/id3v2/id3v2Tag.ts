@@ -2,15 +2,15 @@ import * as DateFormat from "dateformat";
 
 import AttachmentFrame from "./frames/attachmentFrame";
 import CommentsFrame from "./frames/commentsFrame";
-import Id3v2ExtendedHeader from "./id3v2ExtendedHeader";
 import FrameFactory from "./frames/frameFactory";
-import Genres from "../genres";
+import Id3v2ExtendedHeader from "./id3v2ExtendedHeader";
+import Id3v2TagFooter from "./id3v2TagFooter";
 import Id3v2Settings from "./id3v2Settings";
 import SyncData from "./syncData";
 import UniqueFileIdentifierFrame from "./frames/uniqueFileIdentifierFrame";
 import UnsynchronizedLyricsFrame from "./frames/unsynchronizedLyricsFrame";
 import {ByteVector, StringType} from "../byteVector";
-import {CorruptFileError} from "../errors";
+import {CorruptFileError, NotImplementedError, NotSupportedError} from "../errors";
 import {File, FileAccessMode, ReadStyle} from "../file";
 import {Frame, FrameClassType} from "./frames/frame";
 import {FrameIdentifier, FrameIdentifiers} from "./frameIdentifiers";
@@ -21,7 +21,6 @@ import {Tag, TagTypes} from "../tag";
 import {TextInformationFrame, UserTextInformationFrame} from "./frames/textInformationFrame";
 import {UrlLinkFrame} from "./frames/urlLinkFrame";
 import {Guards} from "../utils";
-import Id3v2TagFooter from "./id3v2TagFooter";
 
 export default class Id3v2Tag extends Tag {
     private static _language: string = undefined;       // @TODO: Use the os-locale module to supply a
@@ -370,23 +369,7 @@ export default class Id3v2Tag extends Tag {
 
     /** @inheritDoc via TCON frame */
     get genres(): string[] {
-        const text = this.getTextAsArray(FrameIdentifiers.TCON);
-        if (text.length === 0) { return text; }
-
-        const list = [];
-        for (const genre of text) {
-            if (!genre) { continue; }
-
-            // The string may just be a genre number
-            const genreFromIndex = Genres.indexToAudio(genre);
-            if (genreFromIndex) {
-                list.push(genreFromIndex);
-            } else {
-                list.push(genre);
-            }
-        }
-
-        return list;
+        return this.getTextAsArray(FrameIdentifiers.TCON);
     }
     /** @inheritDoc via TCON frame */
     set genres(value: string[]) {
@@ -396,15 +379,7 @@ export default class Id3v2Tag extends Tag {
         }
 
         // Clone the array so changes made won't affect the passed array
-        value = value.slice();
-        for (let i = 0; i < value.length; i++) {
-            const index = Genres.audioToIndex(value[i]);
-            if (index !== 255) {
-                value[i] = index.toString();
-            }
-        }
-
-        this.setTextFrame(FrameIdentifiers.TCON, ...value);
+        this.setTextFrame(FrameIdentifiers.TCON, ...value.slice());
     }
 
     /**
@@ -467,8 +442,13 @@ export default class Id3v2Tag extends Tag {
             return;
         }
 
-        // Case 3: We have neither type of frame, create a TDRC frame
-        this.setNumberFrame(FrameIdentifiers.TDRC, value, 0);
+        // Case 3: We have neither type of frame, create the frame for the version of tag on disk
+        if (this.version > 3) {
+            this.setNumberFrame(FrameIdentifiers.TDRC, value, 0);
+        } else {
+            this.setNumberFrame(FrameIdentifiers.TYER, value, 0);
+        }
+
     }
 
     /** @inheritDoc via TRCK frame */
@@ -872,9 +852,9 @@ export default class Id3v2Tag extends Tag {
      * @returns ByteVector The rendered tag.
      */
     public render(): ByteVector {
-        // Convert the perfmers role to the TMCL frame
+        // Convert the performers role to the TMCL frame
+        let performersRoleList: string[] = [];
         if (this._performersRole) {
-            const ret: string[] = undefined;
             const map: {[key: string]: string} = {};
             for (let i = 0; i < this._performersRole.length; i++) {
                 const insts = this._performersRole[i];
@@ -898,13 +878,17 @@ export default class Id3v2Tag extends Tag {
             }
 
             // Convert dictionary to string
-            for (const key of map.keys) {
-                ret.push(key);
-                ret.push(map[key]);
+            performersRoleList = new Array<string>(Object.keys(map).length * 2);
+            for (const key in map) {
+                if (!map.hasOwnProperty(key)) {
+                    continue;
+                }
+                performersRoleList.push(key);
+                performersRoleList.push(map[key]);
             }
-
-            this.setTextFrame(FrameIdentifiers.TMCL, ...ret);
         }
+
+        this.setTextFrame(FrameIdentifiers.TMCL, ...performersRoleList);
 
         // We need to render the "tag data" first so that we have to correct size to render in the
         // tag's header. The "tag data" (everything that is included in Header.tagSize) includes
@@ -935,8 +919,11 @@ export default class Id3v2Tag extends Tag {
             try {
                 tagData.addByteVector(frame.render(this._header.majorVersion));
             } catch (e) {
-                // Swallow unimplemented exceptions
-                if (!e.hasOwnProperty("isNotImplementedError")) {
+                if (NotImplementedError.errorIs(e)) {
+                    // Swallow not implemented errors
+                } else if (NotSupportedError.errorIs(e) && !Id3v2Settings.strictFrameForVersion) {
+                    // Ignore not supported errors if we're not in strict frame mode
+                } else {
                     throw e;
                 }
             }
@@ -1211,8 +1198,11 @@ export default class Id3v2Tag extends Tag {
         const frames = this.getFramesByClassType<UserTextInformationFrame>(FrameClassType.UserTextInformationFrame);
         let frame = UserTextInformationFrame.findUserTextInformationFrame(frames, description, caseSensitive);
 
-        if (!text && frame) {
-            this.removeFrame(frame);
+        if (!text) {
+            // Remove the frame if it exists, otherwise do nothing
+            if (frame) {
+                this.removeFrame(frame);
+            }
         } else {
             frame = UserTextInformationFrame.fromDescription(description, Id3v2Settings.defaultEncoding);
             frame.text = text.split(";");

@@ -14,5 +14,6 @@ Note: A port of TagLib already exists for Node.js. Despite TagLib being the orig
 is substantially lacking in the variety of media formats that can be handled. TagLib# greatly
 improved on the original TagLib, hence why this project exists
 
-## Supported Formats
-(TODO)
+## Supported Tagging Formats
+* ID3v1
+* ID3v2
