@@ -12,8 +12,8 @@ library for Node.js. This project is a mostly wholesale translation of the origi
 
 Note: A port of TagLib already exists for Node.js. Despite TagLib being the origin of TabLib#, it
 is substantially lacking in the variety of media formats that can be handled. TagLib# greatly
-improved on the original TagLib, hence why this project exists
+improved on the original TagLib, hence why this project exists.
 
-## Supported Tagging Formats
-* ID3v1
-* ID3v2
+## Supported Tagging Formats (and File Formats)
+* ID3v1: `MP1`, `MP2`, `MP3`, `M2A`
+* ID3v2: `MP1`, `MP2`, `MP3`, `M2A`
