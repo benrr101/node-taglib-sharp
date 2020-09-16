@@ -7,6 +7,7 @@ install:
 
 build_script:
   - npm run build
+  - npm pack
 
 test_script:
   - npm run test-unit-with-coverage
