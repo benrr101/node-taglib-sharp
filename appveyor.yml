@@ -14,3 +14,7 @@ test_script:
 
 after_test:
   - npm run publish-coverage
+
+artifacts:
+  - path: '*.tgz'
+    name: NPM Package
