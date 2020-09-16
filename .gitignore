@@ -81,3 +81,9 @@ com_crashlytics_export_strings.xml
 crashlytics.properties
 crashlytics-build.properties
 fabric.properties
+
+# Ignore build output
+dist/**
+
+# Files created during test
+test*/resources/**/testFile_*

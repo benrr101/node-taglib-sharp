@@ -1,16 +1,16 @@
-import FrameTypes from "../frameTypes";
-import Id3v2TagSettings from "../id3v2TagSettings";
+import Id3v2Settings from "../id3v2Settings";
 import {ByteVector, StringType} from "../../byteVector";
 import {CorruptFileError} from "../../errors";
 import {Frame, FrameClassType} from "./frame";
 import {Id3v2FrameHeader} from "./frameHeader";
+import {FrameIdentifiers} from "../frameIdentifiers";
 import {Guards} from "../../utils";
 
 export default class UnsynchronizedLyricsFrame extends Frame {
     private _description: string;
     private _language: string;
     private _text: string;
-    private _textEncoding: StringType = Id3v2TagSettings.defaultEncoding;
+    private _textEncoding: StringType = Id3v2Settings.defaultEncoding;
 
     // #region Constructors
 
@@ -27,9 +27,9 @@ export default class UnsynchronizedLyricsFrame extends Frame {
     public static fromData(
         description: string,
         language?: string,
-        encoding: StringType = Id3v2TagSettings.defaultEncoding
+        encoding: StringType = Id3v2Settings.defaultEncoding
     ): UnsynchronizedLyricsFrame {
-        const frame = new UnsynchronizedLyricsFrame(new Id3v2FrameHeader(FrameTypes.USLT, 4));
+        const frame = new UnsynchronizedLyricsFrame(new Id3v2FrameHeader(FrameIdentifiers.USLT));
         frame.textEncoding = encoding;
         frame._language = language;
         frame._description = description;
@@ -43,18 +43,21 @@ export default class UnsynchronizedLyricsFrame extends Frame {
      * @param offset What offset in {@paramref data} the frame actually begins. Must be positive,
      *     safe integer
      * @param header Header of the frame found at {@paramref data} in the data
+     * @param version ID3v2 version the frame was originally encoded with
      */
     public static fromOffsetRawData(
         data: ByteVector,
         offset: number,
-        header: Id3v2FrameHeader
+        header: Id3v2FrameHeader,
+        version: number
     ): UnsynchronizedLyricsFrame {
         Guards.truthy(data, "data");
         Guards.uint(offset, "offset");
         Guards.truthy(header, "header");
+        Guards.byte(version, "version");
 
         const frame = new UnsynchronizedLyricsFrame(header);
-        frame.setData(data, offset, false);
+        frame.setData(data, offset, false, version);
         return frame;
     }
 
@@ -68,8 +71,8 @@ export default class UnsynchronizedLyricsFrame extends Frame {
         Guards.truthy(data, "data");
         Guards.byte(version, "version");
 
-        const frame = new UnsynchronizedLyricsFrame(new Id3v2FrameHeader(data, version));
-        frame.setData(data, 0, true);
+        const frame = new UnsynchronizedLyricsFrame(Id3v2FrameHeader.fromData(data, version));
+        frame.setData(data, 0, true, version);
         return frame;
     }
 
@@ -243,9 +246,9 @@ export default class UnsynchronizedLyricsFrame extends Frame {
         return ByteVector.concatenate(
             encoding,
             ByteVector.fromString(this.language, StringType.Latin1),
-            ByteVector.fromString(this._description, encoding),
+            ByteVector.fromString(this.description, encoding),
             ByteVector.getTextDelimiter(encoding),
-            ByteVector.fromString(this._text, encoding)
+            ByteVector.fromString(this.text, encoding)
         );
     }
 

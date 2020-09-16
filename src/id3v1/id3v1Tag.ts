@@ -88,11 +88,11 @@ export default class Id3v1Tag extends Tag {
     public render(): ByteVector {
         const data = ByteVector.empty();
         data.addByteVector(Id3v1Tag.fileIdentifier);
-        data.addByteVector(ByteVector.fromString(this._title, StringType.Latin1).resize(30));
-        data.addByteVector(ByteVector.fromString(this._artist, StringType.Latin1).resize(30));
-        data.addByteVector(ByteVector.fromString(this._album, StringType.Latin1).resize(30));
-        data.addByteVector(ByteVector.fromString(this._year, StringType.Latin1).resize(4));
-        data.addByteVector(ByteVector.fromString(this._comment, StringType.Latin1).resize(28));
+        data.addByteVector(ByteVector.fromString(this._title || "", StringType.Latin1).resize(30));
+        data.addByteVector(ByteVector.fromString(this._artist || "", StringType.Latin1).resize(30));
+        data.addByteVector(ByteVector.fromString(this._album || "", StringType.Latin1).resize(30));
+        data.addByteVector(ByteVector.fromString(this._year || "", StringType.Latin1).resize(4));
+        data.addByteVector(ByteVector.fromString(this._comment || "", StringType.Latin1).resize(28));
         data.addByte(0x00);
         data.addByte(this._track);
         data.addByte(this._genre);
@@ -142,7 +142,7 @@ export default class Id3v1Tag extends Tag {
 
     /** @inheritDoc */
     public get genres(): string[] {
-        const genreName = Genres.indexToAudio(this._genre);
+        const genreName = Genres.indexToAudio(this._genre, false);
         return genreName ? [genreName] : [];
     }
     /**
@@ -163,7 +163,7 @@ export default class Id3v1Tag extends Tag {
     }
     /**
      * @inheritDoc
-     * @description Only values between 1 and 9999 will be stored. All other values will result in
+     * @description Only values betweenInclusive 1 and 9999 will be stored. All other values will result in
      *     the property being zeroed.
      */
     public set year(value: number) {
@@ -174,7 +174,7 @@ export default class Id3v1Tag extends Tag {
     public get track(): number { return this._track; }
     /**
      * @inheritDoc
-     * @description Only values between 1 and 255 will be stored. All other values will result in
+     * @description Only values betweenInclusive 1 and 255 will be stored. All other values will result in
      *     the property being zeroed.
      */
     public set track(value: number) {
@@ -212,6 +212,7 @@ export default class Id3v1Tag extends Tag {
             this._track = data.get(126);
         } else {
             this._comment = Id3v1Tag.parseString(data.mid(97, 30));
+            this._track = 0;
         }
 
         this._genre = data.get(127);
@@ -220,7 +221,7 @@ export default class Id3v1Tag extends Tag {
     private static parseString(data: ByteVector): string {
         Guards.truthy(data, "data");
 
-        const output = data.toString(StringType.Latin1).trim();
+        const output = data.toString(undefined, StringType.Latin1).trim();
         const i = output.indexOf("\0");
         return i >= 0
             ? output.substring(0, i)

@@ -1,0 +1,11 @@
+{
+  "extension": ["ts"],
+  "recursive": true,
+  "require": [
+    "ts-node/register",
+    "source-map-support/register"
+  ],
+  "slow": 1000,
+  "timout": 3000,
+  "ui": "mocha-typescript"
+}

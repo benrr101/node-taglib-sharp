@@ -1,0 +1,13 @@
+## Override the .gitignore to make sure dist
+
+# Ignore test files
+test-*
+
+# Ignore idea stuff
+.idea
+
+# Ignore NYC coverage output files
+.nyc_output/**
+
+# Output of 'npm pack'
+*.tgz

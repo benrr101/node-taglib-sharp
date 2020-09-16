@@ -1,9 +1,16 @@
 import * as BigInt from "big-integer";
+import * as Path from "path";
 
 export class Guards {
-    public static between(value: number, minValue: number, maxValue: number, name: string): void {
+    public static betweenExclusive(value: number, minValue: number, maxValue: number, name: string): void {
+        if (value <= minValue || value >= maxValue) {
+            throw new Error(`Argument out of range: ${name} must satisfy ${maxValue} <= ${name} <= ${minValue}`);
+        }
+    }
+
+    public static betweenInclusive(value: number, minValue: number, maxValue: number, name: string): void {
         if (value < minValue || value > maxValue) {
-            throw new Error(`Argument out of range: ${name} must be between ${minValue} and ${maxValue}`);
+            throw new Error(`Argument out of range: ${name} must satisfy ${maxValue} < ${name} < ${minValue}`);
         }
     }
 
@@ -13,9 +20,21 @@ export class Guards {
         }
     }
 
+    public static greaterThanInclusive(value: number, lowerBound: number, name: string) {
+        if (value < lowerBound) {
+            throw new Error(`Argument out of range: ${name} must greater than ${lowerBound}`);
+        }
+    }
+
     public static int(value: number, name: string): void {
         if (!Number.isSafeInteger(value)) {
             throw new Error(`Argument out of range: ${name} must be a 32-bit integer`);
+        }
+    }
+
+    public static lessThanInclusive(value: number, upperBound: number, name: string) {
+        if (value > upperBound) {
+            throw new Error(`Argument out of range: ${name} must be less than ${upperBound}`);
         }
     }
 
@@ -23,6 +42,13 @@ export class Guards {
         if (value === undefined || value === null) {
             throw new Error(`Argument null: ${name} was not provided`);
         }
+    }
+
+    public static optionalByte(value: number | undefined, name: string): void {
+        if (value === undefined) {
+            return;
+        }
+        Guards.byte(value, name);
     }
 
     public static short(value: number, name: string): void {
@@ -63,6 +89,19 @@ export class StringComparison {
     }
 }
 
+export class FileUtils {
+    public static getExtension(name: string) {
+        let ext = Path.extname(name);
+        if (!ext) {
+            ext = name.startsWith(".") ? name.substring(1) : name;
+        } else {
+            ext = ext.substring(1);
+        }
+
+        return ext.toLowerCase();
+    }
+}
+
 export class ArrayUtils {
     public static remove<T>(array: T[], callbackFn: (e: T, i: number) => boolean): void {
         let i = this.length;
@@ -76,4 +115,13 @@ export class ArrayUtils {
 
 export class NumberUtils {
 
+}
+
+export class StringUtils {
+    public static trimStart(trimee: string, chars: string) {
+        while (trimee.length > 0 && chars.indexOf(trimee[0]) > -1) {
+            trimee = trimee.substr(0);
+        }
+        return trimee;
+    }
 }

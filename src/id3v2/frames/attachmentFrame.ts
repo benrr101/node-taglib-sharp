@@ -1,31 +1,27 @@
-import FrameType from "../frameTypes";
-import Id3v2TagSettings from "../id3v2TagSettings";
-import ILazy from "../../iLazy";
+import Id3v2Settings from "../id3v2Settings";
 import {ByteVector, StringType} from "../../byteVector";
 import {CorruptFileError} from "../../errors";
-import {IFileAbstraction} from "../../fileAbstraction";
 import {Frame, FrameClassType} from "./frame";
 import {Id3v2FrameHeader} from "./frameHeader";
+import {FrameIdentifiers} from "../frameIdentifiers";
 import {IPicture, Picture, PictureType} from "../../picture";
-import {IStream, SeekOrigin} from "../../stream";
 import {Guards} from "../../utils";
+import {IFileAbstraction} from "../../fileAbstraction";
+import PictureLazy from "../../pictureLazy";
 
-export default class AttachmentFrame extends Frame implements ILazy, IPicture {
-    // #region Member Variables
+export default class AttachmentFrame extends Frame implements IPicture {
+    // NOTE: It probably doesn't look necessary to implement IPicture, but it makes converting a
+    //     frame to a picture so much easier, which we need in the Id3v2Tag class.
 
     private _data: ByteVector;
     private _description: string;
-    private _encoding: StringType = Id3v2TagSettings.defaultEncoding;
-    private _file: IFileAbstraction;
+    private _encoding: StringType = Id3v2Settings.defaultEncoding;
     private _filename: string;
     private _mimeType: string;
     private _rawData: ByteVector;
+    private _rawPicture: IPicture;
     private _rawVersion: number;
-    private _streamOffset: number;
-    private _streamSize: number = -1;
     private _type: PictureType;
-
-    // #endregion
 
     // #region Constructors
 
@@ -34,53 +30,26 @@ export default class AttachmentFrame extends Frame implements ILazy, IPicture {
     }
 
     /**
-     * Constructs a new attachment frame from a file. The content will be lazily loaded.
-     * @param abstraction Abstraction of the file to read.
-     * @param offset Position into the file where the picture is located
-     * @param size Size in bytes of the picture. Use -1 to read all bytes of the file
-     * @param header Header of the frame found at {@paramref offset} in the data
-     */
-    public static fromFile(
-        abstraction: IFileAbstraction,
-        offset: number,
-        size: number,
-        header: Id3v2FrameHeader
-    ): AttachmentFrame {
-        Guards.truthy(abstraction, "abstraction");
-        Guards.uint(offset, "offset");
-        Guards.int(size, "size");
-        Guards.truthy(header, "header");
-
-        if (size < 0 && size !== -1) {
-            throw new Error("Argument out of range: size must be positive 32-bit integer or -1");
-        }
-
-        const frame = new AttachmentFrame(header);
-        frame._file = abstraction;
-        frame._streamOffset = offset;
-        frame._streamSize = size;
-        frame._rawVersion = header.version;
-        return frame;
-    }
-
-    /**
      * Constructs and initializes a new attachment frame by reading its raw data in a specified
      * ID3v2 version.
      * @param data ByteVector containing the raw representation of the new frame
      * @param offset Index into {@paramref data} where the frame actually begins
      * @param header Header of the frame found at {@paramref offset} in the data
+     * @param version ID3v2 version the frame was originally encoded with
      */
     public static fromOffsetRawData(
         data: ByteVector,
         offset: number,
-        header: Id3v2FrameHeader
+        header: Id3v2FrameHeader,
+        version: number
     ): AttachmentFrame {
         Guards.truthy(data, "data");
         Guards.uint(offset, "offset");
         Guards.truthy(header, "header");
+        Guards.byte(version, "version");
 
         const frame = new AttachmentFrame(header);
-        frame.setData(data, offset, false);
+        frame.setData(data, offset, false, version);
         return frame;
     }
 
@@ -96,12 +65,39 @@ export default class AttachmentFrame extends Frame implements ILazy, IPicture {
     public static fromPicture(picture: IPicture): AttachmentFrame {
         Guards.truthy(picture, "picture");
 
-        const frame = new AttachmentFrame(new Id3v2FrameHeader(FrameType.APIC, 4));
-        frame.type = picture.type;
-        frame._mimeType = picture.mimeType;
-        frame._filename = picture.filename;
-        frame._description = picture.description;
-        frame._data = picture.data;
+        // NOTE: We assume the frame is an APIC frame of size 1 until we parse it and find out
+        //     otherwise.
+        const frame = new AttachmentFrame(new Id3v2FrameHeader(FrameIdentifiers.APIC, undefined, 1));
+        frame._rawPicture = picture;
+        return frame;
+    }
+
+    /**
+     * Constructs and initializes a new attachment frame by populating it with the contents of a
+     * section of a file. This constructor is only meant to be used by the {@see FrameFactory}
+     * class. All loading is done lazily.
+     * @param file File to load frame data from
+     * @param header ID3v2 frame header that defines the frame
+     * @param frameStart Index into the file where the frame starts
+     * @param size Length of the frame data
+     * @param version ID3v2 version the frame was originally encoded with
+     */
+    // @TODO: Make lazy loading optional
+    public static fromFile(
+        file: IFileAbstraction,
+        header: Id3v2FrameHeader,
+        frameStart: number,
+        size: number,
+        version: number
+    ): AttachmentFrame {
+        Guards.truthy(file, "file");
+        Guards.truthy(header, "header");
+        Guards.uint(frameStart, "frameStart");
+        Guards.uint(size, "size");
+
+        const frame = new AttachmentFrame(header);
+        frame._rawPicture = PictureLazy.fromFile(file, frameStart, size);
+        frame._rawVersion = version;
         return frame;
     }
 
@@ -115,8 +111,8 @@ export default class AttachmentFrame extends Frame implements ILazy, IPicture {
         Guards.truthy(data, "data");
         Guards.byte(version, "version");
 
-        const frame = new AttachmentFrame(new Id3v2FrameHeader(data, version));
-        frame.setData(data, 0, true);
+        const frame = new AttachmentFrame(Id3v2FrameHeader.fromData(data, version));
+        frame.setData(data, 0, true, version);
         return frame;
     }
 
@@ -124,19 +120,21 @@ export default class AttachmentFrame extends Frame implements ILazy, IPicture {
 
     // #region Properties
 
+    /** @inheritDoc */
+    public get frameClassType(): FrameClassType { return FrameClassType.AttachmentFrame; }
+
     /**
      * Gets the image data stored in the current instance.
      */
     public get data(): ByteVector {
-        this.loadIfPossible();
-        this.parseRawData();
+        this.parseFromRaw();
         return this._data ? this._data : ByteVector.empty();
     }
     /**
      * Sets the image data stored in the current instance.
      */
     public set data(value: ByteVector) {
-        this.loadIfPossible();
+        this.parseFromRaw();
         this._data = value;
     }
 
@@ -144,8 +142,7 @@ export default class AttachmentFrame extends Frame implements ILazy, IPicture {
      * Gets the description stored in the current instance.
      */
     public get description(): string {
-        this.loadIfPossible();
-        this.parseRawData();
+        this.parseFromRaw();
         return this._description ? this._description : "";
     }
     /**
@@ -153,7 +150,7 @@ export default class AttachmentFrame extends Frame implements ILazy, IPicture {
      * There should only be one frame with a matching description and type per tag.
      */
     public set description(value: string) {
-        this.loadIfPossible();
+        this.parseFromRaw();
         this._description = value;
     }
 
@@ -161,31 +158,22 @@ export default class AttachmentFrame extends Frame implements ILazy, IPicture {
      * Gets a filename of the picture stored in the current instance.
      */
     public get filename(): string {
-        this.loadIfPossible();
+        this.parseFromRaw();
         return this._filename;
     }
     /**
      * Sets a filename of the picture stored in the current instance.
      */
     public set filename(value: string) {
-        this.loadIfPossible();
+        this.parseFromRaw();
         this._filename = value;
-    }
-
-    /** @inheritDoc */
-    public get frameClassType(): FrameClassType { return FrameClassType.AttachmentFrame; }
-
-    /** @inheritDoc */
-    public get isLoaded(): boolean {
-        return !!(this._data || this._rawData);
     }
 
     /**
      * Gets the MimeType of the picture stored in the current instance.
      */
     public get mimeType(): string {
-        this.loadIfPossible();
-        this.parseRawData();
+        this.parseFromRaw();
 
         return this._mimeType ? this._mimeType : "";
     }
@@ -194,7 +182,7 @@ export default class AttachmentFrame extends Frame implements ILazy, IPicture {
      * @param value MimeType of the picture stored in the current instance.
      */
     public set mimeType(value: string) {
-        this.loadIfPossible();
+        this.parseFromRaw();
         this._mimeType = value;
     }
 
@@ -203,18 +191,18 @@ export default class AttachmentFrame extends Frame implements ILazy, IPicture {
      * @value Text encoding to use when storing the current instance.
      */
     public get textEncoding(): StringType {
-        this.loadIfPossible();
-        this.parseRawData();
+        this.parseFromRaw();
         return this._encoding;
     }
     /**
      * Sets the text encoding to use when storing the current instance.
      * @param value Text encoding to use when storing the current instance.
-     *     This encoding is overridden when rendering if {@see Id3v2Tag.ForceDefaultEncoding} is
-     *     `true` or the render version does not support it.
+     *     This encoding is overridden when rendering if
+     *     {@see Id3v2Settings.forceDefaultEncoding} is `true` or the render version does not
+     *     support it.
      */
     public set textEncoding(value: StringType) {
-        this.loadIfPossible();
+        this.parseFromRaw();
         this._encoding = value;
     }
 
@@ -222,8 +210,7 @@ export default class AttachmentFrame extends Frame implements ILazy, IPicture {
      * Gets the object type stored in the current instance.
      */
     public get type(): PictureType {
-        this.loadIfPossible();
-        this.parseRawData();
+        this.parseFromRaw();
         return this._type;
     }
     /**
@@ -232,14 +219,14 @@ export default class AttachmentFrame extends Frame implements ILazy, IPicture {
      * Picture Frame.
      */
     public set type(value: PictureType) {
-        this.loadIfPossible();
+        this.parseFromRaw();
 
         // Change the frame type depending if this is a picture or a general object
         const frameId = value === PictureType.NotAPicture
-            ? FrameType.GEOB
-            : FrameType.APIC;
+            ? FrameIdentifiers.GEOB
+            : FrameIdentifiers.APIC;
         if (this._header.frameId !== frameId) {
-            this._header = new Id3v2FrameHeader(frameId, 4);
+            this._header = new Id3v2FrameHeader(frameId);
         }
 
         this._type = value;
@@ -251,22 +238,20 @@ export default class AttachmentFrame extends Frame implements ILazy, IPicture {
 
     /** @inheritDoc */
     public clone(): Frame {
-        if (this._file) {
-            this.load();
-        }
-
-        const frame = new AttachmentFrame(new Id3v2FrameHeader(FrameType.APIC, 4));
-        frame._encoding = this._encoding;
-        frame._mimeType = this._mimeType;
-        frame.type = this._type;
-        frame._filename = this._filename;
-        frame._rawVersion = this._rawVersion;
-
-        if (this._data) {
+        const frame = new AttachmentFrame(new Id3v2FrameHeader(this.frameId));
+        if (this._rawPicture) {
+            frame._rawPicture = this._rawPicture;
+        } else if (this._rawData) {
+            frame._rawData = this._rawData;
+            frame._rawVersion = this._rawVersion;
+        } else {
             frame._data = ByteVector.fromByteVector(this._data);
-        }
-        if (this._rawData) {
-            frame._data = ByteVector.fromByteVector(this._rawData);
+            frame._description = this._description;
+            frame._encoding = this._encoding;
+            frame._filename = this._filename;
+            frame._mimeType = this._mimeType;
+            frame._rawVersion = this._rawVersion;
+            frame._type = this._type;
         }
 
         return frame;
@@ -288,53 +273,14 @@ export default class AttachmentFrame extends Frame implements ILazy, IPicture {
     ): AttachmentFrame {
         Guards.truthy(frames, "frames");
         return frames.find((f) => {
-                if (f.description && f.description !== description) { return false; }
+                if (description && f.description !== description) { return false; }
                 if (type !== PictureType.Other && f.type !== type) { return false; }
                 return true;
             });
     }
 
-    /**
-     * Load the picture data from the file if not done yet.
-     */
-    public load(): void {
-        // Already loaded?
-        if (!this._file) {
-            return;
-        }
-
-        // Load the picture from the stream
-        let stream: IStream;
-        let data: ByteVector;
-
-        try {
-            if (this._streamSize === 0) {
-                data = ByteVector.empty();
-            } else {
-                stream = this._file.readStream;
-                stream.seek(this._streamOffset, SeekOrigin.Begin);
-
-                data = ByteVector.fromInternalStream(stream);
-            }
-        } finally {
-            if (stream && this._file) {
-                this._file.closeStream(stream);
-            }
-
-            this._file = undefined;
-        }
-
-        // Decode the raw data if required using FieldData
-        // NOTE: It probably seems weird to set the offset to a negative, but it's because we're
-        //    loading the bytes from a file which won't have a frame header
-        this._rawData = this.fieldData(data, -Id3v2FrameHeader.getSize(this._rawVersion));
-
-        // Get the actual data
-        this.parseRawData();
-    }
-
     public toString(): string {
-        this.loadIfPossible();
+        this.parseFromRaw();
 
         let builder = "";
         if (this.description) {
@@ -349,7 +295,6 @@ export default class AttachmentFrame extends Frame implements ILazy, IPicture {
     // #endregion
 
     protected parseFields(data: ByteVector, version: number): void {
-        this.loadIfPossible();
         if (data.length < 5) {
             throw new CorruptFileError("A picture frame must contain at least 5 bytes");
         }
@@ -359,24 +304,19 @@ export default class AttachmentFrame extends Frame implements ILazy, IPicture {
     }
 
     protected renderFields(version: number) {
-        this.loadIfPossible();
-
-        // Bypass processing if we haven't changed the data. Raw data is cleared when we touch any
-        // fields inside this frame.
-        if (this._rawData && this._rawVersion === version) {
-            return this._rawData;
-        }
+        this.parseFromRaw();
 
         const encoding = AttachmentFrame.correctEncoding(this.textEncoding, version);
         const data = ByteVector.empty();
 
-        if (this._header.frameId === FrameType.APIC) {
+        if (this.frameId === FrameIdentifiers.APIC) {
             // Render an ID3v2 attached picture
             data.addByte(encoding);
 
             if (version === 2) {
-                const ext = Picture.getExtensionFromMimeType(this.mimeType);
-                data.addByteVector(ByteVector.fromString(ext && ext.length === 3 ? ext.toUpperCase() : "XXX"));
+                let ext = Picture.getExtensionFromMimeType(this.mimeType);
+                ext = ext && ext.length >= 3 ? ext.substring(ext.length - 3).toUpperCase() : "XXX";
+                data.addByteVector(ByteVector.fromString(ext));
             } else {
                 data.addByteVector(ByteVector.fromString(this.mimeType, StringType.Latin1));
                 data.addByteVector(ByteVector.getTextDelimiter(StringType.Latin1));
@@ -385,7 +325,7 @@ export default class AttachmentFrame extends Frame implements ILazy, IPicture {
             data.addByte(this._type);
             data.addByteVector(ByteVector.fromString(this.description, encoding));
             data.addByteVector(ByteVector.getTextDelimiter(encoding));
-        } else if (this._header.frameId === FrameType.GEOB) {
+        } else if (this.frameId === FrameIdentifiers.GEOB) {
             // Make an ID3v2 general encapsulated object
             data.addByte(encoding);
 
@@ -411,83 +351,119 @@ export default class AttachmentFrame extends Frame implements ILazy, IPicture {
         return data;
     }
 
-    private loadIfPossible(): void {
-        if (this._file) {
-            this.load();
+    private parseFromRaw(): void {
+        if (this._rawData) {
+            this.parseFromRawData();
+        } else if (this._rawPicture) {
+            if (this._rawVersion !== undefined) {
+                this._rawData = this._rawPicture.data;
+                this._rawPicture = undefined;
+                this.parseFromRawData();
+            } else {
+                this.parseFromRawPicture();
+            }
         }
     }
 
-    /**
-     * Performs the *actual* parsing of the raw data.
-     * Because of the high parsing cost and relatively low usage of the class, {@see parseFields}
-     * only stores the field data so it can be parsed on demand. Whenever a property or method is
-     * called, and only on the first call does it actually parse the data.
-     */
-    private parseRawData(): void {
-        this.loadIfPossible();
-        if (!this._rawData) {
-            return;
-        }
-
-        this._data = this._rawData;
+    private parseFromRawData(): void {
+        // Indicate raw data has been processed
+        const data = this._rawData;
         this._rawData = undefined;
 
-        let pos = 0;
-        let offset: number;
-
-        this._encoding = this._data.get(pos++);
+        // Determine encoding
+        this._encoding = data.get(0);
         const delim = ByteVector.getTextDelimiter(this._encoding);
 
-        if (ByteVector.equal(this._header.frameId, FrameType.APIC)) {
+        let descriptionEndIndex;
+        if (this.frameId === FrameIdentifiers.APIC) {
             // Retrieve an ID3v2 attached picture
             if (this._rawVersion > 2) {
-                offset = this._data.find(ByteVector.getTextDelimiter(StringType.Latin1), pos);
-
-                if (offset < pos) {
+                // Text encoding      $xx
+                // MIME type          <text string> $00
+                // Picture type       $xx
+                // Description        <text string according to encoding> $00 (00)
+                // Picture data       <binary data>
+                const mimeTypeEndIndex = data.find(ByteVector.getTextDelimiter(StringType.Latin1));
+                if (mimeTypeEndIndex === -1) {
                     return;
                 }
+                const mimeTypeLength = mimeTypeEndIndex - 1;
+                this._mimeType = data.toString(mimeTypeLength, StringType.Latin1, 1);
 
-                this._mimeType = this._data.toString(StringType.Latin1, pos, offset - pos);
-                pos = offset = 1;
+                this._type = data.get(mimeTypeEndIndex + 1);
+
+                descriptionEndIndex = data.find(delim, mimeTypeEndIndex + 2, delim.length);
+                const descriptionLength = descriptionEndIndex - mimeTypeEndIndex - 1;
+                this._description = data.toString(
+                    descriptionLength,
+                    this._encoding,
+                    mimeTypeEndIndex + 2
+                );
             } else {
-                const ext = this._data.mid(pos, 3);
-                this._mimeType = Picture.getMimeTypeFromExtension(ext.toString(StringType.UTF8));
-                pos += 3;
+                // Text encoding      $xx
+                // Image format       $xx xx xx
+                // Picture type       $xx
+                // Description        <textstring> $00 (00)
+                // Picture data       <binary data>
+                const imageFormat = data.toString(3, StringType.Latin1, 1);
+                this._mimeType = Picture.getMimeTypeFromFilename(imageFormat);
+
+                this._type = data.get(4);
+
+                descriptionEndIndex = data.find(delim, 5, delim.length);
+                const descriptionLength = descriptionEndIndex - 5;
+                this._description = data.toString(descriptionLength, this._encoding, 5);
             }
 
-            this.type = this._data.get(pos++);
-            offset = this._data.find(delim, pos, delim.length);
-        } else if (ByteVector.equal(this._header.frameId, FrameType.GEOB)) {
-            // Retrieve and ID3v2 general encapsulated object
-            offset = this._data.find(ByteVector.getTextDelimiter(StringType.Latin1), pos);
-            if (offset < pos) {
+            this._data = data.mid(descriptionEndIndex + delim.length);
+        } else if (this.frameId === FrameIdentifiers.GEOB) {
+            // Retrieve an ID3v2 generic encapsulated object
+            // Text encoding          $xx
+            // MIME type              <text string> $00
+            // Filename               <text string according to encoding> $00 (00)
+            // Content description    <text string according to encoding> $00 (00)
+            // Encapsulated object    <binary data>
+            const mimeTypeEndIndex = data.find(ByteVector.getTextDelimiter(StringType.Latin1));
+            if (mimeTypeEndIndex === -1) {
                 return;
             }
+            const mimeTypeLength = mimeTypeEndIndex - 1;
+            this._mimeType = data.toString(mimeTypeLength, StringType.Latin1, 1);
 
-            this._mimeType = this._data.toString(StringType.Latin1, pos, offset - pos);
-            pos = offset + 1;
+            const filenameEndIndex = data.find(delim, mimeTypeEndIndex + 1, delim.length);
+            const filenameLength = filenameEndIndex - mimeTypeEndIndex - 1;
+            this._filename = data.toString(filenameLength, this._encoding, mimeTypeEndIndex + 1);
 
-            offset = this._data.find(delim, pos, delim.length);
-            if (offset < pos) {
-                return;
-            }
+            descriptionEndIndex = data.find(delim, filenameEndIndex + delim.length, delim.length);
+            const descriptionLength = descriptionEndIndex - filenameEndIndex - delim.length;
+            this._description = data.toString(descriptionLength, this._encoding, filenameEndIndex + delim.length);
 
-            this._filename = this._data.toString(this._encoding, pos, offset - pos);
-            pos = offset + delim.length;
-
-            offset = this._data.find(delim, pos, delim.length);
-
-            this.type = PictureType.NotAPicture;
+            this._data = data.mid(descriptionEndIndex + delim.length);
+            this._type = PictureType.NotAPicture;
         } else {
-            throw new Error("Invalid operation: bad frame type");
+            // Unsupported
+            throw new Error("Unsupported: AttachmentFrame cannot be used for frame IDs other than GEOB or APIC");
         }
+    }
 
-        if (offset < pos) {
-            return;
+    private parseFromRawPicture(): void {
+        // Indicate raw picture has been processed
+        const picture = this._rawPicture;
+        this._rawPicture = undefined;
+
+        // Bring over values from the picture
+        this._data = ByteVector.fromByteVector(picture.data);
+        this._description = picture.description;
+        this._filename = picture.filename;
+        this._mimeType = picture.mimeType;
+        this._type = picture.type;
+        this._header.frameSize = this._data.length;
+
+        this._encoding = Id3v2Settings.defaultEncoding;
+
+        // Switch the frame ID if we discovered the attachment isn't an image
+        if (this._type === PictureType.NotAPicture) {
+            this._header.frameId = FrameIdentifiers.GEOB;
         }
-
-        this._description = this._data.toString(this._encoding, pos, offset - pos);
-        pos = offset + delim.length;
-        this._data.removeRange(0, pos);
     }
 }

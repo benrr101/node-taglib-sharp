@@ -1,9 +1,9 @@
-import FrameTypes from "../frameTypes";
-import Id3v2TagSettings from "../id3v2TagSettings";
+import Id3v2Settings from "../id3v2Settings";
 import {ByteVector, StringType} from "../../byteVector";
 import {CorruptFileError} from "../../errors";
 import {Frame, FrameClassType} from "./frame";
 import {Id3v2FrameHeader} from "./frameHeader";
+import {FrameIdentifiers} from "../frameIdentifiers";
 import {Guards} from "../../utils";
 
 /**
@@ -18,7 +18,7 @@ export default class CommentsFrame extends Frame {
     private _description: string;
     private _language: string;
     private _text: string;
-    private _textEncoding: StringType = Id3v2TagSettings.defaultEncoding;
+    private _textEncoding: StringType = Id3v2Settings.defaultEncoding;
 
     // #region
 
@@ -35,11 +35,11 @@ export default class CommentsFrame extends Frame {
     public static fromDescription(
         description: string,
         language?: string,
-        encoding: StringType = Id3v2TagSettings.defaultEncoding
+        encoding: StringType = Id3v2Settings.defaultEncoding
     ): CommentsFrame {
         Guards.notNullOrUndefined(description, "description");
 
-        const frame = new CommentsFrame(new Id3v2FrameHeader(FrameTypes.COMM, 4));
+        const frame = new CommentsFrame(new Id3v2FrameHeader(FrameIdentifiers.COMM));
         frame.textEncoding = encoding;
         frame._language = language;
         frame._description = description;
@@ -54,18 +54,21 @@ export default class CommentsFrame extends Frame {
      * @param offset What offset in {@paramref data} the frame actually begins. Must be positive,
      *     safe integer
      * @param header Header of the frame found at {@paramref data} in the data
+     * @param version ID3v2 version the frame was originally encoded with
      */
     public static fromOffsetRawData(
         data: ByteVector,
         offset: number,
-        header: Id3v2FrameHeader
+        header: Id3v2FrameHeader,
+        version: number
     ): CommentsFrame {
         Guards.truthy(data, "data");
         Guards.uint(offset, "offset");
         Guards.truthy(header, "header");
+        Guards.byte(version, "version");
 
         const frame = new CommentsFrame(header);
-        frame.setData(data, offset, false);
+        frame.setData(data, offset, false, version);
         return frame;
     }
 
@@ -74,13 +77,14 @@ export default class CommentsFrame extends Frame {
      * ID3v2 version.
      * @param data Raw representation of the new frame
      * @param version ID3v2 version the raw frame is encoded with, must be a positive 8-bit integer
+     * @param version ID3v2 version the frame was originally encoded with
      */
     public static fromRawData(data: ByteVector, version: number): CommentsFrame {
         Guards.truthy(data, "data");
         Guards.byte(version, "version");
 
-        const frame = new CommentsFrame(new Id3v2FrameHeader(data, version));
-        frame.setData(data, 0, true);
+        const frame = new CommentsFrame(Id3v2FrameHeader.fromData(data, version));
+        frame.setData(data, 0, true, version);
         return frame;
     }
 
@@ -244,13 +248,12 @@ export default class CommentsFrame extends Frame {
     }
 
     protected parseFields(data: ByteVector, version: number): void {
-        Guards.byte(version, "version");
         if (data.length < 4) {
             throw new CorruptFileError("Not enough bytes in field");
         }
 
         this.textEncoding = data.get(0);
-        this._language = data.toString(StringType.Latin1, 1, 3);
+        this._language = data.toString(3, StringType.Latin1, 1);
 
         // Instead of splitting into two strings, in the format [{desc}\0{value}], try splitting
         // into three strings in case of a misformatted [{desc}\0{value}\0].
@@ -271,14 +274,13 @@ export default class CommentsFrame extends Frame {
     }
 
     protected renderFields(version: number): ByteVector {
-        Guards.byte(version, "version");
         const encoding = Frame.correctEncoding(this.textEncoding, version);
         const v = ByteVector.empty();
-        v.addByte(version);
+        v.addByte(encoding);
         v.addByteVector(ByteVector.fromString(this.language, StringType.Latin1));
         v.addByteVector(ByteVector.fromString(this.description, encoding));
         v.addByteVector(ByteVector.getTextDelimiter(encoding));
-        v.addByteVector(ByteVector.fromString(this._text, encoding));
+        v.addByteVector(ByteVector.fromString(this.text, encoding));
         return v;
     }
 }

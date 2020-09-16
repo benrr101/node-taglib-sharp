@@ -1,7 +1,7 @@
-import FrameTypes from "../frameTypes";
 import {ByteVector, StringType} from "../../byteVector";
 import {Frame, FrameClassType} from "./frame";
 import {Id3v2FrameHeader} from "./frameHeader";
+import {FrameIdentifier, FrameIdentifiers} from "../frameIdentifiers";
 import {Guards} from "../../utils";
 
 /**
@@ -47,9 +47,9 @@ export class UrlLinkFrame extends Frame {
      * Constructs and initializes an empty frame with the provided frame identity
      * @param ident Identity of the frame to construct
      */
-    public static fromIdentity(ident: ByteVector): UrlLinkFrame {
+    public static fromIdentity(ident: FrameIdentifier): UrlLinkFrame {
         Guards.truthy(ident, "ident");
-        return new UrlLinkFrame(new Id3v2FrameHeader(ident, 4));
+        return new UrlLinkFrame(new Id3v2FrameHeader(ident));
     }
 
     /**
@@ -59,18 +59,21 @@ export class UrlLinkFrame extends Frame {
      * @param offset What offset in {@paramref data} the frame actually begins. Must be positive,
      *     safe integer
      * @param header Header of the frame found at {@paramref data} in the data
+     * @param version ID3v2 version the frame was originally encoded with
      */
     public static fromOffsetRawData(
         data: ByteVector,
         offset: number,
-        header: Id3v2FrameHeader
+        header: Id3v2FrameHeader,
+        version: number
     ): UrlLinkFrame {
         Guards.truthy(data, "data");
         Guards.uint(offset, "offset");
         Guards.truthy(header, "header");
+        Guards.byte(version, "version");
 
         const frame = new UrlLinkFrame(header);
-        frame.setData(data, offset, false);
+        frame.setData(data, offset, false, version);
         return frame;
     }
 
@@ -84,8 +87,8 @@ export class UrlLinkFrame extends Frame {
         Guards.truthy(data, "data");
         Guards.byte(version, "version");
 
-        const frame = new UrlLinkFrame(new Id3v2FrameHeader(data, version));
-        frame.setData(data, 0, true);
+        const frame = new UrlLinkFrame(Id3v2FrameHeader.fromData(data, version));
+        frame.setData(data, 0, true, version);
         return frame;
     }
 
@@ -133,18 +136,15 @@ export class UrlLinkFrame extends Frame {
     /**
      * Gets the first frame that matches the provided type
      * @param frames Object to search in
-     * @param ident Frame identifier to search for. Must be 4 bytes
+     * @param ident Frame identifier to search for
      * @returns UrlLinkFrame Frame containing the matching frameId, `undefined` if a match was
      *     not found
      */
-    public static findUrlLinkFrame(frames: UrlLinkFrame[], ident: ByteVector): UrlLinkFrame {
+    public static findUrlLinkFrame(frames: UrlLinkFrame[], ident: FrameIdentifier): UrlLinkFrame {
         Guards.truthy(frames, "frames");
         Guards.truthy(ident, "ident");
-        if (ident.length !== 4) {
-            throw new Error("Identifier must be 4 bytes long.");
-        }
 
-        return frames.find((f) => ByteVector.equal(f.frameId, ident));
+        return frames.find((f) => f.frameId === ident);
     }
 
     /** @inheritDoc */
@@ -180,29 +180,40 @@ export class UrlLinkFrame extends Frame {
         this._rawData = undefined;
 
         const fieldList = [];
-        const delim = ByteVector.getTextDelimiter(this._encoding);
-        if (this.frameId !== FrameTypes.WXXX) {
-            fieldList.push(... data.toStrings(StringType.Latin1, 0));
-        } else if (data.length > 1 && !ByteVector.equal(data.mid(0, delim.length), delim)) {
-            let value = data.toString(StringType.Latin1, 1, data.length - 1);
+        let index = 0;
+        if (this.frameId === FrameIdentifiers.WXXX && data.length > 0) {
+            // Text Encoding    $xx
+            // Description      <text string according to encoding> $00 (00)
+            // URL              <text string>
+            const encoding = <StringType> data.get(0);
+            const delim = ByteVector.getTextDelimiter(encoding);
+            const delimIndex = data.find(delim, 1, delim.length);
+
+            if (delimIndex >= 0) {
+                const description = data.toString(delimIndex - 1, encoding, 1);
+                fieldList.push(description);
+                index += delimIndex - 1 + delim.length;
+            }
+
+            index += 1;
+        }
+
+        if (index < data.length) {
+
+            // Read the url from the data
+            let url = data.toString(data.length - index, StringType.Latin1, index);
 
             // Do a fast removal of end bytes
-            if (value.length > 1 && value[value.length - 1] === "\0") {
-                for (let i = value.length - 1; i >= 0; i--) {
-                    if (value[i] !== "\0") {
-                        value = value.substr(0, i + 1);
+            if (url.length > 1 && url[url.length - 1] === "\0") {
+                for (let i = url.length - 1; i >= 0; i--) {
+                    if (url[i] !== "\0") {
+                        url = url.substr(0, i + 1);
                         break;
                     }
                 }
             }
 
-            fieldList.push(value);
-        }
-
-        // Bad tags may have one or more null characters at the end of a string, resulting in empty
-        // strings at the end of the field list. Strip them off.
-        while (fieldList.length !== 0 && !fieldList[fieldList.length - 1]) {
-            fieldList.pop();
+            fieldList.push(url);
         }
         this._textFields = fieldList;
     }
@@ -214,7 +225,7 @@ export class UrlLinkFrame extends Frame {
         }
 
         const encoding = UrlLinkFrame.correctEncoding(this.textEncoding, version);
-        const isWxxx = this.frameId === FrameTypes.WXXX;
+        const isWxxx = this.frameId === FrameIdentifiers.WXXX;
         const v = isWxxx
             ? ByteVector.fromByteArray(new Uint8Array([encoding]))
             : ByteVector.empty();
@@ -229,6 +240,7 @@ export class UrlLinkFrame extends Frame {
                 }
             }
         }
+        // @TODO: is this correct formatting?
         v.addByteVector(ByteVector.fromString(text.join("/"), StringType.Latin1));
 
         return v;
@@ -253,7 +265,7 @@ export class UserUrlLinkFrame extends UrlLinkFrame {
      * @param description Description to use as text of the frame.
      */
     public static fromDescription(description: string): UserUrlLinkFrame {
-        const frame = new UserUrlLinkFrame(new Id3v2FrameHeader(FrameTypes.WXXX, 4));
+        const frame = new UserUrlLinkFrame(new Id3v2FrameHeader(FrameIdentifiers.WXXX));
         frame.text = [description];
         return frame;
     }
@@ -265,18 +277,20 @@ export class UserUrlLinkFrame extends UrlLinkFrame {
      * @param offset What offset in {@paramref data} the frame actually begins. Must be positive,
      *     safe integer
      * @param header Header of the frame found at {@paramref data} in the data
+     * @param version ID3v2 version the frame was originally encoded with
      */
     public static fromOffsetRawData(
         data: ByteVector,
         offset: number,
-        header: Id3v2FrameHeader
+        header: Id3v2FrameHeader,
+        version: number
     ): UserUrlLinkFrame {
         Guards.truthy(data, "data");
         Guards.uint(offset, "offset");
         Guards.truthy(header, "header");
 
         const frame = new UserUrlLinkFrame(header);
-        frame.setData(data, offset, false);
+        frame.setData(data, offset, false, version);
         return frame;
     }
 
@@ -290,8 +304,8 @@ export class UserUrlLinkFrame extends UrlLinkFrame {
         Guards.truthy(data, "data");
         Guards.byte(version, "version");
 
-        const frame = new UserUrlLinkFrame(new Id3v2FrameHeader(data, version));
-        frame.setData(data, 0, true);
+        const frame = new UserUrlLinkFrame(Id3v2FrameHeader.fromData(data, version));
+        frame.setData(data, 0, true, version);
         return frame;
     }
 
