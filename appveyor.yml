@@ -1,5 +1,5 @@
 environment:
-  nodejs_version: "8.12"
+  nodejs_version: "8.16"
 
 install:
   - ps: Install-Product node $env:nodejs_version
@@ -7,9 +7,14 @@ install:
 
 build_script:
   - npm run build
+  - npm pack
 
 test_script:
   - npm run test-unit-with-coverage
 
 after_test:
   - npm run publish-coverage
+
+artifacts:
+  - path: '*.tgz'
+    name: NPM Package

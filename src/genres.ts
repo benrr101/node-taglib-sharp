@@ -148,7 +148,7 @@ const audioGenres = [
     "Anime",
     "Jpop",
     "Synthpop"
-]
+];
 
 // DivX video genres (INDEXES MATTER)
 const videoGenres = [
@@ -195,9 +195,11 @@ const videoGenres = [
 ];
 
 
-function stringToByte(text: string): number {
-    const trimRegex = /^\(+|\)+$/g;
-    text = text.replace(trimRegex, "");
+function stringToByte(text: string, allowParenthesis: boolean): number {
+    if (allowParenthesis) {
+        const trimRegex = /^\(+|\)+$/g;
+        text = text.replace(trimRegex, "");
+    }
     const index = parseInt(text, 10);
     return Number.isNaN(index) ? 255 : index;
 }
@@ -216,13 +218,15 @@ export default {
     /**
      * Gets the audio genre name for a specified index.
      * @param index Index of the genre in the audio genre array. Can be a {@see Number},
-     *     {@see string} or {@see string} wrapped in `( )`
+     *     {@see string} or {@see string} wrapped in `( )`, if {@paramref allowParenthesis} is set
+     *     to `true`
+     * @param allowParenthesis Whether or not a number wrapped in parenthesis is allowed
      * @returns string Genre name if found, or `undefined` if {@paramref index} is outside the
      *     bounds of the audio genre array or if {@paramref index} is not valid.
      */
-    indexToAudio: (index: number|string): string => {
+    indexToAudio: (index: number|string, allowParenthesis: boolean): string => {
         const safeIndex = typeof(index) === "string"
-            ? stringToByte(index)
+            ? stringToByte(index, allowParenthesis)
             : index;
         return Number.isSafeInteger(safeIndex) && safeIndex < audioGenres.length && safeIndex >= 0
             ? audioGenres[safeIndex]
@@ -232,13 +236,15 @@ export default {
     /**
      * Gets the video genre name for a specified index.
      * @param index Index of the genre in the video genre array. Can be a {@see Number},
-     *     {@see string} or {@see string} wrapped in `( )`
+     *     {@see string} or {@see string} wrapped in `( )` if {@paramref allowParenthesis} is set
+     *     to `true`
+     * @param allowParenthesis Whether or not a number wrapped in parenthesis is allowed
      * @returns string Genre name if found, or `undefined` if {@paramref index} is outside the
      *     bounds of the video genre array or if {@paramref index} is not valid.
      */
-    indexToVideo: (index: number|string): string => {
+    indexToVideo: (index: number|string, allowParenthesis: boolean): string => {
         const safeIndex = typeof(index) === "string"
-            ? stringToByte(index)
+            ? stringToByte(index, allowParenthesis)
             : index;
         return Number.isSafeInteger(safeIndex) && safeIndex < videoGenres.length && safeIndex >= 0
             ? videoGenres[safeIndex]

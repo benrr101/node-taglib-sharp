@@ -13,6 +13,12 @@ export default {
             });
         mockFile.setup((f) => f.readBlock(TypeMoq.It.isAnyNumber()))
             .returns((s) => {
+                if (position + s > data.length) {
+                    s = data.length - position;
+                }
+                if (s <= 0) {
+                    return ByteVector.empty();
+                }
                 return data.mid(position, s);
             });
 

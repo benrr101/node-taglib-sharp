@@ -1,7 +1,6 @@
 import AttachmentFrame from "./attachmentFrame";
 import CommentsFrame from "./commentsFrame";
 import MusicCdIdentifierFrame from "./musicCdIdentifierFrame";
-import PictureLazy from "../../pictureLazy";
 import PlayCountFrame from "./playCountFrame";
 import PopularimeterFrame from "./popularimeterFrame";
 import PrivateFrame from "./privateFrame";
@@ -97,8 +96,9 @@ export default {
         }
 
         const header = Id3v2FrameHeader.fromData(data.mid(position, frameHeaderSize), version);
-        const filePosition = offset + frameHeaderSize;
-        offset += header.frameSize + frameHeaderSize;
+        const frameStartIndex = offset + frameHeaderSize;
+        const frameEndIndex = offset + header.frameSize + frameHeaderSize;
+        const frameSize = frameEndIndex - frameStartIndex;
 
         // Illegal frames are filtered out when creating the frame header
 
@@ -126,7 +126,7 @@ export default {
                 if (frame) {
                     return {
                         frame: frame,
-                        offset: offset
+                        offset: frameEndIndex
                     };
                 }
             }
@@ -139,17 +139,17 @@ export default {
             if (file) {
                 // Attached picture (frames 4.14)
                 // General encapsulated object (frames 4.15)
+                // TODO: Make lazy loading optional
                 if (header.frameId === FrameIdentifiers.APIC || header.frameId === FrameIdentifiers.GEOB) {
-                    const picture = PictureLazy.fromFile(file.fileAbstraction, filePosition, offset - filePosition);
                     return {
-                        frame: AttachmentFrame.fromPicture(picture),
-                        offset: offset
+                        frame: AttachmentFrame.fromFile(file.fileAbstraction, header, frameStartIndex, frameSize, version),
+                        offset: frameEndIndex
                     };
                 }
 
                 // Read remaining part of the frame for the non lazy Frame
-                file.seek(filePosition);
-                data.addByteVector(file.readBlock(offset - filePosition));
+                file.seek(frameStartIndex);
+                data.addByteVector(file.readBlock(frameSize));
             }
 
             let func;
@@ -157,7 +157,7 @@ export default {
                 // User text identification frame
                 func = UserTextInformationFrame.fromOffsetRawData;
             } else if (header.frameId.isTextFrame) {
-                // Text identifiacation frame (frames 4.2) Starts with T
+                // Text identifiacation frame (frames 4.2)
                 func = TextInformationFrame.fromOffsetRawData;
             } else if (header.frameId === FrameIdentifiers.UFID) {
                 // Unique file identifier (frames 4.1)
@@ -196,7 +196,7 @@ export default {
                 // User URL link
                 func = UserUrlLinkFrame.fromOffsetRawData;
             } else if (header.frameId.isUrlFrame) {
-                // URL link (frame 4.3.1) starts with 'W'
+                // URL link (frame 4.3.1)
                 func = UrlLinkFrame.fromOffsetRawData;
             } else if (header.frameId === FrameIdentifiers.ETCO) {
                 // Event timing codes (frames 4.6)
@@ -208,7 +208,7 @@ export default {
 
             return {
                 frame: func(data, position, header, version),
-                offset: offset
+                offset: frameEndIndex
             };
         } catch (e) {
             if (CorruptFileError.errorIs(e) || NotImplementedError.errorIs(e)) {
@@ -218,7 +218,7 @@ export default {
             // Other exceptions will just mean we ignore the frame
             return {
                 frame: undefined,
-                offset: offset
+                offset: frameEndIndex
             };
         }
     }

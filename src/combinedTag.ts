@@ -10,7 +10,7 @@ export default class CombinedTag extends Tag {
      */
     public constructor(tags?: Tag[]) {
         super();
-        this.tags = tags;
+        this._tags = tags ? tags.slice(0) : [];
     }
 
     // #region Properties
@@ -276,13 +276,13 @@ export default class CombinedTag extends Tag {
      * current instance.
      * Returns the first non-null/non-undefined value from the child tags.
      */
-    public get discCount(): number { return this.getFirstValue((t) => t.disc); }
+    public get discCount(): number { return this.getFirstValue((t) => t.discCount); }
     /**
      * Sets the number of the discs in the boxed set containing the media represented by the
      * current instance. Must be a positive integer positive integer.
      * Sets the value on all child tags
      */
-    public set discCount(val: number) { this.setAllUint((t, v) => { t.disc = v; }, val); }
+    public set discCount(val: number) { this.setAllUint((t, v) => { t.discCount = v; }, val); }
 
     /**
      * Gets the lyrics or script of the media represented by the current instance.
@@ -606,7 +606,37 @@ export default class CombinedTag extends Tag {
         }
     }
 
-    // #region Private Helpers
+    /**
+     * Sets the child tags to combine in the current instance
+     * @param tags Tags to combine, falsy tags will be ignored
+     */
+    public setTags(... tags: Tag[]): void {
+        this._tags.splice(0, tags.length);
+
+        const truthyTags = tags.filter((t) => !!t);
+        this._tags.push(... truthyTags);
+    }
+
+    // #region Protected/Private Methods
+
+    protected addTagInternal(tag: Tag) {
+        this._tags.push(tag);
+    }
+
+    protected clearTags(): void {
+        this._tags.splice(0, this._tags.length);
+    }
+
+    protected insertTag(index: number, tag: Tag): void {
+        this._tags.splice(index, 0, tag);
+    }
+
+    protected removeTag(tag: Tag) {
+        const index = this._tags.indexOf(tag);
+        if (index >= 0) {
+            this._tags.splice(index, 1);
+        }
+    }
 
     private getFirstArray<T>(propertyFn: (t: Tag) => T[]): T[] {
         const tagWithProperty = this._tags.find((t) => {
@@ -631,14 +661,14 @@ export default class CombinedTag extends Tag {
             throw new Error("Argument out of range: value must be a positive integer");
         }
         this._tags.forEach((t) => {
-           if (!!t) { return; }
+           if (!t) { return; }
            propertyFn(t, val);
         });
     }
 
     private setAllValues<T>(propertyFn: (t: Tag, val: T) => void, val: T): void {
         this._tags.forEach((t) => {
-            if (!!t) { return; }
+            if (!t) { return; }
             propertyFn(t, val);
         });
     }

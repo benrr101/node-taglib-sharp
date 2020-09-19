@@ -605,7 +605,7 @@ function getTestTagHeader(version: number, flags: Id3v2TagHeaderFlags, tagSize: 
         // Arrange
         const tag = Id3v2Tag.fromEmpty();
         const frame = TextInformationFrame.fromIdentifier(FrameIdentifiers.TCON);
-        frame.text = ["32", "foo"];
+        frame.text = ["Classical", "foo"];
         tag.addFrame(frame);
 
         // Act
@@ -627,7 +627,7 @@ function getTestTagHeader(version: number, flags: Id3v2TagHeaderFlags, tagSize: 
         assert.strictEqual(tag.frames.length, 1);
         assert.strictEqual(tag.frames[0].frameClassType, FrameClassType.TextInformationFrame);
         assert.strictEqual(tag.frames[0].frameId, FrameIdentifiers.TCON);
-        assert.deepStrictEqual((<TextInformationFrame> tag.frames[0]).text, ["32", "foo"]);
+        assert.deepStrictEqual((<TextInformationFrame> tag.frames[0]).text, ["Classical", "foo"]);
     }
 
     @test
@@ -645,7 +645,7 @@ function getTestTagHeader(version: number, flags: Id3v2TagHeaderFlags, tagSize: 
         assert.strictEqual(tag.frames.length, 1);
         assert.strictEqual(tag.frames[0].frameClassType, FrameClassType.TextInformationFrame);
         assert.strictEqual(tag.frames[0].frameId, FrameIdentifiers.TCON);
-        assert.deepStrictEqual((<TextInformationFrame> tag.frames[0]).text, ["32", "foo"]);
+        assert.deepStrictEqual((<TextInformationFrame> tag.frames[0]).text, ["Classical", "foo"]);
     }
 
     @test
@@ -736,9 +736,10 @@ function getTestTagHeader(version: number, flags: Id3v2TagHeaderFlags, tagSize: 
     }
 
     @test
-    public year_noExistingFrame() {
+    public year_v4noExistingFrame() {
         // Arrange
         const tag = Id3v2Tag.fromEmpty();
+        tag.version = 4;
 
         // Act / Assert
         assert.strictEqual(tag.year, 0);
@@ -747,6 +748,26 @@ function getTestTagHeader(version: number, flags: Id3v2TagHeaderFlags, tagSize: 
         assert.strictEqual(tag.year, 1234);
         assert.strictEqual(tag.frames.length, 1);
         assert.strictEqual(tag.frames[0].frameId, FrameIdentifiers.TDRC);
+        assert.deepStrictEqual((<TextInformationFrame> tag.frames[0]).text, ["1234"]);
+
+        tag.year = 99999;
+        assert.strictEqual(tag.year, 0);
+        assert.strictEqual(tag.frames.length, 0);
+    }
+
+    @test
+    public year_v3noExistingFrame() {
+        // Arrange
+        const tag = Id3v2Tag.fromEmpty();
+        tag.version = 3;
+
+        // Act / Assert
+        assert.strictEqual(tag.year, 0);
+
+        tag.year = 1234;
+        assert.strictEqual(tag.year, 1234);
+        assert.strictEqual(tag.frames.length, 1);
+        assert.strictEqual(tag.frames[0].frameId, FrameIdentifiers.TYER);
         assert.deepStrictEqual((<TextInformationFrame> tag.frames[0]).text, ["1234"]);
 
         tag.year = 99999;
@@ -1905,16 +1926,48 @@ function getTestTagHeader(version: number, flags: Id3v2TagHeaderFlags, tagSize: 
     }
 
     @test
-    public render_v4_unsupportedFrameForVersion() {
+    public render_v4_unsupportedFrameForVersion_disallowedViaSettings() {
         // Arrange
         const tag = Id3v2Tag.fromEmpty();
         tag.version = 4;
 
+        const originalSetting = Id3v2Settings.strictFrameForVersion;
+        Id3v2Settings.strictFrameForVersion = true;
+
         const frame1 = TextInformationFrame.fromIdentifier(FrameIdentifiers.TYER);
         tag.frames.push(frame1);
 
-        // Act / Assert
-        assert.throws(() => { const _ = tag.render(); });
+        try {
+            // Act / Assert
+            assert.throws(() => { const _ = tag.render(); });
+        } finally {
+            Id3v2Settings.strictFrameForVersion = originalSetting;
+        }
+    }
+
+    @test
+    public render_v4_unsupportedFrameForVersion_allowedViaSettings() {
+        // Arrange
+        const tag = Id3v2Tag.fromEmpty();
+        tag.version = 4;
+
+        const originalSetting = Id3v2Settings.strictFrameForVersion;
+        Id3v2Settings.strictFrameForVersion = false;
+
+        const frame1 = TextInformationFrame.fromIdentifier(FrameIdentifiers.TYER);
+        tag.frames.push(frame1);
+
+        try {
+            // Act
+            const bytes = tag.render();
+            const rehydratedTag = Id3v2Tag.fromData(bytes);
+
+            // Assert
+            assert.strictEqual(rehydratedTag.version, 4);
+            assert.strictEqual(rehydratedTag.frames.length, 0);
+        } finally {
+            Id3v2Settings.strictFrameForVersion = originalSetting;
+        }
     }
 
     @test

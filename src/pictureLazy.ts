@@ -56,8 +56,8 @@ export default class PictureLazy implements IPicture, ILazy {
      * Constructs a new instance from a file abstraction. The content will be lazily loaded.
      * @param file File abstraction containing the file to read
      * @param offset Index into the file where the picture is located, must be a 32-bit integer
-     * @param size Optionally, size of the picture in bytes. If omitted, all bytes will be read
-     *     when lazily loaded. Must be a 32-bit integer or `undefined`
+     * @param size Optionally, size of the picture in bytes. If omitted, all bytes of file will be
+     *     read when lazily loaded. Must be a 32-bit integer or `undefined`
      */
     public static fromFile(file: IFileAbstraction, offset: number, size?: number): PictureLazy {
         Guards.truthy(file, "file");

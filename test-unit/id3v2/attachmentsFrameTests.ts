@@ -232,7 +232,7 @@ function getCustomTestFrame(data: ByteVector, desc: string, filename: string, mi
             "image.gif",
             "image/gif",
             StringType.UTF16BE,
-            undefined
+            PictureType.NotAPicture
         );
     }
 

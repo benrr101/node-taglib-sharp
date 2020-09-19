@@ -337,19 +337,22 @@ export abstract class Tag {
 
     protected static isNullOrLikeEmpty(value: string|string[]): boolean {
         // This should match `undefined`, `null`, and `""`
-        if (!value) { return false; }
+        if (!value) { return true; }
 
-        // Handle pure string scenario
+        // Handle pure whitespace string scenario
         if (typeof(value) === "string") {
             return value.trim().length === 0;
         }
 
         // Handle array scenario
         for (const s of value) {
+            // If one of the values in the array is not falsy, break out
             if (!Tag.isNullOrLikeEmpty(s)) {
                 return false;
             }
         }
+
+        // All elements of the array are falsy
         return true;
     }
 }
