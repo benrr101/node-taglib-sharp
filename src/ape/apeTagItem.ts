@@ -3,9 +3,9 @@ import {CorruptFileError} from "../errors";
 import {Guards} from "../utils";
 
 /**
- * Indicates the type of data stored in a {@see Item} object.
+ * Indicates the type of data stored in a {@see ApeTagItem} object.
  */
-export enum ItemType {
+export enum ApeTagItemType {
     /**
      * Item contains unicode text
      */
@@ -22,13 +22,13 @@ export enum ItemType {
     Locator = 2
 }
 
-export class Item {
+export class ApeTagItem {
     private _data: ByteVector;
     private _isReadonly: boolean;
     private _key: string;
     private _size: number;
     private _text: string[];
-    private _type: ItemType = ItemType.Text;
+    private _type: ApeTagItemType = ApeTagItemType.Text;
 
     // #region Constructors
 
@@ -40,13 +40,13 @@ export class Item {
      * @param key Key to use for the item
      * @param value Binary data to store as the value
      */
-    public static fromBinaryValue(key: string, value: ByteVector): Item {
+    public static fromBinaryValue(key: string, value: ByteVector): ApeTagItem {
         Guards.notNullOrUndefined(key, "key");
         Guards.truthy(value, "value");
 
-        const item = new Item();
+        const item = new ApeTagItem();
         item._key = key;
-        item._type = ItemType.Binary;
+        item._type = ApeTagItemType.Binary;
         item._data = value.isReadOnly ? value : ByteVector.fromByteVector(value, true);
 
         return item;
@@ -58,11 +58,11 @@ export class Item {
      * @param offset Index into {@paramref data} at which to begin reading the item data. Must be
      *     a positive 32-bit integer.
      */
-    public static fromData(data: ByteVector, offset: number): Item {
+    public static fromData(data: ByteVector, offset: number): ApeTagItem {
         Guards.truthy(data, "data");
         Guards.uint(offset, "offset");
 
-        const item = new Item();
+        const item = new ApeTagItem();
 
         // 11 bytes is the minimum size for an APE item
         if (data.length < offset + 11) {
@@ -74,7 +74,7 @@ export class Item {
 
         // Read flag data
         item._isReadonly = (flags & 1) > 0;
-        item._type = <ItemType> ((flags >> 1) & 3);
+        item._type = <ApeTagItemType> ((flags >> 1) & 3);
 
         // Read key
         const keyEndIndex = data.find(ByteVector.getTextDelimiter(StringType.UTF8), offset + 8);
@@ -86,7 +86,7 @@ export class Item {
 
         item._size = keyEndIndex + 1 + valueLength - 1;
 
-        if (item._type === ItemType.Binary) {
+        if (item._type === ApeTagItemType.Binary) {
             item._data = ByteVector.fromByteVector(data.mid(keyEndIndex + 1), true);
         } else {
             item._text = data.mid(keyEndIndex + 1, valueLength).toStrings(StringType.UTF8, 0);
@@ -101,11 +101,11 @@ export class Item {
      * @param key Key to use for the item
      * @param values Values to store in the item
      */
-    public static fromTextValues(key: string, ...values: string[]): Item {
+    public static fromTextValues(key: string, ...values: string[]): ApeTagItem {
         Guards.notNullOrUndefined(key, "name");
         Guards.truthy(values, "values");
 
-        const item = new Item();
+        const item = new ApeTagItem();
         item._key = key;
         item._text = values.slice();
 
@@ -120,7 +120,7 @@ export class Item {
      * Gets whether or not the current instance is empty.
      */
     public get isEmpty(): boolean {
-        if (this._type === ItemType.Binary) {
+        if (this._type === ApeTagItemType.Binary) {
             return !this._data || this._data.isEmpty;
         } else {
             return !this._text || this._text.length === 0;
@@ -150,7 +150,7 @@ export class Item {
      * an empty array if the current item is a binary item or no text is stored.
      */
     public get text(): string[] {
-        return this._type === ItemType.Binary || !this._text
+        return this._type === ApeTagItemType.Binary || !this._text
             ? []
             : this._text;
     }
@@ -158,13 +158,13 @@ export class Item {
     /**
      * Gets the type of value contained in the current instance.
      */
-    public get type(): ItemType { return this._type; }
+    public get type(): ApeTagItemType { return this._type; }
 
     /**
      * Gets the binary value stored in the current item, if the current item is a binary item, or
      * `undefined` if the current item is a text item.
      */
-    public get value(): ByteVector { return this._type === ItemType.Binary ? this._data : undefined; }
+    public get value(): ByteVector { return this._type === ApeTagItemType.Binary ? this._data : undefined; }
 
     // #endregion
 
@@ -173,8 +173,8 @@ export class Item {
     /**
      * Creates a deep copy of the current instance.
      */
-    public clone(): Item {
-        const newItem = new Item();
+    public clone(): ApeTagItem {
+        const newItem = new ApeTagItem();
         newItem._type = this._type;
         newItem._key = this._key;
         newItem._data = this._data ? ByteVector.fromByteVector(this._data, true) : undefined;
@@ -192,7 +192,7 @@ export class Item {
 
         // Build the byte vector for the value of the item
         let value: ByteVector;
-        if (this._type === ItemType.Binary) {
+        if (this._type === ApeTagItemType.Binary) {
             value = this._data;
         } else {
             const vectors = this._text.reduce<ByteVector[]>((acc, e, i) => {
@@ -229,7 +229,7 @@ export class Item {
      * joined into a single, comma separated list.
      */
     public toString(): string {
-        return this._type === ItemType.Binary || !this._text
+        return this._type === ApeTagItemType.Binary || !this._text
             ? undefined
             : this._text.join(", ");
     }

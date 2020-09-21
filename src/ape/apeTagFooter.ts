@@ -1,3 +1,4 @@
+import * as BigInt from "big-integer";
 import {ByteVector, StringType} from "../byteVector";
 import {CorruptFileError} from "../errors";
 import {Guards} from "../utils";
@@ -22,6 +23,9 @@ export enum ApeTagFooterFlags {
     IsHeader = 0x20000000
 }
 
+/**
+ * Representation of an APEv2 tag footer which can be read from and written to disk.
+ */
 export class ApeTagFooter {
     /**
      * Identifier used to fina an APEv2 footer in a file.
@@ -113,6 +117,56 @@ export class ApeTagFooter {
      * Gets the version of APE tag described by the current isntance.
      */
     public get version(): number { return this._version === 0 ? 2000 : this._version; }
+
+    // #endregion
+
+    // #region Methods
+
+    public renderFooter(): ByteVector {
+        return this.render(false);
+    }
+
+    public renderHeader(): ByteVector {
+        return (this.flags & ApeTagFooterFlags.HeaderPresent) > 0
+            ? this.render(true)
+            : ByteVector.empty();
+    }
+
+    private render(isHeader: boolean): ByteVector {
+        const v = ByteVector.concatenate(
+            // File identifier
+            ApeTagFooter.fileIdentifier,
+
+            // Add the version number -- we always render a 2.000 tag regardless of what the tag
+            // originally was.
+            ByteVector.fromUInt(2000, false),
+
+            // Add the tag size
+            ByteVector.fromUInt(this.tagSize, false),
+
+            // Add the item count
+            ByteVector.fromUInt(this.itemCount, false)
+        );
+
+        // Render and add the flags
+        let flags = 0;
+        if ((this.flags & ApeTagFooterFlags.HeaderPresent) > 0) {
+            flags |= ApeTagFooterFlags.HeaderPresent;
+        }
+
+        // Footer is always present
+        if (isHeader) {
+            flags |= ApeTagFooterFlags.IsHeader;
+        } else {
+            flags &= ~ApeTagFooterFlags.IsHeader;
+        }
+        v.addByteVector(ByteVector.fromUInt(flags, false));
+
+        // Add the reserved 64bit
+        v.addByteVector(ByteVector.fromULong(BigInt(0)));
+
+        return v;
+    }
 
     // #endregion
 }
