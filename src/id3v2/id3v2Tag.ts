@@ -47,26 +47,6 @@ export default class Id3v2Tag extends Tag {
     }
 
     /**
-     * Constructs and initializes a new Tag by reading the contents from a specified position in
-     * the provided file.
-     * @param file File from which the contents of the new instance is to be read
-     * @param position Offset into the file where the tag should be read from
-     * @param style How the data is to be read into the current instance
-     * @returns Id3v2Tag Tag with the data from the file read into it
-     */
-    public static fromFile(file: File, position: number, style: ReadStyle): Id3v2Tag {
-        Guards.truthy(file, "file");
-        Guards.uint(position, "position");
-        if (position > file.length - Id3v2Settings.headerSize) {
-            throw new Error("Argument out of range: position must be within size of the file");
-        }
-
-        const tag = new Id3v2Tag();
-        tag.read(file, position, style);
-        return tag;
-    }
-
-    /**
      * Constructs and initializes a new Tag by reading the contents from a specified
      * {@see ByteVector} object.
      * @param data Tag data to read into a tag object
@@ -91,6 +71,26 @@ export default class Id3v2Tag extends Tag {
         }
 
         tag.parse(data.mid(Id3v2Settings.headerSize, tag._header.tagSize), undefined, 0, ReadStyle.None);
+        return tag;
+    }
+
+    /**
+     * Constructs and initializes a new Tag by reading the contents from a specified position in
+     * the provided file.
+     * @param file File from which the contents of the new instance is to be read
+     * @param position Offset into the file where the tag should be read from
+     * @param style How the data is to be read into the current instance
+     * @returns Id3v2Tag Tag with the data from the file read into it
+     */
+    public static fromFile(file: File, position: number, style: ReadStyle): Id3v2Tag {
+        Guards.truthy(file, "file");
+        Guards.uint(position, "position");
+        if (position > file.length - Id3v2Settings.headerSize) {
+            throw new Error("Argument out of range: position must be within size of the file");
+        }
+
+        const tag = new Id3v2Tag();
+        tag.read(file, position, style);
         return tag;
     }
 
