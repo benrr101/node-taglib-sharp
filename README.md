@@ -38,7 +38,7 @@ The `File` class provides factory methods for generating instances of classes th
 for Monkey's Audio files). The `File` class has exposes the `properties` and `tag` properties to
 allow manipulation of the tagging information and reading audio/video properties. 
 
-See the docs (TODO) for complete details of the available properties.
+See the docs for [the File class](docs/classes/_src_file_.file.md) for complete details of the available properties.
 
 ```typescript
 console.log(myFile.properties.audioBitrate);
