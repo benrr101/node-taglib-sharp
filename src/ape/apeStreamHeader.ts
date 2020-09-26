@@ -1,4 +1,3 @@
-import * as BigInt from "big-integer";
 import {ByteVector, StringType} from "../byteVector";
 import {CorruptFileError} from "../errors";
 import {IAudioCodec, ILosslessAudioCodec, MediaTypes} from "../iCodec";
@@ -91,7 +90,7 @@ export class ApeStreamHeader implements IAudioCodec, ILosslessAudioCodec {
      * Contains the length of the audio stream
      * @private
      */
-    private readonly _streamLength: BigInt.BigInteger;
+    private readonly _streamLength: number;
 
     /**
      * Total number of frames, stored in bytes (63-66)
@@ -114,8 +113,9 @@ export class ApeStreamHeader implements IAudioCodec, ILosslessAudioCodec {
      * @param data Raw stream header data beginning with {@see ApeStreamHeader.fileIdentifier}
      * @param streamLength Length of the stream in bytes
      */
-    public constructor(data: ByteVector, streamLength: BigInt.BigInteger) {
+    public constructor(data: ByteVector, streamLength: number) {
         Guards.truthy(data, "data");
+        Guards.uint(streamLength, "streamLength");
         if (!data.startsWith(ApeStreamHeader.fileIdentifier)) {
             throw new CorruptFileError("Data does not begin with identifier");
         }
@@ -143,7 +143,7 @@ export class ApeStreamHeader implements IAudioCodec, ILosslessAudioCodec {
         if (durationMilliseconds <= 0) { return 0; }
 
         const durationSeconds = durationMilliseconds / 1000;
-        return Number(this._streamLength.multiply(8).divide(durationSeconds)) / 1000;
+        return (this._streamLength * 8 / durationSeconds) / 1000;
     }
 
     /** @inheritDoc */

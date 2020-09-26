@@ -223,13 +223,9 @@ export default class Id3v2Tag extends Tag {
     /** @inheritDoc */
     public get tagTypes(): TagTypes { return TagTypes.Id3v2; }
 
-    /**
-     * @inheritDoc via TIT2 frame
-     */
+    /** @inheritDoc via TIT2 frame */
     public get title(): string { return this.getTextAsString(FrameIdentifiers.TIT2); }
-    /**
-     * @inheritDoc via TIT2 frame
-     */
+    /** @inheritDoc via TIT2 frame */
     public set title(value: string) { this.setTextFrame(FrameIdentifiers.TIT2, value); }
 
     /** @inheritDoc via TSOT frame */
