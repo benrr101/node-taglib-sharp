@@ -11,7 +11,7 @@ import {Guards} from "../utils";
  * Provides information about an MPEG audio stream. For more information and definition of the
  * header, see http://www.mpgedit.org/mpgedit/mpeg_format/mpeghdr.htm
  */
-export class AudioHeader implements IAudioCodec {
+export default class AudioHeader implements IAudioCodec {
     public static readonly Unknown: AudioHeader = AudioHeader.fromInfo(0, 0, XingHeader.unknown, VbriHeader.unknown);
 
     private static readonly bitrates: number[][][] = [
