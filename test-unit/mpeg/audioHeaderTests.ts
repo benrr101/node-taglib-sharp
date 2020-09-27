@@ -4,9 +4,9 @@ import * as TypeMoq from "typemoq";
 import TestFile from "../utilities/testFile";
 import {suite, test} from "mocha-typescript";
 
+import AudioHeader from "../../src/mpeg/audioHeader";
 import VbriHeader from "../../src/mpeg/vbriHeader";
 import XingHeader from "../../src/mpeg/xingHeader";
-import {AudioHeader} from "../../src/mpeg/audioHeader";
 import {ByteVector} from "../../src/byteVector";
 import {File} from "../../src/file";
 import {MediaTypes} from "../../src/iCodec";

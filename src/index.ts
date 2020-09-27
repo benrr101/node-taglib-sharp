@@ -14,6 +14,9 @@ export {default as PictureLazy} from "./pictureLazy";
 export {default as Properties} from "./properties";
 export {Tag, TagTypes} from "./tag";
 
+// ID3v1 ///////////////////////////////////////////////////////////////////
+export {default as Id3v1Tag} from "./id3v1/id3v1Tag";
+
 // ID3v2 ///////////////////////////////////////////////////////////////////
 export {default as Id3v2ExtendedHeader} from "./id3v2/id3v2ExtendedHeader";
 export {default as Id3v2FrameFactory} from "./id3v2/frames/frameFactory";
@@ -71,3 +74,10 @@ export {
 
 // MPEG ////////////////////////////////////////////////////////////////////
 export {default as MpegAudioFile} from "./mpeg/audioFile";
+export {default as MpegAudioHeader} from "./mpeg/audioHeader";
+export {
+    ChannelMode as MpegAudioChannelMode,
+    MpegVersion as MpegVersion
+} from "./mpeg/mpegEnums";
+export {default as MpegVbriHeader} from "./mpeg/vbriHeader";
+export {default as MpegXingHeader} from "./mpeg/xingHeader";
