@@ -24,9 +24,9 @@ export enum ApeTagItemType {
 
 export class ApeTagItem {
     private _data: ByteVector;
-    private _isReadonly: boolean;
+    private _isReadonly: boolean = false;
     private _key: string;
-    private _size: number;
+    private _size: number = 0;
     private _text: string[];
     private _type: ApeTagItemType = ApeTagItemType.Text;
 
@@ -84,7 +84,8 @@ export class ApeTagItem {
             throw new CorruptFileError("Invalid data length");
         }
 
-        item._size = keyEndIndex + 1 + valueLength - 1;
+        // [length of key + flags/size - offset]+[key delimiter]+[value length]
+        item._size = keyEndIndex - offset + 1 + valueLength;
 
         if (item._type === ApeTagItemType.Binary) {
             item._data = ByteVector.fromByteVector(data.mid(keyEndIndex + 1), true);
