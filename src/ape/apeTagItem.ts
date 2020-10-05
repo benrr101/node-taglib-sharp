@@ -186,6 +186,9 @@ export class ApeTagItem {
         return newItem;
     }
 
+    /**
+     * Renders the current instance as an APEv2 item.
+     */
     public render(): ByteVector {
         if (this.isEmpty) {
             return ByteVector.empty();
@@ -215,7 +218,7 @@ export class ApeTagItem {
             sizeVector,
             flagsVector,
             ByteVector.fromString(this._key, StringType.UTF8),
-            0x00,
+            ByteVector.getTextDelimiter(StringType.UTF8),
             value
         );
 

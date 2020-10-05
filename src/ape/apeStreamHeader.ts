@@ -137,7 +137,6 @@ export class ApeStreamHeader implements IAudioCodec, ILosslessAudioCodec {
     // #region Properties
 
     /** @inheritDoc */
-    // @TODO: make sure other places BigInt is converted to an int it is done like this
     public get audioBitrate(): number {
         const durationMilliseconds = this.durationMilliseconds;
         if (durationMilliseconds <= 0) { return 0; }
@@ -147,7 +146,7 @@ export class ApeStreamHeader implements IAudioCodec, ILosslessAudioCodec {
     }
 
     /** @inheritDoc */
-     public get audioChannels(): number { return this._channels; }
+    public get audioChannels(): number { return this._channels; }
 
     /** @inheritDoc */
     public get audioSampleRate(): number { return this._sampleRate; }
@@ -168,7 +167,7 @@ export class ApeStreamHeader implements IAudioCodec, ILosslessAudioCodec {
     public get durationMilliseconds(): number {
         if (this._sampleRate <= 0) { return 0; }
 
-        const samples = ((this._totalFrames - 1) * this._blocksPerFrame + this._finalFrameBlocks);
+        const samples = (this._totalFrames - 1) * this._blocksPerFrame + this._finalFrameBlocks;
         const durationSeconds = samples / this._sampleRate;
         return durationSeconds * 1000;
     }

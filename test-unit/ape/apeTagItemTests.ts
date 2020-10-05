@@ -122,7 +122,7 @@ const assert = Chai.assert;
         const data = ByteVector.concatenate(
             0x00, // Offset
             ByteVector.fromUInt(value.length, false), // Size,
-            0x02, 0x00, 0x00, 0x00, // Flags
+            0x03, 0x00, 0x00, 0x00, // Flags
             ByteVector.fromString("foo", StringType.UTF8), // Key
             ByteVector.getTextDelimiter(StringType.UTF8), // End of key
             value
@@ -134,7 +134,7 @@ const assert = Chai.assert;
         // Assert
         assert.isOk(item);
         assert.isFalse(item.isEmpty);
-        assert.isFalse(item.isReadOnly);
+        assert.isTrue(item.isReadOnly);
         assert.strictEqual(item.key, "foo");
         assert.strictEqual(item.size, 21);
         assert.deepStrictEqual(item.text, []);
@@ -213,6 +213,132 @@ const assert = Chai.assert;
     }
 }
 
-// @suite class ApeTagItemTests_MethodTests() {}
+@suite class ApeTagItemTests_MethodTests {
+    @test
+    public clone_binary() {
+        // Arrange
+        const key = "key";
+        const data = ByteVector.fromSize(10, 0x00, true);
+        const item = ApeTagItem.fromBinaryValue(key, data);
 
+        // Act
+        const clone = item.clone();
 
+        // Assert
+        assert.isOk(clone);
+        assert.isFalse(clone.isEmpty);
+        assert.isFalse(clone.isReadOnly);
+        assert.strictEqual(clone.key, key);
+        assert.strictEqual(clone.size, 0);
+        assert.deepStrictEqual(clone.text, []);
+        assert.strictEqual(clone.type, ApeTagItemType.Binary);
+        assert.notStrictEqual(clone.value, data);
+        assert.isTrue(ByteVector.equal(clone.value, data));
+    }
+
+    @test
+    public clone_text() {
+        // Arrange
+        const key = "key";
+        const data = ["", "foo", "bar"];
+        const item = ApeTagItem.fromTextValues(key, ...data);
+
+        // Act
+        const clone = item.clone();
+
+        // Assert
+        assert.isOk(clone);
+        assert.isFalse(clone.isEmpty);
+        assert.isFalse(clone.isReadOnly);
+        assert.strictEqual(clone.key, key);
+        assert.strictEqual(clone.size, 0);
+        assert.notStrictEqual(clone.text, data);
+        assert.deepStrictEqual(clone.text, data);
+        assert.strictEqual(clone.type, ApeTagItemType.Text);
+        assert.isNotOk(clone.value);
+    }
+
+    @test
+    public render_empty() {
+        // Arrange
+        const key = "key";
+        const data = ByteVector.empty();
+        const item = ApeTagItem.fromBinaryValue(key, data);
+
+        // Act
+        const output = item.render();
+
+        // Assert
+        assert.isOk(output);
+        assert.isTrue(output.isEmpty);
+    }
+
+    @test
+    public render_binary() {
+        // Arrange
+        const value = ByteVector.fromString("foobarbaz");
+        const data = ByteVector.concatenate(
+            ByteVector.fromUInt(value.length, false), // Size,
+            0x03, 0x00, 0x00, 0x00, // Flags
+            ByteVector.fromString("foo", StringType.UTF8), // Key
+            ByteVector.getTextDelimiter(StringType.UTF8), // End of key
+            value
+        );
+        const item = ApeTagItem.fromData(data, 0);
+
+        // Act
+        const output = item.render();
+
+        // Assert
+        assert.isOk(output);
+        assert.isTrue(ByteVector.equal(output, data));
+    }
+
+    @test
+    public render_text() {
+        // Arrange
+        const data = ByteVector.concatenate(
+            ByteVector.fromUInt(11, false), // Size,
+            0x00, 0x00, 0x00, 0x00, // Flags
+            ByteVector.fromString("foo", StringType.UTF8), // Key
+            ByteVector.getTextDelimiter(StringType.UTF8), // End of key
+            ByteVector.fromString("foo", StringType.UTF8), // Value1
+            ByteVector.getTextDelimiter(StringType.UTF8), // End of Value1
+            ByteVector.fromString("bar", StringType.UTF8), // Value2
+            ByteVector.getTextDelimiter(StringType.UTF8), // End of Value2
+            ByteVector.fromString("baz", StringType.UTF8), // Value3
+        );
+        const item = ApeTagItem.fromData(data, 0);
+
+        // Act
+        const output = item.render();
+
+        // Assert
+        assert.isOk(output);
+        assert.isTrue(ByteVector.equal(output, data));
+    }
+
+    @test
+    public toString_binary() {
+        // Arrange
+        const item = ApeTagItem.fromBinaryValue("key", ByteVector.fromSize(10));
+
+        // Act
+        const result = item.toString();
+
+        // Assert
+        assert.isUndefined(result);
+    }
+
+    @test
+    public toString_text() {
+        // Arrange
+        const item = ApeTagItem.fromTextValues("key", "foo", "bar", "baz");
+
+        // Act
+        const result = item.toString();
+
+        // Assert
+        assert.strictEqual(result, "foo, bar, baz");
+    }
+}
