@@ -1,7 +1,7 @@
+import AudioHeader from "./audioHeader";
 import NonContainerTag from "../nonContainer/nonContainerTag";
 import NonContainerFile from "../nonContainer/nonContainerFile";
 import Properties from "../properties";
-import {AudioHeader} from "./audioHeader";
 import {CorruptFileError} from "../errors";
 import {File, ReadStyle} from "../file";
 import {IFileAbstraction} from "../fileAbstraction";

@@ -16,7 +16,6 @@ export {Tag, TagTypes} from "./tag";
 
 // APE /////////////////////////////////////////////////////////////////////
 export {default as ApeTag} from "./ape/apeFile";
-export {Ape}
 
 // ID3v1 ///////////////////////////////////////////////////////////////////
 export {default as Id3v1Tag} from "./id3v1/id3v1Tag";
@@ -78,3 +77,10 @@ export {
 
 // MPEG ////////////////////////////////////////////////////////////////////
 export {default as MpegAudioFile} from "./mpeg/audioFile";
+export {default as MpegAudioHeader} from "./mpeg/audioHeader";
+export {
+    ChannelMode as MpegAudioChannelMode,
+    MpegVersion as MpegVersion
+} from "./mpeg/mpegEnums";
+export {default as MpegVbriHeader} from "./mpeg/vbriHeader";
+export {default as MpegXingHeader} from "./mpeg/xingHeader";

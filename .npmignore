@@ -11,3 +11,6 @@ test-*
 
 # Output of 'npm pack'
 *.tgz
+
+# Doc output
+docs/**

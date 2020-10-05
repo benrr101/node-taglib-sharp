@@ -17,3 +17,42 @@ improved on the original TagLib, hence why this project exists.
 ## Supported Tagging Formats (and File Formats)
 * ID3v1: `MP1`, `MP2`, `MP3`, `M2A`
 * ID3v2: `MP1`, `MP2`, `MP3`, `M2A`
+
+## Installation
+```
+npm install --save node-taglib-sharp
+```
+
+## Getting Started
+Getting started with node-taglib-sharp is surprisingly easy. The main entry point into the library
+is via the `File` class.
+
+```typescript
+import {File} from "node-taglib-sharp";
+
+const myFile = File.createFromPath("path/to/my/file.mp3");
+```
+
+The `File` class provides factory methods for generating instances of classes that inherit from
+`File` to provide implementation specific to a file format (such as `ApeFile` providing support
+for Monkey's Audio files). The `File` class has exposes the `properties` and `tag` properties to
+allow manipulation of the tagging information and reading audio/video properties. 
+
+See the docs for [the File class](docs/classes/_src_file_.file.md) for complete details of the available properties.
+
+```typescript
+console.log(myFile.properties.audioBitrate);
+console.log(myFile.tag.title);
+```
+
+The `Tag` base class provides a tagging-format agnostic interface to modify tag(s) on the file
+object. Set tag properties as needed and they will be stored in a tagging format that is supported
+by the file type. The changes can be easily written back to the file with `save()`.
+
+```typescript
+myFile.tag.title = "Time Won't Let Me Go";
+myFile.tag.album = "The Sun And The Moon";
+myFile.tag.performers = ["The Bravery"];
+myFile.save();
+```
+
