@@ -65,10 +65,10 @@ export class Id3v2TagHeader {
         if (header._majorVersion === 2 && (header._flags & 63) !== 0) {
             throw new CorruptFileError("Invalid flags set on version 2 tag");
         }
-        if (header._majorVersion === 3 && (header._flags & 15) > 0) {
+        if (header._majorVersion === 3 && (header._flags & 15) !== 0) {
             throw new CorruptFileError("Invalid flags set on version 3 tag");
         }
-        if (header._majorVersion === 4 && (header._flags & 7) > 0) {
+        if (header._majorVersion === 4 && (header._flags & 7) !== 0) {
             throw new CorruptFileError("Invalid flags set on version 4 tag");
         }
 
@@ -112,11 +112,11 @@ export class Id3v2TagHeader {
     public set flags(value: Id3v2TagHeaderFlags) {
         // @TODO: Does it make sense to check for flags for major version <4?
         const version3Flags = Id3v2TagHeaderFlags.ExtendedHeader | Id3v2TagHeaderFlags.ExperimentalIndicator;
-        if ((value & version3Flags) > 0 && this.majorVersion < 3) {
+        if ((value & version3Flags) !== 0 && this.majorVersion < 3) {
             throw new Error("Feature only supported in version 2.3+");
         }
         const version4Flags = Id3v2TagHeaderFlags.FooterPresent;
-        if ((value & version4Flags) > 0 && this.majorVersion < 4) {
+        if ((value & version4Flags) !== 0 && this.majorVersion < 4) {
             throw new Error("Feature only supported in version 2.4+");
         }
 

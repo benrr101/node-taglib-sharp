@@ -1,4 +1,3 @@
-import * as BigInt from "big-integer";
 import {ByteVector, StringType} from "../byteVector";
 import {CorruptFileError} from "../errors";
 import {Guards} from "../utils";
@@ -127,7 +126,7 @@ export class ApeTagFooter {
     }
 
     public renderHeader(): ByteVector {
-        return (this.flags & ApeTagFooterFlags.HeaderPresent) > 0
+        return (this.flags & ApeTagFooterFlags.HeaderPresent) !== 0
             ? this.render(true)
             : ByteVector.empty();
     }
@@ -150,20 +149,20 @@ export class ApeTagFooter {
 
         // Render and add the flags
         let flags = 0;
-        if ((this.flags & ApeTagFooterFlags.HeaderPresent) > 0) {
-            flags |= ApeTagFooterFlags.HeaderPresent;
+        if ((this.flags & ApeTagFooterFlags.HeaderPresent) !== 0) {
+            flags = (flags | ApeTagFooterFlags.HeaderPresent) >>> 0; // @TODO: Replace all bitwise logic with >>> 0
         }
 
         // Footer is always present
         if (isHeader) {
-            flags |= ApeTagFooterFlags.IsHeader;
+            flags = (flags | ApeTagFooterFlags.IsHeader) >>> 0;
         } else {
-            flags &= ~ApeTagFooterFlags.IsHeader;
+            flags = (flags & ~ApeTagFooterFlags.IsHeader) >>> 0;
         }
         v.addByteVector(ByteVector.fromUInt(flags, false));
 
         // Add the reserved 64bit
-        v.addByteVector(ByteVector.fromULong(BigInt(0)));
+        v.addByteVector(ByteVector.fromSize(8));
 
         return v;
     }
