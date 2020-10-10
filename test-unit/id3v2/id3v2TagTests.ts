@@ -66,6 +66,7 @@ function getTestTagHeader(version: number, flags: Id3v2TagHeaderFlags, tagSize: 
 
         // Assert
         assert.isOk(output);
+        assert.isTrue(output.isEmpty);
     }
 
     @test

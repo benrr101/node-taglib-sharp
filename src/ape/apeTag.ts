@@ -82,7 +82,7 @@ export default class ApeTag extends Tag {
         if ((tag._footer.flags & ApeTagFooterFlags.IsHeader) !== 0) {
             throw new CorruptFileError("Footer was actually a header");
         }
-        if ((data.length < tag._footer.tagSize)) {
+        if ((data.length < tag._footer.completeTagSize)) {
             throw new CorruptFileError("Does not contain enough tag data");
         }
 
