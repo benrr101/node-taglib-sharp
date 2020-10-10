@@ -10,7 +10,7 @@ import {MediaTypes} from "../../src/iCodec";
 Chai.use(ChaiAsPromised);
 const assert = Chai.assert;
 
-@suite class ApeStreamHeaderTest {
+@suite class ApeStreamHeaderTests {
     @test
     public constructor_invalidData() {
         // Arrange
