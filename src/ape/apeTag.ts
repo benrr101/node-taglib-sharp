@@ -53,13 +53,6 @@ export default class ApeTag extends Tag {
     }
 
     /**
-     * Constructs an empty APEv2 tag.
-     */
-    public static fromEmpty(): ApeTag {
-        return new ApeTag();
-    }
-
-    /**
      * Constructs and initializes a new instance by reading the contents of a raw tag in a
      * specified {@see ByteVector} object.
      * @param data Object containing the raw tag
@@ -82,13 +75,20 @@ export default class ApeTag extends Tag {
         if ((tag._footer.flags & ApeTagFooterFlags.IsHeader) !== 0) {
             throw new CorruptFileError("Footer was actually a header");
         }
-        if ((data.length < tag._footer.completeTagSize)) {
+        if ((data.length < tag._footer.tagSize)) {
             throw new CorruptFileError("Does not contain enough tag data");
         }
 
         tag.parse(data.mid(data.length - tag._footer.tagSize, tag._footer.tagSize - ApeTagFooter.size));
 
         return tag;
+    }
+
+    /**
+     * Constructs an empty APEv2 tag.
+     */
+    public static fromEmpty(): ApeTag {
+        return new ApeTag();
     }
 
     /**
@@ -130,7 +130,9 @@ export default class ApeTag extends Tag {
     /**
      * Gets whether or not the current instance has a header when rendered.
      */
-    public get isHeaderPresent(): boolean { return (this._footer.flags & ApeTagFooterFlags.HeaderPresent) !== 0; }
+    public get isHeaderPresent(): boolean {
+        return !!this._footer && (this._footer.flags & ApeTagFooterFlags.HeaderPresent) !== 0;
+    }
     /**
      * Sets whether or not the current instance has a header when rendered.
      */
@@ -267,7 +269,7 @@ export default class ApeTag extends Tag {
         return asInt;
     }
     /** @inheritDoc via Year item */
-    set year(value: number) { this.setNumericValue("Year", value); }
+    set year(value: number) { this.setNumericValue("Year", value, 0); }
 
     /** @inheritDoc via Track item numerator */
     get track(): number { return this.getUInt32Value("Track", 0); }
@@ -300,17 +302,9 @@ export default class ApeTag extends Tag {
     set grouping(value: string) { this.setStringValue("Grouping", value); }
 
     /** @inheritDoc via BPM item */
-    get beatsPerMinute(): number {
-        const text = this.getStringValue("BPM");
-        if (!text) {
-            return 0;
-        }
-
-        const asInt = Number.parseInt(text, 10);
-        return Number.isNaN(asInt) ? 0 : asInt;
-    }
+    get beatsPerMinute(): number { return this.getUInt32Value("BPM", 0); }
     /** @inheritDoc via BPM item */
-    set beatsPerMinute(value: number) { this.setNumericValue("BPM", value); }
+    set beatsPerMinute(value: number) { this.setNumericValue("BPM", value, 0); }
 
     /** @inheritDoc via Conductor item */
     get conductor(): string { return this.getStringValue("Conductor"); }
@@ -672,14 +666,14 @@ export default class ApeTag extends Tag {
      * @param denominator Bottom half of the fraction to store. Can be `undefined` if only
      *     {@paramref numerator} is needed.
      */
-    public setNumericValue(key: string, numerator: number, denominator?: number): void {
+    public setNumericValue(key: string, numerator: number, denominator: number): void {
         Guards.notNullOrUndefined(key, "key");
         Guards.uint(numerator, "numerator");
+        Guards.uint(denominator, "denominator");
 
-        if (numerator === 0 && !denominator) {
+        if (numerator === 0 && denominator === 0) {
             this.removeItem(key);
         } else if (denominator !== 0) {
-            Guards.uint(denominator, "denominator");
             this.setStringValue(key, `${numerator}/${denominator}`);
         } else {
             this.setStringValue(key, numerator.toString(10));

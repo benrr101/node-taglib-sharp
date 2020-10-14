@@ -9,7 +9,7 @@ import {ByteVector, StringType} from "../../src/byteVector";
 Chai.use(ChaiAsPromised);
 const assert = Chai.assert;
 
-@suite class ApeTagItemTests_ConstructorTests {
+@suite class Ape_TagItemTest_ConstructorTests {
     @test
     public fromBinaryValue_invalidValues() {
         // Arrange
@@ -213,7 +213,7 @@ const assert = Chai.assert;
     }
 }
 
-@suite class ApeTagItemTests_MethodTests {
+@suite class Ape_TagItemTest_MethodTests {
     @test
     public clone_binary() {
         // Arrange

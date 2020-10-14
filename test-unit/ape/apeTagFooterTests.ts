@@ -19,7 +19,7 @@ const _sampleData = ByteVector.concatenate(
     ByteVector.fromSize(12)
 );
 
-@suite class ApeTagFooter_ConstructorTests {
+@suite class Ape_TagFooter_ConstructorTests {
     @test
     public constructor_invalidParameters() {
         // Act / Assert
@@ -76,7 +76,7 @@ const _sampleData = ByteVector.concatenate(
     }
 }
 
-@suite class ApeTagFooter_PropertyTests {
+@suite class Ape_TagFooter_PropertyTests {
     @test
     public setItemCount_valid() {
         // Arrange
@@ -140,7 +140,7 @@ const _sampleData = ByteVector.concatenate(
     }
 }
 
-@suite class ApeTagFooter_MethodTests {
+@suite class Ape_TagFooter_MethodTests {
     @test
     public renderFooter_headerPresent() {
         // Arrange
