@@ -479,7 +479,7 @@ export default class ApeTag extends Tag {
 
             const pic = Picture.fromData(item.value.mid(descriptionEndIndex + 1));
             pic.description = item.value.toString(descriptionEndIndex, StringType.UTF8, 0);
-            pic.type = pictureTypeId === ApeTag.notPictureItemTypeId ? pictureTypeId : PictureType.NotAPicture;
+            pic.type = pictureTypeId !== ApeTag.notPictureItemTypeId ? pictureTypeId : PictureType.NotAPicture;
 
             pictures.push(pic);
         }

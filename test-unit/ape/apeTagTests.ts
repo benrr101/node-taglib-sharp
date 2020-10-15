@@ -10,7 +10,9 @@ import {ApeTagFooter, ApeTagFooterFlags} from "../../src/ape/apeTagFooter";
 import {ApeTagItem, ApeTagItemType} from "../../src/ape/apeTagItem";
 import {ByteVector} from "../../src/byteVector";
 import {File} from "../../src/file";
+import {IPicture, PictureType} from "../../src/picture";
 import {TagTypes} from "../../src/tag";
+
 
 // Setup chai
 Chai.use(ChaiAsPromised);
@@ -452,37 +454,290 @@ function getTestTagFooter(flags: ApeTagFooterFlags, itemCount: number, tagSize: 
         this.testTextItem((t, v) => { t.grouping = v; }, (t) => t.grouping, "Grouping");
     }
 
-    private testUintItem(
-        set: (t: ApeTag, v: number) => void,
-        get: (t: ApeTag) => number,
-        key: string
-    ) {
+    @test
+    public beatsPerMinutes() {
+        this.testUintItem((t, v) => { t.beatsPerMinute = v; }, (t) => t.beatsPerMinute, "BPM");
+    }
+
+    @test
+    public conductor() {
+        this.testTextItem((t, v) => { t.conductor = v; }, (t) => t.conductor, "Conductor");
+    }
+
+    @test
+    public copyright() {
+        this.testTextItem((t, v) => { t.copyright = v; }, (t) => t.copyright, "Copyright");
+    }
+
+    @test
+    public dateTagged() {
         // Arrange
         const tag = ApeTag.fromEmpty();
-        const setProp = (v: number) => set(tag, v);
-        const getProp = () => get(tag);
+        const set = (v: Date) => { tag.dateTagged = v; };
+        const get = () => tag.dateTagged;
 
         // Act / Assert
-        // Initially empty
-        assert.strictEqual(getProp(), 0);
+        assert.isUndefined(tag.dateTagged);
 
-        // Test invalid values
-        PropertyTests.propertyThrows(setProp, undefined);
-        PropertyTests.propertyThrows(setProp, null);
-        PropertyTests.propertyThrows(setProp, 1.23);
-        PropertyTests.propertyThrows(setProp, -1);
-        PropertyTests.propertyThrows(setProp, Number.MAX_SAFE_INTEGER + 1);
-
-        // Test valid values
-        PropertyTests.propertyRoundTrip(setProp, getProp, 123);
+        PropertyTests.propertyRoundTrip(set, get, new Date("2020-04-25 12:34:56"));
         assert.strictEqual(tag.items.length, 1);
         assert.strictEqual(tag.items[0].type, ApeTagItemType.Text);
-        assert.strictEqual(tag.items[0].key, key);
-        assert.deepStrictEqual(tag.items[0].text, ["123"]);
+        assert.strictEqual(tag.items[0].key, "DateTagged");
+        assert.deepStrictEqual(tag.items[0].text, ["2020-04-25T12:34:56"]);
 
-        // Test clear
-        PropertyTests.propertyRoundTrip(setProp, getProp, 0);
+        tag.items[0] = ApeTagItem.fromTextValues("DateTagged", "bunchagarbage");
+        assert.isUndefined(tag.dateTagged);
+
+        PropertyTests.propertyRoundTrip(set, get, undefined);
         assert.strictEqual(tag.items.length, 0);
+    }
+
+    @test
+    public musicBrainzArtistId() {
+        this.testTextItem(
+            (t, v) => { t.musicBrainzArtistId = v; },
+            (t) => t.musicBrainzArtistId,
+            "MUSICBRAINZ_ARTISTID"
+        );
+    }
+
+    @test
+    public musicBrainzReleaseGroupId() {
+        this.testTextItem(
+            (t, v) => { t.musicBrainzReleaseGroupId = v; },
+            (t) => t.musicBrainzReleaseGroupId,
+            "MUSICBRAINZ_RELEASEGROUPID"
+        );
+    }
+
+    @test
+    public musicBrainzReleaseId() {
+        this.testTextItem(
+            (t, v) => { t.musicBrainzReleaseId = v; },
+            (t) => t.musicBrainzReleaseId,
+            "MUSICBRAINZ_ALBUMID"
+        );
+    }
+
+    @test
+    public musicBrainzReleaseArtistId() {
+        this.testTextItem(
+            (t, v) => { t.musicBrainzReleaseArtistId = v; },
+            (t) => t.musicBrainzArtistId,
+            "MUSICBRAINZ_ARTISTID"
+        );
+    }
+
+    @test
+    public musicBrainzTrackId() {
+        this.testTextItem(
+            (t, v) => { t.musicBrainzTrackId = v; },
+            (t) => t.musicBrainzTrackId,
+            "MUSICBRAINZ_TRACKID"
+        );
+    }
+
+    @test
+    public musicBrainzDiscId() {
+        this.testTextItem(
+            (t, v) => { t.musicBrainzDiscId = v; },
+            (t) => t.musicBrainzDiscId,
+            "MUSICBRAINZ_DISCID"
+        );
+    }
+
+    @test
+    public musicIpId() {
+        this.testTextItem((t, v) => { t.musicIpId = v; }, (t) => t.musicIpId, "MUSICIP_PUID");
+    }
+
+    @test
+    public amazonId() {
+        this.testTextItem((t, v) => { t.amazonId = v; }, (t) => t.amazonId, "ASIN");
+    }
+
+    @test
+    public musicBrainzReleaseStatus() {
+        this.testTextItem(
+            (t, v) => { t.musicBrainzReleaseStatus = v; },
+            (t) => t.musicBrainzReleaseStatus,
+            "MUSICBRAINZ_ALBUMSTATUS"
+        );
+    }
+
+    @test
+    public musicBrainzReleaseType() {
+        this.testTextItem(
+            (t, v) => { t.musicBrainzReleaseType = v; },
+            (t) => t.musicBrainzReleaseType,
+            "MUSICBRAINZ_ALBUMTYPE"
+        );
+    }
+
+    @test
+    public musicBrainzReleaseCountry() {
+        this.testTextItem(
+            (t, v) => { t.musicBrainzReleaseCountry = v; },
+            (t) => t.musicBrainzReleaseCountry,
+            "RELEASECOUNTRY"
+        );
+    }
+
+    @test
+    public replayGainTrackGain() {
+        // Arrange
+        const tag = ApeTag.fromEmpty();
+        const setProp = (v: number) => { tag.replayGainTrackGain = v; };
+        const getProp = () => tag.replayGainTrackGain;
+
+        // Act / Assert
+        assert.isNaN(getProp());
+
+        PropertyTests.propertyNormalized(setProp, getProp, 1.23456, 1.23);
+        assert.strictEqual(tag.items.length, 1);
+        assert.strictEqual(tag.items[0].type, ApeTagItemType.Text);
+        assert.strictEqual(tag.items[0].key, "REPLAYGAIN_TRACK_GAIN");
+        assert.deepStrictEqual(tag.items[0].text, ["1.23 dB"]);
+
+        tag.items[0] = ApeTagItem.fromTextValues("REPLAYGAIN_TRACK_GAIN", "1.23");
+        assert.strictEqual(tag.replayGainTrackGain, 1.23);
+
+        tag.items[0] = ApeTagItem.fromTextValues("REPLAYGAIN_TRACK_GAIN", "abcdef");
+        assert.isNaN(tag.replayGainTrackGain);
+
+        PropertyTests.propertyNormalized(setProp, getProp, undefined, Number.NaN);
+        assert.strictEqual(tag.items.length, 0);
+    }
+
+    @test
+    public replayGainTrackPeak() {
+        // Arrange
+        const tag = ApeTag.fromEmpty();
+        const setProp = (v: number) => { tag.replayGainTrackPeak = v; };
+        const getProp = () => tag.replayGainTrackPeak;
+
+        // Act / Assert
+        assert.isNaN(getProp());
+
+        PropertyTests.propertyNormalized(setProp, getProp, 1.23456789, 1.234568);
+        assert.strictEqual(tag.items.length, 1);
+        assert.strictEqual(tag.items[0].type, ApeTagItemType.Text);
+        assert.strictEqual(tag.items[0].key, "REPLAYGAIN_TRACK_PEAK");
+        assert.deepStrictEqual(tag.items[0].text, ["1.234568"]);
+
+        tag.items[0] = ApeTagItem.fromTextValues("REPLAYGAIN_TRACK_PEAK", "abcdef");
+        assert.isNaN(tag.replayGainTrackPeak);
+
+        PropertyTests.propertyNormalized(setProp, getProp, undefined, Number.NaN);
+        assert.strictEqual(tag.items.length, 0);
+    }
+
+    @test
+    public replayGainAlbumGain() {
+        // Arrange
+        const tag = ApeTag.fromEmpty();
+        const setProp = (v: number) => { tag.replayGainAlbumGain = v; };
+        const getProp = () => tag.replayGainAlbumGain;
+
+        // Act / Assert
+        assert.isNaN(getProp());
+
+        PropertyTests.propertyNormalized(setProp, getProp, 1.23456, 1.23);
+        assert.strictEqual(tag.items.length, 1);
+        assert.strictEqual(tag.items[0].type, ApeTagItemType.Text);
+        assert.strictEqual(tag.items[0].key, "REPLAYGAIN_ALBUM_GAIN");
+        assert.deepStrictEqual(tag.items[0].text, ["1.23 dB"]);
+
+        tag.items[0] = ApeTagItem.fromTextValues("REPLAYGAIN_ALBUM_GAIN", "1.23");
+        assert.strictEqual(tag.replayGainAlbumGain, 1.23);
+
+        tag.items[0] = ApeTagItem.fromTextValues("REPLAYGAIN_ALBUM_GAIN", "abcdef");
+        assert.isNaN(tag.replayGainAlbumGain);
+
+        PropertyTests.propertyNormalized(setProp, getProp, undefined, Number.NaN);
+        assert.strictEqual(tag.items.length, 0);
+    }
+
+    @test
+    public replayGainAlbumPeak() {
+        // Arrange
+        const tag = ApeTag.fromEmpty();
+        const setProp = (v: number) => { tag.replayGainAlbumPeak = v; };
+        const getProp = () => tag.replayGainAlbumPeak;
+
+        // Act / Assert
+        assert.isNaN(getProp());
+
+        PropertyTests.propertyNormalized(setProp, getProp, 1.23456789, 1.234568);
+        assert.strictEqual(tag.items.length, 1);
+        assert.strictEqual(tag.items[0].type, ApeTagItemType.Text);
+        assert.strictEqual(tag.items[0].key, "REPLAYGAIN_ALBUM_PEAK");
+        assert.deepStrictEqual(tag.items[0].text, ["1.234568"]);
+
+        tag.items[0] = ApeTagItem.fromTextValues("REPLAYGAIN_ALBUM_PEAK", "abcdef");
+        assert.isNaN(tag.replayGainAlbumPeak);
+
+        PropertyTests.propertyNormalized(setProp, getProp, undefined, Number.NaN);
+        assert.strictEqual(tag.items.length, 0);
+    }
+
+    @test
+    public pictures() {
+        // Arrange
+        const tag = ApeTag.fromEmpty();
+        const mockPicture1 = TypeMoq.Mock.ofType<IPicture>();
+        mockPicture1.setup((p) => p.description).returns(() => "foo");
+        mockPicture1.setup((p) => p.type).returns(() => PictureType.ColoredFish);
+        mockPicture1.setup((p) => p.data).returns(() => ByteVector.fromString("bar"));
+        const mockPicture2 = TypeMoq.Mock.ofType<IPicture>();
+        mockPicture2.setup((p) => p.description).returns(() => "fux");
+        mockPicture2.setup((p) => p.type).returns(() => PictureType.NotAPicture);
+        mockPicture2.setup((p) => p.data).returns(() => ByteVector.fromString("bux"));
+
+        // Act / Assert
+        assert.ok(tag.pictures);
+        assert.isEmpty(tag.pictures);
+
+        // Note: We're only checking that the items exist - ability to generate binary items is
+        //    tested in the ApeTagItem tests.
+        tag.pictures = [mockPicture1.object, mockPicture2.object];
+        assert.strictEqual(tag.items.length, 2);
+        assert.strictEqual(tag.items[0].type, ApeTagItemType.Binary);
+        assert.strictEqual(tag.items[0].type, ApeTagItemType.Binary);
+
+        const pictures = tag.pictures;
+        assert.strictEqual(pictures.length, 2);
+        assert.strictEqual(pictures[0].description, "foo");
+        assert.strictEqual(pictures[0].type, PictureType.ColoredFish);
+        assert.isTrue(ByteVector.equal(pictures[0].data, ByteVector.fromString("bar")));
+        assert.strictEqual(pictures[1].description, "fux");
+        assert.strictEqual(pictures[1].type, PictureType.NotAPicture);
+        assert.isTrue(ByteVector.equal(pictures[1].data, ByteVector.fromString("bux")));
+
+        tag.pictures = undefined;
+        assert.strictEqual(tag.items.length, 0);
+        assert.ok(tag.pictures);
+        assert.isEmpty(tag.pictures);
+    }
+
+    @test
+    public initialKey() {
+        this.testUnsupportedText((t, v) => { t.initialKey = v; }, (t) => t.initialKey);
+    }
+
+    @test
+    public remixedBy() {
+        this.testUnsupportedText((t, v) => { t.remixedBy = v; }, (t) => t.remixedBy);
+    }
+
+    @test
+    public publisher() {
+        this.testUnsupportedText((t, v) => { t.publisher = v; }, (t) => t.publisher);
+    }
+
+    @test
+    public isrc() {
+        this.testUnsupportedText((t, v) => { t.isrc = v; }, (t) => t.isrc);
     }
 
     private testFractionalUintItem(
@@ -610,6 +865,55 @@ function getTestTagFooter(flags: ApeTagFooterFlags, itemCount: number, tagSize: 
         assert.deepStrictEqual(tag.items[0].text, ["foo"]);
 
         PropertyTests.propertyRoundTrip(setProp, getProp, undefined);
+        assert.strictEqual(tag.items.length, 0);
+    }
+
+    private testUintItem(
+        set: (t: ApeTag, v: number) => void,
+        get: (t: ApeTag) => number,
+        key: string
+    ) {
+        // Arrange
+        const tag = ApeTag.fromEmpty();
+        const setProp = (v: number) => set(tag, v);
+        const getProp = () => get(tag);
+
+        // Act / Assert
+        // Initially empty
+        assert.strictEqual(getProp(), 0);
+
+        // Test invalid values
+        PropertyTests.propertyThrows(setProp, undefined);
+        PropertyTests.propertyThrows(setProp, null);
+        PropertyTests.propertyThrows(setProp, 1.23);
+        PropertyTests.propertyThrows(setProp, -1);
+        PropertyTests.propertyThrows(setProp, Number.MAX_SAFE_INTEGER + 1);
+
+        // Test valid values
+        PropertyTests.propertyRoundTrip(setProp, getProp, 123);
+        assert.strictEqual(tag.items.length, 1);
+        assert.strictEqual(tag.items[0].type, ApeTagItemType.Text);
+        assert.strictEqual(tag.items[0].key, key);
+        assert.deepStrictEqual(tag.items[0].text, ["123"]);
+
+        // Test clear
+        PropertyTests.propertyRoundTrip(setProp, getProp, 0);
+        assert.strictEqual(tag.items.length, 0);
+    }
+
+    private testUnsupportedText(
+        set: (t: ApeTag, v: string) => void,
+        get: (t: ApeTag) => string
+    ) {
+        // Arrange
+        const tag = ApeTag.fromEmpty();
+
+        // Act / Assert
+        assert.isUndefined(get(tag));
+
+        set(tag, "foo");
+
+        assert.isUndefined(get(tag));
         assert.strictEqual(tag.items.length, 0);
     }
 }
