@@ -542,19 +542,18 @@ export default class ApeTag extends Tag {
      * @param key Key to use to lookup the item
      * @param value Values to add to the item
      */
-    public appendStringValues(key: string, value: string[]): void {
+    public appendStringValues(key: string, values: string[]): void {
         Guards.notNullOrUndefined(key, "key");
-        if (!value || value.length === 0) {
+        if (!values || values.length === 0) {
             return;
         }
 
         const index = this.getItemIndex(key);
-        const values = [];
 
+        values = values.filter((v) => !!v);
         if (index >= 0) {
-            values.push(...this._items[index].text);
+            values.unshift(...this._items[index].text);
         }
-        values.push(...value);
 
         const item = ApeTagItem.fromTextValues(key, ...values);
         if (index >= 0) {
@@ -630,7 +629,7 @@ export default class ApeTag extends Tag {
 
         // Store data about the tag in the footer(/header)
         this._footer.itemCount = renderedItems.length;
-        this._footer.tagSize = data.length;
+        this._footer.tagSize = data.length + ApeTagFooter.size;
         this.isHeaderPresent = true;
 
         // Add the header/footer
@@ -709,7 +708,7 @@ export default class ApeTag extends Tag {
         if (!values || values.length === 0) {
             this.removeItem(key);
         } else {
-            const item = ApeTagItem.fromTextValues(key, ...values);
+            const item = ApeTagItem.fromTextValues(key, ...values.filter((v) => !!v));
             const index = this.getItemIndex(key);
             if (index >= 0) {
                 this._items[index] = item;

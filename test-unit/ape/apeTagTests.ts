@@ -917,3 +917,554 @@ function getTestTagFooter(flags: ApeTagFooterFlags, itemCount: number, tagSize: 
         assert.strictEqual(tag.items.length, 0);
     }
 }
+
+@suite class Ape_Tag_MethodTests {
+    @test
+    public appendStringValue_invalidValues() {
+        // Arrange
+        const tag = ApeTag.fromEmpty();
+
+        // Act / Assert
+        assert.throws(() => { tag.appendStringValue(undefined, "abc"); });
+        assert.throws(() => { tag.appendStringValue(null, "abc"); });
+    }
+
+    @test
+    public appendStringValue_emptyValue() {
+        // Arrange
+        const tag = ApeTag.fromEmpty();
+        const item1 = ApeTagItem.fromTextValues("item", "foo");
+        tag.items.push(item1);
+
+        // Act
+        tag.appendStringValue(item1.key, undefined);
+        tag.appendStringValue(item1.key, null);
+        tag.appendStringValue(item1.key, "");
+
+        // Assert
+        assert.strictEqual(tag.items.length, 1);
+        assert.strictEqual(tag.items[0].key, "item");
+        assert.deepStrictEqual(tag.items[0].text, ["foo"]);
+    }
+
+    @test
+    public appendStringValue_itemExists() {
+        // Arrange
+        const tag = ApeTag.fromEmpty();
+        const item1 = ApeTagItem.fromTextValues("item", "foo");
+        tag.items.push(item1);
+
+        // Act
+        tag.appendStringValue(item1.key, "bar");
+
+        // Assert
+        assert.strictEqual(tag.items.length, 1);
+        assert.strictEqual(tag.items[0].key, "item");
+        assert.deepStrictEqual(tag.items[0].text, ["foo", "bar"]);
+    }
+
+    @test
+    public appendStringValue_itemDoesNotExists() {
+        // Arrange
+        const tag = ApeTag.fromEmpty();
+        const item1 = ApeTagItem.fromTextValues("item", "foo");
+        tag.items.push(item1);
+
+        // Act
+        tag.appendStringValue("item2", "fux");
+
+        // Assert
+        assert.strictEqual(tag.items.length, 2);
+        assert.strictEqual(tag.items[0].key, "item");
+        assert.deepStrictEqual(tag.items[0].text, ["foo"]);
+        assert.strictEqual(tag.items[1].key, "item2");
+        assert.deepStrictEqual(tag.items[1].text, ["fux"]);
+    }
+
+    @test
+    public appendStringValues_invalidValues() {
+        // Arrange
+        const tag = ApeTag.fromEmpty();
+
+        // Act / Assert
+        assert.throws(() => { tag.appendStringValues(undefined, ["abc"]); });
+        assert.throws(() => { tag.appendStringValues(null, ["abc"]); });
+    }
+
+    @test
+    public appendStringValues_emptyValue() {
+        // Arrange
+        const tag = ApeTag.fromEmpty();
+        const item1 = ApeTagItem.fromTextValues("item", "foo");
+        tag.items.push(item1);
+
+        // Act
+        tag.appendStringValues(item1.key, undefined);
+        tag.appendStringValues(item1.key, null);
+        tag.appendStringValues(item1.key, []);
+
+        // Assert
+        assert.strictEqual(tag.items.length, 1);
+        assert.strictEqual(tag.items[0].key, "item");
+        assert.deepStrictEqual(tag.items[0].text, ["foo"]);
+    }
+
+    @test
+    public appendStringValues_itemExists() {
+        // Arrange
+        const tag = ApeTag.fromEmpty();
+        const item1 = ApeTagItem.fromTextValues("item", "foo");
+        tag.items.push(item1);
+
+        // Act
+        tag.appendStringValues(item1.key, ["bar", "baz", undefined]);
+
+        // Assert
+        assert.strictEqual(tag.items.length, 1);
+        assert.strictEqual(tag.items[0].key, "item");
+        assert.deepStrictEqual(tag.items[0].text, ["foo", "bar", "baz"]);
+    }
+
+    @test
+    public appendStringValues_itemDoesNotExists() {
+        // Arrange
+        const tag = ApeTag.fromEmpty();
+        const item1 = ApeTagItem.fromTextValues("item", "foo");
+        tag.items.push(item1);
+
+        // Act
+        tag.appendStringValues("item2", ["fux", "bux", undefined]);
+
+        // Assert
+        assert.strictEqual(tag.items.length, 2);
+        assert.strictEqual(tag.items[0].key, "item");
+        assert.deepStrictEqual(tag.items[0].text, ["foo"]);
+        assert.strictEqual(tag.items[1].key, "item2");
+        assert.deepStrictEqual(tag.items[1].text, ["fux", "bux"]);
+    }
+
+    @test
+    public clear() {
+        // Arrange
+        const tag = ApeTag.fromEmpty();
+        tag.items.push(ApeTagItem.fromTextValues("Foo", "bar"));
+        tag.items.push(ApeTagItem.fromTextValues("Fux", "bux"));
+
+        // Act
+        tag.clear();
+
+        // Assert
+        assert.deepStrictEqual(tag.items, []);
+    }
+
+    @test
+    public copyTo_invalidDestination() {
+        // Arrange
+        const tag = ApeTag.fromEmpty();
+
+        // Act / Assert
+        assert.throws(() => { tag.copyTo(undefined, true); });
+        assert.throws(() => { tag.copyTo(null, true); });
+    }
+
+    @test
+    public copyTo_noOverwrite() {
+        // Arrange
+        const source = ApeTag.fromEmpty();
+        const sItem1 = ApeTagItem.fromTextValues("Foo", "bar");
+        const sItem2 = ApeTagItem.fromTextValues("Fux", "bux");
+        source.items.push(sItem1, sItem2);
+
+        const dest = ApeTag.fromEmpty();
+        const dItem1 = ApeTagItem.fromTextValues("Foo", "baz");
+        dest.items.push(dItem1);
+
+        // Act
+        source.copyTo(dest, false);
+
+        // Assert
+        assert.sameMembers(source.items, [sItem1, sItem2]);
+
+        assert.strictEqual(dest.items.length, 2);
+        assert.notOwnInclude(dest.items, sItem1);
+        assert.notOwnInclude(dest.items, sItem2);
+        assert.ownInclude(dest.items, dItem1);
+
+        const dItem2 = dest.getItem("Fux");
+        assert.isOk(dItem2);
+        assert.notStrictEqual(dItem2, sItem2);
+        assert.strictEqual(dItem2.value, sItem2.value);
+    }
+
+    @test
+    public copyTo_overwrite() {
+        // Arrange
+        const source = ApeTag.fromEmpty();
+        const sItem1 = ApeTagItem.fromTextValues("Foo", "bar");
+        const sItem2 = ApeTagItem.fromTextValues("Fux", "bux");
+        source.items.push(sItem1, sItem2);
+
+        const dest = ApeTag.fromEmpty();
+        const dItem1 = ApeTagItem.fromTextValues("Foo", "baz");
+        dest.items.push(dItem1);
+
+        // Act
+        source.copyTo(dest, true);
+
+        // Assert
+        assert.sameMembers(source.items, [sItem1, sItem2]);
+
+        assert.strictEqual(dest.items.length, 2);
+        assert.notOwnInclude(dest.items, sItem1);
+        assert.notOwnInclude(dest.items, sItem2);
+        assert.notOwnInclude(dest.items, dItem1);
+
+        const dNewItem1 = dest.getItem("Foo");
+        assert.isOk(dNewItem1);
+        assert.notStrictEqual(dNewItem1, sItem1);
+        assert.strictEqual(dNewItem1.value, sItem1.value);
+
+        const dNewItem2 = dest.getItem("Fux");
+        assert.isOk(dNewItem2);
+        assert.notStrictEqual(dNewItem2, sItem2);
+        assert.strictEqual(dNewItem2.value, sItem2.value);
+    }
+
+    @test
+    public getItem_invalidKey() {
+        // Arrange
+        const tag = ApeTag.fromEmpty();
+
+        // Act / Assert
+        assert(() => tag.getItem(undefined));
+        assert(() => tag.getItem(null));
+    }
+
+    @test
+    public getItem_itemExists() {
+        // Arrange
+        const tag = ApeTag.fromEmpty();
+        tag.items.push(ApeTagItem.fromTextValues("foo", "bar", "baz"));
+
+        // Act
+        const item = tag.getItem("fOo");
+
+        // Assert
+        assert.strictEqual(item, tag.items[0]);
+    }
+
+    @test
+    public getItem_itemDoesNotExist() {
+        // Arrange
+        const tag = ApeTag.fromEmpty();
+        tag.items.push(ApeTagItem.fromTextValues("fux", "bux", "qux"));
+
+        // Act
+        const item = tag.getItem("fOo");
+
+        // Assert
+        assert.isUndefined(item);
+    }
+
+    @test
+    public hasItem_invalidKey() {
+        // Arrange
+        const tag = ApeTag.fromEmpty();
+
+        // Act / Assert
+        assert(() => tag.hasItem(undefined));
+        assert(() => tag.hasItem(null));
+    }
+
+    @test
+    public hasItem_itemExists() {
+        // Arrange
+        const tag = ApeTag.fromEmpty();
+        tag.items.push(ApeTagItem.fromTextValues("foo", "bar", "baz"));
+
+        // Act
+        const hasItem = tag.hasItem("fOo");
+
+        // Assert
+        assert.isTrue(hasItem);
+    }
+
+    @test
+    public hasItem_itemDoesNotExist() {
+        // Arrange
+        const tag = ApeTag.fromEmpty();
+        tag.items.push(ApeTagItem.fromTextValues("fux", "bux", "qux"));
+
+        // Act
+        const hasItem = tag.hasItem("fOo");
+
+        // Assert
+        assert.isFalse(hasItem);
+    }
+
+    @test
+    public removeItem_invalidKey() {
+        // Arrange
+        const tag = ApeTag.fromEmpty();
+
+        // Act / Assert
+        assert(() => tag.removeItem(undefined));
+        assert(() => tag.removeItem(null));
+    }
+
+    @test
+    public removeItem_itemExists() {
+        // Arrange
+        const tag = ApeTag.fromEmpty();
+        tag.items.push(ApeTagItem.fromTextValues("foo", "bar", "baz"));
+
+        // Act
+        const items = tag.items;
+        tag.removeItem("fOo");
+
+        // Assert
+        assert.isEmpty(tag.items);
+        assert.strictEqual(items, tag.items);
+    }
+
+    @test
+    public removeItem_itemDoesNotExist() {
+        // Arrange
+        const tag = ApeTag.fromEmpty();
+        tag.items.push(ApeTagItem.fromTextValues("fux", "bux", "qux"));
+
+        // Act
+        const items = tag.items;
+        tag.removeItem("FoO");
+
+        // Assert
+        assert.isTrue(tag.hasItem("fux"));
+        assert.strictEqual(items, tag.items);
+    }
+
+    @test
+    public render() {
+        // Arrange
+        const flags = (ApeTagFooterFlags.IsHeader | ApeTagFooterFlags.HeaderPresent) >>> 0;
+        let header = getTestTagFooter(flags, 0, ApeTagFooter.size);
+        let footer = getTestTagFooter(ApeTagFooterFlags.HeaderPresent, 0, ApeTagFooter.size);
+        const data = ByteVector.concatenate(
+            ByteVector.fromSize(10),
+            header,
+            footer
+        );
+        const file = TestFile.getFile(data);
+        const tag = ApeTag.fromFile(file, 10);
+
+        const item1 = ApeTagItem.fromTextValues("foo", "bar", "baz");
+        const item2 = ApeTagItem.fromTextValues("fux", "bux", "qux");
+        tag.items.push(item1, item2);
+
+        // Act
+        const output = tag.render();
+
+        // Assert
+        const item1Render = item1.render();
+        const item2Render = item2.render();
+        const tagSize = ApeTagFooter.size + item1Render.length + item2Render.length;
+        header = getTestTagFooter(flags, 2, tagSize);
+        footer = getTestTagFooter(ApeTagFooterFlags.HeaderPresent, 2, tagSize);
+        const expected = ByteVector.concatenate(
+            header,
+            item1Render,
+            item2Render,
+            footer
+        );
+        assert.isTrue(ByteVector.equal(output, expected));
+    }
+
+    @test
+    public setItem_invalidItem() {
+        // Arrange
+        const tag = ApeTag.fromEmpty();
+
+        // Act / Assert
+        assert.throws(() => { tag.setItem(undefined); });
+        assert.throws(() => { tag.setItem(null); });
+    }
+
+    @test
+    public setItem_itemExists() {
+        // Arrange
+        const tag = ApeTag.fromEmpty();
+        const item1 = ApeTagItem.fromTextValues("foo", "bar");
+        const item2 = ApeTagItem.fromTextValues("foo", "bux");
+        tag.items.push(item1);
+
+        // Act
+        tag.setItem(item2);
+
+        // Assert
+        assert.isOk(tag.items);
+        assert.sameMembers(tag.items, [item2]);
+    }
+
+    @test
+    public setItem_itemDoesNotExist() {
+        // Arrange
+        const tag = ApeTag.fromEmpty();
+        const item1 = ApeTagItem.fromTextValues("foo", "bar");
+
+        // Act
+        tag.setItem(item1);
+
+        // Assert
+        assert.isOk(tag.items);
+        assert.sameMembers(tag.items, [item1]);
+    }
+
+    @test
+    public setNumericValue_invalidValues() {
+        // Arrange
+        const tag = ApeTag.fromEmpty();
+
+        // Act / Assert
+        assert.throws(() => { tag.setNumericValue(undefined, 0, 0); });
+        assert.throws(() => { tag.setNumericValue(null, 0, 0); });
+        assert.throws(() => { tag.setNumericValue("foo", -1, 0); });
+        assert.throws(() => { tag.setNumericValue("foo", 1.23, 0); });
+        assert.throws(() => { tag.setNumericValue("foo", Number.MAX_SAFE_INTEGER + 1, 0); });
+        assert.throws(() => { tag.setNumericValue("foo", 0, -1); });
+        assert.throws(() => { tag.setNumericValue("foo", 0,  1.23); });
+        assert.throws(() => { tag.setNumericValue("foo", 0, Number.MAX_SAFE_INTEGER + 1); });
+    }
+
+    @test
+    public setNumericValue_removeItem() {
+        // Arrange
+        const tag = ApeTag.fromEmpty();
+        tag.items.push(ApeTagItem.fromTextValues("foo", "123/456"));
+
+        // Act
+        tag.setNumericValue("foo", 0, 0);
+
+        // Assert
+        assert.isEmpty(tag.items);
+    }
+
+    @test
+    public setNumericValue_numeratorOnly() {
+        // Arrange
+        const tag = ApeTag.fromEmpty();
+
+        // Act
+        tag.setNumericValue("foo", 123, 0);
+
+        // Assert
+        assert.strictEqual(tag.items.length, 1);
+        assert.strictEqual(tag.items[0].key, "foo");
+        assert.deepStrictEqual(tag.items[0].text, ["123"]);
+    }
+
+    @test
+    public setNumericValue_numeratorAndDenominator() {
+        // Arrange
+        const tag = ApeTag.fromEmpty();
+
+        // Act
+        tag.setNumericValue("foo", 123, 456);
+
+        // Assert
+        assert.strictEqual(tag.items.length, 1);
+        assert.strictEqual(tag.items[0].key, "foo");
+        assert.deepStrictEqual(tag.items[0].text, ["123/456"]);
+    }
+
+    @test
+    public setStringValue_invalidValue() {
+        // Arrange
+        const tag = ApeTag.fromEmpty();
+
+        // Act / Assert
+        assert.throws(() => { tag.setStringValue(undefined, "foo"); });
+        assert.throws(() => { tag.setStringValue(null, "foo"); });
+    }
+
+    @test
+    public setStringValue_removeItem() {
+        // Arrange
+        const tag = ApeTag.fromEmpty();
+        tag.items.push(ApeTagItem.fromTextValues("foo", "bar", "baz"));
+
+        // Act
+        tag.setStringValue("foo", undefined);
+
+        // Assert
+        assert.isEmpty(tag.items);
+    }
+
+    @test
+    public setStringValue_createsItem() {
+        // Arrange
+        const tag = ApeTag.fromEmpty();
+
+        // Act
+        tag.setStringValue("foo", "bar");
+
+        // Assert
+        assert.strictEqual(tag.items.length, 1);
+        assert.strictEqual(tag.items[0].key, "foo");
+        assert.deepStrictEqual(tag.items[0].text, ["bar"]);
+    }
+
+    @test
+    public setStringValues_invalidValue() {
+        // Arrange
+        const tag = ApeTag.fromEmpty();
+
+        // Act / Assert
+        assert.throws(() => { tag.setStringValues(undefined, ["foo"]); });
+        assert.throws(() => { tag.setStringValues(null, ["foo"]); });
+    }
+
+    @test
+    public setStringValues_removeItem() {
+        // Arrange
+        const tag = ApeTag.fromEmpty();
+        tag.items.push(ApeTagItem.fromTextValues("foo", "bar", "baz"));
+        tag.items.push(ApeTagItem.fromTextValues("fux", "bux", "qux"));
+
+        // Act
+        tag.setStringValues("foo", []);
+        tag.setStringValue("fux", undefined);
+
+        // Assert
+        assert.isEmpty(tag.items);
+    }
+
+    @test
+    public setStringValues_createsItem() {
+        // Arrange
+        const tag = ApeTag.fromEmpty();
+
+        // Act
+        tag.setStringValues("foo", ["bar"]);
+
+        // Assert
+        assert.strictEqual(tag.items.length, 1);
+        assert.strictEqual(tag.items[0].key, "foo");
+        assert.deepStrictEqual(tag.items[0].text, ["bar"]);
+    }
+
+    @test
+    public setStringValues_replacesItem() {
+        // Arrange
+        const tag = ApeTag.fromEmpty();
+        const item = ApeTagItem.fromTextValues("foo", "bar");
+        tag.items.push(item);
+
+        // Act
+        tag.setStringValues("foo", ["baz"]);
+
+        // Assert
+        assert.strictEqual(tag.items.length, 1);
+        assert.notStrictEqual(tag.items[0], item);
+        assert.strictEqual(tag.items[0].key, "foo");
+        assert.deepStrictEqual(tag.items[0].text, ["baz"]);
+    }
+}
