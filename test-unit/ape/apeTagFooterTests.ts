@@ -21,16 +21,16 @@ const _sampleData = ByteVector.concatenate(
 
 @suite class Ape_TagFooter_ConstructorTests {
     @test
-    public constructor_invalidParameters() {
+    public fromData_invalidParameters() {
         // Act / Assert
-        assert.throws(() => { const _ = new ApeTagFooter(undefined); });
-        assert.throws(() => { const _ = new ApeTagFooter(null); });
-        assert.throws(() => { const _ = new ApeTagFooter(ByteVector.fromSize(10)); });
-        assert.throws(() => { const _ = new ApeTagFooter(ByteVector.fromSize(40)); });
+        assert.throws(() => { const _ = ApeTagFooter.fromData(undefined); });
+        assert.throws(() => { const _ = ApeTagFooter.fromData(null); });
+        assert.throws(() => { const _ = ApeTagFooter.fromData(ByteVector.fromSize(10)); });
+        assert.throws(() => { const _ = ApeTagFooter.fromData(ByteVector.fromSize(40)); });
     }
 
     @test
-    public constructor_isHeaderVersionSet() {
+    public fromData_isHeaderVersionSet() {
         // Arrange
         const data = ByteVector.concatenate(
             ByteVector.fromString("APETAGEX", StringType.Latin1), // File Identifier
@@ -42,18 +42,19 @@ const _sampleData = ByteVector.concatenate(
         );
 
         // Act
-        const footer = new ApeTagFooter(data);
+        const footer = ApeTagFooter.fromData(data);
 
         // Assert
-        assert.strictEqual(footer.completeTagSize, 2345);
+        assert.isOk(footer);
         assert.strictEqual(footer.flags, ApeTagFooterFlags.IsHeader);
         assert.strictEqual(footer.itemCount, 3456);
+        assert.strictEqual(footer.itemSize, 2345 - ApeTagFooter.size);
         assert.strictEqual(footer.tagSize, 2345);
         assert.strictEqual(footer.version, 1234);
     }
 
     @test
-    public constructor_headerPresentVersionNotSet() {
+    public fromData_headerPresentVersionNotSet() {
         // Arrange
         const data = ByteVector.concatenate(
             ByteVector.fromString("APETAGEX", StringType.Latin1), // File Identifier
@@ -65,22 +66,61 @@ const _sampleData = ByteVector.concatenate(
         );
 
         // Act
-        const footer = new ApeTagFooter(data);
+        const footer = ApeTagFooter.fromData(data);
 
         // Assert
-        assert.strictEqual(footer.completeTagSize, 2377);
+        assert.isOk(footer);
         assert.strictEqual(footer.flags, ApeTagFooterFlags.HeaderPresent);
         assert.strictEqual(footer.itemCount, 3456);
-        assert.strictEqual(footer.tagSize, 2345);
+        assert.strictEqual(footer.itemSize, 2345 - ApeTagFooter.size);
+        assert.strictEqual(footer.tagSize, 2345 + ApeTagFooter.size);
+        assert.strictEqual(footer.version, 2000);
+    }
+
+    @test
+    public fromEmpty() {
+        // Act
+        const footer = ApeTagFooter.fromEmpty();
+
+        // Assert
+        assert.isOk(footer);
+        assert.strictEqual(footer.flags, 0);
+        assert.strictEqual(footer.itemCount, 0);
+        assert.strictEqual(footer.tagSize, ApeTagFooter.size);
         assert.strictEqual(footer.version, 2000);
     }
 }
 
 @suite class Ape_TagFooter_PropertyTests {
     @test
+    public setItemSize_valid() {
+        // Arrange
+        const footer = ApeTagFooter.fromData(_sampleData);
+
+        // Act / Assert
+        PropertyTests.propertyRoundTrip(
+            (v) => { footer.itemSize = v; },
+            () => footer.itemSize,
+            8086
+        );
+    }
+
+    @test
+    public setItemSize_invalid() {
+        // Arrange
+        const footer = ApeTagFooter.fromData(_sampleData);
+        const setItemSize = (v: number) => { footer.itemSize = v; };
+
+        // Act / Assert
+        PropertyTests.propertyThrows(setItemSize, -1);
+        PropertyTests.propertyThrows(setItemSize, 1.23);
+        PropertyTests.propertyThrows(setItemSize, Number.MAX_SAFE_INTEGER + 1);
+    }
+
+    @test
     public setItemCount_valid() {
         // Arrange
-        const footer = new ApeTagFooter(_sampleData);
+        const footer = ApeTagFooter.fromData(_sampleData);
 
         // Act / Assert
         PropertyTests.propertyRoundTrip(
@@ -93,7 +133,7 @@ const _sampleData = ByteVector.concatenate(
     @test
     public setItemCount_invalid() {
         // Arrange
-        const footer = new ApeTagFooter(_sampleData);
+        const footer = ApeTagFooter.fromData(_sampleData);
         const setItemCount = (v: number) => { footer.itemCount = v; };
 
         // Act / Assert
@@ -105,7 +145,7 @@ const _sampleData = ByteVector.concatenate(
     @test
     public setFlags() {
         // Arrange
-        const footer = new ApeTagFooter(_sampleData);
+        const footer = ApeTagFooter.fromData(_sampleData);
 
         // Act / Assert
         PropertyTests.propertyRoundTrip(
@@ -113,38 +153,13 @@ const _sampleData = ByteVector.concatenate(
             () => footer.flags,
             ApeTagFooterFlags.FooterAbsent);
     }
-
-    @test
-    public setTagSize_valid() {
-        // Arrange
-        const footer = new ApeTagFooter(_sampleData);
-
-        // Act / Assert
-        PropertyTests.propertyRoundTrip(
-            (v) => { footer.flags = v; },
-            () => footer.flags,
-            8086
-        );
-    }
-
-    @test
-    public setTagSize_invalid() {
-        // Arrange
-        const footer = new ApeTagFooter(_sampleData);
-        const setTagSize = (v: number) => { footer.tagSize = v; };
-
-        // Act / Assert
-        PropertyTests.propertyThrows(setTagSize, -1);
-        PropertyTests.propertyThrows(setTagSize, 1.23);
-        PropertyTests.propertyThrows(setTagSize, Number.MAX_SAFE_INTEGER + 1);
-    }
 }
 
 @suite class Ape_TagFooter_MethodTests {
     @test
     public renderFooter_headerPresent() {
         // Arrange
-        const footer = new ApeTagFooter(_sampleData);
+        const footer = ApeTagFooter.fromData(_sampleData);
         footer.flags = ApeTagFooterFlags.HeaderPresent;
 
         // Act
@@ -165,7 +180,7 @@ const _sampleData = ByteVector.concatenate(
     @test
     public renderFooter_headerNotPresent() {
         // Arrange
-        const footer = new ApeTagFooter(_sampleData);
+        const footer = ApeTagFooter.fromData(_sampleData);
         footer.flags = 0;
 
         // Act
@@ -186,7 +201,7 @@ const _sampleData = ByteVector.concatenate(
     @test
     public renderFooter_isHeader() {
         // Arrange
-        const footer = new ApeTagFooter(_sampleData);
+        const footer = ApeTagFooter.fromData(_sampleData);
 
         // Act
         const output = footer.renderFooter();
@@ -206,7 +221,7 @@ const _sampleData = ByteVector.concatenate(
     @test
     public renderHeader_headerPresentisNotHeader() {
         // Arrange
-        const footer = new ApeTagFooter(_sampleData);
+        const footer = ApeTagFooter.fromData(_sampleData);
         footer.flags = ApeTagFooterFlags.HeaderPresent;
 
         // Act
@@ -228,7 +243,7 @@ const _sampleData = ByteVector.concatenate(
     @test
     public renderHeader_headerNotPresent() {
         // Arrange
-        const footer = new ApeTagFooter(_sampleData);
+        const footer = ApeTagFooter.fromData(_sampleData);
         footer.flags = 0;
 
         // Act
@@ -241,7 +256,7 @@ const _sampleData = ByteVector.concatenate(
     @test
     public renderHeader_headerPresentisHeader() {
         // Arrange
-        const footer = new ApeTagFooter(_sampleData);
+        const footer = ApeTagFooter.fromData(_sampleData);
         footer.flags = (ApeTagFooterFlags.HeaderPresent | ApeTagFooterFlags.IsHeader) >>> 0;
 
         // Act

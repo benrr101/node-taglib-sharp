@@ -66,7 +66,7 @@ export default class ApeTag extends Tag {
         const tag = new ApeTag();
 
         // Read the footer
-        tag._footer = new ApeTagFooter(data.mid(data.length - ApeTagFooter.size));
+        tag._footer = ApeTagFooter.fromData(data.mid(data.length - ApeTagFooter.size));
         if (tag._footer.tagSize === 0) {
             throw new CorruptFileError("Tag size is out of bounds");
         }
@@ -88,7 +88,9 @@ export default class ApeTag extends Tag {
      * Constructs an empty APEv2 tag.
      */
     public static fromEmpty(): ApeTag {
-        return new ApeTag();
+        const tag = new ApeTag();
+        tag._footer = ApeTagFooter.fromEmpty();
+        return tag;
     }
 
     /**
@@ -108,7 +110,7 @@ export default class ApeTag extends Tag {
         const tag = new ApeTag();
 
         // Read the footer in
-        tag._footer = new ApeTagFooter(file.readBlock(ApeTagFooter.size));
+        tag._footer = ApeTagFooter.fromData(file.readBlock(ApeTagFooter.size));
         if (tag._footer.tagSize === 0) {
             throw new CorruptFileError("Tag size out of bounds");
         }
@@ -629,7 +631,7 @@ export default class ApeTag extends Tag {
 
         // Store data about the tag in the footer(/header)
         this._footer.itemCount = renderedItems.length;
-        this._footer.tagSize = data.length + ApeTagFooter.size;
+        this._footer.itemSize = data.length;
         this.isHeaderPresent = true;
 
         // Add the header/footer

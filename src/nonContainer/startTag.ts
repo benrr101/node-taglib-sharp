@@ -1,6 +1,8 @@
+import ApeTag from "../ape/apeTag";
 import CombinedTag from "../combinedTag";
 import Id3v2Tag from "../id3v2/id3v2Tag";
 import Id3v2Settings from "../id3v2/id3v2Settings";
+import {ApeTagFooter} from "../ape/apeTagFooter";
 import {ByteVector} from "../byteVector";
 import {CorruptFileError} from "../errors";
 import {File, ReadStyle} from "../file";
@@ -13,11 +15,10 @@ import {Guards} from "../utils";
  * file.
  * This class is used by {@see NonContainerFile} to read all the tags appearing at the start of the
  * file but could be used by other classes. It currently supports ID3v2 and APE tags.
- * @TODO: JK NO IT DON'T SUPPORT APE YET.
  */
 export default class StartTag extends CombinedTag {
     private readonly _file: File;
-    private readonly _readSize = Math.max(/* TODO: APE */ Id3v2Settings.headerSize);
+    private readonly _readSize = Math.max(ApeTagFooter.size, Id3v2Settings.headerSize);
 
     /**
      * Constructs a new instance for a specified file.
@@ -62,8 +63,10 @@ export default class StartTag extends CombinedTag {
 
         if (type === TagTypes.Id3v2) {
             tag = Id3v2Tag.fromEmpty();
+        } else if (type === TagTypes.Ape) {
+            tag = ApeTag.fromEmpty();
+            (<ApeTag> tag).isHeaderPresent = true;
         }
-        // @TODO: Add APE
 
         if (tag) {
             if (copy) {
@@ -121,7 +124,8 @@ export default class StartTag extends CombinedTag {
     public render(): ByteVector {
         const tagData = this.tags.map((t) => {
             switch (t.tagTypes) {
-                // @TODO: Add APE
+                case TagTypes.Ape:
+                    return (<ApeTag> t).render();
                 case TagTypes.Id3v2:
                     return (<Id3v2Tag> t).render();
             }
@@ -151,7 +155,9 @@ export default class StartTag extends CombinedTag {
         let tag: Tag;
 
         switch (readResult.tagType) {
-            // @TODO: APE
+            case TagTypes.Ape:
+                tag = ApeTag.fromFile(this._file, start);
+                break;
             case TagTypes.Id3v2:
                 tag = Id3v2Tag.fromFile(this._file, start, style);
                 break;
@@ -169,7 +175,15 @@ export default class StartTag extends CombinedTag {
         const data = this._file.readBlock(this._readSize);
 
         try {
-            // @TODO: Add APE
+            if (data.startsWith(ApeTagFooter.fileIdentifier)) {
+                const footer = ApeTagFooter.fromData(data);
+
+                position += footer.tagSize;
+                return {
+                    position: position,
+                    tagType: TagTypes.Ape
+                };
+            }
             if (data.startsWith(Id3v2TagHeader.fileIdentifier)) {
                 const header = Id3v2TagHeader.fromData(data);
 

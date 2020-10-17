@@ -36,19 +36,21 @@ export class ApeTagFooter {
      */
     public static readonly size = 32;
 
-    private _flags: ApeTagFooterFlags;
-    private _itemCount: number;
-    private _tagSize: number;
+    private _flags: ApeTagFooterFlags = 0;
+    private _itemCount: number = 0;
+    private _itemSize: number = 0;
     private _version: number = 0;
 
     // #region Constructors
+
+    private constructor() {}
 
     /**
      * Constructs and initializes a new instance of {@see ApeTagFooter} by reading it from raw
      * footer data.
      * @param data Raw data to build the new instance from.
      */
-    public constructor(data: ByteVector) {
+    public static fromData(data: ByteVector): ApeTagFooter {
         Guards.truthy(data, "data");
         if (data.length < ApeTagFooter.size) {
             throw new CorruptFileError("Provided data is smaller than object size");
@@ -57,24 +59,28 @@ export class ApeTagFooter {
             throw new CorruptFileError("Provided data does not start with file identifier");
         }
 
-        this._version = data.mid(8, 4).toUInt(false);
-        this._tagSize = data.mid(12, 4).toUInt(false);
-        this._itemCount = data.mid(16, 4).toUInt(false);
-        this._flags = <ApeTagFooterFlags> data.mid(20, 4).toUInt(false);
+        const footer = new ApeTagFooter();
+        footer._version = data.mid(8, 4).toUInt(false);
+        footer._itemSize = data.mid(12, 4).toUInt(false)  - ApeTagFooter.size;
+        footer._itemCount = data.mid(16, 4).toUInt(false);
+        footer._flags = <ApeTagFooterFlags> data.mid(20, 4).toUInt(false);
+        return footer;
+    }
+
+    /**
+     * Constructs and initializes a new, blank instance of {@see ApeTagFooter}.
+     */
+    public static fromEmpty(): ApeTagFooter {
+        const footer = new ApeTagFooter();
+
+        // Always default to version 2000
+        footer._version = 2000;
+        return footer;
     }
 
     // #endregion
 
     // #region Properties
-
-    /**
-     * Gets the complete size of the tag represented by the current instance, including the header
-     * and footer.
-     */
-    public get completeTagSize(): number {
-        return this.tagSize +
-            ((this._flags & ApeTagFooterFlags.HeaderPresent) !== 0 ? ApeTagFooter.size : 0);
-    }
 
     /**
      * Gets the flags that apply to the current instance.
@@ -99,17 +105,26 @@ export class ApeTagFooter {
     }
 
     /**
-     * Gets the size of the tag represented by this footer, including the footer but excluding the
-     * header, if applicable.
+     * Gets the size in bytes of the items contained in the tag represented by this footer.
      */
-    public get tagSize(): number { return this._tagSize; }
+    public get itemSize(): number { return this._itemSize; }
     /**
-     * Sets the size of the tag represented by this footer. Should include the size of the footer
-     * but exclude the size of the header, if applicable.
+     * Sets the size in bytes of the items contained in the tag represented by this footer.
+     * @param value
      */
-    public set tagSize(value: number) {
+    public set itemSize(value: number) {
         Guards.uint(value, "value");
-        this._tagSize = value;
+        this._itemSize = value;
+    }
+
+    /**
+     * Gets the complete size of the tag represented by the current instance, including the header
+     * and footer.
+     */
+    public get tagSize(): number {
+        // @TODO: Shouldn't this take into consideration footer missing flags?
+        return this._itemSize + ApeTagFooter.size +
+            ((this._flags & ApeTagFooterFlags.HeaderPresent) !== 0 ? ApeTagFooter.size : 0);
     }
 
     /**
@@ -141,7 +156,7 @@ export class ApeTagFooter {
             ByteVector.fromUInt(2000, false),
 
             // Add the tag size
-            ByteVector.fromUInt(this.tagSize, false),
+            ByteVector.fromUInt(this.itemSize + ApeTagFooter.size, false),
 
             // Add the item count
             ByteVector.fromUInt(this.itemCount, false)

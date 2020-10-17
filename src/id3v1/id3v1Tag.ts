@@ -52,7 +52,7 @@ export default class Id3v1Tag extends Tag {
     /**
      * Constructs and initializes a new instance of {@see Id3v1Tag} with no contents.
      */
-    public static empty(): Id3v1Tag {
+    public static fromEmpty(): Id3v1Tag {
         const output = new Id3v1Tag(undefined);
         output.clear();
         return output;
