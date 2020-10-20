@@ -61,9 +61,15 @@ export class ApeTagFooter {
 
         const footer = new ApeTagFooter();
         footer._version = data.mid(8, 4).toUInt(false);
-        footer._itemSize = data.mid(12, 4).toUInt(false)  - ApeTagFooter.size;
         footer._itemCount = data.mid(16, 4).toUInt(false);
         footer._flags = <ApeTagFooterFlags> data.mid(20, 4).toUInt(false);
+
+        const itemPlusFooterSize = footer._itemSize = data.mid(12, 4).toUInt(false);
+        if (itemPlusFooterSize < ApeTagFooter.size) {
+            throw new CorruptFileError("Tag size is out of bounds");
+        }
+        footer._itemSize = itemPlusFooterSize - ApeTagFooter.size;
+
         return footer;
     }
 
@@ -116,6 +122,12 @@ export class ApeTagFooter {
         Guards.uint(value, "value");
         this._itemSize = value;
     }
+
+    /**
+     * Gets the size in bytes of the items contained in the tag and the footer. This is the minimum
+     * amount of data required to read the entire tag.
+     */
+    public get requiredDataSize() { return this.itemSize + ApeTagFooter.size; }
 
     /**
      * Gets the complete size of the tag represented by the current instance, including the header

@@ -18,11 +18,11 @@ import {TagTypes} from "../../src/tag";
 Chai.use(ChaiAsPromised);
 const assert = Chai.assert;
 
-function getTestTagFooter(flags: ApeTagFooterFlags, itemCount: number, tagSize: number): ByteVector {
+function getTestTagFooter(flags: ApeTagFooterFlags, itemCount: number, itemPlusFooter: number): ByteVector {
     return ByteVector.concatenate(
         ApeTagFooter.fileIdentifier,
         ByteVector.fromUInt(2000, false),
-        ByteVector.fromUInt(tagSize, false),
+        ByteVector.fromUInt(itemPlusFooter, false),
         ByteVector.fromUInt(itemCount, false),
         ByteVector.fromUInt(flags, false),
         ByteVector.fromSize(8)
@@ -41,15 +41,6 @@ function getTestTagFooter(flags: ApeTagFooterFlags, itemCount: number, tagSize: 
     public fromData_dataIsWayTooShort() {
         // Arrange
         const data = ByteVector.fromSize(8);
-
-        // Act / Assert
-        assert.throws(() => { ApeTag.fromData(data); });
-    }
-
-    @test
-    public fromData_dataIsZero() {
-        // Arrange
-        const data = getTestTagFooter(0, 0, 0);
 
         // Act / Assert
         assert.throws(() => { ApeTag.fromData(data); });
@@ -157,17 +148,6 @@ function getTestTagFooter(flags: ApeTagFooterFlags, itemCount: number, tagSize: 
         assert.throws(() => { ApeTag.fromFile(mockFile.object, 1.23); });
         assert.throws(() => { ApeTag.fromFile(mockFile.object, Number.MAX_SAFE_INTEGER + 1); });
         assert.throws(() => { ApeTag.fromFile(mockFile.object, 5); });
-    }
-
-    @test
-    public fromFile_dataIsZero() {
-        // Arrange
-        const data = getTestTagFooter(0, 0, 0);
-        data.insertByteVector(0, ByteVector.fromSize(10));
-        const file = TestFile.getFile(data);
-
-        // Act / Assert
-        assert.throws(() => ApeTag.fromFile(file, 10));
     }
 
     @test

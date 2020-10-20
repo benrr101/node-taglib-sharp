@@ -67,19 +67,19 @@ export default class ApeTag extends Tag {
 
         // Read the footer
         tag._footer = ApeTagFooter.fromData(data.mid(data.length - ApeTagFooter.size));
-        if (tag._footer.tagSize === 0) {
-            throw new CorruptFileError("Tag size is out of bounds");
-        }
 
         // If we've read a header at the end of the block, the block is invalid
         if ((tag._footer.flags & ApeTagFooterFlags.IsHeader) !== 0) {
             throw new CorruptFileError("Footer was actually a header");
         }
-        if ((data.length < tag._footer.tagSize)) {
+        if ((data.length < tag._footer.requiredDataSize)) {
             throw new CorruptFileError("Does not contain enough tag data");
         }
 
-        tag.parse(data.mid(data.length - tag._footer.tagSize, tag._footer.tagSize - ApeTagFooter.size));
+        tag.parse(data.mid(
+            data.length - tag._footer.requiredDataSize,
+            tag._footer.requiredDataSize - ApeTagFooter.size)
+        );
 
         return tag;
     }
@@ -111,16 +111,13 @@ export default class ApeTag extends Tag {
 
         // Read the footer in
         tag._footer = ApeTagFooter.fromData(file.readBlock(ApeTagFooter.size));
-        if (tag._footer.tagSize === 0) {
-            throw new CorruptFileError("Tag size out of bounds");
-        }
 
         // If we've read a header, we don't have to seek to read the content. If we've read a
         // footer, we need to move back to the start of the tag.
         if ((tag._footer.flags & ApeTagFooterFlags.IsHeader) === 0) {
             file.seek(position + ApeTagFooter.size - tag._footer.tagSize);
         }
-        tag.parse(file.readBlock(tag._footer.tagSize - ApeTagFooter.size));
+        tag.parse(file.readBlock(tag._footer.requiredDataSize - ApeTagFooter.size));
 
         return tag;
     }

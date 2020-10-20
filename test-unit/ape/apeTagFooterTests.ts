@@ -30,6 +30,22 @@ const _sampleData = ByteVector.concatenate(
     }
 
     @test
+    public fromData_dataIsZero() {
+        // Arrange
+        const data = ByteVector.concatenate(
+            ByteVector.fromString("APETAGEX", StringType.Latin1), // File Identifier
+            ByteVector.fromUInt(1234, false), // Version
+            ByteVector.fromUInt(10, false), // Tag Size
+            ByteVector.fromUInt(3456, false), // Item count
+            ByteVector.fromUInt(ApeTagFooterFlags.IsHeader, false), // Flags
+            ByteVector.fromSize(12)
+        );
+
+        // Act / Assert
+        assert.throws(() => { ApeTagFooter.fromData(data); });
+    }
+
+    @test
     public fromData_isHeaderVersionSet() {
         // Arrange
         const data = ByteVector.concatenate(
