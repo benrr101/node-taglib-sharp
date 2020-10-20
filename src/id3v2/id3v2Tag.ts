@@ -1200,9 +1200,11 @@ export default class Id3v2Tag extends Tag {
                 this.removeFrame(frame);
             }
         } else {
-            frame = UserTextInformationFrame.fromDescription(description, Id3v2Settings.defaultEncoding);
+            if (!frame) {
+                frame = UserTextInformationFrame.fromDescription(description, Id3v2Settings.defaultEncoding);
+                this.addFrame(frame);
+            }
             frame.text = text.split(";");
-            this.addFrame(frame);
         }
     }
 
