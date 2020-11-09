@@ -21,7 +21,7 @@
   },
   "dependencies": {
     "arraybuffer-to-buffer": "^0.0.5",
-    "big-integer": "^1.6.42",
+    "big-integer": "^1.6.48",
     "dateformat": "^3.0.3",
     "iconv-lite": "^0.4.24",
     "os-locale": "^4.0.0"

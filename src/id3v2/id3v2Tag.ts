@@ -47,26 +47,6 @@ export default class Id3v2Tag extends Tag {
     }
 
     /**
-     * Constructs and initializes a new Tag by reading the contents from a specified position in
-     * the provided file.
-     * @param file File from which the contents of the new instance is to be read
-     * @param position Offset into the file where the tag should be read from
-     * @param style How the data is to be read into the current instance
-     * @returns Id3v2Tag Tag with the data from the file read into it
-     */
-    public static fromFile(file: File, position: number, style: ReadStyle): Id3v2Tag {
-        Guards.truthy(file, "file");
-        Guards.uint(position, "position");
-        if (position > file.length - Id3v2Settings.headerSize) {
-            throw new Error("Argument out of range: position must be within size of the file");
-        }
-
-        const tag = new Id3v2Tag();
-        tag.read(file, position, style);
-        return tag;
-    }
-
-    /**
      * Constructs and initializes a new Tag by reading the contents from a specified
      * {@see ByteVector} object.
      * @param data Tag data to read into a tag object
@@ -91,6 +71,26 @@ export default class Id3v2Tag extends Tag {
         }
 
         tag.parse(data.mid(Id3v2Settings.headerSize, tag._header.tagSize), undefined, 0, ReadStyle.None);
+        return tag;
+    }
+
+    /**
+     * Constructs and initializes a new Tag by reading the contents from a specified position in
+     * the provided file.
+     * @param file File from which the contents of the new instance is to be read
+     * @param position Offset into the file where the tag should be read from
+     * @param style How the data is to be read into the current instance
+     * @returns Id3v2Tag Tag with the data from the file read into it
+     */
+    public static fromFile(file: File, position: number, style: ReadStyle): Id3v2Tag {
+        Guards.truthy(file, "file");
+        Guards.uint(position, "position");
+        if (position > file.length - Id3v2Settings.headerSize) {
+            throw new Error("Argument out of range: position must be within size of the file");
+        }
+
+        const tag = new Id3v2Tag();
+        tag.read(file, position, style);
         return tag;
     }
 
@@ -223,13 +223,9 @@ export default class Id3v2Tag extends Tag {
     /** @inheritDoc */
     public get tagTypes(): TagTypes { return TagTypes.Id3v2; }
 
-    /**
-     * @inheritDoc via TIT2 frame
-     */
+    /** @inheritDoc via TIT2 frame */
     public get title(): string { return this.getTextAsString(FrameIdentifiers.TIT2); }
-    /**
-     * @inheritDoc via TIT2 frame
-     */
+    /** @inheritDoc via TIT2 frame */
     public set title(value: string) { this.setTextFrame(FrameIdentifiers.TIT2, value); }
 
     /** @inheritDoc via TSOT frame */
@@ -1204,9 +1200,11 @@ export default class Id3v2Tag extends Tag {
                 this.removeFrame(frame);
             }
         } else {
-            frame = UserTextInformationFrame.fromDescription(description, Id3v2Settings.defaultEncoding);
+            if (!frame) {
+                frame = UserTextInformationFrame.fromDescription(description, Id3v2Settings.defaultEncoding);
+                this.addFrame(frame);
+            }
             frame.text = text.split(";");
-            this.addFrame(frame);
         }
     }
 

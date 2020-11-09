@@ -73,7 +73,7 @@ export default class AudioFile extends NonContainerFile {
 
 ////////////////////////////////////////////////////////////////////////////
 // Register the file type
-const mimeTypes = [
+[
     "taglib/mp3",
     "audio/x-mp3",
     "application/x-id3",
@@ -87,7 +87,4 @@ const mimeTypes = [
     "taglib/mp1",
     "audio/x-mp2",
     "audio/x-mp1"
-];
-for (const mimeType of mimeTypes) {
-    File.addFileType(mimeType, AudioFile);
-}
+].forEach((mt) => File.addFileType(mt, AudioFile));

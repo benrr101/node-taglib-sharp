@@ -1,8 +1,10 @@
+import ApeTag from "../ape/apeTag";
 import CombinedTag from "../combinedTag";
 import Id3v2Settings from "../id3v2/id3v2Settings";
 import Id3v1Tag from "../id3v1/id3v1Tag";
 import Id3v2Tag from "../id3v2/id3v2Tag";
 import Id3v2TagFooter from "../id3v2/id3v2TagFooter";
+import {ApeTagFooter, ApeTagFooterFlags} from "../ape/apeTagFooter";
 import {ByteVector} from "../byteVector";
 import {CorruptFileError} from "../errors";
 import {File, ReadStyle} from "../file";
@@ -15,12 +17,11 @@ import {Guards} from "../utils";
  * file.
  * This class is used by {@see NonContainerFile} to read all tags appearing at the end of the file
  * but could be used by other classes. It currently supports ID3v1, ID3v2, and APE tags.
- * @TODO: JK, NO IT DON'T SUPPORT APE YET
  */
 export default class EndTag extends CombinedTag {
     private readonly _file: File;
     private readonly _readSize: number = Math.max(
-        /* @TODO: APE footer */
+        ApeTagFooter.size,
         Id3v2Settings.footerSize,
         Id3v1Tag.size
     );
@@ -62,7 +63,9 @@ export default class EndTag extends CombinedTag {
     public addTag(type: TagTypes, copy: Tag): Tag {
         let tag: Tag;
 
-        // @TODO: Add Id3v1
+        if (type === TagTypes.Id3v1) {
+            tag = Id3v1Tag.fromEmpty();
+        }
         if (type === TagTypes.Id3v2) {
             const tag32 = Id3v2Tag.fromEmpty();
             tag32.version = 4;
@@ -70,7 +73,9 @@ export default class EndTag extends CombinedTag {
 
             tag = tag32;
         }
-        // @TODO: Add APE
+        if (type === TagTypes.Ape) {
+            tag = ApeTag.fromEmpty();
+        }
 
         if (tag) {
             if (copy) {
@@ -131,7 +136,8 @@ export default class EndTag extends CombinedTag {
     public render(): ByteVector {
         const tagData = this.tags.map((t) => {
             switch (t.tagTypes) {
-                // @TODO: Add APE
+                case TagTypes.Ape:
+                    return (<ApeTag> t).render();
                 case TagTypes.Id3v2:
                     return (<Id3v2Tag> t).render();
                 case TagTypes.Id3v1:
@@ -167,7 +173,9 @@ export default class EndTag extends CombinedTag {
         let tag: Tag;
         try {
             switch (readResult.tagType) {
-                // TODO: Add APE support
+                case TagTypes.Ape:
+                    tag = ApeTag.fromFile(this._file, readResult.tagStarted);
+                    break;
                 case TagTypes.Id3v2:
                     tag = Id3v2Tag.fromFile(this._file, readResult.tagStarted, style);
                     break;
@@ -201,10 +209,28 @@ export default class EndTag extends CombinedTag {
         const data = this._file.readBlock(this._readSize);
 
         try {
-            // TODO: Try to find APE footer
+            let offset = data.length - ApeTagFooter.size;
+            if (data.containsAt (ApeTagFooter.fileIdentifier, offset)) {
+                const footer = ApeTagFooter.fromData(data.mid(offset));
+
+                // If the complete tag size is zero or the tag is a header, this indicates some
+                // sort of corruption.
+                if (footer.tagSize === 0 || (footer.flags & ApeTagFooterFlags.IsHeader) != 0) {
+                    return {
+                        tagStarted: position,
+                        tagType: TagTypes.None
+                    };
+                }
+
+                position -= footer.tagSize;
+                return {
+                    tagStarted: position,
+                    tagType: TagTypes.Ape
+                };
+            }
 
             // Try to find ID3v2 footer
-            const offset = data.length - Id3v2Settings.footerSize;
+            offset = data.length - Id3v2Settings.footerSize;
             if (data.containsAt(Id3v2TagFooter.fileIdentifier, offset)) {
                 const footer = Id3v2TagFooter.fromData(data.mid(offset));
                 position -= footer.completeTagSize;

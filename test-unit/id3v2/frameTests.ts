@@ -1,6 +1,6 @@
 import * as Chai from "chai";
 import * as ChaiAsPromised from "chai-as-promised";
-import {slow, suite, test, timeout} from "mocha-typescript";
+import {suite, test} from "mocha-typescript";
 
 import PropertyTests from "../utilities/propertyTests";
 import SyncData from "../../src/id3v2/syncData";
@@ -28,16 +28,15 @@ class TestFrame extends Frame {
         return undefined;
     }
 
-    public callFieldData(data: ByteVector, offset: number, version: number): ByteVector {
-        return this.fieldData(data, offset, version);
+    public callFieldData(data: ByteVector, offset: number, version: number, includesHeader: boolean): ByteVector {
+        return this.fieldData(data, offset, version, includesHeader);
     }
 
     public clone(): Frame {
         return undefined;
     }
 
-    protected parseFields(data: ByteVector, version: number): void {
-    }
+    protected parseFields(data: ByteVector, version: number): void { /* no-op */ }
 
     protected renderFields(version: number): ByteVector {
         return ByteVector.fromByteVector(TestFrame.renderFieldData);
@@ -158,7 +157,7 @@ class TestFrame extends Frame {
         );
 
         // Act
-        const output = frame.callFieldData(data, 0, 4);
+        const output = frame.callFieldData(data, 0, 4, true);
 
         // Assert
         assert.isTrue(ByteVector.equal(output, TestFrame.renderFieldData));
@@ -177,7 +176,7 @@ class TestFrame extends Frame {
         );
 
         // Act
-        const output = frame.callFieldData(data, 0, 4);
+        const output = frame.callFieldData(data, 0, 4, true);
 
         // Assert
         assert.isTrue(ByteVector.equal(output, TestFrame.renderFieldData));
@@ -199,10 +198,28 @@ class TestFrame extends Frame {
         );
 
         // Act
-        const output = frame.callFieldData(data, 0, 4);
+        const output = frame.callFieldData(data, 0, 4, true);
 
         // Assert
         SyncData.resyncByteVector(fieldData);
         assert.isTrue(ByteVector.equal(output, fieldData));
+    }
+
+    @test
+    public fieldData_noHeaderInData() {
+        // Arrange
+        const fieldData = ByteVector.concatenate(
+            0x00, 0x00,
+            TestFrame.renderFieldData
+        );
+        const header = new Id3v2FrameHeader(FrameIdentifiers.TXXX, Id3v2FrameFlags.None);
+        header.frameSize = fieldData.length;
+        const frame = new TestFrame(header);
+
+        // Act
+        const output = frame.callFieldData(fieldData, 2, 4, false);
+
+        // Assert
+        assert.isTrue(ByteVector.equal(output, TestFrame.renderFieldData));
     }
 }

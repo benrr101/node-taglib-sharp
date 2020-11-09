@@ -30,6 +30,35 @@ export default class AttachmentFrame extends Frame implements IPicture {
     }
 
     /**
+     * Constructs and initializes a new attachment frame by populating it with the contents of a
+     * section of a file. This constructor is only meant to be used by the {@see FrameFactory}
+     * class. All loading is done lazily.
+     * @param file File to load frame data from
+     * @param header ID3v2 frame header that defines the frame
+     * @param frameStart Index into the file where the frame starts
+     * @param size Length of the frame data
+     * @param version ID3v2 version the frame was originally encoded with
+     */
+    // @TODO: Make lazy loading optional
+    public static fromFile(
+        file: IFileAbstraction,
+        header: Id3v2FrameHeader,
+        frameStart: number,
+        size: number,
+        version: number
+    ): AttachmentFrame {
+        Guards.truthy(file, "file");
+        Guards.truthy(header, "header");
+        Guards.uint(frameStart, "frameStart");
+        Guards.uint(size, "size");
+
+        const frame = new AttachmentFrame(header);
+        frame._rawPicture = PictureLazy.fromFile(file, frameStart, size);
+        frame._rawVersion = version;
+        return frame;
+    }
+
+    /**
      * Constructs and initializes a new attachment frame by reading its raw data in a specified
      * ID3v2 version.
      * @param data ByteVector containing the raw representation of the new frame
@@ -69,35 +98,6 @@ export default class AttachmentFrame extends Frame implements IPicture {
         //     otherwise.
         const frame = new AttachmentFrame(new Id3v2FrameHeader(FrameIdentifiers.APIC, undefined, 1));
         frame._rawPicture = picture;
-        return frame;
-    }
-
-    /**
-     * Constructs and initializes a new attachment frame by populating it with the contents of a
-     * section of a file. This constructor is only meant to be used by the {@see FrameFactory}
-     * class. All loading is done lazily.
-     * @param file File to load frame data from
-     * @param header ID3v2 frame header that defines the frame
-     * @param frameStart Index into the file where the frame starts
-     * @param size Length of the frame data
-     * @param version ID3v2 version the frame was originally encoded with
-     */
-    // @TODO: Make lazy loading optional
-    public static fromFile(
-        file: IFileAbstraction,
-        header: Id3v2FrameHeader,
-        frameStart: number,
-        size: number,
-        version: number
-    ): AttachmentFrame {
-        Guards.truthy(file, "file");
-        Guards.truthy(header, "header");
-        Guards.uint(frameStart, "frameStart");
-        Guards.uint(size, "size");
-
-        const frame = new AttachmentFrame(header);
-        frame._rawPicture = PictureLazy.fromFile(file, frameStart, size);
-        frame._rawVersion = version;
         return frame;
     }
 
@@ -239,20 +239,15 @@ export default class AttachmentFrame extends Frame implements IPicture {
     /** @inheritDoc */
     public clone(): Frame {
         const frame = new AttachmentFrame(new Id3v2FrameHeader(this.frameId));
-        if (this._rawPicture) {
-            frame._rawPicture = this._rawPicture;
-        } else if (this._rawData) {
-            frame._rawData = this._rawData;
-            frame._rawVersion = this._rawVersion;
-        } else {
-            frame._data = ByteVector.fromByteVector(this._data);
-            frame._description = this._description;
-            frame._encoding = this._encoding;
-            frame._filename = this._filename;
-            frame._mimeType = this._mimeType;
-            frame._rawVersion = this._rawVersion;
-            frame._type = this._type;
-        }
+        frame._data = this._data ? ByteVector.fromByteVector(this._data) : undefined;
+        frame._description = this._description;
+        frame._encoding = this._encoding;
+        frame._filename = this._filename;
+        frame._mimeType = this._mimeType;
+        frame._rawData = this._rawData;
+        frame._rawPicture = this._rawPicture;
+        frame._rawVersion = this._rawVersion;
+        frame._type = this._type;
 
         return frame;
     }
@@ -353,21 +348,23 @@ export default class AttachmentFrame extends Frame implements IPicture {
 
     private parseFromRaw(): void {
         if (this._rawData) {
-            this.parseFromRawData();
+            this.parseFromRawData(false);
         } else if (this._rawPicture) {
             if (this._rawVersion !== undefined) {
                 this._rawData = this._rawPicture.data;
                 this._rawPicture = undefined;
-                this.parseFromRawData();
+                this.parseFromRawData(true);
             } else {
                 this.parseFromRawPicture();
             }
         }
     }
 
-    private parseFromRawData(): void {
+    private parseFromRawData(shouldRunFieldData: boolean): void {
         // Indicate raw data has been processed
-        const data = this._rawData;
+        const data = shouldRunFieldData
+            ? super.fieldData(this._rawData, 0, this._rawVersion, false)
+            : this._rawData;
         this._rawData = undefined;
 
         // Determine encoding
@@ -393,7 +390,7 @@ export default class AttachmentFrame extends Frame implements IPicture {
                 this._type = data.get(mimeTypeEndIndex + 1);
 
                 descriptionEndIndex = data.find(delim, mimeTypeEndIndex + 2, delim.length);
-                const descriptionLength = descriptionEndIndex - mimeTypeEndIndex - 1;
+                const descriptionLength = descriptionEndIndex - mimeTypeEndIndex - 2;
                 this._description = data.toString(
                     descriptionLength,
                     this._encoding,

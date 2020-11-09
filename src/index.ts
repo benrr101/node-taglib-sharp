@@ -14,6 +14,9 @@ export {default as PictureLazy} from "./pictureLazy";
 export {default as Properties} from "./properties";
 export {Tag, TagTypes} from "./tag";
 
+// APE /////////////////////////////////////////////////////////////////////
+export {default as ApeTag} from "./ape/apeFile";
+
 // ID3v1 ///////////////////////////////////////////////////////////////////
 export {default as Id3v1Tag} from "./id3v1/id3v1Tag";
 
