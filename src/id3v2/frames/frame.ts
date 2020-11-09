@@ -225,9 +225,16 @@ export abstract class Frame {
      * @param frameData Raw frame data
      * @param offset Index at which the data is contained
      * @param version Version of the ID3v2 tag the data was originally encoded with
+     * @param dataIncludesHeader `true` if {@paramref frameData} includes the header, `false`
+     *     otherwise
      */
-    protected fieldData(frameData: ByteVector, offset: number, version: number): ByteVector {
-        let dataOffset = offset + Id3v2FrameHeader.getSize(version);
+    protected fieldData(
+        frameData: ByteVector,
+        offset: number,
+        version: number,
+        dataIncludesHeader: boolean
+    ): ByteVector {
+        let dataOffset = offset + (dataIncludesHeader ? Id3v2FrameHeader.getSize(version) : 0);
         let dataLength = this.size;
 
         if ((this.flags & (Id3v2FrameFlags.Compression | Id3v2FrameFlags.DataLengthIndicator)) !== 0) {
@@ -300,7 +307,7 @@ export abstract class Frame {
         if (readHeader) {
             this._header = Id3v2FrameHeader.fromData(data, version);
         }
-        this.parseFields(this.fieldData(data, offset, version), version);
+        this.parseFields(this.fieldData(data, offset, version, true), version);
     }
 
     // #endregion
