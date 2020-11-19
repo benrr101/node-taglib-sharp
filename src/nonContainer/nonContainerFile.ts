@@ -129,7 +129,9 @@ export default abstract class NonContainerFile extends BaseFile {
         this.mode = FileAccessMode.Read;
 
         try {
-            this._tag = new NonContainerTag(this);
+            const startTag = new StartTag(this);
+            const endTag = new EndTag(this);
+            this._tag = new NonContainerTag(startTag, endTag);
 
             // Read the tags and property data at the beginning of the file
             this._invariantStartPosition = this._tag.readStart(propertiesStyle);

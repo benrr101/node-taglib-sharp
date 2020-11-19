@@ -1,9 +1,8 @@
 import CombinedTag from "../combinedTag";
 import EndTag from "./endTag";
-import NonContainerFile from "./nonContainerFile";
 import StartTag from "./startTag";
-import {Tag, TagTypes} from "../tag";
 import {ReadStyle} from "../file";
+import {Tag, TagTypes} from "../tag";
 
 /**
  * This class extends {@see CombinedTag}, combining {@see StartTag} and {@see EndTag} in such a way
@@ -17,13 +16,13 @@ export default class NonContainerTag extends CombinedTag {
      * Constructs a new instance for a specified file.
      * Constructing a new instance does not automatically read the contents from the disk.
      * {@see read} must be called to read the tags
-     * @param file File to pull tags from
+     * @param
      */
-    public constructor(file: NonContainerFile) {
+    public constructor(startTag: StartTag, endTag: EndTag) {
         super();
 
-        this._startTag = new StartTag(file);
-        this._endTag = new EndTag(file);
+        this._startTag = startTag;
+        this._endTag = endTag;
         this.addTagInternal(this.startTag);
         this.addTagInternal(this.endTag);
     }
