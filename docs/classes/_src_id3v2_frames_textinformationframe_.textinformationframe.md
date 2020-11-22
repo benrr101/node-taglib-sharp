@@ -1,6 +1,6 @@
-**node-taglib-sharp**
+**[node-taglib-sharp](../README.md)**
 
-> [README](../README.md) / [Globals](../globals.md) / ["src/id3v2/frames/textInformationFrame"](../modules/_src_id3v2_frames_textinformationframe_.md) / TextInformationFrame
+> [Globals](../globals.md) / ["src/id3v2/frames/textInformationFrame"](../modules/_src_id3v2_frames_textinformationframe_.md) / TextInformationFrame
 
 # Class: TextInformationFrame
 
@@ -10,14 +10,14 @@ Text information frames contain the most commonly used values in tagging, includ
 track name, and just about any value that can be expressed as text. The following table contains
 types and descriptions as found in the ID3 2.4.0 native frames specification (Copyright Martin
 Nilsson 2000).
-* TIT1 - The "Content Group Description" frame is used if the sound belongs to a larger cagegory
+* TIT1 - The "Content Group Description" frame is used if the sound belongs to a larger category
   of sounds/music. For example, classical music is often sorted in different musical sections
   (eg. "Piano Concerto", "Weather - Hurricane").
-* TIT2 - The "Title/Songname/Content description" frame is the actual name of the piece (eg.
+* TIT2 - The "Title/Song name/Content description" frame is the actual name of the piece (eg.
   "Adagio", "Hurricane Donna").
 * TIT3 - The "Subtitle/Description refinement" frame is used for information directly related to
   the contents title (eg. "Op. 16" or "Performed Live at Wembley").
-* TALB - The "Album/Movie/Show title" frame is intented for the title of the recording (or
+* TALB - The "Album/Movie/Show title" frame is intended for the title of the recording (or
   source of sound) from which the audio in the file is taken.
 * TOAL - The "Original album/movie/show title" frame is intended for the title of the original
   recording (or source of sound), if for example the music in the file should be a cover of a
@@ -50,7 +50,7 @@ Nilsson 2000).
   released song.
 * TCOM - The "composer" frame is intended for the name of the composer.
 * TMCL - The "musician credits list" frame is intended as a mapping betweenInclusive instruments and the
-  musician who played it. Every odd field is an instrument and every even is an artst of a comma
+  musician who played it. Every odd field is an instrument and every even is an artist of a comma
   delimited list of artists.
 * TIPL - The "Involved people list" frame is very similar to the musician credits list, but maps
   betweenInclusive functions, like producer, and names.
@@ -75,7 +75,7 @@ Nilsson 2000).
   your own.
 * TFLT - The "File type" frame indicates which type of audio this tag defines. (see the
   specification for more details)
-* TMED - The "Media type" frame descrives from which media the sound originated. (see the
+* TMED - The "Media type" frame describes from which media the sound originated. (see the
   specification for more details)
 * TMOO - The "mood" frame is intended to reflect the mood of the audio with a few keywords (eg.
   "Romantic" or "Sad").
@@ -101,7 +101,7 @@ Nilsson 2000).
   media doesn't allow the desired length of the filename. The filename is case sensitive and
   includes its extension.
 * TDLY - The "Playlist delay" frame defines the numbers of milliseconds of silence that should
-  be inserted before this audio. The value zero indicates that this is a part of a multifile
+  be inserted before this audio. The value zero indicates that this is a part of a multi-file
   audio track that should be played continuously.
 * TDEN - The "Encoding time" frame contains a timestamp describing when the audio was encoded.
   Timestamp format is described in the ID3v2 structure document.
@@ -181,8 +181,6 @@ Nilsson 2000).
 
 *Overrides [Frame](_src_id3v2_frames_frame_.frame.md).[constructor](_src_id3v2_frames_frame_.frame.md#constructor)*
 
-*Defined in src/id3v2/frames/textInformationFrame.ts:153*
-
 #### Parameters:
 
 Name | Type |
@@ -197,8 +195,6 @@ Name | Type |
 
 • `Protected` **\_encoding**: [StringType](../enums/_src_bytevector_.stringtype.md) = Id3v2Settings.defaultEncoding
 
-*Defined in src/id3v2/frames/textInformationFrame.ts:150*
-
 ___
 
 ### \_header
@@ -207,15 +203,11 @@ ___
 
 *Inherited from [Frame](_src_id3v2_frames_frame_.frame.md).[_header](_src_id3v2_frames_frame_.frame.md#_header)*
 
-*Defined in src/id3v2/frames/frame.ts:33*
-
 ___
 
 ### \_rawData
 
 • `Protected` **\_rawData**: [ByteVector](_src_bytevector_.bytevector.md)
-
-*Defined in src/id3v2/frames/textInformationFrame.ts:151*
 
 ___
 
@@ -223,15 +215,11 @@ ___
 
 • `Protected` **\_rawVersion**: number
 
-*Defined in src/id3v2/frames/textInformationFrame.ts:152*
-
 ___
 
 ### \_textFields
 
 • `Protected` **\_textFields**: string[] = []
-
-*Defined in src/id3v2/frames/textInformationFrame.ts:153*
 
 ## Accessors
 
@@ -241,20 +229,16 @@ ___
 
 *Inherited from [Frame](_src_id3v2_frames_frame_.frame.md).[encryptionId](_src_id3v2_frames_frame_.frame.md#encryptionid)*
 
-*Defined in src/id3v2/frames/frame.ts:55*
-
 Gets the encryption ID applied to the current instance.
 
 **Returns:** number \| undefined
 
-number Value containing the encryption identifer for the current instance or
+number Value containing the encryption identifier for the current instance or
     `undefined` if not set.
 
 • set **encryptionId**(`value`: number \| undefined): void
 
 *Inherited from [Frame](_src_id3v2_frames_frame_.frame.md).[encryptionId](_src_id3v2_frames_frame_.frame.md#encryptionid)*
-
-*Defined in src/id3v2/frames/frame.ts:65*
 
 Sets the encryption ID applied to the current instance.
 
@@ -266,7 +250,7 @@ Name | Type | Description |
 
 **Returns:** void
 
-number Value containing the encryption identifer for the current instance or
+number Value containing the encryption identifier for the current instance or
     `undefined` if not set.
 
 ___
@@ -277,8 +261,6 @@ ___
 
 *Inherited from [Frame](_src_id3v2_frames_frame_.frame.md).[flags](_src_id3v2_frames_frame_.frame.md#flags)*
 
-*Defined in src/id3v2/frames/frame.ts:78*
-
 Gets the frame flags applied to the current instance.
 
 **Returns:** [Id3v2FrameFlags](../enums/_src_id3v2_frames_frameheader_.id3v2frameflags.md)
@@ -287,11 +269,9 @@ Gets the frame flags applied to the current instance.
 
 *Inherited from [Frame](_src_id3v2_frames_frame_.frame.md).[flags](_src_id3v2_frames_frame_.frame.md#flags)*
 
-*Defined in src/id3v2/frames/frame.ts:84*
-
 Sets the frame flags applied to the current instance.
-If the value includes either {@see Id3v2FrameFlags.Encryption} or
-{@see Id3v2FrameFlags.Compression}, {@see render} will throw.
+If the value includes either [Id3v2FrameFlags.Encryption](../enums/_src_id3v2_frames_frameheader_.id3v2frameflags.md#encryption) or
+[Id3v2FrameFlags.Compression](../enums/_src_id3v2_frames_frameheader_.id3v2frameflags.md#compression), [render](_src_id3v2_frames_textinformationframe_.textinformationframe.md#render) will throw.
 
 #### Parameters:
 
@@ -309,8 +289,6 @@ ___
 
 *Overrides [Frame](_src_id3v2_frames_frame_.frame.md).[frameClassType](_src_id3v2_frames_frame_.frame.md#frameclasstype)*
 
-*Defined in src/id3v2/frames/textInformationFrame.ts:220*
-
 **`inheritdoc`** 
 
 **Returns:** [FrameClassType](../enums/_src_id3v2_frames_frame_.frameclasstype.md)
@@ -322,8 +300,6 @@ ___
 • get **frameId**(): [FrameIdentifier](_src_id3v2_frameidentifiers_.frameidentifier.md)
 
 *Inherited from [Frame](_src_id3v2_frames_frame_.frame.md).[frameId](_src_id3v2_frames_frame_.frame.md#frameid)*
-
-*Defined in src/id3v2/frames/frame.ts:92*
 
 Gets the frame ID for the current instance.
 
@@ -339,8 +315,6 @@ ___
 
 *Inherited from [Frame](_src_id3v2_frames_frame_.frame.md).[groupId](_src_id3v2_frames_frame_.frame.md#groupid)*
 
-*Defined in src/id3v2/frames/frame.ts:99*
-
 Gets the grouping ID applied to the current instance.
 
 **Returns:** number \| undefined
@@ -351,8 +325,6 @@ number Value containing the grouping identifier for the current instance, or
 • set **groupId**(`value`: number \| undefined): void
 
 *Inherited from [Frame](_src_id3v2_frames_frame_.frame.md).[groupId](_src_id3v2_frames_frame_.frame.md#groupid)*
-
-*Defined in src/id3v2/frames/frame.ts:109*
 
 Sets the grouping ID applied to the current instance.
 
@@ -375,8 +347,6 @@ ___
 
 *Inherited from [Frame](_src_id3v2_frames_frame_.frame.md).[size](_src_id3v2_frames_frame_.frame.md#size)*
 
-*Defined in src/id3v2/frames/frame.ts:124*
-
 Gets the size of the current instance as it was last stored on disk.
 NOTE: This value is not used outside of reading a frame from disk, so newly created frames
     should not have this value set.
@@ -389,8 +359,6 @@ ___
 
 • get **text**(): string[]
 
-*Defined in src/id3v2/frames/textInformationFrame.ts:227*
-
 Gets the text contained in the current instance.
 Note: Modifying the contents of the returned value will not modify the contents of the
 current instance. The value must be reassigned for the value to change.
@@ -398,8 +366,6 @@ current instance. The value must be reassigned for the value to change.
 **Returns:** string[]
 
 • set **text**(`value`: string[]): void
-
-*Defined in src/id3v2/frames/textInformationFrame.ts:234*
 
 Sets the text contained in the current instance.
 
@@ -417,18 +383,14 @@ ___
 
 • get **textEncoding**(): [StringType](../enums/_src_bytevector_.stringtype.md)
 
-*Defined in src/id3v2/frames/textInformationFrame.ts:242*
-
 Gets the text encoding to use when rendering the current instance.
 
 **Returns:** [StringType](../enums/_src_bytevector_.stringtype.md)
 
 • set **textEncoding**(`value`: [StringType](../enums/_src_bytevector_.stringtype.md)): void
 
-*Defined in src/id3v2/frames/textInformationFrame.ts:250*
-
 Sets the text encoding to use when rendering the current instance.
-This value will be overridden if {@see Id3v2Tag.forceDefaultEncoding} is `true`.
+This value will be overridden if [Id3v2Settings.forceDefaultEncoding](_src_id3v2_id3v2settings_.id3v2settings.md#forcedefaultencoding) is `true`.
 
 #### Parameters:
 
@@ -446,8 +408,6 @@ Name | Type |
 
 *Overrides [Frame](_src_id3v2_frames_frame_.frame.md).[clone](_src_id3v2_frames_frame_.frame.md#clone)*
 
-*Defined in src/id3v2/frames/textInformationFrame.ts:278*
-
 **`inheritdoc`** 
 
 **Returns:** [Frame](_src_id3v2_frames_frame_.frame.md)
@@ -456,11 +416,9 @@ ___
 
 ### fieldData
 
-▸ `Protected`**fieldData**(`frameData`: [ByteVector](_src_bytevector_.bytevector.md), `offset`: number, `version`: number): [ByteVector](_src_bytevector_.bytevector.md)
+▸ `Protected`**fieldData**(`frameData`: [ByteVector](_src_bytevector_.bytevector.md), `offset`: number, `version`: number, `dataIncludesHeader`: boolean): [ByteVector](_src_bytevector_.bytevector.md)
 
 *Inherited from [Frame](_src_id3v2_frames_frame_.frame.md).[fieldData](_src_id3v2_frames_frame_.frame.md#fielddata)*
-
-*Defined in src/id3v2/frames/frame.ts:229*
 
 Extracts the field data from the raw portion of an ID3v2 frame.
 This method is necessary for extracting extra data prepended to the frame such the as
@@ -472,7 +430,8 @@ Name | Type | Description |
 ------ | ------ | ------ |
 `frameData` | [ByteVector](_src_bytevector_.bytevector.md) | Raw frame data |
 `offset` | number | Index at which the data is contained |
-`version` | number | Version of the ID3v2 tag the data was originally encoded with  |
+`version` | number | Version of the ID3v2 tag the data was originally encoded with |
+`dataIncludesHeader` | boolean | `true` if `frameData` includes the header, `false`     otherwise  |
 
 **Returns:** [ByteVector](_src_bytevector_.bytevector.md)
 
@@ -483,8 +442,6 @@ ___
 ▸ `Protected`**parseFields**(`data`: [ByteVector](_src_bytevector_.bytevector.md), `version`: number): void
 
 *Overrides [Frame](_src_id3v2_frames_frame_.frame.md).[parseFields](_src_id3v2_frames_frame_.frame.md#parsefields)*
-
-*Defined in src/id3v2/frames/textInformationFrame.ts:339*
 
 **`inheritdoc`** 
 
@@ -503,10 +460,8 @@ ___
 
 ▸ `Protected`**parseRawData**(): void
 
-*Defined in src/id3v2/frames/textInformationFrame.ts:351*
-
 Performs the actual parsing of the raw data.
-Because of the high parsing cost and relatively low usage of the class {@see parseFields}
+Because of the high parsing cost and relatively low usage of the class [parseFields](_src_id3v2_frames_textinformationframe_.textinformationframe.md#parsefields)
 only stores the field data so it can be parsed on demand. Whenever a property or method is
 called which requires the data, this method is called, and only on the first call does it
 actually parse the data.
@@ -520,8 +475,6 @@ ___
 ▸ **render**(`version`: number): [ByteVector](_src_bytevector_.bytevector.md)
 
 *Overrides [Frame](_src_id3v2_frames_frame_.frame.md).[render](_src_id3v2_frames_frame_.frame.md#render)*
-
-*Defined in src/id3v2/frames/textInformationFrame.ts:294*
 
 Renders the current instance, encoded in a specified ID3v2 version.
 
@@ -543,8 +496,6 @@ ___
 
 *Overrides [Frame](_src_id3v2_frames_frame_.frame.md).[renderFields](_src_id3v2_frames_frame_.frame.md#renderfields)*
 
-*Defined in src/id3v2/frames/textInformationFrame.ts:464*
-
 **`inheritdoc`** 
 
 #### Parameters:
@@ -563,8 +514,6 @@ ___
 
 *Inherited from [Frame](_src_id3v2_frames_frame_.frame.md).[setData](_src_id3v2_frames_frame_.frame.md#setdata)*
 
-*Defined in src/id3v2/frames/frame.ts:299*
-
 Populates the current instance by reading the raw frame from disk, optionally reading the
 header.
 
@@ -573,7 +522,7 @@ header.
 Name | Type | Description |
 ------ | ------ | ------ |
 `data` | [ByteVector](_src_bytevector_.bytevector.md) | Raw ID3v2 frame |
-`offset` | number | Offset in {@paramref data} at which the frame begins. |
+`offset` | number | Offset in `data` at which the frame begins. |
 `readHeader` | boolean | Whether or not to read the reader into the current instance. |
 `version` | number | Version of the ID3v2 tag the data was encoded with  |
 
@@ -584,8 +533,6 @@ ___
 ### toString
 
 ▸ **toString**(): string
-
-*Defined in src/id3v2/frames/textInformationFrame.ts:329*
 
 Returns a text representation of the current instance by combining the text with semicolons.
 
@@ -599,8 +546,6 @@ ___
 
 *Inherited from [Frame](_src_id3v2_frames_frame_.frame.md).[correctEncoding](_src_id3v2_frames_frame_.frame.md#correctencoding)*
 
-*Defined in src/id3v2/frames/frame.ts:209*
-
 Converts an encoding to be a supported encoding for a specified tag version.
 
 #### Parameters:
@@ -613,8 +558,8 @@ Name | Type | Description |
 **Returns:** [StringType](../enums/_src_bytevector_.stringtype.md)
 
 StringType Value containing the correct encoding to use, based on
-    {@see Id3v2Settings.forceDefaultEncoding} and what is supported by
-    {@paramref version}
+    [Id3v2Settings.forceDefaultEncoding](_src_id3v2_id3v2settings_.id3v2settings.md#forcedefaultencoding) and what is supported by
+    `version`
 
 ___
 
@@ -622,9 +567,7 @@ ___
 
 ▸ `Static`**findTextInformationFrame**(`frames`: [TextInformationFrame](_src_id3v2_frames_textinformationframe_.textinformationframe.md)[], `ident`: [FrameIdentifier](_src_id3v2_frameidentifiers_.frameidentifier.md)): [TextInformationFrame](_src_id3v2_frames_textinformationframe_.textinformationframe.md)
 
-*Defined in src/id3v2/frames/textInformationFrame.ts:267*
-
-Gets a {@see TextInformationFrame} object of a specified type from a specified type from a
+Gets a [TextInformationFrame](_src_id3v2_frames_textinformationframe_.textinformationframe.md) object of a specified type from a specified type from a
 list of text information frames.
 
 #### Parameters:
@@ -636,16 +579,14 @@ Name | Type | Description |
 
 **Returns:** [TextInformationFrame](_src_id3v2_frames_textinformationframe_.textinformationframe.md)
 
-TextInformationFrame Matching frame if it exists in {@paramref tag}, `undefined` if
+TextInformationFrame Matching frame if it exists in `tag`, `undefined` if
     a matching frame was not found
 
 ___
 
 ### fromIdentifier
 
-▸ `Static`**fromIdentifier**(`identifier`: [FrameIdentifier](_src_id3v2_frameidentifiers_.frameidentifier.md), `encoding`: [StringType](../enums/_src_bytevector_.stringtype.md)): [TextInformationFrame](_src_id3v2_frames_textinformationframe_.textinformationframe.md)
-
-*Defined in src/id3v2/frames/textInformationFrame.ts:167*
+▸ `Static`**fromIdentifier**(`identifier`: [FrameIdentifier](_src_id3v2_frameidentifiers_.frameidentifier.md), `encoding?`: [StringType](../enums/_src_bytevector_.stringtype.md)): [TextInformationFrame](_src_id3v2_frames_textinformationframe_.textinformationframe.md)
 
 Constructs and initializes a new instance with a specified identifier
 
@@ -654,7 +595,7 @@ Constructs and initializes a new instance with a specified identifier
 Name | Type | Default value | Description |
 ------ | ------ | ------ | ------ |
 `identifier` | [FrameIdentifier](_src_id3v2_frameidentifiers_.frameidentifier.md) | - | Byte vector containing the identifier for the frame |
-`encoding` | [StringType](../enums/_src_bytevector_.stringtype.md) | Id3v2Settings.defaultEncoding | Optionally, the encoding to use for the new instance. If omitted, defaults     to {@see Id3v2Tag.defaultEncoding}  |
+`encoding` | [StringType](../enums/_src_bytevector_.stringtype.md) | Id3v2Settings.defaultEncoding | Optionally, the encoding to use for the new instance. If omitted, defaults     to [Id3v2Settings.defaultEncoding](_src_id3v2_id3v2settings_.id3v2settings.md#defaultencoding)  |
 
 **Returns:** [TextInformationFrame](_src_id3v2_frames_textinformationframe_.textinformationframe.md)
 
@@ -664,8 +605,6 @@ ___
 
 ▸ `Static`**fromOffsetRawData**(`data`: [ByteVector](_src_bytevector_.bytevector.md), `offset`: number, `header`: [Id3v2FrameHeader](_src_id3v2_frames_frameheader_.id3v2frameheader.md), `version`: number): [TextInformationFrame](_src_id3v2_frames_textinformationframe_.textinformationframe.md)
 
-*Defined in src/id3v2/frames/textInformationFrame.ts:185*
-
 Constructs and initializes a new instance by reading its raw data in a specified ID3v2
 version. This method allows for offset reading from the data bytevector.
 
@@ -674,8 +613,8 @@ version. This method allows for offset reading from the data bytevector.
 Name | Type | Description |
 ------ | ------ | ------ |
 `data` | [ByteVector](_src_bytevector_.bytevector.md) | Raw representation of the new frame |
-`offset` | number | What offset in {@paramref data} the frame actually begins. Must be positive,     safe integer |
-`header` | [Id3v2FrameHeader](_src_id3v2_frames_frameheader_.id3v2frameheader.md) | Header of the frame found at {@paramref data} in the data |
+`offset` | number | What offset in `data` the frame actually begins. Must be positive,     safe integer |
+`header` | [Id3v2FrameHeader](_src_id3v2_frames_frameheader_.id3v2frameheader.md) | Header of the frame found at `data` in the data |
 `version` | number | ID3v2 version the frame was originally encoded with  |
 
 **Returns:** [TextInformationFrame](_src_id3v2_frames_textinformationframe_.textinformationframe.md)
@@ -685,8 +624,6 @@ ___
 ### fromRawData
 
 ▸ `Static`**fromRawData**(`data`: [ByteVector](_src_bytevector_.bytevector.md), `version`: number): [TextInformationFrame](_src_id3v2_frames_textinformationframe_.textinformationframe.md)
-
-*Defined in src/id3v2/frames/textInformationFrame.ts:206*
 
 Constructs and initializes a new instance by reading its raw data in a specified
 ID3v2 version.

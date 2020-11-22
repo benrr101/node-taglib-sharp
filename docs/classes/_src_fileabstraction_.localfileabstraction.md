@@ -1,10 +1,10 @@
-**node-taglib-sharp**
+**[node-taglib-sharp](../README.md)**
 
-> [README](../README.md) / [Globals](../globals.md) / ["src/fileAbstraction"](../modules/_src_fileabstraction_.md) / LocalFileAbstraction
+> [Globals](../globals.md) / ["src/fileAbstraction"](../modules/_src_fileabstraction_.md) / LocalFileAbstraction
 
 # Class: LocalFileAbstraction
 
-This class implements {@see IFileAbstraction} to provide support for accessing the local/
+This class implements [IFileAbstraction](../interfaces/_src_fileabstraction_.ifileabstraction.md) to provide support for accessing the local/
 standard file.
 This class is used as the standard file abstraction throughout the library.
 
@@ -38,11 +38,9 @@ This class is used as the standard file abstraction throughout the library.
 
 \+ **new LocalFileAbstraction**(`path`: string): [LocalFileAbstraction](_src_fileabstraction_.localfileabstraction.md)
 
-*Defined in src/fileAbstraction.ts:50*
-
 Constructs and initializes a new instance from a specified path in the local file system
 
-**`throws`** Error Thrown if {@param path} is falsey
+**`throws`** Error Thrown if `path` is falsey
 
 #### Parameters:
 
@@ -58,8 +56,6 @@ Name | Type | Description |
 
 • get **name**(): string
 
-*Defined in src/fileAbstraction.ts:63*
-
 Name or identifier used by the implementation
 
 **`inheritdoc`** 
@@ -72,8 +68,6 @@ ___
 
 • get **readStream**(): [IStream](../interfaces/_src_stream_.istream.md)
 
-*Defined in src/fileAbstraction.ts:68*
-
 Readable, seekable stream for the file referenced by the current instance.
 
 **`inheritdoc`** 
@@ -85,8 +79,6 @@ ___
 ### writeStream
 
 • get **writeStream**(): [IStream](../interfaces/_src_stream_.istream.md)
-
-*Defined in src/fileAbstraction.ts:73*
 
 Writable, seekable stream fo the file referenced by the current instance.
 
@@ -101,8 +93,6 @@ Writable, seekable stream fo the file referenced by the current instance.
 ▸ **closeStream**(`stream`: [IStream](../interfaces/_src_stream_.istream.md)): void
 
 *Implementation of [IFileAbstraction](../interfaces/_src_fileabstraction_.ifileabstraction.md)*
-
-*Defined in src/fileAbstraction.ts:78*
 
 Closes a stream created by the current instance.
 

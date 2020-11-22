@@ -1,12 +1,12 @@
-**node-taglib-sharp**
+**[node-taglib-sharp](../README.md)**
 
-> [README](../README.md) / [Globals](../globals.md) / ["src/iCodec"](../modules/_src_icodec_.md) / IVideoCodec
+> [Globals](../globals.md) / ["src/iCodec"](../modules/_src_icodec_.md) / IVideoCodec
 
 # Interface: IVideoCodec
 
 Interface that inherits the common codec information and adds video-specific information.
-When dealing with an {@see ICodec}, if {@see ICodec.mediaTypes} contains
-{@see MediaTypes.Video}, it is safe to assume that the object also inherits {@see IVideoCodec}
+When dealing with an [ICodec](_src_icodec_.icodec.md), if [ICodec.mediaTypes](_src_icodec_.icodec.md#mediatypes) contains
+[MediaTypes.Video](../enums/_src_icodec_.mediatypes.md#video), it is safe to assume that the object also inherits [IVideoCodec](_src_icodec_.ivideocodec.md)
 and can be recast without issue.
 
 ## Hierarchy
@@ -37,8 +37,6 @@ and can be recast without issue.
 
 *Inherited from [ICodec](_src_icodec_.icodec.md).[description](_src_icodec_.icodec.md#description)*
 
-*Defined in src/iCodec.ts:44*
-
 Gets a text description of the media represented by the current instance.
 
 ___
@@ -48,8 +46,6 @@ ___
 •  **durationMilliseconds**: number
 
 *Inherited from [ICodec](_src_icodec_.icodec.md).[durationMilliseconds](_src_icodec_.icodec.md#durationmilliseconds)*
-
-*Defined in src/iCodec.ts:50*
 
 Duration of the media in milliseconds represented by the current instance.
 
@@ -63,8 +59,6 @@ ___
 
 *Inherited from [ICodec](_src_icodec_.icodec.md).[mediaTypes](_src_icodec_.icodec.md#mediatypes)*
 
-*Defined in src/iCodec.ts:55*
-
 Types of media represented by the current instance, bitwise combined.
 
 ___
@@ -73,8 +67,6 @@ ___
 
 •  **videoHeight**: number
 
-*Defined in src/iCodec.ts:104*
-
 Height of the video in pixels represented by the current instance.
 
 ___
@@ -82,7 +74,5 @@ ___
 ### videoWidth
 
 •  **videoWidth**: number
-
-*Defined in src/iCodec.ts:109*
 
 Width of the video in pixels represented by the current instance.

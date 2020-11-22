@@ -30,11 +30,41 @@ export default class AttachmentFrame extends Frame implements IPicture {
     }
 
     /**
+     * Constructs and initializes a new attachment frame by populating it with the contents of a
+     * section of a file. This constructor is only meant to be used internally. All loading is done
+     * lazily.
+     * @param file File to load frame data from
+     * @param header ID3v2 frame header that defines the frame
+     * @param frameStart Index into the file where the frame starts
+     * @param size Length of the frame data
+     * @param version ID3v2 version the frame was originally encoded with
+     * @internal
+     */
+    // @TODO: Make lazy loading optional
+    public static fromFile(
+        file: IFileAbstraction,
+        header: Id3v2FrameHeader,
+        frameStart: number,
+        size: number,
+        version: number
+    ): AttachmentFrame {
+        Guards.truthy(file, "file");
+        Guards.truthy(header, "header");
+        Guards.uint(frameStart, "frameStart");
+        Guards.uint(size, "size");
+
+        const frame = new AttachmentFrame(header);
+        frame._rawPicture = PictureLazy.fromFile(file, frameStart, size);
+        frame._rawVersion = version;
+        return frame;
+    }
+
+    /**
      * Constructs and initializes a new attachment frame by reading its raw data in a specified
      * ID3v2 version.
      * @param data ByteVector containing the raw representation of the new frame
-     * @param offset Index into {@paramref data} where the frame actually begins
-     * @param header Header of the frame found at {@paramref offset} in the data
+     * @param offset Index into `data` where the frame actually begins
+     * @param header Header of the frame found at `offset` in the data
      * @param version ID3v2 version the frame was originally encoded with
      */
     public static fromOffsetRawData(
@@ -55,11 +85,11 @@ export default class AttachmentFrame extends Frame implements IPicture {
 
     /**
      * Constructs and initializes a new attachment frame by populating it with the contents of
-     * another {@see IPicture} object.
+     * another {@link IPicture} object.
      * @param picture Value to use in the new instance.
      * @description When a frame is created, it is not automatically added to the tag. Consider
-     *     using {@see get} for more integrated frame creation.
-     *     Additionally, see {@see Tag.pictures} provides a generic way of getting and setting
+     *     using {@link get} for more integrated frame creation.
+     *     Additionally, see {@link Tag.pictures} provides a generic way of getting and setting
      *     attachments which is preferable to format specific code.
      */
     public static fromPicture(picture: IPicture): AttachmentFrame {
@@ -69,35 +99,6 @@ export default class AttachmentFrame extends Frame implements IPicture {
         //     otherwise.
         const frame = new AttachmentFrame(new Id3v2FrameHeader(FrameIdentifiers.APIC, undefined, 1));
         frame._rawPicture = picture;
-        return frame;
-    }
-
-    /**
-     * Constructs and initializes a new attachment frame by populating it with the contents of a
-     * section of a file. This constructor is only meant to be used by the {@see FrameFactory}
-     * class. All loading is done lazily.
-     * @param file File to load frame data from
-     * @param header ID3v2 frame header that defines the frame
-     * @param frameStart Index into the file where the frame starts
-     * @param size Length of the frame data
-     * @param version ID3v2 version the frame was originally encoded with
-     */
-    // @TODO: Make lazy loading optional
-    public static fromFile(
-        file: IFileAbstraction,
-        header: Id3v2FrameHeader,
-        frameStart: number,
-        size: number,
-        version: number
-    ): AttachmentFrame {
-        Guards.truthy(file, "file");
-        Guards.truthy(header, "header");
-        Guards.uint(frameStart, "frameStart");
-        Guards.uint(size, "size");
-
-        const frame = new AttachmentFrame(header);
-        frame._rawPicture = PictureLazy.fromFile(file, frameStart, size);
-        frame._rawVersion = version;
         return frame;
     }
 
@@ -198,7 +199,7 @@ export default class AttachmentFrame extends Frame implements IPicture {
      * Sets the text encoding to use when storing the current instance.
      * @param value Text encoding to use when storing the current instance.
      *     This encoding is overridden when rendering if
-     *     {@see Id3v2Settings.forceDefaultEncoding} is `true` or the render version does not
+     *     {@link Id3v2Settings.forceDefaultEncoding} is `true` or the render version does not
      *     support it.
      */
     public set textEncoding(value: StringType) {
@@ -215,7 +216,7 @@ export default class AttachmentFrame extends Frame implements IPicture {
     }
     /**
      * Sets the object type stored in the current instance.
-     * For General Object Frame, use {@see PictureType.NotAPicture}. Other types will make it a
+     * For General Object Frame, use {@link PictureType.NotAPicture}. Other types will make it a
      * Picture Frame.
      */
     public set type(value: PictureType) {
@@ -239,20 +240,15 @@ export default class AttachmentFrame extends Frame implements IPicture {
     /** @inheritDoc */
     public clone(): Frame {
         const frame = new AttachmentFrame(new Id3v2FrameHeader(this.frameId));
-        if (this._rawPicture) {
-            frame._rawPicture = this._rawPicture;
-        } else if (this._rawData) {
-            frame._rawData = this._rawData;
-            frame._rawVersion = this._rawVersion;
-        } else {
-            frame._data = ByteVector.fromByteVector(this._data);
-            frame._description = this._description;
-            frame._encoding = this._encoding;
-            frame._filename = this._filename;
-            frame._mimeType = this._mimeType;
-            frame._rawVersion = this._rawVersion;
-            frame._type = this._type;
-        }
+        frame._data = this._data ? ByteVector.fromByteVector(this._data) : undefined;
+        frame._description = this._description;
+        frame._encoding = this._encoding;
+        frame._filename = this._filename;
+        frame._mimeType = this._mimeType;
+        frame._rawData = this._rawData;
+        frame._rawPicture = this._rawPicture;
+        frame._rawVersion = this._rawVersion;
+        frame._type = this._type;
 
         return frame;
     }
@@ -263,7 +259,7 @@ export default class AttachmentFrame extends Frame implements IPicture {
      * @param frames List of attachment frames to search
      * @param description Description to match
      * @param type Picture type to match
-     * @returns Matching frame or `undefined` if a match wasn't found and {@paramref create} is
+     * @returns Matching frame or `undefined` if a match wasn't found and `create` is
      *     `false`
      */
     public static find(
@@ -274,6 +270,7 @@ export default class AttachmentFrame extends Frame implements IPicture {
         Guards.truthy(frames, "frames");
         return frames.find((f) => {
                 if (description && f.description !== description) { return false; }
+                // noinspection RedundantIfStatementJS
                 if (type !== PictureType.Other && f.type !== type) { return false; }
                 return true;
             });
@@ -353,21 +350,23 @@ export default class AttachmentFrame extends Frame implements IPicture {
 
     private parseFromRaw(): void {
         if (this._rawData) {
-            this.parseFromRawData();
+            this.parseFromRawData(false);
         } else if (this._rawPicture) {
             if (this._rawVersion !== undefined) {
                 this._rawData = this._rawPicture.data;
                 this._rawPicture = undefined;
-                this.parseFromRawData();
+                this.parseFromRawData(true);
             } else {
                 this.parseFromRawPicture();
             }
         }
     }
 
-    private parseFromRawData(): void {
+    private parseFromRawData(shouldRunFieldData: boolean): void {
         // Indicate raw data has been processed
-        const data = this._rawData;
+        const data = shouldRunFieldData
+            ? super.fieldData(this._rawData, 0, this._rawVersion, false)
+            : this._rawData;
         this._rawData = undefined;
 
         // Determine encoding
@@ -393,7 +392,7 @@ export default class AttachmentFrame extends Frame implements IPicture {
                 this._type = data.get(mimeTypeEndIndex + 1);
 
                 descriptionEndIndex = data.find(delim, mimeTypeEndIndex + 2, delim.length);
-                const descriptionLength = descriptionEndIndex - mimeTypeEndIndex - 1;
+                const descriptionLength = descriptionEndIndex - mimeTypeEndIndex - 2;
                 this._description = data.toString(
                     descriptionLength,
                     this._encoding,
@@ -403,7 +402,7 @@ export default class AttachmentFrame extends Frame implements IPicture {
                 // Text encoding      $xx
                 // Image format       $xx xx xx
                 // Picture type       $xx
-                // Description        <textstring> $00 (00)
+                // Description        <text_string> $00 (00)
                 // Picture data       <binary data>
                 const imageFormat = data.toString(3, StringType.Latin1, 1);
                 this._mimeType = Picture.getMimeTypeFromFilename(imageFormat);

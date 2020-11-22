@@ -1,6 +1,6 @@
-**node-taglib-sharp**
+**[node-taglib-sharp](../README.md)**
 
-> [README](../README.md) / [Globals](../globals.md) / ["src/id3v2/frames/eventTimeCodeFrame"](../modules/_src_id3v2_frames_eventtimecodeframe_.md) / EventTimeCodeFrame
+> [Globals](../globals.md) / ["src/id3v2/frames/eventTimeCodeFrame"](../modules/_src_id3v2_frames_eventtimecodeframe_.md) / EventTimeCodeFrame
 
 # Class: EventTimeCodeFrame
 
@@ -49,8 +49,6 @@
 
 *Inherited from [Frame](_src_id3v2_frames_frame_.frame.md).[_header](_src_id3v2_frames_frame_.frame.md#_header)*
 
-*Defined in src/id3v2/frames/frame.ts:33*
-
 ## Accessors
 
 ### encryptionId
@@ -59,20 +57,16 @@
 
 *Inherited from [Frame](_src_id3v2_frames_frame_.frame.md).[encryptionId](_src_id3v2_frames_frame_.frame.md#encryptionid)*
 
-*Defined in src/id3v2/frames/frame.ts:55*
-
 Gets the encryption ID applied to the current instance.
 
 **Returns:** number \| undefined
 
-number Value containing the encryption identifer for the current instance or
+number Value containing the encryption identifier for the current instance or
     `undefined` if not set.
 
 • set **encryptionId**(`value`: number \| undefined): void
 
 *Inherited from [Frame](_src_id3v2_frames_frame_.frame.md).[encryptionId](_src_id3v2_frames_frame_.frame.md#encryptionid)*
-
-*Defined in src/id3v2/frames/frame.ts:65*
 
 Sets the encryption ID applied to the current instance.
 
@@ -84,7 +78,7 @@ Name | Type | Description |
 
 **Returns:** void
 
-number Value containing the encryption identifer for the current instance or
+number Value containing the encryption identifier for the current instance or
     `undefined` if not set.
 
 ___
@@ -93,16 +87,12 @@ ___
 
 • get **events**(): [EventTimeCode](_src_id3v2_frames_eventtimecodeframe_.eventtimecode.md)[]
 
-*Defined in src/id3v2/frames/eventTimeCodeFrame.ts:128*
-
-Gets the event this frame contains. Each {@see EventTimeCode} represents a single event at a
+Gets the event this frame contains. Each [EventTimeCode](_src_id3v2_frames_eventtimecodeframe_.eventtimecode.md) represents a single event at a
 certain point in time.
 
 **Returns:** [EventTimeCode](_src_id3v2_frames_eventtimecodeframe_.eventtimecode.md)[]
 
 • set **events**(`value`: [EventTimeCode](_src_id3v2_frames_eventtimecodeframe_.eventtimecode.md)[]): void
-
-*Defined in src/id3v2/frames/eventTimeCodeFrame.ts:132*
 
 Sets the event this frame contains
 
@@ -122,8 +112,6 @@ ___
 
 *Inherited from [Frame](_src_id3v2_frames_frame_.frame.md).[flags](_src_id3v2_frames_frame_.frame.md#flags)*
 
-*Defined in src/id3v2/frames/frame.ts:78*
-
 Gets the frame flags applied to the current instance.
 
 **Returns:** [Id3v2FrameFlags](../enums/_src_id3v2_frames_frameheader_.id3v2frameflags.md)
@@ -132,11 +120,9 @@ Gets the frame flags applied to the current instance.
 
 *Inherited from [Frame](_src_id3v2_frames_frame_.frame.md).[flags](_src_id3v2_frames_frame_.frame.md#flags)*
 
-*Defined in src/id3v2/frames/frame.ts:84*
-
 Sets the frame flags applied to the current instance.
-If the value includes either {@see Id3v2FrameFlags.Encryption} or
-{@see Id3v2FrameFlags.Compression}, {@see render} will throw.
+If the value includes either [Id3v2FrameFlags.Encryption](../enums/_src_id3v2_frames_frameheader_.id3v2frameflags.md#encryption) or
+[Id3v2FrameFlags.Compression](../enums/_src_id3v2_frames_frameheader_.id3v2frameflags.md#compression), [render](_src_id3v2_frames_eventtimecodeframe_.eventtimecodeframe.md#render) will throw.
 
 #### Parameters:
 
@@ -154,8 +140,6 @@ ___
 
 *Overrides [Frame](_src_id3v2_frames_frame_.frame.md).[frameClassType](_src_id3v2_frames_frame_.frame.md#frameclasstype)*
 
-*Defined in src/id3v2/frames/eventTimeCodeFrame.ts:122*
-
 **`inheritdoc`** 
 
 **Returns:** [FrameClassType](../enums/_src_id3v2_frames_frame_.frameclasstype.md)
@@ -167,8 +151,6 @@ ___
 • get **frameId**(): [FrameIdentifier](_src_id3v2_frameidentifiers_.frameidentifier.md)
 
 *Inherited from [Frame](_src_id3v2_frames_frame_.frame.md).[frameId](_src_id3v2_frames_frame_.frame.md#frameid)*
-
-*Defined in src/id3v2/frames/frame.ts:92*
 
 Gets the frame ID for the current instance.
 
@@ -184,8 +166,6 @@ ___
 
 *Inherited from [Frame](_src_id3v2_frames_frame_.frame.md).[groupId](_src_id3v2_frames_frame_.frame.md#groupid)*
 
-*Defined in src/id3v2/frames/frame.ts:99*
-
 Gets the grouping ID applied to the current instance.
 
 **Returns:** number \| undefined
@@ -196,8 +176,6 @@ number Value containing the grouping identifier for the current instance, or
 • set **groupId**(`value`: number \| undefined): void
 
 *Inherited from [Frame](_src_id3v2_frames_frame_.frame.md).[groupId](_src_id3v2_frames_frame_.frame.md#groupid)*
-
-*Defined in src/id3v2/frames/frame.ts:109*
 
 Sets the grouping ID applied to the current instance.
 
@@ -220,8 +198,6 @@ ___
 
 *Inherited from [Frame](_src_id3v2_frames_frame_.frame.md).[size](_src_id3v2_frames_frame_.frame.md#size)*
 
-*Defined in src/id3v2/frames/frame.ts:124*
-
 Gets the size of the current instance as it was last stored on disk.
 NOTE: This value is not used outside of reading a frame from disk, so newly created frames
     should not have this value set.
@@ -234,15 +210,11 @@ ___
 
 • get **timestampFormat**(): [TimestampFormat](../enums/_src_id3v2_utiltypes_.timestampformat.md)
 
-*Defined in src/id3v2/frames/eventTimeCodeFrame.ts:137*
-
 Gets the format of timestamps in this frame instance
 
 **Returns:** [TimestampFormat](../enums/_src_id3v2_utiltypes_.timestampformat.md)
 
 • set **timestampFormat**(`value`: [TimestampFormat](../enums/_src_id3v2_utiltypes_.timestampformat.md)): void
-
-*Defined in src/id3v2/frames/eventTimeCodeFrame.ts:141*
 
 Sets the format of timestamps in this frame instance
 
@@ -262,8 +234,6 @@ Name | Type |
 
 *Overrides [Frame](_src_id3v2_frames_frame_.frame.md).[clone](_src_id3v2_frames_frame_.frame.md#clone)*
 
-*Defined in src/id3v2/frames/eventTimeCodeFrame.ts:148*
-
 **`inheritdoc`** 
 
 **Returns:** [Frame](_src_id3v2_frames_frame_.frame.md)
@@ -272,11 +242,9 @@ ___
 
 ### fieldData
 
-▸ `Protected`**fieldData**(`frameData`: [ByteVector](_src_bytevector_.bytevector.md), `offset`: number, `version`: number): [ByteVector](_src_bytevector_.bytevector.md)
+▸ `Protected`**fieldData**(`frameData`: [ByteVector](_src_bytevector_.bytevector.md), `offset`: number, `version`: number, `dataIncludesHeader`: boolean): [ByteVector](_src_bytevector_.bytevector.md)
 
 *Inherited from [Frame](_src_id3v2_frames_frame_.frame.md).[fieldData](_src_id3v2_frames_frame_.frame.md#fielddata)*
-
-*Defined in src/id3v2/frames/frame.ts:229*
 
 Extracts the field data from the raw portion of an ID3v2 frame.
 This method is necessary for extracting extra data prepended to the frame such the as
@@ -288,7 +256,8 @@ Name | Type | Description |
 ------ | ------ | ------ |
 `frameData` | [ByteVector](_src_bytevector_.bytevector.md) | Raw frame data |
 `offset` | number | Index at which the data is contained |
-`version` | number | Version of the ID3v2 tag the data was originally encoded with  |
+`version` | number | Version of the ID3v2 tag the data was originally encoded with |
+`dataIncludesHeader` | boolean | `true` if `frameData` includes the header, `false`     otherwise  |
 
 **Returns:** [ByteVector](_src_bytevector_.bytevector.md)
 
@@ -296,11 +265,9 @@ ___
 
 ### parseFields
 
-▸ `Protected`**parseFields**(`data`: [ByteVector](_src_bytevector_.bytevector.md), `version`: number): void
+▸ `Protected`**parseFields**(`data`: [ByteVector](_src_bytevector_.bytevector.md), `_version`: number): void
 
 *Overrides [Frame](_src_id3v2_frames_frame_.frame.md).[parseFields](_src_id3v2_frames_frame_.frame.md#parsefields)*
-
-*Defined in src/id3v2/frames/eventTimeCodeFrame.ts:156*
 
 **`inheritdoc`** 
 
@@ -309,7 +276,7 @@ ___
 Name | Type |
 ------ | ------ |
 `data` | [ByteVector](_src_bytevector_.bytevector.md) |
-`version` | number |
+`_version` | number |
 
 **Returns:** void
 
@@ -320,8 +287,6 @@ ___
 ▸ **render**(`version`: number): [ByteVector](_src_bytevector_.bytevector.md)
 
 *Inherited from [Frame](_src_id3v2_frames_frame_.frame.md).[render](_src_id3v2_frames_frame_.frame.md#render)*
-
-*Defined in src/id3v2/frames/frame.ts:140*
 
 Renders the current instance, encoded in a specified ID3v2 version.
 
@@ -337,11 +302,9 @@ ___
 
 ### renderFields
 
-▸ `Protected`**renderFields**(`version`: number): [ByteVector](_src_bytevector_.bytevector.md)
+▸ `Protected`**renderFields**(`_version`: number): [ByteVector](_src_bytevector_.bytevector.md)
 
 *Overrides [Frame](_src_id3v2_frames_frame_.frame.md).[renderFields](_src_id3v2_frames_frame_.frame.md#renderfields)*
-
-*Defined in src/id3v2/frames/eventTimeCodeFrame.ts:176*
 
 **`inheritdoc`** 
 
@@ -349,7 +312,7 @@ ___
 
 Name | Type |
 ------ | ------ |
-`version` | number |
+`_version` | number |
 
 **Returns:** [ByteVector](_src_bytevector_.bytevector.md)
 
@@ -361,8 +324,6 @@ ___
 
 *Inherited from [Frame](_src_id3v2_frames_frame_.frame.md).[setData](_src_id3v2_frames_frame_.frame.md#setdata)*
 
-*Defined in src/id3v2/frames/frame.ts:299*
-
 Populates the current instance by reading the raw frame from disk, optionally reading the
 header.
 
@@ -371,7 +332,7 @@ header.
 Name | Type | Description |
 ------ | ------ | ------ |
 `data` | [ByteVector](_src_bytevector_.bytevector.md) | Raw ID3v2 frame |
-`offset` | number | Offset in {@paramref data} at which the frame begins. |
+`offset` | number | Offset in `data` at which the frame begins. |
 `readHeader` | boolean | Whether or not to read the reader into the current instance. |
 `version` | number | Version of the ID3v2 tag the data was encoded with  |
 
@@ -385,8 +346,6 @@ ___
 
 *Inherited from [Frame](_src_id3v2_frames_frame_.frame.md).[correctEncoding](_src_id3v2_frames_frame_.frame.md#correctencoding)*
 
-*Defined in src/id3v2/frames/frame.ts:209*
-
 Converts an encoding to be a supported encoding for a specified tag version.
 
 #### Parameters:
@@ -399,16 +358,14 @@ Name | Type | Description |
 **Returns:** [StringType](../enums/_src_bytevector_.stringtype.md)
 
 StringType Value containing the correct encoding to use, based on
-    {@see Id3v2Settings.forceDefaultEncoding} and what is supported by
-    {@paramref version}
+    [Id3v2Settings.forceDefaultEncoding](_src_id3v2_id3v2settings_.id3v2settings.md#forcedefaultencoding) and what is supported by
+    `version`
 
 ___
 
 ### fromEmpty
 
 ▸ `Static`**fromEmpty**(): [EventTimeCodeFrame](_src_id3v2_frames_eventtimecodeframe_.eventtimecodeframe.md)
-
-*Defined in src/id3v2/frames/eventTimeCodeFrame.ts:60*
 
 Constructs and initializes a new instance without contents
 
@@ -420,8 +377,6 @@ ___
 
 ▸ `Static`**fromOffsetRawData**(`data`: [ByteVector](_src_bytevector_.bytevector.md), `offset`: number, `header`: [Id3v2FrameHeader](_src_id3v2_frames_frameheader_.id3v2frameheader.md), `version`: number): [EventTimeCodeFrame](_src_id3v2_frames_eventtimecodeframe_.eventtimecodeframe.md)
 
-*Defined in src/id3v2/frames/eventTimeCodeFrame.ts:86*
-
 Constructs and initializes a new instance by reading its raw data in a specified ID3v2
 version. This method allows for offset reading from the data bytevector.
 
@@ -430,8 +385,8 @@ version. This method allows for offset reading from the data bytevector.
 Name | Type | Description |
 ------ | ------ | ------ |
 `data` | [ByteVector](_src_bytevector_.bytevector.md) | Raw representation of the new frame |
-`offset` | number | What offset in {@paramref data} the frame actually begins. Must be positive,     safe integer |
-`header` | [Id3v2FrameHeader](_src_id3v2_frames_frameheader_.id3v2frameheader.md) | Header of the frame found at {@paramref data} in the data |
+`offset` | number | What offset in `data` the frame actually begins. Must be positive,     safe integer |
+`header` | [Id3v2FrameHeader](_src_id3v2_frames_frameheader_.id3v2frameheader.md) | Header of the frame found at `data` in the data |
 `version` | number | ID3v2 version the frame was originally encoded with  |
 
 **Returns:** [EventTimeCodeFrame](_src_id3v2_frames_eventtimecodeframe_.eventtimecodeframe.md)
@@ -441,8 +396,6 @@ ___
 ### fromRawData
 
 ▸ `Static`**fromRawData**(`data`: [ByteVector](_src_bytevector_.bytevector.md), `version`: number): [EventTimeCodeFrame](_src_id3v2_frames_eventtimecodeframe_.eventtimecodeframe.md)
-
-*Defined in src/id3v2/frames/eventTimeCodeFrame.ts:108*
 
 Constructs and initializes a new instance by reading its raw data in a specified
 ID3v2 version.
@@ -461,8 +414,6 @@ ___
 ### fromTimestampFormat
 
 ▸ `Static`**fromTimestampFormat**(`timestampFormat`: [TimestampFormat](../enums/_src_id3v2_utiltypes_.timestampformat.md)): [EventTimeCodeFrame](_src_id3v2_frames_eventtimecodeframe_.eventtimecodeframe.md)
-
-*Defined in src/id3v2/frames/eventTimeCodeFrame.ts:70*
 
 Constructs and initializes a timestamp format set
 

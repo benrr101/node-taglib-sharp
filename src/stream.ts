@@ -32,9 +32,9 @@ export interface IStream {
     /**
      * Reads a block of bytes from the current stream and writes the data to a buffer.
      * @param buffer When this method returns, contains the specified byte array with the values
-     *     between {@paramref offset} and ({@paramref offset} + {@paramref length} - 1) replaced by
+     *     between `offset` and (`offset` + `length` - 1) replaced by
      *     the characters read from the current stream
-     * @param offset Zero-based byte offset in {@paramref buffer} at which to begin storing data
+     * @param offset Zero-based byte offset in `buffer` at which to begin storing data
      *     from the current stream
      * @param length The maximum number of bytes to read
      * @returns number Total number of bytes written to the buffer. This can be less than the
@@ -45,9 +45,9 @@ export interface IStream {
 
     /**
      * Sets the position within the current stream to the specified value.
-     * @param offset New positioon within the stream. this is relative to the {@paramref origin}
-     *     paramter and can be positive or negative
-     * @param origin Seek reference point {@see SeekOrigin}
+     * @param offset New position within the stream. this is relative to the `origin`
+     *     parameter and can be positive or negative
+     * @param origin Seek reference point {@link SeekOrigin}
      */
     seek(offset: number, origin: SeekOrigin): void;
 
@@ -60,7 +60,7 @@ export interface IStream {
     /**
      * Writes a block of bytes to the current stream using data read from a buffer.
      * @param buffer Buffer to write data from
-     * @param bufferOffset Zero-based byte offset in {@paramref buffer} at which to begin copying
+     * @param bufferOffset Zero-based byte offset in `buffer` at which to begin copying
      *    bytes to the current stream
      * @param length Maximum number of bytes to write
      */

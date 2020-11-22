@@ -1,10 +1,10 @@
-**node-taglib-sharp**
+**[node-taglib-sharp](../README.md)**
 
-> [README](../README.md) / [Globals](../globals.md) / ["src/id3v2/frames/relativeVolumeFrame"](../modules/_src_id3v2_frames_relativevolumeframe_.md) / ChannelType
+> [Globals](../globals.md) / ["src/id3v2/frames/relativeVolumeFrame"](../modules/_src_id3v2_frames_relativevolumeframe_.md) / ChannelType
 
 # Enumeration: ChannelType
 
-Type of channel data to get from or set to a {@see RelativeVolumeFrame} object
+Type of channel data to get from or set to a [RelativeVolumeFrame](../classes/_src_id3v2_frames_relativevolumeframe_.relativevolumeframe.md) object
 
 ## Index
 
@@ -24,9 +24,7 @@ Type of channel data to get from or set to a {@see RelativeVolumeFrame} object
 
 ### BackCenter
 
-•  **BackCenter**: {} = 7
-
-*Defined in src/id3v2/frames/relativeVolumeFrame.ts:50*
+•  **BackCenter**:  = 7
 
 Channel data for back center speaker
 
@@ -34,9 +32,7 @@ ___
 
 ### BackLeft
 
-•  **BackLeft**: {} = 5
-
-*Defined in src/id3v2/frames/relativeVolumeFrame.ts:40*
+•  **BackLeft**:  = 5
 
 Channel data for back left speaker
 
@@ -44,9 +40,7 @@ ___
 
 ### BackRight
 
-•  **BackRight**: {} = 4
-
-*Defined in src/id3v2/frames/relativeVolumeFrame.ts:35*
+•  **BackRight**:  = 4
 
 Channel data for center right speaker
 
@@ -54,9 +48,7 @@ ___
 
 ### FrontCentre
 
-•  **FrontCentre**: {} = 6
-
-*Defined in src/id3v2/frames/relativeVolumeFrame.ts:45*
+•  **FrontCentre**:  = 6
 
 Channel data for front center speaker
 
@@ -64,9 +56,7 @@ ___
 
 ### FrontLeft
 
-•  **FrontLeft**: {} = 3
-
-*Defined in src/id3v2/frames/relativeVolumeFrame.ts:30*
+•  **FrontLeft**:  = 3
 
 Channel data for front left speaker
 
@@ -74,9 +64,7 @@ ___
 
 ### FrontRight
 
-•  **FrontRight**: {} = 2
-
-*Defined in src/id3v2/frames/relativeVolumeFrame.ts:25*
+•  **FrontRight**:  = 2
 
 Channel data for the front right speaker
 
@@ -84,9 +72,7 @@ ___
 
 ### MasterVolume
 
-•  **MasterVolume**: {} = 1
-
-*Defined in src/id3v2/frames/relativeVolumeFrame.ts:20*
+•  **MasterVolume**:  = 1
 
 Channel data for the master volume
 
@@ -94,9 +80,7 @@ ___
 
 ### Other
 
-•  **Other**: {} = 0
-
-*Defined in src/id3v2/frames/relativeVolumeFrame.ts:15*
+•  **Other**:  = 0
 
 Channel data for some other speaker
 
@@ -104,8 +88,6 @@ ___
 
 ### Subwoofer
 
-•  **Subwoofer**: {} = 8
-
-*Defined in src/id3v2/frames/relativeVolumeFrame.ts:55*
+•  **Subwoofer**:  = 8
 
 Channel data for subwoofer

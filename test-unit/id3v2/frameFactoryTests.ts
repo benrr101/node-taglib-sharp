@@ -146,7 +146,7 @@ const assert = Chai.assert;
         const output = FrameFactory.createFrame(data, undefined, 0, 4, false);
 
         // Assert
-        this.validateOutput(output, FrameClassType.MusicCdIdentiferFrame, data.length);
+        this.validateOutput(output, FrameClassType.MusicCdIdentifierFrame, data.length);
     }
 
     @test

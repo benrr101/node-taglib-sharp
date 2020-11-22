@@ -1,6 +1,6 @@
-**node-taglib-sharp**
+**[node-taglib-sharp](../README.md)**
 
-> [README](../README.md) / [Globals](../globals.md) / "src/id3v1/id3v1Tag"
+> [Globals](../globals.md) / "src/id3v1/id3v1Tag"
 
 # Module: "src/id3v1/id3v1Tag"
 

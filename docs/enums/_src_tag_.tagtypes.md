@@ -1,8 +1,10 @@
-**node-taglib-sharp**
+**[node-taglib-sharp](../README.md)**
 
-> [README](../README.md) / [Globals](../globals.md) / ["src/tag"](../modules/_src_tag_.md) / TagTypes
+> [Globals](../globals.md) / ["src/tag"](../modules/_src_tag_.md) / TagTypes
 
 # Enumeration: TagTypes
+
+Indicates the tag types used by a file.
 
 ## Index
 
@@ -33,9 +35,7 @@
 
 ### AllTags
 
-•  **AllTags**: {} = 4294967295
-
-*Defined in src/tag.ts:102*
+•  **AllTags**:  = 4294967295
 
 **`summary`** All tag types.
 
@@ -43,9 +43,7 @@ ___
 
 ### Ape
 
-•  **Ape**: {} = 8
-
-*Defined in src/tag.ts:27*
+•  **Ape**:  = 8
 
 **`summary`** APE Tag
 
@@ -53,9 +51,7 @@ ___
 
 ### Apple
 
-•  **Apple**: {} = 16
-
-*Defined in src/tag.ts:32*
+•  **Apple**:  = 16
 
 **`summary`** Apple's ILST Tag Format
 
@@ -63,9 +59,7 @@ ___
 
 ### Asf
 
-•  **Asf**: {} = 32
-
-*Defined in src/tag.ts:37*
+•  **Asf**:  = 32
 
 **`summary`** ASF Tag
 
@@ -73,9 +67,7 @@ ___
 
 ### AudibleMetadata
 
-•  **AudibleMetadata**: {} = 65536
-
-*Defined in src/tag.ts:92*
+•  **AudibleMetadata**:  = 65536
 
 **`summary`** Audible Metadata Blocks Tag
 
@@ -83,9 +75,7 @@ ___
 
 ### DivX
 
-•  **DivX**: {} = 256
-
-*Defined in src/tag.ts:52*
+•  **DivX**:  = 256
 
 **`summary`** DivX Tag
 
@@ -93,9 +83,7 @@ ___
 
 ### FlacMetadata
 
-•  **FlacMetadata**: {} = 512
-
-*Defined in src/tag.ts:57*
+•  **FlacMetadata**:  = 512
 
 **`summary`** FLAC Metadata Blocks Tag
 
@@ -103,9 +91,7 @@ ___
 
 ### GifComment
 
-•  **GifComment**: {} = 8192
-
-*Defined in src/tag.ts:77*
+•  **GifComment**:  = 8192
 
 **`summary`** Gif Comment Tag
 
@@ -113,9 +99,7 @@ ___
 
 ### IPTCIIM
 
-•  **IPTCIIM**: {} = 32768
-
-*Defined in src/tag.ts:87*
+•  **IPTCIIM**:  = 32768
 
 **`summary`** IPTC-IIM tag
 
@@ -123,9 +107,7 @@ ___
 
 ### Id3v1
 
-•  **Id3v1**: {} = 2
-
-*Defined in src/tag.ts:17*
+•  **Id3v1**:  = 2
 
 **`summary`** ID3v1 Tag
 
@@ -133,9 +115,7 @@ ___
 
 ### Id3v2
 
-•  **Id3v2**: {} = 4
-
-*Defined in src/tag.ts:22*
+•  **Id3v2**:  = 4
 
 **`summary`** ID3v2 Tag
 
@@ -143,9 +123,7 @@ ___
 
 ### JpegComment
 
-•  **JpegComment**: {} = 4096
-
-*Defined in src/tag.ts:72*
+•  **JpegComment**:  = 4096
 
 **`summary`** Jpeg Comment Tag
 
@@ -153,9 +131,7 @@ ___
 
 ### Matroska
 
-•  **Matroska**: {} = 131072
-
-*Defined in src/tag.ts:97*
+•  **Matroska**:  = 131072
 
 **`summary`** Matroska native tag
 
@@ -163,9 +139,7 @@ ___
 
 ### MovieId
 
-•  **MovieId**: {} = 128
-
-*Defined in src/tag.ts:47*
+•  **MovieId**:  = 128
 
 **`summary`** RIFF Movie ID List Tag
 
@@ -173,9 +147,7 @@ ___
 
 ### None
 
-•  **None**: {} = 0
-
-*Defined in src/tag.ts:7*
+•  **None**:  = 0
 
 **`summary`** No tag types.
 
@@ -183,9 +155,7 @@ ___
 
 ### Png
 
-•  **Png**: {} = 16384
-
-*Defined in src/tag.ts:82*
+•  **Png**:  = 16384
 
 **`summary`** native PNG keywords
 
@@ -193,9 +163,7 @@ ___
 
 ### RiffInfo
 
-•  **RiffInfo**: {} = 64
-
-*Defined in src/tag.ts:42*
+•  **RiffInfo**:  = 64
 
 **`summary`** Standard RIFF INFO List Tag
 
@@ -203,9 +171,7 @@ ___
 
 ### TiffIFD
 
-•  **TiffIFD**: {} = 1024
-
-*Defined in src/tag.ts:62*
+•  **TiffIFD**:  = 1024
 
 **`summary`** TIFF IFD Tag
 
@@ -213,9 +179,7 @@ ___
 
 ### XMP
 
-•  **XMP**: {} = 2048
-
-*Defined in src/tag.ts:67*
+•  **XMP**:  = 2048
 
 **`summary`** XMP Tag
 
@@ -223,8 +187,6 @@ ___
 
 ### Xiph
 
-•  **Xiph**: {} = 1
+•  **Xiph**:  = 1
 
-*Defined in src/tag.ts:12*
-
-**`summary`** Xiph's Vorbis Comment
+**`summary`** Xiph Vorbis Comment

@@ -90,8 +90,8 @@ export default class Id3v2TagFooter {
     public get flags(): Id3v2TagHeaderFlags { return this._flags; }
     /**
      * Sets the flags applied to the current instance.
-     * @param value Bitwise combined {@see HeaderFlags} value containing the flags to apply to the
-     *     current instance.
+     * @param value Bitwise combined {@link Id3v2TagHeaderFlags} value containing the flags to apply
+     *     to the current instance.
      */
     public set flags(value: Id3v2TagHeaderFlags) {
         const version3Flags = Id3v2TagHeaderFlags.ExtendedHeader | Id3v2TagHeaderFlags.ExperimentalIndicator;

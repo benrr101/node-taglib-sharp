@@ -1,6 +1,6 @@
-**node-taglib-sharp**
+**[node-taglib-sharp](../README.md)**
 
-> [README](../README.md) / [Globals](../globals.md) / ["src/id3v2/frames/relativeVolumeFrame"](../modules/_src_id3v2_frames_relativevolumeframe_.md) / RelativeVolumeFrame
+> [Globals](../globals.md) / ["src/id3v2/frames/relativeVolumeFrame"](../modules/_src_id3v2_frames_relativevolumeframe_.md) / RelativeVolumeFrame
 
 # Class: RelativeVolumeFrame
 
@@ -56,15 +56,11 @@
 
 *Inherited from [Frame](_src_id3v2_frames_frame_.frame.md).[_header](_src_id3v2_frames_frame_.frame.md#_header)*
 
-*Defined in src/id3v2/frames/frame.ts:33*
-
 ## Accessors
 
 ### channels
 
 • get **channels**(): [ChannelData](_src_id3v2_frames_relativevolumeframe_.channeldata.md)[]
-
-*Defined in src/id3v2/frames/relativeVolumeFrame.ts:239*
 
 Gets the channels in the current instance that have a value
 
@@ -78,20 +74,16 @@ ___
 
 *Inherited from [Frame](_src_id3v2_frames_frame_.frame.md).[encryptionId](_src_id3v2_frames_frame_.frame.md#encryptionid)*
 
-*Defined in src/id3v2/frames/frame.ts:55*
-
 Gets the encryption ID applied to the current instance.
 
 **Returns:** number \| undefined
 
-number Value containing the encryption identifer for the current instance or
+number Value containing the encryption identifier for the current instance or
     `undefined` if not set.
 
 • set **encryptionId**(`value`: number \| undefined): void
 
 *Inherited from [Frame](_src_id3v2_frames_frame_.frame.md).[encryptionId](_src_id3v2_frames_frame_.frame.md#encryptionid)*
-
-*Defined in src/id3v2/frames/frame.ts:65*
 
 Sets the encryption ID applied to the current instance.
 
@@ -103,7 +95,7 @@ Name | Type | Description |
 
 **Returns:** void
 
-number Value containing the encryption identifer for the current instance or
+number Value containing the encryption identifier for the current instance or
     `undefined` if not set.
 
 ___
@@ -114,8 +106,6 @@ ___
 
 *Inherited from [Frame](_src_id3v2_frames_frame_.frame.md).[flags](_src_id3v2_frames_frame_.frame.md#flags)*
 
-*Defined in src/id3v2/frames/frame.ts:78*
-
 Gets the frame flags applied to the current instance.
 
 **Returns:** [Id3v2FrameFlags](../enums/_src_id3v2_frames_frameheader_.id3v2frameflags.md)
@@ -124,11 +114,9 @@ Gets the frame flags applied to the current instance.
 
 *Inherited from [Frame](_src_id3v2_frames_frame_.frame.md).[flags](_src_id3v2_frames_frame_.frame.md#flags)*
 
-*Defined in src/id3v2/frames/frame.ts:84*
-
 Sets the frame flags applied to the current instance.
-If the value includes either {@see Id3v2FrameFlags.Encryption} or
-{@see Id3v2FrameFlags.Compression}, {@see render} will throw.
+If the value includes either [Id3v2FrameFlags.Encryption](../enums/_src_id3v2_frames_frameheader_.id3v2frameflags.md#encryption) or
+[Id3v2FrameFlags.Compression](../enums/_src_id3v2_frames_frameheader_.id3v2frameflags.md#compression), [render](_src_id3v2_frames_relativevolumeframe_.relativevolumeframe.md#render) will throw.
 
 #### Parameters:
 
@@ -146,8 +134,6 @@ ___
 
 *Overrides [Frame](_src_id3v2_frames_frame_.frame.md).[frameClassType](_src_id3v2_frames_frame_.frame.md#frameclasstype)*
 
-*Defined in src/id3v2/frames/relativeVolumeFrame.ts:234*
-
 **`inheritdoc`** 
 
 **Returns:** [FrameClassType](../enums/_src_id3v2_frames_frame_.frameclasstype.md)
@@ -159,8 +145,6 @@ ___
 • get **frameId**(): [FrameIdentifier](_src_id3v2_frameidentifiers_.frameidentifier.md)
 
 *Inherited from [Frame](_src_id3v2_frames_frame_.frame.md).[frameId](_src_id3v2_frames_frame_.frame.md#frameid)*
-
-*Defined in src/id3v2/frames/frame.ts:92*
 
 Gets the frame ID for the current instance.
 
@@ -176,8 +160,6 @@ ___
 
 *Inherited from [Frame](_src_id3v2_frames_frame_.frame.md).[groupId](_src_id3v2_frames_frame_.frame.md#groupid)*
 
-*Defined in src/id3v2/frames/frame.ts:99*
-
 Gets the grouping ID applied to the current instance.
 
 **Returns:** number \| undefined
@@ -188,8 +170,6 @@ number Value containing the grouping identifier for the current instance, or
 • set **groupId**(`value`: number \| undefined): void
 
 *Inherited from [Frame](_src_id3v2_frames_frame_.frame.md).[groupId](_src_id3v2_frames_frame_.frame.md#groupid)*
-
-*Defined in src/id3v2/frames/frame.ts:109*
 
 Sets the grouping ID applied to the current instance.
 
@@ -210,8 +190,6 @@ ___
 
 • get **identification**(): string
 
-*Defined in src/id3v2/frames/relativeVolumeFrame.ts:244*
-
 Gets the identification used for the current instance
 
 **Returns:** string
@@ -223,8 +201,6 @@ ___
 • get **size**(): number
 
 *Inherited from [Frame](_src_id3v2_frames_frame_.frame.md).[size](_src_id3v2_frames_frame_.frame.md#size)*
-
-*Defined in src/id3v2/frames/frame.ts:124*
 
 Gets the size of the current instance as it was last stored on disk.
 NOTE: This value is not used outside of reading a frame from disk, so newly created frames
@@ -240,8 +216,6 @@ NOTE: This value is not used outside of reading a frame from disk, so newly crea
 
 *Overrides [Frame](_src_id3v2_frames_frame_.frame.md).[clone](_src_id3v2_frames_frame_.frame.md#clone)*
 
-*Defined in src/id3v2/frames/relativeVolumeFrame.ts:251*
-
 **`inheritdoc`** 
 
 **Returns:** [Frame](_src_id3v2_frames_frame_.frame.md)
@@ -250,11 +224,9 @@ ___
 
 ### fieldData
 
-▸ `Protected`**fieldData**(`frameData`: [ByteVector](_src_bytevector_.bytevector.md), `offset`: number, `version`: number): [ByteVector](_src_bytevector_.bytevector.md)
+▸ `Protected`**fieldData**(`frameData`: [ByteVector](_src_bytevector_.bytevector.md), `offset`: number, `version`: number, `dataIncludesHeader`: boolean): [ByteVector](_src_bytevector_.bytevector.md)
 
 *Inherited from [Frame](_src_id3v2_frames_frame_.frame.md).[fieldData](_src_id3v2_frames_frame_.frame.md#fielddata)*
-
-*Defined in src/id3v2/frames/frame.ts:229*
 
 Extracts the field data from the raw portion of an ID3v2 frame.
 This method is necessary for extracting extra data prepended to the frame such the as
@@ -266,7 +238,8 @@ Name | Type | Description |
 ------ | ------ | ------ |
 `frameData` | [ByteVector](_src_bytevector_.bytevector.md) | Raw frame data |
 `offset` | number | Index at which the data is contained |
-`version` | number | Version of the ID3v2 tag the data was originally encoded with  |
+`version` | number | Version of the ID3v2 tag the data was originally encoded with |
+`dataIncludesHeader` | boolean | `true` if `frameData` includes the header, `false`     otherwise  |
 
 **Returns:** [ByteVector](_src_bytevector_.bytevector.md)
 
@@ -275,8 +248,6 @@ ___
 ### getPeakBits
 
 ▸ **getPeakBits**(`type`: [ChannelType](../enums/_src_id3v2_frames_relativevolumeframe_.channeltype.md)): number
-
-*Defined in src/id3v2/frames/relativeVolumeFrame.ts:275*
 
 Gets the number of bits used to encode the peak volume
 
@@ -294,8 +265,6 @@ ___
 
 ▸ **getPeakVolume**(`type`: [ChannelType](../enums/_src_id3v2_frames_relativevolumeframe_.channeltype.md)): BigInt.BigInteger
 
-*Defined in src/id3v2/frames/relativeVolumeFrame.ts:283*
-
 Gets the peak volume for a specified channel
 
 #### Parameters:
@@ -311,8 +280,6 @@ ___
 ### getVolumeAdjustment
 
 ▸ **getVolumeAdjustment**(`type`: [ChannelType](../enums/_src_id3v2_frames_relativevolumeframe_.channeltype.md)): number
-
-*Defined in src/id3v2/frames/relativeVolumeFrame.ts:292*
 
 Gets the volume adjustment for the specified channel.
 
@@ -330,11 +297,9 @@ ___
 
 ### parseFields
 
-▸ `Protected`**parseFields**(`data`: [ByteVector](_src_bytevector_.bytevector.md), `version`: number): void
+▸ `Protected`**parseFields**(`data`: [ByteVector](_src_bytevector_.bytevector.md), `_version`: number): void
 
 *Overrides [Frame](_src_id3v2_frames_frame_.frame.md).[parseFields](_src_id3v2_frames_frame_.frame.md#parsefields)*
-
-*Defined in src/id3v2/frames/relativeVolumeFrame.ts:335*
 
 **`inheritdoc`** 
 
@@ -343,7 +308,7 @@ ___
 Name | Type |
 ------ | ------ |
 `data` | [ByteVector](_src_bytevector_.bytevector.md) |
-`version` | number |
+`_version` | number |
 
 **Returns:** void
 
@@ -354,8 +319,6 @@ ___
 ▸ **render**(`version`: number): [ByteVector](_src_bytevector_.bytevector.md)
 
 *Inherited from [Frame](_src_id3v2_frames_frame_.frame.md).[render](_src_id3v2_frames_frame_.frame.md#render)*
-
-*Defined in src/id3v2/frames/frame.ts:140*
 
 Renders the current instance, encoded in a specified ID3v2 version.
 
@@ -371,11 +334,9 @@ ___
 
 ### renderFields
 
-▸ `Protected`**renderFields**(`version`: number): [ByteVector](_src_bytevector_.bytevector.md)
+▸ `Protected`**renderFields**(`_version`: number): [ByteVector](_src_bytevector_.bytevector.md)
 
 *Overrides [Frame](_src_id3v2_frames_frame_.frame.md).[renderFields](_src_id3v2_frames_frame_.frame.md#renderfields)*
-
-*Defined in src/id3v2/frames/relativeVolumeFrame.ts:360*
 
 **`inheritdoc`** 
 
@@ -383,7 +344,7 @@ ___
 
 Name | Type |
 ------ | ------ |
-`version` | number |
+`_version` | number |
 
 **Returns:** [ByteVector](_src_bytevector_.bytevector.md)
 
@@ -395,8 +356,6 @@ ___
 
 *Inherited from [Frame](_src_id3v2_frames_frame_.frame.md).[setData](_src_id3v2_frames_frame_.frame.md#setdata)*
 
-*Defined in src/id3v2/frames/frame.ts:299*
-
 Populates the current instance by reading the raw frame from disk, optionally reading the
 header.
 
@@ -405,7 +364,7 @@ header.
 Name | Type | Description |
 ------ | ------ | ------ |
 `data` | [ByteVector](_src_bytevector_.bytevector.md) | Raw ID3v2 frame |
-`offset` | number | Offset in {@paramref data} at which the frame begins. |
+`offset` | number | Offset in `data` at which the frame begins. |
 `readHeader` | boolean | Whether or not to read the reader into the current instance. |
 `version` | number | Version of the ID3v2 tag the data was encoded with  |
 
@@ -416,8 +375,6 @@ ___
 ### setPeakBits
 
 ▸ **setPeakBits**(`type`: [ChannelType](../enums/_src_id3v2_frames_relativevolumeframe_.channeltype.md), `value`: number): void
-
-*Defined in src/id3v2/frames/relativeVolumeFrame.ts:301*
 
 Sets the number of bits used to encode peak volume for a specified channel.
 
@@ -436,8 +393,6 @@ ___
 
 ▸ **setPeakVolume**(`type`: [ChannelType](../enums/_src_id3v2_frames_relativevolumeframe_.channeltype.md), `value`: BigInt.BigInteger): void
 
-*Defined in src/id3v2/frames/relativeVolumeFrame.ts:310*
-
 Sets the peak volume for a specified channel.
 
 #### Parameters:
@@ -454,8 +409,6 @@ ___
 ### setVolumeAdjustment
 
 ▸ **setVolumeAdjustment**(`type`: [ChannelType](../enums/_src_id3v2_frames_relativevolumeframe_.channeltype.md), `value`: number): void
-
-*Defined in src/id3v2/frames/relativeVolumeFrame.ts:319*
 
 Sets the volume adjustment in decibels for the specified channel.
 
@@ -474,8 +427,6 @@ ___
 
 ▸ **toString**(): string
 
-*Defined in src/id3v2/frames/relativeVolumeFrame.ts:326*
-
 Creates a text description of the current instance
 
 **Returns:** string
@@ -487,8 +438,6 @@ ___
 ▸ `Static` `Protected`**correctEncoding**(`type`: [StringType](../enums/_src_bytevector_.stringtype.md), `version`: number): [StringType](../enums/_src_bytevector_.stringtype.md)
 
 *Inherited from [Frame](_src_id3v2_frames_frame_.frame.md).[correctEncoding](_src_id3v2_frames_frame_.frame.md#correctencoding)*
-
-*Defined in src/id3v2/frames/frame.ts:209*
 
 Converts an encoding to be a supported encoding for a specified tag version.
 
@@ -502,16 +451,14 @@ Name | Type | Description |
 **Returns:** [StringType](../enums/_src_bytevector_.stringtype.md)
 
 StringType Value containing the correct encoding to use, based on
-    {@see Id3v2Settings.forceDefaultEncoding} and what is supported by
-    {@paramref version}
+    [Id3v2Settings.forceDefaultEncoding](_src_id3v2_id3v2settings_.id3v2settings.md#forcedefaultencoding) and what is supported by
+    `version`
 
 ___
 
 ### find
 
 ▸ `Static`**find**(`frames`: [RelativeVolumeFrame](_src_id3v2_frames_relativevolumeframe_.relativevolumeframe.md)[], `identification`: string): [RelativeVolumeFrame](_src_id3v2_frames_relativevolumeframe_.relativevolumeframe.md)
-
-*Defined in src/id3v2/frames/relativeVolumeFrame.ts:266*
 
 Gets a specified volume adjustment frame from the list of relative volume frames
 
@@ -533,8 +480,6 @@ ___
 
 ▸ `Static`**fromIdentification**(`identification`: string): [RelativeVolumeFrame](_src_id3v2_frames_relativevolumeframe_.relativevolumeframe.md)
 
-*Defined in src/id3v2/frames/relativeVolumeFrame.ts:183*
-
 Constructs and initializes a new instance with a specified identifier
 
 #### Parameters:
@@ -551,8 +496,6 @@ ___
 
 ▸ `Static`**fromOffsetRawData**(`data`: [ByteVector](_src_bytevector_.bytevector.md), `offset`: number, `header`: [Id3v2FrameHeader](_src_id3v2_frames_frameheader_.id3v2frameheader.md), `version`: number): [RelativeVolumeFrame](_src_id3v2_frames_relativevolumeframe_.relativevolumeframe.md)
 
-*Defined in src/id3v2/frames/relativeVolumeFrame.ts:198*
-
 Constructs and initializes a new instance by reading its raw data in a specified ID3v2
 version starting a specified offset.
 
@@ -561,8 +504,8 @@ version starting a specified offset.
 Name | Type | Description |
 ------ | ------ | ------ |
 `data` | [ByteVector](_src_bytevector_.bytevector.md) | Raw representation of the new frame |
-`offset` | number | Offset into {@paramref data} where the frame actually begins. Must be a     positive, 32-bit integer |
-`header` | [Id3v2FrameHeader](_src_id3v2_frames_frameheader_.id3v2frameheader.md) | Header of the frame found at {@paramref offset} in {@paramref data} |
+`offset` | number | Offset into `data` where the frame actually begins. Must be a     positive, 32-bit integer |
+`header` | [Id3v2FrameHeader](_src_id3v2_frames_frameheader_.id3v2frameheader.md) | Header of the frame found at `offset` in `data` |
 `version` | number | ID3v2 version the frame was originally encoded with  |
 
 **Returns:** [RelativeVolumeFrame](_src_id3v2_frames_relativevolumeframe_.relativevolumeframe.md)
@@ -572,8 +515,6 @@ ___
 ### fromRawData
 
 ▸ `Static`**fromRawData**(`data`: [ByteVector](_src_bytevector_.bytevector.md), `version`: number): [RelativeVolumeFrame](_src_id3v2_frames_relativevolumeframe_.relativevolumeframe.md)
-
-*Defined in src/id3v2/frames/relativeVolumeFrame.ts:220*
 
 Constructs and initializes a new instance by reading its raw data in a specified ID3v2
 version.

@@ -1,14 +1,14 @@
-**node-taglib-sharp**
+**[node-taglib-sharp](../README.md)**
 
-> [README](../README.md) / [Globals](../globals.md) / ["src/byteVector"](../modules/_src_bytevector_.md) / StringType
+> [Globals](../globals.md) / ["src/byteVector"](../modules/_src_bytevector_.md) / StringType
 
 # Enumeration: StringType
 
-**`summary`** Specifies the text encoding used when converting betweenInclusive a {@link string} and a
+**`summary`** Specifies the text encoding used when converting betweenInclusive a string and a
          [ByteVector](../classes/_src_bytevector_.bytevector.md).
 
-**`remarks`** This enumeration is used by {@link ByteVector.FromString(string,StringType)} and
-         {@link ByteVector.ToString(StringType)}
+**`remarks`** This enumeration is used by [ByteVector.fromString](../classes/_src_bytevector_.bytevector.md#fromstring) and
+         [ByteVector.toString](../classes/_src_bytevector_.bytevector.md#tostring)
 
 ## Index
 
@@ -24,9 +24,7 @@
 
 ### Latin1
 
-•  **Latin1**: {} = 0
-
-*Defined in src/byteVector.ts:37*
+•  **Latin1**:  = 0
 
 **`summary`** The string is to be Latin-1 encoded.
 
@@ -34,9 +32,7 @@ ___
 
 ### UTF16
 
-•  **UTF16**: {} = 1
-
-*Defined in src/byteVector.ts:42*
+•  **UTF16**:  = 1
 
 **`summary`** The string is to be UTF-16 encoded.
 
@@ -44,9 +40,7 @@ ___
 
 ### UTF16BE
 
-•  **UTF16BE**: {} = 2
-
-*Defined in src/byteVector.ts:47*
+•  **UTF16BE**:  = 2
 
 **`summary`** The string is to be UTF-16BE encoded.
 
@@ -54,9 +48,7 @@ ___
 
 ### UTF16LE
 
-•  **UTF16LE**: {} = 4
-
-*Defined in src/byteVector.ts:57*
+•  **UTF16LE**:  = 4
 
 **`summary`** The string is to be UTF-16LE encoded.
 
@@ -64,8 +56,6 @@ ___
 
 ### UTF8
 
-•  **UTF8**: {} = 3
-
-*Defined in src/byteVector.ts:52*
+•  **UTF8**:  = 3
 
 **`summary`** The string is to be UTF-8 encoded.

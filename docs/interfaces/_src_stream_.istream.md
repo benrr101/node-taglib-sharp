@@ -1,6 +1,6 @@
-**node-taglib-sharp**
+**[node-taglib-sharp](../README.md)**
 
-> [README](../README.md) / [Globals](../globals.md) / ["src/stream"](../modules/_src_stream_.md) / IStream
+> [Globals](../globals.md) / ["src/stream"](../modules/_src_stream_.md) / IStream
 
 # Interface: IStream
 
@@ -34,8 +34,6 @@
 
 • `Readonly` **canWrite**: boolean
 
-*Defined in src/stream.ts:15*
-
 Whether or not the stream can be written to
 
 ___
@@ -43,8 +41,6 @@ ___
 ### length
 
 • `Readonly` **length**: number
-
-*Defined in src/stream.ts:20*
 
 Number of bytes currently stored in file this stream connects to
 
@@ -54,8 +50,6 @@ ___
 
 •  **position**: number
 
-*Defined in src/stream.ts:25*
-
 Position within the stream
 
 ## Methods
@@ -63,8 +57,6 @@ Position within the stream
 ### close
 
 ▸ **close**(): void
-
-*Defined in src/stream.ts:30*
 
 Closes the stream
 
@@ -76,16 +68,14 @@ ___
 
 ▸ **read**(`buffer`: Uint8Array, `offset`: number, `length`: number): number
 
-*Defined in src/stream.ts:44*
-
 Reads a block of bytes from the current stream and writes the data to a buffer.
 
 #### Parameters:
 
 Name | Type | Description |
 ------ | ------ | ------ |
-`buffer` | Uint8Array | When this method returns, contains the specified byte array with the values     between {@paramref offset} and ({@paramref offset} + {@paramref length} - 1) replaced by     the characters read from the current stream |
-`offset` | number | Zero-based byte offset in {@paramref buffer} at which to begin storing data     from the current stream |
+`buffer` | Uint8Array | When this method returns, contains the specified byte array with the values     between `offset` and (`offset` + `length` - 1) replaced by     the characters read from the current stream |
+`offset` | number | Zero-based byte offset in `buffer` at which to begin storing data     from the current stream |
 `length` | number | The maximum number of bytes to read |
 
 **Returns:** number
@@ -100,16 +90,14 @@ ___
 
 ▸ **seek**(`offset`: number, `origin`: [SeekOrigin](../enums/_src_stream_.seekorigin.md)): void
 
-*Defined in src/stream.ts:52*
-
 Sets the position within the current stream to the specified value.
 
 #### Parameters:
 
 Name | Type | Description |
 ------ | ------ | ------ |
-`offset` | number | New positioon within the stream. this is relative to the {@paramref origin}     paramter and can be positive or negative |
-`origin` | [SeekOrigin](../enums/_src_stream_.seekorigin.md) | Seek reference point {@see SeekOrigin}  |
+`offset` | number | New position within the stream. this is relative to the `origin`     parameter and can be positive or negative |
+`origin` | [SeekOrigin](../enums/_src_stream_.seekorigin.md) | Seek reference point [SeekOrigin](../enums/_src_stream_.seekorigin.md)  |
 
 **Returns:** void
 
@@ -118,8 +106,6 @@ ___
 ### setLength
 
 ▸ **setLength**(`length`: number): void
-
-*Defined in src/stream.ts:58*
 
 Sets the length of the current current stream to the specified value.
 
@@ -137,8 +123,6 @@ ___
 
 ▸ **write**(`buffer`: fs.BinaryData, `bufferOffset`: number, `length`: number): number
 
-*Defined in src/stream.ts:67*
-
 Writes a block of bytes to the current stream using data read from a buffer.
 
 #### Parameters:
@@ -146,7 +130,7 @@ Writes a block of bytes to the current stream using data read from a buffer.
 Name | Type | Description |
 ------ | ------ | ------ |
 `buffer` | fs.BinaryData | Buffer to write data from |
-`bufferOffset` | number | Zero-based byte offset in {@paramref buffer} at which to begin copying    bytes to the current stream |
+`bufferOffset` | number | Zero-based byte offset in `buffer` at which to begin copying    bytes to the current stream |
 `length` | number | Maximum number of bytes to write  |
 
 **Returns:** number

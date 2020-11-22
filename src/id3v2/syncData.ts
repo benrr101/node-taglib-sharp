@@ -12,7 +12,7 @@ export default {
      * Encodes a unsigned int as synchronized integer data.
      * @param value Number to encode. Must be an safe, positive integer
      * @returns ByteVector The encoded number
-     * @throws Error if {@paramref value} is greater than 268435456
+     * @throws Error if `value` is greater than 268435456
      */
     fromUint: (value: number): ByteVector => {
         Guards.uint(value, "value");
@@ -29,7 +29,7 @@ export default {
     },
 
     /**
-     * Resynchronizes a {@see ByteVector} object by removing the added bytes.
+     * Resynchronizes a {@link ByteVector} object by removing the added bytes.
      * @param data Object to resynchronize
      */
     resyncByteVector: (data: ByteVector): void => {
@@ -73,7 +73,7 @@ export default {
     },
 
     /**
-     * Unsynchronizes a {@see ByteVector} object by inserting empty bytes where necessary.
+     * Unsynchronizes a {@link ByteVector} object by inserting empty bytes where necessary.
      * @param data Object to unsynchronize
      */
     unsyncByteVector: (data: ByteVector): void => {

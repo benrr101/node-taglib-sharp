@@ -27,7 +27,7 @@ let customFrameCreators: FrameCreator[] = [];
 
 /**
  * Performs the necessary operations to determine and create the correct child classes of
- * {@see Frame} for a given raw ID3v2 frame.
+ * {@link Frame} for a given raw ID3v2 frame.
  * By default, this will only load frames contained in the library. To add additional frames to the
  * process, register a frame creator with addFrameCreator.
  */
@@ -57,17 +57,17 @@ export default {
     },
 
     /**
-     * Creates a {@see Frame} object by reading it from raw ID3v2 frame data.
+     * Creates a {@link Frame} object by reading it from raw ID3v2 frame data.
      * @param data Raw ID3v2 frame
-     * @param file File to read the frame from if {@paramref data} is falsy
-     * @param offset Index into {@paramref file} or in {@paramref data} if truthy, at which the
+     * @param file File to read the frame from if `data` is falsy
+     * @param offset Index into `file` or in `data` if truthy, at which the
      *     frame begins. After reading, the offset where the next frame can be read is returned in
      *     the `offset` property of the returned object
      * @param version ID3v2 version the frame is encoded with. Must be unsigned 8-bit int
      * @param alreadyUnsynced Whether or not the entire tag has already been unsynchronized
      * @returns any Undefined is returned if there are no more frames to read.
      *     Object is returned if a frame was found. Object has the following properties:
-     *     * frame: {@see Frame} that was read
+     *     * frame: {@link Frame} that was read
      *     * offset: updated offset where the next frame starts
      */
     createFrame: (data: ByteVector, file: File, offset: number, version: number, alreadyUnsynced: boolean):
@@ -142,7 +142,13 @@ export default {
                 // TODO: Make lazy loading optional
                 if (header.frameId === FrameIdentifiers.APIC || header.frameId === FrameIdentifiers.GEOB) {
                     return {
-                        frame: AttachmentFrame.fromFile(file.fileAbstraction, header, frameStartIndex, frameSize, version),
+                        frame: AttachmentFrame.fromFile(
+                            file.fileAbstraction,
+                            header,
+                            frameStartIndex,
+                            frameSize,
+                            version
+                        ),
                         offset: frameEndIndex
                     };
                 }
@@ -157,7 +163,7 @@ export default {
                 // User text identification frame
                 func = UserTextInformationFrame.fromOffsetRawData;
             } else if (header.frameId.isTextFrame) {
-                // Text identifiacation frame (frames 4.2)
+                // Text identification frame (frames 4.2)
                 func = TextInformationFrame.fromOffsetRawData;
             } else if (header.frameId === FrameIdentifiers.UFID) {
                 // Unique file identifier (frames 4.1)

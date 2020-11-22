@@ -13,14 +13,14 @@ import {Guards, StringComparison, StringUtils} from "../../utils";
  * track name, and just about any value that can be expressed as text. The following table contains
  * types and descriptions as found in the ID3 2.4.0 native frames specification (Copyright Martin
  * Nilsson 2000).
- * * TIT1 - The "Content Group Description" frame is used if the sound belongs to a larger cagegory
+ * * TIT1 - The "Content Group Description" frame is used if the sound belongs to a larger category
  *   of sounds/music. For example, classical music is often sorted in different musical sections
  *   (eg. "Piano Concerto", "Weather - Hurricane").
- * * TIT2 - The "Title/Songname/Content description" frame is the actual name of the piece (eg.
+ * * TIT2 - The "Title/Song name/Content description" frame is the actual name of the piece (eg.
  *   "Adagio", "Hurricane Donna").
  * * TIT3 - The "Subtitle/Description refinement" frame is used for information directly related to
  *   the contents title (eg. "Op. 16" or "Performed Live at Wembley").
- * * TALB - The "Album/Movie/Show title" frame is intented for the title of the recording (or
+ * * TALB - The "Album/Movie/Show title" frame is intended for the title of the recording (or
  *   source of sound) from which the audio in the file is taken.
  * * TOAL - The "Original album/movie/show title" frame is intended for the title of the original
  *   recording (or source of sound), if for example the music in the file should be a cover of a
@@ -53,7 +53,7 @@ import {Guards, StringComparison, StringUtils} from "../../utils";
  *   released song.
  * * TCOM - The "composer" frame is intended for the name of the composer.
  * * TMCL - The "musician credits list" frame is intended as a mapping betweenInclusive instruments and the
- *   musician who played it. Every odd field is an instrument and every even is an artst of a comma
+ *   musician who played it. Every odd field is an instrument and every even is an artist of a comma
  *   delimited list of artists.
  * * TIPL - The "Involved people list" frame is very similar to the musician credits list, but maps
  *   betweenInclusive functions, like producer, and names.
@@ -78,7 +78,7 @@ import {Guards, StringComparison, StringUtils} from "../../utils";
  *   your own.
  * * TFLT - The "File type" frame indicates which type of audio this tag defines. (see the
  *   specification for more details)
- * * TMED - The "Media type" frame descrives from which media the sound originated. (see the
+ * * TMED - The "Media type" frame describes from which media the sound originated. (see the
  *   specification for more details)
  * * TMOO - The "mood" frame is intended to reflect the mood of the audio with a few keywords (eg.
  *   "Romantic" or "Sad").
@@ -104,7 +104,7 @@ import {Guards, StringComparison, StringUtils} from "../../utils";
  *   media doesn't allow the desired length of the filename. The filename is case sensitive and
  *   includes its extension.
  * * TDLY - The "Playlist delay" frame defines the numbers of milliseconds of silence that should
- *   be inserted before this audio. The value zero indicates that this is a part of a multifile
+ *   be inserted before this audio. The value zero indicates that this is a part of a multi-file
  *   audio track that should be played continuously.
  * * TDEN - The "Encoding time" frame contains a timestamp describing when the audio was encoded.
  *   Timestamp format is described in the ID3v2 structure document.
@@ -162,7 +162,7 @@ export class TextInformationFrame extends Frame {
      * Constructs and initializes a new instance with a specified identifier
      * @param identifier Byte vector containing the identifier for the frame
      * @param encoding Optionally, the encoding to use for the new instance. If omitted, defaults
-     *     to {@see Id3v2Tag.defaultEncoding}
+     *     to {@link Id3v2Settings.defaultEncoding}
      */
     public static fromIdentifier(
         identifier: FrameIdentifier,
@@ -177,9 +177,9 @@ export class TextInformationFrame extends Frame {
      * Constructs and initializes a new instance by reading its raw data in a specified ID3v2
      * version. This method allows for offset reading from the data bytevector.
      * @param data Raw representation of the new frame
-     * @param offset What offset in {@paramref data} the frame actually begins. Must be positive,
+     * @param offset What offset in `data` the frame actually begins. Must be positive,
      *     safe integer
-     * @param header Header of the frame found at {@paramref data} in the data
+     * @param header Header of the frame found at `data` in the data
      * @param version ID3v2 version the frame was originally encoded with
      */
     public static fromOffsetRawData(
@@ -245,7 +245,7 @@ export class TextInformationFrame extends Frame {
     }
     /**
      * Sets the text encoding to use when rendering the current instance.
-     * This value will be overridden if {@see Id3v2Tag.forceDefaultEncoding} is `true`.
+     * This value will be overridden if {@link Id3v2Settings.forceDefaultEncoding} is `true`.
      */
     public set textEncoding(value: StringType) {
         this.parseRawData();
@@ -257,11 +257,11 @@ export class TextInformationFrame extends Frame {
     // #region Public Methods
 
     /**
-     * Gets a {@see TextInformationFrame} object of a specified type from a specified type from a
+     * Gets a {@link TextInformationFrame} object of a specified type from a specified type from a
      * list of text information frames.
      * @param frames List of frames to search
      * @param ident Frame identifier to search for
-     * @returns TextInformationFrame Matching frame if it exists in {@paramref tag}, `undefined` if
+     * @returns TextInformationFrame Matching frame if it exists in `tag`, `undefined` if
      *     a matching frame was not found
      */
     public static findTextInformationFrame(
@@ -343,7 +343,7 @@ export class TextInformationFrame extends Frame {
 
     /**
      * Performs the actual parsing of the raw data.
-     * Because of the high parsing cost and relatively low usage of the class {@see parseFields}
+     * Because of the high parsing cost and relatively low usage of the class {@link parseFields}
      * only stores the field data so it can be parsed on demand. Whenever a property or method is
      * called which requires the data, this method is called, and only on the first call does it
      * actually parse the data.
@@ -402,7 +402,7 @@ export class TextInformationFrame extends Frame {
                 // * (CR) - "Cover"
                 // * (( - used to escape a "(" in a refinement/genre name
 
-                // NOTE: This encoding has and inherent flaw around how multiple genres should be
+                // NOTE: This encoding has an inherent flaw around how multiple genres should be
                 //    encoded. Since multiple genres are already an edge case, I'm just going to
                 //    say yolo to this whole block of code copied over from the .NET implementation
 
@@ -559,7 +559,7 @@ export class TextInformationFrame extends Frame {
 }
 
 export class UserTextInformationFrame extends TextInformationFrame {
-    // #region Contructors
+    // #region Constructors
 
     private constructor(header: Id3v2FrameHeader) {
         super(header);
@@ -584,9 +584,9 @@ export class UserTextInformationFrame extends TextInformationFrame {
      * Constructs and initializes a new instance by reading its raw data in a specified ID3v2
      * version. This method allows for offset reading from the data bytevector.
      * @param data Raw representation of the new frame
-     * @param offset What offset in {@paramref data} the frame actually begins. Must be positive,
+     * @param offset What offset in `data` the frame actually begins. Must be positive,
      *     safe integer
-     * @param header Header of the frame found at {@paramref data} in the data
+     * @param header Header of the frame found at `data` in the data
      * @param version ID3v2 version the frame was originally encoded with
      */
     public static fromOffsetRawData(
@@ -678,7 +678,7 @@ export class UserTextInformationFrame extends TextInformationFrame {
     /**
      * Gets a user text information frame from a specified tag
      * @param frames Object to search in
-     * @param description Description to use to match the frame in the {@paramref tag}
+     * @param description Description to use to match the frame in the `tag`
      * @param caseSensitive Whether or not to search for the frame case-sensitively.
      * @returns UserTextInformationFrame Frame containing the matching user, `undefined` if a match
      *     was not found

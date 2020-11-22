@@ -1,6 +1,6 @@
-**node-taglib-sharp**
+**[node-taglib-sharp](../README.md)**
 
-> [README](../README.md) / [Globals](../globals.md) / ["src/utils"](../modules/_src_utils_.md) / FileUtils
+> [Globals](../globals.md) / ["src/utils"](../modules/_src_utils_.md) / FileUtils
 
 # Class: FileUtils
 
@@ -19,8 +19,6 @@
 ### getExtension
 
 ▸ `Static`**getExtension**(`name`: string): string
-
-*Defined in src/utils.ts:93*
 
 #### Parameters:
 

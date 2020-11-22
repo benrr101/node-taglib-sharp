@@ -1,6 +1,6 @@
-**node-taglib-sharp**
+**[node-taglib-sharp](../README.md)**
 
-> [README](../README.md) / [Globals](../globals.md) / "src/id3v2/frameIdentifiers"
+> [Globals](../globals.md) / "src/id3v2/frameIdentifiers"
 
 # Module: "src/id3v2/frameIdentifiers"
 
@@ -20,8 +20,6 @@
 ### FrameIdentifiers
 
 ▪ `Const` **FrameIdentifiers**: object
-
-*Defined in src/id3v2/frameIdentifiers.ts:167*
 
 #### Properties:
 
@@ -189,8 +187,6 @@ ___
 ### uniqueFrameIdentifiers
 
 ▪ `Const` **uniqueFrameIdentifiers**: object
-
-*Defined in src/id3v2/frameIdentifiers.ts:71*
 
 #### Properties:
 

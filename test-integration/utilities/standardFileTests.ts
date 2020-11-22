@@ -26,6 +26,25 @@ export class StandardFileTests {
     private static readonly samplePicture = TestConstants.getSampleFilePath("sample_teenytiny.gif");
     private static readonly sampleOther = TestConstants.getSampleFilePath("apple_tags.m4a");
 
+    public static performTestWithTmpFile(sampleFile: string, tmpFile: string, test: () => void) {
+        if (sampleFile !== tmpFile && fs.existsSync(tmpFile)) {
+            fs.unlinkSync(tmpFile);
+        }
+
+        const shouldCreateTemp = sampleFile !== tmpFile;
+        if (shouldCreateTemp) {
+            fs.copyFileSync(sampleFile, tmpFile);
+        }
+
+        try {
+            test();
+        } finally {
+            if (shouldCreateTemp) {
+                Utilities.deleteBestEffort(tmpFile);
+            }
+        }
+    }
+
     public static readAudioProperties(file: File): void {
         assert.strictEqual(file.properties.audioSampleRate, 44100);
         assert.strictEqual(Math.floor(file.properties.durationMilliseconds / 1000), 5);

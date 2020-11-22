@@ -6,7 +6,7 @@ import {FrameIdentifiers} from "../frameIdentifiers";
 import {Guards} from "../../utils";
 
 /**
- * This class extends {@see Frame} implementing support for ID3v2 play count (PCNT) frames.
+ * This class extends {@link Frame} implementing support for ID3v2 play count (PCNT) frames.
  */
 export default class PlayCountFrame extends Frame {
     private _playCount: BigInt.BigInteger;
@@ -29,9 +29,9 @@ export default class PlayCountFrame extends Frame {
      * Constructs and initializes a new instance of frame by reading its raw data in a specified
      * ID3v2 version starting at a specified offset.
      * @param data Raw representation of the new frame.
-     * @param offset Offset into {@paramref data} where the frame actually begins. Must be a
+     * @param offset Offset into `data` where the frame actually begins. Must be a
      *     positive, safe integer
-     * @param header Header of the frame found at {@paramref offset} in the data
+     * @param header Header of the frame found at `offset` in the data
      * @param version ID3v2 version the frame was originally encoded with
      */
     public static fromOffsetRawData(
@@ -95,12 +95,12 @@ export default class PlayCountFrame extends Frame {
     }
 
     /** @inheritDoc */
-    protected parseFields(data: ByteVector, version: number) {
+    protected parseFields(data: ByteVector, _version: number) {
         this.playCount = data.toULong();
     }
 
     /** @inheritDoc */
-    protected renderFields(version: number): ByteVector {
+    protected renderFields(_version: number): ByteVector {
         const data = ByteVector.fromULong(this.playCount);
         while (data.length > 4 && data.get(0) === 0) {
             data.removeAtIndex(0);

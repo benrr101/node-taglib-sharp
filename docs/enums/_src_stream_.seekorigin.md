@@ -1,6 +1,6 @@
-**node-taglib-sharp**
+**[node-taglib-sharp](../README.md)**
 
-> [README](../README.md) / [Globals](../globals.md) / ["src/stream"](../modules/_src_stream_.md) / SeekOrigin
+> [Globals](../globals.md) / ["src/stream"](../modules/_src_stream_.md) / SeekOrigin
 
 # Enumeration: SeekOrigin
 
@@ -16,22 +16,16 @@
 
 ### Begin
 
-•  **Begin**: {}
-
-*Defined in src/stream.ts:6*
+•  **Begin**: 
 
 ___
 
 ### Current
 
-•  **Current**: {}
-
-*Defined in src/stream.ts:7*
+•  **Current**: 
 
 ___
 
 ### End
 
-•  **End**: {}
-
-*Defined in src/stream.ts:8*
+•  **End**:

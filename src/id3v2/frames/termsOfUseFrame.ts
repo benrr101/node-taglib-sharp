@@ -21,7 +21,7 @@ export default class TermsOfUseFrame extends Frame {
      * Constructs and initializes a new instance with a specified language.
      * @param language ISO-639-2 language code for the new frame
      * @param textEncoding Optional, text encoding to use when rendering the new frame. If not
-     *     provided defaults to {@see Id3v2Settings.defaultEncoding}
+     *     provided defaults to {@link Id3v2Settings.defaultEncoding}
      */
     public static fromFields(
         language: string,
@@ -37,9 +37,9 @@ export default class TermsOfUseFrame extends Frame {
      * Constructs and initializes a new instance by reading its raw data in a specified ID3v2
      * version. This method allows for offset reading from the data bytevector.
      * @param data Raw representation of the new frame
-     * @param offset What offset in {@paramref data} the frame actually begins. Must be positive,
+     * @param offset What offset in `data` the frame actually begins. Must be positive,
      *     safe integer
-     * @param header Header of the frame found at {@paramref data} in the data
+     * @param header Header of the frame found at `data` in the data
      * @param version ID3v2 version the frame was originally encoded with
      */
     public static fromOffsetRawData(
@@ -109,8 +109,8 @@ export default class TermsOfUseFrame extends Frame {
     public get textEncoding(): StringType { return this._textEncoding; }
     /**
      * Sets the text encoding to use when storing the current instance.
-     * This encoding is overridden when rendering if {@see Id3v2Tag.forceDefaultEncoding} is `true`
-     * or the render version does not support it.
+     * This encoding is overridden when rendering if {@link Id3v2Settings.forceDefaultEncoding} is
+     * `true` or the render version does not support it.
      * @param value Text encoding to use when storing the current instance
      */
     public set textEncoding(value: StringType) { this._textEncoding = value; }
@@ -172,7 +172,7 @@ export default class TermsOfUseFrame extends Frame {
     // #region Protected Methods
 
     /** @inheritDoc */
-    protected parseFields(data: ByteVector, version: number): void {
+    protected parseFields(data: ByteVector, _version: number): void {
         if (data.length < 4) {
             throw new CorruptFileError("Not enough bytes in field");
         }

@@ -13,7 +13,7 @@ import {Guards} from "../../utils";
  * by a string termination, all the following information should be ignored and not be displayed.
  * The following table contains the types and descriptions as found in the ID3 2.4.0 native frames
  * specification.
- * * WCOM - The 'Commercial Information' frame is a URL prointing at a webpage with information
+ * * WCOM - The 'Commercial Information' frame is a URL pointing at a webpage with information
  *   such as where the album can be bought. There may be more than one WCOM frame per tag, but not
  *   with the same content.
  * * WCOP - The 'Copyright/Legal information' frame is a URL pointing at a webpage where the terms
@@ -24,7 +24,7 @@ import {Guards} from "../../utils";
  *   than one performer, but not with the same content.
  * * WOAS - THe 'Official audio source webpage' frame is a URL pointing at the official webpage of
  *   the source of the audio file, eg. a movie.
- * * WORS - The 'Official internet radio statio homepage' frame contains a URL pointing at the
+ * * WORS - The 'Official internet radio station homepage' frame contains a URL pointing at the
  *   homepage of the internet radio station.
  * * WPAY - The 'Payment' frame is a URL pointing at a webpage that will handle the process of
  *   paying for this file.
@@ -56,9 +56,9 @@ export class UrlLinkFrame extends Frame {
      * Constructs and initializes a new instance by reading its raw data in a specified ID3v2
      * version. This method allows for offset reading from the data bytevector.
      * @param data Raw representation of the new frame
-     * @param offset What offset in {@paramref data} the frame actually begins. Must be positive,
+     * @param offset What offset in `data` the frame actually begins. Must be positive,
      *     safe integer
-     * @param header Header of the frame found at {@paramref data} in the data
+     * @param header Header of the frame found at `data` in the data
      * @param version ID3v2 version the frame was originally encoded with
      */
     public static fromOffsetRawData(
@@ -124,7 +124,7 @@ export class UrlLinkFrame extends Frame {
     }
     /**
      * Sets the text encoding to use when rendering the current instance.
-     * NOTE: This value will be overwritten if {@see Id3v2Tag.forceDefaultEncoding} is `true`.
+     * NOTE: This value will be overwritten if {@link Id3v2Settings.forceDefaultEncoding} is `true`.
      * @param value
      */
     public set textEncoding(value: StringType) { this._encoding = value; }
@@ -274,9 +274,9 @@ export class UserUrlLinkFrame extends UrlLinkFrame {
      * Constructs and initializes a new instance by reading its raw data in a specified ID3v2
      * version. This method allows for offset reading from the data bytevector.
      * @param data Raw representation of the new frame
-     * @param offset What offset in {@paramref data} the frame actually begins. Must be positive,
+     * @param offset What offset in `data` the frame actually begins. Must be positive,
      *     safe integer
-     * @param header Header of the frame found at {@paramref data} in the data
+     * @param header Header of the frame found at `data` in the data
      * @param version ID3v2 version the frame was originally encoded with
      */
     public static fromOffsetRawData(

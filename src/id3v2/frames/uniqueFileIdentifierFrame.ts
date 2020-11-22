@@ -39,9 +39,9 @@ export default class UniqueFileIdentifierFrame extends Frame {
      * Constructs and initializes a new instance by reading its raw data in a specified ID3v2
      * version. This method allows for offset reading from the data bytevector.
      * @param data Raw representation of the new frame
-     * @param offset What offset in {@paramref data} the frame actually begins. Must be positive,
+     * @param offset What offset in `data` the frame actually begins. Must be positive,
      *     safe integer
-     * @param header Header of the frame found at {@paramref data} in the data
+     * @param header Header of the frame found at `data` in the data
      * @param version ID3v2 version the frame was originally encoded with
      */
     public static fromOffsetRawData(
@@ -128,7 +128,7 @@ export default class UniqueFileIdentifierFrame extends Frame {
     }
 
     /** @inheritDoc */
-    protected parseFields(data: ByteVector, version: number): void {
+    protected parseFields(data: ByteVector, _version: number): void {
         const fields = data.split(ByteVector.getTextDelimiter(StringType.Latin1));
         if (fields.length !== 2) {
             return;
@@ -139,7 +139,7 @@ export default class UniqueFileIdentifierFrame extends Frame {
     }
 
     /** @inheritDoc */
-    protected renderFields(version: number): ByteVector {
+    protected renderFields(_version: number): ByteVector {
         return ByteVector.concatenate(
             ByteVector.fromString(this.owner, StringType.Latin1),
             ByteVector.getTextDelimiter(StringType.Latin1),

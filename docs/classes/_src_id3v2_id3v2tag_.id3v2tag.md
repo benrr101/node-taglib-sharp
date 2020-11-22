@@ -1,6 +1,6 @@
-**node-taglib-sharp**
+**[node-taglib-sharp](../README.md)**
 
-> [README](../README.md) / [Globals](../globals.md) / ["src/id3v2/id3v2Tag"](../modules/_src_id3v2_id3v2tag_.md) / Id3v2Tag
+> [Globals](../globals.md) / ["src/id3v2/id3v2Tag"](../modules/_src_id3v2_id3v2tag_.md) / Id3v2Tag
 
 # Class: Id3v2Tag
 
@@ -101,7 +101,7 @@
 * [fromData](_src_id3v2_id3v2tag_.id3v2tag.md#fromdata)
 * [fromEmpty](_src_id3v2_id3v2tag_.id3v2tag.md#fromempty)
 * [fromFile](_src_id3v2_id3v2tag_.id3v2tag.md#fromfile)
-* [isNullOrLikeEmpty](_src_id3v2_id3v2tag_.id3v2tag.md#isnullorlikeempty)
+* [isFalsyOrLikeEmpty](_src_id3v2_id3v2tag_.id3v2tag.md#isfalsyorlikeempty)
 * [joinGroup](_src_id3v2_id3v2tag_.id3v2tag.md#joingroup)
 
 ## Accessors
@@ -112,8 +112,6 @@
 
 *Overrides [Tag](_src_tag_.tag.md).[album](_src_tag_.tag.md#album)*
 
-*Defined in src/id3v2/id3v2Tag.ts:335*
-
 **`inheritdoc`** via TALB frame
 
 **Returns:** string
@@ -121,8 +119,6 @@
 • set **album**(`value`: string): void
 
 *Overrides [Tag](_src_tag_.tag.md).[album](_src_tag_.tag.md#album)*
-
-*Defined in src/id3v2/id3v2Tag.ts:337*
 
 **`inheritdoc`** via TALB frame
 
@@ -142,8 +138,6 @@ ___
 
 *Overrides [Tag](_src_tag_.tag.md).[albumArtists](_src_tag_.tag.md#albumartists)*
 
-*Defined in src/id3v2/id3v2Tag.ts:315*
-
 **`inheritdoc`** via TSO2 frame
 
 **Returns:** string[]
@@ -151,8 +145,6 @@ ___
 • set **albumArtists**(`value`: string[]): void
 
 *Overrides [Tag](_src_tag_.tag.md).[albumArtists](_src_tag_.tag.md#albumartists)*
-
-*Defined in src/id3v2/id3v2Tag.ts:317*
 
 **`inheritdoc`** via TSO2 frame
 
@@ -172,8 +164,6 @@ ___
 
 *Overrides [Tag](_src_tag_.tag.md).[albumArtistsSort](_src_tag_.tag.md#albumartistssort)*
 
-*Defined in src/id3v2/id3v2Tag.ts:320*
-
 **`inheritdoc`** via TPE2 frame
 
 **Returns:** string[]
@@ -181,8 +171,6 @@ ___
 • set **albumArtistsSort**(`value`: string[]): void
 
 *Overrides [Tag](_src_tag_.tag.md).[albumArtistsSort](_src_tag_.tag.md#albumartistssort)*
-
-*Defined in src/id3v2/id3v2Tag.ts:322*
 
 **`inheritdoc`** via TPE2 frame
 
@@ -202,8 +190,6 @@ ___
 
 *Overrides [Tag](_src_tag_.tag.md).[albumSort](_src_tag_.tag.md#albumsort)*
 
-*Defined in src/id3v2/id3v2Tag.ts:340*
-
 **`inheritdoc`** via TSOA frame
 
 **Returns:** string
@@ -212,9 +198,7 @@ ___
 
 *Overrides [Tag](_src_tag_.tag.md).[albumSort](_src_tag_.tag.md#albumsort)*
 
-*Defined in src/id3v2/id3v2Tag.ts:342*
-
-**`inheritdoc`** via TSOA fram
+**`inheritdoc`** via TSOA frame
 
 #### Parameters:
 
@@ -232,8 +216,6 @@ ___
 
 *Overrides [Tag](_src_tag_.tag.md).[amazonId](_src_tag_.tag.md#amazonid)*
 
-*Defined in src/id3v2/id3v2Tag.ts:579*
-
 **`inheritdoc`** via TXXX:ASIN
 
 **Returns:** string
@@ -241,8 +223,6 @@ ___
 • set **amazonId**(`value`: string): void
 
 *Overrides [Tag](_src_tag_.tag.md).[amazonId](_src_tag_.tag.md#amazonid)*
-
-*Defined in src/id3v2/id3v2Tag.ts:581*
 
 **`inheritdoc`** via TXXX:ASIN
 
@@ -262,8 +242,6 @@ ___
 
 *Overrides [Tag](_src_tag_.tag.md).[beatsPerMinute](_src_tag_.tag.md#beatsperminute)*
 
-*Defined in src/id3v2/id3v2Tag.ts:507*
-
 **`inheritdoc`** via TBPM frame
 
 **Returns:** number
@@ -271,8 +249,6 @@ ___
 • set **beatsPerMinute**(`value`: number): void
 
 *Overrides [Tag](_src_tag_.tag.md).[beatsPerMinute](_src_tag_.tag.md#beatsperminute)*
-
-*Defined in src/id3v2/id3v2Tag.ts:514*
 
 **`inheritdoc`** via TBPM frame
 
@@ -292,8 +268,6 @@ ___
 
 *Overrides [Tag](_src_tag_.tag.md).[comment](_src_tag_.tag.md#comment)*
 
-*Defined in src/id3v2/id3v2Tag.ts:345*
-
 **`inheritdoc`** via COMM frame
 
 **Returns:** string
@@ -301,8 +275,6 @@ ___
 • set **comment**(`value`: string): void
 
 *Overrides [Tag](_src_tag_.tag.md).[comment](_src_tag_.tag.md#comment)*
-
-*Defined in src/id3v2/id3v2Tag.ts:351*
 
 **`inheritdoc`** via COMM frame
 
@@ -322,8 +294,6 @@ ___
 
 *Overrides [Tag](_src_tag_.tag.md).[composers](_src_tag_.tag.md#composers)*
 
-*Defined in src/id3v2/id3v2Tag.ts:325*
-
 **`inheritdoc`** via TCOM frame
 
 **Returns:** string[]
@@ -331,8 +301,6 @@ ___
 • set **composers**(`value`: string[]): void
 
 *Overrides [Tag](_src_tag_.tag.md).[composers](_src_tag_.tag.md#composers)*
-
-*Defined in src/id3v2/id3v2Tag.ts:327*
 
 **`inheritdoc`** via TCOM frame
 
@@ -352,8 +320,6 @@ ___
 
 *Overrides [Tag](_src_tag_.tag.md).[composersSort](_src_tag_.tag.md#composerssort)*
 
-*Defined in src/id3v2/id3v2Tag.ts:330*
-
 **`inheritdoc`** via TSOC frame
 
 **Returns:** string[]
@@ -361,8 +327,6 @@ ___
 • set **composersSort**(`value`: string[]): void
 
 *Overrides [Tag](_src_tag_.tag.md).[composersSort](_src_tag_.tag.md#composerssort)*
-
-*Defined in src/id3v2/id3v2Tag.ts:332*
 
 **`inheritdoc`** via TSOC frame
 
@@ -382,8 +346,6 @@ ___
 
 *Overrides [Tag](_src_tag_.tag.md).[conductor](_src_tag_.tag.md#conductor)*
 
-*Defined in src/id3v2/id3v2Tag.ts:517*
-
 **`inheritdoc`** via TPE3 frame
 
 **Returns:** string
@@ -391,8 +353,6 @@ ___
 • set **conductor**(`value`: string): void
 
 *Overrides [Tag](_src_tag_.tag.md).[conductor](_src_tag_.tag.md#conductor)*
-
-*Defined in src/id3v2/id3v2Tag.ts:519*
 
 **`inheritdoc`** via TPE3 frame
 
@@ -412,8 +372,6 @@ ___
 
 *Overrides [Tag](_src_tag_.tag.md).[copyright](_src_tag_.tag.md#copyright)*
 
-*Defined in src/id3v2/id3v2Tag.ts:522*
-
 **`inheritdoc`** via TCOP frame
 
 **Returns:** string
@@ -421,8 +379,6 @@ ___
 • set **copyright**(`value`: string): void
 
 *Overrides [Tag](_src_tag_.tag.md).[copyright](_src_tag_.tag.md#copyright)*
-
-*Defined in src/id3v2/id3v2Tag.ts:524*
 
 **`inheritdoc`** via TCOP frame
 
@@ -442,8 +398,6 @@ ___
 
 *Overrides [Tag](_src_tag_.tag.md).[dateTagged](_src_tag_.tag.md#datetagged)*
 
-*Defined in src/id3v2/id3v2Tag.ts:527*
-
 **`inheritdoc`** via TDTG frame
 
 **Returns:** Date \| undefined
@@ -451,8 +405,6 @@ ___
 • set **dateTagged**(`value`: Date \| undefined): void
 
 *Overrides [Tag](_src_tag_.tag.md).[dateTagged](_src_tag_.tag.md#datetagged)*
-
-*Defined in src/id3v2/id3v2Tag.ts:534*
 
 **`inheritdoc`** via TDTG frame
 
@@ -472,8 +424,6 @@ ___
 
 *Overrides [Tag](_src_tag_.tag.md).[description](_src_tag_.tag.md#description)*
 
-*Defined in src/id3v2/id3v2Tag.ts:246*
-
 **`inheritdoc`** via user text frame "description"
 
 **Returns:** string
@@ -481,8 +431,6 @@ ___
 • set **description**(`value`: string): void
 
 *Overrides [Tag](_src_tag_.tag.md).[description](_src_tag_.tag.md#description)*
-
-*Defined in src/id3v2/id3v2Tag.ts:248*
 
 **`inheritdoc`** via user text frame "description"
 
@@ -502,8 +450,6 @@ ___
 
 *Overrides [Tag](_src_tag_.tag.md).[disc](_src_tag_.tag.md#disc)*
 
-*Defined in src/id3v2/id3v2Tag.ts:465*
-
 **`inheritdoc`** via TPOS frame
 
 **Returns:** number
@@ -511,8 +457,6 @@ ___
 • set **disc**(`value`: number): void
 
 *Overrides [Tag](_src_tag_.tag.md).[disc](_src_tag_.tag.md#disc)*
-
-*Defined in src/id3v2/id3v2Tag.ts:467*
 
 **`inheritdoc`** via TPOS frame
 
@@ -532,8 +476,6 @@ ___
 
 *Overrides [Tag](_src_tag_.tag.md).[discCount](_src_tag_.tag.md#disccount)*
 
-*Defined in src/id3v2/id3v2Tag.ts:470*
-
 **`inheritdoc`** via TPOS frame
 
 **Returns:** number
@@ -541,8 +483,6 @@ ___
 • set **discCount**(`value`: number): void
 
 *Overrides [Tag](_src_tag_.tag.md).[discCount](_src_tag_.tag.md#disccount)*
-
-*Defined in src/id3v2/id3v2Tag.ts:472*
 
 **`inheritdoc`** via TPOS frame
 
@@ -562,7 +502,7 @@ ___
 
 *Inherited from [Tag](_src_tag_.tag.md).[firstAlbumArtist](_src_tag_.tag.md#firstalbumartist)*
 
-*Defined in src/tag.ts:246*
+Gets the the first value contained in [albumArtists](_src_id3v2_id3v2tag_.id3v2tag.md#albumartists).
 
 **Returns:** string
 
@@ -574,7 +514,7 @@ ___
 
 *Inherited from [Tag](_src_tag_.tag.md).[firstAlbumArtistSort](_src_tag_.tag.md#firstalbumartistsort)*
 
-*Defined in src/tag.ts:248*
+Gets the first value contained in [albumArtistsSort](_src_id3v2_id3v2tag_.id3v2tag.md#albumartistssort)
 
 **Returns:** string
 
@@ -586,7 +526,7 @@ ___
 
 *Inherited from [Tag](_src_tag_.tag.md).[firstComposer](_src_tag_.tag.md#firstcomposer)*
 
-*Defined in src/tag.ts:254*
+Gets the first value contained in [composers](_src_id3v2_id3v2tag_.id3v2tag.md#composers)
 
 **Returns:** string
 
@@ -598,7 +538,7 @@ ___
 
 *Inherited from [Tag](_src_tag_.tag.md).[firstComposerSort](_src_tag_.tag.md#firstcomposersort)*
 
-*Defined in src/tag.ts:256*
+Gets the first value contained in [composersSort](_src_id3v2_id3v2tag_.id3v2tag.md#composerssort)
 
 **Returns:** string
 
@@ -610,7 +550,7 @@ ___
 
 *Inherited from [Tag](_src_tag_.tag.md).[firstGenre](_src_tag_.tag.md#firstgenre)*
 
-*Defined in src/tag.ts:258*
+Gets the first value contained in [genres](_src_id3v2_id3v2tag_.id3v2tag.md#genres)
 
 **Returns:** string
 
@@ -622,7 +562,7 @@ ___
 
 *Inherited from [Tag](_src_tag_.tag.md).[firstPerformer](_src_tag_.tag.md#firstperformer)*
 
-*Defined in src/tag.ts:250*
+Gets the first value contained in [performers](_src_id3v2_id3v2tag_.id3v2tag.md#performers)
 
 **Returns:** string
 
@@ -634,7 +574,7 @@ ___
 
 *Inherited from [Tag](_src_tag_.tag.md).[firstPerformerSort](_src_tag_.tag.md#firstperformersort)*
 
-*Defined in src/tag.ts:252*
+Gets the first value contained in [performersSort](_src_id3v2_id3v2tag_.id3v2tag.md#performerssort)
 
 **Returns:** string
 
@@ -644,15 +584,11 @@ ___
 
 • get **flags**(): [Id3v2TagHeaderFlags](../enums/_src_id3v2_id3v2tagheader_.id3v2tagheaderflags.md)
 
-*Defined in src/id3v2/id3v2Tag.ts:121*
-
 Gets the header flags applied to the current instance.
 
 **Returns:** [Id3v2TagHeaderFlags](../enums/_src_id3v2_id3v2tagheader_.id3v2tagheaderflags.md)
 
 • set **flags**(`value`: [Id3v2TagHeaderFlags](../enums/_src_id3v2_id3v2tagheader_.id3v2tagheaderflags.md)): void
-
-*Defined in src/id3v2/id3v2Tag.ts:127*
 
 Sets the header flags applied to the current instance
 
@@ -660,7 +596,7 @@ Sets the header flags applied to the current instance
 
 Name | Type | Description |
 ------ | ------ | ------ |
-`value` | [Id3v2TagHeaderFlags](../enums/_src_id3v2_id3v2tagheader_.id3v2tagheaderflags.md) | Bitwise combined {@see Id3v2TagHeaderFlags} value containing flags applied to the     current instance.  |
+`value` | [Id3v2TagHeaderFlags](../enums/_src_id3v2_id3v2tagheader_.id3v2tagheaderflags.md) | Bitwise combined [Id3v2TagHeaderFlags](../enums/_src_id3v2_id3v2tagheader_.id3v2tagheaderflags.md) value containing flags applied to the     current instance.  |
 
 **Returns:** void
 
@@ -669,8 +605,6 @@ ___
 ### frames
 
 • get **frames**(): [Frame](_src_id3v2_frames_frame_.frame.md)[]
-
-*Defined in src/id3v2/id3v2Tag.ts:132*
 
 Gets all frames contained in the current instance.
 
@@ -684,8 +618,6 @@ ___
 
 *Overrides [Tag](_src_tag_.tag.md).[genres](_src_tag_.tag.md#genres)*
 
-*Defined in src/id3v2/id3v2Tag.ts:371*
-
 **`inheritdoc`** via TCON frame
 
 **Returns:** string[]
@@ -693,8 +625,6 @@ ___
 • set **genres**(`value`: string[]): void
 
 *Overrides [Tag](_src_tag_.tag.md).[genres](_src_tag_.tag.md#genres)*
-
-*Defined in src/id3v2/id3v2Tag.ts:375*
 
 **`inheritdoc`** via TCON frame
 
@@ -714,8 +644,6 @@ ___
 
 *Overrides [Tag](_src_tag_.tag.md).[grouping](_src_tag_.tag.md#grouping)*
 
-*Defined in src/id3v2/id3v2Tag.ts:502*
-
 **`inheritdoc`** via TIT1 frame
 
 **Returns:** string
@@ -723,8 +651,6 @@ ___
 • set **grouping**(`value`: string): void
 
 *Overrides [Tag](_src_tag_.tag.md).[grouping](_src_tag_.tag.md#grouping)*
-
-*Defined in src/id3v2/id3v2Tag.ts:504*
 
 **`inheritdoc`** via TIT1 frame
 
@@ -744,8 +670,6 @@ ___
 
 *Overrides [Tag](_src_tag_.tag.md).[initialKey](_src_tag_.tag.md#initialkey)*
 
-*Defined in src/id3v2/id3v2Tag.ts:671*
-
 **`inheritdoc`** via TKEY frame
 
 **Returns:** string
@@ -753,8 +677,6 @@ ___
 • set **initialKey**(`value`: string): void
 
 *Overrides [Tag](_src_tag_.tag.md).[initialKey](_src_tag_.tag.md#initialkey)*
-
-*Defined in src/id3v2/id3v2Tag.ts:673*
 
 **`inheritdoc`** via TKEY frame
 
@@ -772,8 +694,6 @@ ___
 
 • get **isCompilation**(): boolean
 
-*Defined in src/id3v2/id3v2Tag.ts:139*
-
 Gets whether or not the album described by the current instance is a compilation.
 This property is implemented using the TCMP Text Information Frame to provide support for a
 feature of the Apple iPod and iTunes products.
@@ -781,8 +701,6 @@ feature of the Apple iPod and iTunes products.
 **Returns:** boolean
 
 • set **isCompilation**(`value`: boolean): void
-
-*Defined in src/id3v2/id3v2Tag.ts:149*
 
 Gets whether or not the album described by the current instance is a compilation.
 This property is implemented using the TCMP Text Information Frame to provide support for a
@@ -804,8 +722,6 @@ ___
 
 *Overrides [Tag](_src_tag_.tag.md).[isEmpty](_src_tag_.tag.md#isempty)*
 
-*Defined in src/id3v2/id3v2Tag.ts:707*
-
 **`inheritdoc`** 
 
 **Returns:** boolean
@@ -818,8 +734,6 @@ ___
 
 *Overrides [Tag](_src_tag_.tag.md).[isrc](_src_tag_.tag.md#isrc)*
 
-*Defined in src/id3v2/id3v2Tag.ts:686*
-
 **`inheritdoc`** via TSRC frame
 
 **Returns:** string
@@ -827,8 +741,6 @@ ___
 • set **isrc**(`value`: string): void
 
 *Overrides [Tag](_src_tag_.tag.md).[isrc](_src_tag_.tag.md#isrc)*
-
-*Defined in src/id3v2/id3v2Tag.ts:688*
 
 **`inheritdoc`** via TSRC frame
 
@@ -848,7 +760,7 @@ ___
 
 *Inherited from [Tag](_src_tag_.tag.md).[joinedAlbumArtists](_src_tag_.tag.md#joinedalbumartists)*
 
-*Defined in src/tag.ts:260*
+Gets a semicolon and space separated string containing the values in [albumArtists](_src_id3v2_id3v2tag_.id3v2tag.md#albumartists)
 
 **Returns:** string
 
@@ -860,7 +772,7 @@ ___
 
 *Inherited from [Tag](_src_tag_.tag.md).[joinedComposers](_src_tag_.tag.md#joinedcomposers)*
 
-*Defined in src/tag.ts:266*
+Gets a semicolon and space separated string containing the values in [composers](_src_id3v2_id3v2tag_.id3v2tag.md#composers)
 
 **Returns:** string
 
@@ -872,7 +784,7 @@ ___
 
 *Inherited from [Tag](_src_tag_.tag.md).[joinedGenres](_src_tag_.tag.md#joinedgenres)*
 
-*Defined in src/tag.ts:268*
+Gets a semicolon and space separated string containing the values in [genres](_src_id3v2_id3v2tag_.id3v2tag.md#genres)
 
 **Returns:** string
 
@@ -884,7 +796,7 @@ ___
 
 *Inherited from [Tag](_src_tag_.tag.md).[joinedPerformers](_src_tag_.tag.md#joinedperformers)*
 
-*Defined in src/tag.ts:262*
+Gets a semicolon and space separated string containing the values in [performers](_src_id3v2_id3v2tag_.id3v2tag.md#performers)
 
 **Returns:** string
 
@@ -896,7 +808,7 @@ ___
 
 *Inherited from [Tag](_src_tag_.tag.md).[joinedPerformersSort](_src_tag_.tag.md#joinedperformerssort)*
 
-*Defined in src/tag.ts:264*
+Gets a semicolon and space separated string containing the values in [performersSort](_src_id3v2_id3v2tag_.id3v2tag.md#performerssort)
 
 **Returns:** string
 
@@ -908,8 +820,6 @@ ___
 
 *Overrides [Tag](_src_tag_.tag.md).[lyrics](_src_tag_.tag.md#lyrics)*
 
-*Defined in src/id3v2/id3v2Tag.ts:475*
-
 **`inheritdoc`** via USLT frame
 
 **Returns:** string
@@ -917,8 +827,6 @@ ___
 • set **lyrics**(`value`: string): void
 
 *Overrides [Tag](_src_tag_.tag.md).[lyrics](_src_tag_.tag.md#lyrics)*
-
-*Defined in src/id3v2/id3v2Tag.ts:481*
 
 **`inheritdoc`** via USLT frame
 
@@ -938,8 +846,6 @@ ___
 
 *Overrides [Tag](_src_tag_.tag.md).[musicBrainzArtistId](_src_tag_.tag.md#musicbrainzartistid)*
 
-*Defined in src/id3v2/id3v2Tag.ts:544*
-
 **`inheritdoc`** via TXXX:MusicBrainz Artist Id frame
 
 **Returns:** string
@@ -947,8 +853,6 @@ ___
 • set **musicBrainzArtistId**(`value`: string): void
 
 *Overrides [Tag](_src_tag_.tag.md).[musicBrainzArtistId](_src_tag_.tag.md#musicbrainzartistid)*
-
-*Defined in src/id3v2/id3v2Tag.ts:546*
 
 **`inheritdoc`** via TXXX:MusicBrainz Artist Id frame
 
@@ -968,8 +872,6 @@ ___
 
 *Overrides [Tag](_src_tag_.tag.md).[musicBrainzDiscId](_src_tag_.tag.md#musicbrainzdiscid)*
 
-*Defined in src/id3v2/id3v2Tag.ts:569*
-
 **`inheritdoc`** via TXXX:MusicBrainz Disc Id frame
 
 **Returns:** string
@@ -977,8 +879,6 @@ ___
 • set **musicBrainzDiscId**(`value`: string): void
 
 *Overrides [Tag](_src_tag_.tag.md).[musicBrainzDiscId](_src_tag_.tag.md#musicbrainzdiscid)*
-
-*Defined in src/id3v2/id3v2Tag.ts:571*
 
 **`inheritdoc`** via TXXX:MusicBrainz Disc Id frame
 
@@ -998,8 +898,6 @@ ___
 
 *Overrides [Tag](_src_tag_.tag.md).[musicBrainzReleaseArtistId](_src_tag_.tag.md#musicbrainzreleaseartistid)*
 
-*Defined in src/id3v2/id3v2Tag.ts:559*
-
 **`inheritdoc`** via TXXX:MusicBrainz Album Artist Id frame
 
 **Returns:** string
@@ -1007,8 +905,6 @@ ___
 • set **musicBrainzReleaseArtistId**(`value`: string): void
 
 *Overrides [Tag](_src_tag_.tag.md).[musicBrainzReleaseArtistId](_src_tag_.tag.md#musicbrainzreleaseartistid)*
-
-*Defined in src/id3v2/id3v2Tag.ts:561*
 
 **`inheritdoc`** via TXXX:MusicBrainz Album Artist Id frame
 
@@ -1028,8 +924,6 @@ ___
 
 *Overrides [Tag](_src_tag_.tag.md).[musicBrainzReleaseCountry](_src_tag_.tag.md#musicbrainzreleasecountry)*
 
-*Defined in src/id3v2/id3v2Tag.ts:594*
-
 **`inheritdoc`** via TXXX:MusicBrainz Album Release Country frame
 
 **Returns:** string
@@ -1037,8 +931,6 @@ ___
 • set **musicBrainzReleaseCountry**(`value`: string): void
 
 *Overrides [Tag](_src_tag_.tag.md).[musicBrainzReleaseCountry](_src_tag_.tag.md#musicbrainzreleasecountry)*
-
-*Defined in src/id3v2/id3v2Tag.ts:596*
 
 **`inheritdoc`** via TXXX:MusicBrainz Album Release Country frame
 
@@ -1058,9 +950,7 @@ ___
 
 *Overrides [Tag](_src_tag_.tag.md).[musicBrainzReleaseGroupId](_src_tag_.tag.md#musicbrainzreleasegroupid)*
 
-*Defined in src/id3v2/id3v2Tag.ts:549*
-
-**`inheritdoc`** via TXXX:MusicBrainz Relase Group Id frame
+**`inheritdoc`** via TXXX:MusicBrainz Release Group Id frame
 
 **Returns:** string
 
@@ -1068,9 +958,7 @@ ___
 
 *Overrides [Tag](_src_tag_.tag.md).[musicBrainzReleaseGroupId](_src_tag_.tag.md#musicbrainzreleasegroupid)*
 
-*Defined in src/id3v2/id3v2Tag.ts:551*
-
-**`inheritdoc`** via TXXX:MusicBrainz Relase Group Id frame
+**`inheritdoc`** via TXXX:MusicBrainz Release Group Id frame
 
 #### Parameters:
 
@@ -1088,8 +976,6 @@ ___
 
 *Overrides [Tag](_src_tag_.tag.md).[musicBrainzReleaseId](_src_tag_.tag.md#musicbrainzreleaseid)*
 
-*Defined in src/id3v2/id3v2Tag.ts:554*
-
 **`inheritdoc`** via TXXX:MusicBrainz Album Id frame
 
 **Returns:** string
@@ -1097,8 +983,6 @@ ___
 • set **musicBrainzReleaseId**(`value`: string): void
 
 *Overrides [Tag](_src_tag_.tag.md).[musicBrainzReleaseId](_src_tag_.tag.md#musicbrainzreleaseid)*
-
-*Defined in src/id3v2/id3v2Tag.ts:556*
 
 **`inheritdoc`** via TXXX:MusicBrainz Album Id frame
 
@@ -1118,8 +1002,6 @@ ___
 
 *Overrides [Tag](_src_tag_.tag.md).[musicBrainzReleaseStatus](_src_tag_.tag.md#musicbrainzreleasestatus)*
 
-*Defined in src/id3v2/id3v2Tag.ts:584*
-
 **`inheritdoc`** via TXXX:MusicBrainz Album Status frame
 
 **Returns:** string
@@ -1127,8 +1009,6 @@ ___
 • set **musicBrainzReleaseStatus**(`value`: string): void
 
 *Overrides [Tag](_src_tag_.tag.md).[musicBrainzReleaseStatus](_src_tag_.tag.md#musicbrainzreleasestatus)*
-
-*Defined in src/id3v2/id3v2Tag.ts:586*
 
 **`inheritdoc`** via TXXX:MusicBrainz Album Status frame
 
@@ -1148,8 +1028,6 @@ ___
 
 *Overrides [Tag](_src_tag_.tag.md).[musicBrainzReleaseType](_src_tag_.tag.md#musicbrainzreleasetype)*
 
-*Defined in src/id3v2/id3v2Tag.ts:589*
-
 **`inheritdoc`** via TXXX:MusicBrainz Album Type frame
 
 **Returns:** string
@@ -1157,8 +1035,6 @@ ___
 • set **musicBrainzReleaseType**(`value`: string): void
 
 *Overrides [Tag](_src_tag_.tag.md).[musicBrainzReleaseType](_src_tag_.tag.md#musicbrainzreleasetype)*
-
-*Defined in src/id3v2/id3v2Tag.ts:591*
 
 **`inheritdoc`** via TXXX:MusicBrainz Album Type frame
 
@@ -1178,8 +1054,6 @@ ___
 
 *Overrides [Tag](_src_tag_.tag.md).[musicBrainzTrackId](_src_tag_.tag.md#musicbrainztrackid)*
 
-*Defined in src/id3v2/id3v2Tag.ts:564*
-
 **`inheritdoc`** via UFID:http://musicbrainz.org frame
 
 **Returns:** string
@@ -1187,8 +1061,6 @@ ___
 • set **musicBrainzTrackId**(`value`: string): void
 
 *Overrides [Tag](_src_tag_.tag.md).[musicBrainzTrackId](_src_tag_.tag.md#musicbrainztrackid)*
-
-*Defined in src/id3v2/id3v2Tag.ts:566*
 
 **`inheritdoc`** via UFID:http://musicbrainz.org frame
 
@@ -1208,8 +1080,6 @@ ___
 
 *Overrides [Tag](_src_tag_.tag.md).[musicIpId](_src_tag_.tag.md#musicipid)*
 
-*Defined in src/id3v2/id3v2Tag.ts:574*
-
 **`inheritdoc`** via TXXX:MusicIP PUID frame
 
 **Returns:** string
@@ -1217,8 +1087,6 @@ ___
 • set **musicIpId**(`value`: string): void
 
 *Overrides [Tag](_src_tag_.tag.md).[musicIpId](_src_tag_.tag.md#musicipid)*
-
-*Defined in src/id3v2/id3v2Tag.ts:576*
 
 **`inheritdoc`** via TXXX:MusicIP PUID frame
 
@@ -1238,8 +1106,6 @@ ___
 
 *Overrides [Tag](_src_tag_.tag.md).[performers](_src_tag_.tag.md#performers)*
 
-*Defined in src/id3v2/id3v2Tag.ts:251*
-
 **`inheritdoc`** via TPE1 frame
 
 **Returns:** string[]
@@ -1247,8 +1113,6 @@ ___
 • set **performers**(`value`: string[]): void
 
 *Overrides [Tag](_src_tag_.tag.md).[performers](_src_tag_.tag.md#performers)*
-
-*Defined in src/id3v2/id3v2Tag.ts:253*
 
 **`inheritdoc`** via TPE1 frame
 
@@ -1268,8 +1132,6 @@ ___
 
 *Overrides [Tag](_src_tag_.tag.md).[performersRole](_src_tag_.tag.md#performersrole)*
 
-*Defined in src/id3v2/id3v2Tag.ts:264*
-
 **`inheritdoc`** via TMCL frame
 
 **Returns:** string[]
@@ -1277,8 +1139,6 @@ ___
 • set **performersRole**(`value`: string[]): void
 
 *Overrides [Tag](_src_tag_.tag.md).[performersRole](_src_tag_.tag.md#performersrole)*
-
-*Defined in src/id3v2/id3v2Tag.ts:308*
 
 **`inheritdoc`** via TMCL frame
 
@@ -1298,8 +1158,6 @@ ___
 
 *Overrides [Tag](_src_tag_.tag.md).[performersSort](_src_tag_.tag.md#performerssort)*
 
-*Defined in src/id3v2/id3v2Tag.ts:259*
-
 **`inheritdoc`** via TSOP frame
 
 **Returns:** string[]
@@ -1307,8 +1165,6 @@ ___
 • set **performersSort**(`value`: string[]): void
 
 *Overrides [Tag](_src_tag_.tag.md).[performersSort](_src_tag_.tag.md#performerssort)*
-
-*Defined in src/id3v2/id3v2Tag.ts:261*
 
 **`inheritdoc`** via TSOP frame
 
@@ -1328,8 +1184,6 @@ ___
 
 *Overrides [Tag](_src_tag_.tag.md).[pictures](_src_tag_.tag.md#pictures)*
 
-*Defined in src/id3v2/id3v2Tag.ts:691*
-
 **`inheritdoc`** via APIC frame
 
 **Returns:** [IPicture](../interfaces/_src_picture_.ipicture.md)[]
@@ -1337,8 +1191,6 @@ ___
 • set **pictures**(`value`: [IPicture](../interfaces/_src_picture_.ipicture.md)[]): void
 
 *Overrides [Tag](_src_tag_.tag.md).[pictures](_src_tag_.tag.md#pictures)*
-
-*Defined in src/id3v2/id3v2Tag.ts:695*
 
 **`inheritdoc`** via APIC frame
 
@@ -1358,8 +1210,6 @@ ___
 
 *Overrides [Tag](_src_tag_.tag.md).[publisher](_src_tag_.tag.md#publisher)*
 
-*Defined in src/id3v2/id3v2Tag.ts:681*
-
 **`inheritdoc`** via TPUB frame
 
 **Returns:** string
@@ -1367,8 +1217,6 @@ ___
 • set **publisher**(`value`: string): void
 
 *Overrides [Tag](_src_tag_.tag.md).[publisher](_src_tag_.tag.md#publisher)*
-
-*Defined in src/id3v2/id3v2Tag.ts:683*
 
 **`inheritdoc`** via TPUB frame
 
@@ -1388,8 +1236,6 @@ ___
 
 *Overrides [Tag](_src_tag_.tag.md).[remixedBy](_src_tag_.tag.md#remixedby)*
 
-*Defined in src/id3v2/id3v2Tag.ts:676*
-
 **`inheritdoc`** via TPE4 frame
 
 **Returns:** string
@@ -1397,8 +1243,6 @@ ___
 • set **remixedBy**(`value`: string): void
 
 *Overrides [Tag](_src_tag_.tag.md).[remixedBy](_src_tag_.tag.md#remixedby)*
-
-*Defined in src/id3v2/id3v2Tag.ts:678*
 
 **`inheritdoc`** via TPE4 frame
 
@@ -1418,8 +1262,6 @@ ___
 
 *Overrides [Tag](_src_tag_.tag.md).[replayGainAlbumGain](_src_tag_.tag.md#replaygainalbumgain)*
 
-*Defined in src/id3v2/id3v2Tag.ts:636*
-
 **`inheritdoc`** via TXXX:REPLAYGAIN_ALBUM_GAIN frame
 
 **Returns:** number
@@ -1427,8 +1269,6 @@ ___
 • set **replayGainAlbumGain**(`value`: number): void
 
 *Overrides [Tag](_src_tag_.tag.md).[replayGainAlbumGain](_src_tag_.tag.md#replaygainalbumgain)*
-
-*Defined in src/id3v2/id3v2Tag.ts:646*
 
 **`inheritdoc`** via TXXX:REPLAYGAIN_ALBUM_GAIN frame
 
@@ -1448,8 +1288,6 @@ ___
 
 *Overrides [Tag](_src_tag_.tag.md).[replayGainAlbumPeak](_src_tag_.tag.md#replaygainalbumpeak)*
 
-*Defined in src/id3v2/id3v2Tag.ts:656*
-
 **`inheritdoc`** via TXXX:REPLAYGAIN_ALBUM_PEAK frame
 
 **Returns:** number
@@ -1457,8 +1295,6 @@ ___
 • set **replayGainAlbumPeak**(`value`: number): void
 
 *Overrides [Tag](_src_tag_.tag.md).[replayGainAlbumPeak](_src_tag_.tag.md#replaygainalbumpeak)*
-
-*Defined in src/id3v2/id3v2Tag.ts:661*
 
 **`inheritdoc`** via TXXX:REPLAYGAIN_ALBUM_PEAK frame
 
@@ -1478,8 +1314,6 @@ ___
 
 *Overrides [Tag](_src_tag_.tag.md).[replayGainTrackGain](_src_tag_.tag.md#replaygaintrackgain)*
 
-*Defined in src/id3v2/id3v2Tag.ts:601*
-
 **`inheritdoc`** via TXXX:REPLAY_GAIN_TRACK_GAIN frame
 
 **Returns:** number
@@ -1487,8 +1321,6 @@ ___
 • set **replayGainTrackGain**(`value`: number): void
 
 *Overrides [Tag](_src_tag_.tag.md).[replayGainTrackGain](_src_tag_.tag.md#replaygaintrackgain)*
-
-*Defined in src/id3v2/id3v2Tag.ts:611*
 
 **`inheritdoc`** via TXXX:REPLAY_GAIN_TRACK_GAIN frame
 
@@ -1508,8 +1340,6 @@ ___
 
 *Overrides [Tag](_src_tag_.tag.md).[replayGainTrackPeak](_src_tag_.tag.md#replaygaintrackpeak)*
 
-*Defined in src/id3v2/id3v2Tag.ts:621*
-
 **`inheritdoc`** via TXXX:REPLAYGAIN_TRACK_PEAK frame
 
 **Returns:** number
@@ -1517,8 +1347,6 @@ ___
 • set **replayGainTrackPeak**(`value`: number): void
 
 *Overrides [Tag](_src_tag_.tag.md).[replayGainTrackPeak](_src_tag_.tag.md#replaygaintrackpeak)*
-
-*Defined in src/id3v2/id3v2Tag.ts:626*
 
 **`inheritdoc`** via TXXX:REPLAYGAIN_TRACK_PEAK frame
 
@@ -1538,8 +1366,6 @@ ___
 
 *Overrides [Tag](_src_tag_.tag.md).[subtitle](_src_tag_.tag.md#subtitle)*
 
-*Defined in src/id3v2/id3v2Tag.ts:241*
-
 **`inheritdoc`** via TIT3 frame
 
 **Returns:** string
@@ -1547,8 +1373,6 @@ ___
 • set **subtitle**(`value`: string): void
 
 *Overrides [Tag](_src_tag_.tag.md).[subtitle](_src_tag_.tag.md#subtitle)*
-
-*Defined in src/id3v2/id3v2Tag.ts:243*
 
 **`inheritdoc`** via TIT3 frame
 
@@ -1568,8 +1392,6 @@ ___
 
 *Overrides [Tag](_src_tag_.tag.md).[tagTypes](_src_tag_.tag.md#tagtypes)*
 
-*Defined in src/id3v2/id3v2Tag.ts:224*
-
 **`inheritdoc`** 
 
 **Returns:** [TagTypes](../enums/_src_tag_.tagtypes.md)
@@ -1582,8 +1404,6 @@ ___
 
 *Overrides [Tag](_src_tag_.tag.md).[title](_src_tag_.tag.md#title)*
 
-*Defined in src/id3v2/id3v2Tag.ts:229*
-
 **`inheritdoc`** via TIT2 frame
 
 **Returns:** string
@@ -1591,8 +1411,6 @@ ___
 • set **title**(`value`: string): void
 
 *Overrides [Tag](_src_tag_.tag.md).[title](_src_tag_.tag.md#title)*
-
-*Defined in src/id3v2/id3v2Tag.ts:233*
 
 **`inheritdoc`** via TIT2 frame
 
@@ -1612,8 +1430,6 @@ ___
 
 *Overrides [Tag](_src_tag_.tag.md).[titleSort](_src_tag_.tag.md#titlesort)*
 
-*Defined in src/id3v2/id3v2Tag.ts:236*
-
 **`inheritdoc`** via TSOT frame
 
 **Returns:** string
@@ -1621,8 +1437,6 @@ ___
 • set **titleSort**(`value`: string): void
 
 *Overrides [Tag](_src_tag_.tag.md).[titleSort](_src_tag_.tag.md#titlesort)*
-
-*Defined in src/id3v2/id3v2Tag.ts:238*
 
 **`inheritdoc`** via TSOT frame
 
@@ -1642,8 +1456,6 @@ ___
 
 *Overrides [Tag](_src_tag_.tag.md).[track](_src_tag_.tag.md#track)*
 
-*Defined in src/id3v2/id3v2Tag.ts:455*
-
 **`inheritdoc`** via TRCK frame
 
 **Returns:** number
@@ -1651,8 +1463,6 @@ ___
 • set **track**(`value`: number): void
 
 *Overrides [Tag](_src_tag_.tag.md).[track](_src_tag_.tag.md#track)*
-
-*Defined in src/id3v2/id3v2Tag.ts:457*
 
 **`inheritdoc`** via TRCK frame
 
@@ -1672,8 +1482,6 @@ ___
 
 *Overrides [Tag](_src_tag_.tag.md).[trackCount](_src_tag_.tag.md#trackcount)*
 
-*Defined in src/id3v2/id3v2Tag.ts:460*
-
 **`inheritdoc`** via TRCK frame
 
 **Returns:** number
@@ -1681,8 +1489,6 @@ ___
 • set **trackCount**(`value`: number): void
 
 *Overrides [Tag](_src_tag_.tag.md).[trackCount](_src_tag_.tag.md#trackcount)*
-
-*Defined in src/id3v2/id3v2Tag.ts:462*
 
 **`inheritdoc`** via TRCK frame
 
@@ -1700,15 +1506,11 @@ ___
 
 • get **version**(): number
 
-*Defined in src/id3v2/id3v2Tag.ts:156*
-
 Gets the ID3v2 version for the current instance.
 
 **Returns:** number
 
 • set **version**(`value`: number): void
-
-*Defined in src/id3v2/id3v2Tag.ts:163*
 
 Sets the ID3v2 version for the current instance.
 
@@ -1728,8 +1530,6 @@ ___
 
 *Overrides [Tag](_src_tag_.tag.md).[year](_src_tag_.tag.md#year)*
 
-*Defined in src/id3v2/id3v2Tag.ts:391*
-
 **`inheritdoc`** 
 If a TDRC frame exists, the year will be read from that. If a TDRC frame doesn't exist and a
 TYER or TYE frame exists, the year will be read from that. Failing both cases, 0 will be
@@ -1740,8 +1540,6 @@ returned.
 • set **year**(`value`: number): void
 
 *Overrides [Tag](_src_tag_.tag.md).[year](_src_tag_.tag.md#year)*
-
-*Defined in src/id3v2/id3v2Tag.ts:415*
 
 **`inheritdoc`** 
 NOTE: values >9999 will remove the frame
@@ -1760,16 +1558,12 @@ ___
 
 • `Static`get **language**(): string
 
-*Defined in src/id3v2/id3v2Tag.ts:105*
-
 Gets the ISO-639-2 language code to use when searching for and storing language specific
 values.
 
 **Returns:** string
 
 • `Static`set **language**(`value`: string): void
-
-*Defined in src/id3v2/id3v2Tag.ts:112*
 
 Gets the ISO-639-2 language code to use when searching for and storing language specific
 values.
@@ -1787,8 +1581,6 @@ Name | Type | Description |
 ### addFrame
 
 ▸ **addFrame**(`frame`: [Frame](_src_id3v2_frames_frame_.frame.md)): void
-
-*Defined in src/id3v2/id3v2Tag.ts:717*
 
 Adds a frame to the current instance.
 
@@ -1808,8 +1600,6 @@ ___
 
 *Overrides [Tag](_src_tag_.tag.md).[clear](_src_tag_.tag.md#clear)*
 
-*Defined in src/id3v2/id3v2Tag.ts:723*
-
 **`inheritdoc`** 
 
 **Returns:** void
@@ -1821,8 +1611,6 @@ ___
 ▸ **copyTo**(`target`: [Tag](_src_tag_.tag.md), `overwrite`: boolean): void
 
 *Overrides [Tag](_src_tag_.tag.md).[copyTo](_src_tag_.tag.md#copyto)*
-
-*Defined in src/id3v2/id3v2Tag.ts:728*
 
 **`inheritdoc`** 
 
@@ -1840,8 +1628,6 @@ ___
 ### getFramesByClassType
 
 ▸ **getFramesByClassType**\<TFrame>(`type`: [FrameClassType](../enums/_src_id3v2_frames_frame_.frameclasstype.md)): TFrame[]
-
-*Defined in src/id3v2/id3v2Tag.ts:773*
 
 Gets all frames with a specific frame class type.
 NOTE: This diverges from the .NET implementation due to the inability to do type checking
@@ -1870,13 +1656,11 @@ ___
 
 ▸ **getFramesByIdentifier**\<TFrame>(`type`: [FrameClassType](../enums/_src_id3v2_frames_frame_.frameclasstype.md), `ident`: [FrameIdentifier](_src_id3v2_frameidentifiers_.frameidentifier.md)): TFrame[]
 
-*Defined in src/id3v2/id3v2Tag.ts:790*
-
 Gets a list of frames with the specified identifier contained in the current instance.
 NOTE: This implementation deviates a bit from the original .NET implementation due to the
 inability to do `x is y` comparison by types in typescript without type guards.
-{@paramref type} is the type guard for differentiating frame types. If all frames are needed
-use {@see frames}.
+`type` is the type guard for differentiating frame types. If all frames are needed
+use [frames](_src_id3v2_id3v2tag_.id3v2tag.md#frames).
 
 #### Type parameters:
 
@@ -1901,8 +1685,6 @@ ___
 
 ▸ **getTextAsString**(`ident`: [FrameIdentifier](_src_id3v2_frameidentifiers_.frameidentifier.md)): string
 
-*Defined in src/id3v2/id3v2Tag.ts:803*
-
 Gets the text value from a specified text information frame (or URL frame if that was
 specified).
 
@@ -1922,8 +1704,6 @@ ___
 
 ▸ `Protected`**parse**(`data`: [ByteVector](_src_bytevector_.bytevector.md), `file`: [File](_src_file_.file.md), `position`: number, `style`: [ReadStyle](../enums/_src_file_.readstyle.md)): void
 
-*Defined in src/id3v2/id3v2Tag.ts:1057*
-
 #### Parameters:
 
 Name | Type |
@@ -1941,8 +1721,6 @@ ___
 
 ▸ `Protected`**read**(`file`: [File](_src_file_.file.md), `position`: number, `style`: [ReadStyle](../enums/_src_file_.readstyle.md)): void
 
-*Defined in src/id3v2/id3v2Tag.ts:1119*
-
 #### Parameters:
 
 Name | Type |
@@ -1958,8 +1736,6 @@ ___
 ### removeFrame
 
 ▸ **removeFrame**(`frame`: [Frame](_src_id3v2_frames_frame_.frame.md)): void
-
-*Defined in src/id3v2/id3v2Tag.ts:823*
 
 Removes a specified frame from the current instance.
 
@@ -1977,8 +1753,6 @@ ___
 
 ▸ **removeFrames**(`ident`: [FrameIdentifier](_src_id3v2_frameidentifiers_.frameidentifier.md)): void
 
-*Defined in src/id3v2/id3v2Tag.ts:836*
-
 Removes all frames with a specified identifier from the current instance.
 
 #### Parameters:
@@ -1995,11 +1769,9 @@ ___
 
 ▸ **render**(): [ByteVector](_src_bytevector_.bytevector.md)
 
-*Defined in src/id3v2/id3v2Tag.ts:854*
-
 Renders the current instance as a raw ID3v2 tag.
 By default, tags will be rendered in the version they were loaded in and new tags using the
-version specified by {@see defaultVersion}. If {@see forceDefaultVersion} is `true`, all
+version specified by [defaultVersion](_src_id3v2_id3v2settings_.id3v2settings.md#defaultversion). If [forceDefaultVersion](_src_id3v2_id3v2settings_.id3v2settings.md#forcedefaultversion) is `true`, all
 tags will be rendered using that version, except for tags with footers which must be in
 version 4.
 
@@ -2013,8 +1785,6 @@ ___
 
 ▸ **replaceFrame**(`oldFrame`: [Frame](_src_id3v2_frames_frame_.frame.md), `newFrame`: [Frame](_src_id3v2_frames_frame_.frame.md)): void
 
-*Defined in src/id3v2/id3v2Tag.ts:961*
-
 Replaces an existing frame with a new one in the list contained in the current instance, or
 adds a new one if the existing one is not contained.
 
@@ -2023,7 +1793,7 @@ adds a new one if the existing one is not contained.
 Name | Type | Description |
 ------ | ------ | ------ |
 `oldFrame` | [Frame](_src_id3v2_frames_frame_.frame.md) | Object to be replaced |
-`newFrame` | [Frame](_src_id3v2_frames_frame_.frame.md) | Object to replace {@paramref oldFrame} with  |
+`newFrame` | [Frame](_src_id3v2_frames_frame_.frame.md) | Object to replace `oldFrame` with  |
 
 **Returns:** void
 
@@ -2035,7 +1805,9 @@ ___
 
 *Inherited from [Tag](_src_tag_.tag.md).[setInfoTag](_src_tag_.tag.md#setinfotag)*
 
-*Defined in src/tag.ts:303*
+Set the tags that represent the tagger software (node-taglib-sharp) itself.
+
+**`description`** This is typically a method to call just before saving a tag.
 
 **Returns:** void
 
@@ -2043,13 +1815,11 @@ ___
 
 ### setNumberFrame
 
-▸ **setNumberFrame**(`ident`: [FrameIdentifier](_src_id3v2_frameidentifiers_.frameidentifier.md), `numerator`: number, `denominator`: number, `minPlaces`: number): void
+▸ **setNumberFrame**(`ident`: [FrameIdentifier](_src_id3v2_frameidentifiers_.frameidentifier.md), `numerator`: number, `denominator`: number, `minPlaces?`: number): void
 
-*Defined in src/id3v2/id3v2Tag.ts:989*
-
-Sets the numerica values for a specified text information frame.
-If both {@paramref numerator} and {@paramref denominator} are `0`, the frame will be removed
-from the tag. If {@paramref denominator} is zero, {@paramref numerator} will be stored by
+Sets the numerical values for a specified text information frame.
+If both `numerator` and `denominator` are `0`, the frame will be removed
+from the tag. If `denominator` is zero, `numerator` will be stored by
 itself. Otherwise the values will be stored as `{numerator}/{denominator}`.
 
 #### Parameters:
@@ -2057,9 +1827,9 @@ itself. Otherwise the values will be stored as `{numerator}/{denominator}`.
 Name | Type | Default value | Description |
 ------ | ------ | ------ | ------ |
 `ident` | [FrameIdentifier](_src_id3v2_frameidentifiers_.frameidentifier.md) | - | Identity of the frame to set |
-`numerator` | number | - | Value containing the top half of the fraction, or the number if     {@paramref denominator} is zero |
+`numerator` | number | - | Value containing the top half of the fraction, or the number if     `denominator` is zero |
 `denominator` | number | - | Value containing the bottom half of the fraction |
-`minPlaces` | number | 1 | Mininum number of digits to use to display the {@paramref numerator}, if     the numerator has less than this number of digits, it will be filled with leading zeroes.  |
+`minPlaces` | number | 1 | Minimum number of digits to use to display the `numerator`, if     the numerator has less than this number of digits, it will be filled with leading zeroes.  |
 
 **Returns:** void
 
@@ -2068,8 +1838,6 @@ ___
 ### setTextFrame
 
 ▸ **setTextFrame**(`ident`: [FrameIdentifier](_src_id3v2_frameidentifiers_.frameidentifier.md), ...`text`: string[]): void
-
-*Defined in src/id3v2/id3v2Tag.ts:1011*
 
 Sets the text for a specified text information frame.
 
@@ -2090,15 +1858,18 @@ ___
 
 *Inherited from [Tag](_src_tag_.tag.md).[firstInGroup](_src_tag_.tag.md#firstingroup)*
 
-*Defined in src/tag.ts:270*
+Gets the first string in an array.
 
 #### Parameters:
 
-Name | Type |
------- | ------ |
-`group` | string[] |
+Name | Type | Description |
+------ | ------ | ------ |
+`group` | string[] | Array of strings to get the first string from. |
 
 **Returns:** string
+
+First string contained in `group` or `undefined` if the array is
+    `undefined` or empty
 
 ___
 
@@ -2106,10 +1877,8 @@ ___
 
 ▸ `Static`**fromData**(`data`: [ByteVector](_src_bytevector_.bytevector.md)): [Id3v2Tag](_src_id3v2_id3v2tag_.id3v2tag.md)
 
-*Defined in src/id3v2/id3v2Tag.ts:75*
-
 Constructs and initializes a new Tag by reading the contents from a specified
-{@see ByteVector} object.
+[ByteVector](_src_bytevector_.bytevector.md) object.
 
 #### Parameters:
 
@@ -2127,8 +1896,6 @@ ___
 
 ▸ `Static`**fromEmpty**(): [Id3v2Tag](_src_id3v2_id3v2tag_.id3v2tag.md)
 
-*Defined in src/id3v2/id3v2Tag.ts:43*
-
 **Returns:** [Id3v2Tag](_src_id3v2_id3v2tag_.id3v2tag.md)
 
 ___
@@ -2136,8 +1903,6 @@ ___
 ### fromFile
 
 ▸ `Static`**fromFile**(`file`: [File](_src_file_.file.md), `position`: number, `style`: [ReadStyle](../enums/_src_file_.readstyle.md)): [Id3v2Tag](_src_id3v2_id3v2tag_.id3v2tag.md)
-
-*Defined in src/id3v2/id3v2Tag.ts:57*
 
 Constructs and initializes a new Tag by reading the contents from a specified position in
 the provided file.
@@ -2156,21 +1921,25 @@ Id3v2Tag Tag with the data from the file read into it
 
 ___
 
-### isNullOrLikeEmpty
+### isFalsyOrLikeEmpty
 
-▸ `Static` `Protected`**isNullOrLikeEmpty**(`value`: string \| string[]): boolean
+▸ `Static` `Protected`**isFalsyOrLikeEmpty**(`value`: string \| string[]): boolean
 
-*Inherited from [Tag](_src_tag_.tag.md).[isNullOrLikeEmpty](_src_tag_.tag.md#isnullorlikeempty)*
+*Inherited from [Tag](_src_tag_.tag.md).[isFalsyOrLikeEmpty](_src_tag_.tag.md#isfalsyorlikeempty)*
 
-*Defined in src/tag.ts:338*
+Checks if a value is falsy or empty.
 
 #### Parameters:
 
-Name | Type |
------- | ------ |
-`value` | string \| string[] |
+Name | Type | Description |
+------ | ------ | ------ |
+`value` | string \| string[] | Object to check |
 
 **Returns:** boolean
+
+If `value` is a string, `true` is returned if the value is falsy or all
+    whitespace, `false` is returned otherwise. If `value` is an array of strings,
+    the array must be falsy or all elements must be falsy or whitespace to return `true`.
 
 ___
 
@@ -2180,12 +1949,15 @@ ___
 
 *Inherited from [Tag](_src_tag_.tag.md).[joinGroup](_src_tag_.tag.md#joingroup)*
 
-*Defined in src/tag.ts:276*
+Joins an array of string into a single, semicolon and space separated string.
 
 #### Parameters:
 
-Name | Type |
------- | ------ |
-`group` | string[] |
+Name | Type | Description |
+------ | ------ | ------ |
+`group` | string[] | Array of string to join |
 
 **Returns:** string
+
+A semicolon and space separated string containing the values from `group`
+    or undefined if the array is `undefined` or empty.

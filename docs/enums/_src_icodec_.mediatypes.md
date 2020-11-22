@@ -1,10 +1,10 @@
-**node-taglib-sharp**
+**[node-taglib-sharp](../README.md)**
 
-> [README](../README.md) / [Globals](../globals.md) / ["src/iCodec"](../modules/_src_icodec_.md) / MediaTypes
+> [Globals](../globals.md) / ["src/iCodec"](../modules/_src_icodec_.md) / MediaTypes
 
 # Enumeration: MediaTypes
 
-Indicates the types o media represented by a {@see ICodec} or {@see Properties}. These values
+Indicates the types o media represented by a [ICodec](../interfaces/_src_icodec_.icodec.md) or [Properties](../classes/_src_properties_.properties.md). These values
 can be combined to represent multiple media types.
 
 ## Index
@@ -22,9 +22,7 @@ can be combined to represent multiple media types.
 
 ### Audio
 
-•  **Audio**: {} = 1
-
-*Defined in src/iCodec.ts:14*
+•  **Audio**:  = 1
 
 Audio is present
 
@@ -32,9 +30,7 @@ ___
 
 ### LosslessAudio
 
-•  **LosslessAudio**: {} = 17
-
-*Defined in src/iCodec.ts:34*
+•  **LosslessAudio**:  = 17
 
 Lossless audio is present. This also implies audio is present.
 
@@ -42,9 +38,7 @@ ___
 
 ### None
 
-•  **None**: {} = 0
-
-*Defined in src/iCodec.ts:9*
+•  **None**:  = 0
 
 No media is present
 
@@ -52,9 +46,7 @@ ___
 
 ### Photo
 
-•  **Photo**: {} = 4
-
-*Defined in src/iCodec.ts:24*
+•  **Photo**:  = 4
 
 A photo is present
 
@@ -62,9 +54,7 @@ ___
 
 ### Text
 
-•  **Text**: {} = 8
-
-*Defined in src/iCodec.ts:29*
+•  **Text**:  = 8
 
 Text is present
 
@@ -72,8 +62,6 @@ ___
 
 ### Video
 
-•  **Video**: {} = 2
-
-*Defined in src/iCodec.ts:19*
+•  **Video**:  = 2
 
 Video is present

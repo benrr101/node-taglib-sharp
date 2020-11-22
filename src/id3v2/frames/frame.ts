@@ -11,7 +11,7 @@ export enum FrameClassType {
     AttachmentFrame,
     CommentsFrame,
     EventTimeCodeFrame,
-    MusicCdIdentiferFrame,
+    MusicCdIdentifierFrame,
     PlayCountFrame,
     PopularimeterFrame,
     PrivateFrame,
@@ -49,7 +49,7 @@ export abstract class Frame {
 
     /**
      * Gets the encryption ID applied to the current instance.
-     * @returns number Value containing the encryption identifer for the current instance or
+     * @returns number Value containing the encryption identifier for the current instance or
      *     `undefined` if not set.
      */
     public get encryptionId(): number | undefined {
@@ -78,8 +78,8 @@ export abstract class Frame {
     public get flags(): Id3v2FrameFlags { return this._header.flags; }
     /**
      * Sets the frame flags applied to the current instance.
-     * If the value includes either {@see Id3v2FrameFlags.Encryption} or
-     * {@see Id3v2FrameFlags.Compression}, {@see render} will throw.
+     * If the value includes either {@link Id3v2FrameFlags.Encryption} or
+     * {@link Id3v2FrameFlags.Compression}, {@link render} will throw.
      */
     public set flags(value: Id3v2FrameFlags) { this._header.flags = value; }
 
@@ -128,8 +128,8 @@ export abstract class Frame {
     /**
      * Creates a deep copy of the current instance.
      * This method is implemented by rendering the current instance as an ID3v2.4 frame and using
-     * {@see FrameFactory.createFrame} to create a new frame. As such, this method should be
-     * overridden by child classes.
+     * the frame factory to create a new frame. As such, this method should be overridden by child
+     * classes.
      */
     public abstract clone(): Frame;
 
@@ -203,8 +203,8 @@ export abstract class Frame {
      * @param type Value containing the original encoding
      * @param version Value containing the ID3v2 version to be encoded.
      * @returns StringType Value containing the correct encoding to use, based on
-     *     {@see Id3v2Settings.forceDefaultEncoding} and what is supported by
-     *     {@paramref version}
+     *     {@link Id3v2Settings.forceDefaultEncoding} and what is supported by
+     *     `version`
      */
     protected static correctEncoding(type: StringType, version: number): StringType {
         Guards.byte(version, "version");
@@ -225,9 +225,16 @@ export abstract class Frame {
      * @param frameData Raw frame data
      * @param offset Index at which the data is contained
      * @param version Version of the ID3v2 tag the data was originally encoded with
+     * @param dataIncludesHeader `true` if `frameData` includes the header, `false`
+     *     otherwise
      */
-    protected fieldData(frameData: ByteVector, offset: number, version: number): ByteVector {
-        let dataOffset = offset + Id3v2FrameHeader.getSize(version);
+    protected fieldData(
+        frameData: ByteVector,
+        offset: number,
+        version: number,
+        dataIncludesHeader: boolean
+    ): ByteVector {
+        let dataOffset = offset + (dataIncludesHeader ? Id3v2FrameHeader.getSize(version) : 0);
         let dataLength = this.size;
 
         if ((this.flags & (Id3v2FrameFlags.Compression | Id3v2FrameFlags.DataLengthIndicator)) !== 0) {
@@ -292,7 +299,7 @@ export abstract class Frame {
      * Populates the current instance by reading the raw frame from disk, optionally reading the
      * header.
      * @param data Raw ID3v2 frame
-     * @param offset Offset in {@paramref data} at which the frame begins.
+     * @param offset Offset in `data` at which the frame begins.
      * @param readHeader Whether or not to read the reader into the current instance.
      * @param version Version of the ID3v2 tag the data was encoded with
      */
@@ -300,7 +307,7 @@ export abstract class Frame {
         if (readHeader) {
             this._header = Id3v2FrameHeader.fromData(data, version);
         }
-        this.parseFields(this.fieldData(data, offset, version), version);
+        this.parseFields(this.fieldData(data, offset, version, true), version);
     }
 
     // #endregion

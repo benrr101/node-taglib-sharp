@@ -1,6 +1,6 @@
-**node-taglib-sharp**
+**[node-taglib-sharp](../README.md)**
 
-> [README](../README.md) / [Globals](../globals.md) / ["src/picture"](../modules/_src_picture_.md) / IPicture
+> [Globals](../globals.md) / ["src/picture"](../modules/_src_picture_.md) / IPicture
 
 # Interface: IPicture
 
@@ -30,15 +30,11 @@
 
 •  **data**: [ByteVector](../classes/_src_bytevector_.bytevector.md)
 
-*Defined in src/picture.ts:128*
-
 ___
 
 ### description
 
 •  **description**: string
-
-*Defined in src/picture.ts:126*
 
 ___
 
@@ -46,20 +42,14 @@ ___
 
 •  **filename**: string
 
-*Defined in src/picture.ts:124*
-
 ___
 
 ### mimeType
 
 •  **mimeType**: string
 
-*Defined in src/picture.ts:120*
-
 ___
 
 ### type
 
 •  **type**: [PictureType](../enums/_src_picture_.picturetype.md)
-
-*Defined in src/picture.ts:122*
