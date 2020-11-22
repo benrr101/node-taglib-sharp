@@ -8,8 +8,8 @@ import {Guards} from "./utils";
 import {SeekOrigin} from "./stream";
 
 /**
- * This class implements {@see IPicture} and provides mechanisms for loading pictures from files.
- * Contrary to {@see Picture}, a reference to a file where the picture is located can be given and
+ * This class implements {@link IPicture} and provides mechanisms for loading pictures from files.
+ * Contrary to {@link Picture}, a reference to a file where the picture is located can be given and
  * the picture is lazily loaded from the file, meaning that it will be read from the file only when
  * needed. This saves time and memory if the picture loading is not required.
  */

@@ -1,6 +1,6 @@
-**node-taglib-sharp**
+**[node-taglib-sharp](../README.md)**
 
-> [README](../README.md) / [Globals](../globals.md) / ["src/id3v2/frames/attachmentFrame"](../modules/_src_id3v2_frames_attachmentframe_.md) / AttachmentFrame
+> [Globals](../globals.md) / ["src/id3v2/frames/attachmentFrame"](../modules/_src_id3v2_frames_attachmentframe_.md) / AttachmentFrame
 
 # Class: AttachmentFrame
 
@@ -59,23 +59,17 @@
 
 *Inherited from [Frame](_src_id3v2_frames_frame_.frame.md).[_header](_src_id3v2_frames_frame_.frame.md#_header)*
 
-*Defined in src/id3v2/frames/frame.ts:33*
-
 ## Accessors
 
 ### data
 
 • get **data**(): [ByteVector](_src_bytevector_.bytevector.md)
 
-*Defined in src/id3v2/frames/attachmentFrame.ts:129*
-
 Gets the image data stored in the current instance.
 
 **Returns:** [ByteVector](_src_bytevector_.bytevector.md)
 
 • set **data**(`value`: [ByteVector](_src_bytevector_.bytevector.md)): void
-
-*Defined in src/id3v2/frames/attachmentFrame.ts:136*
 
 Sets the image data stored in the current instance.
 
@@ -93,15 +87,11 @@ ___
 
 • get **description**(): string
 
-*Defined in src/id3v2/frames/attachmentFrame.ts:144*
-
 Gets the description stored in the current instance.
 
 **Returns:** string
 
 • set **description**(`value`: string): void
-
-*Defined in src/id3v2/frames/attachmentFrame.ts:152*
 
 Sets the description stored in the current instance.
 There should only be one frame with a matching description and type per tag.
@@ -122,20 +112,16 @@ ___
 
 *Inherited from [Frame](_src_id3v2_frames_frame_.frame.md).[encryptionId](_src_id3v2_frames_frame_.frame.md#encryptionid)*
 
-*Defined in src/id3v2/frames/frame.ts:55*
-
 Gets the encryption ID applied to the current instance.
 
 **Returns:** number \| undefined
 
-number Value containing the encryption identifer for the current instance or
+number Value containing the encryption identifier for the current instance or
     `undefined` if not set.
 
 • set **encryptionId**(`value`: number \| undefined): void
 
 *Inherited from [Frame](_src_id3v2_frames_frame_.frame.md).[encryptionId](_src_id3v2_frames_frame_.frame.md#encryptionid)*
-
-*Defined in src/id3v2/frames/frame.ts:65*
 
 Sets the encryption ID applied to the current instance.
 
@@ -147,7 +133,7 @@ Name | Type | Description |
 
 **Returns:** void
 
-number Value containing the encryption identifer for the current instance or
+number Value containing the encryption identifier for the current instance or
     `undefined` if not set.
 
 ___
@@ -156,15 +142,11 @@ ___
 
 • get **filename**(): string
 
-*Defined in src/id3v2/frames/attachmentFrame.ts:160*
-
 Gets a filename of the picture stored in the current instance.
 
 **Returns:** string
 
 • set **filename**(`value`: string): void
-
-*Defined in src/id3v2/frames/attachmentFrame.ts:167*
 
 Sets a filename of the picture stored in the current instance.
 
@@ -184,8 +166,6 @@ ___
 
 *Inherited from [Frame](_src_id3v2_frames_frame_.frame.md).[flags](_src_id3v2_frames_frame_.frame.md#flags)*
 
-*Defined in src/id3v2/frames/frame.ts:78*
-
 Gets the frame flags applied to the current instance.
 
 **Returns:** [Id3v2FrameFlags](../enums/_src_id3v2_frames_frameheader_.id3v2frameflags.md)
@@ -194,11 +174,9 @@ Gets the frame flags applied to the current instance.
 
 *Inherited from [Frame](_src_id3v2_frames_frame_.frame.md).[flags](_src_id3v2_frames_frame_.frame.md#flags)*
 
-*Defined in src/id3v2/frames/frame.ts:84*
-
 Sets the frame flags applied to the current instance.
-If the value includes either {@see Id3v2FrameFlags.Encryption} or
-{@see Id3v2FrameFlags.Compression}, {@see render} will throw.
+If the value includes either [Id3v2FrameFlags.Encryption](../enums/_src_id3v2_frames_frameheader_.id3v2frameflags.md#encryption) or
+[Id3v2FrameFlags.Compression](../enums/_src_id3v2_frames_frameheader_.id3v2frameflags.md#compression), [render](_src_id3v2_frames_attachmentframe_.attachmentframe.md#render) will throw.
 
 #### Parameters:
 
@@ -216,8 +194,6 @@ ___
 
 *Overrides [Frame](_src_id3v2_frames_frame_.frame.md).[frameClassType](_src_id3v2_frames_frame_.frame.md#frameclasstype)*
 
-*Defined in src/id3v2/frames/attachmentFrame.ts:124*
-
 **`inheritdoc`** 
 
 **Returns:** [FrameClassType](../enums/_src_id3v2_frames_frame_.frameclasstype.md)
@@ -229,8 +205,6 @@ ___
 • get **frameId**(): [FrameIdentifier](_src_id3v2_frameidentifiers_.frameidentifier.md)
 
 *Inherited from [Frame](_src_id3v2_frames_frame_.frame.md).[frameId](_src_id3v2_frames_frame_.frame.md#frameid)*
-
-*Defined in src/id3v2/frames/frame.ts:92*
 
 Gets the frame ID for the current instance.
 
@@ -246,8 +220,6 @@ ___
 
 *Inherited from [Frame](_src_id3v2_frames_frame_.frame.md).[groupId](_src_id3v2_frames_frame_.frame.md#groupid)*
 
-*Defined in src/id3v2/frames/frame.ts:99*
-
 Gets the grouping ID applied to the current instance.
 
 **Returns:** number \| undefined
@@ -258,8 +230,6 @@ number Value containing the grouping identifier for the current instance, or
 • set **groupId**(`value`: number \| undefined): void
 
 *Inherited from [Frame](_src_id3v2_frames_frame_.frame.md).[groupId](_src_id3v2_frames_frame_.frame.md#groupid)*
-
-*Defined in src/id3v2/frames/frame.ts:109*
 
 Sets the grouping ID applied to the current instance.
 
@@ -280,15 +250,11 @@ ___
 
 • get **mimeType**(): string
 
-*Defined in src/id3v2/frames/attachmentFrame.ts:175*
-
 Gets the MimeType of the picture stored in the current instance.
 
 **Returns:** string
 
 • set **mimeType**(`value`: string): void
-
-*Defined in src/id3v2/frames/attachmentFrame.ts:184*
 
 Sets the MimeType of the picture stored in the current instance.
 
@@ -308,8 +274,6 @@ ___
 
 *Inherited from [Frame](_src_id3v2_frames_frame_.frame.md).[size](_src_id3v2_frames_frame_.frame.md#size)*
 
-*Defined in src/id3v2/frames/frame.ts:124*
-
 Gets the size of the current instance as it was last stored on disk.
 NOTE: This value is not used outside of reading a frame from disk, so newly created frames
     should not have this value set.
@@ -322,8 +286,6 @@ ___
 
 • get **textEncoding**(): [StringType](../enums/_src_bytevector_.stringtype.md)
 
-*Defined in src/id3v2/frames/attachmentFrame.ts:193*
-
 Gets the text encoding to use when storing the current instance.
 
 **`value`** Text encoding to use when storing the current instance.
@@ -332,15 +294,13 @@ Gets the text encoding to use when storing the current instance.
 
 • set **textEncoding**(`value`: [StringType](../enums/_src_bytevector_.stringtype.md)): void
 
-*Defined in src/id3v2/frames/attachmentFrame.ts:204*
-
 Sets the text encoding to use when storing the current instance.
 
 #### Parameters:
 
 Name | Type | Description |
 ------ | ------ | ------ |
-`value` | [StringType](../enums/_src_bytevector_.stringtype.md) | Text encoding to use when storing the current instance.     This encoding is overridden when rendering if     {@see Id3v2Settings.forceDefaultEncoding} is `true` or the render version does not     support it.  |
+`value` | [StringType](../enums/_src_bytevector_.stringtype.md) | Text encoding to use when storing the current instance.     This encoding is overridden when rendering if     [Id3v2Settings.forceDefaultEncoding](_src_id3v2_id3v2settings_.id3v2settings.md#forcedefaultencoding) is `true` or the render version does not     support it.  |
 
 **Returns:** void
 
@@ -350,18 +310,14 @@ ___
 
 • get **type**(): [PictureType](../enums/_src_picture_.picturetype.md)
 
-*Defined in src/id3v2/frames/attachmentFrame.ts:212*
-
 Gets the object type stored in the current instance.
 
 **Returns:** [PictureType](../enums/_src_picture_.picturetype.md)
 
 • set **type**(`value`: [PictureType](../enums/_src_picture_.picturetype.md)): void
 
-*Defined in src/id3v2/frames/attachmentFrame.ts:221*
-
 Sets the object type stored in the current instance.
-For General Object Frame, use {@see PictureType.NotAPicture}. Other types will make it a
+For General Object Frame, use [PictureType.NotAPicture](../enums/_src_picture_.picturetype.md#notapicture). Other types will make it a
 Picture Frame.
 
 #### Parameters:
@@ -380,8 +336,6 @@ Name | Type |
 
 *Overrides [Frame](_src_id3v2_frames_frame_.frame.md).[clone](_src_id3v2_frames_frame_.frame.md#clone)*
 
-*Defined in src/id3v2/frames/attachmentFrame.ts:240*
-
 **`inheritdoc`** 
 
 **Returns:** [Frame](_src_id3v2_frames_frame_.frame.md)
@@ -390,11 +344,9 @@ ___
 
 ### fieldData
 
-▸ `Protected`**fieldData**(`frameData`: [ByteVector](_src_bytevector_.bytevector.md), `offset`: number, `version`: number): [ByteVector](_src_bytevector_.bytevector.md)
+▸ `Protected`**fieldData**(`frameData`: [ByteVector](_src_bytevector_.bytevector.md), `offset`: number, `version`: number, `dataIncludesHeader`: boolean): [ByteVector](_src_bytevector_.bytevector.md)
 
 *Inherited from [Frame](_src_id3v2_frames_frame_.frame.md).[fieldData](_src_id3v2_frames_frame_.frame.md#fielddata)*
-
-*Defined in src/id3v2/frames/frame.ts:229*
 
 Extracts the field data from the raw portion of an ID3v2 frame.
 This method is necessary for extracting extra data prepended to the frame such the as
@@ -406,7 +358,8 @@ Name | Type | Description |
 ------ | ------ | ------ |
 `frameData` | [ByteVector](_src_bytevector_.bytevector.md) | Raw frame data |
 `offset` | number | Index at which the data is contained |
-`version` | number | Version of the ID3v2 tag the data was originally encoded with  |
+`version` | number | Version of the ID3v2 tag the data was originally encoded with |
+`dataIncludesHeader` | boolean | `true` if `frameData` includes the header, `false`     otherwise  |
 
 **Returns:** [ByteVector](_src_bytevector_.bytevector.md)
 
@@ -417,8 +370,6 @@ ___
 ▸ `Protected`**parseFields**(`data`: [ByteVector](_src_bytevector_.bytevector.md), `version`: number): void
 
 *Overrides [Frame](_src_id3v2_frames_frame_.frame.md).[parseFields](_src_id3v2_frames_frame_.frame.md#parsefields)*
-
-*Defined in src/id3v2/frames/attachmentFrame.ts:297*
 
 #### Parameters:
 
@@ -436,8 +387,6 @@ ___
 ▸ **render**(`version`: number): [ByteVector](_src_bytevector_.bytevector.md)
 
 *Inherited from [Frame](_src_id3v2_frames_frame_.frame.md).[render](_src_id3v2_frames_frame_.frame.md#render)*
-
-*Defined in src/id3v2/frames/frame.ts:140*
 
 Renders the current instance, encoded in a specified ID3v2 version.
 
@@ -457,8 +406,6 @@ ___
 
 *Overrides [Frame](_src_id3v2_frames_frame_.frame.md).[renderFields](_src_id3v2_frames_frame_.frame.md#renderfields)*
 
-*Defined in src/id3v2/frames/attachmentFrame.ts:306*
-
 #### Parameters:
 
 Name | Type |
@@ -475,8 +422,6 @@ ___
 
 *Inherited from [Frame](_src_id3v2_frames_frame_.frame.md).[setData](_src_id3v2_frames_frame_.frame.md#setdata)*
 
-*Defined in src/id3v2/frames/frame.ts:299*
-
 Populates the current instance by reading the raw frame from disk, optionally reading the
 header.
 
@@ -485,7 +430,7 @@ header.
 Name | Type | Description |
 ------ | ------ | ------ |
 `data` | [ByteVector](_src_bytevector_.bytevector.md) | Raw ID3v2 frame |
-`offset` | number | Offset in {@paramref data} at which the frame begins. |
+`offset` | number | Offset in `data` at which the frame begins. |
 `readHeader` | boolean | Whether or not to read the reader into the current instance. |
 `version` | number | Version of the ID3v2 tag the data was encoded with  |
 
@@ -497,8 +442,6 @@ ___
 
 ▸ **toString**(): string
 
-*Defined in src/id3v2/frames/attachmentFrame.ts:282*
-
 **Returns:** string
 
 ___
@@ -508,8 +451,6 @@ ___
 ▸ `Static` `Protected`**correctEncoding**(`type`: [StringType](../enums/_src_bytevector_.stringtype.md), `version`: number): [StringType](../enums/_src_bytevector_.stringtype.md)
 
 *Inherited from [Frame](_src_id3v2_frames_frame_.frame.md).[correctEncoding](_src_id3v2_frames_frame_.frame.md#correctencoding)*
-
-*Defined in src/id3v2/frames/frame.ts:209*
 
 Converts an encoding to be a supported encoding for a specified tag version.
 
@@ -523,16 +464,14 @@ Name | Type | Description |
 **Returns:** [StringType](../enums/_src_bytevector_.stringtype.md)
 
 StringType Value containing the correct encoding to use, based on
-    {@see Id3v2Settings.forceDefaultEncoding} and what is supported by
-    {@paramref version}
+    [Id3v2Settings.forceDefaultEncoding](_src_id3v2_id3v2settings_.id3v2settings.md#forcedefaultencoding) and what is supported by
+    `version`
 
 ___
 
 ### find
 
-▸ `Static`**find**(`frames`: [AttachmentFrame](_src_id3v2_frames_attachmentframe_.attachmentframe.md)[], `description?`: string, `type`: [PictureType](../enums/_src_picture_.picturetype.md)): [AttachmentFrame](_src_id3v2_frames_attachmentframe_.attachmentframe.md)
-
-*Defined in src/id3v2/frames/attachmentFrame.ts:269*
+▸ `Static`**find**(`frames`: [AttachmentFrame](_src_id3v2_frames_attachmentframe_.attachmentframe.md)[], `description?`: string, `type?`: [PictureType](../enums/_src_picture_.picturetype.md)): [AttachmentFrame](_src_id3v2_frames_attachmentframe_.attachmentframe.md)
 
 Get a specified attachment frame from the specified tag, optionally creating it if it does
 not exist.
@@ -547,7 +486,7 @@ Name | Type | Default value | Description |
 
 **Returns:** [AttachmentFrame](_src_id3v2_frames_attachmentframe_.attachmentframe.md)
 
-Matching frame or `undefined` if a match wasn't found and {@paramref create} is
+Matching frame or `undefined` if a match wasn't found and `create` is
     `false`
 
 ___
@@ -556,11 +495,11 @@ ___
 
 ▸ `Static`**fromFile**(`file`: [IFileAbstraction](../interfaces/_src_fileabstraction_.ifileabstraction.md), `header`: [Id3v2FrameHeader](_src_id3v2_frames_frameheader_.id3v2frameheader.md), `frameStart`: number, `size`: number, `version`: number): [AttachmentFrame](_src_id3v2_frames_attachmentframe_.attachmentframe.md)
 
-*Defined in src/id3v2/frames/attachmentFrame.ts:86*
-
 Constructs and initializes a new attachment frame by populating it with the contents of a
-section of a file. This constructor is only meant to be used by the {@see FrameFactory}
-class. All loading is done lazily.
+section of a file. This constructor is only meant to be used internally. All loading is done
+lazily.
+
+**`internal`** 
 
 #### Parameters:
 
@@ -570,7 +509,7 @@ Name | Type | Description |
 `header` | [Id3v2FrameHeader](_src_id3v2_frames_frameheader_.id3v2frameheader.md) | ID3v2 frame header that defines the frame |
 `frameStart` | number | Index into the file where the frame starts |
 `size` | number | Length of the frame data |
-`version` | number | ID3v2 version the frame was originally encoded with  |
+`version` | number | ID3v2 version the frame was originally encoded with |
 
 **Returns:** [AttachmentFrame](_src_id3v2_frames_attachmentframe_.attachmentframe.md)
 
@@ -580,8 +519,6 @@ ___
 
 ▸ `Static`**fromOffsetRawData**(`data`: [ByteVector](_src_bytevector_.bytevector.md), `offset`: number, `header`: [Id3v2FrameHeader](_src_id3v2_frames_frameheader_.id3v2frameheader.md), `version`: number): [AttachmentFrame](_src_id3v2_frames_attachmentframe_.attachmentframe.md)
 
-*Defined in src/id3v2/frames/attachmentFrame.ts:40*
-
 Constructs and initializes a new attachment frame by reading its raw data in a specified
 ID3v2 version.
 
@@ -590,8 +527,8 @@ ID3v2 version.
 Name | Type | Description |
 ------ | ------ | ------ |
 `data` | [ByteVector](_src_bytevector_.bytevector.md) | ByteVector containing the raw representation of the new frame |
-`offset` | number | Index into {@paramref data} where the frame actually begins |
-`header` | [Id3v2FrameHeader](_src_id3v2_frames_frameheader_.id3v2frameheader.md) | Header of the frame found at {@paramref offset} in the data |
+`offset` | number | Index into `data` where the frame actually begins |
+`header` | [Id3v2FrameHeader](_src_id3v2_frames_frameheader_.id3v2frameheader.md) | Header of the frame found at `offset` in the data |
 `version` | number | ID3v2 version the frame was originally encoded with  |
 
 **Returns:** [AttachmentFrame](_src_id3v2_frames_attachmentframe_.attachmentframe.md)
@@ -602,14 +539,12 @@ ___
 
 ▸ `Static`**fromPicture**(`picture`: [IPicture](../interfaces/_src_picture_.ipicture.md)): [AttachmentFrame](_src_id3v2_frames_attachmentframe_.attachmentframe.md)
 
-*Defined in src/id3v2/frames/attachmentFrame.ts:65*
-
 Constructs and initializes a new attachment frame by populating it with the contents of
-another {@see IPicture} object.
+another [IPicture](../interfaces/_src_picture_.ipicture.md) object.
 
 **`description`** When a frame is created, it is not automatically added to the tag. Consider
-    using {@see get} for more integrated frame creation.
-    Additionally, see {@see Tag.pictures} provides a generic way of getting and setting
+    using [get](_src_bytevector_.bytevector.md#get) for more integrated frame creation.
+    Additionally, see [Tag.pictures](_src_tag_.tag.md#pictures) provides a generic way of getting and setting
     attachments which is preferable to format specific code.
 
 #### Parameters:
@@ -625,8 +560,6 @@ ___
 ### fromRawData
 
 ▸ `Static`**fromRawData**(`data`: [ByteVector](_src_bytevector_.bytevector.md), `version`: number): [AttachmentFrame](_src_id3v2_frames_attachmentframe_.attachmentframe.md)
-
-*Defined in src/id3v2/frames/attachmentFrame.ts:110*
 
 Constructs and initializes a new attachment frame by reading its raw data in a specified
 Id3v2 version.

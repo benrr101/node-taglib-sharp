@@ -6,7 +6,7 @@ import {FrameIdentifiers} from "../frameIdentifiers";
 import {Guards} from "../../utils";
 
 /**
- * Type of channel data to get from or set to a {@see RelativeVolumeFrame} object
+ * Type of channel data to get from or set to a {@link RelativeVolumeFrame} object
  */
 export enum ChannelType {
     /**
@@ -107,14 +107,14 @@ export class ChannelData {
     /**
      * Value of the peak sample in the file. It's unclear exactly how this works, but the ID3v2.4
      * documentation explains this value as betweenInclusive 0 and 255 - but can be expressed using any
-     * number of bits ({@see peakBits}).
+     * number of bits ({@link peakBits}).
      */
     public get peakVolume(): BigInt.BigInteger { return this._peakVolume; }
     /**
      * Value of the peak sample in the file. It's unclear exactly how this works, but the ID3v2.4
      * documentation explains this value as betweenInclusive 0 and 255 - but can be expressed using any
-     * number of bits ({@see peakBits}).
-     * @param value Peak volume value. Must fit in the number of bits set in {@see peakBits}
+     * number of bits ({@link peakBits}).
+     * @param value Peak volume value. Must fit in the number of bits set in {@link peakBits}
      */
     public set peakVolume(value: BigInt.BigInteger) {
         if (!this.peakBits) {
@@ -190,9 +190,9 @@ export class RelativeVolumeFrame extends Frame {
      * Constructs and initializes a new instance by reading its raw data in a specified ID3v2
      * version starting a specified offset.
      * @param data Raw representation of the new frame
-     * @param offset Offset into {@paramref data} where the frame actually begins. Must be a
+     * @param offset Offset into `data` where the frame actually begins. Must be a
      *     positive, 32-bit integer
-     * @param header Header of the frame found at {@paramref offset} in {@paramref data}
+     * @param header Header of the frame found at `offset` in `data`
      * @param version ID3v2 version the frame was originally encoded with
      */
     public static fromOffsetRawData(
@@ -332,7 +332,7 @@ export class RelativeVolumeFrame extends Frame {
     // #region Protected/Private Methods
 
     /** @inheritDoc */
-    protected parseFields(data: ByteVector, version: number): void {
+    protected parseFields(data: ByteVector, _version: number): void {
         const identifierEndIndex = data.find(ByteVector.getTextDelimiter(StringType.Latin1));
         if (identifierEndIndex < 0) {
             return;
@@ -357,7 +357,7 @@ export class RelativeVolumeFrame extends Frame {
     }
 
     /** @inheritDoc */
-    protected renderFields(version: number): ByteVector {
+    protected renderFields(_version: number): ByteVector {
         const data = ByteVector.fromString(this.identification, StringType.Latin1);
         data.addByteVector(ByteVector.getTextDelimiter(StringType.Latin1));
 

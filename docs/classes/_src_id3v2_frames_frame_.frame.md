@@ -1,6 +1,6 @@
-**node-taglib-sharp**
+**[node-taglib-sharp](../README.md)**
 
-> [README](../README.md) / [Globals](../globals.md) / ["src/id3v2/frames/frame"](../modules/_src_id3v2_frames_frame_.md) / Frame
+> [Globals](../globals.md) / ["src/id3v2/frames/frame"](../modules/_src_id3v2_frames_frame_.md) / Frame
 
 # Class: Frame
 
@@ -11,8 +11,6 @@
   ↳ [AttachmentFrame](_src_id3v2_frames_attachmentframe_.attachmentframe.md)
 
   ↳ [CommentsFrame](_src_id3v2_frames_commentsframe_.commentsframe.md)
-
-  ↳ [EventTimeCodeFrame](_src_id3v2_frames_eventtimecodeframe_.eventtimecodeframe.md)
 
   ↳ [MusicCdIdentifierFrame](_src_id3v2_frames_musiccdidentifierframe_.musiccdidentifierframe.md)
 
@@ -29,6 +27,8 @@
   ↳ [UnknownFrame](_src_id3v2_frames_unknownframe_.unknownframe.md)
 
   ↳ [UnsynchronizedLyricsFrame](_src_id3v2_frames_unsynchronizedlyricsframe_.unsynchronizedlyricsframe.md)
+
+  ↳ [EventTimeCodeFrame](_src_id3v2_frames_eventtimecodeframe_.eventtimecodeframe.md)
 
   ↳ [RelativeVolumeFrame](_src_id3v2_frames_relativevolumeframe_.relativevolumeframe.md)
 
@@ -73,8 +73,6 @@
 
 \+ `Protected`**new Frame**(`header`: [Id3v2FrameHeader](_src_id3v2_frames_frameheader_.id3v2frameheader.md)): [Frame](_src_id3v2_frames_frame_.frame.md)
 
-*Defined in src/id3v2/frames/frame.ts:36*
-
 #### Parameters:
 
 Name | Type |
@@ -89,26 +87,20 @@ Name | Type |
 
 • `Protected` **\_header**: [Id3v2FrameHeader](_src_id3v2_frames_frameheader_.id3v2frameheader.md)
 
-*Defined in src/id3v2/frames/frame.ts:33*
-
 ## Accessors
 
 ### encryptionId
 
 • get **encryptionId**(): number \| undefined
 
-*Defined in src/id3v2/frames/frame.ts:55*
-
 Gets the encryption ID applied to the current instance.
 
 **Returns:** number \| undefined
 
-number Value containing the encryption identifer for the current instance or
+number Value containing the encryption identifier for the current instance or
     `undefined` if not set.
 
 • set **encryptionId**(`value`: number \| undefined): void
-
-*Defined in src/id3v2/frames/frame.ts:65*
 
 Sets the encryption ID applied to the current instance.
 
@@ -120,7 +112,7 @@ Name | Type | Description |
 
 **Returns:** void
 
-number Value containing the encryption identifer for the current instance or
+number Value containing the encryption identifier for the current instance or
     `undefined` if not set.
 
 ___
@@ -129,19 +121,15 @@ ___
 
 • get **flags**(): [Id3v2FrameFlags](../enums/_src_id3v2_frames_frameheader_.id3v2frameflags.md)
 
-*Defined in src/id3v2/frames/frame.ts:78*
-
 Gets the frame flags applied to the current instance.
 
 **Returns:** [Id3v2FrameFlags](../enums/_src_id3v2_frames_frameheader_.id3v2frameflags.md)
 
 • set **flags**(`value`: [Id3v2FrameFlags](../enums/_src_id3v2_frames_frameheader_.id3v2frameflags.md)): void
 
-*Defined in src/id3v2/frames/frame.ts:84*
-
 Sets the frame flags applied to the current instance.
-If the value includes either {@see Id3v2FrameFlags.Encryption} or
-{@see Id3v2FrameFlags.Compression}, {@see render} will throw.
+If the value includes either [Id3v2FrameFlags.Encryption](../enums/_src_id3v2_frames_frameheader_.id3v2frameflags.md#encryption) or
+[Id3v2FrameFlags.Compression](../enums/_src_id3v2_frames_frameheader_.id3v2frameflags.md#compression), [render](_src_id3v2_frames_frame_.frame.md#render) will throw.
 
 #### Parameters:
 
@@ -157,8 +145,6 @@ ___
 
 • get **frameClassType**(): [FrameClassType](../enums/_src_id3v2_frames_frame_.frameclasstype.md)
 
-*Defined in src/id3v2/frames/frame.ts:86*
-
 **Returns:** [FrameClassType](../enums/_src_id3v2_frames_frame_.frameclasstype.md)
 
 ___
@@ -166,8 +152,6 @@ ___
 ### frameId
 
 • get **frameId**(): [FrameIdentifier](_src_id3v2_frameidentifiers_.frameidentifier.md)
-
-*Defined in src/id3v2/frames/frame.ts:92*
 
 Gets the frame ID for the current instance.
 
@@ -181,8 +165,6 @@ ___
 
 • get **groupId**(): number \| undefined
 
-*Defined in src/id3v2/frames/frame.ts:99*
-
 Gets the grouping ID applied to the current instance.
 
 **Returns:** number \| undefined
@@ -191,8 +173,6 @@ number Value containing the grouping identifier for the current instance, or
     `undefined` if not set.
 
 • set **groupId**(`value`: number \| undefined): void
-
-*Defined in src/id3v2/frames/frame.ts:109*
 
 Sets the grouping ID applied to the current instance.
 
@@ -213,8 +193,6 @@ ___
 
 • get **size**(): number
 
-*Defined in src/id3v2/frames/frame.ts:124*
-
 Gets the size of the current instance as it was last stored on disk.
 NOTE: This value is not used outside of reading a frame from disk, so newly created frames
     should not have this value set.
@@ -227,12 +205,10 @@ NOTE: This value is not used outside of reading a frame from disk, so newly crea
 
 ▸ `Abstract`**clone**(): [Frame](_src_id3v2_frames_frame_.frame.md)
 
-*Defined in src/id3v2/frames/frame.ts:134*
-
 Creates a deep copy of the current instance.
 This method is implemented by rendering the current instance as an ID3v2.4 frame and using
-{@see FrameFactory.createFrame} to create a new frame. As such, this method should be
-overridden by child classes.
+the frame factory to create a new frame. As such, this method should be overridden by child
+classes.
 
 **Returns:** [Frame](_src_id3v2_frames_frame_.frame.md)
 
@@ -240,9 +216,7 @@ ___
 
 ### fieldData
 
-▸ `Protected`**fieldData**(`frameData`: [ByteVector](_src_bytevector_.bytevector.md), `offset`: number, `version`: number): [ByteVector](_src_bytevector_.bytevector.md)
-
-*Defined in src/id3v2/frames/frame.ts:229*
+▸ `Protected`**fieldData**(`frameData`: [ByteVector](_src_bytevector_.bytevector.md), `offset`: number, `version`: number, `dataIncludesHeader`: boolean): [ByteVector](_src_bytevector_.bytevector.md)
 
 Extracts the field data from the raw portion of an ID3v2 frame.
 This method is necessary for extracting extra data prepended to the frame such the as
@@ -254,7 +228,8 @@ Name | Type | Description |
 ------ | ------ | ------ |
 `frameData` | [ByteVector](_src_bytevector_.bytevector.md) | Raw frame data |
 `offset` | number | Index at which the data is contained |
-`version` | number | Version of the ID3v2 tag the data was originally encoded with  |
+`version` | number | Version of the ID3v2 tag the data was originally encoded with |
+`dataIncludesHeader` | boolean | `true` if `frameData` includes the header, `false`     otherwise  |
 
 **Returns:** [ByteVector](_src_bytevector_.bytevector.md)
 
@@ -263,8 +238,6 @@ ___
 ### parseFields
 
 ▸ `Protected` `Abstract`**parseFields**(`data`: [ByteVector](_src_bytevector_.bytevector.md), `version`: number): void
-
-*Defined in src/id3v2/frames/frame.ts:283*
 
 Populates the values in this frame by parsing its field data in a specified version.
 
@@ -283,8 +256,6 @@ ___
 
 ▸ **render**(`version`: number): [ByteVector](_src_bytevector_.bytevector.md)
 
-*Defined in src/id3v2/frames/frame.ts:140*
-
 Renders the current instance, encoded in a specified ID3v2 version.
 
 #### Parameters:
@@ -300,8 +271,6 @@ ___
 ### renderFields
 
 ▸ `Protected` `Abstract`**renderFields**(`version`: number): [ByteVector](_src_bytevector_.bytevector.md)
-
-*Defined in src/id3v2/frames/frame.ts:289*
 
 Renders the values in the current instance into field data for a specified version.
 
@@ -319,8 +288,6 @@ ___
 
 ▸ `Protected`**setData**(`data`: [ByteVector](_src_bytevector_.bytevector.md), `offset`: number, `readHeader`: boolean, `version`: number): void
 
-*Defined in src/id3v2/frames/frame.ts:299*
-
 Populates the current instance by reading the raw frame from disk, optionally reading the
 header.
 
@@ -329,7 +296,7 @@ header.
 Name | Type | Description |
 ------ | ------ | ------ |
 `data` | [ByteVector](_src_bytevector_.bytevector.md) | Raw ID3v2 frame |
-`offset` | number | Offset in {@paramref data} at which the frame begins. |
+`offset` | number | Offset in `data` at which the frame begins. |
 `readHeader` | boolean | Whether or not to read the reader into the current instance. |
 `version` | number | Version of the ID3v2 tag the data was encoded with  |
 
@@ -340,8 +307,6 @@ ___
 ### correctEncoding
 
 ▸ `Static` `Protected`**correctEncoding**(`type`: [StringType](../enums/_src_bytevector_.stringtype.md), `version`: number): [StringType](../enums/_src_bytevector_.stringtype.md)
-
-*Defined in src/id3v2/frames/frame.ts:209*
 
 Converts an encoding to be a supported encoding for a specified tag version.
 
@@ -355,5 +320,5 @@ Name | Type | Description |
 **Returns:** [StringType](../enums/_src_bytevector_.stringtype.md)
 
 StringType Value containing the correct encoding to use, based on
-    {@see Id3v2Settings.forceDefaultEncoding} and what is supported by
-    {@paramref version}
+    [Id3v2Settings.forceDefaultEncoding](_src_id3v2_id3v2settings_.id3v2settings.md#forcedefaultencoding) and what is supported by
+    `version`

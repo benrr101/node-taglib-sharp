@@ -1,6 +1,6 @@
-**node-taglib-sharp**
+**[node-taglib-sharp](../README.md)**
 
-> [README](../README.md) / [Globals](../globals.md) / ["src/mpeg/vbriHeader"](../modules/_src_mpeg_vbriheader_.md) / VbriHeader
+> [Globals](../globals.md) / ["src/mpeg/vbriHeader"](../modules/_src_mpeg_vbriheader_.md) / VbriHeader
 
 # Class: VbriHeader
 
@@ -35,8 +35,6 @@ Information about a variable bitrate MPEG audio stream encoded by the Fraunhofer
 
 ▪ `Static` `Readonly` **fileIdentifier**: [ByteVector](_src_bytevector_.bytevector.md) = ByteVector.fromString("VBRI", undefined, undefined, true)
 
-*Defined in src/mpeg/vbriHeader.ts:12*
-
 Identifier that appears in the file to indicate the start of the VBRI header.
 
 ___
@@ -44,8 +42,6 @@ ___
 ### unknown
 
 ▪ `Static` `Readonly` **unknown**: [VbriHeader](_src_mpeg_vbriheader_.vbriheader.md) = VbriHeader.fromInfo(0, 0)
-
-*Defined in src/mpeg/vbriHeader.ts:17*
 
 An empty and unset VBRI header.
 
@@ -55,8 +51,6 @@ ___
 
 ▪ `Static` `Readonly` **vbriHeaderOffset**: 36 = 36
 
-*Defined in src/mpeg/vbriHeader.ts:23*
-
 Offset at which a VBRI header would appear in an MPEG audio packet. Always 32 bytes after
 the end of the first MPEG header.
 
@@ -65,8 +59,6 @@ the end of the first MPEG header.
 ### isPresent
 
 • get **isPresent**(): boolean
-
-*Defined in src/mpeg/vbriHeader.ts:77*
 
 Whether or not a physical VBRI header is present in the file.
 
@@ -78,8 +70,6 @@ ___
 
 • get **totalFrames**(): number
 
-*Defined in src/mpeg/vbriHeader.ts:82*
-
 Gets the total number of frames in the file, as indicated by the current instance.
 
 **Returns:** number
@@ -90,8 +80,6 @@ ___
 
 • get **totalSize**(): number
 
-*Defined in src/mpeg/vbriHeader.ts:87*
-
 Gets the total size of the file, as indicated by the current instance.
 
 **Returns:** number
@@ -101,8 +89,6 @@ Gets the total size of the file, as indicated by the current instance.
 ### fromData
 
 ▸ `Static`**fromData**(`data`: [ByteVector](_src_bytevector_.bytevector.md)): [VbriHeader](_src_mpeg_vbriheader_.vbriheader.md)
-
-*Defined in src/mpeg/vbriHeader.ts:53*
 
 Constructs a new instance from the raw data of the header.
 
@@ -119,8 +105,6 @@ ___
 ### fromInfo
 
 ▸ `Static`**fromInfo**(`frames`: number, `size`: number): [VbriHeader](_src_mpeg_vbriheader_.vbriheader.md)
-
-*Defined in src/mpeg/vbriHeader.ts:38*
 
 Constructs a new instance with a specified frame count and size.
 

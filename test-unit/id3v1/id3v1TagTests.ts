@@ -15,7 +15,7 @@ const assert = Chai.assert;
     @test
     public testTitle() {
         // New tag must be empty
-        let tag = Id3v1Tag.empty();
+        let tag = Id3v1Tag.fromEmpty();
         assert.isTrue(tag.isEmpty);
         assert.notOk(tag.title);
 
@@ -51,7 +51,7 @@ const assert = Chai.assert;
     @test
     public testPerformers() {
         // New tag must be empty
-        let tag = Id3v1Tag.empty();
+        let tag = Id3v1Tag.fromEmpty();
         assert.isTrue(tag.isEmpty);
         assert.strictEqual(tag.performers.length, 0);
 
@@ -88,7 +88,7 @@ const assert = Chai.assert;
     @test
     public testAlbum() {
         // New tag must be empty
-        let tag = Id3v1Tag.empty();
+        let tag = Id3v1Tag.fromEmpty();
         assert.isTrue(tag.isEmpty);
         assert.notOk(tag.album);
 
@@ -124,7 +124,7 @@ const assert = Chai.assert;
     @test
     public testYear() {
         // New tag must be empty
-        let tag = Id3v1Tag.empty();
+        let tag = Id3v1Tag.fromEmpty();
         assert.isTrue(tag.isEmpty);
         assert.strictEqual(tag.year, 0);
 
@@ -160,7 +160,7 @@ const assert = Chai.assert;
     @test
     public testComment() {
         // New tag must be empty
-        let tag = Id3v1Tag.empty();
+        let tag = Id3v1Tag.fromEmpty();
         assert.isTrue(tag.isEmpty);
         assert.notOk(tag.comment);
 
@@ -197,7 +197,7 @@ const assert = Chai.assert;
     @test
     public testTrack() {
         // New tag must be empty
-        let tag = Id3v1Tag.empty();
+        let tag = Id3v1Tag.fromEmpty();
         assert.isTrue(tag.isEmpty);
         assert.strictEqual(tag.track, 0);
 
@@ -233,7 +233,7 @@ const assert = Chai.assert;
     @test
     public testGenres() {
         // New tag must be empty
-        let tag = Id3v1Tag.empty();
+        let tag = Id3v1Tag.fromEmpty();
         assert.isTrue(tag.isEmpty);
         assert.strictEqual(tag.genres.length, 0);
 
@@ -273,7 +273,7 @@ const assert = Chai.assert;
 
     @test
     public testClear() {
-        const tag = Id3v1Tag.empty();
+        const tag = Id3v1Tag.fromEmpty();
         tag.title = "A";
         tag.performers = ["B"];
         tag.album = "C";
@@ -296,7 +296,7 @@ const assert = Chai.assert;
 
     @test
     public testRender() {
-        const rendered = Id3v1Tag.empty().render();
+        const rendered = Id3v1Tag.fromEmpty().render();
         assert.strictEqual(rendered.length, 128);
         assert.isTrue(rendered.startsWith(Id3v1Tag.fileIdentifier));
     }

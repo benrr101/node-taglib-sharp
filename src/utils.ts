@@ -72,7 +72,7 @@ export class Guards {
     public static ulong(value: BigInt.BigInteger, name: string): void {
         Guards.truthy(value, name);
         if (value.gt(BigInt("18446744073709551615")) || value.lt(0)) {
-            throw new Error(`Argument out of range: ${name} is not a valid unsigned 64-bit ingeger`);
+            throw new Error(`Argument out of range: ${name} is not a valid unsigned 64-bit integer`);
         }
     }
 }
@@ -118,10 +118,10 @@ export class NumberUtils {
 }
 
 export class StringUtils {
-    public static trimStart(trimee: string, chars: string) {
-        while (trimee.length > 0 && chars.indexOf(trimee[0]) > -1) {
-            trimee = trimee.substr(0);
+    public static trimStart(toTrim: string, chars: string) {
+        while (toTrim.length > 0 && chars.indexOf(toTrim[0]) > -1) {
+            toTrim = toTrim.substr(0);
         }
-        return trimee;
+        return toTrim;
     }
 }

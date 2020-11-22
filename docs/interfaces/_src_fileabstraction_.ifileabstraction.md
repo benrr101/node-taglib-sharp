@@ -1,6 +1,6 @@
-**node-taglib-sharp**
+**[node-taglib-sharp](../README.md)**
 
-> [README](../README.md) / [Globals](../globals.md) / ["src/fileAbstraction"](../modules/_src_fileabstraction_.md) / IFileAbstraction
+> [Globals](../globals.md) / ["src/fileAbstraction"](../modules/_src_fileabstraction_.md) / IFileAbstraction
 
 # Interface: IFileAbstraction
 
@@ -33,12 +33,10 @@ systems and data retrieval methods.
 
 •  **name**: string
 
-*Defined in src/fileAbstraction.ts:14*
-
 Name or identifier used by the implementation
 
 **`description`** This value would typically represent a path or URL to be used when identifying
-  the file system, but it could be any valud as appropriate for the implementation.
+  the file system, but it could be any valid as appropriate for the implementation.
 
 ___
 
@@ -46,13 +44,11 @@ ___
 
 •  **readStream**: [IStream](_src_stream_.istream.md)
 
-*Defined in src/fileAbstraction.ts:23*
-
 Readable, seekable stream for the file referenced by the current instance.
 
-**`description`** This property is typically used when constructing an instance of {@see File}.
-  Upon completion of the constructor {@see closeStream} will be called to close the stream.
-  If the stream is to be reused after this point, {@see closeStream} should be implemented
+**`description`** This property is typically used when constructing an instance of [File](../classes/_src_file_.file.md).
+  Upon completion of the constructor [closeStream](_src_fileabstraction_.ifileabstraction.md#closestream) will be called to close the stream.
+  If the stream is to be reused after this point, [closeStream](_src_fileabstraction_.ifileabstraction.md#closestream) should be implemented
   in a way to keep it open.
 
 ___
@@ -61,13 +57,11 @@ ___
 
 •  **writeStream**: [IStream](_src_stream_.istream.md)
 
-*Defined in src/fileAbstraction.ts:32*
-
 Writable, seekable stream fo the file referenced by the current instance.
 
-**`description`** This property is typically used when saving a file with {@see File.save}. Upon
-  completion of the method, {@see closeStream} will be called to close the stream. If the
-  stream is to be reused after this point, {@see closeStream} should be implemented in a way
+**`description`** This property is typically used when saving a file with [File.save](../classes/_src_file_.file.md#save). Upon
+  completion of the method, [closeStream](_src_fileabstraction_.ifileabstraction.md#closestream) will be called to close the stream. If the
+  stream is to be reused after this point, [closeStream](_src_fileabstraction_.ifileabstraction.md#closestream) should be implemented in a way
   to keep it open
 
 ## Methods
@@ -75,8 +69,6 @@ Writable, seekable stream fo the file referenced by the current instance.
 ### closeStream
 
 ▸ **closeStream**(`stream`: [IStream](_src_stream_.istream.md)): void
-
-*Defined in src/fileAbstraction.ts:38*
 
 Closes a stream created by the current instance.
 

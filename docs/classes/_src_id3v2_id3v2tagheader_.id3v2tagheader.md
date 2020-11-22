@@ -1,6 +1,6 @@
-**node-taglib-sharp**
+**[node-taglib-sharp](../README.md)**
 
-> [README](../README.md) / [Globals](../globals.md) / ["src/id3v2/id3v2TagHeader"](../modules/_src_id3v2_id3v2tagheader_.md) / Id3v2TagHeader
+> [Globals](../globals.md) / ["src/id3v2/id3v2TagHeader"](../modules/_src_id3v2_id3v2tagheader_.md) / Id3v2TagHeader
 
 # Class: Id3v2TagHeader
 
@@ -30,8 +30,6 @@
 
 • get **completeTagSize**(): number
 
-*Defined in src/id3v2/id3v2TagHeader.ts:97*
-
 Gets the complete size of the tag described by the current instance including the header
 and footer.
 
@@ -43,15 +41,11 @@ ___
 
 • get **flags**(): [Id3v2TagHeaderFlags](../enums/_src_id3v2_id3v2tagheader_.id3v2tagheaderflags.md)
 
-*Defined in src/id3v2/id3v2TagHeader.ts:106*
-
 Gets the flags applied to the current instance.
 
 **Returns:** [Id3v2TagHeaderFlags](../enums/_src_id3v2_id3v2tagheader_.id3v2tagheaderflags.md)
 
 • set **flags**(`value`: [Id3v2TagHeaderFlags](../enums/_src_id3v2_id3v2tagheader_.id3v2tagheaderflags.md)): void
-
-*Defined in src/id3v2/id3v2TagHeader.ts:112*
 
 Sets the flags applied to the current instance.
 
@@ -59,7 +53,7 @@ Sets the flags applied to the current instance.
 
 Name | Type | Description |
 ------ | ------ | ------ |
-`value` | [Id3v2TagHeaderFlags](../enums/_src_id3v2_id3v2tagheader_.id3v2tagheaderflags.md) | Bitwise combined {@see HeaderFlags} value containing the flags to apply to the     current instance.  |
+`value` | [Id3v2TagHeaderFlags](../enums/_src_id3v2_id3v2tagheader_.id3v2tagheaderflags.md) | Bitwise combined [Id3v2TagHeaderFlags](../enums/_src_id3v2_id3v2tagheader_.id3v2tagheaderflags.md) value containing the flags to apply to the     current instance.  |
 
 **Returns:** void
 
@@ -69,15 +63,11 @@ ___
 
 • get **majorVersion**(): number
 
-*Defined in src/id3v2/id3v2TagHeader.ts:129*
-
 Gets the major version of the tag described by the current instance.
 
 **Returns:** number
 
 • set **majorVersion**(`value`: number): void
-
-*Defined in src/id3v2/id3v2TagHeader.ts:140*
 
 Sets the major version of the tag described by the current instance.
 When the version is set, unsupported header flags will automatically be removed from the
@@ -97,15 +87,11 @@ ___
 
 • get **revisionNumber**(): number
 
-*Defined in src/id3v2/id3v2TagHeader.ts:158*
-
 Gets the version revision number of the tag represented by the current instance.
 
 **Returns:** number
 
 • set **revisionNumber**(`value`: number): void
-
-*Defined in src/id3v2/id3v2TagHeader.ts:167*
 
 Sets the version revision number of the tag represented by the current instance.
 This value should always be zero. Non-zero values indicate an experimental or new version of
@@ -126,16 +112,12 @@ ___
 
 • get **tagSize**(): number
 
-*Defined in src/id3v2/id3v2TagHeader.ts:176*
-
 Gets the complete size of the tag described by the current instance, minus the header and
 footer.
 
 **Returns:** number
 
 • set **tagSize**(`value`: number): void
-
-*Defined in src/id3v2/id3v2TagHeader.ts:182*
 
 Sets the complete size of the tag described by the current instance, minus the header
 footer. NOTE THIS MUST BE AN 28-BIT UNSIGNED INTEGER.
@@ -154,8 +136,6 @@ ___
 
 • `Static`get **fileIdentifier**(): [ByteVector](_src_bytevector_.bytevector.md)
 
-*Defined in src/id3v2/id3v2TagHeader.ts:91*
-
 The identifier used to recognize an ID3v2 header.
 
 **Returns:** [ByteVector](_src_bytevector_.bytevector.md)
@@ -166,8 +146,6 @@ The identifier used to recognize an ID3v2 header.
 
 ▸ **render**(): [ByteVector](_src_bytevector_.bytevector.md)
 
-*Defined in src/id3v2/id3v2TagHeader.ts:196*
-
 Renders the current instance as a raw ID3v2 header
 
 **Returns:** [ByteVector](_src_bytevector_.bytevector.md)
@@ -177,8 +155,6 @@ ___
 ### fromData
 
 ▸ `Static`**fromData**(`data`: [ByteVector](_src_bytevector_.bytevector.md)): [Id3v2TagHeader](_src_id3v2_id3v2tagheader_.id3v2tagheader.md)
-
-*Defined in src/id3v2/id3v2TagHeader.ts:50*
 
 Constructs and initializes a new instance by reading it from the raw header data.
 

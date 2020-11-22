@@ -1,6 +1,6 @@
-**node-taglib-sharp**
+**[node-taglib-sharp](../README.md)**
 
-> [README](../README.md) / [Globals](../globals.md) / ["src/id3v2/frames/frame"](../modules/_src_id3v2_frames_frame_.md) / FrameClassType
+> [Globals](../globals.md) / ["src/id3v2/frames/frame"](../modules/_src_id3v2_frames_frame_.md) / FrameClassType
 
 # Enumeration: FrameClassType
 
@@ -11,7 +11,7 @@
 * [AttachmentFrame](_src_id3v2_frames_frame_.frameclasstype.md#attachmentframe)
 * [CommentsFrame](_src_id3v2_frames_frame_.frameclasstype.md#commentsframe)
 * [EventTimeCodeFrame](_src_id3v2_frames_frame_.frameclasstype.md#eventtimecodeframe)
-* [MusicCdIdentiferFrame](_src_id3v2_frames_frame_.frameclasstype.md#musiccdidentiferframe)
+* [MusicCdIdentifierFrame](_src_id3v2_frames_frame_.frameclasstype.md#musiccdidentifierframe)
 * [PlayCountFrame](_src_id3v2_frames_frame_.frameclasstype.md#playcountframe)
 * [PopularimeterFrame](_src_id3v2_frames_frame_.frameclasstype.md#popularimeterframe)
 * [PrivateFrame](_src_id3v2_frames_frame_.frameclasstype.md#privateframe)
@@ -30,134 +30,100 @@
 
 ### AttachmentFrame
 
-•  **AttachmentFrame**: {}
-
-*Defined in src/id3v2/frames/frame.ts:11*
+•  **AttachmentFrame**: 
 
 ___
 
 ### CommentsFrame
 
-•  **CommentsFrame**: {}
-
-*Defined in src/id3v2/frames/frame.ts:12*
+•  **CommentsFrame**: 
 
 ___
 
 ### EventTimeCodeFrame
 
-•  **EventTimeCodeFrame**: {}
-
-*Defined in src/id3v2/frames/frame.ts:13*
+•  **EventTimeCodeFrame**: 
 
 ___
 
-### MusicCdIdentiferFrame
+### MusicCdIdentifierFrame
 
-•  **MusicCdIdentiferFrame**: {}
-
-*Defined in src/id3v2/frames/frame.ts:14*
+•  **MusicCdIdentifierFrame**: 
 
 ___
 
 ### PlayCountFrame
 
-•  **PlayCountFrame**: {}
-
-*Defined in src/id3v2/frames/frame.ts:15*
+•  **PlayCountFrame**: 
 
 ___
 
 ### PopularimeterFrame
 
-•  **PopularimeterFrame**: {}
-
-*Defined in src/id3v2/frames/frame.ts:16*
+•  **PopularimeterFrame**: 
 
 ___
 
 ### PrivateFrame
 
-•  **PrivateFrame**: {}
-
-*Defined in src/id3v2/frames/frame.ts:17*
+•  **PrivateFrame**: 
 
 ___
 
 ### RelativeVolumeFrame
 
-•  **RelativeVolumeFrame**: {}
-
-*Defined in src/id3v2/frames/frame.ts:18*
+•  **RelativeVolumeFrame**: 
 
 ___
 
 ### SynchronizedLyricsFrame
 
-•  **SynchronizedLyricsFrame**: {}
-
-*Defined in src/id3v2/frames/frame.ts:19*
+•  **SynchronizedLyricsFrame**: 
 
 ___
 
 ### TermsOfUseFrame
 
-•  **TermsOfUseFrame**: {}
-
-*Defined in src/id3v2/frames/frame.ts:20*
+•  **TermsOfUseFrame**: 
 
 ___
 
 ### TextInformationFrame
 
-•  **TextInformationFrame**: {}
-
-*Defined in src/id3v2/frames/frame.ts:21*
+•  **TextInformationFrame**: 
 
 ___
 
 ### UniqueFileIdentifierFrame
 
-•  **UniqueFileIdentifierFrame**: {}
-
-*Defined in src/id3v2/frames/frame.ts:22*
+•  **UniqueFileIdentifierFrame**: 
 
 ___
 
 ### UnknownFrame
 
-•  **UnknownFrame**: {}
-
-*Defined in src/id3v2/frames/frame.ts:23*
+•  **UnknownFrame**: 
 
 ___
 
 ### UnsynchronizedLyricsFrame
 
-•  **UnsynchronizedLyricsFrame**: {}
-
-*Defined in src/id3v2/frames/frame.ts:24*
+•  **UnsynchronizedLyricsFrame**: 
 
 ___
 
 ### UrlLinkFrame
 
-•  **UrlLinkFrame**: {}
-
-*Defined in src/id3v2/frames/frame.ts:25*
+•  **UrlLinkFrame**: 
 
 ___
 
 ### UserTextInformationFrame
 
-•  **UserTextInformationFrame**: {}
-
-*Defined in src/id3v2/frames/frame.ts:26*
+•  **UserTextInformationFrame**: 
 
 ___
 
 ### UserUrlLinkFrame
 
-•  **UserUrlLinkFrame**: {}
-
-*Defined in src/id3v2/frames/frame.ts:27*
+•  **UserUrlLinkFrame**:

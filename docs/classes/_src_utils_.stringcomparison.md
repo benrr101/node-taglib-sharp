@@ -1,6 +1,6 @@
-**node-taglib-sharp**
+**[node-taglib-sharp](../README.md)**
 
-> [README](../README.md) / [Globals](../globals.md) / ["src/utils"](../modules/_src_utils_.md) / StringComparison
+> [Globals](../globals.md) / ["src/utils"](../modules/_src_utils_.md) / StringComparison
 
 # Class: StringComparison
 
@@ -21,8 +21,6 @@
 
 ▸ `Static`**CaseInsensitive**(`a`: string, `b`: string): boolean
 
-*Defined in src/utils.ts:81*
-
 #### Parameters:
 
 Name | Type |
@@ -37,8 +35,6 @@ ___
 ### CaseSensitive
 
 ▸ `Static`**CaseSensitive**(`a`: string, `b`: string): boolean
-
-*Defined in src/utils.ts:87*
 
 #### Parameters:
 

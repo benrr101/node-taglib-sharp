@@ -78,9 +78,9 @@ export class EventTimeCodeFrame extends Frame {
      * Constructs and initializes a new instance by reading its raw data in a specified ID3v2
      * version. This method allows for offset reading from the data bytevector.
      * @param data Raw representation of the new frame
-     * @param offset What offset in {@paramref data} the frame actually begins. Must be positive,
+     * @param offset What offset in `data` the frame actually begins. Must be positive,
      *     safe integer
-     * @param header Header of the frame found at {@paramref data} in the data
+     * @param header Header of the frame found at `data` in the data
      * @param version ID3v2 version the frame was originally encoded with
      */
     public static fromOffsetRawData(
@@ -122,7 +122,7 @@ export class EventTimeCodeFrame extends Frame {
     public get frameClassType(): FrameClassType { return FrameClassType.EventTimeCodeFrame; }
 
     /**
-     * Gets the event this frame contains. Each {@see EventTimeCode} represents a single event at a
+     * Gets the event this frame contains. Each {@link EventTimeCode} represents a single event at a
      * certain point in time.
      */
     public get events(): EventTimeCode[] { return this._events || []; }
@@ -153,7 +153,7 @@ export class EventTimeCodeFrame extends Frame {
     }
 
     /** @inheritDoc */
-    protected parseFields(data: ByteVector, version: number): void {
+    protected parseFields(data: ByteVector, _version: number): void {
         this._events = [];
         this._timestampFormat = data.get(0);
 
@@ -173,7 +173,7 @@ export class EventTimeCodeFrame extends Frame {
     }
 
     /** @inheritDoc */
-    protected renderFields(version: number): ByteVector {
+    protected renderFields(_version: number): ByteVector {
         // Docs state event codes must be sorted chronologically
         const events = this.events.sort((a, b) => a.time - b.time)
             .map((e) => e.render());

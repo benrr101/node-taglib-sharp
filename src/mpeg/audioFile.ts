@@ -17,8 +17,8 @@ export default class AudioFile extends NonContainerFile {
     /**
      * Gets a tag of a specified type from the current instance, optionally creating a new tag if
      * possible.
-     * If an {@see Id3v2Tag} is added to the current instance, it will be placed at the start of
-     * the file. On the other hand, {@see Id3v1Tag} and {@see ApeTag} will be added to the end of
+     * If an {@link Id3v2Tag} is added to the current instance, it will be placed at the start of
+     * the file. On the other hand, {@link Id3v1Tag} and {@link ApeTag} will be added to the end of
      * the file. All other tag types will be ignored.
      * @param type Type of tag to create
      * @param create Whether or not to try and create the tag if one is not found
@@ -43,7 +43,7 @@ export default class AudioFile extends NonContainerFile {
         }
     }
 
-    protected readEnd(end: number, propertiesStyle: ReadStyle): void {
+    protected readEnd(_end: number, _propertiesStyle: ReadStyle): void {
         // Make sure we have Id3v1 and Id3v2 tags
         // @TODO: This is a kinda sleazy way of adding a ID3v2 tag if we didn't read one at the start
         // NOTE: The reason for adding the ID3v1 and ID3v2 tags is because this library is meant to
@@ -54,7 +54,7 @@ export default class AudioFile extends NonContainerFile {
         this.getTag(TagTypes.Id3v2, true);
     }
 
-    protected readProperties(start: number, end: number, propertiesStyle: ReadStyle): Properties {
+    protected readProperties(start: number, end: number, _propertiesStyle: ReadStyle): Properties {
         this._firstHeader.streamLength =  end - start;
         return new Properties(0, [this._firstHeader]);
     }
@@ -73,7 +73,7 @@ export default class AudioFile extends NonContainerFile {
 
 ////////////////////////////////////////////////////////////////////////////
 // Register the file type
-const mimeTypes = [
+[
     "taglib/mp3",
     "audio/x-mp3",
     "application/x-id3",
@@ -87,7 +87,4 @@ const mimeTypes = [
     "taglib/mp1",
     "audio/x-mp2",
     "audio/x-mp1"
-];
-for (const mimeType of mimeTypes) {
-    File.addFileType(mimeType, AudioFile);
-}
+].forEach((mt) => File.addFileType(mt, AudioFile));

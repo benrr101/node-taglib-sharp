@@ -47,28 +47,8 @@ export default class Id3v2Tag extends Tag {
     }
 
     /**
-     * Constructs and initializes a new Tag by reading the contents from a specified position in
-     * the provided file.
-     * @param file File from which the contents of the new instance is to be read
-     * @param position Offset into the file where the tag should be read from
-     * @param style How the data is to be read into the current instance
-     * @returns Id3v2Tag Tag with the data from the file read into it
-     */
-    public static fromFile(file: File, position: number, style: ReadStyle): Id3v2Tag {
-        Guards.truthy(file, "file");
-        Guards.uint(position, "position");
-        if (position > file.length - Id3v2Settings.headerSize) {
-            throw new Error("Argument out of range: position must be within size of the file");
-        }
-
-        const tag = new Id3v2Tag();
-        tag.read(file, position, style);
-        return tag;
-    }
-
-    /**
      * Constructs and initializes a new Tag by reading the contents from a specified
-     * {@see ByteVector} object.
+     * {@link ByteVector} object.
      * @param data Tag data to read into a tag object
      * @returns Id3v2Tag Tag with the data from the byte vector read into it
      */
@@ -91,6 +71,26 @@ export default class Id3v2Tag extends Tag {
         }
 
         tag.parse(data.mid(Id3v2Settings.headerSize, tag._header.tagSize), undefined, 0, ReadStyle.None);
+        return tag;
+    }
+
+    /**
+     * Constructs and initializes a new Tag by reading the contents from a specified position in
+     * the provided file.
+     * @param file File from which the contents of the new instance is to be read
+     * @param position Offset into the file where the tag should be read from
+     * @param style How the data is to be read into the current instance
+     * @returns Id3v2Tag Tag with the data from the file read into it
+     */
+    public static fromFile(file: File, position: number, style: ReadStyle): Id3v2Tag {
+        Guards.truthy(file, "file");
+        Guards.uint(position, "position");
+        if (position > file.length - Id3v2Settings.headerSize) {
+            throw new Error("Argument out of range: position must be within size of the file");
+        }
+
+        const tag = new Id3v2Tag();
+        tag.read(file, position, style);
         return tag;
     }
 
@@ -121,7 +121,7 @@ export default class Id3v2Tag extends Tag {
     public get flags(): Id3v2TagHeaderFlags { return this._header.flags; }
     /**
      * Sets the header flags applied to the current instance
-     * @param value Bitwise combined {@see Id3v2TagHeaderFlags} value containing flags applied to the
+     * @param value Bitwise combined {@link Id3v2TagHeaderFlags} value containing flags applied to the
      *     current instance.
      */
     public set flags(value: Id3v2TagHeaderFlags) { this._header.flags = value; }
@@ -223,13 +223,9 @@ export default class Id3v2Tag extends Tag {
     /** @inheritDoc */
     public get tagTypes(): TagTypes { return TagTypes.Id3v2; }
 
-    /**
-     * @inheritDoc via TIT2 frame
-     */
+    /** @inheritDoc via TIT2 frame */
     public get title(): string { return this.getTextAsString(FrameIdentifiers.TIT2); }
-    /**
-     * @inheritDoc via TIT2 frame
-     */
+    /** @inheritDoc via TIT2 frame */
     public set title(value: string) { this.setTextFrame(FrameIdentifiers.TIT2, value); }
 
     /** @inheritDoc via TSOT frame */
@@ -306,7 +302,7 @@ export default class Id3v2Tag extends Tag {
     }
     /** @inheritDoc via TMCL frame */
     set performersRole(value: string[]) {
-        // TODO: We shoud really just write this out to the frame instead of this temporary storage
+        // TODO: We should really just write this out to the frame instead of this temporary storage
         this.removeFrames(FrameIdentifiers.TMCL);
         this._performersRole = value ? value.slice(0) : [];
     }
@@ -338,7 +334,7 @@ export default class Id3v2Tag extends Tag {
 
     /** @inheritDoc via TSOA frame */
     get albumSort(): string { return this.getTextAsString(FrameIdentifiers.TSOA); }
-    /** @inheritDoc via TSOA fram */
+    /** @inheritDoc via TSOA frame */
     set albumSort(value: string) { this.setTextFrame(FrameIdentifiers.TSOA, value); }
 
     /** @inheritDoc via COMM frame */
@@ -545,9 +541,9 @@ export default class Id3v2Tag extends Tag {
     /** @inheritDoc via TXXX:MusicBrainz Artist Id frame */
     set musicBrainzArtistId(value: string) { this.setUserTextAsString("MusicBrainz Artist Id", value); }
 
-    /** @inheritDoc via TXXX:MusicBrainz Relase Group Id frame */
+    /** @inheritDoc via TXXX:MusicBrainz Release Group Id frame */
     get musicBrainzReleaseGroupId(): string { return this.getUserTextAsString("MusicBrainz Release Group Id"); }
-    /** @inheritDoc via TXXX:MusicBrainz Relase Group Id frame */
+    /** @inheritDoc via TXXX:MusicBrainz Release Group Id frame */
     set musicBrainzReleaseGroupId(value: string) { this.setUserTextAsString("MusicBrainz Release Group Id", value); }
 
     /** @inheritDoc via TXXX:MusicBrainz Album Id frame */
@@ -781,8 +777,8 @@ export default class Id3v2Tag extends Tag {
      * Gets a list of frames with the specified identifier contained in the current instance.
      * NOTE: This implementation deviates a bit from the original .NET implementation due to the
      * inability to do `x is y` comparison by types in typescript without type guards.
-     * {@paramref type} is the type guard for differentiating frame types. If all frames are needed
-     * use {@see frames}.
+     * `type` is the type guard for differentiating frame types. If all frames are needed
+     * use {@link frames}.
      * @param type Type of frame to return
      * @param ident Identifier of the frame
      * @returns TFrame[] Array of frames with the desired frame identifier
@@ -846,7 +842,7 @@ export default class Id3v2Tag extends Tag {
     /**
      * Renders the current instance as a raw ID3v2 tag.
      * By default, tags will be rendered in the version they were loaded in and new tags using the
-     * version specified by {@see defaultVersion}. If {@see forceDefaultVersion} is `true`, all
+     * version specified by {@link defaultVersion}. If {@link forceDefaultVersion} is `true`, all
      * tags will be rendered using that version, except for tags with footers which must be in
      * version 4.
      * @returns ByteVector The rendered tag.
@@ -857,14 +853,14 @@ export default class Id3v2Tag extends Tag {
         if (this._performersRole) {
             const map: {[key: string]: string} = {};
             for (let i = 0; i < this._performersRole.length; i++) {
-                const insts = this._performersRole[i];
-                if (!insts) {
+                const instruments = this._performersRole[i];
+                if (!instruments) {
                     continue;
                 }
 
-                const instList = insts.split(";");
-                for (const iinst of instList) {
-                    const inst = iinst.trim();
+                const instrumentList = instruments.split(";");
+                for (const instrument of instrumentList) {
+                    const inst = instrument.trim();
 
                     if (i < this.performers.length) {
                         const perf = this.performers[i];
@@ -895,9 +891,9 @@ export default class Id3v2Tag extends Tag {
         // the extended header, frames and padding, but does not include the tag's header or footer
 
         const hasFooter = (this._header.flags & Id3v2TagHeaderFlags.FooterPresent) !== 0;
-        const unsyncAtFrameLevel = (this._header.flags & Id3v2TagHeaderFlags.Unsynchronication) !== 0
+        const unsyncAtFrameLevel = (this._header.flags & Id3v2TagHeaderFlags.Unsynchronization) !== 0
             && this.version >= 4;
-        const unsyncAtTagLevel = (this._header.flags & Id3v2TagHeaderFlags.Unsynchronication) !== 0
+        const unsyncAtTagLevel = (this._header.flags & Id3v2TagHeaderFlags.Unsynchronization) !== 0
             && this.version < 4;
 
         this._header.majorVersion = hasFooter ? 4 : this.version;
@@ -956,7 +952,7 @@ export default class Id3v2Tag extends Tag {
      * Replaces an existing frame with a new one in the list contained in the current instance, or
      * adds a new one if the existing one is not contained.
      * @param oldFrame Object to be replaced
-     * @param newFrame Object to replace {@paramref oldFrame} with
+     * @param newFrame Object to replace `oldFrame` with
      */
     public replaceFrame(oldFrame: Frame, newFrame: Frame): void {
         Guards.truthy(oldFrame, "oldFrame");
@@ -975,15 +971,15 @@ export default class Id3v2Tag extends Tag {
     }
 
     /**
-     * Sets the numerica values for a specified text information frame.
-     * If both {@paramref numerator} and {@paramref denominator} are `0`, the frame will be removed
-     * from the tag. If {@paramref denominator} is zero, {@paramref numerator} will be stored by
+     * Sets the numerical values for a specified text information frame.
+     * If both `numerator` and `denominator` are `0`, the frame will be removed
+     * from the tag. If `denominator` is zero, `numerator` will be stored by
      * itself. Otherwise the values will be stored as `{numerator}/{denominator}`.
      * @param ident Identity of the frame to set
      * @param numerator Value containing the top half of the fraction, or the number if
-     *     {@paramref denominator} is zero
+     *     `denominator` is zero
      * @param denominator Value containing the bottom half of the fraction
-     * @param minPlaces Mininum number of digits to use to display the {@paramref numerator}, if
+     * @param minPlaces Minimum number of digits to use to display the `numerator`, if
      *     the numerator has less than this number of digits, it will be filled with leading zeroes.
      */
     public setNumberFrame(ident: FrameIdentifier, numerator: number, denominator: number, minPlaces: number = 1): void {
@@ -1058,7 +1054,7 @@ export default class Id3v2Tag extends Tag {
         // If the entire tag is marked as unsynchronized, and this tag is version ID3v2.3 or lower,
         // resynchronize it.
         const fullTagUnsync = this._header.majorVersion < 4
-            && (this._header.flags & Id3v2TagHeaderFlags.Unsynchronication) !== 0;
+            && (this._header.flags & Id3v2TagHeaderFlags.Unsynchronization) !== 0;
 
         // Avoid loading all the ID3 tag if PictureLazy is enabled and size is significant enough
         // (ID3v2.4 and later only)
@@ -1167,7 +1163,7 @@ export default class Id3v2Tag extends Tag {
     }
 
     private getUserTextAsString(description: string, caseSensitive: boolean = true): string {
-        // Gets the TXXX frame, frame will be undefined if nonexistant
+        // Gets the TXXX frame, frame will be undefined if nonexistent
         const frames = this.getFramesByClassType<UserTextInformationFrame>(FrameClassType.UserTextInformationFrame);
         const frame = UserTextInformationFrame.findUserTextInformationFrame(frames, description, caseSensitive);
 
@@ -1204,9 +1200,11 @@ export default class Id3v2Tag extends Tag {
                 this.removeFrame(frame);
             }
         } else {
-            frame = UserTextInformationFrame.fromDescription(description, Id3v2Settings.defaultEncoding);
+            if (!frame) {
+                frame = UserTextInformationFrame.fromDescription(description, Id3v2Settings.defaultEncoding);
+                this.addFrame(frame);
+            }
             frame.text = text.split(";");
-            this.addFrame(frame);
         }
     }
 

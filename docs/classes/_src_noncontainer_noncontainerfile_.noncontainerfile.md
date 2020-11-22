@@ -1,23 +1,23 @@
-**node-taglib-sharp**
+**[node-taglib-sharp](../README.md)**
 
-> [README](../README.md) / [Globals](../globals.md) / ["src/nonContainer/nonContainerFile"](../modules/_src_noncontainer_noncontainerfile_.md) / NonContainerFile
+> [Globals](../globals.md) / ["src/nonContainer/nonContainerFile"](../modules/_src_noncontainer_noncontainerfile_.md) / NonContainerFile
 
 # Class: NonContainerFile
 
 Abstract class that provides tagging and properties for files that contain an indeterminate
 number of tags at their beginning or end.
-When extending this class, {@see NonContainerFile.readStart},
+When extending this class, [NonContainerFile.readStart](_src_noncontainer_noncontainerfile_.noncontainerfile.md#readstart),
 
-{@see NonContainerFile.readEnd}, and {@see NonContainerFile.readProperties} should be overridden
+[NonContainerFile.readEnd](_src_noncontainer_noncontainerfile_.noncontainerfile.md#readend), and [NonContainerFile.readProperties](_src_noncontainer_noncontainerfile_.noncontainerfile.md#readproperties) should be overridden
 and read the format specific information from the file.
 The file is read upon construction in the following manner:
 1. The file is opened for reading
 2. The tags at the start of the file are read
-3. {@see NonContainerFile.readStart} is called
+3. [NonContainerFile.readStart](_src_noncontainer_noncontainerfile_.noncontainerfile.md#readstart) is called
 4. The tags at the end of the file are read
-5. {@see NonContainerFile.readEnd} is called
-6. If reading with a style other than {@see ReadStyle.None},
-   {@see NonContainerFile.readProperties} is called
+5. [NonContainerFile.readEnd](_src_noncontainer_noncontainerfile_.noncontainerfile.md#readend) is called
+6. If reading with a style other than [ReadStyle.None](../enums/_src_file_.readstyle.md#none),
+   [NonContainerFile.readProperties](_src_noncontainer_noncontainerfile_.noncontainerfile.md#readproperties) is called
 7. The file is closed
 
 ## Hierarchy
@@ -25,6 +25,8 @@ The file is read upon construction in the following manner:
 * [File](_src_file_.file.md)
 
   ↳ **NonContainerFile**
+
+  ↳↳ [ApeFile](_src_ape_apefile_.apefile.md)
 
   ↳↳ [AudioFile](_src_mpeg_audiofile_.audiofile.md)
 
@@ -93,11 +95,9 @@ The file is read upon construction in the following manner:
 
 ### constructor
 
-\+ `Protected`**new NonContainerFile**(`fileToRead`: [IFileAbstraction](../interfaces/_src_fileabstraction_.ifileabstraction.md) \| string, `propertiesStyle`: [ReadStyle](../enums/_src_file_.readstyle.md)): [NonContainerFile](_src_noncontainer_noncontainerfile_.noncontainerfile.md)
+\+ `Protected`**new NonContainerFile**(`fileToRead`: [IFileAbstraction](../interfaces/_src_fileabstraction_.ifileabstraction.md) \| string, `propertiesStyle?`: [ReadStyle](../enums/_src_file_.readstyle.md)): [NonContainerFile](_src_noncontainer_noncontainerfile_.noncontainerfile.md)
 
 *Overrides [File](_src_file_.file.md).[constructor](_src_file_.file.md#constructor)*
-
-*Defined in src/nonContainer/nonContainerFile.ts:28*
 
 #### Parameters:
 
@@ -116,8 +116,6 @@ Name | Type | Default value |
 
 *Inherited from [File](_src_file_.file.md).[_fileAbstraction](_src_file_.file.md#_fileabstraction)*
 
-*Defined in src/file.ts:89*
-
 ___
 
 ### \_fileStream
@@ -125,8 +123,6 @@ ___
 • `Protected` **\_fileStream**: [IStream](../interfaces/_src_stream_.istream.md)
 
 *Inherited from [File](_src_file_.file.md).[_fileStream](_src_file_.file.md#_filestream)*
-
-*Defined in src/file.ts:90*
 
 ___
 
@@ -136,8 +132,6 @@ ___
 
 *Inherited from [File](_src_file_.file.md).[_invariantEndPosition](_src_file_.file.md#_invariantendposition)*
 
-*Defined in src/file.ts:91*
-
 ___
 
 ### \_invariantStartPosition
@@ -145,8 +139,6 @@ ___
 • `Protected` **\_invariantStartPosition**: number = -1
 
 *Inherited from [File](_src_file_.file.md).[_invariantStartPosition](_src_file_.file.md#_invariantstartposition)*
-
-*Defined in src/file.ts:92*
 
 ___
 
@@ -156,8 +148,6 @@ ___
 
 *Inherited from [File](_src_file_.file.md).[_tagTypesOnDisk](_src_file_.file.md#_tagtypesondisk)*
 
-*Defined in src/file.ts:93*
-
 ## Accessors
 
 ### corruptionReasons
@@ -165,8 +155,6 @@ ___
 • get **corruptionReasons**(): string[]
 
 *Inherited from [File](_src_file_.file.md).[corruptionReasons](_src_file_.file.md#corruptionreasons)*
-
-*Defined in src/file.ts:178*
 
 Reasons for which this file is marked as corrupt.
 
@@ -177,8 +165,6 @@ ___
 ### endTag
 
 • `Protected`get **endTag**(): [EndTag](_src_noncontainer_endtag_.endtag.md)
-
-*Defined in src/nonContainer/nonContainerFile.ts:41*
 
 Gets the collection of tags appearing at the end of the file.
 
@@ -192,9 +178,7 @@ ___
 
 *Inherited from [File](_src_file_.file.md).[fileAbstraction](_src_file_.file.md#fileabstraction)*
 
-*Defined in src/file.ts:183*
-
-Gets the {@see IFileAbstraction} representing the file.
+Gets the [IFileAbstraction](../interfaces/_src_fileabstraction_.ifileabstraction.md) representing the file.
 
 **Returns:** [IFileAbstraction](../interfaces/_src_fileabstraction_.ifileabstraction.md)
 
@@ -205,8 +189,6 @@ ___
 • get **invariantEndPosition**(): number
 
 *Inherited from [File](_src_file_.file.md).[invariantEndPosition](_src_file_.file.md#invariantendposition)*
-
-*Defined in src/file.ts:189*
 
 Gets the position at which the invariant (media) portion of the current instance ends. If
 the value could not be determined, `-1` is returned;
@@ -221,8 +203,6 @@ ___
 
 *Inherited from [File](_src_file_.file.md).[invariantStartPosition](_src_file_.file.md#invariantstartposition)*
 
-*Defined in src/file.ts:195*
-
 Gets the position at which the invariant (media) portion of the current instance begins. If
 the value could not be determined, `-1` is returned.
 
@@ -235,8 +215,6 @@ ___
 • get **isPossiblyCorrupt**(): boolean
 
 *Inherited from [File](_src_file_.file.md).[isPossiblyCorrupt](_src_file_.file.md#ispossiblycorrupt)*
-
-*Defined in src/file.ts:201*
 
 Indicates whether or not this file may be corrupt. Files with unknown corruptions should not
 be written.
@@ -251,8 +229,6 @@ ___
 
 *Inherited from [File](_src_file_.file.md).[isWritable](_src_file_.file.md#iswritable)*
 
-*Defined in src/file.ts:206*
-
 Indicates whether or not tags can be written back to the current file.
 
 **Returns:** boolean
@@ -264,8 +240,6 @@ ___
 • get **length**(): number
 
 *Inherited from [File](_src_file_.file.md).[length](_src_file_.file.md#length)*
-
-*Defined in src/file.ts:212*
 
 Gets the length of the file represented by the current instance. Value will be 0 if the file
 is not open for reading;
@@ -280,10 +254,7 @@ ___
 
 *Inherited from [File](_src_file_.file.md).[mimeType](_src_file_.file.md#mimetype)*
 
-*Defined in src/file.ts:218*
-
-Gets the MimeType of the file as determined by {@see File.create} if that method was used to
-create the current instance.
+Gets the MimeType of the file as determined during creation of the instance.
 
 **Returns:** string
 
@@ -295,8 +266,6 @@ ___
 
 *Inherited from [File](_src_file_.file.md).[mode](_src_file_.file.md#mode)*
 
-*Defined in src/file.ts:223*
-
 Gets the file access mode in use by the current instance.
 
 **Returns:** [FileAccessMode](../enums/_src_file_.fileaccessmode.md)
@@ -305,11 +274,9 @@ Gets the file access mode in use by the current instance.
 
 *Inherited from [File](_src_file_.file.md).[mode](_src_file_.file.md#mode)*
 
-*Defined in src/file.ts:239*
-
 Sets the file access mode in use by the current instance. Changing the value will cause the
 stream currently in use to be closed, except when a change is made from
-{@see FileAccessMode.Write} to {@see FileAccessMode.Read} which has no effect.
+[FileAccessMode.Write](../enums/_src_file_.fileaccessmode.md#write) to [FileAccessMode.Read](../enums/_src_file_.fileaccessmode.md#read) which has no effect.
 
 #### Parameters:
 
@@ -327,8 +294,6 @@ ___
 
 *Inherited from [File](_src_file_.file.md).[name](_src_file_.file.md#name)*
 
-*Defined in src/file.ts:267*
-
 Gets the name of the file as stored in its file abstraction.
 
 **Returns:** string
@@ -340,8 +305,6 @@ ___
 • get **position**(): number
 
 *Inherited from [File](_src_file_.file.md).[position](_src_file_.file.md#position)*
-
-*Defined in src/file.ts:273*
 
 Gets the seek position in the internal stream used by the current instance. Value will be 0
 if the file is not open for reading
@@ -356,8 +319,6 @@ ___
 
 *Overrides [File](_src_file_.file.md).[properties](_src_file_.file.md#properties)*
 
-*Defined in src/nonContainer/nonContainerFile.ts:56*
-
 Gets the media properties of the file represented by the current instance.
 
 **Returns:** [Properties](_src_properties_.properties.md)
@@ -367,8 +328,6 @@ ___
 ### startTag
 
 • `Protected`get **startTag**(): [StartTag](_src_noncontainer_starttag_.starttag.md)
-
-*Defined in src/nonContainer/nonContainerFile.ts:46*
 
 Gets the collection of tags appearing at the start of the file.
 
@@ -382,8 +341,6 @@ ___
 
 *Overrides [File](_src_file_.file.md).[tag](_src_file_.file.md#tag)*
 
-*Defined in src/nonContainer/nonContainerFile.ts:51*
-
 Gets an abstract representation of all tags stored in the current instance.
 
 **Returns:** [NonContainerTag](_src_noncontainer_noncontainertag_.noncontainertag.md)
@@ -396,9 +353,7 @@ ___
 
 *Inherited from [File](_src_file_.file.md).[tagTypes](_src_file_.file.md#tagtypes)*
 
-*Defined in src/file.ts:291*
-
-Gets the tag typescontained in the current instance.
+Gets the tag types contained in the current instance.
 
 **Returns:** [TagTypes](../enums/_src_tag_.tagtypes.md)
 
@@ -409,8 +364,6 @@ ___
 • get **tagTypesOnDisk**(): [TagTypes](../enums/_src_tag_.tagtypes.md)
 
 *Inherited from [File](_src_file_.file.md).[tagTypesOnDisk](_src_file_.file.md#tagtypesondisk)*
-
-*Defined in src/file.ts:296*
 
 Gets the tag types contained in the physical file represented by the current instance.
 
@@ -424,8 +377,6 @@ ___
 
 *Inherited from [File](_src_file_.file.md).[bufferSize](_src_file_.file.md#buffersize)*
 
-*Defined in src/file.ts:173*
-
 Gets the buffer size to use when reading large blocks of data
 
 **Returns:** number
@@ -438,8 +389,6 @@ Gets the buffer size to use when reading large blocks of data
 
 *Inherited from [File](_src_file_.file.md).[dispose](_src_file_.file.md#dispose)*
 
-*Defined in src/file.ts:351*
-
 Dispose the current instance. Equivalent to setting the mode to closed.
 
 **Returns:** void
@@ -448,15 +397,13 @@ ___
 
 ### find
 
-▸ **find**(`pattern`: [ByteVector](_src_bytevector_.bytevector.md), `startPosition`: number, `before?`: [ByteVector](_src_bytevector_.bytevector.md)): number
+▸ **find**(`pattern`: [ByteVector](_src_bytevector_.bytevector.md), `startPosition?`: number, `before?`: [ByteVector](_src_bytevector_.bytevector.md)): number
 
 *Inherited from [File](_src_file_.file.md).[find](_src_file_.file.md#find)*
 
-*Defined in src/file.ts:365*
-
 Searches forward through a file for a specified pattern, starting at a specified offset.
 
-**`throws`** Error Thrown if {@param pattern} is not provided or {@param startPosition} is not a
+**`throws`** Error Thrown if `pattern` is not provided or `startPosition` is not a
     positive, safe integer.
 
 #### Parameters:
@@ -478,8 +425,6 @@ ___
 ▸ `Abstract`**getTag**(`types`: [TagTypes](../enums/_src_tag_.tagtypes.md), `create`: boolean): [Tag](_src_tag_.tag.md)
 
 *Inherited from [File](_src_file_.file.md).[getTag](_src_file_.file.md#gettag)*
-
-*Defined in src/file.ts:434*
 
 Gets a tag of the specified type from the current instance, optionally creating a new tag if
 possible.
@@ -513,11 +458,9 @@ ___
 
 ### insert
 
-▸ **insert**(`data`: [ByteVector](_src_bytevector_.bytevector.md), `start`: number, `replace`: number): void
+▸ **insert**(`data`: [ByteVector](_src_bytevector_.bytevector.md), `start`: number, `replace?`: number): void
 
 *Inherited from [File](_src_file_.file.md).[insert](_src_file_.file.md#insert)*
-
-*Defined in src/file.ts:446*
 
 Inserts a specified block of data into the file represented by the current instance, at a
 specified location, replacing a specified number of bytes.
@@ -543,8 +486,6 @@ ___
 
 *Inherited from [File](_src_file_.file.md).[markAsCorrupt](_src_file_.file.md#markascorrupt)*
 
-*Defined in src/file.ts:505*
-
 Mark the current instance as corrupt. NOTE: Not intended to be used outside of this library.
 
 #### Parameters:
@@ -563,8 +504,6 @@ ___
 
 *Inherited from [File](_src_file_.file.md).[preSave](_src_file_.file.md#presave)*
 
-*Defined in src/file.ts:679*
-
 Prepares to save the file. This must be called at the beginning of every File.save() method.
 
 **Returns:** void
@@ -573,22 +512,20 @@ ___
 
 ### rFind
 
-▸ **rFind**(`pattern`: [ByteVector](_src_bytevector_.bytevector.md), `startPosition`: number, `after?`: [ByteVector](_src_bytevector_.bytevector.md)): number
+▸ **rFind**(`pattern`: [ByteVector](_src_bytevector_.bytevector.md), `startPosition?`: number, `after?`: [ByteVector](_src_bytevector_.bytevector.md)): number
 
 *Inherited from [File](_src_file_.file.md).[rFind](_src_file_.file.md#rfind)*
 
-*Defined in src/file.ts:591*
+Searched backwards through a file for a specified pattern, starting at a specified offset.
 
-Searched backwards through a file for a specified patterh, starting at a specified offset.
-
-**`throws`** Error Thrown if {@param pattern} was not provided or if {@param startPosition} is
+**`throws`** Error Thrown if `pattern` was not provided or if `startPosition` is
     not a safe, positive integer.
 
 #### Parameters:
 
 Name | Type | Default value | Description |
 ------ | ------ | ------ | ------ |
-`pattern` | [ByteVector](_src_bytevector_.bytevector.md) | - | Pattern to search for in the current instance. Must be shorter than the     {@see bufferSize} |
+`pattern` | [ByteVector](_src_bytevector_.bytevector.md) | - | Pattern to search for in the current instance. Must be shorter than the     [bufferSize](_src_noncontainer_noncontainerfile_.noncontainerfile.md#buffersize) |
 `startPosition` | number | 0 | Seek position from which to start searching. |
 `after?` | [ByteVector](_src_bytevector_.bytevector.md) | - | Pattern that the searched for pattern must appear after. If this pattern is     found first, `-1` is returned. |
 
@@ -604,13 +541,11 @@ ___
 
 *Inherited from [File](_src_file_.file.md).[readBlock](_src_file_.file.md#readblock)*
 
-*Defined in src/file.ts:517*
-
 Reads a specified number of bytes at the current seek position from the current position.
 This method reads the block of data at the current seek position. To change the seek
-position, use {@see File.seek}.
+position, use [File.seek](_src_file_.file.md#seek).
 
-**`throws`** Error Thrown when {@param length} is not a positive, safe integer.
+**`throws`** Error Thrown when `length` is not a positive, safe integer.
 
 #### Parameters:
 
@@ -628,8 +563,6 @@ ___
 
 ▸ `Protected`**readEnd**(`end`: number, `propertiesStyle`: [ReadStyle](../enums/_src_file_.readstyle.md)): void
 
-*Defined in src/nonContainer/nonContainerFile.ts:96*
-
 Reads format specific information at the end of the file.
 This method is called by the constructor immediately after the tags at the end of the file
 have been read and as such (so the internal seek mechanism is close to the end). It should
@@ -641,7 +574,7 @@ the file.
 Name | Type | Description |
 ------ | ------ | ------ |
 `end` | number | Seek position at which the media data ends and the tags begin |
-`propertiesStyle` | [ReadStyle](../enums/_src_file_.readstyle.md) | Level of accuracy to read the media properties or     {@see ReadStyle.None} to ignore the properties  |
+`propertiesStyle` | [ReadStyle](../enums/_src_file_.readstyle.md) | Level of accuracy to read the media properties or     [ReadStyle.None](../enums/_src_file_.readstyle.md#none) to ignore the properties  |
 
 **Returns:** void
 
@@ -651,12 +584,10 @@ ___
 
 ▸ `Protected` `Abstract`**readProperties**(`start`: number, `end`: number, `propertiesStyle`: [ReadStyle](../enums/_src_file_.readstyle.md)): [Properties](_src_properties_.properties.md)
 
-*Defined in src/nonContainer/nonContainerFile.ts:112*
-
 Reads the audio properties from the file represented by the current instance.
 This method is called ONLY IF the file is constructed with a read style other than
-{@see ReadStyle.None}, and as such MUST NOT return `undefined`/`null`. It is guaranteed that
-{@see readStart} and {@see readEnd} will have been called first and this method should be
+[ReadStyle.None](../enums/_src_file_.readstyle.md#none), and as such MUST NOT return `undefined`/`null`. It is guaranteed that
+[readStart](_src_noncontainer_noncontainerfile_.noncontainerfile.md#readstart) and [readEnd](_src_noncontainer_noncontainerfile_.noncontainerfile.md#readend) will have been called first and this method should be
 strictly used to perform final processing on already read data.
 
 #### Parameters:
@@ -665,7 +596,7 @@ Name | Type | Description |
 ------ | ------ | ------ |
 `start` | number | Seek position at which the tags end and the media data begins |
 `end` | number | Seek position at which the media data ends and the tags begin |
-`propertiesStyle` | [ReadStyle](../enums/_src_file_.readstyle.md) | Level of accuracy to read the media properties or     {@see ReadStyle.None} to ignore the properties |
+`propertiesStyle` | [ReadStyle](../enums/_src_file_.readstyle.md) | Level of accuracy to read the media properties or     [ReadStyle.None](../enums/_src_file_.readstyle.md#none) to ignore the properties |
 
 **Returns:** [Properties](_src_properties_.properties.md)
 
@@ -676,8 +607,6 @@ ___
 ### readStart
 
 ▸ `Protected`**readStart**(`start`: number, `propertiesStyle`: [ReadStyle](../enums/_src_file_.readstyle.md)): void
-
-*Defined in src/nonContainer/nonContainerFile.ts:124*
 
 Reads format specific information from the start of the file.
 This method is called by the constructor immediately after the tags at the start of the
@@ -690,7 +619,7 @@ the file.
 Name | Type | Description |
 ------ | ------ | ------ |
 `start` | number | Seek position at which the tags end and the media data begins |
-`propertiesStyle` | [ReadStyle](../enums/_src_file_.readstyle.md) | Level of accuracy to read the media properties or     {@see ReadStyle.None} to ignore the properties  |
+`propertiesStyle` | [ReadStyle](../enums/_src_file_.readstyle.md) | Level of accuracy to read the media properties or     [ReadStyle.None](../enums/_src_file_.readstyle.md#none) to ignore the properties  |
 
 **Returns:** void
 
@@ -701,8 +630,6 @@ ___
 ▸ **removeBlock**(`start`: number, `length`: number): void
 
 *Inherited from [File](_src_file_.file.md).[removeBlock](_src_file_.file.md#removeblock)*
-
-*Defined in src/file.ts:545*
 
 Removes a specified block of data from the file represented by the current instance.
 
@@ -726,8 +653,6 @@ ___
 
 *Overrides [File](_src_file_.file.md).[removeTags](_src_file_.file.md#removetags)*
 
-*Defined in src/nonContainer/nonContainerFile.ts:78*
-
 **`inheritdoc`** BaseFile.removeTags
 
 #### Parameters:
@@ -746,8 +671,6 @@ ___
 
 *Overrides [File](_src_file_.file.md).[save](_src_file_.file.md#save)*
 
-*Defined in src/nonContainer/nonContainerFile.ts:63*
-
 **`inheritdoc`** BaseFile.save
 
 **Returns:** void
@@ -756,11 +679,9 @@ ___
 
 ### seek
 
-▸ **seek**(`offset`: number, `origin`: [SeekOrigin](../enums/_src_stream_.seekorigin.md)): void
+▸ **seek**(`offset`: number, `origin?`: [SeekOrigin](../enums/_src_stream_.seekorigin.md)): void
 
 *Inherited from [File](_src_file_.file.md).[seek](_src_file_.file.md#seek)*
-
-*Defined in src/file.ts:650*
 
 Moves the read/write pointer to a specified offset in the current instance, relative to a
 specified origin.
@@ -782,8 +703,6 @@ ___
 
 *Inherited from [File](_src_file_.file.md).[truncate](_src_file_.file.md#truncate)*
 
-*Defined in src/file.ts:695*
-
 Resizes the current instance to a specific number of bytes.
 
 #### Parameters:
@@ -802,13 +721,11 @@ ___
 
 *Inherited from [File](_src_file_.file.md).[writeBlock](_src_file_.file.md#writeblock)*
 
-*Defined in src/file.ts:664*
-
 Writes a block of data to the file represented by the current instance at the current seek
-posiotion. This will overwrite any existing data at the seek position and append new data to
+position. This will overwrite any existing data at the seek position and append new data to
 the file if writing past the current end.
 
-**`throws`** Error Thrown when {@param data} is not provided.
+**`throws`** Error Thrown when `data` is not provided.
 
 #### Parameters:
 
@@ -822,13 +739,11 @@ ___
 
 ### addFileType
 
-▸ `Static`**addFileType**(`mimeType`: string, `constructor`: [FileTypeConstructor](../modules/_src_file_.md#filetypeconstructor), `override`: boolean): void
+▸ `Static`**addFileType**(`mimeType`: string, `constructor`: [FileTypeConstructor](../modules/_src_file_.md#filetypeconstructor), `override?`: boolean): void
 
 *Inherited from [File](_src_file_.file.md).[addFileType](_src_file_.file.md#addfiletype)*
 
-*Defined in src/file.ts:312*
-
-Registers the constructor for a subclass of {@see File} with the MimeType it is associated
+Registers the constructor for a subclass of [File](_src_file_.file.md) with the MimeType it is associated
 with. Optionally, the MimeType can be forcefully overridden if it was already registered.
 
 #### Parameters:
@@ -836,8 +751,8 @@ with. Optionally, the MimeType can be forcefully overridden if it was already re
 Name | Type | Default value | Description |
 ------ | ------ | ------ | ------ |
 `mimeType` | string | - | MimeType to register this subclass constructor to. |
-`constructor` | [FileTypeConstructor](../modules/_src_file_.md#filetypeconstructor) | - | Constructor for a subclass of {@see File} that will be called if a file     with a MimeType of {@param mimeType} is created. |
-`override` | boolean | false | If `true` and a subclass of {@see File} was already registered to     {@param mimeType}, it will be forcefully overridden. If `false`, an {@see Error} will be     thrown if a subclass already registered to the MimeType.}  |
+`constructor` | [FileTypeConstructor](../modules/_src_file_.md#filetypeconstructor) | - | Constructor for a subclass of [File](_src_file_.file.md) that will be called if a file     with a MimeType of `mimeType` is created. |
+`override` | boolean | false | If `true` and a subclass of [File](_src_file_.file.md) was already registered to     `mimeType`, it will be forcefully overridden. If `false`, an [Error](_src_errors_.corruptfileerror.md#error) will be     thrown if a subclass already registered to the MimeType.}  |
 
 **Returns:** void
 
@@ -849,15 +764,13 @@ ___
 
 *Inherited from [File](_src_file_.file.md).[addFileTypeResolver](_src_file_.file.md#addfiletyperesolver)*
 
-*Defined in src/file.ts:326*
-
-Registers a {@see FileTypeResolver} to the front of the list of file type resolvers.
+Registers a [FileTypeResolver](../modules/_src_file_.md#filetyperesolver) to the front of the list of file type resolvers.
 
 #### Parameters:
 
 Name | Type | Description |
 ------ | ------ | ------ |
-`resolver` | [FileTypeResolver](../modules/_src_file_.md#filetyperesolver) | Function to handle resolving a subclass of {@see File} from an     {@see IFileAbstraction}  |
+`resolver` | [FileTypeResolver](../modules/_src_file_.md#filetyperesolver) | Function to handle resolving a subclass of [File](_src_file_.file.md) from an     [IFileAbstraction](../interfaces/_src_fileabstraction_.ifileabstraction.md)  |
 
 **Returns:** void
 
@@ -865,13 +778,11 @@ ___
 
 ### createFromAbstraction
 
-▸ `Static`**createFromAbstraction**(`abstraction`: [IFileAbstraction](../interfaces/_src_fileabstraction_.ifileabstraction.md), `mimeType?`: string, `propertiesStyle`: [ReadStyle](../enums/_src_file_.readstyle.md)): [File](_src_file_.file.md)
+▸ `Static`**createFromAbstraction**(`abstraction`: [IFileAbstraction](../interfaces/_src_fileabstraction_.ifileabstraction.md), `mimeType?`: string, `propertiesStyle?`: [ReadStyle](../enums/_src_file_.readstyle.md)): [File](_src_file_.file.md)
 
 *Inherited from [File](_src_file_.file.md).[createFromAbstraction](_src_file_.file.md#createfromabstraction)*
 
-*Defined in src/file.ts:117*
-
-Creates a new instance of a {@see File} subclass for a specified file abstraction, MimeType,
+Creates a new instance of a [File](_src_file_.file.md) subclass for a specified file abstraction, MimeType,
 and property read style.
 
 #### Parameters:
@@ -879,24 +790,22 @@ and property read style.
 Name | Type | Default value | Description |
 ------ | ------ | ------ | ------ |
 `abstraction` | [IFileAbstraction](../interfaces/_src_fileabstraction_.ifileabstraction.md) | - | Object to use when reading/writing from the current instance. |
-`mimeType?` | string | - | Optional, MimeType to use for determining the subclass of {@see File} to     return. If omitted, the MimeType will be guessed based on the file's extension. |
-`propertiesStyle` | [ReadStyle](../enums/_src_file_.readstyle.md) | ReadStyle.Average | Optional, level of detail to use when reading the media information     from the new instance. If omitted, {@see ReadStyle.Average} is used. |
+`mimeType?` | string | - | Optional, MimeType to use for determining the subclass of [File](_src_file_.file.md) to     return. If omitted, the MimeType will be guessed based on the file's extension. |
+`propertiesStyle` | [ReadStyle](../enums/_src_file_.readstyle.md) | ReadStyle.Average | Optional, level of detail to use when reading the media information     from the new instance. If omitted, [ReadStyle.Average](../enums/_src_file_.readstyle.md#average) is used. |
 
 **Returns:** [File](_src_file_.file.md)
 
-New instance of {@see File} as read from the specified abstraction.
+New instance of [File](_src_file_.file.md) as read from the specified abstraction.
 
 ___
 
 ### createFromPath
 
-▸ `Static`**createFromPath**(`filePath`: string, `mimeType?`: string, `propertiesStyle`: [ReadStyle](../enums/_src_file_.readstyle.md)): [File](_src_file_.file.md)
+▸ `Static`**createFromPath**(`filePath`: string, `mimeType?`: string, `propertiesStyle?`: [ReadStyle](../enums/_src_file_.readstyle.md)): [File](_src_file_.file.md)
 
 *Inherited from [File](_src_file_.file.md).[createFromPath](_src_file_.file.md#createfrompath)*
 
-*Defined in src/file.ts:135*
-
-Creates a new instance of {@see File} subclass for a specified file path, MimeType, and
+Creates a new instance of [File](_src_file_.file.md) subclass for a specified file path, MimeType, and
 property read style.
 
 #### Parameters:
@@ -904,12 +813,12 @@ property read style.
 Name | Type | Default value | Description |
 ------ | ------ | ------ | ------ |
 `filePath` | string | - | Path to the file to read/write. |
-`mimeType?` | string | - | Optional, MimeType to use for determining the subclass of {@see File} to     return. If omitted, the MimeType will be guessed based on the file's extension. |
-`propertiesStyle` | [ReadStyle](../enums/_src_file_.readstyle.md) | ReadStyle.Average | Optional, level of detail to use when reading the media information     from the new instance. If omitted {@see ReadStyle.Average} is used. |
+`mimeType?` | string | - | Optional, MimeType to use for determining the subclass of [File](_src_file_.file.md) to     return. If omitted, the MimeType will be guessed based on the file's extension. |
+`propertiesStyle` | [ReadStyle](../enums/_src_file_.readstyle.md) | ReadStyle.Average | Optional, level of detail to use when reading the media information     from the new instance. If omitted [ReadStyle.Average](../enums/_src_file_.readstyle.md#average) is used. |
 
 **Returns:** [File](_src_file_.file.md)
 
-New instance of {@see File} as read from the specified path.
+New instance of [File](_src_file_.file.md) as read from the specified path.
 
 ___
 
@@ -918,8 +827,6 @@ ___
 ▸ `Static`**removeFileType**(`mimeType`: string): void
 
 *Inherited from [File](_src_file_.file.md).[removeFileType](_src_file_.file.md#removefiletype)*
-
-*Defined in src/file.ts:334*
 
 Used for removing a file type constructor during unit testing
 
@@ -938,8 +845,6 @@ ___
 ▸ `Static`**removeFileTypeResolver**(`resolver`: [FileTypeResolver](../modules/_src_file_.md#filetyperesolver)): void
 
 *Inherited from [File](_src_file_.file.md).[removeFileTypeResolver](_src_file_.file.md#removefiletyperesolver)*
-
-*Defined in src/file.ts:341*
 
 Used for removing a file type resolver during unit testing
 

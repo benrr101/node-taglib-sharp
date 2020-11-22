@@ -7,11 +7,11 @@ import {FrameIdentifiers} from "../frameIdentifiers";
 import {Guards} from "../../utils";
 
 /**
- * Class that extends {@see Frame}, implementing support for ID3v2 Comments (COMM) frames.
- * A {@see CommentsFrame} should be used for storing user readable comments on the media file.
- * When reading comments from a file, {@see CommentsFrame.getPreferred} should be used as it
+ * Class that extends {@link Frame}, implementing support for ID3v2 Comments (COMM) frames.
+ * A {@link CommentsFrame} should be used for storing user readable comments on the media file.
+ * When reading comments from a file, {@link CommentsFrame.findPreferred} should be used as it
  * gracefully falls back to comments that you, as a developer, may not be expecting. When writing
- * comments, however, it is best to use {@see get} as it forces it to be written in the exact
+ * comments, however, it is best to use {@link get} as it forces it to be written in the exact
  * version you are specifying.
  */
 export default class CommentsFrame extends Frame {
@@ -51,9 +51,9 @@ export default class CommentsFrame extends Frame {
      * Constructs and initializes a new CommentsFrame by reading its raw data in a specified ID3v2
      * version. This method allows for offset reading from the data bytevector.
      * @param data Raw representation of the new frame
-     * @param offset What offset in {@paramref data} the frame actually begins. Must be positive,
+     * @param offset What offset in `data` the frame actually begins. Must be positive,
      *     safe integer
-     * @param header Header of the frame found at {@paramref data} in the data
+     * @param header Header of the frame found at `data` in the data
      * @param version ID3v2 version the frame was originally encoded with
      */
     public static fromOffsetRawData(
@@ -156,6 +156,7 @@ export default class CommentsFrame extends Frame {
 
         return frames.find((f) => {
             if (f.description !== description) { return false; }
+            // noinspection RedundantIfStatementJS
             if (language && f.language !== language) { return false; }
             return true;
         });
@@ -174,6 +175,7 @@ export default class CommentsFrame extends Frame {
 
         return frames.filter((f) => {
             if (f.description !== description) { return false; }
+            // noinspection RedundantIfStatementJS
             if (language && f.language !== language) { return false; }
             return true;
         });
@@ -202,13 +204,13 @@ export default class CommentsFrame extends Frame {
         // other languages, so we'd rather have one with actual content, so we try to get one with
         // no description first.
 
-        const skipItunes = !description || !description.startsWith("iTun");
+        const skipITunes = !description || !description.startsWith("iTun");
 
         let bestValue = -1;
         let bestFrame: CommentsFrame;
 
         for (const frame of frames) {
-            if (skipItunes && frame.description.startsWith("iTun")) {
+            if (skipITunes && frame.description.startsWith("iTun")) {
                 continue;
             }
 
@@ -247,7 +249,7 @@ export default class CommentsFrame extends Frame {
         return this.text;
     }
 
-    protected parseFields(data: ByteVector, version: number): void {
+    protected parseFields(data: ByteVector, _version: number): void {
         if (data.length < 4) {
             throw new CorruptFileError("Not enough bytes in field");
         }
@@ -256,7 +258,7 @@ export default class CommentsFrame extends Frame {
         this._language = data.toString(3, StringType.Latin1, 1);
 
         // Instead of splitting into two strings, in the format [{desc}\0{value}], try splitting
-        // into three strings in case of a misformatted [{desc}\0{value}\0].
+        // into three strings in case of a malformatted [{desc}\0{value}\0].
         const split = data.toStrings(this.textEncoding, 4, 3);
 
         if (split.length === 0) {

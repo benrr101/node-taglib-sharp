@@ -1,6 +1,6 @@
-**node-taglib-sharp**
+**[node-taglib-sharp](../README.md)**
 
-> [README](../README.md) / [Globals](../globals.md) / ["src/id3v2/utilTypes"](../modules/_src_id3v2_utiltypes_.md) / SynchronizedTextType
+> [Globals](../globals.md) / ["src/id3v2/utilTypes"](../modules/_src_id3v2_utiltypes_.md) / SynchronizedTextType
 
 # Enumeration: SynchronizedTextType
 
@@ -24,9 +24,7 @@ Specifies the type of text contained in a synchronized lyrics frame
 
 ### Chord
 
-•  **Chord**: {} = 5
-
-*Defined in src/id3v2/utilTypes.ts:33*
+•  **Chord**:  = 5
 
 Text contains chord changes that occur in the music
 
@@ -34,9 +32,7 @@ ___
 
 ### Events
 
-•  **Events**: {} = 4
-
-*Defined in src/id3v2/utilTypes.ts:28*
+•  **Events**:  = 4
 
 Text describes events that occur
 
@@ -44,9 +40,7 @@ ___
 
 ### ImageUrls
 
-•  **ImageUrls**: {} = 8
-
-*Defined in src/id3v2/utilTypes.ts:48*
+•  **ImageUrls**:  = 8
 
 Text contains URLs for relevant images
 
@@ -54,9 +48,7 @@ ___
 
 ### Lyrics
 
-•  **Lyrics**: {} = 1
-
-*Defined in src/id3v2/utilTypes.ts:13*
+•  **Lyrics**:  = 1
 
 Text contains lyrical data
 
@@ -64,9 +56,7 @@ ___
 
 ### Movement
 
-•  **Movement**: {} = 3
-
-*Defined in src/id3v2/utilTypes.ts:23*
+•  **Movement**:  = 3
 
 Text lists the movements in the piece
 
@@ -74,9 +64,7 @@ ___
 
 ### Other
 
-•  **Other**: {} = 0
-
-*Defined in src/id3v2/utilTypes.ts:8*
+•  **Other**:  = 0
 
 Text is some other type of text
 
@@ -84,9 +72,7 @@ ___
 
 ### TextTranscription
 
-•  **TextTranscription**: {} = 2
-
-*Defined in src/id3v2/utilTypes.ts:18*
+•  **TextTranscription**:  = 2
 
 Text contains a transcription
 
@@ -94,9 +80,7 @@ ___
 
 ### Trivia
 
-•  **Trivia**: {} = 6
-
-*Defined in src/id3v2/utilTypes.ts:38*
+•  **Trivia**:  = 6
 
 Text contains trivia or "pop up" information about the media
 
@@ -104,8 +88,6 @@ ___
 
 ### WebpageUrls
 
-•  **WebpageUrls**: {} = 7
-
-*Defined in src/id3v2/utilTypes.ts:43*
+•  **WebpageUrls**:  = 7
 
 Text contains URLs for relevant webpages

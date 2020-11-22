@@ -1,6 +1,6 @@
-**node-taglib-sharp**
+**[node-taglib-sharp](../README.md)**
 
-> [README](../README.md) / [Globals](../globals.md) / ["src/id3v2/id3v2TagFooter"](../modules/_src_id3v2_id3v2tagfooter_.md) / Id3v2TagFooter
+> [Globals](../globals.md) / ["src/id3v2/id3v2TagFooter"](../modules/_src_id3v2_id3v2tagfooter_.md) / Id3v2TagFooter
 
 # Class: Id3v2TagFooter
 
@@ -31,8 +31,6 @@
 
 • get **completeTagSize**(): number
 
-*Defined in src/id3v2/id3v2TagFooter.ts:83*
-
 Gets the complete size of the tag described by the current instance including the header
 and footer.
 
@@ -44,15 +42,11 @@ ___
 
 • get **flags**(): [Id3v2TagHeaderFlags](../enums/_src_id3v2_id3v2tagheader_.id3v2tagheaderflags.md)
 
-*Defined in src/id3v2/id3v2TagFooter.ts:90*
-
 Gets the flags applied to the current instance.
 
 **Returns:** [Id3v2TagHeaderFlags](../enums/_src_id3v2_id3v2tagheader_.id3v2tagheaderflags.md)
 
 • set **flags**(`value`: [Id3v2TagHeaderFlags](../enums/_src_id3v2_id3v2tagheader_.id3v2tagheaderflags.md)): void
-
-*Defined in src/id3v2/id3v2TagFooter.ts:96*
 
 Sets the flags applied to the current instance.
 
@@ -60,7 +54,7 @@ Sets the flags applied to the current instance.
 
 Name | Type | Description |
 ------ | ------ | ------ |
-`value` | [Id3v2TagHeaderFlags](../enums/_src_id3v2_id3v2tagheader_.id3v2tagheaderflags.md) | Bitwise combined {@see HeaderFlags} value containing the flags to apply to the     current instance.  |
+`value` | [Id3v2TagHeaderFlags](../enums/_src_id3v2_id3v2tagheader_.id3v2tagheaderflags.md) | Bitwise combined [Id3v2TagHeaderFlags](../enums/_src_id3v2_id3v2tagheader_.id3v2tagheaderflags.md) value containing the flags to apply     to the current instance.  |
 
 **Returns:** void
 
@@ -70,15 +64,11 @@ ___
 
 • get **majorVersion**(): number
 
-*Defined in src/id3v2/id3v2TagFooter.ts:112*
-
 Sets the major version of the tag described by the current instance.
 
 **Returns:** number
 
 • set **majorVersion**(`value`: number): void
-
-*Defined in src/id3v2/id3v2TagFooter.ts:124*
 
 Sets the major version of the tag described by the current instance.
 When the version is set, unsupported header flags will automatically be removed from the
@@ -98,15 +88,11 @@ ___
 
 • get **revisionNumber**(): number
 
-*Defined in src/id3v2/id3v2TagFooter.ts:134*
-
 Gets the version revision number of the tag represented by the current instance.
 
 **Returns:** number
 
 • set **revisionNumber**(`value`: number): void
-
-*Defined in src/id3v2/id3v2TagFooter.ts:143*
 
 Sets the version revision number of the tag represented by the current instance.
 This value should always be zero. Non-zero values indicate an experimental or new version of
@@ -127,16 +113,12 @@ ___
 
 • get **tagSize**(): number
 
-*Defined in src/id3v2/id3v2TagFooter.ts:152*
-
 Gets the complete size of the tag described by the current instance, minus the header and
 footer.
 
 **Returns:** number
 
 • set **tagSize**(`value`: number): void
-
-*Defined in src/id3v2/id3v2TagFooter.ts:158*
 
 Sets the complete size of the tag described by the current instance, minus the header
 footer. NOTE THIS MUST BE AN 28-BIT UNSIGNED INTEGER.
@@ -155,8 +137,6 @@ ___
 
 • `Static`get **fileIdentifier**(): [ByteVector](_src_bytevector_.bytevector.md)
 
-*Defined in src/id3v2/id3v2TagFooter.ts:77*
-
 Identifier used to recognize an ID3v2 footer.
 
 **Returns:** [ByteVector](_src_bytevector_.bytevector.md)
@@ -167,8 +147,6 @@ Identifier used to recognize an ID3v2 footer.
 
 ▸ **render**(): [ByteVector](_src_bytevector_.bytevector.md)
 
-*Defined in src/id3v2/id3v2TagFooter.ts:169*
-
 **Returns:** [ByteVector](_src_bytevector_.bytevector.md)
 
 ___
@@ -176,8 +154,6 @@ ___
 ### fromData
 
 ▸ `Static`**fromData**(`data`: [ByteVector](_src_bytevector_.bytevector.md)): [Id3v2TagFooter](_src_id3v2_id3v2tagfooter_.id3v2tagfooter.md)
-
-*Defined in src/id3v2/id3v2TagFooter.ts:19*
 
 Constructs and initializes a new instance by reading it from raw footer data.
 
@@ -194,8 +170,6 @@ ___
 ### fromHeader
 
 ▸ `Static`**fromHeader**(`header`: [Id3v2TagHeader](_src_id3v2_id3v2tagheader_.id3v2tagheader.md)): [Id3v2TagFooter](_src_id3v2_id3v2tagfooter_.id3v2tagfooter.md)
-
-*Defined in src/id3v2/id3v2TagFooter.ts:60*
 
 Constructs and initializes a new footer based on the contents of the header used for the
 same tag.

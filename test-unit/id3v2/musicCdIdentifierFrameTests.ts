@@ -129,7 +129,7 @@ const assert = Chai.assert;
 
     private assertFrame(frame: MusicCdIdentifierFrame, d: ByteVector) {
         assert.isOk(frame);
-        assert.strictEqual(frame.frameClassType, FrameClassType.MusicCdIdentiferFrame);
+        assert.strictEqual(frame.frameClassType, FrameClassType.MusicCdIdentifierFrame);
         assert.strictEqual(frame.frameId, FrameIdentifiers.MCDI);
 
         assert.isTrue(ByteVector.equal(frame.data, d));

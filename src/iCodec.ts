@@ -1,5 +1,5 @@
 /**
- * Indicates the types o media represented by a {@see ICodec} or {@see Properties}. These values
+ * Indicates the types o media represented by a {@link ICodec} or {@link Properties}. These values
  * can be combined to represent multiple media types.
  */
 export enum MediaTypes {
@@ -57,8 +57,8 @@ export interface ICodec {
 
 /**
  * Interface that inherits the common codec information and adds audio-specific information.
- * When dealing with an {@see ICodec}, if {@see ICodec.mediaTypes} contains
- * {@see MediaTypes.Audio}, it is safe to assume that the object also inherits {@see IAudioCodec}
+ * When dealing with an {@link ICodec}, if {@link ICodec.mediaTypes} contains
+ * {@link MediaTypes.Audio}, it is safe to assume that the object also inherits {@link IAudioCodec}
  * and can be recast without issue.
  */
 export interface IAudioCodec extends ICodec {
@@ -80,9 +80,9 @@ export interface IAudioCodec extends ICodec {
 
 /**
  * This interface provides information specific to lossless audio codecs.
- * When dealing with an {@see ICodec}, if {@see ICodec.mediaTypes} contains
- * {@see MediaTypes.LosslessAudio}, it is safe to assume that the object also inherits
- * {@see ILosslessAudioCodec} and can be recast without issue.
+ * When dealing with an {@link ICodec}, if {@link ICodec.mediaTypes} contains
+ * {@link MediaTypes.LosslessAudio}, it is safe to assume that the object also inherits
+ * {@link ILosslessAudioCodec} and can be recast without issue.
  */
 export interface ILosslessAudioCodec extends IAudioCodec {
     /**
@@ -93,8 +93,8 @@ export interface ILosslessAudioCodec extends IAudioCodec {
 
 /**
  * Interface that inherits the common codec information and adds video-specific information.
- * When dealing with an {@see ICodec}, if {@see ICodec.mediaTypes} contains
- * {@see MediaTypes.Video}, it is safe to assume that the object also inherits {@see IVideoCodec}
+ * When dealing with an {@link ICodec}, if {@link ICodec.mediaTypes} contains
+ * {@link MediaTypes.Video}, it is safe to assume that the object also inherits {@link IVideoCodec}
  * and can be recast without issue.
  */
 export interface IVideoCodec extends ICodec {
@@ -111,8 +111,8 @@ export interface IVideoCodec extends ICodec {
 
 /**
  * Interface that inherits the common codec information and adds photo-specific information.
- * When dealing with an {@see ICodec}, if {@see ICodec.mediaTypes} contains
- * {@see MediaTypes.Photo}, it is safe to assume that the object also inherits {@see IPhotoCodec}
+ * When dealing with an {@link ICodec}, if {@link ICodec.mediaTypes} contains
+ * {@link MediaTypes.Photo}, it is safe to assume that the object also inherits {@link IPhotoCodec}
  * and can be recast without issue.
  */
 export interface IPhotoCodec extends ICodec {

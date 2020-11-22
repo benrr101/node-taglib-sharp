@@ -1,6 +1,6 @@
-**node-taglib-sharp**
+**[node-taglib-sharp](../README.md)**
 
-> [README](../README.md) / [Globals](../globals.md) / ["src/utils"](../modules/_src_utils_.md) / NumberUtils
+> [Globals](../globals.md) / ["src/utils"](../modules/_src_utils_.md) / NumberUtils
 
 # Class: NumberUtils
 

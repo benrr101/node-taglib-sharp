@@ -1,6 +1,6 @@
-**node-taglib-sharp**
+**[node-taglib-sharp](../README.md)**
 
-> [README](../README.md) / [Globals](../globals.md) / ["src/byteVector"](../modules/_src_bytevector_.md) / ByteVector
+> [Globals](../globals.md) / ["src/byteVector"](../modules/_src_bytevector_.md) / ByteVector
 
 # Class: ByteVector
 
@@ -86,8 +86,6 @@
 
 • get **checksum**(): number
 
-*Defined in src/byteVector.ts:593*
-
 **Returns:** number
 
 ___
@@ -95,8 +93,6 @@ ___
 ### data
 
 • get **data**(): Uint8Array
-
-*Defined in src/byteVector.ts:604*
 
 Array of bytes currently stored in the current instance
 
@@ -108,8 +104,6 @@ ___
 
 • get **hashCode**(): number
 
-*Defined in src/byteVector.ts:606*
-
 **Returns:** number
 
 ___
@@ -117,8 +111,6 @@ ___
 ### isEmpty
 
 • get **isEmpty**(): boolean
-
-*Defined in src/byteVector.ts:611*
 
 Whether or not the current instance has 0 bytes stored
 
@@ -130,8 +122,6 @@ ___
 
 • get **isReadOnly**(): boolean
 
-*Defined in src/byteVector.ts:616*
-
 Whether or not the current instance is readonly.
 
 **Returns:** boolean
@@ -141,8 +131,6 @@ ___
 ### length
 
 • get **length**(): number
-
-*Defined in src/byteVector.ts:621*
 
 Number of bytes currently in this ByteVector
 
@@ -154,13 +142,9 @@ ___
 
 • `Static`get **lastUtf16Encoding**(): string
 
-*Defined in src/byteVector.ts:588*
-
 **Returns:** string
 
 • `Static`set **lastUtf16Encoding**(`encoding`: string): void
-
-*Defined in src/byteVector.ts:589*
 
 #### Parameters:
 
@@ -176,8 +160,6 @@ Name | Type |
 
 ▸ **[Symbol.iterator]**(): Iterator\<number>
 
-*Defined in src/byteVector.ts:627*
-
 **Returns:** Iterator\<number>
 
 ___
@@ -186,9 +168,7 @@ ___
 
 ▸ **addByte**(`byte`: number): void
 
-*Defined in src/byteVector.ts:643*
-
-Adds a single byte to the end of the {@see ByteVector}
+Adds a single byte to the end of the [ByteVector](_src_bytevector_.bytevector.md)
 
 #### Parameters:
 
@@ -204,9 +184,7 @@ ___
 
 ▸ **addByteArray**(`data`: Uint8Array): void
 
-*Defined in src/byteVector.ts:654*
-
-Adds an array of bytes to the end of the {@see ByteVector}
+Adds an array of bytes to the end of the [ByteVector](_src_bytevector_.bytevector.md)
 
 #### Parameters:
 
@@ -222,9 +200,7 @@ ___
 
 ▸ **addByteVector**(`data`: [ByteVector](_src_bytevector_.bytevector.md)): void
 
-*Defined in src/byteVector.ts:672*
-
-Adds a {@see ByteVector} to the end of this ByteVector
+Adds a [ByteVector](_src_bytevector_.bytevector.md) to the end of this ByteVector
 
 #### Parameters:
 
@@ -240,12 +216,10 @@ ___
 
 ▸ **clear**(): void
 
-*Defined in src/byteVector.ts:684*
-
-Removes all elements from this {@see ByteVector}
+Removes all elements from this [ByteVector](_src_bytevector_.bytevector.md)
 
 **`description`** NOTE: This method replaces the internal byte array with a new one. Any
-             existing references to {@see ByteVector.data} will remain unchanged.
+             existing references to [ByteVector.data](_src_bytevector_.bytevector.md#data) will remain unchanged.
 
 **Returns:** void
 
@@ -254,8 +228,6 @@ ___
 ### compareTo
 
 ▸ **compareTo**(`other`: [ByteVector](_src_bytevector_.bytevector.md)): number
-
-*Defined in src/byteVector.ts:735*
 
 Compares this byte vector to a different byte vector. Returns a numeric value
 
@@ -271,11 +243,9 @@ ___
 
 ### containsAt
 
-▸ **containsAt**(`pattern`: [ByteVector](_src_bytevector_.bytevector.md), `offset`: number, `patternOffset`: number, `patternLength`: number): boolean
+▸ **containsAt**(`pattern`: [ByteVector](_src_bytevector_.bytevector.md), `offset?`: number, `patternOffset?`: number, `patternLength?`: number): boolean
 
-*Defined in src/byteVector.ts:699*
-
-Determines if {@paramref pattern} exists at a certain {@paramref offset} in this byte vector.
+Determines if `pattern` exists at a certain `offset` in this byte vector.
 
 #### Parameters:
 
@@ -283,8 +253,8 @@ Name | Type | Default value | Description |
 ------ | ------ | ------ | ------ |
 `pattern` | [ByteVector](_src_bytevector_.bytevector.md) | - | ByteVector to search for at in this byte vector |
 `offset` | number | 0 | Position in this byte vector to search for the pattern. If omitted, defaults     to `0` |
-`patternOffset` | number | 0 | Position in {@paramref pattern} to begin matching. If omitted, defaults     to `0` |
-`patternLength` | number | pattern.length - patternOffset | Bytes of {@paramref pattern} to match. If omitted, defaults to all bytes     in the pattern minus the offset  |
+`patternOffset` | number | 0 | Position in `pattern` to begin matching. If omitted, defaults     to `0` |
+`patternLength` | number | pattern.length - patternOffset | Bytes of `pattern` to match. If omitted, defaults to all bytes     in the pattern minus the offset  |
 
 **Returns:** boolean
 
@@ -294,9 +264,7 @@ ___
 
 ▸ **endsWith**(`pattern`: [ByteVector](_src_bytevector_.bytevector.md)): boolean
 
-*Defined in src/byteVector.ts:751*
-
-Determines whether or not this byte vector ends with the provided {@paramref pattern}.
+Determines whether or not this byte vector ends with the provided `pattern`.
 
 #### Parameters:
 
@@ -312,10 +280,8 @@ ___
 
 ▸ **endsWithPartialMatch**(`pattern`: [ByteVector](_src_bytevector_.bytevector.md)): number
 
-*Defined in src/byteVector.ts:762*
-
-Determines whether or not this byte vector ends with a part of the {@paramref pattern}.
-NOTE: if this byte vector ends with {@paramref pattern} perfectly, it must end with n-1 or
+Determines whether or not this byte vector ends with a part of the `pattern`.
+NOTE: if this byte vector ends with `pattern` perfectly, it must end with n-1 or
 less bytes
 
 #### Parameters:
@@ -330,12 +296,10 @@ ___
 
 ### find
 
-▸ **find**(`pattern`: [ByteVector](_src_bytevector_.bytevector.md), `offset`: number, `byteAlign`: number): number
+▸ **find**(`pattern`: [ByteVector](_src_bytevector_.bytevector.md), `offset?`: number, `byteAlign?`: number): number
 
-*Defined in src/byteVector.ts:793*
-
-Searches this instance for the {@paramref pattern}. Returns the index of the first instance
-of the pattern, or `-1` if it was not found. Providing a {@paramref byteAlign} requires the
+Searches this instance for the `pattern`. Returns the index of the first instance
+of the pattern, or `-1` if it was not found. Providing a `byteAlign` requires the
 pattern to appear at an index that is a multiple of the byteAlign parameter.
 Example: searching "abcd" for "ab" with byteAlign 1 will return 0. Searching "abcd" for
 "ab" with byteAlign 2 will return 1. Searching "00ab" for "ab" with byteAlign 2 will return
@@ -357,9 +321,7 @@ ___
 
 ▸ **get**(`index`: number): number
 
-*Defined in src/byteVector.ts:843*
-
-Gets the byte at the given {@paramref index}
+Gets the byte at the given `index`
 
 #### Parameters:
 
@@ -375,9 +337,7 @@ ___
 
 ▸ **indexOf**(`item`: number): number
 
-*Defined in src/byteVector.ts:855*
-
-Gets the index of the first occurence of the specified value.
+Gets the index of the first occurrence of the specified value.
 
 #### Parameters:
 
@@ -396,9 +356,7 @@ ___
 
 ▸ **insertByte**(`index`: number, `byte`: number): void
 
-*Defined in src/byteVector.ts:865*
-
-Inserts a single byte at the given index of this {@see ByteVector}, increasing the length of
+Inserts a single byte at the given index of this [ByteVector](_src_bytevector_.bytevector.md), increasing the length of
 the ByteVector by one.
 
 #### Parameters:
@@ -416,9 +374,7 @@ ___
 
 ▸ **insertByteArray**(`index`: number, `other`: Uint8Array): void
 
-*Defined in src/byteVector.ts:889*
-
-Inserts an array of bytes into this {@see ByteVector} at the given index, increasing the
+Inserts an array of bytes into this [ByteVector](_src_bytevector_.bytevector.md) at the given index, increasing the
 length of this ByteVector by the length of the byte array.
 
 #### Parameters:
@@ -436,9 +392,7 @@ ___
 
 ▸ **insertByteVector**(`index`: number, `other`: [ByteVector](_src_bytevector_.bytevector.md)): void
 
-*Defined in src/byteVector.ts:917*
-
-Inserts another ByteVector into this {@see ByteVector} at the given index, increasing the
+Inserts another ByteVector into this [ByteVector](_src_bytevector_.bytevector.md) at the given index, increasing the
 length of this ByteVector by the length of the ByteVector.
 
 #### Parameters:
@@ -454,9 +408,7 @@ ___
 
 ### mid
 
-▸ **mid**(`startIndex`: number, `length`: number): [ByteVector](_src_bytevector_.bytevector.md)
-
-*Defined in src/byteVector.ts:929*
+▸ **mid**(`startIndex`: number, `length?`: number): [ByteVector](_src_bytevector_.bytevector.md)
 
 Returns a subarray of the current instance. This operation returns a new instance and does
 not alter the current instance.
@@ -466,7 +418,7 @@ not alter the current instance.
 Name | Type | Default value | Description |
 ------ | ------ | ------ | ------ |
 `startIndex` | number | - | Index into the array to begin |
-`length` | number | this._data.length - startIndex | Number of elements from the array to include. If omitted, defaults to the     remainder of the array  |
+`length` | number | this.\_data.length - startIndex | Number of elements from the array to include. If omitted, defaults to the     remainder of the array  |
 
 **Returns:** [ByteVector](_src_bytevector_.bytevector.md)
 
@@ -474,13 +426,11 @@ ___
 
 ### rFind
 
-▸ **rFind**(`pattern`: [ByteVector](_src_bytevector_.bytevector.md), `offset`: number, `byteAlign`: number): number
-
-*Defined in src/byteVector.ts:1025*
+▸ **rFind**(`pattern`: [ByteVector](_src_bytevector_.bytevector.md), `offset?`: number, `byteAlign?`: number): number
 
 Finds a byte vector by searching from the end of this instance and working towards the
 beginning of this instance. Returns the index of the first instance of the pattern, or `-1`
-if it was not found. Providing a {@paramref byteAlign} requires the pattern to appear at an
+if it was not found. Providing a `byteAlign` requires the pattern to appear at an
 index that is a multiple of the byteAlign parameter.
 Example: searching "abcd" for "ab" with byteAlign 1 will return 0. Searching "abcd" for
 "ab" with byteAlign 2 will return 1. Searching "00ab" for "ab" with byteAlign 2 will return
@@ -502,8 +452,6 @@ ___
 
 ▸ **removeAtIndex**(`index`: number): void
 
-*Defined in src/byteVector.ts:947*
-
 Removes a single byte from this {@ByteVector}
 
 #### Parameters:
@@ -520,8 +468,6 @@ ___
 
 ▸ **removeRange**(`index`: number, `count`: number): void
 
-*Defined in src/byteVector.ts:967*
-
 Removes a range of bytes from this {@ByteVector}
 
 #### Parameters:
@@ -537,13 +483,11 @@ ___
 
 ### resize
 
-▸ **resize**(`size`: number, `padding`: number): [ByteVector](_src_bytevector_.bytevector.md)
+▸ **resize**(`size`: number, `padding?`: number): [ByteVector](_src_bytevector_.bytevector.md)
 
-*Defined in src/byteVector.ts:995*
-
-Resizes this instance to the length specified in {@paramref size}. If the desired size is
+Resizes this instance to the length specified in `size`. If the desired size is
 longer than the current length, it will be filled with the byte value in
-{@paramref padding}. If the desired size is shorter than the current length, bytes will be
+`padding`. If the desired size is shorter than the current length, bytes will be
 removed.
 
 #### Parameters:
@@ -561,8 +505,6 @@ ___
 
 ▸ **set**(`index`: number, `value`: number): void
 
-*Defined in src/byteVector.ts:1067*
-
 Sets the value at a specified index
 
 #### Parameters:
@@ -578,9 +520,7 @@ ___
 
 ### split
 
-▸ **split**(`separator`: [ByteVector](_src_bytevector_.bytevector.md), `byteAlign`: number, `max`: number): [ByteVector](_src_bytevector_.bytevector.md)[]
-
-*Defined in src/byteVector.ts:1085*
+▸ **split**(`separator`: [ByteVector](_src_bytevector_.bytevector.md), `byteAlign?`: number, `max?`: number): [ByteVector](_src_bytevector_.bytevector.md)[]
 
 Splits this byte vector into a list of byte vectors using a separator
 
@@ -590,7 +530,7 @@ Name | Type | Default value | Description |
 ------ | ------ | ------ | ------ |
 `separator` | [ByteVector](_src_bytevector_.bytevector.md) | - | Object to use to split this byte vector |
 `byteAlign` | number | 1 | Byte align to use when splitting. in order to split when a pattern is     encountered, the index at which it is found must be divisible by this value. |
-`max` | number | 0 | Maximum number of objects to return or 0 to not limit the number. If that number     is reached, the last value will contain the remainder of the file even if it contains     more instances of {@paramref separator}. |
+`max` | number | 0 | Maximum number of objects to return or 0 to not limit the number. If that number     is reached, the last value will contain the remainder of the file even if it contains     more instances of `separator`. |
 
 **Returns:** [ByteVector](_src_bytevector_.bytevector.md)[]
 
@@ -601,8 +541,6 @@ ___
 ### startsWith
 
 ▸ **startsWith**(`pattern`: [ByteVector](_src_bytevector_.bytevector.md)): boolean
-
-*Defined in src/byteVector.ts:1116*
 
 Checks whether or not a pattern appears at the beginning of the current instance.
 
@@ -621,9 +559,7 @@ ___
 
 ### toDouble
 
-▸ **toDouble**(`mostSignificantByteFirst`: boolean): number
-
-*Defined in src/byteVector.ts:1132*
+▸ **toDouble**(`mostSignificantByteFirst?`: boolean): number
 
 Converts the first eight bytes of the current instance to a double-precision floating-point
 value.
@@ -644,9 +580,7 @@ ___
 
 ### toFloat
 
-▸ **toFloat**(`mostSignificantByteFirst`: boolean): number
-
-*Defined in src/byteVector.ts:1150*
+▸ **toFloat**(`mostSignificantByteFirst?`: boolean): number
 
 Converts the first four bytes of the current instance to a single-precision floating-point
 value.
@@ -667,9 +601,7 @@ ___
 
 ### toInt
 
-▸ **toInt**(`mostSignificantByteFirst`: boolean): number
-
-*Defined in src/byteVector.ts:1166*
+▸ **toInt**(`mostSignificantByteFirst?`: boolean): number
 
 Converts the first four bytes of the current instance to a signed integer. If the current
 instance is less than four bytes, the most significant bytes will be filled with 0x00.
@@ -688,9 +620,7 @@ ___
 
 ### toLong
 
-▸ **toLong**(`mostSignificantByteFirst`: boolean): BigInt.BigInteger
-
-*Defined in src/byteVector.ts:1179*
+▸ **toLong**(`mostSignificantByteFirst?`: boolean): BigInt.BigInteger
 
 Converts the first eight bytes of the current instance to a signed long. If the current
 instance is less than eight bytes, the most significant bytes will be filled with 0x00.
@@ -704,15 +634,13 @@ Name | Type | Default value | Description |
 **Returns:** BigInt.BigInteger
 
 A signed long value containing the value read from the current instance,
-         represented as a {@see BigInt} due to JavaScript's 32-bit integer limitation
+         represented as a BigInt due to JavaScript's 32-bit integer limitation
 
 ___
 
 ### toShort
 
-▸ **toShort**(`mostSignificantByteFirst`: boolean): number
-
-*Defined in src/byteVector.ts:1202*
+▸ **toShort**(`mostSignificantByteFirst?`: boolean): number
 
 Converts the first two bytes of the current instance to a signed short. If the current
 instance is less than two bytes, the most significant bytes will be filled with 0x00.
@@ -731,9 +659,7 @@ ___
 
 ### toString
 
-▸ **toString**(`count`: number, `type`: [StringType](../enums/_src_bytevector_.stringtype.md), `offset`: number): string
-
-*Defined in src/byteVector.ts:1215*
+▸ **toString**(`count?`: number, `type?`: [StringType](../enums/_src_bytevector_.stringtype.md), `offset?`: number): string
 
 Converts a portion of the current instance to a string using a specified encoding
 
@@ -753,24 +679,22 @@ ___
 
 ### toStrings
 
-▸ **toStrings**(`type`: [StringType](../enums/_src_bytevector_.stringtype.md), `offset`: number, `count`: number): string[]
-
-*Defined in src/byteVector.ts:1244*
+▸ **toStrings**(`type`: [StringType](../enums/_src_bytevector_.stringtype.md), `offset`: number, `count?`: number): string[]
 
 Converts the current instance into an array of strings starting at the specified offset and
 using the specified encoding, assuming the values are `null` separated and limiting it to a
 specified number of items.
 
-**`desc`** I'm not actually sure if this works as defined, but it behaves the same as the
+**`description`** I'm not actually sure if this works as defined, but it behaves the same as the
       original .NET implementation, so that's good enough for now.
 
 #### Parameters:
 
 Name | Type | Default value | Description |
 ------ | ------ | ------ | ------ |
-`type` | [StringType](../enums/_src_bytevector_.stringtype.md) | - | A {@see StringType} value indicating the encoding to use when converting |
+`type` | [StringType](../enums/_src_bytevector_.stringtype.md) | - | A [StringType](../enums/_src_bytevector_.stringtype.md) value indicating the encoding to use when converting |
 `offset` | number | - | Value specifying the index into the current instance at which to start        converting. |
-`count` | number | Number.MAX_SAFE_INTEGER | Value specifying a limit to the number of strings to create. Once the limit has        been reached, the last string will be filled by the remainder of the data |
+`count` | number | Number.MAX\_SAFE\_INTEGER | Value specifying a limit to the number of strings to create. Once the limit has        been reached, the last string will be filled by the remainder of the data |
 
 **Returns:** string[]
 
@@ -780,9 +704,7 @@ ___
 
 ### toUInt
 
-▸ **toUInt**(`mostSignificantByteFirst`: boolean): number
-
-*Defined in src/byteVector.ts:1291*
+▸ **toUInt**(`mostSignificantByteFirst?`: boolean): number
 
 Converts the first four bytes of the current instance to an unsigned integer. If the current
 instance is less than four bytes, the most significant bytes will be filled with 0x00.
@@ -801,9 +723,7 @@ ___
 
 ### toULong
 
-▸ **toULong**(`mostSignificantByteFirst`: boolean): BigInt.BigInteger
-
-*Defined in src/byteVector.ts:1304*
+▸ **toULong**(`mostSignificantByteFirst?`: boolean): BigInt.BigInteger
 
 Converts the first eight bytes of the current instance to an unsigned long. If the current
 instance is less than eight bytes, the most significant bytes will be filled with 0x00.
@@ -817,15 +737,13 @@ Name | Type | Default value | Description |
 **Returns:** BigInt.BigInteger
 
 An unsigned short value containing the value read from the current instance,
-         represented as a {@see BigInt} due to JavaScript's 32-bit integer limitation
+         represented as a BigInt due to JavaScript's 32-bit integer limitation
 
 ___
 
 ### toUShort
 
-▸ **toUShort**(`mostSignificantByteFirst`: boolean): number
-
-*Defined in src/byteVector.ts:1322*
+▸ **toUShort**(`mostSignificantByteFirst?`: boolean): number
 
 Converts the first two bytes of the current instance to an unsigned short. If the current
 instance is less than two bytes, the most significant bytes will be filled with 0x00.
@@ -846,19 +764,17 @@ ___
 
 ▸ `Static`**add**(`first`: [ByteVector](_src_bytevector_.bytevector.md), `second`: [ByteVector](_src_bytevector_.bytevector.md)): [ByteVector](_src_bytevector_.bytevector.md)
 
-*Defined in src/byteVector.ts:1339*
-
-Creates a new {@see ByteVector} that contains the contents of {@param first} concatenated
-with {@param second}. This operation can be thought of as `first + second`. Note: Regardless
-of the value of {@see ByteVector.isReadOnly}, the created ByteVector will always be
+Creates a new [ByteVector](_src_bytevector_.bytevector.md) that contains the contents of `first` concatenated
+with `second`. This operation can be thought of as `first + second`. Note: Regardless
+of the value of [ByteVector.isReadOnly](_src_bytevector_.bytevector.md#isreadonly), the created ByteVector will always be
 read/write.
 
 #### Parameters:
 
 Name | Type | Description |
 ------ | ------ | ------ |
-`first` | [ByteVector](_src_bytevector_.bytevector.md) | ByteVector to which {@param second} will be added |
-`second` | [ByteVector](_src_bytevector_.bytevector.md) | ByteVector which will be added to {@param first}  |
+`first` | [ByteVector](_src_bytevector_.bytevector.md) | ByteVector to which `second` will be added |
+`second` | [ByteVector](_src_bytevector_.bytevector.md) | ByteVector which will be added to `first`  |
 
 **Returns:** [ByteVector](_src_bytevector_.bytevector.md)
 
@@ -868,23 +784,21 @@ ___
 
 ▸ `Static`**concatenate**(...`vectors`: Array\<Uint8Array \| [ByteVector](_src_bytevector_.bytevector.md) \| number>): [ByteVector](_src_bytevector_.bytevector.md)
 
-*Defined in src/byteVector.ts:194*
-
-Creates a {@see ByteVector} from a collection of bytes, byte arrays, and byte vectors. This
+Creates a [ByteVector](_src_bytevector_.bytevector.md) from a collection of bytes, byte arrays, and byte vectors. This
 method is better to use when a known quantity of byte vectors will be concatenated together,
-since doing multiple calls to {@see ByteVector.addByteVector} results in the entire byte
+since doing multiple calls to [ByteVector.addByteVector](_src_bytevector_.bytevector.md#addbytevector) results in the entire byte
 vector being copied for each call.
 
 #### Parameters:
 
 Name | Type | Description |
 ------ | ------ | ------ |
-`...vectors` | Array\<Uint8Array \| [ByteVector](_src_bytevector_.bytevector.md) \| number> | ByteVectors, byte arrays, or straight bytes to concatenate together into a     new {@see ByteVector} |
+`...vectors` | Array\<Uint8Array \| [ByteVector](_src_bytevector_.bytevector.md) \| number> | ByteVectors, byte arrays, or straight bytes to concatenate together into a     new [ByteVector](_src_bytevector_.bytevector.md) |
 
 **Returns:** [ByteVector](_src_bytevector_.bytevector.md)
 
 ByteVector Single byte vector with the contents of the byte vectors in
-    {@paramref vectors} concatenated together
+    `vectors` concatenated together
 
 ___
 
@@ -892,9 +806,7 @@ ___
 
 ▸ `Static`**empty**(): [ByteVector](_src_bytevector_.bytevector.md)
 
-*Defined in src/byteVector.ts:233*
-
-Creates an empty {@see ByteVector}
+Creates an empty [ByteVector](_src_bytevector_.bytevector.md)
 
 **Returns:** [ByteVector](_src_bytevector_.bytevector.md)
 
@@ -904,17 +816,15 @@ ___
 
 ▸ `Static`**equal**(`first`: [ByteVector](_src_bytevector_.bytevector.md), `second`: [ByteVector](_src_bytevector_.bytevector.md)): boolean
 
-*Defined in src/byteVector.ts:1351*
-
-Returns `true` if the contents of the two {@see ByteVector}s are identical, returns `false`
+Returns `true` if the contents of the two [ByteVector](_src_bytevector_.bytevector.md)s are identical, returns `false`
 otherwise
 
 #### Parameters:
 
 Name | Type | Description |
 ------ | ------ | ------ |
-`first` | [ByteVector](_src_bytevector_.bytevector.md) | ByteVector to compare with {@param second} |
-`second` | [ByteVector](_src_bytevector_.bytevector.md) | ByteVector to compare with {@param first}  |
+`first` | [ByteVector](_src_bytevector_.bytevector.md) | ByteVector to compare with `second` |
+`second` | [ByteVector](_src_bytevector_.bytevector.md) | ByteVector to compare with `first`  |
 
 **Returns:** boolean
 
@@ -922,11 +832,9 @@ ___
 
 ### fromByteArray
 
-▸ `Static`**fromByteArray**(`data`: Uint8Array, `length`: number, `isReadOnly`: boolean): [ByteVector](_src_bytevector_.bytevector.md)
+▸ `Static`**fromByteArray**(`data`: Uint8Array, `length?`: number, `isReadOnly?`: boolean): [ByteVector](_src_bytevector_.bytevector.md)
 
-*Defined in src/byteVector.ts:243*
-
-Creates a {@see ByteVector} from a {@see Uint8Array}
+Creates a [ByteVector](_src_bytevector_.bytevector.md) from a Uint8Array
 
 #### Parameters:
 
@@ -942,11 +850,9 @@ ___
 
 ### fromByteVector
 
-▸ `Static`**fromByteVector**(`original`: [ByteVector](_src_bytevector_.bytevector.md), `isReadOnly`: boolean): [ByteVector](_src_bytevector_.bytevector.md)
+▸ `Static`**fromByteVector**(`original`: [ByteVector](_src_bytevector_.bytevector.md), `isReadOnly?`: boolean): [ByteVector](_src_bytevector_.bytevector.md)
 
-*Defined in src/byteVector.ts:266*
-
-Creates a {@see ByteVector} as a copy of another ByteVector.
+Creates a [ByteVector](_src_bytevector_.bytevector.md) as a copy of another ByteVector.
 
 #### Parameters:
 
@@ -961,9 +867,7 @@ ___
 
 ### fromFileAbstraction
 
-▸ `Static`**fromFileAbstraction**(`abstraction`: [IFileAbstraction](../interfaces/_src_fileabstraction_.ifileabstraction.md), `isReadOnly`: boolean): [ByteVector](_src_bytevector_.bytevector.md)
-
-*Defined in src/byteVector.ts:278*
+▸ `Static`**fromFileAbstraction**(`abstraction`: [IFileAbstraction](../interfaces/_src_fileabstraction_.ifileabstraction.md), `isReadOnly?`: boolean): [ByteVector](_src_bytevector_.bytevector.md)
 
 Creates a new instance by reading in the contents of a specified file abstraction.
 
@@ -980,18 +884,16 @@ ___
 
 ### fromInt
 
-▸ `Static`**fromInt**(`value`: number, `mostSignificantByteFirst`: boolean, `isReadOnly`: boolean): [ByteVector](_src_bytevector_.bytevector.md)
+▸ `Static`**fromInt**(`value`: number, `mostSignificantByteFirst?`: boolean, `isReadOnly?`: boolean): [ByteVector](_src_bytevector_.bytevector.md)
 
-*Defined in src/byteVector.ts:295*
-
-Creates a 4 byte {@see ByteVector} with a signed 32-bit integer as the data
+Creates a 4 byte [ByteVector](_src_bytevector_.bytevector.md) with a signed 32-bit integer as the data
 
 #### Parameters:
 
 Name | Type | Default value | Description |
 ------ | ------ | ------ | ------ |
 `value` | number | - | Signed 32-bit integer to use as the data. Must be a safe integer, storable in 4        bytes, cannot be a floating point number. |
-`mostSignificantByteFirst` | boolean | true | If `true`, {@param value} will be stored in big endian        format. If `false`, {@param value} will be stored in little endian format |
+`mostSignificantByteFirst` | boolean | true | If `true`, `value` will be stored in big endian        format. If `false`, `value` will be stored in little endian format |
 `isReadOnly` | boolean | false | If `true` then the ByteVector will be read only  |
 
 **Returns:** [ByteVector](_src_bytevector_.bytevector.md)
@@ -1000,9 +902,7 @@ ___
 
 ### fromInternalStream
 
-▸ `Static`**fromInternalStream**(`stream`: [IStream](../interfaces/_src_stream_.istream.md), `isReadOnly`: boolean): [ByteVector](_src_bytevector_.bytevector.md)
-
-*Defined in src/byteVector.ts:309*
+▸ `Static`**fromInternalStream**(`stream`: [IStream](../interfaces/_src_stream_.istream.md), `isReadOnly?`: boolean): [ByteVector](_src_bytevector_.bytevector.md)
 
 Creates a ByteVector using the contents of an TagLibSharp-node stream as the contents. This
 method reads from the current offset of the stream, not the beginning of the stream
@@ -1020,18 +920,16 @@ ___
 
 ### fromLong
 
-▸ `Static`**fromLong**(`value`: BigInt.BigInteger, `mostSignificantByteFirst`: boolean, `isReadOnly`: boolean): [ByteVector](_src_bytevector_.bytevector.md)
+▸ `Static`**fromLong**(`value`: BigInt.BigInteger, `mostSignificantByteFirst?`: boolean, `isReadOnly?`: boolean): [ByteVector](_src_bytevector_.bytevector.md)
 
-*Defined in src/byteVector.ts:339*
-
-Creates an 8 byte {@see ByteVector} with a signed 64-bit integer as the data
+Creates an 8 byte [ByteVector](_src_bytevector_.bytevector.md) with a signed 64-bit integer as the data
 
 #### Parameters:
 
 Name | Type | Default value | Description |
 ------ | ------ | ------ | ------ |
 `value` | BigInt.BigInteger | - | Signed 64-bit integer to use as the data. Since JavaScript does not support        longs, we are using BigInts. Must be storable in 8 bytes. |
-`mostSignificantByteFirst` | boolean | true | If `true`, {@param value} will be stored in big endian        format. If `false`, {@param value} will be stored in little endian format |
+`mostSignificantByteFirst` | boolean | true | If `true`, `value` will be stored in big endian        format. If `false`, `value` will be stored in little endian format |
 `isReadOnly` | boolean | false | If `true` then the ByteVector will be read only  |
 
 **Returns:** [ByteVector](_src_bytevector_.bytevector.md)
@@ -1040,11 +938,9 @@ ___
 
 ### fromPath
 
-▸ `Static`**fromPath**(`path`: string, `isReadOnly`: boolean): [ByteVector](_src_bytevector_.bytevector.md)
+▸ `Static`**fromPath**(`path`: string, `isReadOnly?`: boolean): [ByteVector](_src_bytevector_.bytevector.md)
 
-*Defined in src/byteVector.ts:384*
-
-Creates a {@see ByteVector} using the contents of a file as the data
+Creates a [ByteVector](_src_bytevector_.bytevector.md) using the contents of a file as the data
 
 #### Parameters:
 
@@ -1059,18 +955,16 @@ ___
 
 ### fromShort
 
-▸ `Static`**fromShort**(`value`: number, `mostSignificantByteFirst`: boolean, `isReadOnly`: boolean): [ByteVector](_src_bytevector_.bytevector.md)
+▸ `Static`**fromShort**(`value`: number, `mostSignificantByteFirst?`: boolean, `isReadOnly?`: boolean): [ByteVector](_src_bytevector_.bytevector.md)
 
-*Defined in src/byteVector.ts:402*
-
-Creates a 2 byte {@see ByteVector} with a signed 16-bit integer as the data
+Creates a 2 byte [ByteVector](_src_bytevector_.bytevector.md) with a signed 16-bit integer as the data
 
 #### Parameters:
 
 Name | Type | Default value | Description |
 ------ | ------ | ------ | ------ |
 `value` | number | - | Signed 16-bit integer to use as the data. Must be a safe integer, storable in 2        bytes, cannot be a floating point number. |
-`mostSignificantByteFirst` | boolean | true | If `true`, {@param value} will be stored in big endian        format. If `false`, {@param value} will be stored in little endian format |
+`mostSignificantByteFirst` | boolean | true | If `true`, `value` will be stored in big endian        format. If `false`, `value` will be stored in little endian format |
 `isReadOnly` | boolean | false | If `true` then the ByteVector will be read only  |
 
 **Returns:** [ByteVector](_src_bytevector_.bytevector.md)
@@ -1079,11 +973,9 @@ ___
 
 ### fromSize
 
-▸ `Static`**fromSize**(`size`: number, `fill`: number, `isReadOnly`: boolean): [ByteVector](_src_bytevector_.bytevector.md)
+▸ `Static`**fromSize**(`size`: number, `fill?`: number, `isReadOnly?`: boolean): [ByteVector](_src_bytevector_.bytevector.md)
 
-*Defined in src/byteVector.ts:417*
-
-Creates a {@see ByteVector} of a given length with a given value for all the elements
+Creates a [ByteVector](_src_bytevector_.bytevector.md) of a given length with a given value for all the elements
 
 #### Parameters:
 
@@ -1099,18 +991,16 @@ ___
 
 ### fromStream
 
-▸ `Static`**fromStream**(`readStream`: ReadableStream, `isReadOnly`: boolean): Promise\<[ByteVector](_src_bytevector_.bytevector.md)>
+▸ `Static`**fromStream**(`readStream`: ReadableStream, `isReadOnly?`: boolean): Promise\<[ByteVector](_src_bytevector_.bytevector.md)>
 
-*Defined in src/byteVector.ts:444*
-
-Creates {@see ByteVector} with the contents of a stream as the data. The stream will be read
+Creates [ByteVector](_src_bytevector_.bytevector.md) with the contents of a stream as the data. The stream will be read
 to the end before the ByteVector is returned.
 
 #### Parameters:
 
 Name | Type | Default value | Description |
 ------ | ------ | ------ | ------ |
-`readStream` | ReadableStream | - | Readable stream that will be read in entirity. |
+`readStream` | ReadableStream | - | Readable stream that will be read in entirety. |
 `isReadOnly` | boolean | false | If `true` then the ByteVector will be read only  |
 
 **Returns:** Promise\<[ByteVector](_src_bytevector_.bytevector.md)>
@@ -1119,19 +1009,17 @@ ___
 
 ### fromString
 
-▸ `Static`**fromString**(`text`: string, `type`: [StringType](../enums/_src_bytevector_.stringtype.md), `length`: number, `isReadOnly`: boolean): [ByteVector](_src_bytevector_.bytevector.md)
+▸ `Static`**fromString**(`text`: string, `type?`: [StringType](../enums/_src_bytevector_.stringtype.md), `length?`: number, `isReadOnly?`: boolean): [ByteVector](_src_bytevector_.bytevector.md)
 
-*Defined in src/byteVector.ts:477*
-
-Creates {@see ByteVector} with the byte representation of a string as the data.
+Creates [ByteVector](_src_bytevector_.bytevector.md) with the byte representation of a string as the data.
 
 #### Parameters:
 
 Name | Type | Default value | Description |
 ------ | ------ | ------ | ------ |
 `text` | string | - | String to store in the ByteVector |
-`type` | [StringType](../enums/_src_bytevector_.stringtype.md) | StringType.UTF8 | StringType to use to encode the string. If {@see StringType.UTF16} is used, the        string will be encoded as UTF16-LE. |
-`length` | number | Number.MAX_SAFE_INTEGER | Number of characters from the string to store in the ByteVector. Must be a        positive safe-integer, cannot be floating point. |
+`type` | [StringType](../enums/_src_bytevector_.stringtype.md) | StringType.UTF8 | StringType to use to encode the string. If [StringType.UTF16](../enums/_src_bytevector_.stringtype.md#utf16) is used, the        string will be encoded as UTF16-LE. |
+`length` | number | Number.MAX\_SAFE\_INTEGER | Number of characters from the string to store in the ByteVector. Must be a        positive safe-integer, cannot be floating point. |
 `isReadOnly` | boolean | false | If `true` then the ByteVector will be read only  |
 
 **Returns:** [ByteVector](_src_bytevector_.bytevector.md)
@@ -1140,18 +1028,16 @@ ___
 
 ### fromUInt
 
-▸ `Static`**fromUInt**(`value`: number, `mostSignificantByteFirst`: boolean, `isReadOnly`: boolean): [ByteVector](_src_bytevector_.bytevector.md)
+▸ `Static`**fromUInt**(`value`: number, `mostSignificantByteFirst?`: boolean, `isReadOnly?`: boolean): [ByteVector](_src_bytevector_.bytevector.md)
 
-*Defined in src/byteVector.ts:522*
-
-Creates a 4 byte {@see ByteVector} with a positive 32-bit integer as the data
+Creates a 4 byte [ByteVector](_src_bytevector_.bytevector.md) with a positive 32-bit integer as the data
 
 #### Parameters:
 
 Name | Type | Default value | Description |
 ------ | ------ | ------ | ------ |
 `value` | number | - | Positive 32-bit integer to use as the data. Must be a positive safe integer,        storable in 4 bytes, cannot be a floating point number. |
-`mostSignificantByteFirst` | boolean | true | If `true`, {@param value} will be stored in big endian        format. If `false`, {@param value} will be stored in little endian format |
+`mostSignificantByteFirst` | boolean | true | If `true`, `value` will be stored in big endian        format. If `false`, `value` will be stored in little endian format |
 `isReadOnly` | boolean | false | If `true` then the ByteVector will be read only  |
 
 **Returns:** [ByteVector](_src_bytevector_.bytevector.md)
@@ -1160,18 +1046,16 @@ ___
 
 ### fromULong
 
-▸ `Static`**fromULong**(`value`: BigInt.BigInteger, `mostSignificantByteFirst`: boolean, `isReadOnly`: boolean): [ByteVector](_src_bytevector_.bytevector.md)
+▸ `Static`**fromULong**(`value`: BigInt.BigInteger, `mostSignificantByteFirst?`: boolean, `isReadOnly?`: boolean): [ByteVector](_src_bytevector_.bytevector.md)
 
-*Defined in src/byteVector.ts:538*
-
-Creates an 8 byte {@see ByteVector} with a positive 64-bit integer as the data
+Creates an 8 byte [ByteVector](_src_bytevector_.bytevector.md) with a positive 64-bit integer as the data
 
 #### Parameters:
 
 Name | Type | Default value | Description |
 ------ | ------ | ------ | ------ |
 `value` | BigInt.BigInteger | - | Positive 64-bit integer to use as the data. Since JavaScript does not support        longs, we are using BigInts. Must be storable in 8 bytes. |
-`mostSignificantByteFirst` | boolean | true | If `true`, {@param value} will be stored in big endian        format. If `false`, {@param value} will be stored in little endian format |
+`mostSignificantByteFirst` | boolean | true | If `true`, `value` will be stored in big endian        format. If `false`, `value` will be stored in little endian format |
 `isReadOnly` | boolean | false | If `true` then the ByteVector will be read only  |
 
 **Returns:** [ByteVector](_src_bytevector_.bytevector.md)
@@ -1180,18 +1064,16 @@ ___
 
 ### fromUShort
 
-▸ `Static`**fromUShort**(`value`: number, `mostSignificantByteFirst`: boolean, `isReadOnly`: boolean): [ByteVector](_src_bytevector_.bytevector.md)
+▸ `Static`**fromUShort**(`value`: number, `mostSignificantByteFirst?`: boolean, `isReadOnly?`: boolean): [ByteVector](_src_bytevector_.bytevector.md)
 
-*Defined in src/byteVector.ts:576*
-
-Creates a 2 byte {@see ByteVector} with a positive 32-bit integer as the data
+Creates a 2 byte [ByteVector](_src_bytevector_.bytevector.md) with a positive 32-bit integer as the data
 
 #### Parameters:
 
 Name | Type | Default value | Description |
 ------ | ------ | ------ | ------ |
 `value` | number | - | Positive 32-bit integer to use as the data. Must be a positive safe integer,        storable in 4 bytes, cannot be a floating point number. |
-`mostSignificantByteFirst` | boolean | true | If `true`, {@param value} will be stored in big endian        format. If `false`, {@param value} will be stored in little endian format |
+`mostSignificantByteFirst` | boolean | true | If `true`, `value` will be stored in big endian        format. If `false`, `value` will be stored in little endian format |
 `isReadOnly` | boolean | false | If `true` then the ByteVector will be read only  |
 
 **Returns:** [ByteVector](_src_bytevector_.bytevector.md)
@@ -1201,8 +1083,6 @@ ___
 ### getTextDelimiter
 
 ▸ `Static`**getTextDelimiter**(`type`: [StringType](../enums/_src_bytevector_.stringtype.md)): [ByteVector](_src_bytevector_.bytevector.md)
-
-*Defined in src/byteVector.ts:633*
 
 #### Parameters:
 
@@ -1218,19 +1098,17 @@ ___
 
 ▸ `Static`**greaterThan**(`first`: [ByteVector](_src_bytevector_.bytevector.md), `second`: [ByteVector](_src_bytevector_.bytevector.md)): boolean
 
-*Defined in src/byteVector.ts:1385*
-
-Returns `true` if {@param first} is greater than {@see second}. This is true if
-{@param first} is longer than {@param second} or if the first element in {@param first}
-that is different than the element at the same position in {@param second} is greater than.
-Returns `false` if the two {@see ByteVector}s are identical.
+Returns `true` if `first` is greater than `second`. This is true if
+`first` is longer than `second` or if the first element in `first`
+that is different than the element at the same position in `second` is greater than.
+Returns `false` if the two [ByteVector](_src_bytevector_.bytevector.md)s are identical.
 
 #### Parameters:
 
 Name | Type | Description |
 ------ | ------ | ------ |
-`first` | [ByteVector](_src_bytevector_.bytevector.md) | ByteVector to compare with {@param second} |
-`second` | [ByteVector](_src_bytevector_.bytevector.md) | ByteVector to compare with {@param first}  |
+`first` | [ByteVector](_src_bytevector_.bytevector.md) | ByteVector to compare with `second` |
+`second` | [ByteVector](_src_bytevector_.bytevector.md) | ByteVector to compare with `first`  |
 
 **Returns:** boolean
 
@@ -1240,19 +1118,17 @@ ___
 
 ▸ `Static`**greaterThanEqual**(`first`: [ByteVector](_src_bytevector_.bytevector.md), `second`: [ByteVector](_src_bytevector_.bytevector.md)): boolean
 
-*Defined in src/byteVector.ts:1404*
-
-Returns `true` if {@param first} is greater than {@see second}. This is true if
-{@param first} is longer than {@param second} or if the first element in {@param first}
-that is different than the element at the same position in {@param second} is greater than.
-Returns `true` if the two {@see ByteVector}s are identical.
+Returns `true` if `first` is greater than `second`. This is true if
+`first` is longer than `second` or if the first element in `first`
+that is different than the element at the same position in `second` is greater than.
+Returns `true` if the two [ByteVector](_src_bytevector_.bytevector.md)s are identical.
 
 #### Parameters:
 
 Name | Type | Description |
 ------ | ------ | ------ |
-`first` | [ByteVector](_src_bytevector_.bytevector.md) | ByteVector to compare with {@param second} |
-`second` | [ByteVector](_src_bytevector_.bytevector.md) | ByteVector to compare with {@param first}  |
+`first` | [ByteVector](_src_bytevector_.bytevector.md) | ByteVector to compare with `second` |
+`second` | [ByteVector](_src_bytevector_.bytevector.md) | ByteVector to compare with `first`  |
 
 **Returns:** boolean
 
@@ -1262,19 +1138,17 @@ ___
 
 ▸ `Static`**lessThan**(`first`: [ByteVector](_src_bytevector_.bytevector.md), `second`: [ByteVector](_src_bytevector_.bytevector.md)): boolean
 
-*Defined in src/byteVector.ts:1423*
-
-Returns `true` if {@param first} is less than {@see second}. This is true if
-{@param first} is shorter than {@param second} or if the first element in {@param first}
-that is different than the element at the same position in {@param second} is less than.
-Returns `false` if the two {@see ByteVector}s are identical.
+Returns `true` if `first` is less than `second`. This is true if
+`first` is shorter than `second` or if the first element in `first`
+that is different than the element at the same position in `second` is less than.
+Returns `false` if the two [ByteVector](_src_bytevector_.bytevector.md)s are identical.
 
 #### Parameters:
 
 Name | Type | Description |
 ------ | ------ | ------ |
-`first` | [ByteVector](_src_bytevector_.bytevector.md) | ByteVector to compare with {@param second} |
-`second` | [ByteVector](_src_bytevector_.bytevector.md) | ByteVector to compare with {@param first}  |
+`first` | [ByteVector](_src_bytevector_.bytevector.md) | ByteVector to compare with `second` |
+`second` | [ByteVector](_src_bytevector_.bytevector.md) | ByteVector to compare with `first`  |
 
 **Returns:** boolean
 
@@ -1284,19 +1158,17 @@ ___
 
 ▸ `Static`**lessThanEqual**(`first`: [ByteVector](_src_bytevector_.bytevector.md), `second`: [ByteVector](_src_bytevector_.bytevector.md)): boolean
 
-*Defined in src/byteVector.ts:1442*
-
-Returns `true` if {@param first} is less than {@see second}. This is true if
-{@param first} is shorter than {@param second} or if the first element in {@param first}
-that is different than the element at the same position in {@param second} is less than.
-Returns `true` if the two {@see ByteVector}s are identical.
+Returns `true` if `first` is less than `second`. This is true if
+`first` is shorter than `second` or if the first element in `first`
+that is different than the element at the same position in `second` is less than.
+Returns `true` if the two [ByteVector](_src_bytevector_.bytevector.md)s are identical.
 
 #### Parameters:
 
 Name | Type | Description |
 ------ | ------ | ------ |
-`first` | [ByteVector](_src_bytevector_.bytevector.md) | ByteVector to compare with {@param second} |
-`second` | [ByteVector](_src_bytevector_.bytevector.md) | ByteVector to compare with {@param first}  |
+`first` | [ByteVector](_src_bytevector_.bytevector.md) | ByteVector to compare with `second` |
+`second` | [ByteVector](_src_bytevector_.bytevector.md) | ByteVector to compare with `first`  |
 
 **Returns:** boolean
 
@@ -1306,16 +1178,14 @@ ___
 
 ▸ `Static`**notEqual**(`first`: [ByteVector](_src_bytevector_.bytevector.md), `second`: [ByteVector](_src_bytevector_.bytevector.md)): boolean
 
-*Defined in src/byteVector.ts:1373*
-
-Returns `false` if the contents of the two {@see ByteVector}s are identical, returns `true`
+Returns `false` if the contents of the two [ByteVector](_src_bytevector_.bytevector.md)s are identical, returns `true`
 otherwise
 
 #### Parameters:
 
 Name | Type | Description |
 ------ | ------ | ------ |
-`first` | [ByteVector](_src_bytevector_.bytevector.md) | ByteVector to compare with {@param second} |
-`second` | [ByteVector](_src_bytevector_.bytevector.md) | ByteVector to compare with {@param first}  |
+`first` | [ByteVector](_src_bytevector_.bytevector.md) | ByteVector to compare with `second` |
+`second` | [ByteVector](_src_bytevector_.bytevector.md) | ByteVector to compare with `first`  |
 
 **Returns:** boolean

@@ -1,6 +1,6 @@
-**node-taglib-sharp**
+**[node-taglib-sharp](README.md)**
 
-> [README](README.md) / Globals
+> Globals
 
 # node-taglib-sharp
 
@@ -8,6 +8,11 @@
 
 ### Modules
 
+* ["src/ape/apeFile"](modules/_src_ape_apefile_.md)
+* ["src/ape/apeStreamHeader"](modules/_src_ape_apestreamheader_.md)
+* ["src/ape/apeTag"](modules/_src_ape_apetag_.md)
+* ["src/ape/apeTagFooter"](modules/_src_ape_apetagfooter_.md)
+* ["src/ape/apeTagItem"](modules/_src_ape_apetagitem_.md)
 * ["src/byteVector"](modules/_src_bytevector_.md)
 * ["src/combinedTag"](modules/_src_combinedtag_.md)
 * ["src/errors"](modules/_src_errors_.md)

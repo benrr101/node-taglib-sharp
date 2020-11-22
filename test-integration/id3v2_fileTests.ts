@@ -6,7 +6,7 @@ import {suite, test} from "mocha-typescript";
 import ExtendedFileTests from "./utilities/extendedFileTests";
 import TestConstants from "./utilities/testConstants";
 import Utilities from "./utilities/utilities";
-import {File, Id3v2FrameIdentifiers, Id3v2Tag, ReadStyle, TagTypes} from "../src";
+import {File, Id3v2FrameIdentifiers, Id3v2Tag, TagTypes} from "../src";
 import {StandardFileTests} from "./utilities/standardFileTests";
 
 // Setup chai
