@@ -26,12 +26,12 @@ export default class Id3v2Settings {
 
     /**
      * Gets the default version to use when creating new tags.
-     * If {@see forceDefaultEncoding} is `true` then all tags will be rendered with this version.
+     * If {@link forceDefaultEncoding} is `true` then all tags will be rendered with this version.
      */
     public static get defaultVersion(): number { return Id3v2Settings._defaultVersion; }
     /**
      * Sets the default version to use when creating new tags.
-     * If {@see forceDefaultEncoding} is `true` then all tags will be rendered with this version.
+     * If {@link forceDefaultEncoding} is `true` then all tags will be rendered with this version.
      * @param value ID3v2 version to use. Must be 2, 3, or 4. The default for this library is 3
      */
     public static set defaultVersion(value: number) {
@@ -53,7 +53,7 @@ export default class Id3v2Settings {
     /**
      * Sets whether or not to render all frames with the default encoding rather than their
      * original encoding.
-     * @param value If `true` frames will be rendered using {@see defaultEncoding} rather than
+     * @param value If `true` frames will be rendered using {@link defaultEncoding} rather than
      *     their original encoding.
      */
     public static set forceDefaultEncoding(value: boolean) { Id3v2Settings._forceDefaultEncoding = value; }
@@ -66,7 +66,7 @@ export default class Id3v2Settings {
     /**
      * Sets whether or not to save all tags in the default version rather than their original
      * version.
-     * @param value If `true`, tags will be saved in the version defined in {@see defaultVersion}
+     * @param value If `true`, tags will be saved in the version defined in {@link defaultVersion}
      *     rather than their original format, with the exception of tags with footers which will
      *     always be saved in version 4
      */

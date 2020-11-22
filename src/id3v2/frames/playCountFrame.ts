@@ -6,7 +6,7 @@ import {FrameIdentifiers} from "../frameIdentifiers";
 import {Guards} from "../../utils";
 
 /**
- * This class extends {@see Frame} implementing support for ID3v2 play count (PCNT) frames.
+ * This class extends {@link Frame} implementing support for ID3v2 play count (PCNT) frames.
  */
 export default class PlayCountFrame extends Frame {
     private _playCount: BigInt.BigInteger;

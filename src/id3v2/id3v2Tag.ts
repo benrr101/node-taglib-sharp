@@ -48,7 +48,7 @@ export default class Id3v2Tag extends Tag {
 
     /**
      * Constructs and initializes a new Tag by reading the contents from a specified
-     * {@see ByteVector} object.
+     * {@link ByteVector} object.
      * @param data Tag data to read into a tag object
      * @returns Id3v2Tag Tag with the data from the byte vector read into it
      */
@@ -121,7 +121,7 @@ export default class Id3v2Tag extends Tag {
     public get flags(): Id3v2TagHeaderFlags { return this._header.flags; }
     /**
      * Sets the header flags applied to the current instance
-     * @param value Bitwise combined {@see Id3v2TagHeaderFlags} value containing flags applied to the
+     * @param value Bitwise combined {@link Id3v2TagHeaderFlags} value containing flags applied to the
      *     current instance.
      */
     public set flags(value: Id3v2TagHeaderFlags) { this._header.flags = value; }
@@ -778,7 +778,7 @@ export default class Id3v2Tag extends Tag {
      * NOTE: This implementation deviates a bit from the original .NET implementation due to the
      * inability to do `x is y` comparison by types in typescript without type guards.
      * {@paramref type} is the type guard for differentiating frame types. If all frames are needed
-     * use {@see frames}.
+     * use {@link frames}.
      * @param type Type of frame to return
      * @param ident Identifier of the frame
      * @returns TFrame[] Array of frames with the desired frame identifier
@@ -842,7 +842,7 @@ export default class Id3v2Tag extends Tag {
     /**
      * Renders the current instance as a raw ID3v2 tag.
      * By default, tags will be rendered in the version they were loaded in and new tags using the
-     * version specified by {@see defaultVersion}. If {@see forceDefaultVersion} is `true`, all
+     * version specified by {@link defaultVersion}. If {@link forceDefaultVersion} is `true`, all
      * tags will be rendered using that version, except for tags with footers which must be in
      * version 4.
      * @returns ByteVector The rendered tag.

@@ -6,7 +6,7 @@ import {Tag, TagTypes} from "../tag";
 import {Guards} from "../utils";
 
 /**
- * Extends {@see Tag} to provide support for reading and writing tags stored in the ID3v1.1 format.
+ * Extends {@link Tag} to provide support for reading and writing tags stored in the ID3v1.1 format.
  */
 export default class Id3v1Tag extends Tag {
     // #region Member Fields
@@ -50,7 +50,7 @@ export default class Id3v1Tag extends Tag {
     }
 
     /**
-     * Constructs and initializes a new instance of {@see Id3v1Tag} with no contents.
+     * Constructs and initializes a new instance of {@link Id3v1Tag} with no contents.
      */
     public static fromEmpty(): Id3v1Tag {
         const output = new Id3v1Tag(undefined);

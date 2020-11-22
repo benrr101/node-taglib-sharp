@@ -122,7 +122,7 @@ export class EventTimeCodeFrame extends Frame {
     public get frameClassType(): FrameClassType { return FrameClassType.EventTimeCodeFrame; }
 
     /**
-     * Gets the event this frame contains. Each {@see EventTimeCode} represents a single event at a
+     * Gets the event this frame contains. Each {@link EventTimeCode} represents a single event at a
      * certain point in time.
      */
     public get events(): EventTimeCode[] { return this._events || []; }

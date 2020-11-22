@@ -27,7 +27,7 @@ let customFrameCreators: FrameCreator[] = [];
 
 /**
  * Performs the necessary operations to determine and create the correct child classes of
- * {@see Frame} for a given raw ID3v2 frame.
+ * {@link Frame} for a given raw ID3v2 frame.
  * By default, this will only load frames contained in the library. To add additional frames to the
  * process, register a frame creator with addFrameCreator.
  */
@@ -57,7 +57,7 @@ export default {
     },
 
     /**
-     * Creates a {@see Frame} object by reading it from raw ID3v2 frame data.
+     * Creates a {@link Frame} object by reading it from raw ID3v2 frame data.
      * @param data Raw ID3v2 frame
      * @param file File to read the frame from if {@paramref data} is falsy
      * @param offset Index into {@paramref file} or in {@paramref data} if truthy, at which the
@@ -67,7 +67,7 @@ export default {
      * @param alreadyUnsynced Whether or not the entire tag has already been unsynchronized
      * @returns any Undefined is returned if there are no more frames to read.
      *     Object is returned if a frame was found. Object has the following properties:
-     *     * frame: {@see Frame} that was read
+     *     * frame: {@link Frame} that was read
      *     * offset: updated offset where the next frame starts
      */
     createFrame: (data: ByteVector, file: File, offset: number, version: number, alreadyUnsynced: boolean):

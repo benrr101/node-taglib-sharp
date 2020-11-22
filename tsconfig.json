@@ -20,6 +20,8 @@
     "inputFiles": ["./src"],
     "mode": "modules",
     "out": "docs/",
-    "excludePrivate": true
+    "excludePrivate": true,
+    "disableSources": true,
+    "listInvalidSymbolLinks": true
   }
 }

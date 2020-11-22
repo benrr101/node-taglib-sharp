@@ -8,7 +8,7 @@ import {Guards} from "../../utils";
 import {SynchronizedTextType, TimestampFormat} from "../utilTypes";
 
 /**
- * This structure contains a single entry in a {@see SynchronizedLyricsFrame} object.
+ * This structure contains a single entry in a {@link SynchronizedLyricsFrame} object.
  */
 export class SynchronizedText {
     /**
@@ -18,14 +18,14 @@ export class SynchronizedText {
 
     /**
      * Time offset of the current instance. The specific format this text element is defined in
-     * {@see SynchronizedLyricsFrame.format} of the frame that owns this element.
+     * {@link SynchronizedLyricsFrame.format} of the frame that owns this element.
      */
     public time: number;
 
     /**
      * Constructs and initializes a new instance with a specified time and text.
      * @param time Offset into the media that owns this element when this element should be
-     *     displayed. See {@see TimestampFormat} for possible values.
+     *     displayed. See {@link TimestampFormat} for possible values.
      * @param text Text for the point in time
      */
     public constructor(time: number, text: string) {
@@ -182,7 +182,7 @@ export class SynchronizedLyricsFrame extends Frame {
     public get textEncoding(): StringType { return this._textEncoding; }
     /**
      * Sets the text encoding to use when storing the current instance.
-     * This encoding is overridden when renderinf if {@see Id3v2Tag.forceDefaultEncoding} is
+     * This encoding is overridden when renderinf if {@link Id3v2Settings.forceDefaultEncoding} is
      * `true` or the render version does not support it.
      * @param value Text encoding to use when storing the current instance
      */

@@ -51,7 +51,7 @@ export default class AudioHeader implements IAudioCodec {
 
     /**
      * Constructs and initializes a new instance by reading its contents from a data
-     * {@see ByteVector} and its Xing header from the appropriate location in the
+     * {@link ByteVector} and its Xing header from the appropriate location in the
      * specified file.
      * @param data The header data to read
      * @param file File to read the Xing/VBRI header from
@@ -278,7 +278,7 @@ export default class AudioHeader implements IAudioCodec {
 
     /**
      * Sets the length of the audio stream represented by the current instance.
-     * If this value has not been set, {@see durationMilliseconds} will return an incorrect value.
+     * If this value has not been set, {@link durationMilliseconds} will return an incorrect value.
      */
     public set streamLength(value: number) {
         this._streamLength = value;
@@ -290,7 +290,7 @@ export default class AudioHeader implements IAudioCodec {
     }
 
     /**
-     * Gets the VBRI header found in the audio. {@see VbriHeader.Unknown} is returned if no header
+     * Gets the VBRI header found in the audio. {@link VbriHeader.unknown} is returned if no header
      * was found.
      */
     public get vbriHeader(): VbriHeader { return this._vbriHeader; }
@@ -310,7 +310,7 @@ export default class AudioHeader implements IAudioCodec {
     }
 
     /**
-     * Gets the Xing header found in the audio. {@see XingHeader.Unknown} is returned if no header
+     * Gets the Xing header found in the audio. {@link XingHeader.unknown} is returned if no header
      * was found.
      */
     public get xingHeader(): XingHeader { return this._xingHeader; }
@@ -325,7 +325,7 @@ export default class AudioHeader implements IAudioCodec {
      * @param length Maximum number of bytes to search before giving up. Defaults to `-1` to
      *     have no maximum
      * @returns {header: AudioHeader, success: boolean}
-     *     * `header` - the header that was found or {@see AudioHeader.Unknown} if a header was not
+     *     * `header` - the header that was found or {@link AudioHeader.Unknown} if a header was not
      *         found
      *     * `success` - whether or not a header was found
      */

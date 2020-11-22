@@ -15,18 +15,18 @@ export interface IFileAbstraction {
 
     /**
      * Readable, seekable stream for the file referenced by the current instance.
-     * @description This property is typically used when constructing an instance of {@see File}.
-     *   Upon completion of the constructor {@see closeStream} will be called to close the stream.
-     *   If the stream is to be reused after this point, {@see closeStream} should be implemented
+     * @description This property is typically used when constructing an instance of {@link File}.
+     *   Upon completion of the constructor {@link closeStream} will be called to close the stream.
+     *   If the stream is to be reused after this point, {@link closeStream} should be implemented
      *   in a way to keep it open.
      */
     readStream: IStream;
 
     /**
      * Writable, seekable stream fo the file referenced by the current instance.
-     * @description This property is typically used when saving a file with {@see File.save}. Upon
-     *   completion of the method, {@see closeStream} will be called to close the stream. If the
-     *   stream is to be reused after this point, {@see closeStream} should be implemented in a way
+     * @description This property is typically used when saving a file with {@link File.save}. Upon
+     *   completion of the method, {@link closeStream} will be called to close the stream. If the
+     *   stream is to be reused after this point, {@link closeStream} should be implemented in a way
      *   to keep it open
      */
     writeStream: IStream;
@@ -39,7 +39,7 @@ export interface IFileAbstraction {
 }
 
 /**
- * This class implements {@see IFileAbstraction} to provide support for accessing the local/
+ * This class implements {@link IFileAbstraction} to provide support for accessing the local/
  * standard file.
  * This class is used as the standard file abstraction throughout the library.
  */

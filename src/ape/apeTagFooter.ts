@@ -3,7 +3,7 @@ import {CorruptFileError} from "../errors";
 import {Guards} from "../utils";
 
 /**
- * Indicates the flags applied to a {@see Footer} object.
+ * Indicates the flags applied to a {@link ApeTagFooter} object.
  */
 export enum ApeTagFooterFlags {
     /**
@@ -46,7 +46,7 @@ export class ApeTagFooter {
     private constructor() {}
 
     /**
-     * Constructs and initializes a new instance of {@see ApeTagFooter} by reading it from raw
+     * Constructs and initializes a new instance of {@link ApeTagFooter} by reading it from raw
      * footer data.
      * @param data Raw data to build the new instance from.
      */
@@ -74,7 +74,7 @@ export class ApeTagFooter {
     }
 
     /**
-     * Constructs and initializes a new, blank instance of {@see ApeTagFooter}.
+     * Constructs and initializes a new, blank instance of {@link ApeTagFooter}.
      */
     public static fromEmpty(): ApeTagFooter {
         const footer = new ApeTagFooter();

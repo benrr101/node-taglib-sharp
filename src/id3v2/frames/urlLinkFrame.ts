@@ -124,7 +124,7 @@ export class UrlLinkFrame extends Frame {
     }
     /**
      * Sets the text encoding to use when rendering the current instance.
-     * NOTE: This value will be overwritten if {@see Id3v2Tag.forceDefaultEncoding} is `true`.
+     * NOTE: This value will be overwritten if {@link Id3v2Settings.forceDefaultEncoding} is `true`.
      * @param value
      */
     public set textEncoding(value: StringType) { this._encoding = value; }

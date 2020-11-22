@@ -5,7 +5,7 @@ export default class CombinedTag extends Tag {
     protected _tags: Tag[];
 
     /**
-     * Constructs and initializes a new instance of {@see CombinedTag}.
+     * Constructs and initializes a new instance of {@link CombinedTag}.
      * @param tags Optionally, a list of tags to combine in the new instance.
      */
     public constructor(tags?: Tag[]) {
@@ -113,7 +113,7 @@ export default class CombinedTag extends Tag {
 
     /**
      * Gets the characters for a video media, or instruments played for music media. This should
-     * match the {@see performers} array (for each person correspond one/more role). Several roles
+     * match the {@link performers} array (for each person correspond one/more role). Several roles
      * for the same artist/actor can be made up with semicolons. For example, "Marty McFly; Marty
      * McFly Jr.; Marlene McFly".
      * Returns the first non-null/non-undefined value from the child tags.

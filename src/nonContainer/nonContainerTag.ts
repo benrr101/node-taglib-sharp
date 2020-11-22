@@ -5,7 +5,7 @@ import {ReadStyle} from "../file";
 import {Tag, TagTypes} from "../tag";
 
 /**
- * This class extends {@see CombinedTag}, combining {@see StartTag} and {@see EndTag} in such a way
+ * This class extends {@link CombinedTag}, combining {@link StartTag} and {@link EndTag} in such a way
  * as their children appear as its children.
  */
 export default class NonContainerTag extends CombinedTag {
@@ -15,8 +15,9 @@ export default class NonContainerTag extends CombinedTag {
     /**
      * Constructs a new instance for a specified file.
      * Constructing a new instance does not automatically read the contents from the disk.
-     * {@see read} must be called to read the tags
-     * @param
+     * {@link read} must be called to read the tags
+     * @param startTag Tag at the start of the file
+     * @param endTag Tag at the end of the file
      */
     public constructor(startTag: StartTag, endTag: EndTag) {
         super();
@@ -83,7 +84,7 @@ export default class NonContainerTag extends CombinedTag {
     /**
      * Removes a set of tag types from the current instance.
      * @param types Tag types to be removed from the file. To remove all tags from a file, use
-     *     {@see TagTypes.AllTags}
+     *     {@link TagTypes.AllTags}
      */
     public removeTags(types: TagTypes): void {
         this.startTag.removeTags(types);

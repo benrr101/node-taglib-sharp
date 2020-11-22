@@ -22,7 +22,7 @@ export enum ReadStyle {
     Average = 2,
 
     /**
-     * Use the {@see PictureLazy} class in the the property {@see Tag.pictures}. This will avoid
+     * Use the {@link PictureLazy} class in the the property {@link Tag.pictures}. This will avoid
      * loading picture content when reading the tag. Picture will be read lazily, when the picture
      * content is accessed.
      */
@@ -30,7 +30,7 @@ export enum ReadStyle {
 }
 
 /**
- * Specifies the type of file access operations currently permitted on an instance of {@see File}
+ * Specifies the type of file access operations currently permitted on an instance of {@link File}
  */
 export enum FileAccessMode {
     /**
@@ -50,20 +50,20 @@ export enum FileAccessMode {
 }
 
 /**
- * Delegate is used for intervening in {@see File.createFromPath} by resolving the filetype before
+ * Delegate is used for intervening in {@link File.createFromPath} by resolving the filetype before
  * any standard resolution operations.
  * @param abstraction File to be read.
  * @param mimeType MimeType of the file.
  * @param style How to read media properties from the file
- * @return New instance of {@see File} or `undefined` if the resolver could not be matched
+ * @return New instance of {@link File} or `undefined` if the resolver could not be matched
  * @description A FileTypeResolver is one way of altering the behavior of
- *     {@see File.createFromPath} When {@see File.createFromPath} is called, the registered
+ *     {@link File.createFromPath} When {@link File.createFromPath} is called, the registered
  *     resolvers are invoked in reverse order in which they were registered. The resolver may then
  *     perform any operations necessary, including other type-finding methods. If the resolver
- *     returns a new {@see File} it will instantly be returned, by {@see File.createFromPath}. If
- *     it returns `undefined`, {@see File.createFromPath} will continue to process. If the resolver
+ *     returns a new {@link File} it will instantly be returned, by {@link File.createFromPath}. If
+ *     it returns `undefined`, {@link File.createFromPath} will continue to process. If the resolver
  *     throws an exception, it will be uncaught. To register a resolver, use
- *     {@see File.addFileTypeResolver}.
+ *     {@link File.addFileTypeResolver}.
  */
 export type FileTypeResolver = (abstraction: IFileAbstraction, mimetype: string, style: ReadStyle) => File;
 
@@ -74,9 +74,9 @@ export type FileTypeConstructor = new (abstraction: IFileAbstraction, style: Rea
  * accessing basic tagging and media properties.
  * @description This class is agnostic to all specific media types. Its child classes, on the other
  *     hand, support the intricacies of different media and tagging formats. For example
- *     {@see Mpeg4File} supports the MPEG-4 specification and Apple's tagging format. Each file
+ *     {@link Mpeg4File} supports the MPEG-4 specification and Apple's tagging format. Each file
  *     type can be created using its format specific constructors, but the preferred method is to
- *     use {@see File.createFromPath} or {@see File.createFromAbstraction} as it automatically
+ *     use {@link File.createFromPath} or {@link File.createFromAbstraction} as it automatically
  *     detects the appropriate class from the file extension or provided MimeType.
  */
 export abstract class File {
@@ -105,14 +105,14 @@ export abstract class File {
     }
 
     /**
-     * Creates a new instance of a {@see File} subclass for a specified file abstraction, MimeType,
+     * Creates a new instance of a {@link File} subclass for a specified file abstraction, MimeType,
      * and property read style.
      * @param abstraction Object to use when reading/writing from the current instance.
-     * @param mimeType Optional, MimeType to use for determining the subclass of {@see File} to
+     * @param mimeType Optional, MimeType to use for determining the subclass of {@link File} to
      *     return. If omitted, the MimeType will be guessed based on the file's extension.
      * @param propertiesStyle Optional, level of detail to use when reading the media information
-     *     from the new instance. If omitted, {@see ReadStyle.Average} is used.
-     * @returns New instance of {@see File} as read from the specified abstraction.
+     *     from the new instance. If omitted, {@link ReadStyle.Average} is used.
+     * @returns New instance of {@link File} as read from the specified abstraction.
      */
     public static createFromAbstraction(
         abstraction: IFileAbstraction,
@@ -123,14 +123,14 @@ export abstract class File {
     }
 
     /**
-     * Creates a new instance of {@see File} subclass for a specified file path, MimeType, and
+     * Creates a new instance of {@link File} subclass for a specified file path, MimeType, and
      * property read style.
      * @param filePath Path to the file to read/write.
-     * @param mimeType Optional, MimeType to use for determining the subclass of {@see File} to
+     * @param mimeType Optional, MimeType to use for determining the subclass of {@link File} to
      *     return. If omitted, the MimeType will be guessed based on the file's extension.
      * @param propertiesStyle Optional, level of detail to use when reading the media information
-     *     from the new instance. If omitted {@see ReadStyle.Average} is used.
-     * @returns New instance of {@see File} as read from the specified path.
+     *     from the new instance. If omitted {@link ReadStyle.Average} is used.
+     * @returns New instance of {@link File} as read from the specified path.
      */
     public static createFromPath(
         filePath: string,
@@ -178,7 +178,7 @@ export abstract class File {
     public get corruptionReasons(): string[] { return this._corruptionReasons; }
 
     /**
-     * Gets the {@see IFileAbstraction} representing the file.
+     * Gets the {@link IFileAbstraction} representing the file.
      */
     public get fileAbstraction(): IFileAbstraction { return this._fileAbstraction; }
 
@@ -212,8 +212,7 @@ export abstract class File {
     public get length(): number { return this.mode === FileAccessMode.Closed ? 0 : this._fileStream.length; }
 
     /**
-     * Gets the MimeType of the file as determined by {@see File.create} if that method was used to
-     * create the current instance.
+     * Gets the MimeType of the file as determined during creation of the instance.
      */
     public get mimeType(): string { return this._mimeType; }
 
@@ -233,7 +232,7 @@ export abstract class File {
     /**
      * Sets the file access mode in use by the current instance. Changing the value will cause the
      * stream currently in use to be closed, except when a change is made from
-     * {@see FileAccessMode.Write} to {@see FileAccessMode.Read} which has no effect.
+     * {@link FileAccessMode.Write} to {@link FileAccessMode.Read} which has no effect.
      * @param val File access mode to change to
      */
     public set mode(val: FileAccessMode) {
@@ -281,7 +280,7 @@ export abstract class File {
      * Gets an abstract representaion of all tags stored in the current instance.
      * @description This property provides generic and general access to the most common tagging
      *     features of a file. To access or add a specific type of tag in the file, use
-     *     {@see File.getTag}.
+     *     {@link File.getTag}.
      */
     public abstract get tag(): Tag;
 
@@ -300,13 +299,13 @@ export abstract class File {
     // #region Public Methods
 
     /**
-     * Registers the constructor for a subclass of {@see File} with the MimeType it is associated
+     * Registers the constructor for a subclass of {@link File} with the MimeType it is associated
      * with. Optionally, the MimeType can be forcefully overridden if it was already registered.
      * @param mimeType MimeType to register this subclass constructor to.
-     * @param constructor Constructor for a subclass of {@see File} that will be called if a file
+     * @param constructor Constructor for a subclass of {@link File} that will be called if a file
      *     with a MimeType of {@param mimeType} is created.
-     * @param override If `true` and a subclass of {@see File} was already registered to
-     *     {@param mimeType}, it will be forcefully overridden. If `false`, an {@see Error} will be
+     * @param override If `true` and a subclass of {@link File} was already registered to
+     *     {@param mimeType}, it will be forcefully overridden. If `false`, an {@link Error} will be
      *     thrown if a subclass already registered to the MimeType.}
      */
     public static addFileType(mimeType: string, constructor: FileTypeConstructor, override: boolean = false): void {
@@ -319,9 +318,9 @@ export abstract class File {
     }
 
     /**
-     * Registers a {@see FileTypeResolver} to the front of the list of file type resolvers.
-     * @param resolver Function to handle resolving a subclass of {@see File} from an
-     *     {@see IFileAbstraction}
+     * Registers a {@link FileTypeResolver} to the front of the list of file type resolvers.
+     * @param resolver Function to handle resolving a subclass of {@link File} from an
+     *     {@link IFileAbstraction}
      */
     public static addFileTypeResolver(resolver: FileTypeResolver): void {
         Guards.truthy(resolver, "resolver");
@@ -509,7 +508,7 @@ export abstract class File {
     /**
      * Reads a specified number of bytes at the current seek position from the current position.
      * This method reads the block of data at the current seek position. To change the seek
-     * position, use {@see File.seek}.
+     * position, use {@link File.seek}.
      * @param length Number of bytes to read.
      * @returns ByteVector Object containing the data read from the current instance.
      * @throws Error Thrown when {@param length} is not a positive, safe integer.
@@ -571,8 +570,8 @@ export abstract class File {
 
     /**
      * Removes a set of tag types from the current instance. In order to remove all tags from a
-     * file, pass {@see TagTypes.AllTags} as {@param types}
-     * @param types Bitwise combined {@see TagTypes} value containing the tag types to be removed
+     * file, pass {@link TagTypes.AllTags} as {@param types}
+     * @param types Bitwise combined {@link TagTypes} value containing the tag types to be removed
      *     from the file
      */
     public abstract removeTags(types: TagTypes): void;
@@ -580,7 +579,7 @@ export abstract class File {
     /**
      * Searched backwards through a file for a specified patterh, starting at a specified offset.
      * @param pattern Pattern to search for in the current instance. Must be shorter than the
-     *     {@see bufferSize}
+     *     {@link bufferSize}
      * @param startPosition Seek position from which to start searching.
      * @param after Pattern that the searched for pattern must appear after. If this pattern is
      *     found first, `-1` is returned.

@@ -31,13 +31,14 @@ export default class AttachmentFrame extends Frame implements IPicture {
 
     /**
      * Constructs and initializes a new attachment frame by populating it with the contents of a
-     * section of a file. This constructor is only meant to be used by the {@see FrameFactory}
-     * class. All loading is done lazily.
+     * section of a file. This constructor is only meant to be used internally. All loading is done
+     * lazily.
      * @param file File to load frame data from
      * @param header ID3v2 frame header that defines the frame
      * @param frameStart Index into the file where the frame starts
      * @param size Length of the frame data
      * @param version ID3v2 version the frame was originally encoded with
+     * @internal
      */
     // @TODO: Make lazy loading optional
     public static fromFile(
@@ -84,11 +85,11 @@ export default class AttachmentFrame extends Frame implements IPicture {
 
     /**
      * Constructs and initializes a new attachment frame by populating it with the contents of
-     * another {@see IPicture} object.
+     * another {@link IPicture} object.
      * @param picture Value to use in the new instance.
      * @description When a frame is created, it is not automatically added to the tag. Consider
-     *     using {@see get} for more integrated frame creation.
-     *     Additionally, see {@see Tag.pictures} provides a generic way of getting and setting
+     *     using {@link get} for more integrated frame creation.
+     *     Additionally, see {@link Tag.pictures} provides a generic way of getting and setting
      *     attachments which is preferable to format specific code.
      */
     public static fromPicture(picture: IPicture): AttachmentFrame {
@@ -198,7 +199,7 @@ export default class AttachmentFrame extends Frame implements IPicture {
      * Sets the text encoding to use when storing the current instance.
      * @param value Text encoding to use when storing the current instance.
      *     This encoding is overridden when rendering if
-     *     {@see Id3v2Settings.forceDefaultEncoding} is `true` or the render version does not
+     *     {@link Id3v2Settings.forceDefaultEncoding} is `true` or the render version does not
      *     support it.
      */
     public set textEncoding(value: StringType) {
@@ -215,7 +216,7 @@ export default class AttachmentFrame extends Frame implements IPicture {
     }
     /**
      * Sets the object type stored in the current instance.
-     * For General Object Frame, use {@see PictureType.NotAPicture}. Other types will make it a
+     * For General Object Frame, use {@link PictureType.NotAPicture}. Other types will make it a
      * Picture Frame.
      */
     public set type(value: PictureType) {

@@ -217,8 +217,8 @@ export default {
 
     /**
      * Gets the audio genre name for a specified index.
-     * @param index Index of the genre in the audio genre array. Can be a {@see Number},
-     *     {@see string} or {@see string} wrapped in `( )`, if {@paramref allowParenthesis} is set
+     * @param index Index of the genre in the audio genre array. Can be a {@link Number},
+     *     {@link string} or {@link string} wrapped in `( )`, if {@paramref allowParenthesis} is set
      *     to `true`
      * @param allowParenthesis Whether or not a number wrapped in parenthesis is allowed
      * @returns string Genre name if found, or `undefined` if {@paramref index} is outside the
@@ -235,8 +235,8 @@ export default {
 
     /**
      * Gets the video genre name for a specified index.
-     * @param index Index of the genre in the video genre array. Can be a {@see Number},
-     *     {@see string} or {@see string} wrapped in `( )` if {@paramref allowParenthesis} is set
+     * @param index Index of the genre in the video genre array. Can be a {@link Number},
+     *     {@link string} or {@link string} wrapped in `( )` if {@paramref allowParenthesis} is set
      *     to `true`
      * @param allowParenthesis Whether or not a number wrapped in parenthesis is allowed
      * @returns string Genre name if found, or `undefined` if {@paramref index} is outside the

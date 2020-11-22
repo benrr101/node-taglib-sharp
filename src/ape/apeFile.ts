@@ -9,8 +9,8 @@ import {Tag, TagTypes} from "../tag";
 
 /**
  * Provides tagging and properties support for Monkey's Audio APE files.
- * Note, a {@see ApeTag} will be added automatically to any file that doesn't contain one. This
- * change does not affect the physical file until {@see File.save} is called and can be reversed
+ * Note, a {@link ApeTag} will be added automatically to any file that doesn't contain one. This
+ * change does not affect the physical file until {@link File.save} is called and can be reversed
  * using the following method: `file.removeTags(file.tagTypes & ~file.tagTypesOnDisk);`
  */
 export default class ApeFile extends NonContainerFile {
@@ -23,8 +23,8 @@ export default class ApeFile extends NonContainerFile {
 
     /**
      * Gets a tag of a specified type from the current instance, optionally creating a new tag if
-     * possible. If an {@see Id3v2Tag} is added to the current instance, it will be placed at the
-     * start of the file. On the other hand, {@see Id3v1Tag} and {@see ApeTag} will be added to the
+     * possible. If an {@link Id3v2Tag} is added to the current instance, it will be placed at the
+     * start of the file. On the other hand, {@link Id3v1Tag} and {@link ApeTag} will be added to the
      * end of the file. All other tag types will be ignored.
      * @param type Type of tag to create
      * @param create Whether or not to create a tag if one is not found

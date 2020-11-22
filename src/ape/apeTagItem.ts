@@ -3,7 +3,7 @@ import {CorruptFileError} from "../errors";
 import {Guards} from "../utils";
 
 /**
- * Indicates the type of data stored in a {@see ApeTagItem} object.
+ * Indicates the type of data stored in a {@link ApeTagItem} object.
  */
 export enum ApeTagItemType {
     /**
@@ -35,7 +35,7 @@ export class ApeTagItem {
     private constructor() {}
 
     /**
-     * Constructs and initializes a new instance of {@see Item} with a specified key and binary
+     * Constructs and initializes a new instance of {@link ApeTagItem} with a specified key and binary
      * data to use as the value.
      * @param key Key to use for the item
      * @param value Binary data to store as the value
@@ -53,8 +53,8 @@ export class ApeTagItem {
     }
 
     /**
-     * Constructs a new instance of {@see Item} by reading in a raw APEv2 item.
-     * @param data {@see ByteVector} containing the item to read
+     * Constructs a new instance of {@link ApeTagItem} by reading in a raw APEv2 item.
+     * @param data {@link ByteVector} containing the item to read
      * @param offset Index into {@paramref data} at which to begin reading the item data. Must be
      *     a positive 32-bit integer.
      */
@@ -97,7 +97,7 @@ export class ApeTagItem {
     }
 
     /**
-     * Constructs and initializes a new instance of {@see Item} with a specified key and collection
+     * Constructs and initializes a new instance of {@link ApeTagItem} with a specified key and collection
      * of text values.
      * @param key Key to use for the item
      * @param values Values to store in the item

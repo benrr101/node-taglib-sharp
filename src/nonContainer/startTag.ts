@@ -13,7 +13,7 @@ import {Guards} from "../utils";
 /**
  * Provides support for accessing and modifying a collection of tags appearing at the start of a
  * file.
- * This class is used by {@see NonContainerFile} to read all the tags appearing at the start of the
+ * This class is used by {@link NonContainerFile} to read all the tags appearing at the start of the
  * file but could be used by other classes. It currently supports ID3v2 and APE tags.
  */
 export default class StartTag extends CombinedTag {
@@ -53,8 +53,8 @@ export default class StartTag extends CombinedTag {
      * Adds a tag of a specified type to the current instance, optionally copying values from an
      * existing type.
      * @param type Type of the tag to add to the current instance. At the time of this writing,
-     *     this is limited to {@see TagTypes.Ape}, {@see TagTypes.Id3v1}, and {@see TagTypes.Id3v2}
-     * @param copy Tag to copy values from using {@see Tag.copyTo}, or `undefined` if no tag is to
+     *     this is limited to {@link TagTypes.Ape}, {@link TagTypes.Id3v1}, and {@link TagTypes.Id3v2}
+     * @param copy Tag to copy values from using {@link Tag.copyTo}, or `undefined` if no tag is to
      *     be copied.
      * @returns Tag Tag added to the current instance. `undefined` if a tag could not be created.
      */
@@ -105,7 +105,7 @@ export default class StartTag extends CombinedTag {
     /**
      * Removes a set of tag types from the current instance.
      * @param types Tag types to be removed from the file. To remove all tags, use
-     *     {@see TagTypes.AllTags}
+     *     {@link TagTypes.AllTags}
      */
     public removeTags(types: TagTypes): void {
         for (let i = this.tags.length - 1; i >= 0; i--) {

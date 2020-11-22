@@ -54,7 +54,7 @@ export default class ApeTag extends Tag {
 
     /**
      * Constructs and initializes a new instance by reading the contents of a raw tag in a
-     * specified {@see ByteVector} object.
+     * specified {@link ByteVector} object.
      * @param data Object containing the raw tag
      */
     public static fromData(data: ByteVector): ApeTag {
@@ -602,7 +602,7 @@ export default class ApeTag extends Tag {
     }
 
     /**
-     * Removes all items from the current instance with the specified {@see key}.
+     * Removes all items from the current instance with the specified {@paramref key}.
      * @param key Identifier of the items to remove.
      */
     public removeItem(key: string): void {
@@ -680,7 +680,7 @@ export default class ApeTag extends Tag {
 
     /**
      * Stores a string in the item specified by {@paramref key}. This will replace the contents of
-     * the specified item. If {@see value} is falsy, the item will be removed.
+     * the specified item. If {@paramref value} is falsy, the item will be removed.
      * @param key Item to set the value of
      * @param value String to store in the item. If falsy, the specified item will be removed
      */
@@ -696,7 +696,7 @@ export default class ApeTag extends Tag {
 
     /**
      * Stores a list of strings in the item specified by {@paramref key}. This will replace the
-     * contents of the specified item. If {@see value} is falsy or empty, the item will be removed
+     * contents of the specified item. If {@paramref value} is falsy or empty, the item will be removed
      * @param key Item to set the value of
      * @param values String to store in the item. If falsy or empty, the specified item will be
      *     removed

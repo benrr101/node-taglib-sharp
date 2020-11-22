@@ -9,18 +9,18 @@ import {TagTypes} from "../tag";
 /**
  * Abstract class that provides tagging and properties for files that contain an indeterminate
  * number of tags at their beginning or end.
- * When extending this class, {@see NonContainerFile.readStart},
+ * When extending this class, {@link NonContainerFile.readStart},
  *
- * {@see NonContainerFile.readEnd}, and {@see NonContainerFile.readProperties} should be overridden
+ * {@link NonContainerFile.readEnd}, and {@link NonContainerFile.readProperties} should be overridden
  * and read the format specific information from the file.
  * The file is read upon construction in the following manner:
  * 1. The file is opened for reading
  * 2. The tags at the start of the file are read
- * 3. {@see NonContainerFile.readStart} is called
+ * 3. {@link NonContainerFile.readStart} is called
  * 4. The tags at the end of the file are read
- * 5. {@see NonContainerFile.readEnd} is called
- * 6. If reading with a style other than {@see ReadStyle.None},
- *    {@see NonContainerFile.readProperties} is called
+ * 5. {@link NonContainerFile.readEnd} is called
+ * 6. If reading with a style other than {@link ReadStyle.None},
+ *    {@link NonContainerFile.readProperties} is called
  * 7. The file is closed
  */
 export default abstract class NonContainerFile extends BaseFile {
@@ -91,7 +91,7 @@ export default abstract class NonContainerFile extends BaseFile {
      * the file.
      * @param end Seek position at which the media data ends and the tags begin
      * @param propertiesStyle Level of accuracy to read the media properties or
-     *     {@see ReadStyle.None} to ignore the properties
+     *     {@link ReadStyle.None} to ignore the properties
      */
     protected readEnd(end: number, propertiesStyle: ReadStyle): void {
         /* No-op in base implementation */
@@ -100,13 +100,13 @@ export default abstract class NonContainerFile extends BaseFile {
     /**
      * Reads the audio properties from the file represented by the current instance.
      * This method is called ONLY IF the file is constructed with a read style other than
-     * {@see ReadStyle.None}, and as such MUST NOT return `undefined`/`null`. It is guaranteed that
-     * {@see readStart} and {@see readEnd} will have been called first and this method should be
+     * {@link ReadStyle.None}, and as such MUST NOT return `undefined`/`null`. It is guaranteed that
+     * {@link readStart} and {@link readEnd} will have been called first and this method should be
      * strictly used to perform final processing on already read data.
      * @param start Seek position at which the tags end and the media data begins
      * @param end Seek position at which the media data ends and the tags begin
      * @param propertiesStyle Level of accuracy to read the media properties or
-     *     {@see ReadStyle.None} to ignore the properties
+     *     {@link ReadStyle.None} to ignore the properties
      * @returns Properties Media properties of the file represented by the current instance
      */
     protected abstract readProperties(start: number, end: number, propertiesStyle: ReadStyle): Properties;
@@ -119,7 +119,7 @@ export default abstract class NonContainerFile extends BaseFile {
      * the file.
      * @param start Seek position at which the tags end and the media data begins
      * @param propertiesStyle Level of accuracy to read the media properties or
-     *     {@see ReadStyle.None} to ignore the properties
+     *     {@link ReadStyle.None} to ignore the properties
      */
     protected readStart(start: number, propertiesStyle: ReadStyle): void {
         /* No-op in base implementation */

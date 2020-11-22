@@ -6,7 +6,7 @@ export default class Properties implements ILosslessAudioCodec, IVideoCodec, IPh
     private readonly _duration: number;
 
     /**
-     * Constructs and initializes a new instance of {@see Properties} with the specified codecs and
+     * Constructs and initializes a new instance of {@link Properties} with the specified codecs and
      * duration.
      * @param durationMilli Duration of the media in milliseconds or 0 if the duration is to be
      *        read from the codecs.

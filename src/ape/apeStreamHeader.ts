@@ -108,9 +108,9 @@ export class ApeStreamHeader implements IAudioCodec, ILosslessAudioCodec {
     // #endregion
 
     /**
-     * Constructs and initializes a new {@see ApeStreamHeader} from a raw header block and stream
+     * Constructs and initializes a new {@link ApeStreamHeader} from a raw header block and stream
      * length.
-     * @param data Raw stream header data beginning with {@see ApeStreamHeader.fileIdentifier}
+     * @param data Raw stream header data beginning with {@link ApeStreamHeader.fileIdentifier}
      * @param streamLength Length of the stream in bytes
      */
     public constructor(data: ByteVector, streamLength: number) {

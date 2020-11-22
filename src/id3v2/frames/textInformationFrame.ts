@@ -162,7 +162,7 @@ export class TextInformationFrame extends Frame {
      * Constructs and initializes a new instance with a specified identifier
      * @param identifier Byte vector containing the identifier for the frame
      * @param encoding Optionally, the encoding to use for the new instance. If omitted, defaults
-     *     to {@see Id3v2Tag.defaultEncoding}
+     *     to {@link Id3v2Settings.defaultEncoding}
      */
     public static fromIdentifier(
         identifier: FrameIdentifier,
@@ -245,7 +245,7 @@ export class TextInformationFrame extends Frame {
     }
     /**
      * Sets the text encoding to use when rendering the current instance.
-     * This value will be overridden if {@see Id3v2Tag.forceDefaultEncoding} is `true`.
+     * This value will be overridden if {@link Id3v2Settings.forceDefaultEncoding} is `true`.
      */
     public set textEncoding(value: StringType) {
         this.parseRawData();
@@ -257,7 +257,7 @@ export class TextInformationFrame extends Frame {
     // #region Public Methods
 
     /**
-     * Gets a {@see TextInformationFrame} object of a specified type from a specified type from a
+     * Gets a {@link TextInformationFrame} object of a specified type from a specified type from a
      * list of text information frames.
      * @param frames List of frames to search
      * @param ident Frame identifier to search for
@@ -343,7 +343,7 @@ export class TextInformationFrame extends Frame {
 
     /**
      * Performs the actual parsing of the raw data.
-     * Because of the high parsing cost and relatively low usage of the class {@see parseFields}
+     * Because of the high parsing cost and relatively low usage of the class {@link parseFields}
      * only stores the field data so it can be parsed on demand. Whenever a property or method is
      * called which requires the data, this method is called, and only on the first call does it
      * actually parse the data.

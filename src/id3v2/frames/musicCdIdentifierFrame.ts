@@ -5,7 +5,7 @@ import {FrameIdentifiers} from "../frameIdentifiers";
 import {Guards} from "../../utils";
 
 /**
- * Class extends {@see Frame}, implementing support for ID3v2 Music CD Identifier (MCDI) frames.
+ * Class extends {@link Frame}, implementing support for ID3v2 Music CD Identifier (MCDI) frames.
  * Music CD identifer frames should contain the table of contents data as stored on the physical
  * CD. It is primarily used for track information lookup through web sources like CDDB.
  */

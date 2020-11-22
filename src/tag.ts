@@ -114,10 +114,10 @@ export enum TagTypes {
  */
 export abstract class Tag {
     /**
-     * Gets the tag types contained in the current instance. A bit wise combined {@see TagTypes}
+     * Gets the tag types contained in the current instance. A bit wise combined {@link TagTypes}
      * containing the tag types contained in the current instance.
      * @desc For a standard tag, the value should be intuitive. For example, Id3v2Tag objects have
-     *     a value of {@see TagTypes.Id3v2}. However, for CombinedTag type objects, they may
+     *     a value of {@link TagTypes.Id3v2}. However, for CombinedTag type objects, they may
      *     contain multiple or no types.
      */
     public abstract tagTypes: TagTypes;
@@ -250,11 +250,11 @@ export abstract class Tag {
 
     /**
      * Gets the characters portrayed by an actor for a video or instruments played by a musician
-     * for music. This must match the {@see performers} array (for each person, correspond one/more
+     * for music. This must match the {@link performers} array (for each person, correspond one/more
      * role). Several roles for the same artist/actor can be separated with semicolons. For
      * example: "Bass; Backing Vocals; Vibraphone".
      * @desc It is highly important to match each role to the performers. This means that an entry
-     *     in the {@see performersRole} array is `undefined` to maintain the relationship between
+     *     in the {@link performersRole} array is `undefined` to maintain the relationship between
      *     `performers[i]` and `performersRole[i]`.
      * @returns Array containing the roles played by the performers in the media described by the
      *     current instance, or an empty array if no value is present.
@@ -262,11 +262,11 @@ export abstract class Tag {
     public get performersRole(): string[] { return[]; }
     /**
      * Sets the characters portrayed by an actor for a video or instruments played by a musician
-     * for music. This must match the {@see performers} array (for each person, correspond one/more
+     * for music. This must match the {@link performers} array (for each person, correspond one/more
      * role). Several roles for the same artist/actor can be separated with semicolons. For
      * example: "Bass; Backing Vocals; Vibraphone".
      * @desc It is highly important to match each role to the performers. This means that an entry
-     *     in the {@see performersRole} array is `undefined` to maintain the relationship between
+     *     in the {@link performersRole} array is `undefined` to maintain the relationship between
      *     `performers[i]` and `performersRole[i]`.
      * @param value Array containing the roles played by the performers in the media described by
      *     the current instance, or an empty array if no value is present.
@@ -281,7 +281,7 @@ export abstract class Tag {
      *     will split up albums by the same artist. Having a single album artist for an entire
      *     album solves this problem.
      *     As this value is to be used as a sorting key, it should be used with less variation
-     *     than {@see performers}. Where performers can be broken into multiple artists, it is
+     *     than {@link performers}. Where performers can be broken into multiple artists, it is
      *     best to stick to a single name. Eg, "Super8 & Tab"
      * @returns Band or artist credited with the creation of the entire album or collection
      *     containing the media described by the current instance or an empty array if no value is
@@ -296,7 +296,7 @@ export abstract class Tag {
      *     will split up albums by the same artist. Having a single album artist for an entire
      *     album solves this problem.
      *     As this value is to be used as a sorting key, it should be used with less variation
-     *     than {@see performers}. Where performers can be broken into multiple artists, it is
+     *     than {@link performers}. Where performers can be broken into multiple artists, it is
      *     best to stick to a single name. Eg, "Super8 & Tab"
      * @param value Band or artist credited with the creation of the entire album or collection
      *     containing the media described by the current instance or an empty array if no value is
@@ -312,7 +312,7 @@ export abstract class Tag {
      *     skip articles or sort by last by last name. For example "Ben Folds" might be sorted as
      *     "Folds, Ben".
      *     As this value is to be used as a sorting key, it should be used with less variation than
-     *     {@see performers}. Where {@see performers} can be broken into multiple performers, it is
+     *     {@link performers}. Where {@link performers} can be broken into multiple performers, it is
      *     best to stick to a single album artist. Eg, "Van Buuren, Armin"
      * @returns Sortable names for the bands/artists are credited with the creation of the entire
      *     album or collection containing the media described by the current instance, or an empty
@@ -327,7 +327,7 @@ export abstract class Tag {
      *     skip articles or sort by last by last name. For example "Ben Folds" might be sorted as
      *     "Folds, Ben".
      *     As this value is to be used as a sorting key, it should be used with less variation than
-     *     {@see performers}. Where {@see performers} can be broken into multiple performers, it is
+     *     {@link performers}. Where {@link performers} can be broken into multiple performers, it is
      *     best to stick to a single album artist. Eg, "Van Buuren, Armin"
      * @param value Sortable names for the bands/artists are credited with the creation of the
      *     entire album or collection containing the media described by the current instance, or an
@@ -444,8 +444,8 @@ export abstract class Tag {
      * Gets the genres of the media represented by the current instance.
      * @desc This field represents genres that apply to the song, album, or video. This is often
      *     used for filtering media.
-     *     A list of common audio genres as popularized by ID3v1 is stored in {@see audioGenres}.
-     *     Additionally, {@see videoGenres} contains video genres as used by DivX.
+     *     A list of common audio genres as popularized by ID3v1 is stored in {@link audioGenres}.
+     *     Additionally, {@link videoGenres} contains video genres as used by DivX.
      * @returns Genres of the media represented by the current instance or an empty array if no
      *     value is present.
      */
@@ -454,8 +454,8 @@ export abstract class Tag {
      * Sets the genres of the media represented by the current instance.
      * @desc This field represents genres that apply to the song, album, or video. This is often
      *     used for filtering media.
-     *     A list of common audio genres as popularized by ID3v1 is stored in {@see audioGenres}.
-     *     Additionally, {@see videoGenres} contains video genres as used by DivX.
+     *     A list of common audio genres as popularized by ID3v1 is stored in {@link audioGenres}.
+     *     Additionally, {@link videoGenres} contains video genres as used by DivX.
      * @param value Genres of the media represented by the current instance or an empty array if no
      *     value is present.
      */
@@ -486,7 +486,7 @@ export abstract class Tag {
      * Gets the position of the media represented by the current instance in its containing album
      * or season (for a series).
      * @desc This value should be the same as is listed on the album cover and no more than
-     *     {@see trackCount}, if {@see trackCount} is non-zero.
+     *     {@link trackCount}, if {@link trackCount} is non-zero.
      *     Most tagging formats store this as a string. To help sorting, a two-digit zero-padded
      *     value is used in the resulting tag.
      *     For a series, this property represents the episodes in a season of the series.
@@ -498,7 +498,7 @@ export abstract class Tag {
      * Sets the position of the media represented by the current instance in its containing album
      * or season (for a series).
      * @desc This value should be the same as is listed on the album cover and no more than
-     *     {@see trackCount}, if {@see trackCount} is non-zero.
+     *     {@link trackCount}, if {@link trackCount} is non-zero.
      *     Most tagging formats store this as a string. To help sorting, a two-digit zero-padded
      *     value is used in the resulting tag.
      *     For a series, this property represents the episodes in a season of the series.
@@ -510,8 +510,8 @@ export abstract class Tag {
     /**
      * Gets the number of tracks in the album or the number of episodes in a series of the media
      * represented by the current instance.
-     * @desc If non-zero, this value should be equal to or greater than {@see track}. If
-     *     {@see track} is `0`, this value should also be `0`.
+     * @desc If non-zero, this value should be equal to or greater than {@link track}. If
+     *     {@link track} is `0`, this value should also be `0`.
      * @returns Number of tracks in the album or number of episodes in a series of the media
      *     represented by the current instance or `0` if not specified.
      */
@@ -519,8 +519,8 @@ export abstract class Tag {
     /**
      * Sets the number of tracks in the album or the number of episodes in a series of the media
      * represented by the current instance.
-     * @desc If non-zero, this value should be equal to or greater than {@see track}. If
-     *     {@see track} is `0`, this value should also be `0`.
+     * @desc If non-zero, this value should be equal to or greater than {@link track}. If
+     *     {@link track} is `0`, this value should also be `0`.
      * @param value Number of tracks in the album or number of episodes in a series of the media
      *     represented by the current instance or `0` if not specified.
      */
@@ -531,7 +531,7 @@ export abstract class Tag {
      * boxed set. For a series, this represents the season number.
      * @desc This value should be the same as the number that appears on the disc. For example, if
      *     the disc is the first of three, the value should be `1`. It should be no more than
-     *     {@see discCount} if {@see discCount} is non-zero.
+     *     {@link discCount} if {@link discCount} is non-zero.
      * @returns Number of the disc or season of the media represented by the current instance in a
      *     boxed set.
      */
@@ -541,7 +541,7 @@ export abstract class Tag {
      * boxed set. For a series, this represents the season number.
      * @desc This value should be the same as the number that appears on the disc. For example, if
      *     the disc is the first of three, the value should be `1`. It should be no more than
-     *     {@see discCount} if {@see discCount} is non-zero.
+     *     {@link discCount} if {@link discCount} is non-zero.
      * @param value Number of the disc or season of the media represented by the current instance
      *     in a boxed set.
      */
@@ -550,7 +550,7 @@ export abstract class Tag {
     /**
      * Gets the number of discs or seasons in the boxed set containing the media represented by the
      * current instance.
-     * @desc If non-zero, this should be at least equal to {@see disc}. If {@see disc} is zero,
+     * @desc If non-zero, this should be at least equal to {@link disc}. If {@link disc} is zero,
      *     this value should also be zero.
      * @returns Number of discs or seasons in the boxed set containing the media represented by the
      *     current instance or `0` if not specified.
@@ -559,7 +559,7 @@ export abstract class Tag {
     /**
      * Sets the number of discs or seasons in the boxed set containing the media represented by the
      * current instance.
-     * @desc If non-zero, this should be at least equal to {@see disc}. If {@see disc} is zero,
+     * @desc If non-zero, this should be at least equal to {@link disc}. If {@link disc} is zero,
      *     this value should also be zero.
      * @param value Number of discs or seasons in the boxed set containing the media represented by
      *     the current instance or `0` if not specified.
@@ -981,68 +981,68 @@ export abstract class Tag {
     public set pictures(value: IPicture[]) { /* no-op in abstract case */ }
 
     /**
-     * Gets the the first value contained in {@see albumArtists}.
+     * Gets the the first value contained in {@link albumArtists}.
      */
     public get firstAlbumArtist(): string { return Tag.firstInGroup(this.albumArtists); }
 
     /**
-     * Gets the first value contained in {@see albumArtistsSort}
+     * Gets the first value contained in {@link albumArtistsSort}
      */
     public get firstAlbumArtistSort(): string { return Tag.firstInGroup(this.albumArtists); }
 
     /**
-     * Gets the first value contained in {@see performers}
+     * Gets the first value contained in {@link performers}
      */
     public get firstPerformer(): string { return Tag.firstInGroup(this.performers); }
 
     /**
-     * Gets the first value contained in {@see performersSort}
+     * Gets the first value contained in {@link performersSort}
      */
     public get firstPerformerSort(): string { return Tag.firstInGroup(this.performersSort); }
 
     /**
-     * Gets the first value contained in {@see composers}
+     * Gets the first value contained in {@link composers}
      */
     public get firstComposer(): string { return Tag.firstInGroup(this.composers); }
 
     /**
-     * Gets the first value contained in {@see composersSort}
+     * Gets the first value contained in {@link composersSort}
      */
     public get firstComposerSort(): string { return Tag.firstInGroup(this.composersSort); }
 
     /**
-     * Gets the first value contained in {@see genres}
+     * Gets the first value contained in {@link genres}
      */
     public get firstGenre(): string { return Tag.firstInGroup(this.genres); }
 
     /**
-     * Gets a semicolon and space separated string containing the values in {@see albumArtists}
+     * Gets a semicolon and space separated string containing the values in {@link albumArtists}
      */
     public get joinedAlbumArtists(): string { return Tag.joinGroup(this.albumArtists); }
 
     /**
-     * Gets a semicolon and space separated string containing the values in {@see performers}
+     * Gets a semicolon and space separated string containing the values in {@link performers}
      */
     public get joinedPerformers(): string { return Tag.joinGroup(this.performers); }
 
     /**
-     * Gets a semicolon and space separated string containing the values in {@see performersSort}
+     * Gets a semicolon and space separated string containing the values in {@link performersSort}
      */
     public get joinedPerformersSort(): string { return Tag.joinGroup(this.performersSort); }
 
     /**
-     * Gets a semicolon and space separated string containing the values in {@see composers}
+     * Gets a semicolon and space separated string containing the values in {@link composers}
      */
     public get joinedComposers(): string { return Tag.joinGroup(this.composers); }
 
     /**
-     * Gets a semicolon and space separated string containing the values in {@see genres}
+     * Gets a semicolon and space separated string containing the values in {@link genres}
      */
     public get joinedGenres(): string { return Tag.joinGroup(this.genres); }
 
     /**
      * Gets whether or not the current instance is empty.
-     * @desc In the default implementation, this checks the values supported by {@see Tag}, but it
+     * @desc In the default implementation, this checks the values supported by {@link Tag}, but it
      *     may be extended by child classes to support other values.
      * @returns `true` if the current instance does not contain any values. `false` otherwise
      */
@@ -1106,12 +1106,12 @@ export abstract class Tag {
     }
 
     /**
-     * Copies the values from the current instance to another {@see Tag}, optionally overwriting
+     * Copies the values from the current instance to another {@link Tag}, optionally overwriting
      *     existing values.
      * @desc This method only copies the mist basic values when copying between different tag
      *     formats. However, if {@paramref target} is of the same type as the current instance,
      *     more advanced copying may be done. For example if both `this` and {@paramref target} are
-     *     {@see Id3v2Tag}, all frames will be copied to the target.
+     *     {@link Id3v2Tag}, all frames will be copied to the target.
      * @param target Target tag to copy values to
      * @param overwrite Whether or not to copy values over existing ones
      */

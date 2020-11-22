@@ -6,7 +6,7 @@ import {FrameIdentifiers} from "../frameIdentifiers";
 import {Guards} from "../../utils";
 
 /**
- * Type of channel data to get from or set to a {@see RelativeVolumeFrame} object
+ * Type of channel data to get from or set to a {@link RelativeVolumeFrame} object
  */
 export enum ChannelType {
     /**
@@ -107,14 +107,14 @@ export class ChannelData {
     /**
      * Value of the peak sample in the file. It's unclear exactly how this works, but the ID3v2.4
      * documentation explains this value as betweenInclusive 0 and 255 - but can be expressed using any
-     * number of bits ({@see peakBits}).
+     * number of bits ({@link peakBits}).
      */
     public get peakVolume(): BigInt.BigInteger { return this._peakVolume; }
     /**
      * Value of the peak sample in the file. It's unclear exactly how this works, but the ID3v2.4
      * documentation explains this value as betweenInclusive 0 and 255 - but can be expressed using any
-     * number of bits ({@see peakBits}).
-     * @param value Peak volume value. Must fit in the number of bits set in {@see peakBits}
+     * number of bits ({@link peakBits}).
+     * @param value Peak volume value. Must fit in the number of bits set in {@link peakBits}
      */
     public set peakVolume(value: BigInt.BigInteger) {
         if (!this.peakBits) {

@@ -17,8 +17,8 @@ export default class AudioFile extends NonContainerFile {
     /**
      * Gets a tag of a specified type from the current instance, optionally creating a new tag if
      * possible.
-     * If an {@see Id3v2Tag} is added to the current instance, it will be placed at the start of
-     * the file. On the other hand, {@see Id3v1Tag} and {@see ApeTag} will be added to the end of
+     * If an {@link Id3v2Tag} is added to the current instance, it will be placed at the start of
+     * the file. On the other hand, {@link Id3v1Tag} and {@link ApeTag} will be added to the end of
      * the file. All other tag types will be ignored.
      * @param type Type of tag to create
      * @param create Whether or not to try and create the tag if one is not found

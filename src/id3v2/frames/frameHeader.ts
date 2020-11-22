@@ -60,7 +60,7 @@ export class Id3v2FrameHeader {
      * Constructs and initializes a new instance by prociding the data for the frame header.
      * @param id Identifier of the frame
      * @param flags Flags to assign to the frame (if omitted, defaults to
-     *     {@see Id3v2FrameFlags.None})
+     *     {@link Id3v2FrameFlags.None})
      * @param frameSize Size of the frame in bytes, excluding the size of the header (if omitted,
      *     defaults to 0)
      */
@@ -74,12 +74,12 @@ export class Id3v2FrameHeader {
     }
 
     /**
-     * Constructs and initializes a new instance of {@see FrameHeader} by reading it from raw
+     * Constructs and initializes a new instance of {@link Id3v2FrameHeader} by reading it from raw
      * header data of a specified version.
      * @param data Raw data to build the new instance from.
      *     If the data size is smaller than the size of a full header, the data is just treated as
      *     a frame identifer and the remaining values are zeroed.
-     * @param version ID3v2 version with which the data in {@see data} was encoded.
+     * @param version ID3v2 version with which the data in {@paramref data} was encoded.
      */
     public static fromData(data: ByteVector, version: number): Id3v2FrameHeader {
         Guards.truthy(data, "data");

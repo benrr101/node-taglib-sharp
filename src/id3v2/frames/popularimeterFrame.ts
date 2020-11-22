@@ -7,7 +7,7 @@ import {FrameIdentifiers} from "../frameIdentifiers";
 import {Guards} from "../../utils";
 
 /**
- * This class extends {@see Frame} implementing support for ID3v2 popularimeter (POPM) frames.
+ * This class extends {@link Frame} implementing support for ID3v2 popularimeter (POPM) frames.
  */
 export default class PopularimeterFrame extends Frame {
     private _playCount: BigInt.BigInteger;

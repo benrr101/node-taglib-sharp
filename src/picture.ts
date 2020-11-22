@@ -16,7 +16,7 @@ export enum PictureType {
     FileIcon = 0x01,
 
     /**
-     * @summary The picture is of an icon different from {@see FileIcon}
+     * @summary The picture is of an icon different from {@link FileIcon}
      */
     OtherFileIcon = 0x02,
 
@@ -301,7 +301,7 @@ export class Picture implements IPicture {
 
     /**
      * Retrieve a mimetype from raw file data by reading the first few bytes of the file. Less
-     * accurate than {@see getExtensionFromMimeType} since this is limited to image file types.
+     * accurate than {@link getExtensionFromMimeType} since this is limited to image file types.
      * @param data Bytes of the file to read to identify the extension
      * @returns string Extension of the file with dot at the beginning based on the first few bytes
      *     of the data. If the extension cannot be determined, `undefined` is returned

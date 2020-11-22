@@ -6,7 +6,7 @@ import {FrameIdentifiers} from "../frameIdentifiers";
 import {Guards} from "../../utils";
 
 /**
- * This class extends {@see frame} implementing support for ID3v2 private (PRIV) frames.
+ * This class extends {@link Frame} implementing support for ID3v2 private (PRIV) frames.
  * A PrivateFrame should be used for storing values specific to the application that cannot or
  * should not be stored in another frame type.
  */

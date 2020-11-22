@@ -78,8 +78,8 @@ export abstract class Frame {
     public get flags(): Id3v2FrameFlags { return this._header.flags; }
     /**
      * Sets the frame flags applied to the current instance.
-     * If the value includes either {@see Id3v2FrameFlags.Encryption} or
-     * {@see Id3v2FrameFlags.Compression}, {@see render} will throw.
+     * If the value includes either {@link Id3v2FrameFlags.Encryption} or
+     * {@link Id3v2FrameFlags.Compression}, {@link render} will throw.
      */
     public set flags(value: Id3v2FrameFlags) { this._header.flags = value; }
 
@@ -128,8 +128,8 @@ export abstract class Frame {
     /**
      * Creates a deep copy of the current instance.
      * This method is implemented by rendering the current instance as an ID3v2.4 frame and using
-     * {@see FrameFactory.createFrame} to create a new frame. As such, this method should be
-     * overridden by child classes.
+     * the frame factory to create a new frame. As such, this method should be overridden by child
+     * classes.
      */
     public abstract clone(): Frame;
 
@@ -203,7 +203,7 @@ export abstract class Frame {
      * @param type Value containing the original encoding
      * @param version Value containing the ID3v2 version to be encoded.
      * @returns StringType Value containing the correct encoding to use, based on
-     *     {@see Id3v2Settings.forceDefaultEncoding} and what is supported by
+     *     {@link Id3v2Settings.forceDefaultEncoding} and what is supported by
      *     {@paramref version}
      */
     protected static correctEncoding(type: StringType, version: number): StringType {

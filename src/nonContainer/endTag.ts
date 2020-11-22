@@ -15,7 +15,7 @@ import {Guards} from "../utils";
 /**
  * Provides support for accessing and modifying a collection of tags appearing at the end of a
  * file.
- * This class is used by {@see NonContainerFile} to read all tags appearing at the end of the file
+ * This class is used by {@link NonContainerFile} to read all tags appearing at the end of the file
  * but could be used by other classes. It currently supports ID3v1, ID3v2, and APE tags.
  */
 export default class EndTag extends CombinedTag {
@@ -55,8 +55,8 @@ export default class EndTag extends CombinedTag {
      * Id3v1 tags are added at the end of the current instance, while other tags are added at the
      * beginning.
      * @param type Type of the tag to add to the current instance. At the time of this writing,
-     *     this is limited to {@see TagTypes.Ape}, {@see TagTypes.Id3v1}, and {@see TagTypes.Id3v2}
-     * @param copy Tag to copy values from using {@see Tag.copyTo}, or `undefined` if no tag is to
+     *     this is limited to {@link TagTypes.Ape}, {@link TagTypes.Id3v1}, and {@link TagTypes.Id3v2}
+     * @param copy Tag to copy values from using {@link Tag.copyTo}, or `undefined` if no tag is to
      *     be copied.
      * @returns Tag Tag added to the current instance. `undefined` if a tag could not be created.
      */
@@ -117,7 +117,7 @@ export default class EndTag extends CombinedTag {
     /**
      * Removes a set of tag types from the current instance.
      * @param types Tag types to be removed from the file. To remove all tags, use
-     *     {@see TagTypes.AllTags}
+     *     {@link TagTypes.AllTags}
      */
     public removeTags(types: TagTypes): void {
         for (let i = this.tags.length - 1; i >= 0; i--) {

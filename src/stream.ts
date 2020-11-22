@@ -47,7 +47,7 @@ export interface IStream {
      * Sets the position within the current stream to the specified value.
      * @param offset New positioon within the stream. this is relative to the {@paramref origin}
      *     paramter and can be positive or negative
-     * @param origin Seek reference point {@see SeekOrigin}
+     * @param origin Seek reference point {@link SeekOrigin}
      */
     seek(offset: number, origin: SeekOrigin): void;
 
