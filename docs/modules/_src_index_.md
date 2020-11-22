@@ -8,6 +8,7 @@
 
 ### References
 
+* [ApeFile](_src_index_.md#apefile)
 * [ApeTag](_src_index_.md#apetag)
 * [ByteVector](_src_index_.md#bytevector)
 * [CombinedTag](_src_index_.md#combinedtag)
@@ -81,9 +82,15 @@
 
 ## References
 
+### ApeFile
+
+Re-exports: [ApeFile](../classes/_src_ape_apefile_.apefile.md)
+
+___
+
 ### ApeTag
 
-Renames and re-exports: [ApeFile](../classes/_src_ape_apefile_.apefile.md)
+Re-exports: [ApeTag](../classes/_src_ape_apetag_.apetag.md)
 
 ___
 
