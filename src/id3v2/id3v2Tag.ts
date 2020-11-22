@@ -891,9 +891,9 @@ export default class Id3v2Tag extends Tag {
         // the extended header, frames and padding, but does not include the tag's header or footer
 
         const hasFooter = (this._header.flags & Id3v2TagHeaderFlags.FooterPresent) !== 0;
-        const unsyncAtFrameLevel = (this._header.flags & Id3v2TagHeaderFlags.Unsynchronication) !== 0
+        const unsyncAtFrameLevel = (this._header.flags & Id3v2TagHeaderFlags.Unsynchronization) !== 0
             && this.version >= 4;
-        const unsyncAtTagLevel = (this._header.flags & Id3v2TagHeaderFlags.Unsynchronication) !== 0
+        const unsyncAtTagLevel = (this._header.flags & Id3v2TagHeaderFlags.Unsynchronization) !== 0
             && this.version < 4;
 
         this._header.majorVersion = hasFooter ? 4 : this.version;
@@ -1054,7 +1054,7 @@ export default class Id3v2Tag extends Tag {
         // If the entire tag is marked as unsynchronized, and this tag is version ID3v2.3 or lower,
         // resynchronize it.
         const fullTagUnsync = this._header.majorVersion < 4
-            && (this._header.flags & Id3v2TagHeaderFlags.Unsynchronication) !== 0;
+            && (this._header.flags & Id3v2TagHeaderFlags.Unsynchronization) !== 0;
 
         // Avoid loading all the ID3 tag if PictureLazy is enabled and size is significant enough
         // (ID3v2.4 and later only)

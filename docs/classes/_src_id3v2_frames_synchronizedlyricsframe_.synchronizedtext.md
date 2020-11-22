@@ -1,10 +1,10 @@
-**node-taglib-sharp**
+**[node-taglib-sharp](../README.md)**
 
-> [README](../README.md) / [Globals](../globals.md) / ["src/id3v2/frames/synchronizedLyricsFrame"](../modules/_src_id3v2_frames_synchronizedlyricsframe_.md) / SynchronizedText
+> [Globals](../globals.md) / ["src/id3v2/frames/synchronizedLyricsFrame"](../modules/_src_id3v2_frames_synchronizedlyricsframe_.md) / SynchronizedText
 
 # Class: SynchronizedText
 
-This structure contains a single entry in a {@see SynchronizedLyricsFrame} object.
+This structure contains a single entry in a [SynchronizedLyricsFrame](_src_id3v2_frames_synchronizedlyricsframe_.synchronizedlyricsframe.md) object.
 
 ## Hierarchy
 
@@ -32,15 +32,13 @@ This structure contains a single entry in a {@see SynchronizedLyricsFrame} objec
 
 \+ **new SynchronizedText**(`time`: number, `text`: string): [SynchronizedText](_src_id3v2_frames_synchronizedlyricsframe_.synchronizedtext.md)
 
-*Defined in src/id3v2/frames/synchronizedLyricsFrame.ts:23*
-
 Constructs and initializes a new instance with a specified time and text.
 
 #### Parameters:
 
 Name | Type | Description |
 ------ | ------ | ------ |
-`time` | number | Offset into the media that owns this element when this element should be     displayed. See {@see TimestampFormat} for possible values. |
+`time` | number | Offset into the media that owns this element when this element should be     displayed. See [TimestampFormat](../enums/_src_id3v2_utiltypes_.timestampformat.md) for possible values. |
 `text` | string | Text for the point in time  |
 
 **Returns:** [SynchronizedText](_src_id3v2_frames_synchronizedlyricsframe_.synchronizedtext.md)
@@ -51,8 +49,6 @@ Name | Type | Description |
 
 •  **text**: string
 
-*Defined in src/id3v2/frames/synchronizedLyricsFrame.ts:17*
-
 Text for the point in time represented by the current instance.
 
 ___
@@ -61,18 +57,14 @@ ___
 
 •  **time**: number
 
-*Defined in src/id3v2/frames/synchronizedLyricsFrame.ts:23*
-
 Time offset of the current instance. The specific format this text element is defined in
-{@see SynchronizedLyricsFrame.format} of the frame that owns this element.
+[SynchronizedLyricsFrame.format](_src_id3v2_frames_synchronizedlyricsframe_.synchronizedlyricsframe.md#format) of the frame that owns this element.
 
 ## Methods
 
 ### clone
 
 ▸ **clone**(): [SynchronizedText](_src_id3v2_frames_synchronizedlyricsframe_.synchronizedtext.md)
-
-*Defined in src/id3v2/frames/synchronizedLyricsFrame.ts:40*
 
 Creates a copy of this instance.
 
@@ -83,8 +75,6 @@ ___
 ### render
 
 ▸ **render**(`encoding`: [StringType](../enums/_src_bytevector_.stringtype.md)): [ByteVector](_src_bytevector_.bytevector.md)
-
-*Defined in src/id3v2/frames/synchronizedLyricsFrame.ts:44*
 
 #### Parameters:
 

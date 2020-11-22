@@ -1,6 +1,6 @@
-**node-taglib-sharp**
+**[node-taglib-sharp](../README.md)**
 
-> [README](../README.md) / [Globals](../globals.md) / ["src/mpeg/xingHeader"](../modules/_src_mpeg_xingheader_.md) / XingHeader
+> [Globals](../globals.md) / ["src/mpeg/xingHeader"](../modules/_src_mpeg_xingheader_.md) / XingHeader
 
 # Class: XingHeader
 
@@ -35,8 +35,6 @@ Information about a variable bitrate MPEG audio stream
 
 ▪ `Static` `Readonly` **fileIdentifier**: [ByteVector](_src_bytevector_.bytevector.md) = ByteVector.fromString("Xing", undefined, undefined, true)
 
-*Defined in src/mpeg/xingHeader.ts:13*
-
 Identifier that appears in a file to indicate the start of a Xing header.
 
 ___
@@ -45,8 +43,6 @@ ___
 
 ▪ `Static` `Readonly` **unknown**: [XingHeader](_src_mpeg_xingheader_.xingheader.md) = XingHeader.fromInfo(0, 0)
 
-*Defined in src/mpeg/xingHeader.ts:18*
-
 An empty an unset Xing header
 
 ## Accessors
@@ -54,8 +50,6 @@ An empty an unset Xing header
 ### isPresent
 
 • get **isPresent**(): boolean
-
-*Defined in src/mpeg/xingHeader.ts:84*
 
 Whether or not a physical VBRI header is present in the file.
 
@@ -67,8 +61,6 @@ ___
 
 • get **totalFrames**(): number
 
-*Defined in src/mpeg/xingHeader.ts:89*
-
 Gets the total number of frames in the file, as indicated by the current instance.
 
 **Returns:** number
@@ -79,8 +71,6 @@ ___
 
 • get **totalSize**(): number
 
-*Defined in src/mpeg/xingHeader.ts:94*
-
 Gets the total size of the file, as indicated by the current instance.
 
 **Returns:** number
@@ -90,8 +80,6 @@ Gets the total size of the file, as indicated by the current instance.
 ### fromData
 
 ▸ `Static`**fromData**(`data`: [ByteVector](_src_bytevector_.bytevector.md)): [XingHeader](_src_mpeg_xingheader_.xingheader.md)
-
-*Defined in src/mpeg/xingHeader.ts:48*
 
 Constructs a new instance by reading its raw contents.
 
@@ -109,8 +97,6 @@ ___
 
 ▸ `Static`**fromInfo**(`frames`: number, `size`: number): [XingHeader](_src_mpeg_xingheader_.xingheader.md)
 
-*Defined in src/mpeg/xingHeader.ts:33*
-
 Constructs a new instance with a specified frame count and size.
 
 #### Parameters:
@@ -127,8 +113,6 @@ ___
 ### xingHeaderOffset
 
 ▸ `Static`**xingHeaderOffset**(`version`: [MpegVersion](../enums/_src_mpeg_mpegenums_.mpegversion.md), `channelModel`: [ChannelMode](../enums/_src_mpeg_mpegenums_.channelmode.md)): number
-
-*Defined in src/mpeg/xingHeader.ts:105*
 
 Gets the offset at which a Xing header would appear in an MPEG audio packet based on the
 version and channel mode.

@@ -1,6 +1,6 @@
-**node-taglib-sharp**
+**[node-taglib-sharp](../README.md)**
 
-> [README](../README.md) / [Globals](../globals.md) / ["src/id3v2/id3v2ExtendedHeader"](../modules/_src_id3v2_id3v2extendedheader_.md) / Id3v2ExtendedHeader
+> [Globals](../globals.md) / ["src/id3v2/id3v2ExtendedHeader"](../modules/_src_id3v2_id3v2extendedheader_.md) / Id3v2ExtendedHeader
 
 # Class: Id3v2ExtendedHeader
 
@@ -26,8 +26,6 @@
 
 • get **size**(): number
 
-*Defined in src/id3v2/id3v2ExtendedHeader.ts:34*
-
 Gets the size of the data on disk in bytes.
 
 **Returns:** number
@@ -37,8 +35,6 @@ Gets the size of the data on disk in bytes.
 ### parse
 
 ▸ `Protected`**parse**(`data`: [ByteVector](_src_bytevector_.bytevector.md), `version`: number): void
-
-*Defined in src/id3v2/id3v2ExtendedHeader.ts:36*
 
 #### Parameters:
 
@@ -54,8 +50,6 @@ ___
 ### fromData
 
 ▸ `Static`**fromData**(`data`: [ByteVector](_src_bytevector_.bytevector.md), `version`: number): [Id3v2ExtendedHeader](_src_id3v2_id3v2extendedheader_.id3v2extendedheader.md)
-
-*Defined in src/id3v2/id3v2ExtendedHeader.ts:15*
 
 Constructs and initializes a new instance by reading the raw contents.
 
@@ -73,8 +67,6 @@ ___
 ### fromEmpty
 
 ▸ `Static`**fromEmpty**(): [Id3v2ExtendedHeader](_src_id3v2_id3v2extendedheader_.id3v2extendedheader.md)
-
-*Defined in src/id3v2/id3v2ExtendedHeader.ts:27*
 
 Constructs and initializes a new instance with no contents.
 

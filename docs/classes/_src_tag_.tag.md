@@ -1,12 +1,19 @@
-**node-taglib-sharp**
+**[node-taglib-sharp](../README.md)**
 
-> [README](../README.md) / [Globals](../globals.md) / ["src/tag"](../modules/_src_tag_.md) / Tag
+> [Globals](../globals.md) / ["src/tag"](../modules/_src_tag_.md) / Tag
 
 # Class: Tag
+
+Abstract class that provides generic access to standard tag features. All tag types will extend
+this class.
+Because not every tag type supports the same features, it may be useful to check that the value
+is stored by re-reading the property after it is set.
 
 ## Hierarchy
 
 * **Tag**
+
+  ↳ [ApeTag](_src_ape_apetag_.apetag.md)
 
   ↳ [CombinedTag](_src_combinedtag_.combinedtag.md)
 
@@ -88,7 +95,7 @@
 * [copyTo](_src_tag_.tag.md#copyto)
 * [setInfoTag](_src_tag_.tag.md#setinfotag)
 * [firstInGroup](_src_tag_.tag.md#firstingroup)
-* [isNullOrLikeEmpty](_src_tag_.tag.md#isnullorlikeempty)
+* [isFalsyOrLikeEmpty](_src_tag_.tag.md#isfalsyorlikeempty)
 * [joinGroup](_src_tag_.tag.md#joingroup)
 
 ## Properties
@@ -97,7 +104,12 @@
 
 • `Abstract` **tagTypes**: [TagTypes](../enums/_src_tag_.tagtypes.md)
 
-*Defined in src/tag.ts:106*
+Gets the tag types contained in the current instance. A bit wise combined [TagTypes](../enums/_src_tag_.tagtypes.md)
+containing the tag types contained in the current instance.
+
+**`description`** For a standard tag, the value should be intuitive. For example, Id3v2Tag objects have
+    a value of [TagTypes.Id3v2](../enums/_src_tag_.tagtypes.md#id3v2). However, for CombinedTag type objects, they may
+    contain multiple or no types.
 
 ## Accessors
 
@@ -105,21 +117,43 @@
 
 • get **album**(): string
 
-*Defined in src/tag.ts:141*
+Gets the album of the media represented by the current instance. For video media, this
+represents the collection the video belongs to.
+
+**`description`** This field represents the name of the album the media belongs to. In the case of a
+    boxed set, it should be the name of the entire set rather than the individual disc. In
+    the case of a series, this should be the name of the series, rather than the season of a
+    series.
+    For example, "Kintsugi" (an album by Death Cab for Cutie), "The Complete Red Green Show"
+    (a boxed set of TV episodes), or "Shark Tank" (a series with several seasons).
 
 **Returns:** string
 
+Album of the media represented by the current instance or `undefined` if no value
+    is present
+
 • set **album**(`value`: string): void
 
-*Defined in src/tag.ts:142*
+Sets the album of the media represented by the current instance. For video media, this
+represents the collection the video belongs to.
+
+**`description`** This field represents the name of the album the media belongs to. In the case of a
+    boxed set, it should be the name of the entire set rather than the individual disc. In
+    the case of a series, this should be the name of the series, rather than the season of a
+    series.
+    For example, "Kintsugi" (an album by Death Cab for Cutie), "The Complete Red Green Show"
+    (a boxed set of TV episodes), or "Shark Tank" (a series with several seasons).
 
 #### Parameters:
 
-Name | Type |
------- | ------ |
-`value` | string |
+Name | Type | Description |
+------ | ------ | ------ |
+`value` | string | of the media represented by the current instance or `undefined` if no value     is present  |
 
 **Returns:** void
+
+Album of the media represented by the current instance or `undefined` if no value
+    is present
 
 ___
 
@@ -127,21 +161,47 @@ ___
 
 • get **albumArtists**(): string[]
 
-*Defined in src/tag.ts:129*
+Gets the band or artist who is credited credited in the creation of the entire album or
+collection containing the media described by the current instance.
+
+**`description`** This field is typically optional but aids in the sorting of compilations or albums
+    with multiple artist. For example, if an album has several artists, sorting by artist
+    will split up albums by the same artist. Having a single album artist for an entire
+    album solves this problem.
+    As this value is to be used as a sorting key, it should be used with less variation
+    than [performers](_src_tag_.tag.md#performers). Where performers can be broken into multiple artists, it is
+    best to stick to a single name. Eg, "Super8 & Tab"
 
 **Returns:** string[]
 
+Band or artist credited with the creation of the entire album or collection
+    containing the media described by the current instance or an empty array if no value is
+    present
+
 • set **albumArtists**(`value`: string[]): void
 
-*Defined in src/tag.ts:130*
+Sets the bands or artists who is credited credited in the creation of the entire album or
+collection containing the media described by the current instance.
+
+**`description`** This field is typically optional but aids in the sorting of compilations or albums
+    with multiple artist. For example, if an album has several artists, sorting by artist
+    will split up albums by the same artist. Having a single album artist for an entire
+    album solves this problem.
+    As this value is to be used as a sorting key, it should be used with less variation
+    than [performers](_src_tag_.tag.md#performers). Where performers can be broken into multiple artists, it is
+    best to stick to a single name. Eg, "Super8 & Tab"
 
 #### Parameters:
 
-Name | Type |
------- | ------ |
-`value` | string[] |
+Name | Type | Description |
+------ | ------ | ------ |
+`value` | string[] | Band or artist credited with the creation of the entire album or collection     containing the media described by the current instance or an empty array if no value is     present  |
 
 **Returns:** void
+
+Band or artist credited with the creation of the entire album or collection
+    containing the media described by the current instance or an empty array if no value is
+    present
 
 ___
 
@@ -149,21 +209,49 @@ ___
 
 • get **albumArtistsSort**(): string[]
 
-*Defined in src/tag.ts:132*
+Gets the sortable names of the bands/artists who are credited with creating the entire
+album or collection containing the media described by the current instance.
+
+**`see`** albumArtists
+
+**`description`** This is used to provide more control over how the media is sorted. Typical uses are to
+    skip articles or sort by last by last name. For example "Ben Folds" might be sorted as
+    "Folds, Ben".
+    As this value is to be used as a sorting key, it should be used with less variation than
+    [performers](_src_tag_.tag.md#performers). Where [performers](_src_tag_.tag.md#performers) can be broken into multiple performers, it is
+    best to stick to a single album artist. Eg, "Van Buuren, Armin"
 
 **Returns:** string[]
 
+Sortable names for the bands/artists are credited with the creation of the entire
+    album or collection containing the media described by the current instance, or an empty
+    array if no value is present.
+
 • set **albumArtistsSort**(`value`: string[]): void
 
-*Defined in src/tag.ts:133*
+Sets the sortable names of the bands/artists who are credited with creating the entire
+album or collection containing the media described by the current instance.
+
+**`see`** albumArtists
+
+**`description`** This is used to provide more control over how the media is sorted. Typical uses are to
+    skip articles or sort by last by last name. For example "Ben Folds" might be sorted as
+    "Folds, Ben".
+    As this value is to be used as a sorting key, it should be used with less variation than
+    [performers](_src_tag_.tag.md#performers). Where [performers](_src_tag_.tag.md#performers) can be broken into multiple performers, it is
+    best to stick to a single album artist. Eg, "Van Buuren, Armin"
 
 #### Parameters:
 
-Name | Type |
------- | ------ |
-`value` | string[] |
+Name | Type | Description |
+------ | ------ | ------ |
+`value` | string[] | Sortable names for the bands/artists are credited with the creation of the     entire album or collection containing the media described by the current instance, or an     empty array if no value is present.  |
 
 **Returns:** void
+
+Sortable names for the bands/artists are credited with the creation of the entire
+    album or collection containing the media described by the current instance, or an empty
+    array if no value is present.
 
 ___
 
@@ -171,21 +259,37 @@ ___
 
 • get **albumSort**(): string
 
-*Defined in src/tag.ts:144*
+Gets the sortable name of the album title of the media represented by the current instance.
+
+**`see`** album
+
+**`description`** This field is typically optional but aids in sort of compilations or albums with
+    similar titles.
 
 **Returns:** string
 
+Sortable name for the album title of the media or `undefined` if the value is not
+    present
+
 • set **albumSort**(`value`: string): void
 
-*Defined in src/tag.ts:145*
+Sets the sortable name of the album title of the media represented by the current instance.
+
+**`see`** album
+
+**`description`** This field is typically optional but aids in sort of compilations or albums with
+    similar titles.
 
 #### Parameters:
 
-Name | Type |
------- | ------ |
-`value` | string |
+Name | Type | Description |
+------ | ------ | ------ |
+`value` | string | Sortable name for the album title of the media or `undefined` if the value is     not present  |
 
 **Returns:** void
+
+Sortable name for the album title of the media or `undefined` if the value is not
+    present
 
 ___
 
@@ -193,21 +297,33 @@ ___
 
 • get **amazonId**(): string
 
-*Defined in src/tag.ts:207*
+Gets the Amazon ID of the media represented by the current instance.
+
+**`description`** This field represents the AmazonID, also called the ASIN, and is used to uniquely
+    identify the particular track or album in the Amazon catalog.
 
 **Returns:** string
 
+Amazon ID of the media represented by the current instance or `undefined` if no
+    value is present
+
 • set **amazonId**(`value`: string): void
 
-*Defined in src/tag.ts:208*
+Sets the Amazon ID of the media represented by the current instance.
+
+**`description`** This field represents the AmazonID, also called the ASIN, and is used to uniquely
+    identify the particular track or album in the Amazon catalog.
 
 #### Parameters:
 
-Name | Type |
------- | ------ |
-`value` | string |
+Name | Type | Description |
+------ | ------ | ------ |
+`value` | string | Amazon ID of the media represented by the current instance or `undefined` if no     value is present  |
 
 **Returns:** void
+
+Amazon ID of the media represented by the current instance or `undefined` if no
+    value is present
 
 ___
 
@@ -215,21 +331,35 @@ ___
 
 • get **beatsPerMinute**(): number
 
-*Defined in src/tag.ts:174*
+Gets the number of beats per minute in the audio of the media represented by the current
+instance.
+
+**`description`** This field is useful for DJ's who are trying to beat match tracks. It should be
+    calculated from the audio or pulled from a database.
 
 **Returns:** number
 
+Beats per minute of the audio in the media represented by the current instance, or
+    `0` if not specified
+
 • set **beatsPerMinute**(`value`: number): void
 
-*Defined in src/tag.ts:175*
+Sets the number of beats per minute in the audio of the media represented by the current
+instance.
+
+**`description`** This field is useful for DJ's who are trying to beat match tracks. It should be
+    calculated from the audio or pulled from a database.
 
 #### Parameters:
 
-Name | Type |
------- | ------ |
-`value` | number |
+Name | Type | Description |
+------ | ------ | ------ |
+`value` | number | Beats per minute of the audio in the media represented by the current instance,     or `0` if not specified  |
 
 **Returns:** void
+
+Beats per minute of the audio in the media represented by the current instance, or
+    `0` if not specified
 
 ___
 
@@ -237,21 +367,39 @@ ___
 
 • get **comment**(): string
 
-*Defined in src/tag.ts:147*
+Gets a user comment on the media represented by the current instance.
+
+**`description`** This field should be used to store user notes and comments. There is no constraint on
+    what text can be stored here, but it should not contain programmatic data.
+    Because this field contains notes the the user might think of while consuming the media,
+    it may be useful for an application to make this field easily accessible, perhaps even
+    including it in the main interface.
 
 **Returns:** string
 
+User comments on the media represented by the current instance or `undefined` if
+    the value is not present
+
 • set **comment**(`value`: string): void
 
-*Defined in src/tag.ts:148*
+Sets a user comment on the media represented by the current instance.
+
+**`description`** This field should be used to store user notes and comments. There is no constraint on
+    what text can be stored here, but it should not contain programmatic data.
+    Because this field contains notes the the user might think of while consuming the media,
+    it may be useful for an application to make this field easily accessible, perhaps even
+    including it in the main interface.
 
 #### Parameters:
 
-Name | Type |
------- | ------ |
-`value` | string |
+Name | Type | Description |
+------ | ------ | ------ |
+`value` | string | User comments on the media represented by the current instance or `undefined`     if the value is not present  |
 
 **Returns:** void
+
+User comments on the media represented by the current instance or `undefined` if
+    the value is not present
 
 ___
 
@@ -259,21 +407,33 @@ ___
 
 • get **composers**(): string[]
 
-*Defined in src/tag.ts:135*
+Gets the composers of the media represented by the current instance.
+
+**`description`** This field represents the composers, song writers, script writers, or persons who
+    claim authorship of the media.
 
 **Returns:** string[]
 
+Composers of the media represented by the current instance of an empty array if no
+    value is present.
+
 • set **composers**(`value`: string[]): void
 
-*Defined in src/tag.ts:136*
+Sets the composers of the media represented by the current instance.
+
+**`description`** This field represents the composers, song writers, script writers, or persons who
+    claim authorship of the media.
 
 #### Parameters:
 
-Name | Type |
------- | ------ |
-`value` | string[] |
+Name | Type | Description |
+------ | ------ | ------ |
+`value` | string[] | Composers of the media represented by the current instance of an empty array if     no value is present.  |
 
 **Returns:** void
+
+Composers of the media represented by the current instance of an empty array if no
+    value is present.
 
 ___
 
@@ -281,21 +441,37 @@ ___
 
 • get **composersSort**(): string[]
 
-*Defined in src/tag.ts:138*
+Gets the sortable names of the composers of the media represented by the current instance.
+
+**`see`** composers
+
+**`description`** This field is typically optional but aids in the sorting of compilations or albums
+    with multiple composers.
 
 **Returns:** string[]
 
+Sortable names for the composers of the media represented by the current instance
+    or an empty array if no value is present.
+
 • set **composersSort**(`value`: string[]): void
 
-*Defined in src/tag.ts:139*
+Sets the sortable names of the composers of the media represented by the current instance.
+
+**`see`** composers
+
+**`description`** This field is typically optional but aids in the sorting of compilations or albums
+    with multiple composers.
 
 #### Parameters:
 
-Name | Type |
------- | ------ |
-`value` | string[] |
+Name | Type | Description |
+------ | ------ | ------ |
+`value` | string[] | Sortable names for the composers of the media represented by the current     instance or an empty array if no value is present.  |
 
 **Returns:** void
+
+Sortable names for the composers of the media represented by the current instance
+    or an empty array if no value is present.
 
 ___
 
@@ -303,21 +479,31 @@ ___
 
 • get **conductor**(): string
 
-*Defined in src/tag.ts:177*
+Gets the conductor or director of the media represented by the current instance.
+
+**`description`** This field is most useful for organizing classical music and movies.
 
 **Returns:** string
 
+Conductor or director of the media represented by the current instance or
+    `undefined` if no value present.
+
 • set **conductor**(`value`: string): void
 
-*Defined in src/tag.ts:178*
+Sets the conductor or director of the media represented by the current instance.
+
+**`description`** This field is most useful for organizing classical music and movies.
 
 #### Parameters:
 
-Name | Type |
------- | ------ |
-`value` | string |
+Name | Type | Description |
+------ | ------ | ------ |
+`value` | string | Conductor or director of the media represented by the current instance or     `undefined` if no value present.  |
 
 **Returns:** void
+
+Conductor or director of the media represented by the current instance or
+    `undefined` if no value present.
 
 ___
 
@@ -325,21 +511,37 @@ ___
 
 • get **copyright**(): string
 
-*Defined in src/tag.ts:180*
+Gets the copyright information for the media represented by the current instance.
+
+**`description`** This field should be used for storing copyright information. It may be useful to show
+    this information somewhere in the program while the media is playing.
+    Players should not support editing this field, but media creation tools should
+    definitely allow modification.
 
 **Returns:** string
 
+Copyright information for the media represented by the current instance or
+    `undefined` if no value is present.
+
 • set **copyright**(`value`: string): void
 
-*Defined in src/tag.ts:181*
+Sets the copyright information for the media represented by the current instance.
+
+**`description`** This field should be used for storing copyright information. It may be useful to show
+    this information somewhere in the program while the media is playing.
+    Players should not support editing this field, but media creation tools should
+    definitely allow modification.
 
 #### Parameters:
 
-Name | Type |
------- | ------ |
-`value` | string |
+Name | Type | Description |
+------ | ------ | ------ |
+`value` | string | Copyright information for the media represented by the current instance or     `undefined` if no value is present.  |
 
 **Returns:** void
+
+Copyright information for the media represented by the current instance or
+    `undefined` if no value is present.
 
 ___
 
@@ -347,21 +549,25 @@ ___
 
 • get **dateTagged**(): Date \| undefined
 
-*Defined in src/tag.ts:183*
+Gets the date and time at which the tag has been written.
 
 **Returns:** Date \| undefined
 
+Date/time at which the tag has been written, or `undefined` if no value is present
+
 • set **dateTagged**(`value`: Date \| undefined): void
 
-*Defined in src/tag.ts:184*
+Sets the date and time at which the tag has been written.
 
 #### Parameters:
 
-Name | Type |
------- | ------ |
-`value` | Date \| undefined |
+Name | Type | Description |
+------ | ------ | ------ |
+`value` | Date \| undefined | Date/time at which the tag has been written, or `undefined` if no value is     present  |
 
 **Returns:** void
+
+Date/time at which the tag has been written, or `undefined` if no value is present
 
 ___
 
@@ -369,21 +575,39 @@ ___
 
 • get **description**(): string
 
-*Defined in src/tag.ts:117*
+Gets a short description of the media. For music, this could be the comment that the artist
+made of his/her work. For a video, this should be a short summary of the story/plot, but
+generally no spoliers. This should give the impression of what to expect in the media.
+
+**`description`** This is especially relevant for a movie. For example, for "Fear and Loathing in Las
+    Vegas", this could be "An oddball journalist and his psychopathic lawyer travel to Las
+    Vegas for a series of psychedelic escapades."
 
 **Returns:** string
 
+Description of the media represented by the current instance or `undefined` if no
+    value is present
+
 • set **description**(`value`: string): void
 
-*Defined in src/tag.ts:118*
+Sets a short description of the media. For music, this could be the comment that the artist
+made of his/her work. For a video, this should be a short summary of the story/plot, but
+generally no spoliers. This should give the impression of what to expect in the media.
+
+**`description`** This is especially relevant for a movie. For example, for "Fear and Loathing in Las
+    Vegas", this could be "An oddball journalist and his psychopathic lawyer travel to Las
+    Vegas for a series of psychedelic escapades."
 
 #### Parameters:
 
-Name | Type |
------- | ------ |
-`value` | string |
+Name | Type | Description |
+------ | ------ | ------ |
+`value` | string | Description of the media represented by the current instance or `undefined` if     no value is present  |
 
 **Returns:** void
+
+Description of the media represented by the current instance or `undefined` if no
+    value is present
 
 ___
 
@@ -391,21 +615,37 @@ ___
 
 • get **disc**(): number
 
-*Defined in src/tag.ts:162*
+Gets the number of the disc containing the media represented by the current instance in the
+boxed set. For a series, this represents the season number.
+
+**`description`** This value should be the same as the number that appears on the disc. For example, if
+    the disc is the first of three, the value should be `1`. It should be no more than
+    [discCount](_src_tag_.tag.md#disccount) if [discCount](_src_tag_.tag.md#disccount) is non-zero.
 
 **Returns:** number
 
+Number of the disc or season of the media represented by the current instance in a
+    boxed set.
+
 • set **disc**(`value`: number): void
 
-*Defined in src/tag.ts:163*
+Sets the number of the disc containing the media represented by the current instance in the
+boxed set. For a series, this represents the season number.
+
+**`description`** This value should be the same as the number that appears on the disc. For example, if
+    the disc is the first of three, the value should be `1`. It should be no more than
+    [discCount](_src_tag_.tag.md#disccount) if [discCount](_src_tag_.tag.md#disccount) is non-zero.
 
 #### Parameters:
 
-Name | Type |
------- | ------ |
-`value` | number |
+Name | Type | Description |
+------ | ------ | ------ |
+`value` | number | Number of the disc or season of the media represented by the current instance     in a boxed set.  |
 
 **Returns:** void
+
+Number of the disc or season of the media represented by the current instance in a
+    boxed set.
 
 ___
 
@@ -413,21 +653,35 @@ ___
 
 • get **discCount**(): number
 
-*Defined in src/tag.ts:165*
+Gets the number of discs or seasons in the boxed set containing the media represented by the
+current instance.
+
+**`description`** If non-zero, this should be at least equal to [disc](_src_tag_.tag.md#disc). If [disc](_src_tag_.tag.md#disc) is zero,
+    this value should also be zero.
 
 **Returns:** number
 
+Number of discs or seasons in the boxed set containing the media represented by the
+    current instance or `0` if not specified.
+
 • set **discCount**(`value`: number): void
 
-*Defined in src/tag.ts:166*
+Sets the number of discs or seasons in the boxed set containing the media represented by the
+current instance.
+
+**`description`** If non-zero, this should be at least equal to [disc](_src_tag_.tag.md#disc). If [disc](_src_tag_.tag.md#disc) is zero,
+    this value should also be zero.
 
 #### Parameters:
 
-Name | Type |
------- | ------ |
-`value` | number |
+Name | Type | Description |
+------ | ------ | ------ |
+`value` | number | Number of discs or seasons in the boxed set containing the media represented by     the current instance or `0` if not specified.  |
 
 **Returns:** void
+
+Number of discs or seasons in the boxed set containing the media represented by the
+    current instance or `0` if not specified.
 
 ___
 
@@ -435,7 +689,7 @@ ___
 
 • get **firstAlbumArtist**(): string
 
-*Defined in src/tag.ts:246*
+Gets the the first value contained in [albumArtists](_src_tag_.tag.md#albumartists).
 
 **Returns:** string
 
@@ -445,7 +699,7 @@ ___
 
 • get **firstAlbumArtistSort**(): string
 
-*Defined in src/tag.ts:248*
+Gets the first value contained in [albumArtistsSort](_src_tag_.tag.md#albumartistssort)
 
 **Returns:** string
 
@@ -455,7 +709,7 @@ ___
 
 • get **firstComposer**(): string
 
-*Defined in src/tag.ts:254*
+Gets the first value contained in [composers](_src_tag_.tag.md#composers)
 
 **Returns:** string
 
@@ -465,7 +719,7 @@ ___
 
 • get **firstComposerSort**(): string
 
-*Defined in src/tag.ts:256*
+Gets the first value contained in [composersSort](_src_tag_.tag.md#composerssort)
 
 **Returns:** string
 
@@ -475,7 +729,7 @@ ___
 
 • get **firstGenre**(): string
 
-*Defined in src/tag.ts:258*
+Gets the first value contained in [genres](_src_tag_.tag.md#genres)
 
 **Returns:** string
 
@@ -485,7 +739,7 @@ ___
 
 • get **firstPerformer**(): string
 
-*Defined in src/tag.ts:250*
+Gets the first value contained in [performers](_src_tag_.tag.md#performers)
 
 **Returns:** string
 
@@ -495,7 +749,7 @@ ___
 
 • get **firstPerformerSort**(): string
 
-*Defined in src/tag.ts:252*
+Gets the first value contained in [performersSort](_src_tag_.tag.md#performerssort)
 
 **Returns:** string
 
@@ -505,21 +759,37 @@ ___
 
 • get **genres**(): string[]
 
-*Defined in src/tag.ts:150*
+Gets the genres of the media represented by the current instance.
+
+**`description`** This field represents genres that apply to the song, album, or video. This is often
+    used for filtering media.
+    A list of common audio genres as popularized by ID3v1 is stored in [audioGenres](../modules/_src_genres_.md#audiogenres).
+    Additionally, [videoGenres](../modules/_src_genres_.md#videogenres) contains video genres as used by DivX.
 
 **Returns:** string[]
 
+Genres of the media represented by the current instance or an empty array if no
+    value is present.
+
 • set **genres**(`value`: string[]): void
 
-*Defined in src/tag.ts:151*
+Sets the genres of the media represented by the current instance.
+
+**`description`** This field represents genres that apply to the song, album, or video. This is often
+    used for filtering media.
+    A list of common audio genres as popularized by ID3v1 is stored in [audioGenres](../modules/_src_genres_.md#audiogenres).
+    Additionally, [videoGenres](../modules/_src_genres_.md#videogenres) contains video genres as used by DivX.
 
 #### Parameters:
 
-Name | Type |
------- | ------ |
-`value` | string[] |
+Name | Type | Description |
+------ | ------ | ------ |
+`value` | string[] | Genres of the media represented by the current instance or an empty array if no     value is present.  |
 
 **Returns:** void
+
+Genres of the media represented by the current instance or an empty array if no
+    value is present.
 
 ___
 
@@ -527,21 +797,35 @@ ___
 
 • get **grouping**(): string
 
-*Defined in src/tag.ts:171*
+Gets the grouping on the album which the media in the current instance belongs to.
+
+**`description`** This field contains a non-physical group to which the track belongs. In classical
+    music this could be a movement. It could also be parts of a series like "Introduction",
+    "Closing Remarks", etc.
 
 **Returns:** string
 
+Grouping on the album which the media in the current instance belongs to or
+    `undefined` if no value is present.
+
 • set **grouping**(`value`: string): void
 
-*Defined in src/tag.ts:172*
+Sets the grouping on the album which the media in the current instance belongs to.
+
+**`description`** This field contains a non-physical group to which the track belongs. In classical
+    music this could be a movement. It could also be parts of a series like "Introduction",
+    "Closing Remarks", etc.
 
 #### Parameters:
 
-Name | Type |
------- | ------ |
-`value` | string |
+Name | Type | Description |
+------ | ------ | ------ |
+`value` | string | Grouping on the album which the media in the current instance belongs to or     `undefined` if no value is present.  |
 
 **Returns:** void
+
+Grouping on the album which the media in the current instance belongs to or
+    `undefined` if no value is present.
 
 ___
 
@@ -549,21 +833,25 @@ ___
 
 • get **initialKey**(): string
 
-*Defined in src/tag.ts:231*
+Gets the initial key of the track.
 
 **Returns:** string
 
+Initial key of the track or `undefined` if no value is set
+
 • set **initialKey**(`value`: string): void
 
-*Defined in src/tag.ts:232*
+Sets the initial key of the track.
 
 #### Parameters:
 
-Name | Type |
------- | ------ |
-`value` | string |
+Name | Type | Description |
+------ | ------ | ------ |
+`value` | string | Initial key of the track or `undefined` if no value is set  |
 
 **Returns:** void
+
+Initial key of the track or `undefined` if no value is set
 
 ___
 
@@ -571,9 +859,14 @@ ___
 
 • get **isEmpty**(): boolean
 
-*Defined in src/tag.ts:282*
+Gets whether or not the current instance is empty.
+
+**`description`** In the default implementation, this checks the values supported by [Tag](_src_tag_.tag.md), but it
+    may be extended by child classes to support other values.
 
 **Returns:** boolean
+
+`true` if the current instance does not contain any values. `false` otherwise
 
 ___
 
@@ -581,21 +874,25 @@ ___
 
 • get **isrc**(): string
 
-*Defined in src/tag.ts:240*
+Gets the ISRC (International Standard Recording Code) of the track.
 
 **Returns:** string
 
+the ISRC of the track or `undefined` if no value is set
+
 • set **isrc**(`value`: string): void
 
-*Defined in src/tag.ts:241*
+Sets the ISRC (International Standard Recording Code) of the track.
 
 #### Parameters:
 
-Name | Type |
------- | ------ |
-`value` | string |
+Name | Type | Description |
+------ | ------ | ------ |
+`value` | string | the ISRC of the track or `undefined` if no value is set  |
 
 **Returns:** void
+
+the ISRC of the track or `undefined` if no value is set
 
 ___
 
@@ -603,7 +900,7 @@ ___
 
 • get **joinedAlbumArtists**(): string
 
-*Defined in src/tag.ts:260*
+Gets a semicolon and space separated string containing the values in [albumArtists](_src_tag_.tag.md#albumartists)
 
 **Returns:** string
 
@@ -613,7 +910,7 @@ ___
 
 • get **joinedComposers**(): string
 
-*Defined in src/tag.ts:266*
+Gets a semicolon and space separated string containing the values in [composers](_src_tag_.tag.md#composers)
 
 **Returns:** string
 
@@ -623,7 +920,7 @@ ___
 
 • get **joinedGenres**(): string
 
-*Defined in src/tag.ts:268*
+Gets a semicolon and space separated string containing the values in [genres](_src_tag_.tag.md#genres)
 
 **Returns:** string
 
@@ -633,7 +930,7 @@ ___
 
 • get **joinedPerformers**(): string
 
-*Defined in src/tag.ts:262*
+Gets a semicolon and space separated string containing the values in [performers](_src_tag_.tag.md#performers)
 
 **Returns:** string
 
@@ -643,7 +940,7 @@ ___
 
 • get **joinedPerformersSort**(): string
 
-*Defined in src/tag.ts:264*
+Gets a semicolon and space separated string containing the values in [performersSort](_src_tag_.tag.md#performerssort)
 
 **Returns:** string
 
@@ -653,21 +950,37 @@ ___
 
 • get **lyrics**(): string
 
-*Defined in src/tag.ts:168*
+Gets the lyrics or script of the media represented by the current instance.
+
+**`description`** This field contains a plain text representation of the lyrics or scripts with line
+    breaks and whitespace being the only formatting marks.
+    Some formats support more advanced lyrics, like synchronized lyrics, but those must be
+    accessed using format-specific implementations.
 
 **Returns:** string
 
+Lyrics or script of the media represented by the current instance or `undefined` if
+    no value is present
+
 • set **lyrics**(`value`: string): void
 
-*Defined in src/tag.ts:169*
+Sets the lyrics or script of the media represented by the current instance.
+
+**`description`** This field contains a plain text representation of the lyrics or scripts with line
+    breaks and whitespace being the only formatting marks.
+    Some formats support more advanced lyrics, like synchronized lyrics, but those must be
+    accessed using format-specific implementations.
 
 #### Parameters:
 
-Name | Type |
------- | ------ |
-`value` | string |
+Name | Type | Description |
+------ | ------ | ------ |
+`value` | string | Lyrics or script of the media represented by the current instance or     `undefined` if no value is present  |
 
 **Returns:** void
+
+Lyrics or script of the media represented by the current instance or `undefined` if
+    no value is present
 
 ___
 
@@ -675,21 +988,33 @@ ___
 
 • get **musicBrainzArtistId**(): string
 
-*Defined in src/tag.ts:186*
+Gets the MusicBrainz artist ID of the media represented by the current instance.
+
+**`description`** This field represents the MusicBrainz ArtistID, and is used to uniquely identify a
+    particular artist of the track.
 
 **Returns:** string
 
+MusicBrainz ArtistID of the media represented by the current instance or
+    `undefined` if no value is present
+
 • set **musicBrainzArtistId**(`value`: string): void
 
-*Defined in src/tag.ts:187*
+Sets the MusicBrainz artist ID of the media represented by the current instance.
+
+**`description`** This field represents the MusicBrainz ArtistID, and is used to uniquely identify a
+    particular artist of the track.
 
 #### Parameters:
 
-Name | Type |
------- | ------ |
-`value` | string |
+Name | Type | Description |
+------ | ------ | ------ |
+`value` | string | MusicBrainz ArtistID of the media represented by the current instance or     `undefined` if no value is present  |
 
 **Returns:** void
+
+MusicBrainz ArtistID of the media represented by the current instance or
+    `undefined` if no value is present
 
 ___
 
@@ -697,21 +1022,33 @@ ___
 
 • get **musicBrainzDiscId**(): string
 
-*Defined in src/tag.ts:201*
+Gets the MusicBrainz disc ID of the media represented by the current instance.
+
+**`description`** This field represents the MusicBrainz DiscID and is used to uniquely identify the
+    particular released media associated with this track.
 
 **Returns:** string
 
+MusicBrainz DiscID of the media represented by the current instance or `undefined`
+    if no value is present
+
 • set **musicBrainzDiscId**(`value`: string): void
 
-*Defined in src/tag.ts:202*
+Sets the MusicBrainz disc ID of the media represented by the current instance.
+
+**`description`** This field represents the MusicBrainz DiscID and is used to uniquely identify the
+    particular released media associated with this track.
 
 #### Parameters:
 
-Name | Type |
------- | ------ |
-`value` | string |
+Name | Type | Description |
+------ | ------ | ------ |
+`value` | string | MusicBrainz DiscID of the media represented by the current instance or     `undefined` if no value is present  |
 
 **Returns:** void
+
+MusicBrainz DiscID of the media represented by the current instance or `undefined`
+    if no value is present
 
 ___
 
@@ -719,21 +1056,33 @@ ___
 
 • get **musicBrainzReleaseArtistId**(): string
 
-*Defined in src/tag.ts:195*
+Gets the MusicBrainz release artist ID of the media represented by the current instance.
+
+**`description`** This field represents the MusicBrainz ReleaseArtistID, and is used to uniquely
+    identify a particular album artist credited with the album.
 
 **Returns:** string
 
+MusicBrainz ReleaseArtistID of the media represented by the current instance or
+    `undefined` if no value is present
+
 • set **musicBrainzReleaseArtistId**(`value`: string): void
 
-*Defined in src/tag.ts:196*
+Sets the MusicBrainz release artist ID of the media represented by the current instance.
+
+**`description`** This field represents the MusicBrainz ReleaseArtistID, and is used to uniquely
+    identify a particular album artist credited with the album.
 
 #### Parameters:
 
-Name | Type |
------- | ------ |
-`value` | string |
+Name | Type | Description |
+------ | ------ | ------ |
+`value` | string | MusicBrainz ReleaseArtistID of the media represented by the current instance or     `undefined` if no value is present  |
 
 **Returns:** void
+
+MusicBrainz ReleaseArtistID of the media represented by the current instance or
+    `undefined` if no value is present
 
 ___
 
@@ -741,21 +1090,39 @@ ___
 
 • get **musicBrainzReleaseCountry**(): string
 
-*Defined in src/tag.ts:216*
+Gets the MusicBrainz release country of the media represented by the current instance.
+
+**`description`** This field represents the MusicBrainz ReleaseCountry which describes the country in
+    which an album was released. Note that the release country of an album is not
+    necessarily the country in which it was produced. The label itself will typically be
+    more relevant. Eg, a release on "Foo Records UK" that has "Made in Austria" printed on
+    it will likely be a UK release.
 
 **Returns:** string
 
+MusicBrainz ReleaseCountry of the media represented by the current instance or
+    `undefined` if no value is present
+
 • set **musicBrainzReleaseCountry**(`value`: string): void
 
-*Defined in src/tag.ts:217*
+Sets the MusicBrainz release country of the media represented by the current instance.
+
+**`description`** This field represents the MusicBrainz ReleaseCountry which describes the country in
+    which an album was released. Note that the release country of an album is not
+    necessarily the country in which it was produced. The label itself will typically be
+    more relevant. Eg, a release on "Foo Records UK" that has "Made in Austria" printed on
+    it will likely be a UK release.
 
 #### Parameters:
 
-Name | Type |
------- | ------ |
-`value` | string |
+Name | Type | Description |
+------ | ------ | ------ |
+`value` | string | MusicBrainz ReleaseCountry of the media represented by the current instance or     `undefined` if no value is present  |
 
 **Returns:** void
+
+MusicBrainz ReleaseCountry of the media represented by the current instance or
+    `undefined` if no value is present
 
 ___
 
@@ -763,21 +1130,33 @@ ___
 
 • get **musicBrainzReleaseGroupId**(): string
 
-*Defined in src/tag.ts:189*
+Gets the MusicBrainz release group ID of the media represented by the current instance.
+
+**`description`** This field represents the MusicBrainz ReleaseGroupID and is used to uniquely identify
+    a particular release group to which this track belongs.
 
 **Returns:** string
 
+MusicBrainz ReleaseGroupID of the media represented by the current instance or
+    `undefined` if no value is present
+
 • set **musicBrainzReleaseGroupId**(`value`: string): void
 
-*Defined in src/tag.ts:190*
+Sets the MusicBrainz release group ID of the media represented by the current instance.
+
+**`description`** This field represents the MusicBrainz ReleaseGroupID and is used to uniquely identify
+    a particular release group to which this track belongs.
 
 #### Parameters:
 
-Name | Type |
------- | ------ |
-`value` | string |
+Name | Type | Description |
+------ | ------ | ------ |
+`value` | string | MusicBrainz ReleaseGroupID of the media represented by the current instance or     `undefined` if no value is present  |
 
 **Returns:** void
+
+MusicBrainz ReleaseGroupID of the media represented by the current instance or
+    `undefined` if no value is present
 
 ___
 
@@ -785,21 +1164,33 @@ ___
 
 • get **musicBrainzReleaseId**(): string
 
-*Defined in src/tag.ts:192*
+Gets the MusicBrainz release ID of the media represented by the current instance.
+
+**`description`** This field represents the MusicBrains ReleaseID and is used to uniquely identify a
+    particular release to which this track belongs.
 
 **Returns:** string
 
+MusicBrainz ReleaseID of the media represented by the current instance or
+    `undefined` if no value is present
+
 • set **musicBrainzReleaseId**(`value`: string): void
 
-*Defined in src/tag.ts:193*
+Sets the MusicBrainz release ID of the media represented by the current instance.
+
+**`description`** This field represents the MusicBrains ReleaseID and is used to uniquely identify a
+    particular release to which this track belongs.
 
 #### Parameters:
 
-Name | Type |
------- | ------ |
-`value` | string |
+Name | Type | Description |
+------ | ------ | ------ |
+`value` | string | MusicBrainz ReleaseID of the media represented by the current instance or     `undefined` if no value is present  |
 
 **Returns:** void
+
+MusicBrainz ReleaseID of the media represented by the current instance or
+    `undefined` if no value is present
 
 ___
 
@@ -807,21 +1198,33 @@ ___
 
 • get **musicBrainzReleaseStatus**(): string
 
-*Defined in src/tag.ts:210*
+Gets the MusicBrainz release status of the media represented by the current instance.
+
+**`description`** This field represents the MusicBrainz ReleaseStatus used to describe how 'official' a
+    release is. Common statuses are: `Official`, `Promotion`, `Bootleg`, `Pseudo-release`.
 
 **Returns:** string
 
+MusicBrainz ReleaseStatus of the media represented by the current instance or
+    `undefined` if no value is present
+
 • set **musicBrainzReleaseStatus**(`value`: string): void
 
-*Defined in src/tag.ts:211*
+Sets the MusicBrainz release status of the media represented by the current instance.
+
+**`description`** This field represents the MusicBrainz ReleaseStatus used to describe how 'official' a
+    release is. Common statuses are: `Official`, `Promotion`, `Bootleg`, `Pseudo-release`.
 
 #### Parameters:
 
-Name | Type |
------- | ------ |
-`value` | string |
+Name | Type | Description |
+------ | ------ | ------ |
+`value` | string | MusicBrainz ReleaseStatus of the media represented by the current instance or     `undefined` if no value is present  |
 
 **Returns:** void
+
+MusicBrainz ReleaseStatus of the media represented by the current instance or
+    `undefined` if no value is present
 
 ___
 
@@ -829,21 +1232,37 @@ ___
 
 • get **musicBrainzReleaseType**(): string
 
-*Defined in src/tag.ts:213*
+Gets the MusicBrainz release type of the media represented by the current instance.
+
+**`description`** This field represents the MusicBrainz ReleaseType that describes what kind of release
+    a release is. Common types are: `Single`, `Album`, `EP`, `Compilation`, `Soundtrack,
+    `SpokenWord`, `Interview`, `Audiobook`, `Live`, `Remix`, and `Other`. Careful thought
+    must be given when using this field to decide if a particular track "is a compilation".
 
 **Returns:** string
 
+MusicBrainz ReleaseType of the media represented by the current instance or
+    `undefined` if no value is present
+
 • set **musicBrainzReleaseType**(`value`: string): void
 
-*Defined in src/tag.ts:214*
+Sets the MusicBrainz release type of the media represented by the current instance.
+
+**`description`** This field represents the MusicBrainz ReleaseType that describes what kind of release
+    a release is. Common types are: `Single`, `Album`, `EP`, `Compilation`, `Soundtrack,
+    `SpokenWord`, `Interview`, `Audiobook`, `Live`, `Remix`, and `Other`. Careful thought
+    must be given when using this field to decide if a particular track "is a compilation".
 
 #### Parameters:
 
-Name | Type |
------- | ------ |
-`value` | string |
+Name | Type | Description |
+------ | ------ | ------ |
+`value` | string | MusicBrainz ReleaseType of the media represented by the current instance or     `undefined` if no value is present  |
 
 **Returns:** void
+
+MusicBrainz ReleaseType of the media represented by the current instance or
+    `undefined` if no value is present
 
 ___
 
@@ -851,21 +1270,35 @@ ___
 
 • get **musicBrainzTrackId**(): string
 
-*Defined in src/tag.ts:198*
+Gets the MusicBrainz track ID of the media represented by the media represented by the
+current instance.
+
+**`description`** This field represents the MusicBrainz TrackID and is used to uniquely identify a
+    particular track.
 
 **Returns:** string
 
+MusicBrainz TrackID of the media represented by the current instance or `undefined`
+    if no value is present
+
 • set **musicBrainzTrackId**(`value`: string): void
 
-*Defined in src/tag.ts:199*
+Sets the MusicBrainz track ID of the media represented by the media represented by the
+current instance.
+
+**`description`** This field represents the MusicBrainz TrackID and is used to uniquely identify a
+    particular track.
 
 #### Parameters:
 
-Name | Type |
------- | ------ |
-`value` | string |
+Name | Type | Description |
+------ | ------ | ------ |
+`value` | string | MusicBrainz TrackID of the media represented by the current instance or     `undefined` if no value is present  |
 
 **Returns:** void
+
+MusicBrainz TrackID of the media represented by the current instance or `undefined`
+    if no value is present
 
 ___
 
@@ -873,21 +1306,33 @@ ___
 
 • get **musicIpId**(): string
 
-*Defined in src/tag.ts:204*
+Gets the MusicIP PUID of the media represented by the current instance.
+
+**`description`** This field represents the MusicIP PUID, an acoustic fingerprint identifier. It
+    identifies wht this track "sounds like".
 
 **Returns:** string
 
+MusicIP PUID of the media represented by the current instance or `undefined` if no
+    value is present
+
 • set **musicIpId**(`value`: string): void
 
-*Defined in src/tag.ts:205*
+Sets the MusicIP PUID of the media represented by the current instance.
+
+**`description`** This field represents the MusicIP PUID, an acoustic fingerprint identifier. It
+    identifies wht this track "sounds like".
 
 #### Parameters:
 
-Name | Type |
------- | ------ |
-`value` | string |
+Name | Type | Description |
+------ | ------ | ------ |
+`value` | string | MusicIP PUID of the media represented by the current instance or `undefined`     if no value is present  |
 
 **Returns:** void
+
+MusicIP PUID of the media represented by the current instance or `undefined` if no
+    value is present
 
 ___
 
@@ -895,21 +1340,43 @@ ___
 
 • get **performers**(): string[]
 
-*Defined in src/tag.ts:120*
+Gets the performers or artists who performed in the media described by the current instance.
+
+**`description`** This field is most commonly called "Artists" in audio media or "Actors" in video
+    media, and should be used to represent each artist/actor appearing in the media. It can
+    be simple in the form of "Above & Beyond" or more complicated in the form of
+    "Jono Grant, Tony McGuinness, Paavo Siljamäki", depending on the preferences of the
+    user and the degree to which they organize their media collection.
+    As the preference of the user may vary, applications should avoid limiting the user in
+    what constitutes the performers field - especially with regards to number of performers.
 
 **Returns:** string[]
 
+Performers who performed in the media described by the current instance or an empty
+    array if no value is present.
+
 • set **performers**(`value`: string[]): void
 
-*Defined in src/tag.ts:121*
+Sets the performers or artists who performed in the media described by the current instance.
+
+**`description`** This field is most commonly called "Artists" in audio media or "Actors" in video
+    media, and should be used to represent each artist/actor appearing in the media. It can
+    be simple in the form of "Above & Beyond" or more complicated in the form of
+    "Jono Grant, Tony McGuinness, Paavo Siljamäki", depending on the preferences of the
+    user and the degree to which they organize their media collection.
+    As the preference of the user may vary, applications should avoid limiting the user in
+    what constitutes the performers field - especially with regards to number of performers.
 
 #### Parameters:
 
-Name | Type |
------- | ------ |
-`value` | string[] |
+Name | Type | Description |
+------ | ------ | ------ |
+`value` | string[] | Performers who performed in the media described by the current instance or an     empty array if no value is present.  |
 
 **Returns:** void
+
+Performers who performed in the media described by the current instance or an empty
+    array if no value is present.
 
 ___
 
@@ -917,21 +1384,41 @@ ___
 
 • get **performersRole**(): string[]
 
-*Defined in src/tag.ts:126*
+Gets the characters portrayed by an actor for a video or instruments played by a musician
+for music. This must match the [performers](_src_tag_.tag.md#performers) array (for each person, correspond one/more
+role). Several roles for the same artist/actor can be separated with semicolons. For
+example: "Bass; Backing Vocals; Vibraphone".
+
+**`description`** It is highly important to match each role to the performers. This means that an entry
+    in the [performersRole](_src_tag_.tag.md#performersrole) array is `undefined` to maintain the relationship between
+    `performers[i]` and `performersRole[i]`.
 
 **Returns:** string[]
 
+Array containing the roles played by the performers in the media described by the
+    current instance, or an empty array if no value is present.
+
 • set **performersRole**(`value`: string[]): void
 
-*Defined in src/tag.ts:127*
+Sets the characters portrayed by an actor for a video or instruments played by a musician
+for music. This must match the [performers](_src_tag_.tag.md#performers) array (for each person, correspond one/more
+role). Several roles for the same artist/actor can be separated with semicolons. For
+example: "Bass; Backing Vocals; Vibraphone".
+
+**`description`** It is highly important to match each role to the performers. This means that an entry
+    in the [performersRole](_src_tag_.tag.md#performersrole) array is `undefined` to maintain the relationship between
+    `performers[i]` and `performersRole[i]`.
 
 #### Parameters:
 
-Name | Type |
------- | ------ |
-`value` | string[] |
+Name | Type | Description |
+------ | ------ | ------ |
+`value` | string[] | Array containing the roles played by the performers in the media described by     the current instance, or an empty array if no value is present.  |
 
 **Returns:** void
+
+Array containing the roles played by the performers in the media described by the
+    current instance, or an empty array if no value is present.
 
 ___
 
@@ -939,21 +1426,41 @@ ___
 
 • get **performersSort**(): string[]
 
-*Defined in src/tag.ts:123*
+Gets the sortable names of the performers or artists who performed in the media described by
+the current instance.
+
+**`description`** This is used to provide more control over how the media is sorted. Typical uses are to
+    skip articles or sort by last name. For example, "The Pillows" might be sorted as
+    "Pillows, The".
+
+**`see`** performers
 
 **Returns:** string[]
 
+Sortable names for the performers who performed in the media described by the
+    current instance, or an empty array if no value is present.
+
 • set **performersSort**(`value`: string[]): void
 
-*Defined in src/tag.ts:124*
+Gets the sortable names of the performers or artists who performed in the media described by
+the current instance.
+
+**`description`** This is used to provide more control over how the media is sorted. Typical uses are to
+    skip articles or sort by last name. For example, "The Pillows" might be sorted as
+    "Pillows, The".
+
+**`see`** performers
 
 #### Parameters:
 
-Name | Type |
------- | ------ |
-`value` | string[] |
+Name | Type | Description |
+------ | ------ | ------ |
+`value` | string[] | Sortable names for the performers who performed in the media described by the     current instance, or an empty array if no value is present.  |
 
 **Returns:** void
+
+Sortable names for the performers who performed in the media described by the
+    current instance, or an empty array if no value is present.
 
 ___
 
@@ -961,21 +1468,35 @@ ___
 
 • get **pictures**(): [IPicture](../interfaces/_src_picture_.ipicture.md)[]
 
-*Defined in src/tag.ts:243*
+Gets a collection of pictures associated with the media represented by the current instance.
+
+**`description`** Typically, this value is used to store an album cover or icon to use for the file, but
+    it is capable of holding any type of image or file, including pictures of the band, the
+    recording studio, the concert, etc.
 
 **Returns:** [IPicture](../interfaces/_src_picture_.ipicture.md)[]
 
+Array containing a collection of pictures associated with the media represented by
+    the current instance or an empty array if no pictures are present.
+
 • set **pictures**(`value`: [IPicture](../interfaces/_src_picture_.ipicture.md)[]): void
 
-*Defined in src/tag.ts:244*
+Sets a collection of pictures associated with the media represented by the current instance.
+
+**`description`** Typically, this value is used to store an album cover or icon to use for the file, but
+    it is capable of holding any type of image or file, including pictures of the band, the
+    recording studio, the concert, etc.
 
 #### Parameters:
 
-Name | Type |
------- | ------ |
-`value` | [IPicture](../interfaces/_src_picture_.ipicture.md)[] |
+Name | Type | Description |
+------ | ------ | ------ |
+`value` | [IPicture](../interfaces/_src_picture_.ipicture.md)[] | Array containing a collection of pictures associated with the media represented by     the current instance or an empty array if no pictures are present.  |
 
 **Returns:** void
+
+Array containing a collection of pictures associated with the media represented by
+    the current instance or an empty array if no pictures are present.
 
 ___
 
@@ -983,21 +1504,25 @@ ___
 
 • get **publisher**(): string
 
-*Defined in src/tag.ts:237*
+Gets the publisher of the track.
 
 **Returns:** string
 
+Publisher of the track or `undefined` if no value is set
+
 • set **publisher**(`value`: string): void
 
-*Defined in src/tag.ts:238*
+Sets the publisher of the track.
 
 #### Parameters:
 
-Name | Type |
------- | ------ |
-`value` | string |
+Name | Type | Description |
+------ | ------ | ------ |
+`value` | string | Publisher of the track or `undefined` if no value is set  |
 
 **Returns:** void
+
+Publisher of the track or `undefined` if no value is set
 
 ___
 
@@ -1005,21 +1530,25 @@ ___
 
 • get **remixedBy**(): string
 
-*Defined in src/tag.ts:234*
+Gets the remixer of the track.
 
 **Returns:** string
 
+Remixer of the track or `undefined` if no value is set
+
 • set **remixedBy**(`value`: string): void
 
-*Defined in src/tag.ts:235*
+Sets the remixer of the track.
 
 #### Parameters:
 
-Name | Type |
------- | ------ |
-`value` | string |
+Name | Type | Description |
+------ | ------ | ------ |
+`value` | string | Remixer of the track or `undefined` if no value is set  |
 
 **Returns:** void
+
+Remixer of the track or `undefined` if no value is set
 
 ___
 
@@ -1027,21 +1556,25 @@ ___
 
 • get **replayGainAlbumGain**(): number
 
-*Defined in src/tag.ts:225*
+Gets the ReplayGain album gain in dB.
 
 **Returns:** number
 
+Album gain as per the ReplayGain specifications, in dB, or `NaN` if no value is set
+
 • set **replayGainAlbumGain**(`value`: number): void
 
-*Defined in src/tag.ts:226*
+Sets the ReplayGain album gain in dB.
 
 #### Parameters:
 
-Name | Type |
------- | ------ |
-`value` | number |
+Name | Type | Description |
+------ | ------ | ------ |
+`value` | number | Album gain as per the ReplayGain specifications, in dB, or `NaN` if no value is     set  |
 
 **Returns:** void
+
+Album gain as per the ReplayGain specifications, in dB, or `NaN` if no value is set
 
 ___
 
@@ -1049,21 +1582,25 @@ ___
 
 • get **replayGainAlbumPeak**(): number
 
-*Defined in src/tag.ts:228*
+Gets the ReplayGain album peak sample.
 
 **Returns:** number
 
+Album peak as per the ReplayGain specifications, or `NaN` if no value is set
+
 • set **replayGainAlbumPeak**(`value`: number): void
 
-*Defined in src/tag.ts:229*
+Sets the ReplayGain album peak sample.
 
 #### Parameters:
 
-Name | Type |
------- | ------ |
-`value` | number |
+Name | Type | Description |
+------ | ------ | ------ |
+`value` | number | Album peak as per the ReplayGain specifications, or `NaN` if no value is set  |
 
 **Returns:** void
+
+Album peak as per the ReplayGain specifications, or `NaN` if no value is set
 
 ___
 
@@ -1071,21 +1608,25 @@ ___
 
 • get **replayGainTrackGain**(): number
 
-*Defined in src/tag.ts:219*
+Gets the ReplayGain track gain in dB.
 
 **Returns:** number
 
+Track gain as per ReplayGain specifications, in dB, or `NaN` if no value is set
+
 • set **replayGainTrackGain**(`value`: number): void
 
-*Defined in src/tag.ts:220*
+Sets the ReplayGain track gain in dB.
 
 #### Parameters:
 
-Name | Type |
------- | ------ |
-`value` | number |
+Name | Type | Description |
+------ | ------ | ------ |
+`value` | number | Track gain as per ReplayGain specifications, in dB, or `NaN` if no value is set  |
 
 **Returns:** void
+
+Track gain as per ReplayGain specifications, in dB, or `NaN` if no value is set
 
 ___
 
@@ -1093,21 +1634,25 @@ ___
 
 • get **replayGainTrackPeak**(): number
 
-*Defined in src/tag.ts:222*
+Gets the ReplayGain track peak sample.
 
 **Returns:** number
 
+Track peak as per the ReplayGain specifications, or `NaN` if no value is set
+
 • set **replayGainTrackPeak**(`value`: number): void
 
-*Defined in src/tag.ts:223*
+Sets the ReplayGain track peak sample.
 
 #### Parameters:
 
-Name | Type |
------- | ------ |
-`value` | number |
+Name | Type | Description |
+------ | ------ | ------ |
+`value` | number | Track peak as per the ReplayGain specifications, or `NaN` if no value is set  |
 
 **Returns:** void
+
+Track peak as per the ReplayGain specifications, or `NaN` if no value is set
 
 ___
 
@@ -1115,21 +1660,35 @@ ___
 
 • get **subtitle**(): string
 
-*Defined in src/tag.ts:114*
+Gets a description, one-line. It represents the tagline of the vide/music.
+
+**`description`** This field gives a nice/short precision to the title, which is typically below the
+    title on the front cover of the media. For example for "Ocean's 13", this would be
+    "Revenge is a funny thing".
 
 **Returns:** string
 
+Subtitle of the media represented by the current instance or `undefined` if no
+    value is present
+
 • set **subtitle**(`value`: string): void
 
-*Defined in src/tag.ts:115*
+Sets a description, one-line. It represents the tagline of the vide/music.
+
+**`description`** This field gives a nice/short precision to the title, which is typically below the
+    title on the front cover of the media. For example for "Ocean's 13", this would be
+    "Revenge is a funny thing".
 
 #### Parameters:
 
-Name | Type |
------- | ------ |
-`value` | string |
+Name | Type | Description |
+------ | ------ | ------ |
+`value` | string | Subtitle of the media represented by the current instance or `undefined` if no     value is present  |
 
 **Returns:** void
+
+Subtitle of the media represented by the current instance or `undefined` if no
+    value is present
 
 ___
 
@@ -1137,21 +1696,35 @@ ___
 
 • get **title**(): string
 
-*Defined in src/tag.ts:108*
+Gets the title for the media described by the current instance.
+
+**`description`** The title is most commonly the name of the song, episode or a movie title. For example
+    "Time Won't Me Go" (a song by The Bravery), "Three Stories" (an episode of House MD), or
+    "Fear and Loathing In Las Vegas" (a movie).
 
 **Returns:** string
 
+Title of the media described by the current instance or `undefined` if no value is
+    present.
+
 • set **title**(`value`: string): void
 
-*Defined in src/tag.ts:109*
+Sets the title for the media described by the current instance.
+
+**`description`** The title is most commonly the name of the song, episode or a movie title. For example
+    "Time Won't Me Go" (a song by The Bravery), "Three Stories" (an episode of House MD), or
+    "Fear and Loathing In Las Vegas" (a movie).
 
 #### Parameters:
 
-Name | Type |
------- | ------ |
-`value` | string |
+Name | Type | Description |
+------ | ------ | ------ |
+`value` | string | Title of the media described by the current instance or `undefined` if no value     is present.  |
 
 **Returns:** void
+
+Title of the media described by the current instance or `undefined` if no value is
+    present.
 
 ___
 
@@ -1159,21 +1732,31 @@ ___
 
 • get **titleSort**(): string
 
-*Defined in src/tag.ts:111*
+Gets the sortable name for the title of the media described by the current instance.
+
+**`description`** Possibly used to sort compilations or episodic content.
 
 **Returns:** string
 
+Sortable name of the media described by the current instance or `undefined` if no
+    value is present
+
 • set **titleSort**(`value`: string): void
 
-*Defined in src/tag.ts:112*
+Sets the sortable name for the title of the media described by the current instance.
+
+**`description`** Possibly used to sort compilations or episodic content.
 
 #### Parameters:
 
-Name | Type |
------- | ------ |
-`value` | string |
+Name | Type | Description |
+------ | ------ | ------ |
+`value` | string | Sortable name of the media described by the current instance or `undefined` if     no value is present  |
 
 **Returns:** void
+
+Sortable name of the media described by the current instance or `undefined` if no
+    value is present
 
 ___
 
@@ -1181,21 +1764,41 @@ ___
 
 • get **track**(): number
 
-*Defined in src/tag.ts:156*
+Gets the position of the media represented by the current instance in its containing album
+or season (for a series).
+
+**`description`** This value should be the same as is listed on the album cover and no more than
+    [trackCount](_src_tag_.tag.md#trackcount), if [trackCount](_src_tag_.tag.md#trackcount) is non-zero.
+    Most tagging formats store this as a string. To help sorting, a two-digit zero-padded
+    value is used in the resulting tag.
+    For a series, this property represents the episodes in a season of the series.
 
 **Returns:** number
 
+Position of the media represented by the current instance in its containing album
+    or `0` if not specified.
+
 • set **track**(`value`: number): void
 
-*Defined in src/tag.ts:157*
+Sets the position of the media represented by the current instance in its containing album
+or season (for a series).
+
+**`description`** This value should be the same as is listed on the album cover and no more than
+    [trackCount](_src_tag_.tag.md#trackcount), if [trackCount](_src_tag_.tag.md#trackcount) is non-zero.
+    Most tagging formats store this as a string. To help sorting, a two-digit zero-padded
+    value is used in the resulting tag.
+    For a series, this property represents the episodes in a season of the series.
 
 #### Parameters:
 
-Name | Type |
------- | ------ |
-`value` | number |
+Name | Type | Description |
+------ | ------ | ------ |
+`value` | number | Position of the media represented by the current instance in its containing     album or `0` if not specified.  |
 
 **Returns:** void
+
+Position of the media represented by the current instance in its containing album
+    or `0` if not specified.
 
 ___
 
@@ -1203,21 +1806,35 @@ ___
 
 • get **trackCount**(): number
 
-*Defined in src/tag.ts:159*
+Gets the number of tracks in the album or the number of episodes in a series of the media
+represented by the current instance.
+
+**`description`** If non-zero, this value should be equal to or greater than [track](_src_tag_.tag.md#track). If
+    [track](_src_tag_.tag.md#track) is `0`, this value should also be `0`.
 
 **Returns:** number
 
+Number of tracks in the album or number of episodes in a series of the media
+    represented by the current instance or `0` if not specified.
+
 • set **trackCount**(`value`: number): void
 
-*Defined in src/tag.ts:160*
+Sets the number of tracks in the album or the number of episodes in a series of the media
+represented by the current instance.
+
+**`description`** If non-zero, this value should be equal to or greater than [track](_src_tag_.tag.md#track). If
+    [track](_src_tag_.tag.md#track) is `0`, this value should also be `0`.
 
 #### Parameters:
 
-Name | Type |
------- | ------ |
-`value` | number |
+Name | Type | Description |
+------ | ------ | ------ |
+`value` | number | Number of tracks in the album or number of episodes in a series of the media     represented by the current instance or `0` if not specified.  |
 
 **Returns:** void
+
+Number of tracks in the album or number of episodes in a series of the media
+    represented by the current instance or `0` if not specified.
 
 ___
 
@@ -1225,21 +1842,37 @@ ___
 
 • get **year**(): number
 
-*Defined in src/tag.ts:153*
+Gets the year that the media represented by the current instance was recorded.
+
+**`description`** Years greater than 9999 cannot be stored by most tagging formats and will be cleared
+    if a higher value is set. Some tagging formats store higher precision dates which will
+    be truncated when this property is set. Format specific implementations are necessary to
+    access the higher precision values.
 
 **Returns:** number
 
+Year that the media represented by the current instance was created or `0` if no
+    value is present.
+
 • set **year**(`value`: number): void
 
-*Defined in src/tag.ts:154*
+Sets the year that the media represented by the current instance was recorded.
+
+**`description`** Years greater than 9999 cannot be stored by most tagging formats and will be cleared
+    if a higher value is set. Some tagging formats store higher precision dates which will
+    be truncated when this property is set. Format specific implementations are necessary to
+    access the higher precision values.
 
 #### Parameters:
 
-Name | Type |
------- | ------ |
-`value` | number |
+Name | Type | Description |
+------ | ------ | ------ |
+`value` | number | Year that the media represented by the current instance was created or `0` if no     value is present.  |
 
 **Returns:** void
+
+Year that the media represented by the current instance was created or `0` if no
+    value is present.
 
 ## Methods
 
@@ -1247,7 +1880,9 @@ Name | Type |
 
 ▸ `Abstract`**clear**(): void
 
-*Defined in src/tag.ts:301*
+Clears all values stored in the current instance.
+
+**`description`** The clearing procedure is format specific and should clear all values.
 
 **Returns:** void
 
@@ -1257,14 +1892,20 @@ ___
 
 ▸ **copyTo**(`target`: [Tag](_src_tag_.tag.md), `overwrite`: boolean): void
 
-*Defined in src/tag.ts:307*
+Copies the values from the current instance to another [Tag](_src_tag_.tag.md), optionally overwriting
+    existing values.
+
+**`description`** This method only copies the mist basic values when copying between different tag
+    formats. However, if `target` is of the same type as the current instance,
+    more advanced copying may be done. For example if both `this` and `target` are
+    [Id3v2Tag](_src_id3v2_id3v2tag_.id3v2tag.md), all frames will be copied to the target.
 
 #### Parameters:
 
-Name | Type |
------- | ------ |
-`target` | [Tag](_src_tag_.tag.md) |
-`overwrite` | boolean |
+Name | Type | Description |
+------ | ------ | ------ |
+`target` | [Tag](_src_tag_.tag.md) | Target tag to copy values to |
+`overwrite` | boolean | Whether or not to copy values over existing ones  |
 
 **Returns:** void
 
@@ -1274,7 +1915,9 @@ ___
 
 ▸ **setInfoTag**(): void
 
-*Defined in src/tag.ts:303*
+Set the tags that represent the tagger software (node-taglib-sharp) itself.
+
+**`description`** This is typically a method to call just before saving a tag.
 
 **Returns:** void
 
@@ -1284,31 +1927,38 @@ ___
 
 ▸ `Static` `Protected`**firstInGroup**(`group`: string[]): string
 
-*Defined in src/tag.ts:270*
+Gets the first string in an array.
 
 #### Parameters:
 
-Name | Type |
------- | ------ |
-`group` | string[] |
+Name | Type | Description |
+------ | ------ | ------ |
+`group` | string[] | Array of strings to get the first string from. |
 
 **Returns:** string
 
+First string contained in `group` or `undefined` if the array is
+    `undefined` or empty
+
 ___
 
-### isNullOrLikeEmpty
+### isFalsyOrLikeEmpty
 
-▸ `Static` `Protected`**isNullOrLikeEmpty**(`value`: string \| string[]): boolean
+▸ `Static` `Protected`**isFalsyOrLikeEmpty**(`value`: string \| string[]): boolean
 
-*Defined in src/tag.ts:338*
+Checks if a value is falsy or empty.
 
 #### Parameters:
 
-Name | Type |
------- | ------ |
-`value` | string \| string[] |
+Name | Type | Description |
+------ | ------ | ------ |
+`value` | string \| string[] | Object to check |
 
 **Returns:** boolean
+
+If `value` is a string, `true` is returned if the value is falsy or all
+    whitespace, `false` is returned otherwise. If `value` is an array of strings,
+    the array must be falsy or all elements must be falsy or whitespace to return `true`.
 
 ___
 
@@ -1316,12 +1966,15 @@ ___
 
 ▸ `Static` `Protected`**joinGroup**(`group`: string[]): string
 
-*Defined in src/tag.ts:276*
+Joins an array of string into a single, semicolon and space separated string.
 
 #### Parameters:
 
-Name | Type |
------- | ------ |
-`group` | string[] |
+Name | Type | Description |
+------ | ------ | ------ |
+`group` | string[] | Array of string to join |
 
 **Returns:** string
+
+A semicolon and space separated string containing the values from `group`
+    or undefined if the array is `undefined` or empty.

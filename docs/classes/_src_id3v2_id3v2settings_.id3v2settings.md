@@ -1,6 +1,6 @@
-**node-taglib-sharp**
+**[node-taglib-sharp](../README.md)**
 
-> [README](../README.md) / [Globals](../globals.md) / ["src/id3v2/id3v2Settings"](../modules/_src_id3v2_id3v2settings_.md) / Id3v2Settings
+> [Globals](../globals.md) / ["src/id3v2/id3v2Settings"](../modules/_src_id3v2_id3v2settings_.md) / Id3v2Settings
 
 # Class: Id3v2Settings
 
@@ -27,15 +27,11 @@
 
 • `Static`get **defaultEncoding**(): [StringType](../enums/_src_bytevector_.stringtype.md)
 
-*Defined in src/id3v2/id3v2Settings.ts:20*
-
 Gets the encoding to use when creating new frames.
 
 **Returns:** [StringType](../enums/_src_bytevector_.stringtype.md)
 
 • `Static`set **defaultEncoding**(`value`: [StringType](../enums/_src_bytevector_.stringtype.md)): void
-
-*Defined in src/id3v2/id3v2Settings.ts:25*
 
 Sets the encoding to use when creating new frames.
 
@@ -53,19 +49,15 @@ ___
 
 • `Static`get **defaultVersion**(): number
 
-*Defined in src/id3v2/id3v2Settings.ts:31*
-
 Gets the default version to use when creating new tags.
-If {@see forceDefaultEncoding} is `true` then all tags will be rendered with this version.
+If [forceDefaultEncoding](_src_id3v2_id3v2settings_.id3v2settings.md#forcedefaultencoding) is `true` then all tags will be rendered with this version.
 
 **Returns:** number
 
 • `Static`set **defaultVersion**(`value`: number): void
 
-*Defined in src/id3v2/id3v2Settings.ts:37*
-
 Sets the default version to use when creating new tags.
-If {@see forceDefaultEncoding} is `true` then all tags will be rendered with this version.
+If [forceDefaultEncoding](_src_id3v2_id3v2settings_.id3v2settings.md#forcedefaultencoding) is `true` then all tags will be rendered with this version.
 
 #### Parameters:
 
@@ -81,8 +73,6 @@ ___
 
 • `Static`get **footerSize**(): number
 
-*Defined in src/id3v2/id3v2Settings.ts:46*
-
 Size of an ID3v2 footer in bytes
 
 **Returns:** number
@@ -93,16 +83,12 @@ ___
 
 • `Static`get **forceDefaultEncoding**(): boolean
 
-*Defined in src/id3v2/id3v2Settings.ts:52*
-
 Gets whether or not to render all frames with the default encoding rather than their
 original encoding.
 
 **Returns:** boolean
 
 • `Static`set **forceDefaultEncoding**(`value`: boolean): void
-
-*Defined in src/id3v2/id3v2Settings.ts:59*
 
 Sets whether or not to render all frames with the default encoding rather than their
 original encoding.
@@ -111,7 +97,7 @@ original encoding.
 
 Name | Type | Description |
 ------ | ------ | ------ |
-`value` | boolean | If `true` frames will be rendered using {@see defaultEncoding} rather than     their original encoding.  |
+`value` | boolean | If `true` frames will be rendered using [defaultEncoding](_src_id3v2_id3v2settings_.id3v2settings.md#defaultencoding) rather than     their original encoding.  |
 
 **Returns:** void
 
@@ -121,16 +107,12 @@ ___
 
 • `Static`get **forceDefaultVersion**(): boolean
 
-*Defined in src/id3v2/id3v2Settings.ts:65*
-
 Gets whether or not to save all tags in the default version rather than their original
 version.
 
 **Returns:** boolean
 
 • `Static`set **forceDefaultVersion**(`value`: boolean): void
-
-*Defined in src/id3v2/id3v2Settings.ts:73*
 
 Sets whether or not to save all tags in the default version rather than their original
 version.
@@ -139,7 +121,7 @@ version.
 
 Name | Type | Description |
 ------ | ------ | ------ |
-`value` | boolean | If `true`, tags will be saved in the version defined in {@see defaultVersion}     rather than their original format, with the exception of tags with footers which will     always be saved in version 4  |
+`value` | boolean | If `true`, tags will be saved in the version defined in [defaultVersion](_src_id3v2_id3v2settings_.id3v2settings.md#defaultversion)     rather than their original format, with the exception of tags with footers which will     always be saved in version 4  |
 
 **Returns:** void
 
@@ -148,8 +130,6 @@ ___
 ### headerSize
 
 • `Static`get **headerSize**(): number
-
-*Defined in src/id3v2/id3v2Settings.ts:78*
 
 Size of an ID3v2 header in bytes
 
@@ -161,8 +141,6 @@ ___
 
 • `Static`get **strictFrameForVersion**(): boolean
 
-*Defined in src/id3v2/id3v2Settings.ts:103*
-
 Gets whether or not attempting to write a frame that is unsupported in the desired version
 will throw an error.
 If `true` writing a frame that is not supported in the desired version will throw an error
@@ -172,8 +150,6 @@ will be omitted from rendering and no error will be thrown.
 **Returns:** boolean
 
 • `Static`set **strictFrameForVersion**(`value`: boolean): void
-
-*Defined in src/id3v2/id3v2Settings.ts:111*
 
 Sets whether or not attempting to write a frame that is unsupported in the desired version
 will throw an error.
@@ -195,8 +171,6 @@ ___
 
 • `Static`get **useNumericGenres**(): boolean
 
-*Defined in src/id3v2/id3v2Settings.ts:86*
-
 Gets whether or not to use ID3v1 style numeric genres when possible.
 If `true`, the library will try looking up the numeric genre code when storing the value.
 for ID3v2.2 and ID3v2.3 "Rock" would be stored as "(17)" and for ID3v2.4, it would be
@@ -205,8 +179,6 @@ stored as "17".
 **Returns:** boolean
 
 • `Static`set **useNumericGenres**(`value`: boolean): void
-
-*Defined in src/id3v2/id3v2Settings.ts:94*
 
 Sets whether or not to use ID3v1 style numeric genres when possible.
 If `true`, the library will try looking up the numeric genre code when storing the value.

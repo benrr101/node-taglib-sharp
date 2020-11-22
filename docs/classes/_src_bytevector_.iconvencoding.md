@@ -1,6 +1,6 @@
-**node-taglib-sharp**
+**[node-taglib-sharp](../README.md)**
 
-> [README](../README.md) / [Globals](../globals.md) / ["src/byteVector"](../modules/_src_bytevector_.md) / IConvEncoding
+> [Globals](../globals.md) / ["src/byteVector"](../modules/_src_bytevector_.md) / IConvEncoding
 
 # Class: IConvEncoding
 
@@ -29,8 +29,6 @@
 
 \+ **new IConvEncoding**(`encoding`: string): [IConvEncoding](_src_bytevector_.iconvencoding.md)
 
-*Defined in src/byteVector.ts:12*
-
 #### Parameters:
 
 Name | Type |
@@ -45,15 +43,11 @@ Name | Type |
 
 • `Readonly` **encoding**: string
 
-*Defined in src/byteVector.ts:12*
-
 ## Methods
 
 ### decode
 
 ▸ **decode**(`data`: Buffer): string
-
-*Defined in src/byteVector.ts:18*
 
 #### Parameters:
 
@@ -68,8 +62,6 @@ ___
 ### encode
 
 ▸ **encode**(`text`: string): Uint8Array
-
-*Defined in src/byteVector.ts:22*
 
 #### Parameters:
 

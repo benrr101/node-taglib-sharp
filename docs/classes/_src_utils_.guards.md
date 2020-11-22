@@ -1,6 +1,6 @@
-**node-taglib-sharp**
+**[node-taglib-sharp](../README.md)**
 
-> [README](../README.md) / [Globals](../globals.md) / ["src/utils"](../modules/_src_utils_.md) / Guards
+> [Globals](../globals.md) / ["src/utils"](../modules/_src_utils_.md) / Guards
 
 # Class: Guards
 
@@ -31,8 +31,6 @@
 
 ▸ `Static`**betweenExclusive**(`value`: number, `minValue`: number, `maxValue`: number, `name`: string): void
 
-*Defined in src/utils.ts:5*
-
 #### Parameters:
 
 Name | Type |
@@ -49,8 +47,6 @@ ___
 ### betweenInclusive
 
 ▸ `Static`**betweenInclusive**(`value`: number, `minValue`: number, `maxValue`: number, `name`: string): void
-
-*Defined in src/utils.ts:11*
 
 #### Parameters:
 
@@ -69,8 +65,6 @@ ___
 
 ▸ `Static`**byte**(`value`: number, `name`: string): void
 
-*Defined in src/utils.ts:17*
-
 #### Parameters:
 
 Name | Type |
@@ -85,8 +79,6 @@ ___
 ### greaterThanInclusive
 
 ▸ `Static`**greaterThanInclusive**(`value`: number, `lowerBound`: number, `name`: string): void
-
-*Defined in src/utils.ts:23*
 
 #### Parameters:
 
@@ -104,8 +96,6 @@ ___
 
 ▸ `Static`**int**(`value`: number, `name`: string): void
 
-*Defined in src/utils.ts:29*
-
 #### Parameters:
 
 Name | Type |
@@ -120,8 +110,6 @@ ___
 ### lessThanInclusive
 
 ▸ `Static`**lessThanInclusive**(`value`: number, `upperBound`: number, `name`: string): void
-
-*Defined in src/utils.ts:35*
 
 #### Parameters:
 
@@ -139,8 +127,6 @@ ___
 
 ▸ `Static`**notNullOrUndefined**(`value`: any, `name`: string): void
 
-*Defined in src/utils.ts:41*
-
 #### Parameters:
 
 Name | Type |
@@ -155,8 +141,6 @@ ___
 ### optionalByte
 
 ▸ `Static`**optionalByte**(`value`: number \| undefined, `name`: string): void
-
-*Defined in src/utils.ts:47*
 
 #### Parameters:
 
@@ -173,8 +157,6 @@ ___
 
 ▸ `Static`**short**(`value`: number, `name`: string): void
 
-*Defined in src/utils.ts:54*
-
 #### Parameters:
 
 Name | Type |
@@ -189,8 +171,6 @@ ___
 ### truthy
 
 ▸ `Static`**truthy**(`value`: object \| string, `name`: string): void
-
-*Defined in src/utils.ts:60*
 
 #### Parameters:
 
@@ -207,8 +187,6 @@ ___
 
 ▸ `Static`**uint**(`value`: number, `name`: string): void
 
-*Defined in src/utils.ts:66*
-
 #### Parameters:
 
 Name | Type |
@@ -223,8 +201,6 @@ ___
 ### ulong
 
 ▸ `Static`**ulong**(`value`: BigInt.BigInteger, `name`: string): void
-
-*Defined in src/utils.ts:72*
 
 #### Parameters:
 

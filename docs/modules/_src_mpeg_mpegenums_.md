@@ -1,6 +1,6 @@
-**node-taglib-sharp**
+**[node-taglib-sharp](../README.md)**
 
-> [README](../README.md) / [Globals](../globals.md) / "src/mpeg/mpegEnums"
+> [Globals](../globals.md) / "src/mpeg/mpegEnums"
 
 # Module: "src/mpeg/mpegEnums"
 

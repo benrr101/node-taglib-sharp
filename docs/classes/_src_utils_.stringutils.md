@@ -1,6 +1,6 @@
-**node-taglib-sharp**
+**[node-taglib-sharp](../README.md)**
 
-> [README](../README.md) / [Globals](../globals.md) / ["src/utils"](../modules/_src_utils_.md) / StringUtils
+> [Globals](../globals.md) / ["src/utils"](../modules/_src_utils_.md) / StringUtils
 
 # Class: StringUtils
 
@@ -18,15 +18,13 @@
 
 ### trimStart
 
-▸ `Static`**trimStart**(`trimee`: string, `chars`: string): string
-
-*Defined in src/utils.ts:121*
+▸ `Static`**trimStart**(`toTrim`: string, `chars`: string): string
 
 #### Parameters:
 
 Name | Type |
 ------ | ------ |
-`trimee` | string |
+`toTrim` | string |
 `chars` | string |
 
 **Returns:** string

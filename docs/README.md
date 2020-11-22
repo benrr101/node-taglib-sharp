@@ -1,6 +1,6 @@
-**node-taglib-sharp**
+**[node-taglib-sharp](README.md)**
 
-> README / [Globals](globals.md)
+> [Globals](globals.md)
 
 # TagLib# for Node
 

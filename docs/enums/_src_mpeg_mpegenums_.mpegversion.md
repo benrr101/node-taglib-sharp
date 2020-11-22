@@ -1,6 +1,6 @@
-**node-taglib-sharp**
+**[node-taglib-sharp](../README.md)**
 
-> [README](../README.md) / [Globals](../globals.md) / ["src/mpeg/mpegEnums"](../modules/_src_mpeg_mpegenums_.md) / MpegVersion
+> [Globals](../globals.md) / ["src/mpeg/mpegEnums"](../modules/_src_mpeg_mpegenums_.md) / MpegVersion
 
 # Enumeration: MpegVersion
 
@@ -19,9 +19,7 @@ Indicates the MPEG version of a file or stream.
 
 ### Unknown
 
-•  **Unknown**: {} = -1
-
-*Defined in src/mpeg/mpegEnums.ts:23*
+•  **Unknown**:  = -1
 
 Unknown version
 
@@ -29,9 +27,7 @@ ___
 
 ### Version1
 
-•  **Version1**: {} = 0
-
-*Defined in src/mpeg/mpegEnums.ts:26*
+•  **Version1**:  = 0
 
 MPEG-1
 
@@ -39,9 +35,7 @@ ___
 
 ### Version2
 
-•  **Version2**: {} = 1
-
-*Defined in src/mpeg/mpegEnums.ts:29*
+•  **Version2**:  = 1
 
 MPEG-2
 
@@ -49,8 +43,6 @@ ___
 
 ### Version25
 
-•  **Version25**: {} = 2
-
-*Defined in src/mpeg/mpegEnums.ts:32*
+•  **Version25**:  = 2
 
 MPEG-2.5

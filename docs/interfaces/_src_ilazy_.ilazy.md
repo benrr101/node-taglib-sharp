@@ -1,6 +1,6 @@
-**node-taglib-sharp**
+**[node-taglib-sharp](../README.md)**
 
-> [README](../README.md) / [Globals](../globals.md) / ["src/iLazy"](../modules/_src_ilazy_.md) / ILazy
+> [Globals](../globals.md) / ["src/iLazy"](../modules/_src_ilazy_.md) / ILazy
 
 # Interface: ILazy
 
@@ -28,14 +28,10 @@
 
 •  **isLoaded**: boolean
 
-*Defined in src/iLazy.ts:2*
-
 ## Methods
 
 ### load
 
 ▸ **load**(): void
-
-*Defined in src/iLazy.ts:3*
 
 **Returns:** void

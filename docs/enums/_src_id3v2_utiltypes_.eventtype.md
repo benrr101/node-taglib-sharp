@@ -1,6 +1,6 @@
-**node-taglib-sharp**
+**[node-taglib-sharp](../README.md)**
 
-> [README](../README.md) / [Globals](../globals.md) / ["src/id3v2/utilTypes"](../modules/_src_id3v2_utiltypes_.md) / EventType
+> [Globals](../globals.md) / ["src/id3v2/utilTypes"](../modules/_src_id3v2_utiltypes_.md) / EventType
 
 # Enumeration: EventType
 
@@ -38,9 +38,7 @@
 
 ### AudioEnd
 
-•  **AudioEnd**: {} = 253
-
-*Defined in src/id3v2/utilTypes.ts:190*
+•  **AudioEnd**:  = 253
 
 End of audio
 
@@ -48,9 +46,7 @@ ___
 
 ### AudioFileEnd
 
-•  **AudioFileEnd**: {} = 254
-
-*Defined in src/id3v2/utilTypes.ts:195*
+•  **AudioFileEnd**:  = 254
 
 End of the audio file
 
@@ -58,9 +54,7 @@ ___
 
 ### EndOfInitialSilence
 
-•  **EndOfInitialSilence**: {} = 1
-
-*Defined in src/id3v2/utilTypes.ts:80*
+•  **EndOfInitialSilence**:  = 1
 
 End of initial silence
 
@@ -68,9 +62,7 @@ ___
 
 ### InterludeStart
 
-•  **InterludeStart**: {} = 8
-
-*Defined in src/id3v2/utilTypes.ts:115*
+•  **InterludeStart**:  = 8
 
 Start of the interlude
 
@@ -78,9 +70,7 @@ ___
 
 ### IntroEnd
 
-•  **IntroEnd**: {} = 16
-
-*Defined in src/id3v2/utilTypes.ts:155*
+•  **IntroEnd**:  = 16
 
 End of the intro
 
@@ -88,9 +78,7 @@ ___
 
 ### IntroStart
 
-•  **IntroStart**: {} = 2
-
-*Defined in src/id3v2/utilTypes.ts:85*
+•  **IntroStart**:  = 2
 
 Start of the intro
 
@@ -98,9 +86,7 @@ ___
 
 ### KeyChange
 
-•  **KeyChange**: {} = 11
-
-*Defined in src/id3v2/utilTypes.ts:130*
+•  **KeyChange**:  = 11
 
 Indicates a key change event
 
@@ -108,9 +94,7 @@ ___
 
 ### MainPartEnd
 
-•  **MainPartEnd**: {} = 17
-
-*Defined in src/id3v2/utilTypes.ts:160*
+•  **MainPartEnd**:  = 17
 
 End of the main part of the song
 
@@ -118,9 +102,7 @@ ___
 
 ### MainPartStart
 
-•  **MainPartStart**: {} = 3
-
-*Defined in src/id3v2/utilTypes.ts:90*
+•  **MainPartStart**:  = 3
 
 Start of the main part of the song
 
@@ -128,9 +110,7 @@ ___
 
 ### MomentaryUnwantedNoise
 
-•  **MomentaryUnwantedNoise**: {} = 13
-
-*Defined in src/id3v2/utilTypes.ts:140*
+•  **MomentaryUnwantedNoise**:  = 13
 
 Indicates momentary unwanted noise (snap, crackle, and pop)
 
@@ -138,9 +118,7 @@ ___
 
 ### OutroEnd
 
-•  **OutroEnd**: {} = 5
-
-*Defined in src/id3v2/utilTypes.ts:100*
+•  **OutroEnd**:  = 5
 
 End of the outro
 
@@ -148,9 +126,7 @@ ___
 
 ### OutroStart
 
-•  **OutroStart**: {} = 4
-
-*Defined in src/id3v2/utilTypes.ts:95*
+•  **OutroStart**:  = 4
 
 Start of the outro
 
@@ -158,9 +134,7 @@ ___
 
 ### Padding
 
-•  **Padding**: {} = 0
-
-*Defined in src/id3v2/utilTypes.ts:75*
+•  **Padding**:  = 0
 
 Padding - no meaning
 
@@ -168,9 +142,7 @@ ___
 
 ### Profanity
 
-•  **Profanity**: {} = 21
-
-*Defined in src/id3v2/utilTypes.ts:180*
+•  **Profanity**:  = 21
 
 Start of profanity
 
@@ -178,9 +150,7 @@ ___
 
 ### ProfanityEnd
 
-•  **ProfanityEnd**: {} = 22
-
-*Defined in src/id3v2/utilTypes.ts:185*
+•  **ProfanityEnd**:  = 22
 
 End of profanity
 
@@ -188,9 +158,7 @@ ___
 
 ### RefrainEnd
 
-•  **RefrainEnd**: {} = 19
-
-*Defined in src/id3v2/utilTypes.ts:170*
+•  **RefrainEnd**:  = 19
 
 End of the refrain
 
@@ -198,9 +166,7 @@ ___
 
 ### RefrainStart
 
-•  **RefrainStart**: {} = 7
-
-*Defined in src/id3v2/utilTypes.ts:110*
+•  **RefrainStart**:  = 7
 
 Start of the refrain
 
@@ -208,9 +174,7 @@ ___
 
 ### SustainedNoise
 
-•  **SustainedNoise**: {} = 14
-
-*Defined in src/id3v2/utilTypes.ts:145*
+•  **SustainedNoise**:  = 14
 
 Start of sustained noise
 
@@ -218,9 +182,7 @@ ___
 
 ### SustainedNoiseEnd
 
-•  **SustainedNoiseEnd**: {} = 15
-
-*Defined in src/id3v2/utilTypes.ts:150*
+•  **SustainedNoiseEnd**:  = 15
 
 End of sustained noise
 
@@ -228,9 +190,7 @@ ___
 
 ### ThemeEnd
 
-•  **ThemeEnd**: {} = 20
-
-*Defined in src/id3v2/utilTypes.ts:175*
+•  **ThemeEnd**:  = 20
 
 End of the main theme
 
@@ -238,9 +198,7 @@ ___
 
 ### ThemeStart
 
-•  **ThemeStart**: {} = 9
-
-*Defined in src/id3v2/utilTypes.ts:120*
+•  **ThemeStart**:  = 9
 
 Start of the theme
 
@@ -248,9 +206,7 @@ ___
 
 ### TimeChange
 
-•  **TimeChange**: {} = 12
-
-*Defined in src/id3v2/utilTypes.ts:135*
+•  **TimeChange**:  = 12
 
 Indicates a tempo/time signature change event
 
@@ -258,9 +214,7 @@ ___
 
 ### VariationStart
 
-•  **VariationStart**: {} = 10
-
-*Defined in src/id3v2/utilTypes.ts:125*
+•  **VariationStart**:  = 10
 
 Start of a variation
 
@@ -268,9 +222,7 @@ ___
 
 ### VerseEnd
 
-•  **VerseEnd**: {} = 18
-
-*Defined in src/id3v2/utilTypes.ts:165*
+•  **VerseEnd**:  = 18
 
 End of the verse
 
@@ -278,8 +230,6 @@ ___
 
 ### VerseStart
 
-•  **VerseStart**: {} = 6
-
-*Defined in src/id3v2/utilTypes.ts:105*
+•  **VerseStart**:  = 6
 
 Start of the verse

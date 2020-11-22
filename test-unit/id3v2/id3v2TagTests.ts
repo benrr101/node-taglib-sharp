@@ -157,7 +157,7 @@ function getTestTagHeader(version: number, flags: Id3v2TagHeaderFlags, tagSize: 
         // Arrange
         const frame1 = PlayCountFrame.fromEmpty().render(4);
         const data = ByteVector.concatenate(
-            getTestTagHeader(3, Id3v2TagHeaderFlags.Unsynchronication, frame1.length),
+            getTestTagHeader(3, Id3v2TagHeaderFlags.Unsynchronization, frame1.length),
             frame1
         );
         SyncData.unsyncByteVector(data);
@@ -1862,7 +1862,7 @@ function getTestTagHeader(version: number, flags: Id3v2TagHeaderFlags, tagSize: 
         // Arrange
         const tag = Id3v2Tag.fromEmpty();
         tag.version = 4;
-        tag.flags = Id3v2TagHeaderFlags.Unsynchronication;
+        tag.flags = Id3v2TagHeaderFlags.Unsynchronization;
 
         const frame1 = TextInformationFrame.fromIdentifier(FrameIdentifiers.TCOM);
         const frame2 = TextInformationFrame.fromIdentifier(FrameIdentifiers.TCON);
@@ -1879,7 +1879,7 @@ function getTestTagHeader(version: number, flags: Id3v2TagHeaderFlags, tagSize: 
 
         const header = new Id3v2TagHeader();
         header.tagSize = 1024 + frame1Data.length + frame2Data.length;
-        header.flags = Id3v2TagHeaderFlags.Unsynchronication;
+        header.flags = Id3v2TagHeaderFlags.Unsynchronization;
         header.majorVersion = 4;
 
         const expected = ByteVector.concatenate(
@@ -1897,7 +1897,7 @@ function getTestTagHeader(version: number, flags: Id3v2TagHeaderFlags, tagSize: 
         // Arrange
         const tag = Id3v2Tag.fromEmpty();
         tag.version = 3;
-        tag.flags = Id3v2TagHeaderFlags.Unsynchronication;
+        tag.flags = Id3v2TagHeaderFlags.Unsynchronization;
 
         const frame1 = TextInformationFrame.fromIdentifier(FrameIdentifiers.TCOM);
         const frame1Data = frame1.render(3);
@@ -1913,7 +1913,7 @@ function getTestTagHeader(version: number, flags: Id3v2TagHeaderFlags, tagSize: 
         SyncData.unsyncByteVector(frameData);
 
         const header = new Id3v2TagHeader();
-        header.flags = Id3v2TagHeaderFlags.Unsynchronication;
+        header.flags = Id3v2TagHeaderFlags.Unsynchronization;
         header.tagSize = 1024 + frameData.length;
         header.majorVersion = 3;
 

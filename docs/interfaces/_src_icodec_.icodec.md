@@ -1,6 +1,6 @@
-**node-taglib-sharp**
+**[node-taglib-sharp](../README.md)**
 
-> [README](../README.md) / [Globals](../globals.md) / ["src/iCodec"](../modules/_src_icodec_.md) / ICodec
+> [Globals](../globals.md) / ["src/iCodec"](../modules/_src_icodec_.md) / ICodec
 
 # Interface: ICodec
 
@@ -30,8 +30,6 @@ Interface that provides basic information common to all media codecs
 
 •  **description**: string
 
-*Defined in src/iCodec.ts:44*
-
 Gets a text description of the media represented by the current instance.
 
 ___
@@ -39,8 +37,6 @@ ___
 ### durationMilliseconds
 
 •  **durationMilliseconds**: number
-
-*Defined in src/iCodec.ts:50*
 
 Duration of the media in milliseconds represented by the current instance.
 
@@ -51,7 +47,5 @@ ___
 ### mediaTypes
 
 •  **mediaTypes**: [MediaTypes](../enums/_src_icodec_.mediatypes.md)
-
-*Defined in src/iCodec.ts:55*
 
 Types of media represented by the current instance, bitwise combined.

@@ -52,7 +52,7 @@ export default class MusicCdIdentifierFrame extends Frame {
     }
 
     /** @inheritDoc */
-    public get frameClassType(): FrameClassType { return FrameClassType.MusicCdIdentiferFrame; }
+    public get frameClassType(): FrameClassType { return FrameClassType.MusicCdIdentifierFrame; }
 
     /**
      * Gets the identifier data stored in the current instance

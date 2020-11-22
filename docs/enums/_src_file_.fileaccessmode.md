@@ -1,10 +1,10 @@
-**node-taglib-sharp**
+**[node-taglib-sharp](../README.md)**
 
-> [README](../README.md) / [Globals](../globals.md) / ["src/file"](../modules/_src_file_.md) / FileAccessMode
+> [Globals](../globals.md) / ["src/file"](../modules/_src_file_.md) / FileAccessMode
 
 # Enumeration: FileAccessMode
 
-Specifies the type of file access operations currently permitted on an instance of {@see File}
+Specifies the type of file access operations currently permitted on an instance of [File](../classes/_src_file_.file.md)
 
 ## Index
 
@@ -18,9 +18,7 @@ Specifies the type of file access operations currently permitted on an instance 
 
 ### Closed
 
-•  **Closed**: {}
-
-*Defined in src/file.ts:49*
+•  **Closed**: 
 
 The file is closed for both read and write operations
 
@@ -28,9 +26,7 @@ ___
 
 ### Read
 
-•  **Read**: {}
-
-*Defined in src/file.ts:39*
+•  **Read**: 
 
 Read operations can be performed.
 
@@ -38,8 +34,6 @@ ___
 
 ### Write
 
-•  **Write**: {}
-
-*Defined in src/file.ts:44*
+•  **Write**: 
 
 Read and write operations can be performed

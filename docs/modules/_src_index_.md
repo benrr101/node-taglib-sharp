@@ -1,6 +1,6 @@
-**node-taglib-sharp**
+**[node-taglib-sharp](../README.md)**
 
-> [README](../README.md) / [Globals](../globals.md) / "src/index"
+> [Globals](../globals.md) / "src/index"
 
 # Module: "src/index"
 
@@ -8,6 +8,7 @@
 
 ### References
 
+* [ApeTag](_src_index_.md#apetag)
 * [ByteVector](_src_index_.md#bytevector)
 * [CombinedTag](_src_index_.md#combinedtag)
 * [CorruptFileError](_src_index_.md#corruptfileerror)
@@ -79,6 +80,12 @@
 * [TagTypes](_src_index_.md#tagtypes)
 
 ## References
+
+### ApeTag
+
+Renames and re-exports: [ApeFile](../classes/_src_ape_apefile_.apefile.md)
+
+___
 
 ### ByteVector
 

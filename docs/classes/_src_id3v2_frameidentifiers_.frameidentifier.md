@@ -1,6 +1,6 @@
-**node-taglib-sharp**
+**[node-taglib-sharp](../README.md)**
 
-> [README](../README.md) / [Globals](../globals.md) / ["src/id3v2/frameIdentifiers"](../modules/_src_id3v2_frameidentifiers_.md) / FrameIdentifier
+> [Globals](../globals.md) / ["src/id3v2/frameIdentifiers"](../modules/_src_id3v2_frameidentifiers_.md) / FrameIdentifier
 
 # Class: FrameIdentifier
 
@@ -45,8 +45,6 @@
 
 \+ **new FrameIdentifier**(`v4`: string, `v3`: string, `v2`: string): [FrameIdentifier](_src_id3v2_frameidentifiers_.frameidentifier.md)
 
-*Defined in src/id3v2/frameIdentifiers.ts:25*
-
 #### Parameters:
 
 Name | Type |
@@ -63,8 +61,6 @@ Name | Type |
 
 • get **isTextFrame**(): boolean
 
-*Defined in src/id3v2/frameIdentifiers.ts:39*
-
 **Returns:** boolean
 
 ___
@@ -73,8 +69,6 @@ ___
 
 • get **isUrlFrame**(): boolean
 
-*Defined in src/id3v2/frameIdentifiers.ts:46*
-
 **Returns:** boolean
 
 ## Methods
@@ -82,8 +76,6 @@ ___
 ### render
 
 ▸ **render**(`version`: number): [ByteVector](_src_bytevector_.bytevector.md)
-
-*Defined in src/id3v2/frameIdentifiers.ts:53*
 
 #### Parameters:
 
@@ -98,7 +90,5 @@ ___
 ### toString
 
 ▸ **toString**(): string
-
-*Defined in src/id3v2/frameIdentifiers.ts:64*
 
 **Returns:** string

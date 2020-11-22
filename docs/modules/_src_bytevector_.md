@@ -1,6 +1,6 @@
-**node-taglib-sharp**
+**[node-taglib-sharp](../README.md)**
 
-> [README](../README.md) / [Globals](../globals.md) / "src/byteVector"
+> [Globals](../globals.md) / "src/byteVector"
 
 # Module: "src/byteVector"
 
@@ -24,5 +24,3 @@
 ### AB2B
 
 • `Const` **AB2B**: any = require("arraybuffer-to-buffer")
-
-*Defined in src/byteVector.ts:9*

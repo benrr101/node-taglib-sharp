@@ -1,6 +1,6 @@
-**node-taglib-sharp**
+**[node-taglib-sharp](../README.md)**
 
-> [README](../README.md) / [Globals](../globals.md) / "src/id3v2/frames/frameFactory"
+> [Globals](../globals.md) / "src/id3v2/frames/frameFactory"
 
 # Module: "src/id3v2/frames/frameFactory"
 
@@ -18,14 +18,10 @@
 
 ### FrameCreator
 
-Ƭ  **FrameCreator**: (data: [ByteVector](../classes/_src_bytevector_.bytevector.md),offset: number,header: [Id3v2FrameHeader](../classes/_src_id3v2_frames_frameheader_.id3v2frameheader.md),version: number) => [Frame](../classes/_src_id3v2_frames_frame_.frame.md)
-
-*Defined in src/id3v2/frames/frameFactory.ts:24*
+Ƭ  **FrameCreator**: (data: [ByteVector](../classes/_src_bytevector_.bytevector.md), offset: number, header: [Id3v2FrameHeader](../classes/_src_id3v2_frames_frameheader_.id3v2frameheader.md), version: number) => [Frame](../classes/_src_id3v2_frames_frame_.frame.md)
 
 ## Variables
 
 ### customFrameCreators
 
 • `Let` **customFrameCreators**: [FrameCreator](_src_id3v2_frames_framefactory_.md#framecreator)[] = []
-
-*Defined in src/id3v2/frames/frameFactory.ts:26*

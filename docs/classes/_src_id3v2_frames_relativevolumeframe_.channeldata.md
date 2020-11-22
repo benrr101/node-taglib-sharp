@@ -1,6 +1,6 @@
-**node-taglib-sharp**
+**[node-taglib-sharp](../README.md)**
 
-> [README](../README.md) / [Globals](../globals.md) / ["src/id3v2/frames/relativeVolumeFrame"](../modules/_src_id3v2_frames_relativevolumeframe_.md) / ChannelData
+> [Globals](../globals.md) / ["src/id3v2/frames/relativeVolumeFrame"](../modules/_src_id3v2_frames_relativevolumeframe_.md) / ChannelData
 
 # Class: ChannelData
 
@@ -33,8 +33,6 @@
 
 \+ **new ChannelData**(`channel`: [ChannelType](../enums/_src_id3v2_frames_relativevolumeframe_.channeltype.md)): [ChannelData](_src_id3v2_frames_relativevolumeframe_.channeldata.md)
 
-*Defined in src/id3v2/frames/relativeVolumeFrame.ts:62*
-
 #### Parameters:
 
 Name | Type |
@@ -49,8 +47,6 @@ Name | Type |
 
 • get **channelType**(): [ChannelType](../enums/_src_id3v2_frames_relativevolumeframe_.channeltype.md)
 
-*Defined in src/id3v2/frames/relativeVolumeFrame.ts:85*
-
 **Returns:** [ChannelType](../enums/_src_id3v2_frames_relativevolumeframe_.channeltype.md)
 
 ___
@@ -58,8 +54,6 @@ ___
 ### isSet
 
 • get **isSet**(): boolean
-
-*Defined in src/id3v2/frames/relativeVolumeFrame.ts:87*
 
 **Returns:** boolean
 
@@ -69,15 +63,11 @@ ___
 
 • get **peakBits**(): number
 
-*Defined in src/id3v2/frames/relativeVolumeFrame.ts:96*
-
 Number of bits used to express the peak volume.
 
 **Returns:** number
 
 • set **peakBits**(`value`: number): void
-
-*Defined in src/id3v2/frames/relativeVolumeFrame.ts:101*
 
 Number of bits used to express the peak volume.
 
@@ -95,27 +85,23 @@ ___
 
 • get **peakVolume**(): BigInt.BigInteger
 
-*Defined in src/id3v2/frames/relativeVolumeFrame.ts:112*
-
 Value of the peak sample in the file. It's unclear exactly how this works, but the ID3v2.4
 documentation explains this value as betweenInclusive 0 and 255 - but can be expressed using any
-number of bits ({@see peakBits}).
+number of bits ([peakBits](_src_id3v2_frames_relativevolumeframe_.channeldata.md#peakbits)).
 
 **Returns:** BigInt.BigInteger
 
 • set **peakVolume**(`value`: BigInt.BigInteger): void
 
-*Defined in src/id3v2/frames/relativeVolumeFrame.ts:119*
-
 Value of the peak sample in the file. It's unclear exactly how this works, but the ID3v2.4
 documentation explains this value as betweenInclusive 0 and 255 - but can be expressed using any
-number of bits ({@see peakBits}).
+number of bits ([peakBits](_src_id3v2_frames_relativevolumeframe_.channeldata.md#peakbits)).
 
 #### Parameters:
 
 Name | Type | Description |
 ------ | ------ | ------ |
-`value` | BigInt.BigInteger | Peak volume value. Must fit in the number of bits set in {@see peakBits}  |
+`value` | BigInt.BigInteger | Peak volume value. Must fit in the number of bits set in [peakBits](_src_id3v2_frames_relativevolumeframe_.channeldata.md#peakbits)  |
 
 **Returns:** void
 
@@ -125,15 +111,11 @@ ___
 
 • get **volumeAdjustment**(): number
 
-*Defined in src/id3v2/frames/relativeVolumeFrame.ts:135*
-
 Volume adjustment of the track in dB.
 
 **Returns:** number
 
 • set **volumeAdjustment**(`value`: number): void
-
-*Defined in src/id3v2/frames/relativeVolumeFrame.ts:141*
 
 Volume adjustment of the track in dB. This value is expressed as a fixed-precision value
 betweenInclusive -64 and 64. Don't worry about the math, we'll do it for you.
@@ -152,8 +134,6 @@ Name | Type | Description |
 
 ▸ **render**(): [ByteVector](_src_bytevector_.bytevector.md)
 
-*Defined in src/id3v2/frames/relativeVolumeFrame.ts:147*
-
 **Returns:** [ByteVector](_src_bytevector_.bytevector.md)
 
 ___
@@ -161,8 +141,6 @@ ___
 ### fromData
 
 ▸ `Static`**fromData**(`bytes`: [ByteVector](_src_bytevector_.bytevector.md)): [ChannelData](_src_id3v2_frames_relativevolumeframe_.channeldata.md)
-
-*Defined in src/id3v2/frames/relativeVolumeFrame.ts:68*
 
 #### Parameters:
 

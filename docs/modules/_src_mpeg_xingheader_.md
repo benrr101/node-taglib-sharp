@@ -1,6 +1,6 @@
-**node-taglib-sharp**
+**[node-taglib-sharp](../README.md)**
 
-> [README](../README.md) / [Globals](../globals.md) / "src/mpeg/xingHeader"
+> [Globals](../globals.md) / "src/mpeg/xingHeader"
 
 # Module: "src/mpeg/xingHeader"
 

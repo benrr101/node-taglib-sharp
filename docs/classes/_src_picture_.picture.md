@@ -1,6 +1,6 @@
-**node-taglib-sharp**
+**[node-taglib-sharp](../README.md)**
 
-> [README](../README.md) / [Globals](../globals.md) / ["src/picture"](../modules/_src_picture_.md) / Picture
+> [Globals](../globals.md) / ["src/picture"](../modules/_src_picture_.md) / Picture
 
 # Class: Picture
 
@@ -39,8 +39,6 @@
 
 *Implementation of [IPicture](../interfaces/_src_picture_.ipicture.md).[data](../interfaces/_src_picture_.ipicture.md#data)*
 
-*Defined in src/picture.ts:296*
-
 ___
 
 ### description
@@ -48,8 +46,6 @@ ___
 •  **description**: string
 
 *Implementation of [IPicture](../interfaces/_src_picture_.ipicture.md).[description](../interfaces/_src_picture_.ipicture.md#description)*
-
-*Defined in src/picture.ts:294*
 
 ___
 
@@ -59,8 +55,6 @@ ___
 
 *Implementation of [IPicture](../interfaces/_src_picture_.ipicture.md).[filename](../interfaces/_src_picture_.ipicture.md#filename)*
 
-*Defined in src/picture.ts:292*
-
 ___
 
 ### mimeType
@@ -68,8 +62,6 @@ ___
 •  **mimeType**: string
 
 *Implementation of [IPicture](../interfaces/_src_picture_.ipicture.md).[mimeType](../interfaces/_src_picture_.ipicture.md#mimetype)*
-
-*Defined in src/picture.ts:288*
 
 ___
 
@@ -79,15 +71,11 @@ ___
 
 *Implementation of [IPicture](../interfaces/_src_picture_.ipicture.md).[type](../interfaces/_src_picture_.ipicture.md#type)*
 
-*Defined in src/picture.ts:290*
-
 ## Methods
 
 ### fromData
 
 ▸ `Static`**fromData**(`data`: [ByteVector](_src_bytevector_.bytevector.md)): [Picture](_src_picture_.picture.md)
-
-*Defined in src/picture.ts:235*
 
 #### Parameters:
 
@@ -103,8 +91,6 @@ ___
 
 ▸ `Static`**fromFileAbstraction**(`abstraction`: [IFileAbstraction](../interfaces/_src_fileabstraction_.ifileabstraction.md)): [Picture](_src_picture_.picture.md)
 
-*Defined in src/picture.ts:256*
-
 #### Parameters:
 
 Name | Type |
@@ -118,8 +104,6 @@ ___
 ### fromPath
 
 ▸ `Static`**fromPath**(`filePath`: string): [Picture](_src_picture_.picture.md)
-
-*Defined in src/picture.ts:218*
 
 #### Parameters:
 
@@ -135,10 +119,8 @@ ___
 
 ▸ `Static`**getExtensionFromData**(`data`: [ByteVector](_src_bytevector_.bytevector.md)): string
 
-*Defined in src/picture.ts:309*
-
 Retrieve a mimetype from raw file data by reading the first few bytes of the file. Less
-accurate than {@see getExtensionFromMimeType} since this is limited to image file types.
+accurate than [getExtensionFromMimeType](_src_picture_.picture.md#getextensionfrommimetype) since this is limited to image file types.
 
 #### Parameters:
 
@@ -156,8 +138,6 @@ ___
 ### getExtensionFromMimeType
 
 ▸ `Static`**getExtensionFromMimeType**(`mime`: string): string
-
-*Defined in src/picture.ts:334*
 
 Gets the file extension for a specific mimetype.
 
@@ -177,8 +157,6 @@ ___
 ### getMimeTypeFromFilename
 
 ▸ `Static`**getMimeTypeFromFilename**(`name`: string): string
-
-*Defined in src/picture.ts:354*
 
 Gets the mimetype of a file based on its extension. If the mimetype cannot be determined, it
 is assumed to be a basic binary file.

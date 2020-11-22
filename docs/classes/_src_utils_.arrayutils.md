@@ -1,6 +1,6 @@
-**node-taglib-sharp**
+**[node-taglib-sharp](../README.md)**
 
-> [README](../README.md) / [Globals](../globals.md) / ["src/utils"](../modules/_src_utils_.md) / ArrayUtils
+> [Globals](../globals.md) / ["src/utils"](../modules/_src_utils_.md) / ArrayUtils
 
 # Class: ArrayUtils
 
@@ -18,9 +18,7 @@
 
 ### remove
 
-▸ `Static`**remove**\<T>(`array`: T[], `callbackFn`: (e: T,i: number) => boolean): void
-
-*Defined in src/utils.ts:106*
+▸ `Static`**remove**\<T>(`array`: T[], `callbackFn`: (e: T, i: number) => boolean): void
 
 #### Type parameters:
 
@@ -33,6 +31,6 @@ Name |
 Name | Type |
 ------ | ------ |
 `array` | T[] |
-`callbackFn` | (e: T,i: number) => boolean |
+`callbackFn` | (e: T, i: number) => boolean |
 
 **Returns:** void

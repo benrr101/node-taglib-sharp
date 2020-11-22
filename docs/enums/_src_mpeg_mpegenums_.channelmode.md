@@ -1,6 +1,6 @@
-**node-taglib-sharp**
+**[node-taglib-sharp](../README.md)**
 
-> [README](../README.md) / [Globals](../globals.md) / ["src/mpeg/mpegEnums"](../modules/_src_mpeg_mpegenums_.md) / ChannelMode
+> [Globals](../globals.md) / ["src/mpeg/mpegEnums"](../modules/_src_mpeg_mpegenums_.md) / ChannelMode
 
 # Enumeration: ChannelMode
 
@@ -19,9 +19,7 @@ Indicates the MPEG audio channel mode of a file or stream.
 
 ### DualChannel
 
-•  **DualChannel**: {} = 2
-
-*Defined in src/mpeg/mpegEnums.ts:12*
+•  **DualChannel**:  = 2
 
 Dual Channel Mono
 
@@ -29,9 +27,7 @@ ___
 
 ### JointStereo
 
-•  **JointStereo**: {} = 1
-
-*Defined in src/mpeg/mpegEnums.ts:9*
+•  **JointStereo**:  = 1
 
 Joint Stereo
 
@@ -39,9 +35,7 @@ ___
 
 ### SingleChannel
 
-•  **SingleChannel**: {} = 3
-
-*Defined in src/mpeg/mpegEnums.ts:15*
+•  **SingleChannel**:  = 3
 
 Single Channel Mono
 
@@ -49,8 +43,6 @@ ___
 
 ### Stereo
 
-•  **Stereo**: {} = 0
-
-*Defined in src/mpeg/mpegEnums.ts:6*
+•  **Stereo**:  = 0
 
 Stereo

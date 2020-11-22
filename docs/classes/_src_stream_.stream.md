@@ -1,6 +1,6 @@
-**node-taglib-sharp**
+**[node-taglib-sharp](../README.md)**
 
-> [README](../README.md) / [Globals](../globals.md) / ["src/stream"](../modules/_src_stream_.md) / Stream
+> [Globals](../globals.md) / ["src/stream"](../modules/_src_stream_.md) / Stream
 
 # Class: Stream
 
@@ -38,8 +38,6 @@ Wrapper around the Node.js internal file descriptors to mock behavior like .NET 
 
 • get **canWrite**(): boolean
 
-*Defined in src/stream.ts:103*
-
 Whether or not the stream can be written to
 
 **`inheritdoc`** 
@@ -51,8 +49,6 @@ ___
 ### length
 
 • get **length**(): number
-
-*Defined in src/stream.ts:106*
 
 Number of bytes currently stored in file this stream connects to
 
@@ -66,8 +62,6 @@ ___
 
 • get **position**(): number
 
-*Defined in src/stream.ts:109*
-
 Position within the stream
 
 **`inheritdoc`** 
@@ -75,8 +69,6 @@ Position within the stream
 **Returns:** number
 
 • set **position**(`position`: number): void
-
-*Defined in src/stream.ts:111*
 
 Position within the stream
 
@@ -98,8 +90,6 @@ Name | Type |
 
 *Implementation of [IStream](../interfaces/_src_stream_.istream.md)*
 
-*Defined in src/stream.ts:122*
-
 Closes the stream
 
 **Returns:** void
@@ -112,16 +102,14 @@ ___
 
 *Implementation of [IStream](../interfaces/_src_stream_.istream.md)*
 
-*Defined in src/stream.ts:127*
-
 Reads a block of bytes from the current stream and writes the data to a buffer.
 
 #### Parameters:
 
 Name | Type | Description |
 ------ | ------ | ------ |
-`buffer` | Uint8Array | When this method returns, contains the specified byte array with the values     between {@paramref offset} and ({@paramref offset} + {@paramref length} - 1) replaced by     the characters read from the current stream |
-`bufferOffset` | number | Zero-based byte offset in {@paramref buffer} at which to begin storing data     from the current stream |
+`buffer` | Uint8Array | When this method returns, contains the specified byte array with the values     between `offset` and (`offset` + `length` - 1) replaced by     the characters read from the current stream |
+`bufferOffset` | number | Zero-based byte offset in `buffer` at which to begin storing data     from the current stream |
 `length` | number | The maximum number of bytes to read |
 
 **Returns:** number
@@ -138,16 +126,14 @@ ___
 
 *Implementation of [IStream](../interfaces/_src_stream_.istream.md)*
 
-*Defined in src/stream.ts:134*
-
 Sets the position within the current stream to the specified value.
 
 #### Parameters:
 
 Name | Type | Description |
 ------ | ------ | ------ |
-`offset` | number | New positioon within the stream. this is relative to the {@paramref origin}     paramter and can be positive or negative |
-`origin` | [SeekOrigin](../enums/_src_stream_.seekorigin.md) | Seek reference point {@see SeekOrigin}  |
+`offset` | number | New position within the stream. this is relative to the `origin`     parameter and can be positive or negative |
+`origin` | [SeekOrigin](../enums/_src_stream_.seekorigin.md) | Seek reference point [SeekOrigin](../enums/_src_stream_.seekorigin.md)  |
 
 **Returns:** void
 
@@ -158,8 +144,6 @@ ___
 ▸ **setLength**(`length`: number): void
 
 *Implementation of [IStream](../interfaces/_src_stream_.istream.md)*
-
-*Defined in src/stream.ts:149*
 
 Sets the length of the current current stream to the specified value.
 
@@ -179,8 +163,6 @@ ___
 
 *Implementation of [IStream](../interfaces/_src_stream_.istream.md)*
 
-*Defined in src/stream.ts:167*
-
 Writes a block of bytes to the current stream using data read from a buffer.
 
 #### Parameters:
@@ -188,7 +170,7 @@ Writes a block of bytes to the current stream using data read from a buffer.
 Name | Type | Description |
 ------ | ------ | ------ |
 `buffer` | fs.BinaryData | Buffer to write data from |
-`bufferOffset` | number | Zero-based byte offset in {@paramref buffer} at which to begin copying    bytes to the current stream |
+`bufferOffset` | number | Zero-based byte offset in `buffer` at which to begin copying    bytes to the current stream |
 `length` | number | Maximum number of bytes to write  |
 
 **Returns:** number
@@ -198,8 +180,6 @@ ___
 ### createAsRead
 
 ▸ `Static`**createAsRead**(`path`: string): [Stream](_src_stream_.stream.md)
-
-*Defined in src/stream.ts:88*
 
 #### Parameters:
 
@@ -214,8 +194,6 @@ ___
 ### createAsReadWrite
 
 ▸ `Static`**createAsReadWrite**(`path`: string): [Stream](_src_stream_.stream.md)
-
-*Defined in src/stream.ts:93*
 
 #### Parameters:
 
