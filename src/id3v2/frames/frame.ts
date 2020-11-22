@@ -11,7 +11,7 @@ export enum FrameClassType {
     AttachmentFrame,
     CommentsFrame,
     EventTimeCodeFrame,
-    MusicCdIdentiferFrame,
+    MusicCdIdentifierFrame,
     PlayCountFrame,
     PopularimeterFrame,
     PrivateFrame,
@@ -49,7 +49,7 @@ export abstract class Frame {
 
     /**
      * Gets the encryption ID applied to the current instance.
-     * @returns number Value containing the encryption identifer for the current instance or
+     * @returns number Value containing the encryption identifier for the current instance or
      *     `undefined` if not set.
      */
     public get encryptionId(): number | undefined {
@@ -204,7 +204,7 @@ export abstract class Frame {
      * @param version Value containing the ID3v2 version to be encoded.
      * @returns StringType Value containing the correct encoding to use, based on
      *     {@link Id3v2Settings.forceDefaultEncoding} and what is supported by
-     *     {@paramref version}
+     *     `version`
      */
     protected static correctEncoding(type: StringType, version: number): StringType {
         Guards.byte(version, "version");
@@ -225,7 +225,7 @@ export abstract class Frame {
      * @param frameData Raw frame data
      * @param offset Index at which the data is contained
      * @param version Version of the ID3v2 tag the data was originally encoded with
-     * @param dataIncludesHeader `true` if {@paramref frameData} includes the header, `false`
+     * @param dataIncludesHeader `true` if `frameData` includes the header, `false`
      *     otherwise
      */
     protected fieldData(
@@ -299,7 +299,7 @@ export abstract class Frame {
      * Populates the current instance by reading the raw frame from disk, optionally reading the
      * header.
      * @param data Raw ID3v2 frame
-     * @param offset Offset in {@paramref data} at which the frame begins.
+     * @param offset Offset in `data` at which the frame begins.
      * @param readHeader Whether or not to read the reader into the current instance.
      * @param version Version of the ID3v2 tag the data was encoded with
      */

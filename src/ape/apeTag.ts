@@ -523,8 +523,8 @@ export default class ApeTag extends Tag {
 
     /**
      * Adds a single value to the contents of an item. Creates a new item if one does not exist.
-     * @param key Key to use to lookup to item to add {@paramref value} to
-     * @param value Values to add to item identified by {@paramref key}
+     * @param key Key to use to lookup to item to add `value` to
+     * @param value Values to add to item identified by `key`
      */
     public appendStringValue(key: string, value: string): void {
         Guards.notNullOrUndefined(key, "key");
@@ -539,7 +539,7 @@ export default class ApeTag extends Tag {
      * Adds a lists of strings to the values stored in a specified item. Creates a new item if one
      * does not already exist.
      * @param key Key to use to lookup the item
-     * @param value Values to add to the item
+     * @param values Values to add to the item
      */
     public appendStringValues(key: string, values: string[]): void {
         Guards.notNullOrUndefined(key, "key");
@@ -581,9 +581,9 @@ export default class ApeTag extends Tag {
     }
 
     /**
-     * Gets an item from the current instance identified by {@paramref key}.
+     * Gets an item from the current instance identified by `key`.
      * @param key Identifier for the item to get
-     * @returns ApeTagItem Item specified by {@paramref key} if it exists, undefined is
+     * @returns ApeTagItem Item specified by `key` if it exists, undefined is
      *     returned otherwise
      */
     public getItem(key: string): ApeTagItem {
@@ -592,7 +592,7 @@ export default class ApeTag extends Tag {
     }
 
     /**
-     * Determines if any items with the specified {@paramref key} exist in the current instance.
+     * Determines if any items with the specified `key` exist in the current instance.
      * @param key Identifier for looking up a matching item
      * @returns boolean `true` if an item with the specified key exists, `false` otherwise
      */
@@ -602,7 +602,7 @@ export default class ApeTag extends Tag {
     }
 
     /**
-     * Removes all items from the current instance with the specified {@paramref key}.
+     * Removes all items from the current instance with the specified `key`.
      * @param key Identifier of the items to remove.
      */
     public removeItem(key: string): void {
@@ -653,16 +653,16 @@ export default class ApeTag extends Tag {
     }
 
     /**
-     * Stores a number in a specified item. If both {@paramref numerator} and
-     * {@paramref denominator} are provided the item will be set to `numerator/denominator`. If
-     * neither {@paramref numerator} nor {@paramref denominator} are provided, the item will be
-     * removed from this tag. A new item is created if one with the specified {@paramref key} does
+     * Stores a number in a specified item. If both `numerator` and
+     * `denominator` are provided the item will be set to `numerator/denominator`. If
+     * neither `numerator` nor `denominator` are provided, the item will be
+     * removed from this tag. A new item is created if one with the specified `key` does
      * not exist.
      * @param key Identifier for the item to set the item
-     * @param numerator Whole number of top half of the fraction if {@paramref denominator} is
+     * @param numerator Whole number of top half of the fraction if `denominator` is
      *     provided
      * @param denominator Bottom half of the fraction to store. Can be `undefined` if only
-     *     {@paramref numerator} is needed.
+     *     `numerator` is needed.
      */
     public setNumericValue(key: string, numerator: number, denominator: number): void {
         Guards.notNullOrUndefined(key, "key");
@@ -679,8 +679,8 @@ export default class ApeTag extends Tag {
     }
 
     /**
-     * Stores a string in the item specified by {@paramref key}. This will replace the contents of
-     * the specified item. If {@paramref value} is falsy, the item will be removed.
+     * Stores a string in the item specified by `key`. This will replace the contents of
+     * the specified item. If `value` is falsy, the item will be removed.
      * @param key Item to set the value of
      * @param value String to store in the item. If falsy, the specified item will be removed
      */
@@ -695,8 +695,8 @@ export default class ApeTag extends Tag {
     }
 
     /**
-     * Stores a list of strings in the item specified by {@paramref key}. This will replace the
-     * contents of the specified item. If {@paramref value} is falsy or empty, the item will be removed
+     * Stores a list of strings in the item specified by `key`. This will replace the
+     * contents of the specified item. If `value` is falsy or empty, the item will be removed
      * @param key Item to set the value of
      * @param values String to store in the item. If falsy or empty, the specified item will be
      *     removed

@@ -170,8 +170,8 @@ export class Picture implements IPicture {
         "mp4", "video/mp4",
         "m4v", "video/mp4",
         "mpkg", "application/vnd.apple.installer+xml", // Apple Installer Package
-        "odp", "application/vnd.oasis.opendocument.presentation", // OpenDocuemnt presentation document
-        "ods", "application/vnd.oasis.opendocument.spreadsheet", // OpenDocuemnt spreadsheet document
+        "odp", "application/vnd.oasis.opendocument.presentation", // OpenDocument presentation document
+        "ods", "application/vnd.oasis.opendocument.spreadsheet", // OpenDocument spreadsheet document
         "odt", "application/vnd.oasis.opendocument.text", // OpenDocument text document
         "oga", "audio/ogg", // OGG audio
         "ogg", "audio/ogg",
@@ -189,7 +189,7 @@ export class Picture implements IPicture {
         "tar", "application/x-tar", // Tape Archive (TAR)
         "tif", "image/tiff", //  Tagged Image File Format(TIFF)
         "tiff", "image/tiff", //  Tagged Image File Format(TIFF)
-        "ts", "video/vnd.dlna.mpeg-tts", // Typescript file
+        "ts", "video/vnd.dlna.mpeg-tts", // Typescript file @TODO: Uh not in this context...
         "ttf", "font/ttf", // TrueType Font
         "vsd", "application/vnd.visio", // Microsoft Visio
         "wav", "audio/x-wav", // Waveform Audio Format

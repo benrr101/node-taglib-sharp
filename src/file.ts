@@ -277,7 +277,7 @@ export abstract class File {
     public abstract get properties(): Properties;
 
     /**
-     * Gets an abstract representaion of all tags stored in the current instance.
+     * Gets an abstract representation of all tags stored in the current instance.
      * @description This property provides generic and general access to the most common tagging
      *     features of a file. To access or add a specific type of tag in the file, use
      *     {@link File.getTag}.
@@ -285,7 +285,7 @@ export abstract class File {
     public abstract get tag(): Tag;
 
     /**
-     * Gets the tag typescontained in the current instance.
+     * Gets the tag types contained in the current instance.
      */
     public get tagTypes(): TagTypes { return !this.tag ? TagTypes.None : this.tag.tagTypes; }
 
@@ -303,9 +303,9 @@ export abstract class File {
      * with. Optionally, the MimeType can be forcefully overridden if it was already registered.
      * @param mimeType MimeType to register this subclass constructor to.
      * @param constructor Constructor for a subclass of {@link File} that will be called if a file
-     *     with a MimeType of {@param mimeType} is created.
+     *     with a MimeType of `mimeType` is created.
      * @param override If `true` and a subclass of {@link File} was already registered to
-     *     {@param mimeType}, it will be forcefully overridden. If `false`, an {@link Error} will be
+     *     `mimeType`, it will be forcefully overridden. If `false`, an {@link Error} will be
      *     thrown if a subclass already registered to the MimeType.}
      */
     public static addFileType(mimeType: string, constructor: FileTypeConstructor, override: boolean = false): void {
@@ -357,7 +357,7 @@ export abstract class File {
      * @param startPosition Seek position to start searching. Must be positive, safe integer.
      * @param before Optional pattern that the searched for pattern must appear before. If this
      *     pattern is found first, `-1` is returned.
-     * @throws Error Thrown if {@param pattern} is not provided or {@param startPosition} is not a
+     * @throws Error Thrown if `pattern` is not provided or `startPosition` is not a
      *     positive, safe integer.
      * @returns Index at which the value was found. If not found, `-1` is returned.
      */
@@ -511,7 +511,7 @@ export abstract class File {
      * position, use {@link File.seek}.
      * @param length Number of bytes to read.
      * @returns ByteVector Object containing the data read from the current instance.
-     * @throws Error Thrown when {@param length} is not a positive, safe integer.
+     * @throws Error Thrown when `length` is not a positive, safe integer.
      */
     public readBlock(length: number): ByteVector {
         Guards.uint(length, "length");
@@ -570,20 +570,20 @@ export abstract class File {
 
     /**
      * Removes a set of tag types from the current instance. In order to remove all tags from a
-     * file, pass {@link TagTypes.AllTags} as {@param types}
+     * file, pass {@link TagTypes.AllTags} as `types`
      * @param types Bitwise combined {@link TagTypes} value containing the tag types to be removed
      *     from the file
      */
     public abstract removeTags(types: TagTypes): void;
 
     /**
-     * Searched backwards through a file for a specified patterh, starting at a specified offset.
+     * Searched backwards through a file for a specified pattern, starting at a specified offset.
      * @param pattern Pattern to search for in the current instance. Must be shorter than the
      *     {@link bufferSize}
      * @param startPosition Seek position from which to start searching.
      * @param after Pattern that the searched for pattern must appear after. If this pattern is
      *     found first, `-1` is returned.
-     * @throws Error Thrown if {@param pattern} was not provided or if {@param startPosition} is
+     * @throws Error Thrown if `pattern` was not provided or if `startPosition` is
      *     not a safe, positive integer.
      * @returns Index at which the value wa found. If not found, `-1` is returned.
      */
@@ -655,10 +655,10 @@ export abstract class File {
 
     /**
      * Writes a block of data to the file represented by the current instance at the current seek
-     * posiotion. This will overwrite any existing data at the seek position and append new data to
+     * position. This will overwrite any existing data at the seek position and append new data to
      * the file if writing past the current end.
      * @param data ByteVector containing data to the current instance.
-     * @throws Error Thrown when {@param data} is not provided.
+     * @throws Error Thrown when `data` is not provided.
      */
     public writeBlock(data: ByteVector): void {
         Guards.truthy(data, "data");

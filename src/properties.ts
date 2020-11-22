@@ -82,7 +82,7 @@ export default class Properties implements ILosslessAudioCodec, IVideoCodec, IPh
 
     /**
      * Gets the number of bits per sample in the audio represented by the current instance. This
-     * value is equal to the first non-zero quantization, or zero if no lossless autio codecs were
+     * value is equal to the first non-zero quantization, or zero if no lossless audio codecs were
      * found in the current instance.
      */
     public get bitsPerSample(): number {

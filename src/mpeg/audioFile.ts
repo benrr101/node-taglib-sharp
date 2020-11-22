@@ -43,7 +43,7 @@ export default class AudioFile extends NonContainerFile {
         }
     }
 
-    protected readEnd(end: number, propertiesStyle: ReadStyle): void {
+    protected readEnd(_end: number, _propertiesStyle: ReadStyle): void {
         // Make sure we have Id3v1 and Id3v2 tags
         // @TODO: This is a kinda sleazy way of adding a ID3v2 tag if we didn't read one at the start
         // NOTE: The reason for adding the ID3v1 and ID3v2 tags is because this library is meant to
@@ -54,7 +54,7 @@ export default class AudioFile extends NonContainerFile {
         this.getTag(TagTypes.Id3v2, true);
     }
 
-    protected readProperties(start: number, end: number, propertiesStyle: ReadStyle): Properties {
+    protected readProperties(start: number, end: number, _propertiesStyle: ReadStyle): Properties {
         this._firstHeader.streamLength =  end - start;
         return new Properties(0, [this._firstHeader]);
     }

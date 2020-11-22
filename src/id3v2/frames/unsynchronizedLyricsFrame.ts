@@ -40,9 +40,9 @@ export default class UnsynchronizedLyricsFrame extends Frame {
      * Constructs and initializes a new instance by reading its raw data in a specified ID3v2
      * version. This method allows for offset reading from the data bytevector.
      * @param data Raw representation of the new frame
-     * @param offset What offset in {@paramref data} the frame actually begins. Must be positive,
+     * @param offset What offset in `data` the frame actually begins. Must be positive,
      *     safe integer
-     * @param header Header of the frame found at {@paramref data} in the data
+     * @param header Header of the frame found at `data` in the data
      * @param version ID3v2 version the frame was originally encoded with
      */
     public static fromOffsetRawData(
@@ -141,6 +141,7 @@ export default class UnsynchronizedLyricsFrame extends Frame {
         Guards.truthy(frames, "frames");
         return frames.find((f) => {
             if (f.description !== description) { return false; }
+            // noinspection RedundantIfStatementJS
             if (language && f.language !== language) { return false; }
             return true;
         });
@@ -163,6 +164,7 @@ export default class UnsynchronizedLyricsFrame extends Frame {
         Guards.truthy(frames, "frames");
         return frames.filter((f) => {
             if (f.description !== description) { return false; }
+            // noinspection RedundantIfStatementJS
             if (language && f.language !== language) { return false; }
             return true;
         });
@@ -221,7 +223,7 @@ export default class UnsynchronizedLyricsFrame extends Frame {
     }
 
     /** @inheritDoc */
-    protected parseFields(data: ByteVector, version: number): void {
+    protected parseFields(data: ByteVector, _version: number): void {
         if (data.length < 4) {
             throw new CorruptFileError("Not enough bytes in field.");
         }

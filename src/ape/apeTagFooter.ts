@@ -140,7 +140,7 @@ export class ApeTagFooter {
     }
 
     /**
-     * Gets the version of APE tag described by the current isntance.
+     * Gets the version of APE tag described by the current instance.
      */
     public get version(): number { return this._version === 0 ? 2000 : this._version; }
 

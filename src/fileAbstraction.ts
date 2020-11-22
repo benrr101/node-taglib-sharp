@@ -9,7 +9,7 @@ export interface IFileAbstraction {
     /**
      * Name or identifier used by the implementation
      * @description This value would typically represent a path or URL to be used when identifying
-     *   the file system, but it could be any valud as appropriate for the implementation.
+     *   the file system, but it could be any valid as appropriate for the implementation.
      */
     name: string;
 
@@ -52,7 +52,7 @@ export class LocalFileAbstraction implements IFileAbstraction {
     /**
      * Constructs and initializes a new instance from a specified path in the local file system
      * @param path Path of the file to use in the new instance
-     * @throws Error Thrown if {@param path} is falsey
+     * @throws Error Thrown if `path` is falsey
      */
     public constructor(path: string) {
         Guards.truthy(path, "path");

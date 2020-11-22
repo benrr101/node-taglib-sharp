@@ -9,6 +9,7 @@ export default class Id3v2Settings {
     private static _strictFramesForVersion: boolean = false;
     private static _useNumericGenres: boolean = true;           // @TODO: DO WE HAVE TO???
 
+    // noinspection JSUnusedLocalSymbols
     /**
      * Private constructor to prevent inadvertent construction
      */

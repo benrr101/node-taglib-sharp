@@ -94,9 +94,9 @@ export class SynchronizedLyricsFrame extends Frame {
      * Constructs and initializes a new instance by reading its raw data in a specified ID3v2
      * format.
      * @param data Raw representation of the new instance
-     * @param offset Offset into {@paramref data} where the frame begins. Must be unsigned, safe
+     * @param offset Offset into `data` where the frame begins. Must be unsigned, safe
      *     integer
-     * @param header Header of the frame found at {@paramref offset} in {@paramref data}
+     * @param header Header of the frame found at `offset` in `data`
      * @param version ID3v2 version the frame was originally encoded with
      */
     public static fromOffsetRawData(data: ByteVector, offset: number, header: Id3v2FrameHeader, version: number) {
@@ -110,7 +110,7 @@ export class SynchronizedLyricsFrame extends Frame {
     }
 
     /**
-     * Constructs and intializes a new instance by reading its raw data in a specified ID3v2
+     * Constructs and initializes a new instance by reading its raw data in a specified ID3v2
      * format.
      * @param data Raw representation of the new instance
      * @param version ID3v2 version the raw frame is encoded with. Must be unsigned 8-bit integer.
@@ -182,7 +182,7 @@ export class SynchronizedLyricsFrame extends Frame {
     public get textEncoding(): StringType { return this._textEncoding; }
     /**
      * Sets the text encoding to use when storing the current instance.
-     * This encoding is overridden when renderinf if {@link Id3v2Settings.forceDefaultEncoding} is
+     * This encoding is overridden when rendering if {@link Id3v2Settings.forceDefaultEncoding} is
      * `true` or the render version does not support it.
      * @param value Text encoding to use when storing the current instance
      */
@@ -221,6 +221,7 @@ export class SynchronizedLyricsFrame extends Frame {
         return frames.find((f) => {
             if (f.description !== description) { return false; }
             if (language && f.language !== language) { return false; }
+            // noinspection RedundantIfStatementJS
             if (f.textType !== textType) { return false; }
             return true;
         });
@@ -294,7 +295,7 @@ export class SynchronizedLyricsFrame extends Frame {
     // #endregion
 
     /** @inheritDoc */
-    protected parseFields(data: ByteVector, version: number): void {
+    protected parseFields(data: ByteVector, _version: number): void {
         if (data.length < 6) {
             throw new CorruptFileError("Not enough bytes in field");
         }
@@ -319,7 +320,7 @@ export class SynchronizedLyricsFrame extends Frame {
             delimIndex = data.find(delim, offset, delim.length);
 
             if (delimIndex < offset) {
-                throw new CorruptFileError("Text delimeter expected");
+                throw new CorruptFileError("Text delimiter expected");
             }
 
             const text = data.toString(delimIndex - offset, this.textEncoding, offset);

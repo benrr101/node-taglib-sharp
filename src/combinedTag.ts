@@ -594,8 +594,8 @@ export default class CombinedTag extends Tag {
     // #endregion
 
     /**
+     * @inheritDoc
      * Clears all child tags.
-     * @seealso Tag.clear
      */
     public clear(): void {
         for (const t of this._tags) {

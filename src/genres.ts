@@ -108,7 +108,7 @@ const audioGenres = [
     "Sonata",
     "Symphony",
     "Booty Bass",
-    "Primus",
+    "Primus", // Because they really deserve their own genre
     "Porn Groove",
     "Satire",
     "Slow Jam",
@@ -218,11 +218,11 @@ export default {
     /**
      * Gets the audio genre name for a specified index.
      * @param index Index of the genre in the audio genre array. Can be a {@link Number},
-     *     {@link string} or {@link string} wrapped in `( )`, if {@paramref allowParenthesis} is set
+     *     {@link string} or {@link string} wrapped in `( )`, if `allowParenthesis` is set
      *     to `true`
      * @param allowParenthesis Whether or not a number wrapped in parenthesis is allowed
-     * @returns string Genre name if found, or `undefined` if {@paramref index} is outside the
-     *     bounds of the audio genre array or if {@paramref index} is not valid.
+     * @returns string Genre name if found, or `undefined` if `index` is outside the
+     *     bounds of the audio genre array or if `index` is not valid.
      */
     indexToAudio: (index: number|string, allowParenthesis: boolean): string => {
         const safeIndex = typeof(index) === "string"
@@ -236,11 +236,11 @@ export default {
     /**
      * Gets the video genre name for a specified index.
      * @param index Index of the genre in the video genre array. Can be a {@link Number},
-     *     {@link string} or {@link string} wrapped in `( )` if {@paramref allowParenthesis} is set
+     *     {@link string} or {@link string} wrapped in `( )` if `allowParenthesis` is set
      *     to `true`
      * @param allowParenthesis Whether or not a number wrapped in parenthesis is allowed
-     * @returns string Genre name if found, or `undefined` if {@paramref index} is outside the
-     *     bounds of the video genre array or if {@paramref index} is not valid.
+     * @returns string Genre name if found, or `undefined` if `index` is outside the
+     *     bounds of the video genre array or if `index` is not valid.
      */
     indexToVideo: (index: number|string, allowParenthesis: boolean): string => {
         const safeIndex = typeof(index) === "string"

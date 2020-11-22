@@ -59,8 +59,8 @@ export default {
     /**
      * Creates a {@link Frame} object by reading it from raw ID3v2 frame data.
      * @param data Raw ID3v2 frame
-     * @param file File to read the frame from if {@paramref data} is falsy
-     * @param offset Index into {@paramref file} or in {@paramref data} if truthy, at which the
+     * @param file File to read the frame from if `data` is falsy
+     * @param offset Index into `file` or in `data` if truthy, at which the
      *     frame begins. After reading, the offset where the next frame can be read is returned in
      *     the `offset` property of the returned object
      * @param version ID3v2 version the frame is encoded with. Must be unsigned 8-bit int
@@ -142,7 +142,13 @@ export default {
                 // TODO: Make lazy loading optional
                 if (header.frameId === FrameIdentifiers.APIC || header.frameId === FrameIdentifiers.GEOB) {
                     return {
-                        frame: AttachmentFrame.fromFile(file.fileAbstraction, header, frameStartIndex, frameSize, version),
+                        frame: AttachmentFrame.fromFile(
+                            file.fileAbstraction,
+                            header,
+                            frameStartIndex,
+                            frameSize,
+                            version
+                        ),
                         offset: frameEndIndex
                     };
                 }
@@ -157,7 +163,7 @@ export default {
                 // User text identification frame
                 func = UserTextInformationFrame.fromOffsetRawData;
             } else if (header.frameId.isTextFrame) {
-                // Text identifiacation frame (frames 4.2)
+                // Text identification frame (frames 4.2)
                 func = TextInformationFrame.fromOffsetRawData;
             } else if (header.frameId === FrameIdentifiers.UFID) {
                 // Unique file identifier (frames 4.1)

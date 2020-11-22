@@ -55,7 +55,7 @@ export class ApeTagItem {
     /**
      * Constructs a new instance of {@link ApeTagItem} by reading in a raw APEv2 item.
      * @param data {@link ByteVector} containing the item to read
-     * @param offset Index into {@paramref data} at which to begin reading the item data. Must be
+     * @param offset Index into `data` at which to begin reading the item data. Must be
      *     a positive 32-bit integer.
      */
     public static fromData(data: ByteVector, offset: number): ApeTagItem {

@@ -55,7 +55,7 @@ export default class AudioHeader implements IAudioCodec {
      * specified file.
      * @param data The header data to read
      * @param file File to read the Xing/VBRI header from
-     * @param position Position into {@paramref file} where the header begins, must be a positive
+     * @param position Position into `file` where the header begins, must be a positive
      *     8-bit integer.
      */
     public static fromData(data: ByteVector, file: File, position: number) {
@@ -321,7 +321,7 @@ export default class AudioHeader implements IAudioCodec {
      * Searches for an audio header in a file starting at a specified position and searching
      * through a specified number of bytes.
      * @param file File to search
-     * @param position Position in {@paramref file} at which to start searching
+     * @param position Position in `file` at which to start searching
      * @param length Maximum number of bytes to search before giving up. Defaults to `-1` to
      *     have no maximum
      * @returns {header: AudioHeader, success: boolean}

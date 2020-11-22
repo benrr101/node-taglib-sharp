@@ -24,9 +24,9 @@ export default class PopularimeterFrame extends Frame {
      * Constructs and initializes a new instance by reading its raw data in a specified ID3v2
      * version. This method allows for offset reading from the data bytevector.
      * @param data Raw representation of the new frame
-     * @param offset What offset in {@paramref data} the frame actually begins. Must be positive,
+     * @param offset What offset in `data` the frame actually begins. Must be positive,
      *     safe integer
-     * @param header Header of the frame found at {@paramref data} in the data
+     * @param header Header of the frame found at `data` in the data
      * @param version ID3v2 version the frame was originally encoded with
      */
     public static fromOffsetRawData(
@@ -111,7 +111,7 @@ export default class PopularimeterFrame extends Frame {
      */
     public get user(): string { return this._user; }
     /**
-     * Sets the email address of the user to whom the current instance belonds
+     * Sets the email address of the user to whom the current instance belongs
      * @param value
      */
     public set user(value: string) { this._user = value || ""; }
@@ -121,7 +121,7 @@ export default class PopularimeterFrame extends Frame {
     /**
      * Gets a popularimeter frame from a specified tag that matches the given parameters
      * @param frames List of frames to search
-     * @param user User email to use to match the frame in the {@paramref tag}
+     * @param user User email to use to match the frame in the `tag`
      * @returns PopularimeterFrame Frame containing the matching user or `undefined` if a match was
      *     not found
      */
@@ -139,12 +139,12 @@ export default class PopularimeterFrame extends Frame {
     }
 
     /** @inheritDoc */
-    protected parseFields(data: ByteVector, version: number): void {
+    protected parseFields(data: ByteVector, _version: number): void {
         const delim = ByteVector.getTextDelimiter(StringType.Latin1);
 
         const delimIndex = data.find(delim);
         if (delimIndex < 0) {
-            throw new CorruptFileError("Popularimeter frame does not contain a text delimeter");
+            throw new CorruptFileError("Popularimeter frame does not contain a text delimiter");
         }
 
         const bytesAfterOwner = data.length - delimIndex - 1;
@@ -165,7 +165,7 @@ export default class PopularimeterFrame extends Frame {
     }
 
     /** @inheritDoc */
-    protected renderFields(version: number): ByteVector {
+    protected renderFields(_version: number): ByteVector {
         const data = ByteVector.concatenate(
             ByteVector.fromString(this._user, StringType.Latin1),
             ByteVector.getTextDelimiter(StringType.Latin1),

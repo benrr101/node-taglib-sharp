@@ -188,7 +188,7 @@ export class ByteVector {
      * @param vectors ByteVectors, byte arrays, or straight bytes to concatenate together into a
      *     new {@link ByteVector}
      * @returns ByteVector Single byte vector with the contents of the byte vectors in
-     *     {@paramref vectors} concatenated together
+     *     `vectors` concatenated together
      */
     // @TODO Remove usages of .addX when this can be substituted
     public static concatenate(... vectors: Array<Uint8Array|ByteVector|number>): ByteVector {
@@ -288,8 +288,8 @@ export class ByteVector {
      * Creates a 4 byte {@link ByteVector} with a signed 32-bit integer as the data
      * @param value Signed 32-bit integer to use as the data. Must be a safe integer, storable in 4
      *        bytes, cannot be a floating point number.
-     * @param mostSignificantByteFirst If `true`, {@param value} will be stored in big endian
-     *        format. If `false`, {@param value} will be stored in little endian format
+     * @param mostSignificantByteFirst If `true`, `value` will be stored in big endian
+     *        format. If `false`, `value` will be stored in little endian format
      * @param isReadOnly If `true` then the ByteVector will be read only
      */
     public static fromInt(
@@ -332,8 +332,8 @@ export class ByteVector {
      * Creates an 8 byte {@link ByteVector} with a signed 64-bit integer as the data
      * @param value Signed 64-bit integer to use as the data. Since JavaScript does not support
      *        longs, we are using BigInts. Must be storable in 8 bytes.
-     * @param mostSignificantByteFirst If `true`, {@param value} will be stored in big endian
-     *        format. If `false`, {@param value} will be stored in little endian format
+     * @param mostSignificantByteFirst If `true`, `value` will be stored in big endian
+     *        format. If `false`, `value` will be stored in little endian format
      * @param isReadOnly If `true` then the ByteVector will be read only
      */
     public static fromLong(
@@ -395,8 +395,8 @@ export class ByteVector {
      * Creates a 2 byte {@link ByteVector} with a signed 16-bit integer as the data
      * @param value Signed 16-bit integer to use as the data. Must be a safe integer, storable in 2
      *        bytes, cannot be a floating point number.
-     * @param mostSignificantByteFirst If `true`, {@param value} will be stored in big endian
-     *        format. If `false`, {@param value} will be stored in little endian format
+     * @param mostSignificantByteFirst If `true`, `value` will be stored in big endian
+     *        format. If `false`, `value` will be stored in little endian format
      * @param isReadOnly If `true` then the ByteVector will be read only
      */
     public static fromShort(
@@ -438,7 +438,7 @@ export class ByteVector {
     /**
      * Creates {@link ByteVector} with the contents of a stream as the data. The stream will be read
      * to the end before the ByteVector is returned.
-     * @param readStream Readable stream that will be read in entirity.
+     * @param readStream Readable stream that will be read in entirety.
      * @param isReadOnly If `true` then the ByteVector will be read only
      */
     public static fromStream(readStream: NodeJS.ReadableStream, isReadOnly: boolean = false): Promise<ByteVector> {
@@ -515,8 +515,8 @@ export class ByteVector {
      * Creates a 4 byte {@link ByteVector} with a positive 32-bit integer as the data
      * @param value Positive 32-bit integer to use as the data. Must be a positive safe integer,
      *        storable in 4 bytes, cannot be a floating point number.
-     * @param mostSignificantByteFirst If `true`, {@param value} will be stored in big endian
-     *        format. If `false`, {@param value} will be stored in little endian format
+     * @param mostSignificantByteFirst If `true`, `value` will be stored in big endian
+     *        format. If `false`, `value` will be stored in little endian format
      * @param isReadOnly If `true` then the ByteVector will be read only
      */
     public static fromUInt(
@@ -531,8 +531,8 @@ export class ByteVector {
      * Creates an 8 byte {@link ByteVector} with a positive 64-bit integer as the data
      * @param value Positive 64-bit integer to use as the data. Since JavaScript does not support
      *        longs, we are using BigInts. Must be storable in 8 bytes.
-     * @param mostSignificantByteFirst If `true`, {@param value} will be stored in big endian
-     *        format. If `false`, {@param value} will be stored in little endian format
+     * @param mostSignificantByteFirst If `true`, `value` will be stored in big endian
+     *        format. If `false`, `value` will be stored in little endian format
      * @param isReadOnly If `true` then the ByteVector will be read only
      */
     public static fromULong(
@@ -569,8 +569,8 @@ export class ByteVector {
      * Creates a 2 byte {@link ByteVector} with a positive 32-bit integer as the data
      * @param value Positive 32-bit integer to use as the data. Must be a positive safe integer,
      *        storable in 4 bytes, cannot be a floating point number.
-     * @param mostSignificantByteFirst If `true`, {@param value} will be stored in big endian
-     *        format. If `false`, {@param value} will be stored in little endian format
+     * @param mostSignificantByteFirst If `true`, `value` will be stored in big endian
+     *        format. If `false`, `value` will be stored in little endian format
      * @param isReadOnly If `true` then the ByteVector will be read only
      */
     public static fromUShort(
@@ -687,13 +687,13 @@ export class ByteVector {
     }
 
     /**
-     * Determines if {@paramref pattern} exists at a certain {@paramref offset} in this byte vector.
+     * Determines if `pattern` exists at a certain `offset` in this byte vector.
      * @param pattern ByteVector to search for at in this byte vector
      * @param offset Position in this byte vector to search for the pattern. If omitted, defaults
      *     to `0`
-     * @param patternOffset Position in {@paramref pattern} to begin matching. If omitted, defaults
+     * @param patternOffset Position in `pattern` to begin matching. If omitted, defaults
      *     to `0`
-     * @param patternLength Bytes of {@paramref pattern} to match. If omitted, defaults to all bytes
+     * @param patternLength Bytes of `pattern` to match. If omitted, defaults to all bytes
      *     in the pattern minus the offset
      */
     public containsAt(
@@ -745,7 +745,7 @@ export class ByteVector {
     }
 
     /**
-     * Determines whether or not this byte vector ends with the provided {@paramref pattern}.
+     * Determines whether or not this byte vector ends with the provided `pattern`.
      * @param pattern ByteVector to look for at the end of this byte vector
      */
     public endsWith(pattern: ByteVector): boolean {
@@ -754,8 +754,8 @@ export class ByteVector {
     }
 
     /**
-     * Determines whether or not this byte vector ends with a part of the {@paramref pattern}.
-     * NOTE: if this byte vector ends with {@paramref pattern} perfectly, it must end with n-1 or
+     * Determines whether or not this byte vector ends with a part of the `pattern`.
+     * NOTE: if this byte vector ends with `pattern` perfectly, it must end with n-1 or
      * less bytes
      * @param pattern ByteVector to look for at the end of this byte vector
      */
@@ -780,8 +780,8 @@ export class ByteVector {
     }
 
     /**
-     * Searches this instance for the {@paramref pattern}. Returns the index of the first instance
-     * of the pattern, or `-1` if it was not found. Providing a {@paramref byteAlign} requires the
+     * Searches this instance for the `pattern`. Returns the index of the first instance
+     * of the pattern, or `-1` if it was not found. Providing a `byteAlign` requires the
      * pattern to appear at an index that is a multiple of the byteAlign parameter.
      * Example: searching "abcd" for "ab" with byteAlign 1 will return 0. Searching "abcd" for
      * "ab" with byteAlign 2 will return 1. Searching "00ab" for "ab" with byteAlign 2 will return
@@ -837,7 +837,7 @@ export class ByteVector {
     }
 
     /**
-     * Gets the byte at the given {@paramref index}
+     * Gets the byte at the given `index`
      * @param index Index into the byte vector to return
      */
     public get(index: number): number {
@@ -847,7 +847,7 @@ export class ByteVector {
     }
 
     /**
-     * Gets the index of the first occurence of the specified value.
+     * Gets the index of the first occurrence of the specified value.
      * @param item A byte to find within the current instance.
      * @returns An integer containing the first index at which the value was found, or -1 if it
      *          was not found/
@@ -985,9 +985,9 @@ export class ByteVector {
     }
 
     /**
-     * Resizes this instance to the length specified in {@paramref size}. If the desired size is
+     * Resizes this instance to the length specified in `size`. If the desired size is
      * longer than the current length, it will be filled with the byte value in
-     * {@paramref padding}. If the desired size is shorter than the current length, bytes will be
+     * `padding`. If the desired size is shorter than the current length, bytes will be
      * removed.
      * @param size Length of the byte vector after resizing. Must be unsigned 32-bit integer
      * @param padding Byte to fill any excess space created after resizing
@@ -1013,7 +1013,7 @@ export class ByteVector {
     /**
      * Finds a byte vector by searching from the end of this instance and working towards the
      * beginning of this instance. Returns the index of the first instance of the pattern, or `-1`
-     * if it was not found. Providing a {@paramref byteAlign} requires the pattern to appear at an
+     * if it was not found. Providing a `byteAlign` requires the pattern to appear at an
      * index that is a multiple of the byteAlign parameter.
      * Example: searching "abcd" for "ab" with byteAlign 1 will return 0. Searching "abcd" for
      * "ab" with byteAlign 2 will return 1. Searching "00ab" for "ab" with byteAlign 2 will return
@@ -1079,7 +1079,7 @@ export class ByteVector {
      *     encountered, the index at which it is found must be divisible by this value.
      * @param max Maximum number of objects to return or 0 to not limit the number. If that number
      *     is reached, the last value will contain the remainder of the file even if it contains
-     *     more instances of {@paramref separator}.
+     *     more instances of `separator`.
      * @returns ByteVector[] The split contents of the current instance
      */
     public split(separator: ByteVector, byteAlign: number = 1, max: number = 0): ByteVector[] {
@@ -1238,7 +1238,7 @@ export class ByteVector {
      * @param count Value specifying a limit to the number of strings to create. Once the limit has
      *        been reached, the last string will be filled by the remainder of the data
      * @returns string[] Array of strings containing the converted text.
-     * @desc I'm not actually sure if this works as defined, but it behaves the same as the
+     * @description I'm not actually sure if this works as defined, but it behaves the same as the
      *       original .NET implementation, so that's good enough for now.
      */
     public toStrings(type: StringType, offset: number, count: number = Number.MAX_SAFE_INTEGER) {
@@ -1329,12 +1329,12 @@ export class ByteVector {
     // #region Operator-Like Methods
 
     /**
-     * Creates a new {@link ByteVector} that contains the contents of {@param first} concatenated
-     * with {@param second}. This operation can be thought of as `first + second`. Note: Regardless
+     * Creates a new {@link ByteVector} that contains the contents of `first` concatenated
+     * with `second`. This operation can be thought of as `first + second`. Note: Regardless
      * of the value of {@link ByteVector.isReadOnly}, the created ByteVector will always be
      * read/write.
-     * @param first ByteVector to which {@param second} will be added
-     * @param second ByteVector which will be added to {@param first}
+     * @param first ByteVector to which `second` will be added
+     * @param second ByteVector which will be added to `first`
      */
     public static add(first: ByteVector, second: ByteVector): ByteVector {
         const sum = ByteVector.fromByteVector(first);   // Will throw on null/undefined
@@ -1345,18 +1345,18 @@ export class ByteVector {
     /**
      * Returns `true` if the contents of the two {@link ByteVector}s are identical, returns `false`
      * otherwise
-     * @param first ByteVector to compare with {@param second}
-     * @param second ByteVector to compare with {@param first}
+     * @param first ByteVector to compare with `second`
+     * @param second ByteVector to compare with `first`
      */
     public static equal(first: ByteVector, second: ByteVector): boolean {
-        const fnull = !first;
-        const snull = !second;
-        if (fnull && snull) {
+        const fNull = !first;
+        const sNull = !second;
+        if (fNull && sNull) {
             // Since (f|s)null could be true with `undefined` OR `null`, we'll just let === decide it for us
             return first === second;
         }
 
-        if (fnull || snull) {
+        if (fNull || sNull) {
             // If only one is null/undefined, then they are not equal
             return false;
         }
@@ -1367,20 +1367,20 @@ export class ByteVector {
     /**
      * Returns `false` if the contents of the two {@link ByteVector}s are identical, returns `true`
      * otherwise
-     * @param first ByteVector to compare with {@param second}
-     * @param second ByteVector to compare with {@param first}
+     * @param first ByteVector to compare with `second`
+     * @param second ByteVector to compare with `first`
      */
     public static notEqual(first: ByteVector, second: ByteVector): boolean {
         return !ByteVector.equal(first, second);
     }
 
     /**
-     * Returns `true` if {@param first} is greater than {@paramref second}. This is true if
-     * {@param first} is longer than {@param second} or if the first element in {@param first}
-     * that is different than the element at the same position in {@param second} is greater than.
+     * Returns `true` if `first` is greater than `second`. This is true if
+     * `first` is longer than `second` or if the first element in `first`
+     * that is different than the element at the same position in `second` is greater than.
      * Returns `false` if the two {@link ByteVector}s are identical.
-     * @param first ByteVector to compare with {@param second}
-     * @param second ByteVector to compare with {@param first}
+     * @param first ByteVector to compare with `second`
+     * @param second ByteVector to compare with `first`
      */
     public static greaterThan(first: ByteVector, second: ByteVector): boolean {
         if (!first) {
@@ -1394,12 +1394,12 @@ export class ByteVector {
     }
 
     /**
-     * Returns `true` if {@param first} is greater than {@paramref second}. This is true if
-     * {@param first} is longer than {@param second} or if the first element in {@param first}
-     * that is different than the element at the same position in {@param second} is greater than.
+     * Returns `true` if `first` is greater than `second`. This is true if
+     * `first` is longer than `second` or if the first element in `first`
+     * that is different than the element at the same position in `second` is greater than.
      * Returns `true` if the two {@link ByteVector}s are identical.
-     * @param first ByteVector to compare with {@param second}
-     * @param second ByteVector to compare with {@param first}
+     * @param first ByteVector to compare with `second`
+     * @param second ByteVector to compare with `first`
      */
     public static greaterThanEqual(first: ByteVector, second: ByteVector): boolean {
         if (!first) {
@@ -1413,12 +1413,12 @@ export class ByteVector {
     }
 
     /**
-     * Returns `true` if {@param first} is less than {@paramref second}. This is true if
-     * {@param first} is shorter than {@param second} or if the first element in {@param first}
-     * that is different than the element at the same position in {@param second} is less than.
+     * Returns `true` if `first` is less than `second`. This is true if
+     * `first` is shorter than `second` or if the first element in `first`
+     * that is different than the element at the same position in `second` is less than.
      * Returns `false` if the two {@link ByteVector}s are identical.
-     * @param first ByteVector to compare with {@param second}
-     * @param second ByteVector to compare with {@param first}
+     * @param first ByteVector to compare with `second`
+     * @param second ByteVector to compare with `first`
      */
     public static lessThan(first: ByteVector, second: ByteVector): boolean {
         if (!first) {
@@ -1432,12 +1432,12 @@ export class ByteVector {
     }
 
     /**
-     * Returns `true` if {@param first} is less than {@paramref second}. This is true if
-     * {@param first} is shorter than {@param second} or if the first element in {@param first}
-     * that is different than the element at the same position in {@param second} is less than.
+     * Returns `true` if `first` is less than `second`. This is true if
+     * `first` is shorter than `second` or if the first element in `first`
+     * that is different than the element at the same position in `second` is less than.
      * Returns `true` if the two {@link ByteVector}s are identical.
-     * @param first ByteVector to compare with {@param second}
-     * @param second ByteVector to compare with {@param first}
+     * @param first ByteVector to compare with `second`
+     * @param second ByteVector to compare with `first`
      */
     public static lessThanEqual(first: ByteVector, second: ByteVector): boolean {
         if (!first) {

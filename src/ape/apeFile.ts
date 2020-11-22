@@ -50,11 +50,12 @@ export default class ApeFile extends NonContainerFile {
     }
 
     /** @inheritDoc */
-    protected readEnd(end: number, propertiesStyle: ReadStyle): void {
+    protected readEnd(_end: number, _propertiesStyle: ReadStyle): void {
         this.getTag(TagTypes.Ape, true);
     }
 
-    protected readProperties(start: number, end: number, propertiesStyle: ReadStyle): Properties {
+    /** @inheritDoc */
+    protected readProperties(start: number, end: number, _propertiesStyle: ReadStyle): Properties {
         const header = new ApeStreamHeader(this._headerBlock, end - start);
         return new Properties(0, [header]);
     }
@@ -76,5 +77,5 @@ export default class ApeFile extends NonContainerFile {
     "taglib/ape",
     "audio/x-ape",
     "audio/ape",
-    "appliction/x-ape"
+    "application/x-ape"
 ].forEach((mt) => File.addFileType(mt, ApeFile));

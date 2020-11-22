@@ -114,7 +114,7 @@ const uniqueFrameIdentifiers: {[key: string]: FrameIdentifier} = {
     TIME: new FrameIdentifier(undefined, "TIME", "TIM"), // Time
     TIPL: new FrameIdentifier("TIPL", "IPLS", "IPL"), // Involved people list
     TIT1: new FrameIdentifier("TIT1", "TIT1", "TT1"), // Content group description
-    TIT2: new FrameIdentifier("TIT2", "TIT2", "TT2"), // Title/songname/content description
+    TIT2: new FrameIdentifier("TIT2", "TIT2", "TT2"), // Title/song name/content description
     TIT3: new FrameIdentifier("TIT3", "TIT3", "TT3"), // Subtitle/description refinement
     TKEY: new FrameIdentifier("TKEY", "TKEY", "TKE"), // Initial key
     TLAN: new FrameIdentifier("TLAN", "TLAN", "TLA"), // Language(s)
@@ -129,7 +129,7 @@ const uniqueFrameIdentifiers: {[key: string]: FrameIdentifier} = {
     TOWN: new FrameIdentifier("TOWN", "TOWN", undefined), // File owner/licensee
     TPE1: new FrameIdentifier("TPE1", "TPE1", "TP1"), // Lead performer(s)/soloist(s)
     TPE2: new FrameIdentifier("TPE2", "TPE2", "TP2"), // Band/orchestra/accompaniment
-    TPE3: new FrameIdentifier("TPE3", "TPE3", "TP3"), // Counductor/performer refinement
+    TPE3: new FrameIdentifier("TPE3", "TPE3", "TP3"), // Conductor/performer refinement
     TPE4: new FrameIdentifier("TPE4", "TPE4", "TP4"), // Interpreted, remixed, or otherwise modified by
     TPOS: new FrameIdentifier("TPOS", "TPOS", "TPA"), // Part of a set
     TPRO: new FrameIdentifier("TPRO", undefined, undefined), // Produced notice
@@ -149,9 +149,9 @@ const uniqueFrameIdentifiers: {[key: string]: FrameIdentifier} = {
     TSST: new FrameIdentifier("TSST", undefined, undefined), // Set subtitle
     TXXX: new FrameIdentifier("TXXX", "TXXX", "TXX"), // User defined text information frame
     TYER: new FrameIdentifier(undefined, "TYER", "TYE"), // Year
-    UFID: new FrameIdentifier("UFID", "UFID", "UFI"), // Unique file identifer
+    UFID: new FrameIdentifier("UFID", "UFID", "UFI"), // Unique file identifier
     USER: new FrameIdentifier("USER", "USER", undefined), // Terms of use
-    USLT: new FrameIdentifier("USLT", "USLT", "ULT"), // Unsynchronised lyric/text transcription
+    USLT: new FrameIdentifier("USLT", "USLT", "ULT"), // Unsynchronized lyric/text transcription
     WCOM: new FrameIdentifier("WCOM", "WCOM", "WCM"), // Commercial information URL
     WCOP: new FrameIdentifier("WCOP", "WCOP", "WCP"), // Copyright/legal information URL
     WOAF: new FrameIdentifier("WOAF", "WOAF", "WAF"), // Official audio file webpage URL

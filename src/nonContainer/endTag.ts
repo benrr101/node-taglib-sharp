@@ -215,7 +215,7 @@ export default class EndTag extends CombinedTag {
 
                 // If the complete tag size is zero or the tag is a header, this indicates some
                 // sort of corruption.
-                if (footer.tagSize === 0 || (footer.flags & ApeTagFooterFlags.IsHeader) != 0) {
+                if (footer.tagSize === 0 || (footer.flags & ApeTagFooterFlags.IsHeader) !== 0) {
                     return {
                         tagStarted: position,
                         tagType: TagTypes.None

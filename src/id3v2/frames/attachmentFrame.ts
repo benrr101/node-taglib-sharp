@@ -63,8 +63,8 @@ export default class AttachmentFrame extends Frame implements IPicture {
      * Constructs and initializes a new attachment frame by reading its raw data in a specified
      * ID3v2 version.
      * @param data ByteVector containing the raw representation of the new frame
-     * @param offset Index into {@paramref data} where the frame actually begins
-     * @param header Header of the frame found at {@paramref offset} in the data
+     * @param offset Index into `data` where the frame actually begins
+     * @param header Header of the frame found at `offset` in the data
      * @param version ID3v2 version the frame was originally encoded with
      */
     public static fromOffsetRawData(
@@ -259,7 +259,7 @@ export default class AttachmentFrame extends Frame implements IPicture {
      * @param frames List of attachment frames to search
      * @param description Description to match
      * @param type Picture type to match
-     * @returns Matching frame or `undefined` if a match wasn't found and {@paramref create} is
+     * @returns Matching frame or `undefined` if a match wasn't found and `create` is
      *     `false`
      */
     public static find(
@@ -270,6 +270,7 @@ export default class AttachmentFrame extends Frame implements IPicture {
         Guards.truthy(frames, "frames");
         return frames.find((f) => {
                 if (description && f.description !== description) { return false; }
+                // noinspection RedundantIfStatementJS
                 if (type !== PictureType.Other && f.type !== type) { return false; }
                 return true;
             });
@@ -401,7 +402,7 @@ export default class AttachmentFrame extends Frame implements IPicture {
                 // Text encoding      $xx
                 // Image format       $xx xx xx
                 // Picture type       $xx
-                // Description        <textstring> $00 (00)
+                // Description        <text_string> $00 (00)
                 // Picture data       <binary data>
                 const imageFormat = data.toString(3, StringType.Latin1, 1);
                 this._mimeType = Picture.getMimeTypeFromFilename(imageFormat);

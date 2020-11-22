@@ -12,7 +12,7 @@ export default {
      * Encodes a unsigned int as synchronized integer data.
      * @param value Number to encode. Must be an safe, positive integer
      * @returns ByteVector The encoded number
-     * @throws Error if {@paramref value} is greater than 268435456
+     * @throws Error if `value` is greater than 268435456
      */
     fromUint: (value: number): ByteVector => {
         Guards.uint(value, "value");

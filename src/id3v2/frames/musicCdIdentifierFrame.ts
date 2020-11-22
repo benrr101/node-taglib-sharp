@@ -6,7 +6,7 @@ import {Guards} from "../../utils";
 
 /**
  * Class extends {@link Frame}, implementing support for ID3v2 Music CD Identifier (MCDI) frames.
- * Music CD identifer frames should contain the table of contents data as stored on the physical
+ * Music CD identifier frames should contain the table of contents data as stored on the physical
  * CD. It is primarily used for track information lookup through web sources like CDDB.
  */
 export default class MusicCdIdentifierFrame extends Frame {
@@ -20,9 +20,9 @@ export default class MusicCdIdentifierFrame extends Frame {
      * Constructs and initializes a new instance of MusicCdIdentifier frame by reading its raw data
      * in a specified ID3v2 version starting at a specified offset.
      * @param data Raw representation of the new frame.
-     * @param offset Offset into {@paramref data} where the frame actually begins. Must be a
+     * @param offset Offset into `data` where the frame actually begins. Must be a
      *     positive, safe integer
-     * @param header Header of the frame found at {@paramref offset} in the data
+     * @param header Header of the frame found at `offset` in the data
      * @param version ID3v2 version the frame was originally encoded with
      */
     public static fromOffsetRawData(data: ByteVector, offset: number, header: Id3v2FrameHeader, version: number) {
