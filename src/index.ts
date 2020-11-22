@@ -15,7 +15,8 @@ export {default as Properties} from "./properties";
 export {Tag, TagTypes} from "./tag";
 
 // APE /////////////////////////////////////////////////////////////////////
-export {default as ApeTag} from "./ape/apeFile";
+export {default as ApeFile} from "./ape/apeFile";
+export {default as ApeTag} from "./ape/apeTag";
 
 // ID3v1 ///////////////////////////////////////////////////////////////////
 export {default as Id3v1Tag} from "./id3v1/id3v1Tag";
