@@ -1,4 +1,4 @@
-import BitStream from "./bitStream";
+import Mpeg4AudioTypes from "../mpeg4/mpeg4AudioTypes";
 import {CorruptFileError} from "../errors";
 import {File} from "../file";
 import {IAudioCodec, MediaTypes} from "../iCodec";
@@ -6,13 +6,9 @@ import {Guards} from "../utils";
 
 /**
  * This structure implements {@link IAudioCodec} and provides information about an ADTS AAC audio
- * stream.
+ * stream. NOTE: This header type should not be used for MPEG-4 encapsulated audio files.
  */
 export default class AacAudioHeader implements IAudioCodec {
-    private static readonly channels = [
-        0, 1, 2, 3, 4, 5, 6, 8
-    ];
-
     private static readonly sampleRates = [
         96000, 88200, 64000, 48000, 44100, 32000,
         24000, 22050, 16000, 12000, 11025, 8000, 7350
@@ -21,41 +17,47 @@ export default class AacAudioHeader implements IAudioCodec {
     /**
      * An empty an unset header
      */
-    public static readonly unknown = new AacAudioHeader(0, 0, 0, 0, 0);
+    public static readonly unknown = new AacAudioHeader(0, 0, 0, 0, 0, 0);
 
-    private _audioBitrate: number;
-    private _audioChannels: number;
-    private _audioSampleRate: number;
+    private readonly _audioBitrate: number;
+    private readonly _audioChannels: number;
+    private readonly _audioSampleRate: number;
+    private readonly _mpeg4AudioTypeIndex: number;
+
     private _durationMilliseconds: number;
     private _streamLength: number;
 
     /**
-     * Constructs and initializes a new instance of {@link AudioHeader} by populating it with the
+     * Constructs and initializes a new instance of {@link AacAudioHeader} by populating it with the
      * specified values.
      * @param channels Number of channels in the audio stream
      * @param bitrate Bitrate of the audio stream
      * @param sampleRate Sample rate of the audio stream
      * @param numberOfSamples Number of samples in the audio stream
      * @param numberOfFrames Number of frames in the audio stream
+     * @param mpegAudioType ID of the MPEG-4 audio type
      */
     public constructor(
         channels: number,
         bitrate: number,
         sampleRate: number,
         numberOfSamples: number,
-        numberOfFrames: number
+        numberOfFrames: number,
+        mpegAudioType: number
     ) {
-        Guards.int(channels, "channels");
-        Guards.int(bitrate, "bitrate");
-        Guards.int(sampleRate, "sapleRate");
-        Guards.int(numberOfSamples, "numberOfSamples");
-        Guards.int(numberOfFrames, "numberOfFrames");
+        Guards.uint(channels, "channels");
+        Guards.greaterThanInclusive(bitrate, 0, "bitrate");
+        Guards.uint(sampleRate, "sampleRate");
+        Guards.uint(numberOfSamples, "numberOfSamples");
+        Guards.uint(numberOfFrames, "numberOfFrames");
+        Guards.uint(mpegAudioType, "mpegAudioType");
 
         this._durationMilliseconds = 0;
         this._streamLength = 0;
         this._audioBitrate = bitrate;
         this._audioChannels = channels;
         this._audioSampleRate = sampleRate;
+        this._mpeg4AudioTypeIndex = mpegAudioType;
     }
 
     // #region Properties
@@ -70,7 +72,7 @@ export default class AacAudioHeader implements IAudioCodec {
     public get audioSampleRate(): number { return this._audioSampleRate; }
 
     /** @inheritDoc */
-    public get description(): string { return "ADTS AAC"; }
+    public get description(): string { return `ADTS AAC: ${Mpeg4AudioTypes[this._mpeg4AudioTypeIndex]}`; }
 
     /** @inheritDoc */
     public get durationMilliseconds(): number { return this._durationMilliseconds; }
@@ -88,7 +90,7 @@ export default class AacAudioHeader implements IAudioCodec {
         Guards.uint(value, "value");
 
         this._streamLength = value;
-        this._durationMilliseconds = this._streamLength * 8 / this.audioBitrate * 1000;
+        this._durationMilliseconds = this._streamLength * 8 / this.audioBitrate;
     }
 
     // #endregion
@@ -99,11 +101,9 @@ export default class AacAudioHeader implements IAudioCodec {
      * @param file File to search
      * @param position Seek position in `file` in which to start searching
      * @param length maximum number of bytes to search before aborting
-     * @returns {header: AudioHeader, success: boolean}
-     *     `header` is the header found or {@link unknown} if a header could not be found.
-     *     `success` is `true` if a header was found, `false` otherwise.
+     * @returns AacAudioHeader Header found or `undefined` if a header could not be found.
      */
-    public static find(file: File, position: number, length: number = -1): {header: AacAudioHeader, success: boolean} {
+    public static find(file: File, position: number, length: number = -1): AacAudioHeader {
         Guards.truthy(file, "file");
         Guards.uint(position, "position");
         Guards.uint(length, "length");
@@ -114,10 +114,7 @@ export default class AacAudioHeader implements IAudioCodec {
         let buffer = file.readBlock(3);
 
         if (buffer.length < 3) {
-            return {
-                header: this.unknown,
-                success: false
-            };
+            return undefined;
         }
 
         do {
@@ -128,76 +125,52 @@ export default class AacAudioHeader implements IAudioCodec {
             for (let i = 0; i < buffer.length; i++) {
                 if (buffer.get(i) === 0xff && buffer.get(i + i) > 0xF0) {
                     try {
-                        const bits = new BitStream(buffer.mid(i, 7).data);
+                        // NOTE: For details of the header format, see https://wiki.multimedia.cx/index.php/ADTS
+                        const bytes = buffer.mid(i, 7);
 
-                        // 12 bits sync header
-                        bits.readInt32(12);
-
-                        // 1 bit mpeg 2/4
-                        bits.readInt32(1);
-
-                        // 2 bits layer
-                        bits.readInt32(2);
-
-                        // 1 bit protection absent
-                        bits.readInt32(1);
-
-                        // 2 bits profile object type
-                        bits.readInt32(2);
-
-                        // 4 bits sampling frequency index
-                        const sampleRateIndex = bits.readInt32(4);
+                        // Sample rate
+                        const sampleRateByte = bytes.get(2);
+                        const sampleRateIndex = (sampleRateByte & 0x3C) >>> 2;
                         if (sampleRateIndex >= this.sampleRates.length) {
-                            return {
-                                header: this.unknown,
-                                success: false
-                            };
+                            return undefined;
                         }
                         const sampleRate = this.sampleRates[sampleRateIndex];
 
-                        // 1 bit private bit
-                        bits.readInt32(1);
+                        // MPEG-4 Audio Type
+                        const mpeg4AudioType = (sampleRateByte & 0xC0) >>> 6;
 
-                        // 3 bits channel configuration
-                        const channelConfigIndex = bits.readInt32(3);
-                        if (channelConfigIndex >= this.channels.length) {
-                            return {
-                                header: this.unknown,
-                                success: false
-                            };
-                        }
+                        // Channel configuration
+                        const channelsByte1 = sampleRateByte;
+                        const channelsByte2 = bytes.get(3);
+                        const channelCount = ((channelsByte1 & 0x1) << 2)
+                            | (channelsByte2 & 0xC0) >>> 6;
 
-                        // 4 copyright bits
-                        bits.readInt32(4);
-
-                        // 13 bits frame length
-                        const frameLength = bits.readInt32(13);
+                        // Frame length
+                        const frameLengthByte1 = channelsByte2;
+                        const frameLengthByte2 = bytes.get(4);
+                        const frameLengthByte3 = bytes.get(5);
+                        const frameLength = ((frameLengthByte1 & 0x03) << 11)
+                            | (frameLengthByte2 << 3)
+                            | ((frameLengthByte3 & 0xE0) >>> 5);
                         if (frameLength < 7) {
-                            return {
-                                header: this.unknown,
-                                success: false
-                            };
+                            return undefined;
                         }
 
-                        // 11 bits buffer fullness
-                        bits.readInt32(11);
+                        // Number of frames in ADTS frame minus 1
+                        const numberOfFrames = ((bytes.get(6) & 0x03) >>> 0) + 1;
 
-                        // 2 bits number of raw data blocks in frame
-                        const numberOfFrames = bits.readInt32(2) + 1;
-
+                        // Calculate number of samples and bitrate
                         const numberOfSamples = numberOfFrames * 1024;
-                        const bitrate = frameLength * 8 * sampleRate / numberOfSamples;
+                        const bitrate = frameLength * 8 * sampleRate / numberOfSamples / 1000;
 
-                        return {
-                            header: new AudioHeader(
-                                this.channels[channelConfigIndex],
-                                bitrate,
-                                sampleRate,
-                                numberOfSamples,
-                                numberOfFrames
-                            ),
-                            success: true
-                        };
+                        return new AacAudioHeader(
+                            channelCount,
+                            bitrate,
+                            sampleRate,
+                            numberOfSamples,
+                            numberOfFrames,
+                            mpeg4AudioType
+                        );
                     } catch (e) {
                         if (!CorruptFileError.errorIs(e)) {
                             throw e;
@@ -209,10 +182,7 @@ export default class AacAudioHeader implements IAudioCodec {
             position += File.bufferSize;
         } while (buffer.length > 3 && (length < 0 || position < end));
 
-        return {
-            header: this.unknown,
-            success: false
-        };
+        return undefined;
     }
 
 }

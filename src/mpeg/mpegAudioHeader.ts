@@ -11,8 +11,8 @@ import {Guards} from "../utils";
  * Provides information about an MPEG audio stream. For more information and definition of the
  * header, see http://www.mpgedit.org/mpgedit/mpeg_format/mpeghdr.htm
  */
-export default class AudioHeader implements IAudioCodec {
-    public static readonly Unknown: AudioHeader = AudioHeader.fromInfo(0, 0, XingHeader.unknown, VbriHeader.unknown);
+export default class MpegAudioHeader implements IAudioCodec {
+    public static readonly Unknown: MpegAudioHeader = MpegAudioHeader.fromInfo(0, 0, XingHeader.unknown, VbriHeader.unknown);
 
     private static readonly bitrates: number[][][] = [
         [ // Version 1
@@ -63,7 +63,7 @@ export default class AudioHeader implements IAudioCodec {
         Guards.truthy(file, "file");
         Guards.uint(position, "position");
 
-        const header = new AudioHeader();
+        const header = new MpegAudioHeader();
         header._durationMilliseconds = 0;
         header._streamLength = 0;
 
@@ -112,13 +112,13 @@ export default class AudioHeader implements IAudioCodec {
         streamLength: number,
         xingHeader: XingHeader,
         vbriHeader: VbriHeader
-    ): AudioHeader {
+    ): MpegAudioHeader {
         Guards.uint(flags, "flags");
         Guards.uint(streamLength, "streamLength");
         Guards.truthy(xingHeader, "xingHeader");
         Guards.truthy(vbriHeader, "vbriHeader");
 
-        const header = new AudioHeader();
+        const header = new MpegAudioHeader();
         header._flags = flags;
         header._streamLength = streamLength;
         header._xingHeader = xingHeader;
@@ -154,7 +154,7 @@ export default class AudioHeader implements IAudioCodec {
         const index1 = this.version === MpegVersion.Version1 ? 0 : 1;
         const index2 = this.audioLayer - 1;
         const index3 = (this._flags >> 12) & 0x0f;
-        return AudioHeader.bitrates[index1][index2][index3];
+        return MpegAudioHeader.bitrates[index1][index2][index3];
     }
 
     /** @inheritDoc IAudioCodec.audioChannels */
@@ -195,7 +195,7 @@ export default class AudioHeader implements IAudioCodec {
     public get audioSampleRate(): number {
         const index1 = this.version;
         const index2 = (this._flags >> 10) & 0x03;
-        return AudioHeader.sampleRates[index1][index2];
+        return MpegAudioHeader.sampleRates[index1][index2];
     }
 
     /**
@@ -232,12 +232,12 @@ export default class AudioHeader implements IAudioCodec {
 
         if (this._xingHeader.totalFrames > 0) {
             // Read the length and the bitrate from the Xing header
-            const timePerFrameSeconds = AudioHeader.blockSize[this.version][this.audioLayer] / this.audioSampleRate;
+            const timePerFrameSeconds = MpegAudioHeader.blockSize[this.version][this.audioLayer] / this.audioSampleRate;
             const durationSeconds = timePerFrameSeconds * this._xingHeader.totalFrames;
             this._durationMilliseconds = durationSeconds * 1000;
         } else if (this._vbriHeader.totalFrames > 0) {
             // Read the length and the bitrate from the VBRI header
-            const timePerFrameSeconds = AudioHeader.blockSize[this.version][this.audioLayer] / this.audioSampleRate;
+            const timePerFrameSeconds = MpegAudioHeader.blockSize[this.version][this.audioLayer] / this.audioSampleRate;
             const durationSeconds = Math.round(timePerFrameSeconds * this._vbriHeader.totalFrames);
             this._durationMilliseconds = durationSeconds * 1000;
         } else if (this.audioFrameLength > 0 && this.audioBitrate > 0) {
@@ -325,11 +325,11 @@ export default class AudioHeader implements IAudioCodec {
      * @param length Maximum number of bytes to search before giving up. Defaults to `-1` to
      *     have no maximum
      * @returns {header: AudioHeader, success: boolean}
-     *     * `header` - the header that was found or {@link AudioHeader.Unknown} if a header was not
+     *     * `header` - the header that was found or {@link MpegAudioHeader.Unknown} if a header was not
      *         found
      *     * `success` - whether or not a header was found
      */
-    public static find(file: File, position: number, length: number = -1): { header: AudioHeader, success: boolean} {
+    public static find(file: File, position: number, length: number = -1): { header: MpegAudioHeader, success: boolean} {
         Guards.truthy(file, "file");
         Guards.int(position, "position");
         Guards.int(length, "length");
@@ -357,7 +357,7 @@ export default class AudioHeader implements IAudioCodec {
                     if (!this.getHeaderError(data)) {
                         try {
                             return {
-                                header: AudioHeader.fromData(data, file, position + i),
+                                header: MpegAudioHeader.fromData(data, file, position + i),
                                 success: true
                             };
                         } catch (e) {
