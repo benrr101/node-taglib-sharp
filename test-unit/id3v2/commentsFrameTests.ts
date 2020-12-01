@@ -1,15 +1,16 @@
 import * as Chai from "chai";
 import * as ChaiAsPromised from "chai-as-promised";
-import {slow, suite, test, timeout} from "mocha-typescript";
-
-import CommentsFrame from "../../src/id3v2/frames/commentsFrame";
 import FrameConstructorTests from "./frameConstructorTests";
 import PropertyTests from "../utilities/propertyTests";
+import {suite, test} from "mocha-typescript";
+
+import CommentsFrame from "../../src/id3v2/frames/commentsFrame";
 import Id3v2Settings from "../../src/id3v2/id3v2Settings";
 import {ByteVector, StringType} from "../../src/byteVector";
 import {Frame, FrameClassType} from "../../src/id3v2/frames/frame";
 import {FrameIdentifiers} from "../../src/id3v2/frameIdentifiers";
 import {Id3v2FrameHeader} from "../../src/id3v2/frames/frameHeader";
+import Testers from "../utilities/testers";
 
 // Setup Chai
 Chai.use(ChaiAsPromised);
@@ -42,8 +43,7 @@ function getTestFrame(): CommentsFrame {
     @test
     public fromDescription_falsyDescription() {
         // Act/Assert
-        assert.throws(() => { CommentsFrame.fromDescription(undefined, undefined, undefined); });
-        assert.throws(() => { CommentsFrame.fromDescription(null, undefined, undefined); });
+        Testers.testTruthy((v: string) => { CommentsFrame.fromDescription(v, undefined, undefined); });
     }
 
     @test
@@ -345,8 +345,7 @@ function getTestFrame(): CommentsFrame {
     @test
     public find_falsyFrames() {
         // Act/Assert
-        assert.throws(() => { CommentsFrame.find(undefined, "fux"); });
-        assert.throws(() => { CommentsFrame.find(null, "fux"); });
+        Testers.testTruthy((v: CommentsFrame[]) => { CommentsFrame.find(v, "fux"); });
     }
 
     @test
@@ -403,8 +402,7 @@ function getTestFrame(): CommentsFrame {
     @test
     public findAll_falsyFrames() {
         // Act/Assert
-        assert.throws(() => { CommentsFrame.findAll(undefined, "fux"); });
-        assert.throws(() => { CommentsFrame.findAll(null, "fux"); });
+        Testers.testTruthy((v: CommentsFrame) => { CommentsFrame.findAll(v, "fux"); });
     }
 
     @test

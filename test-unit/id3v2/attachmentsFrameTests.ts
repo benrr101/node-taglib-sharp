@@ -1,12 +1,13 @@
 import * as Chai from "chai";
 import * as ChaiAsPromised from "chai-as-promised";
 import * as TypeMoq from "typemoq";
-import {slow, suite, test, timeout} from "mocha-typescript";
+import FrameConstructorTests from "./frameConstructorTests";
+import PropertyTests from "../utilities/propertyTests";
+import Testers from "../utilities/testers";
+import {suite, test} from "mocha-typescript";
 
 import AttachmentFrame from "../../src/id3v2/frames/attachmentFrame";
-import FrameConstructorTests from "./frameConstructorTests";
 import Id3v2Settings from "../../src/id3v2/id3v2Settings";
-import PropertyTests from "../utilities/propertyTests";
 import {ByteVector, StringType} from "../../src/byteVector";
 import {Frame, FrameClassType} from "../../src/id3v2/frames/frame";
 import {Id3v2FrameHeader} from "../../src/id3v2/frames/frameHeader";
@@ -50,8 +51,7 @@ function getCustomTestFrame(data: ByteVector, desc: string, filename: string, mi
     @test
     public fromPicture_falsyPicture() {
         // Act / Assert
-        assert.throws(() => { const _ = AttachmentFrame.fromPicture(null); });
-        assert.throws(() => { const _ = AttachmentFrame.fromPicture(undefined); });
+        Testers.testTruthy((v: IPicture) => { const _ = AttachmentFrame.fromPicture(v); });
     }
 
     @test

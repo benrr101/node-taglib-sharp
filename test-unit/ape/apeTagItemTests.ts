@@ -1,5 +1,6 @@
 import * as Chai from "chai";
 import * as ChaiAsPromised from "chai-as-promised";
+import Testers from "../utilities/testers";
 import {suite, test} from "mocha-typescript";
 
 import {ApeTagItem, ApeTagItemType} from "../../src/ape/apeTagItem";
@@ -16,10 +17,8 @@ const assert = Chai.assert;
         const bv = ByteVector.empty();
 
         // Act / Assert
-        assert.throws(() => { ApeTagItem.fromBinaryValue(undefined, bv); });
-        assert.throws(() => { ApeTagItem.fromBinaryValue(null, bv); });
-        assert.throws(() => { ApeTagItem.fromBinaryValue("", undefined); });
-        assert.throws(() => { ApeTagItem.fromBinaryValue("", null); });
+        Testers.testTruthy((v: string) => { ApeTagItem.fromBinaryValue(v, bv); });
+        Testers.testTruthy((v: ByteVector) => { ApeTagItem.fromBinaryValue("", v); });
     }
 
     @test
@@ -83,11 +82,8 @@ const assert = Chai.assert;
         const data = ByteVector.empty();
 
         // Act / Assert
-        assert.throws(() => { ApeTagItem.fromData(undefined, 0); });
-        assert.throws(() => { ApeTagItem.fromData(null, 0); });
-        assert.throws(() => { ApeTagItem.fromData(data, -1); });
-        assert.throws(() => { ApeTagItem.fromData(data, 1.23); });
-        assert.throws(() => { ApeTagItem.fromData(data, Number.MAX_SAFE_INTEGER + 1); });
+        Testers.testTruthy((v: ByteVector) => { ApeTagItem.fromData(v, 0); });
+        Testers.testUint((v: number) => { ApeTagItem.fromData(data, v); });
     }
 
     @test
@@ -175,8 +171,7 @@ const assert = Chai.assert;
     @test
     public fromTextValues_invalidValues() {
         // Act / Assert
-        assert.throws(() => { ApeTagItem.fromTextValues(undefined, ""); });
-        assert.throws(() => { ApeTagItem.fromTextValues(null, "", ""); });
+        Testers.testTruthy((v: ByteVector) => { ApeTagItem.fromTextValues(v, ""); });
     }
 
     @test

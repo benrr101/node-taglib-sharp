@@ -1,15 +1,10 @@
-import * as Chai from "chai";
-import * as ChaiAsPromised from "chai-as-promised";
+import Testers from "../utilities/testers";
 import {test} from "mocha-typescript";
 
 import {ByteVector} from "../../src/byteVector";
 import {Frame} from "../../src/id3v2/frames/frame";
 import {Id3v2FrameHeader} from "../../src/id3v2/frames/frameHeader";
 import {FrameIdentifiers} from "../../src/id3v2/frameIdentifiers";
-
-// Setup chai
-Chai.use(ChaiAsPromised);
-const assert = Chai.assert;
 
 export default abstract class FrameConstructorTests {
 
@@ -22,8 +17,7 @@ export default abstract class FrameConstructorTests {
         const header = new Id3v2FrameHeader(FrameIdentifiers.WCOM);
 
         // Act/Assert
-        assert.throws(() => { this.fromOffsetRawData(null, 2, header, 4); });
-        assert.throws(() => { this.fromOffsetRawData(undefined, 2, header, 4); });
+        Testers.testTruthy((v: ByteVector) => { this.fromOffsetRawData(v, 2, header, 4); });
     }
 
     @test
@@ -33,9 +27,7 @@ export default abstract class FrameConstructorTests {
         const header = new Id3v2FrameHeader(FrameIdentifiers.WCOM);
 
         // Act/Assert
-        assert.throws(() => { this.fromOffsetRawData(data, -1, header, 4); });
-        assert.throws(() => { this.fromOffsetRawData(data, 1.5, header, 4); });
-        assert.throws(() => { this.fromOffsetRawData(data, 0x100, header, 4); });
+        Testers.testUint((v: number) => { this.fromOffsetRawData(data, v, header, 4); });
     }
 
     @test
@@ -44,15 +36,13 @@ export default abstract class FrameConstructorTests {
         const data = ByteVector.empty();
 
         // Act/Assert
-        assert.throws(() => { this.fromOffsetRawData(data, 2, undefined, 4); });
-        assert.throws(() => { this.fromOffsetRawData(data, 2, null, 4); });
+        Testers.testTruthy((v: ByteVector) => { this.fromOffsetRawData(data, 2, v, 4); });
     }
 
     @test
     public fromRawData_falsyData_throws() {
         // Act/Assert
-        assert.throws(() => { this.fromRawData(null, 2); });
-        assert.throws(() => { this.fromRawData(undefined, 2); });
+        Testers.testTruthy((v: ByteVector) => { this.fromRawData(v, 2); });
     }
 
     @test
@@ -61,8 +51,6 @@ export default abstract class FrameConstructorTests {
         const data = ByteVector.empty();
 
         // Act/Assert
-        assert.throws(() => { this.fromRawData(data, -1); });
-        assert.throws(() => { this.fromRawData(data, 1.5); });
-        assert.throws(() => { this.fromRawData(data, 0x100); });
+        Testers.testByte((v: number) => { this.fromRawData(data, v); });
     }
 }
