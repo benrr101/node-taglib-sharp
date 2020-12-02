@@ -18,6 +18,11 @@ export default class Testers {
         assert.throws(() => testFunc(undefined));
     }
 
+    public static testString(testFunc: (testValue: string) => void): void {
+        this.testTruthy(testFunc);
+        assert.throws(() => testFunc(""));
+    }
+
     public static testTruthy<T>(testFunc: (testValue: T) => void): void {
         assert.throws(() => testFunc(undefined));
         assert.throws(() => testFunc(null));

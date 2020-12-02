@@ -1,6 +1,7 @@
 import * as Chai from "chai";
 import * as ChaiAsPromised from "chai-as-promised";
-import {slow, suite, test, timeout} from "mocha-typescript";
+import Testers from "./utilities/testers";
+import {suite, test} from "mocha-typescript";
 
 import {ByteVector} from "../src/byteVector";
 
@@ -46,9 +47,7 @@ const assert = Chai.assert;
         const bv = ByteVector.fromSize(1);
 
         // Act, Assert - AddByte should fail, ByteVector should be unchanged
-        assert.throws(() => { bv.addByte(0.1); });
-        assert.throws(() => { bv.addByte(-1); });
-        assert.throws(() => { bv.addByte(0x1FF); });
+        Testers.testByte((v: number) => () => { bv.addByte(v); });
         assert.deepEqual(bv.data, new Uint8Array([0x00]));
     }
 
@@ -97,8 +96,7 @@ const assert = Chai.assert;
         const bv = ByteVector.fromSize(1, 0x0, true);
 
         // Act, Assert
-        assert.throws(() => { bv.addByteArray(null); });
-        assert.throws(() => { bv.addByteArray(undefined); });
+        Testers.testTruthy((v: Uint8Array) => { bv.addByteArray(v); });
     }
 
     @test
@@ -203,8 +201,7 @@ const assert = Chai.assert;
         const bv = ByteVector.fromSize(1, 0x0, true);
 
         // Act, Assert
-        assert.throws(() => { bv.addByteVector(null); });
-        assert.throws(() => { bv.addByteVector(undefined); });
+        Testers.testTruthy((v: ByteVector) => { bv.addByteVector(v); });
     }
 
     @test
@@ -328,14 +325,10 @@ const assert = Chai.assert;
         const pattern = ByteVector.empty();
 
         // Act / Assert
-        assert.throws(() => { bv.containsAt(null, 0, 0, 0); });
-        assert.throws(() => { bv.containsAt(undefined, 0, 0, 0); });
-        assert.throws(() => { bv.containsAt(pattern, 1.23, 0, 0); });
-        assert.throws(() => { bv.containsAt(pattern, Number.MAX_SAFE_INTEGER + 1, 0, 0); });
-        assert.throws(() => { bv.containsAt(pattern, 0, 1.23, 0); });
-        assert.throws(() => { bv.containsAt(pattern, 0, Number.MAX_SAFE_INTEGER + 1, 0); });
-        assert.throws(() => { bv.containsAt(pattern, 0, 0, 1.23); });
-        assert.throws(() => { bv.containsAt(pattern, 0, 0, Number.MAX_SAFE_INTEGER + 1); });
+        Testers.testTruthy((v: ByteVector) => { bv.containsAt(v, 0, 0, 0); });
+        Testers.testInt((v: number) => { bv.containsAt(pattern, v, 0, 0); });
+        Testers.testInt((v: number) => { bv.containsAt(pattern, 0, v, 0); });
+        Testers.testInt((v: number) => { bv.containsAt(pattern, 0, 0, v); });
     }
 
     @test
@@ -426,8 +419,7 @@ const assert = Chai.assert;
         const bv = ByteVector.fromSize(1);
 
         // Act / Assert
-        assert.throws(() => { bv.compareTo(null); });
-        assert.throws(() => { bv.compareTo(undefined); });
+        Testers.testTruthy((v: ByteVector) => { bv.compareTo(v); });
     }
 
     @test
@@ -488,8 +480,7 @@ const assert = Chai.assert;
         const bv = ByteVector.empty();
 
         // Act / Assert
-        assert.throws(() => { bv.endsWith(undefined); });
-        assert.throws(() => { bv.endsWith(null); });
+        Testers.testTruthy((v: ByteVector) => { bv.endsWith(v); });
     }
 
     @test
@@ -518,8 +509,7 @@ const assert = Chai.assert;
         const bv = ByteVector.fromString("foobarbaz");
 
         // Act / Assert
-        assert.throws(() => { bv.endsWithPartialMatch(null); });
-        assert.throws(() => { bv.endsWithPartialMatch(undefined); });
+        Testers.testTruthy((v: ByteVector) => { bv.endsWithPartialMatch(v); });
     }
 
     @test
@@ -569,15 +559,10 @@ const assert = Chai.assert;
         const pattern = ByteVector.empty();
 
         // Act / Assert
-        assert.throws(() => { bv.find(undefined, 0, 1); });
-        assert.throws(() => { bv.find(null, 0, 1); });
-        assert.throws(() => { bv.find(pattern, -1, 1); });
-        assert.throws(() => { bv.find(pattern, 1.23, 1); });
-        assert.throws(() => { bv.find(pattern, Number.MAX_SAFE_INTEGER + 1, 1); });
-        assert.throws(() => { bv.find(pattern, 0, -1); });
+        Testers.testTruthy((v: ByteVector) => { bv.find(v, 0, 1); });
+        Testers.testUint((v: number) => { bv.find(pattern, v, 1); });
+        Testers.testUint((v: number) => { bv.find(pattern, 0, v); });
         assert.throws(() => { bv.find(pattern, 0, 0); });
-        assert.throws(() => { bv.find(pattern, 0, 1.23); });
-        assert.throws(() => { bv.find(pattern, 0, Number.MAX_SAFE_INTEGER + 1); });
     }
 
     @test
@@ -686,10 +671,8 @@ const assert = Chai.assert;
         const bv = ByteVector.fromString("foobarbaz");
 
         // Act / Assert
-        assert.throws(() => bv.get(-1));
-        assert.throws(() => bv.get(1.23));
-        assert.throws(() => bv.get(Number.MAX_SAFE_INTEGER + 1));
-        assert.throws(() => bv.get(bv.length));
+        Testers.testUint((v: number) => { bv.get(v); });
+        assert.throws(() => { bv.get(bv.length) });
     }
 
     @test
@@ -748,8 +731,7 @@ const assert = Chai.assert;
         const bv = ByteVector.fromSize(1, 0x00);
 
         // Act, Assert
-        assert.throws(() => { bv.insertByte(0.1, 0x01); });
-        assert.throws(() => { bv.insertByte(-1, 0x01); });
+        Testers.testUint((v: number) => { bv.insertByte(v, 0x01); });
         assert.throws(() => { bv.insertByte(2, 0x01); });
 
         assert.isFalse(bv.isReadOnly);
@@ -764,9 +746,7 @@ const assert = Chai.assert;
         const bv = ByteVector.fromSize(1, 0x00);
 
         // Act, Assert
-        assert.throws(() => { bv.insertByte(0, 0.1); });
-        assert.throws(() => { bv.insertByte(0, -1); });
-        assert.throws(() => { bv.insertByte(0, 0x1FF); });
+        Testers.testByte((v: number) => { bv.insertByte(0, v); });
 
         assert.isFalse(bv.isReadOnly);
         assert.isFalse(bv.isEmpty);
@@ -847,8 +827,7 @@ const assert = Chai.assert;
         const bv = ByteVector.fromSize(1, 0x00);
 
         // Act, Assert
-        assert.throws(() => { bv.insertByteArray(0.1, new Uint8Array()); });
-        assert.throws(() => { bv.insertByteArray(-1, new Uint8Array()); });
+        Testers.testUint((v: number) => { bv.insertByteArray(v, new Uint8Array()); });
         assert.throws(() => { bv.insertByteArray(2, new Uint8Array()); });
 
         assert.isFalse(bv.isReadOnly);
@@ -863,8 +842,7 @@ const assert = Chai.assert;
         const bv = ByteVector.fromSize(1, 0x00);
 
         // Act, Assert
-        assert.throws(() => { bv.insertByteArray(0, null); });
-        assert.throws(() => { bv.insertByteArray(0, undefined); });
+        Testers.testTruthy((v: Uint8Array) => { bv.insertByteArray(0, v); });
 
         assert.isFalse(bv.isReadOnly);
         assert.isFalse(bv.isEmpty);
@@ -959,9 +937,7 @@ const assert = Chai.assert;
         const bv = ByteVector.fromSize(1, 0x00);
 
         // Act, Assert
-        assert.throws(() => { bv.insertByteVector(0.1, this.vectorToAdd); });
-        assert.throws(() => { bv.insertByteVector(-1, this.vectorToAdd); });
-        assert.throws(() => { bv.insertByteVector(2, this.vectorToAdd); });
+        Testers.testUint((v: number) => { bv.insertByteVector(v, this.vectorToAdd); });
 
         assert.isFalse(bv.isReadOnly);
         assert.isFalse(bv.isEmpty);
@@ -975,8 +951,7 @@ const assert = Chai.assert;
         const bv = ByteVector.fromSize(1, 0x00);
 
         // Act, Assert
-        assert.throws(() => { bv.insertByteVector(0, null); });
-        assert.throws(() => { bv.insertByteVector(0, undefined); });
+        Testers.testTruthy((v: ByteVector) => { bv.insertByteVector(0, v); });
 
         assert.isFalse(bv.isReadOnly);
         assert.isFalse(bv.isEmpty);
@@ -1057,12 +1032,8 @@ const assert = Chai.assert;
         const bv = ByteVector.fromString("foobarbaz");
 
         // Act / Assert
-        assert.throws(() => bv.mid(-1));
-        assert.throws(() => bv.mid(1.23));
-        assert.throws(() => bv.mid(Number.MAX_SAFE_INTEGER + 1));
-        assert.throws(() => bv.mid(1, -1));
-        assert.throws(() => bv.mid(1, 1.23));
-        assert.throws(() => bv.mid(1, Number.MAX_SAFE_INTEGER + 1));
+        Testers.testUint((v: number) => { bv.mid(v); });
+        Testers.testUint((v: number) => { bv.mid(1, v); });
         assert.throws(() => bv.mid(1, bv.length));
     }
 
@@ -1123,8 +1094,7 @@ const assert = Chai.assert;
         const bv = ByteVector.fromSize(1, 0x00, true);
 
         // Act, Assert
-        assert.throws(() => { bv.removeAtIndex(0.1); });
-        assert.throws(() => { bv.removeAtIndex(-1); });
+        Testers.testUint((v: number) => { bv.removeAtIndex(v); });
         assert.throws(() => { bv.removeAtIndex(bv.length); });
 
         assert.isTrue(bv.isReadOnly);
@@ -1192,8 +1162,7 @@ const assert = Chai.assert;
         const bv = ByteVector.fromSize(1, 0x00, true);
 
         // Act, Assert
-        assert.throws(() => { bv.removeRange(0.1, 1); });
-        assert.throws(() => { bv.removeRange(-1, 1); });
+        Testers.testUint((v: number) => { bv.removeRange(v, 1); });
         assert.throws(() => { bv.removeRange(bv.length, 1); });
 
         assert.isTrue(bv.isReadOnly);
@@ -1262,12 +1231,8 @@ const assert = Chai.assert;
         const bv = ByteVector.fromString("foobarbaz");
 
         // Act / Assert
-        assert.throws(() => { bv.resize(-1); });
-        assert.throws(() => { bv.resize(1.23); });
-        assert.throws(() => { bv.resize(Number.MAX_SAFE_INTEGER + 1); });
-        assert.throws(() => { bv.resize(1, -1); });
-        assert.throws(() => { bv.resize(1, 1.23); });
-        assert.throws(() => { bv.resize(1, 0x100); });
+        Testers.testUint((v: number) => { bv.resize(v); });
+        Testers.testByte((v: number) => { bv.resize(1, v); });
     }
 
     @test
@@ -1335,15 +1300,10 @@ const assert = Chai.assert;
         const pattern = ByteVector.empty();
 
         // Act / Assert
-        assert.throws(() => { bv.rFind(undefined, 0, 1); });
-        assert.throws(() => { bv.rFind(null, 0, 1); });
-        assert.throws(() => { bv.rFind(pattern, -1, 1); });
-        assert.throws(() => { bv.rFind(pattern, 1.23, 1); });
-        assert.throws(() => { bv.rFind(pattern, Number.MAX_SAFE_INTEGER + 1, 1); });
-        assert.throws(() => { bv.rFind(pattern, 0, -1); });
+        Testers.testTruthy((v: ByteVector) => { bv.rFind(v, 0, 1); });
+        Testers.testUint((v: number) => { bv.rFind(pattern, v, 1); });
+        Testers.testUint((v: number) => { bv.rFind(pattern, 0, v); });
         assert.throws(() => { bv.rFind(pattern, 0, 0); });
-        assert.throws(() => { bv.rFind(pattern, 0, 1.23); });
-        assert.throws(() => { bv.rFind(pattern, 0, Number.MAX_SAFE_INTEGER + 1); });
     }
 
     @test
@@ -1466,8 +1426,7 @@ const assert = Chai.assert;
         const bv = ByteVector.fromSize(1, 0x00, true);
 
         // Act, Assert
-        assert.throws(() => { bv.set(0.1, 1); });
-        assert.throws(() => { bv.set(-1, 1); });
+        Testers.testUint((v: number) => { bv.set(v, 1); });
         assert.throws(() => { bv.set(bv.length, 1); });
 
         assert.isTrue(bv.isReadOnly);
@@ -1482,9 +1441,7 @@ const assert = Chai.assert;
         const bv = ByteVector.fromSize(1, 0x00, true);
 
         // Act, Assert
-        assert.throws(() => { bv.set(0, 0.1); });
-        assert.throws(() => { bv.set(0, -1); });
-        assert.throws(() => { bv.set(0, 0x1FF); });
+        Testers.testByte((v: number) => { bv.set(0, v); });
 
         assert.isTrue(bv.isReadOnly);
         assert.isFalse(bv.isEmpty);
@@ -1512,15 +1469,10 @@ const assert = Chai.assert;
         const pattern = ByteVector.fromSize(1);
 
         // Act / Assert
-        assert.throws(() => bv.split(null));
-        assert.throws(() => bv.split(undefined));
-        assert.throws(() => bv.split(pattern, -1));
+        Testers.testTruthy((v: ByteVector) => { bv.split(v); });
+        Testers.testUint((v: number) => { bv.split(pattern, v); });
+        Testers.testUint((v: number) => { bv.split(pattern, 1, v); });
         assert.throws(() => bv.split(pattern, 0));
-        assert.throws(() => bv.split(pattern, 1.23));
-        assert.throws(() => bv.split(pattern, Number.MAX_SAFE_INTEGER + 1));
-        assert.throws(() => bv.split(pattern, 1, -1));
-        assert.throws(() => bv.split(pattern, 1, 1.23));
-        assert.throws(() => bv.split(pattern, 1, Number.MAX_SAFE_INTEGER + 1));
     }
 
     @test
@@ -1646,8 +1598,7 @@ const assert = Chai.assert;
         const bv = ByteVector.empty();
 
         // Act / Assert
-        assert.throws(() => { bv.startsWith(undefined); });
-        assert.throws(() => { bv.startsWith(null); });
+        Testers.testTruthy((v: ByteVector) => { bv.startsWith(undefined); });
     }
 
     @test

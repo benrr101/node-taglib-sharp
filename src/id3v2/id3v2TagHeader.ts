@@ -176,7 +176,7 @@ export class Id3v2TagHeader {
     public get tagSize(): number { return this._tagSize; }
     /**
      * Sets the complete size of the tag described by the current instance, minus the header
-     * footer. NOTE THIS MUST BE AN 28-BIT UNSIGNED INTEGER.
+     * footer. NOTE THIS MUST BE A 28-BIT UNSIGNED INTEGER.
      * @param value Size of the tag in bytes. Must be an unsigned 28-bit integer
      */
     public set tagSize(value: number) {

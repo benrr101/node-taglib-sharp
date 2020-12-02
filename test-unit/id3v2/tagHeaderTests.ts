@@ -1,9 +1,10 @@
 import * as Chai from "chai";
 import * as ChaiAsPromised from "chai-as-promised";
-import {slow, suite, test, timeout} from "mocha-typescript";
+import TestConstants from "../testConstants";
+import Testers from "../utilities/testers";
+import {suite, test} from "mocha-typescript";
 
 import Id3v2Settings from "../../src/id3v2/id3v2Settings";
-import TestConstants from "../testConstants";
 import {ByteVector} from "../../src/byteVector";
 import {Id3v2TagHeader, Id3v2TagHeaderFlags} from "../../src/id3v2/id3v2TagHeader";
 
@@ -26,8 +27,7 @@ const getTestHeader = (majorVersion: number, minorVersion: number, flags: Id3v2T
     @test
     public falsyData() {
         // Act/Assert
-        assert.throws(() => { const _ = Id3v2TagHeader.fromData(null); });
-        assert.throws(() => { const _ = Id3v2TagHeader.fromData(undefined); });
+        Testers.testTruthy((v: ByteVector) => { const _ = Id3v2TagHeader.fromData(null); });
     }
 
     @test
@@ -260,9 +260,7 @@ const getTestHeader = (majorVersion: number, minorVersion: number, flags: Id3v2T
         const header = getTestHeader(4, 0, Id3v2TagHeaderFlags.None);
 
         // Act/Assert
-        assert.throws(() => { header.majorVersion = -1; });
-        assert.throws(() => { header.majorVersion = 1.25; });
-        assert.throws(() => { header.majorVersion = 0x100; });
+        Testers.testByte((v: number) => { header.majorVersion = v; });
         assert.throws(() => { header.majorVersion = 1; });
         assert.throws(() => { header.majorVersion = 5; });
     }
@@ -303,9 +301,7 @@ const getTestHeader = (majorVersion: number, minorVersion: number, flags: Id3v2T
         const header = getTestHeader(4, 0, Id3v2TagHeaderFlags.None);
 
         // Act/Assert
-        assert.throws(() => { header.revisionNumber = -1; });
-        assert.throws(() => { header.revisionNumber = 1.25; });
-        assert.throws(() => { header.revisionNumber = 0x100; });
+        Testers.testByte((v: number) => { header.revisionNumber = v; });
     }
 
     @test
@@ -326,8 +322,7 @@ const getTestHeader = (majorVersion: number, minorVersion: number, flags: Id3v2T
         const header = getTestHeader(4, 0, Id3v2TagHeaderFlags.None);
 
         // Act/Assert
-        assert.throws(() => { header.tagSize = -1; });
-        assert.throws(() => { header.tagSize = 1.25; });
+        Testers.testUint((v: number) => { header.tagSize = -1; });
         assert.throws(() => { header.tagSize = 0xF0000000; });
     }
 

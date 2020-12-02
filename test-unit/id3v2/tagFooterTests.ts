@@ -1,10 +1,11 @@
 import * as Chai from "chai";
 import * as ChaiAsPromised from "chai-as-promised";
-import {slow, suite, test, timeout} from "mocha-typescript";
+import TestConstants from "../testConstants";
+import Testers from "../utilities/testers";
+import {suite, test} from "mocha-typescript";
 
 import Id3v2TagFooter from "../../src/id3v2/id3v2TagFooter";
 import Id3v2Settings from "../../src/id3v2/id3v2Settings";
-import TestConstants from "../testConstants";
 import {ByteVector} from "../../src/byteVector";
 import {Id3v2TagHeaderFlags} from "../../src/id3v2/id3v2TagHeader";
 
@@ -27,8 +28,7 @@ const getTestFooter = (majorVersion: number, minorVersion: number, flags: Id3v2T
     @test
     public fromData_falsyData() {
         // Act/Assert
-        assert.throws(() => { const _ = Id3v2TagFooter.fromData(null); });
-        assert.throws(() => { const _ = Id3v2TagFooter.fromData(undefined); });
+        Testers.testTruthy((v: ByteVector) => { const _ = Id3v2TagFooter.fromData(null); });
     }
 
     @test
@@ -160,9 +160,7 @@ const getTestFooter = (majorVersion: number, minorVersion: number, flags: Id3v2T
         const footer = getTestFooter(4, 0, Id3v2TagHeaderFlags.None);
 
         // Act/Assert
-        assert.throws(() => { footer.majorVersion = -1; });
-        assert.throws(() => { footer.majorVersion = 1.25; });
-        assert.throws(() => { footer.majorVersion = 0x100; });
+        Testers.testByte((v: number) => { footer.majorVersion = v; });
         assert.throws(() => { footer.majorVersion = 1; });
         assert.throws(() => { footer.majorVersion = 5; });
     }
@@ -173,9 +171,7 @@ const getTestFooter = (majorVersion: number, minorVersion: number, flags: Id3v2T
         const footer = getTestFooter(4, 0, Id3v2TagHeaderFlags.None);
 
         // Act/Assert
-        assert.throws(() => { footer.revisionNumber = -1; });
-        assert.throws(() => { footer.revisionNumber = 1.25; });
-        assert.throws(() => { footer.revisionNumber = 0x100; });
+        Testers.testByte((v: number) => { footer.revisionNumber = -1; });
     }
 
     @test

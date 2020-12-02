@@ -1,6 +1,7 @@
 import * as Chai from "chai";
 import * as ChaiAsPromised from "chai-as-promised";
-import {slow, suite, test, timeout} from "mocha-typescript";
+import Testers from "./utilities/testers";
+import {suite, test} from "mocha-typescript";
 
 import {ByteVector} from "../src/byteVector";
 
@@ -15,12 +16,8 @@ const assert = Chai.assert;
         const bv = ByteVector.fromSize(1, 0x00);
 
         // Act/Assert
-        assert.throws(() => { ByteVector.add(undefined, undefined); });
-        assert.throws(() => { ByteVector.add(undefined, bv); });
-        assert.throws(() => { ByteVector.add(bv, undefined); });
-        assert.throws(() => { ByteVector.add(null, null); });
-        assert.throws(() => { ByteVector.add(null, bv); });
-        assert.throws(() => { ByteVector.add(bv, null); });
+        Testers.testTruthy((v: ByteVector) => { ByteVector.add(v, bv); });
+        Testers.testTruthy((v: ByteVector) => { ByteVector.add(bv, v); });
     }
 
     @test
@@ -200,12 +197,8 @@ const assert = Chai.assert;
         const bv = ByteVector.fromSize(0);
 
         // Act, Assert
-        assert.throws(() => { ByteVector.greaterThan(undefined, undefined); });
-        assert.throws(() => { ByteVector.greaterThan(null, undefined); });
-        assert.throws(() => { ByteVector.greaterThan(bv, undefined); });
-        assert.throws(() => { ByteVector.greaterThan(undefined, null); });
-        assert.throws(() => { ByteVector.greaterThan(undefined, bv); });
-        assert.throws(() => { ByteVector.greaterThan(null, null); });
+        Testers.testTruthy((v: ByteVector) => { ByteVector.greaterThan(v, bv); });
+        Testers.testTruthy((v: ByteVector) => { ByteVector.greaterThan(bv, v); });
     }
 
     @test
@@ -247,12 +240,8 @@ const assert = Chai.assert;
         const bv = ByteVector.fromSize(0);
 
         // Act, Assert
-        assert.throws(() => { ByteVector.greaterThanEqual(undefined, undefined); });
-        assert.throws(() => { ByteVector.greaterThanEqual(null, undefined); });
-        assert.throws(() => { ByteVector.greaterThanEqual(bv, undefined); });
-        assert.throws(() => { ByteVector.greaterThanEqual(undefined, null); });
-        assert.throws(() => { ByteVector.greaterThanEqual(undefined, bv); });
-        assert.throws(() => { ByteVector.greaterThanEqual(null, null); });
+        Testers.testTruthy((v: ByteVector) => { ByteVector.greaterThanEqual(v, bv); });
+        Testers.testTruthy((v: ByteVector) => { ByteVector.greaterThanEqual(bv, v); });
     }
 
     @test
@@ -294,12 +283,8 @@ const assert = Chai.assert;
         const bv = ByteVector.fromSize(0);
 
         // Act, Assert
-        assert.throws(() => { ByteVector.lessThan(undefined, undefined); });
-        assert.throws(() => { ByteVector.lessThan(null, undefined); });
-        assert.throws(() => { ByteVector.lessThan(bv, undefined); });
-        assert.throws(() => { ByteVector.lessThan(undefined, null); });
-        assert.throws(() => { ByteVector.lessThan(undefined, bv); });
-        assert.throws(() => { ByteVector.lessThan(null, null); });
+        Testers.testTruthy((v: ByteVector) => { ByteVector.lessThan(v, bv); });
+        Testers.testTruthy((v: ByteVector) => { ByteVector.lessThan(bv, v); });
     }
 
     @test
@@ -341,12 +326,8 @@ const assert = Chai.assert;
         const bv = ByteVector.fromSize(0);
 
         // Act, Assert
-        assert.throws(() => { ByteVector.lessThanEqual(undefined, undefined); });
-        assert.throws(() => { ByteVector.lessThanEqual(null, undefined); });
-        assert.throws(() => { ByteVector.lessThanEqual(bv, undefined); });
-        assert.throws(() => { ByteVector.lessThanEqual(undefined, null); });
-        assert.throws(() => { ByteVector.lessThanEqual(undefined, bv); });
-        assert.throws(() => { ByteVector.lessThanEqual(null, null); });
+        Testers.testTruthy((v: ByteVector) => { ByteVector.lessThanEqual(v, bv); });
+        Testers.testTruthy((v: ByteVector) => { ByteVector.lessThanEqual(bv, v); });
     }
 
     @test
