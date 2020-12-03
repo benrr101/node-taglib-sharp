@@ -1,10 +1,11 @@
 import * as BigInt from "big-integer";
 import * as Chai from "chai";
 import * as ChaiAsPromised from "chai-as-promised";
-import {slow, suite, test, timeout} from "mocha-typescript";
-
 import ConstructorTests from "./frameConstructorTests";
 import PropertyTests from "../utilities/propertyTests";
+import Testers from "../utilities/testers";
+import {suite, test} from "mocha-typescript";
+
 import {ChannelData, ChannelType, RelativeVolumeFrame} from "../../src/id3v2/frames/relativeVolumeFrame";
 import {ByteVector, StringType} from "../../src/byteVector";
 import {Frame, FrameClassType} from "../../src/id3v2/frames/frame";
@@ -22,9 +23,7 @@ const assert = Chai.assert;
         const channel = new ChannelData(0);
 
         // Act / Assert
-        assert.throws(() => { channel.peakBits = -1; });
-        assert.throws(() => { channel.peakBits = 1.23; });
-        assert.throws(() => { channel.peakBits = 0x100; });
+        Testers.testByte((v: number) => { channel.peakBits = v; });
         assert.throws(() => { channel.peakBits = 0; });
         assert.throws(() => { channel.peakBits = 65; });
     }
@@ -91,9 +90,8 @@ const assert = Chai.assert;
         const channel = new ChannelData(0);
 
         // Act / Assert
+        Testers.testInt((v: number) => { channel.volumeAdjustment = v; });
         assert.throws(() => { channel.volumeAdjustment = -64; });
-        assert.throws(() => { channel.volumeAdjustment = -1.23; });
-        assert.throws(() => { channel.volumeAdjustment = 1.23; });
         assert.throws(() => { channel.volumeAdjustment = 64; });
     }
 
@@ -392,8 +390,7 @@ const assert = Chai.assert;
     @test
     public find_falsyFrames() {
         // Act / Assert
-        assert.throws(() => { RelativeVolumeFrame.find(undefined, "foo"); });
-        assert.throws(() => { RelativeVolumeFrame.find(null, "foo"); });
+        Testers.testTruthy((v: RelativeVolumeFrame[]) => { RelativeVolumeFrame.find(undefined, "foo"); });
     }
 
     @test

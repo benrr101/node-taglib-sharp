@@ -2,6 +2,7 @@ import * as Chai from "chai";
 import * as ChaiAsPromised from "chai-as-promised";
 import * as TypeMoq from "typemoq";
 import TestFile from "../utilities/testFile";
+import Testers from "../utilities/testers";
 import {suite, test} from "mocha-typescript";
 
 import MpegAudioHeader from "../../src/mpeg/mpegAudioHeader";
@@ -49,58 +50,10 @@ const assert = Chai.assert;
     @test
     public fromInfo_invalidArguments() {
         // Act/Assert
-        assert.throws(() => {
-            MpegAudioHeader.fromInfo(
-                -1,
-                123,
-                XingHeader.unknown,
-                VbriHeader.unknown
-            );
-        });
-        assert.throws(() => {
-            MpegAudioHeader.fromInfo(
-                1.23,
-                123,
-                XingHeader.unknown,
-                VbriHeader.unknown
-            );
-        });
-        assert.throws(() => {
-            MpegAudioHeader.fromInfo(
-                Number.MAX_SAFE_INTEGER + 1,
-                123,
-                XingHeader.unknown,
-                VbriHeader.unknown
-            );
-        });
-        assert.throws(() => {
-            MpegAudioHeader.fromInfo(
-                123,
-                -1,
-                XingHeader.unknown,
-                VbriHeader.unknown
-            );
-        });
-        assert.throws(() => {
-            MpegAudioHeader.fromInfo(
-                123,
-                1.23,
-                XingHeader.unknown,
-                VbriHeader.unknown
-            );
-        });
-        assert.throws(() => {
-            MpegAudioHeader.fromInfo(
-                123,
-                Number.MAX_SAFE_INTEGER + 1,
-                XingHeader.unknown,
-                VbriHeader.unknown
-            );
-        });
-        assert.throws(() => {MpegAudioHeader.fromInfo(123, 123, undefined, VbriHeader.unknown); });
-        assert.throws(() => {MpegAudioHeader.fromInfo(123, 123, null, VbriHeader.unknown); });
-        assert.throws(() => {MpegAudioHeader.fromInfo(123, 123, XingHeader.unknown, undefined); });
-        assert.throws(() => {MpegAudioHeader.fromInfo(123, -1, XingHeader.unknown, null); });
+        Testers.testUint((v: number) => { MpegAudioHeader.fromInfo(v, 123, XingHeader.unknown, VbriHeader.unknown); });
+        Testers.testUint((v: number) => { MpegAudioHeader.fromInfo(123, v, XingHeader.unknown, VbriHeader.unknown); });
+        Testers.testTruthy((v: XingHeader) => { MpegAudioHeader.fromInfo(123, 123, v, VbriHeader.unknown); });
+        Testers.testTruthy((v: VbriHeader) => { MpegAudioHeader.fromInfo(123, 123, XingHeader.unknown, v); });
     }
 
     @test
@@ -136,13 +89,9 @@ const assert = Chai.assert;
         const data = ByteVector.empty();
 
         // Act / Assert
-        assert.throws(() => { MpegAudioHeader.fromData(undefined, this.mockFile, 1); });
-        assert.throws(() => { MpegAudioHeader.fromData(null, this.mockFile, 1); });
-        assert.throws(() => { MpegAudioHeader.fromData(data, undefined, 1); });
-        assert.throws(() => { MpegAudioHeader.fromData(data, null, 1); });
-        assert.throws(() => { MpegAudioHeader.fromData(data, this.mockFile, -1); });
-        assert.throws(() => { MpegAudioHeader.fromData(data, this.mockFile, 1.23); });
-        assert.throws(() => { MpegAudioHeader.fromData(data, this.mockFile, Number.MAX_SAFE_INTEGER + 1); });
+        Testers.testTruthy((v: ByteVector) => { MpegAudioHeader.fromData(v, this.mockFile, 1); });
+        Testers.testTruthy((v: File) => { MpegAudioHeader.fromData(data, v, 1); });
+        Testers.testUint((v: number) => { MpegAudioHeader.fromData(data, this.mockFile, v); });
     }
 
     @test
@@ -719,14 +668,9 @@ const assert = Chai.assert;
         const mockFile = TestFile.getFile(ByteVector.empty());
 
         // Act / Assert
-        assert.throws(() => { MpegAudioHeader.find(undefined, 123, 234); });
-        assert.throws(() => { MpegAudioHeader.find(null, 123, 234); });
-        assert.throws(() => { MpegAudioHeader.find(mockFile, 1.23, 234); });
-        assert.throws(() => { MpegAudioHeader.find(mockFile, Number.MIN_SAFE_INTEGER - 1, 234); });
-        assert.throws(() => { MpegAudioHeader.find(mockFile, Number.MAX_SAFE_INTEGER + 1, 234); });
-        assert.throws(() => { MpegAudioHeader.find(mockFile, 123, 2.34); });
-        assert.throws(() => { MpegAudioHeader.find(mockFile, 123, Number.MIN_SAFE_INTEGER - 1); });
-        assert.throws(() => { MpegAudioHeader.find(mockFile, 123, Number.MAX_SAFE_INTEGER + 1); });
+        Testers.testTruthy((v: File) => { MpegAudioHeader.find(v, 123, 234); });
+        Testers.testInt((v: number) => { MpegAudioHeader.find(mockFile, v, 234); });
+        Testers.testInt((v: number) => { MpegAudioHeader.find(mockFile, 123, v); }, true);
     }
 
     @test

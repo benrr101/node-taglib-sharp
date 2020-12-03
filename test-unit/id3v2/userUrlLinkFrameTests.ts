@@ -1,8 +1,9 @@
 import * as Chai from "chai";
 import * as ChaiAsPromised from "chai-as-promised";
-import {slow, suite, test, timeout} from "mocha-typescript";
-
 import FrameConstructorTests from "./frameConstructorTests";
+import Testers from "../utilities/testers";
+import {suite, test} from "mocha-typescript";
+
 import {ByteVector, StringType} from "../../src/byteVector";
 import {Frame, FrameClassType} from "../../src/id3v2/frames/frame";
 import {Id3v2FrameHeader} from "../../src/id3v2/frames/frameHeader";
@@ -245,8 +246,7 @@ const getTestUserUrlLinkFrame = (): UserUrlLinkFrame => {
     @test
     public findUserUrlLinkFrame_falsyFrames_throws(): void {
         // Act/Assert
-        assert.throws(() => { UserUrlLinkFrame.findUserUrlLinkFrame(null, "foo"); });
-        assert.throws(() => { UserUrlLinkFrame.findUserUrlLinkFrame(undefined, "foo"); });
+        Testers.testTruthy((v: UserUrlLinkFrame[]) => { UserUrlLinkFrame.findUserUrlLinkFrame(v, "foo"); });
     }
 
     @test
@@ -255,8 +255,7 @@ const getTestUserUrlLinkFrame = (): UserUrlLinkFrame => {
         const frames = [getTestUserUrlLinkFrame()];
 
         // Act/Assert
-        assert.throws(() => { UserUrlLinkFrame.findUserUrlLinkFrame(frames, null); });
-        assert.throws(() => { UserUrlLinkFrame.findUserUrlLinkFrame(frames, undefined); });
+        Testers.testTruthy((v: string) => { UserUrlLinkFrame.findUserUrlLinkFrame(frames, v); });
     }
 
     @test

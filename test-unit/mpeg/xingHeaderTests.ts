@@ -1,5 +1,6 @@
 import * as Chai from "chai";
 import * as ChaiAsPromised from "chai-as-promised";
+import Testers from "../utilities/testers";
 import {suite, test} from "mocha-typescript";
 
 import XingHeader from "../../src/mpeg/xingHeader";
@@ -14,12 +15,8 @@ const assert = Chai.assert;
     @test
     public fromInfo_invalidParameters() {
         // Act / Assert
-        assert.throws(() => { XingHeader.fromInfo(-1, 123); });
-        assert.throws(() => { XingHeader.fromInfo(1.23, 123); });
-        assert.throws(() => { XingHeader.fromInfo(Number.MAX_SAFE_INTEGER + 1, 123); });
-        assert.throws(() => { XingHeader.fromInfo(123, -1); });
-        assert.throws(() => { XingHeader.fromInfo(123, 1.23); });
-        assert.throws(() => { XingHeader.fromInfo(123, Number.MAX_SAFE_INTEGER + 1); });
+        Testers.testUint((v: number) => { XingHeader.fromInfo(v, 123); })
+        Testers.testUint((v: number) => { XingHeader.fromInfo(123, v); });
     }
 
     @test

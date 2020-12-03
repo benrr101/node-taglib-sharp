@@ -1,9 +1,10 @@
 import * as Chai from "chai";
 import * as ChaiAsPromised from "chai-as-promised";
 import * as TypeMoq from "typemoq";
-import {slow, suite, test, timeout} from "mocha-typescript";
-
 import TestConstants from "./testConstants";
+import Testers from "./utilities/testers";
+import {suite, test} from "mocha-typescript";
+
 import {LocalFileAbstraction} from "../src/fileAbstraction";
 import {IStream} from "../src/stream";
 
@@ -40,8 +41,7 @@ const assert = Chai.assert;
         const abstraction = new LocalFileAbstraction(TestConstants.testFilePath);
 
         // Act / Assert
-        assert.throws(() => abstraction.closeStream(null));
-        assert.throws(() => abstraction.closeStream(undefined));
+        Testers.testTruthy((v: IStream) => { abstraction.closeStream(v); });
     }
 
     @test
