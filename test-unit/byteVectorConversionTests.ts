@@ -1,6 +1,6 @@
 import * as BigInt from "big-integer";
 import * as Chai from "chai";
-import {slow, suite, test, timeout} from "mocha-typescript";
+import {suite, test} from "mocha-typescript";
 
 import TestConstants from "./testConstants";
 import {ByteVector, StringType} from "../src/byteVector";

@@ -52,7 +52,7 @@ export class LocalFileAbstraction implements IFileAbstraction {
     /**
      * Constructs and initializes a new instance from a specified path in the local file system
      * @param path Path of the file to use in the new instance
-     * @throws Error Thrown if `path` is falsey
+     * @throws Error Thrown if `path` is falsy
      */
     public constructor(path: string) {
         Guards.truthy(path, "path");

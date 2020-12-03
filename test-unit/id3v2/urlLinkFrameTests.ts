@@ -1,10 +1,11 @@
 import * as Chai from "chai";
 import * as ChaiAsPromised from "chai-as-promised";
-import {slow, suite, test, timeout} from "mocha-typescript";
-
 import FrameConstructorTests from "./frameConstructorTests";
 import PropertyTests from "../utilities/propertyTests";
 import TestConstants from "../testConstants";
+import Testers from "../utilities/testers";
+import {suite, test} from "mocha-typescript";
+
 import {ByteVector, StringType} from "../../src/byteVector";
 import {Frame, FrameClassType} from "../../src/id3v2/frames/frame";
 import {Id3v2FrameHeader} from "../../src/id3v2/frames/frameHeader";
@@ -45,8 +46,7 @@ const getTestUrlLinkFrame = (): UrlLinkFrame => {
     @test
     public fromIdentity_falsyIdentity() {
         // Act/Assert
-        assert.throws(() => { UrlLinkFrame.fromIdentity(null); });
-        assert.throws(() => { UrlLinkFrame.fromIdentity(undefined); });
+        Testers.testTruthy((v: FrameIdentifier) => { UrlLinkFrame.fromIdentity(v); });
     }
 
     @test
@@ -210,8 +210,7 @@ const getTestUrlLinkFrame = (): UrlLinkFrame => {
     @test
     public findUrlLinkFrame_falsyFrames_throws(): void {
         // Act/Assert
-        assert.throws(() => { UrlLinkFrame.findUrlLinkFrame(null, FrameIdentifiers.WCOM); });
-        assert.throws(() => { UrlLinkFrame.findUrlLinkFrame(undefined, FrameIdentifiers.WCOM); });
+        Testers.testTruthy((v: UrlLinkFrame[]) => { UrlLinkFrame.findUrlLinkFrame(v, FrameIdentifiers.WCOM); });
     }
 
     @test
@@ -220,8 +219,7 @@ const getTestUrlLinkFrame = (): UrlLinkFrame => {
         const frames = [getTestUrlLinkFrame()];
 
         // Act/Assert
-        assert.throws(() => { UrlLinkFrame.findUrlLinkFrame(frames, null); });
-        assert.throws(() => { UrlLinkFrame.findUrlLinkFrame(frames, undefined); });
+        Testers.testTruthy((v: FrameIdentifier) => { UrlLinkFrame.findUrlLinkFrame(frames, v); });
     }
 
     @test

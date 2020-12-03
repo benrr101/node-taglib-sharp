@@ -1,8 +1,9 @@
 import * as Chai from "chai";
 import * as ChaiAsPromised from "chai-as-promised";
-import {slow, suite, test, timeout} from "mocha-typescript";
-
 import FrameConstructorTests from "./frameConstructorTests";
+import Testers from "../utilities/testers";
+import {suite, test} from "mocha-typescript";
+
 import Id3v2Settings from "../../src/id3v2/id3v2Settings";
 import {UserTextInformationFrame} from "../../src/id3v2/frames/textInformationFrame";
 import {ByteVector, StringType} from "../../src/byteVector";
@@ -159,8 +160,9 @@ function getTestFrame(): UserTextInformationFrame {
     @test
     public findUserTextInformationFrame_falsyFrames() {
         // Act/Assert
-        assert.throws(() => { UserTextInformationFrame.findUserTextInformationFrame(undefined, "foo"); });
-        assert.throws(() => { UserTextInformationFrame.findUserTextInformationFrame(null, "foo"); });
+        Testers.testTruthy((v: UserTextInformationFrame[]) => {
+            UserTextInformationFrame.findUserTextInformationFrame(v, "foo");
+        });
     }
 
     @test

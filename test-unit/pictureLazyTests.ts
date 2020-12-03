@@ -1,10 +1,11 @@
 import * as Chai from "chai";
 import * as ChaiAsPromised from "chai-as-promised";
 import * as TypeMoq from "typemoq";
-import {slow, suite, test, timeout} from "mocha-typescript";
+import TestStream from "./utilities/testStream";
+import Testers from "./utilities/testers";
+import {suite, test} from "mocha-typescript";
 
 import PictureLazy from "../src/pictureLazy";
-import TestStream from "./utilities/testStream";
 import {IFileAbstraction} from "../src/fileAbstraction";
 import {ByteVector, StringType} from "../src/byteVector";
 import {PictureType} from "../src/picture";
@@ -17,8 +18,7 @@ const assert = Chai.assert;
     @test
     public fromData_falsyData() {
         // Act / Assert
-        assert.throws(() => { PictureLazy.fromData(undefined); });
-        assert.throws(() => { PictureLazy.fromData(null); });
+        Testers.testTruthy((v: ByteVector) => { PictureLazy.fromData(v); });
     }
 
     @test
@@ -61,10 +61,14 @@ const assert = Chai.assert;
     }
 
     @test
-    public fromFile_falsyFile() {
+    public fromFile_invalidParameters() {
+        // Arrange
+        const mockFile = TypeMoq.Mock.ofType<IFileAbstraction>();
+
         // Act / Assert
-        assert.throws(() => { PictureLazy.fromFile(undefined, 0 , 0); });
-        assert.throws(() => { PictureLazy.fromFile(null, 0, 0); });
+        Testers.testTruthy((v: IFileAbstraction) => { PictureLazy.fromFile(v, 0 , 0); });
+        Testers.testInt((v: number) => { PictureLazy.fromFile(mockFile.object, v, 0); });
+        Testers.testInt((v: number) => { PictureLazy.fromFile(mockFile.object, v, 0); }, true);
     }
 
     @test

@@ -1,6 +1,7 @@
 import * as Chai from "chai";
 import * as ChaiAsPromised from "chai-as-promised";
-import {slow, suite, test, timeout} from "mocha-typescript";
+import Testers from "../utilities/testers";
+import {suite, test} from "mocha-typescript";
 
 import Id3v2ExtendedHeader from "../../src/id3v2/id3v2ExtendedHeader";
 import {ByteVector} from "../../src/byteVector";
@@ -13,8 +14,7 @@ const assert = Chai.assert;
     @test
     public fromData_falsyData() {
         // Act/Assert
-        assert.throws(() => { Id3v2ExtendedHeader.fromData(null, 2); });
-        assert.throws(() => { Id3v2ExtendedHeader.fromData(undefined, 2); });
+        Testers.testTruthy((v: ByteVector) => { Id3v2ExtendedHeader.fromData(v, 2); });
     }
 
     @test
@@ -23,9 +23,7 @@ const assert = Chai.assert;
         const testData = ByteVector.empty();
 
         // Act/Assert
-        assert.throws(() => { Id3v2ExtendedHeader.fromData(testData, -1); });
-        assert.throws(() => { Id3v2ExtendedHeader.fromData(testData, 1.5); });
-        assert.throws(() => { Id3v2ExtendedHeader.fromData(testData, 0x100); });
+        Testers.testByte((v: number) => { Id3v2ExtendedHeader.fromData(testData, v); });
     }
 
     @test

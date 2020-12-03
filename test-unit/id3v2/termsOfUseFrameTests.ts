@@ -1,9 +1,9 @@
 import * as Chai from "chai";
 import * as ChaiAsPromised from "chai-as-promised";
-import {slow, suite, test, timeout} from "mocha-typescript";
-
 import FrameConstructorTests from "./frameConstructorTests";
 import PropertyTests from "../utilities/propertyTests";
+import {suite, test} from "mocha-typescript";
+
 import Id3v2Settings from "../../src/id3v2/id3v2Settings";
 import TermsOfUseFrame from "../../src/id3v2/frames/termsOfUseFrame";
 import {ByteVector, StringType} from "../../src/byteVector";

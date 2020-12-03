@@ -1,5 +1,6 @@
 import * as Chai from "chai";
 import * as ChaiAsPromised from "chai-as-promised";
+import Testers from "../utilities/testers";
 import {suite, test} from "mocha-typescript";
 
 import {ApeCompressionLevel, ApeStreamHeader} from "../../src/ape/apeStreamHeader";
@@ -17,11 +18,8 @@ const assert = Chai.assert;
         const data = ByteVector.empty();
 
         // Act / Assert
-        assert.throws(() => { const _ = new ApeStreamHeader(undefined, 123); });
-        assert.throws(() => { const _ = new ApeStreamHeader(null, 123); });
-        assert.throws(() => { const _ = new ApeStreamHeader(data, -1); });
-        assert.throws(() => { const _ = new ApeStreamHeader(data, 1.23); });
-        assert.throws(() => { const _ = new ApeStreamHeader(data, Number.MAX_SAFE_INTEGER + 1); });
+        Testers.testTruthy((v: ByteVector) => { const _ = new ApeStreamHeader(v, 123); });
+        Testers.testUint((v: number) => { const _ = new ApeStreamHeader(data, v); });
     }
 
     @test

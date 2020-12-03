@@ -1,16 +1,16 @@
 import * as Chai from "chai";
 import * as ChaiAsPromised from "chai-as-promised";
-import {slow, suite, test, timeout} from "mocha-typescript";
-
 import FrameConstructorTests from "./frameConstructorTests";
 import PropertyTests from "../utilities/propertyTests";
+import Testers from "../utilities/testers";
+import {suite, test} from "mocha-typescript";
+
 import {ByteVector} from "../../src/byteVector";
 import {EventTimeCode, EventTimeCodeFrame} from "../../src/id3v2/frames/eventTimeCodeFrame";
 import {Frame, FrameClassType} from "../../src/id3v2/frames/frame";
 import {Id3v2FrameFlags, Id3v2FrameHeader} from "../../src/id3v2/frames/frameHeader";
 import {FrameIdentifiers} from "../../src/id3v2/frameIdentifiers";
 import {EventType, TimestampFormat} from "../../src/id3v2/utilTypes";
-import framePropertyTests from "../utilities/propertyTests";
 
 // Setup Chai
 Chai.use(ChaiAsPromised);
@@ -20,8 +20,7 @@ const assert = Chai.assert;
     @test
     public constructor_invalidTime() {
         // Act/Assert
-        assert.throws(() => { const _ = new EventTimeCode(EventType.AudioEnd, 1.23); });
-        assert.throws(() => { const _ = new EventTimeCode(EventType.AudioEnd, Number.MAX_SAFE_INTEGER + 1); });
+        Testers.testInt((v: number) => { const _ = new EventTimeCode(EventType.AudioEnd, v); });
     }
 
     @test
@@ -220,7 +219,7 @@ const assert = Chai.assert;
         // Act / Assert
         PropertyTests.propertyRoundTrip(set, get, [new EventTimeCode(EventType.Profanity, 123)]);
         PropertyTests.propertyRoundTrip(set, get, []);
-        framePropertyTests.propertyNormalized(set, get, undefined, []);
+        PropertyTests.propertyNormalized(set, get, undefined, []);
         PropertyTests.propertyNormalized(set, get, null, []);
     }
 

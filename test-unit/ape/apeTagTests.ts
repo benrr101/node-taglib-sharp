@@ -1,18 +1,18 @@
 import * as Chai from "chai";
 import * as ChaiAsPromised from "chai-as-promised";
 import * as TypeMoq from "typemoq";
+import PropertyTests from "../utilities/propertyTests";
+import Testers from "../utilities/testers";
+import TestFile from "../utilities/testFile";
 import {suite, test} from "mocha-typescript";
 
 import ApeTag from "../../src/ape/apeTag";
-import PropertyTests from "../utilities/propertyTests";
-import TestFile from "../utilities/testFile";
 import {ApeTagFooter, ApeTagFooterFlags} from "../../src/ape/apeTagFooter";
 import {ApeTagItem, ApeTagItemType} from "../../src/ape/apeTagItem";
 import {ByteVector} from "../../src/byteVector";
 import {File} from "../../src/file";
 import {IPicture, PictureType} from "../../src/picture";
 import {TagTypes} from "../../src/tag";
-
 
 // Setup chai
 Chai.use(ChaiAsPromised);
@@ -33,8 +33,7 @@ function getTestTagFooter(flags: ApeTagFooterFlags, itemCount: number, itemPlusF
     @test
     public fromData_falsyData() {
         // Act / Assert
-        assert.throws(() => { ApeTag.fromData(undefined); });
-        assert.throws(() => { ApeTag.fromData(null); });
+        Testers.testTruthy((v: ByteVector) => { ApeTag.fromData(v); });
     }
 
     @test
@@ -142,11 +141,8 @@ function getTestTagFooter(flags: ApeTagFooterFlags, itemCount: number, itemPlusF
         mockFile.setup((f: File) => f.length).returns(() => 14);
 
         // Act / Assert
-        assert.throws(() => { ApeTag.fromFile(undefined, 0); });
-        assert.throws(() => { ApeTag.fromFile(null, 0); });
-        assert.throws(() => { ApeTag.fromFile(mockFile.object, -1); });
-        assert.throws(() => { ApeTag.fromFile(mockFile.object, 1.23); });
-        assert.throws(() => { ApeTag.fromFile(mockFile.object, Number.MAX_SAFE_INTEGER + 1); });
+        Testers.testTruthy((v: File) => { ApeTag.fromFile(v, 0); });
+        Testers.testUint((v: number) => { ApeTag.fromFile(mockFile.object, v); });
         assert.throws(() => { ApeTag.fromFile(mockFile.object, 5); });
     }
 
