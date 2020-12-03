@@ -402,7 +402,7 @@ function getTestFrame(): CommentsFrame {
     @test
     public findAll_falsyFrames() {
         // Act/Assert
-        Testers.testTruthy((v: CommentsFrame) => { CommentsFrame.findAll(v, "fux"); });
+        Testers.testTruthy((v: CommentsFrame[]) => { CommentsFrame.findAll(v, "fux"); });
     }
 
     @test

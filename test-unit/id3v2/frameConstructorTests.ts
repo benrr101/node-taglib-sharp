@@ -36,7 +36,7 @@ export default abstract class FrameConstructorTests {
         const data = ByteVector.empty();
 
         // Act/Assert
-        Testers.testTruthy((v: ByteVector) => { this.fromOffsetRawData(data, 2, v, 4); });
+        Testers.testTruthy((v: Id3v2FrameHeader) => { this.fromOffsetRawData(data, 2, v, 4); });
     }
 
     @test

@@ -1141,7 +1141,7 @@ const assert = Chai.assert;
     @test
     public fromString_invalidLength() {
         // Arrange, Act, Assert
-        Testers.testUint((v: number) => { ByteVector.fromString("", undefined, v); });
+        Testers.testUint((v: number) => { ByteVector.fromString("", undefined, v); }, true);
     }
 
     @test

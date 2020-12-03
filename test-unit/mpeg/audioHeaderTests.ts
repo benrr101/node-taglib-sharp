@@ -670,7 +670,7 @@ const assert = Chai.assert;
         // Act / Assert
         Testers.testTruthy((v: File) => { AudioHeader.find(v, 123, 234); });
         Testers.testInt((v: number) => { AudioHeader.find(mockFile, v, 234); });
-        Testers.testInt((v: number) => { AudioHeader.find(mockFile, 123, v); });
+        Testers.testInt((v: number) => { AudioHeader.find(mockFile, 123, v); }, true);
     }
 
     @test

@@ -471,7 +471,7 @@ export class ByteVector {
      * @param type StringType to use to encode the string. If {@see StringType.UTF16} is used, the
      *        string will be encoded as UTF16-LE.
      * @param length Number of characters from the string to store in the ByteVector. Must be a
-     *        positive safe-integer, cannot be floating point.
+     *        positive 32-bit integer.
      * @param isReadOnly If `true` then the ByteVector will be read only
      */
     public static fromString(
@@ -638,7 +638,7 @@ export class ByteVector {
 
     /**
      * Adds a single byte to the end of the {@see ByteVector}
-     * @param byte Value to add to the end of the ByteVector. Must be positive integer <=0xFF.
+     * @param byte Value to add to the end of the ByteVector. Must be positive 8-bit integer.
      */
     public addByte(byte: number): void {
         this.throwIfReadOnly();

@@ -1,16 +1,17 @@
 import * as Chai from "chai";
 import * as ChaiAsPromised from "chai-as-promised";
 import * as TypeMoq from "typemoq";
-import {slow, suite, test, timeout} from "mocha-typescript";
-
-import Properties from "../src/properties";
 import PropertyTests from "./utilities/propertyTests";
 import TestConstants from "./testConstants";
-import {File, FileAccessMode, FileTypeResolver, ReadStyle} from "../src/file";
+import Testers from "./utilities/testers";
+import TestStream from "./utilities/testStream";
+import {suite, test} from "mocha-typescript";
+
+import Properties from "../src/properties";
+import {File, FileAccessMode, FileTypeConstructor, FileTypeResolver, ReadStyle} from "../src/file";
 import {IFileAbstraction} from "../src/fileAbstraction";
 import {Tag, TagTypes} from "../src/tag";
 import {IStream} from "../src/stream";
-import TestStream from "./utilities/testStream";
 import {ByteVector} from "../src/byteVector";
 
 // Setup Chai
@@ -29,8 +30,7 @@ const assert = Chai.assert;
     @test
     public createFromAbstraction_invalidAbstraction() {
         // Act / Assert
-        assert.throws(() => File.createFromAbstraction(undefined));
-        assert.throws(() => File.createFromAbstraction(null));
+        Testers.testTruthy((v: IFileAbstraction) => { File.createFromAbstraction(v); });
     }
 
     @test
@@ -120,9 +120,7 @@ const assert = Chai.assert;
     @test
     public createFromPath_invalidParams() {
         // Act / Assert
-        assert.throws(() => File.createFromPath(null));
-        assert.throws(() => File.createFromPath(undefined));
-        assert.throws(() => File.createFromPath(""));
+        Testers.testString((v: string) => { File.createFromPath(v); });
     }
 
     @test
@@ -376,11 +374,8 @@ const assert = Chai.assert;
     @test
     public addFileType_invalidParameters() {
         // Act / Assert
-        assert.throws(() => File.addFileType(undefined, TestFile, false));
-        assert.throws(() => File.addFileType(null, TestFile, false));
-        assert.throws(() => File.addFileType("", TestFile, false));
-        assert.throws(() => File.addFileType("foo/bar", undefined, false));
-        assert.throws(() => File.addFileType("foo/bar", null, false));
+        Testers.testString((v: string) => { File.addFileType(v, TestFile, false); });
+        Testers.testTruthy((v: FileTypeConstructor) => { File.addFileType("foo/bar", v, false); });
     }
 
     @test
@@ -399,8 +394,7 @@ const assert = Chai.assert;
     @test
     public addFileTypeResolver_invalidParameters() {
         // Act / Assert
-        assert.throws(() => { File.addFileTypeResolver(null); });
-        assert.throws(() => { File.addFileTypeResolver(undefined); });
+        Testers.testTruthy((v: FileTypeResolver) => { File.addFileTypeResolver(v); });
     }
 
     @test
@@ -618,12 +612,8 @@ const assert = Chai.assert;
     public removeBlock_invalidParams() {
         const testAction = (f: TestFile) => {
             // Act / Assert
-            assert.throws(() => f.removeBlock(-1, 0));
-            assert.throws(() => f.removeBlock(1.23, 0));
-            assert.throws(() => f.removeBlock(Number.MAX_SAFE_INTEGER + 1, 0));
-            assert.throws(() => f.removeBlock(0, 1.23));
-            assert.throws(() => f.removeBlock(0, Number.MAX_SAFE_INTEGER + 1));
-            assert.throws(() => f.removeBlock(0, Number.MIN_SAFE_INTEGER - 1));
+            Testers.testUint((v: number) => { f.removeBlock(v, 0); });
+            Testers.testInt((v: number) => { f.removeBlock(0, v); });
         };
         this.testWithMemoryStream(testAction, 10);
     }

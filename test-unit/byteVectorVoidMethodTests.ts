@@ -47,7 +47,7 @@ const assert = Chai.assert;
         const bv = ByteVector.fromSize(1);
 
         // Act, Assert - AddByte should fail, ByteVector should be unchanged
-        Testers.testByte((v: number) => () => { bv.addByte(v); });
+        Testers.testByte((v: number) => { bv.addByte(v); });
         assert.deepEqual(bv.data, new Uint8Array([0x00]));
     }
 
@@ -326,9 +326,9 @@ const assert = Chai.assert;
 
         // Act / Assert
         Testers.testTruthy((v: ByteVector) => { bv.containsAt(v, 0, 0, 0); });
-        Testers.testInt((v: number) => { bv.containsAt(pattern, v, 0, 0); });
-        Testers.testInt((v: number) => { bv.containsAt(pattern, 0, v, 0); });
-        Testers.testInt((v: number) => { bv.containsAt(pattern, 0, 0, v); });
+        Testers.testInt((v: number) => { bv.containsAt(pattern, v, 0, 0); }, true);
+        Testers.testInt((v: number) => { bv.containsAt(pattern, 0, v, 0); }, true);
+        Testers.testInt((v: number) => { bv.containsAt(pattern, 0, 0, v); }, true);
     }
 
     @test
@@ -560,8 +560,8 @@ const assert = Chai.assert;
 
         // Act / Assert
         Testers.testTruthy((v: ByteVector) => { bv.find(v, 0, 1); });
-        Testers.testUint((v: number) => { bv.find(pattern, v, 1); });
-        Testers.testUint((v: number) => { bv.find(pattern, 0, v); });
+        Testers.testUint((v: number) => { bv.find(pattern, v, 1); }, true);
+        Testers.testUint((v: number) => { bv.find(pattern, 0, v); }, true);
         assert.throws(() => { bv.find(pattern, 0, 0); });
     }
 
@@ -672,7 +672,7 @@ const assert = Chai.assert;
 
         // Act / Assert
         Testers.testUint((v: number) => { bv.get(v); });
-        assert.throws(() => { bv.get(bv.length) });
+        assert.throws(() => { bv.get(bv.length); });
     }
 
     @test
@@ -1033,7 +1033,7 @@ const assert = Chai.assert;
 
         // Act / Assert
         Testers.testUint((v: number) => { bv.mid(v); });
-        Testers.testUint((v: number) => { bv.mid(1, v); });
+        Testers.testUint((v: number) => { bv.mid(1, v); }, true);
         assert.throws(() => bv.mid(1, bv.length));
     }
 
@@ -1301,8 +1301,8 @@ const assert = Chai.assert;
 
         // Act / Assert
         Testers.testTruthy((v: ByteVector) => { bv.rFind(v, 0, 1); });
-        Testers.testUint((v: number) => { bv.rFind(pattern, v, 1); });
-        Testers.testUint((v: number) => { bv.rFind(pattern, 0, v); });
+        Testers.testUint((v: number) => { bv.rFind(pattern, v, 1); }, true);
+        Testers.testUint((v: number) => { bv.rFind(pattern, 0, v); }, true);
         assert.throws(() => { bv.rFind(pattern, 0, 0); });
     }
 
@@ -1470,8 +1470,8 @@ const assert = Chai.assert;
 
         // Act / Assert
         Testers.testTruthy((v: ByteVector) => { bv.split(v); });
-        Testers.testUint((v: number) => { bv.split(pattern, v); });
-        Testers.testUint((v: number) => { bv.split(pattern, 1, v); });
+        Testers.testUint((v: number) => { bv.split(pattern, v); }, true);
+        Testers.testUint((v: number) => { bv.split(pattern, 1, v); }, true);
         assert.throws(() => bv.split(pattern, 0));
     }
 

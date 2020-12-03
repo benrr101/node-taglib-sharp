@@ -171,7 +171,7 @@ const assert = Chai.assert;
     @test
     public fromTextValues_invalidValues() {
         // Act / Assert
-        Testers.testTruthy((v: ByteVector) => { ApeTagItem.fromTextValues(v, ""); });
+        Testers.testTruthy((v: string) => { ApeTagItem.fromTextValues(v, ""); });
     }
 
     @test

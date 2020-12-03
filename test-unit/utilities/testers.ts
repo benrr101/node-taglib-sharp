@@ -10,12 +10,15 @@ export default class Testers {
         assert.throws(() => testFunc(0x100));
     }
 
-    public static testInt(testFunc: (testValue: number) => void): void {
+    public static testInt(testFunc: (testValue: number) => void, allowUndefined = false): void {
         assert.throws(() => testFunc(Number.MIN_SAFE_INTEGER - 1));
         assert.throws(() => testFunc(1.23));
         assert.throws(() => testFunc(Number.MAX_SAFE_INTEGER + 1));
         assert.throws(() => testFunc(null));
-        assert.throws(() => testFunc(undefined));
+
+        if (!allowUndefined) {
+            assert.throws(() => testFunc(undefined));
+        }
     }
 
     public static testString(testFunc: (testValue: string) => void): void {
@@ -28,11 +31,14 @@ export default class Testers {
         assert.throws(() => testFunc(null));
     }
 
-    public static testUint(testFunc: (testValue: number) => void): void {
+    public static testUint(testFunc: (testValue: number) => void, allowUndefined = false): void {
         assert.throws(() => testFunc(-1));
         assert.throws(() => testFunc(1.23));
         assert.throws(() => testFunc(Number.MAX_SAFE_INTEGER + 1));
         assert.throws(() => testFunc(null));
-        assert.throws(() => testFunc(undefined));
+
+        if (!allowUndefined) {
+            assert.throws(() => testFunc(undefined));
+        }
     }
 }

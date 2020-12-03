@@ -1,10 +1,11 @@
 import * as Chai from "chai";
 import * as ChaiAsPromised from "chai-as-promised";
 import * as fs from "fs";
-import {slow, suite, test, timeout} from "mocha-typescript";
-
 import PropertyTests from "./utilities/propertyTests";
 import TestConstants from "./testConstants";
+import Testers from "./utilities/testers";
+import {suite, test} from "mocha-typescript";
+
 import {ByteVector} from "../src/byteVector";
 import {SeekOrigin, Stream} from "../src/stream";
 
@@ -36,7 +37,7 @@ const assert = Chai.assert;
         const testPath = TestConstants.getTestFilePath();
 
         // Act / Assert
-        assert.throws(() => { const stream = Stream.createAsRead(testPath); });
+        assert.throws(() => { const _ = Stream.createAsRead(testPath); });
     }
 
     @test
@@ -62,7 +63,8 @@ const assert = Chai.assert;
         const testPath = TestConstants.getTestFilePath();
 
         // Act / Assert
-        assert.throws(() => { const stream = Stream.createAsReadWrite(testPath); });
+        assert.throws(() => { const _ = Stream.createAsReadWrite(testPath); });
+        assert.throws(() => { const _ = Stream.createAsReadWrite(testPath); });
     }
 
     @test
@@ -72,10 +74,9 @@ const assert = Chai.assert;
 
         try {
             // Act / Assert
-            assert.throws(() => stream.position = -1);
-            assert.throws(() => stream.position = 1.23);
+            Testers.testUint((v: number) => { stream.position = v; });
             assert.throws(() => stream.position = TestConstants.testFileContents.length + 1);
-            assert.throws(() => stream.position = Number.MAX_SAFE_INTEGER + 1);
+
         } finally {
             // Cleanup
             stream.close();
@@ -176,10 +177,8 @@ const assert = Chai.assert;
 
         try {
             // Act / Assert
-            assert.throws(() => stream.seek(-1, SeekOrigin.Begin));
-            assert.throws(() => stream.seek(1.23, SeekOrigin.Begin));
+            Testers.testUint((v: number) => { stream.seek(v, SeekOrigin.Begin); });
             assert.throws(() => stream.seek(TestConstants.testFileContents.length + 1, SeekOrigin.Begin));
-            assert.throws(() => stream.seek(Number.MAX_SAFE_INTEGER + 1, SeekOrigin.Begin));
         } finally {
             // Cleanup
             stream.close();
@@ -212,8 +211,7 @@ const assert = Chai.assert;
 
         try {
             // Act / Assert
-            assert.throws(() => stream.seek(1.23, SeekOrigin.Current)); // Not int
-            assert.throws(() => stream.seek(Number.MAX_SAFE_INTEGER + 1, SeekOrigin.Current)); // Not int
+            Testers.testInt((v: number) => { stream.seek(v, SeekOrigin.Current); });
             assert.throws(() => stream.seek(6, SeekOrigin.Current)); // Would go past end of stream
             assert.throws(() => stream.seek(-6, SeekOrigin.Current)); // Would go past beginning of stream
         } finally {
@@ -249,8 +247,7 @@ const assert = Chai.assert;
 
         try {
             // Act / Assert
-            assert.throws(() => stream.seek(1.23, SeekOrigin.End)); // Not int
-            assert.throws(() => stream.seek(Number.MAX_SAFE_INTEGER + 1, SeekOrigin.End)); // Not int
+            Testers.testInt((v: number) => { stream.seek(v, SeekOrigin.End); });
             assert.throws(() => stream.seek(1, SeekOrigin.End)); // Would go past end of stream
             assert.throws(() => stream.seek(-11, SeekOrigin.End)); // Would go past beginning of stream
         } finally {
@@ -281,9 +278,7 @@ const assert = Chai.assert;
     public setLength_invalidLength() {
         const testAction = (testFilePath: string, stream: Stream) => {
             // Act / Assert
-            assert.throws(() => stream.setLength(-1));
-            assert.throws(() => stream.setLength(1.23));
-            assert.throws(() => stream.setLength(Number.MAX_SAFE_INTEGER + 1));
+            Testers.testUint((v: number) => { stream.setLength(v); });
         };
         this.testWithFile(testAction, true);
     }
