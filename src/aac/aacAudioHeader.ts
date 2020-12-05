@@ -1,5 +1,4 @@
 import Mpeg4AudioTypes from "../mpeg4/mpeg4AudioTypes";
-import {CorruptFileError} from "../errors";
 import {File} from "../file";
 import {IAudioCodec, MediaTypes} from "../iCodec";
 import {Guards} from "../utils";
@@ -17,7 +16,7 @@ export default class AacAudioHeader implements IAudioCodec {
     /**
      * An empty an unset header
      */
-    public static readonly unknown = new AacAudioHeader(0, 0, 0, 0, 0, 0);
+    public static readonly unknown = new AacAudioHeader(0, 0, 0, 0);
 
     private readonly _audioBitrate: number;
     private readonly _audioChannels: number;
@@ -33,26 +32,20 @@ export default class AacAudioHeader implements IAudioCodec {
      * @param channels Number of channels in the audio stream
      * @param bitrate Bitrate of the audio stream
      * @param sampleRate Sample rate of the audio stream
-     * @param numberOfSamples Number of samples in the audio stream
-     * @param numberOfFrames Number of frames in the audio stream
      * @param mpegAudioType ID of the MPEG-4 audio type
      */
     public constructor(
         channels: number,
         bitrate: number,
         sampleRate: number,
-        numberOfSamples: number,
-        numberOfFrames: number,
         mpegAudioType: number
     ) {
         Guards.uint(channels, "channels");
         Guards.greaterThanInclusive(bitrate, 0, "bitrate");
         Guards.uint(sampleRate, "sampleRate");
-        Guards.uint(numberOfSamples, "numberOfSamples");
-        Guards.uint(numberOfFrames, "numberOfFrames");
         Guards.uint(mpegAudioType, "mpegAudioType");
 
-        this._durationMilliseconds = 0;
+        this._durationMilliseconds = undefined;
         this._streamLength = 0;
         this._audioBitrate = bitrate;
         this._audioChannels = channels;
@@ -74,7 +67,11 @@ export default class AacAudioHeader implements IAudioCodec {
     /** @inheritDoc */
     public get description(): string { return `ADTS AAC: ${Mpeg4AudioTypes[this._mpeg4AudioTypeIndex]}`; }
 
-    /** @inheritDoc */
+    /**
+     * @inheritDoc
+     * @remarks Until the stream length has been set ({@link streamLength}), this will return
+     *     `undefined`.
+     */
     public get durationMilliseconds(): number { return this._durationMilliseconds; }
 
     /** @inheritDoc */
@@ -100,13 +97,15 @@ export default class AacAudioHeader implements IAudioCodec {
      * searching through a specified number of bytes.
      * @param file File to search
      * @param position Seek position in `file` in which to start searching
-     * @param length maximum number of bytes to search before aborting
-     * @returns AacAudioHeader Header found or `undefined` if a header could not be found.
+     * @param length maximum number of bytes to search before aborting. Omit to search entire file
+     * @returns AacAudioHeader Header found or `undefined` if a header could not be found
      */
-    public static find(file: File, position: number, length: number = -1): AacAudioHeader {
+    public static find(file: File, position: number, length?: number): AacAudioHeader {
         Guards.truthy(file, "file");
         Guards.uint(position, "position");
-        Guards.uint(length, "length");
+        if (length !== undefined) {
+            Guards.uint(length, "length");
+        }
 
         const end = position + length;
 
@@ -117,70 +116,62 @@ export default class AacAudioHeader implements IAudioCodec {
             return undefined;
         }
 
+        // @TODO: This offset by 3 shit is nuts.
         do {
             file.seek(position + 3);
             buffer = buffer.mid(buffer.length - 3);
             buffer.addByteVector(file.readBlock(File.bufferSize));
 
             for (let i = 0; i < buffer.length; i++) {
-                if (buffer.get(i) === 0xff && buffer.get(i + i) > 0xF0) {
-                    try {
-                        // NOTE: For details of the header format, see https://wiki.multimedia.cx/index.php/ADTS
-                        const bytes = buffer.mid(i, 7);
-
-                        // Sample rate
-                        const sampleRateByte = bytes.get(2);
-                        const sampleRateIndex = (sampleRateByte & 0x3C) >>> 2;
-                        if (sampleRateIndex >= this.sampleRates.length) {
-                            return undefined;
-                        }
-                        const sampleRate = this.sampleRates[sampleRateIndex];
-
-                        // MPEG-4 Audio Type
-                        const mpeg4AudioType = (sampleRateByte & 0xC0) >>> 6;
-
-                        // Channel configuration
-                        const channelsByte1 = sampleRateByte;
-                        const channelsByte2 = bytes.get(3);
-                        const channelCount = ((channelsByte1 & 0x1) << 2)
-                            | (channelsByte2 & 0xC0) >>> 6;
-
-                        // Frame length
-                        const frameLengthByte1 = channelsByte2;
-                        const frameLengthByte2 = bytes.get(4);
-                        const frameLengthByte3 = bytes.get(5);
-                        const frameLength = ((frameLengthByte1 & 0x03) << 11)
-                            | (frameLengthByte2 << 3)
-                            | ((frameLengthByte3 & 0xE0) >>> 5);
-                        if (frameLength < 7) {
-                            return undefined;
-                        }
-
-                        // Number of frames in ADTS frame minus 1
-                        const numberOfFrames = ((bytes.get(6) & 0x03) >>> 0) + 1;
-
-                        // Calculate number of samples and bitrate
-                        const numberOfSamples = numberOfFrames * 1024;
-                        const bitrate = frameLength * 8 * sampleRate / numberOfSamples / 1000;
-
-                        return new AacAudioHeader(
-                            channelCount,
-                            bitrate,
-                            sampleRate,
-                            numberOfSamples,
-                            numberOfFrames,
-                            mpeg4AudioType
-                        );
-                    } catch (e) {
-                        if (!CorruptFileError.errorIs(e)) {
-                            throw e;
-                        }
-                    }
+                // Skip if sync word can't be found
+                if (buffer.get(i) !== 0xFF || buffer.get(i + 1) >= 0xF0) {
+                    continue;
                 }
+
+                // Sync word found, continue processing
+                // NOTE: For details of the header format, see https://wiki.multimedia.cx/index.php/ADTS
+                const bytes = buffer.mid(i, 7);
+
+                // Sample rate
+                const sampleRateByte = bytes.get(2);
+                const sampleRateIndex = (sampleRateByte & 0x3C) >>> 2;
+                if (sampleRateIndex >= this.sampleRates.length) {
+                    return undefined;
+                }
+                const sampleRate = this.sampleRates[sampleRateIndex];
+
+                // MPEG-4 Audio Type
+                const mpeg4AudioType = (sampleRateByte & 0xC0) >>> 6;
+
+                // Channel configuration
+                const channelsByte1 = sampleRateByte;
+                const channelsByte2 = bytes.get(3);
+                const channelCount = ((channelsByte1 & 0x1) << 2)
+                    | (channelsByte2 & 0xC0) >>> 6;
+
+                // Frame length
+                const frameLengthByte1 = channelsByte2;
+                const frameLengthByte2 = bytes.get(4);
+                const frameLengthByte3 = bytes.get(5);
+                const frameLength = ((frameLengthByte1 & 0x03) << 11)
+                    | (frameLengthByte2 << 3)
+                    | ((frameLengthByte3 & 0xE0) >>> 5);
+                if (frameLength < 7) {
+                    return undefined;
+                }
+
+                // Number of frames in ADTS frame minus 1
+                const numberOfFrames = ((bytes.get(6) & 0x03) >>> 0) + 1;
+
+                // Calculate number of samples and bitrate
+                const numberOfSamples = numberOfFrames * 1024;
+                const bitrate = frameLength * 8 * sampleRate / numberOfSamples / 1000;
+
+                return new AacAudioHeader(channelCount, bitrate, sampleRate, mpeg4AudioType);
             }
 
             position += File.bufferSize;
-        } while (buffer.length > 3 && (length < 0 || position < end));
+        } while (buffer.length > 3 && (length === undefined || position < end));
 
         return undefined;
     }
