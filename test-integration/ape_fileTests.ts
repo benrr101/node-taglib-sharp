@@ -29,6 +29,7 @@ const assert = Chai.assert;
     public readAudioProperties() {
         assert.approximately(Ape_FileTests.file.properties.audioBitrate, 604, 0.5);
         assert.strictEqual(Ape_FileTests.file.properties.audioSampleRate, 44100);
+        assert.strictEqual(Ape_FileTests.file.properties.audioChannels, 2);
         assert.approximately(Ape_FileTests.file.properties.durationMilliseconds, 5230, 10);
     }
 

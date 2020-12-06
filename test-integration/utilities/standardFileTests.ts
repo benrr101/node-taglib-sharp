@@ -72,6 +72,16 @@ export class StandardFileTests {
         }
     }
 
+    public static testCorruptionResistance(path: string): void {
+        try {
+            File.createFromPath(path);
+        } catch (e) {
+            if (!CorruptFileError.errorIs(e)) {
+                throw e;
+            }
+        }
+    }
+
     public static writeStandardPictures(
         sampleFile: string,
         tmpFile: string,
@@ -303,15 +313,5 @@ export class StandardFileTests {
         tag.track = 98;
         tag.trackCount = 99;
         tag.year = 1999;
-    }
-
-    private static testCorruptionResistance(path: string): void {
-        try {
-            File.createFromPath(path);
-        } catch (e) {
-            if (!CorruptFileError.errorIs(e)) {
-                throw e;
-            }
-        }
     }
 }

@@ -14,6 +14,9 @@ export {default as PictureLazy} from "./pictureLazy";
 export {default as Properties} from "./properties";
 export {Tag, TagTypes} from "./tag";
 
+// AAC /////////////////////////////////////////////////////////////////////
+export {default as AacFile} from "./aac/aacFile";
+
 // APE /////////////////////////////////////////////////////////////////////
 export {default as ApeFile} from "./ape/apeFile";
 export {default as ApeTag} from "./ape/apeTag";
@@ -77,8 +80,8 @@ export {
 } from "./id3v2/frames/urlLinkFrame";
 
 // MPEG ////////////////////////////////////////////////////////////////////
-export {default as MpegAudioFile} from "./mpeg/audioFile";
-export {default as MpegAudioHeader} from "./mpeg/audioHeader";
+export {default as MpegAudioFile} from "./mpeg/mpegAudioFile";
+export {default as MpegAudioHeader} from "./mpeg/mpegAudioHeader";
 export {
     ChannelMode as MpegAudioChannelMode,
     MpegVersion as MpegVersion
