@@ -60,7 +60,7 @@ export default class AacFile extends NonContainerFile {
     }
 
     /** @inheritDoc */
-    protected readProperties(start: number, end: number, propertiesStyle: ReadStyle): Properties {
+    protected readProperties(start: number, end: number, _propertiesStyle: ReadStyle): Properties {
         this._firstHeader.streamLength = end - start;
         return new Properties(0, [this._firstHeader]);
     }

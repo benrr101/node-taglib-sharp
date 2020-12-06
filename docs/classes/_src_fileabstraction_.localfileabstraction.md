@@ -40,7 +40,7 @@ This class is used as the standard file abstraction throughout the library.
 
 Constructs and initializes a new instance from a specified path in the local file system
 
-**`throws`** Error Thrown if `path` is falsey
+**`throws`** Error Thrown if `path` is falsy
 
 #### Parameters:
 

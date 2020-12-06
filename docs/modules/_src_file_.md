@@ -43,7 +43,7 @@ any standard resolution operations.
 
 **`returns`** New instance of [File](../classes/_src_file_.file.md) or `undefined` if the resolver could not be matched
 
-**`description`** A FileTypeResolver is one way of altering the behavior of
+**`remarks`** A FileTypeResolver is one way of altering the behavior of
     [File.createFromPath](../classes/_src_file_.file.md#createfrompath) When [File.createFromPath](../classes/_src_file_.file.md#createfrompath) is called, the registered
     resolvers are invoked in reverse order in which they were registered. The resolver may then
     perform any operations necessary, including other type-finding methods. If the resolver

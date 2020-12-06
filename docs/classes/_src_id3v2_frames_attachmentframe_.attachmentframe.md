@@ -542,7 +542,7 @@ ___
 Constructs and initializes a new attachment frame by populating it with the contents of
 another [IPicture](../interfaces/_src_picture_.ipicture.md) object.
 
-**`description`** When a frame is created, it is not automatically added to the tag. Consider
+**`remarks`** When a frame is created, it is not automatically added to the tag. Consider
     using [get](_src_bytevector_.bytevector.md#get) for more integrated frame creation.
     Additionally, see [Tag.pictures](_src_tag_.tag.md#pictures) provides a generic way of getting and setting
     attachments which is preferable to format specific code.

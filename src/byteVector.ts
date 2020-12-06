@@ -304,7 +304,7 @@ export class ByteVector {
      * Creates a ByteVector using the contents of an TagLibSharp-node stream as the contents. This
      * method reads from the current offset of the stream, not the beginning of the stream
      * @param stream TagLibSharp-node internal stream object
-     * @param isReadOnly Whether or not the bytevector is readonly
+     * @param isReadOnly Whether or not the byte vector is readonly
      */
     public static fromInternalStream(stream: IStream, isReadOnly: boolean = false): ByteVector {
         Guards.truthy(stream, "stream");
@@ -1188,6 +1188,7 @@ export class ByteVector {
         }
 
         // Number is negative, need to calculate two's complement
+        // noinspection SpellCheckingInspection - It's a numeric value
         const allBits = BigInt("FFFFFFFFFFFFFFFF", 16);
         return uLong.xor(allBits).add(1).and(allBits).times(-1);
     }

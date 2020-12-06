@@ -174,7 +174,7 @@ Adds a single byte to the end of the [ByteVector](_src_bytevector_.bytevector.md
 
 Name | Type | Description |
 ------ | ------ | ------ |
-`byte` | number | Value to add to the end of the ByteVector. Must be positive integer <=0xFF.  |
+`byte` | number | Value to add to the end of the ByteVector. Must be positive 8-bit integer.  |
 
 **Returns:** void
 
@@ -218,7 +218,7 @@ ___
 
 Removes all elements from this [ByteVector](_src_bytevector_.bytevector.md)
 
-**`description`** NOTE: This method replaces the internal byte array with a new one. Any
+**`remarks`** NOTE: This method replaces the internal byte array with a new one. Any
              existing references to [ByteVector.data](_src_bytevector_.bytevector.md#data) will remain unchanged.
 
 **Returns:** void
@@ -685,7 +685,7 @@ Converts the current instance into an array of strings starting at the specified
 using the specified encoding, assuming the values are `null` separated and limiting it to a
 specified number of items.
 
-**`description`** I'm not actually sure if this works as defined, but it behaves the same as the
+**`remarks`** I'm not actually sure if this works as defined, but it behaves the same as the
       original .NET implementation, so that's good enough for now.
 
 #### Parameters:
@@ -1019,7 +1019,7 @@ Name | Type | Default value | Description |
 ------ | ------ | ------ | ------ |
 `text` | string | - | String to store in the ByteVector |
 `type` | [StringType](../enums/_src_bytevector_.stringtype.md) | StringType.UTF8 | StringType to use to encode the string. If [StringType.UTF16](../enums/_src_bytevector_.stringtype.md#utf16) is used, the        string will be encoded as UTF16-LE. |
-`length` | number | Number.MAX\_SAFE\_INTEGER | Number of characters from the string to store in the ByteVector. Must be a        positive safe-integer, cannot be floating point. |
+`length` | number | Number.MAX\_SAFE\_INTEGER | Number of characters from the string to store in the ByteVector. Must be a        positive 32-bit integer. |
 `isReadOnly` | boolean | false | If `true` then the ByteVector will be read only  |
 
 **Returns:** [ByteVector](_src_bytevector_.bytevector.md)

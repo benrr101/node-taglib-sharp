@@ -1,94 +1,101 @@
 **[node-taglib-sharp](../README.md)**
 
-> [Globals](../globals.md) / ["src/file"](../modules/_src_file_.md) / File
+> [Globals](../globals.md) / ["src/aac/aacFile"](../modules/_src_aac_aacfile_.md) / AacFile
 
-# Class: File
+# Class: AacFile
 
-This abstract class provides a basic framework for reading and writing to a file, as well as
-accessing basic tagging and media properties.
+This class extends [File](_src_file_.file.md) to provide tagging and properties for ADTS AAC audio files.
 
-**`remarks`** This class is agnostic to all specific media types. Its child classes, on the other
-    hand, support the intricacies of different media and tagging formats. For example
-    {@link Mpeg4File} supports the MPEG-4 specification and Apple's tagging format. Each file
-    type can be created using its format specific constructors, but the preferred method is to
-    use [File.createFromPath](_src_file_.file.md#createfrompath) or [File.createFromAbstraction](_src_file_.file.md#createfromabstraction) as it automatically
-    detects the appropriate class from the file extension or provided MimeType.
+**`remarks`** A [Id3v1Tag](_src_id3v1_id3v1tag_.id3v1tag.md) and [Id3v2Tag](_src_id3v2_id3v2tag_.id3v2tag.md) will be added automatically to any file
+    that doesn't contain one. This change does not affect the file until it is saved and can be
+    reversed using the following method:
+    `file.removeTags(file.tagTypes & ~file.tagTypesOnDisk);`
 
 ## Hierarchy
 
-* **File**
+* [NonContainerFile](_src_noncontainer_noncontainerfile_.noncontainerfile.md)
 
-  ↳ [NonContainerFile](_src_noncontainer_noncontainerfile_.noncontainerfile.md)
+  ↳ **AacFile**
 
 ## Index
 
 ### Constructors
 
-* [constructor](_src_file_.file.md#constructor)
+* [constructor](_src_aac_aacfile_.aacfile.md#constructor)
 
 ### Properties
 
-* [\_fileAbstraction](_src_file_.file.md#_fileabstraction)
-* [\_fileStream](_src_file_.file.md#_filestream)
-* [\_invariantEndPosition](_src_file_.file.md#_invariantendposition)
-* [\_invariantStartPosition](_src_file_.file.md#_invariantstartposition)
-* [\_tagTypesOnDisk](_src_file_.file.md#_tagtypesondisk)
+* [\_fileAbstraction](_src_aac_aacfile_.aacfile.md#_fileabstraction)
+* [\_fileStream](_src_aac_aacfile_.aacfile.md#_filestream)
+* [\_invariantEndPosition](_src_aac_aacfile_.aacfile.md#_invariantendposition)
+* [\_invariantStartPosition](_src_aac_aacfile_.aacfile.md#_invariantstartposition)
+* [\_tagTypesOnDisk](_src_aac_aacfile_.aacfile.md#_tagtypesondisk)
 
 ### Accessors
 
-* [corruptionReasons](_src_file_.file.md#corruptionreasons)
-* [fileAbstraction](_src_file_.file.md#fileabstraction)
-* [invariantEndPosition](_src_file_.file.md#invariantendposition)
-* [invariantStartPosition](_src_file_.file.md#invariantstartposition)
-* [isPossiblyCorrupt](_src_file_.file.md#ispossiblycorrupt)
-* [isWritable](_src_file_.file.md#iswritable)
-* [length](_src_file_.file.md#length)
-* [mimeType](_src_file_.file.md#mimetype)
-* [mode](_src_file_.file.md#mode)
-* [name](_src_file_.file.md#name)
-* [position](_src_file_.file.md#position)
-* [properties](_src_file_.file.md#properties)
-* [tag](_src_file_.file.md#tag)
-* [tagTypes](_src_file_.file.md#tagtypes)
-* [tagTypesOnDisk](_src_file_.file.md#tagtypesondisk)
-* [bufferSize](_src_file_.file.md#buffersize)
+* [corruptionReasons](_src_aac_aacfile_.aacfile.md#corruptionreasons)
+* [endTag](_src_aac_aacfile_.aacfile.md#endtag)
+* [fileAbstraction](_src_aac_aacfile_.aacfile.md#fileabstraction)
+* [invariantEndPosition](_src_aac_aacfile_.aacfile.md#invariantendposition)
+* [invariantStartPosition](_src_aac_aacfile_.aacfile.md#invariantstartposition)
+* [isPossiblyCorrupt](_src_aac_aacfile_.aacfile.md#ispossiblycorrupt)
+* [isWritable](_src_aac_aacfile_.aacfile.md#iswritable)
+* [length](_src_aac_aacfile_.aacfile.md#length)
+* [mimeType](_src_aac_aacfile_.aacfile.md#mimetype)
+* [mode](_src_aac_aacfile_.aacfile.md#mode)
+* [name](_src_aac_aacfile_.aacfile.md#name)
+* [position](_src_aac_aacfile_.aacfile.md#position)
+* [properties](_src_aac_aacfile_.aacfile.md#properties)
+* [startTag](_src_aac_aacfile_.aacfile.md#starttag)
+* [tag](_src_aac_aacfile_.aacfile.md#tag)
+* [tagTypes](_src_aac_aacfile_.aacfile.md#tagtypes)
+* [tagTypesOnDisk](_src_aac_aacfile_.aacfile.md#tagtypesondisk)
+* [bufferSize](_src_aac_aacfile_.aacfile.md#buffersize)
 
 ### Methods
 
-* [dispose](_src_file_.file.md#dispose)
-* [find](_src_file_.file.md#find)
-* [getTag](_src_file_.file.md#gettag)
-* [insert](_src_file_.file.md#insert)
-* [markAsCorrupt](_src_file_.file.md#markascorrupt)
-* [preSave](_src_file_.file.md#presave)
-* [rFind](_src_file_.file.md#rfind)
-* [readBlock](_src_file_.file.md#readblock)
-* [removeBlock](_src_file_.file.md#removeblock)
-* [removeTags](_src_file_.file.md#removetags)
-* [save](_src_file_.file.md#save)
-* [seek](_src_file_.file.md#seek)
-* [truncate](_src_file_.file.md#truncate)
-* [writeBlock](_src_file_.file.md#writeblock)
-* [addFileType](_src_file_.file.md#addfiletype)
-* [addFileTypeResolver](_src_file_.file.md#addfiletyperesolver)
-* [createFromAbstraction](_src_file_.file.md#createfromabstraction)
-* [createFromPath](_src_file_.file.md#createfrompath)
-* [removeFileType](_src_file_.file.md#removefiletype)
-* [removeFileTypeResolver](_src_file_.file.md#removefiletyperesolver)
+* [dispose](_src_aac_aacfile_.aacfile.md#dispose)
+* [find](_src_aac_aacfile_.aacfile.md#find)
+* [getTag](_src_aac_aacfile_.aacfile.md#gettag)
+* [insert](_src_aac_aacfile_.aacfile.md#insert)
+* [markAsCorrupt](_src_aac_aacfile_.aacfile.md#markascorrupt)
+* [preSave](_src_aac_aacfile_.aacfile.md#presave)
+* [rFind](_src_aac_aacfile_.aacfile.md#rfind)
+* [readBlock](_src_aac_aacfile_.aacfile.md#readblock)
+* [readEnd](_src_aac_aacfile_.aacfile.md#readend)
+* [readProperties](_src_aac_aacfile_.aacfile.md#readproperties)
+* [readStart](_src_aac_aacfile_.aacfile.md#readstart)
+* [removeBlock](_src_aac_aacfile_.aacfile.md#removeblock)
+* [removeTags](_src_aac_aacfile_.aacfile.md#removetags)
+* [save](_src_aac_aacfile_.aacfile.md#save)
+* [seek](_src_aac_aacfile_.aacfile.md#seek)
+* [truncate](_src_aac_aacfile_.aacfile.md#truncate)
+* [writeBlock](_src_aac_aacfile_.aacfile.md#writeblock)
+* [addFileType](_src_aac_aacfile_.aacfile.md#addfiletype)
+* [addFileTypeResolver](_src_aac_aacfile_.aacfile.md#addfiletyperesolver)
+* [createFromAbstraction](_src_aac_aacfile_.aacfile.md#createfromabstraction)
+* [createFromPath](_src_aac_aacfile_.aacfile.md#createfrompath)
+* [removeFileType](_src_aac_aacfile_.aacfile.md#removefiletype)
+* [removeFileTypeResolver](_src_aac_aacfile_.aacfile.md#removefiletyperesolver)
 
 ## Constructors
 
 ### constructor
 
-\+ `Protected`**new File**(`file`: [IFileAbstraction](../interfaces/_src_fileabstraction_.ifileabstraction.md) \| string): [File](_src_file_.file.md)
+\+ **new AacFile**(`file`: [IFileAbstraction](../interfaces/_src_fileabstraction_.ifileabstraction.md) \| string, `propertiesStyle`: [ReadStyle](../enums/_src_file_.readstyle.md)): [AacFile](_src_aac_aacfile_.aacfile.md)
+
+*Overrides [NonContainerFile](_src_noncontainer_noncontainerfile_.noncontainerfile.md).[constructor](_src_noncontainer_noncontainerfile_.noncontainerfile.md#constructor)*
+
+**`inheritdoc`** 
 
 #### Parameters:
 
 Name | Type |
 ------ | ------ |
 `file` | [IFileAbstraction](../interfaces/_src_fileabstraction_.ifileabstraction.md) \| string |
+`propertiesStyle` | [ReadStyle](../enums/_src_file_.readstyle.md) |
 
-**Returns:** [File](_src_file_.file.md)
+**Returns:** [AacFile](_src_aac_aacfile_.aacfile.md)
 
 ## Properties
 
@@ -96,11 +103,15 @@ Name | Type |
 
 • `Protected` **\_fileAbstraction**: [IFileAbstraction](../interfaces/_src_fileabstraction_.ifileabstraction.md)
 
+*Inherited from [File](_src_file_.file.md).[_fileAbstraction](_src_file_.file.md#_fileabstraction)*
+
 ___
 
 ### \_fileStream
 
 • `Protected` **\_fileStream**: [IStream](../interfaces/_src_stream_.istream.md)
+
+*Inherited from [File](_src_file_.file.md).[_fileStream](_src_file_.file.md#_filestream)*
 
 ___
 
@@ -108,11 +119,15 @@ ___
 
 • `Protected` **\_invariantEndPosition**: number = -1
 
+*Inherited from [File](_src_file_.file.md).[_invariantEndPosition](_src_file_.file.md#_invariantendposition)*
+
 ___
 
 ### \_invariantStartPosition
 
 • `Protected` **\_invariantStartPosition**: number = -1
+
+*Inherited from [File](_src_file_.file.md).[_invariantStartPosition](_src_file_.file.md#_invariantstartposition)*
 
 ___
 
@@ -120,11 +135,15 @@ ___
 
 • `Protected` **\_tagTypesOnDisk**: [TagTypes](../enums/_src_tag_.tagtypes.md) = TagTypes.None
 
+*Inherited from [File](_src_file_.file.md).[_tagTypesOnDisk](_src_file_.file.md#_tagtypesondisk)*
+
 ## Accessors
 
 ### corruptionReasons
 
 • get **corruptionReasons**(): string[]
+
+*Inherited from [File](_src_file_.file.md).[corruptionReasons](_src_file_.file.md#corruptionreasons)*
 
 Reasons for which this file is marked as corrupt.
 
@@ -132,9 +151,23 @@ Reasons for which this file is marked as corrupt.
 
 ___
 
+### endTag
+
+• `Protected`get **endTag**(): [EndTag](_src_noncontainer_endtag_.endtag.md)
+
+*Inherited from [NonContainerFile](_src_noncontainer_noncontainerfile_.noncontainerfile.md).[endTag](_src_noncontainer_noncontainerfile_.noncontainerfile.md#endtag)*
+
+Gets the collection of tags appearing at the end of the file.
+
+**Returns:** [EndTag](_src_noncontainer_endtag_.endtag.md)
+
+___
+
 ### fileAbstraction
 
 • get **fileAbstraction**(): [IFileAbstraction](../interfaces/_src_fileabstraction_.ifileabstraction.md)
+
+*Inherited from [File](_src_file_.file.md).[fileAbstraction](_src_file_.file.md#fileabstraction)*
 
 Gets the [IFileAbstraction](../interfaces/_src_fileabstraction_.ifileabstraction.md) representing the file.
 
@@ -145,6 +178,8 @@ ___
 ### invariantEndPosition
 
 • get **invariantEndPosition**(): number
+
+*Inherited from [File](_src_file_.file.md).[invariantEndPosition](_src_file_.file.md#invariantendposition)*
 
 Gets the position at which the invariant (media) portion of the current instance ends. If
 the value could not be determined, `-1` is returned;
@@ -157,6 +192,8 @@ ___
 
 • get **invariantStartPosition**(): number
 
+*Inherited from [File](_src_file_.file.md).[invariantStartPosition](_src_file_.file.md#invariantstartposition)*
+
 Gets the position at which the invariant (media) portion of the current instance begins. If
 the value could not be determined, `-1` is returned.
 
@@ -167,6 +204,8 @@ ___
 ### isPossiblyCorrupt
 
 • get **isPossiblyCorrupt**(): boolean
+
+*Inherited from [File](_src_file_.file.md).[isPossiblyCorrupt](_src_file_.file.md#ispossiblycorrupt)*
 
 Indicates whether or not this file may be corrupt. Files with unknown corruptions should not
 be written.
@@ -179,6 +218,8 @@ ___
 
 • get **isWritable**(): boolean
 
+*Inherited from [File](_src_file_.file.md).[isWritable](_src_file_.file.md#iswritable)*
+
 Indicates whether or not tags can be written back to the current file.
 
 **Returns:** boolean
@@ -188,6 +229,8 @@ ___
 ### length
 
 • get **length**(): number
+
+*Inherited from [File](_src_file_.file.md).[length](_src_file_.file.md#length)*
 
 Gets the length of the file represented by the current instance. Value will be 0 if the file
 is not open for reading;
@@ -200,6 +243,8 @@ ___
 
 • get **mimeType**(): string
 
+*Inherited from [File](_src_file_.file.md).[mimeType](_src_file_.file.md#mimetype)*
+
 Gets the MimeType of the file as determined during creation of the instance.
 
 **Returns:** string
@@ -210,11 +255,15 @@ ___
 
 • get **mode**(): [FileAccessMode](../enums/_src_file_.fileaccessmode.md)
 
+*Inherited from [File](_src_file_.file.md).[mode](_src_file_.file.md#mode)*
+
 Gets the file access mode in use by the current instance.
 
 **Returns:** [FileAccessMode](../enums/_src_file_.fileaccessmode.md)
 
 • set **mode**(`val`: [FileAccessMode](../enums/_src_file_.fileaccessmode.md)): void
+
+*Inherited from [File](_src_file_.file.md).[mode](_src_file_.file.md#mode)*
 
 Sets the file access mode in use by the current instance. Changing the value will cause the
 stream currently in use to be closed, except when a change is made from
@@ -234,6 +283,8 @@ ___
 
 • get **name**(): string
 
+*Inherited from [File](_src_file_.file.md).[name](_src_file_.file.md#name)*
+
 Gets the name of the file as stored in its file abstraction.
 
 **Returns:** string
@@ -243,6 +294,8 @@ ___
 ### position
 
 • get **position**(): number
+
+*Inherited from [File](_src_file_.file.md).[position](_src_file_.file.md#position)*
 
 Gets the seek position in the internal stream used by the current instance. Value will be 0
 if the file is not open for reading
@@ -255,29 +308,47 @@ ___
 
 • get **properties**(): [Properties](_src_properties_.properties.md)
 
+*Inherited from [NonContainerFile](_src_noncontainer_noncontainerfile_.noncontainerfile.md).[properties](_src_noncontainer_noncontainerfile_.noncontainerfile.md#properties)*
+
+*Overrides [File](_src_file_.file.md).[properties](_src_file_.file.md#properties)*
+
 Gets the media properties of the file represented by the current instance.
 
 **Returns:** [Properties](_src_properties_.properties.md)
 
 ___
 
+### startTag
+
+• `Protected`get **startTag**(): [StartTag](_src_noncontainer_starttag_.starttag.md)
+
+*Inherited from [NonContainerFile](_src_noncontainer_noncontainerfile_.noncontainerfile.md).[startTag](_src_noncontainer_noncontainerfile_.noncontainerfile.md#starttag)*
+
+Gets the collection of tags appearing at the start of the file.
+
+**Returns:** [StartTag](_src_noncontainer_starttag_.starttag.md)
+
+___
+
 ### tag
 
-• get **tag**(): [Tag](_src_tag_.tag.md)
+• get **tag**(): [NonContainerTag](_src_noncontainer_noncontainertag_.noncontainertag.md)
+
+*Inherited from [NonContainerFile](_src_noncontainer_noncontainerfile_.noncontainerfile.md).[tag](_src_noncontainer_noncontainerfile_.noncontainerfile.md#tag)*
+
+*Overrides [File](_src_file_.file.md).[tag](_src_file_.file.md#tag)*
 
 Gets an abstract representation of all tags stored in the current instance.
 
-**`remarks`** This property provides generic and general access to the most common tagging
-    features of a file. To access or add a specific type of tag in the file, use
-    [File.getTag](_src_file_.file.md#gettag).
-
-**Returns:** [Tag](_src_tag_.tag.md)
+**Returns:** [NonContainerTag](_src_noncontainer_noncontainertag_.noncontainertag.md)
 
 ___
 
 ### tagTypes
 
 • get **tagTypes**(): [TagTypes](../enums/_src_tag_.tagtypes.md)
+
+*Inherited from [File](_src_file_.file.md).[tagTypes](_src_file_.file.md#tagtypes)*
 
 Gets the tag types contained in the current instance.
 
@@ -289,6 +360,8 @@ ___
 
 • get **tagTypesOnDisk**(): [TagTypes](../enums/_src_tag_.tagtypes.md)
 
+*Inherited from [File](_src_file_.file.md).[tagTypesOnDisk](_src_file_.file.md#tagtypesondisk)*
+
 Gets the tag types contained in the physical file represented by the current instance.
 
 **Returns:** [TagTypes](../enums/_src_tag_.tagtypes.md)
@@ -298,6 +371,8 @@ ___
 ### bufferSize
 
 • `Static`get **bufferSize**(): number
+
+*Inherited from [File](_src_file_.file.md).[bufferSize](_src_file_.file.md#buffersize)*
 
 Gets the buffer size to use when reading large blocks of data
 
@@ -309,6 +384,8 @@ Gets the buffer size to use when reading large blocks of data
 
 ▸ **dispose**(): void
 
+*Inherited from [File](_src_file_.file.md).[dispose](_src_file_.file.md#dispose)*
+
 Dispose the current instance. Equivalent to setting the mode to closed.
 
 **Returns:** void
@@ -318,6 +395,8 @@ ___
 ### find
 
 ▸ **find**(`pattern`: [ByteVector](_src_bytevector_.bytevector.md), `startPosition?`: number, `before?`: [ByteVector](_src_bytevector_.bytevector.md)): number
+
+*Inherited from [File](_src_file_.file.md).[find](_src_file_.file.md#find)*
 
 Searches forward through a file for a specified pattern, starting at a specified offset.
 
@@ -340,41 +419,34 @@ ___
 
 ### getTag
 
-▸ `Abstract`**getTag**(`types`: [TagTypes](../enums/_src_tag_.tagtypes.md), `create`: boolean): [Tag](_src_tag_.tag.md)
+▸ **getTag**(`type`: [TagTypes](../enums/_src_tag_.tagtypes.md), `create`: boolean): [Tag](_src_tag_.tag.md)
 
-Gets a tag of the specified type from the current instance, optionally creating a new tag if
-possible.
+*Overrides [File](_src_file_.file.md).[getTag](_src_file_.file.md#gettag)*
 
-**`example`** ```
-    id3 = file.getTag(TagTypes.ID3v2, true);
-    if (id3) { (<ID3v2.Tag> id3).setTextFrame("TMOO", moods); }
-
-    asf = file.getTag(TagTypes.Asf, true);
-    if (asf) { (<Asf.Tag> adf).setDescriptorStrings(moods, "WM/Mood", "Mood"); }
-
-    ape = file.getTag(TagTypes.Ape);
-    if (ape) { (<Ape.Tag>).setValue("MOOD", moods); }
-```
+Gets a tag of a specified type from the current instance, optionally creating a new tag if
+possible. If a [Id3v2Tag](_src_id3v2_id3v2tag_.id3v2tag.md) is added to the current instance, it will be placed at the
+start of the file. On the other hand, [Id3v1Tag](_src_id3v1_id3v1tag_.id3v1tag.md) and [ApeTag](_src_ape_apetag_.apetag.md) will be added to
+the end of the file. All other tag types will be ignored.
 
 #### Parameters:
 
 Name | Type | Description |
 ------ | ------ | ------ |
-`types` | [TagTypes](../enums/_src_tag_.tagtypes.md) | Type of tag to read. |
-`create` | boolean | Whether or not to try and create the tag if one is not found. `true` does not     guarantee the tag will be created. For example, trying to create an ID3v2 tag on an OGG     Vorbis file will always fail. |
+`type` | [TagTypes](../enums/_src_tag_.tagtypes.md) | Type of tag to read |
+`create` | boolean | Whether or not to create a tag if one is not found |
 
 **Returns:** [Tag](_src_tag_.tag.md)
 
-Tag object containing the tag that was found in or added to the current instance.
-    If no matching tag was found and none was created, `undefined` is returned. It is safe
-    to assume that if `undefined` is not returned, the returned tag can be cast to the
-    appropriate type.
+Tag Tag that was found in or added to the current instance. If no matching tag was
+    found and none was created, `undefined` is returned.
 
 ___
 
 ### insert
 
 ▸ **insert**(`data`: [ByteVector](_src_bytevector_.bytevector.md), `start`: number, `replace?`: number): void
+
+*Inherited from [File](_src_file_.file.md).[insert](_src_file_.file.md#insert)*
 
 Inserts a specified block of data into the file represented by the current instance, at a
 specified location, replacing a specified number of bytes.
@@ -398,6 +470,8 @@ ___
 
 ▸ **markAsCorrupt**(`reason`: string): void
 
+*Inherited from [File](_src_file_.file.md).[markAsCorrupt](_src_file_.file.md#markascorrupt)*
+
 Mark the current instance as corrupt. NOTE: Not intended to be used outside of this library.
 
 #### Parameters:
@@ -414,6 +488,8 @@ ___
 
 ▸ `Protected`**preSave**(): void
 
+*Inherited from [File](_src_file_.file.md).[preSave](_src_file_.file.md#presave)*
+
 Prepares to save the file. This must be called at the beginning of every File.save() method.
 
 **Returns:** void
@@ -424,6 +500,8 @@ ___
 
 ▸ **rFind**(`pattern`: [ByteVector](_src_bytevector_.bytevector.md), `startPosition?`: number, `after?`: [ByteVector](_src_bytevector_.bytevector.md)): number
 
+*Inherited from [File](_src_file_.file.md).[rFind](_src_file_.file.md#rfind)*
+
 Searched backwards through a file for a specified pattern, starting at a specified offset.
 
 **`throws`** Error Thrown if `pattern` was not provided or if `startPosition` is
@@ -433,7 +511,7 @@ Searched backwards through a file for a specified pattern, starting at a specifi
 
 Name | Type | Default value | Description |
 ------ | ------ | ------ | ------ |
-`pattern` | [ByteVector](_src_bytevector_.bytevector.md) | - | Pattern to search for in the current instance. Must be shorter than the     [bufferSize](_src_file_.file.md#buffersize) |
+`pattern` | [ByteVector](_src_bytevector_.bytevector.md) | - | Pattern to search for in the current instance. Must be shorter than the     [bufferSize](_src_aac_aacfile_.aacfile.md#buffersize) |
 `startPosition` | number | 0 | Seek position from which to start searching. |
 `after?` | [ByteVector](_src_bytevector_.bytevector.md) | - | Pattern that the searched for pattern must appear after. If this pattern is     found first, `-1` is returned. |
 
@@ -446,6 +524,8 @@ ___
 ### readBlock
 
 ▸ **readBlock**(`length`: number): [ByteVector](_src_bytevector_.bytevector.md)
+
+*Inherited from [File](_src_file_.file.md).[readBlock](_src_file_.file.md#readblock)*
 
 Reads a specified number of bytes at the current seek position from the current position.
 This method reads the block of data at the current seek position. To change the seek
@@ -465,9 +545,69 @@ ByteVector Object containing the data read from the current instance.
 
 ___
 
+### readEnd
+
+▸ `Protected`**readEnd**(`_end`: number, `_propertiesStyle`: [ReadStyle](../enums/_src_file_.readstyle.md)): void
+
+*Overrides [NonContainerFile](_src_noncontainer_noncontainerfile_.noncontainerfile.md).[readEnd](_src_noncontainer_noncontainerfile_.noncontainerfile.md#readend)*
+
+**`inheritdoc`** 
+
+#### Parameters:
+
+Name | Type |
+------ | ------ |
+`_end` | number |
+`_propertiesStyle` | [ReadStyle](../enums/_src_file_.readstyle.md) |
+
+**Returns:** void
+
+___
+
+### readProperties
+
+▸ `Protected`**readProperties**(`start`: number, `end`: number, `_propertiesStyle`: [ReadStyle](../enums/_src_file_.readstyle.md)): [Properties](_src_properties_.properties.md)
+
+*Overrides [NonContainerFile](_src_noncontainer_noncontainerfile_.noncontainerfile.md).[readProperties](_src_noncontainer_noncontainerfile_.noncontainerfile.md#readproperties)*
+
+**`inheritdoc`** 
+
+#### Parameters:
+
+Name | Type |
+------ | ------ |
+`start` | number |
+`end` | number |
+`_propertiesStyle` | [ReadStyle](../enums/_src_file_.readstyle.md) |
+
+**Returns:** [Properties](_src_properties_.properties.md)
+
+___
+
+### readStart
+
+▸ `Protected`**readStart**(`start`: number, `propertiesStyle`: [ReadStyle](../enums/_src_file_.readstyle.md)): void
+
+*Overrides [NonContainerFile](_src_noncontainer_noncontainerfile_.noncontainerfile.md).[readStart](_src_noncontainer_noncontainerfile_.noncontainerfile.md#readstart)*
+
+**`inheritdoc`** 
+
+#### Parameters:
+
+Name | Type |
+------ | ------ |
+`start` | number |
+`propertiesStyle` | [ReadStyle](../enums/_src_file_.readstyle.md) |
+
+**Returns:** void
+
+___
+
 ### removeBlock
 
 ▸ **removeBlock**(`start`: number, `length`: number): void
+
+*Inherited from [File](_src_file_.file.md).[removeBlock](_src_file_.file.md#removeblock)*
 
 Removes a specified block of data from the file represented by the current instance.
 
@@ -487,16 +627,19 @@ ___
 
 ### removeTags
 
-▸ `Abstract`**removeTags**(`types`: [TagTypes](../enums/_src_tag_.tagtypes.md)): void
+▸ **removeTags**(`types`: [TagTypes](../enums/_src_tag_.tagtypes.md)): void
 
-Removes a set of tag types from the current instance. In order to remove all tags from a
-file, pass [TagTypes.AllTags](../enums/_src_tag_.tagtypes.md#alltags) as `types`
+*Inherited from [NonContainerFile](_src_noncontainer_noncontainerfile_.noncontainerfile.md).[removeTags](_src_noncontainer_noncontainerfile_.noncontainerfile.md#removetags)*
+
+*Overrides [File](_src_file_.file.md).[removeTags](_src_file_.file.md#removetags)*
+
+**`inheritdoc`** BaseFile.removeTags
 
 #### Parameters:
 
-Name | Type | Description |
------- | ------ | ------ |
-`types` | [TagTypes](../enums/_src_tag_.tagtypes.md) | Bitwise combined [TagTypes](../enums/_src_tag_.tagtypes.md) value containing the tag types to be removed     from the file  |
+Name | Type |
+------ | ------ |
+`types` | [TagTypes](../enums/_src_tag_.tagtypes.md) |
 
 **Returns:** void
 
@@ -504,9 +647,13 @@ ___
 
 ### save
 
-▸ `Abstract`**save**(): void
+▸ **save**(): void
 
-Saves the changes made in the current instance to the file it represents.
+*Inherited from [NonContainerFile](_src_noncontainer_noncontainerfile_.noncontainerfile.md).[save](_src_noncontainer_noncontainerfile_.noncontainerfile.md#save)*
+
+*Overrides [File](_src_file_.file.md).[save](_src_file_.file.md#save)*
+
+**`inheritdoc`** BaseFile.save
 
 **Returns:** void
 
@@ -515,6 +662,8 @@ ___
 ### seek
 
 ▸ **seek**(`offset`: number, `origin?`: [SeekOrigin](../enums/_src_stream_.seekorigin.md)): void
+
+*Inherited from [File](_src_file_.file.md).[seek](_src_file_.file.md#seek)*
 
 Moves the read/write pointer to a specified offset in the current instance, relative to a
 specified origin.
@@ -534,6 +683,8 @@ ___
 
 ▸ `Protected`**truncate**(`length`: number): void
 
+*Inherited from [File](_src_file_.file.md).[truncate](_src_file_.file.md#truncate)*
+
 Resizes the current instance to a specific number of bytes.
 
 #### Parameters:
@@ -549,6 +700,8 @@ ___
 ### writeBlock
 
 ▸ **writeBlock**(`data`: [ByteVector](_src_bytevector_.bytevector.md)): void
+
+*Inherited from [File](_src_file_.file.md).[writeBlock](_src_file_.file.md#writeblock)*
 
 Writes a block of data to the file represented by the current instance at the current seek
 position. This will overwrite any existing data at the seek position and append new data to
@@ -570,6 +723,8 @@ ___
 
 ▸ `Static`**addFileType**(`mimeType`: string, `constructor`: [FileTypeConstructor](../modules/_src_file_.md#filetypeconstructor), `override?`: boolean): void
 
+*Inherited from [File](_src_file_.file.md).[addFileType](_src_file_.file.md#addfiletype)*
+
 Registers the constructor for a subclass of [File](_src_file_.file.md) with the MimeType it is associated
 with. Optionally, the MimeType can be forcefully overridden if it was already registered.
 
@@ -589,6 +744,8 @@ ___
 
 ▸ `Static`**addFileTypeResolver**(`resolver`: [FileTypeResolver](../modules/_src_file_.md#filetyperesolver)): void
 
+*Inherited from [File](_src_file_.file.md).[addFileTypeResolver](_src_file_.file.md#addfiletyperesolver)*
+
 Registers a [FileTypeResolver](../modules/_src_file_.md#filetyperesolver) to the front of the list of file type resolvers.
 
 #### Parameters:
@@ -604,6 +761,8 @@ ___
 ### createFromAbstraction
 
 ▸ `Static`**createFromAbstraction**(`abstraction`: [IFileAbstraction](../interfaces/_src_fileabstraction_.ifileabstraction.md), `mimeType?`: string, `propertiesStyle?`: [ReadStyle](../enums/_src_file_.readstyle.md)): [File](_src_file_.file.md)
+
+*Inherited from [File](_src_file_.file.md).[createFromAbstraction](_src_file_.file.md#createfromabstraction)*
 
 Creates a new instance of a [File](_src_file_.file.md) subclass for a specified file abstraction, MimeType,
 and property read style.
@@ -626,6 +785,8 @@ ___
 
 ▸ `Static`**createFromPath**(`filePath`: string, `mimeType?`: string, `propertiesStyle?`: [ReadStyle](../enums/_src_file_.readstyle.md)): [File](_src_file_.file.md)
 
+*Inherited from [File](_src_file_.file.md).[createFromPath](_src_file_.file.md#createfrompath)*
+
 Creates a new instance of [File](_src_file_.file.md) subclass for a specified file path, MimeType, and
 property read style.
 
@@ -647,6 +808,8 @@ ___
 
 ▸ `Static`**removeFileType**(`mimeType`: string): void
 
+*Inherited from [File](_src_file_.file.md).[removeFileType](_src_file_.file.md#removefiletype)*
+
 Used for removing a file type constructor during unit testing
 
 #### Parameters:
@@ -662,6 +825,8 @@ ___
 ### removeFileTypeResolver
 
 ▸ `Static`**removeFileTypeResolver**(`resolver`: [FileTypeResolver](../modules/_src_file_.md#filetyperesolver)): void
+
+*Inherited from [File](_src_file_.file.md).[removeFileTypeResolver](_src_file_.file.md#removefiletyperesolver)*
 
 Used for removing a file type resolver during unit testing
 

@@ -35,7 +35,7 @@ systems and data retrieval methods.
 
 Name or identifier used by the implementation
 
-**`description`** This value would typically represent a path or URL to be used when identifying
+**`remarks`** This value would typically represent a path or URL to be used when identifying
   the file system, but it could be any valid as appropriate for the implementation.
 
 ___
@@ -46,7 +46,7 @@ ___
 
 Readable, seekable stream for the file referenced by the current instance.
 
-**`description`** This property is typically used when constructing an instance of [File](../classes/_src_file_.file.md).
+**`remarks`** This property is typically used when constructing an instance of [File](../classes/_src_file_.file.md).
   Upon completion of the constructor [closeStream](_src_fileabstraction_.ifileabstraction.md#closestream) will be called to close the stream.
   If the stream is to be reused after this point, [closeStream](_src_fileabstraction_.ifileabstraction.md#closestream) should be implemented
   in a way to keep it open.
@@ -59,7 +59,7 @@ ___
 
 Writable, seekable stream fo the file referenced by the current instance.
 
-**`description`** This property is typically used when saving a file with [File.save](../classes/_src_file_.file.md#save). Upon
+**`remarks`** This property is typically used when saving a file with [File.save](../classes/_src_file_.file.md#save). Upon
   completion of the method, [closeStream](_src_fileabstraction_.ifileabstraction.md#closestream) will be called to close the stream. If the
   stream is to be reused after this point, [closeStream](_src_fileabstraction_.ifileabstraction.md#closestream) should be implemented in a way
   to keep it open
