@@ -158,7 +158,7 @@ export class ByteVector {
 
     /**
      * Contains the last generic UTF16 encoding read. Defaults to UTF16-LE
-     * @description When reading a collection of UTF16 strings, sometimes only the first one will
+     * @remarks When reading a collection of UTF16 strings, sometimes only the first one will
      *              contain the BOM. In that case, this field will inform the file what encoding to
      *              use for the second string.
      */
@@ -678,7 +678,7 @@ export class ByteVector {
 
     /**
      * Removes all elements from this {@link ByteVector}
-     * @description NOTE: This method replaces the internal byte array with a new one. Any
+     * @remarks NOTE: This method replaces the internal byte array with a new one. Any
      *              existing references to {@link ByteVector.data} will remain unchanged.
      */
     public clear(): void {
@@ -1238,7 +1238,7 @@ export class ByteVector {
      * @param count Value specifying a limit to the number of strings to create. Once the limit has
      *        been reached, the last string will be filled by the remainder of the data
      * @returns string[] Array of strings containing the converted text.
-     * @description I'm not actually sure if this works as defined, but it behaves the same as the
+     * @remarks I'm not actually sure if this works as defined, but it behaves the same as the
      *       original .NET implementation, so that's good enough for now.
      */
     public toStrings(type: StringType, offset: number, count: number = Number.MAX_SAFE_INTEGER) {

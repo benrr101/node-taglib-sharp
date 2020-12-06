@@ -8,14 +8,14 @@ import {Guards} from "./utils";
 export interface IFileAbstraction {
     /**
      * Name or identifier used by the implementation
-     * @description This value would typically represent a path or URL to be used when identifying
+     * @remarks This value would typically represent a path or URL to be used when identifying
      *   the file system, but it could be any valid as appropriate for the implementation.
      */
     name: string;
 
     /**
      * Readable, seekable stream for the file referenced by the current instance.
-     * @description This property is typically used when constructing an instance of {@link File}.
+     * @remarks This property is typically used when constructing an instance of {@link File}.
      *   Upon completion of the constructor {@link closeStream} will be called to close the stream.
      *   If the stream is to be reused after this point, {@link closeStream} should be implemented
      *   in a way to keep it open.
@@ -24,7 +24,7 @@ export interface IFileAbstraction {
 
     /**
      * Writable, seekable stream fo the file referenced by the current instance.
-     * @description This property is typically used when saving a file with {@link File.save}. Upon
+     * @remarks This property is typically used when saving a file with {@link File.save}. Upon
      *   completion of the method, {@link closeStream} will be called to close the stream. If the
      *   stream is to be reused after this point, {@link closeStream} should be implemented in a way
      *   to keep it open
