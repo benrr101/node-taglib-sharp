@@ -79,24 +79,53 @@ const sampleHeaderBytes = ByteVector.fromByteArray(new Uint8Array([0xFF, 0xF5, 0
     }
 
     @test
-    public find_fileTooShort() {
-        // Arrange
-        const mockFile = TestFile.getFile(ByteVector.fromSize(10));
-
-        // Act
-        const output = AacAudioHeader.find(mockFile, 8);
-
-        // Assert
-        assert.isUndefined(output);
-    }
-
-    @test
     public find_headerNotInFile() {
         // Arrange
         const mockFile = TestFile.getFile(ByteVector.fromSize(File.bufferSize * 4));
 
         // Act
         const output = AacAudioHeader.find(mockFile, 2, undefined);
+
+        // Assert
+        assert.isUndefined(output);
+    }
+
+    @test
+    public find_invalidSampleRate() {
+        // Arrange
+        const data = ByteVector.fromByteArray(new Uint8Array([0xFF, 0xF5, 0xFF, 0x55, 0x55, 0x55, 0x55]));
+        const mockFile = TestFile.getFile(data);
+
+        // Act
+        const output = AacAudioHeader.find(mockFile, 0, undefined);
+
+        // Assert
+        assert.isUndefined(output);
+    }
+
+    @test
+    public find_invalidFrameLength() {
+        // Arrange
+        const data = ByteVector.fromByteArray(new Uint8Array([0xFF, 0xF5, 0x55, 0x00, 0x00, 0x00, 0x55]));
+        const mockFile = TestFile.getFile(data);
+
+        // Act
+        const output = AacAudioHeader.find(mockFile, 0, undefined);
+
+        // Assert
+        assert.isUndefined(output);
+    }
+
+    public find_headerNotWithinByteLimit() {
+        // Arrange
+        const data = ByteVector.concatenate(
+            ByteVector.fromSize(22),
+            sampleHeaderBytes
+        );
+        const mockFile = TestFile.getFile(data);
+
+        // Act
+        const output = AacAudioHeader.find(mockFile, 0, 16);
 
         // Assert
         assert.isUndefined(output);
@@ -117,7 +146,7 @@ const sampleHeaderBytes = ByteVector.fromByteArray(new Uint8Array([0xFF, 0xF5, 0
 
         // Assert
         assert.isOk(output);
-        assert.strictEqual(output.audioBitrate, 321.25);
+        assert.strictEqual(output.audioBitrate, 341.25);
         assert.strictEqual(output.audioChannels, 5);
         assert.strictEqual(output.audioSampleRate, 32000);
         assert.isTrue(output.description.indexOf("ADTS AAC") >= 0);

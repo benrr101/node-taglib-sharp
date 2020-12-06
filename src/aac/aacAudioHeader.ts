@@ -1,4 +1,5 @@
 import Mpeg4AudioTypes from "../mpeg4/mpeg4AudioTypes";
+import {ByteVector} from "../byteVector";
 import {File} from "../file";
 import {IAudioCodec, MediaTypes} from "../iCodec";
 import {Guards} from "../utils";
@@ -108,23 +109,19 @@ export default class AacAudioHeader implements IAudioCodec {
         }
 
         const end = position + length;
-
         file.seek(position);
-        let buffer = file.readBlock(3);
 
-        if (buffer.length < 3) {
-            return undefined;
-        }
-
-        // @TODO: This offset by 3 shit is nuts.
-        do {
-            file.seek(position + 3);
-            buffer = buffer.mid(buffer.length - 3);
-            buffer.addByteVector(file.readBlock(File.bufferSize));
-
-            for (let i = 0; i < buffer.length; i++) {
+        // NOTE: The original .NET implementation used some bizarre (to me) 3 byte offset into each
+        //    buffer that was read. I couldn't see any reason why that was being done, so I dropped
+        //    it. If it turns out that was necessary for some perf reason or something, feel free
+        //    to add it back.
+        // NOTE: We're guaranteed to read in an entire buffer, but not scan the entire thing if
+        //    there was a max number of bytes set to read.
+        let buffer: ByteVector;
+        while ((buffer = file.readBlock(File.bufferSize)).length > 0 && (length === undefined || position < end)) {
+            for (let i = 0; i < buffer.length && (length === undefined || position + i < end); i++) {
                 // Skip if sync word can't be found
-                if (buffer.get(i) !== 0xFF || buffer.get(i + 1) >= 0xF0) {
+                if (buffer.get(i) !== 0xFF || buffer.get(i + 1) < 0xF0) {
                     continue;
                 }
 
@@ -141,7 +138,7 @@ export default class AacAudioHeader implements IAudioCodec {
                 const sampleRate = this.sampleRates[sampleRateIndex];
 
                 // MPEG-4 Audio Type
-                const mpeg4AudioType = (sampleRateByte & 0xC0) >>> 6;
+                const mpeg4AudioType = ((sampleRateByte & 0xC0) >>> 6) + 1;
 
                 // Channel configuration
                 const channelsByte1 = sampleRateByte;
@@ -170,8 +167,8 @@ export default class AacAudioHeader implements IAudioCodec {
                 return new AacAudioHeader(channelCount, bitrate, sampleRate, mpeg4AudioType);
             }
 
-            position += File.bufferSize;
-        } while (buffer.length > 3 && (length === undefined || position < end));
+            position += buffer.length;
+        }
 
         return undefined;
     }

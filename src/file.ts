@@ -526,7 +526,7 @@ export abstract class File {
         let read = 0;
         let needed = length;
         do {
-            count = this._fileStream.read(buffer, read,  needed);
+            count = this._fileStream.read(buffer, read, needed);
             read += count;
             needed -= count;
         } while (needed > 0 && count !== 0);
