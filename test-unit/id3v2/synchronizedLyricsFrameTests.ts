@@ -1,9 +1,10 @@
 import * as Chai from "chai";
 import * as ChaiAsPromised from "chai-as-promised";
-import {slow, suite, test, timeout} from "mocha-typescript";
-
 import FrameConstructorTests from "./frameConstructorTests";
 import PropertyTests from "../utilities/propertyTests";
+import Testers from "../utilities/testers";
+import {suite, test} from "mocha-typescript";
+
 import Id3v2Settings from "../../src/id3v2/id3v2Settings";
 import {ByteVector, StringType} from "../../src/byteVector";
 import {Frame, FrameClassType} from "../../src/id3v2/frames/frame";
@@ -420,8 +421,9 @@ const assert = Chai.assert;
     @test
     public find_falsyFrames() {
         // Act / Assert
-        assert.throws(() => { SynchronizedLyricsFrame.find(undefined, "fux", SynchronizedTextType.Chord); });
-        assert.throws(() => { SynchronizedLyricsFrame.find(null, "fux", SynchronizedTextType.Chord); });
+        Testers.testTruthy((v: SynchronizedLyricsFrame[]) => {
+            SynchronizedLyricsFrame.find(v, "fux", SynchronizedTextType.Chord);
+        });
     }
 
     @test

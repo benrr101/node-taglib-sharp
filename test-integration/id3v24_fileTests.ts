@@ -32,6 +32,9 @@ const assert = Chai.assert;
     public readAudioProperties() {
         assert.strictEqual(Id3v24_FileTests.file.properties.audioSampleRate, 44100);
         assert.strictEqual(Id3v24_FileTests.file.properties.durationMilliseconds, 1352);
+        assert.strictEqual(Id3v24_FileTests.file.properties.audioChannels, 1);
+        assert.strictEqual(Id3v24_FileTests.file.properties.audioBitrate, 64);
+        assert.strictEqual(Id3v24_FileTests.file.properties.durationMilliseconds, 1352);
     }
 
     @test

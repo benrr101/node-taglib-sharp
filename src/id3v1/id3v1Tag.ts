@@ -107,7 +107,7 @@ export default class Id3v1Tag extends Tag {
     public get title(): string { return this._title || undefined; }
     /**
      * @inheritDoc
-     * @description When stored on disk, only the first 30 bytes of the latin-1 encoded value will
+     * @remarks When stored on disk, only the first 30 bytes of the latin-1 encoded value will
      *     be stored. This may result in lost data.
      */
     public set title(value: string) { this._title = value ? value.trim() : ""; }
@@ -116,7 +116,7 @@ export default class Id3v1Tag extends Tag {
     public get performers(): string[] { return this._artist ? this._artist.split(";") : []; }
     /**
      * @inheritDoc
-     * @description When stored on disk, only the first 30 bytes of the latin-1 encoded value will
+     * @remarks When stored on disk, only the first 30 bytes of the latin-1 encoded value will
      *     be stored, minus a byte for each additional performer (ie, two performers will only have
      *     29 bytes and three performers will only have 28 bytes). This may result in data loss.
      */
@@ -126,7 +126,7 @@ export default class Id3v1Tag extends Tag {
     public get album(): string { return this._album || undefined; }
     /**
      * @inheritDoc
-     * @description When stored on disk, only the first 30 bytes of the latin-1 encoded value will
+     * @remarks When stored on disk, only the first 30 bytes of the latin-1 encoded value will
      *     be stored. This may result in data loss.
      */
     public set album(value: string) { this._album = value ? value.trim() : ""; }
@@ -135,7 +135,7 @@ export default class Id3v1Tag extends Tag {
     public get comment(): string { return this._comment || undefined; }
     /**
      * @inheritDoc
-     * @description When stored on disk, only the first 28 bytes of the latin-1 encoded value will
+     * @remarks When stored on disk, only the first 28 bytes of the latin-1 encoded value will
      *     be stored. This may result in lost data.
      */
     public set comment(value: string) { this._comment = value ? value.trim() : ""; }
@@ -147,7 +147,7 @@ export default class Id3v1Tag extends Tag {
     }
     /**
      * @inheritDoc
-     * @description Only first genre will be stored and only if it is an exact match for a value in
+     * @remarks Only first genre will be stored and only if it is an exact match for a value in
      *     the list of audio genres. All other values will result in the property being cleared.
      */
     public set genres(value: string[]) {
@@ -163,7 +163,7 @@ export default class Id3v1Tag extends Tag {
     }
     /**
      * @inheritDoc
-     * @description Only values betweenInclusive 1 and 9999 will be stored. All other values will result in
+     * @remarks Only values betweenInclusive 1 and 9999 will be stored. All other values will result in
      *     the property being zeroed.
      */
     public set year(value: number) {
@@ -174,7 +174,7 @@ export default class Id3v1Tag extends Tag {
     public get track(): number { return this._track; }
     /**
      * @inheritDoc
-     * @description Only values betweenInclusive 1 and 255 will be stored. All other values will result in
+     * @remarks Only values betweenInclusive 1 and 255 will be stored. All other values will result in
      *     the property being zeroed.
      */
     public set track(value: number) {

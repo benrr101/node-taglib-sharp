@@ -1656,7 +1656,7 @@ ___
 
 Set the tags that represent the tagger software (node-taglib-sharp) itself.
 
-**`description`** This is typically a method to call just before saving a tag.
+**`remarks`** This is typically a method to call just before saving a tag.
 
 **Returns:** void
 

@@ -120,7 +120,7 @@ footer.
 • set **tagSize**(`value`: number): void
 
 Sets the complete size of the tag described by the current instance, minus the header
-footer. NOTE THIS MUST BE AN 28-BIT UNSIGNED INTEGER.
+footer. NOTE THIS MUST BE A 28-BIT UNSIGNED INTEGER.
 
 #### Parameters:
 

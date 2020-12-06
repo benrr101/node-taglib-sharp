@@ -1,10 +1,11 @@
 import * as BigInt from "big-integer";
 import * as Chai from "chai";
 import * as ChaiAsPromised from "chai-as-promised";
-import {slow, suite, test, timeout} from "mocha-typescript";
-
 import FrameConstructorTests from "./frameConstructorTests";
 import PropertyTests from "../utilities/propertyTests";
+import Testers from "../utilities/testers";
+import {suite, test} from "mocha-typescript";
+
 import PopularimeterFrame from "../../src/id3v2/frames/popularimeterFrame";
 import {ByteVector, StringType} from "../../src/byteVector";
 import {Frame, FrameClassType} from "../../src/id3v2/frames/frame";
@@ -223,8 +224,7 @@ const assert = Chai.assert;
     @test
     public find_falsyFrames() {
         // Act / Assert
-        assert.throws(() => { PopularimeterFrame.find(undefined, "fux"); });
-        assert.throws(() => { PopularimeterFrame.find(null, "fux"); });
+        Testers.testTruthy((v: PopularimeterFrame[]) => { PopularimeterFrame.find(v, "fux"); });
     }
 
     @test

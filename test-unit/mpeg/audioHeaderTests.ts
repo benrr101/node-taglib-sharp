@@ -2,9 +2,10 @@ import * as Chai from "chai";
 import * as ChaiAsPromised from "chai-as-promised";
 import * as TypeMoq from "typemoq";
 import TestFile from "../utilities/testFile";
+import Testers from "../utilities/testers";
 import {suite, test} from "mocha-typescript";
 
-import AudioHeader from "../../src/mpeg/audioHeader";
+import MpegAudioHeader from "../../src/mpeg/mpegAudioHeader";
 import VbriHeader from "../../src/mpeg/vbriHeader";
 import XingHeader from "../../src/mpeg/xingHeader";
 import {ByteVector} from "../../src/byteVector";
@@ -22,7 +23,7 @@ const assert = Chai.assert;
     @test
     public unknownHeader() {
         // Act
-        const header = AudioHeader.Unknown;
+        const header = MpegAudioHeader.Unknown;
 
         // Assert
         this.assertHeader(
@@ -49,64 +50,16 @@ const assert = Chai.assert;
     @test
     public fromInfo_invalidArguments() {
         // Act/Assert
-        assert.throws(() => {
-            AudioHeader.fromInfo(
-                -1,
-                123,
-                XingHeader.unknown,
-                VbriHeader.unknown
-            );
-        });
-        assert.throws(() => {
-            AudioHeader.fromInfo(
-                1.23,
-                123,
-                XingHeader.unknown,
-                VbriHeader.unknown
-            );
-        });
-        assert.throws(() => {
-            AudioHeader.fromInfo(
-                Number.MAX_SAFE_INTEGER + 1,
-                123,
-                XingHeader.unknown,
-                VbriHeader.unknown
-            );
-        });
-        assert.throws(() => {
-            AudioHeader.fromInfo(
-                123,
-                -1,
-                XingHeader.unknown,
-                VbriHeader.unknown
-            );
-        });
-        assert.throws(() => {
-            AudioHeader.fromInfo(
-                123,
-                1.23,
-                XingHeader.unknown,
-                VbriHeader.unknown
-            );
-        });
-        assert.throws(() => {
-            AudioHeader.fromInfo(
-                123,
-                Number.MAX_SAFE_INTEGER + 1,
-                XingHeader.unknown,
-                VbriHeader.unknown
-            );
-        });
-        assert.throws(() => {AudioHeader.fromInfo(123, 123, undefined, VbriHeader.unknown); });
-        assert.throws(() => {AudioHeader.fromInfo(123, 123, null, VbriHeader.unknown); });
-        assert.throws(() => {AudioHeader.fromInfo(123, 123, XingHeader.unknown, undefined); });
-        assert.throws(() => {AudioHeader.fromInfo(123, -1, XingHeader.unknown, null); });
+        Testers.testUint((v: number) => { MpegAudioHeader.fromInfo(v, 123, XingHeader.unknown, VbriHeader.unknown); });
+        Testers.testUint((v: number) => { MpegAudioHeader.fromInfo(123, v, XingHeader.unknown, VbriHeader.unknown); });
+        Testers.testTruthy((v: XingHeader) => { MpegAudioHeader.fromInfo(123, 123, v, VbriHeader.unknown); });
+        Testers.testTruthy((v: VbriHeader) => { MpegAudioHeader.fromInfo(123, 123, XingHeader.unknown, v); });
     }
 
     @test
     public fromInfo_validArguments() {
         // Act
-        const header = AudioHeader.fromInfo(0, 0, XingHeader.unknown, VbriHeader.unknown);
+        const header = MpegAudioHeader.fromInfo(0, 0, XingHeader.unknown, VbriHeader.unknown);
 
         // Assert
         this.assertHeader(
@@ -136,13 +89,9 @@ const assert = Chai.assert;
         const data = ByteVector.empty();
 
         // Act / Assert
-        assert.throws(() => { AudioHeader.fromData(undefined, this.mockFile, 1); });
-        assert.throws(() => { AudioHeader.fromData(null, this.mockFile, 1); });
-        assert.throws(() => { AudioHeader.fromData(data, undefined, 1); });
-        assert.throws(() => { AudioHeader.fromData(data, null, 1); });
-        assert.throws(() => { AudioHeader.fromData(data, this.mockFile, -1); });
-        assert.throws(() => { AudioHeader.fromData(data, this.mockFile, 1.23); });
-        assert.throws(() => { AudioHeader.fromData(data, this.mockFile, Number.MAX_SAFE_INTEGER + 1); });
+        Testers.testTruthy((v: ByteVector) => { MpegAudioHeader.fromData(v, this.mockFile, 1); });
+        Testers.testTruthy((v: File) => { MpegAudioHeader.fromData(data, v, 1); });
+        Testers.testUint((v: number) => { MpegAudioHeader.fromData(data, this.mockFile, v); });
     }
 
     @test
@@ -151,7 +100,7 @@ const assert = Chai.assert;
         const data = ByteVector.fromSize(2);
 
         // Act / Assert
-        assert.throws(() => { AudioHeader.fromData(data, this.mockFile, 1); });
+        assert.throws(() => { MpegAudioHeader.fromData(data, this.mockFile, 1); });
     }
 
     @test
@@ -161,7 +110,7 @@ const assert = Chai.assert;
         data.set(0, 0xEE);
 
         // Act / Assert
-        assert.throws(() => { AudioHeader.fromData(data, this.mockFile, 1); });
+        assert.throws(() => { MpegAudioHeader.fromData(data, this.mockFile, 1); });
     }
 
     @test
@@ -175,8 +124,8 @@ const assert = Chai.assert;
         data2.set(1, 0xE8);
 
         // Act / Assert
-        assert.throws(() => { AudioHeader.fromData(data1, this.mockFile, 1); });
-        assert.throws(() => { AudioHeader.fromData(data2, this.mockFile, 1); });
+        assert.throws(() => { MpegAudioHeader.fromData(data1, this.mockFile, 1); });
+        assert.throws(() => { MpegAudioHeader.fromData(data2, this.mockFile, 1); });
     }
 
     @test
@@ -188,7 +137,7 @@ const assert = Chai.assert;
         data.set(2, 0xF0);
 
         // Act / Assert
-        assert.throws(() => { AudioHeader.fromData(data, this.mockFile, 1); });
+        assert.throws(() => { MpegAudioHeader.fromData(data, this.mockFile, 1); });
     }
 
     @test
@@ -200,7 +149,7 @@ const assert = Chai.assert;
         data.set(2, 0xEC);
 
         // Act / Assert
-        assert.throws(() => { AudioHeader.fromData(data, this.mockFile, 1); });
+        assert.throws(() => { MpegAudioHeader.fromData(data, this.mockFile, 1); });
     }
 
     @test
@@ -211,7 +160,7 @@ const assert = Chai.assert;
         const mockFile = TestFile.getFile(data);
 
         // Act
-        const header = AudioHeader.fromData(data, mockFile, 0);
+        const header = MpegAudioHeader.fromData(data, mockFile, 0);
 
         // Assert
         this.assertHeader(
@@ -253,7 +202,7 @@ const assert = Chai.assert;
         const mockFile = TestFile.getFile(data);
 
         // Act
-        const header = AudioHeader.fromData(mpegFlags, mockFile, 1);
+        const header = MpegAudioHeader.fromData(mpegFlags, mockFile, 1);
 
         // Assert
         this.assertHeader(
@@ -301,7 +250,7 @@ const assert = Chai.assert;
         const mockFile = TestFile.getFile(data);
 
         // Act
-        const header = AudioHeader.fromData(mpegFlags, mockFile, 1);
+        const header = MpegAudioHeader.fromData(mpegFlags, mockFile, 1);
 
         // Assert
         this.assertHeader(
@@ -331,7 +280,7 @@ const assert = Chai.assert;
     }
 
     private assertHeader(
-        header: AudioHeader,
+        header: MpegAudioHeader,
         bitrate: number,
         channels: number,
         frameLength: number,
@@ -371,7 +320,7 @@ const assert = Chai.assert;
     public audioBitrateDuration_noVbrMpeg1Layer2_256() {
         // Arrange
         const flags = 0x1E8000; // MPEG1, Layer1, 256kbps, 44100kHz, 278 frame length
-        const header = AudioHeader.fromInfo(flags, 1024, XingHeader.unknown, VbriHeader.unknown);
+        const header = MpegAudioHeader.fromInfo(flags, 1024, XingHeader.unknown, VbriHeader.unknown);
 
         // Act/Assert
         assert.strictEqual(header.audioBitrate, 256);
@@ -382,7 +331,7 @@ const assert = Chai.assert;
     public audioBitrateDuration_noVbrMpeg2Layer2_64() {
         // Arrange
         const flags = 0x148000; // MPEG2, Layer2, 64kbps, 22050kHz, 417 frame length
-        const header = AudioHeader.fromInfo(flags, 1024, XingHeader.unknown, VbriHeader.unknown);
+        const header = MpegAudioHeader.fromInfo(flags, 1024, XingHeader.unknown, VbriHeader.unknown);
 
         // Act/Assert
         assert.strictEqual(header.audioBitrate, 64);
@@ -393,7 +342,7 @@ const assert = Chai.assert;
     public audioBitreateDuration_noVbrMpeg25Layer3_32() {
         // Arrange
         const flags = 0x24000; // MPEG2.5, Layer3, 32kbps, 11025kHz
-        const header = AudioHeader.fromInfo(flags, 1024, XingHeader.unknown, VbriHeader.unknown);
+        const header = MpegAudioHeader.fromInfo(flags, 1024, XingHeader.unknown, VbriHeader.unknown);
 
         // Act/Assert
         assert.strictEqual(header.audioBitrate, 32);
@@ -405,7 +354,7 @@ const assert = Chai.assert;
         // Arrange
         const flags = 0x1E8000; // MPEG1, Layer1, 256kbps, 44100kHz
         const xingHeader = XingHeader.fromInfo(10, 0);
-        const header = AudioHeader.fromInfo(flags, 1024, xingHeader, VbriHeader.unknown);
+        const header = MpegAudioHeader.fromInfo(flags, 1024, xingHeader, VbriHeader.unknown);
 
         // Act/Assert
         assert.strictEqual(header.audioBitrate, 256);
@@ -417,7 +366,7 @@ const assert = Chai.assert;
         // Arrange
         const flags = 0x1E8000; // MPEG1, Layer1, 256kbps, 44100kHz
         const xingHeader = XingHeader.fromInfo(0, 10);
-        const header = AudioHeader.fromInfo(flags, 1024, xingHeader, VbriHeader.unknown);
+        const header = MpegAudioHeader.fromInfo(flags, 1024, xingHeader, VbriHeader.unknown);
 
         // Act/Assert
         assert.strictEqual(header.audioBitrate, 256);
@@ -429,7 +378,7 @@ const assert = Chai.assert;
         // Arrange
         const flags = 0x1E8000; // MPEG1, Layer1, 256kbps, 44100kHz
         const xingHeader = XingHeader.fromInfo(12, 23);
-        const header = AudioHeader.fromInfo(flags, 1024, xingHeader, VbriHeader.unknown);
+        const header = MpegAudioHeader.fromInfo(flags, 1024, xingHeader, VbriHeader.unknown);
 
         // Act/Assert
         assert.strictEqual(header.audioBitrate, 2);
@@ -441,7 +390,7 @@ const assert = Chai.assert;
         // Arrange
         const flags = 0x1E8000; // MPEG1, Layer1, 256kbps, 44100kHz
         const vbriHeader = VbriHeader.fromInfo(123, 0);
-        const header = AudioHeader.fromInfo(flags, 1024, XingHeader.unknown, vbriHeader);
+        const header = MpegAudioHeader.fromInfo(flags, 1024, XingHeader.unknown, vbriHeader);
 
         // Act/Assert
         assert.strictEqual(header.audioBitrate, 256);
@@ -453,7 +402,7 @@ const assert = Chai.assert;
         // Arrange
         const flags = 0x1E8000; // MPEG1, Layer1, 256kbps, 44100kHz
         const vbriHeader = VbriHeader.fromInfo(0, 10);
-        const header = AudioHeader.fromInfo(flags, 1024, XingHeader.unknown, vbriHeader);
+        const header = MpegAudioHeader.fromInfo(flags, 1024, XingHeader.unknown, vbriHeader);
 
         // Act/Assert
         assert.strictEqual(header.audioBitrate, 256);
@@ -465,7 +414,7 @@ const assert = Chai.assert;
         // Arrange
         const flags = 0x1E8000; // MPEG1, Layer1, 256kbps, 44100kHz
         const vbriHeader = VbriHeader.fromInfo(123, 234);
-        const header = AudioHeader.fromInfo(flags, 1024, XingHeader.unknown, vbriHeader);
+        const header = MpegAudioHeader.fromInfo(flags, 1024, XingHeader.unknown, vbriHeader);
 
         // Act/Assert
         assert.strictEqual(header.audioBitrate, 2);
@@ -476,12 +425,12 @@ const assert = Chai.assert;
     public audioFrameLength_layer1() {
         // Test 1: Padded
         const flags1 = 0x1E8200; // MPEG1, Layer1, 256kbps, 44100kHz - padded
-        const header1 = AudioHeader.fromInfo(flags1, 0, XingHeader.unknown, VbriHeader.unknown);
+        const header1 = MpegAudioHeader.fromInfo(flags1, 0, XingHeader.unknown, VbriHeader.unknown);
         assert.strictEqual(header1.audioFrameLength, 282);
 
         // Test 2: Unpadded
         const flags2 = 0x1E8000; // MPEG1, Layer1, 256kbps, 44100kHz - unpadded
-        const header2 = AudioHeader.fromInfo(flags2, 0, XingHeader.unknown, VbriHeader.unknown);
+        const header2 = MpegAudioHeader.fromInfo(flags2, 0, XingHeader.unknown, VbriHeader.unknown);
         assert.strictEqual(header2.audioFrameLength, 278);
     }
 
@@ -489,12 +438,12 @@ const assert = Chai.assert;
     public audioFrameLength_layer2Version2() {
         // Test 1: Padded
         const flags1 = 0x148200; // MPEG2, Layer2, 64kbps, 22050kHz - padded
-        const header1 = AudioHeader.fromInfo(flags1, 0, XingHeader.unknown, VbriHeader.unknown);
+        const header1 = MpegAudioHeader.fromInfo(flags1, 0, XingHeader.unknown, VbriHeader.unknown);
         assert.strictEqual(header1.audioFrameLength, 418);
 
         // Test 2: Unpadded
         const flags2 = 0x148000; // MPEG2, Layer2, 64kbps, 22050kHz - unpadded
-        const header2 = AudioHeader.fromInfo(flags2, 0, XingHeader.unknown, VbriHeader.unknown);
+        const header2 = MpegAudioHeader.fromInfo(flags2, 0, XingHeader.unknown, VbriHeader.unknown);
         assert.strictEqual(header2.audioFrameLength, 417);
     }
 
@@ -502,12 +451,12 @@ const assert = Chai.assert;
     public audioFrameLength_layer3Version1() {
         // Test 1: Padded
         const flags1 = 0xA4200; // MPEG1, Layer3, 56kbps, 11025kHz - padded
-        const header1 = AudioHeader.fromInfo(flags1, 0, XingHeader.unknown, VbriHeader.unknown);
+        const header1 = MpegAudioHeader.fromInfo(flags1, 0, XingHeader.unknown, VbriHeader.unknown);
         assert.strictEqual(header1.audioFrameLength, 183);
 
         // Test 2: Unpadded
         const flags2 = 0xA4000; // MPEG1, Layer3, 56kbps, 11025kHz - unpadded
-        const header2 = AudioHeader.fromInfo(flags2, 0, XingHeader.unknown, VbriHeader.unknown);
+        const header2 = MpegAudioHeader.fromInfo(flags2, 0, XingHeader.unknown, VbriHeader.unknown);
         assert.strictEqual(header2.audioFrameLength, 182);
     }
 
@@ -515,12 +464,12 @@ const assert = Chai.assert;
     public audioFrameLength_layer3Version25() {
         // Test 1: Padded
         const flags1 = 0x24200; // MPEG2.5, Layer3, 32kbps, 11025kHz - padded
-        const header1 = AudioHeader.fromInfo(flags1, 0, XingHeader.unknown, VbriHeader.unknown);
+        const header1 = MpegAudioHeader.fromInfo(flags1, 0, XingHeader.unknown, VbriHeader.unknown);
         assert.strictEqual(header1.audioFrameLength, 209);
 
         // Test 2: Unpadded
         const flags2 = 0x24000; // MPEG2.5, Layer3, 32kbps, 11025kHz - unpadded
-        const header2 = AudioHeader.fromInfo(flags2, 0, XingHeader.unknown, VbriHeader.unknown);
+        const header2 = MpegAudioHeader.fromInfo(flags2, 0, XingHeader.unknown, VbriHeader.unknown);
         assert.strictEqual(header2.audioFrameLength, 208);
     }
 
@@ -528,19 +477,19 @@ const assert = Chai.assert;
     public audioLayer_layer1() {
         // Test 1: 00
         const flags1 = 0xFFF9FFFF;
-        const header1 = AudioHeader.fromInfo(flags1, 0, XingHeader.unknown, VbriHeader.unknown);
+        const header1 = MpegAudioHeader.fromInfo(flags1, 0, XingHeader.unknown, VbriHeader.unknown);
         assert.strictEqual(header1.audioLayer, 1);
 
         // Test 2: 11
         const flags2 = 0xFFFFFFFF;
-        const header2 = AudioHeader.fromInfo(flags2, 0, XingHeader.unknown, VbriHeader.unknown);
+        const header2 = MpegAudioHeader.fromInfo(flags2, 0, XingHeader.unknown, VbriHeader.unknown);
         assert.strictEqual(header2.audioLayer, 1);
     }
 
     @test
     public audioLayer_layer2() {
         const flags = 0xFFFDFFFF;
-        const header = AudioHeader.fromInfo(flags, 0, XingHeader.unknown, VbriHeader.unknown);
+        const header = MpegAudioHeader.fromInfo(flags, 0, XingHeader.unknown, VbriHeader.unknown);
 
         // Act / Assert
         assert.strictEqual(header.audioLayer, 2);
@@ -549,7 +498,7 @@ const assert = Chai.assert;
     @test
     public audioLayer_layer3() {
         const flags = 0xFFFBFFFF;
-        const header = AudioHeader.fromInfo(flags, 0, XingHeader.unknown, VbriHeader.unknown);
+        const header = MpegAudioHeader.fromInfo(flags, 0, XingHeader.unknown, VbriHeader.unknown);
 
         // Act / Assert
         assert.strictEqual(header.audioLayer, 3);
@@ -558,37 +507,37 @@ const assert = Chai.assert;
     @test
     public audioSampleRate() {
         // Test 1: Version 1
-        const header1 = AudioHeader.fromInfo(0xFFFFF7FF, 0, XingHeader.unknown, VbriHeader.unknown);
+        const header1 = MpegAudioHeader.fromInfo(0xFFFFF7FF, 0, XingHeader.unknown, VbriHeader.unknown);
         assert.strictEqual(header1.audioSampleRate, 48000);
 
         // Test 2: Version 2
-        const header2 = AudioHeader.fromInfo(0xFFF7F7FF, 0, XingHeader.unknown, VbriHeader.unknown);
+        const header2 = MpegAudioHeader.fromInfo(0xFFF7F7FF, 0, XingHeader.unknown, VbriHeader.unknown);
         assert.strictEqual(header2.audioSampleRate, 24000);
 
         // Test 3: Version 3
-        const header3 = AudioHeader.fromInfo(0xFFE7F7FF, 0, XingHeader.unknown, VbriHeader.unknown);
+        const header3 = MpegAudioHeader.fromInfo(0xFFE7F7FF, 0, XingHeader.unknown, VbriHeader.unknown);
         assert.strictEqual(header3.audioSampleRate, 12000);
     }
 
     @test
     public channels() {
         // Test 1: Stereo
-        const header1 = AudioHeader.fromInfo(0xFFFFFF3F, 0, XingHeader.unknown, VbriHeader.unknown);
+        const header1 = MpegAudioHeader.fromInfo(0xFFFFFF3F, 0, XingHeader.unknown, VbriHeader.unknown);
         assert.strictEqual(header1.channelMode, ChannelMode.Stereo);
         assert.strictEqual(header1.audioChannels, 2);
 
         // Test 2: Joint Stereo
-        const header2 = AudioHeader.fromInfo(0xFFFFFF7F, 0, XingHeader.unknown, VbriHeader.unknown);
+        const header2 = MpegAudioHeader.fromInfo(0xFFFFFF7F, 0, XingHeader.unknown, VbriHeader.unknown);
         assert.strictEqual(header2.channelMode, ChannelMode.JointStereo);
         assert.strictEqual(header2.audioChannels, 2);
 
         // Test 3: Dual Stereo
-        const header3 = AudioHeader.fromInfo(0xFFFFFFBF, 0, XingHeader.unknown, VbriHeader.unknown);
+        const header3 = MpegAudioHeader.fromInfo(0xFFFFFFBF, 0, XingHeader.unknown, VbriHeader.unknown);
         assert.strictEqual(header3.channelMode, ChannelMode.DualChannel);
         assert.strictEqual(header3.audioChannels, 2);
 
         // Test 4: Mono
-        const header4 = AudioHeader.fromInfo(0xFFFFFFFF, 0, XingHeader.unknown, VbriHeader.unknown);
+        const header4 = MpegAudioHeader.fromInfo(0xFFFFFFFF, 0, XingHeader.unknown, VbriHeader.unknown);
         assert.strictEqual(header4.channelMode, ChannelMode.SingleChannel);
         assert.strictEqual(header4.audioChannels, 1);
     }
@@ -596,51 +545,51 @@ const assert = Chai.assert;
     @test
     public isCopyrighted() {
         // Test 1: 00 => false
-        const header1 = AudioHeader.fromInfo(0xFFFFFFE7, 0, XingHeader.unknown, VbriHeader.unknown);
+        const header1 = MpegAudioHeader.fromInfo(0xFFFFFFE7, 0, XingHeader.unknown, VbriHeader.unknown);
         assert.isFalse(header1.isCopyrighted);
 
         // Test 2: 01 => true
-        const header2 = AudioHeader.fromInfo(0xFFFFFFEF, 0, XingHeader.unknown, VbriHeader.unknown);
+        const header2 = MpegAudioHeader.fromInfo(0xFFFFFFEF, 0, XingHeader.unknown, VbriHeader.unknown);
         assert.isTrue(header2.isCopyrighted);
     }
 
     @test
     public isOriginal() {
         // Test 1: 00 => false
-        const header1 = AudioHeader.fromInfo(0xFFFFFFF3, 0, XingHeader.unknown, VbriHeader.unknown);
+        const header1 = MpegAudioHeader.fromInfo(0xFFFFFFF3, 0, XingHeader.unknown, VbriHeader.unknown);
         assert.isFalse(header1.isOriginal);
 
         // Test 2: 01 => true
-        const header2 = AudioHeader.fromInfo(0xFFFFFFFF, 0, XingHeader.unknown, VbriHeader.unknown);
+        const header2 = MpegAudioHeader.fromInfo(0xFFFFFFFF, 0, XingHeader.unknown, VbriHeader.unknown);
         assert.isTrue(header2.isOriginal);
     }
 
     @test
     public isPadded() {
         // Test 1: 0 => false
-        const header1 = AudioHeader.fromInfo(0xFFFFFFF3, 0, XingHeader.unknown, VbriHeader.unknown);
+        const header1 = MpegAudioHeader.fromInfo(0xFFFFFFF3, 0, XingHeader.unknown, VbriHeader.unknown);
         assert.isFalse(header1.isOriginal);
 
         // Test 2: 1 => true
-        const header2 = AudioHeader.fromInfo(0xFFFFFFFF, 0, XingHeader.unknown, VbriHeader.unknown);
+        const header2 = MpegAudioHeader.fromInfo(0xFFFFFFFF, 0, XingHeader.unknown, VbriHeader.unknown);
         assert.isTrue(header2.isOriginal);
     }
 
     @test
     public isProtected() {
         // Test 1: 0 => true
-        const header1 = AudioHeader.fromInfo(0xFFFEFFFF, 0, XingHeader.unknown, VbriHeader.unknown);
+        const header1 = MpegAudioHeader.fromInfo(0xFFFEFFFF, 0, XingHeader.unknown, VbriHeader.unknown);
         assert.isTrue(header1.isProtected);
 
         // Test 2: 1 => false
-        const header2 = AudioHeader.fromInfo(0xFFFFFFFF, 0, XingHeader.unknown, VbriHeader.unknown);
+        const header2 = MpegAudioHeader.fromInfo(0xFFFFFFFF, 0, XingHeader.unknown, VbriHeader.unknown);
         assert.isFalse(header2.isProtected);
     }
 
     @test
     public streamLength_set_noVbr() {
         // Arrange - MPEG2, Layer2, 64kbps, 22050kHz - padded
-        const header = AudioHeader.fromInfo(0xFFF48200, 1234, XingHeader.unknown, VbriHeader.unknown);
+        const header = MpegAudioHeader.fromInfo(0xFFF48200, 1234, XingHeader.unknown, VbriHeader.unknown);
         const _ = header.durationMilliseconds; // Force calculation of durationMilliseconds
 
         // Act
@@ -654,7 +603,7 @@ const assert = Chai.assert;
     public streamLength_set_withXingHeader() {
         // Arrange - MPEG2, Layer2, 64kbps, 22050kHz - padded
         const xingHeader = XingHeader.fromInfo(123, 234);
-        const header = AudioHeader.fromInfo(0xFFF48200, 1234, xingHeader, VbriHeader.unknown);
+        const header = MpegAudioHeader.fromInfo(0xFFF48200, 1234, xingHeader, VbriHeader.unknown);
         const originalDuration = header.durationMilliseconds; // Force calculation of durationMilliseconds
 
         // Act
@@ -668,7 +617,7 @@ const assert = Chai.assert;
     public streamLength_set_withVbriHeader() {
         // Arrange - MPEG2, Layer2, 64kbps, 22050kHz - padded
         const vbriHeader = VbriHeader.fromInfo(123, 234);
-        const header = AudioHeader.fromInfo(0xFFF48200, 1234, XingHeader.unknown, vbriHeader);
+        const header = MpegAudioHeader.fromInfo(0xFFF48200, 1234, XingHeader.unknown, vbriHeader);
         const originalDuration = header.durationMilliseconds; // Force calculation of durationMilliseconds
 
         // Act
@@ -682,12 +631,12 @@ const assert = Chai.assert;
     public version_version1() {
         // Test 1: 01
         const flags1 = 0xFFFEFFFF;
-        const header1 = AudioHeader.fromInfo(flags1, 0, XingHeader.unknown, VbriHeader.unknown);
+        const header1 = MpegAudioHeader.fromInfo(flags1, 0, XingHeader.unknown, VbriHeader.unknown);
         assert.strictEqual(header1.version, MpegVersion.Version1);
 
         // Test 2: 11
         const flags2 = 0xFFFFFFFF;
-        const header2 = AudioHeader.fromInfo(flags2, 0, XingHeader.unknown, VbriHeader.unknown);
+        const header2 = MpegAudioHeader.fromInfo(flags2, 0, XingHeader.unknown, VbriHeader.unknown);
         assert.strictEqual(header2.version, MpegVersion.Version1);
     }
 
@@ -695,7 +644,7 @@ const assert = Chai.assert;
     public version_version2() {
         // Arrange
         const flags = 0xFFF7FFFF;
-        const header = AudioHeader.fromInfo(flags, 0, XingHeader.unknown, VbriHeader.unknown);
+        const header = MpegAudioHeader.fromInfo(flags, 0, XingHeader.unknown, VbriHeader.unknown);
 
         // Act / Assert
         assert.strictEqual(header.version, MpegVersion.Version2);
@@ -705,7 +654,7 @@ const assert = Chai.assert;
     public version_version25() {
         // Arrange
         const flags = 0xFFE7FFFF;
-        const header = AudioHeader.fromInfo(flags, 0, XingHeader.unknown, VbriHeader.unknown);
+        const header = MpegAudioHeader.fromInfo(flags, 0, XingHeader.unknown, VbriHeader.unknown);
 
         // Act / Assert
         assert.strictEqual(header.version, MpegVersion.Version25);
@@ -719,14 +668,9 @@ const assert = Chai.assert;
         const mockFile = TestFile.getFile(ByteVector.empty());
 
         // Act / Assert
-        assert.throws(() => { AudioHeader.find(undefined, 123, 234); });
-        assert.throws(() => { AudioHeader.find(null, 123, 234); });
-        assert.throws(() => { AudioHeader.find(mockFile, 1.23, 234); });
-        assert.throws(() => { AudioHeader.find(mockFile, Number.MIN_SAFE_INTEGER - 1, 234); });
-        assert.throws(() => { AudioHeader.find(mockFile, Number.MAX_SAFE_INTEGER + 1, 234); });
-        assert.throws(() => { AudioHeader.find(mockFile, 123, 2.34); });
-        assert.throws(() => { AudioHeader.find(mockFile, 123, Number.MIN_SAFE_INTEGER - 1); });
-        assert.throws(() => { AudioHeader.find(mockFile, 123, Number.MAX_SAFE_INTEGER + 1); });
+        Testers.testTruthy((v: File) => { MpegAudioHeader.find(v, 123, 234); });
+        Testers.testInt((v: number) => { MpegAudioHeader.find(mockFile, v, 234); });
+        Testers.testInt((v: number) => { MpegAudioHeader.find(mockFile, 123, v); }, true);
     }
 
     @test
@@ -736,11 +680,11 @@ const assert = Chai.assert;
         const mockFile = TestFile.getFile(data);
 
         // Act
-        const result = AudioHeader.find(mockFile, 1);
+        const result = MpegAudioHeader.find(mockFile, 1);
 
         // Assert
         assert.isOk(result);
-        assert.strictEqual(result.header, AudioHeader.Unknown);
+        assert.strictEqual(result.header, MpegAudioHeader.Unknown);
         assert.isFalse(result.success);
     }
 
@@ -751,11 +695,11 @@ const assert = Chai.assert;
         const mockFile = TestFile.getFile(data);
 
         // Act
-        const result = AudioHeader.find(mockFile, 1);
+        const result = MpegAudioHeader.find(mockFile, 1);
 
         // Assert
         assert.isOk(result);
-        assert.strictEqual(result.header, AudioHeader.Unknown);
+        assert.strictEqual(result.header, MpegAudioHeader.Unknown);
         assert.isFalse(result.success);
     }
 
@@ -770,11 +714,11 @@ const assert = Chai.assert;
         const mockFile = TestFile.getFile(data);
 
         // Act
-        const result = AudioHeader.find(mockFile, 1, 1024);
+        const result = MpegAudioHeader.find(mockFile, 1, 1024);
 
         // Assert
         assert.isOk(result);
-        assert.strictEqual(result.header, AudioHeader.Unknown);
+        assert.strictEqual(result.header, MpegAudioHeader.Unknown);
         assert.isFalse(result.success);
     }
 
@@ -789,11 +733,11 @@ const assert = Chai.assert;
         const mockFile = TestFile.getFile(data);
 
         // Act
-        const result = AudioHeader.find(mockFile, 1);
+        const result = MpegAudioHeader.find(mockFile, 1);
 
         // Assert
         assert.isOk(result);
-        assert.notEqual(result.header, AudioHeader.Unknown);
+        assert.notEqual(result.header, MpegAudioHeader.Unknown);
         assert.isTrue(result.success);
     }
 }

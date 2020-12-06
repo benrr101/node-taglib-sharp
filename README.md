@@ -15,9 +15,9 @@ is substantially lacking in the variety of media formats that can be handled. Ta
 improved on the original TagLib, hence why this project exists.
 
 ## Supported Tagging Formats (and File Formats)
-* [APE](http://wiki.hydrogenaud.io/index.php?title=APE_key): `APE`, `MP1`, `MP2`, `MP3`, `M2A`
-* [ID3v1](https://id3.org/ID3v1): `MP1`, `MP2`, `MP3`, `M2A`
-* [ID3v2](https://id3.org/Developer%20Information): `MP1`, `MP2`, `MP3`, `M2A`
+* [APE](http://wiki.hydrogenaud.io/index.php?title=APE_key): `AAC`, `APE`, `M2A`, `MP1`, `MP2`, `MP3`
+* [ID3v1](https://id3.org/ID3v1): `AAC`, `M2A`, `MP1`, `MP2`, `MP3`
+* [ID3v2](https://id3.org/Developer%20Information): `M2A`, `MP1`, `MP2`, `MP3`
 
 ## Installation
 ```
@@ -60,4 +60,3 @@ myFile.tag.album = "The Sun And The Moon";
 myFile.tag.performers = ["The Bravery"];
 myFile.save();
 ```
-

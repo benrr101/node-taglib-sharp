@@ -7,7 +7,7 @@
 This abstract class provides a basic framework for reading and writing to a file, as well as
 accessing basic tagging and media properties.
 
-**`description`** This class is agnostic to all specific media types. Its child classes, on the other
+**`remarks`** This class is agnostic to all specific media types. Its child classes, on the other
     hand, support the intricacies of different media and tagging formats. For example
     {@link Mpeg4File} supports the MPEG-4 specification and Apple's tagging format. Each file
     type can be created using its format specific constructors, but the preferred method is to
@@ -267,7 +267,7 @@ ___
 
 Gets an abstract representation of all tags stored in the current instance.
 
-**`description`** This property provides generic and general access to the most common tagging
+**`remarks`** This property provides generic and general access to the most common tagging
     features of a file. To access or add a specific type of tag in the file, use
     [File.getTag](_src_file_.file.md#gettag).
 

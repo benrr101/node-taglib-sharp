@@ -1,9 +1,10 @@
 import * as Chai from "chai";
 import * as ChaiAsPromised from "chai-as-promised";
-import {suite, test} from "mocha-typescript";
-
 import FrameConstructorTests from "./frameConstructorTests";
 import PropertyTests from "../utilities/propertyTests";
+import Testers from "../utilities/testers";
+import {suite, test} from "mocha-typescript";
+
 import Id3v2Settings from "../../src/id3v2/id3v2Settings";
 import {TextInformationFrame} from "../../src/id3v2/frames/textInformationFrame";
 import {ByteVector, StringType} from "../../src/byteVector";
@@ -276,7 +277,7 @@ function getTestFrame(): TextInformationFrame {
     }
 
     @test
-    public settext() {
+    public setText() {
         // Arrange
         const frame = getTestFrame();
 
@@ -333,15 +334,15 @@ function getTestFrame(): TextInformationFrame {
     @test
     public find_falsyFrames() {
         // Act
-        assert.throws(() => { TextInformationFrame.findTextInformationFrame(null, FrameIdentifiers.TCOP); });
-        assert.throws(() => { TextInformationFrame.findTextInformationFrame(undefined, FrameIdentifiers.TCOP); });
+        Testers.testTruthy((v: TextInformationFrame[]) => {
+            TextInformationFrame.findTextInformationFrame(v, FrameIdentifiers.TCOP);
+        });
     }
 
     @test
     public find_invalidIdentity() {
         // Act
-        assert.throws(() => { TextInformationFrame.findTextInformationFrame([], null); });
-        assert.throws(() => { TextInformationFrame.findTextInformationFrame([], undefined); });
+        Testers.testTruthy((v: FrameIdentifier) => { TextInformationFrame.findTextInformationFrame([], v); });
     }
 
     @test

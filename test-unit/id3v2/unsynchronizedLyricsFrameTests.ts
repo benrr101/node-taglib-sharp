@@ -1,9 +1,10 @@
 import * as Chai from "chai";
 import * as ChaiAsPromised from "chai-as-promised";
-import {slow, suite, test, timeout} from "mocha-typescript";
-
 import FrameConstructorTests from "./frameConstructorTests";
 import PropertyTests from "../utilities/propertyTests";
+import Testers from "../utilities/testers";
+import {suite, test} from "mocha-typescript";
+
 import UnsynchronizedLyricsFrame from "../../src/id3v2/frames/unsynchronizedLyricsFrame";
 import {ByteVector, StringType} from "../../src/byteVector";
 import {Frame, FrameClassType} from "../../src/id3v2/frames/frame";
@@ -210,8 +211,7 @@ const getTestUnsynchronizedLyricsFrame = (): UnsynchronizedLyricsFrame => {
     @test
     public find_falsyFrames_throws() {
         // Act/Assert
-        assert.throws(() => { UnsynchronizedLyricsFrame.find(null, "foo", "bar"); });
-        assert.throws(() => { UnsynchronizedLyricsFrame.find(undefined, "foo", "bar"); });
+        Testers.testTruthy((v: UnsynchronizedLyricsFrame[]) => { UnsynchronizedLyricsFrame.find(v, "foo", "bar"); });
     }
 
     @test
@@ -384,8 +384,9 @@ const getTestUnsynchronizedLyricsFrame = (): UnsynchronizedLyricsFrame => {
     @test
     public findPreferred_falsyFrames_throws() {
         // Act/Assert
-        assert.throws(() => { UnsynchronizedLyricsFrame.findPreferred(null, "foo", "bar"); });
-        assert.throws(() => { UnsynchronizedLyricsFrame.findPreferred(undefined, "foo", "bar"); });
+        Testers.testTruthy((v: UnsynchronizedLyricsFrame[]) => {
+            UnsynchronizedLyricsFrame.findPreferred(v, "foo", "bar");
+        });
     }
 
     @test

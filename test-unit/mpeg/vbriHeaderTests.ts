@@ -1,5 +1,6 @@
 import * as Chai from "chai";
 import * as ChaiAsPromised from "chai-as-promised";
+import Testers from "../utilities/testers";
 import {suite, test} from "mocha-typescript";
 
 import VbriHeader from "../../src/mpeg/vbriHeader";
@@ -13,12 +14,8 @@ const assert = Chai.assert;
     @test
     public fromInfo_invalidParameters() {
         // Act / Assert
-        assert.throws(() => { VbriHeader.fromInfo(-1, 123); });
-        assert.throws(() => { VbriHeader.fromInfo(1.23, 123); });
-        assert.throws(() => { VbriHeader.fromInfo(Number.MAX_SAFE_INTEGER + 1, 123); });
-        assert.throws(() => { VbriHeader.fromInfo(123, -1); });
-        assert.throws(() => { VbriHeader.fromInfo(123, 1.23); });
-        assert.throws(() => { VbriHeader.fromInfo(123, Number.MAX_SAFE_INTEGER + 1); });
+        Testers.testUint((v: number) => { VbriHeader.fromInfo(v, 123); });
+        Testers.testUint((v: number) => { VbriHeader.fromInfo(123, v); });
     }
 
     @test

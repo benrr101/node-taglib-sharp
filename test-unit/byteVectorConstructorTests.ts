@@ -3,12 +3,14 @@ import * as Chai from "chai";
 import * as ChaiAsPromised from "chai-as-promised";
 import * as StreamBuffers from "stream-buffers";
 import * as TypeMoq from "typemoq";
-import {slow, suite, test, timeout} from "mocha-typescript";
-
 import TestConstants from "./testConstants";
+import Testers from "./utilities/testers";
 import TestStream from "./utilities/testStream";
+import {suite, test} from "mocha-typescript";
+
 import {ByteVector, StringType} from "../src/byteVector";
 import {IFileAbstraction} from "../src/fileAbstraction";
+import {IStream} from "../src/stream";
 
 const AB2B = require("arraybuffer-to-buffer");
 
@@ -124,12 +126,7 @@ const assert = Chai.assert;
     @test
     public fromByteArray_noData() {
         // Arrange, Act, Assert
-        assert.throws(() => {
-            ByteVector.fromByteArray(undefined);
-        });
-        assert.throws(() => {
-            ByteVector.fromByteArray(null);
-        });
+        Testers.testTruthy((v: Uint8Array) => { ByteVector.fromByteArray(v); });
     }
 
     @test
@@ -232,8 +229,7 @@ const assert = Chai.assert;
     @test
     public fromFileAbstraction_badAbstraction() {
         // Act / Assert
-        assert.throws(() => { ByteVector.fromFileAbstraction(undefined); });
-        assert.throws(() => { ByteVector.fromFileAbstraction(null); });
+        Testers.testTruthy((v: IFileAbstraction) => { ByteVector.fromFileAbstraction(v); });
     }
 
     @test
@@ -260,20 +256,9 @@ const assert = Chai.assert;
     }
 
     @test
-    public fromInt_badInteger() {
+    public fromInt_invalid() {
         // Arrange, Act, Assert
-        assert.throws(() => { ByteVector.fromInt(undefined); });
-        assert.throws(() => { ByteVector.fromInt(null); });
-        assert.throws(() => { ByteVector.fromInt(0.1); });
-        assert.throws(() => { ByteVector.fromInt(Number.MAX_SAFE_INTEGER + 1); });
-    }
-
-    @test
-    public fromInt_overflow() {
-        // Arrange, Act, Assert
-        assert.throws(() => { ByteVector.fromInt(0x10000000000); });
-        assert.throws(() => { ByteVector.fromInt(0xFFFFFFFF); });
-        assert.throws(() => { ByteVector.fromInt(-0x10000000000); });
+        Testers.testInt((v: number) => { ByteVector.fromInt(v); });
     }
 
     @test
@@ -469,8 +454,7 @@ const assert = Chai.assert;
     @test
     public fromInternalStream_badStream() {
         // Act / Assert
-        assert.throws(() => { ByteVector.fromInternalStream(undefined); });
-        assert.throws(() => { ByteVector.fromInternalStream(null); });
+        Testers.testTruthy((v: IStream) => { ByteVector.fromInternalStream(v); });
     }
 
     @test
@@ -509,8 +493,7 @@ const assert = Chai.assert;
     @test
     public fromLong_badValue() {
         // Arrange, Act, Assert
-        assert.throws(() => { ByteVector.fromLong(undefined); });
-        assert.throws(() => { ByteVector.fromLong(null); });
+        Testers.testTruthy((v: BigInt.BigInteger) => { ByteVector.fromLong(v); });
     }
 
     @test
@@ -873,9 +856,7 @@ const assert = Chai.assert;
     @test
     public fromPath_noPath() {
         // Arrange, Act, Assert
-        assert.throws(() => { ByteVector.fromPath(undefined); });
-        assert.throws(() => { ByteVector.fromPath(null); });
-        assert.throws(() => { ByteVector.fromPath(""); });
+        Testers.testString((v: string) => { ByteVector.fromPath(v); });
     }
 
     @test
@@ -907,10 +888,7 @@ const assert = Chai.assert;
     @test
     public fromShort_badIntShort() {
         // Arrange, Act, Assert
-        assert.throws(() => { ByteVector.fromShort(undefined); });
-        assert.throws(() => { ByteVector.fromShort(null); });
-        assert.throws(() => { ByteVector.fromShort(0.1); });
-        assert.throws(() => { ByteVector.fromShort(Number.MAX_SAFE_INTEGER + 1); });
+        Testers.testInt((v: number) => { ByteVector.fromShort(v); });
     }
 
     @test
@@ -1033,19 +1011,13 @@ const assert = Chai.assert;
     @test
     public fromSize_badSize() {
         // Arrange, Act, Assert
-        assert.throws(() => { ByteVector.fromSize(undefined); });
-        assert.throws(() => { ByteVector.fromSize(null); });
-        assert.throws(() => { ByteVector.fromSize(0.1); });
-        assert.throws(() => { ByteVector.fromSize(Number.MAX_SAFE_INTEGER + 1); });
-        assert.throws(() => { ByteVector.fromSize(-1); });
+        Testers.testUint((v: number) => { ByteVector.fromSize(v); });
     }
 
     @test
     public fromSize_badFillValue() {
         // Arrange, Act, Assert
-        assert.throws(() => { ByteVector.fromSize(1, 0.1); });
-        assert.throws(() => { ByteVector.fromSize(1, -1); });
-        assert.throws(() => { ByteVector.fromSize(1, 0xfff); });
+        Testers.testByte((v: number) => { ByteVector.fromSize(1, v); })
     }
 
     @test
@@ -1169,9 +1141,7 @@ const assert = Chai.assert;
     @test
     public fromString_invalidLength() {
         // Arrange, Act, Assert
-        assert.throws(() => { ByteVector.fromString("", undefined, 0.1); });
-        assert.throws(() => { ByteVector.fromString("", undefined, Number.MAX_SAFE_INTEGER + 1); });
-        assert.throws(() => { ByteVector.fromString("", undefined, -1); });
+        Testers.testUint((v: number) => { ByteVector.fromString("", undefined, v); }, true);
     }
 
     @test
@@ -1389,11 +1359,7 @@ const assert = Chai.assert;
     @test
     public fromUInt_badInteger() {
         // Arrange, Act, Assert
-        assert.throws(() => { ByteVector.fromUInt(undefined); });
-        assert.throws(() => { ByteVector.fromUInt(null); });
-        assert.throws(() => { ByteVector.fromUInt(0.1); });
-        assert.throws(() => { ByteVector.fromUInt(Number.MAX_SAFE_INTEGER + 1); });
-        assert.throws(() => { ByteVector.fromUInt(-1); });
+        Testers.testUint((v: number) => { ByteVector.fromUInt(v); });
     }
 
     @test
@@ -1535,8 +1501,7 @@ const assert = Chai.assert;
     @test
     public fromULong_badValue() {
         // Arrange, Act, Assert
-        assert.throws(() => { ByteVector.fromULong(undefined); });
-        assert.throws(() => { ByteVector.fromULong(null); });
+        Testers.testTruthy((v: BigInt.BigInteger) => { ByteVector.fromULong(v); });
     }
 
     @test
@@ -1759,10 +1724,7 @@ const assert = Chai.assert;
     @test
     public fromUShort_badShort() {
         // Arrange, Act, Assert
-        assert.throws(() => { ByteVector.fromUShort(undefined); });
-        assert.throws(() => { ByteVector.fromUShort(null); });
-        assert.throws(() => { ByteVector.fromUShort(0.1); });
-        assert.throws(() => { ByteVector.fromUShort(Number.MAX_SAFE_INTEGER + 1); });
+        Testers.testUint((v: number) => { ByteVector.fromUShort(v); });
     }
 
     @test
@@ -1861,7 +1823,7 @@ const assert = Chai.assert;
             undefined
         );
     }
-    
+
     private testInt(value: number, expectedData: number[], isReadOnly: boolean, bigEndian: boolean): void {
         // Arrange, Act
         const bv = ByteVector.fromInt(value, bigEndian, isReadOnly);

@@ -63,7 +63,7 @@ export interface ICodec {
  */
 export interface IAudioCodec extends ICodec {
     /**
-     * Bitrate of the audio represented by the current instance.
+     * Bitrate of the audio in kilobits per second represented by the current instance.
      */
     audioBitrate: number;
 

@@ -1,9 +1,10 @@
 import * as Chai from "chai";
 import * as ChaiAsPromised from "chai-as-promised";
-import {slow, suite, test, timeout} from "mocha-typescript";
-
 import FrameConstructorTests from "./frameConstructorTests";
 import PropertyTests from "../utilities/propertyTests";
+import Testers from "../utilities/testers";
+import {suite, test} from "mocha-typescript";
+
 import UniqueFileIdentifierFrame from "../../src/id3v2/frames/uniqueFileIdentifierFrame";
 import {ByteVector, StringType} from "../../src/byteVector";
 import {Frame, FrameClassType} from "../../src/id3v2/frames/frame";
@@ -33,8 +34,7 @@ const testOwner = "http://github.com/benrr101/node-taglib-sharp";
         const identifier = ByteVector.empty();
 
         // Act/Assert
-        assert.throws(() => { UniqueFileIdentifierFrame.fromData(undefined, identifier); });
-        assert.throws(() => { UniqueFileIdentifierFrame.fromData(null, identifier); });
+        Testers.testTruthy((v: string) => { UniqueFileIdentifierFrame.fromData(v, identifier); });
     }
 
     @test
@@ -218,8 +218,7 @@ const testOwner = "http://github.com/benrr101/node-taglib-sharp";
     @test
     public find_falsyFrames_throws() {
         // Act/Assert
-        assert.throws(() => { UniqueFileIdentifierFrame.find(null, "fux"); });
-        assert.throws(() => { UniqueFileIdentifierFrame.find(undefined, "fux"); });
+        Testers.testTruthy((v: UniqueFileIdentifierFrame[]) => { UniqueFileIdentifierFrame.find(v, "fux"); });
     }
 
     @test

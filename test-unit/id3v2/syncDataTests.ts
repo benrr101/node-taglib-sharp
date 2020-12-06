@@ -1,6 +1,7 @@
 import * as Chai from "chai";
 import * as ChaiAsPromised from "chai-as-promised";
-import {slow, suite, test, timeout} from "mocha-typescript";
+import Testers from "../utilities/testers";
+import {suite, test} from "mocha-typescript";
 
 import SyncData from "../../src/id3v2/syncData";
 import TestConstants from "../testConstants";
@@ -14,9 +15,7 @@ const assert = Chai.assert;
     @test
     public fromUint_InvalidValues() {
         // Act/Assert
-        assert.throws(() => { SyncData.fromUint(-1); });
-        assert.throws(() => { SyncData.fromUint(1.5); });
-        assert.throws(() => { SyncData.fromUint(Number.MAX_SAFE_INTEGER + 1); });
+        Testers.testUint((v: number) => { SyncData.fromUint(v); });
         assert.throws(() => { SyncData.fromUint(0xF0000000); });
     }
 
@@ -41,8 +40,7 @@ const assert = Chai.assert;
     @test
     public toUint_FalsyData() {
         // Act/Assert
-        assert.throws(() => { SyncData.toUint(null); });
-        assert.throws(() => { SyncData.toUint(undefined); });
+        Testers.testTruthy((v: ByteVector) => { SyncData.toUint(v); });
     }
 
     @test
@@ -84,8 +82,7 @@ const assert = Chai.assert;
     @test
     public unsyncByteVector_falsyData() {
         // Act/Assert
-        assert.throws(() => { SyncData.unsyncByteVector(null); });
-        assert.throws(() => { SyncData.unsyncByteVector(undefined); });
+        Testers.testTruthy((v: ByteVector) => { SyncData.unsyncByteVector(null); });
     }
 
     // @TODO: unsyncByteVector_validData

@@ -1,4 +1,4 @@
-import AudioHeader from "./audioHeader";
+import MpegAudioHeader from "./mpegAudioHeader";
 import NonContainerTag from "../nonContainer/nonContainerTag";
 import NonContainerFile from "../nonContainer/nonContainerFile";
 import Properties from "../properties";
@@ -7,8 +7,16 @@ import {File, ReadStyle} from "../file";
 import {IFileAbstraction} from "../fileAbstraction";
 import {Tag, TagTypes} from "../tag";
 
-export default class AudioFile extends NonContainerFile {
-    private _firstHeader: AudioHeader;
+/**
+ * This class extends {@link NonContainerFile} to provide tagging and properties support for
+ * MPEG-1, MPEG-2, and MPEG-2.5 audio files.
+ * @remarks A {@link Id3v1Tag} and {@link Id3v2Tag} will be added automatically to any file
+ *     that doesn't contain one. This change does not affect the file until it is saved and can be
+ *     reversed using the following method:
+ *     `file.removeTags(file.tagTypes & ~file.tagTypesOnDisk);`
+ */
+export default class MpegAudioFile extends NonContainerFile {
+    private _firstHeader: MpegAudioHeader;
 
     public constructor(file: IFileAbstraction|string, propertiesStyle: ReadStyle) {
         super(file, propertiesStyle);
@@ -62,7 +70,7 @@ export default class AudioFile extends NonContainerFile {
     protected readStart(start: number, propertiesStyle: ReadStyle): void {
         // Only check the first 16 bytes so we're not stuck reading a bad file forever
         if ((propertiesStyle & ReadStyle.Average) !== 0) {
-            const findResult = AudioHeader.find(this, start, 0x4000);
+            const findResult = MpegAudioHeader.find(this, start, 0x4000);
             this._firstHeader = findResult.header;
             if (!findResult.success) {
                 throw new CorruptFileError("MPEG audio header not found");
@@ -87,4 +95,4 @@ export default class AudioFile extends NonContainerFile {
     "taglib/mp1",
     "audio/x-mp2",
     "audio/x-mp1"
-].forEach((mt) => File.addFileType(mt, AudioFile));
+].forEach((mt) => File.addFileType(mt, MpegAudioFile));

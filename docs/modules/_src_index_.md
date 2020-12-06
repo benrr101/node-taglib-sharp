@@ -8,6 +8,7 @@
 
 ### References
 
+* [AacFile](_src_index_.md#aacfile)
 * [ApeFile](_src_index_.md#apefile)
 * [ApeTag](_src_index_.md#apetag)
 * [ByteVector](_src_index_.md#bytevector)
@@ -81,6 +82,12 @@
 * [TagTypes](_src_index_.md#tagtypes)
 
 ## References
+
+### AacFile
+
+Re-exports: [AacFile](../classes/_src_aac_aacfile_.aacfile.md)
+
+___
 
 ### ApeFile
 
@@ -426,13 +433,13 @@ ___
 
 ### MpegAudioFile
 
-Renames and re-exports: [AudioFile](../classes/_src_mpeg_audiofile_.audiofile.md)
+Re-exports: [MpegAudioFile](../classes/_src_mpeg_mpegaudiofile_.mpegaudiofile.md)
 
 ___
 
 ### MpegAudioHeader
 
-Renames and re-exports: [AudioHeader](../classes/_src_mpeg_audioheader_.audioheader.md)
+Re-exports: [MpegAudioHeader](../classes/_src_mpeg_mpegaudioheader_.mpegaudioheader.md)
 
 ___
 

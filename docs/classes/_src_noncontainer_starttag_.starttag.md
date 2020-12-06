@@ -536,7 +536,7 @@ ___
 Gets the description for the media described by the current instance.
 Returns the first non-null/non-undefined value from the child tags.
 
-**`description`** This is especially relevant for a movie. For example, for "Back to the Future
+**`remarks`** This is especially relevant for a movie. For example, for "Back to the Future
     2", this could be "After visiting 2015, Marty McFly must repeat his visit to 1955 to
     prevent disastrous changes to 1985...without interfering with his first trip".
 
@@ -551,7 +551,7 @@ Returns the first non-null/non-undefined value from the child tags.
 Sets the description for the media described by the current instance.
 Sets the value on all child tags
 
-**`description`** This is especially relevant for a movie. For example, for "Back to the Future
+**`remarks`** This is especially relevant for a movie. For example, for "Back to the Future
     2", this could be "After visiting 2015, Marty McFly must repeat his visit to 1955 to
     prevent disastrous changes to 1985...without interfering with his first trip".
 
@@ -1320,7 +1320,7 @@ for the same artist/actor can be made up with semicolons. For example, "Marty Mc
 McFly Jr.; Marlene McFly".
 Returns the first non-null/non-undefined value from the child tags.
 
-**`description`** This is typically useful for movies, although the instrument played by each
+**`remarks`** This is typically useful for movies, although the instrument played by each
     artist in a music file may be of relevance.
     It is highly important to match each role to the performers. This means that a role may
     be `null\undefined` to keep a match betweenInclusive performers[i] and performersRole[i].
@@ -1336,7 +1336,7 @@ Returns the first non-null/non-undefined value from the child tags.
 Sets the characters in a video media, or instruments played for music media.
 Sets the value on all child tags
 
-**`description`** This is typically useful for movies, although the instrument played by each
+**`remarks`** This is typically useful for movies, although the instrument played by each
     artist in a music file may be of relevance.
     It is highly important to match each role to the performers. This means that a role may
     be `null\undefined` to keep a match betweenInclusive performers[i] and performersRole[i].
@@ -1618,7 +1618,7 @@ ___
 Gets the subtitle for the media described by the current instance.
 Returns the first non-null/non-undefined value from the child tags.
 
-**`description`** This field gives a nice short precision to the title, which is typically below
+**`remarks`** This field gives a nice short precision to the title, which is typically below
     the title on the front cover of the media. Example: for "Back to the Future", this would
     be "It's About Time".
 
@@ -1633,7 +1633,7 @@ Returns the first non-null/non-undefined value from the child tags.
 Sets the subtitle for the media described by the current instance.
 Sets the value on all child tags
 
-**`description`** This field gives a nice short precision to the title, which is typically below
+**`remarks`** This field gives a nice short precision to the title, which is typically below
     the title on the front cover of the media. Example: for "Back to the Future", this would
     be "It's About Time".
 
@@ -1934,7 +1934,7 @@ ___
 Copies the values from the current instance to another [Tag](_src_tag_.tag.md), optionally overwriting
     existing values.
 
-**`description`** This method only copies the mist basic values when copying between different tag
+**`remarks`** This method only copies the mist basic values when copying between different tag
     formats. However, if `target` is of the same type as the current instance,
     more advanced copying may be done. For example if both `this` and `target` are
     [Id3v2Tag](_src_id3v2_id3v2tag_.id3v2tag.md), all frames will be copied to the target.
@@ -2039,7 +2039,7 @@ ___
 
 Set the tags that represent the tagger software (node-taglib-sharp) itself.
 
-**`description`** This is typically a method to call just before saving a tag.
+**`remarks`** This is typically a method to call just before saving a tag.
 
 **Returns:** void
 

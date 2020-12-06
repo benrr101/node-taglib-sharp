@@ -19,8 +19,9 @@ and can be recast without issue.
 
 ## Implemented by
 
+* [AacAudioHeader](../classes/_src_aac_aacaudioheader_.aacaudioheader.md)
 * [ApeStreamHeader](../classes/_src_ape_apestreamheader_.apestreamheader.md)
-* [AudioHeader](../classes/_src_mpeg_audioheader_.audioheader.md)
+* [MpegAudioHeader](../classes/_src_mpeg_mpegaudioheader_.mpegaudioheader.md)
 
 ## Index
 
@@ -39,7 +40,7 @@ and can be recast without issue.
 
 •  **audioBitrate**: number
 
-Bitrate of the audio represented by the current instance.
+Bitrate of the audio in kilibits per second represented by the current instance.
 
 ___
 
