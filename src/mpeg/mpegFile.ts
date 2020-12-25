@@ -9,7 +9,6 @@ import {File, ReadStyle} from "../file";
 import {IFileAbstraction} from "../fileAbstraction";
 import {MpegVersion} from "./mpegEnums";
 import {Tag, TagTypes} from "../tag";
-import MpegAudioFile from "./mpegAudioFile";
 
 /**
  * Indicates the type of marker found in an MPEG file.
@@ -72,12 +71,12 @@ enum MpegFileMarker {
 export default class MpegFile extends NonContainerFile {
     private static readonly _markerStart = ByteVector.fromByteArray(new Uint8Array([0, 0, 1]));
 
-    private _audioFound: boolean;
+    private _audioFound = false;
     private _audioHeader: MpegAudioHeader;
     private _endTime: number;
     private _startTime: number | undefined;
     private _version: MpegVersion;
-    private _videoFound: boolean;
+    private _videoFound = false;
     private _videoHeader: MpegVideoHeader;
 
     public constructor(file: IFileAbstraction|string, propertiesStyle: ReadStyle) {
@@ -194,12 +193,35 @@ export default class MpegFile extends NonContainerFile {
     private readAudioPacket(position: number): number {
         this.seek(position + 4);
         const length = this.readBlock(2).toUShort();
+        const returnValue = position + length;
 
-        if (!this._audioFound) {
-            const audioHeaderResult = MpegAudioHeader.find(this, position + 15, length - 9);
-            this._audioFound = audioHeaderResult.success;
-            this._audioHeader = audioHeaderResult.header;
+        if (this._audioFound) {
+            return returnValue;
         }
+
+        // There is a maximum of 16 stuffing bytes, read to the PTS/DTS flags
+        const packetHeaderBytes = this.readBlock(19);
+        let i = 0;
+        while (i < packetHeaderBytes.length && packetHeaderBytes.get(i) === 0xFF) {
+            // Byte is a stuffing byte
+            i++;
+        }
+
+        if ((packetHeaderBytes.get(i) & 0x40 ) !== 0) {
+            // STD buffer size is unexpected for audio packets, but whatever
+            i++;
+        }
+
+        // Decode the PTS/DTS flags
+        const timestampFlags = packetHeaderBytes.get(i);
+        const dataOffset = 4 + 2 + i                 // Packet marker + packet length + stuffing bytes/STD buffer size
+            + ((timestampFlags & 0x20) > 0 ? 4 : 0)  // Presentation timestamp
+            + ((timestampFlags & 0x10) > 0 ? 4 : 0); // Decode timestamp
+
+        // Decode the MPEG audio header
+        const audioHeaderResult = MpegAudioHeader.find(this, position + dataOffset, length - 9);
+        this._audioFound = audioHeaderResult.success;
+        this._audioHeader = audioHeaderResult.header;
 
         return position + length;
     }
@@ -339,4 +361,4 @@ export default class MpegFile extends NonContainerFile {
     "taglib/m2v",
     "video/x-mpg",
     "video/mpeg"
-].forEach((mt) => File.addFileType(mt, MpegAudioFile));
+].forEach((mt) => File.addFileType(mt, MpegFile));

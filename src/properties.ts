@@ -135,6 +135,8 @@ export default class Properties implements ILosslessAudioCodec, IVideoCodec, IPh
         return this.findCodecProperty<IVideoCodec>(MediaTypes.Video, (c) => c.videoWidth, 0);
     }
 
+    // @TODO: Add support for framerate
+
     // #endregion
 
     // #region Private Helpers
