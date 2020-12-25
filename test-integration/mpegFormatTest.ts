@@ -56,14 +56,14 @@ const assert = Chai.assert;
         );
     }
 
-    @test
-    public WriteStandardPicturesLazy() {
-        StandardFileTests.writeStandardPictures(
-            Mpeg_FileTests.sampleFilePath,
-            Mpeg_FileTests.tmpFileName,
-            ReadStyle.PictureLazy
-        );
-    }
+    // @test
+    // public WriteStandardPicturesLazy() {
+    //     StandardFileTests.writeStandardPictures(
+    //         Mpeg_FileTests.sampleFilePath,
+    //         Mpeg_FileTests.tmpFileName,
+    //         ReadStyle.PictureLazy
+    //     );
+    // }
 
     @test
     public WriteStandardTags() {

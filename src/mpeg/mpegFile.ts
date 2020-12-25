@@ -86,10 +86,8 @@ export default class MpegFile extends NonContainerFile {
     /**
      * Gets a tag of a specified type from the current instance, optionally creating a new tag if
      * possible.
-     * @remarks If a {@link Id3v2Tag} is added to the current instance, it will be placed at the
-     *     start of the file. On the other hand, {@link Id3v1Tag} and {@link ApeTag} will be added
-     *     to the end of the file. All other tag types will be ignored as they are unsupported by
-     *     MPEG files.
+     * @remarks {@link Id3v2Tag}, {@link Id3v1Tag}, and {@link ApeTag} will be added to the end of
+     *     the file. All other tag types will be ignored as they are unsupported by MPEG files.
      * @param type Type of tag to read
      * @param create Whether or not to try and create the tag if one is not found
      * @returns Tag Tag that was found in or added to the current instance. If no matching tag was
@@ -105,7 +103,6 @@ export default class MpegFile extends NonContainerFile {
             case TagTypes.Id3v1:
                 return this.endTag.addTag(type, this.tag);
             case TagTypes.Id3v2:
-                // @TODO: uh, what, shouldn't this be in the start tag? (asked on gitter 12/12/2020)
                 return this.endTag.addTag(type, this.tag);
             case TagTypes.Ape:
                 return this.endTag.addTag(type, this.tag);
