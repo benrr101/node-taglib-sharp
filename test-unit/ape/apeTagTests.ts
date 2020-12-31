@@ -461,7 +461,7 @@ function getTestTagFooter(flags: ApeTagFooterFlags, itemCount: number, itemPlusF
         assert.strictEqual(tag.items[0].key, "DateTagged");
         assert.deepStrictEqual(tag.items[0].text, ["2020-04-25T12:34:56"]);
 
-        tag.items[0] = ApeTagItem.fromTextValues("DateTagged", "bunchagarbage");
+        tag.items[0] = ApeTagItem.fromTextValues("DateTagged", "buncha_garbage");
         assert.isUndefined(tag.dateTagged);
 
         PropertyTests.propertyRoundTrip(set, get, undefined);

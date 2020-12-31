@@ -4,7 +4,7 @@ import {suite, test} from "mocha-typescript";
 
 import TestConstants from "./utilities/testConstants";
 import {File, Id3v2FrameIdentifiers, Id3v2Tag, ReadStyle, TagTypes} from "../src";
-import {StandardFileTests} from "./utilities/standardFileTests";
+import {StandardFileTests, TestTagLevel} from "./utilities/standardFileTests";
 
 // Setup chai
 Chai.use(ChaiAsPromised);
@@ -119,7 +119,7 @@ const assert = Chai.assert;
     @test
     public writeStandardTags() {
         const tmpFilePath = TestConstants.getTempFilePath(Id3v24_FileTests.sampleTmpFileName);
-        StandardFileTests.writeStandardTags(Id3v24_FileTests.sampleFilePath, tmpFilePath);
+        StandardFileTests.writeStandardTags(Id3v24_FileTests.sampleFilePath, tmpFilePath, TestTagLevel.Medium);
     }
 
     @test

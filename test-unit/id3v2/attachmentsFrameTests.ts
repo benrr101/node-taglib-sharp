@@ -601,7 +601,7 @@ function getCustomTestFrame(data: ByteVector, desc: string, filename: string, mi
     public render_apicV2InvalidMimeType_correctsEncoding() {
         // Arrange
         const data = ByteVector.fromString("fuxbuxqux");
-        const frame = getCustomTestFrame(data, "foo", "bar", "this/isnot/amimetype", PictureType.FrontCover);
+        const frame = getCustomTestFrame(data, "foo", "bar", "this/is_not/a_mimetype", PictureType.FrontCover);
 
         // Act
         const output = frame.render(2);

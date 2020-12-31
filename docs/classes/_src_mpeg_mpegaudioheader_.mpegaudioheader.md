@@ -59,7 +59,7 @@ header, see http://www.mpgedit.org/mpgedit/mpeg_format/mpeghdr.htm
 
 • get **audioBitrate**(): number
 
-Bitrate of the audio in kilibits per second represented by the current instance.
+Bitrate of the audio in kilobits per second represented by the current instance.
 
 **`inheritdoc`** IAudioCodec.audioBitrate
 

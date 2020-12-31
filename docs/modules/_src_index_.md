@@ -68,8 +68,10 @@
 * [MpegAudioChannelMode](_src_index_.md#mpegaudiochannelmode)
 * [MpegAudioFile](_src_index_.md#mpegaudiofile)
 * [MpegAudioHeader](_src_index_.md#mpegaudioheader)
+* [MpegFile](_src_index_.md#mpegfile)
 * [MpegVbriHeader](_src_index_.md#mpegvbriheader)
 * [MpegVersion](_src_index_.md#mpegversion)
+* [MpegVideoHeader](_src_index_.md#mpegvideoheader)
 * [MpegXingHeader](_src_index_.md#mpegxingheader)
 * [NotImplementedError](_src_index_.md#notimplementederror)
 * [Picture](_src_index_.md#picture)
@@ -443,6 +445,12 @@ Re-exports: [MpegAudioHeader](../classes/_src_mpeg_mpegaudioheader_.mpegaudiohea
 
 ___
 
+### MpegFile
+
+Re-exports: [MpegFile](../classes/_src_mpeg_mpegfile_.mpegfile.md)
+
+___
+
 ### MpegVbriHeader
 
 Renames and re-exports: [VbriHeader](../classes/_src_mpeg_vbriheader_.vbriheader.md)
@@ -452,6 +460,12 @@ ___
 ### MpegVersion
 
 Re-exports: [MpegVersion](../enums/_src_mpeg_mpegenums_.mpegversion.md)
+
+___
+
+### MpegVideoHeader
+
+Re-exports: [MpegVideoHeader](../classes/_src_mpeg_mpegvideoheader_.mpegvideoheader.md)
 
 ___
 

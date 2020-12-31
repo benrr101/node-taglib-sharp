@@ -15,7 +15,7 @@ const assert = Chai.assert;
     @test
     public fromInfo_invalidParameters() {
         // Act / Assert
-        Testers.testUint((v: number) => { XingHeader.fromInfo(v, 123); })
+        Testers.testUint((v: number) => { XingHeader.fromInfo(v, 123); });
         Testers.testUint((v: number) => { XingHeader.fromInfo(123, v); });
     }
 

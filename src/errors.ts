@@ -33,3 +33,15 @@ export class NotSupportedError extends Error {
         return e.hasOwnProperty("isNotSupportedError");
     }
 }
+
+export class UnsupportedFormatError extends Error {
+    public readonly isNotSupportedError: boolean = true;
+
+    public constructor(message?: string) {
+        super(`Unsupported format${message ? `: ${message}` : ""}`);
+    }
+
+    public static errorIs(e: Error): boolean {
+        return e.hasOwnProperty("isUnsupportedFormatError");
+    }
+}

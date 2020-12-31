@@ -40,7 +40,7 @@ When dealing with an [ICodec](_src_icodec_.icodec.md), if [ICodec.mediaTypes](_s
 
 *Inherited from [IAudioCodec](_src_icodec_.iaudiocodec.md).[audioBitrate](_src_icodec_.iaudiocodec.md#audiobitrate)*
 
-Bitrate of the audio in kilibits per second represented by the current instance.
+Bitrate of the audio in kilobits per second represented by the current instance.
 
 ___
 

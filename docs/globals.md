@@ -54,6 +54,8 @@
 * ["src/mpeg/mpegAudioFile"](modules/_src_mpeg_mpegaudiofile_.md)
 * ["src/mpeg/mpegAudioHeader"](modules/_src_mpeg_mpegaudioheader_.md)
 * ["src/mpeg/mpegEnums"](modules/_src_mpeg_mpegenums_.md)
+* ["src/mpeg/mpegFile"](modules/_src_mpeg_mpegfile_.md)
+* ["src/mpeg/mpegVideoHeader"](modules/_src_mpeg_mpegvideoheader_.md)
 * ["src/mpeg/vbriHeader"](modules/_src_mpeg_vbriheader_.md)
 * ["src/mpeg/xingHeader"](modules/_src_mpeg_xingheader_.md)
 * ["src/mpeg4/mpeg4AudioTypes"](modules/_src_mpeg4_mpeg4audiotypes_.md)

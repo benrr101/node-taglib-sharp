@@ -79,12 +79,14 @@ export {
     UserUrlLinkFrame as Id3v2UserUrlLinkFrame
 } from "./id3v2/frames/urlLinkFrame";
 
-// MPEG ////////////////////////////////////////////////////////////////////
+// MPEG1/2 /////////////////////////////////////////////////////////////////
 export {default as MpegAudioFile} from "./mpeg/mpegAudioFile";
 export {default as MpegAudioHeader} from "./mpeg/mpegAudioHeader";
 export {
     ChannelMode as MpegAudioChannelMode,
     MpegVersion as MpegVersion
 } from "./mpeg/mpegEnums";
+export {default as MpegFile} from "./mpeg/mpegFile";
 export {default as MpegVbriHeader} from "./mpeg/vbriHeader";
+export {default as MpegVideoHeader} from "./mpeg/mpegVideoHeader";
 export {default as MpegXingHeader} from "./mpeg/xingHeader";
