@@ -12,7 +12,12 @@ import {Guards} from "../utils";
  * header, see http://www.mpgedit.org/mpgedit/mpeg_format/mpeghdr.htm
  */
 export default class MpegAudioHeader implements IAudioCodec {
-    public static readonly Unknown: MpegAudioHeader = MpegAudioHeader.fromInfo(0, 0, XingHeader.unknown, VbriHeader.unknown);
+    public static readonly Unknown: MpegAudioHeader = MpegAudioHeader.fromInfo(
+        0,
+        0,
+        XingHeader.unknown,
+        VbriHeader.unknown
+    );
 
     private static readonly bitrates: number[][][] = [
         [ // Version 1
