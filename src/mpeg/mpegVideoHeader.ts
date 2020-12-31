@@ -24,6 +24,7 @@ export default class MpegVideoHeader implements IVideoCodec {
      */
     public constructor(file: File, position: number) {
         Guards.truthy(file, "file");
+        Guards.uint(position, "position");
 
         file.seek(position);
         const data = file.readBlock(7);
@@ -46,6 +47,7 @@ export default class MpegVideoHeader implements IVideoCodec {
     /**
      * @inheritDoc
      * For MPEG, this is always 0
+     * @TODO: Can we calculate the duration?
      */
     public get durationMilliseconds(): number { return 0; }
 
