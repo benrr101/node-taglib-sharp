@@ -124,7 +124,7 @@ betweenInclusive -64 and 64. Don't worry about the math, we'll do it for you.
 
 Name | Type | Description |
 ------ | ------ | ------ |
-`value` | number | Volume adjustment. Must be betweenInclusive -64 and 64.  |
+`value` | number | Volume adjustment. Must be between -64 and 64, inclusive.  |
 
 **Returns:** void
 

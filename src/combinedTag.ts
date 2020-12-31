@@ -64,7 +64,7 @@ export default class CombinedTag extends Tag {
     /**
      * Gets the subtitle for the media described by the current instance.
      * Returns the first non-null/non-undefined value from the child tags.
-     * @description This field gives a nice short precision to the title, which is typically below
+     * @remarks This field gives a nice short precision to the title, which is typically below
      *     the title on the front cover of the media. Example: for "Back to the Future", this would
      *     be "It's About Time".
      */
@@ -78,7 +78,7 @@ export default class CombinedTag extends Tag {
     /**
      * Gets the description for the media described by the current instance.
      * Returns the first non-null/non-undefined value from the child tags.
-     * @description This is especially relevant for a movie. For example, for "Back to the Future
+     * @remarks This is especially relevant for a movie. For example, for "Back to the Future
      *     2", this could be "After visiting 2015, Marty McFly must repeat his visit to 1955 to
      *     prevent disastrous changes to 1985...without interfering with his first trip".
      */
@@ -117,7 +117,7 @@ export default class CombinedTag extends Tag {
      * for the same artist/actor can be made up with semicolons. For example, "Marty McFly; Marty
      * McFly Jr.; Marlene McFly".
      * Returns the first non-null/non-undefined value from the child tags.
-     * @description This is typically useful for movies, although the instrument played by each
+     * @remarks This is typically useful for movies, although the instrument played by each
      *     artist in a music file may be of relevance.
      *     It is highly important to match each role to the performers. This means that a role may
      *     be `null\undefined` to keep a match betweenInclusive performers[i] and performersRole[i].

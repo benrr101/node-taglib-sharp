@@ -9,7 +9,7 @@ import {Tag, TagTypes} from "../tag";
 
 /**
  * This class extends {@link File} to provide tagging and properties for ADTS AAC audio files.
- * @description A {@link Id3v1Tag} and {@link Id3v2Tag} will be added automatically to any file
+ * @remarks A {@link Id3v1Tag} and {@link Id3v2Tag} will be added automatically to any file
  *     that doesn't contain one. This change does not affect the file until it is saved and can be
  *     reversed using the following method:
  *     `file.removeTags(file.tagTypes & ~file.tagTypesOnDisk);`
@@ -60,7 +60,7 @@ export default class AacFile extends NonContainerFile {
     }
 
     /** @inheritDoc */
-    protected readProperties(start: number, end: number, propertiesStyle: ReadStyle): Properties {
+    protected readProperties(start: number, end: number, _propertiesStyle: ReadStyle): Properties {
         this._firstHeader.streamLength = end - start;
         return new Properties(0, [this._firstHeader]);
     }

@@ -10,7 +10,7 @@ import {Tag, TagTypes} from "../tag";
 /**
  * This class extends {@link NonContainerFile} to provide tagging and properties support for
  * MPEG-1, MPEG-2, and MPEG-2.5 audio files.
- * @description A {@link Id3v1Tag} and {@link Id3v2Tag} will be added automatically to any file
+ * @remarks A {@link Id3v1Tag} and {@link Id3v2Tag} will be added automatically to any file
  *     that doesn't contain one. This change does not affect the file until it is saved and can be
  *     reversed using the following method:
  *     `file.removeTags(file.tagTypes & ~file.tagTypesOnDisk);`

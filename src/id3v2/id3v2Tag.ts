@@ -1157,7 +1157,7 @@ export default class Id3v2Tag extends Tag {
         const frames = this.getFramesByClassType<UniqueFileIdentifierFrame>(FrameClassType.UniqueFileIdentifierFrame);
         const frame = UniqueFileIdentifierFrame.find(frames, owner);
 
-        // If the frame existed, frame.identifier is a bytevector, get a string
+        // If the frame existed, frame.identifier is a byte vector, get a string
         const result = frame ? frame.identifier.toString() : undefined;
         return result || undefined;
     }
@@ -1178,7 +1178,7 @@ export default class Id3v2Tag extends Tag {
         const frames = this.getFramesByClassType<UniqueFileIdentifierFrame>(FrameClassType.UniqueFileIdentifierFrame);
         let frame = UniqueFileIdentifierFrame.find(frames, owner);
 
-        // If we have a real string, convert to bytevector and apply to frame
+        // If we have a real string, convert to byte vector and apply to frame
         if (!text && frame) {
             // String was falsy, remove the frame to prevent empties
             this.removeFrame(frame);

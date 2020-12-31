@@ -1,15 +1,15 @@
 **[node-taglib-sharp](../README.md)**
 
-> [Globals](../globals.md) / ["src/mpeg/audioHeader"](../modules/_src_mpeg_audioheader_.md) / AudioHeader
+> [Globals](../globals.md) / ["src/mpeg/mpegAudioHeader"](../modules/_src_mpeg_mpegaudioheader_.md) / MpegAudioHeader
 
-# Class: AudioHeader
+# Class: MpegAudioHeader
 
 Provides information about an MPEG audio stream. For more information and definition of the
 header, see http://www.mpgedit.org/mpgedit/mpeg_format/mpeghdr.htm
 
 ## Hierarchy
 
-* **AudioHeader**
+* **MpegAudioHeader**
 
 ## Implements
 
@@ -19,39 +19,39 @@ header, see http://www.mpgedit.org/mpgedit/mpeg_format/mpeghdr.htm
 
 ### Properties
 
-* [Unknown](_src_mpeg_audioheader_.audioheader.md#unknown)
+* [Unknown](_src_mpeg_mpegaudioheader_.mpegaudioheader.md#unknown)
 
 ### Accessors
 
-* [audioBitrate](_src_mpeg_audioheader_.audioheader.md#audiobitrate)
-* [audioChannels](_src_mpeg_audioheader_.audioheader.md#audiochannels)
-* [audioFrameLength](_src_mpeg_audioheader_.audioheader.md#audioframelength)
-* [audioLayer](_src_mpeg_audioheader_.audioheader.md#audiolayer)
-* [audioSampleRate](_src_mpeg_audioheader_.audioheader.md#audiosamplerate)
-* [channelMode](_src_mpeg_audioheader_.audioheader.md#channelmode)
-* [description](_src_mpeg_audioheader_.audioheader.md#description)
-* [durationMilliseconds](_src_mpeg_audioheader_.audioheader.md#durationmilliseconds)
-* [isCopyrighted](_src_mpeg_audioheader_.audioheader.md#iscopyrighted)
-* [isOriginal](_src_mpeg_audioheader_.audioheader.md#isoriginal)
-* [isPadded](_src_mpeg_audioheader_.audioheader.md#ispadded)
-* [isProtected](_src_mpeg_audioheader_.audioheader.md#isprotected)
-* [mediaTypes](_src_mpeg_audioheader_.audioheader.md#mediatypes)
-* [streamLength](_src_mpeg_audioheader_.audioheader.md#streamlength)
-* [vbriHeader](_src_mpeg_audioheader_.audioheader.md#vbriheader)
-* [version](_src_mpeg_audioheader_.audioheader.md#version)
-* [xingHeader](_src_mpeg_audioheader_.audioheader.md#xingheader)
+* [audioBitrate](_src_mpeg_mpegaudioheader_.mpegaudioheader.md#audiobitrate)
+* [audioChannels](_src_mpeg_mpegaudioheader_.mpegaudioheader.md#audiochannels)
+* [audioFrameLength](_src_mpeg_mpegaudioheader_.mpegaudioheader.md#audioframelength)
+* [audioLayer](_src_mpeg_mpegaudioheader_.mpegaudioheader.md#audiolayer)
+* [audioSampleRate](_src_mpeg_mpegaudioheader_.mpegaudioheader.md#audiosamplerate)
+* [channelMode](_src_mpeg_mpegaudioheader_.mpegaudioheader.md#channelmode)
+* [description](_src_mpeg_mpegaudioheader_.mpegaudioheader.md#description)
+* [durationMilliseconds](_src_mpeg_mpegaudioheader_.mpegaudioheader.md#durationmilliseconds)
+* [isCopyrighted](_src_mpeg_mpegaudioheader_.mpegaudioheader.md#iscopyrighted)
+* [isOriginal](_src_mpeg_mpegaudioheader_.mpegaudioheader.md#isoriginal)
+* [isPadded](_src_mpeg_mpegaudioheader_.mpegaudioheader.md#ispadded)
+* [isProtected](_src_mpeg_mpegaudioheader_.mpegaudioheader.md#isprotected)
+* [mediaTypes](_src_mpeg_mpegaudioheader_.mpegaudioheader.md#mediatypes)
+* [streamLength](_src_mpeg_mpegaudioheader_.mpegaudioheader.md#streamlength)
+* [vbriHeader](_src_mpeg_mpegaudioheader_.mpegaudioheader.md#vbriheader)
+* [version](_src_mpeg_mpegaudioheader_.mpegaudioheader.md#version)
+* [xingHeader](_src_mpeg_mpegaudioheader_.mpegaudioheader.md#xingheader)
 
 ### Methods
 
-* [find](_src_mpeg_audioheader_.audioheader.md#find)
-* [fromData](_src_mpeg_audioheader_.audioheader.md#fromdata)
-* [fromInfo](_src_mpeg_audioheader_.audioheader.md#frominfo)
+* [find](_src_mpeg_mpegaudioheader_.mpegaudioheader.md#find)
+* [fromData](_src_mpeg_mpegaudioheader_.mpegaudioheader.md#fromdata)
+* [fromInfo](_src_mpeg_mpegaudioheader_.mpegaudioheader.md#frominfo)
 
 ## Properties
 
 ### Unknown
 
-▪ `Static` `Readonly` **Unknown**: [AudioHeader](_src_mpeg_audioheader_.audioheader.md) = AudioHeader.fromInfo(0, 0, XingHeader.unknown, VbriHeader.unknown)
+▪ `Static` `Readonly` **Unknown**: [MpegAudioHeader](_src_mpeg_mpegaudioheader_.mpegaudioheader.md) = MpegAudioHeader.fromInfo( 0, 0, XingHeader.unknown, VbriHeader.unknown )
 
 ## Accessors
 
@@ -59,7 +59,7 @@ header, see http://www.mpgedit.org/mpgedit/mpeg_format/mpeghdr.htm
 
 • get **audioBitrate**(): number
 
-Bitrate of the audio represented by the current instance.
+Bitrate of the audio in kilibits per second represented by the current instance.
 
 **`inheritdoc`** IAudioCodec.audioBitrate
 
@@ -202,7 +202,7 @@ ___
 • set **streamLength**(`value`: number): void
 
 Sets the length of the audio stream represented by the current instance.
-If this value has not been set, [durationMilliseconds](_src_mpeg_audioheader_.audioheader.md#durationmilliseconds) will return an incorrect value.
+If this value has not been set, [durationMilliseconds](_src_mpeg_mpegaudioheader_.mpegaudioheader.md#durationmilliseconds) will return an incorrect value.
 
 #### Parameters:
 
@@ -265,10 +265,10 @@ Name | Type | Default value | Description |
 
 Name | Type |
 ------ | ------ |
-`header` | [AudioHeader](_src_mpeg_audioheader_.audioheader.md) |
+`header` | [MpegAudioHeader](_src_mpeg_mpegaudioheader_.mpegaudioheader.md) |
 `success` | boolean |
 
-    * `header` - the header that was found or [AudioHeader.Unknown](_src_mpeg_audioheader_.audioheader.md#unknown) if a header was not
+    * `header` - the header that was found or [MpegAudioHeader.Unknown](_src_mpeg_mpegaudioheader_.mpegaudioheader.md#unknown) if a header was not
         found
     * `success` - whether or not a header was found
 
@@ -276,7 +276,7 @@ ___
 
 ### fromData
 
-▸ `Static`**fromData**(`data`: [ByteVector](_src_bytevector_.bytevector.md), `file`: [File](_src_file_.file.md), `position`: number): [AudioHeader](_src_mpeg_audioheader_.audioheader.md)
+▸ `Static`**fromData**(`data`: [ByteVector](_src_bytevector_.bytevector.md), `file`: [File](_src_file_.file.md), `position`: number): [MpegAudioHeader](_src_mpeg_mpegaudioheader_.mpegaudioheader.md)
 
 Constructs and initializes a new instance by reading its contents from a data
 [ByteVector](_src_bytevector_.bytevector.md) and its Xing header from the appropriate location in the
@@ -290,13 +290,13 @@ Name | Type | Description |
 `file` | [File](_src_file_.file.md) | File to read the Xing/VBRI header from |
 `position` | number | Position into `file` where the header begins, must be a positive     8-bit integer.  |
 
-**Returns:** [AudioHeader](_src_mpeg_audioheader_.audioheader.md)
+**Returns:** [MpegAudioHeader](_src_mpeg_mpegaudioheader_.mpegaudioheader.md)
 
 ___
 
 ### fromInfo
 
-▸ `Static`**fromInfo**(`flags`: number, `streamLength`: number, `xingHeader`: [XingHeader](_src_mpeg_xingheader_.xingheader.md), `vbriHeader`: [VbriHeader](_src_mpeg_vbriheader_.vbriheader.md)): [AudioHeader](_src_mpeg_audioheader_.audioheader.md)
+▸ `Static`**fromInfo**(`flags`: number, `streamLength`: number, `xingHeader`: [XingHeader](_src_mpeg_xingheader_.xingheader.md), `vbriHeader`: [VbriHeader](_src_mpeg_vbriheader_.vbriheader.md)): [MpegAudioHeader](_src_mpeg_mpegaudioheader_.mpegaudioheader.md)
 
 Constructs and initializes a new instance by populating it with specified values.
 
@@ -309,4 +309,4 @@ Name | Type | Description |
 `xingHeader` | [XingHeader](_src_mpeg_xingheader_.xingheader.md) | Xing header associated with the new instance |
 `vbriHeader` | [VbriHeader](_src_mpeg_vbriheader_.vbriheader.md) | VBRI header associated with the new instance  |
 
-**Returns:** [AudioHeader](_src_mpeg_audioheader_.audioheader.md)
+**Returns:** [MpegAudioHeader](_src_mpeg_mpegaudioheader_.mpegaudioheader.md)

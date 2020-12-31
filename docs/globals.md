@@ -8,6 +8,8 @@
 
 ### Modules
 
+* ["src/aac/aacAudioHeader"](modules/_src_aac_aacaudioheader_.md)
+* ["src/aac/aacFile"](modules/_src_aac_aacfile_.md)
 * ["src/ape/apeFile"](modules/_src_ape_apefile_.md)
 * ["src/ape/apeStreamHeader"](modules/_src_ape_apestreamheader_.md)
 * ["src/ape/apeTag"](modules/_src_ape_apetag_.md)
@@ -49,11 +51,12 @@
 * ["src/id3v2/syncData"](modules/_src_id3v2_syncdata_.md)
 * ["src/id3v2/utilTypes"](modules/_src_id3v2_utiltypes_.md)
 * ["src/index"](modules/_src_index_.md)
-* ["src/mpeg/audioFile"](modules/_src_mpeg_audiofile_.md)
-* ["src/mpeg/audioHeader"](modules/_src_mpeg_audioheader_.md)
+* ["src/mpeg/mpegAudioFile"](modules/_src_mpeg_mpegaudiofile_.md)
+* ["src/mpeg/mpegAudioHeader"](modules/_src_mpeg_mpegaudioheader_.md)
 * ["src/mpeg/mpegEnums"](modules/_src_mpeg_mpegenums_.md)
 * ["src/mpeg/vbriHeader"](modules/_src_mpeg_vbriheader_.md)
 * ["src/mpeg/xingHeader"](modules/_src_mpeg_xingheader_.md)
+* ["src/mpeg4/mpeg4AudioTypes"](modules/_src_mpeg4_mpeg4audiotypes_.md)
 * ["src/nonContainer/endTag"](modules/_src_noncontainer_endtag_.md)
 * ["src/nonContainer/nonContainerFile"](modules/_src_noncontainer_noncontainerfile_.md)
 * ["src/nonContainer/nonContainerTag"](modules/_src_noncontainer_noncontainertag_.md)

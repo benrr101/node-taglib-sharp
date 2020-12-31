@@ -334,7 +334,7 @@ export default class MpegAudioHeader implements IAudioCodec {
      *         found
      *     * `success` - whether or not a header was found
      */
-    public static find(file: File, position: number, length: number = -1): { header: MpegAudioHeader, success: boolean} {
+    public static find(file: File, position: number, length: number = -1): {header: MpegAudioHeader, success: boolean} {
         Guards.truthy(file, "file");
         Guards.int(position, "position");
         Guards.int(length, "length");

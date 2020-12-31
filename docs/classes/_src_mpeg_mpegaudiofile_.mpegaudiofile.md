@@ -1,81 +1,89 @@
 **[node-taglib-sharp](../README.md)**
 
-> [Globals](../globals.md) / ["src/mpeg/audioFile"](../modules/_src_mpeg_audiofile_.md) / AudioFile
+> [Globals](../globals.md) / ["src/mpeg/mpegAudioFile"](../modules/_src_mpeg_mpegaudiofile_.md) / MpegAudioFile
 
-# Class: AudioFile
+# Class: MpegAudioFile
+
+This class extends [NonContainerFile](_src_noncontainer_noncontainerfile_.noncontainerfile.md) to provide tagging and properties support for
+MPEG-1, MPEG-2, and MPEG-2.5 audio files.
+
+**`remarks`** A [Id3v1Tag](_src_id3v1_id3v1tag_.id3v1tag.md) and [Id3v2Tag](_src_id3v2_id3v2tag_.id3v2tag.md) will be added automatically to any file
+    that doesn't contain one. This change does not affect the file until it is saved and can be
+    reversed using the following method:
+    `file.removeTags(file.tagTypes & ~file.tagTypesOnDisk);`
 
 ## Hierarchy
 
 * [NonContainerFile](_src_noncontainer_noncontainerfile_.noncontainerfile.md)
 
-  ↳ **AudioFile**
+  ↳ **MpegAudioFile**
 
 ## Index
 
 ### Constructors
 
-* [constructor](_src_mpeg_audiofile_.audiofile.md#constructor)
+* [constructor](_src_mpeg_mpegaudiofile_.mpegaudiofile.md#constructor)
 
 ### Properties
 
-* [\_fileAbstraction](_src_mpeg_audiofile_.audiofile.md#_fileabstraction)
-* [\_fileStream](_src_mpeg_audiofile_.audiofile.md#_filestream)
-* [\_invariantEndPosition](_src_mpeg_audiofile_.audiofile.md#_invariantendposition)
-* [\_invariantStartPosition](_src_mpeg_audiofile_.audiofile.md#_invariantstartposition)
-* [\_tagTypesOnDisk](_src_mpeg_audiofile_.audiofile.md#_tagtypesondisk)
+* [\_fileAbstraction](_src_mpeg_mpegaudiofile_.mpegaudiofile.md#_fileabstraction)
+* [\_fileStream](_src_mpeg_mpegaudiofile_.mpegaudiofile.md#_filestream)
+* [\_invariantEndPosition](_src_mpeg_mpegaudiofile_.mpegaudiofile.md#_invariantendposition)
+* [\_invariantStartPosition](_src_mpeg_mpegaudiofile_.mpegaudiofile.md#_invariantstartposition)
+* [\_tagTypesOnDisk](_src_mpeg_mpegaudiofile_.mpegaudiofile.md#_tagtypesondisk)
 
 ### Accessors
 
-* [corruptionReasons](_src_mpeg_audiofile_.audiofile.md#corruptionreasons)
-* [endTag](_src_mpeg_audiofile_.audiofile.md#endtag)
-* [fileAbstraction](_src_mpeg_audiofile_.audiofile.md#fileabstraction)
-* [invariantEndPosition](_src_mpeg_audiofile_.audiofile.md#invariantendposition)
-* [invariantStartPosition](_src_mpeg_audiofile_.audiofile.md#invariantstartposition)
-* [isPossiblyCorrupt](_src_mpeg_audiofile_.audiofile.md#ispossiblycorrupt)
-* [isWritable](_src_mpeg_audiofile_.audiofile.md#iswritable)
-* [length](_src_mpeg_audiofile_.audiofile.md#length)
-* [mimeType](_src_mpeg_audiofile_.audiofile.md#mimetype)
-* [mode](_src_mpeg_audiofile_.audiofile.md#mode)
-* [name](_src_mpeg_audiofile_.audiofile.md#name)
-* [position](_src_mpeg_audiofile_.audiofile.md#position)
-* [properties](_src_mpeg_audiofile_.audiofile.md#properties)
-* [startTag](_src_mpeg_audiofile_.audiofile.md#starttag)
-* [tag](_src_mpeg_audiofile_.audiofile.md#tag)
-* [tagTypes](_src_mpeg_audiofile_.audiofile.md#tagtypes)
-* [tagTypesOnDisk](_src_mpeg_audiofile_.audiofile.md#tagtypesondisk)
-* [bufferSize](_src_mpeg_audiofile_.audiofile.md#buffersize)
+* [corruptionReasons](_src_mpeg_mpegaudiofile_.mpegaudiofile.md#corruptionreasons)
+* [endTag](_src_mpeg_mpegaudiofile_.mpegaudiofile.md#endtag)
+* [fileAbstraction](_src_mpeg_mpegaudiofile_.mpegaudiofile.md#fileabstraction)
+* [invariantEndPosition](_src_mpeg_mpegaudiofile_.mpegaudiofile.md#invariantendposition)
+* [invariantStartPosition](_src_mpeg_mpegaudiofile_.mpegaudiofile.md#invariantstartposition)
+* [isPossiblyCorrupt](_src_mpeg_mpegaudiofile_.mpegaudiofile.md#ispossiblycorrupt)
+* [isWritable](_src_mpeg_mpegaudiofile_.mpegaudiofile.md#iswritable)
+* [length](_src_mpeg_mpegaudiofile_.mpegaudiofile.md#length)
+* [mimeType](_src_mpeg_mpegaudiofile_.mpegaudiofile.md#mimetype)
+* [mode](_src_mpeg_mpegaudiofile_.mpegaudiofile.md#mode)
+* [name](_src_mpeg_mpegaudiofile_.mpegaudiofile.md#name)
+* [position](_src_mpeg_mpegaudiofile_.mpegaudiofile.md#position)
+* [properties](_src_mpeg_mpegaudiofile_.mpegaudiofile.md#properties)
+* [startTag](_src_mpeg_mpegaudiofile_.mpegaudiofile.md#starttag)
+* [tag](_src_mpeg_mpegaudiofile_.mpegaudiofile.md#tag)
+* [tagTypes](_src_mpeg_mpegaudiofile_.mpegaudiofile.md#tagtypes)
+* [tagTypesOnDisk](_src_mpeg_mpegaudiofile_.mpegaudiofile.md#tagtypesondisk)
+* [bufferSize](_src_mpeg_mpegaudiofile_.mpegaudiofile.md#buffersize)
 
 ### Methods
 
-* [dispose](_src_mpeg_audiofile_.audiofile.md#dispose)
-* [find](_src_mpeg_audiofile_.audiofile.md#find)
-* [getTag](_src_mpeg_audiofile_.audiofile.md#gettag)
-* [insert](_src_mpeg_audiofile_.audiofile.md#insert)
-* [markAsCorrupt](_src_mpeg_audiofile_.audiofile.md#markascorrupt)
-* [preSave](_src_mpeg_audiofile_.audiofile.md#presave)
-* [rFind](_src_mpeg_audiofile_.audiofile.md#rfind)
-* [readBlock](_src_mpeg_audiofile_.audiofile.md#readblock)
-* [readEnd](_src_mpeg_audiofile_.audiofile.md#readend)
-* [readProperties](_src_mpeg_audiofile_.audiofile.md#readproperties)
-* [readStart](_src_mpeg_audiofile_.audiofile.md#readstart)
-* [removeBlock](_src_mpeg_audiofile_.audiofile.md#removeblock)
-* [removeTags](_src_mpeg_audiofile_.audiofile.md#removetags)
-* [save](_src_mpeg_audiofile_.audiofile.md#save)
-* [seek](_src_mpeg_audiofile_.audiofile.md#seek)
-* [truncate](_src_mpeg_audiofile_.audiofile.md#truncate)
-* [writeBlock](_src_mpeg_audiofile_.audiofile.md#writeblock)
-* [addFileType](_src_mpeg_audiofile_.audiofile.md#addfiletype)
-* [addFileTypeResolver](_src_mpeg_audiofile_.audiofile.md#addfiletyperesolver)
-* [createFromAbstraction](_src_mpeg_audiofile_.audiofile.md#createfromabstraction)
-* [createFromPath](_src_mpeg_audiofile_.audiofile.md#createfrompath)
-* [removeFileType](_src_mpeg_audiofile_.audiofile.md#removefiletype)
-* [removeFileTypeResolver](_src_mpeg_audiofile_.audiofile.md#removefiletyperesolver)
+* [dispose](_src_mpeg_mpegaudiofile_.mpegaudiofile.md#dispose)
+* [find](_src_mpeg_mpegaudiofile_.mpegaudiofile.md#find)
+* [getTag](_src_mpeg_mpegaudiofile_.mpegaudiofile.md#gettag)
+* [insert](_src_mpeg_mpegaudiofile_.mpegaudiofile.md#insert)
+* [markAsCorrupt](_src_mpeg_mpegaudiofile_.mpegaudiofile.md#markascorrupt)
+* [preSave](_src_mpeg_mpegaudiofile_.mpegaudiofile.md#presave)
+* [rFind](_src_mpeg_mpegaudiofile_.mpegaudiofile.md#rfind)
+* [readBlock](_src_mpeg_mpegaudiofile_.mpegaudiofile.md#readblock)
+* [readEnd](_src_mpeg_mpegaudiofile_.mpegaudiofile.md#readend)
+* [readProperties](_src_mpeg_mpegaudiofile_.mpegaudiofile.md#readproperties)
+* [readStart](_src_mpeg_mpegaudiofile_.mpegaudiofile.md#readstart)
+* [removeBlock](_src_mpeg_mpegaudiofile_.mpegaudiofile.md#removeblock)
+* [removeTags](_src_mpeg_mpegaudiofile_.mpegaudiofile.md#removetags)
+* [save](_src_mpeg_mpegaudiofile_.mpegaudiofile.md#save)
+* [seek](_src_mpeg_mpegaudiofile_.mpegaudiofile.md#seek)
+* [truncate](_src_mpeg_mpegaudiofile_.mpegaudiofile.md#truncate)
+* [writeBlock](_src_mpeg_mpegaudiofile_.mpegaudiofile.md#writeblock)
+* [addFileType](_src_mpeg_mpegaudiofile_.mpegaudiofile.md#addfiletype)
+* [addFileTypeResolver](_src_mpeg_mpegaudiofile_.mpegaudiofile.md#addfiletyperesolver)
+* [createFromAbstraction](_src_mpeg_mpegaudiofile_.mpegaudiofile.md#createfromabstraction)
+* [createFromPath](_src_mpeg_mpegaudiofile_.mpegaudiofile.md#createfrompath)
+* [removeFileType](_src_mpeg_mpegaudiofile_.mpegaudiofile.md#removefiletype)
+* [removeFileTypeResolver](_src_mpeg_mpegaudiofile_.mpegaudiofile.md#removefiletyperesolver)
 
 ## Constructors
 
 ### constructor
 
-\+ **new AudioFile**(`file`: [IFileAbstraction](../interfaces/_src_fileabstraction_.ifileabstraction.md) \| string, `propertiesStyle`: [ReadStyle](../enums/_src_file_.readstyle.md)): [AudioFile](_src_mpeg_audiofile_.audiofile.md)
+\+ **new MpegAudioFile**(`file`: [IFileAbstraction](../interfaces/_src_fileabstraction_.ifileabstraction.md) \| string, `propertiesStyle`: [ReadStyle](../enums/_src_file_.readstyle.md)): [MpegAudioFile](_src_mpeg_mpegaudiofile_.mpegaudiofile.md)
 
 *Overrides [NonContainerFile](_src_noncontainer_noncontainerfile_.noncontainerfile.md).[constructor](_src_noncontainer_noncontainerfile_.noncontainerfile.md#constructor)*
 
@@ -86,7 +94,7 @@ Name | Type |
 `file` | [IFileAbstraction](../interfaces/_src_fileabstraction_.ifileabstraction.md) \| string |
 `propertiesStyle` | [ReadStyle](../enums/_src_file_.readstyle.md) |
 
-**Returns:** [AudioFile](_src_mpeg_audiofile_.audiofile.md)
+**Returns:** [MpegAudioFile](_src_mpeg_mpegaudiofile_.mpegaudiofile.md)
 
 ## Properties
 
@@ -503,7 +511,7 @@ Searched backwards through a file for a specified pattern, starting at a specifi
 
 Name | Type | Default value | Description |
 ------ | ------ | ------ | ------ |
-`pattern` | [ByteVector](_src_bytevector_.bytevector.md) | - | Pattern to search for in the current instance. Must be shorter than the     [bufferSize](_src_mpeg_audiofile_.audiofile.md#buffersize) |
+`pattern` | [ByteVector](_src_bytevector_.bytevector.md) | - | Pattern to search for in the current instance. Must be shorter than the     [bufferSize](_src_mpeg_mpegaudiofile_.mpegaudiofile.md#buffersize) |
 `startPosition` | number | 0 | Seek position from which to start searching. |
 `after?` | [ByteVector](_src_bytevector_.bytevector.md) | - | Pattern that the searched for pattern must appear after. If this pattern is     found first, `-1` is returned. |
 

@@ -78,7 +78,7 @@ Size of a Monkey Audio Header
 
 • get **audioBitrate**(): number
 
-Bitrate of the audio represented by the current instance.
+Bitrate of the audio in kilibits per second represented by the current instance.
 
 **`inheritdoc`** 
 

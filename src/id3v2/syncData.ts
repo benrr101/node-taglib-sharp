@@ -3,7 +3,7 @@ import {Guards} from "../utils";
 
 /**
  * Support for encoding and decoding unsynchronized data and numbers.
- * @description Unsynchronization is designed so that portions of the tag won't be misinterpreted
+ * @remarks Unsynchronization is designed so that portions of the tag won't be misinterpreted
  *     as MPEG audio stream headers by removing the possibility of the sync bytes occurring in the
  *     tag.
  */

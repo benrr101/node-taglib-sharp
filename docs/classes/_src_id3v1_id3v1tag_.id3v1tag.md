@@ -129,7 +129,7 @@ Size of an ID3v1 tag.
 
 **`inheritdoc`** 
 
-**`description`** When stored on disk, only the first 30 bytes of the latin-1 encoded value will
+**`remarks`** When stored on disk, only the first 30 bytes of the latin-1 encoded value will
     be stored. This may result in data loss.
 
 #### Parameters:
@@ -151,7 +151,7 @@ ___
 Gets the band or artist who is credited credited in the creation of the entire album or
 collection containing the media described by the current instance.
 
-**`description`** This field is typically optional but aids in the sorting of compilations or albums
+**`remarks`** This field is typically optional but aids in the sorting of compilations or albums
     with multiple artist. For example, if an album has several artists, sorting by artist
     will split up albums by the same artist. Having a single album artist for an entire
     album solves this problem.
@@ -172,7 +172,7 @@ Band or artist credited with the creation of the entire album or collection
 Sets the bands or artists who is credited credited in the creation of the entire album or
 collection containing the media described by the current instance.
 
-**`description`** This field is typically optional but aids in the sorting of compilations or albums
+**`remarks`** This field is typically optional but aids in the sorting of compilations or albums
     with multiple artist. For example, if an album has several artists, sorting by artist
     will split up albums by the same artist. Having a single album artist for an entire
     album solves this problem.
@@ -205,7 +205,7 @@ album or collection containing the media described by the current instance.
 
 **`see`** albumArtists
 
-**`description`** This is used to provide more control over how the media is sorted. Typical uses are to
+**`remarks`** This is used to provide more control over how the media is sorted. Typical uses are to
     skip articles or sort by last by last name. For example "Ben Folds" might be sorted as
     "Folds, Ben".
     As this value is to be used as a sorting key, it should be used with less variation than
@@ -227,7 +227,7 @@ album or collection containing the media described by the current instance.
 
 **`see`** albumArtists
 
-**`description`** This is used to provide more control over how the media is sorted. Typical uses are to
+**`remarks`** This is used to provide more control over how the media is sorted. Typical uses are to
     skip articles or sort by last by last name. For example "Ben Folds" might be sorted as
     "Folds, Ben".
     As this value is to be used as a sorting key, it should be used with less variation than
@@ -258,7 +258,7 @@ Gets the sortable name of the album title of the media represented by the curren
 
 **`see`** album
 
-**`description`** This field is typically optional but aids in sort of compilations or albums with
+**`remarks`** This field is typically optional but aids in sort of compilations or albums with
     similar titles.
 
 **Returns:** string
@@ -274,7 +274,7 @@ Sets the sortable name of the album title of the media represented by the curren
 
 **`see`** album
 
-**`description`** This field is typically optional but aids in sort of compilations or albums with
+**`remarks`** This field is typically optional but aids in sort of compilations or albums with
     similar titles.
 
 #### Parameters:
@@ -298,7 +298,7 @@ ___
 
 Gets the Amazon ID of the media represented by the current instance.
 
-**`description`** This field represents the AmazonID, also called the ASIN, and is used to uniquely
+**`remarks`** This field represents the AmazonID, also called the ASIN, and is used to uniquely
     identify the particular track or album in the Amazon catalog.
 
 **Returns:** string
@@ -312,7 +312,7 @@ Amazon ID of the media represented by the current instance or `undefined` if no
 
 Sets the Amazon ID of the media represented by the current instance.
 
-**`description`** This field represents the AmazonID, also called the ASIN, and is used to uniquely
+**`remarks`** This field represents the AmazonID, also called the ASIN, and is used to uniquely
     identify the particular track or album in the Amazon catalog.
 
 #### Parameters:
@@ -337,7 +337,7 @@ ___
 Gets the number of beats per minute in the audio of the media represented by the current
 instance.
 
-**`description`** This field is useful for DJ's who are trying to beat match tracks. It should be
+**`remarks`** This field is useful for DJ's who are trying to beat match tracks. It should be
     calculated from the audio or pulled from a database.
 
 **Returns:** number
@@ -352,7 +352,7 @@ Beats per minute of the audio in the media represented by the current instance, 
 Sets the number of beats per minute in the audio of the media represented by the current
 instance.
 
-**`description`** This field is useful for DJ's who are trying to beat match tracks. It should be
+**`remarks`** This field is useful for DJ's who are trying to beat match tracks. It should be
     calculated from the audio or pulled from a database.
 
 #### Parameters:
@@ -384,7 +384,7 @@ ___
 
 **`inheritdoc`** 
 
-**`description`** When stored on disk, only the first 28 bytes of the latin-1 encoded value will
+**`remarks`** When stored on disk, only the first 28 bytes of the latin-1 encoded value will
     be stored. This may result in lost data.
 
 #### Parameters:
@@ -405,7 +405,7 @@ ___
 
 Gets the composers of the media represented by the current instance.
 
-**`description`** This field represents the composers, song writers, script writers, or persons who
+**`remarks`** This field represents the composers, song writers, script writers, or persons who
     claim authorship of the media.
 
 **Returns:** string[]
@@ -419,7 +419,7 @@ Composers of the media represented by the current instance of an empty array if 
 
 Sets the composers of the media represented by the current instance.
 
-**`description`** This field represents the composers, song writers, script writers, or persons who
+**`remarks`** This field represents the composers, song writers, script writers, or persons who
     claim authorship of the media.
 
 #### Parameters:
@@ -445,7 +445,7 @@ Gets the sortable names of the composers of the media represented by the current
 
 **`see`** composers
 
-**`description`** This field is typically optional but aids in the sorting of compilations or albums
+**`remarks`** This field is typically optional but aids in the sorting of compilations or albums
     with multiple composers.
 
 **Returns:** string[]
@@ -461,7 +461,7 @@ Sets the sortable names of the composers of the media represented by the current
 
 **`see`** composers
 
-**`description`** This field is typically optional but aids in the sorting of compilations or albums
+**`remarks`** This field is typically optional but aids in the sorting of compilations or albums
     with multiple composers.
 
 #### Parameters:
@@ -485,7 +485,7 @@ ___
 
 Gets the conductor or director of the media represented by the current instance.
 
-**`description`** This field is most useful for organizing classical music and movies.
+**`remarks`** This field is most useful for organizing classical music and movies.
 
 **Returns:** string
 
@@ -498,7 +498,7 @@ Conductor or director of the media represented by the current instance or
 
 Sets the conductor or director of the media represented by the current instance.
 
-**`description`** This field is most useful for organizing classical music and movies.
+**`remarks`** This field is most useful for organizing classical music and movies.
 
 #### Parameters:
 
@@ -521,7 +521,7 @@ ___
 
 Gets the copyright information for the media represented by the current instance.
 
-**`description`** This field should be used for storing copyright information. It may be useful to show
+**`remarks`** This field should be used for storing copyright information. It may be useful to show
     this information somewhere in the program while the media is playing.
     Players should not support editing this field, but media creation tools should
     definitely allow modification.
@@ -537,7 +537,7 @@ Copyright information for the media represented by the current instance or
 
 Sets the copyright information for the media represented by the current instance.
 
-**`description`** This field should be used for storing copyright information. It may be useful to show
+**`remarks`** This field should be used for storing copyright information. It may be useful to show
     this information somewhere in the program while the media is playing.
     Players should not support editing this field, but media creation tools should
     definitely allow modification.
@@ -595,7 +595,7 @@ Gets a short description of the media. For music, this could be the comment that
 made of his/her work. For a video, this should be a short summary of the story/plot, but
 generally no spoliers. This should give the impression of what to expect in the media.
 
-**`description`** This is especially relevant for a movie. For example, for "Fear and Loathing in Las
+**`remarks`** This is especially relevant for a movie. For example, for "Fear and Loathing in Las
     Vegas", this could be "An oddball journalist and his psychopathic lawyer travel to Las
     Vegas for a series of psychedelic escapades."
 
@@ -612,7 +612,7 @@ Sets a short description of the media. For music, this could be the comment that
 made of his/her work. For a video, this should be a short summary of the story/plot, but
 generally no spoliers. This should give the impression of what to expect in the media.
 
-**`description`** This is especially relevant for a movie. For example, for "Fear and Loathing in Las
+**`remarks`** This is especially relevant for a movie. For example, for "Fear and Loathing in Las
     Vegas", this could be "An oddball journalist and his psychopathic lawyer travel to Las
     Vegas for a series of psychedelic escapades."
 
@@ -638,7 +638,7 @@ ___
 Gets the number of the disc containing the media represented by the current instance in the
 boxed set. For a series, this represents the season number.
 
-**`description`** This value should be the same as the number that appears on the disc. For example, if
+**`remarks`** This value should be the same as the number that appears on the disc. For example, if
     the disc is the first of three, the value should be `1`. It should be no more than
     [discCount](_src_id3v1_id3v1tag_.id3v1tag.md#disccount) if [discCount](_src_id3v1_id3v1tag_.id3v1tag.md#disccount) is non-zero.
 
@@ -654,7 +654,7 @@ Number of the disc or season of the media represented by the current instance in
 Sets the number of the disc containing the media represented by the current instance in the
 boxed set. For a series, this represents the season number.
 
-**`description`** This value should be the same as the number that appears on the disc. For example, if
+**`remarks`** This value should be the same as the number that appears on the disc. For example, if
     the disc is the first of three, the value should be `1`. It should be no more than
     [discCount](_src_id3v1_id3v1tag_.id3v1tag.md#disccount) if [discCount](_src_id3v1_id3v1tag_.id3v1tag.md#disccount) is non-zero.
 
@@ -680,7 +680,7 @@ ___
 Gets the number of discs or seasons in the boxed set containing the media represented by the
 current instance.
 
-**`description`** If non-zero, this should be at least equal to [disc](_src_id3v1_id3v1tag_.id3v1tag.md#disc). If [disc](_src_id3v1_id3v1tag_.id3v1tag.md#disc) is zero,
+**`remarks`** If non-zero, this should be at least equal to [disc](_src_id3v1_id3v1tag_.id3v1tag.md#disc). If [disc](_src_id3v1_id3v1tag_.id3v1tag.md#disc) is zero,
     this value should also be zero.
 
 **Returns:** number
@@ -695,7 +695,7 @@ Number of discs or seasons in the boxed set containing the media represented by 
 Sets the number of discs or seasons in the boxed set containing the media represented by the
 current instance.
 
-**`description`** If non-zero, this should be at least equal to [disc](_src_id3v1_id3v1tag_.id3v1tag.md#disc). If [disc](_src_id3v1_id3v1tag_.id3v1tag.md#disc) is zero,
+**`remarks`** If non-zero, this should be at least equal to [disc](_src_id3v1_id3v1tag_.id3v1tag.md#disc). If [disc](_src_id3v1_id3v1tag_.id3v1tag.md#disc) is zero,
     this value should also be zero.
 
 #### Parameters:
@@ -811,7 +811,7 @@ ___
 
 **`inheritdoc`** 
 
-**`description`** Only first genre will be stored and only if it is an exact match for a value in
+**`remarks`** Only first genre will be stored and only if it is an exact match for a value in
     the list of audio genres. All other values will result in the property being cleared.
 
 #### Parameters:
@@ -832,7 +832,7 @@ ___
 
 Gets the grouping on the album which the media in the current instance belongs to.
 
-**`description`** This field contains a non-physical group to which the track belongs. In classical
+**`remarks`** This field contains a non-physical group to which the track belongs. In classical
     music this could be a movement. It could also be parts of a series like "Introduction",
     "Closing Remarks", etc.
 
@@ -847,7 +847,7 @@ Grouping on the album which the media in the current instance belongs to or
 
 Sets the grouping on the album which the media in the current instance belongs to.
 
-**`description`** This field contains a non-physical group to which the track belongs. In classical
+**`remarks`** This field contains a non-physical group to which the track belongs. In classical
     music this could be a movement. It could also be parts of a series like "Introduction",
     "Closing Remarks", etc.
 
@@ -902,7 +902,7 @@ ___
 
 Gets whether or not the current instance is empty.
 
-**`description`** In the default implementation, this checks the values supported by [Tag](_src_tag_.tag.md), but it
+**`remarks`** In the default implementation, this checks the values supported by [Tag](_src_tag_.tag.md), but it
     may be extended by child classes to support other values.
 
 **Returns:** boolean
@@ -1009,7 +1009,7 @@ ___
 
 Gets the lyrics or script of the media represented by the current instance.
 
-**`description`** This field contains a plain text representation of the lyrics or scripts with line
+**`remarks`** This field contains a plain text representation of the lyrics or scripts with line
     breaks and whitespace being the only formatting marks.
     Some formats support more advanced lyrics, like synchronized lyrics, but those must be
     accessed using format-specific implementations.
@@ -1025,7 +1025,7 @@ Lyrics or script of the media represented by the current instance or `undefined`
 
 Sets the lyrics or script of the media represented by the current instance.
 
-**`description`** This field contains a plain text representation of the lyrics or scripts with line
+**`remarks`** This field contains a plain text representation of the lyrics or scripts with line
     breaks and whitespace being the only formatting marks.
     Some formats support more advanced lyrics, like synchronized lyrics, but those must be
     accessed using format-specific implementations.
@@ -1051,7 +1051,7 @@ ___
 
 Gets the MusicBrainz artist ID of the media represented by the current instance.
 
-**`description`** This field represents the MusicBrainz ArtistID, and is used to uniquely identify a
+**`remarks`** This field represents the MusicBrainz ArtistID, and is used to uniquely identify a
     particular artist of the track.
 
 **Returns:** string
@@ -1065,7 +1065,7 @@ MusicBrainz ArtistID of the media represented by the current instance or
 
 Sets the MusicBrainz artist ID of the media represented by the current instance.
 
-**`description`** This field represents the MusicBrainz ArtistID, and is used to uniquely identify a
+**`remarks`** This field represents the MusicBrainz ArtistID, and is used to uniquely identify a
     particular artist of the track.
 
 #### Parameters:
@@ -1089,7 +1089,7 @@ ___
 
 Gets the MusicBrainz disc ID of the media represented by the current instance.
 
-**`description`** This field represents the MusicBrainz DiscID and is used to uniquely identify the
+**`remarks`** This field represents the MusicBrainz DiscID and is used to uniquely identify the
     particular released media associated with this track.
 
 **Returns:** string
@@ -1103,7 +1103,7 @@ MusicBrainz DiscID of the media represented by the current instance or `undefine
 
 Sets the MusicBrainz disc ID of the media represented by the current instance.
 
-**`description`** This field represents the MusicBrainz DiscID and is used to uniquely identify the
+**`remarks`** This field represents the MusicBrainz DiscID and is used to uniquely identify the
     particular released media associated with this track.
 
 #### Parameters:
@@ -1127,7 +1127,7 @@ ___
 
 Gets the MusicBrainz release artist ID of the media represented by the current instance.
 
-**`description`** This field represents the MusicBrainz ReleaseArtistID, and is used to uniquely
+**`remarks`** This field represents the MusicBrainz ReleaseArtistID, and is used to uniquely
     identify a particular album artist credited with the album.
 
 **Returns:** string
@@ -1141,7 +1141,7 @@ MusicBrainz ReleaseArtistID of the media represented by the current instance or
 
 Sets the MusicBrainz release artist ID of the media represented by the current instance.
 
-**`description`** This field represents the MusicBrainz ReleaseArtistID, and is used to uniquely
+**`remarks`** This field represents the MusicBrainz ReleaseArtistID, and is used to uniquely
     identify a particular album artist credited with the album.
 
 #### Parameters:
@@ -1165,7 +1165,7 @@ ___
 
 Gets the MusicBrainz release country of the media represented by the current instance.
 
-**`description`** This field represents the MusicBrainz ReleaseCountry which describes the country in
+**`remarks`** This field represents the MusicBrainz ReleaseCountry which describes the country in
     which an album was released. Note that the release country of an album is not
     necessarily the country in which it was produced. The label itself will typically be
     more relevant. Eg, a release on "Foo Records UK" that has "Made in Austria" printed on
@@ -1182,7 +1182,7 @@ MusicBrainz ReleaseCountry of the media represented by the current instance or
 
 Sets the MusicBrainz release country of the media represented by the current instance.
 
-**`description`** This field represents the MusicBrainz ReleaseCountry which describes the country in
+**`remarks`** This field represents the MusicBrainz ReleaseCountry which describes the country in
     which an album was released. Note that the release country of an album is not
     necessarily the country in which it was produced. The label itself will typically be
     more relevant. Eg, a release on "Foo Records UK" that has "Made in Austria" printed on
@@ -1209,7 +1209,7 @@ ___
 
 Gets the MusicBrainz release group ID of the media represented by the current instance.
 
-**`description`** This field represents the MusicBrainz ReleaseGroupID and is used to uniquely identify
+**`remarks`** This field represents the MusicBrainz ReleaseGroupID and is used to uniquely identify
     a particular release group to which this track belongs.
 
 **Returns:** string
@@ -1223,7 +1223,7 @@ MusicBrainz ReleaseGroupID of the media represented by the current instance or
 
 Sets the MusicBrainz release group ID of the media represented by the current instance.
 
-**`description`** This field represents the MusicBrainz ReleaseGroupID and is used to uniquely identify
+**`remarks`** This field represents the MusicBrainz ReleaseGroupID and is used to uniquely identify
     a particular release group to which this track belongs.
 
 #### Parameters:
@@ -1247,7 +1247,7 @@ ___
 
 Gets the MusicBrainz release ID of the media represented by the current instance.
 
-**`description`** This field represents the MusicBrains ReleaseID and is used to uniquely identify a
+**`remarks`** This field represents the MusicBrains ReleaseID and is used to uniquely identify a
     particular release to which this track belongs.
 
 **Returns:** string
@@ -1261,7 +1261,7 @@ MusicBrainz ReleaseID of the media represented by the current instance or
 
 Sets the MusicBrainz release ID of the media represented by the current instance.
 
-**`description`** This field represents the MusicBrains ReleaseID and is used to uniquely identify a
+**`remarks`** This field represents the MusicBrains ReleaseID and is used to uniquely identify a
     particular release to which this track belongs.
 
 #### Parameters:
@@ -1285,7 +1285,7 @@ ___
 
 Gets the MusicBrainz release status of the media represented by the current instance.
 
-**`description`** This field represents the MusicBrainz ReleaseStatus used to describe how 'official' a
+**`remarks`** This field represents the MusicBrainz ReleaseStatus used to describe how 'official' a
     release is. Common statuses are: `Official`, `Promotion`, `Bootleg`, `Pseudo-release`.
 
 **Returns:** string
@@ -1299,7 +1299,7 @@ MusicBrainz ReleaseStatus of the media represented by the current instance or
 
 Sets the MusicBrainz release status of the media represented by the current instance.
 
-**`description`** This field represents the MusicBrainz ReleaseStatus used to describe how 'official' a
+**`remarks`** This field represents the MusicBrainz ReleaseStatus used to describe how 'official' a
     release is. Common statuses are: `Official`, `Promotion`, `Bootleg`, `Pseudo-release`.
 
 #### Parameters:
@@ -1323,7 +1323,7 @@ ___
 
 Gets the MusicBrainz release type of the media represented by the current instance.
 
-**`description`** This field represents the MusicBrainz ReleaseType that describes what kind of release
+**`remarks`** This field represents the MusicBrainz ReleaseType that describes what kind of release
     a release is. Common types are: `Single`, `Album`, `EP`, `Compilation`, `Soundtrack,
     `SpokenWord`, `Interview`, `Audiobook`, `Live`, `Remix`, and `Other`. Careful thought
     must be given when using this field to decide if a particular track "is a compilation".
@@ -1339,7 +1339,7 @@ MusicBrainz ReleaseType of the media represented by the current instance or
 
 Sets the MusicBrainz release type of the media represented by the current instance.
 
-**`description`** This field represents the MusicBrainz ReleaseType that describes what kind of release
+**`remarks`** This field represents the MusicBrainz ReleaseType that describes what kind of release
     a release is. Common types are: `Single`, `Album`, `EP`, `Compilation`, `Soundtrack,
     `SpokenWord`, `Interview`, `Audiobook`, `Live`, `Remix`, and `Other`. Careful thought
     must be given when using this field to decide if a particular track "is a compilation".
@@ -1366,7 +1366,7 @@ ___
 Gets the MusicBrainz track ID of the media represented by the media represented by the
 current instance.
 
-**`description`** This field represents the MusicBrainz TrackID and is used to uniquely identify a
+**`remarks`** This field represents the MusicBrainz TrackID and is used to uniquely identify a
     particular track.
 
 **Returns:** string
@@ -1381,7 +1381,7 @@ MusicBrainz TrackID of the media represented by the current instance or `undefin
 Sets the MusicBrainz track ID of the media represented by the media represented by the
 current instance.
 
-**`description`** This field represents the MusicBrainz TrackID and is used to uniquely identify a
+**`remarks`** This field represents the MusicBrainz TrackID and is used to uniquely identify a
     particular track.
 
 #### Parameters:
@@ -1405,7 +1405,7 @@ ___
 
 Gets the MusicIP PUID of the media represented by the current instance.
 
-**`description`** This field represents the MusicIP PUID, an acoustic fingerprint identifier. It
+**`remarks`** This field represents the MusicIP PUID, an acoustic fingerprint identifier. It
     identifies wht this track "sounds like".
 
 **Returns:** string
@@ -1419,7 +1419,7 @@ MusicIP PUID of the media represented by the current instance or `undefined` if 
 
 Sets the MusicIP PUID of the media represented by the current instance.
 
-**`description`** This field represents the MusicIP PUID, an acoustic fingerprint identifier. It
+**`remarks`** This field represents the MusicIP PUID, an acoustic fingerprint identifier. It
     identifies wht this track "sounds like".
 
 #### Parameters:
@@ -1451,7 +1451,7 @@ ___
 
 **`inheritdoc`** 
 
-**`description`** When stored on disk, only the first 30 bytes of the latin-1 encoded value will
+**`remarks`** When stored on disk, only the first 30 bytes of the latin-1 encoded value will
     be stored, minus a byte for each additional performer (ie, two performers will only have
     29 bytes and three performers will only have 28 bytes). This may result in data loss.
 
@@ -1476,7 +1476,7 @@ for music. This must match the [performers](_src_id3v1_id3v1tag_.id3v1tag.md#per
 role). Several roles for the same artist/actor can be separated with semicolons. For
 example: "Bass; Backing Vocals; Vibraphone".
 
-**`description`** It is highly important to match each role to the performers. This means that an entry
+**`remarks`** It is highly important to match each role to the performers. This means that an entry
     in the [performersRole](_src_id3v1_id3v1tag_.id3v1tag.md#performersrole) array is `undefined` to maintain the relationship between
     `performers[i]` and `performersRole[i]`.
 
@@ -1494,7 +1494,7 @@ for music. This must match the [performers](_src_id3v1_id3v1tag_.id3v1tag.md#per
 role). Several roles for the same artist/actor can be separated with semicolons. For
 example: "Bass; Backing Vocals; Vibraphone".
 
-**`description`** It is highly important to match each role to the performers. This means that an entry
+**`remarks`** It is highly important to match each role to the performers. This means that an entry
     in the [performersRole](_src_id3v1_id3v1tag_.id3v1tag.md#performersrole) array is `undefined` to maintain the relationship between
     `performers[i]` and `performersRole[i]`.
 
@@ -1520,7 +1520,7 @@ ___
 Gets the sortable names of the performers or artists who performed in the media described by
 the current instance.
 
-**`description`** This is used to provide more control over how the media is sorted. Typical uses are to
+**`remarks`** This is used to provide more control over how the media is sorted. Typical uses are to
     skip articles or sort by last name. For example, "The Pillows" might be sorted as
     "Pillows, The".
 
@@ -1538,7 +1538,7 @@ Sortable names for the performers who performed in the media described by the
 Gets the sortable names of the performers or artists who performed in the media described by
 the current instance.
 
-**`description`** This is used to provide more control over how the media is sorted. Typical uses are to
+**`remarks`** This is used to provide more control over how the media is sorted. Typical uses are to
     skip articles or sort by last name. For example, "The Pillows" might be sorted as
     "Pillows, The".
 
@@ -1565,7 +1565,7 @@ ___
 
 Gets a collection of pictures associated with the media represented by the current instance.
 
-**`description`** Typically, this value is used to store an album cover or icon to use for the file, but
+**`remarks`** Typically, this value is used to store an album cover or icon to use for the file, but
     it is capable of holding any type of image or file, including pictures of the band, the
     recording studio, the concert, etc.
 
@@ -1580,7 +1580,7 @@ Array containing a collection of pictures associated with the media represented 
 
 Sets a collection of pictures associated with the media represented by the current instance.
 
-**`description`** Typically, this value is used to store an album cover or icon to use for the file, but
+**`remarks`** Typically, this value is used to store an album cover or icon to use for the file, but
     it is capable of holding any type of image or file, including pictures of the band, the
     recording studio, the concert, etc.
 
@@ -1785,7 +1785,7 @@ ___
 
 Gets a description, one-line. It represents the tagline of the vide/music.
 
-**`description`** This field gives a nice/short precision to the title, which is typically below the
+**`remarks`** This field gives a nice/short precision to the title, which is typically below the
     title on the front cover of the media. For example for "Ocean's 13", this would be
     "Revenge is a funny thing".
 
@@ -1800,7 +1800,7 @@ Subtitle of the media represented by the current instance or `undefined` if no
 
 Sets a description, one-line. It represents the tagline of the vide/music.
 
-**`description`** This field gives a nice/short precision to the title, which is typically below the
+**`remarks`** This field gives a nice/short precision to the title, which is typically below the
     title on the front cover of the media. For example for "Ocean's 13", this would be
     "Revenge is a funny thing".
 
@@ -1843,7 +1843,7 @@ ___
 
 **`inheritdoc`** 
 
-**`description`** When stored on disk, only the first 30 bytes of the latin-1 encoded value will
+**`remarks`** When stored on disk, only the first 30 bytes of the latin-1 encoded value will
     be stored. This may result in lost data.
 
 #### Parameters:
@@ -1864,7 +1864,7 @@ ___
 
 Gets the sortable name for the title of the media described by the current instance.
 
-**`description`** Possibly used to sort compilations or episodic content.
+**`remarks`** Possibly used to sort compilations or episodic content.
 
 **Returns:** string
 
@@ -1877,7 +1877,7 @@ Sortable name of the media described by the current instance or `undefined` if n
 
 Sets the sortable name for the title of the media described by the current instance.
 
-**`description`** Possibly used to sort compilations or episodic content.
+**`remarks`** Possibly used to sort compilations or episodic content.
 
 #### Parameters:
 
@@ -1908,7 +1908,7 @@ ___
 
 **`inheritdoc`** 
 
-**`description`** Only values betweenInclusive 1 and 255 will be stored. All other values will result in
+**`remarks`** Only values betweenInclusive 1 and 255 will be stored. All other values will result in
     the property being zeroed.
 
 #### Parameters:
@@ -1930,7 +1930,7 @@ ___
 Gets the number of tracks in the album or the number of episodes in a series of the media
 represented by the current instance.
 
-**`description`** If non-zero, this value should be equal to or greater than [track](_src_id3v1_id3v1tag_.id3v1tag.md#track). If
+**`remarks`** If non-zero, this value should be equal to or greater than [track](_src_id3v1_id3v1tag_.id3v1tag.md#track). If
     [track](_src_id3v1_id3v1tag_.id3v1tag.md#track) is `0`, this value should also be `0`.
 
 **Returns:** number
@@ -1945,7 +1945,7 @@ Number of tracks in the album or number of episodes in a series of the media
 Sets the number of tracks in the album or the number of episodes in a series of the media
 represented by the current instance.
 
-**`description`** If non-zero, this value should be equal to or greater than [track](_src_id3v1_id3v1tag_.id3v1tag.md#track). If
+**`remarks`** If non-zero, this value should be equal to or greater than [track](_src_id3v1_id3v1tag_.id3v1tag.md#track). If
     [track](_src_id3v1_id3v1tag_.id3v1tag.md#track) is `0`, this value should also be `0`.
 
 #### Parameters:
@@ -1977,7 +1977,7 @@ ___
 
 **`inheritdoc`** 
 
-**`description`** Only values betweenInclusive 1 and 9999 will be stored. All other values will result in
+**`remarks`** Only values betweenInclusive 1 and 9999 will be stored. All other values will result in
     the property being zeroed.
 
 #### Parameters:
@@ -2011,7 +2011,7 @@ ___
 Copies the values from the current instance to another [Tag](_src_tag_.tag.md), optionally overwriting
     existing values.
 
-**`description`** This method only copies the mist basic values when copying between different tag
+**`remarks`** This method only copies the mist basic values when copying between different tag
     formats. However, if `target` is of the same type as the current instance,
     more advanced copying may be done. For example if both `this` and `target` are
     [Id3v2Tag](_src_id3v2_id3v2tag_.id3v2tag.md), all frames will be copied to the target.
@@ -2045,7 +2045,7 @@ ___
 
 Set the tags that represent the tagger software (node-taglib-sharp) itself.
 
-**`description`** This is typically a method to call just before saving a tag.
+**`remarks`** This is typically a method to call just before saving a tag.
 
 **Returns:** void
 
