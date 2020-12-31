@@ -2,7 +2,7 @@ import * as BigInt from "big-integer";
 import * as Chai from "chai";
 import * as ChaiAsPromised from "chai-as-promised";
 import * as TypeMoq from "typemoq";
-import {slow, suite, test, timeout} from "mocha-typescript";
+import {suite, test} from "mocha-typescript";
 
 import Id3v2Tag from "../../src/id3v2/id3v2Tag";
 import SyncData from "../../src/id3v2/syncData";
@@ -1138,7 +1138,7 @@ function getTestTagHeader(version: number, flags: Id3v2TagHeaderFlags, tagSize: 
         assert.strictEqual(tag.frames[0].frameId, FrameIdentifiers.TDTG);
         assert.deepStrictEqual((<TextInformationFrame> tag.frames[0]).text, ["2020-04-25T12:34:56"]);
 
-        (<TextInformationFrame> tag.frames[0]).text = ["bunchagarbage"];
+        (<TextInformationFrame> tag.frames[0]).text = ["buncha_garbage"];
         assert.isUndefined(tag.dateTagged);
 
         PropertyTests.propertyRoundTrip(set, get, undefined);

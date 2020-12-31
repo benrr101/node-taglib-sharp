@@ -17,6 +17,7 @@ and can be recast without issue.
 
 ## Implemented by
 
+* [MpegVideoHeader](../classes/_src_mpeg_mpegvideoheader_.mpegvideoheader.md)
 * [Properties](../classes/_src_properties_.properties.md)
 
 ## Index

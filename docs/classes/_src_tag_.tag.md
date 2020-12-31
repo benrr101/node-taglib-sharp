@@ -763,8 +763,8 @@ Gets the genres of the media represented by the current instance.
 
 **`remarks`** This field represents genres that apply to the song, album, or video. This is often
     used for filtering media.
-    A list of common audio genres as popularized by ID3v1 is stored in [audioGenres](../modules/_src_genres_.md#audiogenres).
-    Additionally, [videoGenres](../modules/_src_genres_.md#videogenres) contains video genres as used by DivX.
+    A list of common audio genres as popularized by ID3v1 is stored in `genres.ts`.
+    Additionally, `genres.ts` contains video genres as used by DivX.
 
 **Returns:** string[]
 
@@ -777,8 +777,8 @@ Sets the genres of the media represented by the current instance.
 
 **`remarks`** This field represents genres that apply to the song, album, or video. This is often
     used for filtering media.
-    A list of common audio genres as popularized by ID3v1 is stored in [audioGenres](../modules/_src_genres_.md#audiogenres).
-    Additionally, [videoGenres](../modules/_src_genres_.md#videogenres) contains video genres as used by DivX.
+    A list of common audio genres as popularized by ID3v1 is stored in `genres.ts.
+    Additionally, `genres.ts` contains video genres as used by DivX.
 
 #### Parameters:
 
