@@ -82,7 +82,7 @@ const assert = Chai.assert;
     @test
     public unsyncByteVector_falsyData() {
         // Act/Assert
-        Testers.testTruthy((v: ByteVector) => { SyncData.unsyncByteVector(null); });
+        Testers.testTruthy((v: ByteVector) => { SyncData.unsyncByteVector(v); });
     }
 
     // @TODO: unsyncByteVector_validData

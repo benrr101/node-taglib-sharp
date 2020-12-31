@@ -390,7 +390,7 @@ const assert = Chai.assert;
     @test
     public find_falsyFrames() {
         // Act / Assert
-        Testers.testTruthy((v: RelativeVolumeFrame[]) => { RelativeVolumeFrame.find(undefined, "foo"); });
+        Testers.testTruthy((v: RelativeVolumeFrame[]) => { RelativeVolumeFrame.find(v, "foo"); });
     }
 
     @test

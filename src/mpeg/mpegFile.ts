@@ -131,7 +131,7 @@ export default class MpegFile extends NonContainerFile {
     }
 
     /** @inheritDoc */
-    protected readProperties(start: number, end: number, propertiesStyle: ReadStyle): Properties {
+    protected readProperties(_start: number, _end: number, _propertiesStyle: ReadStyle): Properties {
         const durationMilliseconds = this._startTime === undefined
             ? 0
             : (this._endTime - this._startTime) * 1000;

@@ -444,8 +444,8 @@ export abstract class Tag {
      * Gets the genres of the media represented by the current instance.
      * @remarks This field represents genres that apply to the song, album, or video. This is often
      *     used for filtering media.
-     *     A list of common audio genres as popularized by ID3v1 is stored in {@link audioGenres}.
-     *     Additionally, {@link videoGenres} contains video genres as used by DivX.
+     *     A list of common audio genres as popularized by ID3v1 is stored in `genres.ts`.
+     *     Additionally, `genres.ts` contains video genres as used by DivX.
      * @returns Genres of the media represented by the current instance or an empty array if no
      *     value is present.
      */
@@ -454,8 +454,8 @@ export abstract class Tag {
      * Sets the genres of the media represented by the current instance.
      * @remarks This field represents genres that apply to the song, album, or video. This is often
      *     used for filtering media.
-     *     A list of common audio genres as popularized by ID3v1 is stored in {@link audioGenres}.
-     *     Additionally, {@link videoGenres} contains video genres as used by DivX.
+     *     A list of common audio genres as popularized by ID3v1 is stored in `genres.ts.
+     *     Additionally, `genres.ts` contains video genres as used by DivX.
      * @param value Genres of the media represented by the current instance or an empty array if no
      *     value is present.
      */

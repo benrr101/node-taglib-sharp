@@ -27,7 +27,7 @@ const getTestHeader = (majorVersion: number, minorVersion: number, flags: Id3v2T
     @test
     public falsyData() {
         // Act/Assert
-        Testers.testTruthy((v: ByteVector) => { const _ = Id3v2TagHeader.fromData(null); });
+        Testers.testTruthy((v: ByteVector) => { const _ = Id3v2TagHeader.fromData(v); });
     }
 
     @test
@@ -322,7 +322,7 @@ const getTestHeader = (majorVersion: number, minorVersion: number, flags: Id3v2T
         const header = getTestHeader(4, 0, Id3v2TagHeaderFlags.None);
 
         // Act/Assert
-        Testers.testUint((v: number) => { header.tagSize = -1; });
+        Testers.testUint((v: number) => { header.tagSize = v; });
         assert.throws(() => { header.tagSize = 0xF0000000; });
     }
 

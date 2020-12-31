@@ -26,7 +26,7 @@ const assert = Chai.assert;
     @test
     public fromData_falsyType_throws() {
         // Act/Assert
-        Testers.testTruthy((v: FrameIdentifier) => { UnknownFrame.fromData(undefined, undefined); });
+        Testers.testTruthy((v: FrameIdentifier) => { UnknownFrame.fromData(v, undefined); });
     }
 
     @test

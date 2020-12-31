@@ -746,11 +746,11 @@ class TestFile extends File {
 
     public get stream(): IStream { return this._fileStream; }
 
-    public getTag(types: TagTypes, create: boolean): Tag {
+    public getTag(_types: TagTypes, _create: boolean): Tag {
         throw new Error("Not implemented");
     }
 
-    public removeTags(types: TagTypes): Tag {
+    public removeTags(_types: TagTypes): Tag {
         throw new Error("Not implemented");
     }
 

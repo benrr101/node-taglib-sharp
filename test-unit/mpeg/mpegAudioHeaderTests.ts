@@ -339,7 +339,7 @@ const assert = Chai.assert;
     }
 
     @test
-    public audioBitreateDuration_noVbrMpeg25Layer3_32() {
+    public audioBitrateDuration_noVbrMpeg25Layer3_32() {
         // Arrange
         const flags = 0x24000; // MPEG2.5, Layer3, 32kbps, 11025kHz
         const header = MpegAudioHeader.fromInfo(flags, 1024, XingHeader.unknown, VbriHeader.unknown);

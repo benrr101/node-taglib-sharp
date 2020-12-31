@@ -1017,7 +1017,7 @@ const assert = Chai.assert;
     @test
     public fromSize_badFillValue() {
         // Arrange, Act, Assert
-        Testers.testByte((v: number) => { ByteVector.fromSize(1, v); })
+        Testers.testByte((v: number) => { ByteVector.fromSize(1, v); });
     }
 
     @test
