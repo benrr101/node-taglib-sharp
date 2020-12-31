@@ -11,3 +11,4 @@
 * [CorruptFileError](../classes/_src_errors_.corruptfileerror.md)
 * [NotImplementedError](../classes/_src_errors_.notimplementederror.md)
 * [NotSupportedError](../classes/_src_errors_.notsupportederror.md)
+* [UnsupportedFormatError](../classes/_src_errors_.unsupportedformaterror.md)

@@ -73,7 +73,7 @@ An empty an unset header
 
 • get **audioBitrate**(): number
 
-Bitrate of the audio in kilibits per second represented by the current instance.
+Bitrate of the audio in kilobits per second represented by the current instance.
 
 **`inheritdoc`** 
 

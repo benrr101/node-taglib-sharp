@@ -1,116 +1,100 @@
 **[node-taglib-sharp](../README.md)**
 
-> [Globals](../globals.md) / ["src/nonContainer/nonContainerFile"](../modules/_src_noncontainer_noncontainerfile_.md) / NonContainerFile
+> [Globals](../globals.md) / ["src/mpeg/mpegFile"](../modules/_src_mpeg_mpegfile_.md) / MpegFile
 
-# Class: NonContainerFile
+# Class: MpegFile
 
-Abstract class that provides tagging and properties for files that contain an indeterminate
-number of tags at their beginning or end.
-When extending this class, [NonContainerFile.readStart](_src_noncontainer_noncontainerfile_.noncontainerfile.md#readstart),
+This class extends [NonContainerFile](_src_noncontainer_noncontainerfile_.noncontainerfile.md) to provide tagging and properties support for
+MPEG-1, MPEG-2, and MPEG-2.5 video files.
 
-[NonContainerFile.readEnd](_src_noncontainer_noncontainerfile_.noncontainerfile.md#readend), and [NonContainerFile.readProperties](_src_noncontainer_noncontainerfile_.noncontainerfile.md#readproperties) should be overridden
-and read the format specific information from the file.
-The file is read upon construction in the following manner:
-1. The file is opened for reading
-2. The tags at the start of the file are read
-3. [NonContainerFile.readStart](_src_noncontainer_noncontainerfile_.noncontainerfile.md#readstart) is called
-4. The tags at the end of the file are read
-5. [NonContainerFile.readEnd](_src_noncontainer_noncontainerfile_.noncontainerfile.md#readend) is called
-6. If reading with a style other than [ReadStyle.None](../enums/_src_file_.readstyle.md#none),
-   [NonContainerFile.readProperties](_src_noncontainer_noncontainerfile_.noncontainerfile.md#readproperties) is called
-7. The file is closed
+**`remarks`** A [Id3v1Tag](_src_id3v1_id3v1tag_.id3v1tag.md) and [Id3v2Tag](_src_id3v2_id3v2tag_.id3v2tag.md) will be added automatically to any file that
+    does not contain one. This change does not affect the file until it is saved and can be
+    reversed using the following method:
+    `file.removeTags(file.tagTypes & ~file.tagTypesOnDisk);`
 
 ## Hierarchy
 
-* [File](_src_file_.file.md)
+* [NonContainerFile](_src_noncontainer_noncontainerfile_.noncontainerfile.md)
 
-  ↳ **NonContainerFile**
-
-  ↳↳ [AacFile](_src_aac_aacfile_.aacfile.md)
-
-  ↳↳ [ApeFile](_src_ape_apefile_.apefile.md)
-
-  ↳↳ [MpegAudioFile](_src_mpeg_mpegaudiofile_.mpegaudiofile.md)
-
-  ↳↳ [MpegFile](_src_mpeg_mpegfile_.mpegfile.md)
+  ↳ **MpegFile**
 
 ## Index
 
 ### Constructors
 
-* [constructor](_src_noncontainer_noncontainerfile_.noncontainerfile.md#constructor)
+* [constructor](_src_mpeg_mpegfile_.mpegfile.md#constructor)
 
 ### Properties
 
-* [\_fileAbstraction](_src_noncontainer_noncontainerfile_.noncontainerfile.md#_fileabstraction)
-* [\_fileStream](_src_noncontainer_noncontainerfile_.noncontainerfile.md#_filestream)
-* [\_invariantEndPosition](_src_noncontainer_noncontainerfile_.noncontainerfile.md#_invariantendposition)
-* [\_invariantStartPosition](_src_noncontainer_noncontainerfile_.noncontainerfile.md#_invariantstartposition)
-* [\_tagTypesOnDisk](_src_noncontainer_noncontainerfile_.noncontainerfile.md#_tagtypesondisk)
+* [\_fileAbstraction](_src_mpeg_mpegfile_.mpegfile.md#_fileabstraction)
+* [\_fileStream](_src_mpeg_mpegfile_.mpegfile.md#_filestream)
+* [\_invariantEndPosition](_src_mpeg_mpegfile_.mpegfile.md#_invariantendposition)
+* [\_invariantStartPosition](_src_mpeg_mpegfile_.mpegfile.md#_invariantstartposition)
+* [\_tagTypesOnDisk](_src_mpeg_mpegfile_.mpegfile.md#_tagtypesondisk)
 
 ### Accessors
 
-* [corruptionReasons](_src_noncontainer_noncontainerfile_.noncontainerfile.md#corruptionreasons)
-* [endTag](_src_noncontainer_noncontainerfile_.noncontainerfile.md#endtag)
-* [fileAbstraction](_src_noncontainer_noncontainerfile_.noncontainerfile.md#fileabstraction)
-* [invariantEndPosition](_src_noncontainer_noncontainerfile_.noncontainerfile.md#invariantendposition)
-* [invariantStartPosition](_src_noncontainer_noncontainerfile_.noncontainerfile.md#invariantstartposition)
-* [isPossiblyCorrupt](_src_noncontainer_noncontainerfile_.noncontainerfile.md#ispossiblycorrupt)
-* [isWritable](_src_noncontainer_noncontainerfile_.noncontainerfile.md#iswritable)
-* [length](_src_noncontainer_noncontainerfile_.noncontainerfile.md#length)
-* [mimeType](_src_noncontainer_noncontainerfile_.noncontainerfile.md#mimetype)
-* [mode](_src_noncontainer_noncontainerfile_.noncontainerfile.md#mode)
-* [name](_src_noncontainer_noncontainerfile_.noncontainerfile.md#name)
-* [position](_src_noncontainer_noncontainerfile_.noncontainerfile.md#position)
-* [properties](_src_noncontainer_noncontainerfile_.noncontainerfile.md#properties)
-* [startTag](_src_noncontainer_noncontainerfile_.noncontainerfile.md#starttag)
-* [tag](_src_noncontainer_noncontainerfile_.noncontainerfile.md#tag)
-* [tagTypes](_src_noncontainer_noncontainerfile_.noncontainerfile.md#tagtypes)
-* [tagTypesOnDisk](_src_noncontainer_noncontainerfile_.noncontainerfile.md#tagtypesondisk)
-* [bufferSize](_src_noncontainer_noncontainerfile_.noncontainerfile.md#buffersize)
+* [corruptionReasons](_src_mpeg_mpegfile_.mpegfile.md#corruptionreasons)
+* [endTag](_src_mpeg_mpegfile_.mpegfile.md#endtag)
+* [fileAbstraction](_src_mpeg_mpegfile_.mpegfile.md#fileabstraction)
+* [invariantEndPosition](_src_mpeg_mpegfile_.mpegfile.md#invariantendposition)
+* [invariantStartPosition](_src_mpeg_mpegfile_.mpegfile.md#invariantstartposition)
+* [isPossiblyCorrupt](_src_mpeg_mpegfile_.mpegfile.md#ispossiblycorrupt)
+* [isWritable](_src_mpeg_mpegfile_.mpegfile.md#iswritable)
+* [length](_src_mpeg_mpegfile_.mpegfile.md#length)
+* [mimeType](_src_mpeg_mpegfile_.mpegfile.md#mimetype)
+* [mode](_src_mpeg_mpegfile_.mpegfile.md#mode)
+* [name](_src_mpeg_mpegfile_.mpegfile.md#name)
+* [position](_src_mpeg_mpegfile_.mpegfile.md#position)
+* [properties](_src_mpeg_mpegfile_.mpegfile.md#properties)
+* [startTag](_src_mpeg_mpegfile_.mpegfile.md#starttag)
+* [tag](_src_mpeg_mpegfile_.mpegfile.md#tag)
+* [tagTypes](_src_mpeg_mpegfile_.mpegfile.md#tagtypes)
+* [tagTypesOnDisk](_src_mpeg_mpegfile_.mpegfile.md#tagtypesondisk)
+* [bufferSize](_src_mpeg_mpegfile_.mpegfile.md#buffersize)
 
 ### Methods
 
-* [dispose](_src_noncontainer_noncontainerfile_.noncontainerfile.md#dispose)
-* [find](_src_noncontainer_noncontainerfile_.noncontainerfile.md#find)
-* [getTag](_src_noncontainer_noncontainerfile_.noncontainerfile.md#gettag)
-* [insert](_src_noncontainer_noncontainerfile_.noncontainerfile.md#insert)
-* [markAsCorrupt](_src_noncontainer_noncontainerfile_.noncontainerfile.md#markascorrupt)
-* [preSave](_src_noncontainer_noncontainerfile_.noncontainerfile.md#presave)
-* [rFind](_src_noncontainer_noncontainerfile_.noncontainerfile.md#rfind)
-* [readBlock](_src_noncontainer_noncontainerfile_.noncontainerfile.md#readblock)
-* [readEnd](_src_noncontainer_noncontainerfile_.noncontainerfile.md#readend)
-* [readProperties](_src_noncontainer_noncontainerfile_.noncontainerfile.md#readproperties)
-* [readStart](_src_noncontainer_noncontainerfile_.noncontainerfile.md#readstart)
-* [removeBlock](_src_noncontainer_noncontainerfile_.noncontainerfile.md#removeblock)
-* [removeTags](_src_noncontainer_noncontainerfile_.noncontainerfile.md#removetags)
-* [save](_src_noncontainer_noncontainerfile_.noncontainerfile.md#save)
-* [seek](_src_noncontainer_noncontainerfile_.noncontainerfile.md#seek)
-* [truncate](_src_noncontainer_noncontainerfile_.noncontainerfile.md#truncate)
-* [writeBlock](_src_noncontainer_noncontainerfile_.noncontainerfile.md#writeblock)
-* [addFileType](_src_noncontainer_noncontainerfile_.noncontainerfile.md#addfiletype)
-* [addFileTypeResolver](_src_noncontainer_noncontainerfile_.noncontainerfile.md#addfiletyperesolver)
-* [createFromAbstraction](_src_noncontainer_noncontainerfile_.noncontainerfile.md#createfromabstraction)
-* [createFromPath](_src_noncontainer_noncontainerfile_.noncontainerfile.md#createfrompath)
-* [removeFileType](_src_noncontainer_noncontainerfile_.noncontainerfile.md#removefiletype)
-* [removeFileTypeResolver](_src_noncontainer_noncontainerfile_.noncontainerfile.md#removefiletyperesolver)
+* [dispose](_src_mpeg_mpegfile_.mpegfile.md#dispose)
+* [find](_src_mpeg_mpegfile_.mpegfile.md#find)
+* [getTag](_src_mpeg_mpegfile_.mpegfile.md#gettag)
+* [insert](_src_mpeg_mpegfile_.mpegfile.md#insert)
+* [markAsCorrupt](_src_mpeg_mpegfile_.mpegfile.md#markascorrupt)
+* [preSave](_src_mpeg_mpegfile_.mpegfile.md#presave)
+* [rFind](_src_mpeg_mpegfile_.mpegfile.md#rfind)
+* [readBlock](_src_mpeg_mpegfile_.mpegfile.md#readblock)
+* [readEnd](_src_mpeg_mpegfile_.mpegfile.md#readend)
+* [readProperties](_src_mpeg_mpegfile_.mpegfile.md#readproperties)
+* [readStart](_src_mpeg_mpegfile_.mpegfile.md#readstart)
+* [removeBlock](_src_mpeg_mpegfile_.mpegfile.md#removeblock)
+* [removeTags](_src_mpeg_mpegfile_.mpegfile.md#removetags)
+* [save](_src_mpeg_mpegfile_.mpegfile.md#save)
+* [seek](_src_mpeg_mpegfile_.mpegfile.md#seek)
+* [truncate](_src_mpeg_mpegfile_.mpegfile.md#truncate)
+* [writeBlock](_src_mpeg_mpegfile_.mpegfile.md#writeblock)
+* [addFileType](_src_mpeg_mpegfile_.mpegfile.md#addfiletype)
+* [addFileTypeResolver](_src_mpeg_mpegfile_.mpegfile.md#addfiletyperesolver)
+* [createFromAbstraction](_src_mpeg_mpegfile_.mpegfile.md#createfromabstraction)
+* [createFromPath](_src_mpeg_mpegfile_.mpegfile.md#createfrompath)
+* [removeFileType](_src_mpeg_mpegfile_.mpegfile.md#removefiletype)
+* [removeFileTypeResolver](_src_mpeg_mpegfile_.mpegfile.md#removefiletyperesolver)
 
 ## Constructors
 
 ### constructor
 
-\+ `Protected`**new NonContainerFile**(`fileToRead`: [IFileAbstraction](../interfaces/_src_fileabstraction_.ifileabstraction.md) \| string, `propertiesStyle?`: [ReadStyle](../enums/_src_file_.readstyle.md)): [NonContainerFile](_src_noncontainer_noncontainerfile_.noncontainerfile.md)
+\+ **new MpegFile**(`file`: [IFileAbstraction](../interfaces/_src_fileabstraction_.ifileabstraction.md) \| string, `propertiesStyle`: [ReadStyle](../enums/_src_file_.readstyle.md)): [MpegFile](_src_mpeg_mpegfile_.mpegfile.md)
 
-*Overrides [File](_src_file_.file.md).[constructor](_src_file_.file.md#constructor)*
+*Overrides [NonContainerFile](_src_noncontainer_noncontainerfile_.noncontainerfile.md).[constructor](_src_noncontainer_noncontainerfile_.noncontainerfile.md#constructor)*
 
 #### Parameters:
 
-Name | Type | Default value |
------- | ------ | ------ |
-`fileToRead` | [IFileAbstraction](../interfaces/_src_fileabstraction_.ifileabstraction.md) \| string | - |
-`propertiesStyle` | [ReadStyle](../enums/_src_file_.readstyle.md) | ReadStyle.Average |
+Name | Type |
+------ | ------ |
+`file` | [IFileAbstraction](../interfaces/_src_fileabstraction_.ifileabstraction.md) \| string |
+`propertiesStyle` | [ReadStyle](../enums/_src_file_.readstyle.md) |
 
-**Returns:** [NonContainerFile](_src_noncontainer_noncontainerfile_.noncontainerfile.md)
+**Returns:** [MpegFile](_src_mpeg_mpegfile_.mpegfile.md)
 
 ## Properties
 
@@ -169,6 +153,8 @@ ___
 ### endTag
 
 • `Protected`get **endTag**(): [EndTag](_src_noncontainer_endtag_.endtag.md)
+
+*Inherited from [NonContainerFile](_src_noncontainer_noncontainerfile_.noncontainerfile.md).[endTag](_src_noncontainer_noncontainerfile_.noncontainerfile.md#endtag)*
 
 Gets the collection of tags appearing at the end of the file.
 
@@ -321,6 +307,8 @@ ___
 
 • get **properties**(): [Properties](_src_properties_.properties.md)
 
+*Inherited from [NonContainerFile](_src_noncontainer_noncontainerfile_.noncontainerfile.md).[properties](_src_noncontainer_noncontainerfile_.noncontainerfile.md#properties)*
+
 *Overrides [File](_src_file_.file.md).[properties](_src_file_.file.md#properties)*
 
 Gets the media properties of the file represented by the current instance.
@@ -333,6 +321,8 @@ ___
 
 • `Protected`get **startTag**(): [StartTag](_src_noncontainer_starttag_.starttag.md)
 
+*Inherited from [NonContainerFile](_src_noncontainer_noncontainerfile_.noncontainerfile.md).[startTag](_src_noncontainer_noncontainerfile_.noncontainerfile.md#starttag)*
+
 Gets the collection of tags appearing at the start of the file.
 
 **Returns:** [StartTag](_src_noncontainer_starttag_.starttag.md)
@@ -342,6 +332,8 @@ ___
 ### tag
 
 • get **tag**(): [NonContainerTag](_src_noncontainer_noncontainertag_.noncontainertag.md)
+
+*Inherited from [NonContainerFile](_src_noncontainer_noncontainerfile_.noncontainerfile.md).[tag](_src_noncontainer_noncontainerfile_.noncontainerfile.md#tag)*
 
 *Overrides [File](_src_file_.file.md).[tag](_src_file_.file.md#tag)*
 
@@ -426,37 +418,27 @@ ___
 
 ### getTag
 
-▸ `Abstract`**getTag**(`types`: [TagTypes](../enums/_src_tag_.tagtypes.md), `create`: boolean): [Tag](_src_tag_.tag.md)
+▸ **getTag**(`type`: [TagTypes](../enums/_src_tag_.tagtypes.md), `create`: boolean): [Tag](_src_tag_.tag.md)
 
-*Inherited from [File](_src_file_.file.md).[getTag](_src_file_.file.md#gettag)*
+*Overrides [File](_src_file_.file.md).[getTag](_src_file_.file.md#gettag)*
 
-Gets a tag of the specified type from the current instance, optionally creating a new tag if
+Gets a tag of a specified type from the current instance, optionally creating a new tag if
 possible.
 
-**`example`** ```
-    id3 = file.getTag(TagTypes.ID3v2, true);
-    if (id3) { (<ID3v2.Tag> id3).setTextFrame("TMOO", moods); }
-
-    asf = file.getTag(TagTypes.Asf, true);
-    if (asf) { (<Asf.Tag> adf).setDescriptorStrings(moods, "WM/Mood", "Mood"); }
-
-    ape = file.getTag(TagTypes.Ape);
-    if (ape) { (<Ape.Tag>).setValue("MOOD", moods); }
-```
+**`remarks`** [Id3v2Tag](_src_id3v2_id3v2tag_.id3v2tag.md), [Id3v1Tag](_src_id3v1_id3v1tag_.id3v1tag.md), and [ApeTag](_src_ape_apetag_.apetag.md) will be added to the end of
+    the file. All other tag types will be ignored as they are unsupported by MPEG files.
 
 #### Parameters:
 
 Name | Type | Description |
 ------ | ------ | ------ |
-`types` | [TagTypes](../enums/_src_tag_.tagtypes.md) | Type of tag to read. |
-`create` | boolean | Whether or not to try and create the tag if one is not found. `true` does not     guarantee the tag will be created. For example, trying to create an ID3v2 tag on an OGG     Vorbis file will always fail. |
+`type` | [TagTypes](../enums/_src_tag_.tagtypes.md) | Type of tag to read |
+`create` | boolean | Whether or not to try and create the tag if one is not found |
 
 **Returns:** [Tag](_src_tag_.tag.md)
 
-Tag object containing the tag that was found in or added to the current instance.
-    If no matching tag was found and none was created, `undefined` is returned. It is safe
-    to assume that if `undefined` is not returned, the returned tag can be cast to the
-    appropriate type.
+Tag Tag that was found in or added to the current instance. If no matching tag was
+    found and none was created, `undefined` is returned.
 
 ___
 
@@ -529,7 +511,7 @@ Searched backwards through a file for a specified pattern, starting at a specifi
 
 Name | Type | Default value | Description |
 ------ | ------ | ------ | ------ |
-`pattern` | [ByteVector](_src_bytevector_.bytevector.md) | - | Pattern to search for in the current instance. Must be shorter than the     [bufferSize](_src_noncontainer_noncontainerfile_.noncontainerfile.md#buffersize) |
+`pattern` | [ByteVector](_src_bytevector_.bytevector.md) | - | Pattern to search for in the current instance. Must be shorter than the     [bufferSize](_src_mpeg_mpegfile_.mpegfile.md#buffersize) |
 `startPosition` | number | 0 | Seek position from which to start searching. |
 `after?` | [ByteVector](_src_bytevector_.bytevector.md) | - | Pattern that the searched for pattern must appear after. If this pattern is     found first, `-1` is returned. |
 
@@ -567,18 +549,16 @@ ___
 
 ▸ `Protected`**readEnd**(`end`: number, `propertiesStyle`: [ReadStyle](../enums/_src_file_.readstyle.md)): void
 
-Reads format specific information at the end of the file.
-This method is called by the constructor immediately after the tags at the end of the file
-have been read and as such (so the internal seek mechanism is close to the end). It should
-be used for reading any content-specific information such as an audio header from the end of
-the file.
+*Overrides [NonContainerFile](_src_noncontainer_noncontainerfile_.noncontainerfile.md).[readEnd](_src_noncontainer_noncontainerfile_.noncontainerfile.md#readend)*
+
+**`inheritdoc`** 
 
 #### Parameters:
 
-Name | Type | Description |
------- | ------ | ------ |
-`end` | number | Seek position at which the media data ends and the tags begin |
-`propertiesStyle` | [ReadStyle](../enums/_src_file_.readstyle.md) | Level of accuracy to read the media properties or     [ReadStyle.None](../enums/_src_file_.readstyle.md#none) to ignore the properties  |
+Name | Type |
+------ | ------ |
+`end` | number |
+`propertiesStyle` | [ReadStyle](../enums/_src_file_.readstyle.md) |
 
 **Returns:** void
 
@@ -586,25 +566,21 @@ ___
 
 ### readProperties
 
-▸ `Protected` `Abstract`**readProperties**(`start`: number, `end`: number, `propertiesStyle`: [ReadStyle](../enums/_src_file_.readstyle.md)): [Properties](_src_properties_.properties.md)
+▸ `Protected`**readProperties**(`_start`: number, `_end`: number, `_propertiesStyle`: [ReadStyle](../enums/_src_file_.readstyle.md)): [Properties](_src_properties_.properties.md)
 
-Reads the audio properties from the file represented by the current instance.
-This method is called ONLY IF the file is constructed with a read style other than
-[ReadStyle.None](../enums/_src_file_.readstyle.md#none), and as such MUST NOT return `undefined`/`null`. It is guaranteed that
-[readStart](_src_noncontainer_noncontainerfile_.noncontainerfile.md#readstart) and [readEnd](_src_noncontainer_noncontainerfile_.noncontainerfile.md#readend) will have been called first and this method should be
-strictly used to perform final processing on already read data.
+*Overrides [NonContainerFile](_src_noncontainer_noncontainerfile_.noncontainerfile.md).[readProperties](_src_noncontainer_noncontainerfile_.noncontainerfile.md#readproperties)*
+
+**`inheritdoc`** 
 
 #### Parameters:
 
-Name | Type | Description |
------- | ------ | ------ |
-`start` | number | Seek position at which the tags end and the media data begins |
-`end` | number | Seek position at which the media data ends and the tags begin |
-`propertiesStyle` | [ReadStyle](../enums/_src_file_.readstyle.md) | Level of accuracy to read the media properties or     [ReadStyle.None](../enums/_src_file_.readstyle.md#none) to ignore the properties |
+Name | Type |
+------ | ------ |
+`_start` | number |
+`_end` | number |
+`_propertiesStyle` | [ReadStyle](../enums/_src_file_.readstyle.md) |
 
 **Returns:** [Properties](_src_properties_.properties.md)
-
-Properties Media properties of the file represented by the current instance
 
 ___
 
@@ -612,18 +588,16 @@ ___
 
 ▸ `Protected`**readStart**(`start`: number, `propertiesStyle`: [ReadStyle](../enums/_src_file_.readstyle.md)): void
 
-Reads format specific information from the start of the file.
-This method is called by the constructor immediately after the tags at the start of the
-file have been read (so the internal seek mechanism is close to the start). It should be
-used for reading any content specific information, such as an audio header from the start of
-the file.
+*Overrides [NonContainerFile](_src_noncontainer_noncontainerfile_.noncontainerfile.md).[readStart](_src_noncontainer_noncontainerfile_.noncontainerfile.md#readstart)*
+
+**`inheritdoc`** 
 
 #### Parameters:
 
-Name | Type | Description |
------- | ------ | ------ |
-`start` | number | Seek position at which the tags end and the media data begins |
-`propertiesStyle` | [ReadStyle](../enums/_src_file_.readstyle.md) | Level of accuracy to read the media properties or     [ReadStyle.None](../enums/_src_file_.readstyle.md#none) to ignore the properties  |
+Name | Type |
+------ | ------ |
+`start` | number |
+`propertiesStyle` | [ReadStyle](../enums/_src_file_.readstyle.md) |
 
 **Returns:** void
 
@@ -655,6 +629,8 @@ ___
 
 ▸ **removeTags**(`types`: [TagTypes](../enums/_src_tag_.tagtypes.md)): void
 
+*Inherited from [NonContainerFile](_src_noncontainer_noncontainerfile_.noncontainerfile.md).[removeTags](_src_noncontainer_noncontainerfile_.noncontainerfile.md#removetags)*
+
 *Overrides [File](_src_file_.file.md).[removeTags](_src_file_.file.md#removetags)*
 
 **`inheritdoc`** BaseFile.removeTags
@@ -672,6 +648,8 @@ ___
 ### save
 
 ▸ **save**(): void
+
+*Inherited from [NonContainerFile](_src_noncontainer_noncontainerfile_.noncontainerfile.md).[save](_src_noncontainer_noncontainerfile_.noncontainerfile.md#save)*
 
 *Overrides [File](_src_file_.file.md).[save](_src_file_.file.md#save)*
 

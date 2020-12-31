@@ -912,7 +912,7 @@ method reads from the current offset of the stream, not the beginning of the str
 Name | Type | Default value | Description |
 ------ | ------ | ------ | ------ |
 `stream` | [IStream](../interfaces/_src_stream_.istream.md) | - | TagLibSharp-node internal stream object |
-`isReadOnly` | boolean | false | Whether or not the bytevector is readonly  |
+`isReadOnly` | boolean | false | Whether or not the byte vector is readonly  |
 
 **Returns:** [ByteVector](_src_bytevector_.bytevector.md)
 
