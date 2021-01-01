@@ -119,4 +119,6 @@ export default class AiffStreamHeader implements ILosslessAudioCodec {
 
     /** @inheritDoc */
     public get mediaTypes(): MediaTypes { return MediaTypes.Audio; }
+
+    // #endregion
 }
