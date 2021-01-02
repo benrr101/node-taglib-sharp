@@ -364,9 +364,7 @@ export default class Id3v2Tag extends Tag {
     }
 
     /** @inheritDoc via TCON frame */
-    get genres(): string[] {
-        return this.getTextAsArray(FrameIdentifiers.TCON);
-    }
+    get genres(): string[] { return this.getTextAsArray(FrameIdentifiers.TCON); }
     /** @inheritDoc via TCON frame */
     set genres(value: string[]) {
         if (!value || !Id3v2Settings.useNumericGenres) {

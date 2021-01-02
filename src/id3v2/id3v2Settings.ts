@@ -7,7 +7,9 @@ export default class Id3v2Settings {
     private static _forceDefaultEncoding: boolean = false;
     private static _forceDefaultVersion: boolean = false;
     private static _strictFramesForVersion: boolean = false;
-    private static _useNumericGenres: boolean = true;           // @TODO: DO WE HAVE TO???
+    private static _useNonstandardV2V3GenreSeparators: boolean = true;
+    private static _useNonstandardV2V3NumericGenres: boolean = true;
+    private static _useNumericGenres: boolean = true;
 
     // noinspection JSUnusedLocalSymbols
     /**
@@ -93,6 +95,62 @@ export default class Id3v2Settings {
      * @param value Whether or not to use genres with numeric values when values when possible
      */
     public static set useNumericGenres(value: boolean) { this._useNumericGenres = value; }
+
+    /**
+     * Gets whether or not to use non-standard genre separators on ID3v2.2 and ID3v2.4.
+     * If `true`, the TCO/TCON frame value will be separated by `;` and/or `/`, empty values will
+     * be thrown out. If `false`, the TCO/TCON frame value will be returned as-is (after processing
+     * standard, escaped numeric genres).
+     * @remarks The official ID3v2 standard makes no mention of separators for genres, one of the
+     *     inherent flaws fixed in ID3v2.4. However, various media players, as well as the original
+     *     implementation of TagLib#, support using `;` and `/` to separate genres. In order to
+     *     maintain compatibility, this functionality is preserved, but can be disabled by setting
+     *     {@link useNonStandardV2V3GenreSeparators} to `false`.
+     */
+    public static get useNonStandardV2V3GenreSeparators(): boolean {
+        return this._useNonstandardV2V3GenreSeparators;
+    }
+    /**
+     * Sets whether or not to use non-standard genre separators on ID3v2.2 and ID3v2.3.
+     * If `true`, the TCO/TCON frame value will be separated by `;` and/or `/`, empty values will
+     * be thrown out. If `false`, the TCO/TCON frame value will be returned as-is (after processing
+     * standard, escaped numeric genres).
+     * @remarks The official ID3v2 standard makes no mention of separators for genres, one of the
+     *     inherent flaws fixed in ID3v2.4. However, various media players, as well as the original
+     *     implementation of TagLib#, support using `;` and `/` to separate genres. In order to
+     *     maintain compatibility, this functionality is preserved, but can be disabled by setting
+     *     {@link useNonStandardV2V3GenreSeparators} to `false`.
+     */
+    public static set useNonStandardV2V3GenreSeparators(value: boolean) {
+        this._useNonstandardV2V3GenreSeparators = value;
+    }
+
+    /**
+     * Gets whether or not to use non-standard numeric genre parsing on ID3v2.2 and ID3v2.3. If
+     * `true`, a purely numeric TCO/TCON frame value will attempt to be parsed as a numeric genre.
+     * If `false`, the TCO/TCON frame value will be returned without parsing purely numeric genres.
+     * @remarks The official ID3v2.2/ID3v2.3 standard only supports numeric genres if they are
+     *     escaped inside parenthesis (eg, `(12)`). However, the original implementation of TagLib#
+     *     allowed ID3v2.2 and ID3v2.3 tags to parse unescaped numeric genres. In order to maintain
+     *     compatibility, this functionality is preserved, but can be disabled by setting
+     *     {@link useNonStandardV2V3NumericGenres} to `false`.
+     */
+    public static get useNonStandardV2V3NumericGenres(): boolean {
+        return this._useNonstandardV2V3NumericGenres;
+    }
+    /**
+     * Sets whether or not to use non-standard numeric genre parsing on ID3v2.2 and ID3v2.3. If
+     * `true`, a purely numeric TCO/TCON frame value will attempt to be parsed as a numeric genre.
+     * If `false`, the TCO/TCON frame value will be returned without parsing purely numeric genres.
+     * @remarks The official ID3v2.2/ID3v2.3 standard only supports numeric genres if they are
+     *     escaped inside parenthesis (eg, `(12)`). However, the original implementation of TagLib#
+     *     allowed ID3v2.2 and ID3v2.3 tags to parse unescaped numeric genres. In order to maintain
+     *     compatibility, this functionality is preserved, but can be disabled by setting
+     *     {@link useNonStandardV2V3NumericGenres} to `false`.
+     */
+    public static set useNonStandardV2V3NumericGenres(value: boolean) {
+        this._useNonstandardV2V3NumericGenres = value;
+    }
 
     /**
      * Gets whether or not attempting to write a frame that is unsupported in the desired version
