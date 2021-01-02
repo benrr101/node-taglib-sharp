@@ -15,6 +15,7 @@ export default class AiffFile extends File {
     /**
      * Identifier used to recognize an AIFF form type.
      */
+    // @TODO: Add support for AIFF-C files - it's pretty much the same
     public static readonly aiffFormType = ByteVector.fromString("AIFF", undefined, undefined, true);
 
     /**
@@ -170,8 +171,7 @@ export default class AiffFile extends File {
             while (this.position < this.length) {
                 // Read 4-byte chunk name
                 const chunkHeader = this.readBlock(4);
-
-                if (chunkHeader === chunkName) {
+                if (ByteVector.equal(chunkHeader, chunkName)) {
                     // We found a matching chunk, return the position of the header start
                     return this.position - 4;
                 } else {

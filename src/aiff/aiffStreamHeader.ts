@@ -108,6 +108,7 @@ export default class AiffStreamHeader implements ILosslessAudioCodec {
     public get bitsPerSample(): number { return this._bitsPerSample; }
 
     /** @inheritDoc */
+    // @TODO: Add support for detecting the compression type
     public get description(): string { return "AIFF Audio"; }
 
     /** @inheritDoc */
