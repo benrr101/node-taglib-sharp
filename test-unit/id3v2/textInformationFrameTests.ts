@@ -160,36 +160,153 @@ function getTestFrame(): TextInformationFrame {
     }
 
     @test
-    public fromRawData_v3Tcon_returnsListOfStrings() {
+    public fromRawData_v3TconNonStandardSeparatorEnabled_returnsListOfStringsSeparatorsSplit() {
         // Arrange
+        // - Store the original settings
+        const originalNonStandardSeparatorSetting = Id3v2Settings.useNonStandardV2V3GenreSeparators;
+        Id3v2Settings.useNonStandardV2V3GenreSeparators = true;
+
         // - Let's get crazy and try to handle all the cases at once
         const header = new Id3v2FrameHeader(FrameIdentifiers.TCON);
-        header.frameSize = 137;
+        header.frameSize = 161;
         const data = ByteVector.concatenate(
             header.render(3),
             StringType.UTF16BE,
             ByteVector.fromString(
-                "(32)Classical(CR)(RX)Whoa here's some cra((z)y string;here's another",
+                "(32)Classical(CR)(RX)Whoa here's some cra((z)y string;here's another/ / one more",
                 StringType.UTF16BE
             )
         );
 
-        // Act
-        const frame = TextInformationFrame.fromRawData(data, 3);
+        try {
+            // Act
+            const frame = TextInformationFrame.fromRawData(data, 3);
 
-        // Assert
-        this.assertFrame(
-            frame,
-            FrameIdentifiers.TCON,
-            [
-                "Classical",
-                "Cover",
-                "Remix",
-                "Whoa here's some cra(z)y string",
-                "here's another"
-            ],
-            StringType.UTF16BE
+            // Assert
+            this.assertFrame(
+                frame,
+                FrameIdentifiers.TCON,
+                [
+                    "Classical",
+                    "Cover",
+                    "Remix",
+                    "Whoa here's some cra(z)y string",
+                    "here's another",
+                    "one more"
+                ],
+                StringType.UTF16BE
+            );
+        } finally {
+            // Cleanup - Restore settings
+            Id3v2Settings.useNonStandardV2V3GenreSeparators = originalNonStandardSeparatorSetting;
+        }
+    }
+
+    @test
+    public fromRawData_v3TconNonStandardSeparatorDisabled_returnsListOfStringsSeparatorsNotSplit() {
+        // Arrange
+        // - Store the original settings
+        const originalNonStandardSeparatorSetting = Id3v2Settings.useNonStandardV2V3GenreSeparators;
+        Id3v2Settings.useNonStandardV2V3GenreSeparators = false;
+
+        // - Let's get crazy and try to handle all the cases at once
+        const header = new Id3v2FrameHeader(FrameIdentifiers.TCON);
+        header.frameSize = 161;
+        const data = ByteVector.concatenate(
+            header.render(3),
+            StringType.UTF16BE,
+            ByteVector.fromString(
+                "(32)Classical(CR)(RX)Whoa here's some cra((z)y string;here's another/ / one more",
+                StringType.UTF16BE
+            )
         );
+
+        try {
+            // Act
+            const frame = TextInformationFrame.fromRawData(data, 3);
+
+            // Assert
+            this.assertFrame(
+                frame,
+                FrameIdentifiers.TCON,
+                [
+                    "Classical",
+                    "Cover",
+                    "Remix",
+                    "Whoa here's some cra(z)y string;here's another/ / one more"
+                ],
+                StringType.UTF16BE
+            );
+        } finally {
+            // Cleanup - Restore settings
+            Id3v2Settings.useNonStandardV2V3GenreSeparators = originalNonStandardSeparatorSetting;
+        }
+    }
+
+    @test
+    public fromRawData_v3TconNonStandardNumericGenresEnabled_returnsDecodedGenreList() {
+        // Arrange
+        // - Store the original settings
+        const originalNonStandardNumericGenreSetting = Id3v2Settings.useNonStandardV2V3NumericGenres;
+        Id3v2Settings.useNonStandardV2V3NumericGenres = true;
+
+        // - Create the test frame data
+        const header = new Id3v2FrameHeader(FrameIdentifiers.TCON);
+        header.frameSize = 13;
+        const data = ByteVector.concatenate(
+            header.render(3),
+            StringType.UTF16BE,
+            ByteVector.fromString("(32)12", StringType.UTF16BE)
+        );
+
+        try {
+            // Act
+            const frame = TextInformationFrame.fromRawData(data, 3);
+
+            // Assert
+            this.assertFrame(
+                frame,
+                FrameIdentifiers.TCON,
+                ["Classical", "Other"],
+                StringType.UTF16BE
+            );
+        } finally {
+            // Cleanup - Restore settings
+            Id3v2Settings.useNonStandardV2V3NumericGenres = originalNonStandardNumericGenreSetting;
+        }
+    }
+
+    @test
+    public fromRawData_v3TconNonStandardNumericGenresDisabled_returnsNumericValue() {
+        // Arrange
+        // - Store the original settings
+        const originalNonStandardNumericGenreSetting = Id3v2Settings.useNonStandardV2V3NumericGenres;
+        Id3v2Settings.useNonStandardV2V3NumericGenres = false;
+
+        // - Create the test frame data
+        const header = new Id3v2FrameHeader(FrameIdentifiers.TCON);
+        header.frameSize = 13;
+        const data = ByteVector.concatenate(
+            header.render(3),
+            StringType.UTF16BE,
+            ByteVector.fromString("(32)12", StringType.UTF16BE)
+        );
+
+        try {
+            // Act
+            const frame = TextInformationFrame.fromRawData(data, 3);
+
+            // Assert
+            this.assertFrame(
+                frame,
+                FrameIdentifiers.TCON,
+                ["Classical", "12"],
+                StringType.UTF16BE
+            );
+        } finally {
+            // Cleanup - Restore settings
+            Id3v2Settings.useNonStandardV2V3NumericGenres = originalNonStandardNumericGenreSetting;
+        }
     }
 
     @test
