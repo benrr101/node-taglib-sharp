@@ -442,13 +442,12 @@ export class TextInformationFrame extends Frame {
                 if (value.length > 0) {
                     // Split the remaining genre value by dividers if the setting is turned on
                     let splitValue = Id3v2Settings.useNonStandardV2V3GenreSeparators
-                        ? value.split(/[\/;]/).filter((v) => !!v)
+                        ? value.split(/[\/;]/).map((v) => v.trim()).filter((v) => !!v)
                         : [value];
 
                     splitValue = splitValue.map((v) => {
-                        // Trim whitespace from front/back
                         // Unescape escaped opening parenthesis
-                        let v2 = v.trim().replace(/\(\(/, "(");
+                        let v2 = v.replace(/\(\(/, "(");
 
                         // If non-standard numeric genres is enabled, parse them
                         if (Id3v2Settings.useNonStandardV2V3NumericGenres) {
