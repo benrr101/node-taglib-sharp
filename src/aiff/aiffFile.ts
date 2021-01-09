@@ -110,9 +110,8 @@ export default class AiffFile extends File {
 
         this.mode = FileAccessMode.Write;
         try {
-            const data = ByteVector.empty();
-
             // Add the ID3 chunk and ID3v2 tag to the vector
+            const id3Chunk = ByteVector.empty();
             if (!!this._tag) {
                 const tagData = this._tag.render();
                 if (tagData.length > 10) {
@@ -121,9 +120,9 @@ export default class AiffFile extends File {
                         tagData.addByte(0);
                     }
 
-                    data.addByteVector(AiffFile.id3Identifier);
-                    data.addByteVector(ByteVector.fromUInt(tagData.length, true));
-                    data.addByteVector(tagData);
+                    id3Chunk.addByteVector(AiffFile.id3Identifier);
+                    id3Chunk.addByteVector(ByteVector.fromUInt(tagData.length, true));
+                    id3Chunk.addByteVector(tagData);
                 }
             }
 
@@ -136,10 +135,10 @@ export default class AiffFile extends File {
             let length = readResult.tagEnd - readResult.tagStart + 8;
 
             // Insert the tagging data
-            this.insert(data, readResult.tagStart, length);
+            this.insert(id3Chunk, readResult.tagStart, length);
 
             // If the data size changed, update the AIFF size
-            if (data.length - length !== 0 && readResult.tagStart <= readResult.aiffSize) {
+            if (id3Chunk.length - length !== 0 && readResult.tagStart <= readResult.aiffSize) {
                 // Depending, if a tag has been added or removed, the length needs to be adjusted
                 if (!this._tag) {
                     length -= 16;
@@ -147,7 +146,7 @@ export default class AiffFile extends File {
                     length -= 8;
                 }
 
-                this.insert(ByteVector.fromUInt(readResult.aiffSize + data.length - length, true), 4, 4);
+                this.insert(ByteVector.fromUInt(readResult.aiffSize + id3Chunk.length - length, true), 4, 4);
             }
 
             // Update the tag types

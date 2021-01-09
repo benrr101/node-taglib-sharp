@@ -554,8 +554,8 @@ export abstract class File {
         const bufferLength = File._bufferSize;
         let readPosition = start + length;
         let writePosition = start;
-        let buffer = ByteVector.fromSize(1);
-        while (buffer.length !== 0) {
+        let buffer: ByteVector;
+        while (buffer && buffer.length !== 0) {
             this._fileStream.position = readPosition;
             buffer = this.readBlock(bufferLength);
             readPosition += buffer.length;

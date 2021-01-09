@@ -110,7 +110,6 @@ export class Stream implements IStream {
     /** @inheritDoc */
     public set position(position: number) {
         Guards.uint(position, "position");
-        Guards.lessThanInclusive(position, this.length, "position");
         this._position = position;
     }
 
