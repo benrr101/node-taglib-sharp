@@ -555,7 +555,7 @@ export abstract class File {
         let readPosition = start + length;
         let writePosition = start;
         let buffer: ByteVector;
-        while (buffer && buffer.length !== 0) {
+        while (!buffer || buffer.length !== 0) {
             this._fileStream.position = readPosition;
             buffer = this.readBlock(bufferLength);
             readPosition += buffer.length;
