@@ -1,5 +1,6 @@
 import * as BigInt from "big-integer";
 import * as Path from "path";
+import {ByteVector} from "./byteVector";
 
 export class Guards {
     public static betweenExclusive(value: number, minValue: number, maxValue: number, name: string): void {
@@ -114,7 +115,57 @@ export class ArrayUtils {
 }
 
 export class NumberUtils {
+    /**
+     * @internal
+     * Converts IEEE 80-bit floating point numbers (SANE "extended" type) to double precision
+     * floating point number.
+     * @source http://www33146ue.sakura.ne.jp/staff/iz/formats/ieee.c
+     */
+    public static convertFromIeeeExtended(bytes: ByteVector): number {
+        let f: number;
 
+        let exponent = (((bytes.get(0) & 0x7F) << 8) >>> 0) | (bytes.get(1) >>> 0);
+        const hiMantissa = (bytes.get(2) << 24) >>> 0
+            | (bytes.get(3) << 16) >>> 0
+            | (bytes.get(4) << 8) >>> 0
+            | bytes.get(5) >>> 0;
+        const loMantissa = (bytes.get(6) << 24) >>> 0
+            | (bytes.get(7) << 16) >>> 0
+            | (bytes.get(8) << 8) >>> 0
+            | bytes.get(9) >>> 0;
+
+        if (exponent === 0 && hiMantissa === 0 && loMantissa === 0) {
+            return 0;
+        }
+
+        if (exponent === 0x7FFF) {
+            f = Number.POSITIVE_INFINITY;
+        } else {
+            exponent -= 16383;
+            f = NumberUtils.ldexp(hiMantissa, exponent -= 31);
+            f = NumberUtils.ldexp(loMantissa, exponent -= 32);
+        }
+
+        if ((bytes.get(0) & 0x80) !== 0) {
+            return -f;
+        } else {
+            return f;
+        }
+    }
+
+    /**
+     * Port of ldexp from C/C++ math.h
+     * @source Vanessa Freudenberg (https://croquetweak.blogspot.com/2014/08/deconstructing-floats-frexp-and-ldexp.html)
+     */
+    public static ldexp(mantissa: number, exponent: number): number {
+        const steps = Math.min(3, Math.ceil(Math.abs(exponent) / 1023));
+        let result = mantissa;
+        for (let i = 0; i < steps; i++) {
+            result *= Math.pow(2, Math.floor((exponent + i) / steps));
+        }
+
+        return result;
+    }
 }
 
 export class StringUtils {
