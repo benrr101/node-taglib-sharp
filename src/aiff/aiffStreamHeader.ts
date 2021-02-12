@@ -49,46 +49,7 @@ export default class AiffStreamHeader implements ILosslessAudioCodec {
         this._channels = data.mid(8, 2).toUShort(true);
         this._totalFrames = data.mid(10, 4).toUInt(true);
         this._bitsPerSample = data.mid(14, 2).toUShort(true);
-
-        // const sampleRateIndicator = data.mid(17, 1).get(0);
-        // const sampleRateTemp = data.mid(18, 2).toULong(true);
-
         this._sampleRate = NumberUtils.convertFromIeeeExtended(data.mid(16, 10));
-        // 44100; // Set a default sample rate
-
-        // The following are combinations that iTunes 8 encodes to. There may be other combinations
-        // of the field, but I [Gabriel Burt] couldn't test them.
-        // if (sampleRateTemp.eq(44100)) {
-        //     if (sampleRateIndicator === 0x0E) {
-        //         this._sampleRate = 44100;
-        //     } else if (sampleRateIndicator === 0x0D) {
-        //         this._sampleRate = 22050;
-        //     } else if (sampleRateIndicator === 0x0C) {
-        //         this._sampleRate = 11025;
-        //     }
-        // } else if (sampleRateTemp.eq(44800)) {
-        //     if (sampleRateIndicator === 0x0E) {
-        //         this._sampleRate = 44800;
-        //     } else if (sampleRateIndicator === 0x0D) {
-        //         this._sampleRate = 24000;
-        //     }
-        // } else if (sampleRateTemp.eq(64000)) {
-        //     if (sampleRateIndicator === 0x0D) {
-        //         this._sampleRate = 32000;
-        //     } else if (sampleRateIndicator === 0x0C) {
-        //         this._sampleRate = 16000;
-        //     } else if (sampleRateIndicator === 0x0B) {
-        //         this._sampleRate = 8000;
-        //     }
-        // } else if (sampleRateTemp.eq(44510)) {
-        //     if (sampleRateIndicator === 0x0D) {
-        //         this._sampleRate = 22255;
-        //     }
-        // } else if (sampleRateTemp.eq(44508)) {
-        //     if (sampleRateIndicator === 0x0C) {
-        //         this._sampleRate = 11127;
-        //     }
-        // }
     }
 
     // #region Properties

@@ -116,7 +116,36 @@ export class ArrayUtils {
 
 export class NumberUtils {
     /**
-     * @internal
+     * Provides way to do unsigned bitwise AND without all the mess of parenthesis.
+     * @param x Left operand
+     * @param y Right operand
+     * @returns Number (x & y) >>> 0
+     */
+    public static uintAnd(x: number, y: number): number {
+        return (x & y) >>> 0;
+    }
+
+    /**
+     * Provides way to do unsigned bitwise OR without all the mess of parenthesis.
+     * @param x Left operand
+     * @param y Right operand
+     * @returns Number (x | y) >>> 0
+     */
+    public static uintOr(x: number, y: number): number {
+        return (x | y) >>> 0;
+    }
+
+    /**
+     * Provides way to do unsigned bitshift left without all the mess of parenthesis.
+     * @param x Number
+     * @param y Bits to shift to the left
+     * @returns Number (x << y) >>> 0;
+     */
+    public static uintLShift(x: number, y: number): number {
+        return (x << y) >>> 0;
+    }
+
+    /**
      * Converts IEEE 80-bit floating point numbers (SANE "extended" type) to double precision
      * floating point number.
      * @source http://www33146ue.sakura.ne.jp/staff/iz/formats/ieee.c
@@ -124,15 +153,17 @@ export class NumberUtils {
     public static convertFromIeeeExtended(bytes: ByteVector): number {
         let f: number;
 
-        let exponent = (((bytes.get(0) & 0x7F) << 8) >>> 0) | (bytes.get(1) >>> 0);
-        const hiMantissa = (bytes.get(2) << 24) >>> 0
-            | (bytes.get(3) << 16) >>> 0
-            | (bytes.get(4) << 8) >>> 0
-            | bytes.get(5) >>> 0;
-        const loMantissa = (bytes.get(6) << 24) >>> 0
-            | (bytes.get(7) << 16) >>> 0
-            | (bytes.get(8) << 8) >>> 0
-            | bytes.get(9) >>> 0;
+        let exponent = NumberUtils.uintLShift(NumberUtils.uintAnd(bytes.get(0), 0x7F), 8);
+        exponent = NumberUtils.uintOr(exponent, bytes.get(1));
+
+        let hiMantissa = NumberUtils.uintLShift(bytes.get(2), 24);
+        hiMantissa = NumberUtils.uintOr(hiMantissa, NumberUtils.uintLShift(bytes.get(3), 16));
+        hiMantissa = NumberUtils.uintOr(hiMantissa, NumberUtils.uintLShift(bytes.get(4), 8));
+        hiMantissa = NumberUtils.uintOr(hiMantissa, bytes.get(5));
+        let loMantissa = NumberUtils.uintLShift(bytes.get(6), 24);
+        loMantissa = NumberUtils.uintOr(loMantissa, NumberUtils.uintLShift(bytes.get(7), 16));
+        loMantissa = NumberUtils.uintOr(loMantissa, NumberUtils.uintLShift(bytes.get(8), 8));
+        loMantissa = NumberUtils.uintOr(loMantissa, bytes.get(9));
 
         if (exponent === 0 && hiMantissa === 0 && loMantissa === 0) {
             return 0;
@@ -143,7 +174,7 @@ export class NumberUtils {
         } else {
             exponent -= 16383;
             f = NumberUtils.ldexp(hiMantissa, exponent -= 31);
-            f = NumberUtils.ldexp(loMantissa, exponent -= 32);
+            f += NumberUtils.ldexp(loMantissa, exponent -= 32);
         }
 
         if ((bytes.get(0) & 0x80) !== 0) {
@@ -154,17 +185,13 @@ export class NumberUtils {
     }
 
     /**
-     * Port of ldexp from C/C++ math.h
-     * @source Vanessa Freudenberg (https://croquetweak.blogspot.com/2014/08/deconstructing-floats-frexp-and-ldexp.html)
+     * Performs the same operation as ldexp does in C/C++
+     * @param x Number to be multiplied by 2^y
+     * @param y Power to raise 2 to
+     * @returns Number x * 2^y
      */
-    public static ldexp(mantissa: number, exponent: number): number {
-        const steps = Math.min(3, Math.ceil(Math.abs(exponent) / 1023));
-        let result = mantissa;
-        for (let i = 0; i < steps; i++) {
-            result *= Math.pow(2, Math.floor((exponent + i) / steps));
-        }
-
-        return result;
+    public static ldexp(x: number, y: number): number {
+        return x * Math.pow(2, y);
     }
 }
 
