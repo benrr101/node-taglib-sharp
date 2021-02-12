@@ -17,11 +17,12 @@ improved on the original TagLib, hence why this project exists.
 ## Supported Tagging Formats (and File Formats)
 * [APE](http://wiki.hydrogenaud.io/index.php?title=APE_key): `AAC`, `APE`, `M2A`, `MP1`, `MP2`, `MP3`
 * [ID3v1](https://id3.org/ID3v1): `AAC`, `M2A`, `MP1`, `MP2`, `MP3`
-* [ID3v2](https://id3.org/Developer%20Information): `M2A`, `MP1`, `MP2`, `MP3`
+* [ID3v2](https://id3.org/Developer%20Information): `AAC`, `AIF`, `AIFF`, `M2A`, `MP1`, `MP2`, `MP3`
 * ... More coming soon
 
 ## Supported Codecs
 * Advanced Audio Codec (AAC): `AAC`
+* Audio Interchange Format (AIFF): `AIF`, `AIFF`
 * MPEG-1/2 Audio: `M2A`, `MP1`, `MP2`, `MP3`
 * MPEG-1/2 Video: `M2V`, `MPE`, `MPEG`, `MPG`, `MPV2`
 * Monkey's Audio: `APE`
