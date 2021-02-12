@@ -75,8 +75,6 @@ const assert = Chai.assert;
         try {
             // Act / Assert
             Testers.testUint((v: number) => { stream.position = v; });
-            assert.throws(() => stream.position = TestConstants.testFileContents.length + 1);
-
         } finally {
             // Cleanup
             stream.close();
@@ -178,7 +176,6 @@ const assert = Chai.assert;
         try {
             // Act / Assert
             Testers.testUint((v: number) => { stream.seek(v, SeekOrigin.Begin); });
-            assert.throws(() => stream.seek(TestConstants.testFileContents.length + 1, SeekOrigin.Begin));
         } finally {
             // Cleanup
             stream.close();
@@ -212,7 +209,6 @@ const assert = Chai.assert;
         try {
             // Act / Assert
             Testers.testInt((v: number) => { stream.seek(v, SeekOrigin.Current); });
-            assert.throws(() => stream.seek(6, SeekOrigin.Current)); // Would go past end of stream
             assert.throws(() => stream.seek(-6, SeekOrigin.Current)); // Would go past beginning of stream
         } finally {
             // Cleanup
@@ -248,7 +244,6 @@ const assert = Chai.assert;
         try {
             // Act / Assert
             Testers.testInt((v: number) => { stream.seek(v, SeekOrigin.End); });
-            assert.throws(() => stream.seek(1, SeekOrigin.End)); // Would go past end of stream
             assert.throws(() => stream.seek(-11, SeekOrigin.End)); // Would go past beginning of stream
         } finally {
             // Cleanup

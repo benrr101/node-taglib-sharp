@@ -1,5 +1,6 @@
 import * as BigInt from "big-integer";
 import * as Path from "path";
+import {ByteVector} from "./byteVector";
 
 export class Guards {
     public static betweenExclusive(value: number, minValue: number, maxValue: number, name: string): void {
@@ -114,7 +115,84 @@ export class ArrayUtils {
 }
 
 export class NumberUtils {
+    /**
+     * Provides way to do unsigned bitwise AND without all the mess of parenthesis.
+     * @param x Left operand
+     * @param y Right operand
+     * @returns Number (x & y) >>> 0
+     */
+    public static uintAnd(x: number, y: number): number {
+        return (x & y) >>> 0;
+    }
 
+    /**
+     * Provides way to do unsigned bitwise OR without all the mess of parenthesis.
+     * @param x Left operand
+     * @param y Right operand
+     * @returns Number (x | y) >>> 0
+     */
+    public static uintOr(x: number, y: number): number {
+        return (x | y) >>> 0;
+    }
+
+    /**
+     * Provides way to do unsigned bitshift left without all the mess of parenthesis.
+     * @param x Number
+     * @param y Bits to shift to the left
+     * @returns Number (x << y) >>> 0;
+     */
+    public static uintLShift(x: number, y: number): number {
+        return (x << y) >>> 0;
+    }
+
+    /**
+     * Converts IEEE 80-bit floating point numbers (SANE "extended" type) to double precision
+     * floating point number.
+     * @source http://www33146ue.sakura.ne.jp/staff/iz/formats/ieee.c
+     */
+    public static convertFromIeeeExtended(bytes: ByteVector): number {
+        let f: number;
+
+        let exponent = NumberUtils.uintLShift(NumberUtils.uintAnd(bytes.get(0), 0x7F), 8);
+        exponent = NumberUtils.uintOr(exponent, bytes.get(1));
+
+        let hiMantissa = NumberUtils.uintLShift(bytes.get(2), 24);
+        hiMantissa = NumberUtils.uintOr(hiMantissa, NumberUtils.uintLShift(bytes.get(3), 16));
+        hiMantissa = NumberUtils.uintOr(hiMantissa, NumberUtils.uintLShift(bytes.get(4), 8));
+        hiMantissa = NumberUtils.uintOr(hiMantissa, bytes.get(5));
+        let loMantissa = NumberUtils.uintLShift(bytes.get(6), 24);
+        loMantissa = NumberUtils.uintOr(loMantissa, NumberUtils.uintLShift(bytes.get(7), 16));
+        loMantissa = NumberUtils.uintOr(loMantissa, NumberUtils.uintLShift(bytes.get(8), 8));
+        loMantissa = NumberUtils.uintOr(loMantissa, bytes.get(9));
+
+        if (exponent === 0 && hiMantissa === 0 && loMantissa === 0) {
+            return 0;
+        }
+
+        if (exponent === 0x7FFF) {
+            f = Number.POSITIVE_INFINITY;
+        } else {
+            exponent -= 16383;
+            f = NumberUtils.ldexp(hiMantissa, exponent -= 31);
+            f += NumberUtils.ldexp(loMantissa, exponent -= 32);
+        }
+
+        if ((bytes.get(0) & 0x80) !== 0) {
+            return -f;
+        } else {
+            return f;
+        }
+    }
+
+    /**
+     * Performs the same operation as ldexp does in C/C++
+     * @param x Number to be multiplied by 2^y
+     * @param y Power to raise 2 to
+     * @returns Number x * 2^y
+     */
+    public static ldexp(x: number, y: number): number {
+        return x * Math.pow(2, y);
+    }
 }
 
 export class StringUtils {
