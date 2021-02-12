@@ -153,7 +153,7 @@ const assert = Chai.assert;
     }
 
     @test
-    public fromData_noVbrheaders() {
+    public fromData_noVbrHeaders() {
         // Arrange - MPEG2, Layer2, 64kbps, 22050kHz - padded
         const data = ByteVector.fromUInt(0xFFF48200, true);
         data.addByteVector(ByteVector.fromSize(100));

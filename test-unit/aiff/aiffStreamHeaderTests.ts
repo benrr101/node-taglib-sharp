@@ -15,7 +15,7 @@ const assert = Chai.assert;
         // Arrange
         const testFunc = (a: ByteVector, b: number) => { const _ = new AiffStreamHeader(a, b); };
 
-        // Act / Asseert
+        // Act / Assert
         Testers.testTruthy((v: ByteVector) => testFunc(v, 0));
         Testers.testUint((v: number) => testFunc(ByteVector.empty(), v));
     }
