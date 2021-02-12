@@ -1,6 +1,4 @@
-**[node-taglib-sharp](README.md)**
-
-> [Globals](globals.md)
+node-taglib-sharp / [Exports](modules.md)
 
 # TagLib# for Node
 

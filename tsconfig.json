@@ -17,8 +17,7 @@
     "./src/**/*"
   ],
   "typedocOptions": {
-    "inputFiles": ["./src"],
-    "mode": "modules",
+    "entryPoints": ["./src/index.ts"],
     "out": "docs/",
     "excludePrivate": true,
     "disableSources": true,
