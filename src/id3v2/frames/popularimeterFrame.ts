@@ -1,4 +1,3 @@
-import * as BigInt from "big-integer";
 import {ByteVector, StringType} from "../../byteVector";
 import {CorruptFileError} from "../../errors";
 import {Frame, FrameClassType} from "./frame";
@@ -10,7 +9,7 @@ import {Guards} from "../../utils";
  * This class extends {@link Frame} implementing support for ID3v2 popularimeter (POPM) frames.
  */
 export default class PopularimeterFrame extends Frame {
-    private _playCount: BigInt.BigInteger;
+    private _playCount: bigint;
     private _rating: number;
     private _user: string = "";
 
@@ -81,12 +80,12 @@ export default class PopularimeterFrame extends Frame {
     /**
      * Gets the play count of the current instance
      */
-    public get playCount(): BigInt.BigInteger { return this._playCount; }
+    public get playCount(): bigint { return this._playCount; }
     /**
      * Sets the play count of the current instance
      * @param value Play count of the current instance
      */
-    public set playCount(value: BigInt.BigInteger) {
+    public set playCount(value: bigint) {
         if (value !== undefined) {
             Guards.ulong(value, "value");
         }

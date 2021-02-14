@@ -1,4 +1,3 @@
-import * as BigInt from "big-integer";
 import {ByteVector} from "../../byteVector";
 import {Frame, FrameClassType} from "./frame";
 import {Id3v2FrameHeader} from "./frameHeader";
@@ -9,11 +8,11 @@ import {Guards} from "../../utils";
  * This class extends {@link Frame} implementing support for ID3v2 play count (PCNT) frames.
  */
 export default class PlayCountFrame extends Frame {
-    private _playCount: BigInt.BigInteger;
+    private _playCount: bigint;
 
     private constructor(header: Id3v2FrameHeader) {
         super(header);
-        this._playCount = BigInt.zero;
+        this._playCount = BigInt(0);
     }
 
     // #region Constructors
@@ -75,12 +74,12 @@ export default class PlayCountFrame extends Frame {
     /**
      * Gets the play count of the current instance.
      */
-    public get playCount(): BigInt.BigInteger { return this._playCount; }
+    public get playCount(): bigint { return this._playCount; }
     /**
      * Sets the play count of the current instance.
      * @param value Number of times this track has been played
      */
-    public set playCount(value: BigInt.BigInteger) {
+    public set playCount(value: bigint) {
         Guards.ulong(value, "value");
         this._playCount = value;
     }

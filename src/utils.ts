@@ -1,8 +1,11 @@
-import * as BigInt from "big-integer";
 import * as Path from "path";
 import {ByteVector} from "./byteVector";
 
 export class Guards {
+    private static readonly MAX_LONG = BigInt("9223372036854775807");
+    private static readonly MAX_ULONG = BigInt("18446744073709551615");
+    private static readonly MIN_LONG = BigInt("-9223372036854775808");
+
     public static betweenExclusive(value: number, minValue: number, maxValue: number, name: string): void {
         if (value <= minValue || value >= maxValue) {
             throw new Error(`Argument out of range: ${name} must satisfy ${maxValue} <= ${name} <= ${minValue}`);
@@ -39,10 +42,9 @@ export class Guards {
         }
     }
 
-    public static long(value: BigInt.BigInteger, name: string) {
-        Guards.truthy(value, name);
-        if (value.gt(BigInt("9223372036854775807")) || value.lt(BigInt("-9223372036854775808"))) {
-            throw new Error(`Argument out of range: ${name} must be a positive, 64-bit integer`);
+    public static long(value: bigint, name: string) {
+        if (value > Guards.MAX_LONG || value < Guards.MIN_LONG) {
+            throw new Error(`Argument out of range: ${name} must be a 64-bit integer`);
         }
     }
 
@@ -107,9 +109,8 @@ export class Guards {
         }
     }
 
-    public static ulong(value: BigInt.BigInteger, name: string): void {
-        Guards.truthy(value, name);
-        if (value.gt(BigInt("18446744073709551615")) || value.lt(0)) {
+    public static ulong(value: bigint, name: string): void {
+        if (value > this.MAX_ULONG || value < 0) {
             throw new Error(`Argument out of range: ${name} must be a positive, 64-bit integer`);
         }
     }
@@ -152,6 +153,20 @@ export class ArrayUtils {
 }
 
 export class NumberUtils {
+    public static readonly BIG_ZERO = BigInt(0);
+    public static readonly BIG_ONE = BigInt(1);
+    public static readonly BIG_TWO = BigInt(2);
+
+    /**
+     * Performs the same operation as ldexp does in C/C++
+     * @param x Number to be multiplied by 2^y
+     * @param y Power to raise 2 to
+     * @returns Number x * 2^y
+     */
+    public static ldexp(x: number, y: number): number {
+        return x * Math.pow(2, y);
+    }
+
     /**
      * Provides way to do unsigned bitwise AND without all the mess of parenthesis.
      * @param x Left operand
@@ -219,16 +234,6 @@ export class NumberUtils {
         } else {
             return f;
         }
-    }
-
-    /**
-     * Performs the same operation as ldexp does in C/C++
-     * @param x Number to be multiplied by 2^y
-     * @param y Power to raise 2 to
-     * @returns Number x * 2^y
-     */
-    public static ldexp(x: number, y: number): number {
-        return x * Math.pow(2, y);
     }
 }
 
