@@ -28,7 +28,7 @@ export class Guards {
     }
 
     public static int(value: number, name: string): void {
-        if (!Number.isSafeInteger(value)) {
+        if (!Number.isInteger(value) || value < -2147483648 || value > 2147483647) {
             throw new Error(`Argument out of range: ${name} must be a 32-bit integer`);
         }
     }
@@ -36,6 +36,13 @@ export class Guards {
     public static lessThanInclusive(value: number, upperBound: number, name: string) {
         if (value > upperBound) {
             throw new Error(`Argument out of range: ${name} must be less than ${upperBound}`);
+        }
+    }
+
+    public static long(value: BigInt.BigInteger, name: string) {
+        Guards.truthy(value, name);
+        if (value.gt(BigInt("9223372036854775807")) || value.lt(BigInt("-9223372036854775808"))) {
+            throw new Error(`Argument out of range: ${name} must be a positive, 64-bit integer`);
         }
     }
 
@@ -52,6 +59,30 @@ export class Guards {
         Guards.byte(value, name);
     }
 
+    /**
+     * Throws if the provided value is not a safe, integer. Use this method instead of
+     * {@see Guards.int()} if validating an argument for use in file manipulation.
+     * @param value Value to validate
+     * @param name Name of the parameter in calling function
+     */
+    public static safeInt(value: number, name: string): void {
+        if (!Number.isSafeInteger(value)) {
+            throw new Error(`Argument out of range: ${name} must be a safe JS integer`);
+        }
+    }
+
+    /**
+     * Throws if the provided value is not a safe, positive integer. Use this method instead of
+     * {@see Guards.uint()} if validating an argument for use in file manipulation.
+     * @param value Value to validate
+     * @param name Name of the parameter in calling function
+     */
+    public static safeUint(value: number, name: string): void {
+        if (!Number.isSafeInteger(value) || value < 0) {
+            throw new Error(`Argument out of range ${name} must be a safe, positive JS integer`);
+        }
+    }
+
     public static short(value: number, name: string): void {
         if (!Number.isSafeInteger(value) || value > 32767 || value < -32768) {
             throw new Error(`Argument out of range: ${name} must be a 16-bit integer`);
@@ -65,15 +96,21 @@ export class Guards {
     }
 
     public static uint(value: number, name: string): void {
-        if (!Number.isSafeInteger(value) || value < 0) {
-            throw new Error(`Argument out of range: ${name} must be a safe, positive, 32-bit integer`);
+        if (!Number.isSafeInteger(value) || value > 4294967295 || value < 0) {
+            throw new Error(`Argument out of range: ${name} must be a positive, 32-bit integer`);
+        }
+    }
+
+    public static ushort(value: number, name: string): void {
+        if (!Number.isSafeInteger(value) || value > 65535 || value < 0) {
+            throw new Error(`Argument out of range: ${name} must be a positive, 16-bit integer`);
         }
     }
 
     public static ulong(value: BigInt.BigInteger, name: string): void {
         Guards.truthy(value, name);
         if (value.gt(BigInt("18446744073709551615")) || value.lt(0)) {
-            throw new Error(`Argument out of range: ${name} is not a valid unsigned 64-bit integer`);
+            throw new Error(`Argument out of range: ${name} must be a positive, 64-bit integer`);
         }
     }
 }

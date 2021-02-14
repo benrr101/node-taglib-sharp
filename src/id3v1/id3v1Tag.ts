@@ -64,7 +64,7 @@ export default class Id3v1Tag extends Tag {
 
     public static fromFile(file: File, position: number): Id3v1Tag {
         Guards.truthy(file, "file");
-        Guards.uint(position, "position");
+        Guards.safeUint(position, "position");
 
         file.mode = FileAccessMode.Read;
 

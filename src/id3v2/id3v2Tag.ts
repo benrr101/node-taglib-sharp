@@ -84,7 +84,7 @@ export default class Id3v2Tag extends Tag {
      */
     public static fromFile(file: File, position: number, style: ReadStyle): Id3v2Tag {
         Guards.truthy(file, "file");
-        Guards.uint(position, "position");
+        Guards.safeUint(position, "position");
         if (position > file.length - Id3v2Settings.headerSize) {
             throw new Error("Argument out of range: position must be within size of the file");
         }

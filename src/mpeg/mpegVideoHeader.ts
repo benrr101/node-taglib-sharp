@@ -24,7 +24,7 @@ export default class MpegVideoHeader implements IVideoCodec {
      */
     public constructor(file: File, position: number) {
         Guards.truthy(file, "file");
-        Guards.uint(position, "position");
+        Guards.safeUint(position, "position");
 
         file.seek(position);
         const data = file.readBlock(7);

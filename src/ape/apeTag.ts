@@ -101,7 +101,7 @@ export default class ApeTag extends Tag {
      */
     public static fromFile(file: File, position: number) {
         Guards.truthy(file, "file");
-        Guards.uint(position, "position");
+        Guards.safeUint(position, "position");
         Guards.lessThanInclusive(position, file.length - ApeTagFooter.size, "position");
 
         file.mode = FileAccessMode.Read;
