@@ -1,5 +1,7 @@
+version: 3.2.1-{branch}.{build}
+
 environment:
-  nodejs_version: "8.16"
+  nodejs_version: "12.16.1"
 
 install:
   - ps: Install-Product node $env:nodejs_version
