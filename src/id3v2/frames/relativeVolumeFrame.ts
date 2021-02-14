@@ -122,7 +122,7 @@ export class ChannelData {
         if (value < 0) {
             throw new Error("Argument out of range: value must be positive");
         }
-        if (value > BigInt(2 ** this.peakBits - 1)) {
+        if (value > NumberUtils.bigPow(NumberUtils.BIG_TWO, this.peakBits) - NumberUtils.BIG_ONE) {
             throw new Error("Argument out of range: value must fit within number of bits defined by peakBits");
         }
         this._peakVolume = value;

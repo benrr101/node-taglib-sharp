@@ -157,6 +157,17 @@ export class NumberUtils {
     public static readonly BIG_ONE = BigInt(1);
     public static readonly BIG_TWO = BigInt(2);
 
+    public static bigPow(x: bigint, y: number): bigint {
+        Guards.uint(y, "y");
+
+        let result = BigInt(1);
+        for (let i = 0; i < y; i++) {
+            result *= x;
+        }
+
+        return result;
+    }
+
     /**
      * Performs the same operation as ldexp does in C/C++
      * @param x Number to be multiplied by 2^y
