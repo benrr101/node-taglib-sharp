@@ -13,6 +13,9 @@ export default abstract class BaseObject {
 
     // #region Initializers
 
+    private constructor() {
+    }
+
     /**
      * Initializes a new instance by reading the contents from a specified position in a specified
      * file.
@@ -22,7 +25,7 @@ export default abstract class BaseObject {
      */
     protected initializeFromFile(file: AsfFile, position: number): void {
         Guards.truthy(file, "file");
-        Guards.lessThanInclusive(position, -1, "position");
+        Guards.uint(position, "position");
         Guards.greaterThanInclusive(position, file.length - 25, "position");
 
         file.seek(position);
@@ -97,6 +100,21 @@ export default abstract class BaseObject {
      * Renders the current instance as a raw ASF object.
      */
     public abstract render(): ByteVector;
+
+    /**
+     * Renders the current instance as a raw ASF object containing the specified data.
+     * @param data Data to store in the rendered version of the current instance.
+     * @remarks Child classes implementing {@see render()} should render their contents and then
+     *     send the data through this method to produce the final output.
+     */
+    protected renderInternal(data: ByteVector): ByteVector {
+        const length = BigInt((!!data ? data.length : 0) + 24);
+        return ByteVector.concatenate(
+            ByteVector.fromByteArray(this._id.bytes),
+            BaseObject.renderQWord(length),
+            data
+        );
+    }
 
     // #endregion
 }
