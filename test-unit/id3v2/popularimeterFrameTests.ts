@@ -187,7 +187,7 @@ const assert = Chai.assert;
         // Act
         PropertyTests.propertyRoundTrip(set, get, BigInt(1234));
         PropertyTests.propertyRoundTrip(set, get, undefined);
-        PropertyTests.propertyThrows(set, null);
+        PropertyTests.propertyNormalized(set, get, null, undefined);
         PropertyTests.propertyThrows(set, BigInt(-1));
     }
 

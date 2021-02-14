@@ -86,10 +86,8 @@ export default class PopularimeterFrame extends Frame {
      * @param value Play count of the current instance
      */
     public set playCount(value: bigint) {
-        if (value !== undefined) {
-            Guards.ulong(value, "value");
-        }
-        this._playCount = value;
+        Guards.ulong(value, "value");
+        this._playCount = value === null ? undefined : value;
     }
 
     /**
