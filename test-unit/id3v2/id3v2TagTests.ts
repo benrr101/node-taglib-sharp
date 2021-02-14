@@ -1554,7 +1554,7 @@ function getTestTagHeader(version: number, flags: Id3v2TagHeaderFlags, tagSize: 
             FrameClassType.PlayCountFrame,
             FrameIdentifiers.PCNT
         )[0];
-        assert.isTrue(dPcnt.playCount === sFrame1.playCount);
+        assert.strictEqual(dPcnt.playCount, sFrame1.playCount);
     }
 
     @test
@@ -1592,7 +1592,7 @@ function getTestTagHeader(version: number, flags: Id3v2TagHeaderFlags, tagSize: 
             FrameClassType.PlayCountFrame,
             FrameIdentifiers.PCNT
         )[0];
-        assert.isTrue(dPcnt.playCount === sFrame1.playCount);
+        assert.strictEqual(dPcnt.playCount, sFrame1.playCount);
     }
 
     @test

@@ -106,7 +106,7 @@ const assert = Chai.assert;
         assert.strictEqual(frame.frameClassType, FrameClassType.PlayCountFrame);
         assert.strictEqual(frame.frameId, FrameIdentifiers.PCNT);
 
-        assert.isTrue(frame.playCount === p);
+        assert.strictEqual(frame.playCount, p);
     }
 }
 
@@ -141,7 +141,7 @@ const assert = Chai.assert;
         assert.strictEqual(output.frameClassType, FrameClassType.PlayCountFrame);
         assert.strictEqual(output.frameId, FrameIdentifiers.PCNT);
 
-        assert.isTrue(output.playCount === frame.playCount);
+        assert.strictEqual(output.playCount, frame.playCount);
     }
 
     @test

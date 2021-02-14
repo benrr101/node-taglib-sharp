@@ -237,7 +237,7 @@ const assert = Chai.assert;
     @test
     public toLong_empty() {
         const long = ByteVector.fromSize(0).toLong();
-        assert.isTrue(long === BigInt(0));
+        assert.strictEqual(long, BigInt(0));
     }
 
     @test
@@ -253,55 +253,55 @@ const assert = Chai.assert;
         const long = ByteVector.fromByteArray(
             new Uint8Array([0x00, 0x00, 0x00, 0x00])
         ).toLong();
-        assert.isTrue(long === BigInt(0));
+        assert.strictEqual(long,  BigInt(0));
     }
 
     @test
     public toLong_positiveBigEndian_complete() {
         const long = this.longPositiveCompleteBV.toLong();
-        assert.isTrue(long === BigInt("0x0102030405060708"));
+        assert.strictEqual(long, BigInt("0x0102030405060708"));
     }
 
     @test
     public toLong_positiveBigEndian_incomplete() {
         const long = this.longPositiveIncompleteBV.toLong();
-        assert.isTrue(long === BigInt("0x01020304"));
+        assert.strictEqual(long, BigInt("0x01020304"));
     }
 
     @test
     public toLong_positiveLittleEndian_complete() {
         const long = this.longPositiveCompleteBV.toLong(false);
-        assert.isTrue(long === BigInt("0x0807060504030201"));
+        assert.strictEqual(long, BigInt("0x0807060504030201"));
     }
 
     @test
     public toLong_positiveLittleEndian_incomplete() {
         const long = this.longPositiveIncompleteBV.toLong(false);
-        assert.isTrue(long === BigInt("0x04030201"));
+        assert.strictEqual(long, BigInt("0x04030201"));
     }
 
     @test
     public toLong_negativeBigEndian_complete() {
         const long = this.longNegativeCompleteBV.toLong();
-        assert.isTrue(long === BigInt("-72623859790382856"));
+        assert.strictEqual(long, BigInt("-72623859790382856"));
     }
 
     @test
     public toLong_negativeBigEndian_incomplete() {
         const long = this.longNegativeIncompleteBV.toLong();
-        assert.isTrue(long === BigInt("0xFEFDFCFC"));
+        assert.strictEqual(long, BigInt("0xFEFDFCFC"));
     }
 
     @test
     public toLong_negativeLittleEndian_complete() {
         const long = this.longNegativeCompleteBV.toLong(false);
-        assert.isTrue(long === BigInt("-506380101714379266"));
+        assert.strictEqual(long, BigInt("-506380101714379266"));
     }
 
     @test
     public toLong_negativeLittleEndian_incomplete() {
         const long = this.longNegativeIncompleteBV.toLong(false);
-        assert.isTrue(long === BigInt("0xFCFCFDFE"));
+        assert.strictEqual(long, BigInt("0xFCFCFDFE"));
     }
 
     @test
@@ -729,7 +729,7 @@ const assert = Chai.assert;
     @test
     public toULong_empty() {
         const long = ByteVector.fromSize(0).toULong();
-        assert.isTrue(long === BigInt(0));
+        assert.strictEqual(long, BigInt(0));
     }
 
     @test
@@ -737,7 +737,7 @@ const assert = Chai.assert;
         const long = ByteVector.fromByteArray(
             new Uint8Array([0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xAA])
         ).toULong();
-        assert.isTrue(long === BigInt(0));
+        assert.strictEqual(long, BigInt(0));
     }
 
     @test
@@ -745,31 +745,31 @@ const assert = Chai.assert;
         const long = ByteVector.fromByteArray(
             new Uint8Array([0x00, 0x00, 0x00, 0x00])
         ).toULong();
-        assert.isTrue(long === BigInt(0));
+        assert.strictEqual(long, BigInt(0));
     }
 
     @test
     public toULong_positiveBigEndian_complete() {
         const long = this.ulongPositiveCompleteBV.toULong();
-        assert.isTrue(long === BigInt("0x0102030405060708"));
+        assert.strictEqual(long, BigInt("0x0102030405060708"));
     }
 
     @test
     public toULong_positiveBigEndian_incomplete() {
         const long = this.ulongPositiveIncompleteBV.toULong();
-        assert.isTrue(long === BigInt("0x01020304"));
+        assert.strictEqual(long, BigInt("0x01020304"));
     }
 
     @test
     public toULong_positiveLittleEndian_complete() {
         const long = this.ulongPositiveCompleteBV.toULong(false);
-        assert.isTrue(long === BigInt("0x0807060504030201"));
+        assert.strictEqual(long, BigInt("0x0807060504030201"));
     }
 
     @test
     public toULong_positiveLittleEndian_incomplete() {
         const long = this.ulongPositiveIncompleteBV.toULong(false);
-        assert.isTrue(long === BigInt("0x04030201"));
+        assert.strictEqual(long, BigInt("0x04030201"));
     }
 
     @test
@@ -777,7 +777,7 @@ const assert = Chai.assert;
         const long = ByteVector.fromByteArray(
             new Uint8Array([0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF])
         ).toULong();
-        assert.isTrue(long === BigInt("0xFFFFFFFFFFFFFFFF"));
+        assert.strictEqual(long, BigInt("0xFFFFFFFFFFFFFFFF"));
     }
 
     @test
