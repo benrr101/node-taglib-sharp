@@ -1,4 +1,3 @@
-import * as BigInt from "big-integer";
 import * as IConv from "iconv-lite";
 import * as fs from "fs";
 import {IFileAbstraction} from "./fileAbstraction";
@@ -130,21 +129,6 @@ export class ByteVector {
         0xafb010b1, 0xab710d06, 0xa6322bdf, 0xa2f33668,
         0xbcb4666d, 0xb8757bda, 0xb5365d03, 0xb1f740b4
     ]);
-
-    /**
-     * Contains useful values when doing validation of different sized integers
-     */
-    private static readonly _maxInts: Array<{mask: number, max: number, min: number}> = [
-        undefined,
-        undefined,
-        {mask: 0xFFFF, max: 0x7FFF, min: -0x8000},                                      // short
-        undefined,
-        {mask: 0xFFFFFFFF, max: 0x7FFFFFFF, min: -0x80000000},                          // int
-        undefined,
-        undefined,
-        undefined,
-        {mask: 0xFFFFFFFFFFFFFFFF, max: 0x7FFFFFFFFFFFFFFF, min: -0x8000000000000000}   // long
-    ];
 
     /**
      * Contains a one byte text delimiter
@@ -297,7 +281,12 @@ export class ByteVector {
         mostSignificantByteFirst: boolean = true,
         isReadOnly: boolean = false
     ): ByteVector {
-        return ByteVector.getByteVectorFromInteger(value, true, 4, mostSignificantByteFirst, isReadOnly);
+        Guards.int(value, "value");
+
+        const bytes = new Uint8Array(4);
+        const dv = new DataView(bytes.buffer);
+        dv.setInt32(0, value, !mostSignificantByteFirst);
+        return ByteVector.fromByteArray(bytes, bytes.length, isReadOnly);
     }
 
     /**
@@ -330,50 +319,30 @@ export class ByteVector {
 
     /**
      * Creates an 8 byte {@link ByteVector} with a signed 64-bit integer as the data
-     * @param value Signed 64-bit integer to use as the data. Since JavaScript does not support
-     *        longs, we are using BigInts. Must be storable in 8 bytes.
+     * @param value Signed 64-bit integer to use as the data. If using a `bigint`, it must fit
+     *     within 8 bytes. If using a `number`, it must be a safe integer.
      * @param mostSignificantByteFirst If `true`, `value` will be stored in big endian
-     *        format. If `false`, `value` will be stored in little endian format
+     *     format. If `false`, `value` will be stored in little endian format
      * @param isReadOnly If `true` then the ByteVector will be read only
      */
     public static fromLong(
-        value: BigInt.BigInteger,
+        value: bigint | number,
         mostSignificantByteFirst: boolean = true,
         isReadOnly: boolean = false
     ): ByteVector {
-        if (value === undefined || value === null) {
-            throw new Error("Argument null exception: value is null");
-        }
-        if (value.gt(BigInt("9223372036854775807")) || value.lt(BigInt("-9223372036854775808"))) {
-            throw new Error("Argument out of range: value is too large to fit in a signed long");
-        }
-
-        const digits = value.toArray(16);
-        const byteArray = new Uint8Array(8);
-        let carry = 1;
-        for (let i = 0; i < 8; i++) {
-            // Get the digits in the position
-            const onesIndex = digits.value.length - i * 2 - 1;
-            const tensIndex = digits.value.length - i * 2 - 2;
-            const onesDigit = onesIndex < 0 ? 0 : digits.value[onesIndex];
-            const tensDigit = tensIndex < 0 ? 0 : digits.value[tensIndex];
-
-            // Calculate a byte value for it
-            let byteValue = tensDigit * 16 + onesDigit;
-
-            // If the number is negative, calculate 2's complement
-            if (digits.isNegative) {
-                const complement = (byteValue ^ 0xFF) + carry;
-                carry = (complement & 0x100) >> 8;
-                byteValue = complement & 0xFF;
-            }
-
-            // Store the byte value in the correct output position
-            const outputIndex = mostSignificantByteFirst ? byteArray.length - 1 - i : i;
-            byteArray[outputIndex] = byteValue;
+        let bigIntValue: bigint;
+        if (typeof(value) === "number") {
+            Guards.safeInt(value, "value");
+            bigIntValue = BigInt(value);
+        } else {
+            Guards.long(value, "value");
+            bigIntValue = value;
         }
 
-        return ByteVector.fromByteArray(byteArray, byteArray.length, isReadOnly);
+        const bytes = new Uint8Array(8);
+        const dv = new DataView(bytes.buffer);
+        dv.setBigInt64(0, bigIntValue, !mostSignificantByteFirst);
+        return ByteVector.fromByteArray(bytes, bytes.length, isReadOnly);
     }
 
     /**
@@ -404,7 +373,12 @@ export class ByteVector {
         mostSignificantByteFirst: boolean = true,
         isReadOnly: boolean = false
     ): ByteVector {
-        return ByteVector.getByteVectorFromInteger(value, true, 2, mostSignificantByteFirst, isReadOnly);
+        Guards.short(value, "value");
+
+        const bytes = new Uint8Array(2);
+        const dv = new DataView(bytes.buffer);
+        dv.setInt16(0, value, !mostSignificantByteFirst);
+        return ByteVector.fromByteArray(bytes, bytes.length, isReadOnly);
     }
 
     /**
@@ -524,51 +498,46 @@ export class ByteVector {
         mostSignificantByteFirst: boolean = true,
         isReadOnly: boolean = false
     ): ByteVector {
-        return ByteVector.getByteVectorFromInteger(value, false, 4, mostSignificantByteFirst, isReadOnly);
+        Guards.uint(value, "value");
+
+        const bytes = new Uint8Array(4);
+        const dv = new DataView(bytes.buffer);
+        dv.setUint32(0, value, !mostSignificantByteFirst);
+        return ByteVector.fromByteArray(bytes, bytes.length, isReadOnly);
     }
 
     /**
      * Creates an 8 byte {@link ByteVector} with a positive 64-bit integer as the data
-     * @param value Positive 64-bit integer to use as the data. Since JavaScript does not support
-     *        longs, we are using BigInts. Must be storable in 8 bytes.
+     * @param value Positive 64-bit integer to use as the data. If using a `bigint` it must fit
+     *     within 8 bytes. If using a `number` it must be a safe, positive integer.
      * @param mostSignificantByteFirst If `true`, `value` will be stored in big endian
      *        format. If `false`, `value` will be stored in little endian format
      * @param isReadOnly If `true` then the ByteVector will be read only
      */
     public static fromULong(
-        value: BigInt.BigInteger,
+        value: bigint | number,
         mostSignificantByteFirst: boolean = true,
         isReadOnly: boolean = false
     ): ByteVector {
-        if (value === undefined || value === null) {
-            throw new Error("Argument null exception: value is null");
-        }
-        if (value.gt(BigInt("18446744073709551615")) || value.lt(0)) {
-            throw new Error("Argument out of range: value is too large to fit in an unsigned long");
-        }
-
-        const digits = value.toArray(16);
-        const byteArray = new Uint8Array(8);
-        for (let i = 0; i < 8; i++) {
-            // Get the digits in the position
-            const onesIndex = digits.value.length - i * 2 - 1;
-            const tensIndex = digits.value.length - i * 2 - 2;
-            const onesDigit = onesIndex < 0 ? 0 : digits.value[onesIndex];
-            const tensDigit = tensIndex < 0 ? 0 : digits.value[tensIndex];
-            const outputIndex = mostSignificantByteFirst ? byteArray.length - 1 - i : i;
-
-            // Store the byte value in the correct output position
-
-            byteArray[outputIndex] = tensDigit * 16 + onesDigit;
+        let bigIntValue: bigint;
+        if (typeof(value) === "number") {
+            Guards.safeUint(value, "value");
+            bigIntValue = BigInt(value);
+        } else {
+            Guards.ulong(value, "value");
+            bigIntValue = value;
         }
 
-        return ByteVector.fromByteArray(byteArray, byteArray.length, isReadOnly);
+        const bytes = new Uint8Array(8);
+        const dv = new DataView(bytes.buffer);
+        dv.setBigUint64(0, bigIntValue, !mostSignificantByteFirst);
+        return ByteVector.fromByteArray(bytes, bytes.length, isReadOnly);
     }
 
     /**
      * Creates a 2 byte {@link ByteVector} with a positive 32-bit integer as the data
-     * @param value Positive 32-bit integer to use as the data. Must be a positive safe integer,
-     *        storable in 4 bytes, cannot be a floating point number.
+     * @param value Positive 16-bit integer to use as the data. Must be a positive safe integer,
+     *        storable in 2 bytes, cannot be a floating point number.
      * @param mostSignificantByteFirst If `true`, `value` will be stored in big endian
      *        format. If `false`, `value` will be stored in little endian format
      * @param isReadOnly If `true` then the ByteVector will be read only
@@ -578,7 +547,12 @@ export class ByteVector {
         mostSignificantByteFirst: boolean = true,
         isReadOnly: boolean = false
     ): ByteVector {
-        return ByteVector.getByteVectorFromInteger(value, false, 2, mostSignificantByteFirst, isReadOnly);
+        Guards.ushort(value, "value");
+
+        const bytes = new Uint8Array(2);
+        const dv = new DataView(bytes.buffer);
+        dv.setUint16(0, value, !mostSignificantByteFirst);
+        return ByteVector.fromByteArray(bytes, bytes.length, isReadOnly);
     }
 
     // #endregion
@@ -1174,23 +1148,11 @@ export class ByteVector {
      * @param mostSignificantByteFirst If `true` the most significant byte appears first (big
      *        endian format)
      * @returns A signed long value containing the value read from the current instance,
-     *          represented as a BigInt due to JavaScript's 32-bit integer limitation
+     *          represented as a BigInt due to JavaScript's 52-bit integer limitation.
      */
-    public toLong(mostSignificantByteFirst: boolean = true): BigInt.BigInteger {
-        // The theory here is to get the unsigned value first, then if the number is negative, we
-        // we calculate the two's complement and return that * -1
-        const uLong = this.toULong(mostSignificantByteFirst);
-        const highestOrderBit = BigInt("8000000000000000", 16);
-
-        if (uLong.and(highestOrderBit).isZero()) {
-            // Number is positive, no need to calculate two's complement
-            return uLong;
-        }
-
-        // Number is negative, need to calculate two's complement
-        // noinspection SpellCheckingInspection - It's a numeric value
-        const allBits = BigInt("FFFFFFFFFFFFFFFF", 16);
-        return uLong.xor(allBits).add(1).and(allBits).times(-1);
+    public toLong(mostSignificantByteFirst: boolean = true): bigint {
+        const dv = new DataView(this.getSizedArray(8, mostSignificantByteFirst).buffer);
+        return dv.getBigInt64(0);
     }
 
     /**
@@ -1302,15 +1264,9 @@ export class ByteVector {
      * @returns An unsigned short value containing the value read from the current instance,
      *          represented as a BigInt due to JavaScript's 32-bit integer limitation
      */
-    public toULong(mostSignificantByteFirst: boolean = true): BigInt.BigInteger {
-        const sizedArray = this.getSizedArray(8, mostSignificantByteFirst);
-
-        // Convert the bytes into a string first
-        let str = "";
-        for (const element of sizedArray) {
-            str += element.toString(16).padStart(2, "0");
-        }
-        return BigInt(str, 16);
+    public toULong(mostSignificantByteFirst: boolean = true): bigint {
+        const dv = new DataView(this.getSizedArray(8, mostSignificantByteFirst).buffer);
+        return dv.getBigUint64(0);
     }
 
     /**
@@ -1454,34 +1410,6 @@ export class ByteVector {
     // #endregion
 
     // #region Private Helpers
-
-    private static getByteVectorFromInteger(
-        value: number,
-        signed: boolean,
-        count: number,
-        mostSignificantByteFirst: boolean,
-        isReadOnly: boolean
-    ): ByteVector {
-        if (!Number.isInteger(value) || !Number.isSafeInteger(value)) {
-            throw new Error("Argument out of range: value is not a valid integer");
-        }
-
-        // Look for overflows
-        if (signed && (value > ByteVector._maxInts[count].max || value < ByteVector._maxInts[count].min)) {
-            throw new Error(`Argument out of range: value overflows a signed ${count} byte integer`);
-        }
-        if (!signed && (value > ByteVector._maxInts[count].mask || value < 0)) {
-            throw new Error(`Argument out of range: value overflows an unsigned ${count} byte integer`);
-        }
-
-        const bytes = new Uint8Array(count);
-        for (let i = 0; i < count; i++) {
-            const offset = mostSignificantByteFirst ? count - i - 1 : i;
-            bytes[offset] = (value >> (i * 8) & 0xFF);
-        }
-
-        return ByteVector.fromByteArray(bytes, undefined, isReadOnly);
-    }
 
     private static getIConvEncoding(type: StringType, bom: ByteVector): IConvEncoding {
         switch (type) {

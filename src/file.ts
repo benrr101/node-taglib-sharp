@@ -363,7 +363,7 @@ export abstract class File {
      */
     public find(pattern: ByteVector, startPosition: number = 0, before?: ByteVector): number {
         Guards.truthy(pattern, "pattern");
-        Guards.uint(startPosition, "startPosition");
+        Guards.safeUint(startPosition, "startPosition");
 
         this.mode = FileAccessMode.Read;
 
@@ -444,8 +444,8 @@ export abstract class File {
      */
     public insert(data: ByteVector, start: number, replace: number = 0): void {
         Guards.truthy(data, "data");
-        Guards.uint(start, "start");
-        Guards.uint(replace, "replace");
+        Guards.safeUint(start, "start");
+        Guards.safeUint(replace, "replace");
 
         this.mode = FileAccessMode.Write;
         this._fileStream.position = start;
@@ -514,7 +514,7 @@ export abstract class File {
      * @throws Error Thrown when `length` is not a positive, safe integer.
      */
     public readBlock(length: number): ByteVector {
-        Guards.uint(length, "length");
+        Guards.safeUint(length, "length");
         if (length === 0) {
             return ByteVector.empty();
         }
@@ -542,8 +542,8 @@ export abstract class File {
      *     integer.
      */
     public removeBlock(start: number, length: number): void {
-        Guards.uint(start, "start");
-        Guards.int(length, "length");
+        Guards.safeUint(start, "start");
+        Guards.safeInt(length, "length");
 
         if (length <= 0) {
             return;
@@ -589,7 +589,7 @@ export abstract class File {
      */
     public rFind(pattern: ByteVector, startPosition: number = 0, after?: ByteVector): number {
         Guards.truthy(pattern, "pattern");
-        Guards.uint(startPosition, "startPosition");
+        Guards.safeUint(startPosition, "startPosition");
 
         this.mode = FileAccessMode.Read;
 

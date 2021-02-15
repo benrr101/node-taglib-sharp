@@ -1,4 +1,3 @@
-import * as BigInt from "big-integer";
 import * as Chai from "chai";
 import * as ChaiAsPromised from "chai-as-promised";
 import * as TypeMoq from "typemoq";
@@ -1555,7 +1554,7 @@ function getTestTagHeader(version: number, flags: Id3v2TagHeaderFlags, tagSize: 
             FrameClassType.PlayCountFrame,
             FrameIdentifiers.PCNT
         )[0];
-        assert.isTrue(dPcnt.playCount.eq(sFrame1.playCount));
+        assert.strictEqual(dPcnt.playCount, sFrame1.playCount);
     }
 
     @test
@@ -1593,7 +1592,7 @@ function getTestTagHeader(version: number, flags: Id3v2TagHeaderFlags, tagSize: 
             FrameClassType.PlayCountFrame,
             FrameIdentifiers.PCNT
         )[0];
-        assert.isTrue(dPcnt.playCount.eq(sFrame1.playCount));
+        assert.strictEqual(dPcnt.playCount, sFrame1.playCount);
     }
 
     @test

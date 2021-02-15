@@ -1,4 +1,3 @@
-import * as BigInt from "big-integer";
 import * as Chai from "chai";
 import * as ChaiAsPromised from "chai-as-promised";
 import FrameConstructorTests from "./frameConstructorTests";
@@ -30,7 +29,7 @@ const assert = Chai.assert;
         const frame = PlayCountFrame.fromEmpty();
 
         // Assert
-        this.assertFrame(frame, 0);
+        this.assertFrame(frame, BigInt(0));
     }
 
     @test
@@ -47,7 +46,7 @@ const assert = Chai.assert;
         const frame = PlayCountFrame.fromRawData(data, 4);
 
         // Assert
-        this.assertFrame(frame, 1234);
+        this.assertFrame(frame, BigInt(1234));
     }
 
     @test
@@ -64,7 +63,7 @@ const assert = Chai.assert;
         const frame = PlayCountFrame.fromRawData(data, 4);
 
         // Assert
-        this.assertFrame(frame, 1234);
+        this.assertFrame(frame, BigInt(1234));
     }
 
     @test
@@ -102,12 +101,12 @@ const assert = Chai.assert;
         this.assertFrame(frame, BigInt("4294967296"));
     }
 
-    private assertFrame(frame: PlayCountFrame, p: BigInt.BigNumber) {
+    private assertFrame(frame: PlayCountFrame, p: bigint) {
         assert.isOk(frame);
         assert.strictEqual(frame.frameClassType, FrameClassType.PlayCountFrame);
         assert.strictEqual(frame.frameId, FrameIdentifiers.PCNT);
 
-        assert.isTrue(frame.playCount.eq(p));
+        assert.strictEqual(frame.playCount, p);
     }
 }
 
@@ -116,14 +115,14 @@ const assert = Chai.assert;
     public playCount() {
         // Arrange
         const frame = PlayCountFrame.fromEmpty();
-        const set = (v: BigInt.BigInteger) => { frame.playCount = v; };
+        const set = (v: bigint) => { frame.playCount = v; };
         const get = () => frame.playCount;
 
         // Act / Assert
         PropertyTests.propertyThrows(set, BigInt(-1));
-        PropertyTests.propertyThrows(set, BigInt("18446744073709551616", 10));
+        PropertyTests.propertyThrows(set, BigInt("18446744073709551616"));
         PropertyTests.propertyRoundTrip(set, get, BigInt(100));
-        PropertyTests.propertyRoundTrip(set, get, BigInt("68719476721", 10));
+        PropertyTests.propertyRoundTrip(set, get, BigInt("68719476721"));
     }
 }
 
@@ -142,7 +141,7 @@ const assert = Chai.assert;
         assert.strictEqual(output.frameClassType, FrameClassType.PlayCountFrame);
         assert.strictEqual(output.frameId, FrameIdentifiers.PCNT);
 
-        assert.isTrue(output.playCount.eq(frame.playCount));
+        assert.strictEqual(output.playCount, frame.playCount);
     }
 
     @test

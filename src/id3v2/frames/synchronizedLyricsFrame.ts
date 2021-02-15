@@ -11,16 +11,7 @@ import {SynchronizedTextType, TimestampFormat} from "../utilTypes";
  * This structure contains a single entry in a {@link SynchronizedLyricsFrame} object.
  */
 export class SynchronizedText {
-    /**
-     * Text for the point in time represented by the current instance.
-     */
-    public text: string;
-
-    /**
-     * Time offset of the current instance. The specific format this text element is defined in
-     * {@link SynchronizedLyricsFrame.format} of the frame that owns this element.
-     */
-    public time: number;
+    private _time: number;
 
     /**
      * Constructs and initializes a new instance with a specified time and text.
@@ -31,8 +22,32 @@ export class SynchronizedText {
     public constructor(time: number, text: string) {
         Guards.uint(time, "time");
         this.text = text;
-        this.time = time;
+        this._time = time;
     }
+
+    // #region Properties
+
+    /**
+     * Text for the point in time represented by the current instance.
+     */
+    public text: string;
+
+    /**
+     * Gets time offset of the current instance. The specific format this text element is defined
+     * in {@link SynchronizedLyricsFrame.format} of the frame that owns this element.
+     */
+    public get time(): number { return this._time; }
+    /**
+     * Sets time offset of the current instance. The specific format this text element is defined
+     * in {@link SynchronizedLyricsFrame.format} of the frame that owns this element.
+     * @param value Offset of the current instance, must be a safe
+     */
+    public set time(value: number) {
+        Guards.uint(value, "value");
+        this._time = value;
+    }
+
+    // #endregion
 
     /**
      * Creates a copy of this instance.

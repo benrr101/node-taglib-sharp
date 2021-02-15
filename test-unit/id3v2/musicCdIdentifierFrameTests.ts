@@ -124,7 +124,7 @@ const assert = Chai.assert;
         const output = frame.render(4);
 
         // Assert
-        assert.isTrue(output.length === 0);
+        assert.strictEqual(output.length, 0);
     }
 
     private assertFrame(frame: MusicCdIdentifierFrame, d: ByteVector) {

@@ -1,9 +1,8 @@
-import * as BigInt from "big-integer";
 import {ByteVector, StringType} from "../../byteVector";
 import {Frame, FrameClassType} from "./frame";
 import {Id3v2FrameHeader} from "./frameHeader";
 import {FrameIdentifiers} from "../frameIdentifiers";
-import {Guards} from "../../utils";
+import {Guards, NumberUtils} from "../../utils";
 
 /**
  * Type of channel data to get from or set to a {@link RelativeVolumeFrame} object
@@ -58,7 +57,7 @@ export enum ChannelType {
 export class ChannelData {
     private readonly _channel: ChannelType;
     private _peakBits: number;
-    private _peakVolume: BigInt.BigInteger;
+    private _peakVolume: bigint;
     private _volumeAdjustment: number;
 
     public constructor(channel: ChannelType) {
@@ -86,7 +85,7 @@ export class ChannelData {
 
     public get isSet(): boolean {
         const volumeAdjustSet = !!this._volumeAdjustment;
-        const peakSet = !!this._peakVolume && !this._peakVolume.isZero();
+        const peakSet = !!this._peakVolume && this._peakVolume !== NumberUtils.BIG_ZERO;
         return volumeAdjustSet || peakSet;
     }
 
@@ -109,21 +108,21 @@ export class ChannelData {
      * documentation explains this value as betweenInclusive 0 and 255 - but can be expressed using any
      * number of bits ({@link peakBits}).
      */
-    public get peakVolume(): BigInt.BigInteger { return this._peakVolume; }
+    public get peakVolume(): bigint { return this._peakVolume; }
     /**
      * Value of the peak sample in the file. It's unclear exactly how this works, but the ID3v2.4
      * documentation explains this value as betweenInclusive 0 and 255 - but can be expressed using any
      * number of bits ({@link peakBits}).
      * @param value Peak volume value. Must fit in the number of bits set in {@link peakBits}
      */
-    public set peakVolume(value: BigInt.BigInteger) {
+    public set peakVolume(value: bigint) {
         if (!this.peakBits) {
             throw new Error("Peak bits must be set before setting peak volume");
         }
-        if (value.isNegative()) {
+        if (value < 0) {
             throw new Error("Argument out of range: value must be positive");
         }
-        if (value.gt(BigInt(2).pow(this.peakBits).minus(1))) {
+        if (value > NumberUtils.bigPow(NumberUtils.BIG_TWO, this.peakBits) - NumberUtils.BIG_ONE) {
             throw new Error("Argument out of range: value must fit within number of bits defined by peakBits");
         }
         this._peakVolume = value;
@@ -272,44 +271,34 @@ export class RelativeVolumeFrame extends Frame {
      * Gets the number of bits used to encode the peak volume
      * @param type Which channel to get the value for
      */
-    public getPeakBits(type: ChannelType): number {
-        return this._channels[type].peakBits;
-    }
+    public getPeakBits(type: ChannelType): number { return this._channels[type].peakBits; }
 
     /**
      * Gets the peak volume for a specified channel
      * @param type Which channel to get the value for
      */
-    public getPeakVolume(type: ChannelType): BigInt.BigInteger {
-        return this._channels[type].peakVolume;
-    }
+    public getPeakVolume(type: ChannelType): bigint { return this._channels[type].peakVolume; }
 
     /**
      * Gets the volume adjustment for the specified channel.
      * @param type Which channel to get the value for
      * @returns number Volume adjustment for the channel, can be betweenInclusive -64 and +64 decibels
      */
-    public getVolumeAdjustment(type: ChannelType): number {
-        return this._channels[type].volumeAdjustment;
-    }
+    public getVolumeAdjustment(type: ChannelType): number { return this._channels[type].volumeAdjustment; }
 
     /**
      * Sets the number of bits used to encode peak volume for a specified channel.
      * @param type Which channel to set the value for
      * @param value Peak volume
      */
-    public setPeakBits(type: ChannelType, value: number) {
-        this._channels[type].peakBits = value;
-    }
+    public setPeakBits(type: ChannelType, value: number) { this._channels[type].peakBits = value; }
 
     /**
      * Sets the peak volume for a specified channel.
      * @param type Which channel to set the value for
      * @param value Peak volume
      */
-    public setPeakVolume(type: ChannelType, value: BigInt.BigInteger): void {
-        this._channels[type].peakVolume = value;
-    }
+    public setPeakVolume(type: ChannelType, value: bigint): void { this._channels[type].peakVolume = value; }
 
     /**
      * Sets the volume adjustment in decibels for the specified channel.

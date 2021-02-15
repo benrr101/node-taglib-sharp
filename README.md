@@ -70,3 +70,12 @@ myFile.tag.performers = ["The Bravery"];
 myFile.save();
 myFile.dispose();
 ```
+
+## Known Issues
+* Maximum supported file size is 8192TB
+  - Why is this an issue? 8192TB is yuuuuge! .NET implementation supports 8192PB file sizes.
+  - The Node.js 12 [fs](https://nodejs.org/docs/latest-v12.x/api/fs.html) library only supports 
+    `integer` types for position arguments, which safely goes up to `2^52 - 1`. Node 15 supports
+    `number` or `biginteger` for position arguments which would increase supported sizes to 64-bit
+    integers. Please create issue if this is a blocker.
+    

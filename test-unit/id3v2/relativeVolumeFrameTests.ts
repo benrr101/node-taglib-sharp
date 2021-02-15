@@ -1,4 +1,3 @@
-import * as BigInt from "big-integer";
 import * as Chai from "chai";
 import * as ChaiAsPromised from "chai-as-promised";
 import ConstructorTests from "./frameConstructorTests";
@@ -81,7 +80,7 @@ const assert = Chai.assert;
         channel.peakVolume = BigInt(0x1FF);
 
         // Assert
-        assert.isTrue(channel.peakVolume.equals(0x1FF));
+        assert.strictEqual(channel.peakVolume, BigInt(0x1FF));
     }
 
     @test
@@ -240,7 +239,7 @@ const assert = Chai.assert;
         // Arrange
         const channel = new ChannelData(ChannelType.Subwoofer);
         channel.peakBits = 39;
-        channel.peakVolume = BigInt("1FFFFFFFFF", 16);
+        channel.peakVolume = BigInt("0x1FFFFFFFFF");
         channel.volumeAdjustment = 32;
 
         // Act
@@ -261,7 +260,7 @@ const assert = Chai.assert;
         // Arrange
         const channel = new ChannelData(ChannelType.Subwoofer);
         channel.peakBits = 64;
-        channel.peakVolume = BigInt("1FFFFFFFFFFFFFFF", 16);
+        channel.peakVolume = BigInt("0x1FFFFFFFFFFFFFFF");
         channel.volumeAdjustment = 32;
 
         // Act
