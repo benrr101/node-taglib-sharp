@@ -612,8 +612,8 @@ const assert = Chai.assert;
     public removeBlock_invalidParams() {
         const testAction = (f: TestFile) => {
             // Act / Assert
-            Testers.testUint((v: number) => { f.removeBlock(v, 0); });
-            Testers.testInt((v: number) => { f.removeBlock(0, v); });
+            Testers.testSafeUint((v: number) => { f.removeBlock(v, 0); });
+            Testers.testSafeInt((v: number) => { f.removeBlock(0, v); });
         };
         this.testWithMemoryStream(testAction, 10);
     }

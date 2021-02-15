@@ -66,7 +66,7 @@ export default class MpegAudioHeader implements IAudioCodec {
     public static fromData(data: ByteVector, file: File, position: number) {
         Guards.truthy(data, "data");
         Guards.truthy(file, "file");
-        Guards.uint(position, "position");
+        Guards.safeUint(position, "position");
 
         const header = new MpegAudioHeader();
         header._durationMilliseconds = 0;
@@ -119,7 +119,7 @@ export default class MpegAudioHeader implements IAudioCodec {
         vbriHeader: VbriHeader
     ): MpegAudioHeader {
         Guards.uint(flags, "flags");
-        Guards.uint(streamLength, "streamLength");
+        Guards.safeUint(streamLength, "streamLength");
         Guards.truthy(xingHeader, "xingHeader");
         Guards.truthy(vbriHeader, "vbriHeader");
 
@@ -286,6 +286,7 @@ export default class MpegAudioHeader implements IAudioCodec {
      * If this value has not been set, {@link durationMilliseconds} will return an incorrect value.
      */
     public set streamLength(value: number) {
+        Guards.safeUint(value, "value");
         this._streamLength = value;
 
         // Force the recalculation of duration if it depends on the stream length.
@@ -336,7 +337,7 @@ export default class MpegAudioHeader implements IAudioCodec {
      */
     public static find(file: File, position: number, length: number = -1): {header: MpegAudioHeader, success: boolean} {
         Guards.truthy(file, "file");
-        Guards.int(position, "position");
+        Guards.safeUint(position, "position");
         Guards.int(length, "length");
 
         const end = position + length;

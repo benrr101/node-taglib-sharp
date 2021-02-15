@@ -85,7 +85,7 @@ export default class AacAudioHeader implements IAudioCodec {
      * @param value Length in bytes of the audio stream represented by the current instance
      */
     public set streamLength(value: number) {
-        Guards.uint(value, "value");
+        Guards.safeUint(value, "value");
 
         this._streamLength = value;
         this._durationMilliseconds = this._streamLength * 8 / this.audioBitrate;
@@ -103,7 +103,7 @@ export default class AacAudioHeader implements IAudioCodec {
      */
     public static find(file: File, position: number, length?: number): AacAudioHeader {
         Guards.truthy(file, "file");
-        Guards.uint(position, "position");
+        Guards.safeUint(position, "position");
         if (length !== undefined) {
             Guards.uint(length, "length");
         }
@@ -163,6 +163,9 @@ export default class AacAudioHeader implements IAudioCodec {
                 // Calculate number of samples and bitrate
                 const numberOfSamples = numberOfFrames * 1024;
                 const bitrate = frameLength * 8 * sampleRate / numberOfSamples / 1000;
+                // NOTE: Original .NET implementation used longs for this calculation. Using the
+                //     maximum possible values, this would still fit within a JS safe integer. So,
+                //     BigInt has not been used here.
 
                 return new AacAudioHeader(channelCount, bitrate, sampleRate, mpeg4AudioType);
             }

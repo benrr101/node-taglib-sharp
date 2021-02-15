@@ -50,8 +50,8 @@ export default class AttachmentFrame extends Frame implements IPicture {
     ): AttachmentFrame {
         Guards.truthy(file, "file");
         Guards.truthy(header, "header");
-        Guards.uint(frameStart, "frameStart");
-        Guards.uint(size, "size");
+        Guards.safeUint(frameStart, "frameStart");
+        Guards.safeUint(size, "size");
 
         const frame = new AttachmentFrame(header);
         frame._rawPicture = PictureLazy.fromFile(file, frameStart, size);

@@ -50,8 +50,8 @@ const assert = Chai.assert;
     @test
     public fromInfo_invalidArguments() {
         // Act/Assert
-        Testers.testUint((v: number) => { MpegAudioHeader.fromInfo(v, 123, XingHeader.unknown, VbriHeader.unknown); });
-        Testers.testUint((v: number) => { MpegAudioHeader.fromInfo(123, v, XingHeader.unknown, VbriHeader.unknown); });
+        Testers.testSafeUint((v: number) => { MpegAudioHeader.fromInfo(v, 123, XingHeader.unknown, VbriHeader.unknown); });
+        Testers.testSafeUint((v: number) => { MpegAudioHeader.fromInfo(123, v, XingHeader.unknown, VbriHeader.unknown); });
         Testers.testTruthy((v: XingHeader) => { MpegAudioHeader.fromInfo(123, 123, v, VbriHeader.unknown); });
         Testers.testTruthy((v: VbriHeader) => { MpegAudioHeader.fromInfo(123, 123, XingHeader.unknown, v); });
     }
@@ -669,8 +669,8 @@ const assert = Chai.assert;
 
         // Act / Assert
         Testers.testTruthy((v: File) => { MpegAudioHeader.find(v, 123, 234); });
-        Testers.testInt((v: number) => { MpegAudioHeader.find(mockFile, v, 234); });
-        Testers.testInt((v: number) => { MpegAudioHeader.find(mockFile, 123, v); }, true);
+        Testers.testSafeInt((v: number) => { MpegAudioHeader.find(mockFile, v, 234); });
+        Testers.testSafeInt((v: number) => { MpegAudioHeader.find(mockFile, 123, v); }, true);
     }
 
     @test

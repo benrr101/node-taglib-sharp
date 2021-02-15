@@ -115,7 +115,7 @@ export class ApeStreamHeader implements IAudioCodec, ILosslessAudioCodec {
      */
     public constructor(data: ByteVector, streamLength: number) {
         Guards.truthy(data, "data");
-        Guards.uint(streamLength, "streamLength");
+        Guards.safeUint(streamLength, "streamLength");
         if (!data.startsWith(ApeStreamHeader.fileIdentifier)) {
             throw new CorruptFileError("Data does not begin with identifier");
         }
