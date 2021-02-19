@@ -1,7 +1,7 @@
-import * as BigInt from "big-integer";
+import AsfFile from "../asfFile";
 import UuidWrapper from "../../uuidWrapper";
-import {Guards} from "../../utils";
 import {ByteVector, StringType} from "../../byteVector";
+import {Guards} from "../../utils";
 
 /**
  * Base object that provides a basic representation of an ASF object that can be written to and
@@ -13,7 +13,7 @@ export default abstract class BaseObject {
 
     // #region Initializers
 
-    private constructor() {
+    protected constructor() {
     }
 
     /**
@@ -73,7 +73,7 @@ export default abstract class BaseObject {
      * Renders an 8-byte quad word.
      * @param value Quad word to render
      */
-    public static renderQWord(value: BigInt.BigInteger): ByteVector {
+    public static renderQWord(value: bigint): ByteVector {
         return ByteVector.fromULong(value, false);
     }
 
@@ -110,7 +110,7 @@ export default abstract class BaseObject {
     protected renderInternal(data: ByteVector): ByteVector {
         const length = BigInt((!!data ? data.length : 0) + 24);
         return ByteVector.concatenate(
-            ByteVector.fromByteArray(this._id.bytes),
+            ByteVector.fromByteArray(this._id.toBytes()),
             BaseObject.renderQWord(length),
             data
         );

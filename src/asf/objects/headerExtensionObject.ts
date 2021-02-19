@@ -1,7 +1,8 @@
+import AsfFile from "../asfFile";
 import BaseObject from "./baseObject";
 import Guids from "../guids";
-import {CorruptFileError} from "../../errors";
 import {ByteVector} from "../../byteVector";
+import {CorruptFileError} from "../../errors";
 
 /**
  * This class extends {@link BaseObject} to provide a representation of an ASF header extension
@@ -69,7 +70,7 @@ export default class HeaderExtensionObject extends BaseObject {
     public render(): ByteVector {
         const renderedChildren = ByteVector.concatenate(...(this._children.map(o => o.render())));
         const output = ByteVector.concatenate(
-            Guids.AsfHeaderExtensionObject.bytes,
+            Guids.AsfHeaderExtensionObject.toBytes(),
             BaseObject.renderWord(6),
             BaseObject.renderDWord(renderedChildren.length),
             renderedChildren

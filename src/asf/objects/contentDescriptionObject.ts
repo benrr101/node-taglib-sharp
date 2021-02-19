@@ -1,7 +1,8 @@
+import AsfFile from "../asfFile";
 import BaseObject from "./baseObject";
 import Guids from "../guids";
-import {CorruptFileError} from "../../errors";
 import {ByteVector} from "../../byteVector";
+import {CorruptFileError} from "../../errors";
 
 /**
  * This class extends {@see BaseObject} to provide a representation of an ASF content description
@@ -46,8 +47,8 @@ export default class ContentDescriptionObject extends BaseObject {
         const ratingLength = file.readWord();
 
         instance._title = file.readUnicode(titleLength);
-        instance._author = file.readUnicode(titleLength);
-        instance._copyright = file.readUnicode(titleLength);
+        instance._author = file.readUnicode(authorLength);
+        instance._copyright = file.readUnicode(copyrightLength);
         instance._description = file.readUnicode(descriptionLength);
         instance._rating = file.readUnicode(ratingLength);
 

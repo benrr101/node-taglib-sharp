@@ -1,7 +1,8 @@
+import AsfFile from "../asfFile";
 import BaseObject from "./baseObject";
+import Guids from "../guids";
 import UuidWrapper from "../../uuidWrapper";
 import {CorruptFileError} from "../../errors";
-import Guids from "../guids";
 import {ByteVector} from "../../byteVector";
 
 /**
@@ -168,7 +169,7 @@ export default class FilePropertiesObject extends BaseObject {
     /** @inheritDoc */
     public render(): ByteVector {
         const output = ByteVector.concatenate(
-            this._fileId.bytes,
+            this._fileId.toBytes(),
             FilePropertiesObject.renderQWord(this._fileSize),
             FilePropertiesObject.renderQWord(this._creationDateTicks),
             FilePropertiesObject.renderQWord(this._dataPacketsCount),
