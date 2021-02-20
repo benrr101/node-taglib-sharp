@@ -1,11 +1,19 @@
-import {ByteVector, StringType} from "../../byteVector";
-import UuidWrapper from "../../uuidWrapper";
-import {Guards} from "../../utils";
-import {DataType} from "../dataType";
 import AsfFile from "../asfFile";
-import {CorruptFileError} from "../../errors";
 import BaseObject from "./baseObject";
+import Guids from "../guids";
+import UuidWrapper from "../../uuidWrapper";
+import {ByteVector, StringType} from "../../byteVector";
+import {DataType} from "../dataType";
+import {CorruptFileError} from "../../errors";
+import {Guards} from "../../utils";
 
+/**
+ * This class provides a representation of an ASF description record to be used inside a
+ * MetadataLibraryObject.
+ * @remarks This class can store various types of information. Although {@link toString} provides
+ *     a representation of all types of values, it is recommended to determine which of the `get*`
+ *     methods to use by accessing {@link type}
+ */
 export class DescriptionRecord {
     private readonly _languageListIndex: number;
     private readonly _name: string;
@@ -40,14 +48,14 @@ export class DescriptionRecord {
      * @param name Name of the new instance
      * @param value Boolean value for the new instance
      */
-    public fromBool(
+    public static fromBool(
         languageListIndex: number,
         streamNumber: number,
         name: string,
         value: boolean
     ): DescriptionRecord {
         const instance = new DescriptionRecord(languageListIndex, streamNumber, name, DataType.Bool);
-        this._boolValue = value;
+        instance._boolValue = value;
         return instance;
     }
 
@@ -59,14 +67,14 @@ export class DescriptionRecord {
      * @param name Name of the new instance
      * @param value Byte value for the new instance
      */
-    public fromBytes(
+    public static fromBytes(
         languageListIndex: number,
         streamNumber: number,
         name: string,
         value: ByteVector
     ): DescriptionRecord {
         const instance = new DescriptionRecord(languageListIndex, streamNumber, name, DataType.Bytes);
-        this._byteValue = value;
+        instance._byteValue = value;
         return instance;
     }
 
@@ -75,7 +83,7 @@ export class DescriptionRecord {
      * @param file The file to read the raw ASF description record from
      * @internal
      */
-    public fromFile(file: AsfFile): DescriptionRecord {
+    public static fromFile(file: AsfFile): DescriptionRecord {
         Guards.truthy(file, "file");
 
         // Field name          Field type Size (bits)
@@ -86,7 +94,6 @@ export class DescriptionRecord {
         // Data Length         DWORD      32
         // Name                WCHAR      varies
         // Data                See below  varies
-
         const languageListIndex = file.readWord();
         const streamNumber = file.readWord();
         const nameLength = file.readWord();
@@ -97,25 +104,25 @@ export class DescriptionRecord {
 
         switch (dataType) {
             case DataType.Word:
-                this._wordValue = file.readWord();
+                instance._wordValue = file.readWord();
                 break;
             case DataType.Bool:
-                this._boolValue = file.readDWord() > 0;
+                instance._boolValue = file.readDWord() > 0;
                 break;
             case DataType.DWord:
-                this._dWordValue = file.readDWord();
+                instance._dWordValue = file.readDWord();
                 break;
             case DataType.QWord:
-                this._qWordValue = file.readQWord();
+                instance._qWordValue = file.readQWord();
                 break;
             case DataType.Unicode:
-                this._stringValue = file.readUnicode(dataLength);
+                instance._stringValue = file.readUnicode(dataLength);
                 break;
             case DataType.Bytes:
-                this._byteValue = file.readBlock(dataLength);
+                instance._byteValue = file.readBlock(dataLength);
                 break;
             case DataType.Guid:
-                this._guidValue = file.readGuid();
+                instance._guidValue = file.readGuid();
                 break;
             default:
                 throw new CorruptFileError("Failed to parse description record.");
@@ -132,7 +139,7 @@ export class DescriptionRecord {
      * @param name Name of the new instance
      * @param value GUID value for the new instance
      */
-    public fromGuid(
+    public static fromGuid(
         languageListIndex: number,
         streamNumber: number,
         name: string,
@@ -141,7 +148,7 @@ export class DescriptionRecord {
         Guards.truthy(value, "value");
 
         const instance = new DescriptionRecord(languageListIndex, streamNumber, name, DataType.Guid);
-        this._guidValue = value;
+        instance._guidValue = value;
         return instance;
     }
 
@@ -153,14 +160,14 @@ export class DescriptionRecord {
      * @param name Name of the new instance
      * @param value Unicode string value for the new instance
      */
-    public fromString(
+    public static fromString(
         languageListIndex: number,
         streamNumber: number,
         name: string,
         value: string
     ): DescriptionRecord {
         const instance = new DescriptionRecord(languageListIndex, streamNumber, name, DataType.Unicode);
-        this._stringValue = value;
+        instance._stringValue = value;
         return instance;
     }
 
@@ -172,7 +179,7 @@ export class DescriptionRecord {
      * @param name Name of the new instance
      * @param value Quad word value for the new instance, expressed as a bigint
      */
-    public fromUlong(
+    public static fromUlong(
         languageListIndex: number,
         streamNumber: number,
         name: string,
@@ -181,7 +188,7 @@ export class DescriptionRecord {
         Guards.ulong(value, "value");
 
         const instance = new DescriptionRecord(languageListIndex, streamNumber, name, DataType.QWord);
-        this._qWordValue = value;
+        instance._qWordValue = value;
         return instance;
     }
 
@@ -193,7 +200,7 @@ export class DescriptionRecord {
      * @param name Name of the new instance
      * @param value Boolean value for the new instance
      */
-    public fromUint(
+    public static fromUint(
         languageListIndex: number,
         streamNumber: number,
         name: string,
@@ -202,7 +209,7 @@ export class DescriptionRecord {
         Guards.uint(value, "value");
 
         const instance = new DescriptionRecord(languageListIndex, streamNumber, name, DataType.DWord);
-        this._dWordValue = value;
+        instance._dWordValue = value;
         return instance;
     }
 
@@ -214,7 +221,7 @@ export class DescriptionRecord {
      * @param name Name of the new instance
      * @param value Boolean value for the new instance
      */
-    public fromUshort(
+    public static fromUshort(
         languageListIndex: number,
         streamNumber: number,
         name: string,
@@ -223,7 +230,7 @@ export class DescriptionRecord {
         Guards.ushort(value, "value");
 
         const instance = new DescriptionRecord(languageListIndex, streamNumber, name, DataType.Word);
-        this._wordValue = value;
+        instance._wordValue = value;
         return instance;
     }
 
@@ -353,6 +360,137 @@ export class DescriptionRecord {
                 return this._guidValue.toString();
         }
         return undefined;
+    }
+
+    // #endregion
+}
+
+/**
+ * This class provides a representation of an ASF metadata library object which can be read from
+ * and written to disk.
+ */
+export class MetadataLibraryObject extends BaseObject {
+    private readonly _records: DescriptionRecord[] = [];
+
+    // #region Constructors
+
+    private constructor() {
+        super();
+    }
+
+    public fromEmpty(): MetadataLibraryObject {
+        const instance = new MetadataLibraryObject();
+        instance.initializeFromGuid(Guids.AsfMetadataLibraryObject);
+        return instance;
+    }
+
+    public fromFile(file: AsfFile, position: number): MetadataLibraryObject {
+        const instance = new MetadataLibraryObject();
+        instance.initializeFromFile(file, position);
+
+        if (!instance.guid.equals(Guids.AsfMetadataLibraryObject)) {
+            throw new CorruptFileError("Object GUID does not match expected metadata library object GUID");
+        }
+        if (instance.originalSize < 26) {
+            throw new CorruptFileError("Metadata library object is too small");
+        }
+
+        const count = file.readWord();
+        for (let i = 0; i < count; i++) {
+            instance._records.push(DescriptionRecord.fromFile(file));
+        }
+
+        return instance;
+    }
+
+    // #endregion
+
+    // #region Properties
+
+    /**
+     * Gets whether or not the current instance contains any records.
+     * @returns boolean `true` if the current isntance does not contain any records, `false`
+     *     otherwise.
+     */
+    public get isEmpty(): boolean { return this._records.length === 0; }
+
+    /**
+     * Gets all records stored in the current instance.
+     */
+    public get records(): DescriptionRecord[] { return this._records; }
+
+    // #endregion
+
+    // #region Methods
+
+    /**
+     * Adds a record to the current instance.
+     * @param record Record to add to the current instance
+     */
+    public addRecord(record: DescriptionRecord): void {
+        this._records.push(record);
+    }
+
+    /**
+     * Gets all records with a given language, stream, and any of a collection of names from the
+     * current instance.
+     * @param languageListIndex Index of the desired language in the language list
+     * @param streamNumber Index of the stream in the file the desired records applies to
+     * @param names List of names of the records to return
+     */
+    public getRecords(languageListIndex: number, streamNumber: number, ... names: string[]): DescriptionRecord[] {
+        Guards.ushort(languageListIndex, "languageListIndex");
+        Guards.ushort(streamNumber, "streamNumber");
+
+        return this._records.filter((r) =>
+            r.languageListIndex === languageListIndex &&
+            r.streamNumber === streamNumber &&
+            names.indexOf(r.name) >= 0
+        );
+    }
+
+    /** @inheritDoc */
+    public render(): ByteVector {
+        const output = ByteVector.concatenate(
+            BaseObject.renderWord(this._records.length),
+            ... this._records.map((r) => r.render())
+        );
+        return super.renderInternal(output);
+    }
+
+    /**
+     * Sets a collection of records for a given language, language, ane name, removing the existing
+     * records that match.
+     * @remarks All added entries in `records` should match the provided `languageListIndex`,
+     *     `streamNumber`, and `name`, but this will not be verified by the method. The records
+     *     will be added with their own values and not those provided in the method arguments. The
+     *     arguments are only used for removing existing values and determining where to position
+     *     the new records.
+     * @param languageListIndex Index of the desired language in the language list
+     * @param streamNumber Index of the stream in the file the desired records applies to
+     * @param name Names of the records to remove
+     * @param records Records to insert into the current instance
+     */
+    public setRecords(
+        languageListIndex: number,
+        streamNumber: number,
+        name: string, ... records: DescriptionRecord[]
+    ): void {
+        let position = this._records.length;
+        for (let i = this._records.length - 1; i >= 0; i--) {
+            // Remove matching records
+            const record = this._records[i];
+            if (record.languageListIndex === languageListIndex &&
+                record.streamNumber === streamNumber &&
+                record.name === name
+            ) {
+                this._records.splice(i, 1);
+                position = i;
+            }
+
+            // Insert the new records
+            this._records.splice(position, 0, ... records);
+        }
     }
 
     // #endregion

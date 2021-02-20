@@ -2,6 +2,7 @@ import AsfFile from "../asfFile";
 import UuidWrapper from "../../uuidWrapper";
 import {ByteVector, StringType} from "../../byteVector";
 import {Guards} from "../../utils";
+import {UnsupportedFormatError} from "../../errors";
 
 /**
  * Base object that provides a basic representation of an ASF object that can be written to and
@@ -30,8 +31,12 @@ export default abstract class BaseObject {
 
         file.seek(position);
         this._id = file.readGuid();
-        this._originalSize = file.readQWord();
-        // TODO: warn if too big
+
+        const bigOriginalSize = file.readQWord();
+        if (bigOriginalSize > BigInt(Number.MAX_SAFE_INTEGER)) {
+            throw new UnsupportedFormatError("Object is too large to be handled with this version of library.");
+        }
+        this._originalSize = Number(bigOriginalSize);
     }
 
     /**
