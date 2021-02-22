@@ -4,6 +4,7 @@ import Guids from "../guids";
 import UuidWrapper from "../../uuidWrapper";
 import {CorruptFileError} from "../../errors";
 import {ByteVector} from "../../byteVector";
+import {NumberUtils} from "../../utils";
 
 /**
  * Flags that are set on a {@link FilePropertiesObject}. See {@link FilePropertiesObject.flags} for
@@ -27,7 +28,6 @@ export enum FilePropertiesFlags {
  * found within the Data object.
  */
 export default class FilePropertiesObject extends BaseObject {
-    private static readonly TICKS_PER_MILLISECOND = BigInt(10000);
     private static readonly UNIX_EPOCH_ZERO = BigInt(621355968000000000);
 
     // #region Member Variables
@@ -90,7 +90,7 @@ export default class FilePropertiesObject extends BaseObject {
         // Creation date is in ticks from 1/1/0001 00:00:00, JS Date is in milliseconds from
         // 1/1/1970 00:00:00.
         const unixEpochTicks = this._creationDateTicks - FilePropertiesObject.UNIX_EPOCH_ZERO;
-        const unixEpochMilli = FilePropertiesObject.ticksToMilli(unixEpochTicks);
+        const unixEpochMilli = NumberUtils.ticksToMilli(unixEpochTicks);
         return new Date(unixEpochMilli);
     }
 
@@ -155,14 +155,14 @@ export default class FilePropertiesObject extends BaseObject {
     /**
      * Get the time needed to play the file described by the current instance in milliseconds.
      */
-    public get playDurationMilliseconds(): number { return FilePropertiesObject.ticksToMilli(this._playDurationTicks); }
+    public get playDurationMilliseconds(): number { return NumberUtils.ticksToMilli(this._playDurationTicks); }
 
     /**
      * Get the time needed to send the file described by the current instance in milliseconds. A
      * packet's "send time" is the time when the packet should be delivered over the network, it is
      * not the presentation of the packet.
      */
-    public get sendDurationMilliseconds(): number { return FilePropertiesObject.ticksToMilli(this._sendDurationTicks); }
+    public get sendDurationMilliseconds(): number { return NumberUtils.ticksToMilli(this._sendDurationTicks); }
 
     // #endregion
 
@@ -184,8 +184,5 @@ export default class FilePropertiesObject extends BaseObject {
         return super.renderInternal(output);
     }
 
-    private static ticksToMilli(ticks: bigint): number {
-        // Ticks are
-        return Number(ticks / FilePropertiesObject.TICKS_PER_MILLISECOND);
-    }
+
 }

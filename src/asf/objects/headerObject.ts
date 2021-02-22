@@ -1,12 +1,13 @@
+import AsfFile from "../asfFile";
 import BaseObject from "./baseObject";
 import FilePropertiesObject from "./filePropertiesObject";
 import Guids from "../guids";
 import HeaderExtensionObject from "./headerExtensionObject";
 import Properties from "../../properties";
+import StreamPropertiesObject from "./streamPropertiesObject";
 import {ByteVector} from "../../byteVector";
 import {CorruptFileError} from "../../errors";
 import {ICodec} from "../../iCodec";
-import AsfFile from "../asfFile";
 
 /**
  * This class provides a representation of an ASF header object which can be read from and written

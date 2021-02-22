@@ -156,6 +156,7 @@ export class NumberUtils {
     public static readonly BIG_ZERO = BigInt(0);
     public static readonly BIG_ONE = BigInt(1);
     public static readonly BIG_TWO = BigInt(2);
+    public static readonly TICKS_PER_MILLISECOND = BigInt(10000);
 
     public static bigPow(x: bigint, y: number): bigint {
         Guards.uint(y, "y");
@@ -176,6 +177,11 @@ export class NumberUtils {
      */
     public static ldexp(x: number, y: number): number {
         return x * Math.pow(2, y);
+    }
+
+    public static ticksToMilli(ticks: bigint): number {
+        // Ticks are 100 nanosecond units
+        return Number(ticks / NumberUtils.TICKS_PER_MILLISECOND);
     }
 
     /**
