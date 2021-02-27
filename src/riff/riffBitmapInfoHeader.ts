@@ -7,7 +7,14 @@ import {Guards, NumberUtils} from "../utils";
  * This class provides a representation of a Microsoft BitmapInfoHeader structure.
  * @link https://docs.microsoft.com/en-us/windows/win32/api/wingdi/ns-wingdi-bitmapinfoheader
  */
-export default class BitmapInfoHeader implements IVideoCodec {
+export default class RiffBitmapInfoHeader implements IVideoCodec {
+    // This list was cobbled together using
+    //   * The original .NET source
+    //   * https://omiod.com/codec/list.php
+    //   * https://www.fourcc.org/
+    //   * http://abcavi.kibi.ru/fourcc.php
+    //   If any FOURCCs are missing or wrong, submit a PR and include a link to some source saying
+    //   this FOURCC exists.
     public static readonly FOURCC_CODES: {[key: number]: string} = {
         /* BI_RGB */       0x00000000: "Windows Bitmap Format",
         /* BI_RLE8 */      0x00000001: "Run length encoded 8bpp RGB Format",
@@ -737,16 +744,7 @@ export default class BitmapInfoHeader implements IVideoCodec {
      */
     public get compressionId(): number { return this._compressionId; }
 
-    /**
-     * @inheritDoc
-     * @developerNotes This list was cobbled together using
-     *   * The original .NET source
-     *   * https://omiod.com/codec/list.php
-     *   * https://www.fourcc.org/
-     *   * http://abcavi.kibi.ru/fourcc.php
-     *   If any FOURCCs are missing or wrong, submit a PR and include a link to some source saying
-     *   this FOURCC exists.
-     */
+    /** @inheritDoc */
     public get description(): string {
         // Get the string version of the FOURCC code
         const fourccString = String.fromCharCode(

@@ -6,6 +6,7 @@ import {ByteVector} from "../../byteVector";
 import {CorruptFileError} from "../../errors";
 import {ICodec} from "../../iCodec";
 import {NumberUtils} from "../../utils";
+import RiffBitmapInfoHeader from "../../riff/riffBitmapInfoHeader";
 
 /**
  * This class provides a representation of an ASF properties object which can be read from and

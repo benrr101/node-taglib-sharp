@@ -3,6 +3,7 @@ import BaseObject from "./baseObject";
 import FilePropertiesObject from "./filePropertiesObject";
 import Guids from "../guids";
 import HeaderExtensionObject from "./headerExtensionObject";
+import PaddingObject from "./paddingObject";
 import Properties from "../../properties";
 import StreamPropertiesObject from "./streamPropertiesObject";
 import {ByteVector} from "../../byteVector";
@@ -83,7 +84,7 @@ export default class HeaderObject extends BaseObject {
                 const fpObj = <FilePropertiesObject> obj;
                 durationMilliseconds = fpObj.playDurationMilliseconds - fpObj.prerollMilliseconds;
             } else if (obj.guid.equals(Guids.AsfStreamPropertiesObject)) {
-                codecs.push((<StreamPropertiesObject> obj).Codec);
+                codecs.push((<StreamPropertiesObject> obj).codec);
             }
         }
 
