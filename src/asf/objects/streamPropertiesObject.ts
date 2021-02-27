@@ -1,12 +1,13 @@
 import AsfFile from "../asfFile";
 import BaseObject from "./baseObject";
 import Guids from "../guids";
+import RiffBitmapInfoHeader from "../../riff/riffBitmapInfoHeader";
+import RiffWaveFormatEx from "../../riff/riffWaveFormatEx";
 import UuidWrapper from "../../uuidWrapper";
 import {ByteVector} from "../../byteVector";
 import {CorruptFileError} from "../../errors";
 import {ICodec} from "../../iCodec";
 import {NumberUtils} from "../../utils";
-import RiffBitmapInfoHeader from "../../riff/riffBitmapInfoHeader";
 
 /**
  * This class provides a representation of an ASF properties object which can be read from and
