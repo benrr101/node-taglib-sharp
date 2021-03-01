@@ -1,9 +1,8 @@
 import AsfFile from "../asfFile";
 import BaseObject from "./baseObject";
 import Guids from "../guids";
-import UuidWrapper from "../../uuidWrapper";
-import {ByteVector, StringType} from "../../byteVector";
-import {DataType} from "../dataType";
+import {ByteVector} from "../../byteVector";
+import {DataType, DescriptorBase, DescriptorValue} from "./descriptorBase";
 import {CorruptFileError} from "../../errors";
 import {Guards} from "../../utils";
 
@@ -14,68 +13,25 @@ import {Guards} from "../../utils";
  *     a representation of all types of values, it is recommended to determine which of the `get*`
  *     methods to use by accessing {@link type}
  */
-export class DescriptionRecord {
+export class MetadataDescriptor extends DescriptorBase {
     private readonly _languageListIndex: number;
-    private readonly _name: string;
     private readonly _streamNumber: number;
-    private readonly _type: DataType;
-
-    private _boolValue: boolean;
-    private _byteValue: ByteVector;
-    private _dWordValue: number;
-    private _guidValue: UuidWrapper;
-    private _qWordValue: bigint;
-    private _stringValue: string;
-    private _wordValue: number;
 
     // #region Constructors
 
-    private constructor(languageListIndex: number, streamNumber: number, name: string, type: DataType) {
+    public constructor(
+        languageListIndex: number,
+        streamNumber: number,
+        name: string,
+        type: DataType,
+        value: DescriptorValue
+    ) {
+        super(name, type, value);
         Guards.ushort(languageListIndex, "languageListIndex");
         Guards.ushort(streamNumber, "streamNumber");
 
         this._languageListIndex = languageListIndex;
         this._streamNumber = streamNumber;
-        this._name = name;
-        this._type = type;
-    }
-
-    /**
-     * Constructs and initializes a new instance with a specified language, stream, name and
-     * boolean value.
-     * @param languageListIndex Language list index of the new instance
-     * @param streamNumber Stream number of the new instance
-     * @param name Name of the new instance
-     * @param value Boolean value for the new instance
-     */
-    public static fromBool(
-        languageListIndex: number,
-        streamNumber: number,
-        name: string,
-        value: boolean
-    ): DescriptionRecord {
-        const instance = new DescriptionRecord(languageListIndex, streamNumber, name, DataType.Bool);
-        instance._boolValue = value;
-        return instance;
-    }
-
-    /**
-     * Constructs and initializes a new instance with a specified language, stream, name and
-     * byte value.
-     * @param languageListIndex Language list index of the new instance
-     * @param streamNumber Stream number of the new instance
-     * @param name Name of the new instance
-     * @param value Byte value for the new instance
-     */
-    public static fromBytes(
-        languageListIndex: number,
-        streamNumber: number,
-        name: string,
-        value: ByteVector
-    ): DescriptionRecord {
-        const instance = new DescriptionRecord(languageListIndex, streamNumber, name, DataType.Bytes);
-        instance._byteValue = value;
-        return instance;
     }
 
     /**
@@ -83,7 +39,7 @@ export class DescriptionRecord {
      * @param file The file to read the raw ASF description record from
      * @internal
      */
-    public static fromFile(file: AsfFile): DescriptionRecord {
+    public static fromFile(file: AsfFile): MetadataDescriptor {
         Guards.truthy(file, "file");
 
         // Field name          Field type Size (bits)
@@ -100,138 +56,35 @@ export class DescriptionRecord {
         const dataType = file.readWord();
         const dataLength = file.readDWord();
         const name = file.readUnicode(nameLength);
-        const instance = new DescriptionRecord(languageListIndex, streamNumber, name, dataType);
 
+        let value: DescriptorValue;
         switch (dataType) {
             case DataType.Word:
-                instance._wordValue = file.readWord();
+                value = file.readWord();
                 break;
             case DataType.Bool:
-                instance._boolValue = file.readDWord() > 0;
+                value = file.readDWord() > 0;
                 break;
             case DataType.DWord:
-                instance._dWordValue = file.readDWord();
+                value = file.readDWord();
                 break;
             case DataType.QWord:
-                instance._qWordValue = file.readQWord();
+                value = file.readQWord();
                 break;
             case DataType.Unicode:
-                instance._stringValue = file.readUnicode(dataLength);
+                value = file.readUnicode(dataLength);
                 break;
             case DataType.Bytes:
-                instance._byteValue = file.readBlock(dataLength);
+                value = file.readBlock(dataLength);
                 break;
             case DataType.Guid:
-                instance._guidValue = file.readGuid();
+                value = file.readGuid();
                 break;
             default:
                 throw new CorruptFileError("Failed to parse description record.");
         }
 
-        return instance;
-    }
-
-    /**
-     * Constructs and initializes a new instance with a specified language, stream, name and
-     * GUID value.
-     * @param languageListIndex Language list index of the new instance
-     * @param streamNumber Stream number of the new instance
-     * @param name Name of the new instance
-     * @param value GUID value for the new instance
-     */
-    public static fromGuid(
-        languageListIndex: number,
-        streamNumber: number,
-        name: string,
-        value: UuidWrapper
-    ): DescriptionRecord {
-        Guards.truthy(value, "value");
-
-        const instance = new DescriptionRecord(languageListIndex, streamNumber, name, DataType.Guid);
-        instance._guidValue = value;
-        return instance;
-    }
-
-    /**
-     * Constructs and initializes a new instance with a specified language, stream, name and
-     * unicode value.
-     * @param languageListIndex Language list index of the new instance
-     * @param streamNumber Stream number of the new instance
-     * @param name Name of the new instance
-     * @param value Unicode string value for the new instance
-     */
-    public static fromString(
-        languageListIndex: number,
-        streamNumber: number,
-        name: string,
-        value: string
-    ): DescriptionRecord {
-        const instance = new DescriptionRecord(languageListIndex, streamNumber, name, DataType.Unicode);
-        instance._stringValue = value;
-        return instance;
-    }
-
-    /**
-     * Constructs and initializes a new instance with a specified language, stream, name and
-     * quad word (unsigned long) value.
-     * @param languageListIndex Language list index of the new instance
-     * @param streamNumber Stream number of the new instance
-     * @param name Name of the new instance
-     * @param value Quad word value for the new instance, expressed as a bigint
-     */
-    public static fromUlong(
-        languageListIndex: number,
-        streamNumber: number,
-        name: string,
-        value: bigint
-    ): DescriptionRecord {
-        Guards.ulong(value, "value");
-
-        const instance = new DescriptionRecord(languageListIndex, streamNumber, name, DataType.QWord);
-        instance._qWordValue = value;
-        return instance;
-    }
-
-    /**
-     * Constructs and initializes a new instance with a specified language, stream, name and
-     * double word (unsigned integer) value.
-     * @param languageListIndex Language list index of the new instance
-     * @param streamNumber Stream number of the new instance
-     * @param name Name of the new instance
-     * @param value Boolean value for the new instance
-     */
-    public static fromUint(
-        languageListIndex: number,
-        streamNumber: number,
-        name: string,
-        value: number
-    ): DescriptionRecord {
-        Guards.uint(value, "value");
-
-        const instance = new DescriptionRecord(languageListIndex, streamNumber, name, DataType.DWord);
-        instance._dWordValue = value;
-        return instance;
-    }
-
-    /**
-     * Constructs and initializes a new instance with a specified language, stream, name and
-     * word (unsigned short) value.
-     * @param languageListIndex Language list index of the new instance
-     * @param streamNumber Stream number of the new instance
-     * @param name Name of the new instance
-     * @param value Boolean value for the new instance
-     */
-    public static fromUshort(
-        languageListIndex: number,
-        streamNumber: number,
-        name: string,
-        value: number
-    ): DescriptionRecord {
-        Guards.ushort(value, "value");
-
-        const instance = new DescriptionRecord(languageListIndex, streamNumber, name, DataType.Word);
-        instance._wordValue = value;
-        return instance;
+        return new MetadataDescriptor(languageListIndex, streamNumber, name, dataType, value);
     }
 
     // #endregion
@@ -244,66 +97,15 @@ export class DescriptionRecord {
     public get languageListIndex(): number { return this._languageListIndex; }
 
     /**
-     * Gets the name of the current instance.
-     */
-    public get name(): string { return this._name; }
-
-    /**
      * Gets the index of the stream associated with the current instance.
      */
     public get streamNumber(): number { return this._streamNumber; }
-
-    /**
-     * Gets the type of data contained in the current instance.
-     */
-    public get type(): DataType { return this._type; }
 
     // #endregion
 
     // #region Methods
 
-    /**
-     * Gets the boolean value of the current instance.
-     * @returns boolean Boolean value of the current instance is returned if {@link type} is
-     *     {@link DataType.Bool}. `undefined` is returned otherwise.
-     */
-    public getBool(): boolean { return this._boolValue; }
-
-    /**
-     * Gets the binary contents of the current instance.
-     * @returns ByteVector Byte contents of the current instance, if {@link type} is
-     *     {@link DataType.Bytes}. `undefined` is returned otherwise.
-     */
-    public getByte(): ByteVector { return this._byteValue; }
-
-    /**
-     * Gets the guid contents of the current instance.
-     * @returns UuidWrapper GUID contents of the current instance, if {@link type} is
-     *     {@link DataType.Guid}. `undefined` is returned otherwise.
-     */
-    public getGuid(): UuidWrapper { return this._guidValue; }
-
-    /**
-     * Gets the 64-bit quad word contents of the current instance.
-     * @returns bigint Quad word contents of the current instance, if {@link type} is
-     *     {@link DataType.QWord}. `undefined` is returned otherwise.
-     */
-    public getLong(): bigint { return this._qWordValue; }
-
-    /**
-     * Gets the 16-bit word contents of the current instance.
-     * @returns number Word contents of the current instance, if {@link type} is
-     *     {@link DataType.Word}. `undefined` is returned otherwise.
-     */
-    public getShort(): number { return this._wordValue; }
-
-    /**
-     * Gets the 32-bit double word contents of the current instance.
-     * @returns number Double word contents of the current instance, if {@link type} is
-     *      {@link DataType.DWord}. `undefined` is returned otherwise.
-     */
-    public getUint(): number { return this._dWordValue; }
-
+    /** @inheritDoc */
     public render(): ByteVector {
         let value: ByteVector;
         switch (this._type) {
@@ -341,27 +143,6 @@ export class DescriptionRecord {
         );
     }
 
-    /** @inheritDoc */
-    public toString(): string {
-        switch (this._type) {
-            case DataType.QWord:
-                return this._qWordValue.toString();
-            case DataType.DWord:
-                return this._dWordValue.toString();
-            case DataType.Word:
-                return this._wordValue.toString();
-            case DataType.Bool:
-                return this._boolValue.toString();
-            case DataType.Unicode:
-                return this._stringValue;
-            case DataType.Bytes:
-                return this._byteValue.toString(undefined, StringType.UTF16LE);
-            case DataType.Guid:
-                return this._guidValue.toString();
-        }
-        return undefined;
-    }
-
     // #endregion
 }
 
@@ -370,7 +151,7 @@ export class DescriptionRecord {
  * and written to disk.
  */
 export class MetadataLibraryObject extends BaseObject {
-    private readonly _records: DescriptionRecord[] = [];
+    private readonly _records: MetadataDescriptor[] = [];
 
     // #region Constructors
 
@@ -397,7 +178,7 @@ export class MetadataLibraryObject extends BaseObject {
 
         const count = file.readWord();
         for (let i = 0; i < count; i++) {
-            instance._records.push(DescriptionRecord.fromFile(file));
+            instance._records.push(MetadataDescriptor.fromFile(file));
         }
 
         return instance;
@@ -409,7 +190,7 @@ export class MetadataLibraryObject extends BaseObject {
 
     /**
      * Gets whether or not the current instance contains any records.
-     * @returns boolean `true` if the current isntance does not contain any records, `false`
+     * @returns boolean `true` if the current instance does not contain any records, `false`
      *     otherwise.
      */
     public get isEmpty(): boolean { return this._records.length === 0; }
@@ -417,7 +198,7 @@ export class MetadataLibraryObject extends BaseObject {
     /**
      * Gets all records stored in the current instance.
      */
-    public get records(): DescriptionRecord[] { return this._records; }
+    public get records(): MetadataDescriptor[] { return this._records; }
 
     // #endregion
 
@@ -427,7 +208,8 @@ export class MetadataLibraryObject extends BaseObject {
      * Adds a record to the current instance.
      * @param record Record to add to the current instance
      */
-    public addRecord(record: DescriptionRecord): void {
+    public addRecord(record: MetadataDescriptor): void {
+        Guards.truthy(record, "record");
         this._records.push(record);
     }
 
@@ -438,15 +220,38 @@ export class MetadataLibraryObject extends BaseObject {
      * @param streamNumber Index of the stream in the file the desired records applies to
      * @param names List of names of the records to return
      */
-    public getRecords(languageListIndex: number, streamNumber: number, ... names: string[]): DescriptionRecord[] {
+    public getRecords(languageListIndex: number, streamNumber: number, ... names: string[]): MetadataDescriptor[] {
         Guards.ushort(languageListIndex, "languageListIndex");
         Guards.ushort(streamNumber, "streamNumber");
+        Guards.truthy(names, "names");
 
         return this._records.filter((r) =>
             r.languageListIndex === languageListIndex &&
             r.streamNumber === streamNumber &&
             names.indexOf(r.name) >= 0
         );
+    }
+
+    /**
+     * Removes all records with a given language, stream, and name from the current instance.
+     * @param languageListIndex Language list index of the records to be removed
+     * @param streamNumber Index of the stream in the file the desired records to remve
+     * @param name Name of the records to remove
+     */
+    public removeRecords(languageListIndex: number, streamNumber: number, name: string): void {
+        Guards.ushort(languageListIndex, "languageListIndex");
+        Guards.ushort(streamNumber, "streamNumber");
+
+        for (let i = this._records.length - 1; i >= 0; i--) {
+            // Remove matching records
+            const rec = this._records[i];
+            if (rec.languageListIndex === languageListIndex &&
+                rec.streamNumber === streamNumber &&
+                rec.name === name
+            ) {
+                this._records.splice(i, 1);
+            }
+        }
     }
 
     /** @inheritDoc */
@@ -474,8 +279,13 @@ export class MetadataLibraryObject extends BaseObject {
     public setRecords(
         languageListIndex: number,
         streamNumber: number,
-        name: string, ... records: DescriptionRecord[]
+        name: string,
+        ... records: MetadataDescriptor[]
     ): void {
+        Guards.ushort(languageListIndex, "languageListIndex");
+        Guards.ushort(streamNumber, "streamNumber");
+        Guards.notNullOrUndefined(name, "name");
+
         let position = this._records.length;
         for (let i = this._records.length - 1; i >= 0; i--) {
             // Remove matching records
@@ -487,10 +297,10 @@ export class MetadataLibraryObject extends BaseObject {
                 this._records.splice(i, 1);
                 position = i;
             }
-
-            // Insert the new records
-            this._records.splice(position, 0, ... records);
         }
+
+        // Insert the new records
+        this._records.splice(position, 0, ... records);
     }
 
     // #endregion
