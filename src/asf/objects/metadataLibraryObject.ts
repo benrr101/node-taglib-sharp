@@ -159,13 +159,13 @@ export class MetadataLibraryObject extends BaseObject {
         super();
     }
 
-    public fromEmpty(): MetadataLibraryObject {
+    public static fromEmpty(): MetadataLibraryObject {
         const instance = new MetadataLibraryObject();
         instance.initializeFromGuid(Guids.AsfMetadataLibraryObject);
         return instance;
     }
 
-    public fromFile(file: AsfFile, position: number): MetadataLibraryObject {
+    public static fromFile(file: AsfFile, position: number): MetadataLibraryObject {
         const instance = new MetadataLibraryObject();
         instance.initializeFromFile(file, position);
 

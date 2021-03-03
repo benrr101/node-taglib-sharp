@@ -1,11 +1,11 @@
 import * as Path from "path";
-
 import ILazy from "./iLazy";
-import {IPicture, Picture, PictureType} from "./picture";
 import {ByteVector} from "./byteVector";
 import {IFileAbstraction, LocalFileAbstraction} from "./fileAbstraction";
-import {Guards} from "./utils";
+import {IPicture, PictureType} from "./iPicture";
+import {Picture} from "./picture";
 import {SeekOrigin} from "./stream";
+import {Guards} from "./utils";
 
 /**
  * This class implements {@link IPicture} and provides mechanisms for loading pictures from files.

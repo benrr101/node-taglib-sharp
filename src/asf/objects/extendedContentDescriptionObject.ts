@@ -120,7 +120,7 @@ export class ExtendedContentDescriptionObject extends BaseObject {
     /**
      * Constructs and initializes a new, empty extended content description object.
      */
-    public fromEmpty(): ExtendedContentDescriptionObject {
+    public static fromEmpty(): ExtendedContentDescriptionObject {
         const instance = new ExtendedContentDescriptionObject();
         instance.initializeFromGuid(Guids.AsfExtendedContentDescriptionObject);
         return instance;
@@ -133,7 +133,7 @@ export class ExtendedContentDescriptionObject extends BaseObject {
      * @param position Position in the file where the instance begins. Must be a positive, safe
      *     integer.
      */
-    public fromFile(file: AsfFile, position: number): ExtendedContentDescriptionObject {
+    public static fromFile(file: AsfFile, position: number): ExtendedContentDescriptionObject {
         const instance = new ExtendedContentDescriptionObject();
         instance.initializeFromFile(file, position);
 
@@ -191,6 +191,19 @@ export class ExtendedContentDescriptionObject extends BaseObject {
         return this._descriptors.filter((r) =>
             names.indexOf(r.name) >= 0
         );
+    }
+
+    /**
+     * Removes all descriptors with a given name from the current instance.
+     * @param name Name of the descriptor to be removed
+     */
+    public removeDescriptors(name: string): void {
+        Guards.notNullOrUndefined(name, "name");
+        for (let i = this._descriptors.length - 1; i >= 0; i--) {
+            if (this._descriptors[i].name === name) {
+                this._descriptors.splice(i, 1);
+            }
+        }
     }
 
     /** @inheritDoc */

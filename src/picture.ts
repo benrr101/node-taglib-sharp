@@ -1,133 +1,12 @@
 import * as path from "path";
-
 import {ByteVector} from "./byteVector";
 import {IFileAbstraction} from "./fileAbstraction";
-import {FileUtils} from "./utils";
+import {IPicture, PictureType} from "./iPicture";
+import {FileUtils, Guards} from "./utils";
 
-export enum PictureType {
-    /**
-     * @summary The picture is of a type other than those specified.
-     */
-    Other = 0x00,
-
-    /**
-     * @summary The picture is a 32x32 PNG image that should be used when displaying the file in a browser.
-     */
-    FileIcon = 0x01,
-
-    /**
-     * @summary The picture is of an icon different from {@link FileIcon}
-     */
-    OtherFileIcon = 0x02,
-
-    /**
-     * @summary The picture is of the front cover of the album.
-     */
-    FrontCover = 0x03,
-
-    /**
-     * @summary The picture is of the back cover of the album.
-     */
-    BackCover = 0x04,
-
-    /**
-     * @summary The picture is of a leaflet page including with the album.
-     */
-    LeafletPage = 0x05,
-
-    /**
-     * @summary The picture is of the album or disc itself.
-     */
-    Media = 0x06,
-
-    /**
-     * @summary The picture is of the lead artist or soloist.
-     */
-    LeadArtist = 0x07,
-
-    /**
-     * @summary The picture is of the artist or performer.
-     */
-    Artist = 0x08,
-
-    /**
-     * @summary The picture is of the conductor.
-     */
-    Conductor = 0x09,
-
-    /**
-     * @summary The picture is of the band or orchestra.
-     */
-    Band = 0x0A,
-
-    /**
-     * @summary The picture is of the composer.
-     */
-    Composer = 0x0B,
-
-    /**
-     * @summary The picture is of the lyricist or text writer.
-     */
-    Lyricist = 0x0C,
-
-    /**
-     * @summary The picture is of the recording location or studio.
-     */
-    RecordingLocation = 0x0D,
-
-    /**
-     * @summary The picture is one taken during the track's recording.
-     */
-    DuringRecording = 0x0E,
-
-    /**
-     * @summary The picture is one taken during the track's performance.
-     */
-    DuringPerformance = 0x0F,
-
-    /**
-     * @summary The picture is a capture from a movie screen.
-     */
-    MovieScreenCapture = 0x10,
-
-    /**
-     * @summary The picture is of a large, colored fish.
-     */
-    ColoredFish = 0x11,
-
-    /**
-     * @summary The picture is an illustration related to the track.
-     */
-    Illustration = 0x12,
-
-    /**
-     * @summary The picture contains the logo of the band or performer.
-     */
-    BandLogo = 0x13,
-
-    /**
-     * @summary The picture is the logo of the publisher or record
-     */
-    PublisherLogo = 0x14,
-
-    /**
-     * @summary In fact, this is not a Picture, but another file-type.
-     */
-    NotAPicture = 0xff
-}
-
-export interface IPicture {
-    mimeType: string;
-
-    type: PictureType;
-
-    filename: string;
-
-    description: string;
-
-    data: ByteVector;
-}
-
+/**
+ * This class implements {@link IPicture} and provides a mechanism for loading pictures from files.
+ */
 export class Picture implements IPicture {
     // #region Constants
 
@@ -215,27 +94,32 @@ export class Picture implements IPicture {
 
     private constructor() {}
 
+    /**
+     * Constructs and initializes a new instance from a file located at the provided path. The type
+     * and description of the picture are determined by the extension of the file. The file is
+     * loaded completely.
+     * @param filePath Path to the file to use to use for the file
+     */
     public static fromPath(filePath: string): Picture {
-        if (!filePath) {
-            throw new Error("Argument null exception: path not provided");
-        }
+        Guards.truthy(filePath, "filePath");
 
         const picture = new Picture();
-
         picture.data = ByteVector.fromPath(filePath);
         picture.filename = path.basename(filePath);
         picture.description = picture.filename;
         picture.mimeType = Picture.getMimeTypeFromFilename(picture.filename);
         picture.type = picture.mimeType.startsWith("image/") ? PictureType.FrontCover : PictureType.NotAPicture;
-
         return picture;
 
     }
 
+    /**
+     * Constructs and initializes a new instance from the data provided. The data is processed to
+     * discover the type of the picture.
+     * @param data Raw bytes of the picture to store in the instance. Cannot be falsey
+     */
     public static fromData(data: ByteVector): Picture {
-        if (!data) {
-            throw new Error("Argument null exception: data not provided");
-        }
+        Guards.truthy(data, "data");
 
         const picture = new Picture();
         picture.data = ByteVector.fromByteVector(data);
@@ -253,13 +137,38 @@ export class Picture implements IPicture {
         return picture;
     }
 
-    public static fromFileAbstraction(abstraction: IFileAbstraction): Picture {
-        if (!abstraction) {
-            throw new Error("Argument null exception: file abstraction not provided");
-        }
+    /**
+     * Constructs a new instance with the data provided. No processing of the data is done.
+     * @param data Raw bytes of the picture to store in the instance. Cannot be falsey
+     * @param type Type of the picture. Cannot be null or undefined
+     * @param mimeType MimeType of the picture. Cannot be falsey
+     * @param description Description of the picture. Cannot be null or undefined
+     */
+    public static fromFullData(data: ByteVector, type: PictureType, mimeType: string, description: string): Picture {
+        Guards.truthy(data, "data");
+        Guards.notNullOrUndefined(type, "type");
+        Guards.truthy(mimeType, "mimeType");
+        Guards.notNullOrUndefined(description, "description");
 
         const picture = new Picture();
-        picture.data = ByteVector.fromFileAbstraction(abstraction, false);
+        picture.data = data;
+        picture.type = type;
+        picture.mimeType = mimeType;
+        picture.description = description;
+
+        return picture;
+    }
+
+    /**
+     * Constructs and initializes a new instance from a file abstraction. The description and type
+     * of the file are determined by the name of the abstraction.
+     * @param abstraction File abstraction to load the picture from.
+     */
+    public static fromFileAbstraction(abstraction: IFileAbstraction): Picture {
+        Guards.truthy(abstraction, "abstraction");
+
+        const picture = new Picture();
+        picture.data = ByteVector.fromFileAbstraction(abstraction);
         picture.filename = abstraction.name;
         picture.description = abstraction.name;
 
@@ -285,15 +194,22 @@ export class Picture implements IPicture {
 
     // #region Public Properties
 
-    public mimeType: string;
+    /** @inheritDoc */
+    public data: ByteVector;
 
-    public type: PictureType;
-
-    public filename: string;
-
+    /** @inheritDoc */
     public description: string;
 
-    public data: ByteVector;
+    /** @inheritDoc */
+    public filename: string;
+
+    /** @inheritDoc */
+    public mimeType: string;
+
+    /**
+     * Gets and sets the type of the content visible in the picture stored in the current instance.
+     */
+    public type: PictureType;
 
     // #endregion
 
@@ -310,7 +226,7 @@ export class Picture implements IPicture {
         let ext: string;
 
         // No picture unless it is corrupted, can fit in a file of less than 4 bytes
-        if (!data || data.length >= 4) {
+        if (data && data.length >= 4) {
             if (data.get(1) === 0x50 && data.get(2) === 0x4E && data.get(3) === 0x47) {
                 ext = ".png";
             } else if (data.get(0) === 0x47 && data.get(1) === 0x49 && data.get(2) === 0x46) {

@@ -45,6 +45,9 @@ export enum DataType {
 
 export type DescriptorValue = bigint | boolean | ByteVector | number | string | UuidWrapper;
 
+/**
+ * Abstract class that forms the basis of extended content descriptors and metadata library records.
+ */
 export abstract class DescriptorBase {
     protected readonly _name: string;
     protected readonly _type: DataType;
@@ -156,19 +159,7 @@ export abstract class DescriptorBase {
      */
     public getGuid(): UuidWrapper { return this._guidValue; }
 
-    /**
-     * Gets the 64-bit quad word contents of the current instance.
-     * @returns bigint Quad word contents of the current instance, if {@link type} is
-     *     {@link DataType.QWord}. `undefined` is returned otherwise.
-     */
-    public getLong(): bigint { return this._qWordValue; }
-
-    /**
-     * Gets the 16-bit word contents of the current instance.
-     * @returns number Word contents of the current instance, if {@link type} is
-     *     {@link DataType.Word}. `undefined` is returned otherwise.
-     */
-    public getShort(): number { return this._wordValue; }
+    public getString(): string { return this._stringValue; }
 
     /**
      * Gets the 32-bit double word contents of the current instance.
@@ -176,6 +167,20 @@ export abstract class DescriptorBase {
      *      {@link DataType.DWord}. `undefined` is returned otherwise.
      */
     public getUint(): number { return this._dWordValue; }
+
+    /**
+     * Gets the 64-bit quad word contents of the current instance.
+     * @returns bigint Quad word contents of the current instance, if {@link type} is
+     *     {@link DataType.QWord}. `undefined` is returned otherwise.
+     */
+    public getUlong(): bigint { return this._qWordValue; }
+
+    /**
+     * Gets the 16-bit word contents of the current instance.
+     * @returns number Word contents of the current instance, if {@link type} is
+     *     {@link DataType.Word}. `undefined` is returned otherwise.
+     */
+    public getUshort(): number { return this._wordValue; }
 
     public abstract render(): ByteVector;
 

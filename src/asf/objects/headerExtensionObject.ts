@@ -51,7 +51,7 @@ export default class HeaderExtensionObject extends BaseObject {
     /**
      * Gets the child ASF objects contained in the current instance.
      */
-    public children(): BaseObject[] { return this._children; }
+    public get children(): BaseObject[] { return this._children; }
 
     /**
      * Adds a unique child object to the current instance, replacing an existing child if present.
