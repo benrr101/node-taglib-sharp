@@ -5,16 +5,19 @@ import {ByteVector, StringType} from "../byteVector";
 import {DataType} from "./objects/descriptorBase";
 import {ContentDescriptor, ExtendedContentDescriptionObject} from "./objects/extendedContentDescriptionObject";
 import {IPicture} from "../iPicture";
-import {MetadataLibraryObject} from "./objects/metadataLibraryObject";
+import {MetadataDescriptor, MetadataLibraryObject} from "./objects/metadataLibraryObject";
 import {Picture} from "../picture";
 import {Tag, TagTypes} from "../tag";
 import {Guards} from "../utils";
+import {Genres} from "../../dist";
 
 export default class AsfTag extends Tag {
 
     private _contentDescriptionObject: ContentDescriptionObject = ContentDescriptionObject.fromEmpty();
     private _extendedDescriptionObject: ExtendedContentDescriptionObject = ExtendedContentDescriptionObject.fromEmpty();
     private _metadataLibraryObject: MetadataLibraryObject = MetadataLibraryObject.fromEmpty();
+
+    private static readonly genreRegex = new RegExp(/\(([0-9]+)\)/).compile();
 
     // #region Constructors
 
@@ -170,6 +173,553 @@ export default class AsfTag extends Tag {
      */
     public set albumArtistsSort(value: string[]) { this.setDescriptorStrings(value, "WM/AlbumArtistSortOrder"); }
 
+    /**
+     * @inheritDoc
+     * @remarks via `WM/Composer` or `Composer` descriptors
+     */
+    public get composers(): string[] { return this.getDescriptorStrings("WM/Composer", "Composer"); }
+    /**
+     * @inheritDoc
+     * @remarks via `WM/Composer` or `Composer` descriptors
+     */
+    public set composers(value: string[]) { this.setDescriptorStrings(value, "WM/Composer", "Composer"); }
+
+    /**
+     * @inheritDoc
+     * @remarks via `WM/AlbumTitle` or `Album` descriptors
+     */
+    public get album(): string { return this.getDescriptorString("WM/AlbumTitle", "Album"); }
+    /**
+     * @inheritDoc
+     * @remarks via `WM/AlbumTitle` or `Album` descriptors
+     */
+    public set album(value: string) { this.setDescriptorString(value, "WM/AlbumTitle", "Album"); }
+
+    /**
+     * @inheritDoc
+     * @remarks via `WM/AlbumSortOrder` descriptors
+     */
+    public get albumSort(): string { return this.getDescriptorString("WM/AlbumSortOrder"); }
+    /**
+     * @inheritDoc
+     * @remarks via `WM/AlbumSortOrder` descriptors
+     */
+    public set albumSort(value: string) { this.setDescriptorString(value, "WM/AlbumSortOrder"); }
+
+    /**
+     * @inheritDoc
+     * @remarks via `WM/Text` descriptor
+     */
+    public get comment(): string { return this.getDescriptorString("WM/Text"); }
+    /**
+     * @inheritDoc
+     * @remarks via `WM/Text` descriptor
+     */
+    public set comment(value: string) { this.setDescriptorString(value, "WM/Text"); }
+
+    /**
+     * @inheritDoc
+     * @remarks via `WM/Genre`, `WM/GenreID`, or `Genre` descriptors
+     */
+    public get genres(): string[] {
+        const value = this.getDescriptorString("WM/Genre", "WM/GenreID", "Genre");
+        if (!value || value.trim().length === 0) {
+            return [];
+        }
+
+        const result = value.split(";");
+        for (let i = 0; i < result.length; i++) {
+            let genre = result[i].trim();
+
+            // Attempt to find a numeric genre in here
+            AsfTag.genreRegex.exec(genre);
+            if (genre) {
+                const numericGenre = Number.parseInt(genre[1], 10);
+                if (!Number.isNaN(numericGenre)) {
+                    genre = Genres.indexToAudio(genre[1], false);
+                }
+            }
+
+            result[i] = genre;
+        }
+
+        return result;
+    }
+    /**
+     * @inheritDoc
+     * @remarks via `WM/Genre`, `WM/GenreID`, or `Genre` descriptors
+     */
+    public set genres(value: string[]) { this.setDescriptorStrings(value, "WM/Genre", "Genre", "WM/GenreID"); }
+
+    /**
+     * @inheritDoc
+     * @remarks via `WM/Year` descriptor
+     */
+    public get year(): number {
+        const text = this.getDescriptorString("WM/Year");
+        if (!text || text.length < 4) {
+            return 0;
+        }
+
+        const parsed = Number.parseInt(text.substr(0, 4), 10);
+        return Number.isNaN(parsed) ? 0 : parsed;
+    }
+    /**
+     * @inheritDoc
+     * @remarks via `WM/Year` descriptor
+     */
+    public set year(value: number) {
+        Guards.uint(value, "value");
+        this.setDescriptorString(value.toString(10), "WM/Year");
+    }
+
+    /**
+     * @inheritDoc
+     * @remarks via `WM/TrackNumber` descriptor
+     *     https://docs.microsoft.com/en-us/windows/win32/wmformat/wm-tracknumber
+     */
+    public get track(): number { return this.getDescriptorUint("WM/TrackNumber"); }
+    /**
+     * @inheritDoc
+     * @remarks via `WM/TrackNumber` descriptor
+     *     https://docs.microsoft.com/en-us/windows/win32/wmformat/wm-tracknumber
+     */
+    public set track(value: number) {
+        Guards.uint(value, "value");
+        if (value === 0) {
+            this.removeDescriptors("WM/TrackNumber");
+        } else {
+            // @TODO: Config value for storing as DWORD or WMT_TYPE_STRING
+            const descriptor = new ContentDescriptor("WM/TrackNumber", DataType.Unicode, value.toString());
+            this.setDescriptors("WM/TrackNumber", descriptor);
+        }
+    }
+
+    /**
+     * @inheritDoc
+     * @remarks via `TrackTotal` descriptor
+     */
+    public get trackCount(): number { return this.getDescriptorUint("TrackTotal"); }
+    /**
+     * @inheritDoc
+     * @remarks via `TrackTotal` descriptor
+     */
+    public set trackCount(value: number) {
+        Guards.uint(value, "value");
+        if (value === 0) {
+            this.removeDescriptors("TrackTotal");
+        } else {
+            const descriptor = new ContentDescriptor("TrackTotal", DataType.DWord, value);
+            this.setDescriptors("TrackTotal", descriptor);
+        }
+    }
+
+    /**
+     * @inheritDoc
+     * @remarks via `WM/PartOfSet` descriptor
+     *     https://docs.microsoft.com/en-us/windows/win32/wmformat/wm-partofset
+     */
+    public get disc(): number {
+        const discString = this.getDescriptorString("WM/PartOfSet");
+        if (!discString) {
+            return 0;
+        }
+
+        const discSplit = discString.split("/");
+        if (discSplit.length < 1) {
+            return 0;
+        }
+
+        const discNumber = Number.parseInt(discSplit[0], 10);
+        return Number.isNaN(discNumber) ? 0 : discNumber;
+    }
+    /**
+     * @inheritDoc
+     * @remarks via `WM/PartOfSet` descriptor
+     *     https://docs.microsoft.com/en-us/windows/win32/wmformat/wm-partofset
+     */
+    public set disc(value: number) {
+        Guards.uint(value, "value");
+
+        const count = this.discCount;
+        if (value === 0 && count === 0) {
+            this.removeDescriptors("WM/PartOfSet");
+        }
+
+        const descriptorValue = count !== 0 ? `${value}/${count}` : value.toString();
+        this.setDescriptorString(descriptorValue, "WM/PartOfSet");
+    }
+
+    /**
+     * @inheritDoc
+     * @remarks via `WM/PartOfSet` descriptor
+     *     https://docs.microsoft.com/en-us/windows/win32/wmformat/wm-partofset
+     */
+    public get discCount(): number {
+        const discString = this.getDescriptorString("WM/PartOfSet");
+        if (!discString) {
+            return 0;
+        }
+
+        const discSplit = discString.split("/");
+        if (discSplit.length < 2) {
+            return 0;
+        }
+
+        const discCount = Number.parseInt(discSplit[1], 10);
+        return Number.isNaN(discCount) ? 0 : discCount;
+    }
+    /**
+     * @inheritDoc
+     * @remarks via `WM/PartOfSet` descriptor
+     *     https://docs.microsoft.com/en-us/windows/win32/wmformat/wm-partofset
+     */
+    public set discCount(value: number) {
+        Guards.uint(value, "value");
+
+        const disc = this.disc;
+        if (value === 0 && disc === 0) {
+            this.removeDescriptors("WM/PartOfSet");
+        }
+
+        const descriptorValue = disc !== 0 ? `${disc}/${value}` : value.toString();
+        this.setDescriptorString(descriptorValue, "WM/PartOfSet");
+    }
+
+    /**
+     * @inheritDoc
+     * @remarks via `WM/Lyrics` descriptor
+     *     https://docs.microsoft.com/en-us/windows/win32/wmformat/wm-lyrics
+     */
+    public get lyrics(): string { return this.getDescriptorString("WM/Lyrics"); }
+    /**
+     * @inheritDoc
+     * @remarks via `WM/Lyrics` descriptor
+     *     https://docs.microsoft.com/en-us/windows/win32/wmformat/wm-lyrics
+     */
+    public set lyrics(value: string) { this.setDescriptorString(value, "WM/Lyrics"); }
+
+    /**
+     * @inheritDoc
+     * @remarks via `WM/ContentGroupDescription` descriptor
+     *     https://docs.microsoft.com/en-us/windows/win32/wmformat/wm-contentgroupdescription
+     */
+    public get grouping(): string { return this.getDescriptorString("WM/ContentGroupDescription"); }
+    /**
+     * @inheritDoc
+     * @remarks via `WM/ContentGroupDescription` descriptor
+     *     https://docs.microsoft.com/en-us/windows/win32/wmformat/wm-contentgroupdescription
+     */
+    public set grouping(value: string) { this.setDescriptorString(value, "WM/ContentGroupDescription"); }
+
+    /**
+     * @inheritDoc
+     * @remarks via `WM/BeatsPerMinute` descriptor
+     *     https://docs.microsoft.com/en-us/windows/win32/wmformat/wm-beatsperminute
+     */
+    public get beatsPerMinute(): number { return this.getDescriptorUint("WM/BeatsPerMinute"); }
+    /**
+     * @inheritDoc
+     * @remarks via `WM/BeatsPerMinute` descriptor
+     *     https://docs.microsoft.com/en-us/windows/win32/wmformat/wm-beatsperminute
+     */
+    public set beatsPerMinute(value: number) {
+        Guards.uint(value, "value");
+        if (value === 0) {
+            this.removeDescriptors("WM/TrackNumber");
+        } else {
+            // @TODO: Config value for storing as DWORD or WMT_TYPE_STRING
+            const descriptor = new ContentDescriptor("WM/TrackNumber", DataType.Unicode, value.toString());
+            this.setDescriptors("WM/TrackNumber", descriptor);
+        }
+    }
+
+    /**
+     * @inheritDoc
+     * @remarks via `WM/Conductor` descriptor
+     *     https://docs.microsoft.com/en-us/windows/win32/wmformat/wm-conductor
+     */
+    public get conductor(): string { return this.getDescriptorString("WM/Conductor"); }
+    /**
+     * @inheritDoc
+     * @remarks via `WM/Conductor` descriptor
+     *     https://docs.microsoft.com/en-us/windows/win32/wmformat/wm-conductor
+     */
+    public set conductor(value: string) { this.setDescriptorString(value, "WM/Conductor"); }
+
+    /**
+     * @inheritDoc
+     * @remarks via {@link ContentDescriptionObject.copyright}
+     */
+    public get copyright(): string { return this._contentDescriptionObject.copyright; }
+    /**
+     * @inheritDoc
+     * @remarks via {@link ContentDescriptionObject.copyright}
+     */
+    public set copyright(value: string) { this._contentDescriptionObject.copyright = value; }
+
+    /**
+     * @inheritDoc
+     * @remarks via `MusicBrainz/Artist Id` descriptor
+     */
+    public get musicBrainzArtistId(): string { return this.getDescriptorString("MusicBrainz/Artist Id"); }
+    /**
+     * @inheritDoc
+     * @remarks via `MusicBrainz/Artist Id` descriptor
+     */
+    public set musicBrainzArtistId(value: string) { this.setDescriptorString(value, "MusicBrainz/Artist Id"); }
+
+    /**
+     * @inheritDoc
+     * @remarks via `MusicBrainz/Release Group Id` descriptor
+     */
+    public get musicBrainzReleaseGroupId(): string { return this.getDescriptorString("MusicBrainz/Release Group Id"); }
+    /**
+     * @inheritDoc
+     * @remarks via `MusicBrainz/Release Group Id` descriptor
+     */
+    public set musicBrainzReleaseGroupId(value: string) {
+        this.setDescriptorString(value, "MusicBrainz/Release Group Id");
+    }
+
+    /**
+     * @inheritDoc
+     * @remarks via `MusicBrainz/Album Id` descriptor
+     */
+    public get musicBrainzReleaseId(): string { return this.getDescriptorString("MusicBrainz/Album Id"); }
+    /**
+     * @inheritDoc
+     * @remarks via `MusicBrainz/Album Id` descriptor
+     */
+    public set musicBrainzReleaseId(value: string) { this.setDescriptorString(value, "MusicBrainz/Album Id"); }
+
+    /**
+     * @inheritDoc
+     * @remarks via `MusicBrainz/Album Artist Id` descriptor
+     */
+    public get musicBrainzAlbumArtistId(): string { return this.getDescriptorString("MusicBrainz/Album Artist Id"); }
+    /**
+     * @inheritDoc
+     * @remarks via `MusicBrainz/Artist Id` descriptor
+     */
+    public set musicBrainzAlbumArtistId(value: string) {
+        this.setDescriptorString(value, "MusicBrainz/Album Artist Id");
+    }
+
+    /**
+     * @inheritDoc
+     * @remarks via `MusicBrainz/Track Id` descriptor
+     */
+    public get musicBrainzTrackId(): string { return this.getDescriptorString("MusicBrainz/Track Id"); }
+    /**
+     * @inheritDoc
+     * @remarks via `MusicBrainz/Track Id` descriptor
+     */
+    public set musicBrainzTrackId(value: string) { this.setDescriptorString(value, "MusicBrainz/Track Id"); }
+
+    /**
+     * @inheritDoc
+     * @remarks via `MusicBrainz/Disc Id` descriptor
+     */
+    public get musicBrainzDiscId(): string { return this.getDescriptorString("MusicBrainz/Disc Id"); }
+    /**
+     * @inheritDoc
+     * @remarks via `MusicBrainz/Disc Id` descriptor
+     */
+    public set musicBrainzDiscId(value: string) { this.setDescriptorString(value, "MusicBrainz/Disc Id"); }
+
+    /**
+     * @inheritDoc
+     * @remarks via `MusicIP/PUID` descriptor
+     */
+    public get musicIpId(): string { return this.getDescriptorString("MusicIP/PUID"); }
+    /**
+     * @inheritDoc
+     * @remarks via `MusicIP/PUID` descriptor
+     */
+    public set musicIpId(value: string) { this.setDescriptorString(value, "MusicIP/PUID"); }
+
+    /**
+     * @inheritDoc
+     * @remarks via `MusicBrainz/Album Status` descriptor
+     */
+    public get musicBrainzReleaseStatus(): string { return this.getDescriptorString("MusicBrainz/Album Status"); }
+    /**
+     * @inheritDoc
+     * @remarks via `MusicBrainz/Album Status` descriptor
+     */
+    public set musicBrainzReleaseStatus(value: string) { this.setDescriptorString(value, "MusicBrainz/Album Status"); }
+
+    /**
+     * @inheritDoc
+     * @remarks via `MusicBrainz/Album Type` descriptor
+     */
+    public get musicBrainzReleaseType(): string { return this.getDescriptorString("MusicBrainz/Album Type"); }
+    /**
+     * @inheritDoc
+     * @remarks via `MusicBrainz/Album Type` descriptor
+     */
+    public set musicBrainzReleaseType(value: string) { this.setDescriptorString(value, "MusicBrainz/Album Type"); }
+
+    /**
+     * @inheritDoc
+     * @remarks via `MusicBrainz/Album Release Country` descriptor
+     */
+    public get musicBrainzReleaseCountry(): string {
+        return this.getDescriptorString("MusicBrainz/Album Release Country");
+    }
+    /**
+     * @inheritDoc
+     * @remarks via `MusicBrainz/Album Release Country` descriptor
+     */
+    public set musicBrainzReleaseCountry(value: string) {
+        this.setDescriptorString(value, "MusicBrainz/Album Release Country");
+    }
+
+    /**
+     * @inheritDoc
+     * @remarks via `ReplayGain/Track` descriptor
+     */
+    public get replayGainTrackGain(): number {
+        let valueString = this.getDescriptorString("ReplayGain/Track");
+        if (!valueString) {
+            return Number.NaN;
+        }
+        if (valueString.toLowerCase().endsWith("db")) {
+            valueString = valueString.substr(0, valueString.length - 2).trim();
+        }
+
+        return  Number.parseFloat(valueString);
+    }
+    /**
+     * @inheritDoc
+     * @remarks via `ReplayGain/Track` descriptor
+     */
+    public set replayGainTrackGain(value: number) {
+        Guards.notNullOrUndefined(value, "value");
+        if (Number.isNaN(value)) {
+            this.removeDescriptors("ReplayGain/Track");
+        } else {
+            const text = value.toFixed(2);
+            this.setDescriptorString(`${text} dB`, "ReplayGain/Track");
+        }
+    }
+
+    /**
+     * @inheritDoc
+     * @remarks via `ReplayGain/Track Peak` descriptor
+     */
+    public get replayGainTrackPeak(): number {
+        const valueString = this.getDescriptorString("ReplayGain/Track Peak");
+        return !valueString ? Number.NaN : Number.parseFloat(valueString);
+    }
+    /**
+     * @inheritDoc
+     * @remarks via `ReplayGain/Track Peak` descriptor
+     */
+    public set replayGainTrackPeak(value: number) {
+        if (Number.isNaN(value)) {
+            this.removeDescriptors("ReplayGain/Track Peak");
+        } else {
+            const text = value.toFixed(6);
+            this.setDescriptorString(text, "ReplayGain/Track Peak");
+        }
+    }
+
+    /**
+     * @inheritDoc
+     * @remarks via `ReplayGain/Album` descriptor
+     */
+    public get replayGainAlbumGain(): number {
+        let valueString = this.getDescriptorString("ReplayGain/Album");
+        if (!valueString) {
+            return Number.NaN;
+        }
+        if (valueString.toLowerCase().endsWith("db")) {
+            valueString = valueString.substr(0, valueString.length - 2).trim();
+        }
+
+        return  Number.parseFloat(valueString);
+    }
+    /**
+     * @inheritDoc
+     * @remarks via `ReplayGain/Album` descriptor
+     */
+    public set replayGainAlbumGain(value: number) {
+        Guards.notNullOrUndefined(value, "value");
+        if (Number.isNaN(value)) {
+            this.removeDescriptors("ReplayGain/Album");
+        } else {
+            const text = value.toFixed(2);
+            this.setDescriptorString(`${text} dB`, "ReplayGain/Album");
+        }
+    }
+
+    /**
+     * @inheritDoc
+     * @remarks via `ReplayGain/Album Peak` descriptor
+     */
+    public get replayGainAlbumPeak(): number {
+        const valueString = this.getDescriptorString("ReplayGain/Album Peak");
+        return !valueString ? Number.NaN : Number.parseFloat(valueString);
+    }
+    /**
+     * @inheritDoc
+     * @remarks via `ReplayGain/Album Peak` descriptor
+     */
+    public set replayGainAlbumPeak(value: number) {
+        if (Number.isNaN(value)) {
+            this.removeDescriptors("ReplayGain/Album Peak");
+        } else {
+            const text = value.toFixed(6);
+            this.setDescriptorString(text, "ReplayGain/Album Peak");
+        }
+    }
+
+    /**
+     * @inheritDoc
+     * @remarks via the `WM/Picture` content descriptor and description record.
+     *      https://docs.microsoft.com/en-us/windows/win32/wmformat/wmpicture
+     */
+    public get pictures(): IPicture[] {
+        const records = [
+            ... this.getDescriptors("WM/Picture"),
+            ... this._metadataLibraryObject.getRecords(0, 0, "WM/Picture")
+        ];
+        return records.map((r) => AsfTag.pictureFromData(r.getBytes()))
+            .filter((p) => !!p);
+    }
+    /**
+     * @inheritDoc
+     * @remarks via the `WM/Picture` content descriptor and description record.
+     *      https://docs.microsoft.com/en-us/windows/win32/wmformat/wmpicture
+     */
+    public set pictures(value: IPicture[]) {
+        if (!value || value.length === 0) {
+            this.removeDescriptors("WM/Picture");
+            this._metadataLibraryObject.removeRecords(0, 0, "WM/Picutre");
+            return;
+        }
+
+        const data = value.map((p) => AsfTag.pictureToData(p));
+        const bigPics = data.some((d) => d.length > 0xFFFF);
+
+        if (bigPics) {
+            const descriptors = data.map((d) => new MetadataDescriptor(0, 0, "WM/Picture", DataType.Bytes, d));
+            this.removeDescriptors("WM/Picture");
+            this._metadataLibraryObject.setRecords(0, 0, "WM/Picture", ...descriptors);
+        } else {
+            const descriptors = data.map((d) => new ContentDescriptor("WM/Picture", DataType.Bytes, d));
+            this.setDescriptors("WM/Picture", ... descriptors);
+            this._metadataLibraryObject.removeRecords(0, 0, "WM/Picture");
+        }
+    }
+
+    /** @inheritDoc */
+    public get isEmpty(): boolean {
+        return this._contentDescriptionObject.isEmpty && this._extendedDescriptionObject.isEmpty;
+    }
+
     // #endregion
 
     // #region Methods
@@ -180,6 +730,13 @@ export default class AsfTag extends Tag {
      */
     public addDescriptor(descriptor: ContentDescriptor): void {
         this._extendedDescriptionObject.addDescriptor(descriptor);
+    }
+
+    /** @inheritDoc */
+    public clear(): void {
+        this._contentDescriptionObject = ContentDescriptionObject.fromEmpty();
+        this._extendedDescriptionObject = ExtendedContentDescriptionObject.fromEmpty();
+        this._metadataLibraryObject.removeRecords(0, 0, "WM/Picture");
     }
 
     /**
@@ -212,6 +769,24 @@ export default class AsfTag extends Tag {
         }
 
         return undefined;
+    }
+
+    public getDescriptorUint(... names: string[]): number {
+        for (const descriptor of this.getDescriptors(... names)) {
+            if (descriptor.type === DataType.DWord) {
+                const uintValue = descriptor.getUint();
+                if (uintValue !== 0) {
+                    return uintValue;
+                }
+            } else if (descriptor.type === DataType.Unicode) {
+                const numericValue = Number.parseInt(descriptor.getString().trim(), 10);
+                if (numericValue !== 0) {
+                    return numericValue;
+                }
+            }
+        }
+
+        return 0;
     }
 
     /**

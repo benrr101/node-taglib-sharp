@@ -150,7 +150,7 @@ export abstract class DescriptorBase {
      * @returns ByteVector Byte contents of the current instance, if {@link type} is
      *     {@link DataType.Bytes}. `undefined` is returned otherwise.
      */
-    public getByte(): ByteVector { return this._byteValue; }
+    public getBytes(): ByteVector { return this._byteValue; }
 
     /**
      * Gets the guid contents of the current instance.

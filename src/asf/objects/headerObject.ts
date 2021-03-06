@@ -28,7 +28,7 @@ export default class HeaderObject extends BaseObject {
      * @param file File containing contents that will be read into the new instance
      * @param position Position in the file where the instance begins
      */
-    public fromFile(file: AsfFile, position: number): HeaderObject {
+    public static fromFile(file: AsfFile, position: number): HeaderObject {
         const instance = new HeaderObject();
         instance.initializeFromFile(file, position);
 
