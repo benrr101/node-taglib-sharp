@@ -1,11 +1,22 @@
-import {File, FileAccessMode, ReadStyle} from "../file";
-import UuidWrapper from "../uuidWrapper";
-import BaseObject from "./objects/baseObject";
 import AsfTag from "./asfTag";
-import Properties from "../properties";
-import {IFileAbstraction} from "../fileAbstraction";
+import BaseObject from "./objects/baseObject";
+import ContentDescriptionObject from "./objects/contentDescriptionObject";
+import FilePropertiesObject from "./objects/filePropertiesObject";
+import Guids from "./guids";
+import HeaderExtensionObject from "./objects/headerExtensionObject";
 import HeaderObject from "./objects/headerObject";
+import PaddingObject from "./objects/paddingObject";
+import Properties from "../properties";
+import StreamPropertiesObject from "./objects/streamPropertiesObject";
+import UnknownObject from "./objects/unknownObject";
+import UuidWrapper from "../uuidWrapper";
+import {StringType} from "../byteVector";
+import {ExtendedContentDescriptionObject} from "./objects/extendedContentDescriptionObject";
+import {File, FileAccessMode, ReadStyle} from "../file";
+import {IFileAbstraction} from "../fileAbstraction";
+import {MetadataLibraryObject} from "./objects/metadataLibraryObject";
 import {Tag, TagTypes} from "../tag";
+import {Guards} from "../utils";
 
 /**
  * This class provides tagging and properties support for Microsoft's ASF files.
@@ -49,13 +60,96 @@ export default class AsfFile extends File {
         return type === TagTypes.Asf ? this._asfTag : undefined;
     }
 
-    public readDWord(): number {}
-    public readGuid(): UuidWrapper {}
-    public readQWord(): bigint {}
-    public readObject(position: number): BaseObject {}
-    public readObjects(count: number, position: number): BaseObject[] {}
-    public readUnicode(length: number): string {}
-    public readWord(): number {}
+    /**
+     * Reads a 4-byte double word from the current instance.
+     */
+    public readDWord(): number {
+        return this.readBlock(4).toUInt(false);
+    }
+
+    /**
+     * Reads a 16-byte GUID from the current instance.
+     */
+    public readGuid(): UuidWrapper {
+        return new UuidWrapper(this.readBlock(16).data);
+    }
+
+    /**
+     * Reads an 8-byte quad word from the current instance.
+     */
+    public readQWord(): bigint {
+        return this.readBlock(8).toLong(false);
+    }
+
+    /**
+     * Reads a single object from the current instance.
+     * @param position Position within the file at which the object begins
+     * @returns BaseObject An object of the appropriate type as read from the current instance
+     */
+    public readObject(position: number): BaseObject {
+        this.seek(position);
+        const guid = this.readGuid();
+
+        if (guid.equals(Guids.AsfFilePropertiesObject)) {
+            return FilePropertiesObject.fromFile(this, position);
+        }
+        if (guid.equals(Guids.AsfStreamPropertiesObject)) {
+            return StreamPropertiesObject.fromFile(this, position);
+        }
+        if (guid.equals(Guids.AsfContentDescriptionObject)) {
+            return ContentDescriptionObject.fromFile(this, position);
+        }
+        if (guid.equals(Guids.AsfExtendedContentDescriptionObject)) {
+            return ExtendedContentDescriptionObject.fromFile(this, position);
+        }
+        if (guid.equals(Guids.AsfPaddingObject)) {
+            return PaddingObject.fromFile(this, position);
+        }
+        if (guid.equals(Guids.AsfHeaderExtensionObject)) {
+            return HeaderExtensionObject.fromFile(this, position);
+        }
+        if (guid.equals(Guids.AsfMetadataLibraryObject)) {
+            return MetadataLibraryObject.fromFile(this, position);
+        }
+
+        return UnknownObject.fromFile(this, position);
+    }
+
+    /**
+     * Reads a collection of objects from the current instance.
+     * @param count Number of objects to read, must be a positive, 32-bit integer
+     * @param position Position within the file at which to start reading objects
+     * @returns BaseObject[] Array of objects read from the file
+     */
+    public readObjects(count: number, position: number): BaseObject[] {
+        Guards.uint(count, "count");
+
+        const objects = [];
+        for (let i = 0; i < count; i++) {
+            const obj = this.readObject(position);
+            position += obj.originalSize;
+            objects.push(obj);
+        }
+
+        return objects;
+    }
+
+    /**
+     * Reads a UTF-16LE string of specified length in bytes from the current instance.
+     * @param length Length in bytes to read as the string
+     */
+    public readUnicode(length: number): string {
+        const string = this.readBlock(length).toString(undefined, StringType.UTF16LE);
+        const nullIndex = string.indexOf("\0");
+        return nullIndex >= 0 ? string.substring(0, nullIndex) : string;
+    }
+
+    /**
+     * Reads a 2-byte word from the current instance.
+     */
+    public readWord(): number {
+        return this.readBlock(2).toUShort(false);
+    }
 
     /** @inheritDoc */
     public removeTags(types: TagTypes): void {
@@ -98,3 +192,14 @@ export default class AsfFile extends File {
 
     // #endregion
 }
+
+////////////////////////////////////////////////////////////////////////////
+// Register the file type
+[
+    "taglib/wma",
+    "taglib/wmv",
+    "taglib/asf",
+    "audio/x-ms-wma",
+    "audio/x-ms-asf",
+    "video/x-ms-asf"
+].forEach((mt) => File.addFileType(mt, AsfFile));

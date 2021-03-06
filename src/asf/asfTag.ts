@@ -1,5 +1,6 @@
 import BaseObject from "./objects/baseObject";
 import ContentDescriptionObject from "./objects/contentDescriptionObject";
+import Genres from "../genres";
 import HeaderObject from "./objects/headerObject";
 import {ByteVector, StringType} from "../byteVector";
 import {DataType} from "./objects/descriptorBase";
@@ -9,8 +10,11 @@ import {MetadataDescriptor, MetadataLibraryObject} from "./objects/metadataLibra
 import {Picture} from "../picture";
 import {Tag, TagTypes} from "../tag";
 import {Guards} from "../utils";
-import {Genres} from "../../dist";
 
+/**
+ * This class extends {@link Tag} to provide a representation of an ASF tag which can be read from
+ * and written to disk.
+ */
 export default class AsfTag extends Tag {
 
     private _contentDescriptionObject: ContentDescriptionObject = ContentDescriptionObject.fromEmpty();

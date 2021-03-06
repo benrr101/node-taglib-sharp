@@ -1,7 +1,7 @@
 import UuidWrapper from "../uuidWrapper";
 
 /**
- * Some commonly used GUIDs used in ASF objects.
+ * GUIDs used to identify objects within an ASF file.
  */
 export default class Guids {
     /**

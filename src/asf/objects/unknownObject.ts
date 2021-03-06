@@ -1,6 +1,6 @@
+import AsfFile from "../asfFile";
 import BaseObject from "./baseObject";
 import {ByteVector} from "../../byteVector";
-import AsfFile from "../asfFile";
 import {Guards} from "../../utils";
 
 /**
@@ -19,10 +19,10 @@ export default class UnknownObject extends BaseObject {
      * @param file File from which the contents of the new instance will be read
      * @param position Index into the file where the object begins
      */
-    public fromFile(file: AsfFile, position: number): UnknownObject {
+    public static fromFile(file: AsfFile, position: number): UnknownObject {
         const instance = new UnknownObject();
         instance.initializeFromFile(file, position);
-        instance._data = file.readBlock(this.originalSize - 24);
+        instance._data = file.readBlock(instance.originalSize - 24);
         return instance;
     }
 
