@@ -7,7 +7,7 @@ import {FileUtils, Guards} from "./utils";
 /**
  * This class implements {@link IPicture} and provides a mechanism for loading pictures from files.
  */
-export class Picture implements IPicture {
+export default class Picture implements IPicture {
     // #region Constants
 
     private static readonly _lutExtensionMime: string[] = [

@@ -2,12 +2,12 @@ import BaseObject from "./objects/baseObject";
 import ContentDescriptionObject from "./objects/contentDescriptionObject";
 import Genres from "../genres";
 import HeaderObject from "./objects/headerObject";
+import Picture from "../picture";
 import {ByteVector, StringType} from "../byteVector";
 import {DataType} from "./objects/descriptorBase";
 import {ContentDescriptor, ExtendedContentDescriptionObject} from "./objects/extendedContentDescriptionObject";
 import {IPicture} from "../iPicture";
 import {MetadataDescriptor, MetadataLibraryObject} from "./objects/metadataLibraryObject";
-import {Picture} from "../picture";
 import {Tag, TagTypes} from "../tag";
 import {Guards} from "../utils";
 

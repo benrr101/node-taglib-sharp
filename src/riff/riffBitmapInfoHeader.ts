@@ -754,9 +754,9 @@ export default class RiffBitmapInfoHeader implements IVideoCodec {
             NumberUtils.uintAnd(this._compressionId, 0xFF000000)
         );
 
-        return BitmapInfoHeader.FOURCC_CODES[this._compressionId] === undefined
+        return RiffBitmapInfoHeader.FOURCC_CODES[this._compressionId] === undefined
             ? `Unknown Video Format [${fourccString}]`
-            : `${BitmapInfoHeader.FOURCC_CODES[this._compressionId]} [${fourccString}]`;
+            : `${RiffBitmapInfoHeader.FOURCC_CODES[this._compressionId]} [${fourccString}]`;
     }
 
     /**

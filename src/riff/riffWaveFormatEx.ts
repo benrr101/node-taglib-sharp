@@ -319,9 +319,9 @@ export default class RiffWaveFormatEx implements ILosslessAudioCodec {
 
     /** @inheritDoc */
     public get description(): string {
-        return WaveFormatEx.WAVE_FORMAT_TAGS[this._formatTag] === undefined
+        return RiffWaveFormatEx.WAVE_FORMAT_TAGS[this._formatTag] === undefined
             ? `Unknown Audio Format [0x${this._formatTag.toString(16)}]`
-            : WaveFormatEx.WAVE_FORMAT_TAGS[this._formatTag];
+            : RiffWaveFormatEx.WAVE_FORMAT_TAGS[this._formatTag];
     }
 
     /**

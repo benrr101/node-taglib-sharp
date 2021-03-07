@@ -27,7 +27,7 @@ export default abstract class BaseObject {
     protected initializeFromFile(file: AsfFile, position: number): void {
         Guards.truthy(file, "file");
         Guards.uint(position, "position");
-        Guards.greaterThanInclusive(position, file.length - 25, "position");
+        Guards.lessThanInclusive(position, file.length - 24, "position");
 
         file.seek(position);
         this._id = file.readGuid();

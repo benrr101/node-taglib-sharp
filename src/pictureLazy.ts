@@ -1,9 +1,9 @@
 import * as Path from "path";
 import ILazy from "./iLazy";
+import Picture from "./picture";
 import {ByteVector} from "./byteVector";
 import {IFileAbstraction, LocalFileAbstraction} from "./fileAbstraction";
 import {IPicture, PictureType} from "./iPicture";
-import {Picture} from "./picture";
 import {SeekOrigin} from "./stream";
 import {Guards} from "./utils";
 

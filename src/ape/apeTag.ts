@@ -1,11 +1,12 @@
 import * as DateFormat from "dateformat";
 
+import Picture from "../picture";
 import {ApeTagFooter, ApeTagFooterFlags} from "./apeTagFooter";
 import {ApeTagItem, ApeTagItemType} from "./apeTagItem";
 import {ByteVector, StringType} from "../byteVector";
 import {CorruptFileError} from "../errors";
 import {File, FileAccessMode} from "../file";
-import {IPicture, Picture, PictureType} from "../picture";
+import {IPicture, PictureType} from "../iPicture";
 import {Tag, TagTypes} from "../tag";
 import {Guards, StringComparison} from "../utils";
 
