@@ -283,7 +283,7 @@ export default class RiffWaveFormatEx implements ILosslessAudioCodec {
     public constructor(data: ByteVector, offset: number) {
         Guards.truthy(data, "data");
         Guards.uint(offset, "offset");
-        if (offset + 16 < data.length) {
+        if (offset + 16 > data.length) {
             throw new CorruptFileError("Expected 16 bytes");
         }
 
@@ -297,7 +297,7 @@ export default class RiffWaveFormatEx implements ILosslessAudioCodec {
     // #region Properties
 
     /** @inheritDoc */
-    public get audioBitrate(): number { return this.averageBytesPerSecond * 8 / 10000; }
+    public get audioBitrate(): number { return this.averageBytesPerSecond * 8 / 1000; }
 
     /** @inheritDoc */
     public get audioChannels(): number { return this._channels; }
@@ -319,9 +319,10 @@ export default class RiffWaveFormatEx implements ILosslessAudioCodec {
 
     /** @inheritDoc */
     public get description(): string {
+        const formatTagString = this._formatTag.toString(16).padStart(4, "0");
         return RiffWaveFormatEx.WAVE_FORMAT_TAGS[this._formatTag] === undefined
-            ? `Unknown Audio Format [0x${this._formatTag.toString(16)}]`
-            : RiffWaveFormatEx.WAVE_FORMAT_TAGS[this._formatTag];
+            ? `Unknown Audio Format [0x${formatTagString}]`
+            : `${RiffWaveFormatEx.WAVE_FORMAT_TAGS[this._formatTag]} [0x${formatTagString}]`;
     }
 
     /**
@@ -338,8 +339,19 @@ export default class RiffWaveFormatEx implements ILosslessAudioCodec {
      */
     public get formatTag(): number { return this._formatTag; }
 
-    /** @inheritDoc */
-    public get mediaTypes(): MediaTypes { return MediaTypes.LosslessAudio; }
+    /**
+     * @inheritDoc
+     * @remarks Technically any audio format can be encapsulated with a RIFF header since RIFF is
+     *     simply a "Resource Interchange File Format". It is entirely possible to encapsulate a
+     *     lossy format (and indeed, lossy WMA must be encapsulated) with a RIFF header. Therefore
+     *     this designation as lossless is somewhat misleading and checking {@link description} is
+     *     necessary to verify the codec being used is lossless or not.
+     */
+    public get mediaTypes(): MediaTypes {
+        // @TODO: This isn't guaranteed. Consider determining the description and mediatype as part
+        //    of construction.
+        return MediaTypes.LosslessAudio;
+    }
 
     // #endregion
 }

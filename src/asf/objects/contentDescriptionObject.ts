@@ -33,7 +33,7 @@ export default class ContentDescriptionObject extends BaseObject {
         const instance = new ContentDescriptionObject();
         instance.initializeFromFile(file, position);
 
-        if (instance.guid.equals(Guids.AsfContentDescriptionObject)) {
+        if (!instance.guid.equals(Guids.AsfContentDescriptionObject)) {
             throw new CorruptFileError("Object GUID is not the expected content description object guid");
         }
         if (instance.originalSize < 34) {

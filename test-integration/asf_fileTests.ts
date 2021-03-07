@@ -25,10 +25,11 @@ const assert = Chai.assert;
 
     @test
     public readAudioProperties() {
-        assert.strictEqual(Asf_FileTests.file.properties.audioBitrate, 96);
+        assert.approximately(Asf_FileTests.file.properties.audioBitrate, 96, 0.1);
         assert.strictEqual(Asf_FileTests.file.properties.audioChannels, 2);
         assert.strictEqual(Asf_FileTests.file.properties.audioSampleRate, 44100);
         assert.strictEqual(Asf_FileTests.file.properties.durationMilliseconds, 4000);
-        assert.strictEqual(Asf_FileTests.file.properties.mediaTypes, MediaTypes.Audio);
+        assert.strictEqual(Asf_FileTests.file.properties.mediaTypes, MediaTypes.LosslessAudio);
+        assert.isTrue(Asf_FileTests.file.properties.description.indexOf("0x0161") >= 0);
     }
 }
