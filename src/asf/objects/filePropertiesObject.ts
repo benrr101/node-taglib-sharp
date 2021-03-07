@@ -87,6 +87,7 @@ export default class FilePropertiesObject extends BaseObject {
      * Gets the creation date of the file described by the current instance.
      */
     public get creationDate(): Date {
+        // @FIXME: Creation date is actually based on 1/1/1601.
         // Creation date is in ticks from 1/1/0001 00:00:00, JS Date is in milliseconds from
         // 1/1/1970 00:00:00.
         const unixEpochTicks = this._creationDateTicks - FilePropertiesObject.UNIX_EPOCH_ZERO;
