@@ -28,7 +28,7 @@ export enum FilePropertiesFlags {
  * found within the Data object.
  */
 export default class FilePropertiesObject extends BaseObject {
-    private static readonly UNIX_EPOCH_ZERO = BigInt(621355968000000000);
+    private static readonly FILE_TIME_TO_UNIX_EPOCH = BigInt(116444736000000000);
 
     // #region Member Variables
 
@@ -87,10 +87,9 @@ export default class FilePropertiesObject extends BaseObject {
      * Gets the creation date of the file described by the current instance.
      */
     public get creationDate(): Date {
-        // @FIXME: Creation date is actually based on 1/1/1601.
         // Creation date is in ticks from 1/1/1601 00:00:00, JS Date is in milliseconds from
         // 1/1/1970 00:00:00.
-        const unixEpochTicks = this._creationDateTicks - FilePropertiesObject.UNIX_EPOCH_ZERO;
+        const unixEpochTicks = this._creationDateTicks - FilePropertiesObject.FILE_TIME_TO_UNIX_EPOCH;
         const unixEpochMilli = NumberUtils.ticksToMilli(unixEpochTicks);
         return new Date(unixEpochMilli);
     }
