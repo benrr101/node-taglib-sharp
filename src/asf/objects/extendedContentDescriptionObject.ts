@@ -188,9 +188,19 @@ export class ExtendedContentDescriptionObject extends BaseObject {
      */
     public getDescriptors(... names: string[]): ContentDescriptor[] {
         Guards.truthy(names, "names");
-        return this._descriptors.filter((r) =>
-            names.indexOf(r.name) >= 0
-        );
+
+        const results = [];
+
+        // Iterate over *names* first to get an implicit sorting of preferred descriptor name first
+        for (const name of names) {
+            for (const descriptor of this._descriptors) {
+                if (descriptor.name === name) {
+                    results.push(descriptor);
+                }
+            }
+        }
+
+        return results;
     }
 
     /**

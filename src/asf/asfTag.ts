@@ -121,11 +121,13 @@ export default class AsfTag extends Tag {
     /**
      * @inheritDoc
      * @remarks via {@link ContentDescriptor.description}
+     *     Some applications will use this field for storing comments.
      */
     public get description(): string { return this._contentDescriptionObject.description; }
     /**
      * @inheritDoc
      * @remarks via {@link ContentDescriptor.description}
+     *     Some applications will use this field for storing comments.
      */
     public set description(value: string) { this._contentDescriptionObject.description = value; }
 
@@ -180,22 +182,26 @@ export default class AsfTag extends Tag {
     /**
      * @inheritDoc
      * @remarks via `WM/Composer` or `Composer` descriptors
+     *     https://docs.microsoft.com/en-us/windows/win32/wmformat/wm-composer
      */
     public get composers(): string[] { return this.getDescriptorStrings("WM/Composer", "Composer"); }
     /**
      * @inheritDoc
      * @remarks via `WM/Composer` or `Composer` descriptors
+     *     https://docs.microsoft.com/en-us/windows/win32/wmformat/wm-composer
      */
     public set composers(value: string[]) { this.setDescriptorStrings(value, "WM/Composer", "Composer"); }
 
     /**
      * @inheritDoc
      * @remarks via `WM/AlbumTitle` or `Album` descriptors
+     *     https://docs.microsoft.com/en-us/windows/win32/wmformat/wm-albumtitle
      */
     public get album(): string { return this.getDescriptorString("WM/AlbumTitle", "Album"); }
     /**
      * @inheritDoc
      * @remarks via `WM/AlbumTitle` or `Album` descriptors
+     *     https://docs.microsoft.com/en-us/windows/win32/wmformat/wm-albumtitle
      */
     public set album(value: string) { this.setDescriptorString(value, "WM/AlbumTitle", "Album"); }
 
@@ -213,19 +219,28 @@ export default class AsfTag extends Tag {
     /**
      * @inheritDoc
      * @remarks via `WM/Text` descriptor
+     *     https://docs.microsoft.com/en-us/windows/win32/wmformat/wm-text
+     *     It should be noted that many applications store comments in the field read by
+     *     {@link description}.
      */
     public get comment(): string { return this.getDescriptorString("WM/Text"); }
     /**
      * @inheritDoc
      * @remarks via `WM/Text` descriptor
+     *     https://docs.microsoft.com/en-us/windows/win32/wmformat/wm-text
+     *     It should be noted that many applications store comments in the field read by
+     *     {@link description}.
      */
     public set comment(value: string) { this.setDescriptorString(value, "WM/Text"); }
 
     /**
      * @inheritDoc
      * @remarks via `WM/Genre`, `WM/GenreID`, or `Genre` descriptors
+     *      https://docs.microsoft.com/en-us/windows/win32/wmformat/wm-genre
+     *      https://docs.microsoft.com/en-us/windows/win32/wmformat/wm-genreid
      */
     public get genres(): string[] {
+        // @TODO: Strings should be combined and checked for duplicates
         const value = this.getDescriptorString("WM/Genre", "WM/GenreID", "Genre");
         if (!value || value.trim().length === 0) {
             return [];
@@ -252,12 +267,19 @@ export default class AsfTag extends Tag {
     /**
      * @inheritDoc
      * @remarks via `WM/Genre`, `WM/GenreID`, or `Genre` descriptors
+     *      https://docs.microsoft.com/en-us/windows/win32/wmformat/wm-genre
+     *      https://docs.microsoft.com/en-us/windows/win32/wmformat/wm-genreid
      */
-    public set genres(value: string[]) { this.setDescriptorStrings(value, "WM/Genre", "Genre", "WM/GenreID"); }
+    public set genres(value: string[]) {
+        // @TODO: Make it optional to write to WM/GenreID in addition to WM/Genre
+        // @TODO: WM/GenreID should be written as a TCON compatible genre ID where possible
+        this.setDescriptorStrings(value, "WM/Genre", "Genre", "WM/GenreID");
+    }
 
     /**
      * @inheritDoc
      * @remarks via `WM/Year` descriptor
+     *      https://docs.microsoft.com/en-us/windows/win32/wmformat/wm-year
      */
     public get year(): number {
         const text = this.getDescriptorString("WM/Year");
@@ -271,6 +293,7 @@ export default class AsfTag extends Tag {
     /**
      * @inheritDoc
      * @remarks via `WM/Year` descriptor
+     *      https://docs.microsoft.com/en-us/windows/win32/wmformat/wm-year
      */
     public set year(value: number) {
         Guards.uint(value, "value");

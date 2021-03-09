@@ -68,8 +68,8 @@ export default class FilePropertiesObject extends BaseObject {
         instance._fileSize = file.readQWord();
         instance._creationDateTicks = file.readQWord();
         instance._dataPacketsCount = file.readQWord();
-        instance._sendDurationTicks = file.readQWord();
         instance._playDurationTicks = file.readQWord();
+        instance._sendDurationTicks = file.readQWord();
         instance._prerollMilliseconds = file.readQWord();
         instance._flags = file.readDWord();
         instance._minimumDataPacketSize = file.readDWord();
@@ -88,7 +88,7 @@ export default class FilePropertiesObject extends BaseObject {
      */
     public get creationDate(): Date {
         // @FIXME: Creation date is actually based on 1/1/1601.
-        // Creation date is in ticks from 1/1/0001 00:00:00, JS Date is in milliseconds from
+        // Creation date is in ticks from 1/1/1601 00:00:00, JS Date is in milliseconds from
         // 1/1/1970 00:00:00.
         const unixEpochTicks = this._creationDateTicks - FilePropertiesObject.UNIX_EPOCH_ZERO;
         const unixEpochMilli = NumberUtils.ticksToMilli(unixEpochTicks);
@@ -174,8 +174,8 @@ export default class FilePropertiesObject extends BaseObject {
             FilePropertiesObject.renderQWord(this._fileSize),
             FilePropertiesObject.renderQWord(this._creationDateTicks),
             FilePropertiesObject.renderQWord(this._dataPacketsCount),
-            FilePropertiesObject.renderQWord(this._sendDurationTicks),
             FilePropertiesObject.renderQWord(this._playDurationTicks),
+            FilePropertiesObject.renderQWord(this._sendDurationTicks),
             FilePropertiesObject.renderQWord(this._prerollMilliseconds),
             FilePropertiesObject.renderDWord(this._flags),
             FilePropertiesObject.renderDWord(this._minimumDataPacketSize),
