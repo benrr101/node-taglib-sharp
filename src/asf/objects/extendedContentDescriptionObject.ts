@@ -41,6 +41,7 @@ export class ContentDescriptor extends DescriptorBase {
                 value = file.readWord();
                 break;
             case DataType.Bool:
+                // NOTE: for content descriptors, bool is a DWORD!!!!
                 value = file.readDWord() > 0;
                 break;
             case DataType.DWord:
@@ -81,7 +82,8 @@ export class ContentDescriptor extends DescriptorBase {
                 value = BaseObject.renderWord(this._wordValue);
                 break;
             case DataType.Bool:
-                value = BaseObject.renderWord(this._boolValue ? 1 : 0);
+                // NOTE: for content descriptors, bool is a DWORD!!!!
+                value = BaseObject.renderDWord(this._boolValue ? 1 : 0);
                 break;
             case DataType.Unicode:
                 value = BaseObject.renderUnicode(this._stringValue);
@@ -94,9 +96,10 @@ export class ContentDescriptor extends DescriptorBase {
                 break;
         }
 
+        const nameBytes = BaseObject.renderUnicode(this._name);
         return ByteVector.concatenate(
-            BaseObject.renderWord(this._name.length),
-            BaseObject.renderUnicode(this._name),
+            BaseObject.renderWord(nameBytes.length),
+            nameBytes,
             BaseObject.renderWord(this._type),
             BaseObject.renderWord(value.length),
             value

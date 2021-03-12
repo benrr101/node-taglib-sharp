@@ -75,10 +75,9 @@ export class StandardFileTests {
     public static testCorruptionResistance(path: string): void {
         try {
             File.createFromPath(path);
+            assert.fail("Reading corrupt file should have failed");
         } catch (e) {
-            if (!CorruptFileError.errorIs(e)) {
-                throw e;
-            }
+            // Tbh, we don't really care what kind of error happened, so long as it fails to be read
         }
     }
 

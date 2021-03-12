@@ -63,7 +63,15 @@ export class MetadataDescriptor extends DescriptorBase {
                 value = file.readWord();
                 break;
             case DataType.Bool:
-                value = file.readDWord() > 0;
+                // NOTE: The ASF specification says metadata description objects should be 2 bytes
+                //    however the original .NET implementation reads them as DWORDs. It might be a
+                //    bug in the .NET implementation, or could be some apps read/write them as
+                //    DWORDS. So, let's hedge our bets and try to read either.
+                if (dataLength === 4) {
+                    value = file.readDWord() > 0;
+                } else {
+                    value = file.readWord() > 0;
+                }
                 break;
             case DataType.DWord:
                 value = file.readDWord();
@@ -119,6 +127,7 @@ export class MetadataDescriptor extends DescriptorBase {
                 value = BaseObject.renderWord(this._wordValue);
                 break;
             case DataType.Bool:
+                // NOTE: For whatever reason metadata content descriptions are WORDs.
                 value = BaseObject.renderWord(this._boolValue ? 1 : 0);
                 break;
             case DataType.Unicode:

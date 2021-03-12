@@ -68,9 +68,9 @@ export default class HeaderExtensionObject extends BaseObject {
 
     /** @inheritDoc */
     public render(): ByteVector {
-        const renderedChildren = ByteVector.concatenate(...(this._children.map(o => o.render())));
+        const renderedChildren = ByteVector.concatenate(...(this._children.map((o) => o.render())));
         const output = ByteVector.concatenate(
-            Guids.AsfHeaderExtensionObject.toBytes(),
+            Guids.AsfReserved1.toBytes(),
             BaseObject.renderWord(6),
             BaseObject.renderDWord(renderedChildren.length),
             renderedChildren
