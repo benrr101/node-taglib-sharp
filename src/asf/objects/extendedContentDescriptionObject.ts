@@ -1,9 +1,10 @@
-import AsfFile from "../asfFile";
 import BaseObject from "./baseObject";
 import Guids from "../guids";
+import ReadWriteUtils from "../readWriteUtils";
 import {ByteVector} from "../../byteVector";
 import {DataType, DescriptorBase, DescriptorValue} from "./descriptorBase";
 import {CorruptFileError} from "../../errors";
+import {File} from "../../file";
 import {Guards} from "../../utils";
 
 /**
@@ -26,38 +27,38 @@ export class ContentDescriptor extends DescriptorBase {
      * @param file The file to read the raw ASF description record from
      * @internal
      */
-    public static fromFile(file: AsfFile): ContentDescriptor {
+    public static fromFile(file: File): ContentDescriptor {
         Guards.truthy(file, "file");
 
-        const nameLength = file.readWord();
-        const name = file.readUnicode(nameLength);
+        const nameLength = ReadWriteUtils.readWord(file);
+        const name = ReadWriteUtils.readUnicode(file, nameLength);
 
-        const type = <DataType> file.readWord();
+        const type = <DataType> ReadWriteUtils.readWord(file);
 
-        const valueLength = file.readWord();
+        const valueLength = ReadWriteUtils.readWord(file);
         let value: DescriptorValue;
         switch (type) {
             case DataType.Word:
-                value = file.readWord();
+                value = ReadWriteUtils.readWord(file);
                 break;
             case DataType.Bool:
                 // NOTE: for content descriptors, bool is a DWORD!!!!
-                value = file.readDWord() > 0;
+                value = ReadWriteUtils.readDWord(file) > 0;
                 break;
             case DataType.DWord:
-                value = file.readDWord();
+                value = ReadWriteUtils.readDWord(file);
                 break;
             case DataType.QWord:
-                value = file.readQWord();
+                value = ReadWriteUtils.readQWord(file);
                 break;
             case DataType.Unicode:
-                value = file.readUnicode(valueLength);
+                value = ReadWriteUtils.readUnicode(file, valueLength);
                 break;
             case DataType.Bytes:
                 value = file.readBlock(valueLength);
                 break;
             case DataType.Guid:
-                value = file.readGuid();
+                value = ReadWriteUtils.readGuid(file);
                 break;
             default:
                 throw new CorruptFileError("Failed to parse description record.");
@@ -73,20 +74,20 @@ export class ContentDescriptor extends DescriptorBase {
         let value: ByteVector;
         switch (this._type) {
             case DataType.QWord:
-                value = BaseObject.renderQWord(this._qWordValue);
+                value = ReadWriteUtils.renderQWord(this._qWordValue);
                 break;
             case DataType.DWord:
-                value = BaseObject.renderDWord(this._dWordValue);
+                value = ReadWriteUtils.renderDWord(this._dWordValue);
                 break;
             case DataType.Word:
-                value = BaseObject.renderWord(this._wordValue);
+                value = ReadWriteUtils.renderWord(this._wordValue);
                 break;
             case DataType.Bool:
                 // NOTE: for content descriptors, bool is a DWORD!!!!
-                value = BaseObject.renderDWord(this._boolValue ? 1 : 0);
+                value = ReadWriteUtils.renderDWord(this._boolValue ? 1 : 0);
                 break;
             case DataType.Unicode:
-                value = BaseObject.renderUnicode(this._stringValue);
+                value = ReadWriteUtils.renderUnicode(this._stringValue);
                 break;
             case DataType.Bytes:
                 value = this._byteValue;
@@ -96,12 +97,12 @@ export class ContentDescriptor extends DescriptorBase {
                 break;
         }
 
-        const nameBytes = BaseObject.renderUnicode(this._name);
+        const nameBytes = ReadWriteUtils.renderUnicode(this._name);
         return ByteVector.concatenate(
-            BaseObject.renderWord(nameBytes.length),
+            ReadWriteUtils.renderWord(nameBytes.length),
             nameBytes,
-            BaseObject.renderWord(this._type),
-            BaseObject.renderWord(value.length),
+            ReadWriteUtils.renderWord(this._type),
+            ReadWriteUtils.renderWord(value.length),
             value
         );
     }
@@ -136,7 +137,7 @@ export class ExtendedContentDescriptionObject extends BaseObject {
      * @param position Position in the file where the instance begins. Must be a positive, safe
      *     integer.
      */
-    public static fromFile(file: AsfFile, position: number): ExtendedContentDescriptionObject {
+    public static fromFile(file: File, position: number): ExtendedContentDescriptionObject {
         const instance = new ExtendedContentDescriptionObject();
         instance.initializeFromFile(file, position);
 
@@ -147,7 +148,7 @@ export class ExtendedContentDescriptionObject extends BaseObject {
             throw new CorruptFileError("Metadata library object is too small");
         }
 
-        const count = file.readWord();
+        const count = ReadWriteUtils.readWord(file);
         for (let i = 0; i < count; i++) {
             instance._descriptors.push(ContentDescriptor.fromFile(file));
         }
@@ -222,7 +223,7 @@ export class ExtendedContentDescriptionObject extends BaseObject {
     /** @inheritDoc */
     public render() {
         const output = ByteVector.concatenate(
-            BaseObject.renderWord(this._descriptors.length),
+            ReadWriteUtils.renderWord(this._descriptors.length),
             ... this._descriptors.map((r) => r.render())
         );
         return super.renderInternal(output);

@@ -1,11 +1,12 @@
-import AsfFile from "../asfFile";
 import BaseObject from "./baseObject";
 import Guids from "../guids";
+import ReadWriteUtils from "../readWriteUtils";
 import RiffBitmapInfoHeader from "../../riff/riffBitmapInfoHeader";
 import RiffWaveFormatEx from "../../riff/riffWaveFormatEx";
 import UuidWrapper from "../../uuidWrapper";
 import {ByteVector} from "../../byteVector";
 import {CorruptFileError} from "../../errors";
+import {File} from "../../file";
 import {ICodec} from "../../iCodec";
 import {NumberUtils} from "../../utils";
 
@@ -34,7 +35,7 @@ export default class StreamPropertiesObject extends BaseObject {
      * @param file File from which the contents of the new instance will be read
      * @param position Index into the file where the stream properties object begins
      */
-    public static fromFile(file: AsfFile, position: number): StreamPropertiesObject {
+    public static fromFile(file: File, position: number): StreamPropertiesObject {
         const instance = new StreamPropertiesObject();
         instance.initializeFromFile(file, position);
 
@@ -46,15 +47,15 @@ export default class StreamPropertiesObject extends BaseObject {
             throw new CorruptFileError("Object size too small for stream properties object");
         }
 
-        instance._streamType = file.readGuid();
-        instance._errorCorrectionType = file.readGuid();
-        instance._timeOffset = file.readQWord();
+        instance._streamType = ReadWriteUtils.readGuid(file);
+        instance._errorCorrectionType = ReadWriteUtils.readGuid(file);
+        instance._timeOffset = ReadWriteUtils.readQWord(file);
 
-        const typeSpecificDataLength = file.readDWord();
-        const errorSpecificDataLength = file.readDWord();
+        const typeSpecificDataLength = ReadWriteUtils.readDWord(file);
+        const errorSpecificDataLength = ReadWriteUtils.readDWord(file);
 
-        instance._flags = file.readWord();
-        instance._reserved = file.readDWord();
+        instance._flags = ReadWriteUtils.readWord(file);
+        instance._reserved = ReadWriteUtils.readDWord(file);
         instance._typeSpecificData = file.readBlock(typeSpecificDataLength);
         instance._errorCorrectionData = file.readBlock(errorSpecificDataLength);
 
@@ -116,11 +117,11 @@ export default class StreamPropertiesObject extends BaseObject {
         const data = ByteVector.concatenate(
             this._streamType.toBytes(),
             this._errorCorrectionType.toBytes(),
-            BaseObject.renderQWord(this._timeOffset),
-            BaseObject.renderDWord(this._typeSpecificData.length),
-            BaseObject.renderDWord(this._errorCorrectionData.length),
-            BaseObject.renderWord(this._flags),
-            BaseObject.renderDWord(this._reserved),
+            ReadWriteUtils.renderQWord(this._timeOffset),
+            ReadWriteUtils.renderDWord(this._typeSpecificData.length),
+            ReadWriteUtils.renderDWord(this._errorCorrectionData.length),
+            ReadWriteUtils.renderWord(this._flags),
+            ReadWriteUtils.renderDWord(this._reserved),
             this._typeSpecificData,
             this._errorCorrectionData
         );

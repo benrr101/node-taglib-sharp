@@ -1,9 +1,10 @@
-import AsfFile from "../asfFile";
 import BaseObject from "./baseObject";
 import Guids from "../guids";
+import ReadWriteUtils from "../readWriteUtils";
 import {ByteVector} from "../../byteVector";
 import {DataType, DescriptorBase, DescriptorValue} from "./descriptorBase";
 import {CorruptFileError} from "../../errors";
+import {File} from "../../file";
 import {Guards} from "../../utils";
 
 /**
@@ -39,7 +40,7 @@ export class MetadataDescriptor extends DescriptorBase {
      * @param file The file to read the raw ASF description record from
      * @internal
      */
-    public static fromFile(file: AsfFile): MetadataDescriptor {
+    public static fromFile(file: File): MetadataDescriptor {
         Guards.truthy(file, "file");
 
         // Field name          Field type Size (bits)
@@ -50,17 +51,17 @@ export class MetadataDescriptor extends DescriptorBase {
         // Data Length         DWORD      32
         // Name                WCHAR      varies
         // Data                See below  varies
-        const languageListIndex = file.readWord();
-        const streamNumber = file.readWord();
-        const nameLength = file.readWord();
-        const dataType = file.readWord();
-        const dataLength = file.readDWord();
-        const name = file.readUnicode(nameLength);
+        const languageListIndex = ReadWriteUtils.readWord(file);
+        const streamNumber = ReadWriteUtils.readWord(file);
+        const nameLength = ReadWriteUtils.readWord(file);
+        const dataType = ReadWriteUtils.readWord(file);
+        const dataLength = ReadWriteUtils.readDWord(file);
+        const name = ReadWriteUtils.readUnicode(file, nameLength);
 
         let value: DescriptorValue;
         switch (dataType) {
             case DataType.Word:
-                value = file.readWord();
+                value = ReadWriteUtils.readWord(file);
                 break;
             case DataType.Bool:
                 // NOTE: The ASF specification says metadata description objects should be 2 bytes
@@ -68,25 +69,25 @@ export class MetadataDescriptor extends DescriptorBase {
                 //    bug in the .NET implementation, or could be some apps read/write them as
                 //    DWORDS. So, let's hedge our bets and try to read either.
                 if (dataLength === 4) {
-                    value = file.readDWord() > 0;
+                    value = ReadWriteUtils.readDWord(file) > 0;
                 } else {
-                    value = file.readWord() > 0;
+                    value = ReadWriteUtils.readWord(file) > 0;
                 }
                 break;
             case DataType.DWord:
-                value = file.readDWord();
+                value = ReadWriteUtils.readDWord(file);
                 break;
             case DataType.QWord:
-                value = file.readQWord();
+                value = ReadWriteUtils.readQWord(file);
                 break;
             case DataType.Unicode:
-                value = file.readUnicode(dataLength);
+                value = ReadWriteUtils.readUnicode(file, dataLength);
                 break;
             case DataType.Bytes:
                 value = file.readBlock(dataLength);
                 break;
             case DataType.Guid:
-                value = file.readGuid();
+                value = ReadWriteUtils.readGuid(file);
                 break;
             default:
                 throw new CorruptFileError("Failed to parse description record.");
@@ -118,20 +119,20 @@ export class MetadataDescriptor extends DescriptorBase {
         let value: ByteVector;
         switch (this._type) {
             case DataType.QWord:
-                value = BaseObject.renderQWord(this._qWordValue);
+                value = ReadWriteUtils.renderQWord(this._qWordValue);
                 break;
             case DataType.DWord:
-                value = BaseObject.renderDWord(this._dWordValue);
+                value = ReadWriteUtils.renderDWord(this._dWordValue);
                 break;
             case DataType.Word:
-                value = BaseObject.renderWord(this._wordValue);
+                value = ReadWriteUtils.renderWord(this._wordValue);
                 break;
             case DataType.Bool:
                 // NOTE: For whatever reason metadata content descriptions are WORDs.
-                value = BaseObject.renderWord(this._boolValue ? 1 : 0);
+                value = ReadWriteUtils.renderWord(this._boolValue ? 1 : 0);
                 break;
             case DataType.Unicode:
-                value = BaseObject.renderUnicode(this._stringValue);
+                value = ReadWriteUtils.renderUnicode(this._stringValue);
                 break;
             case DataType.Bytes:
                 value = this._byteValue;
@@ -141,13 +142,13 @@ export class MetadataDescriptor extends DescriptorBase {
                 break;
         }
 
-        const nameBytes = BaseObject.renderUnicode(this._name);
+        const nameBytes = ReadWriteUtils.renderUnicode(this._name);
         return ByteVector.concatenate(
-            BaseObject.renderWord(this._languageListIndex),
-            BaseObject.renderWord(this._streamNumber),
-            BaseObject.renderWord(nameBytes.length),
-            BaseObject.renderWord(this._type),
-            BaseObject.renderDWord(value.length),
+            ReadWriteUtils.renderWord(this._languageListIndex),
+            ReadWriteUtils.renderWord(this._streamNumber),
+            ReadWriteUtils.renderWord(nameBytes.length),
+            ReadWriteUtils.renderWord(this._type),
+            ReadWriteUtils.renderDWord(value.length),
             nameBytes,
             value
         );
@@ -175,7 +176,7 @@ export class MetadataLibraryObject extends BaseObject {
         return instance;
     }
 
-    public static fromFile(file: AsfFile, position: number): MetadataLibraryObject {
+    public static fromFile(file: File, position: number): MetadataLibraryObject {
         const instance = new MetadataLibraryObject();
         instance.initializeFromFile(file, position);
 
@@ -186,7 +187,7 @@ export class MetadataLibraryObject extends BaseObject {
             throw new CorruptFileError("Metadata library object is too small");
         }
 
-        const count = file.readWord();
+        const count = ReadWriteUtils.readWord(file);
         for (let i = 0; i < count; i++) {
             instance._records.push(MetadataDescriptor.fromFile(file));
         }
@@ -267,7 +268,7 @@ export class MetadataLibraryObject extends BaseObject {
     /** @inheritDoc */
     public render(): ByteVector {
         const output = ByteVector.concatenate(
-            BaseObject.renderWord(this._records.length),
+            ReadWriteUtils.renderWord(this._records.length),
             ... this._records.map((r) => r.render())
         );
         return super.renderInternal(output);

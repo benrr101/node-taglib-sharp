@@ -1,8 +1,8 @@
-import BaseObject from "./objects/baseObject";
 import ContentDescriptionObject from "./objects/contentDescriptionObject";
 import Genres from "../genres";
 import HeaderObject from "./objects/headerObject";
 import Picture from "../picture";
+import ReadWriteUtils from "./readWriteUtils";
 import {ByteVector, StringType} from "../byteVector";
 import {DataType} from "./objects/descriptorBase";
 import {ContentDescriptor, ExtendedContentDescriptionObject} from "./objects/extendedContentDescriptionObject";
@@ -926,9 +926,9 @@ export default class AsfTag extends Tag {
         // @TODO: Make Read/Render methods be in the File class? Or in a helper class?
         return ByteVector.concatenate(
             picture.type,
-            BaseObject.renderDWord(picture.data.length),
-            BaseObject.renderUnicode(picture.mimeType),
-            BaseObject.renderUnicode(picture.description),
+            ReadWriteUtils.renderDWord(picture.data.length),
+            ReadWriteUtils.renderUnicode(picture.mimeType),
+            ReadWriteUtils.renderUnicode(picture.description),
             picture.data
         );
     }

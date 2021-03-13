@@ -1,8 +1,9 @@
-import AsfFile from "../asfFile";
+import ReadWriteUtils from "../readWriteUtils";
 import UuidWrapper from "../../uuidWrapper";
-import {ByteVector, StringType} from "../../byteVector";
-import {Guards} from "../../utils";
+import {ByteVector} from "../../byteVector";
 import {UnsupportedFormatError} from "../../errors";
+import {File} from "../../file";
+import {Guards} from "../../utils";
 
 /**
  * Base object that provides a basic representation of an ASF object that can be written to and
@@ -24,15 +25,15 @@ export default abstract class BaseObject {
      * @param position Position in `file` where the object begins
      * @protected
      */
-    protected initializeFromFile(file: AsfFile, position: number): void {
+    protected initializeFromFile(file: File, position: number): void {
         Guards.truthy(file, "file");
         Guards.uint(position, "position");
         Guards.lessThanInclusive(position, file.length - 24, "position");
 
         file.seek(position);
-        this._id = file.readGuid();
+        this._id = ReadWriteUtils.readGuid(file);
 
-        const bigOriginalSize = file.readQWord();
+        const bigOriginalSize = ReadWriteUtils.readQWord(file);
         if (bigOriginalSize > BigInt(Number.MAX_SAFE_INTEGER)) {
             throw new UnsupportedFormatError("Object is too large to be handled with this version of library.");
         }
@@ -67,41 +68,6 @@ export default abstract class BaseObject {
     // #region Methods
 
     /**
-     * Renders a 4-byte double word.
-     * @param value Double word to render
-     */
-    public static renderDWord(value: number): ByteVector {
-        return ByteVector.fromUInt(value, false);
-    }
-
-    /**
-     * Renders an 8-byte quad word.
-     * @param value Quad word to render
-     */
-    public static renderQWord(value: bigint): ByteVector {
-        return ByteVector.fromULong(value, false);
-    }
-
-    /**
-     * Renders a unicode string.
-     * @param value Text to render
-     */
-    public static renderUnicode(value: string): ByteVector {
-        return ByteVector.concatenate(
-            ByteVector.fromString(value, StringType.UTF16LE),
-            ByteVector.fromUShort(0, false)
-        );
-    }
-
-    /**
-     * Renders a 2-byte word.
-     * @param value Word to render
-     */
-    public static renderWord(value: number): ByteVector {
-        return ByteVector.fromUShort(value, false);
-    }
-
-    /**
      * Renders the current instance as a raw ASF object.
      */
     public abstract render(): ByteVector;
@@ -116,7 +82,7 @@ export default abstract class BaseObject {
         const length = BigInt((!!data ? data.length : 0) + 24);
         return ByteVector.concatenate(
             ByteVector.fromByteArray(this._id.toBytes()),
-            BaseObject.renderQWord(length),
+            ReadWriteUtils.renderQWord(length),
             data
         );
     }

@@ -1,8 +1,8 @@
-import AsfFile from "../asfFile";
 import BaseObject from "./baseObject";
 import Guids from "../guids";
 import {ByteVector} from "../../byteVector";
 import {CorruptFileError} from "../../errors";
+import {File} from "../../file";
 import {Guards} from "../../utils";
 
 /**

@@ -1,8 +1,9 @@
-import AsfFile from "../asfFile";
 import BaseObject from "./baseObject";
 import Guids from "../guids";
+import ReadWriteUtils from "../readWriteUtils";
 import {ByteVector} from "../../byteVector";
 import {CorruptFileError} from "../../errors";
+import {File} from "../../file";
 
 /**
  * This class extends {@see BaseObject} to provide a representation of an ASF content description
@@ -29,7 +30,7 @@ export default class ContentDescriptionObject extends BaseObject {
         return instance;
     }
 
-    public static fromFile(file: AsfFile, position: number): ContentDescriptionObject {
+    public static fromFile(file: File, position: number): ContentDescriptionObject {
         const instance = new ContentDescriptionObject();
         instance.initializeFromFile(file, position);
 
@@ -40,17 +41,17 @@ export default class ContentDescriptionObject extends BaseObject {
             throw new CorruptFileError("Object size too small for content description object");
         }
 
-        const titleLength = file.readWord();
-        const authorLength = file.readWord();
-        const copyrightLength = file.readWord();
-        const descriptionLength = file.readWord();
-        const ratingLength = file.readWord();
+        const titleLength = ReadWriteUtils.readWord(file);
+        const authorLength = ReadWriteUtils.readWord(file);
+        const copyrightLength = ReadWriteUtils.readWord(file);
+        const descriptionLength = ReadWriteUtils.readWord(file);
+        const ratingLength = ReadWriteUtils.readWord(file);
 
-        instance._title = file.readUnicode(titleLength);
-        instance._author = file.readUnicode(authorLength);
-        instance._copyright = file.readUnicode(copyrightLength);
-        instance._description = file.readUnicode(descriptionLength);
-        instance._rating = file.readUnicode(ratingLength);
+        instance._title = ReadWriteUtils.readUnicode(file, titleLength);
+        instance._author = ReadWriteUtils.readUnicode(file, authorLength);
+        instance._copyright = ReadWriteUtils.readUnicode(file, copyrightLength);
+        instance._description = ReadWriteUtils.readUnicode(file, descriptionLength);
+        instance._rating = ReadWriteUtils.readUnicode(file, ratingLength);
 
         return instance;
     }
@@ -127,18 +128,18 @@ export default class ContentDescriptionObject extends BaseObject {
      * Renders the current instance as a raw ASF object.
      */
     public render(): ByteVector {
-        const titleBytes = BaseObject.renderUnicode(this._title);
-        const authorBytes = BaseObject.renderUnicode(this._author);
-        const copyrightBytes = BaseObject.renderUnicode(this._copyright);
-        const descriptionBytes = BaseObject.renderUnicode(this._description);
-        const ratingBytes = BaseObject.renderUnicode(this._rating);
+        const titleBytes = ReadWriteUtils.renderUnicode(this._title);
+        const authorBytes = ReadWriteUtils.renderUnicode(this._author);
+        const copyrightBytes = ReadWriteUtils.renderUnicode(this._copyright);
+        const descriptionBytes = ReadWriteUtils.renderUnicode(this._description);
+        const ratingBytes = ReadWriteUtils.renderUnicode(this._rating);
 
         const data = ByteVector.concatenate(
-            BaseObject.renderWord(titleBytes.length),
-            BaseObject.renderWord(authorBytes.length),
-            BaseObject.renderWord(copyrightBytes.length),
-            BaseObject.renderWord(descriptionBytes.length),
-            BaseObject.renderWord(ratingBytes.length),
+            ReadWriteUtils.renderWord(titleBytes.length),
+            ReadWriteUtils.renderWord(authorBytes.length),
+            ReadWriteUtils.renderWord(copyrightBytes.length),
+            ReadWriteUtils.renderWord(descriptionBytes.length),
+            ReadWriteUtils.renderWord(ratingBytes.length),
             titleBytes,
             authorBytes,
             copyrightBytes,

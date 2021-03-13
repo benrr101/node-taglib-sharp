@@ -1,14 +1,19 @@
-import AsfFile from "../asfFile";
 import BaseObject from "./baseObject";
 import FilePropertiesObject from "./filePropertiesObject";
 import Guids from "../guids";
 import HeaderExtensionObject from "./headerExtensionObject";
 import PaddingObject from "./paddingObject";
 import Properties from "../../properties";
+import ReadWriteUtils from "../readWriteUtils";
 import StreamPropertiesObject from "./streamPropertiesObject";
 import {ByteVector} from "../../byteVector";
 import {CorruptFileError} from "../../errors";
+import {File} from "../../file";
 import {ICodec} from "../../iCodec";
+import {Guards} from "../../utils";
+import ContentDescriptionObject from "./contentDescriptionObject";
+import {ExtendedContentDescriptionObject} from "./extendedContentDescriptionObject";
+import UnknownObject from "./unknownObject";
 
 /**
  * This class provides a representation of an ASF header object which can be read from and written
@@ -28,7 +33,7 @@ export default class HeaderObject extends BaseObject {
      * @param file File containing contents that will be read into the new instance
      * @param position Position in the file where the instance begins
      */
-    public static fromFile(file: AsfFile, position: number): HeaderObject {
+    public static fromFile(file: File, position: number): HeaderObject {
         const instance = new HeaderObject();
         instance.initializeFromFile(file, position);
 
@@ -39,9 +44,9 @@ export default class HeaderObject extends BaseObject {
             throw new CorruptFileError("Header object is too small");
         }
 
-        const childCount = file.readDWord();
+        const childCount = ReadWriteUtils.readDWord(file);
         instance._reserved = file.readBlock(2);
-        instance._children.push(... file.readObjects(childCount, file.position));
+        instance._children.push(... HeaderObject.readObjects(file, childCount, file.position));
 
         return instance;
     }
@@ -137,11 +142,68 @@ export default class HeaderObject extends BaseObject {
 
         // Put it all together
         const output = ByteVector.concatenate(
-            BaseObject.renderDWord(childCount),
+            ReadWriteUtils.renderDWord(childCount),
             this._reserved,
             childrenData
         );
         return super.renderInternal(output);
+    }
+
+    /**
+     * Reads a single object from the current instance.
+     * @remarks If the object read is invalid to be under the top level header object, the object
+     *     will be read in as an {@link UnknownObject}.
+     * @param file File to read the objects from
+     * @param position Position within the file at which the object begins
+     * @returns BaseObject An object of the appropriate type as read from the current instance
+     */
+    private static readObject(file: File, position: number): BaseObject {
+        file.seek(position);
+        const guid = ReadWriteUtils.readGuid(file);
+
+        if (guid.equals(Guids.AsfFilePropertiesObject)) {
+            return FilePropertiesObject.fromFile(file, position);
+        }
+        if (guid.equals(Guids.AsfStreamPropertiesObject)) {
+            return StreamPropertiesObject.fromFile(file, position);
+        }
+        if (guid.equals(Guids.AsfHeaderExtensionObject)) {
+            return HeaderExtensionObject.fromFile(file, position);
+        }
+        if (guid.equals(Guids.AsfContentDescriptionObject)) {
+            return ContentDescriptionObject.fromFile(file, position);
+        }
+        if (guid.equals(Guids.AsfExtendedContentDescriptionObject)) {
+            return ExtendedContentDescriptionObject.fromFile(file, position);
+        }
+        if (guid.equals(Guids.AsfPaddingObject)) {
+            return PaddingObject.fromFile(file, position);
+        }
+
+        // There are other objects that are valid here, if any of them are needed, please create an
+        // issue github.com/benrr101/node-taglib-sharp/issues
+
+        return UnknownObject.fromFile(file, position);
+    }
+
+    /**
+     * Reads a collection of objects from the current instance.
+     * @param file File to read objects from
+     * @param count Number of objects to read, must be a positive, 32-bit integer
+     * @param position Position within the file at which to start reading objects
+     * @returns BaseObject[] Array of objects read from the file
+     */
+    private static readObjects(file: File, count: number, position: number): BaseObject[] {
+        Guards.uint(count, "count");
+
+        const objects = [];
+        for (let i = 0; i < count; i++) {
+            const obj = HeaderObject.readObject(file, position);
+            position += obj.originalSize;
+            objects.push(obj);
+        }
+
+        return objects;
     }
 
     // #endregion

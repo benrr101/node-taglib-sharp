@@ -1,9 +1,10 @@
-import AsfFile from "../asfFile";
 import BaseObject from "./baseObject";
 import Guids from "../guids";
+import ReadWriteUtils from "../readWriteUtils";
 import UuidWrapper from "../../uuidWrapper";
-import {CorruptFileError} from "../../errors";
 import {ByteVector} from "../../byteVector";
+import {CorruptFileError} from "../../errors";
+import {File} from "../../file";
 import {NumberUtils} from "../../utils";
 
 /**
@@ -52,7 +53,7 @@ export default class FilePropertiesObject extends BaseObject {
         super();
     }
 
-    public static fromFile(file: AsfFile, position: number): FilePropertiesObject {
+    public static fromFile(file: File, position: number): FilePropertiesObject {
         const instance = new FilePropertiesObject();
         instance.initializeFromFile(file, position);
 
@@ -64,17 +65,17 @@ export default class FilePropertiesObject extends BaseObject {
             throw new CorruptFileError("Object size too small for file properties object");
         }
 
-        instance._fileId = file.readGuid();
-        instance._fileSize = file.readQWord();
-        instance._creationDateTicks = file.readQWord();
-        instance._dataPacketsCount = file.readQWord();
-        instance._playDurationTicks = file.readQWord();
-        instance._sendDurationTicks = file.readQWord();
-        instance._prerollMilliseconds = file.readQWord();
-        instance._flags = file.readDWord();
-        instance._minimumDataPacketSize = file.readDWord();
-        instance._maximumDataPacketSize = file.readDWord();
-        instance._maximumBitrate = file.readDWord();
+        instance._fileId = ReadWriteUtils.readGuid(file);
+        instance._fileSize = ReadWriteUtils.readQWord(file);
+        instance._creationDateTicks = ReadWriteUtils.readQWord(file);
+        instance._dataPacketsCount = ReadWriteUtils.readQWord(file);
+        instance._playDurationTicks = ReadWriteUtils.readQWord(file);
+        instance._sendDurationTicks = ReadWriteUtils.readQWord(file);
+        instance._prerollMilliseconds = ReadWriteUtils.readQWord(file);
+        instance._flags = ReadWriteUtils.readDWord(file);
+        instance._minimumDataPacketSize = ReadWriteUtils.readDWord(file);
+        instance._maximumDataPacketSize = ReadWriteUtils.readDWord(file);
+        instance._maximumBitrate = ReadWriteUtils.readDWord(file);
 
         return instance;
     }
@@ -170,16 +171,16 @@ export default class FilePropertiesObject extends BaseObject {
     public render(): ByteVector {
         const output = ByteVector.concatenate(
             this._fileId.toBytes(),
-            FilePropertiesObject.renderQWord(this._fileSize),
-            FilePropertiesObject.renderQWord(this._creationDateTicks),
-            FilePropertiesObject.renderQWord(this._dataPacketsCount),
-            FilePropertiesObject.renderQWord(this._playDurationTicks),
-            FilePropertiesObject.renderQWord(this._sendDurationTicks),
-            FilePropertiesObject.renderQWord(this._prerollMilliseconds),
-            FilePropertiesObject.renderDWord(this._flags),
-            FilePropertiesObject.renderDWord(this._minimumDataPacketSize),
-            FilePropertiesObject.renderDWord(this._maximumDataPacketSize),
-            FilePropertiesObject.renderDWord(this._maximumBitrate)
+            ReadWriteUtils.renderQWord(this._fileSize),
+            ReadWriteUtils.renderQWord(this._creationDateTicks),
+            ReadWriteUtils.renderQWord(this._dataPacketsCount),
+            ReadWriteUtils.renderQWord(this._playDurationTicks),
+            ReadWriteUtils.renderQWord(this._sendDurationTicks),
+            ReadWriteUtils.renderQWord(this._prerollMilliseconds),
+            ReadWriteUtils.renderDWord(this._flags),
+            ReadWriteUtils.renderDWord(this._minimumDataPacketSize),
+            ReadWriteUtils.renderDWord(this._maximumDataPacketSize),
+            ReadWriteUtils.renderDWord(this._maximumBitrate)
         );
         return super.renderInternal(output);
     }
