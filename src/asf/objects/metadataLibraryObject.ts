@@ -141,13 +141,14 @@ export class MetadataDescriptor extends DescriptorBase {
                 break;
         }
 
+        const nameBytes = BaseObject.renderUnicode(this._name);
         return ByteVector.concatenate(
             BaseObject.renderWord(this._languageListIndex),
             BaseObject.renderWord(this._streamNumber),
-            BaseObject.renderWord(this._name.length),
+            BaseObject.renderWord(nameBytes.length),
             BaseObject.renderWord(this._type),
             BaseObject.renderDWord(value.length),
-            BaseObject.renderUnicode(this._name),
+            nameBytes,
             value
         );
     }

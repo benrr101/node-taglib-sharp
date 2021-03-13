@@ -167,15 +167,15 @@ export default class AsfFile extends File {
             const header = HeaderObject.fromFile(this, 0);
 
             if (!this._asfTag) {
-                // This header doesn't have a tag, but clear it just to be safe
+                // This file doesn't have a tag, but clear it just to be safe
                 header.removeContentDescriptor();
                 this._tagTypesOnDisk &= ~TagTypes.Asf;
             } else {
-                // This header does have a tag, set the objects we have to it
+                // This file does have a tag, set the objects we have to it
                 this._tagTypesOnDisk |= TagTypes.Asf;
                 header.addUniqueObject(this._asfTag.contentDescriptionObject);
                 header.addUniqueObject(this._asfTag.extendedContentDescriptionObject);
-                header.addUniqueObject(this._asfTag.metadataLibraryObject);
+                header.extension.addUniqueObject(this._asfTag.metadataLibraryObject);
             }
 
             // Write the updated header to the file

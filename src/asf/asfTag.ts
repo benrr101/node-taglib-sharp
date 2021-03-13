@@ -724,7 +724,7 @@ export default class AsfTag extends Tag {
     public set pictures(value: IPicture[]) {
         if (!value || value.length === 0) {
             this.removeDescriptors("WM/Picture");
-            this._metadataLibraryObject.removeRecords(0, 0, "WM/Picutre");
+            this._metadataLibraryObject.removeRecords(0, 0, "WM/Picture");
             return;
         }
 
