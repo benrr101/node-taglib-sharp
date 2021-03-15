@@ -3,6 +3,11 @@ import {ILosslessAudioCodec, MediaTypes} from "../iCodec";
 import {Guards} from "../utils";
 import {CorruptFileError} from "../errors";
 
+/**
+ * Defines the format of waveform-audio data. Only format information common to all waveform-audio
+ * data formats is included in this structure.
+ * https://docs.microsoft.com/en-us/previous-versions/dd757713(v=vs.85)
+ */
 export default class RiffWaveFormatEx implements ILosslessAudioCodec {
     // This list was put together from the Windows 10 SDK mmreg.h header file
     // If any of these descriptions are wrong or out of date, please open a PR.
@@ -280,6 +285,12 @@ export default class RiffWaveFormatEx implements ILosslessAudioCodec {
     private readonly _formatTag: number;
     private readonly _samplesPerSecond: number;
 
+    /**
+     * Constructs and initializes a new instance of a RIFF wave format header from the provided
+     * data.
+     * @param data Byte vector that contains the raw header
+     * @param offset Index into the data byte vector where the header begins
+     */
     public constructor(data: ByteVector, offset: number) {
         Guards.truthy(data, "data");
         Guards.uint(offset, "offset");
@@ -319,7 +330,7 @@ export default class RiffWaveFormatEx implements ILosslessAudioCodec {
 
     /** @inheritDoc */
     public get description(): string {
-        const formatTagString = this._formatTag.toString(16).padStart(4, "0");
+        const formatTagString = this._formatTag.toString(16).padStart(4, "0").toUpperCase();
         return RiffWaveFormatEx.WAVE_FORMAT_TAGS[this._formatTag] === undefined
             ? `Unknown Audio Format [0x${formatTagString}]`
             : `${RiffWaveFormatEx.WAVE_FORMAT_TAGS[this._formatTag]} [0x${formatTagString}]`;

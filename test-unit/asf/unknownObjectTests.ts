@@ -25,14 +25,7 @@ const assert = Chai.assert;
     @test
     public fromFile_validParameters() {
         // Arrange
-        const guid = new UuidWrapper();
-        const bytes = ByteVector.fromSize(32, 0x12);
-        const data = ByteVector.concatenate(
-            ByteVector.fromSize(10),
-            guid.toBytes(),
-            ByteVector.fromULong(bytes.length + 16 + 8, false),
-            bytes
-        );
+        const data = this.getObjectBytes();
         const file = TestFile.getFile(data);
 
         // Act
@@ -40,20 +33,43 @@ const assert = Chai.assert;
 
         // Assert
         assert.isOk(object);
-        assert.isTrue(ByteVector.equal(object.data, bytes));
+        assert.isTrue(ByteVector.equal(object.data, this._bytes));
+        assert.isTrue(object.guid.equals(this._guid));
+        assert.strictEqual(object.originalSize, this._originalSize);
+    }
+
+    @test
+    public setData_invalidValue() {
+        // Arrange
+        const data = this.getObjectBytes();
+        const file = TestFile.getFile(data);
+        const object = UnknownObject.fromFile(file, 10);
+
+        // Act / Assert
+        Testers.testTruthy((v: ByteVector) => { object.data = v; });
+    }
+
+    @test
+    public setData_validValue() {
+        // Arrange
+        const data = this.getObjectBytes();
+        const file = TestFile.getFile(data);
+        const object = UnknownObject.fromFile(file, 10);
+
+        const newBytes = ByteVector.fromSize(10, 0x23);
+
+        // Act
+        object.data = newBytes;
+
+        // Assert
+        assert.isTrue(ByteVector.equal(object.data, newBytes));
+        assert.strictEqual(object.originalSize, this._originalSize);
     }
 
     @test
     public render_isRoundTrip() {
         // Arrange
-        const guid = new UuidWrapper();
-        const bytes = ByteVector.fromSize(32, 0x12);
-        const data = ByteVector.concatenate(
-            ByteVector.fromSize(10),
-            guid.toBytes(),
-            ByteVector.fromULong(bytes.length + 16 + 8, false),
-            bytes
-        );
+        const data = this.getObjectBytes();
         const file = TestFile.getFile(data);
         const object = UnknownObject.fromFile(file, 10);
 
@@ -63,5 +79,18 @@ const assert = Chai.assert;
         // Assert
         assert.isOk(output);
         assert.isTrue(ByteVector.equal(output, data.mid(10)));
+    }
+
+    private readonly _bytes = ByteVector.fromSize(32, 0x12);
+    private readonly _guid = new UuidWrapper();
+    private readonly _originalSize = this._bytes.length + 16 + 8;
+
+    private getObjectBytes() {
+        return ByteVector.concatenate(
+            ByteVector.fromSize(10), // Offset
+            this._guid.toBytes(),
+            ByteVector.fromULong(this._originalSize, false),
+            this._bytes
+        );
     }
 }

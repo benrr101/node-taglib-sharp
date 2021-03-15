@@ -19,7 +19,7 @@ export default class PaddingObject extends BaseObject {
         super();
     }
 
-    public static fromFile(file: AsfFile, position: number): PaddingObject {
+    public static fromFile(file: File, position: number): PaddingObject {
         const instance = new PaddingObject();
         instance.initializeFromFile(file, position);
 
