@@ -4,7 +4,8 @@ import {IVideoCodec, MediaTypes} from "../iCodec";
 import {Guards, NumberUtils} from "../utils";
 
 /**
- * This class provides a representation of a Microsoft BitmapInfoHeader structure.
+ * This class provides a representation of a Microsoft BitmapInfoHeader structure which provides
+ * information about the dimensions and color format of a device-independent bitmap.
  * @link https://docs.microsoft.com/en-us/windows/win32/api/wingdi/ns-wingdi-bitmapinfoheader
  */
 export default class RiffBitmapInfoHeader implements IVideoCodec {
@@ -697,11 +698,10 @@ export default class RiffBitmapInfoHeader implements IVideoCodec {
     public constructor(data: ByteVector, offset: number) {
         Guards.truthy(data, "data");
         Guards.uint(offset, "offset");
-        if (offset + 40 < data.length) {
-            throw new CorruptFileError("Expected 40 bytes");
+        if (offset + 40 > data.length) {
+            throw new CorruptFileError("Expected at least 40 bytes for bitmap info header");
         }
 
-        this._headerSize = data.mid(offset, 4).toUInt(false);
         this._width = data.mid(offset + 4, 4).toUInt(false);
         this._height = data.mid(offset + 8, 4).toUInt(false);
         this._planes = data.mid(offset + 12, 2).toUShort(false);
@@ -749,9 +749,9 @@ export default class RiffBitmapInfoHeader implements IVideoCodec {
         // Get the string version of the FOURCC code
         const fourccString = String.fromCharCode(
             NumberUtils.uintAnd(this._compressionId, 0x000000FF),
-            NumberUtils.uintAnd(this._compressionId, 0x0000FF00),
-            NumberUtils.uintAnd(this._compressionId, 0x00FF0000),
-            NumberUtils.uintAnd(this._compressionId, 0xFF000000)
+            NumberUtils.uintAnd(this._compressionId, 0x0000FF00) >>> 8,
+            NumberUtils.uintAnd(this._compressionId, 0x00FF0000) >>> 16,
+            NumberUtils.uintAnd(this._compressionId, 0xFF000000) >>> 24
         );
 
         return RiffBitmapInfoHeader.FOURCC_CODES[this._compressionId] === undefined
@@ -764,12 +764,6 @@ export default class RiffBitmapInfoHeader implements IVideoCodec {
      * The duration is not known from the video codec in a RIFF format file.
      */
     public get durationMilliseconds(): number { return 0; }
-
-    /**
-     * Gets the size of the structure in bytes. This value does not include the size of the color
-     * table or the size of the color masks, if they are appended to the end of the structure.
-     */
-    public get headerSize(): number { return this._headerSize; }
 
     /**
      * Gets the size, in bytes, of the image. This can be set to 0 for uncompressed RGB bitmaps.

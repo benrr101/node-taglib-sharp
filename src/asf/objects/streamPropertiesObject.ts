@@ -76,6 +76,12 @@ export default class StreamPropertiesObject extends BaseObject {
         if (this._streamType.equals(Guids.AsfVideoMedia)) {
             return new RiffBitmapInfoHeader(this._typeSpecificData, 11);
         }
+
+        // @TODO: We can use the Codec List Object to get a more user friendly description of the
+        //    codec being used, if it is available. Howerver, doing so would require making a new
+        //    class for ASF codec info and using it to wrap the stream properties object and the
+        //    codec list object.
+
         return undefined;
     }
 
@@ -98,6 +104,11 @@ export default class StreamPropertiesObject extends BaseObject {
      *     * Encrypted content flag - 1 bit
      */
     public get flags(): number { return this._flags; }
+
+    /**
+     * Gets the stream number for the current instance. Zero is invalid.
+     */
+    public get streamNumber(): number { return NumberUtils.uintAnd(this._flags, 0x3F); }
 
     /**
      * Gets the stream type GUID of the current instance.

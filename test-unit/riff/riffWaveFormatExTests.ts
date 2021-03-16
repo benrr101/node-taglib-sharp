@@ -4,7 +4,7 @@ import Testers from "../utilities/testers";
 import {ByteVector} from "../../src/byteVector";
 
 import RiffWaveFormatEx from "../../src/riff/riffWaveFormatEx";
-import {MediaTypes} from "../../src";
+import {MediaTypes} from "../../src/iCodec";
 
 // Setup chai
 const assert = Chai.assert;
