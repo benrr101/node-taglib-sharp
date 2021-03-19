@@ -1,10 +1,10 @@
 import * as Chai from "chai";
 import {suite, test} from "mocha-typescript";
-import AsfFile from "../../src/asf/asfFile";
-import Testers from "../utilities/testers";
+import ObjectTests from "./objectTests";
 import TestFile from "../utilities/testFile";
 import UuidWrapper from "../../src/uuidWrapper";
 import {ByteVector} from "../../src/byteVector";
+import {File} from "../../src/file";
 import {NumberUtils} from "../../src/utils";
 
 import Guids from "../../src/asf/guids";
@@ -16,30 +16,12 @@ import {MediaTypes} from "../../src/icodec";
 // Setup chai
 const assert = Chai.assert;
 
-@suite class StreamPropertiesObjectTests {
-    @test
-    public fromFile_invalidParameters() {
-        // Arrange
-        const mockFile = <AsfFile> {};
-
-        // Act / Assert
-        Testers.testTruthy((v: AsfFile) => StreamPropertiesObject.fromFile(v, 0));
-        Testers.testSafeUint((v) => StreamPropertiesObject.fromFile(mockFile, v));
+@suite class StreamPropertiesObjectTests extends ObjectTests<StreamPropertiesObject> {
+    protected get fromFileConstructor(): (f: File, p: number) => StreamPropertiesObject {
+        return StreamPropertiesObject.fromFile;
     }
-
-    @test
-    public fromFile_tooSmall() {
-        // Arrange
-        const data = ByteVector.concatenate(
-            ByteVector.fromSize(10), // Offset
-            Guids.AsfStreamPropertiesObject.toBytes(), // Object ID
-            ByteVector.fromULong(10) // Object size
-        );
-        const file = TestFile.getFile(data);
-
-        // Act / Assert
-        assert.throws(() => StreamPropertiesObject.fromFile(file, 10));
-    }
+    protected get minSize(): number { return 78; }
+    protected get objectGuid(): UuidWrapper { return Guids.AsfStreamPropertiesObject; }
 
     @test
     public fromFile_validParameters() {

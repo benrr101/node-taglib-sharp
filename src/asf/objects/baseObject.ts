@@ -11,7 +11,7 @@ import {Guards} from "../../utils";
  */
 export default abstract class BaseObject {
     private _id: UuidWrapper;
-    private _originalSize: number;
+    private _originalSize: number = 0;
 
     // #region Initializers
 

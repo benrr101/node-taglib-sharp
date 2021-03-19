@@ -12,7 +12,7 @@ import {ByteVector, StringType} from "../../src/byteVector";
 import {Frame, FrameClassType} from "../../src/id3v2/frames/frame";
 import {Id3v2FrameHeader} from "../../src/id3v2/frames/frameHeader";
 import {FrameIdentifier, FrameIdentifiers} from "../../src/id3v2/frameIdentifiers";
-import {IPicture, PictureType} from "../../src/picture";
+import {IPicture, PictureType} from "../../src/iPicture";
 
 // Setup chai
 Chai.use(ChaiAsPromised);

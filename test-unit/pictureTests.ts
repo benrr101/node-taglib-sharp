@@ -2,8 +2,8 @@ import * as Chai from "chai";
 import * as ChaiAsPromised from "chai-as-promised";
 import {suite, test} from "mocha-typescript";
 
+import Picture from "../src/picture";
 import {ByteVector, StringType} from "../src/byteVector";
-import {Picture} from "../src/picture";
 
 // Setup chai
 Chai.use(ChaiAsPromised);

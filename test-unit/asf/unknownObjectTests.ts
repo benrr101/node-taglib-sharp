@@ -1,26 +1,21 @@
 import * as Chai from "chai";
 import {suite, test} from "mocha-typescript";
-import AsfFile from "../../src/asf/asfFile";
+import ObjectTests from "./objectTests";
 import Testers from "../utilities/testers";
 import TestFile from "../utilities/testFile";
 import UuidWrapper from "../../src/uuidWrapper";
 import {ByteVector} from "../../src/byteVector";
+import {File} from "../../src/file";
 
 import UnknownObject from "../../src/asf/objects/unknownObject";
 
 // Setup chai
 const assert = Chai.assert;
 
-@suite class UnknownObjectTests {
-    @test
-    public fromFile_invalidParameters() {
-        // Arrange
-        const mockFile = <AsfFile> {};
-
-        // Act / Assert
-        Testers.testTruthy((v: AsfFile) => UnknownObject.fromFile(v, 0));
-        Testers.testSafeUint((v) => UnknownObject.fromFile(mockFile, v));
-    }
+@suite class UnknownObjectTests extends ObjectTests<UnknownObject> {
+    protected get fromFileConstructor(): (f: File, p: number) => UnknownObject { return UnknownObject.fromFile; }
+    protected get minSize(): number { return undefined; }
+    protected get objectGuid(): UuidWrapper { return undefined; }
 
     @test
     public fromFile_validParameters() {

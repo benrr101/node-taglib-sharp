@@ -11,7 +11,7 @@ import {ApeTagFooter, ApeTagFooterFlags} from "../../src/ape/apeTagFooter";
 import {ApeTagItem, ApeTagItemType} from "../../src/ape/apeTagItem";
 import {ByteVector} from "../../src/byteVector";
 import {File} from "../../src/file";
-import {IPicture, PictureType} from "../../src/picture";
+import {IPicture, PictureType} from "../../src/iPicture";
 import {TagTypes} from "../../src/tag";
 
 // Setup chai

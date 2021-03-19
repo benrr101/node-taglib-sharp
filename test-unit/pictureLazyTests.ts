@@ -8,7 +8,7 @@ import {suite, test} from "mocha-typescript";
 import PictureLazy from "../src/pictureLazy";
 import {IFileAbstraction} from "../src/fileAbstraction";
 import {ByteVector, StringType} from "../src/byteVector";
-import {PictureType} from "../src/picture";
+import {PictureType} from "../src/iPicture";
 
 // Setup chai
 Chai.use(ChaiAsPromised);

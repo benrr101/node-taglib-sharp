@@ -64,7 +64,7 @@ export default class ContentDescriptionObject extends BaseObject {
      * Gets the author of the media described by the current instance.
      * @returns Author of the media or `undefined` if it is not set.
      */
-    public get author(): string { return this._author ?? undefined; }
+    public get author(): string { return this._author || undefined; }
     /**
      * Sets the author of the media described by the current instance.
      */
@@ -74,7 +74,7 @@ export default class ContentDescriptionObject extends BaseObject {
      * Gets the copyright information of the media described by the current instance.
      * @returns Copyright information of the media or `undefined` if it is not set.
      */
-    public get copyright(): string { return this._copyright ?? undefined; }
+    public get copyright(): string { return this._copyright || undefined; }
     /**
      * Sets the copyright information of the media described by the current instance.
      */
@@ -84,7 +84,7 @@ export default class ContentDescriptionObject extends BaseObject {
      * Gets the description of the media described by the current instance.
      * @returns Description of the media or `undefined` if it is not set.
      */
-    public get description(): string { return this._description ?? undefined; }
+    public get description(): string { return this._description || undefined; }
     /**
      * Sets the description of the media described by the current instance.
      */
@@ -106,7 +106,7 @@ export default class ContentDescriptionObject extends BaseObject {
      * Gets the rating of the media described by the current instance.
      * @returns Rating of the media or `undefined` if it is not set.
      */
-    public get rating(): string { return this._rating ?? undefined; }
+    public get rating(): string { return this._rating || undefined; }
     /**
      * Sets the rating of the media described by the current instance.
      */
@@ -116,7 +116,7 @@ export default class ContentDescriptionObject extends BaseObject {
      * Gets the title of the media described by the current instance.
      * @returns Title of the media or `undefined` if it is not set.
      */
-    public get title(): string { return this._title ?? undefined; }
+    public get title(): string { return this._title || undefined; }
     /**
      * Sets the title of the media described by the current instance.
      */

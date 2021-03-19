@@ -19,6 +19,11 @@ export default class PaddingObject extends BaseObject {
         super();
     }
 
+    /**
+     * Constructs and initializes a new instance by reading it from a file.
+     * @param file File to read the padding object from
+     * @param position Index into the file where the padding object starts from
+     */
     public static fromFile(file: File, position: number): PaddingObject {
         const instance = new PaddingObject();
         instance.initializeFromFile(file, position);
@@ -34,6 +39,10 @@ export default class PaddingObject extends BaseObject {
         return instance;
     }
 
+    /**
+     * Constructs and initializes a new instance with a fixed size.
+     * @param size Number of padding bytes to store in the object
+     */
     public static fromSize(size: number): PaddingObject {
         Guards.safeUint(size, "size");
 

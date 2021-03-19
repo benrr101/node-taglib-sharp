@@ -86,4 +86,4 @@ export default {
     renderWord: (value: number): ByteVector => {
         return ByteVector.fromUShort(value, false);
     },
-}
+};
