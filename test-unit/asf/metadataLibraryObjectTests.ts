@@ -1,15 +1,15 @@
 import * as Chai from "chai";
 import {suite, test} from "mocha-typescript";
-import ObjectTests from "./objectTests";
 
+import Guids from "../../src/asf/guids";
+import ObjectTests from "./objectTests";
 import Testers from "../utilities/testers";
 import TestFile from "../utilities/testFile";
-import {File} from "../../src/file";
-import Guids from "../../src/asf/guids";
 import UuidWrapper from "../../src/uuidWrapper";
-import {MetadataDescriptor, MetadataLibraryObject} from "../../src/asf/objects/metadataLibraryObject";
-import {DataType} from "../../src/asf/objects/descriptorBase";
 import {ByteVector, StringType} from "../../src/byteVector";
+import {DataType} from "../../src/asf/objects/descriptorBase";
+import {File} from "../../src/file";
+import {MetadataDescriptor, MetadataLibraryObject} from "../../src/asf/objects/metadataLibraryObject";
 
 // Setup Chai
 const assert = Chai.assert;
@@ -464,5 +464,259 @@ const assert = Chai.assert;
 
         assert.isTrue((object.records.findIndex((d) => d.name === "foo")) >= 0);
         assert.isTrue((object.records.findIndex((d) => d.name === "bar")) >= 0);
+    }
+
+    @test
+    public addRecords_falsyRecord() {
+        // Arrange
+        const object = MetadataLibraryObject.fromEmpty();
+
+        // Act / Assert
+        Testers.testTruthy((v: MetadataDescriptor) => { object.addRecord(v); });
+    }
+
+    @test
+    public addRecords_validValue() {
+        // Arrange
+        const object = MetadataLibraryObject.fromEmpty();
+        const descriptor1 = new MetadataDescriptor(1, 2, "foo", DataType.Word, 1234);
+        const descriptor2 = new MetadataDescriptor(1, 2, "bar", DataType.Word, 2345);
+
+        // Act
+        object.addRecord(descriptor1);
+        object.addRecord(descriptor2);
+
+        // Assert
+        const records = object.records;
+        assert.sameMembers(records, [descriptor1, descriptor2]);
+    }
+
+    @test
+    public getRecords_invalidParameters() {
+        // Arrange
+        const object = MetadataLibraryObject.fromEmpty();
+
+        // Act / Assert
+        Testers.testUshort((v) => object.getRecords(v, 123, "foo"));
+        Testers.testUshort((v) => object.getRecords(123, v, "foo"));
+        Testers.testTruthy((v: string[]) => object.getRecords(123, 234, ...v));
+    }
+
+    @test
+    public getRecords_oneName_oneMatch() {
+        // Arrange
+        const object = MetadataLibraryObject.fromEmpty();
+        const descriptor1 = new MetadataDescriptor(1, 2, "foo", DataType.Word, 1234);
+        const descriptor2 = new MetadataDescriptor(1, 2, "bar", DataType.Word, 2345);
+        const descriptor3 = new MetadataDescriptor(3, 2, "foo", DataType.Word, 3456);
+        const descriptor4 = new MetadataDescriptor(1, 3, "foo", DataType.Word, 4567);
+        object.addRecord(descriptor1);
+        object.addRecord(descriptor2);
+        object.addRecord(descriptor3);
+        object.addRecord(descriptor4);
+
+        // Act
+        const matches = object.getRecords(1, 2, "foo");
+
+        // Assert
+        assert.isOk(matches);
+        assert.sameMembers(matches, [descriptor1]);
+    }
+
+    @test
+    public getRecords_twoNames_twoMatches() {
+        // Arrange
+        const object = MetadataLibraryObject.fromEmpty();
+        const descriptor1 = new MetadataDescriptor(1, 2, "foo", DataType.Word, 1234);
+        const descriptor2 = new MetadataDescriptor(1, 2, "bar", DataType.Word, 2345);
+        const descriptor3 = new MetadataDescriptor(3, 2, "foo", DataType.Word, 3456);
+        const descriptor4 = new MetadataDescriptor(1, 3, "foo", DataType.Word, 4567);
+        object.addRecord(descriptor1);
+        object.addRecord(descriptor2);
+        object.addRecord(descriptor3);
+        object.addRecord(descriptor4);
+
+        // Act
+        const matches = object.getRecords(1, 2, "foo", "bar");
+
+        // Assert
+        assert.isOk(matches);
+        assert.sameMembers(matches, [descriptor1, descriptor2]);
+    }
+
+    @test
+    public getRecords_noMatches() {
+        // Arrange
+        const object = MetadataLibraryObject.fromEmpty();
+        const descriptor1 = new MetadataDescriptor(1, 2, "foo", DataType.Word, 1234);
+        const descriptor2 = new MetadataDescriptor(1, 2, "bar", DataType.Word, 2345);
+        const descriptor3 = new MetadataDescriptor(3, 2, "fux", DataType.Word, 3456);
+        const descriptor4 = new MetadataDescriptor(1, 3, "bux", DataType.Word, 4567);
+        object.addRecord(descriptor1);
+        object.addRecord(descriptor2);
+        object.addRecord(descriptor3);
+        object.addRecord(descriptor4);
+
+        // Act
+        const matches = object.getRecords(1, 2, "fux", "bux");
+
+        // Assert
+        assert.isOk(matches);
+        assert.isEmpty(matches);
+    }
+
+    @test
+    public removeRecords_invalidParameters() {
+        // Arrange
+        const object = MetadataLibraryObject.fromEmpty();
+
+        // Act / Assert
+        Testers.testUshort((v) => object.removeRecords(v, 123, "foo"));
+        Testers.testUshort((v) => object.removeRecords(123, v, "foo"));
+    }
+
+    @test
+    public removeRecords_oneMatch() {
+        // Arrange
+        const object = MetadataLibraryObject.fromEmpty();
+        const descriptor1 = new MetadataDescriptor(1, 2, "foo", DataType.Word, 1234);
+        const descriptor2 = new MetadataDescriptor(1, 2, "bar", DataType.Word, 2345);
+        const descriptor3 = new MetadataDescriptor(3, 2, "foo", DataType.Word, 3456);
+        const descriptor4 = new MetadataDescriptor(1, 3, "foo", DataType.Word, 4567);
+        object.addRecord(descriptor1);
+        object.addRecord(descriptor2);
+        object.addRecord(descriptor3);
+        object.addRecord(descriptor4);
+
+        // Act
+        object.removeRecords(1, 2, "foo");
+
+        // Assert
+        assert.sameMembers(object.records, [descriptor2, descriptor3, descriptor4]);
+    }
+
+    @test
+    public removeRecords_twoMatches() {
+        // Arrange
+        const object = MetadataLibraryObject.fromEmpty();
+        const descriptor1 = new MetadataDescriptor(1, 2, "foo", DataType.Word, 1234);
+        const descriptor2 = new MetadataDescriptor(1, 2, "bar", DataType.Word, 2345);
+        const descriptor3 = new MetadataDescriptor(3, 2, "foo", DataType.Word, 3456);
+        const descriptor4 = new MetadataDescriptor(1, 2, "foo", DataType.Word, 4567);
+        object.addRecord(descriptor1);
+        object.addRecord(descriptor2);
+        object.addRecord(descriptor3);
+        object.addRecord(descriptor4);
+
+        // Act
+        object.removeRecords(1, 2, "foo");
+
+        // Assert
+        assert.sameMembers(object.records, [descriptor2, descriptor3]);
+    }
+
+    @test
+    public removeRecords_noMatches() {
+        // Arrange
+        const object = MetadataLibraryObject.fromEmpty();
+        const descriptor1 = new MetadataDescriptor(1, 2, "foo", DataType.Word, 1234);
+        const descriptor2 = new MetadataDescriptor(1, 2, "bar", DataType.Word, 2345);
+        const descriptor3 = new MetadataDescriptor(3, 2, "fux", DataType.Word, 3456);
+        const descriptor4 = new MetadataDescriptor(1, 3, "bux", DataType.Word, 4567);
+        object.addRecord(descriptor1);
+        object.addRecord(descriptor2);
+        object.addRecord(descriptor3);
+        object.addRecord(descriptor4);
+
+        // Act
+        object.removeRecords(1, 2, "fux");
+
+        // Assert
+        assert.sameMembers(object.records, [descriptor1, descriptor2, descriptor3, descriptor4]);
+    }
+
+    @test
+    public render_isRoundTrip() {
+        // Arrange
+        const record1 = new MetadataDescriptor(123, 234, "foo", DataType.Word, 1234);
+        const record2 = new MetadataDescriptor(123, 234, "bar", DataType.Word, 2345);
+        const record1Bytes = record1.render();
+        const record2Bytes = record2.render();
+        const bytes = ByteVector.concatenate(
+            ByteVector.fromSize(10), // Offset
+            Guids.AsfMetadataLibraryObject.toBytes(),
+            ByteVector.fromULong(16 + 8 + 2 + record1Bytes.length + record2Bytes.length, false),
+            ByteVector.fromUShort(2, false),
+            record1Bytes,
+            record2Bytes
+        );
+        const file = TestFile.getFile(bytes);
+        const object = MetadataLibraryObject.fromFile(file, 10);
+
+        // Act
+        const output = object.render();
+
+        // Assert
+        assert.isTrue(ByteVector.equal(output, bytes.mid(10)));
+    }
+
+    @test
+    public setRecords_invalidParameters() {
+        // Arrange
+        const object = MetadataLibraryObject.fromEmpty();
+        const descriptor = new MetadataDescriptor(123, 234, "foo", DataType.Word, 1234);
+
+        // Act / Assert
+        Testers.testUshort((v) => object.setRecords(v, 123, "foo", descriptor));
+        Testers.testUshort((v) => object.setRecords(123, v, "foo", descriptor));
+        Testers.testTruthy((v: string) => object.setRecords(123, 234, v, descriptor));
+    }
+
+    @test
+    public setRecords_hasMatches() {
+        // Arrange
+        const object = MetadataLibraryObject.fromEmpty();
+        const descriptor1 = new MetadataDescriptor(1, 2, "foo", DataType.Word, 1234);
+        const descriptor2 = new MetadataDescriptor(1, 2, "bar", DataType.Word, 2345);
+        const descriptor3 = new MetadataDescriptor(3, 2, "foo", DataType.Word, 3456);
+        const descriptor4 = new MetadataDescriptor(1, 3, "foo", DataType.Word, 4567);
+        object.addRecord(descriptor1);
+        object.addRecord(descriptor2);
+        object.addRecord(descriptor3);
+        object.addRecord(descriptor4);
+
+        const newDescriptor = new MetadataDescriptor(1, 2, "foo", DataType.Word, 8888);
+
+        // Act
+        object.setRecords(1, 2, "foo", newDescriptor);
+
+        // Assert
+        assert.sameMembers(object.records, [newDescriptor, descriptor2, descriptor3, descriptor4]);
+    }
+
+    @test
+    public setRecords_noMatches() {
+        // Arrange
+        const object = MetadataLibraryObject.fromEmpty();
+        const descriptor1 = new MetadataDescriptor(1, 2, "foo", DataType.Word, 1234);
+        const descriptor2 = new MetadataDescriptor(1, 2, "bar", DataType.Word, 2345);
+        const descriptor3 = new MetadataDescriptor(3, 2, "fux", DataType.Word, 3456);
+        const descriptor4 = new MetadataDescriptor(1, 3, "bux", DataType.Word, 4567);
+        object.addRecord(descriptor1);
+        object.addRecord(descriptor2);
+        object.addRecord(descriptor3);
+        object.addRecord(descriptor4);
+
+        const newDescriptor1 = new MetadataDescriptor(1, 2, "quxx", DataType.Word, 8888);
+        const newDescriptor2 = new MetadataDescriptor(1, 2, "buxx", DataType.Word, 8888);
+
+        // Act
+        object.setRecords(1, 2, "quxx", newDescriptor1, newDescriptor2);
+
+        // Assert
+        assert.sameMembers(
+            object.records,
+            [descriptor1, descriptor2, descriptor3, descriptor4, newDescriptor1, newDescriptor2]
+        );
     }
 }
