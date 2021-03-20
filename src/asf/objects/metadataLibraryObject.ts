@@ -170,6 +170,9 @@ export class MetadataLibraryObject extends BaseObject {
         super();
     }
 
+    /**
+     * Constructs and initializes a new instance that does not contain any records.
+     */
     public static fromEmpty(): MetadataLibraryObject {
         const instance = new MetadataLibraryObject();
         instance.initializeFromGuid(Guids.AsfMetadataLibraryObject);

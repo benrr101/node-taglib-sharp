@@ -63,4 +63,26 @@ export default class Testers {
             assert.throws(() => testFunc(undefined));
         }
     }
+
+    public static testUlong(testFunc: (testValue: bigint) => void, allowUndefined = false): void {
+        assert.throws(() => testFunc(BigInt(-1)));
+        assert.throws(() => testFunc(BigInt(1.23)));
+        assert.throws(() => testFunc(BigInt(0xFFFFFFFFFFFFFFFF) + BigInt(1)));
+        assert.throws(() => testFunc(null));
+
+        if (!allowUndefined) {
+            assert.throws(() => testFunc(undefined));
+        }
+    }
+
+    public static testUshort(testFunc: (testValue: number) => void, allowUndefined = false): void {
+        assert.throws(() => testFunc(-1));
+        assert.throws(() => testFunc(1.23));
+        assert.throws(() => testFunc(0xFFFF + 1));
+        assert.throws(() => testFunc(null));
+
+        if (!allowUndefined) {
+            assert.throws(() => testFunc(undefined));
+        }
+    }
 }

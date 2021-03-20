@@ -159,6 +159,11 @@ export abstract class DescriptorBase {
      */
     public getGuid(): UuidWrapper { return this._guidValue; }
 
+    /**
+     * Gets the string contents of the current instance.
+     * @returns string String contents of the current instance if {@link type} is
+     *     {@link DataType.Unicode}. `undefined` is returned otherwise.
+     */
     public getString(): string { return this._stringValue; }
 
     /**
