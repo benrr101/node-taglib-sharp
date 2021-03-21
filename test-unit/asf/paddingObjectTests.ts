@@ -13,7 +13,7 @@ import UuidWrapper from "../../src/uuidWrapper";
 // Setup chai
 const assert = Chai.assert;
 
-@suite class PaddingObjectTests extends ObjectTests<PaddingObject> {
+@suite class Asf_PaddingObjectTests extends ObjectTests<PaddingObject> {
     protected get fromFileConstructor(): (f: File, p: number) => PaddingObject { return PaddingObject.fromFile; }
     protected get minSize(): number { return 24; }
     protected get objectGuid(): UuidWrapper { return Guids.AsfPaddingObject; }

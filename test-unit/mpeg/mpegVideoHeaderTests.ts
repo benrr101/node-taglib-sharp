@@ -12,7 +12,7 @@ import {MediaTypes} from "../../src/iCodec";
 // Setup Chai
 const assert = Chai.assert;
 
-@suite class MpegVideoHeader_ConstructorTests {
+@suite class Mpeg_VideoHeader_ConstructorTests {
     @test
     public constructor_invalidArguments() {
         // Act/Assert

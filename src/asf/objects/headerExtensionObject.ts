@@ -54,14 +54,21 @@ export default class HeaderExtensionObject extends BaseObject {
 
     /**
      * Gets the child ASF objects contained in the current instance.
+     * @remarks The returned array is a copy of the array of children inside this object. Any
+     *     changes to this array will not be reflected in the object.
+     *
+     *     Only certain objects are valid inside a header extension object. Any objects that
+     *     are not valid or not supported are read as `
      */
-    public get children(): BaseObject[] { return this._children; }
+    public get children(): BaseObject[] { return this._children.slice(); }
 
     /**
      * Adds a unique child object to the current instance, replacing an existing child if present.
      * @param obj Object to add to the current instance
      */
     public addUniqueObject(obj: BaseObject): void {
+        // @TODO: Check against a list of valid object types for this object
+
         const existingIndex = this._children.findIndex((o) => o.guid.equals(obj.guid));
         if (existingIndex >= 0) {
             this._children[existingIndex] = obj;
@@ -91,7 +98,7 @@ export default class HeaderExtensionObject extends BaseObject {
         }
 
         // There are other objects that are valid here, if any of them are needed, please create an
-        // issue github.com/benrr101/node-taglib-sharp/issues
+        // issue. However, only objects that are valid inside this extension object should be added
 
         return UnknownObject.fromFile(file, position);
     }

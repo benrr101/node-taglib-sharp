@@ -9,7 +9,7 @@ import {MediaTypes} from "../../src/iCodec";
 // Setup chai
 const assert = Chai.assert;
 
-@suite class RiffWaveFormatExTests {
+@suite class Riff_WaveFormatExTests {
     @test
     public constructor_invalidParams() {
         // Act / Assert

@@ -13,7 +13,7 @@ import UuidWrapper from "../../src/uuidWrapper";
 const assert = Chai.assert;
 
 @suite
-class FilePropertiesObjectTests extends ObjectTests<FilePropertiesObject> {
+class Asf_FilePropertiesObjectTests extends ObjectTests<FilePropertiesObject> {
     protected get fromFileConstructor(): (f: File, p: number) => FilePropertiesObject {
         return FilePropertiesObject.fromFile;
     }

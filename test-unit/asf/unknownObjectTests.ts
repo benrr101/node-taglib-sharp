@@ -12,7 +12,7 @@ import UnknownObject from "../../src/asf/objects/unknownObject";
 // Setup chai
 const assert = Chai.assert;
 
-@suite class UnknownObjectTests extends ObjectTests<UnknownObject> {
+@suite class Asf_UnknownObjectTests extends ObjectTests<UnknownObject> {
     protected get fromFileConstructor(): (f: File, p: number) => UnknownObject { return UnknownObject.fromFile; }
     protected get minSize(): number { return undefined; }
     protected get objectGuid(): UuidWrapper { return undefined; }

@@ -14,7 +14,7 @@ import {MetadataDescriptor, MetadataLibraryObject} from "../../src/asf/objects/m
 // Setup Chai
 const assert = Chai.assert;
 
-@suite class MetadataDescriptorTests {
+@suite class Asf_MetadataDescriptorTests {
     @test
     public constructor_invalidParameters() {
         // Act / Assert

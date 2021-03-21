@@ -17,7 +17,7 @@ class TestDescriptor extends DescriptorBase {
     public render(): ByteVector { return undefined; /* no-op */ }
 }
 
-@suite class DescriptorBaseTests {
+@suite class Asf_DescriptorBaseTests {
     @test
     public invalidDataType() {
         // Act / Assert

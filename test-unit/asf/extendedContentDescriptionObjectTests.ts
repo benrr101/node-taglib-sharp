@@ -17,7 +17,7 @@ import {
 // Setup Chai
 const assert = Chai.assert;
 
-@suite class ContentDescriptorTests {
+@suite class Asf_ContentDescriptorTests {
     // NOTE: We'll use the constructor tests to make sure the render method does what it's supposed to
 
     @test
@@ -320,7 +320,7 @@ const assert = Chai.assert;
     }
 }
 
-@suite class ExtendedContentDescriptionObjectTests extends ObjectTests<ExtendedContentDescriptionObject> {
+@suite class Asf_ExtendedContentDescriptionObjectTests extends ObjectTests<ExtendedContentDescriptionObject> {
     protected get fromFileConstructor(): (f: File, p: number) => ExtendedContentDescriptionObject {
         return ExtendedContentDescriptionObject.fromFile;
     }

@@ -10,7 +10,7 @@ import {ByteVector} from "../../src/byteVector";
 Chai.use(ChaiAsPromised);
 const assert = Chai.assert;
 
-@suite class MpegXingHeaderTests {
+@suite class Mpeg_XingHeaderTests {
     @test
     public fromInfo_invalidParameters() {
         // Act / Assert

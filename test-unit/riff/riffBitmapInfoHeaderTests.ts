@@ -9,7 +9,7 @@ import {MediaTypes} from "../../src/iCodec";
 // Setup chai
 const assert = Chai.assert;
 
-@suite class RiffBitmapInfoHeaderTests {
+@suite class Riff_BitmapInfoHeaderTests {
     @test
     public constructor_invalidParams() {
         // Act / Assert

@@ -16,7 +16,7 @@ import {MediaTypes} from "../../src/icodec";
 // Setup chai
 const assert = Chai.assert;
 
-@suite class StreamPropertiesObjectTests extends ObjectTests<StreamPropertiesObject> {
+@suite class Asf_StreamPropertiesObjectTests extends ObjectTests<StreamPropertiesObject> {
     protected get fromFileConstructor(): (f: File, p: number) => StreamPropertiesObject {
         return StreamPropertiesObject.fromFile;
     }

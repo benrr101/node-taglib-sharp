@@ -13,7 +13,7 @@ import PropertyTests from "../utilities/propertyTests";
 // Setup Chai
 const assert = Chai.assert;
 
-@suite class ContentDescriptionObjectTests extends ObjectTests<ContentDescriptionObject> {
+@suite class Asf_ContentDescriptionObjectTests extends ObjectTests<ContentDescriptionObject> {
     protected get fromFileConstructor(): (f: File, p: number) => ContentDescriptionObject {
         return ContentDescriptionObject.fromFile;
     }
