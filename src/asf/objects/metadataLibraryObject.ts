@@ -1,7 +1,7 @@
 import BaseObject from "./baseObject";
-import Guids from "../guids";
 import ReadWriteUtils from "../readWriteUtils";
 import {ByteVector} from "../../byteVector";
+import {Guids, ObjectType} from "../constants";
 import {DataType, DescriptorBase, DescriptorValue} from "./descriptorBase";
 import {CorruptFileError} from "../../errors";
 import {File} from "../../file";
@@ -208,6 +208,9 @@ export class MetadataLibraryObject extends BaseObject {
      *     otherwise.
      */
     public get isEmpty(): boolean { return this._records.length === 0; }
+
+    /** @inheritDoc */
+    public get objectType(): ObjectType { return ObjectType.MetadataLibraryObject; }
 
     /**
      * Gets all records stored in the current instance.

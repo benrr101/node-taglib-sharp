@@ -1,9 +1,46 @@
 import UuidWrapper from "../uuidWrapper";
 
 /**
+ * Enum of different types of objects that are part of the ASF specificatio
+ */
+export enum ObjectType {
+    UnknownObject = 0,
+    HeaderObject,
+    FilePropertiesObject,
+    StreamPropertiesObject,
+    HeaderExtensionObject,
+    CodecListObject,
+    ScriptCommandObject,
+    MarkerObject,
+    BitrateMutualExclusionObject,
+    ErrorCorrectionObject,
+    ContentDescriptionObject,
+    ExtendedContentDescriptionObject,
+    StreamBitratePropertiesObject,
+    ContentBrandingObject,
+    ContentEncryptionObject,
+    ExtendedContentEncryptionObject,
+    DigitalSignatureObject,
+    PaddingObject,
+    ExtendedStreamPropertiesObject,
+    AdvancedMutualExclusionObject,
+    GroupMutualExclusionObject,
+    StreamPrioritizationObject,
+    BandwidthSharingObject,
+    LanguageListObject,
+    MetadataObject,
+    MetadataLibraryObject,
+    IndexParametersObject,
+    MediaObjectIndexParametersObject,
+    TimecodeIndexParametersObject,
+    CompatibilityObject,
+    AdvancedContentEncryptionObject
+}
+
+/**
  * GUIDs used to identify objects within an ASF file.
  */
-export default class Guids {
+export class Guids {
     /**
      * Indicates that an object is a {@link ContentDescriptionObject}.
      */

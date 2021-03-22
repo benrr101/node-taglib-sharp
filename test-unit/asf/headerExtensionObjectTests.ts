@@ -5,12 +5,14 @@ import TestFile from "../utilities/testFile";
 import {ByteVector} from "../../src/byteVector";
 import {File} from "../../src/file";
 
-import Guids from "../../src/asf/guids";
+import {Guids, ObjectType} from "../../src/asf/constants";
 import HeaderExtensionObject from "../../src/asf/objects/headerExtensionObject";
 import UuidWrapper from "../../src/uuidWrapper";
 import {MetadataLibraryObject} from "../../src/asf/objects/metadataLibraryObject";
 import ContentDescriptionObject from "../../src/asf/objects/contentDescriptionObject";
 import BaseObject from "../../src/asf/objects/baseObject";
+import {Test} from "mocha";
+import UnknownObject from "../../src/asf/objects/unknownObject";
 
 // Setup Chai
 const assert = Chai.assert;
@@ -71,6 +73,7 @@ const assert = Chai.assert;
 
         // Assert
         assert.isOk(output);
+        assert.strictEqual(output.objectType, ObjectType.HeaderExtensionObject);
         assert.strictEqual(output.originalSize, data.length);
         assert.isTrue(output.guid.equals(Guids.AsfHeaderExtensionObject));
 
@@ -128,7 +131,9 @@ const assert = Chai.assert;
         const file = TestFile.getFile(data);
         const output = HeaderExtensionObject.fromFile(file, 0);
 
-        const newObject = ContentDescriptionObject.fromEmpty();
+        const newObjectBytes = ContentDescriptionObject.fromEmpty().render();
+        const newObjectFile = TestFile.getFile(newObjectBytes);
+        const newObject = UnknownObject.fromFile(newObjectFile, 0);
 
         // Act
         output.addUniqueObject(newObject);

@@ -5,7 +5,7 @@ import TestFile from "../utilities/testFile";
 import {ByteVector, StringType} from "../../src/byteVector";
 import {File} from "../../src/file";
 
-import Guids from "../../src/asf/guids";
+import {Guids, ObjectType} from "../../src/asf/constants";
 import ContentDescriptionObject from "../../src/asf/objects/contentDescriptionObject";
 import UuidWrapper from "../../src/uuidWrapper";
 import PropertyTests from "../utilities/propertyTests";
@@ -27,6 +27,9 @@ const assert = Chai.assert;
 
         // Assert
         assert.isOk(object);
+        assert.strictEqual(object.originalSize, 0);
+        assert.strictEqual(object.objectType, ObjectType.ContentDescriptionObject);
+        assert.isTrue(object.guid.equals(Guids.AsfContentDescriptionObject));
         assert.isUndefined(object.author);
         assert.isUndefined(object.copyright);
         assert.isUndefined(object.description);
@@ -61,6 +64,7 @@ const assert = Chai.assert;
         // Assert
         assert.isOk(object);
         assert.strictEqual(object.originalSize, 94);
+        assert.strictEqual(object.objectType, ObjectType.ContentDescriptionObject);
         assert.isTrue(object.guid.equals(Guids.AsfContentDescriptionObject));
         assert.strictEqual(object.author, "bar0");
         assert.strictEqual(object.copyright, "baz00");

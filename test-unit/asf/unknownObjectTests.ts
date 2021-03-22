@@ -6,6 +6,7 @@ import TestFile from "../utilities/testFile";
 import UuidWrapper from "../../src/uuidWrapper";
 import {ByteVector} from "../../src/byteVector";
 import {File} from "../../src/file";
+import {ObjectType} from "../../src/asf/constants";
 
 import UnknownObject from "../../src/asf/objects/unknownObject";
 
@@ -28,9 +29,10 @@ const assert = Chai.assert;
 
         // Assert
         assert.isOk(object);
-        assert.isTrue(ByteVector.equal(object.data, this._bytes));
         assert.isTrue(object.guid.equals(this._guid));
+        assert.strictEqual(object.objectType, ObjectType.UnknownObject);
         assert.strictEqual(object.originalSize, this._originalSize);
+        assert.isTrue(ByteVector.equal(object.data, this._bytes));
     }
 
     @test

@@ -2,7 +2,7 @@ import AsfTag from "./asfTag";
 import BaseObject from "./objects/baseObject";
 import ContentDescriptionObject from "./objects/contentDescriptionObject";
 import FilePropertiesObject from "./objects/filePropertiesObject";
-import Guids from "./guids";
+import Guids from "./constants";
 import HeaderExtensionObject from "./objects/headerExtensionObject";
 import HeaderObject from "./objects/headerObject";
 import PaddingObject from "./objects/paddingObject";

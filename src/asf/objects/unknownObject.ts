@@ -1,5 +1,6 @@
 import BaseObject from "./baseObject";
 import {ByteVector} from "../../byteVector";
+import {ObjectType} from "../constants";
 import {File} from "../../file";
 import {Guards} from "../../utils";
 
@@ -26,6 +27,8 @@ export default class UnknownObject extends BaseObject {
         return instance;
     }
 
+    // #region Properties
+
     /**
      * Gets the data contained in the current instance.
      */
@@ -38,6 +41,10 @@ export default class UnknownObject extends BaseObject {
         Guards.truthy(value, "value");
         this._data = value;
     }
+
+    public get objectType(): ObjectType { return ObjectType.UnknownObject; }
+
+    // #endregion
 
     /** @inheritDoc */
     public render(): ByteVector {

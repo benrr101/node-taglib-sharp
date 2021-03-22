@@ -1,10 +1,10 @@
 import BaseObject from "./baseObject";
-import Guids from "../guids";
 import ReadWriteUtils from "../readWriteUtils";
 import RiffBitmapInfoHeader from "../../riff/riffBitmapInfoHeader";
 import RiffWaveFormatEx from "../../riff/riffWaveFormatEx";
 import UuidWrapper from "../../uuidWrapper";
 import {ByteVector} from "../../byteVector";
+import {Guids, ObjectType} from "../constants";
 import {CorruptFileError} from "../../errors";
 import {File} from "../../file";
 import {ICodec} from "../../iCodec";
@@ -104,6 +104,9 @@ export default class StreamPropertiesObject extends BaseObject {
      *     * Encrypted content flag - 1 bit
      */
     public get flags(): number { return this._flags; }
+
+    /** @inheritDoc */
+    public get objectType(): ObjectType { return ObjectType.StreamPropertiesObject; }
 
     /**
      * Gets the stream number for the current instance. Zero is invalid.

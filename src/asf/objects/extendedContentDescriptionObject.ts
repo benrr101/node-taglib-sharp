@@ -1,7 +1,7 @@
 import BaseObject from "./baseObject";
-import Guids from "../guids";
 import ReadWriteUtils from "../readWriteUtils";
 import {ByteVector} from "../../byteVector";
+import {Guids, ObjectType} from "../constants";
 import {DataType, DescriptorBase, DescriptorValue} from "./descriptorBase";
 import {CorruptFileError} from "../../errors";
 import {File} from "../../file";
@@ -171,6 +171,9 @@ export class ExtendedContentDescriptionObject extends BaseObject {
      *     otherwise.
      */
     public get isEmpty(): boolean { return this._descriptors.length === 0; }
+
+    /** @inheritDoc */
+    public get objectType(): ObjectType { return ObjectType.ExtendedContentDescriptionObject; }
 
     // #endregion
 

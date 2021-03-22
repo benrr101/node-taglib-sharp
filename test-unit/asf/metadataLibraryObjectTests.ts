@@ -1,7 +1,7 @@
 import * as Chai from "chai";
 import {suite, test} from "mocha-typescript";
 
-import Guids from "../../src/asf/guids";
+import {Guids, ObjectType} from "../../src/asf/constants";
 import ObjectTests from "./objectTests";
 import Testers from "../utilities/testers";
 import TestFile from "../utilities/testFile";
@@ -433,6 +433,9 @@ const assert = Chai.assert;
 
         // Assert
         assert.isOk(object);
+        assert.isTrue(object.guid.equals(Guids.AsfMetadataLibraryObject));
+        assert.strictEqual(object.objectType, ObjectType.MetadataLibraryObject);
+        assert.strictEqual(object.originalSize, 0);
         assert.isTrue(object.isEmpty);
         assert.deepEqual(object.records, []);
     }
@@ -459,6 +462,9 @@ const assert = Chai.assert;
 
         // Assert
         assert.isOk(object);
+        assert.isTrue(object.guid.equals(Guids.AsfMetadataLibraryObject));
+        assert.strictEqual(object.objectType, ObjectType.MetadataLibraryObject);
+        assert.strictEqual(object.originalSize, bytes.length - 10);
         assert.isFalse(object.isEmpty);
         assert.strictEqual(object.records.length, 2);
 

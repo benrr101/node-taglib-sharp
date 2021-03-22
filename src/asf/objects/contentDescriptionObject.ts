@@ -1,7 +1,7 @@
 import BaseObject from "./baseObject";
-import Guids from "../guids";
 import ReadWriteUtils from "../readWriteUtils";
 import {ByteVector} from "../../byteVector";
+import {Guids, ObjectType} from "../constants";
 import {CorruptFileError} from "../../errors";
 import {File} from "../../file";
 
@@ -101,6 +101,9 @@ export default class ContentDescriptionObject extends BaseObject {
             && !this._description
             && !this._rating;
     }
+
+    /** @inheritDoc */
+    public get objectType(): ObjectType { return ObjectType.ContentDescriptionObject; }
 
     /**
      * Gets the rating of the media described by the current instance.

@@ -7,7 +7,7 @@ import {ByteVector} from "../../src/byteVector";
 import {File} from "../../src/file";
 import {NumberUtils} from "../../src/utils";
 
-import Guids from "../../src/asf/guids";
+import {Guids, ObjectType} from "../../src/asf/constants";
 import RiffBitmapInfoHeader from "../../src/riff/riffBitmapInfoHeader";
 import RiffWaveFormatEx from "../../src/riff/riffWaveFormatEx";
 import StreamPropertiesObject from "../../src/asf/objects/streamPropertiesObject";
@@ -34,8 +34,9 @@ const assert = Chai.assert;
 
         // Assert
         assert.isOk(object);
-        assert.strictEqual(object.originalSize, this._originalSize);
         assert.isTrue(object.guid.equals(Guids.AsfStreamPropertiesObject));
+        assert.strictEqual(object.objectType, ObjectType.StreamPropertiesObject);
+        assert.strictEqual(object.originalSize, this._originalSize);
         assert.isTrue(ByteVector.equal(object.errorCorrectionData, this._errorCorrectionData));
         assert.isTrue(object.errorCorrectionType.equals(this._errorCorrectionGuid));
         assert.strictEqual(object.flags, this._flags);

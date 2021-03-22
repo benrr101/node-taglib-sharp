@@ -1,19 +1,19 @@
 import BaseObject from "./baseObject";
 import FilePropertiesObject from "./filePropertiesObject";
-import Guids from "../guids";
 import HeaderExtensionObject from "./headerExtensionObject";
 import PaddingObject from "./paddingObject";
 import Properties from "../../properties";
 import ReadWriteUtils from "../readWriteUtils";
 import StreamPropertiesObject from "./streamPropertiesObject";
+import UnknownObject from "./unknownObject";
 import {ByteVector} from "../../byteVector";
+import {Guids, ObjectType} from "../constants";
 import {CorruptFileError} from "../../errors";
 import {File} from "../../file";
 import {ICodec} from "../../iCodec";
 import {Guards} from "../../utils";
 import ContentDescriptionObject from "./contentDescriptionObject";
 import {ExtendedContentDescriptionObject} from "./extendedContentDescriptionObject";
-import UnknownObject from "./unknownObject";
 
 /**
  * This class provides a representation of an ASF header object which can be read from and written
@@ -21,7 +21,7 @@ import UnknownObject from "./unknownObject";
  */
 export default class HeaderObject extends BaseObject {
     private readonly _children: BaseObject[] = [];
-    private _reserved: ByteVector;
+    private _reserved: number;
 
     private constructor() {
         super();
@@ -45,7 +45,11 @@ export default class HeaderObject extends BaseObject {
         }
 
         const childCount = ReadWriteUtils.readDWord(file);
-        instance._reserved = file.readBlock(2);
+        instance._reserved = ReadWriteUtils.readWord(file);
+        if (instance._reserved !== 0x0201) {
+            throw new CorruptFileError("Header object is missing reserved bytes");
+        }
+
         instance._children.push(... HeaderObject.readObjects(file, childCount, file.position));
 
         return instance;
@@ -53,7 +57,15 @@ export default class HeaderObject extends BaseObject {
 
     // #region Properties
 
-    public get children(): BaseObject[] { return this._children; }
+    /**
+     * Gets that child objects of this instance.
+     * @remarks The returned array is a copy of the array of children inside this object. Any
+     *     changes to this array will not be reflected in the object.
+     *
+     *     Only certain objects are valid inside a header object. Any objects that are not valid or
+     *     not supported are read as {@link UnknownObject}.
+     */
+    public get children(): BaseObject[] { return this._children.slice(); }
 
     /**
      * Gets the header extension object contained in the current instance.
@@ -61,7 +73,7 @@ export default class HeaderObject extends BaseObject {
      *     `undefined` is returned if it doesn't exist
      */
     public get extension(): HeaderExtensionObject {
-        const extensionObj = this._children.find((o) => o.guid.equals(Guids.AsfHeaderExtensionObject));
+        const extensionObj = this._children.find((o) => o.objectType === ObjectType.HeaderExtensionObject);
         return <HeaderExtensionObject> extensionObj;
     }
 
@@ -72,10 +84,13 @@ export default class HeaderObject extends BaseObject {
      */
     public get hasContentDescriptors(): boolean {
         return this._children.findIndex((o) => {
-            return o.guid.equals(Guids.AsfContentDescriptionObject)
-                || o.guid.equals(Guids.AsfExtendedContentDescriptionObject);
+            return o.objectType === ObjectType.ContentDescriptionObject
+                || o.objectType === ObjectType.ExtendedContentDescriptionObject;
         }) >= 0;
     }
+
+    /** @inheritDoc */
+    public get objectType(): ObjectType { return ObjectType.HeaderObject; }
 
     /**
      * Get the media properties contained within the current instance.
@@ -85,10 +100,10 @@ export default class HeaderObject extends BaseObject {
         let durationMilliseconds = 0;
 
         for (const obj of this._children) {
-            if (obj.guid.equals(Guids.AsfFilePropertiesObject)) {
+            if (obj.objectType === ObjectType.FilePropertiesObject) {
                 const fpObj = <FilePropertiesObject> obj;
                 durationMilliseconds = fpObj.playDurationMilliseconds - fpObj.prerollMilliseconds;
-            } else if (obj.guid.equals(Guids.AsfStreamPropertiesObject)) {
+            } else if (obj.objectType === ObjectType.StreamPropertiesObject) {
                 codecs.push((<StreamPropertiesObject> obj).codec);
             }
         }
@@ -105,7 +120,9 @@ export default class HeaderObject extends BaseObject {
      * @param obj Object to add to the current instance
      */
     public addUniqueObject(obj: BaseObject): void {
-        const existingIndex = this._children.findIndex((o) => o.guid.equals(obj.guid));
+        // TODO: Make sure only permitted objects are allowed
+
+        const existingIndex = this._children.findIndex((o) => o.objectType === obj.objectType);
         if (existingIndex >= 0) {
             this._children[existingIndex] = obj;
         } else {
@@ -118,8 +135,8 @@ export default class HeaderObject extends BaseObject {
      */
     public removeContentDescriptor(): void {
         for (let i = this._children.length - 1; i >= 0; i--) {
-            if (this._children[i].guid.equals(Guids.AsfContentDescriptionObject) ||
-                this._children[i].guid.equals(Guids.AsfExtendedContentDescriptionObject)) {
+            if (this._children[i].objectType === ObjectType.ContentDescriptionObject ||
+                this._children[i].objectType === ObjectType.ExtendedContentDescriptionObject) {
                 this._children.splice(i, 1);
             }
         }
@@ -128,7 +145,7 @@ export default class HeaderObject extends BaseObject {
     /** @inheritDoc */
     public render(): ByteVector {
         // Render the non-padding children
-        const substantiveChildren = this._children.filter((o) => !o.guid.equals(Guids.AsfPaddingObject));
+        const substantiveChildren = this._children.filter((o) => o.objectType !== ObjectType.PaddingObject);
         const childrenData = ByteVector.concatenate(... substantiveChildren.map((o) => o.render()));
 
         // Render any required padding
@@ -181,7 +198,9 @@ export default class HeaderObject extends BaseObject {
         }
 
         // There are other objects that are valid here, if any of them are needed, please create an
-        // issue github.com/benrr101/node-taglib-sharp/issues
+        // issue.
+        // NOTE: Objects that are not valid under the header object should be stored as an
+        //     UnknownObject
 
         return UnknownObject.fromFile(file, position);
     }

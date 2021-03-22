@@ -1,6 +1,7 @@
 import ReadWriteUtils from "../readWriteUtils";
 import UuidWrapper from "../../uuidWrapper";
 import {ByteVector} from "../../byteVector";
+import {ObjectType} from "../constants";
 import {UnsupportedFormatError} from "../../errors";
 import {File} from "../../file";
 import {Guards} from "../../utils";
@@ -57,6 +58,11 @@ export default abstract class BaseObject {
      * Gets the GUID that identifies the current instance.
      */
     public get guid(): UuidWrapper { return this._id; }
+
+    /**
+     * Gets the type of the object for easy comparison.
+     */
+    public abstract get objectType(): ObjectType;
 
     /**
      * Gets the original size of the current instance.

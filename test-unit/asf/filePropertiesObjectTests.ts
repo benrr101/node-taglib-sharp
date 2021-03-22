@@ -5,7 +5,7 @@ import TestFile from "../utilities/testFile";
 import {ByteVector} from "../../src/byteVector";
 import {File} from "../../src/file";
 
-import Guids from "../../src/asf/guids";
+import {Guids, ObjectType} from "../../src/asf/constants";
 import FilePropertiesObject from "../../src/asf/objects/filePropertiesObject";
 import UuidWrapper from "../../src/uuidWrapper";
 
@@ -47,8 +47,9 @@ class Asf_FilePropertiesObjectTests extends ObjectTests<FilePropertiesObject> {
 
         // Assert
         assert.isOk(object);
-        assert.strictEqual(object.originalSize, 104);
         assert.isTrue(object.guid.equals(Guids.AsfFilePropertiesObject));
+        assert.strictEqual(object.objectType, ObjectType.FilePropertiesObject);
+        assert.strictEqual(object.originalSize, 104);
         assert.deepEqual(object.creationDate, new Date(Date.UTC(1970, 4, 13, 18, 0, 0)));
         assert.strictEqual(object.dataPacketsCount, BigInt(2345));
         assert.isTrue(object.fileId.equals(fileId));

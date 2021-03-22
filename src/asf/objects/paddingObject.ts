@@ -1,6 +1,6 @@
 import BaseObject from "./baseObject";
-import Guids from "../guids";
 import {ByteVector} from "../../byteVector";
+import {Guids, ObjectType} from "../constants";
 import {CorruptFileError} from "../../errors";
 import {File} from "../../file";
 import {Guards} from "../../utils";
@@ -55,6 +55,11 @@ export default class PaddingObject extends BaseObject {
 
     // #endregion
 
+    // #region Properties
+
+    /** @inheritDoc */
+    public get objectType(): ObjectType { return ObjectType.PaddingObject; }
+
     /**
      * Gets the number of bytes the current instance will take up on disk.
      */
@@ -67,6 +72,8 @@ export default class PaddingObject extends BaseObject {
         Guards.safeUint(value, "value");
         this._size = value;
     }
+
+    // #endregion
 
     /** @inheritDoc */
     public render(): ByteVector {

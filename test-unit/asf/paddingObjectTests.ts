@@ -6,7 +6,7 @@ import TestFile from "../utilities/testFile";
 import {ByteVector} from "../../src/byteVector";
 import {File} from "../../src/file";
 
-import Guids from "../../src/asf/guids";
+import {Guids, ObjectType} from "../../src/asf/constants";
 import PaddingObject from "../../src/asf/objects/PaddingObject";
 import UuidWrapper from "../../src/uuidWrapper";
 
@@ -35,6 +35,7 @@ const assert = Chai.assert;
         // Assert
         assert.isOk(object);
         assert.isTrue(object.guid.equals(Guids.AsfPaddingObject));
+        assert.strictEqual(object.objectType, ObjectType.PaddingObject);
         assert.strictEqual(object.originalSize, 32);
         assert.strictEqual(object.size, 32);
     }
@@ -53,6 +54,7 @@ const assert = Chai.assert;
         // Assert
         assert.isOk(object);
         assert.isTrue(object.guid.equals(Guids.AsfPaddingObject));
+        assert.strictEqual(object.objectType, ObjectType.PaddingObject);
         assert.strictEqual(object.originalSize, 0);
         assert.strictEqual(object.size, 123);
     }

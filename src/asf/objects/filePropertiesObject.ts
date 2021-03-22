@@ -1,8 +1,8 @@
 import BaseObject from "./baseObject";
-import Guids from "../guids";
 import ReadWriteUtils from "../readWriteUtils";
 import UuidWrapper from "../../uuidWrapper";
 import {ByteVector} from "../../byteVector";
+import {Guids, ObjectType} from "../constants";
 import {CorruptFileError} from "../../errors";
 import {File} from "../../file";
 import {NumberUtils} from "../../utils";
@@ -146,6 +146,9 @@ export default class FilePropertiesObject extends BaseObject {
      * Gets the minimum packet size, in bytes, for the file described by the current instance.
      */
     public get minimumDataPacketSize(): number { return this._minimumDataPacketSize; }
+
+    /** @inheritDoc */
+    public get objectType(): ObjectType { return ObjectType.FilePropertiesObject; }
 
     /**
      * Gets the amount of time, in milliseconds, to buffer data before playing the file described

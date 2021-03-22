@@ -1,7 +1,7 @@
 import BaseObject from "./baseObject";
-import Guids from "../guids";
 import ReadWriteUtils from "../readWriteUtils";
 import {ByteVector} from "../../byteVector";
+import {Guids, ObjectType} from "../constants";
 import {CorruptFileError} from "../../errors";
 import {File} from "../../file";
 import readWriteUtils from "../readWriteUtils";
@@ -57,10 +57,13 @@ export default class HeaderExtensionObject extends BaseObject {
      * @remarks The returned array is a copy of the array of children inside this object. Any
      *     changes to this array will not be reflected in the object.
      *
-     *     Only certain objects are valid inside a header extension object. Any objects that
-     *     are not valid or not supported are read as `
+     *     Only certain objects are valid inside a header extension object. Any objects that are
+     *     not valid or not supported are read as {@link UnknownObject}.
      */
     public get children(): BaseObject[] { return this._children.slice(); }
+
+    /** @inheritDoc */
+    public get objectType(): ObjectType { return ObjectType.HeaderExtensionObject; }
 
     /**
      * Adds a unique child object to the current instance, replacing an existing child if present.
@@ -69,7 +72,7 @@ export default class HeaderExtensionObject extends BaseObject {
     public addUniqueObject(obj: BaseObject): void {
         // @TODO: Check against a list of valid object types for this object
 
-        const existingIndex = this._children.findIndex((o) => o.guid.equals(obj.guid));
+        const existingIndex = this._children.findIndex((o) => o.objectType === obj.objectType);
         if (existingIndex >= 0) {
             this._children[existingIndex] = obj;
         } else {
