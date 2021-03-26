@@ -1,20 +1,9 @@
 import AsfTag from "./asfTag";
-import BaseObject from "./objects/baseObject";
-import ContentDescriptionObject from "./objects/contentDescriptionObject";
-import FilePropertiesObject from "./objects/filePropertiesObject";
-import Guids from "./constants";
-import HeaderExtensionObject from "./objects/headerExtensionObject";
 import HeaderObject from "./objects/headerObject";
-import PaddingObject from "./objects/paddingObject";
 import Properties from "../properties";
-import ReadWriteUtils from "./readWriteUtils";
-import StreamPropertiesObject from "./objects/streamPropertiesObject";
-import UnknownObject from "./objects/unknownObject";
-import {ExtendedContentDescriptionObject} from "./objects/extendedContentDescriptionObject";
 import {File, FileAccessMode, ReadStyle} from "../file";
 import {IFileAbstraction} from "../fileAbstraction";
 import {Tag, TagTypes} from "../tag";
-import {Guards} from "../utils";
 
 /**
  * This class provides tagging and properties support for Microsoft's ASF files.

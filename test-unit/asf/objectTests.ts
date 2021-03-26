@@ -55,7 +55,8 @@ export default abstract class ObjectTests<TObject> {
         const data = ByteVector.concatenate(
             ByteVector.fromSize(10), // Offset
             new UuidWrapper().toBytes(), // Object ID
-            ByteVector.fromULong(123) // Object size
+            ByteVector.fromULong(123), // Object size
+            ByteVector.fromSize(20) // Just some bogus bytes
         );
         const file = TestFile.getFile(data);
 

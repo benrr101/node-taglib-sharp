@@ -21,6 +21,7 @@ import {ExtendedContentDescriptionObject} from "./extendedContentDescriptionObje
  */
 export default class HeaderObject extends BaseObject {
     private readonly _children: BaseObject[] = [];
+    private _properties: Properties;
     private _reserved: number;
 
     private constructor() {
@@ -96,19 +97,23 @@ export default class HeaderObject extends BaseObject {
      * Get the media properties contained within the current instance.
      */
     public get properties(): Properties {
-        const codecs: ICodec[] = [];
-        let durationMilliseconds = 0;
+        if (!this._properties) {
+            const codecs: ICodec[] = [];
+            let durationMilliseconds = 0;
 
-        for (const obj of this._children) {
-            if (obj.objectType === ObjectType.FilePropertiesObject) {
-                const fpObj = <FilePropertiesObject> obj;
-                durationMilliseconds = fpObj.playDurationMilliseconds - fpObj.prerollMilliseconds;
-            } else if (obj.objectType === ObjectType.StreamPropertiesObject) {
-                codecs.push((<StreamPropertiesObject> obj).codec);
+            for (const obj of this._children) {
+                if (obj.objectType === ObjectType.FilePropertiesObject) {
+                    const fpObj = <FilePropertiesObject> obj;
+                    durationMilliseconds = fpObj.playDurationMilliseconds - fpObj.prerollMilliseconds;
+                } else if (obj.objectType === ObjectType.StreamPropertiesObject) {
+                    codecs.push((<StreamPropertiesObject> obj).codec);
+                }
             }
+
+            this._properties = new Properties(durationMilliseconds, codecs);
         }
 
-        return new Properties(durationMilliseconds, codecs);
+        return this._properties;
     }
 
     // #endregion
@@ -120,7 +125,8 @@ export default class HeaderObject extends BaseObject {
      * @param obj Object to add to the current instance
      */
     public addUniqueObject(obj: BaseObject): void {
-        // TODO: Make sure only permitted objects are allowed
+        // TODO: Make sure only permitted objects are allowed (and probably make sure only writable
+        //    objects can be added)
 
         const existingIndex = this._children.findIndex((o) => o.objectType === obj.objectType);
         if (existingIndex >= 0) {
@@ -160,7 +166,7 @@ export default class HeaderObject extends BaseObject {
         // Put it all together
         const output = ByteVector.concatenate(
             ReadWriteUtils.renderDWord(childCount),
-            this._reserved,
+            ReadWriteUtils.renderWord(this._reserved),
             childrenData
         );
         return super.renderInternal(output);

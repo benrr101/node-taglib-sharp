@@ -15,6 +15,7 @@ import {NumberUtils} from "../../utils";
  * written to disk.
  */
 export default class StreamPropertiesObject extends BaseObject {
+    private _codec: ICodec;
     private _errorCorrectionData: ByteVector;
     private _errorCorrectionType: UuidWrapper;
     private _flags: number;
@@ -70,19 +71,22 @@ export default class StreamPropertiesObject extends BaseObject {
      * Gets the codec information contained in the current instance.
      */
     public get codec(): ICodec {
-        if (this._streamType.equals(Guids.AsfAudioMedia)) {
-            return new RiffWaveFormatEx(this._typeSpecificData, 0);
-        }
-        if (this._streamType.equals(Guids.AsfVideoMedia)) {
-            return new RiffBitmapInfoHeader(this._typeSpecificData, 11);
+        if (!this._codec) {
+            // Read the codec info from the type specific data
+            if (this._streamType.equals(Guids.AsfAudioMedia)) {
+                this._codec = new RiffWaveFormatEx(this._typeSpecificData, 0);
+            }
+            if (this._streamType.equals(Guids.AsfVideoMedia)) {
+                this._codec = new RiffBitmapInfoHeader(this._typeSpecificData, 11);
+            }
+
+            // @TODO: We can use the Codec List Object to get a more user friendly description of the
+            //    codec being used, if it is available. Howerver, doing so would require making a new
+            //    class for ASF codec info and using it to wrap the stream properties object and the
+            //    codec list object.
         }
 
-        // @TODO: We can use the Codec List Object to get a more user friendly description of the
-        //    codec being used, if it is available. Howerver, doing so would require making a new
-        //    class for ASF codec info and using it to wrap the stream properties object and the
-        //    codec list object.
-
-        return undefined;
+        return this._codec;
     }
 
     /**

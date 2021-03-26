@@ -9,13 +9,14 @@ import {File} from "../../src/file";
 import {Guids, ObjectType} from "../../src/asf/constants";
 import PaddingObject from "../../src/asf/objects/PaddingObject";
 import UuidWrapper from "../../src/uuidWrapper";
+import PropertyTests from "../utilities/propertyTests";
 
 // Setup chai
 const assert = Chai.assert;
 
 @suite class Asf_PaddingObjectTests extends ObjectTests<PaddingObject> {
     protected get fromFileConstructor(): (f: File, p: number) => PaddingObject { return PaddingObject.fromFile; }
-    protected get minSize(): number { return 24; }
+    protected get minSize(): number { return undefined; }
     protected get objectGuid(): UuidWrapper { return Guids.AsfPaddingObject; }
 
     @test
@@ -37,7 +38,7 @@ const assert = Chai.assert;
         assert.isTrue(object.guid.equals(Guids.AsfPaddingObject));
         assert.strictEqual(object.objectType, ObjectType.PaddingObject);
         assert.strictEqual(object.originalSize, 32);
-        assert.strictEqual(object.size, 32);
+        assert.strictEqual(object.size, 8);
     }
 
     @test
@@ -57,6 +58,30 @@ const assert = Chai.assert;
         assert.strictEqual(object.objectType, ObjectType.PaddingObject);
         assert.strictEqual(object.originalSize, 0);
         assert.strictEqual(object.size, 123);
+    }
+
+    @test
+    public size_invalid() {
+        // Arrange
+        const object = PaddingObject.fromSize(123);
+
+        // Act / Assert
+        Testers.testSafeUint((v) => object.size = v);
+    }
+
+    @test
+    public size() {
+        // Arrange
+        const object = PaddingObject.fromSize(123);
+
+        // Act / Assert
+        PropertyTests.propertyRoundTrip((v) => object.size = v, () => object.size, 888);
+
+        // Act
+        const output = object.render();
+
+        // Assert
+        assert.strictEqual(output.length, 888 + 24);
     }
 
     @test

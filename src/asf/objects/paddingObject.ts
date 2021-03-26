@@ -31,11 +31,8 @@ export default class PaddingObject extends BaseObject {
         if (!instance.guid.equals(Guids.AsfPaddingObject)) {
             throw new CorruptFileError("Object GUID does not match expected padding object GUID");
         }
-        if (instance.originalSize < 24) {
-            throw new CorruptFileError("Padding object is too small");
-        }
 
-        instance._size = instance.originalSize;
+        instance._size = instance.originalSize - 24;
         return instance;
     }
 
@@ -61,11 +58,13 @@ export default class PaddingObject extends BaseObject {
     public get objectType(): ObjectType { return ObjectType.PaddingObject; }
 
     /**
-     * Gets the number of bytes the current instance will take up on disk.
+     * Gets the number of bytes the current instance will take up on disk. Note: this does *not*
+     * include the header for the object.
      */
     public get size(): number { return this._size; }
     /**
-     * Sets the number of bytes the current instance will take up on disk.
+     * Sets the number of padding bytes the current instance will contain. Note: this does *not*
+     * include the header for the object.
      * @param value Size of the current instance in bytes, must be a safe, positive integer.
      */
     public set size(value: number) {
@@ -77,6 +76,6 @@ export default class PaddingObject extends BaseObject {
 
     /** @inheritDoc */
     public render(): ByteVector {
-        return super.renderInternal(ByteVector.fromSize(this._size - 24));
+        return super.renderInternal(ByteVector.fromSize(this._size));
     }
 }

@@ -11,7 +11,6 @@ import UuidWrapper from "../../src/uuidWrapper";
 import {MetadataLibraryObject} from "../../src/asf/objects/metadataLibraryObject";
 import ContentDescriptionObject from "../../src/asf/objects/contentDescriptionObject";
 import BaseObject from "../../src/asf/objects/baseObject";
-import {Test} from "mocha";
 import UnknownObject from "../../src/asf/objects/unknownObject";
 
 // Setup Chai
