@@ -10,6 +10,7 @@ import {IPicture} from "../iPicture";
 import {MetadataDescriptor, MetadataLibraryObject} from "./objects/metadataLibraryObject";
 import {Tag, TagTypes} from "../tag";
 import {Guards} from "../utils";
+import {ObjectType} from "./constants";
 
 /**
  * This class extends {@link Tag} to provide a representation of an ASF tag which can be read from
@@ -46,16 +47,19 @@ export default class AsfTag extends Tag {
 
         const instance = new AsfTag();
         for (const child of header.children) {
-            if (child instanceof ContentDescriptionObject) {
+            if (child.objectType === ObjectType.ContentDescriptionObject) {
                 instance._contentDescriptionObject = <ContentDescriptionObject> child;
             }
-            if (child instanceof ExtendedContentDescriptionObject) {
+            if (child.objectType === ObjectType.ExtendedContentDescriptionObject) {
                 instance._extendedDescriptionObject = <ExtendedContentDescriptionObject> child;
             }
         }
-        for (const child of header.extension.children) {
-            if (child instanceof MetadataLibraryObject) {
-                instance._metadataLibraryObject = <MetadataLibraryObject> child;
+
+        if (header.extension) {
+            for (const child of header.extension.children) {
+                if (child.objectType === ObjectType.MetadataLibraryObject) {
+                    instance._metadataLibraryObject = <MetadataLibraryObject> child;
+                }
             }
         }
 
@@ -89,7 +93,15 @@ export default class AsfTag extends Tag {
 
     public get tagTypes(): TagTypes { return TagTypes.Asf; }
 
+    /**
+     *  @inheritDoc
+     *  @remarks via content description object
+     */
     public get title(): string { return this._contentDescriptionObject.title; }
+    /**
+     *  @inheritDoc
+     *  @remarks via content description object
+     */
     public set title(value: string) { this._contentDescriptionObject.title = value; }
 
     /**
