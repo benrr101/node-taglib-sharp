@@ -152,6 +152,71 @@ const getHeaderExtensionObject: (children: BaseObject[]) => HeaderExtensionObjec
         );
     }
 
+    @test
+    public titleSort() {
+        this.testExtendedDescriptionObjectStringField(
+            (t, v) => t.titleSort = v,
+            (t) => t.titleSort,
+            "WM/TitleSortOrder"
+        );
+    }
+
+    @test
+    public description() {
+        this.testContentDescriptorField(
+            (t, v) => t.description = v,
+            (t) => t.description,
+            (cd) => cd.description
+        );
+    }
+
+    @test
+    public performers() {
+        this.testContentDescriptorArray(
+            (t, v) => t.performers = v,
+            (t) => t.performers,
+            (cd) => cd.author
+        );
+    }
+
+    @test
+    public performersSort() {
+        this.testExtendedDescriptionObjectStringArray(
+            (t, v) => t.performersSort = v,
+            (t) => t.performersSort,
+            "WM/ArtistSortOrder"
+        );
+    }
+
+    @test
+    public albumArtists() {
+        this.testExtendedDescriptionObjectStringArray(
+            (t, v) => t.albumArtists = v,
+            (t) => t.albumArtists,
+            "WM/AlbumArtist", "AlbumArtist"
+        );
+    }
+
+    private testContentDescriptorArray(
+        set: (t: AsfTag, v: string[]) => void,
+        get: (t: AsfTag) => string[],
+        cdProperty: (cd: ContentDescriptionObject) => string
+    ) {
+        // Arrange
+        const tag = AsfTag.fromEmpty();
+        const setProp = (v: string[]) => set(tag, v);
+        const getProp = () => get(tag);
+
+        // Act / Assert
+        assert.deepStrictEqual(getProp(), []);
+
+        PropertyTests.propertyRoundTrip(setProp, getProp, ["foo", "bar", "baz"]);
+        assert.strictEqual(cdProperty(tag.contentDescriptionObject), "foo; bar; baz");
+
+        PropertyTests.propertyRoundTrip(setProp, getProp, []);
+        assert.isUndefined(cdProperty(tag.contentDescriptionObject));
+    }
+
     private testContentDescriptorField(
         set: (t: AsfTag, v: string) => void,
         get: (t: AsfTag) => string,
@@ -170,6 +235,56 @@ const getHeaderExtensionObject: (children: BaseObject[]) => HeaderExtensionObjec
 
         PropertyTests.propertyRoundTrip(setProp, getProp, undefined);
         assert.isUndefined(cdProperty(tag.contentDescriptionObject));
+    }
+
+    private testExtendedDescriptionObjectStringArray(
+        set: (t: AsfTag, v: string[]) => void,
+        get: (t: AsfTag) => string[],
+        ...descriptorName: string[]
+    ) {
+            // TEST CASE 1: Basic Case -----------------------------------------
+        // Arrange
+        const tag = AsfTag.fromEmpty();
+        const setProp = (v: string[]) => set(tag, v);
+        const getProp = () => get(tag);
+
+        // Act / Assert
+        assert.deepStrictEqual(getProp(), []);
+
+        PropertyTests.propertyRoundTrip(setProp, getProp, ["foo", "bar", "baz"]);
+        assert.strictEqual(tag.extendedContentDescriptionObject.descriptors.length, 1);
+        assert.strictEqual(tag.extendedContentDescriptionObject.descriptors[0].name, descriptorName[0]);
+        assert.strictEqual(tag.extendedContentDescriptionObject.descriptors[0].type, DataType.Unicode);
+        assert.strictEqual(tag.extendedContentDescriptionObject.descriptors[0].getString(), "foo; bar; baz");
+
+        // End test cases if there's only one descriptor name
+        if (descriptorName.length === 1) {
+            return;
+        }
+
+        // TEST CASE 2: Preferential descriptor names ----------------------
+        for (let i = 0; i < descriptorName.length; i++) {
+            // Arrange
+            const edco = ExtendedContentDescriptionObject.fromEmpty();
+            for (let j = descriptorName.length; j > i; j--) {
+                const descriptor = new ContentDescriptor(descriptorName[j - 1], DataType.Unicode, `foo${j - 1};bar`);
+                edco.addDescriptor(descriptor);
+            }
+
+            const headerObject = getHeaderObject([edco]);
+            const tag2 = AsfTag.fromHeader(headerObject);
+            const setProp2 = (v: string[]) => set(tag2, v);
+            const getProp2 = () => get(tag2);
+
+            // Act / Assert
+            assert.deepStrictEqual(getProp2(), [`foo${i}`, "bar"]);
+
+            PropertyTests.propertyRoundTrip(setProp2, getProp2, ["fux", "bux", "qux"]);
+            assert.strictEqual(tag2.extendedContentDescriptionObject.descriptors.length, 1);
+            assert.strictEqual(tag2.extendedContentDescriptionObject.descriptors[0].name, descriptorName[0]);
+            assert.strictEqual(tag2.extendedContentDescriptionObject.descriptors[0].type, DataType.Unicode);
+            assert.strictEqual(tag2.extendedContentDescriptionObject.descriptors[0].getString(), "fux; bux; qux");
+        }
     }
 
     private testExtendedDescriptionObjectStringField(
