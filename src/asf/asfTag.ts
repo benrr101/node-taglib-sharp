@@ -22,7 +22,7 @@ export default class AsfTag extends Tag {
     private _extendedDescriptionObject: ExtendedContentDescriptionObject = ExtendedContentDescriptionObject.fromEmpty();
     private _metadataLibraryObject: MetadataLibraryObject = MetadataLibraryObject.fromEmpty();
 
-    private static readonly genreRegex = new RegExp(/\(([0-9]+)\)/).compile();
+    private static readonly genreRegex = new RegExp(/\(([0-9]+)\)/);
 
     // #region Constructors
 
@@ -252,7 +252,7 @@ export default class AsfTag extends Tag {
      *      https://docs.microsoft.com/en-us/windows/win32/wmformat/wm-genreid
      */
     public get genres(): string[] {
-        // @TODO: Strings should be combined and checked for duplicates
+        // @TODO: Strings from genre should be combined with genreID and checked for duplicates
         const value = this.getDescriptorString("WM/Genre", "WM/GenreID", "Genre");
         if (!value || value.trim().length === 0) {
             return [];
@@ -263,11 +263,11 @@ export default class AsfTag extends Tag {
             let genre = result[i].trim();
 
             // Attempt to find a numeric genre in here
-            AsfTag.genreRegex.exec(genre);
-            if (genre) {
-                const numericGenre = Number.parseInt(genre[1], 10);
+            const genreMatch = AsfTag.genreRegex.exec(genre);
+            if (genreMatch) {
+                const numericGenre = Number.parseInt(genreMatch[1], 10);
                 if (!Number.isNaN(numericGenre)) {
-                    genre = Genres.indexToAudio(genre[1], false);
+                    genre = Genres.indexToAudio(genreMatch[1], false);
                 }
             }
 
@@ -328,7 +328,8 @@ export default class AsfTag extends Tag {
         if (value === 0) {
             this.removeDescriptors("WM/TrackNumber");
         } else {
-            // @TODO: Config value for storing as DWORD or WMT_TYPE_STRING
+            // @TODO: Config value for storing as DWORD or WMT_TYPE_STRING OR store it the same way
+            //     it was read
             const descriptor = new ContentDescriptor("WM/TrackNumber", DataType.Unicode, value.toString());
             this.setDescriptors("WM/TrackNumber", descriptor);
         }
@@ -365,9 +366,6 @@ export default class AsfTag extends Tag {
         }
 
         const discSplit = discString.split("/");
-        if (discSplit.length < 1) {
-            return 0;
-        }
 
         const discNumber = Number.parseInt(discSplit[0], 10);
         return Number.isNaN(discNumber) ? 0 : discNumber;
@@ -465,11 +463,11 @@ export default class AsfTag extends Tag {
     public set beatsPerMinute(value: number) {
         Guards.uint(value, "value");
         if (value === 0) {
-            this.removeDescriptors("WM/TrackNumber");
+            this.removeDescriptors("WM/BeatsPerMinute");
         } else {
             // @TODO: Config value for storing as DWORD or WMT_TYPE_STRING
-            const descriptor = new ContentDescriptor("WM/TrackNumber", DataType.Unicode, value.toString());
-            this.setDescriptors("WM/TrackNumber", descriptor);
+            const descriptor = new ContentDescriptor("WM/BeatsPerMinute", DataType.Unicode, value.toString());
+            this.setDescriptors("WM/BeatsPerMinute", descriptor);
         }
     }
 

@@ -14,7 +14,7 @@ import {
     ExtendedContentDescriptionObject
 } from "../../src/asf/objects/extendedContentDescriptionObject";
 import {MetadataDescriptor, MetadataLibraryObject} from "../../src/asf/objects/metadataLibraryObject";
-import {DataType} from "../../src/asf/objects/descriptorBase";
+import {DataType, DescriptorBase} from "../../src/asf/objects/descriptorBase";
 import HeaderExtensionObject from "../../src/asf/objects/headerExtensionObject";
 import {TagTypes} from "../../src/tag";
 import PropertyTests from "../utilities/propertyTests";
@@ -47,6 +47,16 @@ const getHeaderExtensionObject: (children: BaseObject[]) => HeaderExtensionObjec
     );
     const headerExtFile = TestFile.getFile(headerExtBytes);
     return HeaderExtensionObject.fromFile(headerExtFile, 0);
+};
+
+const getTagWithExtensionDescriptor: (descriptorName: string, descriptorType: DataType, descriptorValue: any) => AsfTag
+    = (descriptorName: string, descriptorType: DataType, descriptorValue: any) => {
+    const descriptor = new ContentDescriptor(descriptorName, descriptorType, descriptorValue);
+    const edco = ExtendedContentDescriptionObject.fromEmpty();
+    edco.addDescriptor(descriptor);
+
+    const header = getHeaderObject([edco]);
+    return AsfTag.fromHeader(header);
 };
 
 @suite class Asf_Tag_constructorTests {
@@ -224,6 +234,141 @@ const getHeaderExtensionObject: (children: BaseObject[]) => HeaderExtensionObjec
         );
     }
 
+    @test
+    public albumSort() {
+        this.testExtendedDescriptionObjectStringField(
+            (t, v) => t.albumSort = v,
+            (t) => t.albumSort,
+            "WM/AlbumSortOrder"
+        );
+    }
+
+    @test
+    public comment() {
+        this.testExtendedDescriptionObjectStringField(
+            (t, v) => t.comment = v,
+            (t) => t.comment,
+            "WM/Text"
+        );
+    }
+
+    @test
+    public genres_general() {
+        this.testExtendedDescriptionObjectStringArray(
+            (t, v) => t.genres = v,
+            (t) => t.genres,
+            "WM/Genre", "WM/GenreID", "Genre"
+        );
+    }
+
+    @test
+    public genres_hasNumericGenres() {
+        // Arrange
+        const tag = getTagWithExtensionDescriptor("WM/GenreID", DataType.Unicode, "(13) ; Techno; (32)");
+
+        // Act
+        const genres = tag.genres;
+
+        // Assert
+        assert.sameMembers(genres, ["Pop", "Techno", "Classical"]);
+    }
+
+    @test
+    public year_tooShort() {
+        // Arrange
+        const tag = getTagWithExtensionDescriptor("WM/Year", DataType.Unicode, "222");
+
+        // Act
+        const year = tag.year;
+
+        // Assert
+        assert.strictEqual(year, 0);
+    }
+
+    @test
+    public year_general() {
+        // Arrange
+        const tag = AsfTag.fromEmpty();
+
+        // Act / Assert
+        assert.strictEqual(tag.year, 0);
+
+        PropertyTests.propertyRoundTrip((v) => tag.year = v, () => tag.year, 1234);
+        assert.strictEqual(tag.extendedContentDescriptionObject.descriptors.length, 1);
+        assert.strictEqual(tag.extendedContentDescriptionObject.descriptors[0].name, "WM/Year");
+        assert.strictEqual(tag.extendedContentDescriptionObject.descriptors[0].type, DataType.Unicode);
+        assert.strictEqual(tag.extendedContentDescriptionObject.descriptors[0].getString(), "1234");
+    }
+
+    @test
+    public track() {
+        this.testExtendedDescriptionObjectUintField(
+            (t, v) => t.track = v,
+            (t) => t.track,
+            "WM/TrackNumber",
+            DataType.Unicode,
+            (d) => d.getString(),
+            "1234"
+        );
+    }
+
+    @test
+    public trackCount() {
+        this.testExtendedDescriptionObjectUintField(
+            (t, v) => t.trackCount = v,
+            (t) => t.trackCount,
+            "TrackTotal",
+            DataType.DWord,
+            (d) => d.getUint(),
+            1234
+        );
+    }
+
+    @test
+    public disc_invalidValue() {
+        // Arrange
+        const tag = AsfTag.fromEmpty();
+
+        // Act / Assert
+        Testers.testUint((v) => tag.disc = v);
+    }
+
+    @test
+    public disc_noDescriptor_returnsZero() {
+        // Arrange
+        const tag = AsfTag.fromEmpty();
+
+        // Act
+        const disc = tag.disc;
+
+        // Assert
+        assert.strictEqual(disc, 0);
+    }
+
+    @test
+    public disc_noSplit_returnsNumber() {
+        // Arrange
+        const tag = getTagWithExtensionDescriptor("WM/PartOfSet", DataType.Unicode, "123");
+
+        // Act
+        const disc = tag.disc;
+
+        // Assert
+        assert.strictEqual(disc, 123);
+    }
+
+    @test
+    public disc_hasSplit_returnsNumerator() {
+        // Arrange
+        const tag = getTagWithExtensionDescriptor("WM/PartOfSet", DataType.Unicode, "123/234");
+
+        // Act
+        const disc = tag.disc;
+
+        // Assert
+        assert.strictEqual(disc, 123);
+    }
+
     private testContentDescriptorArray(
         set: (t: AsfTag, v: string[]) => void,
         get: (t: AsfTag) => string[],
@@ -361,6 +506,56 @@ const getHeaderExtensionObject: (children: BaseObject[]) => HeaderExtensionObjec
             assert.strictEqual(tag2.extendedContentDescriptionObject.descriptors[0].name, descriptorName[0]);
             assert.strictEqual(tag2.extendedContentDescriptionObject.descriptors[0].type, DataType.Unicode);
             assert.strictEqual(tag2.extendedContentDescriptionObject.descriptors[0].getString(), "fux");
+        }
+    }
+
+    private testExtendedDescriptionObjectUintField(
+        set: (t: AsfTag, v: number) => void,
+        get: (t: AsfTag) => number,
+        descriptorName: string,
+        expectedDescriptorType: DataType,
+        expectedDescriptorReader: (d: DescriptorBase) => any,
+        expectedDescriptorValue: any
+    ) {
+        // CASE 1: Default behavior ----------------------------------------
+        // Arrange
+        const tag = AsfTag.fromEmpty();
+        const setProp = (v: number) => set(tag, v);
+        const getProp = () => get(tag);
+
+        // Act / Assert
+        Testers.testUint((v) => setProp(v));
+
+        assert.strictEqual(getProp(), 0);
+
+        PropertyTests.propertyRoundTrip(setProp, getProp, 1234);
+        assert.strictEqual(tag.extendedContentDescriptionObject.descriptors.length, 1);
+        assert.strictEqual(tag.extendedContentDescriptionObject.descriptors[0].name, descriptorName);
+        assert.strictEqual(tag.extendedContentDescriptionObject.descriptors[0].type, expectedDescriptorType);
+        assert.strictEqual(
+            expectedDescriptorReader(tag.extendedContentDescriptionObject.descriptors[0]),
+            expectedDescriptorValue
+        );
+
+        PropertyTests.propertyRoundTrip(setProp, getProp, 0);
+        assert.strictEqual(tag.extendedContentDescriptionObject.descriptors.length, 0);
+
+        // CASE 2: Load unicode or dword -----------------------------------
+        const types = [
+            {dataType: DataType.Unicode, value: "1234"},
+            {dataType: DataType.DWord, value: 1234}
+        ];
+        for (const params of types) {
+            // Arrange
+            const descriptor = new ContentDescriptor(descriptorName, params.dataType, params.value);
+            const ecdo = ExtendedContentDescriptionObject.fromEmpty();
+            ecdo.addDescriptor(descriptor);
+
+            const header = getHeaderObject([ecdo]);
+            const tag2 = AsfTag.fromHeader(header);
+
+            // Act / Assert
+            assert.strictEqual(get(tag2), 1234);
         }
     }
 }
