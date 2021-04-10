@@ -197,6 +197,33 @@ const getHeaderExtensionObject: (children: BaseObject[]) => HeaderExtensionObjec
         );
     }
 
+    @test
+    public albumArtistsSort() {
+        this.testExtendedDescriptionObjectStringArray(
+            (t, v) => t.albumArtistsSort = v,
+            (t) => t.albumArtistsSort,
+            "WM/AlbumArtistSortOrder"
+        );
+    }
+
+    @test
+    public composers() {
+        this.testExtendedDescriptionObjectStringArray(
+            (t, v) => t.composers = v,
+            (t) => t.composers,
+            "WM/Composer", "Composer"
+        );
+    }
+
+    @test
+    public album() {
+        this.testExtendedDescriptionObjectStringField(
+            (t, v) => t.album = v,
+            (t) => t.album,
+            "WM/AlbumTitle", "Album"
+        );
+    }
+
     private testContentDescriptorArray(
         set: (t: AsfTag, v: string[]) => void,
         get: (t: AsfTag) => string[],
@@ -242,7 +269,7 @@ const getHeaderExtensionObject: (children: BaseObject[]) => HeaderExtensionObjec
         get: (t: AsfTag) => string[],
         ...descriptorName: string[]
     ) {
-            // TEST CASE 1: Basic Case -----------------------------------------
+        // TEST CASE 1: Basic Case -----------------------------------------
         // Arrange
         const tag = AsfTag.fromEmpty();
         const setProp = (v: string[]) => set(tag, v);
@@ -290,8 +317,9 @@ const getHeaderExtensionObject: (children: BaseObject[]) => HeaderExtensionObjec
     private testExtendedDescriptionObjectStringField(
         set: (t: AsfTag, v: string) => void,
         get: (t: AsfTag) => string,
-        descriptorName: string
+        ...descriptorName: string[]
     ) {
+        // TEST CASE 1: Basic Case -----------------------------------------
         // Arrange
         const tag = AsfTag.fromEmpty();
         const setProp = (v: string) => set(tag, v);
@@ -302,8 +330,37 @@ const getHeaderExtensionObject: (children: BaseObject[]) => HeaderExtensionObjec
 
         PropertyTests.propertyRoundTrip(setProp, getProp, "foo");
         assert.strictEqual(tag.extendedContentDescriptionObject.descriptors.length, 1);
-        assert.strictEqual(tag.extendedContentDescriptionObject.descriptors[0].name, descriptorName);
+        assert.strictEqual(tag.extendedContentDescriptionObject.descriptors[0].name, descriptorName[0]);
         assert.strictEqual(tag.extendedContentDescriptionObject.descriptors[0].type, DataType.Unicode);
         assert.strictEqual(tag.extendedContentDescriptionObject.descriptors[0].getString(), "foo");
+
+        // End test cases if there's only one descriptor name
+        if (descriptorName.length === 1) {
+            return;
+        }
+
+        // TEST CASE 2: Preferential descriptor names ----------------------
+        for (let i = 0; i < descriptorName.length; i++) {
+            // Arrange
+            const edco = ExtendedContentDescriptionObject.fromEmpty();
+            for (let j = descriptorName.length; j > i; j--) {
+                const descriptor = new ContentDescriptor(descriptorName[j - 1], DataType.Unicode, `foo${j - 1}`);
+                edco.addDescriptor(descriptor);
+            }
+
+            const headerObject = getHeaderObject([edco]);
+            const tag2 = AsfTag.fromHeader(headerObject);
+            const setProp2 = (v: string) => set(tag2, v);
+            const getProp2 = () => get(tag2);
+
+            // Act / Assert
+            assert.strictEqual(getProp2(), `foo${i}`);
+
+            PropertyTests.propertyRoundTrip(setProp2, getProp2, "fux");
+            assert.strictEqual(tag2.extendedContentDescriptionObject.descriptors.length, 1);
+            assert.strictEqual(tag2.extendedContentDescriptionObject.descriptors[0].name, descriptorName[0]);
+            assert.strictEqual(tag2.extendedContentDescriptionObject.descriptors[0].type, DataType.Unicode);
+            assert.strictEqual(tag2.extendedContentDescriptionObject.descriptors[0].getString(), "fux");
+        }
     }
 }
