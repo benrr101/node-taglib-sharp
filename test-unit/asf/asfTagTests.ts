@@ -1,7 +1,7 @@
 import * as Chai from "chai";
 import {suite, test} from "mocha-typescript";
 
-import AsfTag from "../../src/asf/asfTag";
+import AsfTag from "../../src/asf/AsfTag";
 import BaseObject from "../../src/asf/objects/baseObject";
 import HeaderObject from "../../src/asf/objects/headerObject";
 import TestFile from "../utilities/testFile";
@@ -59,7 +59,7 @@ const getTagWithExtensionDescriptor: (descriptorName: string, descriptorType: Da
     return AsfTag.fromHeader(header);
 };
 
-@suite class Asf_Tag_constructorTests {
+@suite class Asf_Tag_ConstructorTests {
     @test
     public fromEmpty() {
         // Act
@@ -325,15 +325,6 @@ const getTagWithExtensionDescriptor: (descriptorName: string, descriptorType: Da
     }
 
     @test
-    public disc_invalidValue() {
-        // Arrange
-        const tag = AsfTag.fromEmpty();
-
-        // Act / Assert
-        Testers.testUint((v) => tag.disc = v);
-    }
-
-    @test
     public disc_noDescriptor_returnsZero() {
         // Arrange
         const tag = AsfTag.fromEmpty();
@@ -369,6 +360,681 @@ const getTagWithExtensionDescriptor: (descriptorName: string, descriptorType: Da
         assert.strictEqual(disc, 123);
     }
 
+    @test
+    public disc_setInvalidValue() {
+        // Arrange
+        const tag = AsfTag.fromEmpty();
+
+        // Act / Assert
+        Testers.testUint((v) => tag.disc = v);
+    }
+
+    @test
+    public disc_setToZeroNoCount_removesDescriptor() {
+        // Arrange
+        const tag = getTagWithExtensionDescriptor("WM/PartOfSet", DataType.Unicode, "123");
+
+        // Act
+        tag.disc = 0;
+
+        // Assert
+        assert.strictEqual(tag.disc, 0);
+        assert.strictEqual(tag.discCount, 0);
+        assert.strictEqual(tag.extendedContentDescriptionObject.descriptors.length, 0);
+    }
+
+    @test
+    public disc_setToZeroZeroCount_removesDescriptor() {
+        // Arrange
+        const tag = getTagWithExtensionDescriptor("WM/PartOfSet", DataType.Unicode, "123/0");
+
+        // Act
+        tag.disc = 0;
+
+        // Assert
+        assert.strictEqual(tag.disc, 0);
+        assert.strictEqual(tag.discCount, 0);
+        assert.strictEqual(tag.extendedContentDescriptionObject.descriptors.length, 0);
+    }
+
+    @test
+    public disc_setToValueNoCount_setsNonfractionalDescriptor() {
+        // Arrange
+        const tag = AsfTag.fromEmpty();
+
+        // Act
+        tag.disc = 123;
+
+        // Assert
+        assert.strictEqual(tag.disc, 123);
+        assert.strictEqual(tag.discCount, 0);
+        assert.strictEqual(tag.extendedContentDescriptionObject.descriptors.length, 1);
+        assert.strictEqual(tag.extendedContentDescriptionObject.descriptors[0].name, "WM/PartOfSet");
+        assert.strictEqual(tag.extendedContentDescriptionObject.descriptors[0].type, DataType.Unicode);
+        assert.strictEqual(tag.extendedContentDescriptionObject.descriptors[0].getString(), "123");
+    }
+
+    @test
+    public disc_setToValueWithCount_setsFractionalDescriptor() {
+        // Arrange
+        const tag = getTagWithExtensionDescriptor("WM/PartOfSet", DataType.Unicode, "888/234");
+
+        // Act
+        tag.disc = 123;
+
+        // Assert
+        assert.strictEqual(tag.disc, 123);
+        assert.strictEqual(tag.discCount, 234);
+        assert.strictEqual(tag.extendedContentDescriptionObject.descriptors.length, 1);
+        assert.strictEqual(tag.extendedContentDescriptionObject.descriptors[0].name, "WM/PartOfSet");
+        assert.strictEqual(tag.extendedContentDescriptionObject.descriptors[0].type, DataType.Unicode);
+        assert.strictEqual(tag.extendedContentDescriptionObject.descriptors[0].getString(), "123/234");
+    }
+
+    @test
+    public discCount_noDescriptor_returnsZero() {
+        // Arrange
+        const tag = AsfTag.fromEmpty();
+
+        // Act
+        const discCount = tag.discCount;
+
+        // Assert
+        assert.strictEqual(discCount, 0);
+    }
+
+    @test
+    public discCount_noSplit_returnsZero() {
+        // Arrange
+        const tag = getTagWithExtensionDescriptor("WM/PartOfSet", DataType.Unicode, "123");
+
+        // Act
+        const discCount = tag.discCount;
+
+        // Assert
+        assert.strictEqual(discCount, 0);
+    }
+
+    @test
+    public discCount_hasSplitInvalidNumber_returnsZero() {
+        // Arrange
+        const tag = getTagWithExtensionDescriptor("WM/PartOfSet", DataType.Unicode, "123/abc");
+
+        // Act
+        const discCount = tag.discCount;
+
+        // Assert
+        assert.strictEqual(discCount, 0);
+    }
+
+    @test
+    public discCount_hasSplit_returnsDenominator() {
+        // Arrange
+        const tag = getTagWithExtensionDescriptor("WM/PartOfSet", DataType.Unicode, "123/234");
+
+        // Act
+        const discCount = tag.discCount;
+
+        // Assert
+        assert.strictEqual(discCount, 234);
+    }
+
+    @test
+    public discCount_setInvalid() {
+        // Arrange
+        const tag = AsfTag.fromEmpty();
+
+        // Act / Assert
+        Testers.testUint((v) => tag.disc = v);
+    }
+
+    @test
+    public discCount_setToZeroDisc_removesDescriptor() {
+        // Arrange
+        const tag = getTagWithExtensionDescriptor("WM/PartOfSet", DataType.Unicode, "0/123");
+        
+        // Act
+        tag.discCount = 0;
+        
+        // Assert
+        assert.strictEqual(tag.discCount, 0);
+        assert.strictEqual(tag.disc, 0);
+        assert.strictEqual(tag.extendedContentDescriptionObject.descriptors.length, 0);
+    }
+    
+    @test
+    public discCount_setToValueNoDisc_setsDescriptor() {
+        // Arrange
+        const tag = AsfTag.fromEmpty();
+
+        // Act
+        tag.discCount = 123;
+
+        // Assert
+        assert.strictEqual(tag.discCount, 123);
+        assert.strictEqual(tag.disc, 0);
+        assert.strictEqual(tag.extendedContentDescriptionObject.descriptors.length, 1);
+        assert.strictEqual(tag.extendedContentDescriptionObject.descriptors[0].name, "WM/PartOfSet");
+        assert.strictEqual(tag.extendedContentDescriptionObject.descriptors[0].type, DataType.Unicode);
+        assert.strictEqual(tag.extendedContentDescriptionObject.descriptors[0].getString(), "0/123");
+    }
+
+    @test
+    public discCount_setToValueHasDiscNoCount_setsDescriptor() {
+        // Arrange
+        const tag = getTagWithExtensionDescriptor("WM/PartOfSet", DataType.Unicode, "123");
+
+        // Act
+        tag.discCount = 234;
+
+        // Assert
+        assert.strictEqual(tag.discCount, 234);
+        assert.strictEqual(tag.disc, 123);
+        assert.strictEqual(tag.extendedContentDescriptionObject.descriptors.length, 1);
+        assert.strictEqual(tag.extendedContentDescriptionObject.descriptors[0].name, "WM/PartOfSet");
+        assert.strictEqual(tag.extendedContentDescriptionObject.descriptors[0].type, DataType.Unicode);
+        assert.strictEqual(tag.extendedContentDescriptionObject.descriptors[0].getString(), "123/234");
+    }
+
+    @test
+    public discCount_setToValueHasDisc_setsDescriptor() {
+        // Arrange
+        const tag = getTagWithExtensionDescriptor("WM/PartOfSet", DataType.Unicode, "123/888");
+
+        // Act
+        tag.discCount = 234;
+
+        // Assert
+        assert.strictEqual(tag.discCount, 234);
+        assert.strictEqual(tag.disc, 123);
+        assert.strictEqual(tag.extendedContentDescriptionObject.descriptors.length, 1);
+        assert.strictEqual(tag.extendedContentDescriptionObject.descriptors[0].name, "WM/PartOfSet");
+        assert.strictEqual(tag.extendedContentDescriptionObject.descriptors[0].type, DataType.Unicode);
+        assert.strictEqual(tag.extendedContentDescriptionObject.descriptors[0].getString(), "123/234");
+    }
+
+    @test
+    public lyrics_general() {
+        this.testExtendedDescriptionObjectStringField(
+            (t, v) => t.lyrics = v,
+            (t) => t.lyrics,
+            "WM/Lyrics"
+        );
+    }
+
+    @test
+    public grouping() {
+        this.testExtendedDescriptionObjectStringField(
+            (t, v) => t.grouping = v,
+            (t) => t.grouping,
+            "WM/ContentGroupDescription"
+        );
+    }
+
+    @test
+    public bpm() {
+        this.testExtendedDescriptionObjectUintField(
+            (t, v) => t.beatsPerMinute = v,
+            (t) => t.beatsPerMinute,
+            "WM/BeatsPerMinute",
+            DataType.Unicode,
+            (d) => d.getString(),
+            "1234"
+        );
+    }
+
+    @test
+    public conductor() {
+        this.testExtendedDescriptionObjectStringField(
+            (t, v) => t.conductor = v,
+            (t) => t.conductor,
+            "WM/Conductor"
+        );
+    }
+
+    @test
+    public copyright() {
+        this.testContentDescriptorField(
+            (t, v) => t.copyright = v,
+            (t) => t.copyright,
+            (cd) => cd.copyright
+        );
+    }
+
+    @test
+    public musicBrainzArtistId() {
+        this.testExtendedDescriptionObjectStringField(
+            (t, v) => t.musicBrainzArtistId = v,
+            (t) => t.musicBrainzArtistId,
+            "MusicBrainz/Artist Id"
+        );
+    }
+
+    @test
+    public musicBrainzReleaseGroupId() {
+        this.testExtendedDescriptionObjectStringField(
+            (t, v) => t.musicBrainzReleaseGroupId = v,
+            (t) => t.musicBrainzReleaseGroupId,
+            "MusicBrainz/Release Group Id"
+        );
+    }
+
+    @test
+    public musicBrainzReleaseId() {
+        this.testExtendedDescriptionObjectStringField(
+            (t, v) => t.musicBrainzReleaseId = v,
+            (t) => t.musicBrainzReleaseId,
+            "MusicBrainz/Album Id"
+        );
+    }
+
+    @test
+    public musicBrainzAlbumArtistId() {
+        this.testExtendedDescriptionObjectStringField(
+            (t, v) => t.musicBrainzAlbumArtistId = v,
+            (t) => t.musicBrainzAlbumArtistId,
+            "MusicBrainz/Album Artist Id"
+        );
+    }
+
+    @test
+    public musicBrainzTrackId() {
+        this.testExtendedDescriptionObjectStringField(
+            (t, v) => t.musicBrainzTrackId = v,
+            (t) => t.musicBrainzTrackId,
+            "MusicBrainz/Track Id"
+        );
+    }
+
+    @test
+    public musicBrainzDiscId() {
+        this.testExtendedDescriptionObjectStringField(
+            (t, v) => t.musicBrainzDiscId = v,
+            (t) => t.musicBrainzDiscId,
+            "MusicBrainz/Disc Id"
+        );
+    }
+
+    @test
+    public musicIpId() {
+        this.testExtendedDescriptionObjectStringField(
+            (t, v) => t.musicIpId = v,
+            (t) => t.musicIpId,
+            "MusicIP/PUID"
+        );
+    }
+
+    @test
+    public musicBrainzReleaseStatus() {
+        this.testExtendedDescriptionObjectStringField(
+            (t, v) => t.musicBrainzReleaseStatus = v,
+            (t) => t.musicBrainzReleaseStatus,
+            "MusicBrainz/Album Status"
+        );
+    }
+
+    @test
+    public musicBrainzReleaseType() {
+        this.testExtendedDescriptionObjectStringField(
+            (t, v) => t.musicBrainzReleaseType = v,
+            (t) => t.musicBrainzReleaseType,
+            "MusicBrainz/Album Type"
+        );
+    }
+
+    @test
+    public musicBrainzReleaseCountry() {
+        this.testExtendedDescriptionObjectStringField(
+            (t, v) => t.musicBrainzReleaseCountry = v,
+            (t) => t.musicBrainzReleaseCountry,
+            "MusicBrainz/Album Release Country"
+        );
+    }
+
+    @test
+    public replayGainTrackGain_noDescriptor_returnsNaN() {
+        // Arrange
+        const tag = AsfTag.fromEmpty();
+
+        // Act
+        const rpg = tag.replayGainTrackGain;
+
+        // Assert
+        assert.isNaN(rpg);
+    }
+
+    @test
+    public replayGainTrackGain_noValue_returnsNaN() {
+        // Arrange
+        const tag = getTagWithExtensionDescriptor("ReplayGain/Track", DataType.Unicode, "");
+
+        // Act
+        const rpg = tag.replayGainTrackGain;
+
+        // Assert
+        assert.isNaN(rpg);
+    }
+
+    @test
+    public replayGainTrackGain_invalid_returnsNaN() {
+        // Arrange
+        const tag = getTagWithExtensionDescriptor("ReplayGain/Track", DataType.Unicode, "   abcde ");
+
+        // Act
+        const rpg = tag.replayGainTrackGain;
+
+        // Assert
+        assert.isNaN(rpg);
+    }
+
+    @test
+    public replayGainTrackGain_hasValueWithoutDb_returnsValue() {
+        // Arrange
+        const tag = getTagWithExtensionDescriptor("ReplayGain/Track", DataType.Unicode, "1.23");
+
+        // Act
+        const rpg = tag.replayGainTrackGain;
+
+        // Assert
+        assert.strictEqual(rpg, 1.23);
+    }
+
+    @test
+    public replayGainTrackGain_hasValueWithDb_returnsValue() {
+        // Arrange
+        const tag = getTagWithExtensionDescriptor("ReplayGain/Track", DataType.Unicode, "1.23 dB");
+
+        // Act
+        const rpg = tag.replayGainTrackGain;
+
+        // Assert
+        assert.strictEqual(rpg, 1.23);
+    }
+
+    @test
+    public replayGainTrackGain_setInvalid() {
+        // Arrange
+        const tag = AsfTag.fromEmpty();
+
+        // Act / Assert
+        Testers.testTruthy((v: number) => tag.replayGainTrackGain = v);
+    }
+
+    @test
+    public replayGainTrackGain_setNaNValueExists_removesDescriptor() {
+        // Arrange
+        const tag = getTagWithExtensionDescriptor("ReplayGain/Track", DataType.Unicode, "1.23");
+
+        // Act
+        tag.replayGainTrackGain = Number.NaN;
+
+        // Assert
+        assert.isNaN(tag.replayGainTrackGain);
+        assert.strictEqual(tag.extendedContentDescriptionObject.descriptors.length, 0);
+    }
+
+    @test
+    public replayGainTrackGain_setValueExists_updatesDescriptor() {
+        // Arrange
+        const tag = getTagWithExtensionDescriptor("ReplayGain/Track", DataType.Unicode, "1.23");
+
+        // Act
+        tag.replayGainTrackGain = 1.2345;
+
+        // Assert
+        assert.strictEqual(tag.replayGainTrackGain, 1.23);
+        assert.strictEqual(tag.extendedContentDescriptionObject.descriptors.length, 1);
+        assert.strictEqual(tag.extendedContentDescriptionObject.descriptors[0].name, "ReplayGain/Track");
+        assert.strictEqual(tag.extendedContentDescriptionObject.descriptors[0].type, DataType.Unicode);
+        assert.strictEqual(tag.extendedContentDescriptionObject.descriptors[0].getString(), "1.23 dB");
+    }
+
+    @test
+    public replayGainTrackPeak_noValue_returnsNaN() {
+        // Arrange
+        const tag = AsfTag.fromEmpty();
+
+        // Act
+        const rpg = tag.replayGainTrackPeak;
+
+        // Assert
+        assert.isNaN(rpg);
+    }
+
+    @test
+    public replayGainTrackPeak_invalidValue_returnsNaN() {
+        // Arrange
+        const tag = getTagWithExtensionDescriptor("ReplayGain/Track Peak", DataType.Unicode, "   abcde");
+
+        // Act
+        const rpg = tag.replayGainTrackPeak;
+
+        // Assert
+        assert.isNaN(rpg);
+    }
+
+    @test
+    public replaygainTrackPeak_hasValue_returnsValue() {
+        // Arrange
+        const tag = getTagWithExtensionDescriptor("ReplayGain/Track Peak", DataType.Unicode, "1.23");
+
+        // Act
+        const rpg = tag.replayGainTrackPeak;
+
+        // Assert
+        assert.strictEqual(rpg, 1.23);
+    }
+
+    @test
+    public replayGainTrackPeak_setInvalid() {
+        // Arrange
+        const tag = AsfTag.fromEmpty();
+
+        // Act / Assert
+        Testers.testTruthy((v: number) => tag.replayGainTrackPeak = v);
+    }
+
+    @test
+    public replayGainTrackPeak_setNaNValueExists_removesDescriptor() {
+        // Arrange
+        const tag = getTagWithExtensionDescriptor("ReplayGain/Track Peak", DataType.Unicode, "1.23");
+
+        // Act
+        tag.replayGainTrackPeak = Number.NaN;
+
+        // Assert
+        assert.isNaN(tag.replayGainTrackPeak);
+        assert.strictEqual(tag.extendedContentDescriptionObject.descriptors.length, 0);
+    }
+
+    @test
+    public replayGainTrackPeak_setValueExists_updatesDescriptor() {
+        // Arrange
+        const tag = getTagWithExtensionDescriptor("ReplayGain/Track Peak", DataType.Unicode, "1.23");
+
+        // Act
+        tag.replayGainTrackPeak = 1.23456789;
+
+        // Assert
+        assert.strictEqual(tag.replayGainTrackPeak, 1.234568);
+        assert.strictEqual(tag.extendedContentDescriptionObject.descriptors.length, 1);
+        assert.strictEqual(tag.extendedContentDescriptionObject.descriptors[0].name, "ReplayGain/Track Peak");
+        assert.strictEqual(tag.extendedContentDescriptionObject.descriptors[0].type, DataType.Unicode);
+        assert.strictEqual(tag.extendedContentDescriptionObject.descriptors[0].getString(), "1.234568");
+    }
+
+    @test
+    public replayGainAlbumGain_noDescriptor_returnsNaN() {
+        // Arrange
+        const tag = AsfTag.fromEmpty();
+
+        // Act
+        const rpg = tag.replayGainAlbumGain;
+
+        // Assert
+        assert.isNaN(rpg);
+    }
+
+    @test
+    public replayGainAlbumGain_noValue_returnsNaN() {
+        // Arrange
+        const tag = getTagWithExtensionDescriptor("ReplayGain/Album", DataType.Unicode, "");
+
+        // Act
+        const rpg = tag.replayGainAlbumGain;
+
+        // Assert
+        assert.isNaN(rpg);
+    }
+
+    @test
+    public replayGainAlbumGain_invalid_returnsNaN() {
+        // Arrange
+        const tag = getTagWithExtensionDescriptor("ReplayGain/Album", DataType.Unicode, "   abcde ");
+
+        // Act
+        const rpg = tag.replayGainAlbumGain;
+
+        // Assert
+        assert.isNaN(rpg);
+    }
+
+    @test
+    public replayGainAlbumGain_hasValueWithoutDb_returnsValue() {
+        // Arrange
+        const tag = getTagWithExtensionDescriptor("ReplayGain/Album", DataType.Unicode, "1.23");
+
+        // Act
+        const rpg = tag.replayGainAlbumGain;
+
+        // Assert
+        assert.strictEqual(rpg, 1.23);
+    }
+
+    @test
+    public replayGainAlbumGain_hasValueWithDb_returnsValue() {
+        // Arrange
+        const tag = getTagWithExtensionDescriptor("ReplayGain/Album", DataType.Unicode, "1.23 dB");
+
+        // Act
+        const rpg = tag.replayGainAlbumGain;
+
+        // Assert
+        assert.strictEqual(rpg, 1.23);
+    }
+
+    @test
+    public replayGainAlbumGain_setInvalid() {
+        // Arrange
+        const tag = AsfTag.fromEmpty();
+
+        // Act / Assert
+        Testers.testTruthy((v: number) => tag.replayGainAlbumGain = v);
+    }
+
+    @test
+    public replayGainAlbumGain_setNaNValueExists_removesDescriptor() {
+        // Arrange
+        const tag = getTagWithExtensionDescriptor("ReplayGain/Album", DataType.Unicode, "1.23");
+
+        // Act
+        tag.replayGainAlbumGain = Number.NaN;
+
+        // Assert
+        assert.isNaN(tag.replayGainAlbumGain);
+        assert.strictEqual(tag.extendedContentDescriptionObject.descriptors.length, 0);
+    }
+
+    @test
+    public replayGainAlbumGain_setValueExists_updatesDescriptor() {
+        // Arrange
+        const tag = getTagWithExtensionDescriptor("ReplayGain/Album", DataType.Unicode, "1.23");
+
+        // Act
+        tag.replayGainAlbumGain = 1.2345;
+
+        // Assert
+        assert.strictEqual(tag.replayGainAlbumGain, 1.23);
+        assert.strictEqual(tag.extendedContentDescriptionObject.descriptors.length, 1);
+        assert.strictEqual(tag.extendedContentDescriptionObject.descriptors[0].name, "ReplayGain/Album");
+        assert.strictEqual(tag.extendedContentDescriptionObject.descriptors[0].type, DataType.Unicode);
+        assert.strictEqual(tag.extendedContentDescriptionObject.descriptors[0].getString(), "1.23 dB");
+    }
+
+    @test
+    public replayGainAlbumPeak_noValue_returnsNaN() {
+        // Arrange
+        const tag = AsfTag.fromEmpty();
+
+        // Act
+        const rpg = tag.replayGainAlbumPeak;
+
+        // Assert
+        assert.isNaN(rpg);
+    }
+
+    @test
+    public replayGainAlbumPeak_invalidValue_returnsNaN() {
+        // Arrange
+        const tag = getTagWithExtensionDescriptor("ReplayGain/Album Peak", DataType.Unicode, "   abcde");
+
+        // Act
+        const rpg = tag.replayGainAlbumPeak;
+
+        // Assert
+        assert.isNaN(rpg);
+    }
+
+    @test
+    public replaygainAlbumPeak_hasValue_returnsValue() {
+        // Arrange
+        const tag = getTagWithExtensionDescriptor("ReplayGain/Album Peak", DataType.Unicode, "1.23");
+
+        // Act
+        const rpg = tag.replayGainAlbumPeak;
+
+        // Assert
+        assert.strictEqual(rpg, 1.23);
+    }
+
+    @test
+    public replayGainAlbumPeak_setInvalid() {
+        // Arrange
+        const tag = AsfTag.fromEmpty();
+
+        // Act / Assert
+        Testers.testTruthy((v: number) => tag.replayGainAlbumPeak = v);
+    }
+
+    @test
+    public replayGainAlbumPeak_setNaNValueExists_removesDescriptor() {
+        // Arrange
+        const tag = getTagWithExtensionDescriptor("ReplayGain/Album Peak", DataType.Unicode, "1.23");
+
+        // Act
+        tag.replayGainAlbumPeak = Number.NaN;
+
+        // Assert
+        assert.isNaN(tag.replayGainAlbumPeak);
+        assert.strictEqual(tag.extendedContentDescriptionObject.descriptors.length, 0);
+    }
+
+    @test
+    public replayGainAlbumPeak_setValueExists_updatesDescriptor() {
+        // Arrange
+        const tag = getTagWithExtensionDescriptor("ReplayGain/Album Peak", DataType.Unicode, "1.23");
+
+        // Act
+        tag.replayGainAlbumPeak = 1.23456789;
+
+        // Assert
+        assert.strictEqual(tag.replayGainAlbumPeak, 1.234568);
+        assert.strictEqual(tag.extendedContentDescriptionObject.descriptors.length, 1);
+        assert.strictEqual(tag.extendedContentDescriptionObject.descriptors[0].name, "ReplayGain/Album Peak");
+        assert.strictEqual(tag.extendedContentDescriptionObject.descriptors[0].type, DataType.Unicode);
+        assert.strictEqual(tag.extendedContentDescriptionObject.descriptors[0].getString(), "1.234568");
+    }
+    
     private testContentDescriptorArray(
         set: (t: AsfTag, v: string[]) => void,
         get: (t: AsfTag) => string[],

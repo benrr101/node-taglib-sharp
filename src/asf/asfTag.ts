@@ -381,6 +381,7 @@ export default class AsfTag extends Tag {
         const count = this.discCount;
         if (value === 0 && count === 0) {
             this.removeDescriptors("WM/PartOfSet");
+            return;
         }
 
         const descriptorValue = count !== 0 ? `${value}/${count}` : value.toString();
@@ -417,10 +418,10 @@ export default class AsfTag extends Tag {
         const disc = this.disc;
         if (value === 0 && disc === 0) {
             this.removeDescriptors("WM/PartOfSet");
+            return;
         }
 
-        const descriptorValue = disc !== 0 ? `${disc}/${value}` : value.toString();
-        this.setDescriptorString(descriptorValue, "WM/PartOfSet");
+        this.setDescriptorString(`${disc}/${value}`, "WM/PartOfSet");
     }
 
     /**
