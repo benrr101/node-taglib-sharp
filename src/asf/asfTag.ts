@@ -717,7 +717,8 @@ export default class AsfTag extends Tag {
     /**
      * @inheritDoc
      * @remarks via the `WM/Picture` content descriptor and description record.
-     *      https://docs.microsoft.com/en-us/windows/win32/wmformat/wmpicture
+     *     https://docs.microsoft.com/en-us/windows/win32/wmformat/wmpicture
+     *     Modifications to the returned array will not stored.
      */
     public get pictures(): IPicture[] {
         const records = [
@@ -730,7 +731,7 @@ export default class AsfTag extends Tag {
     /**
      * @inheritDoc
      * @remarks via the `WM/Picture` content descriptor and description record.
-     *      https://docs.microsoft.com/en-us/windows/win32/wmformat/wmpicture
+     *     https://docs.microsoft.com/en-us/windows/win32/wmformat/wmpicture
      */
     public set pictures(value: IPicture[]) {
         if (!value || value.length === 0) {
@@ -899,7 +900,8 @@ export default class AsfTag extends Tag {
         this.setDescriptorString(value.join("; "), ...names);
     }
 
-    private static pictureFromData(data: ByteVector): Picture {
+    /** @internal */
+    public static pictureFromData(data: ByteVector): Picture {
         if (data.length < 9) {
             return undefined;
         }
@@ -916,7 +918,7 @@ export default class AsfTag extends Tag {
         // Get the mime-type
         const delimiter = ByteVector.getTextDelimiter(StringType.UTF16LE);
         const mimeTypeDelimiterIndex = data.find(delimiter, offset, delimiter.length);
-        if (mimeTypeDelimiterIndex < 0) {
+        if (mimeTypeDelimiterIndex < 0 || mimeTypeDelimiterIndex - offset === 0) {
             return undefined;
         }
         const mimeType = data.toString(mimeTypeDelimiterIndex - offset, StringType.UTF16LE, offset);
@@ -924,7 +926,7 @@ export default class AsfTag extends Tag {
 
         // Get the description
         const descriptionDelimiterIndex = data.find(delimiter, offset, delimiter.length);
-        if (descriptionDelimiterIndex < 0) {
+        if (descriptionDelimiterIndex < 0 || descriptionDelimiterIndex - offset === 0) {
             return undefined;
         }
         const description = data.toString(descriptionDelimiterIndex - offset, StringType.UTF16LE, offset);
@@ -933,8 +935,8 @@ export default class AsfTag extends Tag {
         return Picture.fromFullData(data.mid(offset, pictureSize), pictureType, mimeType, description);
     }
 
-    private static pictureToData(picture: IPicture) {
-        // @TODO: Make Read/Render methods be in the File class? Or in a helper class?
+    /** @internal */
+    public static pictureToData(picture: IPicture) {
         return ByteVector.concatenate(
             picture.type,
             ReadWriteUtils.renderDWord(picture.data.length),

@@ -10,7 +10,7 @@ import {ByteVector, StringType} from "../../src/byteVector";
 import {Frame, FrameClassType} from "../../src/id3v2/frames/frame";
 import {FrameIdentifiers} from "../../src/id3v2/frameIdentifiers";
 import {Id3v2FrameHeader} from "../../src/id3v2/frames/frameHeader";
-import Testers from "../utilities/testers";
+import {Testers} from "../utilities/testers";
 
 // Setup Chai
 Chai.use(ChaiAsPromised);

@@ -3,7 +3,7 @@ import * as ChaiAsPromised from "chai-as-promised";
 import * as TypeMoq from "typemoq";
 import FrameConstructorTests from "./frameConstructorTests";
 import PropertyTests from "../utilities/propertyTests";
-import Testers from "../utilities/testers";
+import {Testers} from "../utilities/testers";
 import {suite, test} from "mocha-typescript";
 
 import AttachmentFrame from "../../src/id3v2/frames/attachmentFrame";

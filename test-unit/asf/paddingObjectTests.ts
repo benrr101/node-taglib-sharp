@@ -1,7 +1,7 @@
 import * as Chai from "chai";
 import {suite, test} from "mocha-typescript";
 import ObjectTests from "./objectTests";
-import Testers from "../utilities/testers";
+import {Testers} from "../utilities/testers";
 import TestFile from "../utilities/testFile";
 import {ByteVector} from "../../src/byteVector";
 import {File} from "../../src/file";

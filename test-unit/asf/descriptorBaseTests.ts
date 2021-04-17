@@ -1,7 +1,7 @@
 import * as Chai from "chai";
 import {suite} from "mocha-typescript";
 
-import Testers from "../utilities/testers";
+import {Testers} from "../utilities/testers";
 import UuidWrapper from "../../src/uuidWrapper";
 import {DataType, DescriptorBase, DescriptorValue} from "../../src/asf/objects/descriptorBase";
 import {ByteVector} from "../../src/byteVector";

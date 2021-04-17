@@ -1,6 +1,6 @@
 import * as Chai from "chai";
 import {suite, test} from "mocha-typescript";
-import Testers from "../utilities/testers";
+import {Testers} from "../utilities/testers";
 import {ByteVector} from "../../src/byteVector";
 
 import RiffBitmapInfoHeader from "../../src/riff/riffBitmapInfoHeader";

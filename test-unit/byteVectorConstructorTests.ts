@@ -3,7 +3,7 @@ import * as ChaiAsPromised from "chai-as-promised";
 import * as StreamBuffers from "stream-buffers";
 import * as TypeMoq from "typemoq";
 import TestConstants from "./testConstants";
-import Testers from "./utilities/testers";
+import {Testers} from "./utilities/testers";
 import TestStream from "./utilities/testStream";
 import {suite, test} from "mocha-typescript";
 

@@ -5,7 +5,7 @@ import AsfTag from "../../src/asf/AsfTag";
 import BaseObject from "../../src/asf/objects/baseObject";
 import HeaderObject from "../../src/asf/objects/headerObject";
 import TestFile from "../utilities/testFile";
-import {ByteVector} from "../../src/byteVector";
+import {ByteVector, StringType} from "../../src/byteVector";
 import {TagTesters, Testers} from "../utilities/testers";
 import {Guids} from "../../src/asf/constants";
 import ContentDescriptionObject from "../../src/asf/objects/contentDescriptionObject";
@@ -18,6 +18,8 @@ import {DataType, DescriptorBase} from "../../src/asf/objects/descriptorBase";
 import HeaderExtensionObject from "../../src/asf/objects/headerExtensionObject";
 import {TagTypes} from "../../src/tag";
 import PropertyTests from "../utilities/propertyTests";
+import {IPicture, PictureType} from "../../src/iPicture";
+import {Mock} from "typemoq";
 
 // Setup chai
 const assert = Chai.assert;
@@ -1034,7 +1036,168 @@ const getTagWithExtensionDescriptor: (descriptorName: string, descriptorType: Da
         assert.strictEqual(tag.extendedContentDescriptionObject.descriptors[0].type, DataType.Unicode);
         assert.strictEqual(tag.extendedContentDescriptionObject.descriptors[0].getString(), "1.234568");
     }
-    
+
+    @test
+    public pictures_noDescriptors_returnsEmptyArray() {
+        // Arrange
+        const tag = AsfTag.fromEmpty();
+
+        // Act
+        const pictures = tag.pictures;
+
+        // Assert
+        assert.isOk(pictures);
+        assert.isEmpty(pictures);
+    }
+
+    @test
+    public pictures_hasDescriptors_returnsPictures() {
+        // Arrange
+        // - extended content descriptors pic 1 -> too small, is ignored
+        const pic1Data = ByteVector.fromSize(5, 0x08);
+        const ecdoPic1Descriptor = new ContentDescriptor("WM/Picture", DataType.Bytes, pic1Data);
+
+        // - extended content descriptors pic 2 -> valid
+        const pic2PictureData = ByteVector.fromSize(10, 0x08);
+        const pic2Data = ByteVector.concatenate(
+            PictureType.ColoredFish,
+            ByteVector.fromUInt(pic2PictureData.length, false),
+            ByteVector.fromString("Ha! Ha!", StringType.UTF16LE),
+            ByteVector.getTextDelimiter(StringType.UTF16LE),
+            ByteVector.fromString("I'm using the internet!", StringType.UTF16LE),
+            ByteVector.getTextDelimiter(StringType.UTF16LE),
+            pic2PictureData
+        );
+        const ecdoPic2Descriptor = new ContentDescriptor("WM/Picture", DataType.Bytes, pic2Data);
+
+        // - metadata library pic 1 -> too small, is ignored
+        const mlPic1Descriptor = new MetadataDescriptor(0, 0, "WM/Picture", DataType.Bytes, pic1Data);
+
+        // - metadata library pic 2 -> valid
+        const mlPic2Descriptor = new MetadataDescriptor(0, 0, "WM/Picture", DataType.Bytes, pic2Data);
+
+        const ecdo = ExtendedContentDescriptionObject.fromEmpty();
+        ecdo.addDescriptor(ecdoPic1Descriptor);
+        ecdo.addDescriptor(ecdoPic2Descriptor);
+
+        const mlo = MetadataLibraryObject.fromEmpty();
+        mlo.addRecord(mlPic1Descriptor);
+        mlo.addRecord(mlPic2Descriptor);
+
+        const headerExtension = getHeaderExtensionObject([mlo]);
+        const header = getHeaderObject([ecdo, headerExtension]);
+        const tag = AsfTag.fromHeader(header);
+
+        // Act
+        const pictures = tag.pictures;
+
+        // Assert
+        assert.isOk(pictures);
+        assert.strictEqual(pictures.length, 2);
+        for (const pic of pictures) {
+            assert.isOk(pic);
+            assert.strictEqual(pic.description, "I'm using the internet!");
+            assert.strictEqual(pic.mimeType, "Ha! Ha!");
+            assert.strictEqual(pic.type, PictureType.ColoredFish);
+            assert.isUndefined(pic.filename);
+            assert.isTrue(ByteVector.equal(pic.data, pic2PictureData));
+        }
+    }
+
+    @test
+    public setPictures_small() {
+        // Arrange
+        const ecdoPicData = ByteVector.fromSize(22, 0x08);
+        const ecdoDescriptor = new ContentDescriptor("WM/Picture", DataType.Bytes, ecdoPicData);
+        const mloPicData = ByteVector.fromSize(11, 0x08);
+        const mloDescriptor = new MetadataDescriptor(0, 0, "WM/Picture", DataType.Bytes, mloPicData);
+
+        const mlo = MetadataLibraryObject.fromEmpty();
+        mlo.addRecord(mloDescriptor);
+
+        const ecdo = ExtendedContentDescriptionObject.fromEmpty();
+        ecdo.addDescriptor(ecdoDescriptor);
+
+        const headerExtension = getHeaderExtensionObject([mlo]);
+        const header = getHeaderObject([headerExtension, ecdo]);
+        const tag = AsfTag.fromHeader(header);
+
+        const mockPicture = Mock.ofType<IPicture>();
+        const pictureData = ByteVector.fromSize(22, 0x08);
+        mockPicture.setup((p) => p.type).returns(() => PictureType.ColoredFish);
+        mockPicture.setup((p) => p.data).returns(() => pictureData);
+        mockPicture.setup((p) => p.mimeType).returns(() => "Ha! Ha!");
+        mockPicture.setup((p) => p.description).returns(() => "I'm using the internet!");
+
+        // Act
+        tag.pictures = [mockPicture.object];
+        const output = tag.pictures;
+
+        // Assert
+        assert.isOk(output);
+        assert.strictEqual(output.length, 1);
+        assert.isOk(output[0]);
+        assert.strictEqual(output[0].description, "I'm using the internet!");
+        assert.strictEqual(output[0].mimeType, "Ha! Ha!");
+        assert.strictEqual(output[0].type, PictureType.ColoredFish);
+        assert.isUndefined(output[0].filename);
+        assert.isTrue(ByteVector.equal(output[0].data, pictureData));
+
+        assert.strictEqual(tag.extendedContentDescriptionObject.descriptors.length, 1);
+        assert.strictEqual(tag.extendedContentDescriptionObject.descriptors[0].name, "WM/Picture");
+        assert.strictEqual(tag.extendedContentDescriptionObject.descriptors[0].type, DataType.Bytes);
+
+        assert.strictEqual(tag.metadataLibraryObject.records.length, 0);
+    }
+
+    @test
+    public setPictures_large() {
+        // Arrange
+        const ecdoPicData = ByteVector.fromSize(22, 0x08);
+        const ecdoDescriptor = new ContentDescriptor("WM/Picture", DataType.Bytes, ecdoPicData);
+        const mloPicData = ByteVector.fromSize(11, 0x08);
+        const mloDescriptor = new MetadataDescriptor(0, 0, "WM/Picture", DataType.Bytes, mloPicData);
+
+        const mlo = MetadataLibraryObject.fromEmpty();
+        mlo.addRecord(mloDescriptor);
+
+        const ecdo = ExtendedContentDescriptionObject.fromEmpty();
+        ecdo.addDescriptor(ecdoDescriptor);
+
+        const headerExtension = getHeaderExtensionObject([mlo]);
+        const header = getHeaderObject([headerExtension, ecdo]);
+        const tag = AsfTag.fromHeader(header);
+
+        const mockPicture = Mock.ofType<IPicture>();
+        const pictureData = ByteVector.fromSize(0x10000, 0x08);
+        mockPicture.setup((p) => p.type).returns(() => PictureType.ColoredFish);
+        mockPicture.setup((p) => p.data).returns(() => pictureData);
+        mockPicture.setup((p) => p.mimeType).returns(() => "Ha! Ha!");
+        mockPicture.setup((p) => p.description).returns(() => "I'm using the internet!");
+
+        // Act
+        tag.pictures = [mockPicture.object];
+        const output = tag.pictures;
+
+        // Assert
+        assert.isOk(output);
+        assert.strictEqual(output.length, 1);
+        assert.isOk(output[0]);
+        assert.strictEqual(output[0].description, "I'm using the internet!");
+        assert.strictEqual(output[0].mimeType, "Ha! Ha!");
+        assert.strictEqual(output[0].type, PictureType.ColoredFish);
+        assert.isUndefined(output[0].filename);
+        assert.isTrue(ByteVector.equal(output[0].data, pictureData));
+
+        assert.strictEqual(tag.metadataLibraryObject.records.length, 1);
+        assert.strictEqual(tag.metadataLibraryObject.records[0].name, "WM/Picture");
+        assert.strictEqual(tag.metadataLibraryObject.records[0].type, DataType.Bytes);
+        assert.strictEqual(tag.metadataLibraryObject.records[0].streamNumber, 0);
+        assert.strictEqual(tag.metadataLibraryObject.records[0].languageListIndex, 0);
+
+        assert.strictEqual(tag.extendedContentDescriptionObject.descriptors.length, 0);
+    }
+
     private testContentDescriptorArray(
         set: (t: AsfTag, v: string[]) => void,
         get: (t: AsfTag) => string[],
@@ -1223,5 +1386,136 @@ const getTagWithExtensionDescriptor: (descriptorName: string, descriptorType: Da
             // Act / Assert
             assert.strictEqual(get(tag2), 1234);
         }
+    }
+}
+
+@suite class Asf_Tag_MethodTests {
+    @test
+    public pictureFromData_tooSmall() {
+        // Arrange
+        const data = ByteVector.fromSize(5);
+
+        // Act
+        const output = AsfTag.pictureFromData(data);
+
+        // Assert
+        assert.isUndefined(output);
+    }
+
+    @test
+    public pictureFromData_missingMimeTypeDelimiter() {
+        // Arrange
+        const data = ByteVector.concatenate(
+            ByteVector.fromUInt(1234, false),
+            ByteVector.fromSize(10, 0x01)
+        );
+
+        // Act
+        const output = AsfTag.pictureFromData(data);
+
+        // Assert
+        assert.isUndefined(output);
+    }
+
+    @test
+    public pictureFromData_missingMimeTypeDelimiterWithZeroes() {
+        // Arrange
+        const data = ByteVector.concatenate(
+            ByteVector.fromUInt(1234, false),
+            ByteVector.fromSize(10, 0x00)
+        );
+
+        // Act
+        const output = AsfTag.pictureFromData(data);
+
+        // Assert
+        assert.isUndefined(output);
+    }
+
+    @test
+    public pictureFromData_missingDescriptionDelimiter() {
+        // Arrange
+        const data = ByteVector.concatenate(
+            ByteVector.fromUInt(1234, false),
+            ByteVector.fromString("Ha! Ha!", StringType.UTF16LE),
+            ByteVector.getTextDelimiter(StringType.UTF16LE),
+            ByteVector.fromSize(10, 0x01)
+        );
+
+        // Act
+        const output = AsfTag.pictureFromData(data);
+
+        // Assert
+        assert.isUndefined(output);
+    }
+
+    @test
+    public pictureFromData_missingDescriptionDelimiterWithZeroes() {
+        // Arrange
+        const data = ByteVector.concatenate(
+            ByteVector.fromUInt(1234, false),
+            ByteVector.fromString("Ha! Ha!", StringType.UTF16LE),
+            ByteVector.getTextDelimiter(StringType.UTF16LE),
+            ByteVector.fromSize(10, 0x00)
+        );
+
+        // Act
+        const output = AsfTag.pictureFromData(data);
+
+        // Assert
+        assert.isUndefined(output);
+    }
+
+    @test
+    public pictureFromData_properlyFormed() {
+        // Arrange
+        const pictureData = ByteVector.fromSize(22, 0x08);
+        const data = ByteVector.concatenate(
+            PictureType.ColoredFish,
+            ByteVector.fromUInt(pictureData.length, false),
+            ByteVector.fromString("Ha! Ha!", StringType.UTF16LE),
+            ByteVector.getTextDelimiter(StringType.UTF16LE),
+            ByteVector.fromString("I'm using the internet!", StringType.UTF16LE),
+            ByteVector.getTextDelimiter(StringType.UTF16LE),
+            pictureData
+        );
+
+        // Act
+        const output = AsfTag.pictureFromData(data);
+
+        // Assert
+        assert.isOk(output);
+        assert.strictEqual(output.description, "I'm using the internet!");
+        assert.strictEqual(output.mimeType, "Ha! Ha!");
+        assert.strictEqual(output.type, PictureType.ColoredFish);
+        assert.isUndefined(output.filename);
+        assert.isTrue(ByteVector.equal(output.data, pictureData));
+    }
+
+    @test
+    public pictureToData() {
+        // Arrange
+        const pictureData = ByteVector.fromSize(10, 0x08);
+
+        const mockPicture = Mock.ofType<IPicture>();
+        mockPicture.setup((p) => p.type).returns(() => PictureType.ColoredFish);
+        mockPicture.setup((p) => p.data).returns(() => pictureData);
+        mockPicture.setup((p) => p.mimeType).returns(() => "Ha! Ha!");
+        mockPicture.setup((p) => p.description).returns(() => "I'm using the internet!");
+
+        // Act
+        const output = AsfTag.pictureToData(mockPicture.object);
+
+        // Assert
+        const expected = ByteVector.concatenate(
+            PictureType.ColoredFish,
+            ByteVector.fromUInt(pictureData.length, false),
+            ByteVector.fromString("Ha! Ha!", StringType.UTF16LE),
+            ByteVector.getTextDelimiter(StringType.UTF16LE),
+            ByteVector.fromString("I'm using the internet!", StringType.UTF16LE),
+            ByteVector.getTextDelimiter(StringType.UTF16LE),
+            pictureData
+        );
+        assert.isTrue(ByteVector.equal(output, expected));
     }
 }

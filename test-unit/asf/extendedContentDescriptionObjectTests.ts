@@ -3,7 +3,7 @@ import {suite, test} from "mocha-typescript";
 
 import {Guids, ObjectType} from "../../src/asf/constants";
 import ObjectTests from "./objectTests";
-import Testers from "../utilities/testers";
+import {Testers} from "../utilities/testers";
 import TestFile from "../utilities/testFile";
 import UuidWrapper from "../../src/uuidWrapper";
 import {ByteVector, StringType} from "../../src/byteVector";

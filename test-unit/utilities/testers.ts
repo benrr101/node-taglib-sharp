@@ -1,9 +1,6 @@
 import * as Chai from "chai";
 
 import {Tag} from "../../src/tag";
-import BaseObject from "../../src/asf/objects/baseObject";
-import {ByteVector} from "../../src";
-import {Guids} from "../../src/asf/constants";
 
 // Setup Chai
 const assert = Chai.assert;

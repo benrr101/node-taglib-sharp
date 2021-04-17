@@ -3,7 +3,7 @@ import * as ChaiAsPromised from "chai-as-promised";
 import * as fs from "fs";
 import PropertyTests from "./utilities/propertyTests";
 import TestConstants from "./testConstants";
-import Testers from "./utilities/testers";
+import {Testers} from "./utilities/testers";
 import {suite, test} from "mocha-typescript";
 
 import {ByteVector} from "../src/byteVector";
