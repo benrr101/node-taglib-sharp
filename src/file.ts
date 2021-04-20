@@ -555,6 +555,7 @@ export abstract class File {
         let readPosition = start + length;
         let writePosition = start;
         let buffer: ByteVector;
+        // noinspection JSUnusedAssignment Short circuit evaluation prevents attempt to access uninitialized variable
         while (!buffer || buffer.length !== 0) {
             this._fileStream.position = readPosition;
             buffer = this.readBlock(bufferLength);

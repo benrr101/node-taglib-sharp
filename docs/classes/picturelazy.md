@@ -40,7 +40,7 @@ needed. This saves time and memory if the picture loading is not required.
 
 • **data**(): [*ByteVector*](bytevector.md)
 
-**`inheritdoc`** 
+Gets and sets the picture data stored in the current instance.
 
 **Returns:** [*ByteVector*](bytevector.md)
 
@@ -48,7 +48,7 @@ Implementation of: [IPicture](../interfaces/ipicture.md).[data](../interfaces/ip
 
 • **data**(`value`: [*ByteVector*](bytevector.md)): *void*
 
-**`inheritdoc`** 
+Gets and sets the picture data stored in the current instance.
 
 #### Parameters:
 
@@ -66,7 +66,7 @@ ___
 
 • **description**(): *string*
 
-**`inheritdoc`** 
+Gets and sets a description of the picture stored in the current instance. Optional.
 
 **Returns:** *string*
 
@@ -74,7 +74,7 @@ Implementation of: [IPicture](../interfaces/ipicture.md).[description](../interf
 
 • **description**(`value`: *string*): *void*
 
-**`inheritdoc`** 
+Gets and sets a description of the picture stored in the current instance. Optional.
 
 #### Parameters:
 
@@ -92,7 +92,7 @@ ___
 
 • **filename**(): *string*
 
-**`inheritdoc`** 
+Gets and sets a filename of the picture stored in the current instance. Optional.
 
 **Returns:** *string*
 
@@ -100,7 +100,7 @@ Implementation of: [IPicture](../interfaces/ipicture.md).[filename](../interface
 
 • **filename**(`value`: *string*): *void*
 
-**`inheritdoc`** 
+Gets and sets a filename of the picture stored in the current instance. Optional.
 
 #### Parameters:
 
@@ -128,7 +128,7 @@ ___
 
 • **mimeType**(): *string*
 
-**`inheritdoc`** 
+Gets and sets the mime-type of the picture data stored in the current instance.
 
 **Returns:** *string*
 
@@ -136,7 +136,7 @@ Implementation of: [IPicture](../interfaces/ipicture.md).[mimeType](../interface
 
 • **mimeType**(`value`: *string*): *void*
 
-**`inheritdoc`** 
+Gets and sets the mime-type of the picture data stored in the current instance.
 
 #### Parameters:
 
@@ -154,7 +154,7 @@ ___
 
 • **type**(): [*PictureType*](../enums/picturetype.md)
 
-**`inheritdoc`** 
+Gets and sets the type of the content visible in the picture stored in the current instance.
 
 **Returns:** [*PictureType*](../enums/picturetype.md)
 
@@ -162,7 +162,7 @@ Implementation of: [IPicture](../interfaces/ipicture.md).[type](../interfaces/ip
 
 • **type**(`value`: [*PictureType*](../enums/picturetype.md)): *void*
 
-**`inheritdoc`** 
+Gets and sets the type of the content visible in the picture stored in the current instance.
 
 #### Parameters:
 

@@ -153,13 +153,13 @@ ___
 
 ### playCount
 
-• **playCount**(): BigInteger
+• **playCount**(): *bigint*
 
 Gets the play count of the current instance.
 
-**Returns:** BigInteger
+**Returns:** *bigint*
 
-• **playCount**(`value`: BigInteger): *void*
+• **playCount**(`value`: *bigint*): *void*
 
 Sets the play count of the current instance.
 
@@ -167,7 +167,7 @@ Sets the play count of the current instance.
 
 Name | Type | Description |
 ------ | ------ | ------ |
-`value` | BigInteger | Number of times this track has been played    |
+`value` | *bigint* | Number of times this track has been played    |
 
 **Returns:** *void*
 

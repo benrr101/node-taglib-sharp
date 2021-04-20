@@ -54,7 +54,7 @@ export class UrlLinkFrame extends Frame {
 
     /**
      * Constructs and initializes a new instance by reading its raw data in a specified ID3v2
-     * version. This method allows for offset reading from the data bytevector.
+     * version. This method allows for offset reading from the data byte vector.
      * @param data Raw representation of the new frame
      * @param offset What offset in `data` the frame actually begins. Must be positive,
      *     safe integer
@@ -272,7 +272,7 @@ export class UserUrlLinkFrame extends UrlLinkFrame {
 
     /**
      * Constructs and initializes a new instance by reading its raw data in a specified ID3v2
-     * version. This method allows for offset reading from the data bytevector.
+     * version. This method allows for offset reading from the data byte vector.
      * @param data Raw representation of the new frame
      * @param offset What offset in `data` the frame actually begins. Must be positive,
      *     safe integer

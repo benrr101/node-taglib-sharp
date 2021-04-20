@@ -81,7 +81,7 @@ export default class StreamPropertiesObject extends BaseObject {
             }
 
             // @TODO: We can use the Codec List Object to get a more user friendly description of the
-            //    codec being used, if it is available. Howerver, doing so would require making a new
+            //    codec being used, if it is available. However, doing so would require making a new
             //    class for ASF codec info and using it to wrap the stream properties object and the
             //    codec list object.
         }

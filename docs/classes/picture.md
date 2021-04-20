@@ -2,6 +2,8 @@
 
 # Class: Picture
 
+This class implements [IPicture](../interfaces/ipicture.md) and provides a mechanism for loading pictures from files.
+
 ## Hierarchy
 
 * **Picture**
@@ -24,6 +26,7 @@
 
 - [fromData](picture.md#fromdata)
 - [fromFileAbstraction](picture.md#fromfileabstraction)
+- [fromFullData](picture.md#fromfulldata)
 - [fromPath](picture.md#frompath)
 - [getExtensionFromData](picture.md#getextensionfromdata)
 - [getExtensionFromMimeType](picture.md#getextensionfrommimetype)
@@ -35,6 +38,8 @@
 
 • **data**: [*ByteVector*](bytevector.md)
 
+Gets and sets the picture data stored in the current instance.
+
 Implementation of: [IPicture](../interfaces/ipicture.md).[data](../interfaces/ipicture.md#data)
 
 ___
@@ -42,6 +47,8 @@ ___
 ### description
 
 • **description**: *string*
+
+Gets and sets a description of the picture stored in the current instance. Optional.
 
 Implementation of: [IPicture](../interfaces/ipicture.md).[description](../interfaces/ipicture.md#description)
 
@@ -51,6 +58,8 @@ ___
 
 • **filename**: *string*
 
+Gets and sets a filename of the picture stored in the current instance. Optional.
+
 Implementation of: [IPicture](../interfaces/ipicture.md).[filename](../interfaces/ipicture.md#filename)
 
 ___
@@ -58,6 +67,8 @@ ___
 ### mimeType
 
 • **mimeType**: *string*
+
+Gets and sets the mime-type of the picture data stored in the current instance.
 
 Implementation of: [IPicture](../interfaces/ipicture.md).[mimeType](../interfaces/ipicture.md#mimetype)
 
@@ -67,6 +78,8 @@ ___
 
 • **type**: [*PictureType*](../enums/picturetype.md)
 
+Gets and sets the type of the content visible in the picture stored in the current instance.
+
 Implementation of: [IPicture](../interfaces/ipicture.md).[type](../interfaces/ipicture.md#type)
 
 ## Methods
@@ -75,11 +88,14 @@ Implementation of: [IPicture](../interfaces/ipicture.md).[type](../interfaces/ip
 
 ▸ `Static`**fromData**(`data`: [*ByteVector*](bytevector.md)): [*Picture*](picture.md)
 
+Constructs and initializes a new instance from the data provided. The data is processed to
+discover the type of the picture.
+
 #### Parameters:
 
-Name | Type |
------- | ------ |
-`data` | [*ByteVector*](bytevector.md) |
+Name | Type | Description |
+------ | ------ | ------ |
+`data` | [*ByteVector*](bytevector.md) | Raw bytes of the picture to store in the instance. Cannot be falsey    |
 
 **Returns:** [*Picture*](picture.md)
 
@@ -89,11 +105,33 @@ ___
 
 ▸ `Static`**fromFileAbstraction**(`abstraction`: IFileAbstraction): [*Picture*](picture.md)
 
+Constructs and initializes a new instance from a file abstraction. The description and type
+of the file are determined by the name of the abstraction.
+
 #### Parameters:
 
-Name | Type |
------- | ------ |
-`abstraction` | IFileAbstraction |
+Name | Type | Description |
+------ | ------ | ------ |
+`abstraction` | IFileAbstraction | File abstraction to load the picture from.    |
+
+**Returns:** [*Picture*](picture.md)
+
+___
+
+### fromFullData
+
+▸ `Static`**fromFullData**(`data`: [*ByteVector*](bytevector.md), `type`: [*PictureType*](../enums/picturetype.md), `mimeType`: *string*, `description`: *string*): [*Picture*](picture.md)
+
+Constructs a new instance with the data provided. No processing of the data is done.
+
+#### Parameters:
+
+Name | Type | Description |
+------ | ------ | ------ |
+`data` | [*ByteVector*](bytevector.md) | Raw bytes of the picture to store in the instance. Cannot be falsey   |
+`type` | [*PictureType*](../enums/picturetype.md) | Type of the picture. Cannot be null or undefined   |
+`mimeType` | *string* | MimeType of the picture. Cannot be falsey   |
+`description` | *string* | Description of the picture. Cannot be null or undefined    |
 
 **Returns:** [*Picture*](picture.md)
 
@@ -103,11 +141,15 @@ ___
 
 ▸ `Static`**fromPath**(`filePath`: *string*): [*Picture*](picture.md)
 
+Constructs and initializes a new instance from a file located at the provided path. The type
+and description of the picture are determined by the extension of the file. The file is
+loaded completely.
+
 #### Parameters:
 
-Name | Type |
------- | ------ |
-`filePath` | *string* |
+Name | Type | Description |
+------ | ------ | ------ |
+`filePath` | *string* | Path to the file to use to use for the file    |
 
 **Returns:** [*Picture*](picture.md)
 

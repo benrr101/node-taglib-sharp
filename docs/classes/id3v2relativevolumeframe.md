@@ -243,7 +243,7 @@ ___
 
 ### getPeakVolume
 
-▸ **getPeakVolume**(`type`: [*Id3v2RelativeVolumeFrameChannelType*](../enums/id3v2relativevolumeframechanneltype.md)): BigInteger
+▸ **getPeakVolume**(`type`: [*Id3v2RelativeVolumeFrameChannelType*](../enums/id3v2relativevolumeframechanneltype.md)): *bigint*
 
 Gets the peak volume for a specified channel
 
@@ -253,7 +253,7 @@ Name | Type | Description |
 ------ | ------ | ------ |
 `type` | [*Id3v2RelativeVolumeFrameChannelType*](../enums/id3v2relativevolumeframechanneltype.md) | Which channel to get the value for    |
 
-**Returns:** BigInteger
+**Returns:** *bigint*
 
 ___
 
@@ -371,7 +371,7 @@ ___
 
 ### setPeakVolume
 
-▸ **setPeakVolume**(`type`: [*Id3v2RelativeVolumeFrameChannelType*](../enums/id3v2relativevolumeframechanneltype.md), `value`: BigInteger): *void*
+▸ **setPeakVolume**(`type`: [*Id3v2RelativeVolumeFrameChannelType*](../enums/id3v2relativevolumeframechanneltype.md), `value`: *bigint*): *void*
 
 Sets the peak volume for a specified channel.
 
@@ -380,7 +380,7 @@ Sets the peak volume for a specified channel.
 Name | Type | Description |
 ------ | ------ | ------ |
 `type` | [*Id3v2RelativeVolumeFrameChannelType*](../enums/id3v2relativevolumeframechanneltype.md) | Which channel to set the value for   |
-`value` | BigInteger | Peak volume    |
+`value` | *bigint* | Peak volume    |
 
 **Returns:** *void*
 

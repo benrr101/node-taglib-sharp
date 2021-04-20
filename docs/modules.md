@@ -6,6 +6,7 @@
 
 ### Enumerations
 
+- [AsfObjectDataType](enums/asfobjectdatatype.md)
 - [FileAccessMode](enums/fileaccessmode.md)
 - [Id3v2EventType](enums/id3v2eventtype.md)
 - [Id3v2FrameClassType](enums/id3v2frameclasstype.md)
@@ -28,6 +29,19 @@
 - [AiffFile](classes/aifffile.md)
 - [ApeFile](classes/apefile.md)
 - [ApeTag](classes/apetag.md)
+- [AsfContentDescriptionObject](classes/asfcontentdescriptionobject.md)
+- [AsfContentDescriptor](classes/asfcontentdescriptor.md)
+- [AsfExtendedContentDescriptionObject](classes/asfextendedcontentdescriptionobject.md)
+- [AsfFile](classes/asffile.md)
+- [AsfFilePropertiesObject](classes/asffilepropertiesobject.md)
+- [AsfHeaderExtensionObject](classes/asfheaderextensionobject.md)
+- [AsfHeaderObject](classes/asfheaderobject.md)
+- [AsfMetadataDescriptor](classes/asfmetadatadescriptor.md)
+- [AsfMetadataLibraryObject](classes/asfmetadatalibraryobject.md)
+- [AsfPaddingObject](classes/asfpaddingobject.md)
+- [AsfStreamPropertiesObject](classes/asfstreampropertiesobject.md)
+- [AsfTag](classes/asftag.md)
+- [AsfUnknownObject](classes/asfunknownobject.md)
 - [ByteVector](classes/bytevector.md)
 - [CombinedTag](classes/combinedtag.md)
 - [CorruptFileError](classes/corruptfileerror.md)

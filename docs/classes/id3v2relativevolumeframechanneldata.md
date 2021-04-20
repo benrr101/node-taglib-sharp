@@ -81,15 +81,15 @@ ___
 
 ### peakVolume
 
-• **peakVolume**(): BigInteger
+• **peakVolume**(): *bigint*
 
 Value of the peak sample in the file. It's unclear exactly how this works, but the ID3v2.4
 documentation explains this value as betweenInclusive 0 and 255 - but can be expressed using any
 number of bits ([peakBits](id3v2relativevolumeframechanneldata.md#peakbits)).
 
-**Returns:** BigInteger
+**Returns:** *bigint*
 
-• **peakVolume**(`value`: BigInteger): *void*
+• **peakVolume**(`value`: *bigint*): *void*
 
 Value of the peak sample in the file. It's unclear exactly how this works, but the ID3v2.4
 documentation explains this value as betweenInclusive 0 and 255 - but can be expressed using any
@@ -99,7 +99,7 @@ number of bits ([peakBits](id3v2relativevolumeframechanneldata.md#peakbits)).
 
 Name | Type | Description |
 ------ | ------ | ------ |
-`value` | BigInteger | Peak volume value. Must fit in the number of bits set in [peakBits](id3v2relativevolumeframechanneldata.md#peakbits)    |
+`value` | *bigint* | Peak volume value. Must fit in the number of bits set in [peakBits](id3v2relativevolumeframechanneldata.md#peakbits)    |
 
 **Returns:** *void*
 

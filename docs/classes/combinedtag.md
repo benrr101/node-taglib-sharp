@@ -1463,7 +1463,7 @@ ___
 Copies the values from the current instance to another [Tag](tag.md), optionally overwriting
     existing values.
 
-**`remarks`** This method only copies the mist basic values when copying between different tag
+**`remarks`** This method only copies the most basic values when copying between different tag
     formats. However, if `target` is of the same type as the current instance,
     more advanced copying may be done. For example if both `this` and `target` are
     [Id3v2Tag](id3v2tag.md), all frames will be copied to the target.

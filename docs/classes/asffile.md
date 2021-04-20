@@ -1,94 +1,87 @@
-[node-taglib-sharp](../README.md) / [Exports](../modules.md) / File
+[node-taglib-sharp](../README.md) / [Exports](../modules.md) / AsfFile
 
-# Class: File
+# Class: AsfFile
 
-This abstract class provides a basic framework for reading and writing to a file, as well as
-accessing basic tagging and media properties.
-
-**`remarks`** This class is agnostic to all specific media types. Its child classes, on the other
-    hand, support the intricacies of different media and tagging formats. For example
-    {@link Mpeg4File} supports the MPEG-4 specification and Apple's tagging format. Each file
-    type can be created using its format specific constructors, but the preferred method is to
-    use [File.createFromPath](file.md#createfrompath) or [File.createFromAbstraction](file.md#createfromabstraction) as it automatically
-    detects the appropriate class from the file extension or provided MimeType.
+This class provides tagging and properties support for Microsoft's ASF files.
 
 ## Hierarchy
 
-* **File**
+* [*File*](file.md)
 
-  ↳ [*AiffFile*](aifffile.md)
-
-  ↳ [*AsfFile*](asffile.md)
+  ↳ **AsfFile**
 
 ## Table of contents
 
 ### Constructors
 
-- [constructor](file.md#constructor)
+- [constructor](asffile.md#constructor)
 
 ### Properties
 
-- [\_fileAbstraction](file.md#_fileabstraction)
-- [\_fileStream](file.md#_filestream)
-- [\_invariantEndPosition](file.md#_invariantendposition)
-- [\_invariantStartPosition](file.md#_invariantstartposition)
-- [\_tagTypesOnDisk](file.md#_tagtypesondisk)
+- [\_fileAbstraction](asffile.md#_fileabstraction)
+- [\_fileStream](asffile.md#_filestream)
+- [\_invariantEndPosition](asffile.md#_invariantendposition)
+- [\_invariantStartPosition](asffile.md#_invariantstartposition)
+- [\_tagTypesOnDisk](asffile.md#_tagtypesondisk)
 
 ### Accessors
 
-- [corruptionReasons](file.md#corruptionreasons)
-- [fileAbstraction](file.md#fileabstraction)
-- [invariantEndPosition](file.md#invariantendposition)
-- [invariantStartPosition](file.md#invariantstartposition)
-- [isPossiblyCorrupt](file.md#ispossiblycorrupt)
-- [isWritable](file.md#iswritable)
-- [length](file.md#length)
-- [mimeType](file.md#mimetype)
-- [mode](file.md#mode)
-- [name](file.md#name)
-- [position](file.md#position)
-- [properties](file.md#properties)
-- [tag](file.md#tag)
-- [tagTypes](file.md#tagtypes)
-- [tagTypesOnDisk](file.md#tagtypesondisk)
-- [bufferSize](file.md#buffersize)
+- [bufferSize](asffile.md#buffersize)
+- [corruptionReasons](asffile.md#corruptionreasons)
+- [fileAbstraction](asffile.md#fileabstraction)
+- [invariantEndPosition](asffile.md#invariantendposition)
+- [invariantStartPosition](asffile.md#invariantstartposition)
+- [isPossiblyCorrupt](asffile.md#ispossiblycorrupt)
+- [isWritable](asffile.md#iswritable)
+- [length](asffile.md#length)
+- [mimeType](asffile.md#mimetype)
+- [mode](asffile.md#mode)
+- [name](asffile.md#name)
+- [position](asffile.md#position)
+- [properties](asffile.md#properties)
+- [tag](asffile.md#tag)
+- [tagTypes](asffile.md#tagtypes)
+- [tagTypesOnDisk](asffile.md#tagtypesondisk)
 
 ### Methods
 
-- [dispose](file.md#dispose)
-- [find](file.md#find)
-- [getTag](file.md#gettag)
-- [insert](file.md#insert)
-- [markAsCorrupt](file.md#markascorrupt)
-- [preSave](file.md#presave)
-- [rFind](file.md#rfind)
-- [readBlock](file.md#readblock)
-- [removeBlock](file.md#removeblock)
-- [removeTags](file.md#removetags)
-- [save](file.md#save)
-- [seek](file.md#seek)
-- [truncate](file.md#truncate)
-- [writeBlock](file.md#writeblock)
-- [addFileType](file.md#addfiletype)
-- [addFileTypeResolver](file.md#addfiletyperesolver)
-- [createFromAbstraction](file.md#createfromabstraction)
-- [createFromPath](file.md#createfrompath)
-- [removeFileType](file.md#removefiletype)
-- [removeFileTypeResolver](file.md#removefiletyperesolver)
+- [dispose](asffile.md#dispose)
+- [find](asffile.md#find)
+- [getTag](asffile.md#gettag)
+- [insert](asffile.md#insert)
+- [markAsCorrupt](asffile.md#markascorrupt)
+- [preSave](asffile.md#presave)
+- [rFind](asffile.md#rfind)
+- [readBlock](asffile.md#readblock)
+- [removeBlock](asffile.md#removeblock)
+- [removeTags](asffile.md#removetags)
+- [save](asffile.md#save)
+- [seek](asffile.md#seek)
+- [truncate](asffile.md#truncate)
+- [writeBlock](asffile.md#writeblock)
+- [addFileType](asffile.md#addfiletype)
+- [addFileTypeResolver](asffile.md#addfiletyperesolver)
+- [createFromAbstraction](asffile.md#createfromabstraction)
+- [createFromPath](asffile.md#createfrompath)
+- [removeFileType](asffile.md#removefiletype)
+- [removeFileTypeResolver](asffile.md#removefiletyperesolver)
 
 ## Constructors
 
 ### constructor
 
-\+ `Protected`**new File**(`file`: *string* \| IFileAbstraction): [*File*](file.md)
+\+ **new AsfFile**(`file`: *string* \| IFileAbstraction, `propertiesStyle`: [*ReadStyle*](../enums/readstyle.md)): [*AsfFile*](asffile.md)
 
 #### Parameters:
 
 Name | Type |
 ------ | ------ |
 `file` | *string* \| IFileAbstraction |
+`propertiesStyle` | [*ReadStyle*](../enums/readstyle.md) |
 
-**Returns:** [*File*](file.md)
+**Returns:** [*AsfFile*](asffile.md)
+
+Inherited from: [File](file.md)
 
 ## Properties
 
@@ -96,11 +89,15 @@ Name | Type |
 
 • `Protected` **\_fileAbstraction**: IFileAbstraction
 
+Inherited from: [File](file.md).[_fileAbstraction](file.md#_fileabstraction)
+
 ___
 
 ### \_fileStream
 
 • `Protected` **\_fileStream**: IStream
+
+Inherited from: [File](file.md).[_fileStream](file.md#_filestream)
 
 ___
 
@@ -108,11 +105,15 @@ ___
 
 • `Protected` **\_invariantEndPosition**: *number*= -1
 
+Inherited from: [File](file.md).[_invariantEndPosition](file.md#_invariantendposition)
+
 ___
 
 ### \_invariantStartPosition
 
 • `Protected` **\_invariantStartPosition**: *number*= -1
+
+Inherited from: [File](file.md).[_invariantStartPosition](file.md#_invariantstartposition)
 
 ___
 
@@ -120,7 +121,19 @@ ___
 
 • `Protected` **\_tagTypesOnDisk**: [*TagTypes*](../enums/tagtypes.md)
 
+Inherited from: [File](file.md).[_tagTypesOnDisk](file.md#_tagtypesondisk)
+
 ## Accessors
+
+### bufferSize
+
+• **bufferSize**(): *number*
+
+Gets the buffer size to use when reading large blocks of data
+
+**Returns:** *number*
+
+___
 
 ### corruptionReasons
 
@@ -257,21 +270,21 @@ ___
 
 Gets the media properties of the file represented by the current instance.
 
+**`inheritdoc`** 
+
 **Returns:** [*Properties*](properties.md)
 
 ___
 
 ### tag
 
-• **tag**(): [*Tag*](tag.md)
+• **tag**(): [*AsfTag*](asftag.md)
 
 Gets an abstract representation of all tags stored in the current instance.
 
-**`remarks`** This property provides generic and general access to the most common tagging
-    features of a file. To access or add a specific type of tag in the file, use
-    [File.getTag](file.md#gettag).
+**`inheritdoc`** 
 
-**Returns:** [*Tag*](tag.md)
+**Returns:** [*AsfTag*](asftag.md)
 
 ___
 
@@ -293,16 +306,6 @@ Gets the tag types contained in the physical file represented by the current ins
 
 **Returns:** [*TagTypes*](../enums/tagtypes.md)
 
-___
-
-### bufferSize
-
-• `Static`**bufferSize**(): *number*
-
-Gets the buffer size to use when reading large blocks of data
-
-**Returns:** *number*
-
 ## Methods
 
 ### dispose
@@ -312,6 +315,8 @@ Gets the buffer size to use when reading large blocks of data
 Dispose the current instance. Equivalent to setting the mode to closed.
 
 **Returns:** *void*
+
+Inherited from: [File](file.md)
 
 ___
 
@@ -336,39 +341,26 @@ Name | Type | Default value | Description |
 
 Index at which the value was found. If not found, `-1` is returned.
 
+Inherited from: [File](file.md)
+
 ___
 
 ### getTag
 
-▸ `Abstract`**getTag**(`types`: [*TagTypes*](../enums/tagtypes.md), `create`: *boolean*): [*Tag*](tag.md)
+▸ **getTag**(`type`: [*TagTypes*](../enums/tagtypes.md), `_create`: *boolean*): [*Tag*](tag.md)
 
-Gets a tag of the specified type from the current instance, optionally creating a new tag if
-possible.
-
-**`example`** ```
-    id3 = file.getTag(TagTypes.ID3v2, true);
-    if (id3) { (<ID3v2.Tag> id3).setTextFrame("TMOO", moods); }
-
-    asf = file.getTag(TagTypes.Asf, true);
-    if (asf) { (<Asf.Tag> adf).setDescriptorStrings(moods, "WM/Mood", "Mood"); }
-
-    ape = file.getTag(TagTypes.Ape);
-    if (ape) { (<Ape.Tag>).setValue("MOOD", moods); }
-```
+**`inheritdoc`** 
 
 #### Parameters:
 
-Name | Type | Description |
------- | ------ | ------ |
-`types` | [*TagTypes*](../enums/tagtypes.md) | Type of tag to read.   |
-`create` | *boolean* | Whether or not to try and create the tag if one is not found. `true` does not     guarantee the tag will be created. For example, trying to create an ID3v2 tag on an OGG     Vorbis file will always fail.   |
+Name | Type |
+------ | ------ |
+`type` | [*TagTypes*](../enums/tagtypes.md) |
+`_create` | *boolean* |
 
 **Returns:** [*Tag*](tag.md)
 
-Tag object containing the tag that was found in or added to the current instance.
-    If no matching tag was found and none was created, `undefined` is returned. It is safe
-    to assume that if `undefined` is not returned, the returned tag can be cast to the
-    appropriate type.
+Overrides: [File](file.md)
 
 ___
 
@@ -392,6 +384,8 @@ Name | Type | Default value | Description |
 
 **Returns:** *void*
 
+Inherited from: [File](file.md)
+
 ___
 
 ### markAsCorrupt
@@ -408,6 +402,8 @@ Name | Type | Description |
 
 **Returns:** *void*
 
+Inherited from: [File](file.md)
+
 ___
 
 ### preSave
@@ -417,6 +413,8 @@ ___
 Prepares to save the file. This must be called at the beginning of every File.save() method.
 
 **Returns:** *void*
+
+Inherited from: [File](file.md)
 
 ___
 
@@ -433,13 +431,15 @@ Searched backwards through a file for a specified pattern, starting at a specifi
 
 Name | Type | Default value | Description |
 ------ | ------ | ------ | ------ |
-`pattern` | [*ByteVector*](bytevector.md) | - | Pattern to search for in the current instance. Must be shorter than the     [bufferSize](file.md#buffersize)   |
+`pattern` | [*ByteVector*](bytevector.md) | - | Pattern to search for in the current instance. Must be shorter than the     [bufferSize](asffile.md#buffersize)   |
 `startPosition` | *number* | 0 | Seek position from which to start searching.   |
 `after?` | [*ByteVector*](bytevector.md) | - | Pattern that the searched for pattern must appear after. If this pattern is     found first, `-1` is returned.   |
 
 **Returns:** *number*
 
 Index at which the value wa found. If not found, `-1` is returned.
+
+Inherited from: [File](file.md)
 
 ___
 
@@ -463,6 +463,8 @@ Name | Type | Description |
 
 ByteVector Object containing the data read from the current instance.
 
+Inherited from: [File](file.md)
+
 ___
 
 ### removeBlock
@@ -483,32 +485,37 @@ Name | Type | Description |
 
 **Returns:** *void*
 
+Inherited from: [File](file.md)
+
 ___
 
 ### removeTags
 
-▸ `Abstract`**removeTags**(`types`: [*TagTypes*](../enums/tagtypes.md)): *void*
+▸ **removeTags**(`types`: [*TagTypes*](../enums/tagtypes.md)): *void*
 
-Removes a set of tag types from the current instance. In order to remove all tags from a
-file, pass [TagTypes.AllTags](../enums/tagtypes.md#alltags) as `types`
+**`inheritdoc`** 
 
 #### Parameters:
 
-Name | Type | Description |
------- | ------ | ------ |
-`types` | [*TagTypes*](../enums/tagtypes.md) | Bitwise combined [TagTypes](../enums/tagtypes.md) value containing the tag types to be removed     from the file    |
+Name | Type |
+------ | ------ |
+`types` | [*TagTypes*](../enums/tagtypes.md) |
 
 **Returns:** *void*
+
+Overrides: [File](file.md)
 
 ___
 
 ### save
 
-▸ `Abstract`**save**(): *void*
+▸ **save**(): *void*
 
-Saves the changes made in the current instance to the file it represents.
+**`inheritdoc`** 
 
 **Returns:** *void*
+
+Overrides: [File](file.md)
 
 ___
 
@@ -528,6 +535,8 @@ Name | Type | Default value | Description |
 
 **Returns:** *void*
 
+Inherited from: [File](file.md)
+
 ___
 
 ### truncate
@@ -543,6 +552,8 @@ Name | Type | Description |
 `length` | *number* | Number of bytes to resize the file to, must be a safe, positive integer.    |
 
 **Returns:** *void*
+
+Inherited from: [File](file.md)
 
 ___
 
@@ -564,6 +575,8 @@ Name | Type | Description |
 
 **Returns:** *void*
 
+Inherited from: [File](file.md)
+
 ___
 
 ### addFileType
@@ -583,6 +596,8 @@ Name | Type | Default value | Description |
 
 **Returns:** *void*
 
+Inherited from: [File](file.md)
+
 ___
 
 ### addFileTypeResolver
@@ -598,6 +613,8 @@ Name | Type | Description |
 `resolver` | [*FileTypeResolver*](../modules.md#filetyperesolver) | Function to handle resolving a subclass of [File](file.md) from an     {@link IFileAbstraction}    |
 
 **Returns:** *void*
+
+Inherited from: [File](file.md)
 
 ___
 
@@ -620,6 +637,8 @@ Name | Type | Default value | Description |
 
 New instance of [File](file.md) as read from the specified abstraction.
 
+Inherited from: [File](file.md)
+
 ___
 
 ### createFromPath
@@ -641,6 +660,8 @@ Name | Type | Default value | Description |
 
 New instance of [File](file.md) as read from the specified path.
 
+Inherited from: [File](file.md)
+
 ___
 
 ### removeFileType
@@ -657,6 +678,8 @@ Name | Type |
 
 **Returns:** *void*
 
+Inherited from: [File](file.md)
+
 ___
 
 ### removeFileTypeResolver
@@ -672,3 +695,5 @@ Name | Type |
 `resolver` | [*FileTypeResolver*](../modules.md#filetyperesolver) |
 
 **Returns:** *void*
+
+Inherited from: [File](file.md)
