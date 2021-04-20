@@ -3,7 +3,7 @@ import * as ChaiAsPromised from "chai-as-promised";
 import * as TypeMoq from "typemoq";
 import FrameConstructorTests from "./frameConstructorTests";
 import PropertyTests from "../utilities/propertyTests";
-import Testers from "../utilities/testers";
+import {Testers} from "../utilities/testers";
 import {suite, test} from "mocha-typescript";
 
 import AttachmentFrame from "../../src/id3v2/frames/attachmentFrame";
@@ -12,7 +12,7 @@ import {ByteVector, StringType} from "../../src/byteVector";
 import {Frame, FrameClassType} from "../../src/id3v2/frames/frame";
 import {Id3v2FrameHeader} from "../../src/id3v2/frames/frameHeader";
 import {FrameIdentifier, FrameIdentifiers} from "../../src/id3v2/frameIdentifiers";
-import {IPicture, PictureType} from "../../src/picture";
+import {IPicture, PictureType} from "../../src/iPicture";
 
 // Setup chai
 Chai.use(ChaiAsPromised);
@@ -601,7 +601,7 @@ function getCustomTestFrame(data: ByteVector, desc: string, filename: string, mi
     public render_apicV2InvalidMimeType_correctsEncoding() {
         // Arrange
         const data = ByteVector.fromString("fuxbuxqux");
-        const frame = getCustomTestFrame(data, "foo", "bar", "this/isnot/amimetype", PictureType.FrontCover);
+        const frame = getCustomTestFrame(data, "foo", "bar", "this/is_not/a_mimetype", PictureType.FrontCover);
 
         // Act
         const output = frame.render(2);

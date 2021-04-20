@@ -75,10 +75,9 @@ export class StandardFileTests {
     public static testCorruptionResistance(path: string): void {
         try {
             File.createFromPath(path);
+            assert.fail("Reading corrupt file should have failed");
         } catch (e) {
-            if (!CorruptFileError.errorIs(e)) {
-                throw e;
-            }
+            // Tbh, we don't really care what kind of error happened, so long as it fails to be read
         }
     }
 
@@ -238,12 +237,12 @@ export class StandardFileTests {
             assert.strictEqual(tag.titleSort, "title sort, TEST");
             assert.strictEqual(tag.albumSort, "album sort, TEST");
             assert.strictEqual(tag.joinedPerformersSort, "performer sort 1, TEST; performer sort 2, TEST");
-            assert.strictEqual(tag.composersSort.join(";"), "composer sort 1, TEST; composer sort 2, TEST");
-            assert.strictEqual(tag.albumArtistsSort.join(";"), "album artist sort 1, TEST; album artist sort 2, TEST");
+            assert.strictEqual(tag.composersSort.join("; "), "composer sort 1, TEST; composer sort 2, TEST");
+            assert.strictEqual(tag.albumArtistsSort.join("; "), "album artist sort 1, TEST; album artist sort 2, TEST");
             assert.strictEqual(tag.beatsPerMinute, 120);
-            assert.strictEqual(tag.performersRole.join("\n"), "TEST role 1a; TEST role 1b\nTEST role 2");
+            assert.strictEqual(tag.performersRole.join("\n"), "TEST role 1a;TEST role 1b\nTEST role 2");
 
-            const dateTagged = (new Date(2017, 9, 12, 22, 47, 42)).getTime();
+            const dateTagged = (new Date(2017, 8, 12, 22, 47, 42)).getTime();
             assert.strictEqual(tag.dateTagged.getTime(), dateTagged);
             // @TODO: This doesn't correctly handle what happens if the field isn't supported on the version of the tag
         }

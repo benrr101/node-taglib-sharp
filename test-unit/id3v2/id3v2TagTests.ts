@@ -1,8 +1,7 @@
-import * as BigInt from "big-integer";
 import * as Chai from "chai";
 import * as ChaiAsPromised from "chai-as-promised";
 import * as TypeMoq from "typemoq";
-import {slow, suite, test, timeout} from "mocha-typescript";
+import {suite, test} from "mocha-typescript";
 
 import Id3v2Tag from "../../src/id3v2/id3v2Tag";
 import SyncData from "../../src/id3v2/syncData";
@@ -21,7 +20,7 @@ import {TagTypes} from "../../src/tag";
 import CommentsFrame from "../../src/id3v2/frames/commentsFrame";
 import Id3v2Settings from "../../src/id3v2/id3v2Settings";
 import UnsynchronizedLyricsFrame from "../../src/id3v2/frames/unsynchronizedLyricsFrame";
-import {IPicture} from "../../src/picture";
+import {IPicture} from "../../src/iPicture";
 import {UrlLinkFrame} from "../../src/id3v2/frames/urlLinkFrame";
 import Id3v2TagFooter from "../../src/id3v2/id3v2TagFooter";
 import {Id3v2FrameFlags} from "../../src/id3v2/frames/frameHeader";
@@ -1138,7 +1137,7 @@ function getTestTagHeader(version: number, flags: Id3v2TagHeaderFlags, tagSize: 
         assert.strictEqual(tag.frames[0].frameId, FrameIdentifiers.TDTG);
         assert.deepStrictEqual((<TextInformationFrame> tag.frames[0]).text, ["2020-04-25T12:34:56"]);
 
-        (<TextInformationFrame> tag.frames[0]).text = ["bunchagarbage"];
+        (<TextInformationFrame> tag.frames[0]).text = ["buncha_garbage"];
         assert.isUndefined(tag.dateTagged);
 
         PropertyTests.propertyRoundTrip(set, get, undefined);
@@ -1555,7 +1554,7 @@ function getTestTagHeader(version: number, flags: Id3v2TagHeaderFlags, tagSize: 
             FrameClassType.PlayCountFrame,
             FrameIdentifiers.PCNT
         )[0];
-        assert.isTrue(dPcnt.playCount.eq(sFrame1.playCount));
+        assert.strictEqual(dPcnt.playCount, sFrame1.playCount);
     }
 
     @test
@@ -1593,7 +1592,7 @@ function getTestTagHeader(version: number, flags: Id3v2TagHeaderFlags, tagSize: 
             FrameClassType.PlayCountFrame,
             FrameIdentifiers.PCNT
         )[0];
-        assert.isTrue(dPcnt.playCount.eq(sFrame1.playCount));
+        assert.strictEqual(dPcnt.playCount, sFrame1.playCount);
     }
 
     @test

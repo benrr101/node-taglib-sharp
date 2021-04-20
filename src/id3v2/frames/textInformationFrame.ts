@@ -175,7 +175,7 @@ export class TextInformationFrame extends Frame {
 
     /**
      * Constructs and initializes a new instance by reading its raw data in a specified ID3v2
-     * version. This method allows for offset reading from the data bytevector.
+     * version. This method allows for offset reading from the data byte vector.
      * @param data Raw representation of the new frame
      * @param offset What offset in `data` the frame actually begins. Must be positive,
      *     safe integer
@@ -405,7 +405,6 @@ export class TextInformationFrame extends Frame {
                 // NOTE: This encoding has an inherent flaw around how multiple genres should be
                 //    encoded. Since multiple genres are already an edge case, I'm just going to
                 //    say yolo to this whole block of code copied over from the .NET implementation
-
                 while (value.length > 1 && value[0] === "(") {
                     const closing = value.indexOf(")");
                     if (closing < 0) {
@@ -439,11 +438,29 @@ export class TextInformationFrame extends Frame {
                     }
                 }
 
-                // Split the remaining genre value by dividers
-                // NOTE: Nowhere in the spec is this specified!
+                // Process whatever's left
                 if (value.length > 0) {
-                    const splitValues = value.split(/[\/;]/).map((v) => v.replace(/\(\(/, "("));
-                    fieldList.push(...splitValues);
+                    // Split the remaining genre value by dividers if the setting is turned on
+                    let splitValue = Id3v2Settings.useNonStandardV2V3GenreSeparators
+                        ? value.split(/[\/;]/).map((v) => v.trim()).filter((v) => !!v)
+                        : [value];
+
+                    splitValue = splitValue.map((v) => {
+                        // Unescape escaped opening parenthesis
+                        let v2 = v.replace(/\(\(/, "(");
+
+                        // If non-standard numeric genres is enabled, parse them
+                        if (Id3v2Settings.useNonStandardV2V3NumericGenres) {
+                            const text = Genres.indexToAudio(v2, false);
+                            if (text) {
+                                v2 = text;
+                            }
+                        }
+
+                        return v2;
+                    });
+
+                    fieldList.push(...splitValue);
                 }
             } else {
                 fieldList.push(value);
@@ -582,7 +599,7 @@ export class UserTextInformationFrame extends TextInformationFrame {
 
     /**
      * Constructs and initializes a new instance by reading its raw data in a specified ID3v2
-     * version. This method allows for offset reading from the data bytevector.
+     * version. This method allows for offset reading from the data byte vector.
      * @param data Raw representation of the new frame
      * @param offset What offset in `data` the frame actually begins. Must be positive,
      *     safe integer

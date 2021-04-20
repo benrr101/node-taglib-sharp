@@ -16,7 +16,7 @@ import {Frame, FrameClassType} from "./frames/frame";
 import {FrameIdentifier, FrameIdentifiers} from "./frameIdentifiers";
 import {Id3v2FrameFlags} from "./frames/frameHeader";
 import {Id3v2TagHeader, Id3v2TagHeaderFlags} from "./id3v2TagHeader";
-import {IPicture} from "../picture";
+import {IPicture} from "../iPicture";
 import {Tag, TagTypes} from "../tag";
 import {TextInformationFrame, UserTextInformationFrame} from "./frames/textInformationFrame";
 import {UrlLinkFrame} from "./frames/urlLinkFrame";
@@ -84,7 +84,7 @@ export default class Id3v2Tag extends Tag {
      */
     public static fromFile(file: File, position: number, style: ReadStyle): Id3v2Tag {
         Guards.truthy(file, "file");
-        Guards.uint(position, "position");
+        Guards.safeUint(position, "position");
         if (position > file.length - Id3v2Settings.headerSize) {
             throw new Error("Argument out of range: position must be within size of the file");
         }
@@ -364,9 +364,7 @@ export default class Id3v2Tag extends Tag {
     }
 
     /** @inheritDoc via TCON frame */
-    get genres(): string[] {
-        return this.getTextAsArray(FrameIdentifiers.TCON);
-    }
+    get genres(): string[] { return this.getTextAsArray(FrameIdentifiers.TCON); }
     /** @inheritDoc via TCON frame */
     set genres(value: string[]) {
         if (!value || !Id3v2Settings.useNumericGenres) {

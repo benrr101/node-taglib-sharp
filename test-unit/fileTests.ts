@@ -3,7 +3,7 @@ import * as ChaiAsPromised from "chai-as-promised";
 import * as TypeMoq from "typemoq";
 import PropertyTests from "./utilities/propertyTests";
 import TestConstants from "./testConstants";
-import Testers from "./utilities/testers";
+import {Testers} from "./utilities/testers";
 import TestStream from "./utilities/testStream";
 import {suite, test} from "mocha-typescript";
 
@@ -612,8 +612,8 @@ const assert = Chai.assert;
     public removeBlock_invalidParams() {
         const testAction = (f: TestFile) => {
             // Act / Assert
-            Testers.testUint((v: number) => { f.removeBlock(v, 0); });
-            Testers.testInt((v: number) => { f.removeBlock(0, v); });
+            Testers.testSafeUint((v: number) => { f.removeBlock(v, 0); });
+            Testers.testSafeInt((v: number) => { f.removeBlock(0, v); });
         };
         this.testWithMemoryStream(testAction, 10);
     }
@@ -746,11 +746,11 @@ class TestFile extends File {
 
     public get stream(): IStream { return this._fileStream; }
 
-    public getTag(types: TagTypes, create: boolean): Tag {
+    public getTag(_types: TagTypes, _create: boolean): Tag {
         throw new Error("Not implemented");
     }
 
-    public removeTags(types: TagTypes): Tag {
+    public removeTags(_types: TagTypes): Tag {
         throw new Error("Not implemented");
     }
 

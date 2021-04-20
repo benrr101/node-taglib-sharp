@@ -1,7 +1,7 @@
 import * as Chai from "chai";
 import * as ChaiAsPromised from "chai-as-promised";
 import TestConstants from "../testConstants";
-import Testers from "../utilities/testers";
+import {Testers} from "../utilities/testers";
 import {suite, test} from "mocha-typescript";
 
 import Id3v2TagFooter from "../../src/id3v2/id3v2TagFooter";
@@ -28,7 +28,7 @@ const getTestFooter = (majorVersion: number, minorVersion: number, flags: Id3v2T
     @test
     public fromData_falsyData() {
         // Act/Assert
-        Testers.testTruthy((v: ByteVector) => { const _ = Id3v2TagFooter.fromData(null); });
+        Testers.testTruthy((v: ByteVector) => { const _ = Id3v2TagFooter.fromData(v); });
     }
 
     @test
@@ -171,7 +171,7 @@ const getTestFooter = (majorVersion: number, minorVersion: number, flags: Id3v2T
         const footer = getTestFooter(4, 0, Id3v2TagHeaderFlags.None);
 
         // Act/Assert
-        Testers.testByte((v: number) => { footer.revisionNumber = -1; });
+        Testers.testByte((v: number) => { footer.revisionNumber = v; });
     }
 
     @test

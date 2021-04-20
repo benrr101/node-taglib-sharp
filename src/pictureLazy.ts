@@ -1,11 +1,11 @@
 import * as Path from "path";
-
 import ILazy from "./iLazy";
-import {IPicture, Picture, PictureType} from "./picture";
+import Picture from "./picture";
 import {ByteVector} from "./byteVector";
 import {IFileAbstraction, LocalFileAbstraction} from "./fileAbstraction";
-import {Guards} from "./utils";
+import {IPicture, PictureType} from "./iPicture";
 import {SeekOrigin} from "./stream";
+import {Guards} from "./utils";
 
 /**
  * This class implements {@link IPicture} and provides mechanisms for loading pictures from files.
@@ -61,9 +61,9 @@ export default class PictureLazy implements IPicture, ILazy {
      */
     public static fromFile(file: IFileAbstraction, offset: number, size?: number): PictureLazy {
         Guards.truthy(file, "file");
-        Guards.int(offset, "offset");
+        Guards.safeInt(offset, "offset");
         if (size !== undefined) {
-            Guards.int(offset, "size");
+            Guards.safeUint(offset, "size");
         }
 
         const picture = new PictureLazy();

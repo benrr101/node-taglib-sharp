@@ -1,11 +1,12 @@
 import * as DateFormat from "dateformat";
 
+import Picture from "../picture";
 import {ApeTagFooter, ApeTagFooterFlags} from "./apeTagFooter";
 import {ApeTagItem, ApeTagItemType} from "./apeTagItem";
 import {ByteVector, StringType} from "../byteVector";
 import {CorruptFileError} from "../errors";
 import {File, FileAccessMode} from "../file";
-import {IPicture, Picture, PictureType} from "../picture";
+import {IPicture, PictureType} from "../iPicture";
 import {Tag, TagTypes} from "../tag";
 import {Guards, StringComparison} from "../utils";
 
@@ -101,7 +102,7 @@ export default class ApeTag extends Tag {
      */
     public static fromFile(file: File, position: number) {
         Guards.truthy(file, "file");
-        Guards.uint(position, "position");
+        Guards.safeUint(position, "position");
         Guards.lessThanInclusive(position, file.length - ApeTagFooter.size, "position");
 
         file.mode = FileAccessMode.Read;

@@ -1,7 +1,7 @@
 import * as Chai from "chai";
 import * as ChaiAsPromised from "chai-as-promised";
 import PropertyTests from "../utilities/propertyTests";
-import Testers from "../utilities/testers";
+import {Testers} from "../utilities/testers";
 import {suite, test} from "mocha-typescript";
 
 import {ApeTagFooter, ApeTagFooterFlags} from "../../src/ape/apeTagFooter";
@@ -140,7 +140,7 @@ const _sampleData = ByteVector.concatenate(
 
         // Act / Assert
         PropertyTests.propertyRoundTrip(
-            (v: number) => { footer.itemCount = v },
+            (v: number) => { footer.itemCount = v; },
             () => footer.itemCount,
             8086
         );
@@ -235,7 +235,7 @@ const _sampleData = ByteVector.concatenate(
     }
 
     @test
-    public renderHeader_headerPresentisNotHeader() {
+    public renderHeader_headerPresentIsNotHeader() {
         // Arrange
         const footer = ApeTagFooter.fromData(_sampleData);
         footer.flags = ApeTagFooterFlags.HeaderPresent;
@@ -270,7 +270,7 @@ const _sampleData = ByteVector.concatenate(
     }
 
     @test
-    public renderHeader_headerPresentisHeader() {
+    public renderHeader_headerPresentIsHeader() {
         // Arrange
         const footer = ApeTagFooter.fromData(_sampleData);
         footer.flags = (ApeTagFooterFlags.HeaderPresent | ApeTagFooterFlags.IsHeader) >>> 0;

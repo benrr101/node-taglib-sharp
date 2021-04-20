@@ -36,9 +36,9 @@ class TestFrame extends Frame {
         return undefined;
     }
 
-    protected parseFields(data: ByteVector, version: number): void { /* no-op */ }
+    protected parseFields(_data: ByteVector, _version: number): void { /* no-op */ }
 
-    protected renderFields(version: number): ByteVector {
+    protected renderFields(_version: number): ByteVector {
         return ByteVector.fromByteVector(TestFrame.renderFieldData);
     }
 }
@@ -142,6 +142,7 @@ class TestFrame extends Frame {
             0x88,
             TestFrame.renderFieldData
         );
+        assert.isTrue(ByteVector.equal(output, expected));
     }
 
     @test

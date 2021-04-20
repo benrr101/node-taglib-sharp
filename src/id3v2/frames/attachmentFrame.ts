@@ -1,13 +1,14 @@
 import Id3v2Settings from "../id3v2Settings";
+import Picture from "../../picture";
+import PictureLazy from "../../pictureLazy";
 import {ByteVector, StringType} from "../../byteVector";
 import {CorruptFileError} from "../../errors";
 import {Frame, FrameClassType} from "./frame";
 import {Id3v2FrameHeader} from "./frameHeader";
 import {FrameIdentifiers} from "../frameIdentifiers";
-import {IPicture, Picture, PictureType} from "../../picture";
+import {IPicture, PictureType} from "../../iPicture";
 import {Guards} from "../../utils";
 import {IFileAbstraction} from "../../fileAbstraction";
-import PictureLazy from "../../pictureLazy";
 
 export default class AttachmentFrame extends Frame implements IPicture {
     // NOTE: It probably doesn't look necessary to implement IPicture, but it makes converting a
@@ -50,8 +51,8 @@ export default class AttachmentFrame extends Frame implements IPicture {
     ): AttachmentFrame {
         Guards.truthy(file, "file");
         Guards.truthy(header, "header");
-        Guards.uint(frameStart, "frameStart");
-        Guards.uint(size, "size");
+        Guards.safeUint(frameStart, "frameStart");
+        Guards.safeUint(size, "size");
 
         const frame = new AttachmentFrame(header);
         frame._rawPicture = PictureLazy.fromFile(file, frameStart, size);

@@ -1,6 +1,6 @@
 import * as Chai from "chai";
 import * as ChaiAsPromised from "chai-as-promised";
-import Testers from "../utilities/testers";
+import {Testers} from "../utilities/testers";
 import {suite, test} from "mocha-typescript";
 
 import XingHeader from "../../src/mpeg/xingHeader";
@@ -11,11 +11,11 @@ import {ChannelMode, MpegVersion} from "../../src/mpeg/mpegEnums";
 Chai.use(ChaiAsPromised);
 const assert = Chai.assert;
 
-@suite class MpegXingHeaderTests {
+@suite class Mpeg_XingHeaderTests {
     @test
     public fromInfo_invalidParameters() {
         // Act / Assert
-        Testers.testUint((v: number) => { XingHeader.fromInfo(v, 123); })
+        Testers.testUint((v: number) => { XingHeader.fromInfo(v, 123); });
         Testers.testUint((v: number) => { XingHeader.fromInfo(123, v); });
     }
 

@@ -1,10 +1,9 @@
-import * as BigInt from "big-integer";
 import * as Chai from "chai";
 import * as ChaiAsPromised from "chai-as-promised";
 import * as StreamBuffers from "stream-buffers";
 import * as TypeMoq from "typemoq";
 import TestConstants from "./testConstants";
-import Testers from "./utilities/testers";
+import {Testers} from "./utilities/testers";
 import TestStream from "./utilities/testStream";
 import {suite, test} from "mocha-typescript";
 
@@ -493,7 +492,7 @@ const assert = Chai.assert;
     @test
     public fromLong_badValue() {
         // Arrange, Act, Assert
-        Testers.testTruthy((v: BigInt.BigInteger) => { ByteVector.fromLong(v); });
+        Testers.testTruthy((v: bigint) => { ByteVector.fromLong(v); });
     }
 
     @test
@@ -646,7 +645,7 @@ const assert = Chai.assert;
     @test
     public fromLong_positive8Byte_bigEndian() {
         this.testLong(
-            BigInt("123456789ABCDEF0", 16),
+            BigInt("0x123456789ABCDEF0"),
             [0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC, 0xDE, 0xF0],
             undefined,
             undefined
@@ -656,7 +655,7 @@ const assert = Chai.assert;
     @test
     public fromLong_positive8Byte_littleEndian() {
         this.testLong(
-            BigInt("123456789ABCDEF0", 16),
+            BigInt("0x123456789ABCDEF0"),
             [0xF0, 0xDE, 0xBC, 0x9A, 0x78, 0x56, 0x34, 0x12],
             undefined,
             false
@@ -666,7 +665,7 @@ const assert = Chai.assert;
     @test
     public fromLong_negative1Byte_bigEndian() {
         this.testLong(
-            BigInt("-12", 16),
+            BigInt("-18"),
             [0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xEE],
             undefined,
             undefined
@@ -676,7 +675,7 @@ const assert = Chai.assert;
     @test
     public fromLong_negative1Byte_littleEndian() {
         this.testLong(
-            BigInt("-12", 16),
+            BigInt("-18"),
             [0xEE, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF],
             undefined,
             false
@@ -686,7 +685,7 @@ const assert = Chai.assert;
     @test
     public fromLong_negative2Byte_bigEndian() {
         this.testLong(
-            BigInt("-1234", 16),
+            BigInt("-4660"),
             [0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xED, 0xCC],
             undefined,
             undefined
@@ -696,7 +695,7 @@ const assert = Chai.assert;
     @test
     public fromLong_negative2Byte_littleEndian() {
         this.testLong(
-            BigInt("-1234", 16),
+            BigInt("-4660"),
             [0xCC, 0xED, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF],
             undefined,
             false
@@ -706,7 +705,7 @@ const assert = Chai.assert;
     @test
     public fromLong_negative3Byte_bigEndian() {
         this.testLong(
-            BigInt("-123456", 16),
+            BigInt("-1193046"),
             [0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xED, 0xCB, 0xAA],
             undefined,
             undefined
@@ -716,7 +715,7 @@ const assert = Chai.assert;
     @test
     public fromLong_negative3Byte_littleEndian() {
         this.testLong(
-            BigInt("-123456", 16),
+            BigInt("-1193046"),
             [0xAA, 0xCB, 0xED, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF],
             undefined,
             false
@@ -726,7 +725,7 @@ const assert = Chai.assert;
     @test
     public fromLong_negative4Byte_bigEndian() {
         this.testLong(
-            BigInt("-12345678", 16),
+            BigInt("-305419896"),
             [0xFF, 0xFF, 0xFF, 0xFF, 0xED, 0xCB, 0xA9, 0x88],
             undefined,
             undefined
@@ -736,7 +735,7 @@ const assert = Chai.assert;
     @test
     public fromLong_negative4Byte_littleEndian() {
         this.testLong(
-            BigInt("-12345678", 16),
+            BigInt("-305419896"),
             [0x88, 0xA9, 0xCB, 0xED, 0xFF, 0xFF, 0xFF, 0xFF],
             undefined,
             false
@@ -746,7 +745,7 @@ const assert = Chai.assert;
     @test
     public fromLong_negative5Byte_bigEndian() {
         this.testLong(
-            BigInt("-123456789A", 16),
+            BigInt("-78187493530"),
             [0xFF, 0xFF, 0xFF, 0xED, 0xCB, 0xA9, 0x87, 0x66],
             undefined,
             undefined
@@ -756,7 +755,7 @@ const assert = Chai.assert;
     @test
     public fromLong_negative5Byte_littleEndian() {
         this.testLong(
-            BigInt("-123456789A", 16),
+            BigInt("-78187493530"),
             [0x66, 0x87, 0xA9, 0xCB, 0xED, 0xFF, 0xFF, 0xFF],
             undefined,
             false
@@ -766,7 +765,7 @@ const assert = Chai.assert;
     @test
     public fromLong_negative6Byte_bigEndian() {
         this.testLong(
-            BigInt("-123456789ABC", 16),
+            BigInt("-20015998343868"),
             [0xFF, 0xFF, 0xED, 0xCB, 0xA9, 0x87, 0x65, 0x44],
             undefined,
             undefined
@@ -776,7 +775,7 @@ const assert = Chai.assert;
     @test
     public fromLong_negative6Byte_littleEndian() {
         this.testLong(
-            BigInt("-123456789ABC", 16),
+            BigInt("-20015998343868"),
             [0x44, 0x65, 0x87, 0xA9, 0xCB, 0xED, 0xFF, 0xFF],
             undefined,
             false
@@ -786,7 +785,7 @@ const assert = Chai.assert;
     @test
     public fromLong_negative7Byte_bigEndian() {
         this.testLong(
-            BigInt("-123456789ABCDE", 16),
+            BigInt("-5124095576030430"),
             [0xFF, 0xED, 0xCB, 0xA9, 0x87, 0x65, 0x43, 0x22],
             undefined,
             undefined
@@ -796,7 +795,7 @@ const assert = Chai.assert;
     @test
     public fromLong_negative7Byte_littleEndian() {
         this.testLong(
-            BigInt("-123456789ABCDE", 16),
+            BigInt("-5124095576030430"),
             [0x22, 0x43, 0x65, 0x87, 0xA9, 0xCB, 0xED, 0xFF],
             undefined,
             false
@@ -806,7 +805,7 @@ const assert = Chai.assert;
     @test
     public fromLong_negative8Byte_bigEndian() {
         this.testLong(
-            BigInt("-123456789ABCDEF0", 16),
+            BigInt("-1311768467463790320"),
             [0xED, 0xCB, 0xA9, 0x87, 0x65, 0x43, 0x21, 0x10],
             undefined,
             undefined
@@ -816,7 +815,7 @@ const assert = Chai.assert;
     @test
     public fromLong_negative8Byte_littleEndian() {
         this.testLong(
-            BigInt("-123456789ABCDEF0", 16),
+            BigInt("-1311768467463790320"),
             [0x10, 0x21, 0x43, 0x65, 0x87, 0xA9, 0xCB, 0xED],
             undefined,
             false
@@ -1017,7 +1016,7 @@ const assert = Chai.assert;
     @test
     public fromSize_badFillValue() {
         // Arrange, Act, Assert
-        Testers.testByte((v: number) => { ByteVector.fromSize(1, v); })
+        Testers.testByte((v: number) => { ByteVector.fromSize(1, v); });
     }
 
     @test
@@ -1141,7 +1140,7 @@ const assert = Chai.assert;
     @test
     public fromString_invalidLength() {
         // Arrange, Act, Assert
-        Testers.testUint((v: number) => { ByteVector.fromString("", undefined, v); }, true);
+        Testers.testSafeUint((v: number) => { ByteVector.fromString("", undefined, v); }, true);
     }
 
     @test
@@ -1499,20 +1498,26 @@ const assert = Chai.assert;
     }
 
     @test
-    public fromULong_badValue() {
+    public fromULong_bigInt_badValue() {
         // Arrange, Act, Assert
-        Testers.testTruthy((v: BigInt.BigInteger) => { ByteVector.fromULong(v); });
+        Testers.testTruthy((v: bigint) => { ByteVector.fromULong(v); });
     }
 
     @test
-    public fromULong_overflow() {
+    public fromULong_number_badValue() {
+        // Arrange / Act / Assert
+        Testers.testSafeUint((v: number) => { ByteVector.fromULong(v); });
+    }
+
+    @test
+    public fromULong_bigInt_overflow() {
         // Arrange, Act, Assert
         assert.throws(() => { ByteVector.fromULong(BigInt("18446744073709551616")); });
         assert.throws(() => { ByteVector.fromULong(BigInt("-1")); });
     }
 
     @test
-    public fromULong_positive1Byte_bigEndian() {
+    public fromULong_bigIntPositive1Byte_bigEndian() {
         this.testULong(
             BigInt("0x12"),
             [0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x12],
@@ -1522,7 +1527,17 @@ const assert = Chai.assert;
     }
 
     @test
-    public fromULong_positive1Byte_littleEndian() {
+    public fromULong_numberPositive1Byte_bigEndian() {
+        this.testULong(
+            0x12,
+            [0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x12],
+            undefined,
+            undefined
+        );
+    }
+
+    @test
+    public fromULong_bigIntPositive1Byte_littleEndian() {
         this.testULong(
             BigInt("0x12"),
             [0x12, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00],
@@ -1532,7 +1547,17 @@ const assert = Chai.assert;
     }
 
     @test
-    public fromULong_positive2Byte_bigEndian() {
+    public fromULong_numberPositive1Byte_littleEndian() {
+        this.testULong(
+            0x12,
+            [0x12, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00],
+            undefined,
+            false
+        );
+    }
+
+    @test
+    public fromULong_bigIntPositive2Byte_bigEndian() {
         this.testULong(
             BigInt("0x1234"),
             [0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x12, 0x34],
@@ -1542,7 +1567,17 @@ const assert = Chai.assert;
     }
 
     @test
-    public fromULong_positive2Byte_littleEndian() {
+    public fromULong_numberPositive2Byte_bigEndian() {
+        this.testULong(
+            0x1234,
+            [0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x12, 0x34],
+            undefined,
+            undefined
+        );
+    }
+
+    @test
+    public fromULong_bigIntPositive2Byte_littleEndian() {
         this.testULong(
             BigInt("0x1234"),
             [0x34, 0x12, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00],
@@ -1552,7 +1587,17 @@ const assert = Chai.assert;
     }
 
     @test
-    public fromULong_positive3Byte_bigEndian() {
+    public fromULong_numberPositive2Byte_littleEndian() {
+        this.testULong(
+            0x1234,
+            [0x34, 0x12, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00],
+            undefined,
+            false
+        );
+    }
+
+    @test
+    public fromULong_bigIntPositive3Byte_bigEndian() {
         this.testULong(
             BigInt("0x123456"),
             [0x00, 0x00, 0x00, 0x00, 0x00, 0x12, 0x34, 0x56],
@@ -1562,7 +1607,17 @@ const assert = Chai.assert;
     }
 
     @test
-    public fromULong_positive3Byte_littleEndian() {
+    public fromULong_numberPositive3Byte_bigEndian() {
+        this.testULong(
+            0x123456,
+            [0x00, 0x00, 0x00, 0x00, 0x00, 0x12, 0x34, 0x56],
+            undefined,
+            undefined
+        );
+    }
+
+    @test
+    public fromULong_bigIntPositive3Byte_littleEndian() {
         this.testULong(
             BigInt("0x123456"),
             [0x56, 0x34, 0x12, 0x00, 0x00, 0x00, 0x00, 0x00],
@@ -1572,7 +1627,17 @@ const assert = Chai.assert;
     }
 
     @test
-    public fromULong_positive4Byte_bigEndian() {
+    public fromULong_numberPositive3Byte_littleEndian() {
+        this.testULong(
+            0x123456,
+            [0x56, 0x34, 0x12, 0x00, 0x00, 0x00, 0x00, 0x00],
+            undefined,
+            false
+        );
+    }
+
+    @test
+    public fromULong_bigIntPositive4Byte_bigEndian() {
         this.testULong(
             BigInt("0x12345678"),
             [0x00, 0x00, 0x00, 0x00, 0x12, 0x34, 0x56, 0x78],
@@ -1582,7 +1647,17 @@ const assert = Chai.assert;
     }
 
     @test
-    public fromULong_positive4Byte_littleEndian() {
+    public fromULong_numberPositive4Byte_bigEndian() {
+        this.testULong(
+            0x12345678,
+            [0x00, 0x00, 0x00, 0x00, 0x12, 0x34, 0x56, 0x78],
+            undefined,
+            undefined
+        );
+    }
+
+    @test
+    public fromULong_bigIntPositive4Byte_littleEndian() {
         this.testULong(
             BigInt("0x12345678"),
             [0x78, 0x56, 0x34, 0x12, 0x00, 0x00, 0x00, 0x00],
@@ -1592,7 +1667,17 @@ const assert = Chai.assert;
     }
 
     @test
-    public fromULong_positive5Byte_bigEndian() {
+    public fromULong_numberPositive4Byte_littleEndian() {
+        this.testULong(
+            0x12345678,
+            [0x78, 0x56, 0x34, 0x12, 0x00, 0x00, 0x00, 0x00],
+            undefined,
+            false
+        );
+    }
+
+    @test
+    public fromULong_bigIntPositive5Byte_bigEndian() {
         this.testULong(
             BigInt("0x123456789A"),
             [0x00, 0x00, 0x00, 0x12, 0x34, 0x56, 0x78, 0x9A],
@@ -1602,7 +1687,17 @@ const assert = Chai.assert;
     }
 
     @test
-    public fromULong_positive5Byte_littleEndian() {
+    public fromULong_numberPositive5Byte_bigEndian() {
+        this.testULong(
+            0x123456789A,
+            [0x00, 0x00, 0x00, 0x12, 0x34, 0x56, 0x78, 0x9A],
+            undefined,
+            undefined
+        );
+    }
+
+    @test
+    public fromULong_bigIntPositive5Byte_littleEndian() {
         this.testULong(
             BigInt("0x123456789A"),
             [0x9A, 0x78, 0x56, 0x34, 0x12, 0x00, 0x00, 0x00],
@@ -1612,7 +1707,17 @@ const assert = Chai.assert;
     }
 
     @test
-    public fromULong_positive6Byte_bigEndian() {
+    public fromULong_numberPositive5Byte_littleEndian() {
+        this.testULong(
+            0x123456789A,
+            [0x9A, 0x78, 0x56, 0x34, 0x12, 0x00, 0x00, 0x00],
+            undefined,
+            false
+        );
+    }
+
+    @test
+    public fromULong_bigIntPositive6Byte_bigEndian() {
         this.testULong(
             BigInt("0x123456789ABC"),
             [0x00, 0x00, 0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC],
@@ -1622,7 +1727,17 @@ const assert = Chai.assert;
     }
 
     @test
-    public fromULong_positive6Byte_littleEndian() {
+    public fromULong_numberPositive6Byte_bigEndian() {
+        this.testULong(
+            0x123456789ABC,
+            [0x00, 0x00, 0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC],
+            undefined,
+            undefined
+        );
+    }
+
+    @test
+    public fromULong_bigIntPositive6Byte_littleEndian() {
         this.testULong(
             BigInt("0x123456789ABC"),
             [0xBC, 0x9A, 0x78, 0x56, 0x34, 0x12, 0x00, 0x00],
@@ -1632,7 +1747,17 @@ const assert = Chai.assert;
     }
 
     @test
-    public fromULong_positive7Byte_bigEndian() {
+    public fromULong_numberPositive6Byte_littleEndian() {
+        this.testULong(
+            0x123456789ABC,
+            [0xBC, 0x9A, 0x78, 0x56, 0x34, 0x12, 0x00, 0x00],
+            undefined,
+            false
+        );
+    }
+
+    @test
+    public fromULong_bigIntPositive7Byte_bigEndian() {
         this.testULong(
             BigInt("0x123456789ABCDE"),
             [0x00, 0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC, 0xDE],
@@ -1642,7 +1767,7 @@ const assert = Chai.assert;
     }
 
     @test
-    public fromULong_positive7Byte_littleEndian() {
+    public fromULong_bigIntPositive7Byte_littleEndian() {
         this.testULong(
             BigInt("0x123456789ABCDE"),
             [0xDE, 0xBC, 0x9A, 0x78, 0x56, 0x34, 0x12, 0x00],
@@ -1652,9 +1777,9 @@ const assert = Chai.assert;
     }
 
     @test
-    public fromULong_positive8Byte_bigEndian() {
+    public fromULong_bigIntPositive8Byte_bigEndian() {
         this.testULong(
-            BigInt("123456789ABCDEF0", 16),
+            BigInt("0x123456789ABCDEF0"),
             [0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC, 0xDE, 0xF0],
             undefined,
             undefined
@@ -1662,9 +1787,9 @@ const assert = Chai.assert;
     }
 
     @test
-    public fromULong_positive8Byte_littleEndian() {
+    public fromULong_bigIntPositive8Byte_littleEndian() {
         this.testULong(
-            BigInt("123456789ABCDEF0", 16),
+            BigInt("0x123456789ABCDEF0"),
             [0xF0, 0xDE, 0xBC, 0x9A, 0x78, 0x56, 0x34, 0x12],
             undefined,
             false
@@ -1672,9 +1797,9 @@ const assert = Chai.assert;
     }
 
     @test
-    public fromULong_unsignedRange_bigEndian() {
+    public fromULong_bigIntUnsignedRange_bigEndian() {
         this.testULong(
-            BigInt("FFFFFFFFFFFFFFFF", 16),
+            BigInt("0xFFFFFFFFFFFFFFFF"),
             [0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF],
             undefined,
             undefined
@@ -1682,9 +1807,9 @@ const assert = Chai.assert;
     }
 
     @test
-    public fromULong_unsignedRange_littleEndian() {
+    public fromULong_bigIntUnsignedRange_littleEndian() {
         this.testULong(
-            BigInt("FFFFFFFFFFFFFFFF", 16),
+            BigInt("0xFFFFFFFFFFFFFFFF"),
             [0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF],
             undefined,
             false
@@ -1692,7 +1817,7 @@ const assert = Chai.assert;
     }
 
     @test
-    public fromULong_zero_bigEndian() {
+    public fromULong_bigIntZero_bigEndian() {
         this.testULong(
             BigInt(0),
             [0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00],
@@ -1702,9 +1827,29 @@ const assert = Chai.assert;
     }
 
     @test
-    public fromULong_zero_littleEndian() {
+    public fromULong_numberZero_bigEndian() {
+        this.testULong(
+            0,
+            [0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00],
+            undefined,
+            undefined
+        );
+    }
+
+    @test
+    public fromULong_bigIntZero_littleEndian() {
         this.testULong(
             BigInt(0),
+            [0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00],
+            undefined,
+            true
+        );
+    }
+
+    @test
+    public fromULong_numberZero_littleEndian() {
+        this.testULong(
+            0,
             [0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00],
             undefined,
             true
@@ -1841,7 +1986,7 @@ const assert = Chai.assert;
     }
 
     private testLong(
-        value: BigInt.BigInteger,
+        value: bigint,
         expectedData: number[],
         isReadOnly: boolean,
         bigEndian: boolean
@@ -1915,7 +2060,7 @@ const assert = Chai.assert;
     }
 
     private testULong(
-        value: BigInt.BigInteger,
+        value: bigint | number,
         expectedData: number[],
         isReadOnly: boolean,
         bigEndian: boolean

@@ -1,7 +1,7 @@
 {
   "name": "node-taglib-sharp",
   "description": "Read and write audio/video/picture tags using a similar interface to TagLib#",
-  "version": "3.0.0",
+  "version": "3.3.0",
   "license": "LGPL-2.1-or-later",
   "author": "Ben Russell <benrr101@outlook.com> (https://github.com/benrr101)",
   "repository": "github:benrr101/node-taglib-sharp",
@@ -10,21 +10,21 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "tsc -p ./",
-    "generate-docs": "typedoc --tsconfig",
+    "generate-docs": "typedoc --tsconfig tsconfig.json",
     "madge": "node node_modules/madge/bin/cli.js --warning --circular --extensions ts ./",
     "publish-coverage": "nyc report --reporter=text-lcov | coveralls",
     "test-unit": "mocha test-unit",
     "test-unit-with-coverage": "nyc mocha test-unit"
   },
   "engines": {
-    "node": "12.16.1"
+    "node": ">=12.16.1"
   },
   "dependencies": {
     "arraybuffer-to-buffer": "^0.0.5",
-    "big-integer": "^1.6.48",
     "dateformat": "^3.0.3",
     "iconv-lite": "^0.4.24",
-    "os-locale": "^4.0.0"
+    "os-locale": "^4.0.0",
+    "uuid": "^8.3.2"
   },
   "devDependencies": {
     "@istanbuljs/nyc-config-typescript": "^1.0.1",
@@ -32,22 +32,21 @@
     "@types/chai-as-promised": "^7.1.0",
     "@types/dateformat": "^3.0.0",
     "@types/stream-buffers": "^3.0.2",
-    "@types/uuid": "^7.0.2",
+    "@types/uuid": "^8.3.0",
     "chai": "^4.2.0",
     "chai-as-promised": "^7.1.1",
     "coveralls": "^3.0.9",
-    "madge": "^3.9.2",
+    "madge": "^4.0.1",
     "mocha": "^7.0.0-esm1",
     "mocha-typescript": "^1.1.17",
     "nyc": "^15.1.0",
-    "stream-buffers": "^3.0.2",
     "source-map-support": "^0.5.16",
+    "stream-buffers": "^3.0.2",
     "ts-node": "^8.5.4",
     "tslint": "^5.13.1",
+    "typedoc": "^0.20.24",
+    "typedoc-plugin-markdown": "^3.4.5",
     "typemoq": "^2.1.0",
-    "typescript": "^3.9.7",
-    "typedoc": "^0.19.2",
-    "typedoc-plugin-markdown": "^3.0.11",
-    "uuid": "^7.0.2"
+    "typescript": "^3.9.7"
   }
 }

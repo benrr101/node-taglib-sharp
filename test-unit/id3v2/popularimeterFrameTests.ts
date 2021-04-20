@@ -1,9 +1,8 @@
-import * as BigInt from "big-integer";
 import * as Chai from "chai";
 import * as ChaiAsPromised from "chai-as-promised";
 import FrameConstructorTests from "./frameConstructorTests";
 import PropertyTests from "../utilities/propertyTests";
-import Testers from "../utilities/testers";
+import {Testers} from "../utilities/testers";
 import {suite, test} from "mocha-typescript";
 
 import PopularimeterFrame from "../../src/id3v2/frames/popularimeterFrame";
@@ -160,7 +159,7 @@ const assert = Chai.assert;
         this.assertFrame(frame, "fux", BigInt(1234), 0x05);
     }
 
-    private assertFrame(frame: PopularimeterFrame, u: string, p: BigInt.BigInteger, r: number) {
+    private assertFrame(frame: PopularimeterFrame, u: string, p: bigint, r: number) {
         assert.isOk(frame);
         assert.strictEqual(frame.frameClassType, FrameClassType.PopularimeterFrame);
         assert.strictEqual(frame.frameId, FrameIdentifiers.POPM);
@@ -169,7 +168,7 @@ const assert = Chai.assert;
             assert.isUndefined(frame.playCount);
         } else {
             assert.isOk(frame.playCount);
-            assert.isTrue(p.equals(frame.playCount));
+            assert.strictEqual(p, frame.playCount);
         }
 
         assert.strictEqual(frame.rating, r);
@@ -182,13 +181,13 @@ const assert = Chai.assert;
     public playCount() {
         // Arrange
         const frame = PopularimeterFrame.fromUser("fux");
-        const set = (v: BigInt.BigInteger) => { frame.playCount = v; };
+        const set = (v: bigint) => { frame.playCount = v; };
         const get = () => frame.playCount;
 
         // Act
         PropertyTests.propertyRoundTrip(set, get, BigInt(1234));
         PropertyTests.propertyRoundTrip(set, get, undefined);
-        PropertyTests.propertyThrows(set, null);
+        PropertyTests.propertyNormalized(set, get, null, undefined);
         PropertyTests.propertyThrows(set, BigInt(-1));
     }
 
@@ -282,7 +281,7 @@ const assert = Chai.assert;
         assert.strictEqual(output.frameId, FrameIdentifiers.POPM);
 
         assert.isOk(output.playCount);
-        assert.isTrue(frame.playCount.equals(output.playCount));
+        assert.strictEqual(frame.playCount, output.playCount);
 
         assert.strictEqual(output.rating, frame.rating);
         assert.strictEqual(output.user, frame.user);

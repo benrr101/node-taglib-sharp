@@ -9,7 +9,8 @@ export {LocalFileAbstraction} from "./fileAbstraction";
 export {default as CombinedTag} from "./combinedTag";
 export {default as Genres} from "./genres";
 export {ICodec, IAudioCodec, ILosslessAudioCodec, IVideoCodec, IPhotoCodec, MediaTypes} from "./iCodec";
-export {IPicture, Picture, PictureType} from "./picture";
+export {IPicture, PictureType} from "./iPicture";
+export {default as Picture} from "./picture";
 export {default as PictureLazy} from "./pictureLazy";
 export {default as Properties} from "./properties";
 export {Tag, TagTypes} from "./tag";
@@ -17,9 +18,34 @@ export {Tag, TagTypes} from "./tag";
 // AAC /////////////////////////////////////////////////////////////////////
 export {default as AacFile} from "./aac/aacFile";
 
+// AIFF ////////////////////////////////////////////////////////////////////
+export {default as AiffFile} from "./aiff/aiffFile";
+
 // APE /////////////////////////////////////////////////////////////////////
 export {default as ApeFile} from "./ape/apeFile";
 export {default as ApeTag} from "./ape/apeTag";
+
+// ASF /////////////////////////////////////////////////////////////////////
+export {default as AsfFile} from "./asf/asfFile";
+export {default as AsfTag} from "./asf/asfTag";
+
+// Objects
+export {default as AsfContentDescriptionObject} from "./asf/objects/contentDescriptionObject";
+export {DataType as AsfObjectDataType} from "./asf/objects/descriptorBase";
+export {
+    ContentDescriptor as AsfContentDescriptor,
+    ExtendedContentDescriptionObject as AsfExtendedContentDescriptionObject
+} from "./asf/objects/extendedContentDescriptionObject";
+export { default as AsfFilePropertiesObject } from "./asf/objects/filePropertiesObject";
+export { default as AsfHeaderExtensionObject } from "./asf/objects/headerExtensionObject";
+export { default as AsfHeaderObject } from "./asf/objects/headerObject";
+export {
+    MetadataDescriptor as AsfMetadataDescriptor,
+    MetadataLibraryObject as AsfMetadataLibraryObject
+} from "./asf/objects/metadataLibraryObject";
+export { default as AsfPaddingObject } from "./asf/objects/paddingObject";
+export { default as AsfStreamPropertiesObject } from "./asf/objects/streamPropertiesObject";
+export { default as AsfUnknownObject } from "./asf/objects/unknownObject";
 
 // ID3v1 ///////////////////////////////////////////////////////////////////
 export {default as Id3v1Tag} from "./id3v1/id3v1Tag";
@@ -79,12 +105,14 @@ export {
     UserUrlLinkFrame as Id3v2UserUrlLinkFrame
 } from "./id3v2/frames/urlLinkFrame";
 
-// MPEG ////////////////////////////////////////////////////////////////////
+// MPEG1/2 /////////////////////////////////////////////////////////////////
 export {default as MpegAudioFile} from "./mpeg/mpegAudioFile";
 export {default as MpegAudioHeader} from "./mpeg/mpegAudioHeader";
 export {
     ChannelMode as MpegAudioChannelMode,
     MpegVersion as MpegVersion
 } from "./mpeg/mpegEnums";
+export {default as MpegFile} from "./mpeg/mpegFile";
 export {default as MpegVbriHeader} from "./mpeg/vbriHeader";
+export {default as MpegVideoHeader} from "./mpeg/mpegVideoHeader";
 export {default as MpegXingHeader} from "./mpeg/xingHeader";

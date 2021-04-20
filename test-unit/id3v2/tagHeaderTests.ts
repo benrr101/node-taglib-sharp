@@ -1,7 +1,7 @@
 import * as Chai from "chai";
 import * as ChaiAsPromised from "chai-as-promised";
 import TestConstants from "../testConstants";
-import Testers from "../utilities/testers";
+import {Testers} from "../utilities/testers";
 import {suite, test} from "mocha-typescript";
 
 import Id3v2Settings from "../../src/id3v2/id3v2Settings";
@@ -27,7 +27,7 @@ const getTestHeader = (majorVersion: number, minorVersion: number, flags: Id3v2T
     @test
     public falsyData() {
         // Act/Assert
-        Testers.testTruthy((v: ByteVector) => { const _ = Id3v2TagHeader.fromData(null); });
+        Testers.testTruthy((v: ByteVector) => { const _ = Id3v2TagHeader.fromData(v); });
     }
 
     @test
@@ -322,7 +322,7 @@ const getTestHeader = (majorVersion: number, minorVersion: number, flags: Id3v2T
         const header = getTestHeader(4, 0, Id3v2TagHeaderFlags.None);
 
         // Act/Assert
-        Testers.testUint((v: number) => { header.tagSize = -1; });
+        Testers.testUint((v: number) => { header.tagSize = v; });
         assert.throws(() => { header.tagSize = 0xF0000000; });
     }
 

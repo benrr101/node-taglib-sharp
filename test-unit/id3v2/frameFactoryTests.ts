@@ -1,28 +1,28 @@
 import * as Chai from "chai";
 import * as ChaiAsPromised from "chai-as-promised";
 import * as TypeMoq from "typemoq";
-import {slow, suite, test, timeout} from "mocha-typescript";
-
-import FrameFactory, {FrameCreator} from "../../src/id3v2/frames/frameFactory";
-import {ByteVector, StringType} from "../../src/byteVector";
 import TestFile from "../utilities/testFile";
+import {suite, test} from "mocha-typescript";
+
+import CommentsFrame from "../../src/id3v2/frames/commentsFrame";
+import FrameFactory, {FrameCreator} from "../../src/id3v2/frames/frameFactory";
+import PlayCountFrame from "../../src/id3v2/frames/playCountFrame";
+import PopularimeterFrame from "../../src/id3v2/frames/popularimeterFrame";
+import PrivateFrame from "../../src/id3v2/frames/privateFrame";
+import TermsOfUseFrame from "../../src/id3v2/frames/termsOfUseFrame";
+import UniqueFileIdentifierFrame from "../../src/id3v2/frames/uniqueFileIdentifierFrame";
+import UnsynchronizedLyricsFrame from "../../src/id3v2/frames/unsynchronizedLyricsFrame";
+import {ByteVector, StringType} from "../../src/byteVector";
+import {EventTimeCodeFrame} from "../../src/id3v2/frames/eventTimeCodeFrame";
 import {Frame, FrameClassType} from "../../src/id3v2/frames/frame";
 import {Id3v2FrameFlags, Id3v2FrameHeader} from "../../src/id3v2/frames/frameHeader";
 import {FrameIdentifiers} from "../../src/id3v2/frameIdentifiers";
-import {TextInformationFrame, UserTextInformationFrame} from "../../src/id3v2/frames/textInformationFrame";
-import UniqueFileIdentifierFrame from "../../src/id3v2/frames/uniqueFileIdentifierFrame";
-import UnsynchronizedLyricsFrame from "../../src/id3v2/frames/unsynchronizedLyricsFrame";
-import {SynchronizedLyricsFrame} from "../../src/id3v2/frames/synchronizedLyricsFrame";
-import {SynchronizedTextType, TimestampFormat} from "../../src/id3v2/utilTypes";
-import CommentsFrame from "../../src/id3v2/frames/commentsFrame";
+import {PictureType} from "../../src/iPicture";
 import {RelativeVolumeFrame} from "../../src/id3v2/frames/relativeVolumeFrame";
-import {PictureType} from "../../src/picture";
-import PlayCountFrame from "../../src/id3v2/frames/playCountFrame";
-import PopularimeterFrame from "../../src/id3v2/frames/popularimeterFrame";
-import TermsOfUseFrame from "../../src/id3v2/frames/termsOfUseFrame";
-import PrivateFrame from "../../src/id3v2/frames/privateFrame";
+import {TextInformationFrame, UserTextInformationFrame} from "../../src/id3v2/frames/textInformationFrame";
+import {SynchronizedLyricsFrame} from "../../src/id3v2/frames/synchronizedLyricsFrame";
 import {UrlLinkFrame, UserUrlLinkFrame} from "../../src/id3v2/frames/urlLinkFrame";
-import {EventTimeCodeFrame} from "../../src/id3v2/frames/eventTimeCodeFrame";
+import {SynchronizedTextType, TimestampFormat} from "../../src/id3v2/utilTypes";
 
 // Setup chai
 Chai.use(ChaiAsPromised);

@@ -3,7 +3,7 @@ import * as ChaiAsPromised from "chai-as-promised";
 import * as fs from "fs";
 import PropertyTests from "./utilities/propertyTests";
 import TestConstants from "./testConstants";
-import Testers from "./utilities/testers";
+import {Testers} from "./utilities/testers";
 import {suite, test} from "mocha-typescript";
 
 import {ByteVector} from "../src/byteVector";
@@ -74,9 +74,7 @@ const assert = Chai.assert;
 
         try {
             // Act / Assert
-            Testers.testUint((v: number) => { stream.position = v; });
-            assert.throws(() => stream.position = TestConstants.testFileContents.length + 1);
-
+            Testers.testSafeUint((v: number) => { stream.position = v; });
         } finally {
             // Cleanup
             stream.close();
@@ -177,8 +175,7 @@ const assert = Chai.assert;
 
         try {
             // Act / Assert
-            Testers.testUint((v: number) => { stream.seek(v, SeekOrigin.Begin); });
-            assert.throws(() => stream.seek(TestConstants.testFileContents.length + 1, SeekOrigin.Begin));
+            Testers.testSafeUint((v: number) => { stream.seek(v, SeekOrigin.Begin); });
         } finally {
             // Cleanup
             stream.close();
@@ -211,8 +208,7 @@ const assert = Chai.assert;
 
         try {
             // Act / Assert
-            Testers.testInt((v: number) => { stream.seek(v, SeekOrigin.Current); });
-            assert.throws(() => stream.seek(6, SeekOrigin.Current)); // Would go past end of stream
+            Testers.testSafeInt((v: number) => { stream.seek(v, SeekOrigin.Current); });
             assert.throws(() => stream.seek(-6, SeekOrigin.Current)); // Would go past beginning of stream
         } finally {
             // Cleanup
@@ -247,8 +243,7 @@ const assert = Chai.assert;
 
         try {
             // Act / Assert
-            Testers.testInt((v: number) => { stream.seek(v, SeekOrigin.End); });
-            assert.throws(() => stream.seek(1, SeekOrigin.End)); // Would go past end of stream
+            Testers.testSafeInt((v: number) => { stream.seek(v, SeekOrigin.End); });
             assert.throws(() => stream.seek(-11, SeekOrigin.End)); // Would go past beginning of stream
         } finally {
             // Cleanup
@@ -278,7 +273,7 @@ const assert = Chai.assert;
     public setLength_invalidLength() {
         const testAction = (testFilePath: string, stream: Stream) => {
             // Act / Assert
-            Testers.testUint((v: number) => { stream.setLength(v); });
+            Testers.testSafeUint((v: number) => { stream.setLength(v); });
         };
         this.testWithFile(testAction, true);
     }

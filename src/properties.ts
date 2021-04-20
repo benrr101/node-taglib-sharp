@@ -18,9 +18,11 @@ export default class Properties implements ILosslessAudioCodec, IVideoCodec, IPh
     }
 
     /**
-     * Gets the codecs contained in the current instance
+     * Gets the codecs contained in the current instance.
+     * @remarks The list of codecs should not be modified. As such, the returned codec list is a
+     *     copy of codec list stored in this instance.
      */
-    public get codecs(): ICodec[] { return this._codecs; }
+    public get codecs(): ICodec[] { return this._codecs.slice(); }
 
     // #region ICodec
 
@@ -134,6 +136,8 @@ export default class Properties implements ILosslessAudioCodec, IVideoCodec, IPh
     public get videoWidth(): number {
         return this.findCodecProperty<IVideoCodec>(MediaTypes.Video, (c) => c.videoWidth, 0);
     }
+
+    // @TODO: Add support for framerate
 
     // #endregion
 

@@ -1,7 +1,7 @@
 import * as Chai from "chai";
 import * as ChaiAsPromised from "chai-as-promised";
 import * as TypeMoq from "typemoq";
-import Testers from "../utilities/testers";
+import {Testers} from "../utilities/testers";
 import TestFile from "../utilities/testFile";
 import {suite, test} from "mocha-typescript";
 
@@ -52,7 +52,7 @@ const sampleHeaderBytes = ByteVector.fromByteArray(new Uint8Array([0xFF, 0xF5, 0
         const header = new AacAudioHeader(1, 1.23, 2, 3);
 
         // Act / Assert
-        Testers.testUint((v: number) => { header.streamLength = v; });
+        Testers.testSafeUint((v: number) => { header.streamLength = v; });
     }
 
     @test

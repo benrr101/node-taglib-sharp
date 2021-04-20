@@ -1,6 +1,4 @@
-**[node-taglib-sharp](README.md)**
-
-> [Globals](globals.md)
+node-taglib-sharp / [Exports](modules.md)
 
 # TagLib# for Node
 
@@ -18,10 +16,21 @@ Note: A port of TagLib already exists for Node.js. Despite TagLib being the orig
 is substantially lacking in the variety of media formats that can be handled. TagLib# greatly
 improved on the original TagLib, hence why this project exists.
 
-## Supported Tagging Formats (and File Formats)
+## Supported Tagging Formats
 * [APE](http://wiki.hydrogenaud.io/index.php?title=APE_key): `AAC`, `APE`, `M2A`, `MP1`, `MP2`, `MP3`
+* [ASF](https://docs.microsoft.com/en-us/windows/win32/wmformat/overview-of-the-asf-format): `ASF`, `WMA`, `WMV`
 * [ID3v1](https://id3.org/ID3v1): `AAC`, `M2A`, `MP1`, `MP2`, `MP3`
-* [ID3v2](https://id3.org/Developer%20Information): `M2A`, `MP1`, `MP2`, `MP3`
+* [ID3v2](https://id3.org/Developer%20Information): `AAC`, `AIF`, `AIFF`, `M2A`, `MP1`, `MP2`, `MP3`
+* ... More coming soon
+
+## Supported File Formats
+* Advanced Audio Codec (AAC): `AAC`
+* Advanced Systems Format (ASF): `ASF`, `WMA`, `WMV`
+* Audio Interchange Format (AIFF): `AIF`, `AIFF`
+* MPEG-1/2 Audio: `M2A`, `MP1`, `MP2`, `MP3`
+* MPEG-1/2 Video: `M2V`, `MPE`, `MPEG`, `MPG`, `MPV2`
+* Monkey's Audio: `APE`
+* ... More coming soon
 
 ## Installation
 ```
@@ -43,7 +52,7 @@ The `File` class provides factory methods for generating instances of classes th
 for Monkey's Audio files). The `File` class has exposes the `properties` and `tag` properties to
 allow manipulation of the tagging information and reading audio/video properties. 
 
-See the docs for [the File class](docs/classes/_src_file_.file.md) for complete details of the
+See the docs for [the File class](docs/classes/file.md) for complete details of the
 available properties.
 
 ```typescript
@@ -55,7 +64,7 @@ The `Tag` base class provides a tagging-format agnostic interface to modify tag(
 object. Set tag properties as needed and they will be stored in a tagging format that is supported
 by the file type. The changes can be easily written back to the file with `save()`.
 
-See the docs for [the Tag class](docs/classes/_src_tag_.tag.md) for complete details of the fields
+See the docs for [the Tag class](docs/classes/tag.md) for complete details of the fields
 supported by the format-agnostic `Tag` class. 
 
 ```typescript
@@ -63,4 +72,13 @@ myFile.tag.title = "Time Won't Let Me Go";
 myFile.tag.album = "The Sun And The Moon";
 myFile.tag.performers = ["The Bravery"];
 myFile.save();
+myFile.dispose();
 ```
+
+## Known Issues
+* Maximum supported file size is 8192TB
+  - Why is this an issue? 8192TB is yuuuuge, but .NET implementation supports 8192PB file sizes.
+  - The Node.js 12 [fs](https://nodejs.org/docs/latest-v12.x/api/fs.html) library only supports 
+    `integer` types for position arguments, which safely goes up to `2^52 - 1`. Node 15 supports
+    `number` or `biginteger` for position arguments which would increase supported sizes to 64-bit
+    integers. Please create issue if this is a blocker.

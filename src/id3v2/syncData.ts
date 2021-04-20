@@ -30,6 +30,10 @@ export default {
 
     /**
      * Resynchronizes a {@link ByteVector} object by removing the added bytes.
+     * @remarks In some cases (as determined by header flags), the metadata contains MPEG stream
+     *     synchronization bytes that were "unsynchronized" by inserting empty bytes in between
+     *     them. This method removes those bytes such that the original metadata bytes are
+     *     returned.
      * @param data Object to resynchronize
      */
     resyncByteVector: (data: ByteVector): void => {
@@ -74,6 +78,9 @@ export default {
 
     /**
      * Unsynchronizes a {@link ByteVector} object by inserting empty bytes where necessary.
+     * @remarks This is necessary in some cases in order for the MPEG parser to ignore bytes used
+     *     for MPEG stream synchronization that occur accidentally in metadata from being treated
+     *     as synchronization bytes.
      * @param data Object to unsynchronize
      */
     unsyncByteVector: (data: ByteVector): void => {

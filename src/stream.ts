@@ -109,8 +109,7 @@ export class Stream implements IStream {
     public get position(): number { return this._position; }
     /** @inheritDoc */
     public set position(position: number) {
-        Guards.uint(position, "position");
-        Guards.lessThanInclusive(position, this.length, "position");
+        Guards.safeUint(position, "position");
         this._position = position;
     }
 
@@ -132,7 +131,7 @@ export class Stream implements IStream {
 
     /** @inheritDoc */
     public seek(offset: number, origin: SeekOrigin) {
-        Guards.int(offset, "offset");
+        Guards.safeInt(offset, "offset");
         switch (origin) {
             case SeekOrigin.Begin:
                 this.position = offset;
@@ -148,7 +147,7 @@ export class Stream implements IStream {
 
     /** @inheritDoc */
     public setLength(length: number): void {
-        Guards.uint(length, "length");
+        Guards.safeUint(length, "length");
         if (!this._canWrite) {
             throw new Error("Invalid operation: this stream is a read-only stream");
         }

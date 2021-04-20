@@ -1,6 +1,6 @@
 import * as Chai from "chai";
 import * as ChaiAsPromised from "chai-as-promised";
-import Testers from "./utilities/testers";
+import {Testers} from "./utilities/testers";
 import {suite, test} from "mocha-typescript";
 
 import {ByteVector} from "../src/byteVector";
@@ -462,7 +462,7 @@ const assert = Chai.assert;
     }
 
     @test
-    public compareTo_inequalSizes() {
+    public compareTo_unequalSizes() {
         // Arrange
         const bv = ByteVector.concatenate(0x00, 0x05);
         const other = ByteVector.concatenate(0x00);
@@ -1598,7 +1598,7 @@ const assert = Chai.assert;
         const bv = ByteVector.empty();
 
         // Act / Assert
-        Testers.testTruthy((v: ByteVector) => { bv.startsWith(undefined); });
+        Testers.testTruthy((v: ByteVector) => { bv.startsWith(v); });
     }
 
     @test
