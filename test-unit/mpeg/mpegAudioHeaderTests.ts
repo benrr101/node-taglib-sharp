@@ -2,7 +2,7 @@ import * as Chai from "chai";
 import * as ChaiAsPromised from "chai-as-promised";
 import * as TypeMoq from "typemoq";
 import TestFile from "../utilities/testFile";
-import Testers from "../utilities/testers";
+import {Testers} from "../utilities/testers";
 import {suite, test} from "mocha-typescript";
 
 import MpegAudioHeader from "../../src/mpeg/mpegAudioHeader";
@@ -17,7 +17,7 @@ import {ChannelMode, MpegVersion} from "../../src/mpeg/mpegEnums";
 Chai.use(ChaiAsPromised);
 const assert = Chai.assert;
 
-@suite class MpegAudioHeader_ConstructorTests {
+@suite class Mpeg_AudioHeader_ConstructorTests {
     private mockFile = TypeMoq.Mock.ofType<File>().object;
 
     @test
@@ -315,7 +315,7 @@ const assert = Chai.assert;
     }
 }
 
-@suite class MpegAudioHeader_PropertyTests {
+@suite class Mpeg_AudioHeader_PropertyTests {
     @test
     public audioBitrateDuration_noVbrMpeg1Layer2_256() {
         // Arrange
@@ -661,7 +661,7 @@ const assert = Chai.assert;
     }
 }
 
-@suite class MpegAudioHeader_MethodTests {
+@suite class Mpeg_AudioHeader_MethodTests {
     @test
     public find_invalidParameters() {
         // Arrange

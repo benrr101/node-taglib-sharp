@@ -1,4 +1,4 @@
-import {IPicture} from "./picture";
+import {IPicture} from "./ipicture";
 import {Guards} from "./utils";
 
 /**
@@ -1108,7 +1108,7 @@ export abstract class Tag {
     /**
      * Copies the values from the current instance to another {@link Tag}, optionally overwriting
      *     existing values.
-     * @remarks This method only copies the mist basic values when copying between different tag
+     * @remarks This method only copies the most basic values when copying between different tag
      *     formats. However, if `target` is of the same type as the current instance,
      *     more advanced copying may be done. For example if both `this` and `target` are
      *     {@link Id3v2Tag}, all frames will be copied to the target.

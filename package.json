@@ -17,13 +17,14 @@
     "test-unit-with-coverage": "nyc mocha test-unit"
   },
   "engines": {
-    "node": "12.16.1"
+    "node": ">=12.16.1"
   },
   "dependencies": {
     "arraybuffer-to-buffer": "^0.0.5",
     "dateformat": "^3.0.3",
     "iconv-lite": "^0.4.24",
-    "os-locale": "^4.0.0"
+    "os-locale": "^4.0.0",
+    "uuid": "^8.3.2"
   },
   "devDependencies": {
     "@istanbuljs/nyc-config-typescript": "^1.0.1",
@@ -31,7 +32,7 @@
     "@types/chai-as-promised": "^7.1.0",
     "@types/dateformat": "^3.0.0",
     "@types/stream-buffers": "^3.0.2",
-    "@types/uuid": "^7.0.2",
+    "@types/uuid": "^8.3.0",
     "chai": "^4.2.0",
     "chai-as-promised": "^7.1.1",
     "coveralls": "^3.0.9",
@@ -46,7 +47,6 @@
     "typedoc": "^0.20.24",
     "typedoc-plugin-markdown": "^3.4.5",
     "typemoq": "^2.1.0",
-    "typescript": "^3.9.7",
-    "uuid": "^7.0.2"
+    "typescript": "^3.9.7"
   }
 }

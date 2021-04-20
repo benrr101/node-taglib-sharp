@@ -1,7 +1,7 @@
 import * as Chai from "chai";
 import * as ChaiAsPromised from "chai-as-promised";
 import FrameConstructorTests from "./frameConstructorTests";
-import Testers from "../utilities/testers";
+import {Testers} from "../utilities/testers";
 import {suite, test} from "mocha-typescript";
 
 import UnknownFrame from "../../src/id3v2/frames/unknownFrame";

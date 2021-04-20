@@ -20,7 +20,7 @@ import {TagTypes} from "../../src/tag";
 import CommentsFrame from "../../src/id3v2/frames/commentsFrame";
 import Id3v2Settings from "../../src/id3v2/id3v2Settings";
 import UnsynchronizedLyricsFrame from "../../src/id3v2/frames/unsynchronizedLyricsFrame";
-import {IPicture} from "../../src/picture";
+import {IPicture} from "../../src/iPicture";
 import {UrlLinkFrame} from "../../src/id3v2/frames/urlLinkFrame";
 import Id3v2TagFooter from "../../src/id3v2/id3v2TagFooter";
 import {Id3v2FrameFlags} from "../../src/id3v2/frames/frameHeader";

@@ -2,7 +2,7 @@ import * as Chai from "chai";
 import * as ChaiAsPromised from "chai-as-promised";
 import * as TypeMoq from "typemoq";
 import PropertyTests from "../utilities/propertyTests";
-import Testers from "../utilities/testers";
+import {Testers} from "../utilities/testers";
 import TestFile from "../utilities/testFile";
 import {suite, test} from "mocha-typescript";
 
@@ -11,7 +11,7 @@ import {ApeTagFooter, ApeTagFooterFlags} from "../../src/ape/apeTagFooter";
 import {ApeTagItem, ApeTagItemType} from "../../src/ape/apeTagItem";
 import {ByteVector} from "../../src/byteVector";
 import {File} from "../../src/file";
-import {IPicture, PictureType} from "../../src/picture";
+import {IPicture, PictureType} from "../../src/iPicture";
 import {TagTypes} from "../../src/tag";
 
 // Setup chai

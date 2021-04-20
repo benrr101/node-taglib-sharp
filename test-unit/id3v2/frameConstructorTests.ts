@@ -1,4 +1,4 @@
-import Testers from "../utilities/testers";
+import {Testers} from "../utilities/testers";
 import {test} from "mocha-typescript";
 
 import {ByteVector} from "../../src/byteVector";

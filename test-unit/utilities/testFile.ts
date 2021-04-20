@@ -8,6 +8,7 @@ export default {
     getFile: (data: ByteVector): File => {
         const mockFile = TypeMoq.Mock.ofType<File>();
         let position = 0;
+        mockFile.setup((f) => f.length).returns(() => data.length);
         mockFile.setup((f) => f.seek(TypeMoq.It.isAnyNumber(), TypeMoq.It.isAny()))
             .returns((p, o) => {
                 switch (o) {

@@ -1,4 +1,4 @@
-import {IPicture} from "./picture";
+import {IPicture} from "./iPicture";
 import {Tag, TagTypes} from "./tag";
 
 export default class CombinedTag extends Tag {

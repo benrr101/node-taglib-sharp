@@ -1,7 +1,7 @@
 import * as Chai from "chai";
 import * as TypeMoq from "typemoq";
 import TestFile from "../utilities/testFile";
-import Testers from "../utilities/testers";
+import {Testers} from "../utilities/testers";
 import {suite, test} from "mocha-typescript";
 
 import MpegVideoHeader from "../../src/mpeg/mpegVideoHeader";
@@ -12,7 +12,7 @@ import {MediaTypes} from "../../src/iCodec";
 // Setup Chai
 const assert = Chai.assert;
 
-@suite class MpegVideoHeader_ConstructorTests {
+@suite class Mpeg_VideoHeader_ConstructorTests {
     @test
     public constructor_invalidArguments() {
         // Act/Assert

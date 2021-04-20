@@ -2,13 +2,13 @@ import * as Chai from "chai";
 import * as ChaiAsPromised from "chai-as-promised";
 import * as TypeMoq from "typemoq";
 import TestStream from "./utilities/testStream";
-import Testers from "./utilities/testers";
+import {Testers} from "./utilities/testers";
 import {suite, test} from "mocha-typescript";
 
 import PictureLazy from "../src/pictureLazy";
 import {IFileAbstraction} from "../src/fileAbstraction";
 import {ByteVector, StringType} from "../src/byteVector";
-import {PictureType} from "../src/picture";
+import {PictureType} from "../src/iPicture";
 
 // Setup chai
 Chai.use(ChaiAsPromised);
