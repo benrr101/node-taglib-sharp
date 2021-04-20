@@ -40,10 +40,12 @@ export default class AsfFile extends File {
     /** @inheritDoc */
     public get tag(): AsfTag { return this._asfTag; }
 
+    // @TODO: Add access to the header object
+
     // #region Methods
 
     /** @inheritDoc */
-    public getTag(type: TagTypes, create: boolean): Tag {
+    public getTag(type: TagTypes, _create: boolean): Tag {
         return type === TagTypes.Asf ? this._asfTag : undefined;
     }
 

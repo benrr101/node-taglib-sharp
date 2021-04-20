@@ -246,7 +246,7 @@ export class NumberUtils {
         } else {
             exponent -= 16383;
             f = NumberUtils.ldexp(hiMantissa, exponent -= 31);
-            f += NumberUtils.ldexp(loMantissa, exponent -= 32);
+            f += NumberUtils.ldexp(loMantissa, exponent - 32);
         }
 
         if ((bytes.get(0) & 0x80) !== 0) {

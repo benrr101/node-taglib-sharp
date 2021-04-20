@@ -267,7 +267,7 @@ export default class RiffBitmapInfoHeader implements IVideoCodec {
         /* IPJ2 */ 0x324A5049: "ImagePower Motion JPEG2000",
         /* IPMA */ 0x414D5049: "Imagination Pilots IPMA Codec",
         /* IR21 */ 0x31325249: "Intel Indeo 2.1",
-        /* IRAW */ 0x57415249: "Intel Packed Uncompredded YUV Format",
+        /* IRAW */ 0x57415249: "Intel Packed Uncompressed YUV Format",
         /* ISME */ 0x454D5349: "Intel's next-generation video codec",
         /* IUYV */ 0x56595549: "Lead Technologies Packed Interlaced YUV 4:2:2 Format",
         /* IV30 */ 0x30335649: "Intel Indeo Video 3",
@@ -398,7 +398,7 @@ export default class RiffBitmapInfoHeader implements IVideoCodec {
         /* NDXS */ 0x5358444E: "Nero Digital H.264",
         /* NHVU */ 0x5556484E: "NVidia GEForce 3 Texture Format",
         /* NI24 */ 0x3432494E: "Harmonic/Omneon Spectrum Codec",
-        /* NO16 */ 0x36314F4E: "Theory None16 64-bit Wncompressed RAW",
+        /* NO16 */ 0x36314F4E: "Theory None16 64-bit Uncompressed RAW",
         /* NT00 */ 0x3030544E: "NewTek LightWave HDTV YUV w/Alpha-channel",
         /* NTN1 */ 0x314E544E: "Nogatech Video Compression 1",
         /* NTN2 */ 0x324E544E: "Nogatech Video Compression 2 / GrabBee Hardware Coder",
@@ -679,7 +679,6 @@ export default class RiffBitmapInfoHeader implements IVideoCodec {
     private readonly _bitCount: number;
     private readonly _colorsUsed: number;
     private readonly _compressionId: number;
-    private readonly _headerSize: number;
     private readonly _height: number;
     private readonly _imageSize: number;
     private readonly _importantColors: number;

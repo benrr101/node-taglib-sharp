@@ -1,7 +1,7 @@
 import UuidWrapper from "../uuidWrapper";
 
 /**
- * Enum of different types of objects that are part of the ASF specificatio
+ * Enum of different types of objects that are part of the ASF specification
  */
 export enum ObjectType {
     UnknownObject = 0,

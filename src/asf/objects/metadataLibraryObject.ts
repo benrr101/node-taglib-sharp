@@ -67,7 +67,7 @@ export class MetadataDescriptor extends DescriptorBase {
                 // NOTE: The ASF specification says metadata description objects should be 2 bytes
                 //    however the original .NET implementation reads them as DWORDs. It might be a
                 //    bug in the .NET implementation, or could be some apps read/write them as
-                //    DWORDS. So, let's hedge our bets and try to read either.
+                //    DWORDs. So, let's hedge our bets and try to read either.
                 if (dataLength === 4) {
                     value = ReadWriteUtils.readDWord(file) > 0;
                 } else {
@@ -252,7 +252,7 @@ export class MetadataLibraryObject extends BaseObject {
     /**
      * Removes all records with a given language, stream, and name from the current instance.
      * @param languageListIndex Language list index of the records to be removed
-     * @param streamNumber Index of the stream in the file the desired records to remve
+     * @param streamNumber Index of the stream in the file the desired records to remove
      * @param name Name of the records to remove
      */
     public removeRecords(languageListIndex: number, streamNumber: number, name: string): void {
