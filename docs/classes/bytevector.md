@@ -618,7 +618,7 @@ ___
 
 ### toLong
 
-▸ **toLong**(`mostSignificantByteFirst?`: *boolean*): BigInteger
+▸ **toLong**(`mostSignificantByteFirst?`: *boolean*): *bigint*
 
 Converts the first eight bytes of the current instance to a signed long. If the current
 instance is less than eight bytes, the most significant bytes will be filled with 0x00.
@@ -629,10 +629,10 @@ Name | Type | Default value | Description |
 ------ | ------ | ------ | ------ |
 `mostSignificantByteFirst` | *boolean* | true | If `true` the most significant byte appears first (big        endian format)   |
 
-**Returns:** BigInteger
+**Returns:** *bigint*
 
 A signed long value containing the value read from the current instance,
-         represented as a BigInt due to JavaScript's 32-bit integer limitation
+         represented as a BigInt due to JavaScript's 52-bit integer limitation.
 
 ___
 
@@ -721,7 +721,7 @@ ___
 
 ### toULong
 
-▸ **toULong**(`mostSignificantByteFirst?`: *boolean*): BigInteger
+▸ **toULong**(`mostSignificantByteFirst?`: *boolean*): *bigint*
 
 Converts the first eight bytes of the current instance to an unsigned long. If the current
 instance is less than eight bytes, the most significant bytes will be filled with 0x00.
@@ -732,7 +732,7 @@ Name | Type | Default value | Description |
 ------ | ------ | ------ | ------ |
 `mostSignificantByteFirst` | *boolean* | true | If `true` the most significant byte appears first (big        endian format)   |
 
-**Returns:** BigInteger
+**Returns:** *bigint*
 
 An unsigned short value containing the value read from the current instance,
          represented as a BigInt due to JavaScript's 32-bit integer limitation
@@ -918,7 +918,7 @@ ___
 
 ### fromLong
 
-▸ `Static`**fromLong**(`value`: BigInteger, `mostSignificantByteFirst?`: *boolean*, `isReadOnly?`: *boolean*): [*ByteVector*](bytevector.md)
+▸ `Static`**fromLong**(`value`: *number* \| *bigint*, `mostSignificantByteFirst?`: *boolean*, `isReadOnly?`: *boolean*): [*ByteVector*](bytevector.md)
 
 Creates an 8 byte [ByteVector](bytevector.md) with a signed 64-bit integer as the data
 
@@ -926,8 +926,8 @@ Creates an 8 byte [ByteVector](bytevector.md) with a signed 64-bit integer as th
 
 Name | Type | Default value | Description |
 ------ | ------ | ------ | ------ |
-`value` | BigInteger | - | Signed 64-bit integer to use as the data. Since JavaScript does not support        longs, we are using BigInts. Must be storable in 8 bytes.   |
-`mostSignificantByteFirst` | *boolean* | true | If `true`, `value` will be stored in big endian        format. If `false`, `value` will be stored in little endian format   |
+`value` | *number* \| *bigint* | - | Signed 64-bit integer to use as the data. If using a `bigint`, it must fit     within 8 bytes. If using a `number`, it must be a safe integer.   |
+`mostSignificantByteFirst` | *boolean* | true | If `true`, `value` will be stored in big endian     format. If `false`, `value` will be stored in little endian format   |
 `isReadOnly` | *boolean* | false | If `true` then the ByteVector will be read only    |
 
 **Returns:** [*ByteVector*](bytevector.md)
@@ -1044,7 +1044,7 @@ ___
 
 ### fromULong
 
-▸ `Static`**fromULong**(`value`: BigInteger, `mostSignificantByteFirst?`: *boolean*, `isReadOnly?`: *boolean*): [*ByteVector*](bytevector.md)
+▸ `Static`**fromULong**(`value`: *number* \| *bigint*, `mostSignificantByteFirst?`: *boolean*, `isReadOnly?`: *boolean*): [*ByteVector*](bytevector.md)
 
 Creates an 8 byte [ByteVector](bytevector.md) with a positive 64-bit integer as the data
 
@@ -1052,7 +1052,7 @@ Creates an 8 byte [ByteVector](bytevector.md) with a positive 64-bit integer as 
 
 Name | Type | Default value | Description |
 ------ | ------ | ------ | ------ |
-`value` | BigInteger | - | Positive 64-bit integer to use as the data. Since JavaScript does not support        longs, we are using BigInts. Must be storable in 8 bytes.   |
+`value` | *number* \| *bigint* | - | Positive 64-bit integer to use as the data. If using a `bigint` it must fit     within 8 bytes. If using a `number` it must be a safe, positive integer.   |
 `mostSignificantByteFirst` | *boolean* | true | If `true`, `value` will be stored in big endian        format. If `false`, `value` will be stored in little endian format   |
 `isReadOnly` | *boolean* | false | If `true` then the ByteVector will be read only    |
 
@@ -1070,7 +1070,7 @@ Creates a 2 byte [ByteVector](bytevector.md) with a positive 32-bit integer as t
 
 Name | Type | Default value | Description |
 ------ | ------ | ------ | ------ |
-`value` | *number* | - | Positive 32-bit integer to use as the data. Must be a positive safe integer,        storable in 4 bytes, cannot be a floating point number.   |
+`value` | *number* | - | Positive 16-bit integer to use as the data. Must be a positive safe integer,        storable in 2 bytes, cannot be a floating point number.   |
 `mostSignificantByteFirst` | *boolean* | true | If `true`, `value` will be stored in big endian        format. If `false`, `value` will be stored in little endian format   |
 `isReadOnly` | *boolean* | false | If `true` then the ByteVector will be read only    |
 

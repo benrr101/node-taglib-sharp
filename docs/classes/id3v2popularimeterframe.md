@@ -156,13 +156,13 @@ ___
 
 ### playCount
 
-• **playCount**(): BigInteger
+• **playCount**(): *bigint*
 
 Gets the play count of the current instance
 
-**Returns:** BigInteger
+**Returns:** *bigint*
 
-• **playCount**(`value`: BigInteger): *void*
+• **playCount**(`value`: *bigint*): *void*
 
 Sets the play count of the current instance
 
@@ -170,7 +170,7 @@ Sets the play count of the current instance
 
 Name | Type | Description |
 ------ | ------ | ------ |
-`value` | BigInteger | Play count of the current instance    |
+`value` | *bigint* | Play count of the current instance    |
 
 **Returns:** *void*
 
@@ -392,7 +392,7 @@ ___
 ▸ `Static`**fromOffsetRawData**(`data`: [*ByteVector*](bytevector.md), `offset`: *number*, `header`: [*Id3v2FrameHeader*](id3v2frameheader.md), `version`: *number*): [*Id3v2PopularimeterFrame*](id3v2popularimeterframe.md)
 
 Constructs and initializes a new instance by reading its raw data in a specified ID3v2
-version. This method allows for offset reading from the data bytevector.
+version. This method allows for offset reading from the data byte vector.
 
 #### Parameters:
 

@@ -328,7 +328,7 @@ ___
 ▸ `Static`**fromOffsetRawData**(`data`: [*ByteVector*](bytevector.md), `offset`: *number*, `header`: [*Id3v2FrameHeader*](id3v2frameheader.md), `version`: *number*): [*Id3v2UnknownFrame*](id3v2unknownframe.md)
 
 Constructs and initializes a new instance by reading its raw data in a specified ID3v2
-version. This method allows for offset reading from the data bytevector.
+version. This method allows for offset reading from the data byte vector.
 
 #### Parameters:
 

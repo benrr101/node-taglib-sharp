@@ -17,6 +17,9 @@ This structure contains a single entry in a [SynchronizedLyricsFrame](../enums/i
 ### Properties
 
 - [text](id3v2synchronizedlyricsframe.md#text)
+
+### Accessors
+
 - [time](id3v2synchronizedlyricsframe.md#time)
 
 ### Methods
@@ -49,14 +52,29 @@ Name | Type | Description |
 
 Text for the point in time represented by the current instance.
 
-___
+## Accessors
 
 ### time
 
-• **time**: *number*
+• **time**(): *number*
 
-Time offset of the current instance. The specific format this text element is defined in
-{@link SynchronizedLyricsFrame.format} of the frame that owns this element.
+Gets time offset of the current instance. The specific format this text element is defined
+in {@link SynchronizedLyricsFrame.format} of the frame that owns this element.
+
+**Returns:** *number*
+
+• **time**(`value`: *number*): *void*
+
+Sets time offset of the current instance. The specific format this text element is defined
+in {@link SynchronizedLyricsFrame.format} of the frame that owns this element.
+
+#### Parameters:
+
+Name | Type | Description |
+------ | ------ | ------ |
+`value` | *number* | Offset of the current instance, must be a safe    |
+
+**Returns:** *void*
 
 ## Methods
 

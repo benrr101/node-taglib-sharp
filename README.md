@@ -50,7 +50,7 @@ The `File` class provides factory methods for generating instances of classes th
 for Monkey's Audio files). The `File` class has exposes the `properties` and `tag` properties to
 allow manipulation of the tagging information and reading audio/video properties. 
 
-See the docs for [the File class](docs/classes/_src_file_.file.md) for complete details of the
+See the docs for [the File class](docs/classes/file.md) for complete details of the
 available properties.
 
 ```typescript
@@ -62,7 +62,7 @@ The `Tag` base class provides a tagging-format agnostic interface to modify tag(
 object. Set tag properties as needed and they will be stored in a tagging format that is supported
 by the file type. The changes can be easily written back to the file with `save()`.
 
-See the docs for [the Tag class](docs/classes/_src_tag_.tag.md) for complete details of the fields
+See the docs for [the Tag class](docs/classes/tag.md) for complete details of the fields
 supported by the format-agnostic `Tag` class. 
 
 ```typescript

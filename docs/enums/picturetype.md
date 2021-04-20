@@ -2,6 +2,8 @@
 
 # Enumeration: PictureType
 
+The type of content appearing in an [IPicture](../interfaces/ipicture.md) instance.
+
 ## Table of contents
 
 ### Enumeration members

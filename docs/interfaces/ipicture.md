@@ -2,6 +2,9 @@
 
 # Interface: IPicture
 
+Interface that provides generic information about a picture, including its contents, as used by
+various formats.
+
 ## Hierarchy
 
 * **IPicture**
@@ -28,11 +31,15 @@
 
 • **data**: [*ByteVector*](../classes/bytevector.md)
 
+Gets and sets the picture data stored in the current instance.
+
 ___
 
 ### description
 
 • **description**: *string*
+
+Gets and sets a description of the picture stored in the current instance. Optional.
 
 ___
 
@@ -40,14 +47,20 @@ ___
 
 • **filename**: *string*
 
+Gets and sets a filename of the picture stored in the current instance. Optional.
+
 ___
 
 ### mimeType
 
 • **mimeType**: *string*
 
+Gets and sets the mime-type of the picture data stored in the current instance.
+
 ___
 
 ### type
 
 • **type**: [*PictureType*](../enums/picturetype.md)
+
+Gets and sets the type of the content visible in the picture stored in the current instance.
