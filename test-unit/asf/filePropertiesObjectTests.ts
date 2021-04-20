@@ -1,13 +1,13 @@
 import * as Chai from "chai";
 import {suite, test} from "mocha-typescript";
+
+import FilePropertiesObject from "../../src/asf/objects/filePropertiesObject";
 import ObjectTests from "./objectTests";
 import TestFile from "../utilities/testFile";
-import {ByteVector} from "../../src/byteVector";
-import {File} from "../../src/file";
-
-import {Guids, ObjectType} from "../../src/asf/constants";
-import FilePropertiesObject from "../../src/asf/objects/filePropertiesObject";
 import UuidWrapper from "../../src/uuidWrapper";
+import {ByteVector} from "../../src/byteVector";
+import {Guids, ObjectType} from "../../src/asf/constants";
+import {File} from "../../src/file";
 
 // Setup Chai
 const assert = Chai.assert;

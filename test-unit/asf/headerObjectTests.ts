@@ -1,20 +1,20 @@
 import * as Chai from "chai";
 import {suite, test} from "mocha-typescript";
-import ObjectTests from "./objectTests";
-import TestFile from "../utilities/testFile";
-import {ByteVector} from "../../src/byteVector";
-import {File} from "../../src/file";
 
-import {Guids, ObjectType} from "../../src/asf/constants";
-import HeaderObject from "../../src/asf/objects/headerObject";
-import UuidWrapper from "../../src/uuidWrapper";
 import BaseObject from "../../src/asf/objects/baseObject";
-import PaddingObject from "../../src/asf/objects/paddingObject";
-import {MetadataLibraryObject} from "../../src/asf/objects/metadataLibraryObject";
-import HeaderExtensionObject from "../../src/asf/objects/headerExtensionObject";
 import ContentDescriptionObject from "../../src/asf/objects/contentDescriptionObject";
-import {ExtendedContentDescriptionObject} from "../../src/asf/objects/extendedContentDescriptionObject";
+import HeaderExtensionObject from "../../src/asf/objects/headerExtensionObject";
+import HeaderObject from "../../src/asf/objects/headerObject";
+import ObjectTests from "./objectTests";
+import PaddingObject from "../../src/asf/objects/paddingObject";
 import RiffWaveFormatEx from "../../src/riff/riffWaveFormatEx";
+import TestFile from "../utilities/testFile";
+import UuidWrapper from "../../src/uuidWrapper";
+import {ByteVector} from "../../src/byteVector";
+import {Guids, ObjectType} from "../../src/asf/constants";
+import {ExtendedContentDescriptionObject} from "../../src/asf/objects/extendedContentDescriptionObject";
+import {File} from "../../src/file";
+import {MetadataLibraryObject} from "../../src/asf/objects/metadataLibraryObject";
 
 // Setup chai
 const assert = Chai.assert;

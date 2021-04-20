@@ -1,17 +1,17 @@
 import * as Chai from "chai";
 import {suite, test} from "mocha-typescript";
+
+import BaseObject from "../../src/asf/objects/baseObject";
+import ContentDescriptionObject from "../../src/asf/objects/contentDescriptionObject";
+import HeaderExtensionObject from "../../src/asf/objects/headerExtensionObject";
 import ObjectTests from "./objectTests";
 import TestFile from "../utilities/testFile";
-import {ByteVector} from "../../src/byteVector";
-import {File} from "../../src/file";
-
-import {Guids, ObjectType} from "../../src/asf/constants";
-import HeaderExtensionObject from "../../src/asf/objects/headerExtensionObject";
-import UuidWrapper from "../../src/uuidWrapper";
-import {MetadataLibraryObject} from "../../src/asf/objects/metadataLibraryObject";
-import ContentDescriptionObject from "../../src/asf/objects/contentDescriptionObject";
-import BaseObject from "../../src/asf/objects/baseObject";
 import UnknownObject from "../../src/asf/objects/unknownObject";
+import UuidWrapper from "../../src/uuidWrapper";
+import {ByteVector} from "../../src/byteVector";
+import {Guids, ObjectType} from "../../src/asf/constants";
+import {File} from "../../src/file";
+import {MetadataLibraryObject} from "../../src/asf/objects/metadataLibraryObject";
 
 // Setup Chai
 const assert = Chai.assert;

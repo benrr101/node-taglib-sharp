@@ -11,6 +11,8 @@ import {Guards} from "../../utils";
  */
 export default class PaddingObject extends BaseObject {
 
+    public static readonly HEADER_LENGTH = 24;
+
     private _size: number;
 
     // #region Constructors
@@ -32,13 +34,14 @@ export default class PaddingObject extends BaseObject {
             throw new CorruptFileError("Object GUID does not match expected padding object GUID");
         }
 
-        instance._size = instance.originalSize - 24;
+        instance._size = instance.originalSize - PaddingObject.HEADER_LENGTH;
         return instance;
     }
 
     /**
      * Constructs and initializes a new instance with a fixed size.
-     * @param size Number of padding bytes to store in the object
+     * @param size Number of padding bytes to store in the object not including the size of the
+     *     header
      */
     public static fromSize(size: number): PaddingObject {
         Guards.safeUint(size, "size");

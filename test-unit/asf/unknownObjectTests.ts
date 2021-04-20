@@ -1,14 +1,14 @@
 import * as Chai from "chai";
 import {suite, test} from "mocha-typescript";
+
 import ObjectTests from "./objectTests";
-import {Testers} from "../utilities/testers";
 import TestFile from "../utilities/testFile";
+import UnknownObject from "../../src/asf/objects/unknownObject";
 import UuidWrapper from "../../src/uuidWrapper";
 import {ByteVector} from "../../src/byteVector";
-import {File} from "../../src/file";
 import {ObjectType} from "../../src/asf/constants";
-
-import UnknownObject from "../../src/asf/objects/unknownObject";
+import {File} from "../../src/file";
+import {Testers} from "../utilities/testers";
 
 // Setup chai
 const assert = Chai.assert;

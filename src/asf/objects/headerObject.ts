@@ -158,7 +158,8 @@ export default class HeaderObject extends BaseObject {
         let childCount = substantiveChildren.length;
         const sizeDifference = childrenData.length + 30 - this.originalSize;
         if (sizeDifference !== 0) {
-            const obj = PaddingObject.fromSize(sizeDifference > 0 ? 4096 : -sizeDifference);
+            const paddingLength = sizeDifference > 0 ? 4096 : -sizeDifference - PaddingObject.HEADER_LENGTH;
+            const obj = PaddingObject.fromSize(paddingLength);
             childrenData.addByteVector(obj.render());
             childCount++;
         }

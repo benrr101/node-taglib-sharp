@@ -1,25 +1,25 @@
 import * as Chai from "chai";
+import {Mock} from "typemoq";
 import {suite, test} from "mocha-typescript";
 
 import AsfTag from "../../src/asf/AsfTag";
 import BaseObject from "../../src/asf/objects/baseObject";
+import ContentDescriptionObject from "../../src/asf/objects/contentDescriptionObject";
 import HeaderObject from "../../src/asf/objects/headerObject";
+import PropertyTests from "../utilities/propertyTests";
 import TestFile from "../utilities/testFile";
 import {ByteVector, StringType} from "../../src/byteVector";
-import {TagTesters, Testers} from "../utilities/testers";
 import {Guids} from "../../src/asf/constants";
-import ContentDescriptionObject from "../../src/asf/objects/contentDescriptionObject";
+import {DataType, DescriptorBase} from "../../src/asf/objects/descriptorBase";
 import {
     ContentDescriptor,
     ExtendedContentDescriptionObject
 } from "../../src/asf/objects/extendedContentDescriptionObject";
-import {MetadataDescriptor, MetadataLibraryObject} from "../../src/asf/objects/metadataLibraryObject";
-import {DataType, DescriptorBase} from "../../src/asf/objects/descriptorBase";
 import HeaderExtensionObject from "../../src/asf/objects/headerExtensionObject";
-import {TagTypes} from "../../src/tag";
-import PropertyTests from "../utilities/propertyTests";
 import {IPicture, PictureType} from "../../src/iPicture";
-import {Mock} from "typemoq";
+import {MetadataDescriptor, MetadataLibraryObject} from "../../src/asf/objects/metadataLibraryObject";
+import {TagTypes} from "../../src/tag";
+import {TagTesters, Testers} from "../utilities/testers";
 
 // Setup chai
 const assert = Chai.assert;
@@ -494,16 +494,16 @@ const getTagWithExtensionDescriptor: (descriptorName: string, descriptorType: Da
     public discCount_setToZeroDisc_removesDescriptor() {
         // Arrange
         const tag = getTagWithExtensionDescriptor("WM/PartOfSet", DataType.Unicode, "0/123");
-        
+
         // Act
         tag.discCount = 0;
-        
+
         // Assert
         assert.strictEqual(tag.discCount, 0);
         assert.strictEqual(tag.disc, 0);
         assert.strictEqual(tag.extendedContentDescriptionObject.descriptors.length, 0);
     }
-    
+
     @test
     public discCount_setToValueNoDisc_setsDescriptor() {
         // Arrange

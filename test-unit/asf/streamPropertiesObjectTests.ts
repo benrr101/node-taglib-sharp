@@ -1,17 +1,17 @@
 import * as Chai from "chai";
 import {suite, test} from "mocha-typescript";
-import ObjectTests from "./objectTests";
-import TestFile from "../utilities/testFile";
-import UuidWrapper from "../../src/uuidWrapper";
-import {ByteVector} from "../../src/byteVector";
-import {File} from "../../src/file";
-import {NumberUtils} from "../../src/utils";
 
-import {Guids, ObjectType} from "../../src/asf/constants";
+import ObjectTests from "./objectTests";
 import RiffBitmapInfoHeader from "../../src/riff/riffBitmapInfoHeader";
 import RiffWaveFormatEx from "../../src/riff/riffWaveFormatEx";
 import StreamPropertiesObject from "../../src/asf/objects/streamPropertiesObject";
+import TestFile from "../utilities/testFile";
+import UuidWrapper from "../../src/uuidWrapper";
+import {ByteVector} from "../../src/byteVector";
+import {Guids, ObjectType} from "../../src/asf/constants";
+import {File} from "../../src/file";
 import {MediaTypes} from "../../src/icodec";
+import {NumberUtils} from "../../src/utils";
 
 // Setup chai
 const assert = Chai.assert;

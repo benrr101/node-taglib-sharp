@@ -1,10 +1,10 @@
 import * as Chai from "chai";
 import {test} from "mocha-typescript";
 
-import {Testers} from "../utilities/testers";
 import TestFile from "../utilities/testFile";
 import UuidWrapper from "../../src/uuidWrapper";
 import {ByteVector} from "../../src/byteVector";
+import {Testers} from "../utilities/testers";
 import {File} from "../../src/file";
 
 // Setup chai
