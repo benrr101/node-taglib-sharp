@@ -179,12 +179,28 @@ export default class RiffList {
     }
 
     /**
+     * Sets the value for a specified item in the current instance to a uint.
+     * @param id ID of the item of which to get the values. Must be 4 bytes
+     * @param value Value to store in the item. Must be an unsigned integer
+     */
+    public setValueFromUint(id: string, value: number) {
+        RiffList.validateId(id);
+        Guards.uint(value, "value");
+
+        if (value === 0) {
+            this.removeValue(id);
+        } else {
+            this.setValueFromStrings(id, value.toString(10));
+        }
+    }
+
+    /**
      * Sets the value for a specified item in the current instance to an array.
      * @param id ID of the item of which to get the values. Must be 4 bytes
      * @param values Array of {@link ByteVector} to store in the specified item. If falsey or
      *     undefined, the item will be removed
      */
-    public setValue(id: string, ... values: ByteVector[]): void {
+    public setValues(id: string, ... values: ByteVector[]): void {
         RiffList.validateId(id);
         if (!values || values.length === 0) {
             this.removeValue(id);
@@ -199,7 +215,7 @@ export default class RiffList {
      * @param values Array of strings to store in the specified item. If falsey or undefined, the
      *     item will be removed
      */
-    public setValueFromStrings(id: string, ... values: string[]): void {
+    public setValuesFromStrings(id: string, ... values: string[]): void {
         RiffList.validateId(id);
 
         if (!values) {
@@ -220,22 +236,6 @@ export default class RiffList {
             this.removeValue(id);
         } else {
             this.setValue(id, ... byteVectorValues);
-        }
-    }
-
-    /**
-     * Sets the value for a specified item in the current instance to a uint.
-     * @param id ID of the item of which to get the values. Must be 4 bytes
-     * @param value Value to store in the item. Must be an unsigned integer
-     */
-    public setValueFromUint(id: string, value: number) {
-        RiffList.validateId(id);
-        Guards.uint(value, "value");
-
-        if (value === 0) {
-            this.removeValue(id);
-        } else {
-            this.setValueFromStrings(id, value.toString(10));
         }
     }
 

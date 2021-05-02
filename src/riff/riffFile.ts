@@ -1,19 +1,20 @@
-import {File, FileAccessMode, ReadStyle} from "../file";
 import CombinedTag from "../combinedTag";
 import Id3v2Tag from "../id3v2/id3v2Tag";
 import Properties from "../properties";
+import {File, FileAccessMode, ReadStyle} from "../file";
 import {ByteVector} from "../byteVector";
 import {IFileAbstraction} from "../fileAbstraction";
-import {CorruptFileError} from "../errors";
+import {CorruptFileError, UnsupportedFormatError} from "../errors";
 import RiffWaveFormatEx from "./riffWaveFormatEx";
 import {ICodec} from "../iCodec";
 import {AviHeaderList} from "./aviHeaderList";
+import DivxTag from "./divxTag";
 
 export default class RiffFile extends File {
     /**
      * Identifier used to recognize a RIFF file.
      */
-    public static readonly FILE_IDENTIFIER = ByteVector.fromString("RIFF");
+    public static readonly FILE_IDENTIFIER = ByteVector.fromString("RIFF", undefined, undefined, true);
 
     private readonly _tag: CombinedTag = new CombinedTag();
     private _divxTag: DivxTag;
@@ -164,7 +165,7 @@ export default class RiffFile extends File {
                     case "IDVX":
                         // "IDVX" is used by DivX and holds an ID3v1 style tag
                         if (readTags && !this._divxTag) {
-                            this._divxTag = new DivxTag(this, position + 8);
+                            this._divxTag = DivxTag.fromFile(this, position + 8);
                         }
 
                         tagFound = true;
@@ -176,13 +177,36 @@ export default class RiffFile extends File {
                             tagEnd = position + 8 + size;
                         }
                         break;
-                 }
+                }
 
-                 // Determine the region of the file that contains tags.
+                // Determine the region of the file that contains tags.
+                if (tagFound) {
+                    if (tagStart === -1) {
+                        tagStart = position;
+                        tagEnd = position + 8 + size;
+                    } else if (tagEnd === position) {
+                        tagEnd = position + 8 + size;
+                    }
+                }
 
+                // Move to the next item
+                position += 8 + size;
+            } while (position + 8 < length);
 
+            // If we're reading properties and one was found, throw an exception. Otherwise
+            // create the properties object
+            if (style !== ReadStyle.None) {
+                if (codecs.length === 0) {
+                    throw new UnsupportedFormatError("Unsupported RIFF type");
+                }
 
-            } while ((position += 8 + size) + 8 < length);
+                this._properties = new Properties(durationMilliseconds, codecs);
+            }
+
+            // If we're reading tags, update the combined tag
+            if (readTags) {
+                this._tag.setTags(this._id3v2Tag, this._infoTag, this._movieIdTag, this._divxTag);
+            }
 
         } finally {
             this.mode = FileAccessMode.Closed;
