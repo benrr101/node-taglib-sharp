@@ -9,6 +9,10 @@ import RiffWaveFormatEx from "./riffWaveFormatEx";
 import {ICodec} from "../iCodec";
 import {AviHeaderList} from "./aviHeaderList";
 import DivxTag from "./divxTag";
+import InfoTag from "./infoTag";
+import MovieIdTag from "./movieIdTag";
+import {Tag, TagTypes} from "../tag";
+import {Id3v2TagHeaderFlags} from "../id3v2/id3v2TagHeader";
 
 export default class RiffFile extends File {
     /**
@@ -27,16 +31,184 @@ export default class RiffFile extends File {
         super(file);
 
         this.read(true, propertiesStyle);
-        // TODO: create tags here? Look how MP3 is doing it
+
+        // Make sure we have all the possible tags at our disposal
+        // @TODO: Creating *all* the tag types should probably be optional
+        this.getTag(TagTypes.Id3v2, true);
+        this.getTag(TagTypes.RiffInfo, true);
+        this.getTag(TagTypes.MovieId, true);
+        this.getTag(TagTypes.DivX, true);
     }
 
     // #region Properties
+
+    /** @inheritDoc */
+    public get tag(): Tag { return this._tag; }
+
+    /** @inheritDoc */
+    public get properties(): Properties { return this._properties; }
 
     // #endregion
 
     // #region Methods
 
-    private read(readTags: boolean, style: ReadStyle): void {
+    /** @inheritDoc */
+    public getTag(type: TagTypes, create: boolean): Tag {
+        let tag: Tag;
+
+        switch (type) {
+            case TagTypes.Id3v2:
+                if (!this._id3v2Tag && create) {
+                    this._id3v2Tag = Id3v2Tag.fromEmpty();
+                    this._id3v2Tag.version = 4; // @TODO: Is only v2.4 supported or should we fallback to default?
+                    this._id3v2Tag.flags |= Id3v2TagHeaderFlags.FooterPresent;
+                    this._tag.copyTo(this._id3v2Tag, true);
+                }
+
+                tag = this._id3v2Tag;
+                break;
+
+            case TagTypes.RiffInfo:
+                if (!this._infoTag) {
+                    this._infoTag = InfoTag.fromEmpty();
+                    this._tag.copyTo(this._infoTag, true);
+                }
+
+                tag = this._infoTag;
+                break;
+
+            case TagTypes.MovieId:
+                if (!this._movieIdTag) {
+                    this._movieIdTag = MovieIdTag.fromEmpty();
+                    this._tag.copyTo(this._movieIdTag, true);
+                }
+
+                tag = this._movieIdTag;
+                break;
+
+            case TagTypes.DivX:
+                if (!this._divxTag) {
+                    this._divxTag = DivxTag.fromEmpty();
+                    this._tag.copyTo(this._divxTag, true);
+                }
+
+                tag = this._movieIdTag;
+                break;
+        }
+
+        this._tag.setTags(this._id3v2Tag, this._infoTag, this._movieIdTag, this._divxTag);
+        return tag;
+    }
+
+    /** @inheritDoc */
+    public removeTags(types: TagTypes): void {
+        if ((types && TagTypes.Id3v2) !== TagTypes.None) {
+            this._id3v2Tag = undefined;
+        }
+        if ((types && TagTypes.RiffInfo) !== TagTypes.None) {
+            this._infoTag = undefined;
+        }
+        if ((types && TagTypes.MovieId) !== TagTypes.None) {
+            this._movieIdTag = undefined;
+        }
+        if ((types && TagTypes.DivX) !== TagTypes.None) {
+            this._divxTag = undefined;
+        }
+
+        this._tag.setTags(this._id3v2Tag, this._infoTag, this._movieIdTag, this._divxTag);
+    }
+
+    /** @inheritDoc */
+    public save(): void {
+        this.preSave();
+
+        this.mode = FileAccessMode.Write;
+        try {
+            const data = ByteVector.empty();
+
+            // Enclose the ID3v2 tag in an "id3 " item and embed it as the first tag.
+            if (this._id3v2Tag) {
+                const id3v2TagData = this._id3v2Tag.render();
+                if (id3v2TagData.length > 10) {
+                    if (id3v2TagData.length % 2 === 1) {
+                        id3v2TagData.addByte(0);
+                    }
+                    data.addByteVector(ByteVector.concatenate(
+                        ByteVector.fromString("id3 "),
+                        ByteVector.fromUInt(id3v2TagData.length, false),
+                        id3v2TagData
+                    ));
+                }
+            }
+
+            // Embed "INFO" tag as the second tag
+            if (this._infoTag) {
+                data.addByteVector(this._infoTag.renderEnclosed());
+            }
+
+            // Embed MovieID as the third tag
+            if (this._movieIdTag) {
+                data.addByteVector(this._movieIdTag.renderEnclosed());
+            }
+
+            // Embed the DivX tag in "IDVX" as the fourth tag
+            if (this._divxTag) {
+                const divxTagData = this._divxTag.render();
+                // NOTE: No need to pad odd sized tags, b/c DivX is always 128 bytes
+                data.addByteVector(ByteVector.concatenate(
+                    ByteVector.fromString("IDVX"),
+                    ByteVector.fromUInt(divxTagData.length, false),
+                    divxTagData
+                ));
+            }
+
+            // Reread the file to figure out where the RIFF tag blocks should go
+            // NOTE: I suppose we could just store this info in the class when we first read in the
+            //    file, but this *does* prevent problems if the file changes in between reading and
+            //    wring.
+            const readInfo = this.read(false, ReadStyle.None);
+
+            // If tagging info cannot be found, place it at the end of the file
+            if (readInfo.tagStart < 12 || readInfo.tagEnd < readInfo.tagStart) {
+                readInfo.tagStart = this.length;
+                readInfo.tagEnd = this.length;
+            }
+
+            const originalTagLength = readInfo.tagEnd - readInfo.tagStart;
+
+            // If the tag isn't at the end of the file, try appending using padding to improve
+            // write time now or for subsequent writes.
+            if (readInfo.tagEnd !== this.length) {
+                let paddingSize = originalTagLength - data.length - 8;
+                if (paddingSize < 0) {
+                    paddingSize = 1024;
+                }
+
+                data.addByteVector(ByteVector.concatenate(
+                    ByteVector.fromString("JUNK"),
+                    ByteVector.fromUInt(paddingSize, false),
+                    ByteVector.fromSize(paddingSize)
+                ));
+            }
+
+            // Insert the tagging data
+            this.insert(data, readInfo.tagStart, originalTagLength);
+
+            // If the data size changed, and the tagging data is within the RIFF portion of the
+            // file, update the riff size
+            if (data.length - originalTagLength !== 0 && readInfo.tagStart <= readInfo.riffSize) {
+                const newRiffSize = ByteVector.fromUInt(readInfo.riffSize + data.length - originalTagLength, false);
+                this.insert(newRiffSize, 4, 4);
+            }
+
+            // Update the tag types on disk
+            this._tagTypesOnDisk = this.tagTypes;
+        } finally {
+            this.mode = FileAccessMode.Closed;
+        }
+    }
+
+    private read(readTags: boolean, style: ReadStyle): {riffSize: number, tagEnd: number, tagStart: number} {
         this.mode = FileAccessMode.Read;
 
         try {
@@ -46,6 +218,7 @@ export default class RiffFile extends File {
             }
 
             // Initialize our loop state
+            const riffSize = this.readBlock(4).toUInt(false);
             const streamFormat = this.readBlock(4).toString();
             let tagStart = -1;
             let tagEnd = -1;
@@ -122,7 +295,7 @@ export default class RiffFile extends File {
                             case "INFO":
                                 // "INFO" is a tagging format handled by the InfoTag class
                                 if (readTags && !this._infoTag) {
-                                    this._infoTag = new InfoTag(this, position + 12, size - 4);
+                                    this._infoTag = InfoTag.fromFile(this, position + 12, size - 4);
                                 }
 
                                 tagFound = true;
@@ -131,7 +304,7 @@ export default class RiffFile extends File {
                             case "MID ":
                                 // "MID " is a tagging format handled by the MovieIdTag class
                                 if (readTags && !this._movieIdTag) {
-                                    this._movieIdTag = new MovieIdTag(this, position + 12, size - 4);
+                                    this._movieIdTag = MovieIdTag.fromFile(this, position + 12, size - 4);
                                 }
 
                                 tagFound = true;
@@ -207,6 +380,12 @@ export default class RiffFile extends File {
             if (readTags) {
                 this._tag.setTags(this._id3v2Tag, this._infoTag, this._movieIdTag, this._divxTag);
             }
+
+            return {
+                riffSize: riffSize,
+                tagEnd: tagEnd,
+                tagStart: tagStart
+            };
 
         } finally {
             this.mode = FileAccessMode.Closed;

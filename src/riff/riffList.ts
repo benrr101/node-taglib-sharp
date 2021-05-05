@@ -64,7 +64,22 @@ export default class RiffList {
      */
     public set stringType(value: StringType) { this._stringType = value; }
 
+    /**
+     * Gets the number of items in the current instance.
+     */
+    public get length(): number { return Object.keys(this._dict).length; }
+
     // #region Methods
+
+    /** @inheritDoc */
+    public clear(): void {
+        for (const key in this._dict) {
+            if (!this._dict.hasOwnProperty(key)) {
+                continue;
+            }
+            delete this._dict[key];
+        }
+    }
 
     /**
      * Determines whether the current instance contains the specified key.
@@ -190,7 +205,7 @@ export default class RiffList {
         if (value === 0) {
             this.removeValue(id);
         } else {
-            this.setValueFromStrings(id, value.toString(10));
+            this.setValuesFromStrings(id, value.toString(10));
         }
     }
 
@@ -235,7 +250,7 @@ export default class RiffList {
         if (byteVectorValues.length === 0) {
             this.removeValue(id);
         } else {
-            this.setValue(id, ... byteVectorValues);
+            this.setValues(id, ... byteVectorValues);
         }
     }
 

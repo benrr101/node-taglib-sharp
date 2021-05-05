@@ -8,7 +8,6 @@ import {File} from "../file";
  * Abstract class that provides support for reading/writing tags in the RIFF list format.
  */
 export default abstract class RiffListTag extends Tag {
-    // @TODO: I think this can safely inherit from RiffList
     private _fields: RiffList;
 
     // #region Constructors
@@ -38,6 +37,9 @@ export default abstract class RiffListTag extends Tag {
 
     // #region Properties
 
+    /** @inheritDoc */
+    public get isEmpty(): boolean { return this._fields.length === 0; }
+
     /**
      * Gets the type of string used for parsing and rendering the contents of this tag.
      */
@@ -54,6 +56,11 @@ export default abstract class RiffListTag extends Tag {
     // #endregion
 
     // #region Methods
+
+    /** @inheritDoc */
+    public clear() {
+        this._fields.clear();
+    }
 
     /**
      * Gets the value for a specified item in the current instance as an unsigned integer.
@@ -83,7 +90,7 @@ export default abstract class RiffListTag extends Tag {
      * Removed the item with the specified ID from the current instance.
      * @param id ID of the item to remove
      */
-    public removeValue(id: ByteVector): void {
+    public removeValue(id: string): void {
         this._fields.removeValue(id);
     }
 
@@ -124,6 +131,16 @@ export default abstract class RiffListTag extends Tag {
      */
     public setValuesFromStrings(id: string, ... values: string[]): void {
         this._fields.setValuesFromStrings(id, ... values);
+    }
+
+    /**
+     * Gets the first non-falsy string for the specified ID. If the item is not found, `undefined`
+     * is returned.
+     * @param id ID of the item to lookup in the list.
+     * @protected
+     */
+    protected getFirstValueAsString(id: string): string | undefined {
+        return this.getValuesAsStrings(id).find((v) => !!v) || undefined;
     }
 
     /**
