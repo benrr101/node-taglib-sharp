@@ -1,6 +1,6 @@
 import {ByteVector, StringType} from "../byteVector";
-import {Guards} from "../utils";
 import {File} from "../file";
+import {Guards} from "../utils";
 
 export default class RiffList {
     private _dict: {[key: string]: ByteVector[]} = {};

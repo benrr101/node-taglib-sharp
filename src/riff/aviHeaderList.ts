@@ -1,5 +1,5 @@
-import {AviStream} from "./aviStream";
 import RiffList from "./riffList";
+import {AviStream} from "./aviStream";
 import {ByteVector} from "../byteVector";
 import {CorruptFileError} from "../errors";
 import {File} from "../file";

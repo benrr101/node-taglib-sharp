@@ -1,8 +1,8 @@
-import {Tag} from "../tag";
 import RiffList from "./riffList";
-import {Guards} from "../utils";
 import {ByteVector, StringType} from "../byteVector";
 import {File} from "../file";
+import {Tag} from "../tag";
+import {Guards} from "../utils";
 
 /**
  * Abstract class that provides support for reading/writing tags in the RIFF list format.

@@ -1,18 +1,18 @@
 import CombinedTag from "../combinedTag";
-import Id3v2Tag from "../id3v2/id3v2Tag";
-import Properties from "../properties";
-import {File, FileAccessMode, ReadStyle} from "../file";
-import {ByteVector} from "../byteVector";
-import {IFileAbstraction} from "../fileAbstraction";
-import {CorruptFileError, UnsupportedFormatError} from "../errors";
-import RiffWaveFormatEx from "./riffWaveFormatEx";
-import {ICodec} from "../iCodec";
-import {AviHeaderList} from "./aviHeaderList";
 import DivxTag from "./divxTag";
+import Id3v2Tag from "../id3v2/id3v2Tag";
 import InfoTag from "./infoTag";
 import MovieIdTag from "./movieIdTag";
-import {Tag, TagTypes} from "../tag";
+import Properties from "../properties";
+import RiffWaveFormatEx from "./riffWaveFormatEx";
+import {AviHeaderList} from "./aviHeaderList";
+import {ByteVector} from "../byteVector";
+import {File, FileAccessMode, ReadStyle} from "../file";
+import {IFileAbstraction} from "../fileAbstraction";
+import {CorruptFileError, UnsupportedFormatError} from "../errors";
+import {ICodec} from "../iCodec";
 import {Id3v2TagHeaderFlags} from "../id3v2/id3v2TagHeader";
+import {Tag, TagTypes} from "../tag";
 
 export default class RiffFile extends File {
     /**

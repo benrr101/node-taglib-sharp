@@ -1,6 +1,6 @@
 import {ByteVector} from "../byteVector";
-import {Guards} from "../utils";
 import {CorruptFileError} from "../errors";
+import {Guards} from "../utils";
 
 export enum AviStreamType {
     /** Audio Stream */
