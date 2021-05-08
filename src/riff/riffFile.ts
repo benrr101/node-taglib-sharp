@@ -364,7 +364,7 @@ export default class RiffFile extends File {
 
                 // Move to the next item
                 position += 8 + size;
-            } while (position + 8 < length);
+            } while (position + 8 < this.length);
 
             // If we're reading properties and one was found, throw an exception. Otherwise
             // create the properties object
@@ -394,3 +394,20 @@ export default class RiffFile extends File {
 
     // #endregion
 }
+
+////////////////////////////////////////////////////////////////////////////
+// Register the file type
+[
+    "taglib/avi",
+    "taglib/wav",
+    "taglib/divx",
+    "video/avi",
+    "video/msvideo",
+    "video/x-msvideo",
+    "image/avi",
+    "application/x-troff-msvideo",
+    "audio/avi",
+    "audio/wav",
+    "audio/wave",
+    "audio/x-wav"
+].forEach((mt) => File.addFileType(mt, RiffFile));
