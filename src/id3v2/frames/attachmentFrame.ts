@@ -383,7 +383,7 @@ export default class AttachmentFrame extends Frame implements IPicture {
                 // Picture type       $xx
                 // Description        <text string according to encoding> $00 (00)
                 // Picture data       <binary data>
-                const mimeTypeEndIndex = data.find(ByteVector.getTextDelimiter(StringType.Latin1));
+                const mimeTypeEndIndex = data.find(ByteVector.getTextDelimiter(StringType.Latin1), 1);
                 if (mimeTypeEndIndex === -1) {
                     return;
                 }

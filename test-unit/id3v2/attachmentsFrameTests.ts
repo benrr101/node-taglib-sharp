@@ -1,21 +1,19 @@
 import * as Chai from "chai";
-import * as ChaiAsPromised from "chai-as-promised";
 import * as TypeMoq from "typemoq";
-import FrameConstructorTests from "./frameConstructorTests";
-import PropertyTests from "../utilities/propertyTests";
-import {Testers} from "../utilities/testers";
 import {suite, test} from "mocha-typescript";
 
 import AttachmentFrame from "../../src/id3v2/frames/attachmentFrame";
+import FrameConstructorTests from "./frameConstructorTests";
 import Id3v2Settings from "../../src/id3v2/id3v2Settings";
+import PropertyTests from "../utilities/propertyTests";
 import {ByteVector, StringType} from "../../src/byteVector";
 import {Frame, FrameClassType} from "../../src/id3v2/frames/frame";
 import {Id3v2FrameHeader} from "../../src/id3v2/frames/frameHeader";
 import {FrameIdentifier, FrameIdentifiers} from "../../src/id3v2/frameIdentifiers";
 import {IPicture, PictureType} from "../../src/iPicture";
+import {Testers} from "../utilities/testers";
 
 // Setup chai
-Chai.use(ChaiAsPromised);
 const assert = Chai.assert;
 
 function getTestFrame() {
@@ -137,8 +135,46 @@ function getCustomTestFrame(data: ByteVector, desc: string, filename: string, mi
         assert.throws(() => { const _ = AttachmentFrame.fromRawData(data, 4); });
     }
 
+    // NOTE: If you're wondering why we have a test for latin1 vs other encodings, it's b/c the
+    //    mimetype detection looks for a 0 to mark the end of the mimetype. If encoding is Latin1,
+    //    the first byte of the picture is 0, which we want to make sure isn't mistaken for the end
+    //    of the mimetype.
+
     @test
-    public fromRawData_apicV4() {
+    public fromRawData_apicV4_latin1Encoding() {
+        // Arrange
+        const testData = ByteVector.fromString("fuxbuxqux", StringType.Latin1);
+        const header = new Id3v2FrameHeader(FrameIdentifiers.APIC);
+        header.frameSize = 41;
+        const data = ByteVector.concatenate(
+            header.render(4),
+            StringType.Latin1,
+            ByteVector.fromString("image/gif", StringType.Latin1),
+            ByteVector.getTextDelimiter(StringType.Latin1),
+            PictureType.Artist,
+            ByteVector.fromString("foobarbaz", StringType.Latin1),
+            ByteVector.getTextDelimiter(StringType.Latin1),
+            testData
+        );
+
+        // Act
+        const frame = AttachmentFrame.fromRawData(data, 4);
+
+        // Assert
+        this.verifyFrame(
+            frame,
+            FrameIdentifiers.APIC,
+            testData,
+            "foobarbaz",
+            undefined,
+            "image/gif",
+            StringType.Latin1,
+            PictureType.Artist
+        );
+    }
+
+    @test
+    public fromRawData_apicV4_nonLatinEncoding() {
         // Arrange
         const testData = ByteVector.fromString("fuxbuxqux", StringType.Latin1);
         const header = new Id3v2FrameHeader(FrameIdentifiers.APIC);
