@@ -2,12 +2,14 @@ import * as Chai from "chai";
 import {suite, test} from "mocha-typescript";
 
 import TestConstants from "./utilities/testConstants";
-import {File, MediaTypes, PictureType} from "../src";
+import {File, MediaTypes, PictureType, ReadStyle} from "../src";
+import {StandardFileTests} from "./utilities/standardFileTests";
 
 // Setup chai
 const assert = Chai.assert;
 
 @suite class Wav_FileTests {
+    private static readonly corruptFilePath = TestConstants.getCorruptFilePath("corrupt.wav");
     private static readonly sampleFilePath = TestConstants.getSampleFilePath("sample.wav");
     private static readonly tmpFileName = "tmpwrite.wav";
 
@@ -51,5 +53,29 @@ const assert = Chai.assert;
         assert.isEmpty(Wav_FileTests.file.tag.composers);
         assert.isUndefined(Wav_FileTests.file.tag.conductor);
         assert.isUndefined(Wav_FileTests.file.tag.copyright);
+    }
+
+    @test
+    public removeStandardTags() {
+        StandardFileTests.removeStandardTags(Wav_FileTests.sampleFilePath, Wav_FileTests.tmpFileName);
+    }
+
+    @test
+    public testCorruptionResistance() {
+        StandardFileTests.testCorruptionResistance(Wav_FileTests.corruptFilePath);
+    }
+
+    @test
+    public writeStandardPictures() {
+        const tmpFilePath = TestConstants.getTempFilePath(Wav_FileTests.tmpFileName);
+        StandardFileTests.writeStandardPictures(Wav_FileTests.sampleFilePath, tmpFilePath, ReadStyle.None);
+    }
+
+    @test
+    public writeStandardTags() {
+        // @TODO: This was originally a medium test. However, medium has a text frame that can't be
+        //    rendered on ID3v2.3 tags. So I took it off.
+        const tmpFilePath = TestConstants.getTempFilePath(Wav_FileTests.tmpFileName);
+        StandardFileTests.writeStandardTags(tmpFilePath, Wav_FileTests.tmpFileName);
     }
 }
