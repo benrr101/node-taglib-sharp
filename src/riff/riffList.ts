@@ -71,7 +71,9 @@ export default class RiffList {
 
     // #region Methods
 
-    /** @inheritDoc */
+    /**
+     * Removes all elements from the list.
+     */
     public clear(): void {
         for (const key in this._dict) {
             if (!this._dict.hasOwnProperty(key)) {
@@ -108,7 +110,7 @@ export default class RiffList {
         const values = this.getValues(id);
         return values.map((value) => {
             return value
-                ? value.toString(length, this._stringType)
+                ? value.toString(value.length, this._stringType)
                 : "";
         });
     }
