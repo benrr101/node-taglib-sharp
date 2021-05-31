@@ -4,16 +4,16 @@ import {Guards} from "../utils";
 
 export enum AviStreamType {
     /** Audio Stream */
-    /* auds*/ AUDIO_STREAM = 0x61756473,
+    /* auds*/ AUDIO_STREAM = 0x73647561,
 
     /** MIDI Stream */
-    /* mids */ MIDI_STREAM = 0x6D696473,
+    /* mids */ MIDI_STREAM = 0x7264696D,
 
     /** Text stream */
-    /* txts */ TEXT_STREAM = 0x74787473,
+    /* txts */ TEXT_STREAM = 0x73747874,
 
     /** Video stream */
-    /* vids */ VIDEO_STREAM = 0x76696473
+    /* vids */ VIDEO_STREAM = 0x73646976
 }
 
 /**

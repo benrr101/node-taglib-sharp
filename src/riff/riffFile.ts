@@ -13,6 +13,7 @@ import {CorruptFileError, UnsupportedFormatError} from "../errors";
 import {ICodec} from "../iCodec";
 import {Id3v2TagHeaderFlags} from "../id3v2/id3v2TagHeader";
 import {Tag, TagTypes} from "../tag";
+import {NumberUtils} from "../utils";
 
 export default class RiffFile extends File {
     /**
@@ -102,16 +103,17 @@ export default class RiffFile extends File {
 
     /** @inheritDoc */
     public removeTags(types: TagTypes): void {
-        if ((types && TagTypes.Id3v2) !== TagTypes.None) {
+        if (NumberUtils.uintAnd(types, TagTypes.Id3v2) !== TagTypes.None) {
             this._id3v2Tag = undefined;
         }
-        if ((types && TagTypes.RiffInfo) !== TagTypes.None) {
+        if (NumberUtils.uintAnd(types, TagTypes.RiffInfo) !== TagTypes.None) {
             this._infoTag = undefined;
         }
-        if ((types && TagTypes.MovieId) !== TagTypes.None) {
+        if (NumberUtils.uintAnd(types, TagTypes.MovieId) !== TagTypes.None) {
             this._movieIdTag = undefined;
         }
-        if ((types && TagTypes.DivX) !== TagTypes.None) {
+        // noinspection JSSuspiciousNameCombination
+        if (NumberUtils.uintAnd(types, TagTypes.DivX) !== TagTypes.None) {
             this._divxTag = undefined;
         }
 
@@ -284,6 +286,7 @@ export default class RiffFile extends File {
                                 // "hdrl" is used by AVI files to hold a media header and
                                 // BitmapInfoHeader and WaveFormatEv structures.
                                 if (style === ReadStyle.None || streamFormat !== "AVI ") {
+                                    position += 8 + size;
                                     continue;
                                 }
 

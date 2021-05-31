@@ -327,6 +327,7 @@ export default class RiffWaveFormatEx implements ILosslessAudioCodec {
     /**
      * @inheritDoc
      * @remarks Some compression schemes cannot define a value for this field, so it may be `0`.
+     *     This is especially common for MP3 audio embedded in an AVI.
      */
     public get bitsPerSample(): number { return this._bitsPerSample; }
 

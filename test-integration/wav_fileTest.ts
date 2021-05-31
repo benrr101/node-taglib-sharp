@@ -76,6 +76,6 @@ const assert = Chai.assert;
         // @TODO: This was originally a medium test. However, medium has a text frame that can't be
         //    rendered on ID3v2.3 tags. So I took it off.
         const tmpFilePath = TestConstants.getTempFilePath(Wav_FileTests.tmpFileName);
-        StandardFileTests.writeStandardTags(tmpFilePath, Wav_FileTests.tmpFileName);
+        StandardFileTests.writeStandardTags(Wav_FileTests.sampleFilePath, tmpFilePath);
     }
 }
