@@ -9,6 +9,7 @@ import {Guards} from "../utils";
  */
 export default abstract class RiffListTag extends Tag {
     private _fields: RiffList;
+    private _stringType: StringType = StringType.UTF8;
 
     // #region Constructors
 
@@ -43,14 +44,14 @@ export default abstract class RiffListTag extends Tag {
     /**
      * Gets the type of string used for parsing and rendering the contents of this tag.
      */
-    public get stringType(): StringType { return this._fields.stringType; }
+    public get stringType(): StringType { return this._stringType; }
     /**
      * Sets the type of string used for parsing and rendering the contents of this tag.
      * @remarks The value must be `StringType.Latin1` or `StringType.UTF8`.
      */
     public set stringType(value: StringType) {
         // @TODO: Add a guard here?
-        this._fields.stringType = value;
+        this._stringType = value;
     }
 
     // #endregion
@@ -83,7 +84,7 @@ export default abstract class RiffListTag extends Tag {
      * @param id ID of the item of which to get the values
      */
     public getValuesAsStrings(id: string): string[] {
-        return this._fields.getValuesAsStrings(id);
+        return this._fields.getValuesAsStrings(id, this._stringType);
     }
 
     /**

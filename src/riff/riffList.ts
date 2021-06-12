@@ -17,7 +17,7 @@ export default class RiffList {
         const list = new RiffList();
 
         let offset = 0;
-        while (offset + 8 < data.length) {
+        while (offset + 8 <= data.length) {
             const id = data.mid(offset, 4).toString(4);
             let length = data.mid(offset + 4, 4).toUInt(false);
 
@@ -235,7 +235,7 @@ export default class RiffList {
     public setValuesFromStrings(id: string, ... values: string[]): void {
         RiffList.validateId(id);
 
-        if (!values) {
+        if (!values || values.length === 0) {
             this.removeValue(id);
             return;
         }
@@ -243,10 +243,7 @@ export default class RiffList {
         const byteVectorValues = values
             .filter((v) => v !== undefined && v !== null)
             .map((v) => {
-                return ByteVector.concatenate(
-                    ByteVector.fromString(v, this._stringType),
-                    0x00
-                );
+                return ByteVector.fromString(v, this._stringType);
             });
 
         if (byteVectorValues.length === 0) {
@@ -264,6 +261,4 @@ export default class RiffList {
     }
 
     // #endregion
-
-
 }
