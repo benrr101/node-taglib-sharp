@@ -84,7 +84,7 @@ export default abstract class RiffListTag extends Tag {
      * @param id ID of the item of which to get the values
      */
     public getValuesAsStrings(id: string): string[] {
-        return this._fields.getValuesAsStrings(id, this._stringType);
+        return this._fields.getValuesAsStrings(id);
     }
 
     /**
