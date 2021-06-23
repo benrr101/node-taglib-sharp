@@ -1,11 +1,14 @@
 import * as Chai from "chai";
 import {suite, test} from "mocha-typescript";
 
+import RiffList from "../../src/riff/riffList";
 import TestFile from "../utilities/testFile";
 import {AviHeader, AviHeaderList} from "../../src/riff/aviHeaderList";
+import {AviStream} from "../../src/riff/aviStream";
 import {ByteVector} from "../../src/byteVector";
+import {File} from "../../src/file";
+import {ICodec} from "../../src/iCodec";
 import {Testers} from "../utilities/testers";
-import {AviStream, File, ICodec, RiffList} from "../../src";
 
 // Setup chai
 const assert = Chai.assert;
