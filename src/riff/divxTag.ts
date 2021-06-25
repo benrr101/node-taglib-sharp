@@ -9,7 +9,7 @@ export default class DivxTag extends Tag {
     /**
      * Identifier used to recognize DivX tags.
      */
-    public static readonly FILE_IDENTIFIER = ByteVector.fromString("DIVXTAG", undefined, undefined, true)
+    public static readonly FILE_IDENTIFIER = ByteVector.fromString("DIVXTAG", undefined, undefined, true);
 
     /**
      * Size of a DivX tag in bytes.
@@ -40,7 +40,7 @@ export default class DivxTag extends Tag {
             throw new CorruptFileError("DivX tag data is less than minimum DivX tag length");
         }
         if (!data.endsWith(this.FILE_IDENTIFIER)) {
-            throw new CorruptFileError("DivX tag does not end with identifier")
+            throw new CorruptFileError("DivX tag does not end with identifier");
         }
 
         const tag = new DivxTag();
@@ -107,7 +107,7 @@ export default class DivxTag extends Tag {
 
     /**
      * @inheritDoc
-     * @remarks Genre is stored as an ID3v1 numeric genre. This is translated into the human-
+     * @remarks Genre is stored as an numeric genre. This is translated into the human-
      *     readable genre.
      */
     public get genres(): string[] {
@@ -116,7 +116,7 @@ export default class DivxTag extends Tag {
     }
     /**
      * @inheritDoc
-     * @remarks Genre is stored as an Id3v1 numeric genre, so only video genres are supported. Only
+     * @remarks Genre is stored as an numeric genre, so only video genres are supported. Only
      *     one genre can be stored.
      */
     public set genres(value: string[]) {

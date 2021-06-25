@@ -174,7 +174,7 @@ const videoGenres = [
     "Horror/Mystic",
     "Humor",
     "Indian",
-    "Informercial",
+    "Infomercial",
     "Melodrama",
     "Military & War",
     "Music Video",
