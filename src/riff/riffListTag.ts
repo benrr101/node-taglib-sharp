@@ -8,6 +8,9 @@ import {Guards} from "../utils";
  * Abstract class that provides support for reading/writing tags in the RIFF list format.
  */
 export default abstract class RiffListTag extends Tag {
+    // NOTE: Although it would totally make sense for this class to extend RiffList, we can't do
+    //    that because multiple inheritance doesn't exist.
+
     private _fields: RiffList;
     private _stringType: StringType = StringType.UTF8;
 

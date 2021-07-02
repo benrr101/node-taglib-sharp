@@ -74,7 +74,10 @@ export default class MovieIdTag extends RiffListTag {
      * @inheritDoc
      * @remarks Implemented via the `IART` item.
      */
-    public set performers(value: string[]) { this.setValuesFromStrings("IART", ... value); }
+    public set performers(value: string[]) {
+        value = value || [];
+        this.setValuesFromStrings("IART", ... value);
+    }
 
     /**
      * @inheritDoc
@@ -96,7 +99,10 @@ export default class MovieIdTag extends RiffListTag {
      * @inheritDoc
      * @remarks Implemented via the `GENR` item.
      */
-    public set genres(value: string[]) { this.setValuesFromStrings("GENR", ... value); }
+    public set genres(value: string[]) {
+        value = value || [];
+        this.setValuesFromStrings("GENR", ... value);
+    }
 
     /**
      * @inheritDoc
