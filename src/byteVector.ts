@@ -393,12 +393,8 @@ export class ByteVector {
         fill: number = 0x0,
         isReadOnly: boolean = false
     ): ByteVector {
-        if (!Number.isInteger(size) || size < 0 || !Number.isSafeInteger(size)) {
-            throw new Error("Argument out of range exception: ByteVector size is invalid uint");
-        }
-        if (!Number.isInteger(fill) || fill < 0 || fill > 0xff) {
-            throw new Error("Argument out of range exception: ByteVector fill value cannot be used as a uint8");
-        }
+        Guards.safeUint(size, "size");
+        Guards.byte(fill, "fill");
 
         const vector = new ByteVector();
         vector._data = new Uint8Array(size);

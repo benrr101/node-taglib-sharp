@@ -128,7 +128,7 @@ const assert = Chai.assert;
         PropertyTests.propertyNormalized(setter, getter, "foo ", "foo");
         PropertyTests.propertyRoundTrip(setter, getter, undefined);
         PropertyTests.propertyNormalized(setter, getter, null, undefined);
-        PropertyTests.propertyRoundTrip(setter, getter, "");
+        PropertyTests.propertyNormalized(setter, getter, "", undefined);
     }
 
     @test
@@ -156,8 +156,8 @@ const assert = Chai.assert;
         PropertyTests.propertyRoundTrip(setter, getter, "foobarbaz");
         PropertyTests.propertyRoundTrip(setter, getter, undefined);
         PropertyTests.propertyNormalized(setter, getter, null, undefined);
-        PropertyTests.propertyNormalized(setter, getter, "foorbarbaz   ", "foobarbaz");
-        PropertyTests.propertyRoundTrip(setter, getter, "");
+        PropertyTests.propertyNormalized(setter, getter, "foobarbaz   ", "foobarbaz");
+        PropertyTests.propertyNormalized(setter, getter, "", undefined);
     }
 
     @test

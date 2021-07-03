@@ -2,6 +2,7 @@ import RiffListTag from "./riffListTag";
 import {ByteVector} from "../byteVector";
 import {File} from "../file";
 import {TagTypes} from "../tag";
+import {Guards} from "../utils";
 
 /**
  * Provides support for reading and writing standard INFO tags.
@@ -85,7 +86,10 @@ export default class InfoTag extends RiffListTag {
      * @inheritDoc
      * @remarks Implemented via the `ISTR` item.
      */
-    public set performers(value: string[]) { this.setValuesFromStrings("ISTR", ... value); }
+    public set performers(value: string[]) {
+        value = value || [];
+        this.setValuesFromStrings("ISTR", ... value);
+    }
 
     /**
      * @inheritDoc
@@ -96,7 +100,10 @@ export default class InfoTag extends RiffListTag {
      * @inheritDoc
      * @remarks Implemented via the `IART` item.
      */
-    public set albumArtists(value: string[]) { this.setValuesFromStrings("IART", ... value); }
+    public set albumArtists(value: string[]) {
+        value = value || [];
+        this.setValuesFromStrings("IART", ... value);
+    }
 
     /**
      * @inheritDoc
@@ -107,18 +114,21 @@ export default class InfoTag extends RiffListTag {
      * @inheritDoc
      * @remarks Implemented via the `IWRI` item.
      */
-    public set composers(value: string[]) { this.setValuesFromStrings("IWRI", ... value); }
+    public set composers(value: string[]) {
+        value = value || [];
+        this.setValuesFromStrings("IWRI", ... value);
+    }
 
     /**
      * @inheritDoc
      * @remarks Implemented via the `DIRC` item.
      */
-    public get Album(): string { return this.getFirstValueAsString("DIRC"); }
+    public get album(): string { return this.getFirstValueAsString("DIRC"); }
     /**
      * @inheritDoc
      * @remarks Implemented via the `DIRC` item.
      */
-    public set Album(value: string) { this.setValuesFromStrings("DIRC", value); }
+    public set album(value: string) { this.setValuesFromStrings("DIRC", value); }
 
     /**
      * @inheritDoc
@@ -151,7 +161,10 @@ export default class InfoTag extends RiffListTag {
      * @inheritDoc
      * @remarks Implemented via the `IGNR` item.
      */
-    public set genres(value: string[]) { this.setValuesFromStrings("IGNR", ... value); }
+    public set genres(value: string[]) {
+        value = value || [];
+        this.setValuesFromStrings("IGNR", ... value);
+    }
 
     /**
      * @inheritDoc
@@ -162,7 +175,13 @@ export default class InfoTag extends RiffListTag {
      * @inheritDoc
      * @remarks Implemented via the `ICRD` item.
      */
-    public set year(value: number) { this.setValueFromUint("ICRD", value); }
+    public set year(value: number) {
+        Guards.uint(value, "value");
+        if (value < 0 || value > 9999) {
+            value = 0;
+        }
+        this.setValueFromUint("ICRD", value);
+    }
 
     /**
      * @inheritDoc

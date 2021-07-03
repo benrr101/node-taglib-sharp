@@ -1010,7 +1010,7 @@ const assert = Chai.assert;
     @test
     public fromSize_badSize() {
         // Arrange, Act, Assert
-        Testers.testUint((v: number) => { ByteVector.fromSize(v); });
+        Testers.testSafeUint((v: number) => { ByteVector.fromSize(v); });
     }
 
     @test

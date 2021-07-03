@@ -234,8 +234,9 @@ const assert = Chai.assert;
         assert.isOk(output);
 
         const expected = ByteVector.concatenate(
+            ByteVector.fromString("LIST"),
+            ByteVector.fromUInt(this.testTagData.length + 4, false),
             ByteVector.fromString("MID "),
-            ByteVector.fromUInt(this.testTagData.length, false),
             this.testTagData
         );
         assert.isTrue(ByteVector.equal(output, expected));
