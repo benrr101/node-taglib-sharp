@@ -1,5 +1,6 @@
 import {IPicture} from "./iPicture";
 import {Tag, TagTypes} from "./tag";
+import {Guards} from "./utils";
 
 export default class CombinedTag extends Tag {
     protected _tags: Tag[];
@@ -225,7 +226,7 @@ export default class CombinedTag extends Tag {
      * Gets the year that the media represented by the current instance was recorded.
      * Returns the first non-null/non-undefined value from the child tags.
      */
-    public get year(): number { return this.getFirstValue((t) => t.year); }
+    public get year(): number { return this.getFirstValue((t) => t.year, 0); }
     /**
      * Sets the year that the media represented by the current instance was recorded. Must be a
      * positive integer.
@@ -237,7 +238,7 @@ export default class CombinedTag extends Tag {
      * Gets the position of the media represented by the current instance in its containing album.
      * Returns the first non-null/non-undefined value from the child tags.
      */
-    public get track(): number { return this.getFirstValue((t) => t.track); }
+    public get track(): number { return this.getFirstValue((t) => t.track, 0); }
     /**
      * Sets the position of the media represented by the current instance in its containing album.
      * Must be a positive integer positive integer.
@@ -250,7 +251,7 @@ export default class CombinedTag extends Tag {
      * instance.
      * Returns the first non-null/non-undefined value from the child tags.
      */
-    public get trackCount(): number { return this.getFirstValue((t) => t.trackCount); }
+    public get trackCount(): number { return this.getFirstValue((t) => t.trackCount, 0); }
     /**
      * Sets the number of tracks in the album containing the media represented by the current
      * instance. Must be a positive integer positive integer.
@@ -263,7 +264,7 @@ export default class CombinedTag extends Tag {
      * boxed set.
      * Returns the first non-null/non-undefined value from the child tags.
      */
-    public get disc(): number { return this.getFirstValue((t) => t.disc); }
+    public get disc(): number { return this.getFirstValue((t) => t.disc, 0); }
     /**
      * Sets the number of the disc containing the media represented by the current instance in a
      * boxed set. Must be a positive integer positive integer.
@@ -276,7 +277,7 @@ export default class CombinedTag extends Tag {
      * current instance.
      * Returns the first non-null/non-undefined value from the child tags.
      */
-    public get discCount(): number { return this.getFirstValue((t) => t.discCount); }
+    public get discCount(): number { return this.getFirstValue((t) => t.discCount, 0); }
     /**
      * Sets the number of the discs in the boxed set containing the media represented by the
      * current instance. Must be a positive integer positive integer.
@@ -310,7 +311,7 @@ export default class CombinedTag extends Tag {
      * Gets the number of beats per minute of the media represented by the current instance.
      * Returns the first non-null/non-undefined value from the child tags.
      */
-    public get beatsPerMinute(): number { return this.getFirstValue((t) => t.beatsPerMinute); }
+    public get beatsPerMinute(): number { return this.getFirstValue((t) => t.beatsPerMinute, 0); }
     /**
      * Sets the number of beats per minute of the media represented by the current instance. Must
      * be a positive integer positive integer.
@@ -485,7 +486,7 @@ export default class CombinedTag extends Tag {
      * Gets the ReplayGain track gain in dB.
      * Returns the first non-null/non-undefined value from the child tags.
      */
-    public get replayGainTrackGain(): number { return this.getFirstValue((t) => t.replayGainTrackGain); }
+    public get replayGainTrackGain(): number { return this.getFirstValue((t) => t.replayGainTrackGain, NaN); }
     /**
      * Sets the ReplayGain track gain in dB.
      * Sets the value on all child tags
@@ -496,7 +497,7 @@ export default class CombinedTag extends Tag {
      * Gets the ReplayGain track peak sample.
      * Returns the first non-null/non-undefined value from the child tags.
      */
-    public get replayGainTrackPeak(): number { return this.getFirstValue((t) => t.replayGainTrackPeak); }
+    public get replayGainTrackPeak(): number { return this.getFirstValue((t) => t.replayGainTrackPeak, NaN); }
     /**
      * Sets the ReplayGain track peak sample.
      * Sets the value on all child tags
@@ -507,7 +508,7 @@ export default class CombinedTag extends Tag {
      * Gets the ReplayGain album gain in dB.
      * Returns the first non-null/non-undefined value from the child tags.
      */
-    public get replayGainAlbumGain(): number { return this.getFirstValue((t) => t.replayGainAlbumGain); }
+    public get replayGainAlbumGain(): number { return this.getFirstValue((t) => t.replayGainAlbumGain, NaN); }
     /**
      * Sets the ReplayGain album gain in dB.
      * Sets the value on all child tags
@@ -518,7 +519,7 @@ export default class CombinedTag extends Tag {
      * Gets the ReplayGain album peak sample.
      * Returns the first non-null/non-undefined value from the child tags.
      */
-    public get replayGainAlbumPeak(): number { return this.getFirstValue((t) => t.replayGainAlbumPeak); }
+    public get replayGainAlbumPeak(): number { return this.getFirstValue((t) => t.replayGainAlbumPeak, NaN); }
     /**
      * Sets the ReplayGain album peak sample.
      * Sets the value on all child tags
@@ -647,19 +648,17 @@ export default class CombinedTag extends Tag {
         return tagWithProperty ? propertyFn(tagWithProperty) : [];
     }
 
-    private getFirstValue<T>(propertyFn: (t: Tag) => T): T {
+    private getFirstValue<T>(propertyFn: (t: Tag) => T, defaultValue?: T): T {
         const tagWithProperty = this._tags.find((t) => {
             if (!t) { return false; }
             const val = propertyFn(t);
-            return val !== undefined && val !== null;
+            return val !== undefined && val !== null && val !== defaultValue;
         });
-        return tagWithProperty ? propertyFn(tagWithProperty) : undefined;
+        return tagWithProperty ? propertyFn(tagWithProperty) : defaultValue;
     }
 
     private setAllUint(propertyFn: (t: Tag, val: number) => void, val: number): void {
-        if (!Number.isInteger(val) || val < 0) {
-            throw new Error("Argument out of range: value must be a positive integer");
-        }
+        Guards.uint(val, "val");
         this._tags.forEach((t) => {
            if (!t) { return; }
            propertyFn(t, val);

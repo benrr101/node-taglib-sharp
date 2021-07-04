@@ -1,10 +1,10 @@
 import * as Chai from "chai";
 import {suite, test} from "mocha-typescript";
-import {Testers} from "../utilities/testers";
-import {ByteVector} from "../../src/byteVector";
 
 import RiffBitmapInfoHeader from "../../src/riff/riffBitmapInfoHeader";
+import {ByteVector} from "../../src/byteVector";
 import {MediaTypes} from "../../src/iCodec";
+import {Testers} from "../utilities/testers";
 
 // Setup chai
 const assert = Chai.assert;
