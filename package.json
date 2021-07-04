@@ -13,8 +13,8 @@
     "generate-docs": "typedoc --tsconfig tsconfig.json",
     "madge": "node node_modules/madge/bin/cli.js --warning --circular --extensions ts ./",
     "publish-coverage": "nyc report --reporter=text-lcov | coveralls",
-    "test-unit": "mocha test-unit",
-    "test-unit-with-coverage": "nyc mocha test-unit"
+    "test-unit": "mocha test-unit --ui bdd",
+    "test-unit-with-coverage": "nyc mocha test-unit --ui bdd"
   },
   "engines": {
     "node": ">=12.16.1"
