@@ -1,13 +1,13 @@
 import * as Chai from "chai";
 import * as TypeMoq from "typemoq";
-import TestFile from "../utilities/testFile";
-import {Testers} from "../utilities/testers";
-import {suite, test} from "mocha-typescript";
+import {suite, test} from "@testdeck/mocha";
 
 import MpegVideoHeader from "../../src/mpeg/mpegVideoHeader";
+import TestFile from "../utilities/testFile";
 import {ByteVector} from "../../src/byteVector";
 import {File} from "../../src/file";
 import {MediaTypes} from "../../src/iCodec";
+import {Testers} from "../utilities/testers";
 
 // Setup Chai
 const assert = Chai.assert;

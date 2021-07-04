@@ -1,6 +1,6 @@
 import * as Chai from "chai";
+import {suite, test} from "@testdeck/mocha";
 import {Testers} from "../utilities/testers";
-import {suite, test} from "mocha-typescript";
 
 import AiffStreamHeader from "../../src/aiff/aiffStreamHeader";
 import {ByteVector} from "../../src/byteVector";

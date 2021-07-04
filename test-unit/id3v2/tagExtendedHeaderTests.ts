@@ -1,13 +1,11 @@
 import * as Chai from "chai";
-import * as ChaiAsPromised from "chai-as-promised";
-import {Testers} from "../utilities/testers";
-import {suite, test} from "mocha-typescript";
+import {suite, test} from "@testdeck/mocha";
 
 import Id3v2ExtendedHeader from "../../src/id3v2/id3v2ExtendedHeader";
 import {ByteVector} from "../../src/byteVector";
+import {Testers} from "../utilities/testers";
 
 // Setup chai
-Chai.use(ChaiAsPromised);
 const assert = Chai.assert;
 
 @suite class Id3v2_TagExtendedHeaderTests {

@@ -1,5 +1,5 @@
 import * as Chai from "chai";
-import {suite, test} from "mocha-typescript";
+import {suite, test} from "@testdeck/mocha";
 import {Mock} from "typemoq";
 
 import RiffList from "../../src/riff/riffList";

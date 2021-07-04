@@ -1,12 +1,10 @@
 import * as Chai from "chai";
-import * as ChaiAsPromised from "chai-as-promised";
-import {Testers} from "./utilities/testers";
-import {suite, test} from "mocha-typescript";
+import {suite, test} from "@testdeck/mocha";
 
 import {ByteVector} from "../src/byteVector";
+import {Testers} from "./utilities/testers";
 
 // Setup chai
-Chai.use(ChaiAsPromised);
 const assert = Chai.assert;
 
 @suite class ByteVector_VoidMethodTests {

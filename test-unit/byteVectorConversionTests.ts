@@ -1,5 +1,5 @@
 import * as Chai from "chai";
-import {suite, test} from "mocha-typescript";
+import {suite, test} from "@testdeck/mocha";
 
 import TestConstants from "./testConstants";
 import {ByteVector, StringType} from "../src/byteVector";

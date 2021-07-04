@@ -1,6 +1,5 @@
 import * as Chai from "chai";
-import * as ChaiAsPromised from "chai-as-promised";
-import {suite, test} from "mocha-typescript";
+import {suite, test} from "@testdeck/mocha";
 
 import FrameConstructorTests from "./frameConstructorTests";
 import PropertyTests from "../utilities/propertyTests";
@@ -11,7 +10,6 @@ import {Id3v2FrameHeader} from "../../src/id3v2/frames/frameHeader";
 import {FrameIdentifiers} from "../../src/id3v2/frameIdentifiers";
 
 // Setup chai
-Chai.use(ChaiAsPromised);
 const assert = Chai.assert;
 
 @suite class Id3v2_PrivateFrame_ConstructorTests extends FrameConstructorTests {

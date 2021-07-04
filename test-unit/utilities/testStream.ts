@@ -1,4 +1,3 @@
-import * as fs from "fs";
 import {ByteVector} from "../../src/byteVector";
 import {IStream, SeekOrigin} from "../../src/stream";
 
@@ -70,12 +69,16 @@ export default class TestStream implements IStream {
         this._position = Math.max(this.length, this._position);
     }
 
-    public write(buffer: fs.BinaryData, bufferOffset: number, length: number): number {
+    public write(buffer: ByteVector | Uint8Array, bufferOffset: number, length: number): number {
+        if (buffer instanceof ByteVector) {
+            buffer = buffer.data;
+        }
+
         if (!this._isWritable) {
             throw new Error("Invalid operation: this stream is a read-only stream");
         }
 
-        const bytesToWrite = ByteVector.fromByteArray(AB2B(buffer.buffer.slice(bufferOffset, length)));
+        const bytesToWrite = ByteVector.fromByteArray(AB2B(buffer.slice(bufferOffset, length)));
         if (this._position < this._data.length) {
             this._data.removeRange(this._position, bytesToWrite.length);
         }

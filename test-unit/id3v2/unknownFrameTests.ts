@@ -1,17 +1,15 @@
 import * as Chai from "chai";
-import * as ChaiAsPromised from "chai-as-promised";
-import FrameConstructorTests from "./frameConstructorTests";
-import {Testers} from "../utilities/testers";
-import {suite, test} from "mocha-typescript";
+import {suite, test} from "@testdeck/mocha";
 
+import FrameConstructorTests from "./frameConstructorTests";
 import UnknownFrame from "../../src/id3v2/frames/unknownFrame";
 import {ByteVector} from "../../src/byteVector";
 import {Frame, FrameClassType} from "../../src/id3v2/frames/frame";
 import {Id3v2FrameHeader} from "../../src/id3v2/frames/frameHeader";
 import {FrameIdentifier, FrameIdentifiers} from "../../src/id3v2/frameIdentifiers";
+import {Testers} from "../utilities/testers";
 
 // Setup chai
-Chai.use(ChaiAsPromised);
 const assert = Chai.assert;
 
 @suite class Id3v2_UnknownFrame_ConstructorTests extends FrameConstructorTests {

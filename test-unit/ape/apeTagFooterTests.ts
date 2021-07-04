@@ -1,14 +1,12 @@
 import * as Chai from "chai";
-import * as ChaiAsPromised from "chai-as-promised";
-import PropertyTests from "../utilities/propertyTests";
-import {Testers} from "../utilities/testers";
-import {suite, test} from "mocha-typescript";
+import {suite, test} from "@testdeck/mocha";
 
+import PropertyTests from "../utilities/propertyTests";
 import {ApeTagFooter, ApeTagFooterFlags} from "../../src/ape/apeTagFooter";
 import {ByteVector, StringType} from "../../src/byteVector";
+import {Testers} from "../utilities/testers";
 
 // Setup chai
-Chai.use(ChaiAsPromised);
 const assert = Chai.assert;
 
 const _sampleData = ByteVector.concatenate(

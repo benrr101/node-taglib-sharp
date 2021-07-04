@@ -1,6 +1,6 @@
 import * as Chai from "chai";
+import {suite, test} from "@testdeck/mocha";
 import {Mock} from "typemoq";
-import {suite, test} from "mocha-typescript";
 
 import AsfTag from "../../src/asf/AsfTag";
 import BaseObject from "../../src/asf/objects/baseObject";

@@ -1,5 +1,5 @@
 import * as Chai from "chai";
-import {suite, test} from "mocha-typescript";
+import {suite, test} from "@testdeck/mocha";
 
 import FilePropertiesObject from "../../src/asf/objects/filePropertiesObject";
 import ObjectTests from "./objectTests";

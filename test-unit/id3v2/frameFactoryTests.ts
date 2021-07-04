@@ -1,8 +1,6 @@
 import * as Chai from "chai";
-import * as ChaiAsPromised from "chai-as-promised";
 import * as TypeMoq from "typemoq";
-import TestFile from "../utilities/testFile";
-import {suite, test} from "mocha-typescript";
+import {suite, test} from "@testdeck/mocha";
 
 import CommentsFrame from "../../src/id3v2/frames/commentsFrame";
 import FrameFactory, {FrameCreator} from "../../src/id3v2/frames/frameFactory";
@@ -10,6 +8,7 @@ import PlayCountFrame from "../../src/id3v2/frames/playCountFrame";
 import PopularimeterFrame from "../../src/id3v2/frames/popularimeterFrame";
 import PrivateFrame from "../../src/id3v2/frames/privateFrame";
 import TermsOfUseFrame from "../../src/id3v2/frames/termsOfUseFrame";
+import TestFile from "../utilities/testFile";
 import UniqueFileIdentifierFrame from "../../src/id3v2/frames/uniqueFileIdentifierFrame";
 import UnsynchronizedLyricsFrame from "../../src/id3v2/frames/unsynchronizedLyricsFrame";
 import {ByteVector, StringType} from "../../src/byteVector";
@@ -25,7 +24,6 @@ import {UrlLinkFrame, UserUrlLinkFrame} from "../../src/id3v2/frames/urlLinkFram
 import {SynchronizedTextType, TimestampFormat} from "../../src/id3v2/utilTypes";
 
 // Setup chai
-Chai.use(ChaiAsPromised);
 const assert = Chai.assert;
 
 @suite class FrameFactoryTests {

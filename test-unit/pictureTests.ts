@@ -1,12 +1,10 @@
 import * as Chai from "chai";
-import * as ChaiAsPromised from "chai-as-promised";
-import {suite, test} from "mocha-typescript";
+import {suite, test} from "@testdeck/mocha";
 
 import Picture from "../src/picture";
 import {ByteVector, StringType} from "../src/byteVector";
 
 // Setup chai
-Chai.use(ChaiAsPromised);
 const assert = Chai.assert;
 
 @suite class Picture_StaticMethodTests {

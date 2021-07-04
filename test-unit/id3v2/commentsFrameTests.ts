@@ -1,11 +1,10 @@
 import * as Chai from "chai";
-import * as ChaiAsPromised from "chai-as-promised";
-import FrameConstructorTests from "./frameConstructorTests";
-import PropertyTests from "../utilities/propertyTests";
-import {suite, test} from "mocha-typescript";
+import {suite, test} from "@testdeck/mocha";
 
 import CommentsFrame from "../../src/id3v2/frames/commentsFrame";
+import FrameConstructorTests from "./frameConstructorTests";
 import Id3v2Settings from "../../src/id3v2/id3v2Settings";
+import PropertyTests from "../utilities/propertyTests";
 import {ByteVector, StringType} from "../../src/byteVector";
 import {Frame, FrameClassType} from "../../src/id3v2/frames/frame";
 import {FrameIdentifiers} from "../../src/id3v2/frameIdentifiers";
@@ -13,7 +12,6 @@ import {Id3v2FrameHeader} from "../../src/id3v2/frames/frameHeader";
 import {Testers} from "../utilities/testers";
 
 // Setup Chai
-Chai.use(ChaiAsPromised);
 const assert = Chai.assert;
 
 function getTestFrame(): CommentsFrame {

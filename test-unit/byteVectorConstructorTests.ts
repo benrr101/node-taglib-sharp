@@ -2,14 +2,14 @@ import * as Chai from "chai";
 import * as ChaiAsPromised from "chai-as-promised";
 import * as StreamBuffers from "stream-buffers";
 import * as TypeMoq from "typemoq";
-import TestConstants from "./testConstants";
-import {Testers} from "./utilities/testers";
-import TestStream from "./utilities/testStream";
-import {suite, test} from "mocha-typescript";
+import {suite, test} from "@testdeck/mocha";
 
+import TestConstants from "./testConstants";
+import TestStream from "./utilities/testStream";
 import {ByteVector, StringType} from "../src/byteVector";
 import {IFileAbstraction} from "../src/fileAbstraction";
 import {IStream} from "../src/stream";
+import {Testers} from "./utilities/testers";
 
 const AB2B = require("arraybuffer-to-buffer");
 

@@ -1,20 +1,18 @@
 import * as Chai from "chai";
-import * as ChaiAsPromised from "chai-as-promised";
 import * as TypeMoq from "typemoq";
-import TestFile from "../utilities/testFile";
-import {Testers} from "../utilities/testers";
-import {suite, test} from "mocha-typescript";
+import {suite, test} from "@testdeck/mocha";
 
 import MpegAudioHeader from "../../src/mpeg/mpegAudioHeader";
+import TestFile from "../utilities/testFile";
 import VbriHeader from "../../src/mpeg/vbriHeader";
 import XingHeader from "../../src/mpeg/xingHeader";
 import {ByteVector} from "../../src/byteVector";
 import {File} from "../../src/file";
 import {MediaTypes} from "../../src/iCodec";
 import {ChannelMode, MpegVersion} from "../../src/mpeg/mpegEnums";
+import {Testers} from "../utilities/testers";
 
 // Setup chai
-Chai.use(ChaiAsPromised);
 const assert = Chai.assert;
 
 @suite class Mpeg_AudioHeader_ConstructorTests {
@@ -50,8 +48,12 @@ const assert = Chai.assert;
     @test
     public fromInfo_invalidArguments() {
         // Act/Assert
-        Testers.testSafeUint((v: number) => { MpegAudioHeader.fromInfo(v, 123, XingHeader.unknown, VbriHeader.unknown); });
-        Testers.testSafeUint((v: number) => { MpegAudioHeader.fromInfo(123, v, XingHeader.unknown, VbriHeader.unknown); });
+        Testers.testSafeUint((v: number) => {
+            MpegAudioHeader.fromInfo(v, 123, XingHeader.unknown, VbriHeader.unknown);
+        });
+        Testers.testSafeUint((v: number) => {
+            MpegAudioHeader.fromInfo(123, v, XingHeader.unknown, VbriHeader.unknown);
+        });
         Testers.testTruthy((v: XingHeader) => { MpegAudioHeader.fromInfo(123, 123, v, VbriHeader.unknown); });
         Testers.testTruthy((v: VbriHeader) => { MpegAudioHeader.fromInfo(123, 123, XingHeader.unknown, v); });
     }
