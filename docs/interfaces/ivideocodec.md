@@ -9,14 +9,15 @@ and can be recast without issue.
 
 ## Hierarchy
 
-* [*ICodec*](icodec.md)
+- [`ICodec`](icodec.md)
 
-  ↳ **IVideoCodec**
+  ↳ **`IVideoCodec`**
 
 ## Implemented by
 
-* [*MpegVideoHeader*](../classes/mpegvideoheader.md)
-* [*Properties*](../classes/properties.md)
+- [`MpegVideoHeader`](../classes/mpegvideoheader.md)
+- [`Properties`](../classes/properties.md)
+- [`RiffBitmapInfoHeader`](../classes/riffbitmapinfoheader.md)
 
 ## Table of contents
 
@@ -32,39 +33,45 @@ and can be recast without issue.
 
 ### description
 
-• **description**: *string*
+• **description**: `string`
 
 Gets a text description of the media represented by the current instance.
 
-Inherited from: [ICodec](icodec.md).[description](icodec.md#description)
+#### Inherited from
+
+[ICodec](icodec.md).[description](icodec.md#description)
 
 ___
 
 ### durationMilliseconds
 
-• **durationMilliseconds**: *number*
+• **durationMilliseconds**: `number`
 
 Duration of the media in milliseconds represented by the current instance.
 
 **`todo`** Ensure milliseconds is the right way to interpret this field
 
-Inherited from: [ICodec](icodec.md).[durationMilliseconds](icodec.md#durationmilliseconds)
+#### Inherited from
+
+[ICodec](icodec.md).[durationMilliseconds](icodec.md#durationmilliseconds)
 
 ___
 
 ### mediaTypes
 
-• **mediaTypes**: [*MediaTypes*](../enums/mediatypes.md)
+• **mediaTypes**: [`MediaTypes`](../enums/mediatypes.md)
 
 Types of media represented by the current instance, bitwise combined.
 
-Inherited from: [ICodec](icodec.md).[mediaTypes](icodec.md#mediatypes)
+#### Inherited from
+
+[ICodec](icodec.md).[mediaTypes](icodec.md#mediatypes)
 
 ___
 
 ### videoHeight
 
-• **videoHeight**: *number*
+• **videoHeight**: `number`
 
 Height of the video in pixels represented by the current instance.
 
@@ -72,6 +79,6 @@ ___
 
 ### videoWidth
 
-• **videoWidth**: *number*
+• **videoWidth**: `number`
 
 Width of the video in pixels represented by the current instance.

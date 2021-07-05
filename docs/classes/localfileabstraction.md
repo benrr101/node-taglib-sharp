@@ -6,13 +6,9 @@ This class implements {@link IFileAbstraction} to provide support for accessing 
 standard file.
 This class is used as the standard file abstraction throughout the library.
 
-## Hierarchy
-
-* **LocalFileAbstraction**
-
 ## Implements
 
-* *IFileAbstraction*
+- `IFileAbstraction`
 
 ## Table of contents
 
@@ -34,62 +30,72 @@ This class is used as the standard file abstraction throughout the library.
 
 ### constructor
 
-\+ **new LocalFileAbstraction**(`path`: *string*): [*LocalFileAbstraction*](localfileabstraction.md)
+• **new LocalFileAbstraction**(`path`)
 
 Constructs and initializes a new instance from a specified path in the local file system
 
 **`throws`** Error Thrown if `path` is falsy
 
-#### Parameters:
+#### Parameters
 
-Name | Type | Description |
------- | ------ | ------ |
-`path` | *string* | Path of the file to use in the new instance   |
-
-**Returns:** [*LocalFileAbstraction*](localfileabstraction.md)
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `path` | `string` | Path of the file to use in the new instance |
 
 ## Accessors
 
 ### name
 
-• **name**(): *string*
+• `get` **name**(): `string`
 
-**`inheritdoc`** 
+**`inheritdoc`**
 
-**Returns:** *string*
+#### Returns
+
+`string`
 
 ___
 
 ### readStream
 
-• **readStream**(): IStream
+• `get` **readStream**(): `IStream`
 
-**`inheritdoc`** 
+**`inheritdoc`**
 
-**Returns:** IStream
+#### Returns
+
+`IStream`
 
 ___
 
 ### writeStream
 
-• **writeStream**(): IStream
+• `get` **writeStream**(): `IStream`
 
-**`inheritdoc`** 
+**`inheritdoc`**
 
-**Returns:** IStream
+#### Returns
+
+`IStream`
 
 ## Methods
 
 ### closeStream
 
-▸ **closeStream**(`stream`: IStream): *void*
+▸ **closeStream**(`stream`): `void`
 
-**`inheritdoc`** 
+**`inheritdoc`**
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
------- | ------ |
-`stream` | IStream |
+| Name | Type |
+| :------ | :------ |
+| `stream` | `IStream` |
 
-**Returns:** *void*
+#### Returns
+
+`void`
+
+#### Implementation of
+
+IFileAbstraction.closeStream

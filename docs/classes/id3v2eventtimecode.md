@@ -2,10 +2,6 @@
 
 # Class: Id3v2EventTimeCode
 
-## Hierarchy
-
-* **Id3v2EventTimeCode**
-
 ## Table of contents
 
 ### Constructors
@@ -27,75 +23,87 @@
 
 ### constructor
 
-\+ **new Id3v2EventTimeCode**(`eventType`: [*Id3v2EventType*](../enums/id3v2eventtype.md), `time`: *number*): [*Id3v2EventTimeCode*](id3v2eventtimecode.md)
+• **new Id3v2EventTimeCode**(`eventType`, `time`)
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
------- | ------ |
-`eventType` | [*Id3v2EventType*](../enums/id3v2eventtype.md) |
-`time` | *number* |
-
-**Returns:** [*Id3v2EventTimeCode*](id3v2eventtimecode.md)
+| Name | Type |
+| :------ | :------ |
+| `eventType` | [`Id3v2EventType`](../enums/id3v2eventtype.md) |
+| `time` | `number` |
 
 ## Accessors
 
 ### eventType
 
-• **eventType**(): [*Id3v2EventType*](../enums/id3v2eventtype.md)
+• `get` **eventType**(): [`Id3v2EventType`](../enums/id3v2eventtype.md)
 
-**Returns:** [*Id3v2EventType*](../enums/id3v2eventtype.md)
+#### Returns
 
-• **eventType**(`value`: [*Id3v2EventType*](../enums/id3v2eventtype.md)): *void*
+[`Id3v2EventType`](../enums/id3v2eventtype.md)
 
-#### Parameters:
+• `set` **eventType**(`value`): `void`
 
-Name | Type |
------- | ------ |
-`value` | [*Id3v2EventType*](../enums/id3v2eventtype.md) |
+#### Parameters
 
-**Returns:** *void*
+| Name | Type |
+| :------ | :------ |
+| `value` | [`Id3v2EventType`](../enums/id3v2eventtype.md) |
+
+#### Returns
+
+`void`
 
 ___
 
 ### time
 
-• **time**(): *number*
+• `get` **time**(): `number`
 
-**Returns:** *number*
+#### Returns
 
-• **time**(`value`: *number*): *void*
+`number`
 
-#### Parameters:
+• `set` **time**(`value`): `void`
 
-Name | Type |
------- | ------ |
-`value` | *number* |
+#### Parameters
 
-**Returns:** *void*
+| Name | Type |
+| :------ | :------ |
+| `value` | `number` |
+
+#### Returns
+
+`void`
 
 ## Methods
 
 ### clone
 
-▸ **clone**(): [*Id3v2EventTimeCode*](id3v2eventtimecode.md)
+▸ **clone**(): [`Id3v2EventTimeCode`](id3v2eventtimecode.md)
 
 Creates a copy of this instance
 
-**Returns:** [*Id3v2EventTimeCode*](id3v2eventtimecode.md)
+#### Returns
+
+[`Id3v2EventTimeCode`](id3v2eventtimecode.md)
 
 ___
 
 ### render
 
-▸ **render**(): [*ByteVector*](bytevector.md)
+▸ **render**(): [`ByteVector`](bytevector.md)
 
-**Returns:** [*ByteVector*](bytevector.md)
+#### Returns
+
+[`ByteVector`](bytevector.md)
 
 ___
 
 ### fromEmpty
 
-▸ `Static`**fromEmpty**(): [*Id3v2EventTimeCode*](id3v2eventtimecode.md)
+▸ `Static` **fromEmpty**(): [`Id3v2EventTimeCode`](id3v2eventtimecode.md)
 
-**Returns:** [*Id3v2EventTimeCode*](id3v2eventtimecode.md)
+#### Returns
+
+[`Id3v2EventTimeCode`](id3v2eventtimecode.md)

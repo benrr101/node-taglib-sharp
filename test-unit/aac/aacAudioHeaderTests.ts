@@ -23,7 +23,7 @@ class Aac_AudioHeaderTests {
     @test
     public constructor_invalidData() {
         // Arrange
-        const testFunc = (a: number, b: number, c: number, d: number) => { const _  = new AacAudioHeader(a, b, c, d); };
+        const testFunc = (a: number, b: number, c: number, d: number) => new AacAudioHeader(a, b, c, d);
 
         // Act / Assert
         Testers.testUint((v: number) => testFunc(v, 0, 0, 0));

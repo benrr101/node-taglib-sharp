@@ -27,7 +27,7 @@ const assert = Chai.assert;
         const frame = PrivateFrame.fromOwner("foo");
 
         // Assert
-        this.assertFrame(frame, "foo", ByteVector.empty());
+        Id3v2_PrivateFrame_ConstructorTests.assertFrame(frame, "foo", ByteVector.empty());
     }
 
     @test
@@ -57,7 +57,7 @@ const assert = Chai.assert;
         const frame = PrivateFrame.fromRawData(data, 4);
 
         // Assert
-        this.assertFrame(frame, "fux", ByteVector.empty());
+        Id3v2_PrivateFrame_ConstructorTests.assertFrame(frame, "fux", ByteVector.empty());
     }
 
     @test
@@ -76,7 +76,11 @@ const assert = Chai.assert;
         const frame = PrivateFrame.fromRawData(data, 4);
 
         // Assert
-        this.assertFrame(frame, "fux", ByteVector.fromByteArray(new Uint8Array([0x01, 0x02, 0x03, 0x04])));
+        Id3v2_PrivateFrame_ConstructorTests.assertFrame(
+            frame,
+            "fux",
+            ByteVector.fromByteArray(new Uint8Array([0x01, 0x02, 0x03, 0x04]))
+        );
     }
 
     @test
@@ -96,10 +100,14 @@ const assert = Chai.assert;
         const frame = PrivateFrame.fromOffsetRawData(data, 2, header,  4);
 
         // Assert
-        this.assertFrame(frame, "fux", ByteVector.fromByteArray(new Uint8Array([0x01, 0x02, 0x03, 0x04])));
+        Id3v2_PrivateFrame_ConstructorTests.assertFrame(
+            frame,
+            "fux",
+            ByteVector.fromByteArray(new Uint8Array([0x01, 0x02, 0x03, 0x04]))
+        );
     }
 
-    private assertFrame(frame: PrivateFrame, o: string, d: ByteVector) {
+    private static assertFrame(frame: PrivateFrame, o: string, d: ByteVector) {
         assert.isOk(frame);
         assert.strictEqual(frame.frameClassType, FrameClassType.PrivateFrame);
         assert.strictEqual(frame.frameId, FrameIdentifiers.PRIV);
@@ -221,6 +229,6 @@ const assert = Chai.assert;
         const frame = PrivateFrame.fromRawData(data, 4);
 
         // Act / Assert
-        assert.throws(() => { const _ = frame.render(2); });
+        assert.throws(() => frame.render(2));
     }
 }

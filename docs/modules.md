@@ -7,6 +7,7 @@
 ### Enumerations
 
 - [AsfObjectDataType](enums/asfobjectdatatype.md)
+- [AviStreamType](enums/avistreamtype.md)
 - [FileAccessMode](enums/fileaccessmode.md)
 - [Id3v2EventType](enums/id3v2eventtype.md)
 - [Id3v2FrameClassType](enums/id3v2frameclasstype.md)
@@ -42,9 +43,14 @@
 - [AsfStreamPropertiesObject](classes/asfstreampropertiesobject.md)
 - [AsfTag](classes/asftag.md)
 - [AsfUnknownObject](classes/asfunknownobject.md)
+- [AviAudioStream](classes/aviaudiostream.md)
+- [AviStream](classes/avistream.md)
+- [AviStreamHeader](classes/avistreamheader.md)
+- [AviVideoStream](classes/avivideostream.md)
 - [ByteVector](classes/bytevector.md)
 - [CombinedTag](classes/combinedtag.md)
 - [CorruptFileError](classes/corruptfileerror.md)
+- [DivxTag](classes/divxtag.md)
 - [File](classes/file.md)
 - [Id3v1Tag](classes/id3v1tag.md)
 - [Id3v2AttachmentFrame](classes/id3v2attachmentframe.md)
@@ -75,7 +81,9 @@
 - [Id3v2UrlLinkFrame](classes/id3v2urllinkframe.md)
 - [Id3v2UserTextInformationFrame](classes/id3v2usertextinformationframe.md)
 - [Id3v2UserUrlLinkFrame](classes/id3v2userurllinkframe.md)
+- [InfoTag](classes/infotag.md)
 - [LocalFileAbstraction](classes/localfileabstraction.md)
+- [MovieIdTag](classes/movieidtag.md)
 - [MpegAudioFile](classes/mpegaudiofile.md)
 - [MpegAudioHeader](classes/mpegaudioheader.md)
 - [MpegFile](classes/mpegfile.md)
@@ -86,6 +94,11 @@
 - [Picture](classes/picture.md)
 - [PictureLazy](classes/picturelazy.md)
 - [Properties](classes/properties.md)
+- [RiffBitmapInfoHeader](classes/riffbitmapinfoheader.md)
+- [RiffFile](classes/rifffile.md)
+- [RiffList](classes/rifflist.md)
+- [RiffListTag](classes/rifflisttag.md)
+- [RiffWaveFormatEx](classes/riffwaveformatex.md)
 - [Tag](classes/tag.md)
 
 ### Interfaces
@@ -115,65 +128,81 @@
 
 ### FileTypeConstructor
 
-Ƭ **FileTypeConstructor**: (`abstraction`: IFileAbstraction, `style`: [*ReadStyle*](enums/readstyle.md)) => [*File*](classes/file.md)
+Ƭ **FileTypeConstructor**: (`abstraction`: `IFileAbstraction`, `style`: [`ReadStyle`](enums/readstyle.md)) => [`File`](classes/file.md)
+
+#### Type declaration
+
+• (`abstraction`, `style`)
+
+##### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `abstraction` | `IFileAbstraction` |
+| `style` | [`ReadStyle`](enums/readstyle.md) |
 
 ___
 
 ### FileTypeResolver
 
-Ƭ **FileTypeResolver**: (`abstraction`: IFileAbstraction, `mimetype`: *string*, `style`: [*ReadStyle*](enums/readstyle.md)) => [*File*](classes/file.md)
+Ƭ **FileTypeResolver**: (`abstraction`: `IFileAbstraction`, `mimetype`: `string`, `style`: [`ReadStyle`](enums/readstyle.md)) => [`File`](classes/file.md)
+
+#### Type declaration
+
+▸ (`abstraction`, `mimetype`, `style`): [`File`](classes/file.md)
 
 Delegate is used for intervening in [File.createFromPath](classes/file.md#createfrompath) by resolving the filetype before
 any standard resolution operations.
 
-**`param`** File to be read.
+##### Parameters
 
-**`param`** MimeType of the file.
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `abstraction` | `IFileAbstraction` | File to be read. |
+| `mimetype` | `string` | - |
+| `style` | [`ReadStyle`](enums/readstyle.md) | How to read media properties from the file |
 
-**`param`** How to read media properties from the file
+##### Returns
 
-**`returns`** New instance of [File](classes/file.md) or `undefined` if the resolver could not be matched
+[`File`](classes/file.md)
 
-**`remarks`** A FileTypeResolver is one way of altering the behavior of
-    [File.createFromPath](classes/file.md#createfrompath) When [File.createFromPath](classes/file.md#createfrompath) is called, the registered
-    resolvers are invoked in reverse order in which they were registered. The resolver may then
-    perform any operations necessary, including other type-finding methods. If the resolver
-    returns a new [File](classes/file.md) it will instantly be returned, by [File.createFromPath](classes/file.md#createfrompath). If
-    it returns `undefined`, [File.createFromPath](classes/file.md#createfrompath) will continue to process. If the resolver
-    throws an exception, it will be uncaught. To register a resolver, use
-    [File.addFileTypeResolver](classes/file.md#addfiletyperesolver).
+New instance of [File](classes/file.md) or `undefined` if the resolver could not be matched
 
 ## Properties
 
 ### Genres
 
-• **Genres**: { `audioToIndex`: (`name`: *string*) => *number* ; `indexToAudio`: (`index`: *string* \| *number*, `allowParenthesis`: *boolean*) => *string* ; `indexToVideo`: (`index`: *string* \| *number*, `allowParenthesis`: *boolean*) => *string* ; `videoToIndex`: (`name`: *string*) => *number*  }
+• **Genres**: `Object`
 
-#### Type declaration:
+#### Type declaration
 
-Name | Type |
------- | ------ |
-`audioToIndex` | (`name`: *string*) => *number* |
-`indexToAudio` | (`index`: *string* \| *number*, `allowParenthesis`: *boolean*) => *string* |
-`indexToVideo` | (`index`: *string* \| *number*, `allowParenthesis`: *boolean*) => *string* |
-`videoToIndex` | (`name`: *string*) => *number* |
+| Name | Type |
+| :------ | :------ |
+| `audioToIndex` | (`name`: `string`) => `number` |
+| `indexToAudio` | (`index`: `string` \| `number`, `allowParenthesis`: `boolean`) => `string` |
+| `indexToVideo` | (`index`: `string` \| `number`, `allowParenthesis`: `boolean`) => `string` |
+| `videoToIndex` | (`name`: `string`) => `number` |
 
 ___
 
 ### Id3v2FrameFactory
 
-• **Id3v2FrameFactory**: { `addFrameCreator`: (`creator`: FrameCreator) => *void* ; `clearFrameCreators`: () => *void* ; `createFrame`: (`data`: [*ByteVector*](classes/bytevector.md), `file`: [*File*](classes/file.md), `offset`: *number*, `version`: *number*, `alreadyUnsynced`: *boolean*) => { `frame`: [*Id3v2Frame*](classes/id3v2frame.md) ; `offset`: *number*  }  }
+• **Id3v2FrameFactory**: `Object`
 
-#### Type declaration:
+#### Type declaration
 
-Name | Type |
------- | ------ |
-`addFrameCreator` | (`creator`: FrameCreator) => *void* |
-`clearFrameCreators` | () => *void* |
-`createFrame` | (`data`: [*ByteVector*](classes/bytevector.md), `file`: [*File*](classes/file.md), `offset`: *number*, `version`: *number*, `alreadyUnsynced`: *boolean*) => { `frame`: [*Id3v2Frame*](classes/id3v2frame.md) ; `offset`: *number*  } |
+| Name | Type |
+| :------ | :------ |
+| `addFrameCreator` | (`creator`: `FrameCreator`) => `void` |
+| `clearFrameCreators` | () => `void` |
+| `createFrame` | (`data`: [`ByteVector`](classes/bytevector.md), `file`: [`File`](classes/file.md), `offset`: `number`, `version`: `number`, `alreadyUnsynced`: `boolean`) => { `frame`: [`Id3v2Frame`](classes/id3v2frame.md) ; `offset`: `number`  } |
 
 ## Variables
 
 ### Id3v2FrameIdentifiers
 
-• `Const` **Id3v2FrameIdentifiers**: *object*
+• `Const` **Id3v2FrameIdentifiers**: `Object`
+
+#### Index signature
+
+▪ [key: `string`]: [`Id3v2FrameIdentifier`](classes/id3v2frameidentifier.md)

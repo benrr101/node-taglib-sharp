@@ -42,7 +42,7 @@ function getTestFrame(): UserTextInformationFrame {
         const frame = UserTextInformationFrame.fromDescription("foo");
 
         // Assert
-        this.assertFrame(frame, "foo", [], Id3v2Settings.defaultEncoding);
+        Id3v2_UserInformationFrame_ConstructorTests.assertFrame(frame, "foo", [], Id3v2Settings.defaultEncoding);
     }
 
     @test
@@ -51,7 +51,7 @@ function getTestFrame(): UserTextInformationFrame {
         const frame = UserTextInformationFrame.fromDescription("foo", StringType.UTF16);
 
         // Assert
-        this.assertFrame(frame, "foo", [], StringType.UTF16);
+        Id3v2_UserInformationFrame_ConstructorTests.assertFrame(frame, "foo", [], StringType.UTF16);
     }
 
     @test
@@ -72,7 +72,7 @@ function getTestFrame(): UserTextInformationFrame {
         const frame = UserTextInformationFrame.fromOffsetRawData(data, 2, header, 4);
 
         // Assert
-        this.assertFrame(frame, "foo", ["bar"], StringType.Latin1);
+        Id3v2_UserInformationFrame_ConstructorTests.assertFrame(frame, "foo", ["bar"], StringType.Latin1);
     }
 
     @test
@@ -92,10 +92,10 @@ function getTestFrame(): UserTextInformationFrame {
         const frame = UserTextInformationFrame.fromRawData(data, 4);
 
         // Assert
-        this.assertFrame(frame, "foo", ["bar"], StringType.Latin1);
+        Id3v2_UserInformationFrame_ConstructorTests.assertFrame(frame, "foo", ["bar"], StringType.Latin1);
     }
 
-    private assertFrame(
+    private static assertFrame(
         frame: UserTextInformationFrame,
         description: string,
         text: string[],

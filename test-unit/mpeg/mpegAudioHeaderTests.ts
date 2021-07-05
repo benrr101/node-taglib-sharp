@@ -24,7 +24,7 @@ const assert = Chai.assert;
         const header = MpegAudioHeader.Unknown;
 
         // Assert
-        this.assertHeader(
+        Mpeg_AudioHeader_ConstructorTests.assertHeader(
             header,
             0,
             2,
@@ -64,7 +64,7 @@ const assert = Chai.assert;
         const header = MpegAudioHeader.fromInfo(0, 0, XingHeader.unknown, VbriHeader.unknown);
 
         // Assert
-        this.assertHeader(
+        Mpeg_AudioHeader_ConstructorTests.assertHeader(
             header,
             0,
             2,
@@ -165,7 +165,7 @@ const assert = Chai.assert;
         const header = MpegAudioHeader.fromData(data, mockFile, 0);
 
         // Assert
-        this.assertHeader(
+        Mpeg_AudioHeader_ConstructorTests.assertHeader(
             header,
             64,
             2,
@@ -207,7 +207,7 @@ const assert = Chai.assert;
         const header = MpegAudioHeader.fromData(mpegFlags, mockFile, 1);
 
         // Assert
-        this.assertHeader(
+        Mpeg_AudioHeader_ConstructorTests.assertHeader(
             header,
             2,
             2,
@@ -255,7 +255,7 @@ const assert = Chai.assert;
         const header = MpegAudioHeader.fromData(mpegFlags, mockFile, 1);
 
         // Assert
-        this.assertHeader(
+        Mpeg_AudioHeader_ConstructorTests.assertHeader(
             header,
             2,
             2,
@@ -281,7 +281,7 @@ const assert = Chai.assert;
         assert.strictEqual(header.xingHeader, XingHeader.unknown);
     }
 
-    private assertHeader(
+    private static assertHeader(
         header: MpegAudioHeader,
         bitrate: number,
         channels: number,

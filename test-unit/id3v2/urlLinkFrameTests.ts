@@ -53,7 +53,7 @@ const getTestUrlLinkFrame = (): UrlLinkFrame => {
         const output = UrlLinkFrame.fromIdentity(FrameIdentifiers.WCOM);
 
         // Assert
-        this.assertFrame(output, FrameIdentifiers.WCOM, [], StringType.Latin1);
+        Id3v2_UrlLinkFrame_ConstructorTests.assertFrame(output, FrameIdentifiers.WCOM, [], StringType.Latin1);
     }
 
     @test
@@ -72,7 +72,7 @@ const getTestUrlLinkFrame = (): UrlLinkFrame => {
         const output = UrlLinkFrame.fromOffsetRawData(data, 2, header, 4);
 
         // Assert
-        this.assertFrame(output, FrameIdentifiers.WCOM, ["foobar"], StringType.Latin1);
+        Id3v2_UrlLinkFrame_ConstructorTests.assertFrame(output, FrameIdentifiers.WCOM, ["foobar"], StringType.Latin1);
     }
 
     @test
@@ -93,7 +93,12 @@ const getTestUrlLinkFrame = (): UrlLinkFrame => {
         const output = UrlLinkFrame.fromOffsetRawData(data, 2, header, 4);
 
         // Assert
-        this.assertFrame(output, FrameIdentifiers.WXXX, ["foo", "bar"], StringType.Latin1);
+        Id3v2_UrlLinkFrame_ConstructorTests.assertFrame(
+            output,
+            FrameIdentifiers.WXXX,
+            ["foo", "bar"],
+            StringType.Latin1
+        );
     }
 
     @test
@@ -112,7 +117,7 @@ const getTestUrlLinkFrame = (): UrlLinkFrame => {
         const output = UrlLinkFrame.fromRawData(data, 4);
 
         // Assert
-        this.assertFrame(output, FrameIdentifiers.WCOM, ["foobar"], StringType.Latin1);
+        Id3v2_UrlLinkFrame_ConstructorTests.assertFrame(output, FrameIdentifiers.WCOM, ["foobar"], StringType.Latin1);
     }
 
     @test
@@ -132,10 +137,15 @@ const getTestUrlLinkFrame = (): UrlLinkFrame => {
         const output = UrlLinkFrame.fromRawData(data, 4);
 
         // Assert
-        this.assertFrame(output, FrameIdentifiers.WXXX, ["foo", "bar"], StringType.Latin1);
+        Id3v2_UrlLinkFrame_ConstructorTests.assertFrame(
+            output,
+            FrameIdentifiers.WXXX,
+            ["foo", "bar"],
+            StringType.Latin1
+        );
     }
 
-    private assertFrame(frame: UrlLinkFrame, ft: FrameIdentifier, t: string[], te: StringType) {
+    private static assertFrame(frame: UrlLinkFrame, ft: FrameIdentifier, t: string[], te: StringType) {
         assert.ok(frame);
         assert.strictEqual(frame.frameClassType, FrameClassType.UrlLinkFrame);
         assert.strictEqual(frame.frameId, ft);

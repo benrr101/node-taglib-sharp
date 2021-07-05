@@ -696,22 +696,22 @@ function getTestTagFooter(flags: ApeTagFooterFlags, itemCount: number, itemPlusF
 
     @test
     public initialKey() {
-        this.testUnsupportedText((t, v) => { t.initialKey = v; }, (t) => t.initialKey);
+        Ape_Tag_PropertyTests.testUnsupportedText((t, v) => { t.initialKey = v; }, (t) => t.initialKey);
     }
 
     @test
     public remixedBy() {
-        this.testUnsupportedText((t, v) => { t.remixedBy = v; }, (t) => t.remixedBy);
+        Ape_Tag_PropertyTests.testUnsupportedText((t, v) => { t.remixedBy = v; }, (t) => t.remixedBy);
     }
 
     @test
     public publisher() {
-        this.testUnsupportedText((t, v) => { t.publisher = v; }, (t) => t.publisher);
+        Ape_Tag_PropertyTests.testUnsupportedText((t, v) => { t.publisher = v; }, (t) => t.publisher);
     }
 
     @test
     public isrc() {
-        this.testUnsupportedText((t, v) => { t.isrc = v; }, (t) => t.isrc);
+        Ape_Tag_PropertyTests.testUnsupportedText((t, v) => { t.isrc = v; }, (t) => t.isrc);
     }
 
     private testFractionalUintItem(
@@ -875,7 +875,7 @@ function getTestTagFooter(flags: ApeTagFooterFlags, itemCount: number, itemPlusF
         assert.strictEqual(tag.items.length, 0);
     }
 
-    private testUnsupportedText(
+    private static testUnsupportedText(
         set: (t: ApeTag, v: string) => void,
         get: (t: ApeTag) => string
     ) {

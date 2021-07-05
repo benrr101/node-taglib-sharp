@@ -572,7 +572,7 @@ const assert = Chai.assert;
 
     @test
     public toStrings_utf8Single() {
-        this.testStrings(
+        ByteVector_ConversionTests.testStrings(
             "\0\0" + TestConstants.testStrings.UTF8.str,
             StringType.UTF8,
             2,
@@ -583,7 +583,7 @@ const assert = Chai.assert;
 
     @test
     public toStrings_utf8Multiple() {
-        this.testStrings(
+        ByteVector_ConversionTests.testStrings(
             TestConstants.testStrings.UTF8.str + "\0\0" + TestConstants.testStrings.UTF8.str,
             StringType.UTF8,
             0,
@@ -594,7 +594,7 @@ const assert = Chai.assert;
 
     @test
     public toStrings_utf16LittleEndianSingle() {
-        this.testStrings(
+        ByteVector_ConversionTests.testStrings(
             "\0\0" + TestConstants.testStrings.UTF16LE.str,
             StringType.UTF16LE,
             2,
@@ -605,7 +605,7 @@ const assert = Chai.assert;
 
     @test
     public toStrings_ut16LittleEndianMultiple() {
-        this.testStrings(
+        ByteVector_ConversionTests.testStrings(
             TestConstants.testStrings.UTF16LE.str + "\0\0" + TestConstants.testStrings.UTF16LE.str,
             StringType.UTF16LE,
             0,
@@ -616,7 +616,7 @@ const assert = Chai.assert;
 
     @test
     public toStrings_utf16BigEndianSingle() {
-        this.testStrings(
+        ByteVector_ConversionTests.testStrings(
             "\0\0" + TestConstants.testStrings.UTF16BE.str,
             StringType.UTF16BE,
             2,
@@ -627,7 +627,7 @@ const assert = Chai.assert;
 
     @test
     public toStrings_ut16BigEndianMultiple() {
-        this.testStrings(
+        ByteVector_ConversionTests.testStrings(
             TestConstants.testStrings.UTF16BE.str + "\0\0" + TestConstants.testStrings.UTF16BE.str,
             StringType.UTF16BE,
             0,
@@ -643,7 +643,7 @@ const assert = Chai.assert;
         ByteVector.lastUtf16Encoding = "utf16-le";
 
         try {
-            this.testStrings(
+            ByteVector_ConversionTests.testStrings(
                 "\0\0" + TestConstants.testStrings.UTF16LEWithBOM.str,
                 StringType.UTF16,
                 2,
@@ -664,7 +664,7 @@ const assert = Chai.assert;
         ByteVector.lastUtf16Encoding = "utf16-le";
 
         try {
-            this.testStrings(
+            ByteVector_ConversionTests.testStrings(
                 TestConstants.testStrings.UTF16LEWithBOM.str + "\0\0" + TestConstants.testStrings.UTF16LEWithBOM.str,
                 StringType.UTF16,
                 0,
@@ -828,7 +828,7 @@ const assert = Chai.assert;
         assert.strictEqual(short, 0xFFFF);
     }
 
-    private testStrings(
+    private static testStrings(
         textInput: string,
         stringType: StringType,
         offset: number,

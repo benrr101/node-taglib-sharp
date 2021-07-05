@@ -55,7 +55,7 @@ const assert = Chai.assert;
     @test
     public fromData_validData() {
         // Arrange
-        const data = this.getTestTagData(0);
+        const data = Riff_DivxTagTests.getTestTagData(0);
 
         // Act
         const tag = DivxTag.fromData(data);
@@ -96,7 +96,7 @@ const assert = Chai.assert;
     @test
     public fromFile_validParams() {
         // Arrange
-        const data = this.getTestTagData(10);
+        const data = Riff_DivxTagTests.getTestTagData(10);
         const file = TestFile.getFile(data);
 
         // Act
@@ -195,7 +195,7 @@ const assert = Chai.assert;
     @test
     public clear() {
         // Arrange
-        const data = this.getTestTagData(0);
+        const data = Riff_DivxTagTests.getTestTagData(0);
         const tag = DivxTag.fromData(data);
 
         // Act
@@ -210,7 +210,7 @@ const assert = Chai.assert;
     @test
     public render_hasValues() {
         // Arrange
-        const data = this.getTestTagData(0);
+        const data = Riff_DivxTagTests.getTestTagData(0);
         const tag = DivxTag.fromData(data);
 
         // Act
@@ -237,7 +237,7 @@ const assert = Chai.assert;
         assert.isTrue(ByteVector.equal(result, expected));
     }
 
-    private getTestTagData(padding: number) {
+    private static getTestTagData(padding: number) {
         return ByteVector.concatenate(
             ByteVector.fromSize(padding),
             ByteVector.fromString("foo                             "),

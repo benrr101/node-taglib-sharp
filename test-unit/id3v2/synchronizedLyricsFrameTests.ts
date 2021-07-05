@@ -65,7 +65,7 @@ const assert = Chai.assert;
         const frame = SynchronizedLyricsFrame.fromInfo(description, language, textType);
 
         // Assert
-        this.assertFrame(
+        Id3v2_SynchronizedLyricsFrame_ConstructorTests.assertFrame(
             frame,
             description,
             TimestampFormat.Unknown,
@@ -88,7 +88,7 @@ const assert = Chai.assert;
         const frame = SynchronizedLyricsFrame.fromInfo(description, language, textType, encoding);
 
         // Assert
-        this.assertFrame(
+        Id3v2_SynchronizedLyricsFrame_ConstructorTests.assertFrame(
             frame,
             description,
             TimestampFormat.Unknown,
@@ -170,7 +170,7 @@ const assert = Chai.assert;
         const frame = SynchronizedLyricsFrame.fromRawData(data, 4);
 
         // Assert
-        this.assertFrame(
+        Id3v2_SynchronizedLyricsFrame_ConstructorTests.assertFrame(
             frame,
             "bux",
             TimestampFormat.AbsoluteMilliseconds,
@@ -200,7 +200,7 @@ const assert = Chai.assert;
         const frame = SynchronizedLyricsFrame.fromRawData(data, 4);
 
         // Assert
-        this.assertFrame(
+        Id3v2_SynchronizedLyricsFrame_ConstructorTests.assertFrame(
             frame,
             "bux",
             TimestampFormat.AbsoluteMilliseconds,
@@ -232,7 +232,7 @@ const assert = Chai.assert;
         const frame = SynchronizedLyricsFrame.fromRawData(data, 4);
 
         // Assert
-        this.assertFrame(
+        Id3v2_SynchronizedLyricsFrame_ConstructorTests.assertFrame(
             frame,
             "bux",
             TimestampFormat.AbsoluteMilliseconds,
@@ -266,7 +266,7 @@ const assert = Chai.assert;
         const frame = SynchronizedLyricsFrame.fromRawData(data, 4);
 
         // Assert
-        this.assertFrame(
+        Id3v2_SynchronizedLyricsFrame_ConstructorTests.assertFrame(
             frame,
             "bux",
             TimestampFormat.AbsoluteMilliseconds,
@@ -301,7 +301,7 @@ const assert = Chai.assert;
         const frame = SynchronizedLyricsFrame.fromOffsetRawData(data, 2, header, 4);
 
         // Assert
-        this.assertFrame(
+        Id3v2_SynchronizedLyricsFrame_ConstructorTests.assertFrame(
             frame,
             "bux",
             TimestampFormat.AbsoluteMilliseconds,
@@ -312,7 +312,7 @@ const assert = Chai.assert;
         );
     }
 
-    private assertFrame(
+    private static assertFrame(
         frame: SynchronizedLyricsFrame,
         d: string,
         f: TimestampFormat,

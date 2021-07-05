@@ -89,7 +89,7 @@ class TestFrame extends Frame {
     }
 
     @test
-    public groupid() {
+    public groupId() {
         // Arrange
         const header = new Id3v2FrameHeader(FrameIdentifiers.TXXX, Id3v2FrameFlags.FileAlterPreservation);
         const frame = new TestFrame(header);

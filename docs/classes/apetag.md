@@ -6,9 +6,9 @@ Provides a representation of an APEv2 tag which can be read from and written to 
 
 ## Hierarchy
 
-* [*Tag*](tag.md)
+- [`Tag`](tag.md)
 
-  ↳ **ApeTag**
+  ↳ **`ApeTag`**
 
 ## Table of contents
 
@@ -103,32 +103,36 @@ Provides a representation of an APEv2 tag which can be read from and written to 
 
 ### album
 
-• **album**(): *string*
+• `get` **album**(): `string`
 
 Gets the album of the media represented by the current instance. For video media, this
 represents the collection the video belongs to.
 
 **`inheritdoc`** Album item
 
-**Returns:** *string*
+#### Returns
+
+`string`
 
 Album of the media represented by the current instance or `undefined` if no value
     is present
 
-• **album**(`value`: *string*): *void*
+• `set` **album**(`value`): `void`
 
 Gets the album of the media represented by the current instance. For video media, this
 represents the collection the video belongs to.
 
 **`inheritdoc`** Album item
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
------- | ------ |
-`value` | *string* |
+| Name | Type |
+| :------ | :------ |
+| `value` | `string` |
 
-**Returns:** *void*
+#### Returns
+
+`void`
 
 Album of the media represented by the current instance or `undefined` if no value
     is present
@@ -137,37 +141,41 @@ ___
 
 ### albumArtists
 
-• **albumArtists**(): *string*[]
+• `get` **albumArtists**(): `string`[]
 
 Gets the band or artist who is credited credited in the creation of the entire album or
 collection containing the media described by the current instance.
 
-**`inheritdoc`** 
+**`inheritdoc`**
 This property is implemented using the "Album Artist" item and "AlbumArtist" as a backup if
 it exists.
 
-**Returns:** *string*[]
+#### Returns
+
+`string`[]
 
 Band or artist credited with the creation of the entire album or collection
     containing the media described by the current instance or an empty array if no value is
     present
 
-• **albumArtists**(`value`: *string*[]): *void*
+• `set` **albumArtists**(`value`): `void`
 
 Gets the band or artist who is credited credited in the creation of the entire album or
 collection containing the media described by the current instance.
 
-**`inheritdoc`** 
+**`inheritdoc`**
 Will be stored in "Album Artist" primarily. If "AlbumArtist" exists, value will also be
 stored there for compatibility.
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
------- | ------ |
-`value` | *string*[] |
+| Name | Type |
+| :------ | :------ |
+| `value` | `string`[] |
 
-**Returns:** *void*
+#### Returns
+
+`void`
 
 Band or artist credited with the creation of the entire album or collection
     containing the media described by the current instance or an empty array if no value is
@@ -177,33 +185,37 @@ ___
 
 ### albumArtistsSort
 
-• **albumArtistsSort**(): *string*[]
+• `get` **albumArtistsSort**(): `string`[]
 
 Gets the sortable names of the bands/artists who are credited with creating the entire
 album or collection containing the media described by the current instance.
 
 **`inheritdoc`** AlbumArtistSort item
 
-**Returns:** *string*[]
+#### Returns
+
+`string`[]
 
 Sortable names for the bands/artists are credited with the creation of the entire
     album or collection containing the media described by the current instance, or an empty
     array if no value is present.
 
-• **albumArtistsSort**(`value`: *string*[]): *void*
+• `set` **albumArtistsSort**(`value`): `void`
 
 Gets the sortable names of the bands/artists who are credited with creating the entire
 album or collection containing the media described by the current instance.
 
 **`inheritdoc`** AlbumArtistSort item
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
------- | ------ |
-`value` | *string*[] |
+| Name | Type |
+| :------ | :------ |
+| `value` | `string`[] |
 
-**Returns:** *void*
+#### Returns
+
+`void`
 
 Sortable names for the bands/artists are credited with the creation of the entire
     album or collection containing the media described by the current instance, or an empty
@@ -213,30 +225,34 @@ ___
 
 ### albumSort
 
-• **albumSort**(): *string*
+• `get` **albumSort**(): `string`
 
 Gets the sortable name of the album title of the media represented by the current instance.
 
 **`inheritdoc`** AlbumSort item
 
-**Returns:** *string*
+#### Returns
+
+`string`
 
 Sortable name for the album title of the media or `undefined` if the value is not
     present
 
-• **albumSort**(`value`: *string*): *void*
+• `set` **albumSort**(`value`): `void`
 
 Gets the sortable name of the album title of the media represented by the current instance.
 
 **`inheritdoc`** AlbumSort item
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
------- | ------ |
-`value` | *string* |
+| Name | Type |
+| :------ | :------ |
+| `value` | `string` |
 
-**Returns:** *void*
+#### Returns
+
+`void`
 
 Sortable name for the album title of the media or `undefined` if the value is not
     present
@@ -245,30 +261,34 @@ ___
 
 ### amazonId
 
-• **amazonId**(): *string*
+• `get` **amazonId**(): `string`
 
 Gets the Amazon ID of the media represented by the current instance.
 
 **`inheritdoc`** ASIN item
 
-**Returns:** *string*
+#### Returns
+
+`string`
 
 Amazon ID of the media represented by the current instance or `undefined` if no
     value is present
 
-• **amazonId**(`value`: *string*): *void*
+• `set` **amazonId**(`value`): `void`
 
 Gets the Amazon ID of the media represented by the current instance.
 
 **`inheritdoc`** ASIN item
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
------- | ------ |
-`value` | *string* |
+| Name | Type |
+| :------ | :------ |
+| `value` | `string` |
 
-**Returns:** *void*
+#### Returns
+
+`void`
 
 Amazon ID of the media represented by the current instance or `undefined` if no
     value is present
@@ -277,32 +297,36 @@ ___
 
 ### beatsPerMinute
 
-• **beatsPerMinute**(): *number*
+• `get` **beatsPerMinute**(): `number`
 
 Gets the number of beats per minute in the audio of the media represented by the current
 instance.
 
 **`inheritdoc`** BPM item
 
-**Returns:** *number*
+#### Returns
+
+`number`
 
 Beats per minute of the audio in the media represented by the current instance, or
     `0` if not specified
 
-• **beatsPerMinute**(`value`: *number*): *void*
+• `set` **beatsPerMinute**(`value`): `void`
 
 Gets the number of beats per minute in the audio of the media represented by the current
 instance.
 
 **`inheritdoc`** BPM item
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
------- | ------ |
-`value` | *number* |
+| Name | Type |
+| :------ | :------ |
+| `value` | `number` |
 
-**Returns:** *void*
+#### Returns
+
+`void`
 
 Beats per minute of the audio in the media represented by the current instance, or
     `0` if not specified
@@ -311,30 +335,34 @@ ___
 
 ### comment
 
-• **comment**(): *string*
+• `get` **comment**(): `string`
 
 Gets a user comment on the media represented by the current instance.
 
 **`inheritdoc`** Comment item
 
-**Returns:** *string*
+#### Returns
+
+`string`
 
 User comments on the media represented by the current instance or `undefined` if
     the value is not present
 
-• **comment**(`value`: *string*): *void*
+• `set` **comment**(`value`): `void`
 
 Gets a user comment on the media represented by the current instance.
 
 **`inheritdoc`** Comment item
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
------- | ------ |
-`value` | *string* |
+| Name | Type |
+| :------ | :------ |
+| `value` | `string` |
 
-**Returns:** *void*
+#### Returns
+
+`void`
 
 User comments on the media represented by the current instance or `undefined` if
     the value is not present
@@ -343,30 +371,34 @@ ___
 
 ### composers
 
-• **composers**(): *string*[]
+• `get` **composers**(): `string`[]
 
 Gets the composers of the media represented by the current instance.
 
 **`inheritdoc`** Composer item
 
-**Returns:** *string*[]
+#### Returns
+
+`string`[]
 
 Composers of the media represented by the current instance of an empty array if no
     value is present.
 
-• **composers**(`value`: *string*[]): *void*
+• `set` **composers**(`value`): `void`
 
 Gets the composers of the media represented by the current instance.
 
 **`inheritdoc`** Composer item
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
------- | ------ |
-`value` | *string*[] |
+| Name | Type |
+| :------ | :------ |
+| `value` | `string`[] |
 
-**Returns:** *void*
+#### Returns
+
+`void`
 
 Composers of the media represented by the current instance of an empty array if no
     value is present.
@@ -375,30 +407,34 @@ ___
 
 ### composersSort
 
-• **composersSort**(): *string*[]
+• `get` **composersSort**(): `string`[]
 
 Gets the sortable names of the composers of the media represented by the current instance.
 
 **`inheritdoc`** ComposerSort item
 
-**Returns:** *string*[]
+#### Returns
+
+`string`[]
 
 Sortable names for the composers of the media represented by the current instance
     or an empty array if no value is present.
 
-• **composersSort**(`value`: *string*[]): *void*
+• `set` **composersSort**(`value`): `void`
 
 Gets the sortable names of the composers of the media represented by the current instance.
 
 **`inheritdoc`** ComposerSort
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
------- | ------ |
-`value` | *string*[] |
+| Name | Type |
+| :------ | :------ |
+| `value` | `string`[] |
 
-**Returns:** *void*
+#### Returns
+
+`void`
 
 Sortable names for the composers of the media represented by the current instance
     or an empty array if no value is present.
@@ -407,30 +443,34 @@ ___
 
 ### conductor
 
-• **conductor**(): *string*
+• `get` **conductor**(): `string`
 
 Gets the conductor or director of the media represented by the current instance.
 
 **`inheritdoc`** Conductor item
 
-**Returns:** *string*
+#### Returns
+
+`string`
 
 Conductor or director of the media represented by the current instance or
     `undefined` if no value present.
 
-• **conductor**(`value`: *string*): *void*
+• `set` **conductor**(`value`): `void`
 
 Gets the conductor or director of the media represented by the current instance.
 
 **`inheritdoc`** Conductor item
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
------- | ------ |
-`value` | *string* |
+| Name | Type |
+| :------ | :------ |
+| `value` | `string` |
 
-**Returns:** *void*
+#### Returns
+
+`void`
 
 Conductor or director of the media represented by the current instance or
     `undefined` if no value present.
@@ -439,30 +479,34 @@ ___
 
 ### copyright
 
-• **copyright**(): *string*
+• `get` **copyright**(): `string`
 
 Gets the copyright information for the media represented by the current instance.
 
 **`inheritdoc`** Copyright item
 
-**Returns:** *string*
+#### Returns
+
+`string`
 
 Copyright information for the media represented by the current instance or
     `undefined` if no value is present.
 
-• **copyright**(`value`: *string*): *void*
+• `set` **copyright**(`value`): `void`
 
 Gets the copyright information for the media represented by the current instance.
 
 **`inheritdoc`** Copyright item
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
------- | ------ |
-`value` | *string* |
+| Name | Type |
+| :------ | :------ |
+| `value` | `string` |
 
-**Returns:** *void*
+#### Returns
+
+`void`
 
 Copyright information for the media represented by the current instance or
     `undefined` if no value is present.
@@ -471,29 +515,33 @@ ___
 
 ### dateTagged
 
-• **dateTagged**(): Date
+• `get` **dateTagged**(): `Date`
 
 Gets the date and time at which the tag has been written.
 
 **`inheritdoc`** DateTagged item
 
-**Returns:** Date
+#### Returns
+
+`Date`
 
 Date/time at which the tag has been written, or `undefined` if no value is present
 
-• **dateTagged**(`value`: Date): *void*
+• `set` **dateTagged**(`value`): `void`
 
 Gets the date and time at which the tag has been written.
 
 **`inheritdoc`** DateTagged item
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
------- | ------ |
-`value` | Date |
+| Name | Type |
+| :------ | :------ |
+| `value` | `Date` |
 
-**Returns:** *void*
+#### Returns
+
+`void`
 
 Date/time at which the tag has been written, or `undefined` if no value is present
 
@@ -501,7 +549,7 @@ ___
 
 ### description
 
-• **description**(): *string*
+• `get` **description**(): `string`
 
 Gets a short description of the media. For music, this could be the comment that the artist
 made of his/her work. For a video, this should be a short summary of the story/plot, but
@@ -509,12 +557,14 @@ generally no spoliers. This should give the impression of what to expect in the 
 
 **`inheritdoc`** Description item
 
-**Returns:** *string*
+#### Returns
+
+`string`
 
 Description of the media represented by the current instance or `undefined` if no
     value is present
 
-• **description**(`value`: *string*): *void*
+• `set` **description**(`value`): `void`
 
 Gets a short description of the media. For music, this could be the comment that the artist
 made of his/her work. For a video, this should be a short summary of the story/plot, but
@@ -522,13 +572,15 @@ generally no spoliers. This should give the impression of what to expect in the 
 
 **`inheritdoc`** Description item
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
------- | ------ |
-`value` | *string* |
+| Name | Type |
+| :------ | :------ |
+| `value` | `string` |
 
-**Returns:** *void*
+#### Returns
+
+`void`
 
 Description of the media represented by the current instance or `undefined` if no
     value is present
@@ -537,32 +589,36 @@ ___
 
 ### disc
 
-• **disc**(): *number*
+• `get` **disc**(): `number`
 
 Gets the number of the disc containing the media represented by the current instance in the
 boxed set. For a series, this represents the season number.
 
 **`inheritdoc`** Disc item numerator
 
-**Returns:** *number*
+#### Returns
+
+`number`
 
 Number of the disc or season of the media represented by the current instance in a
     boxed set.
 
-• **disc**(`value`: *number*): *void*
+• `set` **disc**(`value`): `void`
 
 Gets the number of the disc containing the media represented by the current instance in the
 boxed set. For a series, this represents the season number.
 
 **`inheritdoc`** Disc item numerator
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
------- | ------ |
-`value` | *number* |
+| Name | Type |
+| :------ | :------ |
+| `value` | `number` |
 
-**Returns:** *void*
+#### Returns
+
+`void`
 
 Number of the disc or season of the media represented by the current instance in a
     boxed set.
@@ -571,32 +627,36 @@ ___
 
 ### discCount
 
-• **discCount**(): *number*
+• `get` **discCount**(): `number`
 
 Gets the number of discs or seasons in the boxed set containing the media represented by the
 current instance.
 
 **`inheritdoc`** Disc item denominator
 
-**Returns:** *number*
+#### Returns
+
+`number`
 
 Number of discs or seasons in the boxed set containing the media represented by the
     current instance or `0` if not specified.
 
-• **discCount**(`value`: *number*): *void*
+• `set` **discCount**(`value`): `void`
 
 Gets the number of discs or seasons in the boxed set containing the media represented by the
 current instance.
 
 **`inheritdoc`** Disc item denominator
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
------- | ------ |
-`value` | *number* |
+| Name | Type |
+| :------ | :------ |
+| `value` | `number` |
 
-**Returns:** *void*
+#### Returns
+
+`void`
 
 Number of discs or seasons in the boxed set containing the media represented by the
     current instance or `0` if not specified.
@@ -605,100 +665,118 @@ ___
 
 ### firstAlbumArtist
 
-• **firstAlbumArtist**(): *string*
+• `get` **firstAlbumArtist**(): `string`
 
 Gets the the first value contained in [albumArtists](apetag.md#albumartists).
 
-**Returns:** *string*
+#### Returns
+
+`string`
 
 ___
 
 ### firstAlbumArtistSort
 
-• **firstAlbumArtistSort**(): *string*
+• `get` **firstAlbumArtistSort**(): `string`
 
 Gets the first value contained in [albumArtistsSort](apetag.md#albumartistssort)
 
-**Returns:** *string*
+#### Returns
+
+`string`
 
 ___
 
 ### firstComposer
 
-• **firstComposer**(): *string*
+• `get` **firstComposer**(): `string`
 
 Gets the first value contained in [composers](apetag.md#composers)
 
-**Returns:** *string*
+#### Returns
+
+`string`
 
 ___
 
 ### firstComposerSort
 
-• **firstComposerSort**(): *string*
+• `get` **firstComposerSort**(): `string`
 
 Gets the first value contained in [composersSort](apetag.md#composerssort)
 
-**Returns:** *string*
+#### Returns
+
+`string`
 
 ___
 
 ### firstGenre
 
-• **firstGenre**(): *string*
+• `get` **firstGenre**(): `string`
 
 Gets the first value contained in [genres](apetag.md#genres)
 
-**Returns:** *string*
+#### Returns
+
+`string`
 
 ___
 
 ### firstPerformer
 
-• **firstPerformer**(): *string*
+• `get` **firstPerformer**(): `string`
 
 Gets the first value contained in [performers](apetag.md#performers)
 
-**Returns:** *string*
+#### Returns
+
+`string`
 
 ___
 
 ### firstPerformerSort
 
-• **firstPerformerSort**(): *string*
+• `get` **firstPerformerSort**(): `string`
 
 Gets the first value contained in [performersSort](apetag.md#performerssort)
 
-**Returns:** *string*
+#### Returns
+
+`string`
 
 ___
 
 ### genres
 
-• **genres**(): *string*[]
+• `get` **genres**(): `string`[]
 
 Gets the genres of the media represented by the current instance.
 
 **`inheritdoc`** Genre item
 
-**Returns:** *string*[]
+#### Returns
+
+`string`[]
 
 Genres of the media represented by the current instance or an empty array if no
     value is present.
 
-• **genres**(`value`: *string*[]): *void*
+• `set` **genres**(`value`): `void`
 
 Gets the genres of the media represented by the current instance.
 
 **`inheritdoc`** Genre item
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
------- | ------ |
-`value` | *string*[] |
+| Name | Type |
+| :------ | :------ |
+| `value` | `string`[] |
 
-**Returns:** *void*
+#### Returns
+
+`void`
 
 Genres of the media represented by the current instance or an empty array if no
     value is present.
@@ -707,30 +785,34 @@ ___
 
 ### grouping
 
-• **grouping**(): *string*
+• `get` **grouping**(): `string`
 
 Gets the grouping on the album which the media in the current instance belongs to.
 
 **`inheritdoc`** Grouping item
 
-**Returns:** *string*
+#### Returns
+
+`string`
 
 Grouping on the album which the media in the current instance belongs to or
     `undefined` if no value is present.
 
-• **grouping**(`value`: *string*): *void*
+• `set` **grouping**(`value`): `void`
 
 Gets the grouping on the album which the media in the current instance belongs to.
 
 **`inheritdoc`** Grouping item
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
------- | ------ |
-`value` | *string* |
+| Name | Type |
+| :------ | :------ |
+| `value` | `string` |
 
-**Returns:** *void*
+#### Returns
+
+`void`
 
 Grouping on the album which the media in the current instance belongs to or
     `undefined` if no value is present.
@@ -739,25 +821,29 @@ ___
 
 ### initialKey
 
-• **initialKey**(): *string*
+• `get` **initialKey**(): `string`
 
 Gets the initial key of the track.
 
-**Returns:** *string*
+#### Returns
+
+`string`
 
 Initial key of the track or `undefined` if no value is set
 
-• **initialKey**(`value`: *string*): *void*
+• `set` **initialKey**(`value`): `void`
 
 Sets the initial key of the track.
 
-#### Parameters:
+#### Parameters
 
-Name | Type | Description |
------- | ------ | ------ |
-`value` | *string* | Initial key of the track or `undefined` if no value is set    |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `value` | `string` | Initial key of the track or `undefined` if no value is set |
 
-**Returns:** *void*
+#### Returns
+
+`void`
 
 Initial key of the track or `undefined` if no value is set
 
@@ -765,13 +851,15 @@ ___
 
 ### isEmpty
 
-• **isEmpty**(): *boolean*
+• `get` **isEmpty**(): `boolean`
 
 Gets whether or not the current instance is empty.
 
-**`inheritdoc`** 
+**`inheritdoc`**
 
-**Returns:** *boolean*
+#### Returns
+
+`boolean`
 
 `true` if the current instance does not contain any values. `false` otherwise
 
@@ -779,47 +867,55 @@ ___
 
 ### isHeaderPresent
 
-• **isHeaderPresent**(): *boolean*
+• `get` **isHeaderPresent**(): `boolean`
 
 Gets whether or not the current instance has a header when rendered.
 
-**Returns:** *boolean*
+#### Returns
 
-• **isHeaderPresent**(`value`: *boolean*): *void*
+`boolean`
+
+• `set` **isHeaderPresent**(`value`): `void`
 
 Sets whether or not the current instance has a header when rendered.
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
------- | ------ |
-`value` | *boolean* |
+| Name | Type |
+| :------ | :------ |
+| `value` | `boolean` |
 
-**Returns:** *void*
+#### Returns
+
+`void`
 
 ___
 
 ### isrc
 
-• **isrc**(): *string*
+• `get` **isrc**(): `string`
 
 Gets the ISRC (International Standard Recording Code) of the track.
 
-**Returns:** *string*
+#### Returns
+
+`string`
 
 the ISRC of the track or `undefined` if no value is set
 
-• **isrc**(`value`: *string*): *void*
+• `set` **isrc**(`value`): `void`
 
 Sets the ISRC (International Standard Recording Code) of the track.
 
-#### Parameters:
+#### Parameters
 
-Name | Type | Description |
------- | ------ | ------ |
-`value` | *string* | the ISRC of the track or `undefined` if no value is set    |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `value` | `string` | the ISRC of the track or `undefined` if no value is set |
 
-**Returns:** *void*
+#### Returns
+
+`void`
 
 the ISRC of the track or `undefined` if no value is set
 
@@ -827,90 +923,106 @@ ___
 
 ### items
 
-• **items**(): *ApeTagItem*[]
+• `get` **items**(): `ApeTagItem`[]
 
 Gets all items stored in the current instance
 
-**Returns:** *ApeTagItem*[]
+#### Returns
+
+`ApeTagItem`[]
 
 ___
 
 ### joinedAlbumArtists
 
-• **joinedAlbumArtists**(): *string*
+• `get` **joinedAlbumArtists**(): `string`
 
 Gets a semicolon and space separated string containing the values in [albumArtists](apetag.md#albumartists)
 
-**Returns:** *string*
+#### Returns
+
+`string`
 
 ___
 
 ### joinedComposers
 
-• **joinedComposers**(): *string*
+• `get` **joinedComposers**(): `string`
 
 Gets a semicolon and space separated string containing the values in [composers](apetag.md#composers)
 
-**Returns:** *string*
+#### Returns
+
+`string`
 
 ___
 
 ### joinedGenres
 
-• **joinedGenres**(): *string*
+• `get` **joinedGenres**(): `string`
 
 Gets a semicolon and space separated string containing the values in [genres](apetag.md#genres)
 
-**Returns:** *string*
+#### Returns
+
+`string`
 
 ___
 
 ### joinedPerformers
 
-• **joinedPerformers**(): *string*
+• `get` **joinedPerformers**(): `string`
 
 Gets a semicolon and space separated string containing the values in [performers](apetag.md#performers)
 
-**Returns:** *string*
+#### Returns
+
+`string`
 
 ___
 
 ### joinedPerformersSort
 
-• **joinedPerformersSort**(): *string*
+• `get` **joinedPerformersSort**(): `string`
 
 Gets a semicolon and space separated string containing the values in [performersSort](apetag.md#performerssort)
 
-**Returns:** *string*
+#### Returns
+
+`string`
 
 ___
 
 ### lyrics
 
-• **lyrics**(): *string*
+• `get` **lyrics**(): `string`
 
 Gets the lyrics or script of the media represented by the current instance.
 
 **`inheritdoc`** Lyrics item
 
-**Returns:** *string*
+#### Returns
+
+`string`
 
 Lyrics or script of the media represented by the current instance or `undefined` if
     no value is present
 
-• **lyrics**(`value`: *string*): *void*
+• `set` **lyrics**(`value`): `void`
 
 Gets the lyrics or script of the media represented by the current instance.
 
 **`inheritdoc`** Lyrics item
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
------- | ------ |
-`value` | *string* |
+| Name | Type |
+| :------ | :------ |
+| `value` | `string` |
 
-**Returns:** *void*
+#### Returns
+
+`void`
 
 Lyrics or script of the media represented by the current instance or `undefined` if
     no value is present
@@ -919,30 +1031,34 @@ ___
 
 ### musicBrainzArtistId
 
-• **musicBrainzArtistId**(): *string*
+• `get` **musicBrainzArtistId**(): `string`
 
 Gets the MusicBrainz artist ID of the media represented by the current instance.
 
 **`inheritdoc`** MUSICBRAINZ_ARTISTID item
 
-**Returns:** *string*
+#### Returns
+
+`string`
 
 MusicBrainz ArtistID of the media represented by the current instance or
     `undefined` if no value is present
 
-• **musicBrainzArtistId**(`value`: *string*): *void*
+• `set` **musicBrainzArtistId**(`value`): `void`
 
 Gets the MusicBrainz artist ID of the media represented by the current instance.
 
 **`inheritdoc`** MUSICBRAINZ_ARTISTID item
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
------- | ------ |
-`value` | *string* |
+| Name | Type |
+| :------ | :------ |
+| `value` | `string` |
 
-**Returns:** *void*
+#### Returns
+
+`void`
 
 MusicBrainz ArtistID of the media represented by the current instance or
     `undefined` if no value is present
@@ -951,30 +1067,34 @@ ___
 
 ### musicBrainzDiscId
 
-• **musicBrainzDiscId**(): *string*
+• `get` **musicBrainzDiscId**(): `string`
 
 Gets the MusicBrainz disc ID of the media represented by the current instance.
 
 **`inheritdoc`** MUSICBRAINZ_DISCID item
 
-**Returns:** *string*
+#### Returns
+
+`string`
 
 MusicBrainz DiscID of the media represented by the current instance or `undefined`
     if no value is present
 
-• **musicBrainzDiscId**(`value`: *string*): *void*
+• `set` **musicBrainzDiscId**(`value`): `void`
 
 Gets the MusicBrainz disc ID of the media represented by the current instance.
 
 **`inheritdoc`** MUSICBRAINZ_DISCID item
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
------- | ------ |
-`value` | *string* |
+| Name | Type |
+| :------ | :------ |
+| `value` | `string` |
 
-**Returns:** *void*
+#### Returns
+
+`void`
 
 MusicBrainz DiscID of the media represented by the current instance or `undefined`
     if no value is present
@@ -983,30 +1103,34 @@ ___
 
 ### musicBrainzReleaseArtistId
 
-• **musicBrainzReleaseArtistId**(): *string*
+• `get` **musicBrainzReleaseArtistId**(): `string`
 
 Gets the MusicBrainz release artist ID of the media represented by the current instance.
 
 **`inheritdoc`** MUSICBRAINZ_ARTISTID item
 
-**Returns:** *string*
+#### Returns
+
+`string`
 
 MusicBrainz ReleaseArtistID of the media represented by the current instance or
     `undefined` if no value is present
 
-• **musicBrainzReleaseArtistId**(`value`: *string*): *void*
+• `set` **musicBrainzReleaseArtistId**(`value`): `void`
 
 Gets the MusicBrainz release artist ID of the media represented by the current instance.
 
 **`inheritdoc`** MUSICBRAINZ_ARTISTID item
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
------- | ------ |
-`value` | *string* |
+| Name | Type |
+| :------ | :------ |
+| `value` | `string` |
 
-**Returns:** *void*
+#### Returns
+
+`void`
 
 MusicBrainz ReleaseArtistID of the media represented by the current instance or
     `undefined` if no value is present
@@ -1015,30 +1139,34 @@ ___
 
 ### musicBrainzReleaseCountry
 
-• **musicBrainzReleaseCountry**(): *string*
+• `get` **musicBrainzReleaseCountry**(): `string`
 
 Gets the MusicBrainz release country of the media represented by the current instance.
 
 **`inheritdoc`** RELEASECOUNTRY item
 
-**Returns:** *string*
+#### Returns
+
+`string`
 
 MusicBrainz ReleaseCountry of the media represented by the current instance or
     `undefined` if no value is present
 
-• **musicBrainzReleaseCountry**(`value`: *string*): *void*
+• `set` **musicBrainzReleaseCountry**(`value`): `void`
 
 Gets the MusicBrainz release country of the media represented by the current instance.
 
 **`inheritdoc`** RELEASECOUNTRY item
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
------- | ------ |
-`value` | *string* |
+| Name | Type |
+| :------ | :------ |
+| `value` | `string` |
 
-**Returns:** *void*
+#### Returns
+
+`void`
 
 MusicBrainz ReleaseCountry of the media represented by the current instance or
     `undefined` if no value is present
@@ -1047,30 +1175,34 @@ ___
 
 ### musicBrainzReleaseGroupId
 
-• **musicBrainzReleaseGroupId**(): *string*
+• `get` **musicBrainzReleaseGroupId**(): `string`
 
 Gets the MusicBrainz release group ID of the media represented by the current instance.
 
 **`inheritdoc`** MUSICBRAINZ_RELEASEGROUPID item
 
-**Returns:** *string*
+#### Returns
+
+`string`
 
 MusicBrainz ReleaseGroupID of the media represented by the current instance or
     `undefined` if no value is present
 
-• **musicBrainzReleaseGroupId**(`value`: *string*): *void*
+• `set` **musicBrainzReleaseGroupId**(`value`): `void`
 
 Gets the MusicBrainz release group ID of the media represented by the current instance.
 
 **`inheritdoc`** MUSICBRAINZ_RELEASEGROUPID item
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
------- | ------ |
-`value` | *string* |
+| Name | Type |
+| :------ | :------ |
+| `value` | `string` |
 
-**Returns:** *void*
+#### Returns
+
+`void`
 
 MusicBrainz ReleaseGroupID of the media represented by the current instance or
     `undefined` if no value is present
@@ -1079,30 +1211,34 @@ ___
 
 ### musicBrainzReleaseId
 
-• **musicBrainzReleaseId**(): *string*
+• `get` **musicBrainzReleaseId**(): `string`
 
 Gets the MusicBrainz release ID of the media represented by the current instance.
 
 **`inheritdoc`** MUSICBRAINZ_ALBUMID item
 
-**Returns:** *string*
+#### Returns
+
+`string`
 
 MusicBrainz ReleaseID of the media represented by the current instance or
     `undefined` if no value is present
 
-• **musicBrainzReleaseId**(`value`: *string*): *void*
+• `set` **musicBrainzReleaseId**(`value`): `void`
 
 Gets the MusicBrainz release ID of the media represented by the current instance.
 
 **`inheritdoc`** MUSICBRAINZ_ALBUMID item
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
------- | ------ |
-`value` | *string* |
+| Name | Type |
+| :------ | :------ |
+| `value` | `string` |
 
-**Returns:** *void*
+#### Returns
+
+`void`
 
 MusicBrainz ReleaseID of the media represented by the current instance or
     `undefined` if no value is present
@@ -1111,30 +1247,34 @@ ___
 
 ### musicBrainzReleaseStatus
 
-• **musicBrainzReleaseStatus**(): *string*
+• `get` **musicBrainzReleaseStatus**(): `string`
 
 Gets the MusicBrainz release status of the media represented by the current instance.
 
 **`inheritdoc`** MUSICBRAINZ_ALBUMSTATUS item
 
-**Returns:** *string*
+#### Returns
+
+`string`
 
 MusicBrainz ReleaseStatus of the media represented by the current instance or
     `undefined` if no value is present
 
-• **musicBrainzReleaseStatus**(`value`: *string*): *void*
+• `set` **musicBrainzReleaseStatus**(`value`): `void`
 
 Gets the MusicBrainz release status of the media represented by the current instance.
 
 **`inheritdoc`** MUSICBRAINZ_ALBUMSTATUS item
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
------- | ------ |
-`value` | *string* |
+| Name | Type |
+| :------ | :------ |
+| `value` | `string` |
 
-**Returns:** *void*
+#### Returns
+
+`void`
 
 MusicBrainz ReleaseStatus of the media represented by the current instance or
     `undefined` if no value is present
@@ -1143,30 +1283,34 @@ ___
 
 ### musicBrainzReleaseType
 
-• **musicBrainzReleaseType**(): *string*
+• `get` **musicBrainzReleaseType**(): `string`
 
 Gets the MusicBrainz release type of the media represented by the current instance.
 
 **`inheritdoc`** MUSICBRAINZ_ALBUMTYPE item
 
-**Returns:** *string*
+#### Returns
+
+`string`
 
 MusicBrainz ReleaseType of the media represented by the current instance or
     `undefined` if no value is present
 
-• **musicBrainzReleaseType**(`value`: *string*): *void*
+• `set` **musicBrainzReleaseType**(`value`): `void`
 
 Gets the MusicBrainz release type of the media represented by the current instance.
 
 **`inheritdoc`** MUSICBRAINZ_ALBUMTYPE item
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
------- | ------ |
-`value` | *string* |
+| Name | Type |
+| :------ | :------ |
+| `value` | `string` |
 
-**Returns:** *void*
+#### Returns
+
+`void`
 
 MusicBrainz ReleaseType of the media represented by the current instance or
     `undefined` if no value is present
@@ -1175,32 +1319,36 @@ ___
 
 ### musicBrainzTrackId
 
-• **musicBrainzTrackId**(): *string*
+• `get` **musicBrainzTrackId**(): `string`
 
 Gets the MusicBrainz track ID of the media represented by the media represented by the
 current instance.
 
 **`inheritdoc`** MUSICBRAINZ_TRACKID item
 
-**Returns:** *string*
+#### Returns
+
+`string`
 
 MusicBrainz TrackID of the media represented by the current instance or `undefined`
     if no value is present
 
-• **musicBrainzTrackId**(`value`: *string*): *void*
+• `set` **musicBrainzTrackId**(`value`): `void`
 
 Gets the MusicBrainz track ID of the media represented by the media represented by the
 current instance.
 
 **`inheritdoc`** MUSICBRAINZ_TRACKID item
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
------- | ------ |
-`value` | *string* |
+| Name | Type |
+| :------ | :------ |
+| `value` | `string` |
 
-**Returns:** *void*
+#### Returns
+
+`void`
 
 MusicBrainz TrackID of the media represented by the current instance or `undefined`
     if no value is present
@@ -1209,30 +1357,34 @@ ___
 
 ### musicIpId
 
-• **musicIpId**(): *string*
+• `get` **musicIpId**(): `string`
 
 Gets the MusicIP PUID of the media represented by the current instance.
 
 **`inheritdoc`** MUSICIP_PUID item
 
-**Returns:** *string*
+#### Returns
+
+`string`
 
 MusicIP PUID of the media represented by the current instance or `undefined` if no
     value is present
 
-• **musicIpId**(`value`: *string*): *void*
+• `set` **musicIpId**(`value`): `void`
 
 Gets the MusicIP PUID of the media represented by the current instance.
 
 **`inheritdoc`** MUSICIP_PUID item
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
------- | ------ |
-`value` | *string* |
+| Name | Type |
+| :------ | :------ |
+| `value` | `string` |
 
-**Returns:** *void*
+#### Returns
+
+`void`
 
 MusicIP PUID of the media represented by the current instance or `undefined` if no
     value is present
@@ -1241,30 +1393,34 @@ ___
 
 ### performers
 
-• **performers**(): *string*[]
+• `get` **performers**(): `string`[]
 
 Gets the performers or artists who performed in the media described by the current instance.
 
 **`inheritdoc`** Artist item
 
-**Returns:** *string*[]
+#### Returns
+
+`string`[]
 
 Performers who performed in the media described by the current instance or an empty
     array if no value is present.
 
-• **performers**(`value`: *string*[]): *void*
+• `set` **performers**(`value`): `void`
 
 Gets the performers or artists who performed in the media described by the current instance.
 
 **`inheritdoc`** Artist item
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
------- | ------ |
-`value` | *string*[] |
+| Name | Type |
+| :------ | :------ |
+| `value` | `string`[] |
 
-**Returns:** *void*
+#### Returns
+
+`void`
 
 Performers who performed in the media described by the current instance or an empty
     array if no value is present.
@@ -1273,7 +1429,7 @@ ___
 
 ### performersRole
 
-• **performersRole**(): *string*[]
+• `get` **performersRole**(): `string`[]
 
 Gets the characters portrayed by an actor for a video or instruments played by a musician
 for music. This must match the [performers](apetag.md#performers) array (for each person, correspond one/more
@@ -1282,12 +1438,14 @@ example: "Bass; Backing Vocals; Vibraphone".
 
 **`inheritdoc`** PerformersRole item
 
-**Returns:** *string*[]
+#### Returns
+
+`string`[]
 
 Array containing the roles played by the performers in the media described by the
     current instance, or an empty array if no value is present.
 
-• **performersRole**(`value`: *string*[]): *void*
+• `set` **performersRole**(`value`): `void`
 
 Gets the characters portrayed by an actor for a video or instruments played by a musician
 for music. This must match the [performers](apetag.md#performers) array (for each person, correspond one/more
@@ -1296,13 +1454,15 @@ example: "Bass; Backing Vocals; Vibraphone".
 
 **`inheritdoc`** PerformersRole item
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
------- | ------ |
-`value` | *string*[] |
+| Name | Type |
+| :------ | :------ |
+| `value` | `string`[] |
 
-**Returns:** *void*
+#### Returns
+
+`void`
 
 Array containing the roles played by the performers in the media described by the
     current instance, or an empty array if no value is present.
@@ -1311,32 +1471,36 @@ ___
 
 ### performersSort
 
-• **performersSort**(): *string*[]
+• `get` **performersSort**(): `string`[]
 
 Gets the sortable names of the performers or artists who performed in the media described by
 the current instance.
 
 **`inheritdoc`** ArtistSort item
 
-**Returns:** *string*[]
+#### Returns
+
+`string`[]
 
 Sortable names for the performers who performed in the media described by the
     current instance, or an empty array if no value is present.
 
-• **performersSort**(`value`: *string*[]): *void*
+• `set` **performersSort**(`value`): `void`
 
 Gets the sortable names of the performers or artists who performed in the media described by
 the current instance.
 
 **`inheritdoc`** ArtistSort item
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
------- | ------ |
-`value` | *string*[] |
+| Name | Type |
+| :------ | :------ |
+| `value` | `string`[] |
 
-**Returns:** *void*
+#### Returns
+
+`void`
 
 Sortable names for the performers who performed in the media described by the
     current instance, or an empty array if no value is present.
@@ -1345,30 +1509,34 @@ ___
 
 ### pictures
 
-• **pictures**(): [*IPicture*](../interfaces/ipicture.md)[]
+• `get` **pictures**(): [`IPicture`](../interfaces/ipicture.md)[]
 
 Gets a collection of pictures associated with the media represented by the current instance.
 
 **`inheritdoc`** Cover Art items
 
-**Returns:** [*IPicture*](../interfaces/ipicture.md)[]
+#### Returns
+
+[`IPicture`](../interfaces/ipicture.md)[]
 
 Array containing a collection of pictures associated with the media represented by
     the current instance or an empty array if no pictures are present.
 
-• **pictures**(`value`: [*IPicture*](../interfaces/ipicture.md)[]): *void*
+• `set` **pictures**(`value`): `void`
 
 Gets a collection of pictures associated with the media represented by the current instance.
 
 **`inheritdoc`** Cover Art items
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
------- | ------ |
-`value` | [*IPicture*](../interfaces/ipicture.md)[] |
+| Name | Type |
+| :------ | :------ |
+| `value` | [`IPicture`](../interfaces/ipicture.md)[] |
 
-**Returns:** *void*
+#### Returns
+
+`void`
 
 Array containing a collection of pictures associated with the media represented by
     the current instance or an empty array if no pictures are present.
@@ -1377,25 +1545,29 @@ ___
 
 ### publisher
 
-• **publisher**(): *string*
+• `get` **publisher**(): `string`
 
 Gets the publisher of the track.
 
-**Returns:** *string*
+#### Returns
+
+`string`
 
 Publisher of the track or `undefined` if no value is set
 
-• **publisher**(`value`: *string*): *void*
+• `set` **publisher**(`value`): `void`
 
 Sets the publisher of the track.
 
-#### Parameters:
+#### Parameters
 
-Name | Type | Description |
------- | ------ | ------ |
-`value` | *string* | Publisher of the track or `undefined` if no value is set    |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `value` | `string` | Publisher of the track or `undefined` if no value is set |
 
-**Returns:** *void*
+#### Returns
+
+`void`
 
 Publisher of the track or `undefined` if no value is set
 
@@ -1403,25 +1575,29 @@ ___
 
 ### remixedBy
 
-• **remixedBy**(): *string*
+• `get` **remixedBy**(): `string`
 
 Gets the remixer of the track.
 
-**Returns:** *string*
+#### Returns
+
+`string`
 
 Remixer of the track or `undefined` if no value is set
 
-• **remixedBy**(`value`: *string*): *void*
+• `set` **remixedBy**(`value`): `void`
 
 Sets the remixer of the track.
 
-#### Parameters:
+#### Parameters
 
-Name | Type | Description |
------- | ------ | ------ |
-`value` | *string* | Remixer of the track or `undefined` if no value is set    |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `value` | `string` | Remixer of the track or `undefined` if no value is set |
 
-**Returns:** *void*
+#### Returns
+
+`void`
 
 Remixer of the track or `undefined` if no value is set
 
@@ -1429,29 +1605,33 @@ ___
 
 ### replayGainAlbumGain
 
-• **replayGainAlbumGain**(): *number*
+• `get` **replayGainAlbumGain**(): `number`
 
 Gets the ReplayGain album gain in dB.
 
 **`inheritdoc`** REPLAYGAIN_ALBUM_GAIN item
 
-**Returns:** *number*
+#### Returns
+
+`number`
 
 Album gain as per the ReplayGain specifications, in dB, or `NaN` if no value is set
 
-• **replayGainAlbumGain**(`value`: *number*): *void*
+• `set` **replayGainAlbumGain**(`value`): `void`
 
 Gets the ReplayGain album gain in dB.
 
 **`inheritdoc`** REPLAYGAIN_ALBUM_GAIN item
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
------- | ------ |
-`value` | *number* |
+| Name | Type |
+| :------ | :------ |
+| `value` | `number` |
 
-**Returns:** *void*
+#### Returns
+
+`void`
 
 Album gain as per the ReplayGain specifications, in dB, or `NaN` if no value is set
 
@@ -1459,29 +1639,33 @@ ___
 
 ### replayGainAlbumPeak
 
-• **replayGainAlbumPeak**(): *number*
+• `get` **replayGainAlbumPeak**(): `number`
 
 Gets the ReplayGain album peak sample.
 
 **`inheritdoc`** REPLAYGAIN_ALBUM_PEAK item
 
-**Returns:** *number*
+#### Returns
+
+`number`
 
 Album peak as per the ReplayGain specifications, or `NaN` if no value is set
 
-• **replayGainAlbumPeak**(`value`: *number*): *void*
+• `set` **replayGainAlbumPeak**(`value`): `void`
 
 Gets the ReplayGain album peak sample.
 
 **`inheritdoc`** REPLAYGAIN_ALBUM_PEAK item
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
------- | ------ |
-`value` | *number* |
+| Name | Type |
+| :------ | :------ |
+| `value` | `number` |
 
-**Returns:** *void*
+#### Returns
+
+`void`
 
 Album peak as per the ReplayGain specifications, or `NaN` if no value is set
 
@@ -1489,29 +1673,33 @@ ___
 
 ### replayGainTrackGain
 
-• **replayGainTrackGain**(): *number*
+• `get` **replayGainTrackGain**(): `number`
 
 Gets the ReplayGain track gain in dB.
 
 **`inheritdoc`** REPLAYGAIN_TRACK_GAIN item
 
-**Returns:** *number*
+#### Returns
+
+`number`
 
 Track gain as per ReplayGain specifications, in dB, or `NaN` if no value is set
 
-• **replayGainTrackGain**(`value`: *number*): *void*
+• `set` **replayGainTrackGain**(`value`): `void`
 
 Gets the ReplayGain track gain in dB.
 
 **`inheritdoc`** REPLAYGAIN_TRACK_GAIN item
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
------- | ------ |
-`value` | *number* |
+| Name | Type |
+| :------ | :------ |
+| `value` | `number` |
 
-**Returns:** *void*
+#### Returns
+
+`void`
 
 Track gain as per ReplayGain specifications, in dB, or `NaN` if no value is set
 
@@ -1519,29 +1707,33 @@ ___
 
 ### replayGainTrackPeak
 
-• **replayGainTrackPeak**(): *number*
+• `get` **replayGainTrackPeak**(): `number`
 
 Gets the ReplayGain track peak sample.
 
 **`inheritdoc`** REPLAYGAIN_TRACK_PEAK item
 
-**Returns:** *number*
+#### Returns
+
+`number`
 
 Track peak as per the ReplayGain specifications, or `NaN` if no value is set
 
-• **replayGainTrackPeak**(`value`: *number*): *void*
+• `set` **replayGainTrackPeak**(`value`): `void`
 
 Gets the ReplayGain track peak sample.
 
 **`inheritdoc`** REPLAYGAIN_TRACK_PEAK item
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
------- | ------ |
-`value` | *number* |
+| Name | Type |
+| :------ | :------ |
+| `value` | `number` |
 
-**Returns:** *void*
+#### Returns
+
+`void`
 
 Track peak as per the ReplayGain specifications, or `NaN` if no value is set
 
@@ -1549,30 +1741,34 @@ ___
 
 ### subtitle
 
-• **subtitle**(): *string*
+• `get` **subtitle**(): `string`
 
 Gets a description, one-line. It represents the tagline of the vide/music.
 
 **`inheritdoc`** Subtitle item
 
-**Returns:** *string*
+#### Returns
+
+`string`
 
 Subtitle of the media represented by the current instance or `undefined` if no
     value is present
 
-• **subtitle**(`value`: *string*): *void*
+• `set` **subtitle**(`value`): `void`
 
 Gets a description, one-line. It represents the tagline of the vide/music.
 
 **`inheritdoc`** Subtitle
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
------- | ------ |
-`value` | *string* |
+| Name | Type |
+| :------ | :------ |
+| `value` | `string` |
 
-**Returns:** *void*
+#### Returns
+
+`void`
 
 Subtitle of the media represented by the current instance or `undefined` if no
     value is present
@@ -1581,43 +1777,49 @@ ___
 
 ### tagTypes
 
-• **tagTypes**(): [*TagTypes*](../enums/tagtypes.md)
+• `get` **tagTypes**(): [`TagTypes`](../enums/tagtypes.md)
 
 Gets the tag types contained in the current instance. A bit wise combined [TagTypes](../enums/tagtypes.md)
 containing the tag types contained in the current instance.
 
-**`inheritdoc`** 
+**`inheritdoc`**
 
-**Returns:** [*TagTypes*](../enums/tagtypes.md)
+#### Returns
+
+[`TagTypes`](../enums/tagtypes.md)
 
 ___
 
 ### title
 
-• **title**(): *string*
+• `get` **title**(): `string`
 
 Gets the title for the media described by the current instance.
 
 **`inheritdoc`** Title item
 
-**Returns:** *string*
+#### Returns
+
+`string`
 
 Title of the media described by the current instance or `undefined` if no value is
     present.
 
-• **title**(`value`: *string*): *void*
+• `set` **title**(`value`): `void`
 
 Gets the title for the media described by the current instance.
 
 **`inheritdoc`** Title item
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
------- | ------ |
-`value` | *string* |
+| Name | Type |
+| :------ | :------ |
+| `value` | `string` |
 
-**Returns:** *void*
+#### Returns
+
+`void`
 
 Title of the media described by the current instance or `undefined` if no value is
     present.
@@ -1626,30 +1828,34 @@ ___
 
 ### titleSort
 
-• **titleSort**(): *string*
+• `get` **titleSort**(): `string`
 
 Gets the sortable name for the title of the media described by the current instance.
 
 **`inheritdoc`** TitleSort item
 
-**Returns:** *string*
+#### Returns
+
+`string`
 
 Sortable name of the media described by the current instance or `undefined` if no
     value is present
 
-• **titleSort**(`value`: *string*): *void*
+• `set` **titleSort**(`value`): `void`
 
 Gets the sortable name for the title of the media described by the current instance.
 
 **`inheritdoc`** TitleSort item
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
------- | ------ |
-`value` | *string* |
+| Name | Type |
+| :------ | :------ |
+| `value` | `string` |
 
-**Returns:** *void*
+#### Returns
+
+`void`
 
 Sortable name of the media described by the current instance or `undefined` if no
     value is present
@@ -1658,32 +1864,36 @@ ___
 
 ### track
 
-• **track**(): *number*
+• `get` **track**(): `number`
 
 Gets the position of the media represented by the current instance in its containing album
 or season (for a series).
 
 **`inheritdoc`** Track item numerator
 
-**Returns:** *number*
+#### Returns
+
+`number`
 
 Position of the media represented by the current instance in its containing album
     or `0` if not specified.
 
-• **track**(`value`: *number*): *void*
+• `set` **track**(`value`): `void`
 
 Gets the position of the media represented by the current instance in its containing album
 or season (for a series).
 
 **`inheritdoc`** Track item numerator
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
------- | ------ |
-`value` | *number* |
+| Name | Type |
+| :------ | :------ |
+| `value` | `number` |
 
-**Returns:** *void*
+#### Returns
+
+`void`
 
 Position of the media represented by the current instance in its containing album
     or `0` if not specified.
@@ -1692,32 +1902,36 @@ ___
 
 ### trackCount
 
-• **trackCount**(): *number*
+• `get` **trackCount**(): `number`
 
 Gets the number of tracks in the album or the number of episodes in a series of the media
 represented by the current instance.
 
 **`inheritdoc`** Track item denominator
 
-**Returns:** *number*
+#### Returns
+
+`number`
 
 Number of tracks in the album or number of episodes in a series of the media
     represented by the current instance or `0` if not specified.
 
-• **trackCount**(`value`: *number*): *void*
+• `set` **trackCount**(`value`): `void`
 
 Gets the number of tracks in the album or the number of episodes in a series of the media
 represented by the current instance.
 
 **`inheritdoc`** Track item denominator
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
------- | ------ |
-`value` | *number* |
+| Name | Type |
+| :------ | :------ |
+| `value` | `number` |
 
-**Returns:** *void*
+#### Returns
+
+`void`
 
 Number of tracks in the album or number of episodes in a series of the media
     represented by the current instance or `0` if not specified.
@@ -1726,30 +1940,34 @@ ___
 
 ### year
 
-• **year**(): *number*
+• `get` **year**(): `number`
 
 Gets the year that the media represented by the current instance was recorded.
 
 **`inheritdoc`** Year item
 
-**Returns:** *number*
+#### Returns
+
+`number`
 
 Year that the media represented by the current instance was created or `0` if no
     value is present.
 
-• **year**(`value`: *number*): *void*
+• `set` **year**(`value`): `void`
 
 Gets the year that the media represented by the current instance was recorded.
 
 **`inheritdoc`** Year item
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
------- | ------ |
-`value` | *number* |
+| Name | Type |
+| :------ | :------ |
+| `value` | `number` |
 
-**Returns:** *void*
+#### Returns
+
+`void`
 
 Year that the media represented by the current instance was created or `0` if no
     value is present.
@@ -1758,81 +1976,105 @@ Year that the media represented by the current instance was created or `0` if no
 
 ### appendStringValue
 
-▸ **appendStringValue**(`key`: *string*, `value`: *string*): *void*
+▸ **appendStringValue**(`key`, `value`): `void`
 
 Adds a single value to the contents of an item. Creates a new item if one does not exist.
 
-#### Parameters:
+#### Parameters
 
-Name | Type | Description |
------- | ------ | ------ |
-`key` | *string* | Key to use to lookup to item to add `value` to   |
-`value` | *string* | Values to add to item identified by `key`    |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `key` | `string` | Key to use to lookup to item to add `value` to |
+| `value` | `string` | Values to add to item identified by `key` |
 
-**Returns:** *void*
+#### Returns
+
+`void`
 
 ___
 
 ### appendStringValues
 
-▸ **appendStringValues**(`key`: *string*, `values`: *string*[]): *void*
+▸ **appendStringValues**(`key`, `values`): `void`
 
 Adds a lists of strings to the values stored in a specified item. Creates a new item if one
 does not already exist.
 
-#### Parameters:
+#### Parameters
 
-Name | Type | Description |
------- | ------ | ------ |
-`key` | *string* | Key to use to lookup the item   |
-`values` | *string*[] | Values to add to the item    |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `key` | `string` | Key to use to lookup the item |
+| `values` | `string`[] | Values to add to the item |
 
-**Returns:** *void*
+#### Returns
+
+`void`
 
 ___
 
 ### clear
 
-▸ **clear**(): *void*
+▸ **clear**(): `void`
 
-**`inheritdoc`** 
+Clears all values stored in the current instance.
 
-**Returns:** *void*
+**`remarks`** The clearing procedure is format specific and should clear all values.
 
-Overrides: [Tag](tag.md)
+#### Returns
+
+`void`
+
+#### Overrides
+
+[Tag](tag.md).[clear](tag.md#clear)
 
 ___
 
 ### copyTo
 
-▸ **copyTo**(`target`: [*Tag*](tag.md), `overwrite`: *boolean*): *void*
+▸ **copyTo**(`target`, `overwrite`): `void`
 
-#### Parameters:
+Copies the values from the current instance to another [Tag](tag.md), optionally overwriting
+    existing values.
 
-Name | Type |
------- | ------ |
-`target` | [*Tag*](tag.md) |
-`overwrite` | *boolean* |
+**`remarks`** This method only copies the most basic values when copying between different tag
+    formats. However, if `target` is of the same type as the current instance,
+    more advanced copying may be done. For example if both `this` and `target` are
+    [Id3v2Tag](id3v2tag.md), all frames will be copied to the target.
 
-**Returns:** *void*
+#### Parameters
 
-Overrides: [Tag](tag.md)
+| Name | Type |
+| :------ | :------ |
+| `target` | [`Tag`](tag.md) |
+| `overwrite` | `boolean` |
+
+#### Returns
+
+`void`
+
+#### Overrides
+
+[Tag](tag.md).[copyTo](tag.md#copyto)
 
 ___
 
 ### getItem
 
-▸ **getItem**(`key`: *string*): *ApeTagItem*
+▸ **getItem**(`key`): `ApeTagItem`
 
 Gets an item from the current instance identified by `key`.
 
-#### Parameters:
+#### Parameters
 
-Name | Type | Description |
------- | ------ | ------ |
-`key` | *string* | Identifier for the item to get   |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `key` | `string` | Identifier for the item to get |
 
-**Returns:** *ApeTagItem*
+#### Returns
+
+`ApeTagItem`
 
 ApeTagItem Item specified by `key` if it exists, undefined is
     returned otherwise
@@ -1841,17 +2083,19 @@ ___
 
 ### hasItem
 
-▸ **hasItem**(`key`: *string*): *boolean*
+▸ **hasItem**(`key`): `boolean`
 
 Determines if any items with the specified `key` exist in the current instance.
 
-#### Parameters:
+#### Parameters
 
-Name | Type | Description |
------- | ------ | ------ |
-`key` | *string* | Identifier for looking up a matching item   |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `key` | `string` | Identifier for looking up a matching item |
 
-**Returns:** *boolean*
+#### Returns
+
+`boolean`
 
 boolean `true` if an item with the specified key exists, `false` otherwise
 
@@ -1859,27 +2103,31 @@ ___
 
 ### removeItem
 
-▸ **removeItem**(`key`: *string*): *void*
+▸ **removeItem**(`key`): `void`
 
 Removes all items from the current instance with the specified `key`.
 
-#### Parameters:
+#### Parameters
 
-Name | Type | Description |
------- | ------ | ------ |
-`key` | *string* | Identifier of the items to remove.    |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `key` | `string` | Identifier of the items to remove. |
 
-**Returns:** *void*
+#### Returns
+
+`void`
 
 ___
 
 ### render
 
-▸ **render**(): [*ByteVector*](bytevector.md)
+▸ **render**(): [`ByteVector`](bytevector.md)
 
 Renders the current instance as a raw APEv2 tag.
 
-**Returns:** [*ByteVector*](bytevector.md)
+#### Returns
+
+[`ByteVector`](bytevector.md)
 
 ByteVector Bytes that represent the current instance
 
@@ -1887,37 +2135,43 @@ ___
 
 ### setInfoTag
 
-▸ **setInfoTag**(): *void*
+▸ **setInfoTag**(): `void`
 
 Set the tags that represent the tagger software (node-taglib-sharp) itself.
 
 **`remarks`** This is typically a method to call just before saving a tag.
 
-**Returns:** *void*
+#### Returns
 
-Inherited from: [Tag](tag.md)
+`void`
+
+#### Inherited from
+
+[Tag](tag.md).[setInfoTag](tag.md#setinfotag)
 
 ___
 
 ### setItem
 
-▸ **setItem**(`item`: *ApeTagItem*): *void*
+▸ **setItem**(`item`): `void`
 
 Adds an item to the current instance, replacing an existing one with the same key.
 
-#### Parameters:
+#### Parameters
 
-Name | Type | Description |
------- | ------ | ------ |
-`item` | *ApeTagItem* | Item to add to the current instance    |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `item` | `ApeTagItem` | Item to add to the current instance |
 
-**Returns:** *void*
+#### Returns
+
+`void`
 
 ___
 
 ### setNumericValue
 
-▸ **setNumericValue**(`key`: *string*, `numerator`: *number*, `denominator`: *number*): *void*
+▸ **setNumericValue**(`key`, `numerator`, `denominator`): `void`
 
 Stores a number in a specified item. If both `numerator` and
 `denominator` are provided the item will be set to `numerator/denominator`. If
@@ -1925,157 +2179,181 @@ neither `numerator` nor `denominator` are provided, the item will be
 removed from this tag. A new item is created if one with the specified `key` does
 not exist.
 
-#### Parameters:
+#### Parameters
 
-Name | Type | Description |
------- | ------ | ------ |
-`key` | *string* | Identifier for the item to set the item   |
-`numerator` | *number* | Whole number of top half of the fraction if `denominator` is     provided   |
-`denominator` | *number* | Bottom half of the fraction to store. Can be `undefined` if only     `numerator` is needed.    |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `key` | `string` | Identifier for the item to set the item |
+| `numerator` | `number` | Whole number of top half of the fraction if `denominator` is     provided |
+| `denominator` | `number` | Bottom half of the fraction to store. Can be `undefined` if only     `numerator` is needed. |
 
-**Returns:** *void*
+#### Returns
+
+`void`
 
 ___
 
 ### setStringValue
 
-▸ **setStringValue**(`key`: *string*, `value`: *string*): *void*
+▸ **setStringValue**(`key`, `value`): `void`
 
 Stores a string in the item specified by `key`. This will replace the contents of
 the specified item. If `value` is falsy, the item will be removed.
 
-#### Parameters:
+#### Parameters
 
-Name | Type | Description |
------- | ------ | ------ |
-`key` | *string* | Item to set the value of   |
-`value` | *string* | String to store in the item. If falsy, the specified item will be removed    |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `key` | `string` | Item to set the value of |
+| `value` | `string` | String to store in the item. If falsy, the specified item will be removed |
 
-**Returns:** *void*
+#### Returns
+
+`void`
 
 ___
 
 ### setStringValues
 
-▸ **setStringValues**(`key`: *string*, `values`: *string*[]): *void*
+▸ **setStringValues**(`key`, `values`): `void`
 
 Stores a list of strings in the item specified by `key`. This will replace the
 contents of the specified item. If `value` is falsy or empty, the item will be removed
 
-#### Parameters:
+#### Parameters
 
-Name | Type | Description |
------- | ------ | ------ |
-`key` | *string* | Item to set the value of   |
-`values` | *string*[] | String to store in the item. If falsy or empty, the specified item will be     removed    |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `key` | `string` | Item to set the value of |
+| `values` | `string`[] | String to store in the item. If falsy or empty, the specified item will be     removed |
 
-**Returns:** *void*
+#### Returns
+
+`void`
 
 ___
 
 ### firstInGroup
 
-▸ `Protected` `Static`**firstInGroup**(`group`: *string*[]): *string*
+▸ `Static` `Protected` **firstInGroup**(`group`): `string`
 
 Gets the first string in an array.
 
-#### Parameters:
+#### Parameters
 
-Name | Type | Description |
------- | ------ | ------ |
-`group` | *string*[] | Array of strings to get the first string from.   |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `group` | `string`[] | Array of strings to get the first string from. |
 
-**Returns:** *string*
+#### Returns
+
+`string`
 
 First string contained in `group` or `undefined` if the array is
     `undefined` or empty
 
-Inherited from: [Tag](tag.md)
+#### Inherited from
+
+[Tag](tag.md).[firstInGroup](tag.md#firstingroup)
 
 ___
 
 ### fromData
 
-▸ `Static`**fromData**(`data`: [*ByteVector*](bytevector.md)): [*ApeTag*](apetag.md)
+▸ `Static` **fromData**(`data`): [`ApeTag`](apetag.md)
 
 Constructs and initializes a new instance by reading the contents of a raw tag in a
 specified [ByteVector](bytevector.md) object.
 
-#### Parameters:
+#### Parameters
 
-Name | Type | Description |
------- | ------ | ------ |
-`data` | [*ByteVector*](bytevector.md) | Object containing the raw tag    |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `data` | [`ByteVector`](bytevector.md) | Object containing the raw tag |
 
-**Returns:** [*ApeTag*](apetag.md)
+#### Returns
+
+[`ApeTag`](apetag.md)
 
 ___
 
 ### fromEmpty
 
-▸ `Static`**fromEmpty**(): [*ApeTag*](apetag.md)
+▸ `Static` **fromEmpty**(): [`ApeTag`](apetag.md)
 
 Constructs an empty APEv2 tag.
 
-**Returns:** [*ApeTag*](apetag.md)
+#### Returns
+
+[`ApeTag`](apetag.md)
 
 ___
 
 ### fromFile
 
-▸ `Static`**fromFile**(`file`: [*File*](file.md), `position`: *number*): [*ApeTag*](apetag.md)
+▸ `Static` **fromFile**(`file`, `position`): [`ApeTag`](apetag.md)
 
 Constructs a new instance by reading the contents from a specified position in a specified
 file.
 
-#### Parameters:
+#### Parameters
 
-Name | Type | Description |
------- | ------ | ------ |
-`file` | [*File*](file.md) | File to read the tag from   |
-`position` | *number* | Position where the tag starts    |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `file` | [`File`](file.md) | File to read the tag from |
+| `position` | `number` | Position where the tag starts |
 
-**Returns:** [*ApeTag*](apetag.md)
+#### Returns
+
+[`ApeTag`](apetag.md)
 
 ___
 
 ### isFalsyOrLikeEmpty
 
-▸ `Protected` `Static`**isFalsyOrLikeEmpty**(`value`: *string* \| *string*[]): *boolean*
+▸ `Static` `Protected` **isFalsyOrLikeEmpty**(`value`): `boolean`
 
 Checks if a value is falsy or empty.
 
-#### Parameters:
+#### Parameters
 
-Name | Type | Description |
------- | ------ | ------ |
-`value` | *string* \| *string*[] | Object to check   |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `value` | `string` \| `string`[] | Object to check |
 
-**Returns:** *boolean*
+#### Returns
+
+`boolean`
 
 If `value` is a string, `true` is returned if the value is falsy or all
     whitespace, `false` is returned otherwise. If `value` is an array of strings,
     the array must be falsy or all elements must be falsy or whitespace to return `true`.
 
-Inherited from: [Tag](tag.md)
+#### Inherited from
+
+[Tag](tag.md).[isFalsyOrLikeEmpty](tag.md#isfalsyorlikeempty)
 
 ___
 
 ### joinGroup
 
-▸ `Protected` `Static`**joinGroup**(`group`: *string*[]): *string*
+▸ `Static` `Protected` **joinGroup**(`group`): `string`
 
 Joins an array of string into a single, semicolon and space separated string.
 
-#### Parameters:
+#### Parameters
 
-Name | Type | Description |
------- | ------ | ------ |
-`group` | *string*[] | Array of string to join   |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `group` | `string`[] | Array of string to join |
 
-**Returns:** *string*
+#### Returns
+
+`string`
 
 A semicolon and space separated string containing the values from `group`
     or undefined if the array is `undefined` or empty.
 
-Inherited from: [Tag](tag.md)
+#### Inherited from
+
+[Tag](tag.md).[joinGroup](tag.md#joingroup)

@@ -4,13 +4,9 @@
 
 This class implements [IPicture](../interfaces/ipicture.md) and provides a mechanism for loading pictures from files.
 
-## Hierarchy
-
-* **Picture**
-
 ## Implements
 
-* [*IPicture*](../interfaces/ipicture.md)
+- [`IPicture`](../interfaces/ipicture.md)
 
 ## Table of contents
 
@@ -36,139 +32,159 @@ This class implements [IPicture](../interfaces/ipicture.md) and provides a mecha
 
 ### data
 
-• **data**: [*ByteVector*](bytevector.md)
+• **data**: [`ByteVector`](bytevector.md)
 
 Gets and sets the picture data stored in the current instance.
 
-Implementation of: [IPicture](../interfaces/ipicture.md).[data](../interfaces/ipicture.md#data)
+#### Implementation of
+
+[IPicture](../interfaces/ipicture.md).[data](../interfaces/ipicture.md#data)
 
 ___
 
 ### description
 
-• **description**: *string*
+• **description**: `string`
 
 Gets and sets a description of the picture stored in the current instance. Optional.
 
-Implementation of: [IPicture](../interfaces/ipicture.md).[description](../interfaces/ipicture.md#description)
+#### Implementation of
+
+[IPicture](../interfaces/ipicture.md).[description](../interfaces/ipicture.md#description)
 
 ___
 
 ### filename
 
-• **filename**: *string*
+• **filename**: `string`
 
 Gets and sets a filename of the picture stored in the current instance. Optional.
 
-Implementation of: [IPicture](../interfaces/ipicture.md).[filename](../interfaces/ipicture.md#filename)
+#### Implementation of
+
+[IPicture](../interfaces/ipicture.md).[filename](../interfaces/ipicture.md#filename)
 
 ___
 
 ### mimeType
 
-• **mimeType**: *string*
+• **mimeType**: `string`
 
 Gets and sets the mime-type of the picture data stored in the current instance.
 
-Implementation of: [IPicture](../interfaces/ipicture.md).[mimeType](../interfaces/ipicture.md#mimetype)
+#### Implementation of
+
+[IPicture](../interfaces/ipicture.md).[mimeType](../interfaces/ipicture.md#mimetype)
 
 ___
 
 ### type
 
-• **type**: [*PictureType*](../enums/picturetype.md)
+• **type**: [`PictureType`](../enums/picturetype.md)
 
 Gets and sets the type of the content visible in the picture stored in the current instance.
 
-Implementation of: [IPicture](../interfaces/ipicture.md).[type](../interfaces/ipicture.md#type)
+#### Implementation of
+
+[IPicture](../interfaces/ipicture.md).[type](../interfaces/ipicture.md#type)
 
 ## Methods
 
 ### fromData
 
-▸ `Static`**fromData**(`data`: [*ByteVector*](bytevector.md)): [*Picture*](picture.md)
+▸ `Static` **fromData**(`data`): [`Picture`](picture.md)
 
 Constructs and initializes a new instance from the data provided. The data is processed to
 discover the type of the picture.
 
-#### Parameters:
+#### Parameters
 
-Name | Type | Description |
------- | ------ | ------ |
-`data` | [*ByteVector*](bytevector.md) | Raw bytes of the picture to store in the instance. Cannot be falsey    |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `data` | [`ByteVector`](bytevector.md) | Raw bytes of the picture to store in the instance. Cannot be falsey |
 
-**Returns:** [*Picture*](picture.md)
+#### Returns
+
+[`Picture`](picture.md)
 
 ___
 
 ### fromFileAbstraction
 
-▸ `Static`**fromFileAbstraction**(`abstraction`: IFileAbstraction): [*Picture*](picture.md)
+▸ `Static` **fromFileAbstraction**(`abstraction`): [`Picture`](picture.md)
 
 Constructs and initializes a new instance from a file abstraction. The description and type
 of the file are determined by the name of the abstraction.
 
-#### Parameters:
+#### Parameters
 
-Name | Type | Description |
------- | ------ | ------ |
-`abstraction` | IFileAbstraction | File abstraction to load the picture from.    |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `abstraction` | `IFileAbstraction` | File abstraction to load the picture from. |
 
-**Returns:** [*Picture*](picture.md)
+#### Returns
+
+[`Picture`](picture.md)
 
 ___
 
 ### fromFullData
 
-▸ `Static`**fromFullData**(`data`: [*ByteVector*](bytevector.md), `type`: [*PictureType*](../enums/picturetype.md), `mimeType`: *string*, `description`: *string*): [*Picture*](picture.md)
+▸ `Static` **fromFullData**(`data`, `type`, `mimeType`, `description`): [`Picture`](picture.md)
 
 Constructs a new instance with the data provided. No processing of the data is done.
 
-#### Parameters:
+#### Parameters
 
-Name | Type | Description |
------- | ------ | ------ |
-`data` | [*ByteVector*](bytevector.md) | Raw bytes of the picture to store in the instance. Cannot be falsey   |
-`type` | [*PictureType*](../enums/picturetype.md) | Type of the picture. Cannot be null or undefined   |
-`mimeType` | *string* | MimeType of the picture. Cannot be falsey   |
-`description` | *string* | Description of the picture. Cannot be null or undefined    |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `data` | [`ByteVector`](bytevector.md) | Raw bytes of the picture to store in the instance. Cannot be falsey |
+| `type` | [`PictureType`](../enums/picturetype.md) | Type of the picture. Cannot be null or undefined |
+| `mimeType` | `string` | MimeType of the picture. Cannot be falsey |
+| `description` | `string` | Description of the picture. Cannot be null or undefined |
 
-**Returns:** [*Picture*](picture.md)
+#### Returns
+
+[`Picture`](picture.md)
 
 ___
 
 ### fromPath
 
-▸ `Static`**fromPath**(`filePath`: *string*): [*Picture*](picture.md)
+▸ `Static` **fromPath**(`filePath`): [`Picture`](picture.md)
 
 Constructs and initializes a new instance from a file located at the provided path. The type
 and description of the picture are determined by the extension of the file. The file is
 loaded completely.
 
-#### Parameters:
+#### Parameters
 
-Name | Type | Description |
------- | ------ | ------ |
-`filePath` | *string* | Path to the file to use to use for the file    |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `filePath` | `string` | Path to the file to use to use for the file |
 
-**Returns:** [*Picture*](picture.md)
+#### Returns
+
+[`Picture`](picture.md)
 
 ___
 
 ### getExtensionFromData
 
-▸ `Static`**getExtensionFromData**(`data`: [*ByteVector*](bytevector.md)): *string*
+▸ `Static` **getExtensionFromData**(`data`): `string`
 
 Retrieve a mimetype from raw file data by reading the first few bytes of the file. Less
 accurate than [getExtensionFromMimeType](picture.md#getextensionfrommimetype) since this is limited to image file types.
 
-#### Parameters:
+#### Parameters
 
-Name | Type | Description |
------- | ------ | ------ |
-`data` | [*ByteVector*](bytevector.md) | Bytes of the file to read to identify the extension   |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `data` | [`ByteVector`](bytevector.md) | Bytes of the file to read to identify the extension |
 
-**Returns:** *string*
+#### Returns
+
+`string`
 
 string Extension of the file with dot at the beginning based on the first few bytes
     of the data. If the extension cannot be determined, `undefined` is returned
@@ -177,17 +193,19 @@ ___
 
 ### getExtensionFromMimeType
 
-▸ `Static`**getExtensionFromMimeType**(`mime`: *string*): *string*
+▸ `Static` **getExtensionFromMimeType**(`mime`): `string`
 
 Gets the file extension for a specific mimetype.
 
-#### Parameters:
+#### Parameters
 
-Name | Type | Description |
------- | ------ | ------ |
-`mime` | *string* | Mimetype to lookup the extension for   |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `mime` | `string` | Mimetype to lookup the extension for |
 
-**Returns:** *string*
+#### Returns
+
+`string`
 
 string Extension of the file based on the mimetype with a dot at the beginning. If
     the extension cannot be determined, `undefined` is returned
@@ -196,18 +214,20 @@ ___
 
 ### getMimeTypeFromFilename
 
-▸ `Static`**getMimeTypeFromFilename**(`name`: *string*): *string*
+▸ `Static` **getMimeTypeFromFilename**(`name`): `string`
 
 Gets the mimetype of a file based on its extension. If the mimetype cannot be determined, it
 is assumed to be a basic binary file.
 
-#### Parameters:
+#### Parameters
 
-Name | Type | Description |
------- | ------ | ------ |
-`name` | *string* | Filename with extension or just the extension of the file   |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `name` | `string` | Filename with extension or just the extension of the file |
 
-**Returns:** *string*
+#### Returns
+
+`string`
 
 string Mimetype of the file based on the extension. If mimetype cannot be
     determined, application/octet-stream is returned.

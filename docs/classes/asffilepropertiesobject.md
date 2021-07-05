@@ -8,9 +8,9 @@ found within the Data object.
 
 ## Hierarchy
 
-* *BaseObject*
+- `BaseObject`
 
-  ↳ **AsfFilePropertiesObject**
+  ↳ **`AsfFilePropertiesObject`**
 
 ## Table of contents
 
@@ -43,48 +43,56 @@ found within the Data object.
 
 ### creationDate
 
-• **creationDate**(): Date
+• `get` **creationDate**(): `Date`
 
 Gets the creation date of the file described by the current instance.
 
-**Returns:** Date
+#### Returns
+
+`Date`
 
 ___
 
 ### dataPacketsCount
 
-• **dataPacketsCount**(): *bigint*
+• `get` **dataPacketsCount**(): `bigint`
 
 Gets the number of packets in the data section of the file represented by the current
 instance.
 
-**Returns:** *bigint*
+#### Returns
+
+`bigint`
 
 ___
 
 ### fileId
 
-• **fileId**(): *default*
+• `get` **fileId**(): `default`
 
 Gets the GUID for the file described by the current instance.
 
-**Returns:** *default*
+#### Returns
+
+`default`
 
 ___
 
 ### fileSize
 
-• **fileSize**(): *bigint*
+• `get` **fileSize**(): `bigint`
 
 Gets the total size of the file described by the current instance in bytes.
 
-**Returns:** *bigint*
+#### Returns
+
+`bigint`
 
 ___
 
 ### flags
 
-• **flags**(): *number*
+• `get` **flags**(): `number`
 
 Gets whether the file described by the current instance is broadcast or seekable.
 
@@ -104,176 +112,222 @@ Gets whether the file described by the current instance is broadcast or seekable
       size. It can also be seekable if the file has an audio stream and a video stream with
       a matching simple index object.
 
-**Returns:** *number*
+#### Returns
+
+`number`
 
 ___
 
 ### guid
 
-• **guid**(): *default*
+• `get` **guid**(): `default`
 
 Gets the GUID that identifies the current instance.
 
-**Returns:** *default*
+#### Returns
+
+`default`
 
 ___
 
 ### maximumBitrate
 
-• **maximumBitrate**(): *number*
+• `get` **maximumBitrate**(): `number`
 
 Gets the maximum instantaneous bit rate, in bits per second, for the file described by the
 current instance.
 
-**Returns:** *number*
+#### Returns
+
+`number`
 
 ___
 
 ### maximumDataPacketSize
 
-• **maximumDataPacketSize**(): *number*
+• `get` **maximumDataPacketSize**(): `number`
 
 Gets the maximum packet size, in bytes, for the file described by the current instance.
 
-**Returns:** *number*
+#### Returns
+
+`number`
 
 ___
 
 ### minimumDataPacketSize
 
-• **minimumDataPacketSize**(): *number*
+• `get` **minimumDataPacketSize**(): `number`
 
 Gets the minimum packet size, in bytes, for the file described by the current instance.
 
-**Returns:** *number*
+#### Returns
+
+`number`
 
 ___
 
 ### objectType
 
-• **objectType**(): ObjectType
+• `get` **objectType**(): `ObjectType`
 
-**`inheritdoc`** 
+**`inheritdoc`**
 
-**Returns:** ObjectType
+#### Returns
+
+`ObjectType`
 
 ___
 
 ### originalSize
 
-• **originalSize**(): *number*
+• `get` **originalSize**(): `number`
 
 Gets the original size of the current instance.
 
-**Returns:** *number*
+#### Returns
+
+`number`
 
 ___
 
 ### playDurationMilliseconds
 
-• **playDurationMilliseconds**(): *number*
+• `get` **playDurationMilliseconds**(): `number`
 
 Get the time needed to play the file described by the current instance in milliseconds.
 
-**Returns:** *number*
+#### Returns
+
+`number`
 
 ___
 
 ### prerollMilliseconds
 
-• **prerollMilliseconds**(): *number*
+• `get` **prerollMilliseconds**(): `number`
 
 Gets the amount of time, in milliseconds, to buffer data before playing the file described
 by the current instance.
 
-**Returns:** *number*
+#### Returns
+
+`number`
 
 ___
 
 ### sendDurationMilliseconds
 
-• **sendDurationMilliseconds**(): *number*
+• `get` **sendDurationMilliseconds**(): `number`
 
 Get the time needed to send the file described by the current instance in milliseconds. A
 packet's "send time" is the time when the packet should be delivered over the network, it is
 not the presentation of the packet.
 
-**Returns:** *number*
+#### Returns
+
+`number`
 
 ## Methods
 
 ### initializeFromFile
 
-▸ `Protected`**initializeFromFile**(`file`: [*File*](file.md), `position`: *number*): *void*
+▸ `Protected` **initializeFromFile**(`file`, `position`): `void`
 
 Initializes a new instance by reading the contents from a specified position in a specified
 file.
 
-#### Parameters:
+#### Parameters
 
-Name | Type | Description |
------- | ------ | ------ |
-`file` | [*File*](file.md) | File which contains the details of the new instance to create   |
-`position` | *number* | Position in `file` where the object begins   |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `file` | [`File`](file.md) | File which contains the details of the new instance to create |
+| `position` | `number` | Position in `file` where the object begins |
 
-**Returns:** *void*
+#### Returns
+
+`void`
+
+#### Inherited from
+
+BaseObject.initializeFromFile
 
 ___
 
 ### initializeFromGuid
 
-▸ `Protected`**initializeFromGuid**(`guid`: *default*): *void*
+▸ `Protected` **initializeFromGuid**(`guid`): `void`
 
 Initializes a new instance with a specified GUID.
 
-#### Parameters:
+#### Parameters
 
-Name | Type | Description |
------- | ------ | ------ |
-`guid` | *default* | GUID to use for the new instance.   |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `guid` | `default` | GUID to use for the new instance. |
 
-**Returns:** *void*
+#### Returns
+
+`void`
+
+#### Inherited from
+
+BaseObject.initializeFromGuid
 
 ___
 
 ### render
 
-▸ **render**(): [*ByteVector*](bytevector.md)
+▸ **render**(): [`ByteVector`](bytevector.md)
 
-**`inheritdoc`** 
+**`inheritdoc`**
 
-**Returns:** [*ByteVector*](bytevector.md)
+#### Returns
+
+[`ByteVector`](bytevector.md)
+
+#### Overrides
+
+BaseObject.render
 
 ___
 
 ### renderInternal
 
-▸ `Protected`**renderInternal**(`data`: [*ByteVector*](bytevector.md)): [*ByteVector*](bytevector.md)
+▸ `Protected` **renderInternal**(`data`): [`ByteVector`](bytevector.md)
 
 Renders the current instance as a raw ASF object containing the specified data.
 
 **`remarks`** Child classes implementing {@see render()} should render their contents and then
     send the data through this method to produce the final output.
 
-#### Parameters:
+#### Parameters
 
-Name | Type | Description |
------- | ------ | ------ |
-`data` | [*ByteVector*](bytevector.md) | Data to store in the rendered version of the current instance.   |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `data` | [`ByteVector`](bytevector.md) | Data to store in the rendered version of the current instance. |
 
-**Returns:** [*ByteVector*](bytevector.md)
+#### Returns
+
+[`ByteVector`](bytevector.md)
+
+#### Inherited from
+
+BaseObject.renderInternal
 
 ___
 
 ### fromFile
 
-▸ `Static`**fromFile**(`file`: [*File*](file.md), `position`: *number*): [*AsfFilePropertiesObject*](asffilepropertiesobject.md)
+▸ `Static` **fromFile**(`file`, `position`): [`AsfFilePropertiesObject`](asffilepropertiesobject.md)
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
------- | ------ |
-`file` | [*File*](file.md) |
-`position` | *number* |
+| Name | Type |
+| :------ | :------ |
+| `file` | [`File`](file.md) |
+| `position` | `number` |
 
-**Returns:** [*AsfFilePropertiesObject*](asffilepropertiesobject.md)
+#### Returns
+
+[`AsfFilePropertiesObject`](asffilepropertiesobject.md)

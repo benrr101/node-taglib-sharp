@@ -315,7 +315,7 @@ export default class RiffFile extends File {
 
                             case "movi":
                                 // "movi" contains the media data for an AVI and its contents
-                                // represent the inavariant portion of the file
+                                // represent the invariant portion of the file
                                 if (streamFormat !== "AVI ") {
                                     break;
                                 }
@@ -330,7 +330,7 @@ export default class RiffFile extends File {
                     case "ID3 ":
                     case "ID32":
                         // "ID32" is a custom box for this format that contains an ID3v2 tag.
-                        // "ID3 " and "id3 " have become defacto standards.
+                        // "ID3 " and "id3 " have become de facto standards.
                         if (readTags && !this._id3v2Tag) {
                             this._id3v2Tag = Id3v2Tag.fromFile(this, position + 8, style);
                         }

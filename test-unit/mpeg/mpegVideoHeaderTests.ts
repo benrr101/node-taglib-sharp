@@ -16,8 +16,8 @@ const assert = Chai.assert;
     @test
     public constructor_invalidArguments() {
         // Act/Assert
-        Testers.testTruthy((f: File) => { const _ = new MpegVideoHeader(f, 0); });
-        Testers.testUint((p: number) => { const _ = new MpegVideoHeader(TypeMoq.Mock.ofType<File>().object, p); });
+        Testers.testTruthy((f: File) => new MpegVideoHeader(f, 0));
+        Testers.testUint((p: number) => new MpegVideoHeader(TypeMoq.Mock.ofType<File>().object, p));
     }
 
     @test
@@ -27,7 +27,7 @@ const assert = Chai.assert;
         const mockFile = TestFile.getFile(mockData);
 
         // Act/Assert
-        assert.throws(() => { const _ = new MpegVideoHeader(mockFile, 5); });
+        assert.throws(() => new MpegVideoHeader(mockFile, 5));
     }
 
     @test

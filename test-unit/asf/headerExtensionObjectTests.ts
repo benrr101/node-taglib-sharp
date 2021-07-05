@@ -64,7 +64,7 @@ const assert = Chai.assert;
         // Arrange
         const metadataLibraryObject = MetadataLibraryObject.fromEmpty();
         const unknownObject = ContentDescriptionObject.fromEmpty();
-        const data = this.getObjectBytes([metadataLibraryObject, unknownObject]);
+        const data = Asf_HeaderExtensionObjectTests.getObjectBytes([metadataLibraryObject, unknownObject]);
         const file = TestFile.getFile(data);
 
         // Act
@@ -85,7 +85,7 @@ const assert = Chai.assert;
     @test
     public children_isReadonly() {
         // Arrange
-        const data = this.getObjectBytes([]);
+        const data = Asf_HeaderExtensionObjectTests.getObjectBytes([]);
         const file = TestFile.getFile(data);
         const output = HeaderExtensionObject.fromFile(file, 0);
 
@@ -107,7 +107,7 @@ const assert = Chai.assert;
     @test
     public addUniqueObject_noMatches() {
         // Arrange
-        const data = this.getObjectBytes([]);
+        const data = Asf_HeaderExtensionObjectTests.getObjectBytes([]);
         const file = TestFile.getFile(data);
         const output = HeaderExtensionObject.fromFile(file, 0);
 
@@ -126,7 +126,7 @@ const assert = Chai.assert;
         // Arrange
         const metadataLibraryObject = MetadataLibraryObject.fromEmpty();
         const unknownObject = ContentDescriptionObject.fromEmpty();
-        const data = this.getObjectBytes([metadataLibraryObject, unknownObject]);
+        const data = Asf_HeaderExtensionObjectTests.getObjectBytes([metadataLibraryObject, unknownObject]);
         const file = TestFile.getFile(data);
         const output = HeaderExtensionObject.fromFile(file, 0);
 
@@ -146,7 +146,7 @@ const assert = Chai.assert;
     @test
     public render_isRoundTrip() {
         // Arrange
-        const data = this.getObjectBytes([
+        const data = Asf_HeaderExtensionObjectTests.getObjectBytes([
             MetadataLibraryObject.fromEmpty(),
             ContentDescriptionObject.fromEmpty()
         ]);
@@ -160,7 +160,7 @@ const assert = Chai.assert;
         assert.isTrue(ByteVector.equal(output, data));
     }
 
-    private getObjectBytes(children: BaseObject[]) {
+    private static getObjectBytes(children: BaseObject[]) {
         const childrenBytes = ByteVector.concatenate(... children.map((o) => o.render()));
         return ByteVector.concatenate(
             Guids.AsfHeaderExtensionObject.toBytes(), // Object ID

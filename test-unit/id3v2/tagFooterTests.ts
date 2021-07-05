@@ -26,7 +26,7 @@ const getTestFooter = (majorVersion: number, minorVersion: number, flags: Id3v2T
     @test
     public fromData_falsyData() {
         // Act/Assert
-        Testers.testTruthy((v: ByteVector) => { const _ = Id3v2TagFooter.fromData(v); });
+        Testers.testTruthy((v: ByteVector) => Id3v2TagFooter.fromData(v));
     }
 
     @test
@@ -35,7 +35,7 @@ const getTestFooter = (majorVersion: number, minorVersion: number, flags: Id3v2T
         const data = ByteVector.fromSize(1);
 
         // Act/Assert
-        assert.throws(() => { const _ = Id3v2TagFooter.fromData(data); });
+        assert.throws(() => Id3v2TagFooter.fromData(data));
     }
 
     @test
@@ -44,7 +44,7 @@ const getTestFooter = (majorVersion: number, minorVersion: number, flags: Id3v2T
         const data = ByteVector.fromSize(10);
 
         // Act/Assert
-        assert.throws(() => { const _ = Id3v2TagFooter.fromData(data); });
+        assert.throws(() => Id3v2TagFooter.fromData(data));
     }
 
     @test
@@ -56,7 +56,7 @@ const getTestFooter = (majorVersion: number, minorVersion: number, flags: Id3v2T
         );
 
         // Act/Assert
-        assert.throws(() => { const _ = Id3v2TagFooter.fromData(data); });
+        assert.throws(() => Id3v2TagFooter.fromData(data));
     }
 
     @test
@@ -72,10 +72,10 @@ const getTestFooter = (majorVersion: number, minorVersion: number, flags: Id3v2T
         const testData4 = ByteVector.concatenate(testData, 0x00, 0x00, 0x00, 0x80);
 
         // Act/Assert
-        assert.throws(() => { const _ = Id3v2TagFooter.fromData(testData1); });
-        assert.throws(() => { const _ = Id3v2TagFooter.fromData(testData2); });
-        assert.throws(() => { const _ = Id3v2TagFooter.fromData(testData3); });
-        assert.throws(() => { const _ = Id3v2TagFooter.fromData(testData4); });
+        assert.throws(() => Id3v2TagFooter.fromData(testData1));
+        assert.throws(() => Id3v2TagFooter.fromData(testData2));
+        assert.throws(() => Id3v2TagFooter.fromData(testData3));
+        assert.throws(() => Id3v2TagFooter.fromData(testData4));
     }
 
     @test

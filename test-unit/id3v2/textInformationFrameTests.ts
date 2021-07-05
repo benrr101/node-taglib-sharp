@@ -59,7 +59,7 @@ function getTestFrame(): TextInformationFrame {
         const frame = TextInformationFrame.fromIdentifier(FrameIdentifiers.TCOP, StringType.Latin1);
 
         // Assert
-        this.assertFrame(frame, FrameIdentifiers.TCOP, []);
+        Id3v2_TextInformationFrame_ConstructorTests.assertFrame(frame, FrameIdentifiers.TCOP, []);
     }
 
     @test
@@ -76,7 +76,7 @@ function getTestFrame(): TextInformationFrame {
         const frame = TextInformationFrame.fromRawData(data, 3);
 
         // Assert
-        this.assertFrame(frame, FrameIdentifiers.TCOP, []);
+        Id3v2_TextInformationFrame_ConstructorTests.assertFrame(frame, FrameIdentifiers.TCOP, []);
     }
 
     @test
@@ -94,7 +94,7 @@ function getTestFrame(): TextInformationFrame {
         const frame = TextInformationFrame.fromRawData(data, 3);
 
         // Assert
-        this.assertFrame(frame, FrameIdentifiers.TCOP, []);
+        Id3v2_TextInformationFrame_ConstructorTests.assertFrame(frame, FrameIdentifiers.TCOP, []);
     }
 
     @test
@@ -115,7 +115,12 @@ function getTestFrame(): TextInformationFrame {
         const frame = TextInformationFrame.fromRawData(data, 4);
 
         // Assert
-        this.assertFrame(frame, FrameIdentifiers.TCOP, ["fux", "bux"], StringType.UTF16BE);
+        Id3v2_TextInformationFrame_ConstructorTests.assertFrame(
+            frame,
+            FrameIdentifiers.TCOP,
+            ["fux", "bux"],
+            StringType.UTF16BE
+        );
     }
 
     @test
@@ -136,7 +141,12 @@ function getTestFrame(): TextInformationFrame {
         const frame = TextInformationFrame.fromRawData(data, 4);
 
         // Assert
-        this.assertFrame(frame, FrameIdentifiers.TXXX, ["fux", "bux"], StringType.UTF16BE);
+        Id3v2_TextInformationFrame_ConstructorTests.assertFrame(
+            frame,
+            FrameIdentifiers.TXXX,
+            ["fux", "bux"],
+            StringType.UTF16BE
+        );
     }
 
     @test
@@ -154,7 +164,7 @@ function getTestFrame(): TextInformationFrame {
         const frame = TextInformationFrame.fromRawData(data, 3);
 
         // Assert
-        this.assertFrame(frame, FrameIdentifiers.TCOM, ["fux", "bux"]);
+        Id3v2_TextInformationFrame_ConstructorTests.assertFrame(frame, FrameIdentifiers.TCOM, ["fux", "bux"]);
     }
 
     @test
@@ -181,7 +191,7 @@ function getTestFrame(): TextInformationFrame {
             const frame = TextInformationFrame.fromRawData(data, 3);
 
             // Assert
-            this.assertFrame(
+            Id3v2_TextInformationFrame_ConstructorTests.assertFrame(
                 frame,
                 FrameIdentifiers.TCON,
                 [
@@ -224,7 +234,7 @@ function getTestFrame(): TextInformationFrame {
             const frame = TextInformationFrame.fromRawData(data, 3);
 
             // Assert
-            this.assertFrame(
+            Id3v2_TextInformationFrame_ConstructorTests.assertFrame(
                 frame,
                 FrameIdentifiers.TCON,
                 [
@@ -262,7 +272,7 @@ function getTestFrame(): TextInformationFrame {
             const frame = TextInformationFrame.fromRawData(data, 3);
 
             // Assert
-            this.assertFrame(
+            Id3v2_TextInformationFrame_ConstructorTests.assertFrame(
                 frame,
                 FrameIdentifiers.TCON,
                 ["Classical", "Other"],
@@ -295,7 +305,7 @@ function getTestFrame(): TextInformationFrame {
             const frame = TextInformationFrame.fromRawData(data, 3);
 
             // Assert
-            this.assertFrame(
+            Id3v2_TextInformationFrame_ConstructorTests.assertFrame(
                 frame,
                 FrameIdentifiers.TCON,
                 ["Classical", "12"],
@@ -326,7 +336,7 @@ function getTestFrame(): TextInformationFrame {
         const frame = TextInformationFrame.fromRawData(data, 4);
 
         // Assert
-        this.assertFrame(
+        Id3v2_TextInformationFrame_ConstructorTests.assertFrame(
             frame,
             FrameIdentifiers.TCON,
             [
@@ -357,10 +367,15 @@ function getTestFrame(): TextInformationFrame {
         const frame = TextInformationFrame.fromOffsetRawData(data, 2, header, 4);
 
         // Assert
-        this.assertFrame(frame, FrameIdentifiers.TCOP, ["fux", "bux"], StringType.UTF16BE);
+        Id3v2_TextInformationFrame_ConstructorTests.assertFrame(
+            frame,
+            FrameIdentifiers.TCOP,
+            ["fux", "bux"],
+            StringType.UTF16BE
+        );
     }
 
-    private assertFrame(
+    private static assertFrame(
         frame: TextInformationFrame,
         frameId: FrameIdentifier,
         text: string[],

@@ -15,7 +15,7 @@ const assert = Chai.assert;
 
 // Test constants
 const testIdentifier = ByteVector.fromString("foobarbaz");
-const testOwner = "http://github.com/benrr101/node-taglib-sharp";
+const testOwner = "https://github.com/benrr101/node-taglib-sharp";
 
 @suite class Id3v2_UniqueFileIdentifierFrame_ConstructorTests extends FrameConstructorTests {
     public get fromOffsetRawData(): (d: ByteVector, o: number, h: Id3v2FrameHeader, v: number) => Frame {
@@ -54,7 +54,7 @@ const testOwner = "http://github.com/benrr101/node-taglib-sharp";
         const frame = UniqueFileIdentifierFrame.fromData(owner, identifier);
 
         // Assert
-        this.assertFrame(frame, owner, identifier);
+        Id3v2_UniqueFileIdentifierFrame_ConstructorTests.assertFrame(frame, owner, identifier);
     }
 
     @test
@@ -72,7 +72,7 @@ const testOwner = "http://github.com/benrr101/node-taglib-sharp";
         const frame = UniqueFileIdentifierFrame.fromOffsetRawData(data, 2, header, 4);
 
         // Assert
-        this.assertFrame(frame, undefined, undefined);
+        Id3v2_UniqueFileIdentifierFrame_ConstructorTests.assertFrame(frame, undefined, undefined);
     }
 
     @test
@@ -95,14 +95,14 @@ const testOwner = "http://github.com/benrr101/node-taglib-sharp";
         const frame = UniqueFileIdentifierFrame.fromOffsetRawData(data, 2, header, 4);
 
         // Assert
-        this.assertFrame(frame, undefined, undefined);
+        Id3v2_UniqueFileIdentifierFrame_ConstructorTests.assertFrame(frame, undefined, undefined);
     }
 
     @test
     public fromOffsetRawData_validData_returnsFrame() {
         // Arrange
         const header = new Id3v2FrameHeader(FrameIdentifiers.UFID);
-        header.frameSize = 54;
+        header.frameSize = 55;
         const data = ByteVector.concatenate(
             header.render(4),
             0x0, 0x0,
@@ -115,7 +115,7 @@ const testOwner = "http://github.com/benrr101/node-taglib-sharp";
         const frame = UniqueFileIdentifierFrame.fromOffsetRawData(data, 2, header, 4);
 
         // Assert
-        this.assertFrame(frame, testOwner, testIdentifier);
+        Id3v2_UniqueFileIdentifierFrame_ConstructorTests.assertFrame(frame, testOwner, testIdentifier);
     }
 
     @test
@@ -132,7 +132,7 @@ const testOwner = "http://github.com/benrr101/node-taglib-sharp";
         const frame = UniqueFileIdentifierFrame.fromRawData(data, 4);
 
         // Assert
-        this.assertFrame(frame, undefined, undefined);
+        Id3v2_UniqueFileIdentifierFrame_ConstructorTests.assertFrame(frame, undefined, undefined);
     }
 
     @test
@@ -154,14 +154,14 @@ const testOwner = "http://github.com/benrr101/node-taglib-sharp";
         const frame = UniqueFileIdentifierFrame.fromRawData(data, 4);
 
         // Assert
-        this.assertFrame(frame, undefined, undefined);
+        Id3v2_UniqueFileIdentifierFrame_ConstructorTests.assertFrame(frame, undefined, undefined);
     }
 
     @test
     public fromRawData_validData_returnsFrame() {
         // Arrange
         const header = new Id3v2FrameHeader(FrameIdentifiers.UFID);
-        header.frameSize = 54;
+        header.frameSize = 55;
         const data = ByteVector.concatenate(
             header.render(4),
             ByteVector.fromString(testOwner),
@@ -173,10 +173,10 @@ const testOwner = "http://github.com/benrr101/node-taglib-sharp";
         const frame = UniqueFileIdentifierFrame.fromRawData(data, 4);
 
         // Assert
-        this.assertFrame(frame, testOwner, testIdentifier);
+        Id3v2_UniqueFileIdentifierFrame_ConstructorTests.assertFrame(frame, testOwner, testIdentifier);
     }
 
-    private assertFrame(frame: UniqueFileIdentifierFrame, o: string, i: ByteVector) {
+    private static assertFrame(frame: UniqueFileIdentifierFrame, o: string, i: ByteVector) {
         assert.isOk(frame);
         assert.strictEqual(frame.frameClassType, FrameClassType.UniqueFileIdentifierFrame);
         assert.strictEqual(frame.frameId, FrameIdentifiers.UFID);
@@ -282,7 +282,7 @@ const testOwner = "http://github.com/benrr101/node-taglib-sharp";
     public render_returnsByteVector() {
         // Arrange
         const header = new Id3v2FrameHeader(FrameIdentifiers.UFID);
-        header.frameSize = 54;
+        header.frameSize = 55;
         const data = ByteVector.concatenate(
             header.render(4),
             ByteVector.fromString(testOwner),

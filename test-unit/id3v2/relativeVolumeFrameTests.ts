@@ -290,7 +290,7 @@ const assert = Chai.assert;
         const frame = RelativeVolumeFrame.fromIdentification("foo");
 
         // Assert
-        this.assertFrame(frame, [], "foo");
+        Id3v2_RelativeVolumeFrame_ConstructorTests.assertFrame(frame, [], "foo");
     }
 
     @test
@@ -307,7 +307,7 @@ const assert = Chai.assert;
         const frame = RelativeVolumeFrame.fromRawData(data, 4);
 
         // Assert
-        this.assertFrame(frame, [], undefined);
+        Id3v2_RelativeVolumeFrame_ConstructorTests.assertFrame(frame, [], undefined);
     }
 
     @test
@@ -338,7 +338,7 @@ const assert = Chai.assert;
         const frame = RelativeVolumeFrame.fromRawData(data, 4);
 
         // Assert
-        this.assertFrame(frame, [channel2, channel1], "foo");
+        Id3v2_RelativeVolumeFrame_ConstructorTests.assertFrame(frame, [channel2, channel1], "foo");
     }
 
     @test
@@ -370,10 +370,10 @@ const assert = Chai.assert;
         const frame = RelativeVolumeFrame.fromOffsetRawData(data, 2, header, 4);
 
         // Assert
-        this.assertFrame(frame, [channel2, channel1], "foo");
+        Id3v2_RelativeVolumeFrame_ConstructorTests.assertFrame(frame, [channel2, channel1], "foo");
     }
 
-    private assertFrame(frame: RelativeVolumeFrame, c: ChannelData[], i: string) {
+    private static assertFrame(frame: RelativeVolumeFrame, c: ChannelData[], i: string) {
         assert.isOk(frame);
         assert.strictEqual(frame.frameClassType, FrameClassType.RelativeVolumeFrame);
         assert.strictEqual(frame.frameId, FrameIdentifiers.RVA2);

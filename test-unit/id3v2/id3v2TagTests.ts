@@ -1937,7 +1937,7 @@ function getTestTagHeader(version: number, flags: Id3v2TagHeaderFlags, tagSize: 
 
         try {
             // Act / Assert
-            assert.throws(() => { const _ = tag.render(); });
+            assert.throws(() => tag.render());
         } finally {
             Id3v2Settings.strictFrameForVersion = originalSetting;
         }

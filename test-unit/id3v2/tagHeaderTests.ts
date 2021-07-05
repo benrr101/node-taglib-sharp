@@ -25,7 +25,7 @@ const getTestHeader = (majorVersion: number, minorVersion: number, flags: Id3v2T
     @test
     public falsyData() {
         // Act/Assert
-        Testers.testTruthy((v: ByteVector) => { const _ = Id3v2TagHeader.fromData(v); });
+        Testers.testTruthy((v: ByteVector) => Id3v2TagHeader.fromData(v));
     }
 
     @test
@@ -35,14 +35,14 @@ const getTestHeader = (majorVersion: number, minorVersion: number, flags: Id3v2T
         const data1 = ByteVector.fromSize(1);
 
         // Act/Assert
-        assert.throws(() => { const _ = Id3v2TagHeader.fromData(data0); });
-        assert.throws(() => { const _ = Id3v2TagHeader.fromData(data1); });
+        assert.throws(() => Id3v2TagHeader.fromData(data0));
+        assert.throws(() => Id3v2TagHeader.fromData(data1));
     }
 
     @test
     public invalidStartOfData() {
         // Act/Assert
-        assert.throws(() => { const _ = Id3v2TagHeader.fromData(TestConstants.testByteVector); });
+        assert.throws(() => Id3v2TagHeader.fromData(TestConstants.testByteVector));
     }
 
     @test
@@ -56,7 +56,7 @@ const getTestHeader = (majorVersion: number, minorVersion: number, flags: Id3v2T
         );
 
         // Act/Assert
-        assert.throws(() => { const _ = Id3v2TagHeader.fromData(testData); });
+        assert.throws(() => Id3v2TagHeader.fromData(testData));
     }
 
     @test
@@ -70,7 +70,7 @@ const getTestHeader = (majorVersion: number, minorVersion: number, flags: Id3v2T
         );
 
         // Act/Assert
-        assert.throws(() => { const _ = Id3v2TagHeader.fromData(testData); });
+        assert.throws(() => Id3v2TagHeader.fromData(testData));
     }
 
     @test
@@ -84,7 +84,7 @@ const getTestHeader = (majorVersion: number, minorVersion: number, flags: Id3v2T
         );
 
         // Act/Assert
-        assert.throws(() => { const _ = Id3v2TagHeader.fromData(testData); });
+        assert.throws(() => Id3v2TagHeader.fromData(testData));
     }
 
     @test
@@ -101,10 +101,10 @@ const getTestHeader = (majorVersion: number, minorVersion: number, flags: Id3v2T
         const testData4 = ByteVector.concatenate(testData, 0x00, 0x00, 0x00, 0x80);
 
         // Act/Assert
-        assert.throws(() => {const _ = Id3v2TagHeader.fromData(testData1); });
-        assert.throws(() => {const _ = Id3v2TagHeader.fromData(testData2); });
-        assert.throws(() => {const _ = Id3v2TagHeader.fromData(testData3); });
-        assert.throws(() => {const _ = Id3v2TagHeader.fromData(testData4); });
+        assert.throws(() => Id3v2TagHeader.fromData(testData1));
+        assert.throws(() => Id3v2TagHeader.fromData(testData2));
+        assert.throws(() => Id3v2TagHeader.fromData(testData3));
+        assert.throws(() => Id3v2TagHeader.fromData(testData4));
     }
 
     @test

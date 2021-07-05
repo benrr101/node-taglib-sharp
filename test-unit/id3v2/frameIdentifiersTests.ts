@@ -144,6 +144,6 @@ const assert = Chai.assert;
         const identifier = new FrameIdentifier("ABCD", undefined, undefined);
 
         // Act / Assert
-        assert.throws(() => { const _ = identifier.render(2); });
+        assert.throws(() => identifier.render(2));
     }
 }

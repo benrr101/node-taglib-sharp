@@ -16,7 +16,7 @@ Specifies the options to use when reading the media. Can be treated as flags.
 
 ### Average
 
-• **Average**: = 2
+• **Average** = `2`
 
 The media properties will be read with average accuracy.
 
@@ -24,7 +24,7 @@ ___
 
 ### None
 
-• **None**: = 0
+• **None** = `0`
 
 The media properties will not be read.
 
@@ -32,7 +32,7 @@ ___
 
 ### PictureLazy
 
-• **PictureLazy**: = 4
+• **PictureLazy** = `4`
 
 Use the [PictureLazy](readstyle.md#picturelazy) class in the the property [Tag.pictures](../classes/tag.md#pictures). This will avoid
 loading picture content when reading the tag. Picture will be read lazily, when the picture

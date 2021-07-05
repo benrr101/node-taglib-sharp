@@ -171,5 +171,5 @@ class AviTestStream extends AviStream {
         this._codec = codec;
     }
 
-    public parseItem(id: string, data: ByteVector, start: number) { /* no-op */ }
+    public parseItem(_id: string, _data: ByteVector, _start: number) { /* no-op */ }
 }

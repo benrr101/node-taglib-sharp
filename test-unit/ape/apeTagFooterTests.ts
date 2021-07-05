@@ -22,9 +22,9 @@ const _sampleData = ByteVector.concatenate(
     @test
     public fromData_invalidParameters() {
         // Act / Assert
-        Testers.testTruthy((v: ByteVector) => { const _ = ApeTagFooter.fromData(v); });
-        assert.throws(() => { const _ = ApeTagFooter.fromData(ByteVector.fromSize(10)); });
-        assert.throws(() => { const _ = ApeTagFooter.fromData(ByteVector.fromSize(40)); });
+        Testers.testTruthy((v: ByteVector) => ApeTagFooter.fromData(v));
+        assert.throws(() => ApeTagFooter.fromData(ByteVector.fromSize(10)));
+        assert.throws(() => ApeTagFooter.fromData(ByteVector.fromSize(40)));
     }
 
     @test

@@ -28,7 +28,7 @@ const assert = Chai.assert;
         const output = TermsOfUseFrame.fromFields("fux");
 
         // Assert
-        this.assertFrame(output, "fux", "", Id3v2Settings.defaultEncoding);
+        Id3v2_TermsOfUseFrame_ConstructorTests.assertFrame(output, "fux", "", Id3v2Settings.defaultEncoding);
     }
 
     @test
@@ -37,7 +37,7 @@ const assert = Chai.assert;
         const output = TermsOfUseFrame.fromFields("fux", StringType.UTF16BE);
 
         // Assert
-        this.assertFrame(output, "fux", "", StringType.UTF16BE);
+        Id3v2_TermsOfUseFrame_ConstructorTests.assertFrame(output, "fux", "", StringType.UTF16BE);
     }
 
     @test
@@ -72,7 +72,7 @@ const assert = Chai.assert;
         const output = TermsOfUseFrame.fromOffsetRawData(data, 2, header, 4);
 
         // Assert
-        this.assertFrame(output, "fux", "buxqux", StringType.Latin1);
+        Id3v2_TermsOfUseFrame_ConstructorTests.assertFrame(output, "fux", "buxqux", StringType.Latin1);
     }
 
     @test
@@ -105,10 +105,10 @@ const assert = Chai.assert;
         const output = TermsOfUseFrame.fromRawData(data, 4);
 
         // Assert
-        this.assertFrame(output, "fux", "buxqux", StringType.Latin1);
+        Id3v2_TermsOfUseFrame_ConstructorTests.assertFrame(output, "fux", "buxqux", StringType.Latin1);
     }
 
-    private assertFrame(frame: TermsOfUseFrame, language: string, text: string, textEncoding: StringType) {
+    private static assertFrame(frame: TermsOfUseFrame, language: string, text: string, textEncoding: StringType) {
         assert.isOk(frame);
         assert.strictEqual(frame.frameClassType, FrameClassType.TermsOfUseFrame);
         assert.strictEqual(frame.frameId, FrameIdentifiers.USER);

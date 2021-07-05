@@ -61,7 +61,7 @@ const assert = Chai.assert;
         // Arrange
         const paddingObject = PaddingObject.fromSize(123);
         const unknownObject = MetadataLibraryObject.fromEmpty();
-        const bytes = this.getObjectBytesFromObjects([paddingObject, unknownObject]);
+        const bytes = Asf_HeaderObjectTests.getObjectBytesFromObjects([paddingObject, unknownObject]);
         const file = TestFile.getFile(bytes);
 
         // Act
@@ -97,7 +97,7 @@ const assert = Chai.assert;
             ByteVector.fromUInt(0, false), // Header extension data length
         );
 
-        const headerBytes = this.getObjectBytesFromBytes(headerExtensionBytes, 1);
+        const headerBytes = Asf_HeaderObjectTests.getObjectBytesFromBytes(headerExtensionBytes, 1);
         const headerFile = TestFile.getFile(headerBytes);
         const headerObject = HeaderObject.fromFile(headerFile, 10);
 
@@ -113,7 +113,7 @@ const assert = Chai.assert;
     @test
     public children_isReadOnly() {
         // Arrange
-        const headerBytes = this.getObjectBytesFromObjects([]);
+        const headerBytes = Asf_HeaderObjectTests.getObjectBytesFromObjects([]);
         const headerFile = TestFile.getFile(headerBytes);
         const headerObject = HeaderObject.fromFile(headerFile, 10);
         const children = headerObject.children;
@@ -129,7 +129,7 @@ const assert = Chai.assert;
     public hasContentDescriptors_contentDescriptionObject() {
         // Arrange
         const contentDescriptionObject = ContentDescriptionObject.fromEmpty();
-        const headerBytes = this.getObjectBytesFromObjects([contentDescriptionObject]);
+        const headerBytes = Asf_HeaderObjectTests.getObjectBytesFromObjects([contentDescriptionObject]);
         const headerFile = TestFile.getFile(headerBytes);
         const headerObject = HeaderObject.fromFile(headerFile, 10);
 
@@ -144,7 +144,7 @@ const assert = Chai.assert;
     public hasContentDescriptors_extendedContentDescriptorObject() {
         // Arrange
         const extendedContentDescriptionObject = ExtendedContentDescriptionObject.fromEmpty();
-        const headerBytes = this.getObjectBytesFromObjects([extendedContentDescriptionObject]);
+        const headerBytes = Asf_HeaderObjectTests.getObjectBytesFromObjects([extendedContentDescriptionObject]);
         const headerFile = TestFile.getFile(headerBytes);
         const headerObject = HeaderObject.fromFile(headerFile, 10);
 
@@ -195,7 +195,7 @@ const assert = Chai.assert;
         );
 
         const childrenBytes = ByteVector.concatenate(filePropertiesBytes, streamPropertiesBytes);
-        const headerBytes = this.getObjectBytesFromBytes(childrenBytes, 2);
+        const headerBytes = Asf_HeaderObjectTests.getObjectBytesFromBytes(childrenBytes, 2);
         const headerFile = TestFile.getFile(headerBytes);
         const headerObject = HeaderObject.fromFile(headerFile, 10);
 
@@ -212,7 +212,7 @@ const assert = Chai.assert;
     @test
     public addUniqueObject_noMatches() {
         // Arrange
-        const data = this.getObjectBytesFromObjects([]);
+        const data = Asf_HeaderObjectTests.getObjectBytesFromObjects([]);
         const file = TestFile.getFile(data);
         const output = HeaderObject.fromFile(file, 10);
 
@@ -233,7 +233,7 @@ const assert = Chai.assert;
         const unknownObject = MetadataLibraryObject.fromEmpty();
         const newObject = PaddingObject.fromSize(234);
 
-        const data = this.getObjectBytesFromObjects([paddingObject, unknownObject]);
+        const data = Asf_HeaderObjectTests.getObjectBytesFromObjects([paddingObject, unknownObject]);
         const file = TestFile.getFile(data);
         const output = HeaderObject.fromFile(file, 10);
 
@@ -252,7 +252,7 @@ const assert = Chai.assert;
         // Arrange
         const paddingObject = PaddingObject.fromSize(123);
         const unknownObject = MetadataLibraryObject.fromEmpty();
-        const headerData = this.getObjectBytesFromObjects([paddingObject, unknownObject]);
+        const headerData = Asf_HeaderObjectTests.getObjectBytesFromObjects([paddingObject, unknownObject]);
         const headerFile = TestFile.getFile(headerData);
         const headerObject = HeaderObject.fromFile(headerFile, 10);
 
@@ -268,7 +268,9 @@ const assert = Chai.assert;
         // Arrange
         const contentDescriptionObject = ContentDescriptionObject.fromEmpty();
         const extendedContentDescription = ExtendedContentDescriptionObject.fromEmpty();
-        const headerBytes = this.getObjectBytesFromObjects([contentDescriptionObject, extendedContentDescription]);
+        const headerBytes = Asf_HeaderObjectTests.getObjectBytesFromObjects(
+            [contentDescriptionObject, extendedContentDescription]
+        );
         const headerFile = TestFile.getFile(headerBytes);
         const headerObject = HeaderObject.fromFile(headerFile, 10);
 
@@ -285,7 +287,7 @@ const assert = Chai.assert;
         const unknownObject = MetadataLibraryObject.fromEmpty();
         const paddingObject = PaddingObject.fromSize(123);
 
-        const headerData = this.getObjectBytesFromObjects([unknownObject, paddingObject]);
+        const headerData = Asf_HeaderObjectTests.getObjectBytesFromObjects([unknownObject, paddingObject]);
         const headerFile = TestFile.getFile(headerData);
         const headerObject = HeaderObject.fromFile(headerFile, 10);
 
@@ -302,7 +304,7 @@ const assert = Chai.assert;
     public render_objectGrew_adds4096Padding() {
         // Arrange
         const unknownObject = MetadataLibraryObject.fromEmpty();
-        const headerData = this.getObjectBytesFromObjects([unknownObject]);
+        const headerData = Asf_HeaderObjectTests.getObjectBytesFromObjects([unknownObject]);
         const headerFile = TestFile.getFile(headerData);
         const headerObject = HeaderObject.fromFile(headerFile, 10);
 
@@ -318,7 +320,7 @@ const assert = Chai.assert;
             newObject,
             PaddingObject.fromSize(4096)
         ];
-        const expected = this.getObjectBytesFromObjects(expectedChildren);
+        const expected = Asf_HeaderObjectTests.getObjectBytesFromObjects(expectedChildren);
         assert.isTrue(ByteVector.equal(output, expected.mid(10)));
     }
 
@@ -328,7 +330,7 @@ const assert = Chai.assert;
         const unknownObject1 = MetadataLibraryObject.fromEmpty();
         const unknownObject2 = MetadataLibraryObject.fromEmpty();
 
-        const headerData = this.getObjectBytesFromObjects([unknownObject1, unknownObject2]);
+        const headerData = Asf_HeaderObjectTests.getObjectBytesFromObjects([unknownObject1, unknownObject2]);
         const headerFile = TestFile.getFile(headerData);
         const headerObject = HeaderObject.fromFile(headerFile, 10);
 
@@ -339,7 +341,7 @@ const assert = Chai.assert;
         assert.isTrue(ByteVector.equal(output, headerData.mid(10)));
     }
 
-    private getObjectBytesFromBytes(children: ByteVector, childrenCount: number) {
+    private static getObjectBytesFromBytes(children: ByteVector, childrenCount: number) {
         return ByteVector.concatenate(
             ByteVector.fromSize(10), // Offset
             Guids.AsfHeaderObject.toBytes(), // Object ID
@@ -350,7 +352,7 @@ const assert = Chai.assert;
         );
     }
 
-    private getObjectBytesFromObjects(children: BaseObject[]) {
+    private static getObjectBytesFromObjects(children: BaseObject[]) {
         const childrenBytes = ByteVector.concatenate(... children.map((o) => o.render()));
         return ByteVector.concatenate(
             ByteVector.fromSize(10), // Offset

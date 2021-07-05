@@ -13,7 +13,7 @@ const assert = Chai.assert;
     @test
     public constructor_invalidData() {
         // Arrange
-        const testFunc = (a: ByteVector, b: number) => { const _ = new AiffStreamHeader(a, b); };
+        const testFunc = (a: ByteVector, b: number) => new AiffStreamHeader(a, b);
 
         // Act / Assert
         Testers.testTruthy((v: ByteVector) => testFunc(v, 0));
@@ -23,7 +23,7 @@ const assert = Chai.assert;
     @test
     public constructor_dataDoesNotStartWithIdentifier() {
         // Act / Assert
-        assert.throws(() => { const _ = new AiffStreamHeader(ByteVector.fromSize(10), 0); });
+        assert.throws(() => new AiffStreamHeader(ByteVector.fromSize(10), 0));
     }
 
     @test

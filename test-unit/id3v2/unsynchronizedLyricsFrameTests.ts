@@ -52,7 +52,7 @@ const getTestUnsynchronizedLyricsFrame = (): UnsynchronizedLyricsFrame => {
         const frame = UnsynchronizedLyricsFrame.fromData(description, language, encoding);
 
         // Assert
-        this.assertFrame(frame, description, language, "", encoding);
+        Id3v2_UnsynchronizedLyricsFrame_ConstructorTests.assertFrame(frame, description, language, "", encoding);
     }
 
     @test
@@ -72,7 +72,7 @@ const getTestUnsynchronizedLyricsFrame = (): UnsynchronizedLyricsFrame => {
         const frame = UnsynchronizedLyricsFrame.fromOffsetRawData(data, 2, header, 4);
 
         // Assert
-        this.assertFrame(frame, "", "eng", "foo", StringType.Latin1);
+        Id3v2_UnsynchronizedLyricsFrame_ConstructorTests.assertFrame(frame, "", "eng", "foo", StringType.Latin1);
     }
 
     @test
@@ -94,7 +94,7 @@ const getTestUnsynchronizedLyricsFrame = (): UnsynchronizedLyricsFrame => {
         const frame = UnsynchronizedLyricsFrame.fromOffsetRawData(data, 2, header, 4);
 
         // Assert
-        this.assertFrame(frame, "foo", "eng", "bar", StringType.Latin1);
+        Id3v2_UnsynchronizedLyricsFrame_ConstructorTests.assertFrame(frame, "foo", "eng", "bar", StringType.Latin1);
     }
 
     @test
@@ -113,7 +113,7 @@ const getTestUnsynchronizedLyricsFrame = (): UnsynchronizedLyricsFrame => {
         const frame = UnsynchronizedLyricsFrame.fromRawData(data, 4);
 
         // Assert
-        this.assertFrame(frame, "", "eng", "foo", StringType.Latin1);
+        Id3v2_UnsynchronizedLyricsFrame_ConstructorTests.assertFrame(frame, "", "eng", "foo", StringType.Latin1);
     }
 
     @test
@@ -134,10 +134,10 @@ const getTestUnsynchronizedLyricsFrame = (): UnsynchronizedLyricsFrame => {
         const frame = UnsynchronizedLyricsFrame.fromRawData(data, 4);
 
         // Assert
-        this.assertFrame(frame, "foo", "eng", "bar", StringType.Latin1);
+        Id3v2_UnsynchronizedLyricsFrame_ConstructorTests.assertFrame(frame, "foo", "eng", "bar", StringType.Latin1);
     }
 
-    private assertFrame(frame: UnsynchronizedLyricsFrame, d: string, l: string, t: string, te: StringType) {
+    private static assertFrame(frame: UnsynchronizedLyricsFrame, d: string, l: string, t: string, te: StringType) {
         assert.isOk(frame);
         assert.strictEqual(frame.frameClassType, FrameClassType.UnsynchronizedLyricsFrame);
         assert.strictEqual(frame.frameId, FrameIdentifiers.USLT);

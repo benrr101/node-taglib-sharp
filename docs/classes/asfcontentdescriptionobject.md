@@ -8,9 +8,9 @@ information such as title, author, copyright, description, rating information.
 
 ## Hierarchy
 
-* *BaseObject*
+- `BaseObject`
 
-  ↳ **AsfContentDescriptionObject**
+  ↳ **`AsfContentDescriptionObject`**
 
 ## Table of contents
 
@@ -39,25 +39,29 @@ information such as title, author, copyright, description, rating information.
 
 ### author
 
-• **author**(): *string*
+• `get` **author**(): `string`
 
 Gets the author of the media described by the current instance.
 
-**Returns:** *string*
+#### Returns
+
+`string`
 
 Author of the media or `undefined` if it is not set.
 
-• **author**(`value`: *string*): *void*
+• `set` **author**(`value`): `void`
 
 Sets the author of the media described by the current instance.
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
------- | ------ |
-`value` | *string* |
+| Name | Type |
+| :------ | :------ |
+| `value` | `string` |
 
-**Returns:** *void*
+#### Returns
+
+`void`
 
 Author of the media or `undefined` if it is not set.
 
@@ -65,25 +69,29 @@ ___
 
 ### copyright
 
-• **copyright**(): *string*
+• `get` **copyright**(): `string`
 
 Gets the copyright information of the media described by the current instance.
 
-**Returns:** *string*
+#### Returns
+
+`string`
 
 Copyright information of the media or `undefined` if it is not set.
 
-• **copyright**(`value`: *string*): *void*
+• `set` **copyright**(`value`): `void`
 
 Sets the copyright information of the media described by the current instance.
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
------- | ------ |
-`value` | *string* |
+| Name | Type |
+| :------ | :------ |
+| `value` | `string` |
 
-**Returns:** *void*
+#### Returns
+
+`void`
 
 Copyright information of the media or `undefined` if it is not set.
 
@@ -91,25 +99,29 @@ ___
 
 ### description
 
-• **description**(): *string*
+• `get` **description**(): `string`
 
 Gets the description of the media described by the current instance.
 
-**Returns:** *string*
+#### Returns
+
+`string`
 
 Description of the media or `undefined` if it is not set.
 
-• **description**(`value`: *string*): *void*
+• `set` **description**(`value`): `void`
 
 Sets the description of the media described by the current instance.
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
------- | ------ |
-`value` | *string* |
+| Name | Type |
+| :------ | :------ |
+| `value` | `string` |
 
-**Returns:** *void*
+#### Returns
+
+`void`
 
 Description of the media or `undefined` if it is not set.
 
@@ -117,21 +129,25 @@ ___
 
 ### guid
 
-• **guid**(): *default*
+• `get` **guid**(): `default`
 
 Gets the GUID that identifies the current instance.
 
-**Returns:** *default*
+#### Returns
+
+`default`
 
 ___
 
 ### isEmpty
 
-• **isEmpty**(): *boolean*
+• `get` **isEmpty**(): `boolean`
 
 Gets whether or not the current instance is empty.
 
-**Returns:** *boolean*
+#### Returns
+
+`boolean`
 
 `true` if all the values are cleared. Otherwise `false` is returned.
 
@@ -139,45 +155,53 @@ ___
 
 ### objectType
 
-• **objectType**(): ObjectType
+• `get` **objectType**(): `ObjectType`
 
-**`inheritdoc`** 
+**`inheritdoc`**
 
-**Returns:** ObjectType
+#### Returns
+
+`ObjectType`
 
 ___
 
 ### originalSize
 
-• **originalSize**(): *number*
+• `get` **originalSize**(): `number`
 
 Gets the original size of the current instance.
 
-**Returns:** *number*
+#### Returns
+
+`number`
 
 ___
 
 ### rating
 
-• **rating**(): *string*
+• `get` **rating**(): `string`
 
 Gets the rating of the media described by the current instance.
 
-**Returns:** *string*
+#### Returns
+
+`string`
 
 Rating of the media or `undefined` if it is not set.
 
-• **rating**(`value`: *string*): *void*
+• `set` **rating**(`value`): `void`
 
 Sets the rating of the media described by the current instance.
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
------- | ------ |
-`value` | *string* |
+| Name | Type |
+| :------ | :------ |
+| `value` | `string` |
 
-**Returns:** *void*
+#### Returns
+
+`void`
 
 Rating of the media or `undefined` if it is not set.
 
@@ -185,25 +209,29 @@ ___
 
 ### title
 
-• **title**(): *string*
+• `get` **title**(): `string`
 
 Gets the title of the media described by the current instance.
 
-**Returns:** *string*
+#### Returns
+
+`string`
 
 Title of the media or `undefined` if it is not set.
 
-• **title**(`value`: *string*): *void*
+• `set` **title**(`value`): `void`
 
 Sets the title of the media described by the current instance.
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
------- | ------ |
-`value` | *string* |
+| Name | Type |
+| :------ | :------ |
+| `value` | `string` |
 
-**Returns:** *void*
+#### Returns
+
+`void`
 
 Title of the media or `undefined` if it is not set.
 
@@ -211,84 +239,112 @@ Title of the media or `undefined` if it is not set.
 
 ### initializeFromFile
 
-▸ `Protected`**initializeFromFile**(`file`: [*File*](file.md), `position`: *number*): *void*
+▸ `Protected` **initializeFromFile**(`file`, `position`): `void`
 
 Initializes a new instance by reading the contents from a specified position in a specified
 file.
 
-#### Parameters:
+#### Parameters
 
-Name | Type | Description |
------- | ------ | ------ |
-`file` | [*File*](file.md) | File which contains the details of the new instance to create   |
-`position` | *number* | Position in `file` where the object begins   |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `file` | [`File`](file.md) | File which contains the details of the new instance to create |
+| `position` | `number` | Position in `file` where the object begins |
 
-**Returns:** *void*
+#### Returns
+
+`void`
+
+#### Inherited from
+
+BaseObject.initializeFromFile
 
 ___
 
 ### initializeFromGuid
 
-▸ `Protected`**initializeFromGuid**(`guid`: *default*): *void*
+▸ `Protected` **initializeFromGuid**(`guid`): `void`
 
 Initializes a new instance with a specified GUID.
 
-#### Parameters:
+#### Parameters
 
-Name | Type | Description |
------- | ------ | ------ |
-`guid` | *default* | GUID to use for the new instance.   |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `guid` | `default` | GUID to use for the new instance. |
 
-**Returns:** *void*
+#### Returns
+
+`void`
+
+#### Inherited from
+
+BaseObject.initializeFromGuid
 
 ___
 
 ### render
 
-▸ **render**(): [*ByteVector*](bytevector.md)
+▸ **render**(): [`ByteVector`](bytevector.md)
 
 Renders the current instance as a raw ASF object.
 
-**Returns:** [*ByteVector*](bytevector.md)
+#### Returns
+
+[`ByteVector`](bytevector.md)
+
+#### Overrides
+
+BaseObject.render
 
 ___
 
 ### renderInternal
 
-▸ `Protected`**renderInternal**(`data`: [*ByteVector*](bytevector.md)): [*ByteVector*](bytevector.md)
+▸ `Protected` **renderInternal**(`data`): [`ByteVector`](bytevector.md)
 
 Renders the current instance as a raw ASF object containing the specified data.
 
 **`remarks`** Child classes implementing {@see render()} should render their contents and then
     send the data through this method to produce the final output.
 
-#### Parameters:
+#### Parameters
 
-Name | Type | Description |
------- | ------ | ------ |
-`data` | [*ByteVector*](bytevector.md) | Data to store in the rendered version of the current instance.   |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `data` | [`ByteVector`](bytevector.md) | Data to store in the rendered version of the current instance. |
 
-**Returns:** [*ByteVector*](bytevector.md)
+#### Returns
+
+[`ByteVector`](bytevector.md)
+
+#### Inherited from
+
+BaseObject.renderInternal
 
 ___
 
 ### fromEmpty
 
-▸ `Static`**fromEmpty**(): [*AsfContentDescriptionObject*](asfcontentdescriptionobject.md)
+▸ `Static` **fromEmpty**(): [`AsfContentDescriptionObject`](asfcontentdescriptionobject.md)
 
-**Returns:** [*AsfContentDescriptionObject*](asfcontentdescriptionobject.md)
+#### Returns
+
+[`AsfContentDescriptionObject`](asfcontentdescriptionobject.md)
 
 ___
 
 ### fromFile
 
-▸ `Static`**fromFile**(`file`: [*File*](file.md), `position`: *number*): [*AsfContentDescriptionObject*](asfcontentdescriptionobject.md)
+▸ `Static` **fromFile**(`file`, `position`): [`AsfContentDescriptionObject`](asfcontentdescriptionobject.md)
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
------- | ------ |
-`file` | [*File*](file.md) |
-`position` | *number* |
+| Name | Type |
+| :------ | :------ |
+| `file` | [`File`](file.md) |
+| `position` | `number` |
 
-**Returns:** [*AsfContentDescriptionObject*](asfcontentdescriptionobject.md)
+#### Returns
+
+[`AsfContentDescriptionObject`](asfcontentdescriptionobject.md)

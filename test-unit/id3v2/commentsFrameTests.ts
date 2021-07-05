@@ -53,7 +53,13 @@ function getTestFrame(): CommentsFrame {
         const frame = CommentsFrame.fromDescription(description);
 
         // Assert
-        this.validateFrame(frame, description, "XXX", Id3v2Settings.defaultEncoding, "");
+        Id3v2_CommentsFrame_ConstructorTests.validateFrame(
+            frame,
+            description,
+            "XXX",
+            Id3v2Settings.defaultEncoding,
+            ""
+        );
     }
 
     @test
@@ -66,7 +72,7 @@ function getTestFrame(): CommentsFrame {
         const frame = CommentsFrame.fromDescription(description, language);
 
         // Assert
-        this.validateFrame(frame, description, language, Id3v2Settings.defaultEncoding, "");
+        Id3v2_CommentsFrame_ConstructorTests.validateFrame(frame, description, language, Id3v2Settings.defaultEncoding, "");
     }
 
     @test
@@ -80,7 +86,7 @@ function getTestFrame(): CommentsFrame {
         const frame = CommentsFrame.fromDescription(description, language, encoding);
 
         // Assert
-        this.validateFrame(frame, description, language, encoding, "");
+        Id3v2_CommentsFrame_ConstructorTests.validateFrame(frame, description, language, encoding, "");
     }
 
     @test
@@ -114,7 +120,7 @@ function getTestFrame(): CommentsFrame {
         const frame = CommentsFrame.fromOffsetRawData(data, 2, header, 4);
 
         // Assert
-        this.validateFrame(frame, "", "eng", StringType.Latin1, "");
+        Id3v2_CommentsFrame_ConstructorTests.validateFrame(frame, "", "eng", StringType.Latin1, "");
     }
 
     @test
@@ -134,7 +140,7 @@ function getTestFrame(): CommentsFrame {
         const frame = CommentsFrame.fromOffsetRawData(data, 2, header, 4);
 
         // Assert
-        this.validateFrame(frame, "", "eng", StringType.Latin1, "fux");
+        Id3v2_CommentsFrame_ConstructorTests.validateFrame(frame, "", "eng", StringType.Latin1, "fux");
     }
 
     @test
@@ -156,7 +162,7 @@ function getTestFrame(): CommentsFrame {
         const frame = CommentsFrame.fromOffsetRawData(data, 2, header, 4);
 
         // Assert
-        this.validateFrame(frame, "fux", "eng", StringType.Latin1, "bux");
+        Id3v2_CommentsFrame_ConstructorTests.validateFrame(frame, "fux", "eng", StringType.Latin1, "bux");
     }
 
     @test
@@ -178,7 +184,7 @@ function getTestFrame(): CommentsFrame {
         const frame = CommentsFrame.fromOffsetRawData(data, 2, header, 4);
 
         // Assert
-        this.validateFrame(frame, "fux", "eng", StringType.Latin1, "bux");
+        Id3v2_CommentsFrame_ConstructorTests.validateFrame(frame, "fux", "eng", StringType.Latin1, "bux");
     }
 
     @test
@@ -210,7 +216,7 @@ function getTestFrame(): CommentsFrame {
         const frame = CommentsFrame.fromRawData(data, 4);
 
         // Assert
-        this.validateFrame(frame, "", "eng", StringType.Latin1, "");
+        Id3v2_CommentsFrame_ConstructorTests.validateFrame(frame, "", "eng", StringType.Latin1, "");
     }
 
     @test
@@ -229,7 +235,7 @@ function getTestFrame(): CommentsFrame {
         const frame = CommentsFrame.fromRawData(data, 4);
 
         // Assert
-        this.validateFrame(frame, "", "eng", StringType.Latin1, "fux");
+        Id3v2_CommentsFrame_ConstructorTests.validateFrame(frame, "", "eng", StringType.Latin1, "fux");
     }
 
     @test
@@ -249,7 +255,7 @@ function getTestFrame(): CommentsFrame {
         const frame = CommentsFrame.fromRawData(data, 4);
 
         // Assert
-        this.validateFrame(frame, "fux", "eng", StringType.Latin1, "bux");
+        Id3v2_CommentsFrame_ConstructorTests.validateFrame(frame, "fux", "eng", StringType.Latin1, "bux");
     }
 
     @test
@@ -270,10 +276,10 @@ function getTestFrame(): CommentsFrame {
         const frame = CommentsFrame.fromRawData(data, 4);
 
         // Assert
-        this.validateFrame(frame, "fux", "eng", StringType.Latin1, "bux");
+        Id3v2_CommentsFrame_ConstructorTests.validateFrame(frame, "fux", "eng", StringType.Latin1, "bux");
     }
 
-    private validateFrame(
+    private static validateFrame(
         frame: CommentsFrame,
         expectedDesc: string,
         expectedLang: string,

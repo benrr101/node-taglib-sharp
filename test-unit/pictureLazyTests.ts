@@ -84,7 +84,7 @@ const assert = Chai.assert;
         const picture = PictureLazy.fromFile(mockFile.object, 0);
 
         // Assert
-        this.assertFileLazyPicture(
+        PictureLazy_Tests.assertFileLazyPicture(
             picture,
             data,
             "foobarbaz.jpg",
@@ -109,7 +109,7 @@ const assert = Chai.assert;
         const picture = PictureLazy.fromFile(mockFile.object, 0);
 
         // Assert
-        this.assertFileLazyPicture(
+        PictureLazy_Tests.assertFileLazyPicture(
             picture,
             data,
             "foobarbaz.bin",
@@ -137,7 +137,7 @@ const assert = Chai.assert;
         const picture = PictureLazy.fromFile(mockFile.object, 0);
 
         // Assert
-        this.assertFileLazyPicture(
+        PictureLazy_Tests.assertFileLazyPicture(
             picture,
             data,
             "fuxbuxqux",
@@ -162,7 +162,7 @@ const assert = Chai.assert;
         const picture = PictureLazy.fromFile(mockFile.object, 0);
 
         // Assert
-        this.assertFileLazyPicture(
+        PictureLazy_Tests.assertFileLazyPicture(
             picture,
             data,
             "fuxbuxqux",
@@ -187,7 +187,7 @@ const assert = Chai.assert;
         const picture = PictureLazy.fromFile(mockFile.object, 0);
 
         // Assert
-        this.assertFileLazyPicture(
+        PictureLazy_Tests.assertFileLazyPicture(
             picture,
             data,
             undefined,
@@ -215,7 +215,7 @@ const assert = Chai.assert;
         const picture = PictureLazy.fromFile(mockFile.object, 2);
 
         // Assert
-        this.assertFileLazyPicture(
+        PictureLazy_Tests.assertFileLazyPicture(
             picture,
             data,
             "foobarbaz.jpg",
@@ -244,7 +244,7 @@ const assert = Chai.assert;
         const picture = PictureLazy.fromFile(mockFile.object, 2, 9);
 
         // Assert
-        this.assertFileLazyPicture(
+        PictureLazy_Tests.assertFileLazyPicture(
             picture,
             data,
             "foobarbaz.jpg",
@@ -254,7 +254,7 @@ const assert = Chai.assert;
         );
     }
 
-    private assertFileLazyPicture(
+    private static assertFileLazyPicture(
         picture: PictureLazy,
         d: ByteVector,
         desc: string,

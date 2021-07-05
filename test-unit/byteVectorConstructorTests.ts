@@ -262,7 +262,7 @@ const assert = Chai.assert;
 
     @test
     public fromInt_zero_bigEndian() {
-        this.testInt(
+        ByteVector_ConstructorTests.testInt(
             0x0,
             [0x0, 0x0, 0x0, 0x0],
             undefined,
@@ -272,7 +272,7 @@ const assert = Chai.assert;
 
     @test
     public fromInt_zero_littleEndian() {
-        this.testInt(
+        ByteVector_ConstructorTests.testInt(
             0x0,
             [0x0, 0x0, 0x0, 0x0],
             undefined,
@@ -282,7 +282,7 @@ const assert = Chai.assert;
 
     @test
     public fromInt_positive1Byte_bigEndian() {
-        this.testInt(
+        ByteVector_ConstructorTests.testInt(
             0x12,
             [0x00, 0x00, 0x00, 0x12],
             undefined,
@@ -292,7 +292,7 @@ const assert = Chai.assert;
 
     @test
     public fromInt_positive1Byte_littleEndian() {
-        this.testInt(
+        ByteVector_ConstructorTests.testInt(
             0x12,
             [0x12, 0x00, 0x00, 0x00],
             undefined,
@@ -302,7 +302,7 @@ const assert = Chai.assert;
 
     @test
     public fromInt_positive2Byte_bigEndian() {
-        this.testInt(
+        ByteVector_ConstructorTests.testInt(
             0x1234,
             [0x00, 0x00, 0x12, 0x34],
             undefined,
@@ -312,7 +312,7 @@ const assert = Chai.assert;
 
     @test
     public fromInt_positive2Byte_littleEndian() {
-        this.testInt(
+        ByteVector_ConstructorTests.testInt(
             0x1234,
             [0x34, 0x12, 0x00, 0x00],
             undefined,
@@ -322,7 +322,7 @@ const assert = Chai.assert;
 
     @test
     public fromInt_positive3Byte_bigEndian() {
-        this.testInt(
+        ByteVector_ConstructorTests.testInt(
             0x123456,
             [0x00, 0x12, 0x34, 0x56],
             undefined,
@@ -332,7 +332,7 @@ const assert = Chai.assert;
 
     @test
     public fromInt_positive3Byte_littleEndian() {
-        this.testInt(
+        ByteVector_ConstructorTests.testInt(
             0x123456,
             [0x56, 0x34, 0x12, 0x00],
             undefined,
@@ -342,7 +342,7 @@ const assert = Chai.assert;
 
     @test
     public fromInt_positive4Byte_bigEndian() {
-        this.testInt(
+        ByteVector_ConstructorTests.testInt(
             0x12345678,
             [0x12, 0x34, 0x56, 0x78],
             undefined,
@@ -352,7 +352,7 @@ const assert = Chai.assert;
 
     @test
     public fromInt_positive4Byte_littleEndian() {
-        this.testInt(
+        ByteVector_ConstructorTests.testInt(
             0x12345678,
             [0x78, 0x56, 0x34, 0x12],
             undefined,
@@ -362,7 +362,7 @@ const assert = Chai.assert;
 
     @test
     public fromInt_negative1Byte_bigEndian() {
-        this.testInt(
+        ByteVector_ConstructorTests.testInt(
             -0x12,
             [0xFF, 0xFF, 0xFF, 0xEE],
             undefined,
@@ -372,7 +372,7 @@ const assert = Chai.assert;
 
     @test
     public fromInt_negative1Byte_littleEndian() {
-        this.testInt(
+        ByteVector_ConstructorTests.testInt(
             -0x12,
             [0xEE, 0xFF, 0xFF, 0xFF],
             undefined,
@@ -382,7 +382,7 @@ const assert = Chai.assert;
 
     @test
     public fromInt_negative2Byte_bigEndian() {
-        this.testInt(
+        ByteVector_ConstructorTests.testInt(
             -0x1234,
             [0xFF, 0xFF, 0xED, 0xCC],
             undefined,
@@ -392,7 +392,7 @@ const assert = Chai.assert;
 
     @test
     public fromInt_negative2Byte_littleEndian() {
-        this.testInt(
+        ByteVector_ConstructorTests.testInt(
             -0x1234,
             [0xCC, 0xED, 0xFF, 0xFF],
             undefined,
@@ -402,7 +402,7 @@ const assert = Chai.assert;
 
     @test
     public fromInt_negative3Byte_bigEndian() {
-        this.testInt(
+        ByteVector_ConstructorTests.testInt(
             -0x123456,
             [0xFF, 0xED, 0xCB, 0xAA],
             undefined,
@@ -412,7 +412,7 @@ const assert = Chai.assert;
 
     @test
     public fromInt_negative3Byte_littleEndian() {
-        this.testInt(
+        ByteVector_ConstructorTests.testInt(
             -0x123456,
             [0xAA, 0xCB, 0xED, 0xFF],
             undefined,
@@ -422,7 +422,7 @@ const assert = Chai.assert;
 
     @test
     public fromInt_negative4Byte_bigEndian() {
-        this.testInt(
+        ByteVector_ConstructorTests.testInt(
             -0x12345678,
             [0xED, 0xCB, 0xA9, 0x88],
             undefined,
@@ -432,7 +432,7 @@ const assert = Chai.assert;
 
     @test
     public fromInt_negative4Byte_littleEndian() {
-        this.testInt(
+        ByteVector_ConstructorTests.testInt(
             -0x12345678,
             [0x88, 0xA9, 0xCB, 0xED],
             undefined,
@@ -442,7 +442,7 @@ const assert = Chai.assert;
 
     @test
     public fromInt_readOnly() {
-        this.testInt(
+        ByteVector_ConstructorTests.testInt(
             0,
             [0x00, 0x00, 0x00, 0x00],
             true,
@@ -899,7 +899,7 @@ const assert = Chai.assert;
 
     @test
     public fromShort_zero_bigEndian() {
-        this.testShort(
+        ByteVector_ConstructorTests.testShort(
             0x0,
             [0x0, 0x0],
             undefined,
@@ -909,7 +909,7 @@ const assert = Chai.assert;
 
     @test
     public fromShort_zero_littleEndian() {
-        this.testShort(
+        ByteVector_ConstructorTests.testShort(
             0x0,
             [0x0, 0x0],
             undefined,
@@ -919,7 +919,7 @@ const assert = Chai.assert;
 
     @test
     public fromShort_positive1Byte_bigEndian() {
-        this.testShort(
+        ByteVector_ConstructorTests.testShort(
             0x12,
             [0x00, 0x12],
             undefined,
@@ -929,7 +929,7 @@ const assert = Chai.assert;
 
     @test
     public fromShort_positive1Byte_littleEndian() {
-        this.testShort(
+        ByteVector_ConstructorTests.testShort(
             0x12,
             [0x12, 0x00],
             undefined,
@@ -939,7 +939,7 @@ const assert = Chai.assert;
 
     @test
     public fromShort_positive2Byte_bigEndian() {
-        this.testShort(
+        ByteVector_ConstructorTests.testShort(
             0x1234,
             [0x12, 0x34],
             undefined,
@@ -949,7 +949,7 @@ const assert = Chai.assert;
 
     @test
     public fromShort_positive2Byte_littleEndian() {
-        this.testShort(
+        ByteVector_ConstructorTests.testShort(
             0x1234,
             [0x34, 0x12],
             undefined,
@@ -959,7 +959,7 @@ const assert = Chai.assert;
 
     @test
     public fromShort_negative1Byte_bigEndian() {
-        this.testShort(
+        ByteVector_ConstructorTests.testShort(
             -0x12,
             [0xFF, 0xEE],
             undefined,
@@ -969,7 +969,7 @@ const assert = Chai.assert;
 
     @test
     public fromShort_negative1Byte_littleEndian() {
-        this.testShort(
+        ByteVector_ConstructorTests.testShort(
             -0x12,
             [0xEE, 0xFF],
             undefined,
@@ -979,7 +979,7 @@ const assert = Chai.assert;
 
     @test
     public fromShort_negative2Byte_bigEndian() {
-        this.testShort(
+        ByteVector_ConstructorTests.testShort(
             -0x1234,
             [0xED, 0xCC],
             undefined,
@@ -989,7 +989,7 @@ const assert = Chai.assert;
 
     @test
     public fromShort_negative2Byte_littleEndian() {
-        this.testShort(
+        ByteVector_ConstructorTests.testShort(
             -0x1234,
             [0xCC, 0xED],
             undefined,
@@ -999,7 +999,7 @@ const assert = Chai.assert;
 
     @test
     public fromShort_readOnly() {
-        this.testShort(
+        ByteVector_ConstructorTests.testShort(
             0x0,
             [0x0, 0x0],
             true,
@@ -1145,7 +1145,7 @@ const assert = Chai.assert;
 
     @test
     public fromString_utf8Full() {
-        this.testString(
+        ByteVector_ConstructorTests.testString(
             TestConstants.testStrings.UTF8.str,
             TestConstants.testStrings.UTF8.bytes,
             undefined,
@@ -1156,7 +1156,7 @@ const assert = Chai.assert;
 
     @test
     public fromString_utf8Partial() {
-        this.testString(
+        ByteVector_ConstructorTests.testString(
             TestConstants.testStrings.UTF8.str,
             TestConstants.testStrings.UTF8.bytes.slice(0, 9),
             undefined,
@@ -1167,7 +1167,7 @@ const assert = Chai.assert;
 
     @test
     public fromString_utf8Empty() {
-        this.testString(
+        ByteVector_ConstructorTests.testString(
             "",
             [],
             undefined,
@@ -1179,7 +1179,7 @@ const assert = Chai.assert;
     @test
     public fromString_utf16LittleEndianFull() {
         const originalLastUtf16Encoding = ByteVector.lastUtf16Encoding;
-        this.testString(
+        ByteVector_ConstructorTests.testString(
             TestConstants.testStrings.UTF16LE.str,
             TestConstants.testStrings.UTF16LE.bytes,
             StringType.UTF16LE,
@@ -1192,7 +1192,7 @@ const assert = Chai.assert;
     @test
     public fromString_utf16LittleEndianPartial() {
         const originalLastUtf16Encoding = ByteVector.lastUtf16Encoding;
-        this.testString(
+        ByteVector_ConstructorTests.testString(
             TestConstants.testStrings.UTF16LE.str,
             TestConstants.testStrings.UTF16LE.bytes.slice(0, 12),
             StringType.UTF16LE,
@@ -1205,7 +1205,7 @@ const assert = Chai.assert;
     @test
     public fromString_utf16LittleEndianEmpty() {
         const originalLastUtf16Encoding = ByteVector.lastUtf16Encoding;
-        this.testString(
+        ByteVector_ConstructorTests.testString(
             "",
             [],
             StringType.UTF16LE,
@@ -1218,7 +1218,7 @@ const assert = Chai.assert;
     @test
     public fromString_utf16BigEndianFull() {
         const originalLastUtf16Encoding = ByteVector.lastUtf16Encoding;
-        this.testString(
+        ByteVector_ConstructorTests.testString(
             TestConstants.testStrings.UTF16BE.str,
             TestConstants.testStrings.UTF16BE.bytes,
             StringType.UTF16BE,
@@ -1231,7 +1231,7 @@ const assert = Chai.assert;
     @test
     public fromString_utf16BigEndianPartial() {
         const originalLastUtf16Encoding = ByteVector.lastUtf16Encoding;
-        this.testString(
+        ByteVector_ConstructorTests.testString(
             TestConstants.testStrings.UTF16BE.str,
             TestConstants.testStrings.UTF16BE.bytes.slice(0, 12),
             StringType.UTF16BE,
@@ -1244,7 +1244,7 @@ const assert = Chai.assert;
     @test
     public fromString_utf16BigEndianEmpty() {
         const originalLastUtf16Encoding = ByteVector.lastUtf16Encoding;
-        this.testString(
+        ByteVector_ConstructorTests.testString(
             "",
             [],
             StringType.UTF16BE,
@@ -1256,7 +1256,7 @@ const assert = Chai.assert;
 
     @test
     public fromString_latin1Full() {
-        this.testString(
+        ByteVector_ConstructorTests.testString(
             TestConstants.testStrings.Latin1.str,
             TestConstants.testStrings.Latin1.bytes,
             StringType.Latin1,
@@ -1267,7 +1267,7 @@ const assert = Chai.assert;
 
     @test
     public fromString_latin1Partial() {
-        this.testString(
+        ByteVector_ConstructorTests.testString(
             TestConstants.testStrings.Latin1.str,
             TestConstants.testStrings.Latin1.bytes.slice(0, 6),
             StringType.Latin1,
@@ -1278,7 +1278,7 @@ const assert = Chai.assert;
 
     @test
     public fromString_latin1Empty() {
-        this.testString(
+        ByteVector_ConstructorTests.testString(
             "",
             [],
             StringType.Latin1,
@@ -1293,7 +1293,7 @@ const assert = Chai.assert;
         const originalLastEncoding = ByteVector.lastUtf16Encoding;
         ByteVector.lastUtf16Encoding = "something bogus";
 
-        this.testString(
+        ByteVector_ConstructorTests.testString(
             TestConstants.testStrings.UTF16LEWithBOM.str,
             TestConstants.testStrings.UTF16LEWithBOM.bytes,
             StringType.UTF16,
@@ -1312,7 +1312,7 @@ const assert = Chai.assert;
         const originalLastEncoding = ByteVector.lastUtf16Encoding;
         ByteVector.lastUtf16Encoding = "something bogus";
 
-        this.testString(
+        ByteVector_ConstructorTests.testString(
             TestConstants.testStrings.UTF16LEWithBOM.str,
             TestConstants.testStrings.UTF16LEWithBOM.bytes.slice(0, 14),
             StringType.UTF16,
@@ -1331,7 +1331,7 @@ const assert = Chai.assert;
         const originalLastEncoding = ByteVector.lastUtf16Encoding;
         ByteVector.lastUtf16Encoding = "something bogus";
 
-        this.testString(
+        ByteVector_ConstructorTests.testString(
             "",
             TestConstants.testStrings.UTF16LEWithBOM.bytes.slice(0, 2),
             StringType.UTF16,
@@ -1346,7 +1346,7 @@ const assert = Chai.assert;
 
     @test
     public fromString_readOnly() {
-        this.testString(
+        ByteVector_ConstructorTests.testString(
             "",
             [],
             StringType.Latin1,
@@ -1369,7 +1369,7 @@ const assert = Chai.assert;
 
     @test
     public fromUInt_zero_bigEndian() {
-        this.testUInt(
+        ByteVector_ConstructorTests.testUInt(
             0x0,
             [0x0, 0x0, 0x0, 0x0],
             undefined,
@@ -1379,7 +1379,7 @@ const assert = Chai.assert;
 
     @test
     public fromUInt_zero_littleEndian() {
-        this.testUInt(
+        ByteVector_ConstructorTests.testUInt(
             0x0,
             [0x0, 0x0, 0x0, 0x0],
             undefined,
@@ -1389,7 +1389,7 @@ const assert = Chai.assert;
 
     @test
     public fromUInt_positive1Byte_bigEndian() {
-        this.testUInt(
+        ByteVector_ConstructorTests.testUInt(
             0x12,
             [0x00, 0x00, 0x00, 0x12],
             undefined,
@@ -1399,7 +1399,7 @@ const assert = Chai.assert;
 
     @test
     public fromUInt_positive1Byte_littleEndian() {
-        this.testUInt(
+        ByteVector_ConstructorTests.testUInt(
             0x12,
             [0x12, 0x00, 0x00, 0x00],
             undefined,
@@ -1409,7 +1409,7 @@ const assert = Chai.assert;
 
     @test
     public fromUInt_positive2Byte_bigEndian() {
-        this.testUInt(
+        ByteVector_ConstructorTests.testUInt(
             0x1234,
             [0x00, 0x00, 0x12, 0x34],
             undefined,
@@ -1419,7 +1419,7 @@ const assert = Chai.assert;
 
     @test
     public fromUInt_positive2Byte_littleEndian() {
-        this.testUInt(
+        ByteVector_ConstructorTests.testUInt(
             0x1234,
             [0x34, 0x12, 0x00, 0x00],
             undefined,
@@ -1429,7 +1429,7 @@ const assert = Chai.assert;
 
     @test
     public fromUInt_positive3Byte_bigEndian() {
-        this.testUInt(
+        ByteVector_ConstructorTests.testUInt(
             0x123456,
             [0x00, 0x12, 0x34, 0x56],
             undefined,
@@ -1439,7 +1439,7 @@ const assert = Chai.assert;
 
     @test
     public fromUInt_positive3Byte_littleEndian() {
-        this.testUInt(
+        ByteVector_ConstructorTests.testUInt(
             0x123456,
             [0x56, 0x34, 0x12, 0x00],
             undefined,
@@ -1449,7 +1449,7 @@ const assert = Chai.assert;
 
     @test
     public fromUInt_positive4Byte_bigEndian() {
-        this.testUInt(
+        ByteVector_ConstructorTests.testUInt(
             0x12345678,
             [0x12, 0x34, 0x56, 0x78],
             undefined,
@@ -1459,7 +1459,7 @@ const assert = Chai.assert;
 
     @test
     public fromUInt_positive4Byte_littleEndian() {
-        this.testUInt(
+        ByteVector_ConstructorTests.testUInt(
             0x12345678,
             [0x78, 0x56, 0x34, 0x12],
             undefined,
@@ -1469,7 +1469,7 @@ const assert = Chai.assert;
 
     @test
     public fromUInt_unsignedRange_bigEndian() {
-        this.testUInt(
+        ByteVector_ConstructorTests.testUInt(
             0xFFFFFFFF,
             [0xFF, 0xFF, 0xFF, 0xFF],
             undefined,
@@ -1479,7 +1479,7 @@ const assert = Chai.assert;
 
     @test
     public fromUInt_unsignedRange_littleEndian() {
-        this.testUInt(
+        ByteVector_ConstructorTests.testUInt(
             0xFFFFFFFF,
             [0xFF, 0xFF, 0xFF, 0xFF],
             undefined,
@@ -1489,7 +1489,7 @@ const assert = Chai.assert;
 
     @test
     public fromUInt_readOnly() {
-        this.testUInt(
+        ByteVector_ConstructorTests.testUInt(
             0,
             [0x00, 0x00, 0x00, 0x00],
             true,
@@ -1881,7 +1881,7 @@ const assert = Chai.assert;
 
     @test
     public fromUShort_zero_bigEndian() {
-        this.testUShort(
+        ByteVector_ConstructorTests.testUShort(
             0x0,
             [0x0, 0x0],
             undefined,
@@ -1891,7 +1891,7 @@ const assert = Chai.assert;
 
     @test
     public fromUShort_zero_littleEndian() {
-        this.testUShort(
+        ByteVector_ConstructorTests.testUShort(
             0x0,
             [0x0, 0x0],
             undefined,
@@ -1901,7 +1901,7 @@ const assert = Chai.assert;
 
     @test
     public fromUShort_positive1Byte_bigEndian() {
-        this.testUShort(
+        ByteVector_ConstructorTests.testUShort(
             0x12,
             [0x00, 0x12],
             undefined,
@@ -1911,7 +1911,7 @@ const assert = Chai.assert;
 
     @test
     public fromUShort_positive1Byte_littleEndian() {
-        this.testUShort(
+        ByteVector_ConstructorTests.testUShort(
             0x12,
             [0x12, 0x00],
             undefined,
@@ -1921,7 +1921,7 @@ const assert = Chai.assert;
 
     @test
     public fromUShort_positive2Byte_bigEndian() {
-        this.testUShort(
+        ByteVector_ConstructorTests.testUShort(
             0x1234,
             [0x12, 0x34],
             undefined,
@@ -1931,7 +1931,7 @@ const assert = Chai.assert;
 
     @test
     public fromUShort_positive2Byte_littleEndian() {
-        this.testUShort(
+        ByteVector_ConstructorTests.testUShort(
             0x1234,
             [0x34, 0x12],
             undefined,
@@ -1941,7 +1941,7 @@ const assert = Chai.assert;
 
     @test
     public fromUShort_unsignedRange_bigEndian() {
-        this.testUShort(
+        ByteVector_ConstructorTests.testUShort(
             0xFFFF,
             [0xFF, 0xFF],
             undefined,
@@ -1951,7 +1951,7 @@ const assert = Chai.assert;
 
     @test
     public fromUShort_unsignedRange_littleEndian() {
-        this.testUShort(
+        ByteVector_ConstructorTests.testUShort(
             0xFFFF,
             [0xFF, 0xFF],
             undefined,
@@ -1961,7 +1961,7 @@ const assert = Chai.assert;
 
     @test
     public fromUShort_readOnly() {
-        this.testUShort(
+        ByteVector_ConstructorTests.testUShort(
             0x0,
             [0x0, 0x0],
             true,
@@ -1969,7 +1969,7 @@ const assert = Chai.assert;
         );
     }
 
-    private testInt(value: number, expectedData: number[], isReadOnly: boolean, bigEndian: boolean): void {
+    private static testInt(value: number, expectedData: number[], isReadOnly: boolean, bigEndian: boolean): void {
         // Arrange, Act
         const bv = ByteVector.fromInt(value, bigEndian, isReadOnly);
 
@@ -2006,7 +2006,7 @@ const assert = Chai.assert;
         assert.deepEqual(bv.data, new Uint8Array(expectedData));
     }
 
-    private testShort(value: number, expectedData: number[], isReadOnly: boolean, bigEndian: boolean): void {
+    private static testShort(value: number, expectedData: number[], isReadOnly: boolean, bigEndian: boolean): void {
         // Arrange, Act
         const bv = ByteVector.fromShort(value, bigEndian, isReadOnly);
 
@@ -2022,7 +2022,7 @@ const assert = Chai.assert;
         assert.deepEqual(bv.data, new Uint8Array(expectedData));
     }
 
-    private testString(
+    private static testString(
         str: string,
         expectedData: number[],
         stringType: StringType,
@@ -2043,7 +2043,7 @@ const assert = Chai.assert;
         assert.deepEqual(bv.data, new Uint8Array(expectedData));
     }
 
-    private testUInt(value: number, expectedData: number[], isReadOnly: boolean, bigEndian: boolean): void {
+    private static testUInt(value: number, expectedData: number[], isReadOnly: boolean, bigEndian: boolean): void {
         // Arrange, Act
         const bv = ByteVector.fromUInt(value, bigEndian, isReadOnly);
 
@@ -2080,7 +2080,7 @@ const assert = Chai.assert;
         assert.deepEqual(bv.data, new Uint8Array(expectedData));
     }
 
-    private testUShort(value: number, expectedData: number[], isReadOnly: boolean, bigEndian: boolean): void {
+    private static testUShort(value: number, expectedData: number[], isReadOnly: boolean, bigEndian: boolean): void {
         // Arrange, Act
         const bv = ByteVector.fromUShort(value, bigEndian, isReadOnly);
 

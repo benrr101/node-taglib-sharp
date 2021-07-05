@@ -15,7 +15,7 @@ export abstract class AviStream {
 
     /**
      * Constructs and initializes a new instance with a specified stream header.
-     * @param header The strean's header
+     * @param header The stream's header
      * @protected
      */
     protected constructor(header: AviStreamHeader) {

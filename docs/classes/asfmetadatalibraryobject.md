@@ -7,9 +7,9 @@ and written to disk.
 
 ## Hierarchy
 
-* *BaseObject*
+- `BaseObject`
 
-  ↳ **AsfMetadataLibraryObject**
+  ↳ **`AsfMetadataLibraryObject`**
 
 ## Table of contents
 
@@ -38,21 +38,25 @@ and written to disk.
 
 ### guid
 
-• **guid**(): *default*
+• `get` **guid**(): `default`
 
 Gets the GUID that identifies the current instance.
 
-**Returns:** *default*
+#### Returns
+
+`default`
 
 ___
 
 ### isEmpty
 
-• **isEmpty**(): *boolean*
+• `get` **isEmpty**(): `boolean`
 
 Gets whether or not the current instance contains any records.
 
-**Returns:** *boolean*
+#### Returns
+
+`boolean`
 
 boolean `true` if the current instance does not contain any records, `false`
     otherwise.
@@ -61,153 +65,189 @@ ___
 
 ### objectType
 
-• **objectType**(): ObjectType
+• `get` **objectType**(): `ObjectType`
 
-**`inheritdoc`** 
+**`inheritdoc`**
 
-**Returns:** ObjectType
+#### Returns
+
+`ObjectType`
 
 ___
 
 ### originalSize
 
-• **originalSize**(): *number*
+• `get` **originalSize**(): `number`
 
 Gets the original size of the current instance.
 
-**Returns:** *number*
+#### Returns
+
+`number`
 
 ___
 
 ### records
 
-• **records**(): [*AsfMetadataDescriptor*](asfmetadatadescriptor.md)[]
+• `get` **records**(): [`AsfMetadataDescriptor`](asfmetadatadescriptor.md)[]
 
 Gets all records stored in the current instance.
 
-**Returns:** [*AsfMetadataDescriptor*](asfmetadatadescriptor.md)[]
+#### Returns
+
+[`AsfMetadataDescriptor`](asfmetadatadescriptor.md)[]
 
 ## Methods
 
 ### addRecord
 
-▸ **addRecord**(`record`: [*AsfMetadataDescriptor*](asfmetadatadescriptor.md)): *void*
+▸ **addRecord**(`record`): `void`
 
 Adds a record to the current instance.
 
-#### Parameters:
+#### Parameters
 
-Name | Type | Description |
------- | ------ | ------ |
-`record` | [*AsfMetadataDescriptor*](asfmetadatadescriptor.md) | Record to add to the current instance    |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `record` | [`AsfMetadataDescriptor`](asfmetadatadescriptor.md) | Record to add to the current instance |
 
-**Returns:** *void*
+#### Returns
+
+`void`
 
 ___
 
 ### getRecords
 
-▸ **getRecords**(`languageListIndex`: *number*, `streamNumber`: *number*, ...`names`: *string*[]): [*AsfMetadataDescriptor*](asfmetadatadescriptor.md)[]
+▸ **getRecords**(`languageListIndex`, `streamNumber`, ...`names`): [`AsfMetadataDescriptor`](asfmetadatadescriptor.md)[]
 
 Gets all records with a given language, stream, and any of a collection of names from the
 current instance.
 
-#### Parameters:
+#### Parameters
 
-Name | Type | Description |
------- | ------ | ------ |
-`languageListIndex` | *number* | Index of the desired language in the language list   |
-`streamNumber` | *number* | Index of the stream in the file the desired records applies to   |
-`...names` | *string*[] | List of names of the records to return    |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `languageListIndex` | `number` | Index of the desired language in the language list |
+| `streamNumber` | `number` | Index of the stream in the file the desired records applies to |
+| `...names` | `string`[] | List of names of the records to return |
 
-**Returns:** [*AsfMetadataDescriptor*](asfmetadatadescriptor.md)[]
+#### Returns
+
+[`AsfMetadataDescriptor`](asfmetadatadescriptor.md)[]
 
 ___
 
 ### initializeFromFile
 
-▸ `Protected`**initializeFromFile**(`file`: [*File*](file.md), `position`: *number*): *void*
+▸ `Protected` **initializeFromFile**(`file`, `position`): `void`
 
 Initializes a new instance by reading the contents from a specified position in a specified
 file.
 
-#### Parameters:
+#### Parameters
 
-Name | Type | Description |
------- | ------ | ------ |
-`file` | [*File*](file.md) | File which contains the details of the new instance to create   |
-`position` | *number* | Position in `file` where the object begins   |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `file` | [`File`](file.md) | File which contains the details of the new instance to create |
+| `position` | `number` | Position in `file` where the object begins |
 
-**Returns:** *void*
+#### Returns
+
+`void`
+
+#### Inherited from
+
+BaseObject.initializeFromFile
 
 ___
 
 ### initializeFromGuid
 
-▸ `Protected`**initializeFromGuid**(`guid`: *default*): *void*
+▸ `Protected` **initializeFromGuid**(`guid`): `void`
 
 Initializes a new instance with a specified GUID.
 
-#### Parameters:
+#### Parameters
 
-Name | Type | Description |
------- | ------ | ------ |
-`guid` | *default* | GUID to use for the new instance.   |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `guid` | `default` | GUID to use for the new instance. |
 
-**Returns:** *void*
+#### Returns
+
+`void`
+
+#### Inherited from
+
+BaseObject.initializeFromGuid
 
 ___
 
 ### removeRecords
 
-▸ **removeRecords**(`languageListIndex`: *number*, `streamNumber`: *number*, `name`: *string*): *void*
+▸ **removeRecords**(`languageListIndex`, `streamNumber`, `name`): `void`
 
 Removes all records with a given language, stream, and name from the current instance.
 
-#### Parameters:
+#### Parameters
 
-Name | Type | Description |
------- | ------ | ------ |
-`languageListIndex` | *number* | Language list index of the records to be removed   |
-`streamNumber` | *number* | Index of the stream in the file the desired records to remove   |
-`name` | *string* | Name of the records to remove    |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `languageListIndex` | `number` | Language list index of the records to be removed |
+| `streamNumber` | `number` | Index of the stream in the file the desired records to remove |
+| `name` | `string` | Name of the records to remove |
 
-**Returns:** *void*
+#### Returns
+
+`void`
 
 ___
 
 ### render
 
-▸ **render**(): [*ByteVector*](bytevector.md)
+▸ **render**(): [`ByteVector`](bytevector.md)
 
-**`inheritdoc`** 
+**`inheritdoc`**
 
-**Returns:** [*ByteVector*](bytevector.md)
+#### Returns
+
+[`ByteVector`](bytevector.md)
+
+#### Overrides
+
+BaseObject.render
 
 ___
 
 ### renderInternal
 
-▸ `Protected`**renderInternal**(`data`: [*ByteVector*](bytevector.md)): [*ByteVector*](bytevector.md)
+▸ `Protected` **renderInternal**(`data`): [`ByteVector`](bytevector.md)
 
 Renders the current instance as a raw ASF object containing the specified data.
 
 **`remarks`** Child classes implementing {@see render()} should render their contents and then
     send the data through this method to produce the final output.
 
-#### Parameters:
+#### Parameters
 
-Name | Type | Description |
------- | ------ | ------ |
-`data` | [*ByteVector*](bytevector.md) | Data to store in the rendered version of the current instance.   |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `data` | [`ByteVector`](bytevector.md) | Data to store in the rendered version of the current instance. |
 
-**Returns:** [*ByteVector*](bytevector.md)
+#### Returns
+
+[`ByteVector`](bytevector.md)
+
+#### Inherited from
+
+BaseObject.renderInternal
 
 ___
 
 ### setRecords
 
-▸ **setRecords**(`languageListIndex`: *number*, `streamNumber`: *number*, `name`: *string*, ...`records`: [*AsfMetadataDescriptor*](asfmetadatadescriptor.md)[]): *void*
+▸ **setRecords**(`languageListIndex`, `streamNumber`, `name`, ...`records`): `void`
 
 Sets a collection of records for a given language, language, ane name, removing the existing
 records that match.
@@ -218,38 +258,44 @@ records that match.
     arguments are only used for removing existing values and determining where to position
     the new records.
 
-#### Parameters:
+#### Parameters
 
-Name | Type | Description |
------- | ------ | ------ |
-`languageListIndex` | *number* | Index of the desired language in the language list   |
-`streamNumber` | *number* | Index of the stream in the file the desired records applies to   |
-`name` | *string* | Names of the records to remove   |
-`...records` | [*AsfMetadataDescriptor*](asfmetadatadescriptor.md)[] | Records to insert into the current instance    |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `languageListIndex` | `number` | Index of the desired language in the language list |
+| `streamNumber` | `number` | Index of the stream in the file the desired records applies to |
+| `name` | `string` | Names of the records to remove |
+| `...records` | [`AsfMetadataDescriptor`](asfmetadatadescriptor.md)[] | Records to insert into the current instance |
 
-**Returns:** *void*
+#### Returns
+
+`void`
 
 ___
 
 ### fromEmpty
 
-▸ `Static`**fromEmpty**(): [*AsfMetadataLibraryObject*](asfmetadatalibraryobject.md)
+▸ `Static` **fromEmpty**(): [`AsfMetadataLibraryObject`](asfmetadatalibraryobject.md)
 
 Constructs and initializes a new instance that does not contain any records.
 
-**Returns:** [*AsfMetadataLibraryObject*](asfmetadatalibraryobject.md)
+#### Returns
+
+[`AsfMetadataLibraryObject`](asfmetadatalibraryobject.md)
 
 ___
 
 ### fromFile
 
-▸ `Static`**fromFile**(`file`: [*File*](file.md), `position`: *number*): [*AsfMetadataLibraryObject*](asfmetadatalibraryobject.md)
+▸ `Static` **fromFile**(`file`, `position`): [`AsfMetadataLibraryObject`](asfmetadatalibraryobject.md)
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
------- | ------ |
-`file` | [*File*](file.md) |
-`position` | *number* |
+| Name | Type |
+| :------ | :------ |
+| `file` | [`File`](file.md) |
+| `position` | `number` |
 
-**Returns:** [*AsfMetadataLibraryObject*](asfmetadatalibraryobject.md)
+#### Returns
+
+[`AsfMetadataLibraryObject`](asfmetadatalibraryobject.md)

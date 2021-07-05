@@ -49,7 +49,7 @@ function getCustomTestFrame(data: ByteVector, desc: string, filename: string, mi
     @test
     public fromPicture_falsyPicture() {
         // Act / Assert
-        Testers.testTruthy((v: IPicture) => { const _ = AttachmentFrame.fromPicture(v); });
+        Testers.testTruthy((v: IPicture) => AttachmentFrame.fromPicture(v));
     }
 
     @test
@@ -67,7 +67,7 @@ function getCustomTestFrame(data: ByteVector, desc: string, filename: string, mi
         const frame = AttachmentFrame.fromPicture(mockPicture.object);
 
         // Assert
-        this.verifyFrame(
+        Id3v2_AttachmentFrame_ConstructorTests.verifyFrame(
             frame,
             FrameIdentifiers.APIC,
             data,
@@ -94,7 +94,7 @@ function getCustomTestFrame(data: ByteVector, desc: string, filename: string, mi
         const frame = AttachmentFrame.fromPicture(mockPicture.object);
 
         // Assert
-        this.verifyFrame(
+        Id3v2_AttachmentFrame_ConstructorTests.verifyFrame(
             frame,
             FrameIdentifiers.GEOB,
             data,
@@ -118,7 +118,7 @@ function getCustomTestFrame(data: ByteVector, desc: string, filename: string, mi
 
         // Act / Assert
         const frame = AttachmentFrame.fromRawData(data, 4);
-        assert.throws(() => { const _ = frame.type; });
+        assert.throws(() => frame.type);
     }
 
     @test
@@ -132,7 +132,7 @@ function getCustomTestFrame(data: ByteVector, desc: string, filename: string, mi
         );
 
         // Act / Assert
-        assert.throws(() => { const _ = AttachmentFrame.fromRawData(data, 4); });
+        assert.throws(() => AttachmentFrame.fromRawData(data, 4));
     }
 
     // NOTE: If you're wondering why we have a test for latin1 vs other encodings, it's b/c the
@@ -161,7 +161,7 @@ function getCustomTestFrame(data: ByteVector, desc: string, filename: string, mi
         const frame = AttachmentFrame.fromRawData(data, 4);
 
         // Assert
-        this.verifyFrame(
+        Id3v2_AttachmentFrame_ConstructorTests.verifyFrame(
             frame,
             FrameIdentifiers.APIC,
             testData,
@@ -194,7 +194,7 @@ function getCustomTestFrame(data: ByteVector, desc: string, filename: string, mi
         const frame = AttachmentFrame.fromRawData(data, 4);
 
         // Assert
-        this.verifyFrame(
+        Id3v2_AttachmentFrame_ConstructorTests.verifyFrame(
             frame,
             FrameIdentifiers.APIC,
             testData,
@@ -226,7 +226,7 @@ function getCustomTestFrame(data: ByteVector, desc: string, filename: string, mi
         const frame = AttachmentFrame.fromRawData(data, 2);
 
         // Assert
-        this.verifyFrame(
+        Id3v2_AttachmentFrame_ConstructorTests.verifyFrame(
             frame,
             FrameIdentifiers.APIC,
             testData,
@@ -260,7 +260,7 @@ function getCustomTestFrame(data: ByteVector, desc: string, filename: string, mi
         const frame = AttachmentFrame.fromRawData(data, 4);
 
         // Assert
-        this.verifyFrame(
+        Id3v2_AttachmentFrame_ConstructorTests.verifyFrame(
             frame,
             FrameIdentifiers.GEOB,
             testData,
@@ -294,7 +294,7 @@ function getCustomTestFrame(data: ByteVector, desc: string, filename: string, mi
         const frame = AttachmentFrame.fromOffsetRawData(data, 2, header, 4);
 
         // Assert
-        this.verifyFrame(
+        Id3v2_AttachmentFrame_ConstructorTests.verifyFrame(
             frame,
             FrameIdentifiers.APIC,
             testData,
@@ -306,7 +306,7 @@ function getCustomTestFrame(data: ByteVector, desc: string, filename: string, mi
         );
     }
 
-    private verifyFrame(
+    private static verifyFrame(
         frame: AttachmentFrame,
         ft: FrameIdentifier,
         d: ByteVector,

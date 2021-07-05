@@ -16,7 +16,7 @@ Specifies the type of file access operations currently permitted on an instance 
 
 ### Closed
 
-• **Closed**: = 2
+• **Closed** = `2`
 
 The file is closed for both read and write operations
 
@@ -24,7 +24,7 @@ ___
 
 ### Read
 
-• **Read**: = 0
+• **Read** = `0`
 
 Read operations can be performed.
 
@@ -32,6 +32,6 @@ ___
 
 ### Write
 
-• **Write**: = 1
+• **Write** = `1`
 
 Read and write operations can be performed

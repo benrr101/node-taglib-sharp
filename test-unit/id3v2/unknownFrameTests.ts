@@ -36,7 +36,7 @@ const assert = Chai.assert;
         const frame = UnknownFrame.fromData(frameType, undefined);
 
         // Assert
-        this.assertFrame(frame, FrameIdentifiers.WXXX, undefined);
+        Id3v2_UnknownFrame_ConstructorTests.assertFrame(frame, FrameIdentifiers.WXXX, undefined);
     }
 
     @test
@@ -48,7 +48,7 @@ const assert = Chai.assert;
         const frame = UnknownFrame.fromData(frameType, null);
 
         // Assert
-        this.assertFrame(frame, FrameIdentifiers.WXXX, undefined);
+        Id3v2_UnknownFrame_ConstructorTests.assertFrame(frame, FrameIdentifiers.WXXX, undefined);
     }
 
     @test
@@ -61,7 +61,7 @@ const assert = Chai.assert;
         const frame = UnknownFrame.fromData(frameType, data);
 
         // Assert
-        this.assertFrame(frame, FrameIdentifiers.WXXX, data);
+        Id3v2_UnknownFrame_ConstructorTests.assertFrame(frame, FrameIdentifiers.WXXX, data);
     }
 
     @test
@@ -79,7 +79,7 @@ const assert = Chai.assert;
         const frame = UnknownFrame.fromOffsetRawData(data, 2, header, 4);
 
         // Assert
-        this.assertFrame(frame, FrameIdentifiers.WXXX, ByteVector.fromString("foo bar baz"));
+        Id3v2_UnknownFrame_ConstructorTests.assertFrame(frame, FrameIdentifiers.WXXX, ByteVector.fromString("foo bar baz"));
     }
 
     @test
@@ -96,10 +96,10 @@ const assert = Chai.assert;
         const frame = UnknownFrame.fromRawData(data, 4);
 
         // Assert
-        this.assertFrame(frame, FrameIdentifiers.WXXX, ByteVector.fromString("foo bar baz"));
+        Id3v2_UnknownFrame_ConstructorTests.assertFrame(frame, FrameIdentifiers.WXXX, ByteVector.fromString("foo bar baz"));
     }
 
-    private assertFrame(frame: UnknownFrame, fi: FrameIdentifier, d: ByteVector) {
+    private static assertFrame(frame: UnknownFrame, fi: FrameIdentifier, d: ByteVector) {
         assert.ok(frame);
         assert.strictEqual(frame.frameClassType, FrameClassType.UnknownFrame);
         assert.strictEqual(frame.frameId, fi);

@@ -37,7 +37,7 @@ const assert = Chai.assert;
         const testPath = TestConstants.getTestFilePath();
 
         // Act / Assert
-        assert.throws(() => { const _ = Stream.createAsRead(testPath); });
+        assert.throws(() => Stream.createAsRead(testPath));
     }
 
     @test
@@ -63,8 +63,8 @@ const assert = Chai.assert;
         const testPath = TestConstants.getTestFilePath();
 
         // Act / Assert
-        assert.throws(() => { const _ = Stream.createAsReadWrite(testPath); });
-        assert.throws(() => { const _ = Stream.createAsReadWrite(testPath); });
+        assert.throws(() => Stream.createAsReadWrite(testPath));
+        assert.throws(() => Stream.createAsReadWrite(testPath));
     }
 
     @test
@@ -275,7 +275,7 @@ const assert = Chai.assert;
             // Act / Assert
             Testers.testSafeUint((v: number) => { stream.setLength(v); });
         };
-        this.testWithFile(testAction, true);
+        StreamTests.testWithFile(testAction, true);
     }
 
     @test
@@ -284,7 +284,7 @@ const assert = Chai.assert;
             // Act / Assert
             assert.throws(() => stream.setLength(10));
         };
-        this.testWithFile(testAction, false);
+        StreamTests.testWithFile(testAction, false);
     }
 
     @test
@@ -303,7 +303,7 @@ const assert = Chai.assert;
             const stats = fs.statSync(testFilePath);
             assert.strictEqual(stats.size, testFilePath.length);
         };
-        this.testWithFile(testAction, true);
+        StreamTests.testWithFile(testAction, true);
     }
 
     @test
@@ -322,7 +322,7 @@ const assert = Chai.assert;
             const stats = fs.statSync(testFilePath);
             assert.strictEqual(stats.size, 4);
         };
-        this.testWithFile(testAction, true);
+        StreamTests.testWithFile(testAction, true);
     }
 
     @test
@@ -342,7 +342,7 @@ const assert = Chai.assert;
             const stats = fs.statSync(testFilePath);
             assert.strictEqual(stats.size, newLength);
         };
-        this.testWithFile(testAction, true);
+        StreamTests.testWithFile(testAction, true);
     }
 
     @test
@@ -354,7 +354,7 @@ const assert = Chai.assert;
             // Act / Assert
             assert.throws(() => { stream.write(contents, 0, 1); });
         };
-        this.testWithFile(testAction, false);
+        StreamTests.testWithFile(testAction, false);
     }
 
     @test
@@ -377,7 +377,7 @@ const assert = Chai.assert;
             expected.set(2, 0x03);
             assert.deepStrictEqual(contents, expected.data);
         };
-        this.testWithFile(testAction, true);
+        StreamTests.testWithFile(testAction, true);
     }
 
     @test
@@ -401,7 +401,7 @@ const assert = Chai.assert;
             expected.set(5, 0x03);
             assert.deepStrictEqual(contents, expected.data);
         };
-        this.testWithFile(testAction, true);
+        StreamTests.testWithFile(testAction, true);
     }
 
     @test
@@ -423,7 +423,7 @@ const assert = Chai.assert;
             expected.addByteArray(buffer);
             assert.deepStrictEqual(contents, expected.data);
         };
-        this.testWithFile(testAction, true);
+        StreamTests.testWithFile(testAction, true);
     }
 
     @test
@@ -445,10 +445,10 @@ const assert = Chai.assert;
             expected.set(1, 0x03);
             assert.deepStrictEqual(contents, expected.data);
         };
-        this.testWithFile(testAction, true);
+        StreamTests.testWithFile(testAction, true);
     }
 
-    private testWithFile(testAction: (filePath: string, stream: Stream) => void, isWritable: boolean) {
+    private static testWithFile(testAction: (filePath: string, stream: Stream) => void, isWritable: boolean) {
         // Arrange
         const testFilePath = TestConstants.getTestFilePath();
         fs.writeFileSync(testFilePath, testFilePath);
