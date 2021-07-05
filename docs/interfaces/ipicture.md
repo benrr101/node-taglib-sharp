@@ -5,15 +5,11 @@
 Interface that provides generic information about a picture, including its contents, as used by
 various formats.
 
-## Hierarchy
-
-* **IPicture**
-
 ## Implemented by
 
-* [*Id3v2AttachmentFrame*](../classes/id3v2attachmentframe.md)
-* [*Picture*](../classes/picture.md)
-* [*PictureLazy*](../classes/picturelazy.md)
+- [`Id3v2AttachmentFrame`](../classes/id3v2attachmentframe.md)
+- [`Picture`](../classes/picture.md)
+- [`PictureLazy`](../classes/picturelazy.md)
 
 ## Table of contents
 
@@ -29,7 +25,7 @@ various formats.
 
 ### data
 
-• **data**: [*ByteVector*](../classes/bytevector.md)
+• **data**: [`ByteVector`](../classes/bytevector.md)
 
 Gets and sets the picture data stored in the current instance.
 
@@ -37,7 +33,7 @@ ___
 
 ### description
 
-• **description**: *string*
+• **description**: `string`
 
 Gets and sets a description of the picture stored in the current instance. Optional.
 
@@ -45,7 +41,7 @@ ___
 
 ### filename
 
-• **filename**: *string*
+• **filename**: `string`
 
 Gets and sets a filename of the picture stored in the current instance. Optional.
 
@@ -53,7 +49,7 @@ ___
 
 ### mimeType
 
-• **mimeType**: *string*
+• **mimeType**: `string`
 
 Gets and sets the mime-type of the picture data stored in the current instance.
 
@@ -61,6 +57,6 @@ ___
 
 ### type
 
-• **type**: [*PictureType*](../enums/picturetype.md)
+• **type**: [`PictureType`](../enums/picturetype.md)
 
 Gets and sets the type of the content visible in the picture stored in the current instance.

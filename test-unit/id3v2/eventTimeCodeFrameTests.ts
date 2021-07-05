@@ -1,26 +1,24 @@
 import * as Chai from "chai";
-import * as ChaiAsPromised from "chai-as-promised";
+import {suite, test} from "@testdeck/mocha";
+
 import FrameConstructorTests from "./frameConstructorTests";
 import PropertyTests from "../utilities/propertyTests";
-import {Testers} from "../utilities/testers";
-import {suite, test} from "mocha-typescript";
-
 import {ByteVector} from "../../src/byteVector";
 import {EventTimeCode, EventTimeCodeFrame} from "../../src/id3v2/frames/eventTimeCodeFrame";
 import {Frame, FrameClassType} from "../../src/id3v2/frames/frame";
 import {Id3v2FrameFlags, Id3v2FrameHeader} from "../../src/id3v2/frames/frameHeader";
 import {FrameIdentifiers} from "../../src/id3v2/frameIdentifiers";
+import {Testers} from "../utilities/testers";
 import {EventType, TimestampFormat} from "../../src/id3v2/utilTypes";
 
 // Setup Chai
-Chai.use(ChaiAsPromised);
 const assert = Chai.assert;
 
 @suite class Id3v2_EventTimeCodeTests {
     @test
     public constructor_invalidTime() {
         // Act/Assert
-        Testers.testInt((v: number) => { const _ = new EventTimeCode(EventType.AudioEnd, v); });
+        Testers.testInt((v: number) => new EventTimeCode(EventType.AudioEnd, v));
     }
 
     @test
@@ -107,7 +105,7 @@ const assert = Chai.assert;
         const output = EventTimeCodeFrame.fromEmpty();
 
         // Assert
-        this.assertFrame(output, [], TimestampFormat.Unknown);
+        Id3v2_EventTimeCodeFrame_ConstructorTests.assertFrame(output, [], TimestampFormat.Unknown);
     }
 
     @test
@@ -116,7 +114,7 @@ const assert = Chai.assert;
         const output = EventTimeCodeFrame.fromTimestampFormat(TimestampFormat.AbsoluteMilliseconds);
 
         // Assert
-        this.assertFrame(output, [], TimestampFormat.AbsoluteMilliseconds);
+        Id3v2_EventTimeCodeFrame_ConstructorTests.assertFrame(output, [], TimestampFormat.AbsoluteMilliseconds);
     }
 
     @test
@@ -133,7 +131,7 @@ const assert = Chai.assert;
         const frame = EventTimeCodeFrame.fromRawData(data, 4);
 
         // Assert
-        this.assertFrame(frame, [], TimestampFormat.AbsoluteMilliseconds);
+        Id3v2_EventTimeCodeFrame_ConstructorTests.assertFrame(frame, [], TimestampFormat.AbsoluteMilliseconds);
     }
 
     @test
@@ -154,7 +152,11 @@ const assert = Chai.assert;
         const frame = EventTimeCodeFrame.fromRawData(data, 4);
 
         // Assert
-        this.assertFrame(frame, [event1, event2], TimestampFormat.AbsoluteMilliseconds);
+        Id3v2_EventTimeCodeFrame_ConstructorTests.assertFrame(
+            frame,
+            [event1, event2],
+            TimestampFormat.AbsoluteMilliseconds
+        );
     }
 
     @test
@@ -172,7 +174,7 @@ const assert = Chai.assert;
         const frame = EventTimeCodeFrame.fromOffsetRawData(data, 2, header, 4);
 
         // Assert
-        this.assertFrame(frame, [], TimestampFormat.AbsoluteMilliseconds);
+        Id3v2_EventTimeCodeFrame_ConstructorTests.assertFrame(frame, [], TimestampFormat.AbsoluteMilliseconds);
     }
 
     @test
@@ -194,10 +196,14 @@ const assert = Chai.assert;
         const frame = EventTimeCodeFrame.fromOffsetRawData(data, 2, header, 4);
 
         // Assert
-        this.assertFrame(frame, [event1, event2], TimestampFormat.AbsoluteMilliseconds);
+        Id3v2_EventTimeCodeFrame_ConstructorTests.assertFrame(
+            frame,
+            [event1, event2],
+            TimestampFormat.AbsoluteMilliseconds
+        );
     }
 
-    private assertFrame(frame: EventTimeCodeFrame, e: EventTimeCode[], t: TimestampFormat) {
+    private static assertFrame(frame: EventTimeCodeFrame, e: EventTimeCode[], t: TimestampFormat) {
         assert.isOk(frame);
         assert.strictEqual(frame.frameClassType, FrameClassType.EventTimeCodeFrame);
         assert.strictEqual(frame.frameId, FrameIdentifiers.ETCO);

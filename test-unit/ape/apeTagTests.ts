@@ -1,21 +1,19 @@
 import * as Chai from "chai";
-import * as ChaiAsPromised from "chai-as-promised";
 import * as TypeMoq from "typemoq";
-import PropertyTests from "../utilities/propertyTests";
-import {Testers} from "../utilities/testers";
-import TestFile from "../utilities/testFile";
-import {suite, test} from "mocha-typescript";
+import {suite, test} from "@testdeck/mocha";
 
 import ApeTag from "../../src/ape/apeTag";
+import PropertyTests from "../utilities/propertyTests";
+import TestFile from "../utilities/testFile";
 import {ApeTagFooter, ApeTagFooterFlags} from "../../src/ape/apeTagFooter";
 import {ApeTagItem, ApeTagItemType} from "../../src/ape/apeTagItem";
 import {ByteVector} from "../../src/byteVector";
 import {File} from "../../src/file";
 import {IPicture, PictureType} from "../../src/iPicture";
 import {TagTypes} from "../../src/tag";
+import {Testers} from "../utilities/testers";
 
 // Setup chai
-Chai.use(ChaiAsPromised);
 const assert = Chai.assert;
 
 function getTestTagFooter(flags: ApeTagFooterFlags, itemCount: number, itemPlusFooter: number): ByteVector {
@@ -698,22 +696,22 @@ function getTestTagFooter(flags: ApeTagFooterFlags, itemCount: number, itemPlusF
 
     @test
     public initialKey() {
-        this.testUnsupportedText((t, v) => { t.initialKey = v; }, (t) => t.initialKey);
+        Ape_Tag_PropertyTests.testUnsupportedText((t, v) => { t.initialKey = v; }, (t) => t.initialKey);
     }
 
     @test
     public remixedBy() {
-        this.testUnsupportedText((t, v) => { t.remixedBy = v; }, (t) => t.remixedBy);
+        Ape_Tag_PropertyTests.testUnsupportedText((t, v) => { t.remixedBy = v; }, (t) => t.remixedBy);
     }
 
     @test
     public publisher() {
-        this.testUnsupportedText((t, v) => { t.publisher = v; }, (t) => t.publisher);
+        Ape_Tag_PropertyTests.testUnsupportedText((t, v) => { t.publisher = v; }, (t) => t.publisher);
     }
 
     @test
     public isrc() {
-        this.testUnsupportedText((t, v) => { t.isrc = v; }, (t) => t.isrc);
+        Ape_Tag_PropertyTests.testUnsupportedText((t, v) => { t.isrc = v; }, (t) => t.isrc);
     }
 
     private testFractionalUintItem(
@@ -877,7 +875,7 @@ function getTestTagFooter(flags: ApeTagFooterFlags, itemCount: number, itemPlusF
         assert.strictEqual(tag.items.length, 0);
     }
 
-    private testUnsupportedText(
+    private static testUnsupportedText(
         set: (t: ApeTag, v: string) => void,
         get: (t: ApeTag) => string
     ) {

@@ -1,17 +1,15 @@
 import * as Chai from "chai";
-import * as ChaiAsPromised from "chai-as-promised";
-import FrameConstructorTests from "./frameConstructorTests";
-import PropertyTests from "../utilities/propertyTests";
-import {suite, test} from "mocha-typescript";
+import {suite, test} from "@testdeck/mocha";
 
+import FrameConstructorTests from "./frameConstructorTests";
 import MusicCdIdentifierFrame from "../../src/id3v2/frames/musicCdIdentifierFrame";
+import PropertyTests from "../utilities/propertyTests";
 import {ByteVector, StringType} from "../../src/byteVector";
 import {Frame, FrameClassType} from "../../src/id3v2/frames/frame";
 import {Id3v2FrameHeader} from "../../src/id3v2/frames/frameHeader";
 import {FrameIdentifiers} from "../../src/id3v2/frameIdentifiers";
 
 // Setup Chai
-Chai.use(ChaiAsPromised);
 const assert = Chai.assert;
 
 @suite class Id3v2_MusicCdIdentifierFrameTests extends FrameConstructorTests {
@@ -37,7 +35,7 @@ const assert = Chai.assert;
         const frame = MusicCdIdentifierFrame.fromRawData(data, 4);
 
         // Assert
-        this.assertFrame(frame, ByteVector.fromString("12345abcd", StringType.Latin1));
+        Id3v2_MusicCdIdentifierFrameTests.assertFrame(frame, ByteVector.fromString("12345abcd", StringType.Latin1));
     }
 
     @test
@@ -55,13 +53,13 @@ const assert = Chai.assert;
         const frame = MusicCdIdentifierFrame.fromOffsetRawData(data, 2, header, 4);
 
         // Assert
-        this.assertFrame(frame, ByteVector.fromString("12345abcd", StringType.Latin1));
+        Id3v2_MusicCdIdentifierFrameTests.assertFrame(frame, ByteVector.fromString("12345abcd", StringType.Latin1));
     }
 
     @test
     public data() {
         // Arrange
-        const frame = this.getTestFrame();
+        const frame = Id3v2_MusicCdIdentifierFrameTests.getTestFrame();
         const data = ByteVector.fromString("fuxbuxqux", StringType.Latin1);
 
         // Act / Assert
@@ -71,13 +69,13 @@ const assert = Chai.assert;
     @test
     public clone_withData() {
         // Arrange
-        const frame = this.getTestFrame();
+        const frame = Id3v2_MusicCdIdentifierFrameTests.getTestFrame();
 
         // Act
         const output = <MusicCdIdentifierFrame> frame.clone();
 
         // Assert
-        this.assertFrame(output, frame.data);
+        Id3v2_MusicCdIdentifierFrameTests.assertFrame(output, frame.data);
         assert.notEqual(output.data, frame.data);
     }
 
@@ -92,7 +90,7 @@ const assert = Chai.assert;
         const output = <MusicCdIdentifierFrame> frame.clone();
 
         // Assert
-        this.assertFrame(output, frame.data);
+        Id3v2_MusicCdIdentifierFrameTests.assertFrame(output, frame.data);
     }
 
     @test
@@ -127,7 +125,7 @@ const assert = Chai.assert;
         assert.strictEqual(output.length, 0);
     }
 
-    private assertFrame(frame: MusicCdIdentifierFrame, d: ByteVector) {
+    private static assertFrame(frame: MusicCdIdentifierFrame, d: ByteVector) {
         assert.isOk(frame);
         assert.strictEqual(frame.frameClassType, FrameClassType.MusicCdIdentifierFrame);
         assert.strictEqual(frame.frameId, FrameIdentifiers.MCDI);
@@ -135,7 +133,7 @@ const assert = Chai.assert;
         assert.isTrue(ByteVector.equal(frame.data, d));
     }
 
-    private getTestFrame() {
+    private static getTestFrame() {
         const header = new Id3v2FrameHeader(FrameIdentifiers.MCDI);
         header.frameSize = 9;
         const data = ByteVector.concatenate(

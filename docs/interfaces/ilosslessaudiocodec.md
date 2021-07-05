@@ -9,13 +9,14 @@ When dealing with an [ICodec](icodec.md), if [ICodec.mediaTypes](icodec.md#media
 
 ## Hierarchy
 
-* [*IAudioCodec*](iaudiocodec.md)
+- [`IAudioCodec`](iaudiocodec.md)
 
-  ↳ **ILosslessAudioCodec**
+  ↳ **`ILosslessAudioCodec`**
 
 ## Implemented by
 
-* [*Properties*](../classes/properties.md)
+- [`Properties`](../classes/properties.md)
+- [`RiffWaveFormatEx`](../classes/riffwaveformatex.md)
 
 ## Table of contents
 
@@ -33,37 +34,43 @@ When dealing with an [ICodec](icodec.md), if [ICodec.mediaTypes](icodec.md#media
 
 ### audioBitrate
 
-• **audioBitrate**: *number*
+• **audioBitrate**: `number`
 
 Bitrate of the audio in kilobits per second represented by the current instance.
 
-Inherited from: [IAudioCodec](iaudiocodec.md).[audioBitrate](iaudiocodec.md#audiobitrate)
+#### Inherited from
+
+[IAudioCodec](iaudiocodec.md).[audioBitrate](iaudiocodec.md#audiobitrate)
 
 ___
 
 ### audioChannels
 
-• **audioChannels**: *number*
+• **audioChannels**: `number`
 
 Number of channels in the audio represented by the current instance.
 
-Inherited from: [IAudioCodec](iaudiocodec.md).[audioChannels](iaudiocodec.md#audiochannels)
+#### Inherited from
+
+[IAudioCodec](iaudiocodec.md).[audioChannels](iaudiocodec.md#audiochannels)
 
 ___
 
 ### audioSampleRate
 
-• **audioSampleRate**: *number*
+• **audioSampleRate**: `number`
 
 Sample rate of the audio represented by the current instance.
 
-Inherited from: [IAudioCodec](iaudiocodec.md).[audioSampleRate](iaudiocodec.md#audiosamplerate)
+#### Inherited from
+
+[IAudioCodec](iaudiocodec.md).[audioSampleRate](iaudiocodec.md#audiosamplerate)
 
 ___
 
 ### bitsPerSample
 
-• **bitsPerSample**: *number*
+• **bitsPerSample**: `number`
 
 Number of bits per sample in the audio represented by the current instance.
 
@@ -71,30 +78,36 @@ ___
 
 ### description
 
-• **description**: *string*
+• **description**: `string`
 
 Gets a text description of the media represented by the current instance.
 
-Inherited from: [IAudioCodec](iaudiocodec.md).[description](iaudiocodec.md#description)
+#### Inherited from
+
+[IAudioCodec](iaudiocodec.md).[description](iaudiocodec.md#description)
 
 ___
 
 ### durationMilliseconds
 
-• **durationMilliseconds**: *number*
+• **durationMilliseconds**: `number`
 
 Duration of the media in milliseconds represented by the current instance.
 
 **`todo`** Ensure milliseconds is the right way to interpret this field
 
-Inherited from: [IAudioCodec](iaudiocodec.md).[durationMilliseconds](iaudiocodec.md#durationmilliseconds)
+#### Inherited from
+
+[IAudioCodec](iaudiocodec.md).[durationMilliseconds](iaudiocodec.md#durationmilliseconds)
 
 ___
 
 ### mediaTypes
 
-• **mediaTypes**: [*MediaTypes*](../enums/mediatypes.md)
+• **mediaTypes**: [`MediaTypes`](../enums/mediatypes.md)
 
 Types of media represented by the current instance, bitwise combined.
 
-Inherited from: [IAudioCodec](iaudiocodec.md).[mediaTypes](iaudiocodec.md#mediatypes)
+#### Inherited from
+
+[IAudioCodec](iaudiocodec.md).[mediaTypes](iaudiocodec.md#mediatypes)

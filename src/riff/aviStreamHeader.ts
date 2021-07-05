@@ -120,7 +120,7 @@ export class AviStreamHeader {
 
     /**
      * Gets an indicator of the quality of the data in the stream. Quality is represented as a
-     * number between `0` and `10000`. -1 indicates the default quality values shold be used.
+     * number between `0` and `10000`. -1 indicates the default quality values should be used.
      * @remarks For compressed data, this typically represents the value of the quality parameter
      *     passed to the compression software.
      */
@@ -130,7 +130,7 @@ export class AviStreamHeader {
      * Used with {@see scale} to specify the time scale that this stream will use.
      * @remarks Dividing {@see rate} by this gives the number of samples per second. For video
      *     streams, this is the frame rate. For audio streams, this rate corresponds to the time
-     *     needed to play {@see RiffWaveFormatEx.blockAligh} bytes of audio. For PCM audio this is
+     *     needed to play {@see RiffWaveFormatEx.blockAlign} bytes of audio. For PCM audio this is
      *     just the sample rate.
      */
     public get rate(): number { return this._rate; }

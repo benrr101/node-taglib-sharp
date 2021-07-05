@@ -1,14 +1,12 @@
 import * as Chai from "chai";
-import * as ChaiAsPromised from "chai-as-promised";
-import {Testers} from "../utilities/testers";
-import {suite, test} from "mocha-typescript";
+import {suite, test} from "@testdeck/mocha";
 
 import {ApeCompressionLevel, ApeStreamHeader} from "../../src/ape/apeStreamHeader";
 import {ByteVector} from "../../src/byteVector";
 import {MediaTypes} from "../../src/iCodec";
+import {Testers} from "../utilities/testers";
 
 // Setup chai
-Chai.use(ChaiAsPromised);
 const assert = Chai.assert;
 
 @suite class Ape_StreamHeaderTests {
@@ -18,8 +16,8 @@ const assert = Chai.assert;
         const data = ByteVector.empty();
 
         // Act / Assert
-        Testers.testTruthy((v: ByteVector) => { const _ = new ApeStreamHeader(v, 123); });
-        Testers.testUint((v: number) => { const _ = new ApeStreamHeader(data, v); });
+        Testers.testTruthy((v: ByteVector) => new ApeStreamHeader(v, 123));
+        Testers.testUint((v: number) => new ApeStreamHeader(data, v));
     }
 
     @test
@@ -31,7 +29,7 @@ const assert = Chai.assert;
         );
 
         // Act / Assert
-        assert.throw(() => { const _ = new ApeStreamHeader(data, 123); });
+        assert.throw(() => new ApeStreamHeader(data, 123));
     }
 
     @test
@@ -43,7 +41,7 @@ const assert = Chai.assert;
         );
 
         // Act / Assert
-        assert.throw(() => { const _ = new ApeStreamHeader(data, 123); });
+        assert.throw(() => new ApeStreamHeader(data, 123));
     }
 
     @test

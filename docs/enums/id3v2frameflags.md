@@ -20,7 +20,7 @@
 
 ### Compression
 
-• **Compression**: = 8
+• **Compression** = `8`
 
 Frame data is compressed.
 
@@ -28,7 +28,7 @@ ___
 
 ### DataLengthIndicator
 
-• **DataLengthIndicator**: = 1
+• **DataLengthIndicator** = `1`
 
 Frame has a data length indicator.
 
@@ -36,7 +36,7 @@ ___
 
 ### Desynchronized
 
-• **Desynchronized**: = 2
+• **Desynchronized** = `2`
 
 Frame data has been desynchronized.
 
@@ -44,7 +44,7 @@ ___
 
 ### Encryption
 
-• **Encryption**: = 4
+• **Encryption** = `4`
 
 Frame data is encrypted.
 
@@ -52,7 +52,7 @@ ___
 
 ### FileAlterPreservation
 
-• **FileAlterPreservation**: = 8192
+• **FileAlterPreservation** = `8192`
 
 Frame is to be deleted if the file is altered.
 
@@ -60,7 +60,7 @@ ___
 
 ### GroupingIdentity
 
-• **GroupingIdentity**: = 64
+• **GroupingIdentity** = `64`
 
 Frame has a grouping identity.
 
@@ -68,7 +68,7 @@ ___
 
 ### None
 
-• **None**: = 0
+• **None** = `0`
 
 Header contains no flags.
 
@@ -76,7 +76,7 @@ ___
 
 ### ReadOnly
 
-• **ReadOnly**: = 4096
+• **ReadOnly** = `4096`
 
 Frame is read-only and should not be altered.
 
@@ -84,6 +84,6 @@ ___
 
 ### TagAlterPreservation
 
-• **TagAlterPreservation**: = 16384
+• **TagAlterPreservation** = `16384`
 
 Frame is to be deleted if the tag is altered.

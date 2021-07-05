@@ -4,9 +4,9 @@
 
 ## Hierarchy
 
-* *Error*
+- `Error`
 
-  ↳ **NotImplementedError**
+  ↳ **`NotImplementedError`**
 
 ## Table of contents
 
@@ -19,8 +19,8 @@
 - [isNotImplementedError](notimplementederror.md#isnotimplementederror)
 - [message](notimplementederror.md#message)
 - [name](notimplementederror.md#name)
-- [prepareStackTrace](notimplementederror.md#preparestacktrace)
 - [stack](notimplementederror.md#stack)
+- [prepareStackTrace](notimplementederror.md#preparestacktrace)
 - [stackTraceLimit](notimplementederror.md#stacktracelimit)
 
 ### Methods
@@ -32,83 +32,126 @@
 
 ### constructor
 
-\+ **new NotImplementedError**(`message?`: *string*): [*NotImplementedError*](notimplementederror.md)
+• **new NotImplementedError**(`message?`)
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
------- | ------ |
-`message?` | *string* |
+| Name | Type |
+| :------ | :------ |
+| `message?` | `string` |
 
-**Returns:** [*NotImplementedError*](notimplementederror.md)
+#### Overrides
+
+Error.constructor
 
 ## Properties
 
 ### isNotImplementedError
 
-• `Readonly` **isNotImplementedError**: *boolean*= true
+• `Readonly` **isNotImplementedError**: `boolean` = `true`
 
 ___
 
 ### message
 
-• **message**: *string*
+• **message**: `string`
+
+#### Inherited from
+
+Error.message
 
 ___
 
 ### name
 
-• **name**: *string*
+• **name**: `string`
 
-___
+#### Inherited from
 
-### prepareStackTrace
-
-• `Optional` **prepareStackTrace**: (`err`: Error, `stackTraces`: CallSite[]) => *any*
-
-Optional override for formatting stack traces
-
-**`see`** https://github.com/v8/v8/wiki/Stack%20Trace%20API#customizing-stack-traces
+Error.name
 
 ___
 
 ### stack
 
-• `Optional` **stack**: *string*
+• `Optional` **stack**: `string`
+
+#### Inherited from
+
+Error.stack
+
+___
+
+### prepareStackTrace
+
+▪ `Static` `Optional` **prepareStackTrace**: (`err`: `Error`, `stackTraces`: `CallSite`[]) => `any`
+
+#### Type declaration
+
+▸ (`err`, `stackTraces`): `any`
+
+Optional override for formatting stack traces
+
+##### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `err` | `Error` |
+| `stackTraces` | `CallSite`[] |
+
+##### Returns
+
+`any`
+
+#### Inherited from
+
+Error.prepareStackTrace
 
 ___
 
 ### stackTraceLimit
 
-• **stackTraceLimit**: *number*
+▪ `Static` **stackTraceLimit**: `number`
+
+#### Inherited from
+
+Error.stackTraceLimit
 
 ## Methods
 
 ### captureStackTrace
 
-▸ **captureStackTrace**(`targetObject`: Object, `constructorOpt?`: Function): *void*
+▸ `Static` **captureStackTrace**(`targetObject`, `constructorOpt?`): `void`
 
 Create .stack property on a target object
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
------- | ------ |
-`targetObject` | Object |
-`constructorOpt?` | Function |
+| Name | Type |
+| :------ | :------ |
+| `targetObject` | `object` |
+| `constructorOpt?` | `Function` |
 
-**Returns:** *void*
+#### Returns
+
+`void`
+
+#### Inherited from
+
+Error.captureStackTrace
 
 ___
 
 ### errorIs
 
-▸ `Static`**errorIs**(`e`: Error): *boolean*
+▸ `Static` **errorIs**(`e`): `boolean`
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
------- | ------ |
-`e` | Error |
+| Name | Type |
+| :------ | :------ |
+| `e` | `Error` |
 
-**Returns:** *boolean*
+#### Returns
+
+`boolean`

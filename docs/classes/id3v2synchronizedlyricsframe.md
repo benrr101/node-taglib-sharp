@@ -4,10 +4,6 @@
 
 This structure contains a single entry in a [SynchronizedLyricsFrame](../enums/id3v2frameclasstype.md#synchronizedlyricsframe) object.
 
-## Hierarchy
-
-* **Id3v2SynchronizedLyricsFrame**
-
 ## Table of contents
 
 ### Constructors
@@ -31,24 +27,22 @@ This structure contains a single entry in a [SynchronizedLyricsFrame](../enums/i
 
 ### constructor
 
-\+ **new Id3v2SynchronizedLyricsFrame**(`time`: *number*, `text`: *string*): [*Id3v2SynchronizedLyricsFrame*](id3v2synchronizedlyricsframe.md)
+• **new Id3v2SynchronizedLyricsFrame**(`time`, `text`)
 
 Constructs and initializes a new instance with a specified time and text.
 
-#### Parameters:
+#### Parameters
 
-Name | Type | Description |
------- | ------ | ------ |
-`time` | *number* | Offset into the media that owns this element when this element should be     displayed. See {@link TimestampFormat} for possible values.   |
-`text` | *string* | Text for the point in time    |
-
-**Returns:** [*Id3v2SynchronizedLyricsFrame*](id3v2synchronizedlyricsframe.md)
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `time` | `number` | Offset into the media that owns this element when this element should be     displayed. See {@link TimestampFormat} for possible values. |
+| `text` | `string` | Text for the point in time |
 
 ## Properties
 
 ### text
 
-• **text**: *string*
+• **text**: `string`
 
 Text for the point in time represented by the current instance.
 
@@ -56,46 +50,54 @@ Text for the point in time represented by the current instance.
 
 ### time
 
-• **time**(): *number*
+• `get` **time**(): `number`
 
 Gets time offset of the current instance. The specific format this text element is defined
 in {@link SynchronizedLyricsFrame.format} of the frame that owns this element.
 
-**Returns:** *number*
+#### Returns
 
-• **time**(`value`: *number*): *void*
+`number`
+
+• `set` **time**(`value`): `void`
 
 Sets time offset of the current instance. The specific format this text element is defined
 in {@link SynchronizedLyricsFrame.format} of the frame that owns this element.
 
-#### Parameters:
+#### Parameters
 
-Name | Type | Description |
------- | ------ | ------ |
-`value` | *number* | Offset of the current instance, must be a safe    |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `value` | `number` | Offset of the current instance, must be a safe |
 
-**Returns:** *void*
+#### Returns
+
+`void`
 
 ## Methods
 
 ### clone
 
-▸ **clone**(): [*Id3v2SynchronizedLyricsFrame*](id3v2synchronizedlyricsframe.md)
+▸ **clone**(): [`Id3v2SynchronizedLyricsFrame`](id3v2synchronizedlyricsframe.md)
 
 Creates a copy of this instance.
 
-**Returns:** [*Id3v2SynchronizedLyricsFrame*](id3v2synchronizedlyricsframe.md)
+#### Returns
+
+[`Id3v2SynchronizedLyricsFrame`](id3v2synchronizedlyricsframe.md)
 
 ___
 
 ### render
 
-▸ **render**(`encoding`: [*StringType*](../enums/stringtype.md)): [*ByteVector*](bytevector.md)
+▸ **render**(`encoding`): [`ByteVector`](bytevector.md)
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
------- | ------ |
-`encoding` | [*StringType*](../enums/stringtype.md) |
+| Name | Type |
+| :------ | :------ |
+| `encoding` | [`StringType`](../enums/stringtype.md) |
 
-**Returns:** [*ByteVector*](bytevector.md)
+#### Returns
+
+[`ByteVector`](bytevector.md)

@@ -1,10 +1,10 @@
-import {Testers} from "../utilities/testers";
-import {test} from "mocha-typescript";
+import {test} from "@testdeck/mocha";
 
 import {ByteVector} from "../../src/byteVector";
 import {Frame} from "../../src/id3v2/frames/frame";
 import {Id3v2FrameHeader} from "../../src/id3v2/frames/frameHeader";
 import {FrameIdentifiers} from "../../src/id3v2/frameIdentifiers";
+import {Testers} from "../utilities/testers";
 
 export default abstract class FrameConstructorTests {
 

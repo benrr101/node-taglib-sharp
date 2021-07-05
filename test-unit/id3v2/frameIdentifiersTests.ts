@@ -1,12 +1,10 @@
 import * as Chai from "chai";
-import * as ChaiAsPromised from "chai-as-promised";
-import {suite, test} from "mocha-typescript";
+import {suite, test} from "@testdeck/mocha";
 
 import {ByteVector} from "../../src/byteVector";
 import {FrameIdentifier, FrameIdentifiers} from "../../src/id3v2/frameIdentifiers";
 
 // Setup Chai
-Chai.use(ChaiAsPromised);
 const assert = Chai.assert;
 
 @suite class FrameIdentifierTests {
@@ -146,6 +144,6 @@ const assert = Chai.assert;
         const identifier = new FrameIdentifier("ABCD", undefined, undefined);
 
         // Act / Assert
-        assert.throws(() => { const _ = identifier.render(2); });
+        assert.throws(() => identifier.render(2));
     }
 }

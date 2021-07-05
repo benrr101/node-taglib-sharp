@@ -1,20 +1,19 @@
 import * as Chai from "chai";
-import * as ChaiAsPromised from "chai-as-promised";
-import FrameConstructorTests from "./frameConstructorTests";
-import PropertyTests from "../utilities/propertyTests";
-import {Testers} from "../utilities/testers";
-import {suite, test} from "mocha-typescript";
+import {suite, test} from "@testdeck/mocha";
 
+import FrameConstructorTests from "./frameConstructorTests";
 import Id3v2Settings from "../../src/id3v2/id3v2Settings";
+import PropertyTests from "../utilities/propertyTests";
 import {ByteVector, StringType} from "../../src/byteVector";
 import {Frame, FrameClassType} from "../../src/id3v2/frames/frame";
 import {Id3v2FrameHeader} from "../../src/id3v2/frames/frameHeader";
 import {FrameIdentifiers} from "../../src/id3v2/frameIdentifiers";
 import {SynchronizedLyricsFrame, SynchronizedText} from "../../src/id3v2/frames/synchronizedLyricsFrame";
+import {Testers} from "../utilities/testers";
 import {SynchronizedTextType, TimestampFormat} from "../../src/id3v2/utilTypes";
 
+
 // Setup chai
-Chai.use(ChaiAsPromised);
 const assert = Chai.assert;
 
 @suite class Id3v2_SynchronizedTextTests {
@@ -66,7 +65,7 @@ const assert = Chai.assert;
         const frame = SynchronizedLyricsFrame.fromInfo(description, language, textType);
 
         // Assert
-        this.assertFrame(
+        Id3v2_SynchronizedLyricsFrame_ConstructorTests.assertFrame(
             frame,
             description,
             TimestampFormat.Unknown,
@@ -89,7 +88,7 @@ const assert = Chai.assert;
         const frame = SynchronizedLyricsFrame.fromInfo(description, language, textType, encoding);
 
         // Assert
-        this.assertFrame(
+        Id3v2_SynchronizedLyricsFrame_ConstructorTests.assertFrame(
             frame,
             description,
             TimestampFormat.Unknown,
@@ -171,7 +170,7 @@ const assert = Chai.assert;
         const frame = SynchronizedLyricsFrame.fromRawData(data, 4);
 
         // Assert
-        this.assertFrame(
+        Id3v2_SynchronizedLyricsFrame_ConstructorTests.assertFrame(
             frame,
             "bux",
             TimestampFormat.AbsoluteMilliseconds,
@@ -201,7 +200,7 @@ const assert = Chai.assert;
         const frame = SynchronizedLyricsFrame.fromRawData(data, 4);
 
         // Assert
-        this.assertFrame(
+        Id3v2_SynchronizedLyricsFrame_ConstructorTests.assertFrame(
             frame,
             "bux",
             TimestampFormat.AbsoluteMilliseconds,
@@ -233,7 +232,7 @@ const assert = Chai.assert;
         const frame = SynchronizedLyricsFrame.fromRawData(data, 4);
 
         // Assert
-        this.assertFrame(
+        Id3v2_SynchronizedLyricsFrame_ConstructorTests.assertFrame(
             frame,
             "bux",
             TimestampFormat.AbsoluteMilliseconds,
@@ -267,7 +266,7 @@ const assert = Chai.assert;
         const frame = SynchronizedLyricsFrame.fromRawData(data, 4);
 
         // Assert
-        this.assertFrame(
+        Id3v2_SynchronizedLyricsFrame_ConstructorTests.assertFrame(
             frame,
             "bux",
             TimestampFormat.AbsoluteMilliseconds,
@@ -302,7 +301,7 @@ const assert = Chai.assert;
         const frame = SynchronizedLyricsFrame.fromOffsetRawData(data, 2, header, 4);
 
         // Assert
-        this.assertFrame(
+        Id3v2_SynchronizedLyricsFrame_ConstructorTests.assertFrame(
             frame,
             "bux",
             TimestampFormat.AbsoluteMilliseconds,
@@ -313,7 +312,7 @@ const assert = Chai.assert;
         );
     }
 
-    private assertFrame(
+    private static assertFrame(
         frame: SynchronizedLyricsFrame,
         d: string,
         f: TimestampFormat,

@@ -30,11 +30,11 @@ specification.
 
 ## Hierarchy
 
-* [*Id3v2Frame*](id3v2frame.md)
+- [`Id3v2Frame`](id3v2frame.md)
 
-  ↳ **Id3v2UrlLinkFrame**
+  ↳ **`Id3v2UrlLinkFrame`**
 
-  ↳↳ [*Id3v2UserUrlLinkFrame*](id3v2userurllinkframe.md)
+  ↳↳ [`Id3v2UserUrlLinkFrame`](id3v2userurllinkframe.md)
 
 ## Table of contents
 
@@ -81,74 +81,80 @@ specification.
 
 ### constructor
 
-\+ `Protected`**new Id3v2UrlLinkFrame**(`header`: [*Id3v2FrameHeader*](id3v2frameheader.md)): [*Id3v2UrlLinkFrame*](id3v2urllinkframe.md)
+• `Protected` **new Id3v2UrlLinkFrame**(`header`)
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
------- | ------ |
-`header` | [*Id3v2FrameHeader*](id3v2frameheader.md) |
+| Name | Type |
+| :------ | :------ |
+| `header` | [`Id3v2FrameHeader`](id3v2frameheader.md) |
 
-**Returns:** [*Id3v2UrlLinkFrame*](id3v2urllinkframe.md)
+#### Overrides
 
-Inherited from: [Id3v2Frame](id3v2frame.md)
+[Id3v2Frame](id3v2frame.md).[constructor](id3v2frame.md#constructor)
 
 ## Properties
 
 ### \_encoding
 
-• `Protected` **\_encoding**: [*StringType*](../enums/stringtype.md)
+• `Protected` **\_encoding**: [`StringType`](../enums/stringtype.md)
 
 ___
 
 ### \_header
 
-• `Protected` **\_header**: [*Id3v2FrameHeader*](id3v2frameheader.md)
+• `Protected` **\_header**: [`Id3v2FrameHeader`](id3v2frameheader.md)
 
-Inherited from: [Id3v2Frame](id3v2frame.md).[_header](id3v2frame.md#_header)
+#### Inherited from
+
+[Id3v2Frame](id3v2frame.md).[_header](id3v2frame.md#_header)
 
 ___
 
 ### \_rawData
 
-• `Protected` **\_rawData**: [*ByteVector*](bytevector.md)
+• `Protected` **\_rawData**: [`ByteVector`](bytevector.md)
 
 ___
 
 ### \_rawVersion
 
-• `Protected` **\_rawVersion**: *number*
+• `Protected` **\_rawVersion**: `number`
 
 ___
 
 ### \_textFields
 
-• `Protected` **\_textFields**: *string*[]
+• `Protected` **\_textFields**: `string`[] = `[]`
 
 ## Accessors
 
 ### encryptionId
 
-• **encryptionId**(): *number*
+• `get` **encryptionId**(): `number`
 
 Gets the encryption ID applied to the current instance.
 
-**Returns:** *number*
+#### Returns
+
+`number`
 
 number Value containing the encryption identifier for the current instance or
     `undefined` if not set.
 
-• **encryptionId**(`value`: *number*): *void*
+• `set` **encryptionId**(`value`): `void`
 
 Sets the encryption ID applied to the current instance.
 
-#### Parameters:
+#### Parameters
 
-Name | Type | Description |
------- | ------ | ------ |
-`value` | *number* | Value containing the encryption identifier for the current instance. Must be an     8-bit unsigned integer. Setting to `undefined` will remove the encryption header and ID    |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `value` | `number` | Value containing the encryption identifier for the current instance. Must be an     8-bit unsigned integer. Setting to `undefined` will remove the encryption header and ID |
 
-**Returns:** *void*
+#### Returns
+
+`void`
 
 number Value containing the encryption identifier for the current instance or
     `undefined` if not set.
@@ -157,43 +163,51 @@ ___
 
 ### flags
 
-• **flags**(): [*Id3v2FrameFlags*](../enums/id3v2frameflags.md)
+• `get` **flags**(): [`Id3v2FrameFlags`](../enums/id3v2frameflags.md)
 
 Gets the frame flags applied to the current instance.
 
-**Returns:** [*Id3v2FrameFlags*](../enums/id3v2frameflags.md)
+#### Returns
 
-• **flags**(`value`: [*Id3v2FrameFlags*](../enums/id3v2frameflags.md)): *void*
+[`Id3v2FrameFlags`](../enums/id3v2frameflags.md)
+
+• `set` **flags**(`value`): `void`
 
 Sets the frame flags applied to the current instance.
 If the value includes either [Id3v2FrameFlags.Encryption](../enums/id3v2frameflags.md#encryption) or
 [Id3v2FrameFlags.Compression](../enums/id3v2frameflags.md#compression), [render](id3v2urllinkframe.md#render) will throw.
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
------- | ------ |
-`value` | [*Id3v2FrameFlags*](../enums/id3v2frameflags.md) |
+| Name | Type |
+| :------ | :------ |
+| `value` | [`Id3v2FrameFlags`](../enums/id3v2frameflags.md) |
 
-**Returns:** *void*
+#### Returns
+
+`void`
 
 ___
 
 ### frameClassType
 
-• **frameClassType**(): [*Id3v2FrameClassType*](../enums/id3v2frameclasstype.md)
+• `get` **frameClassType**(): [`Id3v2FrameClassType`](../enums/id3v2frameclasstype.md)
 
-**Returns:** [*Id3v2FrameClassType*](../enums/id3v2frameclasstype.md)
+#### Returns
+
+[`Id3v2FrameClassType`](../enums/id3v2frameclasstype.md)
 
 ___
 
 ### frameId
 
-• **frameId**(): [*Id3v2FrameIdentifier*](id3v2frameidentifier.md)
+• `get` **frameId**(): [`Id3v2FrameIdentifier`](id3v2frameidentifier.md)
 
 Gets the frame ID for the current instance.
 
-**Returns:** [*Id3v2FrameIdentifier*](id3v2frameidentifier.md)
+#### Returns
+
+[`Id3v2FrameIdentifier`](id3v2frameidentifier.md)
 
 FrameIdentifier Object representing of the identifier of the frame
 
@@ -201,26 +215,30 @@ ___
 
 ### groupId
 
-• **groupId**(): *number*
+• `get` **groupId**(): `number`
 
 Gets the grouping ID applied to the current instance.
 
-**Returns:** *number*
+#### Returns
+
+`number`
 
 number Value containing the grouping identifier for the current instance, or
     `undefined` if not set.
 
-• **groupId**(`value`: *number*): *void*
+• `set` **groupId**(`value`): `void`
 
 Sets the grouping ID applied to the current instance.
 
-#### Parameters:
+#### Parameters
 
-Name | Type | Description |
------- | ------ | ------ |
-`value` | *number* | Grouping identifier for the current instance. Must be a 8-bit unsigned integer.     Setting to `undefined` will remove the grouping identity header and ID    |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `value` | `number` | Grouping identifier for the current instance. Must be a 8-bit unsigned integer.     Setting to `undefined` will remove the grouping identity header and ID |
 
-**Returns:** *void*
+#### Returns
+
+`void`
 
 number Value containing the grouping identifier for the current instance, or
     `undefined` if not set.
@@ -229,230 +247,277 @@ ___
 
 ### size
 
-• **size**(): *number*
+• `get` **size**(): `number`
 
 Gets the size of the current instance as it was last stored on disk.
 NOTE: This value is not used outside of reading a frame from disk, so newly created frames
     should not have this value set.
 
-**Returns:** *number*
+#### Returns
+
+`number`
 
 ___
 
 ### text
 
-• **text**(): *string*[]
+• `get` **text**(): `string`[]
 
 Gets the text contained in the current instance.
 Modifying the contents of the returned value will not modify the contents of the current
 instance. The value must be reassigned for the value to change.
 
-**Returns:** *string*[]
+#### Returns
 
-• **text**(`value`: *string*[]): *void*
+`string`[]
+
+• `set` **text**(`value`): `void`
 
 Sets the text contained in the current instance.
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
------- | ------ |
-`value` | *string*[] |
+| Name | Type |
+| :------ | :------ |
+| `value` | `string`[] |
 
-**Returns:** *void*
+#### Returns
+
+`void`
 
 ___
 
 ### textEncoding
 
-• **textEncoding**(): [*StringType*](../enums/stringtype.md)
+• `get` **textEncoding**(): [`StringType`](../enums/stringtype.md)
 
 Gets the text encoding to use when rendering the current instance.
 
-**Returns:** [*StringType*](../enums/stringtype.md)
+#### Returns
 
-• **textEncoding**(`value`: [*StringType*](../enums/stringtype.md)): *void*
+[`StringType`](../enums/stringtype.md)
+
+• `set` **textEncoding**(`value`): `void`
 
 Sets the text encoding to use when rendering the current instance.
 NOTE: This value will be overwritten if [Id3v2Settings.forceDefaultEncoding](id3v2settings.md#forcedefaultencoding) is `true`.
 
-#### Parameters:
+#### Parameters
 
-Name | Type | Description |
------- | ------ | ------ |
-`value` | [*StringType*](../enums/stringtype.md) |     |
+| Name | Type |
+| :------ | :------ |
+| `value` | [`StringType`](../enums/stringtype.md) |
 
-**Returns:** *void*
+#### Returns
+
+`void`
 
 ## Methods
 
 ### clone
 
-▸ **clone**(): [*Id3v2UrlLinkFrame*](id3v2urllinkframe.md)
+▸ **clone**(): [`Id3v2UrlLinkFrame`](id3v2urllinkframe.md)
 
-**`inheritdoc`** 
+Creates a deep copy of the current instance.
+This method is implemented by rendering the current instance as an ID3v2.4 frame and using
+the frame factory to create a new frame. As such, this method should be overridden by child
+classes.
 
-**Returns:** [*Id3v2UrlLinkFrame*](id3v2urllinkframe.md)
+#### Returns
 
-Overrides: [Id3v2Frame](id3v2frame.md)
+[`Id3v2UrlLinkFrame`](id3v2urllinkframe.md)
+
+#### Overrides
+
+[Id3v2Frame](id3v2frame.md).[clone](id3v2frame.md#clone)
 
 ___
 
 ### fieldData
 
-▸ `Protected`**fieldData**(`frameData`: [*ByteVector*](bytevector.md), `offset`: *number*, `version`: *number*, `dataIncludesHeader`: *boolean*): [*ByteVector*](bytevector.md)
+▸ `Protected` **fieldData**(`frameData`, `offset`, `version`, `dataIncludesHeader`): [`ByteVector`](bytevector.md)
 
 Extracts the field data from the raw portion of an ID3v2 frame.
 This method is necessary for extracting extra data prepended to the frame such the as
 grouping ID.
 
-#### Parameters:
+#### Parameters
 
-Name | Type | Description |
------- | ------ | ------ |
-`frameData` | [*ByteVector*](bytevector.md) | Raw frame data   |
-`offset` | *number* | Index at which the data is contained   |
-`version` | *number* | Version of the ID3v2 tag the data was originally encoded with   |
-`dataIncludesHeader` | *boolean* | `true` if `frameData` includes the header, `false`     otherwise    |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `frameData` | [`ByteVector`](bytevector.md) | Raw frame data |
+| `offset` | `number` | Index at which the data is contained |
+| `version` | `number` | Version of the ID3v2 tag the data was originally encoded with |
+| `dataIncludesHeader` | `boolean` | `true` if `frameData` includes the header, `false`     otherwise |
 
-**Returns:** [*ByteVector*](bytevector.md)
+#### Returns
 
-Inherited from: [Id3v2Frame](id3v2frame.md)
+[`ByteVector`](bytevector.md)
+
+#### Inherited from
+
+[Id3v2Frame](id3v2frame.md).[fieldData](id3v2frame.md#fielddata)
 
 ___
 
 ### parseFields
 
-▸ `Protected`**parseFields**(`data`: [*ByteVector*](bytevector.md), `version`: *number*): *void*
+▸ `Protected` **parseFields**(`data`, `version`): `void`
 
-**`inheritdoc`** 
+Populates the values in this frame by parsing its field data in a specified version.
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
------- | ------ |
-`data` | [*ByteVector*](bytevector.md) |
-`version` | *number* |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `data` | [`ByteVector`](bytevector.md) | Extracted field data |
+| `version` | `number` | ID3v2 version the field data is encoded in |
 
-**Returns:** *void*
+#### Returns
 
-Overrides: [Id3v2Frame](id3v2frame.md)
+`void`
+
+#### Overrides
+
+[Id3v2Frame](id3v2frame.md).[parseFields](id3v2frame.md#parsefields)
 
 ___
 
 ### parseRawData
 
-▸ `Protected`**parseRawData**(): *void*
+▸ `Protected` **parseRawData**(): `void`
 
-**Returns:** *void*
+#### Returns
+
+`void`
 
 ___
 
 ### render
 
-▸ **render**(`version`: *number*): [*ByteVector*](bytevector.md)
+▸ **render**(`version`): [`ByteVector`](bytevector.md)
 
 Renders the current instance, encoded in a specified ID3v2 version.
 
-#### Parameters:
+#### Parameters
 
-Name | Type | Description |
------- | ------ | ------ |
-`version` | *number* | Version of ID3v2 to use when encoding the current instance    |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `version` | `number` | Version of ID3v2 to use when encoding the current instance |
 
-**Returns:** [*ByteVector*](bytevector.md)
+#### Returns
 
-Inherited from: [Id3v2Frame](id3v2frame.md)
+[`ByteVector`](bytevector.md)
+
+#### Inherited from
+
+[Id3v2Frame](id3v2frame.md).[render](id3v2frame.md#render)
 
 ___
 
 ### renderFields
 
-▸ `Protected`**renderFields**(`version`: *number*): [*ByteVector*](bytevector.md)
+▸ `Protected` **renderFields**(`version`): [`ByteVector`](bytevector.md)
 
-**`inheritdoc`** 
+Renders the values in the current instance into field data for a specified version.
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
------- | ------ |
-`version` | *number* |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `version` | `number` | ID3v2 version the field data is to be encoded in. |
 
-**Returns:** [*ByteVector*](bytevector.md)
+#### Returns
 
-Overrides: [Id3v2Frame](id3v2frame.md)
+[`ByteVector`](bytevector.md)
+
+#### Overrides
+
+[Id3v2Frame](id3v2frame.md).[renderFields](id3v2frame.md#renderfields)
 
 ___
 
 ### setData
 
-▸ `Protected`**setData**(`data`: [*ByteVector*](bytevector.md), `offset`: *number*, `readHeader`: *boolean*, `version`: *number*): *void*
+▸ `Protected` **setData**(`data`, `offset`, `readHeader`, `version`): `void`
 
 Populates the current instance by reading the raw frame from disk, optionally reading the
 header.
 
-#### Parameters:
+#### Parameters
 
-Name | Type | Description |
------- | ------ | ------ |
-`data` | [*ByteVector*](bytevector.md) | Raw ID3v2 frame   |
-`offset` | *number* | Offset in `data` at which the frame begins.   |
-`readHeader` | *boolean* | Whether or not to read the reader into the current instance.   |
-`version` | *number* | Version of the ID3v2 tag the data was encoded with    |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `data` | [`ByteVector`](bytevector.md) | Raw ID3v2 frame |
+| `offset` | `number` | Offset in `data` at which the frame begins. |
+| `readHeader` | `boolean` | Whether or not to read the reader into the current instance. |
+| `version` | `number` | Version of the ID3v2 tag the data was encoded with |
 
-**Returns:** *void*
+#### Returns
 
-Inherited from: [Id3v2Frame](id3v2frame.md)
+`void`
+
+#### Inherited from
+
+[Id3v2Frame](id3v2frame.md).[setData](id3v2frame.md#setdata)
 
 ___
 
 ### toString
 
-▸ **toString**(): *string*
+▸ **toString**(): `string`
 
-**`inheritdoc`** 
+**`inheritdoc`**
 
-**Returns:** *string*
+#### Returns
+
+`string`
 
 ___
 
 ### correctEncoding
 
-▸ `Protected` `Static`**correctEncoding**(`type`: [*StringType*](../enums/stringtype.md), `version`: *number*): [*StringType*](../enums/stringtype.md)
+▸ `Static` `Protected` **correctEncoding**(`type`, `version`): [`StringType`](../enums/stringtype.md)
 
 Converts an encoding to be a supported encoding for a specified tag version.
 
-#### Parameters:
+#### Parameters
 
-Name | Type | Description |
------- | ------ | ------ |
-`type` | [*StringType*](../enums/stringtype.md) | Value containing the original encoding   |
-`version` | *number* | Value containing the ID3v2 version to be encoded.   |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `type` | [`StringType`](../enums/stringtype.md) | Value containing the original encoding |
+| `version` | `number` | Value containing the ID3v2 version to be encoded. |
 
-**Returns:** [*StringType*](../enums/stringtype.md)
+#### Returns
+
+[`StringType`](../enums/stringtype.md)
 
 StringType Value containing the correct encoding to use, based on
     [Id3v2Settings.forceDefaultEncoding](id3v2settings.md#forcedefaultencoding) and what is supported by
     `version`
 
-Inherited from: [Id3v2Frame](id3v2frame.md)
+#### Inherited from
+
+[Id3v2Frame](id3v2frame.md).[correctEncoding](id3v2frame.md#correctencoding)
 
 ___
 
 ### findUrlLinkFrame
 
-▸ `Static`**findUrlLinkFrame**(`frames`: [*Id3v2UrlLinkFrame*](id3v2urllinkframe.md)[], `ident`: [*Id3v2FrameIdentifier*](id3v2frameidentifier.md)): [*Id3v2UrlLinkFrame*](id3v2urllinkframe.md)
+▸ `Static` **findUrlLinkFrame**(`frames`, `ident`): [`Id3v2UrlLinkFrame`](id3v2urllinkframe.md)
 
 Gets the first frame that matches the provided type
 
-#### Parameters:
+#### Parameters
 
-Name | Type | Description |
------- | ------ | ------ |
-`frames` | [*Id3v2UrlLinkFrame*](id3v2urllinkframe.md)[] | Object to search in   |
-`ident` | [*Id3v2FrameIdentifier*](id3v2frameidentifier.md) | Frame identifier to search for   |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `frames` | [`Id3v2UrlLinkFrame`](id3v2urllinkframe.md)[] | Object to search in |
+| `ident` | [`Id3v2FrameIdentifier`](id3v2frameidentifier.md) | Frame identifier to search for |
 
-**Returns:** [*Id3v2UrlLinkFrame*](id3v2urllinkframe.md)
+#### Returns
+
+[`Id3v2UrlLinkFrame`](id3v2urllinkframe.md)
 
 UrlLinkFrame Frame containing the matching frameId, `undefined` if a match was
     not found
@@ -461,52 +526,58 @@ ___
 
 ### fromIdentity
 
-▸ `Static`**fromIdentity**(`ident`: [*Id3v2FrameIdentifier*](id3v2frameidentifier.md)): [*Id3v2UrlLinkFrame*](id3v2urllinkframe.md)
+▸ `Static` **fromIdentity**(`ident`): [`Id3v2UrlLinkFrame`](id3v2urllinkframe.md)
 
 Constructs and initializes an empty frame with the provided frame identity
 
-#### Parameters:
+#### Parameters
 
-Name | Type | Description |
------- | ------ | ------ |
-`ident` | [*Id3v2FrameIdentifier*](id3v2frameidentifier.md) | Identity of the frame to construct    |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `ident` | [`Id3v2FrameIdentifier`](id3v2frameidentifier.md) | Identity of the frame to construct |
 
-**Returns:** [*Id3v2UrlLinkFrame*](id3v2urllinkframe.md)
+#### Returns
+
+[`Id3v2UrlLinkFrame`](id3v2urllinkframe.md)
 
 ___
 
 ### fromOffsetRawData
 
-▸ `Static`**fromOffsetRawData**(`data`: [*ByteVector*](bytevector.md), `offset`: *number*, `header`: [*Id3v2FrameHeader*](id3v2frameheader.md), `version`: *number*): [*Id3v2UrlLinkFrame*](id3v2urllinkframe.md)
+▸ `Static` **fromOffsetRawData**(`data`, `offset`, `header`, `version`): [`Id3v2UrlLinkFrame`](id3v2urllinkframe.md)
 
 Constructs and initializes a new instance by reading its raw data in a specified ID3v2
 version. This method allows for offset reading from the data byte vector.
 
-#### Parameters:
+#### Parameters
 
-Name | Type | Description |
------- | ------ | ------ |
-`data` | [*ByteVector*](bytevector.md) | Raw representation of the new frame   |
-`offset` | *number* | What offset in `data` the frame actually begins. Must be positive,     safe integer   |
-`header` | [*Id3v2FrameHeader*](id3v2frameheader.md) | Header of the frame found at `data` in the data   |
-`version` | *number* | ID3v2 version the frame was originally encoded with    |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `data` | [`ByteVector`](bytevector.md) | Raw representation of the new frame |
+| `offset` | `number` | What offset in `data` the frame actually begins. Must be positive,     safe integer |
+| `header` | [`Id3v2FrameHeader`](id3v2frameheader.md) | Header of the frame found at `data` in the data |
+| `version` | `number` | ID3v2 version the frame was originally encoded with |
 
-**Returns:** [*Id3v2UrlLinkFrame*](id3v2urllinkframe.md)
+#### Returns
+
+[`Id3v2UrlLinkFrame`](id3v2urllinkframe.md)
 
 ___
 
 ### fromRawData
 
-▸ `Static`**fromRawData**(`data`: [*ByteVector*](bytevector.md), `version`: *number*): [*Id3v2UrlLinkFrame*](id3v2urllinkframe.md)
+▸ `Static` **fromRawData**(`data`, `version`): [`Id3v2UrlLinkFrame`](id3v2urllinkframe.md)
 
 Constructs and initializes a new instance by reading its raw data in a specified
 ID3v2 version.
 
-#### Parameters:
+#### Parameters
 
-Name | Type | Description |
------- | ------ | ------ |
-`data` | [*ByteVector*](bytevector.md) | Raw representation of the new frame   |
-`version` | *number* | ID3v2 version the raw frame is encoded with, must be a positive 8-bit integer    |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `data` | [`ByteVector`](bytevector.md) | Raw representation of the new frame |
+| `version` | `number` | ID3v2 version the raw frame is encoded with, must be a positive 8-bit integer |
 
-**Returns:** [*Id3v2UrlLinkFrame*](id3v2urllinkframe.md)
+#### Returns
+
+[`Id3v2UrlLinkFrame`](id3v2urllinkframe.md)

@@ -468,7 +468,7 @@ export abstract class File {
         // We need to write out as much as we're replacing, then shuffle the rest to the end
 
         // Step 1: Write the number of bytes to replace
-        this._fileStream.write(data.data, 0, replace);
+        this._fileStream.write(data, 0, replace);
 
         // Step 2: Resize the file to fit all the new bytes
         const bytesToAdd = data.length - replace;
@@ -494,7 +494,7 @@ export abstract class File {
 
         // Step 4: Write the remainder of the data
         this._fileStream.seek(start + replace, SeekOrigin.Begin);
-        this._fileStream.write(data.data, replace, data.length - replace);
+        this._fileStream.write(data, replace, data.length - replace);
     }
 
     /**
@@ -666,7 +666,7 @@ export abstract class File {
 
         this.mode = FileAccessMode.Write;
 
-        this._fileStream.write(data.data, 0, data.length);
+        this._fileStream.write(data, 0, data.length);
     }
 
     // #endregion

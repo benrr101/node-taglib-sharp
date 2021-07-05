@@ -1,10 +1,10 @@
 import * as Chai from "chai";
-import TestConstants from "./utilities/testConstants";
-import {suite, test} from "mocha-typescript";
+import {suite, test} from "@testdeck/mocha";
 
 import {File, ReadStyle} from "../src";
 import {StandardFileTests} from "./utilities/standardFileTests";
 import ExtendedFileTests from "./utilities/extendedFileTests";
+import TestConstants from "./utilities/testConstants";
 
 const assert = Chai.assert;
 

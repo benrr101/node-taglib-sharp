@@ -1,5 +1,5 @@
 import * as Chai from "chai";
-import {suite} from "mocha-typescript";
+import {suite, test} from "@testdeck/mocha";
 
 import UuidWrapper from "../../src/uuidWrapper";
 import {ByteVector} from "../../src/byteVector";

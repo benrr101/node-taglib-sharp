@@ -4,13 +4,9 @@
 
 Provides information about an MPEG video stream.
 
-## Hierarchy
-
-* **MpegVideoHeader**
-
 ## Implements
 
-* [*IVideoCodec*](../interfaces/ivideocodec.md)
+- [`IVideoCodec`](../interfaces/ivideocodec.md)
 
 ## Table of contents
 
@@ -32,98 +28,120 @@ Provides information about an MPEG video stream.
 
 ### constructor
 
-\+ **new MpegVideoHeader**(`file`: [*File*](file.md), `position`: *number*): [*MpegVideoHeader*](mpegvideoheader.md)
+• **new MpegVideoHeader**(`file`, `position`)
 
 Constructs and initializes a new instance of [MpegVideoHeader](mpegvideoheader.md) by reading it from a
 specified location in a specified file.
 
-#### Parameters:
+#### Parameters
 
-Name | Type | Description |
------- | ------ | ------ |
-`file` | [*File*](file.md) | File to read the header from   |
-`position` | *number* | Position in `file` at which the header begins    |
-
-**Returns:** [*MpegVideoHeader*](mpegvideoheader.md)
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `file` | [`File`](file.md) | File to read the header from |
+| `position` | `number` | Position in `file` at which the header begins |
 
 ## Accessors
 
 ### description
 
-• **description**(): *string*
+• `get` **description**(): `string`
 
 Gets a text description of the media represented by the current instance.
 
-**Returns:** *string*
+#### Returns
 
-Implementation of: [IVideoCodec](../interfaces/ivideocodec.md).[description](../interfaces/ivideocodec.md#description)
+`string`
+
+#### Implementation of
+
+[IVideoCodec](../interfaces/ivideocodec.md).[description](../interfaces/ivideocodec.md#description)
 
 ___
 
 ### durationMilliseconds
 
-• **durationMilliseconds**(): *number*
+• `get` **durationMilliseconds**(): `number`
 
 Duration of the media in milliseconds represented by the current instance.
 
 **`todo:`** Can we calculate the duration?
 
-**Returns:** *number*
+#### Returns
 
-Implementation of: [IVideoCodec](../interfaces/ivideocodec.md).[durationMilliseconds](../interfaces/ivideocodec.md#durationmilliseconds)
+`number`
+
+#### Implementation of
+
+[IVideoCodec](../interfaces/ivideocodec.md).[durationMilliseconds](../interfaces/ivideocodec.md#durationmilliseconds)
 
 ___
 
 ### mediaTypes
 
-• **mediaTypes**(): [*MediaTypes*](../enums/mediatypes.md)
+• `get` **mediaTypes**(): [`MediaTypes`](../enums/mediatypes.md)
 
 Types of media represented by the current instance, bitwise combined.
 
-**Returns:** [*MediaTypes*](../enums/mediatypes.md)
+#### Returns
 
-Implementation of: [IVideoCodec](../interfaces/ivideocodec.md).[mediaTypes](../interfaces/ivideocodec.md#mediatypes)
+[`MediaTypes`](../enums/mediatypes.md)
+
+#### Implementation of
+
+[IVideoCodec](../interfaces/ivideocodec.md).[mediaTypes](../interfaces/ivideocodec.md#mediatypes)
 
 ___
 
 ### videoBitrate
 
-• **videoBitrate**(): *number*
+• `get` **videoBitrate**(): `number`
 
-**`inheritdoc`** 
+**`inheritdoc`**
 
-**Returns:** *number*
+#### Returns
+
+`number`
 
 ___
 
 ### videoFrameRate
 
-• **videoFrameRate**(): *number*
+• `get` **videoFrameRate**(): `number`
 
-**`inheritdoc`** 
+**`inheritdoc`**
 
-**Returns:** *number*
+#### Returns
+
+`number`
 
 ___
 
 ### videoHeight
 
-• **videoHeight**(): *number*
+• `get` **videoHeight**(): `number`
 
 Height of the video in pixels represented by the current instance.
 
-**Returns:** *number*
+#### Returns
 
-Implementation of: [IVideoCodec](../interfaces/ivideocodec.md).[videoHeight](../interfaces/ivideocodec.md#videoheight)
+`number`
+
+#### Implementation of
+
+[IVideoCodec](../interfaces/ivideocodec.md).[videoHeight](../interfaces/ivideocodec.md#videoheight)
 
 ___
 
 ### videoWidth
 
-• **videoWidth**(): *number*
+• `get` **videoWidth**(): `number`
 
 Width of the video in pixels represented by the current instance.
 
-**Returns:** *number*
+#### Returns
 
-Implementation of: [IVideoCodec](../interfaces/ivideocodec.md).[videoWidth](../interfaces/ivideocodec.md#videowidth)
+`number`
+
+#### Implementation of
+
+[IVideoCodec](../interfaces/ivideocodec.md).[videoWidth](../interfaces/ivideocodec.md#videowidth)

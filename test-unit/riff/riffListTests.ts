@@ -1,5 +1,5 @@
 import * as Chai from "chai";
-import {suite, test} from "mocha-typescript";
+import {suite, test} from "@testdeck/mocha";
 import {Mock} from "typemoq";
 
 import RiffList from "../../src/riff/riffList";
@@ -60,7 +60,7 @@ const sampleData = ByteVector.concatenate(
         const list = RiffList.fromData(sampleData);
 
         // Assert
-        this.verifySample(list);
+        RiffList_ConstructorTests.verifySample(list);
     }
 
     @test
@@ -103,10 +103,10 @@ const sampleData = ByteVector.concatenate(
         const list = RiffList.fromFile(mockFile, 10, sampleData.length);
 
         // Assert
-        this.verifySample(list);
+        RiffList_ConstructorTests.verifySample(list);
     }
 
-    private verifySample(list: RiffList): void {
+    private static verifySample(list: RiffList): void {
         assert.isOk(list);
         assert.strictEqual(list.length, 3);
 

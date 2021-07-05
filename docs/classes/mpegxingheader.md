@@ -4,10 +4,6 @@
 
 Information about a variable bitrate MPEG audio stream
 
-## Hierarchy
-
-* **MpegXingHeader**
-
 ## Table of contents
 
 ### Properties
@@ -31,7 +27,7 @@ Information about a variable bitrate MPEG audio stream
 
 ### fileIdentifier
 
-▪ `Readonly` `Static` **fileIdentifier**: [*ByteVector*](bytevector.md)
+▪ `Static` `Readonly` **fileIdentifier**: [`ByteVector`](bytevector.md)
 
 Identifier that appears in a file to indicate the start of a Xing header.
 
@@ -39,7 +35,7 @@ ___
 
 ### unknown
 
-▪ `Readonly` `Static` **unknown**: [*MpegXingHeader*](mpegxingheader.md)
+▪ `Static` `Readonly` **unknown**: [`MpegXingHeader`](mpegxingheader.md)
 
 An empty an unset Xing header
 
@@ -47,81 +43,93 @@ An empty an unset Xing header
 
 ### isPresent
 
-• **isPresent**(): *boolean*
+• `get` **isPresent**(): `boolean`
 
 Whether or not a physical VBRI header is present in the file.
 
-**Returns:** *boolean*
+#### Returns
+
+`boolean`
 
 ___
 
 ### totalFrames
 
-• **totalFrames**(): *number*
+• `get` **totalFrames**(): `number`
 
 Gets the total number of frames in the file, as indicated by the current instance.
 
-**Returns:** *number*
+#### Returns
+
+`number`
 
 ___
 
 ### totalSize
 
-• **totalSize**(): *number*
+• `get` **totalSize**(): `number`
 
 Gets the total size of the file, as indicated by the current instance.
 
-**Returns:** *number*
+#### Returns
+
+`number`
 
 ## Methods
 
 ### fromData
 
-▸ `Static`**fromData**(`data`: [*ByteVector*](bytevector.md)): [*MpegXingHeader*](mpegxingheader.md)
+▸ `Static` **fromData**(`data`): [`MpegXingHeader`](mpegxingheader.md)
 
 Constructs a new instance by reading its raw contents.
 
-#### Parameters:
+#### Parameters
 
-Name | Type | Description |
------- | ------ | ------ |
-`data` | [*ByteVector*](bytevector.md) | Raw data of the Xing header    |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `data` | [`ByteVector`](bytevector.md) | Raw data of the Xing header |
 
-**Returns:** [*MpegXingHeader*](mpegxingheader.md)
+#### Returns
+
+[`MpegXingHeader`](mpegxingheader.md)
 
 ___
 
 ### fromInfo
 
-▸ `Static`**fromInfo**(`frames`: *number*, `size`: *number*): [*MpegXingHeader*](mpegxingheader.md)
+▸ `Static` **fromInfo**(`frames`, `size`): [`MpegXingHeader`](mpegxingheader.md)
 
 Constructs a new instance with a specified frame count and size.
 
-#### Parameters:
+#### Parameters
 
-Name | Type | Description |
------- | ------ | ------ |
-`frames` | *number* | Frame count of the audio   |
-`size` | *number* | Stream size of the audio    |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `frames` | `number` | Frame count of the audio |
+| `size` | `number` | Stream size of the audio |
 
-**Returns:** [*MpegXingHeader*](mpegxingheader.md)
+#### Returns
+
+[`MpegXingHeader`](mpegxingheader.md)
 
 ___
 
 ### xingHeaderOffset
 
-▸ `Static`**xingHeaderOffset**(`version`: [*MpegVersion*](../enums/mpegversion.md), `channelModel`: [*MpegAudioChannelMode*](../enums/mpegaudiochannelmode.md)): *number*
+▸ `Static` **xingHeaderOffset**(`version`, `channelModel`): `number`
 
 Gets the offset at which a Xing header would appear in an MPEG audio packet based on the
 version and channel mode.
 
-#### Parameters:
+#### Parameters
 
-Name | Type | Description |
------- | ------ | ------ |
-`version` | [*MpegVersion*](../enums/mpegversion.md) | Version of the MPEG audio packet   |
-`channelModel` | [*MpegAudioChannelMode*](../enums/mpegaudiochannelmode.md) | Channel mode of the MPEG audio packet   |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `version` | [`MpegVersion`](../enums/mpegversion.md) | Version of the MPEG audio packet |
+| `channelModel` | [`MpegAudioChannelMode`](../enums/mpegaudiochannelmode.md) | Channel mode of the MPEG audio packet |
 
-**Returns:** *number*
+#### Returns
+
+`number`
 
 Offset into an MPEG audio packet where the Xing header would appear.

@@ -1,10 +1,9 @@
 import * as Chai from "chai";
-import * as ChaiAsPromised from "chai-as-promised";
-import FrameConstructorTests from "./frameConstructorTests";
-import PropertyTests from "../utilities/propertyTests";
-import {suite, test} from "mocha-typescript";
+import {suite, test} from "@testdeck/mocha";
 
+import FrameConstructorTests from "./frameConstructorTests";
 import Id3v2Settings from "../../src/id3v2/id3v2Settings";
+import PropertyTests from "../utilities/propertyTests";
 import TermsOfUseFrame from "../../src/id3v2/frames/termsOfUseFrame";
 import {ByteVector, StringType} from "../../src/byteVector";
 import {Frame, FrameClassType} from "../../src/id3v2/frames/frame";
@@ -12,7 +11,6 @@ import {Id3v2FrameHeader} from "../../src/id3v2/frames/frameHeader";
 import {FrameIdentifiers} from "../../src/id3v2/frameIdentifiers";
 
 // Setup chai
-Chai.use(ChaiAsPromised);
 const assert = Chai.assert;
 
 @suite class Id3v2_TermsOfUseFrame_ConstructorTests extends FrameConstructorTests {
@@ -30,7 +28,7 @@ const assert = Chai.assert;
         const output = TermsOfUseFrame.fromFields("fux");
 
         // Assert
-        this.assertFrame(output, "fux", "", Id3v2Settings.defaultEncoding);
+        Id3v2_TermsOfUseFrame_ConstructorTests.assertFrame(output, "fux", "", Id3v2Settings.defaultEncoding);
     }
 
     @test
@@ -39,7 +37,7 @@ const assert = Chai.assert;
         const output = TermsOfUseFrame.fromFields("fux", StringType.UTF16BE);
 
         // Assert
-        this.assertFrame(output, "fux", "", StringType.UTF16BE);
+        Id3v2_TermsOfUseFrame_ConstructorTests.assertFrame(output, "fux", "", StringType.UTF16BE);
     }
 
     @test
@@ -74,7 +72,7 @@ const assert = Chai.assert;
         const output = TermsOfUseFrame.fromOffsetRawData(data, 2, header, 4);
 
         // Assert
-        this.assertFrame(output, "fux", "buxqux", StringType.Latin1);
+        Id3v2_TermsOfUseFrame_ConstructorTests.assertFrame(output, "fux", "buxqux", StringType.Latin1);
     }
 
     @test
@@ -107,10 +105,10 @@ const assert = Chai.assert;
         const output = TermsOfUseFrame.fromRawData(data, 4);
 
         // Assert
-        this.assertFrame(output, "fux", "buxqux", StringType.Latin1);
+        Id3v2_TermsOfUseFrame_ConstructorTests.assertFrame(output, "fux", "buxqux", StringType.Latin1);
     }
 
-    private assertFrame(frame: TermsOfUseFrame, language: string, text: string, textEncoding: StringType) {
+    private static assertFrame(frame: TermsOfUseFrame, language: string, text: string, textEncoding: StringType) {
         assert.isOk(frame);
         assert.strictEqual(frame.frameClassType, FrameClassType.TermsOfUseFrame);
         assert.strictEqual(frame.frameId, FrameIdentifiers.USER);

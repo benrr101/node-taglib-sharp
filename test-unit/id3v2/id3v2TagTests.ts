@@ -1,7 +1,6 @@
 import * as Chai from "chai";
-import * as ChaiAsPromised from "chai-as-promised";
 import * as TypeMoq from "typemoq";
-import {suite, test} from "mocha-typescript";
+import {suite, test} from "@testdeck/mocha";
 
 import Id3v2Tag from "../../src/id3v2/id3v2Tag";
 import SyncData from "../../src/id3v2/syncData";
@@ -26,7 +25,6 @@ import Id3v2TagFooter from "../../src/id3v2/id3v2TagFooter";
 import {Id3v2FrameFlags} from "../../src/id3v2/frames/frameHeader";
 
 // Setup Chai
-Chai.use(ChaiAsPromised);
 const assert = Chai.assert;
 
 function getTestTagHeader(version: number, flags: Id3v2TagHeaderFlags, tagSize: number): ByteVector {
@@ -1939,7 +1937,7 @@ function getTestTagHeader(version: number, flags: Id3v2TagHeaderFlags, tagSize: 
 
         try {
             // Act / Assert
-            assert.throws(() => { const _ = tag.render(); });
+            assert.throws(() => tag.render());
         } finally {
             Id3v2Settings.strictFrameForVersion = originalSetting;
         }

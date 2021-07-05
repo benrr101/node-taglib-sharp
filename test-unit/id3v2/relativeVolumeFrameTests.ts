@@ -1,18 +1,16 @@
 import * as Chai from "chai";
-import * as ChaiAsPromised from "chai-as-promised";
+import {suite, test} from "@testdeck/mocha";
+
 import ConstructorTests from "./frameConstructorTests";
 import PropertyTests from "../utilities/propertyTests";
-import {Testers} from "../utilities/testers";
-import {suite, test} from "mocha-typescript";
-
 import {ChannelData, ChannelType, RelativeVolumeFrame} from "../../src/id3v2/frames/relativeVolumeFrame";
 import {ByteVector, StringType} from "../../src/byteVector";
 import {Frame, FrameClassType} from "../../src/id3v2/frames/frame";
 import {Id3v2FrameHeader} from "../../src/id3v2/frames/frameHeader";
 import {FrameIdentifiers} from "../../src/id3v2/frameIdentifiers";
+import {Testers} from "../utilities/testers";
 
 // Setup chai
-Chai.use(ChaiAsPromised);
 const assert = Chai.assert;
 
 @suite class Id3v2_RelativeVolumeChannelData {
@@ -292,7 +290,7 @@ const assert = Chai.assert;
         const frame = RelativeVolumeFrame.fromIdentification("foo");
 
         // Assert
-        this.assertFrame(frame, [], "foo");
+        Id3v2_RelativeVolumeFrame_ConstructorTests.assertFrame(frame, [], "foo");
     }
 
     @test
@@ -309,7 +307,7 @@ const assert = Chai.assert;
         const frame = RelativeVolumeFrame.fromRawData(data, 4);
 
         // Assert
-        this.assertFrame(frame, [], undefined);
+        Id3v2_RelativeVolumeFrame_ConstructorTests.assertFrame(frame, [], undefined);
     }
 
     @test
@@ -340,7 +338,7 @@ const assert = Chai.assert;
         const frame = RelativeVolumeFrame.fromRawData(data, 4);
 
         // Assert
-        this.assertFrame(frame, [channel2, channel1], "foo");
+        Id3v2_RelativeVolumeFrame_ConstructorTests.assertFrame(frame, [channel2, channel1], "foo");
     }
 
     @test
@@ -372,10 +370,10 @@ const assert = Chai.assert;
         const frame = RelativeVolumeFrame.fromOffsetRawData(data, 2, header, 4);
 
         // Assert
-        this.assertFrame(frame, [channel2, channel1], "foo");
+        Id3v2_RelativeVolumeFrame_ConstructorTests.assertFrame(frame, [channel2, channel1], "foo");
     }
 
-    private assertFrame(frame: RelativeVolumeFrame, c: ChannelData[], i: string) {
+    private static assertFrame(frame: RelativeVolumeFrame, c: ChannelData[], i: string) {
         assert.isOk(frame);
         assert.strictEqual(frame.frameClassType, FrameClassType.RelativeVolumeFrame);
         assert.strictEqual(frame.frameId, FrameIdentifiers.RVA2);

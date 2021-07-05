@@ -6,13 +6,13 @@ Interface that provides basic information common to all media codecs
 
 ## Hierarchy
 
-* **ICodec**
+- **`ICodec`**
 
-  ↳ [*IAudioCodec*](iaudiocodec.md)
+  ↳ [`IAudioCodec`](iaudiocodec.md)
 
-  ↳ [*IVideoCodec*](ivideocodec.md)
+  ↳ [`IVideoCodec`](ivideocodec.md)
 
-  ↳ [*IPhotoCodec*](iphotocodec.md)
+  ↳ [`IPhotoCodec`](iphotocodec.md)
 
 ## Table of contents
 
@@ -26,7 +26,7 @@ Interface that provides basic information common to all media codecs
 
 ### description
 
-• **description**: *string*
+• **description**: `string`
 
 Gets a text description of the media represented by the current instance.
 
@@ -34,7 +34,7 @@ ___
 
 ### durationMilliseconds
 
-• **durationMilliseconds**: *number*
+• **durationMilliseconds**: `number`
 
 Duration of the media in milliseconds represented by the current instance.
 
@@ -44,6 +44,6 @@ ___
 
 ### mediaTypes
 
-• **mediaTypes**: [*MediaTypes*](../enums/mediatypes.md)
+• **mediaTypes**: [`MediaTypes`](../enums/mediatypes.md)
 
 Types of media represented by the current instance, bitwise combined.

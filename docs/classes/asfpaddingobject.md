@@ -7,9 +7,9 @@ written to disk.
 
 ## Hierarchy
 
-* *BaseObject*
+- `BaseObject`
 
-  ↳ **AsfPaddingObject**
+  ↳ **`AsfPaddingObject`**
 
 ## Table of contents
 
@@ -37,154 +37,192 @@ written to disk.
 
 ### HEADER\_LENGTH
 
-▪ `Readonly` `Static` **HEADER\_LENGTH**: *24*= 24
+▪ `Static` `Readonly` **HEADER\_LENGTH**: ``24``
 
 ## Accessors
 
 ### guid
 
-• **guid**(): *default*
+• `get` **guid**(): `default`
 
 Gets the GUID that identifies the current instance.
 
-**Returns:** *default*
+#### Returns
+
+`default`
 
 ___
 
 ### objectType
 
-• **objectType**(): ObjectType
+• `get` **objectType**(): `ObjectType`
 
-**`inheritdoc`** 
+**`inheritdoc`**
 
-**Returns:** ObjectType
+#### Returns
+
+`ObjectType`
 
 ___
 
 ### originalSize
 
-• **originalSize**(): *number*
+• `get` **originalSize**(): `number`
 
 Gets the original size of the current instance.
 
-**Returns:** *number*
+#### Returns
+
+`number`
 
 ___
 
 ### size
 
-• **size**(): *number*
+• `get` **size**(): `number`
 
 Gets the number of bytes the current instance will take up on disk. Note: this does *not*
 include the header for the object.
 
-**Returns:** *number*
+#### Returns
 
-• **size**(`value`: *number*): *void*
+`number`
+
+• `set` **size**(`value`): `void`
 
 Sets the number of padding bytes the current instance will contain. Note: this does *not*
 include the header for the object.
 
-#### Parameters:
+#### Parameters
 
-Name | Type | Description |
------- | ------ | ------ |
-`value` | *number* | Size of the current instance in bytes, must be a safe, positive integer.    |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `value` | `number` | Size of the current instance in bytes, must be a safe, positive integer. |
 
-**Returns:** *void*
+#### Returns
+
+`void`
 
 ## Methods
 
 ### initializeFromFile
 
-▸ `Protected`**initializeFromFile**(`file`: [*File*](file.md), `position`: *number*): *void*
+▸ `Protected` **initializeFromFile**(`file`, `position`): `void`
 
 Initializes a new instance by reading the contents from a specified position in a specified
 file.
 
-#### Parameters:
+#### Parameters
 
-Name | Type | Description |
------- | ------ | ------ |
-`file` | [*File*](file.md) | File which contains the details of the new instance to create   |
-`position` | *number* | Position in `file` where the object begins   |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `file` | [`File`](file.md) | File which contains the details of the new instance to create |
+| `position` | `number` | Position in `file` where the object begins |
 
-**Returns:** *void*
+#### Returns
+
+`void`
+
+#### Inherited from
+
+BaseObject.initializeFromFile
 
 ___
 
 ### initializeFromGuid
 
-▸ `Protected`**initializeFromGuid**(`guid`: *default*): *void*
+▸ `Protected` **initializeFromGuid**(`guid`): `void`
 
 Initializes a new instance with a specified GUID.
 
-#### Parameters:
+#### Parameters
 
-Name | Type | Description |
------- | ------ | ------ |
-`guid` | *default* | GUID to use for the new instance.   |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `guid` | `default` | GUID to use for the new instance. |
 
-**Returns:** *void*
+#### Returns
+
+`void`
+
+#### Inherited from
+
+BaseObject.initializeFromGuid
 
 ___
 
 ### render
 
-▸ **render**(): [*ByteVector*](bytevector.md)
+▸ **render**(): [`ByteVector`](bytevector.md)
 
-**`inheritdoc`** 
+**`inheritdoc`**
 
-**Returns:** [*ByteVector*](bytevector.md)
+#### Returns
+
+[`ByteVector`](bytevector.md)
+
+#### Overrides
+
+BaseObject.render
 
 ___
 
 ### renderInternal
 
-▸ `Protected`**renderInternal**(`data`: [*ByteVector*](bytevector.md)): [*ByteVector*](bytevector.md)
+▸ `Protected` **renderInternal**(`data`): [`ByteVector`](bytevector.md)
 
 Renders the current instance as a raw ASF object containing the specified data.
 
 **`remarks`** Child classes implementing {@see render()} should render their contents and then
     send the data through this method to produce the final output.
 
-#### Parameters:
+#### Parameters
 
-Name | Type | Description |
------- | ------ | ------ |
-`data` | [*ByteVector*](bytevector.md) | Data to store in the rendered version of the current instance.   |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `data` | [`ByteVector`](bytevector.md) | Data to store in the rendered version of the current instance. |
 
-**Returns:** [*ByteVector*](bytevector.md)
+#### Returns
+
+[`ByteVector`](bytevector.md)
+
+#### Inherited from
+
+BaseObject.renderInternal
 
 ___
 
 ### fromFile
 
-▸ `Static`**fromFile**(`file`: [*File*](file.md), `position`: *number*): [*AsfPaddingObject*](asfpaddingobject.md)
+▸ `Static` **fromFile**(`file`, `position`): [`AsfPaddingObject`](asfpaddingobject.md)
 
 Constructs and initializes a new instance by reading it from a file.
 
-#### Parameters:
+#### Parameters
 
-Name | Type | Description |
------- | ------ | ------ |
-`file` | [*File*](file.md) | File to read the padding object from   |
-`position` | *number* | Index into the file where the padding object starts from    |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `file` | [`File`](file.md) | File to read the padding object from |
+| `position` | `number` | Index into the file where the padding object starts from |
 
-**Returns:** [*AsfPaddingObject*](asfpaddingobject.md)
+#### Returns
+
+[`AsfPaddingObject`](asfpaddingobject.md)
 
 ___
 
 ### fromSize
 
-▸ `Static`**fromSize**(`size`: *number*): [*AsfPaddingObject*](asfpaddingobject.md)
+▸ `Static` **fromSize**(`size`): [`AsfPaddingObject`](asfpaddingobject.md)
 
 Constructs and initializes a new instance with a fixed size.
 
-#### Parameters:
+#### Parameters
 
-Name | Type | Description |
------- | ------ | ------ |
-`size` | *number* | Number of padding bytes to store in the object not including the size of the     header    |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `size` | `number` | Number of padding bytes to store in the object not including the size of the     header |
 
-**Returns:** [*AsfPaddingObject*](asfpaddingobject.md)
+#### Returns
+
+[`AsfPaddingObject`](asfpaddingobject.md)

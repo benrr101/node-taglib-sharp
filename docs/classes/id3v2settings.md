@@ -2,10 +2,6 @@
 
 # Class: Id3v2Settings
 
-## Hierarchy
-
-* **Id3v2Settings**
-
 ## Table of contents
 
 ### Accessors
@@ -25,121 +21,141 @@
 
 ### defaultEncoding
 
-• `Static`**defaultEncoding**(): [*StringType*](../enums/stringtype.md)
+• `Static` `get` **defaultEncoding**(): [`StringType`](../enums/stringtype.md)
 
 Gets the encoding to use when creating new frames.
 
-**Returns:** [*StringType*](../enums/stringtype.md)
+#### Returns
 
-• `Static`**defaultEncoding**(`value`: [*StringType*](../enums/stringtype.md)): *void*
+[`StringType`](../enums/stringtype.md)
+
+• `Static` `set` **defaultEncoding**(`value`): `void`
 
 Sets the encoding to use when creating new frames.
 
-#### Parameters:
+#### Parameters
 
-Name | Type | Description |
------- | ------ | ------ |
-`value` | [*StringType*](../enums/stringtype.md) | Encoding to use when creating new frames    |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `value` | [`StringType`](../enums/stringtype.md) | Encoding to use when creating new frames |
 
-**Returns:** *void*
+#### Returns
+
+`void`
 
 ___
 
 ### defaultVersion
 
-• `Static`**defaultVersion**(): *number*
+• `Static` `get` **defaultVersion**(): `number`
 
 Gets the default version to use when creating new tags.
 If [forceDefaultEncoding](id3v2settings.md#forcedefaultencoding) is `true` then all tags will be rendered with this version.
 
-**Returns:** *number*
+#### Returns
 
-• `Static`**defaultVersion**(`value`: *number*): *void*
+`number`
+
+• `Static` `set` **defaultVersion**(`value`): `void`
 
 Sets the default version to use when creating new tags.
 If [forceDefaultEncoding](id3v2settings.md#forcedefaultencoding) is `true` then all tags will be rendered with this version.
 
-#### Parameters:
+#### Parameters
 
-Name | Type | Description |
------- | ------ | ------ |
-`value` | *number* | ID3v2 version to use. Must be 2, 3, or 4. The default for this library is 3    |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `value` | `number` | ID3v2 version to use. Must be 2, 3, or 4. The default for this library is 3 |
 
-**Returns:** *void*
+#### Returns
+
+`void`
 
 ___
 
 ### footerSize
 
-• `Static`**footerSize**(): *number*
+• `Static` `get` **footerSize**(): `number`
 
 Size of an ID3v2 footer in bytes
 
-**Returns:** *number*
+#### Returns
+
+`number`
 
 ___
 
 ### forceDefaultEncoding
 
-• `Static`**forceDefaultEncoding**(): *boolean*
+• `Static` `get` **forceDefaultEncoding**(): `boolean`
 
 Gets whether or not to render all frames with the default encoding rather than their
 original encoding.
 
-**Returns:** *boolean*
+#### Returns
 
-• `Static`**forceDefaultEncoding**(`value`: *boolean*): *void*
+`boolean`
+
+• `Static` `set` **forceDefaultEncoding**(`value`): `void`
 
 Sets whether or not to render all frames with the default encoding rather than their
 original encoding.
 
-#### Parameters:
+#### Parameters
 
-Name | Type | Description |
------- | ------ | ------ |
-`value` | *boolean* | If `true` frames will be rendered using [defaultEncoding](id3v2settings.md#defaultencoding) rather than     their original encoding.    |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `value` | `boolean` | If `true` frames will be rendered using [defaultEncoding](id3v2settings.md#defaultencoding) rather than     their original encoding. |
 
-**Returns:** *void*
+#### Returns
+
+`void`
 
 ___
 
 ### forceDefaultVersion
 
-• `Static`**forceDefaultVersion**(): *boolean*
+• `Static` `get` **forceDefaultVersion**(): `boolean`
 
 Gets whether or not to save all tags in the default version rather than their original
 version.
 
-**Returns:** *boolean*
+#### Returns
 
-• `Static`**forceDefaultVersion**(`value`: *boolean*): *void*
+`boolean`
+
+• `Static` `set` **forceDefaultVersion**(`value`): `void`
 
 Sets whether or not to save all tags in the default version rather than their original
 version.
 
-#### Parameters:
+#### Parameters
 
-Name | Type | Description |
------- | ------ | ------ |
-`value` | *boolean* | If `true`, tags will be saved in the version defined in [defaultVersion](id3v2settings.md#defaultversion)     rather than their original format, with the exception of tags with footers which will     always be saved in version 4    |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `value` | `boolean` | If `true`, tags will be saved in the version defined in [defaultVersion](id3v2settings.md#defaultversion)     rather than their original format, with the exception of tags with footers which will     always be saved in version 4 |
 
-**Returns:** *void*
+#### Returns
+
+`void`
 
 ___
 
 ### headerSize
 
-• `Static`**headerSize**(): *number*
+• `Static` `get` **headerSize**(): `number`
 
 Size of an ID3v2 header in bytes
 
-**Returns:** *number*
+#### Returns
+
+`number`
 
 ___
 
 ### strictFrameForVersion
 
-• `Static`**strictFrameForVersion**(): *boolean*
+• `Static` `get` **strictFrameForVersion**(): `boolean`
 
 Gets whether or not attempting to write a frame that is unsupported in the desired version
 will throw an error.
@@ -147,9 +163,11 @@ If `true` writing a frame that is not supported in the desired version will thro
 during the render process. If `false` if a frame is not supported in the desired version it
 will be omitted from rendering and no error will be thrown.
 
-**Returns:** *boolean*
+#### Returns
 
-• `Static`**strictFrameForVersion**(`value`: *boolean*): *void*
+`boolean`
+
+• `Static` `set` **strictFrameForVersion**(`value`): `void`
 
 Sets whether or not attempting to write a frame that is unsupported in the desired version
 will throw an error.
@@ -157,19 +175,21 @@ If `true` writing a frame that is not supported in the desired version will thro
 during the render process. If `false` if a frame is not supported in the desired version it
 will be omitted from rendering and no error will be thrown.
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
------- | ------ |
-`value` | *boolean* |
+| Name | Type |
+| :------ | :------ |
+| `value` | `boolean` |
 
-**Returns:** *void*
+#### Returns
+
+`void`
 
 ___
 
 ### useNonStandardV2V3GenreSeparators
 
-• `Static`**useNonStandardV2V3GenreSeparators**(): *boolean*
+• `Static` `get` **useNonStandardV2V3GenreSeparators**(): `boolean`
 
 Gets whether or not to use non-standard genre separators on ID3v2.2 and ID3v2.4.
 If `true`, the TCO/TCON frame value will be separated by `;` and/or `/`, empty values will
@@ -182,9 +202,11 @@ standard, escaped numeric genres).
     maintain compatibility, this functionality is preserved, but can be disabled by setting
     [useNonStandardV2V3GenreSeparators](id3v2settings.md#usenonstandardv2v3genreseparators) to `false`.
 
-**Returns:** *boolean*
+#### Returns
 
-• `Static`**useNonStandardV2V3GenreSeparators**(`value`: *boolean*): *void*
+`boolean`
+
+• `Static` `set` **useNonStandardV2V3GenreSeparators**(`value`): `void`
 
 Sets whether or not to use non-standard genre separators on ID3v2.2 and ID3v2.3.
 If `true`, the TCO/TCON frame value will be separated by `;` and/or `/`, empty values will
@@ -197,19 +219,21 @@ standard, escaped numeric genres).
     maintain compatibility, this functionality is preserved, but can be disabled by setting
     [useNonStandardV2V3GenreSeparators](id3v2settings.md#usenonstandardv2v3genreseparators) to `false`.
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
------- | ------ |
-`value` | *boolean* |
+| Name | Type |
+| :------ | :------ |
+| `value` | `boolean` |
 
-**Returns:** *void*
+#### Returns
+
+`void`
 
 ___
 
 ### useNonStandardV2V3NumericGenres
 
-• `Static`**useNonStandardV2V3NumericGenres**(): *boolean*
+• `Static` `get` **useNonStandardV2V3NumericGenres**(): `boolean`
 
 Gets whether or not to use non-standard numeric genre parsing on ID3v2.2 and ID3v2.3. If
 `true`, a purely numeric TCO/TCON frame value will attempt to be parsed as a numeric genre.
@@ -221,9 +245,11 @@ If `false`, the TCO/TCON frame value will be returned without parsing purely num
     compatibility, this functionality is preserved, but can be disabled by setting
     [useNonStandardV2V3NumericGenres](id3v2settings.md#usenonstandardv2v3numericgenres) to `false`.
 
-**Returns:** *boolean*
+#### Returns
 
-• `Static`**useNonStandardV2V3NumericGenres**(`value`: *boolean*): *void*
+`boolean`
+
+• `Static` `set` **useNonStandardV2V3NumericGenres**(`value`): `void`
 
 Sets whether or not to use non-standard numeric genre parsing on ID3v2.2 and ID3v2.3. If
 `true`, a purely numeric TCO/TCON frame value will attempt to be parsed as a numeric genre.
@@ -235,38 +261,44 @@ If `false`, the TCO/TCON frame value will be returned without parsing purely num
     compatibility, this functionality is preserved, but can be disabled by setting
     [useNonStandardV2V3NumericGenres](id3v2settings.md#usenonstandardv2v3numericgenres) to `false`.
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
------- | ------ |
-`value` | *boolean* |
+| Name | Type |
+| :------ | :------ |
+| `value` | `boolean` |
 
-**Returns:** *void*
+#### Returns
+
+`void`
 
 ___
 
 ### useNumericGenres
 
-• `Static`**useNumericGenres**(): *boolean*
+• `Static` `get` **useNumericGenres**(): `boolean`
 
 Gets whether or not to use ID3v1 style numeric genres when possible.
 If `true`, the library will try looking up the numeric genre code when storing the value.
 for ID3v2.2 and ID3v2.3 "Rock" would be stored as "(17)" and for ID3v2.4, it would be
 stored as "17".
 
-**Returns:** *boolean*
+#### Returns
 
-• `Static`**useNumericGenres**(`value`: *boolean*): *void*
+`boolean`
+
+• `Static` `set` **useNumericGenres**(`value`): `void`
 
 Sets whether or not to use ID3v1 style numeric genres when possible.
 If `true`, the library will try looking up the numeric genre code when storing the value.
 for ID3v2.2 and ID3v2.3 "Rock" would be stored as "(17)" and for ID3v2.4, it would be
 stored as "17".
 
-#### Parameters:
+#### Parameters
 
-Name | Type | Description |
------- | ------ | ------ |
-`value` | *boolean* | Whether or not to use genres with numeric values when values when possible    |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `value` | `boolean` | Whether or not to use genres with numeric values when values when possible |
 
-**Returns:** *void*
+#### Returns
+
+`void`

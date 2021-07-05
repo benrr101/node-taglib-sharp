@@ -1,21 +1,20 @@
 import * as Chai from "chai";
-import * as ChaiAsPromised from "chai-as-promised";
 import * as TypeMoq from "typemoq";
-import PropertyTests from "./utilities/propertyTests";
-import TestConstants from "./testConstants";
-import {Testers} from "./utilities/testers";
-import TestStream from "./utilities/testStream";
-import {suite, test} from "mocha-typescript";
+
+import {suite, test} from "@testdeck/mocha";
 
 import Properties from "../src/properties";
+import PropertyTests from "./utilities/propertyTests";
+import TestConstants from "./testConstants";
+import TestStream from "./utilities/testStream";
+import {ByteVector} from "../src/byteVector";
 import {File, FileAccessMode, FileTypeConstructor, FileTypeResolver, ReadStyle} from "../src/file";
 import {IFileAbstraction} from "../src/fileAbstraction";
-import {Tag, TagTypes} from "../src/tag";
 import {IStream} from "../src/stream";
-import {ByteVector} from "../src/byteVector";
+import {Tag, TagTypes} from "../src/tag";
+import {Testers} from "./utilities/testers";
 
 // Setup Chai
-Chai.use(ChaiAsPromised);
 const assert = Chai.assert;
 
 @suite class FileTests {

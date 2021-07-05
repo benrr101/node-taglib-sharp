@@ -7,14 +7,10 @@ Contrary to [Picture](picture.md), a reference to a file where the picture is lo
 the picture is lazily loaded from the file, meaning that it will be read from the file only when
 needed. This saves time and memory if the picture loading is not required.
 
-## Hierarchy
-
-* **PictureLazy**
-
 ## Implements
 
-* [*IPicture*](../interfaces/ipicture.md)
-* *ILazy*
+- [`IPicture`](../interfaces/ipicture.md)
+- `ILazy`
 
 ## Table of contents
 
@@ -38,199 +34,253 @@ needed. This saves time and memory if the picture loading is not required.
 
 ### data
 
-• **data**(): [*ByteVector*](bytevector.md)
+• `get` **data**(): [`ByteVector`](bytevector.md)
 
 Gets and sets the picture data stored in the current instance.
 
-**Returns:** [*ByteVector*](bytevector.md)
+#### Returns
 
-Implementation of: [IPicture](../interfaces/ipicture.md).[data](../interfaces/ipicture.md#data)
+[`ByteVector`](bytevector.md)
 
-• **data**(`value`: [*ByteVector*](bytevector.md)): *void*
+#### Implementation of
+
+[IPicture](../interfaces/ipicture.md).[data](../interfaces/ipicture.md#data)
+
+• `set` **data**(`value`): `void`
 
 Gets and sets the picture data stored in the current instance.
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
------- | ------ |
-`value` | [*ByteVector*](bytevector.md) |
+| Name | Type |
+| :------ | :------ |
+| `value` | [`ByteVector`](bytevector.md) |
 
-**Returns:** *void*
+#### Returns
 
-Implementation of: [IPicture](../interfaces/ipicture.md).[data](../interfaces/ipicture.md#data)
+`void`
+
+#### Implementation of
+
+[IPicture](../interfaces/ipicture.md).[data](../interfaces/ipicture.md#data)
 
 ___
 
 ### description
 
-• **description**(): *string*
+• `get` **description**(): `string`
 
 Gets and sets a description of the picture stored in the current instance. Optional.
 
-**Returns:** *string*
+#### Returns
 
-Implementation of: [IPicture](../interfaces/ipicture.md).[description](../interfaces/ipicture.md#description)
+`string`
 
-• **description**(`value`: *string*): *void*
+#### Implementation of
+
+[IPicture](../interfaces/ipicture.md).[description](../interfaces/ipicture.md#description)
+
+• `set` **description**(`value`): `void`
 
 Gets and sets a description of the picture stored in the current instance. Optional.
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
------- | ------ |
-`value` | *string* |
+| Name | Type |
+| :------ | :------ |
+| `value` | `string` |
 
-**Returns:** *void*
+#### Returns
 
-Implementation of: [IPicture](../interfaces/ipicture.md).[description](../interfaces/ipicture.md#description)
+`void`
+
+#### Implementation of
+
+[IPicture](../interfaces/ipicture.md).[description](../interfaces/ipicture.md#description)
 
 ___
 
 ### filename
 
-• **filename**(): *string*
+• `get` **filename**(): `string`
 
 Gets and sets a filename of the picture stored in the current instance. Optional.
 
-**Returns:** *string*
+#### Returns
 
-Implementation of: [IPicture](../interfaces/ipicture.md).[filename](../interfaces/ipicture.md#filename)
+`string`
 
-• **filename**(`value`: *string*): *void*
+#### Implementation of
+
+[IPicture](../interfaces/ipicture.md).[filename](../interfaces/ipicture.md#filename)
+
+• `set` **filename**(`value`): `void`
 
 Gets and sets a filename of the picture stored in the current instance. Optional.
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
------- | ------ |
-`value` | *string* |
+| Name | Type |
+| :------ | :------ |
+| `value` | `string` |
 
-**Returns:** *void*
+#### Returns
 
-Implementation of: [IPicture](../interfaces/ipicture.md).[filename](../interfaces/ipicture.md#filename)
+`void`
+
+#### Implementation of
+
+[IPicture](../interfaces/ipicture.md).[filename](../interfaces/ipicture.md#filename)
 
 ___
 
 ### isLoaded
 
-• **isLoaded**(): *boolean*
+• `get` **isLoaded**(): `boolean`
 
-**`inheritdoc`** 
+**`inheritdoc`**
 
-**Returns:** *boolean*
+#### Returns
+
+`boolean`
 
 ___
 
 ### mimeType
 
-• **mimeType**(): *string*
+• `get` **mimeType**(): `string`
 
 Gets and sets the mime-type of the picture data stored in the current instance.
 
-**Returns:** *string*
+#### Returns
 
-Implementation of: [IPicture](../interfaces/ipicture.md).[mimeType](../interfaces/ipicture.md#mimetype)
+`string`
 
-• **mimeType**(`value`: *string*): *void*
+#### Implementation of
+
+[IPicture](../interfaces/ipicture.md).[mimeType](../interfaces/ipicture.md#mimetype)
+
+• `set` **mimeType**(`value`): `void`
 
 Gets and sets the mime-type of the picture data stored in the current instance.
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
------- | ------ |
-`value` | *string* |
+| Name | Type |
+| :------ | :------ |
+| `value` | `string` |
 
-**Returns:** *void*
+#### Returns
 
-Implementation of: [IPicture](../interfaces/ipicture.md).[mimeType](../interfaces/ipicture.md#mimetype)
+`void`
+
+#### Implementation of
+
+[IPicture](../interfaces/ipicture.md).[mimeType](../interfaces/ipicture.md#mimetype)
 
 ___
 
 ### type
 
-• **type**(): [*PictureType*](../enums/picturetype.md)
+• `get` **type**(): [`PictureType`](../enums/picturetype.md)
 
 Gets and sets the type of the content visible in the picture stored in the current instance.
 
-**Returns:** [*PictureType*](../enums/picturetype.md)
+#### Returns
 
-Implementation of: [IPicture](../interfaces/ipicture.md).[type](../interfaces/ipicture.md#type)
+[`PictureType`](../enums/picturetype.md)
 
-• **type**(`value`: [*PictureType*](../enums/picturetype.md)): *void*
+#### Implementation of
+
+[IPicture](../interfaces/ipicture.md).[type](../interfaces/ipicture.md#type)
+
+• `set` **type**(`value`): `void`
 
 Gets and sets the type of the content visible in the picture stored in the current instance.
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
------- | ------ |
-`value` | [*PictureType*](../enums/picturetype.md) |
+| Name | Type |
+| :------ | :------ |
+| `value` | [`PictureType`](../enums/picturetype.md) |
 
-**Returns:** *void*
+#### Returns
 
-Implementation of: [IPicture](../interfaces/ipicture.md).[type](../interfaces/ipicture.md#type)
+`void`
+
+#### Implementation of
+
+[IPicture](../interfaces/ipicture.md).[type](../interfaces/ipicture.md#type)
 
 ## Methods
 
 ### load
 
-▸ **load**(): *void*
+▸ **load**(): `void`
 
-**`inheritdoc`** 
+**`inheritdoc`**
 
-**Returns:** *void*
+#### Returns
+
+`void`
+
+#### Implementation of
+
+ILazy.load
 
 ___
 
 ### fromData
 
-▸ `Static`**fromData**(`data`: [*ByteVector*](bytevector.md)): [*PictureLazy*](picturelazy.md)
+▸ `Static` **fromData**(`data`): [`PictureLazy`](picturelazy.md)
 
 Constructs a new picture using data that's already been read into memory. The content
 will not be lazily loaded.
 
-#### Parameters:
+#### Parameters
 
-Name | Type | Description |
------- | ------ | ------ |
-`data` | [*ByteVector*](bytevector.md) | ByteVector Object containing picture data    |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `data` | [`ByteVector`](bytevector.md) | ByteVector Object containing picture data |
 
-**Returns:** [*PictureLazy*](picturelazy.md)
+#### Returns
+
+[`PictureLazy`](picturelazy.md)
 
 ___
 
 ### fromFile
 
-▸ `Static`**fromFile**(`file`: IFileAbstraction, `offset`: *number*, `size?`: *number*): [*PictureLazy*](picturelazy.md)
+▸ `Static` **fromFile**(`file`, `offset`, `size?`): [`PictureLazy`](picturelazy.md)
 
 Constructs a new instance from a file abstraction. The content will be lazily loaded.
 
-#### Parameters:
+#### Parameters
 
-Name | Type | Description |
------- | ------ | ------ |
-`file` | IFileAbstraction | File abstraction containing the file to read   |
-`offset` | *number* | Index into the file where the picture is located, must be a 32-bit integer   |
-`size?` | *number* | Optionally, size of the picture in bytes. If omitted, all bytes of file will be     read when lazily loaded. Must be a 32-bit integer or `undefined`    |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `file` | `IFileAbstraction` | File abstraction containing the file to read |
+| `offset` | `number` | Index into the file where the picture is located, must be a 32-bit integer |
+| `size?` | `number` | Optionally, size of the picture in bytes. If omitted, all bytes of file will be     read when lazily loaded. Must be a 32-bit integer or `undefined` |
 
-**Returns:** [*PictureLazy*](picturelazy.md)
+#### Returns
+
+[`PictureLazy`](picturelazy.md)
 
 ___
 
 ### fromPath
 
-▸ `Static`**fromPath**(`path`: *string*): [*PictureLazy*](picturelazy.md)
+▸ `Static` **fromPath**(`path`): [`PictureLazy`](picturelazy.md)
 
 Constructs a new instance that will be lazily loaded from the path provided.
 
-#### Parameters:
+#### Parameters
 
-Name | Type | Description |
------- | ------ | ------ |
-`path` | *string* | Path to the file to read    |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `path` | `string` | Path to the file to read |
 
-**Returns:** [*PictureLazy*](picturelazy.md)
+#### Returns
+
+[`PictureLazy`](picturelazy.md)

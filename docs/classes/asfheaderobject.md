@@ -7,9 +7,9 @@ to disk.
 
 ## Hierarchy
 
-* *BaseObject*
+- `BaseObject`
 
-  ↳ **AsfHeaderObject**
+  ↳ **`AsfHeaderObject`**
 
 ## Table of contents
 
@@ -37,7 +37,7 @@ to disk.
 
 ### children
 
-• **children**(): *default*[]
+• `get` **children**(): `default`[]
 
 Gets that child objects of this instance.
 
@@ -47,17 +47,21 @@ Gets that child objects of this instance.
     Only certain objects are valid inside a header object. Any objects that are not valid or
     not supported are read as {@link UnknownObject}.
 
-**Returns:** *default*[]
+#### Returns
+
+`default`[]
 
 ___
 
 ### extension
 
-• **extension**(): [*AsfHeaderExtensionObject*](asfheaderextensionobject.md)
+• `get` **extension**(): [`AsfHeaderExtensionObject`](asfheaderextensionobject.md)
 
 Gets the header extension object contained in the current instance.
 
-**Returns:** [*AsfHeaderExtensionObject*](asfheaderextensionobject.md)
+#### Returns
+
+[`AsfHeaderExtensionObject`](asfheaderextensionobject.md)
 
 HeaderExtensionObject Header extension contained in this instance, if it exists.
     `undefined` is returned if it doesn't exist
@@ -66,21 +70,25 @@ ___
 
 ### guid
 
-• **guid**(): *default*
+• `get` **guid**(): `default`
 
 Gets the GUID that identifies the current instance.
 
-**Returns:** *default*
+#### Returns
+
+`default`
 
 ___
 
 ### hasContentDescriptors
 
-• **hasContentDescriptors**(): *boolean*
+• `get` **hasContentDescriptors**(): `boolean`
 
 Gets whether or not the current instance contains either type of content descriptors.
 
-**Returns:** *boolean*
+#### Returns
+
+`boolean`
 
 boolean `true` if a content description object or extended content description
     object exists in this instance. `false` otherwise
@@ -89,135 +97,171 @@ ___
 
 ### objectType
 
-• **objectType**(): ObjectType
+• `get` **objectType**(): `ObjectType`
 
-**`inheritdoc`** 
+**`inheritdoc`**
 
-**Returns:** ObjectType
+#### Returns
+
+`ObjectType`
 
 ___
 
 ### originalSize
 
-• **originalSize**(): *number*
+• `get` **originalSize**(): `number`
 
 Gets the original size of the current instance.
 
-**Returns:** *number*
+#### Returns
+
+`number`
 
 ___
 
 ### properties
 
-• **properties**(): [*Properties*](properties.md)
+• `get` **properties**(): [`Properties`](properties.md)
 
 Get the media properties contained within the current instance.
 
-**Returns:** [*Properties*](properties.md)
+#### Returns
+
+[`Properties`](properties.md)
 
 ## Methods
 
 ### addUniqueObject
 
-▸ **addUniqueObject**(`obj`: *default*): *void*
+▸ **addUniqueObject**(`obj`): `void`
 
 Adds a unique child object to the current instance, replacing an existing child if present.
 
-#### Parameters:
+#### Parameters
 
-Name | Type | Description |
------- | ------ | ------ |
-`obj` | *default* | Object to add to the current instance    |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `obj` | `default` | Object to add to the current instance |
 
-**Returns:** *void*
+#### Returns
+
+`void`
 
 ___
 
 ### initializeFromFile
 
-▸ `Protected`**initializeFromFile**(`file`: [*File*](file.md), `position`: *number*): *void*
+▸ `Protected` **initializeFromFile**(`file`, `position`): `void`
 
 Initializes a new instance by reading the contents from a specified position in a specified
 file.
 
-#### Parameters:
+#### Parameters
 
-Name | Type | Description |
------- | ------ | ------ |
-`file` | [*File*](file.md) | File which contains the details of the new instance to create   |
-`position` | *number* | Position in `file` where the object begins   |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `file` | [`File`](file.md) | File which contains the details of the new instance to create |
+| `position` | `number` | Position in `file` where the object begins |
 
-**Returns:** *void*
+#### Returns
+
+`void`
+
+#### Inherited from
+
+BaseObject.initializeFromFile
 
 ___
 
 ### initializeFromGuid
 
-▸ `Protected`**initializeFromGuid**(`guid`: *default*): *void*
+▸ `Protected` **initializeFromGuid**(`guid`): `void`
 
 Initializes a new instance with a specified GUID.
 
-#### Parameters:
+#### Parameters
 
-Name | Type | Description |
------- | ------ | ------ |
-`guid` | *default* | GUID to use for the new instance.   |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `guid` | `default` | GUID to use for the new instance. |
 
-**Returns:** *void*
+#### Returns
+
+`void`
+
+#### Inherited from
+
+BaseObject.initializeFromGuid
 
 ___
 
 ### removeContentDescriptor
 
-▸ **removeContentDescriptor**(): *void*
+▸ **removeContentDescriptor**(): `void`
 
 Removes the content description objects from the current instance.
 
-**Returns:** *void*
+#### Returns
+
+`void`
 
 ___
 
 ### render
 
-▸ **render**(): [*ByteVector*](bytevector.md)
+▸ **render**(): [`ByteVector`](bytevector.md)
 
-**`inheritdoc`** 
+**`inheritdoc`**
 
-**Returns:** [*ByteVector*](bytevector.md)
+#### Returns
+
+[`ByteVector`](bytevector.md)
+
+#### Overrides
+
+BaseObject.render
 
 ___
 
 ### renderInternal
 
-▸ `Protected`**renderInternal**(`data`: [*ByteVector*](bytevector.md)): [*ByteVector*](bytevector.md)
+▸ `Protected` **renderInternal**(`data`): [`ByteVector`](bytevector.md)
 
 Renders the current instance as a raw ASF object containing the specified data.
 
 **`remarks`** Child classes implementing {@see render()} should render their contents and then
     send the data through this method to produce the final output.
 
-#### Parameters:
+#### Parameters
 
-Name | Type | Description |
------- | ------ | ------ |
-`data` | [*ByteVector*](bytevector.md) | Data to store in the rendered version of the current instance.   |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `data` | [`ByteVector`](bytevector.md) | Data to store in the rendered version of the current instance. |
 
-**Returns:** [*ByteVector*](bytevector.md)
+#### Returns
+
+[`ByteVector`](bytevector.md)
+
+#### Inherited from
+
+BaseObject.renderInternal
 
 ___
 
 ### fromFile
 
-▸ `Static`**fromFile**(`file`: [*File*](file.md), `position`: *number*): [*AsfHeaderObject*](asfheaderobject.md)
+▸ `Static` **fromFile**(`file`, `position`): [`AsfHeaderObject`](asfheaderobject.md)
 
 Constructs and initializes a new instance by reading the contents from a specified position
 in the provided file.
 
-#### Parameters:
+#### Parameters
 
-Name | Type | Description |
------- | ------ | ------ |
-`file` | [*File*](file.md) | File containing contents that will be read into the new instance   |
-`position` | *number* | Position in the file where the instance begins    |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `file` | [`File`](file.md) | File containing contents that will be read into the new instance |
+| `position` | `number` | Position in the file where the instance begins |
 
-**Returns:** [*AsfHeaderObject*](asfheaderobject.md)
+#### Returns
+
+[`AsfHeaderObject`](asfheaderobject.md)

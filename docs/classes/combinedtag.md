@@ -4,9 +4,9 @@
 
 ## Hierarchy
 
-* [*Tag*](tag.md)
+- [`Tag`](tag.md)
 
-  ↳ **CombinedTag**
+  ↳ **`CombinedTag`**
 
 ## Table of contents
 
@@ -100,323 +100,371 @@
 
 ### constructor
 
-\+ **new CombinedTag**(`tags?`: [*Tag*](tag.md)[]): [*CombinedTag*](combinedtag.md)
+• **new CombinedTag**(`tags?`)
 
 Constructs and initializes a new instance of [CombinedTag](combinedtag.md).
 
-#### Parameters:
+#### Parameters
 
-Name | Type | Description |
------- | ------ | ------ |
-`tags?` | [*Tag*](tag.md)[] | Optionally, a list of tags to combine in the new instance.    |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `tags?` | [`Tag`](tag.md)[] | Optionally, a list of tags to combine in the new instance. |
 
-**Returns:** [*CombinedTag*](combinedtag.md)
+#### Overrides
 
-Inherited from: [Tag](tag.md)
+[Tag](tag.md).[constructor](tag.md#constructor)
 
 ## Properties
 
 ### \_tags
 
-• `Protected` **\_tags**: [*Tag*](tag.md)[]
+• `Protected` **\_tags**: [`Tag`](tag.md)[]
 
 ## Accessors
 
 ### album
 
-• **album**(): *string*
+• `get` **album**(): `string`
 
 Gets the album title for the media described by the current instance.
 Returns the first non-null/non-undefined value from the child tags.
 
-**Returns:** *string*
+#### Returns
 
-• **album**(`val`: *string*): *void*
+`string`
+
+• `set` **album**(`val`): `void`
 
 Sets the album title for the media described by the current instance.
 Sets the value on all child tags
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
------- | ------ |
-`val` | *string* |
+| Name | Type |
+| :------ | :------ |
+| `val` | `string` |
 
-**Returns:** *void*
+#### Returns
+
+`void`
 
 ___
 
 ### albumArtists
 
-• **albumArtists**(): *string*[]
+• `get` **albumArtists**(): `string`[]
 
 Gets the band or artist is credited in the creation of the entire album or collection
 containing the media described by the current instance.
 Returns the first non-null/non-undefined value from the child tags.
 
-**Returns:** *string*[]
+#### Returns
 
-• **albumArtists**(`val`: *string*[]): *void*
+`string`[]
+
+• `set` **albumArtists**(`val`): `void`
 
 Sets the band or artist is credited in the creation of the entire album or collection
 containing the media described by the current instance.
 Sets the value on all child tags
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
------- | ------ |
-`val` | *string*[] |
+| Name | Type |
+| :------ | :------ |
+| `val` | `string`[] |
 
-**Returns:** *void*
+#### Returns
+
+`void`
 
 ___
 
 ### albumArtistsSort
 
-• **albumArtistsSort**(): *string*[]
+• `get` **albumArtistsSort**(): `string`[]
 
 Gets the band or artist is credited in the creation of the entire album or collection
 containing the media described by the current instance.
 Returns the first non-null/non-undefined value from the child tags.
 
-**Returns:** *string*[]
+#### Returns
 
-• **albumArtistsSort**(`val`: *string*[]): *void*
+`string`[]
+
+• `set` **albumArtistsSort**(`val`): `void`
 
 Sets the band or artist is credited in the creation of the entire album or collection
 containing the media described by the current instance.
 Sets the value on all child tags
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
------- | ------ |
-`val` | *string*[] |
+| Name | Type |
+| :------ | :------ |
+| `val` | `string`[] |
 
-**Returns:** *void*
+#### Returns
+
+`void`
 
 ___
 
 ### albumSort
 
-• **albumSort**(): *string*
+• `get` **albumSort**(): `string`
 
 Gets the album title for sorting the media described by the current instance.
 Returns the first non-null/non-undefined value from the child tags.
 
-**Returns:** *string*
+#### Returns
 
-• **albumSort**(`val`: *string*): *void*
+`string`
+
+• `set` **albumSort**(`val`): `void`
 
 Sets the album title for sorting the media described by the current instance.
 Sets the value on all child tags
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
------- | ------ |
-`val` | *string* |
+| Name | Type |
+| :------ | :------ |
+| `val` | `string` |
 
-**Returns:** *void*
+#### Returns
+
+`void`
 
 ___
 
 ### amazonId
 
-• **amazonId**(): *string*
+• `get` **amazonId**(): `string`
 
 Gets the Amazon ID.
 Returns the first non-null/non-undefined value from the child tags.
 
-**Returns:** *string*
+#### Returns
 
-• **amazonId**(`val`: *string*): *void*
+`string`
+
+• `set` **amazonId**(`val`): `void`
 
 Sets the Amazon ID.
 Sets the value on all child tags
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
------- | ------ |
-`val` | *string* |
+| Name | Type |
+| :------ | :------ |
+| `val` | `string` |
 
-**Returns:** *void*
+#### Returns
+
+`void`
 
 ___
 
 ### beatsPerMinute
 
-• **beatsPerMinute**(): *number*
+• `get` **beatsPerMinute**(): `number`
 
 Gets the number of beats per minute of the media represented by the current instance.
 Returns the first non-null/non-undefined value from the child tags.
 
-**Returns:** *number*
+#### Returns
 
-• **beatsPerMinute**(`val`: *number*): *void*
+`number`
+
+• `set` **beatsPerMinute**(`val`): `void`
 
 Sets the number of beats per minute of the media represented by the current instance. Must
 be a positive integer positive integer.
 Sets the value on all child tags
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
------- | ------ |
-`val` | *number* |
+| Name | Type |
+| :------ | :------ |
+| `val` | `number` |
 
-**Returns:** *void*
+#### Returns
+
+`void`
 
 ___
 
 ### comment
 
-• **comment**(): *string*
+• `get` **comment**(): `string`
 
 Gets a user comment for the media described by the current instance.
 Returns the first non-null/non-undefined value from the child tags.
 
-**Returns:** *string*
+#### Returns
 
-• **comment**(`val`: *string*): *void*
+`string`
+
+• `set` **comment**(`val`): `void`
 
 Sets a user comment for the media described by the current instance.
 Sets the value on all child tags
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
------- | ------ |
-`val` | *string* |
+| Name | Type |
+| :------ | :------ |
+| `val` | `string` |
 
-**Returns:** *void*
+#### Returns
+
+`void`
 
 ___
 
 ### composers
 
-• **composers**(): *string*[]
+• `get` **composers**(): `string`[]
 
 Gets the composers of the media represented by the current instance.
 Returns the first non-null/non-undefined value from the child tags.
 
-**Returns:** *string*[]
+#### Returns
 
-• **composers**(`val`: *string*[]): *void*
+`string`[]
+
+• `set` **composers**(`val`): `void`
 
 Sets the composers of the media represented by the current instance.
 Sets the value on all child tags
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
------- | ------ |
-`val` | *string*[] |
+| Name | Type |
+| :------ | :------ |
+| `val` | `string`[] |
 
-**Returns:** *void*
+#### Returns
+
+`void`
 
 ___
 
 ### composersSort
 
-• **composersSort**(): *string*[]
+• `get` **composersSort**(): `string`[]
 
 Gets the composers of the media represented by the current instance.
 Returns the first non-null/non-undefined value from the child tags.
 
-**Returns:** *string*[]
+#### Returns
 
-• **composersSort**(`val`: *string*[]): *void*
+`string`[]
+
+• `set` **composersSort**(`val`): `void`
 
 Sets the composers of the media represented by the current instance.
 Sets the value on all child tags
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
------- | ------ |
-`val` | *string*[] |
+| Name | Type |
+| :------ | :------ |
+| `val` | `string`[] |
 
-**Returns:** *void*
+#### Returns
+
+`void`
 
 ___
 
 ### conductor
 
-• **conductor**(): *string*
+• `get` **conductor**(): `string`
 
 Gets the conductor or director of the media represented by the current instance.
 Returns the first non-null/non-undefined value from the child tags.
 
-**Returns:** *string*
+#### Returns
 
-• **conductor**(`val`: *string*): *void*
+`string`
+
+• `set` **conductor**(`val`): `void`
 
 Sets the conductor or director of the media represented by the current instance.
 Sets the value on all child tags
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
------- | ------ |
-`val` | *string* |
+| Name | Type |
+| :------ | :------ |
+| `val` | `string` |
 
-**Returns:** *void*
+#### Returns
+
+`void`
 
 ___
 
 ### copyright
 
-• **copyright**(): *string*
+• `get` **copyright**(): `string`
 
 Gets the copyright information of the media represented by the current instance.
 Returns the first non-null/non-undefined value from the child tags.
 
-**Returns:** *string*
+#### Returns
 
-• **copyright**(`val`: *string*): *void*
+`string`
+
+• `set` **copyright**(`val`): `void`
 
 Sets the copyright information of the media represented by the current instance.
 Sets the value on all child tags
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
------- | ------ |
-`val` | *string* |
+| Name | Type |
+| :------ | :------ |
+| `val` | `string` |
 
-**Returns:** *void*
+#### Returns
+
+`void`
 
 ___
 
 ### dateTagged
 
-• **dateTagged**(): Date
+• `get` **dateTagged**(): `Date`
 
 Gets the date at which the tag has been written.
 Returns the first non-null/non-undefined value from the child tags.
 
-**Returns:** Date
+#### Returns
 
-• **dateTagged**(`val`: Date): *void*
+`Date`
+
+• `set` **dateTagged**(`val`): `void`
 
 Sets the date at which the tag has been written
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
------- | ------ |
-`val` | Date |
+| Name | Type |
+| :------ | :------ |
+| `val` | `Date` |
 
-**Returns:** *void*
+#### Returns
+
+`void`
 
 ___
 
 ### description
 
-• **description**(): *string*
+• `get` **description**(): `string`
 
 Gets the description for the media described by the current instance.
 Returns the first non-null/non-undefined value from the child tags.
@@ -425,595 +473,697 @@ Returns the first non-null/non-undefined value from the child tags.
     2", this could be "After visiting 2015, Marty McFly must repeat his visit to 1955 to
     prevent disastrous changes to 1985...without interfering with his first trip".
 
-**Returns:** *string*
+#### Returns
 
-• **description**(`val`: *string*): *void*
+`string`
+
+• `set` **description**(`val`): `void`
 
 Sets the description for the media described by the current instance.
 Sets the value on all child tags
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
------- | ------ |
-`val` | *string* |
+| Name | Type |
+| :------ | :------ |
+| `val` | `string` |
 
-**Returns:** *void*
+#### Returns
+
+`void`
 
 ___
 
 ### disc
 
-• **disc**(): *number*
+• `get` **disc**(): `number`
 
 Gets the number of the disc containing the media represented by the current instance in a
 boxed set.
 Returns the first non-null/non-undefined value from the child tags.
 
-**Returns:** *number*
+#### Returns
 
-• **disc**(`val`: *number*): *void*
+`number`
+
+• `set` **disc**(`val`): `void`
 
 Sets the number of the disc containing the media represented by the current instance in a
 boxed set. Must be a positive integer positive integer.
 Sets the value on all child tags
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
------- | ------ |
-`val` | *number* |
+| Name | Type |
+| :------ | :------ |
+| `val` | `number` |
 
-**Returns:** *void*
+#### Returns
+
+`void`
 
 ___
 
 ### discCount
 
-• **discCount**(): *number*
+• `get` **discCount**(): `number`
 
 Gets the number of the discs in the boxed set containing the media represented by the
 current instance.
 Returns the first non-null/non-undefined value from the child tags.
 
-**Returns:** *number*
+#### Returns
 
-• **discCount**(`val`: *number*): *void*
+`number`
+
+• `set` **discCount**(`val`): `void`
 
 Sets the number of the discs in the boxed set containing the media represented by the
 current instance. Must be a positive integer positive integer.
 Sets the value on all child tags
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
------- | ------ |
-`val` | *number* |
+| Name | Type |
+| :------ | :------ |
+| `val` | `number` |
 
-**Returns:** *void*
+#### Returns
+
+`void`
 
 ___
 
 ### firstAlbumArtist
 
-• **firstAlbumArtist**(): *string*
+• `get` **firstAlbumArtist**(): `string`
 
 Gets the the first value contained in [albumArtists](combinedtag.md#albumartists).
 
-**Returns:** *string*
+#### Returns
+
+`string`
 
 ___
 
 ### firstAlbumArtistSort
 
-• **firstAlbumArtistSort**(): *string*
+• `get` **firstAlbumArtistSort**(): `string`
 
 Gets the first value contained in [albumArtistsSort](combinedtag.md#albumartistssort)
 
-**Returns:** *string*
+#### Returns
+
+`string`
 
 ___
 
 ### firstComposer
 
-• **firstComposer**(): *string*
+• `get` **firstComposer**(): `string`
 
 Gets the first value contained in [composers](combinedtag.md#composers)
 
-**Returns:** *string*
+#### Returns
+
+`string`
 
 ___
 
 ### firstComposerSort
 
-• **firstComposerSort**(): *string*
+• `get` **firstComposerSort**(): `string`
 
 Gets the first value contained in [composersSort](combinedtag.md#composerssort)
 
-**Returns:** *string*
+#### Returns
+
+`string`
 
 ___
 
 ### firstGenre
 
-• **firstGenre**(): *string*
+• `get` **firstGenre**(): `string`
 
 Gets the first value contained in [genres](combinedtag.md#genres)
 
-**Returns:** *string*
+#### Returns
+
+`string`
 
 ___
 
 ### firstPerformer
 
-• **firstPerformer**(): *string*
+• `get` **firstPerformer**(): `string`
 
 Gets the first value contained in [performers](combinedtag.md#performers)
 
-**Returns:** *string*
+#### Returns
+
+`string`
 
 ___
 
 ### firstPerformerSort
 
-• **firstPerformerSort**(): *string*
+• `get` **firstPerformerSort**(): `string`
 
 Gets the first value contained in [performersSort](combinedtag.md#performerssort)
 
-**Returns:** *string*
+#### Returns
+
+`string`
 
 ___
 
 ### genres
 
-• **genres**(): *string*[]
+• `get` **genres**(): `string`[]
 
 Gets the album genres of the media represented by the current instance.
 Returns the first non-null/non-undefined value from the child tags.
 
-**Returns:** *string*[]
+#### Returns
 
-• **genres**(`val`: *string*[]): *void*
+`string`[]
+
+• `set` **genres**(`val`): `void`
 
 Sets the album genres of the media described by the current instance.
 Sets the value on all child tags
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
------- | ------ |
-`val` | *string*[] |
+| Name | Type |
+| :------ | :------ |
+| `val` | `string`[] |
 
-**Returns:** *void*
+#### Returns
+
+`void`
 
 ___
 
 ### grouping
 
-• **grouping**(): *string*
+• `get` **grouping**(): `string`
 
 Gets the grouping on the album which the media in the current instance belongs to.
 Returns the first non-null/non-undefined value from the child tags.
 
-**Returns:** *string*
+#### Returns
 
-• **grouping**(`val`: *string*): *void*
+`string`
+
+• `set` **grouping**(`val`): `void`
 
 Sets the grouping on the album which the media in the current instance belongs to.
 Sets the value on all child tags
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
------- | ------ |
-`val` | *string* |
+| Name | Type |
+| :------ | :------ |
+| `val` | `string` |
 
-**Returns:** *void*
+#### Returns
+
+`void`
 
 ___
 
 ### initialKey
 
-• **initialKey**(): *string*
+• `get` **initialKey**(): `string`
 
 Gets the initial key of the media represented by the current instance.
 Returns the first non-null/non-undefined value from the child tags.
 
-**Returns:** *string*
+#### Returns
 
-• **initialKey**(`val`: *string*): *void*
+`string`
+
+• `set` **initialKey**(`val`): `void`
 
 Sets the initial key of the media represented by the current instance.
 Sets the value on all child tags
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
------- | ------ |
-`val` | *string* |
+| Name | Type |
+| :------ | :------ |
+| `val` | `string` |
 
-**Returns:** *void*
+#### Returns
+
+`void`
 
 ___
 
 ### isEmpty
 
-• **isEmpty**(): *boolean*
+• `get` **isEmpty**(): `boolean`
 
 Whether or not the current instance is empty. If all child tags are empty, `true` is
 returned, `false` otherwise.
 
-**Returns:** *boolean*
+#### Returns
+
+`boolean`
 
 ___
 
 ### isrc
 
-• **isrc**(): *string*
+• `get` **isrc**(): `string`
 
 Gets the ISRC (International Standard Recording Code) of the media represented by the
 current instance.
 Returns the first non-null/non-undefined value from the child tags.
 
-**Returns:** *string*
+#### Returns
 
-• **isrc**(`val`: *string*): *void*
+`string`
+
+• `set` **isrc**(`val`): `void`
 
 Sets the ISRC (International Standard Recording Code) of the media represented by the
 current instance.
 Sets the value on all child tags
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
------- | ------ |
-`val` | *string* |
+| Name | Type |
+| :------ | :------ |
+| `val` | `string` |
 
-**Returns:** *void*
+#### Returns
+
+`void`
 
 ___
 
 ### joinedAlbumArtists
 
-• **joinedAlbumArtists**(): *string*
+• `get` **joinedAlbumArtists**(): `string`
 
 Gets a semicolon and space separated string containing the values in [albumArtists](combinedtag.md#albumartists)
 
-**Returns:** *string*
+#### Returns
+
+`string`
 
 ___
 
 ### joinedComposers
 
-• **joinedComposers**(): *string*
+• `get` **joinedComposers**(): `string`
 
 Gets a semicolon and space separated string containing the values in [composers](combinedtag.md#composers)
 
-**Returns:** *string*
+#### Returns
+
+`string`
 
 ___
 
 ### joinedGenres
 
-• **joinedGenres**(): *string*
+• `get` **joinedGenres**(): `string`
 
 Gets a semicolon and space separated string containing the values in [genres](combinedtag.md#genres)
 
-**Returns:** *string*
+#### Returns
+
+`string`
 
 ___
 
 ### joinedPerformers
 
-• **joinedPerformers**(): *string*
+• `get` **joinedPerformers**(): `string`
 
 Gets a semicolon and space separated string containing the values in [performers](combinedtag.md#performers)
 
-**Returns:** *string*
+#### Returns
+
+`string`
 
 ___
 
 ### joinedPerformersSort
 
-• **joinedPerformersSort**(): *string*
+• `get` **joinedPerformersSort**(): `string`
 
 Gets a semicolon and space separated string containing the values in [performersSort](combinedtag.md#performerssort)
 
-**Returns:** *string*
+#### Returns
+
+`string`
 
 ___
 
 ### lyrics
 
-• **lyrics**(): *string*
+• `get` **lyrics**(): `string`
 
 Gets the lyrics or script of the media represented by the current instance.
 Returns the first non-null/non-undefined value from the child tags.
 
-**Returns:** *string*
+#### Returns
 
-• **lyrics**(`val`: *string*): *void*
+`string`
+
+• `set` **lyrics**(`val`): `void`
 
 Sets the lyrics or script of the media represented by the current instance.
 Sets the value on all child tags
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
------- | ------ |
-`val` | *string* |
+| Name | Type |
+| :------ | :------ |
+| `val` | `string` |
 
-**Returns:** *void*
+#### Returns
+
+`void`
 
 ___
 
 ### musicBrainzArtistId
 
-• **musicBrainzArtistId**(): *string*
+• `get` **musicBrainzArtistId**(): `string`
 
 Gets the MusicBrainz artist ID.
 Returns the first non-null/non-undefined value from the child tags.
 
-**Returns:** *string*
+#### Returns
 
-• **musicBrainzArtistId**(`val`: *string*): *void*
+`string`
+
+• `set` **musicBrainzArtistId**(`val`): `void`
 
 Sets the MusicBrainz artist ID.
 Sets the value on all child tags
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
------- | ------ |
-`val` | *string* |
+| Name | Type |
+| :------ | :------ |
+| `val` | `string` |
 
-**Returns:** *void*
+#### Returns
+
+`void`
 
 ___
 
 ### musicBrainzDiscId
 
-• **musicBrainzDiscId**(): *string*
+• `get` **musicBrainzDiscId**(): `string`
 
 Gets the MusicBrainz disc ID.
 Returns the first non-null/non-undefined value from the child tags.
 
-**Returns:** *string*
+#### Returns
 
-• **musicBrainzDiscId**(`val`: *string*): *void*
+`string`
+
+• `set` **musicBrainzDiscId**(`val`): `void`
 
 Sets the MusicBrainz disc ID.
 Sets the value on all child tags
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
------- | ------ |
-`val` | *string* |
+| Name | Type |
+| :------ | :------ |
+| `val` | `string` |
 
-**Returns:** *void*
+#### Returns
+
+`void`
 
 ___
 
 ### musicBrainzReleaseArtistId
 
-• **musicBrainzReleaseArtistId**(): *string*
+• `get` **musicBrainzReleaseArtistId**(): `string`
 
 Gets the MusicBrainz release artist ID.
 Returns the first non-null/non-undefined value from the child tags.
 
-**Returns:** *string*
+#### Returns
 
-• **musicBrainzReleaseArtistId**(`val`: *string*): *void*
+`string`
+
+• `set` **musicBrainzReleaseArtistId**(`val`): `void`
 
 Sets the MusicBrainz release artist ID.
 Sets the value on all child tags
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
------- | ------ |
-`val` | *string* |
+| Name | Type |
+| :------ | :------ |
+| `val` | `string` |
 
-**Returns:** *void*
+#### Returns
+
+`void`
 
 ___
 
 ### musicBrainzReleaseCountry
 
-• **musicBrainzReleaseCountry**(): *string*
+• `get` **musicBrainzReleaseCountry**(): `string`
 
 Gets the MusicBrainz release country.
 Returns the first non-null/non-undefined value from the child tags.
 
-**Returns:** *string*
+#### Returns
 
-• **musicBrainzReleaseCountry**(`val`: *string*): *void*
+`string`
+
+• `set` **musicBrainzReleaseCountry**(`val`): `void`
 
 Sets the MusicBrainz release country.
 Sets the value on all child tags
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
------- | ------ |
-`val` | *string* |
+| Name | Type |
+| :------ | :------ |
+| `val` | `string` |
 
-**Returns:** *void*
+#### Returns
+
+`void`
 
 ___
 
 ### musicBrainzReleaseGroupId
 
-• **musicBrainzReleaseGroupId**(): *string*
+• `get` **musicBrainzReleaseGroupId**(): `string`
 
 Gets the MusicBrainz release group ID.
 Returns the first non-null/non-undefined value from the child tags.
 
-**Returns:** *string*
+#### Returns
 
-• **musicBrainzReleaseGroupId**(`val`: *string*): *void*
+`string`
+
+• `set` **musicBrainzReleaseGroupId**(`val`): `void`
 
 Sets the MusicBrainz release group ID.
 Sets the value on all child tags
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
------- | ------ |
-`val` | *string* |
+| Name | Type |
+| :------ | :------ |
+| `val` | `string` |
 
-**Returns:** *void*
+#### Returns
+
+`void`
 
 ___
 
 ### musicBrainzReleaseId
 
-• **musicBrainzReleaseId**(): *string*
+• `get` **musicBrainzReleaseId**(): `string`
 
 Gets the MusicBrainz release ID.
 Returns the first non-null/non-undefined value from the child tags.
 
-**Returns:** *string*
+#### Returns
 
-• **musicBrainzReleaseId**(`val`: *string*): *void*
+`string`
+
+• `set` **musicBrainzReleaseId**(`val`): `void`
 
 Sets the MusicBrainz release ID.
 Sets the value on all child tags
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
------- | ------ |
-`val` | *string* |
+| Name | Type |
+| :------ | :------ |
+| `val` | `string` |
 
-**Returns:** *void*
+#### Returns
+
+`void`
 
 ___
 
 ### musicBrainzReleaseStatus
 
-• **musicBrainzReleaseStatus**(): *string*
+• `get` **musicBrainzReleaseStatus**(): `string`
 
 Gets the MusicBrainz release status.
 Returns the first non-null/non-undefined value from the child tags.
 
-**Returns:** *string*
+#### Returns
 
-• **musicBrainzReleaseStatus**(`val`: *string*): *void*
+`string`
+
+• `set` **musicBrainzReleaseStatus**(`val`): `void`
 
 Sets the MusicBrainz release status.
 Sets the value on all child tags
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
------- | ------ |
-`val` | *string* |
+| Name | Type |
+| :------ | :------ |
+| `val` | `string` |
 
-**Returns:** *void*
+#### Returns
+
+`void`
 
 ___
 
 ### musicBrainzReleaseType
 
-• **musicBrainzReleaseType**(): *string*
+• `get` **musicBrainzReleaseType**(): `string`
 
 Gets the MusicBrainz release type.
 Returns the first non-null/non-undefined value from the child tags.
 
-**Returns:** *string*
+#### Returns
 
-• **musicBrainzReleaseType**(`val`: *string*): *void*
+`string`
+
+• `set` **musicBrainzReleaseType**(`val`): `void`
 
 Sets the MusicBrainz release type.
 Sets the value on all child tags
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
------- | ------ |
-`val` | *string* |
+| Name | Type |
+| :------ | :------ |
+| `val` | `string` |
 
-**Returns:** *void*
+#### Returns
+
+`void`
 
 ___
 
 ### musicBrainzTrackId
 
-• **musicBrainzTrackId**(): *string*
+• `get` **musicBrainzTrackId**(): `string`
 
 Gets the MusicBrainz track ID.
 Returns the first non-null/non-undefined value from the child tags.
 
-**Returns:** *string*
+#### Returns
 
-• **musicBrainzTrackId**(`val`: *string*): *void*
+`string`
+
+• `set` **musicBrainzTrackId**(`val`): `void`
 
 Sets the MusicBrainz track ID.
 Sets the value on all child tags
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
------- | ------ |
-`val` | *string* |
+| Name | Type |
+| :------ | :------ |
+| `val` | `string` |
 
-**Returns:** *void*
+#### Returns
+
+`void`
 
 ___
 
 ### musicIpId
 
-• **musicIpId**(): *string*
+• `get` **musicIpId**(): `string`
 
 Gets the MusicIP PUID.
 Returns the first non-null/non-undefined value from the child tags.
 
-**Returns:** *string*
+#### Returns
 
-• **musicIpId**(`val`: *string*): *void*
+`string`
+
+• `set` **musicIpId**(`val`): `void`
 
 Sets the MusicIP PUID.
 Sets the value on all child tags
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
------- | ------ |
-`val` | *string* |
+| Name | Type |
+| :------ | :------ |
+| `val` | `string` |
 
-**Returns:** *void*
+#### Returns
+
+`void`
 
 ___
 
 ### performers
 
-• **performers**(): *string*[]
+• `get` **performers**(): `string`[]
 
 Gets the performers or artists who performed in the media described by the current instance.
 Returns the first non-null/non-undefined value from the child tags.
 
-**Returns:** *string*[]
+#### Returns
 
-• **performers**(`val`: *string*[]): *void*
+`string`[]
+
+• `set` **performers**(`val`): `void`
 
 Sets the performers in the media described by the current instance.
 Sets the value on all child tags
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
------- | ------ |
-`val` | *string*[] |
+| Name | Type |
+| :------ | :------ |
+| `val` | `string`[] |
 
-**Returns:** *void*
+#### Returns
+
+`void`
 
 ___
 
 ### performersRole
 
-• **performersRole**(): *string*[]
+• `get` **performersRole**(): `string`[]
 
 Gets the characters for a video media, or instruments played for music media. This should
 match the [performers](combinedtag.md#performers) array (for each person correspond one/more role). Several roles
@@ -1026,218 +1176,254 @@ Returns the first non-null/non-undefined value from the child tags.
     It is highly important to match each role to the performers. This means that a role may
     be `null\undefined` to keep a match betweenInclusive performers[i] and performersRole[i].
 
-**Returns:** *string*[]
+#### Returns
 
-• **performersRole**(`val`: *string*[]): *void*
+`string`[]
+
+• `set` **performersRole**(`val`): `void`
 
 Sets the characters in a video media, or instruments played for music media.
 Sets the value on all child tags
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
------- | ------ |
-`val` | *string*[] |
+| Name | Type |
+| :------ | :------ |
+| `val` | `string`[] |
 
-**Returns:** *void*
+#### Returns
+
+`void`
 
 ___
 
 ### performersSort
 
-• **performersSort**(): *string*[]
+• `get` **performersSort**(): `string`[]
 
 Gets the performers or artists who performed in the media described by the current instance.
 Returns the first non-null/non-undefined value from the child tags.
 
-**Returns:** *string*[]
+#### Returns
 
-• **performersSort**(`val`: *string*[]): *void*
+`string`[]
+
+• `set` **performersSort**(`val`): `void`
 
 Sets the performers in the media described by the current instance.
 Sets the value on all child tags
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
------- | ------ |
-`val` | *string*[] |
+| Name | Type |
+| :------ | :------ |
+| `val` | `string`[] |
 
-**Returns:** *void*
+#### Returns
+
+`void`
 
 ___
 
 ### pictures
 
-• **pictures**(): [*IPicture*](../interfaces/ipicture.md)[]
+• `get` **pictures**(): [`IPicture`](../interfaces/ipicture.md)[]
 
 Gets a collection of pictures associated with the media represented by the current instance.
 Returns the first non-null/non-undefined value from the child tags.
 
-**Returns:** [*IPicture*](../interfaces/ipicture.md)[]
+#### Returns
 
-• **pictures**(`val`: [*IPicture*](../interfaces/ipicture.md)[]): *void*
+[`IPicture`](../interfaces/ipicture.md)[]
+
+• `set` **pictures**(`val`): `void`
 
 Sets the collection of pictures associated with the current media.
 Sets the value on all child tags
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
------- | ------ |
-`val` | [*IPicture*](../interfaces/ipicture.md)[] |
+| Name | Type |
+| :------ | :------ |
+| `val` | [`IPicture`](../interfaces/ipicture.md)[] |
 
-**Returns:** *void*
+#### Returns
+
+`void`
 
 ___
 
 ### publisher
 
-• **publisher**(): *string*
+• `get` **publisher**(): `string`
 
 Gets the publisher of the media represented by the current instance.
 Returns the first non-null/non-undefined value from the child tags.
 
-**Returns:** *string*
+#### Returns
 
-• **publisher**(`val`: *string*): *void*
+`string`
+
+• `set` **publisher**(`val`): `void`
 
 Sets the publisher of the media represented by the current instance.
 Sets the value on all child tags
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
------- | ------ |
-`val` | *string* |
+| Name | Type |
+| :------ | :------ |
+| `val` | `string` |
 
-**Returns:** *void*
+#### Returns
+
+`void`
 
 ___
 
 ### remixedBy
 
-• **remixedBy**(): *string*
+• `get` **remixedBy**(): `string`
 
 Gets the remixer of the media represented by the current instance.
 Returns the first non-null/non-undefined value from the child tags.
 
-**Returns:** *string*
+#### Returns
 
-• **remixedBy**(`val`: *string*): *void*
+`string`
+
+• `set` **remixedBy**(`val`): `void`
 
 Sets the remixer of the media represented by the current instance.
 Sets the value on all child tags
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
------- | ------ |
-`val` | *string* |
+| Name | Type |
+| :------ | :------ |
+| `val` | `string` |
 
-**Returns:** *void*
+#### Returns
+
+`void`
 
 ___
 
 ### replayGainAlbumGain
 
-• **replayGainAlbumGain**(): *number*
+• `get` **replayGainAlbumGain**(): `number`
 
 Gets the ReplayGain album gain in dB.
 Returns the first non-null/non-undefined value from the child tags.
 
-**Returns:** *number*
+#### Returns
 
-• **replayGainAlbumGain**(`val`: *number*): *void*
+`number`
+
+• `set` **replayGainAlbumGain**(`val`): `void`
 
 Sets the ReplayGain album gain in dB.
 Sets the value on all child tags
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
------- | ------ |
-`val` | *number* |
+| Name | Type |
+| :------ | :------ |
+| `val` | `number` |
 
-**Returns:** *void*
+#### Returns
+
+`void`
 
 ___
 
 ### replayGainAlbumPeak
 
-• **replayGainAlbumPeak**(): *number*
+• `get` **replayGainAlbumPeak**(): `number`
 
 Gets the ReplayGain album peak sample.
 Returns the first non-null/non-undefined value from the child tags.
 
-**Returns:** *number*
+#### Returns
 
-• **replayGainAlbumPeak**(`val`: *number*): *void*
+`number`
+
+• `set` **replayGainAlbumPeak**(`val`): `void`
 
 Sets the ReplayGain album peak sample.
 Sets the value on all child tags
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
------- | ------ |
-`val` | *number* |
+| Name | Type |
+| :------ | :------ |
+| `val` | `number` |
 
-**Returns:** *void*
+#### Returns
+
+`void`
 
 ___
 
 ### replayGainTrackGain
 
-• **replayGainTrackGain**(): *number*
+• `get` **replayGainTrackGain**(): `number`
 
 Gets the ReplayGain track gain in dB.
 Returns the first non-null/non-undefined value from the child tags.
 
-**Returns:** *number*
+#### Returns
 
-• **replayGainTrackGain**(`val`: *number*): *void*
+`number`
+
+• `set` **replayGainTrackGain**(`val`): `void`
 
 Sets the ReplayGain track gain in dB.
 Sets the value on all child tags
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
------- | ------ |
-`val` | *number* |
+| Name | Type |
+| :------ | :------ |
+| `val` | `number` |
 
-**Returns:** *void*
+#### Returns
+
+`void`
 
 ___
 
 ### replayGainTrackPeak
 
-• **replayGainTrackPeak**(): *number*
+• `get` **replayGainTrackPeak**(): `number`
 
 Gets the ReplayGain track peak sample.
 Returns the first non-null/non-undefined value from the child tags.
 
-**Returns:** *number*
+#### Returns
 
-• **replayGainTrackPeak**(`val`: *number*): *void*
+`number`
+
+• `set` **replayGainTrackPeak**(`val`): `void`
 
 Sets the ReplayGain track peak sample.
 Sets the value on all child tags
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
------- | ------ |
-`val` | *number* |
+| Name | Type |
+| :------ | :------ |
+| `val` | `number` |
 
-**Returns:** *void*
+#### Returns
+
+`void`
 
 ___
 
 ### subtitle
 
-• **subtitle**(): *string*
+• `get` **subtitle**(): `string`
 
 Gets the subtitle for the media described by the current instance.
 Returns the first non-null/non-undefined value from the child tags.
@@ -1246,30 +1432,36 @@ Returns the first non-null/non-undefined value from the child tags.
     the title on the front cover of the media. Example: for "Back to the Future", this would
     be "It's About Time".
 
-**Returns:** *string*
+#### Returns
 
-• **subtitle**(`val`: *string*): *void*
+`string`
+
+• `set` **subtitle**(`val`): `void`
 
 Sets the subtitle for the media described by the current instance.
 Sets the value on all child tags
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
------- | ------ |
-`val` | *string* |
+| Name | Type |
+| :------ | :------ |
+| `val` | `string` |
 
-**Returns:** *void*
+#### Returns
+
+`void`
 
 ___
 
 ### tagTypes
 
-• **tagTypes**(): [*TagTypes*](../enums/tagtypes.md)
+• `get` **tagTypes**(): [`TagTypes`](../enums/tagtypes.md)
 
 Gets the tag types contained in the current instance.
 
-**Returns:** [*TagTypes*](../enums/tagtypes.md)
+#### Returns
+
+[`TagTypes`](../enums/tagtypes.md)
 
 TagTypes Bitwise combined tag types contained in all child tags.
 
@@ -1277,188 +1469,221 @@ ___
 
 ### tags
 
-• **tags**(): [*Tag*](tag.md)[]
+• `get` **tags**(): [`Tag`](tag.md)[]
 
 Gets the tags combined in the current instance.
 
-**Returns:** [*Tag*](tag.md)[]
+#### Returns
 
-• **tags**(`tags`: [*Tag*](tag.md)[]): *void*
+[`Tag`](tag.md)[]
+
+• `set` **tags**(`tags`): `void`
 
 Sets the child tags to combine in the current instance.
 
-#### Parameters:
+#### Parameters
 
-Name | Type | Description |
------- | ------ | ------ |
-`tags` | [*Tag*](tag.md)[] | Array of tags to combine    |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `tags` | [`Tag`](tag.md)[] | Array of tags to combine |
 
-**Returns:** *void*
+#### Returns
+
+`void`
 
 ___
 
 ### title
 
-• **title**(): *string*
+• `get` **title**(): `string`
 
 Gets the title for the media described by the current instance.
 Returns the first non-null/non-undefined value from the child tags.
 
-**Returns:** *string*
+#### Returns
 
-• **title**(`val`: *string*): *void*
+`string`
+
+• `set` **title**(`val`): `void`
 
 Sets the title for the media described by the current instance.
 Sets the value on all child tags
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
------- | ------ |
-`val` | *string* |
+| Name | Type |
+| :------ | :------ |
+| `val` | `string` |
 
-**Returns:** *void*
+#### Returns
+
+`void`
 
 ___
 
 ### titleSort
 
-• **titleSort**(): *string*
+• `get` **titleSort**(): `string`
 
 Gets the title used for sorting the media described by the current instance.
 Returns the first non-null/non-undefined value from the child tags.
 
-**Returns:** *string*
+#### Returns
 
-• **titleSort**(`val`: *string*): *void*
+`string`
+
+• `set` **titleSort**(`val`): `void`
 
 Sets the title used for sorting the media described by the current instance.
 Sets the value on all child tags
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
------- | ------ |
-`val` | *string* |
+| Name | Type |
+| :------ | :------ |
+| `val` | `string` |
 
-**Returns:** *void*
+#### Returns
+
+`void`
 
 ___
 
 ### track
 
-• **track**(): *number*
+• `get` **track**(): `number`
 
 Gets the position of the media represented by the current instance in its containing album.
 Returns the first non-null/non-undefined value from the child tags.
 
-**Returns:** *number*
+#### Returns
 
-• **track**(`val`: *number*): *void*
+`number`
+
+• `set` **track**(`val`): `void`
 
 Sets the position of the media represented by the current instance in its containing album.
 Must be a positive integer positive integer.
 Sets the value on all child tags
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
------- | ------ |
-`val` | *number* |
+| Name | Type |
+| :------ | :------ |
+| `val` | `number` |
 
-**Returns:** *void*
+#### Returns
+
+`void`
 
 ___
 
 ### trackCount
 
-• **trackCount**(): *number*
+• `get` **trackCount**(): `number`
 
 Gets the number of tracks in the album containing the media represented by the current
 instance.
 Returns the first non-null/non-undefined value from the child tags.
 
-**Returns:** *number*
+#### Returns
 
-• **trackCount**(`val`: *number*): *void*
+`number`
+
+• `set` **trackCount**(`val`): `void`
 
 Sets the number of tracks in the album containing the media represented by the current
 instance. Must be a positive integer positive integer.
 Sets the value on all child tags
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
------- | ------ |
-`val` | *number* |
+| Name | Type |
+| :------ | :------ |
+| `val` | `number` |
 
-**Returns:** *void*
+#### Returns
+
+`void`
 
 ___
 
 ### year
 
-• **year**(): *number*
+• `get` **year**(): `number`
 
 Gets the year that the media represented by the current instance was recorded.
 Returns the first non-null/non-undefined value from the child tags.
 
-**Returns:** *number*
+#### Returns
 
-• **year**(`val`: *number*): *void*
+`number`
+
+• `set` **year**(`val`): `void`
 
 Sets the year that the media represented by the current instance was recorded. Must be a
 positive integer.
 Sets the value on all child tags
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
------- | ------ |
-`val` | *number* |
+| Name | Type |
+| :------ | :------ |
+| `val` | `number` |
 
-**Returns:** *void*
+#### Returns
+
+`void`
 
 ## Methods
 
 ### addTagInternal
 
-▸ `Protected`**addTagInternal**(`tag`: [*Tag*](tag.md)): *void*
+▸ `Protected` **addTagInternal**(`tag`): `void`
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
------- | ------ |
-`tag` | [*Tag*](tag.md) |
+| Name | Type |
+| :------ | :------ |
+| `tag` | [`Tag`](tag.md) |
 
-**Returns:** *void*
+#### Returns
+
+`void`
 
 ___
 
 ### clear
 
-▸ **clear**(): *void*
+▸ **clear**(): `void`
 
-**`inheritdoc`** 
-Clears all child tags.
+Clears all values stored in the current instance.
 
-**Returns:** *void*
+**`remarks`** The clearing procedure is format specific and should clear all values.
 
-Overrides: [Tag](tag.md)
+#### Returns
+
+`void`
+
+#### Overrides
+
+[Tag](tag.md).[clear](tag.md#clear)
 
 ___
 
 ### clearTags
 
-▸ `Protected`**clearTags**(): *void*
+▸ `Protected` **clearTags**(): `void`
 
-**Returns:** *void*
+#### Returns
+
+`void`
 
 ___
 
 ### copyTo
 
-▸ **copyTo**(`target`: [*Tag*](tag.md), `overwrite`: *boolean*): *void*
+▸ **copyTo**(`target`, `overwrite`): `void`
 
 Copies the values from the current instance to another [Tag](tag.md), optionally overwriting
     existing values.
@@ -1468,136 +1693,162 @@ Copies the values from the current instance to another [Tag](tag.md), optionally
     more advanced copying may be done. For example if both `this` and `target` are
     [Id3v2Tag](id3v2tag.md), all frames will be copied to the target.
 
-#### Parameters:
+#### Parameters
 
-Name | Type | Description |
------- | ------ | ------ |
-`target` | [*Tag*](tag.md) | Target tag to copy values to   |
-`overwrite` | *boolean* | Whether or not to copy values over existing ones    |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `target` | [`Tag`](tag.md) | Target tag to copy values to |
+| `overwrite` | `boolean` | Whether or not to copy values over existing ones |
 
-**Returns:** *void*
+#### Returns
 
-Inherited from: [Tag](tag.md)
+`void`
+
+#### Inherited from
+
+[Tag](tag.md).[copyTo](tag.md#copyto)
 
 ___
 
 ### insertTag
 
-▸ `Protected`**insertTag**(`index`: *number*, `tag`: [*Tag*](tag.md)): *void*
+▸ `Protected` **insertTag**(`index`, `tag`): `void`
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
------- | ------ |
-`index` | *number* |
-`tag` | [*Tag*](tag.md) |
+| Name | Type |
+| :------ | :------ |
+| `index` | `number` |
+| `tag` | [`Tag`](tag.md) |
 
-**Returns:** *void*
+#### Returns
+
+`void`
 
 ___
 
 ### removeTag
 
-▸ `Protected`**removeTag**(`tag`: [*Tag*](tag.md)): *void*
+▸ `Protected` **removeTag**(`tag`): `void`
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
------- | ------ |
-`tag` | [*Tag*](tag.md) |
+| Name | Type |
+| :------ | :------ |
+| `tag` | [`Tag`](tag.md) |
 
-**Returns:** *void*
+#### Returns
+
+`void`
 
 ___
 
 ### setInfoTag
 
-▸ **setInfoTag**(): *void*
+▸ **setInfoTag**(): `void`
 
 Set the tags that represent the tagger software (node-taglib-sharp) itself.
 
 **`remarks`** This is typically a method to call just before saving a tag.
 
-**Returns:** *void*
+#### Returns
 
-Inherited from: [Tag](tag.md)
+`void`
+
+#### Inherited from
+
+[Tag](tag.md).[setInfoTag](tag.md#setinfotag)
 
 ___
 
 ### setTags
 
-▸ **setTags**(...`tags`: [*Tag*](tag.md)[]): *void*
+▸ **setTags**(...`tags`): `void`
 
 Sets the child tags to combine in the current instance
 
-#### Parameters:
+#### Parameters
 
-Name | Type | Description |
------- | ------ | ------ |
-`...tags` | [*Tag*](tag.md)[] | Tags to combine, falsy tags will be ignored    |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `...tags` | [`Tag`](tag.md)[] | Tags to combine, falsy tags will be ignored |
 
-**Returns:** *void*
+#### Returns
+
+`void`
 
 ___
 
 ### firstInGroup
 
-▸ `Protected` `Static`**firstInGroup**(`group`: *string*[]): *string*
+▸ `Static` `Protected` **firstInGroup**(`group`): `string`
 
 Gets the first string in an array.
 
-#### Parameters:
+#### Parameters
 
-Name | Type | Description |
------- | ------ | ------ |
-`group` | *string*[] | Array of strings to get the first string from.   |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `group` | `string`[] | Array of strings to get the first string from. |
 
-**Returns:** *string*
+#### Returns
+
+`string`
 
 First string contained in `group` or `undefined` if the array is
     `undefined` or empty
 
-Inherited from: [Tag](tag.md)
+#### Inherited from
+
+[Tag](tag.md).[firstInGroup](tag.md#firstingroup)
 
 ___
 
 ### isFalsyOrLikeEmpty
 
-▸ `Protected` `Static`**isFalsyOrLikeEmpty**(`value`: *string* \| *string*[]): *boolean*
+▸ `Static` `Protected` **isFalsyOrLikeEmpty**(`value`): `boolean`
 
 Checks if a value is falsy or empty.
 
-#### Parameters:
+#### Parameters
 
-Name | Type | Description |
------- | ------ | ------ |
-`value` | *string* \| *string*[] | Object to check   |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `value` | `string` \| `string`[] | Object to check |
 
-**Returns:** *boolean*
+#### Returns
+
+`boolean`
 
 If `value` is a string, `true` is returned if the value is falsy or all
     whitespace, `false` is returned otherwise. If `value` is an array of strings,
     the array must be falsy or all elements must be falsy or whitespace to return `true`.
 
-Inherited from: [Tag](tag.md)
+#### Inherited from
+
+[Tag](tag.md).[isFalsyOrLikeEmpty](tag.md#isfalsyorlikeempty)
 
 ___
 
 ### joinGroup
 
-▸ `Protected` `Static`**joinGroup**(`group`: *string*[]): *string*
+▸ `Static` `Protected` **joinGroup**(`group`): `string`
 
 Joins an array of string into a single, semicolon and space separated string.
 
-#### Parameters:
+#### Parameters
 
-Name | Type | Description |
------- | ------ | ------ |
-`group` | *string*[] | Array of string to join   |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `group` | `string`[] | Array of string to join |
 
-**Returns:** *string*
+#### Returns
+
+`string`
 
 A semicolon and space separated string containing the values from `group`
     or undefined if the array is `undefined` or empty.
 
-Inherited from: [Tag](tag.md)
+#### Inherited from
+
+[Tag](tag.md).[joinGroup](tag.md#joingroup)

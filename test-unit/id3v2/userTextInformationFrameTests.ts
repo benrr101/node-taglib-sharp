@@ -1,18 +1,16 @@
 import * as Chai from "chai";
-import * as ChaiAsPromised from "chai-as-promised";
-import FrameConstructorTests from "./frameConstructorTests";
-import {Testers} from "../utilities/testers";
-import {suite, test} from "mocha-typescript";
+import {suite, test} from "@testdeck/mocha";
 
+import FrameConstructorTests from "./frameConstructorTests";
 import Id3v2Settings from "../../src/id3v2/id3v2Settings";
 import {UserTextInformationFrame} from "../../src/id3v2/frames/textInformationFrame";
 import {ByteVector, StringType} from "../../src/byteVector";
 import {Frame, FrameClassType} from "../../src/id3v2/frames/frame";
 import {Id3v2FrameHeader} from "../../src/id3v2/frames/frameHeader";
 import {FrameIdentifiers} from "../../src/id3v2/frameIdentifiers";
+import {Testers} from "../utilities/testers";
 
 // Setup chai
-Chai.use(ChaiAsPromised);
 const assert = Chai.assert;
 
 function getTestFrame(): UserTextInformationFrame {
@@ -44,7 +42,7 @@ function getTestFrame(): UserTextInformationFrame {
         const frame = UserTextInformationFrame.fromDescription("foo");
 
         // Assert
-        this.assertFrame(frame, "foo", [], Id3v2Settings.defaultEncoding);
+        Id3v2_UserInformationFrame_ConstructorTests.assertFrame(frame, "foo", [], Id3v2Settings.defaultEncoding);
     }
 
     @test
@@ -53,7 +51,7 @@ function getTestFrame(): UserTextInformationFrame {
         const frame = UserTextInformationFrame.fromDescription("foo", StringType.UTF16);
 
         // Assert
-        this.assertFrame(frame, "foo", [], StringType.UTF16);
+        Id3v2_UserInformationFrame_ConstructorTests.assertFrame(frame, "foo", [], StringType.UTF16);
     }
 
     @test
@@ -74,7 +72,7 @@ function getTestFrame(): UserTextInformationFrame {
         const frame = UserTextInformationFrame.fromOffsetRawData(data, 2, header, 4);
 
         // Assert
-        this.assertFrame(frame, "foo", ["bar"], StringType.Latin1);
+        Id3v2_UserInformationFrame_ConstructorTests.assertFrame(frame, "foo", ["bar"], StringType.Latin1);
     }
 
     @test
@@ -94,10 +92,10 @@ function getTestFrame(): UserTextInformationFrame {
         const frame = UserTextInformationFrame.fromRawData(data, 4);
 
         // Assert
-        this.assertFrame(frame, "foo", ["bar"], StringType.Latin1);
+        Id3v2_UserInformationFrame_ConstructorTests.assertFrame(frame, "foo", ["bar"], StringType.Latin1);
     }
 
-    private assertFrame(
+    private static assertFrame(
         frame: UserTextInformationFrame,
         description: string,
         text: string[],

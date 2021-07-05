@@ -16,7 +16,7 @@ Specifies the timestamp format used by a few frame types.
 
 ### AbsoluteMilliseconds
 
-• **AbsoluteMilliseconds**: = 2
+• **AbsoluteMilliseconds** = `2`
 
 Timestamp represents the number of milliseconds since the beginning of the audio stream
 
@@ -24,7 +24,7 @@ ___
 
 ### AbsoluteMpegFrames
 
-• **AbsoluteMpegFrames**: = 1
+• **AbsoluteMpegFrames** = `1`
 
 Timestamp represents the number of MPEG frames since the beginning of the audio stream
 
@@ -32,6 +32,6 @@ ___
 
 ### Unknown
 
-• **Unknown**: = 0
+• **Unknown** = `0`
 
 Timestamp is of unknown format

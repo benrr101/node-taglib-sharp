@@ -17,10 +17,6 @@
     frame identifiers are statically created and reused. This allows usage of the `===` to
     compare instances because they should always be the same.
 
-## Hierarchy
-
-* **Id3v2FrameIdentifier**
-
 ## Table of contents
 
 ### Constructors
@@ -41,52 +37,58 @@
 
 ### constructor
 
-\+ **new Id3v2FrameIdentifier**(`v4`: *string*, `v3`: *string*, `v2`: *string*): [*Id3v2FrameIdentifier*](id3v2frameidentifier.md)
+• **new Id3v2FrameIdentifier**(`v4`, `v3`, `v2`)
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
------- | ------ |
-`v4` | *string* |
-`v3` | *string* |
-`v2` | *string* |
-
-**Returns:** [*Id3v2FrameIdentifier*](id3v2frameidentifier.md)
+| Name | Type |
+| :------ | :------ |
+| `v4` | `string` |
+| `v3` | `string` |
+| `v2` | `string` |
 
 ## Accessors
 
 ### isTextFrame
 
-• **isTextFrame**(): *boolean*
+• `get` **isTextFrame**(): `boolean`
 
-**Returns:** *boolean*
+#### Returns
+
+`boolean`
 
 ___
 
 ### isUrlFrame
 
-• **isUrlFrame**(): *boolean*
+• `get` **isUrlFrame**(): `boolean`
 
-**Returns:** *boolean*
+#### Returns
+
+`boolean`
 
 ## Methods
 
 ### render
 
-▸ **render**(`version`: *number*): [*ByteVector*](bytevector.md)
+▸ **render**(`version`): [`ByteVector`](bytevector.md)
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
------- | ------ |
-`version` | *number* |
+| Name | Type |
+| :------ | :------ |
+| `version` | `number` |
 
-**Returns:** [*ByteVector*](bytevector.md)
+#### Returns
+
+[`ByteVector`](bytevector.md)
 
 ___
 
 ### toString
 
-▸ **toString**(): *string*
+▸ **toString**(): `string`
 
-**Returns:** *string*
+#### Returns
+
+`string`
