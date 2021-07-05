@@ -11,9 +11,9 @@ MetadataLibraryObject.
 
 ## Hierarchy
 
-* *DescriptorBase*
+- `DescriptorBase`
 
-  ↳ **AsfMetadataDescriptor**
+  ↳ **`AsfMetadataDescriptor`**
 
 ## Table of contents
 
@@ -57,239 +57,341 @@ MetadataLibraryObject.
 
 ### constructor
 
-\+ **new AsfMetadataDescriptor**(`languageListIndex`: *number*, `streamNumber`: *number*, `name`: *string*, `type`: [*AsfObjectDataType*](../enums/asfobjectdatatype.md), `value`: DescriptorValue): [*AsfMetadataDescriptor*](asfmetadatadescriptor.md)
+• **new AsfMetadataDescriptor**(`languageListIndex`, `streamNumber`, `name`, `type`, `value`)
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
------- | ------ |
-`languageListIndex` | *number* |
-`streamNumber` | *number* |
-`name` | *string* |
-`type` | [*AsfObjectDataType*](../enums/asfobjectdatatype.md) |
-`value` | DescriptorValue |
+| Name | Type |
+| :------ | :------ |
+| `languageListIndex` | `number` |
+| `streamNumber` | `number` |
+| `name` | `string` |
+| `type` | [`AsfObjectDataType`](../enums/asfobjectdatatype.md) |
+| `value` | `DescriptorValue` |
 
-**Returns:** [*AsfMetadataDescriptor*](asfmetadatadescriptor.md)
+#### Overrides
+
+DescriptorBase.constructor
 
 ## Properties
 
 ### \_boolValue
 
-• `Protected` `Readonly` **\_boolValue**: *boolean*
+• `Protected` `Readonly` **\_boolValue**: `boolean`
+
+#### Inherited from
+
+DescriptorBase.\_boolValue
 
 ___
 
 ### \_byteValue
 
-• `Protected` `Readonly` **\_byteValue**: [*ByteVector*](bytevector.md)
+• `Protected` `Readonly` **\_byteValue**: [`ByteVector`](bytevector.md)
+
+#### Inherited from
+
+DescriptorBase.\_byteValue
 
 ___
 
 ### \_dWordValue
 
-• `Protected` `Readonly` **\_dWordValue**: *number*
+• `Protected` `Readonly` **\_dWordValue**: `number`
+
+#### Inherited from
+
+DescriptorBase.\_dWordValue
 
 ___
 
 ### \_guidValue
 
-• `Protected` `Readonly` **\_guidValue**: *default*
+• `Protected` `Readonly` **\_guidValue**: `default`
+
+#### Inherited from
+
+DescriptorBase.\_guidValue
 
 ___
 
 ### \_name
 
-• `Protected` `Readonly` **\_name**: *string*
+• `Protected` `Readonly` **\_name**: `string`
+
+#### Inherited from
+
+DescriptorBase.\_name
 
 ___
 
 ### \_qWordValue
 
-• `Protected` `Readonly` **\_qWordValue**: *bigint*
+• `Protected` `Readonly` **\_qWordValue**: `bigint`
+
+#### Inherited from
+
+DescriptorBase.\_qWordValue
 
 ___
 
 ### \_stringValue
 
-• `Protected` `Readonly` **\_stringValue**: *string*
+• `Protected` `Readonly` **\_stringValue**: `string`
+
+#### Inherited from
+
+DescriptorBase.\_stringValue
 
 ___
 
 ### \_type
 
-• `Protected` `Readonly` **\_type**: [*AsfObjectDataType*](../enums/asfobjectdatatype.md)
+• `Protected` `Readonly` **\_type**: [`AsfObjectDataType`](../enums/asfobjectdatatype.md)
+
+#### Inherited from
+
+DescriptorBase.\_type
 
 ___
 
 ### \_wordValue
 
-• `Protected` `Readonly` **\_wordValue**: *number*
+• `Protected` `Readonly` **\_wordValue**: `number`
+
+#### Inherited from
+
+DescriptorBase.\_wordValue
 
 ## Accessors
 
 ### languageListIndex
 
-• **languageListIndex**(): *number*
+• `get` **languageListIndex**(): `number`
 
 Gets the index of the language associated with the current instance.
 
-**Returns:** *number*
+#### Returns
+
+`number`
 
 ___
 
 ### name
 
-• **name**(): *string*
+• `get` **name**(): `string`
 
 Gets the name of the current instance.
 
-**Returns:** *string*
+#### Returns
+
+`string`
 
 ___
 
 ### streamNumber
 
-• **streamNumber**(): *number*
+• `get` **streamNumber**(): `number`
 
 Gets the index of the stream associated with the current instance.
 
-**Returns:** *number*
+#### Returns
+
+`number`
 
 ___
 
 ### type
 
-• **type**(): [*AsfObjectDataType*](../enums/asfobjectdatatype.md)
+• `get` **type**(): [`AsfObjectDataType`](../enums/asfobjectdatatype.md)
 
 Gets the type of data contained in the current instance.
 
-**Returns:** [*AsfObjectDataType*](../enums/asfobjectdatatype.md)
+#### Returns
+
+[`AsfObjectDataType`](../enums/asfobjectdatatype.md)
 
 ## Methods
 
 ### getBool
 
-▸ **getBool**(): *boolean*
+▸ **getBool**(): `boolean`
 
 Gets the boolean value of the current instance.
 
-**Returns:** *boolean*
+#### Returns
+
+`boolean`
 
 boolean Boolean value of the current instance is returned if [type](asfmetadatadescriptor.md#type) is
     {@link DataType.Bool}. `undefined` is returned otherwise.
+
+#### Inherited from
+
+DescriptorBase.getBool
 
 ___
 
 ### getBytes
 
-▸ **getBytes**(): [*ByteVector*](bytevector.md)
+▸ **getBytes**(): [`ByteVector`](bytevector.md)
 
 Gets the binary contents of the current instance.
 
-**Returns:** [*ByteVector*](bytevector.md)
+#### Returns
+
+[`ByteVector`](bytevector.md)
 
 ByteVector Byte contents of the current instance, if [type](asfmetadatadescriptor.md#type) is
     {@link DataType.Bytes}. `undefined` is returned otherwise.
+
+#### Inherited from
+
+DescriptorBase.getBytes
 
 ___
 
 ### getGuid
 
-▸ **getGuid**(): *default*
+▸ **getGuid**(): `default`
 
 Gets the guid contents of the current instance.
 
-**Returns:** *default*
+#### Returns
+
+`default`
 
 UuidWrapper GUID contents of the current instance, if [type](asfmetadatadescriptor.md#type) is
     {@link DataType.Guid}. `undefined` is returned otherwise.
+
+#### Inherited from
+
+DescriptorBase.getGuid
 
 ___
 
 ### getString
 
-▸ **getString**(): *string*
+▸ **getString**(): `string`
 
 Gets the string contents of the current instance.
 
-**Returns:** *string*
+#### Returns
+
+`string`
 
 string String contents of the current instance if [type](asfmetadatadescriptor.md#type) is
     {@link DataType.Unicode}. `undefined` is returned otherwise.
+
+#### Inherited from
+
+DescriptorBase.getString
 
 ___
 
 ### getUint
 
-▸ **getUint**(): *number*
+▸ **getUint**(): `number`
 
 Gets the 32-bit double word contents of the current instance.
 
-**Returns:** *number*
+#### Returns
+
+`number`
 
 number Double word contents of the current instance, if [type](asfmetadatadescriptor.md#type) is
      {@link DataType.DWord}. `undefined` is returned otherwise.
+
+#### Inherited from
+
+DescriptorBase.getUint
 
 ___
 
 ### getUlong
 
-▸ **getUlong**(): *bigint*
+▸ **getUlong**(): `bigint`
 
 Gets the 64-bit quad word contents of the current instance.
 
-**Returns:** *bigint*
+#### Returns
+
+`bigint`
 
 bigint Quad word contents of the current instance, if [type](asfmetadatadescriptor.md#type) is
     {@link DataType.QWord}. `undefined` is returned otherwise.
+
+#### Inherited from
+
+DescriptorBase.getUlong
 
 ___
 
 ### getUshort
 
-▸ **getUshort**(): *number*
+▸ **getUshort**(): `number`
 
 Gets the 16-bit word contents of the current instance.
 
-**Returns:** *number*
+#### Returns
+
+`number`
 
 number Word contents of the current instance, if [type](asfmetadatadescriptor.md#type) is
     {@link DataType.Word}. `undefined` is returned otherwise.
+
+#### Inherited from
+
+DescriptorBase.getUshort
 
 ___
 
 ### render
 
-▸ **render**(): [*ByteVector*](bytevector.md)
+▸ **render**(): [`ByteVector`](bytevector.md)
 
-**`inheritdoc`** 
+**`inheritdoc`**
 
-**Returns:** [*ByteVector*](bytevector.md)
+#### Returns
+
+[`ByteVector`](bytevector.md)
+
+#### Overrides
+
+DescriptorBase.render
 
 ___
 
 ### toString
 
-▸ **toString**(): *string*
+▸ **toString**(): `string`
 
-**`inheritdoc`** 
+**`inheritdoc`**
 
-**Returns:** *string*
+#### Returns
+
+`string`
+
+#### Inherited from
+
+DescriptorBase.toString
 
 ___
 
 ### fromFile
 
-▸ `Static`**fromFile**(`file`: [*File*](file.md)): [*AsfMetadataDescriptor*](asfmetadatadescriptor.md)
+▸ `Static` **fromFile**(`file`): [`AsfMetadataDescriptor`](asfmetadatadescriptor.md)
 
 Instantiates a new instance by reading in the contents from a file.
 
-**`internal`** 
+**`internal`**
 
-#### Parameters:
+#### Parameters
 
-Name | Type | Description |
------- | ------ | ------ |
-`file` | [*File*](file.md) | The file to read the raw ASF description record from   |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `file` | [`File`](file.md) | The file to read the raw ASF description record from |
 
-**Returns:** [*AsfMetadataDescriptor*](asfmetadatadescriptor.md)
+#### Returns
+
+[`AsfMetadataDescriptor`](asfmetadatadescriptor.md)

@@ -1,6 +1,6 @@
 import * as Chai from "chai";
+import {suite, test} from "@testdeck/mocha";
 import {Mock} from "typemoq";
-import {suite, test} from "mocha-typescript";
 
 import AsfTag from "../../src/asf/AsfTag";
 import BaseObject from "../../src/asf/objects/baseObject";
@@ -54,10 +54,10 @@ const getHeaderExtensionObject: (children: BaseObject[]) => HeaderExtensionObjec
 const getTagWithExtensionDescriptor: (descriptorName: string, descriptorType: DataType, descriptorValue: any) => AsfTag
     = (descriptorName: string, descriptorType: DataType, descriptorValue: any) => {
     const descriptor = new ContentDescriptor(descriptorName, descriptorType, descriptorValue);
-    const edco = ExtendedContentDescriptionObject.fromEmpty();
-    edco.addDescriptor(descriptor);
+    const ecdo = ExtendedContentDescriptionObject.fromEmpty();
+    ecdo.addDescriptor(descriptor);
 
-    const header = getHeaderObject([edco]);
+    const header = getHeaderObject([ecdo]);
     return AsfTag.fromHeader(header);
 };
 
@@ -1266,13 +1266,13 @@ const getTagWithExtensionDescriptor: (descriptorName: string, descriptorType: Da
         // TEST CASE 2: Preferential descriptor names ----------------------
         for (let i = 0; i < descriptorName.length; i++) {
             // Arrange
-            const edco = ExtendedContentDescriptionObject.fromEmpty();
+            const ecdo = ExtendedContentDescriptionObject.fromEmpty();
             for (let j = descriptorName.length; j > i; j--) {
                 const descriptor = new ContentDescriptor(descriptorName[j - 1], DataType.Unicode, `foo${j - 1};bar`);
-                edco.addDescriptor(descriptor);
+                ecdo.addDescriptor(descriptor);
             }
 
-            const headerObject = getHeaderObject([edco]);
+            const headerObject = getHeaderObject([ecdo]);
             const tag2 = AsfTag.fromHeader(headerObject);
             const setProp2 = (v: string[]) => set(tag2, v);
             const getProp2 = () => get(tag2);

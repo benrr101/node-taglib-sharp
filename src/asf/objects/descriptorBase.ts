@@ -4,7 +4,7 @@ import {CorruptFileError} from "../../errors";
 import {Guards} from "../../utils";
 
 /**
- * Indicates the type of data stored in a <see cref="ContentDescriptor" /> or <see cref="MetadataDescriptor" /> object.
+ * Indicates the type of data stored in a {@link ContentDescriptor} or {@link MetadataDescriptor} object.
  */
 export enum DataType {
     /**

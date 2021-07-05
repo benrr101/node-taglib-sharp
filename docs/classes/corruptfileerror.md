@@ -4,9 +4,9 @@
 
 ## Hierarchy
 
-* *Error*
+- `Error`
 
-  ↳ **CorruptFileError**
+  ↳ **`CorruptFileError`**
 
 ## Table of contents
 
@@ -32,83 +32,126 @@
 
 ### constructor
 
-\+ **new CorruptFileError**(`msg?`: *string*): [*CorruptFileError*](corruptfileerror.md)
+• **new CorruptFileError**(`msg?`)
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
------- | ------ |
-`msg?` | *string* |
+| Name | Type |
+| :------ | :------ |
+| `msg?` | `string` |
 
-**Returns:** [*CorruptFileError*](corruptfileerror.md)
+#### Overrides
+
+Error.constructor
 
 ## Properties
 
 ### isCorruptFileError
 
-• `Readonly` **isCorruptFileError**: *boolean*= true
+• `Readonly` **isCorruptFileError**: `boolean` = `true`
 
 ___
 
 ### message
 
-• **message**: *string*
+• **message**: `string`
+
+#### Inherited from
+
+Error.message
 
 ___
 
 ### name
 
-• **name**: *string*
+• **name**: `string`
+
+#### Inherited from
+
+Error.name
 
 ___
 
 ### stack
 
-• `Optional` **stack**: *string*
+• `Optional` **stack**: `string`
+
+#### Inherited from
+
+Error.stack
 
 ___
 
 ### prepareStackTrace
 
-▪ `Optional` `Static` **prepareStackTrace**: (`err`: Error, `stackTraces`: CallSite[]) => *any*
+▪ `Static` `Optional` **prepareStackTrace**: (`err`: `Error`, `stackTraces`: `CallSite`[]) => `any`
+
+#### Type declaration
+
+▸ (`err`, `stackTraces`): `any`
 
 Optional override for formatting stack traces
 
-**`see`** https://github.com/v8/v8/wiki/Stack%20Trace%20API#customizing-stack-traces
+##### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `err` | `Error` |
+| `stackTraces` | `CallSite`[] |
+
+##### Returns
+
+`any`
+
+#### Inherited from
+
+Error.prepareStackTrace
 
 ___
 
 ### stackTraceLimit
 
-▪ `Static` **stackTraceLimit**: *number*
+▪ `Static` **stackTraceLimit**: `number`
+
+#### Inherited from
+
+Error.stackTraceLimit
 
 ## Methods
 
 ### captureStackTrace
 
-▸ `Static`**captureStackTrace**(`targetObject`: Object, `constructorOpt?`: Function): *void*
+▸ `Static` **captureStackTrace**(`targetObject`, `constructorOpt?`): `void`
 
 Create .stack property on a target object
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
------- | ------ |
-`targetObject` | Object |
-`constructorOpt?` | Function |
+| Name | Type |
+| :------ | :------ |
+| `targetObject` | `object` |
+| `constructorOpt?` | `Function` |
 
-**Returns:** *void*
+#### Returns
+
+`void`
+
+#### Inherited from
+
+Error.captureStackTrace
 
 ___
 
 ### errorIs
 
-▸ `Static`**errorIs**(`e`: Error): *boolean*
+▸ `Static` **errorIs**(`e`): `boolean`
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
------- | ------ |
-`e` | Error |
+| Name | Type |
+| :------ | :------ |
+| `e` | `Error` |
 
-**Returns:** *boolean*
+#### Returns
+
+`boolean`

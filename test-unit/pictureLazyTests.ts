@@ -1,17 +1,15 @@
 import * as Chai from "chai";
-import * as ChaiAsPromised from "chai-as-promised";
 import * as TypeMoq from "typemoq";
-import TestStream from "./utilities/testStream";
-import {Testers} from "./utilities/testers";
-import {suite, test} from "mocha-typescript";
+import {suite, test} from "@testdeck/mocha";
 
 import PictureLazy from "../src/pictureLazy";
+import TestStream from "./utilities/testStream";
 import {IFileAbstraction} from "../src/fileAbstraction";
 import {ByteVector, StringType} from "../src/byteVector";
 import {PictureType} from "../src/iPicture";
+import {Testers} from "./utilities/testers";
 
 // Setup chai
-Chai.use(ChaiAsPromised);
 const assert = Chai.assert;
 
 @suite class PictureLazy_Tests {
@@ -86,7 +84,7 @@ const assert = Chai.assert;
         const picture = PictureLazy.fromFile(mockFile.object, 0);
 
         // Assert
-        this.assertFileLazyPicture(
+        PictureLazy_Tests.assertFileLazyPicture(
             picture,
             data,
             "foobarbaz.jpg",
@@ -111,7 +109,7 @@ const assert = Chai.assert;
         const picture = PictureLazy.fromFile(mockFile.object, 0);
 
         // Assert
-        this.assertFileLazyPicture(
+        PictureLazy_Tests.assertFileLazyPicture(
             picture,
             data,
             "foobarbaz.bin",
@@ -139,7 +137,7 @@ const assert = Chai.assert;
         const picture = PictureLazy.fromFile(mockFile.object, 0);
 
         // Assert
-        this.assertFileLazyPicture(
+        PictureLazy_Tests.assertFileLazyPicture(
             picture,
             data,
             "fuxbuxqux",
@@ -164,7 +162,7 @@ const assert = Chai.assert;
         const picture = PictureLazy.fromFile(mockFile.object, 0);
 
         // Assert
-        this.assertFileLazyPicture(
+        PictureLazy_Tests.assertFileLazyPicture(
             picture,
             data,
             "fuxbuxqux",
@@ -189,7 +187,7 @@ const assert = Chai.assert;
         const picture = PictureLazy.fromFile(mockFile.object, 0);
 
         // Assert
-        this.assertFileLazyPicture(
+        PictureLazy_Tests.assertFileLazyPicture(
             picture,
             data,
             undefined,
@@ -217,7 +215,7 @@ const assert = Chai.assert;
         const picture = PictureLazy.fromFile(mockFile.object, 2);
 
         // Assert
-        this.assertFileLazyPicture(
+        PictureLazy_Tests.assertFileLazyPicture(
             picture,
             data,
             "foobarbaz.jpg",
@@ -246,7 +244,7 @@ const assert = Chai.assert;
         const picture = PictureLazy.fromFile(mockFile.object, 2, 9);
 
         // Assert
-        this.assertFileLazyPicture(
+        PictureLazy_Tests.assertFileLazyPicture(
             picture,
             data,
             "foobarbaz.jpg",
@@ -256,7 +254,7 @@ const assert = Chai.assert;
         );
     }
 
-    private assertFileLazyPicture(
+    private static assertFileLazyPicture(
         picture: PictureLazy,
         d: ByteVector,
         desc: string,

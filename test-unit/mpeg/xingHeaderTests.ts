@@ -1,14 +1,12 @@
 import * as Chai from "chai";
-import * as ChaiAsPromised from "chai-as-promised";
-import {Testers} from "../utilities/testers";
-import {suite, test} from "mocha-typescript";
+import {suite, test} from "@testdeck/mocha";
 
 import XingHeader from "../../src/mpeg/xingHeader";
 import {ByteVector} from "../../src/byteVector";
 import {ChannelMode, MpegVersion} from "../../src/mpeg/mpegEnums";
+import {Testers} from "../utilities/testers";
 
 // Setup chai
-Chai.use(ChaiAsPromised);
 const assert = Chai.assert;
 
 @suite class Mpeg_XingHeaderTests {

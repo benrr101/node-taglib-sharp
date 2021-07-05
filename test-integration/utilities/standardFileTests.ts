@@ -6,7 +6,6 @@ import TestConstants from "./testConstants";
 import Utilities from "./utilities";
 import {
     ByteVector,
-    CorruptFileError,
     File,
     Picture,
     PictureLazy,

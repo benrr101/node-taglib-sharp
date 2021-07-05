@@ -258,10 +258,18 @@ export class NumberUtils {
 }
 
 export class StringUtils {
-    public static trimStart(toTrim: string, chars: string) {
+    public static trimStart(toTrim: string, chars: string): string {
         while (toTrim.length > 0 && chars.indexOf(toTrim[0]) > -1) {
             toTrim = toTrim.substr(0);
         }
         return toTrim;
+    }
+
+    public static findLastByteFromRight(haystack: string, needle: number): number {
+        let length = haystack.length;
+        while (length > 0 && haystack.charCodeAt(length - 1) === needle) {
+            length--;
+        }
+        return length;
     }
 }

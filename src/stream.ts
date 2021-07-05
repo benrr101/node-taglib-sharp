@@ -1,6 +1,7 @@
 import * as fs from "fs";
 
 import {Guards} from "./utils";
+import {ByteVector} from "./byteVector";
 
 export enum SeekOrigin {
     Begin,
@@ -64,7 +65,7 @@ export interface IStream {
      *    bytes to the current stream
      * @param length Maximum number of bytes to write
      */
-    write(buffer: fs.BinaryData, bufferOffset: number, length: number): number;
+    write(buffer: Uint8Array | ByteVector, bufferOffset: number, length: number): number;
 }
 
 /**
@@ -164,7 +165,12 @@ export class Stream implements IStream {
     }
 
     /** @inheritDoc */
-    public write(buffer: fs.BinaryData, bufferOffset: number, length: number): number {
+    public write(buffer: Uint8Array | ByteVector, bufferOffset: number, length: number): number {
+        // Make sure we standardize on a Uint8Array
+        if (buffer instanceof ByteVector) {
+            buffer = buffer.data;
+        }
+
         if (!this._canWrite) {
             throw new Error("Invalid operation: this stream is a read-only stream");
         }

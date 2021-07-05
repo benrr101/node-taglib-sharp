@@ -1,8 +1,6 @@
 import * as Chai from "chai";
-import * as ChaiAsPromised from "chai-as-promised";
 import * as TypeMoq from "typemoq";
-import TestFile from "../utilities/testFile";
-import {suite, test} from "mocha-typescript";
+import {suite, test} from "@testdeck/mocha";
 
 import CommentsFrame from "../../src/id3v2/frames/commentsFrame";
 import FrameFactory, {FrameCreator} from "../../src/id3v2/frames/frameFactory";
@@ -10,6 +8,7 @@ import PlayCountFrame from "../../src/id3v2/frames/playCountFrame";
 import PopularimeterFrame from "../../src/id3v2/frames/popularimeterFrame";
 import PrivateFrame from "../../src/id3v2/frames/privateFrame";
 import TermsOfUseFrame from "../../src/id3v2/frames/termsOfUseFrame";
+import TestFile from "../utilities/testFile";
 import UniqueFileIdentifierFrame from "../../src/id3v2/frames/uniqueFileIdentifierFrame";
 import UnsynchronizedLyricsFrame from "../../src/id3v2/frames/unsynchronizedLyricsFrame";
 import {ByteVector, StringType} from "../../src/byteVector";
@@ -25,7 +24,6 @@ import {UrlLinkFrame, UserUrlLinkFrame} from "../../src/id3v2/frames/urlLinkFram
 import {SynchronizedTextType, TimestampFormat} from "../../src/id3v2/utilTypes";
 
 // Setup chai
-Chai.use(ChaiAsPromised);
 const assert = Chai.assert;
 
 @suite class FrameFactoryTests {
@@ -105,7 +103,7 @@ const assert = Chai.assert;
         const output = FrameFactory.createFrame(data, undefined, 0, 4, false);
 
         // Assert
-        this.validateOutput(output, FrameClassType.UserTextInformationFrame, data.length);
+        FrameFactoryTests.validateOutput(output, FrameClassType.UserTextInformationFrame, data.length);
     }
 
     @test
@@ -117,7 +115,7 @@ const assert = Chai.assert;
         const output = FrameFactory.createFrame(data, undefined, 0, 4, false);
 
         // Assert
-        this.validateOutput(output, FrameClassType.TextInformationFrame, data.length);
+        FrameFactoryTests.validateOutput(output, FrameClassType.TextInformationFrame, data.length);
     }
 
     @test
@@ -129,7 +127,7 @@ const assert = Chai.assert;
         const output = FrameFactory.createFrame(data, undefined, 0, 4, false);
 
         // Assert
-        this.validateOutput(output, FrameClassType.UniqueFileIdentifierFrame, data.length);
+        FrameFactoryTests.validateOutput(output, FrameClassType.UniqueFileIdentifierFrame, data.length);
     }
 
     @test
@@ -146,7 +144,7 @@ const assert = Chai.assert;
         const output = FrameFactory.createFrame(data, undefined, 0, 4, false);
 
         // Assert
-        this.validateOutput(output, FrameClassType.MusicCdIdentifierFrame, data.length);
+        FrameFactoryTests.validateOutput(output, FrameClassType.MusicCdIdentifierFrame, data.length);
     }
 
     @test
@@ -158,7 +156,7 @@ const assert = Chai.assert;
         const output = FrameFactory.createFrame(data, undefined, 0, 4, false);
 
         // Assert
-        this.validateOutput(output, FrameClassType.UnsynchronizedLyricsFrame, data.length);
+        FrameFactoryTests.validateOutput(output, FrameClassType.UnsynchronizedLyricsFrame, data.length);
     }
 
     @test
@@ -170,7 +168,7 @@ const assert = Chai.assert;
         const output = FrameFactory.createFrame(data, undefined, 0, 4, false);
 
         // Assert
-        this.validateOutput(output, FrameClassType.SynchronizedLyricsFrame, data.length);
+        FrameFactoryTests.validateOutput(output, FrameClassType.SynchronizedLyricsFrame, data.length);
     }
 
     @test
@@ -182,7 +180,7 @@ const assert = Chai.assert;
         const output = FrameFactory.createFrame(data, undefined, 0, 4, false);
 
         // Assert
-        this.validateOutput(output, FrameClassType.CommentsFrame, data.length);
+        FrameFactoryTests.validateOutput(output, FrameClassType.CommentsFrame, data.length);
     }
 
     @test
@@ -194,7 +192,7 @@ const assert = Chai.assert;
         const output = FrameFactory.createFrame(data, undefined, 0, 4, false);
 
         // Assert
-        this.validateOutput(output, FrameClassType.RelativeVolumeFrame, data.length);
+        FrameFactoryTests.validateOutput(output, FrameClassType.RelativeVolumeFrame, data.length);
     }
 
     @test
@@ -217,7 +215,7 @@ const assert = Chai.assert;
         const output = FrameFactory.createFrame(data, undefined, 0, 4, false);
 
         // Assert
-        this.validateOutput(output, FrameClassType.AttachmentFrame, data.length);
+        FrameFactoryTests.validateOutput(output, FrameClassType.AttachmentFrame, data.length);
     }
 
     @test
@@ -241,7 +239,7 @@ const assert = Chai.assert;
         const output = FrameFactory.createFrame(data, undefined, 0, 4, false);
 
         // Assert
-        this.validateOutput(output, FrameClassType.AttachmentFrame, data.length);
+        FrameFactoryTests.validateOutput(output, FrameClassType.AttachmentFrame, data.length);
     }
 
     @test
@@ -253,7 +251,7 @@ const assert = Chai.assert;
         const output = FrameFactory.createFrame(data, undefined, 0, 4, false);
 
         // Assert
-        this.validateOutput(output, FrameClassType.PlayCountFrame, data.length);
+        FrameFactoryTests.validateOutput(output, FrameClassType.PlayCountFrame, data.length);
     }
 
     @test
@@ -265,7 +263,7 @@ const assert = Chai.assert;
         const output = FrameFactory.createFrame(data, undefined, 0, 4, false);
 
         // Assert
-        this.validateOutput(output, FrameClassType.PopularimeterFrame, data.length);
+        FrameFactoryTests.validateOutput(output, FrameClassType.PopularimeterFrame, data.length);
     }
 
     @test
@@ -277,7 +275,7 @@ const assert = Chai.assert;
         const output = FrameFactory.createFrame(data, undefined, 0, 4, false);
 
         // Assert
-        this.validateOutput(output, FrameClassType.TermsOfUseFrame, data.length);
+        FrameFactoryTests.validateOutput(output, FrameClassType.TermsOfUseFrame, data.length);
     }
 
     @test
@@ -289,7 +287,7 @@ const assert = Chai.assert;
         const output = FrameFactory.createFrame(data, undefined, 0, 4, false);
 
         // Assert
-        this.validateOutput(output, FrameClassType.PrivateFrame, data.length);
+        FrameFactoryTests.validateOutput(output, FrameClassType.PrivateFrame, data.length);
     }
 
     @test
@@ -301,7 +299,7 @@ const assert = Chai.assert;
         const output = FrameFactory.createFrame(data, undefined, 0, 4, false);
 
         // Assert
-        this.validateOutput(output, FrameClassType.UserUrlLinkFrame, data.length);
+        FrameFactoryTests.validateOutput(output, FrameClassType.UserUrlLinkFrame, data.length);
     }
 
     @test
@@ -316,7 +314,7 @@ const assert = Chai.assert;
         const output = FrameFactory.createFrame(data, undefined, 0, 4, false);
 
         // Assert
-        this.validateOutput(output, FrameClassType.UrlLinkFrame, data.length);
+        FrameFactoryTests.validateOutput(output, FrameClassType.UrlLinkFrame, data.length);
     }
 
     @test
@@ -328,7 +326,7 @@ const assert = Chai.assert;
         const output = FrameFactory.createFrame(data, undefined, 0, 4, false);
 
         // Assert
-        this.validateOutput(output, FrameClassType.EventTimeCodeFrame, data.length);
+        FrameFactoryTests.validateOutput(output, FrameClassType.EventTimeCodeFrame, data.length);
     }
 
     @test
@@ -345,7 +343,7 @@ const assert = Chai.assert;
         const output = FrameFactory.createFrame(data, undefined, 0, 4, false);
 
         // Assert
-        this.validateOutput(output, FrameClassType.UnknownFrame, data.length);
+        FrameFactoryTests.validateOutput(output, FrameClassType.UnknownFrame, data.length);
     }
 
     @test
@@ -360,7 +358,7 @@ const assert = Chai.assert;
         const output = FrameFactory.createFrame(data, undefined, 2, 4, false);
 
         // Assert
-        this.validateOutput(output, FrameClassType.UniqueFileIdentifierFrame, data.length);
+        FrameFactoryTests.validateOutput(output, FrameClassType.UniqueFileIdentifierFrame, data.length);
     }
 
     @test
@@ -373,7 +371,7 @@ const assert = Chai.assert;
         const output = FrameFactory.createFrame(undefined, file, 0, 4, false);
 
         // Assert
-        this.validateOutput(output, FrameClassType.UniqueFileIdentifierFrame, data.length);
+        FrameFactoryTests.validateOutput(output, FrameClassType.UniqueFileIdentifierFrame, data.length);
     }
 
     @test
@@ -389,7 +387,7 @@ const assert = Chai.assert;
         const output = FrameFactory.createFrame(undefined, file, 2, 4, false);
 
         // Assert
-        this.validateOutput(output, FrameClassType.UniqueFileIdentifierFrame, data.length);
+        FrameFactoryTests.validateOutput(output, FrameClassType.UniqueFileIdentifierFrame, data.length);
     }
 
     @test
@@ -413,11 +411,11 @@ const assert = Chai.assert;
         const output = FrameFactory.createFrame(undefined, file, 0, 4, false);
 
         // Assert
-        this.validateOutput(output, FrameClassType.AttachmentFrame, data.length);
+        FrameFactoryTests.validateOutput(output, FrameClassType.AttachmentFrame, data.length);
     }
 
     @test
-    public createFrame_fromeFile_geob() {
+    public createFrame_fromFile_geob() {
         // Arrange
         const header = new Id3v2FrameHeader(FrameIdentifiers.GEOB);
         header.frameSize = 60;
@@ -438,12 +436,12 @@ const assert = Chai.assert;
         const output = FrameFactory.createFrame(undefined, file, 0, 4, false);
 
         // Assert
-        this.validateOutput(output, FrameClassType.AttachmentFrame, data.length);
+        FrameFactoryTests.validateOutput(output, FrameClassType.AttachmentFrame, data.length);
 
     }
 
     @test
-    public createFrame_fromeFile_nonLazy() {
+    public createFrame_fromFile_nonLazy() {
         // Arrange
         const data = PlayCountFrame.fromEmpty().render(4);
         const file = TestFile.getFile(data);
@@ -452,7 +450,7 @@ const assert = Chai.assert;
         const output = FrameFactory.createFrame(undefined, file, 0, 4, false);
 
         // Assert
-        this.validateOutput(output, FrameClassType.PlayCountFrame, data.length);
+        FrameFactoryTests.validateOutput(output, FrameClassType.PlayCountFrame, data.length);
     }
 
     @test
@@ -505,7 +503,7 @@ const assert = Chai.assert;
             const output = FrameFactory.createFrame(data, undefined, 0, 4, false);
 
             // Assert
-            this.validateOutput(output, FrameClassType.PlayCountFrame, data.length);
+            FrameFactoryTests.validateOutput(output, FrameClassType.PlayCountFrame, data.length);
             assert.notStrictEqual(output.frame, frame);
 
             mockCreator.verify(
@@ -522,7 +520,7 @@ const assert = Chai.assert;
         }
     }
 
-    private validateOutput(output: {frame: Frame, offset: number}, fct: FrameClassType, o: number) {
+    private static validateOutput(output: {frame: Frame, offset: number}, fct: FrameClassType, o: number) {
         assert.ok(output);
         assert.strictEqual(output.frame.frameClassType, fct);
         assert.strictEqual(output.offset, o);

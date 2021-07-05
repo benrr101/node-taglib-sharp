@@ -1,6 +1,5 @@
 import * as Chai from "chai";
-import * as ChaiAsPromised from "chai-as-promised";
-import {suite, test} from "mocha-typescript";
+import {suite, test} from "@testdeck/mocha";
 
 import ExtendedFileTests from "./utilities/extendedFileTests";
 import TestConstants from "./utilities/testConstants";
@@ -8,7 +7,6 @@ import {File} from "../src";
 import {StandardFileTests} from "./utilities/standardFileTests";
 
 // Setup chai
-Chai.use(ChaiAsPromised);
 const assert = Chai.assert;
 
 @suite class Ape_FileTests {

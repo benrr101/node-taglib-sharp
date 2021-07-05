@@ -1,7 +1,7 @@
 import {ByteVector} from "../byteVector";
+import {CorruptFileError} from "../errors";
 import {ILosslessAudioCodec, MediaTypes} from "../iCodec";
 import {Guards} from "../utils";
-import {CorruptFileError} from "../errors";
 
 /**
  * Defines the format of waveform-audio data. Only format information common to all waveform-audio
@@ -281,6 +281,7 @@ export default class RiffWaveFormatEx implements ILosslessAudioCodec {
 
     private readonly _averageBytesPerSecond: number;
     private readonly _bitsPerSample: number;
+    private readonly _blockAlign: number;
     private readonly _channels: number;
     private readonly _formatTag: number;
     private readonly _samplesPerSecond: number;
@@ -302,6 +303,7 @@ export default class RiffWaveFormatEx implements ILosslessAudioCodec {
         this._channels = data.mid(offset + 2, 2).toUShort(false);
         this._samplesPerSecond = data.mid(offset + 4, 4).toUInt(false);
         this._averageBytesPerSecond = data.mid(offset + 8, 4).toUInt(false);
+        this._blockAlign = data.mid(offset + 12, 2).toUShort(false);
         this._bitsPerSample = data.mid(offset + 14, 2).toUShort(false);
     }
 
@@ -325,8 +327,15 @@ export default class RiffWaveFormatEx implements ILosslessAudioCodec {
     /**
      * @inheritDoc
      * @remarks Some compression schemes cannot define a value for this field, so it may be `0`.
+     *     This is especially common for MP3 audio embedded in an AVI.
      */
     public get bitsPerSample(): number { return this._bitsPerSample; }
+
+    /**
+     * Gets the block alignment, in bytes. Block alignment is the minimum atomic unit of data for
+     * {@see formatTag} format type.
+     */
+    public get blockAlign(): number { return this._blockAlign; }
 
     /** @inheritDoc */
     public get description(): string {

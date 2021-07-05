@@ -1,15 +1,15 @@
 import * as Chai from "chai";
 import * as ChaiAsPromised from "chai-as-promised";
 import * as TypeMoq from "typemoq";
-import {Testers} from "../utilities/testers";
-import TestFile from "../utilities/testFile";
-import {suite, test} from "mocha-typescript";
+import {suite, test} from "@testdeck/mocha";
 
 import AacAudioHeader from "../../src/aac/aacAudioHeader";
 import Mpeg4AudioTypes from "../../src/mpeg4/mpeg4AudioTypes";
+import TestFile from "../utilities/testFile";
 import {ByteVector} from "../../src/byteVector";
 import {File} from "../../src/file";
 import {MediaTypes} from "../../src/iCodec";
+import {Testers} from "../utilities/testers";
 
 // Setup Chai
 Chai.use(ChaiAsPromised);
@@ -18,11 +18,12 @@ const assert = Chai.assert;
 // Test constants
 const sampleHeaderBytes = ByteVector.fromByteArray(new Uint8Array([0xFF, 0xF5, 0x55, 0x55, 0x55, 0x55, 0x55]));
 
-@suite class Aac_AudioHeaderTests {
+@suite
+class Aac_AudioHeaderTests {
     @test
     public constructor_invalidData() {
         // Arrange
-        const testFunc = (a: number, b: number, c: number, d: number) => { const _  = new AacAudioHeader(a, b, c, d); };
+        const testFunc = (a: number, b: number, c: number, d: number) => new AacAudioHeader(a, b, c, d);
 
         // Act / Assert
         Testers.testUint((v: number) => testFunc(v, 0, 0, 0));

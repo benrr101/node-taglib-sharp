@@ -1,13 +1,11 @@
 import * as Chai from "chai";
-import * as ChaiAsPromised from "chai-as-promised";
-import {suite, test} from "mocha-typescript";
+import {suite, test} from "@testdeck/mocha";
 
 import TestConstants from "./utilities/testConstants";
 import {File, Id3v2FrameIdentifiers, Id3v2Tag, ReadStyle, TagTypes} from "../src";
 import {StandardFileTests, TestTagLevel} from "./utilities/standardFileTests";
 
 // Setup chai
-Chai.use(ChaiAsPromised);
 const assert = Chai.assert;
 
 @suite class Id3v24_FileTests {

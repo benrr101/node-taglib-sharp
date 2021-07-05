@@ -2,10 +2,6 @@
 
 # Class: Id3v2RelativeVolumeFrameChannelData
 
-## Hierarchy
-
-* **Id3v2RelativeVolumeFrameChannelData**
-
 ## Table of contents
 
 ### Constructors
@@ -29,121 +25,139 @@
 
 ### constructor
 
-\+ **new Id3v2RelativeVolumeFrameChannelData**(`channel`: [*Id3v2RelativeVolumeFrameChannelType*](../enums/id3v2relativevolumeframechanneltype.md)): [*Id3v2RelativeVolumeFrameChannelData*](id3v2relativevolumeframechanneldata.md)
+• **new Id3v2RelativeVolumeFrameChannelData**(`channel`)
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
------- | ------ |
-`channel` | [*Id3v2RelativeVolumeFrameChannelType*](../enums/id3v2relativevolumeframechanneltype.md) |
-
-**Returns:** [*Id3v2RelativeVolumeFrameChannelData*](id3v2relativevolumeframechanneldata.md)
+| Name | Type |
+| :------ | :------ |
+| `channel` | [`Id3v2RelativeVolumeFrameChannelType`](../enums/id3v2relativevolumeframechanneltype.md) |
 
 ## Accessors
 
 ### channelType
 
-• **channelType**(): [*Id3v2RelativeVolumeFrameChannelType*](../enums/id3v2relativevolumeframechanneltype.md)
+• `get` **channelType**(): [`Id3v2RelativeVolumeFrameChannelType`](../enums/id3v2relativevolumeframechanneltype.md)
 
-**Returns:** [*Id3v2RelativeVolumeFrameChannelType*](../enums/id3v2relativevolumeframechanneltype.md)
+#### Returns
+
+[`Id3v2RelativeVolumeFrameChannelType`](../enums/id3v2relativevolumeframechanneltype.md)
 
 ___
 
 ### isSet
 
-• **isSet**(): *boolean*
+• `get` **isSet**(): `boolean`
 
-**Returns:** *boolean*
+#### Returns
+
+`boolean`
 
 ___
 
 ### peakBits
 
-• **peakBits**(): *number*
+• `get` **peakBits**(): `number`
 
 Number of bits used to express the peak volume.
 
-**Returns:** *number*
+#### Returns
 
-• **peakBits**(`value`: *number*): *void*
+`number`
+
+• `set` **peakBits**(`value`): `void`
 
 Number of bits used to express the peak volume.
 
-#### Parameters:
+#### Parameters
 
-Name | Type | Description |
------- | ------ | ------ |
-`value` | *number* | Bits used to express the peak volume. Must be an integer betweenInclusive 1 and 64    |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `value` | `number` | Bits used to express the peak volume. Must be an integer betweenInclusive 1 and 64 |
 
-**Returns:** *void*
+#### Returns
+
+`void`
 
 ___
 
 ### peakVolume
 
-• **peakVolume**(): *bigint*
+• `get` **peakVolume**(): `bigint`
 
 Value of the peak sample in the file. It's unclear exactly how this works, but the ID3v2.4
 documentation explains this value as betweenInclusive 0 and 255 - but can be expressed using any
 number of bits ([peakBits](id3v2relativevolumeframechanneldata.md#peakbits)).
 
-**Returns:** *bigint*
+#### Returns
 
-• **peakVolume**(`value`: *bigint*): *void*
+`bigint`
+
+• `set` **peakVolume**(`value`): `void`
 
 Value of the peak sample in the file. It's unclear exactly how this works, but the ID3v2.4
 documentation explains this value as betweenInclusive 0 and 255 - but can be expressed using any
 number of bits ([peakBits](id3v2relativevolumeframechanneldata.md#peakbits)).
 
-#### Parameters:
+#### Parameters
 
-Name | Type | Description |
------- | ------ | ------ |
-`value` | *bigint* | Peak volume value. Must fit in the number of bits set in [peakBits](id3v2relativevolumeframechanneldata.md#peakbits)    |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `value` | `bigint` | Peak volume value. Must fit in the number of bits set in [peakBits](id3v2relativevolumeframechanneldata.md#peakbits) |
 
-**Returns:** *void*
+#### Returns
+
+`void`
 
 ___
 
 ### volumeAdjustment
 
-• **volumeAdjustment**(): *number*
+• `get` **volumeAdjustment**(): `number`
 
 Volume adjustment of the track in dB.
 
-**Returns:** *number*
+#### Returns
 
-• **volumeAdjustment**(`value`: *number*): *void*
+`number`
+
+• `set` **volumeAdjustment**(`value`): `void`
 
 Volume adjustment of the track in dB. This value is expressed as a fixed-precision value
 betweenInclusive -64 and 64. Don't worry about the math, we'll do it for you.
 
-#### Parameters:
+#### Parameters
 
-Name | Type | Description |
------- | ------ | ------ |
-`value` | *number* | Volume adjustment. Must be between -64 and 64, inclusive.    |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `value` | `number` | Volume adjustment. Must be between -64 and 64, inclusive. |
 
-**Returns:** *void*
+#### Returns
+
+`void`
 
 ## Methods
 
 ### render
 
-▸ **render**(): [*ByteVector*](bytevector.md)
+▸ **render**(): [`ByteVector`](bytevector.md)
 
-**Returns:** [*ByteVector*](bytevector.md)
+#### Returns
+
+[`ByteVector`](bytevector.md)
 
 ___
 
 ### fromData
 
-▸ `Static`**fromData**(`bytes`: [*ByteVector*](bytevector.md)): [*Id3v2RelativeVolumeFrameChannelData*](id3v2relativevolumeframechanneldata.md)
+▸ `Static` **fromData**(`bytes`): [`Id3v2RelativeVolumeFrameChannelData`](id3v2relativevolumeframechanneldata.md)
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
------- | ------ |
-`bytes` | [*ByteVector*](bytevector.md) |
+| Name | Type |
+| :------ | :------ |
+| `bytes` | [`ByteVector`](bytevector.md) |
 
-**Returns:** [*Id3v2RelativeVolumeFrameChannelData*](id3v2relativevolumeframechanneldata.md)
+#### Returns
+
+[`Id3v2RelativeVolumeFrameChannelData`](id3v2relativevolumeframechanneldata.md)

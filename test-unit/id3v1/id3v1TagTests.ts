@@ -1,11 +1,9 @@
 import * as Chai from "chai";
-import * as ChaiAsPromised from "chai-as-promised";
-import {suite, test} from "mocha-typescript";
+import {suite, test} from "@testdeck/mocha";
 
 import Id3v1Tag from "../../src/id3v1/id3v1Tag";
 
 // Setup Chai
-Chai.use(ChaiAsPromised);
 const assert = Chai.assert;
 
 @suite class Id3v1TagTests {

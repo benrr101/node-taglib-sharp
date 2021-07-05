@@ -1,8 +1,6 @@
 import * as Chai from "chai";
-import * as ChaiAsPromised from "chai-as-promised";
 
 // Setup Chai
-Chai.use(ChaiAsPromised);
 const assert = Chai.assert;
 
 export default class PropertyTests {

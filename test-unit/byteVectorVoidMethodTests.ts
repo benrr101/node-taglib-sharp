@@ -1,12 +1,10 @@
 import * as Chai from "chai";
-import * as ChaiAsPromised from "chai-as-promised";
-import {Testers} from "./utilities/testers";
-import {suite, test} from "mocha-typescript";
+import {suite, test} from "@testdeck/mocha";
 
 import {ByteVector} from "../src/byteVector";
+import {Testers} from "./utilities/testers";
 
 // Setup chai
-Chai.use(ChaiAsPromised);
 const assert = Chai.assert;
 
 @suite class ByteVector_VoidMethodTests {
@@ -1485,7 +1483,7 @@ const assert = Chai.assert;
         const output = bv.split(pattern);
 
         // Assert
-        this.verifySplitOutput(output, ["foobarbaz"]);
+        ByteVector_VoidMethodTests.verifySplitOutput(output, ["foobarbaz"]);
     }
 
     @test
@@ -1498,7 +1496,7 @@ const assert = Chai.assert;
         const output = bv.split(pattern);
 
         // Assert
-        this.verifySplitOutput(output, ["foo", "baz"]);
+        ByteVector_VoidMethodTests.verifySplitOutput(output, ["foo", "baz"]);
     }
 
     @test
@@ -1511,7 +1509,7 @@ const assert = Chai.assert;
         const output = bv.split(pattern);
 
         // Assert
-        this.verifySplitOutput(output, ["foo", "bar", "", "baz"]);
+        ByteVector_VoidMethodTests.verifySplitOutput(output, ["foo", "bar", "", "baz"]);
     }
 
     @test
@@ -1524,7 +1522,7 @@ const assert = Chai.assert;
         const output = bv.split(pattern);
 
         // Assert
-        this.verifySplitOutput(output, ["foobarbaz"]);
+        ByteVector_VoidMethodTests.verifySplitOutput(output, ["foobarbaz"]);
     }
 
     @test
@@ -1537,7 +1535,7 @@ const assert = Chai.assert;
         const output = bv.split(pattern);
 
         // Assert
-        this.verifySplitOutput(output, ["foo", "baz"]);
+        ByteVector_VoidMethodTests.verifySplitOutput(output, ["foo", "baz"]);
     }
 
     @test
@@ -1550,7 +1548,7 @@ const assert = Chai.assert;
         const output = bv.split(pattern);
 
         // Assert
-        this.verifySplitOutput(output, ["foo", "bar", "", "baz"]);
+        ByteVector_VoidMethodTests.verifySplitOutput(output, ["foo", "bar", "", "baz"]);
     }
 
     @test
@@ -1563,7 +1561,7 @@ const assert = Chai.assert;
         const output = bv.split(pattern, undefined, 2);
 
         // Assert
-        this.verifySplitOutput(output, ["foo", "bar,,baz"]);
+        ByteVector_VoidMethodTests.verifySplitOutput(output, ["foo", "bar,,baz"]);
     }
 
     @test
@@ -1576,7 +1574,7 @@ const assert = Chai.assert;
         const output = bv.split(pattern, 2);
 
         // Assert
-        this.verifySplitOutput(output, ["foo,,bar"]);
+        ByteVector_VoidMethodTests.verifySplitOutput(output, ["foo,,bar"]);
     }
 
     @test
@@ -1589,7 +1587,7 @@ const assert = Chai.assert;
         const output = bv.split(pattern, 2);
 
         // Assert
-        this.verifySplitOutput(output, ["0foo", "bar"]);
+        ByteVector_VoidMethodTests.verifySplitOutput(output, ["0foo", "bar"]);
     }
 
     @test
@@ -1621,7 +1619,7 @@ const assert = Chai.assert;
         assert.isFalse(bv.startsWith(pattern));
     }
 
-    private verifySplitOutput(output: ByteVector[], expected: string[]) {
+    private static verifySplitOutput(output: ByteVector[], expected: string[]) {
         assert.isOk(output);
         assert.strictEqual(output.length, expected.length);
         for (let i = 0; i < expected.length; i++) {

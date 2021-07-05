@@ -1,15 +1,13 @@
 import * as Chai from "chai";
-import * as ChaiAsPromised from "chai-as-promised";
 import * as TypeMoq from "typemoq";
-import TestConstants from "./testConstants";
-import {Testers} from "./utilities/testers";
-import {suite, test} from "mocha-typescript";
+import {suite, test} from "@testdeck/mocha";
 
+import TestConstants from "./testConstants";
 import {LocalFileAbstraction} from "../src/fileAbstraction";
 import {IStream} from "../src/stream";
+import {Testers} from "./utilities/testers";
 
 // Setup Chai
-Chai.use(ChaiAsPromised);
 const assert = Chai.assert;
 
 @suite class LocalFileAbstractionTests {

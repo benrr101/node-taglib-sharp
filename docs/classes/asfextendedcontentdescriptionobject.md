@@ -7,9 +7,9 @@ read from and written to disk.
 
 ## Hierarchy
 
-* *BaseObject*
+- `BaseObject`
 
-  ↳ **AsfExtendedContentDescriptionObject**
+  ↳ **`AsfExtendedContentDescriptionObject`**
 
 ## Table of contents
 
@@ -38,31 +38,37 @@ read from and written to disk.
 
 ### descriptors
 
-• **descriptors**(): [*AsfContentDescriptor*](asfcontentdescriptor.md)[]
+• `get` **descriptors**(): [`AsfContentDescriptor`](asfcontentdescriptor.md)[]
 
 Gets all descriptors stored in the current instance.
 
-**Returns:** [*AsfContentDescriptor*](asfcontentdescriptor.md)[]
+#### Returns
+
+[`AsfContentDescriptor`](asfcontentdescriptor.md)[]
 
 ___
 
 ### guid
 
-• **guid**(): *default*
+• `get` **guid**(): `default`
 
 Gets the GUID that identifies the current instance.
 
-**Returns:** *default*
+#### Returns
+
+`default`
 
 ___
 
 ### isEmpty
 
-• **isEmpty**(): *boolean*
+• `get` **isEmpty**(): `boolean`
 
 Gets whether or not the current instance contains any records.
 
-**Returns:** *boolean*
+#### Returns
+
+`boolean`
 
 boolean `true` if the current instance does not contain any records, `false`
     otherwise.
@@ -71,139 +77,173 @@ ___
 
 ### objectType
 
-• **objectType**(): ObjectType
+• `get` **objectType**(): `ObjectType`
 
-**`inheritdoc`** 
+**`inheritdoc`**
 
-**Returns:** ObjectType
+#### Returns
+
+`ObjectType`
 
 ___
 
 ### originalSize
 
-• **originalSize**(): *number*
+• `get` **originalSize**(): `number`
 
 Gets the original size of the current instance.
 
-**Returns:** *number*
+#### Returns
+
+`number`
 
 ## Methods
 
 ### addDescriptor
 
-▸ **addDescriptor**(`descriptor`: [*AsfContentDescriptor*](asfcontentdescriptor.md)): *void*
+▸ **addDescriptor**(`descriptor`): `void`
 
 Adds a descriptor to the current instance.
 
-#### Parameters:
+#### Parameters
 
-Name | Type | Description |
------- | ------ | ------ |
-`descriptor` | [*AsfContentDescriptor*](asfcontentdescriptor.md) | Record to add to the current instance    |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `descriptor` | [`AsfContentDescriptor`](asfcontentdescriptor.md) | Record to add to the current instance |
 
-**Returns:** *void*
+#### Returns
+
+`void`
 
 ___
 
 ### getDescriptors
 
-▸ **getDescriptors**(...`names`: *string*[]): [*AsfContentDescriptor*](asfcontentdescriptor.md)[]
+▸ **getDescriptors**(...`names`): [`AsfContentDescriptor`](asfcontentdescriptor.md)[]
 
 Gets all descriptors with a name matching one of the provided collection of names the
 current instance.
 
-#### Parameters:
+#### Parameters
 
-Name | Type | Description |
------- | ------ | ------ |
-`...names` | *string*[] | List of names of the records to return    |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `...names` | `string`[] | List of names of the records to return |
 
-**Returns:** [*AsfContentDescriptor*](asfcontentdescriptor.md)[]
+#### Returns
+
+[`AsfContentDescriptor`](asfcontentdescriptor.md)[]
 
 ___
 
 ### initializeFromFile
 
-▸ `Protected`**initializeFromFile**(`file`: [*File*](file.md), `position`: *number*): *void*
+▸ `Protected` **initializeFromFile**(`file`, `position`): `void`
 
 Initializes a new instance by reading the contents from a specified position in a specified
 file.
 
-#### Parameters:
+#### Parameters
 
-Name | Type | Description |
------- | ------ | ------ |
-`file` | [*File*](file.md) | File which contains the details of the new instance to create   |
-`position` | *number* | Position in `file` where the object begins   |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `file` | [`File`](file.md) | File which contains the details of the new instance to create |
+| `position` | `number` | Position in `file` where the object begins |
 
-**Returns:** *void*
+#### Returns
+
+`void`
+
+#### Inherited from
+
+BaseObject.initializeFromFile
 
 ___
 
 ### initializeFromGuid
 
-▸ `Protected`**initializeFromGuid**(`guid`: *default*): *void*
+▸ `Protected` **initializeFromGuid**(`guid`): `void`
 
 Initializes a new instance with a specified GUID.
 
-#### Parameters:
+#### Parameters
 
-Name | Type | Description |
------- | ------ | ------ |
-`guid` | *default* | GUID to use for the new instance.   |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `guid` | `default` | GUID to use for the new instance. |
 
-**Returns:** *void*
+#### Returns
+
+`void`
+
+#### Inherited from
+
+BaseObject.initializeFromGuid
 
 ___
 
 ### removeDescriptors
 
-▸ **removeDescriptors**(`name`: *string*): *void*
+▸ **removeDescriptors**(`name`): `void`
 
 Removes all descriptors with a given name from the current instance.
 
-#### Parameters:
+#### Parameters
 
-Name | Type | Description |
------- | ------ | ------ |
-`name` | *string* | Name of the descriptor to be removed    |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `name` | `string` | Name of the descriptor to be removed |
 
-**Returns:** *void*
+#### Returns
+
+`void`
 
 ___
 
 ### render
 
-▸ **render**(): [*ByteVector*](bytevector.md)
+▸ **render**(): [`ByteVector`](bytevector.md)
 
-**`inheritdoc`** 
+**`inheritdoc`**
 
-**Returns:** [*ByteVector*](bytevector.md)
+#### Returns
+
+[`ByteVector`](bytevector.md)
+
+#### Overrides
+
+BaseObject.render
 
 ___
 
 ### renderInternal
 
-▸ `Protected`**renderInternal**(`data`: [*ByteVector*](bytevector.md)): [*ByteVector*](bytevector.md)
+▸ `Protected` **renderInternal**(`data`): [`ByteVector`](bytevector.md)
 
 Renders the current instance as a raw ASF object containing the specified data.
 
 **`remarks`** Child classes implementing {@see render()} should render their contents and then
     send the data through this method to produce the final output.
 
-#### Parameters:
+#### Parameters
 
-Name | Type | Description |
------- | ------ | ------ |
-`data` | [*ByteVector*](bytevector.md) | Data to store in the rendered version of the current instance.   |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `data` | [`ByteVector`](bytevector.md) | Data to store in the rendered version of the current instance. |
 
-**Returns:** [*ByteVector*](bytevector.md)
+#### Returns
+
+[`ByteVector`](bytevector.md)
+
+#### Inherited from
+
+BaseObject.renderInternal
 
 ___
 
 ### setDescriptors
 
-▸ **setDescriptors**(`name`: *string*, ...`descriptors`: [*AsfContentDescriptor*](asfcontentdescriptor.md)[]): *void*
+▸ **setDescriptors**(`name`, ...`descriptors`): `void`
 
 Sets a collection of descriptors for a given name, removing the existing matching records.
 
@@ -212,39 +252,45 @@ Sets a collection of descriptors for a given name, removing the existing matchin
     one provided as an argument, which is only used for removing existing values and
     determining where to position the new descriptors.
 
-#### Parameters:
+#### Parameters
 
-Name | Type | Description |
------- | ------ | ------ |
-`name` | *string* | Name of the descriptors to be added/removed   |
-`...descriptors` | [*AsfContentDescriptor*](asfcontentdescriptor.md)[] | Descriptors to add to the new instance   |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `name` | `string` | Name of the descriptors to be added/removed |
+| `...descriptors` | [`AsfContentDescriptor`](asfcontentdescriptor.md)[] | Descriptors to add to the new instance |
 
-**Returns:** *void*
+#### Returns
+
+`void`
 
 ___
 
 ### fromEmpty
 
-▸ `Static`**fromEmpty**(): [*AsfExtendedContentDescriptionObject*](asfextendedcontentdescriptionobject.md)
+▸ `Static` **fromEmpty**(): [`AsfExtendedContentDescriptionObject`](asfextendedcontentdescriptionobject.md)
 
 Constructs and initializes a new, empty extended content description object.
 
-**Returns:** [*AsfExtendedContentDescriptionObject*](asfextendedcontentdescriptionobject.md)
+#### Returns
+
+[`AsfExtendedContentDescriptionObject`](asfextendedcontentdescriptionobject.md)
 
 ___
 
 ### fromFile
 
-▸ `Static`**fromFile**(`file`: [*File*](file.md), `position`: *number*): [*AsfExtendedContentDescriptionObject*](asfextendedcontentdescriptionobject.md)
+▸ `Static` **fromFile**(`file`, `position`): [`AsfExtendedContentDescriptionObject`](asfextendedcontentdescriptionobject.md)
 
 Constructs and initializes a new instance that is read in from the provided file at the
 provided position.
 
-#### Parameters:
+#### Parameters
 
-Name | Type | Description |
------- | ------ | ------ |
-`file` | [*File*](file.md) | File to read the instance from. Must not be falsey   |
-`position` | *number* | Position in the file where the instance begins. Must be a positive, safe     integer.    |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `file` | [`File`](file.md) | File to read the instance from. Must not be falsey |
+| `position` | `number` | Position in the file where the instance begins. Must be a positive, safe     integer. |
 
-**Returns:** [*AsfExtendedContentDescriptionObject*](asfextendedcontentdescriptionobject.md)
+#### Returns
+
+[`AsfExtendedContentDescriptionObject`](asfextendedcontentdescriptionobject.md)

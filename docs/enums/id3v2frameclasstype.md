@@ -28,100 +28,100 @@
 
 ### AttachmentFrame
 
-• **AttachmentFrame**: = 0
+• **AttachmentFrame** = `0`
 
 ___
 
 ### CommentsFrame
 
-• **CommentsFrame**: = 1
+• **CommentsFrame** = `1`
 
 ___
 
 ### EventTimeCodeFrame
 
-• **EventTimeCodeFrame**: = 2
+• **EventTimeCodeFrame** = `2`
 
 ___
 
 ### MusicCdIdentifierFrame
 
-• **MusicCdIdentifierFrame**: = 3
+• **MusicCdIdentifierFrame** = `3`
 
 ___
 
 ### PlayCountFrame
 
-• **PlayCountFrame**: = 4
+• **PlayCountFrame** = `4`
 
 ___
 
 ### PopularimeterFrame
 
-• **PopularimeterFrame**: = 5
+• **PopularimeterFrame** = `5`
 
 ___
 
 ### PrivateFrame
 
-• **PrivateFrame**: = 6
+• **PrivateFrame** = `6`
 
 ___
 
 ### RelativeVolumeFrame
 
-• **RelativeVolumeFrame**: = 7
+• **RelativeVolumeFrame** = `7`
 
 ___
 
 ### SynchronizedLyricsFrame
 
-• **SynchronizedLyricsFrame**: = 8
+• **SynchronizedLyricsFrame** = `8`
 
 ___
 
 ### TermsOfUseFrame
 
-• **TermsOfUseFrame**: = 9
+• **TermsOfUseFrame** = `9`
 
 ___
 
 ### TextInformationFrame
 
-• **TextInformationFrame**: = 10
+• **TextInformationFrame** = `10`
 
 ___
 
 ### UniqueFileIdentifierFrame
 
-• **UniqueFileIdentifierFrame**: = 11
+• **UniqueFileIdentifierFrame** = `11`
 
 ___
 
 ### UnknownFrame
 
-• **UnknownFrame**: = 12
+• **UnknownFrame** = `12`
 
 ___
 
 ### UnsynchronizedLyricsFrame
 
-• **UnsynchronizedLyricsFrame**: = 13
+• **UnsynchronizedLyricsFrame** = `13`
 
 ___
 
 ### UrlLinkFrame
 
-• **UrlLinkFrame**: = 14
+• **UrlLinkFrame** = `14`
 
 ___
 
 ### UserTextInformationFrame
 
-• **UserTextInformationFrame**: = 15
+• **UserTextInformationFrame** = `15`
 
 ___
 
 ### UserUrlLinkFrame
 
-• **UserUrlLinkFrame**: = 16
+• **UserUrlLinkFrame** = `16`

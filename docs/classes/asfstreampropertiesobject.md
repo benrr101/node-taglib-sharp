@@ -7,9 +7,9 @@ written to disk.
 
 ## Hierarchy
 
-* *BaseObject*
+- `BaseObject`
 
-  ↳ **AsfStreamPropertiesObject**
+  ↳ **`AsfStreamPropertiesObject`**
 
 ## Table of contents
 
@@ -39,37 +39,43 @@ written to disk.
 
 ### codec
 
-• **codec**(): [*ICodec*](../interfaces/icodec.md)
+• `get` **codec**(): [`ICodec`](../interfaces/icodec.md)
 
 Gets the codec information contained in the current instance.
 
-**Returns:** [*ICodec*](../interfaces/icodec.md)
+#### Returns
+
+[`ICodec`](../interfaces/icodec.md)
 
 ___
 
 ### errorCorrectionData
 
-• **errorCorrectionData**(): [*ByteVector*](bytevector.md)
+• `get` **errorCorrectionData**(): [`ByteVector`](bytevector.md)
 
 Gets the error correction data contained in the current instance.
 
-**Returns:** [*ByteVector*](bytevector.md)
+#### Returns
+
+[`ByteVector`](bytevector.md)
 
 ___
 
 ### errorCorrectionType
 
-• **errorCorrectionType**(): *default*
+• `get` **errorCorrectionType**(): `default`
 
 Gets the error correction type GUID of the current instance.
 
-**Returns:** *default*
+#### Returns
+
+`default`
 
 ___
 
 ### flags
 
-• **flags**(): *number*
+• `get` **flags**(): `number`
 
 Gets the flags that apply to the current instance.
 
@@ -79,157 +85,199 @@ Gets the flags that apply to the current instance.
     * Reserved - 8 bits
     * Encrypted content flag - 1 bit
 
-**Returns:** *number*
+#### Returns
+
+`number`
 
 ___
 
 ### guid
 
-• **guid**(): *default*
+• `get` **guid**(): `default`
 
 Gets the GUID that identifies the current instance.
 
-**Returns:** *default*
+#### Returns
+
+`default`
 
 ___
 
 ### objectType
 
-• **objectType**(): ObjectType
+• `get` **objectType**(): `ObjectType`
 
-**`inheritdoc`** 
+**`inheritdoc`**
 
-**Returns:** ObjectType
+#### Returns
+
+`ObjectType`
 
 ___
 
 ### originalSize
 
-• **originalSize**(): *number*
+• `get` **originalSize**(): `number`
 
 Gets the original size of the current instance.
 
-**Returns:** *number*
+#### Returns
+
+`number`
 
 ___
 
 ### streamNumber
 
-• **streamNumber**(): *number*
+• `get` **streamNumber**(): `number`
 
 Gets the stream number for the current instance. Zero is invalid.
 
-**Returns:** *number*
+#### Returns
+
+`number`
 
 ___
 
 ### streamType
 
-• **streamType**(): *default*
+• `get` **streamType**(): `default`
 
 Gets the stream type GUID of the current instance.
 
-**Returns:** *default*
+#### Returns
+
+`default`
 
 ___
 
 ### timeOffsetMilliseconds
 
-• **timeOffsetMilliseconds**(): *number*
+• `get` **timeOffsetMilliseconds**(): `number`
 
 Gets the time offset at which the stream described by the current instance begins.
 
-**Returns:** *number*
+#### Returns
+
+`number`
 
 ___
 
 ### typeSpecificData
 
-• **typeSpecificData**(): [*ByteVector*](bytevector.md)
+• `get` **typeSpecificData**(): [`ByteVector`](bytevector.md)
 
 Gets the type specific data contained in the current instance.
 
 **`remarks`** The parsed version of this data is available in [codec](asfstreampropertiesobject.md#codec).
 
-**Returns:** [*ByteVector*](bytevector.md)
+#### Returns
+
+[`ByteVector`](bytevector.md)
 
 ## Methods
 
 ### initializeFromFile
 
-▸ `Protected`**initializeFromFile**(`file`: [*File*](file.md), `position`: *number*): *void*
+▸ `Protected` **initializeFromFile**(`file`, `position`): `void`
 
 Initializes a new instance by reading the contents from a specified position in a specified
 file.
 
-#### Parameters:
+#### Parameters
 
-Name | Type | Description |
------- | ------ | ------ |
-`file` | [*File*](file.md) | File which contains the details of the new instance to create   |
-`position` | *number* | Position in `file` where the object begins   |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `file` | [`File`](file.md) | File which contains the details of the new instance to create |
+| `position` | `number` | Position in `file` where the object begins |
 
-**Returns:** *void*
+#### Returns
+
+`void`
+
+#### Inherited from
+
+BaseObject.initializeFromFile
 
 ___
 
 ### initializeFromGuid
 
-▸ `Protected`**initializeFromGuid**(`guid`: *default*): *void*
+▸ `Protected` **initializeFromGuid**(`guid`): `void`
 
 Initializes a new instance with a specified GUID.
 
-#### Parameters:
+#### Parameters
 
-Name | Type | Description |
------- | ------ | ------ |
-`guid` | *default* | GUID to use for the new instance.   |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `guid` | `default` | GUID to use for the new instance. |
 
-**Returns:** *void*
+#### Returns
+
+`void`
+
+#### Inherited from
+
+BaseObject.initializeFromGuid
 
 ___
 
 ### render
 
-▸ **render**(): [*ByteVector*](bytevector.md)
+▸ **render**(): [`ByteVector`](bytevector.md)
 
-**`inheritdoc`** 
+**`inheritdoc`**
 
-**Returns:** [*ByteVector*](bytevector.md)
+#### Returns
+
+[`ByteVector`](bytevector.md)
+
+#### Overrides
+
+BaseObject.render
 
 ___
 
 ### renderInternal
 
-▸ `Protected`**renderInternal**(`data`: [*ByteVector*](bytevector.md)): [*ByteVector*](bytevector.md)
+▸ `Protected` **renderInternal**(`data`): [`ByteVector`](bytevector.md)
 
 Renders the current instance as a raw ASF object containing the specified data.
 
 **`remarks`** Child classes implementing {@see render()} should render their contents and then
     send the data through this method to produce the final output.
 
-#### Parameters:
+#### Parameters
 
-Name | Type | Description |
------- | ------ | ------ |
-`data` | [*ByteVector*](bytevector.md) | Data to store in the rendered version of the current instance.   |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `data` | [`ByteVector`](bytevector.md) | Data to store in the rendered version of the current instance. |
 
-**Returns:** [*ByteVector*](bytevector.md)
+#### Returns
+
+[`ByteVector`](bytevector.md)
+
+#### Inherited from
+
+BaseObject.renderInternal
 
 ___
 
 ### fromFile
 
-▸ `Static`**fromFile**(`file`: [*File*](file.md), `position`: *number*): [*AsfStreamPropertiesObject*](asfstreampropertiesobject.md)
+▸ `Static` **fromFile**(`file`, `position`): [`AsfStreamPropertiesObject`](asfstreampropertiesobject.md)
 
 Constructs and initializes a new instance by reading contents from a specified position in
 the provided file.
 
-#### Parameters:
+#### Parameters
 
-Name | Type | Description |
------- | ------ | ------ |
-`file` | [*File*](file.md) | File from which the contents of the new instance will be read   |
-`position` | *number* | Index into the file where the stream properties object begins    |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `file` | [`File`](file.md) | File from which the contents of the new instance will be read |
+| `position` | `number` | Index into the file where the stream properties object begins |
 
-**Returns:** [*AsfStreamPropertiesObject*](asfstreampropertiesobject.md)
+#### Returns
+
+[`AsfStreamPropertiesObject`](asfstreampropertiesobject.md)

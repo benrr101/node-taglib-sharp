@@ -1,5 +1,5 @@
 import * as Chai from "chai";
-import {suite, test} from "mocha-typescript";
+import {suite, test} from "@testdeck/mocha";
 
 import TestConstants from "./utilities/testConstants";
 import {File, ReadStyle} from "../src";

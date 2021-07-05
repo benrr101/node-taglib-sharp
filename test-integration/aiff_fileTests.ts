@@ -1,10 +1,10 @@
 import * as Chai from "chai";
-import TestConstants from "./utilities/testConstants";
-import {suite, test} from "mocha-typescript";
+import {suite, test} from "@testdeck/mocha";
 
 import {File, ReadStyle} from "../src";
 import {StandardFileTests} from "./utilities/standardFileTests";
 import ExtendedFileTests from "./utilities/extendedFileTests";
+import TestConstants from "./utilities/testConstants";
 
 const assert = Chai.assert;
 
@@ -53,16 +53,14 @@ const assert = Chai.assert;
 
     @test
     public writeExtendedTags() {
-        ExtendedFileTests.writeExtendedTags(Aiff_FileTests.sampleFilePath, Aiff_FileTests.tmpFileName);
+        const tmpFilePath = TestConstants.getTempFilePath(Aiff_FileTests.tmpFileName);
+        ExtendedFileTests.writeExtendedTags(Aiff_FileTests.sampleFilePath, tmpFilePath);
     }
 
     @test
     public writeStandardPictures() {
-        StandardFileTests.writeStandardPictures(
-            Aiff_FileTests.sampleFilePath,
-            Aiff_FileTests.tmpFileName,
-            ReadStyle.None
-        );
+        const tmpFilePath = TestConstants.getTempFilePath(Aiff_FileTests.tmpFileName);
+        StandardFileTests.writeStandardPictures(Aiff_FileTests.sampleFilePath, tmpFilePath, ReadStyle.None);
     }
 
     // @test
@@ -76,7 +74,8 @@ const assert = Chai.assert;
 
     @test
     public writeStandardTags() {
-        StandardFileTests.writeStandardTags(Aiff_FileTests.sampleFilePath, Aiff_FileTests.tmpFileName);
+        const tmpFilePath = TestConstants.getTempFilePath(Aiff_FileTests.tmpFileName);
+        StandardFileTests.writeStandardTags(Aiff_FileTests.sampleFilePath, tmpFilePath);
     }
 
 }

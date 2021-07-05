@@ -2,10 +2,6 @@
 
 # Class: Id3v2TagHeader
 
-## Hierarchy
-
-* **Id3v2TagHeader**
-
 ## Table of contents
 
 ### Constructors
@@ -30,148 +26,170 @@
 
 ### constructor
 
-\+ **new Id3v2TagHeader**(): [*Id3v2TagHeader*](id3v2tagheader.md)
-
-**Returns:** [*Id3v2TagHeader*](id3v2tagheader.md)
+• **new Id3v2TagHeader**()
 
 ## Accessors
 
 ### completeTagSize
 
-• **completeTagSize**(): *number*
+• `get` **completeTagSize**(): `number`
 
 Gets the complete size of the tag described by the current instance including the header
 and footer.
 
-**Returns:** *number*
+#### Returns
+
+`number`
 
 ___
 
 ### flags
 
-• **flags**(): [*Id3v2TagHeaderFlags*](../enums/id3v2tagheaderflags.md)
+• `get` **flags**(): [`Id3v2TagHeaderFlags`](../enums/id3v2tagheaderflags.md)
 
 Gets the flags applied to the current instance.
 
-**Returns:** [*Id3v2TagHeaderFlags*](../enums/id3v2tagheaderflags.md)
+#### Returns
 
-• **flags**(`value`: [*Id3v2TagHeaderFlags*](../enums/id3v2tagheaderflags.md)): *void*
+[`Id3v2TagHeaderFlags`](../enums/id3v2tagheaderflags.md)
+
+• `set` **flags**(`value`): `void`
 
 Sets the flags applied to the current instance.
 
-#### Parameters:
+#### Parameters
 
-Name | Type | Description |
------- | ------ | ------ |
-`value` | [*Id3v2TagHeaderFlags*](../enums/id3v2tagheaderflags.md) | Bitwise combined [Id3v2TagHeaderFlags](../enums/id3v2tagheaderflags.md) value containing the flags to apply to the     current instance.    |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `value` | [`Id3v2TagHeaderFlags`](../enums/id3v2tagheaderflags.md) | Bitwise combined [Id3v2TagHeaderFlags](../enums/id3v2tagheaderflags.md) value containing the flags to apply to the     current instance. |
 
-**Returns:** *void*
+#### Returns
+
+`void`
 
 ___
 
 ### majorVersion
 
-• **majorVersion**(): *number*
+• `get` **majorVersion**(): `number`
 
 Gets the major version of the tag described by the current instance.
 
-**Returns:** *number*
+#### Returns
 
-• **majorVersion**(`value`: *number*): *void*
+`number`
+
+• `set` **majorVersion**(`value`): `void`
 
 Sets the major version of the tag described by the current instance.
 When the version is set, unsupported header flags will automatically be removed from the
 tag.
 
-#### Parameters:
+#### Parameters
 
-Name | Type | Description |
------- | ------ | ------ |
-`value` | *number* | ID3v2 version of tag. Must be a positive 8-bit integer betweenInclusive 2 and 4.    |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `value` | `number` | ID3v2 version of tag. Must be a positive 8-bit integer betweenInclusive 2 and 4. |
 
-**Returns:** *void*
+#### Returns
+
+`void`
 
 ___
 
 ### revisionNumber
 
-• **revisionNumber**(): *number*
+• `get` **revisionNumber**(): `number`
 
 Gets the version revision number of the tag represented by the current instance.
 
-**Returns:** *number*
+#### Returns
 
-• **revisionNumber**(`value`: *number*): *void*
+`number`
+
+• `set` **revisionNumber**(`value`): `void`
 
 Sets the version revision number of the tag represented by the current instance.
 This value should always be zero. Non-zero values indicate an experimental or new version of
 the format which may not be completely understood by the current version of
 node-taglib-sharp. Some software may refuse to read tags with a non-zero value.
 
-#### Parameters:
+#### Parameters
 
-Name | Type | Description |
------- | ------ | ------ |
-`value` | *number* | Version revision number of the tag represented by the current instance. Must be     an 8-bit unsigned integer.    |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `value` | `number` | Version revision number of the tag represented by the current instance. Must be     an 8-bit unsigned integer. |
 
-**Returns:** *void*
+#### Returns
+
+`void`
 
 ___
 
 ### tagSize
 
-• **tagSize**(): *number*
+• `get` **tagSize**(): `number`
 
 Gets the complete size of the tag described by the current instance, minus the header and
 footer.
 
-**Returns:** *number*
+#### Returns
 
-• **tagSize**(`value`: *number*): *void*
+`number`
+
+• `set` **tagSize**(`value`): `void`
 
 Sets the complete size of the tag described by the current instance, minus the header
 footer. NOTE THIS MUST BE A 28-BIT UNSIGNED INTEGER.
 
-#### Parameters:
+#### Parameters
 
-Name | Type | Description |
------- | ------ | ------ |
-`value` | *number* | Size of the tag in bytes. Must be an unsigned 28-bit integer    |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `value` | `number` | Size of the tag in bytes. Must be an unsigned 28-bit integer |
 
-**Returns:** *void*
+#### Returns
+
+`void`
 
 ___
 
 ### fileIdentifier
 
-• `Static`**fileIdentifier**(): [*ByteVector*](bytevector.md)
+• `Static` `get` **fileIdentifier**(): [`ByteVector`](bytevector.md)
 
 The identifier used to recognize an ID3v2 header.
 
-**Returns:** [*ByteVector*](bytevector.md)
+#### Returns
+
+[`ByteVector`](bytevector.md)
 
 ## Methods
 
 ### render
 
-▸ **render**(): [*ByteVector*](bytevector.md)
+▸ **render**(): [`ByteVector`](bytevector.md)
 
 Renders the current instance as a raw ID3v2 header
 
-**Returns:** [*ByteVector*](bytevector.md)
+#### Returns
+
+[`ByteVector`](bytevector.md)
 
 ___
 
 ### fromData
 
-▸ `Static`**fromData**(`data`: [*ByteVector*](bytevector.md)): [*Id3v2TagHeader*](id3v2tagheader.md)
+▸ `Static` **fromData**(`data`): [`Id3v2TagHeader`](id3v2tagheader.md)
 
 Constructs and initializes a new instance by reading it from the raw header data.
 
-#### Parameters:
+#### Parameters
 
-Name | Type | Description |
------- | ------ | ------ |
-`data` | [*ByteVector*](bytevector.md) | Object containing the raw data to build the new instance from.    |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `data` | [`ByteVector`](bytevector.md) | Object containing the raw data to build the new instance from. |
 
-**Returns:** [*Id3v2TagHeader*](id3v2tagheader.md)
+#### Returns
+
+[`Id3v2TagHeader`](id3v2tagheader.md)
