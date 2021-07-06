@@ -1,8 +1,6 @@
 import {ByteVector} from "../../src/byteVector";
 import {IStream, SeekOrigin} from "../../src/stream";
 
-const AB2B = require("arraybuffer-to-buffer");
-
 export default class TestStream implements IStream {
     private readonly _isWritable: boolean;
     private _data: ByteVector;
@@ -78,7 +76,7 @@ export default class TestStream implements IStream {
             throw new Error("Invalid operation: this stream is a read-only stream");
         }
 
-        const bytesToWrite = ByteVector.fromByteArray(AB2B(buffer.slice(bufferOffset, length)));
+        const bytesToWrite = ByteVector.fromByteArray(Buffer.from(buffer.slice(bufferOffset, length)));
         if (this._position < this._data.length) {
             this._data.removeRange(this._position, bytesToWrite.length);
         }
