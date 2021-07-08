@@ -1,9 +1,10 @@
+import ILazy from "../iLazy";
 import {IPicture, PictureType} from "../iPicture";
 import {ByteVector, StringType} from "../byteVector";
 import {Guards} from "../utils";
 import {CorruptFileError} from "../errors";
 
-export default class FlacPicture implements IPicture {
+export default class XiphPicture implements IPicture, ILazy {
     private _colorDepth: number;
     private _data: ByteVector;
     private _description: string;
@@ -11,6 +12,7 @@ export default class FlacPicture implements IPicture {
     private _height: number;
     private _indexedColors: number;
     private _mimeType: string;
+    private _rawEncodedData: string;
     private _type: PictureType;
     private _width: number;
 
@@ -23,17 +25,17 @@ export default class FlacPicture implements IPicture {
      * object.
      * @param picture Object to copy properties from.
      */
-    public static fromPicture(picture: IPicture): FlacPicture {
+    public static fromPicture(picture: IPicture): XiphPicture {
         Guards.truthy(picture, "picture");
 
-        const instance = new FlacPicture();
+        const instance = new XiphPicture();
         instance._type = picture.type;
         instance._mimeType = picture.mimeType;
-        instance._fileName = picture.filename;
+        instance._filename = picture.filename;
         instance._description = picture.description;
         instance._data = picture.data;
 
-        if (!(picture instanceof FlacPicture)) {
+        if (!(picture instanceof XiphPicture)) {
             return instance;
         }
 
@@ -45,39 +47,18 @@ export default class FlacPicture implements IPicture {
     }
 
     /**
-     * Constructs and initializes a new instance by reading the contents of a raw FLAC image
-     * structure.
-     * @param data Object containing the raw FLAC image, must be at least 32 bytes long.
+     * Constructs and initializes a new instance by decoding and reading the contents of a raw Xiph
+     * image structure. Intended to be used by the XiphComment class.
+     * @param data Object containing the raw, encoded Xiph image
      */
-    public static fromRawData(data: ByteVector): FlacPicture {
+    public static fromEncodedField(data: string): XiphPicture {
         Guards.truthy(data, "data");
-        if (data.length < 32) {
-            throw new CorruptFileError("FLAC picture data must be at least 32 bytes long");
+        if (data.length < 44) { // Decoded data must be 32 bytes long, 44 is length in base64
+            throw new CorruptFileError("Encoded Xiph picture data must be at least 44 bytes long");
         }
 
-        let pos = 0;
-
-        const picture = new FlacPicture();
-        picture._type = data.mid(pos, 4).toUInt();
-        pos += 4;
-
-        const mimetypeLength = data.mid(pos, 4).toUInt();
-        pos += 4;
-        picture._mimeType = data.toString(mimetypeLength, StringType.Latin1, pos);
-        pos += mimetypeLength;
-
-        const descriptionLength = data.mid(pos, 4).toUInt();
-        pos += 4;
-        picture._mimeType = data.toString(descriptionLength, StringType.UTF8, pos);
-        pos += descriptionLength;
-
-        picture._width = data.mid(pos, 4).toUInt();
-        picture._height = data.mid(pos + 4, 4).toUInt();
-        picture._colorDepth = data.mid(pos + 8, 4).toUInt();
-        picture._indexedColors = data.mid(pos + 12, 4).toUInt();
-
-        const dataLength = data.mid(pos + 16, 4).toUInt();
-        picture._data = data.mid(pos + 20, dataLength);
+        const picture = new XiphPicture();
+        picture._rawEncodedData = data;
 
         return picture;
     }
@@ -131,7 +112,6 @@ export default class FlacPicture implements IPicture {
      * Gets the number of indexed colors in the picture represented by the current instance.
      */
     public get indexedColors(): number { return this._indexedColors; }
-
     /**
      * Sets the number of indexed colors in the picture represented by the current instance.
      * @param value Number of indexed colors in the pictures or `0` if the picture is not stored in
@@ -141,6 +121,8 @@ export default class FlacPicture implements IPicture {
         Guards.uint(value, "value");
         this._indexedColors = value;
     }
+
+    public get isLoaded(): boolean { return !!this._rawEncodedData; }
 
     /** @inheritDoc */
     public get mimeType(): string { return this._mimeType; }
@@ -167,24 +149,67 @@ export default class FlacPicture implements IPicture {
 
     // #endregion
 
+    public load(): void {
+        // If we're already loaded, no-op
+        if (this.isLoaded) {
+            return;
+        }
+
+        // We're not loaded, so decode and try
+        const data = ByteVector.fromByteArray(Buffer.from(this._rawEncodedData, "base64"));
+        let pos = 0;
+
+        const picture = new XiphPicture();
+        picture._type = data.mid(pos, 4).toUInt();
+        pos += 4;
+
+        const mimetypeLength = data.mid(pos, 4).toUInt();
+        pos += 4;
+        picture._mimeType = data.toString(mimetypeLength, StringType.Latin1, pos);
+        pos += mimetypeLength;
+
+        const descriptionLength = data.mid(pos, 4).toUInt();
+        pos += 4;
+        picture._mimeType = data.toString(descriptionLength, StringType.UTF8, pos);
+        pos += descriptionLength;
+
+        picture._width = data.mid(pos, 4).toUInt();
+        picture._height = data.mid(pos + 4, 4).toUInt();
+        picture._colorDepth = data.mid(pos + 8, 4).toUInt();
+        picture._indexedColors = data.mid(pos + 12, 4).toUInt();
+
+        const dataLength = data.mid(pos + 16, 4).toUInt();
+        picture._data = data.mid(pos + 20, dataLength);
+
+        this._rawEncodedData = undefined;
+    }
+
     /**
-     * Renders the current as a raw FLAC picture.
+     * Renders the current instance as an encoded Xiph picture, ready for use in an Xiph comment.
      */
-    public render(): ByteVector {
-        const mimeType = ByteVector.fromString(this.mimeType, StringType.Latin1);
-        const description = ByteVector.fromString(this.description, StringType.UTF8);
-        return ByteVector.concatenate(
-            ByteVector.fromUInt(this.type),
-            ByteVector.fromUInt(mimeType.length),
-            mimeType,
-            ByteVector.fromUInt(description.length),
-            description,
-            ByteVector.fromUInt(this.width),
-            ByteVector.fromUInt(this.height),
-            ByteVector.fromUInt(this.colorDepth),
-            ByteVector.fromUInt(this.indexedColors),
-            ByteVector.fromUInt(this.data.length),
-            this.data
-        );
+    public render(): string {
+        if (!this.isLoaded) {
+            // We haven't loaded this, so just return the original data
+            return this._rawEncodedData;
+        } else {
+            // We have loaded this, so recombine everything and encode it
+            const mimeType = ByteVector.fromString(this.mimeType, StringType.Latin1);
+            const description = ByteVector.fromString(this.description, StringType.UTF8);
+            const data = ByteVector.concatenate(
+                ByteVector.fromUInt(this.type),
+                ByteVector.fromUInt(mimeType.length),
+                mimeType,
+                ByteVector.fromUInt(description.length),
+                description,
+                ByteVector.fromUInt(this.width),
+                ByteVector.fromUInt(this.height),
+                ByteVector.fromUInt(this.colorDepth),
+                ByteVector.fromUInt(this.indexedColors),
+                ByteVector.fromUInt(this.data.length),
+                this.data
+            );
+
+            return Buffer.from(data.data.buffer).toString("base64");
+        }
     }
 }

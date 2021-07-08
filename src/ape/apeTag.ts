@@ -460,6 +460,8 @@ export default class ApeTag extends Tag {
 
     /** @inheritDoc via Cover Art items */
     get pictures(): IPicture[] {
+        // TODO: Parse pictures either lazily (see xiph) or at tag parsing to allow for picture
+        //  array to be updated by the user.
         const pictures = [];
         for (const item of this._items) {
             if (!item || item.type !== ApeTagItemType.Binary) {
