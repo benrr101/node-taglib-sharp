@@ -14,7 +14,7 @@ export default class XiphComment extends Tag {
     private static readonly pictureFields: string[] = ["COVERART", "METADATA_BLOCK_PICTURE"];
 
     private _fields: {[key: string]: string[]} = {};
-    private _pictures: IPicture[];
+    private _pictures: IPicture[] = [];
     private _saveBeatsPerMinuteAsTempo: boolean = true;
     private _vendorId: string;
 
@@ -285,7 +285,6 @@ export default class XiphComment extends Tag {
      * @inheritDoc via `DATE` field
      */
     public set year(value: number) {
-        Guards.uint(value, "value");
         if (value > 9999) {
             this.removeField("DATE");
         } else {
@@ -305,8 +304,6 @@ export default class XiphComment extends Tag {
     }
     /** @inheritDoc via `TRACKNUMBER` field */
     public set track(value: number) {
-        Guards.uint(value, "value");
-
         // TODO: Option to store as fractional?
         this.setFieldAsUint("TRACKTOTAL", this.trackCount);
         this.setFieldAsUint("TRACKNUMBER", value, 2);
@@ -340,8 +337,6 @@ export default class XiphComment extends Tag {
      * @inheritDoc via `TRACKNUMBER` field
      */
     public set trackCount(value: number) {
-        Guards.uint(value, "value");
-
         // TODO: Option to store as fractional?
         this.setFieldAsUint("TRACKNUMBER", this.trackCount);
         this.setFieldAsUint("TRACKTOTAL", value);
@@ -359,10 +354,8 @@ export default class XiphComment extends Tag {
     }
     /** @inheritDoc via `DISCNUMBER` field */
     public set disc(value: number) {
-        Guards.uint(value, "value");
-
         // TODO: Option to store as fractional?
-        this.setFieldAsUint("DISCTOTAL", this.trackCount);
+        this.setFieldAsUint("DISCTOTAL", this.discCount);
         this.setFieldAsUint("DISCNUMBER", value);
     }
 
@@ -370,14 +363,14 @@ export default class XiphComment extends Tag {
      * @inheritDoc via `DISCTOTAL` as per standard, but the denominator of `DISCNUMBER` is also
      *     used if `DISCTOTAL` is not available.
      */
-    public get trackCount(): number {
+    public get discCount(): number {
         let text = this.getFieldFirstValue("DISCTOTAL");
         if (text) {
             const parsedValue = Number.parseInt(text, 10);
             if (!Number.isNaN(parsedValue)) { return parsedValue; }
         }
 
-        text = this.getFieldFirstValue("TRACKNUMBER");
+        text = this.getFieldFirstValue("DISCTOTAL");
         if (text) {
             const textSplit = text.split("/");
             if (textSplit.length > 1) {
@@ -391,19 +384,379 @@ export default class XiphComment extends Tag {
         return 0;
     }
     /**
-     * @inheritDoc via `TRACKNUMBER` field
+     * @inheritDoc via `DISCTOTAL` field
      */
-    public set trackCount(value: number) {
-        Guards.uint(value, "value");
-
+    public set discCount(value: number) {
         // TODO: Option to store as fractional?
-        this.setFieldAsUint("TRACKNUMBER", this.trackCount);
-        this.setFieldAsUint("TRACKTOTAL", value);
+        this.setFieldAsUint("DISCNUMBER", this.discCount);
+        this.setFieldAsUint("DISCTOTAL", value);
     }
+
+    /**
+     * @inheritDoc via `LYRICS` field
+     */
+    public get lyrics(): string { return this.getFieldFirstValue("LYRICS"); }
+    /**
+     * @inheritDoc via `LYRICS` field
+     */
+    public set lyrics(value: string) { this.setFieldAsStrings("LYRICS", value); }
+
+    /**
+     * @inheritDoc via `GROUPING` field
+     */
+    public get grouping(): string { return this.getFieldFirstValue("GROUPING"); }
+    /**
+     * @inheritDoc via `GROUPING` field
+     */
+    public set grouping(value: string) { this.setFieldAsStrings("GROUPING", value); }
+
+    /**
+     * @inheritDoc via `TEMPO` field preferentially, BPM field is used as a fallback.
+     * @remarks The field that stores the value will be used when setting a BPM in the future. This
+     *     behavior can be controlled via {@link StoreBeatsPerMinuteAsTempo}.
+     */
+    public get beatsPerMinute(): number {
+        this._saveBeatsPerMinuteAsTempo = true;
+
+        let text = this.getFieldFirstValue("TEMPO");
+        if (!text) {
+            text = this.getFieldFirstValue("BPM");
+
+            if (text) {
+                // BPM was stored as BPM. Make sure we use that going forward
+                this._saveBeatsPerMinuteAsTempo = false;
+            }
+        }
+
+        if (!text) {
+            return 0;
+        }
+
+        const parsedNumber = Number.parseInt(text, 10);
+        return Number.isNaN(parsedNumber) ? 0 : parsedNumber;
+    }
+    /**
+     * @inheritDoc
+     * @remarks Value is stored via `TEMPO` field if {@link StoreBeatsPerMinuteAsTempo} is `true`.
+     *     Value is stored via `BPM` if {@link StoreBeatsPerMinuteAsTempo} is `false`. The other
+     *     field is removed when stored.
+     */
+    public set beatsPerMinute(value: number) {
+        if (this._saveBeatsPerMinuteAsTempo) {
+            this.setFieldAsUint("TEMPO", value);
+            this.removeField("BPM");
+        } else {
+            this.setFieldAsUint("BPM", value);
+            this.removeField("TEMPO");
+        }
+    }
+
+    /**
+     * @inheritDoc via `CONDUCTOR` field
+     */
+    public get conductor(): string { return this.getFieldFirstValue("CONDUCTOR"); }
+    /**
+     * @inheritDoc via `CONDUCTOR` field
+     */
+    public set conductor(value: string) { this.setFieldAsStrings("CONDUCTOR", value); }
+
+    /**
+     * @inheritDoc via `COPYRIGHT` field
+     */
+    public get copyright(): string { return this.getFieldFirstValue("COPYRIGHT"); }
+    /**
+     * @inheritDoc via `GROUPING` field
+     */
+    public set copyright(value: string) { this.setFieldAsStrings("COPYRIGHT", value); }
+
+    /**
+     * @inheritDoc via `DATETAGGED` field
+     */
+    public get dateTagged(): Date {
+        const text = this.getFieldFirstValue("DATETAGGED");
+        const date = new Date(text);
+        return Number.isNaN(date.getTime()) ? undefined : date;
+    }
+    /**
+     * @inheritDoc via `DATETAGGED` field
+     */
+    public set dateTagged(value: Date) {
+        if (Number.isNaN(value.getTime())) {
+            this.removeField("DATETAGGED");
+        } else {
+            this.setFieldAsStrings("DATETAGGED", value.toISOString());
+        }
+    }
+
+    /**
+     * @inheritDoc via `MUSICBRAINZ_ARTISTID` field
+     */
+    public get musicBrainzArtistId(): string {
+        const artistIds = this.getField("MUSICBRAINZ_ARTISTID");
+        return artistIds.length === 0 ? undefined : artistIds.join("/");
+    }
+    /**
+     * @inheritDoc via `MUSICBRAINZ_ARTISTID` field
+     */
+    public set musicBrainzArtistId(value: string) {
+        if (!value) {
+            this.removeField(value);
+        } else {
+            const artistIds = value.split("/");
+            this.setFieldAsStrings("MUSICBRAINZ_ARTISTID", ... artistIds);
+        }
+    }
+
+    /**
+     * @inheritDoc via `MUSICBRAINZ_RELEASEGROUPID` field
+     */
+    public get musicBrainzReleaseGroupId(): string { return this.getFieldFirstValue("MUSICBRAINZ_RELEASEGROUPID"); }
+    /**
+     * @inheritDoc via `MUSICBRAINZ_RELEASEGROUPID` field
+     */
+    public set musicBrainzReleaseGroupId(value: string) { this.setFieldAsStrings("MUSICBRAINZ_RELEASEGROUPID", value); }
+
+    /**
+     * @inheritDoc via `MUSICBRAINZ_ALBUMID` field
+     */
+    public get musicBrainzReleaseId(): string { return this.getFieldFirstValue("MUSICBRAINZ_ALBUMID"); }
+    /**
+     * @inheritDoc via `MUSICBRAINZ_ALBUMID` field
+     */
+    public set musicBrainzReleaseId(value: string) { this.setFieldAsStrings("MUSICBRAINZ_ALBUMID", value); }
+
+    /**
+     * @inheritDoc via `MUSICBRAINZ_ALBUMARTISTID` field
+     */
+    public get musicBrainzAlbumArtistId(): string {
+        const artistIds = this.getField("MUSICBRAINZ_ALBUMARTISTID");
+        return artistIds.length === 0 ? undefined : artistIds.join("/");
+    }
+    /**
+     * @inheritDoc via `MUSICBRAINZ_ALBUMARTISTID` field
+     */
+    public set musicBrainzAlbumArtistId(value: string) {
+        if (!value) {
+            this.removeField(value);
+        } else {
+            const artistIds = value.split("/");
+            this.setFieldAsStrings("MUSICBRAINZ_ALBUMARTISTID", ... artistIds);
+        }
+    }
+
+    /**
+     * @inheritDoc via `MUSICBRAINZ_TRACKID` field
+     */
+    public get musicBrainzTrackId(): string { return this.getFieldFirstValue("MUSICBRAINZ_TRACKID"); }
+    /**
+     * @inheritDoc via `MUSICBRAINZ_TRACKID` field
+     */
+    public set musicBrainzTrackId(value: string) { this.setFieldAsStrings("MUSICBRAINZ_TRACKID", value); }
+
+    /**
+     * @inheritDoc via `MUSICBRAINZ_DISCID` field
+     */
+    public get musicBrainzDiscId(): string { return this.getFieldFirstValue("MUSICBRAINZ_DISCID"); }
+    /**
+     * @inheritDoc via `MUSICBRAINZ_DISCID` field
+     */
+    public set musicBrainzDiscId(value: string) { this.setFieldAsStrings("MUSICBRAINZ_DISCID", value); }
+
+    /**
+     * @inheritDoc via `MUSICIP_PUID` field
+     */
+    public get musicIpId(): string { return this.getFieldFirstValue("MUSICID_PUID"); }
+    /**
+     * @inheritDoc via `MUSICID_PUID` field
+     */
+    public set musicIpId(value: string) { this.setFieldAsStrings("MUSICID_PUID", value); }
+
+    /**
+     * @inheritDoc via `ASIN` field
+     */
+    public get amazonId(): string { return this.getFieldFirstValue("ASIN"); }
+    /**
+     * @inheritDoc via `ASIN` field
+     */
+    public set amazonId(value: string) { this.setFieldAsStrings("ASIN", value); }
+
+    /**
+     * @inheritDoc via `MUSICBRAINZ_ALBUMSTATUS` field
+     */
+    public get musicBrainzReleaseStatus(): string { return this.getFieldFirstValue("MUSICBRAINZ_ALBUMSTATUS"); }
+    /**
+     * @inheritDoc via `MUSICBRAINZ_ALBUMSTATUS` field
+     */
+    public set musicBrainzReleaseStatus(value: string) { this.setFieldAsStrings("MUSICBRAINZ_ALBUMSTATUS", value); }
+
+    /**
+     * @inheritDoc via `MUSICBRAINZ_ALBUMTYPE` field
+     */
+    public get musicBrainzReleaseType(): string { return this.getFieldFirstValue("MUSICBRAINZ_ALBUMTYPE"); }
+    /**
+     * @inheritDoc via `MUSICBRAINZ_ALBUMTYPE` field
+     */
+    public set musicBrainzReleaseType(value: string) { this.setFieldAsStrings("MUSICBRAINZ_ALBUMTYPE", value); }
+
+    /**
+     * @inheritDoc via `RELEASECOUNTRY` field
+     */
+    public get musicBrainzReleaseCountry(): string { return this.getFieldFirstValue("RELEASECOUNTRY"); }
+    /**
+     * @inheritDoc via `RELEASECOUNTRY` field
+     */
+    public set musicBrainzReleaseCountry(value: string) { this.setFieldAsStrings("RELEASECOUNTRY", value); }
+
+    /**
+     * @inheritDoc
+     */
+    public get pictures(): IPicture[] { return this._pictures; }
+    /**
+     * @inheritDoc
+     */
+    public set pictures(value: IPicture[]) { this._pictures = value; }
+
+    /**
+     * @inheritDoc via `COMPILATION` field
+     */
+    public get isCompilation(): boolean { return this.getFieldFirstValue("COMPILATION") === "1"; }
+    /**
+     * @inheritDoc via `COMPILATION` field
+     */
+    public set isCompilation(value: boolean) {
+        if (value) {
+            this.setFieldAsStrings("COMPILATION", "1");
+        } else {
+            this.removeField("COMPILATION");
+        }
+    }
+
+    /**
+     * @inheritDoc via `REPLAYGAIN_TRACK_GAIN` field
+     */
+    public get replayGainTrackGain(): number {
+        // NOTE: don't forget that falsy parses as NaN and invalid characters after valid float are
+        //     ignored, so even if it ends with db it'll parse correctly
+        const text = this.getFieldFirstValue("REPLAYGAIN_TRACK_GAIN");
+        return Number.parseFloat(text);
+    }
+    /**
+     * @inheritDoc via `REPLAYGAIN_TRACK_GAIN` field
+     */
+    public set replayGainTrackGain(value: number) {
+        if (Number.isNaN(value)) {
+            this.removeField("REPLAYGAIN_TRACK_GAIN");
+        } else {
+            this.setFieldAsStrings("REPLAYGAIN_TRACK_GAIN", `${value.toFixed(2)} db`);
+        }
+    }
+
+    /**
+     * @inheritDoc via `REPLAYGAIN_TRACK_PEAK` field
+     */
+    public get replayGainTrackPeak(): number {
+        const text = this.getFieldFirstValue("REPLAYGAIN_TRACK_PEAK");
+        return Number.parseFloat(text);
+    }
+    /**
+     * @inheritDoc via `REPLAYGAIN_TRACK_PEAK` field
+     */
+    public set replayGainTrackPeak(value: number) {
+        if (Number.isNaN(value)) {
+            this.removeField("REPLAYGAIN_TRACK_PEAK");
+        } else {
+            this.setFieldAsStrings("REPLAYGAIN_TRACK_PEAK", value.toFixed(6));
+        }
+    }
+
+    /**
+     * @inheritDoc via `REPLAYGAIN_ALBUM_GAIN` field
+     */
+    public get replayGainAlbumGain(): number {
+        // NOTE: don't forget that falsy parses as NaN and invalid characters after valid float are
+        //     ignored, so even if it ends with db it'll parse correctly
+        const text = this.getFieldFirstValue("REPLAYGAIN_ALBUM_GAIN");
+        return Number.parseFloat(text);
+    }
+    /**
+     * @inheritDoc via `REPLAYGAIN_ALBUM_GAIN` field
+     */
+    public set replayGainAlbumGain(value: number) {
+        if (Number.isNaN(value)) {
+            this.removeField("REPLAYGAIN_ALBUM_GAIN");
+        } else {
+            this.setFieldAsStrings("REPLAYGAIN_ALBUM_GAIN", `${value.toFixed(2)} db`);
+        }
+    }
+
+    /**
+     * @inheritDoc via `REPLAYGAIN_ALBUM_PEAK` field
+     */
+    public get replayGainAlbumPeak(): number {
+        const text = this.getFieldFirstValue("REPLAYGAIN_ALBUM_PEAK");
+        return Number.parseFloat(text);
+    }
+    /**
+     * @inheritDoc via `REPLAYGAIN_TRACK_PEAK` field
+     */
+    public set replayGainAlbumPeak(value: number) {
+        if (Number.isNaN(value)) {
+            this.removeField("REPLAYGAIN_ALBUM_PEAK");
+        } else {
+            this.setFieldAsStrings("REPLAYGAIN_ALBUM_PEAK", value.toFixed(6));
+        }
+    }
+
+    /**
+     * @inheritDoc via `INITIALKEY` field
+     */
+    public get initialKey(): string { return this.getFieldFirstValue("INITIALKEY"); }
+    /**
+     * @inheritDoc via `INITIALKEY` field
+     */
+    public set initialKey(value: string) { this.setFieldAsStrings("INITIALKEY", value); }
+
+    /**
+     * @inheritDoc via `REMIXEDBY` field
+     */
+    public get remixedBy(): string { return this.getFieldFirstValue("REMIXEDBY"); }
+    /**
+     * @inheritDoc via `REMIXEDBY` field
+     */
+    public set remixedBy(value: string) { this.setFieldAsStrings("REMIXEDBY", value); }
+
+    /**
+     * @inheritDoc via `ORGANIZATION` field
+     */
+    public get publisher(): string { return this.getFieldFirstValue("ORGANIZATION"); }
+    /**
+     * @inheritDoc via `ORGANIZATION` field
+     */
+    public set publisher(value: string) { this.setFieldAsStrings("ORGANIZATION", value); }
+
+    /**
+     * @inheritDoc via `ISRC` field
+     */
+    public get isrc(): string { return this.getFieldFirstValue("ISRC"); }
+    /**
+     * @inheritDoc via `ISRC` field
+     */
+    public set isrc(value: string) { this.setFieldAsStrings("ISRC", value); }
+
+    /**
+     * @inheritDoc
+     */
+    public get isEmpty(): boolean { return this.fieldValueCount === 0; }
 
     // #endregion
 
     // #region Public Methods
+
+    /** @inheritDoc */
+    public clear(): void {
+        Object.keys(this._fields).forEach((k) => delete this._fields[k]);
+        this._pictures.splice(0, this._pictures.length);
+    }
 
     /**
      * Gets the field data for a given field identifier.
