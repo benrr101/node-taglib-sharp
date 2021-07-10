@@ -293,7 +293,7 @@ export default class XiphComment extends Tag {
         }
     }
 
-    /** @inheritDoc via `TRACKNUMBER field */
+    /** @inheritDoc via `TRACKNUMBER` field */
     public get track(): number {
         const text = this.getFieldFirstValue("TRACKNUMBER");
         if (!text) { return 0; }
@@ -318,6 +318,60 @@ export default class XiphComment extends Tag {
      */
     public get trackCount(): number {
         let text = this.getFieldFirstValue("TRACKTOTAL");
+        if (text) {
+            const parsedValue = Number.parseInt(text, 10);
+            if (!Number.isNaN(parsedValue)) { return parsedValue; }
+        }
+
+        text = this.getFieldFirstValue("TRACKNUMBER");
+        if (text) {
+            const textSplit = text.split("/");
+            if (textSplit.length > 1) {
+                const parsedValue = Number.parseInt(text, 10);
+                if (!Number.isNaN(parsedValue)) {
+                    return parsedValue;
+                }
+            }
+        }
+
+        return 0;
+    }
+    /**
+     * @inheritDoc via `TRACKNUMBER` field
+     */
+    public set trackCount(value: number) {
+        Guards.uint(value, "value");
+
+        // TODO: Option to store as fractional?
+        this.setFieldAsUint("TRACKNUMBER", this.trackCount);
+        this.setFieldAsUint("TRACKTOTAL", value);
+    }
+
+    /** @inheritDoc via `DISCNUMBER` field */
+    public get disc(): number {
+        const text = this.getFieldFirstValue("DISCNUMBER");
+        if (!text) { return 0; }
+
+        // Sometimes these are stored as fractional fields like ID3v2 tags
+        const splitText = text.split("/");
+        const parsedText = Number.parseInt(splitText[0], 10);
+        return Number.isNaN(parsedText) ? 0 : parsedText;
+    }
+    /** @inheritDoc via `DISCNUMBER` field */
+    public set disc(value: number) {
+        Guards.uint(value, "value");
+
+        // TODO: Option to store as fractional?
+        this.setFieldAsUint("DISCTOTAL", this.trackCount);
+        this.setFieldAsUint("DISCNUMBER", value);
+    }
+
+    /**
+     * @inheritDoc via `DISCTOTAL` as per standard, but the denominator of `DISCNUMBER` is also
+     *     used if `DISCTOTAL` is not available.
+     */
+    public get trackCount(): number {
+        let text = this.getFieldFirstValue("DISCTOTAL");
         if (text) {
             const parsedValue = Number.parseInt(text, 10);
             if (!Number.isNaN(parsedValue)) { return parsedValue; }
