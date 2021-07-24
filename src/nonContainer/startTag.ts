@@ -47,6 +47,8 @@ export default class StartTag extends CombinedTag {
         return size;
     }
 
+    protected get supportedTagTypes(): TagTypes { return TagTypes.Id3v2 | TagTypes.Ape; }
+
     // #region Public Methods
 
     /**

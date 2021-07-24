@@ -21,7 +21,9 @@ export default class RiffFile extends File {
      */
     public static readonly FILE_IDENTIFIER = ByteVector.fromString("RIFF", undefined, undefined, true);
 
-    private readonly _tag: CombinedTag = new CombinedTag();
+    private readonly _tag: CombinedTag = new CombinedTag(
+        TagTypes.DivX | TagTypes.RiffInfo | TagTypes.MovieId | TagTypes.Id3v2
+    );
     private _divxTag: DivxTag;
     private _id3v2Tag: Id3v2Tag;
     private _infoTag: InfoTag;

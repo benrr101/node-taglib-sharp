@@ -47,6 +47,8 @@ export default class EndTag extends CombinedTag {
         return this._file.length - start;
     }
 
+    protected get supportedTagTypes(): TagTypes { return TagTypes.Id3v1 | TagTypes.Id3v2 | TagTypes.Ape; }
+
     // #region Public Methods
 
     /**

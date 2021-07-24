@@ -55,31 +55,11 @@ export default class NonContainerTag extends CombinedTag {
      */
     public get tagTypes(): TagTypes { return this.startTag.tagTypes | this.endTag.tagTypes; }
 
+    protected get supportedTagTypes(): TagTypes { return TagTypes.Ape | TagTypes.Id3v1 | TagTypes.Id3v2; }
+
     // #endregion
 
     // #region Public Methods
-
-    /**
-     * Gets a tag of a specified type from the current instance.
-     * @param type Type of tag to read
-     * @returns Tag that was found in the current instance. If no matching tag was found,
-     *     `undefined` is returned
-     */
-    public getTag(type: TagTypes): Tag {
-        for (const tag of this.tags) {
-            if (type === TagTypes.Id3v1 && tag.tagTypes === TagTypes.Id3v1) {
-                return tag;
-            }
-            if (type === TagTypes.Id3v2 && tag.tagTypes === TagTypes.Id3v2) {
-                return tag;
-            }
-            if (type === TagTypes.Ape && tag.tagTypes === TagTypes.Ape) {
-                return tag;
-            }
-        }
-
-        return undefined;
-    }
 
     /**
      * Removes a set of tag types from the current instance.

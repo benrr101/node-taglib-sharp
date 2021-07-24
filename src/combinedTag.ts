@@ -2,15 +2,22 @@ import {IPicture} from "./iPicture";
 import {Tag, TagTypes} from "./tag";
 import {Guards} from "./utils";
 
+/**
+ * This class provides a unified way of accessing tag data from multiple tag types.
+ * @internal
+ */
 export default class CombinedTag extends Tag {
     protected _tags: Tag[];
+    private readonly _supportedTagTypes: TagTypes;
 
     /**
      * Constructs and initializes a new instance of {@link CombinedTag}.
+     * @param supportedTagTypes Types of tags that are supported by this instance of the combined tag.
      * @param tags Optionally, a list of tags to combine in the new instance.
      */
-    public constructor(tags?: Tag[]) {
+    public constructor(supportedTagTypes: TagTypes, tags?: Tag[]) {
         super();
+        this._supportedTagTypes = supportedTagTypes;
         this._tags = tags ? tags.slice(0) : [];
     }
 
@@ -605,6 +612,20 @@ export default class CombinedTag extends Tag {
             }
             t.clear();
         }
+    }
+
+    /**
+     * Searches the contained tags in this instance for a tag that matches the type provided.
+     * @param type Type of the tag to search and return. If the type is not supported by the
+     *     combined tag type, `undefined` will be returned.
+     * @returns Tag Tag of the desired type if it is supported and contained in the current
+     *     instance. `undefined` is returned if the type is not supported or is not contained in
+     *     the current instance.
+     */
+    public getTag(type: TagTypes): Tag {
+        return (this._supportedTagTypes & type) !== 0
+            ? this._tags.find((t) => t.tagTypes === type)
+            : undefined;
     }
 
     /**

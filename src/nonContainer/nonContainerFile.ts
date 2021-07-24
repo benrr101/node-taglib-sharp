@@ -2,10 +2,11 @@ import EndTag from "./endTag";
 import NonContainerTag from "./nonContainerTag";
 import Properties from "../properties";
 import StartTag from "./startTag";
-import {File as BaseFile, FileAccessMode, ReadStyle} from "../file";
+import {File, FileAccessMode, ReadStyle} from "../file";
 import {IFileAbstraction} from "../fileAbstraction";
 import {TagTypes} from "../tag";
 
+// @TODO: Fix this comment...
 /**
  * Abstract class that provides tagging and properties for files that contain an indeterminate
  * number of tags at their beginning or end.
@@ -23,7 +24,7 @@ import {TagTypes} from "../tag";
  *    {@link NonContainerFile.readProperties} is called
  * 7. The file is closed
  */
-export default abstract class NonContainerFile extends BaseFile {
+export default abstract class NonContainerFile extends File {
     private _tag: NonContainerTag;
     private _properties: Properties;
 
