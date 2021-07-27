@@ -54,6 +54,10 @@ export default class MovieIdTag extends RiffListTag {
     /** @inheritDoc */
     public get tagTypes(): TagTypes { return TagTypes.MovieId; }
 
+    /** @inheritDoc */
+    // @TODO: Reliably calculate the size of the tag when reading
+    public get sizeOnDisk(): number { return undefined; }
+
     /**
      * @inheritDoc
      * @remarks Implemented via the `TITL` item.

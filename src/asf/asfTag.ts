@@ -91,7 +91,12 @@ export default class AsfTag extends Tag {
 
     // #region Tag Properties
 
+    /** @inheritDoc */
     public get tagTypes(): TagTypes { return TagTypes.Asf; }
+
+    /** @inheritDoc */
+    // @TODO: Reliably calculate size on disk during reading
+    public get sizeOnDisk(): number { return undefined; }
 
     /**
      *  @inheritDoc

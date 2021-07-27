@@ -41,6 +41,15 @@ export default class CombinedTag extends Tag {
     }
 
     /**
+     * @inheritDoc
+     * @remarks Note that tags may not appear contiguously in a file. Access the {@link tags}
+     *     contained in this object to see the size of each tag on the disk.
+     */
+    public get sizeOnDisk(): number {
+        return this._tags.filter((t) => !!t).reduce((totalBytes, t) => totalBytes += t.sizeOnDisk, 0);
+    }
+
+    /**
      * Gets the title for the media described by the current instance.
      * Returns the first non-null/non-undefined value from the child tags.
      */

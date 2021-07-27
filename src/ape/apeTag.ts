@@ -156,6 +156,9 @@ export default class ApeTag extends Tag {
     /** @inheritDoc */
     public get tagTypes(): TagTypes { return TagTypes.Ape; }
 
+    /** @inheritDoc */
+    public get sizeOnDisk(): number { return this._footer.tagSize; }
+
     /** @inheritDoc via Title item */
     public get title(): string { return this.getStringValue("Title"); }
     /** @inheritDoc via Title item */

@@ -55,6 +55,10 @@ export default class InfoTag extends RiffListTag {
     /** @inheritDoc */
     public get tagTypes(): TagTypes { return TagTypes.RiffInfo; }
 
+    /** @inheritDoc */
+    // @TODO: Calculate reliable tag size during read
+    public get sizeOnDisk(): number { return undefined; }
+
     /**
      * @inheritDoc
      * @remarks Implemented via the `INAM` item.

@@ -91,6 +91,9 @@ export default class DivxTag extends Tag {
     public get tagTypes(): TagTypes { return TagTypes.DivX; }
 
     /** @inheritDoc */
+    public get sizeOnDisk(): number { return DivxTag.SIZE; }
+
+    /** @inheritDoc */
     public get title(): string { return this._title || undefined; }
     /** @inheritDoc */
     public set title(value: string) { this._title = value ? value.trim() : ""; }
