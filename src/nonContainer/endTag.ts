@@ -4,6 +4,7 @@ import Id3v2Settings from "../id3v2/id3v2Settings";
 import Id3v1Tag from "../id3v1/id3v1Tag";
 import Id3v2Tag from "../id3v2/id3v2Tag";
 import Id3v2TagFooter from "../id3v2/id3v2TagFooter";
+import TagParser from "../startEndTags/tagParsers";
 import {ApeTagFooter, ApeTagFooterFlags} from "../ape/apeTagFooter";
 import {ByteVector} from "../byteVector";
 import {CorruptFileError} from "../errors";
@@ -20,31 +21,11 @@ import {Guards} from "../utils";
  */
 export default class EndTag extends CombinedTag {
     private readonly _file: File;
-    private readonly _readSize: number = Math.max(
-        ApeTagFooter.size,
-        Id3v2Settings.footerSize,
-        Id3v1Tag.size
-    );
 
     public constructor(file: File) {
         super();
         Guards.truthy(file, "file");
         this._file = file;
-    }
-
-    /**
-     * Gets the total size of the tags located at the end of the file by reading from the file.
-     */
-    public get totalSize(): number {
-        let start = this._file.length;
-        let lastReadTagType = TagTypes.AllTags;
-        while (lastReadTagType !== TagTypes.None) {
-            const readResult = this.readTagInfo(start);
-            lastReadTagType = readResult.tagType;
-            start = readResult.tagStarted;
-        }
-
-        return this._file.length - start;
     }
 
     // #region Public Methods
@@ -93,28 +74,6 @@ export default class EndTag extends CombinedTag {
     }
 
     /**
-     * Reads the tags stored at the end of the file into the current instance.
-     * @returns number Seek position in the file at which the read tags begin
-     */
-    public read(style: ReadStyle): number {
-        this.clearTags();
-
-        let start = this._file.length;
-        let tag: Tag;
-        do {
-            const readResult = this.readTag(start, style);
-            tag = readResult.tag;
-            start = readResult.tagStarted;
-
-            if (tag) {
-                this.insertTag(0, tag);
-            }
-        } while (tag);
-
-        return start;
-    }
-
-    /**
      * Removes a set of tag types from the current instance.
      * @param types Tag types to be removed from the file. To remove all tags, use
      *     {@link TagTypes.AllTags}
@@ -154,99 +113,79 @@ export default class EndTag extends CombinedTag {
      * the seek position at which the media ends.
      */
     public write(): number {
-        const totalSize = this.totalSize;
         const data = this.render();
-        this._file.insert(data, this._file.length - totalSize, totalSize);
+        this._file.insert(data, this._file.length - this.sizeOnDisk, this.sizeOnDisk);
         return this._file.length - data.length;
     }
 
     // #endregion
 
-    // #region Private Methods
+    /**
+     * Reads the tags stored at the end of the file into the current instance.
+     * @returns number Seek position in the file at which the tags begin and the media contents end
+     */
+    protected read(style: ReadStyle): number {
+        this.clearTags();
 
-    private readTag(end: number, style: ReadStyle): {tagStarted: number, tag: Tag} {
-        let start = end;
-
-        const readResult = this.readTagInfo(start);
-        start = readResult.tagStarted;
-
-        let tag: Tag;
-        try {
-            switch (readResult.tagType) {
-                case TagTypes.Ape:
-                    tag = ApeTag.fromFile(this._file, readResult.tagStarted);
-                    break;
-                case TagTypes.Id3v2:
-                    tag = Id3v2Tag.fromFile(this._file, readResult.tagStarted, style);
-                    break;
-                case TagTypes.Id3v1:
-                    tag = Id3v1Tag.fromFile(this._file, readResult.tagStarted);
-                    break;
-            }
-
-            end = start;
-        } catch (e) {
-            if (!CorruptFileError.errorIs(e)) {
-                throw e;
-            }
+        const parser = new EndTagParser(this._file, style);
+        while (parser.read()) {
+            this.insertTag(0, parser.currentTag);
         }
 
-        return {
-            tag: tag,
-            tagStarted: end
-        };
+        return parser.currentOffset;
+    }
+}
+
+/**
+ * Class for parsing sequential tags at the end of the file.
+ * @internal
+ */
+class EndTagParser extends TagParser {
+    // Size of the block to read when looking for a tag footer, this must be large enough to
+    // contain the largest footer identifier (a the time of writing, this is ID3v1)
+    private static readonly readSize = Math.max(
+        ApeTagFooter.size,
+        Id3v2Settings.footerSize,
+        Id3v1Tag.size
+    );
+    private static readonly identifierMappings = [
+        {
+            action: (f: File, p: number, rs: ReadStyle) => ApeTag.fromFile(f, p),
+            identifier: ApeTagFooter.fileIdentifier,
+            offset: ApeTagFooter.size,
+        },
+        {
+            action: (f: File, p: number, rs: ReadStyle) => Id3v2Tag.fromFile(f, p, rs),
+            identifier: Id3v2TagFooter.fileIdentifier,
+            offset: Id3v2Settings.footerSize
+        },
+        {
+            action: (f: File, p: number, rs: ReadStyle) => Id3v1Tag.fromFile(f, p),
+            identifier: Id3v1Tag.fileIdentifier,
+            offset: Id3v1Tag.size
+        }
+    ];
+
+    public constructor(file: File, readStyle: ReadStyle) {
+        super(file, readStyle);
+        this._fileOffset = this._file.length - EndTagParser.readSize;
     }
 
-    private readTagInfo(position: number): {tagStarted: number, tagType: TagTypes} {
-        if (position - this._readSize < 0) {
-            return {
-                tagStarted: position,
-                tagType: TagTypes.None
-            };
-        }
-
-        this._file.seek(position - this._readSize);
-        const data = this._file.readBlock(this._readSize);
-
+    public read(): boolean {
         try {
-            let offset = data.length - ApeTagFooter.size;
-            if (data.containsAt (ApeTagFooter.fileIdentifier, offset)) {
-                const footer = ApeTagFooter.fromData(data.mid(offset));
+            // Read a footer from the file
+            this._file.seek(this._fileOffset);
+            const tagFooterBlock = this._file.readBlock(EndTagParser.readSize);
 
-                // If the complete tag size is zero or the tag is a header, this indicates some
-                // sort of corruption.
-                if (footer.tagSize === 0 || (footer.flags & ApeTagFooterFlags.IsHeader) !== 0) {
-                    return {
-                        tagStarted: position,
-                        tagType: TagTypes.None
-                    };
+            // Check for any identifiers of a tag
+            for (const mapping of EndTagParser.identifierMappings) {
+                // Calculate how far from the end of the block to check
+                const offset = tagFooterBlock.length - mapping.offset;
+                if (tagFooterBlock.containsAt(mapping.identifier, offset)) {
+                    this._currentTag = mapping.action(this._file, offset, this._readStyle);
+                    // TODO: Calculate offset...
+                    return true;
                 }
-
-                position -= footer.tagSize;
-                return {
-                    tagStarted: position,
-                    tagType: TagTypes.Ape
-                };
-            }
-
-            // Try to find ID3v2 footer
-            offset = data.length - Id3v2Settings.footerSize;
-            if (data.containsAt(Id3v2TagFooter.fileIdentifier, offset)) {
-                const footer = Id3v2TagFooter.fromData(data.mid(offset));
-                position -= footer.completeTagSize;
-                return {
-                    tagStarted: position,
-                    tagType: TagTypes.Id3v2
-                };
-            }
-
-            // Try to find ID3v1 footer
-            if (data.startsWith(Id3v1Tag.fileIdentifier)) {
-                position -= Id3v1Tag.size;
-                return {
-                    tagStarted: position,
-                    tagType: TagTypes.Id3v1
-                };
             }
         } catch (e) {
             if (!CorruptFileError.errorIs(e)) {
@@ -254,11 +193,6 @@ export default class EndTag extends CombinedTag {
             }
         }
 
-        return {
-            tagStarted: position,
-            tagType: TagTypes.None
-        };
+        return false;
     }
-
-    // #endregion
 }

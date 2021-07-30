@@ -9,6 +9,7 @@ import {File, ReadStyle} from "../file";
 import {Id3v2TagHeader} from "../id3v2/id3v2TagHeader";
 import {Tag, TagTypes} from "../tag";
 import {Guards} from "../utils";
+import TagParser from "../startEndTags/tagParsers";
 
 /**
  * Provides support for accessing and modifying a collection of tags appearing at the start of a
@@ -18,7 +19,6 @@ import {Guards} from "../utils";
  */
 export default class StartTag extends CombinedTag {
     private readonly _file: File;
-    private readonly _readSize = Math.max(ApeTagFooter.size, Id3v2Settings.headerSize);
 
     /**
      * Constructs a new instance for a specified file.
@@ -29,22 +29,6 @@ export default class StartTag extends CombinedTag {
 
         Guards.truthy(file, "file");
         this._file = file;
-    }
-
-    /**
-     * Gets the total size of the tags located at the beginning of the file by reading from
-     * the file.
-     */
-    public get totalSize(): number {
-        let size = 0;
-        let lastReadTagType = TagTypes.AllTags;
-        while (lastReadTagType !== TagTypes.None) {
-            const readResult = this.readTagInfo(size);
-            lastReadTagType = readResult.tagType;
-            size = readResult.position;
-        }
-
-        return size;
     }
 
     // #region Public Methods
@@ -77,29 +61,6 @@ export default class StartTag extends CombinedTag {
         }
 
         return tag;
-    }
-
-    /**
-     * Reads the tags stored at the start of the file into the current instance.
-     * @returns Seek position in the file at which the read tags end. This also marks where the
-     *     media begins.
-     */
-    public read(style: ReadStyle): number {
-        this.clearTags();
-
-        let end = 0;
-        let tag: Tag;
-        do {
-            const readResult = this.readTag(end, style);
-            tag = readResult.tag;
-            end = readResult.start;
-
-            if (tag) {
-                this.addTagInternal(tag);
-            }
-        } while (tag);
-
-        return end;
     }
 
     /**
@@ -141,57 +102,69 @@ export default class StartTag extends CombinedTag {
      */
     public write(): number {
         const data = this.render();
-        this._file.insert(data, 0, this.totalSize);
+        this._file.insert(data, 0, this.sizeOnDisk);
         return data.length;
     }
 
     // #endregion
 
-    // #region Protected/Private Methods
+    /**
+     * Reads the tags stored at the start of the file into the current instance.
+     * @returns Seek position in the file at which the read tags end. This also marks where the
+     *     media begins.
+     */
+    protected read(style: ReadStyle): number {
+        this.clearTags();
 
-    private readTag(start: number, style: ReadStyle): {start: number, tag: Tag} {
-        const readResult = this.readTagInfo(start);
-        const end = readResult.position;
-        let tag: Tag;
-
-        switch (readResult.tagType) {
-            case TagTypes.Ape:
-                tag = ApeTag.fromFile(this._file, start);
-                break;
-            case TagTypes.Id3v2:
-                tag = Id3v2Tag.fromFile(this._file, start, style);
-                break;
+        const parser = new StartTagParser(this._file, style);
+        while (parser.read()) {
+            this.addTagInternal(parser.currentTag);
         }
 
-        start = end;
-        return {
-            start: start,
-            tag: tag
-        };
+        return parser.currentOffset;
+    }
+}
+
+/**
+ * Class for parsing sequential tags at the beginning of the file.
+ * @internal
+ */
+class StartTagParser extends TagParser {
+    // Size of the block to read when looking for a tag header, this must be large to contain the
+    // largest header identifier (at the time of writing, this is APE).
+    private static readonly readSize = Math.max(
+        ApeTagFooter.size,
+        Id3v2Settings.headerSize
+    );
+    private static readonly identifierMappings = [
+        {
+            action: (f: File, p: number, rs: ReadStyle) => ApeTag.fromFile(f, p),
+            identifier: ApeTagFooter.fileIdentifier,
+        },
+        {
+            action: (f: File, p: number, rs: ReadStyle) => Id3v2Tag.fromFile(f, p, rs),
+            identifier: Id3v2TagHeader.fileIdentifier
+        }
+    ];
+
+    public constructor(file: File, readStyle: ReadStyle) {
+        super(file, readStyle);
+        this._fileOffset = 0;
     }
 
-    private readTagInfo(position: number): {position: number, tagType: TagTypes} {
-        this._file.seek(position);
-        const data = this._file.readBlock(this._readSize);
-
+    public read(): boolean {
         try {
-            if (data.startsWith(ApeTagFooter.fileIdentifier)) {
-                const footer = ApeTagFooter.fromData(data);
+            // Read a header from the file
+            this._file.seek(this._fileOffset);
+            const tagHeaderBlock = this._file.readBlock(StartTagParser.readSize);
 
-                position += footer.tagSize;
-                return {
-                    position: position,
-                    tagType: TagTypes.Ape
-                };
-            }
-            if (data.startsWith(Id3v2TagHeader.fileIdentifier)) {
-                const header = Id3v2TagHeader.fromData(data);
-
-                position += header.completeTagSize;
-                return {
-                    position: position,
-                    tagType: TagTypes.Id3v2
-                };
+            // Check for any identifier of a tag
+            for (const mapping of StartTagParser.identifierMappings) {
+                if (tagHeaderBlock.startsWith(mapping.identifier)) {
+                    this._currentTag = mapping.action(this._file, this._fileOffset, this._readStyle);
+                    this._fileOffset += this._currentTag.sizeOnDisk;
+                    return true;
+                }
             }
         } catch (e) {
             if (!CorruptFileError.errorIs(e)) {
@@ -199,11 +172,6 @@ export default class StartTag extends CombinedTag {
             }
         }
 
-        return {
-            position: position,
-            tagType: TagTypes.None
-        };
+        return false;
     }
-
-    // #endregion
 }
