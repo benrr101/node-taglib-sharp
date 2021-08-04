@@ -98,7 +98,9 @@ export default class AacAudioHeader implements IAudioCodec {
      * searching through a specified number of bytes.
      * @param file File to search
      * @param position Seek position in `file` in which to start searching
-     * @param length maximum number of bytes to search before aborting. Omit to search entire file
+     * @param length maximum number of bytes to search before aborting. Omit to search entire file.
+     *     Searching the entire file may take a very long time, it is recommended to always use a
+     *     reasonable length here
      * @returns AacAudioHeader Header found or `undefined` if a header could not be found
      */
     public static find(file: File, position: number, length?: number): AacAudioHeader {
