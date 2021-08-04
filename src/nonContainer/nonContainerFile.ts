@@ -2,35 +2,52 @@ import EndTag from "./endTag";
 import NonContainerTag from "./nonContainerTag";
 import Properties from "../properties";
 import StartTag from "./startTag";
-import {File as BaseFile, FileAccessMode, ReadStyle} from "../file";
+import {File, FileAccessMode, ReadStyle} from "../file";
 import {IFileAbstraction} from "../fileAbstraction";
-import {TagTypes} from "../tag";
+import {Tag, TagTypes} from "../tag";
 
 /**
- * Abstract class that provides tagging and properties for files that contain an indeterminate
- * number of tags at their beginning or end.
- * When extending this class, {@link NonContainerFile.readStart},
- *
- * {@link NonContainerFile.readEnd}, and {@link NonContainerFile.readProperties} should be overridden
- * and read the format specific information from the file.
- * The file is read upon construction in the following manner:
- * 1. The file is opened for reading
- * 2. The tags at the start of the file are read
- * 3. {@link NonContainerFile.readStart} is called
- * 4. The tags at the end of the file are read
- * 5. {@link NonContainerFile.readEnd} is called
- * 6. If reading with a style other than {@link ReadStyle.None},
- *    {@link NonContainerFile.readProperties} is called
- * 7. The file is closed
+ * Abstract class that provides tagging and properties for files that can be wrapped with tags at
+ * the beginning or end.
  */
-export default abstract class NonContainerFile extends BaseFile {
-    private _tag: NonContainerTag;
-    private _properties: Properties;
+export default abstract class NonContainerFile extends File {
+    private readonly _properties: Properties;
+    private readonly _tag: NonContainerTag;
+    private _mediaEndPosition: number;
+    private _mediaStartPosition: number;
 
-    protected constructor(fileToRead: IFileAbstraction | string, propertiesStyle: ReadStyle = ReadStyle.Average) {
+    protected constructor(
+        fileToRead: IFileAbstraction | string,
+        readStyle: ReadStyle,
+        defaultTagMappingTable: Map<TagTypes, () => boolean>,
+        defaultTags: TagTypes
+    ) {
         super(fileToRead);
 
-        this.read(propertiesStyle);
+        // Read existing tags and properties
+        this.mode = FileAccessMode.Read;
+        try {
+            this._tag = new NonContainerTag(this, readStyle, defaultTagMappingTable);
+            this._mediaStartPosition = this.startTag.sizeOnDisk;
+            this._mediaEndPosition = this.length - this.endTag.sizeOnDisk;
+            this._properties = this.readProperties(readStyle);
+        } finally {
+            this.mode = FileAccessMode.Closed;
+        }
+
+        // Create the default tags
+        for (const tagType of defaultTagMappingTable.keys()) {
+            if ((defaultTags & tagType) === 0) {
+                // Tag type was not expected to exist
+                continue;
+            }
+
+            // Tag is expected to exist
+            const existingTag = this._tag.getTag(tagType);
+            if (!existingTag) {
+                this._tag.createTag(tagType);
+            }
+        }
     }
 
     // #region Properties
@@ -46,6 +63,16 @@ export default abstract class NonContainerFile extends BaseFile {
     protected get startTag(): StartTag { return this._tag.startTag; }
 
     /**
+     * Gets the position at which the media content of this file ends.
+     */
+    public get mediaEndPosition(): number { return this._mediaEndPosition; }
+
+    /**
+     * Gets the position at which the media content of this file starts.
+     */
+    public get mediaStartPosition(): number { return this._mediaStartPosition; }
+
+    /**
      * Gets an abstract representation of all tags stored in the current instance.
      */
     public get tag(): NonContainerTag { return this._tag; }
@@ -59,16 +86,36 @@ export default abstract class NonContainerFile extends BaseFile {
 
     // #region Public Methods
 
-    /** @inheritDoc BaseFile.save */
+    /** @inheritDoc */
+    public getTag(type: TagTypes, create: boolean): Tag {
+        // Try to get the tag in question
+        const tag = this._tag.getTag(type);
+        if (tag || !create) {
+            return;
+        }
+
+        // Tag could not be found, create one
+        return this._tag.createTag(type);
+    }
+
+    /** @inheritDoc */
     public save(): void {
         this.preSave();
         this.mode = FileAccessMode.Write;
 
         try {
-            const writeResult = this._tag.write();
-            this._invariantStartPosition = writeResult.start;
-            this._invariantEndPosition = writeResult.end;
-            this._tagTypesOnDisk = this.tagTypes;
+            // Render the start tag and store it at the start of the file
+            const startTagBytes = this.startTag.render();
+            this.insert(startTagBytes, 0, this._mediaStartPosition);
+
+            const mediaStartChange = startTagBytes.length - this._mediaStartPosition;
+            this._mediaStartPosition = startTagBytes.length;
+            this._mediaEndPosition += mediaStartChange;
+
+            // Render the end tag and store it at the end of the file
+            const endTagBytes = this.endTag.render();
+            const endBytesToRemove = this.length - this._mediaEndPosition;
+            this.insert(endTagBytes, this._mediaEndPosition, endBytesToRemove);
         } finally {
             this.mode = FileAccessMode.Closed;
         }
@@ -81,78 +128,5 @@ export default abstract class NonContainerFile extends BaseFile {
 
     // #endregion
 
-    // #region Private/Protected Methods
-
-    /**
-     * Reads format specific information at the end of the file.
-     * This method is called by the constructor immediately after the tags at the end of the file
-     * have been read and as such (so the internal seek mechanism is close to the end). It should
-     * be used for reading any content-specific information such as an audio header from the end of
-     * the file.
-     * @param end Seek position at which the media data ends and the tags begin
-     * @param propertiesStyle Level of accuracy to read the media properties or
-     *     {@link ReadStyle.None} to ignore the properties
-     */
-    protected readEnd(end: number, propertiesStyle: ReadStyle): void {
-        /* No-op in base implementation */
-    }
-
-    /**
-     * Reads the audio properties from the file represented by the current instance.
-     * This method is called ONLY IF the file is constructed with a read style other than
-     * {@link ReadStyle.None}, and as such MUST NOT return `undefined`/`null`. It is guaranteed that
-     * {@link readStart} and {@link readEnd} will have been called first and this method should be
-     * strictly used to perform final processing on already read data.
-     * @param start Seek position at which the tags end and the media data begins
-     * @param end Seek position at which the media data ends and the tags begin
-     * @param propertiesStyle Level of accuracy to read the media properties or
-     *     {@link ReadStyle.None} to ignore the properties
-     * @returns Properties Media properties of the file represented by the current instance
-     */
-    protected abstract readProperties(start: number, end: number, propertiesStyle: ReadStyle): Properties;
-
-    /**
-     * Reads format specific information from the start of the file.
-     * This method is called by the constructor immediately after the tags at the start of the
-     * file have been read (so the internal seek mechanism is close to the start). It should be
-     * used for reading any content specific information, such as an audio header from the start of
-     * the file.
-     * @param start Seek position at which the tags end and the media data begins
-     * @param propertiesStyle Level of accuracy to read the media properties or
-     *     {@link ReadStyle.None} to ignore the properties
-     */
-    protected readStart(start: number, propertiesStyle: ReadStyle): void {
-        /* No-op in base implementation */
-    }
-
-    private read(propertiesStyle: ReadStyle): void {
-        this.mode = FileAccessMode.Read;
-
-        try {
-            const startTag = new StartTag(this);
-            const endTag = new EndTag(this);
-            this._tag = new NonContainerTag(startTag, endTag);
-
-            // Read the tags and property data at the beginning of the file
-            this._invariantStartPosition = this._tag.readStart(propertiesStyle);
-            this._tagTypesOnDisk |= this.startTag.tagTypes;
-            this.readStart(this.invariantStartPosition, propertiesStyle);
-
-            // Read the tags and property data at the end of the file
-            this._invariantEndPosition = this.invariantStartPosition === this.length
-                ? this.length
-                : this._tag.readEnd(propertiesStyle);
-            this._tagTypesOnDisk |= this.endTag.tagTypes;
-            this.readEnd(this._invariantEndPosition, propertiesStyle);
-
-            // Read the audio properties
-            this._properties = (propertiesStyle & ReadStyle.Average) !== 0
-                ? this.readProperties(this.invariantStartPosition, this.invariantEndPosition, propertiesStyle)
-                : undefined;
-        } finally {
-            this.mode = FileAccessMode.Closed;
-        }
-    }
-
-    // #endregion
+    protected abstract readProperties(readStyle: ReadStyle): Properties;
 }

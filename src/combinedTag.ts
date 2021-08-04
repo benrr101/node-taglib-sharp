@@ -1,35 +1,39 @@
 import {IPicture} from "./iPicture";
 import {Tag, TagTypes} from "./tag";
 import {Guards} from "./utils";
+import {NotSupportedError} from "./errors";
 
-export default class CombinedTag extends Tag {
-    protected _tags: Tag[];
+export default abstract class CombinedTag extends Tag {
+    private readonly _supportedTagTypes: TagTypes;
+    private readonly _tags: Tag[];
 
     /**
      * Constructs and initializes a new instance of {@link CombinedTag}.
+     * @param supportedTagTypes Type of tags that are supported by this instance of the combined
      * @param tags Optionally, a list of tags to combine in the new instance.
      */
-    public constructor(tags?: Tag[]) {
+    protected constructor(supportedTagTypes: TagTypes, tags?: Tag[]) {
         super();
+        this._supportedTagTypes = supportedTagTypes;
         this._tags = tags ? tags.slice(0) : [];
     }
 
     // #region Properties
 
     /**
-     * Gets the tags combined in the current instance.
+     * Gets all tags contained within the current instance. If the tags within this tag are also
+     * {@link CombinedTag}s, the retrieval will recurse and return a flat list of nested tags.
+     * @remarks Modifications of the returned array will not be retained.
      */
-    public get tags(): Tag[] { return this._tags; }
-    /**
-     * Sets the child tags to combine in the current instance.
-     * @param tags Array of tags to combine
-     */
-    public set tags(tags: Tag[]) {
-        if (!tags) {
-            this._tags = [];
-        } else {
-            this._tags = tags;
-        }
+    public get tags(): Tag[] {
+        return this._tags.reduce<Tag[]>((accum, tag) => {
+            if (tag instanceof CombinedTag) {
+                accum.push(... tag.tags);
+            } else {
+                accum.push(tag);
+            }
+            return accum;
+        }, []);
     }
 
     /**
@@ -46,7 +50,7 @@ export default class CombinedTag extends Tag {
      *     contained in this object to see the size of each tag on the disk.
      */
     public get sizeOnDisk(): number {
-        return this._tags.filter((t) => !!t).reduce((totalBytes, t) => totalBytes += t.sizeOnDisk, 0);
+        return this._tags.filter((t) => !!t).reduce((totalBytes, t) => totalBytes + t.sizeOnDisk, 0);
     }
 
     /**
@@ -608,23 +612,63 @@ export default class CombinedTag extends Tag {
      * Clears all child tags.
      */
     public clear(): void {
-        for (const t of this._tags) {
-            if (!t) {
-                continue;
-            }
-            t.clear();
-        }
+        this._tags.forEach((t) => t.clear());
     }
 
     /**
-     * Sets the child tags to combine in the current instance
-     * @param tags Tags to combine, falsy tags will be ignored
+     * Creates a new instance of the desired tag type and adds it to the current instance. If the
+     * tag type is unsupported in the current context or the tag type already exists, an error will
+     * be thrown.
+     * @param tagType Type of tag to create
+     * @returns Tag The newly created tag
      */
-    public setTags(... tags: Tag[]): void {
-        this._tags.splice(0, tags.length);
+    public abstract createTag(tagType: TagTypes): Tag;
 
-        const truthyTags = tags.filter((t) => !!t);
-        this._tags.push(... truthyTags);
+    /**
+     * Gets a tag of the specified tag type if a matching tag exists in the current instance.
+     * @param tagType Type of tag to retrieve
+     * @returns Tag Tag with specified type, if it exists. `undefined` otherwise.
+     */
+    public getTag(tagType: TagTypes): Tag {
+        // Make sure the tag type can possibly be stored here
+        if ((tagType & this._supportedTagTypes) === 0) {
+            return undefined;
+        }
+
+        // Look for the tag, recurse if necessary
+        for (const tag of this._tags) {
+            if (tag instanceof CombinedTag) {
+                const foundTag = tag.getTag(tagType);
+                if (foundTag) {
+                    return foundTag;
+                }
+            } else {
+                if (tag.tagTypes === tagType) {
+                    return tag;
+                }
+            }
+        }
+
+        return undefined;
+    }
+
+    /**
+     * Remove all tags that match the specified tagTypes. This is performed recursively.
+     * @param tagTypes Types of tags to remove
+     */
+    public removeTags(tagTypes: TagTypes): void {
+        for (let i = this._tags.length - 1; i >= 0; i--) {
+            const tag = this.tags[i];
+
+            const isMatch = (tag.tagTypes & tagTypes) !== 0;
+            if (isMatch) {
+                if (tag instanceof CombinedTag) {
+                    tag.removeTags(tagTypes);
+                } else {
+                    this._tags.splice(i, 1);
+                }
+            }
+        }
     }
 
     // #region Protected/Private Methods
@@ -645,6 +689,21 @@ export default class CombinedTag extends Tag {
         const index = this._tags.indexOf(tag);
         if (index >= 0) {
             this._tags.splice(index, 1);
+        }
+    }
+
+    /**
+     * Verifies if a tag can be added to the current instance. The criteria for validation are:
+     * * A tag of the given tag type does not already exist
+     * * The given tag type is supported by the current instance
+     * @param tagType Tag type that the caller wants to create
+     */
+    protected validateTagCreation(tagType: TagTypes): void {
+        if ((this._supportedTagTypes & tagType) === 0) {
+            throw new NotSupportedError(`Tag of type ${tagType} is not supported on this CombinedTag`);
+        }
+        if ((this.tagTypes & tagType) !== 0) {
+            throw new Error(`Cannot create tag of type ${tagType} because one already exists`);
         }
     }
 

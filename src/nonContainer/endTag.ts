@@ -5,9 +5,9 @@ import Id3v1Tag from "../id3v1/id3v1Tag";
 import Id3v2Tag from "../id3v2/id3v2Tag";
 import Id3v2TagFooter from "../id3v2/id3v2TagFooter";
 import TagParser from "../startEndTags/tagParsers";
-import {ApeTagFooter, ApeTagFooterFlags} from "../ape/apeTagFooter";
+import {ApeTagFooter} from "../ape/apeTagFooter";
 import {ByteVector} from "../byteVector";
-import {CorruptFileError} from "../errors";
+import {CorruptFileError, UnsupportedFormatError} from "../errors";
 import {File, ReadStyle} from "../file";
 import {Id3v2TagHeaderFlags} from "../id3v2/id3v2TagHeader";
 import {Tag, TagTypes} from "../tag";
@@ -20,119 +20,70 @@ import {Guards} from "../utils";
  * but could be used by other classes. It currently supports ID3v1, ID3v2, and APE tags.
  */
 export default class EndTag extends CombinedTag {
-    private readonly _file: File;
+    public static readonly supportedTagTypes: TagTypes = TagTypes.Ape | TagTypes.Id3v1 | TagTypes.Id3v2;
 
-    public constructor(file: File) {
-        super();
+    /**
+     * Constructs and initializes a new instance of an end tab by reading a file from the end until
+     * non-tag contents are found.
+     * @param file File to read the tags from
+     * @param readStyle
+     */
+    public constructor(file: File, readStyle: ReadStyle) {
+        super(EndTag.supportedTagTypes);
+
         Guards.truthy(file, "file");
-        this._file = file;
+        this.read(file, readStyle);
     }
 
     // #region Public Methods
 
-    /**
-     * Adds a tag of a specified type to the current instance, optionally copying values from an
-     * existing type.
-     * Id3v1 tags are added at the end of the current instance, while other tags are added at the
-     * beginning.
-     * @param type Type of the tag to add to the current instance. At the time of this writing,
-     *     this is limited to {@link TagTypes.Ape}, {@link TagTypes.Id3v1}, and {@link TagTypes.Id3v2}
-     * @param copy Tag to copy values from using {@link Tag.copyTo}, or `undefined` if no tag is to
-     *     be copied.
-     * @returns Tag Tag added to the current instance. `undefined` if a tag could not be created.
-     */
-    public addTag(type: TagTypes, copy: Tag): Tag {
+    /** @inheritDoc */
+    public createTag(type: TagTypes): Tag {
+        this.validateTagCreation(type);
+
         let tag: Tag;
-
-        if (type === TagTypes.Id3v1) {
-            tag = Id3v1Tag.fromEmpty();
-        }
-        if (type === TagTypes.Id3v2) {
-            const tag32 = Id3v2Tag.fromEmpty();
-            tag32.version = 4;
-            tag32.flags |= Id3v2TagHeaderFlags.FooterPresent;
-
-            tag = tag32;
-        }
-        if (type === TagTypes.Ape) {
-            tag = ApeTag.fromEmpty();
-        }
-
-        if (tag) {
-            if (copy) {
-                copy.copyTo(tag, true);
-            }
-
-            if (type === TagTypes.Id3v1) {
-                this.addTagInternal(tag);
-            } else {
-                this.insertTag(0, tag);
-            }
+        switch (type) {
+            case TagTypes.Ape:
+                tag = ApeTag.fromEmpty();
+                break;
+            case TagTypes.Id3v1:
+                tag = Id3v1Tag.fromEmpty();
+                break;
+            case TagTypes.Id3v2:
+                // ID3v2 tags must be told to write a footer
+                const id3v2Tag = Id3v2Tag.fromEmpty();
+                // @TODO: have default version be configurable
+                id3v2Tag.version = 4;
+                id3v2Tag.flags |= Id3v2TagHeaderFlags.FooterPresent;
+                tag = id3v2Tag;
+                break;
+            default:
+                throw new UnsupportedFormatError(`Specified tag type ${type} is invalid`);
         }
 
         return tag;
     }
 
     /**
-     * Removes a set of tag types from the current instance.
-     * @param types Tag types to be removed from the file. To remove all tags, use
-     *     {@link TagTypes.AllTags}
-     */
-    public removeTags(types: TagTypes): void {
-        for (let i = this.tags.length - 1; i >= 0; i--) {
-            const tag = this.tags[i];
-            if (types === TagTypes.AllTags || (tag.tagTypes & types) === tag.tagTypes) {
-                this.removeTag(tag);
-            }
-        }
-    }
-
-    /**
-     * Renders the tags contained in the current instance.
-     * The tags are rendered in the order that they are stored.
+     * Renders the tags contained in the current instance. ID3v1 tag always goes at the end.
      * @returns ByteVector Physical representation of the tags stored in the current instance
      */
     public render(): ByteVector {
-        const tagData = this.tags.map((t) => {
-            switch (t.tagTypes) {
-                case TagTypes.Ape:
-                    return (<ApeTag> t).render();
-                case TagTypes.Id3v2:
-                    return (<Id3v2Tag> t).render();
-                case TagTypes.Id3v1:
-                    return (<Id3v1Tag> t).render();
-            }
-        });
-        return ByteVector.concatenate(... tagData);
-    }
-
-    /**
-     * Writes the tags contained in the current instance to the end of the file that created it,
-     * overwriting the existing tags.
-     * @returns number Seek position in the file at which the written tags begin. This also marks
-     * the seek position at which the media ends.
-     */
-    public write(): number {
-        const data = this.render();
-        this._file.insert(data, this._file.length - this.sizeOnDisk, this.sizeOnDisk);
-        return this._file.length - data.length;
+        // Note: by sorting these in reverse order, we ensure that ID3v1 is rendered at the end
+        const tagBytes = this.tags.sort((t1, t2) => t1.tagTypes - t2.tagTypes)
+            .map((t) => (<ApeTag|Id3v1Tag|Id3v2Tag> t).render());
+        return ByteVector.concatenate(... tagBytes);
     }
 
     // #endregion
 
-    /**
-     * Reads the tags stored at the end of the file into the current instance.
-     * @returns number Seek position in the file at which the tags begin and the media contents end
-     */
-    protected read(style: ReadStyle): number {
+    private read(file: File, style: ReadStyle): void {
         this.clearTags();
 
-        const parser = new EndTagParser(this._file, style);
+        const parser = new EndTagParser(file, style);
         while (parser.read()) {
-            this.insertTag(0, parser.currentTag);
+            this.addTagInternal(parser.currentTag);
         }
-
-        return parser.currentOffset;
     }
 }
 
@@ -150,7 +101,7 @@ class EndTagParser extends TagParser {
     );
     private static readonly identifierMappings = [
         {
-            action: (f: File, p: number, rs: ReadStyle) => ApeTag.fromFile(f, p),
+            action: (f: File, p: number, _rs: ReadStyle) => ApeTag.fromFile(f, p),
             identifier: ApeTagFooter.fileIdentifier,
             offset: ApeTagFooter.size,
         },
@@ -183,7 +134,7 @@ class EndTagParser extends TagParser {
                 const offset = tagFooterBlock.length - mapping.offset;
                 if (tagFooterBlock.containsAt(mapping.identifier, offset)) {
                     this._currentTag = mapping.action(this._file, offset, this._readStyle);
-                    // TODO: Calculate offset...
+                    this._fileOffset += EndTagParser.readSize - this._currentTag.sizeOnDisk;
                     return true;
                 }
             }

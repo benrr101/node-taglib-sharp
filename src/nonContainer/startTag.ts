@@ -2,14 +2,14 @@ import ApeTag from "../ape/apeTag";
 import CombinedTag from "../combinedTag";
 import Id3v2Tag from "../id3v2/id3v2Tag";
 import Id3v2Settings from "../id3v2/id3v2Settings";
+import TagParser from "../startEndTags/tagParsers";
 import {ApeTagFooter} from "../ape/apeTagFooter";
 import {ByteVector} from "../byteVector";
-import {CorruptFileError} from "../errors";
+import {CorruptFileError, UnsupportedFormatError} from "../errors";
 import {File, ReadStyle} from "../file";
 import {Id3v2TagHeader} from "../id3v2/id3v2TagHeader";
 import {Tag, TagTypes} from "../tag";
 import {Guards} from "../utils";
-import TagParser from "../startEndTags/tagParsers";
 
 /**
  * Provides support for accessing and modifying a collection of tags appearing at the start of a
@@ -18,63 +18,42 @@ import TagParser from "../startEndTags/tagParsers";
  * file but could be used by other classes. It currently supports ID3v2 and APE tags.
  */
 export default class StartTag extends CombinedTag {
-    private readonly _file: File;
+    public static readonly supportedTagTypes: TagTypes = TagTypes.Ape | TagTypes.Id3v2;
 
     /**
-     * Constructs a new instance for a specified file.
+     * Constructs and initializes a new instance by reading tags from the beginning of the
+     * specified file until non-tag content is found.
      * @param file File on which the new instance will perform its operations
+     * @param readStyle How deeply to read the tag and its properties
      */
-    public constructor(file: File) {
-        super();
-
+    public constructor(file: File, readStyle: ReadStyle) {
+        super(StartTag.supportedTagTypes);
         Guards.truthy(file, "file");
-        this._file = file;
+        this.read(file, readStyle);
     }
 
     // #region Public Methods
 
-    /**
-     * Adds a tag of a specified type to the current instance, optionally copying values from an
-     * existing type.
-     * @param type Type of the tag to add to the current instance. At the time of this writing,
-     *     this is limited to {@link TagTypes.Ape}, {@link TagTypes.Id3v1}, and {@link TagTypes.Id3v2}
-     * @param copy Tag to copy values from using {@link Tag.copyTo}, or `undefined` if no tag is to
-     *     be copied.
-     * @returns Tag Tag added to the current instance. `undefined` if a tag could not be created.
-     */
-    public addTag(type: TagTypes, copy: Tag) {
+    /** @inheritDoc */
+    public createTag(type: TagTypes) {
+        this.validateTagCreation(type);
+
         let tag: Tag;
-
-        if (type === TagTypes.Id3v2) {
-            tag = Id3v2Tag.fromEmpty();
-        } else if (type === TagTypes.Ape) {
-            tag = ApeTag.fromEmpty();
-            (<ApeTag> tag).isHeaderPresent = true;
+        switch (type) {
+            case TagTypes.Id3v2:
+                tag = Id3v2Tag.fromEmpty();
+                break;
+            case TagTypes.Ape:
+                const apeTag = ApeTag.fromEmpty();
+                apeTag.isHeaderPresent = true;
+                tag = apeTag;
+                break;
+            default:
+                throw new UnsupportedFormatError(`Specified tag type ${type} is invalid`);
         }
 
-        if (tag) {
-            if (copy) {
-                copy.copyTo(tag, true);
-            }
-
-            this.addTagInternal(tag);
-        }
-
+        this.addTagInternal(tag);
         return tag;
-    }
-
-    /**
-     * Removes a set of tag types from the current instance.
-     * @param types Tag types to be removed from the file. To remove all tags, use
-     *     {@link TagTypes.AllTags}
-     */
-    public removeTags(types: TagTypes): void {
-        for (let i = this.tags.length - 1; i >= 0; i--) {
-            const tag = this.tags[0];
-            if (types === TagTypes.AllTags || (tag.tagTypes & types) === tag.tagTypes) {
-                this.removeTag(tag);
-            }
-        }
     }
 
     /**
@@ -94,34 +73,18 @@ export default class StartTag extends CombinedTag {
         return ByteVector.concatenate(... tagData);
     }
 
-    /**
-     * Writes the tags contained in the current instance to the beginning of the file that created
-     * it, overwriting the existing tags.
-     * @returns number Seek position in the file at which the written tags end. This also marks the
-     *     seek position at which the media begins.
-     */
-    public write(): number {
-        const data = this.render();
-        this._file.insert(data, 0, this.sizeOnDisk);
-        return data.length;
-    }
-
     // #endregion
 
     /**
      * Reads the tags stored at the start of the file into the current instance.
-     * @returns Seek position in the file at which the read tags end. This also marks where the
-     *     media begins.
      */
-    protected read(style: ReadStyle): number {
+    private read(file: File, style: ReadStyle): void {
         this.clearTags();
 
-        const parser = new StartTagParser(this._file, style);
+        const parser = new StartTagParser(file, style);
         while (parser.read()) {
             this.addTagInternal(parser.currentTag);
         }
-
-        return parser.currentOffset;
     }
 }
 
