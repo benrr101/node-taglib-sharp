@@ -1,8 +1,6 @@
-import RiffListTag from "./riffListTag";
-import {ByteVector} from "../../byteVector";
-import {File} from "../../file";
-import {TagTypes} from "../../tag";
 import RiffList from "./riffList";
+import RiffListTag from "./riffListTag";
+import {TagTypes} from "../tag";
 
 /**
  * Provides support for reading and writing MovieID tags.

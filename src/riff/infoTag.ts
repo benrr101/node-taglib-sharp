@@ -1,12 +1,15 @@
 import RiffList from "./riffList";
 import RiffListTag from "./riffListTag";
-import {TagTypes} from "../../tag";
-import {Guards} from "../../utils";
+import {TagTypes} from "../tag";
+import {Guards} from "../utils";
 
 /**
  * Provides support for reading and writing standard INFO tags.
  */
 export default class InfoTag extends RiffListTag {
+    /**
+     * Type of the list that contains an info tag.
+     */
     public static readonly listType = "INFO";
 
     // #region Constructors

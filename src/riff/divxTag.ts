@@ -5,6 +5,9 @@ import {Genres} from "../index";
 import {Tag, TagTypes} from "../tag";
 import {Guards} from "../utils";
 
+/**
+ * Represents a DivX tag that behaves similar to an ID3v1 tag.
+ */
 export default class DivxTag extends Tag {
     /**
      * FOURCC ID for a DivX tag chunk

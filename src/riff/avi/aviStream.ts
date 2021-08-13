@@ -1,9 +1,9 @@
 import RiffBitmapInfoHeader from "../riffBitmapInfoHeader";
-import RiffList from "../new/riffList";
+import RiffList from "../riffList";
 import RiffWaveFormatEx from "../riffWaveFormatEx";
 import {ICodec} from "../../iCodec";
-import {Guards} from "../../utils";
 import {CorruptFileError} from "../../errors";
+import {Guards} from "../../utils";
 
 export enum AviStreamType {
     /** Audio Stream */
@@ -23,7 +23,7 @@ export enum AviStreamType {
  * Base class representing a stream in an AVI file. Provides basic support for parsing a raw AVI
  * stream list.
  */
-export default class AviStream {
+export class AviStream {
     public static readonly listType = "strl";
     public static readonly headerChunkId = "strh";
     public static readonly formatChunkId = "strf";

@@ -1,8 +1,8 @@
-import {File} from "../../file";
-import {Guards} from "../../utils";
-import {ByteVector} from "../../byteVector";
+import ILazy from "../iLazy";
 import IRiffChunk from "./iRiffChunk";
-import ILazy from "../../iLazy";
+import {ByteVector} from "../byteVector";
+import {File} from "../file";
+import {Guards} from "../utils";
 
 /**
  * Represents a block of data in a RIFF file. Used primarily for reading and writing files.

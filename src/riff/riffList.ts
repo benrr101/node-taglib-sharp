@@ -1,10 +1,13 @@
-import ILazy from "../../iLazy";
+import ILazy from "../iLazy";
 import IRiffChunk from "./iRiffChunk";
-import {ByteVector} from "../../byteVector";
-import {File} from "../../file";
-import {Guards} from "../../utils";
+import {ByteVector} from "../byteVector";
+import {File} from "../file";
+import {Guards} from "../utils";
 
 export default class RiffList implements IRiffChunk, ILazy {
+    /**
+     * FOURCC code for a list chunk
+     */
     public static readonly identifierFourcc = "LIST";
 
     private _chunkStart: number;

@@ -1,11 +1,11 @@
-import AviStream from "./aviStream";
-import RiffList from "../new/riffList";
+import {AviStream} from "./aviStream";
+import RiffList from "../riffList";
 import {CorruptFileError} from "../../errors";
 import {ICodec} from "../../iCodec";
 import {Guards} from "../../utils";
 
 /**
- * This class provides support for reading an AVI header list to extract stream information.
+ * This class represents the headers in an AVI file.
  */
 export default class AviHeader {
     public static readonly headerListType = "hdrl";
@@ -55,10 +55,7 @@ export default class AviHeader {
 
         // Read the streams in the file
         const streamHeaderLists = list.getLists(AviStream.listType);
-        this._streams = streamHeaderLists.map((l) => AviStream.parseStream(l))
-            .filter((s) => !!s);
-
-        // @TODO: Check for null should only be temporary until all stream types are readable
+        this._streams = streamHeaderLists.map((l) => new AviStream(l));
     }
 
     /**
