@@ -7,6 +7,11 @@ import {Guards} from "../utils";
 
 export default class DivxTag extends Tag {
     /**
+     * FOURCC ID for a DivX tag chunk
+     */
+    public static readonly CHUNK_FOURCC = "IDVX";
+
+    /**
      * Identifier used to recognize DivX tags.
      */
     public static readonly FILE_IDENTIFIER = ByteVector.fromString("DIVXTAG", undefined, undefined, true);

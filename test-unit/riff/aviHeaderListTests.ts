@@ -3,8 +3,8 @@ import {suite, test} from "@testdeck/mocha";
 
 import RiffList from "../../src/riff/riffList";
 import TestFile from "../utilities/testFile";
-import {AviHeader, AviHeaderList} from "../../src/riff/aviHeaderList";
-import {AviStream} from "../../src/riff/aviStream";
+import {AviHeader, AviHeaderList} from "../../src/riff/avi/aviHeader";
+import {AviStream} from "../../src/riff/avi/aviStream";
 import {ByteVector} from "../../src/byteVector";
 import {File} from "../../src/file";
 import {ICodec} from "../../src/iCodec";

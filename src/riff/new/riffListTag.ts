@@ -1,7 +1,7 @@
+import RiffList from "./riffList";
 import {ByteVector, StringType} from "../../byteVector";
 import {Tag} from "../../tag";
 import {Guards} from "../../utils";
-import RiffList from "./riffList";
 
 /**
  * Abstract class that provides support for reading/writing tags in the RIFF list format.
@@ -10,7 +10,7 @@ export default abstract class RiffListTag extends Tag {
     // NOTE: Although it would totally make sense for this class to extend RiffList, we can't do
     //    that because multiple inheritance doesn't exist.
 
-    private _list: RiffList;
+    private readonly _list: RiffList;
     private _stringType: StringType = StringType.UTF8;
 
     // #region Constructors
@@ -26,6 +26,13 @@ export default abstract class RiffListTag extends Tag {
 
     /** @inheritDoc */
     public get isEmpty(): boolean { return this._list.valueCount === 0; }
+
+    /**
+     * Gets the {@link RiffList} that backs the data for this tag.
+     * @remarks Tags based on RiffLists are only supposed to support certain fields. Modify at your
+     *     own risk.
+     */
+    public get list(): RiffList { return this._list; }
 
     /**
      * Gets the type of string used for parsing and rendering the contents of this tag.
@@ -120,6 +127,14 @@ export default abstract class RiffListTag extends Tag {
     public setValueFromUint(id: string, value: number): void {
         Guards.uint(value, "value");
         this._list.setValues(id, [ByteVector.fromUInt(value, false)]);
+    }
+
+    /**
+     * Renders the current instance, including list header and padding bytes, ready to be written
+     * to a file.
+     */
+    public render(): ByteVector {
+        return this._list.render();
     }
 
     /**

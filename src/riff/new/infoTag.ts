@@ -1,9 +1,7 @@
+import RiffList from "./riffList";
 import RiffListTag from "./riffListTag";
-import {ByteVector} from "../../byteVector";
-import {File} from "../../file";
 import {TagTypes} from "../../tag";
 import {Guards} from "../../utils";
-import RiffList from "./riffList";
 
 /**
  * Provides support for reading and writing standard INFO tags.
@@ -21,7 +19,7 @@ export default class InfoTag extends RiffListTag {
      * Constructs and initializes a new, empty instance.
      */
     public static fromEmpty(): InfoTag {
-        return new InfoTag(RiffList.fromEmpty());
+        return new InfoTag(RiffList.fromEmpty(InfoTag.listType));
     }
 
     /**

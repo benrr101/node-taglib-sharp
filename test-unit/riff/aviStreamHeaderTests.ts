@@ -1,7 +1,7 @@
 import * as Chai from "chai";
 import {suite, test} from "@testdeck/mocha";
 
-import {AviStreamHeader} from "../../src/riff/aviStreamHeader";
+import {AviStreamHeader} from "../../src/riff/avi/aviStreamHeader";
 import {ByteVector} from "../../src/byteVector";
 import {Testers} from "../utilities/testers";
 

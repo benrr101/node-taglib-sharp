@@ -1,6 +1,6 @@
 import * as Chai from "chai";
 import {suite, test} from "@testdeck/mocha";
-import {AviStream} from "../../src/riff/aviStream";
+import {AviStream} from "../../src/riff/avi/aviStream";
 import {ByteVector} from "../../src/byteVector";
 import {Testers} from "../utilities/testers";
 import {AviStreamType, RiffBitmapInfoHeader, RiffWaveFormatEx} from "../../src";

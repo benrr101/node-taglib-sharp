@@ -2,7 +2,7 @@ import * as Chai from "chai";
 import {suite, test} from "@testdeck/mocha";
 import {Mock} from "typemoq";
 
-import InfoTag from "../../src/riff/infoTag";
+import InfoTag from "../../src/riff/new/infoTag";
 import PropertyTests from "../utilities/propertyTests";
 import TestFile from "../utilities/testFile";
 import {ByteVector, StringType} from "../../src/byteVector";

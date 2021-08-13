@@ -88,11 +88,11 @@ export abstract class File {
 
     protected _fileAbstraction: IFileAbstraction;
     protected _fileStream: IStream; // Not intended to be used by implementing classes
-    protected _invariantEndPosition: number = -1;
-    protected _invariantStartPosition: number = -1;
     protected _tagTypesOnDisk: TagTypes = TagTypes.None;
 
     private _corruptionReasons: string[] = [];
+    private _invariantEndPosition: number = -1;
+    private _invariantStartPosition: number = -1;
     private _mimeType: string;
 
     // #endregion
@@ -181,18 +181,6 @@ export abstract class File {
      * Gets the {@link IFileAbstraction} representing the file.
      */
     public get fileAbstraction(): IFileAbstraction { return this._fileAbstraction; }
-
-    /**
-     * Gets the position at which the invariant (media) portion of the current instance ends. If
-     * the value could not be determined, `-1` is returned;
-     */
-    public get invariantEndPosition(): number { return this._invariantEndPosition; }
-
-    /**
-     * Gets the position at which the invariant (media) portion of the current instance begins. If
-     * the value could not be determined, `-1` is returned.
-     */
-    public get invariantStartPosition(): number { return this._invariantStartPosition; }
 
     /**
      * Indicates whether or not this file may be corrupt. Files with unknown corruptions should not

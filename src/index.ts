@@ -123,16 +123,16 @@ export {
     AviStream,
     AviAudioStream,
     AviVideoStream
-} from "./riff/aviStream";
+} from "./riff/avi/aviStream";
 export {
     AviStreamHeader as AviStreamHeader,
     AviStreamType as AviStreamType
-} from "./riff/aviStreamHeader";
+} from "./riff/avi/aviStreamHeader";
 export {default as DivxTag} from "./riff/divxTag";
-export {default as InfoTag} from "./riff/infoTag";
-export {default as MovieIdTag} from "./riff/movieIdTag";
+export {default as InfoTag} from "./riff/new/infoTag";
+export {default as MovieIdTag} from "./riff/new/movieIdTag";
 export {default as RiffBitmapInfoHeader} from "./riff/riffBitmapInfoHeader";
 export {default as RiffList} from "./riff/riffList";
-export {default as RiffListTag} from "./riff/riffListTag";
+export {default as RiffListTag} from "./riff/new/riffListTag";
 export {default as RiffWaveFormatEx} from "./riff/riffWaveFormatEx";
 

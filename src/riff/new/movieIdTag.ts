@@ -29,7 +29,7 @@ export default class MovieIdTag extends RiffListTag {
      * Constructs and initializes a new, empty instance.
      */
     public static fromEmpty(): MovieIdTag {
-        return new MovieIdTag(RiffList.fromEmpty());
+        return new MovieIdTag(RiffList.fromEmpty(MovieIdTag.listType));
     }
 
     // #endregion

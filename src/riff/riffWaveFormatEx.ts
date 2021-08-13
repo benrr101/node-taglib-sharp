@@ -9,6 +9,8 @@ import {Guards} from "../utils";
  * https://docs.microsoft.com/en-us/previous-versions/dd757713(v=vs.85)
  */
 export default class RiffWaveFormatEx implements ILosslessAudioCodec {
+    public static readonly CHUNK_FOURCC = "fmt ";
+
     // This list was put together from the Windows 10 SDK mmreg.h header file
     // If any of these descriptions are wrong or out of date, please open a PR.
     public static readonly WAVE_FORMAT_TAGS: {[key: number]: string} = {
@@ -290,21 +292,19 @@ export default class RiffWaveFormatEx implements ILosslessAudioCodec {
      * Constructs and initializes a new instance of a RIFF wave format header from the provided
      * data.
      * @param data Byte vector that contains the raw header
-     * @param offset Index into the data byte vector where the header begins
      */
-    public constructor(data: ByteVector, offset: number) {
+    public constructor(data: ByteVector) {
         Guards.truthy(data, "data");
-        Guards.uint(offset, "offset");
-        if (offset + 16 > data.length) {
-            throw new CorruptFileError("Expected 16 bytes");
+        if (data.length < 16) {
+            throw new CorruptFileError("WAVE format data is too short");
         }
 
-        this._formatTag = data.mid(offset, 2).toUShort(false);
-        this._channels = data.mid(offset + 2, 2).toUShort(false);
-        this._samplesPerSecond = data.mid(offset + 4, 4).toUInt(false);
-        this._averageBytesPerSecond = data.mid(offset + 8, 4).toUInt(false);
-        this._blockAlign = data.mid(offset + 12, 2).toUShort(false);
-        this._bitsPerSample = data.mid(offset + 14, 2).toUShort(false);
+        this._formatTag = data.mid(0, 2).toUShort(false);
+        this._channels = data.mid(2, 2).toUShort(false);
+        this._samplesPerSecond = data.mid(4, 4).toUInt(false);
+        this._averageBytesPerSecond = data.mid(8, 4).toUInt(false);
+        this._blockAlign = data.mid(12, 2).toUShort(false);
+        this._bitsPerSample = data.mid(14, 2).toUShort(false);
     }
 
     // #region Properties

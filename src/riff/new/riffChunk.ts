@@ -2,16 +2,19 @@ import {File} from "../../file";
 import {Guards} from "../../utils";
 import {ByteVector} from "../../byteVector";
 import IRiffChunk from "./iRiffChunk";
+import ILazy from "../../iLazy";
 
 /**
  * Represents a block of data in a RIFF file. Used primarily for reading and writing files.
  */
-export default class RiffChunk implements IRiffChunk {
+export default class RiffChunk implements IRiffChunk, ILazy {
     private _chunkStart: number;
-    private _fileDataSize: number;
+    private _data: ByteVector;
     private _file: File;
     private _fourcc: string;
-    private _data: ByteVector;
+    private _originalDataSize: number;
+
+    // #region Constructors
 
     private constructor() {}
 
@@ -34,7 +37,7 @@ export default class RiffChunk implements IRiffChunk {
 
         const chunk = new RiffChunk();
         file.seek(position + 4);
-        chunk._fileDataSize = file.readBlock(4).toUInt();
+        chunk._originalDataSize = file.readBlock(4).toUInt();
         chunk._file = file;
         chunk._fourcc = fourcc;
         chunk._chunkStart = position;
@@ -56,32 +59,74 @@ export default class RiffChunk implements IRiffChunk {
         const chunk = new RiffChunk();
         chunk._data = data;
         chunk._fourcc = fourcc;
+        chunk._originalDataSize = data.length;
         return chunk;
     }
 
-    public get data(): ByteVector {
-        // Load data if we don't already have it
-        if (!this._data) {
-          this._file.seek(this._chunkStart + 8);
-          this._data = this._file.readBlock(this._fileDataSize);
-        }
+    // #endregion
 
+    // #region Properties
+
+    /** @inheritDoc */
+    public get chunkStart(): number|undefined { return this._chunkStart; }
+    /** @internal */
+    public set chunkStart(value: number) {
+        Guards.safeUint(value, "value");
+        this._chunkStart = value;
+    }
+
+    /**
+     * Data contained in the chunk.
+     */
+    public get data(): ByteVector {
+        this.load();
         return this._data;
     }
 
-    public get chunkStart(): number { return this._chunkStart; }
-
+    /** @inheritDoc */
     public get fourcc(): string { return this._fourcc; }
 
-    public get originalTotalSize(): number|undefined {
-        return this._fileDataSize !== undefined && this._fileDataSize !== null
-            ? this._fileDataSize + 8 + (this._fileDataSize % 2 === 1 ? 1 : 0)
-            : undefined;
+    /** @inheritDoc */
+    public get isLoaded(): boolean { return !!this._data; }
+
+    /** @inheritDoc */
+    public get originalTotalSize(): number {
+        return this._originalDataSize + 8 + (this._originalDataSize % 2 === 1 ? 1 : 0);
+    }
+    /** @internal */
+    public set originalTotalSize(value: number) {
+        Guards.safeUint(value, "value");
+        this._originalDataSize = value - 8;
     }
 
+    // #endregion
+
+    // #region Methods
+
+    /** @inheritDoc */
     public render(): ByteVector {
-        return ByteVector.concatenate(
-
+        const data = ByteVector.concatenate(
+            ByteVector.fromString(this._fourcc),
+            ByteVector.fromUInt(this.data.length, false),
+            this._data
         );
+        if (data.length + 4 % 2 === 1) {
+            data.addByte(0x00);
+        }
+
+        return data;
     }
+
+    /** @inheritDoc */
+    public load(): void {
+        if (this.isLoaded) {
+            return;
+        }
+
+        // Read the data from the file
+        this._file.seek(this._chunkStart + 8);
+        this._data = this._file.readBlock(this._originalDataSize);
+    }
+
+    // #endregion
 }
