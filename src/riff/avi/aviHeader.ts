@@ -1,5 +1,5 @@
-import {AviStream} from "./aviStream";
 import RiffList from "../riffList";
+import {AviStream} from "./aviStream";
 import {CorruptFileError} from "../../errors";
 import {ICodec} from "../../iCodec";
 import {Guards} from "../../utils";
@@ -8,8 +8,17 @@ import {Guards} from "../../utils";
  * This class represents the headers in an AVI file.
  */
 export default class AviHeader {
+    /**
+     * ID of the chunk in the header list that contains the header data.
+     */
+    public static readonly headerChunkId = "avih";
+
+    /**
+     * Type of the list that stores an AVI header
+     */
     public static readonly headerListType = "hdrl";
 
+    private readonly _codecs: ICodec[];
     private readonly _durationMilliseconds: number;
     private readonly _flags: number;
     private readonly _height: number;
@@ -33,12 +42,12 @@ export default class AviHeader {
         }
 
         // Read the main header
-        const mainHeaderValues = list.getValues("avih");
+        const mainHeaderValues = list.getValues(AviHeader.headerChunkId);
         if (mainHeaderValues.length === 0) {
             throw new CorruptFileError("Could not find AVI main header data");
         }
         const mainHeaderData = mainHeaderValues[0];
-        if (mainHeaderData.length !== 40) {
+        if (mainHeaderData.length < 40) {
             throw new CorruptFileError("AVI header is an invalid length");
         }
         this._microsecondsPerFrame = mainHeaderData.mid(0, 4).toUInt(false);
@@ -56,12 +65,13 @@ export default class AviHeader {
         // Read the streams in the file
         const streamHeaderLists = list.getLists(AviStream.listType);
         this._streams = streamHeaderLists.map((l) => new AviStream(l));
+        this._codecs = this._streams.map((s) => s.codec).filter((c) => !!c);
     }
 
     /**
      * Gets the codecs read from the header list.
      */
-    public get codecs(): ICodec[] { return this._streams.map((s) => s.codec); }
+    public get codecs(): ICodec[] { return this._codecs; }
 
     /**
      * Gets the duration of the media in this file, in milliseconds.
@@ -116,6 +126,7 @@ export default class AviHeader {
 
     /**
      * Gets the (supported) streams that were read from the header list.
+     * @remarks Any modifications made to this list will not be reflected.
      */
-    public get streams(): AviStream[] { return this._streams; }
+    public get streams(): AviStream[] { return this._streams.slice(0); }
 }

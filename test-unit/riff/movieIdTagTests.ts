@@ -2,7 +2,7 @@ import * as Chai from "chai";
 import {suite, test} from "@testdeck/mocha";
 import {Mock} from "typemoq";
 
-import MovieIdTag from "../../src/riff/new/movieIdTag";
+import MovieIdTag from "../../src/riff/movieIdTag";
 import PropertyTests from "../utilities/propertyTests";
 import TestFile from "../utilities/testFile";
 import {ByteVector, StringType} from "../../src/byteVector";

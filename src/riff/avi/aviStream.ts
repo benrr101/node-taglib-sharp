@@ -24,9 +24,9 @@ export enum AviStreamType {
  * stream list.
  */
 export class AviStream {
-    public static readonly listType = "strl";
-    public static readonly headerChunkId = "strh";
     public static readonly formatChunkId = "strf";
+    public static readonly headerChunkId = "strh";
+    public static readonly listType = "strl";
 
     private readonly _bottom: number;
     private readonly _codec: ICodec;
@@ -54,7 +54,7 @@ export class AviStream {
     public constructor(list: RiffList) {
         Guards.truthy(list, "list");
         if (list.type !== AviStream.listType) {
-            return undefined;
+            throw new CorruptFileError("Stream header list does not have correct type");
         }
 
         // Parse the stream header
