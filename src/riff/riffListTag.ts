@@ -57,21 +57,6 @@ export default abstract class RiffListTag extends Tag {
     }
 
     /**
-     * Gets the value for a specified item in the current instance as an unsigned integer.
-     * @param id ID of the item for which to get the value
-     */
-    public getValueAsUint(id: string): number {
-        for (const value of this.getValuesAsStrings(id)) {
-            const numberValue = Number.parseInt(value, 10);
-            if (!Number.isNaN(numberValue) && numberValue > 0) {
-                return numberValue;
-            }
-        }
-
-        return 0;
-    }
-
-    /**
      * Gets the values for a specified item in the current instance.
      * @param id ID of the item of which to get the values
      */
@@ -90,6 +75,21 @@ export default abstract class RiffListTag extends Tag {
                 ? value.toString(value.length, this._stringType)
                 : "";
         });
+    }
+
+    /**
+     * Gets the value for a specified item in the current instance as an unsigned integer.
+     * @param id ID of the item for which to get the value
+     */
+    public getValueAsUint(id: string): number {
+        for (const value of this.getValuesAsStrings(id)) {
+            const numberValue = Number.parseInt(value, 10);
+            if (!Number.isNaN(numberValue) && numberValue > 0) {
+                return numberValue;
+            }
+        }
+
+        return 0;
     }
 
     /**
@@ -126,7 +126,7 @@ export default abstract class RiffListTag extends Tag {
      */
     public setValueFromUint(id: string, value: number): void {
         Guards.uint(value, "value");
-        this._list.setValues(id, [ByteVector.fromUInt(value, false)]);
+        this._list.setValues(id, [ByteVector.fromString(value.toString(10))]);
     }
 
     /**

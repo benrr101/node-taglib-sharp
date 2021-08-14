@@ -31,6 +31,7 @@ export default class InfoTag extends RiffListTag {
      * @param list List that contains the contents of the tag
      */
     public static fromList(list: RiffList): InfoTag {
+        Guards.truthy(list, "list");
         return new InfoTag(list);
     }
 
@@ -50,7 +51,7 @@ export default class InfoTag extends RiffListTag {
      * @inheritDoc
      * @remarks Implemented via the `INAM` item.
      */
-    public set title(value: string) { this.setValuesFromStrings("INAM", [value]); }
+    public set title(value: string) { this.setValuesFromStrings("INAM", value ? [value] : undefined); }
 
     /**
      * @inheritDoc
@@ -61,7 +62,7 @@ export default class InfoTag extends RiffListTag {
      * @inheritDoc
      * @remarks Implemented via the `ISBJ` item.
      */
-    public set description(value: string) { this.setValuesFromStrings("ISBJ", [value]); }
+    public set description(value: string) { this.setValuesFromStrings("ISBJ", value ? [value] : undefined); }
 
     /**
      * @inheritDoc
@@ -114,7 +115,7 @@ export default class InfoTag extends RiffListTag {
      * @inheritDoc
      * @remarks Implemented via the `DIRC` item.
      */
-    public set album(value: string) { this.setValuesFromStrings("DIRC", [value]); }
+    public set album(value: string) { this.setValuesFromStrings("DIRC", value ? [value] : undefined); }
 
     /**
      * @inheritDoc
@@ -125,7 +126,7 @@ export default class InfoTag extends RiffListTag {
      * @inheritDoc
      * @remarks Implemented via the `ISBJ` item.
      */
-    public set conductor(value: string) { this.setValuesFromStrings("ICNM", [value]); }
+    public set conductor(value: string) { this.setValuesFromStrings("ICNM", value ? [value] : undefined); }
 
     /**
      * @inheritDoc
@@ -136,7 +137,7 @@ export default class InfoTag extends RiffListTag {
      * @inheritDoc
      * @remarks Implemented via the `ICMT` item.
      */
-    public set comment(value: string) { this.setValuesFromStrings("ICMT", [value]); }
+    public set comment(value: string) { this.setValuesFromStrings("ICMT", value ? [value] : undefined); }
 
     /**
      * @inheritDoc
@@ -200,7 +201,7 @@ export default class InfoTag extends RiffListTag {
      * @inheritDoc
      * @remarks Implemented via the `ICOP` item.
      */
-    public set copyright(value: string) { this.setValuesFromStrings("ICOP", [value]); }
+    public set copyright(value: string) { this.setValuesFromStrings("ICOP", value ? [value] : undefined); }
 
     // #endregion
 }

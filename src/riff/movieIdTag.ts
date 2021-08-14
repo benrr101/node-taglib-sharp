@@ -1,6 +1,7 @@
 import RiffList from "./riffList";
 import RiffListTag from "./riffListTag";
 import {TagTypes} from "../tag";
+import {Guards} from "../utils";
 
 /**
  * Provides support for reading and writing MovieID tags.
@@ -20,6 +21,7 @@ export default class MovieIdTag extends RiffListTag {
      * @param list List that contains the contents of the tag
      */
     public static fromList(list: RiffList): MovieIdTag {
+        Guards.truthy(list, "list");
         return new MovieIdTag(list);
     }
 
@@ -46,7 +48,7 @@ export default class MovieIdTag extends RiffListTag {
      * @inheritDoc
      * @remarks Implemented via the `TITL` item.
      */
-    public set title(value: string) { this.setValuesFromStrings("TITL", [value]); }
+    public set title(value: string) { this.setValuesFromStrings("TITL", value ? [value] : undefined ); }
 
     /**
      * @inheritDoc
@@ -57,10 +59,7 @@ export default class MovieIdTag extends RiffListTag {
      * @inheritDoc
      * @remarks Implemented via the `IART` item.
      */
-    public set performers(value: string[]) {
-        value = value || [];
-        this.setValuesFromStrings("IART", value);
-    }
+    public set performers(value: string[]) { this.setValuesFromStrings("IART", value || []); }
 
     /**
      * @inheritDoc
@@ -71,7 +70,7 @@ export default class MovieIdTag extends RiffListTag {
      * @inheritDoc
      * @remarks Implemented via the `COMM` item.
      */
-    public set comment(value: string) { this.setValuesFromStrings("COMM", [value]); }
+    public set comment(value: string) { this.setValuesFromStrings("COMM", value ? [value] : undefined); }
 
     /**
      * @inheritDoc
@@ -82,10 +81,7 @@ export default class MovieIdTag extends RiffListTag {
      * @inheritDoc
      * @remarks Implemented via the `GENR` item.
      */
-    public set genres(value: string[]) {
-        value = value || [];
-        this.setValuesFromStrings("GENR", value);
-    }
+    public set genres(value: string[]) { this.setValuesFromStrings("GENR", value || []); }
 
     /**
      * @inheritDoc
