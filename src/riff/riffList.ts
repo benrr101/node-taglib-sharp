@@ -142,32 +142,37 @@ export default class RiffList implements IRiffChunk, ILazy {
      *     key does not exist in the instance.
      */
     public getValues(id: string): ByteVector[] {
+        Guards.truthy(id, "id");
+        if (id.length !== 4) {
+            throw new Error("Argument error: ID must be 4 bytes");
+        }
+
         this.load();
         return this._values.get(id) || [];
     }
 
     /** @inheritDoc */
     public load(): void {
-        if (this.isLoaded) {
+        if (this._isLoaded) {
             return;
         }
 
         // Read the raw list from file
         let fileOffset = this._chunkStart + 12;
-        this._file.seek(fileOffset);
-        while (fileOffset + 8 <= this._chunkStart + this._originalDataSize) {
+        while (fileOffset + 8 <= this._chunkStart + this.originalTotalSize) {
             // Read the value
+            this._file.seek(fileOffset);
             const headerBlock = this._file.readBlock(8);
             const id = headerBlock.toString(4);
             const length = headerBlock.mid(4, 4).toUInt(false);
 
             if (id === RiffList.identifierFourcc) {
                 // The element is a list, create a nested riff list from it
-                if (this._lists.get(id) === undefined) {
-                    this._lists.set(id, []);
-                }
                 const nestedList = RiffList.fromFile(this._file, fileOffset);
-                this._lists.get(id).push(nestedList);
+                if (this._lists.get(nestedList.type) === undefined) {
+                    this._lists.set(nestedList.type, []);
+                }
+                this._lists.get(nestedList.type).push(nestedList);
             } else {
                 // The element is just a key-value pair, store it
                 if (this._values.get(id) === undefined) {
@@ -180,6 +185,8 @@ export default class RiffList implements IRiffChunk, ILazy {
             // Increment offset, including padding if necessary
             fileOffset += 8 + length + (length % 2 === 1 ? 1 : 0);
         }
+
+        this._isLoaded = true;
     }
 
     /**
@@ -202,6 +209,11 @@ export default class RiffList implements IRiffChunk, ILazy {
      * @param values Collection of values to store in the current instance
      */
     public setValues(id: string, values: ByteVector[]): void {
+        Guards.truthy(id, "id");
+        if (id.length !== 4) {
+            throw new Error("Argument error: ID must be 4 bytes");
+        }
+
         this.load();
         if (!values || values.length === 0) {
             this._values.delete(id);
