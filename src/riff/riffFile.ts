@@ -19,6 +19,9 @@ import {Tag, TagTypes} from "../tag";
 import {NumberUtils} from "../utils";
 
 export default class RiffFile extends File {
+    /**
+     * Identifier at the beginning of a RIFF file.
+     */
     public static readonly fileIdentifier = ByteVector.fromString("RIFF", undefined, undefined, true);
 
     private readonly _combinedTag: CombinedTag;
@@ -295,6 +298,8 @@ export default class RiffFile extends File {
                 replacedChunk.chunk.originalTotalSize = replacedChunk.newTotalSize;
                 filePosition += replacedChunk.chunk.originalTotalSize;
             }
+
+            // @TODO: UPDATE RIFF SIZE
         } finally {
             this.mode = FileAccessMode.Closed;
         }
@@ -314,6 +319,7 @@ export default class RiffFile extends File {
             // Read chunks until there are less than 8 bytes to read
             let position = this.position;
             while (position + 8 < this.length) {
+                this.seek(position);
                 const fourcc = this.readBlock(4).toString();
                 const chunk = fourcc === RiffList.identifierFourcc
                     ? RiffList.fromFile(this, position)
@@ -360,14 +366,14 @@ export default class RiffFile extends File {
             // Process tags
             // 1) DivX
             this._divxChunkIndex = this._rawChunks.findIndex((c) => c.fourcc === DivxTag.CHUNK_FOURCC);
-            if (this._divxChunkIndex !== undefined) {
+            if (this._divxChunkIndex >= 0) {
                 this._divxTag = DivxTag.fromData((<RiffChunk> this._rawChunks[this._divxChunkIndex]).data);
             }
 
             // 2) ID3v2
             const id3v2ChunkFourcc = ["id3 ", "ID3 ", "ID32"];
             this._id3v2ChunkIndex = this._rawChunks.findIndex((c) => id3v2ChunkFourcc.indexOf(c.fourcc) >= 0);
-            if (this._id3v2ChunkIndex !== undefined) {
+            if (this._id3v2ChunkIndex >= 0) {
                 // @TODO: Switch to fromFile and using chunk start/data length to allow lazy picture loading
                 this._id3v2Tag = Id3v2Tag.fromData((<RiffChunk> this._rawChunks[this._id3v2ChunkIndex]).data);
             }
@@ -377,7 +383,7 @@ export default class RiffFile extends File {
                 return c.fourcc === RiffList.identifierFourcc
                     && (<RiffList> c).type === InfoTag.listType;
             });
-            if (this._infoTagListIndex !== undefined) {
+            if (this._infoTagListIndex >= 0) {
                 this._infoTag = InfoTag.fromList(<RiffList> this._rawChunks[this._infoTagListIndex]);
             }
 
@@ -386,7 +392,7 @@ export default class RiffFile extends File {
                 return c.fourcc === RiffList.identifierFourcc
                     && (<RiffList> c).type === MovieIdTag.listType;
             });
-            if (this._movidIdListIndex !== undefined) {
+            if (this._movidIdListIndex >= 0) {
                 this._movieIdTag = MovieIdTag.fromList(<RiffList> this._rawChunks[this._movidIdListIndex]);
             }
 

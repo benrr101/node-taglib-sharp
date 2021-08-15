@@ -3,6 +3,7 @@ import {suite, test} from "@testdeck/mocha";
 
 import RiffBitmapInfoHeader from "../../src/riff/riffBitmapInfoHeader";
 import RiffList from "../../src/riff/riffList";
+import {default as Resources} from "./resources";
 import {AviStream, AviStreamType} from "../../src/riff/avi/aviStream";
 import {ByteVector} from "../../src/byteVector";
 import {Testers} from "../utilities/testers";
@@ -91,7 +92,7 @@ const assert = Chai.assert;
     public constructor_midiStream() {
         // Arrange
         const list = RiffList.fromEmpty("strl");
-        list.setValues("strh", [Riff_AviStreamTest.getStreamHeaderData(AviStreamType.MIDI_STREAM)]);
+        list.setValues("strh", [Resources.getAviStreamHeaderData(AviStreamType.MIDI_STREAM)]);
         list.setValues("strf", [ByteVector.empty()]);
 
         // Act
@@ -107,7 +108,7 @@ const assert = Chai.assert;
     public constructor_textStream() {
         // Arrange
         const list = RiffList.fromEmpty("strl");
-        list.setValues("strh", [Riff_AviStreamTest.getStreamHeaderData(AviStreamType.TEXT_STREAM)]);
+        list.setValues("strh", [Resources.getAviStreamHeaderData(AviStreamType.TEXT_STREAM)]);
         list.setValues("strf", [ByteVector.empty()]);
 
         // Act
@@ -123,7 +124,7 @@ const assert = Chai.assert;
     public constructor_audioStream() {
         // Arrange
         const list = RiffList.fromEmpty("strl");
-        list.setValues("strh", [Riff_AviStreamTest.getStreamHeaderData(AviStreamType.AUDIO_STREAM)]);
+        list.setValues("strh", [Resources.getAviStreamHeaderData(AviStreamType.AUDIO_STREAM)]);
         list.setValues("strf", [ByteVector.concatenate(
             ByteVector.fromUShort(0xBBBB),
             ByteVector.fromSize(14)
@@ -145,7 +146,7 @@ const assert = Chai.assert;
     public constructor_videoStream() {
         // Arrange
         const list = RiffList.fromEmpty("strl");
-        list.setValues("strh", [Riff_AviStreamTest.getStreamHeaderData(AviStreamType.VIDEO_STREAM)]);
+        list.setValues("strh", [Resources.getAviStreamHeaderData(AviStreamType.VIDEO_STREAM)]);
         list.setValues("strf", [ByteVector.concatenate(
             ByteVector.fromSize(16),
             ByteVector.fromString("fooo"),
@@ -162,28 +163,6 @@ const assert = Chai.assert;
         assert.isOk(stream.codec);
         assert.instanceOf(stream.codec, RiffBitmapInfoHeader);
         assert.isTrue((<RiffBitmapInfoHeader> stream.codec).description.indexOf("[fooo]") >= 0);
-    }
-
-    private static getStreamHeaderData(type: AviStreamType) {
-        return ByteVector.concatenate(
-            ByteVector.fromUInt(type, false), // type
-            ByteVector.fromUInt(0x23456789, false), // handler
-            ByteVector.fromUInt(0x34567890, false), // Flags
-            ByteVector.fromUShort(0x1234, false),   // Priority
-            ByteVector.fromUShort(0x2345, false),   // Language
-            ByteVector.fromUInt(0x45678901, false), // Initial Frames
-            ByteVector.fromUInt(0x56789012, false), // Scale
-            ByteVector.fromUInt(0x67890123, false), // Rate
-            ByteVector.fromUInt(0x78901234, false), // Start
-            ByteVector.fromUInt(0x89012345, false), // Length
-            ByteVector.fromUInt(0x90123456, false), // Suggested Buffer Size
-            ByteVector.fromUInt(0x01234567, false), // Quality
-            ByteVector.fromUInt(0x11234567, false), // Sample size
-            ByteVector.fromUShort(0x3456, false),   // left
-            ByteVector.fromUShort(0x4567, false),   // top
-            ByteVector.fromUShort(0x5678, false),   // right
-            ByteVector.fromUShort(0x6789, false),   // bottom
-        );
     }
 
     private static assertStreamHeaderData(stream: AviStream, type: AviStreamType) {

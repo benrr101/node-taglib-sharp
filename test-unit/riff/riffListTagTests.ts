@@ -1,53 +1,52 @@
-import {test} from "@testdeck/mocha";
-import RiffList from "../../src/riff/riffList";
-import {Testers} from "../utilities/testers";
-import {ByteVector} from "../../src";
+import {suite, test} from "@testdeck/mocha";
+import {assert} from "chai";
 
+import RiffList from "../../src/riff/riffList";
+import RiffListTag from "../../src/riff/riffListTag";
+import {ByteVector, StringType} from "../../src/byteVector";
+import {TagTypes} from "../../src/tag";
+import {Testers} from "../utilities/testers";
+
+@suite
 class Riff_RiffListTagTests {
     @test
     public getValueAsStrings_invalidKey() {
         // Arrange
-        const list = RiffList.fromData(sampleData);
+        const tag = new TestRiffListTag(Riff_RiffListTagTests.getTestList());
 
         // Act / Assert
-        Testers.testTruthy<string>((v) => list.getValuesAsStrings(v));
-        assert.throws(() => list.getValuesAsStrings("FOO"));
-        assert.throws(() => list.getValuesAsStrings("FOOOO"));
+        Testers.testTruthy<string>((v) => tag.getValuesAsStrings(v));
+        assert.throws(() => tag.getValuesAsStrings("FOO"));
+        assert.throws(() => tag.getValuesAsStrings("FOOOO"));
     }
 
     @test
     public getValueAsStrings_keyExists() {
         // Arrange
-        const strData1 = ByteVector.fromString("foobar", StringType.UTF16BE);
-        const strData2 = ByteVector.fromString("fuxbux", StringType.UTF16BE);
-        const data = ByteVector.concatenate(
-            ByteVector.fromString("TXT1"),
-            ByteVector.fromUInt(strData1.length, false),
-            strData1,
-            ByteVector.fromString("TXT1"),
-            ByteVector.fromUInt(strData2.length, false),
-            strData2,
-            ByteVector.fromString("TXT1"),
-            ByteVector.fromUInt(0, false)
-        );
-        const list = RiffList.fromData(data);
+        const list = Riff_RiffListTagTests.getTestList();
+        list.setValues("TXT1", [
+            ByteVector.fromString("foobar", StringType.UTF16BE),
+            ByteVector.fromString("fuxbux", StringType.UTF16BE),
+            ByteVector.empty()
+        ]);
+        const tag = new TestRiffListTag(list);
 
         // Act
-        list.stringType = StringType.UTF16BE;
-        const result = list.getValuesAsStrings("TXT1");
+        tag.stringType = StringType.UTF16BE;
+        const result = tag.getValuesAsStrings("TXT1");
 
         // Assert
-        assert.strictEqual(list.stringType, StringType.UTF16BE);
+        assert.strictEqual(tag.stringType, StringType.UTF16BE);
         assert.sameOrderedMembers(result, ["foobar", "fuxbux", ""]);
     }
 
     @test
     public getValueAsStrings_KeyDoesNotExist() {
         // Arrange
-        const list = RiffList.fromData(sampleData);
+        const tag = new TestRiffListTag(Riff_RiffListTagTests.getTestList());
 
         // Act
-        const result = list.getValuesAsStrings("FOOO");
+        const result = tag.getValuesAsStrings("FOOO");
 
         // Assert
         assert.isOk(result);
@@ -57,21 +56,21 @@ class Riff_RiffListTagTests {
     @test
     public getValueAsUint_invalidKey() {
         // Arrange
-        const list = RiffList.fromData(sampleData);
+        const tag = new TestRiffListTag(Riff_RiffListTagTests.getTestList());
 
         // Act / Assert
-        Testers.testTruthy<string>((v) => list.getValueAsUint(v));
-        assert.throws(() => list.getValueAsUint("FOO"));
-        assert.throws(() => list.getValueAsUint("FOOOO"));
+        Testers.testTruthy<string>((v) => tag.getValueAsUint(v));
+        assert.throws(() => tag.getValueAsUint("FOO"));
+        assert.throws(() => tag.getValueAsUint("FOOOO"));
     }
 
     @test
     public getValueAsUint_keyExists() {
         // Arrange
-        const list = RiffList.fromData(sampleData);
+        const tag = new TestRiffListTag(Riff_RiffListTagTests.getTestList());
 
         // Act
-        const result = list.getValueAsUint("TXT3");
+        const result = tag.getValueAsUint("TXT3");
 
         // Assert
         assert.strictEqual(result, 234);
@@ -80,10 +79,10 @@ class Riff_RiffListTagTests {
     @test
     public getValueAsUint_keyExistsButValueNotNumeric() {
         // Arrange
-        const list = RiffList.fromData(sampleData);
+        const tag = new TestRiffListTag(Riff_RiffListTagTests.getTestList());
 
         // Act
-        const result = list.getValueAsUint("TXT2");
+        const result = tag.getValueAsUint("TXT2");
 
         // Assert
         assert.strictEqual(result, 0);
@@ -92,10 +91,10 @@ class Riff_RiffListTagTests {
     @test
     public getValueAsUint_keyDoesNotExist() {
         // Arrange
-        const list = RiffList.fromData(sampleData);
+        const tag = new TestRiffListTag(Riff_RiffListTagTests.getTestList());
 
         // Act
-        const result = list.getValueAsUint("FOO ");
+        const result = tag.getValueAsUint("FOO ");
 
         // Assert
         assert.strictEqual(result, 0);
@@ -104,148 +103,173 @@ class Riff_RiffListTagTests {
     @test
     public removeValue_invalidKey() {
         // Arrange
-        const list = RiffList.fromData(sampleData);
+        const tag = new TestRiffListTag(Riff_RiffListTagTests.getTestList());
 
         // Act / Assert
-        Testers.testTruthy<string>((v) => list.removeValue(v));
-        assert.throws(() => list.removeValue("FOO"));
-        assert.throws(() => list.removeValue("FOOOO"));
+        Testers.testTruthy<string>((v) => tag.removeValue(v));
+        assert.throws(() => tag.removeValue("FOO"));
+        assert.throws(() => tag.removeValue("FOOOO"));
     }
 
     @test
     public removeValue_keyDoesNotExist() {
         // Arrange
-        const list = RiffList.fromData(sampleData);
+        const tag = new TestRiffListTag(Riff_RiffListTagTests.getTestList());
 
         // Act / Assert
-        list.removeValue("FOO1");
+        tag.removeValue("FOO1");
 
         // Assert
-        assert.strictEqual(list.length, 3);
+        assert.strictEqual(tag.list.valueCount, 3);
     }
 
     @test
     public removeValue_keyExists() {
         // Arrange
-        const list = RiffList.fromData(sampleData);
+        const tag = new TestRiffListTag(Riff_RiffListTagTests.getTestList());
 
         // Act
-        list.removeValue("TXT3");
+        tag.removeValue("TXT3");
 
         // Assert
-        assert.strictEqual(list.length, 2);
-        assert.isTrue(list.containsKey("TXT1"));
-        assert.isTrue(list.containsKey("TXT2"));
+        assert.strictEqual(tag.list.valueCount, 2);
+
+        const result = tag.getValues("TXT3");
+        assert.isOk(result);
+        assert.isEmpty(result);
     }
 
     @test
     public setValueFromUint_invalidKey() {
         // Arrange
-        const list = RiffList.fromData(sampleData);
+        const tag = new TestRiffListTag(Riff_RiffListTagTests.getTestList());
 
         // Act / Assert
-        Testers.testTruthy<string>((v) => list.setValueFromUint(v, 123));
-        assert.throws(() => list.setValueFromUint("FOO", 123));
-        assert.throws(() => list.setValueFromUint("FOOOO", 123));
+        Testers.testTruthy<string>((v) => tag.setValueFromUint(v, 123));
+        assert.throws(() => tag.setValueFromUint("FOO", 123));
+        assert.throws(() => tag.setValueFromUint("FOOOO", 123));
     }
 
     @test
     public setValueFromUint_invalidValues() {
         // Arrange
-        const list = RiffList.fromData(sampleData);
+        const tag = new TestRiffListTag(Riff_RiffListTagTests.getTestList());
 
         // Act / Assert
-        Testers.testUint((v) => list.setValueFromUint("FOOO", v));
+        Testers.testUint((v) => tag.setValueFromUint("FOOO", v));
     }
 
     @test
     public setValueFromUint_keyExists() {
         // Arrange
-        const list = RiffList.fromData(sampleData);
+        const tag = new TestRiffListTag(Riff_RiffListTagTests.getTestList());
 
         // Act
-        list.setValueFromUint("TXT1", 888);
+        tag.setValueFromUint("TXT1", 888);
 
         // Assert
-        assert.strictEqual(list.getValueAsUint("TXT1"), 888);
+        assert.strictEqual(tag.getValueAsUint("TXT1"), 888);
     }
 
     @test
     public setValueFromUint_keyDoesNotExist() {
         // Arrange
-        const list = RiffList.fromData(sampleData);
-        const originalLength = list.length;
+        const tag = new TestRiffListTag(Riff_RiffListTagTests.getTestList());
+        const originalLength = tag.list.valueCount;
 
         // Act
-        list.setValueFromUint("NUM1", 888);
+        tag.setValueFromUint("NUM1", 888);
 
         // Assert
-        assert.strictEqual(list.length, originalLength + 1);
+        assert.strictEqual(tag.list.valueCount, originalLength + 1);
     }
 
     @test
     public setValueFromUint_removesValue() {
         // Arrange
-        const list = RiffList.fromData(sampleData);
-        const originalLength = list.length;
+        const tag = new TestRiffListTag(Riff_RiffListTagTests.getTestList());
+        const originalLength = tag.list.valueCount;
 
         // Act
-        list.setValueFromUint("TXT1", 0);
+        tag.setValueFromUint("TXT1", 0);
 
         // Assert
-        assert.strictEqual(list.length, originalLength - 1);
-        assert.isEmpty(list.getValues("TXT1"));
+        assert.strictEqual(tag.list.valueCount, originalLength - 1);
+        assert.isEmpty(tag.getValues("TXT1"));
     }
 
     @test
     public setValuesFromStrings_invalidKey() {
         // Arrange
-        const list = RiffList.fromData(sampleData);
-        const data = "";
+        const tag = new TestRiffListTag(Riff_RiffListTagTests.getTestList());
+        const data = [""];
 
         // Act / Assert
-        Testers.testTruthy<string>((v) => list.setValuesFromStrings(v, data));
-        assert.throws(() => list.setValuesFromStrings("FOO", data));
-        assert.throws(() => list.setValuesFromStrings("FOOOO", data));
+        Testers.testTruthy<string>((v) => tag.setValuesFromStrings(v, data));
+        assert.throws(() => tag.setValuesFromStrings("FOO", data));
+        assert.throws(() => tag.setValuesFromStrings("FOOOO", data));
     }
 
     @test
     public setValuesFromStrings_keyDoesNotExist() {
         // Arrange
-        const list = RiffList.fromData(sampleData);
-        const originalLength = list.length;
+        const tag = new TestRiffListTag(Riff_RiffListTagTests.getTestList());
+        const originalLength = tag.list.valueCount;
 
         // Act
-        list.setValuesFromStrings("FOOO", "foo", "barbaz");
+        tag.setValuesFromStrings("FOOO", ["foo", "barbaz"]);
 
         // Assert
-        assert.strictEqual(list.length, originalLength + 1);
-        assert.sameOrderedMembers(list.getValuesAsStrings("FOOO"), ["foo", "barbaz"]);
+        assert.strictEqual(tag.list.valueCount, originalLength + 1);
+        assert.sameOrderedMembers(tag.getValuesAsStrings("FOOO"), ["foo", "barbaz"]);
     }
 
     @test
     public setValuesFromStrings_keyExists() {
         // Arrange
-        const list = RiffList.fromData(sampleData);
+        const tag = new TestRiffListTag(Riff_RiffListTagTests.getTestList());
 
         // Act
-        list.setValuesFromStrings("TXT1", "fux", "buxqux");
+        tag.setValuesFromStrings("TXT1", ["fux", "buxqux"]);
 
         // Assert
-        assert.sameOrderedMembers(list.getValuesAsStrings("TXT1"), ["fux", "buxqux"]);
+        assert.sameOrderedMembers(tag.getValuesAsStrings("TXT1"), ["fux", "buxqux"]);
     }
 
     @test
     public setValuesFromStrings_removesValue() {
         // Arrange
-        const list = RiffList.fromData(sampleData);
-        const originalLength = list.length;
+        const tag = new TestRiffListTag(Riff_RiffListTagTests.getTestList());
+        const originalLength = tag.list.valueCount;
 
         // Act
-        list.setValuesFromStrings("TXT1");
+        tag.setValuesFromStrings("TXT1", undefined);
 
         // Assert
-        assert.strictEqual(list.length, originalLength - 1);
-        assert.isEmpty(list.getValues("TXT1"));
+        assert.strictEqual(tag.list.valueCount, originalLength - 1);
+        assert.isEmpty(tag.getValues("TXT1"));
     }
+
+    private static readonly data1 = ByteVector.fromString("foo", undefined, undefined, true);
+    private static readonly data2 = ByteVector.fromString("barbaz", undefined, undefined, true);
+    private static readonly data3 = ByteVector.fromString("buxfux", undefined, undefined, true);
+    private static readonly data4 = ByteVector.fromString("nan", undefined, undefined, false);
+    private static readonly data5 = ByteVector.fromString("234", undefined, undefined, false);
+
+    private static getTestList(): RiffList {
+        const list = RiffList.fromEmpty("TEST");
+        list.setValues("TXT1", [Riff_RiffListTagTests.data1, Riff_RiffListTagTests.data2]);
+        list.setValues("TXT2", [Riff_RiffListTagTests.data3]);
+        list.setValues("TXT3", [Riff_RiffListTagTests.data4, Riff_RiffListTagTests.data5]);
+
+        return list;
+    }
+}
+
+class TestRiffListTag extends RiffListTag {
+    public constructor(list: RiffList) {
+        super(list);
+    }
+
+    public get tagTypes(): TagTypes { return TagTypes.AllTags; }
 }

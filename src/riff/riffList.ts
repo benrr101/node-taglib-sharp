@@ -257,7 +257,7 @@ export default class RiffList implements IRiffChunk, ILazy {
 
         const data = ByteVector.concatenate(
             ByteVector.fromString(RiffList.identifierFourcc),
-            ByteVector.fromUInt(allData.length, false),
+            ByteVector.fromUInt(allData.length + 4, false),
             ByteVector.fromString(this._type),
             allData
         );

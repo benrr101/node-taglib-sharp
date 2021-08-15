@@ -3,6 +3,7 @@ import {suite, test} from "@testdeck/mocha";
 
 import AviHeader from "../../src/riff/avi/aviHeader";
 import RiffList from "../../src/riff/riffList";
+import {default as Resources} from "./resources";
 import {AviStream, AviStreamType} from "../../src/riff/avi/aviStream";
 import {ByteVector} from "../../src/byteVector";
 import {Testers} from "../utilities/testers";
@@ -49,7 +50,7 @@ const assert = Chai.assert;
     public constructor_noStreams() {
         // Arrange
         const list = RiffList.fromEmpty(AviHeader.headerListType);
-        list.setValues(AviHeader.headerChunkId, [Riff_AviHeaderTests.getTestAviHeader()]);
+        list.setValues(AviHeader.headerChunkId, [Resources.getAviHeader()]);
 
         // Act
         const header = new AviHeader(list);
@@ -69,7 +70,7 @@ const assert = Chai.assert;
     public constructor_hasUnsupportedStreams() {
         // Arrange
         const list = RiffList.fromEmpty(AviHeader.headerListType);
-        list.setValues(AviHeader.headerChunkId, [Riff_AviHeaderTests.getTestAviHeader()]);
+        list.setValues(AviHeader.headerChunkId, [Resources.getAviHeader()]);
 
         const header1Data = ByteVector.concatenate(
             ByteVector.fromUInt(AviStreamType.MIDI_STREAM, false),
@@ -109,7 +110,7 @@ const assert = Chai.assert;
     public constructor_hasSupportedStreams() {
         // Arrange
         const list = RiffList.fromEmpty(AviHeader.headerListType);
-        list.setValues(AviHeader.headerChunkId, [Riff_AviHeaderTests.getTestAviHeader()]);
+        list.setValues(AviHeader.headerChunkId, [Resources.getAviHeader()]);
 
         const header1Data = ByteVector.concatenate(
             ByteVector.fromUInt(AviStreamType.AUDIO_STREAM, false),
@@ -146,21 +147,5 @@ const assert = Chai.assert;
         assert.strictEqual(header.suggestedBufferSize, 8901);
         assert.strictEqual(header.totalFrames, 5678);
         assert.strictEqual(header.width, 9012);
-    }
-
-    private static getTestAviHeader(): ByteVector {
-        return ByteVector.concatenate(
-            ByteVector.fromUInt(1234, false), // Microseconds per frame
-            ByteVector.fromUInt(2345, false), // Max bytes per second
-            ByteVector.fromUInt(3456, false), // Padding granularity
-            ByteVector.fromUInt(4567, false), // Flags
-            ByteVector.fromUInt(5678, false), // Total frames
-            ByteVector.fromUInt(6789, false), // Initial frames
-            ByteVector.fromUInt(7890, false), // Streams
-            ByteVector.fromUInt(8901, false), // Suggested buffer size
-            ByteVector.fromUInt(9012, false), // Width
-            ByteVector.fromUInt(123, false), // Height
-            ByteVector.fromSize(16), // Reserved
-        );
     }
 }

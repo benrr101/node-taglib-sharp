@@ -250,8 +250,13 @@ const sampleNestedList = ByteVector.concatenate(
         const result = list.render();
 
         // Assert
+        const expected = ByteVector.concatenate(
+            ByteVector.fromString(RiffList.identifierFourcc),
+            ByteVector.fromUInt(4, false),
+            ByteVector.fromString("fooo")
+        );
         assert.isOk(result);
-        assert.isTrue(result.isEmpty);
+        assert.isTrue(ByteVector.equal(result, expected));
         assert.isTrue(list.isLoaded);
     }
 

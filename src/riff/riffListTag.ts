@@ -115,7 +115,7 @@ export default abstract class RiffListTag extends Tag {
      * @param values Values to store in the specified item
      */
     public setValuesFromStrings(id: string, values: string[]): void {
-        const byteValues = values ? values.map((v) => ByteVector.fromString(v, this._stringType)) : [];
+        const byteValues = values ? values.map((v) => ByteVector.fromString(v, this._stringType)) : undefined;
         this._list.setValues(id, byteValues);
     }
 
@@ -126,7 +126,8 @@ export default abstract class RiffListTag extends Tag {
      */
     public setValueFromUint(id: string, value: number): void {
         Guards.uint(value, "value");
-        this._list.setValues(id, [ByteVector.fromString(value.toString(10))]);
+        const byteValues = value ? [ByteVector.fromString(value.toString(10))] : undefined;
+        this._list.setValues(id, byteValues);
     }
 
     /**

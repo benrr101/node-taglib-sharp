@@ -37,7 +37,7 @@ export default class RiffChunk implements IRiffChunk, ILazy {
 
         const chunk = new RiffChunk();
         file.seek(position + 4);
-        chunk._originalDataSize = file.readBlock(4).toUInt();
+        chunk._originalDataSize = file.readBlock(4).toUInt(false);
         chunk._file = file;
         chunk._fourcc = fourcc;
         chunk._chunkStart = position;

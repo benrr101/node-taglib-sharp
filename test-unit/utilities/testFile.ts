@@ -2,10 +2,12 @@ import * as TypeMoq from "typemoq";
 
 import {ByteVector} from "../../src/byteVector";
 import {File} from "../../src/file";
-import {SeekOrigin} from "../../src/stream";
+import {IStream, SeekOrigin} from "../../src/stream";
+import {IFileAbstraction} from "../../src/fileAbstraction";
+import TestStream from "./testStream";
 
 export default {
-    getFile: (data: ByteVector): File => {
+    getFile(data: ByteVector): File {
         const mockFile = TypeMoq.Mock.ofType<File>();
         let position = 0;
         mockFile.setup((f) => f.length).returns(() => data.length);
@@ -43,5 +45,13 @@ export default {
             });
 
         return mockFile.object;
+    },
+    getFileAbstraction(data: ByteVector): IFileAbstraction {
+        return {
+            name: "test_file",
+            get readStream(): IStream { return new TestStream(data, false); },
+            get writeStream(): IStream { return new TestStream(data, true); },
+            closeStream(stream: IStream): void { stream.close(); }
+        };
     }
 };
