@@ -1,11 +1,9 @@
 import * as Chai from "chai";
 import {suite, test} from "@testdeck/mocha";
-import {Mock} from "typemoq";
 
 import DivxTag from "../../src/riff/divxTag";
-import TestFile from "../utilities/testFile";
+import {default as Resources} from "./resources";
 import {ByteVector} from "../../src/byteVector";
-import {File} from "../../src/file";
 import {TagTypes} from "../../src/tag";
 import {TagTesters, Testers} from "../utilities/testers";
 import PropertyTests from "../utilities/propertyTests";
@@ -55,52 +53,10 @@ const assert = Chai.assert;
     @test
     public fromData_validData() {
         // Arrange
-        const data = Riff_DivxTagTests.getTestTagData(0);
+        const data = Resources.getDivxTagData();
 
         // Act
         const tag = DivxTag.fromData(data);
-
-        // Assert
-        assert.isOk(tag);
-        assert.strictEqual(tag.tagTypes, TagTypes.DivX);
-
-        const expectedProps = {
-            comment: "baz",
-            genres: ["Infomercial"],
-            performers: ["bar", "bux"],
-            title: "foo",
-            year: 2021,
-        };
-        TagTesters.testTagProperties(tag, expectedProps);
-    }
-
-    @test
-    public fromFile_invalidParams() {
-        // Arrange
-        const file = Mock.ofType<File>();
-
-        // Act / Assert
-        Testers.testTruthy<File>((v) => DivxTag.fromFile(v, 0));
-        Testers.testSafeUint((v) => DivxTag.fromFile(file.object, v));
-    }
-
-    @test
-    public fromFile_fileTooShort() {
-        // Arrange
-        const file = TestFile.getFile(ByteVector.fromSize(DivxTag.SIZE));
-
-        // Act / Assert
-        assert.throws(() => DivxTag.fromFile(file, 10));
-    }
-
-    @test
-    public fromFile_validParams() {
-        // Arrange
-        const data = Riff_DivxTagTests.getTestTagData(10);
-        const file = TestFile.getFile(data);
-
-        // Act
-        const tag = DivxTag.fromFile(file, 10);
 
         // Assert
         assert.isOk(tag);
@@ -195,7 +151,7 @@ const assert = Chai.assert;
     @test
     public clear() {
         // Arrange
-        const data = Riff_DivxTagTests.getTestTagData(0);
+        const data = Resources.getDivxTagData();
         const tag = DivxTag.fromData(data);
 
         // Act
@@ -210,7 +166,7 @@ const assert = Chai.assert;
     @test
     public render_hasValues() {
         // Arrange
-        const data = Riff_DivxTagTests.getTestTagData(0);
+        const data = Resources.getDivxTagData();
         const tag = DivxTag.fromData(data);
 
         // Act
@@ -235,19 +191,5 @@ const assert = Chai.assert;
             DivxTag.FILE_IDENTIFIER
         );
         assert.isTrue(ByteVector.equal(result, expected));
-    }
-
-    private static getTestTagData(padding: number) {
-        return ByteVector.concatenate(
-            ByteVector.fromSize(padding),
-            ByteVector.fromString("foo                             "),
-            ByteVector.fromString("bar;bux                     "),
-            ByteVector.fromString("2021"),
-            ByteVector.fromString("baz                                             "),
-            ByteVector.fromString("22 "),
-            ByteVector.fromSize(6),
-            DivxTag.FILE_IDENTIFIER,
-            ByteVector.fromSize(padding)
-        );
     }
 }

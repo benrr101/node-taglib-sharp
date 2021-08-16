@@ -69,28 +69,6 @@ export default class DivxTag extends Tag {
         return new DivxTag();
     }
 
-    /**
-     * Constructs and initializes a new instance by reading the contents of the tag from a
-     * specified position in the provided file.
-     * @param file File containing the tag
-     * @param position Index into the file where the tag starts. Must be a safe, unsigned integer
-     */
-    public static fromFile(file: File, position: number): DivxTag {
-        Guards.truthy(file, "file");
-        Guards.safeUint(position, "position");
-
-        // Move to location where tag starts
-        file.mode = FileAccessMode.Read;
-        if (position > file.length - DivxTag.SIZE) {
-            throw new Error("Argument out of range: position must be within size of file");
-        }
-        file.seek(position);
-
-        // Read the tag -- always 128 bytes
-        const data = file.readBlock(DivxTag.SIZE);
-        return DivxTag.fromData(data);
-    }
-
     // #endregion
 
     // #region Properties

@@ -104,20 +104,6 @@ export default class RiffChunk implements IRiffChunk, ILazy {
     // #region Methods
 
     /** @inheritDoc */
-    public render(): ByteVector {
-        const data = ByteVector.concatenate(
-            ByteVector.fromString(this._fourcc),
-            ByteVector.fromUInt(this.data.length, false),
-            this._data
-        );
-        if (data.length + 4 % 2 === 1) {
-            data.addByte(0x00);
-        }
-
-        return data;
-    }
-
-    /** @inheritDoc */
     public load(): void {
         if (this.isLoaded) {
             return;
@@ -126,6 +112,20 @@ export default class RiffChunk implements IRiffChunk, ILazy {
         // Read the data from the file
         this._file.seek(this._chunkStart + 8);
         this._data = this._file.readBlock(this._originalDataSize);
+    }
+
+    /** @inheritDoc */
+    public render(): ByteVector {
+        const data = ByteVector.concatenate(
+            ByteVector.fromString(this._fourcc),
+            ByteVector.fromUInt(this.data.length, false),
+            this._data
+        );
+        if ((data.length + 4) % 2 === 1) {
+            data.addByte(0x00);
+        }
+
+        return data;
     }
 
     // #endregion

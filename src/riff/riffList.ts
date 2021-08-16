@@ -1,7 +1,7 @@
 import ILazy from "../iLazy";
 import IRiffChunk from "./iRiffChunk";
 import {ByteVector} from "../byteVector";
-import {File} from "../file";
+import {File, FileAccessMode} from "../file";
 import {Guards} from "../utils";
 
 export default class RiffList implements IRiffChunk, ILazy {
@@ -158,35 +158,41 @@ export default class RiffList implements IRiffChunk, ILazy {
         }
 
         // Read the raw list from file
-        let fileOffset = this._chunkStart + 12;
-        while (fileOffset + 8 <= this._chunkStart + this.originalTotalSize) {
-            // Read the value
-            this._file.seek(fileOffset);
-            const headerBlock = this._file.readBlock(8);
-            const id = headerBlock.toString(4);
-            const length = headerBlock.mid(4, 4).toUInt(false);
+        const lastMode = this._file.mode;
+        this._file.mode = FileAccessMode.Read;
+        try {
+            let fileOffset = this._chunkStart + 12;
+            while (fileOffset + 8 <= this._chunkStart + this.originalTotalSize) {
+                // Read the value
+                this._file.seek(fileOffset);
+                const headerBlock = this._file.readBlock(8);
+                const id = headerBlock.toString(4);
+                const length = headerBlock.mid(4, 4).toUInt(false);
 
-            if (id === RiffList.identifierFourcc) {
-                // The element is a list, create a nested riff list from it
-                const nestedList = RiffList.fromFile(this._file, fileOffset);
-                if (this._lists.get(nestedList.type) === undefined) {
-                    this._lists.set(nestedList.type, []);
+                if (id === RiffList.identifierFourcc) {
+                    // The element is a list, create a nested riff list from it
+                    const nestedList = RiffList.fromFile(this._file, fileOffset);
+                    if (this._lists.get(nestedList.type) === undefined) {
+                        this._lists.set(nestedList.type, []);
+                    }
+                    this._lists.get(nestedList.type).push(nestedList);
+                } else {
+                    // The element is just a key-value pair, store it
+                    if (this._values.get(id) === undefined) {
+                        this._values.set(id, []);
+                    }
+                    const valueBlock = this._file.readBlock(length);
+                    this._values.get(id).push(valueBlock);
                 }
-                this._lists.get(nestedList.type).push(nestedList);
-            } else {
-                // The element is just a key-value pair, store it
-                if (this._values.get(id) === undefined) {
-                    this._values.set(id, []);
-                }
-                const valueBlock = this._file.readBlock(length);
-                this._values.get(id).push(valueBlock);
+
+                // Increment offset, including padding if necessary
+                fileOffset += 8 + length + (length % 2 === 1 ? 1 : 0);
             }
 
-            // Increment offset, including padding if necessary
-            fileOffset += 8 + length + (length % 2 === 1 ? 1 : 0);
+            this._isLoaded = true;
+        } finally {
+            this._file.mode = lastMode;
         }
-
-        this._isLoaded = true;
     }
 
     /**

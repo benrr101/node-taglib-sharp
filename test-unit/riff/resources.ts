@@ -2,13 +2,24 @@ import AviHeader from "../../src/riff/avi/aviHeader";
 import RiffList from "../../src/riff/riffList";
 import {AviStream, AviStreamType} from "../../src/riff/avi/aviStream";
 import {ByteVector} from "../../src/byteVector";
+import RiffChunk from "../../src/riff/riffChunk";
+import DivxTag from "../../src/riff/divxTag";
 
 export default {
-    getAviHeaderBlock(streamTypes: AviStreamType[]): ByteVector {
+    getAviHeaderBlock(addStreams: boolean): ByteVector {
         const headerList = RiffList.fromEmpty(AviHeader.headerListType);
         headerList.setValues(AviHeader.headerChunkId, [this.getAviHeader()]);
+        if (!addStreams) {
+            return headerList.render();
+        }
 
         const streamLists = [];
+        const streamTypes = [
+            AviStreamType.AUDIO_STREAM,
+            AviStreamType.VIDEO_STREAM,
+            AviStreamType.MIDI_STREAM,
+            AviStreamType.TEXT_STREAM
+        ];
         for (const streamType of streamTypes) {
             const streamList = RiffList.fromEmpty(AviStream.listType);
             streamList.setValues(AviStream.headerChunkId, [this.getAviStreamHeaderData(streamType)]);
@@ -90,5 +101,20 @@ export default {
             ByteVector.fromUInt(890, false), // Colors used
             ByteVector.fromUInt(1234, false), // Important colors
         );
+    },
+    getDivxTagData() {
+        return ByteVector.concatenate(
+            ByteVector.fromString("foo                             "),
+            ByteVector.fromString("bar;bux                     "),
+            ByteVector.fromString("2021"),
+            ByteVector.fromString("baz                                             "),
+            ByteVector.fromString("22 "),
+            ByteVector.fromSize(6),
+            DivxTag.FILE_IDENTIFIER
+        );
+    },
+    getMoviBlock(): ByteVector {
+        const chunk = RiffChunk.fromData("movi", ByteVector.fromSize(10));
+        return chunk.render();
     }
 };

@@ -359,9 +359,9 @@ export default class RiffFile extends File {
                     default:
                         throw new UnsupportedFormatError("Unsupported RIFF type");
                 }
-            }
 
-            this._properties = new Properties(durationMilliseconds, codecs);
+                this._properties = new Properties(durationMilliseconds, codecs);
+            }
 
             // Process tags
             // 1) DivX
