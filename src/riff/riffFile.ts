@@ -340,9 +340,17 @@ export default class RiffFile extends File {
                             throw new CorruptFileError("WAV file is missing header chunk");
                         }
 
-                        const waveHeader = new RiffWaveFormatEx((<RiffChunk> fmtChunk).data);
+                        const waveHeader = new RiffWaveFormatEx((<RiffChunk> fmtChunk).data, );
                         codecs = [waveHeader];
-                        durationMilliseconds = waveHeader.durationMilliseconds;
+
+                        // Calculate the duration by getting the data chunk size
+                        const dataChunk = this._rawChunks.find((c) => c.fourcc === "data");
+                        if (!dataChunk) {
+                            throw new CorruptFileError("WAV file is missing data chunk");
+                        }
+
+                        durationMilliseconds = dataChunk.originalDataSize * 8
+                            / waveHeader.bitsPerSample / waveHeader.audioSampleRate;
                         break;
 
                     case "AVI ":
@@ -351,6 +359,10 @@ export default class RiffFile extends File {
                             return c.fourcc === RiffList.identifierFourcc
                                 && (<RiffList> c).type === AviHeader.headerListType;
                         });
+                        if (!aviHeaderList) {
+                            throw new CorruptFileError("AVI file is missing header list");
+                        }
+
                         const aviHeader = new AviHeader(<RiffList> aviHeaderList);
                         codecs = aviHeader.codecs;
                         durationMilliseconds = aviHeader.durationMilliseconds;

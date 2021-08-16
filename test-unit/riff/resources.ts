@@ -6,6 +6,16 @@ import RiffChunk from "../../src/riff/riffChunk";
 import DivxTag from "../../src/riff/divxTag";
 
 export default {
+    getAudioFormatBlock(type: number): ByteVector {
+        return ByteVector.concatenate(
+            ByteVector.fromUShort(type, false), // Format tag
+            ByteVector.fromUShort(3, false), // Number of channels
+            ByteVector.fromUInt(1234, false), // Samples per second
+            ByteVector.fromUInt(2345, false), // Average bytes per second
+            ByteVector.fromUShort(88, false), // Block align
+            ByteVector.fromUShort(16, false) // Bits per sample
+        );
+    },
     getAviHeaderBlock(addStreams: boolean): ByteVector {
         const headerList = RiffList.fromEmpty(AviHeader.headerListType);
         headerList.setValues(AviHeader.headerChunkId, [this.getAviHeader()]);
@@ -25,10 +35,10 @@ export default {
             streamList.setValues(AviStream.headerChunkId, [this.getAviStreamHeaderData(streamType)]);
             switch (streamType) {
                 case AviStreamType.AUDIO_STREAM:
-                    streamList.setValues(AviStream.formatChunkId, [this.getAviAudioFormat(0xF1AC)]);
+                    streamList.setValues(AviStream.formatChunkId, [this.getAudioFormatBlock(0xF1AC)]);
                     break;
                 case AviStreamType.VIDEO_STREAM:
-                    streamList.setValues(AviStream.formatChunkId, [this.getAviVideoFormat(0xBBBBBBBB)]);
+                    streamList.setValues(AviStream.formatChunkId, [this.getVideoFormatBlock(0xBBBBBBBB)]);
                     break;
                 case AviStreamType.MIDI_STREAM:
                 case AviStreamType.TEXT_STREAM:
@@ -39,16 +49,6 @@ export default {
         headerList.setLists(AviStream.listType, streamLists);
 
         return headerList.render();
-    },
-    getAviAudioFormat(type: number): ByteVector {
-        return ByteVector.concatenate(
-            ByteVector.fromUShort(type, false), // Format tag
-            ByteVector.fromUShort(3, false), // Number of channels
-            ByteVector.fromUInt(1234, false), // Samples per second
-            ByteVector.fromUInt(2345, false), // Average bytes per second
-            ByteVector.fromUShort(88, false), // Block align
-            ByteVector.fromUShort(16, false) // Bits per sample
-        );
     },
     getAviHeader(): ByteVector {
         return ByteVector.concatenate(
@@ -86,21 +86,9 @@ export default {
             ByteVector.fromUShort(0x6789, false),   // bottom
         );
     },
-    getAviVideoFormat(fourcc: number): ByteVector {
-        return ByteVector.concatenate(
-            ByteVector.fromSize(10), // Offset
-            ByteVector.fromUInt(40, false), // Size of the struct
-            ByteVector.fromUInt(123, false), // Width of image
-            ByteVector.fromUInt(234, false), // Height of image
-            ByteVector.fromUShort(345, false), // Number of planes
-            ByteVector.fromUShort(456, false), // Average bits per pixel
-            ByteVector.fromUInt(fourcc, false), // FOURCC
-            ByteVector.fromUInt(567, false), // Size of the image
-            ByteVector.fromUInt(678, false), // Pixels per meter X
-            ByteVector.fromUInt(789, false), // Pixels per meter Y
-            ByteVector.fromUInt(890, false), // Colors used
-            ByteVector.fromUInt(1234, false), // Important colors
-        );
+    getDataBlock() {
+        const chunk = RiffChunk.fromData("data", ByteVector.fromSize(1000));
+        return chunk.render();
     },
     getDivxTagData() {
         return ByteVector.concatenate(
@@ -116,5 +104,25 @@ export default {
     getMoviBlock(): ByteVector {
         const chunk = RiffChunk.fromData("movi", ByteVector.fromSize(10));
         return chunk.render();
+    },
+    getVideoFormatBlock(fourcc: number): ByteVector {
+        return ByteVector.concatenate(
+            ByteVector.fromSize(10), // Offset
+            ByteVector.fromUInt(40, false), // Size of the struct
+            ByteVector.fromUInt(123, false), // Width of image
+            ByteVector.fromUInt(234, false), // Height of image
+            ByteVector.fromUShort(345, false), // Number of planes
+            ByteVector.fromUShort(456, false), // Average bits per pixel
+            ByteVector.fromUInt(fourcc, false), // FOURCC
+            ByteVector.fromUInt(567, false), // Size of the image
+            ByteVector.fromUInt(678, false), // Pixels per meter X
+            ByteVector.fromUInt(789, false), // Pixels per meter Y
+            ByteVector.fromUInt(890, false), // Colors used
+            ByteVector.fromUInt(1234, false), // Important colors
+        );
+    },
+    getWaveFormatBlock(): ByteVector {
+        const headerChunk = RiffChunk.fromData("fmt ", this.getAudioFormatBlock(0xF1AC));
+        return headerChunk.render();
     }
 };

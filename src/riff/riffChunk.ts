@@ -90,6 +90,9 @@ export default class RiffChunk implements IRiffChunk, ILazy {
     public get isLoaded(): boolean { return !!this._data; }
 
     /** @inheritDoc */
+    public get originalDataSize(): number { return this._originalDataSize; }
+
+    /** @inheritDoc */
     public get originalTotalSize(): number {
         return this._originalDataSize + 8 + (this._originalDataSize % 2 === 1 ? 1 : 0);
     }

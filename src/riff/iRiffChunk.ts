@@ -16,6 +16,12 @@ export default interface IRiffChunk {
     fourcc: string;
 
     /**
+     * Size of just the data contained within the current instance. Does not include the header or
+     * padding byte. This value does not update if contents of the chunk changes.
+     */
+    originalDataSize: number;
+
+    /**
      * Original size of the chunk, including header and padding byte. This value does not update if
      * the contents of the chunk changes.
      */

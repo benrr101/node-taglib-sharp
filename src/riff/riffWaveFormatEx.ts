@@ -294,6 +294,7 @@ export default class RiffWaveFormatEx implements ILosslessAudioCodec {
      * @param data Byte vector that contains the raw header
      */
     public constructor(data: ByteVector) {
+        // @TODO: Pass in data size so we can calculate duration
         Guards.truthy(data, "data");
         if (data.length < 16) {
             throw new CorruptFileError("WAVE format data is too short");

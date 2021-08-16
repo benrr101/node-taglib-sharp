@@ -89,6 +89,9 @@ export default class RiffList implements IRiffChunk, ILazy {
     // @TODO: Just expose the values and lists?
 
     /** @inheritDoc */
+    public get originalDataSize(): number { return this._originalDataSize; }
+
+    /** @inheritDoc */
     public get originalTotalSize(): number {
         return this._originalDataSize + 8 + (this._originalDataSize % 2 === 1 ? 1 : 0);
     }

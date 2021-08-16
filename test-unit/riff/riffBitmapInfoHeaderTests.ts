@@ -30,7 +30,7 @@ const assert = Chai.assert;
     @test
     public constructor_knownFourCC() {
         // Arrange
-        const data = Resources.getAviVideoFormat(0x58564944);
+        const data = Resources.getVideoFormatBlock(0x58564944);
 
         // Act
         const output = new RiffBitmapInfoHeader(data, 10);
@@ -56,7 +56,7 @@ const assert = Chai.assert;
     @test
     public constructor_unknownFourCC() {
         // Arrange
-        const data = Resources.getAviVideoFormat(0x7C7C7C7C);
+        const data = Resources.getVideoFormatBlock(0x7C7C7C7C);
 
         // Act
         const output = new RiffBitmapInfoHeader(data, 10);

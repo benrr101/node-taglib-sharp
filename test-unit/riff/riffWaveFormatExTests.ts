@@ -29,7 +29,7 @@ const assert = Chai.assert;
     @test
     public constructor_knownAudioFormat() {
         // Arrange
-        const data = Resources.getAviAudioFormat(0xF1AC);
+        const data = Resources.getAudioFormatBlock(0xF1AC);
 
         // Act
         const object = new RiffWaveFormatEx(data);
@@ -50,7 +50,7 @@ const assert = Chai.assert;
     @test
     public constructor_unknownAudioFormat() {
         // Arrange
-        const data = Resources.getAviAudioFormat(0xBBBB);
+        const data = Resources.getAudioFormatBlock(0xBBBB);
 
         // Act
         const object = new RiffWaveFormatEx(data);
