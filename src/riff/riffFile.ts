@@ -90,7 +90,7 @@ export default class RiffFile extends File {
                 break;
 
             case TagTypes.RiffInfo:
-                if (!this._infoTag) {
+                if (!this._infoTag && create) {
                     this._infoTag = InfoTag.fromEmpty();
                     this._combinedTag.copyTo(this._infoTag, true);
                 }
@@ -99,7 +99,7 @@ export default class RiffFile extends File {
                 break;
 
             case TagTypes.MovieId:
-                if (!this._movieIdTag) {
+                if (!this._movieIdTag && create) {
                     this._movieIdTag = MovieIdTag.fromEmpty();
                     this._combinedTag.copyTo(this._movieIdTag, true);
                 }
@@ -108,12 +108,12 @@ export default class RiffFile extends File {
                 break;
 
             case TagTypes.DivX:
-                if (!this._divxTag) {
+                if (!this._divxTag && create) {
                     this._divxTag = DivxTag.fromEmpty();
                     this._combinedTag.copyTo(this._divxTag, true);
                 }
 
-                tag = this._movieIdTag;
+                tag = this._divxTag;
                 break;
         }
 

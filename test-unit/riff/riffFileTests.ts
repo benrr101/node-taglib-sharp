@@ -301,6 +301,146 @@ import {Testers} from "../utilities/testers";
     }
 
     @test
+    public getTag_id3v2Exists() {
+        // Arrange
+        const testAbstraction = this.getWaveAllTagsFile();
+        const file = new RiffFile(testAbstraction, ReadStyle.None);
+
+        // Act
+        const tag = file.getTag(TagTypes.Id3v2, false);
+
+        // Assert
+        assert.isOk(tag);
+        assert.isFalse(tag.isEmpty);
+    }
+
+    @test
+    public getTag_id3v2DoesNotExist() {
+        // Arrange
+        const testAbstraction = this.getWaveAllTagsFile();
+        const file = new RiffFile(testAbstraction, ReadStyle.None);
+        file.removeTags(TagTypes.Id3v2);
+
+        // Act 1
+        let tag = file.getTag(TagTypes.Id3v2, false);
+
+        // Assert 1
+        assert.isNotOk(tag);
+
+        // Act 2
+        tag = file.getTag(TagTypes.Id3v2, true);
+
+        // Assert 2
+        assert.isOk(tag);
+        assert.isFalse(tag.isEmpty);
+    }
+
+    @test
+    public getTag_infoTagExists() {
+        // Arrange
+        const testAbstraction = this.getWaveAllTagsFile();
+        const file = new RiffFile(testAbstraction, ReadStyle.None);
+
+        // Act
+        const tag = file.getTag(TagTypes.RiffInfo, false);
+
+        // Assert
+        assert.isOk(tag);
+        assert.isFalse(tag.isEmpty);
+    }
+
+    @test
+    public getTag_infoTagDoesNotExist() {
+        // Arrange
+        const testAbstraction = this.getWaveAllTagsFile();
+        const file = new RiffFile(testAbstraction, ReadStyle.None);
+        file.removeTags(TagTypes.RiffInfo);
+
+        // Act 1
+        let tag = file.getTag(TagTypes.RiffInfo, false);
+
+        // Assert 1
+        assert.isNotOk(tag);
+
+        // Act 2
+        tag = file.getTag(TagTypes.RiffInfo, true);
+
+        // Assert 2
+        assert.isOk(tag);
+        assert.isFalse(tag.isEmpty);
+    }
+
+    @test
+    public getTag_movieIdExists() {
+        // Arrange
+        const testAbstraction = this.getWaveAllTagsFile();
+        const file = new RiffFile(testAbstraction, ReadStyle.None);
+
+        // Act
+        const tag = file.getTag(TagTypes.MovieId, false);
+
+        // Assert
+        assert.isOk(tag);
+        assert.isFalse(tag.isEmpty);
+    }
+
+    @test
+    public getTag_movieIdDoesNotExist() {
+        // Arrange
+        const testAbstraction = this.getWaveAllTagsFile();
+        const file = new RiffFile(testAbstraction, ReadStyle.None);
+        file.removeTags(TagTypes.MovieId);
+
+        // Act 1
+        let tag = file.getTag(TagTypes.MovieId, false);
+
+        // Assert 1
+        assert.isNotOk(tag);
+
+        // Act 2
+        tag = file.getTag(TagTypes.MovieId, true);
+
+        // Assert 2
+        assert.isOk(tag);
+        assert.isFalse(tag.isEmpty);
+    }
+
+    @test
+    public getTag_divxExists() {
+        // Arrange
+        const testAbstraction = this.getWaveAllTagsFile();
+        const file = new RiffFile(testAbstraction, ReadStyle.None);
+
+        // Act
+        const tag = file.getTag(TagTypes.DivX, false);
+
+        // Assert
+        assert.isOk(tag);
+        assert.isFalse(tag.isEmpty);
+    }
+
+    @test
+    public getTag_divxDoesNotExist() {
+        // Arrange
+        const testAbstraction = this.getWaveAllTagsFile();
+        const file = new RiffFile(testAbstraction, ReadStyle.None);
+        file.removeTags(TagTypes.DivX);
+
+        // Act 1
+        let tag = file.getTag(TagTypes.DivX, false);
+
+        // Assert 1
+        assert.isNotOk(tag);
+
+        // Act 2
+        tag = file.getTag(TagTypes.DivX, true);
+
+        // Assert 2
+        assert.isOk(tag);
+        assert.isTrue(tag.isEmpty); // This one is true b/c there isn't overlap with DivX and other tags
+    }
+
+    @test
     public removeTags_tagDoesNotExist() {
         // Arrange
         const dataBytes = ByteVector.concatenate(
@@ -335,17 +475,7 @@ import {Testers} from "../utilities/testers";
     @test
     public removeTags_singleTag() {
         // Arrange
-        const dataBytes = ByteVector.concatenate(
-            ByteVector.fromString("WAVE"),
-            Resources.getWaveFormatBlock(),
-            RiffChunk.fromData(DivxTag.CHUNK_FOURCC, Resources.getDivxTagData()).render(),
-            this.getInfoTagBytes(),
-            Resources.getDataBlock(),
-            this.getId3v2Bytes("id3 "),
-            this.getMovieTagBytes()
-        );
-        const fileBytes = this.getFileBytes(dataBytes);
-        const testAbstraction = TestFile.getFileAbstraction(fileBytes);
+        const testAbstraction = this.getWaveAllTagsFile();
         const file = new RiffFile(testAbstraction, ReadStyle.Average);
 
         // Act
@@ -367,17 +497,7 @@ import {Testers} from "../utilities/testers";
     @test
     public removeTags_allTags() {
         // Arrange
-        const dataBytes = ByteVector.concatenate(
-            ByteVector.fromString("WAVE"),
-            Resources.getWaveFormatBlock(),
-            RiffChunk.fromData(DivxTag.CHUNK_FOURCC, Resources.getDivxTagData()).render(),
-            this.getInfoTagBytes(),
-            Resources.getDataBlock(),
-            this.getId3v2Bytes("id3 "),
-            this.getMovieTagBytes()
-        );
-        const fileBytes = this.getFileBytes(dataBytes);
-        const testAbstraction = TestFile.getFileAbstraction(fileBytes);
+        const testAbstraction = this.getWaveAllTagsFile();
         const file = new RiffFile(testAbstraction, ReadStyle.Average);
 
         // Act
@@ -439,5 +559,19 @@ import {Testers} from "../utilities/testers";
         const movieIdTag = MovieIdTag.fromEmpty();
         movieIdTag.track = 123;
         return movieIdTag.render();
+    }
+
+    private getWaveAllTagsFile(): IFileAbstraction {
+        const dataBytes = ByteVector.concatenate(
+            ByteVector.fromString("WAVE"),
+            Resources.getWaveFormatBlock(),
+            RiffChunk.fromData(DivxTag.CHUNK_FOURCC, Resources.getDivxTagData()).render(),
+            this.getInfoTagBytes(),
+            Resources.getDataBlock(),
+            this.getId3v2Bytes("id3 "),
+            this.getMovieTagBytes()
+        );
+        const fileBytes = this.getFileBytes(dataBytes);
+        return TestFile.getFileAbstraction(fileBytes);
     }
 }
