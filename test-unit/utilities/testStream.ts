@@ -8,8 +8,8 @@ export default class TestStream implements IStream {
     private _data: ByteVector;
     private _position: number;
 
-    public constructor(bytesToReturn: ByteVector, isWritable: boolean) {
-        this._data = ByteVector.fromByteVector(bytesToReturn);
+    public constructor(bytesToReturn: ByteVector, isWritable: boolean, cloneData: boolean = true) {
+        this._data = cloneData ? ByteVector.fromByteVector(bytesToReturn) : bytesToReturn;
         this._position = 0;
         this._isWritable = isWritable;
     }

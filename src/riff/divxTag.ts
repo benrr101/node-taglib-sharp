@@ -1,6 +1,5 @@
 import {ByteVector, StringType} from "../byteVector";
 import {CorruptFileError} from "../errors";
-import {File, FileAccessMode} from "../file";
 import {Genres} from "../index";
 import {Tag, TagTypes} from "../tag";
 import {Guards} from "../utils";

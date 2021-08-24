@@ -86,7 +86,7 @@ export default {
             ByteVector.fromUShort(0x6789, false),   // bottom
         );
     },
-    getDataBlock() {
+    getDataChunk() {
         const chunk = RiffChunk.fromData("data", ByteVector.fromSize(1000));
         return chunk.render();
     },
@@ -101,7 +101,11 @@ export default {
             DivxTag.FILE_IDENTIFIER
         );
     },
-    getMoviBlock(): ByteVector {
+    getJunkChunk(size: number = 1000) {
+        const chunk = RiffChunk.fromData("JUNK", ByteVector.fromSize(size));
+        return chunk.render();
+    },
+    getMoviChunk(): ByteVector {
         const chunk = RiffChunk.fromData("movi", ByteVector.fromSize(10));
         return chunk.render();
     },

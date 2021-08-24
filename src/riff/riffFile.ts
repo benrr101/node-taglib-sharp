@@ -146,14 +146,6 @@ export default class RiffFile extends File {
 
         this.mode = FileAccessMode.Write;
         try {
-            // Determine the boundaries of the tagging chunks
-            const taggingChunkIndexes = [];
-            if (this._divxChunkIndex !== undefined) { taggingChunkIndexes.push(this._divxChunkIndex); }
-            if (this._id3v2ChunkIndex !== undefined) { taggingChunkIndexes.push(this._id3v2ChunkIndex); }
-            if (this._infoTagListIndex !== undefined) { taggingChunkIndexes.push(this._infoTagListIndex); }
-            if (this._movidIdListIndex !== undefined ) { taggingChunkIndexes.push(this._movidIdListIndex); }
-            taggingChunkIndexes.sort();
-
             // Render the tags we have
             const renderedTags = [];
             const replacedChunks: Array<{chunk: IRiffChunk, newTotalSize: number}> = [];
@@ -162,7 +154,7 @@ export default class RiffFile extends File {
                 const id3v2TagBytes = this._id3v2Tag.render();
                 const id3v2TagChunk = RiffChunk.fromData("id3 ", id3v2TagBytes);
                 replacedChunks.push({ chunk: id3v2TagChunk, newTotalSize: id3v2TagBytes.length });
-                renderedTags.push(id3v2TagBytes);
+                renderedTags.push(id3v2TagChunk.render());
             }
             if (this._infoTag) {
                 const infoTagBytes = this._infoTag.render();
@@ -184,7 +176,14 @@ export default class RiffFile extends File {
             }
             const renderedTagBytes = ByteVector.concatenate(... renderedTags);
 
-            // Did the file originally have tags?
+            // Determine the boundaries of the tagging chunks
+            const taggingChunkIndexes = [];
+            if (this._divxChunkIndex >= 0) { taggingChunkIndexes.push(this._divxChunkIndex); }
+            if (this._id3v2ChunkIndex >= 0) { taggingChunkIndexes.push(this._id3v2ChunkIndex); }
+            if (this._infoTagListIndex >= 0) { taggingChunkIndexes.push(this._infoTagListIndex); }
+            if (this._movidIdListIndex >= 0) { taggingChunkIndexes.push(this._movidIdListIndex); }
+            taggingChunkIndexes.sort();
+
             let taggingChunkStartIndex: number;
             let taggingChunkStart: number;
             let taggingChunkLength: number = 0;
@@ -258,6 +257,11 @@ export default class RiffFile extends File {
                 }
             }
 
+            // Make no changes if there weren't any tags and there aren't any tags
+            if (taggingChunkLength === 0 && renderedTagBytes.length === 0) {
+                return;
+            }
+
             // If we don't know where to insert the tags, try to insert them before movi/data chunk,
             // failing that, insert at end of the file.
             if (taggingChunkStart === undefined) {
@@ -299,7 +303,9 @@ export default class RiffFile extends File {
                 filePosition += replacedChunk.chunk.originalTotalSize;
             }
 
-            // @TODO: UPDATE RIFF SIZE
+            // Calculate new RIFF size
+            this._riffSize += renderedTagBytes.length - taggingChunkLength;
+            this.insert(ByteVector.fromUInt(this._riffSize, false), 4, 4);
         } finally {
             this.mode = FileAccessMode.Closed;
         }
