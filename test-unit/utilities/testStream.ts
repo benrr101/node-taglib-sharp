@@ -64,7 +64,9 @@ export default class TestStream implements IStream {
             this._data.addByteVector(ByteVector.fromSize(length - this.length));
         } else if (this.length > length) {
             // Shrink
-            this._data = this._data.mid(0, length);
+            const bytesToRemove = this.length - length;
+            const startIndex = this.length - bytesToRemove;
+            this._data.removeRange(startIndex, bytesToRemove);
         }
         this._position = Math.max(this.length, this._position);
     }

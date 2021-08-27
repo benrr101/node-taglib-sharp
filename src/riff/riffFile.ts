@@ -153,7 +153,7 @@ export default class RiffFile extends File {
                 // @TODO: Allow chunk ID to be configurable
                 const id3v2TagBytes = this._id3v2Tag.render();
                 const id3v2TagChunk = RiffChunk.fromData("id3 ", id3v2TagBytes);
-                replacedChunks.push({ chunk: id3v2TagChunk, newTotalSize: id3v2TagBytes.length });
+                replacedChunks.push({ chunk: id3v2TagChunk, newTotalSize: id3v2TagChunk.originalTotalSize });
                 renderedTags.push(id3v2TagChunk.render());
             }
             if (this._infoTag) {
@@ -171,8 +171,8 @@ export default class RiffFile extends File {
             if (this._divxTag) {
                 const divxTagBytes = this._divxTag.render();
                 const divxTagChunk = RiffChunk.fromData(DivxTag.CHUNK_FOURCC, divxTagBytes);
-                replacedChunks.push({ chunk: divxTagChunk, newTotalSize: divxTagBytes.length });
-                renderedTags.push(divxTagBytes);
+                replacedChunks.push({ chunk: divxTagChunk, newTotalSize: divxTagChunk.originalTotalSize });
+                renderedTags.push(divxTagChunk.render());
             }
             const renderedTagBytes = ByteVector.concatenate(... renderedTags);
 
@@ -229,11 +229,12 @@ export default class RiffFile extends File {
                     // NOTE: After this point, the chunk list and file contents have diverged (but
                     //    it's ok b/c we will update the whole thing as part of writing the tags
                     //    back out)
-                    this._rawChunks.splice(taggingChunkStartIndex, lastChunkIndex - taggingChunkIndexes[0]);
+                    this._rawChunks.splice(taggingChunkStartIndex, lastChunkIndex - taggingChunkStartIndex + 1);
                 } else {
                     // Crud, we can't update in one big write. Let's delete each tagging chunk,
                     // then write them all in a giant block later. This process will be slow on
                     // large files, but future saves should be improved.
+                    taggingChunkIndexes.reverse();
                     for (const chunkIndex of taggingChunkIndexes) {
                         // Find any trailing JUNK chunks
                         let lastChunkIndex = chunkIndex;
@@ -251,7 +252,7 @@ export default class RiffFile extends File {
                             + this._rawChunks[lastChunkIndex].originalTotalSize
                             - blockStart;
                         this.removeBlock(blockStart, blockLength);
-                        this._rawChunks.splice(chunkIndex, lastChunkIndex - chunkIndex);
+                        this._rawChunks.splice(chunkIndex, lastChunkIndex - chunkIndex + 1);
                         this.updateChunkPositions(chunkIndex, -blockLength);
                     }
                 }
@@ -279,7 +280,7 @@ export default class RiffFile extends File {
             let junkLength: number;
             if (renderedTagBytes.length + 8 < taggingChunkLength) {
                 // New tags are smaller, so use the difference as the size of the JUNK chunk
-                junkLength = taggingChunkLength - renderedTagBytes.length + 8;
+                junkLength = taggingChunkLength - renderedTagBytes.length - 8;
             } else {
                 // New tags are same size or larger, so insert a JUNK chunk for future padding
                 // @TODO: Let padding size be configurable
@@ -304,7 +305,7 @@ export default class RiffFile extends File {
             }
 
             // Calculate new RIFF size
-            this._riffSize += renderedTagBytes.length - taggingChunkLength;
+            this._riffSize = this.length - 8;
             this.insert(ByteVector.fromUInt(this._riffSize, false), 4, 4);
         } finally {
             this.mode = FileAccessMode.Closed;

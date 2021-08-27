@@ -15,9 +15,9 @@ import {default as Resources} from "./resources";
 import {ByteVector} from "../../src/byteVector";
 import {ReadStyle} from "../../src/file";
 import {IFileAbstraction} from "../../src/fileAbstraction";
+import {Id3v2TagHeaderFlags} from "../../src/id3v2/id3v2TagHeader";
 import {TagTypes} from "../../src/tag";
 import {Testers} from "../utilities/testers";
-import {Id3v2TagHeaderFlags} from "../../src";
 
 @suite class Riff_RiffFileTests {
     @test
@@ -573,7 +573,7 @@ import {Id3v2TagHeaderFlags} from "../../src";
     }
 
     @test
-    public save_waveHasContiguousTagsOriginally_newTagsLarger() {
+    public save_waveHasContiguousTagsOriginally_newTagsBigger() {
         // Arrange
         const testAbstraction = this.getWaveAllTagsContiguousFile(10);
         const fileBytes = testAbstraction.allBytes;
@@ -607,9 +607,36 @@ import {Id3v2TagHeaderFlags} from "../../src";
     public save_waveHasContiguousTagsOriginally_newTagsSmaller() {
         // Arrange
         const testAbstraction = this.getWaveAllTagsContiguousFile(1000);
-        const fileBytes = testAbstraction.allBytes;
-
         const file = new RiffFile(testAbstraction, ReadStyle.Average);
+        file.tag.clear();
+        file.tag.title = "foo";
+        file.tag.amazonId = "foo";
+        file.tag.composers = ["Giuseppe Ottiviani"];
+        file.tag.track = 123;
+
+        // Act
+        file.save();
+
+        // Assert
+        const expectedDataBytes = ByteVector.concatenate(
+            ByteVector.fromString("WAVE"),
+            Resources.getWaveFormatBlock(),
+            this.getSavedId3v2Bytes("id3 "),
+            this.getSavedInfoTagBytes(),
+            this.getSavedMovieTagBytes(),
+            this.getSavedDivxBytes(),
+            Resources.getJunkChunk(926),
+            Resources.getDataChunk()
+        );
+        const expectedFileBytes = this.getFileBytes(expectedDataBytes);
+        assert.isTrue(ByteVector.equal(testAbstraction.allBytes, expectedFileBytes));
+    }
+
+    @test
+    public save_waveHasDiscontiguousTagsOriginally_writesNewTags() {
+        // Arrange
+        const testFileAbstraction = this.getWaveAllTagsDiscontiguousFile();
+        const file = new RiffFile(testFileAbstraction, ReadStyle.Average);
         file.tag.clear();
         file.tag.title = "foo";
         file.tag.amazonId = "foo";
@@ -631,7 +658,7 @@ import {Id3v2TagHeaderFlags} from "../../src";
             Resources.getDataChunk()
         );
         const expectedFileBytes = this.getFileBytes(expectedDataBytes);
-        assert.isTrue(ByteVector.equal(testAbstraction.allBytes, expectedFileBytes));
+        assert.isTrue(ByteVector.equal(testFileAbstraction.allBytes, expectedFileBytes));
     }
 
     private assertDivXTag(file: RiffFile): void {
@@ -693,7 +720,9 @@ import {Id3v2TagHeaderFlags} from "../../src";
     private getSavedDivxBytes(): ByteVector {
         const divxTag = DivxTag.fromEmpty();
         divxTag.title = "foo";
-        return divxTag.render();
+        const divxTagBytes = divxTag.render();
+        const divxChunk = RiffChunk.fromData(DivxTag.CHUNK_FOURCC, divxTagBytes);
+        return divxChunk.render();
     }
 
     private getSavedId3v2Bytes(fourcc: string): ByteVector {
