@@ -1070,6 +1070,21 @@ export abstract class Tag {
             this.discCount === 0;
     }
 
+    public static tagTypeFlagsToArray(tagTypes: TagTypes): TagTypes[] {
+        const output = [];
+        for (const tagType of Object.values(TagTypes)) {
+            if (typeof tagType === "string") {
+                continue;
+            }
+
+            if ((tagTypes & tagType) === tagType) {
+                output.push(tagType);
+            }
+        }
+
+        return output;
+    }
+
     /**
      * Gets the first string in an array.
      * @param group Array of strings to get the first string from.

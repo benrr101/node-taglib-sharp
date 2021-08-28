@@ -1,263 +1,284 @@
-import {ByteVector, StringType} from "../byteVector";
-import {File} from "../file";
+import ILazy from "../iLazy";
+import IRiffChunk from "./iRiffChunk";
+import {ByteVector} from "../byteVector";
+import {File, FileAccessMode} from "../file";
 import {Guards} from "../utils";
 
-export default class RiffList {
-    private _dict: {[key: string]: ByteVector[]} = {};
-    private _stringType: StringType = StringType.UTF8;
+export default class RiffList implements IRiffChunk, ILazy {
+    /**
+     * FOURCC code for a list chunk
+     */
+    public static readonly identifierFourcc = "LIST";
+
+    private _chunkStart: number;
+    private _file: File;
+    private _isLoaded: boolean;
+    private _lists: Map<string, RiffList[]> = new Map<string, RiffList[]>();
+    private _originalDataSize: number;
+    private _type: string;
+    private _values: Map<string, ByteVector[]> = new Map<string, ByteVector[]>();
+
+    // #region Constructors
+
+    private constructor() {}
 
     /**
-     * Constructs and initializes a new instance by reading the contents of a raw RIFF list stored
-     * in a {@link ByteVector} object.
-     * @param data Object containing a raw RIFF list to read into the new instance.
+     * Constructs and initializes a new instance with no contents.
+     * @param type Type ID of the list
      */
-    public static fromData(data: ByteVector): RiffList {
-        Guards.truthy(data, "data");
-
+    public static fromEmpty(type: string): RiffList {
         const list = new RiffList();
-
-        let offset = 0;
-        while (offset + 8 <= data.length) {
-            const id = data.mid(offset, 4).toString(4);
-            let length = data.mid(offset + 4, 4).toUInt(false);
-
-            if (list._dict[id] === undefined) {
-                list._dict[id] = [];
-            }
-            list._dict[id].push(data.mid(offset + 8, length));
-
-            if (length % 2 === 1) {
-                length++;
-            }
-
-            offset += 8 + length;
-        }
-
+        list._isLoaded = true;
+        list._type = type;
+        list._originalDataSize = 4;
         return list;
     }
 
     /**
-     * Constructs and initializes a new instance by reading the contents of a raw RIFF list from a
-     * specified position in a file.
-     * @param file File containing the contents of the new instance
-     * @param position Index into the file where the the list begins, must be safe positive integer
-     * @param length Length of the list in bytes, must be a positive integer
+     * Constructs and initializes a new instance, lazily, from a position in a file.
+     * @param file File from which to read the current instance
+     * @param position Position in the file where the list begins
      */
-    public static fromFile(file: File, position: number, length: number): RiffList {
+    public static fromFile(file: File, position: number): RiffList {
         Guards.truthy(file, "file");
         Guards.safeUint(position, "position");
-        Guards.uint(length, "length");
-        if (position > file.length - length) {
-            throw new Error("Argument out of range: position must be less than file length");
+        if (position > file.length) {
+            throw new Error("Argument out of range: position must be within size of file");
         }
 
         file.seek(position);
-        return RiffList.fromData(file.readBlock(length));
+        if (file.readBlock(4).toString() !== RiffList.identifierFourcc) {
+            throw new Error("Cannot read RIFF list from non-list chunk");
+        }
+
+        const list = new RiffList();
+        list._chunkStart = position;
+        list._originalDataSize = file.readBlock(4).toUInt(false);
+        list._file = file;
+        list._isLoaded = false;
+        list._type = file.readBlock(4).toString();
+
+        return list;
+    }
+
+    // #endregion
+
+    // #region Properties
+
+    /** @inheritDoc */
+    public get chunkStart(): number|undefined { return this._chunkStart; }
+    /** @inheritDoc */
+    public set chunkStart(value: number) {
+        Guards.safeUint(value, "value");
+        this._chunkStart = value;
+    }
+
+    /** @inheritDoc */
+    public get fourcc(): string { return RiffList.identifierFourcc; }
+
+    /** @inheritDoc */
+    public get isLoaded(): boolean { return this._isLoaded; }
+
+    /**
+     * Total number of nested lists contained in this instance.
+     */
+    public get listCount(): number {
+        this.load();
+        return this._lists.size;
+    }
+    // @TODO: Just expose the values and lists?
+
+    /** @inheritDoc */
+    public get originalDataSize(): number { return this._originalDataSize; }
+
+    /** @inheritDoc */
+    public get originalTotalSize(): number {
+        return this._originalDataSize + 8 + (this._originalDataSize % 2 === 1 ? 1 : 0);
+    }
+    /** @internal */
+    public set originalTotalSize(value: number) {
+        Guards.safeUint(value, "value");
+        this._originalDataSize = value - 8;
     }
 
     /**
-     * Gets the {@link StringType} value used for parsing and rendering the contents of this list.
+     * ID that identifies the type of this list.
      */
-    public get stringType(): StringType { return this._stringType; }
-    /**
-     * Sets the {@link StringType} value used for parsing and rendering the contents of this list.
-     */
-    public set stringType(value: StringType) { this._stringType = value; }
+    public get type(): string { return this._type; }
 
     /**
-     * Gets the number of items in the current instance.
+     * Total number of values contained in this instance.
      */
-    public get length(): number { return Object.keys(this._dict).length; }
+    public get valueCount(): number {
+        this.load();
+        return this._values.size;
+    }
+
+    // #endregion
 
     // #region Methods
 
+    public static isChunkList(c: IRiffChunk): boolean {
+        return c.fourcc === RiffList.identifierFourcc;
+    }
+
     /**
-     * Removes all elements from the list.
+     * Removes all values and nested lists from the current instance.
      */
     public clear(): void {
-        for (const key in this._dict) {
-            if (!this._dict.hasOwnProperty(key)) {
-                continue;
-            }
-            delete this._dict[key];
-        }
+        this._values.clear();
+        this._lists.clear();
+        this._isLoaded = true;
     }
 
     /**
-     * Determines whether the current instance contains the specified key.
-     * @param id Key to locate in the current instance
-     * @returns `true` if key exists, `false` otherwise
+     * Retrieves a collection of lists by the lists' key.
+     * @param id Key for looking up the desired lists
+     * @returns RiffList[] Array of the nested lists with the provided key, or an empty array if
+     *     the key does not exist in this instance.
      */
-    public containsKey(id: string) {
-        return !!this._dict[id];
+    public getLists(id: string): RiffList[] {
+        this.load();
+        return this._lists.get(id) || [];
     }
 
     /**
-     * Gets the values for a specified item in the current instance as an array of
-     * {@link ByteVector}.
-     * @param id ID of the item of which to get the values. Must be 4 bytes
+     * Retrieves a collection of values by the values' key.
+     * @param id Key for looking up the desired values
+     * @returns ByteVector[] Array of the values with the provided key, or an empty array if the
+     *     key does not exist in the instance.
      */
     public getValues(id: string): ByteVector[] {
-        RiffList.validateId(id);
-        return this._dict[id] || [];
-    }
-
-    /**
-     * Gets the values for a specified item as an array of strings.
-     * @param id ID of the item of which to get the values. Must be 4 bytes
-     */
-    public getValuesAsStrings(id: string): string[] {
-        const values = this.getValues(id);
-        return values.map((value) => {
-            return value
-                ? value.toString(value.length, this._stringType)
-                : "";
-        });
-    }
-
-    /**
-     * Gets the value for a specified item in the current instance as an unsigned integer. The
-     * first value that can be parsed as an int will be returned. `0` is returned if no matching
-     * values exist.
-     * @param id ID of the item of which to get the values. Must be 4 bytes
-     */
-    public getValueAsUint(id: string): number {
-        for (const value of this.getValuesAsStrings(id)) {
-            const numberValue = Number.parseInt(value, 10);
-            if (!Number.isNaN(numberValue) && numberValue > 0) {
-                return numberValue;
-            }
+        Guards.truthy(id, "id");
+        if (id.length !== 4) {
+            throw new Error("Argument error: ID must be 4 bytes");
         }
 
-        return 0;
+        this.load();
+        return this._values.get(id) || [];
     }
 
-    /**
-     * Removes the item with the specified ID from the current instance.
-     * @param id ID of the item to remove. Must be 4 bytes
-     */
-    public removeValue(id: string): void {
-        RiffList.validateId(id);
-        delete this._dict[id];
-    }
-
-    /**
-     * Renders the current instance as a raw RIFF list.
-     */
-    public render(): ByteVector {
-        const renderedValues = [];
-        for (const key in this._dict) {
-            if (!this._dict.hasOwnProperty(key)) { continue; }
-
-            for (const value of this._dict[key]) {
-                // Omit any empty values
-                if (value.length === 0) {
-                    continue;
-                }
-
-                const data = ByteVector.concatenate(
-                    ByteVector.fromString(key),
-                    ByteVector.fromUInt(value.length, false),
-                    value
-                );
-
-                // Pad odd length values
-                if (value.length % 2 === 1) {
-                    data.addByte(0x00);
-                }
-
-                renderedValues.push(data);
-            }
-        }
-
-        return ByteVector.concatenate(... renderedValues);
-    }
-
-    /**
-     * Renders the current instance enclosed in an item with a specified ID.
-     * @param id ID of the item in which to enclose the current instance. Must be 4 bytes.
-     */
-    public renderEnclosed(id: string): ByteVector {
-        RiffList.validateId(id);
-
-        const data = this.render();
-        if (data.length <= 8) {
-            return ByteVector.empty();
-        }
-
-        const header = ByteVector.concatenate(
-            ByteVector.fromString("LIST"),
-            ByteVector.fromUInt(data.length + 4, false),
-            ByteVector.fromString(id)
-        );
-        data.insertByteVector(0, header);
-
-        return data;
-    }
-
-    /**
-     * Sets the value for a specified item in the current instance to a uint.
-     * @param id ID of the item of which to get the values. Must be 4 bytes
-     * @param value Value to store in the item. Must be an unsigned integer
-     */
-    public setValueFromUint(id: string, value: number) {
-        RiffList.validateId(id);
-        Guards.uint(value, "value");
-
-        if (value === 0) {
-            this.removeValue(id);
-        } else {
-            this.setValuesFromStrings(id, value.toString(10));
-        }
-    }
-
-    /**
-     * Sets the value for a specified item in the current instance to an array.
-     * @param id ID of the item of which to get the values. Must be 4 bytes
-     * @param values Array of {@link ByteVector} to store in the specified item. If falsey or
-     *     undefined, the item will be removed
-     */
-    public setValues(id: string, ... values: ByteVector[]): void {
-        RiffList.validateId(id);
-        if (!values || values.length === 0) {
-            this.removeValue(id);
-        } else {
-            this._dict[id] = values;
-        }
-    }
-
-    /**
-     * Sets the value for a specified item in the current instance to an array of strings.
-     * @param id ID of the item of which to get the values. Must be 4 bytes
-     * @param values Array of strings to store in the specified item. If falsey or undefined, the
-     *     item will be removed
-     */
-    public setValuesFromStrings(id: string, ... values: string[]): void {
-        RiffList.validateId(id);
-
-        if (!values || values.length === 0) {
-            this.removeValue(id);
+    /** @inheritDoc */
+    public load(): void {
+        if (this._isLoaded) {
             return;
         }
 
-        const byteVectorValues = values
-            .filter((v) => v !== undefined && v !== null)
-            .map((v) => {
-                return ByteVector.fromString(v, this._stringType);
-            });
+        // Read the raw list from file
+        const lastMode = this._file.mode;
+        this._file.mode = FileAccessMode.Read;
+        try {
+            let fileOffset = this._chunkStart + 12;
+            while (fileOffset + 8 <= this._chunkStart + this.originalTotalSize) {
+                // Read the value
+                this._file.seek(fileOffset);
+                const headerBlock = this._file.readBlock(8);
+                const id = headerBlock.toString(4);
+                const length = headerBlock.mid(4, 4).toUInt(false);
 
-        if (byteVectorValues.length === 0) {
-            this.removeValue(id);
-        } else {
-            this.setValues(id, ... byteVectorValues);
+                if (id === RiffList.identifierFourcc) {
+                    // The element is a list, create a nested riff list from it
+                    const nestedList = RiffList.fromFile(this._file, fileOffset);
+                    if (this._lists.get(nestedList.type) === undefined) {
+                        this._lists.set(nestedList.type, []);
+                    }
+                    this._lists.get(nestedList.type).push(nestedList);
+                } else {
+                    // The element is just a key-value pair, store it
+                    if (this._values.get(id) === undefined) {
+                        this._values.set(id, []);
+                    }
+                    const valueBlock = this._file.readBlock(length);
+                    this._values.get(id).push(valueBlock);
+                }
+
+                // Increment offset, including padding if necessary
+                fileOffset += 8 + length + (length % 2 === 1 ? 1 : 0);
+            }
+
+            this._isLoaded = true;
+        } finally {
+            this._file.mode = lastMode;
         }
     }
 
-    private static validateId(id: string) {
+    /**
+     * Stores a collection of lists in the current instance, overwriting any that currently exist.
+     * @param id Key for the lists to store
+     * @param lists Collection of lists to store in the current instance
+     */
+    public setLists(id: string, lists: RiffList[]): void {
+        this.load();
+        if (!lists || lists.length === 0) {
+            this._lists.delete(id);
+        } else {
+            this._lists.set(id, lists);
+        }
+    }
+
+    /**
+     * Stores a collection of values in the current instance, overwriting any that currently exist.
+     * @param id Key for the values to store
+     * @param values Collection of values to store in the current instance
+     */
+    public setValues(id: string, values: ByteVector[]): void {
         Guards.truthy(id, "id");
         if (id.length !== 4) {
-            throw new Error("Argument error: ID must be 4 bytes long");
+            throw new Error("Argument error: ID must be 4 bytes");
         }
+
+        this.load();
+        if (!values || values.length === 0) {
+            this._values.delete(id);
+        } else {
+            this._values.set(id, values);
+        }
+    }
+
+    /** @inheritDoc */
+    public render(): ByteVector {
+        this.load();
+
+        // Render all the values
+        const valueData = Array.from(this._values.entries(), ([key, value]) => {
+            const valuesBytes = value.map((v) => {
+                const valueBytes = ByteVector.concatenate(
+                    ByteVector.fromString(key),
+                    ByteVector.fromUInt(v.length, false),
+                    v
+                );
+                if (v.length % 2 === 1) {
+                    valueBytes.addByte(0x00);
+                }
+
+                return valueBytes;
+            });
+
+            return ByteVector.concatenate(... valuesBytes);
+        });
+
+        // Render all the nested lists
+        const listData = Array.from(this._lists.values(), (lists) => {
+            const listsBytes = lists.map((l) => l.render());
+            return ByteVector.concatenate(... listsBytes);
+        });
+
+        const allData = ByteVector.concatenate(
+            ... valueData,
+            ... listData
+        );
+
+        const data = ByteVector.concatenate(
+            ByteVector.fromString(RiffList.identifierFourcc),
+            ByteVector.fromUInt(allData.length + 4, false),
+            ByteVector.fromString(this._type),
+            allData
+        );
+        if (allData.length + 4 % 2 === 1) {
+            data.addByte(0x00);
+        }
+
+        return data;
     }
 
     // #endregion

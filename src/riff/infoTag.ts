@@ -1,6 +1,5 @@
+import RiffList from "./riffList";
 import RiffListTag from "./riffListTag";
-import {ByteVector} from "../byteVector";
-import {File} from "../file";
 import {TagTypes} from "../tag";
 import {Guards} from "../utils";
 
@@ -8,44 +7,32 @@ import {Guards} from "../utils";
  * Provides support for reading and writing standard INFO tags.
  */
 export default class InfoTag extends RiffListTag {
+    /**
+     * Type of the list that contains an info tag.
+     */
+    public static readonly listType = "INFO";
 
     // #region Constructors
 
-    private constructor() {
-        super();
-    }
-
-    /**
-     * Constructs and initializes a new instance by reading the contents of a raw RIFF list stored
-     * in a {@link ByteVector} object.
-     * @param data Object containing the raw RIFF list
-     */
-    public static fromData(data: ByteVector): InfoTag {
-        const tag = new InfoTag();
-        tag.initializeFromData(data);
-        return tag;
+    private constructor(list: RiffList) {
+        super(list);
     }
 
     /**
      * Constructs and initializes a new, empty instance.
      */
     public static fromEmpty(): InfoTag {
-        const tag = new InfoTag();
-        tag.initializeFromEmpty();
-        return tag;
+        return new InfoTag(RiffList.fromEmpty(InfoTag.listType));
     }
 
     /**
      * Constructs and initializes a new instance by reading the contents of a raw RIFF list stored
      * a file.
-     * @param file File containing the raw RIFF list
-     * @param position Index into the file where the RIFF list begins. Must be a safe, unsigned int
-     * @param length Number of bytes to read
+     * @param list List that contains the contents of the tag
      */
-    public static fromFile(file: File, position: number, length: number): InfoTag {
-        const tag = new InfoTag();
-        tag.initializeFromFile(file, position, length);
-        return tag;
+    public static fromList(list: RiffList): InfoTag {
+        Guards.truthy(list, "list");
+        return new InfoTag(list);
     }
 
     // #endregion
@@ -68,7 +55,7 @@ export default class InfoTag extends RiffListTag {
      * @inheritDoc
      * @remarks Implemented via the `INAM` item.
      */
-    public set title(value: string) { this.setValuesFromStrings("INAM", value); }
+    public set title(value: string) { this.setValuesFromStrings("INAM", value ? [value] : undefined); }
 
     /**
      * @inheritDoc
@@ -79,7 +66,7 @@ export default class InfoTag extends RiffListTag {
      * @inheritDoc
      * @remarks Implemented via the `ISBJ` item.
      */
-    public set description(value: string) { this.setValuesFromStrings("ISBJ", value); }
+    public set description(value: string) { this.setValuesFromStrings("ISBJ", value ? [value] : undefined); }
 
     /**
      * @inheritDoc
@@ -92,7 +79,7 @@ export default class InfoTag extends RiffListTag {
      */
     public set performers(value: string[]) {
         value = value || [];
-        this.setValuesFromStrings("ISTR", ... value);
+        this.setValuesFromStrings("ISTR", value);
     }
 
     /**
@@ -106,7 +93,7 @@ export default class InfoTag extends RiffListTag {
      */
     public set albumArtists(value: string[]) {
         value = value || [];
-        this.setValuesFromStrings("IART", ... value);
+        this.setValuesFromStrings("IART", value);
     }
 
     /**
@@ -120,7 +107,7 @@ export default class InfoTag extends RiffListTag {
      */
     public set composers(value: string[]) {
         value = value || [];
-        this.setValuesFromStrings("IWRI", ... value);
+        this.setValuesFromStrings("IWRI", value);
     }
 
     /**
@@ -132,7 +119,7 @@ export default class InfoTag extends RiffListTag {
      * @inheritDoc
      * @remarks Implemented via the `DIRC` item.
      */
-    public set album(value: string) { this.setValuesFromStrings("DIRC", value); }
+    public set album(value: string) { this.setValuesFromStrings("DIRC", value ? [value] : undefined); }
 
     /**
      * @inheritDoc
@@ -143,7 +130,7 @@ export default class InfoTag extends RiffListTag {
      * @inheritDoc
      * @remarks Implemented via the `ISBJ` item.
      */
-    public set conductor(value: string) { this.setValuesFromStrings("ICNM", value); }
+    public set conductor(value: string) { this.setValuesFromStrings("ICNM", value ? [value] : undefined); }
 
     /**
      * @inheritDoc
@@ -154,7 +141,7 @@ export default class InfoTag extends RiffListTag {
      * @inheritDoc
      * @remarks Implemented via the `ICMT` item.
      */
-    public set comment(value: string) { this.setValuesFromStrings("ICMT", value); }
+    public set comment(value: string) { this.setValuesFromStrings("ICMT", value ? [value] : undefined); }
 
     /**
      * @inheritDoc
@@ -167,7 +154,7 @@ export default class InfoTag extends RiffListTag {
      */
     public set genres(value: string[]) {
         value = value || [];
-        this.setValuesFromStrings("IGNR", ... value);
+        this.setValuesFromStrings("IGNR", value);
     }
 
     /**
@@ -218,16 +205,7 @@ export default class InfoTag extends RiffListTag {
      * @inheritDoc
      * @remarks Implemented via the `ICOP` item.
      */
-    public set copyright(value: string) { this.setValuesFromStrings("ICOP", value); }
-
-    // #endregion
-
-    // #region Methods
-
-    /** @inheritDoc */
-    public renderEnclosed(): ByteVector {
-        return this.renderEnclosedInternal("INFO");
-    }
+    public set copyright(value: string) { this.setValuesFromStrings("ICOP", value ? [value] : undefined); }
 
     // #endregion
 }
