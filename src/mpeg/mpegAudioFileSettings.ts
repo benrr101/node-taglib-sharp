@@ -1,11 +1,11 @@
-/**
- * This class contains settings related to AAC file operations. Open files will need to be re-read
- * in order for changes to take effect.
- */
 import {TagTypes} from "../tag";
 import {NumberUtils} from "../utils";
 
-export default class AacSettings {
+/**
+ * This class contains settings related to MPEG audio file operations. Open files will need to be
+ * re-read in order for changes to take effect.
+ */
+export default class MpegAudioFileSettings {
     public static readonly supportedTagTypes = TagTypes.Id3v1 | TagTypes.Id3v2 | TagTypes.Ape;
 
     private static _defaultTagTypes = TagTypes.Id3v1 | TagTypes.Id3v2;
@@ -13,14 +13,14 @@ export default class AacSettings {
     private static _preferId3v2TagAtFileEnd = false;
 
     /**
-     * Gets the default types of tags for an AAC file. When opening a file, if these tag types do
-     * not exist on the file, they will be created.
+     * Gets the default types of tags for an MPEG audio file. When opening a file, if these tag
+     * types do not exist on the file, they will be created.
      */
     public static get defaultTagTypes(): TagTypes { return this._defaultTagTypes; }
     /**
-     * Sets the default types of tags for an AAC file. When opening a file, if these tag types do
-     * not exist on the file, they will be created. See {@link supportedTagTypes} for a list of tag
-     * types that are supported by node-taglib-sharp for AAC files.
+     * Sets the default types of tags for an MPEG audio file. When opening a file, if these tag
+     * types do not exist on the file, they will be created. See {@link supportedTagTypes} for a
+     * list of tag types that are supported by node-taglib-sharp for MPEG container files.
      */
     public static set defaultTagTypes(value: TagTypes) {
         const unsupportedTagTypes = NumberUtils.uintAnd(value, ~this.supportedTagTypes);

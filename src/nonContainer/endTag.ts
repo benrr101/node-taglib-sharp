@@ -61,6 +61,7 @@ export default class EndTag extends CombinedTag {
                 throw new UnsupportedFormatError(`Specified tag type ${type} is invalid`);
         }
 
+        this.addTagInternal(tag);
         return tag;
     }
 

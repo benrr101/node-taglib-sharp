@@ -243,8 +243,8 @@ export default class AiffFile extends File {
             this.seek(id3ChunkPos + 4);
             const tagSize = this.readBlock(4).toUInt(true) + 8;
 
-            tagStart = this._invariantStartPosition = id3ChunkPos;
-            tagEnd = this._invariantEndPosition = tagStart + tagSize;
+            tagStart = id3ChunkPos;
+            tagEnd = tagStart + tagSize;
         }
 
         return {

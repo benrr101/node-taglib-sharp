@@ -113,6 +113,7 @@ export class ApeStreamHeader implements IAudioCodec, ILosslessAudioCodec {
      * @param data Raw stream header data beginning with {@link ApeStreamHeader.fileIdentifier}
      * @param streamLength Length of the stream in bytes
      */
+    // @TODO: Consider tweaking to have this take a file
     public constructor(data: ByteVector, streamLength: number) {
         Guards.truthy(data, "data");
         Guards.safeUint(streamLength, "streamLength");

@@ -180,6 +180,10 @@ export class NumberUtils {
         return x * Math.pow(2, y);
     }
 
+    /**
+     * Converts .NET DateTime ticks (100 nanosecond units) into milliseconds
+     * @param ticks 100 nanosecond ticks to convert
+     */
     public static ticksToMilli(ticks: bigint|number): number {
         // Ticks are 100 nanosecond units
         return typeof(ticks) === "number"

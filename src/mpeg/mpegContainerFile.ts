@@ -1,14 +1,14 @@
 import MpegAudioHeader from "./mpegAudioHeader";
 import MpegVideoHeader from "./mpegVideoHeader";
 import NonContainerFile from "../nonContainer/nonContainerFile";
-import NonContainerTag from "../nonContainer/nonContainerTag";
 import Properties from "../properties";
 import {ByteVector} from "../byteVector";
 import {CorruptFileError, UnsupportedFormatError} from "../errors";
 import {File, ReadStyle} from "../file";
 import {IFileAbstraction} from "../fileAbstraction";
 import {MpegVersion} from "./mpegEnums";
-import {Tag, TagTypes} from "../tag";
+import {TagTypes} from "../tag";
+import MpegContainerFileSettings from "./mpegContainerFileSettings";
 
 /**
  * Indicates the type of marker found in an MPEG file.
@@ -62,13 +62,18 @@ enum MpegFileMarker {
 
 /**
  * This class extends {@link NonContainerFile} to provide tagging and properties support for
- * MPEG-1, MPEG-2, and MPEG-2.5 video files.
+ * MPEG-1, MPEG-2, and MPEG-2.5 containerized video files.
  * @remarks A {@link Id3v1Tag} and {@link Id3v2Tag} will be added automatically to any file that
  *     does not contain one. This change does not affect the file until it is saved and can be
  *     reversed using the following method:
  *     `file.removeTags(file.tagTypes & ~file.tagTypesOnDisk);`
  */
-export default class MpegFile extends NonContainerFile {
+export default class MpegContainerFile extends NonContainerFile {
+    private static readonly _defaultTagLocationMapping = new Map<TagTypes, () => boolean>([
+        [TagTypes.Ape, () => true],
+        [TagTypes.Id3v1, () => true],
+        [TagTypes.Id3v2, () => true]
+    ]);
     private static readonly _markerStart = ByteVector.fromByteArray(new Uint8Array([0, 0, 1]));
 
     private _audioFound = false;
@@ -80,78 +85,45 @@ export default class MpegFile extends NonContainerFile {
     private _videoHeader: MpegVideoHeader;
 
     public constructor(file: IFileAbstraction|string, propertiesStyle: ReadStyle) {
-        super(file, propertiesStyle);
-    }
-
-    /**
-     * Gets a tag of a specified type from the current instance, optionally creating a new tag if
-     * possible.
-     * @remarks {@link Id3v2Tag}, {@link Id3v1Tag}, and {@link ApeTag} will be added to the end of
-     *     the file. All other tag types will be ignored as they are unsupported by MPEG files.
-     * @param type Type of tag to read
-     * @param create Whether or not to try and create the tag if one is not found
-     * @returns Tag Tag that was found in or added to the current instance. If no matching tag was
-     *     found and none was created, `undefined` is returned.
-     */
-    public getTag(type: TagTypes, create: boolean): Tag {
-        const tag = (<NonContainerTag> this.tag).getTag(type);
-        if (tag || !create) {
-            return tag;
-        }
-
-        switch (type) {
-            case TagTypes.Id3v1:
-                return this.endTag.addTag(type, this.tag);
-            case TagTypes.Id3v2:
-                return this.endTag.addTag(type, this.tag);
-            case TagTypes.Ape:
-                return this.endTag.addTag(type, this.tag);
-            default:
-                return undefined;
-        }
+        super(
+            file,
+            propertiesStyle,
+            MpegContainerFile._defaultTagLocationMapping,
+            MpegContainerFileSettings.defaultTagTypes
+        );
     }
 
     /** @inheritDoc */
-    protected readEnd(end: number, propertiesStyle: ReadStyle) {
-        // Make sure we have ID3v1 and ID3v2 tags
-        this.getTag(TagTypes.Id3v1, true);
-        this.getTag(TagTypes.Id3v2, true);
-
-        if ((propertiesStyle & ReadStyle.Average) === 0 || this._startTime === undefined) {
+    protected readProperties(readStyle: ReadStyle): Properties {
+        // Skip processing if we aren't supposed to read the properties
+        if ((readStyle & ReadStyle.Average) === 0) {
             return;
         }
 
-        // Enable to search the marker in the entire file if non are found so far
-        if (end === this.length) {
-            end = 0;
-        }
+        // Read the audio and video properties
+        const firstSyncPosition = this.findNextMarkerPosition(this.mediaStartPosition, MpegFileMarker.SystemSyncPacket);
+        this.readSystemFile(firstSyncPosition);
 
-        end = this.rFindMarkerPosition(end, MpegFileMarker.SystemSyncPacket);
-        this._endTime = this.readTimestamp(end + 4);
-    }
+        const codecs = [];
+        if (this._videoHeader) { codecs.push(this._videoHeader); }
+        if (this._audioHeader) { codecs.push(this._audioHeader); }
 
-    /** @inheritDoc */
-    protected readProperties(_start: number, _end: number, _propertiesStyle: ReadStyle): Properties {
+        // @TODO: Can we omit calculating duration via start/end timestamps if we have audio with
+        //  a valid duration?
+        // Calculate duration of the file
+        const lastSyncPosition = this.rFindMarkerPosition(this.mediaEndPosition, MpegFileMarker.SystemSyncPacket);
+        this._endTime = this.readTimestamp(lastSyncPosition + 4);
         const durationMilliseconds = this._startTime === undefined
-            ? 0
+            ? (this._audioHeader ? this._audioHeader.durationMilliseconds : 0)
             : (this._endTime - this._startTime) * 1000;
-        return new Properties(durationMilliseconds, [this._videoHeader, this._audioHeader]);
-    }
 
-    /** @inheritDoc */
-    protected readStart(start: number, propertiesStyle: ReadStyle): void {
-        if ((propertiesStyle & ReadStyle.Average) === 0) {
-            return;
-        }
-
-        start = this.findNextMarkerPosition(start, MpegFileMarker.SystemSyncPacket);
-        this.readSystemFile(start);
+        return new Properties(durationMilliseconds, codecs);
     }
 
     // #region Private Methods
 
     private findFirstMarker(position: number): {marker: MpegFileMarker, position: number} {
-        position = this.find(MpegFile._markerStart, position);
+        position = this.find(MpegContainerFile._markerStart, position);
         if (position < 0) {
             throw new CorruptFileError("Marker not found");
         }
@@ -164,7 +136,7 @@ export default class MpegFile extends NonContainerFile {
 
     private findNextMarkerPosition(position: number, marker: MpegFileMarker): number {
         const packet = ByteVector.concatenate(
-            MpegFile._markerStart,
+            MpegContainerFile._markerStart,
             marker
         );
         position = this.find(packet, position);
@@ -180,7 +152,7 @@ export default class MpegFile extends NonContainerFile {
         this.seek(position);
         const identifier = this.readBlock(4);
 
-        if (identifier.length === 4 && identifier.startsWith(MpegFile._markerStart)) {
+        if (identifier.length === 4 && identifier.startsWith(MpegContainerFile._markerStart)) {
             return identifier.get(3);
         }
 
@@ -217,8 +189,7 @@ export default class MpegFile extends NonContainerFile {
 
         // Decode the MPEG audio header
         const audioHeaderResult = MpegAudioHeader.find(this, position + dataOffset, length - 9);
-        this._audioFound = audioHeaderResult.success;
-        this._audioHeader = audioHeaderResult.header;
+        this._audioHeader = audioHeaderResult;
 
         return position + length;
     }
@@ -318,7 +289,6 @@ export default class MpegFile extends NonContainerFile {
             offset = markerResult.position;
             if (markerResult.marker === MpegFileMarker.VideoSyncPacket) {
                 this._videoHeader = new MpegVideoHeader(this, offset + 4);
-                this._videoFound = true;
             } else {
                 // Advance the offset by 6 bytes, so the next iteration of the loop won't find the
                 // same marker and get stuck. 6 bytes because findFirstMarker is a generic find
@@ -333,7 +303,7 @@ export default class MpegFile extends NonContainerFile {
 
     private rFindMarkerPosition(position: number, marker: MpegFileMarker): number {
         const packet = ByteVector.concatenate(
-            MpegFile._markerStart,
+            MpegContainerFile._markerStart,
             marker
         );
         position = this.rFind(packet, position);
@@ -358,4 +328,4 @@ export default class MpegFile extends NonContainerFile {
     "taglib/m2v",
     "video/x-mpg",
     "video/mpeg"
-].forEach((mt) => File.addFileType(mt, MpegFile));
+].forEach((mt) => File.addFileType(mt, MpegContainerFile));

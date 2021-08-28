@@ -330,12 +330,9 @@ export default class MpegAudioHeader implements IAudioCodec {
      * @param position Position in `file` at which to start searching
      * @param length Maximum number of bytes to search before giving up. Defaults to `-1` to
      *     have no maximum
-     * @returns {header: AudioHeader, success: boolean}
-     *     * `header` - the header that was found or {@link MpegAudioHeader.Unknown} if a header was not
-     *         found
-     *     * `success` - whether or not a header was found
+     * @returns the header that was found or `undefined` if a header was not found
      */
-    public static find(file: File, position: number, length: number = -1): {header: MpegAudioHeader, success: boolean} {
+    public static find(file: File, position: number, length?: number): MpegAudioHeader {
         Guards.truthy(file, "file");
         Guards.safeUint(position, "position");
         Guards.int(length, "length");
@@ -346,26 +343,21 @@ export default class MpegAudioHeader implements IAudioCodec {
         let buffer = file.readBlock(3);
 
         if (buffer.length < 3) {
-            return {
-                header: this.Unknown,
-                success: false
-            };
+            return undefined;
         }
 
         do {
+            // @TODO: ugh, this has that bizarre 3 byteoffset into each read, remove it
             file.seek(position + 3);
             buffer = buffer.mid(buffer.length - 3);
             buffer.addByteVector(file.readBlock(File.bufferSize));
 
-            for (let i = 0; i < buffer.length - 3 && (length < 0 || position + i < end); i++) {
+            for (let i = 0; i < buffer.length - 3 && (length === undefined || position + i < end); i++) {
                 if (buffer.get(i) === 0xFF && buffer.get(i + 1) > 0xE0) {
                     const data = buffer.mid(i, 4);
                     if (!this.getHeaderError(data)) {
                         try {
-                            return {
-                                header: MpegAudioHeader.fromData(data, file, position + i),
-                                success: true
-                            };
+                            return MpegAudioHeader.fromData(data, file, position + i);
                         } catch (e) {
                             if (!CorruptFileError.errorIs(e)) {
                                 throw e;
@@ -376,12 +368,9 @@ export default class MpegAudioHeader implements IAudioCodec {
             }
 
             position += File.bufferSize;
-        } while (buffer.length > 3 && (length < 0 || position < end));
+        } while (buffer.length > 3 && (length === undefined || position < end));
 
-        return {
-            header: this.Unknown,
-            success: false
-        };
+        return undefined;
     }
 
     private static getHeaderError(data: ByteVector): string {
