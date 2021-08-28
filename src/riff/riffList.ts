@@ -118,6 +118,10 @@ export default class RiffList implements IRiffChunk, ILazy {
 
     // #region Methods
 
+    public static isChunkList(c: IRiffChunk): boolean {
+        return c.fourcc === RiffList.identifierFourcc;
+    }
+
     /**
      * Removes all values and nested lists from the current instance.
      */

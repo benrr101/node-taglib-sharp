@@ -48,7 +48,7 @@ import {Testers} from "../utilities/testers";
             Resources.getAviHeaderBlock(false),
             Resources.getMoviChunk()
         );
-        const fileBytes = this.getFileBytes(dataBytes);
+        const fileBytes = Riff_RiffFileTests.getFileBytes(dataBytes);
         const testAbstraction = TestFile.getFileAbstraction(fileBytes);
 
         // Act
@@ -75,7 +75,7 @@ import {Testers} from "../utilities/testers";
             Resources.getAviHeaderBlock(true),
             Resources.getMoviChunk()
         );
-        const fileBytes = this.getFileBytes(dataBytes);
+        const fileBytes = Riff_RiffFileTests.getFileBytes(dataBytes);
         const testAbstraction = TestFile.getFileAbstraction(fileBytes);
 
         // Act
@@ -104,7 +104,7 @@ import {Testers} from "../utilities/testers";
             Resources.getAviHeaderBlock(true),
             Resources.getMoviChunk()
         );
-        const fileBytes = this.getFileBytes(dataBytes);
+        const fileBytes = Riff_RiffFileTests.getFileBytes(dataBytes);
         const testAbstraction = TestFile.getFileAbstraction(fileBytes);
 
         // Act
@@ -127,12 +127,12 @@ import {Testers} from "../utilities/testers";
             ByteVector.fromString("AVI "),
             Resources.getAviHeaderBlock(false),
             RiffChunk.fromData(DivxTag.CHUNK_FOURCC, Resources.getDivxTagData()).render(),
-            this.getInfoTagBytes(),
+            Riff_RiffFileTests.getInfoTagBytes(),
             Resources.getMoviChunk(),
-            this.getId3v2Bytes("id3 "),
-            this.getMovieTagBytes()
+            Riff_RiffFileTests.getId3v2Bytes("id3 "),
+            Riff_RiffFileTests.getMovieTagBytes()
         );
-        const fileBytes = this.getFileBytes(dataBytes);
+        const fileBytes = Riff_RiffFileTests.getFileBytes(dataBytes);
         const testAbstraction = TestFile.getFileAbstraction(fileBytes);
 
         // Act
@@ -163,7 +163,7 @@ import {Testers} from "../utilities/testers";
             ByteVector.fromString("AVI "),
             Resources.getMoviChunk()
         );
-        const fileBytes = this.getFileBytes(dataBytes);
+        const fileBytes = Riff_RiffFileTests.getFileBytes(dataBytes);
         const testAbstraction = TestFile.getFileAbstraction(fileBytes);
 
         // Act / Assert
@@ -177,7 +177,7 @@ import {Testers} from "../utilities/testers";
             ByteVector.fromString("FOOO"),
             Resources.getMoviChunk()
         );
-        const fileBytes = this.getFileBytes(dataBytes);
+        const fileBytes = Riff_RiffFileTests.getFileBytes(dataBytes);
         const testAbstraction = TestFile.getFileAbstraction(fileBytes);
 
         // Act / Assert
@@ -192,7 +192,7 @@ import {Testers} from "../utilities/testers";
             Resources.getWaveFormatBlock(),
             Resources.getDataChunk()
         );
-        const fileBytes = this.getFileBytes(dataBytes);
+        const fileBytes = Riff_RiffFileTests.getFileBytes(dataBytes);
         const testAbstraction = TestFile.getFileAbstraction(fileBytes);
 
         // Act
@@ -203,7 +203,7 @@ import {Testers} from "../utilities/testers";
         assert.isOk(file.properties.codecs);
         assert.strictEqual(file.properties.codecs.length, 1);
         assert.isOk(file.properties.codecs.find((c) => c instanceof RiffWaveFormatEx));
-        assert.approximately(file.properties.durationMilliseconds, 0.4, 0.01);
+        assert.approximately(file.properties.durationMilliseconds, 405, 1);
 
         assert.isOk(file.tag);
         assert.instanceOf(file.tag, CombinedTag);
@@ -220,7 +220,7 @@ import {Testers} from "../utilities/testers";
             Resources.getWaveFormatBlock(),
             Resources.getDataChunk()
         );
-        const fileBytes = this.getFileBytes(dataBytes);
+        const fileBytes = Riff_RiffFileTests.getFileBytes(dataBytes);
         const testAbstraction = TestFile.getFileAbstraction(fileBytes);
 
         // Act
@@ -243,12 +243,12 @@ import {Testers} from "../utilities/testers";
             ByteVector.fromString("WAVE"),
             Resources.getWaveFormatBlock(),
             RiffChunk.fromData(DivxTag.CHUNK_FOURCC, Resources.getDivxTagData()).render(),
-            this.getInfoTagBytes(),
+            Riff_RiffFileTests.getInfoTagBytes(),
             Resources.getDataChunk(),
-            this.getId3v2Bytes("id3 "),
-            this.getMovieTagBytes()
+            Riff_RiffFileTests.getId3v2Bytes("id3 "),
+            Riff_RiffFileTests.getMovieTagBytes()
         );
-        const fileBytes = this.getFileBytes(dataBytes);
+        const fileBytes = Riff_RiffFileTests.getFileBytes(dataBytes);
         const testAbstraction = TestFile.getFileAbstraction(fileBytes);
 
         // Act
@@ -259,7 +259,7 @@ import {Testers} from "../utilities/testers";
         assert.isOk(file.properties.codecs);
         assert.strictEqual(file.properties.codecs.length, 1);
         assert.isOk(file.properties.codecs.find((c) => c instanceof RiffWaveFormatEx));
-        assert.approximately(file.properties.durationMilliseconds, 0.4, 0.01);
+        assert.approximately(file.properties.durationMilliseconds, 405, 1);
 
         assert.isOk(file.tag);
         assert.instanceOf(file.tag, CombinedTag);
@@ -280,7 +280,7 @@ import {Testers} from "../utilities/testers";
             ByteVector.fromString("WAVE"),
             Resources.getDataChunk()
         );
-        const fileBytes = this.getFileBytes(dataBytes);
+        const fileBytes = Riff_RiffFileTests.getFileBytes(dataBytes);
         const testAbstraction = TestFile.getFileAbstraction(fileBytes);
 
         // Act / Assert
@@ -294,7 +294,7 @@ import {Testers} from "../utilities/testers";
             ByteVector.fromString("WAVE"),
             Resources.getWaveFormatBlock()
         );
-        const fileBytes = this.getFileBytes(dataBytes);
+        const fileBytes = Riff_RiffFileTests.getFileBytes(dataBytes);
         const testAbstraction = TestFile.getFileAbstraction(fileBytes);
 
         // Act / Assert
@@ -304,7 +304,7 @@ import {Testers} from "../utilities/testers";
     @test
     public getTag_id3v2Exists() {
         // Arrange
-        const testAbstraction = this.getWaveAllTagsContiguousFile(10);
+        const testAbstraction = Riff_RiffFileTests.getWaveAllTagsContiguousFile(10);
         const file = new RiffFile(testAbstraction, ReadStyle.None);
 
         // Act
@@ -318,7 +318,7 @@ import {Testers} from "../utilities/testers";
     @test
     public getTag_id3v2DoesNotExist() {
         // Arrange
-        const testAbstraction = this.getWaveAllTagsContiguousFile(10);
+        const testAbstraction = Riff_RiffFileTests.getWaveAllTagsContiguousFile(10);
         const file = new RiffFile(testAbstraction, ReadStyle.None);
         file.removeTags(TagTypes.Id3v2);
 
@@ -339,7 +339,7 @@ import {Testers} from "../utilities/testers";
     @test
     public getTag_infoTagExists() {
         // Arrange
-        const testAbstraction = this.getWaveAllTagsContiguousFile(10);
+        const testAbstraction = Riff_RiffFileTests.getWaveAllTagsContiguousFile(10);
         const file = new RiffFile(testAbstraction, ReadStyle.None);
 
         // Act
@@ -353,7 +353,7 @@ import {Testers} from "../utilities/testers";
     @test
     public getTag_infoTagDoesNotExist() {
         // Arrange
-        const testAbstraction = this.getWaveAllTagsContiguousFile(10);
+        const testAbstraction = Riff_RiffFileTests.getWaveAllTagsContiguousFile(10);
         const file = new RiffFile(testAbstraction, ReadStyle.None);
         file.removeTags(TagTypes.RiffInfo);
 
@@ -374,7 +374,7 @@ import {Testers} from "../utilities/testers";
     @test
     public getTag_movieIdExists() {
         // Arrange
-        const testAbstraction = this.getWaveAllTagsContiguousFile(10);
+        const testAbstraction = Riff_RiffFileTests.getWaveAllTagsContiguousFile(10);
         const file = new RiffFile(testAbstraction, ReadStyle.None);
 
         // Act
@@ -388,7 +388,7 @@ import {Testers} from "../utilities/testers";
     @test
     public getTag_movieIdDoesNotExist() {
         // Arrange
-        const testAbstraction = this.getWaveAllTagsContiguousFile(10);
+        const testAbstraction = Riff_RiffFileTests.getWaveAllTagsContiguousFile(10);
         const file = new RiffFile(testAbstraction, ReadStyle.None);
         file.removeTags(TagTypes.MovieId);
 
@@ -409,7 +409,7 @@ import {Testers} from "../utilities/testers";
     @test
     public getTag_divxExists() {
         // Arrange
-        const testAbstraction = this.getWaveAllTagsContiguousFile(10);
+        const testAbstraction = Riff_RiffFileTests.getWaveAllTagsContiguousFile(10);
         const file = new RiffFile(testAbstraction, ReadStyle.None);
 
         // Act
@@ -423,7 +423,7 @@ import {Testers} from "../utilities/testers";
     @test
     public getTag_divxDoesNotExist() {
         // Arrange
-        const testAbstraction = this.getWaveAllTagsContiguousFile(10);
+        const testAbstraction = Riff_RiffFileTests.getWaveAllTagsContiguousFile(10);
         const file = new RiffFile(testAbstraction, ReadStyle.None);
         file.removeTags(TagTypes.DivX);
 
@@ -448,12 +448,12 @@ import {Testers} from "../utilities/testers";
             ByteVector.fromString("WAVE"),
             Resources.getWaveFormatBlock(),
             RiffChunk.fromData(DivxTag.CHUNK_FOURCC, Resources.getDivxTagData()).render(),
-            this.getInfoTagBytes(),
+            Riff_RiffFileTests.getInfoTagBytes(),
             Resources.getDataChunk(),
-            this.getId3v2Bytes("id3 "),
-            this.getMovieTagBytes()
+            Riff_RiffFileTests.getId3v2Bytes("id3 "),
+            Riff_RiffFileTests.getMovieTagBytes()
         );
-        const fileBytes = this.getFileBytes(dataBytes);
+        const fileBytes = Riff_RiffFileTests.getFileBytes(dataBytes);
         const testAbstraction = TestFile.getFileAbstraction(fileBytes);
         const file = new RiffFile(testAbstraction, ReadStyle.Average);
 
@@ -476,7 +476,7 @@ import {Testers} from "../utilities/testers";
     @test
     public removeTags_singleTag() {
         // Arrange
-        const testAbstraction = this.getWaveAllTagsContiguousFile(10);
+        const testAbstraction = Riff_RiffFileTests.getWaveAllTagsContiguousFile(10);
         const file = new RiffFile(testAbstraction, ReadStyle.Average);
 
         // Act
@@ -498,7 +498,7 @@ import {Testers} from "../utilities/testers";
     @test
     public removeTags_allTags() {
         // Arrange
-        const testAbstraction = this.getWaveAllTagsContiguousFile(10);
+        const testAbstraction = Riff_RiffFileTests.getWaveAllTagsContiguousFile(10);
         const file = new RiffFile(testAbstraction, ReadStyle.Average);
 
         // Act
@@ -521,7 +521,7 @@ import {Testers} from "../utilities/testers";
             Resources.getJunkChunk(),
             Resources.getDataChunk()
         );
-        const fileBytes = this.getFileBytes(dataBytes);
+        const fileBytes = Riff_RiffFileTests.getFileBytes(dataBytes);
         const testAbstraction = TestFile.getFileAbstraction(fileBytes);
 
         const file = new RiffFile(testAbstraction, ReadStyle.Average);
@@ -543,7 +543,7 @@ import {Testers} from "../utilities/testers";
             Resources.getJunkChunk(10),
             Resources.getDataChunk()
         );
-        const fileBytes = this.getFileBytes(dataBytes);
+        const fileBytes = Riff_RiffFileTests.getFileBytes(dataBytes);
         const testAbstraction = TestFile.getFileAbstraction(fileBytes);
 
         const file = new RiffFile(testAbstraction, ReadStyle.Average);
@@ -561,22 +561,57 @@ import {Testers} from "../utilities/testers";
             ByteVector.fromString("WAVE"),
             Resources.getWaveFormatBlock(),
             Resources.getJunkChunk(10),
-            this.getSavedId3v2Bytes("id3 "),
-            this.getSavedInfoTagBytes(),
-            this.getSavedMovieTagBytes(),
-            this.getSavedDivxBytes(),
+            Riff_RiffFileTests.getSavedId3v2Bytes("id3 "),
+            Riff_RiffFileTests.getSavedInfoTagBytes(),
+            Riff_RiffFileTests.getSavedMovieTagBytes(),
+            Riff_RiffFileTests.getSavedDivxBytes(),
             Resources.getJunkChunk(1024),
             Resources.getDataChunk()
         );
-        const expectedFileBytes = this.getFileBytes(expectedDataBytes);
+        const expectedFileBytes = Riff_RiffFileTests.getFileBytes(expectedDataBytes);
+        assert.isTrue(ByteVector.equal(testAbstraction.allBytes, expectedFileBytes));
+    }
+
+    @test
+    public save_waveNoTagsNoDataChunk_addingTags() {
+        // Arrange
+        const dataBytes = ByteVector.concatenate(
+            ByteVector.fromString("WAVE"),
+            Resources.getWaveFormatBlock(),
+            Resources.getJunkChunk(10),
+        );
+        const fileBytes = Riff_RiffFileTests.getFileBytes(dataBytes);
+        const testAbstraction = TestFile.getFileAbstraction(fileBytes);
+
+        const file = new RiffFile(testAbstraction, ReadStyle.None);
+        file.tag.title = "foo";
+        file.tag.amazonId = "foo";
+        file.tag.composers = ["Giuseppe Ottiviani"];
+        file.tag.track = 123;
+
+        // Act
+        file.save();
+
+        // Assert
+        // - Make sure bytes were written
+        const expectedDataBytes = ByteVector.concatenate(
+            ByteVector.fromString("WAVE"),
+            Resources.getWaveFormatBlock(),
+            Resources.getJunkChunk(10),
+            Riff_RiffFileTests.getSavedId3v2Bytes("id3 "),
+            Riff_RiffFileTests.getSavedInfoTagBytes(),
+            Riff_RiffFileTests.getSavedMovieTagBytes(),
+            Riff_RiffFileTests.getSavedDivxBytes(),
+            Resources.getJunkChunk(1024)
+        );
+        const expectedFileBytes = Riff_RiffFileTests.getFileBytes(expectedDataBytes);
         assert.isTrue(ByteVector.equal(testAbstraction.allBytes, expectedFileBytes));
     }
 
     @test
     public save_waveHasContiguousTagsOriginally_newTagsBigger() {
         // Arrange
-        const testAbstraction = this.getWaveAllTagsContiguousFile(10);
-        const fileBytes = testAbstraction.allBytes;
+        const testAbstraction = Riff_RiffFileTests.getWaveAllTagsContiguousFile(10);
 
         const file = new RiffFile(testAbstraction, ReadStyle.Average);
         file.tag.clear();
@@ -592,21 +627,21 @@ import {Testers} from "../utilities/testers";
         const expectedDataBytes = ByteVector.concatenate(
             ByteVector.fromString("WAVE"),
             Resources.getWaveFormatBlock(),
-            this.getSavedId3v2Bytes("id3 "),
-            this.getSavedInfoTagBytes(),
-            this.getSavedMovieTagBytes(),
-            this.getSavedDivxBytes(),
+            Riff_RiffFileTests.getSavedId3v2Bytes("id3 "),
+            Riff_RiffFileTests.getSavedInfoTagBytes(),
+            Riff_RiffFileTests.getSavedMovieTagBytes(),
+            Riff_RiffFileTests.getSavedDivxBytes(),
             Resources.getJunkChunk(1024),
             Resources.getDataChunk()
         );
-        const expectedFileBytes = this.getFileBytes(expectedDataBytes);
+        const expectedFileBytes = Riff_RiffFileTests.getFileBytes(expectedDataBytes);
         assert.isTrue(ByteVector.equal(testAbstraction.allBytes, expectedFileBytes));
     }
 
     @test
     public save_waveHasContiguousTagsOriginally_newTagsSmaller() {
         // Arrange
-        const testAbstraction = this.getWaveAllTagsContiguousFile(1000);
+        const testAbstraction = Riff_RiffFileTests.getWaveAllTagsContiguousFile(1000);
         const file = new RiffFile(testAbstraction, ReadStyle.Average);
         file.tag.clear();
         file.tag.title = "foo";
@@ -621,21 +656,21 @@ import {Testers} from "../utilities/testers";
         const expectedDataBytes = ByteVector.concatenate(
             ByteVector.fromString("WAVE"),
             Resources.getWaveFormatBlock(),
-            this.getSavedId3v2Bytes("id3 "),
-            this.getSavedInfoTagBytes(),
-            this.getSavedMovieTagBytes(),
-            this.getSavedDivxBytes(),
+            Riff_RiffFileTests.getSavedId3v2Bytes("id3 "),
+            Riff_RiffFileTests.getSavedInfoTagBytes(),
+            Riff_RiffFileTests.getSavedMovieTagBytes(),
+            Riff_RiffFileTests.getSavedDivxBytes(),
             Resources.getJunkChunk(926),
             Resources.getDataChunk()
         );
-        const expectedFileBytes = this.getFileBytes(expectedDataBytes);
+        const expectedFileBytes = Riff_RiffFileTests.getFileBytes(expectedDataBytes);
         assert.isTrue(ByteVector.equal(testAbstraction.allBytes, expectedFileBytes));
     }
 
     @test
     public save_waveHasDiscontiguousTagsOriginally_writesNewTags() {
         // Arrange
-        const testFileAbstraction = this.getWaveAllTagsDiscontiguousFile();
+        const testFileAbstraction = Riff_RiffFileTests.getWaveAllTagsDiscontiguousFile();
         const file = new RiffFile(testFileAbstraction, ReadStyle.Average);
         file.tag.clear();
         file.tag.title = "foo";
@@ -650,14 +685,258 @@ import {Testers} from "../utilities/testers";
         const expectedDataBytes = ByteVector.concatenate(
             ByteVector.fromString("WAVE"),
             Resources.getWaveFormatBlock(),
-            this.getSavedId3v2Bytes("id3 "),
-            this.getSavedInfoTagBytes(),
-            this.getSavedMovieTagBytes(),
-            this.getSavedDivxBytes(),
+            Riff_RiffFileTests.getSavedId3v2Bytes("id3 "),
+            Riff_RiffFileTests.getSavedInfoTagBytes(),
+            Riff_RiffFileTests.getSavedMovieTagBytes(),
+            Riff_RiffFileTests.getSavedDivxBytes(),
             Resources.getJunkChunk(1024),
             Resources.getDataChunk()
         );
-        const expectedFileBytes = this.getFileBytes(expectedDataBytes);
+        const expectedFileBytes = Riff_RiffFileTests.getFileBytes(expectedDataBytes);
+        assert.isTrue(ByteVector.equal(testFileAbstraction.allBytes, expectedFileBytes));
+    }
+
+    @test
+    public save_waveHasDiscontiguousTagsOriginally_writesNewTags_savesAgain() {
+        // Arrange
+        const testFileAbstraction = Riff_RiffFileTests.getWaveAllTagsDiscontiguousFile();
+        const file = new RiffFile(testFileAbstraction, ReadStyle.Average);
+        file.tag.clear();
+        file.tag.title = "foo";
+        file.tag.amazonId = "foo";
+        file.tag.composers = ["Giuseppe Ottiviani"];
+        file.tag.track = 123;
+
+        // Act
+        file.save();
+        file.save();
+
+        // Assert
+        const expectedDataBytes = ByteVector.concatenate(
+            ByteVector.fromString("WAVE"),
+            Resources.getWaveFormatBlock(),
+            Riff_RiffFileTests.getSavedId3v2Bytes("id3 "),
+            Riff_RiffFileTests.getSavedInfoTagBytes(),
+            Riff_RiffFileTests.getSavedMovieTagBytes(),
+            Riff_RiffFileTests.getSavedDivxBytes(),
+            Resources.getJunkChunk(1024),
+            Resources.getDataChunk()
+        );
+        const expectedFileBytes = Riff_RiffFileTests.getFileBytes(expectedDataBytes);
+        assert.isTrue(ByteVector.equal(testFileAbstraction.allBytes, expectedFileBytes));
+    }
+
+    @test
+    public save_aviNoTagsOriginally_noTagsStored() {
+        // Arrange
+        const dataBytes = ByteVector.concatenate(
+            ByteVector.fromString("AVI "),
+            Resources.getAviHeaderBlock(true),
+            Resources.getJunkChunk(),
+            Resources.getMoviChunk()
+        );
+        const fileBytes = Riff_RiffFileTests.getFileBytes(dataBytes);
+        const testAbstraction = TestFile.getFileAbstraction(fileBytes);
+
+        const file = new RiffFile(testAbstraction, ReadStyle.Average);
+        file.removeTags(TagTypes.AllTags);
+
+        // Act
+        file.save();
+
+        // Assert - File should be untouched
+        assert.isTrue(ByteVector.equal(testAbstraction.allBytes, fileBytes));
+    }
+
+    @test
+    public save_aviNoTagsOriginally_addingTags() {
+        // Arrange
+        const dataBytes = ByteVector.concatenate(
+            ByteVector.fromString("AVI "),
+            Resources.getAviHeaderBlock(true),
+            Resources.getJunkChunk(10),
+            Resources.getMoviChunk()
+        );
+        const fileBytes = Riff_RiffFileTests.getFileBytes(dataBytes);
+        const testAbstraction = TestFile.getFileAbstraction(fileBytes);
+
+        const file = new RiffFile(testAbstraction, ReadStyle.Average);
+        file.tag.title = "foo";
+        file.tag.amazonId = "foo";
+        file.tag.composers = ["Giuseppe Ottiviani"];
+        file.tag.track = 123;
+
+        // Act
+        file.save();
+
+        // Assert
+        // - Make sure bytes were written
+        const expectedDataBytes = ByteVector.concatenate(
+            ByteVector.fromString("AVI "),
+            Resources.getAviHeaderBlock(true),
+            Resources.getJunkChunk(10),
+            Riff_RiffFileTests.getSavedId3v2Bytes("id3 "),
+            Riff_RiffFileTests.getSavedInfoTagBytes(),
+            Riff_RiffFileTests.getSavedMovieTagBytes(),
+            Riff_RiffFileTests.getSavedDivxBytes(),
+            Resources.getJunkChunk(1024),
+            Resources.getMoviChunk()
+        );
+        const expectedFileBytes = Riff_RiffFileTests.getFileBytes(expectedDataBytes);
+        assert.isTrue(ByteVector.equal(testAbstraction.allBytes, expectedFileBytes));
+    }
+
+    @test
+    public save_aviNoTagsNoMoviChunk_addingTags() {
+        // Arrange
+        const dataBytes = ByteVector.concatenate(
+            ByteVector.fromString("AVI "),
+            Resources.getAviHeaderBlock(true),
+            Resources.getJunkChunk(10),
+        );
+        const fileBytes = Riff_RiffFileTests.getFileBytes(dataBytes);
+        const testAbstraction = TestFile.getFileAbstraction(fileBytes);
+
+        const file = new RiffFile(testAbstraction, ReadStyle.None);
+        file.tag.title = "foo";
+        file.tag.amazonId = "foo";
+        file.tag.composers = ["Giuseppe Ottiviani"];
+        file.tag.track = 123;
+
+        // Act
+        file.save();
+
+        // Assert
+        // - Make sure bytes were written
+        const expectedDataBytes = ByteVector.concatenate(
+            ByteVector.fromString("AVI "),
+            Resources.getAviHeaderBlock(true),
+            Resources.getJunkChunk(10),
+            Riff_RiffFileTests.getSavedId3v2Bytes("id3 "),
+            Riff_RiffFileTests.getSavedInfoTagBytes(),
+            Riff_RiffFileTests.getSavedMovieTagBytes(),
+            Riff_RiffFileTests.getSavedDivxBytes(),
+            Resources.getJunkChunk(1024)
+        );
+        const expectedFileBytes = Riff_RiffFileTests.getFileBytes(expectedDataBytes);
+        assert.isTrue(ByteVector.equal(testAbstraction.allBytes, expectedFileBytes));
+    }
+
+    @test
+    public save_aviHasContiguousTagsOriginally_newTagsBigger() {
+        // Arrange
+        const testAbstraction = Riff_RiffFileTests.getAviAllTagsContiguousFile(10);
+
+        const file = new RiffFile(testAbstraction, ReadStyle.Average);
+        file.tag.clear();
+        file.tag.title = "foo";
+        file.tag.amazonId = "foo";
+        file.tag.composers = ["Giuseppe Ottiviani"];
+        file.tag.track = 123;
+
+        // Act
+        file.save();
+
+        // Assert
+        const expectedDataBytes = ByteVector.concatenate(
+            ByteVector.fromString("AVI "),
+            Resources.getAviHeaderBlock(true),
+            Riff_RiffFileTests.getSavedId3v2Bytes("id3 "),
+            Riff_RiffFileTests.getSavedInfoTagBytes(),
+            Riff_RiffFileTests.getSavedMovieTagBytes(),
+            Riff_RiffFileTests.getSavedDivxBytes(),
+            Resources.getJunkChunk(1024),
+            Resources.getMoviChunk()
+        );
+        const expectedFileBytes = Riff_RiffFileTests.getFileBytes(expectedDataBytes);
+        assert.isTrue(ByteVector.equal(testAbstraction.allBytes, expectedFileBytes));
+    }
+
+    @test
+    public save_aviHasContiguousTagsOriginally_newTagsSmaller() {
+        // Arrange
+        const testAbstraction = Riff_RiffFileTests.getAviAllTagsContiguousFile(1000);
+        const file = new RiffFile(testAbstraction, ReadStyle.Average);
+        file.tag.clear();
+        file.tag.title = "foo";
+        file.tag.amazonId = "foo";
+        file.tag.composers = ["Giuseppe Ottiviani"];
+        file.tag.track = 123;
+
+        // Act
+        file.save();
+
+        // Assert
+        const expectedDataBytes = ByteVector.concatenate(
+            ByteVector.fromString("AVI "),
+            Resources.getAviHeaderBlock(true),
+            Riff_RiffFileTests.getSavedId3v2Bytes("id3 "),
+            Riff_RiffFileTests.getSavedInfoTagBytes(),
+            Riff_RiffFileTests.getSavedMovieTagBytes(),
+            Riff_RiffFileTests.getSavedDivxBytes(),
+            Resources.getJunkChunk(926),
+            Resources.getMoviChunk()
+        );
+        const expectedFileBytes = Riff_RiffFileTests.getFileBytes(expectedDataBytes);
+        assert.isTrue(ByteVector.equal(testAbstraction.allBytes, expectedFileBytes));
+    }
+
+    @test
+    public save_aviHasDiscontiguousTagsOriginally_writesNewTags() {
+        // Arrange
+        const testFileAbstraction = Riff_RiffFileTests.getAviAllTagsDiscontiguousFile();
+        const file = new RiffFile(testFileAbstraction, ReadStyle.Average);
+        file.tag.clear();
+        file.tag.title = "foo";
+        file.tag.amazonId = "foo";
+        file.tag.composers = ["Giuseppe Ottiviani"];
+        file.tag.track = 123;
+
+        // Act
+        file.save();
+
+        // Assert
+        const expectedDataBytes = ByteVector.concatenate(
+            ByteVector.fromString("AVI "),
+            Resources.getAviHeaderBlock(true),
+            Riff_RiffFileTests.getSavedId3v2Bytes("id3 "),
+            Riff_RiffFileTests.getSavedInfoTagBytes(),
+            Riff_RiffFileTests.getSavedMovieTagBytes(),
+            Riff_RiffFileTests.getSavedDivxBytes(),
+            Resources.getJunkChunk(1024),
+            Resources.getMoviChunk()
+        );
+        const expectedFileBytes = Riff_RiffFileTests.getFileBytes(expectedDataBytes);
+        assert.isTrue(ByteVector.equal(testFileAbstraction.allBytes, expectedFileBytes));
+    }
+
+    @test
+    public save_aviHasDiscontiguousTagsOriginally_writesNewTags_savesAgain() {
+        // Arrange
+        const testFileAbstraction = Riff_RiffFileTests.getAviAllTagsDiscontiguousFile();
+        const file = new RiffFile(testFileAbstraction, ReadStyle.Average);
+        file.tag.clear();
+        file.tag.title = "foo";
+        file.tag.amazonId = "foo";
+        file.tag.composers = ["Giuseppe Ottiviani"];
+        file.tag.track = 123;
+
+        // Act
+        file.save();
+        file.save();
+
+        // Assert
+        const expectedDataBytes = ByteVector.concatenate(
+            ByteVector.fromString("AVI "),
+            Resources.getAviHeaderBlock(true),
+            Riff_RiffFileTests.getSavedId3v2Bytes("id3 "),
+            Riff_RiffFileTests.getSavedInfoTagBytes(),
+            Riff_RiffFileTests.getSavedMovieTagBytes(),
+            Riff_RiffFileTests.getSavedDivxBytes(),
+            Resources.getJunkChunk(1024),
+            Resources.getMoviChunk()
+        );
+        const expectedFileBytes = Riff_RiffFileTests.getFileBytes(expectedDataBytes);
         assert.isTrue(ByteVector.equal(testFileAbstraction.allBytes, expectedFileBytes));
     }
 
@@ -685,7 +964,39 @@ import {Testers} from "../utilities/testers";
         assert.strictEqual(movieIdTag.track, 123);
     }
 
-    private getFileBytes(dataBytes: ByteVector): ByteVector {
+    private static getAviAllTagsContiguousFile(trailingJunkChunkSize: number): TestFileAbstraction {
+        // 1308 bytes in the contiguous tagging chunk
+        const dataBytes = ByteVector.concatenate(
+            ByteVector.fromString("AVI "),
+            Resources.getAviHeaderBlock(true),
+            Riff_RiffFileTests.getDivxBytes(),
+            Riff_RiffFileTests.getInfoTagBytes(),
+            Resources.getJunkChunk(10),
+            Riff_RiffFileTests.getId3v2Bytes("id3 "),
+            Riff_RiffFileTests.getMovieTagBytes(),
+            Resources.getJunkChunk(trailingJunkChunkSize),
+            Resources.getMoviChunk()
+        );
+        const fileBytes = Riff_RiffFileTests.getFileBytes(dataBytes);
+        return TestFile.getFileAbstraction(fileBytes);
+    }
+
+    private static getAviAllTagsDiscontiguousFile(): TestFileAbstraction {
+        const dataBytes = ByteVector.concatenate(
+            ByteVector.fromString("AVI "),
+            Resources.getAviHeaderBlock(true),
+            Riff_RiffFileTests.getDivxBytes(),
+            Resources.getJunkChunk(10),
+            Riff_RiffFileTests.getInfoTagBytes(),
+            Resources.getMoviChunk(),
+            Riff_RiffFileTests.getId3v2Bytes("id3 "),
+            Riff_RiffFileTests.getMovieTagBytes()
+        );
+        const fileBytes = Riff_RiffFileTests.getFileBytes(dataBytes);
+        return TestFile.getFileAbstraction(fileBytes);
+    }
+
+    private static getFileBytes(dataBytes: ByteVector): ByteVector {
         return ByteVector.concatenate(
             RiffFile.fileIdentifier,
             ByteVector.fromUInt(dataBytes.length, false),
@@ -693,11 +1004,11 @@ import {Testers} from "../utilities/testers";
         );
     }
 
-    private getDivxBytes(): ByteVector {
+    private static getDivxBytes(): ByteVector {
         return RiffChunk.fromData(DivxTag.CHUNK_FOURCC, Resources.getDivxTagData()).render();
     }
 
-    private getId3v2Bytes(fourcc: string): ByteVector {
+    private static getId3v2Bytes(fourcc: string): ByteVector {
         const id3v2Tag = Id3v2Tag.fromEmpty();
         id3v2Tag.version = 4;
         id3v2Tag.flags |= Id3v2TagHeaderFlags.FooterPresent;
@@ -705,19 +1016,19 @@ import {Testers} from "../utilities/testers";
         return RiffChunk.fromData(fourcc, id3v2Tag.render()).render();
     }
 
-    private getInfoTagBytes(): ByteVector {
+    private static getInfoTagBytes(): ByteVector {
         const infoTag = InfoTag.fromEmpty();
         infoTag.composers = ["Giuseppe Ottiviani"];
         return infoTag.render();
     }
 
-    private getMovieTagBytes(): ByteVector {
+    private static getMovieTagBytes(): ByteVector {
         const movieIdTag = MovieIdTag.fromEmpty();
         movieIdTag.track = 123;
         return movieIdTag.render();
     }
 
-    private getSavedDivxBytes(): ByteVector {
+    private static getSavedDivxBytes(): ByteVector {
         const divxTag = DivxTag.fromEmpty();
         divxTag.title = "foo";
         const divxTagBytes = divxTag.render();
@@ -725,7 +1036,7 @@ import {Testers} from "../utilities/testers";
         return divxChunk.render();
     }
 
-    private getSavedId3v2Bytes(fourcc: string): ByteVector {
+    private static getSavedId3v2Bytes(fourcc: string): ByteVector {
         const expectedId3v2Tag = Id3v2Tag.fromEmpty();
         expectedId3v2Tag.version = 4;
         expectedId3v2Tag.flags |= Id3v2TagHeaderFlags.FooterPresent;
@@ -733,10 +1044,10 @@ import {Testers} from "../utilities/testers";
         expectedId3v2Tag.amazonId = "foo";
         expectedId3v2Tag.composers = ["Giuseppe Ottiviani"];
         expectedId3v2Tag.track = 123;
-        return RiffChunk.fromData("id3 ", expectedId3v2Tag.render()).render();
+        return RiffChunk.fromData(fourcc, expectedId3v2Tag.render()).render();
     }
 
-    private getSavedInfoTagBytes(): ByteVector {
+    private static getSavedInfoTagBytes(): ByteVector {
         const infoTag = InfoTag.fromEmpty();
         infoTag.title = "foo";
         infoTag.composers = ["Giuseppe Ottiviani"];
@@ -744,41 +1055,42 @@ import {Testers} from "../utilities/testers";
         return infoTag.render();
     }
 
-    private getSavedMovieTagBytes(): ByteVector {
+    private static getSavedMovieTagBytes(): ByteVector {
         const movieIdTag = MovieIdTag.fromEmpty();
         movieIdTag.title = "foo";
         movieIdTag.track = 123;
         return movieIdTag.render();
     }
 
-    private getWaveAllTagsContiguousFile(trailingJunkChunkSize: number): TestFileAbstraction {
+    private static getWaveAllTagsContiguousFile(trailingJunkChunkSize: number): TestFileAbstraction {
         // 1308 bytes in the contiguous tagging chunk
         const dataBytes = ByteVector.concatenate(
             ByteVector.fromString("WAVE"),
             Resources.getWaveFormatBlock(),
-            this.getDivxBytes(),
-            this.getInfoTagBytes(),
+            Riff_RiffFileTests.getDivxBytes(),
+            Riff_RiffFileTests.getInfoTagBytes(),
             Resources.getJunkChunk(10),
-            this.getId3v2Bytes("id3 "),
-            this.getMovieTagBytes(),
+            Riff_RiffFileTests.getId3v2Bytes("id3 "),
+            Riff_RiffFileTests.getMovieTagBytes(),
             Resources.getJunkChunk(trailingJunkChunkSize),
             Resources.getDataChunk()
         );
-        const fileBytes = this.getFileBytes(dataBytes);
+        const fileBytes = Riff_RiffFileTests.getFileBytes(dataBytes);
         return TestFile.getFileAbstraction(fileBytes);
     }
 
-    private getWaveAllTagsDiscontiguousFile(): TestFileAbstraction {
+    private static getWaveAllTagsDiscontiguousFile(): TestFileAbstraction {
         const dataBytes = ByteVector.concatenate(
             ByteVector.fromString("WAVE"),
             Resources.getWaveFormatBlock(),
-            this.getDivxBytes(),
-            this.getInfoTagBytes(),
+            Riff_RiffFileTests.getDivxBytes(),
+            Resources.getJunkChunk(10),
+            Riff_RiffFileTests.getInfoTagBytes(),
             Resources.getDataChunk(),
-            this.getId3v2Bytes("id3 "),
-            this.getMovieTagBytes()
+            Riff_RiffFileTests.getId3v2Bytes("id3 "),
+            Riff_RiffFileTests.getMovieTagBytes()
         );
-        const fileBytes = this.getFileBytes(dataBytes);
+        const fileBytes = Riff_RiffFileTests.getFileBytes(dataBytes);
         return TestFile.getFileAbstraction(fileBytes);
     }
 }
