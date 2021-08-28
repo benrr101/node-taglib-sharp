@@ -1,6 +1,5 @@
 import RiffList from "./riffList";
 import {ByteVector, StringType} from "../byteVector";
-import {File} from "../file";
 import {Tag} from "../tag";
 import {Guards} from "../utils";
 
@@ -11,30 +10,14 @@ export default abstract class RiffListTag extends Tag {
     // NOTE: Although it would totally make sense for this class to extend RiffList, we can't do
     //    that because multiple inheritance doesn't exist.
 
-    private _fields: RiffList;
+    private readonly _list: RiffList;
     private _stringType: StringType = StringType.UTF8;
 
     // #region Constructors
 
-    protected constructor() {
+    protected constructor(list: RiffList) {
         super();
-    }
-
-    protected initializeFromEmpty(): void {
-        this._fields = new RiffList();
-    }
-
-    protected initializeFromList(fields: RiffList): void {
-        Guards.truthy(fields, "fields");
-        this._fields = fields;
-    }
-
-    protected initializeFromData(data: ByteVector): void {
-        this._fields = RiffList.fromData(data);
-    }
-
-    protected initializeFromFile(file: File, position: number, length: number): void {
-        this._fields = RiffList.fromFile(file, position, length);
+        this._list = list;
     }
 
     // #endregion
@@ -42,7 +25,14 @@ export default abstract class RiffListTag extends Tag {
     // #region Properties
 
     /** @inheritDoc */
-    public get isEmpty(): boolean { return this._fields.length === 0; }
+    public get isEmpty(): boolean { return this._list.valueCount === 0; }
+
+    /**
+     * Gets the {@link RiffList} that backs the data for this tag.
+     * @remarks Tags based on RiffLists are only supposed to support certain fields. Modify at your
+     *     own risk.
+     */
+    public get list(): RiffList { return this._list; }
 
     /**
      * Gets the type of string used for parsing and rendering the contents of this tag.
@@ -63,15 +53,7 @@ export default abstract class RiffListTag extends Tag {
 
     /** @inheritDoc */
     public clear() {
-        this._fields.clear();
-    }
-
-    /**
-     * Gets the value for a specified item in the current instance as an unsigned integer.
-     * @param id ID of the item for which to get the value
-     */
-    public getValueAsUint(id: string): number {
-        return this._fields.getValueAsUint(id);
+        this._list.clear();
     }
 
     /**
@@ -79,7 +61,7 @@ export default abstract class RiffListTag extends Tag {
      * @param id ID of the item of which to get the values
      */
     public getValues(id: string): ByteVector[] {
-        return this._fields.getValues(id);
+        return this._list.getValues(id);
     }
 
     /**
@@ -87,36 +69,35 @@ export default abstract class RiffListTag extends Tag {
      * @param id ID of the item of which to get the values
      */
     public getValuesAsStrings(id: string): string[] {
-        return this._fields.getValuesAsStrings(id);
+        const values = this.getValues(id);
+        return values.map((value) => {
+            return value
+                ? value.toString(value.length, this._stringType)
+                : "";
+        });
     }
 
     /**
-     * Removed the item with the specified ID from the current instance.
+     * Gets the value for a specified item in the current instance as an unsigned integer.
+     * @param id ID of the item for which to get the value
+     */
+    public getValueAsUint(id: string): number {
+        for (const value of this.getValuesAsStrings(id)) {
+            const numberValue = Number.parseInt(value, 10);
+            if (!Number.isNaN(numberValue) && numberValue > 0) {
+                return numberValue;
+            }
+        }
+
+        return 0;
+    }
+
+    /**
+     * Removes the item with the specified ID from the current instance.
      * @param id ID of the item to remove
      */
     public removeValue(id: string): void {
-        this._fields.removeValue(id);
-    }
-
-    /**
-     * Renders the current instance as a raw RIFF list.
-     */
-    public render(): ByteVector {
-        return this._fields.render();
-    }
-
-    /**
-     * Renders the current instance enclosed in the appropriate item.
-     */
-    public abstract renderEnclosed(): ByteVector;
-
-    /**
-     * Sets the value for a specified item in the current instance using an unsigned integer.
-     * @param id ID of the item to set
-     * @param value Value to store in the specified item, must be an unsigned 32-bit integer
-     */
-    public setValueFromUint(id: string, value: number): void {
-        this._fields.setValueFromUint(id, value);
+        this._list.setValues(id, undefined);
     }
 
     /**
@@ -124,8 +105,8 @@ export default abstract class RiffListTag extends Tag {
      * @param id ID of the item to set
      * @param values Values to store in the specified item
      */
-    public setValues(id: string, ... values: ByteVector[]): void {
-        this._fields.setValues(id, ... values);
+    public setValues(id: string, values: ByteVector[]): void {
+        this._list.setValues(id, values);
     }
 
     /**
@@ -133,8 +114,28 @@ export default abstract class RiffListTag extends Tag {
      * @param id ID of the item to set
      * @param values Values to store in the specified item
      */
-    public setValuesFromStrings(id: string, ... values: string[]): void {
-        this._fields.setValuesFromStrings(id, ... values);
+    public setValuesFromStrings(id: string, values: string[]): void {
+        const byteValues = values ? values.map((v) => ByteVector.fromString(v, this._stringType)) : undefined;
+        this._list.setValues(id, byteValues);
+    }
+
+    /**
+     * Sets the value for a specified item in the current instance using an unsigned integer.
+     * @param id ID of the item to set
+     * @param value Value to store in the specified item, must be an unsigned 32-bit integer
+     */
+    public setValueFromUint(id: string, value: number): void {
+        Guards.uint(value, "value");
+        const byteValues = value ? [ByteVector.fromString(value.toString(10))] : undefined;
+        this._list.setValues(id, byteValues);
+    }
+
+    /**
+     * Renders the current instance, including list header and padding bytes, ready to be written
+     * to a file.
+     */
+    public render(): ByteVector {
+        return this._list.render();
     }
 
     /**
@@ -145,19 +146,6 @@ export default abstract class RiffListTag extends Tag {
      */
     protected getFirstValueAsString(id: string): string | undefined {
         return this.getValuesAsStrings(id).find((v) => !!v) || undefined;
-    }
-
-    /**
-     * Renders the current instance enclosed in an item with a specified ID.
-     * @param id ID of the item to enclose the current instance in when rendering
-     */
-    protected renderEnclosedInternal(id: string): ByteVector {
-        Guards.truthy(id, "id");
-        if (id.length !== 4) {
-            throw new Error("ID must be 4 bytes long");
-        }
-
-        return this._fields.renderEnclosed(id);
     }
 
     // #endregion
