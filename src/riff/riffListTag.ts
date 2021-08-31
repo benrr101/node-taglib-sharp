@@ -34,6 +34,9 @@ export default abstract class RiffListTag extends Tag {
      */
     public get list(): RiffList { return this._list; }
 
+    /** @inheritDoc */
+    public get sizeOnDisk(): number { return this._list.originalTotalSize; }
+
     /**
      * Gets the type of string used for parsing and rendering the contents of this tag.
      */

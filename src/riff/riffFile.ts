@@ -1,5 +1,5 @@
+import AviFileSettings from "./aviFileSettings";
 import AviHeader from "./avi/aviHeader";
-import CombinedTag from "../combinedTag";
 import DivxTag from "./divxTag";
 import Id3v2Tag from "../id3v2/id3v2Tag";
 import InfoTag from "./infoTag";
@@ -8,15 +8,15 @@ import MovieIdTag from "./movieIdTag";
 import Properties from "../properties";
 import RiffChunk from "./riffChunk";
 import RiffList from "./riffList";
+import RiffTags from "./riffTags";
 import RiffWaveFormatEx from "./riffWaveFormatEx";
+import WaveFileSettings from "./waveFileSettings";
 import {ByteVector} from "../byteVector";
 import {CorruptFileError, UnsupportedFormatError} from "../errors";
 import {File, FileAccessMode, ReadStyle} from "../file";
 import {IFileAbstraction} from "../fileAbstraction";
 import {ICodec} from "../iCodec";
-import {Id3v2TagHeaderFlags} from "../id3v2/id3v2TagHeader";
 import {Tag, TagTypes} from "../tag";
-import {NumberUtils} from "../utils";
 
 export default class RiffFile extends File {
     /**
@@ -24,16 +24,11 @@ export default class RiffFile extends File {
      */
     public static readonly fileIdentifier = ByteVector.fromString("RIFF", undefined, undefined, true);
 
-    private readonly _combinedTag: CombinedTag;
-    private _divxTag: DivxTag;
     private _fileType: string;
-    private _id3v2Tag: Id3v2Tag;
-    private _infoTag: InfoTag;
-    private _movieIdTag: MovieIdTag;
-    private _originalReadStyle: ReadStyle;
     private _properties: Properties;
     private _rawChunks: IRiffChunk[] = [];
     private _riffSize: number;
+    private _tag: RiffTags;
     private _taggingChunkIndexes: Map<TagTypes, number>;
 
     /**
@@ -45,17 +40,36 @@ export default class RiffFile extends File {
         super(file);
 
         // Read the file
-        this.read(propertiesStyle);
-        this._combinedTag = new CombinedTag();
-        this._combinedTag.setTags(this._id3v2Tag, this._infoTag, this._movieIdTag, this._divxTag);
-        this._originalReadStyle = propertiesStyle;
+        this.mode = FileAccessMode.Read;
+        try {
+            this.read(propertiesStyle);
+        } finally {
+            this.mode = FileAccessMode.Closed;
+        }
 
-        // Make sure we have all the possible tags at our disposal
-        // @TODO: Creating *all* the tag types sould probably be optional
-        this.getTag(TagTypes.Id3v2, true);
-        this.getTag(TagTypes.RiffInfo, true);
-        this.getTag(TagTypes.MovieId, true);
-        this.getTag(TagTypes.DivX, true);
+        // Depending on which type of file we're working with, determine which tags to create
+        let defaultTags = 0;
+        switch (this._fileType) {
+            case "AVI ":
+                defaultTags = AviFileSettings.defaultTagTypes;
+                break;
+            case "WAVE":
+                defaultTags = WaveFileSettings.defaultTagTypes;
+                break;
+        }
+
+        // Create the default tags
+        // NOTE: We are adding ID3v2 tag first because it is the most flexible and will store
+        //    complete tag information.
+        const allTagTypes = [TagTypes.Id3v2, TagTypes.DivX, TagTypes.RiffInfo, TagTypes.MovieId];
+        for (const tagType of allTagTypes) {
+            if ((defaultTags & tagType) === 0 || (this._tag.tagTypes & tagType) !== 0) {
+                continue;
+            }
+
+            // Desired default tag does not exist, create it
+            this._tag.createTag(tagType, true);
+        }
     }
 
     // #region Properties
@@ -64,7 +78,7 @@ export default class RiffFile extends File {
     public get properties(): Properties { return this._properties; }
 
     /** @inheritDoc */
-    public get tag(): Tag { return this._combinedTag; }
+    public get tag(): Tag { return this._tag; }
 
     // #endregion
 
@@ -72,69 +86,19 @@ export default class RiffFile extends File {
 
     /** @inheritDoc */
     public getTag(type: TagTypes, create: boolean): Tag {
-        let tag: Tag;
-
-        switch (type) {
-            case TagTypes.Id3v2:
-                if (!this._id3v2Tag && create) {
-                    this._id3v2Tag = Id3v2Tag.fromEmpty();
-                    this._id3v2Tag.version = 4; // @TODO: Is only v2.4 supported or should we fallback to default?
-                    this._id3v2Tag.flags |= Id3v2TagHeaderFlags.FooterPresent;
-                    this._combinedTag.copyTo(this._id3v2Tag, true);
-                }
-
-                tag = this._id3v2Tag;
-                break;
-
-            case TagTypes.RiffInfo:
-                if (!this._infoTag && create) {
-                    this._infoTag = InfoTag.fromEmpty();
-                    this._combinedTag.copyTo(this._infoTag, true);
-                }
-
-                tag = this._infoTag;
-                break;
-
-            case TagTypes.MovieId:
-                if (!this._movieIdTag && create) {
-                    this._movieIdTag = MovieIdTag.fromEmpty();
-                    this._combinedTag.copyTo(this._movieIdTag, true);
-                }
-
-                tag = this._movieIdTag;
-                break;
-
-            case TagTypes.DivX:
-                if (!this._divxTag && create) {
-                    this._divxTag = DivxTag.fromEmpty();
-                    this._combinedTag.copyTo(this._divxTag, true);
-                }
-
-                tag = this._divxTag;
-                break;
+        // Try to get the tag in question
+        const tag = this._tag.getTag(type);
+        if (tag || !create) {
+            return tag;
         }
 
-        this._combinedTag.setTags(this._id3v2Tag, this._infoTag, this._movieIdTag, this._divxTag);
-        return tag;
+        // Tag could not be found, create one
+        return this._tag.createTag(type, false);
     }
 
     /** @inheritDoc */
     public removeTags(types: TagTypes): void {
-        if (NumberUtils.uintAnd(types, TagTypes.Id3v2) !== TagTypes.None) {
-            this._id3v2Tag = undefined;
-        }
-        if (NumberUtils.uintAnd(types, TagTypes.RiffInfo) !== TagTypes.None) {
-            this._infoTag = undefined;
-        }
-        if (NumberUtils.uintAnd(types, TagTypes.MovieId) !== TagTypes.None) {
-            this._movieIdTag = undefined;
-        }
-        // noinspection JSSuspiciousNameCombination
-        if (NumberUtils.uintAnd(types, TagTypes.DivX) !== TagTypes.None) {
-            this._divxTag = undefined;
-        }
-
-        this._combinedTag.setTags(this._id3v2Tag, this._infoTag, this._movieIdTag, this._divxTag);
+        this._tag.removeTags(types);
     }
 
     /** @inheritDoc */
@@ -146,27 +110,31 @@ export default class RiffFile extends File {
             // Render the tags we have
             const renderedTags = [];
             const replacedChunks: Array<{chunk: IRiffChunk, newTotalSize: number}> = [];
-            if (this._id3v2Tag) {
+            const id3v2Tag = this._tag.getTag<Id3v2Tag>(TagTypes.Id3v2);
+            if (id3v2Tag) {
                 // @TODO: Allow chunk ID to be configurable
-                const id3v2TagBytes = this._id3v2Tag.render();
+                const id3v2TagBytes = id3v2Tag.render();
                 const id3v2TagChunk = RiffChunk.fromData("id3 ", id3v2TagBytes);
                 replacedChunks.push({ chunk: id3v2TagChunk, newTotalSize: id3v2TagChunk.originalTotalSize });
                 renderedTags.push(id3v2TagChunk.render());
             }
-            if (this._infoTag) {
-                const infoTagBytes = this._infoTag.render();
-                replacedChunks.push({ chunk: this._infoTag.list, newTotalSize: infoTagBytes.length });
+            const infoTag = this._tag.getTag<InfoTag>(TagTypes.RiffInfo);
+            if (infoTag) {
+                const infoTagBytes = infoTag.render();
+                replacedChunks.push({ chunk: infoTag.list, newTotalSize: infoTagBytes.length });
                 renderedTags.push(infoTagBytes);
 
             }
-            if (this._movieIdTag) {
-                const movieIdBytes = this._movieIdTag.render();
-                replacedChunks.push({ chunk: this._movieIdTag.list, newTotalSize: movieIdBytes.length });
+            const movieIdTag = this._tag.getTag<MovieIdTag>(TagTypes.MovieId);
+            if (movieIdTag) {
+                const movieIdBytes = movieIdTag.render();
+                replacedChunks.push({ chunk: movieIdTag.list, newTotalSize: movieIdBytes.length });
                 renderedTags.push(movieIdBytes);
 
             }
-            if (this._divxTag) {
-                const divxTagBytes = this._divxTag.render();
+            const divxTag = this._tag.getTag<DivxTag>(TagTypes.DivX);
+            if (divxTag) {
+                const divxTagBytes = divxTag.render();
                 const divxTagChunk = RiffChunk.fromData(DivxTag.CHUNK_FOURCC, divxTagBytes);
                 replacedChunks.push({ chunk: divxTagChunk, newTotalSize: divxTagChunk.originalTotalSize });
                 renderedTags.push(divxTagChunk.render());
@@ -381,28 +349,30 @@ export default class RiffFile extends File {
             this.updateTaggingChunkIndexes();
             // 1) DivX
             const divxChunkIndex = this._taggingChunkIndexes.get(TagTypes.DivX);
-            if (divxChunkIndex >= 0) {
-                this._divxTag = DivxTag.fromData((<RiffChunk> this._rawChunks[divxChunkIndex]).data);
-            }
+            const divxTag = divxChunkIndex >= 0
+                ? DivxTag.fromData((<RiffChunk> this._rawChunks[divxChunkIndex]).data)
+                : undefined;
 
             // 2) ID3v2
             const id3v2ChunkIndex = this._taggingChunkIndexes.get(TagTypes.Id3v2);
-            if (id3v2ChunkIndex >= 0) {
-                // @TODO: Switch to fromFile and using chunk start/data length to allow lazy picture loading
-                this._id3v2Tag = Id3v2Tag.fromData((<RiffChunk> this._rawChunks[id3v2ChunkIndex]).data);
-            }
+            // @TODO: Switch to fromFile and using chunk start/data length to allow lazy picture loading
+            const id3v2Tag = id3v2ChunkIndex >= 0
+                ? Id3v2Tag.fromData((<RiffChunk> this._rawChunks[id3v2ChunkIndex]).data)
+                : undefined;
 
             // 3) Info tag
             const infoTagChunkIndex = this._taggingChunkIndexes.get(TagTypes.RiffInfo);
-            if (infoTagChunkIndex >= 0) {
-                this._infoTag = InfoTag.fromList(<RiffList> this._rawChunks[infoTagChunkIndex]);
-            }
+            const infoTag = infoTagChunkIndex >= 0
+                ? InfoTag.fromList(<RiffList> this._rawChunks[infoTagChunkIndex])
+                : undefined;
 
             // 4) MovieID tag
             const movieIdChunkIndex = this._taggingChunkIndexes.get(TagTypes.MovieId);
-            if (movieIdChunkIndex >= 0) {
-                this._movieIdTag = MovieIdTag.fromList(<RiffList> this._rawChunks[movieIdChunkIndex]);
-            }
+            const moveIdTag = movieIdChunkIndex >= 0
+                ? MovieIdTag.fromList(<RiffList> this._rawChunks[movieIdChunkIndex])
+                : undefined;
+
+            this._tag = new RiffTags(divxTag, id3v2Tag, infoTag, moveIdTag);
 
         } finally {
             this.mode = FileAccessMode.Closed;

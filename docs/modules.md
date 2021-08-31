@@ -86,7 +86,7 @@
 - [MovieIdTag](classes/movieidtag.md)
 - [MpegAudioFile](classes/mpegaudiofile.md)
 - [MpegAudioHeader](classes/mpegaudioheader.md)
-- [MpegFile](classes/mpegfile.md)
+- [MpegContainerFile](classes/mpegfile.md)
 - [MpegVbriHeader](classes/mpegvbriheader.md)
 - [MpegVideoHeader](classes/mpegvideoheader.md)
 - [MpegXingHeader](classes/mpegxingheader.md)

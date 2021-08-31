@@ -622,14 +622,14 @@ export default abstract class CombinedTag extends Tag {
      * @param tagType Type of tag to create
      * @returns Tag The newly created tag
      */
-    public abstract createTag(tagType: TagTypes): Tag;
+    public abstract createTag(tagType: TagTypes, copy: boolean): Tag;
 
     /**
      * Gets a tag of the specified tag type if a matching tag exists in the current instance.
      * @param tagType Type of tag to retrieve
      * @returns Tag Tag with specified type, if it exists. `undefined` otherwise.
      */
-    public getTag(tagType: TagTypes): Tag {
+    public getTag<TTag extends Tag>(tagType: TagTypes): TTag {
         // Make sure the tag type can possibly be stored here
         if ((tagType & this._supportedTagTypes) === 0) {
             return undefined;
@@ -640,11 +640,11 @@ export default abstract class CombinedTag extends Tag {
             if (tag instanceof CombinedTag) {
                 const foundTag = tag.getTag(tagType);
                 if (foundTag) {
-                    return foundTag;
+                    return <TTag> foundTag;
                 }
             } else {
                 if (tag.tagTypes === tagType) {
-                    return tag;
+                    return <TTag> tag;
                 }
             }
         }
@@ -674,7 +674,9 @@ export default abstract class CombinedTag extends Tag {
     // #region Protected/Private Methods
 
     protected addTagInternal(tag: Tag) {
-        this._tags.push(tag);
+        if (tag) {
+            this._tags.push(tag);
+        }
     }
 
     protected clearTags(): void {

@@ -38,7 +38,7 @@ export default class EndTag extends CombinedTag {
     // #region Public Methods
 
     /** @inheritDoc */
-    public createTag(type: TagTypes): Tag {
+    public createTag(type: TagTypes, copy: boolean): Tag {
         this.validateTagCreation(type);
 
         let tag: Tag;
@@ -59,6 +59,10 @@ export default class EndTag extends CombinedTag {
                 break;
             default:
                 throw new UnsupportedFormatError(`Specified tag type ${type} is invalid`);
+        }
+
+        if (copy) {
+            this.copyTo(tag, true);
         }
 
         this.addTagInternal(tag);

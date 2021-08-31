@@ -25,7 +25,7 @@ export default class MpegAudioFileSettings {
     public static set defaultTagTypes(value: TagTypes) {
         const unsupportedTagTypes = NumberUtils.uintAnd(value, ~this.supportedTagTypes);
         if (unsupportedTagTypes !== 0) {
-            throw new Error(`Argument error: node-taglib-sharp does not support tag types ${unsupportedTagTypes} for AAC files`);
+            throw new Error(`Argument error: node-taglib-sharp does not support tag types ${unsupportedTagTypes} for MPEG audio files`);
         }
 
         this._defaultTagTypes = value;

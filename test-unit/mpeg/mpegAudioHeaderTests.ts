@@ -685,9 +685,7 @@ const assert = Chai.assert;
         const result = MpegAudioHeader.find(mockFile, 1);
 
         // Assert
-        assert.isOk(result);
-        assert.strictEqual(result.header, MpegAudioHeader.Unknown);
-        assert.isFalse(result.success);
+        assert.isNotOk(result);
     }
 
     @test
@@ -700,9 +698,7 @@ const assert = Chai.assert;
         const result = MpegAudioHeader.find(mockFile, 1);
 
         // Assert
-        assert.isOk(result);
-        assert.strictEqual(result.header, MpegAudioHeader.Unknown);
-        assert.isFalse(result.success);
+        assert.isNotOk(result);
     }
 
     @test
@@ -719,9 +715,7 @@ const assert = Chai.assert;
         const result = MpegAudioHeader.find(mockFile, 1, 1024);
 
         // Assert
-        assert.isOk(result);
-        assert.strictEqual(result.header, MpegAudioHeader.Unknown);
-        assert.isFalse(result.success);
+        assert.isNotOk(result);
     }
 
     @test
@@ -739,7 +733,6 @@ const assert = Chai.assert;
 
         // Assert
         assert.isOk(result);
-        assert.notEqual(result.header, MpegAudioHeader.Unknown);
-        assert.isTrue(result.success);
+        assert.notEqual(result, MpegAudioHeader.Unknown);
     }
 }

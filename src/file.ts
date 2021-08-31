@@ -566,17 +566,15 @@ export abstract class File {
     public abstract removeTags(types: TagTypes): void;
 
     /**
-     * Searched backwards through a file for a specified pattern, starting at a specified offset.
+     * Searches backwards through a file for a specified pattern, starting at a specified offset.
      * @param pattern Pattern to search for in the current instance. Must be shorter than the
      *     {@link bufferSize}
-     * @param startPosition Seek position from which to start searching.
-     * @param after Pattern that the searched for pattern must appear after. If this pattern is
-     *     found first, `-1` is returned.
+     * @param startPosition Number of bytes from end of the file to begin searching.
      * @throws Error Thrown if `pattern` was not provided or if `startPosition` is
      *     not a safe, positive integer.
      * @returns Index at which the value wa found. If not found, `-1` is returned.
      */
-    public rFind(pattern: ByteVector, startPosition: number = 0, after?: ByteVector): number {
+    public rFind(pattern: ByteVector, startPosition: number = 0): number {
         Guards.truthy(pattern, "pattern");
         Guards.safeUint(startPosition, "startPosition");
 
@@ -603,10 +601,6 @@ export abstract class File {
                 const location = buffer.rFind(pattern);
                 if (location >= 0) {
                     return bufferOffset + location;
-                }
-
-                if (after && buffer.rFind(after) >= 0) {
-                    return -1;
                 }
 
                 readSize = Math.min(bufferOffset, File._bufferSize);

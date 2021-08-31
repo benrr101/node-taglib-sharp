@@ -37,16 +37,13 @@ export default abstract class NonContainerFile extends File {
 
         // Create the default tags
         for (const tagType of defaultTagMappingTable.keys()) {
-            if ((defaultTags & tagType) === 0) {
-                // Tag type was not expected to exist
+            // Don't create tag if its not desired or already exists
+            if ((defaultTags & tagType) === 0 || (this._tag.tagTypes & tagType) !== 0) {
                 continue;
             }
 
             // Tag is expected to exist
-            const existingTag = this._tag.getTag(tagType);
-            if (!existingTag) {
-                this._tag.createTag(tagType);
-            }
+            this._tag.createTag(tagType, true);
         }
     }
 
@@ -91,11 +88,11 @@ export default abstract class NonContainerFile extends File {
         // Try to get the tag in question
         const tag = this._tag.getTag(type);
         if (tag || !create) {
-            return;
+            return tag;
         }
 
         // Tag could not be found, create one
-        return this._tag.createTag(type);
+        return this._tag.createTag(type, false);
     }
 
     /** @inheritDoc */

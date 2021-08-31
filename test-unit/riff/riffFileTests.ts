@@ -333,7 +333,7 @@ import {Testers} from "../utilities/testers";
 
         // Assert 2
         assert.isOk(tag);
-        assert.isFalse(tag.isEmpty);
+        assert.isTrue(tag.isEmpty);
     }
 
     @test
@@ -368,7 +368,7 @@ import {Testers} from "../utilities/testers";
 
         // Assert 2
         assert.isOk(tag);
-        assert.isFalse(tag.isEmpty);
+        assert.isTrue(tag.isEmpty);
     }
 
     @test
@@ -403,7 +403,7 @@ import {Testers} from "../utilities/testers";
 
         // Assert 2
         assert.isOk(tag);
-        assert.isFalse(tag.isEmpty);
+        assert.isTrue(tag.isEmpty);
     }
 
     @test
@@ -438,7 +438,7 @@ import {Testers} from "../utilities/testers";
 
         // Assert 2
         assert.isOk(tag);
-        assert.isTrue(tag.isEmpty); // This one is true b/c there isn't overlap with DivX and other tags
+        assert.isTrue(tag.isEmpty); // This one is true b/c there isn't overlap with DivX and other test tags
     }
 
     @test

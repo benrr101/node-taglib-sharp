@@ -335,9 +335,11 @@ export default class MpegAudioHeader implements IAudioCodec {
     public static find(file: File, position: number, length?: number): MpegAudioHeader {
         Guards.truthy(file, "file");
         Guards.safeUint(position, "position");
-        Guards.int(length, "length");
+        if (length !== undefined) {
+            Guards.uint(length, "length");
+        }
 
-        const end = position + length;
+        const end = position + (length || 0);
 
         file.seek(position);
         let buffer = file.readBlock(3);

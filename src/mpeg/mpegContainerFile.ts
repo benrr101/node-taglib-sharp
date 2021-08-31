@@ -109,9 +109,12 @@ export default class MpegContainerFile extends NonContainerFile {
         if (this._audioHeader) { codecs.push(this._audioHeader); }
 
         // @TODO: Can we omit calculating duration via start/end timestamps if we have audio with
-        //  a valid duration?
+        //     a valid duration?
         // Calculate duration of the file
-        const lastSyncPosition = this.rFindMarkerPosition(this.mediaEndPosition, MpegFileMarker.SystemSyncPacket);
+        const lastSyncPosition = this.rFindMarkerPosition(
+            this.length - this.mediaEndPosition,
+            MpegFileMarker.SystemSyncPacket
+        );
         this._endTime = this.readTimestamp(lastSyncPosition + 4);
         const durationMilliseconds = this._startTime === undefined
             ? (this._audioHeader ? this._audioHeader.durationMilliseconds : 0)
@@ -188,8 +191,8 @@ export default class MpegContainerFile extends NonContainerFile {
             + ((timestampFlags & 0x10) > 0 ? 4 : 0); // Decode timestamp
 
         // Decode the MPEG audio header
-        const audioHeaderResult = MpegAudioHeader.find(this, position + dataOffset, length - 9);
-        this._audioHeader = audioHeaderResult;
+        this._audioHeader = MpegAudioHeader.find(this, position + dataOffset, length - 9);
+        this._audioFound = !!this._audioHeader;
 
         return position + length;
     }
@@ -289,6 +292,7 @@ export default class MpegContainerFile extends NonContainerFile {
             offset = markerResult.position;
             if (markerResult.marker === MpegFileMarker.VideoSyncPacket) {
                 this._videoHeader = new MpegVideoHeader(this, offset + 4);
+                this._videoFound = true;
             } else {
                 // Advance the offset by 6 bytes, so the next iteration of the loop won't find the
                 // same marker and get stuck. 6 bytes because findFirstMarker is a generic find

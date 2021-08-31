@@ -51,9 +51,9 @@ export default class NonContainerTag extends CombinedTag {
     // #endregion
 
     /** @inheritDoc */
-    public createTag(tagType: TagTypes): Tag {
+    public createTag(tagType: TagTypes, copy: boolean): Tag {
         // Determine where the tag goes and create it
         const destinationTag = this._defaultTagMappingTable.get(tagType)() ? this._endTag : this._startTag;
-        return destinationTag.createTag(tagType);
+        return destinationTag.createTag(tagType, copy);
     }
 }
