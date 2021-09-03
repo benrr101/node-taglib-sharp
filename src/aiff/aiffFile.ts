@@ -236,7 +236,7 @@ export default class AiffFile extends File {
         // Read the ID3 chunk
         if (id3ChunkPos >= 0) {
             if (readTags && !this._tag) {
-                this._tag = Id3v2Tag.fromFile(this, id3ChunkPos + 8, style);
+                this._tag = Id3v2Tag.fromFileStart(this, id3ChunkPos + 8, style);
             }
 
             // Get the length of the tag from the ID3 chunk

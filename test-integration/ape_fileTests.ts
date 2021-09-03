@@ -1,13 +1,10 @@
-import * as Chai from "chai";
 import {suite, test} from "@testdeck/mocha";
+import {assert} from "chai";
 
 import ExtendedFileTests from "./utilities/extendedFileTests";
 import TestConstants from "./utilities/testConstants";
 import {File} from "../src";
 import {StandardFileTests} from "./utilities/standardFileTests";
-
-// Setup chai
-const assert = Chai.assert;
 
 @suite class Ape_FileTests {
     private static readonly sampleFilePath = TestConstants.getSampleFilePath("sample.ape");

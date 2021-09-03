@@ -105,11 +105,11 @@ class StartTagParser extends TagParser {
     );
     private static readonly identifierMappings = [
         {
-            action: (f: File, p: number, rs: ReadStyle) => ApeTag.fromFile(f, p),
+            action: (f: File, p: number, _rs: ReadStyle) => ApeTag.fromFile(f, p),
             identifier: ApeTagFooter.fileIdentifier,
         },
         {
-            action: (f: File, p: number, rs: ReadStyle) => Id3v2Tag.fromFile(f, p, rs),
+            action: (f: File, p: number, rs: ReadStyle) => Id3v2Tag.fromFileStart(f, p, rs),
             identifier: Id3v2TagHeader.fileIdentifier
         }
     ];

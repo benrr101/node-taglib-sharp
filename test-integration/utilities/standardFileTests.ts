@@ -125,7 +125,7 @@ export class StandardFileTests {
             assert.isOk(file);
             pics = file.tag.pictures;
 
-            assert.strictEqual(3, pics.length);
+            assert.strictEqual(pics.length, 3);
 
             // Lazy picture check
             const isLazy = (readStyle & ReadStyle.PictureLazy) !== 0;

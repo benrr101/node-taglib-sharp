@@ -658,7 +658,7 @@ export default abstract class CombinedTag extends Tag {
      */
     public removeTags(tagTypes: TagTypes): void {
         for (let i = this._tags.length - 1; i >= 0; i--) {
-            const tag = this.tags[i];
+            const tag = this._tags[i];
 
             const isMatch = (tag.tagTypes & tagTypes) !== 0;
             if (isMatch) {

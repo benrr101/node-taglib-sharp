@@ -284,6 +284,7 @@ export default class MpegAudioHeader implements IAudioCodec {
     /**
      * Sets the length of the audio stream represented by the current instance.
      * If this value has not been set, {@link durationMilliseconds} will return an incorrect value.
+     * @internal This is intended to be set when the file is read.
      */
     public set streamLength(value: number) {
         Guards.safeUint(value, "value");

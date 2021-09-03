@@ -75,14 +75,14 @@ export default class Id3v2Tag extends Tag {
     }
 
     /**
-     * Constructs and initializes a new Tag by reading the contents from a specified position in
-     * the provided file.
+     * Constructs and initializes a new Tag by reading the beginning of the tag.
+     * @remarks This method is the most flexible way of reading ID3v2 tags.
      * @param file File from which the contents of the new instance is to be read
-     * @param position Offset into the file where the tag should be read from
+     * @param position Offset into the file where the tag begins
      * @param style How the data is to be read into the current instance
      * @returns Id3v2Tag Tag with the data from the file read into it
      */
-    public static fromFile(file: File, position: number, style: ReadStyle): Id3v2Tag {
+    public static fromFileStart(file: File, position: number, style: ReadStyle): Id3v2Tag {
         Guards.truthy(file, "file");
         Guards.safeUint(position, "position");
         if (position > file.length - Id3v2Settings.headerSize) {
@@ -90,7 +90,27 @@ export default class Id3v2Tag extends Tag {
         }
 
         const tag = new Id3v2Tag();
-        tag.read(file, position, style);
+        tag.readFromStart(file, position, style);
+        return tag;
+    }
+
+    /**
+     * Constructs and initializes a new Tag by reading the end of the tag first.
+     * @remarks This method should only be used if reading tags at the end of a file. Only ID3v2.4
+     *     tags support a footer, which is required to use this method.
+     * @param file File from which the contents of the new instance is to be read
+     * @param position Offset into the file where the tag ends
+     * @param style How the data is to be read into the current instance
+     */
+    public static fromFileEnd(file: File, position: number, style: ReadStyle): Id3v2Tag {
+        Guards.truthy(file, "file");
+        Guards.safeUint(position, "position");
+        if (position > file.length - Id3v2Settings.footerSize) {
+            throw new Error("Argument out of range: position must be within size of the file");
+        }
+
+        const tag = new Id3v2Tag();
+        tag.readFromEnd(file, position, style);
         return tag;
     }
 
@@ -1113,11 +1133,11 @@ export default class Id3v2Tag extends Tag {
         }
     }
 
-    protected read(file: File, position: number, style: ReadStyle): void {
-        file.mode = FileAccessMode.Read;
+    protected readFromStart(file: File, position: number, style: ReadStyle): void {
         file.seek(position);
 
-        this._header = Id3v2TagHeader.fromData(file.readBlock(Id3v2Settings.headerSize));
+        const headerBlock = file.readBlock(Id3v2Settings.headerSize);
+        this._header = Id3v2TagHeader.fromData(headerBlock);
 
         // If the tag size is 0, then this is an invalid tag. Tags must contain at least one frame.
         if (this._header.tagSize === 0) {
@@ -1126,6 +1146,16 @@ export default class Id3v2Tag extends Tag {
 
         position += Id3v2Settings.headerSize;
         this.parse(undefined, file, position, style);
+    }
+
+    protected readFromEnd(file: File, position: number, style: ReadStyle): void {
+        file.seek(position - Id3v2Settings.footerSize);
+
+        const footerBlock = file.readBlock(Id3v2Settings.footerSize);
+        const footer = Id3v2TagFooter.fromData(footerBlock);
+        position -= footer.completeTagSize;
+
+        this.readFromStart(file, position, style);
     }
 
     private getTextAsArray(ident: FrameIdentifier): string[] {

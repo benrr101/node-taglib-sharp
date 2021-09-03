@@ -111,7 +111,7 @@ class EndTagParser extends TagParser {
             offset: ApeTagFooter.size,
         },
         {
-            action: (f: File, p: number, rs: ReadStyle) => Id3v2Tag.fromFile(f, p, rs),
+            action: (f: File, p: number, rs: ReadStyle) => Id3v2Tag.fromFileEnd(f, p + Id3v2Settings.footerSize, rs),
             identifier: Id3v2TagFooter.fileIdentifier,
             offset: Id3v2Settings.footerSize
         },
@@ -124,10 +124,14 @@ class EndTagParser extends TagParser {
 
     public constructor(file: File, readStyle: ReadStyle) {
         super(file, readStyle);
-        this._fileOffset = this._file.length - EndTagParser.readSize;
+        this._fileOffset = Math.max(this._file.length - EndTagParser.readSize, 0);
     }
 
     public read(): boolean {
+        if (this._fileOffset < 0) {
+            return false;
+        }
+
         try {
             // Read a footer from the file
             this._file.seek(this._fileOffset);
@@ -138,8 +142,8 @@ class EndTagParser extends TagParser {
                 // Calculate how far from the end of the block to check
                 const offset = tagFooterBlock.length - mapping.offset;
                 if (tagFooterBlock.containsAt(mapping.identifier, offset)) {
-                    this._currentTag = mapping.action(this._file, offset, this._readStyle);
-                    this._fileOffset += EndTagParser.readSize - this._currentTag.sizeOnDisk;
+                    this._currentTag = mapping.action(this._file, this._fileOffset + offset, this._readStyle);
+                    this._fileOffset -= this._currentTag.sizeOnDisk;
                     return true;
                 }
             }
