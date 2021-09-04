@@ -15,10 +15,10 @@ export default class RiffTags extends CombinedTag {
 
         // NOTE: We're adding ID3 first because it is the most flexible tagging format. Divx is last
         //     because it is the least flexible tagging format.
-        this.addTagInternal(id3v2Tag);
-        this.addTagInternal(infoTag);
-        this.addTagInternal(movieIdTag);
-        this.addTagInternal(divxTag);
+        this.addTag(id3v2Tag);
+        this.addTag(infoTag);
+        this.addTag(movieIdTag);
+        this.addTag(divxTag);
     }
 
     /** @inheritDoc */
@@ -54,7 +54,7 @@ export default class RiffTags extends CombinedTag {
             this.copyTo(tag, true);
         }
 
-        this.addTagInternal(tag);
+        this.addTag(tag);
         return tag;
     }
 }

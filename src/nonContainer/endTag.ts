@@ -65,7 +65,7 @@ export default class EndTag extends CombinedTag {
             this.copyTo(tag, true);
         }
 
-        this.addTagInternal(tag);
+        this.addTag(tag);
         return tag;
     }
 
@@ -75,7 +75,7 @@ export default class EndTag extends CombinedTag {
      */
     public render(): ByteVector {
         // Note: by sorting these in reverse order, we ensure that ID3v1 is rendered at the end
-        const tagBytes = this.tags.sort((t1, t2) => t1.tagTypes - t2.tagTypes)
+        const tagBytes = this.tags.sort((t1, t2) => t2.tagTypes - t1.tagTypes)
             .map((t) => (<ApeTag|Id3v1Tag|Id3v2Tag> t).render());
         return ByteVector.concatenate(... tagBytes);
     }
@@ -83,12 +83,16 @@ export default class EndTag extends CombinedTag {
     // #endregion
 
     private read(file: File, style: ReadStyle): void {
-        this.clearTags();
-
         const parser = new EndTagParser(file, style);
+        const tags = [];
         while (parser.read()) {
-            this.addTagInternal(parser.currentTag);
+            tags.push(parser.currentTag);
         }
+
+        // HACK: We want to make sure ID3v1 tags go at the back of the list. ID3v1 will truncate
+        //    the contents of fields, so we need to make sure it is not preferentially chosen.
+        tags.sort((t1, t2) => t2.tagTypes - t1.tagTypes)
+            .forEach((t) => this.addTag(t));
     }
 }
 
@@ -128,17 +132,26 @@ class EndTagParser extends TagParser {
     }
 
     public read(): boolean {
-        if (this._fileOffset < 0) {
-            return false;
-        }
-
         try {
+            // This check lets us more gracefully handle files that have <128 bytes of media
+            let readSize = EndTagParser.readSize;
+            if (this._fileOffset < 0) {
+                const overflow = this._fileOffset * -1;
+                this._fileOffset = 0;
+                readSize -= overflow;
+            }
+
             // Read a footer from the file
             this._file.seek(this._fileOffset);
-            const tagFooterBlock = this._file.readBlock(EndTagParser.readSize);
+            const tagFooterBlock = this._file.readBlock(readSize);
 
             // Check for any identifiers of a tag
             for (const mapping of EndTagParser.identifierMappings) {
+                // If we don't have enough bytes to check for this mapping, skip it
+                if (mapping.offset > tagFooterBlock.length) {
+                    continue;
+                }
+
                 // Calculate how far from the end of the block to check
                 const offset = tagFooterBlock.length - mapping.offset;
                 if (tagFooterBlock.containsAt(mapping.identifier, offset)) {

@@ -11,7 +11,7 @@ import UniqueFileIdentifierFrame from "./frames/uniqueFileIdentifierFrame";
 import UnsynchronizedLyricsFrame from "./frames/unsynchronizedLyricsFrame";
 import {ByteVector, StringType} from "../byteVector";
 import {CorruptFileError, NotImplementedError, NotSupportedError} from "../errors";
-import {File, FileAccessMode, ReadStyle} from "../file";
+import {File, ReadStyle} from "../file";
 import {Frame, FrameClassType} from "./frames/frame";
 import {FrameIdentifier, FrameIdentifiers} from "./frameIdentifiers";
 import {Id3v2FrameFlags} from "./frames/frameHeader";
@@ -105,7 +105,7 @@ export default class Id3v2Tag extends Tag {
     public static fromFileEnd(file: File, position: number, style: ReadStyle): Id3v2Tag {
         Guards.truthy(file, "file");
         Guards.safeUint(position, "position");
-        if (position > file.length - Id3v2Settings.footerSize) {
+        if (position > file.length) {
             throw new Error("Argument out of range: position must be within size of the file");
         }
 

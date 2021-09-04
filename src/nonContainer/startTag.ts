@@ -56,7 +56,7 @@ export default class StartTag extends CombinedTag {
             this.copyTo(tag, true);
         }
 
-        this.addTagInternal(tag);
+        this.addTag(tag);
         return tag;
     }
 
@@ -83,11 +83,9 @@ export default class StartTag extends CombinedTag {
      * Reads the tags stored at the start of the file into the current instance.
      */
     private read(file: File, style: ReadStyle): void {
-        this.clearTags();
-
         const parser = new StartTagParser(file, style);
         while (parser.read()) {
-            this.addTagInternal(parser.currentTag);
+            this.addTag(parser.currentTag);
         }
     }
 }

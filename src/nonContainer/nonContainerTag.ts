@@ -31,9 +31,9 @@ export default class NonContainerTag extends CombinedTag {
         this._defaultTagMappingTable = defaultTagMappingTable;
 
         this._startTag = new StartTag(file, readStyle);
-        this.addTagInternal(this._startTag);
+        this.addTag(this._startTag);
         this._endTag = new EndTag(file, readStyle);
-        this.addTagInternal(this._endTag);
+        this.addTag(this._endTag);
     }
 
     // #region Properties

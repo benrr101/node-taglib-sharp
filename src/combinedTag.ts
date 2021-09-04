@@ -37,6 +37,12 @@ export default abstract class CombinedTag extends Tag {
     }
 
     /**
+     * Gets the types of tags that are supported by this instance of a combined tag. Only these tag
+     * types can be added to the instance.
+     */
+    public get supportedTagTypes(): TagTypes { return this._supportedTagTypes; }
+
+    /**
      * Gets the tag types contained in the current instance.
      * @returns TagTypes Bitwise combined tag types contained in all child tags.
      */
@@ -601,8 +607,7 @@ export default abstract class CombinedTag extends Tag {
      * returned, `false` otherwise.
      */
     public get isEmpty(): boolean {
-        return this._tags.filter((t) => !!t )
-            .every((t) => t.isEmpty);
+        return this._tags.every((t) => t.isEmpty);
     }
 
     // #endregion
@@ -620,6 +625,8 @@ export default abstract class CombinedTag extends Tag {
      * tag type is unsupported in the current context or the tag type already exists, an error will
      * be thrown.
      * @param tagType Type of tag to create
+     * @param copy Whether or not to copy the contents of the current instance to the newly created
+     *     tag instance
      * @returns Tag The newly created tag
      */
     public abstract createTag(tagType: TagTypes, copy: boolean): Tag;
@@ -642,10 +649,8 @@ export default abstract class CombinedTag extends Tag {
                 if (foundTag) {
                     return <TTag> foundTag;
                 }
-            } else {
-                if (tag.tagTypes === tagType) {
-                    return <TTag> tag;
-                }
+            } else if (tag.tagTypes === tagType) {
+                return <TTag> tag;
             }
         }
 
@@ -653,7 +658,8 @@ export default abstract class CombinedTag extends Tag {
     }
 
     /**
-     * Remove all tags that match the specified tagTypes. This is performed recursively.
+     * Remove all tags that match the specified tagTypes. This is performed recursively. Any nested
+     * `CombinedTag` instances are left in place.
      * @param tagTypes Types of tags to remove
      */
     public removeTags(tagTypes: TagTypes): void {
@@ -673,25 +679,8 @@ export default abstract class CombinedTag extends Tag {
 
     // #region Protected/Private Methods
 
-    protected addTagInternal(tag: Tag) {
-        if (tag) {
-            this._tags.push(tag);
-        }
-    }
-
-    protected clearTags(): void {
-        this._tags.splice(0, this._tags.length);
-    }
-
-    protected insertTag(index: number, tag: Tag): void {
-        this._tags.splice(index, 0, tag);
-    }
-
-    protected removeTag(tag: Tag) {
-        const index = this._tags.indexOf(tag);
-        if (index >= 0) {
-            this._tags.splice(index, 1);
-        }
+    protected addTag(tag: Tag) {
+        this._tags.push(tag);
     }
 
     /**

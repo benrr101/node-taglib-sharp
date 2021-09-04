@@ -58,7 +58,7 @@ import {TagTesters, Testers} from "../utilities/testers";
     }
 
     @test
-    public constructor_tagsAtEnd() {
+    public constructor_tagsAtEnd_tagsSmallerThanReadSize() {
         // Arrange
         const id3v1Tag = Id3v1Tag.fromEmpty();
         id3v1Tag.track = 123;
@@ -88,6 +88,47 @@ import {TagTesters, Testers} from "../utilities/testers";
             album: "foo",
             title: "bar",
             track: 123
+        });
+    }
+
+    @test
+    public constructor_tagsAtEnd_tagsLargerThanReadSize() {
+        // Arrange
+        // Arrange
+        const id3v1Tag = Id3v1Tag.fromEmpty();
+        id3v1Tag.track = 123;
+        const id3v2Tag = Id3v2Tag.fromEmpty();
+        id3v2Tag.version = 4;
+        id3v2Tag.flags |= Id3v2TagHeaderFlags.FooterPresent;
+        id3v2Tag.album = "foobarbaz12345678901234567890";
+        id3v2Tag.albumArtists = ["foo", "bar", "baz"];
+        id3v2Tag.amazonId = "1234567890123456789012345678901234567890";
+        id3v2Tag.copyright = "fuxbuxquxx123456789012345678901234567890";
+        const apeTag = ApeTag.fromEmpty();
+        apeTag.title = "bar";
+
+        const fileBytes = ByteVector.concatenate(
+            ByteVector.fromSize(100),
+            apeTag.render(),
+            id3v2Tag.render(),
+            id3v1Tag.render()
+        );
+        const file = TestFile.getFile(fileBytes);
+
+        // Act
+        const endTag = new EndTag(file, ReadStyle.Average);
+
+        // Assert
+        assert.isOk(endTag);
+        assert.strictEqual(endTag.tags.length, 3);
+        assert.strictEqual(endTag.tagTypes, TagTypes.Id3v1 | TagTypes.Id3v2 | TagTypes.Ape);
+        TagTesters.testTagProperties(endTag, {
+            album: id3v2Tag.album,
+            albumArtists: id3v2Tag.albumArtists,
+            amazonId: id3v2Tag.amazonId,
+            copyright: id3v2Tag.copyright,
+            title: apeTag.title,
+            track: id3v1Tag.track
         });
     }
 
@@ -194,12 +235,14 @@ import {TagTesters, Testers} from "../utilities/testers";
     public createTag_copy() {
         // Arrange
         const id3v2Tag = Id3v2Tag.fromEmpty();
+        id3v2Tag.version = 4;
+        id3v2Tag.flags |= Id3v2TagHeaderFlags.FooterPresent;
         id3v2Tag.album = "foobarbaz";
         id3v2Tag.title = "fuxbuxquxx";
 
         const fileBytes = ByteVector.concatenate(
-            id3v2Tag.render(),
-            ByteVector.fromSize(100)
+            ByteVector.fromSize(100),
+            id3v2Tag.render()
         );
         const file = TestFile.getFile(fileBytes);
         const tag = new EndTag(file, ReadStyle.Average);
@@ -223,6 +266,8 @@ import {TagTesters, Testers} from "../utilities/testers";
     public render_hasTags() {
         // Arrange
         const id3v2Tag = Id3v2Tag.fromEmpty();
+        id3v2Tag.version = 4;
+        id3v2Tag.flags |= Id3v2TagHeaderFlags.FooterPresent;
         id3v2Tag.album = "foobarbaz";
         const apeTag = ApeTag.fromEmpty();
         apeTag.title = "fuxbuxquxx";
@@ -243,8 +288,8 @@ import {TagTesters, Testers} from "../utilities/testers";
 
         // Assert
         const expectedBytes = ByteVector.concatenate(
-            id3v2Tag.render(),
             apeTag.render(),
+            id3v2Tag.render(),
             id3v1Tag.render()
         );
 
