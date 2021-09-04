@@ -1,5 +1,5 @@
 import EndTag from "./endTag";
-import NonContainerTag from "./nonContainerTag";
+import SandwichTag from "./sandwichTag";
 import Properties from "../properties";
 import StartTag from "./startTag";
 import {File, FileAccessMode, ReadStyle} from "../file";
@@ -7,12 +7,16 @@ import {IFileAbstraction} from "../fileAbstraction";
 import {Tag, TagTypes} from "../tag";
 
 /**
- * Abstract class that provides tagging and properties for files that can be wrapped with tags at
- * the beginning or end.
+ * Abstract class that provides tagging and properties for files that can have tags at the
+ * beginning and/or end of the file. The tags are added generically and are not part of the media
+ * format. As such, the tags sandwich the media.
+ * @remarks This was called `NonContainer` in the original .NET implementation, implying that files
+ *     utilizing this pattern could not be containers. This is not true - MPEG containers, for
+ *     example, use this pattern. Therefore the name was changed to better represent the situation.
  */
-export default abstract class NonContainerFile extends File {
+export default abstract class SandwichFile extends File {
     private readonly _properties: Properties;
-    private readonly _tag: NonContainerTag;
+    private readonly _tag: SandwichTag;
     private _mediaEndPosition: number;
     private _mediaStartPosition: number;
 
@@ -27,7 +31,7 @@ export default abstract class NonContainerFile extends File {
         // Read existing tags and properties
         this.mode = FileAccessMode.Read;
         try {
-            this._tag = new NonContainerTag(this, readStyle, defaultTagMappingTable);
+            this._tag = new SandwichTag(this, readStyle, defaultTagMappingTable);
             this._mediaStartPosition = this.startTag.sizeOnDisk;
             this._mediaEndPosition = this.length - this.endTag.sizeOnDisk;
             this._properties = this.readProperties(readStyle);
@@ -72,7 +76,7 @@ export default abstract class NonContainerFile extends File {
     /**
      * Gets an abstract representation of all tags stored in the current instance.
      */
-    public get tag(): NonContainerTag { return this._tag; }
+    public get tag(): SandwichTag { return this._tag; }
 
     /**
      * Gets the media properties of the file represented by the current instance.

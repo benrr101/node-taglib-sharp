@@ -1,5 +1,5 @@
 import ApeFileSettings from "./apeFileSettings";
-import NonContainerFile from "../nonContainer/nonContainerFile";
+import SandwichFile from "../sandwich/sandwichFile";
 import Properties from "../properties";
 import {ApeStreamHeader} from "./apeStreamHeader";
 import {File, ReadStyle} from "../file";
@@ -12,7 +12,7 @@ import {TagTypes} from "../tag";
  * change does not affect the physical file until {@link File.save} is called and can be reversed
  * using the following method: `file.removeTags(file.tagTypes & ~file.tagTypesOnDisk);`
  */
-export default class ApeFile extends NonContainerFile {
+export default class ApeFile extends SandwichFile {
     private static readonly _defaultTagLocationMapping = new Map<TagTypes, () => boolean>([
         [TagTypes.Ape, () => ApeFileSettings.preferApeTagAtFileEnd],
         [TagTypes.Id3v1, () => true],

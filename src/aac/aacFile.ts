@@ -1,6 +1,6 @@
 import AacAudioHeader from "./aacAudioHeader";
 import AacFileSettings from "./aacFileSettings";
-import NonContainerFile from "../nonContainer/nonContainerFile";
+import SandwichFile from "../sandwich/sandwichFile";
 import Properties from "../properties";
 import {CorruptFileError} from "../errors";
 import {File, ReadStyle} from "../file";
@@ -14,7 +14,7 @@ import {TagTypes} from "../tag";
  *     reversed using the following method:
  *     `file.removeTags(file.tagTypes & ~file.tagTypesOnDisk);`
  */
-export default class AacFile extends NonContainerFile {
+export default class AacFile extends SandwichFile {
     private static readonly _defaultTagLocationMapping = new Map<TagTypes, () => boolean>([
         [TagTypes.Ape, () => AacFileSettings.preferApeTagAtFileEnd],
         [TagTypes.Id3v1, () => true],

@@ -5,11 +5,14 @@ import {File, ReadStyle} from "../file";
 import {Tag, TagTypes} from "../tag";
 
 /**
- * This class represents a file that can have tags at the beginning of the file and tags at the
- * end of the file. Some file types are ok with having tags wrapping the actual file contents, but
- * not all file types support this.
+ * This class represents a file that can have tags at the beginning and/or end of the file. Some
+ * file types are fine with tags sandwiching the media contents of the file, but not all file
+ * support this.
+ * @remarks This was called `NonContainer` in the original .NET implementation, implying that files
+ *     utilizing this pattern could not be containers. This is not true - MPEG containers, for
+ *     example, use this pattern. Therefore the name was changed to better represent the situation.
  */
-export default class NonContainerTag extends CombinedTag {
+export default class SandwichTag extends CombinedTag {
     public static readonly supportedTagTypes = TagTypes.Ape | TagTypes.Id3v1 | TagTypes.Id3v2;
 
     private readonly  _defaultTagMappingTable: Map<TagTypes, () => boolean>;
@@ -26,7 +29,7 @@ export default class NonContainerTag extends CombinedTag {
      *     whether a tag type goes into the end tag or start tag
      */
     public constructor(file: File, readStyle: ReadStyle, defaultTagMappingTable: Map<TagTypes, () => boolean>) {
-        super(NonContainerTag.supportedTagTypes);
+        super(SandwichTag.supportedTagTypes);
 
         this._defaultTagMappingTable = defaultTagMappingTable;
 

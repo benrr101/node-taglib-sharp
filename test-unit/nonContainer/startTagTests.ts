@@ -4,7 +4,7 @@ import {assert} from "chai";
 
 import ApeTag from "../../src/ape/apeTag";
 import Id3v2Tag from "../../src/id3v2/id3v2Tag";
-import StartTag from "../../src/nonContainer/startTag";
+import StartTag from "../../src/sandwich/startTag";
 import {default as TestFile} from "../utilities/testFile";
 import {ByteVector} from "../../src/byteVector";
 import {File, ReadStyle} from "../../src/file";

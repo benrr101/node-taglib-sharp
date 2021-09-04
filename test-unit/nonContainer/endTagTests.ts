@@ -3,7 +3,7 @@ import {suite, test} from "@testdeck/mocha";
 import {assert} from "chai";
 
 import ApeTag from "../../src/ape/apeTag";
-import EndTag from "../../src/nonContainer/endTag";
+import EndTag from "../../src/sandwich/endTag";
 import Id3v1Tag from "../../src/id3v1/id3v1Tag";
 import Id3v2Tag from "../../src/id3v2/id3v2Tag";
 import {default as TestFile} from "../utilities/testFile";
