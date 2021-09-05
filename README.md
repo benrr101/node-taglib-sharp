@@ -17,9 +17,10 @@ improved on the original TagLib, hence why this project exists.
 ## Supported Tagging Formats
 * [APE](http://wiki.hydrogenaud.io/index.php?title=APE_key): `AAC`, `APE`, `M2A`, `MP1`, `MP2`, `MP3`
 * [ASF](https://docs.microsoft.com/en-us/windows/win32/wmformat/overview-of-the-asf-format): `ASF`, `WMA`, `WMV`
-* DIVX: `AVI`, `DIVX`
+* DIVX: `AVI`, `DIVX`, `WAV`
 * [ID3v1](https://id3.org/ID3v1): `AAC`, `M2A`, `MP1`, `MP2`, `MP3`
-* [ID3v2](https://id3.org/Developer%20Information): `AAC`, `AIF`, `AIFF`, `M2A`, `MP1`, `MP2`, `MP3`
+* [ID3v2](https://id3.org/Developer%20Information): `AAC`, `AIF`, `AIFF`, `AVI`, `DIVX`, `M2A`, `MP1`, `MP2`, `MP3`, `WAV`
+* MovieID: `AVI`, `DIVX`, `WAV`
 * [RIFF Info](https://www.exiftool.org/TagNames/RIFF.html#Info): `AVI`, `DIVX`, `WAV`
 * ... More coming soon
 
