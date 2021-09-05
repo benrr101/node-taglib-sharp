@@ -24,12 +24,6 @@ export default abstract class TagParser {
     public get currentTag(): Tag { return this._currentTag; }
 
     /**
-     * Gets the position in the file where the last tag started or ended (depending on the
-     * implementation).
-     */
-    public get currentOffset(): number { return this._fileOffset; }
-
-    /**
      * Reads the next tag from the file.
      * @returns boolean `true` is returned if a tag is found, the tag can be accessed from
      *     {@link currentTag}. `false` is returned if no tag was found.

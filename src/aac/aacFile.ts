@@ -26,10 +26,6 @@ export default class AacFile extends SandwichFile {
         super(file, propertiesStyle, AacFile._defaultTagLocationMapping, AacFileSettings.defaultTagTypes);
     }
 
-    protected get defaultTagLocationMapping() { return AacFile._defaultTagLocationMapping; }
-
-    protected get defaultTags() { return AacFileSettings.defaultTagTypes; }
-
     protected readProperties(readStyle: ReadStyle): Properties {
         // Skip if we're not reading the properties
         if ((readStyle & ReadStyle.Average) === 0) {

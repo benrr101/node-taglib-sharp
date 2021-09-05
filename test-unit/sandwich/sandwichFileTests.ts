@@ -296,6 +296,9 @@ import {Testers} from "../utilities/testers";
         assert.strictEqual(file.mode, FileAccessMode.Closed);
         assert.strictEqual(file.mediaStartPosition, 0);
         assert.strictEqual(file.mediaEndPosition, 100);
+
+        assert.strictEqual(file.tagTypes, TagTypes.None);
+        assert.strictEqual(file.tagTypesOnDisk, TagTypes.None);
     }
 
     @test
@@ -327,6 +330,9 @@ import {Testers} from "../utilities/testers";
         assert.strictEqual(file.mode, FileAccessMode.Closed);
         assert.strictEqual(file.mediaStartPosition, startTag.sizeOnDisk);
         assert.strictEqual(file.mediaEndPosition, startTag.sizeOnDisk + fileBytes.length);
+
+        assert.strictEqual(file.tagTypes, TagTypes.Ape | TagTypes.Id3v2);
+        assert.strictEqual(file.tagTypesOnDisk, TagTypes.Ape | TagTypes.Id3v2);
     }
 
     @test
@@ -355,6 +361,9 @@ import {Testers} from "../utilities/testers";
         assert.strictEqual(file.mode, FileAccessMode.Closed);
         assert.strictEqual(file.mediaStartPosition, id3v2Tag.sizeOnDisk + apeTag.sizeOnDisk);
         assert.strictEqual(file.mediaEndPosition, id3v2Tag.sizeOnDisk + apeTag.sizeOnDisk + 100);
+
+        assert.strictEqual(file.tagTypes, TagTypes.Ape | TagTypes.Id3v1 | TagTypes.Id3v2);
+        assert.strictEqual(file.tagTypesOnDisk, TagTypes.Ape | TagTypes.Id3v1 | TagTypes.Id3v2);
     }
 
     @test
@@ -394,6 +403,9 @@ import {Testers} from "../utilities/testers";
         assert.strictEqual(file.mode, FileAccessMode.Closed);
         assert.strictEqual(file.mediaEndPosition, id3v2Tag.sizeOnDisk + newTag.sizeOnDisk + 100);
         assert.strictEqual(file.mediaStartPosition, id3v2Tag.sizeOnDisk + newTag.sizeOnDisk);
+
+        assert.strictEqual(file.tagTypes, TagTypes.Ape | TagTypes.Id3v1 | TagTypes.Id3v2);
+        assert.strictEqual(file.tagTypesOnDisk, TagTypes.Ape | TagTypes.Id3v1 | TagTypes.Id3v2);
     }
 
     @test
@@ -429,6 +441,9 @@ import {Testers} from "../utilities/testers";
         assert.strictEqual(file.mode, FileAccessMode.Closed);
         assert.strictEqual(file.mediaEndPosition, id3v2Tag.sizeOnDisk + 100);
         assert.strictEqual(file.mediaStartPosition, id3v2Tag.sizeOnDisk);
+
+        assert.strictEqual(file.tagTypes, TagTypes.Id3v1 | TagTypes.Id3v2);
+        assert.strictEqual(file.tagTypesOnDisk, TagTypes.Id3v1 | TagTypes.Id3v2);
     }
 }
 

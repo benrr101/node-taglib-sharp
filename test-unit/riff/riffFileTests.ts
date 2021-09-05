@@ -1,7 +1,7 @@
 import {suite, test} from "@testdeck/mocha";
 import {assert} from "chai";
 
-import CombinedTag from "../../src/combinedTag";
+import AviFileSettings from "../../src/riff/aviFileSettings";
 import DivxTag from "../../src/riff/divxTag";
 import Id3v2Tag from "../../src/id3v2/id3v2Tag";
 import InfoTag from "../../src/riff/infoTag";
@@ -9,11 +9,13 @@ import MovieIdTag from "../../src/riff/movieIdTag";
 import RiffBitmapInfoHeader from "../../src/riff/riffBitmapInfoHeader";
 import RiffChunk from "../../src/riff/riffChunk";
 import RiffFile from "../../src/riff/riffFile";
+import RiffTags from "../../src/riff/riffTags";
 import RiffWaveFormatEx from "../../src/riff/riffWaveFormatEx";
+import WaveFileSettings from "../../src/riff/waveFileSettings";
 import {default as TestFile, TestFileAbstraction} from "../utilities/testFile";
 import {default as Resources} from "./resources";
 import {ByteVector} from "../../src/byteVector";
-import {ReadStyle} from "../../src/file";
+import {FileAccessMode, ReadStyle} from "../../src/file";
 import {IFileAbstraction} from "../../src/fileAbstraction";
 import {Id3v2TagHeaderFlags} from "../../src/id3v2/id3v2TagHeader";
 import {TagTypes} from "../../src/tag";
@@ -41,83 +43,229 @@ import {Testers} from "../utilities/testers";
     }
 
     @test
-    public constructor_aviFile_noTagsNoCodecs() {
+    public constructor_aviFile_noTagsNoCodecsAllDefaultsCreated() {
         // Arrange
-        const dataBytes = ByteVector.concatenate(
-            ByteVector.fromString("AVI "),
-            Resources.getAviHeaderBlock(false),
-            Resources.getMoviChunk()
-        );
-        const fileBytes = Riff_RiffFileTests.getFileBytes(dataBytes);
-        const testAbstraction = TestFile.getFileAbstraction(fileBytes);
+        const originalDefaults = AviFileSettings.defaultTagTypes;
+        try {
+            const dataBytes = ByteVector.concatenate(
+                ByteVector.fromString("AVI "),
+                Resources.getAviHeaderBlock(false),
+                Resources.getMoviChunk()
+            );
+            const fileBytes = Riff_RiffFileTests.getFileBytes(dataBytes);
+            const testAbstraction = TestFile.getFileAbstraction(fileBytes);
 
-        // Act
-        const file = new RiffFile(testAbstraction, ReadStyle.Average);
+            // Act
+            AviFileSettings.defaultTagTypes = AviFileSettings.supportedTagTypes;
+            const file = new RiffFile(testAbstraction, ReadStyle.Average);
 
-        // Assert
-        assert.isOk(file.properties);
-        assert.isOk(file.properties.codecs);
-        assert.isEmpty(file.properties.codecs);
-        assert.approximately(file.properties.durationMilliseconds, 7006, 1);
+            // Assert
+            assert.isOk(file.properties);
+            assert.isOk(file.properties.codecs);
+            assert.isEmpty(file.properties.codecs);
+            assert.approximately(file.properties.durationMilliseconds, 7006, 1);
 
-        assert.isOk(file.tag);
-        assert.instanceOf(file.tag, CombinedTag);
-        assert.strictEqual(file.tag.tagTypes, TagTypes.Id3v2 | TagTypes.RiffInfo | TagTypes.MovieId | TagTypes.DivX);
-        assert.strictEqual((<CombinedTag> file.tag).tags.length, 4);
-        assert.isTrue(file.tag.isEmpty);
+            assert.isOk(file.tag);
+            assert.instanceOf(file.tag, RiffTags);
+            assert.strictEqual(file.tag.tagTypes, AviFileSettings.supportedTagTypes);
+            assert.strictEqual((<RiffTags> file.tag).tags.length, 4);
+            assert.isTrue(file.tag.isEmpty);
+
+            assert.strictEqual(file.mode, FileAccessMode.Closed);
+            assert.strictEqual(file.tagTypes, AviFileSettings.supportedTagTypes);
+            assert.strictEqual(file.tagTypesOnDisk, TagTypes.None);
+        } finally {
+            // Cleanup
+            AviFileSettings.defaultTagTypes = originalDefaults;
+        }
     }
 
     @test
-    public constructor_aviFile_noTagsHasCodecsRead() {
+    public constructor_aviFile_noTagsNoCodecsNoDefaultsCreated() {
         // Arrange
-        const dataBytes = ByteVector.concatenate(
-            ByteVector.fromString("AVI "),
-            Resources.getAviHeaderBlock(true),
-            Resources.getMoviChunk()
-        );
-        const fileBytes = Riff_RiffFileTests.getFileBytes(dataBytes);
-        const testAbstraction = TestFile.getFileAbstraction(fileBytes);
+        const originalDefaults = AviFileSettings.defaultTagTypes;
+        try {
+            const dataBytes = ByteVector.concatenate(
+                ByteVector.fromString("AVI "),
+                Resources.getAviHeaderBlock(false),
+                Resources.getMoviChunk()
+            );
+            const fileBytes = Riff_RiffFileTests.getFileBytes(dataBytes);
+            const testAbstraction = TestFile.getFileAbstraction(fileBytes);
 
-        // Act
-        const file = new RiffFile(testAbstraction, ReadStyle.Average);
+            // Act
+            AviFileSettings.defaultTagTypes = TagTypes.None;
+            const file = new RiffFile(testAbstraction, ReadStyle.Average);
 
-        // Assert
-        assert.isOk(file.properties);
-        assert.isOk(file.properties.codecs);
-        assert.strictEqual(file.properties.codecs.length, 2);
-        assert.isOk(file.properties.codecs.find((c) => c instanceof RiffWaveFormatEx));
-        assert.isOk(file.properties.codecs.find((c) => c instanceof RiffBitmapInfoHeader));
-        assert.approximately(file.properties.durationMilliseconds, 7006, 1);
+            // Assert
+            assert.isOk(file.properties);
+            assert.isOk(file.properties.codecs);
+            assert.isEmpty(file.properties.codecs);
+            assert.approximately(file.properties.durationMilliseconds, 7006, 1);
 
-        assert.isOk(file.tag);
-        assert.instanceOf(file.tag, CombinedTag);
-        assert.strictEqual(file.tag.tagTypes, TagTypes.Id3v2 | TagTypes.RiffInfo | TagTypes.MovieId | TagTypes.DivX);
-        assert.strictEqual((<CombinedTag> file.tag).tags.length, 4);
-        assert.isTrue(file.tag.isEmpty);
+            assert.isOk(file.tag);
+            assert.instanceOf(file.tag, RiffTags);
+            assert.strictEqual(file.tag.tagTypes, TagTypes.None);
+            assert.strictEqual((<RiffTags> file.tag).tags.length, 0);
+            assert.isTrue(file.tag.isEmpty);
+
+            assert.strictEqual(file.mode, FileAccessMode.Closed);
+            assert.strictEqual(file.tagTypes, TagTypes.None);
+            assert.strictEqual(file.tagTypesOnDisk, TagTypes.None);
+        } finally {
+            // Cleanup
+            AviFileSettings.defaultTagTypes = originalDefaults;
+        }
     }
 
     @test
-    public constructor_aviFile_noTagsHasCodecsNotRead() {
+    public constructor_aviFile_noTagsHasCodecsReadAllDefaultsCreated() {
         // Arrange
-        const dataBytes = ByteVector.concatenate(
-            ByteVector.fromString("AVI "),
-            Resources.getAviHeaderBlock(true),
-            Resources.getMoviChunk()
-        );
-        const fileBytes = Riff_RiffFileTests.getFileBytes(dataBytes);
-        const testAbstraction = TestFile.getFileAbstraction(fileBytes);
+        const originalDefaults = AviFileSettings.defaultTagTypes;
+        try {
+            const dataBytes = ByteVector.concatenate(
+                ByteVector.fromString("AVI "),
+                Resources.getAviHeaderBlock(true),
+                Resources.getMoviChunk()
+            );
+            const fileBytes = Riff_RiffFileTests.getFileBytes(dataBytes);
+            const testAbstraction = TestFile.getFileAbstraction(fileBytes);
 
-        // Act
-        const file = new RiffFile(testAbstraction, ReadStyle.None);
+            // Act
+            AviFileSettings.defaultTagTypes = AviFileSettings.supportedTagTypes;
+            const file = new RiffFile(testAbstraction, ReadStyle.Average);
 
-        // Assert
-        assert.isNotOk(file.properties);
+            // Assert
+            assert.isOk(file.properties);
+            assert.isOk(file.properties.codecs);
+            assert.strictEqual(file.properties.codecs.length, 2);
+            assert.isOk(file.properties.codecs.find((c) => c instanceof RiffWaveFormatEx));
+            assert.isOk(file.properties.codecs.find((c) => c instanceof RiffBitmapInfoHeader));
+            assert.approximately(file.properties.durationMilliseconds, 7006, 1);
 
-        assert.isOk(file.tag);
-        assert.instanceOf(file.tag, CombinedTag);
-        assert.strictEqual(file.tag.tagTypes, TagTypes.Id3v2 | TagTypes.RiffInfo | TagTypes.MovieId | TagTypes.DivX);
-        assert.strictEqual((<CombinedTag> file.tag).tags.length, 4);
-        assert.isTrue(file.tag.isEmpty);
+            assert.isOk(file.tag);
+            assert.instanceOf(file.tag, RiffTags);
+            assert.strictEqual(file.tag.tagTypes, AviFileSettings.supportedTagTypes);
+            assert.strictEqual((<RiffTags> file.tag).tags.length, 4);
+            assert.isTrue(file.tag.isEmpty);
+
+            assert.strictEqual(file.mode, FileAccessMode.Closed);
+            assert.strictEqual(file.tagTypes, AviFileSettings.supportedTagTypes);
+            assert.strictEqual(file.tagTypesOnDisk, TagTypes.None);
+        } finally {
+            // Cleanup
+            AviFileSettings.defaultTagTypes = originalDefaults;
+        }
+    }
+
+    @test
+    public constructor_aviFile_noTagsHasCodecsReadNoDefaultsCreated() {
+        // Arrange
+        const originalDefaults = AviFileSettings.defaultTagTypes;
+        try {
+            const dataBytes = ByteVector.concatenate(
+                ByteVector.fromString("AVI "),
+                Resources.getAviHeaderBlock(true),
+                Resources.getMoviChunk()
+            );
+            const fileBytes = Riff_RiffFileTests.getFileBytes(dataBytes);
+            const testAbstraction = TestFile.getFileAbstraction(fileBytes);
+
+            // Act
+            AviFileSettings.defaultTagTypes = TagTypes.None;
+            const file = new RiffFile(testAbstraction, ReadStyle.Average);
+
+            // Assert
+            assert.isOk(file.properties);
+            assert.isOk(file.properties.codecs);
+            assert.strictEqual(file.properties.codecs.length, 2);
+            assert.isOk(file.properties.codecs.find((c) => c instanceof RiffWaveFormatEx));
+            assert.isOk(file.properties.codecs.find((c) => c instanceof RiffBitmapInfoHeader));
+            assert.approximately(file.properties.durationMilliseconds, 7006, 1);
+
+            assert.isOk(file.tag);
+            assert.instanceOf(file.tag, RiffTags);
+            assert.strictEqual(file.tag.tagTypes, TagTypes.None);
+            assert.strictEqual((<RiffTags> file.tag).tags.length, 0);
+            assert.isTrue(file.tag.isEmpty);
+
+            assert.strictEqual(file.mode, FileAccessMode.Closed);
+            assert.strictEqual(file.tagTypes, TagTypes.None);
+            assert.strictEqual(file.tagTypesOnDisk, TagTypes.None);
+        } finally {
+            // Cleanup
+            AviFileSettings.defaultTagTypes = originalDefaults;
+        }
+    }
+
+    @test
+    public constructor_aviFile_noTagsHasCodecsNotReadAllDefaultsCreated() {
+        // Arrange
+        const originalDefaults = AviFileSettings.defaultTagTypes;
+        try {
+            const dataBytes = ByteVector.concatenate(
+                ByteVector.fromString("AVI "),
+                Resources.getAviHeaderBlock(true),
+                Resources.getMoviChunk()
+            );
+            const fileBytes = Riff_RiffFileTests.getFileBytes(dataBytes);
+            const testAbstraction = TestFile.getFileAbstraction(fileBytes);
+
+            // Act
+            AviFileSettings.defaultTagTypes = AviFileSettings.supportedTagTypes;
+            const file = new RiffFile(testAbstraction, ReadStyle.None);
+
+            // Assert
+            assert.isNotOk(file.properties);
+
+            assert.isOk(file.tag);
+            assert.instanceOf(file.tag, RiffTags);
+            assert.strictEqual(file.tag.tagTypes, AviFileSettings.supportedTagTypes);
+            assert.strictEqual((<RiffTags> file.tag).tags.length, 4);
+            assert.isTrue(file.tag.isEmpty);
+
+            assert.strictEqual(file.mode, FileAccessMode.Closed);
+            assert.strictEqual(file.tagTypes, AviFileSettings.supportedTagTypes);
+            assert.strictEqual(file.tagTypesOnDisk, TagTypes.None);
+        } finally {
+            // Cleanup
+            AviFileSettings.defaultTagTypes = originalDefaults;
+        }
+    }
+
+    @test
+    public constructor_aviFile_noTagsHasCodecsNotReadNoneDefaultsCreated() {
+        // Arrange
+        const originalDefaults = AviFileSettings.defaultTagTypes;
+        try {
+            const dataBytes = ByteVector.concatenate(
+                ByteVector.fromString("AVI "),
+                Resources.getAviHeaderBlock(true),
+                Resources.getMoviChunk()
+            );
+            const fileBytes = Riff_RiffFileTests.getFileBytes(dataBytes);
+            const testAbstraction = TestFile.getFileAbstraction(fileBytes);
+
+            // Act
+            AviFileSettings.defaultTagTypes = TagTypes.None;
+            const file = new RiffFile(testAbstraction, ReadStyle.None);
+
+            // Assert
+            assert.isNotOk(file.properties);
+
+            assert.isOk(file.tag);
+            assert.instanceOf(file.tag, RiffTags);
+            assert.strictEqual(file.tag.tagTypes, TagTypes.None);
+            assert.strictEqual((<RiffTags> file.tag).tags.length, 0);
+            assert.isTrue(file.tag.isEmpty);
+
+            assert.strictEqual(file.mode, FileAccessMode.Closed);
+            assert.strictEqual(file.tagTypes, TagTypes.None);
+            assert.strictEqual(file.tagTypesOnDisk, TagTypes.None);
+        } finally {
+            // Cleanup
+            AviFileSettings.defaultTagTypes = originalDefaults;
+        }
     }
 
     @test
@@ -145,10 +293,14 @@ import {Testers} from "../utilities/testers";
         assert.approximately(file.properties.durationMilliseconds, 7006, 1);
 
         assert.isOk(file.tag);
-        assert.instanceOf(file.tag, CombinedTag);
+        assert.instanceOf(file.tag, RiffTags);
         assert.strictEqual(file.tag.tagTypes, TagTypes.Id3v2 | TagTypes.RiffInfo | TagTypes.MovieId | TagTypes.DivX);
-        assert.strictEqual((<CombinedTag> file.tag).tags.length, 4);
+        assert.strictEqual((<RiffTags> file.tag).tags.length, 4);
         assert.isFalse(file.tag.isEmpty);
+
+        assert.strictEqual(file.mode, FileAccessMode.Closed);
+        assert.strictEqual(file.tagTypes, TagTypes.Id3v2 | TagTypes.RiffInfo | TagTypes.MovieId | TagTypes.DivX);
+        assert.strictEqual(file.tagTypesOnDisk, TagTypes.Id3v2 | TagTypes.RiffInfo | TagTypes.MovieId | TagTypes.DivX);
 
         this.assertDivXTag(file);
         this.assertId3v2Tag(file);
@@ -185,55 +337,151 @@ import {Testers} from "../utilities/testers";
     }
 
     @test
-    public constructor_waveFile_noTagsCodecsAreRead() {
+    public constructor_waveFile_noTagsCodecsAreReadAllDefaultsCreated() {
         // Arrange
-        const dataBytes = ByteVector.concatenate(
-            ByteVector.fromString("WAVE"),
-            Resources.getWaveFormatBlock(),
-            Resources.getDataChunk()
-        );
-        const fileBytes = Riff_RiffFileTests.getFileBytes(dataBytes);
-        const testAbstraction = TestFile.getFileAbstraction(fileBytes);
+        const originalDefaults = WaveFileSettings.defaultTagTypes;
+        try {
+            const dataBytes = ByteVector.concatenate(
+                ByteVector.fromString("WAVE"),
+                Resources.getWaveFormatBlock(),
+                Resources.getDataChunk()
+            );
+            const fileBytes = Riff_RiffFileTests.getFileBytes(dataBytes);
+            const testAbstraction = TestFile.getFileAbstraction(fileBytes);
 
-        // Act
-        const file = new RiffFile(testAbstraction, ReadStyle.Average);
+            // Act
+            WaveFileSettings.defaultTagTypes = WaveFileSettings.supportedTagTypes;
+            const file = new RiffFile(testAbstraction, ReadStyle.Average);
 
-        // Assert
-        assert.isOk(file.properties);
-        assert.isOk(file.properties.codecs);
-        assert.strictEqual(file.properties.codecs.length, 1);
-        assert.isOk(file.properties.codecs.find((c) => c instanceof RiffWaveFormatEx));
-        assert.approximately(file.properties.durationMilliseconds, 405, 1);
+            // Assert
+            assert.isOk(file.properties);
+            assert.isOk(file.properties.codecs);
+            assert.strictEqual(file.properties.codecs.length, 1);
+            assert.isOk(file.properties.codecs.find((c) => c instanceof RiffWaveFormatEx));
+            assert.isNotOk(file.properties.codecs.find((c) => c instanceof RiffBitmapInfoHeader));
+            assert.approximately(file.properties.durationMilliseconds, 405, 1);
 
-        assert.isOk(file.tag);
-        assert.instanceOf(file.tag, CombinedTag);
-        assert.strictEqual(file.tag.tagTypes, TagTypes.Id3v2 | TagTypes.RiffInfo | TagTypes.MovieId | TagTypes.DivX);
-        assert.strictEqual((<CombinedTag> file.tag).tags.length, 4);
-        assert.isTrue(file.tag.isEmpty);
+            assert.isOk(file.tag);
+            assert.instanceOf(file.tag, RiffTags);
+            assert.strictEqual(file.tag.tagTypes, WaveFileSettings.supportedTagTypes);
+            assert.strictEqual((<RiffTags> file.tag).tags.length, 4);
+            assert.isTrue(file.tag.isEmpty);
+
+            assert.strictEqual(file.mode, FileAccessMode.Closed);
+            assert.strictEqual(file.tagTypes, WaveFileSettings.supportedTagTypes);
+            assert.strictEqual(file.tagTypesOnDisk, TagTypes.None);
+        } finally {
+            // Cleanup
+            WaveFileSettings.defaultTagTypes = originalDefaults;
+        }
     }
 
     @test
-    public constructor_waveFile_noTagsCodecsNotRead() {
+    public constructor_waveFile_noTagsCodecsAreReadNoDefaultsCreated() {
         // Arrange
-        const dataBytes = ByteVector.concatenate(
-            ByteVector.fromString("WAVE"),
-            Resources.getWaveFormatBlock(),
-            Resources.getDataChunk()
-        );
-        const fileBytes = Riff_RiffFileTests.getFileBytes(dataBytes);
-        const testAbstraction = TestFile.getFileAbstraction(fileBytes);
+        const originalDefaults = WaveFileSettings.defaultTagTypes;
+        try {
+            const dataBytes = ByteVector.concatenate(
+                ByteVector.fromString("WAVE"),
+                Resources.getWaveFormatBlock(),
+                Resources.getDataChunk()
+            );
+            const fileBytes = Riff_RiffFileTests.getFileBytes(dataBytes);
+            const testAbstraction = TestFile.getFileAbstraction(fileBytes);
 
-        // Act
-        const file = new RiffFile(testAbstraction, ReadStyle.None);
+            // Act
+            WaveFileSettings.defaultTagTypes = TagTypes.None;
+            const file = new RiffFile(testAbstraction, ReadStyle.Average);
 
-        // Assert
-        assert.isNotOk(file.properties);
+            // Assert
+            assert.isOk(file.properties);
+            assert.isOk(file.properties.codecs);
+            assert.strictEqual(file.properties.codecs.length, 1);
+            assert.isOk(file.properties.codecs.find((c) => c instanceof RiffWaveFormatEx));
+            assert.isNotOk(file.properties.codecs.find((c) => c instanceof RiffBitmapInfoHeader));
+            assert.approximately(file.properties.durationMilliseconds, 405, 1);
 
-        assert.isOk(file.tag);
-        assert.instanceOf(file.tag, CombinedTag);
-        assert.strictEqual(file.tag.tagTypes, TagTypes.Id3v2 | TagTypes.RiffInfo | TagTypes.MovieId | TagTypes.DivX);
-        assert.strictEqual((<CombinedTag> file.tag).tags.length, 4);
-        assert.isTrue(file.tag.isEmpty);
+            assert.isOk(file.tag);
+            assert.instanceOf(file.tag, RiffTags);
+            assert.strictEqual(file.tag.tagTypes, TagTypes.None);
+            assert.strictEqual((<RiffTags> file.tag).tags.length, 0);
+            assert.isTrue(file.tag.isEmpty);
+
+            assert.strictEqual(file.mode, FileAccessMode.Closed);
+            assert.strictEqual(file.tagTypes, TagTypes.None);
+            assert.strictEqual(file.tagTypesOnDisk, TagTypes.None);
+        } finally {
+            // Cleanup
+            WaveFileSettings.defaultTagTypes = originalDefaults;
+        }
+    }
+
+    @test
+    public constructor_waveFile_noTagsCodecsNotReadAllDefaultsCreated() {
+        // Arrange
+        const originalDefaults = WaveFileSettings.defaultTagTypes;
+        try {
+            const dataBytes = ByteVector.concatenate(
+                ByteVector.fromString("WAVE"),
+                Resources.getWaveFormatBlock(),
+                Resources.getDataChunk()
+            );
+            const fileBytes = Riff_RiffFileTests.getFileBytes(dataBytes);
+            const testAbstraction = TestFile.getFileAbstraction(fileBytes);
+
+            // Act
+            WaveFileSettings.defaultTagTypes = WaveFileSettings.supportedTagTypes;
+            const file = new RiffFile(testAbstraction, ReadStyle.None);
+
+            // Assert
+            assert.isNotOk(file.properties);
+
+            assert.instanceOf(file.tag, RiffTags);
+            assert.strictEqual(file.tag.tagTypes, WaveFileSettings.supportedTagTypes);
+            assert.strictEqual((<RiffTags> file.tag).tags.length, 4);
+            assert.isTrue(file.tag.isEmpty);
+
+            assert.strictEqual(file.mode, FileAccessMode.Closed);
+            assert.strictEqual(file.tagTypes,  WaveFileSettings.supportedTagTypes);
+            assert.strictEqual(file.tagTypesOnDisk, TagTypes.None);
+        } finally {
+            // Cleanup
+            WaveFileSettings.defaultTagTypes = originalDefaults;
+        }
+    }
+
+    @test
+    public constructor_waveFile_noTagsCodecsNotReadNoDefaultsCreated() {
+        // Arrange
+        const originalDefaults = WaveFileSettings.defaultTagTypes;
+        try {
+            const dataBytes = ByteVector.concatenate(
+                ByteVector.fromString("WAVE"),
+                Resources.getWaveFormatBlock(),
+                Resources.getDataChunk()
+            );
+            const fileBytes = Riff_RiffFileTests.getFileBytes(dataBytes);
+            const testAbstraction = TestFile.getFileAbstraction(fileBytes);
+
+            // Act
+            WaveFileSettings.defaultTagTypes = TagTypes.None;
+            const file = new RiffFile(testAbstraction, ReadStyle.None);
+
+            // Assert
+            assert.isNotOk(file.properties);
+
+            assert.instanceOf(file.tag, RiffTags);
+            assert.strictEqual(file.tag.tagTypes, TagTypes.None);
+            assert.strictEqual((<RiffTags> file.tag).tags.length, 0);
+            assert.isTrue(file.tag.isEmpty);
+
+            assert.strictEqual(file.mode, FileAccessMode.Closed);
+            assert.strictEqual(file.tagTypes, TagTypes.None);
+            assert.strictEqual(file.tagTypesOnDisk, TagTypes.None);
+        } finally {
+            // Cleanup
+            WaveFileSettings.defaultTagTypes = originalDefaults;
+        }
     }
 
     @test
@@ -262,10 +510,14 @@ import {Testers} from "../utilities/testers";
         assert.approximately(file.properties.durationMilliseconds, 405, 1);
 
         assert.isOk(file.tag);
-        assert.instanceOf(file.tag, CombinedTag);
+        assert.instanceOf(file.tag, RiffTags);
         assert.strictEqual(file.tag.tagTypes, TagTypes.Id3v2 | TagTypes.RiffInfo | TagTypes.MovieId | TagTypes.DivX);
-        assert.strictEqual((<CombinedTag> file.tag).tags.length, 4);
+        assert.strictEqual((<RiffTags> file.tag).tags.length, 4);
         assert.isFalse(file.tag.isEmpty);
+
+        assert.strictEqual(file.mode, FileAccessMode.Closed);
+        assert.strictEqual(file.tagTypes, TagTypes.Id3v2 | TagTypes.RiffInfo | TagTypes.MovieId | TagTypes.DivX);
+        assert.strictEqual(file.tagTypesOnDisk, TagTypes.Id3v2 | TagTypes.RiffInfo | TagTypes.MovieId | TagTypes.DivX);
 
         this.assertDivXTag(file);
         this.assertId3v2Tag(file);
@@ -462,9 +714,9 @@ import {Testers} from "../utilities/testers";
 
         // Assert
         assert.isOk(file.tag);
-        assert.instanceOf(file.tag, CombinedTag);
+        assert.instanceOf(file.tag, RiffTags);
         assert.strictEqual(file.tag.tagTypes, TagTypes.Id3v2 | TagTypes.RiffInfo | TagTypes.MovieId | TagTypes.DivX);
-        assert.strictEqual((<CombinedTag> file.tag).tags.length, 4);
+        assert.strictEqual((<RiffTags> file.tag).tags.length, 4);
         assert.isFalse(file.tag.isEmpty);
 
         this.assertDivXTag(file);
@@ -484,13 +736,13 @@ import {Testers} from "../utilities/testers";
 
         // Assert
         assert.isOk(file.tag);
-        assert.instanceOf(file.tag, CombinedTag);
+        assert.instanceOf(file.tag, RiffTags);
         assert.strictEqual(file.tag.tagTypes, TagTypes.RiffInfo | TagTypes.MovieId | TagTypes.DivX);
-        assert.strictEqual((<CombinedTag> file.tag).tags.length, 3);
+        assert.strictEqual((<RiffTags> file.tag).tags.length, 3);
         assert.isFalse(file.tag.isEmpty);
 
         this.assertDivXTag(file);
-        assert.isNotOk((<CombinedTag> file.tag).tags.find((t) => t.tagTypes === TagTypes.Id3v2));
+        assert.isNotOk((<RiffTags> file.tag).tags.find((t) => t.tagTypes === TagTypes.Id3v2));
         this.assertInfoTag(file);
         this.assertMovieIdTag(file);
     }
@@ -506,9 +758,9 @@ import {Testers} from "../utilities/testers";
 
         // Assert
         assert.isOk(file.tag);
-        assert.instanceOf(file.tag, CombinedTag);
+        assert.instanceOf(file.tag, RiffTags);
         assert.strictEqual(file.tag.tagTypes, TagTypes.None);
-        assert.strictEqual((<CombinedTag> file.tag).tags.length, 0);
+        assert.strictEqual((<RiffTags> file.tag).tags.length, 0);
         assert.isTrue(file.tag.isEmpty);
     }
 
@@ -532,6 +784,10 @@ import {Testers} from "../utilities/testers";
 
         // Assert - File should be untouched
         assert.isTrue(ByteVector.equal(testAbstraction.allBytes, fileBytes));
+
+        assert.strictEqual(file.mode, FileAccessMode.Closed);
+        assert.strictEqual(file.tagTypes, TagTypes.None);
+        assert.strictEqual(file.tagTypesOnDisk, TagTypes.None);
     }
 
     @test
@@ -570,6 +826,10 @@ import {Testers} from "../utilities/testers";
         );
         const expectedFileBytes = Riff_RiffFileTests.getFileBytes(expectedDataBytes);
         assert.isTrue(ByteVector.equal(testAbstraction.allBytes, expectedFileBytes));
+
+        assert.strictEqual(file.mode, FileAccessMode.Closed);
+        assert.strictEqual(file.tagTypes, WaveFileSettings.defaultTagTypes);
+        assert.strictEqual(file.tagTypesOnDisk, WaveFileSettings.defaultTagTypes);
     }
 
     @test
@@ -606,6 +866,10 @@ import {Testers} from "../utilities/testers";
         );
         const expectedFileBytes = Riff_RiffFileTests.getFileBytes(expectedDataBytes);
         assert.isTrue(ByteVector.equal(testAbstraction.allBytes, expectedFileBytes));
+
+        assert.strictEqual(file.mode, FileAccessMode.Closed);
+        assert.strictEqual(file.tagTypes, WaveFileSettings.defaultTagTypes);
+        assert.strictEqual(file.tagTypesOnDisk, WaveFileSettings.defaultTagTypes);
     }
 
     @test
@@ -636,6 +900,10 @@ import {Testers} from "../utilities/testers";
         );
         const expectedFileBytes = Riff_RiffFileTests.getFileBytes(expectedDataBytes);
         assert.isTrue(ByteVector.equal(testAbstraction.allBytes, expectedFileBytes));
+
+        assert.strictEqual(file.mode, FileAccessMode.Closed);
+        assert.strictEqual(file.tagTypes, TagTypes.DivX | TagTypes.MovieId | TagTypes.RiffInfo | TagTypes.Id3v2);
+        assert.strictEqual(file.tagTypesOnDisk, TagTypes.DivX | TagTypes.MovieId | TagTypes.RiffInfo | TagTypes.Id3v2);
     }
 
     @test
@@ -665,6 +933,10 @@ import {Testers} from "../utilities/testers";
         );
         const expectedFileBytes = Riff_RiffFileTests.getFileBytes(expectedDataBytes);
         assert.isTrue(ByteVector.equal(testAbstraction.allBytes, expectedFileBytes));
+
+        assert.strictEqual(file.mode, FileAccessMode.Closed);
+        assert.strictEqual(file.tagTypes, TagTypes.DivX | TagTypes.MovieId | TagTypes.RiffInfo | TagTypes.Id3v2);
+        assert.strictEqual(file.tagTypesOnDisk, TagTypes.DivX | TagTypes.MovieId | TagTypes.RiffInfo | TagTypes.Id3v2);
     }
 
     @test
@@ -694,6 +966,10 @@ import {Testers} from "../utilities/testers";
         );
         const expectedFileBytes = Riff_RiffFileTests.getFileBytes(expectedDataBytes);
         assert.isTrue(ByteVector.equal(testFileAbstraction.allBytes, expectedFileBytes));
+
+        assert.strictEqual(file.mode, FileAccessMode.Closed);
+        assert.strictEqual(file.tagTypes, TagTypes.DivX | TagTypes.MovieId | TagTypes.RiffInfo | TagTypes.Id3v2);
+        assert.strictEqual(file.tagTypesOnDisk, TagTypes.DivX | TagTypes.MovieId | TagTypes.RiffInfo | TagTypes.Id3v2);
     }
 
     @test
@@ -724,6 +1000,10 @@ import {Testers} from "../utilities/testers";
         );
         const expectedFileBytes = Riff_RiffFileTests.getFileBytes(expectedDataBytes);
         assert.isTrue(ByteVector.equal(testFileAbstraction.allBytes, expectedFileBytes));
+
+        assert.strictEqual(file.mode, FileAccessMode.Closed);
+        assert.strictEqual(file.tagTypes, TagTypes.DivX | TagTypes.MovieId | TagTypes.RiffInfo | TagTypes.Id3v2);
+        assert.strictEqual(file.tagTypesOnDisk, TagTypes.DivX | TagTypes.MovieId | TagTypes.RiffInfo | TagTypes.Id3v2);
     }
 
     @test
@@ -746,6 +1026,10 @@ import {Testers} from "../utilities/testers";
 
         // Assert - File should be untouched
         assert.isTrue(ByteVector.equal(testAbstraction.allBytes, fileBytes));
+
+        assert.strictEqual(file.mode, FileAccessMode.Closed);
+        assert.strictEqual(file.tagTypes, TagTypes.None);
+        assert.strictEqual(file.tagTypesOnDisk, TagTypes.None);
     }
 
     @test
@@ -784,6 +1068,10 @@ import {Testers} from "../utilities/testers";
         );
         const expectedFileBytes = Riff_RiffFileTests.getFileBytes(expectedDataBytes);
         assert.isTrue(ByteVector.equal(testAbstraction.allBytes, expectedFileBytes));
+
+        assert.strictEqual(file.mode, FileAccessMode.Closed);
+        assert.strictEqual(file.tagTypes, AviFileSettings.defaultTagTypes);
+        assert.strictEqual(file.tagTypesOnDisk, AviFileSettings.defaultTagTypes);
     }
 
     @test
@@ -820,6 +1108,10 @@ import {Testers} from "../utilities/testers";
         );
         const expectedFileBytes = Riff_RiffFileTests.getFileBytes(expectedDataBytes);
         assert.isTrue(ByteVector.equal(testAbstraction.allBytes, expectedFileBytes));
+
+        assert.strictEqual(file.mode, FileAccessMode.Closed);
+        assert.strictEqual(file.tagTypes, AviFileSettings.defaultTagTypes);
+        assert.strictEqual(file.tagTypesOnDisk, AviFileSettings.defaultTagTypes);
     }
 
     @test
@@ -850,6 +1142,10 @@ import {Testers} from "../utilities/testers";
         );
         const expectedFileBytes = Riff_RiffFileTests.getFileBytes(expectedDataBytes);
         assert.isTrue(ByteVector.equal(testAbstraction.allBytes, expectedFileBytes));
+
+        assert.strictEqual(file.mode, FileAccessMode.Closed);
+        assert.strictEqual(file.tagTypes, TagTypes.DivX | TagTypes.MovieId | TagTypes.RiffInfo | TagTypes.Id3v2);
+        assert.strictEqual(file.tagTypesOnDisk, TagTypes.DivX | TagTypes.MovieId | TagTypes.RiffInfo | TagTypes.Id3v2);
     }
 
     @test
@@ -879,6 +1175,10 @@ import {Testers} from "../utilities/testers";
         );
         const expectedFileBytes = Riff_RiffFileTests.getFileBytes(expectedDataBytes);
         assert.isTrue(ByteVector.equal(testAbstraction.allBytes, expectedFileBytes));
+
+        assert.strictEqual(file.mode, FileAccessMode.Closed);
+        assert.strictEqual(file.tagTypes, TagTypes.DivX | TagTypes.MovieId | TagTypes.RiffInfo | TagTypes.Id3v2);
+        assert.strictEqual(file.tagTypesOnDisk, TagTypes.DivX | TagTypes.MovieId | TagTypes.RiffInfo | TagTypes.Id3v2);
     }
 
     @test
@@ -908,6 +1208,10 @@ import {Testers} from "../utilities/testers";
         );
         const expectedFileBytes = Riff_RiffFileTests.getFileBytes(expectedDataBytes);
         assert.isTrue(ByteVector.equal(testFileAbstraction.allBytes, expectedFileBytes));
+
+        assert.strictEqual(file.mode, FileAccessMode.Closed);
+        assert.strictEqual(file.tagTypes, TagTypes.DivX | TagTypes.MovieId | TagTypes.RiffInfo | TagTypes.Id3v2);
+        assert.strictEqual(file.tagTypesOnDisk, TagTypes.DivX | TagTypes.MovieId | TagTypes.RiffInfo | TagTypes.Id3v2);
     }
 
     @test
@@ -938,28 +1242,32 @@ import {Testers} from "../utilities/testers";
         );
         const expectedFileBytes = Riff_RiffFileTests.getFileBytes(expectedDataBytes);
         assert.isTrue(ByteVector.equal(testFileAbstraction.allBytes, expectedFileBytes));
+
+        assert.strictEqual(file.mode, FileAccessMode.Closed);
+        assert.strictEqual(file.tagTypes, TagTypes.DivX | TagTypes.MovieId | TagTypes.RiffInfo | TagTypes.Id3v2);
+        assert.strictEqual(file.tagTypesOnDisk, TagTypes.DivX | TagTypes.MovieId | TagTypes.RiffInfo | TagTypes.Id3v2);
     }
 
     private assertDivXTag(file: RiffFile): void {
-        const divxTag = (<CombinedTag> file.tag).tags.find((t) => t.tagTypes === TagTypes.DivX);
+        const divxTag = (<RiffTags> file.tag).tags.find((t) => t.tagTypes === TagTypes.DivX);
         assert.isOk(divxTag);
         assert.strictEqual(divxTag.title, "foo");
     }
 
     private assertId3v2Tag(file: RiffFile): void {
-        const id3v2Tag = (<CombinedTag> file.tag).tags.find((t) => t.tagTypes === TagTypes.Id3v2);
+        const id3v2Tag = (<RiffTags> file.tag).tags.find((t) => t.tagTypes === TagTypes.Id3v2);
         assert.isOk(id3v2Tag);
         assert.strictEqual(id3v2Tag.amazonId, "foo");
     }
 
     private assertInfoTag(file: RiffFile): void {
-        const infoTag = (<CombinedTag> file.tag).tags.find((t) => t.tagTypes === TagTypes.RiffInfo);
+        const infoTag = (<RiffTags> file.tag).tags.find((t) => t.tagTypes === TagTypes.RiffInfo);
         assert.isOk(infoTag);
         assert.sameMembers(infoTag.composers, ["Giuseppe Ottiviani"]);
     }
 
     private assertMovieIdTag(file: RiffFile): void {
-        const movieIdTag = (<CombinedTag> file.tag).tags.find((t) => t.tagTypes === TagTypes.MovieId);
+        const movieIdTag = (<RiffTags> file.tag).tags.find((t) => t.tagTypes === TagTypes.MovieId);
         assert.isOk(movieIdTag);
         assert.strictEqual(movieIdTag.track, 123);
     }
