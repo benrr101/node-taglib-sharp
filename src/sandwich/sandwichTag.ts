@@ -3,6 +3,7 @@ import EndTag from "./endTag";
 import StartTag from "./startTag";
 import {File, ReadStyle} from "../file";
 import {Tag, TagTypes} from "../tag";
+import {Guards} from "../utils";
 
 /**
  * This class represents a file that can have tags at the beginning and/or end of the file. Some
@@ -15,7 +16,7 @@ import {Tag, TagTypes} from "../tag";
 export default class SandwichTag extends CombinedTag {
     public static readonly supportedTagTypes = TagTypes.Ape | TagTypes.Id3v1 | TagTypes.Id3v2;
 
-    private readonly  _defaultTagMappingTable: Map<TagTypes, () => boolean>;
+    private readonly _defaultTagMappingTable: Map<TagTypes, () => boolean>;
     private readonly _endTag: EndTag;
     private readonly _startTag: StartTag;
 
@@ -30,6 +31,9 @@ export default class SandwichTag extends CombinedTag {
      */
     public constructor(file: File, readStyle: ReadStyle, defaultTagMappingTable: Map<TagTypes, () => boolean>) {
         super(SandwichTag.supportedTagTypes);
+
+        Guards.truthy(file, "file");
+        Guards.truthy(defaultTagMappingTable, "defaultTagMappingTable");
 
         this._defaultTagMappingTable = defaultTagMappingTable;
 
@@ -55,8 +59,16 @@ export default class SandwichTag extends CombinedTag {
 
     /** @inheritDoc */
     public createTag(tagType: TagTypes, copy: boolean): Tag {
+        this.validateTagCreation(tagType);
+
         // Determine where the tag goes and create it
         const destinationTag = this._defaultTagMappingTable.get(tagType)() ? this._endTag : this._startTag;
-        return destinationTag.createTag(tagType, copy);
+        const newTag = destinationTag.createTag(tagType, false);
+
+        if (copy) {
+            this.copyTo(newTag, true);
+        }
+
+        return newTag;
     }
 }

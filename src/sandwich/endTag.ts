@@ -16,7 +16,7 @@ import {Guards} from "../utils";
 /**
  * Provides support for accessing and modifying a collection of tags appearing at the end of a
  * file.
- * This class is used by {@link NonContainerFile} to read all tags appearing at the end of the file
+ * This class is used by {@link SandwichFile} to read all tags appearing at the end of the file
  * but could be used by other classes. It currently supports ID3v1, ID3v2, and APE tags.
  */
 export default class EndTag extends CombinedTag {
@@ -120,7 +120,7 @@ class EndTagParser extends TagParser {
             offset: Id3v2Settings.footerSize
         },
         {
-            action: (f: File, p: number, rs: ReadStyle) => Id3v1Tag.fromFile(f, p),
+            action: (f: File, p: number, _rs: ReadStyle) => Id3v1Tag.fromFile(f, p),
             identifier: Id3v1Tag.fileIdentifier,
             offset: Id3v1Tag.size
         }

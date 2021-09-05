@@ -11,7 +11,7 @@ import {File, ReadStyle} from "../../src/file";
 import {TagTypes} from "../../src/tag";
 import {TagTesters, Testers} from "../utilities/testers";
 
-@suite class NonContainer_StartTagTests {
+@suite class Sandwich_StartTagTests {
     @test
     public constructor_invalidArguments() {
         // Act / Assert

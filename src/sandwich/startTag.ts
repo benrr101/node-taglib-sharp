@@ -14,7 +14,7 @@ import {Guards} from "../utils";
 /**
  * Provides support for accessing and modifying a collection of tags appearing at the start of a
  * file.
- * This class is used by {@link NonContainerFile} to read all the tags appearing at the start of the
+ * This class is used by {@link SandwichFile} to read all the tags appearing at the start of the
  * file but could be used by other classes. It currently supports ID3v2 and APE tags.
  */
 export default class StartTag extends CombinedTag {
@@ -66,14 +66,7 @@ export default class StartTag extends CombinedTag {
      * @returns ByteVector Physical representation of the tags stored in the current instance
      */
     public render(): ByteVector {
-        const tagData = this.tags.map((t) => {
-            switch (t.tagTypes) {
-                case TagTypes.Ape:
-                    return (<ApeTag> t).render();
-                case TagTypes.Id3v2:
-                    return (<Id3v2Tag> t).render();
-            }
-        });
+        const tagData = this.tags.map((t) => (<ApeTag|Id3v2Tag> t).render());
         return ByteVector.concatenate(... tagData);
     }
 

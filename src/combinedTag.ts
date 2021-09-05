@@ -680,7 +680,9 @@ export default abstract class CombinedTag extends Tag {
     // #region Protected/Private Methods
 
     protected addTag(tag: Tag) {
-        this._tags.push(tag);
+        if (tag) {
+            this._tags.push(tag);
+        }
     }
 
     /**

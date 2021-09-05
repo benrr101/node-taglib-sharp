@@ -13,7 +13,7 @@ import {Id3v2TagHeaderFlags} from "../../src/id3v2/id3v2TagHeader";
 import {TagTypes} from "../../src/tag";
 import {TagTesters, Testers} from "../utilities/testers";
 
-@suite class NonContainer_EndTagTests {
+@suite class Sandwich_EndTagTests {
     @test
     public constructor_invalidArguments() {
         // Act / Assert
@@ -208,6 +208,8 @@ import {TagTesters, Testers} from "../utilities/testers";
         // Assert
         assert.isOk(newTag);
         assert.strictEqual(newTag.tagTypes, TagTypes.Id3v2);
+        assert.strictEqual((<Id3v2Tag> newTag).version, 4);
+        assert.notEqual((<Id3v2Tag> newTag).flags & Id3v2TagHeaderFlags.FooterPresent, 0);
 
         assert.strictEqual(tag.tags.length, 1);
         assert.strictEqual(tag.tagTypes, TagTypes.Id3v2);

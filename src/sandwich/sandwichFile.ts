@@ -100,31 +100,31 @@ export default abstract class SandwichFile extends File {
     }
 
     /** @inheritDoc */
+    public removeTags(types: TagTypes): void {
+        this._tag.removeTags(types);
+    }
+
+    /** @inheritDoc */
     public save(): void {
         this.preSave();
         this.mode = FileAccessMode.Write;
 
         try {
-            // Render the start tag and store it at the start of the file
-            const startTagBytes = this.startTag.render();
-            this.insert(startTagBytes, 0, this._mediaStartPosition);
-
-            const mediaStartChange = startTagBytes.length - this._mediaStartPosition;
-            this._mediaStartPosition = startTagBytes.length;
-            this._mediaEndPosition += mediaStartChange;
-
             // Render the end tag and store it at the end of the file
             const endTagBytes = this.endTag.render();
             const endBytesToRemove = this.length - this._mediaEndPosition;
             this.insert(endTagBytes, this._mediaEndPosition, endBytesToRemove);
+
+            // Render the start tag and store it at the start of the file
+            const startTagBytes = this.startTag.render();
+            this.insert(startTagBytes, 0, this._mediaStartPosition);
+
+            // Calculate the new media start and end positions
+            this._mediaStartPosition = startTagBytes.length;
+            this._mediaEndPosition = this.length - endTagBytes.length;
         } finally {
             this.mode = FileAccessMode.Closed;
         }
-    }
-
-    /** @inheritDoc BaseFile.removeTags */
-    public removeTags(types: TagTypes): void {
-        this._tag.removeTags(types);
     }
 
     // #endregion
