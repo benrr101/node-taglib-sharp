@@ -1,6 +1,6 @@
-[node-taglib-sharp](../README.md) / [Exports](../modules.md) / MpegFile
+[node-taglib-sharp](../README.md) / [Exports](../modules.md) / MpegContainerFile
 
-# Class: MpegFile
+# Class: MpegContainerFile
 
 This class extends {@link NonContainerFile} to provide tagging and properties support for
 MPEG-1, MPEG-2, and MPEG-2.5 video files.
@@ -14,7 +14,7 @@ MPEG-1, MPEG-2, and MPEG-2.5 video files.
 
 - `NonContainerFile`
 
-  ↳ **`MpegFile`**
+  ↳ **`MpegContainerFile`**
 
 ## Table of contents
 
@@ -81,7 +81,7 @@ MPEG-1, MPEG-2, and MPEG-2.5 video files.
 
 ### constructor
 
-• **new MpegFile**(`file`, `propertiesStyle`)
+• **new MpegContainerFile**(`file`, `propertiesStyle`)
 
 #### Parameters
 

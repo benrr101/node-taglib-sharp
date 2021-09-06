@@ -112,7 +112,7 @@ export {
     ChannelMode as MpegAudioChannelMode,
     MpegVersion as MpegVersion
 } from "./mpeg/mpegEnums";
-export {default as MpegFile} from "./mpeg/mpegFile";
+export {default as MpegFile} from "./mpeg/mpegContainerFile";
 export {default as MpegVbriHeader} from "./mpeg/vbriHeader";
 export {default as MpegVideoHeader} from "./mpeg/mpegVideoHeader";
 export {default as MpegXingHeader} from "./mpeg/xingHeader";

@@ -123,6 +123,11 @@ export abstract class Tag {
     public abstract tagTypes: TagTypes;
 
     /**
+     * Gets the size of the tag in bytes on disk as it was read from disk.
+     */
+    public abstract get sizeOnDisk(): number;
+
+    /**
      * Gets the title for the media described by the current instance.
      * @remarks The title is most commonly the name of the song, episode or a movie title. For example
      *     "Time Won't Me Go" (a song by The Bravery), "Three Stories" (an episode of House MD), or

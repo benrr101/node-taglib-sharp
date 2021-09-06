@@ -1,7 +1,6 @@
-import * as Chai from "chai";
 import * as TypeMoq from "typemoq";
-
 import {suite, test} from "@testdeck/mocha";
+import {assert} from "chai";
 
 import Properties from "../src/properties";
 import PropertyTests from "./utilities/propertyTests";
@@ -13,9 +12,6 @@ import {IFileAbstraction} from "../src/fileAbstraction";
 import {IStream} from "../src/stream";
 import {Tag, TagTypes} from "../src/tag";
 import {Testers} from "./utilities/testers";
-
-// Setup Chai
-const assert = Chai.assert;
 
 @suite class FileTests {
     private static readonly chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -58,8 +54,6 @@ const assert = Chai.assert;
 
             assert.isNotNull(file.corruptionReasons);
             assert.isEmpty(file.corruptionReasons);
-            assert.strictEqual(file.invariantEndPosition, -1);
-            assert.strictEqual(file.invariantStartPosition, -1);
             assert.isFalse(file.isPossiblyCorrupt);
             assert.isTrue(file.isWritable);
             assert.strictEqual(file.length, 0);
@@ -99,8 +93,6 @@ const assert = Chai.assert;
 
             assert.isNotNull(file.corruptionReasons);
             assert.isEmpty(file.corruptionReasons);
-            assert.strictEqual(file.invariantEndPosition, -1);
-            assert.strictEqual(file.invariantStartPosition, -1);
             assert.isFalse(file.isPossiblyCorrupt);
             assert.isTrue(file.isWritable);
             assert.strictEqual(file.length, 0);
@@ -143,8 +135,6 @@ const assert = Chai.assert;
 
             assert.isNotNull(file.corruptionReasons);
             assert.isEmpty(file.corruptionReasons);
-            assert.strictEqual(file.invariantEndPosition, -1);
-            assert.strictEqual(file.invariantStartPosition, -1);
             assert.isFalse(file.isPossiblyCorrupt);
             assert.isTrue(file.isWritable);
             assert.strictEqual(file.length, 0);
@@ -181,8 +171,6 @@ const assert = Chai.assert;
 
             assert.isNotNull(file.corruptionReasons);
             assert.isEmpty(file.corruptionReasons);
-            assert.strictEqual(file.invariantEndPosition, -1);
-            assert.strictEqual(file.invariantStartPosition, -1);
             assert.isFalse(file.isPossiblyCorrupt);
             assert.isTrue(file.isWritable);
             assert.strictEqual(file.length, 0);

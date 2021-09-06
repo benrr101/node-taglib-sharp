@@ -22,8 +22,9 @@ export enum ApeTagFooterFlags {
     IsHeader = 0x20000000
 }
 
+// @TODO: Verify that this is specifically APEv2.
 /**
- * Representation of an APEv2 tag footer which can be read from and written to disk.
+ * Representation of an APEv2 tag footer or header which can be read from and written to disk.
  */
 export class ApeTagFooter {
     /**

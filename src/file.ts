@@ -88,11 +88,11 @@ export abstract class File {
 
     protected _fileAbstraction: IFileAbstraction;
     protected _fileStream: IStream; // Not intended to be used by implementing classes
-    protected _invariantEndPosition: number = -1;
-    protected _invariantStartPosition: number = -1;
     protected _tagTypesOnDisk: TagTypes = TagTypes.None;
 
     private _corruptionReasons: string[] = [];
+    private _invariantEndPosition: number = -1;
+    private _invariantStartPosition: number = -1;
     private _mimeType: string;
 
     // #endregion
@@ -181,18 +181,6 @@ export abstract class File {
      * Gets the {@link IFileAbstraction} representing the file.
      */
     public get fileAbstraction(): IFileAbstraction { return this._fileAbstraction; }
-
-    /**
-     * Gets the position at which the invariant (media) portion of the current instance ends. If
-     * the value could not be determined, `-1` is returned;
-     */
-    public get invariantEndPosition(): number { return this._invariantEndPosition; }
-
-    /**
-     * Gets the position at which the invariant (media) portion of the current instance begins. If
-     * the value could not be determined, `-1` is returned.
-     */
-    public get invariantStartPosition(): number { return this._invariantStartPosition; }
 
     /**
      * Indicates whether or not this file may be corrupt. Files with unknown corruptions should not
@@ -578,17 +566,15 @@ export abstract class File {
     public abstract removeTags(types: TagTypes): void;
 
     /**
-     * Searched backwards through a file for a specified pattern, starting at a specified offset.
+     * Searches backwards through a file for a specified pattern, starting at a specified offset.
      * @param pattern Pattern to search for in the current instance. Must be shorter than the
      *     {@link bufferSize}
-     * @param startPosition Seek position from which to start searching.
-     * @param after Pattern that the searched for pattern must appear after. If this pattern is
-     *     found first, `-1` is returned.
+     * @param startPosition Number of bytes from end of the file to begin searching.
      * @throws Error Thrown if `pattern` was not provided or if `startPosition` is
      *     not a safe, positive integer.
      * @returns Index at which the value wa found. If not found, `-1` is returned.
      */
-    public rFind(pattern: ByteVector, startPosition: number = 0, after?: ByteVector): number {
+    public rFind(pattern: ByteVector, startPosition: number = 0): number {
         Guards.truthy(pattern, "pattern");
         Guards.safeUint(startPosition, "startPosition");
 
@@ -615,10 +601,6 @@ export abstract class File {
                 const location = buffer.rFind(pattern);
                 if (location >= 0) {
                     return bufferOffset + location;
-                }
-
-                if (after && buffer.rFind(after) >= 0) {
-                    return -1;
                 }
 
                 readSize = Math.min(bufferOffset, File._bufferSize);
