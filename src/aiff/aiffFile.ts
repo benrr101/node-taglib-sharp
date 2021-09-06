@@ -236,15 +236,15 @@ export default class AiffFile extends File {
         // Read the ID3 chunk
         if (id3ChunkPos >= 0) {
             if (readTags && !this._tag) {
-                this._tag = Id3v2Tag.fromFile(this, id3ChunkPos + 8, style);
+                this._tag = Id3v2Tag.fromFileStart(this, id3ChunkPos + 8, style);
             }
 
             // Get the length of the tag from the ID3 chunk
             this.seek(id3ChunkPos + 4);
             const tagSize = this.readBlock(4).toUInt(true) + 8;
 
-            tagStart = this._invariantStartPosition = id3ChunkPos;
-            tagEnd = this._invariantEndPosition = tagStart + tagSize;
+            tagStart = id3ChunkPos;
+            tagEnd = tagStart + tagSize;
         }
 
         return {

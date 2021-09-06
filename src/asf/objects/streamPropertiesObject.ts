@@ -74,7 +74,7 @@ export default class StreamPropertiesObject extends BaseObject {
         if (!this._codec) {
             // Read the codec info from the type specific data
             if (this._streamType.equals(Guids.AsfAudioMedia)) {
-                this._codec = new RiffWaveFormatEx(this._typeSpecificData, 0);
+                this._codec = new RiffWaveFormatEx(this._typeSpecificData);
             }
             if (this._streamType.equals(Guids.AsfVideoMedia)) {
                 this._codec = new RiffBitmapInfoHeader(this._typeSpecificData, 11);

@@ -112,7 +112,7 @@ export {
     ChannelMode as MpegAudioChannelMode,
     MpegVersion as MpegVersion
 } from "./mpeg/mpegEnums";
-export {default as MpegFile} from "./mpeg/mpegFile";
+export {default as MpegFile} from "./mpeg/mpegContainerFile";
 export {default as MpegVbriHeader} from "./mpeg/vbriHeader";
 export {default as MpegVideoHeader} from "./mpeg/mpegVideoHeader";
 export {default as MpegXingHeader} from "./mpeg/xingHeader";
@@ -121,13 +121,8 @@ export {default as MpegXingHeader} from "./mpeg/xingHeader";
 export {default as RiffFile} from "./riff/riffFile";
 export {
     AviStream,
-    AviAudioStream,
-    AviVideoStream
-} from "./riff/aviStream";
-export {
-    AviStreamHeader as AviStreamHeader,
-    AviStreamType as AviStreamType
-} from "./riff/aviStreamHeader";
+    AviStreamType
+} from "./riff/avi/aviStream";
 export {default as DivxTag} from "./riff/divxTag";
 export {default as InfoTag} from "./riff/infoTag";
 export {default as MovieIdTag} from "./riff/movieIdTag";

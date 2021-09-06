@@ -6,8 +6,8 @@ export default class TestStream implements IStream {
     private _data: ByteVector;
     private _position: number;
 
-    public constructor(bytesToReturn: ByteVector, isWritable: boolean) {
-        this._data = ByteVector.fromByteVector(bytesToReturn);
+    public constructor(bytesToReturn: ByteVector, isWritable: boolean, cloneData: boolean = true) {
+        this._data = cloneData ? ByteVector.fromByteVector(bytesToReturn) : bytesToReturn;
         this._position = 0;
         this._isWritable = isWritable;
     }
@@ -62,7 +62,9 @@ export default class TestStream implements IStream {
             this._data.addByteVector(ByteVector.fromSize(length - this.length));
         } else if (this.length > length) {
             // Shrink
-            this._data = this._data.mid(0, length);
+            const bytesToRemove = this.length - length;
+            const startIndex = this.length - bytesToRemove;
+            this._data.removeRange(startIndex, bytesToRemove);
         }
         this._position = Math.max(this.length, this._position);
     }

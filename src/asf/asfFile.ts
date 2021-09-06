@@ -23,8 +23,6 @@ export default class AsfFile extends File {
             }
 
             this._asfTag = AsfTag.fromHeader(header);
-            this._invariantStartPosition = header.originalSize;
-            this._invariantEndPosition = this.length;
 
             if ((propertiesStyle & ReadStyle.Average) !== 0) {
                 this._properties = header.properties;
@@ -80,9 +78,6 @@ export default class AsfFile extends File {
             const output = header.render();
             const diff = output.length - header.originalSize;
             super.insert(output, 0, header.originalSize);
-
-            this._invariantStartPosition += diff;
-            this._invariantEndPosition += diff;
         } finally {
             this.mode = FileAccessMode.Closed;
         }

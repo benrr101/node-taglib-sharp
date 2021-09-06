@@ -181,6 +181,8 @@ export class ByteVector {
             } else {
                 totalLength += (<Uint8Array|ByteVector> vector).length;
             }
+            // @TODO: Add support for skipping undefined and go back and look for instances where 1
+            //  byte is added after concatenating
         }
 
         // Create a single big vector and copy the contents into it

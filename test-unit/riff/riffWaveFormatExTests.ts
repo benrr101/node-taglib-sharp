@@ -2,6 +2,7 @@ import * as Chai from "chai";
 import {suite, test} from "@testdeck/mocha";
 
 import RiffWaveFormatEx from "../../src/riff/riffWaveFormatEx";
+import {default as Resources} from "./resources";
 import {ByteVector} from "../../src/byteVector";
 import {MediaTypes} from "../../src/iCodec";
 import {Testers} from "../utilities/testers";
@@ -13,34 +14,25 @@ const assert = Chai.assert;
     @test
     public constructor_invalidParams() {
         // Act / Assert
-        Testers.testTruthy((v: ByteVector) => new RiffWaveFormatEx(v, 0));
-        Testers.testUint((v) => new RiffWaveFormatEx(ByteVector.empty(), v));
+        Testers.testTruthy((v: ByteVector) => new RiffWaveFormatEx(v));
     }
 
     @test
     public constructor_dataTooShort() {
         // Arrange
-        const data = ByteVector.fromSize(16);
+        const data = ByteVector.fromSize(10);
 
         // Act / Assert
-        assert.throws(() => new RiffWaveFormatEx(data, 10));
+        assert.throws(() => new RiffWaveFormatEx(data));
     }
 
     @test
     public constructor_knownAudioFormat() {
         // Arrange
-        const data = ByteVector.concatenate(
-            ByteVector.fromSize(10), // Offset
-            ByteVector.fromUShort(0xF1AC, false), // Format tag
-            ByteVector.fromUShort(3, false), // Number of channels
-            ByteVector.fromUInt(1234, false), // Samples per second
-            ByteVector.fromUInt(2345, false), // Average bytes per second
-            ByteVector.fromUShort(88, false), // Block align
-            ByteVector.fromUShort(16, false) // Bits per sample
-        );
+        const data = Resources.getAudioFormatBlock(0xF1AC);
 
         // Act
-        const object = new RiffWaveFormatEx(data, 10);
+        const object = new RiffWaveFormatEx(data);
 
         // Assert
         assert.strictEqual(object.audioBitrate, 2345 * 8 / 1000);
@@ -58,18 +50,10 @@ const assert = Chai.assert;
     @test
     public constructor_unknownAudioFormat() {
         // Arrange
-        const data = ByteVector.concatenate(
-            ByteVector.fromSize(10), // Offset
-            ByteVector.fromUShort(0xBBBB, false), // Format tag
-            ByteVector.fromUShort(3, false), // Number of channels
-            ByteVector.fromUInt(1234, false), // Samples per second
-            ByteVector.fromUInt(2345, false), // Average bytes per second
-            ByteVector.fromUShort(88, false), // Block align
-            ByteVector.fromUShort(16, false) // Bits per sample
-        );
+        const data = Resources.getAudioFormatBlock(0xBBBB);
 
         // Act
-        const object = new RiffWaveFormatEx(data, 10);
+        const object = new RiffWaveFormatEx(data);
 
         // Assert
         assert.strictEqual(object.audioBitrate, 2345 * 8 / 1000);
