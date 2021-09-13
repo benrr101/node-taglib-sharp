@@ -1,35 +1,86 @@
-import {FlacBlockHeader, FlacBlockType} from "./flacBlockHeader";
+import ILazy from "../iLazy";
 import {ByteVector} from "../byteVector";
-import {Guards} from "../utils";
-import {CorruptFileError} from "../errors";
+import {File} from "../file";
+import {Guards, NumberUtils} from "../utils";
+
+/**
+ * Specifies the contents of a FLAC block.
+ */
+export enum FlacBlockType {
+    /**
+     * Block contains stream information.
+     */
+    StreamInfo = 0,
+
+    /**
+     * Block contains padding.
+     */
+    Padding,
+
+    /**
+     * Block contains application data.
+     */
+    Application,
+
+    /**
+     * Block contains a seek table.
+     */
+    SeekTable,
+
+    /**
+     * Block contains a Xiph comment.
+     */
+    XiphComment,
+
+    /**
+     * Block contains a cue sheet.
+     */
+    CueSheet,
+
+    /**
+     * Block contains a picture.
+     */
+    Picture
+}
 
 /**
  * Represents a FLAC metadata block
  */
-export default class FlacBlock {
-    private readonly _header: FlacBlockHeader;
-    private readonly _data: ByteVector;
+export class FlacBlock implements ILazy {
+    public static readonly headerSize = 4;
+
+    private _blockStart: number;
+    private _data: ByteVector;
+    private _dataSize: number;
+    private _file: File;
+    private _isLastBlock: boolean;
+    private _type: FlacBlockType;
 
     // #region Constructors
 
-    private constructor(header: FlacBlockHeader, data: ByteVector) {
-        this._header = header;
-        this._data = data;
-    }
+    private constructor() {}
 
     /**
-     * Constructs and initializes a new instance using a header and the data of the block.
-     * @param header Header that defines this block
-     * @param data Data contained in the block
+     * Constructs and initializes a new instance, lazily, by reading it from a file.
+     * @param file File from which to read the current instance
+     * @param position Offset into the file where the block begins
      */
-    public static fromHeaderAndData(header: FlacBlockHeader, data: ByteVector): FlacBlock {
-        Guards.truthy(header, "header");
-        Guards.truthy(data, "data");
-        if (header.blockSize !== data.length) {
-            throw new CorruptFileError("Data length did not equal length defined in block header");
+    public static fromFile(file: File, position: number): FlacBlock {
+        Guards.truthy(file, "file");
+        Guards.safeUint(position, "position");
+        if (position > file.length) {
+            throw new Error("Argument out of range: position must be within size of file");
         }
 
-        return new FlacBlock(header, data);
+        file.seek(position);
+
+        const block = new FlacBlock();
+        const headerBytes = file.readBlock(4).toUInt();
+        block._dataSize = NumberUtils.uintAnd(headerBytes, 0x00ffffff);
+        block._isLastBlock = !!NumberUtils.uintAnd(headerBytes, 0x80000000);
+        block._type = NumberUtils.uintAnd(headerBytes, 0x7f000000) >>> 24;
+
+        return block;
     }
 
     /**
@@ -38,12 +89,19 @@ export default class FlacBlock {
      * @param type Type of the block to construct
      * @param data Data the block will contain
      */
-    public static fromTypeAndData(type: FlacBlockType, data: ByteVector): FlacBlock {
+    public static fromData(type: FlacBlockType, data: ByteVector): FlacBlock {
         Guards.truthy(data, "data");
-        return new FlacBlock(
-            FlacBlockHeader.fromTypeAndSize(type, data.length),
-            data
-        );
+        if (data.length > Math.pow(2, 24) - 1) {
+            throw new Error("Argument out of range: FLAC block data cannot be larger than 2^24 bytes");
+        }
+
+        const block = new FlacBlock();
+        block._type = type;
+        block._data = data;
+        block._dataSize = data.length;
+        block._isLastBlock = false;
+
+        return block;
     }
 
     // #endregion
@@ -51,14 +109,31 @@ export default class FlacBlock {
     // #region Properties
 
     /**
+     * Offset into the file where the block begins. This is `undefined` if the instance is
+     * constructed directly from data.
+     */
+    public get blockStart(): number { return this._blockStart; }
+    /** @internal */
+    public set blockStart(value: number) {
+        Guards.safeUint(value, "value");
+        this._blockStart = value;
+    }
+
+    /**
      * Gets the data contained in the current instance.
      */
-    public get data(): ByteVector { return this._data; }
+    public get data(): ByteVector {
+        this.load();
+        return this._data;
+    }
 
     /**
      * Gets the size of the data contained in the current instance.
      */
-    public get dataSize(): number { return this._header.blockSize; }
+    public get dataSize(): number {
+        this.load();
+        return this._dataSize;
+    }
 
     /**
      * Gets ehether or not the block represented by the current instance is the last metadata block
@@ -67,33 +142,52 @@ export default class FlacBlock {
      *     in the file and is followed immediately by the audio data, or `false` if another block
      *     appears after the current one or the block was not read from disk.
      */
-    public get isLastBlock(): boolean { return this._header.isLastBlock; }
+    public get isLastBlock(): boolean { return this._isLastBlock; }
+
+    /** @inheritDoc */
+    public get isLoaded(): boolean { return !!this._data; }
 
     /**
      * Gets the total size of the block as it appears on disk. This equals the size of the data
      * plus the size of the header.
      */
-    public get totalSize(): number { return this.dataSize + FlacBlockHeader.size; }
+    public get totalSize(): number { return this.dataSize + FlacBlock.headerSize; }
 
     /**
      * Gets the type of data contained in the current instance.
      */
-    public get type(): FlacBlockType { return this._header.blockType; }
+    public get type(): FlacBlockType { return this._type; }
 
     // #endregion
+
+    // #region Methods
+
+    /** @inheritDoc */
+    public load(): void {
+        if (this.isLoaded) {
+            return;
+        }
+
+        // Read the data from the file
+        this._file.seek(this._blockStart + FlacBlock.headerSize);
+        this._data = this._file.readBlock(this._dataSize);
+    }
 
     /**
      * Renders the current instance as a raw FLAC metadata block.
      * @param isLastBlock Whether or not the block should be marked as the last metadata block.
      */
     public render(isLastBlock: boolean): ByteVector {
-        if (!this._data) {
-            throw new Error("Cannot render empty block");
-        }
+        this.load();
+
+        const headerBytes = ByteVector.fromUInt(this._dataSize);
+        headerBytes.set(0, NumberUtils.uintOr(this._type, this._isLastBlock ? 0x80 : 0));
 
         return ByteVector.concatenate(
-            this._header.render(isLastBlock),
+            headerBytes,
             this._data
         );
     }
+
+    // #endregion
 }

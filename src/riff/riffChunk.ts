@@ -119,6 +119,8 @@ export default class RiffChunk implements IRiffChunk, ILazy {
 
     /** @inheritDoc */
     public render(): ByteVector {
+        this.load();
+
         const data = ByteVector.concatenate(
             ByteVector.fromString(this._fourcc),
             ByteVector.fromUInt(this.data.length, false),

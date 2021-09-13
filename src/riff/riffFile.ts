@@ -18,6 +18,12 @@ import {IFileAbstraction} from "../fileAbstraction";
 import {ICodec} from "../iCodec";
 import {Tag, TagTypes} from "../tag";
 
+/**
+ * This class extends {@link File} to provide tagging and properties support for RIFF files. These
+ * are usually WAV and AVI file.
+ * @remarks The RIFF standard supports a general purpose "chunk" system that software can use for
+ *     whatever purpose. Tagging is accomplished using various types of chunks
+ */
 export default class RiffFile extends File {
     /**
      * Identifier at the beginning of a RIFF file.
@@ -123,14 +129,12 @@ export default class RiffFile extends File {
                 const infoTagBytes = infoTag.render();
                 replacedChunks.push({ chunk: infoTag.list, newTotalSize: infoTagBytes.length });
                 renderedTags.push(infoTagBytes);
-
             }
             const movieIdTag = this._tag.getTag<MovieIdTag>(TagTypes.MovieId);
             if (movieIdTag) {
                 const movieIdBytes = movieIdTag.render();
                 replacedChunks.push({ chunk: movieIdTag.list, newTotalSize: movieIdBytes.length });
                 renderedTags.push(movieIdBytes);
-
             }
             const divxTag = this._tag.getTag<DivxTag>(TagTypes.DivX);
             if (divxTag) {

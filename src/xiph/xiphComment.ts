@@ -16,6 +16,7 @@ export default class XiphComment extends Tag {
     private _fields: {[key: string]: string[]} = {};
     private _pictures: IPicture[] = [];
     private _saveBeatsPerMinuteAsTempo: boolean = true;
+    private _sizeOnDisk: number = 0;
     private _vendorId: string;
 
     // #region Constructors
@@ -33,6 +34,7 @@ export default class XiphComment extends Tag {
         Guards.truthy(data, "data");
 
         const xiphComment = new XiphComment();
+        xiphComment._sizeOnDisk = data.length;
 
         // The first thing in the comment data is the vendor ID length, followed by a UTF8 string
         // with the vendor ID.
@@ -65,7 +67,8 @@ export default class XiphComment extends Tag {
 
             if (XiphComment.pictureFields.indexOf(key) >= 0) {
                 // The field is a picture, load it into a lazy XiphPicture
-                const picture = XiphPicture.fromEncodedField(value);
+                // @TODO: Allow read style to be passed in
+                const picture = XiphPicture.fromXiphComment(value, true);
                 xiphComment._pictures.push(picture);
             } else {
                 // Field is a text field, store it in the field list object
@@ -118,6 +121,9 @@ export default class XiphComment extends Tag {
 
     /** @inheritDoc Always returns {@link TagTypes.Xiph} */
     public get tagTypes(): TagTypes { return TagTypes.Xiph; }
+
+    /** @inheritDoc */
+    public get sizeOnDisk(): number { return this._sizeOnDisk; }
 
     /**
      * @inheritDoc via `TITLE` field
@@ -835,7 +841,7 @@ export default class XiphComment extends Tag {
         // Encode the picture data
         const pictureData = this._pictures.map((p) => {
             const xiphPicture = p instanceof XiphPicture ? p : XiphPicture.fromPicture(p);
-            const encodedPicture = `METADATA_BLOCK_PICTURE=${xiphPicture.render()}`;
+            const encodedPicture = `METADATA_BLOCK_PICTURE=${xiphPicture.renderForFlacBlock()}`;
             return ByteVector.fromString(encodedPicture, StringType.UTF8);
         });
 
