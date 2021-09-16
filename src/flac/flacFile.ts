@@ -45,10 +45,10 @@ export default class FlacFile extends File implements ISandwichFile {
             const startTag = new StartTag(this, propertiesStyle);
             this._mediaStartPosition = startTag.sizeOnDisk;
             const endTag = new EndTag(this, propertiesStyle);
-            this._mediaEndPosition = endTag.sizeOnDisk;
+            this._mediaEndPosition = this.length - endTag.sizeOnDisk;
 
             // Read blocks
-            this._blocks = this.readBlocks();
+            this._blocks = this.readMetadataBlocks();
 
             // Read properties, flac pictures, and Xiph comment
             this._properties = this.readProperties(propertiesStyle);
@@ -179,7 +179,7 @@ export default class FlacFile extends File implements ISandwichFile {
         }
     }
 
-    private readBlocks(): FlacBlock[] {
+    private readMetadataBlocks(): FlacBlock[] {
         // Make sure we've got the header at the beginning of the file
         this.seek(this._mediaStartPosition);
         if (ByteVector.notEqual(this.readBlock(4), FlacFile.fileIdentifier)) {
@@ -214,7 +214,10 @@ export default class FlacFile extends File implements ISandwichFile {
             throw new CorruptFileError("FLAC stream does not begin with StreamInfo block");
         }
 
-        const streamLength = this._blocks.reduce<number>((prev, b) => prev + b.totalSize, this._mediaStartPosition + 4);
+        // @TODO: For precise calculation, read the audio frames
+        const lastBlock = this._blocks[this._blocks.length - 1];
+        const metadataEndPosition = lastBlock.blockStart + lastBlock.dataSize + FlacBlock.headerSize;
+        const streamLength = this._mediaEndPosition - metadataEndPosition;
         const header = new FlacStreamHeader(this._blocks[0].data, streamLength);
 
         return new Properties(header.durationMilliseconds, [header]);

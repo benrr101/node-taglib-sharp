@@ -63,7 +63,7 @@ export default class XiphComment extends Tag {
             }
 
             const key = comment.substr(0, commentSeparatorPosition).toUpperCase();
-            const value = comment.substr(commentSeparatorPosition);
+            const value = comment.substr(commentSeparatorPosition + 1);
 
             if (XiphComment.pictureFields.indexOf(key) >= 0) {
                 // The field is a picture, load it into a lazy XiphPicture

@@ -17,12 +17,14 @@ export {Tag, TagTypes} from "./tag";
 
 // AAC /////////////////////////////////////////////////////////////////////
 export {default as AacFile} from "./aac/aacFile";
+export {default as AacFileSettings} from "./aac/aacFileSettings";
 
 // AIFF ////////////////////////////////////////////////////////////////////
 export {default as AiffFile} from "./aiff/aiffFile";
 
 // APE /////////////////////////////////////////////////////////////////////
 export {default as ApeFile} from "./ape/apeFile";
+export {default as ApeFileSettings} from "./ape/apeFileSettings";
 export {default as ApeTag} from "./ape/apeTag";
 
 // ASF /////////////////////////////////////////////////////////////////////
@@ -46,6 +48,12 @@ export {
 export { default as AsfPaddingObject } from "./asf/objects/paddingObject";
 export { default as AsfStreamPropertiesObject } from "./asf/objects/streamPropertiesObject";
 export { default as AsfUnknownObject } from "./asf/objects/unknownObject";
+
+// FLAC ////////////////////////////////////////////////////////////////////
+export {FlacBlock} from "./flac/flacBlock";
+export {default as FlacFile} from "./flac/flacFile";
+export {default as FlacFileSettings} from "./flac/flacFileSettings";
+export {default as FlacTag} from "./flac/flacTag";
 
 // ID3v1 ///////////////////////////////////////////////////////////////////
 export {default as Id3v1Tag} from "./id3v1/id3v1Tag";
@@ -112,7 +120,7 @@ export {
     ChannelMode as MpegAudioChannelMode,
     MpegVersion as MpegVersion
 } from "./mpeg/mpegEnums";
-export {default as MpegFile} from "./mpeg/mpegContainerFile";
+export {default as MpegContainerFile} from "./mpeg/mpegContainerFile";
 export {default as MpegVbriHeader} from "./mpeg/vbriHeader";
 export {default as MpegVideoHeader} from "./mpeg/mpegVideoHeader";
 export {default as MpegXingHeader} from "./mpeg/xingHeader";

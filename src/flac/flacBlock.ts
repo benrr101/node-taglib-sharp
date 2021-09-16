@@ -75,6 +75,9 @@ export class FlacBlock implements ILazy {
         file.seek(position);
 
         const block = new FlacBlock();
+        block._file = file;
+        block._blockStart = position;
+
         const headerBytes = file.readBlock(4).toUInt();
         block._dataSize = NumberUtils.uintAnd(headerBytes, 0x00ffffff);
         block._isLastBlock = !!NumberUtils.uintAnd(headerBytes, 0x80000000);
@@ -130,10 +133,7 @@ export class FlacBlock implements ILazy {
     /**
      * Gets the size of the data contained in the current instance.
      */
-    public get dataSize(): number {
-        this.load();
-        return this._dataSize;
-    }
+    public get dataSize(): number { return this._dataSize; }
 
     /**
      * Gets ehether or not the block represented by the current instance is the last metadata block
@@ -178,13 +178,18 @@ export class FlacBlock implements ILazy {
      * @param isLastBlock Whether or not the block should be marked as the last metadata block.
      */
     public render(isLastBlock: boolean): ByteVector {
-        this.load();
+        // One last sanity check before we render
+        if (this._data.length > Math.pow(2, 24) - 1) {
+            throw new Error("Invalid operation: FLAC block data cannot be larger than 2^24 bytes");
+        }
 
-        const headerBytes = ByteVector.fromUInt(this._dataSize);
-        headerBytes.set(0, NumberUtils.uintOr(this._type, this._isLastBlock ? 0x80 : 0));
+        const header = NumberUtils.uintOr(
+            this._dataSize,
+            NumberUtils.uintLShift(NumberUtils.uintOr(this._type, isLastBlock ? 0x80 : 0), 24)
+        );
 
         return ByteVector.concatenate(
-            headerBytes,
+            ByteVector.fromUInt(header),
             this._data
         );
     }

@@ -1,9 +1,9 @@
 import ILazy from "../iLazy";
-import {IPicture, PictureType} from "../iPicture";
-import FlacBlock from "../flac/flacBlock";
 import {ByteVector, StringType} from "../byteVector";
-import {Guards} from "../utils";
 import {CorruptFileError} from "../errors";
+import {FlacBlock} from "../flac/flacBlock";
+import {IPicture, PictureType} from "../iPicture";
+import {Guards} from "../utils";
 
 export default class XiphPicture implements IPicture, ILazy {
     private _rawDataSource: () => ByteVector;
