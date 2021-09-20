@@ -222,6 +222,15 @@ export class NumberUtils {
     }
 
     /**
+     * Provides unified way to do unsigned right bitshift.
+     * @param x Number
+     * @param y Bits to shift to the right
+     */
+    public static uintRShift(x: number, y: number): number {
+        return x >>> y;
+    }
+
+    /**
      * Converts IEEE 80-bit floating point numbers (SANE "extended" type) to double precision
      * floating point number.
      * @source http://www33146ue.sakura.ne.jp/staff/iz/formats/ieee.c

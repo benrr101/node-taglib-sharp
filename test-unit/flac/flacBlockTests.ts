@@ -8,7 +8,7 @@ import {File} from "../../src/file";
 import {FlacBlock, FlacBlockType} from "../../src/flac/flacBlock";
 import {Testers} from "../utilities/testers";
 
-@suite class FlacBlockTests {
+@suite class Flac_BlockTests {
     @test
     public fromData_invalidArguments() {
         // Act / Assert

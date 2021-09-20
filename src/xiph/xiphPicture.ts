@@ -28,7 +28,7 @@ export default class XiphPicture implements IPicture, ILazy {
      * @param isLazy Whether or not to lazily load the data. For xiph comments, this only delays
      *     decoding the data from base64
      */
-    public static fromXiphComment(data: string, isLazy: boolean): XiphPicture {
+    public static fromXiphComment(data: string, isLazy: boolean = false): XiphPicture {
         Guards.truthy(data, "data");
         if (data.length < 44) { // Decoded data must be 32 bytes long, 44 is length in base64
             throw new CorruptFileError("Encoded Xiph picture data must be at least 44 bytes long");
@@ -50,7 +50,7 @@ export default class XiphPicture implements IPicture, ILazy {
      * @param isLazy Whether or not to lazily load the data. For FLAC blocks, this will chain into
      *     the lazy loading capabilities of the block
      */
-    public static fromBlock(block: FlacBlock, isLazy: boolean): XiphPicture {
+    public static fromFlacBlock(block: FlacBlock, isLazy: boolean = false): XiphPicture {
         Guards.truthy(block, "block");
         if (block.dataSize < 32) {
             throw new CorruptFileError("Picture data must be at least 32 bytes");
@@ -83,6 +83,8 @@ export default class XiphPicture implements IPicture, ILazy {
         if (!(picture instanceof XiphPicture)) {
             return instance;
         }
+
+        // @TODO: Enable lazy loading by chaining into lazy pictures
 
         // Fill in extra details if we know them
         // @TODO: Maybe calculate these from the picture data?
@@ -122,6 +124,8 @@ export default class XiphPicture implements IPicture, ILazy {
     }
     /** @inheritDoc */
     public set data(value: ByteVector) {
+        Guards.truthy(value, "value");
+
         this.load();
         this._data = value;
     }
@@ -133,16 +137,25 @@ export default class XiphPicture implements IPicture, ILazy {
     }
     /** @inheritDoc */
     public set description(value: string) {
+        Guards.notNullOrUndefined(value, "value");
+
         this.load();
         this._description = value;
     }
 
-    /** @inheritDoc */
+    /**
+     * @inheritDoc
+     * @remarks This value is not stored in a XIPH picture and is only available if copied from
+     *     another picture.
+     */
     public get filename(): string {
         this.load();
         return this._filename;
     }
-    /** @inheritDoc */
+    /**
+     * @inheritDoc
+     * @remarks This value is not stored in a XIPH picture so setting it has no impact.
+     */
     public set filename(value: string) {
         this.load();
         this._filename = value;
@@ -195,6 +208,8 @@ export default class XiphPicture implements IPicture, ILazy {
     }
     /** @inheritDoc */
     public set mimeType(value: string) {
+        Guards.notNullOrUndefined(value, "value");
+
         this.load();
         this._mimeType = value;
     }
@@ -273,20 +288,20 @@ export default class XiphPicture implements IPicture, ILazy {
     public renderForFlacBlock() {
         this.load();
 
-        const mimeType = ByteVector.fromString(this.mimeType, StringType.Latin1);
-        const description = ByteVector.fromString(this.description, StringType.UTF8);
+        const mimeType = ByteVector.fromString(this._mimeType, StringType.Latin1);
+        const description = ByteVector.fromString(this._description, StringType.UTF8);
         return ByteVector.concatenate(
-            ByteVector.fromUInt(this.type),
+            ByteVector.fromUInt(this._type),
             ByteVector.fromUInt(mimeType.length),
             mimeType,
             ByteVector.fromUInt(description.length),
             description,
-            ByteVector.fromUInt(this.width),
-            ByteVector.fromUInt(this.height),
-            ByteVector.fromUInt(this.colorDepth),
-            ByteVector.fromUInt(this.indexedColors),
-            ByteVector.fromUInt(this.data.length),
-            this.data
+            ByteVector.fromUInt(this._width),
+            ByteVector.fromUInt(this._height),
+            ByteVector.fromUInt(this._colorDepth),
+            ByteVector.fromUInt(this._indexedColors),
+            ByteVector.fromUInt(this._data.length),
+            this._data
         );
     }
 

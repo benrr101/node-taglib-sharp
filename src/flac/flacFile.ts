@@ -201,7 +201,7 @@ export default class FlacFile extends File implements ISandwichFile {
 
     private readPictures(readStyle: ReadStyle): XiphPicture[] {
         return this._blocks.filter((b) => b.type === FlacBlockType.Picture)
-            .map((b) => XiphPicture.fromBlock(b, (readStyle & ReadStyle.PictureLazy) !== 0));
+            .map((b) => XiphPicture.fromFlacBlock(b, (readStyle & ReadStyle.PictureLazy) !== 0));
     }
 
     private readProperties(readStyle: ReadStyle): Properties {
