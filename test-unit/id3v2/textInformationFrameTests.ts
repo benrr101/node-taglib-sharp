@@ -536,7 +536,7 @@ function getTestFrame(): TextInformationFrame {
 
         // Assert
         assert.ok(output);
-        assert.isTrue(ByteVector.equal(output, data));
+        Testers.bvEqual(output, data);
     }
 
     // @TODO: Test for render version not same as input w/o read forces a read
@@ -561,7 +561,7 @@ function getTestFrame(): TextInformationFrame {
 
         // Assert
         assert.ok(output);
-        assert.isTrue(ByteVector.equal(output, data));
+        Testers.bvEqual(output, data);
     }
 
     @test
@@ -590,7 +590,7 @@ function getTestFrame(): TextInformationFrame {
             ByteVector.getTextDelimiter(StringType.UTF16)
         );
 
-        assert.isTrue(ByteVector.equal(output, expected));
+        Testers.bvEqual(output, expected);
     }
 
     @test
@@ -621,7 +621,7 @@ function getTestFrame(): TextInformationFrame {
             ByteVector.getTextDelimiter(StringType.UTF16BE)
         );
 
-        assert.isTrue(ByteVector.equal(output, expected));
+        Testers.bvEqual(output, expected);
     }
 
     @test
@@ -659,7 +659,7 @@ function getTestFrame(): TextInformationFrame {
                 ByteVector.fromString("(32)(CR)(32)(RX)SomeGenre;Whoa here's some cra((z)y string", StringType.UTF16BE)
             );
 
-            assert.isTrue(ByteVector.equal(output, expected));
+            Testers.bvEqual(output, expected);
         } finally {
             // Cleanup - Reset numeric genres setting
             Id3v2Settings.useNumericGenres = oldNumericGenresValue;
@@ -704,7 +704,7 @@ function getTestFrame(): TextInformationFrame {
                 )
             );
 
-            assert.isTrue(ByteVector.equal(output, expected));
+            Testers.bvEqual(output, expected);
         } finally {
             // Cleanup: Reset numeric genres setting
             Id3v2Settings.useNumericGenres = oldNumericGenresValue;
@@ -756,7 +756,7 @@ function getTestFrame(): TextInformationFrame {
                 ByteVector.fromString("Whoa here's some cra(z)y string", StringType.UTF16BE)
             );
 
-            assert.isTrue(ByteVector.equal(output, expected));
+            Testers.bvEqual(output, expected);
         } finally {
             // Cleanup - Reset numeric genres setting
             Id3v2Settings.useNumericGenres = oldNumericGenresValue;
@@ -808,7 +808,7 @@ function getTestFrame(): TextInformationFrame {
                 ByteVector.fromString("Whoa here's some cra(z)y string", StringType.UTF16BE)
             );
 
-            assert.isTrue(ByteVector.equal(output, expected));
+            Testers.bvEqual(output, expected);
         } finally {
             // Cleanup - Reset numeric genres setting
             Id3v2Settings.useNumericGenres = oldNumericGenresValue;
@@ -833,7 +833,7 @@ function getTestFrame(): TextInformationFrame {
 
         // Assert
         assert.ok(output);
-        assert.isTrue(ByteVector.equal(output, data));
+        Testers.bvEqual(output, data);
     }
 
     @test
@@ -854,7 +854,7 @@ function getTestFrame(): TextInformationFrame {
 
         // Assert
         assert.ok(output);
-        assert.isTrue(ByteVector.equal(output, data));
+        Testers.bvEqual(output, data);
     }
 }
 

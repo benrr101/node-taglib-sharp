@@ -1045,7 +1045,7 @@ const assert = Chai.assert;
 
         // Assert
         assert.notStrictEqual(output, bv);
-        assert.isTrue(ByteVector.equal(output, bv));
+        Testers.bvEqual(output, bv);
     }
 
     @test
@@ -1057,7 +1057,7 @@ const assert = Chai.assert;
         const output = bv.mid(3, 3);
 
         // Assert
-        assert.isTrue(ByteVector.equal(output, ByteVector.fromString("bar")));
+        Testers.bvEqual(output, ByteVector.fromString("bar"));
     }
 
     @test
@@ -1243,7 +1243,7 @@ const assert = Chai.assert;
 
         // Assert
         assert.strictEqual(output, bv);
-        assert.isTrue(ByteVector.equal(output, ByteVector.fromString("foobar")));
+        Testers.bvEqual(output, ByteVector.fromString("foobar"));
     }
 
     @test
@@ -1256,7 +1256,7 @@ const assert = Chai.assert;
 
         // Assert
         assert.strictEqual(output, bv);
-        assert.isTrue(ByteVector.equal(output, ByteVector.fromString("foobarbaz")));
+        Testers.bvEqual(output, ByteVector.fromString("foobarbaz"));
     }
 
     @test
@@ -1623,7 +1623,7 @@ const assert = Chai.assert;
         assert.isOk(output);
         assert.strictEqual(output.length, expected.length);
         for (let i = 0; i < expected.length; i++) {
-            assert.isTrue(ByteVector.equal(output[i], ByteVector.fromString(expected[i])));
+            Testers.bvEqual(output[i], ByteVector.fromString(expected[i]));
         }
     }
 }

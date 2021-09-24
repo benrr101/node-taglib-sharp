@@ -319,7 +319,7 @@ function getCustomTestFrame(data: ByteVector, desc: string, filename: string, mi
         assert.isOk(frame);
         assert.equal(frame.frameClassType, FrameClassType.AttachmentFrame);
 
-        assert.isTrue(ByteVector.equal(frame.data, d));
+        Testers.bvEqual(frame.data, d);
         assert.strictEqual(frame.description, desc);
         assert.strictEqual(frame.filename, fn);
         assert.strictEqual(frame.mimeType, mt);
@@ -460,7 +460,7 @@ function getCustomTestFrame(data: ByteVector, desc: string, filename: string, mi
         assert.isOk(output);
         assert.equal(output.frameClassType, FrameClassType.AttachmentFrame);
 
-        assert.isTrue(ByteVector.equal(output.data, frame.data));
+        Testers.bvEqual(output.data, frame.data);
         assert.strictEqual(output.description, frame.description);
         assert.strictEqual(output.filename, frame.filename);
         assert.strictEqual(output.mimeType, frame.mimeType);
@@ -494,7 +494,7 @@ function getCustomTestFrame(data: ByteVector, desc: string, filename: string, mi
         assert.isOk(output);
         assert.equal(output.frameClassType, FrameClassType.AttachmentFrame);
 
-        assert.isTrue(ByteVector.equal(output.data, frame.data));
+        Testers.bvEqual(output.data, frame.data);
         assert.strictEqual(output.description, frame.description);
         assert.strictEqual(output.filename, frame.filename);
         assert.strictEqual(output.mimeType, frame.mimeType);
@@ -516,7 +516,7 @@ function getCustomTestFrame(data: ByteVector, desc: string, filename: string, mi
         assert.isOk(output);
         assert.equal(output.frameClassType, FrameClassType.AttachmentFrame);
 
-        assert.isTrue(ByteVector.equal(output.data, frame.data));
+        Testers.bvEqual(output.data, frame.data);
         assert.strictEqual(output.description, frame.description);
         assert.strictEqual(output.filename, frame.filename);
         assert.strictEqual(output.mimeType, frame.mimeType);
@@ -654,7 +654,7 @@ function getCustomTestFrame(data: ByteVector, desc: string, filename: string, mi
             ByteVector.getTextDelimiter(StringType.UTF16),
             data
         );
-        assert.isTrue(ByteVector.equal(output, expected));
+        Testers.bvEqual(output, expected);
     }
 
     @test
@@ -678,7 +678,7 @@ function getCustomTestFrame(data: ByteVector, desc: string, filename: string, mi
             ByteVector.getTextDelimiter(StringType.UTF16),
             data
         );
-        assert.isTrue(ByteVector.equal(output, expected));
+        Testers.bvEqual(output, expected);
     }
 
     @test
@@ -703,7 +703,7 @@ function getCustomTestFrame(data: ByteVector, desc: string, filename: string, mi
             ByteVector.getTextDelimiter(StringType.Latin1),
             data
         );
-        assert.isTrue(ByteVector.equal(output, expected));
+        Testers.bvEqual(output, expected);
     }
 
     @test
@@ -726,7 +726,7 @@ function getCustomTestFrame(data: ByteVector, desc: string, filename: string, mi
             ByteVector.getTextDelimiter(Id3v2Settings.defaultEncoding),
             data
         );
-        assert.isTrue(ByteVector.equal(output, expected));
+        Testers.bvEqual(output, expected);
     }
 
     @test
@@ -750,7 +750,7 @@ function getCustomTestFrame(data: ByteVector, desc: string, filename: string, mi
             ByteVector.getTextDelimiter(Id3v2Settings.defaultEncoding),
             data
         );
-        assert.isTrue(ByteVector.equal(output, expected));
+        Testers.bvEqual(output, expected);
     }
 
     @test
@@ -775,7 +775,7 @@ function getCustomTestFrame(data: ByteVector, desc: string, filename: string, mi
             ByteVector.getTextDelimiter(Id3v2Settings.defaultEncoding),
             data
         );
-        assert.isTrue(ByteVector.equal(output, expected));
+        Testers.bvEqual(output, expected);
     }
 
     @test
@@ -801,6 +801,6 @@ function getCustomTestFrame(data: ByteVector, desc: string, filename: string, mi
             ByteVector.getTextDelimiter(Id3v2Settings.defaultEncoding),
             data
         );
-        assert.isTrue(ByteVector.equal(output, expected));
+        Testers.bvEqual(output, expected);
     }
 }

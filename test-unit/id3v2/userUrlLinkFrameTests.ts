@@ -337,6 +337,6 @@ const getTestUserUrlLinkFrame = (): UserUrlLinkFrame => {
 
         // Assert
         assert.isOk(result);
-        assert.isTrue(ByteVector.equal(result, getTestFrameData()));
+        Testers.bvEqual(result, getTestFrameData());
     }
 }

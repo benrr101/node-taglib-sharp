@@ -37,7 +37,7 @@ const assert = Chai.assert;
         assert.deepStrictEqual(item.text, []);
         assert.strictEqual(item.type, ApeTagItemType.Binary);
         assert.notStrictEqual(item.value, data);
-        assert.isTrue(ByteVector.equal(item.value, data));
+        Testers.bvEqual(item.value, data);
         assert.isTrue(item.value.isReadOnly);
     }
 
@@ -133,7 +133,7 @@ const assert = Chai.assert;
         assert.strictEqual(item.size, 21);
         assert.deepStrictEqual(item.text, []);
         assert.strictEqual(item.type, ApeTagItemType.Binary);
-        assert.isTrue(ByteVector.equal(item.value, value));
+        Testers.bvEqual(item.value, value);
     }
 
     @test
@@ -226,7 +226,7 @@ const assert = Chai.assert;
         assert.deepStrictEqual(clone.text, []);
         assert.strictEqual(clone.type, ApeTagItemType.Binary);
         assert.notStrictEqual(clone.value, data);
-        assert.isTrue(ByteVector.equal(clone.value, data));
+        Testers.bvEqual(clone.value, data);
     }
 
     @test
@@ -284,7 +284,7 @@ const assert = Chai.assert;
 
         // Assert
         assert.isOk(output);
-        assert.isTrue(ByteVector.equal(output, data));
+        Testers.bvEqual(output, data);
     }
 
     @test
@@ -308,7 +308,7 @@ const assert = Chai.assert;
 
         // Assert
         assert.isOk(output);
-        assert.isTrue(ByteVector.equal(output, data));
+        Testers.bvEqual(output, data);
     }
 
     @test

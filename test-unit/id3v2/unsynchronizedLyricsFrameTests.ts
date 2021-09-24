@@ -506,6 +506,6 @@ const getTestUnsynchronizedLyricsFrame = (): UnsynchronizedLyricsFrame => {
 
         // Assert
         assert.isOk(result);
-        assert.isTrue(ByteVector.equal(result, getTestFrameData()));
+        Testers.bvEqual(result, getTestFrameData());
     }
 }

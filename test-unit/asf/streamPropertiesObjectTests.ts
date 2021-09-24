@@ -11,6 +11,7 @@ import {ByteVector} from "../../src/byteVector";
 import {Guids, ObjectType} from "../../src/asf/constants";
 import {File} from "../../src/file";
 import {MediaTypes} from "../../src/icodec";
+import {Testers} from "../utilities/testers";
 import {NumberUtils} from "../../src/utils";
 
 // Setup chai
@@ -37,13 +38,13 @@ const assert = Chai.assert;
         assert.isTrue(object.guid.equals(Guids.AsfStreamPropertiesObject));
         assert.strictEqual(object.objectType, ObjectType.StreamPropertiesObject);
         assert.strictEqual(object.originalSize, this._originalSize);
-        assert.isTrue(ByteVector.equal(object.errorCorrectionData, this._errorCorrectionData));
+        Testers.bvEqual(object.errorCorrectionData, this._errorCorrectionData);
         assert.isTrue(object.errorCorrectionType.equals(this._errorCorrectionGuid));
         assert.strictEqual(object.flags, this._flags);
         assert.strictEqual(object.streamNumber, this._streamNumber);
         assert.isTrue(object.streamType.equals(this._streamTypeGuid));
         assert.strictEqual(object.timeOffsetMilliseconds, Math.floor(NumberUtils.ticksToMilli(this._timeOffset)));
-        assert.isTrue(ByteVector.equal(object.typeSpecificData, this._typeSpecificData));
+        Testers.bvEqual(object.typeSpecificData, this._typeSpecificData);
 
         assert.isNotOk(object.codec);
     }
@@ -60,7 +61,7 @@ const assert = Chai.assert;
 
         // Assert
         assert.isOk(output);
-        assert.isTrue(ByteVector.equal(output, data.mid(10)));
+        Testers.bvEqual(output, data.mid(10));
     }
 
     @test

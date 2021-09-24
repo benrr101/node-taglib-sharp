@@ -86,7 +86,7 @@ const assert = Chai.assert;
             EventType.KeyChange,
             ByteVector.fromInt(123)
         );
-        assert.isTrue(ByteVector.equal(output, expected));
+        Testers.bvEqual(output, expected);
     }
 }
 
@@ -292,6 +292,6 @@ const assert = Chai.assert;
         );
 
         assert.isOk(output);
-        assert.isTrue(ByteVector.equal(output, expected));
+        Testers.bvEqual(output, expected);
     }
 }

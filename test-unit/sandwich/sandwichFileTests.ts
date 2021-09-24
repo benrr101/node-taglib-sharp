@@ -292,7 +292,7 @@ import {Testers} from "../utilities/testers";
         file.save();
 
         // Assert
-        assert.isTrue(ByteVector.equal(testAbstraction.allBytes, fileBytes));
+        Testers.bvEqual(testAbstraction.allBytes, fileBytes);
         assert.strictEqual(file.mode, FileAccessMode.Closed);
         assert.strictEqual(file.mediaStartPosition, 0);
         assert.strictEqual(file.mediaEndPosition, 100);
@@ -326,7 +326,7 @@ import {Testers} from "../utilities/testers";
             fileBytes,
             (<Id3v2Tag> endTag).render()
         );
-        assert.isTrue(ByteVector.equal(testAbstraction.allBytes, expectedBytes));
+        Testers.bvEqual(testAbstraction.allBytes, expectedBytes);
         assert.strictEqual(file.mode, FileAccessMode.Closed);
         assert.strictEqual(file.mediaStartPosition, startTag.sizeOnDisk);
         assert.strictEqual(file.mediaEndPosition, startTag.sizeOnDisk + fileBytes.length);
@@ -357,7 +357,7 @@ import {Testers} from "../utilities/testers";
         file.save();
 
         // Assert
-        assert.isTrue(ByteVector.equal(testAbstraction.allBytes, fileBytes));
+        Testers.bvEqual(testAbstraction.allBytes, fileBytes);
         assert.strictEqual(file.mode, FileAccessMode.Closed);
         assert.strictEqual(file.mediaStartPosition, id3v2Tag.sizeOnDisk + apeTag.sizeOnDisk);
         assert.strictEqual(file.mediaEndPosition, id3v2Tag.sizeOnDisk + apeTag.sizeOnDisk + 100);
@@ -399,7 +399,7 @@ import {Testers} from "../utilities/testers";
             ByteVector.fromSize(100),
             id3v1Tag.render()
         );
-        assert.isTrue(ByteVector.equal(testAbstraction.allBytes, expectedBytes));
+        Testers.bvEqual(testAbstraction.allBytes, expectedBytes);
         assert.strictEqual(file.mode, FileAccessMode.Closed);
         assert.strictEqual(file.mediaEndPosition, id3v2Tag.sizeOnDisk + newTag.sizeOnDisk + 100);
         assert.strictEqual(file.mediaStartPosition, id3v2Tag.sizeOnDisk + newTag.sizeOnDisk);
@@ -437,7 +437,7 @@ import {Testers} from "../utilities/testers";
             ByteVector.fromSize(100),
             id3v1Tag.render()
         );
-        assert.isTrue(ByteVector.equal(testAbstraction.allBytes, expectedBytes));
+        Testers.bvEqual(testAbstraction.allBytes, expectedBytes);
         assert.strictEqual(file.mode, FileAccessMode.Closed);
         assert.strictEqual(file.mediaEndPosition, id3v2Tag.sizeOnDisk + 100);
         assert.strictEqual(file.mediaStartPosition, id3v2Tag.sizeOnDisk);

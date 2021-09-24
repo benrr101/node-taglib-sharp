@@ -4,12 +4,12 @@ import {suite, test} from "@testdeck/mocha";
 import ObjectTests from "./objectTests";
 import PaddingObject from "../../src/asf/objects/PaddingObject";
 import PropertyTests from "../utilities/propertyTests";
+import TestFile from "../utilities/testFile";
 import UuidWrapper from "../../src/uuidWrapper";
 import {ByteVector} from "../../src/byteVector";
 import {Guids, ObjectType} from "../../src/asf/constants";
 import {File} from "../../src/file";
 import {Testers} from "../utilities/testers";
-import TestFile from "../utilities/testFile";
 
 // Setup chai
 const assert = Chai.assert;
@@ -100,6 +100,6 @@ const assert = Chai.assert;
         const output = object.render();
 
         // Assert
-        assert.isTrue(ByteVector.equal(output, data.mid(10)));
+        Testers.bvEqual(output, data.mid(10));
     }
 }

@@ -580,7 +580,7 @@ function getTestFrame(): CommentsFrame {
 
         // Assert
         assert.isOk(output);
-        assert.isTrue(ByteVector.equal(output, data));
+        Testers.bvEqual(output, data);
 
     }
 }

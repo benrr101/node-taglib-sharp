@@ -184,7 +184,7 @@ const testOwner = "https://github.com/benrr101/node-taglib-sharp";
         assert.strictEqual(frame.owner, o);
 
         if (i !== undefined) {
-            assert.isTrue(ByteVector.equal(frame.identifier, i));
+            Testers.bvEqual(frame.identifier, i);
         } else {
             assert.isUndefined(frame.identifier);
         }
@@ -274,7 +274,7 @@ const testOwner = "https://github.com/benrr101/node-taglib-sharp";
         assert.strictEqual(clone.frameClassType, FrameClassType.UniqueFileIdentifierFrame);
         assert.strictEqual(clone.frameId, FrameIdentifiers.UFID);
 
-        assert.isTrue(ByteVector.equal(clone.identifier, frame.identifier));
+        Testers.bvEqual(clone.identifier, frame.identifier);
         assert.strictEqual(clone.owner, frame.owner);
     }
 
@@ -296,6 +296,6 @@ const testOwner = "https://github.com/benrr101/node-taglib-sharp";
 
         // Assert
         assert.ok(result);
-        assert.isTrue(ByteVector.equal(data, result));
+        Testers.bvEqual(data, result);
     }
 }

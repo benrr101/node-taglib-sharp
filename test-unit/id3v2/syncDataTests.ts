@@ -23,7 +23,7 @@ const assert = Chai.assert;
         const output = SyncData.fromUint(TestConstants.syncedUint);
 
         // Assert
-        assert.isTrue(ByteVector.equal(output, TestConstants.syncedUintBytes));
+        Testers.bvEqual(output, TestConstants.syncedUintBytes);
     }
 
     @test
