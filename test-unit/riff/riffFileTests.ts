@@ -783,7 +783,7 @@ import {Testers} from "../utilities/testers";
         file.save();
 
         // Assert - File should be untouched
-        assert.isTrue(ByteVector.equal(testAbstraction.allBytes, fileBytes));
+        Testers.bvEqual(testAbstraction.allBytes, fileBytes);
 
         assert.strictEqual(file.mode, FileAccessMode.Closed);
         assert.strictEqual(file.tagTypes, TagTypes.None);
@@ -825,7 +825,7 @@ import {Testers} from "../utilities/testers";
             Resources.getDataChunk()
         );
         const expectedFileBytes = Riff_RiffFileTests.getFileBytes(expectedDataBytes);
-        assert.isTrue(ByteVector.equal(testAbstraction.allBytes, expectedFileBytes));
+        Testers.bvEqual(testAbstraction.allBytes, expectedFileBytes);
 
         assert.strictEqual(file.mode, FileAccessMode.Closed);
         assert.strictEqual(file.tagTypes, WaveFileSettings.defaultTagTypes);
@@ -865,7 +865,7 @@ import {Testers} from "../utilities/testers";
             Resources.getJunkChunk(1024)
         );
         const expectedFileBytes = Riff_RiffFileTests.getFileBytes(expectedDataBytes);
-        assert.isTrue(ByteVector.equal(testAbstraction.allBytes, expectedFileBytes));
+        Testers.bvEqual(testAbstraction.allBytes, expectedFileBytes);
 
         assert.strictEqual(file.mode, FileAccessMode.Closed);
         assert.strictEqual(file.tagTypes, WaveFileSettings.defaultTagTypes);
@@ -899,7 +899,7 @@ import {Testers} from "../utilities/testers";
             Resources.getDataChunk()
         );
         const expectedFileBytes = Riff_RiffFileTests.getFileBytes(expectedDataBytes);
-        assert.isTrue(ByteVector.equal(testAbstraction.allBytes, expectedFileBytes));
+        Testers.bvEqual(testAbstraction.allBytes, expectedFileBytes);
 
         assert.strictEqual(file.mode, FileAccessMode.Closed);
         assert.strictEqual(file.tagTypes, TagTypes.DivX | TagTypes.MovieId | TagTypes.RiffInfo | TagTypes.Id3v2);
@@ -932,7 +932,7 @@ import {Testers} from "../utilities/testers";
             Resources.getDataChunk()
         );
         const expectedFileBytes = Riff_RiffFileTests.getFileBytes(expectedDataBytes);
-        assert.isTrue(ByteVector.equal(testAbstraction.allBytes, expectedFileBytes));
+        Testers.bvEqual(testAbstraction.allBytes, expectedFileBytes);
 
         assert.strictEqual(file.mode, FileAccessMode.Closed);
         assert.strictEqual(file.tagTypes, TagTypes.DivX | TagTypes.MovieId | TagTypes.RiffInfo | TagTypes.Id3v2);
@@ -965,7 +965,7 @@ import {Testers} from "../utilities/testers";
             Resources.getDataChunk()
         );
         const expectedFileBytes = Riff_RiffFileTests.getFileBytes(expectedDataBytes);
-        assert.isTrue(ByteVector.equal(testFileAbstraction.allBytes, expectedFileBytes));
+        Testers.bvEqual(testFileAbstraction.allBytes, expectedFileBytes);
 
         assert.strictEqual(file.mode, FileAccessMode.Closed);
         assert.strictEqual(file.tagTypes, TagTypes.DivX | TagTypes.MovieId | TagTypes.RiffInfo | TagTypes.Id3v2);
@@ -999,7 +999,7 @@ import {Testers} from "../utilities/testers";
             Resources.getDataChunk()
         );
         const expectedFileBytes = Riff_RiffFileTests.getFileBytes(expectedDataBytes);
-        assert.isTrue(ByteVector.equal(testFileAbstraction.allBytes, expectedFileBytes));
+        Testers.bvEqual(testFileAbstraction.allBytes, expectedFileBytes);
 
         assert.strictEqual(file.mode, FileAccessMode.Closed);
         assert.strictEqual(file.tagTypes, TagTypes.DivX | TagTypes.MovieId | TagTypes.RiffInfo | TagTypes.Id3v2);
@@ -1025,7 +1025,7 @@ import {Testers} from "../utilities/testers";
         file.save();
 
         // Assert - File should be untouched
-        assert.isTrue(ByteVector.equal(testAbstraction.allBytes, fileBytes));
+        Testers.bvEqual(testAbstraction.allBytes, fileBytes);
 
         assert.strictEqual(file.mode, FileAccessMode.Closed);
         assert.strictEqual(file.tagTypes, TagTypes.None);
@@ -1067,7 +1067,7 @@ import {Testers} from "../utilities/testers";
             Resources.getMoviChunk()
         );
         const expectedFileBytes = Riff_RiffFileTests.getFileBytes(expectedDataBytes);
-        assert.isTrue(ByteVector.equal(testAbstraction.allBytes, expectedFileBytes));
+        Testers.bvEqual(testAbstraction.allBytes, expectedFileBytes);
 
         assert.strictEqual(file.mode, FileAccessMode.Closed);
         assert.strictEqual(file.tagTypes, AviFileSettings.defaultTagTypes);
@@ -1107,7 +1107,7 @@ import {Testers} from "../utilities/testers";
             Resources.getJunkChunk(1024)
         );
         const expectedFileBytes = Riff_RiffFileTests.getFileBytes(expectedDataBytes);
-        assert.isTrue(ByteVector.equal(testAbstraction.allBytes, expectedFileBytes));
+        Testers.bvEqual(testAbstraction.allBytes, expectedFileBytes);
 
         assert.strictEqual(file.mode, FileAccessMode.Closed);
         assert.strictEqual(file.tagTypes, AviFileSettings.defaultTagTypes);
@@ -1141,7 +1141,7 @@ import {Testers} from "../utilities/testers";
             Resources.getMoviChunk()
         );
         const expectedFileBytes = Riff_RiffFileTests.getFileBytes(expectedDataBytes);
-        assert.isTrue(ByteVector.equal(testAbstraction.allBytes, expectedFileBytes));
+        Testers.bvEqual(testAbstraction.allBytes, expectedFileBytes);
 
         assert.strictEqual(file.mode, FileAccessMode.Closed);
         assert.strictEqual(file.tagTypes, TagTypes.DivX | TagTypes.MovieId | TagTypes.RiffInfo | TagTypes.Id3v2);
@@ -1174,7 +1174,7 @@ import {Testers} from "../utilities/testers";
             Resources.getMoviChunk()
         );
         const expectedFileBytes = Riff_RiffFileTests.getFileBytes(expectedDataBytes);
-        assert.isTrue(ByteVector.equal(testAbstraction.allBytes, expectedFileBytes));
+        Testers.bvEqual(testAbstraction.allBytes, expectedFileBytes);
 
         assert.strictEqual(file.mode, FileAccessMode.Closed);
         assert.strictEqual(file.tagTypes, TagTypes.DivX | TagTypes.MovieId | TagTypes.RiffInfo | TagTypes.Id3v2);
@@ -1207,7 +1207,7 @@ import {Testers} from "../utilities/testers";
             Resources.getMoviChunk()
         );
         const expectedFileBytes = Riff_RiffFileTests.getFileBytes(expectedDataBytes);
-        assert.isTrue(ByteVector.equal(testFileAbstraction.allBytes, expectedFileBytes));
+        Testers.bvEqual(testFileAbstraction.allBytes, expectedFileBytes);
 
         assert.strictEqual(file.mode, FileAccessMode.Closed);
         assert.strictEqual(file.tagTypes, TagTypes.DivX | TagTypes.MovieId | TagTypes.RiffInfo | TagTypes.Id3v2);
@@ -1241,7 +1241,7 @@ import {Testers} from "../utilities/testers";
             Resources.getMoviChunk()
         );
         const expectedFileBytes = Riff_RiffFileTests.getFileBytes(expectedDataBytes);
-        assert.isTrue(ByteVector.equal(testFileAbstraction.allBytes, expectedFileBytes));
+        Testers.bvEqual(testFileAbstraction.allBytes, expectedFileBytes);
 
         assert.strictEqual(file.mode, FileAccessMode.Closed);
         assert.strictEqual(file.tagTypes, TagTypes.DivX | TagTypes.MovieId | TagTypes.RiffInfo | TagTypes.Id3v2);

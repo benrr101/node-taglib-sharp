@@ -105,7 +105,7 @@ const assert = Chai.assert;
         assert.strictEqual(frame.frameId, fi);
 
         if (d !== undefined) {
-            assert.isTrue(ByteVector.equal(frame.data, d));
+            Testers.bvEqual(frame.data, d);
         } else {
             assert.isUndefined(frame.data);
         }
@@ -132,7 +132,7 @@ const assert = Chai.assert;
         assert.strictEqual(result.frameClassType, FrameClassType.UnknownFrame);
         assert.strictEqual(result.frameId, FrameIdentifiers.WXXX);
 
-        assert.isTrue(ByteVector.equal(result.data, result.data));
+        Testers.bvEqual(result.data, result.data);
     }
 
     @test
@@ -151,6 +151,6 @@ const assert = Chai.assert;
 
         // Assert
         assert.ok(result);
-        assert.isTrue(ByteVector.equal(data, result));
+        Testers.bvEqual(data, result);
     }
 }

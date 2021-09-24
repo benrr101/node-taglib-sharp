@@ -296,7 +296,7 @@ import {TagTesters, Testers} from "../utilities/testers";
         );
 
         assert.isOk(output);
-        assert.isTrue(ByteVector.equal(output, expectedBytes));
+        Testers.bvEqual(output, expectedBytes);
     }
 
     @test

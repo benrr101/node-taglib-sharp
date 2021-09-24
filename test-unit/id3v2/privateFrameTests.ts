@@ -8,6 +8,7 @@ import {ByteVector, StringType} from "../../src/byteVector";
 import {Frame, FrameClassType} from "../../src/id3v2/frames/frame";
 import {Id3v2FrameHeader} from "../../src/id3v2/frames/frameHeader";
 import {FrameIdentifiers} from "../../src/id3v2/frameIdentifiers";
+import {Testers} from "../utilities/testers";
 
 // Setup chai
 const assert = Chai.assert;
@@ -113,7 +114,7 @@ const assert = Chai.assert;
         assert.strictEqual(frame.frameId, FrameIdentifiers.PRIV);
 
         assert.strictEqual(frame.owner, o);
-        assert.isTrue(ByteVector.equal(frame.privateData, d));
+        Testers.bvEqual(frame.privateData, d);
     }
 }
 
@@ -191,7 +192,7 @@ const assert = Chai.assert;
 
         assert.strictEqual(output.owner, frame.owner);
         assert.notEqual(output.privateData, frame.privateData);
-        assert.isTrue(ByteVector.equal(output.privateData, frame.privateData));
+        Testers.bvEqual(output.privateData, frame.privateData);
     }
 
     @test
@@ -212,7 +213,7 @@ const assert = Chai.assert;
 
         // Assert
         assert.isOk(output);
-        assert.isTrue(ByteVector.equal(output, data));
+        Testers.bvEqual(output, data);
     }
 
     @test

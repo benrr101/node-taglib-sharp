@@ -188,7 +188,7 @@ const _sampleData = ByteVector.concatenate(
             ByteVector.fromUInt(ApeTagFooterFlags.HeaderPresent, false), // Flags
             ByteVector.fromSize(8)
         );
-        assert.isTrue(ByteVector.equal(output, expected));
+        Testers.bvEqual(output, expected);
     }
 
     @test
@@ -209,7 +209,7 @@ const _sampleData = ByteVector.concatenate(
             ByteVector.fromUInt(0, false), // Flags
             ByteVector.fromSize(8)
         );
-        assert.isTrue(ByteVector.equal(output, expected));
+        Testers.bvEqual(output, expected);
     }
 
     @test
@@ -229,7 +229,7 @@ const _sampleData = ByteVector.concatenate(
             ByteVector.fromUInt(0, false), // Flags
             ByteVector.fromSize(8)
         );
-        assert.isTrue(ByteVector.equal(output, expected));
+        Testers.bvEqual(output, expected);
     }
 
     @test
@@ -251,7 +251,7 @@ const _sampleData = ByteVector.concatenate(
             ByteVector.fromUInt(expectedFlags, false), // Flags
             ByteVector.fromSize(8)
         );
-        assert.isTrue(ByteVector.equal(output, expected));
+        Testers.bvEqual(output, expected);
     }
 
     @test
@@ -264,7 +264,7 @@ const _sampleData = ByteVector.concatenate(
         const output = footer.renderHeader();
 
         // Assert
-        assert.isTrue(ByteVector.equal(output, ByteVector.empty()));
+        Testers.bvEqual(output, ByteVector.empty());
     }
 
     @test
@@ -286,6 +286,6 @@ const _sampleData = ByteVector.concatenate(
             ByteVector.fromUInt(expectedFlags, false), // Flags
             ByteVector.fromSize(8)
         );
-        assert.isTrue(ByteVector.equal(output, expected));
+        Testers.bvEqual(output, expected);
     }
 }

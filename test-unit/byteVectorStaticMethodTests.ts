@@ -130,7 +130,7 @@ const assert = Chai.assert;
         const bv2 = ByteVector.fromByteArray(new Uint8Array([0x01, 0x02]));
 
         // Act, Assert
-        assert.isTrue(ByteVector.equal(bv1, bv2));
+        Testers.bvEqual(bv1, bv2);
     }
 
     @test

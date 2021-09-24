@@ -9,6 +9,7 @@ import UuidWrapper from "../../src/uuidWrapper";
 import {ByteVector, StringType} from "../../src/byteVector";
 import {Guids, ObjectType} from "../../src/asf/constants";
 import {File} from "../../src/file";
+import {Testers} from "../utilities/testers";
 
 // Setup Chai
 const assert = Chai.assert;
@@ -170,6 +171,6 @@ const assert = Chai.assert;
 
         // Assert
         assert.isOk(object);
-        assert.isTrue(ByteVector.equal(output, data.mid(10)));
+        Testers.bvEqual(output, data.mid(10));
     }
 }

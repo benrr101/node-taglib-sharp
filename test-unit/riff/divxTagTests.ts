@@ -173,7 +173,7 @@ const assert = Chai.assert;
         const result = tag.render();
 
         // Assert
-        assert.isTrue(ByteVector.equal(result, data));
+        Testers.bvEqual(result, data);
     }
 
     @test
@@ -190,6 +190,6 @@ const assert = Chai.assert;
             ByteVector.fromSize(6),
             DivxTag.FILE_IDENTIFIER
         );
-        assert.isTrue(ByteVector.equal(result, expected));
+        Testers.bvEqual(result, expected);
     }
 }
