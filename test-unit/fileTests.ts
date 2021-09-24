@@ -618,7 +618,7 @@ import {Testers} from "./utilities/testers";
 
             // - Open the stream to verify it's contents didn't change
             f.mode = FileAccessMode.Read;
-            assert.isTrue(ByteVector.equal((<TestStream> f.stream).data, d));
+            Testers.bvEqual((<TestStream> f.stream).data, d);
         };
         this.testWithMemoryStream(testAction, 10);
     }

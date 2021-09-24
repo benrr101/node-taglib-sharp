@@ -228,6 +228,6 @@ const getTestFooter = (majorVersion: number, minorVersion: number, flags: Id3v2T
         const output = footer.render();
 
         // Assert
-        assert.isTrue(ByteVector.equal(output, testData));
+        Testers.bvEqual(output, testData);
     }
 }

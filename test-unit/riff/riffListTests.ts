@@ -142,17 +142,17 @@ const sampleNestedList = ByteVector.concatenate(
 
         const txt1 = list.getValues("TXT1");
         assert.isOk(txt1);
-        assert.isTrue(ByteVector.equal(txt1[0], data1));
-        assert.isTrue(ByteVector.equal(txt1[1], data2));
+        Testers.bvEqual(txt1[0], data1);
+        Testers.bvEqual(txt1[1], data2);
 
         const txt2 = list.getValues("TXT2");
         assert.isOk(txt2);
-        assert.isTrue(ByteVector.equal(txt2[0], data3));
+        Testers.bvEqual(txt2[0], data3);
 
         const txt3 = list.getValues("TXT3");
         assert.isOk(txt3);
-        assert.isTrue(ByteVector.equal(txt3[0], data4));
-        assert.isTrue(ByteVector.equal(txt3[1], data5));
+        Testers.bvEqual(txt3[0], data4);
+        Testers.bvEqual(txt3[1], data5);
     }
 }
 
@@ -194,7 +194,7 @@ const sampleNestedList = ByteVector.concatenate(
         // Assert
         assert.isOk(result);
         assert.strictEqual(result.length, 1);
-        assert.isTrue(ByteVector.equal(result[0], data3));
+        Testers.bvEqual(result[0], data3);
         assert.isTrue(list.isLoaded);
     }
 
@@ -209,8 +209,8 @@ const sampleNestedList = ByteVector.concatenate(
         // Assert
         assert.isOk(result);
         assert.strictEqual(result.length, 2);
-        assert.isTrue(ByteVector.equal(result[0], data1));
-        assert.isTrue(ByteVector.equal(result[1], data2));
+        Testers.bvEqual(result[0], data1);
+        Testers.bvEqual(result[1], data2);
         assert.isTrue(list.isLoaded);
     }
 
@@ -237,7 +237,7 @@ const sampleNestedList = ByteVector.concatenate(
         const result = list.render();
 
         // Assert
-        assert.isTrue(ByteVector.equal(result, sampleList));
+        Testers.bvEqual(result, sampleList);
         assert.isTrue(list.isLoaded);
     }
 
@@ -256,7 +256,7 @@ const sampleNestedList = ByteVector.concatenate(
             ByteVector.fromString("fooo")
         );
         assert.isOk(result);
-        assert.isTrue(ByteVector.equal(result, expected));
+        Testers.bvEqual(result, expected);
         assert.isTrue(list.isLoaded);
     }
 

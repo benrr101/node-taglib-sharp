@@ -9,6 +9,7 @@ import {ByteVector, StringType} from "../../src/byteVector";
 import {Frame, FrameClassType} from "../../src/id3v2/frames/frame";
 import {Id3v2FrameHeader} from "../../src/id3v2/frames/frameHeader";
 import {FrameIdentifiers} from "../../src/id3v2/frameIdentifiers";
+import {Testers} from "../utilities/testers";
 
 // Setup chai
 const assert = Chai.assert;
@@ -289,6 +290,6 @@ const assert = Chai.assert;
         const output = frame.render(4);
 
         // Assert
-        assert.isTrue(ByteVector.equal(output, data));
+        Testers.bvEqual(output, data);
     }
 }

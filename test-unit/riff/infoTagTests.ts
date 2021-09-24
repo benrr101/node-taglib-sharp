@@ -282,7 +282,7 @@ const assert = Chai.assert;
 
         // Assert
         assert.isOk(output);
-        assert.isTrue(ByteVector.equal(output, list.render()));
+        Testers.bvEqual(output, list.render());
     }
 
     private static getTestTagData(): RiffList {

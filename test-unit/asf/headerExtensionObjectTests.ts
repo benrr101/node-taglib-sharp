@@ -12,6 +12,7 @@ import {ByteVector} from "../../src/byteVector";
 import {Guids, ObjectType} from "../../src/asf/constants";
 import {File} from "../../src/file";
 import {MetadataLibraryObject} from "../../src/asf/objects/metadataLibraryObject";
+import {Testers} from "../utilities/testers";
 
 // Setup Chai
 const assert = Chai.assert;
@@ -157,7 +158,7 @@ const assert = Chai.assert;
         const output = object.render();
 
         // Assert
-        assert.isTrue(ByteVector.equal(output, data));
+        Testers.bvEqual(output, data);
     }
 
     private static getObjectBytes(children: BaseObject[]) {

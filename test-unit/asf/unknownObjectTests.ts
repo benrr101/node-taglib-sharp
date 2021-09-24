@@ -32,7 +32,7 @@ const assert = Chai.assert;
         assert.isTrue(object.guid.equals(this._guid));
         assert.strictEqual(object.objectType, ObjectType.UnknownObject);
         assert.strictEqual(object.originalSize, this._originalSize);
-        assert.isTrue(ByteVector.equal(object.data, this._bytes));
+        Testers.bvEqual(object.data, this._bytes);
     }
 
     @test
@@ -59,7 +59,7 @@ const assert = Chai.assert;
         object.data = newBytes;
 
         // Assert
-        assert.isTrue(ByteVector.equal(object.data, newBytes));
+        Testers.bvEqual(object.data, newBytes);
         assert.strictEqual(object.originalSize, this._originalSize);
     }
 
@@ -75,7 +75,7 @@ const assert = Chai.assert;
 
         // Assert
         assert.isOk(output);
-        assert.isTrue(ByteVector.equal(output, data.mid(10)));
+        Testers.bvEqual(output, data.mid(10));
     }
 
     private readonly _bytes = ByteVector.fromSize(32, 0x12);

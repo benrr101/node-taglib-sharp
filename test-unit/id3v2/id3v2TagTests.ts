@@ -1192,7 +1192,7 @@ function getTestTagHeader(version: number, flags: Id3v2TagHeaderFlags, tagSize: 
         assert.deepStrictEqual((<UniqueFileIdentifierFrame> tag.frames[0]).owner, "http://musicbrainz.org");
         const expectedBytes = ByteVector.fromString("abcd-ef12-3456-7890");
         const actualBytes = (<UniqueFileIdentifierFrame> tag.frames[0]).identifier;
-        assert.isTrue(ByteVector.equal(actualBytes, expectedBytes));
+        Testers.bvEqual(actualBytes, expectedBytes);
 
         PropertyTests.propertyRoundTrip(set, get, undefined);
         assert.strictEqual(tag.frames.length, 0);
@@ -1817,7 +1817,7 @@ function getTestTagHeader(version: number, flags: Id3v2TagHeaderFlags, tagSize: 
             ByteVector.fromSize(1024, 0x00)
         );
 
-        assert.isTrue(ByteVector.equal(output, expected));
+        Testers.bvEqual(output, expected);
     }
 
     @test
@@ -1848,7 +1848,7 @@ function getTestTagHeader(version: number, flags: Id3v2TagHeaderFlags, tagSize: 
             Id3v2TagFooter.fromHeader(header).render()
         );
 
-        assert.isTrue(ByteVector.equal(output, expected));
+        Testers.bvEqual(output, expected);
     }
 
     @test
@@ -1883,7 +1883,7 @@ function getTestTagHeader(version: number, flags: Id3v2TagHeaderFlags, tagSize: 
             ByteVector.fromSize(1024, 0x00)
         );
 
-        assert.isTrue(ByteVector.equal(output, expected));
+        Testers.bvEqual(output, expected);
     }
 
     @test
@@ -1917,7 +1917,7 @@ function getTestTagHeader(version: number, flags: Id3v2TagHeaderFlags, tagSize: 
             ByteVector.fromSize(1024, 0x00)
         );
 
-        assert.isTrue(ByteVector.equal(output, expected));
+        Testers.bvEqual(output, expected);
     }
 
     @test

@@ -8,6 +8,7 @@ import UuidWrapper from "../../src/uuidWrapper";
 import {ByteVector} from "../../src/byteVector";
 import {Guids, ObjectType} from "../../src/asf/constants";
 import {File} from "../../src/file";
+import {Testers} from "../utilities/testers";
 
 // Setup Chai
 const assert = Chai.assert;
@@ -91,6 +92,6 @@ class Asf_FilePropertiesObjectTests extends ObjectTests<FilePropertiesObject> {
 
         // Assert
         assert.isOk(output);
-        assert.isTrue(ByteVector.equal(output, data.mid(10)));
+        Testers.bvEqual(output, data.mid(10));
     }
 }

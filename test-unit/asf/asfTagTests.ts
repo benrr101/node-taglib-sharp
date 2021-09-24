@@ -1100,7 +1100,7 @@ const getTagWithExtensionDescriptor: (descriptorName: string, descriptorType: Da
             assert.strictEqual(pic.mimeType, "Ha! Ha!");
             assert.strictEqual(pic.type, PictureType.ColoredFish);
             assert.isUndefined(pic.filename);
-            assert.isTrue(ByteVector.equal(pic.data, pic2PictureData));
+            Testers.bvEqual(pic.data, pic2PictureData);
         }
     }
 
@@ -1141,7 +1141,7 @@ const getTagWithExtensionDescriptor: (descriptorName: string, descriptorType: Da
         assert.strictEqual(output[0].mimeType, "Ha! Ha!");
         assert.strictEqual(output[0].type, PictureType.ColoredFish);
         assert.isUndefined(output[0].filename);
-        assert.isTrue(ByteVector.equal(output[0].data, pictureData));
+        Testers.bvEqual(output[0].data, pictureData);
 
         assert.strictEqual(tag.extendedContentDescriptionObject.descriptors.length, 1);
         assert.strictEqual(tag.extendedContentDescriptionObject.descriptors[0].name, "WM/Picture");
@@ -1187,7 +1187,7 @@ const getTagWithExtensionDescriptor: (descriptorName: string, descriptorType: Da
         assert.strictEqual(output[0].mimeType, "Ha! Ha!");
         assert.strictEqual(output[0].type, PictureType.ColoredFish);
         assert.isUndefined(output[0].filename);
-        assert.isTrue(ByteVector.equal(output[0].data, pictureData));
+        Testers.bvEqual(output[0].data, pictureData);
 
         assert.strictEqual(tag.metadataLibraryObject.records.length, 1);
         assert.strictEqual(tag.metadataLibraryObject.records[0].name, "WM/Picture");
@@ -1489,7 +1489,7 @@ const getTagWithExtensionDescriptor: (descriptorName: string, descriptorType: Da
         assert.strictEqual(output.mimeType, "Ha! Ha!");
         assert.strictEqual(output.type, PictureType.ColoredFish);
         assert.isUndefined(output.filename);
-        assert.isTrue(ByteVector.equal(output.data, pictureData));
+        Testers.bvEqual(output.data, pictureData);
     }
 
     @test
@@ -1516,6 +1516,6 @@ const getTagWithExtensionDescriptor: (descriptorName: string, descriptorType: Da
             ByteVector.getTextDelimiter(StringType.UTF16LE),
             pictureData
         );
-        assert.isTrue(ByteVector.equal(output, expected));
+        Testers.bvEqual(output, expected);
     }
 }

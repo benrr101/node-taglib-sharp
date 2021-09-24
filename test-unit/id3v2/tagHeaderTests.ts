@@ -357,6 +357,6 @@ const getTestHeader = (majorVersion: number, minorVersion: number, flags: Id3v2T
         const output = header.render();
 
         // Assert
-        assert.isTrue(ByteVector.equal(output, testData));
+        Testers.bvEqual(output, testData);
     }
 }

@@ -15,6 +15,7 @@ import {Guids, ObjectType} from "../../src/asf/constants";
 import {ExtendedContentDescriptionObject} from "../../src/asf/objects/extendedContentDescriptionObject";
 import {File} from "../../src/file";
 import {MetadataLibraryObject} from "../../src/asf/objects/metadataLibraryObject";
+import {Testers} from "../utilities/testers";
 
 // Setup chai
 const assert = Chai.assert;
@@ -297,7 +298,7 @@ const assert = Chai.assert;
         // Assert
         // NOTE: the padding object is removed, so it "shrunk", then it's added back, so
         //    the contents should be the same.
-        assert.isTrue(ByteVector.equal(output, headerData.mid(10)));
+        Testers.bvEqual(output, headerData.mid(10));
     }
 
     @test
@@ -321,7 +322,7 @@ const assert = Chai.assert;
             PaddingObject.fromSize(4096)
         ];
         const expected = Asf_HeaderObjectTests.getObjectBytesFromObjects(expectedChildren);
-        assert.isTrue(ByteVector.equal(output, expected.mid(10)));
+        Testers.bvEqual(output, expected.mid(10));
     }
 
     @test
@@ -338,7 +339,7 @@ const assert = Chai.assert;
         const output = headerObject.render();
 
         // Assert
-        assert.isTrue(ByteVector.equal(output, headerData.mid(10)));
+        Testers.bvEqual(output, headerData.mid(10));
     }
 
     private static getObjectBytesFromBytes(children: ByteVector, childrenCount: number) {

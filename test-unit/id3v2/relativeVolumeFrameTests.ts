@@ -166,7 +166,7 @@ const assert = Chai.assert;
             0x07,
             0x1F
         );
-        assert.isTrue(ByteVector.equal(output, expected));
+        Testers.bvEqual(output, expected);
     }
 
     @test
@@ -187,7 +187,7 @@ const assert = Chai.assert;
             0x0F,
             0x1F, 0xFF
         );
-        assert.isTrue(ByteVector.equal(output, expected));
+        Testers.bvEqual(output, expected);
     }
 
     @test
@@ -208,7 +208,7 @@ const assert = Chai.assert;
             0x17,
             0x1F, 0xFF, 0xFF
         );
-        assert.isTrue(ByteVector.equal(output, expected));
+        Testers.bvEqual(output, expected);
     }
 
     @test
@@ -229,7 +229,7 @@ const assert = Chai.assert;
             0x1F,
             0x1F, 0xFF, 0xFF, 0xFF
         );
-        assert.isTrue(ByteVector.equal(output, expected));
+        Testers.bvEqual(output, expected);
     }
 
     @test
@@ -250,7 +250,7 @@ const assert = Chai.assert;
             0x27,
             0x1F, 0xFF, 0xFF, 0xFF, 0xFF
         );
-        assert.isTrue(ByteVector.equal(output, expected));
+        Testers.bvEqual(output, expected);
     }
 
     @test
@@ -271,7 +271,7 @@ const assert = Chai.assert;
             0x40,
             0x1F, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF
         );
-        assert.isTrue(ByteVector.equal(output, expected));
+        Testers.bvEqual(output, expected);
     }
 }
 
@@ -492,6 +492,6 @@ const assert = Chai.assert;
 
         // Assert
         assert.ok(output);
-        assert.isTrue(ByteVector.equal(output, data));
+        Testers.bvEqual(output, data);
     }
 }

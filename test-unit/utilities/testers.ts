@@ -1,9 +1,7 @@
-import * as Chai from "chai";
+import {assert} from "chai";
 
 import {Tag} from "../../src/tag";
-
-// Setup Chai
-const assert = Chai.assert;
+import {ByteVector} from "../../src";
 
 export class Testers {
     public static testByte(testFunc: (testValue: number) => void): void {
@@ -86,6 +84,45 @@ export class Testers {
         if (!allowUndefined) {
             assert.throws(() => testFunc(undefined));
         }
+    }
+
+    public static bvEqual(actual: ByteVector, expected: ByteVector) {
+        const getPortion = (bv: ByteVector, pointer: number) => {
+            const min = Math.max(pointer - 10, 0);
+            const max = Math.min(pointer + 10, bv.length - 1);
+            const mid = bv.mid(min, max - min);
+            return {
+                offset: Math.min(10, pointer) + 1,
+                portion: mid.toString()
+            };
+        };
+
+        const getMessage = (bvX: ByteVector, bvY: ByteVector, position: number): string => {
+            const xPort = getPortion(bvX, position);
+            const yPort = getPortion(bvY, position);
+            const spacing = new Array(xPort.offset).join(" ");
+            return `Difference at index: ${position}\n`
+                 + `Actual:   ${xPort.portion}\n`
+                 + `          ${spacing}^\n`
+                 + `Expected: ${yPort.portion}\n`
+                 + `          ${spacing}^\n`;
+        };
+
+        let pos = 0;
+        while (pos < actual.length && pos < expected.length) {
+            if (actual.get(pos) !== expected.get(pos)) {
+                assert.fail(getMessage(actual, expected, pos));
+            }
+
+            pos++;
+        }
+
+        if (pos < actual.length || pos < expected.length) {
+            assert.fail(getMessage(actual, expected, pos));
+        }
+
+        // Last chance catch if I completely effed this up
+        assert.isTrue(ByteVector.equal(actual, expected));
     }
 }
 

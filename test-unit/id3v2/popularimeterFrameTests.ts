@@ -303,7 +303,7 @@ const assert = Chai.assert;
 
         // Assert
         assert.isOk(output);
-        assert.isTrue(ByteVector.equal(output, data));
+        Testers.bvEqual(output, data);
     }
 
     @test
@@ -325,7 +325,7 @@ const assert = Chai.assert;
 
         // Assert
         assert.isOk(output);
-        assert.isTrue(ByteVector.equal(output, data));
+        Testers.bvEqual(output, data);
     }
 
     @test
@@ -347,7 +347,7 @@ const assert = Chai.assert;
 
         // Assert
         assert.isOk(output);
-        assert.isTrue(ByteVector.equal(output, data));
+        Testers.bvEqual(output, data);
     }
 
     @test
@@ -369,7 +369,7 @@ const assert = Chai.assert;
 
         // Assert
         assert.isOk(output);
-        assert.isTrue(ByteVector.equal(output, data));
+        Testers.bvEqual(output, data);
     }
 }
 
