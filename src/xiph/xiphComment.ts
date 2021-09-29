@@ -1,8 +1,11 @@
+import Picture from "../picture";
 import XiphPicture from "./xiphPicture";
+import XiphSettings from "./xiphSettings";
 import {Tag, TagTypes} from "../tag";
 import {IPicture} from "../iPicture";
 import {ByteVector, StringType} from "../byteVector";
 import {Guards} from "../utils";
+import * as DateFormat from "dateformat";
 
 /**
  * Provides support for reading and writing Xiph comment-style tags.
@@ -11,11 +14,11 @@ import {Guards} from "../utils";
  *     each field can have multiple values.
  */
 export default class XiphComment extends Tag {
-    private static readonly pictureFields: string[] = ["COVERART", "METADATA_BLOCK_PICTURE"];
+    private static readonly newPictureFiled = "METADATA_BLOCK_PICTURE";
+    private static readonly oldPictureField = "COVERART";
 
-    private _fields: {[key: string]: string[]} = {};
+    private _fields: Map<string, string[]> = new Map<string, string[]>();
     private _pictures: IPicture[] = [];
-    private _saveBeatsPerMinuteAsTempo: boolean = true;
     private _sizeOnDisk: number = 0;
     private _vendorId: string;
 
@@ -65,17 +68,28 @@ export default class XiphComment extends Tag {
             const key = comment.substr(0, commentSeparatorPosition).toUpperCase();
             const value = comment.substr(commentSeparatorPosition + 1);
 
-            if (XiphComment.pictureFields.indexOf(key) >= 0) {
-                // The field is a picture, load it into a lazy XiphPicture
-                // @TODO: Allow read style to be passed in
-                const picture = XiphPicture.fromXiphComment(value, true);
-                xiphComment._pictures.push(picture);
-            } else {
-                // Field is a text field, store it in the field list object
-                if (!(key in xiphComment._fields)) {
-                    xiphComment._fields[key] = [];
-                }
-                xiphComment._fields[key].push(value);
+            switch (key) {
+                case XiphComment.oldPictureField:
+                    // Old picture fields are just base64 encoded picture bytes
+                    const pictureBytes = ByteVector.fromByteArray(Buffer.from(value, "base64"));
+                    const oldPicture = Picture.fromData(pictureBytes);
+                    xiphComment._pictures.push(oldPicture);
+
+                    break;
+                case XiphComment.newPictureFiled:
+                    // New picture fields have details!
+                    // TODO: Allow read style to be passed in
+                    const newPicture = XiphPicture.fromXiphComment(value, true);
+                    xiphComment._pictures.push(newPicture);
+
+                    break;
+                default:
+                    // Field is just text, store it in the field's list
+                    if (!xiphComment._fields.has(key)) {
+                        xiphComment._fields.set(key, []);
+                    }
+                    xiphComment._fields.get(key).push(value);
+                    break;
             }
         }
 
@@ -97,7 +111,7 @@ export default class XiphComment extends Tag {
      * Gets the total number of values contained in the current instance, including the pictures.
      */
     public get fieldValueCount(): number {
-        let count = Object.values(this._fields).reduce<number>((a, v) => a + v.length, 0);
+        let count = Array.from(this._fields.values()).reduce<number>((a, v) => a + v.length, 0);
         count += this._pictures.length;
 
         return count;
@@ -108,7 +122,7 @@ export default class XiphComment extends Tag {
      * @remarks This getter is useful for iterating over fields defined in this object in
      *     conjunction with {@link getField}.
      */
-    public get fieldNames(): string[] { return Object.keys(this._fields); }
+    public get fieldNames(): string[] { return Array.from(this._fields.keys()); }
 
     /**
      * Gets the vendor ID for the current instance.
@@ -212,7 +226,16 @@ export default class XiphComment extends Tag {
     /**
      * @inheritDoc via `ALBUMARTIST`, as per the standard
      */
-    public set albumArtists(value: string[]) { this.setFieldAsStrings("ALBUMARTIST", ... value); }
+    public set albumArtists(value: string[]) {
+        // @TODO: Coalesce non-standard values?
+        this.setFieldAsStrings("ALBUMARTIST", ... value);
+        if (this.fieldNames.indexOf("ALBUM ARTIST") >= 0) {
+            this.setFieldAsStrings("ALBUM ARTIST", ... value);
+        }
+        if (this.fieldNames.indexOf("ENSEMBLE") >= 0) {
+            this.setFieldAsStrings("ENSEMBLE", ... value);
+        }
+    }
 
     /**
      * @inheritDoc via `ALBUMARTISTSORT` field
@@ -221,7 +244,7 @@ export default class XiphComment extends Tag {
     /**
      * @inheritDoc via `ALBUMARTISTSORT` field
      */
-    public set albumArtistSort(value: string[]) { this.setFieldAsStrings("ALBUMARTISTSORT", ... value); }
+    public set albumArtistsSort(value: string[]) { this.setFieldAsStrings("ALBUMARTISTSORT", ... value); }
 
     /**
      * @inheritDoc via `COMPOSER` field
@@ -291,6 +314,7 @@ export default class XiphComment extends Tag {
      * @inheritDoc via `DATE` field
      */
     public set year(value: number) {
+        Guards.uint(value, "value");
         if (value > 9999) {
             this.removeField("DATE");
         } else {
@@ -330,7 +354,7 @@ export default class XiphComment extends Tag {
         if (text) {
             const textSplit = text.split("/");
             if (textSplit.length > 1) {
-                const parsedValue = Number.parseInt(text, 10);
+                const parsedValue = Number.parseInt(textSplit[1], 10);
                 if (!Number.isNaN(parsedValue)) {
                     return parsedValue;
                 }
@@ -344,7 +368,7 @@ export default class XiphComment extends Tag {
      */
     public set trackCount(value: number) {
         // TODO: Option to store as fractional?
-        this.setFieldAsUint("TRACKNUMBER", this.trackCount);
+        this.setFieldAsUint("TRACKNUMBER", this.track);
         this.setFieldAsUint("TRACKTOTAL", value);
     }
 
@@ -376,11 +400,11 @@ export default class XiphComment extends Tag {
             if (!Number.isNaN(parsedValue)) { return parsedValue; }
         }
 
-        text = this.getFieldFirstValue("DISCTOTAL");
+        text = this.getFieldFirstValue("DISCNUMBER");
         if (text) {
             const textSplit = text.split("/");
             if (textSplit.length > 1) {
-                const parsedValue = Number.parseInt(text, 10);
+                const parsedValue = Number.parseInt(textSplit[1], 10);
                 if (!Number.isNaN(parsedValue)) {
                     return parsedValue;
                 }
@@ -394,7 +418,7 @@ export default class XiphComment extends Tag {
      */
     public set discCount(value: number) {
         // TODO: Option to store as fractional?
-        this.setFieldAsUint("DISCNUMBER", this.discCount);
+        this.setFieldAsUint("DISCNUMBER", this.disc);
         this.setFieldAsUint("DISCTOTAL", value);
     }
 
@@ -419,23 +443,12 @@ export default class XiphComment extends Tag {
     /**
      * @inheritDoc via `TEMPO` field preferentially, BPM field is used as a fallback.
      * @remarks The field that stores the value will be used when setting a BPM in the future. This
-     *     behavior can be controlled via {@link StoreBeatsPerMinuteAsTempo}.
+     *     behavior can be controlled via {@link XiphSettings.useTempoToStoreBpm}.
      */
     public get beatsPerMinute(): number {
-        this._saveBeatsPerMinuteAsTempo = true;
-
         let text = this.getFieldFirstValue("TEMPO");
         if (!text) {
             text = this.getFieldFirstValue("BPM");
-
-            if (text) {
-                // BPM was stored as BPM. Make sure we use that going forward
-                this._saveBeatsPerMinuteAsTempo = false;
-            }
-        }
-
-        if (!text) {
-            return 0;
         }
 
         const parsedNumber = Number.parseInt(text, 10);
@@ -443,12 +456,13 @@ export default class XiphComment extends Tag {
     }
     /**
      * @inheritDoc
-     * @remarks Value is stored via `TEMPO` field if {@link StoreBeatsPerMinuteAsTempo} is `true`.
-     *     Value is stored via `BPM` if {@link StoreBeatsPerMinuteAsTempo} is `false`. The other
-     *     field is removed when stored.
+     * @remarks Value is stored via `TEMPO` field if {@link XiphSettings.useTempoToStoreBpm} is
+     *     `true`. Value is stored via `BPM` if {@link XiphSettings.useTempoToStoreBpm} is `false`.
+     *     The other field is removed when stored.
      */
     public set beatsPerMinute(value: number) {
-        if (this._saveBeatsPerMinuteAsTempo) {
+        // @TODO: Allow existing field to be used via config
+        if (XiphSettings.useTempoToStoreBpm) {
             this.setFieldAsUint("TEMPO", value);
             this.removeField("BPM");
         } else {
@@ -487,31 +501,23 @@ export default class XiphComment extends Tag {
      * @inheritDoc via `DATETAGGED` field
      */
     public set dateTagged(value: Date) {
-        if (Number.isNaN(value.getTime())) {
+        if (!value || Number.isNaN(value.getTime())) {
             this.removeField("DATETAGGED");
         } else {
-            this.setFieldAsStrings("DATETAGGED", value.toISOString());
+            let dateString = DateFormat(value, "yyyy-mm-dd HH:MM:ss");
+            dateString = dateString.replace(" ", "T");
+            this.setFieldAsStrings("DATETAGGED", dateString);
         }
     }
 
     /**
      * @inheritDoc via `MUSICBRAINZ_ARTISTID` field
      */
-    public get musicBrainzArtistId(): string {
-        const artistIds = this.getField("MUSICBRAINZ_ARTISTID");
-        return artistIds.length === 0 ? undefined : artistIds.join("/");
-    }
+    public get musicBrainzArtistId(): string { return this.getFieldFirstValue("MUSICBRAINZ_ARTISTID"); }
     /**
      * @inheritDoc via `MUSICBRAINZ_ARTISTID` field
      */
-    public set musicBrainzArtistId(value: string) {
-        if (!value) {
-            this.removeField(value);
-        } else {
-            const artistIds = value.split("/");
-            this.setFieldAsStrings("MUSICBRAINZ_ARTISTID", ... artistIds);
-        }
-    }
+    public set musicBrainzArtistId(value: string) { this.setFieldAsStrings("MUSICBRAINZ_ARTISTID", value); }
 
     /**
      * @inheritDoc via `MUSICBRAINZ_RELEASEGROUPID` field
@@ -534,21 +540,11 @@ export default class XiphComment extends Tag {
     /**
      * @inheritDoc via `MUSICBRAINZ_ALBUMARTISTID` field
      */
-    public get musicBrainzAlbumArtistId(): string {
-        const artistIds = this.getField("MUSICBRAINZ_ALBUMARTISTID");
-        return artistIds.length === 0 ? undefined : artistIds.join("/");
-    }
+    public get musicBrainzReleaseArtistId(): string { return this.getFieldFirstValue("MUSICBRAINZ_ALBUMARTISTID"); }
     /**
      * @inheritDoc via `MUSICBRAINZ_ALBUMARTISTID` field
      */
-    public set musicBrainzAlbumArtistId(value: string) {
-        if (!value) {
-            this.removeField(value);
-        } else {
-            const artistIds = value.split("/");
-            this.setFieldAsStrings("MUSICBRAINZ_ALBUMARTISTID", ... artistIds);
-        }
-    }
+    public set musicBrainzReleaseArtistId(value: string) { this.setFieldAsStrings("MUSICBRAINZ_ALBUMARTISTID", value); }
 
     /**
      * @inheritDoc via `MUSICBRAINZ_TRACKID` field
@@ -571,11 +567,11 @@ export default class XiphComment extends Tag {
     /**
      * @inheritDoc via `MUSICIP_PUID` field
      */
-    public get musicIpId(): string { return this.getFieldFirstValue("MUSICID_PUID"); }
+    public get musicIpId(): string { return this.getFieldFirstValue("MUSICIP_PUID"); }
     /**
      * @inheritDoc via `MUSICID_PUID` field
      */
-    public set musicIpId(value: string) { this.setFieldAsStrings("MUSICID_PUID", value); }
+    public set musicIpId(value: string) { this.setFieldAsStrings("MUSICIP_PUID", value); }
 
     /**
      * @inheritDoc via `ASIN` field
@@ -616,11 +612,11 @@ export default class XiphComment extends Tag {
     /**
      * @inheritDoc
      */
-    public get pictures(): IPicture[] { return this._pictures; }
+    public get pictures(): IPicture[] { return this._pictures.slice(0); }
     /**
      * @inheritDoc
      */
-    public set pictures(value: IPicture[]) { this._pictures = value; }
+    public set pictures(value: IPicture[]) { this._pictures.splice(0, this._pictures.length, ...value); }
 
     /**
      * @inheritDoc via `COMPILATION` field
@@ -650,10 +646,10 @@ export default class XiphComment extends Tag {
      * @inheritDoc via `REPLAYGAIN_TRACK_GAIN` field
      */
     public set replayGainTrackGain(value: number) {
-        if (Number.isNaN(value)) {
+        if (value === undefined || value === null || Number.isNaN(value)) {
             this.removeField("REPLAYGAIN_TRACK_GAIN");
         } else {
-            this.setFieldAsStrings("REPLAYGAIN_TRACK_GAIN", `${value.toFixed(2)} db`);
+            this.setFieldAsStrings("REPLAYGAIN_TRACK_GAIN", `${value.toFixed(2)} dB`);
         }
     }
 
@@ -668,7 +664,7 @@ export default class XiphComment extends Tag {
      * @inheritDoc via `REPLAYGAIN_TRACK_PEAK` field
      */
     public set replayGainTrackPeak(value: number) {
-        if (Number.isNaN(value)) {
+        if (value === undefined || value === null || Number.isNaN(value)) {
             this.removeField("REPLAYGAIN_TRACK_PEAK");
         } else {
             this.setFieldAsStrings("REPLAYGAIN_TRACK_PEAK", value.toFixed(6));
@@ -688,10 +684,10 @@ export default class XiphComment extends Tag {
      * @inheritDoc via `REPLAYGAIN_ALBUM_GAIN` field
      */
     public set replayGainAlbumGain(value: number) {
-        if (Number.isNaN(value)) {
+        if (value === undefined || value === null || Number.isNaN(value)) {
             this.removeField("REPLAYGAIN_ALBUM_GAIN");
         } else {
-            this.setFieldAsStrings("REPLAYGAIN_ALBUM_GAIN", `${value.toFixed(2)} db`);
+            this.setFieldAsStrings("REPLAYGAIN_ALBUM_GAIN", `${value.toFixed(2)} dB`);
         }
     }
 
@@ -706,7 +702,7 @@ export default class XiphComment extends Tag {
      * @inheritDoc via `REPLAYGAIN_TRACK_PEAK` field
      */
     public set replayGainAlbumPeak(value: number) {
-        if (Number.isNaN(value)) {
+        if (value === undefined || value === null || Number.isNaN(value)) {
             this.removeField("REPLAYGAIN_ALBUM_PEAK");
         } else {
             this.setFieldAsStrings("REPLAYGAIN_ALBUM_PEAK", value.toFixed(6));
@@ -760,16 +756,14 @@ export default class XiphComment extends Tag {
 
     /** @inheritDoc */
     public clear(): void {
-        Object.keys(this._fields).forEach((k) => delete this._fields[k]);
+        this._fields.clear();
         this._pictures.splice(0, this._pictures.length);
     }
 
     /**
      * Gets the field data for a given field identifier.
      * @param key Field identifier to look up
-     * @returns string[] Field data or an empty array if the field was not found
-     * @remarks Field data is cloned before being returned. Any modifications to the returned field
-     *     will not be reflected in the tag.
+     * @returns string[] Field data or undefined if the field cannot be found
      */
     public getField(key: string): string[] {
         Guards.notNullOrUndefined(key, "key");
@@ -778,9 +772,7 @@ export default class XiphComment extends Tag {
             throw new Error("Do not use get/set field methods to manipulate pictures, use the `pictures` property");
         }
 
-        return key in this._fields
-            ? this._fields[key].slice()
-            : [];
+        return this._fields.get(key)?.slice() || [];
     }
 
     /**
@@ -810,7 +802,7 @@ export default class XiphComment extends Tag {
             throw new Error("Do not use get/set field methods to manipulate pictures, use the `pictures` property");
         }
 
-        delete this._fields[key];
+        this._fields.delete(key);
     }
 
     /**
@@ -821,11 +813,11 @@ export default class XiphComment extends Tag {
         // Add the vendor ID length and the vendor ID. It's important to use the length of the
         // vendor ID as a byte vector rather than the string length because UTF8 can include multi-
         // byte characters.
-        const vendor = ByteVector.fromString(this._vendorId, StringType.UTF8);
+        const vendor = ByteVector.fromString(this._vendorId || "", StringType.UTF8);
 
         // Encode the field data
-        const allFieldData = Object.keys(this._fields).reduce<ByteVector[]>((a, k) => {
-            const fieldData = this._fields[k].map((v) => {
+        const allFieldData = this.fieldNames.reduce<ByteVector[]>((a, k) => {
+            const fieldData = this._fields.get(k).map((v) => {
                 const encodedField = `${k}=${v}`;
                 const fieldDatum = ByteVector.fromString(encodedField, StringType.UTF8);
                 return ByteVector.concatenate(
@@ -839,16 +831,21 @@ export default class XiphComment extends Tag {
         }, []);
 
         // Encode the picture data
+        // @TODO: Allow configuration of which field to store pictures
         const pictureData = this._pictures.map((p) => {
             const xiphPicture = p instanceof XiphPicture ? p : XiphPicture.fromPicture(p);
-            const encodedPicture = `METADATA_BLOCK_PICTURE=${xiphPicture.renderForFlacBlock()}`;
-            return ByteVector.fromString(encodedPicture, StringType.UTF8);
+            const encodedPicture = `${XiphComment.newPictureFiled}=${xiphPicture.renderForXiphComment()}`;
+            return ByteVector.concatenate(
+                ByteVector.fromUInt(encodedPicture.length, false),
+                ByteVector.fromString(encodedPicture, StringType.UTF8)
+            );
         });
 
         // Put it all together
         const result = ByteVector.concatenate(
-            ByteVector.fromUInt(vendor.length),
+            ByteVector.fromUInt(vendor.length, false),
             vendor,
+            ByteVector.fromUInt(allFieldData.length + pictureData.length, false),
             ... allFieldData,
             ... pictureData
         );
@@ -868,7 +865,7 @@ export default class XiphComment extends Tag {
      * @param values Values to store in the current instance
      */
     public setFieldAsStrings(key: string, ... values: string[]): void {
-        Guards.notNullOrUndefined(key, "key");
+        Guards.truthy(key, "key");
         key = key.toUpperCase();
         if (XiphComment.isPictureField(key)) {
             throw new Error("Do not use get/set field methods to manipulate pictures, use the `pictures` property");
@@ -883,7 +880,7 @@ export default class XiphComment extends Tag {
         if (values.length === 0) {
             this.removeField(key);
         } else {
-            this._fields[key] = values;
+            this._fields.set(key, values);
         }
     }
 
@@ -895,7 +892,7 @@ export default class XiphComment extends Tag {
      *     than this, the value will be padded with zeroes.
      */
     public setFieldAsUint(key: string, value: number, minPlaces: number = 1): void {
-        Guards.notNullOrUndefined(key, "key");
+        Guards.truthy(key, "key");
         Guards.uint(value, "value");
         Guards.uint(minPlaces, "minPlaces");
         if (XiphComment.isPictureField(key)) {
@@ -914,7 +911,8 @@ export default class XiphComment extends Tag {
     // #region Private Methods
 
     private static isPictureField(fieldName: string): boolean {
-        return XiphComment.pictureFields.indexOf(fieldName) >= 0;
+        return fieldName === XiphComment.oldPictureField
+            || fieldName === XiphComment.newPictureFiled;
     }
 
     // #endregion

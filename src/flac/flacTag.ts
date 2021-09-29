@@ -4,7 +4,6 @@ import FlacFileSettings from "./flacFileSettings";
 import StartTag from "../sandwich/startTag";
 import XiphComment from "../xiph/xiphComment";
 import XiphPicture from "../xiph/xiphPicture";
-import {ByteVector} from "../byteVector";
 import {IPicture} from "../iPicture";
 import {Tag, TagTypes} from "../tag";
 import {Guards} from "../utils";
@@ -26,7 +25,7 @@ export default class FlacTag extends CombinedTag {
     private readonly _endTag: EndTag;
     private readonly _pictures: IPicture[];
     private readonly _startTag: StartTag;
-    private readonly _xiphComment: XiphComment;
+    private _xiphComment: XiphComment;
 
     /**
      * Constructs and initializes a new FLAC tag using the component tags provided.
@@ -58,7 +57,8 @@ export default class FlacTag extends CombinedTag {
         switch (tagType) {
             case TagTypes.Xiph:
                 // XIPH comments we create directly
-                tag = XiphComment.fromEmpty();
+                this._xiphComment = XiphComment.fromEmpty();
+                tag = this._xiphComment;
                 this.addTag(tag);
                 break;
             case TagTypes.Id3v1:
@@ -101,7 +101,7 @@ export default class FlacTag extends CombinedTag {
         // We want to preferentially get pictures from FLAC picture blocks. If there aren't any,
         // fall back to using pictures from the combined tags
         return this._pictures && this._pictures.length > 0
-            ? this._pictures
+            ? this._pictures.slice()
             : super.pictures;
     }
     /**
@@ -114,15 +114,4 @@ export default class FlacTag extends CombinedTag {
     }
 
     // #endregion
-
-    /**
-     * Renders FLAC-style pictures into a collection of block data.
-     * @returns ByteVector[] Array of picture block data, guaranteed to always be an array
-     */
-    public renderPictures(): ByteVector[] {
-        // Make sure all the pictures are FLAC pictures before rendering
-        return this._pictures.map((p) => {
-            return p instanceof XiphPicture ? p : XiphPicture.fromPicture(p);
-        }).map((p) => p.renderForFlacBlock());
-    }
 }

@@ -91,8 +91,6 @@ export abstract class File {
     protected _tagTypesOnDisk: TagTypes = TagTypes.None;
 
     private _corruptionReasons: string[] = [];
-    private _invariantEndPosition: number = -1;
-    private _invariantStartPosition: number = -1;
     private _mimeType: string;
 
     // #endregion

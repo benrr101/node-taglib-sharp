@@ -7,15 +7,15 @@ import {Guards} from "../utils";
 
 export default class XiphPicture implements IPicture, ILazy {
     private _rawDataSource: () => ByteVector;
-    private _colorDepth: number;
+    private _colorDepth: number = 0;
     private _data: ByteVector;
     private _description: string;
     private _filename: string;
-    private _height: number;
-    private _indexedColors: number;
+    private _height: number = 0;
+    private _indexedColors: number = 0;
     private _mimeType: string;
     private _type: PictureType;
-    private _width: number;
+    private _width: number = 0;
 
     // #region Constructors
 
@@ -75,9 +75,9 @@ export default class XiphPicture implements IPicture, ILazy {
 
         const instance = new XiphPicture();
         instance._type = picture.type;
-        instance._mimeType = picture.mimeType;
+        instance._mimeType = picture.mimeType || "";
         instance._filename = picture.filename;
-        instance._description = picture.description;
+        instance._description = picture.description || "";
         instance._data = picture.data;
 
         if (!(picture instanceof XiphPicture)) {

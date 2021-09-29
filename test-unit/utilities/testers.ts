@@ -1,4 +1,5 @@
 import {assert} from "chai";
+import {IMock} from "typemoq";
 
 import {Tag} from "../../src/tag";
 import {ByteVector} from "../../src";
@@ -315,13 +316,15 @@ export class TagTesters {
     };
 
     public static testTagProperties(tag: Tag, expectedOverrides: {[property: string]: unknown}) {
-        for (const propKey in TagTesters.EXPECTED_DEFAULTS) {
-            if (!TagTesters.EXPECTED_DEFAULTS.hasOwnProperty(propKey)) {
-                continue;
-            }
+        for (const [key, val] of Object.entries(TagTesters.EXPECTED_DEFAULTS)) {
+            const expected = expectedOverrides[key] || val.expected;
+            assert.deepEqual(val.getter(tag), expected, `${key}`);
+        }
+    }
 
-            const expected = expectedOverrides[propKey] || TagTesters.EXPECTED_DEFAULTS[propKey].expected;
-            assert.deepEqual(TagTesters.EXPECTED_DEFAULTS[propKey].getter(tag), expected);
+    public static setupTagMock<TTag extends Tag>(mockTag: IMock<TTag>): void {
+        for (const value of Object.values(TagTesters.EXPECTED_DEFAULTS)) {
+            mockTag.setup(value.getter).returns(() => value.expected);
         }
     }
 }

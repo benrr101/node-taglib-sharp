@@ -25,9 +25,9 @@ import {Tag, TagTypes} from "../tag";
 export default class FlacFile extends File implements ISandwichFile {
     public static readonly fileIdentifier = ByteVector.fromString("fLaC", StringType.Latin1, undefined, true);
 
-    private readonly _blocks: FlacBlock[];
     private readonly _properties: Properties;
     private readonly _tag: FlacTag;
+    private _metadataBlocks: FlacBlock[];
     private _mediaEndPosition: number;
     private _mediaStartPosition: number;
 
@@ -48,7 +48,7 @@ export default class FlacFile extends File implements ISandwichFile {
             this._mediaEndPosition = this.length - endTag.sizeOnDisk;
 
             // Read blocks
-            this._blocks = this.readMetadataBlocks();
+            this._metadataBlocks = this.readMetadataBlocks();
 
             // Read properties, flac pictures, and Xiph comment
             this._properties = this.readProperties(propertiesStyle);
@@ -112,65 +112,73 @@ export default class FlacFile extends File implements ISandwichFile {
 
         this.mode = FileAccessMode.Write;
         try {
-            // Step 1) Remove the FLAC picture and Xiph comment blocks
-            const typesToRemove = FlacBlockType.XiphComment | FlacBlockType.Picture;
-            for (let i = this._blocks.length - 1; i >= 0; i--) {
-                const block = this._blocks[i];
-                if ((block.type & typesToRemove) === 0) {
-                    continue;
-                }
+            // Step 0) Store the old metadata start and stop
+            const metadataStart = this._metadataBlocks[0].blockStart;
+            const lastMetadataBlock = this._metadataBlocks[this._metadataBlocks.length - 1];
+            const metadataEnd = lastMetadataBlock.blockStart + lastMetadataBlock.totalSize;
+            const oldMetadataLength = metadataEnd - metadataStart;
 
-                // Remove block from the file, block list, and update the other blocks
-                this.removeBlock(block.blockStart, block.totalSize);
-                this._blocks.splice(i, 1);
-                this.updateBlockPositions(i, -block.totalSize);
-                this._mediaEndPosition -= block.totalSize;
-            }
+            // Step 1) Remove existing Xiph comment and picture blocks
+            const blocksToRemove = [FlacBlockType.XiphComment, FlacBlockType.Picture, FlacBlockType.Padding];
+            this._metadataBlocks = this._metadataBlocks.filter((b) => blocksToRemove.indexOf(b.type) < -1 );
 
-            // Step 2) Write out XIPH comment and FLAC pictures
-            // 2.1) Render and write the tags
-            const taggingBlocks = this._tag.renderPictures()
-                .map((p) => FlacBlock.fromData(FlacBlockType.Picture, p));
-            const pictureBlocksBytes = taggingBlocks.map((b) => b.render(false));
-            const taggingBytes = ByteVector.concatenate(... pictureBlocksBytes);
-
+            // Step 2) Generate blocks for the xiph comment and pictures
             if (this._tag.xiphComment) {
-                const xiphData = this._tag.xiphComment.render(false);
-                const xiphBlock = FlacBlock.fromData(FlacBlockType.XiphComment, xiphData);
-                taggingBlocks.unshift(xiphBlock);
-
-                const xiphBytes = xiphBlock.render(false);
-                taggingBytes.insertByteVector(0, xiphBytes);
+                const xiphCommentBytes = this._tag.xiphComment.render(false);
+                const xiphCommentBlock = FlacBlock.fromData(FlacBlockType.XiphComment, xiphCommentBytes);
+                this._metadataBlocks.push(xiphCommentBlock);
             }
 
-            this.insert(taggingBytes, this._mediaStartPosition, 0);
-
-            // 2.2) Update the block state
-            this.updateBlockPositions(0, taggingBytes.length);
-            this._mediaEndPosition += taggingBytes.length;
-            this._blocks.unshift(... taggingBlocks);
-
-            let runningOffset = this._mediaStartPosition;
-            for (const block of taggingBlocks) {
-                block.blockStart = runningOffset;
-                runningOffset += block.totalSize;
+            if (this._tag.pictures.length > 0) {
+                // @TODO: If we allow pictures to go in xiph comment or metadata blocks, figure out
+                //     how to determine which goes where.
+                for (const picture of this._tag.pictures) {
+                    const xiphPicture = picture instanceof XiphPicture ? picture : XiphPicture.fromPicture(picture);
+                    const pictureBytes = xiphPicture.renderForFlacBlock();
+                    const pictureBlock = FlacBlock.fromData(FlacBlockType.Picture, pictureBytes);
+                    this._metadataBlocks.push(pictureBlock);
+                }
             }
 
-            // Step 3) Write out the tags at the end of the file
+            // Step 3) Render all metadata blocks in the file
+            const metadataBlocksBytes = this._metadataBlocks.map((b) => b.render(false));
+            const metadataBytes = ByteVector.concatenate(... metadataBlocksBytes);
+
+            // Step 4) Add padding block as necessary
+            let paddingLength: number;
+            if (metadataBytes.length < oldMetadataLength) {
+                // Case 1: New metadata blocks are smaller than old ones. Use remaining space as padding
+                paddingLength = oldMetadataLength - metadataBytes.length;
+            } else {
+                // Case 2: New metadata block is bigger than (or equal to) old ones. Add standard padding
+                // @TODO: Allow configuring padding length
+                paddingLength = 1024;
+            }
+
+            const paddingBlock = FlacBlock.fromData(FlacBlockType.Padding, ByteVector.fromSize(paddingLength));
+            metadataBytes.addByteVector(paddingBlock.render(true));
+
+            // Step 5) Write the metadata blocks to the file
+            this.insert(metadataBytes, metadataStart, oldMetadataLength);
+            const mediaEndDifference = metadataBytes.length - oldMetadataLength;
+            this._mediaEndPosition += mediaEndDifference;
+
+            // Step 6) Write out the tags at the end of the file
             const endTagBytes = this._tag.endTag.render();
             const endBytesToRemove = this.length - this._mediaEndPosition;
             this.insert(endTagBytes, this._mediaEndPosition, endBytesToRemove);
 
-            // Step 4) Write out the tags at the start of the file
+            // Step 7) Write out the tags at the start of the file
             const startTagBytes = this._tag.startTag.render();
             this.insert(startTagBytes, 0, this._mediaStartPosition);
 
-            // Step 5) Calculate new start and end positions, update blocks one last time
-            const oldMediaStart = this._mediaStartPosition;
+            // Step 8) Calculate new start and end positions, update block positions
             this._mediaStartPosition = startTagBytes.length;
             this._mediaEndPosition = this.length - endTagBytes.length;
-
-            this.updateBlockPositions(0, this._mediaStartPosition - oldMediaStart);
+            this._metadataBlocks.reduce((pos, b) => {
+                b.blockStart = pos;
+                return pos + b.totalSize;
+            }, this._mediaStartPosition);
 
             this._tagTypesOnDisk = this.tagTypes;
 
@@ -200,7 +208,7 @@ export default class FlacFile extends File implements ISandwichFile {
     }
 
     private readPictures(readStyle: ReadStyle): XiphPicture[] {
-        return this._blocks.filter((b) => b.type === FlacBlockType.Picture)
+        return this._metadataBlocks.filter((b) => b.type === FlacBlockType.Picture)
             .map((b) => XiphPicture.fromFlacBlock(b, (readStyle & ReadStyle.PictureLazy) !== 0));
     }
 
@@ -210,22 +218,22 @@ export default class FlacFile extends File implements ISandwichFile {
         }
 
         // Check that the first block is a METADATA_BLOCK_STREAMINFO
-        if (this._blocks.length === 0 || this._blocks[0].type !== FlacBlockType.StreamInfo) {
+        if (this._metadataBlocks.length === 0 || this._metadataBlocks[0].type !== FlacBlockType.StreamInfo) {
             throw new CorruptFileError("FLAC stream does not begin with StreamInfo block");
         }
 
         // @TODO: For precise calculation, read the audio frames
-        const lastBlock = this._blocks[this._blocks.length - 1];
+        const lastBlock = this._metadataBlocks[this._metadataBlocks.length - 1];
         const metadataEndPosition = lastBlock.blockStart + lastBlock.dataSize + FlacBlock.headerSize;
         const streamLength = this._mediaEndPosition - metadataEndPosition;
-        const header = new FlacStreamHeader(this._blocks[0].data, streamLength);
+        const header = new FlacStreamHeader(this._metadataBlocks[0].data, streamLength);
 
         return new Properties(header.durationMilliseconds, [header]);
     }
 
     private readXiphComments(_readStyle: ReadStyle): XiphComment {
         // Collect all the xiph comments
-        const xiphComments = this._blocks.filter((b) => b.type === FlacBlockType.XiphComment)
+        const xiphComments = this._metadataBlocks.filter((b) => b.type === FlacBlockType.XiphComment)
             .map((b) => XiphComment.fromData(b.data));
 
         // If we don't have any Xiph comments, just return undefined
@@ -246,12 +254,6 @@ export default class FlacFile extends File implements ISandwichFile {
             },
             XiphComment.fromEmpty()
         );
-    }
-
-    private updateBlockPositions(blockIndex: number, filePositionOffset: number ): void {
-        for (let i = blockIndex; i < this._blocks.length; i++) {
-            this._blocks[i].blockStart += filePositionOffset;
-        }
     }
 
     // #endregion

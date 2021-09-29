@@ -136,13 +136,18 @@ export class FlacBlock implements ILazy {
     public get dataSize(): number { return this._dataSize; }
 
     /**
-     * Gets ehether or not the block represented by the current instance is the last metadata block
+     * Gets whether or not the block represented by the current instance is the last metadata block
      * in the FLAC stream.
      * @returns `true` if the block represented by the current instance was the last one to appear
      *     in the file and is followed immediately by the audio data, or `false` if another block
      *     appears after the current one or the block was not read from disk.
      */
-    public get isLastBlock(): boolean { return this._isLastBlock; }
+    public get isLastBlock(): boolean {
+        // DEV NOTE: We don't really care about the value after reading the file, and because we
+        //    don't expose the raw blocks to the user, it's not useful to make it modifiable.
+        //    If we ever *do* expose the raw blocks, this should become an internal set.
+        return this._isLastBlock;
+    }
 
     /** @inheritDoc */
     public get isLoaded(): boolean { return !!this._data; }

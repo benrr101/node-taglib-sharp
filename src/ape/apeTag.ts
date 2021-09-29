@@ -214,6 +214,7 @@ export default class ApeTag extends Tag {
      * stored there for compatibility.
      */
     set albumArtists(value: string[]) {
+        /* @TODO: Coalesce old values via config? */
         this.setStringValues("Album Artist", value);
         if (this.hasItem("AlbumArtist")) {
             this.setStringValues("AlbumArtist", value);
@@ -465,8 +466,7 @@ export default class ApeTag extends Tag {
 
     /** @inheritDoc via Cover Art items */
     get pictures(): IPicture[] {
-        // TODO: Parse pictures either lazily (see xiph) or at tag parsing to allow for picture
-        //  array to be updated by the user.
+        // TODO: Parse pictures either lazily (see xiph) or at tag parsing
         const pictures = [];
         for (const item of this._items) {
             if (!item || item.type !== ApeTagItemType.Binary) {
