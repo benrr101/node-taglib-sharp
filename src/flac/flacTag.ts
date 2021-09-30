@@ -113,5 +113,11 @@ export default class FlacTag extends CombinedTag {
         this._pictures.splice(0, this._pictures.length, ...value);
     }
 
+    public get tagTypes(): TagTypes {
+        return this._pictures && this._pictures.length > 0
+            ? super.tagTypes | TagTypes.FlacPictures
+            : super.tagTypes;
+    }
+
     // #endregion
 }

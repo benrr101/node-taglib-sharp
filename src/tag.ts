@@ -56,9 +56,9 @@ export enum TagTypes {
     DivX = 0x00000100,
 
     /**
-     * @summary FLAC Metadata Blocks Tag
+     * @summary FLAC Metadata Block Pictures
      */
-    FlacMetadata = 0x00000200,
+    FlacPictures = 0x00000200,
 
     /**
      * @summary TIFF IFD Tag

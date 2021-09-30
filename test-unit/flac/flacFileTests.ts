@@ -16,6 +16,9 @@ import {Id3v2TagHeaderFlags} from "../../src/id3v2/id3v2TagHeader";
 import {FlacBlock, FlacBlockType} from "../../src/flac/flacBlock";
 import {TagTypes} from "../../src/tag";
 import {Testers} from "../utilities/testers";
+import XiphComment from "../../src/xiph/xiphComment";
+import {Picture} from "../../src";
+import XiphPicture from "../../src/xiph/xiphPicture";
 
 @suite class Flac_File_ConstructorTests {
     @test
@@ -112,16 +115,120 @@ import {Testers} from "../utilities/testers";
 
     @test
     public constructor_hasXiphTag() {
+        const originalDefaults = FlacFileSettings.defaultTagTypes;
+        try {
+            FlacFileSettings.defaultTagTypes = TagTypes.None;
 
+            // Arrange
+            const xiphTag = this.getXiphTag();
+            const xiphBlock = FlacBlock.fromData(FlacBlockType.XiphComment, xiphTag.render(false));
+            const fileBytes = this.getBasicFile([xiphBlock]);
+            const testAbstraction = TestFile.getFileAbstraction(fileBytes);
+
+            // Act
+            const file = new FlacFile(testAbstraction, ReadStyle.None);
+
+            // Assert
+            assert.strictEqual(file.mode, FileAccessMode.Closed);
+
+            assert.strictEqual(file.mediaStartPosition, 0);
+            assert.strictEqual(file.mediaEndPosition, testAbstraction.allBytes.length);
+
+            this.assertTags(file, TagTypes.None, TagTypes.None, true);
+            this.assertXiphTag(file);
+
+            assert.strictEqual(file.tagTypes, TagTypes.Xiph);
+            assert.strictEqual(file.tagTypes, TagTypes.Xiph);
+        } finally {
+            FlacFileSettings.defaultTagTypes = originalDefaults;
+        }
     }
 
     @test
     public constructor_hasPictures() {
+        const originalDefaults = FlacFileSettings.defaultTagTypes;
+        try {
+            FlacFileSettings.defaultTagTypes = TagTypes.None;
+
+            // Arrange
+            const extraBlocks = [
+                this.getPictureBlock(),
+                FlacBlock.fromData(FlacBlockType.Padding, ByteVector.fromSize(10)),
+                this.getPictureBlock()
+            ];
+
+            const fileBytes = this.getBasicFile(extraBlocks);
+            const testAbstraction = TestFile.getFileAbstraction(fileBytes);
+
+            // Act
+            const file = new FlacFile(testAbstraction, ReadStyle.None);
+
+            // Assert
+            assert.strictEqual(file.mode, FileAccessMode.Closed);
+
+            assert.strictEqual(file.mediaStartPosition, 0);
+            assert.strictEqual(file.mediaEndPosition, testAbstraction.allBytes.length);
+
+            this.assertTags(file, TagTypes.None, TagTypes.None, false);
+            assert.strictEqual(file.tag.pictures.length, 2);
+
+            assert.strictEqual(file.tagTypes, TagTypes.FlacPictures);
+            assert.strictEqual(file.tagTypesOnDisk, TagTypes.FlacPictures);
+        } finally {
+            FlacFileSettings.defaultTagTypes = originalDefaults;
+        }
     }
 
     @test
     public constructor_hasAllTheTags() {
+        const originalDefaults = FlacFileSettings.defaultTagTypes;
+        try {
+            FlacFileSettings.defaultTagTypes = TagTypes.None;
 
+            // Arrange
+            const id3v2Tag = this.getId3v2Tag(false);
+            const apeTag = this.getApeTag();
+            const id3v1Tag = this.getId3v1Tag();
+            const xiphTag = this.getXiphTag();
+            const picBlock = this.getPictureBlock();
+            const extraBlocks = [
+                picBlock,
+                FlacBlock.fromData(FlacBlockType.Padding, ByteVector.fromSize(10)),
+                FlacBlock.fromData(FlacBlockType.XiphComment, xiphTag.render(false))
+            ];
+
+            const startTagBytes = ByteVector.concatenate(apeTag.render(), id3v2Tag.render());
+            const endTagBytes = id3v1Tag.render();
+            const fileBytes = ByteVector.concatenate(
+                startTagBytes,
+                this.getBasicFile(extraBlocks),
+                endTagBytes
+            );
+            const testAbstraction = TestFile.getFileAbstraction(fileBytes);
+
+            // Act
+            const file = new FlacFile(testAbstraction, ReadStyle.None);
+
+            // Assert
+            assert.strictEqual(file.mode, FileAccessMode.Closed);
+
+            assert.strictEqual(file.mediaStartPosition, startTagBytes.length);
+            assert.strictEqual(file.mediaEndPosition, fileBytes.length - endTagBytes.length);
+
+            this.assertTags(file, TagTypes.Id3v2 | TagTypes.Ape, TagTypes.Id3v1, true);
+            this.assertId3v1Tag(file);
+            this.assertId3v2Tag(file);
+            this.assertApeTag(file);
+            this.assertXiphTag(file);
+            assert.strictEqual(file.tag.pictures.length, 1);
+
+            const expectedTags = TagTypes.FlacPictures | TagTypes.Xiph | TagTypes.Id3v1 | TagTypes.Id3v2 | TagTypes.Ape;
+            assert.strictEqual(file.tagTypes, expectedTags);
+            assert.strictEqual(file.tagTypesOnDisk, expectedTags);
+        } finally {
+            // Cleanup
+            FlacFileSettings.defaultTagTypes = originalDefaults;
+        }
     }
 
     // TEST READING PROPERTIES /////////////////////////////////////////////
@@ -214,6 +321,12 @@ import {Testers} from "../utilities/testers";
         assert.strictEqual(id3v2Tag.title, "foo");
     }
 
+    private assertXiphTag(file: FlacFile) {
+        const xiphTag = file.tag.xiphComment;
+        assert.isOk(xiphTag);
+        assert.strictEqual(xiphTag.amazonId, "foobarbaz");
+    }
+
     private getApeTag(): ApeTag {
         const apeTag = ApeTag.fromEmpty();
         apeTag.album = "bar";
@@ -236,7 +349,19 @@ import {Testers} from "../utilities/testers";
         return id3v1Tag;
     }
 
-    private getBasicFile(): ByteVector {
+    private getPictureBlock(): FlacBlock {
+        const picture = Picture.fromData(ByteVector.fromString("picturedata"));
+        const flacPic = XiphPicture.fromPicture(picture);
+        return FlacBlock.fromData(FlacBlockType.Picture, flacPic.renderForFlacBlock());
+    }
+
+    private getXiphTag(): XiphComment {
+        const xiphTag = XiphComment.fromEmpty();
+        xiphTag.amazonId = "foobarbaz";
+        return xiphTag;
+    }
+
+    private getBasicFile(extraBlocks?: FlacBlock[]): ByteVector {
         const streamHeaderBytes = ByteVector.concatenate(
             ByteVector.fromUInt(0x12345678),
             ByteVector.fromUInt(0x23456789),
@@ -248,7 +373,8 @@ import {Testers} from "../utilities/testers";
 
         return ByteVector.concatenate(
             ByteVector.fromString("fLaC"),
-            streamHeaderBlock.render(true),
+            streamHeaderBlock.render(!extraBlocks),
+            ... extraBlocks.map((b, i, a) => b.render(i === a.length - 1 )),
             ByteVector.fromSize(100)
         );
     }
