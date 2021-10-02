@@ -41,7 +41,7 @@ import XiphPicture from "../../src/xiph/xiphPicture";
     public constructor_hasTagsAtBeginning() {
         const originalDefaults = FlacFileSettings.defaultTagTypes;
         try {
-            FlacFileSettings.defaultTagTypes = TagTypes.None;
+            FlacFileSettings.defaultTagTypes = TagTypes.Id3v2 | TagTypes.Ape;
 
             // Arrange
             const id3v2Tag = this.getId3v2Tag(false);
@@ -78,7 +78,7 @@ import XiphPicture from "../../src/xiph/xiphPicture";
     public constructor_hasTagsAtEnd() {
         const originalDefaults = FlacFileSettings.defaultTagTypes;
         try {
-            FlacFileSettings.defaultTagTypes = TagTypes.None;
+            FlacFileSettings.defaultTagTypes = TagTypes.Id3v1 | TagTypes.Id3v1 | TagTypes.Ape;
 
             // Arrange
             const id3v2Tag = this.getId3v2Tag(true);
@@ -117,7 +117,7 @@ import XiphPicture from "../../src/xiph/xiphPicture";
     public constructor_hasXiphTag() {
         const originalDefaults = FlacFileSettings.defaultTagTypes;
         try {
-            FlacFileSettings.defaultTagTypes = TagTypes.None;
+            FlacFileSettings.defaultTagTypes = TagTypes.Xiph;
 
             // Arrange
             const xiphTag = this.getXiphTag();
@@ -136,6 +136,46 @@ import XiphPicture from "../../src/xiph/xiphPicture";
 
             this.assertTags(file, TagTypes.None, TagTypes.None, true);
             this.assertXiphTag(file);
+
+            assert.strictEqual(file.tagTypes, TagTypes.Xiph);
+            assert.strictEqual(file.tagTypes, TagTypes.Xiph);
+        } finally {
+            FlacFileSettings.defaultTagTypes = originalDefaults;
+        }
+    }
+
+    @test
+    public constructor_hasMultipleXiphTags() {
+        const originalDefaults = FlacFileSettings.defaultTagTypes;
+        try {
+            FlacFileSettings.defaultTagTypes = TagTypes.Xiph;
+
+            // Arrange
+            const xiphTag1 = XiphComment.fromEmpty();
+            xiphTag1.album = "Ascend EP";
+            const xiph1Block = FlacBlock.fromData(FlacBlockType.XiphComment, xiphTag1.render(false));
+
+            const xiphTag2 = XiphComment.fromEmpty();
+            xiphTag2.title = "Mobile";
+            const xiph2Block = FlacBlock.fromData(FlacBlockType.XiphComment, xiphTag2.render(false));
+
+            const fileBytes = this.getBasicFile([xiph1Block, xiph2Block]);
+            const testAbstraction = TestFile.getFileAbstraction(fileBytes);
+
+            // Act
+            const file = new FlacFile(testAbstraction, ReadStyle.None);
+
+            // Assert
+            assert.strictEqual(file.mode, FileAccessMode.Closed);
+
+            assert.strictEqual(file.mediaStartPosition, 0);
+            assert.strictEqual(file.mediaEndPosition, testAbstraction.allBytes.length);
+
+            this.assertTags(file, TagTypes.None, TagTypes.None, true);
+            const xiphTag = file.tag.xiphComment;
+            assert.isOk(xiphTag);
+            assert.strictEqual(xiphTag.album, "Ascend EP");
+            assert.strictEqual(xiphTag.title, "Mobile");
 
             assert.strictEqual(file.tagTypes, TagTypes.Xiph);
             assert.strictEqual(file.tagTypes, TagTypes.Xiph);
@@ -267,14 +307,14 @@ import XiphPicture from "../../src/xiph/xiphPicture";
 
     // TEST DEFAULT TAGS ///////////////////////////////////////////////////
     @test
-    public constructor_noDefaultsPreferred() {
+    public constructor_noTagsNoDefaultsPreferred() {
         // Arrange
         const originalDefaults = FlacFileSettings.defaultTagTypes;
         try {
             const testAbstraction = TestFile.getFileAbstraction(this.getBasicFile());
-            FlacFileSettings.defaultTagTypes = TagTypes.None;
 
             // Act
+            FlacFileSettings.defaultTagTypes = TagTypes.None;
             const file = new FlacFile(testAbstraction, ReadStyle.None);
 
             // Assert
@@ -288,6 +328,263 @@ import XiphPicture from "../../src/xiph/xiphPicture";
         }
     }
 
+    @test
+    public constructor_noTagsDefaultTagsAtBeginning() {
+        // Arrange
+        const originalDefaults = FlacFileSettings.defaultTagTypes;
+        const originalApeLocation = FlacFileSettings.preferApeTagAtFileEnd;
+        const originalId3v2Location = FlacFileSettings.preferId3v2TagAtFileEnd;
+        try {
+            const fileBytes = this.getBasicFile();
+            const testAbstraction = TestFile.getFileAbstraction(fileBytes);
+
+            // Act
+            FlacFileSettings.defaultTagTypes = TagTypes.Id3v2 | TagTypes.Ape;
+            FlacFileSettings.preferApeTagAtFileEnd = false;
+            FlacFileSettings.preferId3v2TagAtFileEnd = false;
+            const file = new FlacFile(testAbstraction, ReadStyle.None);
+
+            // Assert
+            assert.strictEqual(file.tag.tags.length, 2);
+            assert.strictEqual(file.tagTypes, TagTypes.Id3v2 | TagTypes.Ape);
+            assert.strictEqual(file.tagTypesOnDisk, TagTypes.None);
+
+            assert.strictEqual(file.tag.startTag.tags.length, 2);
+            assert.strictEqual(file.tag.startTag.tagTypes, TagTypes.Id3v2 | TagTypes.Ape);
+            assert.strictEqual(file.tag.endTag.tags.length, 0);
+            assert.strictEqual(file.tag.endTag.tagTypes, TagTypes.None);
+            assert.isUndefined(file.tag.xiphComment);
+            assert.isEmpty(file.tag.pictures);
+        } finally {
+            // Cleanup
+            FlacFileSettings.defaultTagTypes = originalDefaults;
+            FlacFileSettings.preferApeTagAtFileEnd = originalApeLocation;
+            FlacFileSettings.preferId3v2TagAtFileEnd = originalId3v2Location;
+        }
+    }
+
+    @test
+    public constructor_noTagsDefaultTagsAtEnd() {
+        // Arrange
+        const originalDefaults = FlacFileSettings.defaultTagTypes;
+        const originalApeLocation = FlacFileSettings.preferApeTagAtFileEnd;
+        const originalId3v2Location = FlacFileSettings.preferId3v2TagAtFileEnd;
+        try {
+            const fileBytes = this.getBasicFile();
+            const testAbstraction = TestFile.getFileAbstraction(fileBytes);
+
+            // Act
+            FlacFileSettings.defaultTagTypes = TagTypes.Id3v1 | TagTypes.Id3v2 | TagTypes.Ape;
+            FlacFileSettings.preferApeTagAtFileEnd = true;
+            FlacFileSettings.preferId3v2TagAtFileEnd = true;
+            const file = new FlacFile(testAbstraction, ReadStyle.None);
+
+            // Assert
+            assert.strictEqual(file.tag.tags.length, 3);
+            assert.strictEqual(file.tagTypes, TagTypes.Id3v1 | TagTypes.Id3v2 | TagTypes.Ape);
+            assert.strictEqual(file.tagTypesOnDisk, TagTypes.None);
+
+            assert.strictEqual(file.tag.startTag.tags.length, 0);
+            assert.strictEqual(file.tag.startTag.tagTypes, TagTypes.None);
+            assert.strictEqual(file.tag.endTag.tags.length, 3);
+            assert.strictEqual(file.tag.endTag.tagTypes, TagTypes.Id3v1 | TagTypes.Id3v2 | TagTypes.Ape);
+            assert.isUndefined(file.tag.xiphComment);
+            assert.isEmpty(file.tag.pictures);
+        } finally {
+            // Cleanup
+            FlacFileSettings.defaultTagTypes = originalDefaults;
+            FlacFileSettings.preferApeTagAtFileEnd = originalApeLocation;
+            FlacFileSettings.preferId3v2TagAtFileEnd = originalId3v2Location;
+        }
+    }
+
+    @test
+    public constructor_noTagsXiphDefault() {
+        // Arrange
+        const originalDefaults = FlacFileSettings.defaultTagTypes;
+        try {
+            const fileBytes = this.getBasicFile();
+            const testAbstraction = TestFile.getFileAbstraction(fileBytes);
+
+            // Act
+            FlacFileSettings.defaultTagTypes = TagTypes.Xiph;
+            const file = new FlacFile(testAbstraction, ReadStyle.None);
+
+            // Assert
+            assert.strictEqual(file.tag.tags.length, 1);
+            assert.strictEqual(file.tagTypes, TagTypes.Xiph);
+            assert.strictEqual(file.tagTypesOnDisk, TagTypes.None);
+
+            assert.strictEqual(file.tag.startTag.tags.length, 0);
+            assert.strictEqual(file.tag.endTag.tags.length, 0);
+            assert.isOk(file.tag.xiphComment);
+            assert.isEmpty(file.tag.pictures);
+        } finally {
+            // Cleanup
+            FlacFileSettings.defaultTagTypes = originalDefaults;
+        }
+    }
+
+    // GET TAGS ////////////////////////////////////////////////////////////
+    @test
+    public getTag_tagExists() {
+        // Arrange
+        const fileBytes = this.getCompleteFile();
+        const testAbstraction = TestFile.getFileAbstraction(fileBytes);
+        const file = new FlacFile(testAbstraction, ReadStyle.None);
+
+        // Act
+        const output = file.getTag(TagTypes.Xiph, false);
+
+        // Assert
+        assert.strictEqual(output, file.tag.xiphComment);
+    }
+
+    @test
+    public getTag_id3v1TagDoesNotExist() {
+        this.getTagCreates(
+            TagTypes.Id3v1,
+            Id3v1Tag,
+            () => false,
+            () => { /* no op */ },
+            true
+        );
+    }
+
+    @test
+    public getTag_id3v2TagDoesNotExistCreateAtFront() {
+        this.getTagCreates(
+            TagTypes.Id3v2,
+            Id3v2Tag,
+            () => FlacFileSettings.preferId3v2TagAtFileEnd,
+            (v) => FlacFileSettings.preferId3v2TagAtFileEnd = v,
+            false
+        );
+    }
+
+    @test
+    public getTag_id3v2TagDoesNotExistCreateAtEnd() {
+        this.getTagCreates(
+            TagTypes.Id3v2,
+            Id3v2Tag,
+            () => FlacFileSettings.preferId3v2TagAtFileEnd,
+            (v) => FlacFileSettings.preferId3v2TagAtFileEnd = v,
+            true
+        );
+    }
+
+    @test
+    public getTag_apeDoesNotExistCreateAtFront() {
+        this.getTagCreates(
+            TagTypes.Ape,
+            ApeTag,
+            () => FlacFileSettings.preferApeTagAtFileEnd,
+            (v) => FlacFileSettings.preferApeTagAtFileEnd = v,
+            false
+        );
+    }
+
+    @test
+    public getTag_apeDoesNotExistCreateAtEnd() {
+        this.getTagCreates(
+            TagTypes.Ape,
+            ApeTag,
+            () => FlacFileSettings.preferApeTagAtFileEnd,
+            (v) => FlacFileSettings.preferApeTagAtFileEnd = v,
+            true
+        );
+    }
+
+    @test
+    public getTag_xiphDoesNotExistCreates() {
+        this.getTagCreates(
+            TagTypes.Xiph,
+            XiphComment,
+            () => false,
+            () => { /* no op */ },
+            false
+        );
+    }
+
+    @test
+    public getTag_xiphDoesNotExistDoNotCreate() {
+        const originalDefaultTags = FlacFileSettings.defaultTagTypes;
+        try {
+            FlacFileSettings.defaultTagTypes = TagTypes.None;
+
+            const testAbstraction = TestFile.getFileAbstraction(this.getBasicFile());
+            const file = new FlacFile(testAbstraction, ReadStyle.None);
+
+            // Act
+            const output = file.getTag(TagTypes.Xiph, false);
+
+            // Assert
+            assert.isUndefined(output);
+            assert.isUndefined(file.tag.xiphComment);
+        } finally {
+            // Cleanup
+            FlacFileSettings.defaultTagTypes = originalDefaultTags;
+        }
+    }
+
+    private getTagCreates(
+        tagType: TagTypes,
+        // tslint:disable-next-line:ban-types It's the type that assert.instanceof uses
+        instanceOf: Function,
+        locationGetter: () => boolean,
+        locationSetter: (v: boolean) => void,
+        createAtEnd: boolean
+    ) {
+        // Arrange
+        const originalDefaultTags = FlacFileSettings.defaultTagTypes;
+        const originalLocation = locationGetter();
+        try {
+            FlacFileSettings.defaultTagTypes = TagTypes.None;
+            locationSetter(createAtEnd);
+
+            const testAbstraction = TestFile.getFileAbstraction(this.getBasicFile());
+            const file = new FlacFile(testAbstraction, ReadStyle.None);
+
+            // Act
+            const output = file.getTag(tagType, true);
+
+            // Assert
+            assert.isOk(output);
+            assert.instanceOf(output, instanceOf);
+            assert.isTrue(output.isEmpty);
+
+            if (tagType === TagTypes.Xiph) {
+                assert.strictEqual(file.tag.xiphComment, output);
+            } else if (createAtEnd) {
+                assert.include(file.tag.endTag.tags, output);
+            } else {
+                assert.include(file.tag.startTag.tags, output);
+            }
+        } finally {
+            // Cleanup
+            FlacFileSettings.defaultTagTypes = originalDefaultTags;
+            locationSetter(originalLocation);
+        }
+    }
+
+    // REMOVE TAGS /////////////////////////////////////////////////////////
+    @test
+    public removeTags() {
+        // Arrange
+        const fileBytes = this.getCompleteFile();
+        const testAbstraction = TestFile.getFileAbstraction(fileBytes);
+        const file = new FlacFile(testAbstraction, ReadStyle.None);
+        const originalTagTypes = file.tagTypes;
+
+        // Act
+        file.removeTags(TagTypes.AllTags);
+
+        // Assert
+        assert.strictEqual(file.tagTypes, TagTypes.None);
+        assert.strictEqual(file.tagTypesOnDisk, originalTagTypes);
+    }
+
+    // Helpers /////////////////////////////////////////////////////////////
     private assertTags(file: FlacFile, startTags: TagTypes, endTags: TagTypes, xiph: boolean) {
         assert.isOk(file.tag);
         assert.instanceOf(file.tag, FlacTag);
@@ -374,8 +671,29 @@ import XiphPicture from "../../src/xiph/xiphPicture";
         return ByteVector.concatenate(
             ByteVector.fromString("fLaC"),
             streamHeaderBlock.render(!extraBlocks),
-            ... extraBlocks.map((b, i, a) => b.render(i === a.length - 1 )),
+            ... (extraBlocks || []).map((b, i, a) => b.render(i === a.length - 1 )),
             ByteVector.fromSize(100)
+        );
+    }
+
+    private getCompleteFile(): ByteVector {
+        const id3v2Tag = this.getId3v2Tag(false);
+        const apeTag = this.getApeTag();
+        const id3v1Tag = this.getId3v1Tag();
+        const xiphTag = this.getXiphTag();
+        const picBlock = this.getPictureBlock();
+        const extraBlocks = [
+            picBlock,
+            FlacBlock.fromData(FlacBlockType.Padding, ByteVector.fromSize(10)),
+            FlacBlock.fromData(FlacBlockType.XiphComment, xiphTag.render(false))
+        ];
+
+        const startTagBytes = ByteVector.concatenate(apeTag.render(), id3v2Tag.render());
+        const endTagBytes = id3v1Tag.render();
+        return ByteVector.concatenate(
+            startTagBytes,
+            this.getBasicFile(extraBlocks),
+            endTagBytes
         );
     }
 }

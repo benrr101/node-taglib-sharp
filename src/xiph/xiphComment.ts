@@ -760,6 +760,28 @@ export default class XiphComment extends Tag {
         this._pictures.splice(0, this._pictures.length);
     }
 
+    /** @inheritDoc */
+    public copyTo(target: Tag, overwrite: boolean): void {
+        // We can only handle Xiph comments in this implementation
+        if (!(target instanceof XiphComment)) {
+            super.copyTo(target, overwrite);
+            return;
+        }
+
+        // Copy keys into the destination
+        const targetKeys = target.fieldNames;
+        for (const key of this._fields.keys()) {
+            if (overwrite || targetKeys.indexOf(key) >= 0) {
+                target.setFieldAsStrings(key, ...this.getField(key));
+            }
+        }
+
+        // Copy pictures to destination
+        if (overwrite || target.pictures.length === 0) {
+            target.pictures = this._pictures;
+        }
+    }
+
     /**
      * Gets the field data for a given field identifier.
      * @param key Field identifier to look up

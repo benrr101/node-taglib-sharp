@@ -49,6 +49,12 @@ export default class FlacTag extends CombinedTag {
     }
 
     /** @inheritDoc */
+    public clear(): void {
+        this._pictures.splice(0, this._pictures.length);
+        super.clear();
+    }
+
+    /** @inheritDoc */
     public createTag(tagType: TagTypes, copy: boolean): Tag {
         this.validateTagCreation(tagType);
 
@@ -75,6 +81,18 @@ export default class FlacTag extends CombinedTag {
         }
 
         return tag;
+    }
+
+    /** @inheritDoc */
+    public removeTags(tagTypes: TagTypes): void {
+        if ((tagTypes & TagTypes.Xiph) !== 0) {
+            this._xiphComment = undefined;
+        }
+        if ((tagTypes & TagTypes.FlacPictures) !== 0) {
+            this._pictures.splice(0, this._pictures.length);
+        }
+
+        super.removeTags(tagTypes);
     }
 
     // #region Properties
