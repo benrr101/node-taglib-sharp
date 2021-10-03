@@ -18,6 +18,12 @@ import {IFileAbstraction} from "../fileAbstraction";
 import {ICodec} from "../iCodec";
 import {Tag, TagTypes} from "../tag";
 
+/**
+ * This class extends {@link File} to provide tagging and properties support for RIFF files. These
+ * are usually WAV and AVI file.
+ * @remarks The RIFF standard supports a general purpose "chunk" system that software can use for
+ *     whatever purpose. Tagging is accomplished using various types of chunks
+ */
 export default class RiffFile extends File {
     /**
      * Identifier at the beginning of a RIFF file.
@@ -123,14 +129,12 @@ export default class RiffFile extends File {
                 const infoTagBytes = infoTag.render();
                 replacedChunks.push({ chunk: infoTag.list, newTotalSize: infoTagBytes.length });
                 renderedTags.push(infoTagBytes);
-
             }
             const movieIdTag = this._tag.getTag<MovieIdTag>(TagTypes.MovieId);
             if (movieIdTag) {
                 const movieIdBytes = movieIdTag.render();
                 replacedChunks.push({ chunk: movieIdTag.list, newTotalSize: movieIdBytes.length });
                 renderedTags.push(movieIdBytes);
-
             }
             const divxTag = this._tag.getTag<DivxTag>(TagTypes.DivX);
             if (divxTag) {
@@ -300,51 +304,7 @@ export default class RiffFile extends File {
             }
 
             // Process the properties of the file
-            let codecs: ICodec[];
-            let durationMilliseconds = 0;
-            if ((readStyle & ReadStyle.Average) !== 0) {
-                switch (this._fileType) {
-                    case "WAVE":
-                        // This is a wav file, search for fmt chunk
-                        const fmtChunk = this._rawChunks.find((c) => c.fourcc === RiffWaveFormatEx.CHUNK_FOURCC);
-                        if (!fmtChunk) {
-                            throw new CorruptFileError("WAV file is missing header chunk");
-                        }
-
-                        const waveHeader = new RiffWaveFormatEx((<RiffChunk> fmtChunk).data, );
-                        codecs = [waveHeader];
-
-                        // Calculate the duration by getting the data chunk size
-                        const dataChunk = this._rawChunks.find((c) => c.fourcc === "data");
-                        if (!dataChunk) {
-                            throw new CorruptFileError("WAV file is missing data chunk");
-                        }
-
-                        durationMilliseconds = dataChunk.originalDataSize * 8000
-                            / waveHeader.bitsPerSample / waveHeader.audioSampleRate;
-                        break;
-
-                    case "AVI ":
-                        // This is an AVI file, search for the hdrl list
-                        const aviHeaderList = this._rawChunks.find((c) => {
-                            return c.fourcc === RiffList.identifierFourcc
-                                && (<RiffList> c).type === AviHeader.headerListType;
-                        });
-                        if (!aviHeaderList) {
-                            throw new CorruptFileError("AVI file is missing header list");
-                        }
-
-                        const aviHeader = new AviHeader(<RiffList> aviHeaderList);
-                        codecs = aviHeader.codecs;
-                        durationMilliseconds = aviHeader.durationMilliseconds;
-                        break;
-
-                    default:
-                        throw new UnsupportedFormatError("Unsupported RIFF type");
-                }
-
-                this._properties = new Properties(durationMilliseconds, codecs);
-            }
+            this._properties = this.readProperties(readStyle);
 
             // Process tags
             this.updateTaggingChunkIndexes();
@@ -379,6 +339,57 @@ export default class RiffFile extends File {
         } finally {
             this.mode = FileAccessMode.Closed;
         }
+    }
+
+    private readProperties(readStyle: ReadStyle): Properties {
+        if ((readStyle & ReadStyle.Average) === 0) {
+            return;
+        }
+
+        let codecs: ICodec[];
+        let durationMilliseconds: number = 0;
+        switch (this._fileType) {
+            case "WAVE":
+                // This is a wav file, search for fmt chunk
+                const fmtChunk = this._rawChunks.find((c) => c.fourcc === RiffWaveFormatEx.CHUNK_FOURCC);
+                if (!fmtChunk) {
+                    throw new CorruptFileError("WAV file is missing header chunk");
+                }
+
+                const waveHeader = new RiffWaveFormatEx((<RiffChunk> fmtChunk).data, );
+                codecs = [waveHeader];
+
+                // Calculate the duration by getting the data chunk size
+                const dataChunk = this._rawChunks.find((c) => c.fourcc === "data");
+                if (!dataChunk) {
+                    throw new CorruptFileError("WAV file is missing data chunk");
+                }
+
+                codecs = [waveHeader];
+                durationMilliseconds = dataChunk.originalDataSize * 8000
+                    / waveHeader.bitsPerSample / waveHeader.audioSampleRate;
+                break;
+
+            case "AVI ":
+                // This is an AVI file, search for the hdrl list
+                const aviHeaderList = this._rawChunks.find((c) => {
+                    return c.fourcc === RiffList.identifierFourcc
+                        && (<RiffList> c).type === AviHeader.headerListType;
+                });
+                if (!aviHeaderList) {
+                    throw new CorruptFileError("AVI file is missing header list");
+                }
+
+                const aviHeader = new AviHeader(<RiffList> aviHeaderList);
+                codecs = aviHeader.codecs;
+                durationMilliseconds = aviHeader.durationMilliseconds;
+                break;
+
+            default:
+                throw new UnsupportedFormatError("Unsupported RIFF type");
+        }
+
+        return new Properties(durationMilliseconds, codecs);
     }
 
     private updateChunkPositions(chunkIndex: number, filePositionOffset: number): void {

@@ -11,8 +11,6 @@ import {IFileAbstraction} from "../src/fileAbstraction";
 import {IStream} from "../src/stream";
 import {Testers} from "./utilities/testers";
 
-const AB2B = require("arraybuffer-to-buffer");
-
 // Setup chai
 Chai.use(ChaiAsPromised);
 const assert = Chai.assert;
@@ -1102,7 +1100,7 @@ const assert = Chai.assert;
         // Arrange - Create a stream with some data in it
         const stream = new StreamBuffers.ReadableStreamBuffer();
         const bytes = new Uint8Array(TestConstants.testFileContents);
-        stream.put(AB2B(bytes.buffer));
+        stream.put(Buffer.from(bytes.buffer));
 
         // Act - Get the promise, end the stream, await the promise
         const bvPromise = ByteVector.fromStream(stream);
@@ -1122,7 +1120,7 @@ const assert = Chai.assert;
         // Arrange - Create a stream with some data in it
         const stream = new StreamBuffers.ReadableStreamBuffer();
         const bytes = new Uint8Array(TestConstants.testFileContents);
-        stream.put(AB2B(bytes.buffer));
+        stream.put(Buffer.from(bytes.buffer));
 
         // Act - Get the promise, end the stream, await the promise
         const bvPromise = ByteVector.fromStream(stream, true);

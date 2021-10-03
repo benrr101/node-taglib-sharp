@@ -3,13 +3,16 @@ import {Tag, TagTypes} from "./tag";
 import {Guards} from "./utils";
 import {NotSupportedError} from "./errors";
 
+/**
+ * This class provides a unified way of accessing tag data from multiple tag types.
+ */
 export default abstract class CombinedTag extends Tag {
     private readonly _supportedTagTypes: TagTypes;
     private readonly _tags: Tag[];
 
     /**
      * Constructs and initializes a new instance of {@link CombinedTag}.
-     * @param supportedTagTypes Type of tags that are supported by this instance of the combined
+     * @param supportedTagTypes Types of tags that are supported by this instance of the combined
      * @param tags Optionally, a list of tags to combine in the new instance.
      */
     protected constructor(supportedTagTypes: TagTypes, tags?: Tag[]) {

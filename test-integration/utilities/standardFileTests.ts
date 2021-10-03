@@ -128,13 +128,12 @@ export class StandardFileTests {
             assert.strictEqual(pics.length, 3);
 
             // Lazy picture check
-            const isLazy = (readStyle & ReadStyle.PictureLazy) !== 0;
+            const isLazyTest = (readStyle & ReadStyle.PictureLazy) !== 0;
             for (let i = 0; i < 3; i++) {
-                if (isLazy) {
-                    assert.isTrue(pics[i].hasOwnProperty("isLoaded"));
+                if (isLazyTest) {
                     assert.isFalse((<ILazy> <PictureLazy> pics[i]).isLoaded);
                 } else {
-                    if (pics[i].hasOwnProperty("isLoaded")) {
+                    if ((<ILazy> <PictureLazy> pics[i]).isLoaded !== undefined) {
                         assert.isTrue((<ILazy> <PictureLazy> pics[i]).isLoaded);
                     }
                 }

@@ -20,7 +20,6 @@
     "node": ">=12.16.1"
   },
   "dependencies": {
-    "arraybuffer-to-buffer": "^0.0.5",
     "dateformat": "^3.0.3",
     "iconv-lite": "^0.4.24",
     "os-locale": "^4.0.0",

@@ -4,9 +4,6 @@ import {IFileAbstraction} from "./fileAbstraction";
 import {IStream} from "./stream";
 import {Guards} from "./utils";
 
-// TODO: Assess if this is needed
-const AB2B = require("arraybuffer-to-buffer");
-
 class IConvEncoding {
     public readonly encoding: string;
 
@@ -221,13 +218,13 @@ export class ByteVector {
     }
 
     /**
-     * Creates a {@link ByteVector} from a Uint8Array
+     * Creates a {@link ByteVector} from a `Uint8Array` or node `Buffer`
      * @param data Uint8Array of the bytes to put in the ByteVector
      * @param length Number of bytes to read
      * @param isReadOnly If `true` then the ByteVector will be read only
      */
     public static fromByteArray(
-        data: Uint8Array,
+        data: Uint8Array | Buffer,
         length: number = data.length,
         isReadOnly: boolean = false
     ): ByteVector {
@@ -1182,7 +1179,7 @@ export class ByteVector {
         }
 
         const bom = type === StringType.UTF16 && this.length - offset > 1 ? this.mid(offset, 2) : null;
-        const buffer = AB2B(this.mid(offset, count)._data.buffer);
+        const buffer = Buffer.from(this.mid(offset, count)._data.buffer);
         return ByteVector.getIConvEncoding(type, bom).decode(buffer);
 
         // NOTE: Original .NET implementation had explicit BOM stripping, which is unnecessary when

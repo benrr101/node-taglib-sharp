@@ -56,9 +56,9 @@ export enum TagTypes {
     DivX = 0x00000100,
 
     /**
-     * @summary FLAC Metadata Blocks Tag
+     * @summary FLAC Metadata Block Pictures
      */
-    FlacMetadata = 0x00000200,
+    FlacPictures = 0x00000200,
 
     /**
      * @summary TIFF IFD Tag
@@ -1137,6 +1137,7 @@ export abstract class Tag {
      */
     public copyTo(target: Tag, overwrite: boolean): void {
         Guards.truthy(target, "target");
+        // @TODO: Allow for overwriting existing values or all values
 
         if (overwrite || Tag.isFalsyOrLikeEmpty(target.title)) { target.title = this.title; }
         if (overwrite || Tag.isFalsyOrLikeEmpty(target.subtitle)) { target.subtitle = this.subtitle; }

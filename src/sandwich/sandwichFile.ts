@@ -6,6 +6,11 @@ import {File, FileAccessMode, ReadStyle} from "../file";
 import {IFileAbstraction} from "../fileAbstraction";
 import {Tag, TagTypes} from "../tag";
 
+export interface ISandwichFile {
+    readonly mediaEndPosition: number;
+    readonly mediaStartPosition: number;
+}
+
 /**
  * Abstract class that provides tagging and properties for files that can have tags at the
  * beginning and/or end of the file. The tags are added generically and are not part of the media
@@ -14,7 +19,7 @@ import {Tag, TagTypes} from "../tag";
  *     utilizing this pattern could not be containers. This is not true - MPEG containers, for
  *     example, use this pattern. Therefore the name was changed to better represent the situation.
  */
-export default abstract class SandwichFile extends File {
+export default abstract class SandwichFile extends File implements ISandwichFile {
     private readonly _properties: Properties;
     private readonly _tag: SandwichTag;
     private _mediaEndPosition: number;
@@ -67,12 +72,16 @@ export default abstract class SandwichFile extends File {
     /**
      * Gets the position at which the media content of this file ends.
      */
-    public get mediaEndPosition(): number { return this._mediaEndPosition; }
+    get mediaEndPosition(): number {
+        return this._mediaEndPosition;
+    }
 
     /**
      * Gets the position at which the media content of this file starts.
      */
-    public get mediaStartPosition(): number { return this._mediaStartPosition; }
+    get mediaStartPosition(): number {
+        return this._mediaStartPosition;
+    }
 
     /**
      * Gets an abstract representation of all tags stored in the current instance.
