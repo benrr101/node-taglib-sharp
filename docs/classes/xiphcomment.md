@@ -1,110 +1,106 @@
-[node-taglib-sharp](../README.md) / [Exports](../modules.md) / Id3v2Tag
+[node-taglib-sharp](../README.md) / [Exports](../modules.md) / XiphComment
 
-# Class: Id3v2Tag
+# Class: XiphComment
+
+Provides support for reading and writing Xiph comment-style tags.
+
+**`remarks`** Xiph comment tag properties are stored in "fields" of the form `KEY=value`, where `KEY`
+    is the "field name". The field name can be defined multiple times in the tag which means
+    each field can have multiple values.
 
 ## Hierarchy
 
 - [`Tag`](tag.md)
 
-  ↳ **`Id3v2Tag`**
+  ↳ **`XiphComment`**
 
 ## Table of contents
 
 ### Accessors
 
-- [album](id3v2tag.md#album)
-- [albumArtists](id3v2tag.md#albumartists)
-- [albumArtistsSort](id3v2tag.md#albumartistssort)
-- [albumSort](id3v2tag.md#albumsort)
-- [amazonId](id3v2tag.md#amazonid)
-- [beatsPerMinute](id3v2tag.md#beatsperminute)
-- [comment](id3v2tag.md#comment)
-- [composers](id3v2tag.md#composers)
-- [composersSort](id3v2tag.md#composerssort)
-- [conductor](id3v2tag.md#conductor)
-- [copyright](id3v2tag.md#copyright)
-- [dateTagged](id3v2tag.md#datetagged)
-- [description](id3v2tag.md#description)
-- [disc](id3v2tag.md#disc)
-- [discCount](id3v2tag.md#disccount)
-- [firstAlbumArtist](id3v2tag.md#firstalbumartist)
-- [firstAlbumArtistSort](id3v2tag.md#firstalbumartistsort)
-- [firstComposer](id3v2tag.md#firstcomposer)
-- [firstComposerSort](id3v2tag.md#firstcomposersort)
-- [firstGenre](id3v2tag.md#firstgenre)
-- [firstPerformer](id3v2tag.md#firstperformer)
-- [firstPerformerSort](id3v2tag.md#firstperformersort)
-- [flags](id3v2tag.md#flags)
-- [frames](id3v2tag.md#frames)
-- [genres](id3v2tag.md#genres)
-- [grouping](id3v2tag.md#grouping)
-- [initialKey](id3v2tag.md#initialkey)
-- [isCompilation](id3v2tag.md#iscompilation)
-- [isEmpty](id3v2tag.md#isempty)
-- [isrc](id3v2tag.md#isrc)
-- [joinedAlbumArtists](id3v2tag.md#joinedalbumartists)
-- [joinedComposers](id3v2tag.md#joinedcomposers)
-- [joinedGenres](id3v2tag.md#joinedgenres)
-- [joinedPerformers](id3v2tag.md#joinedperformers)
-- [joinedPerformersSort](id3v2tag.md#joinedperformerssort)
-- [lyrics](id3v2tag.md#lyrics)
-- [musicBrainzArtistId](id3v2tag.md#musicbrainzartistid)
-- [musicBrainzDiscId](id3v2tag.md#musicbrainzdiscid)
-- [musicBrainzReleaseArtistId](id3v2tag.md#musicbrainzreleaseartistid)
-- [musicBrainzReleaseCountry](id3v2tag.md#musicbrainzreleasecountry)
-- [musicBrainzReleaseGroupId](id3v2tag.md#musicbrainzreleasegroupid)
-- [musicBrainzReleaseId](id3v2tag.md#musicbrainzreleaseid)
-- [musicBrainzReleaseStatus](id3v2tag.md#musicbrainzreleasestatus)
-- [musicBrainzReleaseType](id3v2tag.md#musicbrainzreleasetype)
-- [musicBrainzTrackId](id3v2tag.md#musicbrainztrackid)
-- [musicIpId](id3v2tag.md#musicipid)
-- [performers](id3v2tag.md#performers)
-- [performersRole](id3v2tag.md#performersrole)
-- [performersSort](id3v2tag.md#performerssort)
-- [pictures](id3v2tag.md#pictures)
-- [publisher](id3v2tag.md#publisher)
-- [remixedBy](id3v2tag.md#remixedby)
-- [replayGainAlbumGain](id3v2tag.md#replaygainalbumgain)
-- [replayGainAlbumPeak](id3v2tag.md#replaygainalbumpeak)
-- [replayGainTrackGain](id3v2tag.md#replaygaintrackgain)
-- [replayGainTrackPeak](id3v2tag.md#replaygaintrackpeak)
-- [sizeOnDisk](id3v2tag.md#sizeondisk)
-- [subtitle](id3v2tag.md#subtitle)
-- [tagTypes](id3v2tag.md#tagtypes)
-- [title](id3v2tag.md#title)
-- [titleSort](id3v2tag.md#titlesort)
-- [track](id3v2tag.md#track)
-- [trackCount](id3v2tag.md#trackcount)
-- [version](id3v2tag.md#version)
-- [year](id3v2tag.md#year)
-- [language](id3v2tag.md#language)
+- [album](xiphcomment.md#album)
+- [albumArtists](xiphcomment.md#albumartists)
+- [albumArtistsSort](xiphcomment.md#albumartistssort)
+- [albumSort](xiphcomment.md#albumsort)
+- [amazonId](xiphcomment.md#amazonid)
+- [beatsPerMinute](xiphcomment.md#beatsperminute)
+- [comment](xiphcomment.md#comment)
+- [composers](xiphcomment.md#composers)
+- [composersSort](xiphcomment.md#composerssort)
+- [conductor](xiphcomment.md#conductor)
+- [copyright](xiphcomment.md#copyright)
+- [dateTagged](xiphcomment.md#datetagged)
+- [description](xiphcomment.md#description)
+- [disc](xiphcomment.md#disc)
+- [discCount](xiphcomment.md#disccount)
+- [fieldNames](xiphcomment.md#fieldnames)
+- [fieldValueCount](xiphcomment.md#fieldvaluecount)
+- [firstAlbumArtist](xiphcomment.md#firstalbumartist)
+- [firstAlbumArtistSort](xiphcomment.md#firstalbumartistsort)
+- [firstComposer](xiphcomment.md#firstcomposer)
+- [firstComposerSort](xiphcomment.md#firstcomposersort)
+- [firstGenre](xiphcomment.md#firstgenre)
+- [firstPerformer](xiphcomment.md#firstperformer)
+- [firstPerformerSort](xiphcomment.md#firstperformersort)
+- [genres](xiphcomment.md#genres)
+- [grouping](xiphcomment.md#grouping)
+- [initialKey](xiphcomment.md#initialkey)
+- [isCompilation](xiphcomment.md#iscompilation)
+- [isEmpty](xiphcomment.md#isempty)
+- [isrc](xiphcomment.md#isrc)
+- [joinedAlbumArtists](xiphcomment.md#joinedalbumartists)
+- [joinedComposers](xiphcomment.md#joinedcomposers)
+- [joinedGenres](xiphcomment.md#joinedgenres)
+- [joinedPerformers](xiphcomment.md#joinedperformers)
+- [joinedPerformersSort](xiphcomment.md#joinedperformerssort)
+- [lyrics](xiphcomment.md#lyrics)
+- [musicBrainzArtistId](xiphcomment.md#musicbrainzartistid)
+- [musicBrainzDiscId](xiphcomment.md#musicbrainzdiscid)
+- [musicBrainzReleaseArtistId](xiphcomment.md#musicbrainzreleaseartistid)
+- [musicBrainzReleaseCountry](xiphcomment.md#musicbrainzreleasecountry)
+- [musicBrainzReleaseGroupId](xiphcomment.md#musicbrainzreleasegroupid)
+- [musicBrainzReleaseId](xiphcomment.md#musicbrainzreleaseid)
+- [musicBrainzReleaseStatus](xiphcomment.md#musicbrainzreleasestatus)
+- [musicBrainzReleaseType](xiphcomment.md#musicbrainzreleasetype)
+- [musicBrainzTrackId](xiphcomment.md#musicbrainztrackid)
+- [musicIpId](xiphcomment.md#musicipid)
+- [performers](xiphcomment.md#performers)
+- [performersRole](xiphcomment.md#performersrole)
+- [performersSort](xiphcomment.md#performerssort)
+- [pictures](xiphcomment.md#pictures)
+- [publisher](xiphcomment.md#publisher)
+- [remixedBy](xiphcomment.md#remixedby)
+- [replayGainAlbumGain](xiphcomment.md#replaygainalbumgain)
+- [replayGainAlbumPeak](xiphcomment.md#replaygainalbumpeak)
+- [replayGainTrackGain](xiphcomment.md#replaygaintrackgain)
+- [replayGainTrackPeak](xiphcomment.md#replaygaintrackpeak)
+- [sizeOnDisk](xiphcomment.md#sizeondisk)
+- [subtitle](xiphcomment.md#subtitle)
+- [tagTypes](xiphcomment.md#tagtypes)
+- [title](xiphcomment.md#title)
+- [titleSort](xiphcomment.md#titlesort)
+- [track](xiphcomment.md#track)
+- [trackCount](xiphcomment.md#trackcount)
+- [vendorId](xiphcomment.md#vendorid)
+- [year](xiphcomment.md#year)
 
 ### Methods
 
-- [addFrame](id3v2tag.md#addframe)
-- [clear](id3v2tag.md#clear)
-- [copyTo](id3v2tag.md#copyto)
-- [getFramesByClassType](id3v2tag.md#getframesbyclasstype)
-- [getFramesByIdentifier](id3v2tag.md#getframesbyidentifier)
-- [getTextAsString](id3v2tag.md#gettextasstring)
-- [parse](id3v2tag.md#parse)
-- [readFromEnd](id3v2tag.md#readfromend)
-- [readFromStart](id3v2tag.md#readfromstart)
-- [removeFrame](id3v2tag.md#removeframe)
-- [removeFrames](id3v2tag.md#removeframes)
-- [render](id3v2tag.md#render)
-- [replaceFrame](id3v2tag.md#replaceframe)
-- [setInfoTag](id3v2tag.md#setinfotag)
-- [setNumberFrame](id3v2tag.md#setnumberframe)
-- [setTextFrame](id3v2tag.md#settextframe)
-- [firstInGroup](id3v2tag.md#firstingroup)
-- [fromData](id3v2tag.md#fromdata)
-- [fromEmpty](id3v2tag.md#fromempty)
-- [fromFileEnd](id3v2tag.md#fromfileend)
-- [fromFileStart](id3v2tag.md#fromfilestart)
-- [isFalsyOrLikeEmpty](id3v2tag.md#isfalsyorlikeempty)
-- [joinGroup](id3v2tag.md#joingroup)
-- [tagTypeFlagsToArray](id3v2tag.md#tagtypeflagstoarray)
+- [clear](xiphcomment.md#clear)
+- [copyTo](xiphcomment.md#copyto)
+- [getField](xiphcomment.md#getfield)
+- [getFieldFirstValue](xiphcomment.md#getfieldfirstvalue)
+- [removeField](xiphcomment.md#removefield)
+- [render](xiphcomment.md#render)
+- [setFieldAsStrings](xiphcomment.md#setfieldasstrings)
+- [setFieldAsUint](xiphcomment.md#setfieldasuint)
+- [setInfoTag](xiphcomment.md#setinfotag)
+- [firstInGroup](xiphcomment.md#firstingroup)
+- [fromData](xiphcomment.md#fromdata)
+- [fromEmpty](xiphcomment.md#fromempty)
+- [isFalsyOrLikeEmpty](xiphcomment.md#isfalsyorlikeempty)
+- [joinGroup](xiphcomment.md#joingroup)
+- [tagTypeFlagsToArray](xiphcomment.md#tagtypeflagstoarray)
 
 ## Accessors
 
@@ -115,7 +111,7 @@
 Gets the album of the media represented by the current instance. For video media, this
 represents the collection the video belongs to.
 
-**`inheritdoc`** TALB frame
+**`inheritdoc`** `ALBUM` field
 
 #### Returns
 
@@ -129,7 +125,7 @@ Album of the media represented by the current instance or `undefined` if no valu
 Gets the album of the media represented by the current instance. For video media, this
 represents the collection the video belongs to.
 
-**`inheritdoc`** TALB frame
+**`inheritdoc`** `ALBUM` field
 
 #### Parameters
 
@@ -153,7 +149,8 @@ ___
 Gets the band or artist who is credited credited in the creation of the entire album or
 collection containing the media described by the current instance.
 
-**`inheritdoc`** TSO2 frame
+**`inheritdoc`** `ALBUMARTIST` as per standard, though `ALBUM ARTIST` and `ENSEMBLE` will be
+    checked if `ALBUMARTIST` is not set.
 
 #### Returns
 
@@ -168,7 +165,7 @@ Band or artist credited with the creation of the entire album or collection
 Gets the band or artist who is credited credited in the creation of the entire album or
 collection containing the media described by the current instance.
 
-**`inheritdoc`** TSO2 frame
+**`inheritdoc`** `ALBUMARTIST`, as per the standard
 
 #### Parameters
 
@@ -193,7 +190,7 @@ ___
 Gets the sortable names of the bands/artists who are credited with creating the entire
 album or collection containing the media described by the current instance.
 
-**`inheritdoc`** TPE2 frame
+**`inheritdoc`** `ALBUMARTISTSORT` field
 
 #### Returns
 
@@ -208,7 +205,7 @@ Sortable names for the bands/artists are credited with the creation of the entir
 Gets the sortable names of the bands/artists who are credited with creating the entire
 album or collection containing the media described by the current instance.
 
-**`inheritdoc`** TPE2 frame
+**`inheritdoc`** `ALBUMARTISTSORT` field
 
 #### Parameters
 
@@ -232,7 +229,7 @@ ___
 
 Gets the sortable name of the album title of the media represented by the current instance.
 
-**`inheritdoc`** TSOA frame
+**`inheritdoc`** `ALBUMSORT` field
 
 #### Returns
 
@@ -245,7 +242,7 @@ Sortable name for the album title of the media or `undefined` if the value is no
 
 Gets the sortable name of the album title of the media represented by the current instance.
 
-**`inheritdoc`** TSOA frame
+**`inheritdoc`** `ALBUMSORT` field
 
 #### Parameters
 
@@ -268,7 +265,7 @@ ___
 
 Gets the Amazon ID of the media represented by the current instance.
 
-**`inheritdoc`** TXXX:ASIN
+**`inheritdoc`** `ASIN` field
 
 #### Returns
 
@@ -281,7 +278,7 @@ Amazon ID of the media represented by the current instance or `undefined` if no
 
 Gets the Amazon ID of the media represented by the current instance.
 
-**`inheritdoc`** TXXX:ASIN
+**`inheritdoc`** `ASIN` field
 
 #### Parameters
 
@@ -305,7 +302,10 @@ ___
 Gets the number of beats per minute in the audio of the media represented by the current
 instance.
 
-**`inheritdoc`** TBPM frame
+**`inheritdoc`** `TEMPO` field preferentially, BPM field is used as a fallback.
+
+**`remarks`** The field that stores the value will be used when setting a BPM in the future. This
+    behavior can be controlled via {@link XiphSettings.useTempoToStoreBpm}.
 
 #### Returns
 
@@ -319,7 +319,11 @@ Beats per minute of the audio in the media represented by the current instance, 
 Gets the number of beats per minute in the audio of the media represented by the current
 instance.
 
-**`inheritdoc`** TBPM frame
+**`inheritdoc`**
+
+**`remarks`** Value is stored via `TEMPO` field if {@link XiphSettings.useTempoToStoreBpm} is
+    `true`. Value is stored via `BPM` if {@link XiphSettings.useTempoToStoreBpm} is `false`.
+    The other field is removed when stored.
 
 #### Parameters
 
@@ -342,7 +346,7 @@ ___
 
 Gets a user comment on the media represented by the current instance.
 
-**`inheritdoc`** COMM frame
+**`inheritdoc`** `COMMENT` field
 
 #### Returns
 
@@ -355,7 +359,7 @@ User comments on the media represented by the current instance or `undefined` if
 
 Gets a user comment on the media represented by the current instance.
 
-**`inheritdoc`** COMM frame
+**`inheritdoc`** `COMMENT` field
 
 #### Parameters
 
@@ -378,7 +382,7 @@ ___
 
 Gets the composers of the media represented by the current instance.
 
-**`inheritdoc`** TCOM frame
+**`inheritdoc`** `COMPOSER` field
 
 #### Returns
 
@@ -391,7 +395,7 @@ Composers of the media represented by the current instance of an empty array if 
 
 Gets the composers of the media represented by the current instance.
 
-**`inheritdoc`** TCOM frame
+**`inheritdoc`** `COMPOSER` field
 
 #### Parameters
 
@@ -414,7 +418,7 @@ ___
 
 Gets the sortable names of the composers of the media represented by the current instance.
 
-**`inheritdoc`** TSOC frame
+**`inheritdoc`** `COMPOSERSORT` field
 
 #### Returns
 
@@ -427,7 +431,7 @@ Sortable names for the composers of the media represented by the current instanc
 
 Gets the sortable names of the composers of the media represented by the current instance.
 
-**`inheritdoc`** TSOC frame
+**`inheritdoc`** `COMPOSERSORT` field
 
 #### Parameters
 
@@ -450,7 +454,7 @@ ___
 
 Gets the conductor or director of the media represented by the current instance.
 
-**`inheritdoc`** TPE3 frame
+**`inheritdoc`** `CONDUCTOR` field
 
 #### Returns
 
@@ -463,7 +467,7 @@ Conductor or director of the media represented by the current instance or
 
 Gets the conductor or director of the media represented by the current instance.
 
-**`inheritdoc`** TPE3 frame
+**`inheritdoc`** `CONDUCTOR` field
 
 #### Parameters
 
@@ -486,7 +490,7 @@ ___
 
 Gets the copyright information for the media represented by the current instance.
 
-**`inheritdoc`** TCOP frame
+**`inheritdoc`** `COPYRIGHT` field
 
 #### Returns
 
@@ -499,7 +503,7 @@ Copyright information for the media represented by the current instance or
 
 Gets the copyright information for the media represented by the current instance.
 
-**`inheritdoc`** TCOP frame
+**`inheritdoc`** `GROUPING` field
 
 #### Parameters
 
@@ -522,7 +526,7 @@ ___
 
 Gets the date and time at which the tag has been written.
 
-**`inheritdoc`** TDTG frame
+**`inheritdoc`** `DATETAGGED` field
 
 #### Returns
 
@@ -534,7 +538,7 @@ Date/time at which the tag has been written, or `undefined` if no value is prese
 
 Gets the date and time at which the tag has been written.
 
-**`inheritdoc`** TDTG frame
+**`inheritdoc`** `DATETAGGED` field
 
 #### Parameters
 
@@ -558,7 +562,7 @@ Gets a short description of the media. For music, this could be the comment that
 made of his/her work. For a video, this should be a short summary of the story/plot, but
 generally no spoliers. This should give the impression of what to expect in the media.
 
-**`inheritdoc`** user text frame "description"
+**`inheritdoc`** `DESCRIPTION` field
 
 #### Returns
 
@@ -573,7 +577,7 @@ Gets a short description of the media. For music, this could be the comment that
 made of his/her work. For a video, this should be a short summary of the story/plot, but
 generally no spoliers. This should give the impression of what to expect in the media.
 
-**`inheritdoc`** user text frame "description"
+**`inheritdoc`** `DESCRIPTION` field
 
 #### Parameters
 
@@ -597,7 +601,7 @@ ___
 Gets the number of the disc containing the media represented by the current instance in the
 boxed set. For a series, this represents the season number.
 
-**`inheritdoc`** TPOS frame
+**`inheritdoc`** `DISCNUMBER` field
 
 #### Returns
 
@@ -611,7 +615,7 @@ Number of the disc or season of the media represented by the current instance in
 Gets the number of the disc containing the media represented by the current instance in the
 boxed set. For a series, this represents the season number.
 
-**`inheritdoc`** TPOS frame
+**`inheritdoc`** `DISCNUMBER` field
 
 #### Parameters
 
@@ -635,7 +639,8 @@ ___
 Gets the number of discs or seasons in the boxed set containing the media represented by the
 current instance.
 
-**`inheritdoc`** TPOS frame
+**`inheritdoc`** `DISCTOTAL` as per standard, but the denominator of `DISCNUMBER` is also
+    used if `DISCTOTAL` is not available.
 
 #### Returns
 
@@ -649,7 +654,7 @@ Number of discs or seasons in the boxed set containing the media represented by 
 Gets the number of discs or seasons in the boxed set containing the media represented by the
 current instance.
 
-**`inheritdoc`** TPOS frame
+**`inheritdoc`** `DISCTOTAL` field
 
 #### Parameters
 
@@ -666,11 +671,38 @@ Number of discs or seasons in the boxed set containing the media represented by 
 
 ___
 
+### fieldNames
+
+• `get` **fieldNames**(): `string`[]
+
+Gets the names of the fields currently stored in the list of fields, excluding the pictures.
+
+**`remarks`** This getter is useful for iterating over fields defined in this object in
+    conjunction with [getField](xiphcomment.md#getfield).
+
+#### Returns
+
+`string`[]
+
+___
+
+### fieldValueCount
+
+• `get` **fieldValueCount**(): `number`
+
+Gets the total number of values contained in the current instance, including the pictures.
+
+#### Returns
+
+`number`
+
+___
+
 ### firstAlbumArtist
 
 • `get` **firstAlbumArtist**(): `string`
 
-Gets the the first value contained in [albumArtists](id3v2tag.md#albumartists).
+Gets the the first value contained in [albumArtists](xiphcomment.md#albumartists).
 
 #### Returns
 
@@ -682,7 +714,7 @@ ___
 
 • `get` **firstAlbumArtistSort**(): `string`
 
-Gets the first value contained in [albumArtistsSort](id3v2tag.md#albumartistssort)
+Gets the first value contained in [albumArtistsSort](xiphcomment.md#albumartistssort)
 
 #### Returns
 
@@ -694,7 +726,7 @@ ___
 
 • `get` **firstComposer**(): `string`
 
-Gets the first value contained in [composers](id3v2tag.md#composers)
+Gets the first value contained in [composers](xiphcomment.md#composers)
 
 #### Returns
 
@@ -706,7 +738,7 @@ ___
 
 • `get` **firstComposerSort**(): `string`
 
-Gets the first value contained in [composersSort](id3v2tag.md#composerssort)
+Gets the first value contained in [composersSort](xiphcomment.md#composerssort)
 
 #### Returns
 
@@ -718,7 +750,7 @@ ___
 
 • `get` **firstGenre**(): `string`
 
-Gets the first value contained in [genres](id3v2tag.md#genres)
+Gets the first value contained in [genres](xiphcomment.md#genres)
 
 #### Returns
 
@@ -730,7 +762,7 @@ ___
 
 • `get` **firstPerformer**(): `string`
 
-Gets the first value contained in [performers](id3v2tag.md#performers)
+Gets the first value contained in [performers](xiphcomment.md#performers)
 
 #### Returns
 
@@ -742,49 +774,11 @@ ___
 
 • `get` **firstPerformerSort**(): `string`
 
-Gets the first value contained in [performersSort](id3v2tag.md#performerssort)
+Gets the first value contained in [performersSort](xiphcomment.md#performerssort)
 
 #### Returns
 
 `string`
-
-___
-
-### flags
-
-• `get` **flags**(): [`Id3v2TagHeaderFlags`](../enums/id3v2tagheaderflags.md)
-
-Gets the header flags applied to the current instance.
-
-#### Returns
-
-[`Id3v2TagHeaderFlags`](../enums/id3v2tagheaderflags.md)
-
-• `set` **flags**(`value`): `void`
-
-Sets the header flags applied to the current instance
-
-#### Parameters
-
-| Name | Type | Description |
-| :------ | :------ | :------ |
-| `value` | [`Id3v2TagHeaderFlags`](../enums/id3v2tagheaderflags.md) | Bitwise combined [Id3v2TagHeaderFlags](../enums/id3v2tagheaderflags.md) value containing flags applied to the     current instance. |
-
-#### Returns
-
-`void`
-
-___
-
-### frames
-
-• `get` **frames**(): [`Id3v2Frame`](id3v2frame.md)[]
-
-Gets all frames contained in the current instance.
-
-#### Returns
-
-[`Id3v2Frame`](id3v2frame.md)[]
 
 ___
 
@@ -794,7 +788,7 @@ ___
 
 Gets the genres of the media represented by the current instance.
 
-**`inheritdoc`** TCON frame
+**`inheritdoc`** `GENRE` field
 
 #### Returns
 
@@ -807,7 +801,7 @@ Genres of the media represented by the current instance or an empty array if no
 
 Gets the genres of the media represented by the current instance.
 
-**`inheritdoc`** TCON frame
+**`inheritdoc`** `GENRE` field
 
 #### Parameters
 
@@ -830,7 +824,7 @@ ___
 
 Gets the grouping on the album which the media in the current instance belongs to.
 
-**`inheritdoc`** TIT1 frame
+**`inheritdoc`** `GROUPING` field
 
 #### Returns
 
@@ -843,7 +837,7 @@ Grouping on the album which the media in the current instance belongs to or
 
 Gets the grouping on the album which the media in the current instance belongs to.
 
-**`inheritdoc`** TIT1 frame
+**`inheritdoc`** `GROUPING` field
 
 #### Parameters
 
@@ -866,7 +860,7 @@ ___
 
 Gets the initial key of the track.
 
-**`inheritdoc`** TKEY frame
+**`inheritdoc`** `INITIALKEY` field
 
 #### Returns
 
@@ -878,7 +872,7 @@ Initial key of the track or `undefined` if no value is set
 
 Gets the initial key of the track.
 
-**`inheritdoc`** TKEY frame
+**`inheritdoc`** `INITIALKEY` field
 
 #### Parameters
 
@@ -898,9 +892,7 @@ ___
 
 • `get` **isCompilation**(): `boolean`
 
-Gets whether or not the album described by the current instance is a compilation.
-This property is implemented using the TCMP Text Information Frame to provide support for a
-feature of the Apple iPod and iTunes products.
+**`inheritdoc`** `COMPILATION` field
 
 #### Returns
 
@@ -908,15 +900,13 @@ feature of the Apple iPod and iTunes products.
 
 • `set` **isCompilation**(`value`): `void`
 
-Gets whether or not the album described by the current instance is a compilation.
-This property is implemented using the TCMP Text Information Frame to provide support for a
-feature of the Apple iPod and iTunes products.
+**`inheritdoc`** `COMPILATION` field
 
 #### Parameters
 
-| Name | Type | Description |
-| :------ | :------ | :------ |
-| `value` | `boolean` | Whether or not the album described by the current instance is a compilation |
+| Name | Type |
+| :------ | :------ |
+| `value` | `boolean` |
 
 #### Returns
 
@@ -946,7 +936,7 @@ ___
 
 Gets the ISRC (International Standard Recording Code) of the track.
 
-**`inheritdoc`** TSRC frame
+**`inheritdoc`** `ISRC` field
 
 #### Returns
 
@@ -958,7 +948,7 @@ the ISRC of the track or `undefined` if no value is set
 
 Gets the ISRC (International Standard Recording Code) of the track.
 
-**`inheritdoc`** TSRC frame
+**`inheritdoc`** `ISRC` field
 
 #### Parameters
 
@@ -978,7 +968,7 @@ ___
 
 • `get` **joinedAlbumArtists**(): `string`
 
-Gets a semicolon and space separated string containing the values in [albumArtists](id3v2tag.md#albumartists)
+Gets a semicolon and space separated string containing the values in [albumArtists](xiphcomment.md#albumartists)
 
 #### Returns
 
@@ -990,7 +980,7 @@ ___
 
 • `get` **joinedComposers**(): `string`
 
-Gets a semicolon and space separated string containing the values in [composers](id3v2tag.md#composers)
+Gets a semicolon and space separated string containing the values in [composers](xiphcomment.md#composers)
 
 #### Returns
 
@@ -1002,7 +992,7 @@ ___
 
 • `get` **joinedGenres**(): `string`
 
-Gets a semicolon and space separated string containing the values in [genres](id3v2tag.md#genres)
+Gets a semicolon and space separated string containing the values in [genres](xiphcomment.md#genres)
 
 #### Returns
 
@@ -1014,7 +1004,7 @@ ___
 
 • `get` **joinedPerformers**(): `string`
 
-Gets a semicolon and space separated string containing the values in [performers](id3v2tag.md#performers)
+Gets a semicolon and space separated string containing the values in [performers](xiphcomment.md#performers)
 
 #### Returns
 
@@ -1026,7 +1016,7 @@ ___
 
 • `get` **joinedPerformersSort**(): `string`
 
-Gets a semicolon and space separated string containing the values in [performersSort](id3v2tag.md#performerssort)
+Gets a semicolon and space separated string containing the values in [performersSort](xiphcomment.md#performerssort)
 
 #### Returns
 
@@ -1040,7 +1030,7 @@ ___
 
 Gets the lyrics or script of the media represented by the current instance.
 
-**`inheritdoc`** USLT frame
+**`inheritdoc`** `LYRICS` field
 
 #### Returns
 
@@ -1053,7 +1043,7 @@ Lyrics or script of the media represented by the current instance or `undefined`
 
 Gets the lyrics or script of the media represented by the current instance.
 
-**`inheritdoc`** USLT frame
+**`inheritdoc`** `LYRICS` field
 
 #### Parameters
 
@@ -1076,7 +1066,7 @@ ___
 
 Gets the MusicBrainz artist ID of the media represented by the current instance.
 
-**`inheritdoc`** TXXX:MusicBrainz Artist Id frame
+**`inheritdoc`** `MUSICBRAINZ_ARTISTID` field
 
 #### Returns
 
@@ -1089,7 +1079,7 @@ MusicBrainz ArtistID of the media represented by the current instance or
 
 Gets the MusicBrainz artist ID of the media represented by the current instance.
 
-**`inheritdoc`** TXXX:MusicBrainz Artist Id frame
+**`inheritdoc`** `MUSICBRAINZ_ARTISTID` field
 
 #### Parameters
 
@@ -1112,7 +1102,7 @@ ___
 
 Gets the MusicBrainz disc ID of the media represented by the current instance.
 
-**`inheritdoc`** TXXX:MusicBrainz Disc Id frame
+**`inheritdoc`** `MUSICBRAINZ_DISCID` field
 
 #### Returns
 
@@ -1125,7 +1115,7 @@ MusicBrainz DiscID of the media represented by the current instance or `undefine
 
 Gets the MusicBrainz disc ID of the media represented by the current instance.
 
-**`inheritdoc`** TXXX:MusicBrainz Disc Id frame
+**`inheritdoc`** `MUSICBRAINZ_DISCID` field
 
 #### Parameters
 
@@ -1148,7 +1138,7 @@ ___
 
 Gets the MusicBrainz release artist ID of the media represented by the current instance.
 
-**`inheritdoc`** TXXX:MusicBrainz Album Artist Id frame
+**`inheritdoc`** `MUSICBRAINZ_ALBUMARTISTID` field
 
 #### Returns
 
@@ -1161,7 +1151,7 @@ MusicBrainz ReleaseArtistID of the media represented by the current instance or
 
 Gets the MusicBrainz release artist ID of the media represented by the current instance.
 
-**`inheritdoc`** TXXX:MusicBrainz Album Artist Id frame
+**`inheritdoc`** `MUSICBRAINZ_ALBUMARTISTID` field
 
 #### Parameters
 
@@ -1184,7 +1174,7 @@ ___
 
 Gets the MusicBrainz release country of the media represented by the current instance.
 
-**`inheritdoc`** TXXX:MusicBrainz Album Release Country frame
+**`inheritdoc`** `RELEASECOUNTRY` field
 
 #### Returns
 
@@ -1197,7 +1187,7 @@ MusicBrainz ReleaseCountry of the media represented by the current instance or
 
 Gets the MusicBrainz release country of the media represented by the current instance.
 
-**`inheritdoc`** TXXX:MusicBrainz Album Release Country frame
+**`inheritdoc`** `RELEASECOUNTRY` field
 
 #### Parameters
 
@@ -1220,7 +1210,7 @@ ___
 
 Gets the MusicBrainz release group ID of the media represented by the current instance.
 
-**`inheritdoc`** TXXX:MusicBrainz Release Group Id frame
+**`inheritdoc`** `MUSICBRAINZ_RELEASEGROUPID` field
 
 #### Returns
 
@@ -1233,7 +1223,7 @@ MusicBrainz ReleaseGroupID of the media represented by the current instance or
 
 Gets the MusicBrainz release group ID of the media represented by the current instance.
 
-**`inheritdoc`** TXXX:MusicBrainz Release Group Id frame
+**`inheritdoc`** `MUSICBRAINZ_RELEASEGROUPID` field
 
 #### Parameters
 
@@ -1256,7 +1246,7 @@ ___
 
 Gets the MusicBrainz release ID of the media represented by the current instance.
 
-**`inheritdoc`** TXXX:MusicBrainz Album Id frame
+**`inheritdoc`** `MUSICBRAINZ_ALBUMID` field
 
 #### Returns
 
@@ -1269,7 +1259,7 @@ MusicBrainz ReleaseID of the media represented by the current instance or
 
 Gets the MusicBrainz release ID of the media represented by the current instance.
 
-**`inheritdoc`** TXXX:MusicBrainz Album Id frame
+**`inheritdoc`** `MUSICBRAINZ_ALBUMID` field
 
 #### Parameters
 
@@ -1292,7 +1282,7 @@ ___
 
 Gets the MusicBrainz release status of the media represented by the current instance.
 
-**`inheritdoc`** TXXX:MusicBrainz Album Status frame
+**`inheritdoc`** `MUSICBRAINZ_ALBUMSTATUS` field
 
 #### Returns
 
@@ -1305,7 +1295,7 @@ MusicBrainz ReleaseStatus of the media represented by the current instance or
 
 Gets the MusicBrainz release status of the media represented by the current instance.
 
-**`inheritdoc`** TXXX:MusicBrainz Album Status frame
+**`inheritdoc`** `MUSICBRAINZ_ALBUMSTATUS` field
 
 #### Parameters
 
@@ -1328,7 +1318,7 @@ ___
 
 Gets the MusicBrainz release type of the media represented by the current instance.
 
-**`inheritdoc`** TXXX:MusicBrainz Album Type frame
+**`inheritdoc`** `MUSICBRAINZ_ALBUMTYPE` field
 
 #### Returns
 
@@ -1341,7 +1331,7 @@ MusicBrainz ReleaseType of the media represented by the current instance or
 
 Gets the MusicBrainz release type of the media represented by the current instance.
 
-**`inheritdoc`** TXXX:MusicBrainz Album Type frame
+**`inheritdoc`** `MUSICBRAINZ_ALBUMTYPE` field
 
 #### Parameters
 
@@ -1365,7 +1355,7 @@ ___
 Gets the MusicBrainz track ID of the media represented by the media represented by the
 current instance.
 
-**`inheritdoc`** UFID:http://musicbrainz.org frame
+**`inheritdoc`** `MUSICBRAINZ_TRACKID` field
 
 #### Returns
 
@@ -1379,7 +1369,7 @@ MusicBrainz TrackID of the media represented by the current instance or `undefin
 Gets the MusicBrainz track ID of the media represented by the media represented by the
 current instance.
 
-**`inheritdoc`** UFID:http://musicbrainz.org frame
+**`inheritdoc`** `MUSICBRAINZ_TRACKID` field
 
 #### Parameters
 
@@ -1402,7 +1392,7 @@ ___
 
 Gets the MusicIP PUID of the media represented by the current instance.
 
-**`inheritdoc`** TXXX:MusicIP PUID frame
+**`inheritdoc`** `MUSICIP_PUID` field
 
 #### Returns
 
@@ -1415,7 +1405,7 @@ MusicIP PUID of the media represented by the current instance or `undefined` if 
 
 Gets the MusicIP PUID of the media represented by the current instance.
 
-**`inheritdoc`** TXXX:MusicIP PUID frame
+**`inheritdoc`** `MUSICID_PUID` field
 
 #### Parameters
 
@@ -1438,7 +1428,7 @@ ___
 
 Gets the performers or artists who performed in the media described by the current instance.
 
-**`inheritdoc`** TPE1 frame
+**`inheritdoc`** `ARTIST` field
 
 #### Returns
 
@@ -1451,7 +1441,7 @@ Performers who performed in the media described by the current instance or an em
 
 Gets the performers or artists who performed in the media described by the current instance.
 
-**`inheritdoc`** TPE1 frame
+**`inheritdoc`** `ARTIST` field
 
 #### Parameters
 
@@ -1473,11 +1463,11 @@ ___
 • `get` **performersRole**(): `string`[]
 
 Gets the characters portrayed by an actor for a video or instruments played by a musician
-for music. This must match the [performers](id3v2tag.md#performers) array (for each person, correspond one/more
+for music. This must match the [performers](xiphcomment.md#performers) array (for each person, correspond one/more
 role). Several roles for the same artist/actor can be separated with semicolons. For
 example: "Bass; Backing Vocals; Vibraphone".
 
-**`inheritdoc`** TMCL frame
+**`inheritdoc`** `ARTISTROLE` field
 
 #### Returns
 
@@ -1489,11 +1479,11 @@ Array containing the roles played by the performers in the media described by th
 • `set` **performersRole**(`value`): `void`
 
 Gets the characters portrayed by an actor for a video or instruments played by a musician
-for music. This must match the [performers](id3v2tag.md#performers) array (for each person, correspond one/more
+for music. This must match the [performers](xiphcomment.md#performers) array (for each person, correspond one/more
 role). Several roles for the same artist/actor can be separated with semicolons. For
 example: "Bass; Backing Vocals; Vibraphone".
 
-**`inheritdoc`** TMCL frame
+**`inheritdoc`** `ARTISTROLE` field
 
 #### Parameters
 
@@ -1517,7 +1507,7 @@ ___
 Gets the sortable names of the performers or artists who performed in the media described by
 the current instance.
 
-**`inheritdoc`** TSOP frame
+**`inheritdoc`** `ARTISTSORT` field
 
 #### Returns
 
@@ -1531,7 +1521,7 @@ Sortable names for the performers who performed in the media described by the
 Gets the sortable names of the performers or artists who performed in the media described by
 the current instance.
 
-**`inheritdoc`** TSOP frame
+**`inheritdoc`** `ARTIST` field
 
 #### Parameters
 
@@ -1554,7 +1544,7 @@ ___
 
 Gets a collection of pictures associated with the media represented by the current instance.
 
-**`inheritdoc`** APIC frame
+**`inheritdoc`**
 
 #### Returns
 
@@ -1567,7 +1557,7 @@ Array containing a collection of pictures associated with the media represented 
 
 Gets a collection of pictures associated with the media represented by the current instance.
 
-**`inheritdoc`** APIC frame
+**`inheritdoc`**
 
 #### Parameters
 
@@ -1590,7 +1580,7 @@ ___
 
 Gets the publisher of the track.
 
-**`inheritdoc`** TPUB frame
+**`inheritdoc`** `ORGANIZATION` field
 
 #### Returns
 
@@ -1602,7 +1592,7 @@ Publisher of the track or `undefined` if no value is set
 
 Gets the publisher of the track.
 
-**`inheritdoc`** TPUB frame
+**`inheritdoc`** `ORGANIZATION` field
 
 #### Parameters
 
@@ -1624,7 +1614,7 @@ ___
 
 Gets the remixer of the track.
 
-**`inheritdoc`** TPE4 frame
+**`inheritdoc`** `REMIXEDBY` field
 
 #### Returns
 
@@ -1636,7 +1626,7 @@ Remixer of the track or `undefined` if no value is set
 
 Gets the remixer of the track.
 
-**`inheritdoc`** TPE4 frame
+**`inheritdoc`** `REMIXEDBY` field
 
 #### Parameters
 
@@ -1658,7 +1648,7 @@ ___
 
 Gets the ReplayGain album gain in dB.
 
-**`inheritdoc`** TXXX:REPLAYGAIN_ALBUM_GAIN frame
+**`inheritdoc`** `REPLAYGAIN_ALBUM_GAIN` field
 
 #### Returns
 
@@ -1670,7 +1660,7 @@ Album gain as per the ReplayGain specifications, in dB, or `NaN` if no value is 
 
 Gets the ReplayGain album gain in dB.
 
-**`inheritdoc`** TXXX:REPLAYGAIN_ALBUM_GAIN frame
+**`inheritdoc`** `REPLAYGAIN_ALBUM_GAIN` field
 
 #### Parameters
 
@@ -1692,7 +1682,7 @@ ___
 
 Gets the ReplayGain album peak sample.
 
-**`inheritdoc`** TXXX:REPLAYGAIN_ALBUM_PEAK frame
+**`inheritdoc`** `REPLAYGAIN_ALBUM_PEAK` field
 
 #### Returns
 
@@ -1704,7 +1694,7 @@ Album peak as per the ReplayGain specifications, or `NaN` if no value is set
 
 Gets the ReplayGain album peak sample.
 
-**`inheritdoc`** TXXX:REPLAYGAIN_ALBUM_PEAK frame
+**`inheritdoc`** `REPLAYGAIN_TRACK_PEAK` field
 
 #### Parameters
 
@@ -1726,7 +1716,7 @@ ___
 
 Gets the ReplayGain track gain in dB.
 
-**`inheritdoc`** TXXX:REPLAY_GAIN_TRACK_GAIN frame
+**`inheritdoc`** `REPLAYGAIN_TRACK_GAIN` field
 
 #### Returns
 
@@ -1738,7 +1728,7 @@ Track gain as per ReplayGain specifications, in dB, or `NaN` if no value is set
 
 Gets the ReplayGain track gain in dB.
 
-**`inheritdoc`** TXXX:REPLAY_GAIN_TRACK_GAIN frame
+**`inheritdoc`** `REPLAYGAIN_TRACK_GAIN` field
 
 #### Parameters
 
@@ -1760,7 +1750,7 @@ ___
 
 Gets the ReplayGain track peak sample.
 
-**`inheritdoc`** TXXX:REPLAYGAIN_TRACK_PEAK frame
+**`inheritdoc`** `REPLAYGAIN_TRACK_PEAK` field
 
 #### Returns
 
@@ -1772,7 +1762,7 @@ Track peak as per the ReplayGain specifications, or `NaN` if no value is set
 
 Gets the ReplayGain track peak sample.
 
-**`inheritdoc`** TXXX:REPLAYGAIN_TRACK_PEAK frame
+**`inheritdoc`** `REPLAYGAIN_TRACK_PEAK` field
 
 #### Parameters
 
@@ -1808,7 +1798,7 @@ ___
 
 Gets a description, one-line. It represents the tagline of the vide/music.
 
-**`inheritdoc`** TIT3 frame
+**`inheritdoc`** `SUBTITLE` field
 
 #### Returns
 
@@ -1821,7 +1811,7 @@ Subtitle of the media represented by the current instance or `undefined` if no
 
 Gets a description, one-line. It represents the tagline of the vide/music.
 
-**`inheritdoc`** TIT3 frame
+**`inheritdoc`** `SUBTITLE` field
 
 #### Parameters
 
@@ -1845,7 +1835,7 @@ ___
 Gets the tag types contained in the current instance. A bit wise combined [TagTypes](../enums/tagtypes.md)
 containing the tag types contained in the current instance.
 
-**`inheritdoc`**
+**`inheritdoc`** returns [TagTypes.Xiph](../enums/tagtypes.md#xiph)
 
 #### Returns
 
@@ -1859,7 +1849,7 @@ ___
 
 Gets the title for the media described by the current instance.
 
-**`inheritdoc`** TIT2 frame
+**`inheritdoc`** `TITLE` field
 
 #### Returns
 
@@ -1872,7 +1862,7 @@ Title of the media described by the current instance or `undefined` if no value 
 
 Gets the title for the media described by the current instance.
 
-**`inheritdoc`** TIT2 frame
+**`inheritdoc`** `TITLE` field
 
 #### Parameters
 
@@ -1895,7 +1885,7 @@ ___
 
 Gets the sortable name for the title of the media described by the current instance.
 
-**`inheritdoc`** TSOT frame
+**`inheritdoc`** `TITLESORT` field
 
 #### Returns
 
@@ -1908,7 +1898,7 @@ Sortable name of the media described by the current instance or `undefined` if n
 
 Gets the sortable name for the title of the media described by the current instance.
 
-**`inheritdoc`** TSOT frame
+**`inheritdoc`** `TITLESORT` field
 
 #### Parameters
 
@@ -1932,7 +1922,7 @@ ___
 Gets the position of the media represented by the current instance in its containing album
 or season (for a series).
 
-**`inheritdoc`** TRCK frame
+**`inheritdoc`** `TRACKNUMBER` field
 
 #### Returns
 
@@ -1946,7 +1936,7 @@ Position of the media represented by the current instance in its containing albu
 Gets the position of the media represented by the current instance in its containing album
 or season (for a series).
 
-**`inheritdoc`** TRCK frame
+**`inheritdoc`** `TRACKNUMBER` field
 
 #### Parameters
 
@@ -1970,7 +1960,8 @@ ___
 Gets the number of tracks in the album or the number of episodes in a series of the media
 represented by the current instance.
 
-**`inheritdoc`** TRCK frame
+**`inheritdoc`** `TRACKTOTAL` as per standard, but the denominator of `TRACKNUMBER` is also
+    used if `TRACKTOTAL` is not available.
 
 #### Returns
 
@@ -1984,7 +1975,7 @@ Number of tracks in the album or number of episodes in a series of the media
 Gets the number of tracks in the album or the number of episodes in a series of the media
 represented by the current instance.
 
-**`inheritdoc`** TRCK frame
+**`inheritdoc`** `TRACKNUMBER` field
 
 #### Parameters
 
@@ -2001,29 +1992,15 @@ Number of tracks in the album or number of episodes in a series of the media
 
 ___
 
-### version
+### vendorId
 
-• `get` **version**(): `number`
+• `get` **vendorId**(): `string`
 
-Gets the ID3v2 version for the current instance.
-
-#### Returns
-
-`number`
-
-• `set` **version**(`value`): `void`
-
-Sets the ID3v2 version for the current instance.
-
-#### Parameters
-
-| Name | Type | Description |
-| :------ | :------ | :------ |
-| `value` | `number` | ID3v2 version for the current instance. Must be 2, 3, or 4. |
+Gets the vendor ID for the current instance.
 
 #### Returns
 
-`void`
+`string`
 
 ___
 
@@ -2033,10 +2010,7 @@ ___
 
 Gets the year that the media represented by the current instance was recorded.
 
-**`inheritdoc`**
-If a TDRC frame exists, the year will be read from that. If a TDRC frame doesn't exist and a
-TYER or TYE frame exists, the year will be read from that. Failing both cases, 0 will be
-returned.
+**`inheritdoc`** `DATE` field
 
 #### Returns
 
@@ -2049,8 +2023,7 @@ Year that the media represented by the current instance was created or `0` if no
 
 Gets the year that the media represented by the current instance was recorded.
 
-**`inheritdoc`**
-NOTE: values >9999 will remove the frame
+**`inheritdoc`** `DATE` field
 
 #### Parameters
 
@@ -2065,53 +2038,7 @@ NOTE: values >9999 will remove the frame
 Year that the media represented by the current instance was created or `0` if no
     value is present.
 
-___
-
-### language
-
-• `Static` `get` **language**(): `string`
-
-Gets the ISO-639-2 language code to use when searching for and storing language specific
-values.
-
-#### Returns
-
-`string`
-
-• `Static` `set` **language**(`value`): `void`
-
-Gets the ISO-639-2 language code to use when searching for and storing language specific
-values.
-
-#### Parameters
-
-| Name | Type | Description |
-| :------ | :------ | :------ |
-| `value` | `string` | ISO-639-2 language code to use. If the language is unknown `"   "` is the     appropriate filler |
-
-#### Returns
-
-`void`
-
 ## Methods
-
-### addFrame
-
-▸ **addFrame**(`frame`): `void`
-
-Adds a frame to the current instance.
-
-#### Parameters
-
-| Name | Type | Description |
-| :------ | :------ | :------ |
-| `frame` | [`Id3v2Frame`](id3v2frame.md) | Frame to add to the current instance |
-
-#### Returns
-
-`void`
-
-___
 
 ### clear
 
@@ -2160,171 +2087,57 @@ Copies the values from the current instance to another [Tag](tag.md), optionally
 
 ___
 
-### getFramesByClassType
+### getField
 
-▸ **getFramesByClassType**<`TFrame`\>(`type`): `TFrame`[]
+▸ **getField**(`key`): `string`[]
 
-Gets all frames with a specific frame class type.
-NOTE: This diverges from the .NET implementation due to the inability to do type checking
-like in .NET (ie `x is y`). Instead type guards are added to each frame class which provides
-the same functionality.
-
-#### Type parameters
-
-| Name | Type |
-| :------ | :------ |
-| `TFrame` | extends [`Id3v2Frame`](id3v2frame.md)<`TFrame`\> |
+Gets the field data for a given field identifier.
 
 #### Parameters
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `type` | [`Id3v2FrameClassType`](../enums/id3v2frameclasstype.md) | Class type of the frame to find |
+| `key` | `string` | Field identifier to look up |
 
 #### Returns
 
-`TFrame`[]
+`string`[]
 
-TFrame[] Array of frames with the specified class type
+string[] Field data or undefined if the field cannot be found
 
 ___
 
-### getFramesByIdentifier
+### getFieldFirstValue
 
-▸ **getFramesByIdentifier**<`TFrame`\>(`type`, `ident`): `TFrame`[]
+▸ **getFieldFirstValue**(`key`): `string`
 
-Gets a list of frames with the specified identifier contained in the current instance.
-NOTE: This implementation deviates a bit from the original .NET implementation due to the
-inability to do `x is y` comparison by types in typescript without type guards.
-`type` is the type guard for differentiating frame types. If all frames are needed
-use [frames](id3v2tag.md#frames).
-
-#### Type parameters
-
-| Name | Type |
-| :------ | :------ |
-| `TFrame` | extends [`Id3v2Frame`](id3v2frame.md)<`TFrame`\> |
+Gets the first value in a field for a given field identifier.
 
 #### Parameters
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `type` | [`Id3v2FrameClassType`](../enums/id3v2frameclasstype.md) | Type of frame to return |
-| `ident` | [`Id3v2FrameIdentifier`](id3v2frameidentifier.md) | Identifier of the frame |
-
-#### Returns
-
-`TFrame`[]
-
-TFrame[] Array of frames with the desired frame identifier
-
-___
-
-### getTextAsString
-
-▸ **getTextAsString**(`ident`): `string`
-
-Gets the text value from a specified text information frame (or URL frame if that was
-specified).
-
-#### Parameters
-
-| Name | Type | Description |
-| :------ | :------ | :------ |
-| `ident` | [`Id3v2FrameIdentifier`](id3v2frameidentifier.md) | Frame identifier of the text information frame to get the value from |
+| `key` | `string` | Field identifier to look up |
 
 #### Returns
 
 `string`
 
-string Text of the specified frame, or `undefined` if no value was found
+string Field data or `undefined` if the field was notfound
 
 ___
 
-### parse
+### removeField
 
-▸ `Protected` **parse**(`data`, `file`, `position`, `style`): `void`
+▸ **removeField**(`key`): `void`
 
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `data` | [`ByteVector`](bytevector.md) |
-| `file` | [`File`](file.md) |
-| `position` | `number` |
-| `style` | [`ReadStyle`](../enums/readstyle.md) |
-
-#### Returns
-
-`void`
-
-___
-
-### readFromEnd
-
-▸ `Protected` **readFromEnd**(`file`, `position`, `style`): `void`
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `file` | [`File`](file.md) |
-| `position` | `number` |
-| `style` | [`ReadStyle`](../enums/readstyle.md) |
-
-#### Returns
-
-`void`
-
-___
-
-### readFromStart
-
-▸ `Protected` **readFromStart**(`file`, `position`, `style`): `void`
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `file` | [`File`](file.md) |
-| `position` | `number` |
-| `style` | [`ReadStyle`](../enums/readstyle.md) |
-
-#### Returns
-
-`void`
-
-___
-
-### removeFrame
-
-▸ **removeFrame**(`frame`): `void`
-
-Removes a specified frame from the current instance.
+Removes a field and all its values from the current instance.
 
 #### Parameters
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `frame` | [`Id3v2Frame`](id3v2frame.md) | Object to remove from the current instance |
-
-#### Returns
-
-`void`
-
-___
-
-### removeFrames
-
-▸ **removeFrames**(`ident`): `void`
-
-Removes all frames with a specified identifier from the current instance.
-
-#### Parameters
-
-| Name | Type | Description |
-| :------ | :------ | :------ |
-| `ident` | [`Id3v2FrameIdentifier`](id3v2frameidentifier.md) | Identifier of the frames to remove |
+| `key` | `string` | Field identifier to remove |
 
 #### Returns
 
@@ -2334,35 +2147,55 @@ ___
 
 ### render
 
-▸ **render**(): [`ByteVector`](bytevector.md)
+▸ **render**(`addFramingBit`): [`ByteVector`](bytevector.md)
 
-Renders the current instance as a raw ID3v2 tag.
-By default, tags will be rendered in the version they were loaded in and new tags using the
-version specified by [defaultVersion](id3v2settings.md#defaultversion). If [forceDefaultVersion](id3v2settings.md#forcedefaultversion) is `true`, all
-tags will be rendered using that version, except for tags with footers which must be in
-version 4.
-
-#### Returns
-
-[`ByteVector`](bytevector.md)
-
-ByteVector The rendered tag.
-
-___
-
-### replaceFrame
-
-▸ **replaceFrame**(`oldFrame`, `newFrame`): `void`
-
-Replaces an existing frame with a new one in the list contained in the current instance, or
-adds a new one if the existing one is not contained.
+Renders the current instance as a raw Xiph comment, optionally adding a framing bit.
 
 #### Parameters
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `oldFrame` | [`Id3v2Frame`](id3v2frame.md) | Object to be replaced |
-| `newFrame` | [`Id3v2Frame`](id3v2frame.md) | Object to replace `oldFrame` with |
+| `addFramingBit` | `boolean` | Whether or not to add a framing bit to the end of the content. |
+
+#### Returns
+
+[`ByteVector`](bytevector.md)
+
+___
+
+### setFieldAsStrings
+
+▸ **setFieldAsStrings**(`key`, ...`values`): `void`
+
+Sets the contents of a specified field to the provided strings. All values are trimmed and
+empty/undefined values are excluded.
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `key` | `string` | Field identifier to set |
+| `...values` | `string`[] | Values to store in the current instance |
+
+#### Returns
+
+`void`
+
+___
+
+### setFieldAsUint
+
+▸ **setFieldAsUint**(`key`, `value`, `minPlaces?`): `void`
+
+Sets the contents of a specified field to the provided number.
+
+#### Parameters
+
+| Name | Type | Default value | Description |
+| :------ | :------ | :------ | :------ |
+| `key` | `string` | `undefined` | Field identifier to set |
+| `value` | `number` | `undefined` | Value to store, must be a positive, 32-bit integer |
+| `minPlaces` | `number` | `1` | Number of places to include at a minimum, if the number has fewer places     than this, the value will be padded with zeroes. |
 
 #### Returns
 
@@ -2385,49 +2218,6 @@ Set the tags that represent the tagger software (node-taglib-sharp) itself.
 #### Inherited from
 
 [Tag](tag.md).[setInfoTag](tag.md#setinfotag)
-
-___
-
-### setNumberFrame
-
-▸ **setNumberFrame**(`ident`, `numerator`, `denominator`, `minPlaces?`): `void`
-
-Sets the numerical values for a specified text information frame.
-If both `numerator` and `denominator` are `0`, the frame will be removed
-from the tag. If `denominator` is zero, `numerator` will be stored by
-itself. Otherwise the values will be stored as `{numerator}/{denominator}`.
-
-#### Parameters
-
-| Name | Type | Default value | Description |
-| :------ | :------ | :------ | :------ |
-| `ident` | [`Id3v2FrameIdentifier`](id3v2frameidentifier.md) | `undefined` | Identity of the frame to set |
-| `numerator` | `number` | `undefined` | Value containing the top half of the fraction, or the number if     `denominator` is zero |
-| `denominator` | `number` | `undefined` | Value containing the bottom half of the fraction |
-| `minPlaces` | `number` | `1` | Minimum number of digits to use to display the `numerator`, if     the numerator has less than this number of digits, it will be filled with leading zeroes. |
-
-#### Returns
-
-`void`
-
-___
-
-### setTextFrame
-
-▸ **setTextFrame**(`ident`, ...`text`): `void`
-
-Sets the text for a specified text information frame.
-
-#### Parameters
-
-| Name | Type | Description |
-| :------ | :------ | :------ |
-| `ident` | [`Id3v2FrameIdentifier`](id3v2frameidentifier.md) | Identifier of the frame to set the data for |
-| `...text` | `string`[] | Text to set for the specified frame or `undefined`/`null`/`""` to remove all     frames with that identifier. |
-
-#### Returns
-
-`void`
 
 ___
 
@@ -2458,79 +2248,32 @@ ___
 
 ### fromData
 
-▸ `Static` **fromData**(`data`): [`Id3v2Tag`](id3v2tag.md)
+▸ `Static` **fromData**(`data`): [`XiphComment`](xiphcomment.md)
 
-Constructs and initializes a new Tag by reading the contents from a specified
-[ByteVector](bytevector.md) object.
+Constructs and initializes a new instance by reading the contents of a raw Xiph comment from
+a [ByteVector](bytevector.md) object.
 
 #### Parameters
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `data` | [`ByteVector`](bytevector.md) | Tag data to read into a tag object |
+| `data` | [`ByteVector`](bytevector.md) | Object containing a raw Xiph comment, cannot be falsey |
 
 #### Returns
 
-[`Id3v2Tag`](id3v2tag.md)
-
-Id3v2Tag Tag with the data from the byte vector read into it
+[`XiphComment`](xiphcomment.md)
 
 ___
 
 ### fromEmpty
 
-▸ `Static` **fromEmpty**(): [`Id3v2Tag`](id3v2tag.md)
+▸ `Static` **fromEmpty**(): [`XiphComment`](xiphcomment.md)
+
+Constructs and initializes a new instance with no contents.
 
 #### Returns
 
-[`Id3v2Tag`](id3v2tag.md)
-
-___
-
-### fromFileEnd
-
-▸ `Static` **fromFileEnd**(`file`, `position`, `style`): [`Id3v2Tag`](id3v2tag.md)
-
-Constructs and initializes a new Tag by reading the end of the tag first.
-
-**`remarks`** This method should only be used if reading tags at the end of a file. Only ID3v2.4
-    tags support a footer, which is required to use this method.
-
-#### Parameters
-
-| Name | Type | Description |
-| :------ | :------ | :------ |
-| `file` | [`File`](file.md) | File from which the contents of the new instance is to be read |
-| `position` | `number` | Offset into the file where the tag ends |
-| `style` | [`ReadStyle`](../enums/readstyle.md) | How the data is to be read into the current instance |
-
-#### Returns
-
-[`Id3v2Tag`](id3v2tag.md)
-
-___
-
-### fromFileStart
-
-▸ `Static` **fromFileStart**(`file`, `position`, `style`): [`Id3v2Tag`](id3v2tag.md)
-
-Constructs and initializes a new Tag by reading the beginning of the tag.
-
-**`remarks`** This method is the most flexible way of reading ID3v2 tags.
-
-#### Parameters
-
-| Name | Type | Description |
-| :------ | :------ | :------ |
-| `file` | [`File`](file.md) | File from which the contents of the new instance is to be read |
-| `position` | `number` | Offset into the file where the tag begins |
-| `style` | [`ReadStyle`](../enums/readstyle.md) | How the data is to be read into the current instance |
-
-#### Returns
-
-[`Id3v2Tag`](id3v2tag.md)
-
-Id3v2Tag Tag with the data from the file read into it
+[`XiphComment`](xiphcomment.md)
 
 ___
 

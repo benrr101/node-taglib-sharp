@@ -236,6 +236,8 @@ ___
 Sets the length of the audio stream represented by the current instance.
 If this value has not been set, [durationMilliseconds](mpegaudioheader.md#durationmilliseconds) will return an incorrect value.
 
+**`internal`** This is intended to be set when the file is read.
+
 #### Parameters
 
 | Name | Type |
@@ -288,31 +290,24 @@ was found.
 
 ### find
 
-▸ `Static` **find**(`file`, `position`, `length?`): `Object`
+▸ `Static` **find**(`file`, `position`, `length?`): [`MpegAudioHeader`](mpegaudioheader.md)
 
 Searches for an audio header in a file starting at a specified position and searching
 through a specified number of bytes.
 
 #### Parameters
 
-| Name | Type | Default value | Description |
-| :------ | :------ | :------ | :------ |
-| `file` | [`File`](file.md) | `undefined` | File to search |
-| `position` | `number` | `undefined` | Position in `file` at which to start searching |
-| `length` | `number` | `-1` | Maximum number of bytes to search before giving up. Defaults to `-1` to     have no maximum |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `file` | [`File`](file.md) | File to search |
+| `position` | `number` | Position in `file` at which to start searching |
+| `length?` | `number` | Maximum number of bytes to search before giving up. Defaults to `-1` to     have no maximum |
 
 #### Returns
 
-`Object`
+[`MpegAudioHeader`](mpegaudioheader.md)
 
-    * `header` - the header that was found or [MpegAudioHeader.Unknown](mpegaudioheader.md#unknown) if a header was not
-        found
-    * `success` - whether or not a header was found
-
-| Name | Type |
-| :------ | :------ |
-| `header` | [`MpegAudioHeader`](mpegaudioheader.md) |
-| `success` | `boolean` |
+the header that was found or `undefined` if a header was not found
 
 ___
 

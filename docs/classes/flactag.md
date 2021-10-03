@@ -1,122 +1,130 @@
-[node-taglib-sharp](../README.md) / [Exports](../modules.md) / CombinedTag
+[node-taglib-sharp](../README.md) / [Exports](../modules.md) / FlacTag
 
-# Class: CombinedTag
+# Class: FlacTag
 
-This class provides a unified way of accessing tag data from multiple tag types.
+Collection of tags that can be stored in a FLAC file.
+
+**`remarks`** The FLAC file specification states that tagging should be done via a XIPH comment block
+    and any pictures should be stored in a FLAC picture block. However, tagging can be done via
+    ID3 and APE tags at the beginning or end of the file, same as MP3 and other files. This
+    class provides a unified access into all the tags a FLAC file may contain.
 
 ## Hierarchy
 
-- [`Tag`](tag.md)
+- [`CombinedTag`](combinedtag.md)
 
-  ↳ **`CombinedTag`**
-
-  ↳↳ [`FlacTag`](flactag.md)
+  ↳ **`FlacTag`**
 
 ## Table of contents
 
 ### Constructors
 
-- [constructor](combinedtag.md#constructor)
+- [constructor](flactag.md#constructor)
 
 ### Accessors
 
-- [album](combinedtag.md#album)
-- [albumArtists](combinedtag.md#albumartists)
-- [albumArtistsSort](combinedtag.md#albumartistssort)
-- [albumSort](combinedtag.md#albumsort)
-- [amazonId](combinedtag.md#amazonid)
-- [beatsPerMinute](combinedtag.md#beatsperminute)
-- [comment](combinedtag.md#comment)
-- [composers](combinedtag.md#composers)
-- [composersSort](combinedtag.md#composerssort)
-- [conductor](combinedtag.md#conductor)
-- [copyright](combinedtag.md#copyright)
-- [dateTagged](combinedtag.md#datetagged)
-- [description](combinedtag.md#description)
-- [disc](combinedtag.md#disc)
-- [discCount](combinedtag.md#disccount)
-- [firstAlbumArtist](combinedtag.md#firstalbumartist)
-- [firstAlbumArtistSort](combinedtag.md#firstalbumartistsort)
-- [firstComposer](combinedtag.md#firstcomposer)
-- [firstComposerSort](combinedtag.md#firstcomposersort)
-- [firstGenre](combinedtag.md#firstgenre)
-- [firstPerformer](combinedtag.md#firstperformer)
-- [firstPerformerSort](combinedtag.md#firstperformersort)
-- [genres](combinedtag.md#genres)
-- [grouping](combinedtag.md#grouping)
-- [initialKey](combinedtag.md#initialkey)
-- [isEmpty](combinedtag.md#isempty)
-- [isrc](combinedtag.md#isrc)
-- [joinedAlbumArtists](combinedtag.md#joinedalbumartists)
-- [joinedComposers](combinedtag.md#joinedcomposers)
-- [joinedGenres](combinedtag.md#joinedgenres)
-- [joinedPerformers](combinedtag.md#joinedperformers)
-- [joinedPerformersSort](combinedtag.md#joinedperformerssort)
-- [lyrics](combinedtag.md#lyrics)
-- [musicBrainzArtistId](combinedtag.md#musicbrainzartistid)
-- [musicBrainzDiscId](combinedtag.md#musicbrainzdiscid)
-- [musicBrainzReleaseArtistId](combinedtag.md#musicbrainzreleaseartistid)
-- [musicBrainzReleaseCountry](combinedtag.md#musicbrainzreleasecountry)
-- [musicBrainzReleaseGroupId](combinedtag.md#musicbrainzreleasegroupid)
-- [musicBrainzReleaseId](combinedtag.md#musicbrainzreleaseid)
-- [musicBrainzReleaseStatus](combinedtag.md#musicbrainzreleasestatus)
-- [musicBrainzReleaseType](combinedtag.md#musicbrainzreleasetype)
-- [musicBrainzTrackId](combinedtag.md#musicbrainztrackid)
-- [musicIpId](combinedtag.md#musicipid)
-- [performers](combinedtag.md#performers)
-- [performersRole](combinedtag.md#performersrole)
-- [performersSort](combinedtag.md#performerssort)
-- [pictures](combinedtag.md#pictures)
-- [publisher](combinedtag.md#publisher)
-- [remixedBy](combinedtag.md#remixedby)
-- [replayGainAlbumGain](combinedtag.md#replaygainalbumgain)
-- [replayGainAlbumPeak](combinedtag.md#replaygainalbumpeak)
-- [replayGainTrackGain](combinedtag.md#replaygaintrackgain)
-- [replayGainTrackPeak](combinedtag.md#replaygaintrackpeak)
-- [sizeOnDisk](combinedtag.md#sizeondisk)
-- [subtitle](combinedtag.md#subtitle)
-- [supportedTagTypes](combinedtag.md#supportedtagtypes)
-- [tagTypes](combinedtag.md#tagtypes)
-- [tags](combinedtag.md#tags)
-- [title](combinedtag.md#title)
-- [titleSort](combinedtag.md#titlesort)
-- [track](combinedtag.md#track)
-- [trackCount](combinedtag.md#trackcount)
-- [year](combinedtag.md#year)
+- [album](flactag.md#album)
+- [albumArtists](flactag.md#albumartists)
+- [albumArtistsSort](flactag.md#albumartistssort)
+- [albumSort](flactag.md#albumsort)
+- [amazonId](flactag.md#amazonid)
+- [beatsPerMinute](flactag.md#beatsperminute)
+- [comment](flactag.md#comment)
+- [composers](flactag.md#composers)
+- [composersSort](flactag.md#composerssort)
+- [conductor](flactag.md#conductor)
+- [copyright](flactag.md#copyright)
+- [dateTagged](flactag.md#datetagged)
+- [description](flactag.md#description)
+- [disc](flactag.md#disc)
+- [discCount](flactag.md#disccount)
+- [endTag](flactag.md#endtag)
+- [firstAlbumArtist](flactag.md#firstalbumartist)
+- [firstAlbumArtistSort](flactag.md#firstalbumartistsort)
+- [firstComposer](flactag.md#firstcomposer)
+- [firstComposerSort](flactag.md#firstcomposersort)
+- [firstGenre](flactag.md#firstgenre)
+- [firstPerformer](flactag.md#firstperformer)
+- [firstPerformerSort](flactag.md#firstperformersort)
+- [genres](flactag.md#genres)
+- [grouping](flactag.md#grouping)
+- [initialKey](flactag.md#initialkey)
+- [isEmpty](flactag.md#isempty)
+- [isrc](flactag.md#isrc)
+- [joinedAlbumArtists](flactag.md#joinedalbumartists)
+- [joinedComposers](flactag.md#joinedcomposers)
+- [joinedGenres](flactag.md#joinedgenres)
+- [joinedPerformers](flactag.md#joinedperformers)
+- [joinedPerformersSort](flactag.md#joinedperformerssort)
+- [lyrics](flactag.md#lyrics)
+- [musicBrainzArtistId](flactag.md#musicbrainzartistid)
+- [musicBrainzDiscId](flactag.md#musicbrainzdiscid)
+- [musicBrainzReleaseArtistId](flactag.md#musicbrainzreleaseartistid)
+- [musicBrainzReleaseCountry](flactag.md#musicbrainzreleasecountry)
+- [musicBrainzReleaseGroupId](flactag.md#musicbrainzreleasegroupid)
+- [musicBrainzReleaseId](flactag.md#musicbrainzreleaseid)
+- [musicBrainzReleaseStatus](flactag.md#musicbrainzreleasestatus)
+- [musicBrainzReleaseType](flactag.md#musicbrainzreleasetype)
+- [musicBrainzTrackId](flactag.md#musicbrainztrackid)
+- [musicIpId](flactag.md#musicipid)
+- [performers](flactag.md#performers)
+- [performersRole](flactag.md#performersrole)
+- [performersSort](flactag.md#performerssort)
+- [pictures](flactag.md#pictures)
+- [publisher](flactag.md#publisher)
+- [remixedBy](flactag.md#remixedby)
+- [replayGainAlbumGain](flactag.md#replaygainalbumgain)
+- [replayGainAlbumPeak](flactag.md#replaygainalbumpeak)
+- [replayGainTrackGain](flactag.md#replaygaintrackgain)
+- [replayGainTrackPeak](flactag.md#replaygaintrackpeak)
+- [sizeOnDisk](flactag.md#sizeondisk)
+- [startTag](flactag.md#starttag)
+- [subtitle](flactag.md#subtitle)
+- [supportedTagTypes](flactag.md#supportedtagtypes)
+- [tagTypes](flactag.md#tagtypes)
+- [tags](flactag.md#tags)
+- [title](flactag.md#title)
+- [titleSort](flactag.md#titlesort)
+- [track](flactag.md#track)
+- [trackCount](flactag.md#trackcount)
+- [xiphComment](flactag.md#xiphcomment)
+- [year](flactag.md#year)
 
 ### Methods
 
-- [addTag](combinedtag.md#addtag)
-- [clear](combinedtag.md#clear)
-- [copyTo](combinedtag.md#copyto)
-- [createTag](combinedtag.md#createtag)
-- [getTag](combinedtag.md#gettag)
-- [removeTags](combinedtag.md#removetags)
-- [setInfoTag](combinedtag.md#setinfotag)
-- [validateTagCreation](combinedtag.md#validatetagcreation)
-- [firstInGroup](combinedtag.md#firstingroup)
-- [isFalsyOrLikeEmpty](combinedtag.md#isfalsyorlikeempty)
-- [joinGroup](combinedtag.md#joingroup)
-- [tagTypeFlagsToArray](combinedtag.md#tagtypeflagstoarray)
+- [addTag](flactag.md#addtag)
+- [clear](flactag.md#clear)
+- [copyTo](flactag.md#copyto)
+- [createTag](flactag.md#createtag)
+- [getTag](flactag.md#gettag)
+- [removeTags](flactag.md#removetags)
+- [setInfoTag](flactag.md#setinfotag)
+- [validateTagCreation](flactag.md#validatetagcreation)
+- [firstInGroup](flactag.md#firstingroup)
+- [isFalsyOrLikeEmpty](flactag.md#isfalsyorlikeempty)
+- [joinGroup](flactag.md#joingroup)
+- [tagTypeFlagsToArray](flactag.md#tagtypeflagstoarray)
 
 ## Constructors
 
 ### constructor
 
-• `Protected` **new CombinedTag**(`supportedTagTypes`, `tags?`)
+• **new FlacTag**(`startTag`, `endTag`, `xiphTag`, `flacPictures`)
 
-Constructs and initializes a new instance of [CombinedTag](combinedtag.md).
+Constructs and initializes a new FLAC tag using the component tags provided.
 
 #### Parameters
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `supportedTagTypes` | [`TagTypes`](../enums/tagtypes.md) | Types of tags that are supported by this instance of the combined |
-| `tags?` | [`Tag`](tag.md)[] | Optionally, a list of tags to combine in the new instance. |
+| `startTag` | `default` | Required, collection of tags at the start of the file |
+| `endTag` | `default` | Required, collection of tags at the end of the file |
+| `xiphTag` | [`XiphComment`](xiphcomment.md) | Optional, Xiph comment tag from the FLAC file |
+| `flacPictures` | [`XiphPicture`](xiphpicture.md)[] | Optional, array of pictures found in the file |
 
 #### Overrides
 
-[Tag](tag.md).[constructor](tag.md#constructor)
+[CombinedTag](combinedtag.md).[constructor](combinedtag.md#constructor)
 
 ## Accessors
 
@@ -552,11 +560,23 @@ Sets the value on all child tags
 
 ___
 
+### endTag
+
+• `get` **endTag**(): `default`
+
+Gets the collection of tags appearing at the end of the file.
+
+#### Returns
+
+`default`
+
+___
+
 ### firstAlbumArtist
 
 • `get` **firstAlbumArtist**(): `string`
 
-Gets the the first value contained in [albumArtists](combinedtag.md#albumartists).
+Gets the the first value contained in [albumArtists](flactag.md#albumartists).
 
 #### Returns
 
@@ -568,7 +588,7 @@ ___
 
 • `get` **firstAlbumArtistSort**(): `string`
 
-Gets the first value contained in [albumArtistsSort](combinedtag.md#albumartistssort)
+Gets the first value contained in [albumArtistsSort](flactag.md#albumartistssort)
 
 #### Returns
 
@@ -580,7 +600,7 @@ ___
 
 • `get` **firstComposer**(): `string`
 
-Gets the first value contained in [composers](combinedtag.md#composers)
+Gets the first value contained in [composers](flactag.md#composers)
 
 #### Returns
 
@@ -592,7 +612,7 @@ ___
 
 • `get` **firstComposerSort**(): `string`
 
-Gets the first value contained in [composersSort](combinedtag.md#composerssort)
+Gets the first value contained in [composersSort](flactag.md#composerssort)
 
 #### Returns
 
@@ -604,7 +624,7 @@ ___
 
 • `get` **firstGenre**(): `string`
 
-Gets the first value contained in [genres](combinedtag.md#genres)
+Gets the first value contained in [genres](flactag.md#genres)
 
 #### Returns
 
@@ -616,7 +636,7 @@ ___
 
 • `get` **firstPerformer**(): `string`
 
-Gets the first value contained in [performers](combinedtag.md#performers)
+Gets the first value contained in [performers](flactag.md#performers)
 
 #### Returns
 
@@ -628,7 +648,7 @@ ___
 
 • `get` **firstPerformerSort**(): `string`
 
-Gets the first value contained in [performersSort](combinedtag.md#performerssort)
+Gets the first value contained in [performersSort](flactag.md#performerssort)
 
 #### Returns
 
@@ -767,7 +787,7 @@ ___
 
 • `get` **joinedAlbumArtists**(): `string`
 
-Gets a semicolon and space separated string containing the values in [albumArtists](combinedtag.md#albumartists)
+Gets a semicolon and space separated string containing the values in [albumArtists](flactag.md#albumartists)
 
 #### Returns
 
@@ -779,7 +799,7 @@ ___
 
 • `get` **joinedComposers**(): `string`
 
-Gets a semicolon and space separated string containing the values in [composers](combinedtag.md#composers)
+Gets a semicolon and space separated string containing the values in [composers](flactag.md#composers)
 
 #### Returns
 
@@ -791,7 +811,7 @@ ___
 
 • `get` **joinedGenres**(): `string`
 
-Gets a semicolon and space separated string containing the values in [genres](combinedtag.md#genres)
+Gets a semicolon and space separated string containing the values in [genres](flactag.md#genres)
 
 #### Returns
 
@@ -803,7 +823,7 @@ ___
 
 • `get` **joinedPerformers**(): `string`
 
-Gets a semicolon and space separated string containing the values in [performers](combinedtag.md#performers)
+Gets a semicolon and space separated string containing the values in [performers](flactag.md#performers)
 
 #### Returns
 
@@ -815,7 +835,7 @@ ___
 
 • `get` **joinedPerformersSort**(): `string`
 
-Gets a semicolon and space separated string containing the values in [performersSort](combinedtag.md#performerssort)
+Gets a semicolon and space separated string containing the values in [performersSort](flactag.md#performerssort)
 
 #### Returns
 
@@ -1164,7 +1184,7 @@ ___
 • `get` **performersRole**(): `string`[]
 
 Gets the characters for a video media, or instruments played for music media. This should
-match the [performers](combinedtag.md#performers) array (for each person correspond one/more role). Several roles
+match the [performers](flactag.md#performers) array (for each person correspond one/more role). Several roles
 for the same artist/actor can be made up with semicolons. For example, "Marty McFly; Marty
 McFly Jr.; Marlene McFly".
 Returns the first non-null/non-undefined value from the child tags.
@@ -1230,20 +1250,27 @@ ___
 Gets a collection of pictures associated with the media represented by the current instance.
 Returns the first non-null/non-undefined value from the child tags.
 
+**`inheritdoc`**
+For FLAC files, FLAC-style pictures are preferentially returned. If those don't exist the
+pictures that are stored in the
+
 #### Returns
 
 [`IPicture`](../interfaces/ipicture.md)[]
 
-• `set` **pictures**(`val`): `void`
+• `set` **pictures**(`value`): `void`
 
-Sets the collection of pictures associated with the current media.
-Sets the value on all child tags
+Gets a collection of pictures associated with the media represented by the current instance.
+Returns the first non-null/non-undefined value from the child tags.
+
+**`inheritdoc`**
+For FLAC files, pictures are preferentially stored in FLAC-style picture blocks.
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `val` | [`IPicture`](../interfaces/ipicture.md)[] |
+| `value` | [`IPicture`](../interfaces/ipicture.md)[] |
 
 #### Returns
 
@@ -1423,14 +1450,28 @@ ___
 
 • `get` **sizeOnDisk**(): `number`
 
+Gets the size of the tag in bytes on disk as it was read from disk.
+
 **`inheritdoc`**
 
-**`remarks`** Note that tags may not appear contiguously in a file. Access the [tags](combinedtag.md#tags)
+**`remarks`** Note that tags may not appear contiguously in a file. Access the [tags](flactag.md#tags)
     contained in this object to see the size of each tag on the disk.
 
 #### Returns
 
 `number`
+
+___
+
+### startTag
+
+• `get` **startTag**(): `default`
+
+Gets the collection of tags appearing at the start of the file.
+
+#### Returns
+
+`default`
 
 ___
 
@@ -1623,6 +1664,18 @@ Sets the value on all child tags
 
 ___
 
+### xiphComment
+
+• `get` **xiphComment**(): [`XiphComment`](xiphcomment.md)
+
+Gets the Xiph comment that is stored in the current instance.
+
+#### Returns
+
+[`XiphComment`](xiphcomment.md)
+
+___
+
 ### year
 
 • `get` **year**(): `number`
@@ -1666,6 +1719,10 @@ Sets the value on all child tags
 
 `void`
 
+#### Inherited from
+
+[CombinedTag](combinedtag.md).[addTag](combinedtag.md#addtag)
+
 ___
 
 ### clear
@@ -1682,7 +1739,7 @@ Clears all values stored in the current instance.
 
 #### Overrides
 
-[Tag](tag.md).[clear](tag.md#clear)
+[CombinedTag](combinedtag.md).[clear](combinedtag.md#clear)
 
 ___
 
@@ -1711,13 +1768,13 @@ Copies the values from the current instance to another [Tag](tag.md), optionally
 
 #### Inherited from
 
-[Tag](tag.md).[copyTo](tag.md#copyto)
+[CombinedTag](combinedtag.md).[copyTo](combinedtag.md#copyto)
 
 ___
 
 ### createTag
 
-▸ `Abstract` **createTag**(`tagType`, `copy`): [`Tag`](tag.md)
+▸ **createTag**(`tagType`, `copy`): [`Tag`](tag.md)
 
 Creates a new instance of the desired tag type and adds it to the current instance. If the
 tag type is unsupported in the current context or the tag type already exists, an error will
@@ -1735,6 +1792,10 @@ be thrown.
 [`Tag`](tag.md)
 
 Tag The newly created tag
+
+#### Overrides
+
+[CombinedTag](combinedtag.md).[createTag](combinedtag.md#createtag)
 
 ___
 
@@ -1762,6 +1823,10 @@ Gets a tag of the specified tag type if a matching tag exists in the current ins
 
 Tag Tag with specified type, if it exists. `undefined` otherwise.
 
+#### Inherited from
+
+[CombinedTag](combinedtag.md).[getTag](combinedtag.md#gettag)
+
 ___
 
 ### removeTags
@@ -1781,6 +1846,10 @@ Remove all tags that match the specified tagTypes. This is performed recursively
 
 `void`
 
+#### Overrides
+
+[CombinedTag](combinedtag.md).[removeTags](combinedtag.md#removetags)
+
 ___
 
 ### setInfoTag
@@ -1797,7 +1866,7 @@ Set the tags that represent the tagger software (node-taglib-sharp) itself.
 
 #### Inherited from
 
-[Tag](tag.md).[setInfoTag](tag.md#setinfotag)
+[CombinedTag](combinedtag.md).[setInfoTag](combinedtag.md#setinfotag)
 
 ___
 
@@ -1818,6 +1887,10 @@ Verifies if a tag can be added to the current instance. The criteria for validat
 #### Returns
 
 `void`
+
+#### Inherited from
+
+[CombinedTag](combinedtag.md).[validateTagCreation](combinedtag.md#validatetagcreation)
 
 ___
 
@@ -1842,7 +1915,7 @@ First string contained in `group` or `undefined` if the array is
 
 #### Inherited from
 
-[Tag](tag.md).[firstInGroup](tag.md#firstingroup)
+[CombinedTag](combinedtag.md).[firstInGroup](combinedtag.md#firstingroup)
 
 ___
 
@@ -1868,7 +1941,7 @@ If `value` is a string, `true` is returned if the value is falsy or all
 
 #### Inherited from
 
-[Tag](tag.md).[isFalsyOrLikeEmpty](tag.md#isfalsyorlikeempty)
+[CombinedTag](combinedtag.md).[isFalsyOrLikeEmpty](combinedtag.md#isfalsyorlikeempty)
 
 ___
 
@@ -1893,7 +1966,7 @@ A semicolon and space separated string containing the values from `group`
 
 #### Inherited from
 
-[Tag](tag.md).[joinGroup](tag.md#joingroup)
+[CombinedTag](combinedtag.md).[joinGroup](combinedtag.md#joingroup)
 
 ___
 
@@ -1913,4 +1986,4 @@ ___
 
 #### Inherited from
 
-[Tag](tag.md).[tagTypeFlagsToArray](tag.md#tagtypeflagstoarray)
+[CombinedTag](combinedtag.md).[tagTypeFlagsToArray](combinedtag.md#tagtypeflagstoarray)

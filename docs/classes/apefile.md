@@ -9,7 +9,7 @@ using the following method: `file.removeTags(file.tagTypes & ~file.tagTypesOnDis
 
 ## Hierarchy
 
-- `NonContainerFile`
+- `SandwichFile`
 
   ↳ **`ApeFile`**
 
@@ -23,8 +23,6 @@ using the following method: `file.removeTags(file.tagTypes & ~file.tagTypesOnDis
 
 - [\_fileAbstraction](apefile.md#_fileabstraction)
 - [\_fileStream](apefile.md#_filestream)
-- [\_invariantEndPosition](apefile.md#_invariantendposition)
-- [\_invariantStartPosition](apefile.md#_invariantstartposition)
 - [\_tagTypesOnDisk](apefile.md#_tagtypesondisk)
 
 ### Accessors
@@ -32,11 +30,11 @@ using the following method: `file.removeTags(file.tagTypes & ~file.tagTypesOnDis
 - [corruptionReasons](apefile.md#corruptionreasons)
 - [endTag](apefile.md#endtag)
 - [fileAbstraction](apefile.md#fileabstraction)
-- [invariantEndPosition](apefile.md#invariantendposition)
-- [invariantStartPosition](apefile.md#invariantstartposition)
 - [isPossiblyCorrupt](apefile.md#ispossiblycorrupt)
 - [isWritable](apefile.md#iswritable)
 - [length](apefile.md#length)
+- [mediaEndPosition](apefile.md#mediaendposition)
+- [mediaStartPosition](apefile.md#mediastartposition)
 - [mimeType](apefile.md#mimetype)
 - [mode](apefile.md#mode)
 - [name](apefile.md#name)
@@ -60,7 +58,6 @@ using the following method: `file.removeTags(file.tagTypes & ~file.tagTypesOnDis
 - [readBlock](apefile.md#readblock)
 - [readEnd](apefile.md#readend)
 - [readProperties](apefile.md#readproperties)
-- [readStart](apefile.md#readstart)
 - [removeBlock](apefile.md#removeblock)
 - [removeTags](apefile.md#removetags)
 - [save](apefile.md#save)
@@ -91,7 +88,7 @@ using the following method: `file.removeTags(file.tagTypes & ~file.tagTypesOnDis
 
 #### Overrides
 
-NonContainerFile.constructor
+SandwichFile.constructor
 
 ## Properties
 
@@ -101,7 +98,7 @@ NonContainerFile.constructor
 
 #### Inherited from
 
-NonContainerFile.\_fileAbstraction
+SandwichFile.\_fileAbstraction
 
 ___
 
@@ -111,27 +108,7 @@ ___
 
 #### Inherited from
 
-NonContainerFile.\_fileStream
-
-___
-
-### \_invariantEndPosition
-
-• `Protected` **\_invariantEndPosition**: `number` = `-1`
-
-#### Inherited from
-
-NonContainerFile.\_invariantEndPosition
-
-___
-
-### \_invariantStartPosition
-
-• `Protected` **\_invariantStartPosition**: `number` = `-1`
-
-#### Inherited from
-
-NonContainerFile.\_invariantStartPosition
+SandwichFile.\_fileStream
 
 ___
 
@@ -141,7 +118,7 @@ ___
 
 #### Inherited from
 
-NonContainerFile.\_tagTypesOnDisk
+SandwichFile.\_tagTypesOnDisk
 
 ## Accessors
 
@@ -181,32 +158,6 @@ Gets the {@link IFileAbstraction} representing the file.
 
 ___
 
-### invariantEndPosition
-
-• `get` **invariantEndPosition**(): `number`
-
-Gets the position at which the invariant (media) portion of the current instance ends. If
-the value could not be determined, `-1` is returned;
-
-#### Returns
-
-`number`
-
-___
-
-### invariantStartPosition
-
-• `get` **invariantStartPosition**(): `number`
-
-Gets the position at which the invariant (media) portion of the current instance begins. If
-the value could not be determined, `-1` is returned.
-
-#### Returns
-
-`number`
-
-___
-
 ### isPossiblyCorrupt
 
 • `get` **isPossiblyCorrupt**(): `boolean`
@@ -238,6 +189,30 @@ ___
 
 Gets the length of the file represented by the current instance. Value will be 0 if the file
 is not open for reading;
+
+#### Returns
+
+`number`
+
+___
+
+### mediaEndPosition
+
+• `get` **mediaEndPosition**(): `number`
+
+Gets the position at which the media content of this file ends.
+
+#### Returns
+
+`number`
+
+___
+
+### mediaStartPosition
+
+• `get` **mediaStartPosition**(): `number`
+
+Gets the position at which the media content of this file starts.
 
 #### Returns
 
@@ -394,7 +369,7 @@ Dispose the current instance. Equivalent to setting the mode to closed.
 
 #### Inherited from
 
-NonContainerFile.dispose
+SandwichFile.dispose
 
 ___
 
@@ -423,7 +398,7 @@ Index at which the value was found. If not found, `-1` is returned.
 
 #### Inherited from
 
-NonContainerFile.find
+SandwichFile.find
 
 ___
 
@@ -431,28 +406,22 @@ ___
 
 ▸ **getTag**(`type`, `create`): [`Tag`](tag.md)
 
-Gets a tag of a specified type from the current instance, optionally creating a new tag if
-possible. If an [Id3v2Tag](id3v2tag.md) is added to the current instance, it will be placed at the
-start of the file. On the other hand, [Id3v1Tag](id3v1tag.md) and [ApeTag](apetag.md) will be added to the
-end of the file. All other tag types will be ignored.
+**`inheritdoc`**
 
 #### Parameters
 
-| Name | Type | Description |
-| :------ | :------ | :------ |
-| `type` | [`TagTypes`](../enums/tagtypes.md) | Type of tag to create |
-| `create` | `boolean` | Whether or not to create a tag if one is not found |
+| Name | Type |
+| :------ | :------ |
+| `type` | [`TagTypes`](../enums/tagtypes.md) |
+| `create` | `boolean` |
 
 #### Returns
 
 [`Tag`](tag.md)
 
-Tag Tag that was found in or added to the current instance. If no matching tag was
-    found and none was created, `undefined` is returned.
+#### Inherited from
 
-#### Overrides
-
-NonContainerFile.getTag
+SandwichFile.getTag
 
 ___
 
@@ -480,7 +449,7 @@ specified location, replacing a specified number of bytes.
 
 #### Inherited from
 
-NonContainerFile.insert
+SandwichFile.insert
 
 ___
 
@@ -502,7 +471,7 @@ Mark the current instance as corrupt. NOTE: Not intended to be used outside of t
 
 #### Inherited from
 
-NonContainerFile.markAsCorrupt
+SandwichFile.markAsCorrupt
 
 ___
 
@@ -518,15 +487,15 @@ Prepares to save the file. This must be called at the beginning of every File.sa
 
 #### Inherited from
 
-NonContainerFile.preSave
+SandwichFile.preSave
 
 ___
 
 ### rFind
 
-▸ **rFind**(`pattern`, `startPosition?`, `after?`): `number`
+▸ **rFind**(`pattern`, `startPosition?`): `number`
 
-Searched backwards through a file for a specified pattern, starting at a specified offset.
+Searches backwards through a file for a specified pattern, starting at a specified offset.
 
 **`throws`** Error Thrown if `pattern` was not provided or if `startPosition` is
     not a safe, positive integer.
@@ -536,8 +505,7 @@ Searched backwards through a file for a specified pattern, starting at a specifi
 | Name | Type | Default value | Description |
 | :------ | :------ | :------ | :------ |
 | `pattern` | [`ByteVector`](bytevector.md) | `undefined` | Pattern to search for in the current instance. Must be shorter than the     [bufferSize](apefile.md#buffersize) |
-| `startPosition` | `number` | `0` | Seek position from which to start searching. |
-| `after?` | [`ByteVector`](bytevector.md) | `undefined` | Pattern that the searched for pattern must appear after. If this pattern is     found first, `-1` is returned. |
+| `startPosition` | `number` | `0` | Number of bytes from end of the file to begin searching. |
 
 #### Returns
 
@@ -547,7 +515,7 @@ Index at which the value wa found. If not found, `-1` is returned.
 
 #### Inherited from
 
-NonContainerFile.rFind
+SandwichFile.rFind
 
 ___
 
@@ -575,7 +543,7 @@ ByteVector Object containing the data read from the current instance.
 
 #### Inherited from
 
-NonContainerFile.readBlock
+SandwichFile.readBlock
 
 ___
 
@@ -596,15 +564,11 @@ ___
 
 `void`
 
-#### Overrides
-
-NonContainerFile.readEnd
-
 ___
 
 ### readProperties
 
-▸ `Protected` **readProperties**(`start`, `end`, `_propertiesStyle`): [`Properties`](properties.md)
+▸ `Protected` **readProperties**(`readStyle`): [`Properties`](properties.md)
 
 **`inheritdoc`**
 
@@ -612,9 +576,7 @@ ___
 
 | Name | Type |
 | :------ | :------ |
-| `start` | `number` |
-| `end` | `number` |
-| `_propertiesStyle` | [`ReadStyle`](../enums/readstyle.md) |
+| `readStyle` | [`ReadStyle`](../enums/readstyle.md) |
 
 #### Returns
 
@@ -622,30 +584,7 @@ ___
 
 #### Overrides
 
-NonContainerFile.readProperties
-
-___
-
-### readStart
-
-▸ `Protected` **readStart**(`start`, `propertiesStyle`): `void`
-
-**`inheritdoc`**
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `start` | `number` |
-| `propertiesStyle` | [`ReadStyle`](../enums/readstyle.md) |
-
-#### Returns
-
-`void`
-
-#### Overrides
-
-NonContainerFile.readStart
+SandwichFile.readProperties
 
 ___
 
@@ -671,7 +610,7 @@ Removes a specified block of data from the file represented by the current insta
 
 #### Inherited from
 
-NonContainerFile.removeBlock
+SandwichFile.removeBlock
 
 ___
 
@@ -693,7 +632,7 @@ ___
 
 #### Inherited from
 
-NonContainerFile.removeTags
+SandwichFile.removeTags
 
 ___
 
@@ -709,7 +648,7 @@ ___
 
 #### Inherited from
 
-NonContainerFile.save
+SandwichFile.save
 
 ___
 
@@ -733,7 +672,7 @@ specified origin.
 
 #### Inherited from
 
-NonContainerFile.seek
+SandwichFile.seek
 
 ___
 
@@ -755,7 +694,7 @@ Resizes the current instance to a specific number of bytes.
 
 #### Inherited from
 
-NonContainerFile.truncate
+SandwichFile.truncate
 
 ___
 
@@ -781,7 +720,7 @@ the file if writing past the current end.
 
 #### Inherited from
 
-NonContainerFile.writeBlock
+SandwichFile.writeBlock
 
 ___
 
@@ -806,7 +745,7 @@ with. Optionally, the MimeType can be forcefully overridden if it was already re
 
 #### Inherited from
 
-NonContainerFile.addFileType
+SandwichFile.addFileType
 
 ___
 
@@ -828,7 +767,7 @@ Registers a [FileTypeResolver](../modules.md#filetyperesolver) to the front of t
 
 #### Inherited from
 
-NonContainerFile.addFileTypeResolver
+SandwichFile.addFileTypeResolver
 
 ___
 
@@ -855,7 +794,7 @@ New instance of [File](file.md) as read from the specified abstraction.
 
 #### Inherited from
 
-NonContainerFile.createFromAbstraction
+SandwichFile.createFromAbstraction
 
 ___
 
@@ -882,7 +821,7 @@ New instance of [File](file.md) as read from the specified path.
 
 #### Inherited from
 
-NonContainerFile.createFromPath
+SandwichFile.createFromPath
 
 ___
 
@@ -904,7 +843,7 @@ Used for removing a file type constructor during unit testing
 
 #### Inherited from
 
-NonContainerFile.removeFileType
+SandwichFile.removeFileType
 
 ___
 
@@ -926,4 +865,4 @@ Used for removing a file type resolver during unit testing
 
 #### Inherited from
 
-NonContainerFile.removeFileTypeResolver
+SandwichFile.removeFileTypeResolver

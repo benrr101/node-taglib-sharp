@@ -58,6 +58,7 @@ Abstract class that provides support for reading/writing tags in the RIFF list f
 - [joinedGenres](rifflisttag.md#joinedgenres)
 - [joinedPerformers](rifflisttag.md#joinedperformers)
 - [joinedPerformersSort](rifflisttag.md#joinedperformerssort)
+- [list](rifflisttag.md#list)
 - [lyrics](rifflisttag.md#lyrics)
 - [musicBrainzArtistId](rifflisttag.md#musicbrainzartistid)
 - [musicBrainzDiscId](rifflisttag.md#musicbrainzdiscid)
@@ -79,6 +80,7 @@ Abstract class that provides support for reading/writing tags in the RIFF list f
 - [replayGainAlbumPeak](rifflisttag.md#replaygainalbumpeak)
 - [replayGainTrackGain](rifflisttag.md#replaygaintrackgain)
 - [replayGainTrackPeak](rifflisttag.md#replaygaintrackpeak)
+- [sizeOnDisk](rifflisttag.md#sizeondisk)
 - [stringType](rifflisttag.md#stringtype)
 - [subtitle](rifflisttag.md#subtitle)
 - [title](rifflisttag.md#title)
@@ -95,14 +97,8 @@ Abstract class that provides support for reading/writing tags in the RIFF list f
 - [getValueAsUint](rifflisttag.md#getvalueasuint)
 - [getValues](rifflisttag.md#getvalues)
 - [getValuesAsStrings](rifflisttag.md#getvaluesasstrings)
-- [initializeFromData](rifflisttag.md#initializefromdata)
-- [initializeFromEmpty](rifflisttag.md#initializefromempty)
-- [initializeFromFile](rifflisttag.md#initializefromfile)
-- [initializeFromList](rifflisttag.md#initializefromlist)
 - [removeValue](rifflisttag.md#removevalue)
 - [render](rifflisttag.md#render)
-- [renderEnclosed](rifflisttag.md#renderenclosed)
-- [renderEnclosedInternal](rifflisttag.md#renderenclosedinternal)
 - [setInfoTag](rifflisttag.md#setinfotag)
 - [setValueFromUint](rifflisttag.md#setvaluefromuint)
 - [setValues](rifflisttag.md#setvalues)
@@ -110,12 +106,19 @@ Abstract class that provides support for reading/writing tags in the RIFF list f
 - [firstInGroup](rifflisttag.md#firstingroup)
 - [isFalsyOrLikeEmpty](rifflisttag.md#isfalsyorlikeempty)
 - [joinGroup](rifflisttag.md#joingroup)
+- [tagTypeFlagsToArray](rifflisttag.md#tagtypeflagstoarray)
 
 ## Constructors
 
 ### constructor
 
-• `Protected` **new RiffListTag**()
+• `Protected` **new RiffListTag**(`list`)
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `list` | [`RiffList`](rifflist.md) |
 
 #### Overrides
 
@@ -1074,6 +1077,21 @@ Gets a semicolon and space separated string containing the values in [performers
 
 ___
 
+### list
+
+• `get` **list**(): [`RiffList`](rifflist.md)
+
+Gets the [RiffList](rifflist.md) that backs the data for this tag.
+
+**`remarks`** Tags based on RiffLists are only supposed to support certain fields. Modify at your
+    own risk.
+
+#### Returns
+
+[`RiffList`](rifflist.md)
+
+___
+
 ### lyrics
 
 • `get` **lyrics**(): `string`
@@ -1868,6 +1886,20 @@ Track peak as per the ReplayGain specifications, or `NaN` if no value is set
 
 ___
 
+### sizeOnDisk
+
+• `get` **sizeOnDisk**(): `number`
+
+Gets the size of the tag in bytes on disk as it was read from disk.
+
+**`inheritdoc`**
+
+#### Returns
+
+`number`
+
+___
+
 ### stringType
 
 • `get` **stringType**(): [`StringType`](../enums/stringtype.md)
@@ -2260,71 +2292,11 @@ Gets the values for a specified item in the current instance as strings.
 
 ___
 
-### initializeFromData
-
-▸ `Protected` **initializeFromData**(`data`): `void`
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `data` | [`ByteVector`](bytevector.md) |
-
-#### Returns
-
-`void`
-
-___
-
-### initializeFromEmpty
-
-▸ `Protected` **initializeFromEmpty**(): `void`
-
-#### Returns
-
-`void`
-
-___
-
-### initializeFromFile
-
-▸ `Protected` **initializeFromFile**(`file`, `position`, `length`): `void`
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `file` | [`File`](file.md) |
-| `position` | `number` |
-| `length` | `number` |
-
-#### Returns
-
-`void`
-
-___
-
-### initializeFromList
-
-▸ `Protected` **initializeFromList**(`fields`): `void`
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `fields` | [`RiffList`](rifflist.md) |
-
-#### Returns
-
-`void`
-
-___
-
 ### removeValue
 
 ▸ **removeValue**(`id`): `void`
 
-Removed the item with the specified ID from the current instance.
+Removes the item with the specified ID from the current instance.
 
 #### Parameters
 
@@ -2342,37 +2314,8 @@ ___
 
 ▸ **render**(): [`ByteVector`](bytevector.md)
 
-Renders the current instance as a raw RIFF list.
-
-#### Returns
-
-[`ByteVector`](bytevector.md)
-
-___
-
-### renderEnclosed
-
-▸ `Abstract` **renderEnclosed**(): [`ByteVector`](bytevector.md)
-
-Renders the current instance enclosed in the appropriate item.
-
-#### Returns
-
-[`ByteVector`](bytevector.md)
-
-___
-
-### renderEnclosedInternal
-
-▸ `Protected` **renderEnclosedInternal**(`id`): [`ByteVector`](bytevector.md)
-
-Renders the current instance enclosed in an item with a specified ID.
-
-#### Parameters
-
-| Name | Type | Description |
-| :------ | :------ | :------ |
-| `id` | `string` | ID of the item to enclose the current instance in when rendering |
+Renders the current instance, including list header and padding bytes, ready to be written
+to a file.
 
 #### Returns
 
@@ -2419,7 +2362,7 @@ ___
 
 ### setValues
 
-▸ **setValues**(`id`, ...`values`): `void`
+▸ **setValues**(`id`, `values`): `void`
 
 Sets the value for a specified item in the current instance
 
@@ -2428,7 +2371,7 @@ Sets the value for a specified item in the current instance
 | Name | Type | Description |
 | :------ | :------ | :------ |
 | `id` | `string` | ID of the item to set |
-| `...values` | [`ByteVector`](bytevector.md)[] | Values to store in the specified item |
+| `values` | [`ByteVector`](bytevector.md)[] | Values to store in the specified item |
 
 #### Returns
 
@@ -2438,7 +2381,7 @@ ___
 
 ### setValuesFromStrings
 
-▸ **setValuesFromStrings**(`id`, ...`values`): `void`
+▸ **setValuesFromStrings**(`id`, `values`): `void`
 
 Sets the value for a specified item in the current instance using a list of strings.
 
@@ -2447,7 +2390,7 @@ Sets the value for a specified item in the current instance using a list of stri
 | Name | Type | Description |
 | :------ | :------ | :------ |
 | `id` | `string` | ID of the item to set |
-| `...values` | `string`[] | Values to store in the specified item |
+| `values` | `string`[] | Values to store in the specified item |
 
 #### Returns
 
@@ -2528,3 +2471,23 @@ A semicolon and space separated string containing the values from `group`
 #### Inherited from
 
 [Tag](tag.md).[joinGroup](tag.md#joingroup)
+
+___
+
+### tagTypeFlagsToArray
+
+▸ `Static` **tagTypeFlagsToArray**(`tagTypes`): [`TagTypes`](../enums/tagtypes.md)[]
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `tagTypes` | [`TagTypes`](../enums/tagtypes.md) |
+
+#### Returns
+
+[`TagTypes`](../enums/tagtypes.md)[]
+
+#### Inherited from
+
+[Tag](tag.md).[tagTypeFlagsToArray](tag.md#tagtypeflagstoarray)

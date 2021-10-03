@@ -69,6 +69,7 @@ Provides a representation of an APEv2 tag which can be read from and written to 
 - [replayGainAlbumPeak](apetag.md#replaygainalbumpeak)
 - [replayGainTrackGain](apetag.md#replaygaintrackgain)
 - [replayGainTrackPeak](apetag.md#replaygaintrackpeak)
+- [sizeOnDisk](apetag.md#sizeondisk)
 - [subtitle](apetag.md#subtitle)
 - [tagTypes](apetag.md#tagtypes)
 - [title](apetag.md#title)
@@ -98,6 +99,7 @@ Provides a representation of an APEv2 tag which can be read from and written to 
 - [fromFile](apetag.md#fromfile)
 - [isFalsyOrLikeEmpty](apetag.md#isfalsyorlikeempty)
 - [joinGroup](apetag.md#joingroup)
+- [tagTypeFlagsToArray](apetag.md#tagtypeflagstoarray)
 
 ## Accessors
 
@@ -1739,6 +1741,20 @@ Track peak as per the ReplayGain specifications, or `NaN` if no value is set
 
 ___
 
+### sizeOnDisk
+
+• `get` **sizeOnDisk**(): `number`
+
+Gets the size of the tag in bytes on disk as it was read from disk.
+
+**`inheritdoc`**
+
+#### Returns
+
+`number`
+
+___
+
 ### subtitle
 
 • `get` **subtitle**(): `string`
@@ -2296,12 +2312,15 @@ ___
 Constructs a new instance by reading the contents from a specified position in a specified
 file.
 
+**`remarks`** If `position` points to the beginning of the tag footer, the footer will be read
+    and then the parser will backup and start reading from the beginning of the file.
+
 #### Parameters
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
 | `file` | [`File`](file.md) | File to read the tag from |
-| `position` | `number` | Position where the tag starts |
+| `position` | `number` | Position where the tag header or footer begins |
 
 #### Returns
 
@@ -2357,3 +2376,23 @@ A semicolon and space separated string containing the values from `group`
 #### Inherited from
 
 [Tag](tag.md).[joinGroup](tag.md#joingroup)
+
+___
+
+### tagTypeFlagsToArray
+
+▸ `Static` **tagTypeFlagsToArray**(`tagTypes`): [`TagTypes`](../enums/tagtypes.md)[]
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `tagTypes` | [`TagTypes`](../enums/tagtypes.md) |
+
+#### Returns
+
+[`TagTypes`](../enums/tagtypes.md)[]
+
+#### Inherited from
+
+[Tag](tag.md).[tagTypeFlagsToArray](tag.md#tagtypeflagstoarray)

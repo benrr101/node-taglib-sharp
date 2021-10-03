@@ -72,6 +72,7 @@ Extends [Tag](tag.md) to provide support for reading and writing tags stored in 
 - [replayGainAlbumPeak](id3v1tag.md#replaygainalbumpeak)
 - [replayGainTrackGain](id3v1tag.md#replaygaintrackgain)
 - [replayGainTrackPeak](id3v1tag.md#replaygaintrackpeak)
+- [sizeOnDisk](id3v1tag.md#sizeondisk)
 - [subtitle](id3v1tag.md#subtitle)
 - [tagTypes](id3v1tag.md#tagtypes)
 - [title](id3v1tag.md#title)
@@ -92,6 +93,7 @@ Extends [Tag](tag.md) to provide support for reading and writing tags stored in 
 - [fromFile](id3v1tag.md#fromfile)
 - [isFalsyOrLikeEmpty](id3v1tag.md#isfalsyorlikeempty)
 - [joinGroup](id3v1tag.md#joingroup)
+- [tagTypeFlagsToArray](id3v1tag.md#tagtypeflagstoarray)
 
 ## Properties
 
@@ -1817,6 +1819,20 @@ Track peak as per the ReplayGain specifications, or `NaN` if no value is set
 
 ___
 
+### sizeOnDisk
+
+• `get` **sizeOnDisk**(): `number`
+
+Gets the size of the tag in bytes on disk as it was read from disk.
+
+**`inheritdoc`**
+
+#### Returns
+
+`number`
+
+___
+
 ### subtitle
 
 • `get` **subtitle**(): `string`
@@ -1863,6 +1879,8 @@ ___
 
 Gets the tag types contained in the current instance. A bit wise combined [TagTypes](../enums/tagtypes.md)
 containing the tag types contained in the current instance.
+
+**`inheritdoc`**
 
 #### Returns
 
@@ -2260,3 +2278,23 @@ A semicolon and space separated string containing the values from `group`
 #### Inherited from
 
 [Tag](tag.md).[joinGroup](tag.md#joingroup)
+
+___
+
+### tagTypeFlagsToArray
+
+▸ `Static` **tagTypeFlagsToArray**(`tagTypes`): [`TagTypes`](../enums/tagtypes.md)[]
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `tagTypes` | [`TagTypes`](../enums/tagtypes.md) |
+
+#### Returns
+
+[`TagTypes`](../enums/tagtypes.md)[]
+
+#### Inherited from
+
+[Tag](tag.md).[tagTypeFlagsToArray](tag.md#tagtypeflagstoarray)
