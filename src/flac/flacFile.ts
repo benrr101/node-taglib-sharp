@@ -120,7 +120,7 @@ export default class FlacFile extends File implements ISandwichFile {
 
             // Step 1) Remove existing Xiph comment and picture blocks
             const blocksToRemove = [FlacBlockType.XiphComment, FlacBlockType.Picture, FlacBlockType.Padding];
-            this._metadataBlocks = this._metadataBlocks.filter((b) => blocksToRemove.indexOf(b.type) < -1 );
+            this._metadataBlocks = this._metadataBlocks.filter((b) => blocksToRemove.indexOf(b.type) < 0 );
 
             // Step 2) Generate blocks for the xiph comment and pictures
             if (this._tag.xiphComment) {
@@ -148,7 +148,7 @@ export default class FlacFile extends File implements ISandwichFile {
             let paddingLength: number;
             if (metadataBytes.length < oldMetadataLength) {
                 // Case 1: New metadata blocks are smaller than old ones. Use remaining space as padding
-                paddingLength = oldMetadataLength - metadataBytes.length;
+                paddingLength = oldMetadataLength - metadataBytes.length - FlacBlock.headerSize;
             } else {
                 // Case 2: New metadata block is bigger than (or equal to) old ones. Add standard padding
                 // @TODO: Allow configuring padding length
@@ -156,6 +156,7 @@ export default class FlacFile extends File implements ISandwichFile {
             }
 
             const paddingBlock = FlacBlock.fromData(FlacBlockType.Padding, ByteVector.fromSize(paddingLength));
+            this._metadataBlocks.push(paddingBlock);
             metadataBytes.addByteVector(paddingBlock.render(true));
 
             // Step 5) Write the metadata blocks to the file
@@ -178,7 +179,7 @@ export default class FlacFile extends File implements ISandwichFile {
             this._metadataBlocks.reduce((pos, b) => {
                 b.blockStart = pos;
                 return pos + b.totalSize;
-            }, this._mediaStartPosition);
+            }, this._mediaStartPosition + 4);
 
             this._tagTypesOnDisk = this.tagTypes;
 

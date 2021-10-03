@@ -616,7 +616,10 @@ export default class XiphComment extends Tag {
     /**
      * @inheritDoc
      */
-    public set pictures(value: IPicture[]) { this._pictures.splice(0, this._pictures.length, ...value); }
+    public set pictures(value: IPicture[]) {
+        value = value || [];
+        this._pictures.splice(0, this._pictures.length, ...value);
+    }
 
     /**
      * @inheritDoc via `COMPILATION` field

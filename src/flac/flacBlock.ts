@@ -183,6 +183,8 @@ export class FlacBlock implements ILazy {
      * @param isLastBlock Whether or not the block should be marked as the last metadata block.
      */
     public render(isLastBlock: boolean): ByteVector {
+        this.load();
+
         // One last sanity check before we render
         if (this._data.length > Math.pow(2, 24) - 1) {
             throw new Error("Invalid operation: FLAC block data cannot be larger than 2^24 bytes");
