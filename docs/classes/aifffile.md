@@ -18,8 +18,6 @@
 
 - [\_fileAbstraction](aifffile.md#_fileabstraction)
 - [\_fileStream](aifffile.md#_filestream)
-- [\_invariantEndPosition](aifffile.md#_invariantendposition)
-- [\_invariantStartPosition](aifffile.md#_invariantstartposition)
 - [\_tagTypesOnDisk](aifffile.md#_tagtypesondisk)
 - [aiffFormType](aifffile.md#aiffformtype)
 - [commIdentifier](aifffile.md#commidentifier)
@@ -31,8 +29,6 @@
 
 - [corruptionReasons](aifffile.md#corruptionreasons)
 - [fileAbstraction](aifffile.md#fileabstraction)
-- [invariantEndPosition](aifffile.md#invariantendposition)
-- [invariantStartPosition](aifffile.md#invariantstartposition)
 - [isPossiblyCorrupt](aifffile.md#ispossiblycorrupt)
 - [isWritable](aifffile.md#iswritable)
 - [length](aifffile.md#length)
@@ -111,26 +107,6 @@ ___
 
 ___
 
-### \_invariantEndPosition
-
-• `Protected` **\_invariantEndPosition**: `number` = `-1`
-
-#### Inherited from
-
-[File](file.md).[_invariantEndPosition](file.md#_invariantendposition)
-
-___
-
-### \_invariantStartPosition
-
-• `Protected` **\_invariantStartPosition**: `number` = `-1`
-
-#### Inherited from
-
-[File](file.md).[_invariantStartPosition](file.md#_invariantstartposition)
-
-___
-
 ### \_tagTypesOnDisk
 
 • `Protected` **\_tagTypesOnDisk**: [`TagTypes`](../enums/tagtypes.md)
@@ -202,32 +178,6 @@ Gets the {@link IFileAbstraction} representing the file.
 #### Returns
 
 `IFileAbstraction`
-
-___
-
-### invariantEndPosition
-
-• `get` **invariantEndPosition**(): `number`
-
-Gets the position at which the invariant (media) portion of the current instance ends. If
-the value could not be determined, `-1` is returned;
-
-#### Returns
-
-`number`
-
-___
-
-### invariantStartPosition
-
-• `get` **invariantStartPosition**(): `number`
-
-Gets the position at which the invariant (media) portion of the current instance begins. If
-the value could not be determined, `-1` is returned.
-
-#### Returns
-
-`number`
 
 ___
 
@@ -540,9 +490,9 @@ ___
 
 ### rFind
 
-▸ **rFind**(`pattern`, `startPosition?`, `after?`): `number`
+▸ **rFind**(`pattern`, `startPosition?`): `number`
 
-Searched backwards through a file for a specified pattern, starting at a specified offset.
+Searches backwards through a file for a specified pattern, starting at a specified offset.
 
 **`throws`** Error Thrown if `pattern` was not provided or if `startPosition` is
     not a safe, positive integer.
@@ -552,8 +502,7 @@ Searched backwards through a file for a specified pattern, starting at a specifi
 | Name | Type | Default value | Description |
 | :------ | :------ | :------ | :------ |
 | `pattern` | [`ByteVector`](bytevector.md) | `undefined` | Pattern to search for in the current instance. Must be shorter than the     [bufferSize](aifffile.md#buffersize) |
-| `startPosition` | `number` | `0` | Seek position from which to start searching. |
-| `after?` | [`ByteVector`](bytevector.md) | `undefined` | Pattern that the searched for pattern must appear after. If this pattern is     found first, `-1` is returned. |
+| `startPosition` | `number` | `0` | Number of bytes from end of the file to begin searching. |
 
 #### Returns
 

@@ -25,6 +25,8 @@ is stored by re-reading the property after it is set.
 
   ↳ [`RiffListTag`](rifflisttag.md)
 
+  ↳ [`XiphComment`](xiphcomment.md)
+
 ## Table of contents
 
 ### Constructors
@@ -90,6 +92,7 @@ is stored by re-reading the property after it is set.
 - [replayGainAlbumPeak](tag.md#replaygainalbumpeak)
 - [replayGainTrackGain](tag.md#replaygaintrackgain)
 - [replayGainTrackPeak](tag.md#replaygaintrackpeak)
+- [sizeOnDisk](tag.md#sizeondisk)
 - [subtitle](tag.md#subtitle)
 - [title](tag.md#title)
 - [titleSort](tag.md#titlesort)
@@ -105,6 +108,7 @@ is stored by re-reading the property after it is set.
 - [firstInGroup](tag.md#firstingroup)
 - [isFalsyOrLikeEmpty](tag.md#isfalsyorlikeempty)
 - [joinGroup](tag.md#joingroup)
+- [tagTypeFlagsToArray](tag.md#tagtypeflagstoarray)
 
 ## Constructors
 
@@ -1856,6 +1860,18 @@ Track peak as per the ReplayGain specifications, or `NaN` if no value is set
 
 ___
 
+### sizeOnDisk
+
+• `Abstract` `get` **sizeOnDisk**(): `number`
+
+Gets the size of the tag in bytes on disk as it was read from disk.
+
+#### Returns
+
+`number`
+
+___
+
 ### subtitle
 
 • `get` **subtitle**(): `string`
@@ -2214,3 +2230,19 @@ Joins an array of string into a single, semicolon and space separated string.
 
 A semicolon and space separated string containing the values from `group`
     or undefined if the array is `undefined` or empty.
+
+___
+
+### tagTypeFlagsToArray
+
+▸ `Static` **tagTypeFlagsToArray**(`tagTypes`): [`TagTypes`](../enums/tagtypes.md)[]
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `tagTypes` | [`TagTypes`](../enums/tagtypes.md) |
+
+#### Returns
+
+[`TagTypes`](../enums/tagtypes.md)[]

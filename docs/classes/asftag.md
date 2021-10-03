@@ -72,6 +72,7 @@ and written to disk.
 - [replayGainAlbumPeak](asftag.md#replaygainalbumpeak)
 - [replayGainTrackGain](asftag.md#replaygaintrackgain)
 - [replayGainTrackPeak](asftag.md#replaygaintrackpeak)
+- [sizeOnDisk](asftag.md#sizeondisk)
 - [subtitle](asftag.md#subtitle)
 - [tagTypes](asftag.md#tagtypes)
 - [title](asftag.md#title)
@@ -101,6 +102,7 @@ and written to disk.
 - [joinGroup](asftag.md#joingroup)
 - [pictureFromData](asftag.md#picturefromdata)
 - [pictureToData](asftag.md#picturetodata)
+- [tagTypeFlagsToArray](asftag.md#tagtypeflagstoarray)
 
 ## Accessors
 
@@ -1935,6 +1937,20 @@ Track peak as per the ReplayGain specifications, or `NaN` if no value is set
 
 ___
 
+### sizeOnDisk
+
+• `get` **sizeOnDisk**(): `number`
+
+Gets the size of the tag in bytes on disk as it was read from disk.
+
+**`inheritdoc`**
+
+#### Returns
+
+`number`
+
+___
+
 ### subtitle
 
 • `get` **subtitle**(): `string`
@@ -1983,6 +1999,8 @@ ___
 
 Gets the tag types contained in the current instance. A bit wise combined [TagTypes](../enums/tagtypes.md)
 containing the tag types contained in the current instance.
+
+**`inheritdoc`**
 
 #### Returns
 
@@ -2591,3 +2609,23 @@ ___
 #### Returns
 
 [`ByteVector`](bytevector.md)
+
+___
+
+### tagTypeFlagsToArray
+
+▸ `Static` **tagTypeFlagsToArray**(`tagTypes`): [`TagTypes`](../enums/tagtypes.md)[]
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `tagTypes` | [`TagTypes`](../enums/tagtypes.md) |
+
+#### Returns
+
+[`TagTypes`](../enums/tagtypes.md)[]
+
+#### Inherited from
+
+[Tag](tag.md).[tagTypeFlagsToArray](tag.md#tagtypeflagstoarray)

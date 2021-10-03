@@ -27,8 +27,10 @@
 ### Classes
 
 - [AacFile](classes/aacfile.md)
+- [AacFileSettings](classes/aacfilesettings.md)
 - [AiffFile](classes/aifffile.md)
 - [ApeFile](classes/apefile.md)
+- [ApeFileSettings](classes/apefilesettings.md)
 - [ApeTag](classes/apetag.md)
 - [AsfContentDescriptionObject](classes/asfcontentdescriptionobject.md)
 - [AsfContentDescriptor](classes/asfcontentdescriptor.md)
@@ -43,15 +45,16 @@
 - [AsfStreamPropertiesObject](classes/asfstreampropertiesobject.md)
 - [AsfTag](classes/asftag.md)
 - [AsfUnknownObject](classes/asfunknownobject.md)
-- [AviAudioStream](classes/aviaudiostream.md)
 - [AviStream](classes/avistream.md)
-- [AviStreamHeader](classes/avistreamheader.md)
-- [AviVideoStream](classes/avivideostream.md)
 - [ByteVector](classes/bytevector.md)
 - [CombinedTag](classes/combinedtag.md)
 - [CorruptFileError](classes/corruptfileerror.md)
 - [DivxTag](classes/divxtag.md)
 - [File](classes/file.md)
+- [FlacBlock](classes/flacblock.md)
+- [FlacFile](classes/flacfile.md)
+- [FlacFileSettings](classes/flacfilesettings.md)
+- [FlacTag](classes/flactag.md)
 - [Id3v1Tag](classes/id3v1tag.md)
 - [Id3v2AttachmentFrame](classes/id3v2attachmentframe.md)
 - [Id3v2CommentsFrame](classes/id3v2commentsframe.md)
@@ -86,7 +89,7 @@
 - [MovieIdTag](classes/movieidtag.md)
 - [MpegAudioFile](classes/mpegaudiofile.md)
 - [MpegAudioHeader](classes/mpegaudioheader.md)
-- [MpegContainerFile](classes/mpegfile.md)
+- [MpegContainerFile](classes/mpegcontainerfile.md)
 - [MpegVbriHeader](classes/mpegvbriheader.md)
 - [MpegVideoHeader](classes/mpegvideoheader.md)
 - [MpegXingHeader](classes/mpegxingheader.md)
@@ -100,6 +103,8 @@
 - [RiffListTag](classes/rifflisttag.md)
 - [RiffWaveFormatEx](classes/riffwaveformatex.md)
 - [Tag](classes/tag.md)
+- [XiphComment](classes/xiphcomment.md)
+- [XiphPicture](classes/xiphpicture.md)
 
 ### Interfaces
 

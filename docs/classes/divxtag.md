@@ -2,6 +2,8 @@
 
 # Class: DivxTag
 
+Represents a DivX tag that behaves similar to an ID3v1 tag.
+
 ## Hierarchy
 
 - [`Tag`](tag.md)
@@ -12,6 +14,7 @@
 
 ### Properties
 
+- [CHUNK\_FOURCC](divxtag.md#chunk_fourcc)
 - [FILE\_IDENTIFIER](divxtag.md#file_identifier)
 - [SIZE](divxtag.md#size)
 
@@ -70,6 +73,7 @@
 - [replayGainAlbumPeak](divxtag.md#replaygainalbumpeak)
 - [replayGainTrackGain](divxtag.md#replaygaintrackgain)
 - [replayGainTrackPeak](divxtag.md#replaygaintrackpeak)
+- [sizeOnDisk](divxtag.md#sizeondisk)
 - [subtitle](divxtag.md#subtitle)
 - [tagTypes](divxtag.md#tagtypes)
 - [title](divxtag.md#title)
@@ -87,11 +91,19 @@
 - [firstInGroup](divxtag.md#firstingroup)
 - [fromData](divxtag.md#fromdata)
 - [fromEmpty](divxtag.md#fromempty)
-- [fromFile](divxtag.md#fromfile)
 - [isFalsyOrLikeEmpty](divxtag.md#isfalsyorlikeempty)
 - [joinGroup](divxtag.md#joingroup)
+- [tagTypeFlagsToArray](divxtag.md#tagtypeflagstoarray)
 
 ## Properties
+
+### CHUNK\_FOURCC
+
+▪ `Static` `Readonly` **CHUNK\_FOURCC**: ``"IDVX"``
+
+FOURCC ID for a DivX tag chunk
+
+___
 
 ### FILE\_IDENTIFIER
 
@@ -1818,6 +1830,20 @@ Track peak as per the ReplayGain specifications, or `NaN` if no value is set
 
 ___
 
+### sizeOnDisk
+
+• `get` **sizeOnDisk**(): `number`
+
+Gets the size of the tag in bytes on disk as it was read from disk.
+
+**`inheritdoc`**
+
+#### Returns
+
+`number`
+
+___
+
 ### subtitle
 
 • `get` **subtitle**(): `string`
@@ -2200,26 +2226,6 @@ Constructs and initializes a new instance with no contents.
 
 ___
 
-### fromFile
-
-▸ `Static` **fromFile**(`file`, `position`): [`DivxTag`](divxtag.md)
-
-Constructs and initializes a new instance by reading the contents of the tag from a
-specified position in the provided file.
-
-#### Parameters
-
-| Name | Type | Description |
-| :------ | :------ | :------ |
-| `file` | [`File`](file.md) | File containing the tag |
-| `position` | `number` | Index into the file where the tag starts. Must be a safe, unsigned integer |
-
-#### Returns
-
-[`DivxTag`](divxtag.md)
-
-___
-
 ### isFalsyOrLikeEmpty
 
 ▸ `Static` `Protected` **isFalsyOrLikeEmpty**(`value`): `boolean`
@@ -2268,3 +2274,23 @@ A semicolon and space separated string containing the values from `group`
 #### Inherited from
 
 [Tag](tag.md).[joinGroup](tag.md#joingroup)
+
+___
+
+### tagTypeFlagsToArray
+
+▸ `Static` **tagTypeFlagsToArray**(`tagTypes`): [`TagTypes`](../enums/tagtypes.md)[]
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `tagTypes` | [`TagTypes`](../enums/tagtypes.md) |
+
+#### Returns
+
+[`TagTypes`](../enums/tagtypes.md)[]
+
+#### Inherited from
+
+[Tag](tag.md).[tagTypeFlagsToArray](tag.md#tagtypeflagstoarray)

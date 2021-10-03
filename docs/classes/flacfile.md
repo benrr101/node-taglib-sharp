@@ -1,85 +1,93 @@
-[node-taglib-sharp](../README.md) / [Exports](../modules.md) / RiffFile
+[node-taglib-sharp](../README.md) / [Exports](../modules.md) / FlacFile
 
-# Class: RiffFile
+# Class: FlacFile
 
-This class extends [File](file.md) to provide tagging and properties support for RIFF files. These
-are usually WAV and AVI file.
+This class extends [File](file.md) to provide tagging and properties for FLAC audio files.
 
-**`remarks`** The RIFF standard supports a general purpose "chunk" system that software can use for
-    whatever purpose. Tagging is accomplished using various types of chunks
+**`remarks`** A FLAC file is usually tagged using a Xiph comment block with pictures stored in
+    special FLAC picture blocks. Additionally, like many other file types, ID3v1, ID3v2, and APE
+    tags can be added to used to tag a FLAC file by storing them at the beginning or end of the
+    file. To control the type of tags that are created by default when opening the file, see
+    [FlacFileSettings](flacfilesettings.md).
 
 ## Hierarchy
 
 - [`File`](file.md)
 
-  ↳ **`RiffFile`**
+  ↳ **`FlacFile`**
+
+## Implements
+
+- `ISandwichFile`
 
 ## Table of contents
 
 ### Constructors
 
-- [constructor](rifffile.md#constructor)
+- [constructor](flacfile.md#constructor)
 
 ### Properties
 
-- [\_fileAbstraction](rifffile.md#_fileabstraction)
-- [\_fileStream](rifffile.md#_filestream)
-- [\_tagTypesOnDisk](rifffile.md#_tagtypesondisk)
-- [fileIdentifier](rifffile.md#fileidentifier)
+- [\_fileAbstraction](flacfile.md#_fileabstraction)
+- [\_fileStream](flacfile.md#_filestream)
+- [\_tagTypesOnDisk](flacfile.md#_tagtypesondisk)
+- [fileIdentifier](flacfile.md#fileidentifier)
 
 ### Accessors
 
-- [corruptionReasons](rifffile.md#corruptionreasons)
-- [fileAbstraction](rifffile.md#fileabstraction)
-- [isPossiblyCorrupt](rifffile.md#ispossiblycorrupt)
-- [isWritable](rifffile.md#iswritable)
-- [length](rifffile.md#length)
-- [mimeType](rifffile.md#mimetype)
-- [mode](rifffile.md#mode)
-- [name](rifffile.md#name)
-- [position](rifffile.md#position)
-- [properties](rifffile.md#properties)
-- [tag](rifffile.md#tag)
-- [tagTypes](rifffile.md#tagtypes)
-- [tagTypesOnDisk](rifffile.md#tagtypesondisk)
-- [bufferSize](rifffile.md#buffersize)
+- [corruptionReasons](flacfile.md#corruptionreasons)
+- [fileAbstraction](flacfile.md#fileabstraction)
+- [isPossiblyCorrupt](flacfile.md#ispossiblycorrupt)
+- [isWritable](flacfile.md#iswritable)
+- [length](flacfile.md#length)
+- [mediaEndPosition](flacfile.md#mediaendposition)
+- [mediaStartPosition](flacfile.md#mediastartposition)
+- [mimeType](flacfile.md#mimetype)
+- [mode](flacfile.md#mode)
+- [name](flacfile.md#name)
+- [position](flacfile.md#position)
+- [properties](flacfile.md#properties)
+- [tag](flacfile.md#tag)
+- [tagTypes](flacfile.md#tagtypes)
+- [tagTypesOnDisk](flacfile.md#tagtypesondisk)
+- [bufferSize](flacfile.md#buffersize)
 
 ### Methods
 
-- [dispose](rifffile.md#dispose)
-- [find](rifffile.md#find)
-- [getTag](rifffile.md#gettag)
-- [insert](rifffile.md#insert)
-- [markAsCorrupt](rifffile.md#markascorrupt)
-- [preSave](rifffile.md#presave)
-- [rFind](rifffile.md#rfind)
-- [readBlock](rifffile.md#readblock)
-- [removeBlock](rifffile.md#removeblock)
-- [removeTags](rifffile.md#removetags)
-- [save](rifffile.md#save)
-- [seek](rifffile.md#seek)
-- [truncate](rifffile.md#truncate)
-- [writeBlock](rifffile.md#writeblock)
-- [addFileType](rifffile.md#addfiletype)
-- [addFileTypeResolver](rifffile.md#addfiletyperesolver)
-- [createFromAbstraction](rifffile.md#createfromabstraction)
-- [createFromPath](rifffile.md#createfrompath)
-- [removeFileType](rifffile.md#removefiletype)
-- [removeFileTypeResolver](rifffile.md#removefiletyperesolver)
+- [dispose](flacfile.md#dispose)
+- [find](flacfile.md#find)
+- [getTag](flacfile.md#gettag)
+- [insert](flacfile.md#insert)
+- [markAsCorrupt](flacfile.md#markascorrupt)
+- [preSave](flacfile.md#presave)
+- [rFind](flacfile.md#rfind)
+- [readBlock](flacfile.md#readblock)
+- [removeBlock](flacfile.md#removeblock)
+- [removeTags](flacfile.md#removetags)
+- [save](flacfile.md#save)
+- [seek](flacfile.md#seek)
+- [truncate](flacfile.md#truncate)
+- [writeBlock](flacfile.md#writeblock)
+- [addFileType](flacfile.md#addfiletype)
+- [addFileTypeResolver](flacfile.md#addfiletyperesolver)
+- [createFromAbstraction](flacfile.md#createfromabstraction)
+- [createFromPath](flacfile.md#createfrompath)
+- [removeFileType](flacfile.md#removefiletype)
+- [removeFileTypeResolver](flacfile.md#removefiletyperesolver)
 
 ## Constructors
 
 ### constructor
 
-• **new RiffFile**(`file`, `propertiesStyle`)
+• **new FlacFile**(`file`, `propertiesStyle`)
 
-Constructs and initializes a new instance of a RIFF file based on the provided file/file path.
+Constructs and initializes a new instance of a FLAC file based on the provided file.
 
 #### Parameters
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `file` | `string` \| `IFileAbstraction` | File abstraction or path to a file to open as a RIFF file |
+| `file` | `string` \| `IFileAbstraction` | File abstraction or path to a file to open as a FLAC file |
 | `propertiesStyle` | [`ReadStyle`](../enums/readstyle.md) | How in-depth to read the properties of the file |
 
 #### Overrides
@@ -121,8 +129,6 @@ ___
 ### fileIdentifier
 
 ▪ `Static` `Readonly` **fileIdentifier**: [`ByteVector`](bytevector.md)
-
-Identifier at the beginning of a RIFF file.
 
 ## Accessors
 
@@ -181,6 +187,26 @@ ___
 
 Gets the length of the file represented by the current instance. Value will be 0 if the file
 is not open for reading;
+
+#### Returns
+
+`number`
+
+___
+
+### mediaEndPosition
+
+• `get` **mediaEndPosition**(): `number`
+
+#### Returns
+
+`number`
+
+___
+
+### mediaStartPosition
+
+• `get` **mediaStartPosition**(): `number`
 
 #### Returns
 
@@ -259,8 +285,6 @@ ___
 
 Gets the media properties of the file represented by the current instance.
 
-**`inheritdoc`**
-
 #### Returns
 
 [`Properties`](properties.md)
@@ -269,15 +293,13 @@ ___
 
 ### tag
 
-• `get` **tag**(): [`Tag`](tag.md)
+• `get` **tag**(): [`FlacTag`](flactag.md)
 
 Gets an abstract representation of all tags stored in the current instance.
 
-**`inheritdoc`**
-
 #### Returns
 
-[`Tag`](tag.md)
+[`FlacTag`](flactag.md)
 
 ___
 
@@ -470,7 +492,7 @@ Searches backwards through a file for a specified pattern, starting at a specifi
 
 | Name | Type | Default value | Description |
 | :------ | :------ | :------ | :------ |
-| `pattern` | [`ByteVector`](bytevector.md) | `undefined` | Pattern to search for in the current instance. Must be shorter than the     [bufferSize](rifffile.md#buffersize) |
+| `pattern` | [`ByteVector`](bytevector.md) | `undefined` | Pattern to search for in the current instance. Must be shorter than the     [bufferSize](flacfile.md#buffersize) |
 | `startPosition` | `number` | `0` | Number of bytes from end of the file to begin searching. |
 
 #### Returns

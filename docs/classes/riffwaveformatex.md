@@ -18,6 +18,7 @@ https://docs.microsoft.com/en-us/previous-versions/dd757713(v=vs.85)
 
 ### Properties
 
+- [CHUNK\_FOURCC](riffwaveformatex.md#chunk_fourcc)
 - [WAVE\_FORMAT\_TAGS](riffwaveformatex.md#wave_format_tags)
 
 ### Accessors
@@ -37,7 +38,7 @@ https://docs.microsoft.com/en-us/previous-versions/dd757713(v=vs.85)
 
 ### constructor
 
-• **new RiffWaveFormatEx**(`data`, `offset`)
+• **new RiffWaveFormatEx**(`data`)
 
 Constructs and initializes a new instance of a RIFF wave format header from the provided
 data.
@@ -47,9 +48,14 @@ data.
 | Name | Type | Description |
 | :------ | :------ | :------ |
 | `data` | [`ByteVector`](bytevector.md) | Byte vector that contains the raw header |
-| `offset` | `number` | Index into the data byte vector where the header begins |
 
 ## Properties
+
+### CHUNK\_FOURCC
+
+▪ `Static` `Readonly` **CHUNK\_FOURCC**: ``"fmt "``
+
+___
 
 ### WAVE\_FORMAT\_TAGS
 

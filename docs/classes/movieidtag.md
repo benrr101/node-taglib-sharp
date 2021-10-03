@@ -12,6 +12,10 @@ Provides support for reading and writing MovieID tags.
 
 ## Table of contents
 
+### Properties
+
+- [listType](movieidtag.md#listtype)
+
 ### Accessors
 
 - [album](movieidtag.md#album)
@@ -46,6 +50,7 @@ Provides support for reading and writing MovieID tags.
 - [joinedGenres](movieidtag.md#joinedgenres)
 - [joinedPerformers](movieidtag.md#joinedperformers)
 - [joinedPerformersSort](movieidtag.md#joinedperformerssort)
+- [list](movieidtag.md#list)
 - [lyrics](movieidtag.md#lyrics)
 - [musicBrainzArtistId](movieidtag.md#musicbrainzartistid)
 - [musicBrainzDiscId](movieidtag.md#musicbrainzdiscid)
@@ -67,6 +72,7 @@ Provides support for reading and writing MovieID tags.
 - [replayGainAlbumPeak](movieidtag.md#replaygainalbumpeak)
 - [replayGainTrackGain](movieidtag.md#replaygaintrackgain)
 - [replayGainTrackPeak](movieidtag.md#replaygaintrackpeak)
+- [sizeOnDisk](movieidtag.md#sizeondisk)
 - [stringType](movieidtag.md#stringtype)
 - [subtitle](movieidtag.md#subtitle)
 - [tagTypes](movieidtag.md#tagtypes)
@@ -84,24 +90,24 @@ Provides support for reading and writing MovieID tags.
 - [getValueAsUint](movieidtag.md#getvalueasuint)
 - [getValues](movieidtag.md#getvalues)
 - [getValuesAsStrings](movieidtag.md#getvaluesasstrings)
-- [initializeFromData](movieidtag.md#initializefromdata)
-- [initializeFromEmpty](movieidtag.md#initializefromempty)
-- [initializeFromFile](movieidtag.md#initializefromfile)
-- [initializeFromList](movieidtag.md#initializefromlist)
 - [removeValue](movieidtag.md#removevalue)
 - [render](movieidtag.md#render)
-- [renderEnclosed](movieidtag.md#renderenclosed)
-- [renderEnclosedInternal](movieidtag.md#renderenclosedinternal)
 - [setInfoTag](movieidtag.md#setinfotag)
 - [setValueFromUint](movieidtag.md#setvaluefromuint)
 - [setValues](movieidtag.md#setvalues)
 - [setValuesFromStrings](movieidtag.md#setvaluesfromstrings)
 - [firstInGroup](movieidtag.md#firstingroup)
-- [fromData](movieidtag.md#fromdata)
 - [fromEmpty](movieidtag.md#fromempty)
-- [fromFile](movieidtag.md#fromfile)
+- [fromList](movieidtag.md#fromlist)
 - [isFalsyOrLikeEmpty](movieidtag.md#isfalsyorlikeempty)
 - [joinGroup](movieidtag.md#joingroup)
+- [tagTypeFlagsToArray](movieidtag.md#tagtypeflagstoarray)
+
+## Properties
+
+### listType
+
+▪ `Static` `Readonly` **listType**: ``"MID "``
 
 ## Accessors
 
@@ -1009,6 +1015,21 @@ Gets a semicolon and space separated string containing the values in [performers
 
 ___
 
+### list
+
+• `get` **list**(): [`RiffList`](rifflist.md)
+
+Gets the [RiffList](rifflist.md) that backs the data for this tag.
+
+**`remarks`** Tags based on RiffLists are only supposed to support certain fields. Modify at your
+    own risk.
+
+#### Returns
+
+[`RiffList`](rifflist.md)
+
+___
+
 ### lyrics
 
 • `get` **lyrics**(): `string`
@@ -1785,6 +1806,18 @@ Track peak as per the ReplayGain specifications, or `NaN` if no value is set
 
 ___
 
+### sizeOnDisk
+
+• `get` **sizeOnDisk**(): `number`
+
+**`inheritdoc`**
+
+#### Returns
+
+`number`
+
+___
+
 ### stringType
 
 • `get` **stringType**(): [`StringType`](../enums/stringtype.md)
@@ -2169,87 +2202,11 @@ Gets the values for a specified item in the current instance as strings.
 
 ___
 
-### initializeFromData
-
-▸ `Protected` **initializeFromData**(`data`): `void`
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `data` | [`ByteVector`](bytevector.md) |
-
-#### Returns
-
-`void`
-
-#### Inherited from
-
-[RiffListTag](rifflisttag.md).[initializeFromData](rifflisttag.md#initializefromdata)
-
-___
-
-### initializeFromEmpty
-
-▸ `Protected` **initializeFromEmpty**(): `void`
-
-#### Returns
-
-`void`
-
-#### Inherited from
-
-[RiffListTag](rifflisttag.md).[initializeFromEmpty](rifflisttag.md#initializefromempty)
-
-___
-
-### initializeFromFile
-
-▸ `Protected` **initializeFromFile**(`file`, `position`, `length`): `void`
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `file` | [`File`](file.md) |
-| `position` | `number` |
-| `length` | `number` |
-
-#### Returns
-
-`void`
-
-#### Inherited from
-
-[RiffListTag](rifflisttag.md).[initializeFromFile](rifflisttag.md#initializefromfile)
-
-___
-
-### initializeFromList
-
-▸ `Protected` **initializeFromList**(`fields`): `void`
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `fields` | [`RiffList`](rifflist.md) |
-
-#### Returns
-
-`void`
-
-#### Inherited from
-
-[RiffListTag](rifflisttag.md).[initializeFromList](rifflisttag.md#initializefromlist)
-
-___
-
 ### removeValue
 
 ▸ **removeValue**(`id`): `void`
 
-Removed the item with the specified ID from the current instance.
+Removes the item with the specified ID from the current instance.
 
 #### Parameters
 
@@ -2271,7 +2228,8 @@ ___
 
 ▸ **render**(): [`ByteVector`](bytevector.md)
 
-Renders the current instance as a raw RIFF list.
+Renders the current instance, including list header and padding bytes, ready to be written
+to a file.
 
 #### Returns
 
@@ -2280,44 +2238,6 @@ Renders the current instance as a raw RIFF list.
 #### Inherited from
 
 [RiffListTag](rifflisttag.md).[render](rifflisttag.md#render)
-
-___
-
-### renderEnclosed
-
-▸ **renderEnclosed**(): [`ByteVector`](bytevector.md)
-
-Renders the current instance, enclosed in a `MID ` item.
-
-#### Returns
-
-[`ByteVector`](bytevector.md)
-
-#### Overrides
-
-[RiffListTag](rifflisttag.md).[renderEnclosed](rifflisttag.md#renderenclosed)
-
-___
-
-### renderEnclosedInternal
-
-▸ `Protected` **renderEnclosedInternal**(`id`): [`ByteVector`](bytevector.md)
-
-Renders the current instance enclosed in an item with a specified ID.
-
-#### Parameters
-
-| Name | Type | Description |
-| :------ | :------ | :------ |
-| `id` | `string` | ID of the item to enclose the current instance in when rendering |
-
-#### Returns
-
-[`ByteVector`](bytevector.md)
-
-#### Inherited from
-
-[RiffListTag](rifflisttag.md).[renderEnclosedInternal](rifflisttag.md#renderenclosedinternal)
 
 ___
 
@@ -2364,7 +2284,7 @@ ___
 
 ### setValues
 
-▸ **setValues**(`id`, ...`values`): `void`
+▸ **setValues**(`id`, `values`): `void`
 
 Sets the value for a specified item in the current instance
 
@@ -2373,7 +2293,7 @@ Sets the value for a specified item in the current instance
 | Name | Type | Description |
 | :------ | :------ | :------ |
 | `id` | `string` | ID of the item to set |
-| `...values` | [`ByteVector`](bytevector.md)[] | Values to store in the specified item |
+| `values` | [`ByteVector`](bytevector.md)[] | Values to store in the specified item |
 
 #### Returns
 
@@ -2387,7 +2307,7 @@ ___
 
 ### setValuesFromStrings
 
-▸ **setValuesFromStrings**(`id`, ...`values`): `void`
+▸ **setValuesFromStrings**(`id`, `values`): `void`
 
 Sets the value for a specified item in the current instance using a list of strings.
 
@@ -2396,7 +2316,7 @@ Sets the value for a specified item in the current instance using a list of stri
 | Name | Type | Description |
 | :------ | :------ | :------ |
 | `id` | `string` | ID of the item to set |
-| `...values` | `string`[] | Values to store in the specified item |
+| `values` | `string`[] | Values to store in the specified item |
 
 #### Returns
 
@@ -2433,25 +2353,6 @@ First string contained in `group` or `undefined` if the array is
 
 ___
 
-### fromData
-
-▸ `Static` **fromData**(`data`): [`MovieIdTag`](movieidtag.md)
-
-Constructs and initializes a new instance by reading the contents of a raw RIFF list stored
-in a [ByteVector](bytevector.md) object.
-
-#### Parameters
-
-| Name | Type | Description |
-| :------ | :------ | :------ |
-| `data` | [`ByteVector`](bytevector.md) | Object containing the raw RIFF list |
-
-#### Returns
-
-[`MovieIdTag`](movieidtag.md)
-
-___
-
 ### fromEmpty
 
 ▸ `Static` **fromEmpty**(): [`MovieIdTag`](movieidtag.md)
@@ -2464,9 +2365,9 @@ Constructs and initializes a new, empty instance.
 
 ___
 
-### fromFile
+### fromList
 
-▸ `Static` **fromFile**(`file`, `position`, `length`): [`MovieIdTag`](movieidtag.md)
+▸ `Static` **fromList**(`list`): [`MovieIdTag`](movieidtag.md)
 
 Constructs and initializes a new instance by reading the contents of a raw RIFF list stored
 a file.
@@ -2475,9 +2376,7 @@ a file.
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `file` | [`File`](file.md) | File containing the raw RIFF list |
-| `position` | `number` | Index into the file where the RIFF list begins. Must be a safe, unsigned int |
-| `length` | `number` | Number of bytes to read |
+| `list` | [`RiffList`](rifflist.md) | List that contains the contents of the tag |
 
 #### Returns
 
@@ -2533,3 +2432,23 @@ A semicolon and space separated string containing the values from `group`
 #### Inherited from
 
 [RiffListTag](rifflisttag.md).[joinGroup](rifflisttag.md#joingroup)
+
+___
+
+### tagTypeFlagsToArray
+
+▸ `Static` **tagTypeFlagsToArray**(`tagTypes`): [`TagTypes`](../enums/tagtypes.md)[]
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `tagTypes` | [`TagTypes`](../enums/tagtypes.md) |
+
+#### Returns
+
+[`TagTypes`](../enums/tagtypes.md)[]
+
+#### Inherited from
+
+[RiffListTag](rifflisttag.md).[tagTypeFlagsToArray](rifflisttag.md#tagtypeflagstoarray)
