@@ -1,6 +1,6 @@
 import ILazy from "../iLazy";
 import {ByteVector} from "../byteVector";
-import {File} from "../file";
+import {File, FileAccessMode} from "../file";
 import {Guards, NumberUtils} from "../utils";
 
 /**
@@ -174,8 +174,14 @@ export class FlacBlock implements ILazy {
         }
 
         // Read the data from the file
-        this._file.seek(this._blockStart + FlacBlock.headerSize);
-        this._data = this._file.readBlock(this._dataSize);
+        const originalFileMode = this._file.mode;
+        try {
+            this._file.mode = FileAccessMode.Read
+            this._file.seek(this._blockStart + FlacBlock.headerSize);
+            this._data = this._file.readBlock(this._dataSize);
+        } finally {
+            this._file.mode = originalFileMode;
+        }
     }
 
     /**

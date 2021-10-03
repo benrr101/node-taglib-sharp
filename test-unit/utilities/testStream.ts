@@ -78,7 +78,9 @@ export default class TestStream implements IStream {
             throw new Error("Invalid operation: this stream is a read-only stream");
         }
 
-        const bytesToWrite = ByteVector.fromByteArray(Buffer.from(buffer.slice(bufferOffset, length)));
+        const bufferStart = bufferOffset;
+        const bufferEnd = bufferOffset + length;
+        const bytesToWrite = ByteVector.fromByteArray(Buffer.from(buffer.slice(bufferStart, bufferEnd)));
         if (this._position < this._data.length) {
             this._data.removeRange(this._position, bytesToWrite.length);
         }
