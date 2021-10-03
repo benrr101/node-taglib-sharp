@@ -139,3 +139,6 @@ export {default as RiffList} from "./riff/riffList";
 export {default as RiffListTag} from "./riff/riffListTag";
 export {default as RiffWaveFormatEx} from "./riff/riffWaveFormatEx";
 
+// XIPH ////////////////////////////////////////////////////////////////////
+export {default as XiphComment} from "./xiph/xiphComment";
+export {default as XiphPicture} from "./xiph/xiphPicture";
