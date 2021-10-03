@@ -2,46 +2,106 @@
 
 # Class: RiffList
 
+## Implements
+
+- `IRiffChunk`
+- `ILazy`
+
 ## Table of contents
 
-### Constructors
+### Properties
 
-- [constructor](rifflist.md#constructor)
+- [identifierFourcc](rifflist.md#identifierfourcc)
 
 ### Accessors
 
-- [length](rifflist.md#length)
-- [stringType](rifflist.md#stringtype)
+- [chunkStart](rifflist.md#chunkstart)
+- [fourcc](rifflist.md#fourcc)
+- [isLoaded](rifflist.md#isloaded)
+- [listCount](rifflist.md#listcount)
+- [originalDataSize](rifflist.md#originaldatasize)
+- [originalTotalSize](rifflist.md#originaltotalsize)
+- [type](rifflist.md#type)
+- [valueCount](rifflist.md#valuecount)
 
 ### Methods
 
 - [clear](rifflist.md#clear)
-- [containsKey](rifflist.md#containskey)
-- [getValueAsUint](rifflist.md#getvalueasuint)
+- [getLists](rifflist.md#getlists)
 - [getValues](rifflist.md#getvalues)
-- [getValuesAsStrings](rifflist.md#getvaluesasstrings)
-- [removeValue](rifflist.md#removevalue)
+- [load](rifflist.md#load)
 - [render](rifflist.md#render)
-- [renderEnclosed](rifflist.md#renderenclosed)
-- [setValueFromUint](rifflist.md#setvaluefromuint)
+- [setLists](rifflist.md#setlists)
 - [setValues](rifflist.md#setvalues)
-- [setValuesFromStrings](rifflist.md#setvaluesfromstrings)
-- [fromData](rifflist.md#fromdata)
+- [fromEmpty](rifflist.md#fromempty)
 - [fromFile](rifflist.md#fromfile)
+- [isChunkList](rifflist.md#ischunklist)
 
-## Constructors
+## Properties
 
-### constructor
+### identifierFourcc
 
-• **new RiffList**()
+▪ `Static` `Readonly` **identifierFourcc**: ``"LIST"``
+
+FOURCC code for a list chunk
 
 ## Accessors
 
-### length
+### chunkStart
 
-• `get` **length**(): `number`
+• `get` **chunkStart**(): `number`
 
-Gets the number of items in the current instance.
+**`inheritdoc`**
+
+#### Returns
+
+`number`
+
+• `set` **chunkStart**(`value`): `void`
+
+**`inheritdoc`**
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `value` | `number` |
+
+#### Returns
+
+`void`
+
+___
+
+### fourcc
+
+• `get` **fourcc**(): `string`
+
+**`inheritdoc`**
+
+#### Returns
+
+`string`
+
+___
+
+### isLoaded
+
+• `get` **isLoaded**(): `boolean`
+
+**`inheritdoc`**
+
+#### Returns
+
+`boolean`
+
+___
+
+### listCount
+
+• `get` **listCount**(): `number`
+
+Total number of nested lists contained in this instance.
 
 #### Returns
 
@@ -49,29 +109,65 @@ Gets the number of items in the current instance.
 
 ___
 
-### stringType
+### originalDataSize
 
-• `get` **stringType**(): [`StringType`](../enums/stringtype.md)
+• `get` **originalDataSize**(): `number`
 
-Gets the [StringType](../enums/stringtype.md) value used for parsing and rendering the contents of this list.
+**`inheritdoc`**
 
 #### Returns
 
-[`StringType`](../enums/stringtype.md)
+`number`
 
-• `set` **stringType**(`value`): `void`
+___
 
-Sets the [StringType](../enums/stringtype.md) value used for parsing and rendering the contents of this list.
+### originalTotalSize
+
+• `get` **originalTotalSize**(): `number`
+
+**`inheritdoc`**
+
+#### Returns
+
+`number`
+
+• `set` **originalTotalSize**(`value`): `void`
+
+**`internal`**
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `value` | [`StringType`](../enums/stringtype.md) |
+| `value` | `number` |
 
 #### Returns
 
 `void`
+
+___
+
+### type
+
+• `get` **type**(): `string`
+
+ID that identifies the type of this list.
+
+#### Returns
+
+`string`
+
+___
+
+### valueCount
+
+• `get` **valueCount**(): `number`
+
+Total number of values contained in this instance.
+
+#### Returns
+
+`number`
 
 ## Methods
 
@@ -79,7 +175,7 @@ Sets the [StringType](../enums/stringtype.md) value used for parsing and renderi
 
 ▸ **clear**(): `void`
 
-Removes all elements from the list.
+Removes all values and nested lists from the current instance.
 
 #### Returns
 
@@ -87,43 +183,24 @@ Removes all elements from the list.
 
 ___
 
-### containsKey
+### getLists
 
-▸ **containsKey**(`id`): `boolean`
+▸ **getLists**(`id`): [`RiffList`](rifflist.md)[]
 
-Determines whether the current instance contains the specified key.
-
-#### Parameters
-
-| Name | Type | Description |
-| :------ | :------ | :------ |
-| `id` | `string` | Key to locate in the current instance |
-
-#### Returns
-
-`boolean`
-
-`true` if key exists, `false` otherwise
-
-___
-
-### getValueAsUint
-
-▸ **getValueAsUint**(`id`): `number`
-
-Gets the value for a specified item in the current instance as an unsigned integer. The
-first value that can be parsed as an int will be returned. `0` is returned if no matching
-values exist.
+Retrieves a collection of lists by the lists' key.
 
 #### Parameters
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `id` | `string` | ID of the item of which to get the values. Must be 4 bytes |
+| `id` | `string` | Key for looking up the desired lists |
 
 #### Returns
 
-`number`
+[`RiffList`](rifflist.md)[]
+
+RiffList[] Array of the nested lists with the provided key, or an empty array if
+    the key does not exist in this instance.
 
 ___
 
@@ -131,54 +208,36 @@ ___
 
 ▸ **getValues**(`id`): [`ByteVector`](bytevector.md)[]
 
-Gets the values for a specified item in the current instance as an array of
-[ByteVector](bytevector.md).
+Retrieves a collection of values by the values' key.
 
 #### Parameters
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `id` | `string` | ID of the item of which to get the values. Must be 4 bytes |
+| `id` | `string` | Key for looking up the desired values |
 
 #### Returns
 
 [`ByteVector`](bytevector.md)[]
 
-___
-
-### getValuesAsStrings
-
-▸ **getValuesAsStrings**(`id`): `string`[]
-
-Gets the values for a specified item as an array of strings.
-
-#### Parameters
-
-| Name | Type | Description |
-| :------ | :------ | :------ |
-| `id` | `string` | ID of the item of which to get the values. Must be 4 bytes |
-
-#### Returns
-
-`string`[]
+ByteVector[] Array of the values with the provided key, or an empty array if the
+    key does not exist in the instance.
 
 ___
 
-### removeValue
+### load
 
-▸ **removeValue**(`id`): `void`
+▸ **load**(): `void`
 
-Removes the item with the specified ID from the current instance.
-
-#### Parameters
-
-| Name | Type | Description |
-| :------ | :------ | :------ |
-| `id` | `string` | ID of the item to remove. Must be 4 bytes |
+**`inheritdoc`**
 
 #### Returns
 
 `void`
+
+#### Implementation of
+
+ILazy.load
 
 ___
 
@@ -186,44 +245,30 @@ ___
 
 ▸ **render**(): [`ByteVector`](bytevector.md)
 
-Renders the current instance as a raw RIFF list.
+**`inheritdoc`**
 
 #### Returns
 
 [`ByteVector`](bytevector.md)
 
+#### Implementation of
+
+IRiffChunk.render
+
 ___
 
-### renderEnclosed
+### setLists
 
-▸ **renderEnclosed**(`id`): [`ByteVector`](bytevector.md)
+▸ **setLists**(`id`, `lists`): `void`
 
-Renders the current instance enclosed in an item with a specified ID.
+Stores a collection of lists in the current instance, overwriting any that currently exist.
 
 #### Parameters
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `id` | `string` | ID of the item in which to enclose the current instance. Must be 4 bytes. |
-
-#### Returns
-
-[`ByteVector`](bytevector.md)
-
-___
-
-### setValueFromUint
-
-▸ **setValueFromUint**(`id`, `value`): `void`
-
-Sets the value for a specified item in the current instance to a uint.
-
-#### Parameters
-
-| Name | Type | Description |
-| :------ | :------ | :------ |
-| `id` | `string` | ID of the item of which to get the values. Must be 4 bytes |
-| `value` | `number` | Value to store in the item. Must be an unsigned integer |
+| `id` | `string` | Key for the lists to store |
+| `lists` | [`RiffList`](rifflist.md)[] | Collection of lists to store in the current instance |
 
 #### Returns
 
@@ -233,16 +278,16 @@ ___
 
 ### setValues
 
-▸ **setValues**(`id`, ...`values`): `void`
+▸ **setValues**(`id`, `values`): `void`
 
-Sets the value for a specified item in the current instance to an array.
+Stores a collection of values in the current instance, overwriting any that currently exist.
 
 #### Parameters
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `id` | `string` | ID of the item of which to get the values. Must be 4 bytes |
-| `...values` | [`ByteVector`](bytevector.md)[] | Array of [ByteVector](bytevector.md) to store in the specified item. If falsey or     undefined, the item will be removed |
+| `id` | `string` | Key for the values to store |
+| `values` | [`ByteVector`](bytevector.md)[] | Collection of values to store in the current instance |
 
 #### Returns
 
@@ -250,37 +295,17 @@ Sets the value for a specified item in the current instance to an array.
 
 ___
 
-### setValuesFromStrings
+### fromEmpty
 
-▸ **setValuesFromStrings**(`id`, ...`values`): `void`
+▸ `Static` **fromEmpty**(`type`): [`RiffList`](rifflist.md)
 
-Sets the value for a specified item in the current instance to an array of strings.
-
-#### Parameters
-
-| Name | Type | Description |
-| :------ | :------ | :------ |
-| `id` | `string` | ID of the item of which to get the values. Must be 4 bytes |
-| `...values` | `string`[] | Array of strings to store in the specified item. If falsey or undefined, the     item will be removed |
-
-#### Returns
-
-`void`
-
-___
-
-### fromData
-
-▸ `Static` **fromData**(`data`): [`RiffList`](rifflist.md)
-
-Constructs and initializes a new instance by reading the contents of a raw RIFF list stored
-in a [ByteVector](bytevector.md) object.
+Constructs and initializes a new instance with no contents.
 
 #### Parameters
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `data` | [`ByteVector`](bytevector.md) | Object containing a raw RIFF list to read into the new instance. |
+| `type` | `string` | Type ID of the list |
 
 #### Returns
 
@@ -290,19 +315,33 @@ ___
 
 ### fromFile
 
-▸ `Static` **fromFile**(`file`, `position`, `length`): [`RiffList`](rifflist.md)
+▸ `Static` **fromFile**(`file`, `position`): [`RiffList`](rifflist.md)
 
-Constructs and initializes a new instance by reading the contents of a raw RIFF list from a
-specified position in a file.
+Constructs and initializes a new instance, lazily, from a position in a file.
 
 #### Parameters
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `file` | [`File`](file.md) | File containing the contents of the new instance |
-| `position` | `number` | Index into the file where the the list begins, must be safe positive integer |
-| `length` | `number` | Length of the list in bytes, must be a positive integer |
+| `file` | [`File`](file.md) | File from which to read the current instance |
+| `position` | `number` | Position in the file where the list begins |
 
 #### Returns
 
 [`RiffList`](rifflist.md)
+
+___
+
+### isChunkList
+
+▸ `Static` **isChunkList**(`c`): `boolean`
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `c` | `default` |
+
+#### Returns
+
+`boolean`

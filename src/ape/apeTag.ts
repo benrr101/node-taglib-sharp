@@ -98,7 +98,9 @@ export default class ApeTag extends Tag {
      * Constructs a new instance by reading the contents from a specified position in a specified
      * file.
      * @param file File to read the tag from
-     * @param position Position where the tag starts
+     * @param position Position where the tag header or footer begins
+     * @remarks If `position` points to the beginning of the tag footer, the footer will be read
+     *     and then the parser will backup and start reading from the beginning of the file.
      */
     public static fromFile(file: File, position: number) {
         Guards.truthy(file, "file");
@@ -110,13 +112,13 @@ export default class ApeTag extends Tag {
 
         const tag = new ApeTag();
 
-        // Read the footer in
+        // Read the header/footer in
         tag._footer = ApeTagFooter.fromData(file.readBlock(ApeTagFooter.size));
 
         // If we've read a header, we don't have to seek to read the content. If we've read a
         // footer, we need to move back to the start of the tag.
         if ((tag._footer.flags & ApeTagFooterFlags.IsHeader) === 0) {
-            file.seek(position + ApeTagFooter.size - tag._footer.tagSize);
+            file.seek(position - tag._footer.itemSize);
         }
         tag.parse(file.readBlock(tag._footer.requiredDataSize - ApeTagFooter.size));
 
@@ -155,6 +157,9 @@ export default class ApeTag extends Tag {
 
     /** @inheritDoc */
     public get tagTypes(): TagTypes { return TagTypes.Ape; }
+
+    /** @inheritDoc */
+    public get sizeOnDisk(): number { return this._footer.tagSize; }
 
     /** @inheritDoc via Title item */
     public get title(): string { return this.getStringValue("Title"); }
@@ -209,6 +214,7 @@ export default class ApeTag extends Tag {
      * stored there for compatibility.
      */
     set albumArtists(value: string[]) {
+        /* @TODO: Coalesce old values via config? */
         this.setStringValues("Album Artist", value);
         if (this.hasItem("AlbumArtist")) {
             this.setStringValues("AlbumArtist", value);
@@ -460,6 +466,7 @@ export default class ApeTag extends Tag {
 
     /** @inheritDoc via Cover Art items */
     get pictures(): IPicture[] {
+        // TODO: Parse pictures either lazily (see xiph) or at tag parsing
         const pictures = [];
         for (const item of this._items) {
             if (!item || item.type !== ApeTagItemType.Binary) {

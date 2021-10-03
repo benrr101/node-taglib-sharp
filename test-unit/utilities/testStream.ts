@@ -1,15 +1,13 @@
 import {ByteVector} from "../../src/byteVector";
 import {IStream, SeekOrigin} from "../../src/stream";
 
-const AB2B = require("arraybuffer-to-buffer");
-
 export default class TestStream implements IStream {
     private readonly _isWritable: boolean;
     private _data: ByteVector;
     private _position: number;
 
-    public constructor(bytesToReturn: ByteVector, isWritable: boolean) {
-        this._data = ByteVector.fromByteVector(bytesToReturn);
+    public constructor(bytesToReturn: ByteVector, isWritable: boolean, cloneData: boolean = true) {
+        this._data = cloneData ? ByteVector.fromByteVector(bytesToReturn) : bytesToReturn;
         this._position = 0;
         this._isWritable = isWritable;
     }
@@ -64,7 +62,9 @@ export default class TestStream implements IStream {
             this._data.addByteVector(ByteVector.fromSize(length - this.length));
         } else if (this.length > length) {
             // Shrink
-            this._data = this._data.mid(0, length);
+            const bytesToRemove = this.length - length;
+            const startIndex = this.length - bytesToRemove;
+            this._data.removeRange(startIndex, bytesToRemove);
         }
         this._position = Math.max(this.length, this._position);
     }
@@ -78,7 +78,9 @@ export default class TestStream implements IStream {
             throw new Error("Invalid operation: this stream is a read-only stream");
         }
 
-        const bytesToWrite = ByteVector.fromByteArray(AB2B(buffer.slice(bufferOffset, length)));
+        const bufferStart = bufferOffset;
+        const bufferEnd = bufferOffset + length;
+        const bytesToWrite = ByteVector.fromByteArray(Buffer.from(buffer.slice(bufferStart, bufferEnd)));
         if (this._position < this._data.length) {
             this._data.removeRange(this._position, bytesToWrite.length);
         }

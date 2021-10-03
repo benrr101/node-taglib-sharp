@@ -1,61 +1,17 @@
 import * as Chai from "chai";
 import {suite, test} from "@testdeck/mocha";
-import {Mock} from "typemoq";
 
 import InfoTag from "../../src/riff/infoTag";
 import PropertyTests from "../utilities/propertyTests";
-import TestFile from "../utilities/testFile";
 import {ByteVector, StringType} from "../../src/byteVector";
-import {File} from "../../src/file";
 import {TagTypes} from "../../src/tag";
 import {TagTesters, Testers} from "../utilities/testers";
+import RiffList from "../../src/riff/riffList";
 
 // Setup chai
 const assert = Chai.assert;
 
 @suite class Riff_InfoTagTests {
-    private testTagData = ByteVector.concatenate(
-        ByteVector.fromString("INAM"),
-        ByteVector.fromUInt(3, false),
-        ByteVector.fromString("foo"), 0x00,
-        ByteVector.fromString("ISBJ"),
-        ByteVector.fromUInt(3, false),
-        ByteVector.fromString("bar"), 0x00,
-        ByteVector.fromString("ISTR"),
-        ByteVector.fromUInt(3, false),
-        ByteVector.fromString("baz"), 0x00,
-        ByteVector.fromString("IART"),
-        ByteVector.fromUInt(3, false),
-        ByteVector.fromString("fux"), 0x00,
-        ByteVector.fromString("IWRI"),
-        ByteVector.fromUInt(3, false),
-        ByteVector.fromString("bux"), 0x00,
-        ByteVector.fromString("DIRC"),
-        ByteVector.fromUInt(3, false),
-        ByteVector.fromString("qux"), 0x00,
-        ByteVector.fromString("ICNM"),
-        ByteVector.fromUInt(6, false),
-        ByteVector.fromString("foobar"),
-        ByteVector.fromString("ICMT"),
-        ByteVector.fromUInt(6, false),
-        ByteVector.fromString("barbaz"),
-        ByteVector.fromString("IGNR"),
-        ByteVector.fromUInt(6, false),
-        ByteVector.fromString("bazfux"),
-        ByteVector.fromString("ICRD"),
-        ByteVector.fromUInt(4, false),
-        ByteVector.fromString("1234"),
-        ByteVector.fromString("IPRT"),
-        ByteVector.fromUInt(4, false),
-        ByteVector.fromString("2345"),
-        ByteVector.fromString("IFRM"),
-        ByteVector.fromUInt(4, false),
-        ByteVector.fromString("3456"),
-        ByteVector.fromString("ICOP"),
-        ByteVector.fromUInt(6, false),
-        ByteVector.fromString("buxqux")
-    );
-
     @test
     public fromEmpty() {
         // Act
@@ -71,70 +27,25 @@ const assert = Chai.assert;
     }
 
     @test
-    public fromData_invalidParams() {
+    public fromList_invalidParams() {
         // Act / Assert
-        Testers.testTruthy<ByteVector>((v) => InfoTag.fromData(v));
+        Testers.testTruthy<RiffList>((v) => InfoTag.fromList(v));
     }
 
     @test
-    public fromData_validParams() {
+    public fromList_validParams() {
+        // Arrange
+        const list = Riff_InfoTagTests.getTestTagData();
+
         // Act
-        const tag = InfoTag.fromData(this.testTagData);
+        const tag = InfoTag.fromList(list);
 
         // Assert
         assert.isOk(tag);
         assert.isFalse(tag.isEmpty);
         assert.strictEqual(tag.stringType, StringType.UTF8);
         assert.strictEqual(tag.tagTypes, TagTypes.RiffInfo);
-
-        const expected = {
-            album: "qux",
-            albumArtists: ["fux"],
-            comment: "barbaz",
-            composers: ["bux"],
-            conductor: "foobar",
-            copyright: "buxqux",
-            description: "bar",
-            genres: ["bazfux"],
-            performers: ["baz"],
-            title: "foo",
-            track: 2345,
-            trackCount: 3456,
-            year: 1234
-        };
-        TagTesters.testTagProperties(tag, expected);
-    }
-
-    @test
-    public fromFile_invalidParams() {
-        // Arrange
-        const mockFile = Mock.ofType<File>();
-        mockFile.setup((f) => f.length).returns(() => 10);
-
-        // Act / Assert
-        Testers.testTruthy((v: File) => InfoTag.fromFile(v, 0, 0));
-        Testers.testSafeUint((v) => InfoTag.fromFile(mockFile.object, v, 0));
-        Testers.testUint((v) => InfoTag.fromFile(mockFile.object, 0, v));
-        assert.throws(() => InfoTag.fromFile(mockFile.object, 123, 5));
-    }
-
-    @test
-    public fromFile_validParams() {
-        // Arrange
-        const testData = ByteVector.concatenate(
-            ByteVector.fromSize(10),
-            this.testTagData
-        );
-        const mockFile = TestFile.getFile(testData);
-
-        // Act
-        const tag = InfoTag.fromFile(mockFile, 10, this.testTagData.length);
-
-        // Assert
-        assert.isOk(tag);
-        assert.isFalse(tag.isEmpty);
-        assert.strictEqual(tag.stringType, StringType.UTF8);
-        assert.strictEqual(tag.tagTypes, TagTypes.RiffInfo);
+        assert.strictEqual(tag.list, list);
 
         const expected = {
             album: "qux",
@@ -345,8 +256,8 @@ const assert = Chai.assert;
     @test
     public clear() {
         // Arrange
-        const data = this.testTagData;
-        const tag = InfoTag.fromData(data);
+        const data = Riff_InfoTagTests.getTestTagData();
+        const tag = InfoTag.fromList(data);
 
         // Act
         tag.clear();
@@ -355,25 +266,41 @@ const assert = Chai.assert;
         assert.isOk(tag);
         assert.strictEqual(tag.tagTypes, TagTypes.RiffInfo);
         TagTesters.testTagProperties(tag, {});
+
+        assert.strictEqual(data.valueCount, 0);
+        assert.strictEqual(data.listCount, 0);
     }
 
     @test
-    public renderEnclosed() {
+    public render() {
         // Arrange
-        const tag = InfoTag.fromData(this.testTagData);
+        const list = Riff_InfoTagTests.getTestTagData();
+        const tag = InfoTag.fromList(list);
 
         // Act
-        const output = tag.renderEnclosed();
+        const output = tag.render();
 
         // Assert
         assert.isOk(output);
+        Testers.bvEqual(output, list.render());
+    }
 
-        const expected = ByteVector.concatenate(
-            ByteVector.fromString("LIST"),
-            ByteVector.fromUInt(this.testTagData.length + 4, false),
-            ByteVector.fromString("INFO"),
-            this.testTagData
-        );
-        assert.isTrue(ByteVector.equal(output, expected));
+    private static getTestTagData(): RiffList {
+        const list = RiffList.fromEmpty(InfoTag.listType);
+        list.setValues("INAM", [ByteVector.fromString("foo")]);
+        list.setValues("ISBJ", [ByteVector.fromString("bar")]);
+        list.setValues("ISTR", [ByteVector.fromString("baz")]);
+        list.setValues("IART", [ByteVector.fromString("fux")]);
+        list.setValues("IWRI", [ByteVector.fromString("bux")]);
+        list.setValues("DIRC", [ByteVector.fromString("qux")]);
+        list.setValues("ICNM", [ByteVector.fromString("foobar")]);
+        list.setValues("ICMT", [ByteVector.fromString("barbaz")]);
+        list.setValues("IGNR", [ByteVector.fromString("bazfux")]);
+        list.setValues("ICRD", [ByteVector.fromString("1234")]);
+        list.setValues("IPRT", [ByteVector.fromString("2345")]);
+        list.setValues("IFRM", [ByteVector.fromString("3456")]);
+        list.setValues("ICOP", [ByteVector.fromString("buxqux")]);
+
+        return list;
     }
 }

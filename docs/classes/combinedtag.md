@@ -2,21 +2,21 @@
 
 # Class: CombinedTag
 
+This class provides a unified way of accessing tag data from multiple tag types.
+
 ## Hierarchy
 
 - [`Tag`](tag.md)
 
   ↳ **`CombinedTag`**
 
+  ↳↳ [`FlacTag`](flactag.md)
+
 ## Table of contents
 
 ### Constructors
 
 - [constructor](combinedtag.md#constructor)
-
-### Properties
-
-- [\_tags](combinedtag.md#_tags)
 
 ### Accessors
 
@@ -73,7 +73,9 @@
 - [replayGainAlbumPeak](combinedtag.md#replaygainalbumpeak)
 - [replayGainTrackGain](combinedtag.md#replaygaintrackgain)
 - [replayGainTrackPeak](combinedtag.md#replaygaintrackpeak)
+- [sizeOnDisk](combinedtag.md#sizeondisk)
 - [subtitle](combinedtag.md#subtitle)
+- [supportedTagTypes](combinedtag.md#supportedtagtypes)
 - [tagTypes](combinedtag.md#tagtypes)
 - [tags](combinedtag.md#tags)
 - [title](combinedtag.md#title)
@@ -84,23 +86,24 @@
 
 ### Methods
 
-- [addTagInternal](combinedtag.md#addtaginternal)
+- [addTag](combinedtag.md#addtag)
 - [clear](combinedtag.md#clear)
-- [clearTags](combinedtag.md#cleartags)
 - [copyTo](combinedtag.md#copyto)
-- [insertTag](combinedtag.md#inserttag)
-- [removeTag](combinedtag.md#removetag)
+- [createTag](combinedtag.md#createtag)
+- [getTag](combinedtag.md#gettag)
+- [removeTags](combinedtag.md#removetags)
 - [setInfoTag](combinedtag.md#setinfotag)
-- [setTags](combinedtag.md#settags)
+- [validateTagCreation](combinedtag.md#validatetagcreation)
 - [firstInGroup](combinedtag.md#firstingroup)
 - [isFalsyOrLikeEmpty](combinedtag.md#isfalsyorlikeempty)
 - [joinGroup](combinedtag.md#joingroup)
+- [tagTypeFlagsToArray](combinedtag.md#tagtypeflagstoarray)
 
 ## Constructors
 
 ### constructor
 
-• **new CombinedTag**(`tags?`)
+• `Protected` **new CombinedTag**(`supportedTagTypes`, `tags?`)
 
 Constructs and initializes a new instance of [CombinedTag](combinedtag.md).
 
@@ -108,17 +111,12 @@ Constructs and initializes a new instance of [CombinedTag](combinedtag.md).
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
+| `supportedTagTypes` | [`TagTypes`](../enums/tagtypes.md) | Types of tags that are supported by this instance of the combined |
 | `tags?` | [`Tag`](tag.md)[] | Optionally, a list of tags to combine in the new instance. |
 
 #### Overrides
 
 [Tag](tag.md).[constructor](tag.md#constructor)
-
-## Properties
-
-### \_tags
-
-• `Protected` **\_tags**: [`Tag`](tag.md)[]
 
 ## Accessors
 
@@ -1421,6 +1419,21 @@ Sets the value on all child tags
 
 ___
 
+### sizeOnDisk
+
+• `get` **sizeOnDisk**(): `number`
+
+**`inheritdoc`**
+
+**`remarks`** Note that tags may not appear contiguously in a file. Access the [tags](combinedtag.md#tags)
+    contained in this object to see the size of each tag on the disk.
+
+#### Returns
+
+`number`
+
+___
+
 ### subtitle
 
 • `get` **subtitle**(): `string`
@@ -1453,6 +1466,19 @@ Sets the value on all child tags
 
 ___
 
+### supportedTagTypes
+
+• `get` **supportedTagTypes**(): [`TagTypes`](../enums/tagtypes.md)
+
+Gets the types of tags that are supported by this instance of a combined tag. Only these tag
+types can be added to the instance.
+
+#### Returns
+
+[`TagTypes`](../enums/tagtypes.md)
+
+___
+
 ### tagTypes
 
 • `get` **tagTypes**(): [`TagTypes`](../enums/tagtypes.md)
@@ -1471,25 +1497,14 @@ ___
 
 • `get` **tags**(): [`Tag`](tag.md)[]
 
-Gets the tags combined in the current instance.
+Gets all tags contained within the current instance. If the tags within this tag are also
+[CombinedTag](combinedtag.md)s, the retrieval will recurse and return a flat list of nested tags.
+
+**`remarks`** Modifications of the returned array will not be retained.
 
 #### Returns
 
 [`Tag`](tag.md)[]
-
-• `set` **tags**(`tags`): `void`
-
-Sets the child tags to combine in the current instance.
-
-#### Parameters
-
-| Name | Type | Description |
-| :------ | :------ | :------ |
-| `tags` | [`Tag`](tag.md)[] | Array of tags to combine |
-
-#### Returns
-
-`void`
 
 ___
 
@@ -1637,9 +1652,9 @@ Sets the value on all child tags
 
 ## Methods
 
-### addTagInternal
+### addTag
 
-▸ `Protected` **addTagInternal**(`tag`): `void`
+▸ `Protected` **addTag**(`tag`): `void`
 
 #### Parameters
 
@@ -1668,16 +1683,6 @@ Clears all values stored in the current instance.
 #### Overrides
 
 [Tag](tag.md).[clear](tag.md#clear)
-
-___
-
-### clearTags
-
-▸ `Protected` **clearTags**(): `void`
-
-#### Returns
-
-`void`
 
 ___
 
@@ -1710,32 +1715,67 @@ Copies the values from the current instance to another [Tag](tag.md), optionally
 
 ___
 
-### insertTag
+### createTag
 
-▸ `Protected` **insertTag**(`index`, `tag`): `void`
+▸ `Abstract` **createTag**(`tagType`, `copy`): [`Tag`](tag.md)
+
+Creates a new instance of the desired tag type and adds it to the current instance. If the
+tag type is unsupported in the current context or the tag type already exists, an error will
+be thrown.
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `index` | `number` |
-| `tag` | [`Tag`](tag.md) |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `tagType` | [`TagTypes`](../enums/tagtypes.md) | Type of tag to create |
+| `copy` | `boolean` | Whether or not to copy the contents of the current instance to the newly created     tag instance |
 
 #### Returns
 
-`void`
+[`Tag`](tag.md)
+
+Tag The newly created tag
 
 ___
 
-### removeTag
+### getTag
 
-▸ `Protected` **removeTag**(`tag`): `void`
+▸ **getTag**<`TTag`\>(`tagType`): `TTag`
 
-#### Parameters
+Gets a tag of the specified tag type if a matching tag exists in the current instance.
+
+#### Type parameters
 
 | Name | Type |
 | :------ | :------ |
-| `tag` | [`Tag`](tag.md) |
+| `TTag` | extends [`Tag`](tag.md)<`TTag`\> |
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `tagType` | [`TagTypes`](../enums/tagtypes.md) | Type of tag to retrieve |
+
+#### Returns
+
+`TTag`
+
+Tag Tag with specified type, if it exists. `undefined` otherwise.
+
+___
+
+### removeTags
+
+▸ **removeTags**(`tagTypes`): `void`
+
+Remove all tags that match the specified tagTypes. This is performed recursively. Any nested
+`CombinedTag` instances are left in place.
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `tagTypes` | [`TagTypes`](../enums/tagtypes.md) | Types of tags to remove |
 
 #### Returns
 
@@ -1761,17 +1801,19 @@ Set the tags that represent the tagger software (node-taglib-sharp) itself.
 
 ___
 
-### setTags
+### validateTagCreation
 
-▸ **setTags**(...`tags`): `void`
+▸ `Protected` **validateTagCreation**(`tagType`): `void`
 
-Sets the child tags to combine in the current instance
+Verifies if a tag can be added to the current instance. The criteria for validation are:
+* A tag of the given tag type does not already exist
+* The given tag type is supported by the current instance
 
 #### Parameters
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `...tags` | [`Tag`](tag.md)[] | Tags to combine, falsy tags will be ignored |
+| `tagType` | [`TagTypes`](../enums/tagtypes.md) | Tag type that the caller wants to create |
 
 #### Returns
 
@@ -1852,3 +1894,23 @@ A semicolon and space separated string containing the values from `group`
 #### Inherited from
 
 [Tag](tag.md).[joinGroup](tag.md#joingroup)
+
+___
+
+### tagTypeFlagsToArray
+
+▸ `Static` **tagTypeFlagsToArray**(`tagTypes`): [`TagTypes`](../enums/tagtypes.md)[]
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `tagTypes` | [`TagTypes`](../enums/tagtypes.md) |
+
+#### Returns
+
+[`TagTypes`](../enums/tagtypes.md)[]
+
+#### Inherited from
+
+[Tag](tag.md).[tagTypeFlagsToArray](tag.md#tagtypeflagstoarray)

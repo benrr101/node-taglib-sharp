@@ -675,7 +675,6 @@ export default class RiffBitmapInfoHeader implements IVideoCodec {
         /* raw2 */ 0x32776173: "Raw, Uncompressed RGB Bitmap"
     };
 
-
     private readonly _bitCount: number;
     private readonly _colorsUsed: number;
     private readonly _compressionId: number;

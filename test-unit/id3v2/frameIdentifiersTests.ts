@@ -3,6 +3,7 @@ import {suite, test} from "@testdeck/mocha";
 
 import {ByteVector} from "../../src/byteVector";
 import {FrameIdentifier, FrameIdentifiers} from "../../src/id3v2/frameIdentifiers";
+import {Testers} from "../utilities/testers";
 
 // Setup Chai
 const assert = Chai.assert;
@@ -111,7 +112,7 @@ const assert = Chai.assert;
         const output = identifier.render(2);
 
         // Assert
-        assert.isTrue(ByteVector.equal(output, ByteVector.fromString("HIJ")));
+        Testers.bvEqual(output, ByteVector.fromString("HIJ"));
     }
 
     @test
@@ -123,7 +124,7 @@ const assert = Chai.assert;
         const output = identifier.render(3);
 
         // Assert
-        assert.isTrue(ByteVector.equal(output, ByteVector.fromString("DEFG")));
+        Testers.bvEqual(output, ByteVector.fromString("DEFG"));
     }
 
     @test
@@ -135,7 +136,7 @@ const assert = Chai.assert;
         const output = identifier.render(4);
 
         // Assert
-        assert.isTrue(ByteVector.equal(output, ByteVector.fromString("ABCD")));
+        Testers.bvEqual(output, ByteVector.fromString("ABCD"));
     }
 
     @test

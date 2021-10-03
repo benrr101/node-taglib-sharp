@@ -1,7 +1,7 @@
 {
   "name": "node-taglib-sharp",
   "description": "Read and write audio/video/picture tags using a similar interface to TagLib#",
-  "version": "3.4.0",
+  "version": "4.0.0",
   "license": "LGPL-2.1-or-later",
   "author": "Ben Russell <benrr101@outlook.com> (https://github.com/benrr101)",
   "repository": "github:benrr101/node-taglib-sharp",
@@ -20,7 +20,6 @@
     "node": ">=12.16.1"
   },
   "dependencies": {
-    "arraybuffer-to-buffer": "^0.0.5",
     "dateformat": "^3.0.3",
     "iconv-lite": "^0.4.24",
     "os-locale": "^4.0.0",

@@ -190,7 +190,7 @@ class TestDescriptor extends DescriptorBase {
         assert.strictEqual(d.name, "foo");
         assert.strictEqual(d.type, DataType.Bytes);
         assert.isUndefined(d.getBool());
-        assert.isTrue(ByteVector.equal(d.getBytes(), bytes));
+        Testers.bvEqual(d.getBytes(), bytes);
         assert.isUndefined(d.getGuid());
         assert.isUndefined(d.getString());
         assert.isUndefined(d.getUint());

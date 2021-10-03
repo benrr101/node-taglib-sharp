@@ -10,6 +10,7 @@ various formats.
 - [`Id3v2AttachmentFrame`](../classes/id3v2attachmentframe.md)
 - [`Picture`](../classes/picture.md)
 - [`PictureLazy`](../classes/picturelazy.md)
+- [`XiphPicture`](../classes/xiphpicture.md)
 
 ## Table of contents
 

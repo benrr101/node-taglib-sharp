@@ -2,27 +2,28 @@ import * as Chai from "chai";
 import * as TypeMoq from "typemoq";
 import {suite, test} from "@testdeck/mocha";
 
-import Id3v2Tag from "../../src/id3v2/id3v2Tag";
-import SyncData from "../../src/id3v2/syncData";
-import TestFile from "../utilities/testFile";
-import {ByteVector, StringType} from "../../src/byteVector";
-import {File, ReadStyle} from "../../src/file";
-import {Id3v2TagHeader, Id3v2TagHeaderFlags} from "../../src/id3v2/id3v2TagHeader";
-import PlayCountFrame from "../../src/id3v2/frames/playCountFrame";
-import UniqueFileIdentifierFrame from "../../src/id3v2/frames/uniqueFileIdentifierFrame";
-import UnknownFrame from "../../src/id3v2/frames/unknownFrame";
-import {FrameClassType} from "../../src/id3v2/frames/frame";
-import {FrameIdentifier, FrameIdentifiers} from "../../src/id3v2/frameIdentifiers";
-import PropertyTests from "../utilities/propertyTests";
-import {TextInformationFrame, UserTextInformationFrame} from "../../src/id3v2/frames/textInformationFrame";
-import {TagTypes} from "../../src/tag";
 import CommentsFrame from "../../src/id3v2/frames/commentsFrame";
 import Id3v2Settings from "../../src/id3v2/id3v2Settings";
-import UnsynchronizedLyricsFrame from "../../src/id3v2/frames/unsynchronizedLyricsFrame";
-import {IPicture} from "../../src/iPicture";
-import {UrlLinkFrame} from "../../src/id3v2/frames/urlLinkFrame";
+import Id3v2Tag from "../../src/id3v2/id3v2Tag";
 import Id3v2TagFooter from "../../src/id3v2/id3v2TagFooter";
+import PlayCountFrame from "../../src/id3v2/frames/playCountFrame";
+import PropertyTests from "../utilities/propertyTests";
+import SyncData from "../../src/id3v2/syncData";
+import TestFile from "../utilities/testFile";
+import UniqueFileIdentifierFrame from "../../src/id3v2/frames/uniqueFileIdentifierFrame";
+import UnknownFrame from "../../src/id3v2/frames/unknownFrame";
+import UnsynchronizedLyricsFrame from "../../src/id3v2/frames/unsynchronizedLyricsFrame";
+import {ByteVector, StringType} from "../../src/byteVector";
+import {File, ReadStyle} from "../../src/file";
+import {FrameClassType} from "../../src/id3v2/frames/frame";
 import {Id3v2FrameFlags} from "../../src/id3v2/frames/frameHeader";
+import {FrameIdentifier, FrameIdentifiers} from "../../src/id3v2/frameIdentifiers";
+import {Id3v2TagHeader, Id3v2TagHeaderFlags} from "../../src/id3v2/id3v2TagHeader";
+import {IPicture} from "../../src/iPicture";
+import {TagTypes} from "../../src/tag";
+import {Testers} from "../utilities/testers";
+import {TextInformationFrame, UserTextInformationFrame} from "../../src/id3v2/frames/textInformationFrame";
+import {UrlLinkFrame} from "../../src/id3v2/frames/urlLinkFrame";
 
 // Setup Chai
 const assert = Chai.assert;
@@ -40,8 +41,7 @@ function getTestTagHeader(version: number, flags: Id3v2TagHeaderFlags, tagSize: 
     @test
     public fromData_falsyData() {
         // Act / Assert
-        assert.throws(() => { Id3v2Tag.fromData(undefined); });
-        assert.throws(() => { Id3v2Tag.fromData(null); });
+        Testers.testTruthy((v: ByteVector) => Id3v2Tag.fromData(v));
     }
 
     @test
@@ -172,41 +172,38 @@ function getTestTagHeader(version: number, flags: Id3v2TagHeaderFlags, tagSize: 
     }
 
     @test
-    public fromFile_falsyFile() {
+    public fromFileStart_falsyFile() {
         // Act / Assert
-        assert.throws(() => { Id3v2Tag.fromFile(undefined, 0, ReadStyle.None); });
-        assert.throws(() => { Id3v2Tag.fromFile(null, 0, ReadStyle.None); });
+        Testers.testTruthy((v: File) => Id3v2Tag.fromFileStart(v, 0, ReadStyle.None));
     }
 
     @test
-    public fromFile_invalidPosition() {
+    public fromFileStart_invalidPosition() {
         // Arrange
         const file = TestFile.getFile(ByteVector.empty());
 
         // Act / Assert
-        assert.throws(() => { Id3v2Tag.fromFile(file, -1, ReadStyle.None); });
-        assert.throws(() => { Id3v2Tag.fromFile(file, 1.23, ReadStyle.None); });
-        assert.throws(() => { Id3v2Tag.fromFile(file, Number.MAX_SAFE_INTEGER + 1, ReadStyle.None); });
+        Testers.testSafeUint((v) => Id3v2Tag.fromFileStart(file, v, ReadStyle.None));
     }
 
     @test
-    public fromFile_positionTooFar() {
+    public fromFileStart_positionTooFar() {
         // Arrange
         const mockFile = TypeMoq.Mock.ofType<File>();
         mockFile.setup((f: File) => f.length).returns(() => 14);
 
         // Act / Assert
-        assert.throws(() => { Id3v2Tag.fromFile(mockFile.object, 5, ReadStyle.None); });
+        assert.throws(() => { Id3v2Tag.fromFileStart(mockFile.object, 5, ReadStyle.None); });
     }
 
     @test
-    public fromFile_emptyTag() {
+    public fromFileStart_emptyTag() {
         // Arrange
         const data = getTestTagHeader(4, Id3v2TagHeaderFlags.None, 0);
         const file = TestFile.getFile(data);
 
         // Act
-        const output = Id3v2Tag.fromFile(file, 0, ReadStyle.None);
+        const output = Id3v2Tag.fromFileStart(file, 0, ReadStyle.None);
 
         // Assert
         assert.isOk(output);
@@ -214,7 +211,7 @@ function getTestTagHeader(version: number, flags: Id3v2TagHeaderFlags, tagSize: 
     }
 
     @test
-    public fromFile_v4Tag() {
+    public fromFileStart_v4Tag() {
         const frame1 = PlayCountFrame.fromEmpty().render(4);
         const frame2 = UniqueFileIdentifierFrame.fromData("foo", ByteVector.fromString("bar")).render(4);
         const emptyFrame = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.empty()).render(4);
@@ -229,7 +226,7 @@ function getTestTagHeader(version: number, flags: Id3v2TagHeaderFlags, tagSize: 
         const file = TestFile.getFile(data);
 
         // Act
-        const tag = Id3v2Tag.fromFile(file, 2, ReadStyle.None);
+        const tag = Id3v2Tag.fromFileStart(file, 2, ReadStyle.None);
 
         // Assert
         assert.isOk(tag);
@@ -1195,7 +1192,7 @@ function getTestTagHeader(version: number, flags: Id3v2TagHeaderFlags, tagSize: 
         assert.deepStrictEqual((<UniqueFileIdentifierFrame> tag.frames[0]).owner, "http://musicbrainz.org");
         const expectedBytes = ByteVector.fromString("abcd-ef12-3456-7890");
         const actualBytes = (<UniqueFileIdentifierFrame> tag.frames[0]).identifier;
-        assert.isTrue(ByteVector.equal(actualBytes, expectedBytes));
+        Testers.bvEqual(actualBytes, expectedBytes);
 
         PropertyTests.propertyRoundTrip(set, get, undefined);
         assert.strictEqual(tag.frames.length, 0);
@@ -1820,7 +1817,7 @@ function getTestTagHeader(version: number, flags: Id3v2TagHeaderFlags, tagSize: 
             ByteVector.fromSize(1024, 0x00)
         );
 
-        assert.isTrue(ByteVector.equal(output, expected));
+        Testers.bvEqual(output, expected);
     }
 
     @test
@@ -1851,7 +1848,7 @@ function getTestTagHeader(version: number, flags: Id3v2TagHeaderFlags, tagSize: 
             Id3v2TagFooter.fromHeader(header).render()
         );
 
-        assert.isTrue(ByteVector.equal(output, expected));
+        Testers.bvEqual(output, expected);
     }
 
     @test
@@ -1886,7 +1883,7 @@ function getTestTagHeader(version: number, flags: Id3v2TagHeaderFlags, tagSize: 
             ByteVector.fromSize(1024, 0x00)
         );
 
-        assert.isTrue(ByteVector.equal(output, expected));
+        Testers.bvEqual(output, expected);
     }
 
     @test
@@ -1920,7 +1917,7 @@ function getTestTagHeader(version: number, flags: Id3v2TagHeaderFlags, tagSize: 
             ByteVector.fromSize(1024, 0x00)
         );
 
-        assert.isTrue(ByteVector.equal(output, expected));
+        Testers.bvEqual(output, expected);
     }
 
     @test

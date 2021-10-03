@@ -101,7 +101,11 @@ export default class Id3v1Tag extends Tag {
 
     // #region Tag Overrides
 
+    /** @inheritDoc */
     public get tagTypes(): TagTypes { return TagTypes.Id3v1; }
+
+    /** @inheritDoc */
+    public get sizeOnDisk(): number { return Id3v1Tag.size; }
 
     /** @inheritDoc */
     public get title(): string { return this._title || undefined; }

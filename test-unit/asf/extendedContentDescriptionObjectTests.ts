@@ -37,7 +37,7 @@ const assert = Chai.assert;
             ByteVector.fromUShort(2, false),
             ByteVector.fromUShort(1234, false)
         );
-        assert.isTrue(ByteVector.equal(object.render(), expectedBytes));
+        Testers.bvEqual(object.render(), expectedBytes);
     }
 
     @test
@@ -78,7 +78,7 @@ const assert = Chai.assert;
             ByteVector.fromUShort(4, false),
             ByteVector.fromUInt(1, false)
         );
-        assert.isTrue(ByteVector.equal(object.render(), expectedBytes));
+        Testers.bvEqual(object.render(), expectedBytes);
     }
 
     @test
@@ -119,7 +119,7 @@ const assert = Chai.assert;
             ByteVector.fromUShort(4, false),
             ByteVector.fromUInt(1234, false)
         );
-        assert.isTrue(ByteVector.equal(object.render(), expectedBytes));
+        Testers.bvEqual(object.render(), expectedBytes);
     }
 
     @test
@@ -160,7 +160,7 @@ const assert = Chai.assert;
             ByteVector.fromUShort(8, false),
             ByteVector.fromULong(1234, false)
         );
-        assert.isTrue(ByteVector.equal(object.render(), expectedBytes));
+        Testers.bvEqual(object.render(), expectedBytes);
     }
 
     @test
@@ -201,7 +201,7 @@ const assert = Chai.assert;
             ByteVector.fromUShort(20, false),
             ByteVector.fromString("foobarbaz\0", StringType.UTF16LE)
         );
-        assert.isTrue(ByteVector.equal(object.render(), expectedBytes));
+        Testers.bvEqual(object.render(), expectedBytes);
     }
 
     @test
@@ -236,7 +236,7 @@ const assert = Chai.assert;
         // Assert
         assert.strictEqual(object.name, "foo");
         assert.strictEqual(object.type, DataType.Bytes);
-        assert.isTrue(ByteVector.equal(object.getBytes(), bytes));
+        Testers.bvEqual(object.getBytes(), bytes);
 
         const expectedBytes = ByteVector.concatenate(
             ByteVector.fromUShort(8, false),
@@ -245,7 +245,7 @@ const assert = Chai.assert;
             ByteVector.fromUShort(6, false),
             bytes
         );
-        assert.isTrue(ByteVector.equal(object.render(), expectedBytes));
+        Testers.bvEqual(object.render(), expectedBytes);
     }
 
     @test
@@ -269,7 +269,7 @@ const assert = Chai.assert;
         // Assert
         assert.strictEqual(object.name, "foo");
         assert.strictEqual(object.type, DataType.Bytes);
-        assert.isTrue(ByteVector.equal(object.getBytes(), bytes));
+        Testers.bvEqual(object.getBytes(), bytes);
     }
 
     @test
@@ -292,7 +292,7 @@ const assert = Chai.assert;
             ByteVector.fromUShort(16, false),
             guid.toBytes()
         );
-        assert.isTrue(ByteVector.equal(object.render(), expectedBytes));
+        Testers.bvEqual(object.render(), expectedBytes);
     }
 
     @test
@@ -552,7 +552,7 @@ const assert = Chai.assert;
         const output = object.render();
 
         // Assert
-        assert.isTrue(ByteVector.equal(output, bytes.mid(10)));
+        Testers.bvEqual(output, bytes.mid(10));
     }
 
     @test

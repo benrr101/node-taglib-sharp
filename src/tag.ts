@@ -56,9 +56,9 @@ export enum TagTypes {
     DivX = 0x00000100,
 
     /**
-     * @summary FLAC Metadata Blocks Tag
+     * @summary FLAC Metadata Block Pictures
      */
-    FlacMetadata = 0x00000200,
+    FlacPictures = 0x00000200,
 
     /**
      * @summary TIFF IFD Tag
@@ -121,6 +121,11 @@ export abstract class Tag {
      *     contain multiple or no types.
      */
     public abstract tagTypes: TagTypes;
+
+    /**
+     * Gets the size of the tag in bytes on disk as it was read from disk.
+     */
+    public abstract get sizeOnDisk(): number;
 
     /**
      * Gets the title for the media described by the current instance.
@@ -1065,6 +1070,21 @@ export abstract class Tag {
             this.discCount === 0;
     }
 
+    public static tagTypeFlagsToArray(tagTypes: TagTypes): TagTypes[] {
+        const output = [];
+        for (const tagType of Object.values(TagTypes)) {
+            if (typeof tagType === "string") {
+                continue;
+            }
+
+            if ((tagTypes & tagType) === tagType) {
+                output.push(tagType);
+            }
+        }
+
+        return output;
+    }
+
     /**
      * Gets the first string in an array.
      * @param group Array of strings to get the first string from.
@@ -1117,6 +1137,7 @@ export abstract class Tag {
      */
     public copyTo(target: Tag, overwrite: boolean): void {
         Guards.truthy(target, "target");
+        // @TODO: Allow for overwriting existing values or all values
 
         if (overwrite || Tag.isFalsyOrLikeEmpty(target.title)) { target.title = this.title; }
         if (overwrite || Tag.isFalsyOrLikeEmpty(target.subtitle)) { target.subtitle = this.subtitle; }

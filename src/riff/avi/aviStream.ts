@@ -1,10 +1,13 @@
-import {ByteVector} from "../byteVector";
-import {CorruptFileError} from "../errors";
-import {Guards} from "../utils";
+import RiffBitmapInfoHeader from "../riffBitmapInfoHeader";
+import RiffList from "../riffList";
+import RiffWaveFormatEx from "../riffWaveFormatEx";
+import {ICodec} from "../../iCodec";
+import {CorruptFileError} from "../../errors";
+import {Guards} from "../../utils";
 
 export enum AviStreamType {
     /** Audio Stream */
-    /* auds*/ AUDIO_STREAM = 0x73647561,
+    /* auds */ AUDIO_STREAM = 0x73647561,
 
     /** MIDI Stream */
     /* mids */ MIDI_STREAM = 0x7264696D,
@@ -17,11 +20,16 @@ export enum AviStreamType {
 }
 
 /**
- * Contains information about one stream in an AVI file.
- * @link https://docs.microsoft.com/en-us/previous-versions/windows/desktop/api/avifmt/ns-avifmt-avistreamheader
+ * Base class representing a stream in an AVI file. Provides basic support for parsing a raw AVI
+ * stream list.
  */
-export class AviStreamHeader {
+export class AviStream {
+    public static readonly formatChunkId = "strf";
+    public static readonly headerChunkId = "strh";
+    public static readonly listType = "strl";
+
     private readonly _bottom: number;
+    private readonly _codec: ICodec;
     private readonly _flags: number;
     private readonly _handler: number;
     private readonly _initialFrames: number;
@@ -40,42 +48,75 @@ export class AviStreamHeader {
     private readonly _type: number;
 
     /**
-     * Constructs and initializes a new instance by reading the raw structure from a specified
-     * position in the provided data.
-     * @param data Data that contains the raw stream header
-     * @param offset Position into `data` where the stream header begins
+     * Constructs and initializes a new instance with a specified stream header.
+     * @param list RiffList containing the stream headers
      */
-    public constructor(data: ByteVector, offset: number) {
-        Guards.truthy(data, "data");
-        Guards.uint(offset, "offset");
-        if (offset + 56 > data.length) {
-            throw new CorruptFileError("Expected 56 bytes for AVI stream header");
+    public constructor(list: RiffList) {
+        Guards.truthy(list, "list");
+        if (list.type !== AviStream.listType) {
+            throw new CorruptFileError("Stream header list does not have correct type");
         }
 
-        this._type = data.mid(offset, 4).toUInt(false);
-        this._handler = data.mid(offset + 4, 4).toUInt(false);
-        this._flags = data.mid(offset + 8, 4).toUInt(false);
-        this._priority = data.mid(offset + 12, 2).toUShort(false);
-        this._language = data.mid(offset + 14, 2).toUShort(false);
-        this._initialFrames = data.mid(offset + 16, 4).toUInt(false);
-        this._scale = data.mid(offset + 20, 4).toUInt(false);
-        this._rate = data.mid(offset + 24, 4).toUInt(false);
-        this._start = data.mid(offset + 28, 4).toUInt(false);
-        this._length = data.mid(offset + 32, 4).toUInt(false);
-        this._suggestedBufferSize = data.mid(offset + 36, 4).toUInt(false);
-        this._quality = data.mid(offset + 40, 4).toUInt(false);
-        this._sampleSize = data.mid(offset + 44, 4).toUInt(false);
-        this._left = data.mid(offset + 48, 2).toUShort(false);
-        this._top = data.mid(offset + 50, 2).toUShort(false);
-        this._right = data.mid(offset + 52, 2).toUShort(false);
-        this._bottom = data.mid(offset + 54, 2).toUShort(false);
+        // Parse the stream header
+        const streamHeaderData = list.getValues(AviStream.headerChunkId);
+        if (streamHeaderData.length !== 1) {
+            throw new CorruptFileError("Stream header list does not contain valid stream header chunks");
+        }
+        const streamHeaderDatum = streamHeaderData[0];
+        if (streamHeaderDatum.length !== 56) {
+            throw new CorruptFileError("Stream header does not contain correct number of bytes");
+        }
+
+        this._type = streamHeaderDatum.mid(0, 4).toUInt(false);
+        this._handler = streamHeaderDatum.mid(4, 4).toUInt(false);
+        this._flags = streamHeaderDatum.mid(8, 4).toUInt(false);
+        this._priority = streamHeaderDatum.mid(12, 2).toUShort(false);
+        this._language = streamHeaderDatum.mid(14, 2).toUShort(false);
+        this._initialFrames = streamHeaderDatum.mid(16, 4).toUInt(false);
+        this._scale = streamHeaderDatum.mid(20, 4).toUInt(false);
+        this._rate = streamHeaderDatum.mid(24, 4).toUInt(false);
+        this._start = streamHeaderDatum.mid(28, 4).toUInt(false);
+        this._length = streamHeaderDatum.mid(32, 4).toUInt(false);
+        this._suggestedBufferSize = streamHeaderDatum.mid(36, 4).toUInt(false);
+        this._quality = streamHeaderDatum.mid(40, 4).toUInt(false);
+        this._sampleSize = streamHeaderDatum.mid(44, 4).toUInt(false);
+        this._left = streamHeaderDatum.mid(48, 2).toUShort(false);
+        this._top = streamHeaderDatum.mid(50, 2).toUShort(false);
+        this._right = streamHeaderDatum.mid(52, 2).toUShort(false);
+        this._bottom = streamHeaderDatum.mid(54, 2).toUShort(false);
+
+        // Parse the stream construct
+        const streamFormatData = list.getValues(AviStream.formatChunkId);
+        if (streamFormatData.length !== 1) {
+            throw new CorruptFileError("Stream header list is missing stream format chunk");
+        }
+        switch (this._type) {
+            case AviStreamType.VIDEO_STREAM:
+                this._codec = new RiffBitmapInfoHeader(streamFormatData[0], 0);
+                break;
+            case AviStreamType.AUDIO_STREAM:
+                this._codec = new RiffWaveFormatEx(streamFormatData[0]);
+                break;
+            case AviStreamType.MIDI_STREAM:
+            case AviStreamType.TEXT_STREAM:
+                // These types don't have codecs, but we still care about the headers, I think
+                // If there's more information needed for these types, please open a issue
+                break;
+        }
     }
+
+    // #region Properties
 
     /**
      * Gets the offset from the bottom of the main movie rectangle where this stream should be
      * positioned.
      */
     public get bottom(): number { return this._bottom; }
+
+    /**
+     * Gets the codec information for this stream.
+     */
+    public get codec(): ICodec { return this._codec; }
 
     /**
      * Gets any flags for the data stream.
@@ -179,4 +220,6 @@ export class AviStreamHeader {
      * Gets a FOURCC that species the type of data contained in the stream.
      */
     public get type(): AviStreamType { return this._type; }
+
+    // #endregion
 }

@@ -683,10 +683,10 @@ function getTestTagFooter(flags: ApeTagFooterFlags, itemCount: number, itemPlusF
         assert.strictEqual(pictures.length, 2);
         assert.strictEqual(pictures[0].description, "foo");
         assert.strictEqual(pictures[0].type, PictureType.ColoredFish);
-        assert.isTrue(ByteVector.equal(pictures[0].data, ByteVector.fromString("bar")));
+        Testers.bvEqual(pictures[0].data, ByteVector.fromString("bar"));
         assert.strictEqual(pictures[1].description, "fux");
         assert.strictEqual(pictures[1].type, PictureType.NotAPicture);
-        assert.isTrue(ByteVector.equal(pictures[1].data, ByteVector.fromString("bux")));
+        Testers.bvEqual(pictures[1].data, ByteVector.fromString("bux"));
 
         tag.pictures = undefined;
         assert.strictEqual(tag.items.length, 0);
@@ -1249,7 +1249,7 @@ function getTestTagFooter(flags: ApeTagFooterFlags, itemCount: number, itemPlusF
             item2Render,
             footer
         );
-        assert.isTrue(ByteVector.equal(output, expected));
+        Testers.bvEqual(output, expected);
     }
 
     @test

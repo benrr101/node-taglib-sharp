@@ -41,7 +41,7 @@ const assert = Chai.assert;
             ByteVector.getTextDelimiter(StringType.UTF16BE),
             ByteVector.fromUInt(text.time),
         );
-        assert.isTrue(ByteVector.equal(output, expected));
+        Testers.bvEqual(output, expected);
     }
 }
 
@@ -650,7 +650,7 @@ const assert = Chai.assert;
         const output = frame.render(4);
 
         // Assert
-        assert.isTrue(ByteVector.equal(output, data));
+        Testers.bvEqual(output, data);
     }
 }
 

@@ -918,13 +918,13 @@ ___
 
 ▸ `Static` **fromByteArray**(`data`, `length?`, `isReadOnly?`): [`ByteVector`](bytevector.md)
 
-Creates a [ByteVector](bytevector.md) from a Uint8Array
+Creates a [ByteVector](bytevector.md) from a `Uint8Array` or node `Buffer`
 
 #### Parameters
 
 | Name | Type | Default value | Description |
 | :------ | :------ | :------ | :------ |
-| `data` | `Uint8Array` | `undefined` | Uint8Array of the bytes to put in the ByteVector |
+| `data` | `Uint8Array` \| `Buffer` | `undefined` | Uint8Array of the bytes to put in the ByteVector |
 | `length` | `number` | `undefined` | Number of bytes to read |
 | `isReadOnly` | `boolean` | `false` | If `true` then the ByteVector will be read only |
 

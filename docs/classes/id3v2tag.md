@@ -68,6 +68,7 @@
 - [replayGainAlbumPeak](id3v2tag.md#replaygainalbumpeak)
 - [replayGainTrackGain](id3v2tag.md#replaygaintrackgain)
 - [replayGainTrackPeak](id3v2tag.md#replaygaintrackpeak)
+- [sizeOnDisk](id3v2tag.md#sizeondisk)
 - [subtitle](id3v2tag.md#subtitle)
 - [tagTypes](id3v2tag.md#tagtypes)
 - [title](id3v2tag.md#title)
@@ -87,7 +88,8 @@
 - [getFramesByIdentifier](id3v2tag.md#getframesbyidentifier)
 - [getTextAsString](id3v2tag.md#gettextasstring)
 - [parse](id3v2tag.md#parse)
-- [read](id3v2tag.md#read)
+- [readFromEnd](id3v2tag.md#readfromend)
+- [readFromStart](id3v2tag.md#readfromstart)
 - [removeFrame](id3v2tag.md#removeframe)
 - [removeFrames](id3v2tag.md#removeframes)
 - [render](id3v2tag.md#render)
@@ -98,9 +100,11 @@
 - [firstInGroup](id3v2tag.md#firstingroup)
 - [fromData](id3v2tag.md#fromdata)
 - [fromEmpty](id3v2tag.md#fromempty)
-- [fromFile](id3v2tag.md#fromfile)
+- [fromFileEnd](id3v2tag.md#fromfileend)
+- [fromFileStart](id3v2tag.md#fromfilestart)
 - [isFalsyOrLikeEmpty](id3v2tag.md#isfalsyorlikeempty)
 - [joinGroup](id3v2tag.md#joingroup)
+- [tagTypeFlagsToArray](id3v2tag.md#tagtypeflagstoarray)
 
 ## Accessors
 
@@ -1784,6 +1788,20 @@ Track peak as per the ReplayGain specifications, or `NaN` if no value is set
 
 ___
 
+### sizeOnDisk
+
+• `get` **sizeOnDisk**(): `number`
+
+Gets the size of the tag in bytes on disk as it was read from disk.
+
+**`inheritdoc`**
+
+#### Returns
+
+`number`
+
+___
+
 ### subtitle
 
 • `get` **subtitle**(): `string`
@@ -2242,9 +2260,27 @@ ___
 
 ___
 
-### read
+### readFromEnd
 
-▸ `Protected` **read**(`file`, `position`, `style`): `void`
+▸ `Protected` **readFromEnd**(`file`, `position`, `style`): `void`
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `file` | [`File`](file.md) |
+| `position` | `number` |
+| `style` | [`ReadStyle`](../enums/readstyle.md) |
+
+#### Returns
+
+`void`
+
+___
+
+### readFromStart
+
+▸ `Protected` **readFromStart**(`file`, `position`, `style`): `void`
 
 #### Parameters
 
@@ -2451,19 +2487,43 @@ ___
 
 ___
 
-### fromFile
+### fromFileEnd
 
-▸ `Static` **fromFile**(`file`, `position`, `style`): [`Id3v2Tag`](id3v2tag.md)
+▸ `Static` **fromFileEnd**(`file`, `position`, `style`): [`Id3v2Tag`](id3v2tag.md)
 
-Constructs and initializes a new Tag by reading the contents from a specified position in
-the provided file.
+Constructs and initializes a new Tag by reading the end of the tag first.
+
+**`remarks`** This method should only be used if reading tags at the end of a file. Only ID3v2.4
+    tags support a footer, which is required to use this method.
 
 #### Parameters
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
 | `file` | [`File`](file.md) | File from which the contents of the new instance is to be read |
-| `position` | `number` | Offset into the file where the tag should be read from |
+| `position` | `number` | Offset into the file where the tag ends |
+| `style` | [`ReadStyle`](../enums/readstyle.md) | How the data is to be read into the current instance |
+
+#### Returns
+
+[`Id3v2Tag`](id3v2tag.md)
+
+___
+
+### fromFileStart
+
+▸ `Static` **fromFileStart**(`file`, `position`, `style`): [`Id3v2Tag`](id3v2tag.md)
+
+Constructs and initializes a new Tag by reading the beginning of the tag.
+
+**`remarks`** This method is the most flexible way of reading ID3v2 tags.
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `file` | [`File`](file.md) | File from which the contents of the new instance is to be read |
+| `position` | `number` | Offset into the file where the tag begins |
 | `style` | [`ReadStyle`](../enums/readstyle.md) | How the data is to be read into the current instance |
 
 #### Returns
@@ -2522,3 +2582,23 @@ A semicolon and space separated string containing the values from `group`
 #### Inherited from
 
 [Tag](tag.md).[joinGroup](tag.md#joingroup)
+
+___
+
+### tagTypeFlagsToArray
+
+▸ `Static` **tagTypeFlagsToArray**(`tagTypes`): [`TagTypes`](../enums/tagtypes.md)[]
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `tagTypes` | [`TagTypes`](../enums/tagtypes.md) |
+
+#### Returns
+
+[`TagTypes`](../enums/tagtypes.md)[]
+
+#### Inherited from
+
+[Tag](tag.md).[tagTypeFlagsToArray](tag.md#tagtypeflagstoarray)

@@ -32,7 +32,7 @@ const assert = Chai.assert;
 
         // Assert
         assert.isOk(picture);
-        assert.isTrue(ByteVector.equal(picture.data, data));
+        Testers.bvEqual(picture.data, data);
         assert.strictEqual(picture.description, "cover.jpg");
         assert.strictEqual(picture.filename, "cover.jpg");
         assert.strictEqual(picture.mimeType, "image/jpeg");
@@ -50,7 +50,7 @@ const assert = Chai.assert;
 
         // Assert
         assert.isOk(picture);
-        assert.isTrue(ByteVector.equal(picture.data, data));
+        Testers.bvEqual(picture.data, data);
         assert.isUndefined(picture.description);
         assert.strictEqual(picture.filename, "UnknownType");
         assert.strictEqual(picture.mimeType, "application/octet-stream");
@@ -265,7 +265,7 @@ const assert = Chai.assert;
         assert.isOk(picture);
         assert.isFalse(picture.isLoaded);
 
-        assert.isTrue(ByteVector.equal(picture.data, d));
+        Testers.bvEqual(picture.data, d);
         assert.strictEqual(picture.description, desc);
         assert.strictEqual(picture.filename, f);
         assert.strictEqual(picture.mimeType, mt);

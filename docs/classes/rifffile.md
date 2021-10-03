@@ -2,6 +2,12 @@
 
 # Class: RiffFile
 
+This class extends [File](file.md) to provide tagging and properties support for RIFF files. These
+are usually WAV and AVI file.
+
+**`remarks`** The RIFF standard supports a general purpose "chunk" system that software can use for
+    whatever purpose. Tagging is accomplished using various types of chunks
+
 ## Hierarchy
 
 - [`File`](file.md)
@@ -18,17 +24,13 @@
 
 - [\_fileAbstraction](rifffile.md#_fileabstraction)
 - [\_fileStream](rifffile.md#_filestream)
-- [\_invariantEndPosition](rifffile.md#_invariantendposition)
-- [\_invariantStartPosition](rifffile.md#_invariantstartposition)
 - [\_tagTypesOnDisk](rifffile.md#_tagtypesondisk)
-- [FILE\_IDENTIFIER](rifffile.md#file_identifier)
+- [fileIdentifier](rifffile.md#fileidentifier)
 
 ### Accessors
 
 - [corruptionReasons](rifffile.md#corruptionreasons)
 - [fileAbstraction](rifffile.md#fileabstraction)
-- [invariantEndPosition](rifffile.md#invariantendposition)
-- [invariantStartPosition](rifffile.md#invariantstartposition)
 - [isPossiblyCorrupt](rifffile.md#ispossiblycorrupt)
 - [isWritable](rifffile.md#iswritable)
 - [length](rifffile.md#length)
@@ -71,12 +73,14 @@
 
 • **new RiffFile**(`file`, `propertiesStyle`)
 
+Constructs and initializes a new instance of a RIFF file based on the provided file/file path.
+
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `file` | `string` \| `IFileAbstraction` |
-| `propertiesStyle` | [`ReadStyle`](../enums/readstyle.md) |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `file` | `string` \| `IFileAbstraction` | File abstraction or path to a file to open as a RIFF file |
+| `propertiesStyle` | [`ReadStyle`](../enums/readstyle.md) | How in-depth to read the properties of the file |
 
 #### Overrides
 
@@ -104,26 +108,6 @@ ___
 
 ___
 
-### \_invariantEndPosition
-
-• `Protected` **\_invariantEndPosition**: `number` = `-1`
-
-#### Inherited from
-
-[File](file.md).[_invariantEndPosition](file.md#_invariantendposition)
-
-___
-
-### \_invariantStartPosition
-
-• `Protected` **\_invariantStartPosition**: `number` = `-1`
-
-#### Inherited from
-
-[File](file.md).[_invariantStartPosition](file.md#_invariantstartposition)
-
-___
-
 ### \_tagTypesOnDisk
 
 • `Protected` **\_tagTypesOnDisk**: [`TagTypes`](../enums/tagtypes.md)
@@ -134,11 +118,11 @@ ___
 
 ___
 
-### FILE\_IDENTIFIER
+### fileIdentifier
 
-▪ `Static` `Readonly` **FILE\_IDENTIFIER**: [`ByteVector`](bytevector.md)
+▪ `Static` `Readonly` **fileIdentifier**: [`ByteVector`](bytevector.md)
 
-Identifier used to recognize a RIFF file.
+Identifier at the beginning of a RIFF file.
 
 ## Accessors
 
@@ -163,32 +147,6 @@ Gets the {@link IFileAbstraction} representing the file.
 #### Returns
 
 `IFileAbstraction`
-
-___
-
-### invariantEndPosition
-
-• `get` **invariantEndPosition**(): `number`
-
-Gets the position at which the invariant (media) portion of the current instance ends. If
-the value could not be determined, `-1` is returned;
-
-#### Returns
-
-`number`
-
-___
-
-### invariantStartPosition
-
-• `get` **invariantStartPosition**(): `number`
-
-Gets the position at which the invariant (media) portion of the current instance begins. If
-the value could not be determined, `-1` is returned.
-
-#### Returns
-
-`number`
 
 ___
 
@@ -501,9 +459,9 @@ ___
 
 ### rFind
 
-▸ **rFind**(`pattern`, `startPosition?`, `after?`): `number`
+▸ **rFind**(`pattern`, `startPosition?`): `number`
 
-Searched backwards through a file for a specified pattern, starting at a specified offset.
+Searches backwards through a file for a specified pattern, starting at a specified offset.
 
 **`throws`** Error Thrown if `pattern` was not provided or if `startPosition` is
     not a safe, positive integer.
@@ -513,8 +471,7 @@ Searched backwards through a file for a specified pattern, starting at a specifi
 | Name | Type | Default value | Description |
 | :------ | :------ | :------ | :------ |
 | `pattern` | [`ByteVector`](bytevector.md) | `undefined` | Pattern to search for in the current instance. Must be shorter than the     [bufferSize](rifffile.md#buffersize) |
-| `startPosition` | `number` | `0` | Seek position from which to start searching. |
-| `after?` | [`ByteVector`](bytevector.md) | `undefined` | Pattern that the searched for pattern must appear after. If this pattern is     found first, `-1` is returned. |
+| `startPosition` | `number` | `0` | Number of bytes from end of the file to begin searching. |
 
 #### Returns
 

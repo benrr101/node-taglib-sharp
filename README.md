@@ -15,18 +15,21 @@ is substantially lacking in the variety of media formats that can be handled. Ta
 improved on the original TagLib, hence why this project exists.
 
 ## Supported Tagging Formats
-* [APE](http://wiki.hydrogenaud.io/index.php?title=APE_key): `AAC`, `APE`, `M2A`, `MP1`, `MP2`, `MP3`
+* [APE](http://wiki.hydrogenaud.io/index.php?title=APE_key): `AAC`, `APE`, `FLAC`, `M2A`, `MP1`, `MP2`, `MP3`
 * [ASF](https://docs.microsoft.com/en-us/windows/win32/wmformat/overview-of-the-asf-format): `ASF`, `WMA`, `WMV`
-* DIVX: `AVI`, `DIVX`
-* [ID3v1](https://id3.org/ID3v1): `AAC`, `M2A`, `MP1`, `MP2`, `MP3`
-* [ID3v2](https://id3.org/Developer%20Information): `AAC`, `AIF`, `AIFF`, `M2A`, `MP1`, `MP2`, `MP3`
+* DIVX: `AVI`, `DIVX`, `WAV`
+* [ID3v1](https://id3.org/ID3v1): `AAC`, `FLAC`, `M2A`, `MP1`, `MP2`, `MP3`
+* [ID3v2](https://id3.org/Developer%20Information): `AAC`, `AIF`, `AIFF`, `AVI`, `DIVX`, `FLAC`, `M2A`, `MP1`, `MP2`, `MP3`, `WAV`
+* MovieID: `AVI`, `DIVX`, `WAV`
 * [RIFF Info](https://www.exiftool.org/TagNames/RIFF.html#Info): `AVI`, `DIVX`, `WAV`
+* [Xiph Comment](https://www.xiph.org/vorbis/doc/v-comment.html): `FLAC`
 * ... More coming soon
 
 ## Supported File Formats
 * Advanced Audio Codec (AAC): `AAC`
 * Advanced Systems Format (ASF): `ASF`, `WMA`, `WMV`
 * Audio Interchange Format (AIFF): `AIF`, `AIFF`
+* Free Lossless Audio Codec (FLAC): `FLAC`
 * MPEG-1/2 Audio: `M2A`, `MP1`, `MP2`, `MP3`
 * MPEG-1/2 Video: `M2V`, `MPE`, `MPEG`, `MPG`, `MPV2`
 * Monkey's Audio: `APE`
@@ -83,4 +86,3 @@ myFile.dispose();
     `integer` types for position arguments, which safely goes up to `2^52 - 1`. Node 15 supports
     `number` or `biginteger` for position arguments which would increase supported sizes to 64-bit
     integers. Please create issue if this is a blocker.
-    

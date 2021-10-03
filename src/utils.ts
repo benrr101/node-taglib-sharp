@@ -180,6 +180,10 @@ export class NumberUtils {
         return x * Math.pow(2, y);
     }
 
+    /**
+     * Converts .NET DateTime ticks (100 nanosecond units) into milliseconds
+     * @param ticks 100 nanosecond ticks to convert
+     */
     public static ticksToMilli(ticks: bigint|number): number {
         // Ticks are 100 nanosecond units
         return typeof(ticks) === "number"
@@ -215,6 +219,15 @@ export class NumberUtils {
      */
     public static uintLShift(x: number, y: number): number {
         return (x << y) >>> 0;
+    }
+
+    /**
+     * Provides unified way to do unsigned right bitshift.
+     * @param x Number
+     * @param y Bits to shift to the right
+     */
+    public static uintRShift(x: number, y: number): number {
+        return x >>> y;
     }
 
     /**

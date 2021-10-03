@@ -14,7 +14,7 @@ Indicates the tag types used by a file.
 - [Asf](tagtypes.md#asf)
 - [AudibleMetadata](tagtypes.md#audiblemetadata)
 - [DivX](tagtypes.md#divx)
-- [FlacMetadata](tagtypes.md#flacmetadata)
+- [FlacPictures](tagtypes.md#flacpictures)
 - [GifComment](tagtypes.md#gifcomment)
 - [IPTCIIM](tagtypes.md#iptciim)
 - [Id3v1](tagtypes.md#id3v1)
@@ -79,11 +79,11 @@ ___
 
 ___
 
-### FlacMetadata
+### FlacPictures
 
-• **FlacMetadata** = `512`
+• **FlacPictures** = `512`
 
-**`summary`** FLAC Metadata Blocks Tag
+**`summary`** FLAC Metadata Block Pictures
 
 ___
 

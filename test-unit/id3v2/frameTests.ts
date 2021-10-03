@@ -7,6 +7,7 @@ import {ByteVector} from "../../src/byteVector";
 import {Frame, FrameClassType} from "../../src/id3v2/frames/frame";
 import {Id3v2FrameFlags, Id3v2FrameHeader} from "../../src/id3v2/frames/frameHeader";
 import {FrameIdentifiers} from "../../src/id3v2/frameIdentifiers";
+import {Testers} from "../utilities/testers";
 
 // Setup chai
 const assert = Chai.assert;
@@ -121,7 +122,7 @@ class TestFrame extends Frame {
             ByteVector.fromUInt(TestFrame.renderFieldData.length),
             TestFrame.renderFieldData
         );
-        assert.isTrue(ByteVector.equal(output, expected));
+        Testers.bvEqual(output, expected);
     }
 
     @test
@@ -140,7 +141,7 @@ class TestFrame extends Frame {
             0x88,
             TestFrame.renderFieldData
         );
-        assert.isTrue(ByteVector.equal(output, expected));
+        Testers.bvEqual(output, expected);
     }
 
     @test
@@ -159,7 +160,7 @@ class TestFrame extends Frame {
         const output = frame.callFieldData(data, 0, 4, true);
 
         // Assert
-        assert.isTrue(ByteVector.equal(output, TestFrame.renderFieldData));
+        Testers.bvEqual(output, TestFrame.renderFieldData);
     }
 
     @test
@@ -178,7 +179,7 @@ class TestFrame extends Frame {
         const output = frame.callFieldData(data, 0, 4, true);
 
         // Assert
-        assert.isTrue(ByteVector.equal(output, TestFrame.renderFieldData));
+        Testers.bvEqual(output, TestFrame.renderFieldData);
         assert.strictEqual(frame.groupId, 0x88);
     }
 
@@ -201,7 +202,7 @@ class TestFrame extends Frame {
 
         // Assert
         SyncData.resyncByteVector(fieldData);
-        assert.isTrue(ByteVector.equal(output, fieldData));
+        Testers.bvEqual(output, fieldData);
     }
 
     @test
@@ -219,6 +220,6 @@ class TestFrame extends Frame {
         const output = frame.callFieldData(fieldData, 2, 4, false);
 
         // Assert
-        assert.isTrue(ByteVector.equal(output, TestFrame.renderFieldData));
+        Testers.bvEqual(output, TestFrame.renderFieldData);
     }
 }
