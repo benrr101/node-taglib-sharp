@@ -30,11 +30,11 @@ import {Testers} from "../utilities/testers";
     public constructor_invalidSampleRate() {
         // Arrange
         const data = ByteVector.concatenate(
-            ByteVector.fromUInt(0x12345678),
-            ByteVector.fromUInt(0x23456789),
-            ByteVector.fromUInt(0x34560000),
-            ByteVector.fromUInt(0x05678901),
-            ByteVector.fromUInt(0x56789012)
+            ByteVector.fromUint(0x12345678),
+            ByteVector.fromUint(0x23456789),
+            ByteVector.fromUint(0x34560000),
+            ByteVector.fromUint(0x05678901),
+            ByteVector.fromUint(0x56789012)
         );
 
         // Act / Assert
@@ -45,11 +45,11 @@ import {Testers} from "../utilities/testers";
     public constructor_nonZeroSamples() {
         // Arrange
         const data = ByteVector.concatenate(
-            ByteVector.fromUInt(0x12345678),
-            ByteVector.fromUInt(0x23456789),
-            ByteVector.fromUInt(0x34567890),
-            ByteVector.fromUInt(0x45678901),
-            ByteVector.fromUInt(0x56789012)
+            ByteVector.fromUint(0x12345678),
+            ByteVector.fromUint(0x23456789),
+            ByteVector.fromUint(0x34567890),
+            ByteVector.fromUint(0x45678901),
+            ByteVector.fromUint(0x56789012)
         );
 
         // Act
@@ -69,11 +69,11 @@ import {Testers} from "../utilities/testers";
     public constructor_zeroSamples() {
         // Arrange
         const data = ByteVector.concatenate(
-            ByteVector.fromUInt(0x12345678),
-            ByteVector.fromUInt(0x23456789),
-            ByteVector.fromUInt(0x34567890),
-            ByteVector.fromUInt(0x45600000),
-            ByteVector.fromUInt(0x00009012)
+            ByteVector.fromUint(0x12345678),
+            ByteVector.fromUint(0x23456789),
+            ByteVector.fromUint(0x34567890),
+            ByteVector.fromUint(0x45600000),
+            ByteVector.fromUint(0x00009012)
         );
 
         // Act

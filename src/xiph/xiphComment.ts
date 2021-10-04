@@ -42,19 +42,19 @@ export default class XiphComment extends Tag {
         // The first thing in the comment data is the vendor ID length, followed by a UTF8 string
         // with the vendor ID.
         let pos = 0;
-        const vendorLength = data.mid(pos, 4).toUInt(false);
+        const vendorLength = data.mid(pos, 4).toUint(false);
         pos += 4;
         xiphComment._vendorId = data.toString(vendorLength, StringType.UTF8, pos);
         pos += vendorLength;
 
         // Next, the number of fields in the comment vector
-        const commentFields = data.mid(pos, 4).toUInt(false);
+        const commentFields = data.mid(pos, 4).toUint(false);
         pos += 4;
 
         for (let i = 0; i < commentFields; i++) {
             // Each comment field is in the format KEY=value in a UTF8 string and has a 32-bit uint
             // before it with the length.
-            const commentLength = data.mid(pos, 4).toUInt(false);
+            const commentLength = data.mid(pos, 4).toUint(false);
             pos += 4;
             const comment = data.toString(commentLength, StringType.UTF8, pos);
             pos += commentLength;
@@ -846,7 +846,7 @@ export default class XiphComment extends Tag {
                 const encodedField = `${k}=${v}`;
                 const fieldDatum = ByteVector.fromString(encodedField, StringType.UTF8);
                 return ByteVector.concatenate(
-                    ByteVector.fromUInt(fieldDatum.length, false),
+                    ByteVector.fromUint(fieldDatum.length, false),
                     fieldDatum
                 );
             });
@@ -861,16 +861,16 @@ export default class XiphComment extends Tag {
             const xiphPicture = p instanceof XiphPicture ? p : XiphPicture.fromPicture(p);
             const encodedPicture = `${XiphComment.newPictureFiled}=${xiphPicture.renderForXiphComment()}`;
             return ByteVector.concatenate(
-                ByteVector.fromUInt(encodedPicture.length, false),
+                ByteVector.fromUint(encodedPicture.length, false),
                 ByteVector.fromString(encodedPicture, StringType.UTF8)
             );
         });
 
         // Put it all together
         const result = ByteVector.concatenate(
-            ByteVector.fromUInt(vendor.length, false),
+            ByteVector.fromUint(vendor.length, false),
             vendor,
-            ByteVector.fromUInt(allFieldData.length + pictureData.length, false),
+            ByteVector.fromUint(allFieldData.length + pictureData.length, false),
             ... allFieldData,
             ... pictureData
         );

@@ -106,7 +106,7 @@ const assert = Chai.assert;
             ByteVector.fromString("fux", StringType.Latin1),
             ByteVector.getTextDelimiter(StringType.Latin1),
             0x05,
-            ByteVector.fromUInt(1234)
+            ByteVector.fromUint(1234)
         );
 
         // Act
@@ -316,7 +316,7 @@ const assert = Chai.assert;
             ByteVector.fromString("fux", StringType.Latin1),
             ByteVector.getTextDelimiter(StringType.Latin1),
             0x05,
-            ByteVector.fromUInt(1234)
+            ByteVector.fromUint(1234)
         );
         const frame = PopularimeterFrame.fromRawData(data, 4);
 

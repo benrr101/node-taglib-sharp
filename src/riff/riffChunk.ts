@@ -37,7 +37,7 @@ export default class RiffChunk implements IRiffChunk, ILazy {
 
         const chunk = new RiffChunk();
         file.seek(position + 4);
-        chunk._originalDataSize = file.readBlock(4).toUInt(false);
+        chunk._originalDataSize = file.readBlock(4).toUint(false);
         chunk._file = file;
         chunk._fourcc = fourcc;
         chunk._chunkStart = position;
@@ -123,7 +123,7 @@ export default class RiffChunk implements IRiffChunk, ILazy {
 
         const data = ByteVector.concatenate(
             ByteVector.fromString(this._fourcc),
-            ByteVector.fromUInt(this.data.length, false),
+            ByteVector.fromUint(this.data.length, false),
             this._data
         );
         if ((data.length + 4) % 2 === 1) {

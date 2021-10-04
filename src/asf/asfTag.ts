@@ -917,7 +917,7 @@ export default class AsfTag extends Tag {
         offset += 1;
 
         // Get the Picture size
-        const pictureSize = data.mid(offset, 4).toUInt(false);
+        const pictureSize = data.mid(offset, 4).toUint(false);
         offset += 4;
 
         // Get the mime-type

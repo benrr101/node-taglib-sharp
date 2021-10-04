@@ -57,14 +57,14 @@ export default class XingHeader {
         let position = 8;
 
         if ((data.get(7) & 0x01) !== 0) {
-            header._totalFrames = data.mid(position, 4).toUInt();
+            header._totalFrames = data.mid(position, 4).toUint();
             position += 4;
         } else {
             header._totalFrames = 0;
         }
 
         if ((data.get(7) & 0x02) !== 0) {
-            header._totalSize = data.mid(position, 4).toUInt();
+            header._totalSize = data.mid(position, 4).toUint();
         } else {
             header._totalSize = 0;
         }

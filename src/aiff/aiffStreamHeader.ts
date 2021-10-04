@@ -47,7 +47,7 @@ export default class AiffStreamHeader implements ILosslessAudioCodec {
         // The first 8 bytes contain the common chunk identifier "COMM" and the size of the common
         // chunk, which is always 18
         this._channels = data.mid(8, 2).toUShort(true);
-        this._totalFrames = data.mid(10, 4).toUInt(true);
+        this._totalFrames = data.mid(10, 4).toUint(true);
         this._bitsPerSample = data.mid(14, 2).toUShort(true);
         this._sampleRate = NumberUtils.convertFromIeeeExtended(data.mid(16, 10));
     }

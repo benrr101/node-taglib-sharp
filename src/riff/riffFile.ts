@@ -273,7 +273,7 @@ export default class RiffFile extends File {
 
             // Calculate new RIFF size
             this._riffSize = this.length - 8;
-            this.insert(ByteVector.fromUInt(this._riffSize, false), 4, 4);
+            this.insert(ByteVector.fromUint(this._riffSize, false), 4, 4);
             this._tagTypesOnDisk = this.tagTypes;
         } finally {
             this.mode = FileAccessMode.Closed;
@@ -288,7 +288,7 @@ export default class RiffFile extends File {
             if (!ByteVector.equal(this.readBlock(4), RiffFile.fileIdentifier)) {
                 throw new CorruptFileError("File does not begin with RIFF identifier");
             }
-            this._riffSize = this.readBlock(4).toUInt(false);
+            this._riffSize = this.readBlock(4).toUint(false);
             this._fileType = this.readBlock(4).toString();
 
             // Read chunks until there are less than 8 bytes to read

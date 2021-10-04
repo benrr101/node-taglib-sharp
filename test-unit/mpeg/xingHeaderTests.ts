@@ -51,7 +51,7 @@ const assert = Chai.assert;
         const data = ByteVector.concatenate(
             XingHeader.fileIdentifier,
             0x00, 0x00, 0x00, 0x02,
-            ByteVector.fromUInt(123)
+            ByteVector.fromUint(123)
         );
 
         // Act
@@ -69,7 +69,7 @@ const assert = Chai.assert;
         const data = ByteVector.concatenate(
             XingHeader.fileIdentifier,
             0x00, 0x00, 0x00, 0x01,
-            ByteVector.fromUInt(123)
+            ByteVector.fromUint(123)
         );
 
         // Act
@@ -87,8 +87,8 @@ const assert = Chai.assert;
         const data = ByteVector.concatenate(
             XingHeader.fileIdentifier,
             0x00, 0x00, 0x00, 0x03,
-            ByteVector.fromUInt(123),
-            ByteVector.fromUInt(234)
+            ByteVector.fromUint(123),
+            ByteVector.fromUint(234)
         );
 
         // Act

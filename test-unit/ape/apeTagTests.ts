@@ -19,10 +19,10 @@ const assert = Chai.assert;
 function getTestTagFooter(flags: ApeTagFooterFlags, itemCount: number, itemPlusFooter: number): ByteVector {
     return ByteVector.concatenate(
         ApeTagFooter.fileIdentifier,
-        ByteVector.fromUInt(2000, false),
-        ByteVector.fromUInt(itemPlusFooter, false),
-        ByteVector.fromUInt(itemCount, false),
-        ByteVector.fromUInt(flags, false),
+        ByteVector.fromUint(2000, false),
+        ByteVector.fromUint(itemPlusFooter, false),
+        ByteVector.fromUint(itemCount, false),
+        ByteVector.fromUint(flags, false),
         ByteVector.fromSize(8)
     );
 }

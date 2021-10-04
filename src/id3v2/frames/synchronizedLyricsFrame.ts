@@ -60,7 +60,7 @@ export class SynchronizedText {
         return ByteVector.concatenate(
             ByteVector.fromString(this.text, encoding),
             ByteVector.getTextDelimiter(encoding),
-            ByteVector.fromUInt(this.time)
+            ByteVector.fromUint(this.time)
         );
     }
 }
@@ -345,7 +345,7 @@ export class SynchronizedLyricsFrame extends Frame {
                 break;
             }
 
-            const time = data.mid(offset, 4).toUInt();
+            const time = data.mid(offset, 4).toUint();
             l.push(new SynchronizedText(time, text));
 
             offset += 4;

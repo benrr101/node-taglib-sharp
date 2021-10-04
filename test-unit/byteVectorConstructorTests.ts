@@ -1356,13 +1356,13 @@ const assert = Chai.assert;
     @test
     public fromUInt_badInteger() {
         // Arrange, Act, Assert
-        Testers.testUint((v: number) => { ByteVector.fromUInt(v); });
+        Testers.testUint((v: number) => { ByteVector.fromUint(v); });
     }
 
     @test
     public fromUInt_overflow() {
         // Arrange, Act, Assert
-        assert.throws(() => { ByteVector.fromUInt(0x10000000000); });
+        assert.throws(() => { ByteVector.fromUint(0x10000000000); });
     }
 
     @test
@@ -2043,7 +2043,7 @@ const assert = Chai.assert;
 
     private static testUInt(value: number, expectedData: number[], isReadOnly: boolean, bigEndian: boolean): void {
         // Arrange, Act
-        const bv = ByteVector.fromUInt(value, bigEndian, isReadOnly);
+        const bv = ByteVector.fromUint(value, bigEndian, isReadOnly);
 
         // Assert
         assert.isOk(bv);

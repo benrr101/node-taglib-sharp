@@ -33,7 +33,7 @@ const assert = Chai.assert;
             ByteVector.fromULong(56, false), // Object size
             new UuidWrapper().toBytes(), // Invalid reserved field 1
             ByteVector.fromUShort(6, false), // Reserved field 2
-            ByteVector.fromUInt(10, false), // Header extension data length
+            ByteVector.fromUint(10, false), // Header extension data length
             ByteVector.fromSize(10), // Header extension data
         );
         const file = TestFile.getFile(data);
@@ -51,7 +51,7 @@ const assert = Chai.assert;
             ByteVector.fromULong(56, false), // Object size
             Guids.AsfReserved1.toBytes(), // Reserved field 1
             ByteVector.fromUShort(8888, false), // Invalid reserved field 2
-            ByteVector.fromUInt(10, false), // Header extension data length
+            ByteVector.fromUint(10, false), // Header extension data length
             ByteVector.fromSize(10), // Header extension data
         );
         const file = TestFile.getFile(data);
@@ -168,7 +168,7 @@ const assert = Chai.assert;
             ByteVector.fromULong(46 + childrenBytes.length, false), // Object size
             Guids.AsfReserved1.toBytes(), // Reserved field 1
             ByteVector.fromUShort(6, false), // Reserved field 2
-            ByteVector.fromUInt(childrenBytes.length, false), // Header extension data length
+            ByteVector.fromUint(childrenBytes.length, false), // Header extension data length
             childrenBytes
         );
     }

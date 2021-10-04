@@ -278,22 +278,22 @@ export default class ApeTag extends Tag {
     set year(value: number) { this.setNumericValue("Year", value, 0); }
 
     /** @inheritDoc via Track item numerator */
-    get track(): number { return this.getUInt32Value("Track", 0); }
+    get track(): number { return this.getUint32Value("Track", 0); }
     /** @inheritDoc via Track item numerator */
     set track(value: number) { this.setNumericValue("Track", value, this.trackCount); }
 
     /** @inheritDoc via Track item denominator */
-    get trackCount(): number { return this.getUInt32Value("Track", 1); }
+    get trackCount(): number { return this.getUint32Value("Track", 1); }
     /** @inheritDoc via Track item denominator */
     set trackCount(value: number) { this.setNumericValue("Track", this.track, value); }
 
     /** @inheritDoc via Disc item numerator */
-    get disc(): number { return this.getUInt32Value("Disc", 0); }
+    get disc(): number { return this.getUint32Value("Disc", 0); }
     /** @inheritDoc via Disc item numerator */
     set disc(value: number) { this.setNumericValue("Disc", value, this.discCount); }
 
     /** @inheritDoc via Disc item denominator */
-    get discCount(): number { return this.getUInt32Value("Disc", 1); }
+    get discCount(): number { return this.getUint32Value("Disc", 1); }
     /** @inheritDoc via Disc item denominator */
     set discCount(value: number) { this.setNumericValue("Disc", this.disc, value); }
 
@@ -308,7 +308,7 @@ export default class ApeTag extends Tag {
     set grouping(value: string) { this.setStringValue("Grouping", value); }
 
     /** @inheritDoc via BPM item */
-    get beatsPerMinute(): number { return this.getUInt32Value("BPM", 0); }
+    get beatsPerMinute(): number { return this.getUint32Value("BPM", 0); }
     /** @inheritDoc via BPM item */
     set beatsPerMinute(value: number) { this.setNumericValue("BPM", value, 0); }
 
@@ -739,7 +739,7 @@ export default class ApeTag extends Tag {
         return item ? item.text : [];
     }
 
-    private getUInt32Value(key: string, index: number): number {
+    private getUint32Value(key: string, index: number): number {
         const text = this.getStringValue(key);
         if (!text) {
             return 0;

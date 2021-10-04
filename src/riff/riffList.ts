@@ -53,7 +53,7 @@ export default class RiffList implements IRiffChunk, ILazy {
 
         const list = new RiffList();
         list._chunkStart = position;
-        list._originalDataSize = file.readBlock(4).toUInt(false);
+        list._originalDataSize = file.readBlock(4).toUint(false);
         list._file = file;
         list._isLoaded = false;
         list._type = file.readBlock(4).toString();
@@ -174,7 +174,7 @@ export default class RiffList implements IRiffChunk, ILazy {
                 this._file.seek(fileOffset);
                 const headerBlock = this._file.readBlock(8);
                 const id = headerBlock.toString(4);
-                const length = headerBlock.mid(4, 4).toUInt(false);
+                const length = headerBlock.mid(4, 4).toUint(false);
 
                 if (id === RiffList.identifierFourcc) {
                     // The element is a list, create a nested riff list from it
@@ -244,7 +244,7 @@ export default class RiffList implements IRiffChunk, ILazy {
             const valuesBytes = value.map((v) => {
                 const valueBytes = ByteVector.concatenate(
                     ByteVector.fromString(key),
-                    ByteVector.fromUInt(v.length, false),
+                    ByteVector.fromUint(v.length, false),
                     v
                 );
                 if (v.length % 2 === 1) {
@@ -270,7 +270,7 @@ export default class RiffList implements IRiffChunk, ILazy {
 
         const data = ByteVector.concatenate(
             ByteVector.fromString(RiffList.identifierFourcc),
-            ByteVector.fromUInt(allData.length + 4, false),
+            ByteVector.fromUint(allData.length + 4, false),
             ByteVector.fromString(this._type),
             allData
         );

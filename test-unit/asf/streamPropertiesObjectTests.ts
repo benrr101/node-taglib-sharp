@@ -73,15 +73,15 @@ const assert = Chai.assert;
             Guids.AsfAudioMedia.toBytes(), // Stream type
             this._errorCorrectionGuid.toBytes(), // Error correction type GUID
             ByteVector.fromULong(this._timeOffset, false), // Time offset
-            ByteVector.fromUInt(16, false), // Type specific data length
-            ByteVector.fromUInt(this._errorCorrectionData.length, false), // Error correction data length
+            ByteVector.fromUint(16, false), // Type specific data length
+            ByteVector.fromUint(this._errorCorrectionData.length, false), // Error correction data length
             ByteVector.fromShort(this._flags, false), // Flags
             ByteVector.fromSize(4, 0x0), // Reserved
             // AUDIO TYPE SPECIFIC DATA
             ByteVector.fromUShort(0xF1AC, false), // Format tag
             ByteVector.fromUShort(3, false), // Number of channels
-            ByteVector.fromUInt(1234, false), // Samples per second
-            ByteVector.fromUInt(2345, false), // Average bytes per second
+            ByteVector.fromUint(1234, false), // Samples per second
+            ByteVector.fromUint(2345, false), // Average bytes per second
             ByteVector.fromUShort(88, false), // Block align
             ByteVector.fromUShort(16, false), // Bits per sample
             this._errorCorrectionData
@@ -107,23 +107,23 @@ const assert = Chai.assert;
             Guids.AsfVideoMedia.toBytes(), // Stream type
             this._errorCorrectionGuid.toBytes(), // Error correction type GUID
             ByteVector.fromULong(this._timeOffset, false), // Time offset
-            ByteVector.fromUInt(51, false), // Type specific data length
-            ByteVector.fromUInt(this._errorCorrectionData.length, false), // Error correction data length
+            ByteVector.fromUint(51, false), // Type specific data length
+            ByteVector.fromUint(this._errorCorrectionData.length, false), // Error correction data length
             ByteVector.fromShort(this._flags, false), // Flags
             ByteVector.fromSize(4, 0x0), // Reserved
             // VIDEO TYPE SPECIFIC DATA
             ByteVector.fromSize(11), // Offset (ASF summary of video specific data)
-            ByteVector.fromUInt(40, false), // Size of the struct
-            ByteVector.fromUInt(123, false), // Width of image
-            ByteVector.fromUInt(234, false), // Height of image
+            ByteVector.fromUint(40, false), // Size of the struct
+            ByteVector.fromUint(123, false), // Width of image
+            ByteVector.fromUint(234, false), // Height of image
             ByteVector.fromUShort(345, false), // Number of planes
             ByteVector.fromUShort(456, false), // Average bits per pixel
-            ByteVector.fromUInt(0x58564944, false), // FOURCC [DIVX]
-            ByteVector.fromUInt(567, false), // Size of the image
-            ByteVector.fromUInt(678, false), // Pixels per meter X
-            ByteVector.fromUInt(789, false), // Pixels per meter Y
-            ByteVector.fromUInt(890, false), // Colors used
-            ByteVector.fromUInt(1234, false), // Important colors
+            ByteVector.fromUint(0x58564944, false), // FOURCC [DIVX]
+            ByteVector.fromUint(567, false), // Size of the image
+            ByteVector.fromUint(678, false), // Pixels per meter X
+            ByteVector.fromUint(789, false), // Pixels per meter Y
+            ByteVector.fromUint(890, false), // Colors used
+            ByteVector.fromUint(1234, false), // Important colors
             this._errorCorrectionData
         );
         const file = TestFile.getFile(bytes);
@@ -156,8 +156,8 @@ const assert = Chai.assert;
             this._streamTypeGuid.toBytes(), // Stream type
             this._errorCorrectionGuid.toBytes(), // Error correction type GUID
             ByteVector.fromULong(this._timeOffset, false), // Time offset
-            ByteVector.fromUInt(this._typeSpecificData.length, false), // Type specific data length
-            ByteVector.fromUInt(this._errorCorrectionData.length, false), // Error correction data length
+            ByteVector.fromUint(this._typeSpecificData.length, false), // Type specific data length
+            ByteVector.fromUint(this._errorCorrectionData.length, false), // Error correction data length
             ByteVector.fromShort(this._flags, false), // Flags
             ByteVector.fromSize(4, 0x0), // Reserved
             this._typeSpecificData,

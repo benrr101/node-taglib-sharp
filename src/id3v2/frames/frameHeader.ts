@@ -108,7 +108,7 @@ export class Id3v2FrameHeader {
                     break;
                 }
 
-                frameSize = data.mid(3, 3).toUInt();
+                frameSize = data.mid(3, 3).toUint();
                 break;
 
             case 3:
@@ -126,7 +126,7 @@ export class Id3v2FrameHeader {
                 }
 
                 // Store the flags internally as version 2.4
-                frameSize = data.mid(4, 4).toUInt();
+                frameSize = data.mid(4, 4).toUint();
                 flags = ((data.get(8) << 7) & 0x7000)
                     | ((data.get(9) >> 4) & 0x000C)
                     | ((data.get(9) << 1) & 0x0040);
@@ -225,7 +225,7 @@ export class Id3v2FrameHeader {
 
         switch (version) {
             case 2:
-                data.addByteVector(ByteVector.fromUInt(this._frameSize).mid(1, 3));
+                data.addByteVector(ByteVector.fromUint(this._frameSize).mid(1, 3));
                 break;
 
             case 3:
@@ -233,7 +233,7 @@ export class Id3v2FrameHeader {
                     | (this._flags << 4) & 0x00C0
                     | (this._flags >> 1) & 0x0020;
 
-                data.addByteVector(ByteVector.fromUInt(this._frameSize));
+                data.addByteVector(ByteVector.fromUint(this._frameSize));
                 data.addByteVector(ByteVector.fromUShort(newFlags));
                 break;
 

@@ -166,7 +166,7 @@ export abstract class Frame {
         const frontData = ByteVector.empty();
 
         if ((this.flags & (Id3v2FrameFlags.Compression | Id3v2FrameFlags.DataLengthIndicator)) !== 0) {
-            frontData.addByteVector(ByteVector.fromUInt(fieldData.length));
+            frontData.addByteVector(ByteVector.fromUint(fieldData.length));
         }
         if ((this.flags & Id3v2FrameFlags.GroupingIdentity) !== 0) {
             frontData.addByte(this._groupId);

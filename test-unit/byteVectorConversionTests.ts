@@ -680,49 +680,49 @@ const assert = Chai.assert;
 
     @test
     public toUInt_empty() {
-        const int = ByteVector.fromSize(0).toUInt();
+        const int = ByteVector.fromSize(0).toUint();
         assert.strictEqual(int, 0);
     }
 
     @test
     public toUInt_zero_complete() {
-        const int = ByteVector.fromByteArray(new Uint8Array([0x0, 0x0, 0x0, 0x0, 0xAA])).toUInt();
+        const int = ByteVector.fromByteArray(new Uint8Array([0x0, 0x0, 0x0, 0x0, 0xAA])).toUint();
         assert.strictEqual(int, 0);
     }
 
     @test
     public toUInt_zero_incomplete() {
-        const int = ByteVector.fromByteArray(new Uint8Array([0x0, 0x0])).toUInt();
+        const int = ByteVector.fromByteArray(new Uint8Array([0x0, 0x0])).toUint();
         assert.strictEqual(int, 0);
     }
 
     @test
     public toUInt_positiveBigEndian_complete() {
-        const int = this.uintPositiveCompleteBV.toUInt();
+        const int = this.uintPositiveCompleteBV.toUint();
         assert.strictEqual(int, 0x01020304);
     }
 
     @test
     public toUInt_positiveBigEndian_incomplete() {
-        const int = this.uintPositiveIncompleteBV.toUInt();
+        const int = this.uintPositiveIncompleteBV.toUint();
         assert.strictEqual(int, 0x00000102);
     }
 
     @test
     public toUInt_positiveLittleEndian_complete() {
-        const int = this.uintPositiveCompleteBV.toUInt(false);
+        const int = this.uintPositiveCompleteBV.toUint(false);
         assert.strictEqual(int, 0x04030201);
     }
 
     @test
     public toUInt_positiveLittleEndian_incomplete() {
-        const int = this.uintPositiveIncompleteBV.toUInt(false);
+        const int = this.uintPositiveIncompleteBV.toUint(false);
         assert.strictEqual(int, 0x00000201);
     }
 
     @test
     public toUInt_unsignedRange_complete() {
-        const int = ByteVector.fromByteArray(new Uint8Array([0xFF, 0xFF, 0xFF, 0xFF])).toUInt();
+        const int = ByteVector.fromByteArray(new Uint8Array([0xFF, 0xFF, 0xFF, 0xFF])).toUint();
         assert.strictEqual(int, 0xFFFFFFFF);
     }
 

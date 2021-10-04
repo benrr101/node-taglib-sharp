@@ -29,7 +29,7 @@ const getHeaderObject: (children: BaseObject[]) => HeaderObject = (children: Bas
     const headerBytes = ByteVector.concatenate(
         Guids.AsfHeaderObject.toBytes(), // Object ID
         ByteVector.fromULong(30 + childrenBytes.length, false), // Object size
-        ByteVector.fromUInt(children.length, false), // Child objects
+        ByteVector.fromUint(children.length, false), // Child objects
         0x01, 0x02, // Reserved bytes
         childrenBytes
     );
@@ -44,7 +44,7 @@ const getHeaderExtensionObject: (children: BaseObject[]) => HeaderExtensionObjec
         ByteVector.fromULong(46 + childrenBytes.length, false), // Object size
         Guids.AsfReserved1.toBytes(), // Reserved field 1
         ByteVector.fromUShort(6, false), // Reserved field 2
-        ByteVector.fromUInt(childrenBytes.length, false), // Header extension data length
+        ByteVector.fromUint(childrenBytes.length, false), // Header extension data length
         childrenBytes
     );
     const headerExtFile = TestFile.getFile(headerExtBytes);
@@ -1061,7 +1061,7 @@ const getTagWithExtensionDescriptor: (descriptorName: string, descriptorType: Da
         const pic2PictureData = ByteVector.fromSize(10, 0x08);
         const pic2Data = ByteVector.concatenate(
             PictureType.ColoredFish,
-            ByteVector.fromUInt(pic2PictureData.length, false),
+            ByteVector.fromUint(pic2PictureData.length, false),
             ByteVector.fromString("Ha! Ha!", StringType.UTF16LE),
             ByteVector.getTextDelimiter(StringType.UTF16LE),
             ByteVector.fromString("I'm using the internet!", StringType.UTF16LE),
@@ -1406,7 +1406,7 @@ const getTagWithExtensionDescriptor: (descriptorName: string, descriptorType: Da
     public pictureFromData_missingMimeTypeDelimiter() {
         // Arrange
         const data = ByteVector.concatenate(
-            ByteVector.fromUInt(1234, false),
+            ByteVector.fromUint(1234, false),
             ByteVector.fromSize(10, 0x01)
         );
 
@@ -1421,7 +1421,7 @@ const getTagWithExtensionDescriptor: (descriptorName: string, descriptorType: Da
     public pictureFromData_missingMimeTypeDelimiterWithZeroes() {
         // Arrange
         const data = ByteVector.concatenate(
-            ByteVector.fromUInt(1234, false),
+            ByteVector.fromUint(1234, false),
             ByteVector.fromSize(10, 0x00)
         );
 
@@ -1436,7 +1436,7 @@ const getTagWithExtensionDescriptor: (descriptorName: string, descriptorType: Da
     public pictureFromData_missingDescriptionDelimiter() {
         // Arrange
         const data = ByteVector.concatenate(
-            ByteVector.fromUInt(1234, false),
+            ByteVector.fromUint(1234, false),
             ByteVector.fromString("Ha! Ha!", StringType.UTF16LE),
             ByteVector.getTextDelimiter(StringType.UTF16LE),
             ByteVector.fromSize(10, 0x01)
@@ -1453,7 +1453,7 @@ const getTagWithExtensionDescriptor: (descriptorName: string, descriptorType: Da
     public pictureFromData_missingDescriptionDelimiterWithZeroes() {
         // Arrange
         const data = ByteVector.concatenate(
-            ByteVector.fromUInt(1234, false),
+            ByteVector.fromUint(1234, false),
             ByteVector.fromString("Ha! Ha!", StringType.UTF16LE),
             ByteVector.getTextDelimiter(StringType.UTF16LE),
             ByteVector.fromSize(10, 0x00)
@@ -1472,7 +1472,7 @@ const getTagWithExtensionDescriptor: (descriptorName: string, descriptorType: Da
         const pictureData = ByteVector.fromSize(22, 0x08);
         const data = ByteVector.concatenate(
             PictureType.ColoredFish,
-            ByteVector.fromUInt(pictureData.length, false),
+            ByteVector.fromUint(pictureData.length, false),
             ByteVector.fromString("Ha! Ha!", StringType.UTF16LE),
             ByteVector.getTextDelimiter(StringType.UTF16LE),
             ByteVector.fromString("I'm using the internet!", StringType.UTF16LE),
@@ -1509,7 +1509,7 @@ const getTagWithExtensionDescriptor: (descriptorName: string, descriptorType: Da
         // Assert
         const expected = ByteVector.concatenate(
             PictureType.ColoredFish,
-            ByteVector.fromUInt(pictureData.length, false),
+            ByteVector.fromUint(pictureData.length, false),
             ByteVector.fromString("Ha! Ha!", StringType.UTF16LE),
             ByteVector.getTextDelimiter(StringType.UTF16LE),
             ByteVector.fromString("I'm using the internet!", StringType.UTF16LE),

@@ -255,29 +255,29 @@ export default class XiphPicture implements IPicture, ILazy {
 
         let position = 0;
         const rawData = this._rawDataSource();
-        this._type = rawData.mid(position, 4).toUInt();
+        this._type = rawData.mid(position, 4).toUint();
         position += 4;
 
-        const mimetypeLength = rawData.mid(position, 4).toUInt();
+        const mimetypeLength = rawData.mid(position, 4).toUint();
         position += 4;
         this._mimeType = rawData.mid(position, mimetypeLength).toString(undefined, StringType.Latin1);
         position += mimetypeLength;
 
-        const descriptionLength = rawData.mid(position, 4).toUInt();
+        const descriptionLength = rawData.mid(position, 4).toUint();
         position += 4;
         this._description = rawData.mid(position, descriptionLength).toString(undefined, StringType.UTF8);
         position += descriptionLength;
 
-        this._width = rawData.mid(position, 4).toUInt();
+        this._width = rawData.mid(position, 4).toUint();
         position += 4;
-        this._height = rawData.mid(position, 4).toUInt();
+        this._height = rawData.mid(position, 4).toUint();
         position += 4;
-        this._colorDepth = rawData.mid(position, 4).toUInt();
+        this._colorDepth = rawData.mid(position, 4).toUint();
         position += 4;
-        this._indexedColors = rawData.mid(position, 4).toUInt();
+        this._indexedColors = rawData.mid(position, 4).toUint();
         position += 4;
 
-        const dataLength = rawData.mid(position, 4).toUInt();
+        const dataLength = rawData.mid(position, 4).toUint();
         position += 4;
         this._data = rawData.mid(position, dataLength);
     }
@@ -291,16 +291,16 @@ export default class XiphPicture implements IPicture, ILazy {
         const mimeType = ByteVector.fromString(this._mimeType, StringType.Latin1);
         const description = ByteVector.fromString(this._description, StringType.UTF8);
         return ByteVector.concatenate(
-            ByteVector.fromUInt(this._type),
-            ByteVector.fromUInt(mimeType.length),
+            ByteVector.fromUint(this._type),
+            ByteVector.fromUint(mimeType.length),
             mimeType,
-            ByteVector.fromUInt(description.length),
+            ByteVector.fromUint(description.length),
             description,
-            ByteVector.fromUInt(this._width),
-            ByteVector.fromUInt(this._height),
-            ByteVector.fromUInt(this._colorDepth),
-            ByteVector.fromUInt(this._indexedColors),
-            ByteVector.fromUInt(this._data.length),
+            ByteVector.fromUint(this._width),
+            ByteVector.fromUint(this._height),
+            ByteVector.fromUint(this._colorDepth),
+            ByteVector.fromUint(this._indexedColors),
+            ByteVector.fromUint(this._data.length),
             this._data
         );
     }

@@ -157,7 +157,7 @@ const assert = Chai.assert;
     @test
     public fromData_noVbrHeaders() {
         // Arrange - MPEG2, Layer2, 64kbps, 22050kHz - padded
-        const data = ByteVector.fromUInt(0xFFF48200, true);
+        const data = ByteVector.fromUint(0xFFF48200, true);
         data.addByteVector(ByteVector.fromSize(100));
         const mockFile = TestFile.getFile(data);
 
@@ -189,7 +189,7 @@ const assert = Chai.assert;
     @test
     public fromData_hasXingHeader() {
         // Arrange - MPEG1, Layer1, 256kbps (via flags), 44100kHz, Stereo, not padded
-        const mpegFlags = ByteVector.fromUInt(0xFFFE8000, true);
+        const mpegFlags = ByteVector.fromUint(0xFFFE8000, true);
         const data = ByteVector.concatenate(
             ByteVector.fromSize(1),
             mpegFlags,
@@ -197,8 +197,8 @@ const assert = Chai.assert;
             ByteVector.concatenate(
                 XingHeader.fileIdentifier,
                 0x00, 0x00, 0x00, 0x03,
-                ByteVector.fromUInt(12),
-                ByteVector.fromUInt(23)
+                ByteVector.fromUint(12),
+                ByteVector.fromUint(23)
             ) // Calculates to 2kbps via Xing header
         );
         const mockFile = TestFile.getFile(data);
@@ -236,7 +236,7 @@ const assert = Chai.assert;
     @test
     public fromData_hasVbriHeader() {
         // Arrange - MPEG1, Layer1, 256kbps (via flags), 44100kHz, Stereo, not padded
-        const mpegFlags = ByteVector.fromUInt(0xFFFE8000, true);
+        const mpegFlags = ByteVector.fromUint(0xFFFE8000, true);
         const data = ByteVector.concatenate(
             ByteVector.fromSize(1),
             mpegFlags,
@@ -244,8 +244,8 @@ const assert = Chai.assert;
             ByteVector.concatenate(
                 VbriHeader.fileIdentifier,
                 ByteVector.fromSize(6),
-                ByteVector.fromUInt(234),
-                ByteVector.fromUInt(123),
+                ByteVector.fromUint(234),
+                ByteVector.fromUint(123),
                 ByteVector.fromSize(6)
             )
         );
@@ -592,7 +592,8 @@ const assert = Chai.assert;
     public streamLength_set_noVbr() {
         // Arrange - MPEG2, Layer2, 64kbps, 22050kHz - padded
         const header = MpegAudioHeader.fromInfo(0xFFF48200, 1234, XingHeader.unknown, VbriHeader.unknown);
-        const _ = header.durationMilliseconds; // Force calculation of durationMilliseconds
+        // noinspection JSUnusedLocalSymbols Force calculation of durationMilliseconds
+        const _ = header.durationMilliseconds;
 
         // Act
         header.streamLength = 2345;
@@ -706,7 +707,7 @@ const assert = Chai.assert;
         // Arrange
         const data = ByteVector.concatenate(
             ByteVector.fromSize(File.bufferSize * 2),
-            ByteVector.fromUInt(0xFFF48200, true),
+            ByteVector.fromUint(0xFFF48200, true),
             ByteVector.fromSize(100)
         );
         const mockFile = TestFile.getFile(data);
@@ -723,7 +724,7 @@ const assert = Chai.assert;
         // Arrange
         const data = ByteVector.concatenate(
             ByteVector.fromSize(File.bufferSize),
-            ByteVector.fromUInt(0xFFF48200, true),
+            ByteVector.fromUint(0xFFF48200, true),
             ByteVector.fromSize(100)
         );
         const mockFile = TestFile.getFile(data);

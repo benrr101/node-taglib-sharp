@@ -121,7 +121,7 @@ export default class AiffFile extends File {
                     }
 
                     id3Chunk.addByteVector(AiffFile.id3Identifier);
-                    id3Chunk.addByteVector(ByteVector.fromUInt(tagData.length, true));
+                    id3Chunk.addByteVector(ByteVector.fromUint(tagData.length, true));
                     id3Chunk.addByteVector(tagData);
                 }
             }
@@ -146,7 +146,7 @@ export default class AiffFile extends File {
                     length -= 8;
                 }
 
-                this.insert(ByteVector.fromUInt(readResult.aiffSize + id3Chunk.length - length, true), 4, 4);
+                this.insert(ByteVector.fromUint(readResult.aiffSize + id3Chunk.length - length, true), 4, 4);
             }
 
             // Update the tag types
@@ -176,7 +176,7 @@ export default class AiffFile extends File {
                 } else {
                     // This chunk is not the one we are looking for
                     // Continue the search, seeking over the chunk
-                    const chunkSize = this.readBlock(4).toUInt();
+                    const chunkSize = this.readBlock(4).toUint();
                     this.seek(chunkSize, SeekOrigin.Current);
                 }
             }
@@ -195,7 +195,7 @@ export default class AiffFile extends File {
             throw new CorruptFileError("File does not begin with AIFF identifier");
         }
 
-        const aiffSize = this.readBlock(4).toUInt(true);
+        const aiffSize = this.readBlock(4).toUint(true);
         let tagStart = -1;
         let tagEnd = -1;
 
@@ -241,7 +241,7 @@ export default class AiffFile extends File {
 
             // Get the length of the tag from the ID3 chunk
             this.seek(id3ChunkPos + 4);
-            const tagSize = this.readBlock(4).toUInt(true) + 8;
+            const tagSize = this.readBlock(4).toUint(true) + 8;
 
             tagStart = id3ChunkPos;
             tagEnd = tagStart + tagSize;

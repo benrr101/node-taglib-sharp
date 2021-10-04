@@ -302,8 +302,8 @@ export default class RiffWaveFormatEx implements ILosslessAudioCodec {
 
         this._formatTag = data.mid(0, 2).toUShort(false);
         this._channels = data.mid(2, 2).toUShort(false);
-        this._samplesPerSecond = data.mid(4, 4).toUInt(false);
-        this._averageBytesPerSecond = data.mid(8, 4).toUInt(false);
+        this._samplesPerSecond = data.mid(4, 4).toUint(false);
+        this._averageBytesPerSecond = data.mid(8, 4).toUint(false);
         this._blockAlign = data.mid(12, 2).toUShort(false);
         this._bitsPerSample = data.mid(14, 2).toUShort(false);
     }
