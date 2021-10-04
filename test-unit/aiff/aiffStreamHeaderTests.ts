@@ -31,9 +31,9 @@ const assert = Chai.assert;
         // Arrange
         const data = ByteVector.concatenate(
             ByteVector.fromString("COMM"), // Chunk identifier
-            ByteVector.fromUInt(18), // Chunk size
+            ByteVector.fromUint(18), // Chunk size
             ByteVector.fromUShort(1234), // Channels
-            ByteVector.fromUInt(2345), // Total frames
+            ByteVector.fromUint(2345), // Total frames
             ByteVector.fromUShort(3456), // Bits per sample
             // Sample rate (2345678)
             ByteVector.fromByteArray(new Uint8Array([0x40, 0x14, 0x8F, 0x2B, 0x38, 0x00, 0x00, 0x00, 0x00, 0x00]))
@@ -59,9 +59,9 @@ const assert = Chai.assert;
         // Arrange
         const data = ByteVector.concatenate(
             ByteVector.fromString("COMM"), // Chunk identifier
-            ByteVector.fromUInt(18), // Chunk size
+            ByteVector.fromUint(18), // Chunk size
             ByteVector.fromUShort(1234), // Channels
-            ByteVector.fromUInt(2345), // Total frames
+            ByteVector.fromUint(2345), // Total frames
             ByteVector.fromUShort(3456), // Bits per sample
             // Sample rate (0)
             ByteVector.fromByteArray(new Uint8Array([0x3C, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00]))
@@ -87,9 +87,9 @@ const assert = Chai.assert;
         // Arrange
         const data = ByteVector.concatenate(
             ByteVector.fromString("COMM"), // Chunk identifier
-            ByteVector.fromUInt(18), // Chunk size
+            ByteVector.fromUint(18), // Chunk size
             ByteVector.fromUShort(1234), // Channels
-            ByteVector.fromUInt(0), // Total frames
+            ByteVector.fromUint(0), // Total frames
             ByteVector.fromUShort(3456), // Bits per sample
             // Sample rate
             ByteVector.fromByteArray(new Uint8Array([0x40, 0x14, 0x8F, 0x2B, 0x38, 0x00, 0x00, 0x00, 0x00, 0x00]))

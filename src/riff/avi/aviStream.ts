@@ -67,19 +67,19 @@ export class AviStream {
             throw new CorruptFileError("Stream header does not contain correct number of bytes");
         }
 
-        this._type = streamHeaderDatum.mid(0, 4).toUInt(false);
-        this._handler = streamHeaderDatum.mid(4, 4).toUInt(false);
-        this._flags = streamHeaderDatum.mid(8, 4).toUInt(false);
+        this._type = streamHeaderDatum.mid(0, 4).toUint(false);
+        this._handler = streamHeaderDatum.mid(4, 4).toUint(false);
+        this._flags = streamHeaderDatum.mid(8, 4).toUint(false);
         this._priority = streamHeaderDatum.mid(12, 2).toUShort(false);
         this._language = streamHeaderDatum.mid(14, 2).toUShort(false);
-        this._initialFrames = streamHeaderDatum.mid(16, 4).toUInt(false);
-        this._scale = streamHeaderDatum.mid(20, 4).toUInt(false);
-        this._rate = streamHeaderDatum.mid(24, 4).toUInt(false);
-        this._start = streamHeaderDatum.mid(28, 4).toUInt(false);
-        this._length = streamHeaderDatum.mid(32, 4).toUInt(false);
-        this._suggestedBufferSize = streamHeaderDatum.mid(36, 4).toUInt(false);
-        this._quality = streamHeaderDatum.mid(40, 4).toUInt(false);
-        this._sampleSize = streamHeaderDatum.mid(44, 4).toUInt(false);
+        this._initialFrames = streamHeaderDatum.mid(16, 4).toUint(false);
+        this._scale = streamHeaderDatum.mid(20, 4).toUint(false);
+        this._rate = streamHeaderDatum.mid(24, 4).toUint(false);
+        this._start = streamHeaderDatum.mid(28, 4).toUint(false);
+        this._length = streamHeaderDatum.mid(32, 4).toUint(false);
+        this._suggestedBufferSize = streamHeaderDatum.mid(36, 4).toUint(false);
+        this._quality = streamHeaderDatum.mid(40, 4).toUint(false);
+        this._sampleSize = streamHeaderDatum.mid(44, 4).toUint(false);
         this._left = streamHeaderDatum.mid(48, 2).toUShort(false);
         this._top = streamHeaderDatum.mid(50, 2).toUShort(false);
         this._right = streamHeaderDatum.mid(52, 2).toUShort(false);

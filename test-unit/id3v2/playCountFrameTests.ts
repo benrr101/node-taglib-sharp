@@ -38,7 +38,7 @@ const assert = Chai.assert;
         header.frameSize = 4;
         const data = ByteVector.concatenate(
             header.render(4),
-            ByteVector.fromUInt(1234)
+            ByteVector.fromUint(1234)
         );
 
         // Act
@@ -55,7 +55,7 @@ const assert = Chai.assert;
         header.frameSize = 6;
         const data = ByteVector.concatenate(
             header.render(4),
-            0x00, 0x00, ByteVector.fromUInt(1234)
+            0x00, 0x00, ByteVector.fromUint(1234)
         );
 
         // Act
@@ -150,7 +150,7 @@ const assert = Chai.assert;
         header.frameSize = 4;
         const data = ByteVector.concatenate(
             header.render(4),
-            ByteVector.fromUInt(1234)
+            ByteVector.fromUint(1234)
         );
         const frame = PlayCountFrame.fromRawData(data, 4);
 

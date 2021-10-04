@@ -18,32 +18,32 @@ const data4 = ByteVector.fromString("nan", undefined, undefined, false);
 const data5 = ByteVector.fromString("234", undefined, undefined, false);
 const sampleData = ByteVector.concatenate(
     ByteVector.fromString("TXT1"),
-    ByteVector.fromUInt(data1.length, false),
+    ByteVector.fromUint(data1.length, false),
     data1, 0x00,
     ByteVector.fromString("TXT1"),
-    ByteVector.fromUInt(data2.length, false),
+    ByteVector.fromUint(data2.length, false),
     data2,
     ByteVector.fromString("TXT2"),
-    ByteVector.fromUInt(data3.length, false),
+    ByteVector.fromUint(data3.length, false),
     data3,
     ByteVector.fromString("TXT3"),
-    ByteVector.fromUInt(data4.length, false),
+    ByteVector.fromUint(data4.length, false),
     data4, 0x00,
     ByteVector.fromString("TXT3"),
-    ByteVector.fromUInt(data5.length, false),
+    ByteVector.fromUint(data5.length, false),
     data5, 0x00
 );
 
 const sampleList = ByteVector.concatenate(
     ByteVector.fromString(RiffList.identifierFourcc),
-    ByteVector.fromUInt(sampleData.length + 4, false),
+    ByteVector.fromUint(sampleData.length + 4, false),
     ByteVector.fromString("fooo"),
     sampleData
 );
 
 const sampleNestedList = ByteVector.concatenate(
     ByteVector.fromString(RiffList.identifierFourcc),
-    ByteVector.fromUInt(sampleList.length + 4, false),
+    ByteVector.fromUint(sampleList.length + 4, false),
     ByteVector.fromString("baar"),
     sampleList
 );
@@ -65,7 +65,7 @@ const sampleNestedList = ByteVector.concatenate(
         // Arrange
         const data = ByteVector.concatenate(
             ByteVector.fromString(RiffList.identifierFourcc),
-            ByteVector.fromUInt(0, false)
+            ByteVector.fromUint(0, false)
         );
         const mockFile = TestFile.getFile(data);
 
@@ -252,7 +252,7 @@ const sampleNestedList = ByteVector.concatenate(
         // Assert
         const expected = ByteVector.concatenate(
             ByteVector.fromString(RiffList.identifierFourcc),
-            ByteVector.fromUInt(4, false),
+            ByteVector.fromUint(4, false),
             ByteVector.fromString("fooo")
         );
         assert.isOk(result);

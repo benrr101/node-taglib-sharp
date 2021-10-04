@@ -32,7 +32,7 @@ const assert = Chai.assert;
             ByteVector.fromSize(10), // Offset
             Guids.AsfHeaderObject.toBytes(), // Object ID
             ByteVector.fromULong(30, false), // Object size
-            ByteVector.fromUInt(0, false), // Child objects
+            ByteVector.fromUint(0, false), // Child objects
             0x12, 0x02 // Invalid reserved
         );
         const file = TestFile.getFile(bytes);
@@ -48,7 +48,7 @@ const assert = Chai.assert;
             ByteVector.fromSize(10), // Offset
             Guids.AsfHeaderObject.toBytes(), // Object ID
             ByteVector.fromULong(30, false), // Object size
-            ByteVector.fromUInt(0, false), // Child objects
+            ByteVector.fromUint(0, false), // Child objects
             0x01, 0x23 // Invalid reserved
         );
         const file = TestFile.getFile(bytes);
@@ -95,7 +95,7 @@ const assert = Chai.assert;
             ByteVector.fromULong(46, false), // Object size
             Guids.AsfReserved1.toBytes(), // Reserved field 1
             ByteVector.fromUShort(6, false), // Reserved field 2
-            ByteVector.fromUInt(0, false), // Header extension data length
+            ByteVector.fromUint(0, false), // Header extension data length
         );
 
         const headerBytes = Asf_HeaderObjectTests.getObjectBytesFromBytes(headerExtensionBytes, 1);
@@ -169,10 +169,10 @@ const assert = Chai.assert;
             ByteVector.fromULong(3456000, false), // Play duration
             ByteVector.fromULong(4567000, false), // Send duration
             ByteVector.fromULong(5, false), // Preroll
-            ByteVector.fromUInt(123, false), // Flags
-            ByteVector.fromUInt(234, false), // Minimum data packet size
-            ByteVector.fromUInt(345, false), // Maximum data packet size
-            ByteVector.fromUInt(456, false) // Maximum bitrate
+            ByteVector.fromUint(123, false), // Flags
+            ByteVector.fromUint(234, false), // Minimum data packet size
+            ByteVector.fromUint(345, false), // Maximum data packet size
+            ByteVector.fromUint(456, false) // Maximum bitrate
         );
 
         const streamPropertiesBytes = ByteVector.concatenate(
@@ -181,15 +181,15 @@ const assert = Chai.assert;
             Guids.AsfAudioMedia.toBytes(), // Stream type
             new UuidWrapper().toBytes(), // Error correction type GUID
             ByteVector.fromULong(1234567890, false), // Time offset
-            ByteVector.fromUInt(16, false), // Type specific data length
-            ByteVector.fromUInt(23, false), // Error correction data length
+            ByteVector.fromUint(16, false), // Type specific data length
+            ByteVector.fromUint(23, false), // Error correction data length
             ByteVector.fromShort(0x1200, false), // Flags
             ByteVector.fromSize(4, 0x0), // Reserved
             // AUDIO TYPE SPECIFIC DATA
             ByteVector.fromUShort(0xF1AC, false), // Format tag
             ByteVector.fromUShort(3, false), // Number of channels
-            ByteVector.fromUInt(1234, false), // Samples per second
-            ByteVector.fromUInt(2345, false), // Average bytes per second
+            ByteVector.fromUint(1234, false), // Samples per second
+            ByteVector.fromUint(2345, false), // Average bytes per second
             ByteVector.fromUShort(88, false), // Block align
             ByteVector.fromUShort(16, false), // Bits per sample
             ByteVector.fromSize(23, 0x23)
@@ -347,7 +347,7 @@ const assert = Chai.assert;
             ByteVector.fromSize(10), // Offset
             Guids.AsfHeaderObject.toBytes(), // Object ID
             ByteVector.fromULong(30 + children.length, false), // Object size
-            ByteVector.fromUInt(childrenCount, false), // Child objects
+            ByteVector.fromUint(childrenCount, false), // Child objects
             0x01, 0x02, // Invalid reserved
             children
         );
@@ -359,7 +359,7 @@ const assert = Chai.assert;
             ByteVector.fromSize(10), // Offset
             Guids.AsfHeaderObject.toBytes(), // Object ID
             ByteVector.fromULong(30 + childrenBytes.length, false), // Object size
-            ByteVector.fromUInt(children.length, false), // Child objects
+            ByteVector.fromUint(children.length, false), // Child objects
             0x01, 0x02, // Reserved bytes
             childrenBytes
         );

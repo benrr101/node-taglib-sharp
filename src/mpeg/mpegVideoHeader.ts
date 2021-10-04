@@ -36,7 +36,7 @@ export default class MpegVideoHeader implements IVideoCodec {
         this._videoWidth = data.mid(0, 2).toUShort() >>> 4;
         this._videoHeight = (data.mid(1, 2).toShort() & 0x0FFF) >>> 0;
         this._frameRateIndex = (data.get(3) & 0x0F) >>> 0;
-        this._videoBitrate = ((data.mid(4, 3).toUInt() >>> 6) & 0x3FFFF) >>> 0;
+        this._videoBitrate = ((data.mid(4, 3).toUint() >>> 6) & 0x3FFFF) >>> 0;
     }
 
     // #region

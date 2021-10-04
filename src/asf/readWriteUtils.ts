@@ -12,7 +12,7 @@ export default {
      * @param file File to read the double word from
      */
     readDWord: (file: File): number => {
-        return file.readBlock(4).toUInt(false);
+        return file.readBlock(4).toUint(false);
     },
 
     /**
@@ -57,7 +57,7 @@ export default {
      * @param value Double word to render
      */
     renderDWord: (value: number): ByteVector => {
-        return ByteVector.fromUInt(value, false);
+        return ByteVector.fromUint(value, false);
     },
 
     /**

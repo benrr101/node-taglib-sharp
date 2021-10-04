@@ -119,7 +119,7 @@ class TestFrame extends Frame {
         // Assert
         const expected = ByteVector.concatenate(
             header.render(4),
-            ByteVector.fromUInt(TestFrame.renderFieldData.length),
+            ByteVector.fromUint(TestFrame.renderFieldData.length),
             TestFrame.renderFieldData
         );
         Testers.bvEqual(output, expected);
@@ -152,7 +152,7 @@ class TestFrame extends Frame {
         const frame = new TestFrame(header);
         const data = ByteVector.concatenate(
             header.render(4),
-            ByteVector.fromUInt(TestFrame.renderFieldData.length),
+            ByteVector.fromUint(TestFrame.renderFieldData.length),
             TestFrame.renderFieldData
         );
 

@@ -488,7 +488,7 @@ export class ByteVector {
      *        format. If `false`, `value` will be stored in little endian format
      * @param isReadOnly If `true` then the ByteVector will be read only
      */
-    public static fromUInt(
+    public static fromUint(
         value: number,
         mostSignificantByteFirst: boolean = true,
         isReadOnly: boolean = false
@@ -1246,7 +1246,7 @@ export class ByteVector {
      *        endian format)
      * @returns An unsigned integer value containing the value read from the current instance
      */
-    public toUInt(mostSignificantByteFirst: boolean = true): number {
+    public toUint(mostSignificantByteFirst: boolean = true): number {
         const dv = new DataView(this.getSizedArray(4, mostSignificantByteFirst).buffer);
         return dv.getUint32(0);
     }

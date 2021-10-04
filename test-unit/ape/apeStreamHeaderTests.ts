@@ -53,12 +53,12 @@ const assert = Chai.assert;
             ByteVector.fromSize(46),
             ByteVector.fromUShort(ApeCompressionLevel.Insane, false), // Compression level (duh)
             ByteVector.fromSize(2),
-            ByteVector.fromUInt(234, false), // Blocks per frame
-            ByteVector.fromUInt(345, false), // Final frame blocks
-            ByteVector.fromUInt(456, false), // Total frames
+            ByteVector.fromUint(234, false), // Blocks per frame
+            ByteVector.fromUint(345, false), // Final frame blocks
+            ByteVector.fromUint(456, false), // Total frames
             ByteVector.fromUShort(567, false), // Bits per sample
             ByteVector.fromUShort(3, false), // Channels
-            ByteVector.fromUInt(678, false), // Sample rate
+            ByteVector.fromUint(678, false), // Sample rate
         );
 
         // Act
@@ -85,12 +85,12 @@ const assert = Chai.assert;
             ByteVector.fromSize(46),
             ByteVector.fromUShort(ApeCompressionLevel.Insane, false), // Compression level (duh)
             ByteVector.fromSize(2),
-            ByteVector.fromUInt(0, false), // Blocks per frame
-            ByteVector.fromUInt(0, false), // Final frame blocks
-            ByteVector.fromUInt(1, false), // Total frames
+            ByteVector.fromUint(0, false), // Blocks per frame
+            ByteVector.fromUint(0, false), // Final frame blocks
+            ByteVector.fromUint(1, false), // Total frames
             ByteVector.fromUShort(567, false), // Bits per sample
             ByteVector.fromUShort(3, false), // Channels
-            ByteVector.fromUInt(678, false), // Sample rate
+            ByteVector.fromUint(678, false), // Sample rate
         );
 
         // Act

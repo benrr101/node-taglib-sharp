@@ -60,7 +60,7 @@ import {Testers} from "../utilities/testers";
         // Arrange
         const fileBytes = ByteVector.concatenate(
             ByteVector.fromSize(10),
-            ByteVector.fromUInt(0x86123456),
+            ByteVector.fromUint(0x86123456),
             ByteVector.fromSize(10)
         );
         const file = TestFile.getFile(fileBytes);
@@ -83,7 +83,7 @@ import {Testers} from "../utilities/testers";
         // Arrange
         const fileBytes = ByteVector.concatenate(
             ByteVector.fromSize(10),
-            ByteVector.fromUInt(0x06123456),
+            ByteVector.fromUint(0x06123456),
             ByteVector.fromSize(10)
         );
         const file = TestFile.getFile(fileBytes);
@@ -105,7 +105,7 @@ import {Testers} from "../utilities/testers";
     public fromFile_loadsOnDataAccess() {
         // Arrange
         const fileBytes = ByteVector.concatenate(
-            ByteVector.fromUInt(0x0600000A),
+            ByteVector.fromUint(0x0600000A),
             ByteVector.fromSize(10, 0x0B)
         );
         const file = TestFile.getFile(fileBytes);

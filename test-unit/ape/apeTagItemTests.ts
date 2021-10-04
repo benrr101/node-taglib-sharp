@@ -98,7 +98,7 @@ const assert = Chai.assert;
         // Arrange
         const data = ByteVector.concatenate(
             0x00, // Offset
-            ByteVector.fromUInt(12, false), // Size,
+            ByteVector.fromUint(12, false), // Size,
             0x00, 0x00, 0x00, 0x00, // Flags
             ByteVector.fromString("foo", StringType.UTF8), // Key
             ByteVector.getTextDelimiter(StringType.UTF8), // End of key
@@ -115,7 +115,7 @@ const assert = Chai.assert;
         const value = ByteVector.fromString("foobarbaz");
         const data = ByteVector.concatenate(
             0x00, // Offset
-            ByteVector.fromUInt(value.length, false), // Size,
+            ByteVector.fromUint(value.length, false), // Size,
             0x03, 0x00, 0x00, 0x00, // Flags
             ByteVector.fromString("foo", StringType.UTF8), // Key
             ByteVector.getTextDelimiter(StringType.UTF8), // End of key
@@ -141,7 +141,7 @@ const assert = Chai.assert;
         // Arrange
         const data = ByteVector.concatenate(
             0x00, // Offset
-            ByteVector.fromUInt(11, false), // Size,
+            ByteVector.fromUint(11, false), // Size,
             0x00, 0x00, 0x00, 0x00, // Flags
             ByteVector.fromString("foo", StringType.UTF8), // Key
             ByteVector.getTextDelimiter(StringType.UTF8), // End of key
@@ -271,7 +271,7 @@ const assert = Chai.assert;
         // Arrange
         const value = ByteVector.fromString("foobarbaz");
         const data = ByteVector.concatenate(
-            ByteVector.fromUInt(value.length, false), // Size,
+            ByteVector.fromUint(value.length, false), // Size,
             0x03, 0x00, 0x00, 0x00, // Flags
             ByteVector.fromString("foo", StringType.UTF8), // Key
             ByteVector.getTextDelimiter(StringType.UTF8), // End of key
@@ -291,7 +291,7 @@ const assert = Chai.assert;
     public render_text() {
         // Arrange
         const data = ByteVector.concatenate(
-            ByteVector.fromUInt(11, false), // Size,
+            ByteVector.fromUint(11, false), // Size,
             0x00, 0x00, 0x00, 0x00, // Flags
             ByteVector.fromString("foo", StringType.UTF8), // Key
             ByteVector.getTextDelimiter(StringType.UTF8), // End of key

@@ -33,7 +33,7 @@ import {Testers} from "../utilities/testers";
         // Arrange
         const fileBytes = ByteVector.concatenate(
             ByteVector.fromString("FOOO"),
-            ByteVector.fromUInt(100, false),
+            ByteVector.fromUint(100, false),
             Resources.getDataChunk()
         );
         const testAbstraction = TestFile.getFileAbstraction(fileBytes);
@@ -1307,7 +1307,7 @@ import {Testers} from "../utilities/testers";
     private static getFileBytes(dataBytes: ByteVector): ByteVector {
         return ByteVector.concatenate(
             RiffFile.fileIdentifier,
-            ByteVector.fromUInt(dataBytes.length, false),
+            ByteVector.fromUint(dataBytes.length, false),
             dataBytes
         );
     }

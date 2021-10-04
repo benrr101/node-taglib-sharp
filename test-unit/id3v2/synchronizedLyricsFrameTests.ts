@@ -39,7 +39,7 @@ const assert = Chai.assert;
         const expected = ByteVector.concatenate(
             ByteVector.fromString(text.text, StringType.UTF16BE),
             ByteVector.getTextDelimiter(StringType.UTF16BE),
-            ByteVector.fromUInt(text.time),
+            ByteVector.fromUint(text.time),
         );
         Testers.bvEqual(output, expected);
     }

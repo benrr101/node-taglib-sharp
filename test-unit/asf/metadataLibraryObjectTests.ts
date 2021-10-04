@@ -42,7 +42,7 @@ const assert = Chai.assert;
             ByteVector.fromUShort(234, false),
             ByteVector.fromUShort(8, false),
             ByteVector.fromUShort(DataType.Word, false),
-            ByteVector.fromUInt(2, false),
+            ByteVector.fromUint(2, false),
             ByteVector.fromString("foo\0", StringType.UTF16LE),
             ByteVector.fromUShort(1234, false)
         );
@@ -57,7 +57,7 @@ const assert = Chai.assert;
             ByteVector.fromUShort(234, false),
             ByteVector.fromUShort(8, false),
             ByteVector.fromUShort(DataType.Word, false),
-            ByteVector.fromUInt(2, false),
+            ByteVector.fromUint(2, false),
             ByteVector.fromString("foo\0", StringType.UTF16LE),
             ByteVector.fromUShort(1234, false)
         );
@@ -92,7 +92,7 @@ const assert = Chai.assert;
             ByteVector.fromUShort(234, false),
             ByteVector.fromUShort(8, false),
             ByteVector.fromUShort(DataType.Bool, false),
-            ByteVector.fromUInt(2, false),
+            ByteVector.fromUint(2, false),
             ByteVector.fromString("foo\0", StringType.UTF16LE),
             ByteVector.fromUShort(1, false)
         );
@@ -107,7 +107,7 @@ const assert = Chai.assert;
             ByteVector.fromUShort(234, false),
             ByteVector.fromUShort(8, false),
             ByteVector.fromUShort(DataType.Bool, false),
-            ByteVector.fromUInt(2, false),
+            ByteVector.fromUint(2, false),
             ByteVector.fromString("foo\0", StringType.UTF16LE),
             ByteVector.fromUShort(1, false)
         );
@@ -133,9 +133,9 @@ const assert = Chai.assert;
             ByteVector.fromUShort(234, false),
             ByteVector.fromUShort(8, false),
             ByteVector.fromUShort(DataType.Bool, false),
-            ByteVector.fromUInt(4, false),
+            ByteVector.fromUint(4, false),
             ByteVector.fromString("foo\0", StringType.UTF16LE),
-            ByteVector.fromUInt(0, false)
+            ByteVector.fromUint(0, false)
         );
         const file = TestFile.getFile(bytes);
 
@@ -169,9 +169,9 @@ const assert = Chai.assert;
             ByteVector.fromUShort(234, false),
             ByteVector.fromUShort(8, false),
             ByteVector.fromUShort(DataType.DWord, false),
-            ByteVector.fromUInt(4, false),
+            ByteVector.fromUint(4, false),
             ByteVector.fromString("foo\0", StringType.UTF16LE),
-            ByteVector.fromUInt(1234, false)
+            ByteVector.fromUint(1234, false)
         );
         Testers.bvEqual(object.render(), expectedBytes);
     }
@@ -184,9 +184,9 @@ const assert = Chai.assert;
             ByteVector.fromUShort(234, false),
             ByteVector.fromUShort(8, false),
             ByteVector.fromUShort(DataType.DWord, false),
-            ByteVector.fromUInt(4, false),
+            ByteVector.fromUint(4, false),
             ByteVector.fromString("foo\0", StringType.UTF16LE),
-            ByteVector.fromUInt(1234, false)
+            ByteVector.fromUint(1234, false)
         );
         const file = TestFile.getFile(bytes);
 
@@ -220,7 +220,7 @@ const assert = Chai.assert;
             ByteVector.fromUShort(234, false),
             ByteVector.fromUShort(8, false),
             ByteVector.fromUShort(DataType.QWord, false),
-            ByteVector.fromUInt(8, false),
+            ByteVector.fromUint(8, false),
             ByteVector.fromString("foo\0", StringType.UTF16LE),
             ByteVector.fromULong(1234, false)
         );
@@ -235,7 +235,7 @@ const assert = Chai.assert;
             ByteVector.fromUShort(234, false),
             ByteVector.fromUShort(8, false),
             ByteVector.fromUShort(DataType.QWord, false),
-            ByteVector.fromUInt(8, false),
+            ByteVector.fromUint(8, false),
             ByteVector.fromString("foo\0", StringType.UTF16LE),
             ByteVector.fromULong(1234, false)
         );
@@ -271,7 +271,7 @@ const assert = Chai.assert;
             ByteVector.fromUShort(234, false),
             ByteVector.fromUShort(8, false),
             ByteVector.fromUShort(DataType.Unicode, false),
-            ByteVector.fromUInt(20, false),
+            ByteVector.fromUint(20, false),
             ByteVector.fromString("foo\0", StringType.UTF16LE),
             ByteVector.fromString("foobarbaz\0", StringType.UTF16LE)
         );
@@ -286,7 +286,7 @@ const assert = Chai.assert;
             ByteVector.fromUShort(234, false),
             ByteVector.fromUShort(8, false),
             ByteVector.fromUShort(DataType.Unicode, false),
-            ByteVector.fromUInt(20, false),
+            ByteVector.fromUint(20, false),
             ByteVector.fromString("foo\0", StringType.UTF16LE),
             ByteVector.fromString("foobarbaz\0", StringType.UTF16LE)
         );
@@ -325,7 +325,7 @@ const assert = Chai.assert;
             ByteVector.fromUShort(234, false),
             ByteVector.fromUShort(8, false),
             ByteVector.fromUShort(DataType.Bytes, false),
-            ByteVector.fromUInt(6, false),
+            ByteVector.fromUint(6, false),
             ByteVector.fromString("foo\0", StringType.UTF16LE),
             bytes
         );
@@ -343,7 +343,7 @@ const assert = Chai.assert;
             ByteVector.fromUShort(234, false),
             ByteVector.fromUShort(8, false),
             ByteVector.fromUShort(DataType.Bytes, false),
-            ByteVector.fromUInt(6, false),
+            ByteVector.fromUint(6, false),
             ByteVector.fromString("foo\0", StringType.UTF16LE),
             bytes
         );
@@ -382,7 +382,7 @@ const assert = Chai.assert;
             ByteVector.fromUShort(234, false),
             ByteVector.fromUShort(8, false),
             ByteVector.fromUShort(DataType.Guid, false),
-            ByteVector.fromUInt(16, false),
+            ByteVector.fromUint(16, false),
             ByteVector.fromString("foo\0", StringType.UTF16LE),
             guid.toBytes()
         );
@@ -400,7 +400,7 @@ const assert = Chai.assert;
             ByteVector.fromUShort(234, false),
             ByteVector.fromUShort(8, false),
             ByteVector.fromUShort(DataType.Guid, false),
-            ByteVector.fromUInt(16, false),
+            ByteVector.fromUint(16, false),
             ByteVector.fromString("foo\0", StringType.UTF16LE),
             guid.toBytes()
         );

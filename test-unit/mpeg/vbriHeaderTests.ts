@@ -50,8 +50,8 @@ const assert = Chai.assert;
         const data = ByteVector.concatenate(
             VbriHeader.fileIdentifier,
             ByteVector.fromSize(6),
-            ByteVector.fromUInt(123),
-            ByteVector.fromUInt(234)
+            ByteVector.fromUint(123),
+            ByteVector.fromUint(234)
         );
 
         // Act

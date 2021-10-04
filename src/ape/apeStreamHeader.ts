@@ -127,12 +127,12 @@ export class ApeStreamHeader implements IAudioCodec, ILosslessAudioCodec {
         this._streamLength = streamLength;
         this._version = data.mid(4, 2).toUShort(false);
         this._compression = <ApeCompressionLevel> data.mid(52, 2).toUShort(false);
-        this._blocksPerFrame = data.mid(56, 4).toUInt(false);
-        this._finalFrameBlocks = data.mid(60, 4).toUInt(false);
-        this._totalFrames = data.mid(64, 4).toUInt(false);
+        this._blocksPerFrame = data.mid(56, 4).toUint(false);
+        this._finalFrameBlocks = data.mid(60, 4).toUint(false);
+        this._totalFrames = data.mid(64, 4).toUint(false);
         this._bitsPerSample = data.mid(68, 2).toUShort(false);
         this._channels = data.mid(70, 2).toUShort(false);
-        this._sampleRate = data.mid(72, 4).toUInt(false);
+        this._sampleRate = data.mid(72, 4).toUint(false);
     }
 
     // #region Properties

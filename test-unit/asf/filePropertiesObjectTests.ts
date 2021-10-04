@@ -36,10 +36,10 @@ class Asf_FilePropertiesObjectTests extends ObjectTests<FilePropertiesObject> {
             ByteVector.fromULong(345600, false), // Play duration
             ByteVector.fromULong(456700, false), // Send duration
             ByteVector.fromULong(5678, false), // Preroll
-            ByteVector.fromUInt(123, false), // Flags
-            ByteVector.fromUInt(234, false), // Minimum data packet size
-            ByteVector.fromUInt(345, false), // Maximum data packet size
-            ByteVector.fromUInt(456, false) // Maximum bitrate
+            ByteVector.fromUint(123, false), // Flags
+            ByteVector.fromUint(234, false), // Minimum data packet size
+            ByteVector.fromUint(345, false), // Maximum data packet size
+            ByteVector.fromUint(456, false) // Maximum bitrate
         );
         const file = TestFile.getFile(data);
 
@@ -79,10 +79,10 @@ class Asf_FilePropertiesObjectTests extends ObjectTests<FilePropertiesObject> {
             ByteVector.fromULong(345600, false), // Play duration
             ByteVector.fromULong(456700, false), // Send duration
             ByteVector.fromULong(567800, false), // Preroll
-            ByteVector.fromUInt(123, false), // Flags
-            ByteVector.fromUInt(234, false), // Minimum data packet size
-            ByteVector.fromUInt(345, false), // Maximum data packet size
-            ByteVector.fromUInt(456, false) // Maximum bitrate
+            ByteVector.fromUint(123, false), // Flags
+            ByteVector.fromUint(234, false), // Minimum data packet size
+            ByteVector.fromUint(345, false), // Maximum data packet size
+            ByteVector.fromUint(456, false) // Maximum bitrate
         );
         const file = TestFile.getFile(data);
         const object = FilePropertiesObject.fromFile(file, 10);

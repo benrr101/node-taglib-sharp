@@ -60,8 +60,8 @@ export default class VbriHeader {
 
         // Size start at position 10
         const header = new VbriHeader();
-        header._totalSize = data.mid(10, 4).toUInt();
-        header._totalFrames = data.mid(14, 4).toUInt();
+        header._totalSize = data.mid(10, 4).toUint();
+        header._totalFrames = data.mid(14, 4).toUint();
         header._isPresent = true;
 
         return header;

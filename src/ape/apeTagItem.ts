@@ -69,8 +69,8 @@ export class ApeTagItem {
             throw new CorruptFileError("Not enough data for APE item");
         }
 
-        const valueLength = data.mid(offset, 4).toUInt(false);
-        const flags = data.mid(offset + 4, 4).toUInt(false);
+        const valueLength = data.mid(offset, 4).toUint(false);
+        const flags = data.mid(offset + 4, 4).toUint(false);
 
         // Read flag data
         item._isReadonly = (flags & 1) > 0;
@@ -210,8 +210,8 @@ export class ApeTagItem {
         // Calculate the flags and length
         let flags = this._isReadonly ? 1 : 0;
         flags |= this._type << 1;
-        const flagsVector = ByteVector.fromUInt(flags, false);
-        const sizeVector = ByteVector.fromUInt(value.length, false);
+        const flagsVector = ByteVector.fromUint(flags, false);
+        const sizeVector = ByteVector.fromUint(value.length, false);
 
         // Put it all together
         const output = ByteVector.concatenate(

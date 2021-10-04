@@ -61,11 +61,11 @@ export class ApeTagFooter {
         }
 
         const footer = new ApeTagFooter();
-        footer._version = data.mid(8, 4).toUInt(false);
-        footer._itemCount = data.mid(16, 4).toUInt(false);
-        footer._flags = <ApeTagFooterFlags> data.mid(20, 4).toUInt(false);
+        footer._version = data.mid(8, 4).toUint(false);
+        footer._itemCount = data.mid(16, 4).toUint(false);
+        footer._flags = <ApeTagFooterFlags> data.mid(20, 4).toUint(false);
 
-        const itemPlusFooterSize = footer._itemSize = data.mid(12, 4).toUInt(false);
+        const itemPlusFooterSize = footer._itemSize = data.mid(12, 4).toUint(false);
         if (itemPlusFooterSize < ApeTagFooter.size) {
             throw new CorruptFileError("Tag size is out of bounds");
         }
@@ -166,13 +166,13 @@ export class ApeTagFooter {
 
             // Add the version number -- we always render a 2.000 tag regardless of what the tag
             // originally was.
-            ByteVector.fromUInt(2000, false),
+            ByteVector.fromUint(2000, false),
 
             // Add the tag size
-            ByteVector.fromUInt(this.itemSize + ApeTagFooter.size, false),
+            ByteVector.fromUint(this.itemSize + ApeTagFooter.size, false),
 
             // Add the item count
-            ByteVector.fromUInt(this.itemCount, false)
+            ByteVector.fromUint(this.itemCount, false)
         );
 
         // Render and add the flags
@@ -187,7 +187,7 @@ export class ApeTagFooter {
         } else {
             flags = (flags & ~ApeTagFooterFlags.IsHeader) >>> 0;
         }
-        v.addByteVector(ByteVector.fromUInt(flags, false));
+        v.addByteVector(ByteVector.fromUint(flags, false));
 
         // Add the reserved 64bit
         v.addByteVector(ByteVector.fromSize(8));

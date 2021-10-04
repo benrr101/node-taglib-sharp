@@ -73,7 +73,7 @@ const assert = Chai.assert;
         list.setValues(AviHeader.headerChunkId, [Resources.getAviHeader()]);
 
         const header1Data = ByteVector.concatenate(
-            ByteVector.fromUInt(AviStreamType.MIDI_STREAM, false),
+            ByteVector.fromUint(AviStreamType.MIDI_STREAM, false),
             ByteVector.fromSize(52)
         );
         const streamList1 = RiffList.fromEmpty(AviStream.listType);
@@ -81,7 +81,7 @@ const assert = Chai.assert;
         streamList1.setValues(AviStream.formatChunkId, [ByteVector.empty()]);
 
         const header2Data = ByteVector.concatenate(
-            ByteVector.fromUInt(AviStreamType.TEXT_STREAM, false),
+            ByteVector.fromUint(AviStreamType.TEXT_STREAM, false),
             ByteVector.fromSize(52)
         );
         const streamList2 = RiffList.fromEmpty(AviStream.listType);
@@ -113,7 +113,7 @@ const assert = Chai.assert;
         list.setValues(AviHeader.headerChunkId, [Resources.getAviHeader()]);
 
         const header1Data = ByteVector.concatenate(
-            ByteVector.fromUInt(AviStreamType.AUDIO_STREAM, false),
+            ByteVector.fromUint(AviStreamType.AUDIO_STREAM, false),
             ByteVector.fromSize(52)
         );
         const streamList1 = RiffList.fromEmpty(AviStream.listType);

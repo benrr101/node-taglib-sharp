@@ -77,7 +77,7 @@ export default class MpegAudioHeader implements IAudioCodec {
             throw new CorruptFileError(error);
         }
 
-        header._flags = data.toUInt();
+        header._flags = data.toUint();
         header._xingHeader = XingHeader.unknown;
         header._vbriHeader = VbriHeader.unknown;
 
@@ -393,7 +393,7 @@ export default class MpegAudioHeader implements IAudioCodec {
             return "Second byte did not match MPEG sync";
         }
 
-        const flags = data.toUInt();
+        const flags = data.toUint();
         if (((flags >> 12) & 0x0F) === 0x0F) {
             return "Header uses invalid bitrate index";
         }

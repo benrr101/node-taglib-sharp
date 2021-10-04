@@ -76,7 +76,7 @@ const assert = Chai.assert;
             ByteVector.fromString("foo\0", StringType.UTF16LE),
             ByteVector.fromUShort(DataType.Bool, false),
             ByteVector.fromUShort(4, false),
-            ByteVector.fromUInt(1, false)
+            ByteVector.fromUint(1, false)
         );
         Testers.bvEqual(object.render(), expectedBytes);
     }
@@ -89,7 +89,7 @@ const assert = Chai.assert;
             ByteVector.fromString("foo\0", StringType.UTF16LE),
             ByteVector.fromUShort(DataType.Bool, false),
             ByteVector.fromUShort(4, false),
-            ByteVector.fromUInt(1, false)
+            ByteVector.fromUint(1, false)
         );
         const file = TestFile.getFile(bytes);
 
@@ -117,7 +117,7 @@ const assert = Chai.assert;
             ByteVector.fromString("foo\0", StringType.UTF16LE),
             ByteVector.fromUShort(DataType.DWord, false),
             ByteVector.fromUShort(4, false),
-            ByteVector.fromUInt(1234, false)
+            ByteVector.fromUint(1234, false)
         );
         Testers.bvEqual(object.render(), expectedBytes);
     }
@@ -130,7 +130,7 @@ const assert = Chai.assert;
             ByteVector.fromString("foo\0", StringType.UTF16LE),
             ByteVector.fromUShort(DataType.DWord, false),
             ByteVector.fromUShort(4, false),
-            ByteVector.fromUInt(1234, false)
+            ByteVector.fromUint(1234, false)
         );
         const file = TestFile.getFile(bytes);
 
