@@ -1,6 +1,7 @@
 import EndTag from "./endTag";
 import SandwichTag from "./sandwichTag";
 import Properties from "../properties";
+import Settings from "../settings";
 import StartTag from "./startTag";
 import {File, FileAccessMode, ReadStyle} from "../file";
 import {IFileAbstraction} from "../fileAbstraction";
@@ -53,7 +54,7 @@ export default abstract class SandwichFile extends File implements ISandwichFile
             }
 
             // Tag is expected to exist
-            this._tag.createTag(tagType, true);
+            this._tag.createTag(tagType, Settings.copyExistingTagsToNewDefaultTags);
         }
     }
 

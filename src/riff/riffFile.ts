@@ -10,6 +10,7 @@ import RiffChunk from "./riffChunk";
 import RiffList from "./riffList";
 import RiffTags from "./riffTags";
 import RiffWaveFormatEx from "./riffWaveFormatEx";
+import Settings from "../settings";
 import WaveFileSettings from "./waveFileSettings";
 import {ByteVector} from "../byteVector";
 import {CorruptFileError, UnsupportedFormatError} from "../errors";
@@ -74,7 +75,7 @@ export default class RiffFile extends File {
             }
 
             // Desired default tag does not exist, create it
-            this._tag.createTag(tagType, true);
+            this._tag.createTag(tagType, Settings.copyExistingTagsToNewDefaultTags);
         }
     }
 

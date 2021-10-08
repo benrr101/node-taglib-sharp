@@ -3,6 +3,7 @@ import FlacFileSettings from "./flacFileSettings";
 import FlacStreamHeader from "./flacStreamHeader";
 import FlacTag from "./flacTag";
 import Properties from "../properties";
+import Settings from "../settings";
 import StartTag from "../sandwich/startTag";
 import XiphComment from "../xiph/xiphComment";
 import XiphPicture from "../xiph/xiphPicture";
@@ -71,7 +72,7 @@ export default class FlacFile extends File implements ISandwichFile {
             }
 
             // Desired tag does not exist, create it
-            this._tag.createTag(tagType, true);
+            this._tag.createTag(tagType, Settings.copyExistingTagsToNewDefaultTags);
         }
     }
 
