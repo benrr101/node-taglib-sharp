@@ -181,6 +181,12 @@ export abstract class File {
     public get fileAbstraction(): IFileAbstraction { return this._fileAbstraction; }
 
     /**
+     * Shortcut property to determine if a file has tags in memory.
+     * NOTE: Just because `tag !== undefined` does not mean there are tags in memory.
+     */
+    public get hasTags(): boolean { return this.tagTypes !== TagTypes.None; }
+
+    /**
      * Indicates whether or not this file may be corrupt. Files with unknown corruptions should not
      * be written.
      */

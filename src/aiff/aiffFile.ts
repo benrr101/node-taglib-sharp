@@ -1,3 +1,4 @@
+import AiffFileSettings from "./aiffFileSettings";
 import Id3v2Tag from "../id3v2/id3v2Tag";
 import Properties from "../properties";
 import {ByteVector} from "../byteVector";
@@ -64,7 +65,9 @@ export default class AiffFile extends File {
 
         // Retrieve the tag
         this._tagTypesOnDisk = this.tagTypes;
-        this.getTag(TagTypes.Id3v2, true);
+        if ((AiffFileSettings.defaultTagTypes & TagTypes.Id3v2) !== 0) {
+            this.getTag(TagTypes.Id3v2, true);
+        }
     }
 
     // #region Properties
