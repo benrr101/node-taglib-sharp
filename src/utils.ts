@@ -6,6 +6,12 @@ export class Guards {
     private static readonly MAX_ULONG = BigInt("18446744073709551615");
     private static readonly MIN_LONG = BigInt("-9223372036854775808");
 
+    public static all<TElement>(value: TElement[], guard: (val: TElement, name: string) => void, name: string) {
+        for (const element of value) {
+            guard(element, `All elements in ${name}`);
+        }
+    }
+
     public static betweenExclusive(value: number, minValue: number, maxValue: number, name: string): void {
         if (value <= minValue || value >= maxValue) {
             throw new Error(`Argument out of range: ${name} must satisfy ${maxValue} <= ${name} <= ${minValue}`);
