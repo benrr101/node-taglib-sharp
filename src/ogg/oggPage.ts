@@ -1,16 +1,16 @@
 import itiriri from "itiriri";
 import {ByteVector} from "../byteVector";
 import {File} from "../file";
-import {PageHeader} from "./pageHeader";
+import {OggPageHeader} from "./oggPageHeader";
 import {Guards} from "../utils";
 
 export default class OggPage {
-    private readonly _header: PageHeader;
+    private readonly _header: OggPageHeader;
     private readonly _packets: ByteVector[];
 
     // #region Constructors
 
-    private constructor(header: PageHeader) {
+    private constructor(header: OggPageHeader) {
         this._header = header;
         this._packets = [];
     }
@@ -25,7 +25,7 @@ export default class OggPage {
         Guards.truthy(file, "file");
         Guards.safeUint(position, "position");
 
-        const page = new OggPage(PageHeader.fromFile(file, position));
+        const page = new OggPage(OggPageHeader.fromFile(file, position));
         file.seek(position + page._header.size);
 
         for (const packetSize of page._header.packetSizes) {
@@ -40,7 +40,7 @@ export default class OggPage {
      * @param header Header of the page
      * @param packets Packets contained in the page
      */
-    public static fromPackets(header: PageHeader, packets: ByteVector[]) {
+    public static fromPackets(header: OggPageHeader, packets: ByteVector[]) {
         Guards.truthy(packets, "packets");
         Guards.truthy(header, "header");
 
@@ -58,7 +58,7 @@ export default class OggPage {
     /**
      * Gets the header of the current instance.
      */
-    public get header(): PageHeader { return this._header; }
+    public get header(): OggPageHeader { return this._header; }
 
     /**
      * Gets the packets contained in the current instance.
@@ -95,8 +95,8 @@ export default class OggPage {
             return;
         }
 
-        while (position < file.length - PageHeader.minSize) {
-            const header = PageHeader.fromFile(file, position);
+        while (position < file.length - OggPageHeader.minSize) {
+            const header = OggPageHeader.fromFile(file, position);
             const size = header.size + header.dataSize;
 
             if (shiftTable.has(header.streamSerialNumber) && shiftTable.get(header.streamSerialNumber) !== 0) {
@@ -121,5 +121,25 @@ export default class OggPage {
 
             position += size;
         }
+    }
+
+    /**
+     * Renders the current instance as a raw Ogg page.
+     */
+    public render(): ByteVector {
+        const data = ByteVector.concatenate(
+            this._header.render(),
+            ... this._packets
+        );
+
+        // Computer the checksum for the Ogg page. THe checksum is taken over the entire page with
+        // the 4 bytes reserved for the checksum zeroed and then inserted in bytes 22-25 of the
+        // page header.
+        const checksum = ByteVector.fromUint(data.checksum, false);
+        for (let i = 0; i < 4; i++) {
+            data.set(i + 22, checksum.get(i));
+        }
+
+        return data;
     }
 }

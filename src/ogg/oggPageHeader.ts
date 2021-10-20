@@ -4,9 +4,9 @@ import {File} from "../file";
 import {Guards} from "../utils";
 
 /**
- * Indicates the special properties of a {@see PageHeader}.
+ * Indicates the special properties of a {@see OggPageHeader}.
  */
-export enum PageFlags {
+export enum OggPageFlags {
     /** The page is a normal page. */
     None = 0,
 
@@ -23,13 +23,13 @@ export enum PageFlags {
 /**
  * This structure provides a representation of an Ogg page header.
  */
-export class PageHeader {
+export class OggPageHeader {
     public static readonly minSize = 27;
     private static readonly headerBeginning = ByteVector.fromString("OggS", undefined, undefined, true);
 
     private _absoluteGranularPosition: number;
     private _dataSize: number;
-    private _flags: PageFlags;
+    private _flags: OggPageFlags;
     private _lastPacketComplete: boolean;
     private _packetSizes: number[];
     private _pageSequenceNumber: number;
@@ -39,7 +39,7 @@ export class PageHeader {
 
     // #region Constructors
 
-    public static fromFile(file: File, position: number): PageHeader {
+    public static fromFile(file: File, position: number): OggPageHeader {
         Guards.truthy(file, "file");
         Guards.safeUint(position, "position");
         if (position > file.length - this.minSize) {
@@ -52,7 +52,7 @@ export class PageHeader {
             throw new CorruptFileError("Error reading page header");
         }
 
-        const header = new PageHeader();
+        const header = new OggPageHeader();
         header._version = data.get(4);
         header._flags = data.get(5);
 
@@ -119,7 +119,7 @@ export class PageHeader {
     /**
      * Gets the flags for the page described by the current instance.
      */
-    public get flags(): PageFlags { return this._flags; }
+    public get flags(): OggPageFlags { return this._flags; }
 
     /**
      * Gets whether or not the final packet is continued on the next page. If `true`, the final
@@ -177,7 +177,7 @@ export class PageHeader {
         const lacingBytes = ByteVector.concatenate(...lacingValues);
 
         return ByteVector.concatenate(
-            PageHeader.headerBeginning,
+            OggPageHeader.headerBeginning,
             this._version,
             this._flags,
             ByteVector.fromULong(this._absoluteGranularPosition, false),

@@ -2,7 +2,7 @@ import XiphComment from "../../xiph/xiphComment";
 import {ByteVector} from "../../byteVector";
 import {ICodec} from "../../iCodec";
 
-export default interface IOggCodec {
+export default interface IOggCodec extends ICodec{
     /**
      * Reads an Ogg packet that has been encountered in the stream, looking for the comment data.
      * @param packet Packet to read
