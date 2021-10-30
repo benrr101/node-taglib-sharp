@@ -39,6 +39,15 @@ export class OggPageHeader {
 
     // #region Constructors
 
+    private constructor() {
+    }
+
+    /**
+     * Constructs and initializes a new instance by reading a raw Ogg page header from a specified
+     * position in a specified file.
+     * @param file File from which the contents of the new instance are to be read
+     * @param position Position in the file where the header begins
+     */
     public static fromFile(file: File, position: number): OggPageHeader {
         Guards.truthy(file, "file");
         Guards.safeUint(position, "position");
@@ -97,6 +106,65 @@ export class OggPageHeader {
         }
 
         header._lastPacketComplete = pageSegments.get(pageSegmentCount - 1) < 255;
+
+        return header;
+    }
+
+    /**
+     * Constructs and initializes a new instance with a given stream serial number, page number,
+     * and flags.
+     * @param streamSerialNumber Serial number for the stream containing the page described by the
+     *     new instance
+     * @param pageNumber Index of the page described by the new instance in the stream
+     * @param flags Flags that apply to the new instance.
+     */
+    public static fromInfo(streamSerialNumber: number, pageNumber: number, flags: OggPageFlags): OggPageHeader {
+        Guards.uint(streamSerialNumber, "streamSerialNumber");
+        Guards.uint(pageNumber, "pageNumber");
+
+        const header = new OggPageHeader();
+        header._version = 0;
+        header._flags = flags;
+        header._absoluteGranularPosition = 0;
+        header._streamSerialNumber = streamSerialNumber;
+        header._pageSequenceNumber = pageNumber;
+        header._size = 0;
+        header._dataSize = 0;
+        header._packetSizes = [];
+        header._lastPacketComplete = false;
+
+        if (pageNumber === 0 && (flags & OggPageFlags.FirstPacketContinued) === 0) {
+            header._flags |= OggPageFlags.FirstPageOfStream;
+        }
+
+        return header;
+    }
+
+    /**
+     * Constructs and initializes a new instance by copying the values from another instance,
+     * offsetting the page number and applying new flags.
+     * @param original Object to copy values from
+     * @param offset How much to offset the page sequence number in the new instance
+     * @param flags Flags to use in the new instance
+     */
+    public static fromPageHeader(original: OggPageHeader, offset: number, flags: OggPageFlags): OggPageHeader {
+        Guards.truthy(original, "original");
+        Guards.uint(offset, "offset");
+
+        const header = new OggPageHeader();
+        header._version = original._version;
+        header._flags = flags;
+        header._absoluteGranularPosition = original._absoluteGranularPosition;
+        header._streamSerialNumber = original._streamSerialNumber;
+        header._pageSequenceNumber = original._pageSequenceNumber + offset;
+        header._size = original._size;
+        header._dataSize = original._dataSize;
+        header._packetSizes = [];
+        header._lastPacketComplete = false;
+
+        if (header._pageSequenceNumber === 0 && (flags & OggPageFlags.FirstPacketContinued) === 0) {
+            header._flags |= OggPageFlags.FirstPageOfStream;
+        }
 
         return header;
     }

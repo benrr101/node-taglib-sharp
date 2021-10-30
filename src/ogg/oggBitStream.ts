@@ -4,7 +4,6 @@ import OggPage from "./oggPage";
 import {ByteVector} from "../byteVector";
 import {Guards} from "../utils";
 import {OggPageFlags} from "./oggPageHeader";
-import {ICodec} from "../iCodec";
 
 /**
  * This class accepts a sequence of pages belonging to a single logical bitstream, processes them,
@@ -31,7 +30,7 @@ export default class OggBitStream {
     /**
      * Gets the codec object used to interpret the stream represented by the current instance.
      */
-    public get codec(): ICodec { return this._codec; }
+    public get codec(): IOggCodec { return this._codec; }
 
     /**
      * Reads the next logical page in the stream.
@@ -68,5 +67,16 @@ export default class OggBitStream {
         }
 
         return false;
+    }
+
+    /**
+     * Sets the duration of the stream using the first granular position of the stream and the last
+     * granular position of the stream.
+     * @internal
+     */
+    public setDuration(lastAbsoluteGranularPosition: number): void {
+        Guards.safeUint(lastAbsoluteGranularPosition, "lastAbsoluteGranularPosition");
+
+        this._codec.setDuration(this._firstAbsoluteGranularPosition, lastAbsoluteGranularPosition);
     }
 }
