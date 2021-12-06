@@ -234,11 +234,11 @@ export class StandardFileTests {
         if (level >= TestTagLevel.Medium) {
             assert.strictEqual(tag.titleSort, "title sort, TEST");
             assert.strictEqual(tag.albumSort, "album sort, TEST");
-            assert.strictEqual(tag.joinedPerformersSort, "performer sort 1, TEST; performer sort 2, TEST");
-            assert.strictEqual(tag.composersSort.join("; "), "composer sort 1, TEST; composer sort 2, TEST");
-            assert.strictEqual(tag.albumArtistsSort.join("; "), "album artist sort 1, TEST; album artist sort 2, TEST");
+            assert.sameOrderedMembers(tag.performersSort, ["performer sort 1, TEST", "performer sort 2, TEST"]);
+            assert.sameOrderedMembers(tag.composersSort, ["composer sort 1, TEST", "composer sort 2, TEST"]);
+            assert.sameOrderedMembers(tag.albumArtistsSort, ["album artist sort 1, TEST", "album artist sort 2, TEST"]);
+            assert.sameOrderedMembers(tag.performersRole, ["TEST role 1a; TEST role 1b", "TEST role 2"]);
             assert.strictEqual(tag.beatsPerMinute, 120);
-            assert.strictEqual(tag.performersRole.join("\n"), "TEST role 1a;TEST role 1b\nTEST role 2");
 
             const dateTagged = (new Date(2017, 8, 12, 22, 47, 42)).getTime();
             assert.strictEqual(tag.dateTagged.getTime(), dateTagged);
@@ -281,17 +281,8 @@ export class StandardFileTests {
     }
 
     private static setTags(tag: Tag, level: TestTagLevel) {
-        if (level >= TestTagLevel.Medium) {
-            tag.titleSort = "title sort, TEST";
-            tag.albumSort = "album sort, TEST";
-            tag.performersSort = ["performer sort 1, TEST", "performer sort 2, TEST"];
-            tag.composersSort = ["composer sort 1, TEST", "composer sort 2, TEST"];
-            tag.albumArtistsSort = ["album artist sort 1, TEST", "album artist sort 2, TEST"];
-        }
-
         tag.album = "TEST album";
         tag.albumArtists = ["TEST artist 1", "TEST artist 2"];
-        tag.beatsPerMinute = 120;
         tag.comment = "TEST comment";
         tag.composers = ["TEST composer 1", "TEST composer 2"];
         tag.conductor = "TEST conductor";
@@ -303,12 +294,21 @@ export class StandardFileTests {
         tag.grouping = "TEST grouping";
         tag.lyrics = "TEST lyrics 1\r\nTEST lyrics 2";
         tag.performers = ["TEST performer 1", "TEST performer 2"];
-        tag.performersRole = ["TEST role 1a; TEST role 1b", "TEST role 2"];
         tag.title = "TEST title";
         tag.subtitle = "TEST subtitle";
         tag.description = "TEST description";
         tag.track = 98;
         tag.trackCount = 99;
         tag.year = 1999;
+
+        if (level >= TestTagLevel.Medium) {
+            tag.titleSort = "title sort, TEST";
+            tag.albumSort = "album sort, TEST";
+            tag.performersSort = ["performer sort 1, TEST", "performer sort 2, TEST"];
+            tag.composersSort = ["composer sort 1, TEST", "composer sort 2, TEST"];
+            tag.albumArtistsSort = ["album artist sort 1, TEST", "album artist sort 2, TEST"];
+            tag.performersRole = ["TEST role 1a; TEST role 1b", "TEST role 2"];
+            tag.beatsPerMinute = 120;
+        }
     }
 }

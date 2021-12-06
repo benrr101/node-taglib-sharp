@@ -149,7 +149,9 @@ export default class Properties implements ILosslessAudioCodec, IVideoCodec, IPh
         defaultValue: number
     ): number {
         const codec = this._codecs.find((e) => !!e && (e.mediaTypes & mediaType) !== 0);
-        return codec ? property(<TCodec> codec) : defaultValue;
+        return codec
+            ? property(<TCodec> codec) || defaultValue
+            : defaultValue;
     }
 
     // #endregion

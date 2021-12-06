@@ -125,6 +125,15 @@ export {default as MpegVbriHeader} from "./mpeg/vbriHeader";
 export {default as MpegVideoHeader} from "./mpeg/mpegVideoHeader";
 export {default as MpegXingHeader} from "./mpeg/xingHeader";
 
+// OGG /////////////////////////////////////////////////////////////////////
+export {default as OggFile} from "./ogg/oggFile";
+export {default as GroupedComment} from "./ogg/groupedComment";
+
+export {default as OggCodecFactory} from "./ogg/codecs/codecFactory";
+export {default as OggOpusCodec} from "./ogg/codecs/opus";
+export {default as OggTheoraCodec} from "./ogg/codecs/theora";
+export {default as OggVorbisCodec} from "./ogg/codecs/vorbis";
+
 // RIFF ////////////////////////////////////////////////////////////////////
 export {default as RiffFile} from "./riff/riffFile";
 export {

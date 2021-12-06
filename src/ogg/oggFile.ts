@@ -11,43 +11,65 @@ import {IFileAbstraction} from "../fileAbstraction";
 import {OggPageFlags, OggPageHeader} from "./oggPageHeader";
 import {Tag, TagTypes} from "../tag";
 
+/**
+ * Provides tagging and properties support for Ogg files.
+ */
 export default class OggFile extends File {
 
-    private _properties: Properties
-    private _tag: GroupedComment;
+    private readonly _properties: Properties;
+    private readonly _tag: GroupedComment;
 
     /** @inheritDoc */
-    public constructor(file: IFileAbstraction | string, propertiesStyle: ReadStyle) {
+    public constructor(file: IFileAbstraction | string, readStyle: ReadStyle) {
         super(file);
 
-        // Read the file
-        const streamsResult = this.readStreams();
-        const codecs = [];
+        this.mode = FileAccessMode.Read;
+        try {
+            // Read the file
+            const streamsResult = this.readStreams();
+            const codecs = [];
 
-        for (const id of streamsResult.streams.keys()) {
-            const codec = streamsResult.streams.get(id);
-            const comment = XiphComment.fromData(codec.codec.commentData);
-            this._tag.setComment(id, comment);
-            codecs.push(codec.codec);
-        }
-
-        // Read the properties if requested
-        if ((propertiesStyle & ReadStyle.Average) !== 0) {
-            // Find the last page header and use it's position to determine the duration of the
-            // file.
-            const lastPageHeaderOffset = this.rFind();
-            if (lastPageHeaderOffset < 0) {
-                throw new CorruptFileError("Could not find last Ogg page header");
+            for (const id of streamsResult.streams.keys()) {
+                const codec = streamsResult.streams.get(id);
+                const comment = XiphComment.fromData(codec.codec.commentData, (readStyle & ReadStyle.PictureLazy) !== 0);
+                this._tag = new GroupedComment();
+                this._tag.setComment(id, comment);
+                codecs.push(codec.codec);
             }
 
-            const lastPageHeader = OggPageHeader.fromFile(this, lastPageHeaderOffset);
-            streamsResult.streams.get(lastPageHeader.streamSerialNumber)
-                .setDuration(lastPageHeader.absoluteGranularPosition);
-            const duration = streamsResult.streams.get(lastPageHeader.streamSerialNumber)
-                .codec.durationMilliseconds;
-            this._properties = new Properties(duration, codecs);
+            // Read the properties if requested
+            // TODO: Read bitrate more accurately if accurate read style provided
+            if ((readStyle & ReadStyle.Average) !== 0) {
+                // Find the last page header and use it's position to determine the duration of the
+                // file.
+                const lastPageHeaderOffset = this.rFind(OggPageHeader.headerBeginning);
+                if (lastPageHeaderOffset < 0) {
+                    throw new CorruptFileError("Could not find last Ogg page header");
+                }
+
+                const lastPageHeader = OggPageHeader.fromFile(this, lastPageHeaderOffset);
+                streamsResult.streams.get(lastPageHeader.streamSerialNumber)
+                    .setDuration(lastPageHeader.absoluteGranularPosition);
+                const duration = streamsResult.streams.get(lastPageHeader.streamSerialNumber)
+                    .codec.durationMilliseconds;
+                this._properties = new Properties(duration, codecs);
+            }
+        } finally {
+            this.mode = FileAccessMode.Closed;
         }
     }
+
+    // #region Properties
+
+    /** @inheritDoc */
+    public get properties(): Properties { return this._properties; }
+
+    /** @inheritDoc */
+    public get tag(): Tag { return this._tag; }
+
+    // #endregion
+
+    // #region Methods
 
     /** @inheritDoc */
     public getTag(type: TagTypes, create: boolean): Tag {
@@ -109,7 +131,7 @@ export default class OggFile extends File {
                         continue;
                     }
 
-                    output.addByteVector(streamPages[0].header.render());
+                    output.addByteVector(streamPages[0].render());
                     streamPages.shift();
 
                     isEmpty = streamPages.length === 0;
@@ -163,4 +185,29 @@ export default class OggFile extends File {
             streams: streams
         };
     }
+
+    // #endregion
 }
+
+////////////////////////////////////////////////////////////////////////////
+// Register the file type
+[
+    "taglib/ogg",
+    "taglib/oga",
+    "taglib/ogv",
+    "taglib/opus",
+    "application/ogg",
+    "application/x-ogg",
+    "audio/vorbis",
+    "audio/x-vorbis",
+    "audio/x-vorbis+ogg",
+    "audio/ogg",
+    "audio/x-ogg",
+    "video/ogg",
+    "video/x-ogm+ogg",
+    "video/x-theora+ogg",
+    "video/x-theora",
+    "audio/opus",
+    "audio/x-opus",
+    "audio/x-opus+ogg"
+].forEach((mt) => File.addFileType(mt, OggFile));

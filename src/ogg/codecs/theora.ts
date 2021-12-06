@@ -58,7 +58,7 @@ export default class Theora implements IOggCodec, IVideoCodec {
     public get description(): string { return `Theora v${this._majorVersion}.${this._minorVersion} video`; }
 
     /** @inheritDoc */
-    public get durationMilliseconds(): number
+    public get durationMilliseconds(): number { return this._durationMilliseconds; }
 
     /** @inheritDoc */
     public get mediaTypes(): MediaTypes { return MediaTypes.Video; }

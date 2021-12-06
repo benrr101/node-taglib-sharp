@@ -36,22 +36,31 @@ export default class Vorbis implements IOggCodec, IAudioCodec {
         if (!headerPacket.containsAt(Vorbis.id, 1)) {
             throw new Error("Argument error: header packet must start with Vorbis ID");
         }
-        if (headerPacket.get(0) === VorbisPacketType.Header) {
+        if (headerPacket.get(0) !== VorbisPacketType.Header) {
             throw new Error("Argument error: header packet must be a header packet");
         }
 
         this._vorbisVersion = headerPacket.mid(7, 4).toUint(false);
         this._channels = headerPacket.get(11);
         this._sampleRate = headerPacket.mid(12, 4).toUint(false);
-        this._bitrateMaximum = headerPacket.mid(16, 4).toUint(false);
-        this._bitrateNominal = headerPacket.mid(20, 4).toUint(false);
-        this._bitrateMinimum = headerPacket.mid(24, 4).toUint(false);
+        this._bitrateMaximum = headerPacket.mid(16, 4).toInt(false);
+        this._bitrateNominal = headerPacket.mid(20, 4).toInt(false);
+        this._bitrateMinimum = headerPacket.mid(24, 4).toInt(false);
     }
 
     // #region Properties
 
-    /** @inheritDoc */
-    public get audioBitrate(): number { return this._bitrateNominal / 1000 + 0.5; }
+    /**
+     * @inheritDoc
+     * @remarks For Vorbis files, this is the nominal bitrate as specified in the identification
+     *     header. This may be significantly different than the actual average since this header
+     *     only provides decoding hints.
+     */
+    public get audioBitrate(): number {
+        // NOTE: The original .NET implementation had a + 0.5 at the beginning but this isn't
+        //    listed anywhere in the Vorbis spec, so I removed it.
+        return this._bitrateNominal / 1000;
+    }
 
     /** @inheritDoc */
     public get audioChannels(): number { return this._channels; }

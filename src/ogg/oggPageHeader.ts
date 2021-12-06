@@ -25,7 +25,7 @@ export enum OggPageFlags {
  */
 export class OggPageHeader {
     public static readonly minSize = 27;
-    private static readonly headerBeginning = ByteVector.fromString("OggS", undefined, undefined, true);
+    public static readonly headerBeginning = ByteVector.fromString("OggS", undefined, undefined, true);
 
     private _absoluteGranularPosition: number;
     private _dataSize: number;

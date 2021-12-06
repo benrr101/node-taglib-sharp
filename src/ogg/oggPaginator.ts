@@ -1,18 +1,18 @@
-import {ByteVector} from "../byteVector";
-import {OggPageFlags, OggPageHeader} from "./oggPageHeader";
 import IOggCodec from "./codecs/iOggCodec";
 import OggPage from "./oggPage";
 import XiphComment from "../xiph/xiphComment";
+import {ByteVector} from "../byteVector";
+import {OggPageFlags, OggPageHeader} from "./oggPageHeader";
 
 /**
  * This class accepts a sequence of pages for a single Ogg stream, accepts changes, and produces a
  * new sequence of pages to write to disk.
  */
 export default class OggPaginator {
-    private readonly _packets: ByteVector[];
+    private readonly _packets: ByteVector[] = [];
     private _codec: IOggCodec;
     private _firstPageHeader: OggPageHeader;
-    private _pagesRead: number;
+    private _pagesRead: number = 0;
 
     /**
      * Constructs and initializes a new instance for a given codec.

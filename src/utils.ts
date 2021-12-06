@@ -218,6 +218,16 @@ export class NumberUtils {
     }
 
     /**
+     * Provides way to do unsigned bitwise XOR without all the mess of parenthesis.
+     * @param x Left operand
+     * @param y Right operant
+     * @returns Number (x ^ y) >>> 0
+     */
+    public static uintXor(x: number, y: number): number {
+        return (x ^ y) >>> 0;
+    }
+
+    /**
      * Provides way to do unsigned bitshift left without all the mess of parenthesis.
      * @param x Number
      * @param y Bits to shift to the left

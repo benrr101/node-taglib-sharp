@@ -11,10 +11,10 @@ import {StandardFileTests} from "./utilities/standardFileTests";
 // Setup chai
 const assert = Chai.assert;
 
-@suite class Id3v2_FileTests {
+@suite class Mp3_id3v2_fileTests {
     // NOTE: These tests are more integration level tests from the original .NET implementation
 
-    private static readonly corruptFilePath = TestConstants.getCorruptFilePath("null_title_v2.mp3");
+    private static readonly corruptFilePath = TestConstants.getCorruptFilePath("corruptNullTitleId3v2.mp3");
     private static readonly extHeaderFilePath = TestConstants.getSampleFilePath("sample_v2_3_ext_header.mp3");
     private static readonly sampleFilePath = TestConstants.getSampleFilePath("sample.mp3");
     private static readonly tmpFileName = "tmpwrite_v2_only.mp3";
@@ -23,16 +23,16 @@ const assert = Chai.assert;
     private static file: File;
 
     public static before() {
-        Id3v2_FileTests.file = File.createFromPath(Id3v2_FileTests.v2sampleFilePath);
+        Mp3_id3v2_fileTests.file = File.createFromPath(Mp3_id3v2_fileTests.v2sampleFilePath);
     }
 
     public static after() {
-        Id3v2_FileTests.file.dispose();
+        Mp3_id3v2_fileTests.file.dispose();
     }
 
     @test
     public multiGenresTest() {
-        const rgFile = File.createFromPath(Id3v2_FileTests.sampleFilePath);
+        const rgFile = File.createFromPath(Mp3_id3v2_fileTests.sampleFilePath);
         try {
             const tag = rgFile.tag;
             const genres = tag.genres;
@@ -48,28 +48,28 @@ const assert = Chai.assert;
 
     @test
     public readAudioProperties() {
-        assert.strictEqual(Id3v2_FileTests.file.properties.audioSampleRate, 44100);
-        assert.strictEqual(Id3v2_FileTests.file.properties.durationMilliseconds, 1352);
-        assert.strictEqual(Id3v2_FileTests.file.properties.audioChannels, 1);
-        assert.strictEqual(Id3v2_FileTests.file.properties.audioBitrate, 64);
-        assert.strictEqual(Id3v2_FileTests.file.properties.durationMilliseconds, 1352);
+        assert.strictEqual(Mp3_id3v2_fileTests.file.properties.audioSampleRate, 44100);
+        assert.strictEqual(Mp3_id3v2_fileTests.file.properties.durationMilliseconds, 1352);
+        assert.strictEqual(Mp3_id3v2_fileTests.file.properties.audioChannels, 1);
+        assert.strictEqual(Mp3_id3v2_fileTests.file.properties.audioBitrate, 64);
+        assert.strictEqual(Mp3_id3v2_fileTests.file.properties.durationMilliseconds, 1352);
     }
 
     @test
     public readTags() {
-        assert.strictEqual(Id3v2_FileTests.file.tag.album, "MP3 album");
-        assert.strictEqual(Id3v2_FileTests.file.tag.firstPerformer, "MP3 artist");
-        assert.strictEqual(Id3v2_FileTests.file.tag.comment, "MP3 comment");
-        assert.strictEqual(Id3v2_FileTests.file.tag.firstGenre, "Acid Punk");
-        assert.strictEqual(Id3v2_FileTests.file.tag.title, "MP3 title");
-        assert.strictEqual(Id3v2_FileTests.file.tag.track, 6);
-        assert.strictEqual(Id3v2_FileTests.file.tag.trackCount, 7);
-        assert.strictEqual(Id3v2_FileTests.file.tag.year, 1234);
+        assert.strictEqual(Mp3_id3v2_fileTests.file.tag.album, "MP3 album");
+        assert.strictEqual(Mp3_id3v2_fileTests.file.tag.firstPerformer, "MP3 artist");
+        assert.strictEqual(Mp3_id3v2_fileTests.file.tag.comment, "MP3 comment");
+        assert.strictEqual(Mp3_id3v2_fileTests.file.tag.firstGenre, "Acid Punk");
+        assert.strictEqual(Mp3_id3v2_fileTests.file.tag.title, "MP3 title");
+        assert.strictEqual(Mp3_id3v2_fileTests.file.tag.track, 6);
+        assert.strictEqual(Mp3_id3v2_fileTests.file.tag.trackCount, 7);
+        assert.strictEqual(Mp3_id3v2_fileTests.file.tag.year, 1234);
     }
 
     @test
     public testExtendedHeaderSize() {
-        const file = File.createFromPath(Id3v2_FileTests.extHeaderFilePath);
+        const file = File.createFromPath(Mp3_id3v2_fileTests.extHeaderFilePath);
         try {
             assert.strictEqual(file.tag.title, "Title v2");
         } finally {
@@ -80,11 +80,11 @@ const assert = Chai.assert;
     @test
     public testTruncateOrFalsy() {
         // Arrange
-        const tmpFilePath = TestConstants.getTempFilePath(Id3v2_FileTests.tmpFileName);
+        const tmpFilePath = TestConstants.getTempFilePath(Mp3_id3v2_fileTests.tmpFileName);
         if (fs.existsSync(tmpFilePath)) {
             fs.unlinkSync(tmpFilePath);
         }
-        fs.copyFileSync(Id3v2_FileTests.corruptFilePath, tmpFilePath);
+        fs.copyFileSync(Mp3_id3v2_fileTests.corruptFilePath, tmpFilePath);
 
         try {
             // Act
@@ -104,8 +104,8 @@ const assert = Chai.assert;
 
     @test
     public urlLinkFrameTest() {
-        const tempFilePath = TestConstants.getTempFilePath(Id3v2_FileTests.tmpFileName);
-        fs.copyFileSync(Id3v2_FileTests.sampleFilePath, tempFilePath);
+        const tempFilePath = TestConstants.getTempFilePath(Mp3_id3v2_fileTests.tmpFileName);
+        fs.copyFileSync(Mp3_id3v2_fileTests.sampleFilePath, tempFilePath);
 
         try {
             const urlLinkFile1 = File.createFromPath(tempFilePath);
@@ -169,19 +169,19 @@ const assert = Chai.assert;
 
     @test
     public writeExtendedTags() {
-        const tmpFilePath = TestConstants.getTempFilePath(Id3v2_FileTests.tmpFileName);
-        ExtendedFileTests.writeExtendedTags(Id3v2_FileTests.sampleFilePath, tmpFilePath);
+        const tmpFilePath = TestConstants.getTempFilePath(Mp3_id3v2_fileTests.tmpFileName);
+        ExtendedFileTests.writeExtendedTags(Mp3_id3v2_fileTests.sampleFilePath, tmpFilePath);
     }
 
     @test
     public writeStandardPictures() {
-        const tmpFilePath = TestConstants.getTempFilePath(Id3v2_FileTests.tmpFileName);
-        StandardFileTests.writeStandardPictures(Id3v2_FileTests.sampleFilePath, tmpFilePath);
+        const tmpFilePath = TestConstants.getTempFilePath(Mp3_id3v2_fileTests.tmpFileName);
+        StandardFileTests.writeStandardPictures(Mp3_id3v2_fileTests.sampleFilePath, tmpFilePath);
     }
 
     @test
     public writeStandardTags() {
-        const tmpFilePath = TestConstants.getTempFilePath(Id3v2_FileTests.tmpFileName);
-        StandardFileTests.writeStandardTags(Id3v2_FileTests.sampleFilePath, tmpFilePath);
+        const tmpFilePath = TestConstants.getTempFilePath(Mp3_id3v2_fileTests.tmpFileName);
+        StandardFileTests.writeStandardTags(Mp3_id3v2_fileTests.sampleFilePath, tmpFilePath);
     }
 }

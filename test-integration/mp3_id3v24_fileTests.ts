@@ -8,7 +8,7 @@ import {StandardFileTests, TestTagLevel} from "./utilities/standardFileTests";
 // Setup chai
 const assert = Chai.assert;
 
-@suite class Id3v24_FileTests {
+@suite class Mp3_id3v24_fileTests {
     // NOTE: These tests are more integration level tests from the original .NET implementation
 
     private static readonly replayGainPath = TestConstants.getSampleFilePath("sample_replaygain.mp3");
@@ -19,48 +19,48 @@ const assert = Chai.assert;
     private static file: File;
 
     public static before() {
-        Id3v24_FileTests.file = File.createFromPath(Id3v24_FileTests.sampleFilePath);
+        Mp3_id3v24_fileTests.file = File.createFromPath(Mp3_id3v24_fileTests.sampleFilePath);
     }
 
     public static after() {
-        Id3v24_FileTests.file.dispose();
+        Mp3_id3v24_fileTests.file.dispose();
     }
 
     @test
     public readAudioProperties() {
-        assert.strictEqual(Id3v24_FileTests.file.properties.audioSampleRate, 44100);
-        assert.strictEqual(Id3v24_FileTests.file.properties.durationMilliseconds, 1352);
-        assert.strictEqual(Id3v24_FileTests.file.properties.audioChannels, 1);
-        assert.strictEqual(Id3v24_FileTests.file.properties.audioBitrate, 64);
-        assert.strictEqual(Id3v24_FileTests.file.properties.durationMilliseconds, 1352);
+        assert.strictEqual(Mp3_id3v24_fileTests.file.properties.audioSampleRate, 44100);
+        assert.strictEqual(Mp3_id3v24_fileTests.file.properties.durationMilliseconds, 1352);
+        assert.strictEqual(Mp3_id3v24_fileTests.file.properties.audioChannels, 1);
+        assert.strictEqual(Mp3_id3v24_fileTests.file.properties.audioBitrate, 64);
+        assert.strictEqual(Mp3_id3v24_fileTests.file.properties.durationMilliseconds, 1352);
     }
 
     @test
     public readTags() {
-        assert.strictEqual(Id3v24_FileTests.file.tag.album, "MP3 album");
-        assert.isTrue(Id3v24_FileTests.file.tag.comment.startsWith("MP3 comment"));
-        assert.strictEqual(Id3v24_FileTests.file.tag.title, "MP3 title unicode (\u12a2\u1275\u12ee\u1335\u12eb)");
-        assert.strictEqual(Id3v24_FileTests.file.tag.track, 6);
-        assert.strictEqual(Id3v24_FileTests.file.tag.trackCount, 7);
-        assert.strictEqual(Id3v24_FileTests.file.tag.year, 1234);
+        assert.strictEqual(Mp3_id3v24_fileTests.file.tag.album, "MP3 album");
+        assert.isTrue(Mp3_id3v24_fileTests.file.tag.comment.startsWith("MP3 comment"));
+        assert.strictEqual(Mp3_id3v24_fileTests.file.tag.title, "MP3 title unicode (\u12a2\u1275\u12ee\u1335\u12eb)");
+        assert.strictEqual(Mp3_id3v24_fileTests.file.tag.track, 6);
+        assert.strictEqual(Mp3_id3v24_fileTests.file.tag.trackCount, 7);
+        assert.strictEqual(Mp3_id3v24_fileTests.file.tag.year, 1234);
 
         assert.deepStrictEqual(
-            Id3v24_FileTests.file.tag.performers,
+            Mp3_id3v24_fileTests.file.tag.performers,
             ["MP3 artist unicode (\u1283\u12ed\u120c \u1308\u1265\u1228\u1225\u120b\u1234)"]
         );
         assert.deepStrictEqual(
-            Id3v24_FileTests.file.tag.genres,
+            Mp3_id3v24_fileTests.file.tag.genres,
             ["Acid Punk"]
         );
         assert.deepStrictEqual(
-            Id3v24_FileTests.file.tag.composers,
+            Mp3_id3v24_fileTests.file.tag.composers,
             ["MP3 composer"]
         );
     }
 
     @test
     public replayGainTest() {
-        const tmpFilePath = TestConstants.getTempFilePath(Id3v24_FileTests.replayGainTmpFileName);
+        const tmpFilePath = TestConstants.getTempFilePath(Mp3_id3v24_fileTests.replayGainTmpFileName);
         const testToPerform = () => {
             let rgFile: File;
 
@@ -111,19 +111,19 @@ const assert = Chai.assert;
                 rgFile.dispose();
             }
         };
-        StandardFileTests.performTestWithTmpFile(Id3v24_FileTests.replayGainPath, tmpFilePath, testToPerform);
+        StandardFileTests.performTestWithTmpFile(Mp3_id3v24_fileTests.replayGainPath, tmpFilePath, testToPerform);
     }
 
     @test
     public writeStandardTags() {
-        const tmpFilePath = TestConstants.getTempFilePath(Id3v24_FileTests.sampleTmpFileName);
-        StandardFileTests.writeStandardTags(Id3v24_FileTests.sampleFilePath, tmpFilePath, TestTagLevel.Medium);
+        const tmpFilePath = TestConstants.getTempFilePath(Mp3_id3v24_fileTests.sampleTmpFileName);
+        StandardFileTests.writeStandardTags(Mp3_id3v24_fileTests.sampleFilePath, tmpFilePath, TestTagLevel.Medium);
     }
 
     @test
     public writeStandardPictures() {
-        const tmpFilePath = TestConstants.getTempFilePath(Id3v24_FileTests.sampleTmpFileName);
-        StandardFileTests.writeStandardPictures(Id3v24_FileTests.sampleFilePath, tmpFilePath, ReadStyle.None);
+        const tmpFilePath = TestConstants.getTempFilePath(Mp3_id3v24_fileTests.sampleTmpFileName);
+        StandardFileTests.writeStandardPictures(Mp3_id3v24_fileTests.sampleFilePath, tmpFilePath, ReadStyle.None);
     }
 
     // @test
@@ -134,7 +134,7 @@ const assert = Chai.assert;
 
     @test
     public urlLinkFrameTest() {
-        const tempFilePath = TestConstants.getTempFilePath(Id3v24_FileTests.sampleTmpFileName);
+        const tempFilePath = TestConstants.getTempFilePath(Mp3_id3v24_fileTests.sampleTmpFileName);
         const testToPerform = () => {
             let urlLinkFile = File.createFromPath(tempFilePath);
             try {
@@ -191,6 +191,6 @@ const assert = Chai.assert;
                 urlLinkFile.dispose();
             }
         };
-        StandardFileTests.performTestWithTmpFile(Id3v24_FileTests.sampleFilePath, tempFilePath, testToPerform);
+        StandardFileTests.performTestWithTmpFile(Mp3_id3v24_fileTests.sampleFilePath, tempFilePath, testToPerform);
     }
 }
