@@ -8,8 +8,7 @@ import {Guards} from "../../utils";
  * Represents an Ogg Opus bitstream for use within an Ogg file.
  */
 export default class Opus implements IOggCodec, IAudioCodec {
-    private static readonly magicSignatureBase = ByteVector.fromString("Opus", undefined, undefined, true);
-    private static readonly magicSignatureHeader = ByteVector.fromString("OpusHeader", undefined, undefined, true);
+    private static readonly magicSignatureHeader = ByteVector.fromString("OpusHead", undefined, undefined, true);
     private static readonly magicSignatureComment = ByteVector.fromString("OpusTags", undefined, undefined, true);
 
     private readonly _channelCount: number;
