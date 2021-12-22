@@ -48,7 +48,7 @@ export default class Theora implements IOggCodec, IVideoCodec {
         this._fpsDenominator = headerPacket.mid(26, 4).toUint();
 
         const lastBits = headerPacket.mid(40, 2).toShort();
-        this._keyframeGranuleShift = NumberUtils.uintAnd(NumberUtils.uintLShift(lastBits, 5), 0x1F);
+        this._keyframeGranuleShift = NumberUtils.uintAnd(NumberUtils.uintRShift(lastBits, 5), 0x1F);
     }
 
     /** @inheritDoc */
@@ -113,8 +113,8 @@ export default class Theora implements IOggCodec, IVideoCodec {
     }
 
     private getGranuleTime(granularPosition: number): number {
-        const iframe = NumberUtils.uintLShift(granularPosition, this._keyframeGranuleShift);
-        const pframe = granularPosition - NumberUtils.uintRShift(iframe, this._keyframeGranuleShift);
+        const iframe = NumberUtils.uintRShift(granularPosition, this._keyframeGranuleShift);
+        const pframe = granularPosition - NumberUtils.uintLShift(iframe, this._keyframeGranuleShift);
         return (iframe + pframe) * (this._fpsDenominator / this._fpsNumerator);
     }
 }

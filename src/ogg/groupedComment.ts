@@ -58,6 +58,8 @@ export default class GroupedComment extends Tag {
     public setComment(streamSerialNumber: number, comment: XiphComment): void {
         Guards.uint(streamSerialNumber, "streamSerialNumber");
 
+        // Remove existing comment with provided stream serial number. If comment is provided add
+        // it, otherwise leave it blank.
         this._comments = this._comments.filter((m) => m.streamSerialNumber !== streamSerialNumber);
         if (comment) {
             this._comments.push({

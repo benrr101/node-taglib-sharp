@@ -29,10 +29,12 @@ export default class OggFile extends File {
             const streamsResult = this.readStreams();
             const codecs = [];
 
+            this._tag = new GroupedComment();
             for (const id of streamsResult.streams.keys()) {
                 const codec = streamsResult.streams.get(id);
-                const comment = XiphComment.fromData(codec.codec.commentData, (readStyle & ReadStyle.PictureLazy) !== 0);
-                this._tag = new GroupedComment();
+                const comment = XiphComment.fromData(
+                    codec.codec.commentData,
+                    (readStyle & ReadStyle.PictureLazy) !== 0);
                 this._tag.setComment(id, comment);
                 codecs.push(codec.codec);
             }
@@ -134,7 +136,9 @@ export default class OggFile extends File {
                     output.addByteVector(streamPages[0].render());
                     streamPages.shift();
 
-                    isEmpty = streamPages.length === 0;
+                    if (streamPages.length !== 0) {
+                        isEmpty = false;
+                    }
                 }
             } while (!isEmpty);
 

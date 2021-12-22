@@ -117,16 +117,16 @@ export default class OggPaginator {
                 count--;
                 firstPacketContinued = !wholePacket;
             }
+        }
 
-            if (pagePackets.length > 0) {
-                const header = OggPageHeader.fromInfo(
-                    firstHeader.streamSerialNumber,
-                    index,
-                    firstPacketContinued ? OggPageFlags.FirstPacketContinued : OggPageFlags.None);
-                pages.push(OggPage.fromPackets(header, pagePackets));
-                index++;
-                count--;
-            }
+        if (pagePackets.length > 0) {
+            const header = OggPageHeader.fromInfo(
+                firstHeader.streamSerialNumber,
+                index,
+                firstPacketContinued ? OggPageFlags.FirstPacketContinued : OggPageFlags.None);
+            pages.push(OggPage.fromPackets(header, pagePackets));
+            index++;
+            count--;
         }
 
         return {
