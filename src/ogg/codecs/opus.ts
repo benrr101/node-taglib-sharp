@@ -12,16 +12,12 @@ export default class Opus implements IOggCodec, IAudioCodec {
     private static readonly magicSignatureComment = ByteVector.fromString("OpusTags", undefined, undefined, true);
 
     private readonly _channelCount: number;
-    private readonly _channelMap: number;
-    private readonly _channelMappings: Uint32Array;
     private readonly _inputSampleRate: number;
     private readonly _opusVersion: number;
     private readonly _preSkip: number;
+    private readonly _streamCount: number;
     private _commentData: ByteVector;
     private _durationMilliseconds: number;
-    private _outputGain: number;
-    private _streamCount: number;
-    private _twoChannelStreamCount: number;
 
     /**
      * Constructs and initializes a new instance using the provided header packet to read the
@@ -39,26 +35,12 @@ export default class Opus implements IOggCodec, IAudioCodec {
         this._channelCount = headerPacket.get(9);
         this._preSkip = headerPacket.mid(10, 2).toUint(false);
         this._inputSampleRate = headerPacket.mid(12, 4).toUint(false);
-        this._outputGain = headerPacket.mid(16, 2).toUint(false);
-        this._channelMap = headerPacket.get(18);
 
-        if (this._channelMap === 0) {
+        const channelMappingFamily = headerPacket.get(18);
+        if (channelMappingFamily === 0) {
             this._streamCount = 1;
-            this._twoChannelStreamCount = this._channelCount - 1;
-
-            this._channelMappings = new Uint32Array(this._channelCount);
-            this._channelMappings[0] = 0;
-            if (this._channelCount === 2) {
-                this._channelMappings[1] = 1;
-            }
         } else {
             this._streamCount = headerPacket.get(19);
-            this._twoChannelStreamCount = headerPacket.get(20);
-
-            this._channelMappings = new Uint32Array(this._channelCount);
-            for (let i = 0; i < this._channelCount; i++) {
-                this._channelMappings[i] = headerPacket.get(21 + i);
-            }
         }
     }
 
@@ -71,7 +53,12 @@ export default class Opus implements IOggCodec, IAudioCodec {
      */
     public get audioBitrate(): number { return 0; }
 
-    /** @inheritDoc */
+    /**
+     * @inheritDoc
+     * @remarks This is the *input* sample rate used when the file was created. Opus uses a variety
+     *     of sample rates internally, and as such the output sample rate is dependent on the
+     *     decoder used. In most modern hardware cases, this will be 48kHz.
+     */
     public get audioSampleRate(): number { return this._inputSampleRate; }
 
     /** @inheritDoc */
@@ -91,12 +78,17 @@ export default class Opus implements IOggCodec, IAudioCodec {
     /** @inheritDoc */
     public get mediaTypes(): MediaTypes { return MediaTypes.Audio; }
 
+    /**
+     * Gets the number of streams contained in the bitstream.
+     */
+    public get streamCount(): number { return this._streamCount; }
+
     // #endregion
 
     // #region Methods
 
     /**
-     * Determines whether or not an Opus header packet based on the presence of the Opus header
+     * Determines whether an Opus header packet based on the presence of the Opus header
      * packet magic signature.
      * @param headerPacket Packet to check
      */
@@ -116,6 +108,7 @@ export default class Opus implements IOggCodec, IAudioCodec {
     }
 
     /** @inheritDoc */
+    // NOTE: This is not static b/c it must be part of the interface.
     public writeCommentPacket(packets: ByteVector[], comment: XiphComment): void {
         Guards.truthy(packets, "packets");
         Guards.truthy(comment, "comment");
@@ -126,8 +119,10 @@ export default class Opus implements IOggCodec, IAudioCodec {
         );
 
         if (packets.length > 1 && packets[1].startsWith(Opus.magicSignatureComment)) {
+            // Replace the comments packet as the 2nd packet
             packets[1] = data;
         } else {
+            // Insert the comments packet as the 2nd packet
             packets.splice(1, 0, data);
         }
     }
@@ -136,8 +131,9 @@ export default class Opus implements IOggCodec, IAudioCodec {
         Guards.safeUint(firstGranularPosition, "firstGranularPosition");
         Guards.safeUint(lastGranularPosition, "lastGranularPosition");
 
-        // TODO: Verify that 48000 should always be used and not just when sample rate is 48kHz
-        const durationSeconds = (lastGranularPosition - firstGranularPosition - (2 * this._preSkip)) / 48000;
+        // NOTE: It probably looks wrong to use 48kHz all the time, but this is actually correct as
+        //    per the Opus guide https://wiki.xiph.org/OpusFAQ
+        const durationSeconds = (lastGranularPosition - firstGranularPosition - this._preSkip) / 48000;
         this._durationMilliseconds = durationSeconds * 1000;
     }
 
