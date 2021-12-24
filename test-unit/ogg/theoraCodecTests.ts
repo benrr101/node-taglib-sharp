@@ -1,17 +1,17 @@
 import {assert} from "chai";
 import {suite, test} from "@testdeck/mocha";
 
-import Opus from "../../src/ogg/codecs/opus";
+import Vorbis from "../../src/ogg/codecs/vorbis";
 import XiphComment from "../../src/xiph/xiphComment";
 import {ByteVector} from "../../src/byteVector";
 import {MediaTypes} from "../../src/iCodec";
 import {Testers} from "../utilities/testers";
 
-@suite class Ogg_OpusTests {
+@suite class Ogg_TheoraTests {
     @test
     public constructor_invalidParameters() {
         // Act / Assert
-        Testers.testTruthy((v: ByteVector) => new Opus(v));
+        Testers.testTruthy((v: ByteVector) => new Vorbis(v));
     }
 
     @test
@@ -20,92 +20,34 @@ import {Testers} from "../utilities/testers";
         const headerPacket = ByteVector.fromString("invalidString");
 
         // Act / Assert
-        assert.throws(() => new Opus(headerPacket));
+        assert.throws(() => new Vorbis(headerPacket));
     }
 
     @test
-    public constructor_rtpChannelMapping_mono() {
+    public constructor_validPacket() {
         // Arrange
         const headerPacket = ByteVector.concatenate(
-            ByteVector.fromString("OpusHead"),      // Magic header
-            0x01,                                   // Version
-            0x01,                                   // Channel count
-            0x03, 0x04,                             // Pre-skip
-            0x05, 0x06, 0x07, 0x08,                 // Original sample rate
-            0x09, 0x0A,                             // Output gain
-            0x00,                                   // Channel mapping family (RTP)
-            ByteVector.fromSize(20, 0xBE)           // Filler
+            0x01, ByteVector.fromString("vorbis"),
+            ByteVector.fromUint(1234, false), // Version
+            0x05, // Channels
+            ByteVector.fromUint(456789, false), // Sample rate
+            ByteVector.fromUint(200000, false), // bitrate max
+            ByteVector.fromUint(128000, false), // bitrate nominal
+            ByteVector.fromUint(100000, false), // bitrate min
+            // We don't care about anything after this
         );
 
         // Act
-        const codec = new Opus(headerPacket);
+        const codec = new Vorbis(headerPacket);
 
         // Assert
-        assert.strictEqual(codec.audioBitrate, 0);
-        assert.strictEqual(codec.audioSampleRate, 0x08070605);
-        assert.strictEqual(codec.audioChannels, 1);
+        assert.strictEqual(codec.audioBitrate, 128);
+        assert.strictEqual(codec.audioChannels, 5);
+        assert.strictEqual(codec.audioSampleRate, 456789);
         assert.isUndefined(codec.commentData);
-        assert.strictEqual(codec.description, `Opus v1 Audio`);
+        assert.strictEqual(codec.description, "Vorbis v1234 Audio");
         assert.strictEqual(codec.durationMilliseconds, 0);
         assert.strictEqual(codec.mediaTypes, MediaTypes.Audio);
-        assert.strictEqual(codec.streamCount, 1);
-    }
-
-    @test
-    public constructor_rtpChannelMapping_stereo() {
-        // Arrange
-        const headerPacket = ByteVector.concatenate(
-            ByteVector.fromString("OpusHead"),      // Magic header
-            0x01,                                   // Version
-            0x02,                                   // Channel count
-            0x03, 0x04,                             // Pre-skip
-            0x05, 0x06, 0x07, 0x08,                 // Original sample rate
-            0x09, 0x0A,                             // Output gain
-            0x00,                                   // Channel mapping family (RTP)
-            ByteVector.fromSize(20, 0xBE)           // Filler
-        );
-
-        // Act
-        const codec = new Opus(headerPacket);
-
-        // Assert
-        assert.strictEqual(codec.audioBitrate, 0);
-        assert.strictEqual(codec.audioSampleRate, 0x08070605);
-        assert.strictEqual(codec.audioChannels, 2);
-        assert.isUndefined(codec.commentData);
-        assert.strictEqual(codec.description, `Opus v1 audio`);
-        assert.strictEqual(codec.durationMilliseconds, 0);
-        assert.strictEqual(codec.mediaTypes, MediaTypes.Audio);
-        assert.strictEqual(codec.streamCount, 1);
-    }
-
-    @test
-    public constructor_vorbisChannelMapping() {
-        // Arrange
-        const headerPacket = ByteVector.concatenate(
-            ByteVector.fromString("OpusHead"),      // Magic header
-            0x01,                                   // Version
-            0x08,                                   // Channel count
-            0x03, 0x04,                             // Pre-skip
-            0x05, 0x06, 0x07, 0x08,                 // Original sample rate
-            0x09, 0x0A,                             // Output gain
-            0x01,                                   // Channel mapping family
-            0x05,                                   // Stream count 'N'
-            0x03                                    // Two-channel stream count 'M'
-        );
-
-        // Act
-        const codec = new Opus(headerPacket);
-
-        // Assert
-        assert.strictEqual(codec.audioBitrate, 0);
-        assert.strictEqual(codec.audioSampleRate, 0x08070605);
-        assert.strictEqual(codec.audioChannels, 8);
-        assert.isUndefined(codec.commentData);
-        assert.strictEqual(codec.description, `Opus v1 audio`);
-        assert.strictEqual(codec.durationMilliseconds, 0);
-        assert.strictEqual(codec.mediaTypes, MediaTypes.Audio);
-        assert.strictEqual(codec.streamCount, 5);
     }
 
     @test
@@ -127,7 +69,8 @@ import {Testers} from "../utilities/testers";
         // Arrange
         const codec = this.getTestCodec();
         const packet = ByteVector.concatenate(
-            ByteVector.fromString("OpusTags"),
+            0x03,
+            ByteVector.fromString("vorbis"),
             ByteVector.fromString("foobarbaz")
         );
 
@@ -136,7 +79,7 @@ import {Testers} from "../utilities/testers";
 
         // Assert
         assert.isTrue(result);
-        Testers.bvEqual(codec.commentData, packet.mid(8));
+        Testers.bvEqual(codec.commentData, packet.mid(7));
     }
 
     @test
@@ -144,11 +87,13 @@ import {Testers} from "../utilities/testers";
         // Arrange
         const codec = this.getTestCodec();
         const commentPacket1 = ByteVector.concatenate(
-            ByteVector.fromString("OpusTags"),
+            0x03,
+            ByteVector.fromString("vorbis"),
             ByteVector.fromString("foobarbaz")
         );
         const commentPacket2 = ByteVector.concatenate(
-            ByteVector.fromString("OpusTags"),
+            0x03,
+            ByteVector.fromString("vorbis"),
             ByteVector.fromString("fuxbuxquxx")
         );
         codec.readPacket(commentPacket1);
@@ -158,7 +103,7 @@ import {Testers} from "../utilities/testers";
 
         // Assert
         assert.isTrue(result);
-        Testers.bvEqual(codec.commentData, commentPacket1.mid(8));
+        Testers.bvEqual(codec.commentData, commentPacket1.mid(7));
     }
 
     @test
@@ -186,7 +131,7 @@ import {Testers} from "../utilities/testers";
         assert.strictEqual(packets.length, 1);
 
         const expected = ByteVector.concatenate(
-            ByteVector.fromString("OpusTags"),
+            0x03, ByteVector.fromString("vorbis"),
             comment.render(true)
         );
         Testers.bvEqual(packets[0], expected);
@@ -208,7 +153,7 @@ import {Testers} from "../utilities/testers";
         assert.strictEqual(packets.length, 2);
 
         const expected = ByteVector.concatenate(
-            ByteVector.fromString("OpusTags"),
+            0x03, ByteVector.fromString("vorbis"),
             comment.render(true)
         );
         Testers.bvEqual(packets[1], expected);
@@ -231,7 +176,7 @@ import {Testers} from "../utilities/testers";
         assert.strictEqual(packets.length, 3);
 
         const expected = ByteVector.concatenate(
-            ByteVector.fromString("OpusTags"),
+            0x03, ByteVector.fromString("vorbis"),
             comment.render(true)
         );
         Testers.bvEqual(packets[1], expected);
@@ -244,7 +189,7 @@ import {Testers} from "../utilities/testers";
         const comment = XiphComment.fromEmpty();
         const packets = [
             ByteVector.fromSize(10, 0x0C),
-            ByteVector.fromString("OpusTags"),
+            ByteVector.concatenate(0x03, ByteVector.fromString("vorbis")),
             ByteVector.fromSize(10, 0x0F)
         ];
 
@@ -255,7 +200,7 @@ import {Testers} from "../utilities/testers";
         assert.strictEqual(packets.length, 3);
 
         const expected = ByteVector.concatenate(
-            ByteVector.fromString("OpusTags"),
+            0x03, ByteVector.fromString("vorbis"),
             comment.render(true)
         );
         Testers.bvEqual(packets[1], expected);
@@ -279,19 +224,23 @@ import {Testers} from "../utilities/testers";
         const codec = this.getTestCodec();
 
         // Act
-        codec.setDuration(0, 123456789);
+        codec.setDuration(123456, 456789);
 
         // Assert
-        assert.approximately(codec.durationMilliseconds, 2571995, 0.5);
+        assert.approximately(codec.durationMilliseconds, 729, 1);
     }
 
-    private getTestCodec(): Opus {
+    private getTestCodec(): Vorbis {
         const headerPacket = ByteVector.concatenate(
-            ByteVector.fromString("OpusHead"),
-            0x01, 0x08, 0x03, 0x04,
-            0x05, 0x06, 0x07, 0x08,
-            0x09, 0x0A, 0x01, 0x05, 0x03
+            0x01, ByteVector.fromString("vorbis"),
+            ByteVector.fromUint(1234, false), // Version
+            0x05, // Channels
+            ByteVector.fromUint(456789, false), // Sample rate
+            ByteVector.fromUint(200000, false), // bitrate max
+            ByteVector.fromUint(128000, false), // bitrate nominal
+            ByteVector.fromUint(100000, false), // bitrate min
+            // We don't care about anything after this
         );
-        return new Opus(headerPacket);
+        return new Vorbis(headerPacket);
     }
 }

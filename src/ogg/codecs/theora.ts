@@ -8,8 +8,8 @@ import {Guards, NumberUtils} from "../../utils";
  * Types of packets that occur within an Ogg Theora bitstream.
  */
 enum TheoraPacketType {
-    Header = 0x80,
-    Comment = 0x81
+    IdentificationHeader = 0x80,
+    CommentHeader = 0x81
 }
 
 /**
@@ -39,11 +39,13 @@ export default class Theora implements IOggCodec, IVideoCodec {
             throw new Error("Argument error: packet must have proper signature for Theora header packet");
         }
 
+        // NOTE: See https://www.theora.org/doc/Theora.pdf section 6.2 for header spec
+
         this._majorVersion = headerPacket.get(7);
         this._minorVersion = headerPacket.get(8);
         this._reversionVersion = headerPacket.get(9);
-        this._width = headerPacket.mid(14, 3).toUint();
-        this._height = headerPacket.mid(17, 3).toUint();
+        this._width = NumberUtils.uintAnd(headerPacket.mid(14, 3).toUint(), 0x0FFFFF);
+        this._height = NumberUtils.uintAnd(headerPacket.mid(17, 3).toUint(), 0x0FFFFF);
         this._fpsNumerator = headerPacket.mid(22, 4).toUint();
         this._fpsDenominator = headerPacket.mid(26, 4).toUint();
 
@@ -55,10 +57,10 @@ export default class Theora implements IOggCodec, IVideoCodec {
     public get commentData(): ByteVector { return this._commentData; }
 
     /** @inheritDoc */
-    public get description(): string { return `Theora v${this._majorVersion}.${this._minorVersion} video`; }
+    public get description(): string { return `Theora v${this._majorVersion}.${this._minorVersion} Video`; }
 
     /** @inheritDoc */
-    public get durationMilliseconds(): number { return this._durationMilliseconds; }
+    public get durationMilliseconds(): number { return this._durationMilliseconds || 0; }
 
     /** @inheritDoc */
     public get mediaTypes(): MediaTypes { return MediaTypes.Video; }
@@ -74,14 +76,14 @@ export default class Theora implements IOggCodec, IVideoCodec {
      * @param packet Packet to check
      */
     public static isHeaderPacket(packet: ByteVector): boolean {
-        return packet.get(0) === TheoraPacketType.Header && packet.containsAt(Theora.id, 1);
+        return packet.get(0) === TheoraPacketType.IdentificationHeader && packet.containsAt(Theora.id, 1);
     }
 
     /** @inheritDoc */
     public readPacket(packet: ByteVector): boolean {
         Guards.truthy(packet, "packet");
 
-        if (!this._commentData && packet.get(0) === TheoraPacketType.Comment) {
+        if (!this._commentData && packet.get(0) === TheoraPacketType.CommentHeader) {
             this._commentData = packet.mid(7);
         }
 
@@ -90,6 +92,9 @@ export default class Theora implements IOggCodec, IVideoCodec {
 
     /** @inheritDoc */
     public setDuration(firstGranularPosition: number, lastGranularPosition: number): void {
+        Guards.safeUint(firstGranularPosition, "firstGranularPosition");
+        Guards.safeUint(lastGranularPosition, "lastGranularPosition");
+
         const durationSeconds = this.getGranuleTime(lastGranularPosition) - this.getGranuleTime(firstGranularPosition);
         this._durationMilliseconds = durationSeconds * 1000;
     }
@@ -100,12 +105,12 @@ export default class Theora implements IOggCodec, IVideoCodec {
         Guards.truthy(comment, "comment");
 
         const data = ByteVector.concatenate(
-            TheoraPacketType.Comment,
+            TheoraPacketType.CommentHeader,
             Theora.id,
             comment.render(true)
         );
 
-        if (packets.length > 1 && packets[1].get(0) === TheoraPacketType.Comment) {
+        if (packets.length > 1 && packets[1].get(0) === TheoraPacketType.CommentHeader) {
             packets[1] = data;
         } else {
             packets.splice(1, 0, data);
@@ -113,8 +118,8 @@ export default class Theora implements IOggCodec, IVideoCodec {
     }
 
     private getGranuleTime(granularPosition: number): number {
-        const iframe = NumberUtils.uintRShift(granularPosition, this._keyframeGranuleShift);
-        const pframe = granularPosition - NumberUtils.uintLShift(iframe, this._keyframeGranuleShift);
-        return (iframe + pframe) * (this._fpsDenominator / this._fpsNumerator);
+        const iFrame = NumberUtils.uintRShift(granularPosition, this._keyframeGranuleShift);
+        const pFrame = granularPosition - NumberUtils.uintLShift(iFrame, this._keyframeGranuleShift);
+        return (iFrame + pFrame) * (this._fpsDenominator / this._fpsNumerator);
     }
 }

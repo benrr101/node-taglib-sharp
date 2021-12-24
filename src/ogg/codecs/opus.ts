@@ -70,7 +70,7 @@ export default class Opus implements IOggCodec, IAudioCodec {
     public get commentData(): ByteVector { return this._commentData; }
 
     /** @inheritDoc */
-    public get description(): string { return `Opus v${this._opusVersion} audio`; }
+    public get description(): string { return `Opus v${this._opusVersion} Audio`; }
 
     /** @inheritDoc */
     public get durationMilliseconds(): number { return this._durationMilliseconds || 0; }

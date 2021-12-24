@@ -40,6 +40,9 @@ export default class Vorbis implements IOggCodec, IAudioCodec {
             throw new Error("Argument error: header packet must be a header packet");
         }
 
+        // NOTE: See https://xiph.org/vorbis/doc/Vorbis_I_spec.html#x1-630004.2.2 for details on
+        //    the Vorbis header.
+
         this._vorbisVersion = headerPacket.mid(7, 4).toUint(false);
         this._channels = headerPacket.get(11);
         this._sampleRate = headerPacket.mid(12, 4).toUint(false);
