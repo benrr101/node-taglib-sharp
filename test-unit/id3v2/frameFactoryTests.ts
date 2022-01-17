@@ -21,6 +21,7 @@ import {RelativeVolumeFrame} from "../../src/id3v2/frames/relativeVolumeFrame";
 import {TextInformationFrame, UserTextInformationFrame} from "../../src/id3v2/frames/textInformationFrame";
 import {SynchronizedLyricsFrame} from "../../src/id3v2/frames/synchronizedLyricsFrame";
 import {UrlLinkFrame, UserUrlLinkFrame} from "../../src/id3v2/frames/urlLinkFrame";
+import {NumberUtils} from "../../src/utils";
 import {SynchronizedTextType, TimestampFormat} from "../../src/id3v2/utilTypes";
 
 // Setup chai
@@ -74,7 +75,8 @@ const assert = Chai.assert;
         const data = ByteVector.concatenate(
             FrameIdentifiers.TXXX.render(4),
             0x00, 0x00, 0x00, 0x0A,
-            (Id3v2FrameFlags.Compression & 0xFF >> 16), (Id3v2FrameFlags.Compression & 0xFF)
+            NumberUtils.uintRShift(NumberUtils.uintAnd(Id3v2FrameFlags.Compression, 0xFF), 16),
+            NumberUtils.uintAnd(Id3v2FrameFlags.Compression, 0xFF)
         );
 
         // Act / Assert
@@ -87,7 +89,8 @@ const assert = Chai.assert;
         const data = ByteVector.concatenate(
             FrameIdentifiers.TXXX.render(4),
             0x00, 0x00, 0x00, 0x0A,
-            (Id3v2FrameFlags.Encryption & 0xFF >> 16), (Id3v2FrameFlags.Encryption & 0xFF)
+            NumberUtils.uintRShift(NumberUtils.uintAnd(Id3v2FrameFlags.Encryption, 0xFF), 16),
+            NumberUtils.uintAnd(Id3v2FrameFlags.Encryption, 0xFF)
         );
 
         // Act / Assert

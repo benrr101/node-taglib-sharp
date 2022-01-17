@@ -5,6 +5,7 @@ import {ApeStreamHeader} from "./apeStreamHeader";
 import {File, ReadStyle} from "../file";
 import {IFileAbstraction} from "../fileAbstraction";
 import {TagTypes} from "../tag";
+import {NumberUtils} from "../utils";
 
 /**
  * Provides tagging and properties support for Monkey's Audio APE files.
@@ -32,7 +33,7 @@ export default class ApeFile extends SandwichFile {
     /** @inheritDoc */
     protected readProperties(readStyle: ReadStyle): Properties {
         // Skip if we're not reading the properties
-        if ((readStyle & ReadStyle.Average) === 0) {
+        if (!NumberUtils.hasFlag(readStyle, ReadStyle.Average)) {
             return undefined;
         }
 

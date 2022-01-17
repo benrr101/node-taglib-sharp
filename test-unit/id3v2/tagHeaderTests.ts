@@ -6,6 +6,7 @@ import TestConstants from "../testConstants";
 import {ByteVector} from "../../src/byteVector";
 import {Id3v2TagHeader, Id3v2TagHeaderFlags} from "../../src/id3v2/id3v2TagHeader";
 import {Testers} from "../utilities/testers";
+import {NumberUtils} from "../../src/utils";
 
 // Setup chai
 const assert = Chai.assert;
@@ -276,7 +277,7 @@ const getTestHeader = (majorVersion: number, minorVersion: number, flags: Id3v2T
 
         // Assert
         assert.equal(header.majorVersion, 2);
-        assert.equal(header.flags & flags, 0);
+        assert.isFalse(NumberUtils.hasFlag(header.flags, flags));
     }
 
     @test
@@ -290,7 +291,7 @@ const getTestHeader = (majorVersion: number, minorVersion: number, flags: Id3v2T
 
         // Assert
         assert.equal(header.majorVersion, 3);
-        assert.equal(header.flags & flags, 0);
+        assert.isFalse(NumberUtils.hasFlag(header.flags, flags));
     }
 
     @test

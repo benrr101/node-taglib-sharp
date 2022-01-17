@@ -2,7 +2,7 @@ import Id3v2Settings from "./id3v2Settings";
 import SyncData from "./syncData";
 import {ByteVector, StringType} from "../byteVector";
 import {CorruptFileError} from "../errors";
-import {Guards} from "../utils";
+import {Guards, NumberUtils} from "../utils";
 
 export enum Id3v2TagHeaderFlags {
     /**
@@ -62,13 +62,13 @@ export class Id3v2TagHeader {
         header._flags = data.get(5);
 
         // Make sure flags provided are legal
-        if (header._majorVersion === 2 && (header._flags & 63) !== 0) {
+        if (header._majorVersion === 2 && NumberUtils.hasFlag(header._flags, 63)) {
             throw new CorruptFileError("Invalid flags set on version 2 tag");
         }
-        if (header._majorVersion === 3 && (header._flags & 15) !== 0) {
+        if (header._majorVersion === 3 && NumberUtils.hasFlag(header._flags, 15)) {
             throw new CorruptFileError("Invalid flags set on version 3 tag");
         }
-        if (header._majorVersion === 4 && (header._flags & 7) !== 0) {
+        if (header._majorVersion === 4 && NumberUtils.hasFlag(header._flags, 7)) {
             throw new CorruptFileError("Invalid flags set on version 4 tag");
         }
 

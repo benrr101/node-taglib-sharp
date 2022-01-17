@@ -1,6 +1,6 @@
 import {ByteVector, StringType} from "../byteVector";
 import {CorruptFileError} from "../errors";
-import {Guards} from "../utils";
+import {Guards, NumberUtils} from "../utils";
 
 /**
  * Indicates the flags applied to a {@link ApeTagFooter} object.
@@ -137,7 +137,7 @@ export class ApeTagFooter {
     public get tagSize(): number {
         // @TODO: Shouldn't this take into consideration footer missing flags?
         return this._itemSize + ApeTagFooter.size +
-            ((this._flags & ApeTagFooterFlags.HeaderPresent) !== 0 ? ApeTagFooter.size : 0);
+            (NumberUtils.hasFlag(this._flags, ApeTagFooterFlags.HeaderPresent) ? ApeTagFooter.size : 0);
     }
 
     /**
@@ -154,7 +154,7 @@ export class ApeTagFooter {
     }
 
     public renderHeader(): ByteVector {
-        return (this.flags & ApeTagFooterFlags.HeaderPresent) !== 0
+        return NumberUtils.hasFlag(this.flags, ApeTagFooterFlags.HeaderPresent)
             ? this.render(true)
             : ByteVector.empty();
     }
@@ -177,15 +177,15 @@ export class ApeTagFooter {
 
         // Render and add the flags
         let flags = 0;
-        if ((this.flags & ApeTagFooterFlags.HeaderPresent) !== 0) {
-            flags = (flags | ApeTagFooterFlags.HeaderPresent) >>> 0; // @TODO: Replace all bitwise logic with >>> 0
+        if (NumberUtils.hasFlag(this.flags, ApeTagFooterFlags.HeaderPresent)) {
+            flags = NumberUtils.uintOr(flags, ApeTagFooterFlags.HeaderPresent);
         }
 
         // Footer is always present
         if (isHeader) {
-            flags = (flags | ApeTagFooterFlags.IsHeader) >>> 0;
+            flags = NumberUtils.uintOr(flags, ApeTagFooterFlags.IsHeader);
         } else {
-            flags = (flags & ~ApeTagFooterFlags.IsHeader) >>> 0;
+            flags = NumberUtils.uintAnd(flags, ~ApeTagFooterFlags.IsHeader);
         }
         v.addByteVector(ByteVector.fromUint(flags, false));
 

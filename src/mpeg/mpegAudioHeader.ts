@@ -5,13 +5,15 @@ import {CorruptFileError} from "../errors";
 import {File} from "../file";
 import {IAudioCodec, MediaTypes} from "../iCodec";
 import {ChannelMode, MpegVersion} from "./mpegEnums";
-import {Guards} from "../utils";
+import {Guards, NumberUtils} from "../utils";
 
 /**
  * Provides information about an MPEG audio stream. For more information and definition of the
  * header, see http://www.mpgedit.org/mpgedit/mpeg_format/mpeghdr.htm
  */
 export default class MpegAudioHeader implements IAudioCodec {
+    // @TODO: make an enum for header flags
+
     public static readonly Unknown: MpegAudioHeader = MpegAudioHeader.fromInfo(
         0,
         0,
@@ -158,7 +160,7 @@ export default class MpegAudioHeader implements IAudioCodec {
 
         const index1 = this.version === MpegVersion.Version1 ? 0 : 1;
         const index2 = this.audioLayer - 1;
-        const index3 = (this._flags >> 12) & 0x0f;
+        const index3 = NumberUtils.uintAnd(NumberUtils.uintRShift(this._flags, 12), 0x0f);
         return MpegAudioHeader.bitrates[index1][index2][index3];
     }
 
@@ -186,7 +188,7 @@ export default class MpegAudioHeader implements IAudioCodec {
      * Gets the MPEG audio layer used to encode the audio represented by the current instance.
      */
     public get audioLayer(): number {
-        switch ((this._flags >> 17) & 0x03) {
+        switch (NumberUtils.uintAnd(NumberUtils.uintRShift(this._flags, 17), 0x03)) {
             case 1:
                 return 3;
             case 2:
@@ -199,7 +201,7 @@ export default class MpegAudioHeader implements IAudioCodec {
     /** @inheritDoc IAudioCodec.audioSampleRate */
     public get audioSampleRate(): number {
         const index1 = this.version;
-        const index2 = (this._flags >> 10) & 0x03;
+        const index2 = NumberUtils.uintAnd(NumberUtils.uintRShift(this._flags, 10), 0x03);
         return MpegAudioHeader.sampleRates[index1][index2];
     }
 

@@ -19,7 +19,7 @@ import {RelativeVolumeFrame} from "./relativeVolumeFrame";
 import {SynchronizedLyricsFrame} from "./synchronizedLyricsFrame";
 import {TextInformationFrame, UserTextInformationFrame} from "./textInformationFrame";
 import {UrlLinkFrame, UserUrlLinkFrame} from "./urlLinkFrame";
-import {Guards} from "../../utils";
+import {Guards, NumberUtils} from "../../utils";
 
 export type FrameCreator = (data: ByteVector, offset: number, header: Id3v2FrameHeader, version: number) => Frame;
 
@@ -109,12 +109,12 @@ export default {
         }
 
         // TODO: Support compression
-        if ((header.flags & Id3v2FrameFlags.Compression) !== 0) {
+        if (NumberUtils.hasFlag(header.flags, Id3v2FrameFlags.Compression)) {
             throw new NotImplementedError("Compression is not supported");
         }
 
         // TODO: Support encryption
-        if ((header.flags & Id3v2FrameFlags.Encryption) !== 0) {
+        if (NumberUtils.hasFlag(header.flags, Id3v2FrameFlags.Encryption)) {
             throw new NotImplementedError("Encryption is not supported");
         }
 

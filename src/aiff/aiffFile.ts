@@ -1,12 +1,13 @@
+import AiffStreamHeader from "./aiffStreamHeader";
 import Id3v2Tag from "../id3v2/id3v2Tag";
 import Properties from "../properties";
 import {ByteVector} from "../byteVector";
+import {CorruptFileError} from "../errors";
 import {File, FileAccessMode, ReadStyle} from "../file";
 import {IFileAbstraction} from "../fileAbstraction";
 import {Tag, TagTypes} from "../tag";
 import {SeekOrigin} from "../stream";
-import {CorruptFileError} from "../errors";
-import AiffStreamHeader from "./aiffStreamHeader";
+import {NumberUtils} from "../utils";
 
 export default class AiffFile extends File {
 
@@ -99,7 +100,7 @@ export default class AiffFile extends File {
 
     /** @inheritDoc */
     public removeTags(types: TagTypes): void {
-        if ((types & TagTypes.Id3v2) > 0) {
+        if (NumberUtils.hasFlag(types, TagTypes.Id3v2)) {
             this._tag = undefined;
         }
     }

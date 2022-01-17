@@ -1,3 +1,4 @@
+import MpegContainerFileSettings from "./mpegContainerFileSettings";
 import MpegAudioHeader from "./mpegAudioHeader";
 import MpegVideoHeader from "./mpegVideoHeader";
 import SandwichFile from "../sandwich/sandwichFile";
@@ -8,7 +9,7 @@ import {File, ReadStyle} from "../file";
 import {IFileAbstraction} from "../fileAbstraction";
 import {MpegVersion} from "./mpegEnums";
 import {TagTypes} from "../tag";
-import MpegContainerFileSettings from "./mpegContainerFileSettings";
+import {NumberUtils} from "../utils";
 
 /**
  * Indicates the type of marker found in an MPEG file.
@@ -96,7 +97,7 @@ export default class MpegContainerFile extends SandwichFile {
     /** @inheritDoc */
     protected readProperties(readStyle: ReadStyle): Properties {
         // Skip processing if we aren't supposed to read the properties
-        if ((readStyle & ReadStyle.Average) === 0) {
+        if (!NumberUtils.hasFlag(readStyle, ReadStyle.Average)) {
             return;
         }
 
@@ -179,7 +180,7 @@ export default class MpegContainerFile extends SandwichFile {
             i++;
         }
 
-        if ((packetHeaderBytes.get(i) & 0x40 ) !== 0) {
+        if (NumberUtils.hasFlag(packetHeaderBytes.get(i), 0x40 )) {
             // STD buffer size is unexpected for audio packets, but whatever
             i++;
         }
@@ -187,8 +188,8 @@ export default class MpegContainerFile extends SandwichFile {
         // Decode the PTS/DTS flags
         const timestampFlags = packetHeaderBytes.get(i);
         const dataOffset = 4 + 2 + i                 // Packet marker + packet length + stuffing bytes/STD buffer size
-            + ((timestampFlags & 0x20) > 0 ? 4 : 0)  // Presentation timestamp
-            + ((timestampFlags & 0x10) > 0 ? 4 : 0); // Decode timestamp
+            + (NumberUtils.hasFlag(timestampFlags, 0x20) ? 4 : 0)  // Presentation timestamp
+            + (NumberUtils.hasFlag(timestampFlags, 0x10) ? 4 : 0); // Decode timestamp
 
         // Decode the MPEG audio header
         this._audioHeader = MpegAudioHeader.find(this, position + dataOffset, length - 9);
@@ -237,13 +238,13 @@ export default class MpegContainerFile extends SandwichFile {
         this.seek(position + 4);
 
         const versionInfo = this.readBlock(1).get(0);
-        if ((versionInfo & 0xF0) === 0x20) {
+        if (NumberUtils.uintAnd(versionInfo, 0xF0) === 0x20) {
             this._version = MpegVersion.Version1;
             packetSize = 12;
-        } else if ((versionInfo & 0xC0) === 0x40) {
+        } else if (NumberUtils.uintAnd(versionInfo, 0xC0) === 0x40) {
             this._version = MpegVersion.Version2;
             this.seek(position + 13);
-            packetSize = 14 + (this.readBlock(1).get(0) & 0x07);
+            packetSize = 14 + NumberUtils.uintAnd(this.readBlock(1).get(0), 0x07);
         } else {
             throw new UnsupportedFormatError("Unknown MPEG version");
         }
@@ -262,21 +263,25 @@ export default class MpegContainerFile extends SandwichFile {
         this.seek(position);
         if (this._version === MpegVersion.Version1) {
             const data = this.readBlock(5);
-            high = ((data.get(0) >>> 3) & 0x01) >>> 0;
-            low = (((data.get(0) >>> 1) & 0x03 << 30)
-                |   (data.get(1) << 22)
-                |  ((data.get(2) >>> 1) << 15)
-                |   (data.get(3) << 7)
-                |   (data.get(4) >>> 1)) >>> 0;
+            high = NumberUtils.uintAnd(NumberUtils.uintRShift(data.get(0), 3), 0x01);
+            low = NumberUtils.uintOr(
+                NumberUtils.uintLShift(NumberUtils.uintAnd(NumberUtils.uintRShift(data.get(0), 1), 0x03), 30),
+                NumberUtils.uintLShift(data.get(1), 22),
+                NumberUtils.uintLShift(NumberUtils.uintRShift(data.get(2), 1), 15),
+                NumberUtils.uintLShift(data.get(3), 7),
+                NumberUtils.uintRShift(data.get(4), 1)
+            );
         } else {
             const data = this.readBlock(6);
-            high = ((data.get(0) & 0x20) >>> 5);
-            low = (((data.get(0) & 0x03) << 28)
-                |   (data.get(1) << 20)
-                |  ((data.get(2) & 0xF8) << 12)
-                |  ((data.get(2) & 0x03) << 13)
-                |   (data.get(3) << 5)
-                |   (data.get(4) >>> 3)) >>> 0;
+            high = NumberUtils.uintRShift(NumberUtils.uintAnd(data.get(0), 0x20), 5);
+            low = NumberUtils.uintOr(
+                NumberUtils.uintLShift(NumberUtils.uintAnd(data.get(0), 0x03), 28),
+                NumberUtils.uintLShift(data.get(1), 20),
+                NumberUtils.uintLShift(NumberUtils.uintAnd(data.get(2), 0xF8), 12),
+                NumberUtils.uintLShift(NumberUtils.uintAnd(data.get(2), 0x03), 13),
+                NumberUtils.uintLShift(data.get(3), 5),
+                NumberUtils.uintRShift(data.get(4), 3)
+            );
         }
 
         return (high * 0x10000 * 0x10000 + low) / 90000;

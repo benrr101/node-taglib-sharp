@@ -8,7 +8,7 @@ import {CorruptFileError} from "../errors";
 import {File, FileAccessMode} from "../file";
 import {IPicture, PictureType} from "../iPicture";
 import {Tag, TagTypes} from "../tag";
-import {Guards, StringComparison} from "../utils";
+import {Guards, NumberUtils, StringComparison} from "../utils";
 
 /**
  * Provides a representation of an APEv2 tag which can be read from and written to disk.
@@ -70,7 +70,7 @@ export default class ApeTag extends Tag {
         tag._footer = ApeTagFooter.fromData(data.mid(data.length - ApeTagFooter.size));
 
         // If we've read a header at the end of the block, the block is invalid
-        if ((tag._footer.flags & ApeTagFooterFlags.IsHeader) !== 0) {
+        if (NumberUtils.hasFlag(tag._footer.flags, ApeTagFooterFlags.IsHeader)) {
             throw new CorruptFileError("Footer was actually a header");
         }
         if ((data.length < tag._footer.requiredDataSize)) {
@@ -117,7 +117,7 @@ export default class ApeTag extends Tag {
 
         // If we've read a header, we don't have to seek to read the content. If we've read a
         // footer, we need to move back to the start of the tag.
-        if ((tag._footer.flags & ApeTagFooterFlags.IsHeader) === 0) {
+        if (!NumberUtils.hasFlag(tag._footer.flags, ApeTagFooterFlags.IsHeader)) {
             file.seek(position - tag._footer.itemSize);
         }
         tag.parse(file.readBlock(tag._footer.requiredDataSize - ApeTagFooter.size));
@@ -133,7 +133,7 @@ export default class ApeTag extends Tag {
      * Gets whether or not the current instance has a header when rendered.
      */
     public get isHeaderPresent(): boolean {
-        return !!this._footer && (this._footer.flags & ApeTagFooterFlags.HeaderPresent) !== 0;
+        return !!this._footer && NumberUtils.hasFlag(this._footer.flags, ApeTagFooterFlags.HeaderPresent);
     }
     /**
      * Sets whether or not the current instance has a header when rendered.

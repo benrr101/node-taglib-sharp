@@ -1,11 +1,10 @@
 import Id3v2Settings from "../id3v2Settings";
 import SyncData from "../syncData";
 import {ByteVector, StringType} from "../../byteVector";
-import {CorruptFileError} from "../../errors";
+import {CorruptFileError, NotImplementedError} from "../../errors";
 import {Id3v2FrameFlags, Id3v2FrameHeader} from "./frameHeader";
-import {Guards} from "../../utils";
-import {NotImplementedError} from "../../errors";
 import {FrameIdentifier} from "../frameIdentifiers";
+import {Guards, NumberUtils} from "../../utils";
 
 export enum FrameClassType {
     AttachmentFrame,
@@ -53,7 +52,7 @@ export abstract class Frame {
      *     `undefined` if not set.
      */
     public get encryptionId(): number | undefined {
-        return (this.flags & Id3v2FrameFlags.Encryption) !== 0
+        return NumberUtils.hasFlag(this.flags, Id3v2FrameFlags.Encryption)
             ? this._encryptionId
             : undefined;
     }
@@ -97,7 +96,7 @@ export abstract class Frame {
      *     `undefined` if not set.
      */
     public get groupId(): number | undefined {
-        return (this.flags & Id3v2FrameFlags.GroupingIdentity) !== 0
+        return NumberUtils.hasFlag(this.flags, Id3v2FrameFlags.GroupingIdentity)
             ? this._groupId
             : undefined;
     }
@@ -165,24 +164,24 @@ export abstract class Frame {
 
         const frontData = ByteVector.empty();
 
-        if ((this.flags & (Id3v2FrameFlags.Compression | Id3v2FrameFlags.DataLengthIndicator)) !== 0) {
+        if (NumberUtils.hasFlag(this.flags, (Id3v2FrameFlags.Compression | Id3v2FrameFlags.DataLengthIndicator))) {
             frontData.addByteVector(ByteVector.fromUint(fieldData.length));
         }
-        if ((this.flags & Id3v2FrameFlags.GroupingIdentity) !== 0) {
+        if (NumberUtils.hasFlag(this.flags, Id3v2FrameFlags.GroupingIdentity)) {
             frontData.addByte(this._groupId);
         }
-        if ((this.flags & Id3v2FrameFlags.Encryption) !== 0) {
+        if (NumberUtils.hasFlag(this.flags, Id3v2FrameFlags.Encryption)) {
             frontData.addByte(this._encryptionId);
         }
         // @FIXME: Implement compression
-        if ((this.flags & Id3v2FrameFlags.Compression) !== 0) {
+        if (NumberUtils.hasFlag(this.flags, Id3v2FrameFlags.Compression)) {
             throw new NotImplementedError("Compression is not yet supported");
         }
         // @FIXME: Implement encryption
-        if ((this.flags & Id3v2FrameFlags.Encryption) !== 0) {
+        if (NumberUtils.hasFlag(this.flags, Id3v2FrameFlags.Encryption)) {
             throw new NotImplementedError("Encryption is not yet supported");
         }
-        if ((this.flags & Id3v2FrameFlags.Desynchronized) !== 0) {
+        if (NumberUtils.hasFlag(this.flags, Id3v2FrameFlags.Desynchronized)) {
             SyncData.unsyncByteVector(fieldData);
         }
         if (frontData.length > 0) {
@@ -237,12 +236,12 @@ export abstract class Frame {
         let dataOffset = offset + (dataIncludesHeader ? Id3v2FrameHeader.getSize(version) : 0);
         let dataLength = this.size;
 
-        if ((this.flags & (Id3v2FrameFlags.Compression | Id3v2FrameFlags.DataLengthIndicator)) !== 0) {
+        if (NumberUtils.hasFlag(this.flags, (Id3v2FrameFlags.Compression | Id3v2FrameFlags.DataLengthIndicator))) {
             dataOffset += 4;
             dataLength -= 4;
         }
 
-        if ((this.flags & Id3v2FrameFlags.GroupingIdentity) !== 0) {
+        if (NumberUtils.hasFlag(this.flags, Id3v2FrameFlags.GroupingIdentity)) {
             if (frameData.length <= dataOffset) {
                 throw new CorruptFileError("Frame data incomplete");
             }
@@ -250,7 +249,7 @@ export abstract class Frame {
             dataLength--;
         }
 
-        if ((this.flags & Id3v2FrameFlags.Encryption) !== 0) {
+        if (NumberUtils.hasFlag(this.flags, Id3v2FrameFlags.Encryption)) {
             if (frameData.length <= dataOffset) {
                 throw new CorruptFileError("Frame data incomplete");
             }
@@ -265,17 +264,17 @@ export abstract class Frame {
 
         const data = frameData.mid(dataOffset, dataLength);
 
-        if ((this.flags & Id3v2FrameFlags.Desynchronized) !== 0) {
+        if (NumberUtils.hasFlag(this.flags, Id3v2FrameFlags.Desynchronized)) {
             SyncData.resyncByteVector(data);
         }
 
         // @FIXME: Implement encryption
-        if ((this.flags & Id3v2FrameFlags.Encryption) !== 0) {
+        if (NumberUtils.hasFlag(this.flags, Id3v2FrameFlags.Encryption)) {
             throw new NotImplementedError("Encryption is not supported");
         }
 
         // @FIXME: Implement compression
-        if ((this.flags & Id3v2FrameFlags.Compression) !== 0) {
+        if (NumberUtils.hasFlag(this.flags, Id3v2FrameFlags.Compression)) {
             throw new NotImplementedError("Compression is not supported");
         }
 

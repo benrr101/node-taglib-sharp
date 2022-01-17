@@ -3,7 +3,7 @@ import SyncData from "./syncData";
 import {ByteVector} from "../byteVector";
 import {CorruptFileError} from "../errors";
 import {Id3v2TagHeader, Id3v2TagHeaderFlags} from "./id3v2TagHeader";
-import {Guards} from "../utils";
+import {Guards, NumberUtils} from "../utils";
 
 export default class Id3v2TagFooter {
     private static readonly _fileIdentifier: ByteVector = ByteVector.fromString("3DI", undefined, undefined, true);
@@ -31,13 +31,13 @@ export default class Id3v2TagFooter {
         footer._flags = data.get(5);
 
         // TODO: Is there any point to supporting footers on versions less than 4?
-        if (footer._majorVersion === 2 && (footer._flags & 127) !== 0) {
+        if (footer._majorVersion === 2 && NumberUtils.hasFlag(footer._flags, 127)) {
             throw new CorruptFileError("Invalid flags set on version 2 tag");
         }
-        if (footer._majorVersion === 3 && (footer._flags & 15) !== 0) {
+        if (footer._majorVersion === 3 && NumberUtils.hasFlag(footer._flags, 15)) {
             throw new CorruptFileError("Invalid flags set on version 3 tag");
         }
-        if (footer._majorVersion === 4 && (footer._flags & 7) !== 0) {
+        if (footer._majorVersion === 4 && NumberUtils.hasFlag(footer._flags, 7)) {
             throw new CorruptFileError("Invalid flags set on version 4 tag");
         }
 
