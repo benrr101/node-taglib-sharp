@@ -129,25 +129,17 @@ export default class AiffFile extends File {
             const readResult = this.read(false, ReadStyle.None);
 
             // If tagging info cannot be found, place it at the end of the file
-            if (readResult.tagStart < 12 || readResult.tagEnd < readResult.tagStart) {
+            if (readResult.tagStart < 0 || readResult.tagEnd < 0) {
                 readResult.tagStart = readResult.tagEnd = this.length;
             }
-            let length = readResult.tagEnd - readResult.tagStart + 8;
+            const originalTagChunkLength = readResult.tagEnd - readResult.tagStart + 8;
 
             // Insert the tagging data
-            this.insert(id3Chunk, readResult.tagStart, length);
+            this.insert(id3Chunk, readResult.tagStart, originalTagChunkLength);
 
-            // If the data size changed, update the AIFF size
-            if (id3Chunk.length - length !== 0 && readResult.tagStart <= readResult.aiffSize) {
-                // Depending, if a tag has been added or removed, the length needs to be adjusted
-                if (!this._tag) {
-                    length -= 16;
-                } else {
-                    length -= 8;
-                }
-
-                this.insert(ByteVector.fromUint(readResult.aiffSize + id3Chunk.length - length, true), 4, 4);
-            }
+            // Update the AIFF size
+            const aiffSize = this.length - 8;
+            this.insert(ByteVector.fromUint(aiffSize, true), 4, 4);
 
             // Update the tag types
             this._tagTypesOnDisk = this.tagTypes;
@@ -189,7 +181,7 @@ export default class AiffFile extends File {
         }
     }
 
-    private read(readTags: boolean, style: ReadStyle): {aiffSize: number, tagEnd: number, tagStart: number} {
+    private read(readTags: boolean, style: ReadStyle): {fileSize: number, tagEnd: number, tagStart: number} {
         this.seek(0);
         if (!ByteVector.equal(this.readBlock(4), AiffFile.fileIdentifier)) {
             throw new CorruptFileError("File does not begin with AIFF identifier");
@@ -203,11 +195,10 @@ export default class AiffFile extends File {
         if (!ByteVector.equal(this.readBlock(4), AiffFile.aiffFormType)) {
             throw new CorruptFileError("File form type is not AIFF");
         }
-        const formBlockChunkPosition = this.position;
 
         // Read the properties of the file
         if (!this._headerBlock && style !== ReadStyle.None) {
-            const commonChunkPos = this.findChunk(AiffFile.commIdentifier, formBlockChunkPosition);
+            const commonChunkPos = this.findChunk(AiffFile.commIdentifier, this.position);
             if (commonChunkPos === -1) {
                 throw new CorruptFileError("No common chunk available in this AIFF file");
             }
@@ -219,21 +210,16 @@ export default class AiffFile extends File {
             this._properties = new Properties(0, [header]);
         }
 
-        // Search for the ID3 chunk
-        const id3ChunkPos = this.findChunk(AiffFile.id3Identifier, formBlockChunkPosition);
-
         // Search for the sound chunk
-        const soundChunkPos = this.findChunk(AiffFile.soundIdentifier, formBlockChunkPosition);
-
-        // Ensure there is a sound chunk for the file to be valid
+        const soundChunkPos = this.findChunk(AiffFile.soundIdentifier, this.position);
         if (soundChunkPos === -1) {
             throw new CorruptFileError("No sound chunk available in this AIFF file");
         }
+        this.seek(this.position + 4);
+        const soundChunkLength = this.readBlock(4).toUint();
 
-        // Get the length of the sound chunk and use this as a start value to look for ID3 chunk
-        this.seek(soundChunkPos + 4);
-
-        // Read the ID3 chunk
+        // Search for the ID3 chunk
+        const id3ChunkPos = this.findChunk(AiffFile.id3Identifier, this.position + soundChunkLength);
         if (id3ChunkPos >= 0) {
             if (readTags && !this._tag) {
                 this._tag = Id3v2Tag.fromFileStart(this, id3ChunkPos + 8, style);
@@ -248,7 +234,7 @@ export default class AiffFile extends File {
         }
 
         return {
-            aiffSize: aiffSize,
+            fileSize: this.length,
             tagEnd: tagEnd,
             tagStart: tagStart
         };
