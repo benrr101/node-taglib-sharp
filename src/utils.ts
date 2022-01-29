@@ -170,8 +170,10 @@ export class NumberUtils {
         return result;
     }
 
-    public static hasFlag(haystack: number, needle: number): boolean {
-        return (haystack & needle) !== 0;
+    public static hasFlag(haystack: number, needle: number, strict: boolean = false): boolean {
+        return strict
+            ? (haystack & needle) === needle
+            : (haystack & needle) !== 0;
     }
 
     /**
@@ -231,6 +233,16 @@ export class NumberUtils {
      */
     public static uintRShift(x: number, y: number): number {
         return x >>> y;
+    }
+
+    /**
+     * Provides way to do unsigned bitwise XOR without all the mess of parenthesis.
+     * @param x Left operand
+     * @param y Right operand
+     * @returns Number (x ^ y) >>> 0
+     */
+    public static uintXor(x: number, y: number): number {
+        return (x ^ y) >>> 0;
     }
 
     /**

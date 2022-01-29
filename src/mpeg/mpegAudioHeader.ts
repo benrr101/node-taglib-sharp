@@ -208,7 +208,7 @@ export default class MpegAudioHeader implements IAudioCodec {
     /**
      * Gets the MPEG audio channel mode of the audio represented by the current instance.
      */
-    public get channelMode(): ChannelMode { return (this._flags >> 6) & 0x03; }
+    public get channelMode(): ChannelMode { return NumberUtils.uintAnd(NumberUtils.uintRShift(this._flags, 6), 0x03); }
 
     /** @inheritDoc ICodec.description */
     public get description(): string {
@@ -259,6 +259,8 @@ export default class MpegAudioHeader implements IAudioCodec {
 
         return this._durationMilliseconds;
     }
+
+    // TODO: Introduce an MPEG flags enum
 
     /**
      * Whether or not the current audio is copyrighted.
@@ -391,15 +393,15 @@ export default class MpegAudioHeader implements IAudioCodec {
         // - Bits 4 and 5 can be 00, 10, or 11 but not 01
         // - One or more of bits 6 and 7 must be set
         // - Bit 8 can be anything
-        if ((data.get(1) & 0xE6) <= 0xE0 || (data.get(1) & 0x18) === 0x08) {
+        if (NumberUtils.uintAnd(data.get(1), 0xE6) <= 0xE0 || NumberUtils.uintAnd(data.get(1), 0x18) === 0x08) {
             return "Second byte did not match MPEG sync";
         }
 
         const flags = data.toUint();
-        if (((flags >> 12) & 0x0F) === 0x0F) {
+        if (NumberUtils.hasFlag(NumberUtils.uintRShift(flags, 12), 0x0F, true)) {
             return "Header uses invalid bitrate index";
         }
-        if (((flags >> 10) & 0x03) === 0x03) {
+        if (NumberUtils.hasFlag(NumberUtils.uintRShift(flags, 10), 0x03, true)) {
             return "Invalid sample rate";
         }
 

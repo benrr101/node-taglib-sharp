@@ -95,11 +95,11 @@ export default class Id3v2TagFooter {
      */
     public set flags(value: Id3v2TagHeaderFlags) {
         const version3Flags = Id3v2TagHeaderFlags.ExtendedHeader | Id3v2TagHeaderFlags.ExperimentalIndicator;
-        if ((value & version3Flags) !== 0 && this.majorVersion < 3) {
+        if (NumberUtils.hasFlag(value, version3Flags) && this.majorVersion < 3) {
             throw new Error("Feature only supported in version 2.3+");
         }
         const version4Flags = Id3v2TagHeaderFlags.FooterPresent;
-        if ((value & version4Flags) !== 0 && this.majorVersion < 4) {
+        if (NumberUtils.hasFlag(value, version4Flags) && this.majorVersion < 4) {
             throw new Error("Feature only supported in version 2.4+");
         }
 
@@ -157,7 +157,7 @@ export default class Id3v2TagFooter {
      */
     public set tagSize(value: number) {
         Guards.uint(value, "value");
-        if ((value & 0xF0000000) !== 0) {
+        if (NumberUtils.hasFlag(value, 0xF0000000)) {
             throw new Error("Argument out of range: value must be a 28-bit unsigned integer");
         }
 
