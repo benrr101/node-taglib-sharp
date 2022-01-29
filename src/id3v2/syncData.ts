@@ -1,5 +1,5 @@
 import {ByteVector} from "../byteVector";
-import {Guards} from "../utils";
+import {Guards, NumberUtils} from "../utils";
 
 /**
  * Support for encoding and decoding unsynchronized data and numbers.
@@ -22,7 +22,7 @@ export default {
 
         const out = ByteVector.fromSize(4, 0);
         for (let i = 0; i < 4; i++) {
-            out.set(i, value >> ((3 - i) * 7) & 0x7F);
+            out.set(i, NumberUtils.uintAnd(NumberUtils.uintRShift(value, (3 - i) * 7), 0x7F));
         }
 
         return out;
@@ -87,7 +87,7 @@ export default {
         Guards.notNullOrUndefined(data, "data");
 
         for (let i = data.length - 2; i >= 0; i--) {
-            if (data.get(i) === 0xFF && (data.get(i + 1) === 0 || (data.get(i + 1) & 0xE0) !== 0)) {
+            if (data.get(i) === 0xFF && (data.get(i + 1) === 0 || NumberUtils.hasFlag(data.get(i + 1), 0xE0))) {
                 data.insertByte(i + 1, 0x0);
             }
         }

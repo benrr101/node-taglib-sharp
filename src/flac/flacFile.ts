@@ -14,6 +14,7 @@ import {IFileAbstraction} from "../fileAbstraction";
 import {FlacBlock, FlacBlockType} from "./flacBlock";
 import {ISandwichFile} from "../sandwich/sandwichFile";
 import {Tag, TagTypes} from "../tag";
+import {NumberUtils} from "../utils";
 
 /**
  * This class extends {@link File} to provide tagging and properties for FLAC audio files.
@@ -67,7 +68,9 @@ export default class FlacFile extends File implements ISandwichFile {
         //    complete tag information.
         const allTagTypes = [TagTypes.Xiph, TagTypes.Id3v2, TagTypes.Ape, TagTypes.Id3v1];
         for (const tagType of allTagTypes) {
-            if ((FlacFileSettings.defaultTagTypes & tagType) === 0 || (this._tag.tagTypes & tagType) !== 0) {
+            const isDefaultTag = NumberUtils.hasFlag(FlacFileSettings.defaultTagTypes, tagType);
+            const existsAlready = NumberUtils.hasFlag(this._tag.tagTypes, tagType);
+            if (!isDefaultTag || existsAlready) {
                 continue;
             }
 
@@ -211,11 +214,11 @@ export default class FlacFile extends File implements ISandwichFile {
 
     private readPictures(readStyle: ReadStyle): XiphPicture[] {
         return this._metadataBlocks.filter((b) => b.type === FlacBlockType.Picture)
-            .map((b) => XiphPicture.fromFlacBlock(b, (readStyle & ReadStyle.PictureLazy) !== 0));
+            .map((b) => XiphPicture.fromFlacBlock(b, NumberUtils.hasFlag(readStyle, ReadStyle.PictureLazy)));
     }
 
     private readProperties(readStyle: ReadStyle): Properties {
-        if ((readStyle & ReadStyle.Average) === 0) {
+        if (!NumberUtils.hasFlag(readStyle, ReadStyle.Average)) {
             return undefined;
         }
 

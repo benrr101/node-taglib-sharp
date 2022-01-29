@@ -2,7 +2,7 @@ import Mpeg4AudioTypes from "../mpeg4/mpeg4AudioTypes";
 import {ByteVector} from "../byteVector";
 import {File} from "../file";
 import {IAudioCodec, MediaTypes} from "../iCodec";
-import {Guards} from "../utils";
+import {Guards, NumberUtils} from "../utils";
 
 /**
  * This structure implements {@link IAudioCodec} and provides information about an ADTS AAC audio
@@ -133,34 +133,39 @@ export default class AacAudioHeader implements IAudioCodec {
 
                 // Sample rate
                 const sampleRateByte = bytes.get(2);
-                const sampleRateIndex = (sampleRateByte & 0x3C) >>> 2;
+                const sampleRateIndex = NumberUtils.uintRShift(NumberUtils.uintAnd(sampleRateByte, 0x3C), 2);
                 if (sampleRateIndex >= this.sampleRates.length) {
                     return undefined;
                 }
                 const sampleRate = this.sampleRates[sampleRateIndex];
 
                 // MPEG-4 Audio Type
-                const mpeg4AudioType = ((sampleRateByte & 0xC0) >>> 6) + 1;
+                const mpeg4AudioType = NumberUtils.uintRShift(NumberUtils.uintAnd(sampleRateByte, 0xC0), 6) + 1;
 
                 // Channel configuration
                 const channelsByte1 = sampleRateByte;
                 const channelsByte2 = bytes.get(3);
-                const channelCount = ((channelsByte1 & 0x1) << 2)
-                    | (channelsByte2 & 0xC0) >>> 6;
+                const channelCount = NumberUtils.uintOr(
+                    NumberUtils.uintLShift(NumberUtils.uintAnd(channelsByte1, 0x01), 2),
+                    NumberUtils.uintRShift(NumberUtils.uintAnd(channelsByte2, 0xC0), 6)
+                );
 
                 // Frame length
                 const frameLengthByte1 = channelsByte2;
                 const frameLengthByte2 = bytes.get(4);
                 const frameLengthByte3 = bytes.get(5);
-                const frameLength = ((frameLengthByte1 & 0x03) << 11)
-                    | (frameLengthByte2 << 3)
-                    | ((frameLengthByte3 & 0xE0) >>> 5);
+                const frameLength = NumberUtils.uintOr(
+                    NumberUtils.uintLShift(NumberUtils.uintAnd(frameLengthByte1, 0x03), 11),
+                    NumberUtils.uintLShift(frameLengthByte2, 3),
+                    NumberUtils.uintRShift(NumberUtils.uintAnd(frameLengthByte3, 0xE0), 5)
+                );
                 if (frameLength < 7) {
                     return undefined;
                 }
 
                 // Number of frames in ADTS frame minus 1
-                const numberOfFrames = ((bytes.get(6) & 0x03) >>> 0) + 1;
+                const framesByte = bytes.get(6);
+                const numberOfFrames = NumberUtils.uintAnd(framesByte, 0x03) + 1;
 
                 // Calculate number of samples and bitrate
                 const numberOfSamples = numberOfFrames * 1024;

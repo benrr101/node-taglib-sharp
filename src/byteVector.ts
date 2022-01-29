@@ -562,10 +562,8 @@ export class ByteVector {
     public get checksum(): number {
         let sum = 0;
         for (const b of this._data) {
-            sum = NumberUtils.uintXor(
-                NumberUtils.uintLShift(sum, 8),
-                ByteVector._crcTable[NumberUtils.uintXor(NumberUtils.uintAnd(NumberUtils.uintRShift(sum, 24), 0xFF), b)]
-            );
+            const index = NumberUtils.uintXor(NumberUtils.uintAnd(NumberUtils.uintRShift(sum, 24), 0xFF), b);
+            sum = NumberUtils.uintXor(NumberUtils.uintLShift(sum, 8), ByteVector._crcTable[index]);
         }
         return sum;
     }

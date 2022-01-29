@@ -1,7 +1,7 @@
 import {IPicture} from "./iPicture";
-import {Tag, TagTypes} from "./tag";
-import {Guards} from "./utils";
 import {NotSupportedError} from "./errors";
+import {Tag, TagTypes} from "./tag";
+import {Guards, NumberUtils} from "./utils";
 
 /**
  * This class provides a unified way of accessing tag data from multiple tag types.
@@ -641,7 +641,7 @@ export default abstract class CombinedTag extends Tag {
      */
     public getTag<TTag extends Tag>(tagType: TagTypes): TTag {
         // Make sure the tag type can possibly be stored here
-        if ((tagType & this._supportedTagTypes) === 0) {
+        if (!NumberUtils.hasFlag(this._supportedTagTypes, tagType)) {
             return undefined;
         }
 
@@ -669,8 +669,7 @@ export default abstract class CombinedTag extends Tag {
         for (let i = this._tags.length - 1; i >= 0; i--) {
             const tag = this._tags[i];
 
-            const isMatch = (tag.tagTypes & tagTypes) !== 0;
-            if (isMatch) {
+            if (NumberUtils.hasFlag(tag.tagTypes, tagTypes)) {
                 if (tag instanceof CombinedTag) {
                     tag.removeTags(tagTypes);
                 } else {
@@ -695,10 +694,10 @@ export default abstract class CombinedTag extends Tag {
      * @param tagType Tag type that the caller wants to create
      */
     protected validateTagCreation(tagType: TagTypes): void {
-        if ((this._supportedTagTypes & tagType) === 0) {
+        if (!NumberUtils.hasFlag(this._supportedTagTypes, tagType)) {
             throw new NotSupportedError(`Tag of type ${tagType} is not supported on this CombinedTag`);
         }
-        if ((this.tagTypes & tagType) !== 0) {
+        if (NumberUtils.hasFlag(this.tagTypes, tagType)) {
             throw new Error(`Cannot create tag of type ${tagType} because one already exists`);
         }
     }

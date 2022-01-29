@@ -1,7 +1,7 @@
 import {ByteVector} from "../byteVector";
 import {CorruptFileError} from "../errors";
 import {ChannelMode, MpegVersion} from "./mpegEnums";
-import {Guards} from "../utils";
+import {Guards, NumberUtils} from "../utils";
 
 /**
  * Information about a variable bitrate MPEG audio stream
@@ -56,14 +56,14 @@ export default class XingHeader {
         const header = new XingHeader();
         let position = 8;
 
-        if ((data.get(7) & 0x01) !== 0) {
+        if (NumberUtils.hasFlag(data.get(7), 0x01)) {
             header._totalFrames = data.mid(position, 4).toUint();
             position += 4;
         } else {
             header._totalFrames = 0;
         }
 
-        if ((data.get(7) & 0x02) !== 0) {
+        if (NumberUtils.hasFlag(data.get(7), 0x02)) {
             header._totalSize = data.mid(position, 4).toUint();
         } else {
             header._totalSize = 0;

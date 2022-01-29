@@ -55,6 +55,7 @@ export default class AiffStreamHeader implements ILosslessAudioCodec {
     // #region Properties
 
     /** @inheritDoc */
+    // @TODO: streamlength is total file data length, not sound length.
     public get audioBitrate(): number {
         return this.durationMilliseconds <= 0
             ? 0

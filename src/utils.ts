@@ -176,6 +176,12 @@ export class NumberUtils {
         return result;
     }
 
+    public static hasFlag(haystack: number, needle: number, strict: boolean = false): boolean {
+        return strict
+            ? (haystack & needle) === needle
+            : (haystack & needle) !== 0;
+    }
+
     /**
      * Performs the same operation as ldexp does in C/C++
      * @param x Number to be multiplied by 2^y
@@ -209,12 +215,11 @@ export class NumberUtils {
 
     /**
      * Provides way to do unsigned bitwise OR without all the mess of parenthesis.
-     * @param x Left operand
-     * @param y Right operand
-     * @returns Number (x | y) >>> 0
+     * @param numbers Operands to bitwise or together
+     * @returns Number (x | y | ...) >>> 0
      */
-    public static uintOr(x: number, y: number): number {
-        return (x | y) >>> 0;
+    public static uintOr(... numbers: number[]): number {
+        return numbers.reduce((acc, cur) => (acc | cur) >>> 0, 0);
     }
 
     /**
@@ -244,6 +249,16 @@ export class NumberUtils {
      */
     public static uintRShift(x: number, y: number): number {
         return x >>> y;
+    }
+
+    /**
+     * Provides way to do unsigned bitwise XOR without all the mess of parenthesis.
+     * @param x Left operand
+     * @param y Right operand
+     * @returns Number (x ^ y) >>> 0
+     */
+    public static uintXor(x: number, y: number): number {
+        return (x ^ y) >>> 0;
     }
 
     /**

@@ -6,6 +6,7 @@ import StartTag from "./startTag";
 import {File, FileAccessMode, ReadStyle} from "../file";
 import {IFileAbstraction} from "../fileAbstraction";
 import {Tag, TagTypes} from "../tag";
+import {NumberUtils} from "../utils";
 
 export interface ISandwichFile {
     readonly mediaEndPosition: number;
@@ -48,8 +49,10 @@ export default abstract class SandwichFile extends File implements ISandwichFile
 
         // Create the default tags
         for (const tagType of defaultTagMappingTable.keys()) {
-            // Don't create tag if its not desired or already exists
-            if ((defaultTags & tagType) === 0 || (this._tag.tagTypes & tagType) !== 0) {
+            // Don't create tag if it's not desired or already exists
+            const isDefault = NumberUtils.hasFlag(defaultTags, tagType);
+            const existsAlready = NumberUtils.hasFlag(this._tag.tagTypes, tagType);
+            if (!isDefault || existsAlready) {
                 continue;
             }
 

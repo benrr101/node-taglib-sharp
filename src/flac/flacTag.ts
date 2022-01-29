@@ -6,7 +6,7 @@ import XiphComment from "../xiph/xiphComment";
 import XiphPicture from "../xiph/xiphPicture";
 import {IPicture} from "../iPicture";
 import {Tag, TagTypes} from "../tag";
-import {Guards} from "../utils";
+import {Guards, NumberUtils} from "../utils";
 
 /**
  * Collection of tags that can be stored in a FLAC file.
@@ -85,10 +85,10 @@ export default class FlacTag extends CombinedTag {
 
     /** @inheritDoc */
     public removeTags(tagTypes: TagTypes): void {
-        if ((tagTypes & TagTypes.Xiph) !== 0) {
+        if (NumberUtils.hasFlag(tagTypes, TagTypes.Xiph)) {
             this._xiphComment = undefined;
         }
-        if ((tagTypes & TagTypes.FlacPictures) !== 0) {
+        if (NumberUtils.hasFlag(tagTypes, TagTypes.FlacPictures)) {
             this._pictures.splice(0, this._pictures.length);
         }
 

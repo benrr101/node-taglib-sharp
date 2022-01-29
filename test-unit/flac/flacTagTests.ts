@@ -5,12 +5,13 @@ import {It, Mock, Times} from "typemoq";
 import EndTag from "../../src/sandwich/endTag";
 import FlacFileSettings from "../../src/flac/flacFileSettings";
 import FlacTag from "../../src/flac/flacTag";
+import Id3v1Tag from "../../src/id3v1/id3v1Tag";
 import StartTag from "../../src/sandwich/startTag";
 import XiphComment from "../../src/xiph/xiphComment";
 import XiphPicture from "../../src/xiph/xiphPicture";
 import {TagTypes} from "../../src/tag";
 import {TagTesters, Testers} from "../utilities/testers";
-import {Id3v1Tag} from "../../src";
+import {NumberUtils} from "../../src/utils";
 
 @suite class Flac_TagTests {
     @test
@@ -105,7 +106,7 @@ import {Id3v1Tag} from "../../src";
         assert.isOk(output);
         assert.instanceOf(output, XiphComment);
         assert.include(tags.tag.tags, output);
-        assert.isOk(tags.tag.tagTypes & TagTypes.Xiph);
+        assert.isTrue(NumberUtils.hasFlag(tags.tag.tagTypes, TagTypes.Xiph));
         assert.strictEqual(tags.tag.xiphComment, output);
     }
 

@@ -1,6 +1,6 @@
 import {ByteVector, StringType} from "../byteVector";
 import {CorruptFileError} from "../errors";
-import {Guards} from "../utils";
+import {Guards, NumberUtils} from "../utils";
 
 /**
  * Indicates the type of data stored in a {@link ApeTagItem} object.
@@ -73,8 +73,8 @@ export class ApeTagItem {
         const flags = data.mid(offset + 4, 4).toUint(false);
 
         // Read flag data
-        item._isReadonly = (flags & 1) > 0;
-        item._type = <ApeTagItemType> ((flags >> 1) & 3);
+        item._isReadonly = NumberUtils.hasFlag(flags, 1);
+        item._type = <ApeTagItemType> NumberUtils.uintAnd(NumberUtils.uintRShift(flags, 1), 3);
 
         // Read key
         const keyEndIndex = data.find(ByteVector.getTextDelimiter(StringType.UTF8), offset + 8);
