@@ -18,6 +18,7 @@ import {File, FileAccessMode, ReadStyle} from "../file";
 import {IFileAbstraction} from "../fileAbstraction";
 import {ICodec} from "../iCodec";
 import {Tag, TagTypes} from "../tag";
+import {NumberUtils} from "../utils";
 
 /**
  * This class extends {@link File} to provide tagging and properties support for RIFF files. These
@@ -70,7 +71,9 @@ export default class RiffFile extends File {
         //    complete tag information.
         const allTagTypes = [TagTypes.Id3v2, TagTypes.DivX, TagTypes.RiffInfo, TagTypes.MovieId];
         for (const tagType of allTagTypes) {
-            if ((defaultTags & tagType) === 0 || (this._tag.tagTypes & tagType) !== 0) {
+            const isDefault = NumberUtils.hasFlag(defaultTags, tagType);
+            const existsAlready = NumberUtils.hasFlag(this._tag.tagTypes, tagType);
+            if (!isDefault || existsAlready) {
                 continue;
             }
 
@@ -343,7 +346,7 @@ export default class RiffFile extends File {
     }
 
     private readProperties(readStyle: ReadStyle): Properties {
-        if ((readStyle & ReadStyle.Average) === 0) {
+        if (!NumberUtils.hasFlag(readStyle, ReadStyle.Average)) {
             return;
         }
 

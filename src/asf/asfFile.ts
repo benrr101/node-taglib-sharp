@@ -4,6 +4,7 @@ import Properties from "../properties";
 import {File, FileAccessMode, ReadStyle} from "../file";
 import {IFileAbstraction} from "../fileAbstraction";
 import {Tag, TagTypes} from "../tag";
+import {NumberUtils} from "../utils";
 
 /**
  * This class provides tagging and properties support for Microsoft's ASF files.
@@ -24,7 +25,7 @@ export default class AsfFile extends File {
 
             this._asfTag = AsfTag.fromHeader(header);
 
-            if ((propertiesStyle & ReadStyle.Average) !== 0) {
+            if (NumberUtils.hasFlag(propertiesStyle, ReadStyle.Average)) {
                 this._properties = header.properties;
             }
         } finally {
@@ -49,7 +50,7 @@ export default class AsfFile extends File {
 
     /** @inheritDoc */
     public removeTags(types: TagTypes): void {
-        if ((types & TagTypes.Asf) === TagTypes.Asf) {
+        if (NumberUtils.hasFlag(types, TagTypes.Asf)) {
             this._asfTag.clear();
         }
     }

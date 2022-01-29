@@ -14,6 +14,7 @@ import {
     Tag,
     TagTypes
 } from "../../src";
+import {NumberUtils} from "../../src/utils";
 
 export enum TestTagLevel {
     Normal,
@@ -128,7 +129,7 @@ export class StandardFileTests {
             assert.strictEqual(pics.length, 3);
 
             // Lazy picture check
-            const isLazyTest = (readStyle & ReadStyle.PictureLazy) !== 0;
+            const isLazyTest = NumberUtils.hasFlag(readStyle, ReadStyle.PictureLazy);
             for (let i = 0; i < 3; i++) {
                 if (isLazyTest) {
                     assert.isFalse((<ILazy> <PictureLazy> pics[i]).isLoaded);

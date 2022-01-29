@@ -6,6 +6,7 @@ import {CorruptFileError} from "../errors";
 import {File, ReadStyle} from "../file";
 import {IFileAbstraction} from "../fileAbstraction";
 import {TagTypes} from "../tag";
+import {NumberUtils} from "../utils";
 
 /**
  * This class extends {@link SandwichFile} to provide tagging and properties support for
@@ -29,7 +30,7 @@ export default class MpegAudioFile extends SandwichFile {
     }
 
     protected readProperties(readStyle: ReadStyle): Properties {
-        if ((readStyle & ReadStyle.Average) === 0) {
+        if (!NumberUtils.hasFlag(readStyle, ReadStyle.Average)) {
             return undefined;
         }
 

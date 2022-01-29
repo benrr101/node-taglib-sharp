@@ -12,6 +12,7 @@ import {File, ReadStyle} from "../../src/file";
 import {Id3v2TagHeaderFlags} from "../../src/id3v2/id3v2TagHeader";
 import {TagTypes} from "../../src/tag";
 import {TagTesters, Testers} from "../utilities/testers";
+import {NumberUtils} from "../../src/utils";
 
 @suite class Sandwich_EndTagTests {
     @test
@@ -209,7 +210,7 @@ import {TagTesters, Testers} from "../utilities/testers";
         assert.isOk(newTag);
         assert.strictEqual(newTag.tagTypes, TagTypes.Id3v2);
         assert.strictEqual((<Id3v2Tag> newTag).version, 4);
-        assert.notEqual((<Id3v2Tag> newTag).flags & Id3v2TagHeaderFlags.FooterPresent, 0);
+        assert.isTrue(NumberUtils.hasFlag((<Id3v2Tag> newTag).flags, Id3v2TagHeaderFlags.FooterPresent));
 
         assert.strictEqual(tag.tags.length, 1);
         assert.strictEqual(tag.tagTypes, TagTypes.Id3v2);
