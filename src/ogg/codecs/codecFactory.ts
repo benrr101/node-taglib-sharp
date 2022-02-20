@@ -4,6 +4,7 @@ import Theora from "./theora";
 import Vorbis from "./vorbis";
 import {ByteVector} from "../../byteVector";
 import {UnsupportedFormatError} from "../../errors";
+import {Guards} from "../../utils";
 
 export type CodecProvider = (firstPacket: ByteVector) => IOggCodec | undefined;
 
@@ -24,6 +25,7 @@ export default class CodecFactory {
      *     * returns IOggCodec if method was able to match the packet, falsy otherwise
      */
     public static addCodecProvider(provider: CodecProvider): void {
+        Guards.truthy(provider, "provider");
         CodecFactory._customCodecProviders.push(provider);
     }
 
@@ -39,6 +41,8 @@ export default class CodecFactory {
      * @param packet First packet of an Ogg logical bitstream.
      */
     public static getCodec(packet: ByteVector): IOggCodec {
+        Guards.truthy(packet, "packet");
+
         // Check custom providers first
         let codec: IOggCodec;
         for (const provider of CodecFactory._customCodecProviders) {

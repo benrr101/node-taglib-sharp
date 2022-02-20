@@ -1,19 +1,15 @@
-import {Tag, TagTypes} from "../tag";
+import itiriri from "itiriri";
 import XiphComment from "../xiph/xiphComment";
+import {Tag, TagTypes} from "../tag";
 import {Guards} from "../utils";
 import {IPicture} from "../iPicture";
-
-interface ICommentMapping {
-    comment: XiphComment;
-    streamSerialNumber: number;
-}
 
 /**
  * This class combines a collection of {@link XiphComment} objects so that tagging properties can
  * be read from each but are only set to the first comment of the file.
  */
 export default class GroupedComment extends Tag {
-    private _comments: ICommentMapping[];
+    private _comments: Map<number, XiphComment>;
 
     /**
      * Constructs and initializes a new instance with no contents.
@@ -21,7 +17,7 @@ export default class GroupedComment extends Tag {
     public constructor() {
         super();
 
-        this._comments = [];
+        this._comments = new Map<number, XiphComment>();
     }
 
     // #region Methods
@@ -30,7 +26,13 @@ export default class GroupedComment extends Tag {
      * Gets the list of comments in the current instance, in the order they were added.
      * @remarks Modifying this array makes no changes to the file. Use {@link setComment}.
      */
-    public get comments(): XiphComment[] { return this._comments.map((m) => m.comment); }
+    public get comments(): XiphComment[] { return Array.from(this._comments.values()); }
+
+    /**
+     * Gets the list of stream serial numbers that have comments associated with them.
+     * @remarks Modifying this array makes no changes to the file. Use {@link setComment}.
+     */
+    public get serialNumbers(): number[] { return Array.from(this._comments.keys()); }
 
     /**
      * Retrieves a Xiph comment for a given stream.
@@ -41,7 +43,7 @@ export default class GroupedComment extends Tag {
      */
     public getComment(streamSerialNumber: number): XiphComment {
         Guards.uint(streamSerialNumber, "streamSerialNumber");
-        return this._comments.find((m) => m.streamSerialNumber === streamSerialNumber).comment;
+        return this._comments.get(streamSerialNumber);
     }
 
     /**
@@ -58,14 +60,11 @@ export default class GroupedComment extends Tag {
     public setComment(streamSerialNumber: number, comment: XiphComment): void {
         Guards.uint(streamSerialNumber, "streamSerialNumber");
 
-        // Remove existing comment with provided stream serial number. If comment is provided add
-        // it, otherwise leave it blank.
-        this._comments = this._comments.filter((m) => m.streamSerialNumber !== streamSerialNumber);
+        // If comment is provided add it, otherwise leave it blank.
         if (comment) {
-            this._comments.push({
-                comment: comment,
-                streamSerialNumber: streamSerialNumber
-            });
+            this._comments.set(streamSerialNumber, comment);
+        } else {
+            this._comments.delete(streamSerialNumber);
         }
     }
 
@@ -74,10 +73,12 @@ export default class GroupedComment extends Tag {
     // #region Tag Implementation
 
     /** @inheritDoc */
-    public get tagTypes(): TagTypes { return this._comments.length > 0 ? TagTypes.Xiph : TagTypes.None; }
+    public get tagTypes(): TagTypes { return this._comments.size > 0 ? TagTypes.Xiph : TagTypes.None; }
 
+    /** @inheritDoc */
+    // TODO: This value is never updated after a save!!
     public get sizeOnDisk(): number {
-        return this._comments.reduce((accum, c) => accum + c.comment.sizeOnDisk, 0);
+        return itiriri(this._comments.values()).reduce((accum, c) => accum + c.sizeOnDisk, 0);
     }
 
     /** @inheritDoc */
@@ -323,7 +324,7 @@ export default class GroupedComment extends Tag {
     public set pictures(value: IPicture[]) { this.setFirstValue((xc, v) => xc.pictures = v, value); }
 
     /** @inheritDoc */
-    public get isCompilation(): boolean { return this.getFirstValue((xc) => xc.isCompilation); }
+    public get isCompilation(): boolean { return this.getFirstValue((xc) => xc.isCompilation, false); }
     /** @inheritDoc */
     public set isCompilation(value: boolean) { this.setFirstValue((xc, v) => xc.isCompilation = v, value); }
 
@@ -348,12 +349,12 @@ export default class GroupedComment extends Tag {
     public set isrc(value: string) { this.setFirstValue((xc, v) => xc.isrc = v, value); }
 
     public clear() {
-        this._comments.forEach((xc) => xc.comment.clear());
+        this._comments.forEach((xc) => xc.clear());
     }
 
     private getFirstValue<T>(getter: (xc: XiphComment) => T, defaultValue?: T): T {
-        for (const comment of this._comments) {
-            const value = getter(comment.comment);
+        for (const comment of this._comments.values()) {
+            const value = getter(comment);
             if (value) {
                 return value;
             }
@@ -363,8 +364,8 @@ export default class GroupedComment extends Tag {
     }
 
     private getFirstArray<T>(getter: (xc: XiphComment) => T[]): T[] {
-        for (const comment of this._comments) {
-            const value = getter(comment.comment);
+        for (const comment of this._comments.values()) {
+            const value = getter(comment);
             if (value && value.length) {
                 return value;
             }
@@ -374,8 +375,8 @@ export default class GroupedComment extends Tag {
     }
 
     private setFirstValue<T>(setter: (xc: XiphComment, v: T) => void, value: T): void {
-        if (this._comments.length > 0) {
-            setter(this._comments[0].comment, value);
+        if (this._comments.size > 0) {
+            setter(this._comments.values().next().value, value);
         }
     }
 

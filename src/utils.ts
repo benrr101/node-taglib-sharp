@@ -252,16 +252,6 @@ export class NumberUtils {
     }
 
     /**
-     * Provides way to do unsigned bitwise XOR without all the mess of parenthesis.
-     * @param x Left operand
-     * @param y Right operand
-     * @returns Number (x ^ y) >>> 0
-     */
-    public static uintXor(x: number, y: number): number {
-        return (x ^ y) >>> 0;
-    }
-
-    /**
      * Converts IEEE 80-bit floating point numbers (SANE "extended" type) to double precision
      * floating point number.
      * @source http://www33146ue.sakura.ne.jp/staff/iz/formats/ieee.c

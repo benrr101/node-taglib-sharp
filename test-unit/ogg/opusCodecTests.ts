@@ -1,6 +1,7 @@
 import {assert} from "chai";
 import {suite, test} from "@testdeck/mocha";
 
+import CodecPackets from "./codecPackets";
 import Opus from "../../src/ogg/codecs/opus";
 import XiphComment from "../../src/xiph/xiphComment";
 import {ByteVector} from "../../src/byteVector";
@@ -111,7 +112,7 @@ import {Testers} from "../utilities/testers";
     @test
     public readPacket_packetIsNotCommentData() {
         // Arrange
-        const codec = this.getTestCodec();
+        const codec = Ogg_OpusTests.getTestCodec();
         const packet = ByteVector.fromSize(20, 0x0F);
 
         // Act
@@ -125,7 +126,7 @@ import {Testers} from "../utilities/testers";
     @test
     public readPacket_packetIsCommentData() {
         // Arrange
-        const codec = this.getTestCodec();
+        const codec = Ogg_OpusTests.getTestCodec();
         const packet = ByteVector.concatenate(
             ByteVector.fromString("OpusTags"),
             ByteVector.fromString("foobarbaz")
@@ -142,7 +143,7 @@ import {Testers} from "../utilities/testers";
     @test
     public readPacket_commentsAlreadyRead() {
         // Arrange
-        const codec = this.getTestCodec();
+        const codec = Ogg_OpusTests.getTestCodec();
         const commentPacket1 = ByteVector.concatenate(
             ByteVector.fromString("OpusTags"),
             ByteVector.fromString("foobarbaz")
@@ -164,7 +165,7 @@ import {Testers} from "../utilities/testers";
     @test
     public writeCommentPacket_invalidParameters() {
         // Arrange
-        const codec = this.getTestCodec();
+        const codec = Ogg_OpusTests.getTestCodec();
         const comment = XiphComment.fromEmpty();
 
         // Act / Assert
@@ -175,7 +176,7 @@ import {Testers} from "../utilities/testers";
     @test
     public writeCommentPacket_noPackets() {
         // Arrange
-        const codec = this.getTestCodec();
+        const codec = Ogg_OpusTests.getTestCodec();
         const comment = XiphComment.fromEmpty();
         const packets: ByteVector[] = [];
 
@@ -195,7 +196,7 @@ import {Testers} from "../utilities/testers";
     @test
     public writeCommentPacket_onePacket() {
         // Arrange
-        const codec = this.getTestCodec();
+        const codec = Ogg_OpusTests.getTestCodec();
         const comment = XiphComment.fromEmpty();
         const packets = [
             ByteVector.fromString("OpusHead")
@@ -217,7 +218,7 @@ import {Testers} from "../utilities/testers";
     @test
     public writeCommentPacket_noCommentPackets() {
         // Arrange
-        const codec = this.getTestCodec();
+        const codec = Ogg_OpusTests.getTestCodec();
         const comment = XiphComment.fromEmpty();
         const packets = [
             ByteVector.fromSize(10, 0x0C),
@@ -240,7 +241,7 @@ import {Testers} from "../utilities/testers";
     @test
     public writeCommentPacket_hasCommentPacket() {
         // Arrange
-        const codec = this.getTestCodec();
+        const codec = Ogg_OpusTests.getTestCodec();
         const comment = XiphComment.fromEmpty();
         const packets = [
             ByteVector.fromSize(10, 0x0C),
@@ -264,7 +265,7 @@ import {Testers} from "../utilities/testers";
     @test
     public setDuration_invalidParameters() {
         // Arrange
-        const codec = this.getTestCodec();
+        const codec = Ogg_OpusTests.getTestCodec();
 
         // Act / Assert
         Testers.testSafeUint((v) => codec.setDuration(v, 123));
@@ -276,7 +277,7 @@ import {Testers} from "../utilities/testers";
     @test
     public setDuration_validParameters() {
         // Arrange
-        const codec = this.getTestCodec();
+        const codec = Ogg_OpusTests.getTestCodec();
 
         // Act
         codec.setDuration(0, 123456789);
@@ -285,13 +286,7 @@ import {Testers} from "../utilities/testers";
         assert.approximately(codec.durationMilliseconds, 2571995, 0.5);
     }
 
-    private getTestCodec(): Opus {
-        const headerPacket = ByteVector.concatenate(
-            ByteVector.fromString("OpusHead"),
-            0x01, 0x08, 0x03, 0x04,
-            0x05, 0x06, 0x07, 0x08,
-            0x09, 0x0A, 0x01, 0x05, 0x03
-        );
-        return new Opus(headerPacket);
+    private static getTestCodec(): Opus {
+        return new Opus(CodecPackets.getTestOpusPacket());
     }
 }

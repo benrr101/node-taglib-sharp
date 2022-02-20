@@ -1,17 +1,19 @@
 import {assert} from "chai";
 import {suite, test} from "@testdeck/mocha";
 
-import Vorbis from "../../src/ogg/codecs/vorbis";
+import Theora from "../../src/ogg/codecs/theora";
 import XiphComment from "../../src/xiph/xiphComment";
 import {ByteVector} from "../../src/byteVector";
 import {MediaTypes} from "../../src/iCodec";
 import {Testers} from "../utilities/testers";
+import CodecFactory from "../../src/ogg/codecs/codecFactory";
+import CodecPackets from "./codecPackets";
 
 @suite class Ogg_TheoraTests {
     @test
     public constructor_invalidParameters() {
         // Act / Assert
-        Testers.testTruthy((v: ByteVector) => new Vorbis(v));
+        Testers.testTruthy((v: ByteVector) => new Theora(v));
     }
 
     @test
@@ -20,40 +22,41 @@ import {Testers} from "../utilities/testers";
         const headerPacket = ByteVector.fromString("invalidString");
 
         // Act / Assert
-        assert.throws(() => new Vorbis(headerPacket));
+        assert.throws(() => new Theora(headerPacket));
     }
 
     @test
     public constructor_validPacket() {
         // Arrange
         const headerPacket = ByteVector.concatenate(
-            0x01, ByteVector.fromString("vorbis"),
-            ByteVector.fromUint(1234, false), // Version
-            0x05, // Channels
-            ByteVector.fromUint(456789, false), // Sample rate
-            ByteVector.fromUint(200000, false), // bitrate max
-            ByteVector.fromUint(128000, false), // bitrate nominal
-            ByteVector.fromUint(100000, false), // bitrate min
-            // We don't care about anything after this
+            0x80, ByteVector.fromString("theora"),
+            0x01, 0x02, 0x03, // version
+            ByteVector.fromUint(0), // Size in macro blocks
+            0xF0, 0x12, 0x34, // Width in pixels
+            0xF0, 0x45, 0x67, // Height in pixels
+            0x01, 0x02, // Picture offset in pixels
+            ByteVector.fromUint(1234), // Frame rate numerator
+            ByteVector.fromUint(2345), // Frame rate denominator
+            ByteVector.fromSize(10, 0xFF), // Stuff we don't care about
+            0xFC, 0x56, 0xEF // "last bits" including keyframe granule shift
         );
 
         // Act
-        const codec = new Vorbis(headerPacket);
+        const codec = new Theora(headerPacket);
 
         // Assert
-        assert.strictEqual(codec.audioBitrate, 128);
-        assert.strictEqual(codec.audioChannels, 5);
-        assert.strictEqual(codec.audioSampleRate, 456789);
         assert.isUndefined(codec.commentData);
-        assert.strictEqual(codec.description, "Vorbis v1234 Audio");
+        assert.strictEqual(codec.description, "Theora v1.2 video");
         assert.strictEqual(codec.durationMilliseconds, 0);
-        assert.strictEqual(codec.mediaTypes, MediaTypes.Audio);
+        assert.strictEqual(codec.mediaTypes, MediaTypes.Video);
+        assert.strictEqual(codec.videoHeight, 17767);
+        assert.strictEqual(codec.videoWidth, 4660);
     }
 
     @test
     public readPacket_packetIsNotCommentData() {
         // Arrange
-        const codec = this.getTestCodec();
+        const codec = Ogg_TheoraTests.getTestCodec();
         const packet = ByteVector.fromSize(20, 0x0F);
 
         // Act
@@ -67,10 +70,9 @@ import {Testers} from "../utilities/testers";
     @test
     public readPacket_packetIsCommentData() {
         // Arrange
-        const codec = this.getTestCodec();
+        const codec = Ogg_TheoraTests.getTestCodec();
         const packet = ByteVector.concatenate(
-            0x03,
-            ByteVector.fromString("vorbis"),
+            0x81, 0x12, 0x23, 0x34, 0x45, 0x56, 0x67,
             ByteVector.fromString("foobarbaz")
         );
 
@@ -85,15 +87,13 @@ import {Testers} from "../utilities/testers";
     @test
     public readPacket_commentsAlreadyRead() {
         // Arrange
-        const codec = this.getTestCodec();
+        const codec = Ogg_TheoraTests.getTestCodec();
         const commentPacket1 = ByteVector.concatenate(
-            0x03,
-            ByteVector.fromString("vorbis"),
+            0x81, 0x12, 0x23, 0x34, 0x45, 0x56, 0x67,
             ByteVector.fromString("foobarbaz")
         );
         const commentPacket2 = ByteVector.concatenate(
-            0x03,
-            ByteVector.fromString("vorbis"),
+            0x81, 0x12, 0x23, 0x34, 0x45, 0x56, 0x67,
             ByteVector.fromString("fuxbuxquxx")
         );
         codec.readPacket(commentPacket1);
@@ -109,7 +109,7 @@ import {Testers} from "../utilities/testers";
     @test
     public writeCommentPacket_invalidParameters() {
         // Arrange
-        const codec = this.getTestCodec();
+        const codec = Ogg_TheoraTests.getTestCodec();
         const comment = XiphComment.fromEmpty();
 
         // Act / Assert
@@ -120,7 +120,7 @@ import {Testers} from "../utilities/testers";
     @test
     public writeCommentPacket_noPackets() {
         // Arrange
-        const codec = this.getTestCodec();
+        const codec = Ogg_TheoraTests.getTestCodec();
         const comment = XiphComment.fromEmpty();
         const packets: ByteVector[] = [];
 
@@ -131,7 +131,7 @@ import {Testers} from "../utilities/testers";
         assert.strictEqual(packets.length, 1);
 
         const expected = ByteVector.concatenate(
-            0x03, ByteVector.fromString("vorbis"),
+            0x81, ByteVector.fromString("theora"),
             comment.render(true)
         );
         Testers.bvEqual(packets[0], expected);
@@ -140,7 +140,7 @@ import {Testers} from "../utilities/testers";
     @test
     public writeCommentPacket_onePacket() {
         // Arrange
-        const codec = this.getTestCodec();
+        const codec = Ogg_TheoraTests.getTestCodec();
         const comment = XiphComment.fromEmpty();
         const packets = [
             ByteVector.fromString("OpusHead")
@@ -153,7 +153,7 @@ import {Testers} from "../utilities/testers";
         assert.strictEqual(packets.length, 2);
 
         const expected = ByteVector.concatenate(
-            0x03, ByteVector.fromString("vorbis"),
+            0x81, ByteVector.fromString("theora"),
             comment.render(true)
         );
         Testers.bvEqual(packets[1], expected);
@@ -162,7 +162,7 @@ import {Testers} from "../utilities/testers";
     @test
     public writeCommentPacket_noCommentPackets() {
         // Arrange
-        const codec = this.getTestCodec();
+        const codec = Ogg_TheoraTests.getTestCodec();
         const comment = XiphComment.fromEmpty();
         const packets = [
             ByteVector.fromSize(10, 0x0C),
@@ -176,7 +176,7 @@ import {Testers} from "../utilities/testers";
         assert.strictEqual(packets.length, 3);
 
         const expected = ByteVector.concatenate(
-            0x03, ByteVector.fromString("vorbis"),
+            0x81, ByteVector.fromString("theora"),
             comment.render(true)
         );
         Testers.bvEqual(packets[1], expected);
@@ -185,11 +185,11 @@ import {Testers} from "../utilities/testers";
     @test
     public writeCommentPacket_hasCommentPacket() {
         // Arrange
-        const codec = this.getTestCodec();
+        const codec = Ogg_TheoraTests.getTestCodec();
         const comment = XiphComment.fromEmpty();
         const packets = [
             ByteVector.fromSize(10, 0x0C),
-            ByteVector.concatenate(0x03, ByteVector.fromString("vorbis")),
+            ByteVector.concatenate(0x81, ByteVector.fromString("theora")),
             ByteVector.fromSize(10, 0x0F)
         ];
 
@@ -200,7 +200,7 @@ import {Testers} from "../utilities/testers";
         assert.strictEqual(packets.length, 3);
 
         const expected = ByteVector.concatenate(
-            0x03, ByteVector.fromString("vorbis"),
+            0x81, ByteVector.fromString("theora"),
             comment.render(true)
         );
         Testers.bvEqual(packets[1], expected);
@@ -209,7 +209,7 @@ import {Testers} from "../utilities/testers";
     @test
     public setDuration_invalidParameters() {
         // Arrange
-        const codec = this.getTestCodec();
+        const codec = Ogg_TheoraTests.getTestCodec();
 
         // Act / Assert
         Testers.testSafeUint((v) => codec.setDuration(v, 123));
@@ -221,26 +221,16 @@ import {Testers} from "../utilities/testers";
     @test
     public setDuration_validParameters() {
         // Arrange
-        const codec = this.getTestCodec();
+        const codec = Ogg_TheoraTests.getTestCodec();
 
         // Act
         codec.setDuration(123456, 456789);
 
         // Assert
-        assert.approximately(codec.durationMilliseconds, 729, 1);
+        assert.approximately(codec.durationMilliseconds, 158361612, 1);
     }
 
-    private getTestCodec(): Vorbis {
-        const headerPacket = ByteVector.concatenate(
-            0x01, ByteVector.fromString("vorbis"),
-            ByteVector.fromUint(1234, false), // Version
-            0x05, // Channels
-            ByteVector.fromUint(456789, false), // Sample rate
-            ByteVector.fromUint(200000, false), // bitrate max
-            ByteVector.fromUint(128000, false), // bitrate nominal
-            ByteVector.fromUint(100000, false), // bitrate min
-            // We don't care about anything after this
-        );
-        return new Vorbis(headerPacket);
+    private static getTestCodec(): Theora {
+        return new Theora(CodecPackets.getTestTheoraPacket());
     }
 }

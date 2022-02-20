@@ -138,6 +138,7 @@ export default class XiphComment extends Tag {
     public get tagTypes(): TagTypes { return TagTypes.Xiph; }
 
     /** @inheritDoc */
+    // TODO: This value is never updated after a save!!
     public get sizeOnDisk(): number { return this._sizeOnDisk; }
 
     /**
