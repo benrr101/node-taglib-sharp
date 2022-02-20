@@ -1,5 +1,5 @@
-import {assert} from "chai";
 import {suite, test} from "@testdeck/mocha";
+import {assert} from "chai";
 
 import CodecPackets from "./codecPackets";
 import Opus from "../../src/ogg/codecs/opus";
@@ -74,7 +74,7 @@ import {Testers} from "../utilities/testers";
         assert.strictEqual(codec.audioSampleRate, 0x08070605);
         assert.strictEqual(codec.audioChannels, 2);
         assert.isUndefined(codec.commentData);
-        assert.strictEqual(codec.description, `Opus v1 audio`);
+        assert.strictEqual(codec.description, `Opus v1 Audio`);
         assert.strictEqual(codec.durationMilliseconds, 0);
         assert.strictEqual(codec.mediaTypes, MediaTypes.Audio);
         assert.strictEqual(codec.streamCount, 1);
@@ -103,7 +103,7 @@ import {Testers} from "../utilities/testers";
         assert.strictEqual(codec.audioSampleRate, 0x08070605);
         assert.strictEqual(codec.audioChannels, 8);
         assert.isUndefined(codec.commentData);
-        assert.strictEqual(codec.description, `Opus v1 audio`);
+        assert.strictEqual(codec.description, `Opus v1 Audio`);
         assert.strictEqual(codec.durationMilliseconds, 0);
         assert.strictEqual(codec.mediaTypes, MediaTypes.Audio);
         assert.strictEqual(codec.streamCount, 5);

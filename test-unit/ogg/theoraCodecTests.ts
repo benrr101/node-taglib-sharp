@@ -46,7 +46,7 @@ import CodecPackets from "./codecPackets";
 
         // Assert
         assert.isUndefined(codec.commentData);
-        assert.strictEqual(codec.description, "Theora v1.2 video");
+        assert.strictEqual(codec.description, "Theora v1.2 Video");
         assert.strictEqual(codec.durationMilliseconds, 0);
         assert.strictEqual(codec.mediaTypes, MediaTypes.Video);
         assert.strictEqual(codec.videoHeight, 17767);

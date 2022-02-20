@@ -148,10 +148,15 @@ import {TagTesters, Testers} from "../utilities/testers";
         assert.strictEqual(comment.title, "bar");
         const pictures = comment.pictures;
         assert.strictEqual(pictures.length, 2);
-        for (const pic of pictures) {
-            assert.instanceOf(pic, XiphPicture);
-            assert.isFalse((<XiphPicture> pic).isLoaded);
-        }
+
+        // ... Pic 1 should be the old one (and should be loaded already)
+        assert.instanceOf(pictures[0], Picture);
+        Testers.bvEqual(pictures[0].data, oldPictureData);
+        assert.strictEqual(pictures[0].type, PictureType.NotAPicture);
+
+        // ... Pic 2 should be the new one (and should be lazily loaded)
+        assert.instanceOf(pictures[1], XiphPicture);
+        assert.isFalse((<XiphPicture> pictures[1]).isLoaded);
     }
 
     @test

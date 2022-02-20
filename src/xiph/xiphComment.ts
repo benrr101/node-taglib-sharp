@@ -72,6 +72,7 @@ export default class XiphComment extends Tag {
             switch (key) {
                 case XiphComment.oldPictureField:
                     // Old picture fields are just base64 encoded picture bytes
+                    // TODO: Allow picture to be lazily decoded
                     const pictureBytes = ByteVector.fromByteArray(Buffer.from(value, "base64"));
                     const oldPicture = Picture.fromData(pictureBytes);
                     xiphComment._pictures.push(oldPicture);

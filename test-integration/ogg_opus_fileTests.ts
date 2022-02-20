@@ -32,11 +32,11 @@ import {StandardFileTests, TestTagLevel} from "./utilities/standardFileTests";
 
     @test
     public readTags() {
-        assert.strictEqual(Ogg_Opus_FileTests.file.tag.album, "Theora album");
-        assert.strictEqual(Ogg_Opus_FileTests.file.tag.firstPerformer, "Theora artist");
-        assert.strictEqual(Ogg_Opus_FileTests.file.tag.description, "Theora comment");
+        assert.strictEqual(Ogg_Opus_FileTests.file.tag.album, "Opus album");
+        assert.strictEqual(Ogg_Opus_FileTests.file.tag.firstPerformer, "Opus artist");
+        assert.strictEqual(Ogg_Opus_FileTests.file.tag.description, "Opus comment");
         assert.strictEqual(Ogg_Opus_FileTests.file.tag.firstGenre, "Acid Punk");
-        assert.strictEqual(Ogg_Opus_FileTests.file.tag.title, "Theora title");
+        assert.strictEqual(Ogg_Opus_FileTests.file.tag.title, "Opus title");
         assert.strictEqual(Ogg_Opus_FileTests.file.tag.track, 6);
         assert.strictEqual(Ogg_Opus_FileTests.file.tag.trackCount, 7);
         assert.strictEqual(Ogg_Opus_FileTests.file.tag.year, 1234);

@@ -49,7 +49,7 @@ export default class CodecFactory {
             codec = provider(packet);
         }
         if (codec) {
-            return ;
+            return codec;
         }
 
         // Try the known codecs

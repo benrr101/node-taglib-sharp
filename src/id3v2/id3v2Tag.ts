@@ -271,6 +271,9 @@ export default class Id3v2Tag extends Tag {
     /** @inheritDoc via TPE1 frame */
     set performers(value: string[]) {
         this.setTextFrame(FrameIdentifiers.TPE1, ...value);
+
+        // Reset the performer roles
+        this._performersRole = [];
     }
 
     /** @inheritDoc via TSOP frame */

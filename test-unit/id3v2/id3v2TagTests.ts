@@ -401,7 +401,7 @@ function getTestTagHeader(version: number, flags: Id3v2TagHeaderFlags, tagSize: 
         tmclFrame.text = tmclText;
         tag.frames.push(tmclFrame);
         tag.performers = ["alice", "bob", "malory"];
-        const expected = ["saxophone;flugelhorn", "saxophone", undefined];
+        const expected = ["saxophone; flugelhorn", "saxophone", undefined];
         assert.deepStrictEqual(tag.performersRole, expected);
 
         const newData = ["saxophone", "flugelhorn", undefined];

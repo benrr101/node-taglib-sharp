@@ -1,7 +1,7 @@
 import {ByteVector} from "../byteVector";
 import {CorruptFileError, UnsupportedFormatError} from "../errors";
 import {File} from "../file";
-import {Guards} from "../utils";
+import {Guards, NumberUtils} from "../utils";
 
 /**
  * Indicates the special properties of a {@see OggPageHeader}.
@@ -133,7 +133,7 @@ export class OggPageHeader {
         header._packetSizes = [];
         header._lastPacketComplete = false;
 
-        if (pageNumber === 0 && (flags & OggPageFlags.FirstPacketContinued) === 0) {
+        if (pageNumber === 0 && !NumberUtils.hasFlag(flags, OggPageFlags.FirstPacketContinued)) {
             header._flags |= OggPageFlags.FirstPageOfStream;
         }
 
@@ -162,7 +162,7 @@ export class OggPageHeader {
         header._packetSizes = [];
         header._lastPacketComplete = false;
 
-        if (header._pageSequenceNumber === 0 && (flags & OggPageFlags.FirstPacketContinued) === 0) {
+        if (header._pageSequenceNumber === 0 && !NumberUtils.hasFlag(flags, OggPageFlags.FirstPacketContinued)) {
             header._flags |= OggPageFlags.FirstPageOfStream;
         }
 
