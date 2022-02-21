@@ -11,7 +11,7 @@ export default class RiffTags extends CombinedTag {
     public static readonly supportedTagTypes = TagTypes.DivX | TagTypes.Id3v2 | TagTypes.RiffInfo | TagTypes.MovieId;
 
     public constructor(divxTag: DivxTag, id3v2Tag: Id3v2Tag, infoTag: InfoTag, movieIdTag: MovieIdTag) {
-        super(RiffTags.supportedTagTypes);
+        super(RiffTags.supportedTagTypes, true);
 
         // NOTE: We're adding ID3 first because it is the most flexible tagging format. Divx is last
         //     because it is the least flexible tagging format.

@@ -27,7 +27,7 @@ export default class StartTag extends CombinedTag {
      * @param readStyle How deeply to read the tag and its properties
      */
     public constructor(file: File, readStyle: ReadStyle) {
-        super(StartTag.supportedTagTypes);
+        super(StartTag.supportedTagTypes, true);
         Guards.truthy(file, "file");
         this.read(file, readStyle);
     }

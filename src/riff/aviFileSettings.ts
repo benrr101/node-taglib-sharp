@@ -1,21 +1,25 @@
 import {TagTypes} from "../tag";
 import {NumberUtils} from "../utils";
 
+/**
+ * This class contains settings related to AVI file operations. Open files will need to be re-read
+ * in order for changes to take effect.
+ */
 export default class AviFileSettings {
     public static readonly supportedTagTypes = TagTypes.DivX | TagTypes.Id3v2 | TagTypes.RiffInfo | TagTypes.MovieId;
 
     private static _defaultTagTypes = AviFileSettings.supportedTagTypes;
 
     /**
-     * Gets the default types of tags for an AAC file. When opening a file, if these tag types do
+     * Gets the default types of tags for an AVI file. When opening a file, if these tag types do
      * not exist on the file, they will be created.
      */
     public static get defaultTagTypes(): TagTypes { return this._defaultTagTypes; }
 
     /**
-     * Sets the default types of tags for an AAC file. When opening a file, if these tag types do
+     * Sets the default types of tags for an AVI file. When opening a file, if these tag types do
      * not exist on the file, they will be created. See {@link supportedTagTypes} for a list of tag
-     * types that are supported by node-taglib-sharp for AAC files.
+     * types that are supported by node-taglib-sharp for AVI files.
      */
     public static set defaultTagTypes(value: TagTypes) {
         const unsupportedTagTypes = NumberUtils.uintAnd(value, ~this.supportedTagTypes);

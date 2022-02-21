@@ -64,7 +64,7 @@ export default class AiffFile extends File {
             this.mode = FileAccessMode.Closed;
         }
 
-        // Retrieve the tag
+        // Create default tags if desired
         this._tagTypesOnDisk = this.tagTypes;
         if (NumberUtils.hasFlag(AiffFileSettings.defaultTagTypes, TagTypes.Id3v2)) {
             this.getTag(TagTypes.Id3v2, true);

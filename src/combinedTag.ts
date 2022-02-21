@@ -9,16 +9,20 @@ import {Guards, NumberUtils} from "./utils";
 export default abstract class CombinedTag extends Tag {
     private readonly _supportedTagTypes: TagTypes;
     private readonly _tags: Tag[];
+    private readonly _writeToAll: boolean;
 
     /**
      * Constructs and initializes a new instance of {@link CombinedTag}.
      * @param supportedTagTypes Types of tags that are supported by this instance of the combined
+     * @param writeToAllTags Whether to write to all tags in the instance (`true`) or to the first
+     *     tag in the instance (`false`).
      * @param tags Optionally, a list of tags to combine in the new instance.
      */
-    protected constructor(supportedTagTypes: TagTypes, tags?: Tag[]) {
+    protected constructor(supportedTagTypes: TagTypes, writeToAllTags: boolean, tags?: Tag[]) {
         super();
         this._supportedTagTypes = supportedTagTypes;
         this._tags = tags ? tags.slice(0) : [];
+        this._writeToAll = writeToAllTags;
     }
 
     // #region Properties
@@ -71,7 +75,7 @@ export default abstract class CombinedTag extends Tag {
      * Sets the title for the media described by the current instance.
      * Sets the value on all child tags
      */
-    public set title(val: string) { this.setAllValues((t, v) => { t.title = v; }, val); }
+    public set title(val: string) { this.setValues((t, v) => { t.title = v; }, val); }
 
     /**
      * Gets the title used for sorting the media described by the current instance.
@@ -82,7 +86,7 @@ export default abstract class CombinedTag extends Tag {
      * Sets the title used for sorting the media described by the current instance.
      * Sets the value on all child tags
      */
-    public set titleSort(val: string) { this.setAllValues((t, v) => { t.titleSort = v; }, val); }
+    public set titleSort(val: string) { this.setValues((t, v) => { t.titleSort = v; }, val); }
 
     /**
      * Gets the subtitle for the media described by the current instance.
@@ -96,7 +100,7 @@ export default abstract class CombinedTag extends Tag {
      * Sets the subtitle for the media described by the current instance.
      * Sets the value on all child tags
      */
-    public set subtitle(val: string) { this.setAllValues((t, v) => { t.subtitle = v; }, val); }
+    public set subtitle(val: string) { this.setValues((t, v) => { t.subtitle = v; }, val); }
 
     /**
      * Gets the description for the media described by the current instance.
@@ -110,7 +114,7 @@ export default abstract class CombinedTag extends Tag {
      * Sets the description for the media described by the current instance.
      * Sets the value on all child tags
      */
-    public set description(val: string) { this.setAllValues((t, v) => { t.description = v; }, val); }
+    public set description(val: string) { this.setValues((t, v) => { t.description = v; }, val); }
 
     /**
      * Gets the performers or artists who performed in the media described by the current instance.
@@ -121,7 +125,7 @@ export default abstract class CombinedTag extends Tag {
      * Sets the performers in the media described by the current instance.
      * Sets the value on all child tags
      */
-    public set performers(val: string[]) { this.setAllValues((t, v) => { t.performers = v; }, val); }
+    public set performers(val: string[]) { this.setValues((t, v) => { t.performers = v; }, val); }
 
     /**
      * Gets the performers or artists who performed in the media described by the current instance.
@@ -132,7 +136,7 @@ export default abstract class CombinedTag extends Tag {
      * Sets the performers in the media described by the current instance.
      * Sets the value on all child tags
      */
-    public set performersSort(val: string[]) { this.setAllValues((t, v) => { t.performersSort = v; }, val); }
+    public set performersSort(val: string[]) { this.setValues((t, v) => { t.performersSort = v; }, val); }
 
     /**
      * Gets the characters for a video media, or instruments played for music media. This should
@@ -150,7 +154,7 @@ export default abstract class CombinedTag extends Tag {
      * Sets the characters in a video media, or instruments played for music media.
      * Sets the value on all child tags
      */
-    public set performersRole(val: string[]) { this.setAllValues((t, v) => { t.performersRole = v; }, val); }
+    public set performersRole(val: string[]) { this.setValues((t, v) => { t.performersRole = v; }, val); }
 
     /**
      * Gets the band or artist is credited in the creation of the entire album or collection
@@ -163,7 +167,7 @@ export default abstract class CombinedTag extends Tag {
      * containing the media described by the current instance.
      * Sets the value on all child tags
      */
-    public set albumArtists(val: string[]) { this.setAllValues((t, v) => { t.albumArtists = v; }, val); }
+    public set albumArtists(val: string[]) { this.setValues((t, v) => { t.albumArtists = v; }, val); }
 
     /**
      * Gets the band or artist is credited in the creation of the entire album or collection
@@ -176,7 +180,7 @@ export default abstract class CombinedTag extends Tag {
      * containing the media described by the current instance.
      * Sets the value on all child tags
      */
-    public set albumArtistsSort(val: string[]) { this.setAllValues((t, v) => { t.albumArtistsSort = v; }, val); }
+    public set albumArtistsSort(val: string[]) { this.setValues((t, v) => { t.albumArtistsSort = v; }, val); }
 
     /**
      * Gets the composers of the media represented by the current instance.
@@ -187,7 +191,7 @@ export default abstract class CombinedTag extends Tag {
      * Sets the composers of the media represented by the current instance.
      * Sets the value on all child tags
      */
-    public set composers(val: string[]) { this.setAllValues((t, v) => { t.composers = v; }, val); }
+    public set composers(val: string[]) { this.setValues((t, v) => { t.composers = v; }, val); }
 
     /**
      * Gets the composers of the media represented by the current instance.
@@ -198,7 +202,7 @@ export default abstract class CombinedTag extends Tag {
      * Sets the composers of the media represented by the current instance.
      * Sets the value on all child tags
      */
-    public set composersSort(val: string[]) { this.setAllValues((t, v) => { t.composersSort = v; }, val); }
+    public set composersSort(val: string[]) { this.setValues((t, v) => { t.composersSort = v; }, val); }
 
     /**
      * Gets the album title for the media described by the current instance.
@@ -209,7 +213,7 @@ export default abstract class CombinedTag extends Tag {
      * Sets the album title for the media described by the current instance.
      * Sets the value on all child tags
      */
-    public set album(val: string) { this.setAllValues((t, v) => { t.album = v; }, val); }
+    public set album(val: string) { this.setValues((t, v) => { t.album = v; }, val); }
 
     /**
      * Gets the album title for sorting the media described by the current instance.
@@ -220,7 +224,7 @@ export default abstract class CombinedTag extends Tag {
      * Sets the album title for sorting the media described by the current instance.
      * Sets the value on all child tags
      */
-    public set albumSort(val: string) { this.setAllValues((t, v) => { t.albumSort = v; }, val); }
+    public set albumSort(val: string) { this.setValues((t, v) => { t.albumSort = v; }, val); }
 
     /**
      * Gets a user comment for the media described by the current instance.
@@ -231,7 +235,7 @@ export default abstract class CombinedTag extends Tag {
      * Sets a user comment for the media described by the current instance.
      * Sets the value on all child tags
      */
-    public set comment(val: string) { this.setAllValues((t, v) => { t.comment = v; }, val); }
+    public set comment(val: string) { this.setValues((t, v) => { t.comment = v; }, val); }
 
     /**
      * Gets the album genres of the media represented by the current instance.
@@ -242,7 +246,7 @@ export default abstract class CombinedTag extends Tag {
      * Sets the album genres of the media described by the current instance.
      * Sets the value on all child tags
      */
-    public set genres(val: string[]) { this.setAllValues((t, v) => { t.genres = v; }, val); }
+    public set genres(val: string[]) { this.setValues((t, v) => { t.genres = v; }, val); }
 
     /**
      * Gets the year that the media represented by the current instance was recorded.
@@ -254,7 +258,7 @@ export default abstract class CombinedTag extends Tag {
      * positive integer.
      * Sets the value on all child tags
      */
-    public set year(val: number) { this.setAllUint((t, v) => { t.year = v; }, val); }
+    public set year(val: number) { this.setUint((t, v) => { t.year = v; }, val); }
 
     /**
      * Gets the position of the media represented by the current instance in its containing album.
@@ -266,7 +270,7 @@ export default abstract class CombinedTag extends Tag {
      * Must be a positive integer positive integer.
      * Sets the value on all child tags
      */
-    public set track(val: number) { this.setAllUint((t, v) => { t.track = v; }, val); }
+    public set track(val: number) { this.setUint((t, v) => { t.track = v; }, val); }
 
     /**
      * Gets the number of tracks in the album containing the media represented by the current
@@ -279,7 +283,7 @@ export default abstract class CombinedTag extends Tag {
      * instance. Must be a positive integer positive integer.
      * Sets the value on all child tags
      */
-    public set trackCount(val: number) { this.setAllUint((t, v) => { t.trackCount = v; }, val); }
+    public set trackCount(val: number) { this.setUint((t, v) => { t.trackCount = v; }, val); }
 
     /**
      * Gets the number of the disc containing the media represented by the current instance in a
@@ -292,7 +296,7 @@ export default abstract class CombinedTag extends Tag {
      * boxed set. Must be a positive integer positive integer.
      * Sets the value on all child tags
      */
-    public set disc(val: number) { this.setAllUint((t, v) => { t.disc = v; }, val); }
+    public set disc(val: number) { this.setUint((t, v) => { t.disc = v; }, val); }
 
     /**
      * Gets the number of the discs in the boxed set containing the media represented by the
@@ -305,7 +309,7 @@ export default abstract class CombinedTag extends Tag {
      * current instance. Must be a positive integer positive integer.
      * Sets the value on all child tags
      */
-    public set discCount(val: number) { this.setAllUint((t, v) => { t.discCount = v; }, val); }
+    public set discCount(val: number) { this.setUint((t, v) => { t.discCount = v; }, val); }
 
     /**
      * Gets the lyrics or script of the media represented by the current instance.
@@ -316,7 +320,7 @@ export default abstract class CombinedTag extends Tag {
      * Sets the lyrics or script of the media represented by the current instance.
      * Sets the value on all child tags
      */
-    public set lyrics(val: string) { this.setAllValues((t, v) => { t.lyrics = v; }, val); }
+    public set lyrics(val: string) { this.setValues((t, v) => { t.lyrics = v; }, val); }
 
     /**
      * Gets the grouping on the album which the media in the current instance belongs to.
@@ -327,7 +331,7 @@ export default abstract class CombinedTag extends Tag {
      * Sets the grouping on the album which the media in the current instance belongs to.
      * Sets the value on all child tags
      */
-    public set grouping(val: string) { this.setAllValues((t, v) => { t.grouping = v; }, val); }
+    public set grouping(val: string) { this.setValues((t, v) => { t.grouping = v; }, val); }
 
     /**
      * Gets the number of beats per minute of the media represented by the current instance.
@@ -339,7 +343,7 @@ export default abstract class CombinedTag extends Tag {
      * be a positive integer positive integer.
      * Sets the value on all child tags
      */
-    public set beatsPerMinute(val: number) { this.setAllUint((t, v) => { t.beatsPerMinute = v; }, val); }
+    public set beatsPerMinute(val: number) { this.setUint((t, v) => { t.beatsPerMinute = v; }, val); }
 
     /**
      * Gets the conductor or director of the media represented by the current instance.
@@ -350,7 +354,7 @@ export default abstract class CombinedTag extends Tag {
      * Sets the conductor or director of the media represented by the current instance.
      * Sets the value on all child tags
      */
-    public set conductor(val: string) { this.setAllValues((t, v) => { t.conductor = v; }, val); }
+    public set conductor(val: string) { this.setValues((t, v) => { t.conductor = v; }, val); }
 
     /**
      * Gets the copyright information of the media represented by the current instance.
@@ -361,7 +365,7 @@ export default abstract class CombinedTag extends Tag {
      * Sets the copyright information of the media represented by the current instance.
      * Sets the value on all child tags
      */
-    public set copyright(val: string) { this.setAllValues((t, v) => { t.copyright = v; }, val); }
+    public set copyright(val: string) { this.setValues((t, v) => { t.copyright = v; }, val); }
 
     /**
      * Gets the date at which the tag has been written.
@@ -371,7 +375,7 @@ export default abstract class CombinedTag extends Tag {
     /**
      * Sets the date at which the tag has been written
      */
-    public set dateTagged(val: Date) { this.setAllValues((t, v) => { t.dateTagged = v; }, val); }
+    public set dateTagged(val: Date) { this.setValues((t, v) => { t.dateTagged = v; }, val); }
 
     /**
      * Gets the MusicBrainz artist ID.
@@ -382,7 +386,7 @@ export default abstract class CombinedTag extends Tag {
      * Sets the MusicBrainz artist ID.
      * Sets the value on all child tags
      */
-    public set musicBrainzArtistId(val: string) { this.setAllValues((t, v) => { t.musicBrainzArtistId = v; }, val); }
+    public set musicBrainzArtistId(val: string) { this.setValues((t, v) => { t.musicBrainzArtistId = v; }, val); }
 
     /**
      * Gets the MusicBrainz release group ID.
@@ -394,7 +398,7 @@ export default abstract class CombinedTag extends Tag {
      * Sets the value on all child tags
      */
     public set musicBrainzReleaseGroupId(val: string) {
-        this.setAllValues((t, v) => { t.musicBrainzReleaseGroupId = v; }, val);
+        this.setValues((t, v) => { t.musicBrainzReleaseGroupId = v; }, val);
     }
 
     /**
@@ -406,7 +410,7 @@ export default abstract class CombinedTag extends Tag {
      * Sets the MusicBrainz release ID.
      * Sets the value on all child tags
      */
-    public set musicBrainzReleaseId(val: string) { this.setAllValues((t, v) => { t.musicBrainzReleaseId = v; }, val); }
+    public set musicBrainzReleaseId(val: string) { this.setValues((t, v) => { t.musicBrainzReleaseId = v; }, val); }
 
     /**
      * Gets the MusicBrainz release artist ID.
@@ -418,7 +422,7 @@ export default abstract class CombinedTag extends Tag {
      * Sets the value on all child tags
      */
     public set musicBrainzReleaseArtistId(val: string) {
-        this.setAllValues((t, v) => { t.musicBrainzReleaseArtistId = v; }, val);
+        this.setValues((t, v) => { t.musicBrainzReleaseArtistId = v; }, val);
     }
 
     /**
@@ -430,7 +434,7 @@ export default abstract class CombinedTag extends Tag {
      * Sets the MusicBrainz track ID.
      * Sets the value on all child tags
      */
-    public set musicBrainzTrackId(val: string) { this.setAllValues((t, v) => { t.musicBrainzTrackId = v; }, val); }
+    public set musicBrainzTrackId(val: string) { this.setValues((t, v) => { t.musicBrainzTrackId = v; }, val); }
 
     /**
      * Gets the MusicBrainz disc ID.
@@ -441,7 +445,7 @@ export default abstract class CombinedTag extends Tag {
      * Sets the MusicBrainz disc ID.
      * Sets the value on all child tags
      */
-    public set musicBrainzDiscId(val: string) { this.setAllValues((t, v) => { t.musicBrainzDiscId = v; }, val); }
+    public set musicBrainzDiscId(val: string) { this.setValues((t, v) => { t.musicBrainzDiscId = v; }, val); }
 
     /**
      * Gets the MusicIP PUID.
@@ -452,7 +456,7 @@ export default abstract class CombinedTag extends Tag {
      * Sets the MusicIP PUID.
      * Sets the value on all child tags
      */
-    public set musicIpId(val: string) { this.setAllValues((t, v) => { t.musicIpId = v; }, val); }
+    public set musicIpId(val: string) { this.setValues((t, v) => { t.musicIpId = v; }, val); }
 
     /**
      * Gets the Amazon ID.
@@ -463,7 +467,7 @@ export default abstract class CombinedTag extends Tag {
      * Sets the Amazon ID.
      * Sets the value on all child tags
      */
-    public set amazonId(val: string) { this.setAllValues((t, v) => { t.amazonId = v; }, val); }
+    public set amazonId(val: string) { this.setValues((t, v) => { t.amazonId = v; }, val); }
 
     /**
      * Gets the MusicBrainz release status.
@@ -475,7 +479,7 @@ export default abstract class CombinedTag extends Tag {
      * Sets the value on all child tags
      */
     public set musicBrainzReleaseStatus(val: string) {
-        this.setAllValues((t, v) => { t.musicBrainzReleaseStatus = v; }, val);
+        this.setValues((t, v) => { t.musicBrainzReleaseStatus = v; }, val);
     }
 
     /**
@@ -488,7 +492,7 @@ export default abstract class CombinedTag extends Tag {
      * Sets the value on all child tags
      */
     public set musicBrainzReleaseType(val: string) {
-        this.setAllValues((t, v) => { t.musicBrainzReleaseStatus = v; }, val);
+        this.setValues((t, v) => { t.musicBrainzReleaseStatus = v; }, val);
     }
 
     /**
@@ -501,7 +505,7 @@ export default abstract class CombinedTag extends Tag {
      * Sets the value on all child tags
      */
     public set musicBrainzReleaseCountry(val: string) {
-        this.setAllValues((t, v) => { t.musicBrainzReleaseCountry = v; }, val);
+        this.setValues((t, v) => { t.musicBrainzReleaseCountry = v; }, val);
     }
 
     /**
@@ -513,7 +517,7 @@ export default abstract class CombinedTag extends Tag {
      * Sets the ReplayGain track gain in dB.
      * Sets the value on all child tags
      */
-    public set replayGainTrackGain(val: number) { this.setAllValues((t, v) => { t.replayGainTrackGain = v; }, val); }
+    public set replayGainTrackGain(val: number) { this.setValues((t, v) => { t.replayGainTrackGain = v; }, val); }
 
     /**
      * Gets the ReplayGain track peak sample.
@@ -524,7 +528,7 @@ export default abstract class CombinedTag extends Tag {
      * Sets the ReplayGain track peak sample.
      * Sets the value on all child tags
      */
-    public set replayGainTrackPeak(val: number) { this.setAllValues((t, v) => { t.replayGainTrackPeak = v; }, val); }
+    public set replayGainTrackPeak(val: number) { this.setValues((t, v) => { t.replayGainTrackPeak = v; }, val); }
 
     /**
      * Gets the ReplayGain album gain in dB.
@@ -535,7 +539,7 @@ export default abstract class CombinedTag extends Tag {
      * Sets the ReplayGain album gain in dB.
      * Sets the value on all child tags
      */
-    public set replayGainAlbumGain(val: number) { this.setAllValues((t, v) => { t.replayGainAlbumGain = v; }, val); }
+    public set replayGainAlbumGain(val: number) { this.setValues((t, v) => { t.replayGainAlbumGain = v; }, val); }
 
     /**
      * Gets the ReplayGain album peak sample.
@@ -546,7 +550,7 @@ export default abstract class CombinedTag extends Tag {
      * Sets the ReplayGain album peak sample.
      * Sets the value on all child tags
      */
-    public set replayGainAlbumPeak(val: number) { this.setAllValues((t, v) => { t.replayGainAlbumPeak = v; }, val); }
+    public set replayGainAlbumPeak(val: number) { this.setValues((t, v) => { t.replayGainAlbumPeak = v; }, val); }
 
     /**
      * Gets the initial key of the media represented by the current instance.
@@ -557,7 +561,7 @@ export default abstract class CombinedTag extends Tag {
      * Sets the initial key of the media represented by the current instance.
      * Sets the value on all child tags
      */
-    public set initialKey(val: string) { this.setAllValues((t, v) => { t.initialKey = v; }, val); }
+    public set initialKey(val: string) { this.setValues((t, v) => { t.initialKey = v; }, val); }
 
     /**
      * Gets the remixer of the media represented by the current instance.
@@ -568,7 +572,7 @@ export default abstract class CombinedTag extends Tag {
      * Sets the remixer of the media represented by the current instance.
      * Sets the value on all child tags
      */
-    public set remixedBy(val: string) { this.setAllValues((t, v) => { t.remixedBy = v; }, val); }
+    public set remixedBy(val: string) { this.setValues((t, v) => { t.remixedBy = v; }, val); }
 
     /**
      * Gets the publisher of the media represented by the current instance.
@@ -579,7 +583,7 @@ export default abstract class CombinedTag extends Tag {
      * Sets the publisher of the media represented by the current instance.
      * Sets the value on all child tags
      */
-    public set publisher(val: string) { this.setAllValues((t, v) => { t.publisher = v; }, val); }
+    public set publisher(val: string) { this.setValues((t, v) => { t.publisher = v; }, val); }
 
     /**
      * Gets the ISRC (International Standard Recording Code) of the media represented by the
@@ -592,7 +596,7 @@ export default abstract class CombinedTag extends Tag {
      * current instance.
      * Sets the value on all child tags
      */
-    public set isrc(val: string) { this.setAllValues((t, v) => { t.isrc = v; }, val); }
+    public set isrc(val: string) { this.setValues((t, v) => { t.isrc = v; }, val); }
 
     /**
      * Gets a collection of pictures associated with the media represented by the current instance.
@@ -603,7 +607,7 @@ export default abstract class CombinedTag extends Tag {
      * Sets the collection of pictures associated with the current media.
      * Sets the value on all child tags
      */
-    public set pictures(val: IPicture[]) { this.setAllValues((t, v) => { t.pictures = v; }, val); }
+    public set pictures(val: IPicture[]) { this.setValues((t, v) => { t.pictures = v; }, val); }
 
     /**
      * Whether or not the current instance is empty. If all child tags are empty, `true` is
@@ -688,6 +692,15 @@ export default abstract class CombinedTag extends Tag {
     }
 
     /**
+     * This is used for special cases where the order of tags is important.
+     * @protected
+     */
+    protected replaceTag(oldTag: Tag, newTag: Tag) {
+        const index = this._tags.indexOf(oldTag);
+        this._tags.splice(index, 1, newTag);
+    }
+
+    /**
      * Verifies if a tag can be added to the current instance. The criteria for validation are:
      * * A tag of the given tag type does not already exist
      * * The given tag type is supported by the current instance
@@ -720,19 +733,26 @@ export default abstract class CombinedTag extends Tag {
         return tagWithProperty ? propertyFn(tagWithProperty) : defaultValue;
     }
 
-    private setAllUint(propertyFn: (t: Tag, val: number) => void, val: number): void {
+    private setUint(propertyFn: (t: Tag, val: number) => void, val: number): void {
         Guards.uint(val, "val");
-        this._tags.forEach((t) => {
-           if (!t) { return; }
-           propertyFn(t, val);
-        });
+
+        if (this._writeToAll) {
+            this._tags.forEach((t) => { propertyFn(t, val); });
+        } else {
+            if (this._tags.length > 0) {
+                propertyFn(this._tags[0], val);
+            }
+        }
     }
 
-    private setAllValues<T>(propertyFn: (t: Tag, val: T) => void, val: T): void {
-        this._tags.forEach((t) => {
-            if (!t) { return; }
-            propertyFn(t, val);
-        });
+    private setValues<T>(propertyFn: (t: Tag, val: T) => void, val: T): void {
+        if (this._writeToAll) {
+            this._tags.forEach((t) => { propertyFn(t, val); });
+        } else {
+            if (this._tags.length > 0) {
+                propertyFn(this._tags[0], val);
+            }
+        }
     }
 
     // #endregion

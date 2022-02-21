@@ -1,4 +1,4 @@
-import GroupedComment from "./groupedComment";
+import OggTag from "./oggTag";
 import OggBitStream from "./oggBitStream";
 import OggPage from "./oggPage";
 import OggPaginator from "./oggPaginator";
@@ -10,6 +10,7 @@ import {File, FileAccessMode, ReadStyle} from "../file";
 import {IFileAbstraction} from "../fileAbstraction";
 import {OggPageFlags, OggPageHeader} from "./oggPageHeader";
 import {Tag, TagTypes} from "../tag";
+import {NumberUtils} from "../utils";
 
 /**
  * Provides tagging and properties support for Ogg files.
@@ -17,7 +18,7 @@ import {Tag, TagTypes} from "../tag";
 export default class OggFile extends File {
 
     private readonly _properties: Properties;
-    private readonly _tag: GroupedComment;
+    private readonly _tag: OggTag;
 
     /** @inheritDoc */
     public constructor(file: IFileAbstraction | string, readStyle: ReadStyle) {
@@ -29,20 +30,24 @@ export default class OggFile extends File {
             const streamsResult = this.readStreams();
             const codecs = [];
 
-            this._tag = new GroupedComment();
-            for (const id of streamsResult.streams.keys()) {
-                const codec = streamsResult.streams.get(id);
-                const comment = XiphComment.fromData(
-                    codec.codec.commentData,
-                    (readStyle & ReadStyle.PictureLazy) !== 0);
-                this._tag.setComment(id, comment);
-                codecs.push(codec.codec);
+            // Read the streams and extract the Xiph comments from them
+            const commentMapping = new Map<number, XiphComment>();
+            for (const [id, bitStream] of streamsResult.streams.entries()) {
+                commentMapping.set(
+                    id,
+                    XiphComment.fromData(
+                        bitStream.codec.commentData,
+                        NumberUtils.hasFlag(readStyle, ReadStyle.PictureLazy)
+                    )
+                );
+                codecs.push(bitStream.codec);
             }
+            this._tag = new OggTag(commentMapping);
 
             // Read the properties if requested
             // TODO: Read bitrate more accurately if accurate read style provided
             if ((readStyle & ReadStyle.Average) !== 0) {
-                // Find the last page header and use it's position to determine the duration of the
+                // Find the last page header and use its position to determine the duration of the
                 // file.
                 const lastPageHeaderOffset = this.rFind(OggPageHeader.headerBeginning);
                 if (lastPageHeaderOffset < 0) {
@@ -56,6 +61,10 @@ export default class OggFile extends File {
                     .codec.durationMilliseconds;
                 this._properties = new Properties(duration, codecs);
             }
+
+            // NOTE: All known Ogg formats require a comment header. This means an Ogg file will
+            //    always have a tag.
+
         } finally {
             this.mode = FileAccessMode.Closed;
         }

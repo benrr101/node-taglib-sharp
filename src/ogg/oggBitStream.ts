@@ -11,12 +11,12 @@ import {OggPageFlags} from "./oggPageHeader";
  */
 export default class OggBitStream {
     private readonly _codec: IOggCodec;
-    private _firstAbsoluteGranularPosition: number;
+    private readonly _firstAbsoluteGranularPosition: number;
     private _previousPacket: ByteVector;
 
     /**
      * Constructs and initializes a new instance capable of processing a specified page.
-     * @param page Page of the stream to be processed by the new instnace
+     * @param page Page of the stream to be processed by the new instance
      */
     public constructor(page: OggPage) {
         Guards.truthy(page, "page");

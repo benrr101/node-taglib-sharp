@@ -29,7 +29,7 @@ export default class EndTag extends CombinedTag {
      * @param readStyle
      */
     public constructor(file: File, readStyle: ReadStyle) {
-        super(EndTag.supportedTagTypes);
+        super(EndTag.supportedTagTypes, true);
 
         Guards.truthy(file, "file");
         this.read(file, readStyle);
