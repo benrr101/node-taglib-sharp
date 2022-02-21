@@ -271,6 +271,8 @@ export default class Id3v2Tag extends Tag {
     /** @inheritDoc via TPE1 frame */
     set performers(value: string[]) {
         this.setTextFrame(FrameIdentifiers.TPE1, ...value);
+
+        // Reset the performer roles
         this._performersRole = [];
     }
 
@@ -320,7 +322,7 @@ export default class Id3v2Tag extends Tag {
         }
 
         // Collapse the instrument lists and return that
-        this._performersRole = Object.values(map).map((e: string[]) => e.length > 0 ? e.join(";") : undefined);
+        this._performersRole = Object.values(map).map((e: string[]) => e.length > 0 ? e.join("; ") : undefined);
         return this._performersRole;
     }
     /** @inheritDoc via TMCL frame */

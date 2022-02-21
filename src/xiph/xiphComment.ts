@@ -32,8 +32,9 @@ export default class XiphComment extends Tag {
      * Constructs and initializes a new instance by reading the contents of a raw Xiph comment from
      * a {@link ByteVector} object.
      * @param data Object containing a raw Xiph comment, cannot be falsey
+     * @param lazyLoadPictures Whether or not to load pictures lazily
      */
-    public static fromData(data: ByteVector): XiphComment {
+    public static fromData(data: ByteVector, lazyLoadPictures: boolean): XiphComment {
         Guards.truthy(data, "data");
 
         const xiphComment = new XiphComment();
@@ -71,6 +72,7 @@ export default class XiphComment extends Tag {
             switch (key) {
                 case XiphComment.oldPictureField:
                     // Old picture fields are just base64 encoded picture bytes
+                    // TODO: Allow picture to be lazily decoded
                     const pictureBytes = ByteVector.fromByteArray(Buffer.from(value, "base64"));
                     const oldPicture = Picture.fromData(pictureBytes);
                     xiphComment._pictures.push(oldPicture);
@@ -79,7 +81,7 @@ export default class XiphComment extends Tag {
                 case XiphComment.newPictureFiled:
                     // New picture fields have details!
                     // TODO: Allow read style to be passed in
-                    const newPicture = XiphPicture.fromXiphComment(value, true);
+                    const newPicture = XiphPicture.fromXiphComment(value, lazyLoadPictures);
                     xiphComment._pictures.push(newPicture);
 
                     break;
@@ -137,6 +139,7 @@ export default class XiphComment extends Tag {
     public get tagTypes(): TagTypes { return TagTypes.Xiph; }
 
     /** @inheritDoc */
+    // TODO: This value is never updated after a save!!
     public get sizeOnDisk(): number { return this._sizeOnDisk; }
 
     /**

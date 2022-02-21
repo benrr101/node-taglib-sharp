@@ -236,10 +236,10 @@ export default class FlacFile extends File implements ISandwichFile {
         return new Properties(header.durationMilliseconds, [header]);
     }
 
-    private readXiphComments(_readStyle: ReadStyle): XiphComment {
+    private readXiphComments(readStyle: ReadStyle): XiphComment {
         // Collect all the xiph comments
         const xiphComments = this._metadataBlocks.filter((b) => b.type === FlacBlockType.XiphComment)
-            .map((b) => XiphComment.fromData(b.data));
+            .map((b) => XiphComment.fromData(b.data, (readStyle & ReadStyle.PictureLazy) !== 0));
 
         // If we don't have any Xiph comments, just return undefined
         if (xiphComments.length === 0) {

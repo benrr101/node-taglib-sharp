@@ -22,6 +22,7 @@
   "dependencies": {
     "dateformat": "^3.0.3",
     "iconv-lite": "^0.4.24",
+    "itiriri": "^2.0.1",
     "os-locale": "^4.0.0",
     "uuid": "^8.3.2"
   },

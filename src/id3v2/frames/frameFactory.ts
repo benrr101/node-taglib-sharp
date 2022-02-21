@@ -29,7 +29,7 @@ let customFrameCreators: FrameCreator[] = [];
  * Performs the necessary operations to determine and create the correct child classes of
  * {@link Frame} for a given raw ID3v2 frame.
  * By default, this will only load frames contained in the library. To add additional frames to the
- * process, register a frame creator with addFrameCreator.
+ * process, register a frame creator with {@see addFrameCreator}.
  */
 export default {
     /**
@@ -43,8 +43,7 @@ export default {
      *     * version: number ID3v2 version the raw frame data is stored in (should be byte)
      *     * returns Frame if method was able to match the frame, falsy otherwise
      */
-    addFrameCreator: (creator: FrameCreator):
-        void => {
+    addFrameCreator: (creator: FrameCreator): void => {
         Guards.truthy(creator, "creator");
         customFrameCreators.unshift(creator);
     },
