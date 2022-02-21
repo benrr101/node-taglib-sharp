@@ -1,7 +1,7 @@
 import SyncData from "../syncData";
 import {ByteVector, StringType} from "../../byteVector";
 import {CorruptFileError} from "../../errors";
-import {Guards} from "../../utils";
+import {Guards, NumberUtils} from "../../utils";
 import {FrameIdentifier, FrameIdentifiers} from "../frameIdentifiers";
 
 export enum Id3v2FrameFlags {
@@ -127,9 +127,11 @@ export class Id3v2FrameHeader {
 
                 // Store the flags internally as version 2.4
                 frameSize = data.mid(4, 4).toUint();
-                flags = ((data.get(8) << 7) & 0x7000)
-                    | ((data.get(9) >> 4) & 0x000C)
-                    | ((data.get(9) << 1) & 0x0040);
+                flags = NumberUtils.uintOr(
+                    NumberUtils.uintAnd(NumberUtils.uintLShift(data.get(8), 7), 0x7000),
+                    NumberUtils.uintAnd(NumberUtils.uintRShift(data.get(9), 4), 0x000C),
+                    NumberUtils.uintAnd(NumberUtils.uintLShift(data.get(9), 1), 0x0040)
+                );
                 break;
 
             case 4:
@@ -168,7 +170,7 @@ export class Id3v2FrameHeader {
      * Sets the flags applied to the current instance.
      */
     public set flags(value: Id3v2FrameFlags) {
-        if ((value & (Id3v2FrameFlags.Compression | Id3v2FrameFlags.Encryption)) !== 0) {
+        if (NumberUtils.hasFlag(value, (Id3v2FrameFlags.Compression | Id3v2FrameFlags.Encryption))) {
             throw new Error("Argument invalid: Encryption and compression are not supported");
         }
         this._flags = value;
@@ -229,9 +231,11 @@ export class Id3v2FrameHeader {
                 break;
 
             case 3:
-                const newFlags = (this._flags << 1) & 0xE000
-                    | (this._flags << 4) & 0x00C0
-                    | (this._flags >> 1) & 0x0020;
+                const newFlags = NumberUtils.uintOr(
+                    NumberUtils.uintAnd(NumberUtils.uintLShift(this._flags, 1), 0xE000),
+                    NumberUtils.uintAnd(NumberUtils.uintLShift(this._flags, 4), 0x00C0),
+                    NumberUtils.uintAnd(NumberUtils.uintRShift(this._flags, 1), 0x0020)
+                );
 
                 data.addByteVector(ByteVector.fromUint(this._frameSize));
                 data.addByteVector(ByteVector.fromUShort(newFlags));

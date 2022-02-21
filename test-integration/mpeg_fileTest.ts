@@ -39,7 +39,8 @@ const assert = Chai.assert;
 
     @test
     public RemoveStandardTags() {
-        StandardFileTests.removeStandardTags(Mpeg_FileTests.sampleFilePath, Mpeg_FileTests.tmpFileName);
+        const tempFilePath = TestConstants.getTempFilePath(Mpeg_FileTests.tmpFileName);
+        StandardFileTests.removeStandardTags(Mpeg_FileTests.sampleFilePath, tempFilePath);
     }
 
     @test
@@ -49,11 +50,8 @@ const assert = Chai.assert;
 
     @test
     public WriteStandardPictures() {
-        StandardFileTests.writeStandardPictures(
-            Mpeg_FileTests.sampleFilePath,
-            Mpeg_FileTests.tmpFileName,
-            ReadStyle.None
-        );
+        const tempFilePath = TestConstants.getTempFilePath(Mpeg_FileTests.tmpFileName);
+        StandardFileTests.writeStandardPictures(Mpeg_FileTests.sampleFilePath, tempFilePath, ReadStyle.None);
     }
 
     // @test
@@ -67,10 +65,7 @@ const assert = Chai.assert;
 
     @test
     public WriteStandardTags() {
-        StandardFileTests.writeStandardTags(
-            Mpeg_FileTests.sampleFilePath,
-            Mpeg_FileTests.tmpFileName,
-            TestTagLevel.Medium
-        );
+        const tempFilePath = TestConstants.getTempFilePath(Mpeg_FileTests.tmpFileName);
+        StandardFileTests.writeStandardTags(Mpeg_FileTests.sampleFilePath, tempFilePath, TestTagLevel.Medium);
     }
 }

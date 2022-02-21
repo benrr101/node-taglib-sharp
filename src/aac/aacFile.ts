@@ -6,6 +6,7 @@ import {CorruptFileError} from "../errors";
 import {File, ReadStyle} from "../file";
 import {IFileAbstraction} from "../fileAbstraction";
 import {TagTypes} from "../tag";
+import {NumberUtils} from "../utils";
 
 /**
  * This class extends {@link File} to provide tagging and properties for ADTS AAC audio files.
@@ -28,7 +29,7 @@ export default class AacFile extends SandwichFile {
 
     protected readProperties(readStyle: ReadStyle): Properties {
         // Skip if we're not reading the properties
-        if ((readStyle & ReadStyle.Average) === 0) {
+        if (!NumberUtils.hasFlag(readStyle, ReadStyle.Average)) {
             return undefined;
         }
 

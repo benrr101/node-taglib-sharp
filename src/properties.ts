@@ -1,4 +1,5 @@
 import {IAudioCodec, ICodec, ILosslessAudioCodec, IPhotoCodec, IVideoCodec, MediaTypes} from "./iCodec";
+import {NumberUtils} from "./utils";
 
 
 export default class Properties implements ILosslessAudioCodec, IVideoCodec, IPhotoCodec {
@@ -148,8 +149,10 @@ export default class Properties implements ILosslessAudioCodec, IVideoCodec, IPh
         property: (codec: TCodec) => number,
         defaultValue: number
     ): number {
-        const codec = this._codecs.find((e) => !!e && (e.mediaTypes & mediaType) !== 0);
-        return codec ? property(<TCodec> codec) : defaultValue;
+        const codec = this._codecs.find((e) => !!e && NumberUtils.hasFlag(e.mediaTypes, mediaType));
+        return codec
+            ? property(<TCodec> codec) || defaultValue
+            : defaultValue;
     }
 
     // #endregion

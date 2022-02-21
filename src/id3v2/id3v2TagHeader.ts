@@ -2,7 +2,7 @@ import Id3v2Settings from "./id3v2Settings";
 import SyncData from "./syncData";
 import {ByteVector, StringType} from "../byteVector";
 import {CorruptFileError} from "../errors";
-import {Guards} from "../utils";
+import {Guards, NumberUtils} from "../utils";
 
 export enum Id3v2TagHeaderFlags {
     /**
@@ -62,13 +62,13 @@ export class Id3v2TagHeader {
         header._flags = data.get(5);
 
         // Make sure flags provided are legal
-        if (header._majorVersion === 2 && (header._flags & 63) !== 0) {
+        if (header._majorVersion === 2 && NumberUtils.hasFlag(header._flags, 63)) {
             throw new CorruptFileError("Invalid flags set on version 2 tag");
         }
-        if (header._majorVersion === 3 && (header._flags & 15) !== 0) {
+        if (header._majorVersion === 3 && NumberUtils.hasFlag(header._flags, 15)) {
             throw new CorruptFileError("Invalid flags set on version 3 tag");
         }
-        if (header._majorVersion === 4 && (header._flags & 7) !== 0) {
+        if (header._majorVersion === 4 && NumberUtils.hasFlag(header._flags, 7)) {
             throw new CorruptFileError("Invalid flags set on version 4 tag");
         }
 
@@ -95,7 +95,7 @@ export class Id3v2TagHeader {
      * and footer.
      */
     public get completeTagSize(): number {
-        return (this._flags & Id3v2TagHeaderFlags.FooterPresent) > 0
+        return NumberUtils.hasFlag(this._flags, Id3v2TagHeaderFlags.FooterPresent)
             ? this.tagSize + Id3v2Settings.headerSize + Id3v2Settings.footerSize
             : this.tagSize + Id3v2Settings.headerSize;
     }
@@ -112,11 +112,11 @@ export class Id3v2TagHeader {
     public set flags(value: Id3v2TagHeaderFlags) {
         // @TODO: Does it make sense to check for flags for major version <4?
         const version3Flags = Id3v2TagHeaderFlags.ExtendedHeader | Id3v2TagHeaderFlags.ExperimentalIndicator;
-        if ((value & version3Flags) !== 0 && this.majorVersion < 3) {
+        if (NumberUtils.hasFlag(value, version3Flags) && this.majorVersion < 3) {
             throw new Error("Feature only supported in version 2.3+");
         }
         const version4Flags = Id3v2TagHeaderFlags.FooterPresent;
-        if ((value & version4Flags) !== 0 && this.majorVersion < 4) {
+        if (NumberUtils.hasFlag(value, version4Flags) && this.majorVersion < 4) {
             throw new Error("Feature only supported in version 2.4+");
         }
 
@@ -181,7 +181,7 @@ export class Id3v2TagHeader {
      */
     public set tagSize(value: number) {
         Guards.uint(value, "value");
-        if ((value & 0xF0000000) !== 0) {
+        if (NumberUtils.hasFlag(value, 0xF0000000)) {
             throw new Error("Argument out of range: value must be a 28-bit unsigned integer");
         }
 
