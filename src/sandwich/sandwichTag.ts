@@ -30,7 +30,7 @@ export default class SandwichTag extends CombinedTag {
      *     whether a tag type goes into the end tag or start tag
      */
     public constructor(file: File, readStyle: ReadStyle, defaultTagMappingTable: Map<TagTypes, () => boolean>) {
-        super(SandwichTag.supportedTagTypes);
+        super(SandwichTag.supportedTagTypes, true);
 
         Guards.truthy(file, "file");
         Guards.truthy(defaultTagMappingTable, "defaultTagMappingTable");

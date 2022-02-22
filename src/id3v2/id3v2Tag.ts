@@ -152,18 +152,20 @@ export default class Id3v2Tag extends Tag {
     public get frames(): Frame[] { return this._frameList; }
 
     /**
-     * Gets whether or not the album described by the current instance is a compilation.
-     * This property is implemented using the TCMP Text Information Frame to provide support for a
-     * feature of the Apple iPod and iTunes products.
+     * @inheritDoc
+     * @remarks This property is implemented using the TCMP Text Information Frame to provide
+     * support for a feature of the Apple iPod and iTunes products (ie, this is a non-standard
+     * field).
      */
     public get isCompilation(): boolean {
         const val = this.getTextAsString(FrameIdentifiers.TCMP);
         return !!val && val !== "0";
     }
     /**
-     * Gets whether or not the album described by the current instance is a compilation.
-     * This property is implemented using the TCMP Text Information Frame to provide support for a
-     * feature of the Apple iPod and iTunes products.
+     * @inheritDoc
+     * @remarks This property is implemented using the TCMP Text Information Frame to provide
+     * support for a feature of the Apple iPod and iTunes products (ie, this is a non-standard
+     * field).
      * @param value Whether or not the album described by the current instance is a compilation
      */
     public set isCompilation(value: boolean) {

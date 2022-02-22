@@ -5,7 +5,7 @@ import {NumberUtils} from "../utils";
  * This class contains settings related to APE file operations. Open files will need to be re-read
  * in order for changes to take effect.
  */
-export default class AacSettings {
+export default class ApeFileSettings {
     public static readonly supportedTagTypes = TagTypes.Ape | TagTypes.Id3v1 | TagTypes.Id3v2;
 
     private static _defaultTagTypes = TagTypes.Ape;

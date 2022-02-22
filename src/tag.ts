@@ -986,7 +986,18 @@ export abstract class Tag {
     public set pictures(value: IPicture[]) { /* no-op in abstract case */ }
 
     /**
-     * Gets the the first value contained in {@link albumArtists}.
+     * Gets whether or not the album described by the current instance is a compilation.
+     */
+    public get isCompilation(): boolean { return false; }
+
+    /**
+     * Gets whether or not the album described by the current instance is a compilation.
+     * @param value Whether or not the album described by the current instance is a compilation
+     */
+    public set isCompilation(value: boolean) { /* no-op in abstract case */ }
+
+    /**
+     * Gets the first value contained in {@link albumArtists}.
      */
     public get firstAlbumArtist(): string { return Tag.firstInGroup(this.albumArtists); }
 

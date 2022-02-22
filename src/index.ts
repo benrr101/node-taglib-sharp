@@ -127,7 +127,8 @@ export {default as MpegXingHeader} from "./mpeg/xingHeader";
 
 // OGG /////////////////////////////////////////////////////////////////////
 export {default as OggFile} from "./ogg/oggFile";
-export {default as GroupedComment} from "./ogg/groupedComment";
+export {default as OggFileSettings} from "./ogg/oggFileSettings";
+export {default as OggTag} from "./ogg/oggTag";
 
 export {default as OggCodecFactory} from "./ogg/codecs/codecFactory";
 export {default as OggOpusCodec} from "./ogg/codecs/opus";

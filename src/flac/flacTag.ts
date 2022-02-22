@@ -35,7 +35,7 @@ export default class FlacTag extends CombinedTag {
      * @param flacPictures Optional, array of pictures found in the file
      */
     public constructor(startTag: StartTag, endTag: EndTag, xiphTag: XiphComment, flacPictures: XiphPicture[]) {
-        super(FlacFileSettings.supportedTagTypes);
+        super(FlacFileSettings.supportedTagTypes, true);
         Guards.truthy(startTag, "startTag");
         Guards.truthy(endTag, "endTag");
 
@@ -47,6 +47,50 @@ export default class FlacTag extends CombinedTag {
         this.addTag(this._endTag);
         this._pictures = flacPictures || [];
     }
+
+    // #region Properties
+
+    /**
+     * Gets the collection of tags appearing at the end of the file.
+     */
+    public get endTag(): EndTag { return this._endTag; }
+
+    /**
+     * Gets the collection of tags appearing at the start of the file.
+     */
+    public get startTag(): StartTag { return this._startTag; }
+
+    /** Gets the Xiph comment that is stored in the current instance. */
+    public get xiphComment(): XiphComment { return this._xiphComment; }
+
+    /**
+     * @inheritDoc
+     * For FLAC files, FLAC-style pictures are preferentially returned. If those don't exist the
+     * pictures that are stored in the
+     */
+    public get pictures(): IPicture[] {
+        // We want to preferentially get pictures from FLAC picture blocks. If there aren't any,
+        // fall back to using pictures from the combined tags
+        return this._pictures && this._pictures.length > 0
+            ? this._pictures.slice()
+            : super.pictures;
+    }
+    /**
+     * @inheritDoc
+     * For FLAC files, pictures are preferentially stored in FLAC-style picture blocks.
+     */
+    public set pictures(value: IPicture[]) {
+        // @TODO: Allow config to store pictures in flac only or in combined tags.
+        this._pictures.splice(0, this._pictures.length, ...value);
+    }
+
+    public get tagTypes(): TagTypes {
+        return this._pictures && this._pictures.length > 0
+            ? super.tagTypes | TagTypes.FlacPictures
+            : super.tagTypes;
+    }
+
+    // #endregion
 
     /** @inheritDoc */
     public clear(): void {
@@ -94,48 +138,4 @@ export default class FlacTag extends CombinedTag {
 
         super.removeTags(tagTypes);
     }
-
-    // #region Properties
-
-    /**
-     * Gets the collection of tags appearing at the end of the file.
-     */
-    public get endTag(): EndTag { return this._endTag; }
-
-    /**
-     * Gets the collection of tags appearing at the start of the file.
-     */
-    public get startTag(): StartTag { return this._startTag; }
-
-    /** Gets the Xiph comment that is stored in the current instance. */
-    public get xiphComment(): XiphComment { return this._xiphComment; }
-
-    /**
-     * @inheritDoc
-     * For FLAC files, FLAC-style pictures are preferentially returned. If those don't exist the
-     * pictures that are stored in the
-     */
-    public get pictures(): IPicture[] {
-        // We want to preferentially get pictures from FLAC picture blocks. If there aren't any,
-        // fall back to using pictures from the combined tags
-        return this._pictures && this._pictures.length > 0
-            ? this._pictures.slice()
-            : super.pictures;
-    }
-    /**
-     * @inheritDoc
-     * For FLAC files, pictures are preferentially stored in FLAC-style picture blocks.
-     */
-    public set pictures(value: IPicture[]) {
-        // @TODO: Allow config to store pictures in flac only or in combined tags.
-        this._pictures.splice(0, this._pictures.length, ...value);
-    }
-
-    public get tagTypes(): TagTypes {
-        return this._pictures && this._pictures.length > 0
-            ? super.tagTypes | TagTypes.FlacPictures
-            : super.tagTypes;
-    }
-
-    // #endregion
 }

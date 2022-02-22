@@ -1,3 +1,4 @@
+import AiffFileSettings from "./aiffFileSettings";
 import AiffStreamHeader from "./aiffStreamHeader";
 import Id3v2Tag from "../id3v2/id3v2Tag";
 import Properties from "../properties";
@@ -63,9 +64,11 @@ export default class AiffFile extends File {
             this.mode = FileAccessMode.Closed;
         }
 
-        // Retrieve the tag
+        // Create default tags if desired
         this._tagTypesOnDisk = this.tagTypes;
-        this.getTag(TagTypes.Id3v2, true);
+        if (NumberUtils.hasFlag(AiffFileSettings.defaultTagTypes, TagTypes.Id3v2)) {
+            this.getTag(TagTypes.Id3v2, true);
+        }
     }
 
     // #region Properties
