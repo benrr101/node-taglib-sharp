@@ -38,6 +38,14 @@ export enum StringType {
     UTF16LE = 4
 }
 
+/**
+ * Interface for a read-only array of bytes.
+ * @remarks The instance this represents may be backed by a concrete instance of a `Uint8Array` or
+ *     it may be backed by a `Uint8Array` that references another instance. Therefore, it is unsafe
+ *     to cast this to a {@see ByteVector} and write to it as this may touch multiple instance. If
+ *     a writable instance is needed, use {@see IReadOnlyByteVector.toByteVector} to "realize" the
+ *     instance to one backed a concrete `Uint8Array` (in some cases, this may create a copy).
+ */
 export interface IReadOnlyByteVector {
     get checksum(): number;
 
@@ -108,7 +116,7 @@ export interface IReadOnlyByteVector {
      * @param pattern Pattern of bytes to search this instance for
      * @param byteAlign Optional, byte alignment the pattern much align to
      */
-    find(pattern: IReadOnlyByteVector, byteAlign: number): number;
+    find(pattern: IReadOnlyByteVector, byteAlign?: number): number;
 
     /**
      * Gets the byte at the given `index`.
@@ -123,6 +131,9 @@ export interface IReadOnlyByteVector {
      *          was not found/
      */
     indexOf(item: number): number;
+
+
+    offsetFind(pattern: IReadOnlyByteVector, offset: number, byteAlign?: number ): number;
 
     /**
      * Finds a byte vector by searching from the end of this instance and working towards the
@@ -150,12 +161,16 @@ export interface IReadOnlyByteVector {
     split(separator: IReadOnlyByteVector, byteAlign?: number, max?: number): IReadOnlyByteVector[];
 
     /**
-     * Returns a comprehension over this instance.
+     * Returns a window over the current instance.
      * @param startIndex Offset into this instance where the comprehension begins
      * @param length Number of elements from the instance to include. If omitted, defaults to the
      *     remainder of the instance
+     * @remarks This *references* the current instance so any changes to it will be reflected in
+     *     the returned `IReadOnlyByteVector`. Calling {@link IReadOnlyByteVector.toByteVector}
+     *     will copy the instance to a new {@link ByteVector} that does not reference the current
+     *     instance.
      */
-    sub(startIndex: number, length: number): IReadOnlyByteVector;
+    subarray(startIndex: number, length?: number): IReadOnlyByteVector;
 
     /**
      * Checks whether or not a pattern appears at the beginning of the current instance.
@@ -166,10 +181,15 @@ export interface IReadOnlyByteVector {
     startsWith(pattern: IReadOnlyByteVector): boolean;
 
     /**
-     * Returns a copy of the bytes represented by this instance represents.
-     * @remarks This is a **copy** of the data. Use sparingly.
+     * Returns a buffer view on the contents of the current instance. Very useful for interfacing
+     * with Node's IO.
      */
-    toByteArray(): Uint8Array;
+    toBuffer(): Buffer;
+
+    /**
+     * Returns the current instance as a base64 encoded string.
+     */
+    toBase64String(): string;
 
     /**
      * Returns a writable copy of the bytes represented by this instance.
@@ -274,7 +294,10 @@ export interface IReadOnlyByteVector {
     toUshort(mostSignificantByteFirst?: boolean): number;
 }
 
-class Encoding {
+/**
+ * Wrapper around the `iconv-lite` library to provide string encoding and decoding functionality.
+ */
+export class Encoding {
     private static readonly _encodings = new Map<StringType, Encoding>([
         [StringType.Latin1, new Encoding("latin1")],
         [StringType.UTF8, new Encoding("utf8")],
@@ -284,7 +307,6 @@ class Encoding {
 
     /**
      * Contains the last generic UTF16 encoding read. Defaults to UTF16-LE
-     * @remarks
      */
     private static _lastUtf16Encoding: StringType = StringType.UTF16LE;
 
@@ -341,6 +363,17 @@ class Encoding {
     }
 }
 
+/**
+ * Wrapper around a `Uint8Array` that provides functionality for reading and writing byte arrays.
+ * @remarks Implementation of this class uses a single `Uint8Array` to store bytes. Any operation
+ *     that inserts, adds, or removes bytes to this instance will result in a copy of the existing
+ *     bytes being made into a larger `Uint8Array`. This also means that any bytes added to the
+ *     instance will be copied into it. This decision was made to improve read performance at the
+ *     expense of write performance.
+ *     The {@link ByteVector.concatenate} method is provided to improve performance when creating
+ *     vectors made up of lots of unchanging elements. When possible, use this over creating an
+ *     empty `ByteVector` and adding additional `ByteVector`s to it.
+ */
 export class ByteVector implements IReadOnlyByteVector {
 
     // #region Member Fields
@@ -385,23 +418,31 @@ export class ByteVector implements IReadOnlyByteVector {
      *     `vectors` concatenated together
      */
     // @TODO Remove usages of .addX when this can be substituted
-    public static concatenate(... vectors: Array<Uint8Array|IReadOnlyByteVector|number>): ByteVector {
+    public static concatenate(... vectors: Array<Uint8Array|IReadOnlyByteVector|number|undefined>): ByteVector {
         // Get the length of the vector we need to create
-        let totalLength = 0;
-        for (const vector of vectors) {
-            if (typeof(vector) === "number") {
-                totalLength++;
-            } else {
-                totalLength += (<Uint8Array|ByteVector> vector).length;
+        const totalLength = vectors.reduce<number>((accum, vector) => {
+            if (vector === undefined || vector === null) {
+                // Ignore falsy values
+                return accum;
             }
-            // @TODO: Add support for skipping undefined and go back and look for instances where 1
-            //  byte is added after concatenating
-        }
+            if (typeof(vector) === "number") {
+                // Add 1 for a single byte
+                return accum + 1;
+            }
+
+            // Add length of vector to length
+            return accum + vector.length;
+        }, 0);
 
         // Create a single big vector and copy the contents into it
         const result = ByteVector.fromSize(totalLength);
         let currentPosition = 0;
         for (const v of vectors) {
+            if (v === undefined || v === null) {
+                // Ignore falsy values
+                continue;
+            }
+
             if ((<any> v).length === undefined) {
                 // We were given a single byte
                 const byte = <number> v;
@@ -433,11 +474,14 @@ export class ByteVector implements IReadOnlyByteVector {
     /**
      * Creates a {@link ByteVector} from a `Uint8Array` or node `Buffer`
      * @param data Uint8Array of the bytes to put in the ByteVector
+     * @param copyValues If `true` the {@link ByteVector} is based on a copy of the values in
+     *    `data`. If `false`, the {@link ByteVector} directly references `data`.
      * @param length Number of bytes to read
      * @param isReadOnly If `true` then the ByteVector will be read only
      */
     public static fromByteArray(
         data: Uint8Array | Buffer,
+        copyValues: boolean,
         length: number = data.length,
         isReadOnly: boolean = false
     ): ByteVector {
@@ -447,7 +491,11 @@ export class ByteVector implements IReadOnlyByteVector {
             throw new Error("Argument out of range: length must be less than or equal to the length of the byte array");
         }
 
-        const bytes = new Uint8Array(length);
+        const bytes = copyValues
+            ? new Uint8Array(data, 0, length)
+            : length < data.length
+                ? data.subarray(0, length)
+                : data;
         return new ByteVector(bytes, isReadOnly);
     }
 
@@ -456,10 +504,11 @@ export class ByteVector implements IReadOnlyByteVector {
      * @param original Data from this ByteVector will be copied into the new one
      * @param isReadOnly If `true` then the ByteVector will be read only
      */
-    public static fromByteVector(original: ByteVector, isReadOnly: boolean = false): ByteVector {
+    public static fromByteVector(original: IReadOnlyByteVector, isReadOnly: boolean = false): ByteVector {
         Guards.truthy(original, "original");
 
-        return ByteVector.fromByteArray(original._bytes, original.length, isReadOnly);
+        // HACK: This is safe because only one type implements IReadOnlyByteVector ... for now
+        return ByteVector.fromByteArray((<ByteVector> original)._bytes, true, original.length, isReadOnly);
     }
 
     /**
@@ -508,16 +557,13 @@ export class ByteVector implements IReadOnlyByteVector {
 
         const vector = ByteVector.empty();
         const bytes = new Uint8Array(4096);
-        let totalBytesRead = 0;
-
         while (true) {
             const bytesRead = stream.read(bytes, 0, bytes.length);
-            vector.addByteArray(bytes);
-            totalBytesRead += bytesRead;
-
             if (bytesRead < bytes.length) {
-                vector.resize(totalBytesRead);
+                vector.addByteArray(bytes, bytesRead);
                 break;
+            } else {
+                vector.addByteArray(bytes);
             }
         }
 
@@ -563,9 +609,8 @@ export class ByteVector implements IReadOnlyByteVector {
 
         // NOTE: We are doing this with read file b/c it removes the headache of working with streams
         // @TODO: Add support for async file reading
-        // @TODO: See if there's a less memory insane way of creating this
         const fileBuffer = fs.readFileSync(path);
-        return ByteVector.fromByteArray(fileBuffer, fileBuffer.length, isReadOnly);
+        return ByteVector.fromByteArray(fileBuffer, false, fileBuffer.length, isReadOnly);
     }
 
     /**
@@ -635,8 +680,9 @@ export class ByteVector implements IReadOnlyByteVector {
                 output._isReadOnly = isReadOnly;
                 complete(output);
             });
-
-            // TODO: Add error handling that fails the promise?
+            readStream.on("error", (error: Error) => {
+                fail(error);
+            });
         });
     }
 
@@ -655,19 +701,17 @@ export class ByteVector implements IReadOnlyByteVector {
         length: number = Number.MAX_SAFE_INTEGER,
         isReadOnly: boolean = false
     ): ByteVector {
+        // @TODO: Allow adding delimiters and find usages that immediately add a delimiter
         Guards.notNullOrUndefined(text, "text");
         if (!Number.isInteger(length) || !Number.isSafeInteger(length) || length < 0) {
             throw new Error("Argument out of range exception: length is invalid");
         }
 
-        const vector = ByteVector.empty();
-        // @TODO: Improve to remove adding byte arrays.
-
         // If we're doing UTF16 w/o specifying an endian-ness, inject a BOM which also coerces
         // the converter to use UTF16LE
-        if (type === StringType.UTF16) {
-            vector.addByteArray(new Uint8Array([0xff, 0xfe]));
-        }
+        const vector = type === StringType.UTF16
+            ? new ByteVector(new Uint8Array([0xff, 0xfe]), false)
+            : ByteVector.empty();
 
         // NOTE: This mirrors the behavior from the original .NET implementation where empty
         //       strings return an empty ByteVector (possibly with UTF16LE BOM)
@@ -676,10 +720,12 @@ export class ByteVector implements IReadOnlyByteVector {
             return vector;
         }
 
+        // Shorten text if only part of it was requested
         if (text.length > length) {
             text = text.substr(0, length);
         }
 
+        // Encode the string into bytes
         const textBytes = Encoding.getEncoding(type, vector).encode(text);
         vector.addByteArray(textBytes);
         vector._isReadOnly = isReadOnly;
@@ -774,6 +820,63 @@ export class ByteVector implements IReadOnlyByteVector {
 
     // #endregion
 
+    // #region Public Static Methods
+
+    /**
+     * Gets the appropriate length null-byte text delimiter for the specified `type`.
+     * @param type String type to get delimiter for
+     */
+    public static getTextDelimiter(type: StringType): ByteVector {
+        return type === StringType.UTF16 || type === StringType.UTF16BE || type === StringType.UTF16LE
+            ? ByteVector._td2
+            : ByteVector._td1;
+    }
+
+    /**
+     * Compares two byte vectors. Returns a numeric value
+     * @param a Byte vector to compare against `b`
+     * @param b Byte vector to compare against `a`
+     * @returns number `0` if the two vectors are the same. Any other value indicates the two are
+     *     different. If the two vectors differ by length, this will be the length of `a` minus the
+     *     length of `b`. If the lengths are the same it will be the difference between the first
+     *     element that differs.
+     */
+    public static compare(a: IReadOnlyByteVector, b: IReadOnlyByteVector): number {
+        Guards.truthy(a, "a");
+        Guards.truthy(b, "b");
+
+        let diff = a.length - b.length;
+        for (let i = 0; diff === 0 && i < this.length; i++) {
+            diff = a.get(i) - b.get(i);
+        }
+
+        return diff;
+    }
+
+    /**
+     * Returns `true` if the contents of the two {@link ByteVector}s are identical, returns `false`
+     * otherwise
+     * @param first ByteVector to compare with `second`
+     * @param second ByteVector to compare with `first`
+     */
+    public static equals(first: IReadOnlyByteVector, second: IReadOnlyByteVector): boolean {
+        const fNull = !first;
+        const sNull = !second;
+        if (fNull && sNull) {
+            // Since (f|s)null could be true with `undefined` OR `null`, we'll just let === decide it for us
+            return first === second;
+        }
+
+        if (fNull || sNull) {
+            // If only one is null/undefined, then they are not equal
+            return false;
+        }
+
+        return ByteVector.compare(first, second) === 0;
+    }
+
+    // #endregion
+
     // #region Public Instance Methods
 
     /** @inheritDoc */
@@ -783,10 +886,8 @@ export class ByteVector implements IReadOnlyByteVector {
         }
     }
 
-    // TODO: Add stuff without copying memory by using list of Uint8Array
-
     /**
-     * Adds a single byte to the end of the {@link ByteVector}
+     * Adds a single byte to the end of the current instance
      * @param byte Value to add to the end of the ByteVector. Must be positive 8-bit integer.
      */
     public addByte(byte: number): void {
@@ -797,10 +898,31 @@ export class ByteVector implements IReadOnlyByteVector {
     }
 
     /**
-     * Adds an array of bytes to the end of the {@link ByteVector}
+     * Adds an array of bytes to the end of the current instance
      * @param data Array of bytes to add to the end of the ByteVector
+     * @param length Number of elements from `data` to copy into the current instance
      */
-    public addByteArray(data: Uint8Array): void {
+    public addByteArray(data: Uint8Array, length: number = data.length): void {
+        this.throwIfReadOnly();
+        Guards.truthy(data, "data");
+
+        if (data.length === 0 || length === 0) {
+            return;
+        }
+
+        // Create a copy of the existing byte array with additional space at the end for the new
+        // byte array. Copy the new array into it.
+        const oldData = this._bytes;
+        this._bytes = new Uint8Array(oldData.length + data.length);
+        this._bytes.set(oldData);
+        this._bytes.set(data.subarray(0, length), oldData.length);
+    }
+
+    /**
+     * Adds a {@link ByteVector} to the end of this ByteVector
+     * @param data ByteVector to add to the end of this ByteVector
+     */
+    public addByteVector(data: IReadOnlyByteVector): void {
         this.throwIfReadOnly();
         Guards.truthy(data, "data");
 
@@ -808,21 +930,14 @@ export class ByteVector implements IReadOnlyByteVector {
             return;
         }
 
+        // Create a copy of the existing byte array with additional space at the end for the new
+        // byte array. Copy the new array into it.
         const oldData = this._bytes;
         this._bytes = new Uint8Array(oldData.length + data.length);
         this._bytes.set(oldData);
-        this._bytes.set(data, oldData.length);
-    }
-
-    /**
-     * Adds a {@link ByteVector} to the end of this ByteVector
-     * @param data ByteVector to add to the end of this ByteVector
-     */
-    public addByteVector(data: ByteVector): void {
-        this.throwIfReadOnly();
-        Guards.truthy(data, "data");
-
-        this.addByteArray(data._bytes);
+        for (let i = 0; i < data.length; i++) {
+            this._bytes[i + oldData.length] = data.get(i);
+        }
     }
 
     /**
@@ -878,7 +993,7 @@ export class ByteVector implements IReadOnlyByteVector {
         // fails, try to match n-2, n-3... until there are no more to try.
         const startIndex = this.length - pattern.length;
         for (let i = 1; i < pattern.length; i++) {
-            const patternSubset = pattern.sub(0, pattern.length - i);
+            const patternSubset = pattern.subarray(0, pattern.length - i);
             if (this.containsAt(patternSubset, startIndex + i)) {
                 return startIndex + i;
             }
@@ -893,7 +1008,7 @@ export class ByteVector implements IReadOnlyByteVector {
     }
 
     /** @inheritDoc */
-    public find(pattern: IReadOnlyByteVector, byteAlign: number): number {
+    public find(pattern: IReadOnlyByteVector, byteAlign: number = 1): number {
         Guards.truthy(pattern, "pattern");
         Guards.uint(byteAlign, "byteAlign");
         Guards.greaterThanInclusive(byteAlign, 1, "byteAlign");
@@ -994,6 +1109,12 @@ export class ByteVector implements IReadOnlyByteVector {
     public insertByteVector(index: number, other: ByteVector): void {
         Guards.truthy(other, "other");
         this.insertByteArray(index, other._bytes);
+    }
+
+    /** @inheritDoc */
+    public offsetFind(pattern: IReadOnlyByteVector, offset: number, byteAlign?: number): number {
+        const findIndex = this.subarray(offset).find(pattern, byteAlign);
+        return findIndex >= 0 ? findIndex + offset : findIndex;
     }
 
     /**
@@ -1110,8 +1231,8 @@ export class ByteVector implements IReadOnlyByteVector {
     }
 
     /** @inheritDoc */
-    public sub(startIndex: number, length: number = this._bytes.length - startIndex): IReadOnlyByteVector {
-        return new ByteVector(this._bytes.slice(startIndex, startIndex + length));
+    public subarray(startIndex: number, length: number = this._bytes.length - startIndex): IReadOnlyByteVector {
+        return new ByteVector(this._bytes.subarray(startIndex, startIndex + length), true);
     }
 
     /** @inheritDoc */
@@ -1137,7 +1258,7 @@ export class ByteVector implements IReadOnlyByteVector {
 
             if (j === separator.length) {
                 // We found a separator. Everything before i is a split element
-                list.push(this.sub(previousOffset, i - previousOffset));
+                list.push(this.subarray(previousOffset, i - previousOffset));
                 i += separator.length;
                 previousOffset = i;
             }
@@ -1145,7 +1266,7 @@ export class ByteVector implements IReadOnlyByteVector {
 
         // Add any remaining bytes to the list
         if (previousOffset < this.length) {
-            list.push(this.sub(previousOffset));
+            list.push(this.subarray(previousOffset));
         }
 
         return list;
@@ -1157,13 +1278,19 @@ export class ByteVector implements IReadOnlyByteVector {
     }
 
     /** @inheritDoc */
-    public toByteArray(): Uint8Array {
-        return this._bytes.subarray();
+    public toBuffer(): Buffer {
+        return Buffer.from(this._bytes, this._bytes.byteOffset, this._bytes.byteLength);
+    }
+
+    /** @inheritDoc */
+    public toBase64String(): string {
+        return Buffer.from(this._bytes.buffer, this._bytes.byteOffset, this._bytes.byteLength)
+            .toString("base64");
     }
 
     /** @inheritDoc */
     public toByteVector(): ByteVector {
-        return ByteVector.fromByteArray(this._bytes);
+        return ByteVector.fromByteVector(this);
     }
 
     /** @inheritDoc */
@@ -1203,7 +1330,7 @@ export class ByteVector implements IReadOnlyByteVector {
     /** @inheritDoc */
     public toString(type: StringType = StringType.UTF8): string {
         const bom = type === StringType.UTF16 && this.length > 1
-            ? this.sub(0, 2)
+            ? this.subarray(0, 2)
             : undefined;
         return Encoding.getEncoding(type, bom).decode(this._bytes);
     }
@@ -1224,7 +1351,7 @@ export class ByteVector implements IReadOnlyByteVector {
             if (chunk + 1 === count) {
                 position = count;
             } else {
-                position = this.find(separator, start, align);
+                position = this.subarray(start).find(separator, align);
                 if (position < 0) {
                     position = this.length;
                 }
@@ -1235,7 +1362,7 @@ export class ByteVector implements IReadOnlyByteVector {
             if (length === 0) {
                 list.push("");
             } else {
-                list.push(this.toString(length, type, start));
+                list.push(this.subarray(start, length).toString(type));
             }
 
             position += align;
@@ -1262,68 +1389,13 @@ export class ByteVector implements IReadOnlyByteVector {
         return dv.getUint16(0, !mostSignificantByteFirst);
     }
 
-    // #region Static Methods
-
-    /**
-     * Gets the appropriate length null-byte text delimiter for the specified `type`.
-     * @param type String type to get delimiter for
-     */
-    public static getTextDelimiter(type: StringType): ByteVector {
-        return type === StringType.UTF16 || type === StringType.UTF16BE || type === StringType.UTF16LE
-            ? ByteVector._td2
-            : ByteVector._td1;
-    }
-
-    /**
-     * Compares two byte vectors. Returns a numeric value
-     * @param a Byte vector to compare against `b`
-     * @param b Byte vector to compare against `a`
-     * @returns number `0` if the two vectors are the same. Any other value indicates the two are
-     *     different. If the two vectors differ by length, this will be the length of `a` minus the
-     *     length of `b`. If the lengths are the same it will be the difference between the first
-     *     element that differs.
-     */
-    public static compare(a: IReadOnlyByteVector, b: IReadOnlyByteVector): number {
-        Guards.truthy(a, "a");
-        Guards.truthy(b, "b");
-
-        let diff = a.length - b.length;
-        for (let i = 0; diff === 0 && i < this.length; i++) {
-            diff = a.get(i) - b.get(i);
-        }
-
-        return diff;
-    }
-
-    /**
-     * Returns `true` if the contents of the two {@link ByteVector}s are identical, returns `false`
-     * otherwise
-     * @param first ByteVector to compare with `second`
-     * @param second ByteVector to compare with `first`
-     */
-    public static equals(first: IReadOnlyByteVector, second: IReadOnlyByteVector): boolean {
-        const fNull = !first;
-        const sNull = !second;
-        if (fNull && sNull) {
-            // Since (f|s)null could be true with `undefined` OR `null`, we'll just let === decide it for us
-            return first === second;
-        }
-
-        if (fNull || sNull) {
-            // If only one is null/undefined, then they are not equal
-            return false;
-        }
-
-        return ByteVector.compare(first, second) === 0;
-    }
-
     // #endregion
 
     // #region Private Helpers
 
     private throwIfReadOnly() {
         if (this._isReadOnly) {
-            throw new Error("Not supported: Cannot edit readonly byte vectors");
+            throw new Error("Invalid operation: Cannot edit readonly byte vectors");
         }
     }
 
