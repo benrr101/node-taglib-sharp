@@ -6,7 +6,7 @@ import {ByteVector} from "../src/byteVector";
 export default class TestConstants {
     public static testFileFolderPath: string = "./test-unit/resources/";
     public static testFilePath: string = Path.join(TestConstants.testFileFolderPath, "testFile.txt");
-    public static testFileContents: number[] = [0x31, 0x32, 0x33, 0x34, 0x35, 0x61, 0x62, 0x63, 0x64, 0x65];
+    public static testFileContents: Uint8Array = new Uint8Array([0x31, 0x32, 0x33, 0x34, 0x35, 0x61, 0x62, 0x63, 0x64, 0x65]);
     public static testFileContentsStr: string = "12345abcde";
 
     public static getTestFilePath: () => string = () => {
