@@ -468,7 +468,7 @@ export class ByteVector {
      */
     public static fromString(
         text: string,
-        type: StringType = StringType.UTF8,
+        type: StringType,
         length: number = Number.MAX_SAFE_INTEGER
     ): ByteVector {
         // @TODO: Allow adding delimiters and find usages that immediately add a delimiter
@@ -1101,8 +1101,8 @@ export class ByteVector {
         if (this.length < 8) {
             throw new Error("Invalid operation: Cannot convert a byte vector of <8 bytes to double");
         }
-        const dv = new DataView(this._bytes);
-        return dv.getFloat32(0, !mostSignificantByteFirst);
+        const dv = new DataView(this._bytes.buffer, this._bytes.byteOffset, 8);
+        return dv.getFloat64(0, !mostSignificantByteFirst);
     }
 
     /**
@@ -1114,7 +1114,7 @@ export class ByteVector {
      * @returns A float value containing the value read from the current instance.
      */
     public toFloat(mostSignificantByteFirst: boolean = true): number {
-        const dv = new DataView(this._bytes);
+        const dv = new DataView(this._bytes.buffer, this._bytes.byteOffset, 4);
         return dv.getFloat32(0, !mostSignificantByteFirst);
     }
 
@@ -1126,7 +1126,7 @@ export class ByteVector {
      * @returns A signed integer value containing the value read from the current instance
      */
     public toInt(mostSignificantByteFirst: boolean = true): number {
-        const dv = new DataView(this.getSizedBuffer(4, mostSignificantByteFirst));
+        const dv = this.getSizedDataView(4, mostSignificantByteFirst);
         return dv.getInt32(0, !mostSignificantByteFirst);
     }
 
@@ -1139,7 +1139,7 @@ export class ByteVector {
      *          represented as a BigInt due to JavaScript's 52-bit integer limitation.
      */
     public toLong(mostSignificantByteFirst: boolean = true): bigint {
-        const dv = new DataView(this.getSizedBuffer(8, mostSignificantByteFirst));
+        const dv = this.getSizedDataView(8, mostSignificantByteFirst);
         return dv.getBigInt64(0, !mostSignificantByteFirst);
     }
 
@@ -1151,7 +1151,7 @@ export class ByteVector {
      * @returns A signed short value containing the value read from the current instance
      */
     public toShort(mostSignificantByteFirst: boolean = true): number {
-        const dv = new DataView(this.getSizedBuffer(2, mostSignificantByteFirst));
+        const dv = this.getSizedDataView(2, mostSignificantByteFirst);
         return dv.getInt16(0, !mostSignificantByteFirst);
     }
 
@@ -1160,7 +1160,7 @@ export class ByteVector {
      * @param type Value indicating the encoding to use when converting to a string.
      * @returns string String containing the converted bytes
      */
-    public toString(type: StringType = StringType.UTF8): string {
+    public toString(type: StringType): string {
         const bom = type === StringType.UTF16 && this.length > 1
             ? this.subarray(0, 2)
             : undefined;
@@ -1175,42 +1175,35 @@ export class ByteVector {
      * @param count Value specifying a limit to the number of strings to create. Once the limit has
      *        been reached, the last string will be filled by the remainder of the data
      * @returns string[] Array of strings containing the converted text.
-     * @remarks I'm not actually sure if this works as defined, but it behaves the same as the
-     *       original .NET implementation, so that's good enough for now.
      */
-    public toStrings(type: StringType = StringType.UTF8, count: number = Number.MAX_SAFE_INTEGER): string[] {
+    public toStrings(type: StringType, count: number = Number.MAX_SAFE_INTEGER): string[] {
         Guards.safeUint(count, "count");
 
-        const chunk = 0;
-        let position = 0;
-
-        const list: string[] = [];
-        const separator = ByteVector.getTextDelimiter(type);
-        const align = separator.length;
-
-        while (chunk < count && position < this.length) {
-            const start = position;
-            if (chunk + 1 === count) {
-                position = count;
-            } else {
-                position = this.subarray(start).find(separator, align);
-                if (position < 0) {
-                    position = this.length;
-                }
+        const delimiter = ByteVector.getTextDelimiter(type);
+        let leadingPtr = 0;
+        let trailingPtr = 0;
+        const strings = [];
+        while (leadingPtr < this.length && strings.length < count) {
+            // Find the next delimiter
+            const delimiterPosition = this.offsetFind(delimiter, trailingPtr, delimiter.length);
+            if (delimiterPosition < 0) {
+                // We didn't find another delimiter, so break out of the loop
+                break;
             }
 
-            const length = position - start;
+            const str = this.subarray(trailingPtr, delimiterPosition - trailingPtr).toString(type);
+            strings.push(str);
 
-            if (length === 0) {
-                list.push("");
-            } else {
-                list.push(this.subarray(start, length).toString(type));
-            }
-
-            position += align;
+            trailingPtr = delimiterPosition + delimiter.length;
         }
 
-        return list;
+        // If there's any remaining bytes, convert them to string
+        if (trailingPtr < this.length && strings.length < count) {
+            const str = this.subarray(trailingPtr).toString(type);
+            strings.push(str);
+        }
+
+        return strings;
     }
 
     /**
@@ -1221,7 +1214,7 @@ export class ByteVector {
      * @returns An unsigned integer value containing the value read from the current instance
      */
     public toUint(mostSignificantByteFirst: boolean = true): number {
-        const dv = new DataView(this.getSizedBuffer(4, mostSignificantByteFirst));
+        const dv = this.getSizedDataView(4, mostSignificantByteFirst);
         return dv.getUint32(0, !mostSignificantByteFirst);
     }
 
@@ -1234,7 +1227,7 @@ export class ByteVector {
      *          represented as a BigInt due to JavaScript's 32-bit integer limitation
      */
     public toUlong(mostSignificantByteFirst: boolean = true): bigint {
-        const dv = new DataView(this.getSizedBuffer(8, mostSignificantByteFirst));
+        const dv = this.getSizedDataView(8, mostSignificantByteFirst);
         return dv.getBigUint64(0, !mostSignificantByteFirst);
     }
 
@@ -1246,23 +1239,23 @@ export class ByteVector {
      * @returns An unsigned short value containing the value read from the current instance
      */
     public toUshort(mostSignificantByteFirst: boolean = true): number {
-        const dv = new DataView(this.getSizedBuffer(2, mostSignificantByteFirst));
+        const dv = this.getSizedDataView(2, mostSignificantByteFirst);
         return dv.getUint16(0, !mostSignificantByteFirst);
     }
 
     // #endregion
 
-    private getSizedBuffer(size: number, mostSignificantByteFirst: boolean): ArrayBufferLike {
+    private getSizedDataView(size: number, mostSignificantByteFirst: boolean): DataView {
         const difference = size - this._bytes.length;
         if (difference <= 0) {
             // Comprehension is at least the required size
-            return this._bytes;
+            return new DataView(this._bytes.buffer, this._bytes.byteOffset, size);
         }
 
         // Comprehension is too short. Pad it out.
         const fullSizeArray = new Uint8Array(size);
-        fullSizeArray.set(this._bytes, difference);
-        return fullSizeArray;
+        fullSizeArray.set(this._bytes, mostSignificantByteFirst ? difference : 0);
+        return new DataView(fullSizeArray.buffer);
     }
 
     private throwIfReadOnly(): void {
