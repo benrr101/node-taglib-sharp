@@ -522,7 +522,7 @@ const assert = Chai.assert;
             [0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x12, 0x34],
             0x77951e50,
             undefined
-        )
+        );
     }
 
     @test
@@ -532,7 +532,7 @@ const assert = Chai.assert;
             [0x34, 0x12, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00],
             0xe032bc9b,
             false
-        )
+        );
     }
 
     @test
@@ -542,7 +542,7 @@ const assert = Chai.assert;
             [0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xED, 0xCC],
             0xc7d22877,
             undefined
-        )
+        );
     }
 
     @test
@@ -552,7 +552,7 @@ const assert = Chai.assert;
             [0xCC, 0xED, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF],
             0xc896d178,
             false
-        )
+        );
     }
 
     @test
@@ -562,7 +562,7 @@ const assert = Chai.assert;
             [0x00, 0x00, 0x00, 0x12, 0x34, 0x00, 0x00, 0x00],
             0x70c0e641,
             undefined
-        )
+        );
     }
 
     @test
@@ -572,7 +572,7 @@ const assert = Chai.assert;
             [0x00, 0x00, 0x00, 0x34, 0x12, 0x00, 0x00, 0x00],
             0xeb4d895a,
             false
-        )
+        );
     }
 
     @test
@@ -1518,7 +1518,7 @@ const assert = Chai.assert;
             [0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x12, 0x34],
             0x77951e50,
             undefined
-        )
+        );
     }
 
     @test
@@ -1528,7 +1528,7 @@ const assert = Chai.assert;
             [0x34, 0x12, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00],
             0xe032bc9b,
             false
-        )
+        );
     }
 
     @test
@@ -1538,7 +1538,7 @@ const assert = Chai.assert;
             [0x00, 0x00, 0x00, 0x12, 0x34, 0x00, 0x00, 0x00],
             0x70c0e641,
             undefined
-        )
+        );
     }
 
     @test
@@ -1548,7 +1548,7 @@ const assert = Chai.assert;
             [0x00, 0x00, 0x00, 0x34, 0x12, 0x00, 0x00, 0x00],
             0xeb4d895a,
             false
-        )
+        );
     }
 
     @test

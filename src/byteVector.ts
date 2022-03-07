@@ -620,7 +620,7 @@ export class ByteVector {
         Guards.truthy(b, "b");
 
         let diff = a.length - b.length;
-        for (let i = 0; diff === 0 && i < this.length; i++) {
+        for (let i = 0; diff === 0 && i < a.length; i++) {
             diff = a.get(i) - b.get(i);
         }
 
@@ -678,7 +678,7 @@ export class ByteVector {
      * @param data Array of bytes to add to the end of the ByteVector
      * @param length Number of elements from `data` to copy into the current instance
      */
-    public addByteArray(data: Uint8Array, length: number = data.length): void {
+    public addByteArray(data: Uint8Array, length?: number): void {
         Guards.truthy(data, "data");
         this.throwIfReadOnly();
 
@@ -688,10 +688,13 @@ export class ByteVector {
 
         // Create a copy of the existing byte array with additional space at the end for the new
         // byte array. Copy the new array into it.
+        length = length || data.length;
         const oldData = this._bytes;
+        const newData = length !== data.length ? data.subarray(0, length) : data;
+
         this._bytes = new Uint8Array(oldData.length + length);
         this._bytes.set(oldData);
-        this._bytes.set(data.subarray(0, length), oldData.length);
+        this._bytes.set(newData, oldData.length);
     }
 
     /**
@@ -702,18 +705,7 @@ export class ByteVector {
         Guards.truthy(data, "data");
         this.throwIfReadOnly();
 
-        if (data.length === 0) {
-            return;
-        }
-
-        // Create a copy of the existing byte array with additional space at the end for the new
-        // byte array. Copy the new array into it.
-        const oldData = this._bytes;
-        this._bytes = new Uint8Array(oldData.length + data.length);
-        this._bytes.set(oldData);
-        for (let i = 0; i < data.length; i++) {
-            this._bytes[i + oldData.length] = data.get(i);
-        }
+        this.addByteArray(data._bytes);
     }
 
     /**
@@ -733,16 +725,16 @@ export class ByteVector {
      */
     public containsAt(pattern: ByteVector, offset: number = 0): boolean {
         Guards.truthy(pattern, "pattern");
-        Guards.int(offset, "offset");
+        Guards.safeInt(offset, "offset");
 
         // Sanity check - make sure we're within the range of the comprehension
-        if (offset < 0 || offset >= this.length) {
+        if (offset < 0 || offset >= this.length || pattern.length === 0) {
             return false;
         }
 
         // Look through looking for a mismatch
         for (let i = 0; i < pattern.length; i++) {
-            if (this._bytes[i] !== pattern.get(i)) {
+            if (this._bytes[offset + i] !== pattern.get(i)) {
                 return false;
             }
         }
@@ -783,7 +775,7 @@ export class ByteVector {
         // Try to match the last n-1 bytes of the source (where n is the pattern length), if that
         // fails, try to match n-2, n-3... until there are no more to try.
         const startIndex = this.length - pattern.length;
-        for (let i = 1; i < pattern.length; i++) {
+        for (let i = 0; i < pattern.length; i++) {
             const patternSubset = pattern.subarray(0, pattern.length - i);
             if (this.containsAt(patternSubset, startIndex + i)) {
                 return startIndex + i;
@@ -817,7 +809,7 @@ export class ByteVector {
         Guards.greaterThanInclusive(byteAlign, 1, "byteAlign");
 
         // Sanity check impossible matches
-        if (pattern.length === 0 || pattern.length > this.length) {
+        if (this.length == 0 || pattern.length === 0 || pattern.length > this.length) {
             return -1;
         }
 
