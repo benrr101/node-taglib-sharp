@@ -184,16 +184,14 @@ const assert = Chai.assert;
 
     @test
     public toDouble_zero_complete() {
-        const double = ByteVector.fromByteArray(new Uint8Array([0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00]))
+        const double = ByteVector.fromByteArray([0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00])
             .toDouble();
         assert.strictEqual(double, 0);
     }
 
     @test
     public toDouble_zero_completeView() {
-        const double = ByteVector.fromByteArray(
-            new Uint8Array([0xAA, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xAA])
-        )
+        const double = ByteVector.fromByteArray([0xAA, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xAA])
             .subarray(1, 8)
             .toDouble();
         assert.strictEqual(double, 0);
@@ -257,14 +255,14 @@ const assert = Chai.assert;
 
     @test
     public toDouble_doubleRangeBigEndian() {
-        const double = ByteVector.fromByteArray(new Uint8Array([0x7F, 0xEF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF]))
+        const double = ByteVector.fromByteArray([0x7F, 0xEF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF])
             .toDouble();
         assert.approximately(double, 1.7976931348623157e308, 0.000000000001e308);
     }
 
     @test
     public toDouble_doubleRangeLittleEndian() {
-        const double = ByteVector.fromByteArray(new Uint8Array([0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xEF, 0x7F]))
+        const double = ByteVector.fromByteArray([0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xEF, 0x7F])
             .toDouble(false);
         assert.approximately(double, 1.7976931348623157e308, 0.000000000001e308);
     }
@@ -279,13 +277,13 @@ const assert = Chai.assert;
 
     @test
     public toFloat_zero_complete() {
-        const float = ByteVector.fromByteArray(new Uint8Array([0x00, 0x00, 0x00, 0x00])).toFloat();
+        const float = ByteVector.fromByteArray([0x00, 0x00, 0x00, 0x00]).toFloat();
         assert.strictEqual(float, 0);
     }
 
     @test
     public toFloat_zero_completeView() {
-        const double = ByteVector.fromByteArray(new Uint8Array([0xAA, 0x00, 0x00, 0x00, 0x00, 0xAA]))
+        const double = ByteVector.fromByteArray([0xAA, 0x00, 0x00, 0x00, 0x00, 0xAA])
             .subarray(1, 4)
             .toFloat();
         assert.strictEqual(double, 0);
@@ -349,13 +347,14 @@ const assert = Chai.assert;
 
     @test
     public toInt_empty() {
-        const int = ByteVector.fromSize(0).toInt();
+        const int = ByteVector.fromSize(0)
+            .toInt();
         assert.strictEqual(int, 0);
     }
 
     @test
     public toInt_emptyView() {
-        const uint = ByteVector.fromByteArray(new Uint8Array([0xAA, 0xAA]))
+        const uint = ByteVector.fromByteArray([0xAA, 0xAA])
             .subarray(1, 0)
             .toInt();
         assert.strictEqual(uint, 0);
@@ -363,13 +362,14 @@ const assert = Chai.assert;
 
     @test
     public toInt_zero_complete() {
-        const int = ByteVector.fromByteArray(new Uint8Array([0x0, 0x0, 0x0, 0x0, 0xAA])).toInt();
+        const int = ByteVector.fromByteArray([0x0, 0x0, 0x0, 0x0, 0xAA])
+            .toInt();
         assert.strictEqual(int, 0);
     }
 
     @test
     public toInt_zero_completeView() {
-        const int = ByteVector.fromByteArray(new Uint8Array([0xAA, 0x0, 0x0, 0x0, 0x0, 0xAA]))
+        const int = ByteVector.fromByteArray([0xAA, 0x0, 0x0, 0x0, 0x0, 0xAA])
             .subarray(1, 4)
             .toInt();
         assert.strictEqual(int, 0);
@@ -377,13 +377,14 @@ const assert = Chai.assert;
 
     @test
     public toInt_zero_incomplete() {
-        const int = ByteVector.fromByteArray(new Uint8Array([0x0, 0x0])).toInt();
+        const int = ByteVector.fromByteArray([0x0, 0x0])
+            .toInt();
         assert.strictEqual(int, 0);
     }
 
     @test
     public toInt_zero_incompleteView() {
-        const int = ByteVector.fromByteArray(new Uint8Array([0xAA, 0x0, 0x0, 0xAA]))
+        const int = ByteVector.fromByteArray([0xAA, 0x0, 0x0, 0xAA])
             .subarray(1, 2)
             .toInt();
         assert.strictEqual(int, 0);
@@ -509,7 +510,7 @@ const assert = Chai.assert;
 
     @test
     public toLong_emptyView() {
-        const ulong = ByteVector.fromByteArray(new Uint8Array([0xAA, 0xAA]))
+        const ulong = ByteVector.fromByteArray([0xAA, 0xAA])
             .subarray(1, 0)
             .toLong();
         assert.strictEqual(ulong, BigInt(0));
@@ -517,17 +518,14 @@ const assert = Chai.assert;
 
     @test
     public toLong_zero_complete() {
-        const long = ByteVector.fromByteArray(
-            new Uint8Array([0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xAA])
+        const long = ByteVector.fromByteArray([0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xAA]
         ).toLong();
         assert.strictEqual(long,  BigInt(0));
     }
 
     @test
     public toLong_zero_completeView() {
-        const long = ByteVector.fromByteArray(
-            new Uint8Array([0xAA, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xAA])
-        )
+        const long = ByteVector.fromByteArray([0xAA, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xAA])
             .subarray(1, 8)
             .toLong();
         assert.strictEqual(long,  BigInt(0));
@@ -535,17 +533,14 @@ const assert = Chai.assert;
 
     @test
     public toLong_zero_incomplete() {
-        const long = ByteVector.fromByteArray(
-            new Uint8Array([0x00, 0x00, 0x00, 0x00])
-        ).toLong();
+        const long = ByteVector.fromByteArray([0x00, 0x00, 0x00, 0x00])
+            .toLong();
         assert.strictEqual(long,  BigInt(0));
     }
 
     @test
     public toLong_zero_incompleteView() {
-        const long = ByteVector.fromByteArray(
-            new Uint8Array([0xAA, 0x00, 0x00, 0x00, 0x00, 0xAA])
-        )
+        const long = ByteVector.fromByteArray([0xAA, 0x00, 0x00, 0x00, 0x00, 0xAA])
             .subarray(1, 4)
             .toLong();
         assert.strictEqual(long,  BigInt(0));
@@ -671,7 +666,7 @@ const assert = Chai.assert;
 
     @test
     public toShort_emptyView() {
-        const short = ByteVector.fromByteArray(new Uint8Array([0xAA, 0xAA]))
+        const short = ByteVector.fromByteArray([0xAA, 0xAA])
             .subarray(1, 0)
             .toShort();
         assert.strictEqual(short, 0);
@@ -679,13 +674,14 @@ const assert = Chai.assert;
 
     @test
     public toShort_zero_complete() {
-        const int = ByteVector.fromByteArray(new Uint8Array([0x0, 0x0, 0xAA])).toShort();
+        const int = ByteVector.fromByteArray([0x0, 0x0, 0xAA])
+            .toShort();
         assert.strictEqual(int, 0);
     }
 
     @test
     public toShort_zero_completeView() {
-        const short = ByteVector.fromByteArray(new Uint8Array([0xAA, 0x00, 0x00, 0xAA]))
+        const short = ByteVector.fromByteArray([0xAA, 0x00, 0x00, 0xAA])
             .subarray(1, 2)
             .toShort();
         assert.strictEqual(short,  0);
@@ -693,13 +689,14 @@ const assert = Chai.assert;
 
     @test
     public toShort_zero_incomplete() {
-        const int = ByteVector.fromByteArray(new Uint8Array([0x0])).toShort();
+        const int = ByteVector.fromByteArray([0x0])
+            .toShort();
         assert.strictEqual(int, 0);
     }
 
     @test
     public toShort_zero_incompleteView() {
-        const short = ByteVector.fromByteArray(new Uint8Array([0xAA, 0x00, 0xAA]))
+        const short = ByteVector.fromByteArray([0xAA, 0x00, 0xAA])
             .subarray(1, 1)
             .toShort();
         assert.strictEqual(short,  0);
@@ -1056,7 +1053,7 @@ const assert = Chai.assert;
 
     @test
     public toUint_emptyView() {
-        const uint = ByteVector.fromByteArray(new Uint8Array([0xAA, 0xAA]))
+        const uint = ByteVector.fromByteArray([0xAA, 0xAA])
             .subarray(1, 0)
             .toUint();
         assert.strictEqual(uint, 0);
@@ -1064,13 +1061,14 @@ const assert = Chai.assert;
 
     @test
     public toUint_zero_complete() {
-        const int = ByteVector.fromByteArray(new Uint8Array([0x0, 0x0, 0x0, 0x0, 0xAA])).toUint();
+        const int = ByteVector.fromByteArray([0x0, 0x0, 0x0, 0x0, 0xAA])
+            .toUint();
         assert.strictEqual(int, 0);
     }
 
     @test
     public toUint_zero_completeView() {
-        const short = ByteVector.fromByteArray(new Uint8Array([0xAA, 0x0, 0x0, 0x0, 0x0, 0xAA]))
+        const short = ByteVector.fromByteArray([0xAA, 0x0, 0x0, 0x0, 0x0, 0xAA])
             .subarray(1, 4)
             .toShort();
         assert.strictEqual(short,  0);
@@ -1078,13 +1076,14 @@ const assert = Chai.assert;
 
     @test
     public toUint_zero_incomplete() {
-        const int = ByteVector.fromByteArray(new Uint8Array([0x0, 0x0])).toUint();
+        const int = ByteVector.fromByteArray([0x0, 0x0])
+            .toUint();
         assert.strictEqual(int, 0);
     }
 
     @test
     public toUint_zero_incompleteView() {
-        const short = ByteVector.fromByteArray(new Uint8Array([0xAA, 0x0, 0x0, 0xAA]))
+        const short = ByteVector.fromByteArray([0xAA, 0x0, 0x0, 0xAA])
             .subarray(1, 2)
             .toShort();
         assert.strictEqual(short,  0);
@@ -1148,7 +1147,8 @@ const assert = Chai.assert;
 
     @test
     public toUint_unsignedRange_complete() {
-        const int = ByteVector.fromByteArray(new Uint8Array([0xFF, 0xFF, 0xFF, 0xFF])).toUint();
+        const int = ByteVector.fromByteArray([0xFF, 0xFF, 0xFF, 0xFF])
+            .toUint();
         assert.strictEqual(int, 0xFFFFFFFF);
     }
 
@@ -1160,7 +1160,7 @@ const assert = Chai.assert;
 
     @test
     public toUlong_emptyView() {
-        const ulong = ByteVector.fromByteArray(new Uint8Array([0xAA, 0xAA]))
+        const ulong = ByteVector.fromByteArray([0xAA, 0xAA])
             .subarray(1, 0)
             .toUlong();
         assert.strictEqual(ulong, BigInt(0));
@@ -1168,17 +1168,14 @@ const assert = Chai.assert;
 
     @test
     public toUlong_zero_complete() {
-        const long = ByteVector.fromByteArray(
-            new Uint8Array([0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xAA])
-        ).toUlong();
+        const long = ByteVector.fromByteArray([0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xAA])
+            .toUlong();
         assert.strictEqual(long, BigInt(0));
     }
 
     @test
     public toUlong_zero_completeView() {
-        const long = ByteVector.fromByteArray(
-            new Uint8Array([0xAA, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xAA])
-        )
+        const long = ByteVector.fromByteArray([0xAA, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xAA])
             .subarray(1, 8)
             .toUlong();
         assert.strictEqual(long, BigInt(0));
@@ -1186,13 +1183,14 @@ const assert = Chai.assert;
 
     @test
     public toUlong_zero_incomplete() {
-        const long = ByteVector.fromByteArray(new Uint8Array([0x00, 0x00, 0x00, 0x00])).toUlong();
+        const long = ByteVector.fromByteArray([0x00, 0x00, 0x00, 0x00])
+            .toUlong();
         assert.strictEqual(long, BigInt(0));
     }
 
     @test
     public toUlong_zero_incompleteView() {
-        const long = ByteVector.fromByteArray(new Uint8Array([0xAA, 0x00, 0x00, 0x00, 0x00, 0xAA]))
+        const long = ByteVector.fromByteArray([0xAA, 0x00, 0x00, 0x00, 0x00, 0xAA])
             .subarray(1, 4)
             .toUlong();
         assert.strictEqual(long, BigInt(0));
@@ -1270,7 +1268,7 @@ const assert = Chai.assert;
 
     @test
     public toUshort_emptyView() {
-        const short = ByteVector.fromByteArray(new Uint8Array([0xAA, 0xAA]))
+        const short = ByteVector.fromByteArray([0xAA, 0xAA])
             .subarray(1, 0)
             .toUshort();
         assert.strictEqual(short, 0);
@@ -1278,13 +1276,14 @@ const assert = Chai.assert;
 
     @test
     public toUshort_zero_complete() {
-        const int = ByteVector.fromByteArray(new Uint8Array([0x0, 0x0, 0xAA])).toUshort();
+        const int = ByteVector.fromByteArray([0x0, 0x0, 0xAA])
+            .toUshort();
         assert.strictEqual(int, 0);
     }
 
     @test
     public toUshort_zero_completeView() {
-        const short = ByteVector.fromByteArray(new Uint8Array([0xAA, 0x0, 0x0, 0xAA]))
+        const short = ByteVector.fromByteArray([0xAA, 0x0, 0x0, 0xAA])
             .subarray(1, 2)
             .toUshort();
         assert.strictEqual(short, 0);
@@ -1292,13 +1291,14 @@ const assert = Chai.assert;
 
     @test
     public toUshort_zero_incomplete() {
-        const int = ByteVector.fromByteArray(new Uint8Array([0x0])).toUshort();
+        const int = ByteVector.fromByteArray([0x0])
+            .toUshort();
         assert.strictEqual(int, 0);
     }
 
     @test
     public toUshort_zero_incompleteView() {
-        const short = ByteVector.fromByteArray(new Uint8Array([0xAA, 0x00, 0xAA]))
+        const short = ByteVector.fromByteArray([0xAA, 0x00, 0xAA])
             .subarray(1, 1)
             .toUshort();
         assert.strictEqual(short, 0);
@@ -1361,7 +1361,7 @@ const assert = Chai.assert;
 
     @test
     public toUshort_unsignedRange_complete() {
-        const short = ByteVector.fromByteArray(new Uint8Array([0xFF, 0xFF])).toUshort();
+        const short = ByteVector.fromByteArray([0xFF, 0xFF]).toUshort();
         assert.strictEqual(short, 0xFFFF);
     }
 

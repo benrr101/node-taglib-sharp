@@ -293,13 +293,17 @@ export class ByteVector {
      *     copied into the {@see ByteVector}.
      */
     public static fromByteArray(
-        bytes: Uint8Array | Buffer,
+        bytes: Uint8Array | Buffer | number[],
         length: number = bytes.length
     ): ByteVector {
         Guards.truthy(bytes, "bytes");
         Guards.safeUint(length, "length");
         if (length > bytes.length) {
             throw new Error("Argument out of range: length must be less than or equal to the length of the byte array");
+        }
+
+        if (!(bytes instanceof Uint8Array || bytes instanceof Buffer)) {
+            bytes = new Uint8Array(bytes);
         }
 
         if (length < bytes.length) {
@@ -888,10 +892,13 @@ export class ByteVector {
         Guards.uint(size, "size");
         Guards.byte(padding, "padding");
 
-        if (this.length > size) {
-            this.splice(size, this.length - size);
+        const oldData = this._bytes;
+        if (size < this.length) {
+            // Shorten it
+            this._bytes = new Uint8Array(size);
+            this._bytes.set(oldData.subarray(0, size));
         } else if (this.length < size) {
-            const oldData = this._bytes;
+            // Lengthen it
             this._bytes = new Uint8Array(size);
             this._bytes.set(oldData);
             this._bytes.fill(padding, oldData.length);
@@ -920,8 +927,8 @@ export class ByteVector {
             return -1;
         }
 
-        const alignOffset = (this.length % 2) === 0 ? 0 : 1;
-        for (let i = this.length - 1 - alignOffset - pattern.length; i >= 0; i -= byteAlign) {
+        const alignOffset = this.length % byteAlign;
+        for (let i = this.length - alignOffset - pattern.length; i >= 0; i -= byteAlign) {
             let j = 0;
             while (j < pattern.length) {
                 if (this._bytes[i + j] !== pattern.get(j)) {
@@ -946,56 +953,10 @@ export class ByteVector {
      */
     public set(index: number, value: number): void {
         Guards.uint(index, "index");
-        Guards.lessThanInclusive(index, this.length, "index");
+        Guards.lessThanInclusive(index, this.length - 1, "index");
         Guards.byte(value, "value");
 
         this.splice(index, 1, [value]);
-    }
-
-    /**
-     * Splits this byte vector into a list of byte vectors using a separator
-     * @param separator Object to use to split this byte vector
-     * @param byteAlign Byte align to use when splitting. in order to split when a pattern is
-     *     encountered, the index at which it is found must be divisible by this value.
-     * @param max Maximum number of objects to return or 0 to not limit the number. If that number
-     *     is reached, the last value will contain the remainder of the file even if it contains
-     *     more instances of `separator`.
-     * @returns ByteVector[] The split contents of the current instance
-     */
-    public split(separator: ByteVector, byteAlign: number = 1, max: number = 0): ByteVector[] {
-        Guards.truthy(separator, "separator");
-        Guards.uint(byteAlign, "byteAlign");
-        Guards.greaterThanInclusive(byteAlign, 1, "byteAlign");
-        Guards.uint(max, "max");
-
-        const list: ByteVector[] = [];
-        let previousOffset = 0;
-
-        let i = 0;
-        while (i < this.length && (max < 1 || list.length < max)) {
-            let j = 0;
-            while (j < separator.length) {
-                if (this._bytes[i + j] !== separator.get(j)) {
-                    break;
-                }
-
-                j++;
-            }
-
-            if (j === separator.length) {
-                // We found a separator. Everything before i is a split element
-                list.push(this.subarray(previousOffset, i - previousOffset));
-                i += separator.length;
-                previousOffset = i;
-            }
-        }
-
-        // Add any remaining bytes to the list
-        if (previousOffset < this.length) {
-            list.push(this.subarray(previousOffset));
-        }
-
-        return list;
     }
 
     /**
@@ -1008,7 +969,7 @@ export class ByteVector {
      * @param items Elements to add to the array beginning from start. If omitted, the method will
      *     only remove elements from the current instance.
      */
-    public splice(start: number, deleteCount: number, items?: number[]|Uint8Array): void {
+    public splice(start: number, deleteCount: number, items?: ByteVector|Uint8Array|number[]): void {
         Guards.safeUint(start, "start");
         Guards.lessThanInclusive(start, this.length, "start");
         Guards.safeUint(deleteCount, "deleteCount");
@@ -1017,12 +978,14 @@ export class ByteVector {
         // Determine how many elements we're *actually* deleting
         deleteCount = Math.min(deleteCount, this.length - start);
 
-        const newBytes = new Uint8Array(this._bytes.length - deleteCount + items?.length);
+        const addCount = items ? items.length : 0;
+        const newBytes = new Uint8Array(this._bytes.length - deleteCount + addCount);
         newBytes.set(this._bytes.subarray(0, start));
         if (items) {
+            items = items instanceof ByteVector ? items._bytes : items;
             newBytes.set(items, start);
         }
-        newBytes.set(this._bytes.subarray(start + deleteCount), start + items?.length);
+        newBytes.set(this._bytes.subarray(start + deleteCount), start + addCount);
 
         this._bytes = newBytes;
     }
@@ -1034,6 +997,8 @@ export class ByteVector {
      *     remainder of the instance
      */
     public subarray(startIndex: number, length: number = this._bytes.length - startIndex): ByteVector {
+        Guards.safeUint(startIndex, "startIndex");
+        Guards.safeUint(length, "length");
         return new ByteVector(this._bytes.subarray(startIndex, startIndex + length));
     }
 
