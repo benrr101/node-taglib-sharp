@@ -67,7 +67,7 @@ export default class ApeTag extends Tag {
         const tag = new ApeTag();
 
         // Read the footer
-        tag._footer = ApeTagFooter.fromData(data.mid(data.length - ApeTagFooter.size));
+        tag._footer = ApeTagFooter.fromData(data.subarray(data.length - ApeTagFooter.size));
 
         // If we've read a header at the end of the block, the block is invalid
         if (NumberUtils.hasFlag(tag._footer.flags, ApeTagFooterFlags.IsHeader)) {
@@ -77,10 +77,9 @@ export default class ApeTag extends Tag {
             throw new CorruptFileError("Does not contain enough tag data");
         }
 
-        tag.parse(data.mid(
-            data.length - tag._footer.requiredDataSize,
-            tag._footer.requiredDataSize - ApeTagFooter.size)
-        );
+        const startIndex = data.length - tag._footer.requiredDataSize;
+        const length = tag._footer.requiredDataSize - ApeTagFooter.size;
+        tag.parse(data.subarray(startIndex, length));
 
         return tag;
     }
@@ -484,8 +483,8 @@ export default class ApeTag extends Tag {
                 continue;
             }
 
-            const pic = Picture.fromData(item.value.mid(descriptionEndIndex + 1));
-            pic.description = item.value.toString(descriptionEndIndex, StringType.UTF8, 0);
+            const pic = Picture.fromData(item.value.subarray(descriptionEndIndex + 1));
+            pic.description = item.value.subarray(0, descriptionEndIndex).toString(StringType.UTF8);
             pic.type = pictureTypeId !== ApeTag.notPictureItemTypeId ? pictureTypeId : PictureType.NotAPicture;
 
             pictures.push(pic);
@@ -640,9 +639,11 @@ export default class ApeTag extends Tag {
         this.isHeaderPresent = true;
 
         // Add the header/footer
-        data.insertByteVector(0, this._footer.renderHeader());
-        data.addByteVector(this._footer.renderFooter());
-        return data;
+        return ByteVector.concatenate(
+            this._footer.renderHeader(),
+            ... renderedItems,
+            this._footer.renderFooter()
+        );
     }
 
     /**

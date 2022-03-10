@@ -917,27 +917,30 @@ export default class AsfTag extends Tag {
         offset += 1;
 
         // Get the Picture size
-        const pictureSize = data.mid(offset, 4).toUint(false);
+        const pictureSize = data.subarray(offset, 4).toUint(false);
         offset += 4;
 
-        // Get the mime-type
         const delimiter = ByteVector.getTextDelimiter(StringType.UTF16LE);
-        const mimeTypeDelimiterIndex = data.find(delimiter, offset, delimiter.length);
+
+        // Get the mime-type
+        const mimeTypeDelimiterIndex = data.offsetFind(delimiter, offset, delimiter.length);
         if (mimeTypeDelimiterIndex < 0 || mimeTypeDelimiterIndex - offset === 0) {
             return undefined;
         }
-        const mimeType = data.toString(mimeTypeDelimiterIndex - offset, StringType.UTF16LE, offset);
+        const mimeTypeLength = mimeTypeDelimiterIndex - offset;
+        const mimeType = data.subarray(offset, mimeTypeLength).toString(StringType.UTF16LE);
         offset = mimeTypeDelimiterIndex + delimiter.length;
 
         // Get the description
-        const descriptionDelimiterIndex = data.find(delimiter, offset, delimiter.length);
+        const descriptionDelimiterIndex = data.offsetFind(delimiter, offset, delimiter.length);
         if (descriptionDelimiterIndex < 0 || descriptionDelimiterIndex - offset === 0) {
             return undefined;
         }
-        const description = data.toString(descriptionDelimiterIndex - offset, StringType.UTF16LE, offset);
+        const descriptionLength = descriptionDelimiterIndex - offset;
+        const description = data.subarray(offset, descriptionLength).toString(StringType.UTF16LE);
         offset = descriptionDelimiterIndex + 2;
 
-        return Picture.fromFullData(data.mid(offset, pictureSize), pictureType, mimeType, description);
+        return Picture.fromFullData(data.subarray(offset, pictureSize), pictureType, mimeType, description);
     }
 
     /** @internal */

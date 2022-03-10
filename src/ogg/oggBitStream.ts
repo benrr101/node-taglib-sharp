@@ -11,7 +11,7 @@ import {OggPageFlags} from "./oggPageHeader";
  */
 export default class OggBitStream {
     private readonly _codec: IOggCodec;
-    private _firstAbsoluteGranularPosition: number;
+    private readonly _firstAbsoluteGranularPosition: number;
     private _previousPacket: ByteVector;
 
     /**
@@ -59,7 +59,7 @@ export default class OggBitStream {
 
             if (i === packets.length - 1 && !page.header.lastPacketComplete) {
                 // We're at the last packet of the page and it's continued on the next page. Store it.
-                this._previousPacket = ByteVector.fromByteVector(packet);
+                this._previousPacket = packet;
             } else if (this._codec.readPacket(packet)) {
                 // This isn't the last packet, we need to process it.
                 return true;

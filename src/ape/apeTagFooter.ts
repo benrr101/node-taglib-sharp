@@ -30,7 +30,7 @@ export class ApeTagFooter {
     /**
      * Identifier used to fina an APEv2 footer in a file.
      */
-    public static readonly fileIdentifier = ByteVector.fromString("APETAGEX", StringType.Latin1, undefined, true);
+    public static readonly fileIdentifier = ByteVector.fromString("APETAGEX", StringType.Latin1).makeReadOnly();
 
     /**
      * Size of an APEv2 footer.
@@ -61,11 +61,11 @@ export class ApeTagFooter {
         }
 
         const footer = new ApeTagFooter();
-        footer._version = data.mid(8, 4).toUint(false);
-        footer._itemCount = data.mid(16, 4).toUint(false);
-        footer._flags = <ApeTagFooterFlags> data.mid(20, 4).toUint(false);
+        footer._version = data.subarray(8, 4).toUint(false);
+        footer._itemCount = data.subarray(16, 4).toUint(false);
+        footer._flags = <ApeTagFooterFlags> data.subarray(20, 4).toUint(false);
 
-        const itemPlusFooterSize = footer._itemSize = data.mid(12, 4).toUint(false);
+        const itemPlusFooterSize = footer._itemSize = data.subarray(12, 4).toUint(false);
         if (itemPlusFooterSize < ApeTagFooter.size) {
             throw new CorruptFileError("Tag size is out of bounds");
         }

@@ -75,7 +75,7 @@ export default abstract class RiffListTag extends Tag {
         const values = this.getValues(id);
         return values.map((value) => {
             return value
-                ? value.toString(value.length, this._stringType)
+                ? value.toString(this._stringType)
                 : "";
         });
     }
@@ -129,7 +129,7 @@ export default abstract class RiffListTag extends Tag {
      */
     public setValueFromUint(id: string, value: number): void {
         Guards.uint(value, "value");
-        const byteValues = value ? [ByteVector.fromString(value.toString(10))] : undefined;
+        const byteValues = value ? [ByteVector.fromString(value.toString(10), StringType.Latin1)] : undefined;
         this._list.setValues(id, byteValues);
     }
 

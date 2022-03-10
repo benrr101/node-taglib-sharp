@@ -356,12 +356,12 @@ export default class MpegAudioHeader implements IAudioCodec {
         do {
             // @TODO: ugh, this has that bizarre 3 byteoffset into each read, remove it
             file.seek(position + 3);
-            buffer = buffer.mid(buffer.length - 3);
+            buffer = buffer.subarray(buffer.length - 3);
             buffer.addByteVector(file.readBlock(File.bufferSize));
 
             for (let i = 0; i < buffer.length - 3 && (length === undefined || position + i < end); i++) {
                 if (buffer.get(i) === 0xFF && buffer.get(i + 1) > 0xE0) {
-                    const data = buffer.mid(i, 4);
+                    const data = buffer.subarray(i, 4);
                     if (!this.getHeaderError(data)) {
                         try {
                             return MpegAudioHeader.fromData(data, file, position + i);

@@ -1,6 +1,6 @@
 import IOggCodec from "./iOggCodec";
 import XiphComment from "../../xiph/xiphComment";
-import {ByteVector} from "../../byteVector";
+import {ByteVector, StringType} from "../../byteVector";
 import {IAudioCodec, MediaTypes} from "../../iCodec";
 import {Guards} from "../../utils";
 
@@ -8,8 +8,8 @@ import {Guards} from "../../utils";
  * Represents an Ogg Opus bitstream for use within an Ogg file.
  */
 export default class Opus implements IOggCodec, IAudioCodec {
-    private static readonly magicSignatureHeader = ByteVector.fromString("OpusHead", undefined, undefined, true);
-    private static readonly magicSignatureComment = ByteVector.fromString("OpusTags", undefined, undefined, true);
+    private static readonly magicSignatureHeader = ByteVector.fromString("OpusHead", StringType.Latin1).makeReadOnly();
+    private static readonly magicSignatureComment = ByteVector.fromString("OpusTags", StringType.Latin1).makeReadOnly();
 
     private readonly _channelCount: number;
     private readonly _inputSampleRate: number;
@@ -33,8 +33,8 @@ export default class Opus implements IOggCodec, IAudioCodec {
         // Head the header
         this._opusVersion = headerPacket.get(8);
         this._channelCount = headerPacket.get(9);
-        this._preSkip = headerPacket.mid(10, 2).toUint(false);
-        this._inputSampleRate = headerPacket.mid(12, 4).toUint(false);
+        this._preSkip = headerPacket.subarray(10, 2).toUint(false);
+        this._inputSampleRate = headerPacket.subarray(12, 4).toUint(false);
 
         const channelMappingFamily = headerPacket.get(18);
         if (channelMappingFamily === 0) {
@@ -101,7 +101,7 @@ export default class Opus implements IOggCodec, IAudioCodec {
         Guards.truthy(packet, "packet");
 
         if (!this._commentData && packet.startsWith(Opus.magicSignatureComment)) {
-            this._commentData = packet.mid(Opus.magicSignatureComment.length);
+            this._commentData = packet.subarray(Opus.magicSignatureComment.length).toByteVector();
         }
 
         return !!this._commentData;

@@ -50,15 +50,15 @@ export default class AviHeader {
         if (mainHeaderData.length < 40) {
             throw new CorruptFileError("AVI header is an invalid length");
         }
-        this._microsecondsPerFrame = mainHeaderData.mid(0, 4).toUint(false);
-        this._maxBytesPerSecond = mainHeaderData.mid(4, 4).toUint(false);
-        this._flags = mainHeaderData.mid(12, 4).toUint(false);
-        this._totalFrames = mainHeaderData.mid(16, 4).toUint(false);
-        this._initialFrames = mainHeaderData.mid(20, 4).toUint(false);
-        this._streamCount = mainHeaderData.mid(24, 4).toUint(false);
-        this._suggestedBufferSize = mainHeaderData.mid(28, 4).toUint(false);
-        this._width = mainHeaderData.mid(32, 4).toUint(false);
-        this._height = mainHeaderData.mid(36, 4).toUint(false);
+        this._microsecondsPerFrame = mainHeaderData.subarray(0, 4).toUint(false);
+        this._maxBytesPerSecond = mainHeaderData.subarray(4, 4).toUint(false);
+        this._flags = mainHeaderData.subarray(12, 4).toUint(false);
+        this._totalFrames = mainHeaderData.subarray(16, 4).toUint(false);
+        this._initialFrames = mainHeaderData.subarray(20, 4).toUint(false);
+        this._streamCount = mainHeaderData.subarray(24, 4).toUint(false);
+        this._suggestedBufferSize = mainHeaderData.subarray(28, 4).toUint(false);
+        this._width = mainHeaderData.subarray(32, 4).toUint(false);
+        this._height = mainHeaderData.subarray(36, 4).toUint(false);
 
         this._durationMilliseconds = this._totalFrames * this._microsecondsPerFrame / 1000;
 

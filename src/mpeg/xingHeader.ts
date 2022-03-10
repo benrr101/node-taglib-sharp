@@ -1,4 +1,4 @@
-import {ByteVector} from "../byteVector";
+import {ByteVector, StringType} from "../byteVector";
 import {CorruptFileError} from "../errors";
 import {ChannelMode, MpegVersion} from "./mpegEnums";
 import {Guards, NumberUtils} from "../utils";
@@ -10,7 +10,7 @@ export default class XingHeader {
     /**
      * Identifier that appears in a file to indicate the start of a Xing header.
      */
-    public static readonly fileIdentifier = ByteVector.fromString("Xing", undefined, undefined, true);
+    public static readonly fileIdentifier = ByteVector.fromString("Xing", StringType.Latin1).makeReadOnly();
 
     /**
      * An empty an unset Xing header
@@ -57,14 +57,14 @@ export default class XingHeader {
         let position = 8;
 
         if (NumberUtils.hasFlag(data.get(7), 0x01)) {
-            header._totalFrames = data.mid(position, 4).toUint();
+            header._totalFrames = data.subarray(position, 4).toUint();
             position += 4;
         } else {
             header._totalFrames = 0;
         }
 
         if (NumberUtils.hasFlag(data.get(7), 0x02)) {
-            header._totalSize = data.mid(position, 4).toUint();
+            header._totalSize = data.subarray(position, 4).toUint();
         } else {
             header._totalSize = 0;
         }

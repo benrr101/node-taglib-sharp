@@ -164,10 +164,10 @@ const assert = Chai.assert;
         assert.strictEqual(output.length, 3);
         assert.strictEqual(output.get(0), 0x01);
 
-        // - Do not point to same underlying array
+        // Assert - Point to same underlying array
         ba[0] = 88;
         assert.strictEqual(bv.get(0), 88);
-        assert.strictEqual(output.get(0), 1);
+        assert.strictEqual(output.get(0), 88);
     }
 
     @test

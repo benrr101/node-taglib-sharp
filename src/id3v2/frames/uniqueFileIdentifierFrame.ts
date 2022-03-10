@@ -31,7 +31,7 @@ export default class UniqueFileIdentifierFrame extends Frame {
 
         const frame = new UniqueFileIdentifierFrame(new Id3v2FrameHeader(FrameIdentifiers.UFID));
         frame._owner = owner;
-        frame._identifier = identifier;
+        frame._identifier = identifier.toByteVector();
         return frame;
     }
 
@@ -121,9 +121,7 @@ export default class UniqueFileIdentifierFrame extends Frame {
     public clone(): Frame {
         const frame = new UniqueFileIdentifierFrame(new Id3v2FrameHeader(FrameIdentifiers.UFID));
         frame._owner = this._owner;
-        if (this._identifier) {
-            frame.identifier = ByteVector.fromByteVector(this.identifier);
-        }
+        frame._identifier = this._identifier?.toByteVector();
         return frame;
     }
 
@@ -134,16 +132,16 @@ export default class UniqueFileIdentifierFrame extends Frame {
             return;
         }
 
-        this._owner = fields[0].toString(undefined, StringType.Latin1);
-        this._identifier = fields[1];
+        this._owner = fields[0].toString(StringType.Latin1);
+        this._identifier = fields[1].toByteVector();
     }
 
     /** @inheritDoc */
     protected renderFields(_version: number): ByteVector {
         return ByteVector.concatenate(
-            ByteVector.fromString(this.owner, StringType.Latin1),
+            ByteVector.fromString(this._owner, StringType.Latin1),
             ByteVector.getTextDelimiter(StringType.Latin1),
-            this.identifier
+            this._identifier
         );
     }
 

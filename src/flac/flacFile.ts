@@ -25,7 +25,7 @@ import {NumberUtils} from "../utils";
  *     {@link FlacFileSettings}.
  */
 export default class FlacFile extends File implements ISandwichFile {
-    public static readonly fileIdentifier = ByteVector.fromString("fLaC", StringType.Latin1, undefined, true);
+    public static readonly fileIdentifier = ByteVector.fromString("fLaC", StringType.Latin1).makeReadOnly();
 
     private readonly _properties: Properties;
     private readonly _tag: FlacTag;
@@ -195,7 +195,7 @@ export default class FlacFile extends File implements ISandwichFile {
     private readMetadataBlocks(): FlacBlock[] {
         // Make sure we've got the header at the beginning of the file
         this.seek(this._mediaStartPosition);
-        if (ByteVector.notEqual(this.readBlock(4), FlacFile.fileIdentifier)) {
+        if (!this.readBlock(4).equals(FlacFile.fileIdentifier)) {
             throw new CorruptFileError("FLAC header not found after any starting tags");
         }
 

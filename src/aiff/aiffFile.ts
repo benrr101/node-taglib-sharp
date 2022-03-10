@@ -1,7 +1,7 @@
 import AiffStreamHeader from "./aiffStreamHeader";
 import Id3v2Tag from "../id3v2/id3v2Tag";
 import Properties from "../properties";
-import {ByteVector} from "../byteVector";
+import {ByteVector, StringType} from "../byteVector";
 import {CorruptFileError} from "../errors";
 import {File, FileAccessMode, ReadStyle} from "../file";
 import {IFileAbstraction} from "../fileAbstraction";
@@ -17,27 +17,27 @@ export default class AiffFile extends File {
      * Identifier used to recognize an AIFF form type.
      */
     // @TODO: Add support for AIFF-C files - it's pretty much the same
-    public static readonly aiffFormType = ByteVector.fromString("AIFF", undefined, undefined, true);
+    public static readonly aiffFormType = ByteVector.fromString("AIFF", StringType.UTF8).makeReadOnly();
 
     /**
      * Identifier used to recognize an AIFF common chunk.
      */
-    public static readonly commIdentifier = ByteVector.fromString("COMM", undefined, undefined, true);
+    public static readonly commIdentifier = ByteVector.fromString("COMM", StringType.UTF8).makeReadOnly();
 
     /**
      * Identifier used to recognize an AIFF file.
      */
-    public static readonly fileIdentifier = ByteVector.fromString("FORM", undefined, undefined, true);
+    public static readonly fileIdentifier = ByteVector.fromString("FORM", StringType.UTF8).makeReadOnly();
 
     /**
      * Identifier used to recognize an AIFF ID3 chunk.
      */
-    public static readonly id3Identifier = ByteVector.fromString("ID3 ", undefined, undefined, true);
+    public static readonly id3Identifier = ByteVector.fromString("ID3 ", StringType.UTF8).makeReadOnly();
 
     /**
      * Identifier used to recognize an AIFF sound data chunk.
      */
-    public static readonly soundIdentifier = ByteVector.fromString("SSND", undefined, undefined, true);
+    public static readonly soundIdentifier = ByteVector.fromString("SSND", StringType.UTF8).makeReadOnly();
 
     // #endregion
 
@@ -113,7 +113,7 @@ export default class AiffFile extends File {
         try {
             // Add the ID3 chunk and ID3v2 tag to the vector
             const id3Chunk = ByteVector.empty();
-            if (!!this._tag) {
+            if (this._tag) {
                 const tagData = this._tag.render();
                 if (tagData.length > 10) {
                     // Add padding if tag data length is odd
@@ -162,8 +162,7 @@ export default class AiffFile extends File {
             // While we're not at the end of the file
             while (this.position < this.length) {
                 // Read 4-byte chunk name
-                const chunkHeader = this.readBlock(4);
-                if (ByteVector.equal(chunkHeader, chunkName)) {
+                if (this.readBlock(4).equals(chunkName)) {
                     // We found a matching chunk, return the position of the header start
                     return this.position - 4;
                 } else {
@@ -184,7 +183,7 @@ export default class AiffFile extends File {
 
     private read(readTags: boolean, style: ReadStyle): {fileSize: number, tagEnd: number, tagStart: number} {
         this.seek(0);
-        if (!ByteVector.equal(this.readBlock(4), AiffFile.fileIdentifier)) {
+        if (!this.readBlock(4).equals(AiffFile.fileIdentifier)) {
             throw new CorruptFileError("File does not begin with AIFF identifier");
         }
 
@@ -193,7 +192,7 @@ export default class AiffFile extends File {
         let tagEnd = -1;
 
         // Check form type
-        if (!ByteVector.equal(this.readBlock(4), AiffFile.aiffFormType)) {
+        if (!this.readBlock(4).equals(AiffFile.aiffFormType)) {
             throw new CorruptFileError("File form type is not AIFF");
         }
 

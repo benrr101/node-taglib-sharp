@@ -21,11 +21,7 @@ export default class UnknownFrame extends Frame {
         Guards.truthy(identifier, "identifier");
 
         const frame = new UnknownFrame(new Id3v2FrameHeader(identifier));
-        if (data) {
-            frame.data = data;
-        } else {
-            frame.data = undefined;
-        }
+        frame.data = data?.toByteVector();
         return frame;
     }
 
@@ -84,7 +80,7 @@ export default class UnknownFrame extends Frame {
 
     /** @inheritDoc */
     protected parseFields(data: ByteVector, _version: number): void {
-        this.data = data;
+        this.data = data.toByteVector();
     }
 
     /** @inheritDoc */

@@ -57,8 +57,8 @@ export default class StreamPropertiesObject extends BaseObject {
 
         instance._flags = ReadWriteUtils.readWord(file);
         instance._reserved = ReadWriteUtils.readDWord(file);
-        instance._typeSpecificData = file.readBlock(typeSpecificDataLength);
-        instance._errorCorrectionData = file.readBlock(errorSpecificDataLength);
+        instance._typeSpecificData = file.readBlock(typeSpecificDataLength).toByteVector();
+        instance._errorCorrectionData = file.readBlock(errorSpecificDataLength).toByteVector();
 
         return instance;
     }

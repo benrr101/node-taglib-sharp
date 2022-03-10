@@ -95,16 +95,18 @@ export default class PlayCountFrame extends Frame {
 
     /** @inheritDoc */
     protected parseFields(data: ByteVector, _version: number) {
-        this.playCount = data.toULong();
+        this.playCount = data.toUlong();
     }
 
     /** @inheritDoc */
     protected renderFields(_version: number): ByteVector {
-        const data = ByteVector.fromULong(this.playCount);
-        while (data.length > 4 && data.get(0) === 0) {
-            data.removeAtIndex(0);
+        const data = ByteVector.fromUlong(this.playCount);
+
+        let ptr = 0;
+        while (data.length > 4 && data.get(ptr) === 0) {
+            ptr++;
         }
 
-        return data;
+        return data.subarray(ptr);
     }
 }

@@ -286,6 +286,17 @@ export class ByteVector {
     }
 
     /**
+     * Creates a {@link ByteVector} from a base64 string.
+     * @param str Base64 string to convert into a byte vector
+     */
+    public static fromBase64String(str: string): ByteVector {
+        Guards.notNullOrUndefined(str, "str");
+
+        const bytes = Buffer.from(str, "base64");
+        return new ByteVector(bytes);
+    }
+
+    /**
      * Creates a {@link ByteVector} from a `Uint8Array` or `Buffer`
      * @param bytes Uint8Array of the bytes to put in the ByteVector
      * @param length Optionally, number of bytes to read. If this is not provided, it will default
@@ -813,7 +824,7 @@ export class ByteVector {
         Guards.greaterThanInclusive(byteAlign, 1, "byteAlign");
 
         // Sanity check impossible matches
-        if (this.length == 0 || pattern.length === 0 || pattern.length > this.length) {
+        if (this.length === 0 || pattern.length === 0 || pattern.length > this.length) {
             return -1;
         }
 
@@ -991,6 +1002,40 @@ export class ByteVector {
     }
 
     /**
+     * Splits this byte vector into a list of byte vectors using a separator
+     * @param separator Object to use to split this byte vector
+     * @param byteAlign Byte align to use when splitting. in order to split when a pattern is
+     *     encountered, the index at which it is found must be divisible by this value.
+     * @param max Maximum number of objects to return or 0 to not limit the number. If that number
+     *     is reached, the last value will contain the remainder of the file even if it contains
+     *     more instances of `separator`.
+     * @returns ByteVector[] The split contents of the current instance
+     */
+    public split(separator: ByteVector, byteAlign: number = 1, max: number = 0) {
+        Guards.truthy(separator, "pattern");
+        Guards.uint(byteAlign, "byteAlign");
+        Guards.greaterThanInclusive(byteAlign, 1, "byteAlign");
+        Guards.uint(max, "max");
+
+        const vectors = [];
+        const condition = (o: number) => o !== -1 && (max < 1 || max > vectors.length + 1);
+        const increment = (o: number) => this.offsetFind(separator, o + separator.length, byteAlign);
+
+        let previousOffset = 0;
+        let offset = this.offsetFind(separator, 0, byteAlign);
+        for (offset; condition(offset); offset = increment(offset)) {
+            vectors.push(this.subarray(previousOffset, offset - previousOffset));
+            previousOffset = offset + separator.length;
+        }
+
+        if (previousOffset < this.length) {
+            vectors.push(this.subarray(previousOffset));
+        }
+
+        return vectors;
+    }
+
+    /**
      * Returns a window over the current instance.
      * @param startIndex Offset into this instance where the comprehension begins
      * @param length Number of elements from the instance to include. If omitted, defaults to the
@@ -1034,8 +1079,7 @@ export class ByteVector {
      * @remarks This is a **copy** of the data. Use sparingly.
      */
     public toByteVector(): ByteVector {
-        if (this._bytes.byteOffset !== 0 || this._bytes.byteLength !== this._bytes.buffer.byteLength) {
-            // This instance is a view of another ByteVector, copy it
+        if (this.isView) {
             const bytes = new Uint8Array(this._bytes);
             return new ByteVector(bytes);
         }
@@ -1137,26 +1181,25 @@ export class ByteVector {
         Guards.safeUint(count, "count");
 
         const delimiter = ByteVector.getTextDelimiter(type);
-        let leadingPtr = 0;
-        let trailingPtr = 0;
+        let ptr = 0;
         const strings = [];
-        while (leadingPtr < this.length && strings.length < count) {
+        while (ptr < this.length && strings.length < count) {
             // Find the next delimiter
-            const delimiterPosition = this.offsetFind(delimiter, trailingPtr, delimiter.length);
+            const delimiterPosition = this.offsetFind(delimiter, ptr, delimiter.length);
             if (delimiterPosition < 0) {
                 // We didn't find another delimiter, so break out of the loop
                 break;
             }
 
-            const str = this.subarray(trailingPtr, delimiterPosition - trailingPtr).toString(type);
+            const str = this.subarray(ptr, delimiterPosition - ptr).toString(type);
             strings.push(str);
 
-            trailingPtr = delimiterPosition + delimiter.length;
+            ptr = delimiterPosition + delimiter.length;
         }
 
         // If there's any remaining bytes, convert them to string
-        if (trailingPtr < this.length && strings.length < count) {
-            const str = this.subarray(trailingPtr).toString(type);
+        if (ptr < this.length && strings.length < count) {
+            const str = this.subarray(ptr).toString(type);
             strings.push(str);
         }
 

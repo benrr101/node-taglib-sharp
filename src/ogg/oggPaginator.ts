@@ -99,8 +99,8 @@ export default class OggPaginator {
                 pagePackets.push(packets.shift());
                 lacingBytesUsed += packetBytes;
             } else {
-                pagePackets.push(packets[0].mid(0, remaining * 0xff));
-                packets[0] = packets[0].mid(remaining * 0xff);
+                pagePackets.push(packets[0].subarray(0, remaining * 0xff));
+                packets[0] = packets[0].subarray(remaining * 0xff);
                 lacingBytesUsed += remaining;
             }
 

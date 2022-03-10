@@ -1,11 +1,11 @@
+import * as DateFormat from "dateformat";
 import Picture from "../picture";
 import XiphPicture from "./xiphPicture";
 import XiphSettings from "./xiphSettings";
-import {Tag, TagTypes} from "../tag";
-import {IPicture} from "../iPicture";
 import {ByteVector, StringType} from "../byteVector";
+import {IPicture} from "../iPicture";
+import {Tag, TagTypes} from "../tag";
 import {Guards} from "../utils";
-import * as DateFormat from "dateformat";
 
 /**
  * Provides support for reading and writing Xiph comment-style tags.
@@ -43,21 +43,21 @@ export default class XiphComment extends Tag {
         // The first thing in the comment data is the vendor ID length, followed by a UTF8 string
         // with the vendor ID.
         let pos = 0;
-        const vendorLength = data.mid(pos, 4).toUint(false);
+        const vendorLength = data.subarray(pos, 4).toUint(false);
         pos += 4;
-        xiphComment._vendorId = data.toString(vendorLength, StringType.UTF8, pos);
+        xiphComment._vendorId = data.subarray(pos, vendorLength).toString(StringType.UTF8);
         pos += vendorLength;
 
         // Next, the number of fields in the comment vector
-        const commentFields = data.mid(pos, 4).toUint(false);
+        const commentFields = data.subarray(pos, 4).toUint(false);
         pos += 4;
 
         for (let i = 0; i < commentFields; i++) {
             // Each comment field is in the format KEY=value in a UTF8 string and has a 32-bit uint
             // before it with the length.
-            const commentLength = data.mid(pos, 4).toUint(false);
+            const commentLength = data.subarray(pos, 4).toUint(false);
             pos += 4;
-            const comment = data.toString(commentLength, StringType.UTF8, pos);
+            const comment = data.subarray(pos, commentLength).toString(StringType.UTF8);
             pos += commentLength;
 
             const commentSeparatorPosition = comment.indexOf("=");
@@ -73,7 +73,7 @@ export default class XiphComment extends Tag {
                 case XiphComment.oldPictureField:
                     // Old picture fields are just base64 encoded picture bytes
                     // TODO: Allow picture to be lazily decoded
-                    const pictureBytes = ByteVector.fromByteArray(Buffer.from(value, "base64"));
+                    const pictureBytes = ByteVector.fromBase64String(value);
                     const oldPicture = Picture.fromData(pictureBytes);
                     xiphComment._pictures.push(oldPicture);
 

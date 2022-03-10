@@ -1,8 +1,8 @@
 import SyncData from "../syncData";
 import {ByteVector, StringType} from "../../byteVector";
 import {CorruptFileError} from "../../errors";
-import {Guards, NumberUtils} from "../../utils";
 import {FrameIdentifier, FrameIdentifiers} from "../frameIdentifiers";
+import {Guards, NumberUtils} from "../../utils";
 
 export enum Id3v2FrameFlags {
     /**
@@ -100,7 +100,7 @@ export class Id3v2FrameHeader {
                 }
 
                 // Set frame ID -- first 3 bytes
-                frameId = FrameIdentifiers[data.toString(3, StringType.Latin1)];
+                frameId = FrameIdentifiers[data.subarray(0, 3).toString(StringType.Latin1)];
 
                 // If the full header information was not passed in, do not continue to the steps
                 // to parse the frame size and flags.
@@ -108,7 +108,7 @@ export class Id3v2FrameHeader {
                     break;
                 }
 
-                frameSize = data.mid(3, 3).toUint();
+                frameSize = data.subarray(3, 3).toUint();
                 break;
 
             case 3:
@@ -117,7 +117,7 @@ export class Id3v2FrameHeader {
                 }
 
                 // Set the frame ID -- first 4 bytes
-                frameId = FrameIdentifiers[data.toString(4, StringType.Latin1)];
+                frameId = FrameIdentifiers[data.subarray(0, 4).toString(StringType.Latin1)];
 
                 // If the full header information was not passed in, do not continue to the steps
                 // to parse the frame size and flags.
@@ -126,7 +126,7 @@ export class Id3v2FrameHeader {
                 }
 
                 // Store the flags internally as version 2.4
-                frameSize = data.mid(4, 4).toUint();
+                frameSize = data.subarray(4, 4).toUint();
                 flags = NumberUtils.uintOr(
                     NumberUtils.uintAnd(NumberUtils.uintLShift(data.get(8), 7), 0x7000),
                     NumberUtils.uintAnd(NumberUtils.uintRShift(data.get(9), 4), 0x000C),
@@ -140,7 +140,7 @@ export class Id3v2FrameHeader {
                 }
 
                 // Set the frame ID -- the first 4 bytes
-                frameId = FrameIdentifiers[data.toString(4, StringType.Latin1)];
+                frameId = FrameIdentifiers[data.subarray(0, 4).toString(StringType.Latin1)];
 
                 // If the full header information was not passed in, do not continue to the steps to
                 // ... eh, you probably get it by now.
@@ -148,8 +148,8 @@ export class Id3v2FrameHeader {
                     return;
                 }
 
-                frameSize = SyncData.toUint(data.mid(4, 4));
-                flags = data.mid(8, 2).toUShort();
+                frameSize = SyncData.toUint(data.subarray(4, 4));
+                flags = data.subarray(8, 2).toUshort();
                 break;
         }
 
@@ -223,11 +223,11 @@ export class Id3v2FrameHeader {
         Guards.betweenInclusive(version, 2, 4, "version");
 
         // Start by rendering the frame identifier
-        const data = this._frameId.render(version);
+        const byteVectors = [this._frameId.render(version)];
 
         switch (version) {
             case 2:
-                data.addByteVector(ByteVector.fromUint(this._frameSize).mid(1, 3));
+                byteVectors.push(ByteVector.fromUint(this._frameSize).subarray(1, 3));
                 break;
 
             case 3:
@@ -237,17 +237,17 @@ export class Id3v2FrameHeader {
                     NumberUtils.uintAnd(NumberUtils.uintRShift(this._flags, 1), 0x0020)
                 );
 
-                data.addByteVector(ByteVector.fromUint(this._frameSize));
-                data.addByteVector(ByteVector.fromUShort(newFlags));
+                byteVectors.push(ByteVector.fromUint(this._frameSize));
+                byteVectors.push(ByteVector.fromUshort(newFlags));
                 break;
 
             case 4:
-                data.addByteVector(SyncData.fromUint(this._frameSize));
-                data.addByteVector(ByteVector.fromUShort(this._flags));
+                byteVectors.push(SyncData.fromUint(this._frameSize));
+                byteVectors.push(ByteVector.fromUshort(this._flags));
                 break;
         }
 
-        return data;
+        return ByteVector.concatenate(... byteVectors);
     }
 
     // #endregion

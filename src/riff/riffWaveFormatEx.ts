@@ -300,12 +300,12 @@ export default class RiffWaveFormatEx implements ILosslessAudioCodec {
             throw new CorruptFileError("WAVE format data is too short");
         }
 
-        this._formatTag = data.mid(0, 2).toUShort(false);
-        this._channels = data.mid(2, 2).toUShort(false);
-        this._samplesPerSecond = data.mid(4, 4).toUint(false);
-        this._averageBytesPerSecond = data.mid(8, 4).toUint(false);
-        this._blockAlign = data.mid(12, 2).toUShort(false);
-        this._bitsPerSample = data.mid(14, 2).toUShort(false);
+        this._formatTag = data.subarray(0, 2).toUshort(false);
+        this._channels = data.subarray(2, 2).toUshort(false);
+        this._samplesPerSecond = data.subarray(4, 4).toUint(false);
+        this._averageBytesPerSecond = data.subarray(8, 4).toUint(false);
+        this._blockAlign = data.subarray(12, 2).toUshort(false);
+        this._bitsPerSample = data.subarray(14, 2).toUshort(false);
     }
 
     // #region Properties

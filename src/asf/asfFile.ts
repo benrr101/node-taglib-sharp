@@ -78,7 +78,7 @@ export default class AsfFile extends File {
             // Write the updated header to the file
             const output = header.render();
             const diff = output.length - header.originalSize;
-            super.insert(output, 0, header.originalSize);
+            super.insert(output, 0, header.originalSize + diff);
         } finally {
             this.mode = FileAccessMode.Closed;
         }

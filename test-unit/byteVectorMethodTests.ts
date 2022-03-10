@@ -1771,7 +1771,7 @@ const assert = Chai.assert;
         const bv = ByteVector.fromSize(0);
 
         // Act
-        bv.splice(0, 0,[0x01]);
+        bv.splice(0, 0, [0x01]);
 
         // Assert
         assert.deepEqual(bv["_bytes"], new Uint8Array([0x01]));
@@ -2139,6 +2139,222 @@ const assert = Chai.assert;
     }
 
     @test
+    public split_invalidParameters() {
+        // Arrange
+        const bv = ByteVector.fromString("foobarbaz", StringType.Latin1);
+        const pattern = ByteVector.fromSize(1);
+
+        // Act / Assert
+        Testers.testTruthy((v: ByteVector) => { bv.split(v); });
+        Testers.testUint((v: number) => { bv.split(pattern, v); }, true);
+        Testers.testUint((v: number) => { bv.split(pattern, 1, v); }, true);
+        assert.throws(() => bv.split(pattern, 0));
+    }
+
+    @test
+    public split_singleByteSplit_noMatch() {
+        // Arrange
+        const bv = ByteVector.fromString("foobarbaz", StringType.Latin1);
+        const pattern = ByteVector.fromString(",", StringType.Latin1);
+
+        // Act
+        const output = bv.split(pattern);
+
+        // Assert
+        ByteVector_MethodTests.verifySplitOutput(output, ["foobarbaz"]);
+    }
+
+    @test
+    public split_singleByteSplit_oneMatch() {
+        // Arrange
+        const bv = ByteVector.fromString("foo,baz", StringType.Latin1);
+        const pattern = ByteVector.fromString(",", StringType.Latin1);
+
+        // Act
+        const output = bv.split(pattern);
+
+        // Assert
+        ByteVector_MethodTests.verifySplitOutput(output, ["foo", "baz"]);
+    }
+
+    @test
+    public split_singleByteSplit_multipleMatch() {
+        // Arrange
+        const bv = ByteVector.fromString("foo,bar,,baz", StringType.Latin1);
+        const pattern = ByteVector.fromString(",", StringType.Latin1);
+
+        // Act
+        const output = bv.split(pattern);
+
+        // Assert
+        ByteVector_MethodTests.verifySplitOutput(output, ["foo", "bar", "", "baz"]);
+    }
+
+    @test
+    public split_multiByteSplit_noMatch() {
+        // Arrange
+        const bv = ByteVector.fromString("foobarbaz", StringType.Latin1);
+        const pattern = ByteVector.fromString(",,", StringType.Latin1);
+
+        // Act
+        const output = bv.split(pattern);
+
+        // Assert
+        ByteVector_MethodTests.verifySplitOutput(output, ["foobarbaz"]);
+    }
+
+    @test
+    public split_multiByteSplit_singleMatch() {
+        // Arrange
+        const bv = ByteVector.fromString("foo,,baz", StringType.Latin1);
+        const pattern = ByteVector.fromString(",,", StringType.Latin1);
+
+        // Act
+        const output = bv.split(pattern);
+
+        // Assert
+        ByteVector_MethodTests.verifySplitOutput(output, ["foo", "baz"]);
+    }
+
+    @test
+    public split_multiByteSplit_multipleMatch() {
+        // Arrange
+        const bv = ByteVector.fromString("foo,,bar,,,,baz", StringType.Latin1);
+        const pattern = ByteVector.fromString(",,", StringType.Latin1);
+
+        // Act
+        const output = bv.split(pattern);
+
+        // Assert
+        ByteVector_MethodTests.verifySplitOutput(output, ["foo", "bar", "", "baz"]);
+    }
+
+    @test
+    public split_singleByte_maxMatches() {
+        // Arrange
+        const bv = ByteVector.fromString("foo,bar,,baz", StringType.Latin1);
+        const pattern = ByteVector.fromString(",", StringType.Latin1);
+
+        // Act
+        const output = bv.split(pattern, undefined, 2);
+
+        // Assert
+        ByteVector_MethodTests.verifySplitOutput(output, ["foo", "bar,,baz"]);
+    }
+
+    @test
+    public split_multiByteWithByteAlign_noMatch() {
+        // Arrange
+        const bv = ByteVector.fromString("foo,,bar", StringType.Latin1);
+        const pattern = ByteVector.fromString(",,", StringType.Latin1);
+
+        // Act
+        const output = bv.split(pattern, 2);
+
+        // Assert
+        ByteVector_MethodTests.verifySplitOutput(output, ["foo,,bar"]);
+    }
+
+    @test
+    public split_multiByteWithByteAlignOnView_noMatch() {
+        // Arrange
+        const bv = ByteVector.fromString("Afoo,,barA", StringType.Latin1)
+            .subarray(1, 8);
+        const pattern = ByteVector.fromString(",,", StringType.Latin1);
+
+        // Act
+        const output = bv.split(pattern, 2);
+
+        // Assert
+        ByteVector_MethodTests.verifySplitOutput(output, ["foo,,bar"]);
+    }
+
+    @test
+    public split_multiByteViewWithByteAlign_noMatch() {
+        // Arrange
+        const bv = ByteVector.fromString("foo,,bar", StringType.Latin1);
+        const pattern = ByteVector.fromString("0,,0", StringType.Latin1)
+            .subarray(1, 2);
+
+        // Act
+        const output = bv.split(pattern, 2);
+
+        // Assert
+        ByteVector_MethodTests.verifySplitOutput(output, ["foo,,bar"]);
+    }
+
+    @test
+    public split_multiByteViewWithByteAlignOnView_noMatch() {
+        // Arrange
+        const bv = ByteVector.fromString("Afoo,,barA", StringType.Latin1)
+            .subarray(1, 8);
+        const pattern = ByteVector.fromString("0,,0", StringType.Latin1)
+            .subarray(1, 2);
+
+        // Act
+        const output = bv.split(pattern, 2);
+
+        // Assert
+        ByteVector_MethodTests.verifySplitOutput(output, ["foo,,bar"]);
+    }
+
+    @test
+    public split_multiByteWithByteAlign_match() {
+        // Arrange
+        const bv = ByteVector.fromString("0foo,,bar", StringType.Latin1);
+        const pattern = ByteVector.fromString(",,", StringType.Latin1);
+
+        // Act
+        const output = bv.split(pattern, 2);
+
+        // Assert
+        ByteVector_MethodTests.verifySplitOutput(output, ["0foo", "bar"]);
+    }
+
+    @test
+    public split_multiByteWithByteAlignOnView_match() {
+        // Arrange
+        const bv = ByteVector.fromString(" 0foo,,bar ", StringType.Latin1)
+            .subarray(1, 9);
+        const pattern = ByteVector.fromString(",,", StringType.Latin1);
+
+        // Act
+        const output = bv.split(pattern, 2);
+
+        // Assert
+        ByteVector_MethodTests.verifySplitOutput(output, ["0foo", "bar"]);
+    }
+
+    @test
+    public split_multiByteViewWithByteAlign_match() {
+        // Arrange
+        const bv = ByteVector.fromString("0foo,,bar", StringType.Latin1);
+        const pattern = ByteVector.fromString(" ,, ", StringType.Latin1)
+            .subarray(1, 2);
+
+        // Act
+        const output = bv.split(pattern, 2);
+
+        // Assert
+        ByteVector_MethodTests.verifySplitOutput(output, ["0foo", "bar"]);
+    }
+
+    @test
+    public split_multiByteViewWithByteAlignOnView_match() {
+        // Arrange
+        const bv = ByteVector.fromString(" 0foo,,bar ", StringType.Latin1)
+            .subarray(1, 9);
+        const pattern = ByteVector.fromString(" ,, ", StringType.Latin1)
+            .subarray(1, 2);
+
+        // Act
+        const output = bv.split(pattern, 2);
+
+        // Assert
+        ByteVector_MethodTests.verifySplitOutput(output, ["0foo", "bar"]);
+    }
+
+    @test
     public startsWith_invalidParam() {
         // Arrange
         const bv = ByteVector.empty();
@@ -2229,7 +2445,7 @@ const assert = Chai.assert;
         const bv = ByteVector.fromString("0foobarbaz0", StringType.Latin1)
             .subarray(1, 9);
         const pattern = ByteVector.fromString("0fux0", StringType.Latin1)
-            .subarray(1,3);
+            .subarray(1, 3);
 
         // Act / Assert
         assert.isFalse(bv.startsWith(pattern));

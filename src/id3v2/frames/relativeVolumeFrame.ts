@@ -69,14 +69,16 @@ export class ChannelData {
 
         const channelType = bytes.get(0);
         const channelData = new ChannelData(channelType);
-        channelData._volumeAdjustment = bytes.mid(1, 2).toShort();
+        channelData._volumeAdjustment = bytes.subarray(1, 2).toShort();
         channelData._peakBits = bytes.get(3);
 
+        // Calculate peak volume by padding value with zeroes
         const peakByteCount = Math.ceil(channelData._peakBits / 8);
-        const peakBytes = bytes.mid(4);
-        const zeroes = ByteVector.fromSize(peakByteCount - peakBytes.length, 0x00);
-        peakBytes.insertByteVector(0, zeroes);
-        channelData._peakVolume = peakBytes.toULong();
+        const peakBytes = ByteVector.concatenate(
+            ByteVector.fromSize(peakByteCount - bytes.length - 4, 0x00),
+            bytes.subarray(4)
+        );
+        channelData._peakVolume = peakBytes.toUlong();
 
         return channelData;
     }
@@ -157,7 +159,7 @@ export class ChannelData {
             this._channel,
             ByteVector.fromShort(this._volumeAdjustment),
             this._peakBits,
-            ByteVector.fromULong(this._peakVolume).mid(8 - peakByteCount)
+            ByteVector.fromUlong(this._peakVolume).subarray(8 - peakByteCount)
         );
     }
 }
@@ -327,12 +329,12 @@ export class RelativeVolumeFrame extends Frame {
             return;
         }
 
-        this._identification = data.toString(identifierEndIndex, StringType.Latin1);
+        this._identification = data.subarray(0, identifierEndIndex).toString(StringType.Latin1);
 
         let pos = identifierEndIndex + 1;
         while (pos < data.length) {
             const dataLength = 4 + Math.ceil(data.get(pos + 3) / 8);
-            const dataBytes = data.mid(pos, dataLength);
+            const dataBytes = data.subarray(pos, dataLength);
 
             // If we're at the end of the vector, we'll just end processing
             if (dataBytes.length !== dataLength) {

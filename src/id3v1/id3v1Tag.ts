@@ -11,6 +11,10 @@ import {Guards} from "../utils";
 export default class Id3v1Tag extends Tag {
     // #region Member Fields
 
+    private static readonly commentBytes = 28;
+    private static readonly titleArtistAlbumBytes = 30;
+    private static readonly yearBytes = 4;
+
     /**
      * Identifier used to recognize an ID3v1 tag.
      */
@@ -86,17 +90,23 @@ export default class Id3v1Tag extends Tag {
      * Renders the current instance as a raw ID3v1 tag.
      */
     public render(): ByteVector {
-        const data = ByteVector.empty();
-        data.addByteVector(Id3v1Tag.fileIdentifier);
-        data.addByteVector(ByteVector.fromString(this._title || "", StringType.Latin1).resize(30));
-        data.addByteVector(ByteVector.fromString(this._artist || "", StringType.Latin1).resize(30));
-        data.addByteVector(ByteVector.fromString(this._album || "", StringType.Latin1).resize(30));
-        data.addByteVector(ByteVector.fromString(this._year || "", StringType.Latin1).resize(4));
-        data.addByteVector(ByteVector.fromString(this._comment || "", StringType.Latin1).resize(28));
-        data.addByte(0x00);
-        data.addByte(this._track);
-        data.addByte(this._genre);
-        return data;
+        const titleBytes = ByteVector.fromString(this._title || "", StringType.Latin1);
+        const artistBytes = ByteVector.fromString(this._artist || "", StringType.Latin1);
+        const albumBytes = ByteVector.fromString(this._album || "", StringType.Latin1);
+        const yearBytes = ByteVector.fromString(this._year || "", StringType.Latin1);
+        const commentBytes = ByteVector.fromString(this._comment || "", StringType.Latin1);
+
+        return ByteVector.concatenate(
+            Id3v1Tag.fileIdentifier,
+            titleBytes, ByteVector.fromSize(Id3v1Tag.titleArtistAlbumBytes - titleBytes.length),
+            artistBytes, ByteVector.fromSize(Id3v1Tag.titleArtistAlbumBytes - artistBytes.length),
+            albumBytes, ByteVector.fromSize(Id3v1Tag.titleArtistAlbumBytes - albumBytes.length),
+            yearBytes, ByteVector.fromSize(Id3v1Tag.yearBytes, yearBytes.length),
+            commentBytes, ByteVector.fromSize(Id3v1Tag.commentBytes - commentBytes.length),
+            0x00,
+            this._track,
+            this._genre
+        );
     }
 
     // #region Tag Overrides
@@ -114,7 +124,11 @@ export default class Id3v1Tag extends Tag {
      * @remarks When stored on disk, only the first 30 bytes of the latin-1 encoded value will
      *     be stored. This may result in lost data.
      */
-    public set title(value: string) { this._title = value ? value.trim() : ""; }
+    public set title(value: string) {
+        this._title = value
+            ? value.trim().substring(0, Id3v1Tag.titleArtistAlbumBytes)
+            : "";
+    }
 
     /** @inheritDoc */
     public get performers(): string[] { return this._artist ? this._artist.split(";") : []; }
@@ -124,7 +138,11 @@ export default class Id3v1Tag extends Tag {
      *     be stored, minus a byte for each additional performer (ie, two performers will only have
      *     29 bytes and three performers will only have 28 bytes). This may result in data loss.
      */
-    public set performers(value: string[]) { this._artist = value ? value.join(";") : ""; }
+    public set performers(value: string[]) {
+        this._artist = value
+            ? value.join(";").substring(0, Id3v1Tag.titleArtistAlbumBytes)
+            : "";
+    }
 
     /** @inheritDoc */
     public get album(): string { return this._album || undefined; }
@@ -133,7 +151,11 @@ export default class Id3v1Tag extends Tag {
      * @remarks When stored on disk, only the first 30 bytes of the latin-1 encoded value will
      *     be stored. This may result in data loss.
      */
-    public set album(value: string) { this._album = value ? value.trim() : ""; }
+    public set album(value: string) {
+        this._album = value
+            ? value.trim().substring(0, Id3v1Tag.titleArtistAlbumBytes)
+            : "";
+    }
 
     /** @inheritDoc */
     public get comment(): string { return this._comment || undefined; }
@@ -167,22 +189,22 @@ export default class Id3v1Tag extends Tag {
     }
     /**
      * @inheritDoc
-     * @remarks Only values betweenInclusive 1 and 9999 will be stored. All other values will result in
-     *     the property being zeroed.
+     * @remarks Only values betweenInclusive 0 and 9999 will be stored.
      */
     public set year(value: number) {
-        this._year = Number.isSafeInteger(value) && value > 0 && value < 10000 ? value.toString(10) : "";
+        Guards.uint(value, "value");
+        this._year = value < 10000 ? value.toString(10) : "";
     }
 
     /** @inheritDoc */
     public get track(): number { return this._track; }
     /**
      * @inheritDoc
-     * @remarks Only values betweenInclusive 1 and 255 will be stored. All other values will result in
-     *     the property being zeroed.
+     * @remarks Only values betweenInclusive 0 and 255 will be stored.
      */
     public set track(value: number) {
-        this._track = Number.isSafeInteger(value) && value > 0 && value < 256 ? value : 0;
+        Guards.uint(value, "value");
+        this._track = value;
     }
 
     /** @inheritDoc */
@@ -201,10 +223,10 @@ export default class Id3v1Tag extends Tag {
     // #region Private Helpers
 
     private parse(data: ByteVector): void {
-        this._title = Id3v1Tag.parseString(data.mid(3, 30));
-        this._artist = Id3v1Tag.parseString(data.mid(33, 30));
-        this._album = Id3v1Tag.parseString(data.mid(63, 30));
-        this._year = Id3v1Tag.parseString(data.mid(93, 4));
+        this._title = Id3v1Tag.parseString(data.subarray(3, Id3v1Tag.titleArtistAlbumBytes));
+        this._artist = Id3v1Tag.parseString(data.subarray(33, Id3v1Tag.titleArtistAlbumBytes));
+        this._album = Id3v1Tag.parseString(data.subarray(63, Id3v1Tag.titleArtistAlbumBytes));
+        this._year = Id3v1Tag.parseString(data.subarray(93, Id3v1Tag.yearBytes));
 
         // Check for ID3v1.1
         // NOTE: ID3v1 does not support "track zero", this is not a bug in TagLib. Since a zeroed
@@ -212,10 +234,10 @@ export default class Id3v1Tag extends Tag {
         //     string, a value of zero must be assumed to be just that.
         if (data.get(125) === 0 && data.get(126) !== 0) {
             // ID3v1.1 detected
-            this._comment = Id3v1Tag.parseString(data.mid(97, 28));
+            this._comment = Id3v1Tag.parseString(data.subarray(97, Id3v1Tag.commentBytes));
             this._track = data.get(126);
         } else {
-            this._comment = Id3v1Tag.parseString(data.mid(97, 30));
+            this._comment = Id3v1Tag.parseString(data.subarray(97, Id3v1Tag.titleArtistAlbumBytes));
             this._track = 0;
         }
 
@@ -225,7 +247,7 @@ export default class Id3v1Tag extends Tag {
     private static parseString(data: ByteVector): string {
         Guards.truthy(data, "data");
 
-        const output = data.toString(undefined, StringType.Latin1).trim();
+        const output = data.toString(StringType.Latin1).trim();
         const i = output.indexOf("\0");
         return i >= 0
             ? output.substring(0, i)

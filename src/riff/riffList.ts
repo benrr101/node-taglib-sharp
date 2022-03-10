@@ -1,6 +1,6 @@
 import ILazy from "../iLazy";
 import IRiffChunk from "./iRiffChunk";
-import {ByteVector} from "../byteVector";
+import {ByteVector, StringType} from "../byteVector";
 import {File, FileAccessMode} from "../file";
 import {Guards} from "../utils";
 
@@ -47,16 +47,17 @@ export default class RiffList implements IRiffChunk, ILazy {
         }
 
         file.seek(position);
-        if (file.readBlock(4).toString() !== RiffList.identifierFourcc) {
+        const listHeader = file.readBlock(12);
+        if (listHeader.subarray(0, 4).toString(StringType.Latin1) !== RiffList.identifierFourcc) {
             throw new Error("Cannot read RIFF list from non-list chunk");
         }
 
         const list = new RiffList();
         list._chunkStart = position;
-        list._originalDataSize = file.readBlock(4).toUint(false);
+        list._originalDataSize = listHeader.subarray(4, 4).toUint(false);
         list._file = file;
         list._isLoaded = false;
-        list._type = file.readBlock(4).toString();
+        list._type = listHeader.subarray(8, 4).toString(StringType.Latin1);
 
         return list;
     }
@@ -174,7 +175,7 @@ export default class RiffList implements IRiffChunk, ILazy {
                 this._file.seek(fileOffset);
                 const headerBlock = this._file.readBlock(8);
                 const id = headerBlock.toString(4);
-                const length = headerBlock.mid(4, 4).toUint(false);
+                const length = headerBlock.subarray(4, 4).toUint(false);
 
                 if (id === RiffList.identifierFourcc) {
                     // The element is a list, create a nested riff list from it
@@ -240,19 +241,14 @@ export default class RiffList implements IRiffChunk, ILazy {
         this.load();
 
         // Render all the values
+        // @TODO: I think we can do this with less concat calls
         const valueData = Array.from(this._values.entries(), ([key, value]) => {
-            const valuesBytes = value.map((v) => {
-                const valueBytes = ByteVector.concatenate(
-                    ByteVector.fromString(key),
-                    ByteVector.fromUint(v.length, false),
-                    v
-                );
-                if (v.length % 2 === 1) {
-                    valueBytes.addByte(0x00);
-                }
-
-                return valueBytes;
-            });
+            const valuesBytes = value.map((v) => ByteVector.concatenate(
+                ByteVector.fromString(key, StringType.UTF8),
+                ByteVector.fromUint(v.length, false),
+                v,
+                (v.length % 2 === 1) ? 0x00 : undefined
+            ));
 
             return ByteVector.concatenate(... valuesBytes);
         });
@@ -268,17 +264,13 @@ export default class RiffList implements IRiffChunk, ILazy {
             ... listData
         );
 
-        const data = ByteVector.concatenate(
-            ByteVector.fromString(RiffList.identifierFourcc),
+        return ByteVector.concatenate(
+            ByteVector.fromString(RiffList.identifierFourcc, StringType.Latin1),
             ByteVector.fromUint(allData.length + 4, false),
-            ByteVector.fromString(this._type),
-            allData
+            ByteVector.fromString(this._type, StringType.Latin1),
+            allData,
+            (allData.length % 2 === 1) ? 0x00 : undefined
         );
-        if (allData.length + 4 % 2 === 1) {
-            data.addByte(0x00);
-        }
-
-        return data;
     }
 
     // #endregion

@@ -67,23 +67,23 @@ export class AviStream {
             throw new CorruptFileError("Stream header does not contain correct number of bytes");
         }
 
-        this._type = streamHeaderDatum.mid(0, 4).toUint(false);
-        this._handler = streamHeaderDatum.mid(4, 4).toUint(false);
-        this._flags = streamHeaderDatum.mid(8, 4).toUint(false);
-        this._priority = streamHeaderDatum.mid(12, 2).toUShort(false);
-        this._language = streamHeaderDatum.mid(14, 2).toUShort(false);
-        this._initialFrames = streamHeaderDatum.mid(16, 4).toUint(false);
-        this._scale = streamHeaderDatum.mid(20, 4).toUint(false);
-        this._rate = streamHeaderDatum.mid(24, 4).toUint(false);
-        this._start = streamHeaderDatum.mid(28, 4).toUint(false);
-        this._length = streamHeaderDatum.mid(32, 4).toUint(false);
-        this._suggestedBufferSize = streamHeaderDatum.mid(36, 4).toUint(false);
-        this._quality = streamHeaderDatum.mid(40, 4).toUint(false);
-        this._sampleSize = streamHeaderDatum.mid(44, 4).toUint(false);
-        this._left = streamHeaderDatum.mid(48, 2).toUShort(false);
-        this._top = streamHeaderDatum.mid(50, 2).toUShort(false);
-        this._right = streamHeaderDatum.mid(52, 2).toUShort(false);
-        this._bottom = streamHeaderDatum.mid(54, 2).toUShort(false);
+        this._type = streamHeaderDatum.subarray(0, 4).toUint(false);
+        this._handler = streamHeaderDatum.subarray(4, 4).toUint(false);
+        this._flags = streamHeaderDatum.subarray(8, 4).toUint(false);
+        this._priority = streamHeaderDatum.subarray(12, 2).toUshort(false);
+        this._language = streamHeaderDatum.subarray(14, 2).toUshort(false);
+        this._initialFrames = streamHeaderDatum.subarray(16, 4).toUint(false);
+        this._scale = streamHeaderDatum.subarray(20, 4).toUint(false);
+        this._rate = streamHeaderDatum.subarray(24, 4).toUint(false);
+        this._start = streamHeaderDatum.subarray(28, 4).toUint(false);
+        this._length = streamHeaderDatum.subarray(32, 4).toUint(false);
+        this._suggestedBufferSize = streamHeaderDatum.subarray(36, 4).toUint(false);
+        this._quality = streamHeaderDatum.subarray(40, 4).toUint(false);
+        this._sampleSize = streamHeaderDatum.subarray(44, 4).toUint(false);
+        this._left = streamHeaderDatum.subarray(48, 2).toUshort(false);
+        this._top = streamHeaderDatum.subarray(50, 2).toUshort(false);
+        this._right = streamHeaderDatum.subarray(52, 2).toUshort(false);
+        this._bottom = streamHeaderDatum.subarray(54, 2).toUshort(false);
 
         // Parse the stream construct
         const streamFormatData = list.getValues(AviStream.formatChunkId);

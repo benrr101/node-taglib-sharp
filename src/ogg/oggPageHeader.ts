@@ -1,4 +1,4 @@
-import {ByteVector} from "../byteVector";
+import {ByteVector, StringType} from "../byteVector";
 import {CorruptFileError, UnsupportedFormatError} from "../errors";
 import {File} from "../file";
 import {Guards, NumberUtils} from "../utils";
@@ -25,7 +25,7 @@ export enum OggPageFlags {
  */
 export class OggPageHeader {
     public static readonly minSize = 27;
-    public static readonly headerBeginning = ByteVector.fromString("OggS", undefined, undefined, true);
+    public static readonly headerBeginning = ByteVector.fromString("OggS", StringType.Latin1).makeReadOnly();
 
     private _absoluteGranularPosition: number;
     private _dataSize: number;
@@ -65,13 +65,13 @@ export class OggPageHeader {
         header._version = data.get(4);
         header._flags = data.get(5);
 
-        const absoluteGranularPosition = data.mid(6, 8).toULong(false);
+        const absoluteGranularPosition = data.subarray(6, 8).toUlong(false);
         if (absoluteGranularPosition > Number.MAX_SAFE_INTEGER) {
             throw new UnsupportedFormatError("Granular position is too large to be handled with this version of node-taglib-sharp");
         }
         header._absoluteGranularPosition = Number(absoluteGranularPosition);
-        header._streamSerialNumber = data.mid(14, 4).toUint(false);
-        header._pageSequenceNumber = data.mid(18, 4).toUint(false);
+        header._streamSerialNumber = data.subarray(14, 4).toUint(false);
+        header._pageSequenceNumber = data.subarray(18, 4).toUint(false);
 
         // Byte 27 is the number of page segments, which is the only variable length portion of the
         // page header. After reading the number of page segments, we'll then read in the
@@ -248,7 +248,7 @@ export class OggPageHeader {
             OggPageHeader.headerBeginning,
             this._version,
             this._flags,
-            ByteVector.fromULong(this._absoluteGranularPosition, false),
+            ByteVector.fromUlong(this._absoluteGranularPosition, false),
             ByteVector.fromUint(this._streamSerialNumber, false),
             ByteVector.fromUint(this._pageSequenceNumber, false),
             ByteVector.fromSize(4), // Checksum to be filled later
