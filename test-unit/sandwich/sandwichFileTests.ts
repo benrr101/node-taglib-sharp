@@ -285,7 +285,7 @@ import {Testers} from "../utilities/testers";
     public save_noTags() {
         // Arrange
         const fileBytes = ByteVector.fromSize(100);
-        const testAbstraction = TestFile.getFileAbstraction(fileBytes);
+        const testAbstraction = TestFile.getFileAbstraction(fileBytes.toByteVector());
         const file = new TestSandwichFile(testAbstraction, ReadStyle.None, this.testMapping, TagTypes.None);
 
         // Act
@@ -323,7 +323,7 @@ import {Testers} from "../utilities/testers";
         // Assert
         const expectedBytes = ByteVector.concatenate(
             (<ApeTag> startTag).render(),
-            fileBytes,
+            ByteVector.fromSize(100),
             (<Id3v2Tag> endTag).render()
         );
         Testers.bvEqual(testAbstraction.allBytes, expectedBytes);
@@ -350,7 +350,7 @@ import {Testers} from "../utilities/testers";
             ByteVector.fromSize(100),
             id3v1Tag.render()
         );
-        const testAbstraction = TestFile.getFileAbstraction(fileBytes);
+        const testAbstraction = TestFile.getFileAbstraction(fileBytes.toByteVector());
         const file = new TestSandwichFile(testAbstraction, ReadStyle.PictureLazy, this.testMapping, TagTypes.None);
 
         // Act

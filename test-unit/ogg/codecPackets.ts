@@ -1,9 +1,9 @@
-import {ByteVector} from "../../src/byteVector";
+import {ByteVector, StringType} from "../../src/byteVector";
 
 export default class CodecPackets {
     public static getTestOpusPacket(): ByteVector {
         return ByteVector.concatenate(
-            ByteVector.fromString("OpusHead"),
+            ByteVector.fromString("OpusHead", StringType.UTF8),
             0x01, 0x08, 0x03, 0x04,
             0x05, 0x06, 0x07, 0x08,
             0x09, 0x0A, 0x01, 0x05, 0x03
@@ -12,7 +12,7 @@ export default class CodecPackets {
 
     public static getTestTheoraPacket(): ByteVector {
         return ByteVector.concatenate(
-            0x80, ByteVector.fromString("theora"),
+            0x80, ByteVector.fromString("theora", StringType.UTF8),
             0x01, 0x02, 0x03, // version
             ByteVector.fromUint(0), // Size in macro blocks
             0xF0, 0x12, 0x34, // Width in pixels
@@ -27,7 +27,7 @@ export default class CodecPackets {
 
     public static getTestVorbisPacket(): ByteVector {
         return ByteVector.concatenate(
-            0x01, ByteVector.fromString("vorbis"),
+            0x01, ByteVector.fromString("vorbis", StringType.UTF8),
             ByteVector.fromUint(1234, false), // Version
             0x05, // Channels
             ByteVector.fromUint(456789, false), // Sample rate

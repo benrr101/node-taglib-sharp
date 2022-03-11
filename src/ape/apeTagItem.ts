@@ -47,7 +47,7 @@ export class ApeTagItem {
         const item = new ApeTagItem();
         item._key = key;
         item._type = ApeTagItemType.Binary;
-        item._data = value.isReadOnly ? value.makeReadOnly() : value;
+        item._data = value;
 
         return item;
     }

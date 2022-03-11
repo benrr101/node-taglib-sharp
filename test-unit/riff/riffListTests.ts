@@ -1,50 +1,47 @@
-import * as Chai from "chai";
 import {suite, test} from "@testdeck/mocha";
+import {assert} from "chai";
 import {Mock} from "typemoq";
 
 import RiffList from "../../src/riff/riffList";
 import TestFile from "../utilities/testFile";
-import {ByteVector} from "../../src/byteVector";
+import {ByteVector, StringType} from "../../src/byteVector";
 import {File} from "../../src/File";
 import {Testers} from "../utilities/testers";
 
-// Setup chai
-const assert = Chai.assert;
-
-const data1 = ByteVector.fromString("foo", undefined, undefined, true);
-const data2 = ByteVector.fromString("barbaz", undefined, undefined, true);
-const data3 = ByteVector.fromString("buxfux", undefined, undefined, true);
-const data4 = ByteVector.fromString("nan", undefined, undefined, false);
-const data5 = ByteVector.fromString("234", undefined, undefined, false);
+const data1 = ByteVector.fromString("foo", StringType.UTF8);
+const data2 = ByteVector.fromString("barbaz", StringType.UTF8);
+const data3 = ByteVector.fromString("buxfux", StringType.UTF8);
+const data4 = ByteVector.fromString("nan", StringType.UTF8);
+const data5 = ByteVector.fromString("234", StringType.UTF8);
 const sampleData = ByteVector.concatenate(
-    ByteVector.fromString("TXT1"),
+    ByteVector.fromString("TXT1", StringType.UTF8),
     ByteVector.fromUint(data1.length, false),
     data1, 0x00,
-    ByteVector.fromString("TXT1"),
+    ByteVector.fromString("TXT1", StringType.UTF8),
     ByteVector.fromUint(data2.length, false),
     data2,
-    ByteVector.fromString("TXT2"),
+    ByteVector.fromString("TXT2", StringType.UTF8),
     ByteVector.fromUint(data3.length, false),
     data3,
-    ByteVector.fromString("TXT3"),
+    ByteVector.fromString("TXT3", StringType.UTF8),
     ByteVector.fromUint(data4.length, false),
     data4, 0x00,
-    ByteVector.fromString("TXT3"),
+    ByteVector.fromString("TXT3", StringType.UTF8),
     ByteVector.fromUint(data5.length, false),
     data5, 0x00
 );
 
 const sampleList = ByteVector.concatenate(
-    ByteVector.fromString(RiffList.identifierFourcc),
+    ByteVector.fromString(RiffList.identifierFourcc, StringType.UTF8),
     ByteVector.fromUint(sampleData.length + 4, false),
-    ByteVector.fromString("fooo"),
+    ByteVector.fromString("fooo", StringType.UTF8),
     sampleData
 );
 
 const sampleNestedList = ByteVector.concatenate(
-    ByteVector.fromString(RiffList.identifierFourcc),
+    ByteVector.fromString(RiffList.identifierFourcc, StringType.UTF8),
     ByteVector.fromUint(sampleList.length + 4, false),
-    ByteVector.fromString("baar"),
+    ByteVector.fromString("baar", StringType.UTF8),
     sampleList
 );
 
@@ -64,7 +61,7 @@ const sampleNestedList = ByteVector.concatenate(
     public fromFile_emptyList() {
         // Arrange
         const data = ByteVector.concatenate(
-            ByteVector.fromString(RiffList.identifierFourcc),
+            ByteVector.fromString(RiffList.identifierFourcc, StringType.UTF8),
             ByteVector.fromUint(0, false)
         );
         const mockFile = TestFile.getFile(data);
@@ -251,9 +248,9 @@ const sampleNestedList = ByteVector.concatenate(
 
         // Assert
         const expected = ByteVector.concatenate(
-            ByteVector.fromString(RiffList.identifierFourcc),
+            ByteVector.fromString(RiffList.identifierFourcc, StringType.UTF8),
             ByteVector.fromUint(4, false),
-            ByteVector.fromString("fooo")
+            ByteVector.fromString("fooo", StringType.UTF8)
         );
         assert.isOk(result);
         Testers.bvEqual(result, expected);
@@ -277,7 +274,7 @@ const sampleNestedList = ByteVector.concatenate(
     public setValues_keyDoesNotExist() {
         // Arrange
         const list = RiffList.fromFile(TestFile.getFile(sampleList), 0);
-        const data = ByteVector.fromString("foobarbaz");
+        const data = ByteVector.fromString("foobarbaz", StringType.UTF8);
         const originalLength = list.valueCount;
 
         // Act
@@ -293,7 +290,7 @@ const sampleNestedList = ByteVector.concatenate(
     public setValues_keyExists() {
         // Arrange
         const list = RiffList.fromFile(TestFile.getFile(sampleList), 0);
-        const data = ByteVector.fromString("foobarbaz");
+        const data = ByteVector.fromString("foobarbaz", StringType.UTF8);
 
         // Act
         list.setValues("TXT1", [data, data]);

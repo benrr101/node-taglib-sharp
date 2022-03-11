@@ -1,6 +1,6 @@
-import * as Chai from "chai";
 import * as TypeMoq from "typemoq";
 import {suite, test} from "@testdeck/mocha";
+import {assert} from "chai";
 
 import CommentsFrame from "../../src/id3v2/frames/commentsFrame";
 import Id3v2Settings from "../../src/id3v2/id3v2Settings";
@@ -24,9 +24,6 @@ import {TagTypes} from "../../src/tag";
 import {Testers} from "../utilities/testers";
 import {TextInformationFrame, UserTextInformationFrame} from "../../src/id3v2/frames/textInformationFrame";
 import {UrlLinkFrame} from "../../src/id3v2/frames/urlLinkFrame";
-
-// Setup Chai
-const assert = Chai.assert;
 
 function getTestTagHeader(version: number, flags: Id3v2TagHeaderFlags, tagSize: number): ByteVector {
     return ByteVector.concatenate(
@@ -81,9 +78,12 @@ function getTestTagHeader(version: number, flags: Id3v2TagHeaderFlags, tagSize: 
     @test
     public fromData_v4Tag() {
         // Arrange
-        const frame1 = PlayCountFrame.fromEmpty().render(4);
-        const frame2 = UniqueFileIdentifierFrame.fromData("foo", ByteVector.fromString("bar")).render(4);
-        const emptyFrame = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.empty()).render(4);
+        const frame1 = PlayCountFrame.fromEmpty()
+            .render(4);
+        const frame2 = UniqueFileIdentifierFrame.fromData("foo", ByteVector.fromString("bar", StringType.UTF8))
+            .render(4);
+        const emptyFrame = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.empty())
+            .render(4);
         const data = ByteVector.concatenate(
             getTestTagHeader(4, Id3v2TagHeaderFlags.None, frame1.length + frame2.length + emptyFrame.length + 5),
             frame1,
@@ -212,9 +212,12 @@ function getTestTagHeader(version: number, flags: Id3v2TagHeaderFlags, tagSize: 
 
     @test
     public fromFileStart_v4Tag() {
-        const frame1 = PlayCountFrame.fromEmpty().render(4);
-        const frame2 = UniqueFileIdentifierFrame.fromData("foo", ByteVector.fromString("bar")).render(4);
-        const emptyFrame = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.empty()).render(4);
+        const frame1 = PlayCountFrame.fromEmpty()
+            .render(4);
+        const frame2 = UniqueFileIdentifierFrame.fromData("foo", ByteVector.fromString("bar", StringType.UTF8))
+            .render(4);
+        const emptyFrame = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.empty())
+            .render(4);
         const data = ByteVector.concatenate(
             0x00, 0x00,
             getTestTagHeader(4, Id3v2TagHeaderFlags.None, frame1.length + frame2.length + emptyFrame.length + 5),
@@ -1190,7 +1193,7 @@ function getTestTagHeader(version: number, flags: Id3v2TagHeaderFlags, tagSize: 
         assert.strictEqual(tag.frames[0].frameClassType, FrameClassType.UniqueFileIdentifierFrame);
         assert.strictEqual(tag.frames[0].frameId, FrameIdentifiers.UFID);
         assert.deepStrictEqual((<UniqueFileIdentifierFrame> tag.frames[0]).owner, "http://musicbrainz.org");
-        const expectedBytes = ByteVector.fromString("abcd-ef12-3456-7890");
+        const expectedBytes = ByteVector.fromString("abcd-ef12-3456-7890", StringType.UTF8);
         const actualBytes = (<UniqueFileIdentifierFrame> tag.frames[0]).identifier;
         Testers.bvEqual(actualBytes, expectedBytes);
 

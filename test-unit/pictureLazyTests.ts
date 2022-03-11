@@ -72,7 +72,7 @@ const assert = Chai.assert;
     @test
     public fromFile_hasImageFilenameNoOffsetReadAll() {
         // Arrange
-        const data = ByteVector.fromString("foobarbaz");
+        const data = ByteVector.fromString("foobarbaz", StringType.Latin1);
         const mockStream = new TestStream(data, false);
 
         const mockFile = TypeMoq.Mock.ofType<IFileAbstraction>();
@@ -97,7 +97,7 @@ const assert = Chai.assert;
     @test
     public fromFile_hasNonImageFilenameNoOffsetReadAll() {
         // Arrange
-        const data = ByteVector.fromString("foobarbaz");
+        const data = ByteVector.fromString("foobarbaz", StringType.Latin1);
         const mockStream = new TestStream(data, false);
 
         const mockFile = TypeMoq.Mock.ofType<IFileAbstraction>();
@@ -124,7 +124,7 @@ const assert = Chai.assert;
         // Arrange
         const data = ByteVector.concatenate(
             0xFF, 0xD8, 0xFF,
-            ByteVector.fromString("foobarbaz")
+            ByteVector.fromString("foobarbaz", StringType.Latin1)
         );
         const mockStream = new TestStream(data, false);
 
@@ -150,7 +150,7 @@ const assert = Chai.assert;
     @test
     public fromFile_noExtensionNotImageNoOffsetReadAll() {
         // Arrange
-        const data = ByteVector.fromString("foobarbaz");
+        const data = ByteVector.fromString("foobarbaz", StringType.Latin1);
         const mockStream = new TestStream(data, false);
 
         const mockFile = TypeMoq.Mock.ofType<IFileAbstraction>();
@@ -175,7 +175,7 @@ const assert = Chai.assert;
     @test
     public fromFile_noFilenameNotImageFileNoOffsetReadAll() {
         // Arrange
-        const data = ByteVector.fromString("foobarbaz");
+        const data = ByteVector.fromString("foobarbaz", StringType.Latin1);
         const mockStream = new TestStream(data, false);
 
         const mockFile = TypeMoq.Mock.ofType<IFileAbstraction>();
@@ -199,7 +199,7 @@ const assert = Chai.assert;
 
     @test
     public fromFile_hasOffsetReadAll() {
-        const data = ByteVector.fromString("foobarbaz");
+        const data = ByteVector.fromString("foobarbaz", StringType.Latin1);
         const allData = ByteVector.concatenate(
             0x00, 0x00,
             data

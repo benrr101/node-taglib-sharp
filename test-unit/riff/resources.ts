@@ -1,19 +1,19 @@
 import AviHeader from "../../src/riff/avi/aviHeader";
+import DivxTag from "../../src/riff/divxTag";
+import RiffChunk from "../../src/riff/riffChunk";
 import RiffList from "../../src/riff/riffList";
 import {AviStream, AviStreamType} from "../../src/riff/avi/aviStream";
-import {ByteVector} from "../../src/byteVector";
-import RiffChunk from "../../src/riff/riffChunk";
-import DivxTag from "../../src/riff/divxTag";
+import {ByteVector, StringType} from "../../src/byteVector";
 
 export default {
     getAudioFormatBlock(type: number): ByteVector {
         return ByteVector.concatenate(
-            ByteVector.fromUShort(type, false), // Format tag
-            ByteVector.fromUShort(3, false), // Number of channels
+            ByteVector.fromUshort(type, false), // Format tag
+            ByteVector.fromUshort(3, false), // Number of channels
             ByteVector.fromUint(1234, false), // Samples per second
             ByteVector.fromUint(2345, false), // Average bytes per second
-            ByteVector.fromUShort(88, false), // Block align
-            ByteVector.fromUShort(16, false) // Bits per sample
+            ByteVector.fromUshort(88, false), // Block align
+            ByteVector.fromUshort(16, false) // Bits per sample
         );
     },
     getAviHeaderBlock(addStreams: boolean): ByteVector {
@@ -70,8 +70,8 @@ export default {
             ByteVector.fromUint(type, false), // type
             ByteVector.fromUint(0x23456789, false), // handler
             ByteVector.fromUint(0x34567890, false), // Flags
-            ByteVector.fromUShort(0x1234, false),   // Priority
-            ByteVector.fromUShort(0x2345, false),   // Language
+            ByteVector.fromUshort(0x1234, false),   // Priority
+            ByteVector.fromUshort(0x2345, false),   // Language
             ByteVector.fromUint(0x45678901, false), // Initial Frames
             ByteVector.fromUint(0x56789012, false), // Scale
             ByteVector.fromUint(0x67890123, false), // Rate
@@ -80,10 +80,10 @@ export default {
             ByteVector.fromUint(0x90123456, false), // Suggested Buffer Size
             ByteVector.fromUint(0x01234567, false), // Quality
             ByteVector.fromUint(0x11234567, false), // Sample size
-            ByteVector.fromUShort(0x3456, false),   // left
-            ByteVector.fromUShort(0x4567, false),   // top
-            ByteVector.fromUShort(0x5678, false),   // right
-            ByteVector.fromUShort(0x6789, false),   // bottom
+            ByteVector.fromUshort(0x3456, false),   // left
+            ByteVector.fromUshort(0x4567, false),   // top
+            ByteVector.fromUshort(0x5678, false),   // right
+            ByteVector.fromUshort(0x6789, false),   // bottom
         );
     },
     getDataChunk() {
@@ -92,11 +92,11 @@ export default {
     },
     getDivxTagData() {
         return ByteVector.concatenate(
-            ByteVector.fromString("foo                             "),
-            ByteVector.fromString("bar;bux                     "),
-            ByteVector.fromString("2021"),
-            ByteVector.fromString("baz                                             "),
-            ByteVector.fromString("22 "),
+            ByteVector.fromString("foo                             ", StringType.Latin1),
+            ByteVector.fromString("bar;bux                     ", StringType.Latin1),
+            ByteVector.fromString("2021", StringType.Latin1),
+            ByteVector.fromString("baz                                             ", StringType.Latin1),
+            ByteVector.fromString("22 ", StringType.Latin1),
             ByteVector.fromSize(6),
             DivxTag.FILE_IDENTIFIER
         );
@@ -115,8 +115,8 @@ export default {
             ByteVector.fromUint(40, false), // Size of the struct
             ByteVector.fromUint(123, false), // Width of image
             ByteVector.fromUint(234, false), // Height of image
-            ByteVector.fromUShort(345, false), // Number of planes
-            ByteVector.fromUShort(456, false), // Average bits per pixel
+            ByteVector.fromUshort(345, false), // Number of planes
+            ByteVector.fromUshort(456, false), // Average bits per pixel
             ByteVector.fromUint(fourcc, false), // FOURCC
             ByteVector.fromUint(567, false), // Size of the image
             ByteVector.fromUint(678, false), // Pixels per meter X

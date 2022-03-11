@@ -3,10 +3,9 @@ import {suite, test} from "@testdeck/mocha";
 
 import Theora from "../../src/ogg/codecs/theora";
 import XiphComment from "../../src/xiph/xiphComment";
-import {ByteVector} from "../../src/byteVector";
+import {ByteVector, StringType} from "../../src/byteVector";
 import {MediaTypes} from "../../src/iCodec";
 import {Testers} from "../utilities/testers";
-import CodecFactory from "../../src/ogg/codecs/codecFactory";
 import CodecPackets from "./codecPackets";
 
 @suite class Ogg_TheoraTests {
@@ -19,7 +18,7 @@ import CodecPackets from "./codecPackets";
     @test
     public constructor_doesNotStartWithSignature() {
         // Arrange
-        const headerPacket = ByteVector.fromString("invalidString");
+        const headerPacket = ByteVector.fromString("invalidString", StringType.UTF8);
 
         // Act / Assert
         assert.throws(() => new Theora(headerPacket));
@@ -29,7 +28,7 @@ import CodecPackets from "./codecPackets";
     public constructor_validPacket() {
         // Arrange
         const headerPacket = ByteVector.concatenate(
-            0x80, ByteVector.fromString("theora"),
+            0x80, ByteVector.fromString("theora", StringType.UTF8),
             0x01, 0x02, 0x03, // version
             ByteVector.fromUint(0), // Size in macro blocks
             0xF0, 0x12, 0x34, // Width in pixels
@@ -73,7 +72,7 @@ import CodecPackets from "./codecPackets";
         const codec = Ogg_TheoraTests.getTestCodec();
         const packet = ByteVector.concatenate(
             0x81, 0x12, 0x23, 0x34, 0x45, 0x56, 0x67,
-            ByteVector.fromString("foobarbaz")
+            ByteVector.fromString("foobarbaz", StringType.UTF8)
         );
 
         // Act
@@ -81,7 +80,7 @@ import CodecPackets from "./codecPackets";
 
         // Assert
         assert.isTrue(result);
-        Testers.bvEqual(codec.commentData, packet.mid(7));
+        Testers.bvEqual(codec.commentData, packet.subarray(7));
     }
 
     @test
@@ -90,11 +89,11 @@ import CodecPackets from "./codecPackets";
         const codec = Ogg_TheoraTests.getTestCodec();
         const commentPacket1 = ByteVector.concatenate(
             0x81, 0x12, 0x23, 0x34, 0x45, 0x56, 0x67,
-            ByteVector.fromString("foobarbaz")
+            ByteVector.fromString("foobarbaz", StringType.UTF8)
         );
         const commentPacket2 = ByteVector.concatenate(
             0x81, 0x12, 0x23, 0x34, 0x45, 0x56, 0x67,
-            ByteVector.fromString("fuxbuxquxx")
+            ByteVector.fromString("fuxbuxquxx", StringType.UTF8)
         );
         codec.readPacket(commentPacket1);
 
@@ -103,7 +102,7 @@ import CodecPackets from "./codecPackets";
 
         // Assert
         assert.isTrue(result);
-        Testers.bvEqual(codec.commentData, commentPacket1.mid(7));
+        Testers.bvEqual(codec.commentData, commentPacket1.subarray(7));
     }
 
     @test
@@ -131,7 +130,7 @@ import CodecPackets from "./codecPackets";
         assert.strictEqual(packets.length, 1);
 
         const expected = ByteVector.concatenate(
-            0x81, ByteVector.fromString("theora"),
+            0x81, ByteVector.fromString("theora", StringType.UTF8),
             comment.render(true)
         );
         Testers.bvEqual(packets[0], expected);
@@ -143,7 +142,7 @@ import CodecPackets from "./codecPackets";
         const codec = Ogg_TheoraTests.getTestCodec();
         const comment = XiphComment.fromEmpty();
         const packets = [
-            ByteVector.fromString("OpusHead")
+            ByteVector.fromString("OpusHead", StringType.UTF8)
         ];
 
         // Act
@@ -153,7 +152,7 @@ import CodecPackets from "./codecPackets";
         assert.strictEqual(packets.length, 2);
 
         const expected = ByteVector.concatenate(
-            0x81, ByteVector.fromString("theora"),
+            0x81, ByteVector.fromString("theora", StringType.UTF8),
             comment.render(true)
         );
         Testers.bvEqual(packets[1], expected);
@@ -176,7 +175,7 @@ import CodecPackets from "./codecPackets";
         assert.strictEqual(packets.length, 3);
 
         const expected = ByteVector.concatenate(
-            0x81, ByteVector.fromString("theora"),
+            0x81, ByteVector.fromString("theora", StringType.UTF8),
             comment.render(true)
         );
         Testers.bvEqual(packets[1], expected);
@@ -189,7 +188,7 @@ import CodecPackets from "./codecPackets";
         const comment = XiphComment.fromEmpty();
         const packets = [
             ByteVector.fromSize(10, 0x0C),
-            ByteVector.concatenate(0x81, ByteVector.fromString("theora")),
+            ByteVector.concatenate(0x81, ByteVector.fromString("theora", StringType.UTF8)),
             ByteVector.fromSize(10, 0x0F)
         ];
 
@@ -200,7 +199,7 @@ import CodecPackets from "./codecPackets";
         assert.strictEqual(packets.length, 3);
 
         const expected = ByteVector.concatenate(
-            0x81, ByteVector.fromString("theora"),
+            0x81, ByteVector.fromString("theora", StringType.UTF8),
             comment.render(true)
         );
         Testers.bvEqual(packets[1], expected);

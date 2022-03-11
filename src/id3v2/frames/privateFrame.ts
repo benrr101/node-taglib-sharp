@@ -124,7 +124,7 @@ export default class PrivateFrame extends Frame {
 
         const l = data.split(ByteVector.getTextDelimiter(StringType.Latin1), 1, 2);
         this._owner = l[0].toString(StringType.Latin1);
-        this._privateData = l[1].toByteVector() || ByteVector.empty();
+        this._privateData = l[1]?.toByteVector() || ByteVector.empty();
     }
 
     /** @inheritDoc */

@@ -1,13 +1,10 @@
-import * as Chai from "chai";
 import {suite, test} from "@testdeck/mocha";
+import {assert} from "chai";
 
 import PropertyTests from "../utilities/propertyTests";
 import {ApeTagFooter, ApeTagFooterFlags} from "../../src/ape/apeTagFooter";
 import {ByteVector, StringType} from "../../src/byteVector";
 import {Testers} from "../utilities/testers";
-
-// Setup chai
-const assert = Chai.assert;
 
 const _sampleData = ByteVector.concatenate(
     ByteVector.fromString("APETAGEX", StringType.Latin1), // File Identifier

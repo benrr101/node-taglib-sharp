@@ -366,7 +366,7 @@ export class TextInformationFrame extends Frame {
             // TCON on ID3v2.4 is encoded as a separate field for each genre. Fields can either be
             // the old numeric ID3v1 genres (no parenthesis) or free text. RX/CR can also be used.
             // This way is **much** better...
-            const genres = data.toStrings(this._encoding, 1);
+            const genres = data.subarray(1).toStrings(this._encoding);
             const textGenres = genres.map((g) => {
                 switch (g) {
                     case TextInformationFrame.COVER_ABBREV:
@@ -380,7 +380,7 @@ export class TextInformationFrame extends Frame {
             });
             fieldList.push(...textGenres);
         } else if (this._rawVersion > 3 || this.frameId === FrameIdentifiers.TXXX) {
-            fieldList.push(...data.toStrings(this._encoding, 1));
+            fieldList.push(...data.subarray(1).toStrings(this._encoding));
         } else if (data.length > 1 && !data.containsAt(delim, 1)) {
             let value = data.subarray(1).toString(this._encoding);
 

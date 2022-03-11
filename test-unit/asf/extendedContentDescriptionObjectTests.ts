@@ -1,5 +1,5 @@
-import * as Chai from "chai";
 import {suite, test} from "@testdeck/mocha";
+import {assert} from "chai";
 
 import ObjectTests from "./objectTests";
 import UuidWrapper from "../../src/uuidWrapper";
@@ -13,9 +13,6 @@ import {
     ContentDescriptor,
     ExtendedContentDescriptionObject
 } from "../../src/asf/objects/extendedContentDescriptionObject";
-
-// Setup Chai
-const assert = Chai.assert;
 
 @suite class Asf_ContentDescriptorTests {
     // NOTE: We'll use the constructor tests to make sure the render method does what it's supposed to
@@ -31,11 +28,11 @@ const assert = Chai.assert;
         assert.strictEqual(object.getUshort(), 1234);
 
         const expectedBytes = ByteVector.concatenate(
-            ByteVector.fromUShort(8, false),
+            ByteVector.fromUshort(8, false),
             ByteVector.fromString("foo\0", StringType.UTF16LE),
-            ByteVector.fromUShort(DataType.Word, false),
-            ByteVector.fromUShort(2, false),
-            ByteVector.fromUShort(1234, false)
+            ByteVector.fromUshort(DataType.Word, false),
+            ByteVector.fromUshort(2, false),
+            ByteVector.fromUshort(1234, false)
         );
         Testers.bvEqual(object.render(), expectedBytes);
     }
@@ -44,11 +41,11 @@ const assert = Chai.assert;
     public fromFile_word() {
         // Arrange
         const bytes = ByteVector.concatenate(
-            ByteVector.fromUShort(8, false),
+            ByteVector.fromUshort(8, false),
             ByteVector.fromString("foo\0", StringType.UTF16LE),
-            ByteVector.fromUShort(DataType.Word, false),
-            ByteVector.fromUShort(2, false),
-            ByteVector.fromUShort(1234, false)
+            ByteVector.fromUshort(DataType.Word, false),
+            ByteVector.fromUshort(2, false),
+            ByteVector.fromUshort(1234, false)
         );
         const file = TestFile.getFile(bytes);
 
@@ -72,10 +69,10 @@ const assert = Chai.assert;
         assert.strictEqual(object.getBool(), true);
 
         const expectedBytes = ByteVector.concatenate(
-            ByteVector.fromUShort(8, false),
+            ByteVector.fromUshort(8, false),
             ByteVector.fromString("foo\0", StringType.UTF16LE),
-            ByteVector.fromUShort(DataType.Bool, false),
-            ByteVector.fromUShort(4, false),
+            ByteVector.fromUshort(DataType.Bool, false),
+            ByteVector.fromUshort(4, false),
             ByteVector.fromUint(1, false)
         );
         Testers.bvEqual(object.render(), expectedBytes);
@@ -85,10 +82,10 @@ const assert = Chai.assert;
     public fromFile_bool() {
         // Arrange
         const bytes = ByteVector.concatenate(
-            ByteVector.fromUShort(8, false),
+            ByteVector.fromUshort(8, false),
             ByteVector.fromString("foo\0", StringType.UTF16LE),
-            ByteVector.fromUShort(DataType.Bool, false),
-            ByteVector.fromUShort(4, false),
+            ByteVector.fromUshort(DataType.Bool, false),
+            ByteVector.fromUshort(4, false),
             ByteVector.fromUint(1, false)
         );
         const file = TestFile.getFile(bytes);
@@ -113,10 +110,10 @@ const assert = Chai.assert;
         assert.strictEqual(object.getUint(), 1234);
 
         const expectedBytes = ByteVector.concatenate(
-            ByteVector.fromUShort(8, false),
+            ByteVector.fromUshort(8, false),
             ByteVector.fromString("foo\0", StringType.UTF16LE),
-            ByteVector.fromUShort(DataType.DWord, false),
-            ByteVector.fromUShort(4, false),
+            ByteVector.fromUshort(DataType.DWord, false),
+            ByteVector.fromUshort(4, false),
             ByteVector.fromUint(1234, false)
         );
         Testers.bvEqual(object.render(), expectedBytes);
@@ -126,10 +123,10 @@ const assert = Chai.assert;
     public fromFile_dword() {
         // Arrange
         const bytes = ByteVector.concatenate(
-            ByteVector.fromUShort(8, false),
+            ByteVector.fromUshort(8, false),
             ByteVector.fromString("foo\0", StringType.UTF16LE),
-            ByteVector.fromUShort(DataType.DWord, false),
-            ByteVector.fromUShort(4, false),
+            ByteVector.fromUshort(DataType.DWord, false),
+            ByteVector.fromUshort(4, false),
             ByteVector.fromUint(1234, false)
         );
         const file = TestFile.getFile(bytes);
@@ -154,11 +151,11 @@ const assert = Chai.assert;
         assert.strictEqual(object.getUlong(), BigInt(1234));
 
         const expectedBytes = ByteVector.concatenate(
-            ByteVector.fromUShort(8, false),
+            ByteVector.fromUshort(8, false),
             ByteVector.fromString("foo\0", StringType.UTF16LE),
-            ByteVector.fromUShort(DataType.QWord, false),
-            ByteVector.fromUShort(8, false),
-            ByteVector.fromULong(1234, false)
+            ByteVector.fromUshort(DataType.QWord, false),
+            ByteVector.fromUshort(8, false),
+            ByteVector.fromUlong(1234, false)
         );
         Testers.bvEqual(object.render(), expectedBytes);
     }
@@ -167,11 +164,11 @@ const assert = Chai.assert;
     public fromFile_qword() {
         // Arrange
         const bytes = ByteVector.concatenate(
-            ByteVector.fromUShort(8, false),
+            ByteVector.fromUshort(8, false),
             ByteVector.fromString("foo\0", StringType.UTF16LE),
-            ByteVector.fromUShort(DataType.QWord, false),
-            ByteVector.fromUShort(8, false),
-            ByteVector.fromULong(1234, false)
+            ByteVector.fromUshort(DataType.QWord, false),
+            ByteVector.fromUshort(8, false),
+            ByteVector.fromUlong(1234, false)
         );
         const file = TestFile.getFile(bytes);
 
@@ -195,10 +192,10 @@ const assert = Chai.assert;
         assert.strictEqual(object.getString(), "foobarbaz");
 
         const expectedBytes = ByteVector.concatenate(
-            ByteVector.fromUShort(8, false),
+            ByteVector.fromUshort(8, false),
             ByteVector.fromString("foo\0", StringType.UTF16LE),
-            ByteVector.fromUShort(DataType.Unicode, false),
-            ByteVector.fromUShort(20, false),
+            ByteVector.fromUshort(DataType.Unicode, false),
+            ByteVector.fromUshort(20, false),
             ByteVector.fromString("foobarbaz\0", StringType.UTF16LE)
         );
         Testers.bvEqual(object.render(), expectedBytes);
@@ -208,10 +205,10 @@ const assert = Chai.assert;
     public fromFile_unicode() {
         // Arrange
         const bytes = ByteVector.concatenate(
-            ByteVector.fromUShort(8, false),
+            ByteVector.fromUshort(8, false),
             ByteVector.fromString("foo\0", StringType.UTF16LE),
-            ByteVector.fromUShort(DataType.Unicode, false),
-            ByteVector.fromUShort(20, false),
+            ByteVector.fromUshort(DataType.Unicode, false),
+            ByteVector.fromUshort(20, false),
             ByteVector.fromString("foobarbaz\0", StringType.UTF16LE)
         );
         const file = TestFile.getFile(bytes);
@@ -228,7 +225,7 @@ const assert = Chai.assert;
     @test
     public constructor_bytes() {
         // Arrange
-        const bytes = ByteVector.fromString("abcdef");
+        const bytes = ByteVector.fromString("abcdef", StringType.UTF8);
 
         // Act
         const object = new ContentDescriptor("foo", DataType.Bytes, bytes);
@@ -239,10 +236,10 @@ const assert = Chai.assert;
         Testers.bvEqual(object.getBytes(), bytes);
 
         const expectedBytes = ByteVector.concatenate(
-            ByteVector.fromUShort(8, false),
+            ByteVector.fromUshort(8, false),
             ByteVector.fromString("foo\0", StringType.UTF16LE),
-            ByteVector.fromUShort(DataType.Bytes, false),
-            ByteVector.fromUShort(6, false),
+            ByteVector.fromUshort(DataType.Bytes, false),
+            ByteVector.fromUshort(6, false),
             bytes
         );
         Testers.bvEqual(object.render(), expectedBytes);
@@ -251,14 +248,14 @@ const assert = Chai.assert;
     @test
     public fromFile_bytes() {
         // Arrange
-        const bytes = ByteVector.fromString("abcdef");
+        const bytes = ByteVector.fromString("abcdef", StringType.UTF8);
 
         // Arrange
         const data = ByteVector.concatenate(
-            ByteVector.fromUShort(8, false),
+            ByteVector.fromUshort(8, false),
             ByteVector.fromString("foo\0", StringType.UTF16LE),
-            ByteVector.fromUShort(DataType.Bytes, false),
-            ByteVector.fromUShort(6, false),
+            ByteVector.fromUshort(DataType.Bytes, false),
+            ByteVector.fromUshort(6, false),
             bytes
         );
         const file = TestFile.getFile(data);
@@ -286,10 +283,10 @@ const assert = Chai.assert;
         assert.isTrue(object.getGuid().equals(guid));
 
         const expectedBytes = ByteVector.concatenate(
-            ByteVector.fromUShort(8, false),
+            ByteVector.fromUshort(8, false),
             ByteVector.fromString("foo\0", StringType.UTF16LE),
-            ByteVector.fromUShort(DataType.Guid, false),
-            ByteVector.fromUShort(16, false),
+            ByteVector.fromUshort(DataType.Guid, false),
+            ByteVector.fromUshort(16, false),
             guid.toBytes()
         );
         Testers.bvEqual(object.render(), expectedBytes);
@@ -302,10 +299,10 @@ const assert = Chai.assert;
 
         // Arrange
         const data = ByteVector.concatenate(
-            ByteVector.fromUShort(8, false),
+            ByteVector.fromUshort(8, false),
             ByteVector.fromString("foo\0", StringType.UTF16LE),
-            ByteVector.fromUShort(DataType.Guid, false),
-            ByteVector.fromUShort(16, false),
+            ByteVector.fromUshort(DataType.Guid, false),
+            ByteVector.fromUshort(16, false),
             guid.toBytes()
         );
         const file = TestFile.getFile(data);
@@ -351,8 +348,8 @@ const assert = Chai.assert;
         const bytes = ByteVector.concatenate(
             ByteVector.fromSize(10), // Offset
             Guids.AsfExtendedContentDescriptionObject.toBytes(),
-            ByteVector.fromULong(16 + 8 + 2 + record1Bytes.length + record2Bytes.length, false),
-            ByteVector.fromUShort(2, false),
+            ByteVector.fromUlong(16 + 8 + 2 + record1Bytes.length + record2Bytes.length, false),
+            ByteVector.fromUshort(2, false),
             record1Bytes,
             record2Bytes
         );
@@ -540,8 +537,8 @@ const assert = Chai.assert;
         const bytes = ByteVector.concatenate(
             ByteVector.fromSize(10), // Offset
             Guids.AsfExtendedContentDescriptionObject.toBytes(),
-            ByteVector.fromULong(16 + 8 + 2 + record1Bytes.length + record2Bytes.length, false),
-            ByteVector.fromUShort(2, false),
+            ByteVector.fromUlong(16 + 8 + 2 + record1Bytes.length + record2Bytes.length, false),
+            ByteVector.fromUshort(2, false),
             record1Bytes,
             record2Bytes
         );
@@ -552,7 +549,7 @@ const assert = Chai.assert;
         const output = object.render();
 
         // Assert
-        Testers.bvEqual(output, bytes.mid(10));
+        Testers.bvEqual(output, bytes.subarray(10));
     }
 
     @test

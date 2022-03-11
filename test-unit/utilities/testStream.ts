@@ -3,11 +3,11 @@ import {IStream, SeekOrigin} from "../../src/stream";
 
 export default class TestStream implements IStream {
     private readonly _isWritable: boolean;
-    private _data: ByteVector;
+    private readonly _data: ByteVector;
     private _position: number;
 
-    public constructor(bytesToReturn: ByteVector, isWritable: boolean, cloneData: boolean = true) {
-        this._data = cloneData ? ByteVector.fromByteVector(bytesToReturn) : bytesToReturn;
+    public constructor(bytesToReturn: ByteVector, isWritable: boolean) {
+        this._data = bytesToReturn;
         this._position = 0;
         this._isWritable = isWritable;
     }
@@ -57,21 +57,13 @@ export default class TestStream implements IStream {
     }
 
     public setLength(length: number): void {
-        if (this.length < length) {
-            // Extend
-            this._data.addByteVector(ByteVector.fromSize(length - this.length));
-        } else if (this.length > length) {
-            // Shrink
-            const bytesToRemove = this.length - length;
-            const startIndex = this.length - bytesToRemove;
-            this._data.removeRange(startIndex, bytesToRemove);
-        }
+        this._data.resize(length);
         this._position = Math.max(this.length, this._position);
     }
 
     public write(buffer: ByteVector | Uint8Array, bufferOffset: number, length: number): number {
-        if (buffer instanceof ByteVector) {
-            buffer = buffer.data;
+        if (buffer instanceof Uint8Array) {
+            buffer = ByteVector.fromByteArray(buffer);
         }
 
         if (!this._isWritable) {
@@ -80,13 +72,11 @@ export default class TestStream implements IStream {
 
         const bufferStart = bufferOffset;
         const bufferEnd = bufferOffset + length;
-        const bytesToWrite = ByteVector.fromByteArray(Buffer.from(buffer.slice(bufferStart, bufferEnd)));
-        if (this._position < this._data.length) {
-            this._data.removeRange(this._position, bytesToWrite.length);
-        }
-        this._data.insertByteVector(this._position, bytesToWrite);
+        const bytesToWrite = buffer.subarray(bufferStart, bufferEnd);
+        this._data.splice(this._position, bytesToWrite.length, bytesToWrite);
+        this._position = bufferOffset + bytesToWrite.length;
 
-        return length;
+        return bytesToWrite.length;
     }
 
 }

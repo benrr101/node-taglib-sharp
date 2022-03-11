@@ -1,13 +1,10 @@
-import * as Chai from "chai";
 import {suite, test} from "@testdeck/mocha";
+import {assert} from "chai";
 
 import {ApeCompressionLevel, ApeStreamHeader} from "../../src/ape/apeStreamHeader";
-import {ByteVector} from "../../src/byteVector";
+import {ByteVector, StringType} from "../../src/byteVector";
 import {MediaTypes} from "../../src/iCodec";
 import {Testers} from "../utilities/testers";
-
-// Setup chai
-const assert = Chai.assert;
 
 @suite class Ape_StreamHeaderTests {
     @test
@@ -24,7 +21,7 @@ const assert = Chai.assert;
     public constructor_wrongIdentifier() {
         // Arrange
         const data = ByteVector.concatenate(
-            ByteVector.fromString("ID3"),
+            ByteVector.fromString("ID3", StringType.Latin1),
             ByteVector.fromSize(73)
         );
 
@@ -36,7 +33,7 @@ const assert = Chai.assert;
     public constructor_tooShort() {
         // Arrange
         const data = ByteVector.concatenate(
-            ByteVector.fromString("MAC "),
+            ByteVector.fromString("MAC ", StringType.Latin1),
             ByteVector.fromSize(10)
         );
 
@@ -48,16 +45,16 @@ const assert = Chai.assert;
     public constructor_validData() {
         // Arrange
         const data = ByteVector.concatenate(
-            ByteVector.fromString("MAC "),
-            ByteVector.fromUShort(9123, false), // Version
+            ByteVector.fromString("MAC ", StringType.Latin1),
+            ByteVector.fromUshort(9123, false), // Version
             ByteVector.fromSize(46),
-            ByteVector.fromUShort(ApeCompressionLevel.Insane, false), // Compression level (duh)
+            ByteVector.fromUshort(ApeCompressionLevel.Insane, false), // Compression level (duh)
             ByteVector.fromSize(2),
             ByteVector.fromUint(234, false), // Blocks per frame
             ByteVector.fromUint(345, false), // Final frame blocks
             ByteVector.fromUint(456, false), // Total frames
-            ByteVector.fromUShort(567, false), // Bits per sample
-            ByteVector.fromUShort(3, false), // Channels
+            ByteVector.fromUshort(567, false), // Bits per sample
+            ByteVector.fromUshort(3, false), // Channels
             ByteVector.fromUint(678, false), // Sample rate
         );
 
@@ -80,16 +77,16 @@ const assert = Chai.assert;
     public constructor_zeroDuration() {
         // Arrange
         const data = ByteVector.concatenate(
-            ByteVector.fromString("MAC "),
-            ByteVector.fromUShort(9123, false), // Version
+            ByteVector.fromString("MAC ", StringType.Latin1),
+            ByteVector.fromUshort(9123, false), // Version
             ByteVector.fromSize(46),
-            ByteVector.fromUShort(ApeCompressionLevel.Insane, false), // Compression level (duh)
+            ByteVector.fromUshort(ApeCompressionLevel.Insane, false), // Compression level (duh)
             ByteVector.fromSize(2),
             ByteVector.fromUint(0, false), // Blocks per frame
             ByteVector.fromUint(0, false), // Final frame blocks
             ByteVector.fromUint(1, false), // Total frames
-            ByteVector.fromUShort(567, false), // Bits per sample
-            ByteVector.fromUShort(3, false), // Channels
+            ByteVector.fromUshort(567, false), // Bits per sample
+            ByteVector.fromUshort(3, false), // Channels
             ByteVector.fromUint(678, false), // Sample rate
         );
 

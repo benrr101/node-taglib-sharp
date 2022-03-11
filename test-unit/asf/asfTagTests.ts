@@ -1,5 +1,5 @@
-import * as Chai from "chai";
 import {suite, test} from "@testdeck/mocha";
+import {assert} from "chai";
 import {Mock} from "typemoq";
 
 import AsfTag from "../../src/asf/AsfTag";
@@ -21,14 +21,11 @@ import {MetadataDescriptor, MetadataLibraryObject} from "../../src/asf/objects/m
 import {TagTypes} from "../../src/tag";
 import {TagTesters, Testers} from "../utilities/testers";
 
-// Setup chai
-const assert = Chai.assert;
-
 const getHeaderObject: (children: BaseObject[]) => HeaderObject = (children: BaseObject[]) => {
     const childrenBytes = ByteVector.concatenate(... children.map((o) => o.render()));
     const headerBytes = ByteVector.concatenate(
         Guids.AsfHeaderObject.toBytes(), // Object ID
-        ByteVector.fromULong(30 + childrenBytes.length, false), // Object size
+        ByteVector.fromUlong(30 + childrenBytes.length, false), // Object size
         ByteVector.fromUint(children.length, false), // Child objects
         0x01, 0x02, // Reserved bytes
         childrenBytes
@@ -41,9 +38,9 @@ const getHeaderExtensionObject: (children: BaseObject[]) => HeaderExtensionObjec
     const childrenBytes = ByteVector.concatenate(... children.map((o) => o.render()));
     const headerExtBytes = ByteVector.concatenate(
         Guids.AsfHeaderExtensionObject.toBytes(), // Object ID
-        ByteVector.fromULong(46 + childrenBytes.length, false), // Object size
+        ByteVector.fromUlong(46 + childrenBytes.length, false), // Object size
         Guids.AsfReserved1.toBytes(), // Reserved field 1
-        ByteVector.fromUShort(6, false), // Reserved field 2
+        ByteVector.fromUshort(6, false), // Reserved field 2
         ByteVector.fromUint(childrenBytes.length, false), // Header extension data length
         childrenBytes
     );

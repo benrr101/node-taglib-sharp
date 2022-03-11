@@ -1,13 +1,10 @@
-import * as Chai from "chai";
 import {suite, test} from "@testdeck/mocha";
+import {assert} from "chai";
 
 import UuidWrapper from "../../src/uuidWrapper";
-import {ByteVector} from "../../src/byteVector";
+import {ByteVector, StringType} from "../../src/byteVector";
 import {DataType, DescriptorBase, DescriptorValue} from "../../src/asf/objects/descriptorBase";
 import {Testers} from "../utilities/testers";
-
-// Setup Chai
-const assert = Chai.assert;
 
 class TestDescriptor extends DescriptorBase {
     public constructor(name: string, type: DataType, value: DescriptorValue) {
@@ -181,7 +178,7 @@ class TestDescriptor extends DescriptorBase {
     @test
     public bytes_valid() {
         // Arrange
-        const bytes = ByteVector.fromString("fuxbuxquxx");
+        const bytes = ByteVector.fromString("fuxbuxquxx", StringType.UTF8);
 
         // Act
         const d = new TestDescriptor("foo", DataType.Bytes, bytes);

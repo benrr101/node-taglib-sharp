@@ -90,19 +90,13 @@ export default class Id3v1Tag extends Tag {
      * Renders the current instance as a raw ID3v1 tag.
      */
     public render(): ByteVector {
-        const titleBytes = ByteVector.fromString(this._title || "", StringType.Latin1);
-        const artistBytes = ByteVector.fromString(this._artist || "", StringType.Latin1);
-        const albumBytes = ByteVector.fromString(this._album || "", StringType.Latin1);
-        const yearBytes = ByteVector.fromString(this._year || "", StringType.Latin1);
-        const commentBytes = ByteVector.fromString(this._comment || "", StringType.Latin1);
-
         return ByteVector.concatenate(
             Id3v1Tag.fileIdentifier,
-            titleBytes, ByteVector.fromSize(Id3v1Tag.titleArtistAlbumBytes - titleBytes.length),
-            artistBytes, ByteVector.fromSize(Id3v1Tag.titleArtistAlbumBytes - artistBytes.length),
-            albumBytes, ByteVector.fromSize(Id3v1Tag.titleArtistAlbumBytes - albumBytes.length),
-            yearBytes, ByteVector.fromSize(Id3v1Tag.yearBytes, yearBytes.length),
-            commentBytes, ByteVector.fromSize(Id3v1Tag.commentBytes - commentBytes.length),
+            ... Id3v1Tag.renderField(this._title, Id3v1Tag.titleArtistAlbumBytes),
+            ... Id3v1Tag.renderField(this._artist, Id3v1Tag.titleArtistAlbumBytes),
+            ... Id3v1Tag.renderField(this._album, Id3v1Tag.titleArtistAlbumBytes),
+            ... Id3v1Tag.renderField(this._year, Id3v1Tag.yearBytes),
+            ... Id3v1Tag.renderField(this._comment, Id3v1Tag.commentBytes),
             0x00,
             this._track,
             this._genre
@@ -124,11 +118,7 @@ export default class Id3v1Tag extends Tag {
      * @remarks When stored on disk, only the first 30 bytes of the latin-1 encoded value will
      *     be stored. This may result in lost data.
      */
-    public set title(value: string) {
-        this._title = value
-            ? value.trim().substring(0, Id3v1Tag.titleArtistAlbumBytes)
-            : "";
-    }
+    public set title(value: string) { this._title = value ? value.trim() : ""; }
 
     /** @inheritDoc */
     public get performers(): string[] { return this._artist ? this._artist.split(";") : []; }
@@ -138,11 +128,7 @@ export default class Id3v1Tag extends Tag {
      *     be stored, minus a byte for each additional performer (ie, two performers will only have
      *     29 bytes and three performers will only have 28 bytes). This may result in data loss.
      */
-    public set performers(value: string[]) {
-        this._artist = value
-            ? value.join(";").substring(0, Id3v1Tag.titleArtistAlbumBytes)
-            : "";
-    }
+    public set performers(value: string[]) { this._artist = value ? value.join(";") : ""; }
 
     /** @inheritDoc */
     public get album(): string { return this._album || undefined; }
@@ -151,11 +137,7 @@ export default class Id3v1Tag extends Tag {
      * @remarks When stored on disk, only the first 30 bytes of the latin-1 encoded value will
      *     be stored. This may result in data loss.
      */
-    public set album(value: string) {
-        this._album = value
-            ? value.trim().substring(0, Id3v1Tag.titleArtistAlbumBytes)
-            : "";
-    }
+    public set album(value: string) { this._album = value ? value.trim() : ""; }
 
     /** @inheritDoc */
     public get comment(): string { return this._comment || undefined; }
@@ -189,7 +171,8 @@ export default class Id3v1Tag extends Tag {
     }
     /**
      * @inheritDoc
-     * @remarks Only values betweenInclusive 0 and 9999 will be stored.
+     * @remarks Only values betweenInclusive 1 and 9999 will be stored. All other values will result in
+     *     the property being zeroed.
      */
     public set year(value: number) {
         Guards.uint(value, "value");
@@ -200,11 +183,12 @@ export default class Id3v1Tag extends Tag {
     public get track(): number { return this._track; }
     /**
      * @inheritDoc
-     * @remarks Only values betweenInclusive 0 and 255 will be stored.
+     * @remarks Only values betweenInclusive 1 and 255 will be stored. All other values will result in
+     *     the property being zeroed.
      */
     public set track(value: number) {
         Guards.uint(value, "value");
-        this._track = value;
+        this._track = value < 256 ? value : 0;
     }
 
     /** @inheritDoc */
@@ -252,6 +236,15 @@ export default class Id3v1Tag extends Tag {
         return i >= 0
             ? output.substring(0, i)
             : output;
+    }
+
+    private static renderField(value: string, maxLength: number): ByteVector[] {
+        const valueToWrite = value?.substr(0, maxLength) || "";
+        const remainingBytes = maxLength - valueToWrite.length;
+        return [
+            ByteVector.fromString(valueToWrite, StringType.Latin1),
+            remainingBytes > 0 ? ByteVector.fromSize(remainingBytes) : undefined
+        ];
     }
 
     // #endregion

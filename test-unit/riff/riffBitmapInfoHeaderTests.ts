@@ -1,14 +1,11 @@
-import * as Chai from "chai";
 import {suite, test} from "@testdeck/mocha";
+import {assert} from "chai";
 
 import RiffBitmapInfoHeader from "../../src/riff/riffBitmapInfoHeader";
 import {default as Resources} from "./resources";
 import {ByteVector} from "../../src/byteVector";
 import {MediaTypes} from "../../src/iCodec";
 import {Testers} from "../utilities/testers";
-
-// Setup chai
-const assert = Chai.assert;
 
 @suite class Riff_BitmapInfoHeaderTests {
     @test

@@ -1,7 +1,4 @@
-import * as Chai from "chai";
-
-// Setup Chai
-const assert = Chai.assert;
+import {assert} from "chai";
 
 export default class PropertyTests {
     public static propertyRoundTrip<T>(set: (v: T) => void, get: () => T, val: T) {

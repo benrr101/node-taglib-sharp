@@ -8,7 +8,7 @@ import XiphComment from "../../src/xiph/xiphComment";
 import XiphPicture from "../../src/xiph/xiphPicture";
 import XiphSettings from "../../src/xiph/xiphSettings";
 import XiphTestResources from "./resources";
-import {ByteVector} from "../../src/byteVector";
+import {ByteVector, StringType} from "../../src/byteVector";
 import {IPicture, PictureType} from "../../src/iPicture";
 import {TagTypes} from "../../src/tag";
 import {TagTesters, Testers} from "../utilities/testers";
@@ -25,7 +25,7 @@ import {TagTesters, Testers} from "../utilities/testers";
         // Arrange
         const data = ByteVector.concatenate(
             ByteVector.fromUint(9, false),
-            ByteVector.fromString("foobarbaz"),
+            ByteVector.fromString("foobarbaz", StringType.UTF8),
             ByteVector.fromUint(0, false)
         );
 
@@ -47,16 +47,16 @@ import {TagTesters, Testers} from "../utilities/testers";
         // Arrange
         const data = ByteVector.concatenate(
             ByteVector.fromUint(3, false),
-            ByteVector.fromString("foo"),
+            ByteVector.fromString("foo", StringType.UTF8),
             ByteVector.fromUint(4, false),
             ByteVector.fromUint(9, false),
-            ByteVector.fromString("TITLE=bar"),
+            ByteVector.fromString("TITLE=bar", StringType.UTF8),
             ByteVector.fromUint(7, false),
-            ByteVector.fromString("FUX=bux"),
+            ByteVector.fromString("FUX=bux", StringType.UTF8),
             ByteVector.fromUint(7, false),
-            ByteVector.fromString("FUX=qux"),
+            ByteVector.fromString("FUX=qux", StringType.UTF8),
             ByteVector.fromUint(15, false),
-            ByteVector.fromString("Malformed_field")
+            ByteVector.fromString("Malformed_field", StringType.UTF8)
         );
 
         // Act
@@ -77,19 +77,19 @@ import {TagTesters, Testers} from "../utilities/testers";
     @test
     public fromData_hasPictures_eagerLoading() {
         // Arrange
-        const oldPictureData = ByteVector.fromString("fuxbuxqux");
-        const oldPictureItem = `COVERART=${Buffer.from(oldPictureData.data).toString("base64")}`;
+        const oldPictureData = ByteVector.fromString("fuxbuxqux", StringType.UTF8);
+        const oldPictureItem = `COVERART=${oldPictureData.toBase64String()}`;
         const newPictureItem = `METADATA_BLOCK_PICTURE=${XiphTestResources.pictureEncodedBytes}`;
         const data = ByteVector.concatenate(
             ByteVector.fromUint(3, false),
-            ByteVector.fromString("foo"),
+            ByteVector.fromString("foo", StringType.UTF8),
             ByteVector.fromUint(3, false),
             ByteVector.fromUint(9, false),
-            ByteVector.fromString("TITLE=bar"),
+            ByteVector.fromString("TITLE=bar", StringType.UTF8),
             ByteVector.fromUint(oldPictureItem.length, false),
-            ByteVector.fromString(oldPictureItem),
+            ByteVector.fromString(oldPictureItem, StringType.UTF8),
             ByteVector.fromUint(newPictureItem.length, false),
-            ByteVector.fromString(newPictureItem)
+            ByteVector.fromString(newPictureItem, StringType.UTF8)
         );
 
         // Act
@@ -119,19 +119,19 @@ import {TagTesters, Testers} from "../utilities/testers";
     @test
     public fromData_hasPictures_lazyLoading() {
         // Arrange
-        const oldPictureData = ByteVector.fromString("fuxbuxqux");
-        const oldPictureItem = `COVERART=${Buffer.from(oldPictureData.data).toString("base64")}`;
+        const oldPictureData = ByteVector.fromString("fuxbuxqux", StringType.UTF8);
+        const oldPictureItem = `COVERART=${oldPictureData.toBase64String()}`;
         const newPictureItem = `METADATA_BLOCK_PICTURE=${XiphTestResources.pictureEncodedBytes}`;
         const data = ByteVector.concatenate(
             ByteVector.fromUint(3, false),
-            ByteVector.fromString("foo"),
+            ByteVector.fromString("foo", StringType.UTF8),
             ByteVector.fromUint(3, false),
             ByteVector.fromUint(9, false),
-            ByteVector.fromString("TITLE=bar"),
+            ByteVector.fromString("TITLE=bar", StringType.UTF8),
             ByteVector.fromUint(oldPictureItem.length, false),
-            ByteVector.fromString(oldPictureItem),
+            ByteVector.fromString(oldPictureItem, StringType.UTF8),
             ByteVector.fromUint(newPictureItem.length, false),
-            ByteVector.fromString(newPictureItem)
+            ByteVector.fromString(newPictureItem, StringType.UTF8)
         );
 
         // Act
@@ -890,7 +890,8 @@ import {TagTesters, Testers} from "../utilities/testers";
     private static readonly vendorId = "foo";
     private static readonly title1 = "bar";
     private static readonly title2 = "baz";
-    private static readonly encodedOldPictureData = Buffer.from(ByteVector.fromString("fuxbuxqux").data).toString("base64");
+    private static readonly encodedOldPictureData = ByteVector.fromString("fuxbuxqux", StringType.UTF8)
+        .toBase64String();
     private static getTestComment() {
         const oldPictureItem = `COVERART=${Xiph_Comment_MethodTests.encodedOldPictureData}`;
         const newPictureItem = `METADATA_BLOCK_PICTURE=${XiphTestResources.pictureEncodedBytes}`;
@@ -898,16 +899,16 @@ import {TagTesters, Testers} from "../utilities/testers";
         const titleItem2 = `TITLE=${Xiph_Comment_MethodTests.title2}`;
         const data = ByteVector.concatenate(
             ByteVector.fromUint(Xiph_Comment_MethodTests.vendorId.length, false),
-            ByteVector.fromString(Xiph_Comment_MethodTests.vendorId),
+            ByteVector.fromString(Xiph_Comment_MethodTests.vendorId, StringType.UTF8),
             ByteVector.fromUint(4, false),
             ByteVector.fromUint(titleItem1.length, false),
-            ByteVector.fromString(titleItem1),
+            ByteVector.fromString(titleItem1, StringType.UTF8),
             ByteVector.fromUint(titleItem2.length, false),
-            ByteVector.fromString(titleItem2),
+            ByteVector.fromString(titleItem2, StringType.UTF8),
             ByteVector.fromUint(oldPictureItem.length, false),
-            ByteVector.fromString(oldPictureItem),
+            ByteVector.fromString(oldPictureItem, StringType.UTF8),
             ByteVector.fromUint(newPictureItem.length, false),
-            ByteVector.fromString(newPictureItem)
+            ByteVector.fromString(newPictureItem, StringType.UTF8)
         );
         return XiphComment.fromData(data, false);
     }
@@ -1065,7 +1066,7 @@ import {TagTesters, Testers} from "../utilities/testers";
             ByteVector.fromUint(0, false),
             ByteVector.fromUint(0, false),
         );
-        assert.isTrue(ByteVector.equal(output, expectedOutput));
+        Testers.bvEqual(output, expectedOutput);
     }
 
     @test
@@ -1101,16 +1102,16 @@ import {TagTesters, Testers} from "../utilities/testers";
         const pictureItem2 = `METADATA_BLOCK_PICTURE=${XiphTestResources.pictureEncodedBytes}`;
         const expected = ByteVector.concatenate(
             ByteVector.fromUint(Xiph_Comment_MethodTests.vendorId.length, false),
-            ByteVector.fromString(Xiph_Comment_MethodTests.vendorId),
+            ByteVector.fromString(Xiph_Comment_MethodTests.vendorId, StringType.UTF8),
             ByteVector.fromUint(4, false),
             ByteVector.fromUint(titleItem1.length, false),
-            ByteVector.fromString(titleItem1),
+            ByteVector.fromString(titleItem1, StringType.UTF8),
             ByteVector.fromUint(titleItem2.length, false),
-            ByteVector.fromString(titleItem2),
+            ByteVector.fromString(titleItem2, StringType.UTF8),
             ByteVector.fromUint(pictureItem1.length, false),
-            ByteVector.fromString(pictureItem1),
+            ByteVector.fromString(pictureItem1, StringType.UTF8),
             ByteVector.fromUint(pictureItem2.length, false),
-            ByteVector.fromString(pictureItem2)
+            ByteVector.fromString(pictureItem2, StringType.UTF8)
         );
         Testers.bvEqual(output, expected);
     }

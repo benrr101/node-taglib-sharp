@@ -5,6 +5,7 @@ import {File} from "../../src/file";
 import {IStream, SeekOrigin} from "../../src/stream";
 import {IFileAbstraction} from "../../src/fileAbstraction";
 import TestStream from "./testStream";
+import TestConstants from "../testConstants";
 
 export type TestFileAbstraction = IFileAbstraction & {allBytes: ByteVector};
 export default {
@@ -36,7 +37,7 @@ export default {
                     return ByteVector.empty();
                 }
 
-                const output = data.mid(position, s);
+                const output = data.subarray(position, s);
                 position += s;
                 return output;
             });
@@ -48,12 +49,11 @@ export default {
         return mockFile.object;
     },
     getFileAbstraction(data: ByteVector): TestFileAbstraction {
-        const clonedData = ByteVector.fromByteVector(data);
         return {
-            name: "test_file",
-            get allBytes(): ByteVector { return clonedData; },
-            get readStream(): IStream { return new TestStream(clonedData, false, false); },
-            get writeStream(): IStream { return new TestStream(clonedData, true, false); },
+            name: TestConstants.name,
+            get allBytes(): ByteVector { return data; },
+            get readStream(): IStream { return new TestStream(data, false); },
+            get writeStream(): IStream { return new TestStream(data, true); },
             closeStream(stream: IStream): void { stream.close(); }
         };
     }

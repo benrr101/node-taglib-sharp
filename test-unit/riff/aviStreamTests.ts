@@ -1,16 +1,13 @@
-import * as Chai from "chai";
 import {suite, test} from "@testdeck/mocha";
+import {assert} from "chai";
 
 import RiffBitmapInfoHeader from "../../src/riff/riffBitmapInfoHeader";
 import RiffList from "../../src/riff/riffList";
 import {default as Resources} from "./resources";
 import {AviStream, AviStreamType} from "../../src/riff/avi/aviStream";
-import {ByteVector} from "../../src/byteVector";
+import {ByteVector, StringType} from "../../src/byteVector";
 import {Testers} from "../utilities/testers";
 import RiffWaveFormatEx from "../../src/riff/riffWaveFormatEx";
-
-// Setup chai
-const assert = Chai.assert;
 
 @suite class Riff_AviStreamTest {
     @test
@@ -126,7 +123,7 @@ const assert = Chai.assert;
         const list = RiffList.fromEmpty("strl");
         list.setValues("strh", [Resources.getAviStreamHeaderData(AviStreamType.AUDIO_STREAM)]);
         list.setValues("strf", [ByteVector.concatenate(
-            ByteVector.fromUShort(0xBBBB),
+            ByteVector.fromUshort(0xBBBB),
             ByteVector.fromSize(14)
         )]);
 
@@ -149,7 +146,7 @@ const assert = Chai.assert;
         list.setValues("strh", [Resources.getAviStreamHeaderData(AviStreamType.VIDEO_STREAM)]);
         list.setValues("strf", [ByteVector.concatenate(
             ByteVector.fromSize(16),
-            ByteVector.fromString("fooo"),
+            ByteVector.fromString("fooo", StringType.UTF8),
             ByteVector.fromSize(20)
         )]);
 

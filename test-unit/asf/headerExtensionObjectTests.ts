@@ -1,5 +1,5 @@
-import * as Chai from "chai";
 import {suite, test} from "@testdeck/mocha";
+import {assert} from "chai";
 
 import BaseObject from "../../src/asf/objects/baseObject";
 import ContentDescriptionObject from "../../src/asf/objects/contentDescriptionObject";
@@ -14,9 +14,6 @@ import {File} from "../../src/file";
 import {MetadataLibraryObject} from "../../src/asf/objects/metadataLibraryObject";
 import {Testers} from "../utilities/testers";
 
-// Setup Chai
-const assert = Chai.assert;
-
 @suite class Asf_HeaderExtensionObjectTests extends ObjectTests<HeaderExtensionObject> {
     protected get fromFileConstructor(): (f: File, p: number) => HeaderExtensionObject {
         return HeaderExtensionObject.fromFile;
@@ -30,9 +27,9 @@ const assert = Chai.assert;
         const data = ByteVector.concatenate(
             ByteVector.fromSize(10), // Offset
             Guids.AsfHeaderExtensionObject.toBytes(), // Object ID
-            ByteVector.fromULong(56, false), // Object size
+            ByteVector.fromUlong(56, false), // Object size
             new UuidWrapper().toBytes(), // Invalid reserved field 1
-            ByteVector.fromUShort(6, false), // Reserved field 2
+            ByteVector.fromUshort(6, false), // Reserved field 2
             ByteVector.fromUint(10, false), // Header extension data length
             ByteVector.fromSize(10), // Header extension data
         );
@@ -48,9 +45,9 @@ const assert = Chai.assert;
         const data = ByteVector.concatenate(
             ByteVector.fromSize(10), // Offset
             Guids.AsfHeaderExtensionObject.toBytes(), // Object ID
-            ByteVector.fromULong(56, false), // Object size
+            ByteVector.fromUlong(56, false), // Object size
             Guids.AsfReserved1.toBytes(), // Reserved field 1
-            ByteVector.fromUShort(8888, false), // Invalid reserved field 2
+            ByteVector.fromUshort(8888, false), // Invalid reserved field 2
             ByteVector.fromUint(10, false), // Header extension data length
             ByteVector.fromSize(10), // Header extension data
         );
@@ -165,9 +162,9 @@ const assert = Chai.assert;
         const childrenBytes = ByteVector.concatenate(... children.map((o) => o.render()));
         return ByteVector.concatenate(
             Guids.AsfHeaderExtensionObject.toBytes(), // Object ID
-            ByteVector.fromULong(46 + childrenBytes.length, false), // Object size
+            ByteVector.fromUlong(46 + childrenBytes.length, false), // Object size
             Guids.AsfReserved1.toBytes(), // Reserved field 1
-            ByteVector.fromUShort(6, false), // Reserved field 2
+            ByteVector.fromUshort(6, false), // Reserved field 2
             ByteVector.fromUint(childrenBytes.length, false), // Header extension data length
             childrenBytes
         );

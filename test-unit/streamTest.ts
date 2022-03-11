@@ -5,7 +5,7 @@ import {suite, test} from "@testdeck/mocha";
 
 import PropertyTests from "./utilities/propertyTests";
 import TestConstants from "./testConstants";
-import {ByteVector} from "../src/byteVector";
+import {ByteVector, StringType} from "../src/byteVector";
 import {SeekOrigin, Stream} from "../src/stream";
 import {Testers} from "./utilities/testers";
 
@@ -371,11 +371,11 @@ const assert = Chai.assert;
             assert.strictEqual(stream.position, 3);
 
             const contents = fs.readFileSync(testFilePath);
-            const expected = ByteVector.fromString(testFilePath);
+            const expected = ByteVector.fromString(testFilePath, StringType.Latin1);
             expected.set(0, 0x01);
             expected.set(1, 0x02);
             expected.set(2, 0x03);
-            assert.deepStrictEqual(contents, expected.data);
+            assert.deepStrictEqual(contents, expected["_bytes"]);
         };
         StreamTests.testWithFile(testAction, true);
     }
@@ -395,11 +395,11 @@ const assert = Chai.assert;
             assert.strictEqual(stream.position, 6);
 
             const contents = fs.readFileSync(testFilePath);
-            const expected = ByteVector.fromString(testFilePath);
+            const expected = ByteVector.fromString(testFilePath, StringType.Latin1);
             expected.set(3, 0x01);
             expected.set(4, 0x02);
             expected.set(5, 0x03);
-            assert.deepStrictEqual(contents, expected.data);
+            assert.deepStrictEqual(contents, expected["_bytes"]);
         };
         StreamTests.testWithFile(testAction, true);
     }
@@ -419,9 +419,11 @@ const assert = Chai.assert;
             assert.strictEqual(stream.position, testFilePath.length + 3);
 
             const contents = fs.readFileSync(testFilePath);
-            const expected = ByteVector.fromString(testFilePath);
-            expected.addByteArray(buffer);
-            assert.deepStrictEqual(contents, expected.data);
+            const expected = ByteVector.concatenate(
+                ByteVector.fromString(testFilePath, StringType.Latin1),
+                buffer
+            );
+            assert.deepStrictEqual(contents, expected["_bytes"]);
         };
         StreamTests.testWithFile(testAction, true);
     }
@@ -440,10 +442,10 @@ const assert = Chai.assert;
             assert.strictEqual(stream.position, 2);
 
             const contents = fs.readFileSync(testFilePath);
-            const expected = ByteVector.fromString(testFilePath);
+            const expected = ByteVector.fromString(testFilePath, StringType.Latin1);
             expected.set(0, 0x02);
             expected.set(1, 0x03);
-            assert.deepStrictEqual(contents, expected.data);
+            assert.deepStrictEqual(contents, expected["_bytes"]);
         };
         StreamTests.testWithFile(testAction, true);
     }

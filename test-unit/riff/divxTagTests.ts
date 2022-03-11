@@ -1,15 +1,12 @@
-import * as Chai from "chai";
 import {suite, test} from "@testdeck/mocha";
+import {assert} from "chai";
 
 import DivxTag from "../../src/riff/divxTag";
 import {default as Resources} from "./resources";
-import {ByteVector} from "../../src/byteVector";
+import {ByteVector, StringType} from "../../src/byteVector";
 import {TagTypes} from "../../src/tag";
 import {TagTesters, Testers} from "../utilities/testers";
 import PropertyTests from "../utilities/propertyTests";
-
-// Setup chai
-const assert = Chai.assert;
 
 @suite class Riff_DivxTagTests {
     @test
@@ -43,7 +40,7 @@ const assert = Chai.assert;
         // Arrange
         const data = ByteVector.concatenate(
             ByteVector.fromSize(DivxTag.SIZE),
-            ByteVector.fromString("FooBarBaz")
+            ByteVector.fromString("FooBarBaz", StringType.UTF8)
         );
 
         // Act / Assert

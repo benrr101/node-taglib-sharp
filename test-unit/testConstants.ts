@@ -5,7 +5,8 @@ import {ByteVector, StringType} from "../src/byteVector";
 
 export default class TestConstants {
     public static testFileFolderPath: string = "./test-unit/resources/";
-    public static testFilePath: string = Path.join(TestConstants.testFileFolderPath, "testFile.txt");
+    public static testFileName = "testFile.txt";
+    public static testFilePath: string = Path.join(TestConstants.testFileFolderPath, TestConstants.testFileName);
     public static testFileContents: Uint8Array = new Uint8Array(
         [0x31, 0x32, 0x33, 0x34, 0x35, 0x61, 0x62, 0x63, 0x64, 0x65]
     );
