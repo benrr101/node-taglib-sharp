@@ -103,7 +103,7 @@ export default class PlayCountFrame extends Frame {
         const data = ByteVector.fromUlong(this.playCount);
 
         let ptr = 0;
-        while (data.length > 4 && data.get(ptr) === 0) {
+        while (ptr < data.length - 4 && data.get(ptr) === 0) {
             ptr++;
         }
 

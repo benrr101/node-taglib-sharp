@@ -104,9 +104,9 @@ export class Testers {
             const spacing = new Array(xPort.offset).join(" ");
             return `Difference at index: ${position}\n`
                  + `Actual:   ${xPort.portion}\n`
-                 + `          ${spacing}^\n`
+                 + `          ${spacing}^ 0x${bvX.get(position).toString(16).padStart(2, "0")}\n`
                  + `Expected: ${yPort.portion}\n`
-                 + `          ${spacing}^\n`;
+                 + `          ${spacing}^ 0x${bvY.get(position).toString(16).padStart(2, "0")}\n`;
         };
 
         let pos = 0;

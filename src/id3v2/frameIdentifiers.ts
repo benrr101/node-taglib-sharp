@@ -55,7 +55,9 @@ export class FrameIdentifier {
         Guards.betweenInclusive(version, 2, 4, "version");
         if (!this.versionTable[version]) {
             const newest = this.versionTable[4] || this.versionTable[3] || this.versionTable[2];
-            throw new NotSupportedError(`Frame ${newest} is not supported in ID3v2 version ${version}`);
+            throw new NotSupportedError(
+                `Frame ${newest.toString(0)} is not supported in ID3v2 version ${version}`
+            );
         }
 
         return this.versionTable[version];

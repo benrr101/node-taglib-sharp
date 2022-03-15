@@ -71,15 +71,7 @@ export class ChannelData {
         const channelData = new ChannelData(channelType);
         channelData._volumeAdjustment = bytes.subarray(1, 2).toShort();
         channelData._peakBits = bytes.get(3);
-
-        // Calculate peak volume by padding value with zeroes
-        const peakByteCount = Math.ceil(channelData._peakBits / 8);
-        const peakBytes = ByteVector.concatenate(
-            ByteVector.fromSize(peakByteCount - bytes.length - 4, 0x00),
-            bytes.subarray(4)
-        );
-        channelData._peakVolume = peakBytes.toUlong();
-
+        channelData._peakVolume = bytes.subarray(4).toUlong();
         return channelData;
     }
 
@@ -100,6 +92,7 @@ export class ChannelData {
      * @param value Bits used to express the peak volume. Must be an integer betweenInclusive 1 and 64
      */
     public set peakBits(value: number) {
+        // @TODO: This should be calculated based on peak volume
         Guards.byte(value, "value");
         Guards.betweenInclusive(value, 1, 64, "value");
         this._peakBits = value;

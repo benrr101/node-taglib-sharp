@@ -304,8 +304,7 @@ import {Testers} from "../utilities/testers";
     @test
     public save_noTags_addTags() {
         // Arrange
-        const fileBytes = ByteVector.fromSize(100);
-        const testAbstraction = TestFile.getFileAbstraction(fileBytes);
+        const testAbstraction = TestFile.getFileAbstraction(ByteVector.fromSize(100));
         const testMapping = new Map<TagTypes, () => boolean>([
             [TagTypes.Ape, () => false],
             [TagTypes.Id3v2, () => true]
@@ -329,7 +328,7 @@ import {Testers} from "../utilities/testers";
         Testers.bvEqual(testAbstraction.allBytes, expectedBytes);
         assert.strictEqual(file.mode, FileAccessMode.Closed);
         assert.strictEqual(file.mediaStartPosition, startTag.sizeOnDisk);
-        assert.strictEqual(file.mediaEndPosition, startTag.sizeOnDisk + fileBytes.length);
+        assert.strictEqual(file.mediaEndPosition, 100 + startTag.sizeOnDisk);
 
         assert.strictEqual(file.tagTypes, TagTypes.Ape | TagTypes.Id3v2);
         assert.strictEqual(file.tagTypesOnDisk, TagTypes.Ape | TagTypes.Id3v2);

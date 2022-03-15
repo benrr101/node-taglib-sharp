@@ -200,7 +200,7 @@ export class UrlLinkFrame extends Frame {
 
             // Read the url from the data
             let url = data.subarray(index).toString(StringType.Latin1);
-            url = url.trimEnd();
+            url = url.replace(/[\s\0]+$/, "");
 
             fieldList.push(url);
         }
@@ -375,10 +375,10 @@ export class UserUrlLinkFrame extends UrlLinkFrame {
 
     /** @inheritDoc */
     public clone(): UserUrlLinkFrame {
-        const frame = UserUrlLinkFrame.fromDescription(null);
+        const frame = UserUrlLinkFrame.fromDescription(undefined);
         frame._encoding = this._encoding;
         frame._textFields = this._textFields.slice();
-        frame._rawData = frame._rawData?.toByteVector();
+        frame._rawData = this._rawData?.toByteVector();
         frame._rawVersion = this._rawVersion;
         return frame;
     }

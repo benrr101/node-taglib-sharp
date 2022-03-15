@@ -174,7 +174,7 @@ export default class RiffList implements IRiffChunk, ILazy {
                 // Read the value
                 this._file.seek(fileOffset);
                 const headerBlock = this._file.readBlock(8);
-                const id = headerBlock.toString(4);
+                const id = headerBlock.subarray(0, 4).toString(StringType.UTF8);
                 const length = headerBlock.subarray(4, 4).toUint(false);
 
                 if (id === RiffList.identifierFourcc) {

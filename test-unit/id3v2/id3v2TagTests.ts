@@ -24,6 +24,7 @@ import {TagTypes} from "../../src/tag";
 import {Testers} from "../utilities/testers";
 import {TextInformationFrame, UserTextInformationFrame} from "../../src/id3v2/frames/textInformationFrame";
 import {UrlLinkFrame} from "../../src/id3v2/frames/urlLinkFrame";
+import PrivateFrame from "../../src/id3v2/frames/privateFrame";
 
 function getTestTagHeader(version: number, flags: Id3v2TagHeaderFlags, tagSize: number): ByteVector {
     return ByteVector.concatenate(
@@ -1896,18 +1897,21 @@ function getTestTagHeader(version: number, flags: Id3v2TagHeaderFlags, tagSize: 
         tag.version = 3;
         tag.flags = Id3v2TagHeaderFlags.Unsynchronization;
 
-        const frame1 = TextInformationFrame.fromIdentifier(FrameIdentifiers.TCOM);
-        const frame1Data = frame1.render(3);
-        const frame2 = TextInformationFrame.fromIdentifier(FrameIdentifiers.TCON);
-        const frame2Data = frame2.render(3);
+        const frame1 = PrivateFrame.fromOwner("foobarbaz");
+        frame1.privateData = ByteVector.fromByteArray([0xAA, 0xFF, 0x00, 0xAA]);
+        const frame2 = PrivateFrame.fromOwner("fuxbuxqux");
+        frame2.privateData = ByteVector.fromByteArray([0xAA, 0x12, 0x34, 0xAA]);
         tag.frames.push(frame1, frame2);
 
         // Act
         const output = tag.render();
 
         // Assert
-        const frameData = ByteVector.concatenate(frame1Data, frame2Data);
-        SyncData.unsyncByteVector(frameData);
+        let frameData = ByteVector.concatenate(
+            frame1.render(3),
+            frame2.render(3)
+        );
+        frameData = SyncData.unsyncByteVector(frameData);
 
         const header = new Id3v2TagHeader();
         header.flags = Id3v2TagHeaderFlags.Unsynchronization;

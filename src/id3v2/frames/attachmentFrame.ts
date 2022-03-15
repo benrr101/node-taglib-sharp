@@ -326,7 +326,8 @@ export default class AttachmentFrame extends Frame implements IPicture {
                 extensionData,
                 this._type,
                 ByteVector.fromString(this.description, encoding),
-                ByteVector.getTextDelimiter(encoding)
+                ByteVector.getTextDelimiter(encoding),
+                this._data
             );
         } else if (this.frameId === FrameIdentifiers.GEOB) {
             // Make an ID3v2 general encapsulated object
@@ -382,7 +383,7 @@ export default class AttachmentFrame extends Frame implements IPicture {
                 // Picture type       $xx
                 // Description        <text string according to encoding> $00 (00)
                 // Picture data       <binary data>
-                const mimeTypeEndIndex = data.find(ByteVector.getTextDelimiter(StringType.Latin1), 1);
+                const mimeTypeEndIndex = data.offsetFind(ByteVector.getTextDelimiter(StringType.Latin1), 1);
                 if (mimeTypeEndIndex < 0) {
                     return;
                 }
