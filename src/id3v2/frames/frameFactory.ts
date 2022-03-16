@@ -69,6 +69,7 @@ export default {
      *     * frame: {@link Frame} that was read
      *     * offset: updated offset where the next frame starts
      */
+    // @TODO: Split into fromFile and fromData
     createFrame: (data: ByteVector, file: File, offset: number, version: number, alreadyUnsynced: boolean):
         {frame: Frame, offset: number} => {
         Guards.uint(offset, "offset");
@@ -94,7 +95,7 @@ export default {
             return undefined;
         }
 
-        const header = Id3v2FrameHeader.fromData(data.mid(position, frameHeaderSize), version);
+        const header = Id3v2FrameHeader.fromData(data.subarray(position, frameHeaderSize), version);
         const frameStartIndex = offset + frameHeaderSize;
         const frameEndIndex = offset + header.frameSize + frameHeaderSize;
         const frameSize = frameEndIndex - frameStartIndex;
@@ -154,10 +155,13 @@ export default {
 
                 // Read remaining part of the frame for the non lazy Frame
                 file.seek(frameStartIndex);
-                data.addByteVector(file.readBlock(frameSize));
+                data = ByteVector.concatenate(
+                    data,
+                    file.readBlock(frameSize)
+                );
             }
 
-            let func;
+            let func: FrameCreator;
             if (header.frameId === FrameIdentifiers.TXXX) {
                 // User text identification frame
                 func = UserTextInformationFrame.fromOffsetRawData;

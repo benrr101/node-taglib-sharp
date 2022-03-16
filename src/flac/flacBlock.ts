@@ -100,7 +100,7 @@ export class FlacBlock implements ILazy {
 
         const block = new FlacBlock();
         block._type = type;
-        block._data = data;
+        block._data = data.toByteVector();
         block._dataSize = data.length;
         block._isLastBlock = false;
 
@@ -178,7 +178,7 @@ export class FlacBlock implements ILazy {
         try {
             this._file.mode = FileAccessMode.Read;
             this._file.seek(this._blockStart + FlacBlock.headerSize);
-            this._data = this._file.readBlock(this._dataSize);
+            this._data = this._file.readBlock(this._dataSize).toByteVector();
         } finally {
             this._file.mode = originalFileMode;
         }

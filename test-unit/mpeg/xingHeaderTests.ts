@@ -1,13 +1,10 @@
-import * as Chai from "chai";
 import {suite, test} from "@testdeck/mocha";
+import {assert} from "chai";
 
 import XingHeader from "../../src/mpeg/xingHeader";
 import {ByteVector} from "../../src/byteVector";
 import {ChannelMode, MpegVersion} from "../../src/mpeg/mpegEnums";
 import {Testers} from "../utilities/testers";
-
-// Setup chai
-const assert = Chai.assert;
 
 @suite class Mpeg_XingHeaderTests {
     @test

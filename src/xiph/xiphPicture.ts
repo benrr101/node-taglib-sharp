@@ -35,7 +35,7 @@ export default class XiphPicture implements IPicture, ILazy {
         }
 
         const picture = new XiphPicture();
-        picture._rawDataSource = () => ByteVector.fromByteArray(Buffer.from(data, "base64"));
+        picture._rawDataSource = () => ByteVector.fromBase64String(data);
         if (!isLazy) {
             picture.load();
         }
@@ -78,7 +78,7 @@ export default class XiphPicture implements IPicture, ILazy {
         instance._mimeType = picture.mimeType || "";
         instance._filename = picture.filename;
         instance._description = picture.description || "";
-        instance._data = picture.data;
+        instance._data = picture.data.toByteVector();
 
         if (!(picture instanceof XiphPicture)) {
             return instance;
@@ -255,31 +255,31 @@ export default class XiphPicture implements IPicture, ILazy {
 
         let position = 0;
         const rawData = this._rawDataSource();
-        this._type = rawData.mid(position, 4).toUint();
+        this._type = rawData.subarray(position, 4).toUint();
         position += 4;
 
-        const mimetypeLength = rawData.mid(position, 4).toUint();
+        const mimetypeLength = rawData.subarray(position, 4).toUint();
         position += 4;
-        this._mimeType = rawData.mid(position, mimetypeLength).toString(undefined, StringType.Latin1);
+        this._mimeType = rawData.subarray(position, mimetypeLength).toString(StringType.Latin1);
         position += mimetypeLength;
 
-        const descriptionLength = rawData.mid(position, 4).toUint();
+        const descriptionLength = rawData.subarray(position, 4).toUint();
         position += 4;
-        this._description = rawData.mid(position, descriptionLength).toString(undefined, StringType.UTF8);
+        this._description = rawData.subarray(position, descriptionLength).toString(StringType.UTF8);
         position += descriptionLength;
 
-        this._width = rawData.mid(position, 4).toUint();
+        this._width = rawData.subarray(position, 4).toUint();
         position += 4;
-        this._height = rawData.mid(position, 4).toUint();
+        this._height = rawData.subarray(position, 4).toUint();
         position += 4;
-        this._colorDepth = rawData.mid(position, 4).toUint();
+        this._colorDepth = rawData.subarray(position, 4).toUint();
         position += 4;
-        this._indexedColors = rawData.mid(position, 4).toUint();
+        this._indexedColors = rawData.subarray(position, 4).toUint();
         position += 4;
 
-        const dataLength = rawData.mid(position, 4).toUint();
+        const dataLength = rawData.subarray(position, 4).toUint();
         position += 4;
-        this._data = rawData.mid(position, dataLength);
+        this._data = rawData.subarray(position, dataLength).toByteVector();
     }
 
     /**
@@ -310,8 +310,7 @@ export default class XiphPicture implements IPicture, ILazy {
      * but base64 encoded).
      */
     public renderForXiphComment() {
-        const unencodedData = this.renderForFlacBlock();
-        return Buffer.from(unencodedData.data.buffer).toString("base64");
+        return this.renderForFlacBlock().toBase64String();
     }
 
     // #endregion

@@ -1,5 +1,5 @@
-import * as Chai from "chai";
 import {suite, test} from "@testdeck/mocha";
+import {assert} from "chai";
 
 import CommentsFrame from "../../src/id3v2/frames/commentsFrame";
 import FrameConstructorTests from "./frameConstructorTests";
@@ -10,9 +10,6 @@ import {Frame, FrameClassType} from "../../src/id3v2/frames/frame";
 import {FrameIdentifiers} from "../../src/id3v2/frameIdentifiers";
 import {Id3v2FrameHeader} from "../../src/id3v2/frames/frameHeader";
 import {Testers} from "../utilities/testers";
-
-// Setup Chai
-const assert = Chai.assert;
 
 function getTestFrame(): CommentsFrame {
     const header = new Id3v2FrameHeader(FrameIdentifiers.COMM);

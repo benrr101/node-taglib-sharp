@@ -1,5 +1,5 @@
-import * as Chai from "chai";
 import {suite, test} from "@testdeck/mocha";
+import {assert} from "chai";
 
 import AviHeader from "../../src/riff/avi/aviHeader";
 import RiffList from "../../src/riff/riffList";
@@ -7,9 +7,6 @@ import {default as Resources} from "./resources";
 import {AviStream, AviStreamType} from "../../src/riff/avi/aviStream";
 import {ByteVector} from "../../src/byteVector";
 import {Testers} from "../utilities/testers";
-
-// Setup chai
-const assert = Chai.assert;
 
 @suite class Riff_AviHeaderTests {
     @test

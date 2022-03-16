@@ -1,4 +1,4 @@
-import {ByteVector} from "../byteVector";
+import {ByteVector, StringType} from "../byteVector";
 import {CorruptFileError} from "../errors";
 import {Guards} from "../utils";
 
@@ -9,7 +9,7 @@ export default class VbriHeader {
     /**
      * Identifier that appears in the file to indicate the start of the VBRI header.
      */
-    public static readonly fileIdentifier = ByteVector.fromString("VBRI", undefined, undefined, true);
+    public static readonly fileIdentifier = ByteVector.fromString("VBRI", StringType.Latin1).makeReadOnly();
 
     /**
      * An empty and unset VBRI header.
@@ -60,8 +60,8 @@ export default class VbriHeader {
 
         // Size start at position 10
         const header = new VbriHeader();
-        header._totalSize = data.mid(10, 4).toUint();
-        header._totalFrames = data.mid(14, 4).toUint();
+        header._totalSize = data.subarray(10, 4).toUint();
+        header._totalFrames = data.subarray(14, 4).toUint();
         header._isPresent = true;
 
         return header;

@@ -1,5 +1,5 @@
-import * as Chai from "chai";
 import {suite, test} from "@testdeck/mocha";
+import {assert} from "chai";
 
 import FrameConstructorTests from "./frameConstructorTests";
 import PlayCountFrame from "../../src/id3v2/frames/playCountFrame";
@@ -9,9 +9,6 @@ import {Frame, FrameClassType} from "../../src/id3v2/frames/frame";
 import {Id3v2FrameHeader} from "../../src/id3v2/frames/frameHeader";
 import {FrameIdentifiers} from "../../src/id3v2/frameIdentifiers";
 import {Testers} from "../utilities/testers";
-
-// Setup chai
-const assert = Chai.assert;
 
 @suite class Id3v2_PlayCountFrame_ConstructorTests extends FrameConstructorTests {
     public get fromOffsetRawData(): (d: ByteVector, o: number, h: Id3v2FrameHeader, v: number) => Frame {
@@ -72,7 +69,7 @@ const assert = Chai.assert;
         header.frameSize = 8;
         const data = ByteVector.concatenate(
             header.render(4),
-            ByteVector.fromULong(BigInt("4294967296"))
+            ByteVector.fromUlong(BigInt("4294967296"))
         );
 
         // Act
@@ -90,7 +87,7 @@ const assert = Chai.assert;
         const data = ByteVector.concatenate(
             header.render(4),
             0x00, 0x00,
-            ByteVector.fromULong(BigInt("4294967296"))
+            ByteVector.fromUlong(BigInt("4294967296"))
         );
 
         // Act

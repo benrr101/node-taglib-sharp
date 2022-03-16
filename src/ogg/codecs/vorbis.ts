@@ -1,6 +1,6 @@
 import IOggCodec from "./iOggCodec";
 import XiphComment from "../../xiph/xiphComment";
-import {ByteVector} from "../../byteVector";
+import {ByteVector, StringType} from "../../byteVector";
 import {IAudioCodec, MediaTypes} from "../../iCodec";
 import {Guards} from "../../utils";
 
@@ -16,7 +16,7 @@ enum VorbisPacketType {
  * Represents an Ogg Vorbis bitstream for use in an Ogg file.
  */
 export default class Vorbis implements IOggCodec, IAudioCodec {
-    private static readonly id = ByteVector.fromString("vorbis", undefined, undefined, true);
+    private static readonly id = ByteVector.fromString("vorbis", StringType.Latin1).makeReadOnly();
 
     private readonly _bitrateMaximum: number;
     private readonly _bitrateMinimum: number;
@@ -43,12 +43,12 @@ export default class Vorbis implements IOggCodec, IAudioCodec {
         // NOTE: See https://xiph.org/vorbis/doc/Vorbis_I_spec.html#x1-630004.2.2 for details on
         //    the Vorbis header.
 
-        this._vorbisVersion = headerPacket.mid(7, 4).toUint(false);
+        this._vorbisVersion = headerPacket.subarray(7, 4).toUint(false);
         this._channels = headerPacket.get(11);
-        this._sampleRate = headerPacket.mid(12, 4).toUint(false);
-        this._bitrateMaximum = headerPacket.mid(16, 4).toInt(false);
-        this._bitrateNominal = headerPacket.mid(20, 4).toInt(false);
-        this._bitrateMinimum = headerPacket.mid(24, 4).toInt(false);
+        this._sampleRate = headerPacket.subarray(12, 4).toUint(false);
+        this._bitrateMaximum = headerPacket.subarray(16, 4).toInt(false);
+        this._bitrateNominal = headerPacket.subarray(20, 4).toInt(false);
+        this._bitrateMinimum = headerPacket.subarray(24, 4).toInt(false);
     }
 
     // #region Properties
@@ -106,7 +106,7 @@ export default class Vorbis implements IOggCodec, IAudioCodec {
         }
 
         if (!this._commentData && packet.get(0) === VorbisPacketType.Comment) {
-            this._commentData = packet.mid(7);
+            this._commentData = packet.subarray(7).toByteVector();
         }
 
         return !!this._commentData;

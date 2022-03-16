@@ -1,10 +1,7 @@
-import * as Chai from "chai";
 import {suite, test} from "@testdeck/mocha";
+import {assert} from "chai";
 
 import Id3v1Tag from "../../src/id3v1/id3v1Tag";
-
-// Setup Chai
-const assert = Chai.assert;
 
 @suite class Id3v1TagTests {
     // NOTE: These tests are just copied from the .NET implementation. ID3v1 is too simple for me

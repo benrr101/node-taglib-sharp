@@ -1,5 +1,5 @@
-import * as Chai from "chai";
 import {suite, test} from "@testdeck/mocha";
+import {assert} from "chai";
 
 import FrameConstructorTests from "./frameConstructorTests";
 import PropertyTests from "../utilities/propertyTests";
@@ -10,9 +10,6 @@ import {Id3v2FrameHeader} from "../../src/id3v2/frames/frameHeader";
 import {FrameIdentifiers} from "../../src/id3v2/frameIdentifiers";
 import {Testers} from "../utilities/testers";
 
-// Setup chai
-const assert = Chai.assert;
-
 const getTestFrameData = (): ByteVector => {
     const header = new Id3v2FrameHeader(FrameIdentifiers.USLT);
     header.frameSize = 11;
@@ -21,9 +18,9 @@ const getTestFrameData = (): ByteVector => {
         header.render(4),                               // Header
         StringType.Latin1,                                      // Encoding
         ByteVector.fromString("eng", StringType.Latin1),    // Language
-        ByteVector.fromString("foo"),                       // Description
+        ByteVector.fromString("foo", StringType.UTF8),     // Description
         ByteVector.getTextDelimiter(StringType.Latin1),         // Delimiter
-        ByteVector.fromString("bar")                        // Content
+        ByteVector.fromString("bar", StringType.UTF8)      // Content
     );
 };
 
@@ -65,7 +62,7 @@ const getTestUnsynchronizedLyricsFrame = (): UnsynchronizedLyricsFrame => {
             header.render(4),                               // Header
             StringType.Latin1,                                      // Encoding
             ByteVector.fromString("eng", StringType.Latin1),    // Language
-            ByteVector.fromString("foo")                        // Content
+            ByteVector.fromString("foo", StringType.UTF8)      // Content
         );
 
         // Act
@@ -85,9 +82,9 @@ const getTestUnsynchronizedLyricsFrame = (): UnsynchronizedLyricsFrame => {
             header.render(4),                               // Header
             StringType.Latin1,                                      // Encoding
             ByteVector.fromString("eng", StringType.Latin1),    // Language
-            ByteVector.fromString("foo"),                       // Description
+            ByteVector.fromString("foo", StringType.UTF8),      // Description
             ByteVector.getTextDelimiter(StringType.Latin1),         // Delimiter
-            ByteVector.fromString("bar")                        // Content
+            ByteVector.fromString("bar", StringType.UTF8)      // Content
         );
 
         // Act
@@ -106,7 +103,7 @@ const getTestUnsynchronizedLyricsFrame = (): UnsynchronizedLyricsFrame => {
             header.render(4),                               // Header
             StringType.Latin1,                                      // Encoding
             ByteVector.fromString("eng", StringType.Latin1),    // Language
-            ByteVector.fromString("foo")                        // Content
+            ByteVector.fromString("foo", StringType.UTF8)      // Content
         );
 
         // Act
@@ -125,9 +122,9 @@ const getTestUnsynchronizedLyricsFrame = (): UnsynchronizedLyricsFrame => {
             header.render(4),                               // Header
             StringType.Latin1,                                      // Encoding
             ByteVector.fromString("eng", StringType.Latin1),    // Language
-            ByteVector.fromString("foo"),                       // Description
+            ByteVector.fromString("foo", StringType.UTF8),     // Description
             ByteVector.getTextDelimiter(StringType.Latin1),         // Delimiter
-            ByteVector.fromString("bar")                        // Content
+            ByteVector.fromString("bar", StringType.UTF8)      // Content
         );
 
         // Act

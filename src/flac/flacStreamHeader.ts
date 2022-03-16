@@ -29,9 +29,9 @@ export default class FlacStreamHeader implements ILosslessAudioCodec {
         // See https://www.xiph.org/flac/format.html#metadata_block_streaminfo for the details of
         // how the header is defined
         // NOTE: We're completely ignoring block/frame size
-        const int2 = data.mid(8, 4).toUint(true);
-        const int3 = data.mid(12, 4).toUint(true);
-        const int4 = data.mid(16, 4).toUint(true);
+        const int2 = data.subarray(8, 4).toUint(true);
+        const int3 = data.subarray(12, 4).toUint(true);
+        const int4 = data.subarray(16, 4).toUint(true);
 
         // # of channels is bits 100-103
         this._audioChannels = NumberUtils.uintRShift(NumberUtils.uintAnd(int3, 0x0E000000), 25) + 1;

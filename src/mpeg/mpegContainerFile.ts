@@ -75,7 +75,7 @@ export default class MpegContainerFile extends SandwichFile {
         [TagTypes.Id3v1, () => true],
         [TagTypes.Id3v2, () => true]
     ]);
-    private static readonly _markerStart = ByteVector.fromByteArray(new Uint8Array([0, 0, 1]));
+    private static readonly _markerStart = ByteVector.fromByteArray([0, 0, 1]);
 
     private _audioFound = false;
     private _audioHeader: MpegAudioHeader;
@@ -165,7 +165,8 @@ export default class MpegContainerFile extends SandwichFile {
 
     private readAudioPacket(position: number): number {
         this.seek(position + 4);
-        const length = this.readBlock(2).toUShort();
+        const headerBytes = this.readBlock(21);
+        const length = headerBytes.subarray(0, 2).toUshort();
         const returnValue = position + length;
 
         if (this._audioFound) {
@@ -173,7 +174,7 @@ export default class MpegContainerFile extends SandwichFile {
         }
 
         // There is a maximum of 16 stuffing bytes, read to the PTS/DTS flags
-        const packetHeaderBytes = this.readBlock(19);
+        const packetHeaderBytes = headerBytes.subarray(2, 19);
         let i = 0;
         while (i < packetHeaderBytes.length && packetHeaderBytes.get(i) === 0xFF) {
             // Byte is a stuffing byte
@@ -216,7 +217,7 @@ export default class MpegContainerFile extends SandwichFile {
                 case MpegFileMarker.SystemPacket:
                 case MpegFileMarker.PaddingPacket:
                     this.seek(position + 4);
-                    position += this.readBlock(2).toUShort() + 6;
+                    position += this.readBlock(2).toUshort() + 6;
                     break;
                 case MpegFileMarker.VideoPacket:
                     position = this.readVideoPacket(position);
@@ -289,7 +290,7 @@ export default class MpegContainerFile extends SandwichFile {
 
     private readVideoPacket(position: number): number {
         this.seek(position + 4);
-        const length = this.readBlock(2).toUShort();
+        const length = this.readBlock(2).toUshort();
         let offset = position + 6;
 
         while (!this._videoFound && offset < position + length) {

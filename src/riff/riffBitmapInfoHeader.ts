@@ -700,16 +700,16 @@ export default class RiffBitmapInfoHeader implements IVideoCodec {
             throw new CorruptFileError("Expected at least 40 bytes for bitmap info header");
         }
 
-        this._width = data.mid(offset + 4, 4).toUint(false);
-        this._height = data.mid(offset + 8, 4).toUint(false);
-        this._planes = data.mid(offset + 12, 2).toUShort(false);
-        this._bitCount = data.mid(offset + 14, 2).toUShort(false);
-        this._compressionId = data.mid(offset + 16, 4).toUint(false);
-        this._imageSize = data.mid(offset + 20, 4).toUint(false);
-        this._xPixelsPerMeter = data.mid(offset + 24, 4).toUint(false);
-        this._yPixelsPerMeter = data.mid(offset + 28, 4).toUint(false);
-        this._colorsUsed = data.mid(offset + 32, 4).toUint(false);
-        this._importantColors = data.mid(offset + 36, 4).toUint(false);
+        this._width = data.subarray(offset + 4, 4).toUint(false);
+        this._height = data.subarray(offset + 8, 4).toUint(false);
+        this._planes = data.subarray(offset + 12, 2).toUshort(false);
+        this._bitCount = data.subarray(offset + 14, 2).toUshort(false);
+        this._compressionId = data.subarray(offset + 16, 4).toUint(false);
+        this._imageSize = data.subarray(offset + 20, 4).toUint(false);
+        this._xPixelsPerMeter = data.subarray(offset + 24, 4).toUint(false);
+        this._yPixelsPerMeter = data.subarray(offset + 28, 4).toUint(false);
+        this._colorsUsed = data.subarray(offset + 32, 4).toUint(false);
+        this._importantColors = data.subarray(offset + 36, 4).toUint(false);
     }
 
     // #region Properties

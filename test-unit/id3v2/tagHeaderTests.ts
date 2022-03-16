@@ -1,5 +1,5 @@
-import * as Chai from "chai";
 import {suite, test} from "@testdeck/mocha";
+import {assert} from "chai";
 
 import Id3v2Settings from "../../src/id3v2/id3v2Settings";
 import TestConstants from "../testConstants";
@@ -7,9 +7,6 @@ import {ByteVector} from "../../src/byteVector";
 import {Id3v2TagHeader, Id3v2TagHeaderFlags} from "../../src/id3v2/id3v2TagHeader";
 import {Testers} from "../utilities/testers";
 import {NumberUtils} from "../../src/utils";
-
-// Setup chai
-const assert = Chai.assert;
 
 const getTestHeader = (majorVersion: number, minorVersion: number, flags: Id3v2TagHeaderFlags): Id3v2TagHeader => {
     const data = ByteVector.concatenate(

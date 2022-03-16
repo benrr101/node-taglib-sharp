@@ -6,7 +6,7 @@ import {suite, test} from "@testdeck/mocha";
 
 import TestConstants from "./testConstants";
 import TestStream from "./utilities/testStream";
-import {ByteVector, StringType} from "../src/byteVector";
+import {ByteVector, Encoding, StringType} from "../src/byteVector";
 import {IFileAbstraction} from "../src/fileAbstraction";
 import {IStream} from "../src/stream";
 import {Testers} from "./utilities/testers";
@@ -23,6 +23,16 @@ const assert = Chai.assert;
     public concatenate_noData() {
         // Act
         const bv = ByteVector.concatenate();
+
+        // Assert
+        assert.ok(bv);
+        assert.equal(bv.length, 0);
+    }
+
+    @test
+    public concatenate_undefined() {
+        // Act
+        const bv = ByteVector.concatenate(undefined, null);
 
         // Assert
         assert.ok(bv);
@@ -54,60 +64,90 @@ const assert = Chai.assert;
 
     @test
     public concatenate_oneArray() {
+        // Arrange
+        const testArray = new Uint8Array(this.testArray);
+
         // Act
         const bv = ByteVector.concatenate(this.testArray);
 
         // Assert
         assert.ok(bv);
-        assert.equal(bv.length, this.testArray.length);
+        assert.equal(bv.length, testArray.length);
         for (let i = 0; i < bv.length; i++) {
-            assert.equal(bv.data[i], this.testArray[i]);
+            assert.equal(bv.get(i), testArray[i]);
         }
+
+        // Act / Assert - Changing source does not change bv
+        testArray[0] = 88;
+        assert.equal(bv.get(0), this.testArray[0]);
     }
 
     @test
     public concatenate_twoArrays() {
+        // Arrange
+        const testArray = new Uint8Array(this.testArray);
+
         // Act
         const bv = ByteVector.concatenate(
-            this.testArray,
-            this.testArray
+            testArray,
+            testArray
         );
 
         // Assert
         assert.ok(bv);
-        assert.strictEqual(bv.length, this.testArray.length * 2);
+        assert.strictEqual(bv.length, testArray.length * 2);
         for (let i = 0; i < bv.length; i++) {
-            assert.strictEqual(bv.data[i], this.testArray[i % this.testArray.length]);
+            assert.strictEqual(bv.get(i), testArray[i % this.testArray.length]);
         }
+
+        // Act / Assert - Changing source does not change bv
+        testArray[0] = 88;
+        assert.equal(bv.get(0), this.testArray[0]);
+        assert.equal(bv.get(testArray.length), this.testArray[0]);
     }
 
     @test
     public concatenate_oneVector() {
+        // Arrange
+        const testVector = this.testByteVector.toByteVector();
+
         // Act
-        const bv = ByteVector.concatenate(this.testByteVector);
+        const bv = ByteVector.concatenate(testVector);
 
         // Assert
         assert.ok(bv);
-        assert.strictEqual(bv.length, this.testByteVector.length);
+        assert.strictEqual(bv.length, testVector.length);
         for (let i = 0; i < bv.length; i++) {
-            assert.strictEqual(bv.data[i], this.testByteVector.data[i]);
+            assert.strictEqual(bv.get(i), testVector.get(i));
         }
+
+        // Act / Assert - Changing source does not change bv
+        testVector.set(0, 88);
+        assert.equal(bv.get(0), this.testByteVector.get(0));
     }
 
     @test
     public concatenate_twoVectors() {
+        // Arrange
+        const testVector = this.testByteVector.toByteVector();
+
         // Act
         const bv = ByteVector.concatenate(
-            this.testByteVector,
-            this.testByteVector
+            testVector,
+            testVector
         );
 
         // Assert
         assert.ok(bv);
-        assert.strictEqual(bv.length, this.testByteVector.length * 2);
+        assert.strictEqual(bv.length, testVector.length * 2);
         for (let i = 0; i < bv.length; i++) {
-            assert.strictEqual(bv.data[i], this.testByteVector.data[i % this.testByteVector.length]);
+            assert.strictEqual(bv.get(i), testVector.get(i % this.testByteVector.length));
         }
+
+        // Act / Assert - Changing source does not change bv
+        testVector.set(0, 88);
+        assert.equal(bv.get(0), this.testByteVector.get(0));
+        assert.equal(bv.get(this.testByteVector.length), this.testByteVector.get(0));
     }
 
     @test
@@ -118,6 +158,17 @@ const assert = Chai.assert;
         // Assert
         assert.isOk(bv);
         assert.strictEqual(bv.length, 0);
+    }
+
+    @test
+    public fromByteArray_invalidParams() {
+        // Arrange
+        const bytes = new Uint8Array(0);
+
+        // Act / Assert
+        Testers.testTruthy((v: Uint8Array) => ByteVector.fromByteArray(v, 123));
+        Testers.testSafeUint((v) => ByteVector.fromByteArray(bytes, v), true);
+        assert.throws(() => ByteVector.fromByteArray(bytes, 123));
     }
 
     @test
@@ -134,10 +185,13 @@ const assert = Chai.assert;
 
         // Assert
         assert.isOk(bv);
+
+        assert.strictEqual(bv.checksum, 0x00000000);
         assert.strictEqual(bv.length, 0);
         assert.isTrue(bv.isEmpty);
         assert.isFalse(bv.isReadOnly);
-        assert.deepEqual(bv.data, data);
+
+        ByteVector_ConstructorTests.equalContents(bv, data);
     }
 
     @test
@@ -148,10 +202,17 @@ const assert = Chai.assert;
 
         // Assert
         assert.isOk(bv);
+
+        assert.strictEqual(bv.checksum, 0xbe33eab6);
         assert.strictEqual(bv.length, data.length);
         assert.isFalse(bv.isEmpty);
         assert.isFalse(bv.isReadOnly);
-        assert.deepEqual(bv.data, data);
+
+        ByteVector_ConstructorTests.equalContents(bv, data);
+
+        // Act / Assert - Changes to source affects bv
+        data[2] = 0x88;
+        assert.strictEqual(bv.get(2), 0x88);
     }
 
     @test
@@ -162,65 +223,17 @@ const assert = Chai.assert;
 
         // Assert
         assert.isOk(bv);
+
+        assert.strictEqual(bv.checksum, 0xdb9bfab2);
         assert.strictEqual(bv.length, 3);
         assert.isFalse(bv.isEmpty);
         assert.isFalse(bv.isReadOnly);
-        assert.deepEqual(bv.data, data.slice(0, 3));
-    }
 
-    @test
-    public fromByteArray_readOnly() {
-        // Arrange, Act
-        const data = new Uint8Array([0x0, 0x1, 0x2, 0x3, 0x4]);
-        const bv = ByteVector.fromByteArray(data, undefined, true);
+        ByteVector_ConstructorTests.equalContents(bv, data.subarray(0, 3));
 
-        // Assert
-        assert.isOk(bv);
-        assert.strictEqual(bv.length, data.length);
-        assert.isFalse(bv.isEmpty);
-        assert.isTrue(bv.isReadOnly);
-        assert.deepEqual(bv.data, data);
-    }
-
-    @test
-    public fromByteVector_noVector() {
-        // Arrange, Act, Assert
-        assert.throws(() => {
-            ByteVector.fromByteVector(null);
-        });
-        assert.throws(() => {
-            ByteVector.fromByteArray(undefined);
-        });
-    }
-
-    @test
-    public fromByteVector_withData() {
-        // Arrange, Act
-        const data = new Uint8Array([0x1, 0x2]);
-        const original = ByteVector.fromByteArray(data);
-        const bv = ByteVector.fromByteVector(original);
-
-        // Assert
-        assert.isOk(bv);
-        assert.strictEqual(bv.length, data.length);
-        assert.isFalse(bv.isEmpty);
-        assert.isFalse(bv.isReadOnly);
-        assert.deepEqual(bv.data, data);
-    }
-
-    @test
-    public fromByteVector_readOnly() {
-        // Arrange, Act
-        const data = new Uint8Array([0x1, 0x2]);
-        const original = ByteVector.fromByteArray(data);
-        const bv = ByteVector.fromByteVector(original, true);
-
-        // Assert
-        assert.isOk(bv);
-        assert.strictEqual(bv.length, data.length);
-        assert.isFalse(bv.isEmpty);
-        assert.isTrue(bv.isReadOnly);
-        assert.deepEqual(bv.data, data);
+        // Act / Assert - Changes to source does not affect b/c it is copied
+        data[2] = 0x88;
+        assert.strictEqual(bv.get(2), 0x02);
     }
 
     @test
@@ -231,8 +244,13 @@ const assert = Chai.assert;
 
     @test
     public fromFileAbstraction() {
-        // Arrange
-        const bytes = new Uint8Array(TestConstants.testFileContents);
+        // Arrange - Make a file big enough to fill up a buffer
+        const bytes = new Uint8Array(5000);
+        let total = 0;
+        while (total < 5000) {
+            bytes.set(TestConstants.testFileContents, total);
+            total += TestConstants.testFileContents.length;
+        }
         const mockStream = new TestStream(ByteVector.fromByteArray(bytes), false);
 
         const mockFileAbstraction = TypeMoq.Mock.ofType<IFileAbstraction>();
@@ -247,7 +265,7 @@ const assert = Chai.assert;
         assert.strictEqual(bv.length, bytes.length);
         assert.isFalse(bv.isEmpty);
         assert.isFalse(bv.isReadOnly);
-        assert.deepEqual(bv.data, bytes);
+        ByteVector_ConstructorTests.equalContents(bv, bytes);
 
         mockFileAbstraction.verify((a) => a.closeStream(TypeMoq.It.isValue(mockStream)), TypeMoq.Times.once());
     }
@@ -263,7 +281,7 @@ const assert = Chai.assert;
         ByteVector_ConstructorTests.testInt(
             0x0,
             [0x0, 0x0, 0x0, 0x0],
-            undefined,
+            0x00000000,
             undefined
         );
     }
@@ -273,8 +291,8 @@ const assert = Chai.assert;
         ByteVector_ConstructorTests.testInt(
             0x0,
             [0x0, 0x0, 0x0, 0x0],
-            undefined,
-            false
+            0x00000000,
+            undefined
         );
     }
 
@@ -283,7 +301,7 @@ const assert = Chai.assert;
         ByteVector_ConstructorTests.testInt(
             0x12,
             [0x00, 0x00, 0x00, 0x12],
-            undefined,
+            0x4593e01e,
             undefined
         );
     }
@@ -293,7 +311,7 @@ const assert = Chai.assert;
         ByteVector_ConstructorTests.testInt(
             0x12,
             [0x12, 0x00, 0x00, 0x00],
-            undefined,
+            0x4b0e057a,
             false
         );
     }
@@ -303,7 +321,7 @@ const assert = Chai.assert;
         ByteVector_ConstructorTests.testInt(
             0x1234,
             [0x00, 0x00, 0x12, 0x34],
-            undefined,
+            0x77951e50,
             undefined
         );
     }
@@ -313,7 +331,7 @@ const assert = Chai.assert;
         ByteVector_ConstructorTests.testInt(
             0x1234,
             [0x34, 0x12, 0x00, 0x00],
-            undefined,
+            0x7f33b629,
             false
         );
     }
@@ -323,7 +341,7 @@ const assert = Chai.assert;
         ByteVector_ConstructorTests.testInt(
             0x123456,
             [0x00, 0x12, 0x34, 0x56],
-            undefined,
+            0x09fcfb57,
             undefined
         );
     }
@@ -333,7 +351,7 @@ const assert = Chai.assert;
         ByteVector_ConstructorTests.testInt(
             0x123456,
             [0x56, 0x34, 0x12, 0x00],
-            undefined,
+            0x77b636ba,
             false
         );
     }
@@ -343,7 +361,7 @@ const assert = Chai.assert;
         ByteVector_ConstructorTests.testInt(
             0x12345678,
             [0x12, 0x34, 0x56, 0x78],
-            undefined,
+            0x188e5750,
             undefined
         );
     }
@@ -353,7 +371,7 @@ const assert = Chai.assert;
         ByteVector_ConstructorTests.testInt(
             0x12345678,
             [0x78, 0x56, 0x34, 0x12],
-            undefined,
+            0x6a330d2d,
             false
         );
     }
@@ -363,7 +381,7 @@ const assert = Chai.assert;
         ByteVector_ConstructorTests.testInt(
             -0x12,
             [0xFF, 0xFF, 0xFF, 0xEE],
-            undefined,
+            0x8fd41bbc,
             undefined
         );
     }
@@ -373,7 +391,7 @@ const assert = Chai.assert;
         ByteVector_ConstructorTests.testInt(
             -0x12,
             [0xEE, 0xFF, 0xFF, 0xFF],
-            undefined,
+            0xec7d6a6f,
             false
         );
     }
@@ -383,7 +401,7 @@ const assert = Chai.assert;
         ByteVector_ConstructorTests.testInt(
             -0x1234,
             [0xFF, 0xFF, 0xED, 0xCC],
-            undefined,
+            0xaed6932e,
             undefined
         );
     }
@@ -393,7 +411,7 @@ const assert = Chai.assert;
         ByteVector_ConstructorTests.testInt(
             -0x1234,
             [0xCC, 0xED, 0xFF, 0xFF],
-            undefined,
+            0xa4b59539,
             false
         );
     }
@@ -403,7 +421,7 @@ const assert = Chai.assert;
         ByteVector_ConstructorTests.testInt(
             -0x123456,
             [0xFF, 0xED, 0xCB, 0xAA],
-            undefined,
+            0xc3bb00f5,
             undefined
         );
     }
@@ -413,7 +431,7 @@ const assert = Chai.assert;
         ByteVector_ConstructorTests.testInt(
             -0x123456,
             [0xAA, 0xCB, 0xED, 0xFF],
-            undefined,
+            0xd0c559af,
             false
         );
     }
@@ -423,7 +441,7 @@ const assert = Chai.assert;
         ByteVector_ConstructorTests.testInt(
             -0x12345678,
             [0xED, 0xCB, 0xA9, 0x88],
-            undefined,
+            0xe7c53796,
             undefined
         );
     }
@@ -433,18 +451,8 @@ const assert = Chai.assert;
         ByteVector_ConstructorTests.testInt(
             -0x12345678,
             [0x88, 0xA9, 0xCB, 0xED],
-            undefined,
+            0x485fb637,
             false
-        );
-    }
-
-    @test
-    public fromInt_readOnly() {
-        ByteVector_ConstructorTests.testInt(
-            0,
-            [0x00, 0x00, 0x00, 0x00],
-            true,
-            undefined
         );
     }
 
@@ -464,10 +472,13 @@ const assert = Chai.assert;
 
         // Assert
         assert.isOk(bv);
+
+        assert.strictEqual(bv.checksum, 0x00000000);
         assert.strictEqual(bv.length, 0);
         assert.isTrue(bv.isEmpty);
         assert.isFalse(bv.isReadOnly);
-        assert.deepEqual(bv.data, new Uint8Array([]));
+
+        ByteVector_ConstructorTests.equalContents(bv, []);
     }
 
     @test
@@ -481,23 +492,87 @@ const assert = Chai.assert;
 
         // Assert
         assert.isOk(bv);
+
+        assert.strictEqual(bv.checksum, 0x8227a366);
         assert.strictEqual(bv.length, bytes.length);
         assert.isFalse(bv.isEmpty);
         assert.isFalse(bv.isReadOnly);
-        assert.deepEqual(bv.data, bytes);
+
+        ByteVector_ConstructorTests.equalContents(bv, bytes);
     }
 
     @test
-    public fromLong_badValue() {
+    public fromLong_badValues() {
         // Arrange, Act, Assert
         Testers.testTruthy((v: bigint) => { ByteVector.fromLong(v); });
     }
 
     @test
     public fromLong_overflow() {
+
         // Arrange, Act, Assert
         assert.throws(() => { ByteVector.fromLong(BigInt("9223372036854775808")); });
         assert.throws(() => { ByteVector.fromLong(BigInt("-9223372036854775809")); });
+    }
+
+    @test
+    public fromLong_positiveNumber_bigEndian() {
+        this.testLong(
+            0x1234,
+            [0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x12, 0x34],
+            0x77951e50,
+            undefined
+        );
+    }
+
+    @test
+    public fromLong_positiveNumber_littleEndian() {
+        this.testLong(
+            0x1234,
+            [0x34, 0x12, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00],
+            0xe032bc9b,
+            false
+        );
+    }
+
+    @test
+    public fromLong_negativeNumber_bigEndian() {
+        this.testLong(
+            -0x1234,
+            [0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xED, 0xCC],
+            0xc7d22877,
+            undefined
+        );
+    }
+
+    @test
+    public fromLong_negativeNumber_littleEndian() {
+        this.testLong(
+            -0x1234,
+            [0xCC, 0xED, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF],
+            0xc896d178,
+            false
+        );
+    }
+
+    @test
+    public fromLong_bigPositiveNumber_bigEndian() {
+        this.testLong(
+            0x1234000000,
+            [0x00, 0x00, 0x00, 0x12, 0x34, 0x00, 0x00, 0x00],
+            0x70c0e641,
+            undefined
+        );
+    }
+
+    @test
+    public fromLong_bigPositiveNumber_littleEndian() {
+        this.testLong(
+            0x1234000000,
+            [0x00, 0x00, 0x00, 0x34, 0x12, 0x00, 0x00, 0x00],
+            0xeb4d895a,
+            false
+        );
     }
 
     @test
@@ -505,7 +580,7 @@ const assert = Chai.assert;
         this.testLong(
             BigInt("0x12"),
             [0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x12],
-            undefined,
+            0x4593e01e,
             undefined
         );
     }
@@ -515,7 +590,7 @@ const assert = Chai.assert;
         this.testLong(
             BigInt("0x12"),
             [0x12, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00],
-            undefined,
+            0x1a9b1e5f,
             false
         );
     }
@@ -525,7 +600,7 @@ const assert = Chai.assert;
         this.testLong(
             BigInt("0x1234"),
             [0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x12, 0x34],
-            undefined,
+            0x77951e50,
             undefined
         );
     }
@@ -535,7 +610,7 @@ const assert = Chai.assert;
         this.testLong(
             BigInt("0x1234"),
             [0x34, 0x12, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00],
-            undefined,
+            0xe032bc9b,
             false
         );
     }
@@ -545,7 +620,7 @@ const assert = Chai.assert;
         this.testLong(
             BigInt("0x123456"),
             [0x00, 0x00, 0x00, 0x00, 0x00, 0x12, 0x34, 0x56],
-            undefined,
+            0x09fcfb57,
             undefined
         );
     }
@@ -555,7 +630,7 @@ const assert = Chai.assert;
         this.testLong(
             BigInt("0x123456"),
             [0x56, 0x34, 0x12, 0x00, 0x00, 0x00, 0x00, 0x00],
-            undefined,
+            0x59e6bc55,
             false
         );
     }
@@ -565,7 +640,7 @@ const assert = Chai.assert;
         this.testLong(
             BigInt("0x12345678"),
             [0x00, 0x00, 0x00, 0x00, 0x12, 0x34, 0x56, 0x78],
-            undefined,
+            0x188e5750,
             undefined
         );
     }
@@ -575,7 +650,7 @@ const assert = Chai.assert;
         this.testLong(
             BigInt("0x12345678"),
             [0x78, 0x56, 0x34, 0x12, 0x00, 0x00, 0x00, 0x00],
-            undefined,
+            0xee67587a,
             false
         );
     }
@@ -585,7 +660,7 @@ const assert = Chai.assert;
         this.testLong(
             BigInt("0x123456789A"),
             [0x00, 0x00, 0x00, 0x12, 0x34, 0x56, 0x78, 0x9A],
-            undefined,
+            0xeed98b80,
             undefined
         );
     }
@@ -595,7 +670,7 @@ const assert = Chai.assert;
         this.testLong(
             BigInt("0x123456789A"),
             [0x9A, 0x78, 0x56, 0x34, 0x12, 0x00, 0x00, 0x00],
-            undefined,
+            0xa9896e71,
             false
         );
     }
@@ -605,7 +680,7 @@ const assert = Chai.assert;
         this.testLong(
             BigInt("0x123456789ABC"),
             [0x00, 0x00, 0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC],
-            undefined,
+            0xa89e1069,
             undefined
         );
     }
@@ -615,7 +690,7 @@ const assert = Chai.assert;
         this.testLong(
             BigInt("0x123456789ABC"),
             [0xBC, 0x9A, 0x78, 0x56, 0x34, 0x12, 0x00, 0x00],
-            undefined,
+            0x8c546d6b,
             false
         );
     }
@@ -625,7 +700,7 @@ const assert = Chai.assert;
         this.testLong(
             BigInt("0x123456789ABCDE"),
             [0x00, 0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC, 0xDE],
-            undefined,
+            0x64223955,
             undefined
         );
     }
@@ -635,7 +710,7 @@ const assert = Chai.assert;
         this.testLong(
             BigInt("0x123456789ABCDE"),
             [0xDE, 0xBC, 0x9A, 0x78, 0x56, 0x34, 0x12, 0x00],
-            undefined,
+            0x662acd89,
             false
         );
     }
@@ -645,7 +720,7 @@ const assert = Chai.assert;
         this.testLong(
             BigInt("0x123456789ABCDEF0"),
             [0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC, 0xDE, 0xF0],
-            undefined,
+            0x14201842,
             undefined
         );
     }
@@ -655,7 +730,7 @@ const assert = Chai.assert;
         this.testLong(
             BigInt("0x123456789ABCDEF0"),
             [0xF0, 0xDE, 0xBC, 0x9A, 0x78, 0x56, 0x34, 0x12],
-            undefined,
+            0x47c71870,
             false
         );
     }
@@ -665,7 +740,7 @@ const assert = Chai.assert;
         this.testLong(
             BigInt("-18"),
             [0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xEE],
-            undefined,
+            0xe6d0a0e5,
             undefined
         );
     }
@@ -675,7 +750,7 @@ const assert = Chai.assert;
         this.testLong(
             BigInt("-18"),
             [0xEE, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF],
-            undefined,
+            0x58791d23,
             false
         );
     }
@@ -685,7 +760,7 @@ const assert = Chai.assert;
         this.testLong(
             BigInt("-4660"),
             [0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xED, 0xCC],
-            undefined,
+            0xc7d22877,
             undefined
         );
     }
@@ -695,7 +770,7 @@ const assert = Chai.assert;
         this.testLong(
             BigInt("-4660"),
             [0xCC, 0xED, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF],
-            undefined,
+            0xc896d178,
             false
         );
     }
@@ -705,7 +780,7 @@ const assert = Chai.assert;
         this.testLong(
             BigInt("-1193046"),
             [0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xED, 0xCB, 0xAA],
-            undefined,
+            0xaabfbbac,
             undefined
         );
     }
@@ -715,7 +790,7 @@ const assert = Chai.assert;
         this.testLong(
             BigInt("-1193046"),
             [0xAA, 0xCB, 0xED, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF],
-            undefined,
+            0x1b04bf29,
             false
         );
     }
@@ -725,7 +800,7 @@ const assert = Chai.assert;
         this.testLong(
             BigInt("-305419896"),
             [0xFF, 0xFF, 0xFF, 0xFF, 0xED, 0xCB, 0xA9, 0x88],
-            undefined,
+            0x8ec18ccf,
             undefined
         );
     }
@@ -735,7 +810,7 @@ const assert = Chai.assert;
         this.testLong(
             BigInt("-305419896"),
             [0x88, 0xA9, 0xCB, 0xED, 0xFF, 0xFF, 0xFF, 0xFF],
-            undefined,
+            0x124fe8a7,
             false
         );
     }
@@ -745,7 +820,7 @@ const assert = Chai.assert;
         this.testLong(
             BigInt("-78187493530"),
             [0xFF, 0xFF, 0xFF, 0xED, 0xCB, 0xA9, 0x87, 0x66],
-            undefined,
+            0x4d9acb7b,
             undefined
         );
     }
@@ -755,7 +830,7 @@ const assert = Chai.assert;
         this.testLong(
             BigInt("-78187493530"),
             [0x66, 0x87, 0xA9, 0xCB, 0xED, 0xFF, 0xFF, 0xFF],
-            undefined,
+            0xeb6b6d0d,
             false
         );
     }
@@ -765,7 +840,7 @@ const assert = Chai.assert;
         this.testLong(
             BigInt("-20015998343868"),
             [0xFF, 0xFF, 0xED, 0xCB, 0xA9, 0x87, 0x65, 0x44],
-            undefined,
+            0x18d9264e,
             undefined
         );
     }
@@ -775,7 +850,7 @@ const assert = Chai.assert;
         this.testLong(
             BigInt("-20015998343868"),
             [0x44, 0x65, 0x87, 0xA9, 0xCB, 0xED, 0xFF, 0xFF],
-            undefined,
+            0xa4f00088,
             false
         );
     }
@@ -785,7 +860,7 @@ const assert = Chai.assert;
         this.testLong(
             BigInt("-5124095576030430"),
             [0xFF, 0xED, 0xCB, 0xA9, 0x87, 0x65, 0x43, 0x22],
-            undefined,
+            0xc76179ae,
             undefined
         );
     }
@@ -795,7 +870,7 @@ const assert = Chai.assert;
         this.testLong(
             BigInt("-5124095576030430"),
             [0x22, 0x43, 0x65, 0x87, 0xA9, 0xCB, 0xED, 0xFF],
-            undefined,
+            0x24c8cef5,
             false
         );
     }
@@ -805,7 +880,7 @@ const assert = Chai.assert;
         this.testLong(
             BigInt("-1311768467463790320"),
             [0xED, 0xCB, 0xA9, 0x87, 0x65, 0x43, 0x21, 0x10],
-            undefined,
+            0xce7e18ad,
             undefined
         );
     }
@@ -815,7 +890,7 @@ const assert = Chai.assert;
         this.testLong(
             BigInt("-1311768467463790320"),
             [0x10, 0x21, 0x43, 0x65, 0x87, 0xA9, 0xCB, 0xED],
-            undefined,
+            0x16370f66,
             false
         );
     }
@@ -825,7 +900,7 @@ const assert = Chai.assert;
         this.testLong(
             BigInt(0),
             [0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00],
-            undefined,
+            0x00000000,
             undefined
         );
     }
@@ -835,18 +910,8 @@ const assert = Chai.assert;
         this.testLong(
             BigInt(0),
             [0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00],
-            undefined,
-            true
-        );
-    }
-
-    @test
-    public fromLong_readOnly() {
-        this.testLong(
-            BigInt(0),
-            [0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00],
-            true,
-            undefined
+            0x00000000,
+            false
         );
     }
 
@@ -863,23 +928,13 @@ const assert = Chai.assert;
 
         // Assert
         assert.isOk(bv);
+
+        assert.strictEqual(bv.checksum, 0x8227a366);
         assert.strictEqual(bv.length, TestConstants.testFileContents.length);
         assert.isFalse(bv.isEmpty);
         assert.isFalse(bv.isReadOnly);
-        assert.deepEqual(bv.data, new Uint8Array(TestConstants.testFileContents));
-    }
 
-    @test
-    public fromPath_readOnly() {
-        // Arrange, Act
-        const bv = ByteVector.fromPath(TestConstants.testFilePath, true);
-
-        // Assert
-        assert.isOk(bv);
-        assert.strictEqual(bv.length, TestConstants.testFileContents.length);
-        assert.isFalse(bv.isEmpty);
-        assert.isTrue(bv.isReadOnly);
-        assert.deepEqual(bv.data, new Uint8Array(TestConstants.testFileContents));
+        ByteVector_ConstructorTests.equalContents(bv, TestConstants.testFileContents);
     }
 
     @test
@@ -900,7 +955,7 @@ const assert = Chai.assert;
         ByteVector_ConstructorTests.testShort(
             0x0,
             [0x0, 0x0],
-            undefined,
+            0x00000000,
             undefined
         );
     }
@@ -910,7 +965,7 @@ const assert = Chai.assert;
         ByteVector_ConstructorTests.testShort(
             0x0,
             [0x0, 0x0],
-            undefined,
+            0x00000000,
             false
         );
     }
@@ -920,7 +975,7 @@ const assert = Chai.assert;
         ByteVector_ConstructorTests.testShort(
             0x12,
             [0x00, 0x12],
-            undefined,
+            0x4593e01e,
             undefined
         );
     }
@@ -930,7 +985,7 @@ const assert = Chai.assert;
         ByteVector_ConstructorTests.testShort(
             0x12,
             [0x12, 0x00],
-            undefined,
+            0xb0a3051c,
             false
         );
     }
@@ -940,7 +995,7 @@ const assert = Chai.assert;
         ByteVector_ConstructorTests.testShort(
             0x1234,
             [0x12, 0x34],
-            undefined,
+            0x77951e50,
             undefined
         );
     }
@@ -950,7 +1005,7 @@ const assert = Chai.assert;
         ByteVector_ConstructorTests.testShort(
             0x1234,
             [0x34, 0x12],
-            undefined,
+            0x30456c82,
             false
         );
     }
@@ -960,7 +1015,7 @@ const assert = Chai.assert;
         ByteVector_ConstructorTests.testShort(
             -0x12,
             [0xFF, 0xEE],
-            undefined,
+            0xb798a2ba,
             undefined
         );
     }
@@ -970,7 +1025,7 @@ const assert = Chai.assert;
         ByteVector_ConstructorTests.testShort(
             -0x12,
             [0xEE, 0xFF],
-            undefined,
+            0x3d003eb2,
             false
         );
     }
@@ -980,7 +1035,7 @@ const assert = Chai.assert;
         ByteVector_ConstructorTests.testShort(
             -0x1234,
             [0xED, 0xCC],
-            undefined,
+            0x969a2a28,
             undefined
         );
     }
@@ -990,18 +1045,8 @@ const assert = Chai.assert;
         ByteVector_ConstructorTests.testShort(
             -0x1234,
             [0xCC, 0xED],
-            undefined,
+            0xf8c27685,
             false
-        );
-    }
-
-    @test
-    public fromShort_readOnly() {
-        ByteVector_ConstructorTests.testShort(
-            0x0,
-            [0x0, 0x0],
-            true,
-            undefined
         );
     }
 
@@ -1024,10 +1069,11 @@ const assert = Chai.assert;
 
         // Assert
         assert.isOk(bv);
+
+        assert.strictEqual(bv.checksum, 0x00000000);
         assert.strictEqual(bv.length, 0);
         assert.isTrue(bv.isEmpty);
         assert.isFalse(bv.isReadOnly);
-        assert.deepEqual(bv.data, new Uint8Array());
     }
 
     @test
@@ -1037,10 +1083,13 @@ const assert = Chai.assert;
 
         // Assert
         assert.isOk(bv);
+
+        assert.strictEqual(bv.checksum, 0x00000000);
         assert.strictEqual(bv.length, 4);
         assert.isFalse(bv.isEmpty);
         assert.isFalse(bv.isReadOnly);
-        assert.deepEqual(bv.data, new Uint8Array([0x00, 0x00, 0x00, 0x00]));
+
+        ByteVector_ConstructorTests.equalContents(bv, [0x00, 0x00, 0x00, 0x00]);
     }
 
     @test
@@ -1050,23 +1099,13 @@ const assert = Chai.assert;
 
         // Assert
         assert.isOk(bv);
+
+        assert.strictEqual(bv.checksum, 0x7ab79290);
         assert.strictEqual(bv.length, 4);
         assert.isFalse(bv.isEmpty);
         assert.isFalse(bv.isReadOnly);
-        assert.deepEqual(bv.data, new Uint8Array([0xEE, 0xEE, 0xEE, 0xEE]));
-    }
 
-    @test
-    public fromSize_readOnly() {
-        // Arrange, Act
-        const bv = ByteVector.fromSize(4, undefined, true);
-
-        // Assert
-        assert.isOk(bv);
-        assert.strictEqual(bv.length, 4);
-        assert.isFalse(bv.isEmpty);
-        assert.isTrue(bv.isReadOnly);
-        assert.deepEqual(bv.data, new Uint8Array([0x00, 0x00, 0x00, 0x00]));
+        ByteVector_ConstructorTests.equalContents(bv, [0xEE, 0xEE, 0xEE, 0xEE]);
     }
 
     @test
@@ -1089,14 +1128,17 @@ const assert = Chai.assert;
 
         // Assert
         assert.isOk(bv);
+
+        assert.strictEqual(bv.checksum, 0x000000);
         assert.strictEqual(bv.length, 0);
         assert.isTrue(bv.isEmpty);
         assert.isFalse(bv.isReadOnly);
-        assert.deepEqual(bv.data, new Uint8Array([]));
+
+        ByteVector_ConstructorTests.equalContents(bv, []);
     }
 
     @test
-    public async fromStream_readWrite() {
+    public async fromStream() {
         // Arrange - Create a stream with some data in it
         const stream = new StreamBuffers.ReadableStreamBuffer();
         const bytes = new Uint8Array(TestConstants.testFileContents);
@@ -1109,31 +1151,16 @@ const assert = Chai.assert;
 
         // Assert
         assert.isOk(bv);
+
+        assert.strictEqual(bv.checksum, 0x8227a366);
         assert.strictEqual(bv.length, bytes.length);
         assert.isFalse(bv.isEmpty);
         assert.isFalse(bv.isReadOnly);
-        assert.deepEqual(bv.data, bytes);
+
+        ByteVector_ConstructorTests.equalContents(bv, bytes);
     }
 
-    @test
-    public async fromStream_readOnly() {
-        // Arrange - Create a stream with some data in it
-        const stream = new StreamBuffers.ReadableStreamBuffer();
-        const bytes = new Uint8Array(TestConstants.testFileContents);
-        stream.put(Buffer.from(bytes.buffer));
-
-        // Act - Get the promise, end the stream, await the promise
-        const bvPromise = ByteVector.fromStream(stream, true);
-        stream.stop();
-        const bv = await bvPromise;
-
-        // Assert
-        assert.isOk(bv);
-        assert.strictEqual(bv.length, bytes.length);
-        assert.isFalse(bv.isEmpty);
-        assert.isTrue(bv.isReadOnly);
-        assert.deepEqual(bv.data, bytes);
-    }
+    // @TODO: Add test for failing stream read
 
     @test
     public fromString_invalidLength() {
@@ -1146,8 +1173,8 @@ const assert = Chai.assert;
         ByteVector_ConstructorTests.testString(
             TestConstants.testStrings.UTF8.str,
             TestConstants.testStrings.UTF8.bytes,
-            undefined,
-            undefined,
+            0x88b08693,
+            StringType.UTF8,
             undefined
         );
     }
@@ -1157,9 +1184,9 @@ const assert = Chai.assert;
         ByteVector_ConstructorTests.testString(
             TestConstants.testStrings.UTF8.str,
             TestConstants.testStrings.UTF8.bytes.slice(0, 9),
-            undefined,
-            6,
-            undefined
+            0xbd58b35e,
+            StringType.UTF8,
+            6
         );
     }
 
@@ -1168,7 +1195,7 @@ const assert = Chai.assert;
         ByteVector_ConstructorTests.testString(
             "",
             [],
-            undefined,
+            0x00000000,
             undefined,
             undefined
         );
@@ -1176,80 +1203,74 @@ const assert = Chai.assert;
 
     @test
     public fromString_utf16LittleEndianFull() {
-        const originalLastUtf16Encoding = ByteVector.lastUtf16Encoding;
         ByteVector_ConstructorTests.testString(
             TestConstants.testStrings.UTF16LE.str,
             TestConstants.testStrings.UTF16LE.bytes,
+            0xd74d6dea,
             StringType.UTF16LE,
-            undefined,
             undefined
         );
-        assert.strictEqual(ByteVector.lastUtf16Encoding, originalLastUtf16Encoding);
     }
 
     @test
     public fromString_utf16LittleEndianPartial() {
-        const originalLastUtf16Encoding = ByteVector.lastUtf16Encoding;
         ByteVector_ConstructorTests.testString(
             TestConstants.testStrings.UTF16LE.str,
             TestConstants.testStrings.UTF16LE.bytes.slice(0, 12),
+            0xe9e1088f,
             StringType.UTF16LE,
-            6,
-            undefined
+            6
         );
-        assert.strictEqual(ByteVector.lastUtf16Encoding, originalLastUtf16Encoding);
     }
 
     @test
     public fromString_utf16LittleEndianEmpty() {
-        const originalLastUtf16Encoding = ByteVector.lastUtf16Encoding;
         ByteVector_ConstructorTests.testString(
             "",
             [],
+            0x00000000,
             StringType.UTF16LE,
-            undefined,
             undefined
         );
-        assert.strictEqual(ByteVector.lastUtf16Encoding, originalLastUtf16Encoding);
     }
 
     @test
     public fromString_utf16BigEndianFull() {
-        const originalLastUtf16Encoding = ByteVector.lastUtf16Encoding;
+        const originalLastUtf16Encoding = Encoding["_lastUtf16Encoding"];
         ByteVector_ConstructorTests.testString(
             TestConstants.testStrings.UTF16BE.str,
             TestConstants.testStrings.UTF16BE.bytes,
+            0xa8031d65,
             StringType.UTF16BE,
-            undefined,
             undefined
         );
-        assert.strictEqual(ByteVector.lastUtf16Encoding, originalLastUtf16Encoding);
+        assert.strictEqual(Encoding["_lastUtf16Encoding"], originalLastUtf16Encoding);
     }
 
     @test
     public fromString_utf16BigEndianPartial() {
-        const originalLastUtf16Encoding = ByteVector.lastUtf16Encoding;
+        const originalLastUtf16Encoding = Encoding["_lastUtf16Encoding"];
         ByteVector_ConstructorTests.testString(
             TestConstants.testStrings.UTF16BE.str,
             TestConstants.testStrings.UTF16BE.bytes.slice(0, 12),
+            0xa5d3b1ab,
             StringType.UTF16BE,
-            6,
-            undefined
+            6
         );
-        assert.strictEqual(ByteVector.lastUtf16Encoding, originalLastUtf16Encoding);
+        assert.strictEqual(Encoding["_lastUtf16Encoding"], originalLastUtf16Encoding);
     }
 
     @test
     public fromString_utf16BigEndianEmpty() {
-        const originalLastUtf16Encoding = ByteVector.lastUtf16Encoding;
+        const originalLastUtf16Encoding = Encoding["_lastUtf16Encoding"];
         ByteVector_ConstructorTests.testString(
             "",
             [],
+            0x00000000,
             StringType.UTF16BE,
-            undefined,
             undefined
         );
-        assert.strictEqual(ByteVector.lastUtf16Encoding, originalLastUtf16Encoding);
+        assert.strictEqual(Encoding["_lastUtf16Encoding"], originalLastUtf16Encoding);
     }
 
     @test
@@ -1257,8 +1278,8 @@ const assert = Chai.assert;
         ByteVector_ConstructorTests.testString(
             TestConstants.testStrings.Latin1.str,
             TestConstants.testStrings.Latin1.bytes,
+            0xd1733f6b,
             StringType.Latin1,
-            undefined,
             undefined
         );
     }
@@ -1268,9 +1289,9 @@ const assert = Chai.assert;
         ByteVector_ConstructorTests.testString(
             TestConstants.testStrings.Latin1.str,
             TestConstants.testStrings.Latin1.bytes.slice(0, 6),
+            0x919ae494,
             StringType.Latin1,
-            6,
-            undefined
+            6
         );
     }
 
@@ -1279,8 +1300,8 @@ const assert = Chai.assert;
         ByteVector_ConstructorTests.testString(
             "",
             [],
+            0x00000000,
             StringType.Latin1,
-            undefined,
             undefined
         );
     }
@@ -1288,69 +1309,61 @@ const assert = Chai.assert;
     @test
     public fromString_utf16Full() {
         // This test will change the last used utf16 encoding, so we'll restore it afterward
-        const originalLastEncoding = ByteVector.lastUtf16Encoding;
-        ByteVector.lastUtf16Encoding = "something bogus";
-
-        ByteVector_ConstructorTests.testString(
-            TestConstants.testStrings.UTF16LEWithBOM.str,
-            TestConstants.testStrings.UTF16LEWithBOM.bytes,
-            StringType.UTF16,
-            undefined,
-            undefined
-        );
-        assert.strictEqual(ByteVector.lastUtf16Encoding, "utf16-le");
-
-        // Cleanup
-        ByteVector.lastUtf16Encoding = originalLastEncoding;
+        const originalLastEncoding = Encoding["_lastUtf16Encoding"];
+        Encoding["_lastUtf16Encoding"] = StringType.Latin1;
+        try {
+            ByteVector_ConstructorTests.testString(
+                TestConstants.testStrings.UTF16LEWithBOM.str,
+                TestConstants.testStrings.UTF16LEWithBOM.bytes,
+                0x37993f26,
+                StringType.UTF16,
+                undefined
+            );
+            assert.strictEqual(Encoding["_lastUtf16Encoding"], StringType.UTF16LE);
+        } finally {
+            // Cleanup
+            Encoding["_lastUtf16Encoding"] = originalLastEncoding;
+        }
     }
 
     @test
     public fromString_utf16Partial() {
         // This test will change the last used utf16 encoding, so we'll restore it afterward
-        const originalLastEncoding = ByteVector.lastUtf16Encoding;
-        ByteVector.lastUtf16Encoding = "something bogus";
-
-        ByteVector_ConstructorTests.testString(
-            TestConstants.testStrings.UTF16LEWithBOM.str,
-            TestConstants.testStrings.UTF16LEWithBOM.bytes.slice(0, 14),
-            StringType.UTF16,
-            6,
-            undefined
-        );
-        assert.strictEqual(ByteVector.lastUtf16Encoding, "utf16-le");
-
-        // Cleanup
-        ByteVector.lastUtf16Encoding = originalLastEncoding;
+        const originalLastEncoding = Encoding["_lastUtf16Encoding"];
+        Encoding["_lastUtf16Encoding"] = StringType.Latin1;
+        try {
+            ByteVector_ConstructorTests.testString(
+                TestConstants.testStrings.UTF16LEWithBOM.str,
+                TestConstants.testStrings.UTF16LEWithBOM.bytes.slice(0, 14),
+                0xee6338ca,
+                StringType.UTF16,
+                6
+            );
+            assert.strictEqual(Encoding["_lastUtf16Encoding"], StringType.UTF16LE);
+        } finally {
+            // Cleanup
+            Encoding["_lastUtf16Encoding"] = originalLastEncoding;
+        }
     }
 
     @test
     public fromString_utf16Empty() {
         // This test will change the last used utf16 encoding, so we'll restore it afterward
-        const originalLastEncoding = ByteVector.lastUtf16Encoding;
-        ByteVector.lastUtf16Encoding = "something bogus";
-
-        ByteVector_ConstructorTests.testString(
-            "",
-            TestConstants.testStrings.UTF16LEWithBOM.bytes.slice(0, 2),
-            StringType.UTF16,
-            undefined,
-            undefined
-        );
-        assert.strictEqual(ByteVector.lastUtf16Encoding, "something bogus");
-
-        // Cleanup
-        ByteVector.lastUtf16Encoding = originalLastEncoding;
-    }
-
-    @test
-    public fromString_readOnly() {
-        ByteVector_ConstructorTests.testString(
-            "",
-            [],
-            StringType.Latin1,
-            undefined,
-            true
-        );
+        const originalLastEncoding = Encoding["_lastUtf16Encoding"];
+        Encoding["_lastUtf16Encoding"] = StringType.Latin1;
+        try {
+            ByteVector_ConstructorTests.testString(
+                "",
+                TestConstants.testStrings.UTF16LEWithBOM.bytes.slice(0, 2),
+                0xfb8979ca,
+                StringType.UTF16,
+                undefined
+            );
+            assert.strictEqual(Encoding["_lastUtf16Encoding"], StringType.Latin1);
+        } finally {
+            // Cleanup
+            Encoding["_lastUtf16Encoding"] = originalLastEncoding;
+        }
     }
 
     @test
@@ -1360,17 +1373,11 @@ const assert = Chai.assert;
     }
 
     @test
-    public fromUInt_overflow() {
-        // Arrange, Act, Assert
-        assert.throws(() => { ByteVector.fromUint(0x10000000000); });
-    }
-
-    @test
     public fromUInt_zero_bigEndian() {
         ByteVector_ConstructorTests.testUInt(
             0x0,
             [0x0, 0x0, 0x0, 0x0],
-            undefined,
+            0x00000000,
             undefined
         );
     }
@@ -1380,7 +1387,7 @@ const assert = Chai.assert;
         ByteVector_ConstructorTests.testUInt(
             0x0,
             [0x0, 0x0, 0x0, 0x0],
-            undefined,
+            0x00000000,
             false
         );
     }
@@ -1390,7 +1397,7 @@ const assert = Chai.assert;
         ByteVector_ConstructorTests.testUInt(
             0x12,
             [0x00, 0x00, 0x00, 0x12],
-            undefined,
+            0x4593e01e,
             undefined
         );
     }
@@ -1400,7 +1407,7 @@ const assert = Chai.assert;
         ByteVector_ConstructorTests.testUInt(
             0x12,
             [0x12, 0x00, 0x00, 0x00],
-            undefined,
+            0x4b0e057a,
             false
         );
     }
@@ -1410,7 +1417,7 @@ const assert = Chai.assert;
         ByteVector_ConstructorTests.testUInt(
             0x1234,
             [0x00, 0x00, 0x12, 0x34],
-            undefined,
+            0x77951e50,
             undefined
         );
     }
@@ -1420,7 +1427,7 @@ const assert = Chai.assert;
         ByteVector_ConstructorTests.testUInt(
             0x1234,
             [0x34, 0x12, 0x00, 0x00],
-            undefined,
+            0x7f33b629,
             false
         );
     }
@@ -1430,7 +1437,7 @@ const assert = Chai.assert;
         ByteVector_ConstructorTests.testUInt(
             0x123456,
             [0x00, 0x12, 0x34, 0x56],
-            undefined,
+            0x09fcfb57,
             undefined
         );
     }
@@ -1440,7 +1447,7 @@ const assert = Chai.assert;
         ByteVector_ConstructorTests.testUInt(
             0x123456,
             [0x56, 0x34, 0x12, 0x00],
-            undefined,
+            0x77b636ba,
             false
         );
     }
@@ -1450,7 +1457,7 @@ const assert = Chai.assert;
         ByteVector_ConstructorTests.testUInt(
             0x12345678,
             [0x12, 0x34, 0x56, 0x78],
-            undefined,
+            0x188e5750,
             undefined
         );
     }
@@ -1460,7 +1467,7 @@ const assert = Chai.assert;
         ByteVector_ConstructorTests.testUInt(
             0x12345678,
             [0x78, 0x56, 0x34, 0x12],
-            undefined,
+            0x6a330d2d,
             false
         );
     }
@@ -1470,7 +1477,7 @@ const assert = Chai.assert;
         ByteVector_ConstructorTests.testUInt(
             0xFFFFFFFF,
             [0xFF, 0xFF, 0xFF, 0xFF],
-            undefined,
+            0xc704dd7b,
             undefined
         );
     }
@@ -1480,617 +1487,618 @@ const assert = Chai.assert;
         ByteVector_ConstructorTests.testUInt(
             0xFFFFFFFF,
             [0xFF, 0xFF, 0xFF, 0xFF],
-            undefined,
+            0xc704dd7b,
             false
         );
     }
 
     @test
-    public fromUInt_readOnly() {
-        ByteVector_ConstructorTests.testUInt(
-            0,
-            [0x00, 0x00, 0x00, 0x00],
-            true,
-            undefined
-        );
-    }
-
-    @test
-    public fromULong_bigInt_badValue() {
+    public fromUlong_bigInt_badValue() {
         // Arrange, Act, Assert
-        Testers.testTruthy((v: bigint) => { ByteVector.fromULong(v); });
+        Testers.testTruthy((v: bigint) => { ByteVector.fromUlong(v); });
     }
 
     @test
-    public fromULong_number_badValue() {
+    public fromUlong_number_badValue() {
         // Arrange / Act / Assert
-        Testers.testSafeUint((v: number) => { ByteVector.fromULong(v); });
+        Testers.testSafeUint((v: number) => { ByteVector.fromUlong(v); });
     }
 
     @test
-    public fromULong_bigInt_overflow() {
+    public fromUlong_bigInt_overflow() {
         // Arrange, Act, Assert
-        assert.throws(() => { ByteVector.fromULong(BigInt("18446744073709551616")); });
-        assert.throws(() => { ByteVector.fromULong(BigInt("-1")); });
+        assert.throws(() => { ByteVector.fromUlong(BigInt("18446744073709551616")); });
+        assert.throws(() => { ByteVector.fromUlong(BigInt("-1")); });
     }
 
     @test
-    public fromULong_bigIntPositive1Byte_bigEndian() {
-        this.testULong(
-            BigInt("0x12"),
-            [0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x12],
-            undefined,
-            undefined
-        );
-    }
-
-    @test
-    public fromULong_numberPositive1Byte_bigEndian() {
-        this.testULong(
-            0x12,
-            [0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x12],
-            undefined,
-            undefined
-        );
-    }
-
-    @test
-    public fromULong_bigIntPositive1Byte_littleEndian() {
-        this.testULong(
-            BigInt("0x12"),
-            [0x12, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00],
-            undefined,
-            false
-        );
-    }
-
-    @test
-    public fromULong_numberPositive1Byte_littleEndian() {
-        this.testULong(
-            0x12,
-            [0x12, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00],
-            undefined,
-            false
-        );
-    }
-
-    @test
-    public fromULong_bigIntPositive2Byte_bigEndian() {
-        this.testULong(
-            BigInt("0x1234"),
-            [0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x12, 0x34],
-            undefined,
-            undefined
-        );
-    }
-
-    @test
-    public fromULong_numberPositive2Byte_bigEndian() {
-        this.testULong(
+    public fromUlong_positiveNumber_bigEndian() {
+        this.testUlong(
             0x1234,
             [0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x12, 0x34],
-            undefined,
+            0x77951e50,
             undefined
         );
     }
 
     @test
-    public fromULong_bigIntPositive2Byte_littleEndian() {
-        this.testULong(
-            BigInt("0x1234"),
-            [0x34, 0x12, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00],
-            undefined,
-            false
-        );
-    }
-
-    @test
-    public fromULong_numberPositive2Byte_littleEndian() {
-        this.testULong(
+    public fromUlong_positiveNumber_littleEndian() {
+        this.testUlong(
             0x1234,
             [0x34, 0x12, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00],
-            undefined,
+            0xe032bc9b,
             false
         );
     }
 
     @test
-    public fromULong_bigIntPositive3Byte_bigEndian() {
-        this.testULong(
+    public fromUlong_bigPositiveNumber_bigEndian() {
+        this.testUlong(
+            0x1234000000,
+            [0x00, 0x00, 0x00, 0x12, 0x34, 0x00, 0x00, 0x00],
+            0x70c0e641,
+            undefined
+        );
+    }
+
+    @test
+    public fromUlong_bigPositiveNumber_littleEndian() {
+        this.testUlong(
+            0x1234000000,
+            [0x00, 0x00, 0x00, 0x34, 0x12, 0x00, 0x00, 0x00],
+            0xeb4d895a,
+            false
+        );
+    }
+
+    @test
+    public fromUlong_bigIntPositive1Byte_bigEndian() {
+        this.testUlong(
+            BigInt("0x12"),
+            [0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x12],
+            0x4593e01e,
+            undefined
+        );
+    }
+
+    @test
+    public fromUlong_numberPositive1Byte_bigEndian() {
+        this.testUlong(
+            0x12,
+            [0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x12],
+            0x4593e01e,
+            undefined
+        );
+    }
+
+    @test
+    public fromUlong_bigIntPositive1Byte_littleEndian() {
+        this.testUlong(
+            BigInt("0x12"),
+            [0x12, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00],
+            0x1a9b1e5f,
+            false
+        );
+    }
+
+    @test
+    public fromUlong_numberPositive1Byte_littleEndian() {
+        this.testUlong(
+            0x12,
+            [0x12, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00],
+            0x1a9b1e5f,
+            false
+        );
+    }
+
+    @test
+    public fromUlong_bigIntPositive2Byte_bigEndian() {
+        this.testUlong(
+            BigInt("0x1234"),
+            [0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x12, 0x34],
+            0x77951e50,
+            undefined
+        );
+    }
+
+    @test
+    public fromUlong_numberPositive2Byte_bigEndian() {
+        this.testUlong(
+            0x1234,
+            [0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x12, 0x34],
+            0x77951e50,
+            undefined
+        );
+    }
+
+    @test
+    public fromUlong_bigIntPositive2Byte_littleEndian() {
+        this.testUlong(
+            BigInt("0x1234"),
+            [0x34, 0x12, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00],
+            0xe032bc9b,
+            false
+        );
+    }
+
+    @test
+    public fromUlong_numberPositive2Byte_littleEndian() {
+        this.testUlong(
+            0x1234,
+            [0x34, 0x12, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00],
+            0xe032bc9b,
+            false
+        );
+    }
+
+    @test
+    public fromUlong_bigIntPositive3Byte_bigEndian() {
+        this.testUlong(
             BigInt("0x123456"),
             [0x00, 0x00, 0x00, 0x00, 0x00, 0x12, 0x34, 0x56],
-            undefined,
+            0x09fcfb57,
             undefined
         );
     }
 
     @test
-    public fromULong_numberPositive3Byte_bigEndian() {
-        this.testULong(
+    public fromUlong_numberPositive3Byte_bigEndian() {
+        this.testUlong(
             0x123456,
             [0x00, 0x00, 0x00, 0x00, 0x00, 0x12, 0x34, 0x56],
-            undefined,
+            0x09fcfb57,
             undefined
         );
     }
 
     @test
-    public fromULong_bigIntPositive3Byte_littleEndian() {
-        this.testULong(
+    public fromUlong_bigIntPositive3Byte_littleEndian() {
+        this.testUlong(
             BigInt("0x123456"),
             [0x56, 0x34, 0x12, 0x00, 0x00, 0x00, 0x00, 0x00],
-            undefined,
+            0x59e6bc55,
             false
         );
     }
 
     @test
-    public fromULong_numberPositive3Byte_littleEndian() {
-        this.testULong(
+    public fromUlong_numberPositive3Byte_littleEndian() {
+        this.testUlong(
             0x123456,
             [0x56, 0x34, 0x12, 0x00, 0x00, 0x00, 0x00, 0x00],
-            undefined,
+            0x59e6bc55,
             false
         );
     }
 
     @test
-    public fromULong_bigIntPositive4Byte_bigEndian() {
-        this.testULong(
+    public fromUlong_bigIntPositive4Byte_bigEndian() {
+        this.testUlong(
             BigInt("0x12345678"),
             [0x00, 0x00, 0x00, 0x00, 0x12, 0x34, 0x56, 0x78],
-            undefined,
+            0x188e5750,
             undefined
         );
     }
 
     @test
-    public fromULong_numberPositive4Byte_bigEndian() {
-        this.testULong(
+    public fromUlong_numberPositive4Byte_bigEndian() {
+        this.testUlong(
             0x12345678,
             [0x00, 0x00, 0x00, 0x00, 0x12, 0x34, 0x56, 0x78],
-            undefined,
+            0x188e5750,
             undefined
         );
     }
 
     @test
-    public fromULong_bigIntPositive4Byte_littleEndian() {
-        this.testULong(
+    public fromUlong_bigIntPositive4Byte_littleEndian() {
+        this.testUlong(
             BigInt("0x12345678"),
             [0x78, 0x56, 0x34, 0x12, 0x00, 0x00, 0x00, 0x00],
-            undefined,
+            0xee67587a,
             false
         );
     }
 
     @test
-    public fromULong_numberPositive4Byte_littleEndian() {
-        this.testULong(
+    public fromUlong_numberPositive4Byte_littleEndian() {
+        this.testUlong(
             0x12345678,
             [0x78, 0x56, 0x34, 0x12, 0x00, 0x00, 0x00, 0x00],
-            undefined,
+            0xee67587a,
             false
         );
     }
 
     @test
-    public fromULong_bigIntPositive5Byte_bigEndian() {
-        this.testULong(
+    public fromUlong_bigIntPositive5Byte_bigEndian() {
+        this.testUlong(
             BigInt("0x123456789A"),
             [0x00, 0x00, 0x00, 0x12, 0x34, 0x56, 0x78, 0x9A],
-            undefined,
+            0xeed98b80,
             undefined
         );
     }
 
     @test
-    public fromULong_numberPositive5Byte_bigEndian() {
-        this.testULong(
+    public fromUlong_numberPositive5Byte_bigEndian() {
+        this.testUlong(
             0x123456789A,
             [0x00, 0x00, 0x00, 0x12, 0x34, 0x56, 0x78, 0x9A],
-            undefined,
+            0xeed98b80,
             undefined
         );
     }
 
     @test
-    public fromULong_bigIntPositive5Byte_littleEndian() {
-        this.testULong(
+    public fromUlong_bigIntPositive5Byte_littleEndian() {
+        this.testUlong(
             BigInt("0x123456789A"),
             [0x9A, 0x78, 0x56, 0x34, 0x12, 0x00, 0x00, 0x00],
-            undefined,
+            0xa9896e71,
             false
         );
     }
 
     @test
-    public fromULong_numberPositive5Byte_littleEndian() {
-        this.testULong(
+    public fromUlong_numberPositive5Byte_littleEndian() {
+        this.testUlong(
             0x123456789A,
             [0x9A, 0x78, 0x56, 0x34, 0x12, 0x00, 0x00, 0x00],
-            undefined,
+            0xa9896e71,
             false
         );
     }
 
     @test
-    public fromULong_bigIntPositive6Byte_bigEndian() {
-        this.testULong(
+    public fromUlong_bigIntPositive6Byte_bigEndian() {
+        this.testUlong(
             BigInt("0x123456789ABC"),
             [0x00, 0x00, 0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC],
-            undefined,
+            0xa89e1069,
             undefined
         );
     }
 
     @test
-    public fromULong_numberPositive6Byte_bigEndian() {
-        this.testULong(
+    public fromUlong_numberPositive6Byte_bigEndian() {
+        this.testUlong(
             0x123456789ABC,
             [0x00, 0x00, 0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC],
-            undefined,
+            0xa89e1069,
             undefined
         );
     }
 
     @test
-    public fromULong_bigIntPositive6Byte_littleEndian() {
-        this.testULong(
+    public fromUlong_bigIntPositive6Byte_littleEndian() {
+        this.testUlong(
             BigInt("0x123456789ABC"),
             [0xBC, 0x9A, 0x78, 0x56, 0x34, 0x12, 0x00, 0x00],
-            undefined,
+            0x8c546d6b,
             false
         );
     }
 
     @test
-    public fromULong_numberPositive6Byte_littleEndian() {
-        this.testULong(
+    public fromUlong_numberPositive6Byte_littleEndian() {
+        this.testUlong(
             0x123456789ABC,
             [0xBC, 0x9A, 0x78, 0x56, 0x34, 0x12, 0x00, 0x00],
-            undefined,
+            0x8c546d6b,
             false
         );
     }
 
     @test
-    public fromULong_bigIntPositive7Byte_bigEndian() {
-        this.testULong(
+    public fromUlong_bigIntPositive7Byte_bigEndian() {
+        this.testUlong(
             BigInt("0x123456789ABCDE"),
             [0x00, 0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC, 0xDE],
-            undefined,
+            0x64223955,
             undefined
         );
     }
 
     @test
-    public fromULong_bigIntPositive7Byte_littleEndian() {
-        this.testULong(
+    public fromUlong_bigIntPositive7Byte_littleEndian() {
+        this.testUlong(
             BigInt("0x123456789ABCDE"),
             [0xDE, 0xBC, 0x9A, 0x78, 0x56, 0x34, 0x12, 0x00],
-            undefined,
+            0x662acd89,
             false
         );
     }
 
     @test
-    public fromULong_bigIntPositive8Byte_bigEndian() {
-        this.testULong(
+    public fromUlong_bigIntPositive8Byte_bigEndian() {
+        this.testUlong(
             BigInt("0x123456789ABCDEF0"),
             [0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC, 0xDE, 0xF0],
-            undefined,
+            0x14201842,
             undefined
         );
     }
 
     @test
-    public fromULong_bigIntPositive8Byte_littleEndian() {
-        this.testULong(
+    public fromUlong_bigIntPositive8Byte_littleEndian() {
+        this.testUlong(
             BigInt("0x123456789ABCDEF0"),
             [0xF0, 0xDE, 0xBC, 0x9A, 0x78, 0x56, 0x34, 0x12],
-            undefined,
+            0x47c71870,
             false
         );
     }
 
     @test
-    public fromULong_bigIntUnsignedRange_bigEndian() {
-        this.testULong(
+    public fromUlong_bigIntUnsignedRange_bigEndian() {
+        this.testUlong(
             BigInt("0xFFFFFFFFFFFFFFFF"),
             [0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF],
-            undefined,
+            0xae006622,
             undefined
         );
     }
 
     @test
-    public fromULong_bigIntUnsignedRange_littleEndian() {
-        this.testULong(
+    public fromUlong_bigIntUnsignedRange_littleEndian() {
+        this.testUlong(
             BigInt("0xFFFFFFFFFFFFFFFF"),
             [0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF],
-            undefined,
+            0xae006622,
             false
         );
     }
 
     @test
-    public fromULong_bigIntZero_bigEndian() {
-        this.testULong(
+    public fromUlong_bigIntZero_bigEndian() {
+        this.testUlong(
             BigInt(0),
             [0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00],
-            undefined,
+            0x00000000,
             undefined
         );
     }
 
     @test
-    public fromULong_numberZero_bigEndian() {
-        this.testULong(
+    public fromUlong_numberZero_bigEndian() {
+        this.testUlong(
             0,
             [0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00],
-            undefined,
+            0x00000000,
             undefined
         );
     }
 
     @test
-    public fromULong_bigIntZero_littleEndian() {
-        this.testULong(
+    public fromUlong_bigIntZero_littleEndian() {
+        this.testUlong(
             BigInt(0),
             [0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00],
-            undefined,
-            true
-        );
-    }
-
-    @test
-    public fromULong_numberZero_littleEndian() {
-        this.testULong(
-            0,
-            [0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00],
-            undefined,
-            true
-        );
-    }
-
-    @test
-    public fromULong_readOnly() {
-        this.testULong(
-            BigInt(0),
-            [0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00],
-            true,
-            undefined
-        );
-    }
-
-    @test
-    public fromUShort_badShort() {
-        // Arrange, Act, Assert
-        Testers.testUint((v: number) => { ByteVector.fromUShort(v); });
-    }
-
-    @test
-    public fromUShort_overflow() {
-        // Arrange, Act, Assert
-        assert.throws(() => { ByteVector.fromUShort(0x1000000); });
-        assert.throws(() => { ByteVector.fromUShort(-0x1000000); });
-    }
-
-    @test
-    public fromUShort_zero_bigEndian() {
-        ByteVector_ConstructorTests.testUShort(
-            0x0,
-            [0x0, 0x0],
-            undefined,
-            undefined
-        );
-    }
-
-    @test
-    public fromUShort_zero_littleEndian() {
-        ByteVector_ConstructorTests.testUShort(
-            0x0,
-            [0x0, 0x0],
-            undefined,
+            0x00000000,
             false
         );
     }
 
     @test
-    public fromUShort_positive1Byte_bigEndian() {
-        ByteVector_ConstructorTests.testUShort(
+    public fromUlong_numberZero_littleEndian() {
+        this.testUlong(
+            0,
+            [0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00],
+            0x00000000,
+            false
+        );
+    }
+
+    @test
+    public fromUshort_badShort() {
+        // Arrange, Act, Assert
+        Testers.testUint((v: number) => { ByteVector.fromUshort(v); });
+    }
+
+    @test
+    public fromUshort_overflow() {
+        // Arrange, Act, Assert
+        assert.throws(() => { ByteVector.fromUshort(0x1000000); });
+        assert.throws(() => { ByteVector.fromUshort(-0x1000000); });
+    }
+
+    @test
+    public fromUshort_zero_bigEndian() {
+        ByteVector_ConstructorTests.testUshort(
+            0x0,
+            [0x0, 0x0],
+            0x00000000,
+            undefined
+        );
+    }
+
+    @test
+    public fromUshort_zero_littleEndian() {
+        ByteVector_ConstructorTests.testUshort(
+            0x0,
+            [0x0, 0x0],
+            0x00000000,
+            false
+        );
+    }
+
+    @test
+    public fromUshort_positive1Byte_bigEndian() {
+        ByteVector_ConstructorTests.testUshort(
             0x12,
             [0x00, 0x12],
-            undefined,
+            0x4593e01e,
             undefined
         );
     }
 
     @test
-    public fromUShort_positive1Byte_littleEndian() {
-        ByteVector_ConstructorTests.testUShort(
+    public fromUshort_positive1Byte_littleEndian() {
+        ByteVector_ConstructorTests.testUshort(
             0x12,
             [0x12, 0x00],
-            undefined,
+            0xb0a3051c,
             false
         );
     }
 
     @test
-    public fromUShort_positive2Byte_bigEndian() {
-        ByteVector_ConstructorTests.testUShort(
+    public fromUshort_positive2Byte_bigEndian() {
+        ByteVector_ConstructorTests.testUshort(
             0x1234,
             [0x12, 0x34],
-            undefined,
+            0x77951e50,
             undefined
         );
     }
 
     @test
-    public fromUShort_positive2Byte_littleEndian() {
-        ByteVector_ConstructorTests.testUShort(
+    public fromUshort_positive2Byte_littleEndian() {
+        ByteVector_ConstructorTests.testUshort(
             0x1234,
             [0x34, 0x12],
-            undefined,
+            0x30456c82,
             false
         );
     }
 
     @test
-    public fromUShort_unsignedRange_bigEndian() {
-        ByteVector_ConstructorTests.testUShort(
+    public fromUshort_unsignedRange_bigEndian() {
+        ByteVector_ConstructorTests.testUshort(
             0xFFFF,
             [0xFF, 0xFF],
-            undefined,
+            0xff48647d,
             undefined
         );
     }
 
     @test
-    public fromUShort_unsignedRange_littleEndian() {
-        ByteVector_ConstructorTests.testUShort(
+    public fromUshort_unsignedRange_littleEndian() {
+        ByteVector_ConstructorTests.testUshort(
             0xFFFF,
             [0xFF, 0xFF],
-            undefined,
+            0xff48647d,
             false
         );
     }
 
-    @test
-    public fromUShort_readOnly() {
-        ByteVector_ConstructorTests.testUShort(
-            0x0,
-            [0x0, 0x0],
-            true,
-            undefined
-        );
-    }
-
-    private static testInt(value: number, expectedData: number[], isReadOnly: boolean, bigEndian: boolean): void {
-        // Arrange, Act
-        const bv = ByteVector.fromInt(value, bigEndian, isReadOnly);
-
-        // Assert
-        assert.isOk(bv);
-        assert.strictEqual(bv.length, 4);
-        assert.isFalse(bv.isEmpty);
-        if (isReadOnly !== undefined) {
-            assert.strictEqual(bv.isReadOnly, isReadOnly);
-        } else {
-            assert.isFalse(bv.isReadOnly);
+    private static equalContents(bv: ByteVector, expected: ArrayLike<number>): void {
+        assert.strictEqual(bv.length, expected.length);
+        for (let i = 0; i < bv.length; i++) {
+            assert.strictEqual(bv.get(i), expected[i]);
         }
-        assert.deepEqual(bv.data, new Uint8Array(expectedData));
+    }
+
+    private static testInt(
+        value: number,
+        expectedData: number[],
+        expectedCrc: number,
+        bigEndian: boolean
+    ): void {
+        ByteVector_ConstructorTests.testFromX(
+            ByteVector.fromInt(value, bigEndian),
+            expectedData,
+            expectedCrc
+        );
     }
 
     private testLong(
-        value: bigint,
+        value: bigint | number,
         expectedData: number[],
-        isReadOnly: boolean,
+        expectedCrc: number,
         bigEndian: boolean
     ): void {
-        // Arrange, Act
-        const bv = ByteVector.fromLong(value, bigEndian, isReadOnly);
-
-        // Assert
-        assert.isOk(bv);
-        assert.strictEqual(bv.length, 8);
-        assert.isFalse(bv.isEmpty);
-        if (isReadOnly !== undefined) {
-            assert.strictEqual(bv.isReadOnly, isReadOnly);
-        } else {
-            assert.isFalse(bv.isReadOnly);
-        }
-        assert.deepEqual(bv.data, new Uint8Array(expectedData));
+        ByteVector_ConstructorTests.testFromX(
+            ByteVector.fromLong(value, bigEndian),
+            expectedData,
+            expectedCrc,
+        );
     }
 
-    private static testShort(value: number, expectedData: number[], isReadOnly: boolean, bigEndian: boolean): void {
-        // Arrange, Act
-        const bv = ByteVector.fromShort(value, bigEndian, isReadOnly);
-
-        // Assert
-        assert.isOk(bv);
-        assert.strictEqual(bv.length, 2);
-        assert.isFalse(bv.isEmpty);
-        if (isReadOnly !== undefined) {
-            assert.strictEqual(bv.isReadOnly, isReadOnly);
-        } else {
-            assert.isFalse(bv.isReadOnly);
-        }
-        assert.deepEqual(bv.data, new Uint8Array(expectedData));
+    private static testShort(
+        value: number,
+        expectedData: number[],
+        expectedCrc: number,
+        bigEndian: boolean
+    ): void {
+        ByteVector_ConstructorTests.testFromX(
+            ByteVector.fromShort(value, bigEndian),
+            expectedData,
+            expectedCrc
+        );
     }
 
     private static testString(
         str: string,
-        expectedData: number[],
+        expectedData: number[]|Uint8Array,
+        expectedCrc: number,
         stringType: StringType,
-        inputLength: number,
-        isReadOnly: boolean
+        inputLength: number
     ) {
-        // Arrange, Act
-        const bv = ByteVector.fromString(str, stringType, inputLength, isReadOnly);
-
-        // Assert
-        assert.isOk(bv);
-        assert.strictEqual(bv.isEmpty, expectedData.length === 0);
-        if (isReadOnly !== undefined) {
-            assert.strictEqual(bv.isReadOnly, isReadOnly);
-        } else {
-            assert.isFalse(bv.isReadOnly);
-        }
-        assert.deepEqual(bv.data, new Uint8Array(expectedData));
+        ByteVector_ConstructorTests.testFromX(
+            ByteVector.fromString(str, stringType, inputLength),
+            expectedData,
+            expectedCrc
+        );
     }
 
-    private static testUInt(value: number, expectedData: number[], isReadOnly: boolean, bigEndian: boolean): void {
-        // Arrange, Act
-        const bv = ByteVector.fromUint(value, bigEndian, isReadOnly);
-
-        // Assert
-        assert.isOk(bv);
-        assert.strictEqual(bv.length, 4);
-        assert.isFalse(bv.isEmpty);
-        if (isReadOnly !== undefined) {
-            assert.strictEqual(bv.isReadOnly, isReadOnly);
-        } else {
-            assert.isFalse(bv.isReadOnly);
-        }
-        assert.deepEqual(bv.data, new Uint8Array(expectedData));
-    }
-
-    private testULong(
-        value: bigint | number,
+    private static testUInt(
+        value: number,
         expectedData: number[],
-        isReadOnly: boolean,
+        expectedCrc: number,
         bigEndian: boolean
     ): void {
-        // Arrange, Act
-        const bv = ByteVector.fromULong(value, bigEndian, isReadOnly);
-
-        // Assert
-        assert.isOk(bv);
-        assert.strictEqual(bv.length, 8);
-        assert.isFalse(bv.isEmpty);
-        if (isReadOnly !== undefined) {
-            assert.strictEqual(bv.isReadOnly, isReadOnly);
-        } else {
-            assert.isFalse(bv.isReadOnly);
-        }
-        assert.deepEqual(bv.data, new Uint8Array(expectedData));
+        ByteVector_ConstructorTests.testFromX(
+            ByteVector.fromUint(value, bigEndian),
+            expectedData,
+            expectedCrc
+        );
     }
 
-    private static testUShort(value: number, expectedData: number[], isReadOnly: boolean, bigEndian: boolean): void {
-        // Arrange, Act
-        const bv = ByteVector.fromUShort(value, bigEndian, isReadOnly);
+    private testUlong(
+        value: bigint | number,
+        expectedData: number[],
+        expectedCrc: number,
+        bigEndian: boolean
+    ): void {
+        ByteVector_ConstructorTests.testFromX(
+            ByteVector.fromUlong(value, bigEndian),
+            expectedData,
+            expectedCrc,
+        );
+    }
 
+    private static testUshort(
+        value: number,
+        expectedData: number[],
+        expectedCrc: number,
+        bigEndian: boolean
+    ): void {
+        ByteVector_ConstructorTests.testFromX(
+            ByteVector.fromUshort(value, bigEndian),
+            expectedData,
+            expectedCrc
+        );
+    }
+
+    private static testFromX(
+        bv: ByteVector,
+        expectedData: number[]|Uint8Array,
+        expectedCrc: number
+    ): ByteVector {
         // Assert
         assert.isOk(bv);
-        assert.strictEqual(bv.length, 2);
-        assert.isFalse(bv.isEmpty);
-        if (isReadOnly !== undefined) {
-            assert.strictEqual(bv.isReadOnly, isReadOnly);
-        } else {
-            assert.isFalse(bv.isReadOnly);
-        }
-        assert.deepEqual(bv.data, new Uint8Array(expectedData));
+
+        assert.strictEqual(bv.checksum, expectedCrc);
+        assert.strictEqual(bv.isEmpty, expectedData.length === 0);
+        assert.isFalse(bv.isReadOnly);
+        assert.isFalse(bv.isView);
+        assert.strictEqual(bv.length, expectedData.length);
+
+        ByteVector_ConstructorTests.equalContents(bv, expectedData);
+
+        return bv;
     }
 }

@@ -1,5 +1,5 @@
-import * as Chai from "chai";
 import {suite, test} from "@testdeck/mocha";
+import {assert} from "chai";
 
 import FrameConstructorTests from "./frameConstructorTests";
 import {ByteVector, StringType} from "../../src/byteVector";
@@ -9,9 +9,6 @@ import {FrameIdentifiers} from "../../src/id3v2/frameIdentifiers";
 import {Testers} from "../utilities/testers";
 import {UserUrlLinkFrame} from "../../src/id3v2/frames/urlLinkFrame";
 
-// Setup chai
-const assert = Chai.assert;
-
 const getTestFrameData = (): ByteVector => {
     const header = new Id3v2FrameHeader(FrameIdentifiers.WXXX);
     header.frameSize = 12;
@@ -19,9 +16,9 @@ const getTestFrameData = (): ByteVector => {
     return ByteVector.concatenate(
         header.render(4),
         StringType.UTF16BE,
-        ByteVector.fromString("foo", StringType.UTF16BE, undefined, true),
+        ByteVector.fromString("foo", StringType.UTF16BE),
         ByteVector.getTextDelimiter(StringType.UTF16BE),
-        ByteVector.fromString("bar", StringType.Latin1, undefined, true)
+        ByteVector.fromString("bar", StringType.Latin1)
     );
 };
 
@@ -48,9 +45,9 @@ const getTestUserUrlLinkFrame = (): UserUrlLinkFrame => {
             0x00, 0x00,
             header.render(4),
             StringType.Latin1,
-            ByteVector.fromString("foo", StringType.Latin1, undefined, true),
+            ByteVector.fromString("foo", StringType.Latin1),
             ByteVector.getTextDelimiter(StringType.Latin1),
-            ByteVector.fromString("bar", StringType.Latin1, undefined, true)
+            ByteVector.fromString("bar", StringType.Latin1)
         );
 
         // Act
@@ -74,9 +71,9 @@ const getTestUserUrlLinkFrame = (): UserUrlLinkFrame => {
         const data = ByteVector.concatenate(
             header.render(4),
             StringType.Latin1,
-            ByteVector.fromString("foo", StringType.Latin1, undefined, true),   // - String 1
-            ByteVector.getTextDelimiter(StringType.Latin1),                     // - String separator
-            ByteVector.fromString("bar", StringType.Latin1, undefined, true)    // - String 2
+            ByteVector.fromString("foo", StringType.Latin1),   // - String 1
+            ByteVector.getTextDelimiter(StringType.Latin1),         // - String separator
+            ByteVector.fromString("bar", StringType.Latin1)    // - String 2
         );
 
         // Act

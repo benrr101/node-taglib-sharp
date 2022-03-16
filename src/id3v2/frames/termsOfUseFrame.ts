@@ -178,20 +178,19 @@ export default class TermsOfUseFrame extends Frame {
         }
 
         this.textEncoding = data.get(0);
-        this._language = data.toString(3, StringType.Latin1, 1);
-        this.text = data.toString(data.length - 4, this.textEncoding, 4);
+        this._language = data.subarray(1, 3).toString(StringType.Latin1);
+        this.text = data.subarray(4).toString(this.textEncoding);
     }
 
     /** @inheritDoc */
     protected renderFields(version: number) {
         const encoding = Frame.correctEncoding(this.textEncoding, version);
 
-        const v = ByteVector.empty();
-        v.addByte(encoding);
-        v.addByteVector(ByteVector.fromString(this.language, StringType.Latin1));
-        v.addByteVector(ByteVector.fromString(this.text, encoding));
-
-        return v;
+        return ByteVector.concatenate(
+            encoding,
+            ByteVector.fromString(this.language, StringType.Latin1),
+            ByteVector.fromString(this.text, encoding)
+        );
     }
 
     // #endregion

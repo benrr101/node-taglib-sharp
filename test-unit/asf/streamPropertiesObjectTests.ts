@@ -1,5 +1,5 @@
-import * as Chai from "chai";
 import {suite, test} from "@testdeck/mocha";
+import {assert} from "chai";
 
 import ObjectTests from "./objectTests";
 import RiffBitmapInfoHeader from "../../src/riff/riffBitmapInfoHeader";
@@ -13,9 +13,6 @@ import {File} from "../../src/file";
 import {MediaTypes} from "../../src/icodec";
 import {Testers} from "../utilities/testers";
 import {NumberUtils} from "../../src/utils";
-
-// Setup chai
-const assert = Chai.assert;
 
 @suite class Asf_StreamPropertiesObjectTests extends ObjectTests<StreamPropertiesObject> {
     protected get fromFileConstructor(): (f: File, p: number) => StreamPropertiesObject {
@@ -61,7 +58,7 @@ const assert = Chai.assert;
 
         // Assert
         assert.isOk(output);
-        Testers.bvEqual(output, data.mid(10));
+        Testers.bvEqual(output, data.subarray(10));
     }
 
     @test
@@ -69,21 +66,21 @@ const assert = Chai.assert;
         // Arrange
         const bytes = ByteVector.concatenate(
             Guids.AsfStreamPropertiesObject.toBytes(), // Object ID
-            ByteVector.fromULong(this._originalSize, false), // Object size
+            ByteVector.fromUlong(this._originalSize, false), // Object size
             Guids.AsfAudioMedia.toBytes(), // Stream type
             this._errorCorrectionGuid.toBytes(), // Error correction type GUID
-            ByteVector.fromULong(this._timeOffset, false), // Time offset
+            ByteVector.fromUlong(this._timeOffset, false), // Time offset
             ByteVector.fromUint(16, false), // Type specific data length
             ByteVector.fromUint(this._errorCorrectionData.length, false), // Error correction data length
             ByteVector.fromShort(this._flags, false), // Flags
             ByteVector.fromSize(4, 0x0), // Reserved
             // AUDIO TYPE SPECIFIC DATA
-            ByteVector.fromUShort(0xF1AC, false), // Format tag
-            ByteVector.fromUShort(3, false), // Number of channels
+            ByteVector.fromUshort(0xF1AC, false), // Format tag
+            ByteVector.fromUshort(3, false), // Number of channels
             ByteVector.fromUint(1234, false), // Samples per second
             ByteVector.fromUint(2345, false), // Average bytes per second
-            ByteVector.fromUShort(88, false), // Block align
-            ByteVector.fromUShort(16, false), // Bits per sample
+            ByteVector.fromUshort(88, false), // Block align
+            ByteVector.fromUshort(16, false), // Bits per sample
             this._errorCorrectionData
         );
         const file = TestFile.getFile(bytes);
@@ -103,10 +100,10 @@ const assert = Chai.assert;
         // Arrange
         const bytes = ByteVector.concatenate(
             Guids.AsfStreamPropertiesObject.toBytes(), // Object ID
-            ByteVector.fromULong(this._originalSize, false), // Object size
+            ByteVector.fromUlong(this._originalSize, false), // Object size
             Guids.AsfVideoMedia.toBytes(), // Stream type
             this._errorCorrectionGuid.toBytes(), // Error correction type GUID
-            ByteVector.fromULong(this._timeOffset, false), // Time offset
+            ByteVector.fromUlong(this._timeOffset, false), // Time offset
             ByteVector.fromUint(51, false), // Type specific data length
             ByteVector.fromUint(this._errorCorrectionData.length, false), // Error correction data length
             ByteVector.fromShort(this._flags, false), // Flags
@@ -116,8 +113,8 @@ const assert = Chai.assert;
             ByteVector.fromUint(40, false), // Size of the struct
             ByteVector.fromUint(123, false), // Width of image
             ByteVector.fromUint(234, false), // Height of image
-            ByteVector.fromUShort(345, false), // Number of planes
-            ByteVector.fromUShort(456, false), // Average bits per pixel
+            ByteVector.fromUshort(345, false), // Number of planes
+            ByteVector.fromUshort(456, false), // Average bits per pixel
             ByteVector.fromUint(0x58564944, false), // FOURCC [DIVX]
             ByteVector.fromUint(567, false), // Size of the image
             ByteVector.fromUint(678, false), // Pixels per meter X
@@ -152,10 +149,10 @@ const assert = Chai.assert;
         return ByteVector.concatenate(
             ByteVector.fromSize(10), // Offset
             Guids.AsfStreamPropertiesObject.toBytes(), // Object ID
-            ByteVector.fromULong(this._originalSize, false), // Object size
+            ByteVector.fromUlong(this._originalSize, false), // Object size
             this._streamTypeGuid.toBytes(), // Stream type
             this._errorCorrectionGuid.toBytes(), // Error correction type GUID
-            ByteVector.fromULong(this._timeOffset, false), // Time offset
+            ByteVector.fromUlong(this._timeOffset, false), // Time offset
             ByteVector.fromUint(this._typeSpecificData.length, false), // Type specific data length
             ByteVector.fromUint(this._errorCorrectionData.length, false), // Error correction data length
             ByteVector.fromShort(this._flags, false), // Flags

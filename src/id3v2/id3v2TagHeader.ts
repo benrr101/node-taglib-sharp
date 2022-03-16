@@ -32,12 +32,11 @@ export enum Id3v2TagHeaderFlags {
 }
 
 export class Id3v2TagHeader {
-    private static readonly _fileIdentifier: ByteVector = ByteVector.fromString(
-        "ID3",
-        StringType.Latin1,
-        undefined,
-        true
-    );
+    /**
+     * The identifier used to recognize an ID3v2 header.
+     */
+    public static readonly fileIdentifier = ByteVector.fromString("ID3", StringType.Latin1).makeReadOnly();
+
     private _flags: Id3v2TagHeaderFlags = Id3v2TagHeaderFlags.None;
     private _majorVersion: number = 0;
     private _revisionNumber: number = 0;
@@ -78,17 +77,12 @@ export class Id3v2TagHeader {
                 throw new CorruptFileError("One of the bytes in the tag size was greater than the allowed 128");
             }
         }
-        header.tagSize = SyncData.toUint(data.mid(6, 4));
+        header.tagSize = SyncData.toUint(data.subarray(6, 4));
 
         return header;
     }
 
     // #region Properties
-
-    /**
-     * The identifier used to recognize an ID3v2 header.
-     */
-    public static get fileIdentifier(): ByteVector { return Id3v2TagHeader._fileIdentifier; }
 
     /**
      * Gets the complete size of the tag described by the current instance including the header

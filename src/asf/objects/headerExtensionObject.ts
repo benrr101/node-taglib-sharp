@@ -1,12 +1,11 @@
 import BaseObject from "./baseObject";
 import ReadWriteUtils from "../readWriteUtils";
+import UnknownObject from "./unknownObject";
 import {ByteVector} from "../../byteVector";
 import {Guids, ObjectType} from "../constants";
 import {CorruptFileError} from "../../errors";
 import {File} from "../../file";
-import readWriteUtils from "../readWriteUtils";
 import {MetadataLibraryObject} from "./metadataLibraryObject";
-import UnknownObject from "./unknownObject";
 
 /**
  * This class extends {@link BaseObject} to provide a representation of an ASF header extension
@@ -39,7 +38,7 @@ export default class HeaderExtensionObject extends BaseObject {
             throw new CorruptFileError("Invalid reserved word, expected '6'");
         }
 
-        let sizeRemaining = readWriteUtils.readDWord(file);
+        let sizeRemaining = ReadWriteUtils.readDWord(file);
         position += 0x170 / 8;
 
         while (sizeRemaining > 0) {

@@ -1,12 +1,9 @@
-import * as Chai from "chai";
 import {suite, test} from "@testdeck/mocha";
+import {assert} from "chai";
 
 import VbriHeader from "../../src/mpeg/vbriHeader";
 import {ByteVector} from "../../src/byteVector";
 import {Testers} from "../utilities/testers";
-
-// Setup chai
-const assert = Chai.assert;
 
 @suite class Mpeg_XingHeaderTests {
     @test

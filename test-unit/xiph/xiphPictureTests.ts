@@ -27,7 +27,7 @@ class Xiph_PictureTests {
         // Assert
         assert.isTrue(picture.isLoaded);
         assert.strictEqual(picture.colorDepth, XiphTestResources.pictureColorDepth);
-        assert.isTrue(ByteVector.equal(picture.data, XiphTestResources.pictureData));
+        Testers.bvEqual(picture.data, XiphTestResources.pictureData);
         assert.strictEqual(picture.description, XiphTestResources.pictureDescription);
         assert.isUndefined(picture.filename);
         assert.strictEqual(picture.height, XiphTestResources.pictureHeight);
@@ -73,7 +73,7 @@ class Xiph_PictureTests {
         // Assert
         assert.isTrue(picture.isLoaded);
         assert.strictEqual(picture.colorDepth, XiphTestResources.pictureColorDepth);
-        assert.isTrue(ByteVector.equal(picture.data, XiphTestResources.pictureData));
+        Testers.bvEqual(picture.data, XiphTestResources.pictureData);
         assert.strictEqual(picture.description, XiphTestResources.pictureDescription);
         assert.isUndefined(picture.filename);
         assert.strictEqual(picture.height, XiphTestResources.pictureHeight);
@@ -117,7 +117,7 @@ class Xiph_PictureTests {
         // Assert
         assert.isTrue(picture.isLoaded);
         assert.strictEqual(picture.colorDepth, 0);
-        assert.isTrue(ByteVector.equal(picture.data, XiphTestResources.pictureData));
+        Testers.bvEqual(picture.data, XiphTestResources.pictureData);
         assert.strictEqual(picture.description, XiphTestResources.pictureDescription);
         assert.strictEqual(picture.filename, "foobarbaz");
         assert.strictEqual(picture.height, 0);
@@ -138,7 +138,7 @@ class Xiph_PictureTests {
         // Assert
         assert.isTrue(picture.isLoaded);
         assert.strictEqual(picture.colorDepth, XiphTestResources.pictureColorDepth);
-        assert.isTrue(ByteVector.equal(picture.data, XiphTestResources.pictureData));
+        Testers.bvEqual(picture.data, XiphTestResources.pictureData);
         assert.strictEqual(picture.description, XiphTestResources.pictureDescription);
         assert.isUndefined(picture.filename);
         assert.strictEqual(picture.height, XiphTestResources.pictureHeight);
@@ -246,7 +246,7 @@ class Xiph_PictureTests {
         const output = picture.renderForFlacBlock();
 
         // Assert
-        assert.isTrue(ByteVector.equal(output, XiphTestResources.pictureBytes));
+        Testers.bvEqual(output, XiphTestResources.pictureBytes);
     }
 
     @test

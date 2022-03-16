@@ -2,7 +2,7 @@ import {assert} from "chai";
 import {IMock} from "typemoq";
 
 import {Tag} from "../../src/tag";
-import {ByteVector} from "../../src";
+import {ByteVector, StringType} from "../../src/byteVector";
 
 export class Testers {
     public static testByte(testFunc: (testValue: number) => void): void {
@@ -91,22 +91,25 @@ export class Testers {
         const getPortion = (bv: ByteVector, pointer: number) => {
             const min = Math.max(pointer - 10, 0);
             const max = Math.min(pointer + 10, bv.length - 1);
-            const mid = bv.mid(min, max - min);
+            const mid = bv.subarray(min, max - min);
             return {
                 offset: Math.min(10, pointer) + 1,
-                portion: mid.toString()
+                portion: mid.toString(StringType.UTF8)
             };
         };
 
         const getMessage = (bvX: ByteVector, bvY: ByteVector, position: number): string => {
             const xPort = getPortion(bvX, position);
+            const xByte = position >= bvX.length ? "<null>" : `0x${bvX.get(position).toString(16).padStart(2, "0")}`;
             const yPort = getPortion(bvY, position);
             const spacing = new Array(xPort.offset).join(" ");
+            const yByte = position >= bvY.length ? "<null>" : `0x${bvY.get(position).toString(16).padStart(2, "0")}`;
+
             return `Difference at index: ${position}\n`
                  + `Actual:   ${xPort.portion}\n`
-                 + `          ${spacing}^\n`
+                 + `          ${spacing}^ ${xByte}\n`
                  + `Expected: ${yPort.portion}\n`
-                 + `          ${spacing}^\n`;
+                 + `          ${spacing}^ ${yByte}\n`;
         };
 
         let pos = 0;
@@ -121,9 +124,6 @@ export class Testers {
         if (pos < actual.length || pos < expected.length) {
             assert.fail(getMessage(actual, expected, pos));
         }
-
-        // Last chance catch if I completely effed this up
-        assert.isTrue(ByteVector.equal(actual, expected));
     }
 }
 

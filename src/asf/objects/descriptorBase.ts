@@ -108,7 +108,7 @@ export abstract class DescriptorBase {
                     throw new Error("Invalid value type for datatype bytes");
                 }
 
-                this._byteValue = value;
+                this._byteValue = value.toByteVector();
                 break;
             case DataType.Guid:
                 if (!(value instanceof UuidWrapper)) {
@@ -203,7 +203,7 @@ export abstract class DescriptorBase {
             case DataType.Unicode:
                 return this._stringValue;
             case DataType.Bytes:
-                return this._byteValue.toString(undefined, StringType.UTF16LE);
+                return this._byteValue.toString(StringType.UTF16LE);
             case DataType.Guid:
                 return this._guidValue.toString();
         }

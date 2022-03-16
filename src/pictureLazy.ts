@@ -36,7 +36,7 @@ export default class PictureLazy implements IPicture, ILazy {
         Guards.truthy(data, "data");
 
         const picture = new PictureLazy();
-        picture._data = ByteVector.fromByteVector(data);
+        picture._data = data.toByteVector();
 
         const extension = Picture.getExtensionFromData(data);
         if (extension) {
@@ -104,7 +104,7 @@ export default class PictureLazy implements IPicture, ILazy {
 
     /** @inheritDoc */
     public get data(): ByteVector {
-        if (!this._data) { this.load(); }
+        this.load();
         return this._data;
     }
     /** @inheritDoc */
@@ -117,7 +117,7 @@ export default class PictureLazy implements IPicture, ILazy {
 
     /** @inheritDoc */
     public get filename(): string {
-        if (!this._filename) { this.load(); }
+        this.load();
         return this._filename;
     }
     /** @inheritDoc */
@@ -175,7 +175,7 @@ export default class PictureLazy implements IPicture, ILazy {
                     needed -= count;
                 } while (needed > 0 && count !== 0);
 
-                this._data = ByteVector.fromByteArray(buffer, read);
+                this._data = ByteVector.fromByteArray(buffer, read).toByteVector();
             } else {
                 // Picture length was not defined, read entire stream as the data
                 stream = this._file.readStream;

@@ -87,7 +87,7 @@ export default abstract class BaseObject {
     protected renderInternal(data: ByteVector): ByteVector {
         const length = BigInt((!!data ? data.length : 0) + 24);
         return ByteVector.concatenate(
-            ByteVector.fromByteArray(this._id.toBytes()),
+            this._id.toBytes(),
             ReadWriteUtils.renderQWord(length),
             data
         );

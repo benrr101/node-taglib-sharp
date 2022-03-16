@@ -229,9 +229,9 @@ export default class UnsynchronizedLyricsFrame extends Frame {
         }
 
         this.textEncoding = data.get(0);
-        this._language = data.toString(3, StringType.Latin1, 1);
+        this._language = data.subarray(1, 3).toString(StringType.Latin1);
 
-        const split = data.toStrings(this.textEncoding, 4, 2);
+        const split = data.subarray(4).toStrings(this.textEncoding, 2);
         if (split.length === 1) {
             // Bad lyrics frame. Assume that it lacks a description
             this._description = "";

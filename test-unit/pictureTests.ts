@@ -11,7 +11,7 @@ const assert = Chai.assert;
     @test
     public getExtensionFromData_noMatch() {
         // Arrange
-        const data = ByteVector.fromString("FOObarBaZ");
+        const data = ByteVector.fromString("FOObarBaZ", StringType.Latin1);
 
         // Act
         const output = Picture.getExtensionFromData(data);
@@ -37,7 +37,7 @@ const assert = Chai.assert;
         // Arrange
         const data = ByteVector.concatenate(
             0xFF, 0xD8, 0xFF,
-            ByteVector.fromString("foobarbaz")
+            ByteVector.fromString("foobarbaz", StringType.Latin1)
         );
 
         // Act

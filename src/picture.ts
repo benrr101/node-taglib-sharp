@@ -98,7 +98,7 @@ export default class Picture implements IPicture {
      * Constructs and initializes a new instance from a file located at the provided path. The type
      * and description of the picture are determined by the extension of the file. The file is
      * loaded completely.
-     * @param filePath Path to the file to use to use for the file
+     * @param filePath Path to the file to use for the file
      */
     public static fromPath(filePath: string): Picture {
         Guards.truthy(filePath, "filePath");
@@ -122,7 +122,7 @@ export default class Picture implements IPicture {
         Guards.truthy(data, "data");
 
         const picture = new Picture();
-        picture.data = ByteVector.fromByteVector(data);
+        picture.data = data.toByteVector();
 
         const ext = Picture.getExtensionFromData(data);
         picture.mimeType = Picture.getMimeTypeFromFilename(ext);
@@ -151,7 +151,7 @@ export default class Picture implements IPicture {
         Guards.notNullOrUndefined(description, "description");
 
         const picture = new Picture();
-        picture.data = data;
+        picture.data = data.toByteVector();
         picture.type = type;
         picture.mimeType = mimeType;
         picture.description = description;

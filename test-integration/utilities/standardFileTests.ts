@@ -143,16 +143,16 @@ export class StandardFileTests {
             assert.strictEqual(pics[0].description, "TEST description 1");
             assert.strictEqual(pics[0].mimeType, "image/gif");
             assert.strictEqual(pics[0].data.length, fs.statSync(this.samplePicture).size);
-            assert.isTrue(ByteVector.equal(pics[0].data, raws[0]));
+            assert.isTrue(ByteVector.equals(pics[0].data, raws[0]));
 
             assert.strictEqual(pics[1].description, "TEST description 2");
             assert.strictEqual(pics[1].data.length, fs.statSync(this.sampleOther).size);
-            assert.isTrue(ByteVector.equal(pics[1].data, raws[1]));
+            assert.isTrue(ByteVector.equals(pics[1].data, raws[1]));
 
             assert.strictEqual(pics[2].description, "TEST description 3");
             assert.strictEqual(pics[2].mimeType, "image/gif");
             assert.strictEqual(pics[2].data.length, fs.statSync(this.samplePicture).size);
-            assert.isTrue(ByteVector.equal(pics[2].data, raws[2]));
+            assert.isTrue(ByteVector.equals(pics[2].data, raws[2]));
 
             // Types and mimetypes assumed to be properly supported at Medium level test
             if (level >= TestTagLevel.Medium) {

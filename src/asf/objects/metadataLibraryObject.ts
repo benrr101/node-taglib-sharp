@@ -138,7 +138,7 @@ export class MetadataDescriptor extends DescriptorBase {
                 value = this._byteValue;
                 break;
             case DataType.Guid:
-                value = ByteVector.fromByteArray(this._guidValue.toBytes());
+                value = this._guidValue.toBytes();
                 break;
         }
 

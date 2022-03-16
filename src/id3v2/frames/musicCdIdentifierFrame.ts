@@ -67,9 +67,7 @@ export default class MusicCdIdentifierFrame extends Frame {
     /** @inheritDoc */
     public clone(): Frame {
         const frame = new MusicCdIdentifierFrame(new Id3v2FrameHeader(FrameIdentifiers.MCDI));
-        if (this.data) {
-            frame.data = ByteVector.fromByteVector(this.data);
-        }
+        frame.data = this._data?.toByteVector();
         return frame;
     }
 
@@ -79,7 +77,7 @@ export default class MusicCdIdentifierFrame extends Frame {
      * @param version Ignored.
      */
     protected parseFields(data: ByteVector, version: number): void {
-        this.data = data;
+        this._data = data;
     }
 
     /**
@@ -87,6 +85,6 @@ export default class MusicCdIdentifierFrame extends Frame {
      * @param version Ignored.
      */
     protected renderFields(version: number): ByteVector {
-        return this.data || ByteVector.empty();
+        return this._data || ByteVector.empty();
     }
 }

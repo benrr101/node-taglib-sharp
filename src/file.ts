@@ -460,7 +460,9 @@ export abstract class File {
         // We need to write out as much as we're replacing, then shuffle the rest to the end
 
         // Step 1: Write the number of bytes to replace
-        this._fileStream.write(data, 0, replace);
+        if (replace > 0) {
+            this._fileStream.write(data, 0, replace);
+        }
 
         // Step 2: Resize the file to fit all the new bytes
         const bytesToAdd = data.length - replace;

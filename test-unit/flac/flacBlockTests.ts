@@ -37,7 +37,7 @@ import {Testers} from "../utilities/testers";
         assert.isOk(block);
         assert.isTrue(block.isLoaded);
         assert.isUndefined(block.blockStart);
-        assert.isTrue(ByteVector.equal(block.data, data));
+        Testers.bvEqual(block.data, data);
         assert.strictEqual(block.dataSize, data.length);
         assert.isFalse(block.isLastBlock);
         assert.strictEqual(block.totalSize, data.length + FlacBlock.headerSize);
@@ -116,7 +116,7 @@ import {Testers} from "../utilities/testers";
 
         // Assert
         assert.isTrue(block.isLoaded);
-        assert.isTrue(ByteVector.equal(data, fileBytes.mid(4)));
+        Testers.bvEqual(data, fileBytes.subarray(4));
     }
 
     @test
@@ -146,7 +146,7 @@ import {Testers} from "../utilities/testers";
             0x81, 0x00, 0x00, 0x0A,
             data
         );
-        assert.isTrue(ByteVector.equal(output, expected));
+        Testers.bvEqual(output, expected);
     }
 
     @test
@@ -163,6 +163,6 @@ import {Testers} from "../utilities/testers";
             0x01, 0x00, 0x00, 0x0A,
             data
         );
-        assert.isTrue(ByteVector.equal(output, expected));
+        Testers.bvEqual(output, expected);
     }
 }

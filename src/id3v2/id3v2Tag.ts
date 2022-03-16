@@ -70,7 +70,7 @@ export default class Id3v2Tag extends Tag {
             throw new CorruptFileError("Provided data does not enough tag data");
         }
 
-        tag.parse(data.mid(Id3v2Settings.headerSize, tag._header.tagSize), undefined, 0, ReadStyle.None);
+        tag.parse(data.subarray(Id3v2Settings.headerSize, tag._header.tagSize), undefined, 0, ReadStyle.None);
         return tag;
     }
 
@@ -914,7 +914,6 @@ export default class Id3v2Tag extends Tag {
         // We need to render the "tag data" first so that we have to correct size to render in the
         // tag's header. The "tag data" (everything that is included in Header.tagSize) includes
         // the extended header, frames and padding, but does not include the tag's header or footer
-
         const hasFooter = (this._header.flags & Id3v2TagHeaderFlags.FooterPresent) !== 0;
         const unsyncAtFrameLevel = (this._header.flags & Id3v2TagHeaderFlags.Unsynchronization) !== 0
             && this.version >= 4;
@@ -923,22 +922,20 @@ export default class Id3v2Tag extends Tag {
 
         this._header.majorVersion = hasFooter ? 4 : this.version;
 
-        const tagData = ByteVector.empty();
-
         // TODO: Render the extended header
         this._header.flags &= ~Id3v2TagHeaderFlags.ExtendedHeader;
 
         // Loop through the frames rendering them and adding them to tag data
-        for (const frame of this._frameList) {
+        const renderedFrames = this._frameList.map((frame) => {
             if (unsyncAtFrameLevel) {
                 frame.flags |= Id3v2FrameFlags.Desynchronized;
             }
             if ((frame.flags & Id3v2FrameFlags.TagAlterPreservation) !== 0 ) {
-                continue;
+                return undefined;
             }
 
             try {
-                tagData.addByteVector(frame.render(this._header.majorVersion));
+                return frame.render(this._header.majorVersion);
             } catch (e) {
                 if (NotImplementedError.errorIs(e)) {
                     // Swallow not implemented errors
@@ -948,29 +945,41 @@ export default class Id3v2Tag extends Tag {
                     throw e;
                 }
             }
-        }
+        });
 
-        // Add unsynchronization bytes if necessary
+        // Put the tag data together and unsynchronize it.
+        let frameBytes = ByteVector.concatenate(... renderedFrames);
         if (unsyncAtTagLevel) {
-            SyncData.unsyncByteVector(tagData);
+            frameBytes = SyncData.unsyncByteVector(frameBytes);
         }
 
         // Compute the amount of padding and append that to tag data
+        let paddingBytes;
         if (!hasFooter) {
-            const size = tagData.length < this._header.tagSize
-                ? this._header.tagSize - tagData.length
+            const size = frameBytes.length < this._header.tagSize
+                ? this._header.tagSize - frameBytes.length
                 : 1024;
-            tagData.addByteVector(ByteVector.fromSize(size));
+            paddingBytes = ByteVector.fromSize(size);
         }
 
         // Set the tag size and add the header/footer
-        this._header.tagSize = tagData.length;
-        tagData.insertByteVector(0, this._header.render());
+        this._header.tagSize = frameBytes.length;
+        if (paddingBytes) {
+            this._header.tagSize += paddingBytes.length;
+        }
+        const headerBytes = this._header.render();
+
+        let footerBytes;
         if (hasFooter) {
-            tagData.addByteVector(Id3v2TagFooter.fromHeader(this._header).render());
+            footerBytes = Id3v2TagFooter.fromHeader(this._header).render();
         }
 
-        return tagData;
+        return ByteVector.concatenate(
+            headerBytes,
+            frameBytes,
+            paddingBytes,
+            footerBytes
+        );
     }
 
     /**
@@ -1074,7 +1083,7 @@ export default class Id3v2Tag extends Tag {
     // #endregion
 
     // #region Protected/Private Methods
-
+    // @TODO: Split into parseFromFile and parseFromData
     protected parse(data: ByteVector, file: File, position: number, style: ReadStyle): void {
         // If the entire tag is marked as unsynchronized, and this tag is version ID3v2.3 or lower,
         // resynchronize it.
@@ -1094,7 +1103,7 @@ export default class Id3v2Tag extends Tag {
         }
 
         if (fullTagUnsync) {
-            SyncData.resyncByteVector(data);
+            data = SyncData.resyncByteVector(data);
         }
 
         let frameDataPosition = data ? 0 : position;
@@ -1193,7 +1202,7 @@ export default class Id3v2Tag extends Tag {
         const frame = UniqueFileIdentifierFrame.find(frames, owner);
 
         // If the frame existed, frame.identifier is a byte vector, get a string
-        const result = frame ? frame.identifier.toString() : undefined;
+        const result = frame ? frame.identifier.toString(StringType.Latin1) : undefined;
         return result || undefined;
     }
 

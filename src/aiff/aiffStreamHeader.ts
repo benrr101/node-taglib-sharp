@@ -1,4 +1,4 @@
-import {ByteVector} from "../byteVector";
+import {ByteVector, StringType} from "../byteVector";
 import {ILosslessAudioCodec, MediaTypes} from "../iCodec";
 import {Guards, NumberUtils} from "../utils";
 import {CorruptFileError} from "../errors";
@@ -12,7 +12,7 @@ export default class AiffStreamHeader implements ILosslessAudioCodec {
      * Identifier used to recognize an AIFF file. Although an AIFF file starts with "FORM2", we're
      * interested in the common chunk only, which contains the properties we need.
      */
-    public static readonly fileIdentifier = ByteVector.fromString("COMM", undefined, undefined, true);
+    public static readonly fileIdentifier = ByteVector.fromString("COMM", StringType.UTF8).makeReadOnly();
 
     /**
      * Size of an AIFF common chunk in bytes
@@ -46,10 +46,10 @@ export default class AiffStreamHeader implements ILosslessAudioCodec {
 
         // The first 8 bytes contain the common chunk identifier "COMM" and the size of the common
         // chunk, which is always 18
-        this._channels = data.mid(8, 2).toUShort(true);
-        this._totalFrames = data.mid(10, 4).toUint(true);
-        this._bitsPerSample = data.mid(14, 2).toUShort(true);
-        this._sampleRate = NumberUtils.convertFromIeeeExtended(data.mid(16, 10));
+        this._channels = data.subarray(8, 2).toUshort(true);
+        this._totalFrames = data.subarray(10, 4).toUint(true);
+        this._bitsPerSample = data.subarray(14, 2).toUshort(true);
+        this._sampleRate = NumberUtils.convertFromIeeeExtended(data.subarray(16, 10));
     }
 
     // #region Properties

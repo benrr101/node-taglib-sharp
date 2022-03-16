@@ -1,6 +1,6 @@
-import * as Chai from "chai";
 import * as TypeMoq from "typemoq";
 import {suite, test} from "@testdeck/mocha";
+import {assert} from "chai";
 
 import MpegAudioHeader from "../../src/mpeg/mpegAudioHeader";
 import TestFile from "../utilities/testFile";
@@ -11,9 +11,6 @@ import {File} from "../../src/file";
 import {MediaTypes} from "../../src/iCodec";
 import {ChannelMode, MpegVersion} from "../../src/mpeg/mpegEnums";
 import {Testers} from "../utilities/testers";
-
-// Setup chai
-const assert = Chai.assert;
 
 @suite class Mpeg_AudioHeader_ConstructorTests {
     private mockFile = TypeMoq.Mock.ofType<File>().object;

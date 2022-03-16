@@ -26,13 +26,13 @@ export class FrameIdentifier {
 
     public constructor(v4: string, v3: string, v2: string) {
         this.versionTable[4] = v4
-            ? ByteVector.fromString(v4, StringType.Latin1, undefined, true)
+            ? ByteVector.fromString(v4, StringType.Latin1).makeReadOnly()
             : undefined;
         this.versionTable[3] = v3
-            ? (v3 === v4 ? this.versionTable[4] : ByteVector.fromString(v3, StringType.Latin1, undefined, true))
+            ? (v3 === v4 ? this.versionTable[4] : ByteVector.fromString(v3, StringType.Latin1).makeReadOnly())
             : undefined;
         this.versionTable[2] = v2
-            ? ByteVector.fromString(v2, StringType.Latin1, undefined, true)
+            ? ByteVector.fromString(v2, StringType.Latin1).makeReadOnly()
             : undefined;
     }
 
@@ -55,15 +55,17 @@ export class FrameIdentifier {
         Guards.betweenInclusive(version, 2, 4, "version");
         if (!this.versionTable[version]) {
             const newest = this.versionTable[4] || this.versionTable[3] || this.versionTable[2];
-            throw new NotSupportedError(`Frame ${newest} is not supported in ID3v2 version ${version}`);
+            throw new NotSupportedError(
+                `Frame ${newest.toString(0)} is not supported in ID3v2 version ${version}`
+            );
         }
 
-        return ByteVector.fromByteVector(this.versionTable[version]);
+        return this.versionTable[version];
     }
 
     public toString(): string {
         const newest = this.versionTable[4] || this.versionTable[3] || this.versionTable[2];
-        return newest.toString();
+        return newest.toString(StringType.Latin1);
     }
 }
 

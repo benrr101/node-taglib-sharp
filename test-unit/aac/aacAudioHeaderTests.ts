@@ -1,7 +1,6 @@
-import * as Chai from "chai";
-import * as ChaiAsPromised from "chai-as-promised";
 import * as TypeMoq from "typemoq";
 import {suite, test} from "@testdeck/mocha";
+import {assert} from "chai";
 
 import AacAudioHeader from "../../src/aac/aacAudioHeader";
 import Mpeg4AudioTypes from "../../src/mpeg4/mpeg4AudioTypes";
@@ -10,10 +9,6 @@ import {ByteVector} from "../../src/byteVector";
 import {File} from "../../src/file";
 import {MediaTypes} from "../../src/iCodec";
 import {Testers} from "../utilities/testers";
-
-// Setup Chai
-Chai.use(ChaiAsPromised);
-const assert = Chai.assert;
 
 // Test constants
 const sampleHeaderBytes = ByteVector.fromByteArray(new Uint8Array([0xFF, 0xF5, 0x55, 0x55, 0x55, 0x55, 0x55]));

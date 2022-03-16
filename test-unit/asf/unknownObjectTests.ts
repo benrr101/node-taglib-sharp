@@ -1,5 +1,5 @@
-import * as Chai from "chai";
 import {suite, test} from "@testdeck/mocha";
+import {assert} from "chai";
 
 import ObjectTests from "./objectTests";
 import TestFile from "../utilities/testFile";
@@ -9,9 +9,6 @@ import {ByteVector} from "../../src/byteVector";
 import {ObjectType} from "../../src/asf/constants";
 import {File} from "../../src/file";
 import {Testers} from "../utilities/testers";
-
-// Setup chai
-const assert = Chai.assert;
 
 @suite class Asf_UnknownObjectTests extends ObjectTests<UnknownObject> {
     protected get fromFileConstructor(): (f: File, p: number) => UnknownObject { return UnknownObject.fromFile; }
@@ -75,7 +72,7 @@ const assert = Chai.assert;
 
         // Assert
         assert.isOk(output);
-        Testers.bvEqual(output, data.mid(10));
+        Testers.bvEqual(output, data.subarray(10));
     }
 
     private readonly _bytes = ByteVector.fromSize(32, 0x12);
@@ -86,7 +83,7 @@ const assert = Chai.assert;
         return ByteVector.concatenate(
             ByteVector.fromSize(10), // Offset
             this._guid.toBytes(),
-            ByteVector.fromULong(this._originalSize, false),
+            ByteVector.fromUlong(this._originalSize, false),
             this._bytes
         );
     }

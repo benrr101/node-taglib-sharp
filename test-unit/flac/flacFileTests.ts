@@ -11,7 +11,7 @@ import Id3v2Tag from "../../src/id3v2/id3v2Tag";
 import XiphComment from "../../src/xiph/xiphComment";
 import XiphPicture from "../../src/xiph/xiphPicture";
 import {default as TestFile} from "../utilities/testFile";
-import {ByteVector} from "../../src/byteVector";
+import {ByteVector, StringType} from "../../src/byteVector";
 import {FileAccessMode, ReadStyle} from "../../src/file";
 import {IFileAbstraction} from "../../src/fileAbstraction";
 import {Id3v2TagHeaderFlags} from "../../src/id3v2/id3v2TagHeader";
@@ -51,7 +51,7 @@ import {Picture} from "../../src";
                 tagBytes,
                 Flac_File_ConstructorTests.getBasicFile()
             );
-            const testAbstraction = TestFile.getFileAbstraction(fileBytes);
+            const testAbstraction = TestFile.getFileAbstraction(fileBytes.toByteVector());
 
             // Act
             const file = new FlacFile(testAbstraction, ReadStyle.None);
@@ -89,7 +89,7 @@ import {Picture} from "../../src";
                 Flac_File_ConstructorTests.getBasicFile(),
                 tagBytes
             );
-            const testAbstraction = TestFile.getFileAbstraction(fileBytes);
+            const testAbstraction = TestFile.getFileAbstraction(fileBytes.toByteVector());
 
             // Act
             const file = new FlacFile(testAbstraction, ReadStyle.None);
@@ -247,7 +247,7 @@ import {Picture} from "../../src";
                 Flac_File_ConstructorTests.getBasicFile(extraBlocks),
                 endTagBytes
             );
-            const testAbstraction = TestFile.getFileAbstraction(fileBytes);
+            const testAbstraction = TestFile.getFileAbstraction(fileBytes.toByteVector());
 
             // Act
             const file = new FlacFile(testAbstraction, ReadStyle.None);
@@ -279,7 +279,7 @@ import {Picture} from "../../src";
     public constructor_averageRead_doesNotHaveStreamInfoBlock() {
         // Arrange
         const fileBytes = ByteVector.concatenate(
-            ByteVector.fromString("fLaC"),
+            ByteVector.fromString("fLaC", StringType.Latin1),
             ByteVector.fromSize(20, 0xFF)
         );
         const testAbstraction = TestFile.getFileAbstraction(fileBytes);
@@ -689,8 +689,8 @@ import {Picture} from "../../src";
         xiphTag.performers = ["Andy Tau"];
         xiphTag.title = "Open Your Eyes";
 
-        const pic1 = Picture.fromData(ByteVector.fromString("foobarbaz"));
-        const pic2 = Picture.fromData(ByteVector.fromString("fuxbuxqux"));
+        const pic1 = Picture.fromData(ByteVector.fromString("foobarbaz", StringType.UTF8));
+        const pic2 = Picture.fromData(ByteVector.fromString("fuxbuxqux", StringType.UTF8));
         file.tag.pictures = [pic1, pic2];
 
         // Act
@@ -884,7 +884,7 @@ import {Picture} from "../../src";
     }
 
     private static getPictureBlock(): FlacBlock {
-        const picture = Picture.fromData(ByteVector.fromString("picturedata"));
+        const picture = Picture.fromData(ByteVector.fromString("picturedata", StringType.UTF8));
         const flacPic = XiphPicture.fromPicture(picture);
         return FlacBlock.fromData(FlacBlockType.Picture, flacPic.renderForFlacBlock());
     }
@@ -906,7 +906,7 @@ import {Picture} from "../../src";
         const streamHeaderBlock = FlacBlock.fromData(FlacBlockType.StreamInfo, streamHeaderBytes);
 
         return ByteVector.concatenate(
-            ByteVector.fromString("fLaC"),
+            ByteVector.fromString("fLaC", StringType.UTF8),
             streamHeaderBlock.render(!extraBlocks),
             ... (extraBlocks || []).map((b, i, a) => b.render(i === a.length - 1 )),
             ByteVector.fromSize(100)

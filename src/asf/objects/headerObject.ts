@@ -1,4 +1,5 @@
 import BaseObject from "./baseObject";
+import ContentDescriptionObject from "./contentDescriptionObject";
 import FilePropertiesObject from "./filePropertiesObject";
 import HeaderExtensionObject from "./headerExtensionObject";
 import PaddingObject from "./paddingObject";
@@ -12,7 +13,6 @@ import {CorruptFileError} from "../../errors";
 import {File} from "../../file";
 import {ICodec} from "../../iCodec";
 import {Guards} from "../../utils";
-import ContentDescriptionObject from "./contentDescriptionObject";
 import {ExtendedContentDescriptionObject} from "./extendedContentDescriptionObject";
 
 /**

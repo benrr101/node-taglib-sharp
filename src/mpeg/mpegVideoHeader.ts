@@ -33,10 +33,10 @@ export default class MpegVideoHeader implements IVideoCodec {
             throw new CorruptFileError("Insufficient data in header");
         }
 
-        this._videoWidth = data.mid(0, 2).toUShort() >>> 4;
-        this._videoHeight = NumberUtils.uintAnd(data.mid(1, 2).toShort(), 0x0FFF);
+        this._videoWidth = data.subarray(0, 2).toUshort() >>> 4;
+        this._videoHeight = NumberUtils.uintAnd(data.subarray(1, 2).toUshort(), 0x0FFF);
         this._frameRateIndex = NumberUtils.uintAnd(data.get(3), 0x0F);
-        this._videoBitrate = NumberUtils.uintAnd(NumberUtils.uintRShift(data.mid(4, 3).toUint(), 6), 0x3FFFF);
+        this._videoBitrate = NumberUtils.uintAnd(NumberUtils.uintRShift(data.subarray(4, 3).toUint(), 6), 0x3FFFF);
     }
 
     // #region

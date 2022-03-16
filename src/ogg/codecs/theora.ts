@@ -1,6 +1,6 @@
 import IOggCodec from "./iOggCodec";
 import XiphComment from "../../xiph/xiphComment";
-import {ByteVector} from "../../byteVector";
+import {ByteVector, StringType} from "../../byteVector";
 import {IVideoCodec, MediaTypes} from "../../iCodec";
 import {Guards, NumberUtils} from "../../utils";
 
@@ -16,7 +16,7 @@ enum TheoraPacketType {
  * Represents an Ogg Theora bitstream for use in an Ogg file.
  */
 export default class Theora implements IOggCodec, IVideoCodec {
-    private static readonly id = ByteVector.fromString("theora", undefined, undefined, true);
+    private static readonly id = ByteVector.fromString("theora", StringType.Latin1).makeReadOnly();
 
     private readonly _fpsDenominator: number;
     private readonly _fpsNumerator: number;
@@ -44,12 +44,12 @@ export default class Theora implements IOggCodec, IVideoCodec {
         this._majorVersion = headerPacket.get(7);
         this._minorVersion = headerPacket.get(8);
         this._reversionVersion = headerPacket.get(9);
-        this._width = NumberUtils.uintAnd(headerPacket.mid(14, 3).toUint(), 0x0FFFFF);
-        this._height = NumberUtils.uintAnd(headerPacket.mid(17, 3).toUint(), 0x0FFFFF);
-        this._fpsNumerator = headerPacket.mid(22, 4).toUint();
-        this._fpsDenominator = headerPacket.mid(26, 4).toUint();
+        this._width = NumberUtils.uintAnd(headerPacket.subarray(14, 3).toUint(), 0x0FFFFF);
+        this._height = NumberUtils.uintAnd(headerPacket.subarray(17, 3).toUint(), 0x0FFFFF);
+        this._fpsNumerator = headerPacket.subarray(22, 4).toUint();
+        this._fpsDenominator = headerPacket.subarray(26, 4).toUint();
 
-        const lastBits = headerPacket.mid(40, 2).toShort();
+        const lastBits = headerPacket.subarray(40, 2).toShort();
         this._keyframeGranuleShift = NumberUtils.uintAnd(NumberUtils.uintRShift(lastBits, 5), 0x1F);
     }
 
@@ -84,7 +84,7 @@ export default class Theora implements IOggCodec, IVideoCodec {
         Guards.truthy(packet, "packet");
 
         if (!this._commentData && packet.get(0) === TheoraPacketType.CommentHeader) {
-            this._commentData = packet.mid(7);
+            this._commentData = packet.subarray(7).toByteVector();
         }
 
         return !!this._commentData;

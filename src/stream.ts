@@ -168,7 +168,7 @@ export class Stream implements IStream {
     public write(buffer: Uint8Array | ByteVector, bufferOffset: number, length: number): number {
         // Make sure we standardize on a Uint8Array
         if (buffer instanceof ByteVector) {
-            buffer = buffer.data;
+            buffer = buffer.toByteArray();
         }
 
         if (!this._canWrite) {

@@ -12,7 +12,7 @@ import RiffTags from "./riffTags";
 import RiffWaveFormatEx from "./riffWaveFormatEx";
 import Settings from "../settings";
 import WaveFileSettings from "./waveFileSettings";
-import {ByteVector} from "../byteVector";
+import {ByteVector, StringType} from "../byteVector";
 import {CorruptFileError, UnsupportedFormatError} from "../errors";
 import {File, FileAccessMode, ReadStyle} from "../file";
 import {IFileAbstraction} from "../fileAbstraction";
@@ -30,7 +30,7 @@ export default class RiffFile extends File {
     /**
      * Identifier at the beginning of a RIFF file.
      */
-    public static readonly fileIdentifier = ByteVector.fromString("RIFF", undefined, undefined, true);
+    public static readonly fileIdentifier = ByteVector.fromString("RIFF", StringType.Latin1).makeReadOnly();
 
     private _fileType: string;
     private _properties: Properties;
@@ -289,17 +289,18 @@ export default class RiffFile extends File {
 
         try {
             // Read the header of the file
-            if (!ByteVector.equal(this.readBlock(4), RiffFile.fileIdentifier)) {
+            const initialHeader = this.readBlock(12);
+            if (!initialHeader.startsWith(RiffFile.fileIdentifier)) {
                 throw new CorruptFileError("File does not begin with RIFF identifier");
             }
-            this._riffSize = this.readBlock(4).toUint(false);
-            this._fileType = this.readBlock(4).toString();
+            this._riffSize = initialHeader.subarray(4, 4).toUint(false);
+            this._fileType = initialHeader.subarray(8, 4).toString(StringType.Latin1);
 
             // Read chunks until there are less than 8 bytes to read
             let position = this.position;
             while (position + 8 < this.length) {
                 this.seek(position);
-                const fourcc = this.readBlock(4).toString();
+                const fourcc = this.readBlock(4).toString(StringType.Latin1);
                 const chunk = fourcc === RiffList.identifierFourcc
                     ? RiffList.fromFile(this, position)
                     : RiffChunk.fromFile(this, fourcc, position);

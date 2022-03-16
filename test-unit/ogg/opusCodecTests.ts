@@ -4,7 +4,7 @@ import {assert} from "chai";
 import CodecPackets from "./codecPackets";
 import Opus from "../../src/ogg/codecs/opus";
 import XiphComment from "../../src/xiph/xiphComment";
-import {ByteVector} from "../../src/byteVector";
+import {ByteVector, StringType} from "../../src/byteVector";
 import {MediaTypes} from "../../src/iCodec";
 import {Testers} from "../utilities/testers";
 
@@ -18,7 +18,7 @@ import {Testers} from "../utilities/testers";
     @test
     public constructor_doesNotStartWithSignature() {
         // Arrange
-        const headerPacket = ByteVector.fromString("invalidString");
+        const headerPacket = ByteVector.fromString("invalidString", StringType.Latin1);
 
         // Act / Assert
         assert.throws(() => new Opus(headerPacket));
@@ -28,7 +28,7 @@ import {Testers} from "../utilities/testers";
     public constructor_rtpChannelMapping_mono() {
         // Arrange
         const headerPacket = ByteVector.concatenate(
-            ByteVector.fromString("OpusHead"),      // Magic header
+            ByteVector.fromString("OpusHead", StringType.UTF8),      // Magic header
             0x01,                                   // Version
             0x01,                                   // Channel count
             0x03, 0x04,                             // Pre-skip
@@ -56,7 +56,7 @@ import {Testers} from "../utilities/testers";
     public constructor_rtpChannelMapping_stereo() {
         // Arrange
         const headerPacket = ByteVector.concatenate(
-            ByteVector.fromString("OpusHead"),      // Magic header
+            ByteVector.fromString("OpusHead", StringType.UTF8),      // Magic header
             0x01,                                   // Version
             0x02,                                   // Channel count
             0x03, 0x04,                             // Pre-skip
@@ -84,7 +84,7 @@ import {Testers} from "../utilities/testers";
     public constructor_vorbisChannelMapping() {
         // Arrange
         const headerPacket = ByteVector.concatenate(
-            ByteVector.fromString("OpusHead"),      // Magic header
+            ByteVector.fromString("OpusHead", StringType.UTF8),      // Magic header
             0x01,                                   // Version
             0x08,                                   // Channel count
             0x03, 0x04,                             // Pre-skip
@@ -128,8 +128,8 @@ import {Testers} from "../utilities/testers";
         // Arrange
         const codec = Ogg_OpusTests.getTestCodec();
         const packet = ByteVector.concatenate(
-            ByteVector.fromString("OpusTags"),
-            ByteVector.fromString("foobarbaz")
+            ByteVector.fromString("OpusTags", StringType.UTF8),
+            ByteVector.fromString("foobarbaz", StringType.UTF8)
         );
 
         // Act
@@ -137,7 +137,7 @@ import {Testers} from "../utilities/testers";
 
         // Assert
         assert.isTrue(result);
-        Testers.bvEqual(codec.commentData, packet.mid(8));
+        Testers.bvEqual(codec.commentData, packet.subarray(8));
     }
 
     @test
@@ -145,12 +145,12 @@ import {Testers} from "../utilities/testers";
         // Arrange
         const codec = Ogg_OpusTests.getTestCodec();
         const commentPacket1 = ByteVector.concatenate(
-            ByteVector.fromString("OpusTags"),
-            ByteVector.fromString("foobarbaz")
+            ByteVector.fromString("OpusTags", StringType.UTF8),
+            ByteVector.fromString("foobarbaz", StringType.UTF8)
         );
         const commentPacket2 = ByteVector.concatenate(
-            ByteVector.fromString("OpusTags"),
-            ByteVector.fromString("fuxbuxquxx")
+            ByteVector.fromString("OpusTags", StringType.UTF8),
+            ByteVector.fromString("fuxbuxquxx", StringType.UTF8)
         );
         codec.readPacket(commentPacket1);
 
@@ -159,7 +159,7 @@ import {Testers} from "../utilities/testers";
 
         // Assert
         assert.isTrue(result);
-        Testers.bvEqual(codec.commentData, commentPacket1.mid(8));
+        Testers.bvEqual(codec.commentData, commentPacket1.subarray(8));
     }
 
     @test
@@ -187,7 +187,7 @@ import {Testers} from "../utilities/testers";
         assert.strictEqual(packets.length, 1);
 
         const expected = ByteVector.concatenate(
-            ByteVector.fromString("OpusTags"),
+            ByteVector.fromString("OpusTags", StringType.UTF8),
             comment.render(true)
         );
         Testers.bvEqual(packets[0], expected);
@@ -199,7 +199,7 @@ import {Testers} from "../utilities/testers";
         const codec = Ogg_OpusTests.getTestCodec();
         const comment = XiphComment.fromEmpty();
         const packets = [
-            ByteVector.fromString("OpusHead")
+            ByteVector.fromString("OpusHead", StringType.UTF8)
         ];
 
         // Act
@@ -209,7 +209,7 @@ import {Testers} from "../utilities/testers";
         assert.strictEqual(packets.length, 2);
 
         const expected = ByteVector.concatenate(
-            ByteVector.fromString("OpusTags"),
+            ByteVector.fromString("OpusTags", StringType.UTF8),
             comment.render(true)
         );
         Testers.bvEqual(packets[1], expected);
@@ -232,7 +232,7 @@ import {Testers} from "../utilities/testers";
         assert.strictEqual(packets.length, 3);
 
         const expected = ByteVector.concatenate(
-            ByteVector.fromString("OpusTags"),
+            ByteVector.fromString("OpusTags", StringType.UTF8),
             comment.render(true)
         );
         Testers.bvEqual(packets[1], expected);
@@ -245,7 +245,7 @@ import {Testers} from "../utilities/testers";
         const comment = XiphComment.fromEmpty();
         const packets = [
             ByteVector.fromSize(10, 0x0C),
-            ByteVector.fromString("OpusTags"),
+            ByteVector.fromString("OpusTags", StringType.UTF8),
             ByteVector.fromSize(10, 0x0F)
         ];
 
@@ -256,7 +256,7 @@ import {Testers} from "../utilities/testers";
         assert.strictEqual(packets.length, 3);
 
         const expected = ByteVector.concatenate(
-            ByteVector.fromString("OpusTags"),
+            ByteVector.fromString("OpusTags", StringType.UTF8),
             comment.render(true)
         );
         Testers.bvEqual(packets[1], expected);

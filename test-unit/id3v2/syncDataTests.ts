@@ -1,13 +1,10 @@
-import * as Chai from "chai";
 import {suite, test} from "@testdeck/mocha";
+import {assert} from "chai";
 
 import SyncData from "../../src/id3v2/syncData";
 import TestConstants from "../testConstants";
 import {ByteVector} from "../../src/byteVector";
 import {Testers} from "../utilities/testers";
-
-// Setup chai
-const assert = Chai.assert;
 
 @suite class Id3v2_SyncDataTests {
     @test
@@ -33,7 +30,55 @@ const assert = Chai.assert;
         assert.throws(() => { SyncData.resyncByteVector(undefined); });
     }
 
-    // @TODO: resyncByteVector_validData
+    @test
+    public resyncByteVector_validData() {
+        // Arrange
+        const data = ByteVector.concatenate(
+            ByteVector.fromSize(10, 0xAA),
+            0xFF, 0x00, 0xFF,
+            ByteVector.fromSize(11, 0xBB),
+            0xFF, 0x00, 0xFF,
+            ByteVector.fromSize(9, 0xCC),
+            0xFF, 0x00, 0xE5,
+            ByteVector.fromSize(11, 0xDD),
+            0xFF, 0x00, 0xE5,
+            ByteVector.fromSize(9, 0xEE),
+            0xFF, 0x00, 0x00,
+            ByteVector.fromSize(11, 0x11),
+            0xFF, 0x00, 0x00,
+            ByteVector.fromSize(9, 0x22),
+            0xFF, 0x00, 0xFF, 0x00, 0xFF,
+            ByteVector.fromSize(7, 0x33),
+            0xFF, 0x00, 0xFF, 0x00, 0xFF,
+            ByteVector.fromSize(7, 0x33)
+        );
+
+        // Act
+        const output = SyncData.resyncByteVector(data);
+
+        // Assert
+        const expected = ByteVector.concatenate(
+            ByteVector.fromSize(10, 0xAA),
+            0xFF, 0xFF, // Aligned to 2
+            ByteVector.fromSize(11, 0xBB),
+            0xFF, 0xFF, // Not aligned to 2
+            ByteVector.fromSize(9, 0xCC),
+            0xFF, 0xE5, // Aligned, second byte is 0b111xxxxx
+            ByteVector.fromSize(11, 0xDD),
+            0xFF, 0xE5, // Not aligned, second byte is 0b111xxxxx
+            ByteVector.fromSize(9, 0xEE),
+            0xFF, 0x00, // Aligned, second byte is 00
+            ByteVector.fromSize(11, 0x11),
+            0xFF, 0x00, // Not aligned, second byte is 00
+            ByteVector.fromSize(9, 0x22),
+            0xFF, 0xFF, 0xFF, // Multiple bytes
+            ByteVector.fromSize(7, 0x33),
+            0xFF, 0xFF, 0xFF, // Multiple bytes, not aligned
+            ByteVector.fromSize(7, 0x33)
+        );
+        Testers.bvEqual(output, expected);
+        assert.isFalse(ByteVector.equals(data, expected));
+    }
 
     @test
     public toUint_FalsyData() {
@@ -83,5 +128,53 @@ const assert = Chai.assert;
         Testers.testTruthy((v: ByteVector) => { SyncData.unsyncByteVector(v); });
     }
 
-    // @TODO: unsyncByteVector_validData
+    @test
+    public unsyncByteVector_validData() {
+        // Arrange
+        const data = ByteVector.concatenate(
+            ByteVector.fromSize(10, 0xAA),
+            0xFF, 0xFF, // Aligned to 2
+            ByteVector.fromSize(11, 0xBB),
+            0xFF, 0xFF, // Not aligned to 2
+            ByteVector.fromSize(9, 0xCC),
+            0xFF, 0xE5, // Aligned, second byte is 0b111xxxxx
+            ByteVector.fromSize(11, 0xDD),
+            0xFF, 0xE5, // Not aligned, second byte is 0b111xxxxx
+            ByteVector.fromSize(9, 0xEE),
+            0xFF, 0x00, // Aligned, second byte is 00
+            ByteVector.fromSize(11, 0x11),
+            0xFF, 0x00, // Not aligned, second byte is 00
+            ByteVector.fromSize(9, 0x22),
+            0xFF, 0xFF, 0xFF, // Multiple bytes
+            ByteVector.fromSize(7, 0x33),
+            0xFF, 0xFF, 0xFF, // Multiple bytes, not aligned
+            ByteVector.fromSize(7, 0x33)
+        );
+
+        // Act
+        const output = SyncData.unsyncByteVector(data);
+
+        // Assert
+        const expected = ByteVector.concatenate(
+            ByteVector.fromSize(10, 0xAA),
+            0xFF, 0x00, 0xFF,
+            ByteVector.fromSize(11, 0xBB),
+            0xFF, 0x00, 0xFF,
+            ByteVector.fromSize(9, 0xCC),
+            0xFF, 0x00, 0xE5,
+            ByteVector.fromSize(11, 0xDD),
+            0xFF, 0x00, 0xE5,
+            ByteVector.fromSize(9, 0xEE),
+            0xFF, 0x00, 0x00,
+            ByteVector.fromSize(11, 0x11),
+            0xFF, 0x00, 0x00,
+            ByteVector.fromSize(9, 0x22),
+            0xFF, 0x00, 0xFF, 0x00, 0xFF,
+            ByteVector.fromSize(7, 0x33),
+            0xFF, 0x00, 0xFF, 0x00, 0xFF,
+            ByteVector.fromSize(7, 0x33)
+        );
+        Testers.bvEqual(output, expected);
+        assert.isFalse(ByteVector.equals(data, expected));
+    }
 }

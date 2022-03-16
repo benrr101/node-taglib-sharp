@@ -46,7 +46,7 @@ import {Testers} from "../utilities/testers";
         const data = ByteVector.concatenate(
             OggPageHeader.headerBeginning,
             0x05, 0x06,
-            ByteVector.fromULong(BigInt(0x100000000000000))
+            ByteVector.fromUlong(BigInt(0x100000000000000))
         );
         const file = TestFile.getFile(data);
 
@@ -62,7 +62,7 @@ import {Testers} from "../utilities/testers";
             OggPageHeader.headerBeginning,
             0x05, // Version
             0x07, // Flags,
-            ByteVector.fromULong(0x123456, false), // Absolute granular position
+            ByteVector.fromUlong(0x123456, false), // Absolute granular position
             ByteVector.fromUint(0x1234, false), // Stream serial number
             ByteVector.fromUint(0x2345, false), // Page sequence number
             ByteVector.fromSize(4), // Checksum
@@ -83,7 +83,7 @@ import {Testers} from "../utilities/testers";
             OggPageHeader.headerBeginning,
             0x05, // Version
             0x07, // Flags,
-            ByteVector.fromULong(0x123456, false), // Absolute granular position
+            ByteVector.fromUlong(0x123456, false), // Absolute granular position
             ByteVector.fromUint(0x1234, false), // Stream serial number
             ByteVector.fromUint(0x2345, false), // Page sequence number
             ByteVector.fromSize(4), // Checksum
@@ -117,7 +117,7 @@ import {Testers} from "../utilities/testers";
             OggPageHeader.headerBeginning,
             0x05, // Version
             0x07, // Flags,
-            ByteVector.fromULong(0x123456, false), // Absolute granular position
+            ByteVector.fromUlong(0x123456, false), // Absolute granular position
             ByteVector.fromUint(0x1234, false), // Stream serial number
             ByteVector.fromUint(0x2345, false), // Page sequence number
             ByteVector.fromSize(4), // Checksum
@@ -223,7 +223,7 @@ import {Testers} from "../utilities/testers";
             OggPageHeader.headerBeginning,
             0x05, // Version
             0x07, // Flags,
-            ByteVector.fromULong(0x123456, false), // Absolute granular position
+            ByteVector.fromUlong(0x123456, false), // Absolute granular position
             ByteVector.fromUint(0x1234, false), // Stream serial number
             ByteVector.fromUint(0x2345, false), // Page sequence number
             ByteVector.fromSize(4), // Checksum
@@ -258,7 +258,7 @@ import {Testers} from "../utilities/testers";
             OggPageHeader.headerBeginning,
             0x05, // Version
             0x07, // Flags,
-            ByteVector.fromULong(0x123456, false), // Absolute granular position
+            ByteVector.fromUlong(0x123456, false), // Absolute granular position
             ByteVector.fromUint(0x1234, false), // Stream serial number
             ByteVector.fromUint(0x00, false), // Page sequence number
             ByteVector.fromSize(4), // Checksum
@@ -293,7 +293,7 @@ import {Testers} from "../utilities/testers";
             OggPageHeader.headerBeginning,
             0x05, // Version
             0x07, // Flags,
-            ByteVector.fromULong(0x123456, false), // Absolute granular position
+            ByteVector.fromUlong(0x123456, false), // Absolute granular position
             ByteVector.fromUint(0x1234, false), // Stream serial number
             ByteVector.fromUint(0x00, false), // Page sequence number
             ByteVector.fromSize(4), // Checksum

@@ -23,7 +23,7 @@ export default class UnknownObject extends BaseObject {
     public static fromFile(file: File, position: number): UnknownObject {
         const instance = new UnknownObject();
         instance.initializeFromFile(file, position);
-        instance._data = file.readBlock(instance.originalSize - 24);
+        instance._data = file.readBlock(instance.originalSize - 24).toByteVector();
         return instance;
     }
 
@@ -42,6 +42,7 @@ export default class UnknownObject extends BaseObject {
         this._data = value;
     }
 
+    /** @inheritDoc */
     public get objectType(): ObjectType { return ObjectType.UnknownObject; }
 
     // #endregion

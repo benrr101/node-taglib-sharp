@@ -154,7 +154,7 @@ export abstract class Frame {
             this.flags &= ~(v3Flags);
         }
 
-        const fieldData = this.renderFields(version);
+        let fieldData = this.renderFields(version);
 
         // If we don't have any content, don't render anything. This will cause the frame to not be
         // rendered
@@ -162,35 +162,39 @@ export abstract class Frame {
             return ByteVector.empty();
         }
 
-        const frontData = ByteVector.empty();
-
+        const frontData: Array<ByteVector|number> = [];
         if (NumberUtils.hasFlag(this.flags, (Id3v2FrameFlags.Compression | Id3v2FrameFlags.DataLengthIndicator))) {
-            frontData.addByteVector(ByteVector.fromUint(fieldData.length));
+            frontData.push(ByteVector.fromUint(fieldData.length));
         }
         if (NumberUtils.hasFlag(this.flags, Id3v2FrameFlags.GroupingIdentity)) {
-            frontData.addByte(this._groupId);
+            frontData.push(this._groupId);
         }
         if (NumberUtils.hasFlag(this.flags, Id3v2FrameFlags.Encryption)) {
-            frontData.addByte(this._encryptionId);
+            frontData.push(this._encryptionId);
         }
-        // @FIXME: Implement compression
+        // @TODO: Implement compression
         if (NumberUtils.hasFlag(this.flags, Id3v2FrameFlags.Compression)) {
             throw new NotImplementedError("Compression is not yet supported");
         }
-        // @FIXME: Implement encryption
+        // @TODO: Implement encryption
         if (NumberUtils.hasFlag(this.flags, Id3v2FrameFlags.Encryption)) {
             throw new NotImplementedError("Encryption is not yet supported");
         }
         if (NumberUtils.hasFlag(this.flags, Id3v2FrameFlags.Desynchronized)) {
-            SyncData.unsyncByteVector(fieldData);
-        }
-        if (frontData.length > 0) {
-            fieldData.insertByteVector(0, frontData);
+            fieldData = SyncData.unsyncByteVector(fieldData);
         }
 
-        this._header.frameSize = fieldData.length;
+        // Update the header size with the size of the rendered bytes and any "front" data
+        const frontDataSize = frontData.reduce<number>(
+            (accum, e) => accum += e instanceof ByteVector ? e.length : 1,
+            0
+        );
+        this._header.frameSize = fieldData.length + frontDataSize;
+
+
         return ByteVector.concatenate(
             this._header.render(version),
+            ...frontData,
             fieldData
         );
     }
@@ -262,10 +266,9 @@ export abstract class Frame {
             throw new CorruptFileError("Frame size less than zero");
         }
 
-        const data = frameData.mid(dataOffset, dataLength);
-
+        let data = frameData.subarray(dataOffset, dataLength);
         if (NumberUtils.hasFlag(this.flags, Id3v2FrameFlags.Desynchronized)) {
-            SyncData.resyncByteVector(data);
+            data = SyncData.resyncByteVector(data);
         }
 
         // @FIXME: Implement encryption

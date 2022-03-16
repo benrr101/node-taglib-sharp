@@ -1,5 +1,5 @@
-import * as Chai from "chai";
 import {suite, test} from "@testdeck/mocha";
+import {assert} from "chai";
 
 import FrameConstructorTests from "./frameConstructorTests";
 import PropertyTests from "../utilities/propertyTests";
@@ -10,11 +10,8 @@ import {Id3v2FrameHeader} from "../../src/id3v2/frames/frameHeader";
 import {FrameIdentifiers} from "../../src/id3v2/frameIdentifiers";
 import {Testers} from "../utilities/testers";
 
-// Setup chai
-const assert = Chai.assert;
-
 // Test constants
-const testIdentifier = ByteVector.fromString("foobarbaz");
+const testIdentifier = ByteVector.fromString("foobarbaz", StringType.UTF8);
 const testOwner = "https://github.com/benrr101/node-taglib-sharp";
 
 @suite class Id3v2_UniqueFileIdentifierFrame_ConstructorTests extends FrameConstructorTests {
@@ -106,7 +103,7 @@ const testOwner = "https://github.com/benrr101/node-taglib-sharp";
         const data = ByteVector.concatenate(
             header.render(4),
             0x0, 0x0,
-            ByteVector.fromString(testOwner),
+            ByteVector.fromString(testOwner, StringType.UTF8),
             ByteVector.getTextDelimiter(StringType.Latin1),
             testIdentifier
         );
@@ -164,7 +161,7 @@ const testOwner = "https://github.com/benrr101/node-taglib-sharp";
         header.frameSize = 55;
         const data = ByteVector.concatenate(
             header.render(4),
-            ByteVector.fromString(testOwner),
+            ByteVector.fromString(testOwner, StringType.UTF8),
             ByteVector.getTextDelimiter(StringType.Latin1),
             testIdentifier
         );
@@ -205,7 +202,7 @@ const testOwner = "https://github.com/benrr101/node-taglib-sharp";
     public setIdentifier_valid() {
         // Arrange
         const frame = UniqueFileIdentifierFrame.fromData("fuxqux", ByteVector.fromSize(1));
-        const identifier = ByteVector.fromString("quxx");
+        const identifier = ByteVector.fromString("quxx", StringType.UTF8);
 
         // Act / Assert
         PropertyTests.propertyRoundTrip((v) => { frame.identifier = v; }, () => frame.identifier, identifier);
@@ -264,7 +261,7 @@ const testOwner = "https://github.com/benrr101/node-taglib-sharp";
     @test
     public clone_withIdentifier() {
         // Arrange
-        const frame = UniqueFileIdentifierFrame.fromData("fux", ByteVector.fromString("qux"));
+        const frame = UniqueFileIdentifierFrame.fromData("fux", ByteVector.fromString("qux", StringType.UTF8));
 
         // Act
         const clone = <UniqueFileIdentifierFrame> frame.clone();
@@ -285,7 +282,7 @@ const testOwner = "https://github.com/benrr101/node-taglib-sharp";
         header.frameSize = 55;
         const data = ByteVector.concatenate(
             header.render(4),
-            ByteVector.fromString(testOwner),
+            ByteVector.fromString(testOwner, StringType.UTF8),
             ByteVector.getTextDelimiter(StringType.Latin1),
             testIdentifier
         );

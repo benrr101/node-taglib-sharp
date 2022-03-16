@@ -1,12 +1,9 @@
-import * as Chai from "chai";
 import {suite, test} from "@testdeck/mocha";
+import {assert} from "chai";
 
 import {ApeTagItem, ApeTagItemType} from "../../src/ape/apeTagItem";
 import {ByteVector, StringType} from "../../src/byteVector";
 import {Testers} from "../utilities/testers";
-
-// Setup chai
-const assert = Chai.assert;
 
 @suite class Ape_TagItemTest_ConstructorTests {
     @test
@@ -20,32 +17,10 @@ const assert = Chai.assert;
     }
 
     @test
-    public fromBinaryValue_notReadOnly() {
+    public fromBinaryValue() {
         // Arrange
         const key = "key";
         const data = ByteVector.fromSize(10);
-
-        // Act
-        const item = ApeTagItem.fromBinaryValue(key, data);
-
-        // Assert
-        assert.isOk(item);
-        assert.isFalse(item.isEmpty);
-        assert.isFalse(item.isReadOnly);
-        assert.strictEqual(item.key, key);
-        assert.strictEqual(item.size, 0);
-        assert.deepStrictEqual(item.text, []);
-        assert.strictEqual(item.type, ApeTagItemType.Binary);
-        assert.notStrictEqual(item.value, data);
-        Testers.bvEqual(item.value, data);
-        assert.isTrue(item.value.isReadOnly);
-    }
-
-    @test
-    public fromBinaryValue_isReadOnly() {
-        // Arrange
-        const key = "key";
-        const data = ByteVector.fromSize(10, 0x00, true);
 
         // Act
         const item = ApeTagItem.fromBinaryValue(key, data);
@@ -112,7 +87,7 @@ const assert = Chai.assert;
     @test
     public fromData_binary() {
         // Arrange
-        const value = ByteVector.fromString("foobarbaz");
+        const value = ByteVector.fromString("foobarbaz", StringType.Latin1);
         const data = ByteVector.concatenate(
             0x00, // Offset
             ByteVector.fromUint(value.length, false), // Size,
@@ -211,7 +186,7 @@ const assert = Chai.assert;
     public clone_binary() {
         // Arrange
         const key = "key";
-        const data = ByteVector.fromSize(10, 0x00, true);
+        const data = ByteVector.fromSize(10, 0x00);
         const item = ApeTagItem.fromBinaryValue(key, data);
 
         // Act
@@ -269,7 +244,7 @@ const assert = Chai.assert;
     @test
     public render_binary() {
         // Arrange
-        const value = ByteVector.fromString("foobarbaz");
+        const value = ByteVector.fromString("foobarbaz", StringType.Latin1);
         const data = ByteVector.concatenate(
             ByteVector.fromUint(value.length, false), // Size,
             0x03, 0x00, 0x00, 0x00, // Flags

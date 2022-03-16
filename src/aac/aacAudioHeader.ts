@@ -129,7 +129,7 @@ export default class AacAudioHeader implements IAudioCodec {
 
                 // Sync word found, continue processing
                 // NOTE: For details of the header format, see https://wiki.multimedia.cx/index.php/ADTS
-                const bytes = buffer.mid(i, 7);
+                const bytes = buffer.subarray(i, 7);
 
                 // Sample rate
                 const sampleRateByte = bytes.get(2);

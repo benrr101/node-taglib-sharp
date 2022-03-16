@@ -1,12 +1,16 @@
 import Id3v2Settings from "./id3v2Settings";
 import SyncData from "./syncData";
-import {ByteVector} from "../byteVector";
+import {ByteVector, StringType} from "../byteVector";
 import {CorruptFileError} from "../errors";
 import {Id3v2TagHeader, Id3v2TagHeaderFlags} from "./id3v2TagHeader";
 import {Guards, NumberUtils} from "../utils";
 
 export default class Id3v2TagFooter {
-    private static readonly _fileIdentifier: ByteVector = ByteVector.fromString("3DI", undefined, undefined, true);
+    /**
+     * Identifier used to recognize an ID3v2 footer.
+     */
+    public static readonly fileIdentifier = ByteVector.fromString("3DI", StringType.Latin1).makeReadOnly();
+
     private _flags: Id3v2TagHeaderFlags = Id3v2TagHeaderFlags.FooterPresent;
     private _majorVersion: number = 0;
     private _revisionNumber: number = 0;
@@ -47,7 +51,7 @@ export default class Id3v2TagFooter {
             }
         }
 
-        footer.tagSize = SyncData.toUint(data.mid(6, 4));
+        footer.tagSize = SyncData.toUint(data.subarray(6, 4));
 
         return footer;
     }
@@ -70,11 +74,6 @@ export default class Id3v2TagFooter {
     }
 
     // #region Properties
-
-    /**
-     * Identifier used to recognize an ID3v2 footer.
-     */
-    public static get fileIdentifier(): ByteVector { return this._fileIdentifier; }
 
     /**
      * Gets the complete size of the tag described by the current instance including the header
