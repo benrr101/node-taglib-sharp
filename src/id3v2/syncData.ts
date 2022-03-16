@@ -50,8 +50,8 @@ export default {
                 const length = leadingPtr - trailingPtr + 1;
                 outputList.push(data.subarray(trailingPtr, length));
 
-                trailingPtr = leadingPtr + 1;
                 leadingPtr += 2;
+                trailingPtr = leadingPtr;
             } else {
                 leadingPtr++;
             }
@@ -108,8 +108,8 @@ export default {
                 outputList.push(data.subarray(trailingPtr, length));
                 outputList.push(0x00);
 
-                trailingPtr = leadingPtr + 1;
-                leadingPtr += 2;
+                leadingPtr++;
+                trailingPtr = leadingPtr;
             } else {
                 leadingPtr++;
             }

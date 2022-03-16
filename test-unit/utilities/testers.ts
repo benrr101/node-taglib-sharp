@@ -100,13 +100,16 @@ export class Testers {
 
         const getMessage = (bvX: ByteVector, bvY: ByteVector, position: number): string => {
             const xPort = getPortion(bvX, position);
+            const xByte = position >= bvX.length ? "<null>" : `0x${bvX.get(position).toString(16).padStart(2, "0")}`;
             const yPort = getPortion(bvY, position);
             const spacing = new Array(xPort.offset).join(" ");
+            const yByte = position >= bvY.length ? "<null>" : `0x${bvY.get(position).toString(16).padStart(2, "0")}`;
+
             return `Difference at index: ${position}\n`
                  + `Actual:   ${xPort.portion}\n`
-                 + `          ${spacing}^ 0x${bvX.get(position).toString(16).padStart(2, "0")}\n`
+                 + `          ${spacing}^ ${xByte}\n`
                  + `Expected: ${yPort.portion}\n`
-                 + `          ${spacing}^ 0x${bvY.get(position).toString(16).padStart(2, "0")}\n`;
+                 + `          ${spacing}^ ${yByte}\n`;
         };
 
         let pos = 0;

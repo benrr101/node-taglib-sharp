@@ -183,8 +183,7 @@ class TestFrame extends Frame {
     @test
     public fieldData_desynchronized() {
         // Arrange
-        const fieldData = TestFrame.renderFieldData;
-        SyncData.unsyncByteVector(fieldData);
+        let fieldData = SyncData.unsyncByteVector(TestFrame.renderFieldData);
 
         const header = new Id3v2FrameHeader(FrameIdentifiers.TXXX, Id3v2FrameFlags.Desynchronized);
         header.frameSize = fieldData.length;
@@ -198,7 +197,7 @@ class TestFrame extends Frame {
         const output = frame.callFieldData(data, 0, 4, true);
 
         // Assert
-        SyncData.resyncByteVector(fieldData);
+        fieldData = SyncData.resyncByteVector(fieldData);
         Testers.bvEqual(output, fieldData);
     }
 

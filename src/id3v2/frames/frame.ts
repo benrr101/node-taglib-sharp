@@ -163,7 +163,6 @@ export abstract class Frame {
         }
 
         const frontData: Array<ByteVector|number> = [];
-
         if (NumberUtils.hasFlag(this.flags, (Id3v2FrameFlags.Compression | Id3v2FrameFlags.DataLengthIndicator))) {
             frontData.push(ByteVector.fromUint(fieldData.length));
         }
@@ -185,7 +184,14 @@ export abstract class Frame {
             fieldData = SyncData.unsyncByteVector(fieldData);
         }
 
-        this._header.frameSize = fieldData.length;
+        // Update the header size with the size of the rendered bytes and any "front" data
+        const frontDataSize = frontData.reduce<number>(
+            (accum, e) => accum += e instanceof ByteVector ? e.length : 1,
+            0
+        );
+        this._header.frameSize = fieldData.length + frontDataSize;
+
+
         return ByteVector.concatenate(
             this._header.render(version),
             ...frontData,
