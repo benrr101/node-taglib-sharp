@@ -1870,8 +1870,8 @@ function getTestTagHeader(version: number, flags: Id3v2TagHeaderFlags, tagSize: 
         const output = tag.render();
 
         // Assert
-        frame1.flags |= Id3v2FrameFlags.Desynchronized;
-        frame2.flags |= Id3v2FrameFlags.Desynchronized;
+        frame1.flags |= Id3v2FrameFlags.Unsynchronized;
+        frame2.flags |= Id3v2FrameFlags.Unsynchronized;
         const frame1Data = frame1.render(4);
         const frame2Data = frame2.render(4);
 

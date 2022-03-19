@@ -41,9 +41,9 @@ export enum Id3v2FrameFlags {
     Encryption = 0x0004,
 
     /**
-     * Frame data has been desynchronized.
+     * Frame data has been unsynchronized using the ID3v2 unsynchronization scheme.
      */
-    Desynchronized = 0x0002,
+    Unsynchronized = 0x0002,
 
     /**
      * Frame has a data length indicator.

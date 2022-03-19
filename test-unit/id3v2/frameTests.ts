@@ -185,7 +185,7 @@ class TestFrame extends Frame {
         // Arrange
         let fieldData = SyncData.unsyncByteVector(TestFrame.renderFieldData);
 
-        const header = new Id3v2FrameHeader(FrameIdentifiers.TXXX, Id3v2FrameFlags.Desynchronized);
+        const header = new Id3v2FrameHeader(FrameIdentifiers.TXXX, Id3v2FrameFlags.Unsynchronized);
         header.frameSize = fieldData.length;
         const frame = new TestFrame(header);
         const data = ByteVector.concatenate(

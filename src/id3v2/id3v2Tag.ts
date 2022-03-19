@@ -928,7 +928,7 @@ export default class Id3v2Tag extends Tag {
         // Loop through the frames rendering them and adding them to tag data
         const renderedFrames = this._frameList.map((frame) => {
             if (unsyncAtFrameLevel) {
-                frame.flags |= Id3v2FrameFlags.Desynchronized;
+                frame.flags |= Id3v2FrameFlags.Unsynchronized;
             }
             if ((frame.flags & Id3v2FrameFlags.TagAlterPreservation) !== 0 ) {
                 return undefined;
