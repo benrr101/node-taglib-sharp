@@ -26,7 +26,8 @@ export enum Id3v2TagHeaderFlags {
     ExtendedHeader = 0x40,
 
     /**
-     * The tag described by the header has been desynchronized.
+     * The tag described by the header has been unsynchronized using the ID3v2 unsynchronization
+     * scheme.
      */
     Unsynchronization = 0x80,
 }

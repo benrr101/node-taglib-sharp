@@ -103,9 +103,8 @@ export default {
         // Illegal frames are filtered out when creating the frame header
 
         // Mark the frame as unsynchronized if the entire tag is already unsynchronized
-        // @TODO Standardize on "Desynchronized"
         if (alreadyUnsynced) {
-            header.flags &= ~Id3v2FrameFlags.Desynchronized;
+            header.flags &= ~Id3v2FrameFlags.Unsynchronized;
         }
 
         // TODO: Support compression

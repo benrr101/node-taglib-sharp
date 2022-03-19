@@ -141,7 +141,7 @@ export abstract class Frame {
 
         // Remove flags that are not supported by older versions of ID3v2
         if (version < 4) {
-            const v4Flags = Id3v2FrameFlags.DataLengthIndicator | Id3v2FrameFlags.Desynchronized;
+            const v4Flags = Id3v2FrameFlags.DataLengthIndicator | Id3v2FrameFlags.Unsynchronized;
             this.flags &= ~(v4Flags);
         }
         if (version < 3) {
@@ -180,7 +180,7 @@ export abstract class Frame {
         if (NumberUtils.hasFlag(this.flags, Id3v2FrameFlags.Encryption)) {
             throw new NotImplementedError("Encryption is not yet supported");
         }
-        if (NumberUtils.hasFlag(this.flags, Id3v2FrameFlags.Desynchronized)) {
+        if (NumberUtils.hasFlag(this.flags, Id3v2FrameFlags.Unsynchronized)) {
             fieldData = SyncData.unsyncByteVector(fieldData);
         }
 
@@ -267,7 +267,7 @@ export abstract class Frame {
         }
 
         let data = frameData.subarray(dataOffset, dataLength);
-        if (NumberUtils.hasFlag(this.flags, Id3v2FrameFlags.Desynchronized)) {
+        if (NumberUtils.hasFlag(this.flags, Id3v2FrameFlags.Unsynchronized)) {
             data = SyncData.resyncByteVector(data);
         }
 
