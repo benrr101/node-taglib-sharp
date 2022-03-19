@@ -22,7 +22,7 @@ export default class AsfTag extends Tag {
     private _extendedDescriptionObject: ExtendedContentDescriptionObject = ExtendedContentDescriptionObject.fromEmpty();
     private _metadataLibraryObject: MetadataLibraryObject = MetadataLibraryObject.fromEmpty();
 
-    private static readonly genreRegex = new RegExp(/\(([0-9]+)\)/);
+    private static readonly GENRE_REGEX = new RegExp(/\(([0-9]+)\)/);
 
     // #region Constructors
 
@@ -268,7 +268,7 @@ export default class AsfTag extends Tag {
             let genre = result[i].trim();
 
             // Attempt to find a numeric genre in here
-            const genreMatch = AsfTag.genreRegex.exec(genre);
+            const genreMatch = AsfTag.GENRE_REGEX.exec(genre);
             if (genreMatch) {
                 const numericGenre = Number.parseInt(genreMatch[1], 10);
                 if (!Number.isNaN(numericGenre)) {
@@ -944,7 +944,7 @@ export default class AsfTag extends Tag {
     }
 
     /** @internal */
-    public static pictureToData(picture: IPicture) {
+    public static pictureToData(picture: IPicture): ByteVector {
         return ByteVector.concatenate(
             picture.type,
             ReadWriteUtils.renderDWord(picture.data.length),

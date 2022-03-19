@@ -32,14 +32,14 @@ const sampleData = ByteVector.concatenate(
 );
 
 const sampleList = ByteVector.concatenate(
-    ByteVector.fromString(RiffList.identifierFourcc, StringType.UTF8),
+    ByteVector.fromString(RiffList.IDENTIFIER_FOURCC, StringType.UTF8),
     ByteVector.fromUint(sampleData.length + 4, false),
     ByteVector.fromString("fooo", StringType.UTF8),
     sampleData
 );
 
 const sampleNestedList = ByteVector.concatenate(
-    ByteVector.fromString(RiffList.identifierFourcc, StringType.UTF8),
+    ByteVector.fromString(RiffList.IDENTIFIER_FOURCC, StringType.UTF8),
     ByteVector.fromUint(sampleList.length + 4, false),
     ByteVector.fromString("baar", StringType.UTF8),
     sampleList
@@ -61,7 +61,7 @@ const sampleNestedList = ByteVector.concatenate(
     public fromFile_emptyList() {
         // Arrange
         const data = ByteVector.concatenate(
-            ByteVector.fromString(RiffList.identifierFourcc, StringType.UTF8),
+            ByteVector.fromString(RiffList.IDENTIFIER_FOURCC, StringType.UTF8),
             ByteVector.fromUint(0, false)
         );
         const mockFile = TestFile.getFile(data);
@@ -110,7 +110,7 @@ const sampleNestedList = ByteVector.concatenate(
         assert.isOk(list);
         assert.isFalse(list.isLoaded);
         assert.strictEqual(list.chunkStart, 10);
-        assert.strictEqual(list.fourcc, RiffList.identifierFourcc);
+        assert.strictEqual(list.fourcc, RiffList.IDENTIFIER_FOURCC);
         assert.strictEqual(list.originalTotalSize, 88);
         assert.strictEqual(list.type, "baar");
 
@@ -129,7 +129,7 @@ const sampleNestedList = ByteVector.concatenate(
     private static verifySample(list: RiffList): void {
         assert.isOk(list);
         assert.isFalse(list.isLoaded);
-        assert.strictEqual(list.fourcc, RiffList.identifierFourcc);
+        assert.strictEqual(list.fourcc, RiffList.IDENTIFIER_FOURCC);
         assert.strictEqual(list.originalTotalSize, 76);
         assert.strictEqual(list.type, "fooo");
 
@@ -248,7 +248,7 @@ const sampleNestedList = ByteVector.concatenate(
 
         // Assert
         const expected = ByteVector.concatenate(
-            ByteVector.fromString(RiffList.identifierFourcc, StringType.UTF8),
+            ByteVector.fromString(RiffList.IDENTIFIER_FOURCC, StringType.UTF8),
             ByteVector.fromUint(4, false),
             ByteVector.fromString("fooo", StringType.UTF8)
         );

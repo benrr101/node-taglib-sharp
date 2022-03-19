@@ -16,7 +16,7 @@ class Asf_FilePropertiesObjectTests extends ObjectTests<FilePropertiesObject> {
         return FilePropertiesObject.fromFile;
     }
     protected get minSize(): number { return 104; }
-    protected get objectGuid(): UuidWrapper { return Guids.AsfFilePropertiesObject; }
+    protected get objectGuid(): UuidWrapper { return Guids.ASF_FILE_PROPERTIES_OBJECT; }
 
     @test
     public fromFile_validParameters() {
@@ -24,7 +24,7 @@ class Asf_FilePropertiesObjectTests extends ObjectTests<FilePropertiesObject> {
         const fileId = new UuidWrapper();
         const data = ByteVector.concatenate(
             ByteVector.fromSize(10), // Offset
-            Guids.AsfFilePropertiesObject.toBytes(), // Object ID
+            Guids.ASF_FILE_PROPERTIES_OBJECT.toBytes(), // Object ID
             ByteVector.fromUlong(104, false), // Object size
             fileId.toBytes(), // File ID
             ByteVector.fromUlong(1234, false), // File Size
@@ -45,7 +45,7 @@ class Asf_FilePropertiesObjectTests extends ObjectTests<FilePropertiesObject> {
 
         // Assert
         assert.isOk(object);
-        assert.isTrue(object.guid.equals(Guids.AsfFilePropertiesObject));
+        assert.isTrue(object.guid.equals(Guids.ASF_FILE_PROPERTIES_OBJECT));
         assert.strictEqual(object.objectType, ObjectType.FilePropertiesObject);
         assert.strictEqual(object.originalSize, 104);
         assert.deepEqual(object.creationDate, new Date(Date.UTC(1970, 4, 13, 18, 0, 0)));
@@ -67,7 +67,7 @@ class Asf_FilePropertiesObjectTests extends ObjectTests<FilePropertiesObject> {
         const fileId = new UuidWrapper();
         const data = ByteVector.concatenate(
             ByteVector.fromSize(10), // Offset
-            Guids.AsfFilePropertiesObject.toBytes(), // Object ID
+            Guids.ASF_FILE_PROPERTIES_OBJECT.toBytes(), // Object ID
             ByteVector.fromUlong(104, false), // Object size
             fileId.toBytes(), // File ID
             ByteVector.fromUlong(1234, false), // File Size

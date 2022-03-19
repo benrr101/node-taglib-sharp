@@ -70,8 +70,13 @@ export default {
      *     * offset: updated offset where the next frame starts
      */
     // @TODO: Split into fromFile and fromData
-    createFrame: (data: ByteVector, file: File, offset: number, version: number, alreadyUnsynced: boolean):
-        {frame: Frame, offset: number} => {
+    createFrame: (
+        data: ByteVector,
+        file: File,
+        offset: number,
+        version: number,
+        alreadyUnsynced: boolean
+    ): {frame: Frame, offset: number} => {
         Guards.uint(offset, "offset");
         Guards.byte(version, "version");
 
@@ -218,7 +223,7 @@ export default {
                 frame: func(data, position, header, version),
                 offset: frameEndIndex
             };
-        } catch (e) {
+        } catch (e: unknown) {
             if (CorruptFileError.errorIs(e) || NotImplementedError.errorIs(e)) {
                 throw e;
             }

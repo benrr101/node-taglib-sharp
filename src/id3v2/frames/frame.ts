@@ -29,6 +29,7 @@ export enum FrameClassType {
 export abstract class Frame {
     // #region Member Variables
 
+    // @TODO: Disallow protected member variables
     protected _header: Id3v2FrameHeader;
 
     private _encryptionId: number;
@@ -136,7 +137,7 @@ export abstract class Frame {
      * Renders the current instance, encoded in a specified ID3v2 version.
      * @param version Version of ID3v2 to use when encoding the current instance
      */
-    public render(version: number) {
+    public render(version: number): ByteVector {
         Guards.byte(version, "version");
 
         // Remove flags that are not supported by older versions of ID3v2

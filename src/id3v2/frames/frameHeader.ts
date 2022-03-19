@@ -209,7 +209,7 @@ export class Id3v2FrameHeader {
      * Gets the size of a header for a specified ID3v2 version.
      * @param version Version of ID3v2 to get the size for. Must be a positive integer < 256
      */
-    public static getSize(version: number) {
+    public static getSize(version: number): number {
         Guards.byte(version, "version");
         return version < 3 ? 6 : 10;
     }

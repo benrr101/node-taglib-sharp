@@ -44,7 +44,7 @@ export default class AsfFile extends File {
     // #region Methods
 
     /** @inheritDoc */
-    public getTag(type: TagTypes, _create: boolean): Tag {
+    public getTag(type: TagTypes): Tag {
         return type === TagTypes.Asf ? this._asfTag : undefined;
     }
 
@@ -87,7 +87,7 @@ export default class AsfFile extends File {
     // #endregion
 }
 
-////////////////////////////////////////////////////////////////////////////
+// /////////////////////////////////////////////////////////////////////////
 // Register the file type
 [
     "taglib/wma",

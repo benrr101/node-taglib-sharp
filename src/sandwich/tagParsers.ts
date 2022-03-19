@@ -7,6 +7,7 @@ import {File, ReadStyle} from "../file";
  * returns `true` the tag that was just read can be read from {@link currentTag}.
  */
 export default abstract class TagParser {
+    // @TODO: Don't allow access to member variables
     protected _currentTag: Tag;
     protected _file: File;
     protected _fileOffset: number;

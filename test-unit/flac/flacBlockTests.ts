@@ -40,7 +40,7 @@ import {Testers} from "../utilities/testers";
         Testers.bvEqual(block.data, data);
         assert.strictEqual(block.dataSize, data.length);
         assert.isFalse(block.isLastBlock);
-        assert.strictEqual(block.totalSize, data.length + FlacBlock.headerSize);
+        assert.strictEqual(block.totalSize, data.length + FlacBlock.HEADER_SIZE);
         assert.strictEqual(block.type, FlacBlockType.Padding);
     }
 
@@ -74,7 +74,7 @@ import {Testers} from "../utilities/testers";
         assert.strictEqual(block.blockStart, 10);
         assert.strictEqual(block.dataSize, 0x123456);
         assert.isTrue(block.isLastBlock);
-        assert.strictEqual(block.totalSize, 0x123456 + FlacBlock.headerSize);
+        assert.strictEqual(block.totalSize, 0x123456 + FlacBlock.HEADER_SIZE);
         assert.strictEqual(block.type, FlacBlockType.Picture);
     }
 
@@ -97,7 +97,7 @@ import {Testers} from "../utilities/testers";
         assert.strictEqual(block.blockStart, 10);
         assert.strictEqual(block.dataSize, 0x123456);
         assert.isFalse(block.isLastBlock);
-        assert.strictEqual(block.totalSize, 0x123456 + FlacBlock.headerSize);
+        assert.strictEqual(block.totalSize, 0x123456 + FlacBlock.HEADER_SIZE);
         assert.strictEqual(block.type, FlacBlockType.Picture);
     }
 

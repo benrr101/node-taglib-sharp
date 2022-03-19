@@ -14,7 +14,8 @@
     "target": "es6"
   },
   "include": [
-    "./src/**/*"
+    "./src/**/*",
+    ".eslintrc.js"
   ],
   "typedocOptions": {
     "entryPoints": ["./src/index.ts"],

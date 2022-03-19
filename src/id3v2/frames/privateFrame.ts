@@ -117,7 +117,7 @@ export default class PrivateFrame extends Frame {
     }
 
     /** @inheritDoc */
-    protected parseFields(data: ByteVector, _version: number): void {
+    protected parseFields(data: ByteVector): void {
         if (data.length < 1) {
             throw new CorruptFileError("A private frame must contain at least 1 byte");
         }

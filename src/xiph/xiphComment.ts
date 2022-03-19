@@ -14,8 +14,8 @@ import {Guards} from "../utils";
  *     each field can have multiple values.
  */
 export default class XiphComment extends Tag {
-    private static readonly newPictureFiled = "METADATA_BLOCK_PICTURE";
-    private static readonly oldPictureField = "COVERART";
+    private static readonly NEW_PICTURE_FIELD = "METADATA_BLOCK_PICTURE";
+    private static readonly OLD_PICTURE_FIELD = "COVERART";
 
     private _fields: Map<string, string[]> = new Map<string, string[]>();
     private _pictures: IPicture[] = [];
@@ -70,7 +70,7 @@ export default class XiphComment extends Tag {
             const value = comment.substr(commentSeparatorPosition + 1);
 
             switch (key) {
-                case XiphComment.oldPictureField:
+                case XiphComment.OLD_PICTURE_FIELD:
                     // Old picture fields are just base64 encoded picture bytes
                     // TODO: Allow picture to be lazily decoded
                     const pictureBytes = ByteVector.fromBase64String(value);
@@ -78,7 +78,7 @@ export default class XiphComment extends Tag {
                     xiphComment._pictures.push(oldPicture);
 
                     break;
-                case XiphComment.newPictureFiled:
+                case XiphComment.NEW_PICTURE_FIELD:
                     // New picture fields have details!
                     // TODO: Allow read style to be passed in
                     const newPicture = XiphPicture.fromXiphComment(value, lazyLoadPictures);
@@ -862,7 +862,7 @@ export default class XiphComment extends Tag {
         // @TODO: Allow configuration of which field to store pictures
         const pictureData = this._pictures.map((p) => {
             const xiphPicture = p instanceof XiphPicture ? p : XiphPicture.fromPicture(p);
-            const encodedPicture = `${XiphComment.newPictureFiled}=${xiphPicture.renderForXiphComment()}`;
+            const encodedPicture = `${XiphComment.NEW_PICTURE_FIELD}=${xiphPicture.renderForXiphComment()}`;
             return ByteVector.concatenate(
                 ByteVector.fromUint(encodedPicture.length, false),
                 ByteVector.fromString(encodedPicture, StringType.UTF8)
@@ -939,8 +939,8 @@ export default class XiphComment extends Tag {
     // #region Private Methods
 
     private static isPictureField(fieldName: string): boolean {
-        return fieldName === XiphComment.oldPictureField
-            || fieldName === XiphComment.newPictureFiled;
+        return fieldName === XiphComment.OLD_PICTURE_FIELD
+            || fieldName === XiphComment.NEW_PICTURE_FIELD;
     }
 
     // #endregion

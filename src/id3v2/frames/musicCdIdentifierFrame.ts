@@ -25,7 +25,11 @@ export default class MusicCdIdentifierFrame extends Frame {
      * @param header Header of the frame found at `offset` in the data
      * @param version ID3v2 version the frame was originally encoded with
      */
-    public static fromOffsetRawData(data: ByteVector, offset: number, header: Id3v2FrameHeader, version: number) {
+    public static fromOffsetRawData(
+        data: ByteVector,
+        offset: number,
+        header: Id3v2FrameHeader, version: number
+    ): MusicCdIdentifierFrame {
         Guards.truthy(data, "data");
         Guards.uint(offset, "offset");
         Guards.truthy(header, "header");
@@ -71,20 +75,13 @@ export default class MusicCdIdentifierFrame extends Frame {
         return frame;
     }
 
-    /**
-     * Populates the values in the current instance.
-     * @param data ByteVector containing the extracted field data.
-     * @param version Ignored.
-     */
-    protected parseFields(data: ByteVector, version: number): void {
+    /** @inheritDoc */
+    protected parseFields(data: ByteVector): void {
         this._data = data;
     }
 
-    /**
-     * Renders the value in current instance into field data.
-     * @param version Ignored.
-     */
-    protected renderFields(version: number): ByteVector {
+    /** @inheritDoc */
+    protected renderFields(): ByteVector {
         return this._data || ByteVector.empty();
     }
 }

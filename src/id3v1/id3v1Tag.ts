@@ -11,19 +11,19 @@ import {Guards} from "../utils";
 export default class Id3v1Tag extends Tag {
     // #region Member Fields
 
-    private static readonly commentBytes = 28;
-    private static readonly titleArtistAlbumBytes = 30;
-    private static readonly yearBytes = 4;
+    private static readonly COMMENT_LENGTH = 28;
+    private static readonly TITLE_ARTIST_ALBUM_LENGTH = 30;
+    private static readonly YEAR_LENGTH = 4;
 
     /**
      * Identifier used to recognize an ID3v1 tag.
      */
-    public static readonly fileIdentifier = ByteVector.fromString("TAG", StringType.UTF8);
+    public static readonly FILE_IDENTIFIER = ByteVector.fromString("TAG", StringType.UTF8);
 
     /**
      * Size of an ID3v1 tag.
      */
-    public static readonly size = 128;
+    public static readonly TOTAL_SIZE = 128;
 
     private _album: string;
     private _artist: string;
@@ -46,7 +46,7 @@ export default class Id3v1Tag extends Tag {
 
         // Some initial sanity checking
         Guards.truthy(data, "data");
-        if (!data.startsWith(Id3v1Tag.fileIdentifier)) {
+        if (!data.startsWith(Id3v1Tag.FILE_IDENTIFIER)) {
             throw new CorruptFileError("Id3v1 data does not start with identifier");
         }
 
@@ -72,14 +72,14 @@ export default class Id3v1Tag extends Tag {
 
         file.mode = FileAccessMode.Read;
 
-        if (position > file.length - Id3v1Tag.size) {
+        if (position > file.length - Id3v1Tag.TOTAL_SIZE) {
             throw new Error("Argument out of range: position must be less than the length of the file");
         }
 
         file.seek(position);
 
         // Read the tag, it's always 128 bytes
-        const data = file.readBlock(Id3v1Tag.size);
+        const data = file.readBlock(Id3v1Tag.TOTAL_SIZE);
 
         return new Id3v1Tag(data);
     }
@@ -91,12 +91,12 @@ export default class Id3v1Tag extends Tag {
      */
     public render(): ByteVector {
         return ByteVector.concatenate(
-            Id3v1Tag.fileIdentifier,
-            ... Id3v1Tag.renderField(this._title, Id3v1Tag.titleArtistAlbumBytes),
-            ... Id3v1Tag.renderField(this._artist, Id3v1Tag.titleArtistAlbumBytes),
-            ... Id3v1Tag.renderField(this._album, Id3v1Tag.titleArtistAlbumBytes),
-            ... Id3v1Tag.renderField(this._year, Id3v1Tag.yearBytes),
-            ... Id3v1Tag.renderField(this._comment, Id3v1Tag.commentBytes),
+            Id3v1Tag.FILE_IDENTIFIER,
+            ... Id3v1Tag.renderField(this._title, Id3v1Tag.TITLE_ARTIST_ALBUM_LENGTH),
+            ... Id3v1Tag.renderField(this._artist, Id3v1Tag.TITLE_ARTIST_ALBUM_LENGTH),
+            ... Id3v1Tag.renderField(this._album, Id3v1Tag.TITLE_ARTIST_ALBUM_LENGTH),
+            ... Id3v1Tag.renderField(this._year, Id3v1Tag.YEAR_LENGTH),
+            ... Id3v1Tag.renderField(this._comment, Id3v1Tag.COMMENT_LENGTH),
             0x00,
             this._track,
             this._genre
@@ -109,7 +109,7 @@ export default class Id3v1Tag extends Tag {
     public get tagTypes(): TagTypes { return TagTypes.Id3v1; }
 
     /** @inheritDoc */
-    public get sizeOnDisk(): number { return Id3v1Tag.size; }
+    public get sizeOnDisk(): number { return Id3v1Tag.TOTAL_SIZE; }
 
     /** @inheritDoc */
     public get title(): string { return this._title || undefined; }
@@ -207,10 +207,10 @@ export default class Id3v1Tag extends Tag {
     // #region Private Helpers
 
     private parse(data: ByteVector): void {
-        this._title = Id3v1Tag.parseString(data.subarray(3, Id3v1Tag.titleArtistAlbumBytes));
-        this._artist = Id3v1Tag.parseString(data.subarray(33, Id3v1Tag.titleArtistAlbumBytes));
-        this._album = Id3v1Tag.parseString(data.subarray(63, Id3v1Tag.titleArtistAlbumBytes));
-        this._year = Id3v1Tag.parseString(data.subarray(93, Id3v1Tag.yearBytes));
+        this._title = Id3v1Tag.parseString(data.subarray(3, Id3v1Tag.TITLE_ARTIST_ALBUM_LENGTH));
+        this._artist = Id3v1Tag.parseString(data.subarray(33, Id3v1Tag.TITLE_ARTIST_ALBUM_LENGTH));
+        this._album = Id3v1Tag.parseString(data.subarray(63, Id3v1Tag.TITLE_ARTIST_ALBUM_LENGTH));
+        this._year = Id3v1Tag.parseString(data.subarray(93, Id3v1Tag.YEAR_LENGTH));
 
         // Check for ID3v1.1
         // NOTE: ID3v1 does not support "track zero", this is not a bug in TagLib. Since a zeroed
@@ -218,10 +218,10 @@ export default class Id3v1Tag extends Tag {
         //     string, a value of zero must be assumed to be just that.
         if (data.get(125) === 0 && data.get(126) !== 0) {
             // ID3v1.1 detected
-            this._comment = Id3v1Tag.parseString(data.subarray(97, Id3v1Tag.commentBytes));
+            this._comment = Id3v1Tag.parseString(data.subarray(97, Id3v1Tag.COMMENT_LENGTH));
             this._track = data.get(126);
         } else {
-            this._comment = Id3v1Tag.parseString(data.subarray(97, Id3v1Tag.titleArtistAlbumBytes));
+            this._comment = Id3v1Tag.parseString(data.subarray(97, Id3v1Tag.TITLE_ARTIST_ALBUM_LENGTH));
             this._track = 0;
         }
 

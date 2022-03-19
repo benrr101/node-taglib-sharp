@@ -44,7 +44,7 @@ import {Testers} from "../utilities/testers";
     public fromFile_unsupportedSize() {
         // Arrange
         const data = ByteVector.concatenate(
-            OggPageHeader.headerBeginning,
+            OggPageHeader.HEADER_IDENTIFIER,
             0x05, 0x06,
             ByteVector.fromUlong(BigInt(0x100000000000000))
         );
@@ -59,7 +59,7 @@ import {Testers} from "../utilities/testers";
         // Arrange
         const data = ByteVector.concatenate(
             ByteVector.fromSize(10), // Buffer
-            OggPageHeader.headerBeginning,
+            OggPageHeader.HEADER_IDENTIFIER,
             0x05, // Version
             0x07, // Flags,
             ByteVector.fromUlong(0x123456, false), // Absolute granular position
@@ -80,7 +80,7 @@ import {Testers} from "../utilities/testers";
         // Arrange
         const data = ByteVector.concatenate(
             ByteVector.fromSize(10), // Buffer
-            OggPageHeader.headerBeginning,
+            OggPageHeader.HEADER_IDENTIFIER,
             0x05, // Version
             0x07, // Flags,
             ByteVector.fromUlong(0x123456, false), // Absolute granular position
@@ -114,7 +114,7 @@ import {Testers} from "../utilities/testers";
         // Arrange
         const data = ByteVector.concatenate(
             ByteVector.fromSize(10), // Buffer
-            OggPageHeader.headerBeginning,
+            OggPageHeader.HEADER_IDENTIFIER,
             0x05, // Version
             0x07, // Flags,
             ByteVector.fromUlong(0x123456, false), // Absolute granular position
@@ -220,7 +220,7 @@ import {Testers} from "../utilities/testers";
         // Arrange
         const data = ByteVector.concatenate(
             ByteVector.fromSize(10), // Buffer
-            OggPageHeader.headerBeginning,
+            OggPageHeader.HEADER_IDENTIFIER,
             0x05, // Version
             0x07, // Flags,
             ByteVector.fromUlong(0x123456, false), // Absolute granular position
@@ -255,7 +255,7 @@ import {Testers} from "../utilities/testers";
         // Arrange
         const data = ByteVector.concatenate(
             ByteVector.fromSize(10), // Buffer
-            OggPageHeader.headerBeginning,
+            OggPageHeader.HEADER_IDENTIFIER,
             0x05, // Version
             0x07, // Flags,
             ByteVector.fromUlong(0x123456, false), // Absolute granular position
@@ -290,7 +290,7 @@ import {Testers} from "../utilities/testers";
         // Arrange
         const data = ByteVector.concatenate(
             ByteVector.fromSize(10), // Buffer
-            OggPageHeader.headerBeginning,
+            OggPageHeader.HEADER_IDENTIFIER,
             0x05, // Version
             0x07, // Flags,
             ByteVector.fromUlong(0x123456, false), // Absolute granular position

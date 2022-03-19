@@ -10,12 +10,12 @@ export default class XingHeader {
     /**
      * Identifier that appears in a file to indicate the start of a Xing header.
      */
-    public static readonly fileIdentifier = ByteVector.fromString("Xing", StringType.Latin1).makeReadOnly();
+    public static readonly FILE_IDENTIFIER = ByteVector.fromString("Xing", StringType.Latin1).makeReadOnly();
 
     /**
      * An empty an unset Xing header
      */
-    public static readonly unknown = XingHeader.fromInfo(0, 0);
+    public static readonly UNKNOWN = XingHeader.fromInfo(0, 0);
 
     private _isPresent: boolean;
     private _totalFrames: number;
@@ -23,7 +23,7 @@ export default class XingHeader {
 
     // #region Constructors
 
-    private constructor() {}
+    private constructor() { /* private to enforce construction via static methods */ }
 
     /**
      * Constructs a new instance with a specified frame count and size.
@@ -49,7 +49,7 @@ export default class XingHeader {
         Guards.truthy(data, "data");
 
         // Check to see if a valid Xing header is available
-        if (!data.startsWith(XingHeader.fileIdentifier)) {
+        if (!data.startsWith(XingHeader.FILE_IDENTIFIER)) {
             throw new CorruptFileError("Not a valid Xing header");
         }
 

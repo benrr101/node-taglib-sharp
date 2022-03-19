@@ -25,7 +25,7 @@ export default class PictureLazy implements IPicture, ILazy {
 
     // #region Constructors
 
-    private constructor() {}
+    private constructor() { /* private to enforce construction via static methods */ }
 
     /**
      * Constructs a new picture using data that's already been read into memory. The content

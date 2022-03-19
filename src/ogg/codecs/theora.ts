@@ -16,7 +16,7 @@ enum TheoraPacketType {
  * Represents an Ogg Theora bitstream for use in an Ogg file.
  */
 export default class Theora implements IOggCodec, IVideoCodec {
-    private static readonly id = ByteVector.fromString("theora", StringType.Latin1).makeReadOnly();
+    private static readonly IDENTIFIER = ByteVector.fromString("theora", StringType.Latin1).makeReadOnly();
 
     private readonly _fpsDenominator: number;
     private readonly _fpsNumerator: number;
@@ -76,7 +76,7 @@ export default class Theora implements IOggCodec, IVideoCodec {
      * @param packet Packet to check
      */
     public static isHeaderPacket(packet: ByteVector): boolean {
-        return packet.get(0) === TheoraPacketType.IdentificationHeader && packet.containsAt(Theora.id, 1);
+        return packet.get(0) === TheoraPacketType.IdentificationHeader && packet.containsAt(Theora.IDENTIFIER, 1);
     }
 
     /** @inheritDoc */
@@ -106,7 +106,7 @@ export default class Theora implements IOggCodec, IVideoCodec {
 
         const data = ByteVector.concatenate(
             TheoraPacketType.CommentHeader,
-            Theora.id,
+            Theora.IDENTIFIER,
             comment.render(true)
         );
 

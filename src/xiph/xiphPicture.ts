@@ -19,7 +19,7 @@ export default class XiphPicture implements IPicture, ILazy {
 
     // #region Constructors
 
-    private constructor() {}
+    private constructor() { /* private to enforce construction via static methods */ }
 
     /**
      * Constructs and initializes a new instance by decoding and reading the contents of a raw Xiph
@@ -285,7 +285,7 @@ export default class XiphPicture implements IPicture, ILazy {
     /**
      * Renders the picture for use in a FLAC block.
      */
-    public renderForFlacBlock() {
+    public renderForFlacBlock(): ByteVector {
         this.load();
 
         const mimeType = ByteVector.fromString(this._mimeType, StringType.Latin1);
@@ -309,7 +309,7 @@ export default class XiphPicture implements IPicture, ILazy {
      * Renders the picture for use in a XIPH comment block (ie, the same structure as a FLAC block,
      * but base64 encoded).
      */
-    public renderForXiphComment() {
+    public renderForXiphComment(): string {
         return this.renderForFlacBlock().toBase64String();
     }
 

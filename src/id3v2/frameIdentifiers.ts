@@ -18,53 +18,53 @@ import {Guards} from "../utils";
  *     compare instances because they should always be the same.
  */
 export class FrameIdentifier {
-    private versionTable: {[key: number]: ByteVector} = {
+    private _versionTable: {[key: number]: ByteVector} = {
         2: undefined,
         3: undefined,
         4: undefined
     };
 
     public constructor(v4: string, v3: string, v2: string) {
-        this.versionTable[4] = v4
+        this._versionTable[4] = v4
             ? ByteVector.fromString(v4, StringType.Latin1).makeReadOnly()
             : undefined;
-        this.versionTable[3] = v3
-            ? (v3 === v4 ? this.versionTable[4] : ByteVector.fromString(v3, StringType.Latin1).makeReadOnly())
+        this._versionTable[3] = v3
+            ? (v3 === v4 ? this._versionTable[4] : ByteVector.fromString(v3, StringType.Latin1).makeReadOnly())
             : undefined;
-        this.versionTable[2] = v2
+        this._versionTable[2] = v2
             ? ByteVector.fromString(v2, StringType.Latin1).makeReadOnly()
             : undefined;
     }
 
     public get isTextFrame(): boolean {
         const T = "T".codePointAt(0);
-        return (this.versionTable[2] && this.versionTable[2].get(0) === T)
-            || (this.versionTable[3] && this.versionTable[3].get(0) === T)
-            || (this.versionTable[4] && this.versionTable[4].get(0) === T);
+        return (this._versionTable[2] && this._versionTable[2].get(0) === T)
+            || (this._versionTable[3] && this._versionTable[3].get(0) === T)
+            || (this._versionTable[4] && this._versionTable[4].get(0) === T);
     }
 
     public get isUrlFrame(): boolean {
         const W = "W".codePointAt(0);
-        return (this.versionTable[2] && this.versionTable[2].get(0) === W)
-            || (this.versionTable[3] && this.versionTable[3].get(0) === W)
-            || (this.versionTable[4] && this.versionTable[4].get(0) === W);
+        return (this._versionTable[2] && this._versionTable[2].get(0) === W)
+            || (this._versionTable[3] && this._versionTable[3].get(0) === W)
+            || (this._versionTable[4] && this._versionTable[4].get(0) === W);
     }
 
     public render(version: number): ByteVector {
         Guards.byte(version, "version");
         Guards.betweenInclusive(version, 2, 4, "version");
-        if (!this.versionTable[version]) {
-            const newest = this.versionTable[4] || this.versionTable[3] || this.versionTable[2];
+        if (!this._versionTable[version]) {
+            const newest = this._versionTable[4] || this._versionTable[3] || this._versionTable[2];
             throw new NotSupportedError(
                 `Frame ${newest.toString(0)} is not supported in ID3v2 version ${version}`
             );
         }
 
-        return this.versionTable[version];
+        return this._versionTable[version];
     }
 
     public toString(): string {
-        const newest = this.versionTable[4] || this.versionTable[3] || this.versionTable[2];
+        const newest = this._versionTable[4] || this._versionTable[3] || this._versionTable[2];
         return newest.toString(StringType.Latin1);
     }
 }

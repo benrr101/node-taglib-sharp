@@ -70,12 +70,12 @@ enum MpegFileMarker {
  *     `file.removeTags(file.tagTypes & ~file.tagTypesOnDisk);`
  */
 export default class MpegContainerFile extends SandwichFile {
-    private static readonly _defaultTagLocationMapping = new Map<TagTypes, () => boolean>([
+    private static readonly DEFAULT_TAG_LOCATION_MAPPING = new Map<TagTypes, () => boolean>([
         [TagTypes.Ape, () => true],
         [TagTypes.Id3v1, () => true],
         [TagTypes.Id3v2, () => true]
     ]);
-    private static readonly _markerStart = ByteVector.fromByteArray([0, 0, 1]);
+    private static readonly MARKER_START = ByteVector.fromByteArray([0, 0, 1]);
 
     private _audioFound = false;
     private _audioHeader: MpegAudioHeader;
@@ -89,7 +89,7 @@ export default class MpegContainerFile extends SandwichFile {
         super(
             file,
             propertiesStyle,
-            MpegContainerFile._defaultTagLocationMapping,
+            MpegContainerFile.DEFAULT_TAG_LOCATION_MAPPING,
             MpegContainerFileSettings.defaultTagTypes
         );
     }
@@ -127,7 +127,7 @@ export default class MpegContainerFile extends SandwichFile {
     // #region Private Methods
 
     private findFirstMarker(position: number): {marker: MpegFileMarker, position: number} {
-        position = this.find(MpegContainerFile._markerStart, position);
+        position = this.find(MpegContainerFile.MARKER_START, position);
         if (position < 0) {
             throw new CorruptFileError("Marker not found");
         }
@@ -140,7 +140,7 @@ export default class MpegContainerFile extends SandwichFile {
 
     private findNextMarkerPosition(position: number, marker: MpegFileMarker): number {
         const packet = ByteVector.concatenate(
-            MpegContainerFile._markerStart,
+            MpegContainerFile.MARKER_START,
             marker
         );
         position = this.find(packet, position);
@@ -156,7 +156,7 @@ export default class MpegContainerFile extends SandwichFile {
         this.seek(position);
         const identifier = this.readBlock(4);
 
-        if (identifier.length === 4 && identifier.startsWith(MpegContainerFile._markerStart)) {
+        if (identifier.length === 4 && identifier.startsWith(MpegContainerFile.MARKER_START)) {
             return identifier.get(3);
         }
 
@@ -313,7 +313,7 @@ export default class MpegContainerFile extends SandwichFile {
 
     private rFindMarkerPosition(position: number, marker: MpegFileMarker): number {
         const packet = ByteVector.concatenate(
-            MpegContainerFile._markerStart,
+            MpegContainerFile.MARKER_START,
             marker
         );
         position = this.rFind(packet, position);
@@ -328,7 +328,7 @@ export default class MpegContainerFile extends SandwichFile {
     // #endregion
 }
 
-////////////////////////////////////////////////////////////////////////////
+// /////////////////////////////////////////////////////////////////////////
 // Register the file type
 [
     "taglib/mpg",

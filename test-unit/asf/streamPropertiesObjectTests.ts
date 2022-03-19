@@ -19,7 +19,7 @@ import {NumberUtils} from "../../src/utils";
         return StreamPropertiesObject.fromFile;
     }
     protected get minSize(): number { return 78; }
-    protected get objectGuid(): UuidWrapper { return Guids.AsfStreamPropertiesObject; }
+    protected get objectGuid(): UuidWrapper { return Guids.ASF_STREAM_PROPERTIES_OBJECT; }
 
     @test
     public fromFile_validParameters() {
@@ -32,7 +32,7 @@ import {NumberUtils} from "../../src/utils";
 
         // Assert
         assert.isOk(object);
-        assert.isTrue(object.guid.equals(Guids.AsfStreamPropertiesObject));
+        assert.isTrue(object.guid.equals(Guids.ASF_STREAM_PROPERTIES_OBJECT));
         assert.strictEqual(object.objectType, ObjectType.StreamPropertiesObject);
         assert.strictEqual(object.originalSize, this._originalSize);
         Testers.bvEqual(object.errorCorrectionData, this._errorCorrectionData);
@@ -65,9 +65,9 @@ import {NumberUtils} from "../../src/utils";
     public codec_audioStream() {
         // Arrange
         const bytes = ByteVector.concatenate(
-            Guids.AsfStreamPropertiesObject.toBytes(), // Object ID
+            Guids.ASF_STREAM_PROPERTIES_OBJECT.toBytes(), // Object ID
             ByteVector.fromUlong(this._originalSize, false), // Object size
-            Guids.AsfAudioMedia.toBytes(), // Stream type
+            Guids.ASF_AUDIO_MEDIA.toBytes(), // Stream type
             this._errorCorrectionGuid.toBytes(), // Error correction type GUID
             ByteVector.fromUlong(this._timeOffset, false), // Time offset
             ByteVector.fromUint(16, false), // Type specific data length
@@ -99,9 +99,9 @@ import {NumberUtils} from "../../src/utils";
     public codec_videoStream() {
         // Arrange
         const bytes = ByteVector.concatenate(
-            Guids.AsfStreamPropertiesObject.toBytes(), // Object ID
+            Guids.ASF_STREAM_PROPERTIES_OBJECT.toBytes(), // Object ID
             ByteVector.fromUlong(this._originalSize, false), // Object size
-            Guids.AsfVideoMedia.toBytes(), // Stream type
+            Guids.ASF_VIDEO_MEDIA.toBytes(), // Stream type
             this._errorCorrectionGuid.toBytes(), // Error correction type GUID
             ByteVector.fromUlong(this._timeOffset, false), // Time offset
             ByteVector.fromUint(51, false), // Type specific data length
@@ -148,7 +148,7 @@ import {NumberUtils} from "../../src/utils";
     private getObjectBytes() {
         return ByteVector.concatenate(
             ByteVector.fromSize(10), // Offset
-            Guids.AsfStreamPropertiesObject.toBytes(), // Object ID
+            Guids.ASF_STREAM_PROPERTIES_OBJECT.toBytes(), // Object ID
             ByteVector.fromUlong(this._originalSize, false), // Object size
             this._streamTypeGuid.toBytes(), // Stream type
             this._errorCorrectionGuid.toBytes(), // Error correction type GUID

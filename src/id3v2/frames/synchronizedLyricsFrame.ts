@@ -114,7 +114,11 @@ export class SynchronizedLyricsFrame extends Frame {
      * @param header Header of the frame found at `offset` in `data`
      * @param version ID3v2 version the frame was originally encoded with
      */
-    public static fromOffsetRawData(data: ByteVector, offset: number, header: Id3v2FrameHeader, version: number) {
+    public static fromOffsetRawData(
+        data: ByteVector,
+        offset: number,
+        header: Id3v2FrameHeader, version: number
+    ): SynchronizedLyricsFrame {
         Guards.truthy(data, "data");
         Guards.uint(offset, "offset");
         Guards.truthy(header, "header");
@@ -232,7 +236,7 @@ export class SynchronizedLyricsFrame extends Frame {
         description: string,
         textType: SynchronizedTextType,
         language?: string
-    ) {
+    ): SynchronizedLyricsFrame {
         Guards.truthy(frames, "frames");
         return frames.find((f) => {
             if (f.description !== description) { return false; }
@@ -264,7 +268,7 @@ export class SynchronizedLyricsFrame extends Frame {
         description: string,
         language: string,
         textType: SynchronizedTextType
-    ) {
+    ): SynchronizedLyricsFrame {
         Guards.truthy(frames, "frames");
 
         let bestValue = -1;
@@ -311,7 +315,7 @@ export class SynchronizedLyricsFrame extends Frame {
     // #endregion
 
     /** @inheritDoc */
-    protected parseFields(data: ByteVector, _version: number): void {
+    protected parseFields(data: ByteVector): void {
         if (data.length < 6) {
             throw new CorruptFileError("Not enough bytes in field");
         }

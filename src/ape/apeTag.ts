@@ -18,7 +18,7 @@ export default class ApeTag extends Tag {
      * Names of picture fields, indexed to correspond to their picture item names.
      * @private
      */
-    private static readonly pictureItemNames = [
+    private static readonly PICTURE_ITEM_NAMES = [
         "Cover Art (other)",
         "Cover Art (icon)",
         "Cover Art (other icon)",
@@ -42,7 +42,7 @@ export default class ApeTag extends Tag {
         "Cover Art (publisher logo)",
         "Embedded Object"
     ];
-    private static readonly notPictureItemTypeId = 21;
+    private static readonly NOT_PICTURE_ITEM_TYPE_ID = 21;
 
     private _footer: ApeTagFooter;
     private _items: ApeTagItem[] = [];
@@ -60,14 +60,14 @@ export default class ApeTag extends Tag {
      */
     public static fromData(data: ByteVector): ApeTag {
         Guards.truthy(data, "data");
-        if (data.length < ApeTagFooter.size) {
+        if (data.length < ApeTagFooter.SIZE) {
             throw new CorruptFileError("Does not contain enough footer data");
         }
 
         const tag = new ApeTag();
 
         // Read the footer
-        tag._footer = ApeTagFooter.fromData(data.subarray(data.length - ApeTagFooter.size));
+        tag._footer = ApeTagFooter.fromData(data.subarray(data.length - ApeTagFooter.SIZE));
 
         // If we've read a header at the end of the block, the block is invalid
         if (NumberUtils.hasFlag(tag._footer.flags, ApeTagFooterFlags.IsHeader)) {
@@ -78,7 +78,7 @@ export default class ApeTag extends Tag {
         }
 
         const startIndex = data.length - tag._footer.requiredDataSize;
-        const length = tag._footer.requiredDataSize - ApeTagFooter.size;
+        const length = tag._footer.requiredDataSize - ApeTagFooter.SIZE;
         tag.parse(data.subarray(startIndex, length));
 
         return tag;
@@ -101,10 +101,10 @@ export default class ApeTag extends Tag {
      * @remarks If `position` points to the beginning of the tag footer, the footer will be read
      *     and then the parser will backup and start reading from the beginning of the file.
      */
-    public static fromFile(file: File, position: number) {
+    public static fromFile(file: File, position: number): ApeTag {
         Guards.truthy(file, "file");
         Guards.safeUint(position, "position");
-        Guards.lessThanInclusive(position, file.length - ApeTagFooter.size, "position");
+        Guards.lessThanInclusive(position, file.length - ApeTagFooter.SIZE, "position");
 
         file.mode = FileAccessMode.Read;
         file.seek(position);
@@ -112,14 +112,14 @@ export default class ApeTag extends Tag {
         const tag = new ApeTag();
 
         // Read the header/footer in
-        tag._footer = ApeTagFooter.fromData(file.readBlock(ApeTagFooter.size));
+        tag._footer = ApeTagFooter.fromData(file.readBlock(ApeTagFooter.SIZE));
 
         // If we've read a header, we don't have to seek to read the content. If we've read a
         // footer, we need to move back to the start of the tag.
         if (!NumberUtils.hasFlag(tag._footer.flags, ApeTagFooterFlags.IsHeader)) {
             file.seek(position - tag._footer.itemSize);
         }
-        tag.parse(file.readBlock(tag._footer.requiredDataSize - ApeTagFooter.size));
+        tag.parse(file.readBlock(tag._footer.requiredDataSize - ApeTagFooter.SIZE));
 
         return tag;
     }
@@ -472,8 +472,8 @@ export default class ApeTag extends Tag {
                 continue;
             }
 
-            const comparison = (e: string) => StringComparison.CaseInsensitive(item.key, e);
-            const pictureTypeId = ApeTag.pictureItemNames.findIndex(comparison);
+            const comparison = (e: string): boolean => StringComparison.caseInsensitive(item.key, e);
+            const pictureTypeId = ApeTag.PICTURE_ITEM_NAMES.findIndex(comparison);
             if (pictureTypeId < 0) {
                 continue;
             }
@@ -485,7 +485,7 @@ export default class ApeTag extends Tag {
 
             const pic = Picture.fromData(item.value.subarray(descriptionEndIndex + 1));
             pic.description = item.value.subarray(0, descriptionEndIndex).toString(StringType.UTF8);
-            pic.type = pictureTypeId !== ApeTag.notPictureItemTypeId ? pictureTypeId : PictureType.NotAPicture;
+            pic.type = pictureTypeId !== ApeTag.NOT_PICTURE_ITEM_TYPE_ID ? pictureTypeId : PictureType.NotAPicture;
 
             pictures.push(pic);
         }
@@ -494,7 +494,7 @@ export default class ApeTag extends Tag {
     }
     /** @inheritDoc via Cover Art items */
     set pictures(value: IPicture[]) {
-        ApeTag.pictureItemNames.forEach((e) => this.removeItem(e));
+        ApeTag.PICTURE_ITEM_NAMES.forEach((e) => this.removeItem(e));
 
         if (!value || value.length === 0) {
             return;
@@ -502,10 +502,10 @@ export default class ApeTag extends Tag {
 
         for (const pic of value) {
             let type = <number> pic.type;
-            if (type > ApeTag.notPictureItemTypeId) {
-                type = ApeTag.notPictureItemTypeId;
+            if (type > ApeTag.NOT_PICTURE_ITEM_TYPE_ID) {
+                type = ApeTag.NOT_PICTURE_ITEM_TYPE_ID;
             }
-            const name = ApeTag.pictureItemNames[type];
+            const name = ApeTag.PICTURE_ITEM_NAMES[type];
 
             if (this.getItem(name)) {
                 continue;
@@ -595,7 +595,7 @@ export default class ApeTag extends Tag {
      */
     public getItem(key: string): ApeTagItem {
         Guards.notNullOrUndefined(key, "key");
-        return this._items.find((e) => StringComparison.CaseInsensitive(e.key, key));
+        return this._items.find((e) => StringComparison.caseInsensitive(e.key, key));
     }
 
     /**
@@ -618,7 +618,7 @@ export default class ApeTag extends Tag {
         Guards.notNullOrUndefined(key, "key");
 
         for (let i = this._items.length - 1 ; i >= 0; i--) {
-            if (StringComparison.CaseInsensitive(this._items[i].key, key)) {
+            if (StringComparison.caseInsensitive(this._items[i].key, key)) {
                 this._items.splice(i, 1);
             }
         }
@@ -758,7 +758,7 @@ export default class ApeTag extends Tag {
     }
 
     private getItemIndex(key: string): number {
-        return this._items.findIndex((e) => StringComparison.CaseInsensitive(e.key, key));
+        return this._items.findIndex((e) => StringComparison.caseInsensitive(e.key, key));
     }
 
     private parse(data: ByteVector): void {
@@ -771,7 +771,7 @@ export default class ApeTag extends Tag {
                 this.setItem(item);
                 pos += item.size;
             }
-        } catch (e) {
+        } catch (e: unknown) {
             if (!CorruptFileError.errorIs(e)) {
                 throw e;
             }

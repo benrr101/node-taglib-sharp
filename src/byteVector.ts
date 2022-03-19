@@ -41,7 +41,7 @@ export enum StringType {
  * Wrapper around the `iconv-lite` library to provide string encoding and decoding functionality.
  */
 export class Encoding {
-    private static readonly _encodings = new Map<StringType, Encoding>([
+    private static readonly ENCODINGS = new Map<StringType, Encoding>([
         [StringType.Latin1, new Encoding("latin1")],
         [StringType.UTF8, new Encoding("utf8")],
         [StringType.UTF16BE, new Encoding("utf16-be")],
@@ -84,7 +84,7 @@ export class Encoding {
             type = this._lastUtf16Encoding;
         }
 
-        return this._encodings.get(type);
+        return this.ENCODINGS.get(type);
 
         // NOTE: The original .NET implementation has the notion of "broken" latin behavior that
         //       uses Encoding.Default. I have removed it in this port because 1) this behavior is
@@ -133,7 +133,7 @@ export class ByteVector {
 
     // #region Members
 
-    private static readonly _crcTable: Uint32Array = new Uint32Array([
+    private static readonly CRC_TABLE: Uint32Array = new Uint32Array([
         0x00000000, 0x04c11db7, 0x09823b6e, 0x0d4326d9,
         0x130476dc, 0x17c56b6b, 0x1a864db2, 0x1e475005,
         0x2608edb8, 0x22c9f00f, 0x2f8ad6d6, 0x2b4bcb61,
@@ -203,12 +203,12 @@ export class ByteVector {
     /**
      * Contains a one byte text delimiter
      */
-    private static readonly _td1: ByteVector = ByteVector.fromSize(1).makeReadOnly();
+    private static readonly TD1: ByteVector = ByteVector.fromSize(1).makeReadOnly();
 
     /**
      * Contains a two byte text delimiter
      */
-    private static readonly _td2: ByteVector = ByteVector.fromSize(2).makeReadOnly();
+    private static readonly TD2: ByteVector = ByteVector.fromSize(2).makeReadOnly();
 
     private _bytes: Uint8Array;
     private _isReadOnly: boolean = false;
@@ -257,21 +257,21 @@ export class ByteVector {
                 continue;
             }
 
-            if ((<any> v).length === undefined) {
+            if (typeof(v) === "number") {
                 // We were given a single byte
-                const byte = <number> v;
-                Guards.byte(byte, "Byte values");
-                result._bytes[currentPosition] = byte;
+                Guards.byte(v, "Byte values");
+                result._bytes[currentPosition] = v;
                 currentPosition += 1;
             } else {
                 // We were given an array of bytes
-                const vector = <Uint8Array|ByteVector> v;
-                for (let i = 0; i < vector.length; i++) {
-                    result._bytes[currentPosition + i] = (<any> vector).get
-                        ? (<ByteVector> vector).get(i)
-                        : (<Uint8Array> vector)[i];
+                const getter = v instanceof ByteVector
+                    ? (i: number) => v.get(i)
+                    : (i: number) => v[i];
+
+                for (let i = 0; i < v.length; i++) {
+                    result._bytes[currentPosition + i] = getter(i);
                 }
-                currentPosition += vector.length;
+                currentPosition += v.length;
             }
         }
 
@@ -579,7 +579,7 @@ export class ByteVector {
         let sum = 0;
         for (const b of this._bytes) {
             const index = NumberUtils.uintXor(NumberUtils.uintAnd(NumberUtils.uintRShift(sum, 24), 0xFF), b);
-            sum = NumberUtils.uintXor(NumberUtils.uintLShift(sum, 8), ByteVector._crcTable[index]);
+            sum = NumberUtils.uintXor(NumberUtils.uintLShift(sum, 8), ByteVector.CRC_TABLE[index]);
         }
         return sum;
     }
@@ -617,8 +617,8 @@ export class ByteVector {
      */
     public static getTextDelimiter(type: StringType): ByteVector {
         return type === StringType.UTF16 || type === StringType.UTF16BE || type === StringType.UTF16LE
-            ? ByteVector._td2
-            : ByteVector._td1;
+            ? ByteVector.TD2
+            : ByteVector.TD1;
     }
 
     /**
@@ -1011,15 +1011,15 @@ export class ByteVector {
      *     more instances of `separator`.
      * @returns ByteVector[] The split contents of the current instance
      */
-    public split(separator: ByteVector, byteAlign: number = 1, max: number = 0) {
+    public split(separator: ByteVector, byteAlign: number = 1, max: number = 0): ByteVector[] {
         Guards.truthy(separator, "pattern");
         Guards.uint(byteAlign, "byteAlign");
         Guards.greaterThanInclusive(byteAlign, 1, "byteAlign");
         Guards.uint(max, "max");
 
         const vectors = [];
-        const condition = (o: number) => o !== -1 && (max < 1 || max > vectors.length + 1);
-        const increment = (o: number) => this.offsetFind(separator, o + separator.length, byteAlign);
+        const condition = (o: number): boolean => o !== -1 && (max < 1 || max > vectors.length + 1);
+        const increment = (o: number): number => this.offsetFind(separator, o + separator.length, byteAlign);
 
         let previousOffset = 0;
         let offset = this.offsetFind(separator, 0, byteAlign);
@@ -1053,7 +1053,7 @@ export class ByteVector {
      * @returns `true` if the pattern was found at the beginning of the current instance, `false`
      *     otherwise.
      */
-    public startsWith(pattern: ByteVector) {
+    public startsWith(pattern: ByteVector): boolean {
         return this.containsAt(pattern, 0);
     }
 

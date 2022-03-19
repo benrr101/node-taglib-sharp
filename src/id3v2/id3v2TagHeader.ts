@@ -36,7 +36,7 @@ export class Id3v2TagHeader {
     /**
      * The identifier used to recognize an ID3v2 header.
      */
-    public static readonly fileIdentifier = ByteVector.fromString("ID3", StringType.Latin1).makeReadOnly();
+    public static readonly FILE_IDENTIFIER = ByteVector.fromString("ID3", StringType.Latin1).makeReadOnly();
 
     private _flags: Id3v2TagHeaderFlags = Id3v2TagHeaderFlags.None;
     private _majorVersion: number = 0;
@@ -52,7 +52,7 @@ export class Id3v2TagHeader {
         if (data.length < Id3v2Settings.headerSize) {
             throw new CorruptFileError("Provided data is smaller than object size");
         }
-        if (!data.startsWith(Id3v2TagHeader.fileIdentifier)) {
+        if (!data.startsWith(Id3v2TagHeader.FILE_IDENTIFIER)) {
             throw new CorruptFileError("Provided data does not start with the file identifier");
         }
 
@@ -190,7 +190,7 @@ export class Id3v2TagHeader {
      */
     public render(): ByteVector {
         return ByteVector.concatenate(
-            Id3v2TagHeader.fileIdentifier,
+            Id3v2TagHeader.FILE_IDENTIFIER,
             this.majorVersion,
             this.revisionNumber,
             this.flags,

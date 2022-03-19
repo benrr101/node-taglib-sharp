@@ -88,7 +88,7 @@ export class EventTimeCodeFrame extends Frame {
         offset: number,
         header: Id3v2FrameHeader,
         version: number
-    ) {
+    ): EventTimeCodeFrame {
         Guards.truthy(data, "data");
         Guards.uint(offset, "offset");
         Guards.truthy(header, "header");
@@ -105,7 +105,7 @@ export class EventTimeCodeFrame extends Frame {
      * @param data Raw representation of the new frame
      * @param version ID3v2 version the raw frame is encoded with, must be a positive 8-bit integer
      */
-    public static fromRawData(data: ByteVector, version: number) {
+    public static fromRawData(data: ByteVector, version: number): EventTimeCodeFrame {
         Guards.truthy(data, "data");
         Guards.byte(version, "version");
 
@@ -153,7 +153,7 @@ export class EventTimeCodeFrame extends Frame {
     }
 
     /** @inheritDoc */
-    protected parseFields(data: ByteVector, _version: number): void {
+    protected parseFields(data: ByteVector): void {
         this._events = [];
         this._timestampFormat = data.get(0);
 
@@ -173,7 +173,7 @@ export class EventTimeCodeFrame extends Frame {
     }
 
     /** @inheritDoc */
-    protected renderFields(_version: number): ByteVector {
+    protected renderFields(): ByteVector {
         // Docs state event codes must be sorted chronologically
         const events = this.events.sort((a, b) => a.time - b.time)
             .map((e) => e.render());

@@ -126,7 +126,7 @@ export class ExtendedContentDescriptionObject extends BaseObject {
      */
     public static fromEmpty(): ExtendedContentDescriptionObject {
         const instance = new ExtendedContentDescriptionObject();
-        instance.initializeFromGuid(Guids.AsfExtendedContentDescriptionObject);
+        instance.initializeFromGuid(Guids.ASF_EXTENDED_CONTENT_DESCRIPTION_OBJECT);
         return instance;
     }
 
@@ -141,7 +141,7 @@ export class ExtendedContentDescriptionObject extends BaseObject {
         const instance = new ExtendedContentDescriptionObject();
         instance.initializeFromFile(file, position);
 
-        if (!instance.guid.equals(Guids.AsfExtendedContentDescriptionObject)) {
+        if (!instance.guid.equals(Guids.ASF_EXTENDED_CONTENT_DESCRIPTION_OBJECT)) {
             throw new CorruptFileError("Object GUID does not match expected content description object GUID");
         }
         if (instance.originalSize < 26) {
@@ -224,7 +224,7 @@ export class ExtendedContentDescriptionObject extends BaseObject {
     }
 
     /** @inheritDoc */
-    public render() {
+    public render(): ByteVector {
         const output = ByteVector.concatenate(
             ReadWriteUtils.renderWord(this._descriptors.length),
             ... this._descriptors.map((r) => r.render())

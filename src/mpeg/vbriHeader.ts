@@ -9,18 +9,18 @@ export default class VbriHeader {
     /**
      * Identifier that appears in the file to indicate the start of the VBRI header.
      */
-    public static readonly fileIdentifier = ByteVector.fromString("VBRI", StringType.Latin1).makeReadOnly();
+    public static readonly FILE_IDENTIFIER = ByteVector.fromString("VBRI", StringType.Latin1).makeReadOnly();
 
     /**
      * An empty and unset VBRI header.
      */
-    public static readonly unknown = VbriHeader.fromInfo(0, 0);
+    public static readonly UNKNOWN = VbriHeader.fromInfo(0, 0);
 
     /**
      * Offset at which a VBRI header would appear in an MPEG audio packet. Always 32 bytes after
      * the end of the first MPEG header.
      */
-    public static readonly vbriHeaderOffset = 0x24;
+    public static readonly VBRI_HEADER_OFFSET = 0x24;
 
     private _isPresent: boolean;
     private _totalFrames: number;
@@ -28,7 +28,7 @@ export default class VbriHeader {
 
     // #region Constructors
 
-    private constructor() {}
+    private constructor() { /* private to enforce construction via static methods */ }
 
     /**
      * Constructs a new instance with a specified frame count and size.
@@ -54,7 +54,7 @@ export default class VbriHeader {
         Guards.truthy(data, "data");
 
         // Check to see if a valid VBRI header is available
-        if (!data.startsWith(VbriHeader.fileIdentifier)) {
+        if (!data.startsWith(VbriHeader.FILE_IDENTIFIER)) {
             throw new CorruptFileError("Not a valid VBRI header");
         }
 

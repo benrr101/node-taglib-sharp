@@ -14,7 +14,7 @@ import {Guards} from "../utils";
  *     example, use this pattern. Therefore the name was changed to better represent the situation.
  */
 export default class SandwichTag extends CombinedTag {
-    public static readonly supportedTagTypes = TagTypes.Ape | TagTypes.Id3v1 | TagTypes.Id3v2;
+    public static readonly SUPPORTED_TAG_TYPES = TagTypes.Ape | TagTypes.Id3v1 | TagTypes.Id3v2;
 
     private readonly _defaultTagMappingTable: Map<TagTypes, () => boolean>;
     private readonly _endTag: EndTag;
@@ -30,7 +30,7 @@ export default class SandwichTag extends CombinedTag {
      *     whether a tag type goes into the end tag or start tag
      */
     public constructor(file: File, readStyle: ReadStyle, defaultTagMappingTable: Map<TagTypes, () => boolean>) {
-        super(SandwichTag.supportedTagTypes, true);
+        super(SandwichTag.SUPPORTED_TAG_TYPES, true);
 
         Guards.truthy(file, "file");
         Guards.truthy(defaultTagMappingTable, "defaultTagMappingTable");

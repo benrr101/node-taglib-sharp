@@ -724,7 +724,7 @@ import {Picture} from "../../src";
 
         // Assert
         const paddingLength = Flac_File_ConstructorTests.standardPadding
-            + Flac_File_ConstructorTests.getXiphTag().render(false).length + FlacBlock.headerSize
+            + Flac_File_ConstructorTests.getXiphTag().render(false).length + FlacBlock.HEADER_SIZE
             + Flac_File_ConstructorTests.getPictureBlock().render(false).length;
         const paddingBlock = FlacBlock.fromData(FlacBlockType.Padding, ByteVector.fromSize(paddingLength));
 

@@ -32,7 +32,7 @@ export class ApeTagItem {
 
     // #region Constructors
 
-    private constructor() {}
+    private constructor() { /* empty to enforce static construction */ }
 
     /**
      * Constructs and initializes a new instance of {@link ApeTagItem} with a specified key and binary

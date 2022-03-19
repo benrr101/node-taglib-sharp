@@ -128,11 +128,11 @@ import {Guards, StringComparison, StringUtils} from "../../utils";
  *   (TIT2) for sorting purposes.
  */
 export class TextInformationFrame extends Frame {
-    private static COVER_ABBREV = "CR";
-    private static COVER_STRING = "Cover";
-    private static REMIX_ABBREV = "RX";
-    private static REMIX_STRING = "Remix";
-    private static SPLIT_FRAME_TYPES = [
+    private static readonly COVER_ABBREV = "CR";
+    private static readonly COVER_STRING = "Cover";
+    private static readonly REMIX_ABBREV = "RX";
+    private static readonly REMIX_STRING = "Remix";
+    private static readonly SPLIT_FRAME_TYPES = [
         FrameIdentifiers.TCOM,
         FrameIdentifiers.TEXT,
         FrameIdentifiers.TMCL,
@@ -147,6 +147,7 @@ export class TextInformationFrame extends Frame {
         FrameIdentifiers.TPE4
     ];
 
+    // @TODO: no protected access to members
     protected _encoding: StringType = Id3v2Settings.defaultEncoding;
     protected _rawData: ByteVector;
     protected _rawVersion: number;
@@ -708,7 +709,7 @@ export class UserTextInformationFrame extends TextInformationFrame {
     ): UserTextInformationFrame {
         Guards.truthy(frames, "frames");
 
-        const comparison = caseSensitive ? StringComparison.CaseSensitive : StringComparison.CaseInsensitive;
+        const comparison = caseSensitive ? StringComparison.caseSensitive : StringComparison.caseInsensitive;
         return frames.find((f) => comparison(f.description, description));
     }
 

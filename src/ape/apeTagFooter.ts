@@ -30,12 +30,12 @@ export class ApeTagFooter {
     /**
      * Identifier used to fina an APEv2 footer in a file.
      */
-    public static readonly fileIdentifier = ByteVector.fromString("APETAGEX", StringType.Latin1).makeReadOnly();
+    public static readonly FILE_IDENTIFIER = ByteVector.fromString("APETAGEX", StringType.Latin1).makeReadOnly();
 
     /**
      * Size of an APEv2 footer.
      */
-    public static readonly size = 32;
+    public static readonly SIZE = 32;
 
     private _flags: ApeTagFooterFlags = 0;
     private _itemCount: number = 0;
@@ -44,7 +44,7 @@ export class ApeTagFooter {
 
     // #region Constructors
 
-    private constructor() {}
+    private constructor() { /* empty to enforce static construction */ }
 
     /**
      * Constructs and initializes a new instance of {@link ApeTagFooter} by reading it from raw
@@ -53,10 +53,10 @@ export class ApeTagFooter {
      */
     public static fromData(data: ByteVector): ApeTagFooter {
         Guards.truthy(data, "data");
-        if (data.length < ApeTagFooter.size) {
+        if (data.length < ApeTagFooter.SIZE) {
             throw new CorruptFileError("Provided data is smaller than object size");
         }
-        if (!data.startsWith(ApeTagFooter.fileIdentifier)) {
+        if (!data.startsWith(ApeTagFooter.FILE_IDENTIFIER)) {
             throw new CorruptFileError("Provided data does not start with file identifier");
         }
 
@@ -66,10 +66,10 @@ export class ApeTagFooter {
         footer._flags = <ApeTagFooterFlags> data.subarray(20, 4).toUint(false);
 
         const itemPlusFooterSize = footer._itemSize = data.subarray(12, 4).toUint(false);
-        if (itemPlusFooterSize < ApeTagFooter.size) {
+        if (itemPlusFooterSize < ApeTagFooter.SIZE) {
             throw new CorruptFileError("Tag size is out of bounds");
         }
-        footer._itemSize = itemPlusFooterSize - ApeTagFooter.size;
+        footer._itemSize = itemPlusFooterSize - ApeTagFooter.SIZE;
 
         return footer;
     }
@@ -128,7 +128,7 @@ export class ApeTagFooter {
      * Gets the size in bytes of the items contained in the tag and the footer. This is the minimum
      * amount of data required to read the entire tag.
      */
-    public get requiredDataSize() { return this.itemSize + ApeTagFooter.size; }
+    public get requiredDataSize(): number { return this.itemSize + ApeTagFooter.SIZE; }
 
     /**
      * Gets the complete size of the tag represented by the current instance, including the header
@@ -136,8 +136,8 @@ export class ApeTagFooter {
      */
     public get tagSize(): number {
         // @TODO: Shouldn't this take into consideration footer missing flags?
-        return this._itemSize + ApeTagFooter.size +
-            (NumberUtils.hasFlag(this._flags, ApeTagFooterFlags.HeaderPresent) ? ApeTagFooter.size : 0);
+        return this._itemSize + ApeTagFooter.SIZE +
+            (NumberUtils.hasFlag(this._flags, ApeTagFooterFlags.HeaderPresent) ? ApeTagFooter.SIZE : 0);
     }
 
     /**
@@ -162,14 +162,14 @@ export class ApeTagFooter {
     private render(isHeader: boolean): ByteVector {
         const v = ByteVector.concatenate(
             // File identifier
-            ApeTagFooter.fileIdentifier,
+            ApeTagFooter.FILE_IDENTIFIER,
 
             // Add the version number -- we always render a 2.000 tag regardless of what the tag
             // originally was.
             ByteVector.fromUint(2000, false),
 
             // Add the tag size
-            ByteVector.fromUint(this.itemSize + ApeTagFooter.size, false),
+            ByteVector.fromUint(this.itemSize + ApeTagFooter.SIZE, false),
 
             // Add the item count
             ByteVector.fromUint(this.itemCount, false)

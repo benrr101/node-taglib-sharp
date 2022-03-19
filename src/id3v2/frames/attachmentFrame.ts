@@ -301,7 +301,7 @@ export default class AttachmentFrame extends Frame implements IPicture {
         this._rawVersion = version;
     }
 
-    protected renderFields(version: number) {
+    protected renderFields(version: number): ByteVector {
         this.parseFromRaw();
 
         const encoding = AttachmentFrame.correctEncoding(this.textEncoding, version);

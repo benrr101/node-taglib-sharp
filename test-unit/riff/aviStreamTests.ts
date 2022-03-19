@@ -89,7 +89,7 @@ import RiffWaveFormatEx from "../../src/riff/riffWaveFormatEx";
     public constructor_midiStream() {
         // Arrange
         const list = RiffList.fromEmpty("strl");
-        list.setValues("strh", [Resources.getAviStreamHeaderData(AviStreamType.MIDI_STREAM)]);
+        list.setValues("strh", [Resources.getAviStreamHeaderData(AviStreamType.MidiStream)]);
         list.setValues("strf", [ByteVector.empty()]);
 
         // Act
@@ -97,7 +97,7 @@ import RiffWaveFormatEx from "../../src/riff/riffWaveFormatEx";
 
         // Assert
         assert.isOk(stream);
-        Riff_AviStreamTest.assertStreamHeaderData(stream, AviStreamType.MIDI_STREAM);
+        Riff_AviStreamTest.assertStreamHeaderData(stream, AviStreamType.MidiStream);
         assert.isUndefined(stream.codec);
     }
 
@@ -105,7 +105,7 @@ import RiffWaveFormatEx from "../../src/riff/riffWaveFormatEx";
     public constructor_textStream() {
         // Arrange
         const list = RiffList.fromEmpty("strl");
-        list.setValues("strh", [Resources.getAviStreamHeaderData(AviStreamType.TEXT_STREAM)]);
+        list.setValues("strh", [Resources.getAviStreamHeaderData(AviStreamType.TextStream)]);
         list.setValues("strf", [ByteVector.empty()]);
 
         // Act
@@ -113,7 +113,7 @@ import RiffWaveFormatEx from "../../src/riff/riffWaveFormatEx";
 
         // Assert
         assert.isOk(stream);
-        Riff_AviStreamTest.assertStreamHeaderData(stream, AviStreamType.TEXT_STREAM);
+        Riff_AviStreamTest.assertStreamHeaderData(stream, AviStreamType.TextStream);
         assert.isUndefined(stream.codec);
     }
 
@@ -121,7 +121,7 @@ import RiffWaveFormatEx from "../../src/riff/riffWaveFormatEx";
     public constructor_audioStream() {
         // Arrange
         const list = RiffList.fromEmpty("strl");
-        list.setValues("strh", [Resources.getAviStreamHeaderData(AviStreamType.AUDIO_STREAM)]);
+        list.setValues("strh", [Resources.getAviStreamHeaderData(AviStreamType.AudioStream)]);
         list.setValues("strf", [ByteVector.concatenate(
             ByteVector.fromUshort(0xBBBB),
             ByteVector.fromSize(14)
@@ -132,7 +132,7 @@ import RiffWaveFormatEx from "../../src/riff/riffWaveFormatEx";
 
         // Assert
         assert.isOk(stream);
-        Riff_AviStreamTest.assertStreamHeaderData(stream, AviStreamType.AUDIO_STREAM);
+        Riff_AviStreamTest.assertStreamHeaderData(stream, AviStreamType.AudioStream);
 
         assert.isOk(stream.codec);
         assert.instanceOf(stream.codec, RiffWaveFormatEx);
@@ -143,7 +143,7 @@ import RiffWaveFormatEx from "../../src/riff/riffWaveFormatEx";
     public constructor_videoStream() {
         // Arrange
         const list = RiffList.fromEmpty("strl");
-        list.setValues("strh", [Resources.getAviStreamHeaderData(AviStreamType.VIDEO_STREAM)]);
+        list.setValues("strh", [Resources.getAviStreamHeaderData(AviStreamType.VideoStream)]);
         list.setValues("strf", [ByteVector.concatenate(
             ByteVector.fromSize(16),
             ByteVector.fromString("fooo", StringType.UTF8),
@@ -155,7 +155,7 @@ import RiffWaveFormatEx from "../../src/riff/riffWaveFormatEx";
 
         // Assert
         assert.isOk(stream);
-        Riff_AviStreamTest.assertStreamHeaderData(stream, AviStreamType.VIDEO_STREAM);
+        Riff_AviStreamTest.assertStreamHeaderData(stream, AviStreamType.VideoStream);
 
         assert.isOk(stream.codec);
         assert.instanceOf(stream.codec, RiffBitmapInfoHeader);

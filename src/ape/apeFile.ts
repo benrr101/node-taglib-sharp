@@ -14,7 +14,7 @@ import {NumberUtils} from "../utils";
  * using the following method: `file.removeTags(file.tagTypes & ~file.tagTypesOnDisk);`
  */
 export default class ApeFile extends SandwichFile {
-    private static readonly _defaultTagLocationMapping = new Map<TagTypes, () => boolean>([
+    private static readonly DEFAULT_TAG_LOCATION_MAPPING = new Map<TagTypes, () => boolean>([
         [TagTypes.Ape, () => ApeFileSettings.preferApeTagAtFileEnd],
         [TagTypes.Id3v1, () => true],
         [TagTypes.Id3v2, () => ApeFileSettings.preferId3v2TagAtFileEnd]
@@ -22,12 +22,7 @@ export default class ApeFile extends SandwichFile {
 
     /** @inheritDoc */
     public constructor(file: IFileAbstraction|string, propertiesStyle: ReadStyle) {
-        super(file, propertiesStyle, ApeFile._defaultTagLocationMapping, ApeFileSettings.defaultTagTypes);
-    }
-
-    /** @inheritDoc */
-    protected readEnd(_end: number, _propertiesStyle: ReadStyle): void {
-        this.getTag(TagTypes.Ape, true);
+        super(file, propertiesStyle, ApeFile.DEFAULT_TAG_LOCATION_MAPPING, ApeFileSettings.defaultTagTypes);
     }
 
     /** @inheritDoc */
@@ -39,13 +34,13 @@ export default class ApeFile extends SandwichFile {
 
         // Find the header and use it to generate the properties
         this.seek(this.mediaStartPosition);
-        const headerBlock = this.readBlock(ApeStreamHeader.size);
+        const headerBlock = this.readBlock(ApeStreamHeader.SIZE);
         const header = new ApeStreamHeader(headerBlock, this.mediaEndPosition - this.mediaStartPosition);
         return new Properties(header.durationMilliseconds, [header]);
     }
 }
 
-////////////////////////////////////////////////////////////////////////////
+// /////////////////////////////////////////////////////////////////////////
 // Register the file type
 [
     "taglib/ape",

@@ -56,7 +56,7 @@ import {Testers} from "../utilities/testers";
             const testAbstraction = TestFile.getFileAbstraction(fileBytes);
 
             // Act
-            AviFileSettings.defaultTagTypes = AviFileSettings.supportedTagTypes;
+            AviFileSettings.defaultTagTypes = AviFileSettings.SUPPORTED_TAG_TYPES;
             const file = new RiffFile(testAbstraction, ReadStyle.Average);
 
             // Assert
@@ -67,12 +67,12 @@ import {Testers} from "../utilities/testers";
 
             assert.isOk(file.tag);
             assert.instanceOf(file.tag, RiffTags);
-            assert.strictEqual(file.tag.tagTypes, AviFileSettings.supportedTagTypes);
+            assert.strictEqual(file.tag.tagTypes, AviFileSettings.SUPPORTED_TAG_TYPES);
             assert.strictEqual((<RiffTags> file.tag).tags.length, 4);
             assert.isTrue(file.tag.isEmpty);
 
             assert.strictEqual(file.mode, FileAccessMode.Closed);
-            assert.strictEqual(file.tagTypes, AviFileSettings.supportedTagTypes);
+            assert.strictEqual(file.tagTypes, AviFileSettings.SUPPORTED_TAG_TYPES);
             assert.strictEqual(file.tagTypesOnDisk, TagTypes.None);
         } finally {
             // Cleanup
@@ -132,7 +132,7 @@ import {Testers} from "../utilities/testers";
             const testAbstraction = TestFile.getFileAbstraction(fileBytes);
 
             // Act
-            AviFileSettings.defaultTagTypes = AviFileSettings.supportedTagTypes;
+            AviFileSettings.defaultTagTypes = AviFileSettings.SUPPORTED_TAG_TYPES;
             const file = new RiffFile(testAbstraction, ReadStyle.Average);
 
             // Assert
@@ -145,12 +145,12 @@ import {Testers} from "../utilities/testers";
 
             assert.isOk(file.tag);
             assert.instanceOf(file.tag, RiffTags);
-            assert.strictEqual(file.tag.tagTypes, AviFileSettings.supportedTagTypes);
+            assert.strictEqual(file.tag.tagTypes, AviFileSettings.SUPPORTED_TAG_TYPES);
             assert.strictEqual((<RiffTags> file.tag).tags.length, 4);
             assert.isTrue(file.tag.isEmpty);
 
             assert.strictEqual(file.mode, FileAccessMode.Closed);
-            assert.strictEqual(file.tagTypes, AviFileSettings.supportedTagTypes);
+            assert.strictEqual(file.tagTypes, AviFileSettings.SUPPORTED_TAG_TYPES);
             assert.strictEqual(file.tagTypesOnDisk, TagTypes.None);
         } finally {
             // Cleanup
@@ -212,7 +212,7 @@ import {Testers} from "../utilities/testers";
             const testAbstraction = TestFile.getFileAbstraction(fileBytes);
 
             // Act
-            AviFileSettings.defaultTagTypes = AviFileSettings.supportedTagTypes;
+            AviFileSettings.defaultTagTypes = AviFileSettings.SUPPORTED_TAG_TYPES;
             const file = new RiffFile(testAbstraction, ReadStyle.None);
 
             // Assert
@@ -220,12 +220,12 @@ import {Testers} from "../utilities/testers";
 
             assert.isOk(file.tag);
             assert.instanceOf(file.tag, RiffTags);
-            assert.strictEqual(file.tag.tagTypes, AviFileSettings.supportedTagTypes);
+            assert.strictEqual(file.tag.tagTypes, AviFileSettings.SUPPORTED_TAG_TYPES);
             assert.strictEqual((<RiffTags> file.tag).tags.length, 4);
             assert.isTrue(file.tag.isEmpty);
 
             assert.strictEqual(file.mode, FileAccessMode.Closed);
-            assert.strictEqual(file.tagTypes, AviFileSettings.supportedTagTypes);
+            assert.strictEqual(file.tagTypes, AviFileSettings.SUPPORTED_TAG_TYPES);
             assert.strictEqual(file.tagTypesOnDisk, TagTypes.None);
         } finally {
             // Cleanup
@@ -350,7 +350,7 @@ import {Testers} from "../utilities/testers";
             const testAbstraction = TestFile.getFileAbstraction(fileBytes);
 
             // Act
-            WaveFileSettings.defaultTagTypes = WaveFileSettings.supportedTagTypes;
+            WaveFileSettings.defaultTagTypes = WaveFileSettings.SUPPORTED_TAG_TYPES;
             const file = new RiffFile(testAbstraction, ReadStyle.Average);
 
             // Assert
@@ -363,12 +363,12 @@ import {Testers} from "../utilities/testers";
 
             assert.isOk(file.tag);
             assert.instanceOf(file.tag, RiffTags);
-            assert.strictEqual(file.tag.tagTypes, WaveFileSettings.supportedTagTypes);
+            assert.strictEqual(file.tag.tagTypes, WaveFileSettings.SUPPORTED_TAG_TYPES);
             assert.strictEqual((<RiffTags> file.tag).tags.length, 4);
             assert.isTrue(file.tag.isEmpty);
 
             assert.strictEqual(file.mode, FileAccessMode.Closed);
-            assert.strictEqual(file.tagTypes, WaveFileSettings.supportedTagTypes);
+            assert.strictEqual(file.tagTypes, WaveFileSettings.SUPPORTED_TAG_TYPES);
             assert.strictEqual(file.tagTypesOnDisk, TagTypes.None);
         } finally {
             // Cleanup
@@ -430,19 +430,19 @@ import {Testers} from "../utilities/testers";
             const testAbstraction = TestFile.getFileAbstraction(fileBytes);
 
             // Act
-            WaveFileSettings.defaultTagTypes = WaveFileSettings.supportedTagTypes;
+            WaveFileSettings.defaultTagTypes = WaveFileSettings.SUPPORTED_TAG_TYPES;
             const file = new RiffFile(testAbstraction, ReadStyle.None);
 
             // Assert
             assert.isNotOk(file.properties);
 
             assert.instanceOf(file.tag, RiffTags);
-            assert.strictEqual(file.tag.tagTypes, WaveFileSettings.supportedTagTypes);
+            assert.strictEqual(file.tag.tagTypes, WaveFileSettings.SUPPORTED_TAG_TYPES);
             assert.strictEqual((<RiffTags> file.tag).tags.length, 4);
             assert.isTrue(file.tag.isEmpty);
 
             assert.strictEqual(file.mode, FileAccessMode.Closed);
-            assert.strictEqual(file.tagTypes,  WaveFileSettings.supportedTagTypes);
+            assert.strictEqual(file.tagTypes,  WaveFileSettings.SUPPORTED_TAG_TYPES);
             assert.strictEqual(file.tagTypesOnDisk, TagTypes.None);
         } finally {
             // Cleanup
@@ -1306,7 +1306,7 @@ import {Testers} from "../utilities/testers";
 
     private static getFileBytes(dataBytes: ByteVector): ByteVector {
         return ByteVector.concatenate(
-            RiffFile.fileIdentifier,
+            RiffFile.FILE_IDENTIFIER,
             ByteVector.fromUint(dataBytes.length, false),
             dataBytes
         );

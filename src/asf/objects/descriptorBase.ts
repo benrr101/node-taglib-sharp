@@ -49,6 +49,7 @@ export type DescriptorValue = bigint | boolean | ByteVector | number | string | 
  * Abstract class that forms the basis of extended content descriptors and metadata library records.
  */
 export abstract class DescriptorBase {
+    // @TODO: No protected access to member variables
     protected readonly _name: string;
     protected readonly _type: DataType;
 

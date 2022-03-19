@@ -293,6 +293,6 @@ import Id3v1Tag from "../../src/id3v1/id3v1Tag";
     public testRender() {
         const rendered = Id3v1Tag.fromEmpty().render();
         assert.strictEqual(rendered.length, 128);
-        assert.isTrue(rendered.startsWith(Id3v1Tag.fileIdentifier));
+        assert.isTrue(rendered.startsWith(Id3v1Tag.FILE_IDENTIFIER));
     }
 }

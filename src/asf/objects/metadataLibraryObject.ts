@@ -175,7 +175,7 @@ export class MetadataLibraryObject extends BaseObject {
      */
     public static fromEmpty(): MetadataLibraryObject {
         const instance = new MetadataLibraryObject();
-        instance.initializeFromGuid(Guids.AsfMetadataLibraryObject);
+        instance.initializeFromGuid(Guids.ASF_METADATA_LIBRARY_OBJECT);
         return instance;
     }
 
@@ -183,7 +183,7 @@ export class MetadataLibraryObject extends BaseObject {
         const instance = new MetadataLibraryObject();
         instance.initializeFromFile(file, position);
 
-        if (!instance.guid.equals(Guids.AsfMetadataLibraryObject)) {
+        if (!instance.guid.equals(Guids.ASF_METADATA_LIBRARY_OBJECT)) {
             throw new CorruptFileError("Object GUID does not match expected metadata library object GUID");
         }
         if (instance.originalSize < 26) {

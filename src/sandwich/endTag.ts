@@ -20,7 +20,7 @@ import {Guards} from "../utils";
  * but could be used by other classes. It currently supports ID3v1, ID3v2, and APE tags.
  */
 export default class EndTag extends CombinedTag {
-    public static readonly supportedTagTypes: TagTypes = TagTypes.Ape | TagTypes.Id3v1 | TagTypes.Id3v2;
+    public static readonly SUPPORTED_TAG_TYPES: TagTypes = TagTypes.Ape | TagTypes.Id3v1 | TagTypes.Id3v2;
 
     /**
      * Constructs and initializes a new instance of an end tab by reading a file from the end until
@@ -29,7 +29,7 @@ export default class EndTag extends CombinedTag {
      * @param readStyle
      */
     public constructor(file: File, readStyle: ReadStyle) {
-        super(EndTag.supportedTagTypes, true);
+        super(EndTag.SUPPORTED_TAG_TYPES, true);
 
         Guards.truthy(file, "file");
         this.read(file, readStyle);
@@ -102,39 +102,39 @@ export default class EndTag extends CombinedTag {
  */
 class EndTagParser extends TagParser {
     // Size of the block to read when looking for a tag footer, this must be large enough to
-    // contain the largest footer identifier (a the time of writing, this is ID3v1)
-    private static readonly readSize = Math.max(
-        ApeTagFooter.size,
+    // contain the largest footer identifier (at the time of writing, this is ID3v1)
+    private static readonly READ_SIZE = Math.max(
+        ApeTagFooter.SIZE,
         Id3v2Settings.footerSize,
-        Id3v1Tag.size
+        Id3v1Tag.TOTAL_SIZE
     );
-    private static readonly identifierMappings = [
+    private static readonly IDENTIFIER_MAPPINGS = [
         {
-            action: (f: File, p: number, _rs: ReadStyle) => ApeTag.fromFile(f, p),
+            action: (f: File, p: number) => ApeTag.fromFile(f, p),
             identifier: ApeTagFooter.fileIdentifier,
-            offset: ApeTagFooter.size,
+            offset: ApeTagFooter.SIZE,
         },
         {
             action: (f: File, p: number, rs: ReadStyle) => Id3v2Tag.fromFileEnd(f, p + Id3v2Settings.footerSize, rs),
-            identifier: Id3v2TagFooter.fileIdentifier,
+            identifier: Id3v2TagFooter.FILE_IDENTIFIER,
             offset: Id3v2Settings.footerSize
         },
         {
-            action: (f: File, p: number, _rs: ReadStyle) => Id3v1Tag.fromFile(f, p),
-            identifier: Id3v1Tag.fileIdentifier,
-            offset: Id3v1Tag.size
+            action: (f: File, p: number) => Id3v1Tag.fromFile(f, p),
+            identifier: Id3v1Tag.FILE_IDENTIFIER,
+            offset: Id3v1Tag.TOTAL_SIZE
         }
     ];
 
     public constructor(file: File, readStyle: ReadStyle) {
         super(file, readStyle);
-        this._fileOffset = Math.max(this._file.length - EndTagParser.readSize, 0);
+        this._fileOffset = Math.max(this._file.length - EndTagParser.READ_SIZE, 0);
     }
 
     public read(): boolean {
         try {
             // This check lets us more gracefully handle files that have <128 bytes of media
-            let readSize = EndTagParser.readSize;
+            let readSize = EndTagParser.READ_SIZE;
             if (this._fileOffset < 0) {
                 const overflow = this._fileOffset * -1;
                 this._fileOffset = 0;
@@ -146,7 +146,7 @@ class EndTagParser extends TagParser {
             const tagFooterBlock = this._file.readBlock(readSize);
 
             // Check for any identifiers of a tag
-            for (const mapping of EndTagParser.identifierMappings) {
+            for (const mapping of EndTagParser.IDENTIFIER_MAPPINGS) {
                 // If we don't have enough bytes to check for this mapping, skip it
                 if (mapping.offset > tagFooterBlock.length) {
                     continue;

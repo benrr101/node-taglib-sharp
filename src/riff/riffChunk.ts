@@ -16,7 +16,7 @@ export default class RiffChunk implements IRiffChunk, ILazy {
 
     // #region Constructors
 
-    private constructor() {}
+    private constructor() { /* private to enforce construction via static methods */ }
 
     /**
      * Creates and initializes a new instance, lazily, from a position of a file.

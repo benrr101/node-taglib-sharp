@@ -59,7 +59,7 @@ const _sampleData = ByteVector.concatenate(
         assert.isOk(footer);
         assert.strictEqual(footer.flags, ApeTagFooterFlags.IsHeader);
         assert.strictEqual(footer.itemCount, 3456);
-        assert.strictEqual(footer.itemSize, 2345 - ApeTagFooter.size);
+        assert.strictEqual(footer.itemSize, 2345 - ApeTagFooter.SIZE);
         assert.strictEqual(footer.tagSize, 2345);
         assert.strictEqual(footer.version, 1234);
     }
@@ -83,8 +83,8 @@ const _sampleData = ByteVector.concatenate(
         assert.isOk(footer);
         assert.strictEqual(footer.flags, ApeTagFooterFlags.HeaderPresent);
         assert.strictEqual(footer.itemCount, 3456);
-        assert.strictEqual(footer.itemSize, 2345 - ApeTagFooter.size);
-        assert.strictEqual(footer.tagSize, 2345 + ApeTagFooter.size);
+        assert.strictEqual(footer.itemSize, 2345 - ApeTagFooter.SIZE);
+        assert.strictEqual(footer.tagSize, 2345 + ApeTagFooter.SIZE);
         assert.strictEqual(footer.version, 2000);
     }
 
@@ -97,7 +97,7 @@ const _sampleData = ByteVector.concatenate(
         assert.isOk(footer);
         assert.strictEqual(footer.flags, 0);
         assert.strictEqual(footer.itemCount, 0);
-        assert.strictEqual(footer.tagSize, ApeTagFooter.size);
+        assert.strictEqual(footer.tagSize, ApeTagFooter.SIZE);
         assert.strictEqual(footer.version, 2000);
     }
 }

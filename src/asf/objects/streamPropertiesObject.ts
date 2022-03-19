@@ -40,7 +40,7 @@ export default class StreamPropertiesObject extends BaseObject {
         const instance = new StreamPropertiesObject();
         instance.initializeFromFile(file, position);
 
-        if (!instance.guid.equals(Guids.AsfStreamPropertiesObject)) {
+        if (!instance.guid.equals(Guids.ASF_STREAM_PROPERTIES_OBJECT)) {
             throw new CorruptFileError("Object GUID is not the expected stream properties object GUID");
         }
 
@@ -73,10 +73,10 @@ export default class StreamPropertiesObject extends BaseObject {
     public get codec(): ICodec {
         if (!this._codec) {
             // Read the codec info from the type specific data
-            if (this._streamType.equals(Guids.AsfAudioMedia)) {
+            if (this._streamType.equals(Guids.ASF_AUDIO_MEDIA)) {
                 this._codec = new RiffWaveFormatEx(this._typeSpecificData);
             }
-            if (this._streamType.equals(Guids.AsfVideoMedia)) {
+            if (this._streamType.equals(Guids.ASF_VIDEO_MEDIA)) {
                 this._codec = new RiffBitmapInfoHeader(this._typeSpecificData, 11);
             }
 

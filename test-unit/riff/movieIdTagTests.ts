@@ -176,7 +176,7 @@ import RiffList from "../../src/riff/riffList";
     }
 
     private static getTestTagData(): RiffList {
-        const list = RiffList.fromEmpty(MovieIdTag.listType);
+        const list = RiffList.fromEmpty(MovieIdTag.LIST_TYPE);
         list.setValues("TITL", [ByteVector.fromString("foo", StringType.UTF8)]);
         list.setValues("IART", [ByteVector.fromString("bar", StringType.UTF8)]);
         list.setValues("COMM", [ByteVector.fromString("baz", StringType.UTF8)]);

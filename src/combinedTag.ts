@@ -381,7 +381,7 @@ export default abstract class CombinedTag extends Tag {
 
     // #region Protected/Private Methods
 
-    protected addTag(tag: Tag) {
+    protected addTag(tag: Tag): void {
         if (tag) {
             this._tags.push(tag);
         }
@@ -391,7 +391,7 @@ export default abstract class CombinedTag extends Tag {
      * This is used for special cases where the order of tags is important.
      * @protected
      */
-    protected replaceTag(oldTag: Tag, newTag: Tag) {
+    protected replaceTag(oldTag: Tag, newTag: Tag): void {
         const index = this._tags.indexOf(oldTag);
         this._tags.splice(index, 1, newTag);
     }

@@ -421,7 +421,7 @@ import {Testers} from "../utilities/testers";
         return MetadataLibraryObject.fromFile;
     }
     protected get minSize(): number { return 26; }
-    protected get objectGuid(): UuidWrapper { return Guids.AsfMetadataLibraryObject; }
+    protected get objectGuid(): UuidWrapper { return Guids.ASF_METADATA_LIBRARY_OBJECT; }
 
     @test
     public fromEmpty() {
@@ -430,7 +430,7 @@ import {Testers} from "../utilities/testers";
 
         // Assert
         assert.isOk(object);
-        assert.isTrue(object.guid.equals(Guids.AsfMetadataLibraryObject));
+        assert.isTrue(object.guid.equals(Guids.ASF_METADATA_LIBRARY_OBJECT));
         assert.strictEqual(object.objectType, ObjectType.MetadataLibraryObject);
         assert.strictEqual(object.originalSize, 0);
         assert.isTrue(object.isEmpty);
@@ -446,7 +446,7 @@ import {Testers} from "../utilities/testers";
         const record2Bytes = record2.render();
         const bytes = ByteVector.concatenate(
             ByteVector.fromSize(10), // Offset
-            Guids.AsfMetadataLibraryObject.toBytes(),
+            Guids.ASF_METADATA_LIBRARY_OBJECT.toBytes(),
             ByteVector.fromUlong(16 + 8 + 2 + record1Bytes.length + record2Bytes.length, false),
             ByteVector.fromUshort(2, false),
             record1Bytes,
@@ -459,7 +459,7 @@ import {Testers} from "../utilities/testers";
 
         // Assert
         assert.isOk(object);
-        assert.isTrue(object.guid.equals(Guids.AsfMetadataLibraryObject));
+        assert.isTrue(object.guid.equals(Guids.ASF_METADATA_LIBRARY_OBJECT));
         assert.strictEqual(object.objectType, ObjectType.MetadataLibraryObject);
         assert.strictEqual(object.originalSize, bytes.length - 10);
         assert.isFalse(object.isEmpty);
@@ -647,7 +647,7 @@ import {Testers} from "../utilities/testers";
         const record2Bytes = record2.render();
         const bytes = ByteVector.concatenate(
             ByteVector.fromSize(10), // Offset
-            Guids.AsfMetadataLibraryObject.toBytes(),
+            Guids.ASF_METADATA_LIBRARY_OBJECT.toBytes(),
             ByteVector.fromUlong(16 + 8 + 2 + record1Bytes.length + record2Bytes.length, false),
             ByteVector.fromUshort(2, false),
             record1Bytes,

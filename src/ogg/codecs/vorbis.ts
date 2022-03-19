@@ -16,7 +16,7 @@ enum VorbisPacketType {
  * Represents an Ogg Vorbis bitstream for use in an Ogg file.
  */
 export default class Vorbis implements IOggCodec, IAudioCodec {
-    private static readonly id = ByteVector.fromString("vorbis", StringType.Latin1).makeReadOnly();
+    private static readonly IDENTIFIER = ByteVector.fromString("vorbis", StringType.Latin1).makeReadOnly();
 
     private readonly _bitrateMaximum: number;
     private readonly _bitrateMinimum: number;
@@ -33,7 +33,7 @@ export default class Vorbis implements IOggCodec, IAudioCodec {
      */
     public constructor(headerPacket: ByteVector) {
         Guards.truthy(headerPacket, "headerPacket");
-        if (!headerPacket.containsAt(Vorbis.id, 1)) {
+        if (!headerPacket.containsAt(Vorbis.IDENTIFIER, 1)) {
             throw new Error("Argument error: header packet must start with Vorbis ID");
         }
         if (headerPacket.get(0) !== VorbisPacketType.Header) {
@@ -93,14 +93,14 @@ export default class Vorbis implements IOggCodec, IAudioCodec {
      * Determines if a packet is a Vorbis header packet.
      * @param packet Packet to check
      */
-    public static isHeaderPacket(packet: ByteVector) {
-        return packet.get(0) === VorbisPacketType.Header && packet.containsAt(Vorbis.id, 1);
+    public static isHeaderPacket(packet: ByteVector): boolean {
+        return packet.get(0) === VorbisPacketType.Header && packet.containsAt(Vorbis.IDENTIFIER, 1);
     }
 
     /** @inheritDoc */
-    public readPacket(packet: ByteVector, ) {
+    public readPacket(packet: ByteVector): boolean {
         Guards.truthy(packet, "packet");
-        if (!packet.containsAt(Vorbis.id, 1)) {
+        if (!packet.containsAt(Vorbis.IDENTIFIER, 1)) {
             // Ignore invalid packets
             return false;
         }
@@ -113,7 +113,7 @@ export default class Vorbis implements IOggCodec, IAudioCodec {
     }
 
     /** @inheritDoc */
-    public setDuration(firstGranularPosition: number, lastGranularPosition: number) {
+    public setDuration(firstGranularPosition: number, lastGranularPosition: number): void {
         Guards.safeUint(firstGranularPosition, "firstGranularPosition");
         Guards.safeUint(lastGranularPosition, "lastGranularPosition");
 
@@ -124,13 +124,13 @@ export default class Vorbis implements IOggCodec, IAudioCodec {
     }
 
     /** @inheritDoc */
-    public writeCommentPacket(packets: ByteVector[], comment: XiphComment) {
+    public writeCommentPacket(packets: ByteVector[], comment: XiphComment): void {
         Guards.truthy(packets, "packets");
         Guards.truthy(comment, "xiphComment");
 
         const data = ByteVector.concatenate(
             VorbisPacketType.Comment,
-            Vorbis.id,
+            Vorbis.IDENTIFIER,
             comment.render(true)
         );
         if (packets.length > 1 && packets[1].get(0) === VorbisPacketType.Comment) {

@@ -24,7 +24,7 @@ import {TagTesters, Testers} from "../utilities/testers";
 const getHeaderObject: (children: BaseObject[]) => HeaderObject = (children: BaseObject[]) => {
     const childrenBytes = ByteVector.concatenate(... children.map((o) => o.render()));
     const headerBytes = ByteVector.concatenate(
-        Guids.AsfHeaderObject.toBytes(), // Object ID
+        Guids.ASF_HEADER_OBJECT.toBytes(), // Object ID
         ByteVector.fromUlong(30 + childrenBytes.length, false), // Object size
         ByteVector.fromUint(children.length, false), // Child objects
         0x01, 0x02, // Reserved bytes
@@ -37,9 +37,9 @@ const getHeaderObject: (children: BaseObject[]) => HeaderObject = (children: Bas
 const getHeaderExtensionObject: (children: BaseObject[]) => HeaderExtensionObject = (children: BaseObject[]) => {
     const childrenBytes = ByteVector.concatenate(... children.map((o) => o.render()));
     const headerExtBytes = ByteVector.concatenate(
-        Guids.AsfHeaderExtensionObject.toBytes(), // Object ID
+        Guids.ASF_HEADER_EXTENSION_OBJECT.toBytes(), // Object ID
         ByteVector.fromUlong(46 + childrenBytes.length, false), // Object size
-        Guids.AsfReserved1.toBytes(), // Reserved field 1
+        Guids.ASF_RESERVED.toBytes(), // Reserved field 1
         ByteVector.fromUshort(6, false), // Reserved field 2
         ByteVector.fromUint(childrenBytes.length, false), // Header extension data length
         childrenBytes

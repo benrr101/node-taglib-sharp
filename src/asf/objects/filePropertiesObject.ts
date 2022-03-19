@@ -57,7 +57,7 @@ export default class FilePropertiesObject extends BaseObject {
         const instance = new FilePropertiesObject();
         instance.initializeFromFile(file, position);
 
-        if (!instance.guid.equals(Guids.AsfFilePropertiesObject)) {
+        if (!instance.guid.equals(Guids.ASF_FILE_PROPERTIES_OBJECT)) {
             throw new CorruptFileError("Object GUID is not the expected file properties object GUID");
         }
 

@@ -7,7 +7,7 @@ import {Guards, NumberUtils} from "../utils";
  * Provides information about an MPEG video stream.
  */
 export default class MpegVideoHeader implements IVideoCodec {
-    private static readonly _frameRates = [
+    private static readonly FRAME_RATES = [
         0, 24000 / 1001, 24, 25, 30000 / 1001, 30, 50, 60000 / 1001, 60
     ];
 
@@ -59,7 +59,7 @@ export default class MpegVideoHeader implements IVideoCodec {
 
     /** @inheritDoc */
     public get videoFrameRate(): number {
-        return this._frameRateIndex < 9 ? MpegVideoHeader._frameRates[this._frameRateIndex] : 0;
+        return this._frameRateIndex < 9 ? MpegVideoHeader.FRAME_RATES[this._frameRateIndex] : 0;
     }
 
     /** @inheritDoc */

@@ -45,7 +45,7 @@ import {Testers} from "../utilities/testers";
     public fromData_validParameters() {
         // Arrange
         const data = ByteVector.concatenate(
-            VbriHeader.fileIdentifier,
+            VbriHeader.FILE_IDENTIFIER,
             ByteVector.fromSize(6),
             ByteVector.fromUint(123),
             ByteVector.fromUint(234)

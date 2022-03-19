@@ -7,16 +7,16 @@ import {Guards} from "../../utils";
 
 export enum AviStreamType {
     /** Audio Stream */
-    /* auds */ AUDIO_STREAM = 0x73647561,
+    /* auds */ AudioStream = 0x73647561,
 
     /** MIDI Stream */
-    /* mids */ MIDI_STREAM = 0x7264696D,
+    /* mids */ MidiStream = 0x7264696D,
 
     /** Text stream */
-    /* txts */ TEXT_STREAM = 0x73747874,
+    /* txts */ TextStream = 0x73747874,
 
     /** Video stream */
-    /* vids */ VIDEO_STREAM = 0x73646976
+    /* vids */ VideoStream = 0x73646976
 }
 
 /**
@@ -24,9 +24,9 @@ export enum AviStreamType {
  * stream list.
  */
 export class AviStream {
-    public static readonly formatChunkId = "strf";
-    public static readonly headerChunkId = "strh";
-    public static readonly listType = "strl";
+    public static readonly FORMAT_CHUNK_ID = "strf";
+    public static readonly HEADER_CHUNK_ID = "strh";
+    public static readonly LIST_TYPE = "strl";
 
     private readonly _bottom: number;
     private readonly _codec: ICodec;
@@ -53,12 +53,12 @@ export class AviStream {
      */
     public constructor(list: RiffList) {
         Guards.truthy(list, "list");
-        if (list.type !== AviStream.listType) {
+        if (list.type !== AviStream.LIST_TYPE) {
             throw new CorruptFileError("Stream header list does not have correct type");
         }
 
         // Parse the stream header
-        const streamHeaderData = list.getValues(AviStream.headerChunkId);
+        const streamHeaderData = list.getValues(AviStream.HEADER_CHUNK_ID);
         if (streamHeaderData.length !== 1) {
             throw new CorruptFileError("Stream header list does not contain valid stream header chunks");
         }
@@ -86,19 +86,19 @@ export class AviStream {
         this._bottom = streamHeaderDatum.subarray(54, 2).toUshort(false);
 
         // Parse the stream construct
-        const streamFormatData = list.getValues(AviStream.formatChunkId);
+        const streamFormatData = list.getValues(AviStream.FORMAT_CHUNK_ID);
         if (streamFormatData.length !== 1) {
             throw new CorruptFileError("Stream header list is missing stream format chunk");
         }
         switch (this._type) {
-            case AviStreamType.VIDEO_STREAM:
+            case AviStreamType.VideoStream:
                 this._codec = new RiffBitmapInfoHeader(streamFormatData[0], 0);
                 break;
-            case AviStreamType.AUDIO_STREAM:
+            case AviStreamType.AudioStream:
                 this._codec = new RiffWaveFormatEx(streamFormatData[0]);
                 break;
-            case AviStreamType.MIDI_STREAM:
-            case AviStreamType.TEXT_STREAM:
+            case AviStreamType.MidiStream:
+            case AviStreamType.TextStream:
                 // These types don't have codecs, but we still care about the headers, I think
                 // If there's more information needed for these types, please open a issue
                 break;

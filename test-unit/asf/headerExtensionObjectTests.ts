@@ -19,14 +19,14 @@ import {Testers} from "../utilities/testers";
         return HeaderExtensionObject.fromFile;
     }
     protected get minSize(): number { return undefined; }
-    protected get objectGuid(): UuidWrapper { return Guids.AsfHeaderExtensionObject; }
+    protected get objectGuid(): UuidWrapper { return Guids.ASF_HEADER_EXTENSION_OBJECT; }
 
     @test
     public fromFile_missingReservedField1() {
         // Arrange
         const data = ByteVector.concatenate(
             ByteVector.fromSize(10), // Offset
-            Guids.AsfHeaderExtensionObject.toBytes(), // Object ID
+            Guids.ASF_HEADER_EXTENSION_OBJECT.toBytes(), // Object ID
             ByteVector.fromUlong(56, false), // Object size
             new UuidWrapper().toBytes(), // Invalid reserved field 1
             ByteVector.fromUshort(6, false), // Reserved field 2
@@ -44,9 +44,9 @@ import {Testers} from "../utilities/testers";
         // Arrange
         const data = ByteVector.concatenate(
             ByteVector.fromSize(10), // Offset
-            Guids.AsfHeaderExtensionObject.toBytes(), // Object ID
+            Guids.ASF_HEADER_EXTENSION_OBJECT.toBytes(), // Object ID
             ByteVector.fromUlong(56, false), // Object size
-            Guids.AsfReserved1.toBytes(), // Reserved field 1
+            Guids.ASF_RESERVED.toBytes(), // Reserved field 1
             ByteVector.fromUshort(8888, false), // Invalid reserved field 2
             ByteVector.fromUint(10, false), // Header extension data length
             ByteVector.fromSize(10), // Header extension data
@@ -72,12 +72,12 @@ import {Testers} from "../utilities/testers";
         assert.isOk(output);
         assert.strictEqual(output.objectType, ObjectType.HeaderExtensionObject);
         assert.strictEqual(output.originalSize, data.length);
-        assert.isTrue(output.guid.equals(Guids.AsfHeaderExtensionObject));
+        assert.isTrue(output.guid.equals(Guids.ASF_HEADER_EXTENSION_OBJECT));
 
         const children = output.children;
         assert.strictEqual(children.length, 2);
-        assert.isTrue(children[0].guid.equals(Guids.AsfMetadataLibraryObject));
-        assert.isTrue(children[1].guid.equals(Guids.AsfContentDescriptionObject));
+        assert.isTrue(children[0].guid.equals(Guids.ASF_METADATA_LIBRARY_OBJECT));
+        assert.isTrue(children[1].guid.equals(Guids.ASF_CONTENT_DESCRIPTION_OBJECT));
     }
 
     @test
@@ -161,9 +161,9 @@ import {Testers} from "../utilities/testers";
     private static getObjectBytes(children: BaseObject[]) {
         const childrenBytes = ByteVector.concatenate(... children.map((o) => o.render()));
         return ByteVector.concatenate(
-            Guids.AsfHeaderExtensionObject.toBytes(), // Object ID
+            Guids.ASF_HEADER_EXTENSION_OBJECT.toBytes(), // Object ID
             ByteVector.fromUlong(46 + childrenBytes.length, false), // Object size
-            Guids.AsfReserved1.toBytes(), // Reserved field 1
+            Guids.ASF_RESERVED.toBytes(), // Reserved field 1
             ByteVector.fromUshort(6, false), // Reserved field 2
             ByteVector.fromUint(childrenBytes.length, false), // Header extension data length
             childrenBytes

@@ -47,7 +47,7 @@ export enum FlacBlockType {
  * Represents a FLAC metadata block
  */
 export class FlacBlock implements ILazy {
-    public static readonly headerSize = 4;
+    public static readonly HEADER_SIZE = 4;
 
     private _blockStart: number;
     private _data: ByteVector;
@@ -58,7 +58,7 @@ export class FlacBlock implements ILazy {
 
     // #region Constructors
 
-    private constructor() {}
+    private constructor() { /* private to enforce creation via static constructors */ }
 
     /**
      * Constructs and initializes a new instance, lazily, by reading it from a file.
@@ -156,7 +156,7 @@ export class FlacBlock implements ILazy {
      * Gets the total size of the block as it appears on disk. This equals the size of the data
      * plus the size of the header.
      */
-    public get totalSize(): number { return this.dataSize + FlacBlock.headerSize; }
+    public get totalSize(): number { return this.dataSize + FlacBlock.HEADER_SIZE; }
 
     /**
      * Gets the type of data contained in the current instance.
@@ -177,7 +177,7 @@ export class FlacBlock implements ILazy {
         const originalFileMode = this._file.mode;
         try {
             this._file.mode = FileAccessMode.Read;
-            this._file.seek(this._blockStart + FlacBlock.headerSize);
+            this._file.seek(this._blockStart + FlacBlock.HEADER_SIZE);
             this._data = this._file.readBlock(this._dataSize).toByteVector();
         } finally {
             this._file.mode = originalFileMode;

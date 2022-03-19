@@ -32,6 +32,7 @@ import {Guards} from "../../utils";
  *   for the publisher.
  */
 export class UrlLinkFrame extends Frame {
+    // @TODO: Don't allow protected member variables
     protected _encoding: StringType = StringType.Latin1;
     protected _rawData: ByteVector;
     protected _rawVersion: number;

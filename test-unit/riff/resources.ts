@@ -17,36 +17,36 @@ export default {
         );
     },
     getAviHeaderBlock(addStreams: boolean): ByteVector {
-        const headerList = RiffList.fromEmpty(AviHeader.headerListType);
-        headerList.setValues(AviHeader.headerChunkId, [this.getAviHeader()]);
+        const headerList = RiffList.fromEmpty(AviHeader.HEADER_LIST_TYPE);
+        headerList.setValues(AviHeader.HEADER_CHUNK_ID, [this.getAviHeader()]);
         if (!addStreams) {
             return headerList.render();
         }
 
         const streamLists = [];
         const streamTypes = [
-            AviStreamType.AUDIO_STREAM,
-            AviStreamType.VIDEO_STREAM,
-            AviStreamType.MIDI_STREAM,
-            AviStreamType.TEXT_STREAM
+            AviStreamType.AudioStream,
+            AviStreamType.VideoStream,
+            AviStreamType.MidiStream,
+            AviStreamType.TextStream
         ];
         for (const streamType of streamTypes) {
-            const streamList = RiffList.fromEmpty(AviStream.listType);
-            streamList.setValues(AviStream.headerChunkId, [this.getAviStreamHeaderData(streamType)]);
+            const streamList = RiffList.fromEmpty(AviStream.LIST_TYPE);
+            streamList.setValues(AviStream.HEADER_CHUNK_ID, [this.getAviStreamHeaderData(streamType)]);
             switch (streamType) {
-                case AviStreamType.AUDIO_STREAM:
-                    streamList.setValues(AviStream.formatChunkId, [this.getAudioFormatBlock(0xF1AC)]);
+                case AviStreamType.AudioStream:
+                    streamList.setValues(AviStream.FORMAT_CHUNK_ID, [this.getAudioFormatBlock(0xF1AC)]);
                     break;
-                case AviStreamType.VIDEO_STREAM:
-                    streamList.setValues(AviStream.formatChunkId, [this.getVideoFormatBlock(0xBBBBBBBB)]);
+                case AviStreamType.VideoStream:
+                    streamList.setValues(AviStream.FORMAT_CHUNK_ID, [this.getVideoFormatBlock(0xBBBBBBBB)]);
                     break;
-                case AviStreamType.MIDI_STREAM:
-                case AviStreamType.TEXT_STREAM:
-                    streamList.setValues(AviStream.formatChunkId, [ByteVector.fromSize(10)]);
+                case AviStreamType.MidiStream:
+                case AviStreamType.TextStream:
+                    streamList.setValues(AviStream.FORMAT_CHUNK_ID, [ByteVector.fromSize(10)]);
             }
             streamLists.push(streamList);
         }
-        headerList.setLists(AviStream.listType, streamLists);
+        headerList.setLists(AviStream.LIST_TYPE, streamLists);
 
         return headerList.render();
     },

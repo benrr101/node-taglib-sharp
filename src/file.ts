@@ -86,6 +86,7 @@ export abstract class File {
     private static _fileTypes: {[mimeType: string]: FileTypeConstructor} = {};
     private static _fileTypeResolvers: FileTypeResolver[] = [];
 
+    // @TODO: Remove protected member variables
     protected _fileAbstraction: IFileAbstraction;
     protected _fileStream: IStream; // Not intended to be used by implementing classes
     protected _tagTypesOnDisk: TagTypes = TagTypes.None;
@@ -99,7 +100,7 @@ export abstract class File {
         Guards.truthy(file, "file");
         this._fileAbstraction = typeof(file) === "string"
             ? <IFileAbstraction> new LocalFileAbstraction(file)
-            : <IFileAbstraction> file;
+            : file;
     }
 
     /**
@@ -322,14 +323,14 @@ export abstract class File {
     /**
      * Used for removing a file type constructor during unit testing
      */
-    public static removeFileType(mimeType: string) {
+    public static removeFileType(mimeType: string): void {
         delete File._fileTypes[mimeType];
     }
 
     /**
      * Used for removing a file type resolver during unit testing
      */
-    public static removeFileTypeResolver(resolver: FileTypeResolver) {
+    public static removeFileTypeResolver(resolver: FileTypeResolver): void {
         const index = File._fileTypeResolvers.indexOf(resolver);
         if (index >= 0) {
             File._fileTypeResolvers.splice(index, 1);
@@ -339,7 +340,7 @@ export abstract class File {
     /**
      * Dispose the current instance. Equivalent to setting the mode to closed.
      */
-    public dispose() {
+    public dispose(): void {
         this.mode = FileAccessMode.Closed;
     }
 

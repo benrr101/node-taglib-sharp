@@ -16,7 +16,7 @@ import {Testers} from "../utilities/testers";
         return ContentDescriptionObject.fromFile;
     }
     protected get minSize(): number { return 34; }
-    protected get objectGuid(): UuidWrapper { return Guids.AsfContentDescriptionObject; }
+    protected get objectGuid(): UuidWrapper { return Guids.ASF_CONTENT_DESCRIPTION_OBJECT; }
 
     @test
     public fromEmpty() {
@@ -27,7 +27,7 @@ import {Testers} from "../utilities/testers";
         assert.isOk(object);
         assert.strictEqual(object.originalSize, 0);
         assert.strictEqual(object.objectType, ObjectType.ContentDescriptionObject);
-        assert.isTrue(object.guid.equals(Guids.AsfContentDescriptionObject));
+        assert.isTrue(object.guid.equals(Guids.ASF_CONTENT_DESCRIPTION_OBJECT));
         assert.isUndefined(object.author);
         assert.isUndefined(object.copyright);
         assert.isUndefined(object.description);
@@ -41,7 +41,7 @@ import {Testers} from "../utilities/testers";
         // Arrange
         const data = ByteVector.concatenate(
             ByteVector.fromSize(10), // Offset
-            Guids.AsfContentDescriptionObject.toBytes(), // Object ID
+            Guids.ASF_CONTENT_DESCRIPTION_OBJECT.toBytes(), // Object ID
             ByteVector.fromUlong(94, false), // Object size
             ByteVector.fromUshort(8, false), // Title size
             ByteVector.fromUshort(10, false), // Author length
@@ -63,7 +63,7 @@ import {Testers} from "../utilities/testers";
         assert.isOk(object);
         assert.strictEqual(object.originalSize, 94);
         assert.strictEqual(object.objectType, ObjectType.ContentDescriptionObject);
-        assert.isTrue(object.guid.equals(Guids.AsfContentDescriptionObject));
+        assert.isTrue(object.guid.equals(Guids.ASF_CONTENT_DESCRIPTION_OBJECT));
         assert.strictEqual(object.author, "bar0");
         assert.strictEqual(object.copyright, "baz00");
         assert.strictEqual(object.description, "fux000");
@@ -147,7 +147,7 @@ import {Testers} from "../utilities/testers";
         // Arrange
         const data = ByteVector.concatenate(
             ByteVector.fromSize(10), // Offset
-            Guids.AsfContentDescriptionObject.toBytes(), // Object ID
+            Guids.ASF_CONTENT_DESCRIPTION_OBJECT.toBytes(), // Object ID
             ByteVector.fromUlong(94, false),
             ByteVector.fromUshort(8, false),
             ByteVector.fromUshort(10, false),
