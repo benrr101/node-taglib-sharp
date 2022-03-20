@@ -1,6 +1,5 @@
 import {ByteVector, StringType} from "../byteVector";
 import {NotSupportedError} from "../errors";
-import {Guards} from "../utils";
 
 /**
  * @summary Represents the identifier of a frame, depending on the version this may be 3 or 4
@@ -18,56 +17,70 @@ import {Guards} from "../utils";
  *     compare instances because they should always be the same.
  */
 export class FrameIdentifier {
-    private _versionTable: {[key: number]: ByteVector} = {
-        2: undefined,
-        3: undefined,
-        4: undefined
-    };
+    private readonly _version2: ByteVector;
+    private readonly _version3: ByteVector;
+    private readonly _version4: ByteVector
 
     public constructor(v4: string, v3: string, v2: string) {
-        this._versionTable[4] = v4
+        if (!v4 && !v3 && !v2) {
+            throw new Error("A frame identifier for at least one ID3v2 version must be supplied");
+        }
+
+        this._version4 = v4
             ? ByteVector.fromString(v4, StringType.Latin1).makeReadOnly()
             : undefined;
-        this._versionTable[3] = v3
-            ? (v3 === v4 ? this._versionTable[4] : ByteVector.fromString(v3, StringType.Latin1).makeReadOnly())
+        this._version3 = v3
+            ? (v3 === v4 ? this._version4 : ByteVector.fromString(v3, StringType.Latin1).makeReadOnly())
             : undefined;
-        this._versionTable[2] = v2
+        this._version2 = v2
             ? ByteVector.fromString(v2, StringType.Latin1).makeReadOnly()
             : undefined;
     }
 
     public get isTextFrame(): boolean {
-        const T = "T".codePointAt(0);
-        return (this._versionTable[2] && this._versionTable[2].get(0) === T)
-            || (this._versionTable[3] && this._versionTable[3].get(0) === T)
-            || (this._versionTable[4] && this._versionTable[4].get(0) === T);
+        const t = 0x54; // T
+        return (this._version2?.get(0) === t)
+            || (this._version3?.get(0) === t)
+            || (this._version4?.get(0) === t);
     }
 
     public get isUrlFrame(): boolean {
-        const W = "W".codePointAt(0);
-        return (this._versionTable[2] && this._versionTable[2].get(0) === W)
-            || (this._versionTable[3] && this._versionTable[3].get(0) === W)
-            || (this._versionTable[4] && this._versionTable[4].get(0) === W);
+        const w = 0x57; // W
+        return (this._version2?.get(0) === w)
+            || (this._version3?.get(0) === w)
+            || (this._version4?.get(0) === w);
     }
 
     public render(version: number): ByteVector {
-        Guards.byte(version, "version");
-        Guards.betweenInclusive(version, 2, 4, "version");
-        if (!this._versionTable[version]) {
-            const newest = this._versionTable[4] || this._versionTable[3] || this._versionTable[2];
-            throw new NotSupportedError(
-                `Frame ${newest.toString(0)} is not supported in ID3v2 version ${version}`
-            );
+        let bytesForVersion;
+        switch (version) {
+            case 2:
+                bytesForVersion = this._version2;
+                break;
+            case 3:
+                bytesForVersion = this._version3;
+                break;
+            case 4:
+                bytesForVersion = this._version4;
+                break;
+            default:
+                throw new Error("Argument error: version must be a value between 2 and 4");
         }
 
-        return this._versionTable[version];
+        if (!bytesForVersion) {
+            throw new NotSupportedError(`Frame ${this.toString()} is not supported in ID3v2 version ${version}`);
+        }
+
+        return bytesForVersion;
     }
 
     public toString(): string {
-        const newest = this._versionTable[4] || this._versionTable[3] || this._versionTable[2];
+        const newest = this._version4 || this._version3 || this._version2;
         return newest.toString(StringType.Latin1);
     }
 }
+
+/* eslint-disable @typescript-eslint/naming-convention */
 
 // Pre-create the unique identifiers
 const uniqueFrameIdentifiers: {[key: string]: FrameIdentifier} = {

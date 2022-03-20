@@ -237,14 +237,15 @@ export default class MpegAudioHeader implements IAudioCodec {
     public get durationMilliseconds(): number {
         if (this._durationMilliseconds > 0) { return this._durationMilliseconds; }
 
+        const blockSizeForVersionAndLayer = MpegAudioHeader.BLOCK_SIZES[this.version][this.audioLayer];
         if (this._xingHeader.totalFrames > 0) {
             // Read the length and the bitrate from the Xing header
-            const timePerFrameSeconds = MpegAudioHeader.BLOCK_SIZES[this.version][this.audioLayer] / this.audioSampleRate;
+            const timePerFrameSeconds = blockSizeForVersionAndLayer / this.audioSampleRate;
             const durationSeconds = timePerFrameSeconds * this._xingHeader.totalFrames;
             this._durationMilliseconds = durationSeconds * 1000;
         } else if (this._vbriHeader.totalFrames > 0) {
             // Read the length and the bitrate from the VBRI header
-            const timePerFrameSeconds = MpegAudioHeader.BLOCK_SIZES[this.version][this.audioLayer] / this.audioSampleRate;
+            const timePerFrameSeconds = blockSizeForVersionAndLayer / this.audioSampleRate;
             const durationSeconds = Math.round(timePerFrameSeconds * this._vbriHeader.totalFrames);
             this._durationMilliseconds = durationSeconds * 1000;
         } else if (this.audioFrameLength > 0 && this.audioBitrate > 0) {

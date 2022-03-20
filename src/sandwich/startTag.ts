@@ -97,7 +97,7 @@ class StartTagParser extends TagParser {
     private static readonly IDENTIFIER_MAPPINGS = [
         {
             action: (f: File, p: number) => ApeTag.fromFile(f, p),
-            identifier: ApeTagFooter.fileIdentifier,
+            identifier: ApeTagFooter.FILE_IDENTIFIER,
         },
         {
             action: (f: File, p: number, rs: ReadStyle) => Id3v2Tag.fromFileStart(f, p, rs),
@@ -106,21 +106,20 @@ class StartTagParser extends TagParser {
     ];
 
     public constructor(file: File, readStyle: ReadStyle) {
-        super(file, readStyle);
-        this._fileOffset = 0;
+        super(file, readStyle, 0);
     }
 
     public read(): boolean {
         try {
             // Read a header from the file
-            this._file.seek(this._fileOffset);
-            const tagHeaderBlock = this._file.readBlock(StartTagParser.READ_SIZE);
+            this.file.seek(this.fileOffset);
+            const tagHeaderBlock = this.file.readBlock(StartTagParser.READ_SIZE);
 
             // Check for any identifier of a tag
             for (const mapping of StartTagParser.IDENTIFIER_MAPPINGS) {
                 if (tagHeaderBlock.startsWith(mapping.identifier)) {
-                    this._currentTag = mapping.action(this._file, this._fileOffset, this._readStyle);
-                    this._fileOffset += this._currentTag.sizeOnDisk;
+                    this.currentTag = mapping.action(this.file, this.fileOffset, this.readStyle);
+                    this.fileOffset += this.currentTag.sizeOnDisk;
                     return true;
                 }
             }

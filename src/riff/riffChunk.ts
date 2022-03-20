@@ -49,7 +49,7 @@ export default class RiffChunk implements IRiffChunk, ILazy {
      * @param fourcc FOURCC code for the chunk
      * @param data Data to contain in the chunk, not includeing FOURCC or size
      */
-    public static fromData(fourcc: string, data: ByteVector) {
+    public static fromData(fourcc: string, data: ByteVector): RiffChunk {
         Guards.truthy(fourcc, "fourcc");
         if (fourcc.length !== 4) {
             throw new Error("Argument error: fourcc must be 4 characters");

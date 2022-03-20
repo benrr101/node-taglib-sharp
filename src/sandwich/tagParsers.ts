@@ -8,13 +8,14 @@ import {File, ReadStyle} from "../file";
  */
 export default abstract class TagParser {
     // @TODO: Don't allow access to member variables
-    protected _currentTag: Tag;
-    protected _file: File;
-    protected _fileOffset: number;
-    protected _readStyle: ReadStyle;
+    private readonly _file: File;
+    private readonly _readStyle: ReadStyle;
+    private _currentTag: Tag;
+    private _fileOffset: number;
 
-    protected constructor(file: File, readStyle: ReadStyle) {
+    protected constructor(file: File, readStyle: ReadStyle, initialOffset: number) {
         this._file = file;
+        this._fileOffset = initialOffset;
         this._readStyle = readStyle;
     }
 
@@ -23,6 +24,14 @@ export default abstract class TagParser {
      * The value is not guaranteed if {@link read} returns `false`
      */
     public get currentTag(): Tag { return this._currentTag; }
+    protected set currentTag(value: Tag) { this._currentTag = value; }
+
+    protected get file(): File { return this._file; }
+
+    protected get fileOffset(): number { return this._fileOffset; }
+    protected set fileOffset(value: number) { this._fileOffset = value; }
+
+    protected get readStyle(): ReadStyle { return this._readStyle; }
 
     /**
      * Reads the next tag from the file.

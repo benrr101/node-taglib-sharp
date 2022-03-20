@@ -72,36 +72,36 @@ export class ContentDescriptor extends DescriptorBase {
     /** @inheritDoc */
     public render(): ByteVector {
         let value: ByteVector;
-        switch (this._type) {
+        switch (this.type) {
             case DataType.QWord:
-                value = ReadWriteUtils.renderQWord(this._qWordValue);
+                value = ReadWriteUtils.renderQWord(this.ulongValue);
                 break;
             case DataType.DWord:
-                value = ReadWriteUtils.renderDWord(this._dWordValue);
+                value = ReadWriteUtils.renderDWord(this.uintValue);
                 break;
             case DataType.Word:
-                value = ReadWriteUtils.renderWord(this._wordValue);
+                value = ReadWriteUtils.renderWord(this.ushortValue);
                 break;
             case DataType.Bool:
                 // NOTE: for content descriptors, bool is a DWORD!!!!
-                value = ReadWriteUtils.renderDWord(this._boolValue ? 1 : 0);
+                value = ReadWriteUtils.renderDWord(this.boolValue ? 1 : 0);
                 break;
             case DataType.Unicode:
-                value = ReadWriteUtils.renderUnicode(this._stringValue);
+                value = ReadWriteUtils.renderUnicode(this.stringValue);
                 break;
             case DataType.Bytes:
-                value = this._byteValue;
+                value = this.byteValue;
                 break;
             case DataType.Guid:
-                value = this._guidValue.toBytes();
+                value = this.guidValue.toBytes();
                 break;
         }
 
-        const nameBytes = ReadWriteUtils.renderUnicode(this._name);
+        const nameBytes = ReadWriteUtils.renderUnicode(this.name);
         return ByteVector.concatenate(
             ReadWriteUtils.renderWord(nameBytes.length),
             nameBytes,
-            ReadWriteUtils.renderWord(this._type),
+            ReadWriteUtils.renderWord(this.type),
             ReadWriteUtils.renderWord(value.length),
             value
         );

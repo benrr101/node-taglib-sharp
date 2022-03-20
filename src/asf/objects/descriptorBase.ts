@@ -49,17 +49,16 @@ export type DescriptorValue = bigint | boolean | ByteVector | number | string | 
  * Abstract class that forms the basis of extended content descriptors and metadata library records.
  */
 export abstract class DescriptorBase {
-    // @TODO: No protected access to member variables
-    protected readonly _name: string;
-    protected readonly _type: DataType;
+    private readonly _name: string;
+    private readonly _type: DataType;
 
-    protected readonly _boolValue: boolean;
-    protected readonly _byteValue: ByteVector;
-    protected readonly _dWordValue: number;
-    protected readonly _guidValue: UuidWrapper;
-    protected readonly _qWordValue: bigint;
-    protected readonly _stringValue: string;
-    protected readonly _wordValue: number;
+    private readonly _boolValue: boolean;
+    private readonly _byteValue: ByteVector;
+    private readonly _dWordValue: number;
+    private readonly _guidValue: UuidWrapper;
+    private readonly _qWordValue: bigint;
+    private readonly _stringValue: string;
+    private readonly _wordValue: number;
 
     protected constructor(name: string, type: DataType, value: DescriptorValue) {
         this._name = name;
@@ -135,58 +134,54 @@ export abstract class DescriptorBase {
      */
     public get type(): DataType { return this._type; }
 
-    // #endregion
-
-    // #region Public Methods
-
     /**
      * Gets the boolean value of the current instance.
      * @returns boolean Boolean value of the current instance is returned if {@link type} is
      *     {@link DataType.Bool}. `undefined` is returned otherwise.
      */
-    public getBool(): boolean { return this._boolValue; }
+    public get boolValue(): boolean { return this._boolValue; }
 
     /**
      * Gets the binary contents of the current instance.
      * @returns ByteVector Byte contents of the current instance, if {@link type} is
      *     {@link DataType.Bytes}. `undefined` is returned otherwise.
      */
-    public getBytes(): ByteVector { return this._byteValue; }
+    public get byteValue(): ByteVector { return this._byteValue; }
 
     /**
      * Gets the guid contents of the current instance.
      * @returns UuidWrapper GUID contents of the current instance, if {@link type} is
      *     {@link DataType.Guid}. `undefined` is returned otherwise.
      */
-    public getGuid(): UuidWrapper { return this._guidValue; }
+    public get guidValue(): UuidWrapper { return this._guidValue; }
 
     /**
      * Gets the string contents of the current instance.
      * @returns string String contents of the current instance if {@link type} is
      *     {@link DataType.Unicode}. `undefined` is returned otherwise.
      */
-    public getString(): string { return this._stringValue; }
+    public get stringValue(): string { return this._stringValue; }
 
     /**
      * Gets the 32-bit double word contents of the current instance.
      * @returns number Double word contents of the current instance, if {@link type} is
      *      {@link DataType.DWord}. `undefined` is returned otherwise.
      */
-    public getUint(): number { return this._dWordValue; }
+    public get uintValue(): number { return this._dWordValue; }
 
     /**
      * Gets the 64-bit quad word contents of the current instance.
      * @returns bigint Quad word contents of the current instance, if {@link type} is
      *     {@link DataType.QWord}. `undefined` is returned otherwise.
      */
-    public getUlong(): bigint { return this._qWordValue; }
+    public get ulongValue(): bigint { return this._qWordValue; }
 
     /**
      * Gets the 16-bit word contents of the current instance.
      * @returns number Word contents of the current instance, if {@link type} is
      *     {@link DataType.Word}. `undefined` is returned otherwise.
      */
-    public getUshort(): number { return this._wordValue; }
+    public get ushortValue(): number { return this._wordValue; }
 
     public abstract render(): ByteVector;
 

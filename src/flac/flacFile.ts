@@ -58,7 +58,7 @@ export default class FlacFile extends File implements ISandwichFile {
             const xiphComment = this.readXiphComments(propertiesStyle);
 
             this._tag = new FlacTag(startTag, endTag, xiphComment, pictures);
-            this._tagTypesOnDisk = this._tag.tagTypes;
+            this.tagTypesOnDisk = this._tag.tagTypes;
         } finally {
             this.mode = FileAccessMode.Closed;
         }
@@ -185,7 +185,7 @@ export default class FlacFile extends File implements ISandwichFile {
                 return pos + b.totalSize;
             }, this._mediaStartPosition + 4);
 
-            this._tagTypesOnDisk = this.tagTypes;
+            this.tagTypesOnDisk = this.tagTypes;
 
         } finally {
             this.mode = FileAccessMode.Closed;

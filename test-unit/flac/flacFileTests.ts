@@ -532,7 +532,7 @@ import {Picture} from "../../src";
 
     private static getTagCreates(
         tagType: TagTypes,
-        // tslint:disable-next-line:ban-types It's the type that assert.instanceof uses
+        // eslint-disable-next-line @typescript-eslint/ban-types
         instanceOf: Function,
         locationGetter: () => boolean,
         locationSetter: (v: boolean) => void,

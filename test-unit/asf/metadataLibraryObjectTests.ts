@@ -32,7 +32,7 @@ import {Testers} from "../utilities/testers";
 
         assert.strictEqual(object.languageListIndex, 123);
         assert.strictEqual(object.streamNumber, 234);
-        assert.strictEqual(object.getUshort(), 1234);
+        assert.strictEqual(object.ushortValue, 1234);
 
         const expectedBytes = ByteVector.concatenate(
             ByteVector.fromUshort(123, false),
@@ -68,7 +68,7 @@ import {Testers} from "../utilities/testers";
         assert.strictEqual(object.type, DataType.Word);
         assert.strictEqual(object.languageListIndex, 123);
         assert.strictEqual(object.streamNumber, 234);
-        assert.strictEqual(object.getUshort(), 1234);
+        assert.strictEqual(object.ushortValue, 1234);
     }
 
     @test
@@ -82,7 +82,7 @@ import {Testers} from "../utilities/testers";
 
         assert.strictEqual(object.languageListIndex, 123);
         assert.strictEqual(object.streamNumber, 234);
-        assert.strictEqual(object.getBool(), true);
+        assert.strictEqual(object.boolValue, true);
 
         const expectedBytes = ByteVector.concatenate(
             ByteVector.fromUshort(123, false),
@@ -119,7 +119,7 @@ import {Testers} from "../utilities/testers";
 
         assert.strictEqual(object.languageListIndex, 123);
         assert.strictEqual(object.streamNumber, 234);
-        assert.strictEqual(object.getBool(), true);
+        assert.strictEqual(object.boolValue, true);
     }
 
     @test
@@ -145,7 +145,7 @@ import {Testers} from "../utilities/testers";
 
         assert.strictEqual(object.languageListIndex, 123);
         assert.strictEqual(object.streamNumber, 234);
-        assert.strictEqual(object.getBool(), false);
+        assert.strictEqual(object.boolValue, false);
     }
 
     @test
@@ -159,7 +159,7 @@ import {Testers} from "../utilities/testers";
 
         assert.strictEqual(object.languageListIndex, 123);
         assert.strictEqual(object.streamNumber, 234);
-        assert.strictEqual(object.getUint(), 1234);
+        assert.strictEqual(object.uintValue, 1234);
 
         const expectedBytes = ByteVector.concatenate(
             ByteVector.fromUshort(123, false),
@@ -196,7 +196,7 @@ import {Testers} from "../utilities/testers";
 
         assert.strictEqual(object.languageListIndex, 123);
         assert.strictEqual(object.streamNumber, 234);
-        assert.strictEqual(object.getUint(), 1234);
+        assert.strictEqual(object.uintValue, 1234);
     }
 
     @test
@@ -210,7 +210,7 @@ import {Testers} from "../utilities/testers";
 
         assert.strictEqual(object.languageListIndex, 123);
         assert.strictEqual(object.streamNumber, 234);
-        assert.strictEqual(object.getUlong(), BigInt(1234));
+        assert.strictEqual(object.ulongValue, BigInt(1234));
 
         const expectedBytes = ByteVector.concatenate(
             ByteVector.fromUshort(123, false),
@@ -247,7 +247,7 @@ import {Testers} from "../utilities/testers";
 
         assert.strictEqual(object.languageListIndex, 123);
         assert.strictEqual(object.streamNumber, 234);
-        assert.strictEqual(object.getUlong(), BigInt(1234));
+        assert.strictEqual(object.ulongValue, BigInt(1234));
     }
 
     @test
@@ -261,7 +261,7 @@ import {Testers} from "../utilities/testers";
 
         assert.strictEqual(object.languageListIndex, 123);
         assert.strictEqual(object.streamNumber, 234);
-        assert.strictEqual(object.getString(), "foobarbaz");
+        assert.strictEqual(object.toString(), "foobarbaz");
 
         const expectedBytes = ByteVector.concatenate(
             ByteVector.fromUshort(123, false),
@@ -298,7 +298,7 @@ import {Testers} from "../utilities/testers";
 
         assert.strictEqual(object.languageListIndex, 123);
         assert.strictEqual(object.streamNumber, 234);
-        assert.strictEqual(object.getString(), "foobarbaz");
+        assert.strictEqual(object.stringValue, "foobarbaz");
     }
 
     @test
@@ -315,7 +315,7 @@ import {Testers} from "../utilities/testers";
 
         assert.strictEqual(object.languageListIndex, 123);
         assert.strictEqual(object.streamNumber, 234);
-        Testers.bvEqual(object.getBytes(), bytes);
+        Testers.bvEqual(object.byteValue, bytes);
 
         const expectedBytes = ByteVector.concatenate(
             ByteVector.fromUshort(123, false),
@@ -355,7 +355,7 @@ import {Testers} from "../utilities/testers";
 
         assert.strictEqual(object.languageListIndex, 123);
         assert.strictEqual(object.streamNumber, 234);
-        Testers.bvEqual(object.getBytes(), bytes);
+        Testers.bvEqual(object.byteValue, bytes);
     }
 
     @test
@@ -372,7 +372,7 @@ import {Testers} from "../utilities/testers";
 
         assert.strictEqual(object.languageListIndex, 123);
         assert.strictEqual(object.streamNumber, 234);
-        assert.isTrue(object.getGuid().equals(guid));
+        assert.isTrue(object.guidValue.equals(guid));
 
         const expectedBytes = ByteVector.concatenate(
             ByteVector.fromUshort(123, false),
@@ -412,7 +412,7 @@ import {Testers} from "../utilities/testers";
 
         assert.strictEqual(object.languageListIndex, 123);
         assert.strictEqual(object.streamNumber, 234);
-        assert.isTrue(object.getGuid().equals(guid));
+        assert.isTrue(object.guidValue.equals(guid));
     }
 }
 

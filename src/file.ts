@@ -82,15 +82,15 @@ export type FileTypeConstructor = new (abstraction: IFileAbstraction, style: Rea
 export abstract class File {
     // #region Member Variables
 
-    private static readonly _bufferSize: number = 1024;
+    private static readonly BUFFER_SIZE: number = 1024;
     private static _fileTypes: {[mimeType: string]: FileTypeConstructor} = {};
     private static _fileTypeResolvers: FileTypeResolver[] = [];
 
     // @TODO: Remove protected member variables
-    protected _fileAbstraction: IFileAbstraction;
-    protected _fileStream: IStream; // Not intended to be used by implementing classes
-    protected _tagTypesOnDisk: TagTypes = TagTypes.None;
+    private readonly _fileAbstraction: IFileAbstraction;
 
+    private _fileStream: IStream;
+    private _tagTypesOnDisk: TagTypes = TagTypes.None;
     private _corruptionReasons: string[] = [];
     private _mimeType: string;
 
@@ -169,7 +169,7 @@ export abstract class File {
     /**
      * Gets the buffer size to use when reading large blocks of data
      */
-    public static get bufferSize(): number { return File._bufferSize; }
+    public static get bufferSize(): number { return File.BUFFER_SIZE; }
 
     /**
      * Reasons for which this file is marked as corrupt.
@@ -286,6 +286,7 @@ export abstract class File {
      * Gets the tag types contained in the physical file represented by the current instance.
      */
     public get tagTypesOnDisk(): TagTypes { return this._tagTypesOnDisk; }
+    protected set tagTypesOnDisk(value: TagTypes) { this._tagTypesOnDisk = value; }
 
     // #endregion
 
@@ -360,7 +361,7 @@ export abstract class File {
 
         this.mode = FileAccessMode.Read;
 
-        if (pattern.length > File._bufferSize) {
+        if (pattern.length > File.BUFFER_SIZE) {
             return -1;
         }
 
@@ -371,8 +372,8 @@ export abstract class File {
         try {
             // Start the search at the offset.
             this._fileStream.position = startPosition;
-            let buffer = this.readBlock(File._bufferSize);
-            for (buffer; buffer.length > 0; buffer = this.readBlock(File._bufferSize)) {
+            let buffer = this.readBlock(File.BUFFER_SIZE);
+            for (buffer; buffer.length > 0; buffer = this.readBlock(File.BUFFER_SIZE)) {
                 const location = buffer.find(pattern);
                 if (before) {
                     const beforeLocation = buffer.find(before);
@@ -387,7 +388,7 @@ export abstract class File {
 
                 // Ensure that we always rewind the stream a little so we never have a partial
                 // match where our data exists betweenInclusive the end of read A and the start of read B.
-                bufferOffset += File._bufferSize - pattern.length;
+                bufferOffset += File.BUFFER_SIZE - pattern.length;
                 if (before && before.length > pattern.length) {
                     bufferOffset -= before.length - pattern.length;
                 }
@@ -546,7 +547,7 @@ export abstract class File {
 
         this.mode = FileAccessMode.Write;
 
-        const bufferLength = File._bufferSize;
+        const bufferLength = File.BUFFER_SIZE;
         let readPosition = start + length;
         let writePosition = start;
         let buffer: ByteVector;
@@ -587,7 +588,7 @@ export abstract class File {
 
         this.mode = FileAccessMode.Read;
 
-        if (pattern.length > File._bufferSize) {
+        if (pattern.length > File.BUFFER_SIZE) {
             return -1;
         }
 
@@ -597,7 +598,7 @@ export abstract class File {
         // Start the search at the offset
         let bufferOffset = this.length - startPosition;
 
-        let readSize = Math.min(bufferOffset, File._bufferSize);
+        let readSize = Math.min(bufferOffset, File.BUFFER_SIZE);
         bufferOffset -= readSize;
         this._fileStream.position = bufferOffset;
 
@@ -610,9 +611,9 @@ export abstract class File {
                     return bufferOffset + location;
                 }
 
-                readSize = Math.min(bufferOffset, File._bufferSize);
+                readSize = Math.min(bufferOffset, File.BUFFER_SIZE);
                 bufferOffset -= readSize;
-                if (readSize + pattern.length > File._bufferSize) {
+                if (readSize + pattern.length > File.BUFFER_SIZE) {
                     bufferOffset += pattern.length;
                 }
 

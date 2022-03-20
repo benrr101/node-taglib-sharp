@@ -227,8 +227,8 @@ export default class AttachmentFrame extends Frame implements IPicture {
         const frameId = value === PictureType.NotAPicture
             ? FrameIdentifiers.GEOB
             : FrameIdentifiers.APIC;
-        if (this._header.frameId !== frameId) {
-            this._header = new Id3v2FrameHeader(frameId);
+        if (this.header.frameId !== frameId) {
+            this.header = new Id3v2FrameHeader(frameId);
         }
 
         this._type = value;
@@ -463,13 +463,13 @@ export default class AttachmentFrame extends Frame implements IPicture {
         this._filename = picture.filename;
         this._mimeType = picture.mimeType;
         this._type = picture.type;
-        this._header.frameSize = this._data.length;
+        this.header.frameSize = this._data.length;
 
         this._encoding = Id3v2Settings.defaultEncoding;
 
         // Switch the frame ID if we discovered the attachment isn't an image
         if (this._type === PictureType.NotAPicture) {
-            this._header.frameId = FrameIdentifiers.GEOB;
+            this.header.frameId = FrameIdentifiers.GEOB;
         }
     }
 }

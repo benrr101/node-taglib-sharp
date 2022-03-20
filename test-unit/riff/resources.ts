@@ -5,8 +5,8 @@ import RiffList from "../../src/riff/riffList";
 import {AviStream, AviStreamType} from "../../src/riff/avi/aviStream";
 import {ByteVector, StringType} from "../../src/byteVector";
 
-export default {
-    getAudioFormatBlock(type: number): ByteVector {
+export default class Resources{
+    public static getAudioFormatBlock(type: number): ByteVector {
         return ByteVector.concatenate(
             ByteVector.fromUshort(type, false), // Format tag
             ByteVector.fromUshort(3, false), // Number of channels
@@ -15,15 +15,16 @@ export default {
             ByteVector.fromUshort(88, false), // Block align
             ByteVector.fromUshort(16, false) // Bits per sample
         );
-    },
-    getAviHeaderBlock(addStreams: boolean): ByteVector {
+    }
+
+    public static getAviHeaderBlock(addStreams: boolean): ByteVector {
         const headerList = RiffList.fromEmpty(AviHeader.HEADER_LIST_TYPE);
         headerList.setValues(AviHeader.HEADER_CHUNK_ID, [this.getAviHeader()]);
         if (!addStreams) {
             return headerList.render();
         }
 
-        const streamLists = [];
+        const streamLists: RiffList[] = [];
         const streamTypes = [
             AviStreamType.AudioStream,
             AviStreamType.VideoStream,
@@ -32,13 +33,13 @@ export default {
         ];
         for (const streamType of streamTypes) {
             const streamList = RiffList.fromEmpty(AviStream.LIST_TYPE);
-            streamList.setValues(AviStream.HEADER_CHUNK_ID, [this.getAviStreamHeaderData(streamType)]);
+            streamList.setValues(AviStream.HEADER_CHUNK_ID, [Resources.getAviStreamHeaderData(streamType)]);
             switch (streamType) {
                 case AviStreamType.AudioStream:
-                    streamList.setValues(AviStream.FORMAT_CHUNK_ID, [this.getAudioFormatBlock(0xF1AC)]);
+                    streamList.setValues(AviStream.FORMAT_CHUNK_ID, [Resources.getAudioFormatBlock(0xF1AC)]);
                     break;
                 case AviStreamType.VideoStream:
-                    streamList.setValues(AviStream.FORMAT_CHUNK_ID, [this.getVideoFormatBlock(0xBBBBBBBB)]);
+                    streamList.setValues(AviStream.FORMAT_CHUNK_ID, [Resources.getVideoFormatBlock(0xBBBBBBBB)]);
                     break;
                 case AviStreamType.MidiStream:
                 case AviStreamType.TextStream:
@@ -49,8 +50,9 @@ export default {
         headerList.setLists(AviStream.LIST_TYPE, streamLists);
 
         return headerList.render();
-    },
-    getAviHeader(): ByteVector {
+    }
+
+    public static getAviHeader(): ByteVector {
         return ByteVector.concatenate(
             ByteVector.fromUint(1234, false), // Microseconds per frame
             ByteVector.fromUint(2345, false), // Max bytes per second
@@ -64,8 +66,9 @@ export default {
             ByteVector.fromUint(123, false), // Height
             ByteVector.fromSize(16), // Reserved
         );
-    },
-    getAviStreamHeaderData(type: AviStreamType) {
+    }
+
+    public static getAviStreamHeaderData(type: AviStreamType): ByteVector {
         return ByteVector.concatenate(
             ByteVector.fromUint(type, false), // type
             ByteVector.fromUint(0x23456789, false), // handler
@@ -85,12 +88,14 @@ export default {
             ByteVector.fromUshort(0x5678, false),   // right
             ByteVector.fromUshort(0x6789, false),   // bottom
         );
-    },
-    getDataChunk() {
+    }
+
+    public static getDataChunk(): ByteVector {
         const chunk = RiffChunk.fromData("data", ByteVector.fromSize(1000));
         return chunk.render();
-    },
-    getDivxTagData() {
+    }
+
+    public static getDivxTagData() {
         return ByteVector.concatenate(
             ByteVector.fromString("foo                             ", StringType.Latin1),
             ByteVector.fromString("bar;bux                     ", StringType.Latin1),
@@ -100,16 +105,19 @@ export default {
             ByteVector.fromSize(6),
             DivxTag.FILE_IDENTIFIER
         );
-    },
-    getJunkChunk(size: number = 1000) {
+    }
+
+    public static getJunkChunk(size: number = 1000) {
         const chunk = RiffChunk.fromData("JUNK", ByteVector.fromSize(size));
         return chunk.render();
-    },
-    getMoviChunk(): ByteVector {
+    }
+
+    public static getMoviChunk(): ByteVector {
         const chunk = RiffChunk.fromData("movi", ByteVector.fromSize(10));
         return chunk.render();
-    },
-    getVideoFormatBlock(fourcc: number): ByteVector {
+    }
+
+    public static getVideoFormatBlock(fourcc: number): ByteVector {
         return ByteVector.concatenate(
             ByteVector.fromSize(10), // Offset
             ByteVector.fromUint(40, false), // Size of the struct
@@ -124,9 +132,10 @@ export default {
             ByteVector.fromUint(890, false), // Colors used
             ByteVector.fromUint(1234, false), // Important colors
         );
-    },
-    getWaveFormatBlock(): ByteVector {
+    }
+
+    public static getWaveFormatBlock(): ByteVector {
         const headerChunk = RiffChunk.fromData("fmt ", this.getAudioFormatBlock(0xF1AC));
         return headerChunk.render();
     }
-};
+}

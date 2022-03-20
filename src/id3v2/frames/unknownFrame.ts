@@ -75,7 +75,7 @@ export default class UnknownFrame extends Frame {
 
     /** @inheritDoc */
     public clone(): Frame {
-        return UnknownFrame.fromData(this._header.frameId, this.data);
+        return UnknownFrame.fromData(this.header.frameId, this.data);
     }
 
     /** @inheritDoc */

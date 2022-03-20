@@ -10,7 +10,7 @@ import {Id3v2FrameHeader} from "../../src/id3v2/frames/frameHeader";
 import {FrameIdentifiers} from "../../src/id3v2/frameIdentifiers";
 import {Testers} from "../utilities/testers";
 
-function getTestFrame(): UserTextInformationFrame {
+const getTestFrame = (): UserTextInformationFrame => {
     const header = new Id3v2FrameHeader(FrameIdentifiers.TXXX);
     header.frameSize = 8;
     const data = ByteVector.concatenate(

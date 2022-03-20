@@ -29,10 +29,8 @@ export enum FrameClassType {
 export abstract class Frame {
     // #region Member Variables
 
-    // @TODO: Disallow protected member variables
-    protected _header: Id3v2FrameHeader;
-
     private _encryptionId: number;
+    private _header: Id3v2FrameHeader;
     private _groupId: number;
 
     // #endregion
@@ -82,6 +80,18 @@ export abstract class Frame {
      * {@link Id3v2FrameFlags.Compression}, {@link render} will throw.
      */
     public set flags(value: Id3v2FrameFlags) { this._header.flags = value; }
+
+    /**
+     * Gets the header for the frame. For new frames this should not exist.
+     * @protected
+     */
+    protected get header(): Id3v2FrameHeader { return this._header; }
+    /**
+     * Sets the header for the frame.
+     * @param value Header for the frame
+     * @protected
+     */
+    protected set header(value: Id3v2FrameHeader) { this._header = value; }
 
     public abstract get frameClassType(): FrameClassType;
 

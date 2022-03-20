@@ -111,7 +111,7 @@ class EndTagParser extends TagParser {
     private static readonly IDENTIFIER_MAPPINGS = [
         {
             action: (f: File, p: number) => ApeTag.fromFile(f, p),
-            identifier: ApeTagFooter.fileIdentifier,
+            identifier: ApeTagFooter.FILE_IDENTIFIER,
             offset: ApeTagFooter.SIZE,
         },
         {
@@ -127,23 +127,22 @@ class EndTagParser extends TagParser {
     ];
 
     public constructor(file: File, readStyle: ReadStyle) {
-        super(file, readStyle);
-        this._fileOffset = Math.max(this._file.length - EndTagParser.READ_SIZE, 0);
+        super(file, readStyle, Math.max(file.length - EndTagParser.READ_SIZE, 0));
     }
 
     public read(): boolean {
         try {
             // This check lets us more gracefully handle files that have <128 bytes of media
             let readSize = EndTagParser.READ_SIZE;
-            if (this._fileOffset < 0) {
-                const overflow = this._fileOffset * -1;
-                this._fileOffset = 0;
+            if (this.fileOffset < 0) {
+                const overflow = this.fileOffset * -1;
+                this.fileOffset = 0;
                 readSize -= overflow;
             }
 
             // Read a footer from the file
-            this._file.seek(this._fileOffset);
-            const tagFooterBlock = this._file.readBlock(readSize);
+            this.file.seek(this.fileOffset);
+            const tagFooterBlock = this.file.readBlock(readSize);
 
             // Check for any identifiers of a tag
             for (const mapping of EndTagParser.IDENTIFIER_MAPPINGS) {
@@ -155,8 +154,8 @@ class EndTagParser extends TagParser {
                 // Calculate how far from the end of the block to check
                 const offset = tagFooterBlock.length - mapping.offset;
                 if (tagFooterBlock.containsAt(mapping.identifier, offset)) {
-                    this._currentTag = mapping.action(this._file, this._fileOffset + offset, this._readStyle);
-                    this._fileOffset -= this._currentTag.sizeOnDisk;
+                    this.currentTag = mapping.action(this.file, this.fileOffset + offset, this.readStyle);
+                    this.fileOffset -= this.currentTag.sizeOnDisk;
                     return true;
                 }
             }

@@ -294,7 +294,7 @@ export class NumberUtils {
 export class StringUtils {
     public static trimStart(toTrim: string, chars: string): string {
         while (toTrim.length > 0 && chars.indexOf(toTrim[0]) > -1) {
-            toTrim = toTrim.substr(0);
+            toTrim = toTrim.substring(0);
         }
         return toTrim;
     }

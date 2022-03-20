@@ -155,7 +155,7 @@ export default class OggFile extends File {
             this.insert(output, 0, streamsResult.end);
             OggPage.overwriteSequenceNumbers(this, output.length, shifts);
 
-            this._tagTypesOnDisk = this.tagTypes;
+            this.tagTypesOnDisk = this.tagTypes;
 
         } finally {
             this.mode = FileAccessMode.Closed;

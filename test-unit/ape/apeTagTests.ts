@@ -13,9 +13,9 @@ import {IPicture, PictureType} from "../../src/iPicture";
 import {TagTypes} from "../../src/tag";
 import {Testers} from "../utilities/testers";
 
-function getTestTagFooter(flags: ApeTagFooterFlags, itemCount: number, itemPlusFooter: number): ByteVector {
+const getTestTagFooter = (flags: ApeTagFooterFlags, itemCount: number, itemPlusFooter: number): ByteVector => {
     return ByteVector.concatenate(
-        ApeTagFooter.fileIdentifier,
+        ApeTagFooter.FILE_IDENTIFIER,
         ByteVector.fromUint(2000, false),
         ByteVector.fromUint(itemPlusFooter, false),
         ByteVector.fromUint(itemCount, false),

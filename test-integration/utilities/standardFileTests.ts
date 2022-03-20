@@ -102,7 +102,7 @@ export class StandardFileTests {
             const raws = new Array<ByteVector>(3);
 
             // Insert new picture
-            pics = [...pics, ...Array(Math.max(3 - pics.length, 0)).fill(undefined)];
+            pics = [...pics, ...<Picture[]>Array(Math.max(3 - pics.length, 0)).fill(undefined)];
             raws[0] = ByteVector.fromPath(StandardFileTests.samplePicture);
             pics[0] = Picture.fromPath(StandardFileTests.samplePicture);
             pics[0].type = PictureType.BackCover;

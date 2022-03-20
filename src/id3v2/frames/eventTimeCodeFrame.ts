@@ -146,7 +146,7 @@ export class EventTimeCodeFrame extends Frame {
 
     /** @inheritDoc */
     public clone(): Frame {
-        const frame = new EventTimeCodeFrame(this._header);
+        const frame = new EventTimeCodeFrame(this.header);
         frame.timestampFormat = this.timestampFormat;
         frame.events = this.events.map((i) => i.clone());
         return frame;

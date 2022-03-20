@@ -136,7 +136,7 @@ import RiffWaveFormatEx from "../../src/riff/riffWaveFormatEx";
 
         assert.isOk(stream.codec);
         assert.instanceOf(stream.codec, RiffWaveFormatEx);
-        assert.isTrue((<RiffBitmapInfoHeader> stream.codec).description.indexOf("0xBBBB") >= 0);
+        assert.isTrue((<RiffWaveFormatEx> stream.codec).description.indexOf("0xBBBB") >= 0);
     }
 
     @test

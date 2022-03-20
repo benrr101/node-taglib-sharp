@@ -284,7 +284,7 @@ export default class RiffFile extends File {
             // Calculate new RIFF size
             this._riffSize = this.length - 8;
             this.insert(ByteVector.fromUint(this._riffSize, false), 4, 4);
-            this._tagTypesOnDisk = this.tagTypes;
+            this.tagTypesOnDisk = this.tagTypes;
         } finally {
             this.mode = FileAccessMode.Closed;
         }
@@ -345,7 +345,7 @@ export default class RiffFile extends File {
                 : undefined;
 
             this._tag = new RiffTags(divxTag, id3v2Tag, infoTag, moveIdTag);
-            this._tagTypesOnDisk = this.tagTypes;
+            this.tagTypesOnDisk = this.tagTypes;
 
         } finally {
             this.mode = FileAccessMode.Closed;
