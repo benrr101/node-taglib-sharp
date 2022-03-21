@@ -55,7 +55,7 @@ export default abstract class RiffListTag extends Tag {
     // #region Methods
 
     /** @inheritDoc */
-    public clear() {
+    public clear(): void {
         this._list.clear();
     }
 

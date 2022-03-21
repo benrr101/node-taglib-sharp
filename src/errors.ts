@@ -5,7 +5,7 @@ export class CorruptFileError extends Error {
         super(msg);
     }
 
-    public static errorIs(e: Error): boolean {
+    public static errorIs(e: unknown): boolean {
         return e.hasOwnProperty("isCorruptFileError");
     }
 }
@@ -17,7 +17,7 @@ export class NotImplementedError extends Error {
         super(`Not implemented${message ? `: ${message}` : ""}`);
     }
 
-    public static errorIs(e: Error): boolean {
+    public static errorIs(e: unknown): boolean {
         return e.hasOwnProperty("isNotImplementedError");
     }
 }
@@ -29,7 +29,7 @@ export class NotSupportedError extends Error {
         super(`Not supported${message ? `: ${message}` : ""}`);
     }
 
-    public static errorIs(e: Error): boolean {
+    public static errorIs(e: unknown): boolean {
         return e.hasOwnProperty("isNotSupportedError");
     }
 }
@@ -41,7 +41,7 @@ export class UnsupportedFormatError extends Error {
         super(`Unsupported format${message ? `: ${message}` : ""}`);
     }
 
-    public static errorIs(e: Error): boolean {
+    public static errorIs(e: unknown): boolean {
         return e.hasOwnProperty("isUnsupportedFormatError");
     }
 }

@@ -17,7 +17,7 @@ import {NumberUtils} from "../utils";
  *     `file.removeTags(file.tagTypes & ~file.tagTypesOnDisk);`
  */
 export default class MpegAudioFile extends SandwichFile {
-    private static readonly _defaultTagLocationMapping = new Map<TagTypes, () => boolean>([
+    private static readonly DEFAULT_TAG_LOCATION_MAPPING = new Map<TagTypes, () => boolean>([
         [TagTypes.Ape, () => MpegAudioFileSettings.preferApeTagAtFileEnd],
         [TagTypes.Id3v1, () => true],
         [TagTypes.Id3v2, () => MpegAudioFileSettings.preferId3v2TagAtFileEnd]
@@ -26,7 +26,7 @@ export default class MpegAudioFile extends SandwichFile {
     private _firstHeader: MpegAudioHeader;
 
     public constructor(file: IFileAbstraction|string, propertiesStyle: ReadStyle) {
-        super(file, propertiesStyle, MpegAudioFile._defaultTagLocationMapping, MpegAudioFileSettings.defaultTagTypes);
+        super(file, propertiesStyle, MpegAudioFile.DEFAULT_TAG_LOCATION_MAPPING, MpegAudioFileSettings.defaultTagTypes);
     }
 
     protected readProperties(readStyle: ReadStyle): Properties {
@@ -48,7 +48,7 @@ export default class MpegAudioFile extends SandwichFile {
     }
 }
 
-////////////////////////////////////////////////////////////////////////////
+// /////////////////////////////////////////////////////////////////////////
 // Register the file type
 [
     "taglib/mp3",

@@ -68,7 +68,7 @@ export class Testers {
     public static testUlong(testFunc: (testValue: bigint) => void, allowUndefined = false): void {
         assert.throws(() => testFunc(BigInt(-1)));
         assert.throws(() => testFunc(BigInt(1.23)));
-        assert.throws(() => testFunc(BigInt(0xFFFFFFFFFFFFFFFF) + BigInt(1)));
+        assert.throws(() => testFunc(BigInt("18446744073709551615") + BigInt(1)));
         assert.throws(() => testFunc(null));
 
         if (!allowUndefined) {

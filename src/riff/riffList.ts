@@ -8,7 +8,7 @@ export default class RiffList implements IRiffChunk, ILazy {
     /**
      * FOURCC code for a list chunk
      */
-    public static readonly identifierFourcc = "LIST";
+    public static readonly IDENTIFIER_FOURCC = "LIST";
 
     private _chunkStart: number;
     private _file: File;
@@ -20,7 +20,7 @@ export default class RiffList implements IRiffChunk, ILazy {
 
     // #region Constructors
 
-    private constructor() {}
+    private constructor() { /* private to enforce construction via static methods */ }
 
     /**
      * Constructs and initializes a new instance with no contents.
@@ -48,7 +48,7 @@ export default class RiffList implements IRiffChunk, ILazy {
 
         file.seek(position);
         const listHeader = file.readBlock(12);
-        if (listHeader.subarray(0, 4).toString(StringType.Latin1) !== RiffList.identifierFourcc) {
+        if (listHeader.subarray(0, 4).toString(StringType.Latin1) !== RiffList.IDENTIFIER_FOURCC) {
             throw new Error("Cannot read RIFF list from non-list chunk");
         }
 
@@ -75,7 +75,7 @@ export default class RiffList implements IRiffChunk, ILazy {
     }
 
     /** @inheritDoc */
-    public get fourcc(): string { return RiffList.identifierFourcc; }
+    public get fourcc(): string { return RiffList.IDENTIFIER_FOURCC; }
 
     /** @inheritDoc */
     public get isLoaded(): boolean { return this._isLoaded; }
@@ -120,7 +120,7 @@ export default class RiffList implements IRiffChunk, ILazy {
     // #region Methods
 
     public static isChunkList(c: IRiffChunk): boolean {
-        return c.fourcc === RiffList.identifierFourcc;
+        return c.fourcc === RiffList.IDENTIFIER_FOURCC;
     }
 
     /**
@@ -177,7 +177,7 @@ export default class RiffList implements IRiffChunk, ILazy {
                 const id = headerBlock.subarray(0, 4).toString(StringType.UTF8);
                 const length = headerBlock.subarray(4, 4).toUint(false);
 
-                if (id === RiffList.identifierFourcc) {
+                if (id === RiffList.IDENTIFIER_FOURCC) {
                     // The element is a list, create a nested riff list from it
                     const nestedList = RiffList.fromFile(this._file, fileOffset);
                     if (this._lists.get(nestedList.type) === undefined) {
@@ -265,7 +265,7 @@ export default class RiffList implements IRiffChunk, ILazy {
         );
 
         return ByteVector.concatenate(
-            ByteVector.fromString(RiffList.identifierFourcc, StringType.Latin1),
+            ByteVector.fromString(RiffList.IDENTIFIER_FOURCC, StringType.Latin1),
             ByteVector.fromUint(allData.length + 4, false),
             ByteVector.fromString(this._type, StringType.Latin1),
             allData,

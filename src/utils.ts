@@ -6,7 +6,7 @@ export class Guards {
     private static readonly MAX_ULONG = BigInt("18446744073709551615");
     private static readonly MIN_LONG = BigInt("-9223372036854775808");
 
-    public static all<TElement>(value: TElement[], guard: (val: TElement, name: string) => void, name: string) {
+    public static all<TElement>(value: TElement[], guard: (val: TElement, name: string) => void, name: string): void {
         for (const element of value) {
             guard(element, `All elements in ${name}`);
         }
@@ -30,7 +30,7 @@ export class Guards {
         }
     }
 
-    public static greaterThanInclusive(value: number, lowerBound: number, name: string) {
+    public static greaterThanInclusive(value: number, lowerBound: number, name: string): void {
         if (value < lowerBound) {
             throw new Error(`Argument out of range: ${name} must greater than ${lowerBound}`);
         }
@@ -42,19 +42,19 @@ export class Guards {
         }
     }
 
-    public static lessThanInclusive(value: number, upperBound: number, name: string) {
+    public static lessThanInclusive(value: number, upperBound: number, name: string): void {
         if (value > upperBound) {
             throw new Error(`Argument out of range: ${name} must be less than ${upperBound}`);
         }
     }
 
-    public static long(value: bigint, name: string) {
+    public static long(value: bigint, name: string): void {
         if (value > Guards.MAX_LONG || value < Guards.MIN_LONG) {
             throw new Error(`Argument out of range: ${name} must be a 64-bit integer`);
         }
     }
 
-    public static notNullOrUndefined(value: any, name: string): void {
+    public static notNullOrUndefined(value: unknown, name: string): void {
         if (value === undefined || value === null) {
             throw new Error(`Argument null: ${name} was not provided`);
         }
@@ -123,19 +123,19 @@ export class Guards {
 }
 
 export class StringComparison {
-    public static CaseInsensitive(a: string, b: string): boolean {
+    public static caseInsensitive(a: string, b: string): boolean {
         Guards.notNullOrUndefined(a, "a");
         Guards.notNullOrUndefined(b, "b");
         return a.toUpperCase() === b.toUpperCase();
     }
 
-    public static CaseSensitive(a: string, b: string): boolean {
+    public static caseSensitive(a: string, b: string): boolean {
         return a === b;
     }
 }
 
 export class FileUtils {
-    public static getExtension(name: string) {
+    public static getExtension(name: string): string {
         let ext = Path.extname(name);
         if (!ext) {
             ext = name.startsWith(".") ? name.substring(1) : name;
@@ -294,7 +294,7 @@ export class NumberUtils {
 export class StringUtils {
     public static trimStart(toTrim: string, chars: string): string {
         while (toTrim.length > 0 && chars.indexOf(toTrim[0]) > -1) {
-            toTrim = toTrim.substr(0);
+            toTrim = toTrim.substring(0);
         }
         return toTrim;
     }

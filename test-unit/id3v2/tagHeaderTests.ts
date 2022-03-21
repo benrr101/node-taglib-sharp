@@ -10,7 +10,7 @@ import {NumberUtils} from "../../src/utils";
 
 const getTestHeader = (majorVersion: number, minorVersion: number, flags: Id3v2TagHeaderFlags): Id3v2TagHeader => {
     const data = ByteVector.concatenate(
-        Id3v2TagHeader.fileIdentifier,
+        Id3v2TagHeader.FILE_IDENTIFIER,
         majorVersion,
         minorVersion,
         flags,
@@ -47,7 +47,7 @@ const getTestHeader = (majorVersion: number, minorVersion: number, flags: Id3v2T
     public invalidFlagsForVersion2() {
         // Arrange
         const testData = ByteVector.concatenate(
-            Id3v2TagHeader.fileIdentifier,
+            Id3v2TagHeader.FILE_IDENTIFIER,
             0x02, 0x00,
             0xFF,
             0x00, 0x00, 0x00, 0x00
@@ -61,7 +61,7 @@ const getTestHeader = (majorVersion: number, minorVersion: number, flags: Id3v2T
     public invalidFlagsForVersion3() {
         // Arrange
         const testData = ByteVector.concatenate(
-            Id3v2TagHeader.fileIdentifier,
+            Id3v2TagHeader.FILE_IDENTIFIER,
             0x03, 0x00,
             0xFF,
             0x00, 0x00, 0x00, 0x00
@@ -75,7 +75,7 @@ const getTestHeader = (majorVersion: number, minorVersion: number, flags: Id3v2T
     public invalidFlagsForVersion4() {
         // Arrange
         const testData = ByteVector.concatenate(
-            Id3v2TagHeader.fileIdentifier,
+            Id3v2TagHeader.FILE_IDENTIFIER,
             0x04, 0x00,
             0xFF,
             0x00, 0x00, 0x00, 0x00
@@ -89,7 +89,7 @@ const getTestHeader = (majorVersion: number, minorVersion: number, flags: Id3v2T
     public invalidTagSizeBytes() {
         // Arrange
         const testData = ByteVector.concatenate(
-            Id3v2TagHeader.fileIdentifier,
+            Id3v2TagHeader.FILE_IDENTIFIER,
             0x04, 0x00,
             0x00
         );
@@ -112,7 +112,7 @@ const getTestHeader = (majorVersion: number, minorVersion: number, flags: Id3v2T
         const minorVersion = 0x00;
         const flags = 0xE0;
         const testData = ByteVector.concatenate(
-            Id3v2TagHeader.fileIdentifier,
+            Id3v2TagHeader.FILE_IDENTIFIER,
             majorVersion,
             minorVersion,
             flags,
@@ -134,7 +134,7 @@ const getTestHeader = (majorVersion: number, minorVersion: number, flags: Id3v2T
     @test
     public getFileIdentifier() {
         // Act
-        const output = Id3v2TagHeader.fileIdentifier;
+        const output = Id3v2TagHeader.FILE_IDENTIFIER;
 
         // Assert
         assert.ok(output);
@@ -343,7 +343,7 @@ const getTestHeader = (majorVersion: number, minorVersion: number, flags: Id3v2T
         const minorVersion = 0x00;
         const flags = 0xE0;
         const testData = ByteVector.concatenate(
-            Id3v2TagHeader.fileIdentifier,
+            Id3v2TagHeader.FILE_IDENTIFIER,
             majorVersion,
             minorVersion,
             flags,

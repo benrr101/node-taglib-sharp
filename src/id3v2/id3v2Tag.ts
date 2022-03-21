@@ -1,4 +1,5 @@
 import * as DateFormat from "dateformat";
+import itiriri from "itiriri";
 
 import AttachmentFrame from "./frames/attachmentFrame";
 import CommentsFrame from "./frames/commentsFrame";
@@ -300,12 +301,14 @@ export default class Id3v2Tag extends Tag {
         //   [ "instrument", "artist1,artist2", ... ]
         // We want:
         //   { "artist1": ["instrument", ...], "artist2": ["instrument", ...], ...}
-        const map = this.performers.reduce((o: any, v: string) => {
-            o[v] = [];
-            return o;
-        }, {});
-
         const frameData = this.getTextAsArray(FrameIdentifiers.TMCL);
+
+        // Initialize the map with all the known performers
+        const map = this.performers.reduce((accum: Map<string, string[]>, performer: string) => {
+            accum.set(performer, []);
+            return accum;
+        }, new Map<string, string[]>())
+
         for (let i = 0; i + 1 < frameData.length; i += 2) {
             const instrument = frameData[i];
             const performers = frameData[i + 1];
@@ -315,16 +318,19 @@ export default class Id3v2Tag extends Tag {
 
             const performersList = performers.split(",");
             for (const performer of performersList) {
-                if (!map[performer]) {
+                if (!map.has(performer)) {
+                    // Skip unknown performers
                     continue;
                 }
 
-                map[performer].push(instrument);
+                map.get(performer).push(instrument);
             }
         }
 
         // Collapse the instrument lists and return that
-        this._performersRole = Object.values(map).map((e: string[]) => e.length > 0 ? e.join("; ") : undefined);
+        this._performersRole = itiriri(map.values())
+            .map((e: string[]) => e.length > 0 ? e.join("; ") : undefined)
+            .toArray();
         return this._performersRole;
     }
     /** @inheritDoc via TMCL frame */

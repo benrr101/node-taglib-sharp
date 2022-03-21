@@ -1062,7 +1062,7 @@ export abstract class Tag {
      *     may be extended by child classes to support other values.
      * @returns `true` if the current instance does not contain any values. `false` otherwise
      */
-    public get isEmpty() {
+    public get isEmpty(): boolean {
         return Tag.isFalsyOrLikeEmpty(this.title) &&
             Tag.isFalsyOrLikeEmpty(this.grouping) &&
             Tag.isFalsyOrLikeEmpty(this.albumArtists) &&
@@ -1103,7 +1103,7 @@ export abstract class Tag {
      *     `undefined` or empty
      * @protected
      */
-    protected static firstInGroup(group: string[]) {
+    protected static firstInGroup(group: string[]): string {
         return !group || group.length === 0
             ? undefined
             : group[0];
@@ -1116,7 +1116,7 @@ export abstract class Tag {
      *     or undefined if the array is `undefined` or empty.
      * @protected
      */
-    protected static joinGroup(group: string[]) {
+    protected static joinGroup(group: string[]): string {
         return !group || group.length === 0
             ? undefined
             : group.join("; ");

@@ -286,7 +286,7 @@ export class RelativeVolumeFrame extends Frame {
      * @param type Which channel to set the value for
      * @param value Peak volume
      */
-    public setPeakBits(type: ChannelType, value: number) { this._channels[type].peakBits = value; }
+    public setPeakBits(type: ChannelType, value: number): void { this._channels[type].peakBits = value; }
 
     /**
      * Sets the peak volume for a specified channel.
@@ -316,7 +316,7 @@ export class RelativeVolumeFrame extends Frame {
     // #region Protected/Private Methods
 
     /** @inheritDoc */
-    protected parseFields(data: ByteVector, _version: number): void {
+    protected parseFields(data: ByteVector): void {
         const identifierEndIndex = data.find(ByteVector.getTextDelimiter(StringType.Latin1));
         if (identifierEndIndex < 0) {
             return;
@@ -341,7 +341,7 @@ export class RelativeVolumeFrame extends Frame {
     }
 
     /** @inheritDoc */
-    protected renderFields(_version: number): ByteVector {
+    protected renderFields(): ByteVector {
         const data = ByteVector.fromString(this.identification, StringType.Latin1);
         data.addByteVector(ByteVector.getTextDelimiter(StringType.Latin1));
 

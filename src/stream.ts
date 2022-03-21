@@ -131,7 +131,7 @@ export class Stream implements IStream {
     }
 
     /** @inheritDoc */
-    public seek(offset: number, origin: SeekOrigin) {
+    public seek(offset: number, origin: SeekOrigin): void {
         Guards.safeInt(offset, "offset");
         switch (origin) {
             case SeekOrigin.Begin:

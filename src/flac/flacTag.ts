@@ -16,7 +16,7 @@ import {Guards, NumberUtils} from "../utils";
  *     class provides a unified access into all the tags a FLAC file may contain.
  */
 export default class FlacTag extends CombinedTag {
-    private static readonly _defaultTagMappingTable = new Map<TagTypes, () => boolean>([
+    private static readonly DEFAULT_TAG_LOCATION_MAPPING = new Map<TagTypes, () => boolean>([
         [TagTypes.Ape, () => FlacFileSettings.preferApeTagAtFileEnd],
         [TagTypes.Id3v1, () => true],
         [TagTypes.Id3v2, () => FlacFileSettings.preferId3v2TagAtFileEnd]
@@ -35,7 +35,7 @@ export default class FlacTag extends CombinedTag {
      * @param flacPictures Optional, array of pictures found in the file
      */
     public constructor(startTag: StartTag, endTag: EndTag, xiphTag: XiphComment, flacPictures: XiphPicture[]) {
-        super(FlacFileSettings.supportedTagTypes, true);
+        super(FlacFileSettings.SUPPORTED_TAG_TYPES, true);
         Guards.truthy(startTag, "startTag");
         Guards.truthy(endTag, "endTag");
 
@@ -115,7 +115,7 @@ export default class FlacTag extends CombinedTag {
             case TagTypes.Id3v2:
             case TagTypes.Ape:
                 // Sandwich tags, we farm out to the start/end tags
-                const targetTag = FlacTag._defaultTagMappingTable.get(tagType)() ? this._endTag : this._startTag;
+                const targetTag = FlacTag.DEFAULT_TAG_LOCATION_MAPPING.get(tagType)() ? this._endTag : this._startTag;
                 tag = targetTag.createTag(tagType, false);
         }
 

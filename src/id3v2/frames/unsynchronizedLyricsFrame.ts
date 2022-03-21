@@ -223,7 +223,7 @@ export default class UnsynchronizedLyricsFrame extends Frame {
     }
 
     /** @inheritDoc */
-    protected parseFields(data: ByteVector, _version: number): void {
+    protected parseFields(data: ByteVector): void {
         if (data.length < 4) {
             throw new CorruptFileError("Not enough bytes in field.");
         }

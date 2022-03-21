@@ -42,7 +42,7 @@ export default abstract class SandwichFile extends File implements ISandwichFile
             this._mediaStartPosition = this.startTag.sizeOnDisk;
             this._mediaEndPosition = this.length - this.endTag.sizeOnDisk;
             this._properties = this.readProperties(readStyle);
-            this._tagTypesOnDisk = this.tagTypes;
+            this.tagTypesOnDisk = this.tagTypes;
         } finally {
             this.mode = FileAccessMode.Closed;
         }
@@ -136,7 +136,7 @@ export default abstract class SandwichFile extends File implements ISandwichFile
             // Calculate the new media start and end positions
             this._mediaStartPosition = startTagBytes.length;
             this._mediaEndPosition = this.length - endTagBytes.length;
-            this._tagTypesOnDisk = this.tagTypes;
+            this.tagTypesOnDisk = this.tagTypes;
         } finally {
             this.mode = FileAccessMode.Closed;
         }

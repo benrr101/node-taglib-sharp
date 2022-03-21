@@ -9,7 +9,7 @@ export default class XiphSettings {
     /**
      * Private constructor to prevent inadvertent construction
      */
-    private constructor() {}
+    private constructor() { /* private to prevent constructing instances */ }
 
     /**
      * Gets whether to use "TEMPO" field to store {@see XiphComment.bpm} property. If `true`

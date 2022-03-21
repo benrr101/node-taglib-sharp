@@ -10,7 +10,8 @@ import {FileUtils, Guards} from "./utils";
 export default class Picture implements IPicture {
     // #region Constants
 
-    private static readonly _lutExtensionMime: string[] = [
+    // @TODO: Just do this as a friggin dictionary
+    private static readonly EXTENSION_TO_MIMETYPES: string[] = [
         "bin", "application/octet-stream", // Any kind of binary data - placed at top to act as default
         "aac", "audio/aac", // AAC audio file
         "abw", "application/x-abiword", // AbiWord document
@@ -92,7 +93,7 @@ export default class Picture implements IPicture {
 
     // #region Constructors
 
-    private constructor() {}
+    private constructor() { /* private to enforce construction via static methods */ }
 
     /**
      * Constructs and initializes a new instance from a file located at the provided path. The type
@@ -250,9 +251,9 @@ export default class Picture implements IPicture {
     public static getExtensionFromMimeType(mime: string): string {
         let ext: string;
 
-        for (let i = 0; i < this._lutExtensionMime.length; i += 2) {
-            if (this._lutExtensionMime[i + 1] === mime) {
-                ext = this._lutExtensionMime[i];
+        for (let i = 0; i < this.EXTENSION_TO_MIMETYPES.length; i += 2) {
+            if (this.EXTENSION_TO_MIMETYPES[i + 1] === mime) {
+                ext = this.EXTENSION_TO_MIMETYPES[i];
                 break;
             }
         }
@@ -275,9 +276,9 @@ export default class Picture implements IPicture {
         }
 
         const ext = FileUtils.getExtension(name);
-        for (let i = 0; i < this._lutExtensionMime.length; i += 2) {
-            if (this._lutExtensionMime[i] === ext) {
-                mimeType = this._lutExtensionMime[i + 1];
+        for (let i = 0; i < this.EXTENSION_TO_MIMETYPES.length; i += 2) {
+            if (this.EXTENSION_TO_MIMETYPES[i] === ext) {
+                mimeType = this.EXTENSION_TO_MIMETYPES[i + 1];
                 break;
             }
         }

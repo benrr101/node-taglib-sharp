@@ -139,7 +139,7 @@ export default class TermsOfUseFrame extends Frame {
      * @returns TermsOfUseFrame Frame containing the matching frame or `undefined` if a match was
      *     not found
      */
-    public static findPreferred(frames: TermsOfUseFrame[], language: string) {
+    public static findPreferred(frames: TermsOfUseFrame[], language: string): TermsOfUseFrame {
         Guards.truthy(frames, "frames");
 
         let bestFrame: TermsOfUseFrame;
@@ -172,7 +172,7 @@ export default class TermsOfUseFrame extends Frame {
     // #region Protected Methods
 
     /** @inheritDoc */
-    protected parseFields(data: ByteVector, _version: number): void {
+    protected parseFields(data: ByteVector): void {
         if (data.length < 4) {
             throw new CorruptFileError("Not enough bytes in field");
         }
@@ -183,7 +183,7 @@ export default class TermsOfUseFrame extends Frame {
     }
 
     /** @inheritDoc */
-    protected renderFields(version: number) {
+    protected renderFields(version: number): ByteVector {
         const encoding = Frame.correctEncoding(this.textEncoding, version);
 
         return ByteVector.concatenate(

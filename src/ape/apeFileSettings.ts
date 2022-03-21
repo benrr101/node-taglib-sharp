@@ -6,7 +6,7 @@ import {NumberUtils} from "../utils";
  * in order for changes to take effect.
  */
 export default class ApeFileSettings {
-    public static readonly supportedTagTypes = TagTypes.Ape | TagTypes.Id3v1 | TagTypes.Id3v2;
+    public static readonly SUPPORTED_TAG_TYPES = TagTypes.Ape | TagTypes.Id3v1 | TagTypes.Id3v2;
 
     private static _defaultTagTypes = TagTypes.Ape;
     private static _preferApeTagAtFileEnd = true;
@@ -19,13 +19,15 @@ export default class ApeFileSettings {
     public static get defaultTagTypes(): TagTypes { return this._defaultTagTypes; }
     /**
      * Sets the default types of tags for an APE file. When opening a file, if these tag types do
-     * not exist on the file, they will be created. See {@link supportedTagTypes} for a list of tag
+     * not exist on the file, they will be created. See {@link SUPPORTED_TAG_TYPES} for a list of tag
      * types that are supported by node-taglib-sharp for APE files.
      */
     public static set defaultTagTypes(value: TagTypes) {
-        const unsupportedTagTypes = NumberUtils.uintAnd(value, ~this.supportedTagTypes);
+        const unsupportedTagTypes = NumberUtils.uintAnd(value, ~this.SUPPORTED_TAG_TYPES);
         if (unsupportedTagTypes !== 0) {
-            throw new Error(`Argument error: node-taglib-sharp does not support tag types ${unsupportedTagTypes} for APE files`);
+            throw new Error(
+                `Argument error: node-taglib-sharp does not support tag types ${unsupportedTagTypes} for APE files`
+            );
         }
 
         this._defaultTagTypes = value;

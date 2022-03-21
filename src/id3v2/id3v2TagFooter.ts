@@ -9,7 +9,7 @@ export default class Id3v2TagFooter {
     /**
      * Identifier used to recognize an ID3v2 footer.
      */
-    public static readonly fileIdentifier = ByteVector.fromString("3DI", StringType.Latin1).makeReadOnly();
+    public static readonly FILE_IDENTIFIER = ByteVector.fromString("3DI", StringType.Latin1).makeReadOnly();
 
     private _flags: Id3v2TagHeaderFlags = Id3v2TagHeaderFlags.FooterPresent;
     private _majorVersion: number = 0;
@@ -25,7 +25,7 @@ export default class Id3v2TagFooter {
         if (data.length < Id3v2Settings.footerSize) {
             throw new CorruptFileError("Provided data is smaller than object size.");
         }
-        if (!data.startsWith(Id3v2TagFooter.fileIdentifier)) {
+        if (!data.startsWith(Id3v2TagFooter.FILE_IDENTIFIER)) {
             throw new CorruptFileError("Provided data does not start with the file identifier");
         }
 
@@ -167,7 +167,7 @@ export default class Id3v2TagFooter {
 
     public render(): ByteVector {
         return ByteVector.concatenate(
-            Id3v2TagFooter.fileIdentifier,
+            Id3v2TagFooter.FILE_IDENTIFIER,
             this.majorVersion,
             this.revisionNumber,
             this.flags,

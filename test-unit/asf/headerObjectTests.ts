@@ -20,14 +20,14 @@ import {Testers} from "../utilities/testers";
 @suite class Asf_HeaderObjectTests extends ObjectTests<HeaderObject> {
     protected get fromFileConstructor(): (f: File, p: number) => HeaderObject { return HeaderObject.fromFile; }
     protected get minSize(): number { return 26; }
-    protected get objectGuid(): UuidWrapper { return Guids.AsfHeaderObject; }
+    protected get objectGuid(): UuidWrapper { return Guids.ASF_HEADER_OBJECT; }
 
     @test
     public fromFile_missingFirstReservedByte() {
         // Arrange
         const bytes = ByteVector.concatenate(
             ByteVector.fromSize(10), // Offset
-            Guids.AsfHeaderObject.toBytes(), // Object ID
+            Guids.ASF_HEADER_OBJECT.toBytes(), // Object ID
             ByteVector.fromUlong(30, false), // Object size
             ByteVector.fromUint(0, false), // Child objects
             0x12, 0x02 // Invalid reserved
@@ -43,7 +43,7 @@ import {Testers} from "../utilities/testers";
         // Arrange
         const bytes = ByteVector.concatenate(
             ByteVector.fromSize(10), // Offset
-            Guids.AsfHeaderObject.toBytes(), // Object ID
+            Guids.ASF_HEADER_OBJECT.toBytes(), // Object ID
             ByteVector.fromUlong(30, false), // Object size
             ByteVector.fromUint(0, false), // Child objects
             0x01, 0x23 // Invalid reserved
@@ -67,7 +67,7 @@ import {Testers} from "../utilities/testers";
 
         // Assert
         assert.isOk(object);
-        assert.isTrue(object.guid.equals(Guids.AsfHeaderObject));
+        assert.isTrue(object.guid.equals(Guids.ASF_HEADER_OBJECT));
         assert.strictEqual(object.objectType, ObjectType.HeaderObject);
         assert.strictEqual(object.originalSize, bytes.length - 10);
 
@@ -88,9 +88,9 @@ import {Testers} from "../utilities/testers";
     public extension_hasExtension() {
         // Arrange
         const headerExtensionBytes = ByteVector.concatenate(
-            Guids.AsfHeaderExtensionObject.toBytes(), // Object ID
+            Guids.ASF_HEADER_EXTENSION_OBJECT.toBytes(), // Object ID
             ByteVector.fromUlong(46, false), // Object size
-            Guids.AsfReserved1.toBytes(), // Reserved field 1
+            Guids.ASF_RESERVED.toBytes(), // Reserved field 1
             ByteVector.fromUshort(6, false), // Reserved field 2
             ByteVector.fromUint(0, false), // Header extension data length
         );
@@ -157,7 +157,7 @@ import {Testers} from "../utilities/testers";
     public properties_hasPropertiesObjects() {
         // Arrange
         const filePropertiesBytes = ByteVector.concatenate(
-            Guids.AsfFilePropertiesObject.toBytes(), // Object ID
+            Guids.ASF_FILE_PROPERTIES_OBJECT.toBytes(), // Object ID
             ByteVector.fromUlong(104, false), // Object size
             new UuidWrapper().toBytes(), // File ID
             ByteVector.fromUlong(1234, false), // File Size
@@ -173,9 +173,9 @@ import {Testers} from "../utilities/testers";
         );
 
         const streamPropertiesBytes = ByteVector.concatenate(
-            Guids.AsfStreamPropertiesObject.toBytes(), // Object ID
+            Guids.ASF_STREAM_PROPERTIES_OBJECT.toBytes(), // Object ID
             ByteVector.fromUlong(117, false), // Object size
-            Guids.AsfAudioMedia.toBytes(), // Stream type
+            Guids.ASF_AUDIO_MEDIA.toBytes(), // Stream type
             new UuidWrapper().toBytes(), // Error correction type GUID
             ByteVector.fromUlong(1234567890, false), // Time offset
             ByteVector.fromUint(16, false), // Type specific data length
@@ -342,7 +342,7 @@ import {Testers} from "../utilities/testers";
     private static getObjectBytesFromBytes(children: ByteVector, childrenCount: number) {
         return ByteVector.concatenate(
             ByteVector.fromSize(10), // Offset
-            Guids.AsfHeaderObject.toBytes(), // Object ID
+            Guids.ASF_HEADER_OBJECT.toBytes(), // Object ID
             ByteVector.fromUlong(30 + children.length, false), // Object size
             ByteVector.fromUint(childrenCount, false), // Child objects
             0x01, 0x02, // Invalid reserved
@@ -354,7 +354,7 @@ import {Testers} from "../utilities/testers";
         const childrenBytes = ByteVector.concatenate(... children.map((o) => o.render()));
         return ByteVector.concatenate(
             ByteVector.fromSize(10), // Offset
-            Guids.AsfHeaderObject.toBytes(), // Object ID
+            Guids.ASF_HEADER_OBJECT.toBytes(), // Object ID
             ByteVector.fromUlong(30 + childrenBytes.length, false), // Object size
             ByteVector.fromUint(children.length, false), // Child objects
             0x01, 0x02, // Reserved bytes

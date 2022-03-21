@@ -8,8 +8,8 @@ import {Guards} from "../../utils";
  * Represents an Ogg Opus bitstream for use within an Ogg file.
  */
 export default class Opus implements IOggCodec, IAudioCodec {
-    private static readonly magicSignatureHeader = ByteVector.fromString("OpusHead", StringType.Latin1).makeReadOnly();
-    private static readonly magicSignatureComment = ByteVector.fromString("OpusTags", StringType.Latin1).makeReadOnly();
+    private static readonly HEADER_IDENTIFIER = ByteVector.fromString("OpusHead", StringType.Latin1).makeReadOnly();
+    private static readonly COMMENT_IDENTIFIER = ByteVector.fromString("OpusTags", StringType.Latin1).makeReadOnly();
 
     private readonly _channelCount: number;
     private readonly _inputSampleRate: number;
@@ -26,7 +26,7 @@ export default class Opus implements IOggCodec, IAudioCodec {
      */
     public constructor(headerPacket: ByteVector) {
         Guards.truthy(headerPacket, "headerPacket");
-        if (!headerPacket.startsWith(Opus.magicSignatureHeader)) {
+        if (!headerPacket.startsWith(Opus.HEADER_IDENTIFIER)) {
             throw new Error(`Argument error: Header packet must start with magic signature`);
         }
 
@@ -93,15 +93,15 @@ export default class Opus implements IOggCodec, IAudioCodec {
      * @param headerPacket Packet to check
      */
     public static isHeaderPacket(headerPacket: ByteVector): boolean {
-        return headerPacket.startsWith(Opus.magicSignatureHeader);
+        return headerPacket.startsWith(Opus.HEADER_IDENTIFIER);
     }
 
     /** @inheritDoc */
     public readPacket(packet: ByteVector): boolean {
         Guards.truthy(packet, "packet");
 
-        if (!this._commentData && packet.startsWith(Opus.magicSignatureComment)) {
-            this._commentData = packet.subarray(Opus.magicSignatureComment.length).toByteVector();
+        if (!this._commentData && packet.startsWith(Opus.COMMENT_IDENTIFIER)) {
+            this._commentData = packet.subarray(Opus.COMMENT_IDENTIFIER.length).toByteVector();
         }
 
         return !!this._commentData;
@@ -114,11 +114,11 @@ export default class Opus implements IOggCodec, IAudioCodec {
         Guards.truthy(comment, "comment");
 
         const data = ByteVector.concatenate(
-            Opus.magicSignatureComment,
+            Opus.COMMENT_IDENTIFIER,
             comment.render(true)
         );
 
-        if (packets.length > 1 && packets[1].startsWith(Opus.magicSignatureComment)) {
+        if (packets.length > 1 && packets[1].startsWith(Opus.COMMENT_IDENTIFIER)) {
             // Replace the comments packet as the 2nd packet
             packets[1] = data;
         } else {

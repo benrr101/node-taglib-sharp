@@ -937,7 +937,7 @@ import {TagTesters, Testers} from "../utilities/testers";
         const comment = Xiph_Comment_MethodTests.getTestComment();
 
         // Act / Assert
-        Testers.testString(comment.getField);
+        Testers.testTruthy<string>((s) => comment.getField(s));
         assert.throws(() => comment.getField("COVERART"));
         assert.throws(() => comment.getField("METADATA_BLOCK_PICTURE"));
     }
@@ -988,7 +988,7 @@ import {TagTesters, Testers} from "../utilities/testers";
         const comment = Xiph_Comment_MethodTests.getTestComment();
 
         // Act / Assert
-        Testers.testString(comment.getFieldFirstValue);
+        Testers.testTruthy<string>((s) => comment.getFieldFirstValue(s));
         assert.throws(() => comment.getFieldFirstValue("COVERART"));
         assert.throws(() => comment.getFieldFirstValue("METADATA_BLOCK_PICTURE"));
     }
@@ -1023,7 +1023,7 @@ import {TagTesters, Testers} from "../utilities/testers";
         const comment = Xiph_Comment_MethodTests.getTestComment();
 
         // Act / Assert
-        Testers.testString(comment.removeField);
+        Testers.testTruthy<string>((s) => comment.removeField(s));
         assert.throws(() => comment.removeField("COVERART"));
         assert.throws(() => comment.removeField("METADATA_BLOCK_PICTURE"));
     }

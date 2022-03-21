@@ -2,6 +2,7 @@ import * as TypeMoq from "typemoq";
 import {suite, test} from "@testdeck/mocha";
 import {assert} from "chai";
 
+import MockFile from "./utilities/testFile";
 import Properties from "../src/properties";
 import PropertyTests from "./utilities/propertyTests";
 import TestConstants from "./testConstants";
@@ -12,7 +13,6 @@ import {IFileAbstraction} from "../src/fileAbstraction";
 import {IStream} from "../src/stream";
 import {Tag, TagTypes} from "../src/tag";
 import {Testers} from "./utilities/testers";
-import testFile from "./utilities/testFile";
 
 @suite class FileTests {
     private static readonly chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -717,7 +717,7 @@ import testFile from "./utilities/testFile";
             data.set(i, FileTests.chars.charCodeAt(i % FileTests.chars.length));
         }
 
-        const mockAbstraction = testFile.getFileAbstraction(data);
+        const mockAbstraction = MockFile.getFileAbstraction(data);
         const file = File.createFromAbstraction(mockAbstraction);
 
         try {
@@ -738,7 +738,7 @@ class TestFile extends File {
 
     public get tag(): Tag { return undefined; }
 
-    public get stream(): IStream { return this._fileStream; }
+    public get stream(): IStream { return this["_fileStream"]; }
 
     public getTag(_types: TagTypes, _create: boolean): Tag {
         throw new Error("Not implemented");

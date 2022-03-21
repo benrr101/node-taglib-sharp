@@ -25,7 +25,7 @@ import {NumberUtils} from "../utils";
  *     {@link FlacFileSettings}.
  */
 export default class FlacFile extends File implements ISandwichFile {
-    public static readonly fileIdentifier = ByteVector.fromString("fLaC", StringType.Latin1).makeReadOnly();
+    public static readonly FILE_IDENTIFIER = ByteVector.fromString("fLaC", StringType.Latin1).makeReadOnly();
 
     private readonly _properties: Properties;
     private readonly _tag: FlacTag;
@@ -58,7 +58,7 @@ export default class FlacFile extends File implements ISandwichFile {
             const xiphComment = this.readXiphComments(propertiesStyle);
 
             this._tag = new FlacTag(startTag, endTag, xiphComment, pictures);
-            this._tagTypesOnDisk = this._tag.tagTypes;
+            this.tagTypesOnDisk = this._tag.tagTypes;
         } finally {
             this.mode = FileAccessMode.Closed;
         }
@@ -152,7 +152,7 @@ export default class FlacFile extends File implements ISandwichFile {
             let paddingLength: number;
             if (metadataBytes.length < oldMetadataLength) {
                 // Case 1: New metadata blocks are smaller than old ones. Use remaining space as padding
-                paddingLength = oldMetadataLength - metadataBytes.length - FlacBlock.headerSize;
+                paddingLength = oldMetadataLength - metadataBytes.length - FlacBlock.HEADER_SIZE;
             } else {
                 // Case 2: New metadata block is bigger than (or equal to) old ones. Add standard padding
                 // @TODO: Allow configuring padding length
@@ -185,7 +185,7 @@ export default class FlacFile extends File implements ISandwichFile {
                 return pos + b.totalSize;
             }, this._mediaStartPosition + 4);
 
-            this._tagTypesOnDisk = this.tagTypes;
+            this.tagTypesOnDisk = this.tagTypes;
 
         } finally {
             this.mode = FileAccessMode.Closed;
@@ -195,7 +195,7 @@ export default class FlacFile extends File implements ISandwichFile {
     private readMetadataBlocks(): FlacBlock[] {
         // Make sure we've got the header at the beginning of the file
         this.seek(this._mediaStartPosition);
-        if (!this.readBlock(4).equals(FlacFile.fileIdentifier)) {
+        if (!this.readBlock(4).equals(FlacFile.FILE_IDENTIFIER)) {
             throw new CorruptFileError("FLAC header not found after any starting tags");
         }
 
@@ -229,7 +229,7 @@ export default class FlacFile extends File implements ISandwichFile {
 
         // @TODO: For precise calculation, read the audio frames
         const lastBlock = this._metadataBlocks[this._metadataBlocks.length - 1];
-        const metadataEndPosition = lastBlock.blockStart + lastBlock.dataSize + FlacBlock.headerSize;
+        const metadataEndPosition = lastBlock.blockStart + lastBlock.dataSize + FlacBlock.HEADER_SIZE;
         const streamLength = this._mediaEndPosition - metadataEndPosition;
         const header = new FlacStreamHeader(this._metadataBlocks[0].data, streamLength);
 
@@ -264,7 +264,7 @@ export default class FlacFile extends File implements ISandwichFile {
     // #endregion
 }
 
-////////////////////////////////////////////////////////////////////////////
+// /////////////////////////////////////////////////////////////////////////
 // Register the file type
 [
     "taglib/flac",

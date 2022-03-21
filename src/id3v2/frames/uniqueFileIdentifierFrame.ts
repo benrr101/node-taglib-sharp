@@ -126,7 +126,7 @@ export default class UniqueFileIdentifierFrame extends Frame {
     }
 
     /** @inheritDoc */
-    protected parseFields(data: ByteVector, _version: number): void {
+    protected parseFields(data: ByteVector): void {
         const fields = data.split(ByteVector.getTextDelimiter(StringType.Latin1));
         if (fields.length !== 2) {
             return;
@@ -137,7 +137,7 @@ export default class UniqueFileIdentifierFrame extends Frame {
     }
 
     /** @inheritDoc */
-    protected renderFields(_version: number): ByteVector {
+    protected renderFields(): ByteVector {
         return ByteVector.concatenate(
             ByteVector.fromString(this._owner, StringType.Latin1),
             ByteVector.getTextDelimiter(StringType.Latin1),

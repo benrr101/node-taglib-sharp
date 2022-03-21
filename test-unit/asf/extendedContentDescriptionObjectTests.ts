@@ -25,7 +25,7 @@ import {
         // Assert
         assert.strictEqual(object.name, "foo");
         assert.strictEqual(object.type, DataType.Word);
-        assert.strictEqual(object.getUshort(), 1234);
+        assert.strictEqual(object.ushortValue, 1234);
 
         const expectedBytes = ByteVector.concatenate(
             ByteVector.fromUshort(8, false),
@@ -55,7 +55,7 @@ import {
         // Assert
         assert.strictEqual(object.name, "foo");
         assert.strictEqual(object.type, DataType.Word);
-        assert.strictEqual(object.getUshort(), 1234);
+        assert.strictEqual(object.ushortValue, 1234);
     }
 
     @test
@@ -66,7 +66,7 @@ import {
         // Assert
         assert.strictEqual(object.name, "foo");
         assert.strictEqual(object.type, DataType.Bool);
-        assert.strictEqual(object.getBool(), true);
+        assert.strictEqual(object.boolValue, true);
 
         const expectedBytes = ByteVector.concatenate(
             ByteVector.fromUshort(8, false),
@@ -96,7 +96,7 @@ import {
         // Assert
         assert.strictEqual(object.name, "foo");
         assert.strictEqual(object.type, DataType.Bool);
-        assert.strictEqual(object.getBool(), true);
+        assert.strictEqual(object.boolValue, true);
     }
 
     @test
@@ -107,7 +107,7 @@ import {
         // Assert
         assert.strictEqual(object.name, "foo");
         assert.strictEqual(object.type, DataType.DWord);
-        assert.strictEqual(object.getUint(), 1234);
+        assert.strictEqual(object.uintValue, 1234);
 
         const expectedBytes = ByteVector.concatenate(
             ByteVector.fromUshort(8, false),
@@ -137,7 +137,7 @@ import {
         // Assert
         assert.strictEqual(object.name, "foo");
         assert.strictEqual(object.type, DataType.DWord);
-        assert.strictEqual(object.getUint(), 1234);
+        assert.strictEqual(object.uintValue, 1234);
     }
 
     @test
@@ -148,7 +148,7 @@ import {
         // Assert
         assert.strictEqual(object.name, "foo");
         assert.strictEqual(object.type, DataType.QWord);
-        assert.strictEqual(object.getUlong(), BigInt(1234));
+        assert.strictEqual(object.ulongValue, BigInt(1234));
 
         const expectedBytes = ByteVector.concatenate(
             ByteVector.fromUshort(8, false),
@@ -178,7 +178,7 @@ import {
         // Assert
         assert.strictEqual(object.name, "foo");
         assert.strictEqual(object.type, DataType.QWord);
-        assert.strictEqual(object.getUlong(), BigInt(1234));
+        assert.strictEqual(object.ulongValue, BigInt(1234));
     }
 
     @test
@@ -189,7 +189,7 @@ import {
         // Assert
         assert.strictEqual(object.name, "foo");
         assert.strictEqual(object.type, DataType.Unicode);
-        assert.strictEqual(object.getString(), "foobarbaz");
+        assert.strictEqual(object.stringValue, "foobarbaz");
 
         const expectedBytes = ByteVector.concatenate(
             ByteVector.fromUshort(8, false),
@@ -219,7 +219,7 @@ import {
         // Assert
         assert.strictEqual(object.name, "foo");
         assert.strictEqual(object.type, DataType.Unicode);
-        assert.strictEqual(object.getString(), "foobarbaz");
+        assert.strictEqual(object.stringValue, "foobarbaz");
     }
 
     @test
@@ -233,7 +233,7 @@ import {
         // Assert
         assert.strictEqual(object.name, "foo");
         assert.strictEqual(object.type, DataType.Bytes);
-        Testers.bvEqual(object.getBytes(), bytes);
+        Testers.bvEqual(object.byteValue, bytes);
 
         const expectedBytes = ByteVector.concatenate(
             ByteVector.fromUshort(8, false),
@@ -266,7 +266,7 @@ import {
         // Assert
         assert.strictEqual(object.name, "foo");
         assert.strictEqual(object.type, DataType.Bytes);
-        Testers.bvEqual(object.getBytes(), bytes);
+        Testers.bvEqual(object.byteValue, bytes);
     }
 
     @test
@@ -280,7 +280,7 @@ import {
         // Assert
         assert.strictEqual(object.name, "foo");
         assert.strictEqual(object.type, DataType.Guid);
-        assert.isTrue(object.getGuid().equals(guid));
+        assert.isTrue(object.guidValue.equals(guid));
 
         const expectedBytes = ByteVector.concatenate(
             ByteVector.fromUshort(8, false),
@@ -313,7 +313,7 @@ import {
         // Assert
         assert.strictEqual(object.name, "foo");
         assert.strictEqual(object.type, DataType.Guid);
-        assert.isTrue(object.getGuid().equals(guid));
+        assert.isTrue(object.guidValue.equals(guid));
     }
 }
 
@@ -322,7 +322,7 @@ import {
         return ExtendedContentDescriptionObject.fromFile;
     }
     protected get minSize(): number { return 26; }
-    protected get objectGuid(): UuidWrapper { return Guids.AsfMetadataLibraryObject; }
+    protected get objectGuid(): UuidWrapper { return Guids.ASF_METADATA_LIBRARY_OBJECT; }
 
     @test
     public fromEmpty() {
@@ -331,7 +331,7 @@ import {
 
         // Assert
         assert.isOk(object);
-        assert.isTrue(object.guid.equals(Guids.AsfExtendedContentDescriptionObject));
+        assert.isTrue(object.guid.equals(Guids.ASF_EXTENDED_CONTENT_DESCRIPTION_OBJECT));
         assert.strictEqual(object.objectType, ObjectType.ExtendedContentDescriptionObject);
         assert.strictEqual(object.originalSize, 0);
         assert.isTrue(object.isEmpty);
@@ -347,7 +347,7 @@ import {
         const record2Bytes = record2.render();
         const bytes = ByteVector.concatenate(
             ByteVector.fromSize(10), // Offset
-            Guids.AsfExtendedContentDescriptionObject.toBytes(),
+            Guids.ASF_EXTENDED_CONTENT_DESCRIPTION_OBJECT.toBytes(),
             ByteVector.fromUlong(16 + 8 + 2 + record1Bytes.length + record2Bytes.length, false),
             ByteVector.fromUshort(2, false),
             record1Bytes,
@@ -360,7 +360,7 @@ import {
 
         // Assert
         assert.isOk(object);
-        assert.isTrue(object.guid.equals(Guids.AsfExtendedContentDescriptionObject));
+        assert.isTrue(object.guid.equals(Guids.ASF_EXTENDED_CONTENT_DESCRIPTION_OBJECT));
         assert.strictEqual(object.objectType, ObjectType.ExtendedContentDescriptionObject);
         assert.strictEqual(object.originalSize, bytes.length - 10);
         assert.isFalse(object.isEmpty);
@@ -536,7 +536,7 @@ import {
         const record2Bytes = record2.render();
         const bytes = ByteVector.concatenate(
             ByteVector.fromSize(10), // Offset
-            Guids.AsfExtendedContentDescriptionObject.toBytes(),
+            Guids.ASF_EXTENDED_CONTENT_DESCRIPTION_OBJECT.toBytes(),
             ByteVector.fromUlong(16 + 8 + 2 + record1Bytes.length + record2Bytes.length, false),
             ByteVector.fromUshort(2, false),
             record1Bytes,

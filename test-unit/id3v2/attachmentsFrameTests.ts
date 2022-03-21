@@ -13,17 +13,21 @@ import {FrameIdentifier, FrameIdentifiers} from "../../src/id3v2/frameIdentifier
 import {IPicture, PictureType} from "../../src/iPicture";
 import {Testers} from "../utilities/testers";
 
-function getTestFrame() {
-    return getCustomTestFrame(
-        ByteVector.fromString("foobarbaz", StringType.UTF8),
-        "fux",
-        "bux",
-        "application/octet-stream",
-        PictureType.FrontCover
-    );
-}
+const getTestFrame = () => getCustomTestFrame(
+    ByteVector.fromString("foobarbaz", StringType.UTF8),
+    "fux",
+    "bux",
+    "application/octet-stream",
+    PictureType.FrontCover
+);
 
-function getCustomTestFrame(data: ByteVector, desc: string, filename: string, mimeType: string, type: PictureType) {
+const getCustomTestFrame = (
+    data: ByteVector,
+    desc: string,
+    filename: string,
+    mimeType: string,
+    type: PictureType
+): AttachmentFrame => {
     const mockPicture = TypeMoq.Mock.ofType<IPicture>();
     mockPicture.setup((p) => p.data).returns(() => data);
     mockPicture.setup((p) => p.description).returns(() => desc);

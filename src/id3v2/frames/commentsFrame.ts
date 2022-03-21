@@ -124,7 +124,7 @@ export default class CommentsFrame extends Frame {
     /**
      * Gets the comment text stored in the current instance, or empty string if not set.
      */
-    public get text() { return this._text || ""; }
+    public get text(): string { return this._text || ""; }
     /**
      * Sets the comment text stored in the current instance.
      * @param value Comment text to store
@@ -249,7 +249,7 @@ export default class CommentsFrame extends Frame {
         return this.text;
     }
 
-    protected parseFields(data: ByteVector, _version: number): void {
+    protected parseFields(data: ByteVector): void {
         if (data.length < 4) {
             throw new CorruptFileError("Not enough bytes in field");
         }

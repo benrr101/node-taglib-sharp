@@ -24,8 +24,8 @@ export enum OggPageFlags {
  * This structure provides a representation of an Ogg page header.
  */
 export class OggPageHeader {
-    public static readonly minSize = 27;
-    public static readonly headerBeginning = ByteVector.fromString("OggS", StringType.Latin1).makeReadOnly();
+    public static readonly MINIMUM_SIZE = 27;
+    public static readonly HEADER_IDENTIFIER = ByteVector.fromString("OggS", StringType.Latin1).makeReadOnly();
 
     private _absoluteGranularPosition: number;
     private _dataSize: number;
@@ -39,8 +39,7 @@ export class OggPageHeader {
 
     // #region Constructors
 
-    private constructor() {
-    }
+    private constructor() { /* private to enforce construction via static methods */ }
 
     /**
      * Constructs and initializes a new instance by reading a raw Ogg page header from a specified
@@ -51,13 +50,13 @@ export class OggPageHeader {
     public static fromFile(file: File, position: number): OggPageHeader {
         Guards.truthy(file, "file");
         Guards.safeUint(position, "position");
-        if (position > file.length - this.minSize) {
-            throw new Error(`Argument out of range: page header must be at least ${this.minSize} bytes`);
+        if (position > file.length - this.MINIMUM_SIZE) {
+            throw new Error(`Argument out of range: page header must be at least ${this.MINIMUM_SIZE} bytes`);
         }
 
         file.seek(position);
-        const data = file.readBlock(this.minSize);
-        if (data.length < this.minSize || !data.startsWith(this.headerBeginning)) {
+        const data = file.readBlock(this.MINIMUM_SIZE);
+        if (data.length < this.MINIMUM_SIZE || !data.startsWith(this.HEADER_IDENTIFIER)) {
             throw new CorruptFileError("Error reading page header");
         }
 
@@ -67,7 +66,9 @@ export class OggPageHeader {
 
         const absoluteGranularPosition = data.subarray(6, 8).toUlong(false);
         if (absoluteGranularPosition > Number.MAX_SAFE_INTEGER) {
-            throw new UnsupportedFormatError("Granular position is too large to be handled with this version of node-taglib-sharp");
+            throw new UnsupportedFormatError(
+                "Granular position is too large to be handled with this version of node-taglib-sharp"
+            );
         }
         header._absoluteGranularPosition = Number(absoluteGranularPosition);
         header._streamSerialNumber = data.subarray(14, 4).toUint(false);
@@ -85,7 +86,7 @@ export class OggPageHeader {
         }
 
         // The base size of an Ogg page is 27 bytes + the number of lacing values
-        header._size = this.minSize + pageSegmentCount;
+        header._size = this.MINIMUM_SIZE + pageSegmentCount;
         header._packetSizes = [];
 
         let packetSize = 0;
@@ -245,7 +246,7 @@ export class OggPageHeader {
         const lacingBytes = ByteVector.concatenate(...lacingValues);
 
         return ByteVector.concatenate(
-            OggPageHeader.headerBeginning,
+            OggPageHeader.HEADER_IDENTIFIER,
             this._version,
             this._flags,
             ByteVector.fromUlong(this._absoluteGranularPosition, false),

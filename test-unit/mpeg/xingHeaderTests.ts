@@ -46,7 +46,7 @@ import {Testers} from "../utilities/testers";
     public fromData_zeroTotalFrames() {
         // Arrange
         const data = ByteVector.concatenate(
-            XingHeader.fileIdentifier,
+            XingHeader.FILE_IDENTIFIER,
             0x00, 0x00, 0x00, 0x02,
             ByteVector.fromUint(123)
         );
@@ -64,7 +64,7 @@ import {Testers} from "../utilities/testers";
     public fromData_zeroTotalSize() {
         // Arrange
         const data = ByteVector.concatenate(
-            XingHeader.fileIdentifier,
+            XingHeader.FILE_IDENTIFIER,
             0x00, 0x00, 0x00, 0x01,
             ByteVector.fromUint(123)
         );
@@ -82,7 +82,7 @@ import {Testers} from "../utilities/testers";
     public fromData_totalSizeAndFrames() {
         // Arrange
         const data = ByteVector.concatenate(
-            XingHeader.fileIdentifier,
+            XingHeader.FILE_IDENTIFIER,
             0x00, 0x00, 0x00, 0x03,
             ByteVector.fromUint(123),
             ByteVector.fromUint(234)

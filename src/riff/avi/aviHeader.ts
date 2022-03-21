@@ -11,12 +11,12 @@ export default class AviHeader {
     /**
      * ID of the chunk in the header list that contains the header data.
      */
-    public static readonly headerChunkId = "avih";
+    public static readonly HEADER_CHUNK_ID = "avih";
 
     /**
      * Type of the list that stores an AVI header
      */
-    public static readonly headerListType = "hdrl";
+    public static readonly HEADER_LIST_TYPE = "hdrl";
 
     private readonly _codecs: ICodec[];
     private readonly _durationMilliseconds: number;
@@ -37,12 +37,12 @@ export default class AviHeader {
      */
     public constructor(list: RiffList) {
         Guards.truthy(list, "list");
-        if (list.type !== AviHeader.headerListType) {
-            throw new CorruptFileError(`Expected ${AviHeader.headerListType} list but got ${list.type}`);
+        if (list.type !== AviHeader.HEADER_LIST_TYPE) {
+            throw new CorruptFileError(`Expected ${AviHeader.HEADER_LIST_TYPE} list but got ${list.type}`);
         }
 
         // Read the main header
-        const mainHeaderValues = list.getValues(AviHeader.headerChunkId);
+        const mainHeaderValues = list.getValues(AviHeader.HEADER_CHUNK_ID);
         if (mainHeaderValues.length === 0) {
             throw new CorruptFileError("Could not find AVI main header data");
         }
@@ -63,7 +63,7 @@ export default class AviHeader {
         this._durationMilliseconds = this._totalFrames * this._microsecondsPerFrame / 1000;
 
         // Read the streams in the file
-        const streamHeaderLists = list.getLists(AviStream.listType);
+        const streamHeaderLists = list.getLists(AviStream.LIST_TYPE);
         this._streams = streamHeaderLists.map((l) => new AviStream(l));
         this._codecs = this._streams.map((s) => s.codec).filter((c) => !!c);
     }

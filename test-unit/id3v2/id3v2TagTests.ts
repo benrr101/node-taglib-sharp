@@ -26,7 +26,7 @@ import {TextInformationFrame, UserTextInformationFrame} from "../../src/id3v2/fr
 import {UrlLinkFrame} from "../../src/id3v2/frames/urlLinkFrame";
 import PrivateFrame from "../../src/id3v2/frames/privateFrame";
 
-function getTestTagHeader(version: number, flags: Id3v2TagHeaderFlags, tagSize: number): ByteVector {
+const getTestTagHeader = (version: number, flags: Id3v2TagHeaderFlags, tagSize: number): ByteVector => {
     return ByteVector.concatenate(
         ByteVector.fromString("ID3", StringType.Latin1),
         version, 0x00,

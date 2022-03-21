@@ -1,23 +1,23 @@
 import * as TypeMoq from "typemoq";
 
+import TestConstants from "../testConstants";
+import TestStream from "./testStream";
 import {ByteVector} from "../../src/byteVector";
 import {File} from "../../src/file";
 import {IStream, SeekOrigin} from "../../src/stream";
 import {IFileAbstraction} from "../../src/fileAbstraction";
-import TestStream from "./testStream";
-import TestConstants from "../testConstants";
 
 export type TestFileAbstraction = IFileAbstraction & {allBytes: ByteVector};
 export default {
-    getFile(data: ByteVector): File {
+    getFile: (data: ByteVector): File => {
         const mockFile = TypeMoq.Mock.ofType<File>();
         let position = 0;
         mockFile.setup((f) => f.length).returns(() => data.length);
-        mockFile.setup((f) => f.seek(TypeMoq.It.isAnyNumber(), TypeMoq.It.isAny()))
-            .returns((p, o) => {
-                switch (o) {
+        mockFile.setup((f) => f.seek(TypeMoq.It.isAnyNumber(), <SeekOrigin>TypeMoq.It.isAny()))
+            .returns((p: number, o: SeekOrigin) => {
+                switch (o || SeekOrigin.Begin) {
                     case SeekOrigin.Begin:
-                        position = Math.min(data.length, position);
+                        position = Math.min(data.length, p);
                         break;
                     case SeekOrigin.Current:
                         position = Math.min(data.length, position + p);
@@ -26,10 +26,9 @@ export default {
                         position = Math.min(data.length, data.length + p);
                         break;
                 }
-                position = p;
             });
         mockFile.setup((f) => f.readBlock(TypeMoq.It.isAnyNumber()))
-            .returns((s) => {
+            .returns((s: number) => {
                 if (position + s > data.length) {
                     s = data.length - position;
                 }
@@ -48,13 +47,13 @@ export default {
 
         return mockFile.object;
     },
-    getFileAbstraction(data: ByteVector): TestFileAbstraction {
+    getFileAbstraction: (data: ByteVector): TestFileAbstraction => {
         return {
             name: TestConstants.name,
             get allBytes(): ByteVector { return data; },
             get readStream(): IStream { return new TestStream(data, false); },
             get writeStream(): IStream { return new TestStream(data, true); },
-            closeStream(stream: IStream): void { stream.close(); }
+            closeStream: (stream: IStream): void => { stream.close(); }
         };
     }
 };

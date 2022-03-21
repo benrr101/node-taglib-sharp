@@ -49,7 +49,7 @@ export default class OggFile extends File {
             if ((readStyle & ReadStyle.Average) !== 0) {
                 // Find the last page header and use its position to determine the duration of the
                 // file.
-                const lastPageHeaderOffset = this.rFind(OggPageHeader.headerBeginning);
+                const lastPageHeaderOffset = this.rFind(OggPageHeader.HEADER_IDENTIFIER);
                 if (lastPageHeaderOffset < 0) {
                     throw new CorruptFileError("Could not find last Ogg page header");
                 }
@@ -83,7 +83,7 @@ export default class OggFile extends File {
     // #region Methods
 
     /** @inheritDoc */
-    public getTag(type: TagTypes, create: boolean): Tag {
+    public getTag(type: TagTypes): Tag {
         if (type === TagTypes.Xiph) {
             return this._tag.comments[0];
         }
@@ -155,7 +155,7 @@ export default class OggFile extends File {
             this.insert(output, 0, streamsResult.end);
             OggPage.overwriteSequenceNumbers(this, output.length, shifts);
 
-            this._tagTypesOnDisk = this.tagTypes;
+            this.tagTypesOnDisk = this.tagTypes;
 
         } finally {
             this.mode = FileAccessMode.Closed;
@@ -202,7 +202,7 @@ export default class OggFile extends File {
     // #endregion
 }
 
-////////////////////////////////////////////////////////////////////////////
+// /////////////////////////////////////////////////////////////////////////
 // Register the file type
 [
     "taglib/ogg",

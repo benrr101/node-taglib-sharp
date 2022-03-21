@@ -532,7 +532,7 @@ import {Picture} from "../../src";
 
     private static getTagCreates(
         tagType: TagTypes,
-        // tslint:disable-next-line:ban-types It's the type that assert.instanceof uses
+        // eslint-disable-next-line @typescript-eslint/ban-types
         instanceOf: Function,
         locationGetter: () => boolean,
         locationSetter: (v: boolean) => void,
@@ -724,7 +724,7 @@ import {Picture} from "../../src";
 
         // Assert
         const paddingLength = Flac_File_ConstructorTests.standardPadding
-            + Flac_File_ConstructorTests.getXiphTag().render(false).length + FlacBlock.headerSize
+            + Flac_File_ConstructorTests.getXiphTag().render(false).length + FlacBlock.HEADER_SIZE
             + Flac_File_ConstructorTests.getPictureBlock().render(false).length;
         const paddingBlock = FlacBlock.fromData(FlacBlockType.Padding, ByteVector.fromSize(paddingLength));
 

@@ -84,7 +84,7 @@ export default class OggTag extends CombinedTag {
      * @inheritDoc
      * @remarks Tags cannot be added or removed from Ogg files. This will always throw.
      */
-    public createTag(tagType: TagTypes, copy: boolean): Tag {
+    public createTag(): Tag {
         throw new Error("Invalid operation: tags cannot be added or removed from Ogg files.");
     }
 
@@ -92,7 +92,7 @@ export default class OggTag extends CombinedTag {
      * @inheritDoc
      * @remarks Tags cannot be added or removed from Ogg files. This will do nothing.
      */
-    public removeTags(tagTypes: TagTypes): void {
+    public removeTags(): void {
         /* no-op */
     }
 

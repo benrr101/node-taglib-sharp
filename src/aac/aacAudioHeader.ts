@@ -9,7 +9,7 @@ import {Guards, NumberUtils} from "../utils";
  * stream. NOTE: This header type should not be used for MPEG-4 encapsulated audio files.
  */
 export default class AacAudioHeader implements IAudioCodec {
-    private static readonly sampleRates = [
+    private static readonly SAMPLE_RATES = [
         96000, 88200, 64000, 48000, 44100, 32000,
         24000, 22050, 16000, 12000, 11025, 8000, 7350
     ];
@@ -17,7 +17,7 @@ export default class AacAudioHeader implements IAudioCodec {
     /**
      * An empty an unset header
      */
-    public static readonly unknown = new AacAudioHeader(0, 0, 0, 0);
+    public static readonly UNKNOWN = new AacAudioHeader(0, 0, 0, 0);
 
     private readonly _audioBitrate: number;
     private readonly _audioChannels: number;
@@ -134,10 +134,10 @@ export default class AacAudioHeader implements IAudioCodec {
                 // Sample rate
                 const sampleRateByte = bytes.get(2);
                 const sampleRateIndex = NumberUtils.uintRShift(NumberUtils.uintAnd(sampleRateByte, 0x3C), 2);
-                if (sampleRateIndex >= this.sampleRates.length) {
+                if (sampleRateIndex >= this.SAMPLE_RATES.length) {
                     return undefined;
                 }
-                const sampleRate = this.sampleRates[sampleRateIndex];
+                const sampleRate = this.SAMPLE_RATES[sampleRateIndex];
 
                 // MPEG-4 Audio Type
                 const mpeg4AudioType = NumberUtils.uintRShift(NumberUtils.uintAnd(sampleRateByte, 0xC0), 6) + 1;

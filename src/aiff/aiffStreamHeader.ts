@@ -12,12 +12,12 @@ export default class AiffStreamHeader implements ILosslessAudioCodec {
      * Identifier used to recognize an AIFF file. Although an AIFF file starts with "FORM2", we're
      * interested in the common chunk only, which contains the properties we need.
      */
-    public static readonly fileIdentifier = ByteVector.fromString("COMM", StringType.UTF8).makeReadOnly();
+    public static readonly FILE_IDENTIFIER = ByteVector.fromString("COMM", StringType.UTF8).makeReadOnly();
 
     /**
      * Size of an AIFF common chunk in bytes
      */
-    public static readonly size = 26;
+    public static readonly SIZE = 26;
 
     // #region Private members
 
@@ -38,7 +38,7 @@ export default class AiffStreamHeader implements ILosslessAudioCodec {
     public constructor(data: ByteVector, streamLength: number) {
         Guards.truthy(data, "data");
         Guards.uint(streamLength, "streamLength");
-        if (!data.startsWith(AiffStreamHeader.fileIdentifier)) {
+        if (!data.startsWith(AiffStreamHeader.FILE_IDENTIFIER)) {
             throw new CorruptFileError("Data does not begin with identifier");
         }
 
@@ -84,8 +84,6 @@ export default class AiffStreamHeader implements ILosslessAudioCodec {
 
     /** @inheritDoc */
     public get mediaTypes(): MediaTypes { return MediaTypes.Audio; }
-
-
 
     // #endregion
 }

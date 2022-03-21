@@ -75,16 +75,16 @@ export default class UnknownFrame extends Frame {
 
     /** @inheritDoc */
     public clone(): Frame {
-        return UnknownFrame.fromData(this._header.frameId, this.data);
+        return UnknownFrame.fromData(this.header.frameId, this.data);
     }
 
     /** @inheritDoc */
-    protected parseFields(data: ByteVector, _version: number): void {
+    protected parseFields(data: ByteVector): void {
         this.data = data.toByteVector();
     }
 
     /** @inheritDoc */
-    protected renderFields(_version: number): ByteVector {
+    protected renderFields(): ByteVector {
         return this.data || ByteVector.empty();
     }
 }

@@ -13,9 +13,9 @@ import {IPicture, PictureType} from "../../src/iPicture";
 import {TagTypes} from "../../src/tag";
 import {Testers} from "../utilities/testers";
 
-function getTestTagFooter(flags: ApeTagFooterFlags, itemCount: number, itemPlusFooter: number): ByteVector {
+const getTestTagFooter = (flags: ApeTagFooterFlags, itemCount: number, itemPlusFooter: number): ByteVector => {
     return ByteVector.concatenate(
-        ApeTagFooter.fileIdentifier,
+        ApeTagFooter.FILE_IDENTIFIER,
         ByteVector.fromUint(2000, false),
         ByteVector.fromUint(itemPlusFooter, false),
         ByteVector.fromUint(itemCount, false),
@@ -61,7 +61,7 @@ function getTestTagFooter(flags: ApeTagFooterFlags, itemCount: number, itemPlusF
     @test
     public fromData_emptyTag() {
         // Arrange
-        const data = getTestTagFooter(ApeTagFooterFlags.HeaderPresent, 0, ApeTagFooter.size);
+        const data = getTestTagFooter(ApeTagFooterFlags.HeaderPresent, 0, ApeTagFooter.SIZE);
 
         // Act
         const tag = ApeTag.fromData(data);
@@ -82,7 +82,7 @@ function getTestTagFooter(flags: ApeTagFooterFlags, itemCount: number, itemPlusF
         const data = ByteVector.concatenate(
             item1,
             item2,
-            getTestTagFooter(0, 3, item1.length + item2.length + ApeTagFooter.size)
+            getTestTagFooter(0, 3, item1.length + item2.length + ApeTagFooter.SIZE)
         );
 
         // Act
@@ -146,7 +146,7 @@ function getTestTagFooter(flags: ApeTagFooterFlags, itemCount: number, itemPlusF
         // Arrange
         const data = ByteVector.concatenate(
             ByteVector.fromSize(10),
-            getTestTagFooter(ApeTagFooterFlags.HeaderPresent, 0, ApeTagFooter.size)
+            getTestTagFooter(ApeTagFooterFlags.HeaderPresent, 0, ApeTagFooter.SIZE)
         );
         const file = TestFile.getFile(data);
 
@@ -169,7 +169,7 @@ function getTestTagFooter(flags: ApeTagFooterFlags, itemCount: number, itemPlusF
             ByteVector.fromSize(10),
             item1,
             item2,
-            getTestTagFooter(0, 3, item1.length + item2.length + ApeTagFooter.size)
+            getTestTagFooter(0, 3, item1.length + item2.length + ApeTagFooter.SIZE)
         );
         const footerPosition = item1.length + item2.length + 10;
         const file = TestFile.getFile(data);
@@ -209,8 +209,8 @@ function getTestTagFooter(flags: ApeTagFooterFlags, itemCount: number, itemPlusF
     public fromFile_positionIsAtHeader() {
         // Arrange
         const flags = (ApeTagFooterFlags.IsHeader | ApeTagFooterFlags.HeaderPresent) >>> 0;
-        const header = getTestTagFooter(flags, 0, ApeTagFooter.size);
-        const footer = getTestTagFooter(ApeTagFooterFlags.HeaderPresent, 0, ApeTagFooter.size);
+        const header = getTestTagFooter(flags, 0, ApeTagFooter.SIZE);
+        const footer = getTestTagFooter(ApeTagFooterFlags.HeaderPresent, 0, ApeTagFooter.SIZE);
         const data = ByteVector.concatenate(
             ByteVector.fromSize(10),
             header,
@@ -1219,8 +1219,8 @@ function getTestTagFooter(flags: ApeTagFooterFlags, itemCount: number, itemPlusF
     public render() {
         // Arrange
         const flags = (ApeTagFooterFlags.IsHeader | ApeTagFooterFlags.HeaderPresent) >>> 0;
-        let header = getTestTagFooter(flags, 0, ApeTagFooter.size);
-        let footer = getTestTagFooter(ApeTagFooterFlags.HeaderPresent, 0, ApeTagFooter.size);
+        let header = getTestTagFooter(flags, 0, ApeTagFooter.SIZE);
+        let footer = getTestTagFooter(ApeTagFooterFlags.HeaderPresent, 0, ApeTagFooter.SIZE);
         const data = ByteVector.concatenate(
             ByteVector.fromSize(10),
             header,
@@ -1239,7 +1239,7 @@ function getTestTagFooter(flags: ApeTagFooterFlags, itemCount: number, itemPlusF
         // Assert
         const item1Render = item1.render();
         const item2Render = item2.render();
-        const tagSize = ApeTagFooter.size + item1Render.length + item2Render.length;
+        const tagSize = ApeTagFooter.SIZE + item1Render.length + item2Render.length;
         header = getTestTagFooter(flags, 2, tagSize);
         footer = getTestTagFooter(ApeTagFooterFlags.HeaderPresent, 2, tagSize);
         const expected = ByteVector.concatenate(

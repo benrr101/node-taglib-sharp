@@ -283,7 +283,7 @@ import RiffList from "../../src/riff/riffList";
     }
 
     private static getTestTagData(): RiffList {
-        const list = RiffList.fromEmpty(InfoTag.listType);
+        const list = RiffList.fromEmpty(InfoTag.LIST_TYPE);
         list.setValues("INAM", [ByteVector.fromString("foo", StringType.UTF8)]);
         list.setValues("ISBJ", [ByteVector.fromString("bar", StringType.UTF8)]);
         list.setValues("ISTR", [ByteVector.fromString("baz", StringType.UTF8)]);

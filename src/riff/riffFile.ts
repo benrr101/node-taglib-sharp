@@ -1,3 +1,4 @@
+import itiriri from "itiriri";
 import AviFileSettings from "./aviFileSettings";
 import AviHeader from "./avi/aviHeader";
 import DivxTag from "./divxTag";
@@ -30,7 +31,7 @@ export default class RiffFile extends File {
     /**
      * Identifier at the beginning of a RIFF file.
      */
-    public static readonly fileIdentifier = ByteVector.fromString("RIFF", StringType.Latin1).makeReadOnly();
+    public static readonly FILE_IDENTIFIER = ByteVector.fromString("RIFF", StringType.Latin1).makeReadOnly();
 
     private _fileType: string;
     private _properties: Properties;
@@ -150,9 +151,10 @@ export default class RiffFile extends File {
             const renderedTagBytes = ByteVector.concatenate(... renderedTags);
 
             // Determine the boundaries of the tagging chunks
-            const taggingChunkIndexes = new Array(... this._taggingChunkIndexes.values())
+            const taggingChunkIndexes = itiriri(this._taggingChunkIndexes.values())
                 .filter((i) => i >= 0)
-                .sort();
+                .sort()
+                .toArray();
 
             let taggingChunkStartIndex: number;
             let taggingChunkStart: number;
@@ -182,10 +184,11 @@ export default class RiffFile extends File {
                     // operation
                     // Find any trailing JUNK chunks
                     let lastChunkIndex = taggingChunkIndexes[taggingChunkIndexes.length - 1];
-                    let junkSize = 0;
-                    while (lastChunkIndex + 1 < this._rawChunks.length && this._rawChunks[lastChunkIndex + 1].fourcc === "JUNK") {
+                    while (
+                        lastChunkIndex + 1 < this._rawChunks.length &&
+                        this._rawChunks[lastChunkIndex + 1].fourcc === "JUNK"
+                    ) {
                         lastChunkIndex++;
-                        junkSize += this._rawChunks[lastChunkIndex].originalTotalSize;
                     }
 
                     // Calculate tagging chunks start/length
@@ -278,7 +281,7 @@ export default class RiffFile extends File {
             // Calculate new RIFF size
             this._riffSize = this.length - 8;
             this.insert(ByteVector.fromUint(this._riffSize, false), 4, 4);
-            this._tagTypesOnDisk = this.tagTypes;
+            this.tagTypesOnDisk = this.tagTypes;
         } finally {
             this.mode = FileAccessMode.Closed;
         }
@@ -290,7 +293,7 @@ export default class RiffFile extends File {
         try {
             // Read the header of the file
             const initialHeader = this.readBlock(12);
-            if (!initialHeader.startsWith(RiffFile.fileIdentifier)) {
+            if (!initialHeader.startsWith(RiffFile.FILE_IDENTIFIER)) {
                 throw new CorruptFileError("File does not begin with RIFF identifier");
             }
             this._riffSize = initialHeader.subarray(4, 4).toUint(false);
@@ -301,7 +304,7 @@ export default class RiffFile extends File {
             while (position + 8 < this.length) {
                 this.seek(position);
                 const fourcc = this.readBlock(4).toString(StringType.Latin1);
-                const chunk = fourcc === RiffList.identifierFourcc
+                const chunk = fourcc === RiffList.IDENTIFIER_FOURCC
                     ? RiffList.fromFile(this, position)
                     : RiffChunk.fromFile(this, fourcc, position);
                 position += chunk.originalTotalSize;
@@ -339,7 +342,7 @@ export default class RiffFile extends File {
                 : undefined;
 
             this._tag = new RiffTags(divxTag, id3v2Tag, infoTag, moveIdTag);
-            this._tagTypesOnDisk = this.tagTypes;
+            this.tagTypesOnDisk = this.tagTypes;
 
         } finally {
             this.mode = FileAccessMode.Closed;
@@ -378,8 +381,8 @@ export default class RiffFile extends File {
             case "AVI ":
                 // This is an AVI file, search for the hdrl list
                 const aviHeaderList = this._rawChunks.find((c) => {
-                    return c.fourcc === RiffList.identifierFourcc
-                        && (<RiffList> c).type === AviHeader.headerListType;
+                    return c.fourcc === RiffList.IDENTIFIER_FOURCC
+                        && (<RiffList> c).type === AviHeader.HEADER_LIST_TYPE;
                 });
                 if (!aviHeaderList) {
                     throw new CorruptFileError("AVI file is missing header list");
@@ -416,18 +419,18 @@ export default class RiffFile extends File {
         );
         this._taggingChunkIndexes.set(
             TagTypes.RiffInfo,
-            this._rawChunks.findIndex((c) => RiffList.isChunkList(c) && (<RiffList> c).type === InfoTag.listType)
+            this._rawChunks.findIndex((c) => RiffList.isChunkList(c) && (<RiffList> c).type === InfoTag.LIST_TYPE)
         );
         this._taggingChunkIndexes.set(
             TagTypes.MovieId,
-            this._rawChunks.findIndex((c) => RiffList.isChunkList(c) && (<RiffList> c).type === MovieIdTag.listType)
+            this._rawChunks.findIndex((c) => RiffList.isChunkList(c) && (<RiffList> c).type === MovieIdTag.LIST_TYPE)
         );
     }
 
     // #endregion
 }
 
-////////////////////////////////////////////////////////////////////////////
+// /////////////////////////////////////////////////////////////////////////
 // Register the file type
 [
     "taglib/avi",

@@ -40,7 +40,7 @@ export default class OggPage {
      * @param header Header of the page
      * @param packets Packets contained in the page
      */
-    public static fromPackets(header: OggPageHeader, packets: ByteVector[]) {
+    public static fromPackets(header: OggPageHeader, packets: ByteVector[]): OggPage {
         Guards.truthy(packets, "packets");
         Guards.truthy(header, "header");
 
@@ -95,7 +95,7 @@ export default class OggPage {
             return;
         }
 
-        while (position < file.length - OggPageHeader.minSize) {
+        while (position < file.length - OggPageHeader.MINIMUM_SIZE) {
             const header = OggPageHeader.fromFile(file, position);
             const size = header.size + header.dataSize;
 

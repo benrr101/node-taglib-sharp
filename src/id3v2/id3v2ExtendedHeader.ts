@@ -5,7 +5,7 @@ import {Guards} from "../utils";
 export default class Id3v2ExtendedHeader {
     private _size: number;
 
-    private constructor() {}
+    private constructor() { /* private to enforce construction via static methods */ }
 
     /**
      * Constructs and initializes a new instance by reading the raw contents.

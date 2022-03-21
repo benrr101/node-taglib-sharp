@@ -136,7 +136,7 @@ export default class PopularimeterFrame extends Frame {
     }
 
     /** @inheritDoc */
-    protected parseFields(data: ByteVector, _version: number): void {
+    protected parseFields(data: ByteVector): void {
         const delim = ByteVector.getTextDelimiter(StringType.Latin1);
 
         const delimIndex = data.find(delim);
@@ -162,7 +162,7 @@ export default class PopularimeterFrame extends Frame {
     }
 
     /** @inheritDoc */
-    protected renderFields(_version: number): ByteVector {
+    protected renderFields(): ByteVector {
         // Only include personal play count if it's desired
         let playCountData: ByteVector;
         if (this.playCount !== undefined) {

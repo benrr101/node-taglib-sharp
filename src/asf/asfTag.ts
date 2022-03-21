@@ -22,7 +22,7 @@ export default class AsfTag extends Tag {
     private _extendedDescriptionObject: ExtendedContentDescriptionObject = ExtendedContentDescriptionObject.fromEmpty();
     private _metadataLibraryObject: MetadataLibraryObject = MetadataLibraryObject.fromEmpty();
 
-    private static readonly genreRegex = new RegExp(/\(([0-9]+)\)/);
+    private static readonly GENRE_REGEX = new RegExp(/\(([0-9]+)\)/);
 
     // #region Constructors
 
@@ -268,7 +268,7 @@ export default class AsfTag extends Tag {
             let genre = result[i].trim();
 
             // Attempt to find a numeric genre in here
-            const genreMatch = AsfTag.genreRegex.exec(genre);
+            const genreMatch = AsfTag.GENRE_REGEX.exec(genre);
             if (genreMatch) {
                 const numericGenre = Number.parseInt(genreMatch[1], 10);
                 if (!Number.isNaN(numericGenre)) {
@@ -730,7 +730,7 @@ export default class AsfTag extends Tag {
             ... this.getDescriptors("WM/Picture"),
             ... this._metadataLibraryObject.getRecords(0, 0, "WM/Picture")
         ];
-        return records.map((r) => AsfTag.pictureFromData(r.getBytes()))
+        return records.map((r) => AsfTag.pictureFromData(r.byteValue))
             .filter((p) => !!p);
     }
     /**
@@ -806,7 +806,7 @@ export default class AsfTag extends Tag {
                 continue;
             }
 
-            const value = descriptor.getString();
+            const value = descriptor.stringValue;
             if (value !== undefined) {
                 return value;
             }
@@ -818,12 +818,12 @@ export default class AsfTag extends Tag {
     public getDescriptorUint(... names: string[]): number {
         for (const descriptor of this.getDescriptors(... names)) {
             if (descriptor.type === DataType.DWord) {
-                const uintValue = descriptor.getUint();
+                const uintValue = descriptor.uintValue;
                 if (uintValue !== 0) {
                     return uintValue;
                 }
             } else if (descriptor.type === DataType.Unicode) {
-                const numericValue = Number.parseInt(descriptor.getString().trim(), 10);
+                const numericValue = Number.parseInt(descriptor.stringValue.trim(), 10);
                 if (numericValue !== 0) {
                     return numericValue;
                 }
@@ -944,7 +944,7 @@ export default class AsfTag extends Tag {
     }
 
     /** @internal */
-    public static pictureToData(picture: IPicture) {
+    public static pictureToData(picture: IPicture): ByteVector {
         return ByteVector.concatenate(
             picture.type,
             ReadWriteUtils.renderDWord(picture.data.length),

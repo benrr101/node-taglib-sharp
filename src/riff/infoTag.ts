@@ -10,7 +10,7 @@ export default class InfoTag extends RiffListTag {
     /**
      * Type of the list that contains an info tag.
      */
-    public static readonly listType = "INFO";
+    public static readonly LIST_TYPE = "INFO";
 
     // #region Constructors
 
@@ -22,7 +22,7 @@ export default class InfoTag extends RiffListTag {
      * Constructs and initializes a new, empty instance.
      */
     public static fromEmpty(): InfoTag {
-        return new InfoTag(RiffList.fromEmpty(InfoTag.listType));
+        return new InfoTag(RiffList.fromEmpty(InfoTag.LIST_TYPE));
     }
 
     /**
