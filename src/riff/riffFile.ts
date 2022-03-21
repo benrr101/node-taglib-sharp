@@ -1,3 +1,4 @@
+import itiriri from "itiriri";
 import AviFileSettings from "./aviFileSettings";
 import AviHeader from "./avi/aviHeader";
 import DivxTag from "./divxTag";
@@ -19,7 +20,6 @@ import {IFileAbstraction} from "../fileAbstraction";
 import {ICodec} from "../iCodec";
 import {Tag, TagTypes} from "../tag";
 import {NumberUtils} from "../utils";
-import itiriri from "itiriri";
 
 /**
  * This class extends {@link File} to provide tagging and properties support for RIFF files. These
@@ -184,13 +184,11 @@ export default class RiffFile extends File {
                     // operation
                     // Find any trailing JUNK chunks
                     let lastChunkIndex = taggingChunkIndexes[taggingChunkIndexes.length - 1];
-                    let junkSize = 0;
                     while (
                         lastChunkIndex + 1 < this._rawChunks.length &&
                         this._rawChunks[lastChunkIndex + 1].fourcc === "JUNK"
                     ) {
                         lastChunkIndex++;
-                        junkSize += this._rawChunks[lastChunkIndex].originalTotalSize;
                     }
 
                     // Calculate tagging chunks start/length
@@ -198,7 +196,6 @@ export default class RiffFile extends File {
                     taggingChunkStart = this._rawChunks[taggingChunkStartIndex].chunkStart;
                     taggingChunkLength = this._rawChunks[lastChunkIndex].chunkStart
                         + this._rawChunks[lastChunkIndex].originalTotalSize
-                        + junkSize
                         - taggingChunkStart;
 
                     // Remove the chunks from the chunk list
