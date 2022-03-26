@@ -1,9 +1,8 @@
 import * as DateFormat from "dateformat";
-import Picture from "../picture";
 import XiphPicture from "./xiphPicture";
 import XiphSettings from "./xiphSettings";
 import {ByteVector, StringType} from "../byteVector";
-import {IPicture} from "../iPicture";
+import {IPicture, Picture} from "../picture";
 import {Tag, TagTypes} from "../tag";
 import {Guards} from "../utils";
 

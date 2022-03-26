@@ -2,13 +2,13 @@ import OggTag from "./oggTag";
 import OggBitStream from "./oggBitStream";
 import OggPage from "./oggPage";
 import OggPaginator from "./oggPaginator";
-import Properties from "../properties";
 import XiphComment from "../xiph/xiphComment";
 import {ByteVector} from "../byteVector";
 import {CorruptFileError} from "../errors";
 import {File, FileAccessMode, ReadStyle} from "../file";
 import {IFileAbstraction} from "../fileAbstraction";
 import {OggPageFlags, OggPageHeader} from "./oggPageHeader";
+import {Properties} from "../properties";
 import {Tag, TagTypes} from "../tag";
 import {NumberUtils} from "../utils";
 

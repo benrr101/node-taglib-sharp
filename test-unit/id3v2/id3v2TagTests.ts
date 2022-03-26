@@ -19,7 +19,7 @@ import {FrameClassType} from "../../src/id3v2/frames/frame";
 import {Id3v2FrameFlags} from "../../src/id3v2/frames/frameHeader";
 import {FrameIdentifier, FrameIdentifiers} from "../../src/id3v2/frameIdentifiers";
 import {Id3v2TagHeader, Id3v2TagHeaderFlags} from "../../src/id3v2/id3v2TagHeader";
-import {IPicture} from "../../src/iPicture";
+import {IPicture} from "../../src/picture";
 import {TagTypes} from "../../src/tag";
 import {Testers} from "../utilities/testers";
 import {TextInformationFrame, UserTextInformationFrame} from "../../src/id3v2/frames/textInformationFrame";

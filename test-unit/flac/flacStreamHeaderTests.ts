@@ -3,7 +3,7 @@ import {assert} from "chai";
 
 import FlacStreamHeader from "../../src/flac/flacStreamHeader";
 import {ByteVector} from "../../src/byteVector";
-import {MediaTypes} from "../../src/iCodec";
+import {MediaTypes} from "../../src/properties";
 import {Testers} from "../utilities/testers";
 
 @suite class Flac_StreamHeaderTests {

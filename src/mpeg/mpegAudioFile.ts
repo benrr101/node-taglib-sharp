@@ -1,10 +1,10 @@
 import MpegAudioFileSettings from "./mpegAudioFileSettings";
 import MpegAudioHeader from "./mpegAudioHeader";
 import SandwichFile from "../sandwich/sandwichFile";
-import Properties from "../properties";
 import {CorruptFileError} from "../errors";
 import {File, ReadStyle} from "../file";
 import {IFileAbstraction} from "../fileAbstraction";
+import {Properties} from "../properties";
 import {TagTypes} from "../tag";
 import {NumberUtils} from "../utils";
 

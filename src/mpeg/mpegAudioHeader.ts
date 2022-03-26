@@ -3,7 +3,7 @@ import VbriHeader from "./vbriHeader";
 import {ByteVector} from "../byteVector";
 import {CorruptFileError} from "../errors";
 import {File} from "../file";
-import {IAudioCodec, MediaTypes} from "../iCodec";
+import {IAudioCodec, MediaTypes} from "../properties";
 import {ChannelMode, MpegVersion} from "./mpegEnums";
 import {Guards, NumberUtils} from "../utils";
 

@@ -8,11 +8,8 @@ export {LocalFileAbstraction} from "./fileAbstraction";
 // Base Tag Classes
 export {default as CombinedTag} from "./combinedTag";
 export {default as Genres} from "./genres";
-export {ICodec, IAudioCodec, ILosslessAudioCodec, IVideoCodec, IPhotoCodec, MediaTypes} from "./iCodec";
-export {IPicture, PictureType} from "./iPicture";
-export {default as Picture} from "./picture";
-export {default as PictureLazy} from "./pictureLazy";
-export {default as Properties} from "./properties";
+export {IPicture, Picture, PictureLazy, PictureType} from "./picture";
+export {ICodec, IAudioCodec, ILosslessAudioCodec, IVideoCodec, IPhotoCodec, MediaTypes, Properties} from "./properties";
 export {Tag, TagTypes} from "./tag";
 
 // AAC /////////////////////////////////////////////////////////////////////

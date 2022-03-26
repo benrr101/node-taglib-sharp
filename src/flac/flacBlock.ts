@@ -1,6 +1,6 @@
-import ILazy from "../iLazy";
 import {ByteVector} from "../byteVector";
 import {File, FileAccessMode} from "../file";
+import {ILazy} from "../interfaces";
 import {Guards, NumberUtils} from "../utils";
 
 /**

@@ -1,10 +1,10 @@
 import EndTag from "./endTag";
 import SandwichTag from "./sandwichTag";
-import Properties from "../properties";
 import Settings from "../settings";
 import StartTag from "./startTag";
 import {File, FileAccessMode, ReadStyle} from "../file";
 import {IFileAbstraction} from "../fileAbstraction";
+import {Properties} from "../properties";
 import {Tag, TagTypes} from "../tag";
 import {NumberUtils} from "../utils";
 

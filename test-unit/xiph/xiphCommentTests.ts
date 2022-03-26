@@ -2,14 +2,13 @@ import {suite, test} from "@testdeck/mocha";
 import {assert} from "chai";
 import {Mock} from "typemoq";
 
-import Picture from "../../src/picture";
 import PropertyTests from "../utilities/propertyTests";
 import XiphComment from "../../src/xiph/xiphComment";
 import XiphPicture from "../../src/xiph/xiphPicture";
 import XiphSettings from "../../src/xiph/xiphSettings";
 import XiphTestResources from "./resources";
 import {ByteVector, StringType} from "../../src/byteVector";
-import {IPicture, PictureType} from "../../src/iPicture";
+import {IPicture, Picture, PictureType} from "../../src/picture";
 import {TagTypes} from "../../src/tag";
 import {TagTesters, Testers} from "../utilities/testers";
 

@@ -4,7 +4,7 @@ import {Testers} from "../utilities/testers";
 
 import AiffStreamHeader from "../../src/aiff/aiffStreamHeader";
 import {ByteVector, StringType} from "../../src/byteVector";
-import {MediaTypes} from "../../src/iCodec";
+import {MediaTypes} from "../../src/properties";
 
 @suite class Aiff_StreamHeaderTests {
     @test

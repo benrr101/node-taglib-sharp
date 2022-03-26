@@ -1,6 +1,6 @@
 import {ByteVector} from "../byteVector";
 import {CorruptFileError} from "../errors";
-import {IVideoCodec, MediaTypes} from "../iCodec";
+import {IVideoCodec, MediaTypes} from "../properties";
 import {Guards, NumberUtils} from "../utils";
 
 /**

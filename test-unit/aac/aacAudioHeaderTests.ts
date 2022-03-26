@@ -7,7 +7,7 @@ import Mpeg4AudioTypes from "../../src/mpeg4/mpeg4AudioTypes";
 import TestFile from "../utilities/testFile";
 import {ByteVector} from "../../src/byteVector";
 import {File} from "../../src/file";
-import {MediaTypes} from "../../src/iCodec";
+import {MediaTypes} from "../../src/properties";
 import {Testers} from "../utilities/testers";
 
 // Test constants

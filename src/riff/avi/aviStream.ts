@@ -1,8 +1,8 @@
 import RiffBitmapInfoHeader from "../riffBitmapInfoHeader";
 import RiffList from "../riffList";
 import RiffWaveFormatEx from "../riffWaveFormatEx";
-import {ICodec} from "../../iCodec";
 import {CorruptFileError} from "../../errors";
+import {ICodec} from "../../properties";
 import {Guards} from "../../utils";
 
 export enum AviStreamType {

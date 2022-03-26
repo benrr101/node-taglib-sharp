@@ -1,7 +1,7 @@
-import ILazy from "../iLazy";
 import IRiffChunk from "./iRiffChunk";
 import {ByteVector, StringType} from "../byteVector";
 import {File} from "../file";
+import {ILazy} from "../interfaces";
 import {Guards} from "../utils";
 
 /**
