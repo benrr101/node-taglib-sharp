@@ -1162,6 +1162,8 @@ export class ByteVector {
      * @returns string String containing the converted bytes
      */
     public toString(type: StringType): string {
+        // @TODO: Would it be useful to have a null terminated version that finds first null
+        //      terminator and returns that subset of bytes?
         const bom = type === StringType.UTF16 && this.length > 1
             ? this.subarray(0, 2)
             : undefined;

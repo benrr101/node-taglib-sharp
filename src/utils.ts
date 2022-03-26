@@ -167,6 +167,7 @@ export class NumberUtils {
 
     public static bigPow(x: bigint, y: number): bigint {
         Guards.uint(y, "y");
+        // @TODO: Consider upgrading target to es2016 to get the ** syntax
 
         let result = BigInt(1);
         for (let i = 0; i < y; i++) {
