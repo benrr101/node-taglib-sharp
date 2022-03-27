@@ -9,7 +9,7 @@ import {ApeTagFooter, ApeTagFooterFlags} from "../../src/ape/apeTagFooter";
 import {ApeTagItem, ApeTagItemType} from "../../src/ape/apeTagItem";
 import {ByteVector, StringType} from "../../src/byteVector";
 import {File} from "../../src/file";
-import {IPicture, PictureType} from "../../src/iPicture";
+import {IPicture, PictureType} from "../../src/picture";
 import {TagTypes} from "../../src/tag";
 import {Testers} from "../utilities/testers";
 

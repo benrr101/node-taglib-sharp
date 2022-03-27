@@ -6,7 +6,6 @@ import Id3v2Tag from "../id3v2/id3v2Tag";
 import InfoTag from "./infoTag";
 import IRiffChunk from "./iRiffChunk";
 import MovieIdTag from "./movieIdTag";
-import Properties from "../properties";
 import RiffChunk from "./riffChunk";
 import RiffList from "./riffList";
 import RiffTags from "./riffTags";
@@ -17,7 +16,7 @@ import {ByteVector, StringType} from "../byteVector";
 import {CorruptFileError, UnsupportedFormatError} from "../errors";
 import {File, FileAccessMode, ReadStyle} from "../file";
 import {IFileAbstraction} from "../fileAbstraction";
-import {ICodec} from "../iCodec";
+import {ICodec, Properties} from "../properties";
 import {Tag, TagTypes} from "../tag";
 import {NumberUtils} from "../utils";
 

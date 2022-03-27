@@ -1,6 +1,6 @@
 import {CorruptFileError} from "../errors";
 import {File} from "../file";
-import {IVideoCodec, MediaTypes} from "../iCodec";
+import {IVideoCodec, MediaTypes} from "../properties";
 import {Guards, NumberUtils} from "../utils";
 
 /**

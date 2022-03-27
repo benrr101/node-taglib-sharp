@@ -1,7 +1,7 @@
 import IOggCodec from "./iOggCodec";
 import XiphComment from "../../xiph/xiphComment";
 import {ByteVector, StringType} from "../../byteVector";
-import {IAudioCodec, MediaTypes} from "../../iCodec";
+import {IAudioCodec, MediaTypes} from "../../properties";
 import {Guards} from "../../utils";
 
 /**

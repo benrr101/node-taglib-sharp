@@ -1,6 +1,6 @@
 import XiphComment from "../../xiph/xiphComment";
 import {ByteVector} from "../../byteVector";
-import {ICodec} from "../../iCodec";
+import {ICodec} from "../../properties";
 
 export default interface IOggCodec extends ICodec {
     /**

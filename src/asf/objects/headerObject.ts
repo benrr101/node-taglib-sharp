@@ -3,7 +3,6 @@ import ContentDescriptionObject from "./contentDescriptionObject";
 import FilePropertiesObject from "./filePropertiesObject";
 import HeaderExtensionObject from "./headerExtensionObject";
 import PaddingObject from "./paddingObject";
-import Properties from "../../properties";
 import ReadWriteUtils from "../readWriteUtils";
 import StreamPropertiesObject from "./streamPropertiesObject";
 import UnknownObject from "./unknownObject";
@@ -11,7 +10,7 @@ import {ByteVector} from "../../byteVector";
 import {Guids, ObjectType} from "../constants";
 import {CorruptFileError} from "../../errors";
 import {File} from "../../file";
-import {ICodec} from "../../iCodec";
+import {ICodec, Properties} from "../../properties";
 import {Guards} from "../../utils";
 import {ExtendedContentDescriptionObject} from "./extendedContentDescriptionObject";
 

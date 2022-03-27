@@ -8,7 +8,7 @@ import VbriHeader from "../../src/mpeg/vbriHeader";
 import XingHeader from "../../src/mpeg/xingHeader";
 import {ByteVector} from "../../src/byteVector";
 import {File} from "../../src/file";
-import {MediaTypes} from "../../src/iCodec";
+import {MediaTypes} from "../../src/properties";
 import {ChannelMode, MpegVersion} from "../../src/mpeg/mpegEnums";
 import {Testers} from "../utilities/testers";
 

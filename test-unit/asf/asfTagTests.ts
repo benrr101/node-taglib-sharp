@@ -16,7 +16,7 @@ import {
     ExtendedContentDescriptionObject
 } from "../../src/asf/objects/extendedContentDescriptionObject";
 import HeaderExtensionObject from "../../src/asf/objects/headerExtensionObject";
-import {IPicture, PictureType} from "../../src/iPicture";
+import {IPicture, PictureType} from "../../src/picture";
 import {MetadataDescriptor, MetadataLibraryObject} from "../../src/asf/objects/metadataLibraryObject";
 import {TagTypes} from "../../src/tag";
 import {TagTesters, Testers} from "../utilities/testers";

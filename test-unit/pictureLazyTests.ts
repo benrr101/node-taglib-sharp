@@ -2,11 +2,10 @@ import * as Chai from "chai";
 import * as TypeMoq from "typemoq";
 import {suite, test} from "@testdeck/mocha";
 
-import PictureLazy from "../src/pictureLazy";
 import TestStream from "./utilities/testStream";
 import {IFileAbstraction} from "../src/fileAbstraction";
 import {ByteVector, StringType} from "../src/byteVector";
-import {PictureType} from "../src/iPicture";
+import {PictureLazy, PictureType} from "../src/picture";
 import {Testers} from "./utilities/testers";
 
 // Setup chai

@@ -1,6 +1,7 @@
-import Properties from "./properties";
 import {ByteVector} from "./byteVector";
 import {IFileAbstraction, LocalFileAbstraction} from "./fileAbstraction";
+import {IDisposable} from "./interfaces";
+import {Properties} from "./properties";
 import {IStream, SeekOrigin} from "./stream";
 import {Tag, TagTypes} from "./tag";
 import {FileUtils, Guards} from "./utils";
@@ -79,7 +80,7 @@ export type FileTypeConstructor = new (abstraction: IFileAbstraction, style: Rea
  *     use {@link File.createFromPath} or {@link File.createFromAbstraction} as it automatically
  *     detects the appropriate class from the file extension or provided MimeType.
  */
-export abstract class File {
+export abstract class File implements IDisposable {
     // #region Member Variables
 
     private static readonly BUFFER_SIZE: number = 1024;

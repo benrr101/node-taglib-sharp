@@ -10,7 +10,7 @@ import UuidWrapper from "../../src/uuidWrapper";
 import {ByteVector} from "../../src/byteVector";
 import {Guids, ObjectType} from "../../src/asf/constants";
 import {File} from "../../src/file";
-import {MediaTypes} from "../../src/icodec";
+import {MediaTypes} from "../../src/properties";
 import {Testers} from "../utilities/testers";
 import {NumberUtils} from "../../src/utils";
 

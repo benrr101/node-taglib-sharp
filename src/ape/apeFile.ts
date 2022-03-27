@@ -1,9 +1,9 @@
 import ApeFileSettings from "./apeFileSettings";
 import SandwichFile from "../sandwich/sandwichFile";
-import Properties from "../properties";
 import {ApeStreamHeader} from "./apeStreamHeader";
 import {File, ReadStyle} from "../file";
 import {IFileAbstraction} from "../fileAbstraction";
+import {Properties} from "../properties";
 import {TagTypes} from "../tag";
 import {NumberUtils} from "../utils";
 

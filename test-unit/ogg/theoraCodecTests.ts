@@ -4,7 +4,7 @@ import {suite, test} from "@testdeck/mocha";
 import Theora from "../../src/ogg/codecs/theora";
 import XiphComment from "../../src/xiph/xiphComment";
 import {ByteVector, StringType} from "../../src/byteVector";
-import {MediaTypes} from "../../src/iCodec";
+import {MediaTypes} from "../../src/properties";
 import {Testers} from "../utilities/testers";
 import CodecPackets from "./codecPackets";
 

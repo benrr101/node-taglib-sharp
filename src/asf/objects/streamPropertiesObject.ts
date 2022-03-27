@@ -7,7 +7,7 @@ import {ByteVector} from "../../byteVector";
 import {Guids, ObjectType} from "../constants";
 import {CorruptFileError} from "../../errors";
 import {File} from "../../file";
-import {ICodec} from "../../iCodec";
+import {ICodec} from "../../properties";
 import {NumberUtils} from "../../utils";
 
 /**
