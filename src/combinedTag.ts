@@ -1,5 +1,5 @@
-import {IPicture} from "./iPicture";
 import {NotSupportedError} from "./errors";
+import {IPicture} from "./picture";
 import {Tag, TagTypes} from "./tag";
 import {Guards, NumberUtils} from "./utils";
 

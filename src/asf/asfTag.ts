@@ -1,12 +1,11 @@
 import ContentDescriptionObject from "./objects/contentDescriptionObject";
 import Genres from "../genres";
 import HeaderObject from "./objects/headerObject";
-import Picture from "../picture";
 import ReadWriteUtils from "./readWriteUtils";
 import {ByteVector, StringType} from "../byteVector";
 import {DataType} from "./objects/descriptorBase";
 import {ContentDescriptor, ExtendedContentDescriptionObject} from "./objects/extendedContentDescriptionObject";
-import {IPicture} from "../iPicture";
+import {IPicture, Picture} from "../picture";
 import {MetadataDescriptor, MetadataLibraryObject} from "./objects/metadataLibraryObject";
 import {Tag, TagTypes} from "../tag";
 import {Guards} from "../utils";

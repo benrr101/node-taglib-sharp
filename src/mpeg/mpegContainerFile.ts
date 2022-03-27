@@ -2,12 +2,12 @@ import MpegContainerFileSettings from "./mpegContainerFileSettings";
 import MpegAudioHeader from "./mpegAudioHeader";
 import MpegVideoHeader from "./mpegVideoHeader";
 import SandwichFile from "../sandwich/sandwichFile";
-import Properties from "../properties";
 import {ByteVector} from "../byteVector";
 import {CorruptFileError, UnsupportedFormatError} from "../errors";
 import {File, ReadStyle} from "../file";
 import {IFileAbstraction} from "../fileAbstraction";
 import {MpegVersion} from "./mpegEnums";
+import {Properties} from "../properties";
 import {TagTypes} from "../tag";
 import {NumberUtils} from "../utils";
 

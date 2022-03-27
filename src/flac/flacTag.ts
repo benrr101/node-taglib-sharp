@@ -4,7 +4,7 @@ import FlacFileSettings from "./flacFileSettings";
 import StartTag from "../sandwich/startTag";
 import XiphComment from "../xiph/xiphComment";
 import XiphPicture from "../xiph/xiphPicture";
-import {IPicture} from "../iPicture";
+import {IPicture} from "../picture";
 import {Tag, TagTypes} from "../tag";
 import {Guards, NumberUtils} from "../utils";
 

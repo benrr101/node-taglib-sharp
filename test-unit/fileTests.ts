@@ -3,13 +3,13 @@ import {suite, test} from "@testdeck/mocha";
 import {assert} from "chai";
 
 import MockFile from "./utilities/testFile";
-import Properties from "../src/properties";
 import PropertyTests from "./utilities/propertyTests";
 import TestConstants from "./testConstants";
 import TestStream from "./utilities/testStream";
 import {ByteVector, StringType} from "../src/byteVector";
 import {File, FileAccessMode, FileTypeConstructor, FileTypeResolver, ReadStyle} from "../src/file";
 import {IFileAbstraction} from "../src/fileAbstraction";
+import {Properties} from "../src/properties";
 import {IStream} from "../src/stream";
 import {Tag, TagTypes} from "../src/tag";
 import {Testers} from "./utilities/testers";

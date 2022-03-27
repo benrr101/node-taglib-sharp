@@ -7,7 +7,7 @@ import XiphPicture from "../../src/xiph/xiphPicture";
 import XiphTestResources from "./resources";
 import {ByteVector} from "../../src/byteVector";
 import {FlacBlock, FlacBlockType} from "../../src/flac/flacBlock";
-import {IPicture, PictureType} from "../../src/iPicture";
+import {IPicture, PictureType} from "../../src/picture";
 import {Testers} from "../utilities/testers";
 
 @suite

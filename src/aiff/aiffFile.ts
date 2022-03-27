@@ -1,11 +1,11 @@
 import AiffFileSettings from "./aiffFileSettings";
 import AiffStreamHeader from "./aiffStreamHeader";
 import Id3v2Tag from "../id3v2/id3v2Tag";
-import Properties from "../properties";
 import {ByteVector, StringType} from "../byteVector";
 import {CorruptFileError} from "../errors";
 import {File, FileAccessMode, ReadStyle} from "../file";
 import {IFileAbstraction} from "../fileAbstraction";
+import {Properties} from "../properties";
 import {Tag, TagTypes} from "../tag";
 import {SeekOrigin} from "../stream";
 import {NumberUtils} from "../utils";

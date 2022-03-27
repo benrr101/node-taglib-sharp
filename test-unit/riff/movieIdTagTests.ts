@@ -3,10 +3,10 @@ import {assert} from "chai";
 
 import MovieIdTag from "../../src/riff/movieIdTag";
 import PropertyTests from "../utilities/propertyTests";
+import RiffList from "../../src/riff/riffList";
 import {ByteVector, StringType} from "../../src/byteVector";
 import {TagTypes} from "../../src/tag";
 import {TagTesters, Testers} from "../utilities/testers";
-import RiffList from "../../src/riff/riffList";
 
 @suite class Riff_MovieIdTagTests {
     @test

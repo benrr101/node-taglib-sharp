@@ -5,7 +5,7 @@ import CodecPackets from "./codecPackets";
 import Vorbis from "../../src/ogg/codecs/vorbis";
 import XiphComment from "../../src/xiph/xiphComment";
 import {ByteVector, StringType} from "../../src/byteVector";
-import {MediaTypes} from "../../src/iCodec";
+import {MediaTypes} from "../../src/properties";
 import {Testers} from "../utilities/testers";
 
 @suite class Ogg_VorbisTests {

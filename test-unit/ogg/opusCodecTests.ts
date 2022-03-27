@@ -5,7 +5,7 @@ import CodecPackets from "./codecPackets";
 import Opus from "../../src/ogg/codecs/opus";
 import XiphComment from "../../src/xiph/xiphComment";
 import {ByteVector, StringType} from "../../src/byteVector";
-import {MediaTypes} from "../../src/iCodec";
+import {MediaTypes} from "../../src/properties";
 import {Testers} from "../utilities/testers";
 
 @suite class Ogg_OpusTests {

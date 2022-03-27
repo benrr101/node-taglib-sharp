@@ -1,8 +1,8 @@
 import AsfTag from "./asfTag";
 import HeaderObject from "./objects/headerObject";
-import Properties from "../properties";
 import {File, FileAccessMode, ReadStyle} from "../file";
 import {IFileAbstraction} from "../fileAbstraction";
+import {Properties} from "../properties";
 import {Tag, TagTypes} from "../tag";
 import {NumberUtils} from "../utils";
 

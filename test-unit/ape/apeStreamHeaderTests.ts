@@ -3,7 +3,7 @@ import {assert} from "chai";
 
 import {ApeCompressionLevel, ApeStreamHeader} from "../../src/ape/apeStreamHeader";
 import {ByteVector, StringType} from "../../src/byteVector";
-import {MediaTypes} from "../../src/iCodec";
+import {MediaTypes} from "../../src/properties";
 import {Testers} from "../utilities/testers";
 
 @suite class Ape_StreamHeaderTests {

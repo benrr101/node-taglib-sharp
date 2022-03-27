@@ -5,13 +5,13 @@ import ApeTag from "../../src/ape/apeTag";
 import EndTag from "../../src/sandwich/endTag";
 import Id3v1Tag from "../../src/id3v1/id3v1Tag";
 import Id3v2Tag from "../../src/id3v2/id3v2Tag";
-import Properties from "../../src/properties";
 import SandwichFile from "../../src/sandwich/sandwichFile";
 import StartTag from "../../src/sandwich/startTag";
 import {default as TestFile} from "../utilities/testFile";
 import {ByteVector} from "../../src/byteVector";
 import {IFileAbstraction} from "../../src/fileAbstraction";
 import {FileAccessMode, ReadStyle} from "../../src/file";
+import {Properties} from "../../src/properties";
 import {TagTypes} from "../../src/tag";
 import {Testers} from "../utilities/testers";
 

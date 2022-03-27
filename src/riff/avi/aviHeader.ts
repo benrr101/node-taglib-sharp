@@ -1,7 +1,7 @@
 import RiffList from "../riffList";
 import {AviStream} from "./aviStream";
 import {CorruptFileError} from "../../errors";
-import {ICodec} from "../../iCodec";
+import {ICodec} from "../../properties";
 import {Guards} from "../../utils";
 
 /**

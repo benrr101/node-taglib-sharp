@@ -4,7 +4,7 @@ import {assert} from "chai";
 import RiffBitmapInfoHeader from "../../src/riff/riffBitmapInfoHeader";
 import {default as Resources} from "./resources";
 import {ByteVector} from "../../src/byteVector";
-import {MediaTypes} from "../../src/iCodec";
+import {MediaTypes} from "../../src/properties";
 import {Testers} from "../utilities/testers";
 
 @suite class Riff_BitmapInfoHeaderTests {

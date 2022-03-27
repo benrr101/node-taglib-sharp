@@ -1,9 +1,9 @@
 import * as fs from "fs";
 import {assert} from "chai";
 
-import ILazy from "../../src/iLazy";
 import TestConstants from "./testConstants";
 import Utilities from "./utilities";
+import {ILazy} from "../../src/interfaces";
 import {
     ByteVector,
     File,

@@ -1,7 +1,7 @@
 import Mpeg4AudioTypes from "../mpeg4/mpeg4AudioTypes";
 import {ByteVector} from "../byteVector";
 import {File} from "../file";
-import {IAudioCodec, MediaTypes} from "../iCodec";
+import {IAudioCodec, MediaTypes} from "../properties";
 import {Guards, NumberUtils} from "../utils";
 
 /**

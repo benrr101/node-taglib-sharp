@@ -1,4 +1,4 @@
-import {IPicture} from "./ipicture";
+import {IPicture} from "./picture";
 import {Guards} from "./utils";
 
 /**

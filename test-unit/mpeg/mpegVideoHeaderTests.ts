@@ -6,7 +6,7 @@ import MpegVideoHeader from "../../src/mpeg/mpegVideoHeader";
 import TestFile from "../utilities/testFile";
 import {ByteVector} from "../../src/byteVector";
 import {File} from "../../src/file";
-import {MediaTypes} from "../../src/iCodec";
+import {MediaTypes} from "../../src/properties";
 import {Testers} from "../utilities/testers";
 
 @suite class Mpeg_VideoHeader_ConstructorTests {
