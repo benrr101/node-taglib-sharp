@@ -111,6 +111,10 @@ export class EbmlElementValue implements ILazy {
         return getDouble(this._data);
     }
 
+    public getParser(): EbmlParser {
+        return new EbmlParser(this._file, this._dataOffset, this._dataSize);
+    }
+
     /**
      * Reads a UTF8 string from the current element's data section.
      * @returns string String value contained in the element.
@@ -212,6 +216,22 @@ export class EbmlParser implements IDisposable {
 
     // #region Methods
 
+    public static getAllValues(parser: EbmlParser): Map<number, EbmlElementValue> {
+        try {
+            const elements = new Map<number, EbmlElementValue>();
+            while (parser.read()) {
+                elements.set(
+                    parser.id,
+                    parser.getValue()
+                );
+            }
+
+            return elements;
+        } finally {
+            parser.dispose();
+        }
+    }
+
     public dispose(): void {
         this._parent?.onChildDisposed();
     }
@@ -224,7 +244,7 @@ export class EbmlParser implements IDisposable {
     public getBool(): boolean {
         return this._dataSize === undefined
             ? false
-            : new EbmlElementValue(this).getBool();
+            : getBool(this.getBytes());
     }
 
     /**

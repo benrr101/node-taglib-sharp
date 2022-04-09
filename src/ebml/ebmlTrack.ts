@@ -2,7 +2,8 @@ import {ICodec, MediaTypes} from "../properties";
 import {EbmlElementValue, EbmlParser} from "./ebmlParser";
 import {MatroskaIds} from "./ids";
 import {ByteVector} from "../byteVector";
-import EbmlAudioTrack from "./audioTrack";
+import EbmlAudioTrack from "./ebmlAudioTrack";
+import EbmlVideoTrack from "./ebmlVideoTrack";
 
 enum TrackType {
     Video = 0x01,
@@ -43,25 +44,18 @@ export default class EbmlTrack implements ICodec {
 
     public fromTrackEntry(parser: EbmlParser): EbmlTrack {
         // Read all the elements from the track
-        const trackEntryParser = parser.getParser();
-        const trackElements = new Map<number, EbmlElementValue>();
-        try {
-            while (trackEntryParser.read()) {
-                trackElements.set(
-                    trackEntryParser.id,
-                    trackEntryParser.getValue()
-                );
-            }
-        } finally {
-            trackEntryParser.dispose();
-        }
+        const trackElements = EbmlParser.getAllValues(parser.getParser());
 
         // Parse the elements into a track object
         switch (trackElements.get(MatroskaIds.TRACK_TYPE)?.getUint()) {
             case TrackType.Audio:
-                return new EbmlAudioTrack(trackElements);
+                const audioElementParser = trackElements.get(MatroskaIds.AUDIO).getParser();
+                const audioElements = EbmlParser.getAllValues(audioElementParser);
+                return new EbmlAudioTrack(trackElements, audioElements);
             case TrackType.Video:
-                return new EbmlVideoTrack(trackElements);
+                const videoElementParser = trackElements.get(MatroskaIds.VIDEO).getParser();
+                const videoElements = EbmlParser.getAllValues(videoElementParser);
+                return new EbmlVideoTrack(trackElements, videoElements);
             case TrackType.Subtitle:
                 return new EbmlSubtitleTrack(trackElements);
             default:
