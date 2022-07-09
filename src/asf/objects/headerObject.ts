@@ -1,8 +1,8 @@
 import BaseObject from "./baseObject";
+import ContentDescriptionObject from "./contentDescriptionObject";
 import FilePropertiesObject from "./filePropertiesObject";
 import HeaderExtensionObject from "./headerExtensionObject";
 import PaddingObject from "./paddingObject";
-import Properties from "../../properties";
 import ReadWriteUtils from "../readWriteUtils";
 import StreamPropertiesObject from "./streamPropertiesObject";
 import UnknownObject from "./unknownObject";
@@ -10,9 +10,8 @@ import {ByteVector} from "../../byteVector";
 import {Guids, ObjectType} from "../constants";
 import {CorruptFileError} from "../../errors";
 import {File} from "../../file";
-import {ICodec} from "../../iCodec";
+import {ICodec, Properties} from "../../properties";
 import {Guards} from "../../utils";
-import ContentDescriptionObject from "./contentDescriptionObject";
 import {ExtendedContentDescriptionObject} from "./extendedContentDescriptionObject";
 
 /**
@@ -38,7 +37,7 @@ export default class HeaderObject extends BaseObject {
         const instance = new HeaderObject();
         instance.initializeFromFile(file, position);
 
-        if (!instance.guid.equals(Guids.AsfHeaderObject)) {
+        if (!instance.guid.equals(Guids.ASF_HEADER_OBJECT)) {
             throw new CorruptFileError("Object GUID does not match expected header object GUID");
         }
         if (instance.originalSize < 26) {
@@ -185,22 +184,22 @@ export default class HeaderObject extends BaseObject {
         file.seek(position);
         const guid = ReadWriteUtils.readGuid(file);
 
-        if (guid.equals(Guids.AsfFilePropertiesObject)) {
+        if (guid.equals(Guids.ASF_FILE_PROPERTIES_OBJECT)) {
             return FilePropertiesObject.fromFile(file, position);
         }
-        if (guid.equals(Guids.AsfStreamPropertiesObject)) {
+        if (guid.equals(Guids.ASF_STREAM_PROPERTIES_OBJECT)) {
             return StreamPropertiesObject.fromFile(file, position);
         }
-        if (guid.equals(Guids.AsfHeaderExtensionObject)) {
+        if (guid.equals(Guids.ASF_HEADER_EXTENSION_OBJECT)) {
             return HeaderExtensionObject.fromFile(file, position);
         }
-        if (guid.equals(Guids.AsfContentDescriptionObject)) {
+        if (guid.equals(Guids.ASF_CONTENT_DESCRIPTION_OBJECT)) {
             return ContentDescriptionObject.fromFile(file, position);
         }
-        if (guid.equals(Guids.AsfExtendedContentDescriptionObject)) {
+        if (guid.equals(Guids.ASF_EXTENDED_CONTENT_DESCRIPTION_OBJECT)) {
             return ExtendedContentDescriptionObject.fromFile(file, position);
         }
-        if (guid.equals(Guids.AsfPaddingObject)) {
+        if (guid.equals(Guids.ASF_PADDING_OBJECT)) {
             return PaddingObject.fromFile(file, position);
         }
 

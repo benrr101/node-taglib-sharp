@@ -1,5 +1,5 @@
-import * as Chai from "chai";
 import {suite, test} from "@testdeck/mocha";
+import {assert} from "chai";
 
 import FrameConstructorTests from "./frameConstructorTests";
 import PropertyTests from "../utilities/propertyTests";
@@ -10,9 +10,6 @@ import {Id3v2FrameFlags, Id3v2FrameHeader} from "../../src/id3v2/frames/frameHea
 import {FrameIdentifiers} from "../../src/id3v2/frameIdentifiers";
 import {Testers} from "../utilities/testers";
 import {EventType, TimestampFormat} from "../../src/id3v2/utilTypes";
-
-// Setup Chai
-const assert = Chai.assert;
 
 @suite class Id3v2_EventTimeCodeTests {
     @test

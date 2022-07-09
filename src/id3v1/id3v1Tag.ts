@@ -11,15 +11,19 @@ import {Guards} from "../utils";
 export default class Id3v1Tag extends Tag {
     // #region Member Fields
 
+    private static readonly COMMENT_LENGTH = 28;
+    private static readonly TITLE_ARTIST_ALBUM_LENGTH = 30;
+    private static readonly YEAR_LENGTH = 4;
+
     /**
      * Identifier used to recognize an ID3v1 tag.
      */
-    public static readonly fileIdentifier = ByteVector.fromString("TAG", StringType.UTF8);
+    public static readonly FILE_IDENTIFIER = ByteVector.fromString("TAG", StringType.UTF8);
 
     /**
      * Size of an ID3v1 tag.
      */
-    public static readonly size = 128;
+    public static readonly TOTAL_SIZE = 128;
 
     private _album: string;
     private _artist: string;
@@ -42,7 +46,7 @@ export default class Id3v1Tag extends Tag {
 
         // Some initial sanity checking
         Guards.truthy(data, "data");
-        if (!data.startsWith(Id3v1Tag.fileIdentifier)) {
+        if (!data.startsWith(Id3v1Tag.FILE_IDENTIFIER)) {
             throw new CorruptFileError("Id3v1 data does not start with identifier");
         }
 
@@ -68,14 +72,14 @@ export default class Id3v1Tag extends Tag {
 
         file.mode = FileAccessMode.Read;
 
-        if (position > file.length - Id3v1Tag.size) {
+        if (position > file.length - Id3v1Tag.TOTAL_SIZE) {
             throw new Error("Argument out of range: position must be less than the length of the file");
         }
 
         file.seek(position);
 
         // Read the tag, it's always 128 bytes
-        const data = file.readBlock(Id3v1Tag.size);
+        const data = file.readBlock(Id3v1Tag.TOTAL_SIZE);
 
         return new Id3v1Tag(data);
     }
@@ -86,17 +90,17 @@ export default class Id3v1Tag extends Tag {
      * Renders the current instance as a raw ID3v1 tag.
      */
     public render(): ByteVector {
-        const data = ByteVector.empty();
-        data.addByteVector(Id3v1Tag.fileIdentifier);
-        data.addByteVector(ByteVector.fromString(this._title || "", StringType.Latin1).resize(30));
-        data.addByteVector(ByteVector.fromString(this._artist || "", StringType.Latin1).resize(30));
-        data.addByteVector(ByteVector.fromString(this._album || "", StringType.Latin1).resize(30));
-        data.addByteVector(ByteVector.fromString(this._year || "", StringType.Latin1).resize(4));
-        data.addByteVector(ByteVector.fromString(this._comment || "", StringType.Latin1).resize(28));
-        data.addByte(0x00);
-        data.addByte(this._track);
-        data.addByte(this._genre);
-        return data;
+        return ByteVector.concatenate(
+            Id3v1Tag.FILE_IDENTIFIER,
+            ... Id3v1Tag.renderField(this._title, Id3v1Tag.TITLE_ARTIST_ALBUM_LENGTH),
+            ... Id3v1Tag.renderField(this._artist, Id3v1Tag.TITLE_ARTIST_ALBUM_LENGTH),
+            ... Id3v1Tag.renderField(this._album, Id3v1Tag.TITLE_ARTIST_ALBUM_LENGTH),
+            ... Id3v1Tag.renderField(this._year, Id3v1Tag.YEAR_LENGTH),
+            ... Id3v1Tag.renderField(this._comment, Id3v1Tag.COMMENT_LENGTH),
+            0x00,
+            this._track,
+            this._genre
+        );
     }
 
     // #region Tag Overrides
@@ -105,7 +109,7 @@ export default class Id3v1Tag extends Tag {
     public get tagTypes(): TagTypes { return TagTypes.Id3v1; }
 
     /** @inheritDoc */
-    public get sizeOnDisk(): number { return Id3v1Tag.size; }
+    public get sizeOnDisk(): number { return Id3v1Tag.TOTAL_SIZE; }
 
     /** @inheritDoc */
     public get title(): string { return this._title || undefined; }
@@ -171,7 +175,8 @@ export default class Id3v1Tag extends Tag {
      *     the property being zeroed.
      */
     public set year(value: number) {
-        this._year = Number.isSafeInteger(value) && value > 0 && value < 10000 ? value.toString(10) : "";
+        Guards.uint(value, "value");
+        this._year = value < 10000 ? value.toString(10) : "";
     }
 
     /** @inheritDoc */
@@ -182,7 +187,8 @@ export default class Id3v1Tag extends Tag {
      *     the property being zeroed.
      */
     public set track(value: number) {
-        this._track = Number.isSafeInteger(value) && value > 0 && value < 256 ? value : 0;
+        Guards.uint(value, "value");
+        this._track = value < 256 ? value : 0;
     }
 
     /** @inheritDoc */
@@ -201,10 +207,10 @@ export default class Id3v1Tag extends Tag {
     // #region Private Helpers
 
     private parse(data: ByteVector): void {
-        this._title = Id3v1Tag.parseString(data.mid(3, 30));
-        this._artist = Id3v1Tag.parseString(data.mid(33, 30));
-        this._album = Id3v1Tag.parseString(data.mid(63, 30));
-        this._year = Id3v1Tag.parseString(data.mid(93, 4));
+        this._title = Id3v1Tag.parseString(data.subarray(3, Id3v1Tag.TITLE_ARTIST_ALBUM_LENGTH));
+        this._artist = Id3v1Tag.parseString(data.subarray(33, Id3v1Tag.TITLE_ARTIST_ALBUM_LENGTH));
+        this._album = Id3v1Tag.parseString(data.subarray(63, Id3v1Tag.TITLE_ARTIST_ALBUM_LENGTH));
+        this._year = Id3v1Tag.parseString(data.subarray(93, Id3v1Tag.YEAR_LENGTH));
 
         // Check for ID3v1.1
         // NOTE: ID3v1 does not support "track zero", this is not a bug in TagLib. Since a zeroed
@@ -212,10 +218,10 @@ export default class Id3v1Tag extends Tag {
         //     string, a value of zero must be assumed to be just that.
         if (data.get(125) === 0 && data.get(126) !== 0) {
             // ID3v1.1 detected
-            this._comment = Id3v1Tag.parseString(data.mid(97, 28));
+            this._comment = Id3v1Tag.parseString(data.subarray(97, Id3v1Tag.COMMENT_LENGTH));
             this._track = data.get(126);
         } else {
-            this._comment = Id3v1Tag.parseString(data.mid(97, 30));
+            this._comment = Id3v1Tag.parseString(data.subarray(97, Id3v1Tag.TITLE_ARTIST_ALBUM_LENGTH));
             this._track = 0;
         }
 
@@ -225,11 +231,20 @@ export default class Id3v1Tag extends Tag {
     private static parseString(data: ByteVector): string {
         Guards.truthy(data, "data");
 
-        const output = data.toString(undefined, StringType.Latin1).trim();
+        const output = data.toString(StringType.Latin1).trim();
         const i = output.indexOf("\0");
         return i >= 0
             ? output.substring(0, i)
             : output;
+    }
+
+    private static renderField(value: string, maxLength: number): ByteVector[] {
+        const valueToWrite = value?.substring(0, maxLength) || "";
+        const remainingBytes = maxLength - valueToWrite.length;
+        return [
+            ByteVector.fromString(valueToWrite, StringType.Latin1),
+            remainingBytes > 0 ? ByteVector.fromSize(remainingBytes) : undefined
+        ];
     }
 
     // #endregion

@@ -1,6 +1,6 @@
-import * as Chai from "chai";
 import * as TypeMoq from "typemoq";
 import {suite, test} from "@testdeck/mocha";
+import {assert} from "chai";
 
 import AttachmentFrame from "../../src/id3v2/frames/attachmentFrame";
 import FrameConstructorTests from "./frameConstructorTests";
@@ -10,23 +10,24 @@ import {ByteVector, StringType} from "../../src/byteVector";
 import {Frame, FrameClassType} from "../../src/id3v2/frames/frame";
 import {Id3v2FrameHeader} from "../../src/id3v2/frames/frameHeader";
 import {FrameIdentifier, FrameIdentifiers} from "../../src/id3v2/frameIdentifiers";
-import {IPicture, PictureType} from "../../src/iPicture";
+import {IPicture, PictureType} from "../../src/picture";
 import {Testers} from "../utilities/testers";
 
-// Setup chai
-const assert = Chai.assert;
+const getTestFrame = () => getCustomTestFrame(
+    ByteVector.fromString("foobarbaz", StringType.UTF8),
+    "fux",
+    "bux",
+    "application/octet-stream",
+    PictureType.FrontCover
+);
 
-function getTestFrame() {
-    return getCustomTestFrame(
-        ByteVector.fromString("foobarbaz"),
-        "fux",
-        "bux",
-        "application/octet-stream",
-        PictureType.FrontCover
-    );
-}
-
-function getCustomTestFrame(data: ByteVector, desc: string, filename: string, mimeType: string, type: PictureType) {
+const getCustomTestFrame = (
+    data: ByteVector,
+    desc: string,
+    filename: string,
+    mimeType: string,
+    type: PictureType
+): AttachmentFrame => {
     const mockPicture = TypeMoq.Mock.ofType<IPicture>();
     mockPicture.setup((p) => p.data).returns(() => data);
     mockPicture.setup((p) => p.description).returns(() => desc);
@@ -55,7 +56,7 @@ function getCustomTestFrame(data: ByteVector, desc: string, filename: string, mi
     @test
     public fromPicture_validPicture() {
         // Arrange
-        const data = ByteVector.fromString("foobarbaz");
+        const data = ByteVector.fromString("foobarbaz", StringType.UTF8);
         const mockPicture = TypeMoq.Mock.ofType<IPicture>();
         mockPicture.setup((p) => p.data).returns(() => data);
         mockPicture.setup((p) => p.description).returns(() => "fux");
@@ -82,7 +83,7 @@ function getCustomTestFrame(data: ByteVector, desc: string, filename: string, mi
     @test
     public fromPicture_notAPicture() {
         // Arrange
-        const data = ByteVector.fromString("foobarbaz");
+        const data = ByteVector.fromString("foobarbaz", StringType.UTF8);
         const mockPicture = TypeMoq.Mock.ofType<IPicture>();
         mockPicture.setup((p) => p.data).returns(() => data);
         mockPicture.setup((p) => p.description).returns(() => "fux");
@@ -443,7 +444,7 @@ function getCustomTestFrame(data: ByteVector, desc: string, filename: string, mi
     @test
     public clone_fromPictureUnread() {
         // Arrange
-        const data = ByteVector.fromString("foobarbaz");
+        const data = ByteVector.fromString("foobarbaz", StringType.UTF8);
         const mockPicture = TypeMoq.Mock.ofType<IPicture>();
         mockPicture.setup((p) => p.data).returns(() => data);
         mockPicture.setup((p) => p.description).returns(() => "fux");
@@ -507,7 +508,8 @@ function getCustomTestFrame(data: ByteVector, desc: string, filename: string, mi
     public clone_alreadyRead() {
         // Arrange
         const frame = getTestFrame();
-        const _ = frame.data;    // force a raw load
+        // noinspection JSUnusedLocalSymbols forces a raw load
+        const _ = frame.data;
 
         // Act
         const output = <AttachmentFrame> frame.clone();
@@ -636,7 +638,7 @@ function getCustomTestFrame(data: ByteVector, desc: string, filename: string, mi
     @test
     public render_apicV2InvalidMimeType_correctsEncoding() {
         // Arrange
-        const data = ByteVector.fromString("fuxbuxqux");
+        const data = ByteVector.fromString("fuxbuxqux", StringType.UTF8);
         const frame = getCustomTestFrame(data, "foo", "bar", "this/is_not/a_mimetype", PictureType.FrontCover);
 
         // Act
@@ -648,7 +650,7 @@ function getCustomTestFrame(data: ByteVector, desc: string, filename: string, mi
         const expected = ByteVector.concatenate(
             header.render(2),
             StringType.UTF16,
-            ByteVector.fromString("XXX"),
+            ByteVector.fromString("XXX", StringType.Latin1),
             PictureType.FrontCover,
             ByteVector.fromString("foo", StringType.UTF16),
             ByteVector.getTextDelimiter(StringType.UTF16),
@@ -660,7 +662,7 @@ function getCustomTestFrame(data: ByteVector, desc: string, filename: string, mi
     @test
     public render_apicV2ValidMimeType_correctsEncoding() {
         // Arrange
-        const data = ByteVector.fromString("fuxbuxqux");
+        const data = ByteVector.fromString("fuxbuxqux", StringType.UTF8);
         const frame = getCustomTestFrame(data, "foo", "bar", "image/gif", PictureType.FrontCover);
 
         // Act
@@ -672,7 +674,7 @@ function getCustomTestFrame(data: ByteVector, desc: string, filename: string, mi
         const expected = ByteVector.concatenate(
             header.render(2),
             StringType.UTF16,
-            ByteVector.fromString("GIF"),
+            ByteVector.fromString("GIF", StringType.Latin1),
             PictureType.FrontCover,
             ByteVector.fromString("foo", StringType.UTF16),
             ByteVector.getTextDelimiter(StringType.UTF16),
@@ -684,7 +686,7 @@ function getCustomTestFrame(data: ByteVector, desc: string, filename: string, mi
     @test
     public render_apicV4() {
         // Arrange
-        const data = ByteVector.fromString("fuxbuxqux");
+        const data = ByteVector.fromString("fuxbuxqux", StringType.UTF8);
         const frame = getCustomTestFrame(data, "foo", "bar", "image/gif", PictureType.FrontCover);
 
         // Act
@@ -696,7 +698,7 @@ function getCustomTestFrame(data: ByteVector, desc: string, filename: string, mi
         const expected = ByteVector.concatenate(
             header.render(4),
             Id3v2Settings.defaultEncoding,
-            ByteVector.fromString("image/gif"),
+            ByteVector.fromString("image/gif", StringType.Latin1),
             ByteVector.getTextDelimiter(StringType.Latin1),
             PictureType.FrontCover,
             ByteVector.fromString("foo", StringType.Latin1),
@@ -709,7 +711,7 @@ function getCustomTestFrame(data: ByteVector, desc: string, filename: string, mi
     @test
     public render_geobNoMimeType() {
         // Arrange
-        const data = ByteVector.fromString("fuxbuxqux");
+        const data = ByteVector.fromString("fuxbuxqux", StringType.UTF8);
         const frame = getCustomTestFrame(data, undefined, undefined, undefined, PictureType.NotAPicture);
 
         // Act
@@ -732,7 +734,7 @@ function getCustomTestFrame(data: ByteVector, desc: string, filename: string, mi
     @test
     public render_geobWithMimeType() {
         // Arrange
-        const data = ByteVector.fromString("fuxbuxqux");
+        const data = ByteVector.fromString("fuxbuxqux", StringType.UTF8);
         const frame = getCustomTestFrame(data, undefined, undefined, "image/gif", PictureType.NotAPicture);
 
         // Act
@@ -756,7 +758,7 @@ function getCustomTestFrame(data: ByteVector, desc: string, filename: string, mi
     @test
     public render_geobWithMimeTypeAndFileName() {
         // Arrange
-        const data = ByteVector.fromString("fuxbuxqux");
+        const data = ByteVector.fromString("fuxbuxqux", StringType.UTF8);
         const frame = getCustomTestFrame(data, undefined, "file.gif", "image/gif", PictureType.NotAPicture);
 
         // Act
@@ -781,7 +783,7 @@ function getCustomTestFrame(data: ByteVector, desc: string, filename: string, mi
     @test
     public render_geobWithMimeTypeAndFileNameAndDescription() {
         // Arrange
-        const data = ByteVector.fromString("fuxbuxqux");
+        const data = ByteVector.fromString("fuxbuxqux", StringType.UTF8);
         const frame = getCustomTestFrame(data, "foobarbaz", "file.gif", "image/gif", PictureType.NotAPicture);
 
         // Act

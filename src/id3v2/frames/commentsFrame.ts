@@ -124,7 +124,7 @@ export default class CommentsFrame extends Frame {
     /**
      * Gets the comment text stored in the current instance, or empty string if not set.
      */
-    public get text() { return this._text || ""; }
+    public get text(): string { return this._text || ""; }
     /**
      * Sets the comment text stored in the current instance.
      * @param value Comment text to store
@@ -249,17 +249,17 @@ export default class CommentsFrame extends Frame {
         return this.text;
     }
 
-    protected parseFields(data: ByteVector, _version: number): void {
+    protected parseFields(data: ByteVector): void {
         if (data.length < 4) {
             throw new CorruptFileError("Not enough bytes in field");
         }
 
         this.textEncoding = data.get(0);
-        this._language = data.toString(3, StringType.Latin1, 1);
+        this._language = data.subarray(1, 3).toString(StringType.Latin1);
 
         // Instead of splitting into two strings, in the format [{desc}\0{value}], try splitting
         // into three strings in case of a malformatted [{desc}\0{value}\0].
-        const split = data.toStrings(this.textEncoding, 4, 3);
+        const split = data.subarray(4).toStrings(this.textEncoding, 3);
 
         if (split.length === 0) {
             // No data in the frame.
@@ -277,12 +277,12 @@ export default class CommentsFrame extends Frame {
 
     protected renderFields(version: number): ByteVector {
         const encoding = Frame.correctEncoding(this.textEncoding, version);
-        const v = ByteVector.empty();
-        v.addByte(encoding);
-        v.addByteVector(ByteVector.fromString(this.language, StringType.Latin1));
-        v.addByteVector(ByteVector.fromString(this.description, encoding));
-        v.addByteVector(ByteVector.getTextDelimiter(encoding));
-        v.addByteVector(ByteVector.fromString(this.text, encoding));
-        return v;
+        return ByteVector.concatenate(
+            encoding,
+            ByteVector.fromString(this.language, StringType.Latin1),
+            ByteVector.fromString(this.description, encoding),
+            ByteVector.getTextDelimiter(encoding),
+            ByteVector.fromString(this.text, encoding)
+        );
     }
 }

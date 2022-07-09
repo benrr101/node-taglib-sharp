@@ -2,7 +2,7 @@ import Id3v2Settings from "./id3v2Settings";
 import SyncData from "./syncData";
 import {ByteVector, StringType} from "../byteVector";
 import {CorruptFileError} from "../errors";
-import {Guards} from "../utils";
+import {Guards, NumberUtils} from "../utils";
 
 export enum Id3v2TagHeaderFlags {
     /**
@@ -26,18 +26,18 @@ export enum Id3v2TagHeaderFlags {
     ExtendedHeader = 0x40,
 
     /**
-     * The tag described by the header has been desynchronized.
+     * The tag described by the header has been unsynchronized using the ID3v2 unsynchronization
+     * scheme.
      */
     Unsynchronization = 0x80,
 }
 
 export class Id3v2TagHeader {
-    private static readonly _fileIdentifier: ByteVector = ByteVector.fromString(
-        "ID3",
-        StringType.Latin1,
-        undefined,
-        true
-    );
+    /**
+     * The identifier used to recognize an ID3v2 header.
+     */
+    public static readonly FILE_IDENTIFIER = ByteVector.fromString("ID3", StringType.Latin1).makeReadOnly();
+
     private _flags: Id3v2TagHeaderFlags = Id3v2TagHeaderFlags.None;
     private _majorVersion: number = 0;
     private _revisionNumber: number = 0;
@@ -52,7 +52,7 @@ export class Id3v2TagHeader {
         if (data.length < Id3v2Settings.headerSize) {
             throw new CorruptFileError("Provided data is smaller than object size");
         }
-        if (!data.startsWith(Id3v2TagHeader.fileIdentifier)) {
+        if (!data.startsWith(Id3v2TagHeader.FILE_IDENTIFIER)) {
             throw new CorruptFileError("Provided data does not start with the file identifier");
         }
 
@@ -62,13 +62,13 @@ export class Id3v2TagHeader {
         header._flags = data.get(5);
 
         // Make sure flags provided are legal
-        if (header._majorVersion === 2 && (header._flags & 63) !== 0) {
+        if (header._majorVersion === 2 && NumberUtils.hasFlag(header._flags, 63)) {
             throw new CorruptFileError("Invalid flags set on version 2 tag");
         }
-        if (header._majorVersion === 3 && (header._flags & 15) !== 0) {
+        if (header._majorVersion === 3 && NumberUtils.hasFlag(header._flags, 15)) {
             throw new CorruptFileError("Invalid flags set on version 3 tag");
         }
-        if (header._majorVersion === 4 && (header._flags & 7) !== 0) {
+        if (header._majorVersion === 4 && NumberUtils.hasFlag(header._flags, 7)) {
             throw new CorruptFileError("Invalid flags set on version 4 tag");
         }
 
@@ -78,7 +78,7 @@ export class Id3v2TagHeader {
                 throw new CorruptFileError("One of the bytes in the tag size was greater than the allowed 128");
             }
         }
-        header.tagSize = SyncData.toUint(data.mid(6, 4));
+        header.tagSize = SyncData.toUint(data.subarray(6, 4));
 
         return header;
     }
@@ -86,16 +86,11 @@ export class Id3v2TagHeader {
     // #region Properties
 
     /**
-     * The identifier used to recognize an ID3v2 header.
-     */
-    public static get fileIdentifier(): ByteVector { return Id3v2TagHeader._fileIdentifier; }
-
-    /**
      * Gets the complete size of the tag described by the current instance including the header
      * and footer.
      */
     public get completeTagSize(): number {
-        return (this._flags & Id3v2TagHeaderFlags.FooterPresent) > 0
+        return NumberUtils.hasFlag(this._flags, Id3v2TagHeaderFlags.FooterPresent)
             ? this.tagSize + Id3v2Settings.headerSize + Id3v2Settings.footerSize
             : this.tagSize + Id3v2Settings.headerSize;
     }
@@ -112,11 +107,11 @@ export class Id3v2TagHeader {
     public set flags(value: Id3v2TagHeaderFlags) {
         // @TODO: Does it make sense to check for flags for major version <4?
         const version3Flags = Id3v2TagHeaderFlags.ExtendedHeader | Id3v2TagHeaderFlags.ExperimentalIndicator;
-        if ((value & version3Flags) !== 0 && this.majorVersion < 3) {
+        if (NumberUtils.hasFlag(value, version3Flags) && this.majorVersion < 3) {
             throw new Error("Feature only supported in version 2.3+");
         }
         const version4Flags = Id3v2TagHeaderFlags.FooterPresent;
-        if ((value & version4Flags) !== 0 && this.majorVersion < 4) {
+        if (NumberUtils.hasFlag(value, version4Flags) && this.majorVersion < 4) {
             throw new Error("Feature only supported in version 2.4+");
         }
 
@@ -181,7 +176,7 @@ export class Id3v2TagHeader {
      */
     public set tagSize(value: number) {
         Guards.uint(value, "value");
-        if ((value & 0xF0000000) !== 0) {
+        if (NumberUtils.hasFlag(value, 0xF0000000)) {
             throw new Error("Argument out of range: value must be a 28-bit unsigned integer");
         }
 
@@ -195,7 +190,7 @@ export class Id3v2TagHeader {
      */
     public render(): ByteVector {
         return ByteVector.concatenate(
-            Id3v2TagHeader.fileIdentifier,
+            Id3v2TagHeader.FILE_IDENTIFIER,
             this.majorVersion,
             this.revisionNumber,
             this.flags,

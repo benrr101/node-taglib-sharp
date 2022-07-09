@@ -1,5 +1,5 @@
-import * as Chai from "chai";
 import {suite, test} from "@testdeck/mocha";
+import {assert} from "chai";
 
 import ObjectTests from "./objectTests";
 import TestFile from "../utilities/testFile";
@@ -10,9 +10,6 @@ import {DataType} from "../../src/asf/objects/descriptorBase";
 import {File} from "../../src/file";
 import {MetadataDescriptor, MetadataLibraryObject} from "../../src/asf/objects/metadataLibraryObject";
 import {Testers} from "../utilities/testers";
-
-// Setup Chai
-const assert = Chai.assert;
 
 @suite class Asf_MetadataDescriptorTests {
     @test
@@ -35,16 +32,16 @@ const assert = Chai.assert;
 
         assert.strictEqual(object.languageListIndex, 123);
         assert.strictEqual(object.streamNumber, 234);
-        assert.strictEqual(object.getUshort(), 1234);
+        assert.strictEqual(object.ushortValue, 1234);
 
         const expectedBytes = ByteVector.concatenate(
-            ByteVector.fromUShort(123, false),
-            ByteVector.fromUShort(234, false),
-            ByteVector.fromUShort(8, false),
-            ByteVector.fromUShort(DataType.Word, false),
-            ByteVector.fromUInt(2, false),
+            ByteVector.fromUshort(123, false),
+            ByteVector.fromUshort(234, false),
+            ByteVector.fromUshort(8, false),
+            ByteVector.fromUshort(DataType.Word, false),
+            ByteVector.fromUint(2, false),
             ByteVector.fromString("foo\0", StringType.UTF16LE),
-            ByteVector.fromUShort(1234, false)
+            ByteVector.fromUshort(1234, false)
         );
         Testers.bvEqual(object.render(), expectedBytes);
     }
@@ -53,13 +50,13 @@ const assert = Chai.assert;
     public fromFile_word() {
         // Arrange
         const bytes = ByteVector.concatenate(
-            ByteVector.fromUShort(123, false),
-            ByteVector.fromUShort(234, false),
-            ByteVector.fromUShort(8, false),
-            ByteVector.fromUShort(DataType.Word, false),
-            ByteVector.fromUInt(2, false),
+            ByteVector.fromUshort(123, false),
+            ByteVector.fromUshort(234, false),
+            ByteVector.fromUshort(8, false),
+            ByteVector.fromUshort(DataType.Word, false),
+            ByteVector.fromUint(2, false),
             ByteVector.fromString("foo\0", StringType.UTF16LE),
-            ByteVector.fromUShort(1234, false)
+            ByteVector.fromUshort(1234, false)
         );
         const file = TestFile.getFile(bytes);
 
@@ -71,7 +68,7 @@ const assert = Chai.assert;
         assert.strictEqual(object.type, DataType.Word);
         assert.strictEqual(object.languageListIndex, 123);
         assert.strictEqual(object.streamNumber, 234);
-        assert.strictEqual(object.getUshort(), 1234);
+        assert.strictEqual(object.ushortValue, 1234);
     }
 
     @test
@@ -85,16 +82,16 @@ const assert = Chai.assert;
 
         assert.strictEqual(object.languageListIndex, 123);
         assert.strictEqual(object.streamNumber, 234);
-        assert.strictEqual(object.getBool(), true);
+        assert.strictEqual(object.boolValue, true);
 
         const expectedBytes = ByteVector.concatenate(
-            ByteVector.fromUShort(123, false),
-            ByteVector.fromUShort(234, false),
-            ByteVector.fromUShort(8, false),
-            ByteVector.fromUShort(DataType.Bool, false),
-            ByteVector.fromUInt(2, false),
+            ByteVector.fromUshort(123, false),
+            ByteVector.fromUshort(234, false),
+            ByteVector.fromUshort(8, false),
+            ByteVector.fromUshort(DataType.Bool, false),
+            ByteVector.fromUint(2, false),
             ByteVector.fromString("foo\0", StringType.UTF16LE),
-            ByteVector.fromUShort(1, false)
+            ByteVector.fromUshort(1, false)
         );
         Testers.bvEqual(object.render(), expectedBytes);
     }
@@ -103,13 +100,13 @@ const assert = Chai.assert;
     public fromFile_bool_twoByte() {
         // Arrange
         const bytes = ByteVector.concatenate(
-            ByteVector.fromUShort(123, false),
-            ByteVector.fromUShort(234, false),
-            ByteVector.fromUShort(8, false),
-            ByteVector.fromUShort(DataType.Bool, false),
-            ByteVector.fromUInt(2, false),
+            ByteVector.fromUshort(123, false),
+            ByteVector.fromUshort(234, false),
+            ByteVector.fromUshort(8, false),
+            ByteVector.fromUshort(DataType.Bool, false),
+            ByteVector.fromUint(2, false),
             ByteVector.fromString("foo\0", StringType.UTF16LE),
-            ByteVector.fromUShort(1, false)
+            ByteVector.fromUshort(1, false)
         );
         const file = TestFile.getFile(bytes);
 
@@ -122,20 +119,20 @@ const assert = Chai.assert;
 
         assert.strictEqual(object.languageListIndex, 123);
         assert.strictEqual(object.streamNumber, 234);
-        assert.strictEqual(object.getBool(), true);
+        assert.strictEqual(object.boolValue, true);
     }
 
     @test
     public fromFile_bool_fourByte() {
         // Arrange
         const bytes = ByteVector.concatenate(
-            ByteVector.fromUShort(123, false),
-            ByteVector.fromUShort(234, false),
-            ByteVector.fromUShort(8, false),
-            ByteVector.fromUShort(DataType.Bool, false),
-            ByteVector.fromUInt(4, false),
+            ByteVector.fromUshort(123, false),
+            ByteVector.fromUshort(234, false),
+            ByteVector.fromUshort(8, false),
+            ByteVector.fromUshort(DataType.Bool, false),
+            ByteVector.fromUint(4, false),
             ByteVector.fromString("foo\0", StringType.UTF16LE),
-            ByteVector.fromUInt(0, false)
+            ByteVector.fromUint(0, false)
         );
         const file = TestFile.getFile(bytes);
 
@@ -148,7 +145,7 @@ const assert = Chai.assert;
 
         assert.strictEqual(object.languageListIndex, 123);
         assert.strictEqual(object.streamNumber, 234);
-        assert.strictEqual(object.getBool(), false);
+        assert.strictEqual(object.boolValue, false);
     }
 
     @test
@@ -162,16 +159,16 @@ const assert = Chai.assert;
 
         assert.strictEqual(object.languageListIndex, 123);
         assert.strictEqual(object.streamNumber, 234);
-        assert.strictEqual(object.getUint(), 1234);
+        assert.strictEqual(object.uintValue, 1234);
 
         const expectedBytes = ByteVector.concatenate(
-            ByteVector.fromUShort(123, false),
-            ByteVector.fromUShort(234, false),
-            ByteVector.fromUShort(8, false),
-            ByteVector.fromUShort(DataType.DWord, false),
-            ByteVector.fromUInt(4, false),
+            ByteVector.fromUshort(123, false),
+            ByteVector.fromUshort(234, false),
+            ByteVector.fromUshort(8, false),
+            ByteVector.fromUshort(DataType.DWord, false),
+            ByteVector.fromUint(4, false),
             ByteVector.fromString("foo\0", StringType.UTF16LE),
-            ByteVector.fromUInt(1234, false)
+            ByteVector.fromUint(1234, false)
         );
         Testers.bvEqual(object.render(), expectedBytes);
     }
@@ -180,13 +177,13 @@ const assert = Chai.assert;
     public fromFile_dword() {
         // Arrange
         const bytes = ByteVector.concatenate(
-            ByteVector.fromUShort(123, false),
-            ByteVector.fromUShort(234, false),
-            ByteVector.fromUShort(8, false),
-            ByteVector.fromUShort(DataType.DWord, false),
-            ByteVector.fromUInt(4, false),
+            ByteVector.fromUshort(123, false),
+            ByteVector.fromUshort(234, false),
+            ByteVector.fromUshort(8, false),
+            ByteVector.fromUshort(DataType.DWord, false),
+            ByteVector.fromUint(4, false),
             ByteVector.fromString("foo\0", StringType.UTF16LE),
-            ByteVector.fromUInt(1234, false)
+            ByteVector.fromUint(1234, false)
         );
         const file = TestFile.getFile(bytes);
 
@@ -199,7 +196,7 @@ const assert = Chai.assert;
 
         assert.strictEqual(object.languageListIndex, 123);
         assert.strictEqual(object.streamNumber, 234);
-        assert.strictEqual(object.getUint(), 1234);
+        assert.strictEqual(object.uintValue, 1234);
     }
 
     @test
@@ -213,16 +210,16 @@ const assert = Chai.assert;
 
         assert.strictEqual(object.languageListIndex, 123);
         assert.strictEqual(object.streamNumber, 234);
-        assert.strictEqual(object.getUlong(), BigInt(1234));
+        assert.strictEqual(object.ulongValue, BigInt(1234));
 
         const expectedBytes = ByteVector.concatenate(
-            ByteVector.fromUShort(123, false),
-            ByteVector.fromUShort(234, false),
-            ByteVector.fromUShort(8, false),
-            ByteVector.fromUShort(DataType.QWord, false),
-            ByteVector.fromUInt(8, false),
+            ByteVector.fromUshort(123, false),
+            ByteVector.fromUshort(234, false),
+            ByteVector.fromUshort(8, false),
+            ByteVector.fromUshort(DataType.QWord, false),
+            ByteVector.fromUint(8, false),
             ByteVector.fromString("foo\0", StringType.UTF16LE),
-            ByteVector.fromULong(1234, false)
+            ByteVector.fromUlong(1234, false)
         );
         Testers.bvEqual(object.render(), expectedBytes);
     }
@@ -231,13 +228,13 @@ const assert = Chai.assert;
     public fromFile_qword() {
         // Arrange
         const bytes = ByteVector.concatenate(
-            ByteVector.fromUShort(123, false),
-            ByteVector.fromUShort(234, false),
-            ByteVector.fromUShort(8, false),
-            ByteVector.fromUShort(DataType.QWord, false),
-            ByteVector.fromUInt(8, false),
+            ByteVector.fromUshort(123, false),
+            ByteVector.fromUshort(234, false),
+            ByteVector.fromUshort(8, false),
+            ByteVector.fromUshort(DataType.QWord, false),
+            ByteVector.fromUint(8, false),
             ByteVector.fromString("foo\0", StringType.UTF16LE),
-            ByteVector.fromULong(1234, false)
+            ByteVector.fromUlong(1234, false)
         );
         const file = TestFile.getFile(bytes);
 
@@ -250,7 +247,7 @@ const assert = Chai.assert;
 
         assert.strictEqual(object.languageListIndex, 123);
         assert.strictEqual(object.streamNumber, 234);
-        assert.strictEqual(object.getUlong(), BigInt(1234));
+        assert.strictEqual(object.ulongValue, BigInt(1234));
     }
 
     @test
@@ -264,14 +261,14 @@ const assert = Chai.assert;
 
         assert.strictEqual(object.languageListIndex, 123);
         assert.strictEqual(object.streamNumber, 234);
-        assert.strictEqual(object.getString(), "foobarbaz");
+        assert.strictEqual(object.toString(), "foobarbaz");
 
         const expectedBytes = ByteVector.concatenate(
-            ByteVector.fromUShort(123, false),
-            ByteVector.fromUShort(234, false),
-            ByteVector.fromUShort(8, false),
-            ByteVector.fromUShort(DataType.Unicode, false),
-            ByteVector.fromUInt(20, false),
+            ByteVector.fromUshort(123, false),
+            ByteVector.fromUshort(234, false),
+            ByteVector.fromUshort(8, false),
+            ByteVector.fromUshort(DataType.Unicode, false),
+            ByteVector.fromUint(20, false),
             ByteVector.fromString("foo\0", StringType.UTF16LE),
             ByteVector.fromString("foobarbaz\0", StringType.UTF16LE)
         );
@@ -282,11 +279,11 @@ const assert = Chai.assert;
     public fromFile_unicode() {
         // Arrange
         const bytes = ByteVector.concatenate(
-            ByteVector.fromUShort(123, false),
-            ByteVector.fromUShort(234, false),
-            ByteVector.fromUShort(8, false),
-            ByteVector.fromUShort(DataType.Unicode, false),
-            ByteVector.fromUInt(20, false),
+            ByteVector.fromUshort(123, false),
+            ByteVector.fromUshort(234, false),
+            ByteVector.fromUshort(8, false),
+            ByteVector.fromUshort(DataType.Unicode, false),
+            ByteVector.fromUint(20, false),
             ByteVector.fromString("foo\0", StringType.UTF16LE),
             ByteVector.fromString("foobarbaz\0", StringType.UTF16LE)
         );
@@ -301,13 +298,13 @@ const assert = Chai.assert;
 
         assert.strictEqual(object.languageListIndex, 123);
         assert.strictEqual(object.streamNumber, 234);
-        assert.strictEqual(object.getString(), "foobarbaz");
+        assert.strictEqual(object.stringValue, "foobarbaz");
     }
 
     @test
     public constructor_bytes() {
         // Arrange
-        const bytes = ByteVector.fromString("abcdef");
+        const bytes = ByteVector.fromString("abcdef", StringType.UTF8);
 
         // Act
         const object = new MetadataDescriptor(123, 234, "foo", DataType.Bytes, bytes);
@@ -318,14 +315,14 @@ const assert = Chai.assert;
 
         assert.strictEqual(object.languageListIndex, 123);
         assert.strictEqual(object.streamNumber, 234);
-        Testers.bvEqual(object.getBytes(), bytes);
+        Testers.bvEqual(object.byteValue, bytes);
 
         const expectedBytes = ByteVector.concatenate(
-            ByteVector.fromUShort(123, false),
-            ByteVector.fromUShort(234, false),
-            ByteVector.fromUShort(8, false),
-            ByteVector.fromUShort(DataType.Bytes, false),
-            ByteVector.fromUInt(6, false),
+            ByteVector.fromUshort(123, false),
+            ByteVector.fromUshort(234, false),
+            ByteVector.fromUshort(8, false),
+            ByteVector.fromUshort(DataType.Bytes, false),
+            ByteVector.fromUint(6, false),
             ByteVector.fromString("foo\0", StringType.UTF16LE),
             bytes
         );
@@ -335,15 +332,15 @@ const assert = Chai.assert;
     @test
     public fromFile_bytes() {
         // Arrange
-        const bytes = ByteVector.fromString("abcdef");
+        const bytes = ByteVector.fromString("abcdef", StringType.UTF8);
 
         // Arrange
         const data = ByteVector.concatenate(
-            ByteVector.fromUShort(123, false),
-            ByteVector.fromUShort(234, false),
-            ByteVector.fromUShort(8, false),
-            ByteVector.fromUShort(DataType.Bytes, false),
-            ByteVector.fromUInt(6, false),
+            ByteVector.fromUshort(123, false),
+            ByteVector.fromUshort(234, false),
+            ByteVector.fromUshort(8, false),
+            ByteVector.fromUshort(DataType.Bytes, false),
+            ByteVector.fromUint(6, false),
             ByteVector.fromString("foo\0", StringType.UTF16LE),
             bytes
         );
@@ -358,7 +355,7 @@ const assert = Chai.assert;
 
         assert.strictEqual(object.languageListIndex, 123);
         assert.strictEqual(object.streamNumber, 234);
-        Testers.bvEqual(object.getBytes(), bytes);
+        Testers.bvEqual(object.byteValue, bytes);
     }
 
     @test
@@ -375,14 +372,14 @@ const assert = Chai.assert;
 
         assert.strictEqual(object.languageListIndex, 123);
         assert.strictEqual(object.streamNumber, 234);
-        assert.isTrue(object.getGuid().equals(guid));
+        assert.isTrue(object.guidValue.equals(guid));
 
         const expectedBytes = ByteVector.concatenate(
-            ByteVector.fromUShort(123, false),
-            ByteVector.fromUShort(234, false),
-            ByteVector.fromUShort(8, false),
-            ByteVector.fromUShort(DataType.Guid, false),
-            ByteVector.fromUInt(16, false),
+            ByteVector.fromUshort(123, false),
+            ByteVector.fromUshort(234, false),
+            ByteVector.fromUshort(8, false),
+            ByteVector.fromUshort(DataType.Guid, false),
+            ByteVector.fromUint(16, false),
             ByteVector.fromString("foo\0", StringType.UTF16LE),
             guid.toBytes()
         );
@@ -396,11 +393,11 @@ const assert = Chai.assert;
 
         // Arrange
         const data = ByteVector.concatenate(
-            ByteVector.fromUShort(123, false),
-            ByteVector.fromUShort(234, false),
-            ByteVector.fromUShort(8, false),
-            ByteVector.fromUShort(DataType.Guid, false),
-            ByteVector.fromUInt(16, false),
+            ByteVector.fromUshort(123, false),
+            ByteVector.fromUshort(234, false),
+            ByteVector.fromUshort(8, false),
+            ByteVector.fromUshort(DataType.Guid, false),
+            ByteVector.fromUint(16, false),
             ByteVector.fromString("foo\0", StringType.UTF16LE),
             guid.toBytes()
         );
@@ -415,7 +412,7 @@ const assert = Chai.assert;
 
         assert.strictEqual(object.languageListIndex, 123);
         assert.strictEqual(object.streamNumber, 234);
-        assert.isTrue(object.getGuid().equals(guid));
+        assert.isTrue(object.guidValue.equals(guid));
     }
 }
 
@@ -424,7 +421,7 @@ const assert = Chai.assert;
         return MetadataLibraryObject.fromFile;
     }
     protected get minSize(): number { return 26; }
-    protected get objectGuid(): UuidWrapper { return Guids.AsfMetadataLibraryObject; }
+    protected get objectGuid(): UuidWrapper { return Guids.ASF_METADATA_LIBRARY_OBJECT; }
 
     @test
     public fromEmpty() {
@@ -433,7 +430,7 @@ const assert = Chai.assert;
 
         // Assert
         assert.isOk(object);
-        assert.isTrue(object.guid.equals(Guids.AsfMetadataLibraryObject));
+        assert.isTrue(object.guid.equals(Guids.ASF_METADATA_LIBRARY_OBJECT));
         assert.strictEqual(object.objectType, ObjectType.MetadataLibraryObject);
         assert.strictEqual(object.originalSize, 0);
         assert.isTrue(object.isEmpty);
@@ -449,9 +446,9 @@ const assert = Chai.assert;
         const record2Bytes = record2.render();
         const bytes = ByteVector.concatenate(
             ByteVector.fromSize(10), // Offset
-            Guids.AsfMetadataLibraryObject.toBytes(),
-            ByteVector.fromULong(16 + 8 + 2 + record1Bytes.length + record2Bytes.length, false),
-            ByteVector.fromUShort(2, false),
+            Guids.ASF_METADATA_LIBRARY_OBJECT.toBytes(),
+            ByteVector.fromUlong(16 + 8 + 2 + record1Bytes.length + record2Bytes.length, false),
+            ByteVector.fromUshort(2, false),
             record1Bytes,
             record2Bytes
         );
@@ -462,7 +459,7 @@ const assert = Chai.assert;
 
         // Assert
         assert.isOk(object);
-        assert.isTrue(object.guid.equals(Guids.AsfMetadataLibraryObject));
+        assert.isTrue(object.guid.equals(Guids.ASF_METADATA_LIBRARY_OBJECT));
         assert.strictEqual(object.objectType, ObjectType.MetadataLibraryObject);
         assert.strictEqual(object.originalSize, bytes.length - 10);
         assert.isFalse(object.isEmpty);
@@ -650,9 +647,9 @@ const assert = Chai.assert;
         const record2Bytes = record2.render();
         const bytes = ByteVector.concatenate(
             ByteVector.fromSize(10), // Offset
-            Guids.AsfMetadataLibraryObject.toBytes(),
-            ByteVector.fromULong(16 + 8 + 2 + record1Bytes.length + record2Bytes.length, false),
-            ByteVector.fromUShort(2, false),
+            Guids.ASF_METADATA_LIBRARY_OBJECT.toBytes(),
+            ByteVector.fromUlong(16 + 8 + 2 + record1Bytes.length + record2Bytes.length, false),
+            ByteVector.fromUshort(2, false),
             record1Bytes,
             record2Bytes
         );
@@ -663,7 +660,7 @@ const assert = Chai.assert;
         const output = object.render();
 
         // Assert
-        Testers.bvEqual(output, bytes.mid(10));
+        Testers.bvEqual(output, bytes.subarray(10));
     }
 
     @test

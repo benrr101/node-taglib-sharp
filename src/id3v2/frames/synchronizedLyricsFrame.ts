@@ -60,7 +60,7 @@ export class SynchronizedText {
         return ByteVector.concatenate(
             ByteVector.fromString(this.text, encoding),
             ByteVector.getTextDelimiter(encoding),
-            ByteVector.fromUInt(this.time)
+            ByteVector.fromUint(this.time)
         );
     }
 }
@@ -114,7 +114,11 @@ export class SynchronizedLyricsFrame extends Frame {
      * @param header Header of the frame found at `offset` in `data`
      * @param version ID3v2 version the frame was originally encoded with
      */
-    public static fromOffsetRawData(data: ByteVector, offset: number, header: Id3v2FrameHeader, version: number) {
+    public static fromOffsetRawData(
+        data: ByteVector,
+        offset: number,
+        header: Id3v2FrameHeader, version: number
+    ): SynchronizedLyricsFrame {
         Guards.truthy(data, "data");
         Guards.uint(offset, "offset");
         Guards.truthy(header, "header");
@@ -211,6 +215,7 @@ export class SynchronizedLyricsFrame extends Frame {
      * Sets the type of text contained in the current instance.
      * @param value Type of the synchronized text
      */
+    // @TODO: Rename to Content Type to match spec
     public set textType(value: SynchronizedTextType) { this._textType = value; }
 
     // #endregion
@@ -231,7 +236,7 @@ export class SynchronizedLyricsFrame extends Frame {
         description: string,
         textType: SynchronizedTextType,
         language?: string
-    ) {
+    ): SynchronizedLyricsFrame {
         Guards.truthy(frames, "frames");
         return frames.find((f) => {
             if (f.description !== description) { return false; }
@@ -263,7 +268,7 @@ export class SynchronizedLyricsFrame extends Frame {
         description: string,
         language: string,
         textType: SynchronizedTextType
-    ) {
+    ): SynchronizedLyricsFrame {
         Guards.truthy(frames, "frames");
 
         let bestValue = -1;
@@ -310,42 +315,47 @@ export class SynchronizedLyricsFrame extends Frame {
     // #endregion
 
     /** @inheritDoc */
-    protected parseFields(data: ByteVector, _version: number): void {
+    protected parseFields(data: ByteVector): void {
         if (data.length < 6) {
             throw new CorruptFileError("Not enough bytes in field");
         }
 
+        // Read the basic information of the frame
         this.textEncoding = data.get(0);
-        this._language = data.toString(3, StringType.Latin1, 1);
+        this._language = data.subarray(1, 3).toString(StringType.Latin1);
         this.format = data.get(4);
         this.textType = data.get(5);
 
         const delim = ByteVector.getTextDelimiter(this.textEncoding);
-        let delimIndex = data.find(delim, 6, delim.length);
 
-        if (delimIndex < 0) {
+        // Read the description of the frame
+        const descriptionEndIndex = data.offsetFind(delim, 6, delim.length);
+        if (descriptionEndIndex < 0) {
             throw new CorruptFileError("Text delimiter expected");
         }
+        const descriptionLength = descriptionEndIndex - 6;
+        this.description = data.subarray(6, descriptionLength).toString(this.textEncoding);
 
-        this.description = data.toString(delimIndex - 6, this.textEncoding, 6);
-
-        let offset = delimIndex + delim.length;
-        const l = [];
+        let offset = 6 + descriptionLength + delim.length;
+        const l: SynchronizedText[] = [];
         while (offset + delim.length + 4 < data.length) {
-            delimIndex = data.find(delim, offset, delim.length);
-
-            if (delimIndex < offset) {
-                throw new CorruptFileError("Text delimiter expected");
+            // Determine length of lyrics
+            const lyricsLength = data.subarray(offset).find(delim, delim.length);
+            if (lyricsLength < 0) {
+                throw new CorruptFileError("Text delimiter for synchronized lyric not found");
             }
 
-            const text = data.toString(delimIndex - offset, this.textEncoding, offset);
-            offset = delimIndex + delim.length;
+            // Read lyrics
+            const text = data.subarray(offset, lyricsLength).toString(this.textEncoding);
 
+            // Read time code
+            offset += lyricsLength + delim.length;
             if (offset + 4 > data.length) {
+                // This handles malformed frames that don't have the timecode
                 break;
             }
 
-            const time = data.mid(offset, 4).toUInt();
+            const time = data.subarray(offset, 4).toUint();
             l.push(new SynchronizedText(time, text));
 
             offset += 4;

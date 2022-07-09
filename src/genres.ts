@@ -195,7 +195,7 @@ const videoGenres = [
 ];
 
 
-function stringToByte(text: string, allowParenthesis: boolean): number {
+const stringToByte = (text: string, allowParenthesis: boolean): number => {
     if (allowParenthesis) {
         const trimRegex = /^\(+|\)+$/g;
         text = text.replace(trimRegex, "");

@@ -32,6 +32,7 @@ import {Guards} from "../../utils";
  *   for the publisher.
  */
 export class UrlLinkFrame extends Frame {
+    // @TODO: Don't allow protected member variables
     protected _encoding: StringType = StringType.Latin1;
     protected _rawData: ByteVector;
     protected _rawVersion: number;
@@ -151,9 +152,7 @@ export class UrlLinkFrame extends Frame {
     public clone(): UrlLinkFrame {
         const frame = UrlLinkFrame.fromIdentity(this.frameId);
         frame._textFields = this._textFields.slice();
-        if (this._rawData) {
-            frame._rawData = ByteVector.fromByteVector(this._rawData);
-        }
+        frame._rawData = this._rawData?.toByteVector();
         frame._rawVersion = this._rawVersion;
         return frame;
     }
@@ -167,7 +166,7 @@ export class UrlLinkFrame extends Frame {
     /** @inheritDoc */
     protected parseFields(data: ByteVector, version: number): void {
         Guards.byte(version, "version");
-        this._rawData = data;
+        this._rawData = data.toByteVector();
         this._rawVersion = version;
     }
 
@@ -185,33 +184,24 @@ export class UrlLinkFrame extends Frame {
             // Text Encoding    $xx
             // Description      <text string according to encoding> $00 (00)
             // URL              <text string>
-            const encoding = <StringType> data.get(0);
+            const encoding = <StringType> data.get(index);
             const delim = ByteVector.getTextDelimiter(encoding);
-            const delimIndex = data.find(delim, 1, delim.length);
+            index++;
 
+            const delimIndex = data.offsetFind(delim, index, delim.length);
             if (delimIndex >= 0) {
-                const description = data.toString(delimIndex - 1, encoding, 1);
+                const descriptionLength = delimIndex - index;
+                const description = data.subarray(index, descriptionLength).toString(encoding);
                 fieldList.push(description);
-                index += delimIndex - 1 + delim.length;
+                index += descriptionLength + delim.length;
             }
-
-            index += 1;
         }
 
         if (index < data.length) {
 
             // Read the url from the data
-            let url = data.toString(data.length - index, StringType.Latin1, index);
-
-            // Do a fast removal of end bytes
-            if (url.length > 1 && url[url.length - 1] === "\0") {
-                for (let i = url.length - 1; i >= 0; i--) {
-                    if (url[i] !== "\0") {
-                        url = url.substr(0, i + 1);
-                        break;
-                    }
-                }
-            }
+            let url = data.subarray(index).toString(StringType.Latin1);
+            url = url.replace(/[\s\0]+$/, "");
 
             fieldList.push(url);
         }
@@ -220,30 +210,31 @@ export class UrlLinkFrame extends Frame {
 
     /** @inheritDoc */
     protected renderFields(version: number): ByteVector {
+        // @TODO: Move WXXX rendering to WXXX class
         if (this._rawData && this._rawVersion === version) {
             return this._rawData;
         }
 
         const encoding = UrlLinkFrame.correctEncoding(this.textEncoding, version);
         const isWxxx = this.frameId === FrameIdentifiers.WXXX;
-        const v = isWxxx
-            ? ByteVector.fromByteArray(new Uint8Array([encoding]))
-            : ByteVector.empty();
-        let text = this._textFields;
 
+        let textFields = this._textFields;
         if (version > 3 || isWxxx) {
             if (isWxxx) {
-                if (text.length === 0) {
-                    text = [undefined, undefined];
-                } else if (text.length === 1) {
-                    text = [text[0], undefined];
+                if (textFields.length === 0) {
+                    textFields = [undefined, undefined];
+                } else if (textFields.length === 1) {
+                    textFields = [textFields[0], undefined];
                 }
             }
         }
         // @TODO: is this correct formatting?
-        v.addByteVector(ByteVector.fromString(text.join("/"), StringType.Latin1));
+        const text = textFields.join("/");
 
-        return v;
+        return ByteVector.concatenate(
+            isWxxx ? encoding : undefined,
+            ByteVector.fromString(text, StringType.Latin1)
+        );
     }
 
     // #endregion
@@ -385,12 +376,10 @@ export class UserUrlLinkFrame extends UrlLinkFrame {
 
     /** @inheritDoc */
     public clone(): UserUrlLinkFrame {
-        const frame = UserUrlLinkFrame.fromDescription(null);
+        const frame = UserUrlLinkFrame.fromDescription(undefined);
         frame._encoding = this._encoding;
         frame._textFields = this._textFields.slice();
-        if (this._rawData) {
-            frame._rawData = ByteVector.fromByteVector(this._rawData);
-        }
+        frame._rawData = this._rawData?.toByteVector();
         frame._rawVersion = this._rawVersion;
         return frame;
     }

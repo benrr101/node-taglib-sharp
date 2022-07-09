@@ -1,14 +1,15 @@
+import MpegContainerFileSettings from "./mpegContainerFileSettings";
 import MpegAudioHeader from "./mpegAudioHeader";
 import MpegVideoHeader from "./mpegVideoHeader";
 import SandwichFile from "../sandwich/sandwichFile";
-import Properties from "../properties";
 import {ByteVector} from "../byteVector";
 import {CorruptFileError, UnsupportedFormatError} from "../errors";
 import {File, ReadStyle} from "../file";
 import {IFileAbstraction} from "../fileAbstraction";
 import {MpegVersion} from "./mpegEnums";
+import {Properties} from "../properties";
 import {TagTypes} from "../tag";
-import MpegContainerFileSettings from "./mpegContainerFileSettings";
+import {NumberUtils} from "../utils";
 
 /**
  * Indicates the type of marker found in an MPEG file.
@@ -69,12 +70,12 @@ enum MpegFileMarker {
  *     `file.removeTags(file.tagTypes & ~file.tagTypesOnDisk);`
  */
 export default class MpegContainerFile extends SandwichFile {
-    private static readonly _defaultTagLocationMapping = new Map<TagTypes, () => boolean>([
+    private static readonly DEFAULT_TAG_LOCATION_MAPPING = new Map<TagTypes, () => boolean>([
         [TagTypes.Ape, () => true],
         [TagTypes.Id3v1, () => true],
         [TagTypes.Id3v2, () => true]
     ]);
-    private static readonly _markerStart = ByteVector.fromByteArray(new Uint8Array([0, 0, 1]));
+    private static readonly MARKER_START = ByteVector.fromByteArray([0, 0, 1]);
 
     private _audioFound = false;
     private _audioHeader: MpegAudioHeader;
@@ -88,7 +89,7 @@ export default class MpegContainerFile extends SandwichFile {
         super(
             file,
             propertiesStyle,
-            MpegContainerFile._defaultTagLocationMapping,
+            MpegContainerFile.DEFAULT_TAG_LOCATION_MAPPING,
             MpegContainerFileSettings.defaultTagTypes
         );
     }
@@ -96,7 +97,7 @@ export default class MpegContainerFile extends SandwichFile {
     /** @inheritDoc */
     protected readProperties(readStyle: ReadStyle): Properties {
         // Skip processing if we aren't supposed to read the properties
-        if ((readStyle & ReadStyle.Average) === 0) {
+        if (!NumberUtils.hasFlag(readStyle, ReadStyle.Average)) {
             return;
         }
 
@@ -126,7 +127,7 @@ export default class MpegContainerFile extends SandwichFile {
     // #region Private Methods
 
     private findFirstMarker(position: number): {marker: MpegFileMarker, position: number} {
-        position = this.find(MpegContainerFile._markerStart, position);
+        position = this.find(MpegContainerFile.MARKER_START, position);
         if (position < 0) {
             throw new CorruptFileError("Marker not found");
         }
@@ -139,7 +140,7 @@ export default class MpegContainerFile extends SandwichFile {
 
     private findNextMarkerPosition(position: number, marker: MpegFileMarker): number {
         const packet = ByteVector.concatenate(
-            MpegContainerFile._markerStart,
+            MpegContainerFile.MARKER_START,
             marker
         );
         position = this.find(packet, position);
@@ -155,7 +156,7 @@ export default class MpegContainerFile extends SandwichFile {
         this.seek(position);
         const identifier = this.readBlock(4);
 
-        if (identifier.length === 4 && identifier.startsWith(MpegContainerFile._markerStart)) {
+        if (identifier.length === 4 && identifier.startsWith(MpegContainerFile.MARKER_START)) {
             return identifier.get(3);
         }
 
@@ -164,7 +165,8 @@ export default class MpegContainerFile extends SandwichFile {
 
     private readAudioPacket(position: number): number {
         this.seek(position + 4);
-        const length = this.readBlock(2).toUShort();
+        const headerBytes = this.readBlock(21);
+        const length = headerBytes.subarray(0, 2).toUshort();
         const returnValue = position + length;
 
         if (this._audioFound) {
@@ -172,14 +174,14 @@ export default class MpegContainerFile extends SandwichFile {
         }
 
         // There is a maximum of 16 stuffing bytes, read to the PTS/DTS flags
-        const packetHeaderBytes = this.readBlock(19);
+        const packetHeaderBytes = headerBytes.subarray(2, 19);
         let i = 0;
         while (i < packetHeaderBytes.length && packetHeaderBytes.get(i) === 0xFF) {
             // Byte is a stuffing byte
             i++;
         }
 
-        if ((packetHeaderBytes.get(i) & 0x40 ) !== 0) {
+        if (NumberUtils.hasFlag(packetHeaderBytes.get(i), 0x40 )) {
             // STD buffer size is unexpected for audio packets, but whatever
             i++;
         }
@@ -187,8 +189,8 @@ export default class MpegContainerFile extends SandwichFile {
         // Decode the PTS/DTS flags
         const timestampFlags = packetHeaderBytes.get(i);
         const dataOffset = 4 + 2 + i                 // Packet marker + packet length + stuffing bytes/STD buffer size
-            + ((timestampFlags & 0x20) > 0 ? 4 : 0)  // Presentation timestamp
-            + ((timestampFlags & 0x10) > 0 ? 4 : 0); // Decode timestamp
+            + (NumberUtils.hasFlag(timestampFlags, 0x20) ? 4 : 0)  // Presentation timestamp
+            + (NumberUtils.hasFlag(timestampFlags, 0x10) ? 4 : 0); // Decode timestamp
 
         // Decode the MPEG audio header
         this._audioHeader = MpegAudioHeader.find(this, position + dataOffset, length - 9);
@@ -215,7 +217,7 @@ export default class MpegContainerFile extends SandwichFile {
                 case MpegFileMarker.SystemPacket:
                 case MpegFileMarker.PaddingPacket:
                     this.seek(position + 4);
-                    position += this.readBlock(2).toUShort() + 6;
+                    position += this.readBlock(2).toUshort() + 6;
                     break;
                 case MpegFileMarker.VideoPacket:
                     position = this.readVideoPacket(position);
@@ -237,13 +239,13 @@ export default class MpegContainerFile extends SandwichFile {
         this.seek(position + 4);
 
         const versionInfo = this.readBlock(1).get(0);
-        if ((versionInfo & 0xF0) === 0x20) {
+        if (NumberUtils.uintAnd(versionInfo, 0xF0) === 0x20) {
             this._version = MpegVersion.Version1;
             packetSize = 12;
-        } else if ((versionInfo & 0xC0) === 0x40) {
+        } else if (NumberUtils.uintAnd(versionInfo, 0xC0) === 0x40) {
             this._version = MpegVersion.Version2;
             this.seek(position + 13);
-            packetSize = 14 + (this.readBlock(1).get(0) & 0x07);
+            packetSize = 14 + NumberUtils.uintAnd(this.readBlock(1).get(0), 0x07);
         } else {
             throw new UnsupportedFormatError("Unknown MPEG version");
         }
@@ -262,21 +264,25 @@ export default class MpegContainerFile extends SandwichFile {
         this.seek(position);
         if (this._version === MpegVersion.Version1) {
             const data = this.readBlock(5);
-            high = ((data.get(0) >>> 3) & 0x01) >>> 0;
-            low = (((data.get(0) >>> 1) & 0x03 << 30)
-                |   (data.get(1) << 22)
-                |  ((data.get(2) >>> 1) << 15)
-                |   (data.get(3) << 7)
-                |   (data.get(4) >>> 1)) >>> 0;
+            high = NumberUtils.uintAnd(NumberUtils.uintRShift(data.get(0), 3), 0x01);
+            low = NumberUtils.uintOr(
+                NumberUtils.uintLShift(NumberUtils.uintAnd(NumberUtils.uintRShift(data.get(0), 1), 0x03), 30),
+                NumberUtils.uintLShift(data.get(1), 22),
+                NumberUtils.uintLShift(NumberUtils.uintRShift(data.get(2), 1), 15),
+                NumberUtils.uintLShift(data.get(3), 7),
+                NumberUtils.uintRShift(data.get(4), 1)
+            );
         } else {
             const data = this.readBlock(6);
-            high = ((data.get(0) & 0x20) >>> 5);
-            low = (((data.get(0) & 0x03) << 28)
-                |   (data.get(1) << 20)
-                |  ((data.get(2) & 0xF8) << 12)
-                |  ((data.get(2) & 0x03) << 13)
-                |   (data.get(3) << 5)
-                |   (data.get(4) >>> 3)) >>> 0;
+            high = NumberUtils.uintRShift(NumberUtils.uintAnd(data.get(0), 0x20), 5);
+            low = NumberUtils.uintOr(
+                NumberUtils.uintLShift(NumberUtils.uintAnd(data.get(0), 0x03), 28),
+                NumberUtils.uintLShift(data.get(1), 20),
+                NumberUtils.uintLShift(NumberUtils.uintAnd(data.get(2), 0xF8), 12),
+                NumberUtils.uintLShift(NumberUtils.uintAnd(data.get(2), 0x03), 13),
+                NumberUtils.uintLShift(data.get(3), 5),
+                NumberUtils.uintRShift(data.get(4), 3)
+            );
         }
 
         return (high * 0x10000 * 0x10000 + low) / 90000;
@@ -284,7 +290,7 @@ export default class MpegContainerFile extends SandwichFile {
 
     private readVideoPacket(position: number): number {
         this.seek(position + 4);
-        const length = this.readBlock(2).toUShort();
+        const length = this.readBlock(2).toUshort();
         let offset = position + 6;
 
         while (!this._videoFound && offset < position + length) {
@@ -307,7 +313,7 @@ export default class MpegContainerFile extends SandwichFile {
 
     private rFindMarkerPosition(position: number, marker: MpegFileMarker): number {
         const packet = ByteVector.concatenate(
-            MpegContainerFile._markerStart,
+            MpegContainerFile.MARKER_START,
             marker
         );
         position = this.rFind(packet, position);
@@ -322,7 +328,7 @@ export default class MpegContainerFile extends SandwichFile {
     // #endregion
 }
 
-////////////////////////////////////////////////////////////////////////////
+// /////////////////////////////////////////////////////////////////////////
 // Register the file type
 [
     "taglib/mpg",

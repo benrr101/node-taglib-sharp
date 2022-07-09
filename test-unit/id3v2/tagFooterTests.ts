@@ -1,5 +1,5 @@
-import * as Chai from "chai";
 import {suite, test} from "@testdeck/mocha";
+import {assert} from "chai";
 
 import TestConstants from "../testConstants";
 import Id3v2TagFooter from "../../src/id3v2/id3v2TagFooter";
@@ -8,12 +8,9 @@ import {ByteVector} from "../../src/byteVector";
 import {Id3v2TagHeaderFlags} from "../../src/id3v2/id3v2TagHeader";
 import {Testers} from "../utilities/testers";
 
-// Setup chai
-const assert = Chai.assert;
-
 const getTestFooter = (majorVersion: number, minorVersion: number, flags: Id3v2TagHeaderFlags): Id3v2TagFooter => {
     const data = ByteVector.concatenate(
-        Id3v2TagFooter.fileIdentifier,
+        Id3v2TagFooter.FILE_IDENTIFIER,
         majorVersion,
         minorVersion,
         flags,
@@ -51,7 +48,7 @@ const getTestFooter = (majorVersion: number, minorVersion: number, flags: Id3v2T
     public fromData_invalidFlags_version4() {
         // Arrange
         const data = ByteVector.concatenate(
-            Id3v2TagFooter.fileIdentifier,
+            Id3v2TagFooter.FILE_IDENTIFIER,
             0x04, 0x00, 0x07
         );
 
@@ -63,7 +60,7 @@ const getTestFooter = (majorVersion: number, minorVersion: number, flags: Id3v2T
     public fromData_invalidTagSizeBytes() {
         // Arrange
         const testData = ByteVector.concatenate(
-            Id3v2TagFooter.fileIdentifier,
+            Id3v2TagFooter.FILE_IDENTIFIER,
             0x04, 0x00, 0x00
         );
         const testData1 = ByteVector.concatenate(testData, 0x80, 0x00, 0x00, 0x00);
@@ -85,7 +82,7 @@ const getTestFooter = (majorVersion: number, minorVersion: number, flags: Id3v2T
         const minorVersion = 0x00;
         const flags = 0xE0;
         const testData = ByteVector.concatenate(
-            Id3v2TagFooter.fileIdentifier,
+            Id3v2TagFooter.FILE_IDENTIFIER,
             majorVersion,
             minorVersion,
             flags,
@@ -216,7 +213,7 @@ const getTestFooter = (majorVersion: number, minorVersion: number, flags: Id3v2T
         const minorVersion = 0x00;
         const flags = 0xE0;
         const testData = ByteVector.concatenate(
-            Id3v2TagFooter.fileIdentifier,
+            Id3v2TagFooter.FILE_IDENTIFIER,
             majorVersion,
             minorVersion,
             flags,

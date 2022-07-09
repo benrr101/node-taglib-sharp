@@ -1,5 +1,5 @@
-import * as Chai from "chai";
 import {suite, test} from "@testdeck/mocha";
+import {assert} from "chai";
 
 import FrameConstructorTests from "./frameConstructorTests";
 import Id3v2Settings from "../../src/id3v2/id3v2Settings";
@@ -10,18 +10,15 @@ import {Id3v2FrameHeader} from "../../src/id3v2/frames/frameHeader";
 import {FrameIdentifiers} from "../../src/id3v2/frameIdentifiers";
 import {Testers} from "../utilities/testers";
 
-// Setup chai
-const assert = Chai.assert;
-
-function getTestFrame(): UserTextInformationFrame {
+const getTestFrame = (): UserTextInformationFrame => {
     const header = new Id3v2FrameHeader(FrameIdentifiers.TXXX);
     header.frameSize = 8;
     const data = ByteVector.concatenate(
         header.render(4),
         StringType.Latin1,
-        ByteVector.fromString("foo"),
+        ByteVector.fromString("foo", StringType.UTF8),
         ByteVector.getTextDelimiter(StringType.Latin1),
-        ByteVector.fromString("bar")
+        ByteVector.fromString("bar", StringType.UTF8)
     );
 
     return UserTextInformationFrame.fromRawData(data, 4);
@@ -63,9 +60,9 @@ function getTestFrame(): UserTextInformationFrame {
             header.render(4),
             0x00, 0x00,
             StringType.Latin1,
-            ByteVector.fromString("foo"),
+            ByteVector.fromString("foo", StringType.UTF8),
             ByteVector.getTextDelimiter(StringType.Latin1),
-            ByteVector.fromString("bar")
+            ByteVector.fromString("bar", StringType.UTF8)
         );
 
         // Act
@@ -83,9 +80,9 @@ function getTestFrame(): UserTextInformationFrame {
         const data = ByteVector.concatenate(
             header.render(4),
             StringType.Latin1,
-            ByteVector.fromString("foo"),
+            ByteVector.fromString("foo", StringType.UTF8),
             ByteVector.getTextDelimiter(StringType.Latin1),
-            ByteVector.fromString("bar")
+            ByteVector.fromString("bar", StringType.UTF8)
         );
 
         // Act

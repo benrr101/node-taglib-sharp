@@ -1,15 +1,15 @@
 import Mpeg4AudioTypes from "../mpeg4/mpeg4AudioTypes";
 import {ByteVector} from "../byteVector";
 import {File} from "../file";
-import {IAudioCodec, MediaTypes} from "../iCodec";
-import {Guards} from "../utils";
+import {IAudioCodec, MediaTypes} from "../properties";
+import {Guards, NumberUtils} from "../utils";
 
 /**
  * This structure implements {@link IAudioCodec} and provides information about an ADTS AAC audio
  * stream. NOTE: This header type should not be used for MPEG-4 encapsulated audio files.
  */
 export default class AacAudioHeader implements IAudioCodec {
-    private static readonly sampleRates = [
+    private static readonly SAMPLE_RATES = [
         96000, 88200, 64000, 48000, 44100, 32000,
         24000, 22050, 16000, 12000, 11025, 8000, 7350
     ];
@@ -17,7 +17,7 @@ export default class AacAudioHeader implements IAudioCodec {
     /**
      * An empty an unset header
      */
-    public static readonly unknown = new AacAudioHeader(0, 0, 0, 0);
+    public static readonly UNKNOWN = new AacAudioHeader(0, 0, 0, 0);
 
     private readonly _audioBitrate: number;
     private readonly _audioChannels: number;
@@ -129,38 +129,43 @@ export default class AacAudioHeader implements IAudioCodec {
 
                 // Sync word found, continue processing
                 // NOTE: For details of the header format, see https://wiki.multimedia.cx/index.php/ADTS
-                const bytes = buffer.mid(i, 7);
+                const bytes = buffer.subarray(i, 7);
 
                 // Sample rate
                 const sampleRateByte = bytes.get(2);
-                const sampleRateIndex = (sampleRateByte & 0x3C) >>> 2;
-                if (sampleRateIndex >= this.sampleRates.length) {
+                const sampleRateIndex = NumberUtils.uintRShift(NumberUtils.uintAnd(sampleRateByte, 0x3C), 2);
+                if (sampleRateIndex >= this.SAMPLE_RATES.length) {
                     return undefined;
                 }
-                const sampleRate = this.sampleRates[sampleRateIndex];
+                const sampleRate = this.SAMPLE_RATES[sampleRateIndex];
 
                 // MPEG-4 Audio Type
-                const mpeg4AudioType = ((sampleRateByte & 0xC0) >>> 6) + 1;
+                const mpeg4AudioType = NumberUtils.uintRShift(NumberUtils.uintAnd(sampleRateByte, 0xC0), 6) + 1;
 
                 // Channel configuration
                 const channelsByte1 = sampleRateByte;
                 const channelsByte2 = bytes.get(3);
-                const channelCount = ((channelsByte1 & 0x1) << 2)
-                    | (channelsByte2 & 0xC0) >>> 6;
+                const channelCount = NumberUtils.uintOr(
+                    NumberUtils.uintLShift(NumberUtils.uintAnd(channelsByte1, 0x01), 2),
+                    NumberUtils.uintRShift(NumberUtils.uintAnd(channelsByte2, 0xC0), 6)
+                );
 
                 // Frame length
                 const frameLengthByte1 = channelsByte2;
                 const frameLengthByte2 = bytes.get(4);
                 const frameLengthByte3 = bytes.get(5);
-                const frameLength = ((frameLengthByte1 & 0x03) << 11)
-                    | (frameLengthByte2 << 3)
-                    | ((frameLengthByte3 & 0xE0) >>> 5);
+                const frameLength = NumberUtils.uintOr(
+                    NumberUtils.uintLShift(NumberUtils.uintAnd(frameLengthByte1, 0x03), 11),
+                    NumberUtils.uintLShift(frameLengthByte2, 3),
+                    NumberUtils.uintRShift(NumberUtils.uintAnd(frameLengthByte3, 0xE0), 5)
+                );
                 if (frameLength < 7) {
                     return undefined;
                 }
 
                 // Number of frames in ADTS frame minus 1
-                const numberOfFrames = ((bytes.get(6) & 0x03) >>> 0) + 1;
+                const framesByte = bytes.get(6);
+                const numberOfFrames = NumberUtils.uintAnd(framesByte, 0x03) + 1;
 
                 // Calculate number of samples and bitrate
                 const numberOfSamples = numberOfFrames * 1024;

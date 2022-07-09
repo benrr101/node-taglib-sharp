@@ -1,7 +1,7 @@
 import RiffList from "../riffList";
 import {AviStream} from "./aviStream";
 import {CorruptFileError} from "../../errors";
-import {ICodec} from "../../iCodec";
+import {ICodec} from "../../properties";
 import {Guards} from "../../utils";
 
 /**
@@ -11,12 +11,12 @@ export default class AviHeader {
     /**
      * ID of the chunk in the header list that contains the header data.
      */
-    public static readonly headerChunkId = "avih";
+    public static readonly HEADER_CHUNK_ID = "avih";
 
     /**
      * Type of the list that stores an AVI header
      */
-    public static readonly headerListType = "hdrl";
+    public static readonly HEADER_LIST_TYPE = "hdrl";
 
     private readonly _codecs: ICodec[];
     private readonly _durationMilliseconds: number;
@@ -37,12 +37,12 @@ export default class AviHeader {
      */
     public constructor(list: RiffList) {
         Guards.truthy(list, "list");
-        if (list.type !== AviHeader.headerListType) {
-            throw new CorruptFileError(`Expected ${AviHeader.headerListType} list but got ${list.type}`);
+        if (list.type !== AviHeader.HEADER_LIST_TYPE) {
+            throw new CorruptFileError(`Expected ${AviHeader.HEADER_LIST_TYPE} list but got ${list.type}`);
         }
 
         // Read the main header
-        const mainHeaderValues = list.getValues(AviHeader.headerChunkId);
+        const mainHeaderValues = list.getValues(AviHeader.HEADER_CHUNK_ID);
         if (mainHeaderValues.length === 0) {
             throw new CorruptFileError("Could not find AVI main header data");
         }
@@ -50,20 +50,20 @@ export default class AviHeader {
         if (mainHeaderData.length < 40) {
             throw new CorruptFileError("AVI header is an invalid length");
         }
-        this._microsecondsPerFrame = mainHeaderData.mid(0, 4).toUInt(false);
-        this._maxBytesPerSecond = mainHeaderData.mid(4, 4).toUInt(false);
-        this._flags = mainHeaderData.mid(12, 4).toUInt(false);
-        this._totalFrames = mainHeaderData.mid(16, 4).toUInt(false);
-        this._initialFrames = mainHeaderData.mid(20, 4).toUInt(false);
-        this._streamCount = mainHeaderData.mid(24, 4).toUInt(false);
-        this._suggestedBufferSize = mainHeaderData.mid(28, 4).toUInt(false);
-        this._width = mainHeaderData.mid(32, 4).toUInt(false);
-        this._height = mainHeaderData.mid(36, 4).toUInt(false);
+        this._microsecondsPerFrame = mainHeaderData.subarray(0, 4).toUint(false);
+        this._maxBytesPerSecond = mainHeaderData.subarray(4, 4).toUint(false);
+        this._flags = mainHeaderData.subarray(12, 4).toUint(false);
+        this._totalFrames = mainHeaderData.subarray(16, 4).toUint(false);
+        this._initialFrames = mainHeaderData.subarray(20, 4).toUint(false);
+        this._streamCount = mainHeaderData.subarray(24, 4).toUint(false);
+        this._suggestedBufferSize = mainHeaderData.subarray(28, 4).toUint(false);
+        this._width = mainHeaderData.subarray(32, 4).toUint(false);
+        this._height = mainHeaderData.subarray(36, 4).toUint(false);
 
         this._durationMilliseconds = this._totalFrames * this._microsecondsPerFrame / 1000;
 
         // Read the streams in the file
-        const streamHeaderLists = list.getLists(AviStream.listType);
+        const streamHeaderLists = list.getLists(AviStream.LIST_TYPE);
         this._streams = streamHeaderLists.map((l) => new AviStream(l));
         this._codecs = this._streams.map((s) => s.codec).filter((c) => !!c);
     }

@@ -15,7 +15,7 @@ export default class Id3v2Settings {
     /**
      * Private constructor to prevent inadvertent construction
      */
-    private constructor() {}
+    private constructor() { /* private to prevent construction */ }
 
     /**
      * Gets the encoding to use when creating new frames.

@@ -1,11 +1,10 @@
-import Picture from "../picture";
+import * as DateFormat from "dateformat";
 import XiphPicture from "./xiphPicture";
 import XiphSettings from "./xiphSettings";
-import {Tag, TagTypes} from "../tag";
-import {IPicture} from "../iPicture";
 import {ByteVector, StringType} from "../byteVector";
+import {IPicture, Picture} from "../picture";
+import {Tag, TagTypes} from "../tag";
 import {Guards} from "../utils";
-import * as DateFormat from "dateformat";
 
 /**
  * Provides support for reading and writing Xiph comment-style tags.
@@ -14,8 +13,8 @@ import * as DateFormat from "dateformat";
  *     each field can have multiple values.
  */
 export default class XiphComment extends Tag {
-    private static readonly newPictureFiled = "METADATA_BLOCK_PICTURE";
-    private static readonly oldPictureField = "COVERART";
+    private static readonly NEW_PICTURE_FIELD = "METADATA_BLOCK_PICTURE";
+    private static readonly OLD_PICTURE_FIELD = "COVERART";
 
     private _fields: Map<string, string[]> = new Map<string, string[]>();
     private _pictures: IPicture[] = [];
@@ -32,8 +31,9 @@ export default class XiphComment extends Tag {
      * Constructs and initializes a new instance by reading the contents of a raw Xiph comment from
      * a {@link ByteVector} object.
      * @param data Object containing a raw Xiph comment, cannot be falsey
+     * @param lazyLoadPictures Whether or not to load pictures lazily
      */
-    public static fromData(data: ByteVector): XiphComment {
+    public static fromData(data: ByteVector, lazyLoadPictures: boolean): XiphComment {
         Guards.truthy(data, "data");
 
         const xiphComment = new XiphComment();
@@ -42,21 +42,21 @@ export default class XiphComment extends Tag {
         // The first thing in the comment data is the vendor ID length, followed by a UTF8 string
         // with the vendor ID.
         let pos = 0;
-        const vendorLength = data.mid(pos, 4).toUInt(false);
+        const vendorLength = data.subarray(pos, 4).toUint(false);
         pos += 4;
-        xiphComment._vendorId = data.toString(vendorLength, StringType.UTF8, pos);
+        xiphComment._vendorId = data.subarray(pos, vendorLength).toString(StringType.UTF8);
         pos += vendorLength;
 
         // Next, the number of fields in the comment vector
-        const commentFields = data.mid(pos, 4).toUInt(false);
+        const commentFields = data.subarray(pos, 4).toUint(false);
         pos += 4;
 
         for (let i = 0; i < commentFields; i++) {
             // Each comment field is in the format KEY=value in a UTF8 string and has a 32-bit uint
             // before it with the length.
-            const commentLength = data.mid(pos, 4).toUInt(false);
+            const commentLength = data.subarray(pos, 4).toUint(false);
             pos += 4;
-            const comment = data.toString(commentLength, StringType.UTF8, pos);
+            const comment = data.subarray(pos, commentLength).toString(StringType.UTF8);
             pos += commentLength;
 
             const commentSeparatorPosition = comment.indexOf("=");
@@ -65,21 +65,22 @@ export default class XiphComment extends Tag {
                 continue;
             }
 
-            const key = comment.substr(0, commentSeparatorPosition).toUpperCase();
-            const value = comment.substr(commentSeparatorPosition + 1);
+            const key = comment.substring(0, commentSeparatorPosition).toUpperCase();
+            const value = comment.substring(commentSeparatorPosition + 1);
 
             switch (key) {
-                case XiphComment.oldPictureField:
+                case XiphComment.OLD_PICTURE_FIELD:
                     // Old picture fields are just base64 encoded picture bytes
-                    const pictureBytes = ByteVector.fromByteArray(Buffer.from(value, "base64"));
+                    // TODO: Allow picture to be lazily decoded
+                    const pictureBytes = ByteVector.fromBase64String(value);
                     const oldPicture = Picture.fromData(pictureBytes);
                     xiphComment._pictures.push(oldPicture);
 
                     break;
-                case XiphComment.newPictureFiled:
+                case XiphComment.NEW_PICTURE_FIELD:
                     // New picture fields have details!
                     // TODO: Allow read style to be passed in
-                    const newPicture = XiphPicture.fromXiphComment(value, true);
+                    const newPicture = XiphPicture.fromXiphComment(value, lazyLoadPictures);
                     xiphComment._pictures.push(newPicture);
 
                     break;
@@ -137,6 +138,7 @@ export default class XiphComment extends Tag {
     public get tagTypes(): TagTypes { return TagTypes.Xiph; }
 
     /** @inheritDoc */
+    // TODO: This value is never updated after a save!!
     public get sizeOnDisk(): number { return this._sizeOnDisk; }
 
     /**
@@ -307,7 +309,7 @@ export default class XiphComment extends Tag {
         const text = this.getFieldFirstValue("DATE");
         if (!text) { return 0; }
 
-        const parsedText = Number.parseInt(text.substr(0, 4), 10);
+        const parsedText = Number.parseInt(text.substring(0, 4), 10);
         return Number.isNaN(parsedText) ? 0 : parsedText;
     }
     /**
@@ -846,7 +848,7 @@ export default class XiphComment extends Tag {
                 const encodedField = `${k}=${v}`;
                 const fieldDatum = ByteVector.fromString(encodedField, StringType.UTF8);
                 return ByteVector.concatenate(
-                    ByteVector.fromUInt(fieldDatum.length, false),
+                    ByteVector.fromUint(fieldDatum.length, false),
                     fieldDatum
                 );
             });
@@ -859,18 +861,18 @@ export default class XiphComment extends Tag {
         // @TODO: Allow configuration of which field to store pictures
         const pictureData = this._pictures.map((p) => {
             const xiphPicture = p instanceof XiphPicture ? p : XiphPicture.fromPicture(p);
-            const encodedPicture = `${XiphComment.newPictureFiled}=${xiphPicture.renderForXiphComment()}`;
+            const encodedPicture = `${XiphComment.NEW_PICTURE_FIELD}=${xiphPicture.renderForXiphComment()}`;
             return ByteVector.concatenate(
-                ByteVector.fromUInt(encodedPicture.length, false),
+                ByteVector.fromUint(encodedPicture.length, false),
                 ByteVector.fromString(encodedPicture, StringType.UTF8)
             );
         });
 
         // Put it all together
         const result = ByteVector.concatenate(
-            ByteVector.fromUInt(vendor.length, false),
+            ByteVector.fromUint(vendor.length, false),
             vendor,
-            ByteVector.fromUInt(allFieldData.length + pictureData.length, false),
+            ByteVector.fromUint(allFieldData.length + pictureData.length, false),
             ... allFieldData,
             ... pictureData
         );
@@ -936,8 +938,8 @@ export default class XiphComment extends Tag {
     // #region Private Methods
 
     private static isPictureField(fieldName: string): boolean {
-        return fieldName === XiphComment.oldPictureField
-            || fieldName === XiphComment.newPictureFiled;
+        return fieldName === XiphComment.OLD_PICTURE_FIELD
+            || fieldName === XiphComment.NEW_PICTURE_FIELD;
     }
 
     // #endregion

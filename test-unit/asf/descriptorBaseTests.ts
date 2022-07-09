@@ -1,13 +1,10 @@
-import * as Chai from "chai";
 import {suite, test} from "@testdeck/mocha";
+import {assert} from "chai";
 
 import UuidWrapper from "../../src/uuidWrapper";
-import {ByteVector} from "../../src/byteVector";
+import {ByteVector, StringType} from "../../src/byteVector";
 import {DataType, DescriptorBase, DescriptorValue} from "../../src/asf/objects/descriptorBase";
 import {Testers} from "../utilities/testers";
-
-// Setup Chai
-const assert = Chai.assert;
 
 class TestDescriptor extends DescriptorBase {
     public constructor(name: string, type: DataType, value: DescriptorValue) {
@@ -43,13 +40,13 @@ class TestDescriptor extends DescriptorBase {
         // Assert
         assert.strictEqual(d.name, "foo");
         assert.strictEqual(d.type, DataType.Word);
-        assert.isUndefined(d.getBool());
-        assert.isUndefined(d.getBytes());
-        assert.isUndefined(d.getGuid());
-        assert.isUndefined(d.getString());
-        assert.isUndefined(d.getUint());
-        assert.isUndefined(d.getUlong());
-        assert.strictEqual(d.getUshort(), 1234);
+        assert.isUndefined(d.boolValue);
+        assert.isUndefined(d.byteValue);
+        assert.isUndefined(d.guidValue);
+        assert.isUndefined(d.stringValue);
+        assert.isUndefined(d.uintValue);
+        assert.isUndefined(d.ulongValue);
+        assert.strictEqual(d.ushortValue, 1234);
     }
 
     @test
@@ -71,13 +68,13 @@ class TestDescriptor extends DescriptorBase {
         // Assert
         assert.strictEqual(d.name, "foo");
         assert.strictEqual(d.type, DataType.DWord);
-        assert.isUndefined(d.getBool());
-        assert.isUndefined(d.getBytes());
-        assert.isUndefined(d.getGuid());
-        assert.isUndefined(d.getString());
-        assert.strictEqual(d.getUint(), 1234);
-        assert.isUndefined(d.getUlong());
-        assert.isUndefined(d.getUshort());
+        assert.isUndefined(d.boolValue);
+        assert.isUndefined(d.byteValue);
+        assert.isUndefined(d.guidValue);
+        assert.isUndefined(d.stringValue);
+        assert.strictEqual(d.uintValue, 1234);
+        assert.isUndefined(d.ulongValue);
+        assert.isUndefined(d.ushortValue);
     }
 
     @test
@@ -99,13 +96,13 @@ class TestDescriptor extends DescriptorBase {
         // Assert
         assert.strictEqual(d.name, "foo");
         assert.strictEqual(d.type, DataType.QWord);
-        assert.isUndefined(d.getBool());
-        assert.isUndefined(d.getBytes());
-        assert.isUndefined(d.getGuid());
-        assert.isUndefined(d.getString());
-        assert.isUndefined(d.getUint());
-        assert.strictEqual(d.getUlong(), BigInt(1234));
-        assert.isUndefined(d.getUshort());
+        assert.isUndefined(d.boolValue);
+        assert.isUndefined(d.byteValue);
+        assert.isUndefined(d.guidValue);
+        assert.isUndefined(d.stringValue);
+        assert.isUndefined(d.uintValue);
+        assert.strictEqual(d.ulongValue, BigInt(1234));
+        assert.isUndefined(d.ushortValue);
     }
 
     @test
@@ -128,13 +125,13 @@ class TestDescriptor extends DescriptorBase {
         // Assert
         assert.strictEqual(d.name, "foo");
         assert.strictEqual(d.type, DataType.Bool);
-        assert.strictEqual(d.getBool(), true);
-        assert.isUndefined(d.getBytes());
-        assert.isUndefined(d.getGuid());
-        assert.isUndefined(d.getString());
-        assert.isUndefined(d.getUint());
-        assert.isUndefined(d.getUlong());
-        assert.isUndefined(d.getUshort());
+        assert.strictEqual(d.boolValue, true);
+        assert.isUndefined(d.byteValue);
+        assert.isUndefined(d.guidValue);
+        assert.isUndefined(d.stringValue);
+        assert.isUndefined(d.uintValue);
+        assert.isUndefined(d.ulongValue);
+        assert.isUndefined(d.ushortValue);
     }
 
     @test
@@ -157,13 +154,13 @@ class TestDescriptor extends DescriptorBase {
         // Assert
         assert.strictEqual(d.name, "foo");
         assert.strictEqual(d.type, DataType.Unicode);
-        assert.isUndefined(d.getBool());
-        assert.isUndefined(d.getBytes());
-        assert.isUndefined(d.getGuid());
-        assert.strictEqual(d.getString(), "bar");
-        assert.isUndefined(d.getUint());
-        assert.isUndefined(d.getUlong());
-        assert.isUndefined(d.getUshort());
+        assert.isUndefined(d.boolValue);
+        assert.isUndefined(d.byteValue);
+        assert.isUndefined(d.guidValue);
+        assert.strictEqual(d.stringValue, "bar");
+        assert.isUndefined(d.uintValue);
+        assert.isUndefined(d.ulongValue);
+        assert.isUndefined(d.ushortValue);
     }
 
     @test
@@ -181,7 +178,7 @@ class TestDescriptor extends DescriptorBase {
     @test
     public bytes_valid() {
         // Arrange
-        const bytes = ByteVector.fromString("fuxbuxquxx");
+        const bytes = ByteVector.fromString("fuxbuxquxx", StringType.UTF8);
 
         // Act
         const d = new TestDescriptor("foo", DataType.Bytes, bytes);
@@ -189,13 +186,13 @@ class TestDescriptor extends DescriptorBase {
         // Assert
         assert.strictEqual(d.name, "foo");
         assert.strictEqual(d.type, DataType.Bytes);
-        assert.isUndefined(d.getBool());
-        Testers.bvEqual(d.getBytes(), bytes);
-        assert.isUndefined(d.getGuid());
-        assert.isUndefined(d.getString());
-        assert.isUndefined(d.getUint());
-        assert.isUndefined(d.getUlong());
-        assert.isUndefined(d.getUshort());
+        assert.isUndefined(d.boolValue);
+        Testers.bvEqual(d.byteValue, bytes);
+        assert.isUndefined(d.guidValue);
+        assert.isUndefined(d.stringValue);
+        assert.isUndefined(d.uintValue);
+        assert.isUndefined(d.ulongValue);
+        assert.isUndefined(d.ushortValue);
     }
 
     @test
@@ -221,12 +218,12 @@ class TestDescriptor extends DescriptorBase {
         // Assert
         assert.strictEqual(d.name, "foo");
         assert.strictEqual(d.type, DataType.Guid);
-        assert.isUndefined(d.getBool());
-        assert.isUndefined(d.getBytes());
-        assert.isTrue(d.getGuid().equals(guid));
-        assert.isUndefined(d.getString());
-        assert.isUndefined(d.getUint());
-        assert.isUndefined(d.getUlong());
-        assert.isUndefined(d.getUshort());
+        assert.isUndefined(d.boolValue);
+        assert.isUndefined(d.byteValue);
+        assert.isTrue(d.guidValue.equals(guid));
+        assert.isUndefined(d.stringValue);
+        assert.isUndefined(d.uintValue);
+        assert.isUndefined(d.ulongValue);
+        assert.isUndefined(d.ushortValue);
     }
 }

@@ -1,7 +1,7 @@
-import ILazy from "../iLazy";
 import IRiffChunk from "./iRiffChunk";
-import {ByteVector} from "../byteVector";
+import {ByteVector, StringType} from "../byteVector";
 import {File} from "../file";
+import {ILazy} from "../interfaces";
 import {Guards} from "../utils";
 
 /**
@@ -16,7 +16,7 @@ export default class RiffChunk implements IRiffChunk, ILazy {
 
     // #region Constructors
 
-    private constructor() {}
+    private constructor() { /* private to enforce construction via static methods */ }
 
     /**
      * Creates and initializes a new instance, lazily, from a position of a file.
@@ -37,7 +37,7 @@ export default class RiffChunk implements IRiffChunk, ILazy {
 
         const chunk = new RiffChunk();
         file.seek(position + 4);
-        chunk._originalDataSize = file.readBlock(4).toUInt(false);
+        chunk._originalDataSize = file.readBlock(4).toUint(false);
         chunk._file = file;
         chunk._fourcc = fourcc;
         chunk._chunkStart = position;
@@ -49,7 +49,7 @@ export default class RiffChunk implements IRiffChunk, ILazy {
      * @param fourcc FOURCC code for the chunk
      * @param data Data to contain in the chunk, not includeing FOURCC or size
      */
-    public static fromData(fourcc: string, data: ByteVector) {
+    public static fromData(fourcc: string, data: ByteVector): RiffChunk {
         Guards.truthy(fourcc, "fourcc");
         if (fourcc.length !== 4) {
             throw new Error("Argument error: fourcc must be 4 characters");
@@ -57,7 +57,7 @@ export default class RiffChunk implements IRiffChunk, ILazy {
         Guards.truthy(data, "data");
 
         const chunk = new RiffChunk();
-        chunk._data = data;
+        chunk._data = data.toByteVector();
         chunk._fourcc = fourcc;
         chunk._originalDataSize = data.length;
         return chunk;
@@ -121,16 +121,12 @@ export default class RiffChunk implements IRiffChunk, ILazy {
     public render(): ByteVector {
         this.load();
 
-        const data = ByteVector.concatenate(
-            ByteVector.fromString(this._fourcc),
-            ByteVector.fromUInt(this.data.length, false),
-            this._data
+        return ByteVector.concatenate(
+            ByteVector.fromString(this._fourcc, StringType.Latin1),
+            ByteVector.fromUint(this.data.length, false),
+            this._data,
+            ((this._data.length + 4 + 4) % 2 === 1) ? 0x00 : undefined
         );
-        if ((data.length + 4) % 2 === 1) {
-            data.addByte(0x00);
-        }
-
-        return data;
     }
 
     // #endregion

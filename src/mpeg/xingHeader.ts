@@ -1,7 +1,7 @@
-import {ByteVector} from "../byteVector";
+import {ByteVector, StringType} from "../byteVector";
 import {CorruptFileError} from "../errors";
 import {ChannelMode, MpegVersion} from "./mpegEnums";
-import {Guards} from "../utils";
+import {Guards, NumberUtils} from "../utils";
 
 /**
  * Information about a variable bitrate MPEG audio stream
@@ -10,12 +10,12 @@ export default class XingHeader {
     /**
      * Identifier that appears in a file to indicate the start of a Xing header.
      */
-    public static readonly fileIdentifier = ByteVector.fromString("Xing", undefined, undefined, true);
+    public static readonly FILE_IDENTIFIER = ByteVector.fromString("Xing", StringType.Latin1).makeReadOnly();
 
     /**
      * An empty an unset Xing header
      */
-    public static readonly unknown = XingHeader.fromInfo(0, 0);
+    public static readonly UNKNOWN = XingHeader.fromInfo(0, 0);
 
     private _isPresent: boolean;
     private _totalFrames: number;
@@ -23,7 +23,7 @@ export default class XingHeader {
 
     // #region Constructors
 
-    private constructor() {}
+    private constructor() { /* private to enforce construction via static methods */ }
 
     /**
      * Constructs a new instance with a specified frame count and size.
@@ -49,22 +49,22 @@ export default class XingHeader {
         Guards.truthy(data, "data");
 
         // Check to see if a valid Xing header is available
-        if (!data.startsWith(XingHeader.fileIdentifier)) {
+        if (!data.startsWith(XingHeader.FILE_IDENTIFIER)) {
             throw new CorruptFileError("Not a valid Xing header");
         }
 
         const header = new XingHeader();
         let position = 8;
 
-        if ((data.get(7) & 0x01) !== 0) {
-            header._totalFrames = data.mid(position, 4).toUInt();
+        if (NumberUtils.hasFlag(data.get(7), 0x01)) {
+            header._totalFrames = data.subarray(position, 4).toUint();
             position += 4;
         } else {
             header._totalFrames = 0;
         }
 
-        if ((data.get(7) & 0x02) !== 0) {
-            header._totalSize = data.mid(position, 4).toUInt();
+        if (NumberUtils.hasFlag(data.get(7), 0x02)) {
+            header._totalSize = data.subarray(position, 4).toUint();
         } else {
             header._totalSize = 0;
         }

@@ -30,7 +30,7 @@ export default class PaddingObject extends BaseObject {
         const instance = new PaddingObject();
         instance.initializeFromFile(file, position);
 
-        if (!instance.guid.equals(Guids.AsfPaddingObject)) {
+        if (!instance.guid.equals(Guids.ASF_PADDING_OBJECT)) {
             throw new CorruptFileError("Object GUID does not match expected padding object GUID");
         }
 
@@ -47,7 +47,7 @@ export default class PaddingObject extends BaseObject {
         Guards.safeUint(size, "size");
 
         const instance = new PaddingObject();
-        instance.initializeFromGuid(Guids.AsfPaddingObject);
+        instance.initializeFromGuid(Guids.ASF_PADDING_OBJECT);
         instance._size = size;
 
         return instance;

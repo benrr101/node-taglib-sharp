@@ -1,9 +1,9 @@
 import * as fs from "fs";
 import {assert} from "chai";
 
-import ILazy from "../../src/iLazy";
 import TestConstants from "./testConstants";
 import Utilities from "./utilities";
+import {ILazy} from "../../src/interfaces";
 import {
     ByteVector,
     File,
@@ -14,6 +14,7 @@ import {
     Tag,
     TagTypes
 } from "../../src";
+import {NumberUtils} from "../../src/utils";
 
 export enum TestTagLevel {
     Normal,
@@ -101,7 +102,7 @@ export class StandardFileTests {
             const raws = new Array<ByteVector>(3);
 
             // Insert new picture
-            pics = [...pics, ...Array(Math.max(3 - pics.length, 0)).fill(undefined)];
+            pics = [...pics, ...<Picture[]>Array(Math.max(3 - pics.length, 0)).fill(undefined)];
             raws[0] = ByteVector.fromPath(StandardFileTests.samplePicture);
             pics[0] = Picture.fromPath(StandardFileTests.samplePicture);
             pics[0].type = PictureType.BackCover;
@@ -128,7 +129,7 @@ export class StandardFileTests {
             assert.strictEqual(pics.length, 3);
 
             // Lazy picture check
-            const isLazyTest = (readStyle & ReadStyle.PictureLazy) !== 0;
+            const isLazyTest = NumberUtils.hasFlag(readStyle, ReadStyle.PictureLazy);
             for (let i = 0; i < 3; i++) {
                 if (isLazyTest) {
                     assert.isFalse((<ILazy> <PictureLazy> pics[i]).isLoaded);
@@ -142,16 +143,16 @@ export class StandardFileTests {
             assert.strictEqual(pics[0].description, "TEST description 1");
             assert.strictEqual(pics[0].mimeType, "image/gif");
             assert.strictEqual(pics[0].data.length, fs.statSync(this.samplePicture).size);
-            assert.isTrue(ByteVector.equal(pics[0].data, raws[0]));
+            assert.isTrue(ByteVector.equals(pics[0].data, raws[0]));
 
             assert.strictEqual(pics[1].description, "TEST description 2");
             assert.strictEqual(pics[1].data.length, fs.statSync(this.sampleOther).size);
-            assert.isTrue(ByteVector.equal(pics[1].data, raws[1]));
+            assert.isTrue(ByteVector.equals(pics[1].data, raws[1]));
 
             assert.strictEqual(pics[2].description, "TEST description 3");
             assert.strictEqual(pics[2].mimeType, "image/gif");
             assert.strictEqual(pics[2].data.length, fs.statSync(this.samplePicture).size);
-            assert.isTrue(ByteVector.equal(pics[2].data, raws[2]));
+            assert.isTrue(ByteVector.equals(pics[2].data, raws[2]));
 
             // Types and mimetypes assumed to be properly supported at Medium level test
             if (level >= TestTagLevel.Medium) {
@@ -234,11 +235,11 @@ export class StandardFileTests {
         if (level >= TestTagLevel.Medium) {
             assert.strictEqual(tag.titleSort, "title sort, TEST");
             assert.strictEqual(tag.albumSort, "album sort, TEST");
-            assert.strictEqual(tag.joinedPerformersSort, "performer sort 1, TEST; performer sort 2, TEST");
-            assert.strictEqual(tag.composersSort.join("; "), "composer sort 1, TEST; composer sort 2, TEST");
-            assert.strictEqual(tag.albumArtistsSort.join("; "), "album artist sort 1, TEST; album artist sort 2, TEST");
+            assert.sameOrderedMembers(tag.performersSort, ["performer sort 1, TEST", "performer sort 2, TEST"]);
+            assert.sameOrderedMembers(tag.composersSort, ["composer sort 1, TEST", "composer sort 2, TEST"]);
+            assert.sameOrderedMembers(tag.albumArtistsSort, ["album artist sort 1, TEST", "album artist sort 2, TEST"]);
+            assert.sameOrderedMembers(tag.performersRole, ["TEST role 1a; TEST role 1b", "TEST role 2"]);
             assert.strictEqual(tag.beatsPerMinute, 120);
-            assert.strictEqual(tag.performersRole.join("\n"), "TEST role 1a;TEST role 1b\nTEST role 2");
 
             const dateTagged = (new Date(2017, 8, 12, 22, 47, 42)).getTime();
             assert.strictEqual(tag.dateTagged.getTime(), dateTagged);
@@ -281,17 +282,8 @@ export class StandardFileTests {
     }
 
     private static setTags(tag: Tag, level: TestTagLevel) {
-        if (level >= TestTagLevel.Medium) {
-            tag.titleSort = "title sort, TEST";
-            tag.albumSort = "album sort, TEST";
-            tag.performersSort = ["performer sort 1, TEST", "performer sort 2, TEST"];
-            tag.composersSort = ["composer sort 1, TEST", "composer sort 2, TEST"];
-            tag.albumArtistsSort = ["album artist sort 1, TEST", "album artist sort 2, TEST"];
-        }
-
         tag.album = "TEST album";
         tag.albumArtists = ["TEST artist 1", "TEST artist 2"];
-        tag.beatsPerMinute = 120;
         tag.comment = "TEST comment";
         tag.composers = ["TEST composer 1", "TEST composer 2"];
         tag.conductor = "TEST conductor";
@@ -303,12 +295,21 @@ export class StandardFileTests {
         tag.grouping = "TEST grouping";
         tag.lyrics = "TEST lyrics 1\r\nTEST lyrics 2";
         tag.performers = ["TEST performer 1", "TEST performer 2"];
-        tag.performersRole = ["TEST role 1a; TEST role 1b", "TEST role 2"];
         tag.title = "TEST title";
         tag.subtitle = "TEST subtitle";
         tag.description = "TEST description";
         tag.track = 98;
         tag.trackCount = 99;
         tag.year = 1999;
+
+        if (level >= TestTagLevel.Medium) {
+            tag.titleSort = "title sort, TEST";
+            tag.albumSort = "album sort, TEST";
+            tag.performersSort = ["performer sort 1, TEST", "performer sort 2, TEST"];
+            tag.composersSort = ["composer sort 1, TEST", "composer sort 2, TEST"];
+            tag.albumArtistsSort = ["album artist sort 1, TEST", "album artist sort 2, TEST"];
+            tag.performersRole = ["TEST role 1a; TEST role 1b", "TEST role 2"];
+            tag.beatsPerMinute = 120;
+        }
     }
 }

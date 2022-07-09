@@ -117,37 +117,37 @@ export class MetadataDescriptor extends DescriptorBase {
     /** @inheritDoc */
     public render(): ByteVector {
         let value: ByteVector;
-        switch (this._type) {
+        switch (this.type) {
             case DataType.QWord:
-                value = ReadWriteUtils.renderQWord(this._qWordValue);
+                value = ReadWriteUtils.renderQWord(this.ulongValue);
                 break;
             case DataType.DWord:
-                value = ReadWriteUtils.renderDWord(this._dWordValue);
+                value = ReadWriteUtils.renderDWord(this.uintValue);
                 break;
             case DataType.Word:
-                value = ReadWriteUtils.renderWord(this._wordValue);
+                value = ReadWriteUtils.renderWord(this.ushortValue);
                 break;
             case DataType.Bool:
                 // NOTE: For whatever reason metadata content descriptions are WORDs.
-                value = ReadWriteUtils.renderWord(this._boolValue ? 1 : 0);
+                value = ReadWriteUtils.renderWord(this.boolValue ? 1 : 0);
                 break;
             case DataType.Unicode:
-                value = ReadWriteUtils.renderUnicode(this._stringValue);
+                value = ReadWriteUtils.renderUnicode(this.stringValue);
                 break;
             case DataType.Bytes:
-                value = this._byteValue;
+                value = this.byteValue;
                 break;
             case DataType.Guid:
-                value = ByteVector.fromByteArray(this._guidValue.toBytes());
+                value = this.guidValue.toBytes();
                 break;
         }
 
-        const nameBytes = ReadWriteUtils.renderUnicode(this._name);
+        const nameBytes = ReadWriteUtils.renderUnicode(this.name);
         return ByteVector.concatenate(
             ReadWriteUtils.renderWord(this._languageListIndex),
             ReadWriteUtils.renderWord(this._streamNumber),
             ReadWriteUtils.renderWord(nameBytes.length),
-            ReadWriteUtils.renderWord(this._type),
+            ReadWriteUtils.renderWord(this.type),
             ReadWriteUtils.renderDWord(value.length),
             nameBytes,
             value
@@ -175,7 +175,7 @@ export class MetadataLibraryObject extends BaseObject {
      */
     public static fromEmpty(): MetadataLibraryObject {
         const instance = new MetadataLibraryObject();
-        instance.initializeFromGuid(Guids.AsfMetadataLibraryObject);
+        instance.initializeFromGuid(Guids.ASF_METADATA_LIBRARY_OBJECT);
         return instance;
     }
 
@@ -183,7 +183,7 @@ export class MetadataLibraryObject extends BaseObject {
         const instance = new MetadataLibraryObject();
         instance.initializeFromFile(file, position);
 
-        if (!instance.guid.equals(Guids.AsfMetadataLibraryObject)) {
+        if (!instance.guid.equals(Guids.ASF_METADATA_LIBRARY_OBJECT)) {
             throw new CorruptFileError("Object GUID does not match expected metadata library object GUID");
         }
         if (instance.originalSize < 26) {

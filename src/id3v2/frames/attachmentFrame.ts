@@ -1,14 +1,12 @@
 import Id3v2Settings from "../id3v2Settings";
-import Picture from "../../picture";
-import PictureLazy from "../../pictureLazy";
 import {ByteVector, StringType} from "../../byteVector";
 import {CorruptFileError} from "../../errors";
+import {IFileAbstraction} from "../../fileAbstraction";
 import {Frame, FrameClassType} from "./frame";
 import {Id3v2FrameHeader} from "./frameHeader";
 import {FrameIdentifiers} from "../frameIdentifiers";
-import {IPicture, PictureType} from "../../iPicture";
+import {IPicture, Picture, PictureLazy, PictureType} from "../../picture";
 import {Guards} from "../../utils";
-import {IFileAbstraction} from "../../fileAbstraction";
 
 export default class AttachmentFrame extends Frame implements IPicture {
     // NOTE: It probably doesn't look necessary to implement IPicture, but it makes converting a
@@ -227,8 +225,8 @@ export default class AttachmentFrame extends Frame implements IPicture {
         const frameId = value === PictureType.NotAPicture
             ? FrameIdentifiers.GEOB
             : FrameIdentifiers.APIC;
-        if (this._header.frameId !== frameId) {
-            this._header = new Id3v2FrameHeader(frameId);
+        if (this.header.frameId !== frameId) {
+            this.header = new Id3v2FrameHeader(frameId);
         }
 
         this._type = value;
@@ -241,7 +239,7 @@ export default class AttachmentFrame extends Frame implements IPicture {
     /** @inheritDoc */
     public clone(): Frame {
         const frame = new AttachmentFrame(new Id3v2FrameHeader(this.frameId));
-        frame._data = this._data ? ByteVector.fromByteVector(this._data) : undefined;
+        frame._data = this._data?.toByteVector();
         frame._description = this._description;
         frame._encoding = this._encoding;
         frame._filename = this._filename;
@@ -301,51 +299,50 @@ export default class AttachmentFrame extends Frame implements IPicture {
         this._rawVersion = version;
     }
 
-    protected renderFields(version: number) {
+    protected renderFields(version: number): ByteVector {
         this.parseFromRaw();
 
         const encoding = AttachmentFrame.correctEncoding(this.textEncoding, version);
-        const data = ByteVector.empty();
+        let data;
 
         if (this.frameId === FrameIdentifiers.APIC) {
             // Render an ID3v2 attached picture
-            data.addByte(encoding);
-
+            let extensionData;
             if (version === 2) {
                 let ext = Picture.getExtensionFromMimeType(this.mimeType);
                 ext = ext && ext.length >= 3 ? ext.substring(ext.length - 3).toUpperCase() : "XXX";
-                data.addByteVector(ByteVector.fromString(ext));
+                extensionData = ByteVector.fromString(ext, StringType.Latin1);
             } else {
-                data.addByteVector(ByteVector.fromString(this.mimeType, StringType.Latin1));
-                data.addByteVector(ByteVector.getTextDelimiter(StringType.Latin1));
+                extensionData = ByteVector.concatenate(
+                    ByteVector.fromString(this.mimeType, StringType.Latin1),
+                    ByteVector.getTextDelimiter(StringType.Latin1)
+                );
             }
 
-            data.addByte(this._type);
-            data.addByteVector(ByteVector.fromString(this.description, encoding));
-            data.addByteVector(ByteVector.getTextDelimiter(encoding));
+            data = ByteVector.concatenate(
+                encoding,
+                extensionData,
+                this._type,
+                ByteVector.fromString(this.description, encoding),
+                ByteVector.getTextDelimiter(encoding),
+                this._data
+            );
         } else if (this.frameId === FrameIdentifiers.GEOB) {
             // Make an ID3v2 general encapsulated object
-            data.addByte(encoding);
-
-            if (this.mimeType) {
-                data.addByteVector(ByteVector.fromString(this.mimeType, StringType.Latin1));
-            }
-            data.addByteVector(ByteVector.getTextDelimiter(StringType.Latin1));
-
-            if (this._filename) {
-                data.addByteVector(ByteVector.fromString(this._filename, encoding));
-            }
-            data.addByteVector(ByteVector.getTextDelimiter(encoding));
-
-            if (this.description) {
-                data.addByteVector(ByteVector.fromString(this.description, encoding));
-            }
-            data.addByteVector(ByteVector.getTextDelimiter(encoding));
+            data = ByteVector.concatenate(
+                encoding,
+                this._mimeType ? ByteVector.fromString(this._mimeType, StringType.Latin1) : undefined,
+                ByteVector.getTextDelimiter(StringType.Latin1),
+                this._filename ? ByteVector.fromString(this._filename, encoding) : undefined,
+                ByteVector.getTextDelimiter(encoding),
+                this._description ? ByteVector.fromString(this._description, encoding) : undefined,
+                ByteVector.getTextDelimiter(encoding),
+                this._data
+            );
         } else {
             throw new Error("Invalid operation: Bad frame type");
         }
 
-        data.addByteVector(this._data);
         return data;
     }
 
@@ -354,7 +351,7 @@ export default class AttachmentFrame extends Frame implements IPicture {
             this.parseFromRawData(false);
         } else if (this._rawPicture) {
             if (this._rawVersion !== undefined) {
-                this._rawData = this._rawPicture.data;
+                this._rawData = this._rawPicture.data.toByteVector();
                 this._rawPicture = undefined;
                 this.parseFromRawData(true);
             } else {
@@ -375,6 +372,7 @@ export default class AttachmentFrame extends Frame implements IPicture {
         const delim = ByteVector.getTextDelimiter(this._encoding);
 
         let descriptionEndIndex;
+        // @TODO: Maybe make two different classes?
         if (this.frameId === FrameIdentifiers.APIC) {
             // Retrieve an ID3v2 attached picture
             if (this._rawVersion > 2) {
@@ -383,39 +381,42 @@ export default class AttachmentFrame extends Frame implements IPicture {
                 // Picture type       $xx
                 // Description        <text string according to encoding> $00 (00)
                 // Picture data       <binary data>
-                const mimeTypeEndIndex = data.find(ByteVector.getTextDelimiter(StringType.Latin1), 1);
-                if (mimeTypeEndIndex === -1) {
+                const mimeTypeEndIndex = data.offsetFind(ByteVector.getTextDelimiter(StringType.Latin1), 1);
+                if (mimeTypeEndIndex < 0) {
                     return;
                 }
                 const mimeTypeLength = mimeTypeEndIndex - 1;
-                this._mimeType = data.toString(mimeTypeLength, StringType.Latin1, 1);
+                this._mimeType = data.subarray(1, mimeTypeLength).toString(StringType.Latin1);
 
                 this._type = data.get(mimeTypeEndIndex + 1);
 
-                descriptionEndIndex = data.find(delim, mimeTypeEndIndex + 2, delim.length);
+                descriptionEndIndex = data.offsetFind(delim, mimeTypeEndIndex + 2, delim.length);
+                if (descriptionEndIndex < 0) {
+                    return;
+                }
+
                 const descriptionLength = descriptionEndIndex - mimeTypeEndIndex - 2;
-                this._description = data.toString(
-                    descriptionLength,
-                    this._encoding,
-                    mimeTypeEndIndex + 2
-                );
+                this._description = data.subarray(mimeTypeEndIndex + 2, descriptionLength).toString(this._encoding);
             } else {
                 // Text encoding      $xx
                 // Image format       $xx xx xx
                 // Picture type       $xx
                 // Description        <text_string> $00 (00)
                 // Picture data       <binary data>
-                const imageFormat = data.toString(3, StringType.Latin1, 1);
+                const imageFormat = data.subarray(1, 3).toString(StringType.Latin1);
                 this._mimeType = Picture.getMimeTypeFromFilename(imageFormat);
 
                 this._type = data.get(4);
 
-                descriptionEndIndex = data.find(delim, 5, delim.length);
+                descriptionEndIndex = data.offsetFind(delim, 5, delim.length);
+                if (descriptionEndIndex < 0) {
+                    return;
+                }
                 const descriptionLength = descriptionEndIndex - 5;
-                this._description = data.toString(descriptionLength, this._encoding, 5);
+                this._description = data.subarray(5, descriptionLength).toString(this._encoding);
             }
 
-            this._data = data.mid(descriptionEndIndex + delim.length);
+            this._data = data.subarray(descriptionEndIndex + delim.length).toByteVector();
         } else if (this.frameId === FrameIdentifiers.GEOB) {
             // Retrieve an ID3v2 generic encapsulated object
             // Text encoding          $xx
@@ -428,17 +429,20 @@ export default class AttachmentFrame extends Frame implements IPicture {
                 return;
             }
             const mimeTypeLength = mimeTypeEndIndex - 1;
-            this._mimeType = data.toString(mimeTypeLength, StringType.Latin1, 1);
+            this._mimeType = data.subarray(1, mimeTypeLength)
+                .toString(StringType.Latin1);
 
-            const filenameEndIndex = data.find(delim, mimeTypeEndIndex + 1, delim.length);
+            const filenameEndIndex = data.offsetFind(delim, mimeTypeEndIndex + 1, delim.length);
             const filenameLength = filenameEndIndex - mimeTypeEndIndex - 1;
-            this._filename = data.toString(filenameLength, this._encoding, mimeTypeEndIndex + 1);
+            this._filename = data.subarray(mimeTypeEndIndex + 1, filenameLength)
+                .toString(this._encoding);
 
-            descriptionEndIndex = data.find(delim, filenameEndIndex + delim.length, delim.length);
+            descriptionEndIndex = data.offsetFind(delim, filenameEndIndex + delim.length, delim.length);
             const descriptionLength = descriptionEndIndex - filenameEndIndex - delim.length;
-            this._description = data.toString(descriptionLength, this._encoding, filenameEndIndex + delim.length);
+            this._description = data.subarray(filenameEndIndex + delim.length, descriptionLength)
+                .toString(this._encoding);
 
-            this._data = data.mid(descriptionEndIndex + delim.length);
+            this._data = data.subarray(descriptionEndIndex + delim.length).toByteVector();
             this._type = PictureType.NotAPicture;
         } else {
             // Unsupported
@@ -452,18 +456,18 @@ export default class AttachmentFrame extends Frame implements IPicture {
         this._rawPicture = undefined;
 
         // Bring over values from the picture
-        this._data = ByteVector.fromByteVector(picture.data);
+        this._data = picture.data.toByteVector();
         this._description = picture.description;
         this._filename = picture.filename;
         this._mimeType = picture.mimeType;
         this._type = picture.type;
-        this._header.frameSize = this._data.length;
+        this.header.frameSize = this._data.length;
 
         this._encoding = Id3v2Settings.defaultEncoding;
 
         // Switch the frame ID if we discovered the attachment isn't an image
         if (this._type === PictureType.NotAPicture) {
-            this._header.frameId = FrameIdentifiers.GEOB;
+            this.header.frameId = FrameIdentifiers.GEOB;
         }
     }
 }

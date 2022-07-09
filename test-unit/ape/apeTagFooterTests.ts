@@ -1,20 +1,17 @@
-import * as Chai from "chai";
 import {suite, test} from "@testdeck/mocha";
+import {assert} from "chai";
 
 import PropertyTests from "../utilities/propertyTests";
 import {ApeTagFooter, ApeTagFooterFlags} from "../../src/ape/apeTagFooter";
 import {ByteVector, StringType} from "../../src/byteVector";
 import {Testers} from "../utilities/testers";
 
-// Setup chai
-const assert = Chai.assert;
-
 const _sampleData = ByteVector.concatenate(
     ByteVector.fromString("APETAGEX", StringType.Latin1), // File Identifier
-    ByteVector.fromUInt(1234, false), // Version
-    ByteVector.fromUInt(2345, false), // Tag Size
-    ByteVector.fromUInt(3456, false), // Item count
-    ByteVector.fromUInt(ApeTagFooterFlags.IsHeader, false), // Flags
+    ByteVector.fromUint(1234, false), // Version
+    ByteVector.fromUint(2345, false), // Tag Size
+    ByteVector.fromUint(3456, false), // Item count
+    ByteVector.fromUint(ApeTagFooterFlags.IsHeader, false), // Flags
     ByteVector.fromSize(12)
 );
 
@@ -32,10 +29,10 @@ const _sampleData = ByteVector.concatenate(
         // Arrange
         const data = ByteVector.concatenate(
             ByteVector.fromString("APETAGEX", StringType.Latin1), // File Identifier
-            ByteVector.fromUInt(1234, false), // Version
-            ByteVector.fromUInt(10, false), // Tag Size
-            ByteVector.fromUInt(3456, false), // Item count
-            ByteVector.fromUInt(ApeTagFooterFlags.IsHeader, false), // Flags
+            ByteVector.fromUint(1234, false), // Version
+            ByteVector.fromUint(10, false), // Tag Size
+            ByteVector.fromUint(3456, false), // Item count
+            ByteVector.fromUint(ApeTagFooterFlags.IsHeader, false), // Flags
             ByteVector.fromSize(12)
         );
 
@@ -48,10 +45,10 @@ const _sampleData = ByteVector.concatenate(
         // Arrange
         const data = ByteVector.concatenate(
             ByteVector.fromString("APETAGEX", StringType.Latin1), // File Identifier
-            ByteVector.fromUInt(1234, false), // Version
-            ByteVector.fromUInt(2345, false), // Tag Size
-            ByteVector.fromUInt(3456, false), // Item count
-            ByteVector.fromUInt(ApeTagFooterFlags.IsHeader, false), // Flags
+            ByteVector.fromUint(1234, false), // Version
+            ByteVector.fromUint(2345, false), // Tag Size
+            ByteVector.fromUint(3456, false), // Item count
+            ByteVector.fromUint(ApeTagFooterFlags.IsHeader, false), // Flags
             ByteVector.fromSize(12)
         );
 
@@ -62,7 +59,7 @@ const _sampleData = ByteVector.concatenate(
         assert.isOk(footer);
         assert.strictEqual(footer.flags, ApeTagFooterFlags.IsHeader);
         assert.strictEqual(footer.itemCount, 3456);
-        assert.strictEqual(footer.itemSize, 2345 - ApeTagFooter.size);
+        assert.strictEqual(footer.itemSize, 2345 - ApeTagFooter.SIZE);
         assert.strictEqual(footer.tagSize, 2345);
         assert.strictEqual(footer.version, 1234);
     }
@@ -72,10 +69,10 @@ const _sampleData = ByteVector.concatenate(
         // Arrange
         const data = ByteVector.concatenate(
             ByteVector.fromString("APETAGEX", StringType.Latin1), // File Identifier
-            ByteVector.fromUInt(0, false), // Version
-            ByteVector.fromUInt(2345, false), // Tag Size
-            ByteVector.fromUInt(3456, false), // Item count
-            ByteVector.fromUInt(ApeTagFooterFlags.HeaderPresent, false), // Flags
+            ByteVector.fromUint(0, false), // Version
+            ByteVector.fromUint(2345, false), // Tag Size
+            ByteVector.fromUint(3456, false), // Item count
+            ByteVector.fromUint(ApeTagFooterFlags.HeaderPresent, false), // Flags
             ByteVector.fromSize(12)
         );
 
@@ -86,8 +83,8 @@ const _sampleData = ByteVector.concatenate(
         assert.isOk(footer);
         assert.strictEqual(footer.flags, ApeTagFooterFlags.HeaderPresent);
         assert.strictEqual(footer.itemCount, 3456);
-        assert.strictEqual(footer.itemSize, 2345 - ApeTagFooter.size);
-        assert.strictEqual(footer.tagSize, 2345 + ApeTagFooter.size);
+        assert.strictEqual(footer.itemSize, 2345 - ApeTagFooter.SIZE);
+        assert.strictEqual(footer.tagSize, 2345 + ApeTagFooter.SIZE);
         assert.strictEqual(footer.version, 2000);
     }
 
@@ -100,7 +97,7 @@ const _sampleData = ByteVector.concatenate(
         assert.isOk(footer);
         assert.strictEqual(footer.flags, 0);
         assert.strictEqual(footer.itemCount, 0);
-        assert.strictEqual(footer.tagSize, ApeTagFooter.size);
+        assert.strictEqual(footer.tagSize, ApeTagFooter.SIZE);
         assert.strictEqual(footer.version, 2000);
     }
 }
@@ -182,10 +179,10 @@ const _sampleData = ByteVector.concatenate(
         // Assert
         const expected = ByteVector.concatenate(
             ByteVector.fromString("APETAGEX", StringType.Latin1), // File Identifier
-            ByteVector.fromUInt(2000, false), // Version
-            ByteVector.fromUInt(2345, false), // Tag Size
-            ByteVector.fromUInt(3456, false), // Item count
-            ByteVector.fromUInt(ApeTagFooterFlags.HeaderPresent, false), // Flags
+            ByteVector.fromUint(2000, false), // Version
+            ByteVector.fromUint(2345, false), // Tag Size
+            ByteVector.fromUint(3456, false), // Item count
+            ByteVector.fromUint(ApeTagFooterFlags.HeaderPresent, false), // Flags
             ByteVector.fromSize(8)
         );
         Testers.bvEqual(output, expected);
@@ -203,10 +200,10 @@ const _sampleData = ByteVector.concatenate(
         // Assert
         const expected = ByteVector.concatenate(
             ByteVector.fromString("APETAGEX", StringType.Latin1), // File Identifier
-            ByteVector.fromUInt(2000, false), // Version
-            ByteVector.fromUInt(2345, false), // Tag Size
-            ByteVector.fromUInt(3456, false), // Item count
-            ByteVector.fromUInt(0, false), // Flags
+            ByteVector.fromUint(2000, false), // Version
+            ByteVector.fromUint(2345, false), // Tag Size
+            ByteVector.fromUint(3456, false), // Item count
+            ByteVector.fromUint(0, false), // Flags
             ByteVector.fromSize(8)
         );
         Testers.bvEqual(output, expected);
@@ -223,10 +220,10 @@ const _sampleData = ByteVector.concatenate(
         // Assert
         const expected = ByteVector.concatenate(
             ByteVector.fromString("APETAGEX", StringType.Latin1), // File Identifier
-            ByteVector.fromUInt(2000, false), // Version
-            ByteVector.fromUInt(2345, false), // Tag Size
-            ByteVector.fromUInt(3456, false), // Item count
-            ByteVector.fromUInt(0, false), // Flags
+            ByteVector.fromUint(2000, false), // Version
+            ByteVector.fromUint(2345, false), // Tag Size
+            ByteVector.fromUint(3456, false), // Item count
+            ByteVector.fromUint(0, false), // Flags
             ByteVector.fromSize(8)
         );
         Testers.bvEqual(output, expected);
@@ -245,10 +242,10 @@ const _sampleData = ByteVector.concatenate(
         const expectedFlags = (ApeTagFooterFlags.HeaderPresent | ApeTagFooterFlags.IsHeader) >>> 0;
         const expected = ByteVector.concatenate(
             ByteVector.fromString("APETAGEX", StringType.Latin1), // File Identifier
-            ByteVector.fromUInt(2000, false), // Version
-            ByteVector.fromUInt(2345, false), // Tag Size
-            ByteVector.fromUInt(3456, false), // Item count
-            ByteVector.fromUInt(expectedFlags, false), // Flags
+            ByteVector.fromUint(2000, false), // Version
+            ByteVector.fromUint(2345, false), // Tag Size
+            ByteVector.fromUint(3456, false), // Item count
+            ByteVector.fromUint(expectedFlags, false), // Flags
             ByteVector.fromSize(8)
         );
         Testers.bvEqual(output, expected);
@@ -280,10 +277,10 @@ const _sampleData = ByteVector.concatenate(
         const expectedFlags = (ApeTagFooterFlags.HeaderPresent | ApeTagFooterFlags.IsHeader) >>> 0;
         const expected = ByteVector.concatenate(
             ByteVector.fromString("APETAGEX", StringType.Latin1), // File Identifier
-            ByteVector.fromUInt(2000, false), // Version
-            ByteVector.fromUInt(2345, false), // Tag Size
-            ByteVector.fromUInt(3456, false), // Item count
-            ByteVector.fromUInt(expectedFlags, false), // Flags
+            ByteVector.fromUint(2000, false), // Version
+            ByteVector.fromUint(2345, false), // Tag Size
+            ByteVector.fromUint(3456, false), // Item count
+            ByteVector.fromUint(expectedFlags, false), // Flags
             ByteVector.fromSize(8)
         );
         Testers.bvEqual(output, expected);

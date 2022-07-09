@@ -1,5 +1,5 @@
-import * as Chai from "chai";
 import {suite, test} from "@testdeck/mocha";
+import {assert} from "chai";
 
 import ContentDescriptionObject from "../../src/asf/objects/contentDescriptionObject";
 import ObjectTests from "./objectTests";
@@ -11,15 +11,12 @@ import {Guids, ObjectType} from "../../src/asf/constants";
 import {File} from "../../src/file";
 import {Testers} from "../utilities/testers";
 
-// Setup Chai
-const assert = Chai.assert;
-
 @suite class Asf_ContentDescriptionObjectTests extends ObjectTests<ContentDescriptionObject> {
     protected get fromFileConstructor(): (f: File, p: number) => ContentDescriptionObject {
         return ContentDescriptionObject.fromFile;
     }
     protected get minSize(): number { return 34; }
-    protected get objectGuid(): UuidWrapper { return Guids.AsfContentDescriptionObject; }
+    protected get objectGuid(): UuidWrapper { return Guids.ASF_CONTENT_DESCRIPTION_OBJECT; }
 
     @test
     public fromEmpty() {
@@ -30,7 +27,7 @@ const assert = Chai.assert;
         assert.isOk(object);
         assert.strictEqual(object.originalSize, 0);
         assert.strictEqual(object.objectType, ObjectType.ContentDescriptionObject);
-        assert.isTrue(object.guid.equals(Guids.AsfContentDescriptionObject));
+        assert.isTrue(object.guid.equals(Guids.ASF_CONTENT_DESCRIPTION_OBJECT));
         assert.isUndefined(object.author);
         assert.isUndefined(object.copyright);
         assert.isUndefined(object.description);
@@ -44,13 +41,13 @@ const assert = Chai.assert;
         // Arrange
         const data = ByteVector.concatenate(
             ByteVector.fromSize(10), // Offset
-            Guids.AsfContentDescriptionObject.toBytes(), // Object ID
-            ByteVector.fromULong(94, false), // Object size
-            ByteVector.fromUShort(8, false), // Title size
-            ByteVector.fromUShort(10, false), // Author length
-            ByteVector.fromUShort(12, false), // Copyright length
-            ByteVector.fromUShort(14, false), // Description length
-            ByteVector.fromUShort(16, false), // Rating length
+            Guids.ASF_CONTENT_DESCRIPTION_OBJECT.toBytes(), // Object ID
+            ByteVector.fromUlong(94, false), // Object size
+            ByteVector.fromUshort(8, false), // Title size
+            ByteVector.fromUshort(10, false), // Author length
+            ByteVector.fromUshort(12, false), // Copyright length
+            ByteVector.fromUshort(14, false), // Description length
+            ByteVector.fromUshort(16, false), // Rating length
             ByteVector.fromString("foo\0", StringType.UTF16LE), // Title
             ByteVector.fromString("bar0\0", StringType.UTF16LE), // Author
             ByteVector.fromString("baz00\0", StringType.UTF16LE), // Copyright
@@ -66,7 +63,7 @@ const assert = Chai.assert;
         assert.isOk(object);
         assert.strictEqual(object.originalSize, 94);
         assert.strictEqual(object.objectType, ObjectType.ContentDescriptionObject);
-        assert.isTrue(object.guid.equals(Guids.AsfContentDescriptionObject));
+        assert.isTrue(object.guid.equals(Guids.ASF_CONTENT_DESCRIPTION_OBJECT));
         assert.strictEqual(object.author, "bar0");
         assert.strictEqual(object.copyright, "baz00");
         assert.strictEqual(object.description, "fux000");
@@ -150,13 +147,13 @@ const assert = Chai.assert;
         // Arrange
         const data = ByteVector.concatenate(
             ByteVector.fromSize(10), // Offset
-            Guids.AsfContentDescriptionObject.toBytes(), // Object ID
-            ByteVector.fromULong(94, false),
-            ByteVector.fromUShort(8, false),
-            ByteVector.fromUShort(10, false),
-            ByteVector.fromUShort(12, false),
-            ByteVector.fromUShort(14, false),
-            ByteVector.fromUShort(16, false),
+            Guids.ASF_CONTENT_DESCRIPTION_OBJECT.toBytes(), // Object ID
+            ByteVector.fromUlong(94, false),
+            ByteVector.fromUshort(8, false),
+            ByteVector.fromUshort(10, false),
+            ByteVector.fromUshort(12, false),
+            ByteVector.fromUshort(14, false),
+            ByteVector.fromUshort(16, false),
             ByteVector.fromString("foo\0", StringType.UTF16LE),
             ByteVector.fromString("bar0\0", StringType.UTF16LE),
             ByteVector.fromString("baz00\0", StringType.UTF16LE),
@@ -171,6 +168,6 @@ const assert = Chai.assert;
 
         // Assert
         assert.isOk(object);
-        Testers.bvEqual(output, data.mid(10));
+        Testers.bvEqual(output, data.subarray(10));
     }
 }

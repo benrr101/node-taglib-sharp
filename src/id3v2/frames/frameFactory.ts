@@ -19,8 +19,15 @@ import {RelativeVolumeFrame} from "./relativeVolumeFrame";
 import {SynchronizedLyricsFrame} from "./synchronizedLyricsFrame";
 import {TextInformationFrame, UserTextInformationFrame} from "./textInformationFrame";
 import {UrlLinkFrame, UserUrlLinkFrame} from "./urlLinkFrame";
-import {Guards} from "../../utils";
+import {Guards, NumberUtils} from "../../utils";
 
+/**
+ * Type shortcut for a method that returns a {@link Frame}.
+ * @param data Byte vector that contains the frame
+ * @param offset Position into the byte vector where the frame begins
+ * @param header The header that describes the frame
+ * @param version ID3v2 version the frame is encoded with. Must be unsigned 8-bit int
+ */
 export type FrameCreator = (data: ByteVector, offset: number, header: Id3v2FrameHeader, version: number) => Frame;
 
 let customFrameCreators: FrameCreator[] = [];
@@ -29,7 +36,7 @@ let customFrameCreators: FrameCreator[] = [];
  * Performs the necessary operations to determine and create the correct child classes of
  * {@link Frame} for a given raw ID3v2 frame.
  * By default, this will only load frames contained in the library. To add additional frames to the
- * process, register a frame creator with addFrameCreator.
+ * process, register a frame creator with {@see addFrameCreator}.
  */
 export default {
     /**
@@ -43,8 +50,7 @@ export default {
      *     * version: number ID3v2 version the raw frame data is stored in (should be byte)
      *     * returns Frame if method was able to match the frame, falsy otherwise
      */
-    addFrameCreator: (creator: FrameCreator):
-        void => {
+    addFrameCreator: (creator: FrameCreator): void => {
         Guards.truthy(creator, "creator");
         customFrameCreators.unshift(creator);
     },
@@ -70,8 +76,14 @@ export default {
      *     * frame: {@link Frame} that was read
      *     * offset: updated offset where the next frame starts
      */
-    createFrame: (data: ByteVector, file: File, offset: number, version: number, alreadyUnsynced: boolean):
-        {frame: Frame, offset: number} => {
+    // @TODO: Split into fromFile and fromData
+    createFrame: (
+        data: ByteVector,
+        file: File,
+        offset: number,
+        version: number,
+        alreadyUnsynced: boolean
+    ): {frame: Frame, offset: number} => {
         Guards.uint(offset, "offset");
         Guards.byte(version, "version");
 
@@ -95,7 +107,7 @@ export default {
             return undefined;
         }
 
-        const header = Id3v2FrameHeader.fromData(data.mid(position, frameHeaderSize), version);
+        const header = Id3v2FrameHeader.fromData(data.subarray(position, frameHeaderSize), version);
         const frameStartIndex = offset + frameHeaderSize;
         const frameEndIndex = offset + header.frameSize + frameHeaderSize;
         const frameSize = frameEndIndex - frameStartIndex;
@@ -103,18 +115,17 @@ export default {
         // Illegal frames are filtered out when creating the frame header
 
         // Mark the frame as unsynchronized if the entire tag is already unsynchronized
-        // @TODO Standardize on "Desynchronized"
         if (alreadyUnsynced) {
-            header.flags &= ~Id3v2FrameFlags.Desynchronized;
+            header.flags &= ~Id3v2FrameFlags.Unsynchronized;
         }
 
         // TODO: Support compression
-        if ((header.flags & Id3v2FrameFlags.Compression) !== 0) {
+        if (NumberUtils.hasFlag(header.flags, Id3v2FrameFlags.Compression)) {
             throw new NotImplementedError("Compression is not supported");
         }
 
         // TODO: Support encryption
-        if ((header.flags & Id3v2FrameFlags.Encryption) !== 0) {
+        if (NumberUtils.hasFlag(header.flags, Id3v2FrameFlags.Encryption)) {
             throw new NotImplementedError("Encryption is not supported");
         }
 
@@ -155,10 +166,13 @@ export default {
 
                 // Read remaining part of the frame for the non lazy Frame
                 file.seek(frameStartIndex);
-                data.addByteVector(file.readBlock(frameSize));
+                data = ByteVector.concatenate(
+                    data,
+                    file.readBlock(frameSize)
+                );
             }
 
-            let func;
+            let func: FrameCreator;
             if (header.frameId === FrameIdentifiers.TXXX) {
                 // User text identification frame
                 func = UserTextInformationFrame.fromOffsetRawData;
@@ -216,7 +230,7 @@ export default {
                 frame: func(data, position, header, version),
                 offset: frameEndIndex
             };
-        } catch (e) {
+        } catch (e: unknown) {
             if (CorruptFileError.errorIs(e) || NotImplementedError.errorIs(e)) {
                 throw e;
             }

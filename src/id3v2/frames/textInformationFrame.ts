@@ -128,11 +128,11 @@ import {Guards, StringComparison, StringUtils} from "../../utils";
  *   (TIT2) for sorting purposes.
  */
 export class TextInformationFrame extends Frame {
-    private static COVER_ABBREV = "CR";
-    private static COVER_STRING = "Cover";
-    private static REMIX_ABBREV = "RX";
-    private static REMIX_STRING = "Remix";
-    private static SPLIT_FRAME_TYPES = [
+    private static readonly COVER_ABBREV = "CR";
+    private static readonly COVER_STRING = "Cover";
+    private static readonly REMIX_ABBREV = "RX";
+    private static readonly REMIX_STRING = "Remix";
+    private static readonly SPLIT_FRAME_TYPES = [
         FrameIdentifiers.TCOM,
         FrameIdentifiers.TEXT,
         FrameIdentifiers.TMCL,
@@ -147,6 +147,7 @@ export class TextInformationFrame extends Frame {
         FrameIdentifiers.TPE4
     ];
 
+    // @TODO: no protected access to members
     protected _encoding: StringType = Id3v2Settings.defaultEncoding;
     protected _rawData: ByteVector;
     protected _rawVersion: number;
@@ -279,7 +280,7 @@ export class TextInformationFrame extends Frame {
         const frame = TextInformationFrame.fromIdentifier(this.frameId, this._encoding);
         frame._textFields = this._textFields.slice();
         if (this._rawData) {
-            frame._rawData = ByteVector.fromByteVector(this._rawData);
+            frame._rawData = this._rawData.toByteVector();
         }
         frame._rawVersion = this._rawVersion;
         return frame;
@@ -366,7 +367,7 @@ export class TextInformationFrame extends Frame {
             // TCON on ID3v2.4 is encoded as a separate field for each genre. Fields can either be
             // the old numeric ID3v1 genres (no parenthesis) or free text. RX/CR can also be used.
             // This way is **much** better...
-            const genres = data.toStrings(this._encoding, 1);
+            const genres = data.subarray(1).toStrings(this._encoding);
             const textGenres = genres.map((g) => {
                 switch (g) {
                     case TextInformationFrame.COVER_ABBREV:
@@ -380,9 +381,9 @@ export class TextInformationFrame extends Frame {
             });
             fieldList.push(...textGenres);
         } else if (this._rawVersion > 3 || this.frameId === FrameIdentifiers.TXXX) {
-            fieldList.push(...data.toStrings(this._encoding, 1));
-        } else if (data.length > 1 && !ByteVector.equal(data.mid(1, delim.length), delim)) {
-            let value = data.toString(data.length - 1, this._encoding, 1);
+            fieldList.push(...data.subarray(1).toStrings(this._encoding));
+        } else if (data.length > 1 && !data.containsAt(delim, 1)) {
+            let value = data.subarray(1).toString(this._encoding);
 
             // Truncate values containing NULL bytes
             const nullIndex = value.indexOf("\x00");
@@ -394,6 +395,7 @@ export class TextInformationFrame extends Frame {
                 // Some frames are designed to be split into multiple parts by a /
                 fieldList.push(... value.split("/"));
             } else if (this.frameId === FrameIdentifiers.TCON) {
+                // @TODO: Can we just make a separate class for TCON?
                 // TCON in ID3v2.2 and ID3v2.3 is specified as
                 // * (xx) - where xx is a number from the ID3v1 genre list
                 // * (xx)yy - where xx is a number from the ID3v1 genre list and yyy is a
@@ -411,7 +413,7 @@ export class TextInformationFrame extends Frame {
                         break;
                     }
 
-                    const number = value.substr(1, closing - 1);
+                    const number = value.substring(1, closing);
 
                     let text: string;
                     if (number === TextInformationFrame.COVER_ABBREV) {
@@ -430,11 +432,11 @@ export class TextInformationFrame extends Frame {
 
                     // Number in parenthesis was a numeric genre
                     fieldList.push(text);
-                    value = StringUtils.trimStart(value.substr(closing + 1), "/ ");
+                    value = StringUtils.trimStart(value.substring(closing + 1), "/ ");
 
                     // Ignore genre if the same genre appears after the numeric genre
                     if (value.startsWith(text)) {
-                        value = StringUtils.trimStart(value.substr(text.length), "/ ");
+                        value = StringUtils.trimStart(value.substring(text.length), "/ ");
                     }
                 }
 
@@ -707,7 +709,7 @@ export class UserTextInformationFrame extends TextInformationFrame {
     ): UserTextInformationFrame {
         Guards.truthy(frames, "frames");
 
-        const comparison = caseSensitive ? StringComparison.CaseSensitive : StringComparison.CaseInsensitive;
+        const comparison = caseSensitive ? StringComparison.caseSensitive : StringComparison.caseInsensitive;
         return frames.find((f) => comparison(f.description, description));
     }
 
@@ -716,7 +718,7 @@ export class UserTextInformationFrame extends TextInformationFrame {
         const frame = UserTextInformationFrame.fromDescription(undefined, this._encoding);
         frame._textFields = this._textFields.slice();
         if (this._rawData) {
-            frame._rawData = ByteVector.fromByteVector(this._rawData);
+            frame._rawData = this._rawData.toByteVector();
         }
         frame._rawVersion = this._rawVersion;
         return frame;

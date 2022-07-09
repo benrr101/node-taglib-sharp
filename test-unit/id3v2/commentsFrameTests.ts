@@ -1,5 +1,5 @@
-import * as Chai from "chai";
 import {suite, test} from "@testdeck/mocha";
+import {assert} from "chai";
 
 import CommentsFrame from "../../src/id3v2/frames/commentsFrame";
 import FrameConstructorTests from "./frameConstructorTests";
@@ -11,10 +11,7 @@ import {FrameIdentifiers} from "../../src/id3v2/frameIdentifiers";
 import {Id3v2FrameHeader} from "../../src/id3v2/frames/frameHeader";
 import {Testers} from "../utilities/testers";
 
-// Setup Chai
-const assert = Chai.assert;
-
-function getTestFrame(): CommentsFrame {
+const getTestFrame = (): CommentsFrame => {
     const header = new Id3v2FrameHeader(FrameIdentifiers.COMM);
     header.frameSize = 11;
     const data = ByteVector.concatenate(
@@ -72,7 +69,13 @@ function getTestFrame(): CommentsFrame {
         const frame = CommentsFrame.fromDescription(description, language);
 
         // Assert
-        Id3v2_CommentsFrame_ConstructorTests.validateFrame(frame, description, language, Id3v2Settings.defaultEncoding, "");
+        Id3v2_CommentsFrame_ConstructorTests.validateFrame(
+            frame,
+            description,
+            language,
+            Id3v2Settings.defaultEncoding,
+            ""
+        );
     }
 
     @test

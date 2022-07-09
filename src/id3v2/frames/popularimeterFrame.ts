@@ -136,7 +136,7 @@ export default class PopularimeterFrame extends Frame {
     }
 
     /** @inheritDoc */
-    protected parseFields(data: ByteVector, _version: number): void {
+    protected parseFields(data: ByteVector): void {
         const delim = ByteVector.getTextDelimiter(StringType.Latin1);
 
         const delimIndex = data.find(delim);
@@ -152,26 +152,21 @@ export default class PopularimeterFrame extends Frame {
             throw new CorruptFileError("Popularimeter frame with play count must have at least 4 bytes of play count");
         }
 
-        this._user = data.toString(delimIndex, StringType.Latin1, 0);
+        this._user = data.subarray(0, delimIndex).toString(StringType.Latin1);
         this._rating = data.get(delimIndex + 1);
 
         // Play count may be omitted
         if (bytesAfterOwner > 1) {
-            this._playCount = data.mid(delimIndex + 2).toULong();
+            this._playCount = data.subarray(delimIndex + 2).toUlong();
         }
     }
 
     /** @inheritDoc */
-    protected renderFields(_version: number): ByteVector {
-        const data = ByteVector.concatenate(
-            ByteVector.fromString(this._user, StringType.Latin1),
-            ByteVector.getTextDelimiter(StringType.Latin1),
-            this.rating
-        );
-
+    protected renderFields(): ByteVector {
         // Only include personal play count if it's desired
+        let playCountData: ByteVector;
         if (this.playCount !== undefined) {
-            const playCountData = ByteVector.fromULong(this.playCount);
+            playCountData = ByteVector.fromUlong(this.playCount);
 
             // Remove zero bytes from beginning of play count, leaving at least 4 bytes
             let firstNonZeroIndex = 0;
@@ -179,9 +174,14 @@ export default class PopularimeterFrame extends Frame {
                 firstNonZeroIndex++;
             }
 
-            data.addByteVector(playCountData.mid(firstNonZeroIndex));
+            playCountData = playCountData.subarray(firstNonZeroIndex);
         }
 
-        return data;
+        return ByteVector.concatenate(
+            ByteVector.fromString(this._user, StringType.Latin1),
+            ByteVector.getTextDelimiter(StringType.Latin1),
+            this.rating,
+            playCountData
+        );
     }
 }

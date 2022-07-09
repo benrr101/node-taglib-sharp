@@ -1,13 +1,25 @@
 import EndTag from "./endTag";
 import SandwichTag from "./sandwichTag";
-import Properties from "../properties";
+import Settings from "../settings";
 import StartTag from "./startTag";
 import {File, FileAccessMode, ReadStyle} from "../file";
 import {IFileAbstraction} from "../fileAbstraction";
+import {Properties} from "../properties";
 import {Tag, TagTypes} from "../tag";
+import {NumberUtils} from "../utils";
 
+/**
+ * Interface for a sandwich file.
+ */
 export interface ISandwichFile {
+    /**
+     * Gets the position at which the media content of this file ends.
+     */
     readonly mediaEndPosition: number;
+
+    /**
+     * Gets the position at which the media content of this file starts.
+     */
     readonly mediaStartPosition: number;
 }
 
@@ -40,20 +52,22 @@ export default abstract class SandwichFile extends File implements ISandwichFile
             this._mediaStartPosition = this.startTag.sizeOnDisk;
             this._mediaEndPosition = this.length - this.endTag.sizeOnDisk;
             this._properties = this.readProperties(readStyle);
-            this._tagTypesOnDisk = this.tagTypes;
+            this.tagTypesOnDisk = this.tagTypes;
         } finally {
             this.mode = FileAccessMode.Closed;
         }
 
         // Create the default tags
         for (const tagType of defaultTagMappingTable.keys()) {
-            // Don't create tag if its not desired or already exists
-            if ((defaultTags & tagType) === 0 || (this._tag.tagTypes & tagType) !== 0) {
+            // Don't create tag if it's not desired or already exists
+            const isDefault = NumberUtils.hasFlag(defaultTags, tagType);
+            const existsAlready = NumberUtils.hasFlag(this._tag.tagTypes, tagType);
+            if (!isDefault || existsAlready) {
                 continue;
             }
 
             // Tag is expected to exist
-            this._tag.createTag(tagType, true);
+            this._tag.createTag(tagType, Settings.copyExistingTagsToNewDefaultTags);
         }
     }
 
@@ -69,16 +83,12 @@ export default abstract class SandwichFile extends File implements ISandwichFile
      */
     protected get startTag(): StartTag { return this._tag.startTag; }
 
-    /**
-     * Gets the position at which the media content of this file ends.
-     */
+    /** @inheritDoc */
     get mediaEndPosition(): number {
         return this._mediaEndPosition;
     }
 
-    /**
-     * Gets the position at which the media content of this file starts.
-     */
+    /** @inheritDoc */
     get mediaStartPosition(): number {
         return this._mediaStartPosition;
     }
@@ -132,7 +142,7 @@ export default abstract class SandwichFile extends File implements ISandwichFile
             // Calculate the new media start and end positions
             this._mediaStartPosition = startTagBytes.length;
             this._mediaEndPosition = this.length - endTagBytes.length;
-            this._tagTypesOnDisk = this.tagTypes;
+            this.tagTypesOnDisk = this.tagTypes;
         } finally {
             this.mode = FileAccessMode.Closed;
         }

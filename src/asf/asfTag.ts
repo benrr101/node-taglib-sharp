@@ -1,12 +1,11 @@
 import ContentDescriptionObject from "./objects/contentDescriptionObject";
 import Genres from "../genres";
 import HeaderObject from "./objects/headerObject";
-import Picture from "../picture";
 import ReadWriteUtils from "./readWriteUtils";
 import {ByteVector, StringType} from "../byteVector";
 import {DataType} from "./objects/descriptorBase";
 import {ContentDescriptor, ExtendedContentDescriptionObject} from "./objects/extendedContentDescriptionObject";
-import {IPicture} from "../iPicture";
+import {IPicture, Picture} from "../picture";
 import {MetadataDescriptor, MetadataLibraryObject} from "./objects/metadataLibraryObject";
 import {Tag, TagTypes} from "../tag";
 import {Guards} from "../utils";
@@ -22,7 +21,7 @@ export default class AsfTag extends Tag {
     private _extendedDescriptionObject: ExtendedContentDescriptionObject = ExtendedContentDescriptionObject.fromEmpty();
     private _metadataLibraryObject: MetadataLibraryObject = MetadataLibraryObject.fromEmpty();
 
-    private static readonly genreRegex = new RegExp(/\(([0-9]+)\)/);
+    private static readonly GENRE_REGEX = new RegExp(/\((\d+)\)/);
 
     // #region Constructors
 
@@ -268,7 +267,7 @@ export default class AsfTag extends Tag {
             let genre = result[i].trim();
 
             // Attempt to find a numeric genre in here
-            const genreMatch = AsfTag.genreRegex.exec(genre);
+            const genreMatch = AsfTag.GENRE_REGEX.exec(genre);
             if (genreMatch) {
                 const numericGenre = Number.parseInt(genreMatch[1], 10);
                 if (!Number.isNaN(numericGenre)) {
@@ -304,7 +303,7 @@ export default class AsfTag extends Tag {
             return 0;
         }
 
-        const parsed = Number.parseInt(text.substr(0, 4), 10);
+        const parsed = Number.parseInt(text.substring(0, 4), 10);
         return Number.isNaN(parsed) ? 0 : parsed;
     }
     /**
@@ -629,7 +628,7 @@ export default class AsfTag extends Tag {
             return Number.NaN;
         }
         if (valueString.toLowerCase().endsWith("db")) {
-            valueString = valueString.substr(0, valueString.length - 2).trim();
+            valueString = valueString.substring(0, valueString.length - 2).trim();
         }
 
         return  Number.parseFloat(valueString);
@@ -679,7 +678,7 @@ export default class AsfTag extends Tag {
             return Number.NaN;
         }
         if (valueString.toLowerCase().endsWith("db")) {
-            valueString = valueString.substr(0, valueString.length - 2).trim();
+            valueString = valueString.substring(0, valueString.length - 2).trim();
         }
 
         return  Number.parseFloat(valueString);
@@ -730,7 +729,7 @@ export default class AsfTag extends Tag {
             ... this.getDescriptors("WM/Picture"),
             ... this._metadataLibraryObject.getRecords(0, 0, "WM/Picture")
         ];
-        return records.map((r) => AsfTag.pictureFromData(r.getBytes()))
+        return records.map((r) => AsfTag.pictureFromData(r.byteValue))
             .filter((p) => !!p);
     }
     /**
@@ -806,7 +805,7 @@ export default class AsfTag extends Tag {
                 continue;
             }
 
-            const value = descriptor.getString();
+            const value = descriptor.stringValue;
             if (value !== undefined) {
                 return value;
             }
@@ -818,12 +817,12 @@ export default class AsfTag extends Tag {
     public getDescriptorUint(... names: string[]): number {
         for (const descriptor of this.getDescriptors(... names)) {
             if (descriptor.type === DataType.DWord) {
-                const uintValue = descriptor.getUint();
+                const uintValue = descriptor.uintValue;
                 if (uintValue !== 0) {
                     return uintValue;
                 }
             } else if (descriptor.type === DataType.Unicode) {
-                const numericValue = Number.parseInt(descriptor.getString().trim(), 10);
+                const numericValue = Number.parseInt(descriptor.stringValue.trim(), 10);
                 if (numericValue !== 0) {
                     return numericValue;
                 }
@@ -917,31 +916,34 @@ export default class AsfTag extends Tag {
         offset += 1;
 
         // Get the Picture size
-        const pictureSize = data.mid(offset, 4).toUInt(false);
+        const pictureSize = data.subarray(offset, 4).toUint(false);
         offset += 4;
 
-        // Get the mime-type
         const delimiter = ByteVector.getTextDelimiter(StringType.UTF16LE);
-        const mimeTypeDelimiterIndex = data.find(delimiter, offset, delimiter.length);
+
+        // Get the mime-type
+        const mimeTypeDelimiterIndex = data.offsetFind(delimiter, offset, delimiter.length);
         if (mimeTypeDelimiterIndex < 0 || mimeTypeDelimiterIndex - offset === 0) {
             return undefined;
         }
-        const mimeType = data.toString(mimeTypeDelimiterIndex - offset, StringType.UTF16LE, offset);
+        const mimeTypeLength = mimeTypeDelimiterIndex - offset;
+        const mimeType = data.subarray(offset, mimeTypeLength).toString(StringType.UTF16LE);
         offset = mimeTypeDelimiterIndex + delimiter.length;
 
         // Get the description
-        const descriptionDelimiterIndex = data.find(delimiter, offset, delimiter.length);
+        const descriptionDelimiterIndex = data.offsetFind(delimiter, offset, delimiter.length);
         if (descriptionDelimiterIndex < 0 || descriptionDelimiterIndex - offset === 0) {
             return undefined;
         }
-        const description = data.toString(descriptionDelimiterIndex - offset, StringType.UTF16LE, offset);
+        const descriptionLength = descriptionDelimiterIndex - offset;
+        const description = data.subarray(offset, descriptionLength).toString(StringType.UTF16LE);
         offset = descriptionDelimiterIndex + 2;
 
-        return Picture.fromFullData(data.mid(offset, pictureSize), pictureType, mimeType, description);
+        return Picture.fromFullData(data.subarray(offset, pictureSize), pictureType, mimeType, description);
     }
 
     /** @internal */
-    public static pictureToData(picture: IPicture) {
+    public static pictureToData(picture: IPicture): ByteVector {
         return ByteVector.concatenate(
             picture.type,
             ReadWriteUtils.renderDWord(picture.data.length),

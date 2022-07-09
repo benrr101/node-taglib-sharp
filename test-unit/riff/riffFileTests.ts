@@ -14,7 +14,7 @@ import RiffWaveFormatEx from "../../src/riff/riffWaveFormatEx";
 import WaveFileSettings from "../../src/riff/waveFileSettings";
 import {default as TestFile, TestFileAbstraction} from "../utilities/testFile";
 import {default as Resources} from "./resources";
-import {ByteVector} from "../../src/byteVector";
+import {ByteVector, StringType} from "../../src/byteVector";
 import {FileAccessMode, ReadStyle} from "../../src/file";
 import {IFileAbstraction} from "../../src/fileAbstraction";
 import {Id3v2TagHeaderFlags} from "../../src/id3v2/id3v2TagHeader";
@@ -32,8 +32,8 @@ import {Testers} from "../utilities/testers";
     public constructor_nonRiffFile() {
         // Arrange
         const fileBytes = ByteVector.concatenate(
-            ByteVector.fromString("FOOO"),
-            ByteVector.fromUInt(100, false),
+            ByteVector.fromString("FOOO", StringType.UTF8),
+            ByteVector.fromUint(100, false),
             Resources.getDataChunk()
         );
         const testAbstraction = TestFile.getFileAbstraction(fileBytes);
@@ -48,7 +48,7 @@ import {Testers} from "../utilities/testers";
         const originalDefaults = AviFileSettings.defaultTagTypes;
         try {
             const dataBytes = ByteVector.concatenate(
-                ByteVector.fromString("AVI "),
+                ByteVector.fromString("AVI ", StringType.UTF8),
                 Resources.getAviHeaderBlock(false),
                 Resources.getMoviChunk()
             );
@@ -56,7 +56,7 @@ import {Testers} from "../utilities/testers";
             const testAbstraction = TestFile.getFileAbstraction(fileBytes);
 
             // Act
-            AviFileSettings.defaultTagTypes = AviFileSettings.supportedTagTypes;
+            AviFileSettings.defaultTagTypes = AviFileSettings.SUPPORTED_TAG_TYPES;
             const file = new RiffFile(testAbstraction, ReadStyle.Average);
 
             // Assert
@@ -67,12 +67,12 @@ import {Testers} from "../utilities/testers";
 
             assert.isOk(file.tag);
             assert.instanceOf(file.tag, RiffTags);
-            assert.strictEqual(file.tag.tagTypes, AviFileSettings.supportedTagTypes);
+            assert.strictEqual(file.tag.tagTypes, AviFileSettings.SUPPORTED_TAG_TYPES);
             assert.strictEqual((<RiffTags> file.tag).tags.length, 4);
             assert.isTrue(file.tag.isEmpty);
 
             assert.strictEqual(file.mode, FileAccessMode.Closed);
-            assert.strictEqual(file.tagTypes, AviFileSettings.supportedTagTypes);
+            assert.strictEqual(file.tagTypes, AviFileSettings.SUPPORTED_TAG_TYPES);
             assert.strictEqual(file.tagTypesOnDisk, TagTypes.None);
         } finally {
             // Cleanup
@@ -86,7 +86,7 @@ import {Testers} from "../utilities/testers";
         const originalDefaults = AviFileSettings.defaultTagTypes;
         try {
             const dataBytes = ByteVector.concatenate(
-                ByteVector.fromString("AVI "),
+                ByteVector.fromString("AVI ", StringType.UTF8),
                 Resources.getAviHeaderBlock(false),
                 Resources.getMoviChunk()
             );
@@ -124,7 +124,7 @@ import {Testers} from "../utilities/testers";
         const originalDefaults = AviFileSettings.defaultTagTypes;
         try {
             const dataBytes = ByteVector.concatenate(
-                ByteVector.fromString("AVI "),
+                ByteVector.fromString("AVI ", StringType.UTF8),
                 Resources.getAviHeaderBlock(true),
                 Resources.getMoviChunk()
             );
@@ -132,7 +132,7 @@ import {Testers} from "../utilities/testers";
             const testAbstraction = TestFile.getFileAbstraction(fileBytes);
 
             // Act
-            AviFileSettings.defaultTagTypes = AviFileSettings.supportedTagTypes;
+            AviFileSettings.defaultTagTypes = AviFileSettings.SUPPORTED_TAG_TYPES;
             const file = new RiffFile(testAbstraction, ReadStyle.Average);
 
             // Assert
@@ -145,12 +145,12 @@ import {Testers} from "../utilities/testers";
 
             assert.isOk(file.tag);
             assert.instanceOf(file.tag, RiffTags);
-            assert.strictEqual(file.tag.tagTypes, AviFileSettings.supportedTagTypes);
+            assert.strictEqual(file.tag.tagTypes, AviFileSettings.SUPPORTED_TAG_TYPES);
             assert.strictEqual((<RiffTags> file.tag).tags.length, 4);
             assert.isTrue(file.tag.isEmpty);
 
             assert.strictEqual(file.mode, FileAccessMode.Closed);
-            assert.strictEqual(file.tagTypes, AviFileSettings.supportedTagTypes);
+            assert.strictEqual(file.tagTypes, AviFileSettings.SUPPORTED_TAG_TYPES);
             assert.strictEqual(file.tagTypesOnDisk, TagTypes.None);
         } finally {
             // Cleanup
@@ -164,7 +164,7 @@ import {Testers} from "../utilities/testers";
         const originalDefaults = AviFileSettings.defaultTagTypes;
         try {
             const dataBytes = ByteVector.concatenate(
-                ByteVector.fromString("AVI "),
+                ByteVector.fromString("AVI ", StringType.UTF8),
                 Resources.getAviHeaderBlock(true),
                 Resources.getMoviChunk()
             );
@@ -204,7 +204,7 @@ import {Testers} from "../utilities/testers";
         const originalDefaults = AviFileSettings.defaultTagTypes;
         try {
             const dataBytes = ByteVector.concatenate(
-                ByteVector.fromString("AVI "),
+                ByteVector.fromString("AVI ", StringType.UTF8),
                 Resources.getAviHeaderBlock(true),
                 Resources.getMoviChunk()
             );
@@ -212,7 +212,7 @@ import {Testers} from "../utilities/testers";
             const testAbstraction = TestFile.getFileAbstraction(fileBytes);
 
             // Act
-            AviFileSettings.defaultTagTypes = AviFileSettings.supportedTagTypes;
+            AviFileSettings.defaultTagTypes = AviFileSettings.SUPPORTED_TAG_TYPES;
             const file = new RiffFile(testAbstraction, ReadStyle.None);
 
             // Assert
@@ -220,12 +220,12 @@ import {Testers} from "../utilities/testers";
 
             assert.isOk(file.tag);
             assert.instanceOf(file.tag, RiffTags);
-            assert.strictEqual(file.tag.tagTypes, AviFileSettings.supportedTagTypes);
+            assert.strictEqual(file.tag.tagTypes, AviFileSettings.SUPPORTED_TAG_TYPES);
             assert.strictEqual((<RiffTags> file.tag).tags.length, 4);
             assert.isTrue(file.tag.isEmpty);
 
             assert.strictEqual(file.mode, FileAccessMode.Closed);
-            assert.strictEqual(file.tagTypes, AviFileSettings.supportedTagTypes);
+            assert.strictEqual(file.tagTypes, AviFileSettings.SUPPORTED_TAG_TYPES);
             assert.strictEqual(file.tagTypesOnDisk, TagTypes.None);
         } finally {
             // Cleanup
@@ -239,7 +239,7 @@ import {Testers} from "../utilities/testers";
         const originalDefaults = AviFileSettings.defaultTagTypes;
         try {
             const dataBytes = ByteVector.concatenate(
-                ByteVector.fromString("AVI "),
+                ByteVector.fromString("AVI ", StringType.UTF8),
                 Resources.getAviHeaderBlock(true),
                 Resources.getMoviChunk()
             );
@@ -272,7 +272,7 @@ import {Testers} from "../utilities/testers";
     public constructor_aviFile_allTagsNoCodecs() {
         // Arrange
         const dataBytes = ByteVector.concatenate(
-            ByteVector.fromString("AVI "),
+            ByteVector.fromString("AVI ", StringType.UTF8),
             Resources.getAviHeaderBlock(false),
             RiffChunk.fromData(DivxTag.CHUNK_FOURCC, Resources.getDivxTagData()).render(),
             Riff_RiffFileTests.getInfoTagBytes(),
@@ -312,7 +312,7 @@ import {Testers} from "../utilities/testers";
     public constructor_aviFile_missingHeaders() {
         // Arrange
         const dataBytes = ByteVector.concatenate(
-            ByteVector.fromString("AVI "),
+            ByteVector.fromString("AVI ", StringType.UTF8),
             Resources.getMoviChunk()
         );
         const fileBytes = Riff_RiffFileTests.getFileBytes(dataBytes);
@@ -326,7 +326,7 @@ import {Testers} from "../utilities/testers";
     public constructor_unsupportedType() {
         // Arrange
         const dataBytes = ByteVector.concatenate(
-            ByteVector.fromString("FOOO"),
+            ByteVector.fromString("FOOO", StringType.UTF8),
             Resources.getMoviChunk()
         );
         const fileBytes = Riff_RiffFileTests.getFileBytes(dataBytes);
@@ -342,7 +342,7 @@ import {Testers} from "../utilities/testers";
         const originalDefaults = WaveFileSettings.defaultTagTypes;
         try {
             const dataBytes = ByteVector.concatenate(
-                ByteVector.fromString("WAVE"),
+                ByteVector.fromString("WAVE", StringType.UTF8),
                 Resources.getWaveFormatBlock(),
                 Resources.getDataChunk()
             );
@@ -350,7 +350,7 @@ import {Testers} from "../utilities/testers";
             const testAbstraction = TestFile.getFileAbstraction(fileBytes);
 
             // Act
-            WaveFileSettings.defaultTagTypes = WaveFileSettings.supportedTagTypes;
+            WaveFileSettings.defaultTagTypes = WaveFileSettings.SUPPORTED_TAG_TYPES;
             const file = new RiffFile(testAbstraction, ReadStyle.Average);
 
             // Assert
@@ -363,12 +363,12 @@ import {Testers} from "../utilities/testers";
 
             assert.isOk(file.tag);
             assert.instanceOf(file.tag, RiffTags);
-            assert.strictEqual(file.tag.tagTypes, WaveFileSettings.supportedTagTypes);
+            assert.strictEqual(file.tag.tagTypes, WaveFileSettings.SUPPORTED_TAG_TYPES);
             assert.strictEqual((<RiffTags> file.tag).tags.length, 4);
             assert.isTrue(file.tag.isEmpty);
 
             assert.strictEqual(file.mode, FileAccessMode.Closed);
-            assert.strictEqual(file.tagTypes, WaveFileSettings.supportedTagTypes);
+            assert.strictEqual(file.tagTypes, WaveFileSettings.SUPPORTED_TAG_TYPES);
             assert.strictEqual(file.tagTypesOnDisk, TagTypes.None);
         } finally {
             // Cleanup
@@ -382,7 +382,7 @@ import {Testers} from "../utilities/testers";
         const originalDefaults = WaveFileSettings.defaultTagTypes;
         try {
             const dataBytes = ByteVector.concatenate(
-                ByteVector.fromString("WAVE"),
+                ByteVector.fromString("WAVE", StringType.UTF8),
                 Resources.getWaveFormatBlock(),
                 Resources.getDataChunk()
             );
@@ -422,7 +422,7 @@ import {Testers} from "../utilities/testers";
         const originalDefaults = WaveFileSettings.defaultTagTypes;
         try {
             const dataBytes = ByteVector.concatenate(
-                ByteVector.fromString("WAVE"),
+                ByteVector.fromString("WAVE", StringType.UTF8),
                 Resources.getWaveFormatBlock(),
                 Resources.getDataChunk()
             );
@@ -430,19 +430,19 @@ import {Testers} from "../utilities/testers";
             const testAbstraction = TestFile.getFileAbstraction(fileBytes);
 
             // Act
-            WaveFileSettings.defaultTagTypes = WaveFileSettings.supportedTagTypes;
+            WaveFileSettings.defaultTagTypes = WaveFileSettings.SUPPORTED_TAG_TYPES;
             const file = new RiffFile(testAbstraction, ReadStyle.None);
 
             // Assert
             assert.isNotOk(file.properties);
 
             assert.instanceOf(file.tag, RiffTags);
-            assert.strictEqual(file.tag.tagTypes, WaveFileSettings.supportedTagTypes);
+            assert.strictEqual(file.tag.tagTypes, WaveFileSettings.SUPPORTED_TAG_TYPES);
             assert.strictEqual((<RiffTags> file.tag).tags.length, 4);
             assert.isTrue(file.tag.isEmpty);
 
             assert.strictEqual(file.mode, FileAccessMode.Closed);
-            assert.strictEqual(file.tagTypes,  WaveFileSettings.supportedTagTypes);
+            assert.strictEqual(file.tagTypes,  WaveFileSettings.SUPPORTED_TAG_TYPES);
             assert.strictEqual(file.tagTypesOnDisk, TagTypes.None);
         } finally {
             // Cleanup
@@ -456,7 +456,7 @@ import {Testers} from "../utilities/testers";
         const originalDefaults = WaveFileSettings.defaultTagTypes;
         try {
             const dataBytes = ByteVector.concatenate(
-                ByteVector.fromString("WAVE"),
+                ByteVector.fromString("WAVE", StringType.UTF8),
                 Resources.getWaveFormatBlock(),
                 Resources.getDataChunk()
             );
@@ -488,7 +488,7 @@ import {Testers} from "../utilities/testers";
     public constructor_waveFile_allTags() {
         // Arrange
         const dataBytes = ByteVector.concatenate(
-            ByteVector.fromString("WAVE"),
+            ByteVector.fromString("WAVE", StringType.UTF8),
             Resources.getWaveFormatBlock(),
             RiffChunk.fromData(DivxTag.CHUNK_FOURCC, Resources.getDivxTagData()).render(),
             Riff_RiffFileTests.getInfoTagBytes(),
@@ -529,7 +529,7 @@ import {Testers} from "../utilities/testers";
     public constructor_waveFile_missingHeaders() {
         // Arrange
         const dataBytes = ByteVector.concatenate(
-            ByteVector.fromString("WAVE"),
+            ByteVector.fromString("WAVE", StringType.UTF8),
             Resources.getDataChunk()
         );
         const fileBytes = Riff_RiffFileTests.getFileBytes(dataBytes);
@@ -543,7 +543,7 @@ import {Testers} from "../utilities/testers";
     public constructor_waveFile_noDataBlock() {
         // Arrange
         const dataBytes = ByteVector.concatenate(
-            ByteVector.fromString("WAVE"),
+            ByteVector.fromString("WAVE", StringType.UTF8),
             Resources.getWaveFormatBlock()
         );
         const fileBytes = Riff_RiffFileTests.getFileBytes(dataBytes);
@@ -697,7 +697,7 @@ import {Testers} from "../utilities/testers";
     public removeTags_tagDoesNotExist() {
         // Arrange
         const dataBytes = ByteVector.concatenate(
-            ByteVector.fromString("WAVE"),
+            ByteVector.fromString("WAVE", StringType.UTF8),
             Resources.getWaveFormatBlock(),
             RiffChunk.fromData(DivxTag.CHUNK_FOURCC, Resources.getDivxTagData()).render(),
             Riff_RiffFileTests.getInfoTagBytes(),
@@ -768,13 +768,13 @@ import {Testers} from "../utilities/testers";
     public save_waveNoTagsOriginally_noTagsStored() {
         // Arrange
         const dataBytes = ByteVector.concatenate(
-            ByteVector.fromString("WAVE"),
+            ByteVector.fromString("WAVE", StringType.UTF8),
             Resources.getWaveFormatBlock(),
             Resources.getJunkChunk(),
             Resources.getDataChunk()
         );
         const fileBytes = Riff_RiffFileTests.getFileBytes(dataBytes);
-        const testAbstraction = TestFile.getFileAbstraction(fileBytes);
+        const testAbstraction = TestFile.getFileAbstraction(fileBytes.toByteVector());
 
         const file = new RiffFile(testAbstraction, ReadStyle.Average);
         file.removeTags(TagTypes.AllTags);
@@ -794,7 +794,7 @@ import {Testers} from "../utilities/testers";
     public save_waveNoTagsOriginally_addingTags() {
         // Arrange
         const dataBytes = ByteVector.concatenate(
-            ByteVector.fromString("WAVE"),
+            ByteVector.fromString("WAVE", StringType.UTF8),
             Resources.getWaveFormatBlock(),
             Resources.getJunkChunk(10),
             Resources.getDataChunk()
@@ -814,7 +814,7 @@ import {Testers} from "../utilities/testers";
         // Assert
         // - Make sure bytes were written
         const expectedDataBytes = ByteVector.concatenate(
-            ByteVector.fromString("WAVE"),
+            ByteVector.fromString("WAVE", StringType.UTF8),
             Resources.getWaveFormatBlock(),
             Resources.getJunkChunk(10),
             Riff_RiffFileTests.getSavedId3v2Bytes("id3 "),
@@ -836,7 +836,7 @@ import {Testers} from "../utilities/testers";
     public save_waveNoTagsNoDataChunk_addingTags() {
         // Arrange
         const dataBytes = ByteVector.concatenate(
-            ByteVector.fromString("WAVE"),
+            ByteVector.fromString("WAVE", StringType.UTF8),
             Resources.getWaveFormatBlock(),
             Resources.getJunkChunk(10),
         );
@@ -855,7 +855,7 @@ import {Testers} from "../utilities/testers";
         // Assert
         // - Make sure bytes were written
         const expectedDataBytes = ByteVector.concatenate(
-            ByteVector.fromString("WAVE"),
+            ByteVector.fromString("WAVE", StringType.UTF8),
             Resources.getWaveFormatBlock(),
             Resources.getJunkChunk(10),
             Riff_RiffFileTests.getSavedId3v2Bytes("id3 "),
@@ -889,7 +889,7 @@ import {Testers} from "../utilities/testers";
 
         // Assert
         const expectedDataBytes = ByteVector.concatenate(
-            ByteVector.fromString("WAVE"),
+            ByteVector.fromString("WAVE", StringType.UTF8),
             Resources.getWaveFormatBlock(),
             Riff_RiffFileTests.getSavedId3v2Bytes("id3 "),
             Riff_RiffFileTests.getSavedInfoTagBytes(),
@@ -922,7 +922,7 @@ import {Testers} from "../utilities/testers";
 
         // Assert
         const expectedDataBytes = ByteVector.concatenate(
-            ByteVector.fromString("WAVE"),
+            ByteVector.fromString("WAVE", StringType.UTF8),
             Resources.getWaveFormatBlock(),
             Riff_RiffFileTests.getSavedId3v2Bytes("id3 "),
             Riff_RiffFileTests.getSavedInfoTagBytes(),
@@ -955,7 +955,7 @@ import {Testers} from "../utilities/testers";
 
         // Assert
         const expectedDataBytes = ByteVector.concatenate(
-            ByteVector.fromString("WAVE"),
+            ByteVector.fromString("WAVE", StringType.UTF8),
             Resources.getWaveFormatBlock(),
             Riff_RiffFileTests.getSavedId3v2Bytes("id3 "),
             Riff_RiffFileTests.getSavedInfoTagBytes(),
@@ -989,7 +989,7 @@ import {Testers} from "../utilities/testers";
 
         // Assert
         const expectedDataBytes = ByteVector.concatenate(
-            ByteVector.fromString("WAVE"),
+            ByteVector.fromString("WAVE", StringType.UTF8),
             Resources.getWaveFormatBlock(),
             Riff_RiffFileTests.getSavedId3v2Bytes("id3 "),
             Riff_RiffFileTests.getSavedInfoTagBytes(),
@@ -1010,13 +1010,13 @@ import {Testers} from "../utilities/testers";
     public save_aviNoTagsOriginally_noTagsStored() {
         // Arrange
         const dataBytes = ByteVector.concatenate(
-            ByteVector.fromString("AVI "),
+            ByteVector.fromString("AVI ", StringType.UTF8),
             Resources.getAviHeaderBlock(true),
             Resources.getJunkChunk(),
             Resources.getMoviChunk()
         );
         const fileBytes = Riff_RiffFileTests.getFileBytes(dataBytes);
-        const testAbstraction = TestFile.getFileAbstraction(fileBytes);
+        const testAbstraction = TestFile.getFileAbstraction(fileBytes.toByteVector());
 
         const file = new RiffFile(testAbstraction, ReadStyle.Average);
         file.removeTags(TagTypes.AllTags);
@@ -1036,7 +1036,7 @@ import {Testers} from "../utilities/testers";
     public save_aviNoTagsOriginally_addingTags() {
         // Arrange
         const dataBytes = ByteVector.concatenate(
-            ByteVector.fromString("AVI "),
+            ByteVector.fromString("AVI ", StringType.UTF8),
             Resources.getAviHeaderBlock(true),
             Resources.getJunkChunk(10),
             Resources.getMoviChunk()
@@ -1056,7 +1056,7 @@ import {Testers} from "../utilities/testers";
         // Assert
         // - Make sure bytes were written
         const expectedDataBytes = ByteVector.concatenate(
-            ByteVector.fromString("AVI "),
+            ByteVector.fromString("AVI ", StringType.UTF8),
             Resources.getAviHeaderBlock(true),
             Resources.getJunkChunk(10),
             Riff_RiffFileTests.getSavedId3v2Bytes("id3 "),
@@ -1078,7 +1078,7 @@ import {Testers} from "../utilities/testers";
     public save_aviNoTagsNoMoviChunk_addingTags() {
         // Arrange
         const dataBytes = ByteVector.concatenate(
-            ByteVector.fromString("AVI "),
+            ByteVector.fromString("AVI ", StringType.UTF8),
             Resources.getAviHeaderBlock(true),
             Resources.getJunkChunk(10),
         );
@@ -1097,7 +1097,7 @@ import {Testers} from "../utilities/testers";
         // Assert
         // - Make sure bytes were written
         const expectedDataBytes = ByteVector.concatenate(
-            ByteVector.fromString("AVI "),
+            ByteVector.fromString("AVI ", StringType.UTF8),
             Resources.getAviHeaderBlock(true),
             Resources.getJunkChunk(10),
             Riff_RiffFileTests.getSavedId3v2Bytes("id3 "),
@@ -1131,7 +1131,7 @@ import {Testers} from "../utilities/testers";
 
         // Assert
         const expectedDataBytes = ByteVector.concatenate(
-            ByteVector.fromString("AVI "),
+            ByteVector.fromString("AVI ", StringType.UTF8),
             Resources.getAviHeaderBlock(true),
             Riff_RiffFileTests.getSavedId3v2Bytes("id3 "),
             Riff_RiffFileTests.getSavedInfoTagBytes(),
@@ -1164,7 +1164,7 @@ import {Testers} from "../utilities/testers";
 
         // Assert
         const expectedDataBytes = ByteVector.concatenate(
-            ByteVector.fromString("AVI "),
+            ByteVector.fromString("AVI ", StringType.UTF8),
             Resources.getAviHeaderBlock(true),
             Riff_RiffFileTests.getSavedId3v2Bytes("id3 "),
             Riff_RiffFileTests.getSavedInfoTagBytes(),
@@ -1197,7 +1197,7 @@ import {Testers} from "../utilities/testers";
 
         // Assert
         const expectedDataBytes = ByteVector.concatenate(
-            ByteVector.fromString("AVI "),
+            ByteVector.fromString("AVI ", StringType.UTF8),
             Resources.getAviHeaderBlock(true),
             Riff_RiffFileTests.getSavedId3v2Bytes("id3 "),
             Riff_RiffFileTests.getSavedInfoTagBytes(),
@@ -1231,7 +1231,7 @@ import {Testers} from "../utilities/testers";
 
         // Assert
         const expectedDataBytes = ByteVector.concatenate(
-            ByteVector.fromString("AVI "),
+            ByteVector.fromString("AVI ", StringType.UTF8),
             Resources.getAviHeaderBlock(true),
             Riff_RiffFileTests.getSavedId3v2Bytes("id3 "),
             Riff_RiffFileTests.getSavedInfoTagBytes(),
@@ -1275,7 +1275,7 @@ import {Testers} from "../utilities/testers";
     private static getAviAllTagsContiguousFile(trailingJunkChunkSize: number): TestFileAbstraction {
         // 1308 bytes in the contiguous tagging chunk
         const dataBytes = ByteVector.concatenate(
-            ByteVector.fromString("AVI "),
+            ByteVector.fromString("AVI ", StringType.UTF8),
             Resources.getAviHeaderBlock(true),
             Riff_RiffFileTests.getDivxBytes(),
             Riff_RiffFileTests.getInfoTagBytes(),
@@ -1291,7 +1291,7 @@ import {Testers} from "../utilities/testers";
 
     private static getAviAllTagsDiscontiguousFile(): TestFileAbstraction {
         const dataBytes = ByteVector.concatenate(
-            ByteVector.fromString("AVI "),
+            ByteVector.fromString("AVI ", StringType.UTF8),
             Resources.getAviHeaderBlock(true),
             Riff_RiffFileTests.getDivxBytes(),
             Resources.getJunkChunk(10),
@@ -1306,8 +1306,8 @@ import {Testers} from "../utilities/testers";
 
     private static getFileBytes(dataBytes: ByteVector): ByteVector {
         return ByteVector.concatenate(
-            RiffFile.fileIdentifier,
-            ByteVector.fromUInt(dataBytes.length, false),
+            RiffFile.FILE_IDENTIFIER,
+            ByteVector.fromUint(dataBytes.length, false),
             dataBytes
         );
     }
@@ -1373,7 +1373,7 @@ import {Testers} from "../utilities/testers";
     private static getWaveAllTagsContiguousFile(trailingJunkChunkSize: number): TestFileAbstraction {
         // 1308 bytes in the contiguous tagging chunk
         const dataBytes = ByteVector.concatenate(
-            ByteVector.fromString("WAVE"),
+            ByteVector.fromString("WAVE", StringType.UTF8),
             Resources.getWaveFormatBlock(),
             Riff_RiffFileTests.getDivxBytes(),
             Riff_RiffFileTests.getInfoTagBytes(),
@@ -1389,7 +1389,7 @@ import {Testers} from "../utilities/testers";
 
     private static getWaveAllTagsDiscontiguousFile(): TestFileAbstraction {
         const dataBytes = ByteVector.concatenate(
-            ByteVector.fromString("WAVE"),
+            ByteVector.fromString("WAVE", StringType.UTF8),
             Resources.getWaveFormatBlock(),
             Riff_RiffFileTests.getDivxBytes(),
             Resources.getJunkChunk(10),

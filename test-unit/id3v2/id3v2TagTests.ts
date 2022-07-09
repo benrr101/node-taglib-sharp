@@ -1,6 +1,6 @@
-import * as Chai from "chai";
 import * as TypeMoq from "typemoq";
 import {suite, test} from "@testdeck/mocha";
+import {assert} from "chai";
 
 import CommentsFrame from "../../src/id3v2/frames/commentsFrame";
 import Id3v2Settings from "../../src/id3v2/id3v2Settings";
@@ -19,16 +19,14 @@ import {FrameClassType} from "../../src/id3v2/frames/frame";
 import {Id3v2FrameFlags} from "../../src/id3v2/frames/frameHeader";
 import {FrameIdentifier, FrameIdentifiers} from "../../src/id3v2/frameIdentifiers";
 import {Id3v2TagHeader, Id3v2TagHeaderFlags} from "../../src/id3v2/id3v2TagHeader";
-import {IPicture} from "../../src/iPicture";
+import {IPicture} from "../../src/picture";
 import {TagTypes} from "../../src/tag";
 import {Testers} from "../utilities/testers";
 import {TextInformationFrame, UserTextInformationFrame} from "../../src/id3v2/frames/textInformationFrame";
 import {UrlLinkFrame} from "../../src/id3v2/frames/urlLinkFrame";
+import PrivateFrame from "../../src/id3v2/frames/privateFrame";
 
-// Setup Chai
-const assert = Chai.assert;
-
-function getTestTagHeader(version: number, flags: Id3v2TagHeaderFlags, tagSize: number): ByteVector {
+const getTestTagHeader = (version: number, flags: Id3v2TagHeaderFlags, tagSize: number): ByteVector => {
     return ByteVector.concatenate(
         ByteVector.fromString("ID3", StringType.Latin1),
         version, 0x00,
@@ -81,9 +79,12 @@ function getTestTagHeader(version: number, flags: Id3v2TagHeaderFlags, tagSize: 
     @test
     public fromData_v4Tag() {
         // Arrange
-        const frame1 = PlayCountFrame.fromEmpty().render(4);
-        const frame2 = UniqueFileIdentifierFrame.fromData("foo", ByteVector.fromString("bar")).render(4);
-        const emptyFrame = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.empty()).render(4);
+        const frame1 = PlayCountFrame.fromEmpty()
+            .render(4);
+        const frame2 = UniqueFileIdentifierFrame.fromData("foo", ByteVector.fromString("bar", StringType.UTF8))
+            .render(4);
+        const emptyFrame = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.empty())
+            .render(4);
         const data = ByteVector.concatenate(
             getTestTagHeader(4, Id3v2TagHeaderFlags.None, frame1.length + frame2.length + emptyFrame.length + 5),
             frame1,
@@ -212,9 +213,12 @@ function getTestTagHeader(version: number, flags: Id3v2TagHeaderFlags, tagSize: 
 
     @test
     public fromFileStart_v4Tag() {
-        const frame1 = PlayCountFrame.fromEmpty().render(4);
-        const frame2 = UniqueFileIdentifierFrame.fromData("foo", ByteVector.fromString("bar")).render(4);
-        const emptyFrame = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.empty()).render(4);
+        const frame1 = PlayCountFrame.fromEmpty()
+            .render(4);
+        const frame2 = UniqueFileIdentifierFrame.fromData("foo", ByteVector.fromString("bar", StringType.UTF8))
+            .render(4);
+        const emptyFrame = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.empty())
+            .render(4);
         const data = ByteVector.concatenate(
             0x00, 0x00,
             getTestTagHeader(4, Id3v2TagHeaderFlags.None, frame1.length + frame2.length + emptyFrame.length + 5),
@@ -401,7 +405,7 @@ function getTestTagHeader(version: number, flags: Id3v2TagHeaderFlags, tagSize: 
         tmclFrame.text = tmclText;
         tag.frames.push(tmclFrame);
         tag.performers = ["alice", "bob", "malory"];
-        const expected = ["saxophone;flugelhorn", "saxophone", undefined];
+        const expected = ["saxophone; flugelhorn", "saxophone", undefined];
         assert.deepStrictEqual(tag.performersRole, expected);
 
         const newData = ["saxophone", "flugelhorn", undefined];
@@ -1190,7 +1194,7 @@ function getTestTagHeader(version: number, flags: Id3v2TagHeaderFlags, tagSize: 
         assert.strictEqual(tag.frames[0].frameClassType, FrameClassType.UniqueFileIdentifierFrame);
         assert.strictEqual(tag.frames[0].frameId, FrameIdentifiers.UFID);
         assert.deepStrictEqual((<UniqueFileIdentifierFrame> tag.frames[0]).owner, "http://musicbrainz.org");
-        const expectedBytes = ByteVector.fromString("abcd-ef12-3456-7890");
+        const expectedBytes = ByteVector.fromString("abcd-ef12-3456-7890", StringType.UTF8);
         const actualBytes = (<UniqueFileIdentifierFrame> tag.frames[0]).identifier;
         Testers.bvEqual(actualBytes, expectedBytes);
 
@@ -1866,8 +1870,8 @@ function getTestTagHeader(version: number, flags: Id3v2TagHeaderFlags, tagSize: 
         const output = tag.render();
 
         // Assert
-        frame1.flags |= Id3v2FrameFlags.Desynchronized;
-        frame2.flags |= Id3v2FrameFlags.Desynchronized;
+        frame1.flags |= Id3v2FrameFlags.Unsynchronized;
+        frame2.flags |= Id3v2FrameFlags.Unsynchronized;
         const frame1Data = frame1.render(4);
         const frame2Data = frame2.render(4);
 
@@ -1893,18 +1897,21 @@ function getTestTagHeader(version: number, flags: Id3v2TagHeaderFlags, tagSize: 
         tag.version = 3;
         tag.flags = Id3v2TagHeaderFlags.Unsynchronization;
 
-        const frame1 = TextInformationFrame.fromIdentifier(FrameIdentifiers.TCOM);
-        const frame1Data = frame1.render(3);
-        const frame2 = TextInformationFrame.fromIdentifier(FrameIdentifiers.TCON);
-        const frame2Data = frame2.render(3);
+        const frame1 = PrivateFrame.fromOwner("foobarbaz");
+        frame1.privateData = ByteVector.fromByteArray([0xAA, 0xFF, 0x00, 0xAA]);
+        const frame2 = PrivateFrame.fromOwner("fuxbuxqux");
+        frame2.privateData = ByteVector.fromByteArray([0xAA, 0x12, 0x34, 0xAA]);
         tag.frames.push(frame1, frame2);
 
         // Act
         const output = tag.render();
 
         // Assert
-        const frameData = ByteVector.concatenate(frame1Data, frame2Data);
-        SyncData.unsyncByteVector(frameData);
+        let frameData = ByteVector.concatenate(
+            frame1.render(3),
+            frame2.render(3)
+        );
+        frameData = SyncData.unsyncByteVector(frameData);
 
         const header = new Id3v2TagHeader();
         header.flags = Id3v2TagHeaderFlags.Unsynchronization;

@@ -1,13 +1,10 @@
-import * as Chai from "chai";
 import {suite, test} from "@testdeck/mocha";
+import {assert} from "chai";
 
 import XingHeader from "../../src/mpeg/xingHeader";
 import {ByteVector} from "../../src/byteVector";
 import {ChannelMode, MpegVersion} from "../../src/mpeg/mpegEnums";
 import {Testers} from "../utilities/testers";
-
-// Setup chai
-const assert = Chai.assert;
 
 @suite class Mpeg_XingHeaderTests {
     @test
@@ -49,9 +46,9 @@ const assert = Chai.assert;
     public fromData_zeroTotalFrames() {
         // Arrange
         const data = ByteVector.concatenate(
-            XingHeader.fileIdentifier,
+            XingHeader.FILE_IDENTIFIER,
             0x00, 0x00, 0x00, 0x02,
-            ByteVector.fromUInt(123)
+            ByteVector.fromUint(123)
         );
 
         // Act
@@ -67,9 +64,9 @@ const assert = Chai.assert;
     public fromData_zeroTotalSize() {
         // Arrange
         const data = ByteVector.concatenate(
-            XingHeader.fileIdentifier,
+            XingHeader.FILE_IDENTIFIER,
             0x00, 0x00, 0x00, 0x01,
-            ByteVector.fromUInt(123)
+            ByteVector.fromUint(123)
         );
 
         // Act
@@ -85,10 +82,10 @@ const assert = Chai.assert;
     public fromData_totalSizeAndFrames() {
         // Arrange
         const data = ByteVector.concatenate(
-            XingHeader.fileIdentifier,
+            XingHeader.FILE_IDENTIFIER,
             0x00, 0x00, 0x00, 0x03,
-            ByteVector.fromUInt(123),
-            ByteVector.fromUInt(234)
+            ByteVector.fromUint(123),
+            ByteVector.fromUint(234)
         );
 
         // Act

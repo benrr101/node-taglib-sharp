@@ -1,6 +1,6 @@
-import ILazy from "../iLazy";
 import {ByteVector} from "../byteVector";
 import {File, FileAccessMode} from "../file";
+import {ILazy} from "../interfaces";
 import {Guards, NumberUtils} from "../utils";
 
 /**
@@ -47,7 +47,7 @@ export enum FlacBlockType {
  * Represents a FLAC metadata block
  */
 export class FlacBlock implements ILazy {
-    public static readonly headerSize = 4;
+    public static readonly HEADER_SIZE = 4;
 
     private _blockStart: number;
     private _data: ByteVector;
@@ -58,7 +58,7 @@ export class FlacBlock implements ILazy {
 
     // #region Constructors
 
-    private constructor() {}
+    private constructor() { /* private to enforce creation via static constructors */ }
 
     /**
      * Constructs and initializes a new instance, lazily, by reading it from a file.
@@ -78,7 +78,7 @@ export class FlacBlock implements ILazy {
         block._file = file;
         block._blockStart = position;
 
-        const headerBytes = file.readBlock(4).toUInt();
+        const headerBytes = file.readBlock(4).toUint();
         block._dataSize = NumberUtils.uintAnd(headerBytes, 0x00ffffff);
         block._isLastBlock = !!NumberUtils.uintAnd(headerBytes, 0x80000000);
         block._type = NumberUtils.uintAnd(headerBytes, 0x7f000000) >>> 24;
@@ -100,7 +100,7 @@ export class FlacBlock implements ILazy {
 
         const block = new FlacBlock();
         block._type = type;
-        block._data = data;
+        block._data = data.toByteVector();
         block._dataSize = data.length;
         block._isLastBlock = false;
 
@@ -156,7 +156,7 @@ export class FlacBlock implements ILazy {
      * Gets the total size of the block as it appears on disk. This equals the size of the data
      * plus the size of the header.
      */
-    public get totalSize(): number { return this.dataSize + FlacBlock.headerSize; }
+    public get totalSize(): number { return this.dataSize + FlacBlock.HEADER_SIZE; }
 
     /**
      * Gets the type of data contained in the current instance.
@@ -176,9 +176,9 @@ export class FlacBlock implements ILazy {
         // Read the data from the file
         const originalFileMode = this._file.mode;
         try {
-            this._file.mode = FileAccessMode.Read
-            this._file.seek(this._blockStart + FlacBlock.headerSize);
-            this._data = this._file.readBlock(this._dataSize);
+            this._file.mode = FileAccessMode.Read;
+            this._file.seek(this._blockStart + FlacBlock.HEADER_SIZE);
+            this._data = this._file.readBlock(this._dataSize).toByteVector();
         } finally {
             this._file.mode = originalFileMode;
         }
@@ -202,7 +202,7 @@ export class FlacBlock implements ILazy {
         );
 
         return ByteVector.concatenate(
-            ByteVector.fromUInt(header),
+            ByteVector.fromUint(header),
             this._data
         );
     }

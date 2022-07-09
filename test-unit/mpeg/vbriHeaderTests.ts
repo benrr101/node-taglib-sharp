@@ -1,12 +1,9 @@
-import * as Chai from "chai";
 import {suite, test} from "@testdeck/mocha";
+import {assert} from "chai";
 
 import VbriHeader from "../../src/mpeg/vbriHeader";
 import {ByteVector} from "../../src/byteVector";
 import {Testers} from "../utilities/testers";
-
-// Setup chai
-const assert = Chai.assert;
 
 @suite class Mpeg_XingHeaderTests {
     @test
@@ -48,10 +45,10 @@ const assert = Chai.assert;
     public fromData_validParameters() {
         // Arrange
         const data = ByteVector.concatenate(
-            VbriHeader.fileIdentifier,
+            VbriHeader.FILE_IDENTIFIER,
             ByteVector.fromSize(6),
-            ByteVector.fromUInt(123),
-            ByteVector.fromUInt(234)
+            ByteVector.fromUint(123),
+            ByteVector.fromUint(234)
         );
 
         // Act

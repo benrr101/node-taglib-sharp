@@ -1,11 +1,12 @@
 import AacAudioHeader from "./aacAudioHeader";
 import AacFileSettings from "./aacFileSettings";
 import SandwichFile from "../sandwich/sandwichFile";
-import Properties from "../properties";
 import {CorruptFileError} from "../errors";
 import {File, ReadStyle} from "../file";
 import {IFileAbstraction} from "../fileAbstraction";
+import {Properties} from "../properties";
 import {TagTypes} from "../tag";
+import {NumberUtils} from "../utils";
 
 /**
  * This class extends {@link File} to provide tagging and properties for ADTS AAC audio files.
@@ -15,7 +16,7 @@ import {TagTypes} from "../tag";
  *     `file.removeTags(file.tagTypes & ~file.tagTypesOnDisk);`
  */
 export default class AacFile extends SandwichFile {
-    private static readonly _defaultTagLocationMapping = new Map<TagTypes, () => boolean>([
+    private static readonly DEFAULT_TAG_LOCATION_MAPPING = new Map<TagTypes, () => boolean>([
         [TagTypes.Ape, () => AacFileSettings.preferApeTagAtFileEnd],
         [TagTypes.Id3v1, () => true],
         [TagTypes.Id3v2, () => AacFileSettings.preferId3v2TagAtFileEnd]
@@ -23,12 +24,12 @@ export default class AacFile extends SandwichFile {
 
     /** @inheritDoc */
     public constructor(file: IFileAbstraction|string, propertiesStyle: ReadStyle) {
-        super(file, propertiesStyle, AacFile._defaultTagLocationMapping, AacFileSettings.defaultTagTypes);
+        super(file, propertiesStyle, AacFile.DEFAULT_TAG_LOCATION_MAPPING, AacFileSettings.defaultTagTypes);
     }
 
     protected readProperties(readStyle: ReadStyle): Properties {
         // Skip if we're not reading the properties
-        if ((readStyle & ReadStyle.Average) === 0) {
+        if (!NumberUtils.hasFlag(readStyle, ReadStyle.Average)) {
             return undefined;
         }
 
@@ -43,7 +44,7 @@ export default class AacFile extends SandwichFile {
     }
 }
 
-////////////////////////////////////////////////////////////////////////////
+// /////////////////////////////////////////////////////////////////////////
 // Register the file type
 [
     "taglib/aac",

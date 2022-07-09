@@ -1,5 +1,5 @@
 import {ByteVector} from "../byteVector";
-import {Guards} from "../utils";
+import {Guards, NumberUtils} from "../utils";
 
 /**
  * Support for encoding and decoding unsynchronized data and numbers.
@@ -22,7 +22,7 @@ export default {
 
         const out = ByteVector.fromSize(4, 0);
         for (let i = 0; i < 4; i++) {
-            out.set(i, value >> ((3 - i) * 7) & 0x7F);
+            out.set(i, NumberUtils.uintAnd(NumberUtils.uintRShift(value, (3 - i) * 7), 0x7F));
         }
 
         return out;
@@ -36,25 +36,33 @@ export default {
      *     returned.
      * @param data Object to resynchronize
      */
-    resyncByteVector: (data: ByteVector): void => {
+    resyncByteVector: (data: ByteVector): ByteVector => {
         Guards.truthy(data, "data");
 
-        let i = 0;
-        let j = 0;
-        while (i < data.length - 1) {
-            if (i !== j) {
-                data.set(j, data.get(i));
+        let leadingPtr = 0;
+        let trailingPtr = 0;
+        const outputList: ByteVector[] = [];
+        while (leadingPtr < data.length - 1) {
+            const currentByte = data.get(leadingPtr);
+            const nextByte = data.get(leadingPtr + 1);
+            if (currentByte === 0xFF && nextByte === 0x00) {
+                // Put the segment into the list
+                const length = leadingPtr - trailingPtr + 1;
+                outputList.push(data.subarray(trailingPtr, length));
+
+                leadingPtr += 2;
+                trailingPtr = leadingPtr;
+            } else {
+                leadingPtr++;
             }
-
-            i += (data.get(i) === 0xFF && data.get(i + 1) === 0x00) ? 2 : 1;
-            j ++;
         }
 
-        if (i < data.length) {
-            data.set(j++, data.get(i++));
+        if (trailingPtr < data.length) {
+            // Put the remaining segment onto the list
+            outputList.push(data.subarray(trailingPtr, data.length - trailingPtr));
         }
 
-        data.resize(j);
+        return ByteVector.concatenate(... outputList);
     },
 
     /**
@@ -83,13 +91,35 @@ export default {
      *     as synchronization bytes.
      * @param data Object to unsynchronize
      */
-    unsyncByteVector: (data: ByteVector): void => {
+    unsyncByteVector: (data: ByteVector): ByteVector => {
         Guards.notNullOrUndefined(data, "data");
 
-        for (let i = data.length - 2; i >= 0; i--) {
-            if (data.get(i) === 0xFF && (data.get(i + 1) === 0 || (data.get(i + 1) & 0xE0) !== 0)) {
-                data.insertByte(i + 1, 0x0);
+        // Inserting bytes is expensive. So, lets build a list of segments, add the 0x0 bytes and
+        // then concatenate them together at the end.
+        let leadingPtr = 0;
+        let trailingPtr = 0;
+        const outputList: Array<number|ByteVector> = [];
+        while (leadingPtr < data.length - 1) {
+            const currentByte = data.get(leadingPtr);
+            const nextByte = data.get(leadingPtr + 1);
+            if (currentByte === 0xFF && (nextByte === 0x00 || (nextByte & 0xE0) === 0xE0)) {
+                // Put the segment and an empty byte on the list
+                const length = leadingPtr - trailingPtr + 1;
+                outputList.push(data.subarray(trailingPtr, length));
+                outputList.push(0x00);
+
+                leadingPtr++;
+                trailingPtr = leadingPtr;
+            } else {
+                leadingPtr++;
             }
         }
+
+        if (trailingPtr < data.length) {
+            // Put the remaining segment onto the list
+            outputList.push(data.subarray(trailingPtr, data.length - trailingPtr));
+        }
+
+        return ByteVector.concatenate(... outputList);
     }
 };

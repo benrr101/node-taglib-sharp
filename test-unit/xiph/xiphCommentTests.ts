@@ -2,14 +2,13 @@ import {suite, test} from "@testdeck/mocha";
 import {assert} from "chai";
 import {Mock} from "typemoq";
 
-import Picture from "../../src/picture";
 import PropertyTests from "../utilities/propertyTests";
 import XiphComment from "../../src/xiph/xiphComment";
 import XiphPicture from "../../src/xiph/xiphPicture";
 import XiphSettings from "../../src/xiph/xiphSettings";
 import XiphTestResources from "./resources";
-import {ByteVector} from "../../src/byteVector";
-import {IPicture, PictureType} from "../../src/iPicture";
+import {ByteVector, StringType} from "../../src/byteVector";
+import {IPicture, Picture, PictureType} from "../../src/picture";
 import {TagTypes} from "../../src/tag";
 import {TagTesters, Testers} from "../utilities/testers";
 
@@ -17,20 +16,20 @@ import {TagTesters, Testers} from "../utilities/testers";
     @test
     public fromData_invalidParameters() {
         // Act / Assert
-        Testers.testTruthy((v: ByteVector) => XiphComment.fromData(v));
+        Testers.testTruthy((v: ByteVector) => XiphComment.fromData(v, false));
     }
 
     @test
     public fromData_noData() {
         // Arrange
         const data = ByteVector.concatenate(
-            ByteVector.fromUInt(9, false),
-            ByteVector.fromString("foobarbaz"),
-            ByteVector.fromUInt(0, false)
+            ByteVector.fromUint(9, false),
+            ByteVector.fromString("foobarbaz", StringType.UTF8),
+            ByteVector.fromUint(0, false)
         );
 
         // Act
-        const comment = XiphComment.fromData(data);
+        const comment = XiphComment.fromData(data, false);
 
         // Assert
         assert.strictEqual(comment.fieldValueCount, 0);
@@ -46,21 +45,21 @@ import {TagTesters, Testers} from "../utilities/testers";
     public fromData_hasValues() {
         // Arrange
         const data = ByteVector.concatenate(
-            ByteVector.fromUInt(3, false),
-            ByteVector.fromString("foo"),
-            ByteVector.fromUInt(4, false),
-            ByteVector.fromUInt(9, false),
-            ByteVector.fromString("TITLE=bar"),
-            ByteVector.fromUInt(7, false),
-            ByteVector.fromString("FUX=bux"),
-            ByteVector.fromUInt(7, false),
-            ByteVector.fromString("FUX=qux"),
-            ByteVector.fromUInt(15, false),
-            ByteVector.fromString("Malformed_field")
+            ByteVector.fromUint(3, false),
+            ByteVector.fromString("foo", StringType.UTF8),
+            ByteVector.fromUint(4, false),
+            ByteVector.fromUint(9, false),
+            ByteVector.fromString("TITLE=bar", StringType.UTF8),
+            ByteVector.fromUint(7, false),
+            ByteVector.fromString("FUX=bux", StringType.UTF8),
+            ByteVector.fromUint(7, false),
+            ByteVector.fromString("FUX=qux", StringType.UTF8),
+            ByteVector.fromUint(15, false),
+            ByteVector.fromString("Malformed_field", StringType.UTF8)
         );
 
         // Act
-        const comment = XiphComment.fromData(data);
+        const comment = XiphComment.fromData(data, false);
 
         // Assert
         assert.strictEqual(comment.fieldValueCount, 3);
@@ -75,25 +74,25 @@ import {TagTesters, Testers} from "../utilities/testers";
     }
 
     @test
-    public fromData_hasPictures() {
+    public fromData_hasPictures_eagerLoading() {
         // Arrange
-        const oldPictureData = ByteVector.fromString("fuxbuxqux");
-        const oldPictureItem = `COVERART=${Buffer.from(oldPictureData.data).toString("base64")}`;
+        const oldPictureData = ByteVector.fromString("fuxbuxqux", StringType.UTF8);
+        const oldPictureItem = `COVERART=${oldPictureData.toBase64String()}`;
         const newPictureItem = `METADATA_BLOCK_PICTURE=${XiphTestResources.pictureEncodedBytes}`;
         const data = ByteVector.concatenate(
-            ByteVector.fromUInt(3, false),
-            ByteVector.fromString("foo"),
-            ByteVector.fromUInt(3, false),
-            ByteVector.fromUInt(9, false),
-            ByteVector.fromString("TITLE=bar"),
-            ByteVector.fromUInt(oldPictureItem.length, false),
-            ByteVector.fromString(oldPictureItem),
-            ByteVector.fromUInt(newPictureItem.length, false),
-            ByteVector.fromString(newPictureItem)
+            ByteVector.fromUint(3, false),
+            ByteVector.fromString("foo", StringType.UTF8),
+            ByteVector.fromUint(3, false),
+            ByteVector.fromUint(9, false),
+            ByteVector.fromString("TITLE=bar", StringType.UTF8),
+            ByteVector.fromUint(oldPictureItem.length, false),
+            ByteVector.fromString(oldPictureItem, StringType.UTF8),
+            ByteVector.fromUint(newPictureItem.length, false),
+            ByteVector.fromString(newPictureItem, StringType.UTF8)
         );
 
         // Act
-        const comment = XiphComment.fromData(data);
+        const comment = XiphComment.fromData(data, false);
 
         // Assert
         assert.strictEqual(comment.fieldValueCount, 3);
@@ -114,6 +113,49 @@ import {TagTesters, Testers} from "../utilities/testers";
         const newPicture = pictures.find((p) => p.type === PictureType.ColoredFish);
         assert.isOk(newPicture);
         assert.instanceOf(newPicture, XiphPicture);
+    }
+
+    @test
+    public fromData_hasPictures_lazyLoading() {
+        // Arrange
+        const oldPictureData = ByteVector.fromString("fuxbuxqux", StringType.UTF8);
+        const oldPictureItem = `COVERART=${oldPictureData.toBase64String()}`;
+        const newPictureItem = `METADATA_BLOCK_PICTURE=${XiphTestResources.pictureEncodedBytes}`;
+        const data = ByteVector.concatenate(
+            ByteVector.fromUint(3, false),
+            ByteVector.fromString("foo", StringType.UTF8),
+            ByteVector.fromUint(3, false),
+            ByteVector.fromUint(9, false),
+            ByteVector.fromString("TITLE=bar", StringType.UTF8),
+            ByteVector.fromUint(oldPictureItem.length, false),
+            ByteVector.fromString(oldPictureItem, StringType.UTF8),
+            ByteVector.fromUint(newPictureItem.length, false),
+            ByteVector.fromString(newPictureItem, StringType.UTF8)
+        );
+
+        // Act
+        const comment = XiphComment.fromData(data, true);
+
+        // Assert
+        assert.strictEqual(comment.fieldValueCount, 3);
+        assert.sameMembers(comment.fieldNames, ["TITLE"]);
+        assert.strictEqual(comment.vendorId, "foo");
+        assert.strictEqual(comment.tagTypes, TagTypes.Xiph);
+        assert.strictEqual(comment.sizeOnDisk, data.length);
+        assert.isFalse(comment.isEmpty);
+
+        assert.strictEqual(comment.title, "bar");
+        const pictures = comment.pictures;
+        assert.strictEqual(pictures.length, 2);
+
+        // ... Pic 1 should be the old one (and should be loaded already)
+        assert.instanceOf(pictures[0], Picture);
+        Testers.bvEqual(pictures[0].data, oldPictureData);
+        assert.strictEqual(pictures[0].type, PictureType.NotAPicture);
+
+        // ... Pic 2 should be the new one (and should be lazily loaded)
+        assert.instanceOf(pictures[1], XiphPicture);
+        assert.isFalse((<XiphPicture> pictures[1]).isLoaded);
     }
 
     @test
@@ -847,32 +889,33 @@ import {TagTesters, Testers} from "../utilities/testers";
     private static readonly vendorId = "foo";
     private static readonly title1 = "bar";
     private static readonly title2 = "baz";
-    private static readonly encodedOldPictureData = Buffer.from(ByteVector.fromString("fuxbuxqux").data).toString("base64");
-    private getTestComment() {
+    private static readonly encodedOldPictureData = ByteVector.fromString("fuxbuxqux", StringType.UTF8)
+        .toBase64String();
+    private static getTestComment() {
         const oldPictureItem = `COVERART=${Xiph_Comment_MethodTests.encodedOldPictureData}`;
         const newPictureItem = `METADATA_BLOCK_PICTURE=${XiphTestResources.pictureEncodedBytes}`;
         const titleItem1 = `TITLE=${Xiph_Comment_MethodTests.title1}`;
         const titleItem2 = `TITLE=${Xiph_Comment_MethodTests.title2}`;
         const data = ByteVector.concatenate(
-            ByteVector.fromUInt(Xiph_Comment_MethodTests.vendorId.length, false),
-            ByteVector.fromString(Xiph_Comment_MethodTests.vendorId),
-            ByteVector.fromUInt(4, false),
-            ByteVector.fromUInt(titleItem1.length, false),
-            ByteVector.fromString(titleItem1),
-            ByteVector.fromUInt(titleItem2.length, false),
-            ByteVector.fromString(titleItem2),
-            ByteVector.fromUInt(oldPictureItem.length, false),
-            ByteVector.fromString(oldPictureItem),
-            ByteVector.fromUInt(newPictureItem.length, false),
-            ByteVector.fromString(newPictureItem)
+            ByteVector.fromUint(Xiph_Comment_MethodTests.vendorId.length, false),
+            ByteVector.fromString(Xiph_Comment_MethodTests.vendorId, StringType.UTF8),
+            ByteVector.fromUint(4, false),
+            ByteVector.fromUint(titleItem1.length, false),
+            ByteVector.fromString(titleItem1, StringType.UTF8),
+            ByteVector.fromUint(titleItem2.length, false),
+            ByteVector.fromString(titleItem2, StringType.UTF8),
+            ByteVector.fromUint(oldPictureItem.length, false),
+            ByteVector.fromString(oldPictureItem, StringType.UTF8),
+            ByteVector.fromUint(newPictureItem.length, false),
+            ByteVector.fromString(newPictureItem, StringType.UTF8)
         );
-        return XiphComment.fromData(data);
+        return XiphComment.fromData(data, false);
     }
 
     @test
     public clear() {
         // Arrange
-        const comment = this.getTestComment();
+        const comment = Xiph_Comment_MethodTests.getTestComment();
 
         // Act
         comment.clear();
@@ -890,10 +933,10 @@ import {TagTesters, Testers} from "../utilities/testers";
     @test
     public getField_invalidParameters() {
         // Arrange
-        const comment = this.getTestComment();
+        const comment = Xiph_Comment_MethodTests.getTestComment();
 
         // Act / Assert
-        Testers.testString(comment.getField);
+        Testers.testTruthy<string>((s) => comment.getField(s));
         assert.throws(() => comment.getField("COVERART"));
         assert.throws(() => comment.getField("METADATA_BLOCK_PICTURE"));
     }
@@ -901,7 +944,7 @@ import {TagTesters, Testers} from "../utilities/testers";
     @test
     public getField_fieldExists() {
         // Arrange
-        const comment = this.getTestComment();
+        const comment = Xiph_Comment_MethodTests.getTestComment();
 
         // Act
         const output = comment.getField("TitlE");
@@ -941,10 +984,10 @@ import {TagTesters, Testers} from "../utilities/testers";
     @test
     public getFieldFirstValue_invalidValues() {
         // Arrange
-        const comment = this.getTestComment();
+        const comment = Xiph_Comment_MethodTests.getTestComment();
 
         // Act / Assert
-        Testers.testString(comment.getFieldFirstValue);
+        Testers.testTruthy<string>((s) => comment.getFieldFirstValue(s));
         assert.throws(() => comment.getFieldFirstValue("COVERART"));
         assert.throws(() => comment.getFieldFirstValue("METADATA_BLOCK_PICTURE"));
     }
@@ -952,7 +995,7 @@ import {TagTesters, Testers} from "../utilities/testers";
     @test
     public getFieldFirstValue_fieldExists() {
         // Arrange
-        const comment = this.getTestComment();
+        const comment = Xiph_Comment_MethodTests.getTestComment();
 
         // Act
         const output = comment.getFieldFirstValue("TitlE");
@@ -964,7 +1007,7 @@ import {TagTesters, Testers} from "../utilities/testers";
     @test
     public getFieldFirstValue_fieldDoesNotExist() {
         // Arrange
-        const comment = this.getTestComment();
+        const comment = Xiph_Comment_MethodTests.getTestComment();
 
         // Act
         const output = comment.getFieldFirstValue("foobar");
@@ -976,10 +1019,10 @@ import {TagTesters, Testers} from "../utilities/testers";
     @test
     public removeField_invalidValues() {
         // Arrange
-        const comment = this.getTestComment();
+        const comment = Xiph_Comment_MethodTests.getTestComment();
 
         // Act / Assert
-        Testers.testString(comment.removeField);
+        Testers.testTruthy<string>((s) => comment.removeField(s));
         assert.throws(() => comment.removeField("COVERART"));
         assert.throws(() => comment.removeField("METADATA_BLOCK_PICTURE"));
     }
@@ -987,7 +1030,7 @@ import {TagTesters, Testers} from "../utilities/testers";
     @test
     public removeValue_fieldExists() {
         // Arrange
-        const comment = this.getTestComment();
+        const comment = Xiph_Comment_MethodTests.getTestComment();
 
         // Act
         comment.removeField("TitlE");
@@ -1000,7 +1043,7 @@ import {TagTesters, Testers} from "../utilities/testers";
     @test
     public removeValue_fieldDoesNotExist() {
         // Arrange
-        const comment = this.getTestComment();
+        const comment = Xiph_Comment_MethodTests.getTestComment();
 
         // Act
         comment.removeField("foobar");
@@ -1019,10 +1062,10 @@ import {TagTesters, Testers} from "../utilities/testers";
 
         // Assert
         const expectedOutput = ByteVector.concatenate(
-            ByteVector.fromUInt(0, false),
-            ByteVector.fromUInt(0, false),
+            ByteVector.fromUint(0, false),
+            ByteVector.fromUint(0, false),
         );
-        assert.isTrue(ByteVector.equal(output, expectedOutput));
+        Testers.bvEqual(output, expectedOutput);
     }
 
     @test
@@ -1035,8 +1078,8 @@ import {TagTesters, Testers} from "../utilities/testers";
 
         // Assert
         const expectedOutput = ByteVector.concatenate(
-            ByteVector.fromUInt(0, false),
-            ByteVector.fromUInt(0, false),
+            ByteVector.fromUint(0, false),
+            ByteVector.fromUint(0, false),
             0x01
         );
         Testers.bvEqual(output, expectedOutput);
@@ -1045,7 +1088,7 @@ import {TagTesters, Testers} from "../utilities/testers";
     @test
     public render_hasContents() {
         // Arrange
-        const comment = this.getTestComment();
+        const comment = Xiph_Comment_MethodTests.getTestComment();
 
         // Act
         const output = comment.render(false);
@@ -1057,17 +1100,17 @@ import {TagTesters, Testers} from "../utilities/testers";
         const pictureItem1 = `METADATA_BLOCK_PICTURE=${picture1EncodedBytes}`;
         const pictureItem2 = `METADATA_BLOCK_PICTURE=${XiphTestResources.pictureEncodedBytes}`;
         const expected = ByteVector.concatenate(
-            ByteVector.fromUInt(Xiph_Comment_MethodTests.vendorId.length, false),
-            ByteVector.fromString(Xiph_Comment_MethodTests.vendorId),
-            ByteVector.fromUInt(4, false),
-            ByteVector.fromUInt(titleItem1.length, false),
-            ByteVector.fromString(titleItem1),
-            ByteVector.fromUInt(titleItem2.length, false),
-            ByteVector.fromString(titleItem2),
-            ByteVector.fromUInt(pictureItem1.length, false),
-            ByteVector.fromString(pictureItem1),
-            ByteVector.fromUInt(pictureItem2.length, false),
-            ByteVector.fromString(pictureItem2)
+            ByteVector.fromUint(Xiph_Comment_MethodTests.vendorId.length, false),
+            ByteVector.fromString(Xiph_Comment_MethodTests.vendorId, StringType.UTF8),
+            ByteVector.fromUint(4, false),
+            ByteVector.fromUint(titleItem1.length, false),
+            ByteVector.fromString(titleItem1, StringType.UTF8),
+            ByteVector.fromUint(titleItem2.length, false),
+            ByteVector.fromString(titleItem2, StringType.UTF8),
+            ByteVector.fromUint(pictureItem1.length, false),
+            ByteVector.fromString(pictureItem1, StringType.UTF8),
+            ByteVector.fromUint(pictureItem2.length, false),
+            ByteVector.fromString(pictureItem2, StringType.UTF8)
         );
         Testers.bvEqual(output, expected);
     }
@@ -1075,7 +1118,7 @@ import {TagTesters, Testers} from "../utilities/testers";
     @test
     public setFieldAsString_invalidValues() {
         // Arrange
-        const comment = this.getTestComment();
+        const comment = Xiph_Comment_MethodTests.getTestComment();
 
         // Act / Assert
         Testers.testString((v: string) => comment.setFieldAsStrings(v));
@@ -1086,7 +1129,7 @@ import {TagTesters, Testers} from "../utilities/testers";
     @test
     public setFieldAsString_removesField() {
         // Arrange
-        const comment = this.getTestComment();
+        const comment = Xiph_Comment_MethodTests.getTestComment();
 
         // Act
         comment.setFieldAsStrings("TitlE");
@@ -1099,7 +1142,7 @@ import {TagTesters, Testers} from "../utilities/testers";
     @test
     public setFieldAsString_allValuesFilteredOutRemovesField() {
         // Arrange
-        const comment = this.getTestComment();
+        const comment = Xiph_Comment_MethodTests.getTestComment();
 
         // Act
         comment.setFieldAsStrings("TitlE", "", undefined, null, "   ");
@@ -1112,7 +1155,7 @@ import {TagTesters, Testers} from "../utilities/testers";
     @test
     public setFieldAsString_fieldExists() {
         // Arrange
-        const comment = this.getTestComment();
+        const comment = Xiph_Comment_MethodTests.getTestComment();
 
         // Act
         comment.setFieldAsStrings("TitlE", "nobody's", "accusing", "you");
@@ -1138,7 +1181,7 @@ import {TagTesters, Testers} from "../utilities/testers";
     @test
     public setFieldAsUint_invalidValues() {
         // Arrange
-        const comment = this.getTestComment();
+        const comment = Xiph_Comment_MethodTests.getTestComment();
 
         // Act / Assert
         Testers.testString((v: string) => comment.setFieldAsUint(v, 0, 0));
@@ -1151,7 +1194,7 @@ import {TagTesters, Testers} from "../utilities/testers";
     @test
     public setFieldAsUint_removesField() {
         // Arrange
-        const comment = this.getTestComment();
+        const comment = Xiph_Comment_MethodTests.getTestComment();
 
         // Act
         comment.setFieldAsUint("TitlE", 0);
@@ -1164,7 +1207,7 @@ import {TagTesters, Testers} from "../utilities/testers";
     @test
     public setFieldAsUint_fieldExists() {
         // Arrange
-        const comment = this.getTestComment();
+        const comment = Xiph_Comment_MethodTests.getTestComment();
 
         // Act
         comment.setFieldAsUint("TitlE", 3, 3);

@@ -1,15 +1,12 @@
-import * as Chai from "chai";
 import {suite, test} from "@testdeck/mocha";
+import {assert} from "chai";
 
 import MovieIdTag from "../../src/riff/movieIdTag";
 import PropertyTests from "../utilities/propertyTests";
+import RiffList from "../../src/riff/riffList";
 import {ByteVector, StringType} from "../../src/byteVector";
 import {TagTypes} from "../../src/tag";
 import {TagTesters, Testers} from "../utilities/testers";
-import RiffList from "../../src/riff/riffList";
-
-// Setup chai
-const assert = Chai.assert;
 
 @suite class Riff_MovieIdTagTests {
     @test
@@ -179,13 +176,13 @@ const assert = Chai.assert;
     }
 
     private static getTestTagData(): RiffList {
-        const list = RiffList.fromEmpty(MovieIdTag.listType);
-        list.setValues("TITL", [ByteVector.fromString("foo")]);
-        list.setValues("IART", [ByteVector.fromString("bar")]);
-        list.setValues("COMM", [ByteVector.fromString("baz")]);
-        list.setValues("GENR", [ByteVector.fromString("fux")]);
-        list.setValues("PRT1", [ByteVector.fromString("1234")]);
-        list.setValues("PRT2", [ByteVector.fromString("2345")]);
+        const list = RiffList.fromEmpty(MovieIdTag.LIST_TYPE);
+        list.setValues("TITL", [ByteVector.fromString("foo", StringType.UTF8)]);
+        list.setValues("IART", [ByteVector.fromString("bar", StringType.UTF8)]);
+        list.setValues("COMM", [ByteVector.fromString("baz", StringType.UTF8)]);
+        list.setValues("GENR", [ByteVector.fromString("fux", StringType.UTF8)]);
+        list.setValues("PRT1", [ByteVector.fromString("1234", StringType.UTF8)]);
+        list.setValues("PRT2", [ByteVector.fromString("2345", StringType.UTF8)]);
 
         return list;
     }

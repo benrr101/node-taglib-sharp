@@ -2,23 +2,7 @@ import * as IConv from "iconv-lite";
 import * as fs from "fs";
 import {IFileAbstraction} from "./fileAbstraction";
 import {IStream} from "./stream";
-import {Guards} from "./utils";
-
-class IConvEncoding {
-    public readonly encoding: string;
-
-    constructor(encoding: string) {
-        this.encoding = encoding;
-    }
-
-    public decode(data: Buffer): string {
-        return IConv.decode(data, this.encoding);
-    }
-
-    public encode(text: string): Uint8Array {
-        return IConv.encode(text, this.encoding);
-    }
-}
+import {Guards, NumberUtils} from "./utils";
 
 /**
  * @summary Specifies the text encoding used when converting betweenInclusive a string and a
@@ -53,14 +37,103 @@ export enum StringType {
     UTF16LE = 4
 }
 
-export class ByteVector {
-
-    // #region Member Fields
+/**
+ * Wrapper around the `iconv-lite` library to provide string encoding and decoding functionality.
+ */
+export class Encoding {
+    private static readonly ENCODINGS = new Map<StringType, Encoding>([
+        [StringType.Latin1, new Encoding("latin1")],
+        [StringType.UTF8, new Encoding("utf8")],
+        [StringType.UTF16BE, new Encoding("utf16-be")],
+        [StringType.UTF16LE, new Encoding("utf16-le")]
+    ]);
 
     /**
-     * Contains values to use in CRC calculation
+     * Contains the last generic UTF16 encoding read. Defaults to UTF16-LE
      */
-    private static readonly _crcTable: Uint32Array = new Uint32Array([
+    private static _lastUtf16Encoding: StringType = StringType.UTF16LE;
+
+    private readonly _encoding: string;
+
+    private constructor(encoding: string) {
+        this._encoding = encoding;
+    }
+
+    /**
+     * Gets the appropriate encoding instance for encoding and decoding strings, based on the
+     * provided `type`.
+     * @param type Type of string to get an {@link Encoding} class instance for
+     * @param bom Optional, the byte order marker for the string. Used to determine UTF16 endianess
+     */
+    public static getEncoding(type: StringType, bom?: ByteVector): Encoding {
+        // When reading a collection of UTF16 strings, sometimes only the first one will contain
+        // the BOM. In that case, this field will inform the file what encoding to use for the
+        // second string.
+        if (type === StringType.UTF16) {
+            // If we have a BOM, return the appropriate encoding.  Otherwise, assume we're
+            // reading from a string that was already identified. In that case, we'll use
+            // the last used encoding.
+            if (bom && bom.length >= 2) {
+                if (bom.get(0) === 0xFF && bom.get(1) === 0xFE) {
+                    this._lastUtf16Encoding = StringType.UTF16LE;
+                } else {
+                    this._lastUtf16Encoding = StringType.UTF16BE;
+                }
+            }
+
+            type = this._lastUtf16Encoding;
+        }
+
+        return this.ENCODINGS.get(type);
+
+        // NOTE: The original .NET implementation has the notion of "broken" latin behavior that
+        //       uses Encoding.Default. I have removed it in this port because 1) this behavior is
+        //       not used anywhere in the library, 2) Encoding.Default could be anything depending
+        //       on the machine's region, 3) in .NET Core this is always UTF8.
+        //       If it turns out we need support for other non unicode encodings, we'll want to
+        //       revisit this.
+    }
+
+    public decode(data: Uint8Array): string {
+        // @TODO: The next version of iconv-lite will add Uint8Array to the types for decode. Until
+        //    then, I have word it should work w/an 'unsafe' cast. See
+        //    https://github.com/ashtuchkin/iconv-lite/issues/293
+        return IConv.decode(<Buffer> data, this._encoding);
+    }
+
+    public encode(text: string): Uint8Array {
+        return IConv.encode(text, this._encoding);
+    }
+}
+
+/**
+ * Wrapper around a `Uint8Array` that provides functionality for reading and writing byte arrays.
+ * @remarks Implementation of this class uses a single `Uint8Array` to store bytes. Due to
+ *     `Uint8Array`s being fixed length, any operation that inserts or removes values into the
+ *     instance will result in a copy of the internal array being made. If multiple additions will
+ *     be made, rather than using multiple inserts/adds, the {@link ByteVector.concatenate} method
+ *     is provided to group additions/inserts and therefore improve performance.
+ *
+ *     The original .NET implementation had an ubiquitous `mid` method that would return a subset
+ *     of the bytes in the current instance. In versions <5 of the node port, `mid` would make a
+ *     copy of the subset of the bytes. Since this was frequently done right before reading a
+ *     number or string, this copy was extremely wasteful. In version 5, the `mid` method was
+ *     replaced with `subarray` which behaves identically to `Uint8Array.subarray` and returns
+ *     an instance that is a 'view' of an existing instance - no copying involved. However, all
+ *     write operations make copies, instances that are backed by 'views' may waste memory by
+ *     referencing a `Uint8Array` that is much larger than the view.
+ *
+ *     With this in mind, best practices for using `ByteVectors`:
+ *     * Calling {@link ByteVector.subarray} is cheap, use it when possible
+ *     * If storing a subset of a `ByteVector`, store a copy with {@link ByteVector.toByteVector}
+ *     * If building a `ByteVector`, use {@link ByteVector.concatenate} when possible
+ *     * If the instance should be immutable, use {@link ByteVector.makeReadOnly}
+ */
+export class ByteVector {
+
+    // #region Members
+
+    private static readonly CRC_TABLE: Uint32Array = new Uint32Array([
         0x00000000, 0x04c11db7, 0x09823b6e, 0x0d4326d9,
         0x130476dc, 0x17c56b6b, 0x1a864db2, 0x1e475005,
         0x2608edb8, 0x22c9f00f, 0x2f8ad6d6, 0x2b4bcb61,
@@ -130,36 +203,23 @@ export class ByteVector {
     /**
      * Contains a one byte text delimiter
      */
-    private static readonly _td1: ByteVector = ByteVector.fromSize(1, undefined, true);
+    private static readonly TD1: ByteVector = ByteVector.fromSize(1).makeReadOnly();
 
     /**
      * Contains a two byte text delimiter
      */
-    private static readonly _td2: ByteVector = ByteVector.fromSize(2, undefined, true);
+    private static readonly TD2: ByteVector = ByteVector.fromSize(2).makeReadOnly();
 
-    /**
-     * Contains the last generic UTF16 encoding read. Defaults to UTF16-LE
-     * @remarks When reading a collection of UTF16 strings, sometimes only the first one will
-     *              contain the BOM. In that case, this field will inform the file what encoding to
-     *              use for the second string.
-     */
-    private static _lastUtf16IConvFunc: IConvEncoding = new IConvEncoding("utf16-le");
-
-    /**
-     * Contains the internal byte list
-     */
-    private _data: Uint8Array;
-
-    /**
-     * Whether or not this byte vector is readonly
-     */
-    private _isReadOnly: boolean;
+    private _bytes: Uint8Array;
+    private _isReadOnly: boolean = false;
 
     // #endregion
 
     // #region Constructors
 
-    private constructor() { }
+    private constructor(bytes: Uint8Array) {
+        this._bytes = bytes;
+    }
 
     /**
      * Creates a {@link ByteVector} from a collection of bytes, byte arrays, and byte vectors. This
@@ -172,38 +232,46 @@ export class ByteVector {
      *     `vectors` concatenated together
      */
     // @TODO Remove usages of .addX when this can be substituted
-    public static concatenate(... vectors: Array<Uint8Array|ByteVector|number>): ByteVector {
+    public static concatenate(... vectors: Array<Uint8Array|ByteVector|number|undefined>): ByteVector {
         // Get the length of the vector we need to create
-        let totalLength = 0;
-        for (const vector of vectors) {
-            if (typeof(vector) === "number") {
-                totalLength++;
-            } else {
-                totalLength += (<Uint8Array|ByteVector> vector).length;
+        const totalLength = vectors.reduce<number>((accum, vector) => {
+            if (vector === undefined || vector === null) {
+                // Ignore falsy values
+                return accum;
             }
-            // @TODO: Add support for skipping undefined and go back and look for instances where 1
-            //  byte is added after concatenating
-        }
+            if (typeof(vector) === "number") {
+                // Add 1 for a single byte
+                return accum + 1;
+            }
+
+            // Add length of vector to length
+            return accum + vector.length;
+        }, 0);
 
         // Create a single big vector and copy the contents into it
         const result = ByteVector.fromSize(totalLength);
         let currentPosition = 0;
         for (const v of vectors) {
-            if ((<any> v).length === undefined) {
+            if (v === undefined || v === null) {
+                // Ignore falsy values
+                continue;
+            }
+
+            if (typeof(v) === "number") {
                 // We were given a single byte
-                const byte = <number> v;
-                Guards.byte(byte, "Byte values");
-                result.data[currentPosition] = byte;
+                Guards.byte(v, "Byte values");
+                result._bytes[currentPosition] = v;
                 currentPosition += 1;
             } else {
                 // We were given an array of bytes
-                const vector = <Uint8Array|ByteVector> v;
-                for (let i = 0; i < vector.length; i++) {
-                    result.data[currentPosition + i] = (<any> vector).get
-                        ? (<ByteVector> vector).get(i)
-                        : (<Uint8Array> vector)[i];
+                const getter = v instanceof ByteVector
+                    ? (i: number) => v.get(i)
+                    : (i: number) => v[i];
+
+                for (let i = 0; i < v.length; i++) {
+                    result._bytes[currentPosition + i] = getter(i);
                 }
-                currentPosition += vector.length;
+                currentPosition += v.length;
             }
         }
 
@@ -214,105 +282,97 @@ export class ByteVector {
      * Creates an empty {@link ByteVector}
      */
     public static empty(): ByteVector {
-        return this.fromSize(0);
+        return new ByteVector(new Uint8Array(0));
     }
 
     /**
-     * Creates a {@link ByteVector} from a `Uint8Array` or node `Buffer`
-     * @param data Uint8Array of the bytes to put in the ByteVector
-     * @param length Number of bytes to read
-     * @param isReadOnly If `true` then the ByteVector will be read only
+     * Creates a {@link ByteVector} from a base64 string.
+     * @param str Base64 string to convert into a byte vector
+     */
+    public static fromBase64String(str: string): ByteVector {
+        Guards.notNullOrUndefined(str, "str");
+
+        const bytes = Buffer.from(str, "base64");
+        return new ByteVector(bytes);
+    }
+
+    /**
+     * Creates a {@link ByteVector} from a `Uint8Array` or `Buffer`
+     * @param bytes Uint8Array of the bytes to put in the ByteVector
+     * @param length Optionally, number of bytes to read. If this is not provided, it will default
+     *     to the full length of `bytes`. If it is less than the length of `bytes`, `bytes` will be
+     *     copied into the {@see ByteVector}.
      */
     public static fromByteArray(
-        data: Uint8Array | Buffer,
-        length: number = data.length,
-        isReadOnly: boolean = false
+        bytes: Uint8Array | Buffer | number[],
+        length: number = bytes.length
     ): ByteVector {
-        Guards.truthy(data, "data");
-        Guards.uint(length, "length");
-        if (length > data.length) {
+        Guards.truthy(bytes, "bytes");
+        Guards.safeUint(length, "length");
+        if (length > bytes.length) {
             throw new Error("Argument out of range: length must be less than or equal to the length of the byte array");
         }
 
-        const vector = new ByteVector();
-        vector._data = new Uint8Array(length);
-        vector._data.set(data.slice(0, length));
-        vector._isReadOnly = isReadOnly;
-        return vector;
-    }
-
-    /**
-     * Creates a {@link ByteVector} as a copy of another ByteVector.
-     * @param original Data from this ByteVector will be copied into the new one
-     * @param isReadOnly If `true` then the ByteVector will be read only
-     */
-    public static fromByteVector(original: ByteVector, isReadOnly: boolean = false): ByteVector {
-        if (!original) {
-            throw new Error("Argument null exception: original was not provided");
+        if (!(bytes instanceof Uint8Array || bytes instanceof Buffer)) {
+            bytes = new Uint8Array(bytes);
         }
-        return ByteVector.fromByteArray(original._data, original.length, isReadOnly);
+
+        if (length < bytes.length) {
+            bytes = new Uint8Array(bytes.subarray(0, length));
+        }
+        return new ByteVector(bytes);
     }
 
     /**
      * Creates a new instance by reading in the contents of a specified file abstraction.
      * @param abstraction File abstraction to read
-     * @param isReadOnly Whether or not the resulting ByteVector is readonly
      */
-    public static fromFileAbstraction(abstraction: IFileAbstraction, isReadOnly: boolean = false): ByteVector {
+    public static fromFileAbstraction(abstraction: IFileAbstraction): ByteVector {
         Guards.truthy(abstraction, "abstraction");
 
         const stream = abstraction.readStream;
-        const output = this.fromInternalStream(stream, isReadOnly);
+        const output = this.fromInternalStream(stream);
         abstraction.closeStream(stream);
         return output;
     }
 
     /**
      * Creates a 4 byte {@link ByteVector} with a signed 32-bit integer as the data
-     * @param value Signed 32-bit integer to use as the data. Must be a safe integer, storable in 4
-     *        bytes, cannot be a floating point number.
-     * @param mostSignificantByteFirst If `true`, `value` will be stored in big endian
-     *        format. If `false`, `value` will be stored in little endian format
-     * @param isReadOnly If `true` then the ByteVector will be read only
+     * @param value Signed 32-bit integer to use as the data.
+     * @param isBigEndian If `true`, `value` will be stored in big endian format. If `false`,
+     *     `value` will be stored in little endian format
      */
-    public static fromInt(
-        value: number,
-        mostSignificantByteFirst: boolean = true,
-        isReadOnly: boolean = false
-    ): ByteVector {
+    public static fromInt(value: number, isBigEndian: boolean = true): ByteVector {
         Guards.int(value, "value");
 
         const bytes = new Uint8Array(4);
         const dv = new DataView(bytes.buffer);
-        dv.setInt32(0, value, !mostSignificantByteFirst);
-        return ByteVector.fromByteArray(bytes, bytes.length, isReadOnly);
+        dv.setInt32(0, value, !isBigEndian);
+
+        return new ByteVector(bytes);
     }
 
     /**
      * Creates a ByteVector using the contents of an TagLibSharp-node stream as the contents. This
      * method reads from the current offset of the stream, not the beginning of the stream
      * @param stream TagLibSharp-node internal stream object
-     * @param isReadOnly Whether or not the byte vector is readonly
      */
-    public static fromInternalStream(stream: IStream, isReadOnly: boolean = false): ByteVector {
+    public static fromInternalStream(stream: IStream): ByteVector {
+        // @TODO: Validate how much memory is used vs doing a concatenate
         Guards.truthy(stream, "stream");
 
         const vector = ByteVector.empty();
         const bytes = new Uint8Array(4096);
-        let totalBytesRead = 0;
-
         while (true) {
             const bytesRead = stream.read(bytes, 0, bytes.length);
-            vector.addByteArray(bytes);
-            totalBytesRead += bytesRead;
-
             if (bytesRead < bytes.length) {
-                vector.resize(totalBytesRead);
+                vector.addByteArray(bytes, bytesRead);
                 break;
+            } else {
+                vector.addByteArray(bytes);
             }
         }
 
-        vector._isReadOnly = isReadOnly;
         return vector;
     }
 
@@ -320,15 +380,10 @@ export class ByteVector {
      * Creates an 8 byte {@link ByteVector} with a signed 64-bit integer as the data
      * @param value Signed 64-bit integer to use as the data. If using a `bigint`, it must fit
      *     within 8 bytes. If using a `number`, it must be a safe integer.
-     * @param mostSignificantByteFirst If `true`, `value` will be stored in big endian
-     *     format. If `false`, `value` will be stored in little endian format
-     * @param isReadOnly If `true` then the ByteVector will be read only
+     * @param isBigEndian If `true`, `value` will be stored in big endian format. If `false`,
+     *     `value` will be stored in little endian format
      */
-    public static fromLong(
-        value: bigint | number,
-        mostSignificantByteFirst: boolean = true,
-        isReadOnly: boolean = false
-    ): ByteVector {
+    public static fromLong(value: bigint | number, isBigEndian: boolean = true): ByteVector {
         let bigIntValue: bigint;
         if (typeof(value) === "number") {
             Guards.safeInt(value, "value");
@@ -340,85 +395,67 @@ export class ByteVector {
 
         const bytes = new Uint8Array(8);
         const dv = new DataView(bytes.buffer);
-        dv.setBigInt64(0, bigIntValue, !mostSignificantByteFirst);
-        return ByteVector.fromByteArray(bytes, bytes.length, isReadOnly);
+        dv.setBigInt64(0, bigIntValue, !isBigEndian);
+
+        return new ByteVector(bytes);
     }
 
     /**
      * Creates a {@link ByteVector} using the contents of a file as the data
      * @param path Path to the file to store in the ByteVector
-     * @param isReadOnly If `true` then the ByteVector will be read only
      */
-    public static fromPath(path: string, isReadOnly: boolean = false): ByteVector {
-        if (!path) {
-            throw new Error("Argument null exception: Path was not provided");
-        }
+    public static fromPath(path: string): ByteVector {
+        Guards.truthy(path, "path");
 
         // NOTE: We are doing this with read file b/c it removes the headache of working with streams
+        // @TODO: Add support for async file reading
         const fileBuffer = fs.readFileSync(path);
-        return ByteVector.fromByteArray(fileBuffer, fileBuffer.length, isReadOnly);
+        return ByteVector.fromByteArray(fileBuffer);
     }
 
     /**
      * Creates a 2 byte {@link ByteVector} with a signed 16-bit integer as the data
-     * @param value Signed 16-bit integer to use as the data. Must be a safe integer, storable in 2
-     *        bytes, cannot be a floating point number.
-     * @param mostSignificantByteFirst If `true`, `value` will be stored in big endian
-     *        format. If `false`, `value` will be stored in little endian format
-     * @param isReadOnly If `true` then the ByteVector will be read only
+     * @param value Signed 16-bit integer to use as the data.
+     * @param isBigEndian If `true`, `value` will be stored in big endian format. If `false`,
+     *     `value` will be stored in little endian format
      */
-    public static fromShort(
-        value: number,
-        mostSignificantByteFirst: boolean = true,
-        isReadOnly: boolean = false
-    ): ByteVector {
+    public static fromShort(value: number, isBigEndian: boolean = true): ByteVector {
         Guards.short(value, "value");
 
         const bytes = new Uint8Array(2);
         const dv = new DataView(bytes.buffer);
-        dv.setInt16(0, value, !mostSignificantByteFirst);
-        return ByteVector.fromByteArray(bytes, bytes.length, isReadOnly);
+        dv.setInt16(0, value, !isBigEndian);
+
+        return new ByteVector(bytes);
     }
 
     /**
      * Creates a {@link ByteVector} of a given length with a given value for all the elements
-     * @param size Length of the ByteVector. Must be a positive safe integer, cannot be a float
-     * @param fill Byte value to initialize all elements to. Must be a positive 8-bit integer,
-     *        cannot be floating point
-     * @param isReadOnly If `true` then the ByteVector will be read only
+     * @param size Length of the ByteVector. Must be a positive safe integer
+     * @param fill Byte value to initialize all elements to. Must be a positive 8-bit integer
      */
-    public static fromSize(
-        size: number,
-        fill: number = 0x0,
-        isReadOnly: boolean = false
-    ): ByteVector {
+    public static fromSize(size: number, fill: number = 0x0): ByteVector {
         Guards.safeUint(size, "size");
         Guards.byte(fill, "fill");
 
-        const vector = new ByteVector();
-        vector._data = new Uint8Array(size);
-        vector._data.fill(fill);
-
-        vector._isReadOnly = isReadOnly;
-
-        return vector;
+        const bytes = new Uint8Array(size);
+        bytes.fill(fill);
+        return new ByteVector(bytes);
     }
 
     /**
      * Creates {@link ByteVector} with the contents of a stream as the data. The stream will be read
      * to the end before the ByteVector is returned.
      * @param readStream Readable stream that will be read in entirety.
-     * @param isReadOnly If `true` then the ByteVector will be read only
      */
-    public static fromStream(readStream: NodeJS.ReadableStream, isReadOnly: boolean = false): Promise<ByteVector> {
+    public static fromStream(readStream: NodeJS.ReadableStream): Promise<ByteVector> {
         return new Promise<ByteVector>((complete, fail) => {
             if (!readStream) {
-                 fail(new Error("Null argument exception: Stream was not provided"));
+                fail(new Error("Null argument exception: Stream was not provided"));
             }
 
             // Setup the output
-            const output = new ByteVector();
-            output._data = new Uint8Array(0);
+            const output = ByteVector.empty();
 
             // Setup the events to read the stream
             readStream.on("readable", () => {
@@ -428,8 +465,10 @@ export class ByteVector {
                 }
             });
             readStream.on("end", () => {
-                output._isReadOnly = isReadOnly;
                 complete(output);
+            });
+            readStream.on("error", (error: Error) => {
+                fail(error);
             });
         });
     }
@@ -441,79 +480,64 @@ export class ByteVector {
      *        string will be encoded as UTF16-LE.
      * @param length Number of characters from the string to store in the ByteVector. Must be a
      *        positive 32-bit integer.
-     * @param isReadOnly If `true` then the ByteVector will be read only
      */
     public static fromString(
         text: string,
-        type: StringType = StringType.UTF8,
-        length: number = Number.MAX_SAFE_INTEGER,
-        isReadOnly: boolean = false
+        type: StringType,
+        length: number = Number.MAX_SAFE_INTEGER
     ): ByteVector {
+        // @TODO: Allow adding delimiters and find usages that immediately add a delimiter
         Guards.notNullOrUndefined(text, "text");
         if (!Number.isInteger(length) || !Number.isSafeInteger(length) || length < 0) {
             throw new Error("Argument out of range exception: length is invalid");
         }
 
-        const vector = new ByteVector();
-        vector._data = new Uint8Array(0);
-
         // If we're doing UTF16 w/o specifying an endian-ness, inject a BOM which also coerces
         // the converter to use UTF16LE
-        if (type === StringType.UTF16) {
-            vector.addByteArray(new Uint8Array([0xff, 0xfe]));
-        }
+        const vector = type === StringType.UTF16
+            ? new ByteVector(new Uint8Array([0xff, 0xfe]))
+            : ByteVector.empty();
 
         // NOTE: This mirrors the behavior from the original .NET implementation where empty
         //       strings return an empty ByteVector (possibly with UTF16LE BOM)
         if (!text) {
-            vector._isReadOnly = isReadOnly;
             return vector;
         }
 
+        // Shorten text if only part of it was requested
         if (text.length > length) {
-            text = text.substr(0, length);
+            text = text.substring(0, length);
         }
-        const textBytes = ByteVector.getIConvEncoding(type, vector).encode(text);
-        vector.addByteArray(textBytes);
 
-        vector._isReadOnly = isReadOnly;
+        // Encode the string into bytes
+        const textBytes = Encoding.getEncoding(type, vector).encode(text);
+        vector.addByteArray(textBytes);
         return vector;
     }
 
     /**
      * Creates a 4 byte {@link ByteVector} with a positive 32-bit integer as the data
-     * @param value Positive 32-bit integer to use as the data. Must be a positive safe integer,
-     *        storable in 4 bytes, cannot be a floating point number.
-     * @param mostSignificantByteFirst If `true`, `value` will be stored in big endian
-     *        format. If `false`, `value` will be stored in little endian format
-     * @param isReadOnly If `true` then the ByteVector will be read only
+     * @param value Positive 32-bit integer to use as the data
+     * @param isBigEndian If `true`, `value` will be stored in big endian format. If `false`,
+     *     `value` will be stored in little endian format
      */
-    public static fromUInt(
-        value: number,
-        mostSignificantByteFirst: boolean = true,
-        isReadOnly: boolean = false
-    ): ByteVector {
+    public static fromUint(value: number, isBigEndian: boolean = true): ByteVector {
         Guards.uint(value, "value");
 
         const bytes = new Uint8Array(4);
         const dv = new DataView(bytes.buffer);
-        dv.setUint32(0, value, !mostSignificantByteFirst);
-        return ByteVector.fromByteArray(bytes, bytes.length, isReadOnly);
+        dv.setUint32(0, value, !isBigEndian);
+        return new ByteVector(bytes);
     }
 
     /**
      * Creates an 8 byte {@link ByteVector} with a positive 64-bit integer as the data
      * @param value Positive 64-bit integer to use as the data. If using a `bigint` it must fit
-     *     within 8 bytes. If using a `number` it must be a safe, positive integer.
-     * @param mostSignificantByteFirst If `true`, `value` will be stored in big endian
-     *        format. If `false`, `value` will be stored in little endian format
-     * @param isReadOnly If `true` then the ByteVector will be read only
+     *     within 8 bytes.
+     * @param isBigEndian If `true`, `value` will be stored in big endian format. If `false`,
+     *     `value` will be stored in little endian format
      */
-    public static fromULong(
-        value: bigint | number,
-        mostSignificantByteFirst: boolean = true,
-        isReadOnly: boolean = false
-    ): ByteVector {
+    public static fromUlong(value: bigint | number, isBigEndian: boolean = true): ByteVector {
         let bigIntValue: bigint;
         if (typeof(value) === "number") {
             Guards.safeUint(value, "value");
@@ -525,113 +549,167 @@ export class ByteVector {
 
         const bytes = new Uint8Array(8);
         const dv = new DataView(bytes.buffer);
-        dv.setBigUint64(0, bigIntValue, !mostSignificantByteFirst);
-        return ByteVector.fromByteArray(bytes, bytes.length, isReadOnly);
+        dv.setBigUint64(0, bigIntValue, !isBigEndian);
+        return new ByteVector(bytes);
     }
 
     /**
-     * Creates a 2 byte {@link ByteVector} with a positive 32-bit integer as the data
-     * @param value Positive 16-bit integer to use as the data. Must be a positive safe integer,
-     *        storable in 2 bytes, cannot be a floating point number.
-     * @param mostSignificantByteFirst If `true`, `value` will be stored in big endian
-     *        format. If `false`, `value` will be stored in little endian format
-     * @param isReadOnly If `true` then the ByteVector will be read only
+     * Creates a 2 byte {@link ByteVector} with a positive 16-bit integer as the data
+     * @param value Positive 16-bit integer to use as the data.
+     * @param isBigEndian If `true`, `value` will be stored in big endian format. If `false`,
+     *     `value` will be stored in little endian format
      */
-    public static fromUShort(
-        value: number,
-        mostSignificantByteFirst: boolean = true,
-        isReadOnly: boolean = false
-    ): ByteVector {
+    public static fromUshort(value: number, isBigEndian: boolean = true): ByteVector {
         Guards.ushort(value, "value");
 
         const bytes = new Uint8Array(2);
         const dv = new DataView(bytes.buffer);
-        dv.setUint16(0, value, !mostSignificantByteFirst);
-        return ByteVector.fromByteArray(bytes, bytes.length, isReadOnly);
+        dv.setUint16(0, value, !isBigEndian);
+        return new ByteVector(bytes);
     }
 
     // #endregion
 
     // #region Properties
 
-    public static get lastUtf16Encoding(): string { return ByteVector._lastUtf16IConvFunc.encoding; }
-    public static set lastUtf16Encoding(encoding: string) {
-        ByteVector._lastUtf16IConvFunc = new IConvEncoding(encoding);
-    }
-
+    /**
+     * Calculates the CRC32 of the current instance.
+     */
     public get checksum(): number {
         let sum = 0;
-        for (const b of this._data) {
-            sum = (sum << 8) ^ ByteVector._crcTable[((sum >> 24) & 0xFF) ^ b];
+        for (const b of this._bytes) {
+            const index = NumberUtils.uintXor(NumberUtils.uintAnd(NumberUtils.uintRShift(sum, 24), 0xFF), b);
+            sum = NumberUtils.uintXor(NumberUtils.uintLShift(sum, 8), ByteVector.CRC_TABLE[index]);
         }
         return sum;
     }
 
     /**
-     * Array of bytes currently stored in the current instance
+     * Whether the current instance has 0 bytes stored.
      */
-    public get data(): Uint8Array { return this._data; }
-
-    public get hashCode(): number { return this.checksum; }
+    public get isEmpty(): boolean { return this._bytes?.length === 0; }
 
     /**
-     * Whether or not the current instance has 0 bytes stored
-     */
-    public get isEmpty(): boolean { return !this._data || this._data.length === 0; }
-
-    /**
-     * Whether or not the current instance is readonly.
+     * Whether the current instance is read-only. If `true`, any call that will modify the instance
+     * will throw.
      */
     public get isReadOnly(): boolean { return this._isReadOnly; }
 
     /**
-     * Number of bytes currently in this ByteVector
+     * Whether the current instance is a 'view' of another byte vector.
      */
-    public get length(): number { return this._data.length; }
+    public get isView(): boolean {
+        return this._bytes.byteOffset !== 0 && this._bytes.byteLength !== this._bytes.buffer.byteLength;
+    }
+
+    /**
+     * Number of bytes currently in this instance.
+     */
+    public get length(): number { return this._bytes.length; }
+
+    // #endregion
+
+    // #region Static Methods
+
+    /**
+     * Gets the appropriate length null-byte text delimiter for the specified `type`.
+     * @param type String type to get delimiter for
+     */
+    public static getTextDelimiter(type: StringType): ByteVector {
+        return type === StringType.UTF16 || type === StringType.UTF16BE || type === StringType.UTF16LE
+            ? ByteVector.TD2
+            : ByteVector.TD1;
+    }
+
+    /**
+     * Compares two byte vectors. Returns a numeric value
+     * @param a Byte vector to compare against `b`
+     * @param b Byte vector to compare against `a`
+     * @returns number `0` if the two vectors are the same. Any other value indicates the two are
+     *     different. If the two vectors differ by length, this will be the length of `a` minus the
+     *     length of `b`. If the lengths are the same it will be the difference between the first
+     *     element that differs.
+     */
+    public static compare(a: ByteVector, b: ByteVector): number {
+        Guards.truthy(a, "a");
+        Guards.truthy(b, "b");
+
+        let diff = a.length - b.length;
+        for (let i = 0; diff === 0 && i < a.length; i++) {
+            diff = a.get(i) - b.get(i);
+        }
+
+        return diff;
+    }
+
+    /**
+     * Returns `true` if the contents of the two {@link ByteVector}s are identical, returns `false`
+     * otherwise
+     * @param first ByteVector to compare with `second`
+     * @param second ByteVector to compare with `first`
+     */
+    public static equals(first: ByteVector, second: ByteVector): boolean {
+        const fNull = !first;
+        const sNull = !second;
+        if (fNull && sNull) {
+            // Since (f|s)null could be true with `undefined` OR `null`, we'll just let === decide it for us
+            return first === second;
+        }
+
+        if (fNull || sNull) {
+            // If only one is null/undefined, then they are not equal
+            return false;
+        }
+
+        return ByteVector.compare(first, second) === 0;
+    }
 
     // #endregion
 
     // #region Public Methods
 
+    /**
+     * Gets iterator for iterating over bytes in the current instance.
+     */
     public *[Symbol.iterator](): Iterator<number> {
-        for (const b of this._data) {
+        for (const b of this._bytes) {
             yield b;
         }
     }
 
-    public static getTextDelimiter(type: StringType): ByteVector {
-        return type === StringType.UTF16 || type === StringType.UTF16BE || type === StringType.UTF16LE
-            ? ByteVector._td2
-            : ByteVector._td1;
-    }
-
     /**
-     * Adds a single byte to the end of the {@link ByteVector}
+     * Adds a single byte to the end of the current instance
      * @param byte Value to add to the end of the ByteVector. Must be positive 8-bit integer.
      */
     public addByte(byte: number): void {
-        this.throwIfReadOnly();
         Guards.byte(byte, "byte");
+        this.throwIfReadOnly();
 
         this.addByteArray(new Uint8Array([byte]));
     }
 
     /**
-     * Adds an array of bytes to the end of the {@link ByteVector}
+     * Adds an array of bytes to the end of the current instance
      * @param data Array of bytes to add to the end of the ByteVector
+     * @param length Number of elements from `data` to copy into the current instance
      */
-    public addByteArray(data: Uint8Array): void {
-        this.throwIfReadOnly();
+    public addByteArray(data: Uint8Array, length?: number): void {
         Guards.truthy(data, "data");
+        this.throwIfReadOnly();
 
-        if (data.length === 0) {
+        if (data.length === 0 || length === 0) {
             return;
         }
 
-        const oldData = this._data;
-        this._data = new Uint8Array(oldData.length + data.length);
-        this._data.set(oldData);
-        this._data.set(data, oldData.length);
+        // Create a copy of the existing byte array with additional space at the end for the new
+        // byte array. Copy the new array into it.
+        length = length || data.length;
+        const oldData = this._bytes;
+        const newData = length !== data.length ? data.subarray(0, length) : data;
+
+        this._bytes = new Uint8Array(oldData.length + length);
+        this._bytes.set(oldData);
+        this._bytes.set(newData, oldData.length);
     }
 
     /**
@@ -639,20 +717,19 @@ export class ByteVector {
      * @param data ByteVector to add to the end of this ByteVector
      */
     public addByteVector(data: ByteVector): void {
-        this.throwIfReadOnly();
         Guards.truthy(data, "data");
+        this.throwIfReadOnly();
 
-        this.addByteArray(data._data);
+        this.addByteArray(data._bytes);
     }
 
     /**
      * Removes all elements from this {@link ByteVector}
-     * @remarks NOTE: This method replaces the internal byte array with a new one. Any
-     *              existing references to {@link ByteVector.data} will remain unchanged.
+     * @remarks This method replaces the internal byte array with a new one.
      */
     public clear(): void {
         this.throwIfReadOnly();
-        this._data = new Uint8Array(0);
+        this._bytes = new Uint8Array(0);
     }
 
     /**
@@ -660,36 +737,19 @@ export class ByteVector {
      * @param pattern ByteVector to search for at in this byte vector
      * @param offset Position in this byte vector to search for the pattern. If omitted, defaults
      *     to `0`
-     * @param patternOffset Position in `pattern` to begin matching. If omitted, defaults
-     *     to `0`
-     * @param patternLength Bytes of `pattern` to match. If omitted, defaults to all bytes
-     *     in the pattern minus the offset
      */
-    public containsAt(
-        pattern: ByteVector,
-        offset: number = 0,
-        patternOffset: number = 0,
-        patternLength: number = pattern.length - patternOffset
-    ): boolean {
+    public containsAt(pattern: ByteVector, offset: number = 0): boolean {
         Guards.truthy(pattern, "pattern");
-        Guards.int(offset, "offset");
-        Guards.int(patternOffset, "patternOffset");
-        Guards.int(patternLength, "patternLength");
+        Guards.safeInt(offset, "offset");
 
-        // Do some sanity checking -- all of these things are needed for the search to be valid
-        if (
-            patternLength > this.length ||
-            offset >= this.length ||
-            patternOffset >= pattern.length ||
-            patternLength <= 0 ||
-            offset < 0
-        ) {
+        // Sanity check - make sure we're within the range of the comprehension
+        if (offset < 0 || offset >= this.length || pattern.length === 0) {
             return false;
         }
 
-        // Loop through looking for a mismatch
-        for (let i = 0; i < patternLength - patternOffset; i++) {
-            if (this._data[i + offset] !== pattern._data[i + patternOffset]) {
+        // Look through looking for a mismatch
+        for (let i = 0; i < pattern.length; i++) {
+            if (this._bytes[offset + i] !== pattern.get(i)) {
                 return false;
             }
         }
@@ -698,54 +758,54 @@ export class ByteVector {
     }
 
     /**
-     * Compares this byte vector to a different byte vector. Returns a numeric value
-     * @param other ByteVector to compare to this byte vector
+     * Compares the current instance to another byte vector. Returns a numeric result.
+     * @param other Other byte vector to compare against the current instance.
      */
     public compareTo(other: ByteVector): number {
-        Guards.truthy(other, "other");
-
-        let diff = this.length - other.length;
-
-        for (let i = 0; diff === 0 && i < this.length; i++) {
-            diff = this.get(i) - other.get(i);
-        }
-
-        return diff;
+        return ByteVector.compare(this, other);
     }
 
     /**
-     * Determines whether or not this byte vector ends with the provided `pattern`.
+     * Determines whether this byte vector ends with the provided `pattern`.
      * @param pattern ByteVector to look for at the end of this byte vector
      */
     public endsWith(pattern: ByteVector): boolean {
-        Guards.truthy(pattern, "pattern");
         return this.containsAt(pattern, this.length - pattern.length);
     }
 
     /**
-     * Determines whether or not this byte vector ends with a part of the `pattern`.
-     * NOTE: if this byte vector ends with `pattern` perfectly, it must end with n-1 or
-     * less bytes
+     * Determines whether this byte vector ends with a part of the `pattern`.
+     * NOTE: if this instance ends with `pattern` perfectly, it must end with n-1 or
+     * fewer bytes.
      * @param pattern ByteVector to look for at the end of this byte vector
      */
     public endsWithPartialMatch(pattern: ByteVector): number {
         Guards.truthy(pattern, "pattern");
 
+        // Short circuit impossible calls
         if (pattern.length > this.length) {
             return -1;
         }
 
+        // Try to match the last n-1 bytes of the source (where n is the pattern length), if that
+        // fails, try to match n-2, n-3... until there are no more to try.
         const startIndex = this.length - pattern.length;
-
-        // Try to match the last n-1bytes from the vector (where n is the pattern size)
-        // continue trying to match n-2, n-3...1 bytes
-        for (let i = 1; i < pattern.length; i++) {
-            if (this.containsAt(pattern, startIndex + i, 0, pattern.length - i)) {
+        for (let i = 0; i < pattern.length; i++) {
+            const patternSubset = pattern.subarray(0, pattern.length - i);
+            if (this.containsAt(patternSubset, startIndex + i)) {
                 return startIndex + i;
             }
         }
 
         return -1;
+    }
+
+    /**
+     * Determines if this instance has identical contents to the `other` instance.
+     * @param other Other instance to compare against the current instance.
+     */
+    public equals(other: ByteVector): boolean {
+        return ByteVector.equals(this, other);
     }
 
     /**
@@ -756,49 +816,30 @@ export class ByteVector {
      * "ab" with byteAlign 2 will return 1. Searching "00ab" for "ab" with byteAlign 2 will return
      * 2. Searching "0abc" with byteAlign 2 will return -1.
      * @param pattern Pattern of bytes to search this instance for
-     * @param offset Optional, offset into this instance to start searching
      * @param byteAlign Optional, byte alignment the pattern much align to
      */
-    public find(pattern: ByteVector, offset: number = 0, byteAlign: number = 1): number {
+    public find(pattern: ByteVector, byteAlign: number = 1): number {
         Guards.truthy(pattern, "pattern");
-        Guards.uint(offset, "offset");
         Guards.uint(byteAlign, "byteAlign");
         Guards.greaterThanInclusive(byteAlign, 1, "byteAlign");
 
-        if (pattern.length > this.length - offset) {
+        // Sanity check impossible matches
+        if (this.length === 0 || pattern.length === 0 || pattern.length > this.length) {
             return -1;
         }
 
-        // Let's go ahead and special case a pattern of size one since that' common and easy to make fast
-        if (pattern.length === 1) {
-            const p = pattern._data[0];
-            for (let i = offset; i < this.length; i += byteAlign) {
-                if (this._data[i] === p) {
-                    return i;
+        for (let i = 0; i < this.length; i += byteAlign) {
+            let j = 0;
+            while (j < pattern.length) {
+                if (this._bytes[i + j] !== pattern.get(j)) {
+                    break;
                 }
-            }
-            return -1;
-        }
 
-        // Non-special cases
-        const lastOccurrence = new Int32Array(256);
-        lastOccurrence.fill(pattern.length);
-
-        for (let i = 0; i < pattern.length - 1; ++i) {
-            lastOccurrence[pattern._data[i]] = pattern.length - i - 1;
-        }
-
-        for (let i = pattern.length - 1 + offset; i < this.length; i += lastOccurrence[this._data[i]]) {
-            let iBuffer = i;
-            let iPattern = pattern.length - 1;
-
-            while (iPattern >= 0 && this._data[iBuffer] === pattern._data[iPattern]) {
-                --iBuffer;
-                --iPattern;
+                j++;
             }
 
-            if (iPattern === -1 && (iBuffer + 1 - offset) % byteAlign === 0) {
-                return iBuffer + 1;
+            if (j === pattern.length ) {
+                return i;
             }
         }
 
@@ -806,13 +847,13 @@ export class ByteVector {
     }
 
     /**
-     * Gets the byte at the given `index`
-     * @param index Index into the byte vector to return
+     * Gets the byte at the given `index`.
+     * @param index Element index to return
      */
     public get(index: number): number {
         Guards.uint(index, "index");
         Guards.lessThanInclusive(index, this.length - 1, "index");
-        return this._data[index];
+        return this._bytes[index];
     }
 
     /**
@@ -822,135 +863,32 @@ export class ByteVector {
      *          was not found/
      */
     public indexOf(item: number): number {
-        return this._data.indexOf(item);
+        return this._bytes.indexOf(item);
     }
 
     /**
-     * Inserts a single byte at the given index of this {@link ByteVector}, increasing the length of
-     * the ByteVector by one.
-     * @param index Index into this ByteVector at which the value will be inserted.
-     * @param byte Value to insert into the ByteVector. Must be a positive integer <=0xFF
+     * Makes the current instance read-only, causing any call that would modify it or allow it to
+     * be modified to throw.
      */
-    public insertByte(index: number, byte: number): void {
-        this.throwIfReadOnly();
-        Guards.uint(index, "index");
-        Guards.lessThanInclusive(index, this.length, "index");
-        Guards.byte(byte, "byte");
-
-        const oldData = this._data;
-        this._data = new Uint8Array(oldData.length + 1);
-
-        if (index > 0) {
-            this._data.set(oldData.subarray(0, index), 0);
-        }
-        this._data[index] = byte;
-        if (index < oldData.length) {
-            this._data.set(oldData.subarray(index), index + 1);
-        }
+    public makeReadOnly(): this {
+        this._isReadOnly = true;
+        return this;
     }
 
     /**
-     * Inserts an array of bytes into this {@link ByteVector} at the given index, increasing the
-     * length of this ByteVector by the length of the byte array.
-     * @param index Index into this ByteVector at which the bytes will be inserted.
-     * @param other Array of bytes to insert into the ByteVector.
+     * Searches this instance for the `pattern` occurring after a given offset. Returns the index
+     * of the first instance of the pattern, relative to the start of the array, or `-1` if it was
+     * not found. Providing a `byteAlign` requires the pattern to appear at an index that is a
+     * multiple of the byteAlign parameter. Example: searching "abcd" for "ab" with byteAlign 1
+     * will return 0. Searching "abcd" for "ab" with byteAlign 2 will return 1. Searching "00ab"
+     * for "ab" with byteAlign 2 will return 2. Searching "0abc" with byteAlign 2 will return -1.
+     * @param pattern Pattern of bytes to search this instance for
+     * @param offset Index into the instance to begin searching for `pattern`
+     * @param byteAlign Optional, byte alignment the pattern much align to
      */
-    public insertByteArray(index: number, other: Uint8Array): void {
-        this.throwIfReadOnly();
-        Guards.uint(index, "index");
-        Guards.lessThanInclusive(index, this.length, "index");
-        Guards.truthy(other, "other");
-
-        if (other.length === 0 ) {
-            return;
-        }
-
-        const oldData = this._data;
-        this._data = new Uint8Array(oldData.length + other.length);
-
-        if (index > 0) {
-            this._data.set(oldData.subarray(0, index), 0);
-        }
-        this._data.set(other, index);
-        if (index < oldData.length) {
-            this._data.set(oldData.subarray(index), index + other.length);
-        }
-    }
-
-    /**
-     * Inserts another ByteVector into this {@link ByteVector} at the given index, increasing the
-     * length of this ByteVector by the length of the ByteVector.
-     * @param index Index into this ByteVector at which the ByteVector will be inserted.
-     * @param other ByteVector to insert into this ByteVector.
-     */
-    public insertByteVector(index: number, other: ByteVector): void {
-        Guards.truthy(other, "other");
-        this.insertByteArray(index, other._data);
-    }
-
-    /**
-     * Returns a subarray of the current instance. This operation returns a new instance and does
-     * not alter the current instance.
-     * @param startIndex Index into the array to begin
-     * @param length Number of elements from the array to include. If omitted, defaults to the
-     *     remainder of the array
-     */
-    public mid(startIndex: number, length: number = this._data.length - startIndex): ByteVector {
-        Guards.uint(startIndex, "startIndex");
-        Guards.uint(length, "length");
-
-        if (length === 0) {
-            return ByteVector.fromSize(0);
-        }
-
-        Guards.lessThanInclusive(startIndex, this.length - 1, "startIndex");
-        Guards.lessThanInclusive(length, this.length - startIndex, "length");
-
-        return ByteVector.fromByteArray(this._data.subarray(startIndex, startIndex + length));
-    }
-
-    /**
-     * Removes a single byte from this {@ByteVector}
-     * @param index Index that will be removed from the ByteVector
-     */
-    public removeAtIndex(index: number) {
-        this.throwIfReadOnly();
-        Guards.uint(index, "index");
-        Guards.lessThanInclusive(index, this.length - 1, "index");
-
-        const oldData = this._data;
-        this._data = new Uint8Array(oldData.length - 1);
-        if (index > 0) {
-            this._data.set(oldData.subarray(0, index), 0);
-        }
-        if (index < oldData.length) {
-            this._data.set(oldData.subarray(index + 1), index);
-        }
-    }
-
-    /**
-     * Removes a range of bytes from this {@ByteVector}
-     * @param index Index into this ByteVector where the range to remove begins
-     * @param count Number of bytes to remove from this ByteVector
-     */
-    public removeRange(index: number, count: number) {
-        this.throwIfReadOnly();
-        Guards.uint(index, "index");
-        Guards.lessThanInclusive(index, this.length - 1, "index");
-        Guards.uint(count, "count");
-
-        if (index + count > this.length) {
-            count = this.length - index;
-        }
-
-        const oldData = this._data;
-        this._data = new Uint8Array(oldData.length - count);
-        if (index > 0) {
-            this._data.set(oldData.subarray(0, index), 0);
-        }
-        if (index < oldData.length) {
-            this._data.set(oldData.subarray(index + count), index);
-        }
+    public offsetFind(pattern: ByteVector, offset: number, byteAlign?: number): number {
+        const findIndex = this.subarray(offset).find(pattern, byteAlign);
+        return findIndex >= 0 ? findIndex + offset : findIndex;
     }
 
     /**
@@ -961,22 +899,22 @@ export class ByteVector {
      * @param size Length of the byte vector after resizing. Must be unsigned 32-bit integer
      * @param padding Byte to fill any excess space created after resizing
      */
-    public resize(size: number, padding: number = 0x0): ByteVector {
-        this.throwIfReadOnly();
+    public resize(size: number, padding: number = 0x0): void {
         Guards.uint(size, "size");
         Guards.byte(padding, "padding");
 
-        if (this.length > size) {
-            this.removeRange(size, this.length - size);
+        const oldData = this._bytes;
+        if (size < this.length) {
+            // Shorten it
+            this._bytes = new Uint8Array(size);
+            this._bytes.set(oldData.subarray(0, size));
         } else if (this.length < size) {
-            const oldData = this._data;
-            this._data = new Uint8Array(size);
-            this._data.set(oldData);
-            this._data.fill(padding, oldData.length);
+            // Lengthen it
+            this._bytes = new Uint8Array(size);
+            this._bytes.set(oldData);
+            this._bytes.fill(padding, oldData.length);
         }
         // Do nothing on same size
-
-        return this;
     }
 
     /**
@@ -988,39 +926,30 @@ export class ByteVector {
      * "ab" with byteAlign 2 will return 1. Searching "00ab" for "ab" with byteAlign 2 will return
      * 2. Searching "0abc" with byteAlign 2 will return -1.
      * @param pattern Pattern of bytes to search this instance for
-     * @param offset Optional, offset into this instance to start searching
-     * @param byteAlign Optional, byte alignment the pattern much align to
+     * @param byteAlign Optional, byte alignment the pattern must align to
      */
-    public rFind(pattern: ByteVector, offset: number = 0, byteAlign: number = 1): number {
+    public rFind(pattern: ByteVector, byteAlign: number = 1): number {
         Guards.truthy(pattern, "pattern");
-        Guards.uint(offset, "offset");
         Guards.uint(byteAlign, "byteAlign");
         Guards.greaterThanInclusive(byteAlign, 1, "byteAlign");
 
-        if (pattern.length === 0 || pattern.length > this.length - offset) {
+        // Sanity check impossible matches
+        if (pattern.length === 0 || pattern.length > this.length) {
             return -1;
         }
 
-        // Let's go ahead and special case a pattern of size one since that' common and easy to make fast
-        if (pattern.length === 1) {
-            const p = pattern._data[0];
-            for (let i = this.length - offset - 1; i >= 0; i -= byteAlign) {
-                if (this._data[i] === p) {
-                    return i;
+        const alignOffset = this.length % byteAlign;
+        for (let i = this.length - alignOffset - pattern.length; i >= 0; i -= byteAlign) {
+            let j = 0;
+            while (j < pattern.length) {
+                if (this._bytes[i + j] !== pattern.get(j)) {
+                    break;
                 }
+
+                j++;
             }
-        }
 
-        // Non-special cases
-        const firstOccurrence = new Int32Array(256);
-        firstOccurrence.fill(pattern.length);
-
-        for (let i = pattern.length - 1; i > 0; --i) {
-            firstOccurrence[pattern.get(i)] = i;
-        }
-
-        for (let i = this.length - offset - pattern.length; i >= 0; i -= firstOccurrence[this.get(i)]) {
-            if ((offset - i) % byteAlign === 0 && this.containsAt(pattern, i)) {
+            if (j === pattern.length) {
                 return i;
             }
         }
@@ -1034,11 +963,42 @@ export class ByteVector {
      * @param value Value to set at the index. Must be a valid integer betweenInclusive 0x0 and 0xff
      */
     public set(index: number, value: number): void {
-        this.throwIfReadOnly();
         Guards.uint(index, "index");
-        Guards.lessThanInclusive(index, this.length, "index");
+        Guards.lessThanInclusive(index, this.length - 1, "index");
         Guards.byte(value, "value");
-        this._data[index] = value;
+
+        this.splice(index, 1, [value]);
+    }
+
+    /**
+     * Changes the contents of the current instance by removing or replacing existing elements
+     * and/or adding new elements.
+     * @param start Index at which to start changing the array. Must be less than the length of
+     *     the instance
+     * @param deleteCount Number of elements in the array to remove from start. If greater than
+     *     the remaining length of the element, it will be capped at the remaining length
+     * @param items Elements to add to the array beginning from start. If omitted, the method will
+     *     only remove elements from the current instance.
+     */
+    public splice(start: number, deleteCount: number, items?: ByteVector|Uint8Array|number[]): void {
+        Guards.safeUint(start, "start");
+        Guards.lessThanInclusive(start, this.length, "start");
+        Guards.safeUint(deleteCount, "deleteCount");
+        this.throwIfReadOnly();
+
+        // Determine how many elements we're *actually* deleting
+        deleteCount = Math.min(deleteCount, this.length - start);
+
+        const addCount = items ? items.length : 0;
+        const newBytes = new Uint8Array(this._bytes.length - deleteCount + addCount);
+        newBytes.set(this._bytes.subarray(0, start));
+        if (items) {
+            items = items instanceof ByteVector ? items._bytes : items;
+            newBytes.set(items, start);
+        }
+        newBytes.set(this._bytes.subarray(start + deleteCount), start + addCount);
+
+        this._bytes = newBytes;
     }
 
     /**
@@ -1052,28 +1012,39 @@ export class ByteVector {
      * @returns ByteVector[] The split contents of the current instance
      */
     public split(separator: ByteVector, byteAlign: number = 1, max: number = 0): ByteVector[] {
-        Guards.truthy(separator, "separator");
+        Guards.truthy(separator, "pattern");
         Guards.uint(byteAlign, "byteAlign");
         Guards.greaterThanInclusive(byteAlign, 1, "byteAlign");
         Guards.uint(max, "max");
 
-        const list: ByteVector[] = [];
-        let previousOffset = 0;
+        const vectors = [];
+        const condition = (o: number): boolean => o !== -1 && (max < 1 || max > vectors.length + 1);
+        const increment = (o: number): number => this.offsetFind(separator, o + separator.length, byteAlign);
 
-        for (
-            let offset = this.find(separator, 0, byteAlign);
-            offset !== -1 && (max < 1 || max > list.length + 1);
-            offset = this.find(separator, offset + separator.length, byteAlign)
-        ) {
-            list.push(this.mid(previousOffset, offset - previousOffset));
+        let previousOffset = 0;
+        let offset = this.offsetFind(separator, 0, byteAlign);
+        for (offset; condition(offset); offset = increment(offset)) {
+            vectors.push(this.subarray(previousOffset, offset - previousOffset));
             previousOffset = offset + separator.length;
         }
 
         if (previousOffset < this.length) {
-            list.push(this.mid(previousOffset, this.length - previousOffset));
+            vectors.push(this.subarray(previousOffset));
         }
 
-        return list;
+        return vectors;
+    }
+
+    /**
+     * Returns a window over the current instance.
+     * @param startIndex Offset into this instance where the comprehension begins
+     * @param length Number of elements from the instance to include. If omitted, defaults to the
+     *     remainder of the instance
+     */
+    public subarray(startIndex: number, length: number = this._bytes.length - startIndex): ByteVector {
+        Guards.safeUint(startIndex, "startIndex");
+        Guards.safeUint(length, "length");
+        return new ByteVector(this._bytes.subarray(startIndex, startIndex + length));
     }
 
     /**
@@ -1082,13 +1053,41 @@ export class ByteVector {
      * @returns `true` if the pattern was found at the beginning of the current instance, `false`
      *     otherwise.
      */
-    public startsWith(pattern: ByteVector) {
+    public startsWith(pattern: ByteVector): boolean {
         return this.containsAt(pattern, 0);
     }
 
-    // #endregion
+    /**
+     * Returns the current instance as a base64 encoded string.
+     */
+    public toBase64String(): string {
+        return Buffer.from(this._bytes.buffer, this._bytes.byteOffset, this._bytes.byteLength)
+            .toString("base64");
+    }
 
-    // #region Conversions
+    /**
+     * Returns the bytes for the instance. Don't use it unless you need to.
+     * @internal
+     * @deprecated DON'T USE IT UNLESS YOU HAVE NO CHOICE.
+     */
+    public toByteArray(): Uint8Array {
+        return this._bytes;
+    }
+
+    /**
+     * Returns a writable copy of the bytes represented by this instance.
+     * @remarks This is a **copy** of the data. Use sparingly.
+     */
+    public toByteVector(): ByteVector {
+        if (this.isView) {
+            const bytes = new Uint8Array(this._bytes);
+            return new ByteVector(bytes);
+        }
+
+        // This is a concrete instance, return a new instance pointing to the existing bytes
+        // This is safe because the existing bytes will be copied on write
+        return new ByteVector(this._bytes);
+    }
 
     /**
      * Converts the first eight bytes of the current instance to a double-precision floating-point
@@ -1103,9 +1102,8 @@ export class ByteVector {
         if (this.length < 8) {
             throw new Error("Invalid operation: Cannot convert a byte vector of <8 bytes to double");
         }
-        const array = this.getSizedArray(8, mostSignificantByteFirst);
-        const dv = new DataView(array.buffer);
-        return dv.getFloat64(0);
+        const dv = new DataView(this._bytes.buffer, this._bytes.byteOffset, 8);
+        return dv.getFloat64(0, !mostSignificantByteFirst);
     }
 
     /**
@@ -1117,12 +1115,8 @@ export class ByteVector {
      * @returns A float value containing the value read from the current instance.
      */
     public toFloat(mostSignificantByteFirst: boolean = true): number {
-        // NOTE: This is the behavior from the .NET implementation, due to BitConverter behavior
-        if (this.length < 4) {
-            throw new Error("Invalid operation: Cannot convert a byte vector of <4 bytes to float");
-        }
-        const dv = new DataView(this.getSizedArray(4, mostSignificantByteFirst).buffer);
-        return dv.getFloat32(0);
+        const dv = new DataView(this._bytes.buffer, this._bytes.byteOffset, 4);
+        return dv.getFloat32(0, !mostSignificantByteFirst);
     }
 
     /**
@@ -1133,8 +1127,8 @@ export class ByteVector {
      * @returns A signed integer value containing the value read from the current instance
      */
     public toInt(mostSignificantByteFirst: boolean = true): number {
-        const dv = new DataView(this.getSizedArray(4, mostSignificantByteFirst).buffer);
-        return dv.getInt32(0);
+        const dv = this.getSizedDataView(4, mostSignificantByteFirst);
+        return dv.getInt32(0, !mostSignificantByteFirst);
     }
 
     /**
@@ -1146,8 +1140,8 @@ export class ByteVector {
      *          represented as a BigInt due to JavaScript's 52-bit integer limitation.
      */
     public toLong(mostSignificantByteFirst: boolean = true): bigint {
-        const dv = new DataView(this.getSizedArray(8, mostSignificantByteFirst).buffer);
-        return dv.getBigInt64(0);
+        const dv = this.getSizedDataView(8, mostSignificantByteFirst);
+        return dv.getBigInt64(0, !mostSignificantByteFirst);
     }
 
     /**
@@ -1158,32 +1152,20 @@ export class ByteVector {
      * @returns A signed short value containing the value read from the current instance
      */
     public toShort(mostSignificantByteFirst: boolean = true): number {
-        const dv = new DataView(this.getSizedArray(2, mostSignificantByteFirst).buffer);
-        return dv.getInt16(0);
+        const dv = this.getSizedDataView(2, mostSignificantByteFirst);
+        return dv.getInt16(0, !mostSignificantByteFirst);
     }
 
     /**
      * Converts a portion of the current instance to a string using a specified encoding
-     * @param count Integer value specifying the number of *bytes* to convert.
      * @param type Value indicating the encoding to use when converting to a string.
-     * @param offset Value specifying the index into the current instance at which to start
-     *        converting.
      * @returns string String containing the converted bytes
      */
-    public toString(count: number = this.length, type: StringType = StringType.UTF8, offset: number = 0): string {
-        if (!Number.isInteger(offset) || offset < 0 || offset > this.length) {
-            throw new Error("Argument out of range exception: offset is invalid");
-        }
-        if (!Number.isInteger(count) || count < 0 || count + offset > this.length) {
-            throw new Error("Argument out of range exception: count is invalid");
-        }
-
-        const bom = type === StringType.UTF16 && this.length - offset > 1 ? this.mid(offset, 2) : null;
-        const buffer = Buffer.from(this.mid(offset, count)._data.buffer);
-        return ByteVector.getIConvEncoding(type, bom).decode(buffer);
-
-        // NOTE: Original .NET implementation had explicit BOM stripping, which is unnecessary when
-        //       we use IConv.
+    public toString(type: StringType): string {
+        const bom = type === StringType.UTF16 && this.length > 1
+            ? this.subarray(0, 2)
+            : undefined;
+        return Encoding.getEncoding(type, bom).decode(this._bytes);
     }
 
     /**
@@ -1191,52 +1173,37 @@ export class ByteVector {
      * using the specified encoding, assuming the values are `null` separated and limiting it to a
      * specified number of items.
      * @param type A {@link StringType} value indicating the encoding to use when converting
-     * @param offset Value specifying the index into the current instance at which to start
-     *        converting.
      * @param count Value specifying a limit to the number of strings to create. Once the limit has
      *        been reached, the last string will be filled by the remainder of the data
      * @returns string[] Array of strings containing the converted text.
-     * @remarks I'm not actually sure if this works as defined, but it behaves the same as the
-     *       original .NET implementation, so that's good enough for now.
      */
-    public toStrings(type: StringType, offset: number, count: number = Number.MAX_SAFE_INTEGER) {
-        if (!Number.isInteger(offset) || offset < 0 || offset > this.length) {
-            throw new Error("Argument out of range exception: offset is invalid");
-        }
-        if (!Number.isInteger(count) || count < 0) {
-            throw new Error("Argument out of range exception: count is invalid");
-        }
+    public toStrings(type: StringType, count: number = Number.MAX_SAFE_INTEGER): string[] {
+        Guards.safeUint(count, "count");
 
-        const chunk = 0;
-        let position = offset;
-
-        const list: string[] = [];
-        const separator = ByteVector.getTextDelimiter(type);
-        const align = separator.length;
-
-        while (chunk < count && position < this.length) {
-            const start = position;
-            if (chunk + 1 === count) {
-                position = offset + count;
-            } else {
-                position = this.find(separator, start, align);
-                if (position < 0) {
-                    position = this.length;
-                }
+        const delimiter = ByteVector.getTextDelimiter(type);
+        let ptr = 0;
+        const strings = [];
+        while (ptr < this.length && strings.length < count) {
+            // Find the next delimiter
+            const delimiterPosition = this.offsetFind(delimiter, ptr, delimiter.length);
+            if (delimiterPosition < 0) {
+                // We didn't find another delimiter, so break out of the loop
+                break;
             }
 
-            const length = position - start;
+            const str = this.subarray(ptr, delimiterPosition - ptr).toString(type);
+            strings.push(str);
 
-            if (length === 0) {
-                list.push("");
-            } else {
-                list.push(this.toString(length, type, start));
-            }
-
-            position += align;
+            ptr = delimiterPosition + delimiter.length;
         }
 
-        return list;
+        // If there's any remaining bytes, convert them to string
+        if (ptr < this.length && strings.length < count) {
+            const str = this.subarray(ptr).toString(type);
+            strings.push(str);
+        }
+
+        return strings;
     }
 
     /**
@@ -1246,9 +1213,9 @@ export class ByteVector {
      *        endian format)
      * @returns An unsigned integer value containing the value read from the current instance
      */
-    public toUInt(mostSignificantByteFirst: boolean = true): number {
-        const dv = new DataView(this.getSizedArray(4, mostSignificantByteFirst).buffer);
-        return dv.getUint32(0);
+    public toUint(mostSignificantByteFirst: boolean = true): number {
+        const dv = this.getSizedDataView(4, mostSignificantByteFirst);
+        return dv.getUint32(0, !mostSignificantByteFirst);
     }
 
     /**
@@ -1259,9 +1226,9 @@ export class ByteVector {
      * @returns An unsigned short value containing the value read from the current instance,
      *          represented as a BigInt due to JavaScript's 32-bit integer limitation
      */
-    public toULong(mostSignificantByteFirst: boolean = true): bigint {
-        const dv = new DataView(this.getSizedArray(8, mostSignificantByteFirst).buffer);
-        return dv.getBigUint64(0);
+    public toUlong(mostSignificantByteFirst: boolean = true): bigint {
+        const dv = this.getSizedDataView(8, mostSignificantByteFirst);
+        return dv.getBigUint64(0, !mostSignificantByteFirst);
     }
 
     /**
@@ -1271,190 +1238,29 @@ export class ByteVector {
      *        endian format)
      * @returns An unsigned short value containing the value read from the current instance
      */
-    public toUShort(mostSignificantByteFirst: boolean = true): number {
-        const dv = new DataView(this.getSizedArray(2, mostSignificantByteFirst).buffer);
-        return dv.getUint16(0);
+    public toUshort(mostSignificantByteFirst: boolean = true): number {
+        const dv = this.getSizedDataView(2, mostSignificantByteFirst);
+        return dv.getUint16(0, !mostSignificantByteFirst);
     }
 
     // #endregion
 
-    // #region Operator-Like Methods
+    private getSizedDataView(size: number, mostSignificantByteFirst: boolean): DataView {
+        const difference = size - this._bytes.length;
+        if (difference <= 0) {
+            // Comprehension is at least the required size
+            return new DataView(this._bytes.buffer, this._bytes.byteOffset, size);
+        }
 
-    /**
-     * Creates a new {@link ByteVector} that contains the contents of `first` concatenated
-     * with `second`. This operation can be thought of as `first + second`. Note: Regardless
-     * of the value of {@link ByteVector.isReadOnly}, the created ByteVector will always be
-     * read/write.
-     * @param first ByteVector to which `second` will be added
-     * @param second ByteVector which will be added to `first`
-     */
-    public static add(first: ByteVector, second: ByteVector): ByteVector {
-        const sum = ByteVector.fromByteVector(first);   // Will throw on null/undefined
-        sum.addByteVector(second);                      // Will throw on null/undefined
-        return sum;
+        // Comprehension is too short. Pad it out.
+        const fullSizeArray = new Uint8Array(size);
+        fullSizeArray.set(this._bytes, mostSignificantByteFirst ? difference : 0);
+        return new DataView(fullSizeArray.buffer);
     }
 
-    /**
-     * Returns `true` if the contents of the two {@link ByteVector}s are identical, returns `false`
-     * otherwise
-     * @param first ByteVector to compare with `second`
-     * @param second ByteVector to compare with `first`
-     */
-    public static equal(first: ByteVector, second: ByteVector): boolean {
-        const fNull = !first;
-        const sNull = !second;
-        if (fNull && sNull) {
-            // Since (f|s)null could be true with `undefined` OR `null`, we'll just let === decide it for us
-            return first === second;
-        }
-
-        if (fNull || sNull) {
-            // If only one is null/undefined, then they are not equal
-            return false;
-        }
-
-        return first.compareTo(second) === 0;
-    }
-
-    /**
-     * Returns `false` if the contents of the two {@link ByteVector}s are identical, returns `true`
-     * otherwise
-     * @param first ByteVector to compare with `second`
-     * @param second ByteVector to compare with `first`
-     */
-    public static notEqual(first: ByteVector, second: ByteVector): boolean {
-        return !ByteVector.equal(first, second);
-    }
-
-    /**
-     * Returns `true` if `first` is greater than `second`. This is true if
-     * `first` is longer than `second` or if the first element in `first`
-     * that is different than the element at the same position in `second` is greater than.
-     * Returns `false` if the two {@link ByteVector}s are identical.
-     * @param first ByteVector to compare with `second`
-     * @param second ByteVector to compare with `first`
-     */
-    public static greaterThan(first: ByteVector, second: ByteVector): boolean {
-        if (!first) {
-            throw new Error("Argument null exception: first is null");
-        }
-        if (!second) {
-            throw new Error("Argument null exception: second is null");
-        }
-
-        return first.compareTo(second) > 0;
-    }
-
-    /**
-     * Returns `true` if `first` is greater than `second`. This is true if
-     * `first` is longer than `second` or if the first element in `first`
-     * that is different than the element at the same position in `second` is greater than.
-     * Returns `true` if the two {@link ByteVector}s are identical.
-     * @param first ByteVector to compare with `second`
-     * @param second ByteVector to compare with `first`
-     */
-    public static greaterThanEqual(first: ByteVector, second: ByteVector): boolean {
-        if (!first) {
-            throw new Error("Argument null exception: first is null");
-        }
-        if (!second) {
-            throw new Error("Argument null exception: second is null");
-        }
-
-        return first.compareTo(second) >= 0;
-    }
-
-    /**
-     * Returns `true` if `first` is less than `second`. This is true if
-     * `first` is shorter than `second` or if the first element in `first`
-     * that is different than the element at the same position in `second` is less than.
-     * Returns `false` if the two {@link ByteVector}s are identical.
-     * @param first ByteVector to compare with `second`
-     * @param second ByteVector to compare with `first`
-     */
-    public static lessThan(first: ByteVector, second: ByteVector): boolean {
-        if (!first) {
-            throw new Error("Argument null exception: first is null");
-        }
-        if (!second) {
-            throw new Error("Argument null exception: second is null");
-        }
-
-        return first.compareTo(second) < 0;
-    }
-
-    /**
-     * Returns `true` if `first` is less than `second`. This is true if
-     * `first` is shorter than `second` or if the first element in `first`
-     * that is different than the element at the same position in `second` is less than.
-     * Returns `true` if the two {@link ByteVector}s are identical.
-     * @param first ByteVector to compare with `second`
-     * @param second ByteVector to compare with `first`
-     */
-    public static lessThanEqual(first: ByteVector, second: ByteVector): boolean {
-        if (!first) {
-            throw new Error("Argument null exception: first is null");
-        }
-        if (!second) {
-            throw new Error("Argument null exception: second is null");
-        }
-
-        return first.compareTo(second) <= 0;
-    }
-
-    // #endregion
-
-    // #region Private Helpers
-
-    private static getIConvEncoding(type: StringType, bom: ByteVector): IConvEncoding {
-        switch (type) {
-            case StringType.UTF16:
-                // If we have a BOM, return the appropriate encoding.  Otherwise, assume we're
-                // reading from a string that was already identified. In that case, we'll use
-                // the last used encoding.
-                if (bom) {
-                    if (bom.get(0) === 0xFF && bom.get(1) === 0xFE) {
-                        ByteVector._lastUtf16IConvFunc = new IConvEncoding("utf16-le");
-                    } else if ( bom.get(0) === 0xFE && bom.get(1) === 0xFF) {
-                        ByteVector._lastUtf16IConvFunc = new IConvEncoding("utf16-be");
-                    }
-                }
-                return ByteVector._lastUtf16IConvFunc;
-            case StringType.UTF16BE:
-                return new IConvEncoding("utf16-be");
-            case StringType.UTF8:
-                return new IConvEncoding("utf8");
-            case StringType.UTF16LE:
-                return new IConvEncoding("utf16-le");
-        }
-
-        // NOTE: The original .NET implementation has the notion of "broken" latin behavior that
-        //       uses Encoding.Default. I have removed it in this port because 1) this behavior is
-        //       not used anywhere in the library, 2) Encoding.Default could be anything depending
-        //       on the machine's region, 3) in .NET Core this is always UTF8.
-        //       If it turns out we need support for other non unicode encodings, we'll want to
-        //       revisit this.
-        return new IConvEncoding("latin1");
-    }
-
-    private getSizedArray(size: number, mostSignificantByteFirst: boolean): Uint8Array {
-        const last = this.length > size ? size - 1 : this.length - 1;
-        const pad = size - (last + 1);
-
-        const output = new Uint8Array(size);
-        for (let i = 0; i <= last; i++) {
-            const outIndex = pad + (mostSignificantByteFirst ? i : last - i);
-            output[outIndex] = this._data[i];
-        }
-
-        return output;
-    }
-
-    private throwIfReadOnly() {
+    private throwIfReadOnly(): void {
         if (this._isReadOnly) {
-            throw new Error("Not supported: Cannot edit readonly byte vectors");
+            throw new Error("Invalid operation: Cannot modify a read-only ByteVector");
         }
     }
-
-    // #endregion
 }

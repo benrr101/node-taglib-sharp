@@ -1,5 +1,5 @@
-import * as Chai from "chai";
 import {suite, test} from "@testdeck/mocha";
+import {assert} from "chai";
 import {Mock} from "typemoq";
 
 import AsfTag from "../../src/asf/AsfTag";
@@ -10,26 +10,23 @@ import PropertyTests from "../utilities/propertyTests";
 import TestFile from "../utilities/testFile";
 import {ByteVector, StringType} from "../../src/byteVector";
 import {Guids} from "../../src/asf/constants";
-import {DataType, DescriptorBase} from "../../src/asf/objects/descriptorBase";
+import {DataType, DescriptorBase, DescriptorValue} from "../../src/asf/objects/descriptorBase";
 import {
     ContentDescriptor,
     ExtendedContentDescriptionObject
 } from "../../src/asf/objects/extendedContentDescriptionObject";
 import HeaderExtensionObject from "../../src/asf/objects/headerExtensionObject";
-import {IPicture, PictureType} from "../../src/iPicture";
+import {IPicture, PictureType} from "../../src/picture";
 import {MetadataDescriptor, MetadataLibraryObject} from "../../src/asf/objects/metadataLibraryObject";
 import {TagTypes} from "../../src/tag";
 import {TagTesters, Testers} from "../utilities/testers";
 
-// Setup chai
-const assert = Chai.assert;
-
 const getHeaderObject: (children: BaseObject[]) => HeaderObject = (children: BaseObject[]) => {
     const childrenBytes = ByteVector.concatenate(... children.map((o) => o.render()));
     const headerBytes = ByteVector.concatenate(
-        Guids.AsfHeaderObject.toBytes(), // Object ID
-        ByteVector.fromULong(30 + childrenBytes.length, false), // Object size
-        ByteVector.fromUInt(children.length, false), // Child objects
+        Guids.ASF_HEADER_OBJECT.toBytes(), // Object ID
+        ByteVector.fromUlong(30 + childrenBytes.length, false), // Object size
+        ByteVector.fromUint(children.length, false), // Child objects
         0x01, 0x02, // Reserved bytes
         childrenBytes
     );
@@ -40,19 +37,23 @@ const getHeaderObject: (children: BaseObject[]) => HeaderObject = (children: Bas
 const getHeaderExtensionObject: (children: BaseObject[]) => HeaderExtensionObject = (children: BaseObject[]) => {
     const childrenBytes = ByteVector.concatenate(... children.map((o) => o.render()));
     const headerExtBytes = ByteVector.concatenate(
-        Guids.AsfHeaderExtensionObject.toBytes(), // Object ID
-        ByteVector.fromULong(46 + childrenBytes.length, false), // Object size
-        Guids.AsfReserved1.toBytes(), // Reserved field 1
-        ByteVector.fromUShort(6, false), // Reserved field 2
-        ByteVector.fromUInt(childrenBytes.length, false), // Header extension data length
+        Guids.ASF_HEADER_EXTENSION_OBJECT.toBytes(), // Object ID
+        ByteVector.fromUlong(46 + childrenBytes.length, false), // Object size
+        Guids.ASF_RESERVED.toBytes(), // Reserved field 1
+        ByteVector.fromUshort(6, false), // Reserved field 2
+        ByteVector.fromUint(childrenBytes.length, false), // Header extension data length
         childrenBytes
     );
     const headerExtFile = TestFile.getFile(headerExtBytes);
     return HeaderExtensionObject.fromFile(headerExtFile, 0);
 };
 
-const getTagWithExtensionDescriptor: (descriptorName: string, descriptorType: DataType, descriptorValue: any) => AsfTag
-    = (descriptorName: string, descriptorType: DataType, descriptorValue: any) => {
+const getTagWithExtensionDescriptor: (
+    descriptorName: string,
+    descriptorType: DataType,
+    descriptorValue: DescriptorValue
+) => AsfTag
+    = (descriptorName: string, descriptorType: DataType, descriptorValue: DescriptorValue) => {
     const descriptor = new ContentDescriptor(descriptorName, descriptorType, descriptorValue);
     const ecdo = ExtendedContentDescriptionObject.fromEmpty();
     ecdo.addDescriptor(descriptor);
@@ -299,7 +300,7 @@ const getTagWithExtensionDescriptor: (descriptorName: string, descriptorType: Da
         assert.strictEqual(tag.extendedContentDescriptionObject.descriptors.length, 1);
         assert.strictEqual(tag.extendedContentDescriptionObject.descriptors[0].name, "WM/Year");
         assert.strictEqual(tag.extendedContentDescriptionObject.descriptors[0].type, DataType.Unicode);
-        assert.strictEqual(tag.extendedContentDescriptionObject.descriptors[0].getString(), "1234");
+        assert.strictEqual(tag.extendedContentDescriptionObject.descriptors[0].stringValue, "1234");
     }
 
     @test
@@ -309,7 +310,7 @@ const getTagWithExtensionDescriptor: (descriptorName: string, descriptorType: Da
             (t) => t.track,
             "WM/TrackNumber",
             DataType.Unicode,
-            (d) => d.getString(),
+            (d) => d.stringValue,
             "1234"
         );
     }
@@ -321,7 +322,7 @@ const getTagWithExtensionDescriptor: (descriptorName: string, descriptorType: Da
             (t) => t.trackCount,
             "TrackTotal",
             DataType.DWord,
-            (d) => d.getUint(),
+            (d) => d.uintValue,
             1234
         );
     }
@@ -413,7 +414,7 @@ const getTagWithExtensionDescriptor: (descriptorName: string, descriptorType: Da
         assert.strictEqual(tag.extendedContentDescriptionObject.descriptors.length, 1);
         assert.strictEqual(tag.extendedContentDescriptionObject.descriptors[0].name, "WM/PartOfSet");
         assert.strictEqual(tag.extendedContentDescriptionObject.descriptors[0].type, DataType.Unicode);
-        assert.strictEqual(tag.extendedContentDescriptionObject.descriptors[0].getString(), "123");
+        assert.strictEqual(tag.extendedContentDescriptionObject.descriptors[0].stringValue, "123");
     }
 
     @test
@@ -430,7 +431,7 @@ const getTagWithExtensionDescriptor: (descriptorName: string, descriptorType: Da
         assert.strictEqual(tag.extendedContentDescriptionObject.descriptors.length, 1);
         assert.strictEqual(tag.extendedContentDescriptionObject.descriptors[0].name, "WM/PartOfSet");
         assert.strictEqual(tag.extendedContentDescriptionObject.descriptors[0].type, DataType.Unicode);
-        assert.strictEqual(tag.extendedContentDescriptionObject.descriptors[0].getString(), "123/234");
+        assert.strictEqual(tag.extendedContentDescriptionObject.descriptors[0].stringValue, "123/234");
     }
 
     @test
@@ -518,7 +519,7 @@ const getTagWithExtensionDescriptor: (descriptorName: string, descriptorType: Da
         assert.strictEqual(tag.extendedContentDescriptionObject.descriptors.length, 1);
         assert.strictEqual(tag.extendedContentDescriptionObject.descriptors[0].name, "WM/PartOfSet");
         assert.strictEqual(tag.extendedContentDescriptionObject.descriptors[0].type, DataType.Unicode);
-        assert.strictEqual(tag.extendedContentDescriptionObject.descriptors[0].getString(), "0/123");
+        assert.strictEqual(tag.extendedContentDescriptionObject.descriptors[0].stringValue, "0/123");
     }
 
     @test
@@ -535,7 +536,7 @@ const getTagWithExtensionDescriptor: (descriptorName: string, descriptorType: Da
         assert.strictEqual(tag.extendedContentDescriptionObject.descriptors.length, 1);
         assert.strictEqual(tag.extendedContentDescriptionObject.descriptors[0].name, "WM/PartOfSet");
         assert.strictEqual(tag.extendedContentDescriptionObject.descriptors[0].type, DataType.Unicode);
-        assert.strictEqual(tag.extendedContentDescriptionObject.descriptors[0].getString(), "123/234");
+        assert.strictEqual(tag.extendedContentDescriptionObject.descriptors[0].stringValue, "123/234");
     }
 
     @test
@@ -552,7 +553,7 @@ const getTagWithExtensionDescriptor: (descriptorName: string, descriptorType: Da
         assert.strictEqual(tag.extendedContentDescriptionObject.descriptors.length, 1);
         assert.strictEqual(tag.extendedContentDescriptionObject.descriptors[0].name, "WM/PartOfSet");
         assert.strictEqual(tag.extendedContentDescriptionObject.descriptors[0].type, DataType.Unicode);
-        assert.strictEqual(tag.extendedContentDescriptionObject.descriptors[0].getString(), "123/234");
+        assert.strictEqual(tag.extendedContentDescriptionObject.descriptors[0].stringValue, "123/234");
     }
 
     @test
@@ -580,7 +581,7 @@ const getTagWithExtensionDescriptor: (descriptorName: string, descriptorType: Da
             (t) => t.beatsPerMinute,
             "WM/BeatsPerMinute",
             DataType.Unicode,
-            (d) => d.getString(),
+            (d) => d.stringValue,
             "1234"
         );
     }
@@ -788,7 +789,7 @@ const getTagWithExtensionDescriptor: (descriptorName: string, descriptorType: Da
         assert.strictEqual(tag.extendedContentDescriptionObject.descriptors.length, 1);
         assert.strictEqual(tag.extendedContentDescriptionObject.descriptors[0].name, "ReplayGain/Track");
         assert.strictEqual(tag.extendedContentDescriptionObject.descriptors[0].type, DataType.Unicode);
-        assert.strictEqual(tag.extendedContentDescriptionObject.descriptors[0].getString(), "1.23 dB");
+        assert.strictEqual(tag.extendedContentDescriptionObject.descriptors[0].stringValue, "1.23 dB");
     }
 
     @test
@@ -862,7 +863,7 @@ const getTagWithExtensionDescriptor: (descriptorName: string, descriptorType: Da
         assert.strictEqual(tag.extendedContentDescriptionObject.descriptors.length, 1);
         assert.strictEqual(tag.extendedContentDescriptionObject.descriptors[0].name, "ReplayGain/Track Peak");
         assert.strictEqual(tag.extendedContentDescriptionObject.descriptors[0].type, DataType.Unicode);
-        assert.strictEqual(tag.extendedContentDescriptionObject.descriptors[0].getString(), "1.234568");
+        assert.strictEqual(tag.extendedContentDescriptionObject.descriptors[0].stringValue, "1.234568");
     }
 
     @test
@@ -960,7 +961,7 @@ const getTagWithExtensionDescriptor: (descriptorName: string, descriptorType: Da
         assert.strictEqual(tag.extendedContentDescriptionObject.descriptors.length, 1);
         assert.strictEqual(tag.extendedContentDescriptionObject.descriptors[0].name, "ReplayGain/Album");
         assert.strictEqual(tag.extendedContentDescriptionObject.descriptors[0].type, DataType.Unicode);
-        assert.strictEqual(tag.extendedContentDescriptionObject.descriptors[0].getString(), "1.23 dB");
+        assert.strictEqual(tag.extendedContentDescriptionObject.descriptors[0].stringValue, "1.23 dB");
     }
 
     @test
@@ -1034,7 +1035,7 @@ const getTagWithExtensionDescriptor: (descriptorName: string, descriptorType: Da
         assert.strictEqual(tag.extendedContentDescriptionObject.descriptors.length, 1);
         assert.strictEqual(tag.extendedContentDescriptionObject.descriptors[0].name, "ReplayGain/Album Peak");
         assert.strictEqual(tag.extendedContentDescriptionObject.descriptors[0].type, DataType.Unicode);
-        assert.strictEqual(tag.extendedContentDescriptionObject.descriptors[0].getString(), "1.234568");
+        assert.strictEqual(tag.extendedContentDescriptionObject.descriptors[0].stringValue, "1.234568");
     }
 
     @test
@@ -1061,7 +1062,7 @@ const getTagWithExtensionDescriptor: (descriptorName: string, descriptorType: Da
         const pic2PictureData = ByteVector.fromSize(10, 0x08);
         const pic2Data = ByteVector.concatenate(
             PictureType.ColoredFish,
-            ByteVector.fromUInt(pic2PictureData.length, false),
+            ByteVector.fromUint(pic2PictureData.length, false),
             ByteVector.fromString("Ha! Ha!", StringType.UTF16LE),
             ByteVector.getTextDelimiter(StringType.UTF16LE),
             ByteVector.fromString("I'm using the internet!", StringType.UTF16LE),
@@ -1256,7 +1257,7 @@ const getTagWithExtensionDescriptor: (descriptorName: string, descriptorType: Da
         assert.strictEqual(tag.extendedContentDescriptionObject.descriptors.length, 1);
         assert.strictEqual(tag.extendedContentDescriptionObject.descriptors[0].name, descriptorName[0]);
         assert.strictEqual(tag.extendedContentDescriptionObject.descriptors[0].type, DataType.Unicode);
-        assert.strictEqual(tag.extendedContentDescriptionObject.descriptors[0].getString(), "foo; bar; baz");
+        assert.strictEqual(tag.extendedContentDescriptionObject.descriptors[0].stringValue, "foo; bar; baz");
 
         // End test cases if there's only one descriptor name
         if (descriptorName.length === 1) {
@@ -1284,7 +1285,7 @@ const getTagWithExtensionDescriptor: (descriptorName: string, descriptorType: Da
             assert.strictEqual(tag2.extendedContentDescriptionObject.descriptors.length, 1);
             assert.strictEqual(tag2.extendedContentDescriptionObject.descriptors[0].name, descriptorName[0]);
             assert.strictEqual(tag2.extendedContentDescriptionObject.descriptors[0].type, DataType.Unicode);
-            assert.strictEqual(tag2.extendedContentDescriptionObject.descriptors[0].getString(), "fux; bux; qux");
+            assert.strictEqual(tag2.extendedContentDescriptionObject.descriptors[0].stringValue, "fux; bux; qux");
         }
     }
 
@@ -1306,7 +1307,7 @@ const getTagWithExtensionDescriptor: (descriptorName: string, descriptorType: Da
         assert.strictEqual(tag.extendedContentDescriptionObject.descriptors.length, 1);
         assert.strictEqual(tag.extendedContentDescriptionObject.descriptors[0].name, descriptorName[0]);
         assert.strictEqual(tag.extendedContentDescriptionObject.descriptors[0].type, DataType.Unicode);
-        assert.strictEqual(tag.extendedContentDescriptionObject.descriptors[0].getString(), "foo");
+        assert.strictEqual(tag.extendedContentDescriptionObject.descriptors[0].stringValue, "foo");
 
         // End test cases if there's only one descriptor name
         if (descriptorName.length === 1) {
@@ -1334,7 +1335,7 @@ const getTagWithExtensionDescriptor: (descriptorName: string, descriptorType: Da
             assert.strictEqual(tag2.extendedContentDescriptionObject.descriptors.length, 1);
             assert.strictEqual(tag2.extendedContentDescriptionObject.descriptors[0].name, descriptorName[0]);
             assert.strictEqual(tag2.extendedContentDescriptionObject.descriptors[0].type, DataType.Unicode);
-            assert.strictEqual(tag2.extendedContentDescriptionObject.descriptors[0].getString(), "fux");
+            assert.strictEqual(tag2.extendedContentDescriptionObject.descriptors[0].stringValue, "fux");
         }
     }
 
@@ -1343,8 +1344,8 @@ const getTagWithExtensionDescriptor: (descriptorName: string, descriptorType: Da
         get: (t: AsfTag) => number,
         descriptorName: string,
         expectedDescriptorType: DataType,
-        expectedDescriptorReader: (d: DescriptorBase) => any,
-        expectedDescriptorValue: any
+        expectedDescriptorReader: (d: DescriptorBase) => DescriptorValue,
+        expectedDescriptorValue: DescriptorValue
     ) {
         // CASE 1: Default behavior ----------------------------------------
         // Arrange
@@ -1406,7 +1407,7 @@ const getTagWithExtensionDescriptor: (descriptorName: string, descriptorType: Da
     public pictureFromData_missingMimeTypeDelimiter() {
         // Arrange
         const data = ByteVector.concatenate(
-            ByteVector.fromUInt(1234, false),
+            ByteVector.fromUint(1234, false),
             ByteVector.fromSize(10, 0x01)
         );
 
@@ -1421,7 +1422,7 @@ const getTagWithExtensionDescriptor: (descriptorName: string, descriptorType: Da
     public pictureFromData_missingMimeTypeDelimiterWithZeroes() {
         // Arrange
         const data = ByteVector.concatenate(
-            ByteVector.fromUInt(1234, false),
+            ByteVector.fromUint(1234, false),
             ByteVector.fromSize(10, 0x00)
         );
 
@@ -1436,7 +1437,7 @@ const getTagWithExtensionDescriptor: (descriptorName: string, descriptorType: Da
     public pictureFromData_missingDescriptionDelimiter() {
         // Arrange
         const data = ByteVector.concatenate(
-            ByteVector.fromUInt(1234, false),
+            ByteVector.fromUint(1234, false),
             ByteVector.fromString("Ha! Ha!", StringType.UTF16LE),
             ByteVector.getTextDelimiter(StringType.UTF16LE),
             ByteVector.fromSize(10, 0x01)
@@ -1453,7 +1454,7 @@ const getTagWithExtensionDescriptor: (descriptorName: string, descriptorType: Da
     public pictureFromData_missingDescriptionDelimiterWithZeroes() {
         // Arrange
         const data = ByteVector.concatenate(
-            ByteVector.fromUInt(1234, false),
+            ByteVector.fromUint(1234, false),
             ByteVector.fromString("Ha! Ha!", StringType.UTF16LE),
             ByteVector.getTextDelimiter(StringType.UTF16LE),
             ByteVector.fromSize(10, 0x00)
@@ -1472,7 +1473,7 @@ const getTagWithExtensionDescriptor: (descriptorName: string, descriptorType: Da
         const pictureData = ByteVector.fromSize(22, 0x08);
         const data = ByteVector.concatenate(
             PictureType.ColoredFish,
-            ByteVector.fromUInt(pictureData.length, false),
+            ByteVector.fromUint(pictureData.length, false),
             ByteVector.fromString("Ha! Ha!", StringType.UTF16LE),
             ByteVector.getTextDelimiter(StringType.UTF16LE),
             ByteVector.fromString("I'm using the internet!", StringType.UTF16LE),
@@ -1509,7 +1510,7 @@ const getTagWithExtensionDescriptor: (descriptorName: string, descriptorType: Da
         // Assert
         const expected = ByteVector.concatenate(
             PictureType.ColoredFish,
-            ByteVector.fromUInt(pictureData.length, false),
+            ByteVector.fromUint(pictureData.length, false),
             ByteVector.fromString("Ha! Ha!", StringType.UTF16LE),
             ByteVector.getTextDelimiter(StringType.UTF16LE),
             ByteVector.fromString("I'm using the internet!", StringType.UTF16LE),

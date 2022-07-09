@@ -5,7 +5,7 @@ import {Guards} from "../utils";
 export default class Id3v2ExtendedHeader {
     private _size: number;
 
-    private constructor() {}
+    private constructor() { /* private to enforce construction via static methods */ }
 
     /**
      * Constructs and initializes a new instance by reading the raw contents.
@@ -35,7 +35,7 @@ export default class Id3v2ExtendedHeader {
 
     protected parse(data: ByteVector, version: number): void {
         this._size = (version === 3 ? 4 : 0)
-            + SyncData.toUint(data.mid(0, 4));
+            + SyncData.toUint(data.subarray(0, 4));
 
         // TODO: Are we going to actually support any of the flags?
     }

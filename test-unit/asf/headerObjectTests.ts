@@ -1,5 +1,5 @@
-import * as Chai from "chai";
 import {suite, test} from "@testdeck/mocha";
+import {assert} from "chai";
 
 import BaseObject from "../../src/asf/objects/baseObject";
 import ContentDescriptionObject from "../../src/asf/objects/contentDescriptionObject";
@@ -17,22 +17,19 @@ import {File} from "../../src/file";
 import {MetadataLibraryObject} from "../../src/asf/objects/metadataLibraryObject";
 import {Testers} from "../utilities/testers";
 
-// Setup chai
-const assert = Chai.assert;
-
 @suite class Asf_HeaderObjectTests extends ObjectTests<HeaderObject> {
     protected get fromFileConstructor(): (f: File, p: number) => HeaderObject { return HeaderObject.fromFile; }
     protected get minSize(): number { return 26; }
-    protected get objectGuid(): UuidWrapper { return Guids.AsfHeaderObject; }
+    protected get objectGuid(): UuidWrapper { return Guids.ASF_HEADER_OBJECT; }
 
     @test
     public fromFile_missingFirstReservedByte() {
         // Arrange
         const bytes = ByteVector.concatenate(
             ByteVector.fromSize(10), // Offset
-            Guids.AsfHeaderObject.toBytes(), // Object ID
-            ByteVector.fromULong(30, false), // Object size
-            ByteVector.fromUInt(0, false), // Child objects
+            Guids.ASF_HEADER_OBJECT.toBytes(), // Object ID
+            ByteVector.fromUlong(30, false), // Object size
+            ByteVector.fromUint(0, false), // Child objects
             0x12, 0x02 // Invalid reserved
         );
         const file = TestFile.getFile(bytes);
@@ -46,9 +43,9 @@ const assert = Chai.assert;
         // Arrange
         const bytes = ByteVector.concatenate(
             ByteVector.fromSize(10), // Offset
-            Guids.AsfHeaderObject.toBytes(), // Object ID
-            ByteVector.fromULong(30, false), // Object size
-            ByteVector.fromUInt(0, false), // Child objects
+            Guids.ASF_HEADER_OBJECT.toBytes(), // Object ID
+            ByteVector.fromUlong(30, false), // Object size
+            ByteVector.fromUint(0, false), // Child objects
             0x01, 0x23 // Invalid reserved
         );
         const file = TestFile.getFile(bytes);
@@ -70,7 +67,7 @@ const assert = Chai.assert;
 
         // Assert
         assert.isOk(object);
-        assert.isTrue(object.guid.equals(Guids.AsfHeaderObject));
+        assert.isTrue(object.guid.equals(Guids.ASF_HEADER_OBJECT));
         assert.strictEqual(object.objectType, ObjectType.HeaderObject);
         assert.strictEqual(object.originalSize, bytes.length - 10);
 
@@ -91,11 +88,11 @@ const assert = Chai.assert;
     public extension_hasExtension() {
         // Arrange
         const headerExtensionBytes = ByteVector.concatenate(
-            Guids.AsfHeaderExtensionObject.toBytes(), // Object ID
-            ByteVector.fromULong(46, false), // Object size
-            Guids.AsfReserved1.toBytes(), // Reserved field 1
-            ByteVector.fromUShort(6, false), // Reserved field 2
-            ByteVector.fromUInt(0, false), // Header extension data length
+            Guids.ASF_HEADER_EXTENSION_OBJECT.toBytes(), // Object ID
+            ByteVector.fromUlong(46, false), // Object size
+            Guids.ASF_RESERVED.toBytes(), // Reserved field 1
+            ByteVector.fromUshort(6, false), // Reserved field 2
+            ByteVector.fromUint(0, false), // Header extension data length
         );
 
         const headerBytes = Asf_HeaderObjectTests.getObjectBytesFromBytes(headerExtensionBytes, 1);
@@ -160,38 +157,38 @@ const assert = Chai.assert;
     public properties_hasPropertiesObjects() {
         // Arrange
         const filePropertiesBytes = ByteVector.concatenate(
-            Guids.AsfFilePropertiesObject.toBytes(), // Object ID
-            ByteVector.fromULong(104, false), // Object size
+            Guids.ASF_FILE_PROPERTIES_OBJECT.toBytes(), // Object ID
+            ByteVector.fromUlong(104, false), // Object size
             new UuidWrapper().toBytes(), // File ID
-            ByteVector.fromULong(1234, false), // File Size
-            ByteVector.fromULong(BigInt(116559432000000000), false), // Creation date
-            ByteVector.fromULong(2345, false), // Data packets count
-            ByteVector.fromULong(3456000, false), // Play duration
-            ByteVector.fromULong(4567000, false), // Send duration
-            ByteVector.fromULong(5, false), // Preroll
-            ByteVector.fromUInt(123, false), // Flags
-            ByteVector.fromUInt(234, false), // Minimum data packet size
-            ByteVector.fromUInt(345, false), // Maximum data packet size
-            ByteVector.fromUInt(456, false) // Maximum bitrate
+            ByteVector.fromUlong(1234, false), // File Size
+            ByteVector.fromUlong(BigInt(116559432000000000), false), // Creation date
+            ByteVector.fromUlong(2345, false), // Data packets count
+            ByteVector.fromUlong(3456000, false), // Play duration
+            ByteVector.fromUlong(4567000, false), // Send duration
+            ByteVector.fromUlong(5, false), // Preroll
+            ByteVector.fromUint(123, false), // Flags
+            ByteVector.fromUint(234, false), // Minimum data packet size
+            ByteVector.fromUint(345, false), // Maximum data packet size
+            ByteVector.fromUint(456, false) // Maximum bitrate
         );
 
         const streamPropertiesBytes = ByteVector.concatenate(
-            Guids.AsfStreamPropertiesObject.toBytes(), // Object ID
-            ByteVector.fromULong(117, false), // Object size
-            Guids.AsfAudioMedia.toBytes(), // Stream type
+            Guids.ASF_STREAM_PROPERTIES_OBJECT.toBytes(), // Object ID
+            ByteVector.fromUlong(117, false), // Object size
+            Guids.ASF_AUDIO_MEDIA.toBytes(), // Stream type
             new UuidWrapper().toBytes(), // Error correction type GUID
-            ByteVector.fromULong(1234567890, false), // Time offset
-            ByteVector.fromUInt(16, false), // Type specific data length
-            ByteVector.fromUInt(23, false), // Error correction data length
+            ByteVector.fromUlong(1234567890, false), // Time offset
+            ByteVector.fromUint(16, false), // Type specific data length
+            ByteVector.fromUint(23, false), // Error correction data length
             ByteVector.fromShort(0x1200, false), // Flags
             ByteVector.fromSize(4, 0x0), // Reserved
             // AUDIO TYPE SPECIFIC DATA
-            ByteVector.fromUShort(0xF1AC, false), // Format tag
-            ByteVector.fromUShort(3, false), // Number of channels
-            ByteVector.fromUInt(1234, false), // Samples per second
-            ByteVector.fromUInt(2345, false), // Average bytes per second
-            ByteVector.fromUShort(88, false), // Block align
-            ByteVector.fromUShort(16, false), // Bits per sample
+            ByteVector.fromUshort(0xF1AC, false), // Format tag
+            ByteVector.fromUshort(3, false), // Number of channels
+            ByteVector.fromUint(1234, false), // Samples per second
+            ByteVector.fromUint(2345, false), // Average bytes per second
+            ByteVector.fromUshort(88, false), // Block align
+            ByteVector.fromUshort(16, false), // Bits per sample
             ByteVector.fromSize(23, 0x23)
         );
 
@@ -298,7 +295,7 @@ const assert = Chai.assert;
         // Assert
         // NOTE: the padding object is removed, so it "shrunk", then it's added back, so
         //    the contents should be the same.
-        Testers.bvEqual(output, headerData.mid(10));
+        Testers.bvEqual(output, headerData.subarray(10));
     }
 
     @test
@@ -322,7 +319,7 @@ const assert = Chai.assert;
             PaddingObject.fromSize(4096)
         ];
         const expected = Asf_HeaderObjectTests.getObjectBytesFromObjects(expectedChildren);
-        Testers.bvEqual(output, expected.mid(10));
+        Testers.bvEqual(output, expected.subarray(10));
     }
 
     @test
@@ -339,15 +336,15 @@ const assert = Chai.assert;
         const output = headerObject.render();
 
         // Assert
-        Testers.bvEqual(output, headerData.mid(10));
+        Testers.bvEqual(output, headerData.subarray(10));
     }
 
     private static getObjectBytesFromBytes(children: ByteVector, childrenCount: number) {
         return ByteVector.concatenate(
             ByteVector.fromSize(10), // Offset
-            Guids.AsfHeaderObject.toBytes(), // Object ID
-            ByteVector.fromULong(30 + children.length, false), // Object size
-            ByteVector.fromUInt(childrenCount, false), // Child objects
+            Guids.ASF_HEADER_OBJECT.toBytes(), // Object ID
+            ByteVector.fromUlong(30 + children.length, false), // Object size
+            ByteVector.fromUint(childrenCount, false), // Child objects
             0x01, 0x02, // Invalid reserved
             children
         );
@@ -357,9 +354,9 @@ const assert = Chai.assert;
         const childrenBytes = ByteVector.concatenate(... children.map((o) => o.render()));
         return ByteVector.concatenate(
             ByteVector.fromSize(10), // Offset
-            Guids.AsfHeaderObject.toBytes(), // Object ID
-            ByteVector.fromULong(30 + childrenBytes.length, false), // Object size
-            ByteVector.fromUInt(children.length, false), // Child objects
+            Guids.ASF_HEADER_OBJECT.toBytes(), // Object ID
+            ByteVector.fromUlong(30 + childrenBytes.length, false), // Object size
+            ByteVector.fromUint(children.length, false), // Child objects
             0x01, 0x02, // Reserved bytes
             childrenBytes
         );

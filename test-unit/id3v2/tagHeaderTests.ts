@@ -1,18 +1,16 @@
-import * as Chai from "chai";
 import {suite, test} from "@testdeck/mocha";
+import {assert} from "chai";
 
 import Id3v2Settings from "../../src/id3v2/id3v2Settings";
 import TestConstants from "../testConstants";
 import {ByteVector} from "../../src/byteVector";
 import {Id3v2TagHeader, Id3v2TagHeaderFlags} from "../../src/id3v2/id3v2TagHeader";
 import {Testers} from "../utilities/testers";
-
-// Setup chai
-const assert = Chai.assert;
+import {NumberUtils} from "../../src/utils";
 
 const getTestHeader = (majorVersion: number, minorVersion: number, flags: Id3v2TagHeaderFlags): Id3v2TagHeader => {
     const data = ByteVector.concatenate(
-        Id3v2TagHeader.fileIdentifier,
+        Id3v2TagHeader.FILE_IDENTIFIER,
         majorVersion,
         minorVersion,
         flags,
@@ -49,7 +47,7 @@ const getTestHeader = (majorVersion: number, minorVersion: number, flags: Id3v2T
     public invalidFlagsForVersion2() {
         // Arrange
         const testData = ByteVector.concatenate(
-            Id3v2TagHeader.fileIdentifier,
+            Id3v2TagHeader.FILE_IDENTIFIER,
             0x02, 0x00,
             0xFF,
             0x00, 0x00, 0x00, 0x00
@@ -63,7 +61,7 @@ const getTestHeader = (majorVersion: number, minorVersion: number, flags: Id3v2T
     public invalidFlagsForVersion3() {
         // Arrange
         const testData = ByteVector.concatenate(
-            Id3v2TagHeader.fileIdentifier,
+            Id3v2TagHeader.FILE_IDENTIFIER,
             0x03, 0x00,
             0xFF,
             0x00, 0x00, 0x00, 0x00
@@ -77,7 +75,7 @@ const getTestHeader = (majorVersion: number, minorVersion: number, flags: Id3v2T
     public invalidFlagsForVersion4() {
         // Arrange
         const testData = ByteVector.concatenate(
-            Id3v2TagHeader.fileIdentifier,
+            Id3v2TagHeader.FILE_IDENTIFIER,
             0x04, 0x00,
             0xFF,
             0x00, 0x00, 0x00, 0x00
@@ -91,7 +89,7 @@ const getTestHeader = (majorVersion: number, minorVersion: number, flags: Id3v2T
     public invalidTagSizeBytes() {
         // Arrange
         const testData = ByteVector.concatenate(
-            Id3v2TagHeader.fileIdentifier,
+            Id3v2TagHeader.FILE_IDENTIFIER,
             0x04, 0x00,
             0x00
         );
@@ -114,7 +112,7 @@ const getTestHeader = (majorVersion: number, minorVersion: number, flags: Id3v2T
         const minorVersion = 0x00;
         const flags = 0xE0;
         const testData = ByteVector.concatenate(
-            Id3v2TagHeader.fileIdentifier,
+            Id3v2TagHeader.FILE_IDENTIFIER,
             majorVersion,
             minorVersion,
             flags,
@@ -136,7 +134,7 @@ const getTestHeader = (majorVersion: number, minorVersion: number, flags: Id3v2T
     @test
     public getFileIdentifier() {
         // Act
-        const output = Id3v2TagHeader.fileIdentifier;
+        const output = Id3v2TagHeader.FILE_IDENTIFIER;
 
         // Assert
         assert.ok(output);
@@ -276,7 +274,7 @@ const getTestHeader = (majorVersion: number, minorVersion: number, flags: Id3v2T
 
         // Assert
         assert.equal(header.majorVersion, 2);
-        assert.equal(header.flags & flags, 0);
+        assert.isFalse(NumberUtils.hasFlag(header.flags, flags));
     }
 
     @test
@@ -290,7 +288,7 @@ const getTestHeader = (majorVersion: number, minorVersion: number, flags: Id3v2T
 
         // Assert
         assert.equal(header.majorVersion, 3);
-        assert.equal(header.flags & flags, 0);
+        assert.isFalse(NumberUtils.hasFlag(header.flags, flags));
     }
 
     @test
@@ -345,7 +343,7 @@ const getTestHeader = (majorVersion: number, minorVersion: number, flags: Id3v2T
         const minorVersion = 0x00;
         const flags = 0xE0;
         const testData = ByteVector.concatenate(
-            Id3v2TagHeader.fileIdentifier,
+            Id3v2TagHeader.FILE_IDENTIFIER,
             majorVersion,
             minorVersion,
             flags,

@@ -5,13 +5,13 @@ import ApeTag from "../../src/ape/apeTag";
 import EndTag from "../../src/sandwich/endTag";
 import Id3v1Tag from "../../src/id3v1/id3v1Tag";
 import Id3v2Tag from "../../src/id3v2/id3v2Tag";
-import Properties from "../../src/properties";
 import SandwichFile from "../../src/sandwich/sandwichFile";
 import StartTag from "../../src/sandwich/startTag";
 import {default as TestFile} from "../utilities/testFile";
 import {ByteVector} from "../../src/byteVector";
 import {IFileAbstraction} from "../../src/fileAbstraction";
 import {FileAccessMode, ReadStyle} from "../../src/file";
+import {Properties} from "../../src/properties";
 import {TagTypes} from "../../src/tag";
 import {Testers} from "../utilities/testers";
 
@@ -285,7 +285,7 @@ import {Testers} from "../utilities/testers";
     public save_noTags() {
         // Arrange
         const fileBytes = ByteVector.fromSize(100);
-        const testAbstraction = TestFile.getFileAbstraction(fileBytes);
+        const testAbstraction = TestFile.getFileAbstraction(fileBytes.toByteVector());
         const file = new TestSandwichFile(testAbstraction, ReadStyle.None, this.testMapping, TagTypes.None);
 
         // Act
@@ -304,8 +304,7 @@ import {Testers} from "../utilities/testers";
     @test
     public save_noTags_addTags() {
         // Arrange
-        const fileBytes = ByteVector.fromSize(100);
-        const testAbstraction = TestFile.getFileAbstraction(fileBytes);
+        const testAbstraction = TestFile.getFileAbstraction(ByteVector.fromSize(100));
         const testMapping = new Map<TagTypes, () => boolean>([
             [TagTypes.Ape, () => false],
             [TagTypes.Id3v2, () => true]
@@ -323,13 +322,13 @@ import {Testers} from "../utilities/testers";
         // Assert
         const expectedBytes = ByteVector.concatenate(
             (<ApeTag> startTag).render(),
-            fileBytes,
+            ByteVector.fromSize(100),
             (<Id3v2Tag> endTag).render()
         );
         Testers.bvEqual(testAbstraction.allBytes, expectedBytes);
         assert.strictEqual(file.mode, FileAccessMode.Closed);
         assert.strictEqual(file.mediaStartPosition, startTag.sizeOnDisk);
-        assert.strictEqual(file.mediaEndPosition, startTag.sizeOnDisk + fileBytes.length);
+        assert.strictEqual(file.mediaEndPosition, 100 + startTag.sizeOnDisk);
 
         assert.strictEqual(file.tagTypes, TagTypes.Ape | TagTypes.Id3v2);
         assert.strictEqual(file.tagTypesOnDisk, TagTypes.Ape | TagTypes.Id3v2);
@@ -350,7 +349,7 @@ import {Testers} from "../utilities/testers";
             ByteVector.fromSize(100),
             id3v1Tag.render()
         );
-        const testAbstraction = TestFile.getFileAbstraction(fileBytes);
+        const testAbstraction = TestFile.getFileAbstraction(fileBytes.toByteVector());
         const file = new TestSandwichFile(testAbstraction, ReadStyle.PictureLazy, this.testMapping, TagTypes.None);
 
         // Act

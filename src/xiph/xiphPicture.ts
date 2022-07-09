@@ -1,8 +1,8 @@
-import ILazy from "../iLazy";
 import {ByteVector, StringType} from "../byteVector";
 import {CorruptFileError} from "../errors";
 import {FlacBlock} from "../flac/flacBlock";
-import {IPicture, PictureType} from "../iPicture";
+import {ILazy} from "../interfaces";
+import {IPicture, PictureType} from "../picture";
 import {Guards} from "../utils";
 
 export default class XiphPicture implements IPicture, ILazy {
@@ -19,7 +19,7 @@ export default class XiphPicture implements IPicture, ILazy {
 
     // #region Constructors
 
-    private constructor() {}
+    private constructor() { /* private to enforce construction via static methods */ }
 
     /**
      * Constructs and initializes a new instance by decoding and reading the contents of a raw Xiph
@@ -35,7 +35,7 @@ export default class XiphPicture implements IPicture, ILazy {
         }
 
         const picture = new XiphPicture();
-        picture._rawDataSource = () => ByteVector.fromByteArray(Buffer.from(data, "base64"));
+        picture._rawDataSource = () => ByteVector.fromBase64String(data);
         if (!isLazy) {
             picture.load();
         }
@@ -78,7 +78,7 @@ export default class XiphPicture implements IPicture, ILazy {
         instance._mimeType = picture.mimeType || "";
         instance._filename = picture.filename;
         instance._description = picture.description || "";
-        instance._data = picture.data;
+        instance._data = picture.data.toByteVector();
 
         if (!(picture instanceof XiphPicture)) {
             return instance;
@@ -255,52 +255,52 @@ export default class XiphPicture implements IPicture, ILazy {
 
         let position = 0;
         const rawData = this._rawDataSource();
-        this._type = rawData.mid(position, 4).toUInt();
+        this._type = rawData.subarray(position, 4).toUint();
         position += 4;
 
-        const mimetypeLength = rawData.mid(position, 4).toUInt();
+        const mimetypeLength = rawData.subarray(position, 4).toUint();
         position += 4;
-        this._mimeType = rawData.mid(position, mimetypeLength).toString(undefined, StringType.Latin1);
+        this._mimeType = rawData.subarray(position, mimetypeLength).toString(StringType.Latin1);
         position += mimetypeLength;
 
-        const descriptionLength = rawData.mid(position, 4).toUInt();
+        const descriptionLength = rawData.subarray(position, 4).toUint();
         position += 4;
-        this._description = rawData.mid(position, descriptionLength).toString(undefined, StringType.UTF8);
+        this._description = rawData.subarray(position, descriptionLength).toString(StringType.UTF8);
         position += descriptionLength;
 
-        this._width = rawData.mid(position, 4).toUInt();
+        this._width = rawData.subarray(position, 4).toUint();
         position += 4;
-        this._height = rawData.mid(position, 4).toUInt();
+        this._height = rawData.subarray(position, 4).toUint();
         position += 4;
-        this._colorDepth = rawData.mid(position, 4).toUInt();
+        this._colorDepth = rawData.subarray(position, 4).toUint();
         position += 4;
-        this._indexedColors = rawData.mid(position, 4).toUInt();
+        this._indexedColors = rawData.subarray(position, 4).toUint();
         position += 4;
 
-        const dataLength = rawData.mid(position, 4).toUInt();
+        const dataLength = rawData.subarray(position, 4).toUint();
         position += 4;
-        this._data = rawData.mid(position, dataLength);
+        this._data = rawData.subarray(position, dataLength).toByteVector();
     }
 
     /**
      * Renders the picture for use in a FLAC block.
      */
-    public renderForFlacBlock() {
+    public renderForFlacBlock(): ByteVector {
         this.load();
 
         const mimeType = ByteVector.fromString(this._mimeType, StringType.Latin1);
         const description = ByteVector.fromString(this._description, StringType.UTF8);
         return ByteVector.concatenate(
-            ByteVector.fromUInt(this._type),
-            ByteVector.fromUInt(mimeType.length),
+            ByteVector.fromUint(this._type),
+            ByteVector.fromUint(mimeType.length),
             mimeType,
-            ByteVector.fromUInt(description.length),
+            ByteVector.fromUint(description.length),
             description,
-            ByteVector.fromUInt(this._width),
-            ByteVector.fromUInt(this._height),
-            ByteVector.fromUInt(this._colorDepth),
-            ByteVector.fromUInt(this._indexedColors),
-            ByteVector.fromUInt(this._data.length),
+            ByteVector.fromUint(this._width),
+            ByteVector.fromUint(this._height),
+            ByteVector.fromUint(this._colorDepth),
+            ByteVector.fromUint(this._indexedColors),
+            ByteVector.fromUint(this._data.length),
             this._data
         );
     }
@@ -309,9 +309,8 @@ export default class XiphPicture implements IPicture, ILazy {
      * Renders the picture for use in a XIPH comment block (ie, the same structure as a FLAC block,
      * but base64 encoded).
      */
-    public renderForXiphComment() {
-        const unencodedData = this.renderForFlacBlock();
-        return Buffer.from(unencodedData.data.buffer).toString("base64");
+    public renderForXiphComment(): string {
+        return this.renderForFlacBlock().toBase64String();
     }
 
     // #endregion

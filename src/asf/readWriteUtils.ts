@@ -12,7 +12,7 @@ export default {
      * @param file File to read the double word from
      */
     readDWord: (file: File): number => {
-        return file.readBlock(4).toUInt(false);
+        return file.readBlock(4).toUint(false);
     },
 
     /**
@@ -20,7 +20,7 @@ export default {
      * @param file File to read the guid from
      */
     readGuid: (file: File): UuidWrapper => {
-        return new UuidWrapper(file.readBlock(16).data);
+        return new UuidWrapper(file.readBlock(16));
     },
 
     /**
@@ -39,7 +39,7 @@ export default {
      * @param file File to read unicode from
      */
     readUnicode: (file: File, length: number): string => {
-        const string = file.readBlock(length).toString(undefined, StringType.UTF16LE);
+        const string = file.readBlock(length).toString(StringType.UTF16LE);
         const nullIndex = string.indexOf("\0");
         return nullIndex >= 0 ? string.substring(0, nullIndex) : string;
     },
@@ -49,7 +49,7 @@ export default {
      * @param file File to read the word from
      */
     readWord: (file: File): number => {
-        return file.readBlock(2).toUShort(false);
+        return file.readBlock(2).toUshort(false);
     },
 
     /**
@@ -57,7 +57,7 @@ export default {
      * @param value Double word to render
      */
     renderDWord: (value: number): ByteVector => {
-        return ByteVector.fromUInt(value, false);
+        return ByteVector.fromUint(value, false);
     },
 
     /**
@@ -65,7 +65,7 @@ export default {
      * @param value Quad word to render
      */
     renderQWord: (value: bigint): ByteVector => {
-        return ByteVector.fromULong(value, false);
+        return ByteVector.fromUlong(value, false);
     },
 
     /**
@@ -75,7 +75,7 @@ export default {
     renderUnicode: (value: string): ByteVector => {
         return ByteVector.concatenate(
             ByteVector.fromString(value, StringType.UTF16LE),
-            ByteVector.fromUShort(0, false)
+            ByteVector.fromUshort(0, false)
         );
     },
 
@@ -84,6 +84,6 @@ export default {
      * @param value Word to render
      */
     renderWord: (value: number): ByteVector => {
-        return ByteVector.fromUShort(value, false);
+        return ByteVector.fromUshort(value, false);
     },
 };

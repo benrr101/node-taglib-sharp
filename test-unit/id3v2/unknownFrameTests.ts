@@ -1,16 +1,13 @@
-import * as Chai from "chai";
 import {suite, test} from "@testdeck/mocha";
+import {assert} from "chai";
 
 import FrameConstructorTests from "./frameConstructorTests";
 import UnknownFrame from "../../src/id3v2/frames/unknownFrame";
-import {ByteVector} from "../../src/byteVector";
+import {ByteVector, StringType} from "../../src/byteVector";
 import {Frame, FrameClassType} from "../../src/id3v2/frames/frame";
 import {Id3v2FrameHeader} from "../../src/id3v2/frames/frameHeader";
 import {FrameIdentifier, FrameIdentifiers} from "../../src/id3v2/frameIdentifiers";
 import {Testers} from "../utilities/testers";
-
-// Setup chai
-const assert = Chai.assert;
 
 @suite class Id3v2_UnknownFrame_ConstructorTests extends FrameConstructorTests {
     public get fromOffsetRawData(): (d: ByteVector, o: number, h: Id3v2FrameHeader, v: number) => Frame {
@@ -55,7 +52,7 @@ const assert = Chai.assert;
     public fromData_withData_frameHasData() {
         // Arrange
         const frameType = FrameIdentifiers.WXXX;
-        const data = ByteVector.fromString("fux qux quxx");
+        const data = ByteVector.fromString("fux qux quxx", StringType.UTF8);
 
         // Act
         const frame = UnknownFrame.fromData(frameType, data);
@@ -72,14 +69,18 @@ const assert = Chai.assert;
         const data = ByteVector.concatenate(
             header.render(4),
             0x0, 0x0,
-            ByteVector.fromString("foo bar baz")
+            ByteVector.fromString("foo bar baz", StringType.UTF8)
         );
 
         // Act
         const frame = UnknownFrame.fromOffsetRawData(data, 2, header, 4);
 
         // Assert
-        Id3v2_UnknownFrame_ConstructorTests.assertFrame(frame, FrameIdentifiers.WXXX, ByteVector.fromString("foo bar baz"));
+        Id3v2_UnknownFrame_ConstructorTests.assertFrame(
+            frame,
+            FrameIdentifiers.WXXX,
+            ByteVector.fromString("foo bar baz", StringType.UTF8)
+        );
     }
 
     @test
@@ -89,14 +90,18 @@ const assert = Chai.assert;
         header.frameSize = 11;
         const data = ByteVector.concatenate(
             header.render(4),
-            ByteVector.fromString("foo bar baz")
+            ByteVector.fromString("foo bar baz", StringType.UTF8)
         );
 
         // Act
         const frame = UnknownFrame.fromRawData(data, 4);
 
         // Assert
-        Id3v2_UnknownFrame_ConstructorTests.assertFrame(frame, FrameIdentifiers.WXXX, ByteVector.fromString("foo bar baz"));
+        Id3v2_UnknownFrame_ConstructorTests.assertFrame(
+            frame,
+            FrameIdentifiers.WXXX,
+            ByteVector.fromString("foo bar baz", StringType.UTF8)
+        );
     }
 
     private static assertFrame(frame: UnknownFrame, fi: FrameIdentifier, d: ByteVector) {
@@ -120,7 +125,7 @@ const assert = Chai.assert;
         header.frameSize = 11;
         const data = ByteVector.concatenate(
             header.render(4),
-            ByteVector.fromString("foo bar baz")
+            ByteVector.fromString("foo bar baz", StringType.UTF8)
         );
         const frame = UnknownFrame.fromRawData(data, 4);
 
@@ -142,7 +147,7 @@ const assert = Chai.assert;
         header.frameSize = 11;
         const data = ByteVector.concatenate(
             header.render(4),
-            ByteVector.fromString("foo bar baz")
+            ByteVector.fromString("foo bar baz", StringType.UTF8)
         );
         const frame = UnknownFrame.fromRawData(data, 4);
 

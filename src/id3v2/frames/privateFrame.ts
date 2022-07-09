@@ -106,25 +106,25 @@ export default class PrivateFrame extends Frame {
     public static find(frames: PrivateFrame[], owner: string): PrivateFrame {
         Guards.truthy(frames, "frames");
 
-        return frames.find((f) => f.owner === owner);
+        return frames.find((f) => f._owner === owner);
     }
 
     /** @inheritDoc */
     public clone(): Frame {
-        const frame = PrivateFrame.fromOwner(this.owner);
-        frame.privateData = ByteVector.fromByteVector(this.privateData);
+        const frame = PrivateFrame.fromOwner(this._owner);
+        frame._privateData = this._privateData.toByteVector();
         return frame;
     }
 
     /** @inheritDoc */
-    protected parseFields(data: ByteVector, _version: number): void {
+    protected parseFields(data: ByteVector): void {
         if (data.length < 1) {
             throw new CorruptFileError("A private frame must contain at least 1 byte");
         }
 
         const l = data.split(ByteVector.getTextDelimiter(StringType.Latin1), 1, 2);
-        this._owner = l[0].toString(l[0].length, StringType.Latin1);
-        this._privateData = l.length === 2 ? l[1] : ByteVector.empty();
+        this._owner = l[0].toString(StringType.Latin1);
+        this._privateData = l[1]?.toByteVector() || ByteVector.empty();
     }
 
     /** @inheritDoc */
@@ -134,7 +134,7 @@ export default class PrivateFrame extends Frame {
         }
 
         return ByteVector.concatenate(
-            ByteVector.fromString(this.owner, StringType.Latin1),
+            ByteVector.fromString(this._owner, StringType.Latin1),
             ByteVector.getTextDelimiter(StringType.Latin1),
             this._privateData
         );

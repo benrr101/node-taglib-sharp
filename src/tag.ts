@@ -1,4 +1,4 @@
-import {IPicture} from "./ipicture";
+import {IPicture} from "./picture";
 import {Guards} from "./utils";
 
 /**
@@ -986,7 +986,18 @@ export abstract class Tag {
     public set pictures(value: IPicture[]) { /* no-op in abstract case */ }
 
     /**
-     * Gets the the first value contained in {@link albumArtists}.
+     * Gets whether or not the album described by the current instance is a compilation.
+     */
+    public get isCompilation(): boolean { return false; }
+
+    /**
+     * Gets whether or not the album described by the current instance is a compilation.
+     * @param value Whether or not the album described by the current instance is a compilation
+     */
+    public set isCompilation(value: boolean) { /* no-op in abstract case */ }
+
+    /**
+     * Gets the first value contained in {@link albumArtists}.
      */
     public get firstAlbumArtist(): string { return Tag.firstInGroup(this.albumArtists); }
 
@@ -1051,7 +1062,7 @@ export abstract class Tag {
      *     may be extended by child classes to support other values.
      * @returns `true` if the current instance does not contain any values. `false` otherwise
      */
-    public get isEmpty() {
+    public get isEmpty(): boolean {
         return Tag.isFalsyOrLikeEmpty(this.title) &&
             Tag.isFalsyOrLikeEmpty(this.grouping) &&
             Tag.isFalsyOrLikeEmpty(this.albumArtists) &&
@@ -1092,7 +1103,7 @@ export abstract class Tag {
      *     `undefined` or empty
      * @protected
      */
-    protected static firstInGroup(group: string[]) {
+    protected static firstInGroup(group: string[]): string {
         return !group || group.length === 0
             ? undefined
             : group[0];
@@ -1105,7 +1116,7 @@ export abstract class Tag {
      *     or undefined if the array is `undefined` or empty.
      * @protected
      */
-    protected static joinGroup(group: string[]) {
+    protected static joinGroup(group: string[]): string {
         return !group || group.length === 0
             ? undefined
             : group.join("; ");

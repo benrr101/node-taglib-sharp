@@ -1,5 +1,5 @@
-import * as Chai from "chai";
 import {suite, test} from "@testdeck/mocha";
+import {assert} from "chai";
 
 import FrameConstructorTests from "./frameConstructorTests";
 import PropertyTests from "../utilities/propertyTests";
@@ -11,9 +11,6 @@ import {FrameIdentifier, FrameIdentifiers} from "../../src/id3v2/frameIdentifier
 import {Testers} from "../utilities/testers";
 import {UrlLinkFrame} from "../../src/id3v2/frames/urlLinkFrame";
 
-// Setup chai
-const assert = Chai.assert;
-
 const getTestFrameData = (): ByteVector => {
     const header = new Id3v2FrameHeader(FrameIdentifiers.WXXX);
     header.frameSize = 8;
@@ -21,9 +18,9 @@ const getTestFrameData = (): ByteVector => {
     return ByteVector.concatenate(
         header.render(4),
         StringType.Latin1,
-        ByteVector.fromString("foo", StringType.Latin1, undefined, true),
+        ByteVector.fromString("foo", StringType.Latin1),
         ByteVector.getTextDelimiter(StringType.Latin1),
-        ByteVector.fromString("bar", StringType.Latin1, undefined, true)
+        ByteVector.fromString("bar", StringType.Latin1)
     );
 };
 
@@ -64,7 +61,7 @@ const getTestUrlLinkFrame = (): UrlLinkFrame => {
         const data = ByteVector.concatenate(
             header.render(4),
             0x00, 0x00,
-            ByteVector.fromString("foobar", StringType.Latin1, undefined, true),
+            ByteVector.fromString("foobar", StringType.Latin1),
             0x00, 0x00 // Some null bytes to trigger null cleanup
         );
 
@@ -84,7 +81,7 @@ const getTestUrlLinkFrame = (): UrlLinkFrame => {
             header.render(4),
             0x00, 0x00,
             StringType.UTF16BE,
-            ByteVector.fromString("foo", StringType.UTF16BE, undefined, true),
+            ByteVector.fromString("foo", StringType.UTF16BE),
             ByteVector.getTextDelimiter(StringType.UTF16BE),
             ByteVector.fromString("bar", StringType.Latin1)
         );
@@ -108,9 +105,9 @@ const getTestUrlLinkFrame = (): UrlLinkFrame => {
         header.frameSize = 8;
         const data = ByteVector.concatenate(
             header.render(4),
-            ByteVector.fromString("foobar", StringType.Latin1, undefined, true),    // - Data
-            0x00, 0x00                                                              // - null bytes to test end byte
-                                                                                    //   cleanup
+            ByteVector.fromString("foobar", StringType.Latin1),    // - Data
+            0x00, 0x00                                             // - null bytes to test end byte
+                                                                   //   cleanup
         );
 
         // Act
@@ -287,7 +284,8 @@ const getTestUrlLinkFrame = (): UrlLinkFrame => {
     public clone_withoutRawData_returnsClone() {
         // Arrange
         const frame = getTestUrlLinkFrame();
-        const _ = frame.text;    // Force reading raw data, and trashing it
+        // noinspection JSUnusedLocalSymbols Forces a read of the raw data
+        const _ = frame.text;
 
         // Act
         const result = frame.clone();

@@ -1,6 +1,6 @@
-import * as Chai from "chai";
 import * as TypeMoq from "typemoq";
 import {suite, test} from "@testdeck/mocha";
+import {assert} from "chai";
 
 import CommentsFrame from "../../src/id3v2/frames/commentsFrame";
 import FrameFactory, {FrameCreator} from "../../src/id3v2/frames/frameFactory";
@@ -16,15 +16,13 @@ import {EventTimeCodeFrame} from "../../src/id3v2/frames/eventTimeCodeFrame";
 import {Frame, FrameClassType} from "../../src/id3v2/frames/frame";
 import {Id3v2FrameFlags, Id3v2FrameHeader} from "../../src/id3v2/frames/frameHeader";
 import {FrameIdentifiers} from "../../src/id3v2/frameIdentifiers";
-import {PictureType} from "../../src/iPicture";
+import {PictureType} from "../../src/picture";
 import {RelativeVolumeFrame} from "../../src/id3v2/frames/relativeVolumeFrame";
 import {TextInformationFrame, UserTextInformationFrame} from "../../src/id3v2/frames/textInformationFrame";
 import {SynchronizedLyricsFrame} from "../../src/id3v2/frames/synchronizedLyricsFrame";
 import {UrlLinkFrame, UserUrlLinkFrame} from "../../src/id3v2/frames/urlLinkFrame";
+import {NumberUtils} from "../../src/utils";
 import {SynchronizedTextType, TimestampFormat} from "../../src/id3v2/utilTypes";
-
-// Setup chai
-const assert = Chai.assert;
 
 @suite class FrameFactoryTests {
     @test
@@ -74,7 +72,8 @@ const assert = Chai.assert;
         const data = ByteVector.concatenate(
             FrameIdentifiers.TXXX.render(4),
             0x00, 0x00, 0x00, 0x0A,
-            (Id3v2FrameFlags.Compression & 0xFF >> 16), (Id3v2FrameFlags.Compression & 0xFF)
+            NumberUtils.uintRShift(NumberUtils.uintAnd(Id3v2FrameFlags.Compression, 0xFF), 16),
+            NumberUtils.uintAnd(Id3v2FrameFlags.Compression, 0xFF)
         );
 
         // Act / Assert
@@ -87,7 +86,8 @@ const assert = Chai.assert;
         const data = ByteVector.concatenate(
             FrameIdentifiers.TXXX.render(4),
             0x00, 0x00, 0x00, 0x0A,
-            (Id3v2FrameFlags.Encryption & 0xFF >> 16), (Id3v2FrameFlags.Encryption & 0xFF)
+            NumberUtils.uintRShift(NumberUtils.uintAnd(Id3v2FrameFlags.Encryption, 0xFF), 16),
+            NumberUtils.uintAnd(Id3v2FrameFlags.Encryption, 0xFF)
         );
 
         // Act / Assert
@@ -336,7 +336,7 @@ const assert = Chai.assert;
         header.frameSize = 3;
         const data = ByteVector.concatenate(
             header.render(4),
-            ByteVector.fromString("foo")
+            ByteVector.fromString("foo", StringType.UTF8)
         );
 
         // Act
@@ -475,7 +475,7 @@ const assert = Chai.assert;
 
             mockCreator.verify(
                 (c) => c(
-                    TypeMoq.It.is<ByteVector>((d) => ByteVector.equal(d, data)),
+                    TypeMoq.It.is<ByteVector>((d) => d.equals(data)),
                     TypeMoq.It.isValue(0),
                     TypeMoq.It.isAny(),
                     TypeMoq.It.isValue(4)
@@ -508,7 +508,7 @@ const assert = Chai.assert;
 
             mockCreator.verify(
                 (c) => c(
-                    TypeMoq.It.is<ByteVector>((d) => ByteVector.equal(d, data)),
+                    TypeMoq.It.is<ByteVector>((d) => d.equals(data)),
                     TypeMoq.It.isValue(0),
                     TypeMoq.It.isAny(),
                     TypeMoq.It.isValue(4)

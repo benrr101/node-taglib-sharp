@@ -2,21 +2,22 @@ import * as TypeMoq from "typemoq";
 import {suite, test} from "@testdeck/mocha";
 import {assert} from "chai";
 
-import Properties from "../src/properties";
+import MockFile from "./utilities/testFile";
 import PropertyTests from "./utilities/propertyTests";
 import TestConstants from "./testConstants";
 import TestStream from "./utilities/testStream";
-import {ByteVector} from "../src/byteVector";
+import {ByteVector, StringType} from "../src/byteVector";
 import {File, FileAccessMode, FileTypeConstructor, FileTypeResolver, ReadStyle} from "../src/file";
 import {IFileAbstraction} from "../src/fileAbstraction";
+import {Properties} from "../src/properties";
 import {IStream} from "../src/stream";
 import {Tag, TagTypes} from "../src/tag";
 import {Testers} from "./utilities/testers";
 
 @suite class FileTests {
     private static readonly chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    private readonly pattern1 = ByteVector.fromString("efg");
-    private readonly pattern3 = ByteVector.fromString("bbbbba");
+    private readonly pattern1 = ByteVector.fromString("efg", StringType.Latin1);
+    private readonly pattern3 = ByteVector.fromString("bbbbba", StringType.Latin1);
 
     private readonly length1 = Math.floor(0.75 * File.bufferSize); // Smaller than buffer size
     private readonly length2 = Math.floor(1.5 * File.bufferSize);  // Bigger than buffer size
@@ -405,7 +406,10 @@ import {Testers} from "./utilities/testers";
             // f.insert(ByteVector.fromString("123"), 4, 2);
 
             // Act / Assert
-            assert.strictEqual(f.find(ByteVector.fromString("U")), FileTests.chars.indexOf("U"));
+            assert.strictEqual(
+                f.find(ByteVector.fromString("U", StringType.Latin1)),
+                FileTests.chars.indexOf("U")
+            );
 
             assert.strictEqual(f.find(this.pattern1), -1);
             assert.strictEqual(f.find(this.pattern1, 9), -1);
@@ -426,7 +430,10 @@ import {Testers} from "./utilities/testers";
     public find_file2() {
         const testAction = (f: TestFile) => {
             // Act / Assert
-            assert.strictEqual(f.find(ByteVector.fromString("M")), FileTests.chars.indexOf("M"));
+            assert.strictEqual(
+                f.find(ByteVector.fromString("M", StringType.Latin1)),
+                FileTests.chars.indexOf("M")
+            );
 
             assert.strictEqual(f.find(this.pattern1), -1);
             assert.strictEqual(f.find(this.pattern1, 3), -1);
@@ -528,7 +535,10 @@ import {Testers} from "./utilities/testers";
     public rFind_file1() {
         const testAction = (f: TestFile, d: ByteVector) => {
             // Act / Assert
-            assert.strictEqual(f.rFind(ByteVector.fromString("U")), d.data.lastIndexOf("U".charCodeAt(0)));
+            assert.strictEqual(
+                f.rFind(ByteVector.fromString("U", StringType.Latin1)),
+                d["_bytes"].lastIndexOf("U".charCodeAt(0))
+            );
 
             assert.strictEqual(f.rFind(this.pattern1), -1);
             assert.strictEqual(f.rFind(this.pattern1, 9), -1);
@@ -549,7 +559,10 @@ import {Testers} from "./utilities/testers";
     public rFind_file2() {
         const testAction = (f: TestFile, d: ByteVector) => {
             // Act / Assert
-            assert.strictEqual(f.rFind(ByteVector.fromString("M")), d.data.lastIndexOf("M".charCodeAt(0)));
+            assert.strictEqual(
+                f.rFind(ByteVector.fromString("M", StringType.Latin1)),
+                d["_bytes"].lastIndexOf("M".charCodeAt(0))
+            );
 
             assert.strictEqual(f.rFind(this.pattern1), -1);
             assert.strictEqual(f.rFind(this.pattern1, 3), -1);
@@ -616,7 +629,7 @@ import {Testers} from "./utilities/testers";
             // - Mode shouldn't have changed
             assert.strictEqual(f.mode, FileAccessMode.Closed);
 
-            // - Open the stream to verify it's contents didn't change
+            // - Open the stream to verify its contents didn't change
             f.mode = FileAccessMode.Read;
             Testers.bvEqual((<TestStream> f.stream).data, d);
         };
@@ -703,15 +716,9 @@ import {Testers} from "./utilities/testers";
         for (let i = 0; i < length; i++) {
             data.set(i, FileTests.chars.charCodeAt(i % FileTests.chars.length));
         }
-        const stream = new TestStream(data, true);
 
-        const mockAbstraction = TypeMoq.Mock.ofType<IFileAbstraction>();
-        mockAbstraction.setup((a) => a.readStream).returns(() => stream);
-        mockAbstraction.setup((a) => a.writeStream).returns(() => stream);
-        mockAbstraction.setup((a) => a.closeStream(TypeMoq.It.isAny()));
-        mockAbstraction.setup((a) => a.name).returns(() => TestConstants.testFilePath);
-
-        const file = File.createFromAbstraction(mockAbstraction.object);
+        const mockAbstraction = MockFile.getFileAbstraction(data);
+        const file = File.createFromAbstraction(mockAbstraction);
 
         try {
             testAction(file, data);
@@ -731,7 +738,7 @@ class TestFile extends File {
 
     public get tag(): Tag { return undefined; }
 
-    public get stream(): IStream { return this._fileStream; }
+    public get stream(): IStream { return this["_fileStream"]; }
 
     public getTag(_types: TagTypes, _create: boolean): Tag {
         throw new Error("Not implemented");

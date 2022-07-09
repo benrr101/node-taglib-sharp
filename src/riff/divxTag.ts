@@ -16,7 +16,7 @@ export default class DivxTag extends Tag {
     /**
      * Identifier used to recognize DivX tags.
      */
-    public static readonly FILE_IDENTIFIER = ByteVector.fromString("DIVXTAG", undefined, undefined, true);
+    public static readonly FILE_IDENTIFIER = ByteVector.fromString("DIVXTAG", StringType.Latin1).makeReadOnly();
 
     /**
      * Size of a DivX tag in bytes.
@@ -51,12 +51,12 @@ export default class DivxTag extends Tag {
         }
 
         const tag = new DivxTag();
-        tag._title = data.toString(32, StringType.Latin1, 0).trim();
-        tag._artist = data.toString(28, StringType.Latin1, 32).trim();
-        tag._year = data.toString(4, StringType.Latin1, 60).trim();
-        tag._comment = data.toString(48, StringType.Latin1, 64).trim();
-        tag._genre = data.toString(3, StringType.Latin1, 112).trim();
-        tag._extraData = data.mid(115, 6);
+        tag._title = data.subarray(0, 32).toString(StringType.Latin1).trim();
+        tag._artist = data.subarray(32, 28).toString(StringType.Latin1).trim();
+        tag._year = data.subarray(60, 4).toString(StringType.Latin1).trim();
+        tag._comment = data.subarray(64, 48).toString(StringType.Latin1).trim();
+        tag._genre = data.subarray(112, 3).toString(StringType.Latin1).trim();
+        tag._extraData = data.subarray(115, 6);
 
         return tag;
     }
@@ -95,7 +95,7 @@ export default class DivxTag extends Tag {
 
     /**
      * @inheritDoc
-     * @remarks Genre is stored as an numeric genre. This is translated into the human-
+     * @remarks Genre is stored as a numeric genre. This is translated into the human-
      *     readable genre.
      */
     public get genres(): string[] {
@@ -104,7 +104,7 @@ export default class DivxTag extends Tag {
     }
     /**
      * @inheritDoc
-     * @remarks Genre is stored as an numeric genre, so only video genres are supported. Only
+     * @remarks Genre is stored as a numeric genre, so only video genres are supported. Only
      *     one genre can be stored.
      */
     public set genres(value: string[]) {
@@ -131,7 +131,7 @@ export default class DivxTag extends Tag {
     // #region Methods
 
     /** @inheritDoc */
-    public clear() {
+    public clear(): void {
         this._title = "";
         this._artist = "";
         this._genre = "";
@@ -145,11 +145,11 @@ export default class DivxTag extends Tag {
      */
     public render(): ByteVector {
         return ByteVector.concatenate(
-            ByteVector.fromString(this._title, StringType.Latin1).resize(32, 0x20),
-            ByteVector.fromString(this._artist, StringType.Latin1).resize(28, 0x20),
-            ByteVector.fromString(this._year, StringType.Latin1).resize(4, 0x20),
-            ByteVector.fromString(this._comment, StringType.Latin1).resize(48, 0x20),
-            ByteVector.fromString(this._genre, StringType.Latin1).resize(3, 0x20),
+            ByteVector.fromString(this._title.padEnd(32, " ").substring(0, 32), StringType.Latin1),
+            ByteVector.fromString(this._artist.padEnd(28, " ").substring(0 , 28), StringType.Latin1),
+            ByteVector.fromString(this._year.padEnd(4, " ").substring(0, 4), StringType.Latin1),
+            ByteVector.fromString(this._comment.padEnd(48, " ").substring(0, 48), StringType.Latin1),
+            ByteVector.fromString(this._genre.padEnd(3, " ").substring(0, 3), StringType.Latin1),
             this._extraData,
             DivxTag.FILE_IDENTIFIER
         );

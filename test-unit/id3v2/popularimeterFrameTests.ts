@@ -1,5 +1,5 @@
-import * as Chai from "chai";
 import {suite, test} from "@testdeck/mocha";
+import {assert} from "chai";
 
 import FrameConstructorTests from "./frameConstructorTests";
 import PopularimeterFrame from "../../src/id3v2/frames/popularimeterFrame";
@@ -9,9 +9,6 @@ import {Frame, FrameClassType} from "../../src/id3v2/frames/frame";
 import {Id3v2FrameHeader} from "../../src/id3v2/frames/frameHeader";
 import {FrameIdentifiers} from "../../src/id3v2/frameIdentifiers";
 import {Testers} from "../utilities/testers";
-
-// Setup chai
-const assert = Chai.assert;
 
 @suite class Id3v2_PopularimeterFrame_ConstructorTests extends FrameConstructorTests {
     public get fromOffsetRawData(): (d: ByteVector, o: number, h: Id3v2FrameHeader, v: number) => Frame {
@@ -106,7 +103,7 @@ const assert = Chai.assert;
             ByteVector.fromString("fux", StringType.Latin1),
             ByteVector.getTextDelimiter(StringType.Latin1),
             0x05,
-            ByteVector.fromUInt(1234)
+            ByteVector.fromUint(1234)
         );
 
         // Act
@@ -126,7 +123,7 @@ const assert = Chai.assert;
             ByteVector.fromString("fux", StringType.Latin1),
             ByteVector.getTextDelimiter(StringType.Latin1),
             0x05,
-            ByteVector.fromULong(BigInt(1234))
+            ByteVector.fromUlong(BigInt(1234))
         );
 
         // Act
@@ -147,7 +144,7 @@ const assert = Chai.assert;
             ByteVector.fromString("fux", StringType.Latin1),
             ByteVector.getTextDelimiter(StringType.Latin1),
             0x05,
-            ByteVector.fromULong(BigInt(1234))
+            ByteVector.fromUlong(BigInt(1234))
         );
 
         // Act
@@ -316,7 +313,7 @@ const assert = Chai.assert;
             ByteVector.fromString("fux", StringType.Latin1),
             ByteVector.getTextDelimiter(StringType.Latin1),
             0x05,
-            ByteVector.fromUInt(1234)
+            ByteVector.fromUint(1234)
         );
         const frame = PopularimeterFrame.fromRawData(data, 4);
 

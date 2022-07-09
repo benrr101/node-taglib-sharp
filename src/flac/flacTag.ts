@@ -4,9 +4,9 @@ import FlacFileSettings from "./flacFileSettings";
 import StartTag from "../sandwich/startTag";
 import XiphComment from "../xiph/xiphComment";
 import XiphPicture from "../xiph/xiphPicture";
-import {IPicture} from "../iPicture";
+import {IPicture} from "../picture";
 import {Tag, TagTypes} from "../tag";
-import {Guards} from "../utils";
+import {Guards, NumberUtils} from "../utils";
 
 /**
  * Collection of tags that can be stored in a FLAC file.
@@ -16,7 +16,7 @@ import {Guards} from "../utils";
  *     class provides a unified access into all the tags a FLAC file may contain.
  */
 export default class FlacTag extends CombinedTag {
-    private static readonly _defaultTagMappingTable = new Map<TagTypes, () => boolean>([
+    private static readonly DEFAULT_TAG_LOCATION_MAPPING = new Map<TagTypes, () => boolean>([
         [TagTypes.Ape, () => FlacFileSettings.preferApeTagAtFileEnd],
         [TagTypes.Id3v1, () => true],
         [TagTypes.Id3v2, () => FlacFileSettings.preferId3v2TagAtFileEnd]
@@ -35,7 +35,7 @@ export default class FlacTag extends CombinedTag {
      * @param flacPictures Optional, array of pictures found in the file
      */
     public constructor(startTag: StartTag, endTag: EndTag, xiphTag: XiphComment, flacPictures: XiphPicture[]) {
-        super(FlacFileSettings.supportedTagTypes);
+        super(FlacFileSettings.SUPPORTED_TAG_TYPES, true);
         Guards.truthy(startTag, "startTag");
         Guards.truthy(endTag, "endTag");
 
@@ -46,53 +46,6 @@ export default class FlacTag extends CombinedTag {
         this._endTag = endTag;
         this.addTag(this._endTag);
         this._pictures = flacPictures || [];
-    }
-
-    /** @inheritDoc */
-    public clear(): void {
-        this._pictures.splice(0, this._pictures.length);
-        super.clear();
-    }
-
-    /** @inheritDoc */
-    public createTag(tagType: TagTypes, copy: boolean): Tag {
-        this.validateTagCreation(tagType);
-
-        // Create the desired tag
-        let tag: Tag;
-        switch (tagType) {
-            case TagTypes.Xiph:
-                // XIPH comments we create directly
-                this._xiphComment = XiphComment.fromEmpty();
-                tag = this._xiphComment;
-                this.addTag(tag);
-                break;
-            case TagTypes.Id3v1:
-            case TagTypes.Id3v2:
-            case TagTypes.Ape:
-                // Sandwich tags, we farm out to the start/end tags
-                const targetTag = FlacTag._defaultTagMappingTable.get(tagType)() ? this._endTag : this._startTag;
-                tag = targetTag.createTag(tagType, false);
-        }
-
-        // Copy the contents if desired
-        if (copy) {
-            this.copyTo(tag, true);
-        }
-
-        return tag;
-    }
-
-    /** @inheritDoc */
-    public removeTags(tagTypes: TagTypes): void {
-        if ((tagTypes & TagTypes.Xiph) !== 0) {
-            this._xiphComment = undefined;
-        }
-        if ((tagTypes & TagTypes.FlacPictures) !== 0) {
-            this._pictures.splice(0, this._pictures.length);
-        }
-
-        super.removeTags(tagTypes);
     }
 
     // #region Properties
@@ -138,4 +91,51 @@ export default class FlacTag extends CombinedTag {
     }
 
     // #endregion
+
+    /** @inheritDoc */
+    public clear(): void {
+        this._pictures.splice(0, this._pictures.length);
+        super.clear();
+    }
+
+    /** @inheritDoc */
+    public createTag(tagType: TagTypes, copy: boolean): Tag {
+        this.validateTagCreation(tagType);
+
+        // Create the desired tag
+        let tag: Tag;
+        switch (tagType) {
+            case TagTypes.Xiph:
+                // XIPH comments we create directly
+                this._xiphComment = XiphComment.fromEmpty();
+                tag = this._xiphComment;
+                this.addTag(tag);
+                break;
+            case TagTypes.Id3v1:
+            case TagTypes.Id3v2:
+            case TagTypes.Ape:
+                // Sandwich tags, we farm out to the start/end tags
+                const targetTag = FlacTag.DEFAULT_TAG_LOCATION_MAPPING.get(tagType)() ? this._endTag : this._startTag;
+                tag = targetTag.createTag(tagType, false);
+        }
+
+        // Copy the contents if desired
+        if (copy) {
+            this.copyTo(tag, true);
+        }
+
+        return tag;
+    }
+
+    /** @inheritDoc */
+    public removeTags(tagTypes: TagTypes): void {
+        if (NumberUtils.hasFlag(tagTypes, TagTypes.Xiph)) {
+            this._xiphComment = undefined;
+        }
+        if (NumberUtils.hasFlag(tagTypes, TagTypes.FlacPictures)) {
+            this._pictures.splice(0, this._pictures.length);
+        }
+
+        super.removeTags(tagTypes);
+    }
 }

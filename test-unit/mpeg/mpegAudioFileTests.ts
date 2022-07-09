@@ -55,7 +55,7 @@ import {TagTypes} from "../../src/tag";
             assert.strictEqual(file.tag.startTag.tags.length, 2);
             assert.strictEqual(file.tag.startTag.tagTypes, TagTypes.Id3v2 | TagTypes.Ape);
             assert.strictEqual(file.tag.endTag.tags.length, 0);
-            assert.strictEqual(file.tag.endTag.tagTypes, TagTypes.None)
+            assert.strictEqual(file.tag.endTag.tagTypes, TagTypes.None);
 
             assert.isUndefined(file.properties);
 

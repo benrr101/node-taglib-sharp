@@ -7,7 +7,7 @@ import {Guards} from "../utils";
  * Provides support for reading and writing MovieID tags.
  */
 export default class MovieIdTag extends RiffListTag {
-    public static readonly listType = "MID ";
+    public static readonly LIST_TYPE = "MID ";
 
     // #region Constructors
 
@@ -29,7 +29,7 @@ export default class MovieIdTag extends RiffListTag {
      * Constructs and initializes a new, empty instance.
      */
     public static fromEmpty(): MovieIdTag {
-        return new MovieIdTag(RiffList.fromEmpty(MovieIdTag.listType));
+        return new MovieIdTag(RiffList.fromEmpty(MovieIdTag.LIST_TYPE));
     }
 
     // #endregion

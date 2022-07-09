@@ -1,14 +1,11 @@
-import * as Chai from "chai";
 import {suite, test} from "@testdeck/mocha";
+import {assert} from "chai";
 
 import RiffWaveFormatEx from "../../src/riff/riffWaveFormatEx";
 import {default as Resources} from "./resources";
 import {ByteVector} from "../../src/byteVector";
-import {MediaTypes} from "../../src/iCodec";
+import {MediaTypes} from "../../src/properties";
 import {Testers} from "../utilities/testers";
-
-// Setup chai
-const assert = Chai.assert;
 
 @suite class Riff_WaveFormatExTests {
     @test

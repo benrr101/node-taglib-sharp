@@ -1,22 +1,22 @@
 import RiffBitmapInfoHeader from "../riffBitmapInfoHeader";
 import RiffList from "../riffList";
 import RiffWaveFormatEx from "../riffWaveFormatEx";
-import {ICodec} from "../../iCodec";
 import {CorruptFileError} from "../../errors";
+import {ICodec} from "../../properties";
 import {Guards} from "../../utils";
 
 export enum AviStreamType {
     /** Audio Stream */
-    /* auds */ AUDIO_STREAM = 0x73647561,
+    /* auds */ AudioStream = 0x73647561,
 
     /** MIDI Stream */
-    /* mids */ MIDI_STREAM = 0x7264696D,
+    /* mids */ MidiStream = 0x7264696D,
 
     /** Text stream */
-    /* txts */ TEXT_STREAM = 0x73747874,
+    /* txts */ TextStream = 0x73747874,
 
     /** Video stream */
-    /* vids */ VIDEO_STREAM = 0x73646976
+    /* vids */ VideoStream = 0x73646976
 }
 
 /**
@@ -24,9 +24,9 @@ export enum AviStreamType {
  * stream list.
  */
 export class AviStream {
-    public static readonly formatChunkId = "strf";
-    public static readonly headerChunkId = "strh";
-    public static readonly listType = "strl";
+    public static readonly FORMAT_CHUNK_ID = "strf";
+    public static readonly HEADER_CHUNK_ID = "strh";
+    public static readonly LIST_TYPE = "strl";
 
     private readonly _bottom: number;
     private readonly _codec: ICodec;
@@ -53,12 +53,12 @@ export class AviStream {
      */
     public constructor(list: RiffList) {
         Guards.truthy(list, "list");
-        if (list.type !== AviStream.listType) {
+        if (list.type !== AviStream.LIST_TYPE) {
             throw new CorruptFileError("Stream header list does not have correct type");
         }
 
         // Parse the stream header
-        const streamHeaderData = list.getValues(AviStream.headerChunkId);
+        const streamHeaderData = list.getValues(AviStream.HEADER_CHUNK_ID);
         if (streamHeaderData.length !== 1) {
             throw new CorruptFileError("Stream header list does not contain valid stream header chunks");
         }
@@ -67,38 +67,38 @@ export class AviStream {
             throw new CorruptFileError("Stream header does not contain correct number of bytes");
         }
 
-        this._type = streamHeaderDatum.mid(0, 4).toUInt(false);
-        this._handler = streamHeaderDatum.mid(4, 4).toUInt(false);
-        this._flags = streamHeaderDatum.mid(8, 4).toUInt(false);
-        this._priority = streamHeaderDatum.mid(12, 2).toUShort(false);
-        this._language = streamHeaderDatum.mid(14, 2).toUShort(false);
-        this._initialFrames = streamHeaderDatum.mid(16, 4).toUInt(false);
-        this._scale = streamHeaderDatum.mid(20, 4).toUInt(false);
-        this._rate = streamHeaderDatum.mid(24, 4).toUInt(false);
-        this._start = streamHeaderDatum.mid(28, 4).toUInt(false);
-        this._length = streamHeaderDatum.mid(32, 4).toUInt(false);
-        this._suggestedBufferSize = streamHeaderDatum.mid(36, 4).toUInt(false);
-        this._quality = streamHeaderDatum.mid(40, 4).toUInt(false);
-        this._sampleSize = streamHeaderDatum.mid(44, 4).toUInt(false);
-        this._left = streamHeaderDatum.mid(48, 2).toUShort(false);
-        this._top = streamHeaderDatum.mid(50, 2).toUShort(false);
-        this._right = streamHeaderDatum.mid(52, 2).toUShort(false);
-        this._bottom = streamHeaderDatum.mid(54, 2).toUShort(false);
+        this._type = streamHeaderDatum.subarray(0, 4).toUint(false);
+        this._handler = streamHeaderDatum.subarray(4, 4).toUint(false);
+        this._flags = streamHeaderDatum.subarray(8, 4).toUint(false);
+        this._priority = streamHeaderDatum.subarray(12, 2).toUshort(false);
+        this._language = streamHeaderDatum.subarray(14, 2).toUshort(false);
+        this._initialFrames = streamHeaderDatum.subarray(16, 4).toUint(false);
+        this._scale = streamHeaderDatum.subarray(20, 4).toUint(false);
+        this._rate = streamHeaderDatum.subarray(24, 4).toUint(false);
+        this._start = streamHeaderDatum.subarray(28, 4).toUint(false);
+        this._length = streamHeaderDatum.subarray(32, 4).toUint(false);
+        this._suggestedBufferSize = streamHeaderDatum.subarray(36, 4).toUint(false);
+        this._quality = streamHeaderDatum.subarray(40, 4).toUint(false);
+        this._sampleSize = streamHeaderDatum.subarray(44, 4).toUint(false);
+        this._left = streamHeaderDatum.subarray(48, 2).toUshort(false);
+        this._top = streamHeaderDatum.subarray(50, 2).toUshort(false);
+        this._right = streamHeaderDatum.subarray(52, 2).toUshort(false);
+        this._bottom = streamHeaderDatum.subarray(54, 2).toUshort(false);
 
         // Parse the stream construct
-        const streamFormatData = list.getValues(AviStream.formatChunkId);
+        const streamFormatData = list.getValues(AviStream.FORMAT_CHUNK_ID);
         if (streamFormatData.length !== 1) {
             throw new CorruptFileError("Stream header list is missing stream format chunk");
         }
         switch (this._type) {
-            case AviStreamType.VIDEO_STREAM:
+            case AviStreamType.VideoStream:
                 this._codec = new RiffBitmapInfoHeader(streamFormatData[0], 0);
                 break;
-            case AviStreamType.AUDIO_STREAM:
+            case AviStreamType.AudioStream:
                 this._codec = new RiffWaveFormatEx(streamFormatData[0]);
                 break;
-            case AviStreamType.MIDI_STREAM:
-            case AviStreamType.TEXT_STREAM:
+            case AviStreamType.MidiStream:
+            case AviStreamType.TextStream:
                 // These types don't have codecs, but we still care about the headers, I think
                 // If there's more information needed for these types, please open a issue
                 break;

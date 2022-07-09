@@ -8,11 +8,8 @@ export {LocalFileAbstraction} from "./fileAbstraction";
 // Base Tag Classes
 export {default as CombinedTag} from "./combinedTag";
 export {default as Genres} from "./genres";
-export {ICodec, IAudioCodec, ILosslessAudioCodec, IVideoCodec, IPhotoCodec, MediaTypes} from "./iCodec";
-export {IPicture, PictureType} from "./iPicture";
-export {default as Picture} from "./picture";
-export {default as PictureLazy} from "./pictureLazy";
-export {default as Properties} from "./properties";
+export {IPicture, Picture, PictureLazy, PictureType} from "./picture";
+export {ICodec, IAudioCodec, ILosslessAudioCodec, IVideoCodec, IPhotoCodec, MediaTypes, Properties} from "./properties";
 export {Tag, TagTypes} from "./tag";
 
 // AAC /////////////////////////////////////////////////////////////////////
@@ -124,6 +121,16 @@ export {default as MpegContainerFile} from "./mpeg/mpegContainerFile";
 export {default as MpegVbriHeader} from "./mpeg/vbriHeader";
 export {default as MpegVideoHeader} from "./mpeg/mpegVideoHeader";
 export {default as MpegXingHeader} from "./mpeg/xingHeader";
+
+// OGG /////////////////////////////////////////////////////////////////////
+export {default as OggFile} from "./ogg/oggFile";
+export {default as OggFileSettings} from "./ogg/oggFileSettings";
+export {default as OggTag} from "./ogg/oggTag";
+
+export {default as OggCodecFactory} from "./ogg/codecs/codecFactory";
+export {default as OggOpusCodec} from "./ogg/codecs/opus";
+export {default as OggTheoraCodec} from "./ogg/codecs/theora";
+export {default as OggVorbisCodec} from "./ogg/codecs/vorbis";
 
 // RIFF ////////////////////////////////////////////////////////////////////
 export {default as RiffFile} from "./riff/riffFile";

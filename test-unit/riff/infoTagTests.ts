@@ -1,5 +1,5 @@
-import * as Chai from "chai";
 import {suite, test} from "@testdeck/mocha";
+import {assert} from "chai";
 
 import InfoTag from "../../src/riff/infoTag";
 import PropertyTests from "../utilities/propertyTests";
@@ -7,9 +7,6 @@ import {ByteVector, StringType} from "../../src/byteVector";
 import {TagTypes} from "../../src/tag";
 import {TagTesters, Testers} from "../utilities/testers";
 import RiffList from "../../src/riff/riffList";
-
-// Setup chai
-const assert = Chai.assert;
 
 @suite class Riff_InfoTagTests {
     @test
@@ -286,20 +283,20 @@ const assert = Chai.assert;
     }
 
     private static getTestTagData(): RiffList {
-        const list = RiffList.fromEmpty(InfoTag.listType);
-        list.setValues("INAM", [ByteVector.fromString("foo")]);
-        list.setValues("ISBJ", [ByteVector.fromString("bar")]);
-        list.setValues("ISTR", [ByteVector.fromString("baz")]);
-        list.setValues("IART", [ByteVector.fromString("fux")]);
-        list.setValues("IWRI", [ByteVector.fromString("bux")]);
-        list.setValues("DIRC", [ByteVector.fromString("qux")]);
-        list.setValues("ICNM", [ByteVector.fromString("foobar")]);
-        list.setValues("ICMT", [ByteVector.fromString("barbaz")]);
-        list.setValues("IGNR", [ByteVector.fromString("bazfux")]);
-        list.setValues("ICRD", [ByteVector.fromString("1234")]);
-        list.setValues("IPRT", [ByteVector.fromString("2345")]);
-        list.setValues("IFRM", [ByteVector.fromString("3456")]);
-        list.setValues("ICOP", [ByteVector.fromString("buxqux")]);
+        const list = RiffList.fromEmpty(InfoTag.LIST_TYPE);
+        list.setValues("INAM", [ByteVector.fromString("foo", StringType.UTF8)]);
+        list.setValues("ISBJ", [ByteVector.fromString("bar", StringType.UTF8)]);
+        list.setValues("ISTR", [ByteVector.fromString("baz", StringType.UTF8)]);
+        list.setValues("IART", [ByteVector.fromString("fux", StringType.UTF8)]);
+        list.setValues("IWRI", [ByteVector.fromString("bux", StringType.UTF8)]);
+        list.setValues("DIRC", [ByteVector.fromString("qux", StringType.UTF8)]);
+        list.setValues("ICNM", [ByteVector.fromString("foobar", StringType.UTF8)]);
+        list.setValues("ICMT", [ByteVector.fromString("barbaz", StringType.UTF8)]);
+        list.setValues("IGNR", [ByteVector.fromString("bazfux", StringType.UTF8)]);
+        list.setValues("ICRD", [ByteVector.fromString("1234", StringType.UTF8)]);
+        list.setValues("IPRT", [ByteVector.fromString("2345", StringType.UTF8)]);
+        list.setValues("IFRM", [ByteVector.fromString("3456", StringType.UTF8)]);
+        list.setValues("ICOP", [ByteVector.fromString("buxqux", StringType.UTF8)]);
 
         return list;
     }

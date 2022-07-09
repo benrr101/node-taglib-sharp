@@ -37,10 +37,10 @@ import {Testers} from "../utilities/testers";
         assert.isOk(block);
         assert.isTrue(block.isLoaded);
         assert.isUndefined(block.blockStart);
-        assert.isTrue(ByteVector.equal(block.data, data));
+        Testers.bvEqual(block.data, data);
         assert.strictEqual(block.dataSize, data.length);
         assert.isFalse(block.isLastBlock);
-        assert.strictEqual(block.totalSize, data.length + FlacBlock.headerSize);
+        assert.strictEqual(block.totalSize, data.length + FlacBlock.HEADER_SIZE);
         assert.strictEqual(block.type, FlacBlockType.Padding);
     }
 
@@ -60,7 +60,7 @@ import {Testers} from "../utilities/testers";
         // Arrange
         const fileBytes = ByteVector.concatenate(
             ByteVector.fromSize(10),
-            ByteVector.fromUInt(0x86123456),
+            ByteVector.fromUint(0x86123456),
             ByteVector.fromSize(10)
         );
         const file = TestFile.getFile(fileBytes);
@@ -74,7 +74,7 @@ import {Testers} from "../utilities/testers";
         assert.strictEqual(block.blockStart, 10);
         assert.strictEqual(block.dataSize, 0x123456);
         assert.isTrue(block.isLastBlock);
-        assert.strictEqual(block.totalSize, 0x123456 + FlacBlock.headerSize);
+        assert.strictEqual(block.totalSize, 0x123456 + FlacBlock.HEADER_SIZE);
         assert.strictEqual(block.type, FlacBlockType.Picture);
     }
 
@@ -83,7 +83,7 @@ import {Testers} from "../utilities/testers";
         // Arrange
         const fileBytes = ByteVector.concatenate(
             ByteVector.fromSize(10),
-            ByteVector.fromUInt(0x06123456),
+            ByteVector.fromUint(0x06123456),
             ByteVector.fromSize(10)
         );
         const file = TestFile.getFile(fileBytes);
@@ -97,7 +97,7 @@ import {Testers} from "../utilities/testers";
         assert.strictEqual(block.blockStart, 10);
         assert.strictEqual(block.dataSize, 0x123456);
         assert.isFalse(block.isLastBlock);
-        assert.strictEqual(block.totalSize, 0x123456 + FlacBlock.headerSize);
+        assert.strictEqual(block.totalSize, 0x123456 + FlacBlock.HEADER_SIZE);
         assert.strictEqual(block.type, FlacBlockType.Picture);
     }
 
@@ -105,7 +105,7 @@ import {Testers} from "../utilities/testers";
     public fromFile_loadsOnDataAccess() {
         // Arrange
         const fileBytes = ByteVector.concatenate(
-            ByteVector.fromUInt(0x0600000A),
+            ByteVector.fromUint(0x0600000A),
             ByteVector.fromSize(10, 0x0B)
         );
         const file = TestFile.getFile(fileBytes);
@@ -116,7 +116,7 @@ import {Testers} from "../utilities/testers";
 
         // Assert
         assert.isTrue(block.isLoaded);
-        assert.isTrue(ByteVector.equal(data, fileBytes.mid(4)));
+        Testers.bvEqual(data, fileBytes.subarray(4));
     }
 
     @test
@@ -146,7 +146,7 @@ import {Testers} from "../utilities/testers";
             0x81, 0x00, 0x00, 0x0A,
             data
         );
-        assert.isTrue(ByteVector.equal(output, expected));
+        Testers.bvEqual(output, expected);
     }
 
     @test
@@ -163,6 +163,6 @@ import {Testers} from "../utilities/testers";
             0x01, 0x00, 0x00, 0x0A,
             data
         );
-        assert.isTrue(ByteVector.equal(output, expected));
+        Testers.bvEqual(output, expected);
     }
 }

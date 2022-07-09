@@ -1,20 +1,21 @@
 import * as Uuid from "uuid";
+import {ByteVector} from "./byteVector";
 
 /**
  * Wrapper around the UUID package to make it easier to handle UUIDs.
  */
 export default class UuidWrapper {
     private static readonly GUID_REGEX =
-        new RegExp(/([0-9A-F]{8})-?([0-9A-F]{4})-?([0-9A-F]{4})-?([0-9A-F]{4})-?([0-9A-F]{12})/i);
+        new RegExp(/([\dA-F]{8})-?([\dA-F]{4})-?([\dA-F]{4})-?([\dA-F]{4})-?([\dA-F]{12})/i);
 
-    private readonly _bytes: Uint8Array;
+    private readonly _bytes: ByteVector;
 
     /**
      * Constructs a instance using either the supplied UUID or generating a new, random one.
      * @param source If provided, it is used as the bytes of the instance. If a falsy value is
      *     provided, a new v4 UUID will be generated.
      */
-    public constructor(source?: Uint8Array | string) {
+    public constructor(source?: ByteVector | string) {
         // Temporary implementation - it's probably not perfect
         if (!source) {
             // Source wasn't provided, generate a new guid string
@@ -41,10 +42,10 @@ export default class UuidWrapper {
             dv.setUint16(8, short3, false);
 
             for (let i = 0; i < 12; i += 2) {
-                bytes[10 + i / 2] = Number.parseInt(match[5].substr(i, 2), 16);
+                bytes[10 + i / 2] = Number.parseInt(match[5].substring(i, i + 2), 16);
             }
 
-            source = bytes;
+            source = ByteVector.fromByteArray(bytes);
         }
 
         if (source.length !== 16) {
@@ -72,7 +73,7 @@ export default class UuidWrapper {
     public equals(b: UuidWrapper): boolean {
         if (!b || this._bytes.length !== b._bytes.length) { return false; }
         for (let i = 0; i < this._bytes.length; i++) {
-            if (this._bytes[i] !== b._bytes[i]) {
+            if (this._bytes.get(i) !== b._bytes.get(i)) {
                 return false;
             }
         }
@@ -83,21 +84,23 @@ export default class UuidWrapper {
     /**
      * Gets the bytes that make up the UUID.
      */
-    public toBytes(): Uint8Array { return this._bytes.slice(); }
+    public toBytes(): ByteVector { return this._bytes.toByteVector(); }
 
     /**
      * Gets a string representation of the UUID.
      */
     public toString(): string {
-        // Temporary implementation - it's probably not perfect
-        const dv = new DataView(this._bytes.buffer);
-        return `${dv.getUint32(0, true).toString(16)}-` +
-               `${dv.getUint16(4, true).toString(16)}-` +
-               `${dv.getUint16(6, true).toString(16)}-` +
-               `${dv.getUint16(8, false).toString(16)}-` +
-               `${this._bytes[10].toString(16).padStart(2, "0")}${this._bytes[11].toString(16).padStart(2, "0")}` +
-               `${this._bytes[12].toString(16).padStart(2, "0")}${this._bytes[13].toString(16).padStart(2, "0")}` +
-               `${this._bytes[14].toString(16).padStart(2, "0")}${this._bytes[15].toString(16).padStart(2, "0")}`;
+        const bytes1 = this._bytes.subarray(0, 4).toUint(false);
+        const bytes2 = this._bytes.subarray(4, 2).toUshort(false);
+        const bytes3 = this._bytes.subarray(6, 2).toUshort(false);
+        const bytes4 = this._bytes.subarray(8, 2).toUshort(true);
+        const bytes5 = this._bytes.subarray(10, 4).toUint(true);
+        const bytes6 = this._bytes.subarray(14, 2).toUshort(true);
+        return `${bytes1.toString(16)}-` +
+               `${bytes2.toString(16)}-` +
+               `${bytes3.toString(16)}-` +
+               `${bytes4.toString(16)}-` +
+               `${bytes5.toString(16).padStart(4, "0")}${bytes6.toString(16).padStart(2, "0")}`;
 
         // @TODO: This implementation is commented out b/c the uuid package doesn't appear to
         //    follow RFC byte formatting of a GUID. See https://github.com/uuidjs/uuid/issues/503

@@ -1,12 +1,14 @@
+import AiffFileSettings from "./aiffFileSettings";
+import AiffStreamHeader from "./aiffStreamHeader";
 import Id3v2Tag from "../id3v2/id3v2Tag";
-import Properties from "../properties";
-import {ByteVector} from "../byteVector";
+import {ByteVector, StringType} from "../byteVector";
+import {CorruptFileError} from "../errors";
 import {File, FileAccessMode, ReadStyle} from "../file";
 import {IFileAbstraction} from "../fileAbstraction";
+import {Properties} from "../properties";
 import {Tag, TagTypes} from "../tag";
 import {SeekOrigin} from "../stream";
-import {CorruptFileError} from "../errors";
-import AiffStreamHeader from "./aiffStreamHeader";
+import {NumberUtils} from "../utils";
 
 export default class AiffFile extends File {
 
@@ -16,27 +18,27 @@ export default class AiffFile extends File {
      * Identifier used to recognize an AIFF form type.
      */
     // @TODO: Add support for AIFF-C files - it's pretty much the same
-    public static readonly aiffFormType = ByteVector.fromString("AIFF", undefined, undefined, true);
+    public static readonly AIFF_FORM_TYPE = ByteVector.fromString("AIFF", StringType.UTF8).makeReadOnly();
 
     /**
      * Identifier used to recognize an AIFF common chunk.
      */
-    public static readonly commIdentifier = ByteVector.fromString("COMM", undefined, undefined, true);
+    public static readonly COMM_IDENTIFIER = ByteVector.fromString("COMM", StringType.UTF8).makeReadOnly();
 
     /**
      * Identifier used to recognize an AIFF file.
      */
-    public static readonly fileIdentifier = ByteVector.fromString("FORM", undefined, undefined, true);
+    public static readonly FILE_IDENTIFIER = ByteVector.fromString("FORM", StringType.UTF8).makeReadOnly();
 
     /**
      * Identifier used to recognize an AIFF ID3 chunk.
      */
-    public static readonly id3Identifier = ByteVector.fromString("ID3 ", undefined, undefined, true);
+    public static readonly ID3_IDENTIFIER = ByteVector.fromString("ID3 ", StringType.UTF8).makeReadOnly();
 
     /**
      * Identifier used to recognize an AIFF sound data chunk.
      */
-    public static readonly soundIdentifier = ByteVector.fromString("SSND", undefined, undefined, true);
+    public static readonly SOUND_IDENTIFIER = ByteVector.fromString("SSND", StringType.UTF8).makeReadOnly();
 
     // #endregion
 
@@ -62,9 +64,11 @@ export default class AiffFile extends File {
             this.mode = FileAccessMode.Closed;
         }
 
-        // Retrieve the tag
-        this._tagTypesOnDisk = this.tagTypes;
-        this.getTag(TagTypes.Id3v2, true);
+        // Create default tags if desired
+        this.tagTypesOnDisk = this.tagTypes;
+        if (NumberUtils.hasFlag(AiffFileSettings.defaultTagTypes, TagTypes.Id3v2)) {
+            this.getTag(TagTypes.Id3v2, true);
+        }
     }
 
     // #region Properties
@@ -99,7 +103,7 @@ export default class AiffFile extends File {
 
     /** @inheritDoc */
     public removeTags(types: TagTypes): void {
-        if ((types & TagTypes.Id3v2) > 0) {
+        if (NumberUtils.hasFlag(types, TagTypes.Id3v2)) {
             this._tag = undefined;
         }
     }
@@ -112,7 +116,7 @@ export default class AiffFile extends File {
         try {
             // Add the ID3 chunk and ID3v2 tag to the vector
             const id3Chunk = ByteVector.empty();
-            if (!!this._tag) {
+            if (this._tag) {
                 const tagData = this._tag.render();
                 if (tagData.length > 10) {
                     // Add padding if tag data length is odd
@@ -120,8 +124,8 @@ export default class AiffFile extends File {
                         tagData.addByte(0);
                     }
 
-                    id3Chunk.addByteVector(AiffFile.id3Identifier);
-                    id3Chunk.addByteVector(ByteVector.fromUInt(tagData.length, true));
+                    id3Chunk.addByteVector(AiffFile.ID3_IDENTIFIER);
+                    id3Chunk.addByteVector(ByteVector.fromUint(tagData.length, true));
                     id3Chunk.addByteVector(tagData);
                 }
             }
@@ -139,10 +143,10 @@ export default class AiffFile extends File {
 
             // Update the AIFF size
             const aiffSize = this.length - 8;
-            this.insert(ByteVector.fromUInt(aiffSize, true), 4, 4);
+            this.insert(ByteVector.fromUint(aiffSize, true), 4, 4);
 
             // Update the tag types
-            this._tagTypesOnDisk = this.tagTypes;
+            this.tagTypesOnDisk = this.tagTypes;
         } finally {
             this.mode = FileAccessMode.Closed;
         }
@@ -161,14 +165,13 @@ export default class AiffFile extends File {
             // While we're not at the end of the file
             while (this.position < this.length) {
                 // Read 4-byte chunk name
-                const chunkHeader = this.readBlock(4);
-                if (ByteVector.equal(chunkHeader, chunkName)) {
+                if (this.readBlock(4).equals(chunkName)) {
                     // We found a matching chunk, return the position of the header start
                     return this.position - 4;
                 } else {
                     // This chunk is not the one we are looking for
                     // Continue the search, seeking over the chunk
-                    const chunkSize = this.readBlock(4).toUInt();
+                    const chunkSize = this.readBlock(4).toUint();
                     this.seek(chunkSize, SeekOrigin.Current);
                 }
             }
@@ -183,43 +186,43 @@ export default class AiffFile extends File {
 
     private read(readTags: boolean, style: ReadStyle): {fileSize: number, tagEnd: number, tagStart: number} {
         this.seek(0);
-        if (!ByteVector.equal(this.readBlock(4), AiffFile.fileIdentifier)) {
+        if (!this.readBlock(4).equals(AiffFile.FILE_IDENTIFIER)) {
             throw new CorruptFileError("File does not begin with AIFF identifier");
         }
 
-        const aiffSize = this.readBlock(4).toUInt(true);
+        const aiffSize = this.readBlock(4).toUint(true);
         let tagStart = -1;
         let tagEnd = -1;
 
         // Check form type
-        if (!ByteVector.equal(this.readBlock(4), AiffFile.aiffFormType)) {
+        if (!this.readBlock(4).equals(AiffFile.AIFF_FORM_TYPE)) {
             throw new CorruptFileError("File form type is not AIFF");
         }
 
         // Read the properties of the file
         if (!this._headerBlock && style !== ReadStyle.None) {
-            const commonChunkPos = this.findChunk(AiffFile.commIdentifier, this.position);
+            const commonChunkPos = this.findChunk(AiffFile.COMM_IDENTIFIER, this.position);
             if (commonChunkPos === -1) {
                 throw new CorruptFileError("No common chunk available in this AIFF file");
             }
 
             this.seek(commonChunkPos);
-            this._headerBlock = this.readBlock(AiffStreamHeader.size);
+            this._headerBlock = this.readBlock(AiffStreamHeader.SIZE);
 
             const header = new AiffStreamHeader(this._headerBlock, aiffSize);
             this._properties = new Properties(0, [header]);
         }
 
         // Search for the sound chunk
-        const soundChunkPos = this.findChunk(AiffFile.soundIdentifier, this.position);
+        const soundChunkPos = this.findChunk(AiffFile.SOUND_IDENTIFIER, this.position);
         if (soundChunkPos === -1) {
             throw new CorruptFileError("No sound chunk available in this AIFF file");
         }
         this.seek(this.position + 4);
-        const soundChunkLength = this.readBlock(4).toUInt();
+        const soundChunkLength = this.readBlock(4).toUint();
 
         // Search for the ID3 chunk
-        const id3ChunkPos = this.findChunk(AiffFile.id3Identifier, this.position + soundChunkLength);
+        const id3ChunkPos = this.findChunk(AiffFile.ID3_IDENTIFIER, this.position + soundChunkLength);
         if (id3ChunkPos >= 0) {
             if (readTags && !this._tag) {
                 this._tag = Id3v2Tag.fromFileStart(this, id3ChunkPos + 8, style);
@@ -227,7 +230,7 @@ export default class AiffFile extends File {
 
             // Get the length of the tag from the ID3 chunk
             this.seek(id3ChunkPos + 4);
-            const tagSize = this.readBlock(4).toUInt(true) + 8;
+            const tagSize = this.readBlock(4).toUint(true) + 8;
 
             tagStart = id3ChunkPos;
             tagEnd = tagStart + tagSize;
@@ -243,7 +246,7 @@ export default class AiffFile extends File {
     // #endregion
 }
 
-////////////////////////////////////////////////////////////////////////////
+// /////////////////////////////////////////////////////////////////////////
 // Register the file type
 [
     "taglib/aif",

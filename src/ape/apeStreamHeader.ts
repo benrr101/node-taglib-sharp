@@ -1,6 +1,6 @@
 import {ByteVector, StringType} from "../byteVector";
 import {CorruptFileError} from "../errors";
-import {IAudioCodec, ILosslessAudioCodec, MediaTypes} from "../iCodec";
+import {IAudioCodec, ILosslessAudioCodec, MediaTypes} from "../properties";
 import {Guards} from "../utils";
 
 /**
@@ -45,12 +45,12 @@ export class ApeStreamHeader implements IAudioCodec, ILosslessAudioCodec {
     /**
      * Identifier used to recognize a Monkey's Audio file
      */
-    public static readonly fileIdentifier = ByteVector.fromString("MAC ", StringType.Latin1, undefined, true);
+    public static readonly FILE_IDENTIFIER = ByteVector.fromString("MAC ", StringType.Latin1).makeReadOnly();
 
     /**
      * Size of a Monkey Audio Header
      */
-    public static readonly size = 76;
+    public static readonly SIZE = 76;
 
     // #region Member variables
 
@@ -110,29 +110,29 @@ export class ApeStreamHeader implements IAudioCodec, ILosslessAudioCodec {
     /**
      * Constructs and initializes a new {@link ApeStreamHeader} from a raw header block and stream
      * length.
-     * @param data Raw stream header data beginning with {@link ApeStreamHeader.fileIdentifier}
+     * @param data Raw stream header data beginning with {@link ApeStreamHeader.FILE_IDENTIFIER}
      * @param streamLength Length of the stream in bytes
      */
     // @TODO: Consider tweaking to have this take a file
     public constructor(data: ByteVector, streamLength: number) {
         Guards.truthy(data, "data");
         Guards.safeUint(streamLength, "streamLength");
-        if (!data.startsWith(ApeStreamHeader.fileIdentifier)) {
+        if (!data.startsWith(ApeStreamHeader.FILE_IDENTIFIER)) {
             throw new CorruptFileError("Data does not begin with identifier");
         }
-        if (data.length < ApeStreamHeader.size) {
+        if (data.length < ApeStreamHeader.SIZE) {
             throw new CorruptFileError("Insufficient data in stream header");
         }
 
         this._streamLength = streamLength;
-        this._version = data.mid(4, 2).toUShort(false);
-        this._compression = <ApeCompressionLevel> data.mid(52, 2).toUShort(false);
-        this._blocksPerFrame = data.mid(56, 4).toUInt(false);
-        this._finalFrameBlocks = data.mid(60, 4).toUInt(false);
-        this._totalFrames = data.mid(64, 4).toUInt(false);
-        this._bitsPerSample = data.mid(68, 2).toUShort(false);
-        this._channels = data.mid(70, 2).toUShort(false);
-        this._sampleRate = data.mid(72, 4).toUInt(false);
+        this._version = data.subarray(4, 2).toUshort(false);
+        this._compression = <ApeCompressionLevel> data.subarray(52, 2).toUshort(false);
+        this._blocksPerFrame = data.subarray(56, 4).toUint(false);
+        this._finalFrameBlocks = data.subarray(60, 4).toUint(false);
+        this._totalFrames = data.subarray(64, 4).toUint(false);
+        this._bitsPerSample = data.subarray(68, 2).toUshort(false);
+        this._channels = data.subarray(70, 2).toUshort(false);
+        this._sampleRate = data.subarray(72, 4).toUint(false);
     }
 
     // #region Properties

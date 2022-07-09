@@ -3,23 +3,25 @@ import VbriHeader from "./vbriHeader";
 import {ByteVector} from "../byteVector";
 import {CorruptFileError} from "../errors";
 import {File} from "../file";
-import {IAudioCodec, MediaTypes} from "../iCodec";
+import {IAudioCodec, MediaTypes} from "../properties";
 import {ChannelMode, MpegVersion} from "./mpegEnums";
-import {Guards} from "../utils";
+import {Guards, NumberUtils} from "../utils";
 
 /**
  * Provides information about an MPEG audio stream. For more information and definition of the
  * header, see http://www.mpgedit.org/mpgedit/mpeg_format/mpeghdr.htm
  */
 export default class MpegAudioHeader implements IAudioCodec {
-    public static readonly Unknown: MpegAudioHeader = MpegAudioHeader.fromInfo(
+    // @TODO: make an enum for header flags
+
+    public static readonly UNKNOWN: MpegAudioHeader = MpegAudioHeader.fromInfo(
         0,
         0,
-        XingHeader.unknown,
-        VbriHeader.unknown
+        XingHeader.UNKNOWN,
+        VbriHeader.UNKNOWN
     );
 
-    private static readonly bitrates: number[][][] = [
+    private static readonly BITRATES: number[][][] = [
         [ // Version 1
             [0, 32, 64, 96, 128, 160, 192, 224, 256, 288, 320, 352, 384, 416, 448, -1], // layer 1
             [0, 32, 48, 56,  64,  80,  96, 112, 128, 160, 192, 224, 256, 320, 384, -1], // layer 2
@@ -32,13 +34,13 @@ export default class MpegAudioHeader implements IAudioCodec {
         ]
     ];
 
-    private static readonly blockSize: number[][] = [
+    private static readonly BLOCK_SIZES: number[][] = [
         [0, 384, 1152, 1152], // Version 1
         [0, 384, 1152,  576], // Version 2
         [0, 384, 1152,  576]  // Version 2.5
     ];
 
-    private static readonly sampleRates: number[][] = [
+    private static readonly SAMPLE_RATES: number[][] = [
         [44100, 48000, 32000, 0], // Version 1
         [22050, 24000, 16000, 0], // Version 2
         [11025, 12000,  8000, 0]  // Version 2.5
@@ -52,7 +54,7 @@ export default class MpegAudioHeader implements IAudioCodec {
 
     // #region Constructors
 
-    private constructor() {}
+    private constructor() { /* private to enforce construction via static methods */ }
 
     /**
      * Constructs and initializes a new instance by reading its contents from a data
@@ -63,7 +65,7 @@ export default class MpegAudioHeader implements IAudioCodec {
      * @param position Position into `file` where the header begins, must be a positive
      *     8-bit integer.
      */
-    public static fromData(data: ByteVector, file: File, position: number) {
+    public static fromData(data: ByteVector, file: File, position: number): MpegAudioHeader {
         Guards.truthy(data, "data");
         Guards.truthy(file, "file");
         Guards.safeUint(position, "position");
@@ -77,15 +79,15 @@ export default class MpegAudioHeader implements IAudioCodec {
             throw new CorruptFileError(error);
         }
 
-        header._flags = data.toUInt();
-        header._xingHeader = XingHeader.unknown;
-        header._vbriHeader = VbriHeader.unknown;
+        header._flags = data.toUint();
+        header._xingHeader = XingHeader.UNKNOWN;
+        header._vbriHeader = VbriHeader.UNKNOWN;
 
         // Check for a Xing header that will help us in gathering info about a VBR stream
         file.seek(position + XingHeader.xingHeaderOffset(header.version, header.channelMode));
 
         const xingData = file.readBlock(16);
-        if (xingData.length === 16 && xingData.startsWith(XingHeader.fileIdentifier)) {
+        if (xingData.length === 16 && xingData.startsWith(XingHeader.FILE_IDENTIFIER)) {
             header._xingHeader = XingHeader.fromData(xingData);
         }
 
@@ -94,11 +96,11 @@ export default class MpegAudioHeader implements IAudioCodec {
         }
 
         // A Xing header could not be found, next check for a Fraunhofer VBRI header
-        file.seek(position + VbriHeader.vbriHeaderOffset);
+        file.seek(position + VbriHeader.VBRI_HEADER_OFFSET);
 
         // Only get the first 24 bytes of the header. We're not interested in the TOC entries.
         const vbriData = file.readBlock(24);
-        if (vbriData.length === 24 && vbriData.startsWith(VbriHeader.fileIdentifier)) {
+        if (vbriData.length === 24 && vbriData.startsWith(VbriHeader.FILE_IDENTIFIER)) {
             header._vbriHeader = VbriHeader.fromData(vbriData);
         }
 
@@ -158,8 +160,8 @@ export default class MpegAudioHeader implements IAudioCodec {
 
         const index1 = this.version === MpegVersion.Version1 ? 0 : 1;
         const index2 = this.audioLayer - 1;
-        const index3 = (this._flags >> 12) & 0x0f;
-        return MpegAudioHeader.bitrates[index1][index2][index3];
+        const index3 = NumberUtils.uintAnd(NumberUtils.uintRShift(this._flags, 12), 0x0f);
+        return MpegAudioHeader.BITRATES[index1][index2][index3];
     }
 
     /** @inheritDoc IAudioCodec.audioChannels */
@@ -186,7 +188,7 @@ export default class MpegAudioHeader implements IAudioCodec {
      * Gets the MPEG audio layer used to encode the audio represented by the current instance.
      */
     public get audioLayer(): number {
-        switch ((this._flags >> 17) & 0x03) {
+        switch (NumberUtils.uintAnd(NumberUtils.uintRShift(this._flags, 17), 0x03)) {
             case 1:
                 return 3;
             case 2:
@@ -199,14 +201,14 @@ export default class MpegAudioHeader implements IAudioCodec {
     /** @inheritDoc IAudioCodec.audioSampleRate */
     public get audioSampleRate(): number {
         const index1 = this.version;
-        const index2 = (this._flags >> 10) & 0x03;
-        return MpegAudioHeader.sampleRates[index1][index2];
+        const index2 = NumberUtils.uintAnd(NumberUtils.uintRShift(this._flags, 10), 0x03);
+        return MpegAudioHeader.SAMPLE_RATES[index1][index2];
     }
 
     /**
      * Gets the MPEG audio channel mode of the audio represented by the current instance.
      */
-    public get channelMode(): ChannelMode { return (this._flags >> 6) & 0x03; }
+    public get channelMode(): ChannelMode { return NumberUtils.uintAnd(NumberUtils.uintRShift(this._flags, 6), 0x03); }
 
     /** @inheritDoc ICodec.description */
     public get description(): string {
@@ -235,14 +237,15 @@ export default class MpegAudioHeader implements IAudioCodec {
     public get durationMilliseconds(): number {
         if (this._durationMilliseconds > 0) { return this._durationMilliseconds; }
 
+        const blockSizeForVersionAndLayer = MpegAudioHeader.BLOCK_SIZES[this.version][this.audioLayer];
         if (this._xingHeader.totalFrames > 0) {
             // Read the length and the bitrate from the Xing header
-            const timePerFrameSeconds = MpegAudioHeader.blockSize[this.version][this.audioLayer] / this.audioSampleRate;
+            const timePerFrameSeconds = blockSizeForVersionAndLayer / this.audioSampleRate;
             const durationSeconds = timePerFrameSeconds * this._xingHeader.totalFrames;
             this._durationMilliseconds = durationSeconds * 1000;
         } else if (this._vbriHeader.totalFrames > 0) {
             // Read the length and the bitrate from the VBRI header
-            const timePerFrameSeconds = MpegAudioHeader.blockSize[this.version][this.audioLayer] / this.audioSampleRate;
+            const timePerFrameSeconds = blockSizeForVersionAndLayer / this.audioSampleRate;
             const durationSeconds = Math.round(timePerFrameSeconds * this._vbriHeader.totalFrames);
             this._durationMilliseconds = durationSeconds * 1000;
         } else if (this.audioFrameLength > 0 && this.audioBitrate > 0) {
@@ -257,6 +260,8 @@ export default class MpegAudioHeader implements IAudioCodec {
 
         return this._durationMilliseconds;
     }
+
+    // TODO: Introduce an MPEG flags enum
 
     /**
      * Whether or not the current audio is copyrighted.
@@ -297,7 +302,7 @@ export default class MpegAudioHeader implements IAudioCodec {
     }
 
     /**
-     * Gets the VBRI header found in the audio. {@link VbriHeader.unknown} is returned if no header
+     * Gets the VBRI header found in the audio. {@link VbriHeader.UNKNOWN} is returned if no header
      * was found.
      */
     public get vbriHeader(): VbriHeader { return this._vbriHeader; }
@@ -317,7 +322,7 @@ export default class MpegAudioHeader implements IAudioCodec {
     }
 
     /**
-     * Gets the Xing header found in the audio. {@link XingHeader.unknown} is returned if no header
+     * Gets the Xing header found in the audio. {@link XingHeader.UNKNOWN} is returned if no header
      * was found.
      */
     public get xingHeader(): XingHeader { return this._xingHeader; }
@@ -352,12 +357,12 @@ export default class MpegAudioHeader implements IAudioCodec {
         do {
             // @TODO: ugh, this has that bizarre 3 byteoffset into each read, remove it
             file.seek(position + 3);
-            buffer = buffer.mid(buffer.length - 3);
+            buffer = buffer.subarray(buffer.length - 3);
             buffer.addByteVector(file.readBlock(File.bufferSize));
 
             for (let i = 0; i < buffer.length - 3 && (length === undefined || position + i < end); i++) {
                 if (buffer.get(i) === 0xFF && buffer.get(i + 1) > 0xE0) {
-                    const data = buffer.mid(i, 4);
+                    const data = buffer.subarray(i, 4);
                     if (!this.getHeaderError(data)) {
                         try {
                             return MpegAudioHeader.fromData(data, file, position + i);
@@ -389,15 +394,15 @@ export default class MpegAudioHeader implements IAudioCodec {
         // - Bits 4 and 5 can be 00, 10, or 11 but not 01
         // - One or more of bits 6 and 7 must be set
         // - Bit 8 can be anything
-        if ((data.get(1) & 0xE6) <= 0xE0 || (data.get(1) & 0x18) === 0x08) {
+        if (NumberUtils.uintAnd(data.get(1), 0xE6) <= 0xE0 || NumberUtils.uintAnd(data.get(1), 0x18) === 0x08) {
             return "Second byte did not match MPEG sync";
         }
 
-        const flags = data.toUInt();
-        if (((flags >> 12) & 0x0F) === 0x0F) {
+        const flags = data.toUint();
+        if (NumberUtils.hasFlag(NumberUtils.uintRShift(flags, 12), 0x0F, true)) {
             return "Header uses invalid bitrate index";
         }
-        if (((flags >> 10) & 0x03) === 0x03) {
+        if (NumberUtils.hasFlag(NumberUtils.uintRShift(flags, 10), 0x03, true)) {
             return "Invalid sample rate";
         }
 

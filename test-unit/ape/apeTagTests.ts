@@ -1,28 +1,25 @@
-import * as Chai from "chai";
 import * as TypeMoq from "typemoq";
 import {suite, test} from "@testdeck/mocha";
+import {assert} from "chai";
 
 import ApeTag from "../../src/ape/apeTag";
 import PropertyTests from "../utilities/propertyTests";
 import TestFile from "../utilities/testFile";
 import {ApeTagFooter, ApeTagFooterFlags} from "../../src/ape/apeTagFooter";
 import {ApeTagItem, ApeTagItemType} from "../../src/ape/apeTagItem";
-import {ByteVector} from "../../src/byteVector";
+import {ByteVector, StringType} from "../../src/byteVector";
 import {File} from "../../src/file";
-import {IPicture, PictureType} from "../../src/iPicture";
+import {IPicture, PictureType} from "../../src/picture";
 import {TagTypes} from "../../src/tag";
 import {Testers} from "../utilities/testers";
 
-// Setup chai
-const assert = Chai.assert;
-
-function getTestTagFooter(flags: ApeTagFooterFlags, itemCount: number, itemPlusFooter: number): ByteVector {
+const getTestTagFooter = (flags: ApeTagFooterFlags, itemCount: number, itemPlusFooter: number): ByteVector => {
     return ByteVector.concatenate(
-        ApeTagFooter.fileIdentifier,
-        ByteVector.fromUInt(2000, false),
-        ByteVector.fromUInt(itemPlusFooter, false),
-        ByteVector.fromUInt(itemCount, false),
-        ByteVector.fromUInt(flags, false),
+        ApeTagFooter.FILE_IDENTIFIER,
+        ByteVector.fromUint(2000, false),
+        ByteVector.fromUint(itemPlusFooter, false),
+        ByteVector.fromUint(itemCount, false),
+        ByteVector.fromUint(flags, false),
         ByteVector.fromSize(8)
     );
 }
@@ -64,7 +61,7 @@ function getTestTagFooter(flags: ApeTagFooterFlags, itemCount: number, itemPlusF
     @test
     public fromData_emptyTag() {
         // Arrange
-        const data = getTestTagFooter(ApeTagFooterFlags.HeaderPresent, 0, ApeTagFooter.size);
+        const data = getTestTagFooter(ApeTagFooterFlags.HeaderPresent, 0, ApeTagFooter.SIZE);
 
         // Act
         const tag = ApeTag.fromData(data);
@@ -85,7 +82,7 @@ function getTestTagFooter(flags: ApeTagFooterFlags, itemCount: number, itemPlusF
         const data = ByteVector.concatenate(
             item1,
             item2,
-            getTestTagFooter(0, 3, item1.length + item2.length + ApeTagFooter.size)
+            getTestTagFooter(0, 3, item1.length + item2.length + ApeTagFooter.SIZE)
         );
 
         // Act
@@ -147,8 +144,10 @@ function getTestTagFooter(flags: ApeTagFooterFlags, itemCount: number, itemPlusF
     @test
     public fromFile_emptyTag() {
         // Arrange
-        const data = getTestTagFooter(ApeTagFooterFlags.HeaderPresent, 0, ApeTagFooter.size);
-        data.insertByteVector(0, ByteVector.fromSize(10));
+        const data = ByteVector.concatenate(
+            ByteVector.fromSize(10),
+            getTestTagFooter(ApeTagFooterFlags.HeaderPresent, 0, ApeTagFooter.SIZE)
+        );
         const file = TestFile.getFile(data);
 
         // Act
@@ -167,11 +166,11 @@ function getTestTagFooter(flags: ApeTagFooterFlags, itemCount: number, itemPlusF
         const item1 = ApeTagItem.fromTextValues("key1", "value1").render();
         const item2 = ApeTagItem.fromTextValues("key2", "value2").render();
         const data = ByteVector.concatenate(
+            ByteVector.fromSize(10),
             item1,
             item2,
-            getTestTagFooter(0, 3, item1.length + item2.length + ApeTagFooter.size)
+            getTestTagFooter(0, 3, item1.length + item2.length + ApeTagFooter.SIZE)
         );
-        data.insertByteVector(0, ByteVector.fromSize(10));
         const footerPosition = item1.length + item2.length + 10;
         const file = TestFile.getFile(data);
 
@@ -210,8 +209,8 @@ function getTestTagFooter(flags: ApeTagFooterFlags, itemCount: number, itemPlusF
     public fromFile_positionIsAtHeader() {
         // Arrange
         const flags = (ApeTagFooterFlags.IsHeader | ApeTagFooterFlags.HeaderPresent) >>> 0;
-        const header = getTestTagFooter(flags, 0, ApeTagFooter.size);
-        const footer = getTestTagFooter(ApeTagFooterFlags.HeaderPresent, 0, ApeTagFooter.size);
+        const header = getTestTagFooter(flags, 0, ApeTagFooter.SIZE);
+        const footer = getTestTagFooter(ApeTagFooterFlags.HeaderPresent, 0, ApeTagFooter.SIZE);
         const data = ByteVector.concatenate(
             ByteVector.fromSize(10),
             header,
@@ -662,11 +661,11 @@ function getTestTagFooter(flags: ApeTagFooterFlags, itemCount: number, itemPlusF
         const mockPicture1 = TypeMoq.Mock.ofType<IPicture>();
         mockPicture1.setup((p) => p.description).returns(() => "foo");
         mockPicture1.setup((p) => p.type).returns(() => PictureType.ColoredFish);
-        mockPicture1.setup((p) => p.data).returns(() => ByteVector.fromString("bar"));
+        mockPicture1.setup((p) => p.data).returns(() => ByteVector.fromString("bar", StringType.UTF8));
         const mockPicture2 = TypeMoq.Mock.ofType<IPicture>();
         mockPicture2.setup((p) => p.description).returns(() => "fux");
         mockPicture2.setup((p) => p.type).returns(() => PictureType.NotAPicture);
-        mockPicture2.setup((p) => p.data).returns(() => ByteVector.fromString("bux"));
+        mockPicture2.setup((p) => p.data).returns(() => ByteVector.fromString("bux", StringType.UTF8));
 
         // Act / Assert
         assert.ok(tag.pictures);
@@ -683,10 +682,10 @@ function getTestTagFooter(flags: ApeTagFooterFlags, itemCount: number, itemPlusF
         assert.strictEqual(pictures.length, 2);
         assert.strictEqual(pictures[0].description, "foo");
         assert.strictEqual(pictures[0].type, PictureType.ColoredFish);
-        Testers.bvEqual(pictures[0].data, ByteVector.fromString("bar"));
+        Testers.bvEqual(pictures[0].data, ByteVector.fromString("bar", StringType.UTF8));
         assert.strictEqual(pictures[1].description, "fux");
         assert.strictEqual(pictures[1].type, PictureType.NotAPicture);
-        Testers.bvEqual(pictures[1].data, ByteVector.fromString("bux"));
+        Testers.bvEqual(pictures[1].data, ByteVector.fromString("bux", StringType.UTF8));
 
         tag.pictures = undefined;
         assert.strictEqual(tag.items.length, 0);
@@ -1220,8 +1219,8 @@ function getTestTagFooter(flags: ApeTagFooterFlags, itemCount: number, itemPlusF
     public render() {
         // Arrange
         const flags = (ApeTagFooterFlags.IsHeader | ApeTagFooterFlags.HeaderPresent) >>> 0;
-        let header = getTestTagFooter(flags, 0, ApeTagFooter.size);
-        let footer = getTestTagFooter(ApeTagFooterFlags.HeaderPresent, 0, ApeTagFooter.size);
+        let header = getTestTagFooter(flags, 0, ApeTagFooter.SIZE);
+        let footer = getTestTagFooter(ApeTagFooterFlags.HeaderPresent, 0, ApeTagFooter.SIZE);
         const data = ByteVector.concatenate(
             ByteVector.fromSize(10),
             header,
@@ -1240,7 +1239,7 @@ function getTestTagFooter(flags: ApeTagFooterFlags, itemCount: number, itemPlusF
         // Assert
         const item1Render = item1.render();
         const item2Render = item2.render();
-        const tagSize = ApeTagFooter.size + item1Render.length + item2Render.length;
+        const tagSize = ApeTagFooter.SIZE + item1Render.length + item2Render.length;
         header = getTestTagFooter(flags, 2, tagSize);
         footer = getTestTagFooter(ApeTagFooterFlags.HeaderPresent, 2, tagSize);
         const expected = ByteVector.concatenate(

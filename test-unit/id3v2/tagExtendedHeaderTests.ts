@@ -1,12 +1,9 @@
-import * as Chai from "chai";
 import {suite, test} from "@testdeck/mocha";
+import {assert} from "chai";
 
 import Id3v2ExtendedHeader from "../../src/id3v2/id3v2ExtendedHeader";
 import {ByteVector} from "../../src/byteVector";
 import {Testers} from "../utilities/testers";
-
-// Setup chai
-const assert = Chai.assert;
 
 @suite class Id3v2_TagExtendedHeaderTests {
     @test

@@ -1,12 +1,11 @@
 import BaseObject from "./baseObject";
 import ReadWriteUtils from "../readWriteUtils";
+import UnknownObject from "./unknownObject";
 import {ByteVector} from "../../byteVector";
 import {Guids, ObjectType} from "../constants";
 import {CorruptFileError} from "../../errors";
 import {File} from "../../file";
-import readWriteUtils from "../readWriteUtils";
 import {MetadataLibraryObject} from "./metadataLibraryObject";
-import UnknownObject from "./unknownObject";
 
 /**
  * This class extends {@link BaseObject} to provide a representation of an ASF header extension
@@ -29,17 +28,17 @@ export default class HeaderExtensionObject extends BaseObject {
         const instance = new HeaderExtensionObject();
         instance.initializeFromFile(file, position);
 
-        if (!instance.guid.equals(Guids.AsfHeaderExtensionObject)) {
+        if (!instance.guid.equals(Guids.ASF_HEADER_EXTENSION_OBJECT)) {
             throw new CorruptFileError("Object GUID does not match expected header extension object GUID");
         }
-        if (!ReadWriteUtils.readGuid(file).equals(Guids.AsfReserved1)) {
+        if (!ReadWriteUtils.readGuid(file).equals(Guids.ASF_RESERVED)) {
             throw new CorruptFileError("Expected reserved1 GUID was not found");
         }
         if (ReadWriteUtils.readWord(file) !== 6) {
             throw new CorruptFileError("Invalid reserved word, expected '6'");
         }
 
-        let sizeRemaining = readWriteUtils.readDWord(file);
+        let sizeRemaining = ReadWriteUtils.readDWord(file);
         position += 0x170 / 8;
 
         while (sizeRemaining > 0) {
@@ -84,7 +83,7 @@ export default class HeaderExtensionObject extends BaseObject {
     public render(): ByteVector {
         const renderedChildren = ByteVector.concatenate(...(this._children.map((o) => o.render())));
         const output = ByteVector.concatenate(
-            Guids.AsfReserved1.toBytes(),
+            Guids.ASF_RESERVED.toBytes(),
             ReadWriteUtils.renderWord(6),
             ReadWriteUtils.renderDWord(renderedChildren.length),
             renderedChildren
@@ -96,7 +95,7 @@ export default class HeaderExtensionObject extends BaseObject {
         file.seek(position);
         const guid = ReadWriteUtils.readGuid(file);
 
-        if (guid.equals(Guids.AsfMetadataLibraryObject)) {
+        if (guid.equals(Guids.ASF_METADATA_LIBRARY_OBJECT)) {
             return MetadataLibraryObject.fromFile(file, position);
         }
 

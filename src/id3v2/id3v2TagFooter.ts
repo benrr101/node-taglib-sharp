@@ -1,12 +1,16 @@
 import Id3v2Settings from "./id3v2Settings";
 import SyncData from "./syncData";
-import {ByteVector} from "../byteVector";
+import {ByteVector, StringType} from "../byteVector";
 import {CorruptFileError} from "../errors";
 import {Id3v2TagHeader, Id3v2TagHeaderFlags} from "./id3v2TagHeader";
-import {Guards} from "../utils";
+import {Guards, NumberUtils} from "../utils";
 
 export default class Id3v2TagFooter {
-    private static readonly _fileIdentifier: ByteVector = ByteVector.fromString("3DI", undefined, undefined, true);
+    /**
+     * Identifier used to recognize an ID3v2 footer.
+     */
+    public static readonly FILE_IDENTIFIER = ByteVector.fromString("3DI", StringType.Latin1).makeReadOnly();
+
     private _flags: Id3v2TagHeaderFlags = Id3v2TagHeaderFlags.FooterPresent;
     private _majorVersion: number = 0;
     private _revisionNumber: number = 0;
@@ -21,7 +25,7 @@ export default class Id3v2TagFooter {
         if (data.length < Id3v2Settings.footerSize) {
             throw new CorruptFileError("Provided data is smaller than object size.");
         }
-        if (!data.startsWith(Id3v2TagFooter.fileIdentifier)) {
+        if (!data.startsWith(Id3v2TagFooter.FILE_IDENTIFIER)) {
             throw new CorruptFileError("Provided data does not start with the file identifier");
         }
 
@@ -31,13 +35,13 @@ export default class Id3v2TagFooter {
         footer._flags = data.get(5);
 
         // TODO: Is there any point to supporting footers on versions less than 4?
-        if (footer._majorVersion === 2 && (footer._flags & 127) !== 0) {
+        if (footer._majorVersion === 2 && NumberUtils.hasFlag(footer._flags, 127)) {
             throw new CorruptFileError("Invalid flags set on version 2 tag");
         }
-        if (footer._majorVersion === 3 && (footer._flags & 15) !== 0) {
+        if (footer._majorVersion === 3 && NumberUtils.hasFlag(footer._flags, 15)) {
             throw new CorruptFileError("Invalid flags set on version 3 tag");
         }
-        if (footer._majorVersion === 4 && (footer._flags & 7) !== 0) {
+        if (footer._majorVersion === 4 && NumberUtils.hasFlag(footer._flags, 7)) {
             throw new CorruptFileError("Invalid flags set on version 4 tag");
         }
 
@@ -47,7 +51,7 @@ export default class Id3v2TagFooter {
             }
         }
 
-        footer.tagSize = SyncData.toUint(data.mid(6, 4));
+        footer.tagSize = SyncData.toUint(data.subarray(6, 4));
 
         return footer;
     }
@@ -72,11 +76,6 @@ export default class Id3v2TagFooter {
     // #region Properties
 
     /**
-     * Identifier used to recognize an ID3v2 footer.
-     */
-    public static get fileIdentifier(): ByteVector { return this._fileIdentifier; }
-
-    /**
      * Gets the complete size of the tag described by the current instance including the header
      * and footer.
      */
@@ -95,11 +94,11 @@ export default class Id3v2TagFooter {
      */
     public set flags(value: Id3v2TagHeaderFlags) {
         const version3Flags = Id3v2TagHeaderFlags.ExtendedHeader | Id3v2TagHeaderFlags.ExperimentalIndicator;
-        if ((value & version3Flags) !== 0 && this.majorVersion < 3) {
+        if (NumberUtils.hasFlag(value, version3Flags) && this.majorVersion < 3) {
             throw new Error("Feature only supported in version 2.3+");
         }
         const version4Flags = Id3v2TagHeaderFlags.FooterPresent;
-        if ((value & version4Flags) !== 0 && this.majorVersion < 4) {
+        if (NumberUtils.hasFlag(value, version4Flags) && this.majorVersion < 4) {
             throw new Error("Feature only supported in version 2.4+");
         }
 
@@ -157,7 +156,7 @@ export default class Id3v2TagFooter {
      */
     public set tagSize(value: number) {
         Guards.uint(value, "value");
-        if ((value & 0xF0000000) !== 0) {
+        if (NumberUtils.hasFlag(value, 0xF0000000)) {
             throw new Error("Argument out of range: value must be a 28-bit unsigned integer");
         }
 
@@ -168,7 +167,7 @@ export default class Id3v2TagFooter {
 
     public render(): ByteVector {
         return ByteVector.concatenate(
-            Id3v2TagFooter.fileIdentifier,
+            Id3v2TagFooter.FILE_IDENTIFIER,
             this.majorVersion,
             this.revisionNumber,
             this.flags,

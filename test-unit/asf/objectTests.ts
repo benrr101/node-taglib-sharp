@@ -1,14 +1,11 @@
-import * as Chai from "chai";
 import {test} from "@testdeck/mocha";
+import {assert} from "chai";
 
 import TestFile from "../utilities/testFile";
 import UuidWrapper from "../../src/uuidWrapper";
 import {ByteVector} from "../../src/byteVector";
 import {Testers} from "../utilities/testers";
 import {File} from "../../src/file";
-
-// Setup chai
-const assert = Chai.assert;
 
 export default abstract class ObjectTests<TObject> {
     protected abstract get fromFileConstructor(): (f: File, p: number) => TObject;
@@ -36,7 +33,7 @@ export default abstract class ObjectTests<TObject> {
         const data = ByteVector.concatenate(
             ByteVector.fromSize(10), // Offset
             this.objectGuid.toBytes(), // Object ID
-            ByteVector.fromULong(Math.min(26, this.minSize - 10)) // Object size
+            ByteVector.fromUlong(Math.min(26, this.minSize - 10)) // Object size
         );
         const file = TestFile.getFile(data);
 
@@ -55,7 +52,7 @@ export default abstract class ObjectTests<TObject> {
         const data = ByteVector.concatenate(
             ByteVector.fromSize(10), // Offset
             new UuidWrapper().toBytes(), // Object ID
-            ByteVector.fromULong(123), // Object size
+            ByteVector.fromUlong(123), // Object size
             ByteVector.fromSize(20) // Just some bogus bytes
         );
         const file = TestFile.getFile(data);

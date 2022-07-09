@@ -18,7 +18,7 @@ import {Guards} from "../utils";
  * file but could be used by other classes. It currently supports ID3v2 and APE tags.
  */
 export default class StartTag extends CombinedTag {
-    public static readonly supportedTagTypes: TagTypes = TagTypes.Ape | TagTypes.Id3v2;
+    public static readonly SUPPORTED_TAG_TYPES: TagTypes = TagTypes.Ape | TagTypes.Id3v2;
 
     /**
      * Constructs and initializes a new instance by reading tags from the beginning of the
@@ -27,7 +27,7 @@ export default class StartTag extends CombinedTag {
      * @param readStyle How deeply to read the tag and its properties
      */
     public constructor(file: File, readStyle: ReadStyle) {
-        super(StartTag.supportedTagTypes);
+        super(StartTag.SUPPORTED_TAG_TYPES, true);
         Guards.truthy(file, "file");
         this.read(file, readStyle);
     }
@@ -35,7 +35,7 @@ export default class StartTag extends CombinedTag {
     // #region Public Methods
 
     /** @inheritDoc */
-    public createTag(type: TagTypes, copy: boolean) {
+    public createTag(type: TagTypes, copy: boolean): Tag {
         this.validateTagCreation(type);
 
         let tag: Tag;
@@ -90,37 +90,36 @@ export default class StartTag extends CombinedTag {
 class StartTagParser extends TagParser {
     // Size of the block to read when looking for a tag header, this must be large to contain the
     // largest header identifier (at the time of writing, this is APE).
-    private static readonly readSize = Math.max(
-        ApeTagFooter.size,
+    private static readonly READ_SIZE = Math.max(
+        ApeTagFooter.SIZE,
         Id3v2Settings.headerSize
     );
-    private static readonly identifierMappings = [
+    private static readonly IDENTIFIER_MAPPINGS = [
         {
-            action: (f: File, p: number, _rs: ReadStyle) => ApeTag.fromFile(f, p),
-            identifier: ApeTagFooter.fileIdentifier,
+            action: (f: File, p: number) => ApeTag.fromFile(f, p),
+            identifier: ApeTagFooter.FILE_IDENTIFIER,
         },
         {
             action: (f: File, p: number, rs: ReadStyle) => Id3v2Tag.fromFileStart(f, p, rs),
-            identifier: Id3v2TagHeader.fileIdentifier
+            identifier: Id3v2TagHeader.FILE_IDENTIFIER
         }
     ];
 
     public constructor(file: File, readStyle: ReadStyle) {
-        super(file, readStyle);
-        this._fileOffset = 0;
+        super(file, readStyle, 0);
     }
 
     public read(): boolean {
         try {
             // Read a header from the file
-            this._file.seek(this._fileOffset);
-            const tagHeaderBlock = this._file.readBlock(StartTagParser.readSize);
+            this.file.seek(this.fileOffset);
+            const tagHeaderBlock = this.file.readBlock(StartTagParser.READ_SIZE);
 
             // Check for any identifier of a tag
-            for (const mapping of StartTagParser.identifierMappings) {
+            for (const mapping of StartTagParser.IDENTIFIER_MAPPINGS) {
                 if (tagHeaderBlock.startsWith(mapping.identifier)) {
-                    this._currentTag = mapping.action(this._file, this._fileOffset, this._readStyle);
-                    this._fileOffset += this._currentTag.sizeOnDisk;
+                    this.currentTag = mapping.action(this.file, this.fileOffset, this.readStyle);
+                    this.fileOffset += this.currentTag.sizeOnDisk;
                     return true;
                 }
             }

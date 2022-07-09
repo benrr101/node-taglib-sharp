@@ -139,7 +139,7 @@ export default class TermsOfUseFrame extends Frame {
      * @returns TermsOfUseFrame Frame containing the matching frame or `undefined` if a match was
      *     not found
      */
-    public static findPreferred(frames: TermsOfUseFrame[], language: string) {
+    public static findPreferred(frames: TermsOfUseFrame[], language: string): TermsOfUseFrame {
         Guards.truthy(frames, "frames");
 
         let bestFrame: TermsOfUseFrame;
@@ -172,26 +172,25 @@ export default class TermsOfUseFrame extends Frame {
     // #region Protected Methods
 
     /** @inheritDoc */
-    protected parseFields(data: ByteVector, _version: number): void {
+    protected parseFields(data: ByteVector): void {
         if (data.length < 4) {
             throw new CorruptFileError("Not enough bytes in field");
         }
 
         this.textEncoding = data.get(0);
-        this._language = data.toString(3, StringType.Latin1, 1);
-        this.text = data.toString(data.length - 4, this.textEncoding, 4);
+        this._language = data.subarray(1, 3).toString(StringType.Latin1);
+        this.text = data.subarray(4).toString(this.textEncoding);
     }
 
     /** @inheritDoc */
-    protected renderFields(version: number) {
+    protected renderFields(version: number): ByteVector {
         const encoding = Frame.correctEncoding(this.textEncoding, version);
 
-        const v = ByteVector.empty();
-        v.addByte(encoding);
-        v.addByteVector(ByteVector.fromString(this.language, StringType.Latin1));
-        v.addByteVector(ByteVector.fromString(this.text, encoding));
-
-        return v;
+        return ByteVector.concatenate(
+            encoding,
+            ByteVector.fromString(this.language, StringType.Latin1),
+            ByteVector.fromString(this.text, encoding)
+        );
     }
 
     // #endregion

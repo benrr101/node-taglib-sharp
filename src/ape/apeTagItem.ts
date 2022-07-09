@@ -1,6 +1,6 @@
 import {ByteVector, StringType} from "../byteVector";
 import {CorruptFileError} from "../errors";
-import {Guards} from "../utils";
+import {Guards, NumberUtils} from "../utils";
 
 /**
  * Indicates the type of data stored in a {@link ApeTagItem} object.
@@ -22,6 +22,9 @@ export enum ApeTagItemType {
     Locator = 2
 }
 
+/**
+ * Class that represents a property in an APE tag.
+ */
 export class ApeTagItem {
     private _data: ByteVector;
     private _isReadonly: boolean = false;
@@ -32,7 +35,7 @@ export class ApeTagItem {
 
     // #region Constructors
 
-    private constructor() {}
+    private constructor() { /* empty to enforce static construction */ }
 
     /**
      * Constructs and initializes a new instance of {@link ApeTagItem} with a specified key and binary
@@ -47,7 +50,7 @@ export class ApeTagItem {
         const item = new ApeTagItem();
         item._key = key;
         item._type = ApeTagItemType.Binary;
-        item._data = value.isReadOnly ? value : ByteVector.fromByteVector(value, true);
+        item._data = value;
 
         return item;
     }
@@ -69,16 +72,18 @@ export class ApeTagItem {
             throw new CorruptFileError("Not enough data for APE item");
         }
 
-        const valueLength = data.mid(offset, 4).toUInt(false);
-        const flags = data.mid(offset + 4, 4).toUInt(false);
+        const valueLength = data.subarray(offset, 4).toUint(false);
+        const flags = data.subarray(offset + 4, 4).toUint(false);
 
         // Read flag data
-        item._isReadonly = (flags & 1) > 0;
-        item._type = <ApeTagItemType> ((flags >> 1) & 3);
+        item._isReadonly = NumberUtils.hasFlag(flags, 1);
+        item._type = <ApeTagItemType> NumberUtils.uintAnd(NumberUtils.uintRShift(flags, 1), 3);
 
         // Read key
-        const keyEndIndex = data.find(ByteVector.getTextDelimiter(StringType.UTF8), offset + 8);
-        item._key = data.toString(keyEndIndex - offset - 8, StringType.UTF8, offset + 8);
+        const keyStartIndex = offset + 8;
+        const keyEndIndex = data.offsetFind(ByteVector.getTextDelimiter(StringType.UTF8), offset + 8);
+        const keyLength = keyEndIndex - keyStartIndex;
+        item._key = data.subarray(keyStartIndex, keyLength).toString(StringType.UTF8);
 
         if (valueLength > data.length - keyEndIndex - 1) {
             throw new CorruptFileError("Invalid data length");
@@ -88,9 +93,9 @@ export class ApeTagItem {
         item._size = keyEndIndex - offset + 1 + valueLength;
 
         if (item._type === ApeTagItemType.Binary) {
-            item._data = ByteVector.fromByteVector(data.mid(keyEndIndex + 1), true);
+            item._data = data.subarray(keyEndIndex + 1).toByteVector();
         } else {
-            item._text = data.mid(keyEndIndex + 1, valueLength).toStrings(StringType.UTF8, 0);
+            item._text = data.subarray(keyEndIndex + 1, valueLength).toStrings(StringType.UTF8);
         }
 
         return item;
@@ -178,7 +183,7 @@ export class ApeTagItem {
         const newItem = new ApeTagItem();
         newItem._type = this._type;
         newItem._key = this._key;
-        newItem._data = this._data ? ByteVector.fromByteVector(this._data, true) : undefined;
+        newItem._data = this._data ? this._data.toByteVector() : undefined;
         newItem._text = this._text ? this._text.slice() : undefined;
         newItem._isReadonly = this._isReadonly;
         newItem._size = this._size;
@@ -200,18 +205,20 @@ export class ApeTagItem {
             value = this._data;
         } else {
             const vectors = this._text.reduce<ByteVector[]>((acc, e, i) => {
-                return i > 0
-                    ? acc.concat(ByteVector.getTextDelimiter(StringType.UTF8), ByteVector.fromString(e))
-                    : [ByteVector.fromString(e)];
-            }, undefined);
+                if (i > 0) {
+                    acc.push(ByteVector.getTextDelimiter(StringType.UTF8));
+                }
+                acc.push(ByteVector.fromString(e, StringType.UTF8));
+                return acc;
+            }, []);
             value = ByteVector.concatenate(...vectors);
         }
 
         // Calculate the flags and length
         let flags = this._isReadonly ? 1 : 0;
         flags |= this._type << 1;
-        const flagsVector = ByteVector.fromUInt(flags, false);
-        const sizeVector = ByteVector.fromUInt(value.length, false);
+        const flagsVector = ByteVector.fromUint(flags, false);
+        const sizeVector = ByteVector.fromUint(value.length, false);
 
         // Put it all together
         const output = ByteVector.concatenate(

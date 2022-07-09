@@ -250,11 +250,11 @@ class Riff_RiffListTagTests {
         assert.isEmpty(tag.getValues("TXT1"));
     }
 
-    private static readonly data1 = ByteVector.fromString("foo", undefined, undefined, true);
-    private static readonly data2 = ByteVector.fromString("barbaz", undefined, undefined, true);
-    private static readonly data3 = ByteVector.fromString("buxfux", undefined, undefined, true);
-    private static readonly data4 = ByteVector.fromString("nan", undefined, undefined, false);
-    private static readonly data5 = ByteVector.fromString("234", undefined, undefined, false);
+    private static readonly data1 = ByteVector.fromString("foo", StringType.UTF8);
+    private static readonly data2 = ByteVector.fromString("barbaz", StringType.UTF8);
+    private static readonly data3 = ByteVector.fromString("buxfux", StringType.UTF8);
+    private static readonly data4 = ByteVector.fromString("nan", StringType.UTF8);
+    private static readonly data5 = ByteVector.fromString("234", StringType.UTF8);
 
     private static getTestList(): RiffList {
         const list = RiffList.fromEmpty("TEST");

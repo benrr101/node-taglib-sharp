@@ -69,15 +69,9 @@ export class ChannelData {
 
         const channelType = bytes.get(0);
         const channelData = new ChannelData(channelType);
-        channelData._volumeAdjustment = bytes.mid(1, 2).toShort();
+        channelData._volumeAdjustment = bytes.subarray(1, 2).toShort();
         channelData._peakBits = bytes.get(3);
-
-        const peakByteCount = Math.ceil(channelData._peakBits / 8);
-        const peakBytes = bytes.mid(4);
-        const zeroes = ByteVector.fromSize(peakByteCount - peakBytes.length, 0x00);
-        peakBytes.insertByteVector(0, zeroes);
-        channelData._peakVolume = peakBytes.toULong();
-
+        channelData._peakVolume = bytes.subarray(4).toUlong();
         return channelData;
     }
 
@@ -98,6 +92,7 @@ export class ChannelData {
      * @param value Bits used to express the peak volume. Must be an integer betweenInclusive 1 and 64
      */
     public set peakBits(value: number) {
+        // @TODO: This should be calculated based on peak volume
         Guards.byte(value, "value");
         Guards.betweenInclusive(value, 1, 64, "value");
         this._peakBits = value;
@@ -157,7 +152,7 @@ export class ChannelData {
             this._channel,
             ByteVector.fromShort(this._volumeAdjustment),
             this._peakBits,
-            ByteVector.fromULong(this._peakVolume).mid(8 - peakByteCount)
+            ByteVector.fromUlong(this._peakVolume).subarray(8 - peakByteCount)
         );
     }
 }
@@ -291,7 +286,7 @@ export class RelativeVolumeFrame extends Frame {
      * @param type Which channel to set the value for
      * @param value Peak volume
      */
-    public setPeakBits(type: ChannelType, value: number) { this._channels[type].peakBits = value; }
+    public setPeakBits(type: ChannelType, value: number): void { this._channels[type].peakBits = value; }
 
     /**
      * Sets the peak volume for a specified channel.
@@ -321,18 +316,18 @@ export class RelativeVolumeFrame extends Frame {
     // #region Protected/Private Methods
 
     /** @inheritDoc */
-    protected parseFields(data: ByteVector, _version: number): void {
+    protected parseFields(data: ByteVector): void {
         const identifierEndIndex = data.find(ByteVector.getTextDelimiter(StringType.Latin1));
         if (identifierEndIndex < 0) {
             return;
         }
 
-        this._identification = data.toString(identifierEndIndex, StringType.Latin1);
+        this._identification = data.subarray(0, identifierEndIndex).toString(StringType.Latin1);
 
         let pos = identifierEndIndex + 1;
         while (pos < data.length) {
             const dataLength = 4 + Math.ceil(data.get(pos + 3) / 8);
-            const dataBytes = data.mid(pos, dataLength);
+            const dataBytes = data.subarray(pos, dataLength);
 
             // If we're at the end of the vector, we'll just end processing
             if (dataBytes.length !== dataLength) {
@@ -346,7 +341,7 @@ export class RelativeVolumeFrame extends Frame {
     }
 
     /** @inheritDoc */
-    protected renderFields(_version: number): ByteVector {
+    protected renderFields(): ByteVector {
         const data = ByteVector.fromString(this.identification, StringType.Latin1);
         data.addByteVector(ByteVector.getTextDelimiter(StringType.Latin1));
 

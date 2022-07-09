@@ -1,9 +1,10 @@
 import AsfTag from "./asfTag";
 import HeaderObject from "./objects/headerObject";
-import Properties from "../properties";
 import {File, FileAccessMode, ReadStyle} from "../file";
 import {IFileAbstraction} from "../fileAbstraction";
+import {Properties} from "../properties";
 import {Tag, TagTypes} from "../tag";
+import {NumberUtils} from "../utils";
 
 /**
  * This class provides tagging and properties support for Microsoft's ASF files.
@@ -19,12 +20,12 @@ export default class AsfFile extends File {
         try {
             const header = HeaderObject.fromFile(this, 0);
             if (header.hasContentDescriptors) {
-                this._tagTypesOnDisk |= TagTypes.Asf;
+                this.tagTypesOnDisk |= TagTypes.Asf;
             }
 
             this._asfTag = AsfTag.fromHeader(header);
 
-            if ((propertiesStyle & ReadStyle.Average) !== 0) {
+            if (NumberUtils.hasFlag(propertiesStyle, ReadStyle.Average)) {
                 this._properties = header.properties;
             }
         } finally {
@@ -43,13 +44,13 @@ export default class AsfFile extends File {
     // #region Methods
 
     /** @inheritDoc */
-    public getTag(type: TagTypes, _create: boolean): Tag {
+    public getTag(type: TagTypes): Tag {
         return type === TagTypes.Asf ? this._asfTag : undefined;
     }
 
     /** @inheritDoc */
     public removeTags(types: TagTypes): void {
-        if ((types & TagTypes.Asf) === TagTypes.Asf) {
+        if (NumberUtils.hasFlag(types, TagTypes.Asf)) {
             this._asfTag.clear();
         }
     }
@@ -65,10 +66,10 @@ export default class AsfFile extends File {
             if (!this._asfTag) {
                 // This file doesn't have a tag, but clear it just to be safe
                 header.removeContentDescriptor();
-                this._tagTypesOnDisk &= ~TagTypes.Asf;
+                this.tagTypesOnDisk &= ~TagTypes.Asf;
             } else {
                 // This file does have a tag, set the objects we have to it
-                this._tagTypesOnDisk |= TagTypes.Asf;
+                this.tagTypesOnDisk |= TagTypes.Asf;
                 header.addUniqueObject(this._asfTag.contentDescriptionObject);
                 header.addUniqueObject(this._asfTag.extendedContentDescriptionObject);
                 header.extension.addUniqueObject(this._asfTag.metadataLibraryObject);
@@ -77,7 +78,7 @@ export default class AsfFile extends File {
             // Write the updated header to the file
             const output = header.render();
             const diff = output.length - header.originalSize;
-            super.insert(output, 0, header.originalSize);
+            super.insert(output, 0, header.originalSize + diff);
         } finally {
             this.mode = FileAccessMode.Closed;
         }
@@ -86,7 +87,7 @@ export default class AsfFile extends File {
     // #endregion
 }
 
-////////////////////////////////////////////////////////////////////////////
+// /////////////////////////////////////////////////////////////////////////
 // Register the file type
 [
     "taglib/wma",

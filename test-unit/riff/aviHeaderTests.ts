@@ -1,5 +1,5 @@
-import * as Chai from "chai";
 import {suite, test} from "@testdeck/mocha";
+import {assert} from "chai";
 
 import AviHeader from "../../src/riff/avi/aviHeader";
 import RiffList from "../../src/riff/riffList";
@@ -7,9 +7,6 @@ import {default as Resources} from "./resources";
 import {AviStream, AviStreamType} from "../../src/riff/avi/aviStream";
 import {ByteVector} from "../../src/byteVector";
 import {Testers} from "../utilities/testers";
-
-// Setup chai
-const assert = Chai.assert;
 
 @suite class Riff_AviHeaderTests {
     @test
@@ -30,7 +27,7 @@ const assert = Chai.assert;
     @test
     public constructor_headerChunkMissing() {
         // Arrange
-        const list = RiffList.fromEmpty(AviHeader.headerListType);
+        const list = RiffList.fromEmpty(AviHeader.HEADER_LIST_TYPE);
 
         // Act / Assert
         assert.throws(() => new AviHeader(list));
@@ -39,8 +36,8 @@ const assert = Chai.assert;
     @test
     public constructor_headerInfoTooShort() {
         // Arrange
-        const list = RiffList.fromEmpty(AviHeader.headerListType);
-        list.setValues(AviHeader.headerChunkId, [ByteVector.empty()]);
+        const list = RiffList.fromEmpty(AviHeader.HEADER_LIST_TYPE);
+        list.setValues(AviHeader.HEADER_CHUNK_ID, [ByteVector.empty()]);
 
         // Act / Assert
         assert.throws(() => new AviHeader(list));
@@ -49,8 +46,8 @@ const assert = Chai.assert;
     @test
     public constructor_noStreams() {
         // Arrange
-        const list = RiffList.fromEmpty(AviHeader.headerListType);
-        list.setValues(AviHeader.headerChunkId, [Resources.getAviHeader()]);
+        const list = RiffList.fromEmpty(AviHeader.HEADER_LIST_TYPE);
+        list.setValues(AviHeader.HEADER_CHUNK_ID, [Resources.getAviHeader()]);
 
         // Act
         const header = new AviHeader(list);
@@ -69,26 +66,26 @@ const assert = Chai.assert;
     @test
     public constructor_hasUnsupportedStreams() {
         // Arrange
-        const list = RiffList.fromEmpty(AviHeader.headerListType);
-        list.setValues(AviHeader.headerChunkId, [Resources.getAviHeader()]);
+        const list = RiffList.fromEmpty(AviHeader.HEADER_LIST_TYPE);
+        list.setValues(AviHeader.HEADER_CHUNK_ID, [Resources.getAviHeader()]);
 
         const header1Data = ByteVector.concatenate(
-            ByteVector.fromUInt(AviStreamType.MIDI_STREAM, false),
+            ByteVector.fromUint(AviStreamType.MidiStream, false),
             ByteVector.fromSize(52)
         );
-        const streamList1 = RiffList.fromEmpty(AviStream.listType);
-        streamList1.setValues(AviStream.headerChunkId, [header1Data]);
-        streamList1.setValues(AviStream.formatChunkId, [ByteVector.empty()]);
+        const streamList1 = RiffList.fromEmpty(AviStream.LIST_TYPE);
+        streamList1.setValues(AviStream.HEADER_CHUNK_ID, [header1Data]);
+        streamList1.setValues(AviStream.FORMAT_CHUNK_ID, [ByteVector.empty()]);
 
         const header2Data = ByteVector.concatenate(
-            ByteVector.fromUInt(AviStreamType.TEXT_STREAM, false),
+            ByteVector.fromUint(AviStreamType.TextStream, false),
             ByteVector.fromSize(52)
         );
-        const streamList2 = RiffList.fromEmpty(AviStream.listType);
-        streamList2.setValues(AviStream.headerChunkId, [header2Data]);
-        streamList2.setValues(AviStream.formatChunkId, [ByteVector.empty()]);
+        const streamList2 = RiffList.fromEmpty(AviStream.LIST_TYPE);
+        streamList2.setValues(AviStream.HEADER_CHUNK_ID, [header2Data]);
+        streamList2.setValues(AviStream.FORMAT_CHUNK_ID, [ByteVector.empty()]);
 
-        list.setLists(AviStream.listType, [streamList1, streamList2]);
+        list.setLists(AviStream.LIST_TYPE, [streamList1, streamList2]);
 
         // Act
         const header = new AviHeader(list);
@@ -102,24 +99,24 @@ const assert = Chai.assert;
 
         assert.isOk(header.streams);
         assert.strictEqual(header.streams.length, 2);
-        assert.isOk(header.streams.find((s) => s.type === AviStreamType.MIDI_STREAM));
-        assert.isOk(header.streams.find((s) => s.type === AviStreamType.TEXT_STREAM));
+        assert.isOk(header.streams.find((s) => s.type === AviStreamType.MidiStream));
+        assert.isOk(header.streams.find((s) => s.type === AviStreamType.TextStream));
     }
 
     @test
     public constructor_hasSupportedStreams() {
         // Arrange
-        const list = RiffList.fromEmpty(AviHeader.headerListType);
-        list.setValues(AviHeader.headerChunkId, [Resources.getAviHeader()]);
+        const list = RiffList.fromEmpty(AviHeader.HEADER_LIST_TYPE);
+        list.setValues(AviHeader.HEADER_CHUNK_ID, [Resources.getAviHeader()]);
 
         const header1Data = ByteVector.concatenate(
-            ByteVector.fromUInt(AviStreamType.AUDIO_STREAM, false),
+            ByteVector.fromUint(AviStreamType.AudioStream, false),
             ByteVector.fromSize(52)
         );
-        const streamList1 = RiffList.fromEmpty(AviStream.listType);
-        streamList1.setValues(AviStream.headerChunkId, [header1Data]);
-        streamList1.setValues(AviStream.formatChunkId, [ByteVector.fromSize(16)]);
-        list.setLists(AviStream.listType, [streamList1]);
+        const streamList1 = RiffList.fromEmpty(AviStream.LIST_TYPE);
+        streamList1.setValues(AviStream.HEADER_CHUNK_ID, [header1Data]);
+        streamList1.setValues(AviStream.FORMAT_CHUNK_ID, [ByteVector.fromSize(16)]);
+        list.setLists(AviStream.LIST_TYPE, [streamList1]);
 
         // Act
         const header = new AviHeader(list);
@@ -133,7 +130,7 @@ const assert = Chai.assert;
 
         assert.isOk(header.streams);
         assert.strictEqual(header.streams.length, 1);
-        assert.isOk(header.streams.find((s) => s.type === AviStreamType.AUDIO_STREAM));
+        assert.isOk(header.streams.find((s) => s.type === AviStreamType.AudioStream));
     }
 
     private static assertTestHeader(header: AviHeader) {
