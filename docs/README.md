@@ -2,10 +2,10 @@ node-taglib-sharp / [Exports](modules.md)
 
 # TagLib# for Node
 
-| Master | Develop | Latest |
-|--------|---------|--------|
-|[![Build Status](https://ci.appveyor.com/api/projects/status/7hdfrbc4ecvvruwv/branch/master?svg=true)](https://ci.appveyor.com/project/benrr101/node-taglib-sharp/branch/master)|[![Build Status](https://ci.appveyor.com/api/projects/status/7hdfrbc4ecvvruwv/branch/develop?svg=true)](https://ci.appveyor.com/project/benrr101/node-taglib-sharp/branch/develop)|[![Build Status](https://ci.appveyor.com/api/projects/status/7hdfrbc4ecvvruwv?svg=true)](https://ci.appveyor.com/project/benrr101/node-taglib-sharp)
-|[![Coverage Status](https://coveralls.io/repos/github/benrr101/node-taglib-sharp/badge.svg?branch=master)](https://coveralls.io/github/benrr101/node-taglib-sharp?branch=master)|[![Coverage Status](https://coveralls.io/repos/github/benrr101/node-taglib-sharp/badge.svg?branch=develop)](https://coveralls.io/github/benrr101/node-taglib-sharp?branch=develop)|[![Coverage Status](https://coveralls.io/repos/github/benrr101/node-taglib-sharp/badge.svg?latest)](https://coveralls.io/github/benrr101/node-taglib-sharp)
+| Master                                                                                                                                                                           | Develop                                                                                                                                                                            | Latest                                                                                                                                                      |
+|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| [![Build Status](https://ci.appveyor.com/api/projects/status/7hdfrbc4ecvvruwv/branch/master?svg=true)](https://ci.appveyor.com/project/benrr101/node-taglib-sharp/branch/master) | [![Build Status](https://ci.appveyor.com/api/projects/status/7hdfrbc4ecvvruwv/branch/develop?svg=true)](https://ci.appveyor.com/project/benrr101/node-taglib-sharp/branch/develop) | [![Build Status](https://ci.appveyor.com/api/projects/status/7hdfrbc4ecvvruwv?svg=true)](https://ci.appveyor.com/project/benrr101/node-taglib-sharp)        |
+| [![Coverage Status](https://coveralls.io/repos/github/benrr101/node-taglib-sharp/badge.svg?branch=master)](https://coveralls.io/github/benrr101/node-taglib-sharp?branch=master) | [![Coverage Status](https://coveralls.io/repos/github/benrr101/node-taglib-sharp/badge.svg?branch=develop)](https://coveralls.io/github/benrr101/node-taglib-sharp?branch=develop) | [![Coverage Status](https://coveralls.io/repos/github/benrr101/node-taglib-sharp/badge.svg?latest)](https://coveralls.io/github/benrr101/node-taglib-sharp) |
 
 ## Description
 TagLib# is a .NET library that has been around for years. It provides a unified interface for
@@ -24,7 +24,7 @@ improved on the original TagLib, hence why this project exists.
 * [ID3v2](https://id3.org/Developer%20Information): `AAC`, `AIF`, `AIFF`, `AVI`, `DIVX`, `FLAC`, `M2A`, `MP1`, `MP2`, `MP3`, `WAV`
 * MovieID: `AVI`, `DIVX`, `WAV`
 * [RIFF Info](https://www.exiftool.org/TagNames/RIFF.html#Info): `AVI`, `DIVX`, `WAV`
-* [Xiph Comment](https://www.xiph.org/vorbis/doc/v-comment.html): `FLAC`
+* [Xiph Comment](https://www.xiph.org/vorbis/doc/v-comment.html): `FLAC`, `OGA`, `OGG`, `OGV`, `OPUS`
 * ... More coming soon
 
 ## Supported File Formats
@@ -35,6 +35,7 @@ improved on the original TagLib, hence why this project exists.
 * MPEG-1/2 Audio: `M2A`, `MP1`, `MP2`, `MP3`
 * MPEG-1/2 Video: `M2V`, `MPE`, `MPEG`, `MPG`, `MPV2`
 * Monkey's Audio: `APE`
+* Ogg: `OGA`, `OGG`, `OGV`, `OPUS`
 * Resource Interchange File Format (RIFF): `AVI`, `DIVX`, `WAV`
 * ... More coming soon
 

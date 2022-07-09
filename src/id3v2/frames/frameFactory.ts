@@ -21,6 +21,13 @@ import {TextInformationFrame, UserTextInformationFrame} from "./textInformationF
 import {UrlLinkFrame, UserUrlLinkFrame} from "./urlLinkFrame";
 import {Guards, NumberUtils} from "../../utils";
 
+/**
+ * Type shortcut for a method that returns a {@link Frame}.
+ * @param data Byte vector that contains the frame
+ * @param offset Position into the byte vector where the frame begins
+ * @param header The header that describes the frame
+ * @param version ID3v2 version the frame is encoded with. Must be unsigned 8-bit int
+ */
 export type FrameCreator = (data: ByteVector, offset: number, header: Id3v2FrameHeader, version: number) => Frame;
 
 let customFrameCreators: FrameCreator[] = [];

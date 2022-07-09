@@ -43,6 +43,9 @@ export enum DataType {
     Guid = 6
 }
 
+/**
+ * Type shortcut for all the types a descriptor can contain
+ */
 export type DescriptorValue = bigint | boolean | ByteVector | number | string | UuidWrapper;
 
 /**

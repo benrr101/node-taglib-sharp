@@ -8,8 +8,18 @@ import {Properties} from "../properties";
 import {Tag, TagTypes} from "../tag";
 import {NumberUtils} from "../utils";
 
+/**
+ * Interface for a sandwich file.
+ */
 export interface ISandwichFile {
+    /**
+     * Gets the position at which the media content of this file ends.
+     */
     readonly mediaEndPosition: number;
+
+    /**
+     * Gets the position at which the media content of this file starts.
+     */
     readonly mediaStartPosition: number;
 }
 
@@ -73,16 +83,12 @@ export default abstract class SandwichFile extends File implements ISandwichFile
      */
     protected get startTag(): StartTag { return this._tag.startTag; }
 
-    /**
-     * Gets the position at which the media content of this file ends.
-     */
+    /** @inheritDoc */
     get mediaEndPosition(): number {
         return this._mediaEndPosition;
     }
 
-    /**
-     * Gets the position at which the media content of this file starts.
-     */
+    /** @inheritDoc */
     get mediaStartPosition(): number {
         return this._mediaStartPosition;
     }

@@ -22,6 +22,9 @@ export enum ApeTagItemType {
     Locator = 2
 }
 
+/**
+ * Class that represents a property in an APE tag.
+ */
 export class ApeTagItem {
     private _data: ByteVector;
     private _isReadonly: boolean = false;
