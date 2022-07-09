@@ -21,7 +21,7 @@ export default class AsfTag extends Tag {
     private _extendedDescriptionObject: ExtendedContentDescriptionObject = ExtendedContentDescriptionObject.fromEmpty();
     private _metadataLibraryObject: MetadataLibraryObject = MetadataLibraryObject.fromEmpty();
 
-    private static readonly GENRE_REGEX = new RegExp(/\(([0-9]+)\)/);
+    private static readonly GENRE_REGEX = new RegExp(/\((\d+)\)/);
 
     // #region Constructors
 
@@ -303,7 +303,7 @@ export default class AsfTag extends Tag {
             return 0;
         }
 
-        const parsed = Number.parseInt(text.substr(0, 4), 10);
+        const parsed = Number.parseInt(text.substring(0, 4), 10);
         return Number.isNaN(parsed) ? 0 : parsed;
     }
     /**
@@ -628,7 +628,7 @@ export default class AsfTag extends Tag {
             return Number.NaN;
         }
         if (valueString.toLowerCase().endsWith("db")) {
-            valueString = valueString.substr(0, valueString.length - 2).trim();
+            valueString = valueString.substring(0, valueString.length - 2).trim();
         }
 
         return  Number.parseFloat(valueString);
@@ -678,7 +678,7 @@ export default class AsfTag extends Tag {
             return Number.NaN;
         }
         if (valueString.toLowerCase().endsWith("db")) {
-            valueString = valueString.substr(0, valueString.length - 2).trim();
+            valueString = valueString.substring(0, valueString.length - 2).trim();
         }
 
         return  Number.parseFloat(valueString);

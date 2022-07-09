@@ -109,6 +109,7 @@ const assert = Chai.assert;
         const bv = ByteVector.fromByteArray(ba);
 
         // Act
+        // noinspection JSDeprecatedSymbols This is to test the deprecated method
         const output = bv.toByteArray();
 
         // Assert

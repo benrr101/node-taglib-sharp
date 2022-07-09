@@ -413,7 +413,7 @@ export class TextInformationFrame extends Frame {
                         break;
                     }
 
-                    const number = value.substr(1, closing - 1);
+                    const number = value.substring(1, closing);
 
                     let text: string;
                     if (number === TextInformationFrame.COVER_ABBREV) {
@@ -432,11 +432,11 @@ export class TextInformationFrame extends Frame {
 
                     // Number in parenthesis was a numeric genre
                     fieldList.push(text);
-                    value = StringUtils.trimStart(value.substr(closing + 1), "/ ");
+                    value = StringUtils.trimStart(value.substring(closing + 1), "/ ");
 
                     // Ignore genre if the same genre appears after the numeric genre
                     if (value.startsWith(text)) {
-                        value = StringUtils.trimStart(value.substr(text.length), "/ ");
+                        value = StringUtils.trimStart(value.substring(text.length), "/ ");
                     }
                 }
 
