@@ -1,12 +1,12 @@
 /**
  * Possible modifications to the aspect ratio.
  */
-import EbmlTrack from "./ebmlTrack";
-import {IVideoCodec, MediaTypes} from "../properties";
-import {EbmlElementValue} from "./ebmlParser";
-import {MatroskaIds} from "./ids";
+import Track from "./track";
+import {EbmlElementValue} from "../../ebml/ebmlParser";
+import {MatroskaIds} from "../matroskaIds";
+import {IVideoCodec, MediaTypes} from "../../properties";
 
-export enum EbmlVideoAspectRatioType {
+export enum VideoAspectRatioMode {
     /**
      * Free resizing allowed
      */
@@ -23,7 +23,7 @@ export enum EbmlVideoAspectRatioType {
     Fixed = 0x02
 }
 
-export enum EbmlVideoDisplayUnits {
+export enum VideoDisplayUnits {
     /**
      * Display values are in pixels.
      */
@@ -50,7 +50,7 @@ export enum EbmlVideoDisplayUnits {
     Unknown = 0x04
 }
 
-export enum EbmlVideoInterlaceFlag {
+export enum VideoInterlaceFlag {
     /**
      * Interlacing mode is unknown.
      */
@@ -70,7 +70,7 @@ export enum EbmlVideoInterlaceFlag {
 /**
  * Stereo-3D video mode.
  */
-export enum EbmlVideoStereoMode {
+export enum VideoStereoMode {
     /**
      * Video is not stereo.
      */
@@ -147,20 +147,20 @@ export enum EbmlVideoStereoMode {
     LacedRightFirst = 14
 }
 
-export default class EbmlVideoTrack extends EbmlTrack implements IVideoCodec {
-    private readonly _aspectRatioType: EbmlVideoAspectRatioType;
+export default class VideoTrack extends Track implements IVideoCodec {
+    private readonly _aspectRatioType: VideoAspectRatioMode;
     private readonly _colourSpaceFourcc: number;
     private readonly _cropBottom: number;
     private readonly _cropLeft: number;
     private readonly _cropRight: number;
     private readonly _cropTop: number;
     private readonly _displayHeight: number;
-    private readonly _displayUnits: EbmlVideoDisplayUnits;
+    private readonly _displayUnits: VideoDisplayUnits;
     private readonly _displayWidth: number;
     private readonly _framerate: number;
     private readonly _height: number;
-    private readonly _isInterlaced: EbmlVideoInterlaceFlag;
-    private readonly _stereoMode: EbmlVideoStereoMode;
+    private readonly _isInterlaced: VideoInterlaceFlag;
+    private readonly _stereoMode: VideoStereoMode;
     private readonly _width: number;
 
     public constructor(trackElements: Map<number, EbmlElementValue>, audioElements: Map<number, EbmlElementValue>) {
@@ -179,9 +179,9 @@ export default class EbmlVideoTrack extends EbmlTrack implements IVideoCodec {
         this._width = audioElements.get(MatroskaIds.PIXEL_WIDTH)?.getUint();
 
         const interlacingModeValue = audioElements.get(MatroskaIds.FLAG_INTERLACED)?.getUint();
-        this._isInterlaced = interlacingModeValue && interlacingModeValue > EbmlVideoInterlaceFlag.Progressive
+        this._isInterlaced = interlacingModeValue && interlacingModeValue > VideoInterlaceFlag.Progressive
             ? interlacingModeValue
-            : EbmlVideoInterlaceFlag.Undetermined;
+            : VideoInterlaceFlag.Undetermined;
 
         const stereoModeValue = audioElements.get(MatroskaIds.STEREO_MODE)?.getUint();
         this._stereoMode = stereoModeValue || 0;
@@ -190,7 +190,7 @@ export default class EbmlVideoTrack extends EbmlTrack implements IVideoCodec {
     /**
      * Specifies the possible modifications to the aspect ratio.
      */
-    public get aspectRatioType(): EbmlVideoAspectRatioType { return this._aspectRatioType; }
+    public get aspectRatioType(): VideoAspectRatioMode { return this._aspectRatioType; }
 
     /**
      * Number of pixels to remove at the bottom of the image.
@@ -214,7 +214,7 @@ export default class EbmlVideoTrack extends EbmlTrack implements IVideoCodec {
 
     /**
      * Height of the video frames to display. Applies to the video frame after cropping.
-     * @remarks If the {@link displayUnits} is {@link EbmlVideoDisplayUnits.Pixels}, then default
+     * @remarks If the {@link displayUnits} is {@link VideoDisplayUnits.Pixels}, then default
      *     value for this is equal to {@link videoHeight} - {@link cropTop} - {@link cropBottom},
      *     otherwise there is no default value.
      */
@@ -227,7 +227,7 @@ export default class EbmlVideoTrack extends EbmlTrack implements IVideoCodec {
 
     /**
      * Width of the video frames to display. Applies to the video frame after cropping.
-     * @remarks If the {@link displayUnits} is {@link EbmlVideoDisplayUnits.Pixels}, then default
+     * @remarks If the {@link displayUnits} is {@link VideoDisplayUnits.Pixels}, then default
      *     value for this is equal to {@link videoWidth} - {@link cropLeft} - {@link cropRight},
      *     otherwise there is no default value.
      */
@@ -236,7 +236,7 @@ export default class EbmlVideoTrack extends EbmlTrack implements IVideoCodec {
     /**
      * Mode for interlacing the video.
      */
-    public get interlacingMode(): EbmlVideoInterlaceFlag { return this._isInterlaced; }
+    public get interlacingMode(): VideoInterlaceFlag { return this._isInterlaced; }
 
     /** @inheritDoc */
     public get mediaTypes(): MediaTypes { return MediaTypes.Video; }
@@ -244,7 +244,7 @@ export default class EbmlVideoTrack extends EbmlTrack implements IVideoCodec {
     /**
      * Stereo-3D video mode.
      */
-    public get stereoMode(): EbmlVideoStereoMode { return this._stereoMode; }
+    public get stereoMode(): VideoStereoMode { return this._stereoMode; }
 
     /** @inheritDoc */
     public get videoHeight(): number { return this._height; }

@@ -1,15 +1,17 @@
+import Track from "./tracks/track";
+import {ByteVector} from "../byteVector";
+import {EbmlParser} from "../ebml/ebmlParser";
+import {CorruptFileError, UnsupportedFormatError} from "../errors";
 import {File, FileAccessMode, ReadStyle} from "../file";
 import {IFileAbstraction} from "../fileAbstraction";
-import {ByteVector} from "../byteVector";
-import {CorruptFileError, UnsupportedFormatError} from "../errors";
-import EbmlParser from "./ebmlParser";
-import {EbmlIds, MatroskaIds} from "./ids";
-import {header} from "typedoc/dist/lib/output/themes/default/partials/header";
+import {EbmlIds} from "../ebml/ids";
+import {MatroskaIds} from "./matroskaIds";
 
-export default class EbmlFile extends File {
+export default class MatroskaFile extends File {
     private static readonly SUPPORTED_DOCTYPES = ["matroska", "webm"];
 
     private _doctype: string;
+    private _tracks: Track[];
 
     public constructor(file: IFileAbstraction|string, propertiesStyle: ReadStyle) {
         super(file);
@@ -18,8 +20,6 @@ export default class EbmlFile extends File {
         this.mode = FileAccessMode.Read;
         try {
             this.read();
-
-            // Read properties if requested
         } finally {
             this.mode = FileAccessMode.Closed;
         }
@@ -59,7 +59,7 @@ export default class EbmlFile extends File {
                 switch (headerReader.id) {
                     case EbmlIds.EBML_DOC_TYPE:
                         this._doctype = headerReader.getString();
-                        if (EbmlFile.SUPPORTED_DOCTYPES.indexOf(this._doctype) < 0) {
+                        if (MatroskaFile.SUPPORTED_DOCTYPES.indexOf(this._doctype) < 0) {
                             throw new UnsupportedFormatError(`EBML doctype ${this._doctype} is unsupported`);
                         }
                         break;
@@ -83,12 +83,12 @@ export default class EbmlFile extends File {
                         break;
                     case MatroskaIds.TRACKS:
                         const tracksReader = reader.getParser();
-                        const tracks = [];
                         try {
                             while (tracksReader.read()) {
+                                // @TODO: Don't read if read style isn't average or better
                                 if (tracksReader.id === MatroskaIds.TRACK_ENTRY) {
-                                    const track = this.readTrackEntry(tracksReader, readStyle);
-                                    tracks.push(track);
+                                    const track = Track.fromTrackEntry(tracksReader);
+                                    this._tracks.push(track);
                                 }
                             }
                         } finally {
@@ -102,24 +102,15 @@ export default class EbmlFile extends File {
                     case MatroskaIds.CHAPTERS:
                         break;
                     case MatroskaIds.TAGS:
-                        break;
-                }
-            }
-        } finally {
-            reader.dispose();
-        }
-    }
+                        const tagsReader = segmentsReader.getParser();
+                        try {
+                            while (tagsReader.read()) {
 
-    private readTrackEntry(reader: EbmlParser, readStyle: ReadStyle): void {
-        const entryReader = reader.getParser();
-        try {
-            while (entryReader.read()) {
-                switch (entryReader.id) {
-                    case MatroskaIds.TRACK_TYPE:
-                        const trackType = entryReader.getUint();
-                        switch (trackType) {
-                            
+                            }
+                        } finally {
+                            tagsReader.dispose();
                         }
+                        break;
                 }
             }
         } finally {

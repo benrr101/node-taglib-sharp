@@ -1,9 +1,9 @@
-import EbmlTrack from "./ebmlTrack";
-import {EbmlElementValue} from "./ebmlParser";
-import {MatroskaIds} from "./ids";
-import {ILosslessAudioCodec, MediaTypes} from "../properties";
+import Track from "./track";
+import {EbmlElementValue} from "../../ebml/ebmlParser";
+import {MatroskaIds} from "../matroskaIds";
+import {ILosslessAudioCodec, MediaTypes} from "../../properties";
 
-export default class EbmlAudioTrack extends EbmlTrack implements ILosslessAudioCodec {
+export default class AudioTrack extends Track implements ILosslessAudioCodec {
     private readonly _bitDepth: number;
     private readonly _channels: number;
     private readonly _sampleRate: number;
