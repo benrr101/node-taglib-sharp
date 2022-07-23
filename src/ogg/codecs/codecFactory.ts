@@ -6,6 +6,13 @@ import {ByteVector} from "../../byteVector";
 import {UnsupportedFormatError} from "../../errors";
 import {Guards} from "../../utils";
 
+/**
+ * Type shortcut for a method that can generate a codec object based on the first packet of the
+ * bit stream.
+ * @param firstPacket First packet in the bit stream
+ * @returns (IOggCodec | undefined) Generated {@see IOggCodec} is returned if a codec could be
+ *     constructed from the first packet, otherwise `undefined` is returned.
+ */
 export type CodecProvider = (firstPacket: ByteVector) => IOggCodec | undefined;
 
 /**

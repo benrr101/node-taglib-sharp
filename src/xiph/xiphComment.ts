@@ -65,8 +65,8 @@ export default class XiphComment extends Tag {
                 continue;
             }
 
-            const key = comment.substr(0, commentSeparatorPosition).toUpperCase();
-            const value = comment.substr(commentSeparatorPosition + 1);
+            const key = comment.substring(0, commentSeparatorPosition).toUpperCase();
+            const value = comment.substring(commentSeparatorPosition + 1);
 
             switch (key) {
                 case XiphComment.OLD_PICTURE_FIELD:
@@ -309,7 +309,7 @@ export default class XiphComment extends Tag {
         const text = this.getFieldFirstValue("DATE");
         if (!text) { return 0; }
 
-        const parsedText = Number.parseInt(text.substr(0, 4), 10);
+        const parsedText = Number.parseInt(text.substring(0, 4), 10);
         return Number.isNaN(parsedText) ? 0 : parsedText;
     }
     /**

@@ -916,7 +916,7 @@ class TestCombinedTag extends CombinedTag {
         super(supportedTagTypes, writeToAll, tags);
     }
 
-    public createTag(tagType: TagTypes, copy: boolean): Tag {
+    public createTag(): Tag {
         return undefined;
     }
 

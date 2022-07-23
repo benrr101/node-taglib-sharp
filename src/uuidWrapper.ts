@@ -6,7 +6,7 @@ import {ByteVector} from "./byteVector";
  */
 export default class UuidWrapper {
     private static readonly GUID_REGEX =
-        new RegExp(/([0-9A-F]{8})-?([0-9A-F]{4})-?([0-9A-F]{4})-?([0-9A-F]{4})-?([0-9A-F]{12})/i);
+        new RegExp(/([\dA-F]{8})-?([\dA-F]{4})-?([\dA-F]{4})-?([\dA-F]{4})-?([\dA-F]{12})/i);
 
     private readonly _bytes: ByteVector;
 
@@ -42,7 +42,7 @@ export default class UuidWrapper {
             dv.setUint16(8, short3, false);
 
             for (let i = 0; i < 12; i += 2) {
-                bytes[10 + i / 2] = Number.parseInt(match[5].substr(i, 2), 16);
+                bytes[10 + i / 2] = Number.parseInt(match[5].substring(i, i + 2), 16);
             }
 
             source = ByteVector.fromByteArray(bytes);

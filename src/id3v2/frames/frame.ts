@@ -197,7 +197,10 @@ export abstract class Frame {
 
         // Update the header size with the size of the rendered bytes and any "front" data
         const frontDataSize = frontData.reduce<number>(
-            (accum, e) => accum += e instanceof ByteVector ? e.length : 1,
+            (accum, e) => {
+                accum += e instanceof ByteVector ? e.length : 1;
+                return accum;
+            },
             0
         );
         this._header.frameSize = fieldData.length + frontDataSize;

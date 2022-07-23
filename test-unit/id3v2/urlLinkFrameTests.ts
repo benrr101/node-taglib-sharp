@@ -284,7 +284,8 @@ const getTestUrlLinkFrame = (): UrlLinkFrame => {
     public clone_withoutRawData_returnsClone() {
         // Arrange
         const frame = getTestUrlLinkFrame();
-        const _ = frame.text;    // Force reading raw data, and trashing it
+        // noinspection JSUnusedLocalSymbols Forces a read of the raw data
+        const _ = frame.text;
 
         // Act
         const result = frame.clone();

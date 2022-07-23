@@ -145,11 +145,11 @@ export default class DivxTag extends Tag {
      */
     public render(): ByteVector {
         return ByteVector.concatenate(
-            ByteVector.fromString(this._title.padEnd(32, " ").substr(0, 32), StringType.Latin1),
-            ByteVector.fromString(this._artist.padEnd(28, " ").substr(0 , 28), StringType.Latin1),
-            ByteVector.fromString(this._year.padEnd(4, " ").substr(0, 4), StringType.Latin1),
-            ByteVector.fromString(this._comment.padEnd(48, " ").substr(0, 48), StringType.Latin1),
-            ByteVector.fromString(this._genre.padEnd(3, " ").substr(0, 3), StringType.Latin1),
+            ByteVector.fromString(this._title.padEnd(32, " ").substring(0, 32), StringType.Latin1),
+            ByteVector.fromString(this._artist.padEnd(28, " ").substring(0 , 28), StringType.Latin1),
+            ByteVector.fromString(this._year.padEnd(4, " ").substring(0, 4), StringType.Latin1),
+            ByteVector.fromString(this._comment.padEnd(48, " ").substring(0, 48), StringType.Latin1),
+            ByteVector.fromString(this._genre.padEnd(3, " ").substring(0, 3), StringType.Latin1),
             this._extraData,
             DivxTag.FILE_IDENTIFIER
         );
