@@ -1,11 +1,9 @@
-import AudioTrack from "./audioTrack";
-import VideoTrack from "./videoTrack";
-import {ByteVector} from "../byteVector";
-import {EbmlElementValue, EbmlParser} from "./ebmlParser";
-import {MatroskaIds} from "./ids";
-import {ICodec, MediaTypes} from "../properties";
+import {ByteVector} from "../../byteVector";
+import {EbmlElementValue} from "../../ebml/ebmlParser";
+import {MatroskaIds} from "../matroskaIds";
+import {ICodec, MediaTypes} from "../../properties";
 
-enum EbmlTrackType {
+export enum EbmlTrackType {
     Video = 1,
     Audio = 2,
     Complex = 3,
@@ -16,7 +14,7 @@ enum EbmlTrackType {
     Metadata = 33
 }
 
-export default class Track implements ICodec {
+export class Track implements ICodec {
 
     private readonly _codecPrivateData: ByteVector;
     private readonly _codecId: string;
@@ -37,7 +35,13 @@ export default class Track implements ICodec {
 
     // #region Constructors
 
-    protected constructor(elements: Map<number, EbmlElementValue>) {
+    /**
+     * Constructor for a generic {@link Track} object. Not intended to be called from outside the
+     * {@link TrackFactory} class.
+     * @param elements
+     * @internal
+     */
+    public constructor(elements: Map<number, EbmlElementValue>) {
         // Read general-purpose elements
         this._codecId = elements.get(MatroskaIds.CODEC_ID)?.getString();
         this._codecName = elements.get(MatroskaIds.CODEC_NAME)?.getString();
@@ -58,25 +62,6 @@ export default class Track implements ICodec {
         const flagOriginal = elements.get(MatroskaIds.FLAG_ORIGINAL);
         if (flagOriginal) {
             this._isTranslation = !flagOriginal;
-        }
-    }
-
-    public static fromTrackEntry(parser: EbmlParser): Track {
-        // Read all the elements from the track
-        const trackElements = EbmlParser.getAllValues(parser.getParser());
-
-        // Parse the elements into a track object
-        switch (trackElements.get(MatroskaIds.TRACK_TYPE)?.getUint()) {
-            case EbmlTrackType.Audio:
-                const audioElementParser = trackElements.get(MatroskaIds.AUDIO).getParser();
-                const audioElements = EbmlParser.getAllValues(audioElementParser);
-                return new AudioTrack(trackElements, audioElements);
-            case EbmlTrackType.Video:
-                const videoElementParser = trackElements.get(MatroskaIds.VIDEO).getParser();
-                const videoElements = EbmlParser.getAllValues(videoElementParser);
-                return new VideoTrack(trackElements, videoElements);
-            default:
-                return new Track(trackElements);
         }
     }
 
@@ -167,7 +152,7 @@ export default class Track implements ICodec {
     public get trackName(): string { return this._trackName; }
 
     /**
-     * Track number as used in the block header.
+     * Track number as is used in the block header.
      */
     public get trackNumber(): number { return this._trackNumber; }
 

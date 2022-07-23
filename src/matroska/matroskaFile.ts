@@ -1,4 +1,5 @@
-import Track from "./tracks/track";
+import MatroskaAttachment from "./attachment";
+import TrackFactory from "./tracks/trackFactory";
 import {ByteVector} from "../byteVector";
 import {EbmlParser} from "../ebml/ebmlParser";
 import {CorruptFileError, UnsupportedFormatError} from "../errors";
@@ -6,6 +7,9 @@ import {File, FileAccessMode, ReadStyle} from "../file";
 import {IFileAbstraction} from "../fileAbstraction";
 import {EbmlIds} from "../ebml/ids";
 import {MatroskaIds} from "./matroskaIds";
+import {Properties} from "../properties";
+import {Tag, TagTypes} from "../tag";
+import {Track} from "./tracks/track";
 
 export default class MatroskaFile extends File {
     private static readonly SUPPORTED_DOCTYPES = ["matroska", "webm"];
@@ -19,10 +23,26 @@ export default class MatroskaFile extends File {
         // Read the file
         this.mode = FileAccessMode.Read;
         try {
-            this.read();
+            this.read(propertiesStyle);
         } finally {
             this.mode = FileAccessMode.Closed;
         }
+    }
+
+    public get properties(): Properties { return undefined; }
+
+    public get tag(): Tag { return undefined; }
+
+    public getTag(types: TagTypes, create: boolean): Tag {
+        return undefined;
+    }
+
+    public removeTags(types: TagTypes): void {
+        // TODO: Implement
+    }
+
+    public save(): void {
+        // TODO: Implement
     }
 
     private read(propertiesStyle: ReadStyle): void {
@@ -72,6 +92,7 @@ export default class MatroskaFile extends File {
 
     private readSegments(reader: EbmlParser, readStyle: ReadStyle): void {
         const segmentsReader = reader.getParser();
+        const attachments = [];
         try {
             while (segmentsReader.read()) {
                 switch(segmentsReader.id) {
@@ -87,7 +108,7 @@ export default class MatroskaFile extends File {
                             while (tracksReader.read()) {
                                 // @TODO: Don't read if read style isn't average or better
                                 if (tracksReader.id === MatroskaIds.TRACK_ENTRY) {
-                                    const track = Track.fromTrackEntry(tracksReader);
+                                    const track = TrackFactory.fromTrackEntry(tracksReader);
                                     this._tracks.push(track);
                                 }
                             }
@@ -98,18 +119,29 @@ export default class MatroskaFile extends File {
                     case MatroskaIds.CUES:
                         break;
                     case MatroskaIds.ATTACHMENTS:
+                        const attachmentsReader = reader.getParser();
+                        try {
+                            while (attachmentsReader.read()) {
+                                if (attachmentsReader.id === MatroskaIds.ATTACHED_FILE) {
+                                    const attachment = MatroskaAttachment.fromAttachmentEntry(attachmentsReader);
+                                    attachments.push(attachment);
+                                }
+                            }
+                        } finally {
+                            attachmentsReader.dispose();
+                        }
                         break;
                     case MatroskaIds.CHAPTERS:
                         break;
                     case MatroskaIds.TAGS:
-                        const tagsReader = segmentsReader.getParser();
-                        try {
-                            while (tagsReader.read()) {
-
-                            }
-                        } finally {
-                            tagsReader.dispose();
-                        }
+                        // const tagsReader = segmentsReader.getParser();
+                        // try {
+                        //     while (tagsReader.read()) {
+                        //
+                        //     }
+                        // } finally {
+                        //     tagsReader.dispose();
+                        // }
                         break;
                 }
             }
@@ -118,3 +150,17 @@ export default class MatroskaFile extends File {
         }
     }
 }
+
+// /////////////////////////////////////////////////////////////////////////
+// Register the file type
+[
+    "taglib/mk3d",
+    "taglib/mka",
+    "taglib/mks",
+    "taglib/mkv",
+    "taglib/webm",
+    "audio/webm",
+    "audio/x-matroska",
+    "video/webm",
+    "video/x-matroska"
+].forEach((mt) => File.addFileType(mt, MatroskaFile));

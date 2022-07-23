@@ -1,11 +1,11 @@
-/**
- * Possible modifications to the aspect ratio.
- */
-import Track from "./track";
 import {EbmlElementValue} from "../../ebml/ebmlParser";
 import {MatroskaIds} from "../matroskaIds";
 import {IVideoCodec, MediaTypes} from "../../properties";
+import {Track} from "./track";
 
+/**
+ * Possible modifications to the aspect ratio.
+ */
 export enum VideoAspectRatioMode {
     /**
      * Free resizing allowed
