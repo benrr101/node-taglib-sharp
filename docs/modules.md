@@ -6,114 +6,121 @@
 
 ### Enumerations
 
-- [AsfObjectDataType](enums/asfobjectdatatype.md)
-- [AviStreamType](enums/avistreamtype.md)
-- [FileAccessMode](enums/fileaccessmode.md)
-- [Id3v2EventType](enums/id3v2eventtype.md)
-- [Id3v2FrameClassType](enums/id3v2frameclasstype.md)
-- [Id3v2FrameFlags](enums/id3v2frameflags.md)
-- [Id3v2RelativeVolumeFrameChannelType](enums/id3v2relativevolumeframechanneltype.md)
-- [Id3v2SynchronizedTextType](enums/id3v2synchronizedtexttype.md)
-- [Id3v2TagHeaderFlags](enums/id3v2tagheaderflags.md)
-- [Id3v2TimestampFormat](enums/id3v2timestampformat.md)
-- [MediaTypes](enums/mediatypes.md)
-- [MpegAudioChannelMode](enums/mpegaudiochannelmode.md)
-- [MpegVersion](enums/mpegversion.md)
-- [PictureType](enums/picturetype.md)
-- [ReadStyle](enums/readstyle.md)
-- [StringType](enums/stringtype.md)
-- [TagTypes](enums/tagtypes.md)
+- [AsfObjectDataType](enums/AsfObjectDataType.md)
+- [AviStreamType](enums/AviStreamType.md)
+- [FileAccessMode](enums/FileAccessMode.md)
+- [Id3v2EventType](enums/Id3v2EventType.md)
+- [Id3v2FrameClassType](enums/Id3v2FrameClassType.md)
+- [Id3v2FrameFlags](enums/Id3v2FrameFlags.md)
+- [Id3v2RelativeVolumeFrameChannelType](enums/Id3v2RelativeVolumeFrameChannelType.md)
+- [Id3v2SynchronizedTextType](enums/Id3v2SynchronizedTextType.md)
+- [Id3v2TagHeaderFlags](enums/Id3v2TagHeaderFlags.md)
+- [Id3v2TimestampFormat](enums/Id3v2TimestampFormat.md)
+- [MediaTypes](enums/MediaTypes.md)
+- [MpegAudioChannelMode](enums/MpegAudioChannelMode.md)
+- [MpegVersion](enums/MpegVersion.md)
+- [PictureType](enums/PictureType.md)
+- [ReadStyle](enums/ReadStyle.md)
+- [StringType](enums/StringType.md)
+- [TagTypes](enums/TagTypes.md)
 
 ### Classes
 
-- [AacFile](classes/aacfile.md)
-- [AacFileSettings](classes/aacfilesettings.md)
-- [AiffFile](classes/aifffile.md)
-- [ApeFile](classes/apefile.md)
-- [ApeFileSettings](classes/apefilesettings.md)
-- [ApeTag](classes/apetag.md)
-- [AsfContentDescriptionObject](classes/asfcontentdescriptionobject.md)
-- [AsfContentDescriptor](classes/asfcontentdescriptor.md)
-- [AsfExtendedContentDescriptionObject](classes/asfextendedcontentdescriptionobject.md)
-- [AsfFile](classes/asffile.md)
-- [AsfFilePropertiesObject](classes/asffilepropertiesobject.md)
-- [AsfHeaderExtensionObject](classes/asfheaderextensionobject.md)
-- [AsfHeaderObject](classes/asfheaderobject.md)
-- [AsfMetadataDescriptor](classes/asfmetadatadescriptor.md)
-- [AsfMetadataLibraryObject](classes/asfmetadatalibraryobject.md)
-- [AsfPaddingObject](classes/asfpaddingobject.md)
-- [AsfStreamPropertiesObject](classes/asfstreampropertiesobject.md)
-- [AsfTag](classes/asftag.md)
-- [AsfUnknownObject](classes/asfunknownobject.md)
-- [AviStream](classes/avistream.md)
-- [ByteVector](classes/bytevector.md)
-- [CombinedTag](classes/combinedtag.md)
-- [CorruptFileError](classes/corruptfileerror.md)
-- [DivxTag](classes/divxtag.md)
-- [File](classes/file.md)
-- [FlacBlock](classes/flacblock.md)
-- [FlacFile](classes/flacfile.md)
-- [FlacFileSettings](classes/flacfilesettings.md)
-- [FlacTag](classes/flactag.md)
-- [Id3v1Tag](classes/id3v1tag.md)
-- [Id3v2AttachmentFrame](classes/id3v2attachmentframe.md)
-- [Id3v2CommentsFrame](classes/id3v2commentsframe.md)
-- [Id3v2EventTimeCode](classes/id3v2eventtimecode.md)
-- [Id3v2EventTimeCodeFrame](classes/id3v2eventtimecodeframe.md)
-- [Id3v2ExtendedHeader](classes/id3v2extendedheader.md)
-- [Id3v2Frame](classes/id3v2frame.md)
-- [Id3v2FrameHeader](classes/id3v2frameheader.md)
-- [Id3v2FrameIdentifier](classes/id3v2frameidentifier.md)
-- [Id3v2MusicCdIdentifierFrame](classes/id3v2musiccdidentifierframe.md)
-- [Id3v2PlayCountFrame](classes/id3v2playcountframe.md)
-- [Id3v2PopularimeterFrame](classes/id3v2popularimeterframe.md)
-- [Id3v2PrivateFrame](classes/id3v2privateframe.md)
-- [Id3v2RelativeVolumeFrame](classes/id3v2relativevolumeframe.md)
-- [Id3v2RelativeVolumeFrameChannelData](classes/id3v2relativevolumeframechanneldata.md)
-- [Id3v2Settings](classes/id3v2settings.md)
-- [Id3v2Synchronized](classes/id3v2synchronized.md)
-- [Id3v2SynchronizedLyricsFrame](classes/id3v2synchronizedlyricsframe.md)
-- [Id3v2Tag](classes/id3v2tag.md)
-- [Id3v2TagFooter](classes/id3v2tagfooter.md)
-- [Id3v2TagHeader](classes/id3v2tagheader.md)
-- [Id3v2TermsOfUseFrame](classes/id3v2termsofuseframe.md)
-- [Id3v2TextInformationFrame](classes/id3v2textinformationframe.md)
-- [Id3v2UniqueFileIdentifierFrame](classes/id3v2uniquefileidentifierframe.md)
-- [Id3v2UnknownFrame](classes/id3v2unknownframe.md)
-- [Id3v2UnsynchronizedFrame](classes/id3v2unsynchronizedframe.md)
-- [Id3v2UrlLinkFrame](classes/id3v2urllinkframe.md)
-- [Id3v2UserTextInformationFrame](classes/id3v2usertextinformationframe.md)
-- [Id3v2UserUrlLinkFrame](classes/id3v2userurllinkframe.md)
-- [InfoTag](classes/infotag.md)
-- [LocalFileAbstraction](classes/localfileabstraction.md)
-- [MovieIdTag](classes/movieidtag.md)
-- [MpegAudioFile](classes/mpegaudiofile.md)
-- [MpegAudioHeader](classes/mpegaudioheader.md)
-- [MpegContainerFile](classes/mpegcontainerfile.md)
-- [MpegVbriHeader](classes/mpegvbriheader.md)
-- [MpegVideoHeader](classes/mpegvideoheader.md)
-- [MpegXingHeader](classes/mpegxingheader.md)
-- [NotImplementedError](classes/notimplementederror.md)
-- [Picture](classes/picture.md)
-- [PictureLazy](classes/picturelazy.md)
-- [Properties](classes/properties.md)
-- [RiffBitmapInfoHeader](classes/riffbitmapinfoheader.md)
-- [RiffFile](classes/rifffile.md)
-- [RiffList](classes/rifflist.md)
-- [RiffListTag](classes/rifflisttag.md)
-- [RiffWaveFormatEx](classes/riffwaveformatex.md)
-- [Tag](classes/tag.md)
-- [XiphComment](classes/xiphcomment.md)
-- [XiphPicture](classes/xiphpicture.md)
+- [AacFile](classes/AacFile.md)
+- [AacFileSettings](classes/AacFileSettings.md)
+- [AiffFile](classes/AiffFile.md)
+- [ApeFile](classes/ApeFile.md)
+- [ApeFileSettings](classes/ApeFileSettings.md)
+- [ApeTag](classes/ApeTag.md)
+- [AsfContentDescriptionObject](classes/AsfContentDescriptionObject.md)
+- [AsfContentDescriptor](classes/AsfContentDescriptor.md)
+- [AsfExtendedContentDescriptionObject](classes/AsfExtendedContentDescriptionObject.md)
+- [AsfFile](classes/AsfFile.md)
+- [AsfFilePropertiesObject](classes/AsfFilePropertiesObject.md)
+- [AsfHeaderExtensionObject](classes/AsfHeaderExtensionObject.md)
+- [AsfHeaderObject](classes/AsfHeaderObject.md)
+- [AsfMetadataDescriptor](classes/AsfMetadataDescriptor.md)
+- [AsfMetadataLibraryObject](classes/AsfMetadataLibraryObject.md)
+- [AsfPaddingObject](classes/AsfPaddingObject.md)
+- [AsfStreamPropertiesObject](classes/AsfStreamPropertiesObject.md)
+- [AsfTag](classes/AsfTag.md)
+- [AsfUnknownObject](classes/AsfUnknownObject.md)
+- [AviStream](classes/AviStream.md)
+- [ByteVector](classes/ByteVector.md)
+- [CombinedTag](classes/CombinedTag.md)
+- [CorruptFileError](classes/CorruptFileError.md)
+- [DivxTag](classes/DivxTag.md)
+- [File](classes/File.md)
+- [FlacBlock](classes/FlacBlock.md)
+- [FlacFile](classes/FlacFile.md)
+- [FlacFileSettings](classes/FlacFileSettings.md)
+- [FlacTag](classes/FlacTag.md)
+- [Id3v1Tag](classes/Id3v1Tag.md)
+- [Id3v2AttachmentFrame](classes/Id3v2AttachmentFrame.md)
+- [Id3v2CommentsFrame](classes/Id3v2CommentsFrame.md)
+- [Id3v2EventTimeCode](classes/Id3v2EventTimeCode.md)
+- [Id3v2EventTimeCodeFrame](classes/Id3v2EventTimeCodeFrame.md)
+- [Id3v2ExtendedHeader](classes/Id3v2ExtendedHeader.md)
+- [Id3v2Frame](classes/Id3v2Frame.md)
+- [Id3v2FrameHeader](classes/Id3v2FrameHeader.md)
+- [Id3v2FrameIdentifier](classes/Id3v2FrameIdentifier.md)
+- [Id3v2MusicCdIdentifierFrame](classes/Id3v2MusicCdIdentifierFrame.md)
+- [Id3v2PlayCountFrame](classes/Id3v2PlayCountFrame.md)
+- [Id3v2PopularimeterFrame](classes/Id3v2PopularimeterFrame.md)
+- [Id3v2PrivateFrame](classes/Id3v2PrivateFrame.md)
+- [Id3v2RelativeVolumeFrame](classes/Id3v2RelativeVolumeFrame.md)
+- [Id3v2RelativeVolumeFrameChannelData](classes/Id3v2RelativeVolumeFrameChannelData.md)
+- [Id3v2Settings](classes/Id3v2Settings.md)
+- [Id3v2Synchronized](classes/Id3v2Synchronized.md)
+- [Id3v2SynchronizedLyricsFrame](classes/Id3v2SynchronizedLyricsFrame.md)
+- [Id3v2Tag](classes/Id3v2Tag.md)
+- [Id3v2TagFooter](classes/Id3v2TagFooter.md)
+- [Id3v2TagHeader](classes/Id3v2TagHeader.md)
+- [Id3v2TermsOfUseFrame](classes/Id3v2TermsOfUseFrame.md)
+- [Id3v2TextInformationFrame](classes/Id3v2TextInformationFrame.md)
+- [Id3v2UniqueFileIdentifierFrame](classes/Id3v2UniqueFileIdentifierFrame.md)
+- [Id3v2UnknownFrame](classes/Id3v2UnknownFrame.md)
+- [Id3v2UnsynchronizedFrame](classes/Id3v2UnsynchronizedFrame.md)
+- [Id3v2UrlLinkFrame](classes/Id3v2UrlLinkFrame.md)
+- [Id3v2UserTextInformationFrame](classes/Id3v2UserTextInformationFrame.md)
+- [Id3v2UserUrlLinkFrame](classes/Id3v2UserUrlLinkFrame.md)
+- [InfoTag](classes/InfoTag.md)
+- [LocalFileAbstraction](classes/LocalFileAbstraction.md)
+- [MovieIdTag](classes/MovieIdTag.md)
+- [MpegAudioFile](classes/MpegAudioFile.md)
+- [MpegAudioHeader](classes/MpegAudioHeader.md)
+- [MpegContainerFile](classes/MpegContainerFile.md)
+- [MpegVbriHeader](classes/MpegVbriHeader.md)
+- [MpegVideoHeader](classes/MpegVideoHeader.md)
+- [MpegXingHeader](classes/MpegXingHeader.md)
+- [NotImplementedError](classes/NotImplementedError.md)
+- [OggCodecFactory](classes/OggCodecFactory.md)
+- [OggFile](classes/OggFile.md)
+- [OggFileSettings](classes/OggFileSettings.md)
+- [OggOpusCodec](classes/OggOpusCodec.md)
+- [OggTag](classes/OggTag.md)
+- [OggTheoraCodec](classes/OggTheoraCodec.md)
+- [OggVorbisCodec](classes/OggVorbisCodec.md)
+- [Picture](classes/Picture.md)
+- [PictureLazy](classes/PictureLazy.md)
+- [Properties](classes/Properties.md)
+- [RiffBitmapInfoHeader](classes/RiffBitmapInfoHeader.md)
+- [RiffFile](classes/RiffFile.md)
+- [RiffList](classes/RiffList.md)
+- [RiffListTag](classes/RiffListTag.md)
+- [RiffWaveFormatEx](classes/RiffWaveFormatEx.md)
+- [Tag](classes/Tag.md)
+- [XiphComment](classes/XiphComment.md)
+- [XiphPicture](classes/XiphPicture.md)
 
 ### Interfaces
 
-- [IAudioCodec](interfaces/iaudiocodec.md)
-- [ICodec](interfaces/icodec.md)
-- [ILosslessAudioCodec](interfaces/ilosslessaudiocodec.md)
-- [IPhotoCodec](interfaces/iphotocodec.md)
-- [IPicture](interfaces/ipicture.md)
-- [IVideoCodec](interfaces/ivideocodec.md)
+- [IAudioCodec](interfaces/IAudioCodec.md)
+- [ICodec](interfaces/ICodec.md)
+- [ILosslessAudioCodec](interfaces/ILosslessAudioCodec.md)
+- [IPhotoCodec](interfaces/IPhotoCodec.md)
+- [IPicture](interfaces/IPicture.md)
+- [IVideoCodec](interfaces/IVideoCodec.md)
 
 ### Type aliases
 
@@ -133,7 +140,7 @@
 
 ### FileTypeConstructor
 
-Ƭ **FileTypeConstructor**: (`abstraction`: `IFileAbstraction`, `style`: [`ReadStyle`](enums/readstyle.md)) => [`File`](classes/file.md)
+Ƭ **FileTypeConstructor**: (`abstraction`: `IFileAbstraction`, `style`: [`ReadStyle`](enums/ReadStyle.md)) => [`File`](classes/File.md)
 
 #### Type declaration
 
@@ -144,20 +151,29 @@
 | Name | Type |
 | :------ | :------ |
 | `abstraction` | `IFileAbstraction` |
-| `style` | [`ReadStyle`](enums/readstyle.md) |
+| `style` | [`ReadStyle`](enums/ReadStyle.md) |
 
 ___
 
 ### FileTypeResolver
 
-Ƭ **FileTypeResolver**: (`abstraction`: `IFileAbstraction`, `mimetype`: `string`, `style`: [`ReadStyle`](enums/readstyle.md)) => [`File`](classes/file.md)
+Ƭ **FileTypeResolver**: (`abstraction`: `IFileAbstraction`, `mimetype`: `string`, `style`: [`ReadStyle`](enums/ReadStyle.md)) => [`File`](classes/File.md)
 
 #### Type declaration
 
-▸ (`abstraction`, `mimetype`, `style`): [`File`](classes/file.md)
+▸ (`abstraction`, `mimetype`, `style`): [`File`](classes/File.md)
 
-Delegate is used for intervening in [File.createFromPath](classes/file.md#createfrompath) by resolving the filetype before
+Delegate is used for intervening in [File.createFromPath](classes/File.md#createfrompath) by resolving the filetype before
 any standard resolution operations.
+
+**`remarks`** A FileTypeResolver is one way of altering the behavior of
+    [File.createFromPath](classes/File.md#createfrompath) When [File.createFromPath](classes/File.md#createfrompath) is called, the registered
+    resolvers are invoked in reverse order in which they were registered. The resolver may then
+    perform any operations necessary, including other type-finding methods. If the resolver
+    returns a new [File](classes/File.md) it will instantly be returned, by [File.createFromPath](classes/File.md#createfrompath). If
+    it returns `undefined`, [File.createFromPath](classes/File.md#createfrompath) will continue to process. If the resolver
+    throws an exception, it will be uncaught. To register a resolver, use
+    [File.addFileTypeResolver](classes/File.md#addfiletyperesolver).
 
 ##### Parameters
 
@@ -165,13 +181,13 @@ any standard resolution operations.
 | :------ | :------ | :------ |
 | `abstraction` | `IFileAbstraction` | File to be read. |
 | `mimetype` | `string` | - |
-| `style` | [`ReadStyle`](enums/readstyle.md) | How to read media properties from the file |
+| `style` | [`ReadStyle`](enums/ReadStyle.md) | How to read media properties from the file |
 
 ##### Returns
 
-[`File`](classes/file.md)
+[`File`](classes/File.md)
 
-New instance of [File](classes/file.md) or `undefined` if the resolver could not be matched
+New instance of [File](classes/File.md) or `undefined` if the resolver could not be matched
 
 ## Properties
 
@@ -200,7 +216,7 @@ ___
 | :------ | :------ |
 | `addFrameCreator` | (`creator`: `FrameCreator`) => `void` |
 | `clearFrameCreators` | () => `void` |
-| `createFrame` | (`data`: [`ByteVector`](classes/bytevector.md), `file`: [`File`](classes/file.md), `offset`: `number`, `version`: `number`, `alreadyUnsynced`: `boolean`) => { `frame`: [`Id3v2Frame`](classes/id3v2frame.md) ; `offset`: `number`  } |
+| `createFrame` | (`data`: [`ByteVector`](classes/ByteVector.md), `file`: [`File`](classes/File.md), `offset`: `number`, `version`: `number`, `alreadyUnsynced`: `boolean`) => { `frame`: [`Id3v2Frame`](classes/Id3v2Frame.md) ; `offset`: `number`  } |
 
 ## Variables
 
@@ -210,4 +226,4 @@ ___
 
 #### Index signature
 
-▪ [key: `string`]: [`Id3v2FrameIdentifier`](classes/id3v2frameidentifier.md)
+▪ [key: `string`]: [`Id3v2FrameIdentifier`](classes/Id3v2FrameIdentifier.md)

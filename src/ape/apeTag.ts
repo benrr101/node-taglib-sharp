@@ -263,7 +263,7 @@ export default class ApeTag extends Tag {
 
         let asInt = Number.parseInt(text, 10);
         if (Number.isNaN(asInt)) {
-            text = text.substr(0, 4);
+            text = text.substring(0, 4);
             asInt = Number.parseInt(text, 10);
             if (Number.isNaN(asInt)) {
                 return 0;
@@ -397,7 +397,7 @@ export default class ApeTag extends Tag {
         let text = this.getStringValue("REPLAYGAIN_TRACK_GAIN");
         if (!text) { return NaN; }
         if (text.toLowerCase().endsWith("db")) {
-            text = text.substr(0, text.length - 2).trim();
+            text = text.substring(0, text.length - 2).trim();
         }
 
         return Number.parseFloat(text);
@@ -432,7 +432,7 @@ export default class ApeTag extends Tag {
         let text = this.getStringValue("REPLAYGAIN_ALBUM_GAIN");
         if (!text) { return NaN; }
         if (text.toLowerCase().endsWith("db")) {
-            text = text.substr(0, text.length - 2).trim();
+            text = text.substring(0, text.length - 2).trim();
         }
 
         return Number.parseFloat(text);

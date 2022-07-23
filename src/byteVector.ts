@@ -506,7 +506,7 @@ export class ByteVector {
 
         // Shorten text if only part of it was requested
         if (text.length > length) {
-            text = text.substr(0, length);
+            text = text.substring(0, length);
         }
 
         // Encode the string into bytes

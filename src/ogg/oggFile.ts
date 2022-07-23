@@ -46,7 +46,7 @@ export default class OggFile extends File {
 
             // Read the properties if requested
             // TODO: Read bitrate more accurately if accurate read style provided
-            if ((readStyle & ReadStyle.Average) !== 0) {
+            if (NumberUtils.hasFlag(readStyle, ReadStyle.Average)) {
                 // Find the last page header and use its position to determine the duration of the
                 // file.
                 const lastPageHeaderOffset = this.rFind(OggPageHeader.HEADER_IDENTIFIER);

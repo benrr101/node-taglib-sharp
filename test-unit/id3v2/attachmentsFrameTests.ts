@@ -508,7 +508,8 @@ const getCustomTestFrame = (
     public clone_alreadyRead() {
         // Arrange
         const frame = getTestFrame();
-        const _ = frame.data;    // force a raw load
+        // noinspection JSUnusedLocalSymbols forces a raw load
+        const _ = frame.data;
 
         // Act
         const output = <AttachmentFrame> frame.clone();

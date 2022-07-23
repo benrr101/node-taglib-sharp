@@ -3,12 +3,30 @@ import * as fs from "fs";
 import {Guards} from "./utils";
 import {ByteVector} from "./byteVector";
 
+/**
+ * Indicates there the seek operation should begin.
+ */
 export enum SeekOrigin {
+    /**
+     * Seek should begin at the start of the file.
+     */
     Begin,
+
+    /**
+     * Seek should begin at the current position in the file.
+     */
     Current,
+
+    /**
+     * Seek should begin at the end of the file.
+     */
     End
 }
 
+/**
+ * Interface for a stream, it wraps around a file descriptor to make reading and writing to files
+ * using node IO a lot easier.
+ */
 export interface IStream {
     /**
      * Whether or not the stream can be written to

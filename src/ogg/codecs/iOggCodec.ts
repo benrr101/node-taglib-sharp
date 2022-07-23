@@ -2,6 +2,9 @@ import XiphComment from "../../xiph/xiphComment";
 import {ByteVector} from "../../byteVector";
 import {ICodec} from "../../properties";
 
+/**
+ * Interface for an OGG codec.
+ */
 export default interface IOggCodec extends ICodec {
     /**
      * Gets the raw Xiph comment data contained in the codec.

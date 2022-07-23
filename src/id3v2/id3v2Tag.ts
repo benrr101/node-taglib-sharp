@@ -133,7 +133,7 @@ export default class Id3v2Tag extends Tag {
     public static set language(value: string) {
         Id3v2Tag._language = !value || value.length < 3
             ? "   "
-            : value.substr(0, 3);
+            : value.substring(0, 3);
     }
 
     /**
@@ -210,7 +210,7 @@ export default class Id3v2Tag extends Tag {
                 let tdrcText = tyerFrames[0].text[0];
                 if (tdatFrames.length > 0) {
                     const tdatText = tdatFrames[0].text[0];
-                    tdrcText += `-${tdatText.substr(0, 2)}-${tdatText.substr(2, 2)}`;
+                    tdrcText += `-${tdatText.substring(0, 2)}-${tdatText.substring(2, 4)}`;
                     if (timeFrames.length > 0) {
                         const timeText = timeFrames[0].text[0];
                         tdrcText += `T${timeText}`;
@@ -228,14 +228,14 @@ export default class Id3v2Tag extends Tag {
             if (tdrcFrames.length > 0) {
                 const tdrcText = tdrcFrames[0].text[0];
                 this.removeFrames(FrameIdentifiers.TDRC);
-                this.setTextFrame(FrameIdentifiers.TYER, tdrcText.substr(0, 4));
+                this.setTextFrame(FrameIdentifiers.TYER, tdrcText.substring(0, 4));
 
                 if (tdrcText.length >= 10) {
-                    this.setTextFrame(FrameIdentifiers.TDAT, tdrcText.substr(6, 5).replace("-", ""));
+                    this.setTextFrame(FrameIdentifiers.TDAT, tdrcText.substring(6, 11).replace("-", ""));
                 }
 
                 if (tdrcText.length === 19) {
-                    this.setTextFrame(FrameIdentifiers.TIME, tdrcText.substr(11, 8));
+                    this.setTextFrame(FrameIdentifiers.TIME, tdrcText.substring(11, 19));
                 }
             }
         }
@@ -421,7 +421,7 @@ export default class Id3v2Tag extends Tag {
         if (tdrcText && tdrcText.length >= 4) {
             // @TODO: Check places where we use this pattern... .parseInt doesn't parse the whole string if it started
             //  with good data
-            return Number.parseInt(tdrcText.substr(0, 4), 10);
+            return Number.parseInt(tdrcText.substring(0, 4), 10);
         }
 
         // Case 2: We have a TYER frame (v2.3/v2.2)
@@ -429,7 +429,7 @@ export default class Id3v2Tag extends Tag {
         if (tyerText && tyerText.length >= 4) {
             // @TODO: Check places where we use this pattern... .parseInt doesn't parse the whole string if it started
             //  with good data
-            return Number.parseInt(tyerText.substr(0, 4), 10);
+            return Number.parseInt(tyerText.substring(0, 4), 10);
         }
 
         // Case 3: Neither, return 0
@@ -629,7 +629,7 @@ export default class Id3v2Tag extends Tag {
         let text = this.getUserTextAsString("REPLAYGAIN_TRACK_GAIN", false);
         if (!text) { return NaN; }
         if (text.toLowerCase().endsWith("db")) {
-            text = text.substr(0, text.length - 2).trim();
+            text = text.substring(0, text.length - 2).trim();
         }
 
         return Number.parseFloat(text);
@@ -664,7 +664,7 @@ export default class Id3v2Tag extends Tag {
         let text = this.getUserTextAsString("REPLAYGAIN_ALBUM_GAIN", false);
         if (!text) { return NaN; }
         if (text.toLowerCase().endsWith("db")) {
-            text = text.substr(0, text.length - 2).trim();
+            text = text.substring(0, text.length - 2).trim();
         }
 
         return Number.parseFloat(text);

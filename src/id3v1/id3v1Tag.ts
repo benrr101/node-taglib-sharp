@@ -239,7 +239,7 @@ export default class Id3v1Tag extends Tag {
     }
 
     private static renderField(value: string, maxLength: number): ByteVector[] {
-        const valueToWrite = value?.substr(0, maxLength) || "";
+        const valueToWrite = value?.substring(0, maxLength) || "";
         const remainingBytes = maxLength - valueToWrite.length;
         return [
             ByteVector.fromString(valueToWrite, StringType.Latin1),
