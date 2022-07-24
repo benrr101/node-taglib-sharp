@@ -2,6 +2,7 @@ import {ByteVector, StringType} from "../byteVector";
 import {File, FileAccessMode} from "../file";
 import {IDisposable, ILazy} from "../interfaces"
 import {Guards, NumberUtils} from "../utils";
+import {UnsupportedFormatError} from "../errors";
 
 /**
  * Reads a boolean from the current element's data section.
@@ -55,6 +56,22 @@ const getUint = (bytes: ByteVector): number => {
     return Number(bigInt);
 }
 
+export class EbmlParserOptions {
+    public maxSize?: number;
+    public maxIdLength?: number;
+    public maxSizeLength?: number;
+
+    public clone(newLength: number): EbmlParserOptions {
+        Guards.safeUint(newLength, "newLength");
+
+        const clone = new EbmlParserOptions();
+        clone.maxSize = newLength;
+        clone.maxIdLength = this.maxIdLength;
+        clone.maxSizeLength = this.maxSizeLength;
+        return clone;
+    }
+}
+
 /**
  * An element that allows accessing typed information from a parser at a later time than parsing.
  */
@@ -62,6 +79,7 @@ export class EbmlElementValue implements ILazy {
     private readonly _dataOffset: number;
     private readonly _dataSize: number;
     private readonly _file: File;
+    private readonly _options: EbmlParserOptions;
     private _data: ByteVector;
 
     /**
@@ -70,8 +88,10 @@ export class EbmlElementValue implements ILazy {
      * @param file File containing the data
      * @param offset Offset into the file where the data begins, must be a safe, positive integer
      * @param size Size of the data in bytes, must be a safe, positive integer
+     * @param parserOptions Options from the parser that read the element
+     * @internal
      */
-    public constructor(file: File, offset: number, size: number) {
+    public constructor(file: File, offset: number, size: number, parserOptions: EbmlParserOptions) {
         Guards.truthy(file, "file");
         Guards.safeUint(offset, "offset");
         Guards.safeUint(size, "size")
@@ -79,6 +99,7 @@ export class EbmlElementValue implements ILazy {
         this._file = file;
         this._dataOffset = offset;
         this._dataSize = size;
+        this._options = parserOptions;
     }
 
     /** @inheritDoc */
@@ -112,7 +133,8 @@ export class EbmlElementValue implements ILazy {
     }
 
     public getParser(): EbmlParser {
-        return new EbmlParser(this._file, this._dataOffset, this._dataSize);
+        const newOptions = this._options.clone(this._dataSize);
+        return new EbmlParser(this._file, this._dataOffset, newOptions);
     }
 
     /**
@@ -162,6 +184,8 @@ export class EbmlElementValue implements ILazy {
 export class EbmlParser implements IDisposable {
 
     private readonly _file: File;
+    private readonly _options: EbmlParserOptions;
+
     private _childParser: EbmlParser;
     private _data: ByteVector;
     private _dataOffset: number;
@@ -172,7 +196,7 @@ export class EbmlParser implements IDisposable {
      * Length of all elements and headers that is readable by this instance.
      * @private
      */
-    private _length: number;
+    private _maxSize: number;
     /**
      * Absolute position within the file where the reader is currently pointing. This will always
      * be the *next* element to read.
@@ -189,18 +213,27 @@ export class EbmlParser implements IDisposable {
      * file, `length` can be provided.
      * @param file EBML file to process
      * @param offset Position in the file to begin parsing
-     * @param length Maximum number of bytes after the offset to process with this instance
+     * @param options Optional options for reading the EBML file
      */
-    public constructor(file: File, offset: number = 0, length?: number) {
+    public constructor(file: File, offset: number = 0, options?: EbmlParserOptions) {
         Guards.truthy(file, "file");
         Guards.safeUint(offset, "offset");
-        if (length) {
-            Guards.safeUint(length, "length");
+
+        this._options = options || new EbmlParserOptions();
+        this._options.maxIdLength = this._options.maxIdLength || 4;
+        this._options.maxSizeLength = this._options.maxSizeLength || 8;
+
+        Guards.safeUint(this._options.maxIdLength, "options.maxIdLength");
+        Guards.safeUint(this._options.maxSizeLength, "options.maxSizeLength");
+        if (this._options.maxIdLength > 8 || this._options.maxSizeLength > 8) {
+            throw new UnsupportedFormatError(
+                "Not supported: This EBML file is not supported in this version of node-taglib-sharp."
+            )
         }
 
         this._file = file;
         this._offset = offset;
-        this._length = length || this._file.length;
+        this._maxSize = options?.maxSize || this._file.length;
     }
 
     // #endregion
@@ -211,6 +244,11 @@ export class EbmlParser implements IDisposable {
      * Gets the ID of the current EBML element.
      */
     public get id(): number { return this._id; }
+
+    /**
+     * Gets the total size of the current EBML element, header plus data.
+     */
+    public get length(): number { return this._headerSize + this._dataSize; }
 
     // #endregion
 
@@ -301,7 +339,8 @@ export class EbmlParser implements IDisposable {
             return undefined;
         }
 
-        const nestedParser = new EbmlParser(this._file, this._dataOffset, this._dataSize);
+        const options = this._options.clone(this._dataSize);
+        const nestedParser = new EbmlParser(this._file, this._dataOffset, options);
         nestedParser._parent = this;
         return nestedParser;
     }
@@ -329,7 +368,21 @@ export class EbmlParser implements IDisposable {
     public getValue(): EbmlElementValue {
         return this._dataSize === undefined
             ? undefined
-            : new EbmlElementValue(this._file, this._dataOffset, this._dataSize);
+            : new EbmlElementValue(this._file, this._dataOffset, this._dataSize, this._options);
+    }
+
+    public processChildren(actionMap: Map<number, (parser: EbmlParser) => void>): void {
+        const childrenParser = this.getParser();
+        try {
+            while(childrenParser.read()) {
+                const action = actionMap.get(childrenParser.id);
+                if (action) {
+                    action(childrenParser);
+                }
+            }
+        } finally {
+            childrenParser.dispose();
+        }
     }
 
     /**
@@ -341,26 +394,25 @@ export class EbmlParser implements IDisposable {
             throw new Error("Cannot advance parser when child parser exists. Dispose existing one first.");
         }
 
-        if (this._offset >= (this._length - 1)) {
+        if (this._offset >= (this._maxSize - 1)) {
             // We've reached the end of the element
             return false;
         }
 
         // Read the ID
         this._file.seek(this._offset);
-        const idReadResult = this.readUtf8StyleNumber(4);
-        this._offset += idReadResult.bytes;
+        const idReadResult = this.readElementId(this._options.maxIdLength);
         this._id = idReadResult.value;
 
         // Read the data size
-        this._file.seek(this._offset);
-        const dataSizeReadResult = this.readUtf8StyleNumber(8);
-        this._dataOffset = this._offset + dataSizeReadResult.bytes;
+        this._file.seek(this._offset + idReadResult.bytes);
+        const dataSizeReadResult = this.readVariableInteger(this._options.maxSizeLength);
         this._dataSize = dataSizeReadResult.value;
 
         // Update the state of the reader within the file
         this._headerSize = idReadResult.bytes + dataSizeReadResult.bytes;
-        this._offset += dataSizeReadResult.bytes;
+        this._dataOffset = this._offset + this._headerSize;
+        this._offset = this._dataOffset + this._dataSize;
         this._data = undefined;
 
         return true;
@@ -388,8 +440,8 @@ export class EbmlParser implements IDisposable {
         // Write the bytes, re-render the header
         this._file.insert(value, this._dataOffset, this._dataSize);
         const headerBytes = ByteVector.concatenate(
-            this.renderUtf8StyleNumber(this._id),
-            this.renderUtf8StyleNumber(value.length)
+            this.renderVariableInteger(this._id),
+            this.renderVariableInteger(value.length)
         )
         this._file.insert(headerBytes, this._dataOffset - this._headerSize, this._headerSize);
 
@@ -398,7 +450,7 @@ export class EbmlParser implements IDisposable {
         this._headerSize = headerBytes.length;
         const dataDifference = value.length - this._dataSize;
         this._dataSize = value.length;
-        this._length += headerDifference + dataDifference;
+        this._maxSize += headerDifference + dataDifference;
 
         // Update the parent if necessary
         this._parent?.onChildDataSizeChange(headerDifference + dataDifference);
@@ -424,10 +476,10 @@ export class EbmlParser implements IDisposable {
     private onChildDataSizeChange(difference: number): void {
         this._offset += difference;
         this._dataSize += difference;
-        this._length += difference;
+        this._maxSize += difference;
     }
 
-    private renderUtf8StyleNumber(value: number|bigint): ByteVector {
+    private renderVariableInteger(value: number|bigint): ByteVector {
         // The theory behind this algorithm: The maximum size the EBML spec supports at time of
         // writing is 56-bits. Since this is greater than the maximum uint javascript safely
         // handles, we convert the number to bytes. If the uppermost 7 bits of a 56-bit value (the
@@ -437,7 +489,7 @@ export class EbmlParser implements IDisposable {
         // upper byte. If those bits contained something, we OR the upper bits with the length
         // descriptor and take the 2-7 bytes. If the bits are empty, we shift the masks to the
         // left, shift the length descriptor, increment the lower byte index, and repeat.
-        // FUCK this took a too long to solve.
+        // FUCK this took too long to solve.
 
         const valueBytes = ByteVector.fromUlong(value);
         if (valueBytes.get(0)) {
@@ -468,7 +520,52 @@ export class EbmlParser implements IDisposable {
         return ByteVector.fromByteArray([byte]);
     }
 
-    private readUtf8StyleNumber(maxBytes: number): { bytes: number, value: number } {
+    private readElementId(maxBytes: number): { bytes: number, value: number } {
+        // For whatever reason, element IDs seem to always include the variable integer length
+        // bits. This isn't described in the specification, but all documented element IDs start
+        // with the variable integer length bits, so that must be how it is. As such, we just need
+        // to determine the length of the variable integer and return the entire thing as a number.
+        const bytes = this.readVariableIntegerBytes(maxBytes);
+        return {
+            bytes: bytes.length,
+            value: bytes.toUint()
+        }
+    }
+
+    private readVariableInteger(maxBytes: number): { bytes: number, value: number } {
+        const bytes = this.readVariableIntegerBytes(maxBytes);
+        const additionalBytes = bytes.length - 1;
+
+        // Put together the bytes into the output value
+        let outputValue = BigInt(0);
+        for (let i = 0; i < additionalBytes; i++) {
+            const byteIndex = additionalBytes - i;
+            const byte = bytes.get(byteIndex);
+
+            // SPECIAL CASE: We operate under the assumption that data sizes will *not* be >52
+            // bits. If we encounter too many bits in the number, give up.
+            if (additionalBytes >= 7 && i >= 6 && NumberUtils.hasFlag(byte, 0xF0)) {
+                throw new Error(
+                    "Not supported: EBML data sizes > 52 bits are not supported in this version of node-taglib-sharp"
+                );
+            }
+
+            outputValue |= BigInt(byte) << BigInt(i * 8)
+        }
+
+        // @TODO: Support unknown element size?
+
+        const upperMostMask = NumberUtils.uintRShift(0xFF, additionalBytes + 1);
+        const upperMostByte = NumberUtils.uintAnd(bytes.get(0), upperMostMask);
+        outputValue |= BigInt(upperMostByte) << BigInt(additionalBytes * 8);
+
+        return {
+            bytes: additionalBytes + 1,
+            value: Number(outputValue)
+        };
+    }
+
+    private readVariableIntegerBytes(maxBytes: number): ByteVector {
         // The theory behind this algorithm: Certain numbers in EBML are stored like UTF8 values.
         // The first x bits are used to indicate how many bytes are used to store the value.
         // Starting from the most significant bit, a 1 in this position indicates the value only
@@ -498,33 +595,11 @@ export class EbmlParser implements IDisposable {
         if (additionalBytes > maxBytes) {
             throw new Error("Invalid EBML format read: Missing length descriptor")
         }
-        if (bytes.length < additionalBytes) {
+        if (bytes.length < additionalBytes + 1) {
             throw new Error("Invalid EBML format read: Could not read enough bytes");
         }
 
-        // Put together the bytes into the output value
-        let outputValue = BigInt(0);
-        for (let i = 0; i < additionalBytes; i++) {
-            const byteIndex = additionalBytes - i;
-            const byte = bytes.get(byteIndex);
-
-            // SPECIAL CASE: We operate under the assumption that data sizes will *not* be >52
-            // bits. If we encounter too many bits in the number, give up.
-            if (additionalBytes >= 7 && i >= 6 && NumberUtils.hasFlag(byte, 0xF0)) {
-                throw new Error(
-                    "Not supported: Data sizes > 52 bits are not supported in this version of node-taglib-sharp"
-                );
-            }
-
-            outputValue |= BigInt(byte) << BigInt(i * 8)
-        }
-
-        // @TODO: Support unknown element size?
-
-        const upperMostMask = NumberUtils.uintRShift(0xFF, additionalBytes + 1);
-        const upperMostByte = NumberUtils.uintAnd(bytes.get(0), upperMostMask);
-        outputValue |= BigInt(upperMostByte) << BigInt(additionalBytes * 8);
-        return { bytes: additionalBytes + 1, value: Number(outputValue) };
+        return bytes.subarray(0, additionalBytes + 1);
     }
 
     // #endregion
