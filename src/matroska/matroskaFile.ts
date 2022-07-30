@@ -30,7 +30,11 @@ export default class MatroskaFile extends File {
     private static readonly SUPPORTED_DOCTYPES = ["matroska", "webm"];
 
     private _header: EbmlHeader;
-    private _tracks: Track[];
+    private _tracks: Track[] = [];
+
+    // TEST CODE
+    private _readState : TagReadState;
+    // /TEST CODE
 
     public constructor(file: IFileAbstraction|string, propertiesStyle: ReadStyle) {
         super(file);
@@ -126,7 +130,7 @@ export default class MatroskaFile extends File {
             }
 
             // Read the children of the segment element
-            const tagState: TagReadState = {
+            this._readState = {
                 attachments: []
             };
             const segmentParseActions = new Map<number, (parser: EbmlParser) => void>([
@@ -135,7 +139,7 @@ export default class MatroskaFile extends File {
                 [MatroskaIds.CLUSTER, undefined],
                 [MatroskaIds.TRACKS, p => this.readTracks(p)],
                 [MatroskaIds.CUES, undefined],
-                [MatroskaIds.ATTACHMENTS, p => this.readAttachments(p, tagState)],
+                [MatroskaIds.ATTACHMENTS, p => this.readAttachments(p, this._readState)],
                 [MatroskaIds.CHAPTERS, undefined],
                 [MatroskaIds.TAGS, undefined]
             ]);

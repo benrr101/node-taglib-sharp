@@ -4,6 +4,8 @@ import {IDisposable, ILazy} from "../interfaces"
 import {Guards, NumberUtils} from "../utils";
 import {UnsupportedFormatError} from "../errors";
 
+// @TODO: Update comments for these functions
+
 /**
  * Reads a boolean from the current element's data section.
  * @returns boolean `true` if the data stored in the element is > 0, `false` if 0 is stored
@@ -40,7 +42,7 @@ const getString = (bytes: ByteVector): string => {
 }
 
 /**
- * Read an integer from the current element's data section.
+ * Read an integer from the provided bytes.
  * @remarks The EMBL spec supports up to 64-bit unsigned integers. Due to javascript's
  *     implementation of `number`s and wanting to avoid using `BigInt`s everywhere an integer
  *     is needed in this implementation, we will only support up to 52-bit unsigned integers.
@@ -54,6 +56,15 @@ const getUint = (bytes: ByteVector): number => {
     }
 
     return Number(bigInt);
+}
+
+/**
+ * Read a long from the provided bytes.
+ * @remarks Use this if you know the number has the potential to be greater than 52 bits.
+ * @param bytes Bytes to read the ulong from.
+ */
+const getUlong = (bytes: ByteVector): bigint => {
+    return bytes.toUlong();
 }
 
 export class EbmlParserOptions {
@@ -158,6 +169,16 @@ export class EbmlElementValue implements ILazy {
         return getUint(this._data);
     }
 
+    /**
+     * Read an integer from the data section.
+     * @remarks Use this method if there's a high likelihood that the data will be >52 bits.
+     * @returns number A `safe` integer contained in the element.
+     */
+    public getUlong(): bigint {
+        this.load();
+        return getUlong(this._data);
+    }
+
     /** @inheritDoc */
     public load(): void {
         if (this._data) {
@@ -193,10 +214,10 @@ export class EbmlParser implements IDisposable {
     private _headerSize: number;
     private _id: number;
     /**
-     * Length of all elements and headers that is readable by this instance.
+     * Maximum offset of the element.
      * @private
      */
-    private _maxSize: number;
+    private _maxOffset: number;
     /**
      * Absolute position within the file where the reader is currently pointing. This will always
      * be the *next* element to read.
@@ -233,7 +254,9 @@ export class EbmlParser implements IDisposable {
 
         this._file = file;
         this._offset = offset;
-        this._maxSize = options?.maxSize || this._file.length;
+        this._maxOffset = options
+            ? this._offset + options.maxSize
+            : this._file.length;
     }
 
     // #endregion
@@ -360,6 +383,18 @@ export class EbmlParser implements IDisposable {
     }
 
     /**
+     * Read a long from the current element's data section.
+     * @remarks Use this method if there's a high likelihood that the value will be > 52 bits.
+     * @returns number A long contained in the element. `0` is returned if an element has not been
+     *     read, yet.
+     */
+    public getUlong(): bigint {
+        return this._dataSize === undefined
+            ? NumberUtils.BIG_ZERO
+            : getUlong(this.getBytes());
+    }
+
+    /**
      * Reads the bytes from the current element and packages them up into an object that allows
      * them to be converted at a later time than at reading.
      * @returns EbmlElementValue Object containing the data from the element. `undefined` will be
@@ -394,7 +429,7 @@ export class EbmlParser implements IDisposable {
             throw new Error("Cannot advance parser when child parser exists. Dispose existing one first.");
         }
 
-        if (this._offset >= (this._maxSize - 1)) {
+        if (this._offset >= (this._maxOffset - 1)) {
             // We've reached the end of the element
             return false;
         }
@@ -450,7 +485,7 @@ export class EbmlParser implements IDisposable {
         this._headerSize = headerBytes.length;
         const dataDifference = value.length - this._dataSize;
         this._dataSize = value.length;
-        this._maxSize += headerDifference + dataDifference;
+        this._maxOffset += headerDifference + dataDifference;
 
         // Update the parent if necessary
         this._parent?.onChildDataSizeChange(headerDifference + dataDifference);
@@ -476,7 +511,7 @@ export class EbmlParser implements IDisposable {
     private onChildDataSizeChange(difference: number): void {
         this._offset += difference;
         this._dataSize += difference;
-        this._maxSize += difference;
+        this._maxOffset += difference;
     }
 
     private renderVariableInteger(value: number|bigint): ByteVector {
