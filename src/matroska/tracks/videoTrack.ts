@@ -163,27 +163,27 @@ export default class VideoTrack extends Track implements IVideoCodec {
     private readonly _stereoMode: VideoStereoMode;
     private readonly _width: number;
 
-    public constructor(trackElements: Map<number, EbmlElementValue>, audioElements: Map<number, EbmlElementValue>) {
-        super(audioElements);
+    public constructor(trackElements: Map<number, EbmlElementValue>, videoElements: Map<number, EbmlElementValue>) {
+        super(trackElements);
 
-        this._aspectRatioType = audioElements.get(MatroskaIds.ASPECT_RATIO_TYPE)?.getUint();
-        this._colourSpaceFourcc = audioElements.get(MatroskaIds.COLOUR_SPACE)?.getUint();
-        this._cropBottom = audioElements.get(MatroskaIds.PIXEL_CROP_BOTTOM)?.getUint();
-        this._cropLeft = audioElements.get(MatroskaIds.PIXEL_CROP_LEFT)?.getUint();
-        this._cropRight = audioElements.get(MatroskaIds.PIXEL_CROP_RIGHT)?.getUint();
-        this._cropTop = audioElements.get(MatroskaIds.PIXEL_CROP_TOP)?.getUint();
-        this._displayHeight = audioElements.get(MatroskaIds.DISPLAY_HEIGHT)?.getUint();
-        this._displayWidth = audioElements.get(MatroskaIds.DISPLAY_WIDTH)?.getUint();
-        this._displayUnits = audioElements.get(MatroskaIds.DISPLAY_UNIT)?.getUint();
-        this._height = audioElements.get(MatroskaIds.PIXEL_HEIGHT)?.getUint();
-        this._width = audioElements.get(MatroskaIds.PIXEL_WIDTH)?.getUint();
+        this._aspectRatioType = videoElements.get(MatroskaIds.ASPECT_RATIO_TYPE)?.getUint();
+        this._colourSpaceFourcc = videoElements.get(MatroskaIds.COLOUR_SPACE)?.getUint();
+        this._cropBottom = videoElements.get(MatroskaIds.PIXEL_CROP_BOTTOM)?.getUint();
+        this._cropLeft = videoElements.get(MatroskaIds.PIXEL_CROP_LEFT)?.getUint();
+        this._cropRight = videoElements.get(MatroskaIds.PIXEL_CROP_RIGHT)?.getUint();
+        this._cropTop = videoElements.get(MatroskaIds.PIXEL_CROP_TOP)?.getUint();
+        this._displayHeight = videoElements.get(MatroskaIds.DISPLAY_HEIGHT)?.getUint();
+        this._displayWidth = videoElements.get(MatroskaIds.DISPLAY_WIDTH)?.getUint();
+        this._displayUnits = videoElements.get(MatroskaIds.DISPLAY_UNIT)?.getUint();
+        this._height = videoElements.get(MatroskaIds.PIXEL_HEIGHT)?.getUint();
+        this._width = videoElements.get(MatroskaIds.PIXEL_WIDTH)?.getUint();
 
-        const interlacingModeValue = audioElements.get(MatroskaIds.FLAG_INTERLACED)?.getUint();
+        const interlacingModeValue = videoElements.get(MatroskaIds.FLAG_INTERLACED)?.getUint();
         this._isInterlaced = interlacingModeValue && interlacingModeValue > VideoInterlaceFlag.Progressive
             ? interlacingModeValue
             : VideoInterlaceFlag.Undetermined;
 
-        const stereoModeValue = audioElements.get(MatroskaIds.STEREO_MODE)?.getUint();
+        const stereoModeValue = videoElements.get(MatroskaIds.STEREO_MODE)?.getUint();
         this._stereoMode = stereoModeValue || 0;
     }
 
