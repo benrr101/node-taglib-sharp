@@ -1,3 +1,5 @@
+import * as crypto from "crypto";
+
 import {IPicture, Picture, PictureType} from "../picture";
 import {ILazy} from "../interfaces";
 import {EbmlParser} from "../ebml/ebmlParser";
@@ -13,7 +15,7 @@ export default class MatroskaAttachment implements IPicture, ILazy {
     private _loader: () => void;
     private _mimeType: string;
     private _type: PictureType;
-    private _uid: number;
+    private _uid: bigint;
 
     // #region Constructors
 
@@ -23,12 +25,12 @@ export default class MatroskaAttachment implements IPicture, ILazy {
         Guards.truthy(parser, "parser");
 
         const attachment = new MatroskaAttachment();
-        const attachmentElements = EbmlParser.getAllValues(parser);
+        const attachmentElements = EbmlParser.getAllValues(parser.getParser());
         attachment._loader = () => {
             attachment._description = attachmentElements.get(MatroskaIds.FILE_DESCRIPTION)?.getString();
             attachment._filename = attachmentElements.get(MatroskaIds.FILE_NAME)?.getString();
             attachment._mimeType = attachmentElements.get(MatroskaIds.FILE_MIME_TYPE)?.getString();
-            attachment._uid = attachmentElements.get(MatroskaIds.FILE_UID)?.getUint();
+            attachment._uid = attachmentElements.get(MatroskaIds.FILE_UID)?.getUlong();
 
             const dataElement = attachmentElements.get(MatroskaIds.FILE_DATA);
             if (!dataElement) {
@@ -46,9 +48,13 @@ export default class MatroskaAttachment implements IPicture, ILazy {
         const attachment = new MatroskaAttachment();
         attachment._loader = () => {
             attachment._type = picture.type;
-            attachment._uid = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
             attachment._data = picture.data;
             attachment._description = picture.description;
+
+            const uidBytes = new Uint8Array(8);
+            crypto.randomFillSync(uidBytes);
+            const uidBytesVector = ByteVector.fromByteArray(uidBytes);
+            attachment._uid = uidBytesVector.toUlong();
 
             // Attempt to get mimeType and filename from each other if both are not provided
             attachment._mimeType = picture.mimeType;
@@ -142,7 +148,7 @@ export default class MatroskaAttachment implements IPicture, ILazy {
     /**
      * Unique ID representing the file.
      */
-    public get uid(): number {
+    public get uid(): bigint {
         this.load();
         return this._uid;
     }
