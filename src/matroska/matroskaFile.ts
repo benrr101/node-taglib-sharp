@@ -24,6 +24,7 @@ interface EbmlHeader {
 
 interface TagReadState {
     attachments: MatroskaAttachment[],
+    durationMilliseconds: number,
 }
 
 export default class MatroskaFile extends File {
@@ -121,6 +122,26 @@ export default class MatroskaFile extends File {
         }
     }
 
+    private readSegmentInfo(rootParser: EbmlParser, readState: TagReadState, readStyle: ReadStyle): void {
+        // @TODO: If read style is too low, don't read
+        let duration: number = 0;
+        let timeCodeScale: number;
+
+        const segmentInfoParseActions = new Map<number, (parser: EbmlParser) => void>([
+            [MatroskaIds.DURATION, p => duration = p.getDouble()],
+            [MatroskaIds.TIME_CODE_SCALE, p => timeCodeScale = p.getUint()],
+            [MatroskaIds.TITLE, undefined] // @TODO Is this used? If so how do we use it?
+        ]);
+        rootParser.processChildren(segmentInfoParseActions);
+
+        // Calculate duration in milliseconds
+        // Matroska stores duration as nanoseconds when multiplied by the timecode scale. There are
+        // 1,000,000 ns per ms.
+        if (timeCodeScale) {
+            readState.durationMilliseconds = duration * timeCodeScale / 1000000;
+        }
+    }
+
     private readSegments(offset: number, readStyle: ReadStyle): void {
         // Read the root of the segment
         const segmentRootReader = new EbmlParser(this, offset);
@@ -131,11 +152,12 @@ export default class MatroskaFile extends File {
 
             // Read the children of the segment element
             this._readState = {
-                attachments: []
+                attachments: [],
+                durationMilliseconds: 0
             };
             const segmentParseActions = new Map<number, (parser: EbmlParser) => void>([
                 [MatroskaIds.SEEK_HEAD, undefined],
-                [MatroskaIds.INFO, undefined],
+                [MatroskaIds.INFO, p => this.readSegmentInfo(p, this._readState, readStyle)],
                 [MatroskaIds.CLUSTER, undefined],
                 [MatroskaIds.TRACKS, p => this.readTracks(p)],
                 [MatroskaIds.CUES, undefined],
