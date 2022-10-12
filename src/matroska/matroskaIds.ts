@@ -525,6 +525,11 @@ export class MatroskaIds
     public static readonly TAG_LANGUAGE = 0x447A;
 
     /**
+     * Indicates a Matroska Tag Language BCP47 EBML element.
+     */
+    public static readonly TAG_LANGUAGE_BCP47 = 0x447B;
+
+    /**
      * Indicate a Matroska Tag Default EBML element.
      */
     public static readonly TAG_DEFAULT = 0x4484;

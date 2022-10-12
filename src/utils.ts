@@ -293,12 +293,7 @@ export class NumberUtils {
 }
 
 export class StringUtils {
-    public static trimStart(toTrim: string, chars: string): string {
-        while (toTrim.length > 0 && chars.indexOf(toTrim[0]) > -1) {
-            toTrim = toTrim.substring(0);
-        }
-        return toTrim;
-    }
+    public static readonly ISO369_2_REGEX = new RegExp(/^[a-zA-Z]{2,3}([-\/][a-zA-Z]{2,3})?$/);
 
     public static findLastByteFromRight(haystack: string, needle: number): number {
         let length = haystack.length;
@@ -306,5 +301,16 @@ export class StringUtils {
             length--;
         }
         return length;
+    }
+
+    public static isIs03692(value: string): boolean {
+        return this.ISO369_2_REGEX.test(value);
+    }
+
+    public static trimStart(toTrim: string, chars: string): string {
+        while (toTrim.length > 0 && chars.indexOf(toTrim[0]) > -1) {
+            toTrim = toTrim.substring(0);
+        }
+        return toTrim;
     }
 }
