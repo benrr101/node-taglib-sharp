@@ -1,27 +1,25 @@
-import {Tag} from "../tag";
-import {EbmlParser} from "../ebml/ebmlParser";
-import {Guards} from "../utils";
-import MatroskaSimpleTag from "./matroskaSimpleTag";
+import MatroskaTagValue from "./matroskaTagValue";
+import MatroskaTagTarget from "./matroskaTagTarget";
 
-export default class MatroskaTag extends Tag {
+export default class MatroskaTag {
+    private _simpleTag: MatroskaTagValue;
+    private _target: MatroskaTagTarget;
 
-    private _tags: MatroskaSimpleTag[] = [];
-    private _sizeOnDisk: number = 0;
-
-    private constructor() {
-        super();
-    }
+    private constructor() { }
 
     public static fromEmpty(): MatroskaTag {
-        return new MatroskaTag();
     }
 
-    public static fromTagsEntry(parser: EbmlParser): MatroskaTag {
-        Guards.truthy(parser, "parser");
-
+    public static fromReaderResults(simpleTag: MatroskaTagValue, target: MatroskaTagTarget): MatroskaTag {
         const tag = new MatroskaTag();
-        tag._sizeOnDisk = parser.length;
+
+        tag._simpleTag = simpleTag;
+        tag._target = target;
 
         return tag;
     }
+
+    public get simpleTag(): MatroskaTagValue { return this._simpleTag; }
+
+    public get target(): MatroskaTagTarget { return this._target; }
 }

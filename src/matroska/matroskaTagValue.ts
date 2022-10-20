@@ -6,15 +6,15 @@ import {EbmlParser} from "../ebml/ebmlParser";
 import {MatroskaIds} from "./matroskaIds";
 import {Guards, StringUtils} from "../utils";
 
-export default class MatroskaSimpleTag {
+export default class MatroskaTagValue {
     private static readonly DEFAULT_LANGUAGE_CODE = "und";
 
+    private readonly _matroskaVersion: number
     private _isDefaultLanguage: boolean = true;
     private _isLanguageCodeBcp47: boolean = false;
-    private _languageCode: string = MatroskaSimpleTag.DEFAULT_LANGUAGE_CODE;
-    private _matroskaVersion: number
+    private _languageCode: string = MatroskaTagValue.DEFAULT_LANGUAGE_CODE;
     private _name: string;
-    private _nestedTags: MatroskaSimpleTag[] = [];
+    private _nestedTags: MatroskaTagValue[] = [];
     private _value: string | ByteVector;
 
     private constructor(matroskaVersion: number) {
@@ -23,15 +23,15 @@ export default class MatroskaSimpleTag {
         this._matroskaVersion = matroskaVersion;
     }
 
-    public static fromEmpty(matroskaVersion: number): MatroskaSimpleTag {
-        return new MatroskaSimpleTag(matroskaVersion);
+    public static fromEmpty(matroskaVersion: number): MatroskaTagValue {
+        return new MatroskaTagValue(matroskaVersion);
     }
 
-    public static fromTagEntry(parser: EbmlParser, matroskaVersion: number): MatroskaSimpleTag {
+    public static fromTagEntry(parser: EbmlParser, matroskaVersion: number): MatroskaTagValue {
         Guards.truthy(parser, "parser");
         Guards.byte(matroskaVersion, "matroskaVersion");
 
-        const simpleTag = new MatroskaSimpleTag(matroskaVersion);
+        const simpleTag = new MatroskaTagValue(matroskaVersion);
 
         let languageCodeBcp47;
         let languageCodeIso639;
@@ -46,7 +46,7 @@ export default class MatroskaSimpleTag {
             [MatroskaIds.TAG_BINARY, p => binaryValue = p.getBytes()],
             [
                 MatroskaIds.SIMPLE_TAG,
-                p => simpleTag._nestedTags.push(MatroskaSimpleTag.fromTagEntry(p, matroskaVersion))
+                p => simpleTag._nestedTags.push(MatroskaTagValue.fromTagEntry(p, matroskaVersion))
             ]
         ]);
         parser.processChildren(simpleTagParseActions);
@@ -82,7 +82,7 @@ export default class MatroskaSimpleTag {
     public get languageCode(): string { return this._languageCode; }
     public set languageCode(value) {
         // Default to "und" for "undetermined", as per spec
-        value ??= MatroskaSimpleTag.DEFAULT_LANGUAGE_CODE;
+        value ??= MatroskaTagValue.DEFAULT_LANGUAGE_CODE;
 
         if (!!bcp47.parse(value)) {
             if (this._matroskaVersion < 4) {
@@ -103,8 +103,8 @@ export default class MatroskaSimpleTag {
         this._name = value;
     }
 
-    public get nestedTags(): MatroskaSimpleTag[] { return this._nestedTags; }
-    public set nestedTags(value: MatroskaSimpleTag[]) {
+    public get nestedTags(): MatroskaTagValue[] { return this._nestedTags; }
+    public set nestedTags(value: MatroskaTagValue[]) {
         Guards.truthy(value, "value");
         this._nestedTags = value;
     }

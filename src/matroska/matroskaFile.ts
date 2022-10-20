@@ -10,6 +10,9 @@ import {MatroskaIds} from "./matroskaIds";
 import {Properties} from "../properties";
 import {Tag, TagTypes} from "../tag";
 import {Track} from "./tracks/track";
+import MatroskaTagValue from "./matroskaTagValue";
+import MatroskaTag from "./matroskaTag";
+import MatroskaTagTarget from "./matroskaTagTarget";
 
 interface EbmlHeader {
     docType?: string,
@@ -25,6 +28,8 @@ interface EbmlHeader {
 interface TagReadState {
     attachments: MatroskaAttachment[],
     durationMilliseconds: number,
+    tags: MatroskaTag[]
+    tagSizeOnDisk: number;
 }
 
 export default class MatroskaFile extends File {
@@ -153,7 +158,9 @@ export default class MatroskaFile extends File {
             // Read the children of the segment element
             this._readState = {
                 attachments: [],
-                durationMilliseconds: 0
+                durationMilliseconds: 0,
+                tags: [],
+                tagSizeOnDisk: 0
             };
             const segmentParseActions = new Map<number, (parser: EbmlParser) => void>([
                 [MatroskaIds.SEEK_HEAD, undefined],
@@ -163,13 +170,45 @@ export default class MatroskaFile extends File {
                 [MatroskaIds.CUES, undefined],
                 [MatroskaIds.ATTACHMENTS, p => this.readAttachments(p, this._readState)],
                 [MatroskaIds.CHAPTERS, undefined],
-                [MatroskaIds.TAGS, undefined]
+                [MatroskaIds.TAGS, p => this.readTags(p, this._readState)]
             ]);
             segmentRootReader.processChildren(segmentParseActions);
 
         } finally {
             segmentRootReader.dispose();
         }
+    }
+
+    private readTag(rootParser: EbmlParser): MatroskaTag[] {
+        const simpleTags: MatroskaTagValue[] = [];
+        let tagTarget: MatroskaTagTarget;
+
+        const parserActions = new Map<number, (p: EbmlParser) => void>([
+            [
+                MatroskaIds.SIMPLE_TAG,
+                p => simpleTags.push(MatroskaTagValue.fromTagEntry(p, this._header.docTypeVersion))
+            ],
+            [
+                MatroskaIds.TARGETS,
+                p => { tagTarget = MatroskaTagTarget.fromTargetsEntry(p); }
+            ]
+        ]);
+        rootParser.processChildren(parserActions);
+
+        // Create the tag wrapper objects
+        return simpleTags.map(t => MatroskaTag.fromReaderResults(t, tagTarget.clone()));
+    }
+
+    private readTags(rootParser: EbmlParser, readState: TagReadState): void {
+        const tagCollections: MatroskaTag[][] = [];
+
+        const parserActions = new Map<number, (p: EbmlParser) => void>([
+            [MatroskaIds.TAG, p => tagCollections.push(this.readTag(p))]
+        ]);
+        rootParser.processChildren(parserActions)
+
+        readState.tags = readState.tags.concat(... tagCollections);
+        readState.tagSizeOnDisk = rootParser.length;
     }
 
     private readTracks(rootParser: EbmlParser): void {
