@@ -144,6 +144,38 @@ import {Testers} from "../utilities/testers";
     }
 
     @test
+    public fromFile_noPacketsEndInFile() {
+        // Arrange
+        const data = ByteVector.concatenate(
+            ByteVector.fromSize(10), // Buffer
+            OggPageHeader.HEADER_IDENTIFIER,
+            0x05, // Version
+            0x07, // Flags
+            0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, // Absolute granular position
+            ByteVector.fromUint(0x1234, false), // Stream serial number
+            ByteVector.fromUint(0x2345, false), // Page sequence number
+            ByteVector.fromSize(4), // Checksum
+            0x01, // Page segment count
+            0xFF // Page segment 1 (partial)
+        );
+        const file = TestFile.getFile(data);
+
+        // Act
+        const header = OggPageHeader.fromFile(file, 10);
+
+        // Assert
+        assert.ok(header);
+        assert.strictEqual(header.absoluteGranularPosition, -1);
+        assert.strictEqual(header.dataSize, 255);
+        assert.strictEqual(header.flags, 0x07);
+        assert.isFalse(header.lastPacketComplete);
+        assert.deepStrictEqual(header.packetSizes, [0xFF]);
+        assert.strictEqual(header.pageSequenceNumber, 0x2345);
+        assert.strictEqual(header.size, 28);
+        assert.strictEqual(header.streamSerialNumber, 0x1234);
+    }
+
+    @test
     public fromInfo_invalidParameters() {
         // Arrange
         const serialNumber = 1234;
