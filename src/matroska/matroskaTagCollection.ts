@@ -5,6 +5,7 @@ import MatroskaTag from "./matroskaTag";
 import MatroskaTagValue from "./matroskaTagValue";
 import MatroskaTagTarget, {TagTargetValue} from "./matroskaTagTarget";
 import Genres from "../genres";
+import {IPicture} from "../picture";
 
 export default class MatroskaTagCollection extends Tag {
 
@@ -12,6 +13,7 @@ export default class MatroskaTagCollection extends Tag {
     private static readonly PERFORMER_VIDEO_KEY = "ACTOR";
     private static readonly NUMERIC_GENRE_REGEX = new RegExp(/\((\d+)\)/);
 
+    private readonly _albumPartTagLevel: number;
     private readonly _albumTagLevel: number;
     private readonly _isVideo: boolean;
     private readonly _fileTagLevel: number;
@@ -33,6 +35,7 @@ export default class MatroskaTagCollection extends Tag {
         this._fileTagLevel = this._isVideo
             ? TagTargetValue.Episode
             : TagTargetValue.Track;
+        this._albumPartTagLevel = this._fileTagLevel + 10;
         this._performerKey = this._isVideo
             ? MatroskaTagCollection.PERFORMER_VIDEO_KEY
             : MatroskaTagCollection.PERFORMER_AUDIO_KEY;
@@ -149,6 +152,75 @@ export default class MatroskaTagCollection extends Tag {
         return result;
     }
 
+    public get year(): number {
+        let value = this.getTagValuesRecursively(this._fileTagLevel, "DATE_RECORDED").firstString;
+        let result = 0;
+
+        // Parse date to retrieve year
+        // Expected format: YYYY-MM-DD HH:MM:SS.MSS
+        if (value) {
+            const firstDash = value.indexOf('-');
+            if (firstDash > 0) {
+                value = value.substring(firstDash - 4, firstDash);
+            }
+
+            result = parseInt(value, 10);
+        }
+
+        return result;
+    }
+
+    public get track(): number {
+        return this.getFileTagValues("PART_NUMBER").firstUintFromString || 0;
+    }
+
+    public get trackCount(): number {
+        return this.getTagValues(this._albumPartTagLevel, "TOTAL_PARTS").firstUintFromString || 0;
+    }
+
+    public get disc(): number {
+        return this.getTagValues(this._albumPartTagLevel, "PART_NUMBER").firstUintFromString || 0;
+    }
+
+    public get discCount(): number {
+        return this.getTagValues(this._albumTagLevel, "TOTAL_PARTS").firstUintFromString || 0;
+    }
+
+    public get lyrics(): string {
+        return this.getFileTagValues("LYRICS").firstString;
+    }
+
+    public get grouping(): string {
+        return this.getTagValues(this._albumTagLevel, "GROUPING").firstString;
+    }
+
+    public get beatsPerMinute(): number {
+        return this.getTagValuesRecursively(this._fileTagLevel, "BPM").firstUintFromString || 0;
+    }
+
+    public get conductor(): string {
+        const key = this._isVideo ? "DIRECTOR" : "CONDUCTOR";
+        return this.getTagValuesRecursively(this._fileTagLevel, key).firstString;
+    }
+
+    public get copyright(): string {
+        return this.getTagValuesRecursively(this._fileTagLevel, "COPYRIGHT").firstString;
+    }
+
+    public get dateTagged(): Date {
+        const str = this.getTagValuesRecursively(this._fileTagLevel, "DATE_TAGGED").firstString;
+        if (!str) { return undefined; }
+        const dateValue = new Date(str);
+        return isNaN(dateValue.getTime()) ? undefined : dateValue;
+    }
+
+    public get pictures(): IPicture[] { return this._attachments.slice(0); }
+
+    public get isEmpty(): boolean {
+        return this._attachments.length === 0
+            && this._tags.length === 0;
+    }
+
     // #endregion
 
     // #region Methods
@@ -217,6 +289,13 @@ class FilteredTags {
         return firstStringTag === undefined
             ? undefined
             : <string>firstStringTag.value;
+    }
+
+    public get firstUintFromString(): number {
+        const str = this.firstString;
+        return str
+            ? parseInt(str, 10)
+            : undefined;
     }
 
     public get length(): number { return this._tags.length; }
