@@ -61,7 +61,7 @@ export default class MatroskaTagTarget {
     private _targetTypeValue: TagTargetValue;
     private _trackUids: number[] = [];
 
-    private constructor() {}
+    private constructor() { /* No implementation to enforce private constructor */ }
 
     public static fromEmpty(value: TagTargetValue, str?: TagTargetString): MatroskaTagTarget {
         const target = new MatroskaTagTarget();
@@ -85,7 +85,7 @@ export default class MatroskaTagTarget {
                 p => target._targetTypeString = p.getString() as TagTargetString
             ],
             [MatroskaIds.TAG_TRACK_UID, p => target._trackUids.push(p.getUint())],
-            [MatroskaIds.TAG_EDITION_UID, p => target._trackUids.push(p.getUint())],
+            [MatroskaIds.TAG_EDITION_UID, p => target._editionUids.push(p.getUint())],
             [MatroskaIds.TAG_CHAPTER_UID, p => target._chapterUids.push(p.getUint())],
             [MatroskaIds.TAG_ATTACHMENT_UID, p => target._attachmentUids.push(p.getUint())]
         ]);
@@ -95,7 +95,14 @@ export default class MatroskaTagTarget {
     }
 
     public clone(): MatroskaTagTarget {
-
+        const clone = new MatroskaTagTarget();
+        clone._attachmentUids = this._attachmentUids.slice();
+        clone._chapterUids = this._chapterUids.slice();
+        clone._editionUids = this._editionUids.slice();
+        clone._targetTypeString = this._targetTypeString;
+        clone._targetTypeValue = this._targetTypeValue;
+        clone._trackUids = this._trackUids.slice();
+        return clone;
     }
 
     public get targetTypeValue(): TagTargetValue { return this._targetTypeValue; }

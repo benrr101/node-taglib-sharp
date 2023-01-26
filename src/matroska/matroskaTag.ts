@@ -7,9 +7,6 @@ export default class MatroskaTag {
 
     private constructor() { }
 
-    public static fromEmpty(): MatroskaTag {
-    }
-
     public static fromReaderResults(simpleTag: MatroskaTagValue, target: MatroskaTagTarget): MatroskaTag {
         const tag = new MatroskaTag();
 

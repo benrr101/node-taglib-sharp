@@ -272,6 +272,9 @@ export default class MatroskaTagCollection extends Tag {
     // #endregion
 }
 
+/**
+ * Internal class that wraps an array of tags and provides useful methods on top of the collection.
+ */
 class FilteredTags {
     private readonly _tags: MatroskaTagValue[];
 

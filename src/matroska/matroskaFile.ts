@@ -1,8 +1,11 @@
 import MatroskaAttachment from "./attachment";
+import MatroskaTag from "./matroskaTag";
+import MatroskaTagTarget from "./matroskaTagTarget";
+import MatroskaTagValue from "./matroskaTagValue";
 import TrackFactory from "./tracks/trackFactory";
 import {ByteVector} from "../byteVector";
 import {EbmlParser} from "../ebml/ebmlParser";
-import {CorruptFileError, UnsupportedFormatError} from "../errors";
+import {CorruptFileError, NotImplementedError, UnsupportedFormatError} from "../errors";
 import {File, FileAccessMode, ReadStyle} from "../file";
 import {IFileAbstraction} from "../fileAbstraction";
 import {EbmlIds} from "../ebml/ids";
@@ -10,9 +13,6 @@ import {MatroskaIds} from "./matroskaIds";
 import {Properties} from "../properties";
 import {Tag, TagTypes} from "../tag";
 import {Track} from "./tracks/track";
-import MatroskaTagValue from "./matroskaTagValue";
-import MatroskaTag from "./matroskaTag";
-import MatroskaTagTarget from "./matroskaTagTarget";
 
 interface EbmlHeader {
     docType?: string,
@@ -67,7 +67,7 @@ export default class MatroskaFile extends File {
     }
 
     public save(): void {
-        // TODO: Implement
+        throw new NotImplementedError("Saving matroska/webm files is not supported, yet.");
     }
 
     private read(propertiesStyle: ReadStyle): void {
