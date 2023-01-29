@@ -1,5 +1,3 @@
-import * as bcp47 from "bcp-47";
-
 import {ByteVector} from "../byteVector";
 import {UnsupportedFormatError} from "../errors";
 import {EbmlParser} from "../ebml/ebmlParser";
@@ -84,13 +82,15 @@ export default class MatroskaTagValue {
         // Default to "und" for "undetermined", as per spec
         value ??= MatroskaTagValue.DEFAULT_LANGUAGE_CODE;
 
-        if (!!bcp47.parse(value)) {
-            if (this._matroskaVersion < 4) {
-                throw new UnsupportedFormatError("BCP 47 language codes are not supported in Matroska < 4");
-            }
+        if (StringUtils.isBcp47(value)) {
+            if (!StringUtils.isIso3692(value)) {
+                if (this._matroskaVersion < 4) {
+                    throw new UnsupportedFormatError("BCP 47 language codes are not supported in Matroska < 4");
+                }
 
-            this._isLanguageCodeBcp47 = true;
-        } else if(!StringUtils.isIs03692(value)) {
+                this._isLanguageCodeBcp47 = true;
+            }
+        } else {
             throw new Error(`Argument out of range: Value '${value}' is not a valid BCP 47 or ISO 639-2 language code`);
         }
 
@@ -115,4 +115,3 @@ export default class MatroskaTagValue {
         this._value = v;
     }
 }
-

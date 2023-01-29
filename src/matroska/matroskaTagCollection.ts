@@ -133,7 +133,7 @@ export default class MatroskaTagCollection extends Tag {
 
     public get genres(): string[] {
         const value = this.getTagValuesRecursively(this._fileTagLevel, "GENRE").firstString;
-        if (value?.trim()) {
+        if (!value || !value.trim()) {
             return [];
         }
 

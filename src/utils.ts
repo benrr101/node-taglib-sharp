@@ -293,7 +293,8 @@ export class NumberUtils {
 }
 
 export class StringUtils {
-    public static readonly ISO369_2_REGEX = new RegExp(/^[a-zA-Z]{2,3}([-\/][a-zA-Z]{2,3})?$/);
+    public static readonly BCP47_REGEX = new RegExp(/^[a-z]{2,3}(-[a-z]{2,8})*$/i)
+    public static readonly ISO369_2_REGEX = new RegExp(/^[a-z]{2,3}([-\/][a-z]{2,3})?$/i);
 
     public static findLastByteFromRight(haystack: string, needle: number): number {
         let length = haystack.length;
@@ -303,7 +304,11 @@ export class StringUtils {
         return length;
     }
 
-    public static isIs03692(value: string): boolean {
+    public static isBcp47(value: string): boolean {
+        return this.BCP47_REGEX.test(value);
+    }
+
+    public static isIso3692(value: string): boolean {
         return this.ISO369_2_REGEX.test(value);
     }
 

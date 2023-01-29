@@ -10,9 +10,11 @@ import {File, FileAccessMode, ReadStyle} from "../file";
 import {IFileAbstraction} from "../fileAbstraction";
 import {EbmlIds} from "../ebml/ids";
 import {MatroskaIds} from "./matroskaIds";
-import {Properties} from "../properties";
+import {MediaTypes, Properties} from "../properties";
 import {Tag, TagTypes} from "../tag";
 import {Track} from "./tracks/track";
+import MatroskaTagCollection from "./matroskaTagCollection";
+import {NumberUtils} from "../utils";
 
 interface EbmlHeader {
     docType?: string,
@@ -35,6 +37,9 @@ interface TagReadState {
 export default class MatroskaFile extends File {
     private static readonly SUPPORTED_DOCTYPES = ["matroska", "webm"];
 
+    private readonly _properties: Properties;
+    private readonly _tag: MatroskaTagCollection;
+
     private _header: EbmlHeader;
     private _tracks: Track[] = [];
 
@@ -45,18 +50,25 @@ export default class MatroskaFile extends File {
     public constructor(file: IFileAbstraction|string, propertiesStyle: ReadStyle) {
         super(file);
 
-        // Read the file
         this.mode = FileAccessMode.Read;
         try {
             this.read(propertiesStyle);
+
+            this._properties = new Properties(this._readState.durationMilliseconds, this._tracks);
+            this._tag = new MatroskaTagCollection(
+                this._readState.tagSizeOnDisk,
+                NumberUtils.hasFlag(this._properties.mediaTypes, MediaTypes.Video),
+                this._readState.tags,
+                this._readState.attachments
+            );
         } finally {
             this.mode = FileAccessMode.Closed;
         }
     }
 
-    public get properties(): Properties { return undefined; }
+    public get properties(): Properties { return this._properties; }
 
-    public get tag(): Tag { return undefined; }
+    public get tag(): Tag { return this._tag; }
 
     public getTag(types: TagTypes, create: boolean): Tag {
         return undefined;

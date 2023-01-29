@@ -38,6 +38,6 @@ import {File, MediaTypes} from "../src";
         assert.strictEqual(Matroska_FileTests.file.tag.year, 2017);
         assert.strictEqual(Matroska_FileTests.file.tag.firstComposer, "Starwer");
         assert.strictEqual(Matroska_FileTests.file.tag.conductor, "Starwer");
-        assert.strictEqual(Matroska_FileTests.file.tag.copyright, "Startwer 2017");
+        assert.strictEqual(Matroska_FileTests.file.tag.copyright, "Starwer 2017");
     }
 }
