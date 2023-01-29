@@ -2,6 +2,9 @@ import {EbmlParser} from "../ebml/ebmlParser";
 import {Guards} from "../utils";
 import {MatroskaIds} from "./matroskaIds";
 
+/**
+ * String representation of the tag target.
+ */
 export enum TagTargetString {
     Album = "ALBUM",
     AlbumPart = "PART",
@@ -27,6 +30,9 @@ export enum TagTargetString {
     Volume = "VOLUME"
 }
 
+/**
+ * Numeric representations of the tag target.
+ */
 export enum TagTargetValue {
     Album = 50,
     AlbumPart = 40,
@@ -52,7 +58,10 @@ export enum TagTargetValue {
     Volume = 60
 }
 
-export default class MatroskaTagTarget {
+/**
+ * Representation of the target of a tag.
+ */
+export class MatroskaTagTarget {
 
     private _attachmentUids: number[] = [];
     private _chapterUids: number[] = [];
@@ -63,6 +72,11 @@ export default class MatroskaTagTarget {
 
     private constructor() { /* No implementation to enforce private constructor */ }
 
+    /**
+     * Constructs a tag target using the provided {@paramref value} and {@paramref str}.
+     * @param value Numeric representation of the tag target.
+     * @param str String representation of the tag target.
+     */
     public static fromEmpty(value: TagTargetValue, str?: TagTargetString): MatroskaTagTarget {
         const target = new MatroskaTagTarget();
         target._targetTypeValue = value;
@@ -70,6 +84,11 @@ export default class MatroskaTagTarget {
         return target;
     }
 
+    /**
+     * Constructs and initializes a new instance from an {@link EbmlParser} that points at a
+     * tag target element.
+     * @param parser Parser that points at a tag target element
+     */
     public static fromTargetsEntry(parser: EbmlParser): MatroskaTagTarget {
         Guards.truthy(parser, "parser");
 
@@ -94,6 +113,9 @@ export default class MatroskaTagTarget {
         return target;
     }
 
+    /**
+     * Clones the current instance.
+     */
     public clone(): MatroskaTagTarget {
         const clone = new MatroskaTagTarget();
         clone._attachmentUids = this._attachmentUids.slice();
@@ -105,6 +127,13 @@ export default class MatroskaTagTarget {
         return clone;
     }
 
+    /**
+     * Gets the numeric value of the tag target, colloquially known as the "level".
+     */
     public get targetTypeValue(): TagTargetValue { return this._targetTypeValue; }
+
+    /**
+     * Gets a string representation of the tag target.
+     */
     public get targetTypeString(): TagTargetString { return this._targetTypeString; }
 }

@@ -1,6 +1,6 @@
 import MatroskaAttachment from "./attachment";
 import MatroskaTag from "./matroskaTag";
-import MatroskaTagTarget from "./matroskaTagTarget";
+import MatroskaTagCollection from "./matroskaTagCollection";
 import MatroskaTagValue from "./matroskaTagValue";
 import TrackFactory from "./tracks/trackFactory";
 import {ByteVector} from "../byteVector";
@@ -10,23 +10,62 @@ import {File, FileAccessMode, ReadStyle} from "../file";
 import {IFileAbstraction} from "../fileAbstraction";
 import {EbmlIds} from "../ebml/ids";
 import {MatroskaIds} from "./matroskaIds";
+import {MatroskaTagTarget} from "./matroskaTagTarget";
 import {MediaTypes, Properties} from "../properties";
 import {Tag, TagTypes} from "../tag";
 import {Track} from "./tracks/track";
-import MatroskaTagCollection from "./matroskaTagCollection";
 import {NumberUtils} from "../utils";
 
+/**
+ * Interface for an EBML header
+ */
 interface EbmlHeader {
+    /**
+     * Lists the official name of the EBML document type that is defined by the EBML schema.
+     */
     docType?: string,
+
+    /**
+     * Minumum doctype version an EBML reader has to support to read this EBML document.
+     */
     docTypeReadVersion?: number
+
+    /**
+     * The doctype interpreter used to create the EBML document.
+     */
     docTypeVersion?: number,
+
+    /**
+     * Size of the header in bytes.
+     */
     headerLength: number,
+
+    /**
+     * Maximum permitted length in octets of the element IDs to be found within the EBML body.
+     */
     ebmlMaxIdLength?: number,
+
+    /**
+     * Maximum permitted length in octets of the expressions of all element data sizes to be found
+     * in the EBML body.
+     */
     ebmlMaxSizeLength?: number,
+
+    /**
+     * Minimum version of EBML version an EBML reader has to support to read this EBML document.
+     */
     ebmlReadVersion?: number,
+
+    /**
+     * Version of EBML specification used to create the EBML document.
+     */
     ebmlVersion?: number,
 }
 
+/**
+ * Object that contains information obtained by reading the EBML file.
+ * @internal
+ */
 interface TagReadState {
     attachments: MatroskaAttachment[],
     durationMilliseconds: number,
@@ -34,6 +73,10 @@ interface TagReadState {
     tagSizeOnDisk: number;
 }
 
+/**
+ * This class extends {@link File} to provide tagging and properties support for Matroska and WebM
+ * files.
+ */
 export default class MatroskaFile extends File {
     private static readonly SUPPORTED_DOCTYPES = ["matroska", "webm"];
 
@@ -47,6 +90,11 @@ export default class MatroskaFile extends File {
     private _readState : TagReadState;
     // /TEST CODE
 
+    /**
+     * Constructs and initializes a new instance of a Matroska/Webm file based on the provided file.
+     * @param file File abstraction or path to a file to open as a Matroska/WebM file
+     * @param propertiesStyle How in-depth to read the properties of the file
+     */
     public constructor(file: IFileAbstraction|string, propertiesStyle: ReadStyle) {
         super(file);
 
@@ -66,18 +114,24 @@ export default class MatroskaFile extends File {
         }
     }
 
+    /** @inheritDoc */
     public get properties(): Properties { return this._properties; }
 
+    /** @inheritDoc */
     public get tag(): Tag { return this._tag; }
 
+    /** @inheritDoc */
     public getTag(types: TagTypes, create: boolean): Tag {
-        return undefined;
+        // TODO: Implement
+        return undefined
     }
 
+    /** @inheritDoc */
     public removeTags(types: TagTypes): void {
         // TODO: Implement
     }
 
+    /** @inheritDoc */
     public save(): void {
         throw new NotImplementedError("Saving matroska/webm files is not supported, yet.");
     }
@@ -208,7 +262,7 @@ export default class MatroskaFile extends File {
         rootParser.processChildren(parserActions);
 
         // Create the tag wrapper objects
-        return simpleTags.map(t => MatroskaTag.fromReaderResults(t, tagTarget.clone()));
+        return simpleTags.map(t => new MatroskaTag(t, tagTarget.clone()));
     }
 
     private readTags(rootParser: EbmlParser, readState: TagReadState): void {

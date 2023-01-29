@@ -1,12 +1,15 @@
 import * as crypto from "crypto";
 
-import {IPicture, Picture, PictureType} from "../picture";
-import {ILazy} from "../interfaces";
-import {EbmlParser} from "../ebml/ebmlParser";
 import {ByteVector} from "../byteVector";
-import {Guards} from "../utils";
+import {EbmlParser} from "../ebml/ebmlParser";
+import {ILazy} from "../interfaces";
 import {MatroskaIds} from "./matroskaIds";
+import {IPicture, Picture, PictureType} from "../picture";
+import {Guards} from "../utils";
 
+/**
+ * Class that represents an attachment for a Matroska file
+ */
 export default class MatroskaAttachment implements IPicture, ILazy {
 
     private _data: ByteVector;
@@ -21,6 +24,10 @@ export default class MatroskaAttachment implements IPicture, ILazy {
 
     private constructor() { /* private to enforce construction via static methods */ }
 
+    /**
+     * Constructs and initializes a new instance using an EBML parser.
+     * @param parser Parser that points to the attachment element to use to initialize the instance
+     */
     public static fromAttachmentEntry(parser: EbmlParser): MatroskaAttachment {
         Guards.truthy(parser, "parser");
 
@@ -42,6 +49,10 @@ export default class MatroskaAttachment implements IPicture, ILazy {
         return attachment;
     }
 
+    /**
+     * Constructs and initializes a new instance using an existing picture object.
+     * @param picture Picture to use to initialize the new instance
+     */
     public static fromPicture(picture: IPicture): MatroskaAttachment {
         Guards.truthy(picture, "parser");
 
