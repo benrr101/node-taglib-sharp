@@ -1,10 +1,8 @@
 import {ByteVector, StringType} from "../byteVector";
+import {UnsupportedFormatError} from "../errors";
 import {File, FileAccessMode} from "../file";
 import {IDisposable, ILazy} from "../interfaces"
 import {Guards, NumberUtils} from "../utils";
-import {UnsupportedFormatError} from "../errors";
-
-// @TODO: Update comments for these functions
 
 /**
  * Reads a boolean from the current element's data section.
@@ -193,11 +191,6 @@ export class EbmlElementValue implements ILazy {
             this._data = this._file.readBlock(this._dataSize).toByteVector();
         } finally {
             this._file.mode = originalFileMode;
-        }
-
-        // If we still don't have data, then give up
-        if (!this._data) {
-            throw new Error("EBML element value cannot be read from undefined data");
         }
     }
 }

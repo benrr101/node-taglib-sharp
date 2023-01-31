@@ -11,9 +11,7 @@ class Ebml_ParserTests {
     @test
     public readVariableInteger_1ByteValue() {
         // Arrange
-        const bytes = ByteVector.fromByteArray([0xBB]);
-        const file = TestFile.getFile(bytes);
-        const parser = new EbmlParser(file, 0);
+        const parser = this.getTestParser([0xBB]);
 
         // Act
         const result = parser["readVariableInteger"](8);
@@ -27,9 +25,7 @@ class Ebml_ParserTests {
     @test
     public readVariableInteger_2ByteValue() {
         // Arrange
-        const bytes = ByteVector.fromByteArray([0x6A, 0xAA]);
-        const file = TestFile.getFile(bytes);
-        const parser = new EbmlParser(file, 0);
+        const parser = this.getTestParser([0x6A, 0xAA])
 
         // Act
         const result = parser["readVariableInteger"](8);
@@ -43,9 +39,7 @@ class Ebml_ParserTests {
     @test
     public readVariableInteger_3ByteValue() {
         // Arrange
-        const bytes = ByteVector.fromByteArray([0x36, 0x7A, 0xA5]);
-        const file = TestFile.getFile(bytes);
-        const parser = new EbmlParser(file, 0);
+        const parser = this.getTestParser([0x36, 0x7A, 0xA5]);
 
         // Act
         const result = parser["readVariableInteger"](8);
@@ -59,9 +53,7 @@ class Ebml_ParserTests {
     @test
     public readVariableInteger_4ByteValue() {
         // Arrange
-        const bytes = ByteVector.fromByteArray([0x1C, 0x16, 0x7A, 0xA5]);
-        const file = TestFile.getFile(bytes);
-        const parser = new EbmlParser(file, 0);
+        const parser = this.getTestParser([0x1C, 0x16, 0x7A, 0xA5])
 
         // Act
         const result = parser["readVariableInteger"](8);
@@ -75,9 +67,7 @@ class Ebml_ParserTests {
     @test
     public readVariableInteger_5ByteValue() {
         // Arrange
-        const bytes = ByteVector.fromByteArray([0x0E, 0x6C, 0x16, 0x7A, 0xA5]);
-        const file = TestFile.getFile(bytes);
-        const parser = new EbmlParser(file, 0);
+        const parser = this.getTestParser([0x0E, 0x6C, 0x16, 0x7A, 0xA5]);
 
         // Act
         const result = parser["readVariableInteger"](8);
@@ -91,9 +81,7 @@ class Ebml_ParserTests {
     @test
     public readVariableInteger_6ByteValue() {
         // Arrange
-        const bytes = ByteVector.fromByteArray([0x07, 0x28, 0x6C, 0x16, 0x7A, 0xA5]);
-        const file = TestFile.getFile(bytes);
-        const parser = new EbmlParser(file, 0);
+        const parser = this.getTestParser([0x07, 0x28, 0x6C, 0x16, 0x7A, 0xA5]);
 
         // Act
         const result = parser["readVariableInteger"](8);
@@ -107,9 +95,7 @@ class Ebml_ParserTests {
     @test
     public readVariableInteger_7ByteValue() {
         // Arrange
-        const bytes = ByteVector.fromByteArray([0x03, 0x63, 0x28, 0x6C, 0x16, 0x7A, 0xA5]);
-        const file = TestFile.getFile(bytes);
-        const parser = new EbmlParser(file, 0);
+        const parser = this.getTestParser([0x03, 0x63, 0x28, 0x6C, 0x16, 0x7A, 0xA5]);
 
         // Act
         const result = parser["readVariableInteger"](8);
@@ -123,9 +109,7 @@ class Ebml_ParserTests {
     @test
     public readVariableInteger_8ByteValue() {
         // Arrange
-        const bytes = ByteVector.fromByteArray([0x01, 0x0F, 0x63, 0x28, 0x6C, 0x16, 0x7A, 0xA5]);
-        const file = TestFile.getFile(bytes);
-        const parser = new EbmlParser(file, 0);
+        const parser = this.getTestParser([0x01, 0x0F, 0x63, 0x28, 0x6C, 0x16, 0x7A, 0xA5]);
 
         // Act
         const result = parser["readVariableInteger"](8);
@@ -139,9 +123,7 @@ class Ebml_ParserTests {
     @test
     public readVariableInteger_overflow() {
         // Arrange
-        const bytes = ByteVector.fromByteArray([0x01, 0x1F, 0x63, 0x28, 0x6C, 0x16, 0x7A, 0xA5]);
-        const file = TestFile.getFile(bytes);
-        const parser = new EbmlParser(file, 0);
+        const parser = this.getTestParser([0x01, 0x1F, 0x63, 0x28, 0x6C, 0x16, 0x7A, 0xA5]);
 
         // Act / Assert
         assert.throws(() => parser["readVariableInteger"](8));
@@ -150,9 +132,7 @@ class Ebml_ParserTests {
     @test
     public readVariableInteger_tooFewBytes() {
         // Arrange
-        const bytes = ByteVector.fromByteArray([0x01, 0x1F, 0x63, 0x28, 0x6C, 0x16, 0x7A]);
-        const file = TestFile.getFile(bytes);
-        const parser = new EbmlParser(file, 0);
+        const parser = this.getTestParser([0x01, 0x1F, 0x63, 0x28, 0x6C, 0x16, 0x7A]);
 
         // Act / Assert
         assert.throws(() => parser["readVariableInteger"](8));
@@ -161,7 +141,7 @@ class Ebml_ParserTests {
     @test
     public renderVariableInteger_1ByteValue() {
         // Arrange
-        const file = TestFile.getFile(ByteVector.empty());
+        const file = TestFile.getFile([]);
         const parser = new EbmlParser(file, 0);
 
         // Act
@@ -174,7 +154,7 @@ class Ebml_ParserTests {
     @test
     public renderVariableInteger_2ByteValue() {
         // Arrange
-        const file = TestFile.getFile(ByteVector.empty());
+        const file = TestFile.getFile([]);
         const parser = new EbmlParser(file, 0);
 
         // Act
@@ -187,7 +167,7 @@ class Ebml_ParserTests {
     @test
     public renderVariableInteger_3ByteValue() {
         // Arrange
-        const file = TestFile.getFile(ByteVector.empty());
+        const file = TestFile.getFile([]);
         const parser = new EbmlParser(file, 0);
 
         // Act
@@ -200,7 +180,7 @@ class Ebml_ParserTests {
     @test
     public renderVariableInteger_4ByteValue() {
         // Arrange
-        const file = TestFile.getFile(ByteVector.empty());
+        const file = TestFile.getFile([]);
         const parser = new EbmlParser(file, 0);
 
         // Act
@@ -213,7 +193,7 @@ class Ebml_ParserTests {
     @test
     public renderVariableInteger_5ByteValue() {
         // Arrange
-        const file = TestFile.getFile(ByteVector.empty());
+        const file = TestFile.getFile([]);
         const parser = new EbmlParser(file, 0);
 
         // Act
@@ -226,7 +206,7 @@ class Ebml_ParserTests {
     @test
     public renderVariableInteger_6ByteValue() {
         // Arrange
-        const file = TestFile.getFile(ByteVector.empty());
+        const file = TestFile.getFile([]);
         const parser = new EbmlParser(file, 0);
 
         // Act
@@ -239,7 +219,7 @@ class Ebml_ParserTests {
     @test
     public renderVariableInteger_7ByteValue() {
         // Arrange
-        const file = TestFile.getFile(ByteVector.empty());
+        const file = TestFile.getFile([]);
         const parser = new EbmlParser(file, 0);
 
         // Act
@@ -252,7 +232,7 @@ class Ebml_ParserTests {
     @test
     public renderVariableInteger_8ByteValue() {
         // Arrange
-        const file = TestFile.getFile(ByteVector.empty());
+        const file = TestFile.getFile([]);
         const parser = new EbmlParser(file, 0);
 
         // Act
@@ -265,10 +245,15 @@ class Ebml_ParserTests {
     @test
     public renderVariableInteger_overflow() {
         // Arrange
-        const file = TestFile.getFile(ByteVector.empty());
+        const file = TestFile.getFile([]);
         const parser = new EbmlParser(file, 0);
 
         // Act / Assert
         assert.throws(() => parser["renderVariableInteger"](BigInt("9151314442816847872")));
+    }
+
+    private getTestParser(bytes: ByteVector|number[], offset: number = 0): EbmlParser {
+        const file = TestFile.getFile(bytes);
+        return new EbmlParser(file, offset);
     }
 }
