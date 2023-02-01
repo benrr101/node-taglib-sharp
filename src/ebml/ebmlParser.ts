@@ -40,13 +40,13 @@ const getString = (bytes: ByteVector): string => {
 }
 
 /**
- * Read an integer from the provided bytes.
+ * Read a js safe integer from the provided bytes.
  * @remarks The EMBL spec supports up to 64-bit unsigned integers. Due to javascript's
  *     implementation of `number`s and wanting to avoid using `BigInt`s everywhere an integer
  *     is needed in this implementation, we will only support up to 52-bit unsigned integers.
  * @returns number A `safe` integer contained in the element.
  */
-const getUint = (bytes: ByteVector): number => {
+const getSafeUint = (bytes: ByteVector): number => {
     // Cast to a "safe" integer
     const bigInt = bytes.toUlong();
     if (bigInt > Number.MAX_SAFE_INTEGER) {
@@ -162,9 +162,9 @@ export class EbmlElementValue implements ILazy {
      *     is needed in this implementation, we will only support up to 52-bit unsigned integers.
      * @returns number A `safe` integer contained in the element.
      */
-    public getUint(): number {
+    public getSafeUint(): number {
         this.load();
-        return getUint(this._data);
+        return getSafeUint(this._data);
     }
 
     /**
@@ -372,7 +372,7 @@ export class EbmlParser implements IDisposable {
     public getUint(): number {
         return this._dataSize === undefined
             ? 0
-            : getUint(this.getBytes());
+            : getSafeUint(this.getBytes());
     }
 
     /**

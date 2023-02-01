@@ -12,8 +12,8 @@ export default class AudioTrack extends Track implements ILosslessAudioCodec {
         super(trackElements);
 
         // Read the relevant values
-        this._channels = audioElements.get(MatroskaIds.CHANNELS)?.getUint();
-        this._bitDepth = audioElements.get(MatroskaIds.BIT_DEPTH)?.getUint();
+        this._channels = audioElements.get(MatroskaIds.CHANNELS)?.getSafeUint();
+        this._bitDepth = audioElements.get(MatroskaIds.BIT_DEPTH)?.getSafeUint();
         this._sampleRate = audioElements.get(MatroskaIds.SAMPLING_FREQ)?.getDouble();
     }
 

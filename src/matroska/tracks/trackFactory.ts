@@ -10,7 +10,7 @@ export default class TrackFactory {
         const trackElements = EbmlParser.getAllValues(parser.getParser());
 
         // Parse the elements into a track object
-        switch (trackElements.get(MatroskaIds.TRACK_TYPE)?.getUint()) {
+        switch (trackElements.get(MatroskaIds.TRACK_TYPE)?.getSafeUint()) {
             case EbmlTrackType.Audio:
                 const audioElementParser = trackElements.get(MatroskaIds.AUDIO).getParser();
                 const audioElements = EbmlParser.getAllValues(audioElementParser);

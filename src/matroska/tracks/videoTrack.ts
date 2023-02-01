@@ -166,24 +166,24 @@ export default class VideoTrack extends Track implements IVideoCodec {
     public constructor(trackElements: Map<number, EbmlElementValue>, videoElements: Map<number, EbmlElementValue>) {
         super(trackElements);
 
-        this._aspectRatioType = videoElements.get(MatroskaIds.ASPECT_RATIO_TYPE)?.getUint();
-        this._colourSpaceFourcc = videoElements.get(MatroskaIds.COLOUR_SPACE)?.getUint();
-        this._cropBottom = videoElements.get(MatroskaIds.PIXEL_CROP_BOTTOM)?.getUint();
-        this._cropLeft = videoElements.get(MatroskaIds.PIXEL_CROP_LEFT)?.getUint();
-        this._cropRight = videoElements.get(MatroskaIds.PIXEL_CROP_RIGHT)?.getUint();
-        this._cropTop = videoElements.get(MatroskaIds.PIXEL_CROP_TOP)?.getUint();
-        this._displayHeight = videoElements.get(MatroskaIds.DISPLAY_HEIGHT)?.getUint();
-        this._displayWidth = videoElements.get(MatroskaIds.DISPLAY_WIDTH)?.getUint();
-        this._displayUnits = videoElements.get(MatroskaIds.DISPLAY_UNIT)?.getUint();
-        this._height = videoElements.get(MatroskaIds.PIXEL_HEIGHT)?.getUint();
-        this._width = videoElements.get(MatroskaIds.PIXEL_WIDTH)?.getUint();
+        this._aspectRatioType = videoElements.get(MatroskaIds.ASPECT_RATIO_TYPE)?.getSafeUint();
+        this._colourSpaceFourcc = videoElements.get(MatroskaIds.COLOUR_SPACE)?.getSafeUint();
+        this._cropBottom = videoElements.get(MatroskaIds.PIXEL_CROP_BOTTOM)?.getSafeUint();
+        this._cropLeft = videoElements.get(MatroskaIds.PIXEL_CROP_LEFT)?.getSafeUint();
+        this._cropRight = videoElements.get(MatroskaIds.PIXEL_CROP_RIGHT)?.getSafeUint();
+        this._cropTop = videoElements.get(MatroskaIds.PIXEL_CROP_TOP)?.getSafeUint();
+        this._displayHeight = videoElements.get(MatroskaIds.DISPLAY_HEIGHT)?.getSafeUint();
+        this._displayWidth = videoElements.get(MatroskaIds.DISPLAY_WIDTH)?.getSafeUint();
+        this._displayUnits = videoElements.get(MatroskaIds.DISPLAY_UNIT)?.getSafeUint();
+        this._height = videoElements.get(MatroskaIds.PIXEL_HEIGHT)?.getSafeUint();
+        this._width = videoElements.get(MatroskaIds.PIXEL_WIDTH)?.getSafeUint();
 
-        const interlacingModeValue = videoElements.get(MatroskaIds.FLAG_INTERLACED)?.getUint();
+        const interlacingModeValue = videoElements.get(MatroskaIds.FLAG_INTERLACED)?.getSafeUint();
         this._isInterlaced = interlacingModeValue && interlacingModeValue > VideoInterlaceFlag.Progressive
             ? interlacingModeValue
             : VideoInterlaceFlag.Undetermined;
 
-        const stereoModeValue = videoElements.get(MatroskaIds.STEREO_MODE)?.getUint();
+        const stereoModeValue = videoElements.get(MatroskaIds.STEREO_MODE)?.getSafeUint();
         this._stereoMode = stereoModeValue || 0;
     }
 
