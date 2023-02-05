@@ -1,10 +1,11 @@
+import EbmlElement from "../ebml/ebmlElement";
+import EbmlParser from "../ebml/ebmlParser";
 import MatroskaAttachment from "./attachment";
 import MatroskaTag from "./matroskaTag";
 import MatroskaTagCollection from "./matroskaTagCollection";
 import MatroskaTagValue from "./matroskaTagValue";
 import TrackFactory from "./tracks/trackFactory";
 import {ByteVector} from "../byteVector";
-import {EbmlParser} from "../ebml/ebmlParser";
 import {CorruptFileError, NotImplementedError, UnsupportedFormatError} from "../errors";
 import {File, FileAccessMode, ReadStyle} from "../file";
 import {IFileAbstraction} from "../fileAbstraction";
@@ -120,21 +121,28 @@ export default class MatroskaFile extends File {
     /** @inheritDoc */
     public get tag(): Tag { return this._tag; }
 
+    // #region Public Methods
+
     /** @inheritDoc */
-    public getTag(types: TagTypes, create: boolean): Tag {
-        // TODO: Implement
-        return undefined
+    public getTag(types: TagTypes): Tag {
+        return types === TagTypes.Matroska ? this._tag : undefined;
     }
 
     /** @inheritDoc */
     public removeTags(types: TagTypes): void {
-        // TODO: Implement
+        if (NumberUtils.hasFlag(types, TagTypes.Matroska)) {
+            this._tag.clear();
+        }
     }
 
     /** @inheritDoc */
     public save(): void {
         throw new NotImplementedError("Saving matroska/webm files is not supported, yet.");
     }
+
+    // #endregion
+
+    // #region Private Methods
 
     private read(propertiesStyle: ReadStyle): void {
         // Look up the EBML 0-level ID
@@ -145,7 +153,7 @@ export default class MatroskaFile extends File {
         }
 
         // Read the header first in order to determine information for parsing the rest of it
-        this.readHeader(level0Offset);
+        this.readEbmlHeader(level0Offset);
         if (MatroskaFile.SUPPORTED_DOCTYPES.indexOf(this._header.docType) < 0) {
             throw new UnsupportedFormatError(
                 `EBML doctype ${this._header.docType} is not supported by Matroska file loader`
@@ -156,36 +164,37 @@ export default class MatroskaFile extends File {
         this.readSegments(level0Offset + this._header.headerLength, propertiesStyle);
     }
 
-    private readAttachments(rootParser: EbmlParser, state: TagReadState): void {
-        const attachmentParseActions = new Map<number, (parser: EbmlParser) => void>([
-            [MatroskaIds.ATTACHED_FILE, p => state.attachments.push(MatroskaAttachment.fromAttachmentEntry(p))]
+    private readAttachments(attachmentsElement: EbmlElement, state: TagReadState): void {
+        const attachmentParseActions = new Map<number, (e: EbmlElement) => void>([
+            [MatroskaIds.ATTACHED_FILE, e => state.attachments.push(MatroskaAttachment.fromAttachmentElement(e))]
         ]);
-        rootParser.processChildren(attachmentParseActions);
+        EbmlParser.processElements(attachmentsElement.getParser(), attachmentParseActions);
     }
 
-    private readHeader(offset: number): void {
+    private readEbmlHeader(offset: number): void {
         // NOTE: If it ever becomes necessary to separate EBML functionality from Matroska/WebM
         // functionality, this method should be moved.
 
         // Read the root of the header
         const headerRootParser = new EbmlParser(this, offset);
         try {
-            if (!headerRootParser.read() || headerRootParser.id !== EbmlIds.EBML_HEADER) {
+            if (!headerRootParser.read() || headerRootParser.currentElement.id !== EbmlIds.EBML_HEADER) {
                 throw new CorruptFileError("Invalid EBML file, missing header element");
             }
 
             // Read the contents of the header
-            const result: EbmlHeader = { headerLength: headerRootParser.length - offset };
-            const headerParseActions = new Map<number, (parser: EbmlParser) => void>([
-                [EbmlIds.EBML_VERSION, p => result.ebmlVersion = p.getUint()],
-                [EbmlIds.EBML_READ_VERSION, p => result.ebmlReadVersion = p.getUint()],
-                [EbmlIds.EBML_MAX_IDLENGTH, p => result.ebmlMaxIdLength = p.getUint()],
-                [EbmlIds.EBML_MAX_SIZE_LENGTH, p => result.ebmlMaxSizeLength = p.getUint()],
-                [EbmlIds.EBML_DOC_TYPE, p => result.docType = p.getString()],
-                [EbmlIds.EBML_DOC_TYPE_VERSION, p => result.docTypeVersion = p.getUint()],
-                [EbmlIds.EBML_DOC_TYPE_READ_VERSION, p => result.docTypeReadVersion = p.getUint()]
+            const result: EbmlHeader = { headerLength: headerRootParser.currentElement.length };
+            const headerParseActions = new Map<number, (element: EbmlElement) => void>([
+                [EbmlIds.EBML_VERSION, e => result.ebmlVersion = e.getSafeUint()],
+                [EbmlIds.EBML_READ_VERSION, e => result.ebmlReadVersion = e.getSafeUint()],
+                [EbmlIds.EBML_MAX_IDLENGTH, e => result.ebmlMaxIdLength = e.getSafeUint()],
+                [EbmlIds.EBML_MAX_SIZE_LENGTH, e => result.ebmlMaxSizeLength = e.getSafeUint()],
+                [EbmlIds.EBML_DOC_TYPE, e => result.docType = e.getString()],
+                [EbmlIds.EBML_DOC_TYPE_VERSION, e => result.docTypeVersion = e.getSafeUint()],
+                [EbmlIds.EBML_DOC_TYPE_READ_VERSION, e => result.docTypeReadVersion = e.getSafeUint()]
             ]);
-            headerRootParser.processChildren(headerParseActions);
+
+            EbmlParser.processElements(headerRootParser.currentElement.getParser(), headerParseActions);
 
             this._header = result;
         } finally {
@@ -193,17 +202,17 @@ export default class MatroskaFile extends File {
         }
     }
 
-    private readSegmentInfo(rootParser: EbmlParser, readState: TagReadState, readStyle: ReadStyle): void {
+    private readSegmentInfo(infoElement: EbmlElement, readState: TagReadState, readStyle: ReadStyle): void {
         // @TODO: If read style is too low, don't read
         let duration: number = 0;
         let timeCodeScale: number;
 
-        const segmentInfoParseActions = new Map<number, (parser: EbmlParser) => void>([
-            [MatroskaIds.DURATION, p => duration = p.getDouble()],
-            [MatroskaIds.TIME_CODE_SCALE, p => timeCodeScale = p.getUint()],
+        const segmentInfoParseActions = new Map<number, (parser: EbmlElement) => void>([
+            [MatroskaIds.DURATION, e => duration = e.getDouble()],
+            [MatroskaIds.TIME_CODE_SCALE, e => timeCodeScale = e.getSafeUint()],
             [MatroskaIds.TITLE, undefined] // @TODO Is this used? If so how do we use it?
         ]);
-        rootParser.processChildren(segmentInfoParseActions);
+        EbmlParser.processElements(infoElement.getParser(), segmentInfoParseActions);
 
         // Calculate duration in milliseconds
         // Matroska stores duration as nanoseconds when multiplied by the timecode scale. There are
@@ -215,9 +224,9 @@ export default class MatroskaFile extends File {
 
     private readSegments(offset: number, readStyle: ReadStyle): void {
         // Read the root of the segment
-        const segmentRootReader = new EbmlParser(this, offset);
+        const segmentRootParser = new EbmlParser(this, offset);
         try {
-            if (!segmentRootReader.read() || segmentRootReader.id !== MatroskaIds.SEGMENT) {
+            if (!segmentRootParser.read() || segmentRootParser.currentElement.id !== MatroskaIds.SEGMENT) {
                 throw new CorruptFileError("Invalid Matroska file, missing segment element");
             }
 
@@ -228,63 +237,65 @@ export default class MatroskaFile extends File {
                 tags: [],
                 tagSizeOnDisk: 0
             };
-            const segmentParseActions = new Map<number, (parser: EbmlParser) => void>([
+            const segmentParseActions = new Map<number, (e: EbmlElement) => void>([
                 [MatroskaIds.SEEK_HEAD, undefined],
-                [MatroskaIds.INFO, p => this.readSegmentInfo(p, this._readState, readStyle)],
+                [MatroskaIds.INFO, e => this.readSegmentInfo(e, this._readState, readStyle)],
                 [MatroskaIds.CLUSTER, undefined],
-                [MatroskaIds.TRACKS, p => this.readTracks(p)],
+                [MatroskaIds.TRACKS, e => this.readTracks(e)],
                 [MatroskaIds.CUES, undefined],
-                [MatroskaIds.ATTACHMENTS, p => this.readAttachments(p, this._readState)],
+                [MatroskaIds.ATTACHMENTS, e => this.readAttachments(e, this._readState)],
                 [MatroskaIds.CHAPTERS, undefined],
-                [MatroskaIds.TAGS, p => this.readTags(p, this._readState)]
+                [MatroskaIds.TAGS, e => this.readTags(e, this._readState)]
             ]);
-            segmentRootReader.processChildren(segmentParseActions);
+            EbmlParser.processElements(segmentRootParser.currentElement.getParser(), segmentParseActions);
 
         } finally {
-            segmentRootReader.dispose();
+            segmentRootParser.dispose();
         }
     }
 
-    private readTag(rootParser: EbmlParser): MatroskaTag[] {
+    private readTag(tagElement: EbmlElement): MatroskaTag[] {
         const simpleTags: MatroskaTagValue[] = [];
         let tagTarget: MatroskaTagTarget;
 
-        const parserActions = new Map<number, (p: EbmlParser) => void>([
+        const parserActions = new Map<number, (e: EbmlElement) => void>([
             [
                 MatroskaIds.SIMPLE_TAG,
-                p => simpleTags.push(MatroskaTagValue.fromTagEntry(p, this._header.docTypeVersion))
+                e => simpleTags.push(MatroskaTagValue.fromTagEntry(e, this._header.docTypeVersion))
             ],
             [
                 MatroskaIds.TARGETS,
-                p => { tagTarget = MatroskaTagTarget.fromTargetsEntry(p); }
+                e => { tagTarget = MatroskaTagTarget.fromTargetsEntry(e); }
             ]
         ]);
-        rootParser.processChildren(parserActions);
+        EbmlParser.processElements(tagElement.getParser(), parserActions);
 
         // Create the tag wrapper objects
         return simpleTags.map(t => new MatroskaTag(t, tagTarget.clone()));
     }
 
-    private readTags(rootParser: EbmlParser, readState: TagReadState): void {
+    private readTags(tagsElement: EbmlElement, readState: TagReadState): void {
         const tagCollections: MatroskaTag[][] = [];
 
-        const parserActions = new Map<number, (p: EbmlParser) => void>([
-            [MatroskaIds.TAG, p => tagCollections.push(this.readTag(p))]
+        const parserActions = new Map<number, (e: EbmlElement) => void>([
+            [MatroskaIds.TAG, e => tagCollections.push(this.readTag(e))]
         ]);
-        rootParser.processChildren(parserActions)
+        EbmlParser.processElements(tagsElement.getParser(), parserActions);
 
         readState.tags = readState.tags.concat(... tagCollections);
-        readState.tagSizeOnDisk = rootParser.length;
+        readState.tagSizeOnDisk = tagsElement.length;
     }
 
-    private readTracks(rootParser: EbmlParser): void {
+    private readTracks(tracksElement: EbmlElement): void {
         // @TODO: Only read if read style is > average
 
-        const trackParseActions = new Map<number, (parser: EbmlParser) => void>([
-            [MatroskaIds.TRACK_ENTRY, p => this._tracks.push(TrackFactory.fromTrackEntry(p))]
+        const trackParseActions = new Map<number, (e: EbmlElement) => void>([
+            [MatroskaIds.TRACK_ENTRY, e => this._tracks.push(TrackFactory.fromTrackElement(e))]
         ]);
-        rootParser.processChildren(trackParseActions);
+        EbmlParser.processElements(tracksElement.getParser(), trackParseActions);
     }
+
+    // #endregion
 }
 
 // /////////////////////////////////////////////////////////////////////////

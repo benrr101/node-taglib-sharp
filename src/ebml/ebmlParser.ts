@@ -1,207 +1,18 @@
-import {ByteVector, StringType} from "../byteVector";
+import EbmlElement from "./ebmlElement";
+import EbmlParserOptions from "./ebmlParserOptions";
+import {ByteVector} from "../byteVector";
 import {UnsupportedFormatError} from "../errors";
-import {File, FileAccessMode} from "../file";
-import {IDisposable, ILazy} from "../interfaces"
+import {File} from "../file";
+import {IDisposable} from "../interfaces"
 import {Guards, NumberUtils} from "../utils";
 
-/**
- * Reads a boolean from the current element's data section.
- * @returns boolean `true` if the data stored in the element is > 0, `false` if 0 is stored
- */
-const getBool = (bytes: ByteVector): boolean => {
-    return bytes.toUint() > 0;
-}
-
-/**
- * Reads a double-precision or single-precision number from the current element's data section.
- * @returns number Floating point value contained in the element.
- */
-const getDouble = (bytes: ByteVector): number => {
-    switch (bytes.length) {
-        case 4:
-            return bytes.toFloat();
-        case 8:
-            return bytes.toDouble();
-        default:
-            throw new Error("Cannot read double from EBML element that is not 4 or 8 bytes long.");
-    }
-}
-
-/**
- * Reads a UTF8 string from the current element's data section.
- * @returns string String value contained in the element.
- */
-const getString = (bytes: ByteVector): string => {
-    // Look for null termination
-    const nullIndex = bytes.indexOf(0x00);
-    return nullIndex >= 0
-        ? bytes.subarray(0, nullIndex).toString(StringType.UTF8)
-        : bytes.toString(StringType.UTF8);
-}
-
-/**
- * Read a js safe integer from the provided bytes.
- * @remarks The EMBL spec supports up to 64-bit unsigned integers. Due to javascript's
- *     implementation of `number`s and wanting to avoid using `BigInt`s everywhere an integer
- *     is needed in this implementation, we will only support up to 52-bit unsigned integers.
- * @returns number A `safe` integer contained in the element.
- */
-const getSafeUint = (bytes: ByteVector): number => {
-    // Cast to a "safe" integer
-    const bigInt = bytes.toUlong();
-    if (bigInt > Number.MAX_SAFE_INTEGER) {
-        throw Error(`EBML value ${bigInt} is larger than can be supported by this version of node-taglib-sharp`);
-    }
-
-    return Number(bigInt);
-}
-
-/**
- * Read a long from the provided bytes.
- * @remarks Use this if you know the number has the potential to be greater than 52 bits.
- * @param bytes Bytes to read the ulong from.
- */
-const getUlong = (bytes: ByteVector): bigint => {
-    return bytes.toUlong();
-}
-
-export class EbmlParserOptions {
-    public maxSize?: number;
-    public maxIdLength?: number;
-    public maxSizeLength?: number;
-
-    public clone(newLength: number): EbmlParserOptions {
-        Guards.safeUint(newLength, "newLength");
-
-        const clone = new EbmlParserOptions();
-        clone.maxSize = newLength;
-        clone.maxIdLength = this.maxIdLength;
-        clone.maxSizeLength = this.maxSizeLength;
-        return clone;
-    }
-}
-
-/**
- * An element that allows accessing typed information from a parser at a later time than parsing.
- */
-export class EbmlElementValue implements ILazy {
-    private readonly _dataOffset: number;
-    private readonly _dataSize: number;
-    private readonly _file: File;
-    private readonly _options: EbmlParserOptions;
-    private _data: ByteVector;
-
-    /**
-     * Constructs and initializes a new instance using a file, an offset where the target data
-     * resides, and the number of bytes of data at that position.
-     * @param file File containing the data
-     * @param offset Offset into the file where the data begins, must be a safe, positive integer
-     * @param size Size of the data in bytes, must be a safe, positive integer
-     * @param parserOptions Options from the parser that read the element
-     * @internal
-     */
-    public constructor(file: File, offset: number, size: number, parserOptions: EbmlParserOptions) {
-        Guards.truthy(file, "file");
-        Guards.safeUint(offset, "offset");
-        Guards.safeUint(size, "size")
-
-        this._file = file;
-        this._dataOffset = offset;
-        this._dataSize = size;
-        this._options = parserOptions;
-    }
-
-    /** @inheritDoc */
-    public get isLoaded(): boolean { return !!this._data; }
-
-    /**
-     * Reads a boolean from the current element's data section.
-     * @returns boolean `true` if the data stored in the element is > 0, `false` if 0 is stored
-     */
-    public getBool(): boolean {
-        this.load();
-        return getBool(this._data);
-    }
-
-    /**
-     * Reads raw binary bytes from the current element's data section.
-     * @returns ByteVector Raw bytes contained in the element.
-     */
-    public getBytes(): ByteVector {
-        this.load();
-        return this._data;
-    }
-
-    /**
-     * Reads a double-precision or single-precision number from the current element's data section.
-     * @returns number Floating point value contained in the element.
-     */
-    public getDouble(): number {
-        this.load();
-        return getDouble(this._data);
-    }
-
-    public getParser(): EbmlParser {
-        const newOptions = this._options.clone(this._dataSize);
-        return new EbmlParser(this._file, this._dataOffset, newOptions);
-    }
-
-    /**
-     * Reads a UTF8 string from the current element's data section.
-     * @returns string String value contained in the element.
-     */
-    public getString(): string {
-        this.load();
-        return getString(this._data);
-    }
-
-    /**
-     * Read an integer from the current element's data section.
-     * @remarks The EMBL spec supports up to 64-bit unsigned integers. Due to javascript's
-     *     implementation of `number`s and wanting to avoid using `BigInt`s everywhere an integer
-     *     is needed in this implementation, we will only support up to 52-bit unsigned integers.
-     * @returns number A `safe` integer contained in the element.
-     */
-    public getSafeUint(): number {
-        this.load();
-        return getSafeUint(this._data);
-    }
-
-    /**
-     * Read an integer from the data section.
-     * @remarks Use this method if there's a high likelihood that the data will be >52 bits.
-     * @returns number A `safe` integer contained in the element.
-     */
-    public getUlong(): bigint {
-        this.load();
-        return getUlong(this._data);
-    }
-
-    /** @inheritDoc */
-    public load(): void {
-        if (this._data) {
-            return;
-        }
-
-        // Read the data from the file
-        const originalFileMode = this._file.mode;
-        try {
-            this._file.mode = FileAccessMode.Read;
-            this._file.seek(this._dataOffset);
-            this._data = this._file.readBlock(this._dataSize).toByteVector();
-        } finally {
-            this._file.mode = originalFileMode;
-        }
-    }
-}
-
-export class EbmlParser implements IDisposable {
+export default class EbmlParser implements IDisposable {
 
     private readonly _file: File;
     private readonly _options: EbmlParserOptions;
 
     private _childParser: EbmlParser;
-    private _data: ByteVector;
+    private _currentElement: EbmlElement;
     private _dataOffset: number;
     private _dataSize: number;
     private _headerSize: number;
@@ -256,27 +67,19 @@ export class EbmlParser implements IDisposable {
 
     // #region Properties
 
-    /**
-     * Gets the ID of the current EBML element.
-     */
-    public get id(): number { return this._id; }
-
-    /**
-     * Gets the total size of the current EBML element, header plus data.
-     */
-    public get length(): number { return this._headerSize + this._dataSize; }
+    public get currentElement(): EbmlElement { return this._currentElement; }
 
     // #endregion
 
     // #region Methods
 
-    public static getAllValues(parser: EbmlParser): Map<number, EbmlElementValue> {
+    public static getAllValues(parser: EbmlParser): Map<number, EbmlElement> {
         try {
-            const elements = new Map<number, EbmlElementValue>();
+            const elements = new Map<number, EbmlElement>();
             while (parser.read()) {
                 elements.set(
-                    parser.id,
-                    parser.getValue()
+                    parser.currentElement.id,
+                    parser.currentElement
                 );
             }
 
@@ -286,131 +89,22 @@ export class EbmlParser implements IDisposable {
         }
     }
 
-    public dispose(): void {
-        this._parent?.onChildDisposed();
-    }
-
-    /**
-     * Reads a boolean from the current element's data section.
-     * @returns boolean `true` if the data stored in the element is > 0, `false` if 0 is stored or
-     *     if an element has not been read, yet.
-     */
-    public getBool(): boolean {
-        return this._dataSize === undefined
-            ? false
-            : getBool(this.getBytes());
-    }
-
-    /**
-     * Reads raw binary bytes from the current element's data section.
-     * @returns ByteVector Raw bytes contained in the element. `undefined` is returned if an
-     *     element has not been read, yet.
-     */
-    public getBytes(): ByteVector {
-        if (!this._file || this._dataSize === undefined) {
-            return undefined;
-        }
-
-        if (!this._data) {
-            this._file.seek(this._dataOffset);
-            this._data = this._file.readBlock(this._dataSize);
-        }
-
-        return this._data;
-    }
-
-    /**
-     * Reads a double-precision or single-precision number from the current element's data section.
-     * @returns number Floating point value contained in the element. `0` is returned if an element
-     *     has not been read, yet.
-     */
-    public getDouble(): number {
-        return this._dataSize === undefined
-            ? 0
-            : getDouble(this.getBytes());
-    }
-
-    /**
-     * Reads a UTF8 string from the current element's data section.
-     * @returns string String value contained in the element. `undefined` is returned if an element
-     *     has not been read, yet.
-     */
-    public getString(): string {
-        return this._dataSize === undefined
-            ? undefined
-            : getString(this.getBytes());
-    }
-
-    /**
-     * Generates a new parser for reading/writing nested elements.
-     * @returns EbmlParser Parser for reading/writing nested elements. `undefined` is returned if
-     *     an element has not been read, yet.
-     */
-    public getParser(): EbmlParser {
-        if (this._childParser) {
-            throw new Error("Cannot generate multiple child parsers. Dispose existing one first.");
-        }
-
-        if (!this._file || this._dataSize === undefined) {
-            return undefined;
-        }
-
-        const options = this._options.clone(this._dataSize);
-        const nestedParser = new EbmlParser(this._file, this._dataOffset, options);
-        nestedParser._parent = this;
-        return nestedParser;
-    }
-
-    /**
-     * Read an integer from the current element's data section.
-     * @remarks The EMBL spec supports up to 64-bit unsigned integers. Due to javascript's
-     *     implementation of `number`s and wanting to avoid using `BigInt`s everywhere an integer
-     *     is needed in this implementation, we will only support up to 52-bit unsigned integers.
-     * @returns number A `safe` integer contained in the element. `0` is returned if an element
-     *     has not been read, yet.
-     */
-    public getUint(): number {
-        return this._dataSize === undefined
-            ? 0
-            : getSafeUint(this.getBytes());
-    }
-
-    /**
-     * Read a long from the current element's data section.
-     * @remarks Use this method if there's a high likelihood that the value will be > 52 bits.
-     * @returns number A long contained in the element. `0` is returned if an element has not been
-     *     read, yet.
-     */
-    public getUlong(): bigint {
-        return this._dataSize === undefined
-            ? NumberUtils.BIG_ZERO
-            : getUlong(this.getBytes());
-    }
-
-    /**
-     * Reads the bytes from the current element and packages them up into an object that allows
-     * them to be converted at a later time than at reading.
-     * @returns EbmlElementValue Object containing the data from the element. `undefined` will be
-     *     returned if an element has not been read yet.
-     */
-    public getValue(): EbmlElementValue {
-        return this._dataSize === undefined
-            ? undefined
-            : new EbmlElementValue(this._file, this._dataOffset, this._dataSize, this._options);
-    }
-
-    public processChildren(actionMap: Map<number, (parser: EbmlParser) => void>): void {
-        const childrenParser = this.getParser();
+    public static processElements(parser: EbmlParser, actionMap: Map<number, (element: EbmlElement) => void>): void {
         try {
-            while(childrenParser.read()) {
-                const action = actionMap.get(childrenParser.id);
+            while (parser.read()) {
+                const action = actionMap.get(parser.currentElement.id);
                 if (action) {
-                    action(childrenParser);
+                    action(parser.currentElement);
                 }
             }
-        } finally {
-            childrenParser.dispose();
         }
+        finally {
+            parser.dispose();
+        }
+    }
+
+    public dispose(): void {
+        this._parent?.onChildDisposed();
     }
 
     /**
@@ -441,21 +135,9 @@ export class EbmlParser implements IDisposable {
         this._headerSize = idReadResult.bytes + dataSizeReadResult.bytes;
         this._dataOffset = this._offset + this._headerSize;
         this._offset = this._dataOffset + this._dataSize;
-        this._data = undefined;
+        this._currentElement = new EbmlElement(this._file, this._dataOffset, this._id, this._dataSize, this._options)
 
         return true;
-    }
-
-    public setBool(value: boolean): void {
-
-    }
-
-    public setUlong(vaoue: number): void {
-
-    }
-
-    public setUint(value: number): void {
-
     }
 
     /**

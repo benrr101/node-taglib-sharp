@@ -1,4 +1,4 @@
-import {EbmlElementValue} from "../../ebml/ebmlParser";
+import EbmlElement from "../../ebml/ebmlElement";
 import {MatroskaIds} from "../matroskaIds";
 import {ILosslessAudioCodec, MediaTypes} from "../../properties";
 import {Track} from "./track";
@@ -8,7 +8,7 @@ export default class AudioTrack extends Track implements ILosslessAudioCodec {
     private readonly _channels: number;
     private readonly _sampleRate: number;
 
-    public constructor(trackElements: Map<number, EbmlElementValue>, audioElements: Map<number, EbmlElementValue>) {
+    public constructor(trackElements: Map<number, EbmlElement>, audioElements: Map<number, EbmlElement>) {
         super(trackElements);
 
         // Read the relevant values

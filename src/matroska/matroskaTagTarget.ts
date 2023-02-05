@@ -1,6 +1,7 @@
-import {EbmlParser} from "../ebml/ebmlParser";
+import EbmlElement from "../ebml/ebmlElement";
 import {Guards} from "../utils";
 import {MatroskaIds} from "./matroskaIds";
+import EbmlParser from "../ebml/ebmlParser";
 
 /**
  * String representation of the tag target.
@@ -87,28 +88,28 @@ export class MatroskaTagTarget {
     /**
      * Constructs and initializes a new instance from an {@link EbmlParser} that points at a
      * tag target element.
-     * @param parser Parser that points at a tag target element
+     * @param element Tag target root element
      */
-    public static fromTargetsEntry(parser: EbmlParser): MatroskaTagTarget {
-        Guards.truthy(parser, "parser");
+    public static fromTargetsEntry(element: EbmlElement): MatroskaTagTarget {
+        Guards.truthy(element, "element");
 
         const target = new MatroskaTagTarget();
 
-        const parserActions = new Map<number, (p: EbmlParser) => void>([
+        const parserActions = new Map<number, (e: EbmlElement) => void>([
             [
                 MatroskaIds.TARGET_TYPE_VALUE,
-                p => target._targetTypeValue = p.getUint() as TagTargetValue
+                e => target._targetTypeValue = e.getSafeUint() as TagTargetValue
             ],
             [
                 MatroskaIds.TARGET_TYPE,
                 p => target._targetTypeString = p.getString() as TagTargetString
             ],
-            [MatroskaIds.TAG_TRACK_UID, p => target._trackUids.push(p.getUint())],
-            [MatroskaIds.TAG_EDITION_UID, p => target._editionUids.push(p.getUint())],
-            [MatroskaIds.TAG_CHAPTER_UID, p => target._chapterUids.push(p.getUint())],
-            [MatroskaIds.TAG_ATTACHMENT_UID, p => target._attachmentUids.push(p.getUint())]
+            [MatroskaIds.TAG_TRACK_UID, e => target._trackUids.push(e.getSafeUint())],
+            [MatroskaIds.TAG_EDITION_UID, e => target._editionUids.push(e.getSafeUint())],
+            [MatroskaIds.TAG_CHAPTER_UID, e => target._chapterUids.push(e.getSafeUint())],
+            [MatroskaIds.TAG_ATTACHMENT_UID, e => target._attachmentUids.push(e.getSafeUint())]
         ]);
-        parser.processChildren(parserActions);
+        EbmlParser.processElements(element.getParser(), parserActions);
 
         return target;
     }

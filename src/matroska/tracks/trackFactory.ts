@@ -1,26 +1,27 @@
 import AudioTrack from "./audioTrack";
-import {EbmlTrackType, Track} from "./track";
+import EbmlElement from "../../ebml/ebmlElement";
+import EbmlParser from "../../ebml/ebmlParser";
 import VideoTrack from "./videoTrack";
-import {EbmlParser} from "../../ebml/ebmlParser";
 import {MatroskaIds} from "../matroskaIds";
+import {EbmlTrackType, Track} from "./track";
 
 export default class TrackFactory {
-    public static fromTrackEntry(parser: EbmlParser): Track {
+    public static fromTrackElement(trackElement: EbmlElement): Track {
         // Read all the elements from the track
-        const trackElements = EbmlParser.getAllValues(parser.getParser());
+        const elements = EbmlParser.getAllValues(trackElement.getParser());
 
         // Parse the elements into a track object
-        switch (trackElements.get(MatroskaIds.TRACK_TYPE)?.getSafeUint()) {
+        switch (elements.get(MatroskaIds.TRACK_TYPE)?.getSafeUint()) {
             case EbmlTrackType.Audio:
-                const audioElementParser = trackElements.get(MatroskaIds.AUDIO).getParser();
+                const audioElementParser = elements.get(MatroskaIds.AUDIO).getParser();
                 const audioElements = EbmlParser.getAllValues(audioElementParser);
-                return new AudioTrack(trackElements, audioElements);
+                return new AudioTrack(elements, audioElements);
             case EbmlTrackType.Video:
-                const videoElementParser = trackElements.get(MatroskaIds.VIDEO).getParser();
+                const videoElementParser = elements.get(MatroskaIds.VIDEO).getParser();
                 const videoElements = EbmlParser.getAllValues(videoElementParser);
-                return new VideoTrack(trackElements, videoElements);
+                return new VideoTrack(elements, videoElements);
             default:
-                return new Track(trackElements);
+                return new Track(elements);
         }
     }
 }

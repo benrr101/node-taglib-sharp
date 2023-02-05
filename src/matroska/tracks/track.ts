@@ -1,5 +1,5 @@
+import EbmlElement from "../../ebml/ebmlElement";
 import {ByteVector} from "../../byteVector";
-import {EbmlElementValue} from "../../ebml/ebmlParser";
 import {MatroskaIds} from "../matroskaIds";
 import {ICodec, MediaTypes} from "../../properties";
 
@@ -41,7 +41,7 @@ export class Track implements ICodec {
      * @param elements
      * @internal
      */
-    public constructor(elements: Map<number, EbmlElementValue>) {
+    public constructor(elements: Map<number, EbmlElement>) {
         // Read general-purpose elements
         this._codecId = elements.get(MatroskaIds.CODEC_ID)?.getString();
         this._codecName = elements.get(MatroskaIds.CODEC_NAME)?.getString();

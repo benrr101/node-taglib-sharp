@@ -1,6 +1,7 @@
+import EbmlElement from "../ebml/ebmlElement";
+import EbmlParser from "../ebml/ebmlParser";
 import {ByteVector} from "../byteVector";
 import {UnsupportedFormatError} from "../errors";
-import {EbmlParser} from "../ebml/ebmlParser";
 import {MatroskaIds} from "./matroskaIds";
 import {Guards, StringUtils} from "../utils";
 
@@ -40,11 +41,11 @@ export default class MatroskaTagValue {
 
     /**
      * Constructs and initializes a new tag using a {@link EbmlParser} that points to a tag.
-     * @param parser Parser that points to a tag
+     * @param element Root element of a tag value
      * @param matroskaVersion Version of Matroska file the tag should be written for
      */
-    public static fromTagEntry(parser: EbmlParser, matroskaVersion: number): MatroskaTagValue {
-        Guards.truthy(parser, "parser");
+    public static fromTagEntry(element: EbmlElement, matroskaVersion: number): MatroskaTagValue {
+        Guards.truthy(element, "element");
         Guards.byte(matroskaVersion, "matroskaVersion");
 
         const simpleTag = new MatroskaTagValue(matroskaVersion);
@@ -53,19 +54,19 @@ export default class MatroskaTagValue {
         let languageCodeIso639;
         let binaryValue;
         let stringValue;
-        const simpleTagParseActions = new Map<number, (parser: EbmlParser) => void>([
-            [MatroskaIds.TAG_NAME, p => simpleTag._name = p.getString()],
-            [MatroskaIds.TAG_LANGUAGE, p => languageCodeIso639 = p.getString()],
-            [MatroskaIds.TAG_LANGUAGE_BCP47, p => languageCodeBcp47 = p.getString()],
-            [MatroskaIds.TAG_DEFAULT, p => simpleTag._isDefaultLanguage = p.getBool()],
-            [MatroskaIds.TAG_STRING, p => stringValue = p.getString()],
-            [MatroskaIds.TAG_BINARY, p => binaryValue = p.getBytes()],
+        const simpleTagParseActions = new Map<number, (e: EbmlElement) => void>([
+            [MatroskaIds.TAG_NAME, e => simpleTag._name = e.getString()],
+            [MatroskaIds.TAG_LANGUAGE, e => languageCodeIso639 = e.getString()],
+            [MatroskaIds.TAG_LANGUAGE_BCP47, e => languageCodeBcp47 = e.getString()],
+            [MatroskaIds.TAG_DEFAULT, e => simpleTag._isDefaultLanguage = e.getBool()],
+            [MatroskaIds.TAG_STRING, e => stringValue = e.getString()],
+            [MatroskaIds.TAG_BINARY, e => binaryValue = e.getBytes()],
             [
                 MatroskaIds.SIMPLE_TAG,
-                p => simpleTag._nestedTags.push(MatroskaTagValue.fromTagEntry(p, matroskaVersion))
+                e => simpleTag._nestedTags.push(MatroskaTagValue.fromTagEntry(e, matroskaVersion))
             ]
         ]);
-        parser.processChildren(simpleTagParseActions);
+        EbmlParser.processElements(element.getParser(), simpleTagParseActions);
 
         // Prefer BCP 47 over ISO 639
         if (languageCodeBcp47) {

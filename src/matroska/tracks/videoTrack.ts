@@ -1,4 +1,4 @@
-import {EbmlElementValue} from "../../ebml/ebmlParser";
+import EbmlElement from "../../ebml/ebmlElement";
 import {MatroskaIds} from "../matroskaIds";
 import {IVideoCodec, MediaTypes} from "../../properties";
 import {Track} from "./track";
@@ -163,7 +163,7 @@ export default class VideoTrack extends Track implements IVideoCodec {
     private readonly _stereoMode: VideoStereoMode;
     private readonly _width: number;
 
-    public constructor(trackElements: Map<number, EbmlElementValue>, videoElements: Map<number, EbmlElementValue>) {
+    public constructor(trackElements: Map<number, EbmlElement>, videoElements: Map<number, EbmlElement>) {
         super(trackElements);
 
         this._aspectRatioType = videoElements.get(MatroskaIds.ASPECT_RATIO_TYPE)?.getSafeUint();

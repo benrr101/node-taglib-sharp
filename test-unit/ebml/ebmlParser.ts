@@ -2,7 +2,7 @@ import {suite, test} from "@testdeck/mocha";
 import {assert} from "chai";
 
 import TestFile from "../utilities/testFile"
-import {EbmlParser} from "../../src/ebml/ebmlParser";
+import EbmlParser from "../../src/ebml/ebmlParser";
 import {ByteVector} from "../../src/byteVector";
 import {Testers} from "../utilities/testers";
 

@@ -1,7 +1,8 @@
 import * as crypto from "crypto";
 
+import EbmlElement from "../ebml/ebmlElement";
+import EbmlParser from "../ebml/ebmlParser";
 import {ByteVector} from "../byteVector";
-import {EbmlParser} from "../ebml/ebmlParser";
 import {ILazy} from "../interfaces";
 import {MatroskaIds} from "./matroskaIds";
 import {IPicture, Picture, PictureType} from "../picture";
@@ -26,13 +27,14 @@ export default class MatroskaAttachment implements IPicture, ILazy {
 
     /**
      * Constructs and initializes a new instance using an EBML parser.
-     * @param parser Parser that points to the attachment element to use to initialize the instance
+     * @param element EBML element that represents the attachment
      */
-    public static fromAttachmentEntry(parser: EbmlParser): MatroskaAttachment {
-        Guards.truthy(parser, "parser");
+    public static fromAttachmentElement(element: EbmlElement): MatroskaAttachment {
+        Guards.truthy(element, "parser");
+        // @TODO: Add check to make sure the element has the correct id
 
         const attachment = new MatroskaAttachment();
-        const attachmentElements = EbmlParser.getAllValues(parser.getParser());
+        const attachmentElements = EbmlParser.getAllValues(element.getParser());
         attachment._loader = () => {
             attachment._description = attachmentElements.get(MatroskaIds.FILE_DESCRIPTION)?.getString();
             attachment._filename = attachmentElements.get(MatroskaIds.FILE_NAME)?.getString();
