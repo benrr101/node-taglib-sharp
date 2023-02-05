@@ -42,10 +42,16 @@ import {Testers} from "../utilities/testers";
         const bytes = [0x01];
         const element = new EbmlElement(TestFile.getFile(bytes), 0, 0, 1, this.DEFAULT_OPTIONS);
 
-        // Act
+        // Act 1
         element.load();
 
-        // Assert
+        // Assert 1
+        assert.isTrue(element.isLoaded);
+
+        // Act 1
+        element.load();
+
+        // Assert 1
         assert.isTrue(element.isLoaded);
     }
 
@@ -134,6 +140,7 @@ import {Testers} from "../utilities/testers";
         }
     }
 
+    @test
     public getParser() {
         // Arrange
         const bytes = [
