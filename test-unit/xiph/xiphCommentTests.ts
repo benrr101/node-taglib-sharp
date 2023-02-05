@@ -10,7 +10,7 @@ import XiphTestResources from "./resources";
 import {ByteVector, StringType} from "../../src/byteVector";
 import {IPicture, Picture, PictureType} from "../../src/picture";
 import {TagTypes} from "../../src/tag";
-import {TagTesters, Testers} from "../utilities/testers";
+import {Allow, TagTesters, Testers} from "../utilities/testers";
 
 @suite class Xiph_Comment_ConstructorTests {
     @test
@@ -1186,7 +1186,7 @@ import {TagTesters, Testers} from "../utilities/testers";
         // Act / Assert
         Testers.testString((v: string) => comment.setFieldAsUint(v, 0, 0));
         Testers.testUint((v) => comment.setFieldAsUint("qqq", v, 0));
-        Testers.testUint((v) => comment.setFieldAsUint("qqq", 0, v), true);
+        Testers.testUint((v) => comment.setFieldAsUint("qqq", 0, v), Allow.Undefined);
         assert.throws(() => comment.setFieldAsUint("COVERART", 0));
         assert.throws(() => comment.setFieldAsUint("METADATA_BLOCK_PICTURE", 0));
     }

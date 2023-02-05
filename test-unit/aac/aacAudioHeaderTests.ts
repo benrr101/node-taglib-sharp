@@ -8,7 +8,7 @@ import TestFile from "../utilities/testFile";
 import {ByteVector} from "../../src/byteVector";
 import {File} from "../../src/file";
 import {MediaTypes} from "../../src/properties";
-import {Testers} from "../utilities/testers";
+import {Allow, Testers} from "../utilities/testers";
 
 // Test constants
 const sampleHeaderBytes = ByteVector.fromByteArray(new Uint8Array([0xFF, 0xF5, 0x55, 0x55, 0x55, 0x55, 0x55]));
@@ -71,7 +71,7 @@ class Aac_AudioHeaderTests {
         // Act / Assert
         Testers.testTruthy((v: File) => { AacAudioHeader.find(v, 0, 0); });
         Testers.testUint((v: number) => { AacAudioHeader.find(mockFile.object, v, 0); });
-        Testers.testUint((v: number) => { AacAudioHeader.find(mockFile.object, 0, v); }, true);
+        Testers.testUint((v: number) => { AacAudioHeader.find(mockFile.object, 0, v); }, Allow.Undefined);
     }
 
     @test

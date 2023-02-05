@@ -2,7 +2,7 @@ import * as Chai from "chai";
 import {suite, test} from "@testdeck/mocha";
 
 import {ByteVector, StringType} from "../src/byteVector";
-import {Testers} from "./utilities/testers";
+import {Allow, Testers} from "./utilities/testers";
 
 // Setup chai
 const assert = Chai.assert;
@@ -493,7 +493,7 @@ const assert = Chai.assert;
 
         // Act / Assert
         Testers.testTruthy((v: ByteVector) => { bv.containsAt(v, 0); });
-        Testers.testSafeInt((v: number) => { bv.containsAt(pattern, v); }, true);
+        Testers.testSafeInt((v: number) => { bv.containsAt(pattern, v); }, Allow.Undefined);
     }
 
     @test
@@ -1040,7 +1040,7 @@ const assert = Chai.assert;
 
         // Act / Assert
         Testers.testTruthy((v: ByteVector) => { bv.find(v, 1); });
-        Testers.testUint((v: number) => { bv.find(pattern, v); }, true);
+        Testers.testUint((v: number) => { bv.find(pattern, v); }, Allow.Undefined);
         assert.throws(() => { bv.find(pattern, 0); });
     }
 
@@ -1286,7 +1286,7 @@ const assert = Chai.assert;
         // Act / Assert
         Testers.testTruthy((v: ByteVector) => bv.offsetFind(v, 1));
         Testers.testSafeUint((v) => bv.offsetFind(pattern, v));
-        Testers.testUint((v) => bv.offsetFind(pattern, 0, v), true);
+        Testers.testUint((v) => bv.offsetFind(pattern, 0, v), Allow.Undefined);
         assert.throws(() => bv.offsetFind(pattern, 0, 0));
     }
 
@@ -1553,7 +1553,7 @@ const assert = Chai.assert;
 
         // Act / Assert
         Testers.testTruthy((v: ByteVector) => bv.rFind(v, 1));
-        Testers.testUint((v: number) => bv.rFind(pattern, v), true);
+        Testers.testUint((v: number) => bv.rFind(pattern, v), Allow.Undefined);
         assert.throws(() => bv.rFind(pattern, 0));
     }
 
@@ -2146,8 +2146,8 @@ const assert = Chai.assert;
 
         // Act / Assert
         Testers.testTruthy((v: ByteVector) => { bv.split(v); });
-        Testers.testUint((v: number) => { bv.split(pattern, v); }, true);
-        Testers.testUint((v: number) => { bv.split(pattern, 1, v); }, true);
+        Testers.testUint((v: number) => { bv.split(pattern, v); }, Allow.Undefined);
+        Testers.testUint((v: number) => { bv.split(pattern, 1, v); }, Allow.Undefined);
         assert.throws(() => bv.split(pattern, 0));
     }
 
@@ -2458,7 +2458,7 @@ const assert = Chai.assert;
 
         // Act / Assert
         Testers.testSafeUint((v) => bv.subarray(v, 1));
-        Testers.testSafeUint((v) => bv.subarray(0, v), true);
+        Testers.testSafeUint((v) => bv.subarray(0, v), Allow.Undefined);
     }
 
     @test
