@@ -9,7 +9,7 @@ import TestStream from "./utilities/testStream";
 import {ByteVector, Encoding, StringType} from "../src/byteVector";
 import {IFileAbstraction} from "../src/fileAbstraction";
 import {IStream} from "../src/stream";
-import {Testers} from "./utilities/testers";
+import {Allow, Testers} from "./utilities/testers";
 
 // Setup chai
 Chai.use(ChaiAsPromised);
@@ -167,7 +167,7 @@ const assert = Chai.assert;
 
         // Act / Assert
         Testers.testTruthy((v: Uint8Array) => ByteVector.fromByteArray(v, 123));
-        Testers.testSafeUint((v) => ByteVector.fromByteArray(bytes, v), true);
+        Testers.testSafeUint((v) => ByteVector.fromByteArray(bytes, v), Allow.Undefined);
         assert.throws(() => ByteVector.fromByteArray(bytes, 123));
     }
 
@@ -1165,7 +1165,7 @@ const assert = Chai.assert;
     @test
     public fromString_invalidLength() {
         // Arrange, Act, Assert
-        Testers.testSafeUint((v: number) => { ByteVector.fromString("", undefined, v); }, true);
+        Testers.testSafeUint((v: number) => { ByteVector.fromString("", undefined, v); }, Allow.Undefined);
     }
 
     @test

@@ -6,7 +6,7 @@ import TestStream from "./utilities/testStream";
 import {IFileAbstraction} from "../src/fileAbstraction";
 import {ByteVector, StringType} from "../src/byteVector";
 import {PictureLazy, PictureType} from "../src/picture";
-import {Testers} from "./utilities/testers";
+import {Allow, Testers} from "./utilities/testers";
 
 // Setup chai
 const assert = Chai.assert;
@@ -65,7 +65,7 @@ const assert = Chai.assert;
         // Act / Assert
         Testers.testTruthy((v: IFileAbstraction) => { PictureLazy.fromFile(v, 0 , 0); });
         Testers.testInt((v: number) => { PictureLazy.fromFile(mockFile.object, v, 0); });
-        Testers.testInt((v: number) => { PictureLazy.fromFile(mockFile.object, v, 0); }, true);
+        Testers.testInt((v: number) => { PictureLazy.fromFile(mockFile.object, v, 0); }, Allow.Undefined);
     }
 
     @test

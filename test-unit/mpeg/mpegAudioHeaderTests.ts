@@ -10,7 +10,7 @@ import {ByteVector} from "../../src/byteVector";
 import {File} from "../../src/file";
 import {MediaTypes} from "../../src/properties";
 import {ChannelMode, MpegVersion} from "../../src/mpeg/mpegEnums";
-import {Testers} from "../utilities/testers";
+import {Allow, Testers} from "../utilities/testers";
 
 @suite class Mpeg_AudioHeader_ConstructorTests {
     private mockFile = TypeMoq.Mock.ofType<File>().object;
@@ -670,7 +670,7 @@ import {Testers} from "../utilities/testers";
         // Act / Assert
         Testers.testTruthy((v: File) => { MpegAudioHeader.find(v, 123, 234); });
         Testers.testSafeInt((v: number) => { MpegAudioHeader.find(mockFile, v, 234); });
-        Testers.testSafeInt((v: number) => { MpegAudioHeader.find(mockFile, 123, v); }, true);
+        Testers.testSafeInt((v: number) => { MpegAudioHeader.find(mockFile, 123, v); }, Allow.Undefined);
     }
 
     @test
