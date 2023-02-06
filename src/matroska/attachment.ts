@@ -34,7 +34,7 @@ export default class MatroskaAttachment implements IPicture, ILazy {
         // @TODO: Add check to make sure the element has the correct id
 
         const attachment = new MatroskaAttachment();
-        const attachmentElements = EbmlParser.getAllValues(element.getParser());
+        const attachmentElements = EbmlParser.getAllElements(element.getParser());
         attachment._loader = () => {
             attachment._description = attachmentElements.get(MatroskaIds.FILE_DESCRIPTION)?.getString();
             attachment._filename = attachmentElements.get(MatroskaIds.FILE_NAME)?.getString();

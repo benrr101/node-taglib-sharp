@@ -28,7 +28,7 @@ export default class EbmlParser implements IDisposable {
      * @private
      */
     private _offset: number;
-    private _parent: EbmlParser;
+    // private _parent: EbmlParser;
 
     // #region Constructors
 
@@ -73,7 +73,7 @@ export default class EbmlParser implements IDisposable {
 
     // #region Methods
 
-    public static getAllValues(parser: EbmlParser): Map<number, EbmlElement> {
+    public static getAllElements(parser: EbmlParser): Map<number, EbmlElement> {
         try {
             const elements = new Map<number, EbmlElement>();
             while (parser.read()) {
@@ -104,7 +104,7 @@ export default class EbmlParser implements IDisposable {
     }
 
     public dispose(): void {
-        this._parent?.onChildDisposed();
+        // this._parent?.onChildDisposed();
     }
 
     /**
@@ -140,31 +140,31 @@ export default class EbmlParser implements IDisposable {
         return true;
     }
 
-    /**
-     * Stores raw binary bytes in the current element's data section.
-     * @param value Raw bytes to store in the element
-     */
-    public setBytes(value: ByteVector): void {
-        Guards.truthy(value, "value");
-
-        // Write the bytes, re-render the header
-        this._file.insert(value, this._dataOffset, this._dataSize);
-        const headerBytes = ByteVector.concatenate(
-            this.renderVariableInteger(this._id),
-            this.renderVariableInteger(value.length)
-        )
-        this._file.insert(headerBytes, this._dataOffset - this._headerSize, this._headerSize);
-
-        // Update the current state of the parser
-        const headerDifference = headerBytes.length - this._headerSize;
-        this._headerSize = headerBytes.length;
-        const dataDifference = value.length - this._dataSize;
-        this._dataSize = value.length;
-        this._maxOffset += headerDifference + dataDifference;
-
-        // Update the parent if necessary
-        this._parent?.onChildDataSizeChange(headerDifference + dataDifference);
-    }
+    // /**
+    //  * Stores raw binary bytes in the current element's data section.
+    //  * @param value Raw bytes to store in the element
+    //  */
+    // public setBytes(value: ByteVector): void {
+    //     Guards.truthy(value, "value");
+    //
+    //     // Write the bytes, re-render the header
+    //     this._file.insert(value, this._dataOffset, this._dataSize);
+    //     const headerBytes = ByteVector.concatenate(
+    //         this.renderVariableInteger(this._id),
+    //         this.renderVariableInteger(value.length)
+    //     )
+    //     this._file.insert(headerBytes, this._dataOffset - this._headerSize, this._headerSize);
+    //
+    //     // Update the current state of the parser
+    //     const headerDifference = headerBytes.length - this._headerSize;
+    //     this._headerSize = headerBytes.length;
+    //     const dataDifference = value.length - this._dataSize;
+    //     this._dataSize = value.length;
+    //     this._maxOffset += headerDifference + dataDifference;
+    //
+    //     // Update the parent if necessary
+    //     this._parent?.onChildDataSizeChange(headerDifference + dataDifference);
+    // }
 
     private static lastSevenBitsTruthy(
         bytes: ByteVector,
@@ -179,21 +179,21 @@ export default class EbmlParser implements IDisposable {
 
     }
 
-    private onChildDisposed(): void {
-        this._childParser = undefined;
-    }
-
-    private onChildDataSizeChange(difference: number): void {
-        this._offset += difference;
-        this._dataSize += difference;
-        this._maxOffset += difference;
-    }
+    // private onChildDisposed(): void {
+    //     this._childParser = undefined;
+    // }
+    //
+    // private onChildDataSizeChange(difference: number): void {
+    //     this._offset += difference;
+    //     this._dataSize += difference;
+    //     this._maxOffset += difference;
+    // }
 
     private renderVariableInteger(value: number|bigint): ByteVector {
         // The theory behind this algorithm: The maximum size the EBML spec supports at time of
         // writing is 56-bits. Since this is greater than the maximum uint javascript safely
         // handles, we convert the number to bytes. If the uppermost 7 bits of a 56-bit value (the
-        // 1th byte) contain something, then we are using 8 bytes to store the value (bytes 1-7 and
+        // 1st byte) contain something, then we are using 8 bytes to store the value (bytes 1-7 and
         // a 0x01 length descriptor). If those bits were empty, we check the next 7 bits. This
         // crosses a byte boundary, so we check it using a mask on the lower byte and a mask on the
         // upper byte. If those bits contained something, we OR the upper bits with the length
