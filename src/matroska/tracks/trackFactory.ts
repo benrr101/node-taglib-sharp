@@ -1,9 +1,9 @@
 import AudioTrack from "./audioTrack";
 import EbmlElement from "../../ebml/ebmlElement";
 import EbmlParser from "../../ebml/ebmlParser";
-import VideoTrack from "./videoTrack";
 import {MatroskaIds} from "../matroskaIds";
-import {EbmlTrackType, Track} from "./track";
+import {MatroskaTrackType, Track} from "./track";
+import {VideoTrack} from "./videoTrack";
 
 export default class TrackFactory {
     public static fromTrackElement(trackElement: EbmlElement): Track {
@@ -12,11 +12,11 @@ export default class TrackFactory {
 
         // Parse the elements into a track object
         switch (elements.get(MatroskaIds.TRACK_TYPE)?.getSafeUint()) {
-            case EbmlTrackType.Audio:
+            case MatroskaTrackType.Audio:
                 const audioElementParser = elements.get(MatroskaIds.AUDIO).getParser();
                 const audioElements = EbmlParser.getAllElements(audioElementParser);
                 return new AudioTrack(elements, audioElements);
-            case EbmlTrackType.Video:
+            case MatroskaTrackType.Video:
                 const videoElementParser = elements.get(MatroskaIds.VIDEO).getParser();
                 const videoElements = EbmlParser.getAllElements(videoElementParser);
                 return new VideoTrack(elements, videoElements);

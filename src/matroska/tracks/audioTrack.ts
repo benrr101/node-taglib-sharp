@@ -1,7 +1,8 @@
 import EbmlElement from "../../ebml/ebmlElement";
 import {MatroskaIds} from "../matroskaIds";
 import {ILosslessAudioCodec, MediaTypes} from "../../properties";
-import {Track} from "./track";
+import {MatroskaTrackType, Track} from "./track";
+import {Guards} from "../../utils";
 
 export default class AudioTrack extends Track implements ILosslessAudioCodec {
     private readonly _bitDepth: number;
@@ -10,6 +11,11 @@ export default class AudioTrack extends Track implements ILosslessAudioCodec {
 
     public constructor(trackElements: Map<number, EbmlElement>, audioElements: Map<number, EbmlElement>) {
         super(trackElements);
+
+        Guards.truthy(audioElements, "audioElements");
+        if (this.type !== MatroskaTrackType.Audio) {
+            throw new Error(`Video track constructor used to construct type ${this.type} track.`);
+        }
 
         // Read the relevant values
         this._channels = audioElements.get(MatroskaIds.CHANNELS)?.getSafeUint();
@@ -20,7 +26,7 @@ export default class AudioTrack extends Track implements ILosslessAudioCodec {
     /** @inheritDoc */
     public get audioBitrate(): number {
         // @TODO How can we calculate that
-        return 0;
+        return undefined;
     }
 
     /** @inheritDoc */

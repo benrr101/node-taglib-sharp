@@ -1,7 +1,8 @@
 import EbmlElement from "../../ebml/ebmlElement";
 import {MatroskaIds} from "../matroskaIds";
 import {IVideoCodec, MediaTypes} from "../../properties";
-import {Track} from "./track";
+import {MatroskaTrackType, Track} from "./track";
+import {Guards} from "../../utils";
 
 /**
  * Possible modifications to the aspect ratio.
@@ -23,6 +24,9 @@ export enum VideoAspectRatioMode {
     Fixed = 0x02
 }
 
+/**
+ * Units for the "display" dimensions values of the video.
+ */
 export enum VideoDisplayUnits {
     /**
      * Display values are in pixels.
@@ -50,6 +54,9 @@ export enum VideoDisplayUnits {
     Unknown = 0x04
 }
 
+/**
+ * Type of interlacing of the video.
+ */
 export enum VideoInterlaceFlag {
     /**
      * Interlacing mode is unknown.
@@ -147,9 +154,13 @@ export enum VideoStereoMode {
     LacedRightFirst = 14
 }
 
-export default class VideoTrack extends Track implements IVideoCodec {
+/**
+ * Extension of {@link Track} that adds video information.
+ * @remarks An earlier version of Matroska had a framerate field. This has since been deprecated
+ *     and the only true way to calculate framerate it do calculate it based on time codes.
+ */
+export class VideoTrack extends Track implements IVideoCodec {
     private readonly _aspectRatioType: VideoAspectRatioMode;
-    private readonly _colourSpaceFourcc: number;
     private readonly _cropBottom: number;
     private readonly _cropLeft: number;
     private readonly _cropRight: number;
@@ -157,17 +168,25 @@ export default class VideoTrack extends Track implements IVideoCodec {
     private readonly _displayHeight: number;
     private readonly _displayUnits: VideoDisplayUnits;
     private readonly _displayWidth: number;
-    private readonly _framerate: number;
     private readonly _height: number;
     private readonly _isInterlaced: VideoInterlaceFlag;
     private readonly _stereoMode: VideoStereoMode;
     private readonly _width: number;
 
+    /**
+     * Constructs and initializes a new instance from a dictionary of elements from a video track element.
+     * @param trackElements All elements in the track root element
+     * @param videoElements All elements in the video root elements
+     */
     public constructor(trackElements: Map<number, EbmlElement>, videoElements: Map<number, EbmlElement>) {
         super(trackElements);
 
+        Guards.truthy(videoElements, "videoElements");
+        if (this.type !== MatroskaTrackType.Video) {
+            throw new Error(`Video track constructor used to construct type ${this.type} track.`);
+        }
+
         this._aspectRatioType = videoElements.get(MatroskaIds.ASPECT_RATIO_TYPE)?.getSafeUint();
-        this._colourSpaceFourcc = videoElements.get(MatroskaIds.COLOUR_SPACE)?.getSafeUint();
         this._cropBottom = videoElements.get(MatroskaIds.PIXEL_CROP_BOTTOM)?.getSafeUint();
         this._cropLeft = videoElements.get(MatroskaIds.PIXEL_CROP_LEFT)?.getSafeUint();
         this._cropRight = videoElements.get(MatroskaIds.PIXEL_CROP_RIGHT)?.getSafeUint();
@@ -179,12 +198,14 @@ export default class VideoTrack extends Track implements IVideoCodec {
         this._width = videoElements.get(MatroskaIds.PIXEL_WIDTH)?.getSafeUint();
 
         const interlacingModeValue = videoElements.get(MatroskaIds.FLAG_INTERLACED)?.getSafeUint();
-        this._isInterlaced = interlacingModeValue && interlacingModeValue > VideoInterlaceFlag.Progressive
+        this._isInterlaced = interlacingModeValue && interlacingModeValue <= VideoInterlaceFlag.Progressive
             ? interlacingModeValue
             : VideoInterlaceFlag.Undetermined;
 
         const stereoModeValue = videoElements.get(MatroskaIds.STEREO_MODE)?.getSafeUint();
-        this._stereoMode = stereoModeValue || 0;
+        this._stereoMode = stereoModeValue && stereoModeValue <= VideoStereoMode.LacedRightFirst
+            ? stereoModeValue
+            : VideoStereoMode.Mono;
     }
 
     /**

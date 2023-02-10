@@ -2,8 +2,9 @@ import EbmlElement from "../../ebml/ebmlElement";
 import {ByteVector} from "../../byteVector";
 import {MatroskaIds} from "../matroskaIds";
 import {ICodec, MediaTypes} from "../../properties";
+import {Guards} from "../../utils";
 
-export enum EbmlTrackType {
+export enum MatroskaTrackType {
     Video = 1,
     Audio = 2,
     Complex = 3,
@@ -42,6 +43,8 @@ export class Track implements ICodec {
      * @internal
      */
     public constructor(elements: Map<number, EbmlElement>) {
+        Guards.truthy(elements, "elements");
+
         // Read general-purpose elements
         this._codecId = elements.get(MatroskaIds.CODEC_ID)?.getString();
         this._codecName = elements.get(MatroskaIds.CODEC_NAME)?.getString();
@@ -61,7 +64,7 @@ export class Track implements ICodec {
 
         const flagOriginal = elements.get(MatroskaIds.FLAG_ORIGINAL);
         if (flagOriginal) {
-            this._isTranslation = !flagOriginal;
+            this._isTranslation = !flagOriginal.getBool();
         }
     }
 
@@ -87,8 +90,8 @@ export class Track implements ICodec {
 
     /** @inheritDoc */
     public get description(): string {
-        const codecName = this._codecName || this._codecId.substring(2);
-        return `${codecName} ${EbmlTrackType[this._type]}`;
+        const codecName = this._codecName || this._codecId?.substring(2) || "Unknown";
+        return `${codecName} ${MatroskaTrackType[this._type]}`;
     }
 
     /** @inheritDoc */
@@ -164,7 +167,7 @@ export class Track implements ICodec {
     /**
      * Type of the track.
      */
-    public get type(): EbmlTrackType { return this._type; }
+    public get type(): MatroskaTrackType { return this._type; }
 
     // #endregion
 }
