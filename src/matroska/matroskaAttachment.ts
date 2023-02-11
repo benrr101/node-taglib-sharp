@@ -89,21 +89,21 @@ export default class MatroskaAttachment implements IPicture, ILazy {
             attachment._uid = uidBytesVector.toUlong();
 
             // Attempt to get mimeType and filename from each other if both are not provided
-            attachment._mimeType = picture.mimeType;
-            attachment._filename = picture.filename;
-            if (!attachment._mimeType && !attachment._filename) {
+            if (!picture.mimeType && !picture.filename) {
                 throw new Error(
                     "Cannot use picture as Matroska attachment, " +
                     "mime type or filename must be provided"
                 );
-            } else if (!attachment._mimeType) {
-                attachment._mimeType = Picture.getMimeTypeFromFilename(attachment._filename);
-            } else if (!attachment._filename) {
-                const name = PictureType[attachment._type];
-                let extension = Picture.getExtensionFromMimeType(attachment._mimeType);
-                extension ??= ".bin";
-                attachment._filename = `${name}${extension}`;
             }
+
+            // Mimetype can be recovered from file name
+            attachment._mimeType = picture.mimeType || Picture.getMimeTypeFromFilename(picture.filename);
+
+            // Since Matroska attachments don't have a concept of a "type", we embed the type
+            // in the file name
+            const name = PictureType[attachment._type];
+            const extension = Picture.getExtensionFromMimeType(attachment._mimeType) || ".bin";
+            attachment._filename = `${name}${extension}`;
         }
 
         return attachment;
@@ -144,7 +144,14 @@ export default class MatroskaAttachment implements IPicture, ILazy {
         this.load();
         return this._filename;
     }
-    /** @inheritDoc */
+    /**
+     * @inheritDoc
+     * @remarks Although this value can be set to anything, it is recommended if creating an
+     *     attachment from an {@see IPicture} to not change this value. Matroska does not have a
+     *     concept of attachment "type", so node-taglib-sharp embeds the type in the filename
+     *     field.
+     */
+
     public set filename(value: string) {
         this.load();
         this._filename = value;
@@ -171,10 +178,16 @@ export default class MatroskaAttachment implements IPicture, ILazy {
         this.load();
         return this._type;
     }
-    /** @inheritDoc */
+    /**
+     * @inheritDoc
+     * @remarks Since Matroska attachments do not have a concept of "type", in order for this
+     *     value to be preserved, the string representation of the type will be embedded in the
+     *     {@see filename}.
+     */
     public set type(value: PictureType) {
         this.load();
         this._type = value;
+        this._filename = `${PictureType[value]}${Picture.getExtensionFromMimeType(this._mimeType)}`
     }
 
     /**

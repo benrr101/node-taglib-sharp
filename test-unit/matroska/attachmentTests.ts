@@ -5,12 +5,12 @@ import {Mock} from "typemoq";
 import EbmlElement from "../../src/ebml/ebmlElement";
 import EbmlParserOptions from "../../src/ebml/ebmlParserOptions";
 import MatroskaAttachment from "../../src/matroska/matroskaAttachment";
+import MatroskaTestUtils from "./utils";
 import TestFile from "../utilities/testFile";
 import {ByteVector, StringType} from "../../src/byteVector";
 import {MatroskaIds} from "../../src/matroska/matroskaIds";
-import {PictureType} from "../../src/picture";
+import {IPicture, PictureType} from "../../src/picture";
 import {Testers} from "../utilities/testers";
-import MatroskaTestUtils from "./utils";
 
 @suite
 class Matroska_AttachmentTests {
@@ -115,7 +115,7 @@ class Matroska_AttachmentTests {
     }
 
     @test
-    public load_fromElement_fileNameType() {
+    public load_fromElement_filenameType() {
         // Arrange
         const bytes = ByteVector.concatenate(
             // Id (FILE_MIME_TYPE)
@@ -144,5 +144,170 @@ class Matroska_AttachmentTests {
         // Assert
         assert.isTrue(attachment.isLoaded);
         assert.strictEqual(attachment.type, PictureType.ColoredFish);
+    }
+
+    @test
+    public load_fromPicture_noFilenameOrMimeType() {
+        // Arrange
+        const picture: IPicture = {
+            data: ByteVector.empty(),
+            description: "a colored fish",
+            type: PictureType.ColoredFish,
+            filename: null,
+            mimeType: null
+        };
+        const attachment = MatroskaAttachment.fromPicture(picture);
+
+        // Act / Assert
+        assert.throws(() => attachment.load());
+    }
+
+    @test
+    public load_fromPicture_withFilenameNoMimeType() {
+        // Arrange
+        const picture: IPicture = {
+            data: ByteVector.fromString("foobarbaz", StringType.UTF8),
+            description: "a colored fish",
+            filename: "fish.gif",
+            mimeType: null,
+            type: PictureType.ColoredFish
+        };
+        const attachment = MatroskaAttachment.fromPicture(picture);
+
+        // Act
+        attachment.load();
+
+        // Assert
+        assert.isTrue(attachment.isLoaded);
+        Testers.bvEqual(attachment.data, picture.data);
+        assert.strictEqual(attachment.description, picture.description);
+        assert.strictEqual(attachment.filename, "ColoredFish.gif");
+        assert.strictEqual(attachment.mimeType, "image/gif");
+        assert.ok(attachment.uid);
+    }
+
+    @test
+    public load_fromPicture_withMimeTypeNoFilename() {
+        // Arrange
+        const picture: IPicture = {
+            data: ByteVector.fromString("foobarbaz", StringType.UTF8),
+            description: "a colored fish",
+            filename: null,
+            mimeType: "image/gif",
+            type: PictureType.ColoredFish
+        };
+        const attachment = MatroskaAttachment.fromPicture(picture);
+
+        // Act
+        attachment.load();
+
+        // Assert
+        assert.isTrue(attachment.isLoaded);
+        Testers.bvEqual(attachment.data, picture.data);
+        assert.strictEqual(attachment.description, picture.description);
+        assert.strictEqual(attachment.filename, "ColoredFish.gif");
+        assert.strictEqual(attachment.mimeType, "image/gif");
+        assert.strictEqual(attachment.type, PictureType.ColoredFish);
+    }
+
+    @test
+    public load_fromPicture_unknownMimeType() {
+        // Arrange
+        const picture: IPicture = {
+            data: ByteVector.fromString("foobarbaz", StringType.UTF8),
+            description: "a colored fish",
+            filename: "foobar.gif",
+            mimeType: "foo/bar",
+            type: PictureType.ColoredFish
+        };
+        const attachment = MatroskaAttachment.fromPicture(picture);
+
+        // Act
+        attachment.load();
+
+        // Assert
+        assert.isTrue(attachment.isLoaded);
+        Testers.bvEqual(attachment.data, picture.data);
+        assert.strictEqual(attachment.description, picture.description);
+        assert.strictEqual(attachment.filename, "ColoredFish.bin");
+        assert.strictEqual(attachment.mimeType, "foo/bar");
+        assert.strictEqual(attachment.type, PictureType.ColoredFish);
+    }
+
+    @test
+    public set_data() {
+        // Arrange
+        const attachment = this.getTestAttachment();
+        const data = ByteVector.fromString("foobarbaz", StringType.UTF8);
+
+        // Act
+        attachment.data = data;
+
+        // Assert
+        assert.strictEqual(attachment.data, data);
+    }
+
+    @test
+    public set_description() {
+        // Arrange
+        const attachment = this.getTestAttachment();
+        const description = "foobarbaz";
+
+        // Act
+        attachment.description = description;
+
+        // Assert
+        assert.strictEqual(attachment.description, description);
+    }
+
+    @test
+    public set_filename() {
+        // Arrange
+        const attachment = this.getTestAttachment();
+        const filename = "foobarbaz.gif";
+
+        // Act
+        attachment.filename = filename;
+
+        // Assert
+        assert.strictEqual(attachment.filename, filename);
+    }
+
+    @test
+    public set_mimetype() {
+        // Arrange
+        const attachment = this.getTestAttachment();
+        const mimeType = "image/jpeg";
+
+        // Act
+        attachment.mimeType = mimeType;
+
+        // Assert
+        assert.strictEqual(attachment.mimeType, mimeType);
+    }
+
+    @test
+    public set_type() {
+        // Arrange
+        const attachment = this.getTestAttachment();
+        const type = PictureType.DuringPerformance;
+
+        // Act
+        attachment.type = type;
+
+        // Assert
+        assert.strictEqual(attachment.type, type);
+        assert.strictEqual(attachment.filename, "DuringPerformance.gif");
+    }
+
+    private getTestAttachment() {
+        const picture: IPicture = {
+            data: ByteVector.empty(),
+            description: "foo",
+            filename: "bar",
+            mimeType: "image/gif",
+            type: PictureType.ColoredFish,
+        };
+        return MatroskaAttachment.fromPicture(picture);
     }
 }
