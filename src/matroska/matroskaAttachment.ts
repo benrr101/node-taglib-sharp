@@ -31,7 +31,9 @@ export default class MatroskaAttachment implements IPicture, ILazy {
      */
     public static fromAttachmentElement(element: EbmlElement): MatroskaAttachment {
         Guards.truthy(element, "parser");
-        // @TODO: Add check to make sure the element has the correct id
+        if (element.id !== MatroskaIds.ATTACHED_FILE) {
+            throw new Error(`Attachment constructor was provided element of type ${element.id}`);
+        }
 
         const attachment = new MatroskaAttachment();
         const attachmentElements = EbmlParser.getAllElements(element.getParser());
@@ -46,6 +48,23 @@ export default class MatroskaAttachment implements IPicture, ILazy {
                 throw new Error("Matroska attachment is missing data element");
             }
             attachment._data = dataElement.getBytes();
+
+            if (attachment._mimeType.startsWith("image")) {
+                // Default to other
+                attachment._type = PictureType.Other;
+
+                // Attempt to find a better type
+                if (attachment._filename) {
+                    // I don't know if this effort is worth it, but hey, we'll try anyhow
+                    for (const key of Object.keys(PictureType)) {
+                        if (attachment._filename.toUpperCase().indexOf(key.toUpperCase()) >= 0) {
+                            attachment._type = PictureType[key as keyof typeof PictureType];
+                        }
+                    }
+                }
+            } else {
+                attachment._type = PictureType.NotAPicture;
+            }
         };
 
         return attachment;
@@ -75,7 +94,7 @@ export default class MatroskaAttachment implements IPicture, ILazy {
             if (!attachment._mimeType && !attachment._filename) {
                 throw new Error(
                     "Cannot use picture as Matroska attachment, " +
-                    "mime type and filename must be provided"
+                    "mime type or filename must be provided"
                 );
             } else if (!attachment._mimeType) {
                 attachment._mimeType = Picture.getMimeTypeFromFilename(attachment._filename);

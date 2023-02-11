@@ -1,6 +1,6 @@
 import EbmlElement from "../ebml/ebmlElement";
 import EbmlParser from "../ebml/ebmlParser";
-import MatroskaAttachment from "./attachment";
+import MatroskaAttachment from "./matroskaAttachment";
 import MatroskaTag from "./matroskaTag";
 import MatroskaTagCollection from "./matroskaTagCollection";
 import MatroskaTagValue from "./matroskaTagValue";

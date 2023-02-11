@@ -1,4 +1,4 @@
-import MatroskaAttachment from "./attachment";
+import MatroskaAttachment from "./matroskaAttachment";
 import Genres from "../genres";
 import MatroskaTag from "./matroskaTag";
 import MatroskaTagValue from "./matroskaTagValue";
