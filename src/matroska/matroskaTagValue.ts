@@ -9,7 +9,7 @@ import {Guards, StringUtils} from "../utils";
  * Represents a value stored in a Matroska tag.
  */
 export default class MatroskaTagValue {
-    private static readonly DEFAULT_LANGUAGE_CODE = "und";
+    public static readonly DEFAULT_LANGUAGE_CODE = "und";
 
     private readonly _matroskaVersion: number
 
@@ -34,19 +34,32 @@ export default class MatroskaTagValue {
     /**
      * Constructs and initializes a new, empty tag.
      * @param matroskaVersion Version of Matroska file the tag should be written for
+     * @param name: Name of the tag value
+     * @param value: Value to store in the tag value
      */
-    public static fromEmpty(matroskaVersion: number): MatroskaTagValue {
-        return new MatroskaTagValue(matroskaVersion);
+    public static fromValue(matroskaVersion: number, name: string, value: string|ByteVector): MatroskaTagValue {
+        Guards.byte(matroskaVersion, "matroskaVersion");
+        Guards.truthy(name, "name");
+        Guards.notNullOrUndefined(value, "value");
+
+        const obj = new MatroskaTagValue(matroskaVersion);
+        obj._name = name;
+        obj._value = value;
+
+        return obj;
     }
 
     /**
      * Constructs and initializes a new tag using a {@link EbmlParser} that points to a tag.
-     * @param element Root element of a tag value
+     * @param element Root element of a tag
      * @param matroskaVersion Version of Matroska file the tag should be written for
      */
-    public static fromTagEntry(element: EbmlElement, matroskaVersion: number): MatroskaTagValue {
+    public static fromSimpleTagElement(element: EbmlElement, matroskaVersion: number): MatroskaTagValue {
         Guards.truthy(element, "element");
         Guards.byte(matroskaVersion, "matroskaVersion");
+        if (element.id !== MatroskaIds.SIMPLE_TAG) {
+            throw new Error(`Tag value constructor was provided element of type ${element.id}`);
+        }
 
         const simpleTag = new MatroskaTagValue(matroskaVersion);
 
@@ -63,8 +76,9 @@ export default class MatroskaTagValue {
             [MatroskaIds.TAG_BINARY, e => binaryValue = e.getBytes()],
             [
                 MatroskaIds.SIMPLE_TAG,
-                e => simpleTag._nestedTags.push(MatroskaTagValue.fromTagEntry(e, matroskaVersion))
+                e => simpleTag._nestedTags.push(MatroskaTagValue.fromSimpleTagElement(e, matroskaVersion))
             ]
+            // @TODO: Nested tags
         ]);
         EbmlParser.processElements(element.getParser(), simpleTagParseActions);
 

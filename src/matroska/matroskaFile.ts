@@ -245,11 +245,11 @@ export default class MatroskaFile extends File {
         const parserActions = new Map<number, (e: EbmlElement) => void>([
             [
                 MatroskaIds.SIMPLE_TAG,
-                e => simpleTags.push(MatroskaTagValue.fromTagEntry(e, this._header.docTypeVersion))
+                e => simpleTags.push(MatroskaTagValue.fromSimpleTagElement(e, this._header.docTypeVersion))
             ],
             [
                 MatroskaIds.TARGETS,
-                e => { tagTarget = MatroskaTagTarget.fromTargetsEntry(e); }
+                e => { tagTarget = MatroskaTagTarget.fromTargetsElement(e); }
             ]
         ]);
         EbmlParser.processElements(tagElement.getParser(), parserActions);

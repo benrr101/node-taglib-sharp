@@ -1,7 +1,7 @@
 import EbmlElement from "../ebml/ebmlElement";
-import {Guards} from "../utils";
-import {MatroskaIds} from "./matroskaIds";
 import EbmlParser from "../ebml/ebmlParser";
+import {MatroskaIds} from "./matroskaIds";
+import {Guards} from "../utils";
 
 /**
  * String representation of the tag target.
@@ -60,16 +60,16 @@ export enum TagTargetValue {
 }
 
 /**
- * Representation of the target of a tag.
+ * Representation of the target of a tag. This is indicates what a tag applies to.
  */
 export class MatroskaTagTarget {
 
-    private _attachmentUids: number[] = [];
-    private _chapterUids: number[] = [];
-    private _editionUids: number[] = [];
+    private _attachmentUids: bigint[] = [];
+    private _chapterUids: bigint[] = [];
+    private _editionUids: bigint[] = [];
     private _targetTypeString: TagTargetString;
     private _targetTypeValue: TagTargetValue;
-    private _trackUids: number[] = [];
+    private _trackUids: bigint[] = [];
 
     private constructor() { /* No implementation to enforce private constructor */ }
 
@@ -87,11 +87,14 @@ export class MatroskaTagTarget {
 
     /**
      * Constructs and initializes a new instance from an {@link EbmlParser} that points at a
-     * tag target element.
+     * tag targets element.
      * @param element Tag target root element
      */
-    public static fromTargetsEntry(element: EbmlElement): MatroskaTagTarget {
+    public static fromTargetsElement(element: EbmlElement): MatroskaTagTarget {
         Guards.truthy(element, "element");
+        if (element.id !== MatroskaIds.TARGETS) {
+            throw new Error(`Target constructor was provided element of type ${element.id}`);
+        }
 
         const target = new MatroskaTagTarget();
 
@@ -104,10 +107,10 @@ export class MatroskaTagTarget {
                 MatroskaIds.TARGET_TYPE,
                 p => target._targetTypeString = p.getString() as TagTargetString
             ],
-            [MatroskaIds.TAG_TRACK_UID, e => target._trackUids.push(e.getSafeUint())],
-            [MatroskaIds.TAG_EDITION_UID, e => target._editionUids.push(e.getSafeUint())],
-            [MatroskaIds.TAG_CHAPTER_UID, e => target._chapterUids.push(e.getSafeUint())],
-            [MatroskaIds.TAG_ATTACHMENT_UID, e => target._attachmentUids.push(e.getSafeUint())]
+            [MatroskaIds.TAG_TRACK_UID, e => target._trackUids.push(e.getUlong())],
+            [MatroskaIds.TAG_EDITION_UID, e => target._editionUids.push(e.getUlong())],
+            [MatroskaIds.TAG_CHAPTER_UID, e => target._chapterUids.push(e.getUlong())],
+            [MatroskaIds.TAG_ATTACHMENT_UID, e => target._attachmentUids.push(e.getUlong())]
         ]);
         EbmlParser.processElements(element.getParser(), parserActions);
 
@@ -129,12 +132,32 @@ export class MatroskaTagTarget {
     }
 
     /**
-     * Gets the numeric value of the tag target, colloquially known as the "level".
+     * Gets a collection of attachment UIDs that tags with this target apply to.
      */
-    public get targetTypeValue(): TagTargetValue { return this._targetTypeValue; }
+    public get attachmentUids(): bigint[] { return this._attachmentUids; }
+
+    /**
+     * Gets a collection of chapter UIDs that tags with this target apply to.
+     */
+    public get chapterUids(): bigint[] { return this._chapterUids; }
+
+    /**
+     * Gets a collection of edition UIDs that tags with this target apply to.
+     */
+    public get editionUids(): bigint[] { return this._editionUids; }
 
     /**
      * Gets a string representation of the tag target.
      */
     public get targetTypeString(): TagTargetString { return this._targetTypeString; }
+
+    /**
+     * Gets the numeric value of the tag target, colloquially known as the "level".
+     */
+    public get targetTypeValue(): TagTargetValue { return this._targetTypeValue; }
+
+    /**
+     * Gets a collection of track UIDs that tags with this target apply to.
+     */
+    public get trackUids(): bigint[] { return this._trackUids; }
 }

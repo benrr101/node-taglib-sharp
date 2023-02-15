@@ -41,6 +41,7 @@ export default class EbmlParser implements IDisposable {
      * @param options Optional options for reading the EBML file
      */
     public constructor(file: File, offset: number = 0, options?: EbmlParserOptions) {
+        // @TODO: Options should only contain the options, have the max offset be a separate param
         Guards.truthy(file, "file");
         Guards.safeUint(offset, "offset");
 
