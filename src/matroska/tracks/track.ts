@@ -56,7 +56,7 @@ export class Track implements ICodec {
         this._isHearingImpaired = elements.get(MatroskaIds.FLAG_HEARING_IMPAIRED)?.getBool();
         this._isVisualImpaired = elements.get(MatroskaIds.FLAG_VISUAL_IMPAIRED)?.getBool();
         this._language = elements.get(MatroskaIds.LANGUAGE)?.getString();
-        this._languageIetf = elements.get(MatroskaIds.LANGUAGE_IETF)?.getString();
+        this._languageIetf = elements.get(MatroskaIds.LANGUAGE_BCP47)?.getString();
         this._trackName = elements.get(MatroskaIds.NAME)?.getString();
         this._trackNumber = elements.get(MatroskaIds.TRACK_NUMBER)?.getSafeUint();
         this._trackUid = elements.get(MatroskaIds.TRACK_UID)?.getUlong();

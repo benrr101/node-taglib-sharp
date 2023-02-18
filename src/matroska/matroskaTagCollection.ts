@@ -357,9 +357,18 @@ export default class MatroskaTagCollection extends Tag {
             : (t: MatroskaTagTarget) => !t;
         const matchingTagValues = this._tags
             .filter(t => targetTypeValueFunc(t.target) && t.simpleTag.name === key)
-            .map(t => t.simpleTag);
+            .map(t => t.simpleTag)
+            .sort((t1, t2) => {
+                // Sort with default language going first
+                if (t1.isDefaultLanguage === t2.isDefaultLanguage) {
+                    return 0;
+                } else if(t1.isDefaultLanguage) {
+                    return -1;
+                } else {
+                    return 1;
+                }
+            });
 
-        // @TODO: sort such that default language goes first, then whatever.
         return new FilteredTags(matchingTagValues);
     }
 

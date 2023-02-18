@@ -78,7 +78,6 @@ export default class MatroskaTagValue {
                 MatroskaIds.SIMPLE_TAG,
                 e => simpleTag._nestedTags.push(MatroskaTagValue.fromSimpleTagElement(e, matroskaVersion))
             ]
-            // @TODO: Nested tags
         ]);
         EbmlParser.processElements(element.getParser(), simpleTagParseActions);
 

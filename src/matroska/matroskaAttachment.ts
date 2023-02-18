@@ -40,7 +40,7 @@ export default class MatroskaAttachment implements IPicture, ILazy {
         attachment._loader = () => {
             attachment._description = attachmentElements.get(MatroskaIds.FILE_DESCRIPTION)?.getString();
             attachment._filename = attachmentElements.get(MatroskaIds.FILE_NAME)?.getString();
-            attachment._mimeType = attachmentElements.get(MatroskaIds.FILE_MIME_TYPE)?.getString();
+            attachment._mimeType = attachmentElements.get(MatroskaIds.FILE_MEDIA_TYPE)?.getString();
             attachment._uid = attachmentElements.get(MatroskaIds.FILE_UID)?.getUlong();
 
             const dataElement = attachmentElements.get(MatroskaIds.FILE_DATA);

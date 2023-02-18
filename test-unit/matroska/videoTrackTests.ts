@@ -25,7 +25,7 @@ import {VideoDisplayUnits, VideoInterlaceFlag, VideoStereoMode, VideoTrack} from
         [MatroskaIds.FLAG_HEARING_IMPAIRED, MatroskaTestUtils.getTestElement(true, MatroskaIds.FLAG_HEARING_IMPAIRED)],
         [MatroskaIds.FLAG_VISUAL_IMPAIRED, MatroskaTestUtils.getTestElement(true, MatroskaIds.FLAG_VISUAL_IMPAIRED)],
         [MatroskaIds.LANGUAGE, MatroskaTestUtils.getTestElement("baz", MatroskaIds.LANGUAGE)],
-        [MatroskaIds.LANGUAGE_IETF, MatroskaTestUtils.getTestElement("foobar", MatroskaIds.LANGUAGE_IETF)],
+        [MatroskaIds.LANGUAGE_BCP47, MatroskaTestUtils.getTestElement("foobar", MatroskaIds.LANGUAGE_BCP47)],
         [MatroskaIds.NAME, MatroskaTestUtils.getTestElement("barbaz", MatroskaIds.NAME)],
         [MatroskaIds.TRACK_NUMBER, MatroskaTestUtils.getTestElement(123, MatroskaIds.TRACK_NUMBER)],
         [MatroskaIds.TRACK_UID, MatroskaTestUtils.getTestElement(BigInt(234), MatroskaIds.TRACK_UID)],
