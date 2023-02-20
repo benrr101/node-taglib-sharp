@@ -3,7 +3,6 @@ import {assert} from "chai";
 import {Mock} from "typemoq";
 
 import EbmlElement from "../../src/ebml/ebmlElement";
-import EbmlParserOptions from "../../src/ebml/ebmlParserOptions";
 import MatroskaTagValue from "../../src/matroska/matroskaTagValue";
 import MatroskaTestUtils from "./utils";
 import TestFile from "../utilities/testFile";
@@ -92,12 +91,7 @@ class Matroska_TagValueTests {
             0x83,             // Size (3)
             0x42, 0x43, 0x44  // Value (BCD)
         ];
-        const element = new EbmlElement(
-            TestFile.getFile(bytes),
-            0,
-            MatroskaIds.SIMPLE_TAG,
-            bytes.length,
-            new EbmlParserOptions());
+        const element = new EbmlElement(TestFile.getFile(bytes), 0, MatroskaIds.SIMPLE_TAG, bytes.length, {});
 
         // Act
         const tagValue = MatroskaTagValue.fromSimpleTagElement(element, 123);
@@ -133,12 +127,10 @@ class Matroska_TagValueTests {
             0x83,             // Size (3)
             0x01, 0x02, 0x03  // Value
         ];
-        const element = new EbmlElement(
-            TestFile.getFile(bytes),
-            0,
+        const element = new EbmlElement(TestFile.getFile(bytes),0,
             MatroskaIds.SIMPLE_TAG,
             bytes.length,
-            new EbmlParserOptions());
+            {});
 
         // Act
         const tagValue = MatroskaTagValue.fromSimpleTagElement(element, 123);
@@ -174,12 +166,7 @@ class Matroska_TagValueTests {
             0x83,             // Size (3)
             0x01, 0x02, 0x03  // Value
         ];
-        const element = new EbmlElement(
-            TestFile.getFile(bytes),
-            0,
-            MatroskaIds.SIMPLE_TAG,
-            bytes.length,
-            new EbmlParserOptions());
+        const element = new EbmlElement(TestFile.getFile(bytes),0, MatroskaIds.SIMPLE_TAG, bytes.length, {});
 
         // Act
         const tagValue = MatroskaTagValue.fromSimpleTagElement(element, 123);
@@ -219,12 +206,7 @@ class Matroska_TagValueTests {
             0x83,             // Size (3)
             0x42, 0x43, 0x44  // Value (BCD)
         ];
-        const element = new EbmlElement(
-            TestFile.getFile(bytes),
-            0,
-            MatroskaIds.SIMPLE_TAG,
-            bytes.length,
-            new EbmlParserOptions());
+        const element = new EbmlElement(TestFile.getFile(bytes), 0, MatroskaIds.SIMPLE_TAG, bytes.length, {});
 
         // Act
         const tagValue = MatroskaTagValue.fromSimpleTagElement(element, 123);
@@ -296,12 +278,7 @@ class Matroska_TagValueTests {
                 0x83,             // Size (3)
                 0x48, 0x49, 0x4A  // Value (HIJ)
         ];
-        const element = new EbmlElement(
-            TestFile.getFile(bytes),
-            0,
-            MatroskaIds.SIMPLE_TAG,
-            bytes.length,
-            new EbmlParserOptions());
+        const element = new EbmlElement(TestFile.getFile(bytes),0, MatroskaIds.SIMPLE_TAG, bytes.length, {});
 
         // Act
         const tagValue = MatroskaTagValue.fromSimpleTagElement(element, 123);

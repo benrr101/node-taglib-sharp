@@ -3,7 +3,6 @@ import {assert} from "chai";
 import {Mock} from "typemoq";
 
 import EbmlElement from "../../src/ebml/ebmlElement";
-import EbmlParserOptions from "../../src/ebml/ebmlParserOptions";
 import MatroskaAttachment from "../../src/matroska/matroskaAttachment";
 import MatroskaTestUtils from "./utils";
 import TestFile from "../utilities/testFile";
@@ -37,7 +36,7 @@ class Matroska_AttachmentTests {
     @test
     public load_fromElement_missingDataElement() {
         // Arrange
-        const element = new EbmlElement(TestFile.getFile([]), 0, MatroskaIds.ATTACHED_FILE, 0, new EbmlParserOptions());
+        const element = new EbmlElement(TestFile.getFile([]), 0, MatroskaIds.ATTACHED_FILE, 0, {});
         const attachment = MatroskaAttachment.fromAttachmentElement(element);
 
         // Act / Assert
@@ -65,11 +64,7 @@ class Matroska_AttachmentTests {
             0x83,             // Size (3)
             0x44, 0x45, 0x46  // Value (DEF)
         ];
-        const element = new EbmlElement(
-            TestFile.getFile(bytes),
-            0,
-            MatroskaIds.ATTACHED_FILE,
-            bytes.length, new EbmlParserOptions());
+        const element = new EbmlElement(TestFile.getFile(bytes), 0, MatroskaIds.ATTACHED_FILE, bytes.length, {});
         const attachment = MatroskaAttachment.fromAttachmentElement(element);
 
         // Act
@@ -99,11 +94,7 @@ class Matroska_AttachmentTests {
             0x83,             // Size (3)
             0x44, 0x45, 0x46  // Value (DEF)
         );
-        const element = new EbmlElement(
-            TestFile.getFile(bytes),
-            0,
-            MatroskaIds.ATTACHED_FILE,
-            bytes.length, new EbmlParserOptions());
+        const element = new EbmlElement(TestFile.getFile(bytes), 0, MatroskaIds.ATTACHED_FILE, bytes.length, {});
         const attachment = MatroskaAttachment.fromAttachmentElement(element);
 
         // Act
@@ -131,11 +122,7 @@ class Matroska_AttachmentTests {
             0x83,             // Size (3)
             0x44, 0x45, 0x46  // Value (DEF)
         );
-        const element = new EbmlElement(
-            TestFile.getFile(bytes),
-            0,
-            MatroskaIds.ATTACHED_FILE,
-            bytes.length, new EbmlParserOptions());
+        const element = new EbmlElement(TestFile.getFile(bytes), 0, MatroskaIds.ATTACHED_FILE, bytes.length, {});
         const attachment = MatroskaAttachment.fromAttachmentElement(element);
 
         // Act

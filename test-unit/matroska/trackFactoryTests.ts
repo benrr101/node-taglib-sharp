@@ -5,7 +5,6 @@ import AudioTrack from "../../src/matroska/tracks/audioTrack";
 import EbmlElement from "../../src/ebml/ebmlElement";
 import TestFile from "../utilities/testFile";
 import TrackFactory from "../../src/matroska/tracks/trackFactory";
-import MatroskaTestUtils from "./utils";
 import {MatroskaIds} from "../../src/matroska/matroskaIds";
 import {MediaTypes} from "../../src/properties";
 import {Track} from "../../src/matroska/tracks/track";
@@ -23,12 +22,7 @@ class Matroska_TrackFactoryTests {
             0xE1, // Identifier (AUDIO)
             0x80  // Size (0)
         ];
-        const element = new EbmlElement(
-            TestFile.getFile(testBytes),
-            0,
-            MatroskaIds.TRACK_ENTRY,
-            testBytes.length,
-            MatroskaTestUtils.defaultOptions);
+        const element = new EbmlElement(TestFile.getFile(testBytes), 0, MatroskaIds.TRACK_ENTRY, testBytes.length, {});
 
         // Act
         const track = TrackFactory.fromTrackElement(element);
@@ -47,12 +41,7 @@ class Matroska_TrackFactoryTests {
             0xE0, // Identifier (VIDEO)
             0x80  // Size (0)
         ];
-        const element = new EbmlElement(
-            TestFile.getFile(testBytes),
-            0,
-            MatroskaIds.TRACK_ENTRY,
-            testBytes.length,
-            MatroskaTestUtils.defaultOptions);
+        const element = new EbmlElement(TestFile.getFile(testBytes), 0, MatroskaIds.TRACK_ENTRY, testBytes.length, {});
 
         // Act
         const track = TrackFactory.fromTrackElement(element);
@@ -65,12 +54,7 @@ class Matroska_TrackFactoryTests {
     public missing() {
         // Arrange
         const testBytes: number[] = [];
-        const element = new EbmlElement(
-            TestFile.getFile(testBytes),
-            0,
-            MatroskaIds.TRACK_ENTRY,
-            testBytes.length,
-            MatroskaTestUtils.defaultOptions);
+        const element = new EbmlElement(TestFile.getFile(testBytes), 0, MatroskaIds.TRACK_ENTRY, testBytes.length, {});
 
         // Act
         const track = TrackFactory.fromTrackElement(element);
@@ -88,12 +72,7 @@ class Matroska_TrackFactoryTests {
             0x81, // Size
             0x10  // Logo
         ];
-        const element = new EbmlElement(
-            TestFile.getFile(testBytes),
-            0,
-            MatroskaIds.TRACK_ENTRY,
-            testBytes.length,
-            MatroskaTestUtils.defaultOptions);
+        const element = new EbmlElement(TestFile.getFile(testBytes), 0, MatroskaIds.TRACK_ENTRY, testBytes.length, {});
 
         // Act
         const track = TrackFactory.fromTrackElement(element);

@@ -9,19 +9,16 @@ import {Guards, NumberUtils} from "../utils";
 export default class EbmlParser implements IDisposable {
 
     private readonly _file: File;
-    private readonly _options: EbmlParserOptions;
+    private readonly _maxOffset: number;
 
-    private _childParser: EbmlParser;
+    // private _childParser: EbmlParser;
     private _currentElement: EbmlElement;
     private _dataOffset: number;
     private _dataSize: number;
     private _headerSize: number;
     private _id: number;
-    /**
-     * Maximum offset of the element.
-     * @private
-     */
-    private _maxOffset: number;
+    private _options: EbmlParserOptions;
+
     /**
      * Absolute position within the file where the reader is currently pointing. This will always
      * be the *next* element to read.
@@ -38,30 +35,19 @@ export default class EbmlParser implements IDisposable {
      * file, `length` can be provided.
      * @param file EBML file to process
      * @param offset Position in the file to begin parsing
+     * @param maxOffset: Maximum position in the file to read up to
      * @param options Optional options for reading the EBML file
      */
-    public constructor(file: File, offset: number = 0, options?: EbmlParserOptions) {
-        // @TODO: Options should only contain the options, have the max offset be a separate param
+    public constructor(file: File, offset: number, maxOffset: number, options?: EbmlParserOptions) {
         Guards.truthy(file, "file");
         Guards.safeUint(offset, "offset");
-
-        this._options = options || new EbmlParserOptions();
-        this._options.maxIdLength = this._options.maxIdLength || 4;
-        this._options.maxSizeLength = this._options.maxSizeLength || 8;
-
-        Guards.safeUint(this._options.maxIdLength, "options.maxIdLength");
-        Guards.safeUint(this._options.maxSizeLength, "options.maxSizeLength");
-        if (this._options.maxIdLength > 8 || this._options.maxSizeLength > 8) {
-            throw new UnsupportedFormatError(
-                "Not supported: This EBML file is not supported in this version of node-taglib-sharp."
-            )
-        }
+        Guards.safeUint(maxOffset, "maxOffset");
 
         this._file = file;
         this._offset = offset;
-        this._maxOffset = options
-            ? this._offset + options.maxSize
-            : this._file.length;
+        this._maxOffset = maxOffset;
+
+        this.setOptions(options?.maxIdLength ?? 4, options?.maxSizeLength ?? 8);
     }
 
     // #endregion
@@ -113,9 +99,9 @@ export default class EbmlParser implements IDisposable {
      * @returns boolean `true` if an element was successfully read. `false` otherwise.
      */
     public read(): boolean {
-        if (this._childParser) {
-            throw new Error("Cannot advance parser when child parser exists. Dispose existing one first.");
-        }
+        // if (this._childParser) {
+        //     throw new Error("Cannot advance parser when child parser exists. Dispose existing one first.");
+        // }
 
         if (this._offset >= (this._maxOffset - 1)) {
             // We've reached the end of the element
@@ -139,6 +125,21 @@ export default class EbmlParser implements IDisposable {
         this._currentElement = new EbmlElement(this._file, this._dataOffset, this._id, this._dataSize, this._options)
 
         return true;
+    }
+
+    public setOptions(maxIdLength: number|undefined, maxSizeLength: number|undefined): void {
+        Guards.safeUint(maxIdLength, "options.maxIdLength");
+        Guards.safeUint(maxSizeLength, "options.maxSizeLength");
+        if (maxIdLength > 8 || maxSizeLength > 8) {
+            throw new UnsupportedFormatError(
+                "Not supported: This EBML file is not supported in this version of node-taglib-sharp."
+            )
+        }
+
+        this._options = <EbmlParserOptions>{
+            maxIdLength: maxIdLength,
+            maxSizeLength: maxSizeLength
+        };
     }
 
     // /**

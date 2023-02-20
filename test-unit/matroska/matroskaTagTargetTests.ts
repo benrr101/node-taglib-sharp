@@ -2,42 +2,25 @@ import {suite, test} from "@testdeck/mocha";
 import {assert} from "chai";
 
 import EbmlElement from "../../src/ebml/ebmlElement";
-import EbmlParserOptions from "../../src/ebml/ebmlParserOptions";
 import MatroskaTestUtils from "./utils";
 import TestFile from "../utilities/testFile";
 import {MatroskaIds} from "../../src/matroska/matroskaIds";
-import {MatroskaTagTarget, TagTargetString, TagTargetValue} from "../../src/matroska/matroskaTagTarget";
+import {MatroskaTagTarget, MatroskaTagTargetType} from "../../src/matroska/matroskaTagTarget";
 import {Testers} from "../utilities/testers";
 
 @suite
 class Matroska_TagTargetTests {
     @test
-    public fromEmpty_withString() {
+    public fromEmpty() {
         // Act
-        const target = MatroskaTagTarget.fromEmpty(TagTargetValue.Episode, TagTargetString.Edition);
+        const target = MatroskaTagTarget.fromEmpty(MatroskaTagTargetType.EPISODE);
 
         // Assert
         assert.isOk(target);
         assert.isEmpty(target.attachmentUids);
         assert.isEmpty(target.chapterUids);
         assert.isEmpty(target.editionUids);
-        assert.strictEqual(target.targetTypeString, TagTargetString.Edition);
-        assert.strictEqual(target.targetTypeValue, TagTargetValue.Episode);
-        assert.isEmpty(target.trackUids);
-    }
-
-    @test
-    public fromEmpty_noString() {
-        // Act
-        const target = MatroskaTagTarget.fromEmpty(TagTargetValue.Episode);
-
-        // Assert
-        assert.isOk(target);
-        assert.isEmpty(target.attachmentUids);
-        assert.isEmpty(target.chapterUids);
-        assert.isEmpty(target.editionUids);
-        assert.isUndefined(target.targetTypeString);
-        assert.strictEqual(target.targetTypeValue, TagTargetValue.Episode);
+        assert.strictEqual(target.targetType, MatroskaTagTargetType.EPISODE);
         assert.isEmpty(target.trackUids);
     }
 
@@ -61,8 +44,8 @@ class Matroska_TagTargetTests {
         // Arrange
         const bytes = [
             0x68, 0xCA,             // Identifier (TARGET_TYPE_VALUE)
-            0x84,                   // Size (4)
-            0x01, 0x02, 0x03, 0x04, // Value (0x01020304)
+            0x81,                   // Size (1)
+            0x46,                   // Value (0x46)
 
             0x63, 0xCA,             // Identifier (TARGET_TYPE)
             0x83,                   // Size (3)
@@ -100,12 +83,7 @@ class Matroska_TagTargetTests {
             0x88,                   // Size (8)
             0x08, 0x09, 0x00, 0x01, 0x02, 0x03, 0x04, 0x05
         ];
-        const element = new EbmlElement(
-            TestFile.getFile(bytes),
-            0,
-            MatroskaIds.TARGETS,
-            bytes.length,
-            new EbmlParserOptions());
+        const element = new EbmlElement(TestFile.getFile(bytes), 0, MatroskaIds.TARGETS, bytes.length, {});
 
         // Act
         const target = MatroskaTagTarget.fromTargetsElement(element);
@@ -115,15 +93,15 @@ class Matroska_TagTargetTests {
         assert.sameMembers(target.attachmentUids, [BigInt("0x0708090001020304"), BigInt("0x0809000102030405")]);
         assert.sameMembers(target.chapterUids, [BigInt("0x0506070809000102"), BigInt("0x0607080900010203")]);
         assert.sameMembers(target.editionUids, [BigInt("0x0304050607080900"), BigInt("0x0405060708090001")]);
-        assert.strictEqual(target.targetTypeString, "ABC");
-        assert.strictEqual(target.targetTypeValue, 0x01020304);
+        assert.strictEqual(target.targetType.string, "ABC");
+        assert.strictEqual(target.targetType.value, 0x46);
         assert.sameMembers(target.trackUids, [BigInt("0x0102030405060708"), BigInt("0x0203040506070809")]);
     }
 
     @test
     public clone() {
         // Arrange
-        const target = MatroskaTagTarget.fromEmpty(TagTargetValue.Collection, TagTargetString.Collection);
+        const target = MatroskaTagTarget.fromEmpty(MatroskaTagTargetType.COLLECTION);
         target.attachmentUids.push(BigInt("0x0708090001020304"));
         target.chapterUids.push(BigInt("0x0506070809000102"));
         target.editionUids.push(BigInt("0x0304050607080900"));
@@ -137,8 +115,7 @@ class Matroska_TagTargetTests {
         assert.sameMembers(target.attachmentUids, [BigInt("0x0708090001020304")]);
         assert.sameMembers(target.chapterUids, [BigInt("0x0506070809000102")]);
         assert.sameMembers(target.editionUids, [BigInt("0x0304050607080900")]);
-        assert.strictEqual(target.targetTypeString, TagTargetString.Collection);
-        assert.strictEqual(target.targetTypeValue, TagTargetValue.Collection);
+        assert.strictEqual(target.targetType, MatroskaTagTargetType.COLLECTION);
         assert.sameMembers(target.trackUids, [BigInt("0x0102030405060708")]);
     }
 }

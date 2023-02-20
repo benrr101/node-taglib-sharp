@@ -2,33 +2,30 @@ import {suite, test} from "@testdeck/mocha";
 import {assert} from "chai";
 
 import EbmlElement from "../../src/ebml/ebmlElement";
-import EbmlParserOptions from "../../src/ebml/ebmlParserOptions";
 import TestFile from "../utilities/testFile";
 import {File} from "../../src/file";
 import {Testers} from "../utilities/testers";
 
 @suite class Ebml_ElementTests {
-    private readonly DEFAULT_OPTIONS = new EbmlParserOptions();
-
     @test
     public constructor_falsyFile() {
-        Testers.testTruthy((f: File) => new EbmlElement(f, 0, 0, 0, this.DEFAULT_OPTIONS));
+        Testers.testTruthy((f: File) => new EbmlElement(f, 0, 0, 0, {}));
     }
 
     @test
     public constructor_invalidOffset() {
-        Testers.testSafeUint((o: number) => new EbmlElement(TestFile.mockFile(), o, 0, 0, this.DEFAULT_OPTIONS));
+        Testers.testSafeUint((o: number) => new EbmlElement(TestFile.mockFile(), o, 0, 0, {}));
     }
 
     @test
     public constructor_invalidSize() {
-        Testers.testSafeUint((s: number) => new EbmlElement(TestFile.mockFile(), 0, 0, s, this.DEFAULT_OPTIONS));
+        Testers.testSafeUint((s: number) => new EbmlElement(TestFile.mockFile(), 0, 0, s, {}));
     }
 
     @test
     public constructor_valid() {
         // Act
-        const element = new EbmlElement(TestFile.mockFile(), 0, 888, 123, this.DEFAULT_OPTIONS);
+        const element = new EbmlElement(TestFile.mockFile(), 0, 888, 123, {});
 
         // Assert
         assert.strictEqual(element.id, 888)
@@ -40,7 +37,7 @@ import {Testers} from "../utilities/testers";
     public loads_isLoaded() {
         // Arrange
         const bytes = [0x01];
-        const element = new EbmlElement(TestFile.getFile(bytes), 0, 0, 1, this.DEFAULT_OPTIONS);
+        const element = new EbmlElement(TestFile.getFile(bytes), 0, 0, 1, {});
 
         // Act 1
         element.load();
@@ -65,7 +62,7 @@ import {Testers} from "../utilities/testers";
 
         for (const t of testCases) {
             // Arrange
-            const element = new EbmlElement(TestFile.getFile(t.bytes), 0, 0, t.bytes.length, this.DEFAULT_OPTIONS);
+            const element = new EbmlElement(TestFile.getFile(t.bytes), 0, 0, t.bytes.length, {});
 
             // Act
             const result = element.getBool();
@@ -80,7 +77,7 @@ import {Testers} from "../utilities/testers";
     public getBytes_noOffset() {
         // Arrange
         const bytes = [0x01, 0x02, 0x03, 0xAA, 0xBB, 0xCC];
-        const element = new EbmlElement(TestFile.getFile(bytes), 0, 0, bytes.length, this.DEFAULT_OPTIONS);
+        const element = new EbmlElement(TestFile.getFile(bytes), 0, 0, bytes.length, {});
 
         // Act
         const result = element.getBytes();
@@ -94,7 +91,7 @@ import {Testers} from "../utilities/testers";
     public getBytes_withOffset() {
         // Arrange
         const bytes = [0x01, 0x02, 0x03, 0xAA, 0xBB, 0xCC];
-        const element = new EbmlElement(TestFile.getFile(bytes), 3, 0, 3, this.DEFAULT_OPTIONS);
+        const element = new EbmlElement(TestFile.getFile(bytes), 3, 0, 3, {});
 
         // Act
         const result = element.getBytes();
@@ -112,7 +109,7 @@ import {Testers} from "../utilities/testers";
         ];
         for (const tc of testCases) {
             // Arrange
-            const element = new EbmlElement(TestFile.getFile(tc.bytes), 0, 0, tc.bytes.length, this.DEFAULT_OPTIONS);
+            const element = new EbmlElement(TestFile.getFile(tc.bytes), 0, 0, tc.bytes.length, {});
 
             // Act
             const result = element.getDouble();
@@ -132,7 +129,7 @@ import {Testers} from "../utilities/testers";
         ];
         for (const tc of testCases) {
             // Arrange
-            const element = new EbmlElement(TestFile.getFile(tc.bytes), 0, 0, tc.bytes.length, this.DEFAULT_OPTIONS);
+            const element = new EbmlElement(TestFile.getFile(tc.bytes), 0, 0, tc.bytes.length, {});
 
             // Act / Assert
             assert.throws(() => element.getDouble());
@@ -147,7 +144,7 @@ import {Testers} from "../utilities/testers";
             0x00, 0x00, 0x00, // Offset
             0x01, 0x02, 0x03, // Data
         ];
-        const element = new EbmlElement(TestFile.getFile(bytes), 3, 0, bytes.length, this.DEFAULT_OPTIONS);
+        const element = new EbmlElement(TestFile.getFile(bytes), 3, 0, bytes.length, {});
 
         // Act
         const parser = element.getParser();
@@ -166,7 +163,7 @@ import {Testers} from "../utilities/testers";
         ];
         for (const tc of testCases) {
             // Arrange
-            const element = new EbmlElement(TestFile.getFile(tc.bytes), 0, 0, tc.bytes.length, this.DEFAULT_OPTIONS);
+            const element = new EbmlElement(TestFile.getFile(tc.bytes), 0, 0, tc.bytes.length, {});
 
             // Act
             const result = element.getString();
@@ -189,7 +186,7 @@ import {Testers} from "../utilities/testers";
         ]
         for (const tc of testCases) {
             // Arrange
-            const element = new EbmlElement(TestFile.getFile(tc.bytes), 0, 0, tc.bytes.length, this.DEFAULT_OPTIONS);
+            const element = new EbmlElement(TestFile.getFile(tc.bytes), 0, 0, tc.bytes.length, {});
 
             // Act
             const result = element.getSafeUint();
@@ -204,7 +201,7 @@ import {Testers} from "../utilities/testers";
     public getSafeUint_invalid() {
         // Arrange
         const bytes = [0x20, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00];
-        const element = new EbmlElement(TestFile.getFile(bytes), 0, 0, bytes.length, this.DEFAULT_OPTIONS);
+        const element = new EbmlElement(TestFile.getFile(bytes), 0, 0, bytes.length, {});
 
         // Act / Assert
         assert.throws(() => element.getSafeUint());
@@ -218,7 +215,7 @@ import {Testers} from "../utilities/testers";
         ];
         for (const tc of testCases) {
             // Arrange
-            const element = new EbmlElement(TestFile.getFile(tc.bytes), 0, 0, tc.bytes.length, this.DEFAULT_OPTIONS);
+            const element = new EbmlElement(TestFile.getFile(tc.bytes), 0, 0, tc.bytes.length, {});
 
             // Act
             const result = element.getUlong();

@@ -1,13 +1,12 @@
 import {suite, test} from "@testdeck/mocha";
 import {assert} from "chai";
 
+import EbmlElement from "../../src/ebml/ebmlElement";
 import EbmlParser from "../../src/ebml/ebmlParser";
-import EbmlParserOptions from "../../src/ebml/ebmlParserOptions";
 import TestFile from "../utilities/testFile"
 import {ByteVector} from "../../src/byteVector";
-import {Allow, Testers} from "../utilities/testers";
 import {File} from "../../src/file";
-import EbmlElement from "../../src/ebml/ebmlElement";
+import {Allow, Testers} from "../utilities/testers";
 
 @suite
 class Ebml_ParserTests {
@@ -39,62 +38,71 @@ class Ebml_ParserTests {
     @test
     public constructor_invalidParams() {
         // Act / Assert
-        Testers.testTruthy((f: File) => new EbmlParser(f, 0));
-        Testers.testSafeUint((o: number) => new EbmlParser(TestFile.mockFile(), o), Allow.Undefined);
+        Testers.testTruthy((f: File) => new EbmlParser(f, 0, 123));
+        Testers.testSafeUint((o: number) => new EbmlParser(TestFile.mockFile(), o, 123));
+        Testers.testSafeUint((o: number) => new EbmlParser(TestFile.mockFile(), 0, o))
     }
 
     @test
     public constructor_invalidOptions() {
         // Act / Asssert
         Testers.testSafeUint((o: number) => {
-            const options = new EbmlParserOptions();
-            options.maxIdLength = o;
-            const _ = new EbmlParser(TestFile.mockFile(), 0, options);
+            const options = { maxIdLength: o }
+            const _ = new EbmlParser(TestFile.mockFile(), 0, 123, options);
         }, Allow.Undefined | Allow.Null);
 
         Testers.testSafeUint((o: number) => {
-            const options = new EbmlParserOptions();
-            options.maxSizeLength = o;
-            const _ = new EbmlParser(TestFile.mockFile(), 0, options);
+            const options = { maxSizeLength: o };
+            const _ = new EbmlParser(TestFile.mockFile(), 0, 123, options);
         }, Allow.Undefined | Allow.Null);
     }
 
     @test
     public constructor_unsupportedOptions() {
         // Arrange 1
-        const options1 = new EbmlParserOptions();
-        options1.maxIdLength = 16;
+        const options1 = { maxIdLength: 16 };
 
         // Act / Assert 1
-        assert.throws(() => new EbmlParser(TestFile.mockFile(), 0, options1));
+        assert.throws(() => new EbmlParser(TestFile.mockFile(), 0, 123, options1));
 
         // Arrange 2
-        const options2 = new EbmlParserOptions();
-        options2.maxSizeLength = 16;
+        const options2 = { maxSizeLength: 16 };
 
         // Act / Assert 2
-        assert.throws(() => new EbmlParser(TestFile.mockFile(), 0, options2));
+        assert.throws(() => new EbmlParser(TestFile.mockFile(), 0, 123, options2));
 
     }
 
     @test
-    public constructor_valid() {
+    public constructor_validNoOptions() {
         // Act
-        const parser = new EbmlParser(TestFile.mockFile(), 0);
+        const parser = new EbmlParser(TestFile.mockFile(), 0, 123);
 
         // Assert
         assert.strictEqual(parser.currentElement, undefined);
         assert.strictEqual(parser["_offset"], 0);
+        assert.strictEqual(parser["_maxOffset"], 123);
+        assert.strictEqual(parser["_options"].maxSizeLength, 8);
+        assert.strictEqual(parser["_options"].maxIdLength, 4);
     }
 
     @test
-    public constructor_validWithOffset() {
+    public constructor_validWithOptions() {
+        // Arrange
+        const options = {
+            maxSizeLength: 3,
+            maxIdLength: 5
+        };
+
         // Act
-        const parser = new EbmlParser(TestFile.mockFile(), 123);
+        const parser = new EbmlParser(TestFile.mockFile(), 0, 123, options);
 
         // Assert
         assert.strictEqual(parser.currentElement, undefined);
-        assert.strictEqual(parser["_offset"], 123);
+        assert.strictEqual(parser["_offset"], 0);
+        assert.strictEqual(parser["_maxOffset"], 123);
+        assert.strictEqual(parser["_options"].maxSizeLength, 3);
+        assert.strictEqual(parser["_options"].maxIdLength, 5);
     }
 
     @test
@@ -488,6 +496,6 @@ class Ebml_ParserTests {
 
     private getTestParser(bytes: ByteVector|number[], offset: number = 0): EbmlParser {
         const file = TestFile.getFile(bytes);
-        return new EbmlParser(file, offset);
+        return new EbmlParser(file, offset, bytes.length);
     }
 }

@@ -4,84 +4,81 @@ import {MatroskaIds} from "./matroskaIds";
 import {Guards} from "../utils";
 
 /**
- * String representation of the tag target.
+ * Association between a target type numeric value and a target type string value. Also provides a
+ * collection of well-known target type combinations
  */
-export enum TagTargetString {
-    Album = "ALBUM",
-    AlbumPart = "PART",
-    Chapter = "CHAPTER",
-    Collection = "COLLECTION",
-    Concert = "CONCERT",
-    Edition = "EDITION",
-    Episode = "EPISODE",
-    Issue = "ISSUE",
-    Movement = "MOVEMENT",
-    Movie = "MOVIE",
-    Opera = "OPERA",
-    Opus = "OPUS",
-    Scene = "SCENE",
-    Season = "SEASON",
-    Sequel = "SEQUEL",
-    Session = "SESSION",
-    Shot = "SHOT",
-    Song = "SONG",
-    Subtrack = "SUBTRACK",
-    Track = "TRACK",
-    TrackPart = "PART",
-    Volume = "VOLUME"
-}
+export class MatroskaTagTargetType {
+    // #region Well Known Targets
 
-/**
- * Numeric representations of the tag target.
- */
-export enum TagTargetValue {
-    Album = 50,
-    AlbumPart = 40,
-    Chapter = 30,
-    Collection = 70,
-    Concert = 50,
-    Edition = 60,
-    Episode = 50,
-    Issue = 60,
-    Movement = 20,
-    Movie = 50,
-    Opera = 50,
-    Opus = 60,
-    Season = 60,
-    Sequel = 60,
-    Session = 40,
-    Scene = 20,
-    Shot = 10,
-    Song = 30,
-    Subtrack = 20,
-    Track = 30,
-    TrackPart = 20,
-    Volume = 60
+    public static readonly ALBUM = new MatroskaTagTargetType(50, "ALBUM");
+    public static readonly ALBUM_PART = new MatroskaTagTargetType(40, "PART");
+    public static readonly CHAPTER = new MatroskaTagTargetType(30, "CHAPTER");
+    public static readonly COLLECTION = new MatroskaTagTargetType(70, "COLLECTION");
+    public static readonly CONCERT = new MatroskaTagTargetType(50, "CONCERT");
+    public static readonly EDITION = new MatroskaTagTargetType(60, "EDITION");
+    public static readonly EPISODE = new MatroskaTagTargetType(50, "EPISODE");
+    public static readonly ISSUE = new MatroskaTagTargetType(60, "ISSUE");
+    public static readonly MOVEMENT = new MatroskaTagTargetType(20, "MOVEMENT");
+    public static readonly MOVIE = new MatroskaTagTargetType(50, "MOVIE");
+    public static readonly OPERA = new MatroskaTagTargetType(50, "OPERA");
+    public static readonly OPUS = new MatroskaTagTargetType(60, "OPUS");
+    public static readonly SCENE = new MatroskaTagTargetType(20, "SCENE");
+    public static readonly SEASON = new MatroskaTagTargetType(60, "SEASON");
+    public static readonly SEQUEL = new MatroskaTagTargetType(60, "SEQUEL");
+    public static readonly SESSION = new MatroskaTagTargetType(40, "SESSION");
+    public static readonly SHOT = new MatroskaTagTargetType(10, "SHOT");
+    public static readonly SONG = new MatroskaTagTargetType(30, "SONG");
+    public static readonly SUBTRACK = new MatroskaTagTargetType(20, "SUBTRACK");
+    public static readonly TRACK = new MatroskaTagTargetType(30, "TRACK");
+    public static readonly TRACK_PART = new MatroskaTagTargetType(20, "PART");
+    public static readonly VOLUME = new MatroskaTagTargetType(60, "VOLUME");
+
+    // #endregion
+
+    private _str: string;
+    private _val: number;
+
+    public constructor(value: number, str?: string) {
+        Guards.byte(value, "value");
+        if (value > 70) {
+            throw new Error("Argument error: value must not be > 70.")
+        }
+
+        this._str = str;
+        this._val = value;
+    }
+
+    /**
+     * Gets the string representation of the target type.
+     */
+    public get string(): string { return this._str; }
+
+    /**
+     * Gets the numeric representation of the target type.
+     */
+    public get value(): number { return this._val; }
 }
 
 /**
  * Representation of the target of a tag. This is indicates what a tag applies to.
  */
 export class MatroskaTagTarget {
-
     private _attachmentUids: bigint[] = [];
     private _chapterUids: bigint[] = [];
     private _editionUids: bigint[] = [];
-    private _targetTypeString: TagTargetString;
-    private _targetTypeValue: TagTargetValue;
+    private _targetType: MatroskaTagTargetType;
     private _trackUids: bigint[] = [];
 
     private constructor() { /* No implementation to enforce private constructor */ }
 
     /**
      * Constructs a tag target using the provided {@paramref value} and {@paramref str}.
-     * @param value Numeric representation of the tag target.
-     * @param str String representation of the tag target.
+     * @param targetType target type for the tag's target. If `undefined` this indicated the tag
+     *     applies to the entire file.
      */
-    public static fromEmpty(value: TagTargetValue, str?: TagTargetString): MatroskaTagTarget {
+    public static fromEmpty(targetType?: MatroskaTagTargetType): MatroskaTagTarget {
         const target = new MatroskaTagTarget();
-        target._targetTypeValue = value;
-        target._targetTypeString = str;
+        target._targetType = targetType
         return target;
     }
 
@@ -98,21 +95,19 @@ export class MatroskaTagTarget {
 
         const target = new MatroskaTagTarget();
 
+        let targetTypeValue;
+        let targetTypeString;
         const parserActions = new Map<number, (e: EbmlElement) => void>([
-            [
-                MatroskaIds.TARGET_TYPE_VALUE,
-                e => target._targetTypeValue = e.getSafeUint() as TagTargetValue
-            ],
-            [
-                MatroskaIds.TARGET_TYPE,
-                p => target._targetTypeString = p.getString() as TagTargetString
-            ],
+            [MatroskaIds.TARGET_TYPE_VALUE, e => targetTypeValue = e.getSafeUint()],
+            [MatroskaIds.TARGET_TYPE, e => targetTypeString = e.getString()],
             [MatroskaIds.TAG_TRACK_UID, e => target._trackUids.push(e.getUlong())],
             [MatroskaIds.TAG_EDITION_UID, e => target._editionUids.push(e.getUlong())],
             [MatroskaIds.TAG_CHAPTER_UID, e => target._chapterUids.push(e.getUlong())],
             [MatroskaIds.TAG_ATTACHMENT_UID, e => target._attachmentUids.push(e.getUlong())]
         ]);
         EbmlParser.processElements(element.getParser(), parserActions);
+
+        target._targetType = new MatroskaTagTargetType(targetTypeValue, targetTypeString);
 
         return target;
     }
@@ -125,8 +120,7 @@ export class MatroskaTagTarget {
         clone._attachmentUids = this._attachmentUids.slice();
         clone._chapterUids = this._chapterUids.slice();
         clone._editionUids = this._editionUids.slice();
-        clone._targetTypeString = this._targetTypeString;
-        clone._targetTypeValue = this._targetTypeValue;
+        clone._targetType = this.targetType;
         clone._trackUids = this._trackUids.slice();
         return clone;
     }
@@ -147,14 +141,10 @@ export class MatroskaTagTarget {
     public get editionUids(): bigint[] { return this._editionUids; }
 
     /**
-     * Gets a string representation of the tag target.
+     * Gets the tag target type for the current instance. This is a value that indicates the
+     * "level" that the target belongs to.
      */
-    public get targetTypeString(): TagTargetString { return this._targetTypeString; }
-
-    /**
-     * Gets the numeric value of the tag target, colloquially known as the "level".
-     */
-    public get targetTypeValue(): TagTargetValue { return this._targetTypeValue; }
+    public get targetType(): MatroskaTagTargetType { return this._targetType; }
 
     /**
      * Gets a collection of track UIDs that tags with this target apply to.

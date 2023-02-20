@@ -1,11 +1,8 @@
 import {ByteVector, StringType} from "../../src";
 import EbmlElement from "../../src/ebml/ebmlElement";
 import TestFile from "../utilities/testFile";
-import EbmlParserOptions from "../../src/ebml/ebmlParserOptions";
 
 export default class MatroskaTestUtils {
-    public static readonly defaultOptions = new EbmlParserOptions();
-
     public static getTestElement(value: string|boolean|number|bigint|ByteVector, id: number): EbmlElement {
         let bytes: ByteVector;
         // noinspection FallThroughInSwitchStatementJS
@@ -32,6 +29,6 @@ export default class MatroskaTestUtils {
                 break;
         }
 
-        return new EbmlElement(TestFile.getFile(bytes), 0, id, bytes.length, MatroskaTestUtils.defaultOptions);
+        return new EbmlElement(TestFile.getFile(bytes), 0, id, bytes.length, {});
     }
 }

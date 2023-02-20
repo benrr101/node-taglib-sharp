@@ -90,8 +90,7 @@ export default class EbmlElement implements ILazy {
      * Creates a parser from the
      */
     public getParser(): EbmlParser {
-        const newOptions = this._options.clone(this._dataSize);
-        return new EbmlParser(this._file, this._dataOffset, newOptions);
+        return new EbmlParser(this._file, this._dataOffset, this._dataOffset + this._dataSize, this._options);
     }
 
     /**

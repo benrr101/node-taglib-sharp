@@ -2,7 +2,7 @@ import MatroskaAttachment from "./matroskaAttachment";
 import Genres from "../genres";
 import MatroskaTag from "./matroskaTag";
 import MatroskaTagValue from "./matroskaTagValue";
-import {MatroskaTagTarget, TagTargetValue} from "./matroskaTagTarget";
+import {MatroskaTagTarget, MatroskaTagTargetType} from "./matroskaTagTarget";
 import {IPicture} from "../picture";
 import {Tag, TagTypes} from "../tag";
 import {Guards} from "../utils";
@@ -11,7 +11,7 @@ import {Guards} from "../utils";
  * Class that represents a collection of Matroska "tags". This class implements the {@link Tag}
  * unified tagging interface.
  * @remarks The Matroska tagging interface is very open-ended and allows a high level of
- *     customizability. In particular, Matroska files may contain multiple subunits that can be
+ *     customization. In particular, Matroska files may contain multiple subunits that can be
  *     independently tagged (eg, multiple episodes of a TV show in a single file). The unified
  *     tagging interface assumes that a file only represents a single unit (eg, episode). This
  *     can cause problems when, eg, a title is defined multiple times in a file to provide the
@@ -56,11 +56,11 @@ export default class MatroskaTagCollection extends Tag {
 
         this._isVideo = isVideo;
         this._albumTagLevel = this._isVideo
-            ? TagTargetValue.Collection
-            : TagTargetValue.Album;
+            ? MatroskaTagTargetType.COLLECTION.value
+            : MatroskaTagTargetType.ALBUM.value;
         this._fileTagLevel = this._isVideo
-            ? TagTargetValue.Episode
-            : TagTargetValue.Track;
+            ? MatroskaTagTargetType.EPISODE.value
+            : MatroskaTagTargetType.TRACK.value;
         this._albumPartTagLevel = this._fileTagLevel + 10;
         this._performerKey = this._isVideo
             ? MatroskaTagCollection.PERFORMER_VIDEO_KEY
@@ -310,7 +310,7 @@ export default class MatroskaTagCollection extends Tag {
      * @param key Key of the desired tag
      * @private
      */
-    private getTagValuesRecursively(level: TagTargetValue, key: string): FilteredTags {
+    private getTagValuesRecursively(level: number, key: string): FilteredTags {
         // Base case: We've recursed beyond the top level. Try last ditch at the untargeted level.
         if (level > 70) {
             return this.getTagValues(undefined, key);
@@ -350,14 +350,14 @@ export default class MatroskaTagCollection extends Tag {
      * @param key Key of the desired tag.
      * @private
      */
-    private getTagValues(level: TagTargetValue | undefined, key: string): FilteredTags {
+    private getTagValues(level: number|undefined, key: string): FilteredTags {
         // Filter tags for ones that match the desired target level
         const targetTypeValueFunc = level
-            ? (t: MatroskaTagTarget) => t.targetTypeValue === level
-            : (t: MatroskaTagTarget) => !t;
+            ? (t: MatroskaTagTarget) => t.targetType && t.targetType.value === level
+            : (t: MatroskaTagTarget) => !t.targetType;
         const matchingTagValues = this._tags
-            .filter(t => targetTypeValueFunc(t.target) && t.simpleTag.name === key)
-            .map(t => t.simpleTag)
+            .filter(t => targetTypeValueFunc(t.target) && t.value.name === key)
+            .map(t => t.value)
             .sort((t1, t2) => {
                 // Sort with default language going first
                 if (t1.isDefaultLanguage === t2.isDefaultLanguage) {

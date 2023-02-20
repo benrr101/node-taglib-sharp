@@ -142,26 +142,19 @@ export default class MatroskaFile extends File {
     private read(propertiesStyle: ReadStyle): void {
         // Look up the EBML 0-level ID
         // @TODO: This should only search like a couple kilobytes. File is supposed to *start* with this
-        const firstElement = this.find(ByteVector.fromByteArray([0x1A, 0x45, 0xDF, 0xA3]));
-        if (firstElement < 0) {
+        const firstElementOffset = this.find(ByteVector.fromByteArray([0x1A, 0x45, 0xDF, 0xA3]));
+        if (firstElementOffset < 0) {
             throw new CorruptFileError("Invalid EBML file, missing header element");
         }
 
         // Read the header first in order to determine information for parsing the rest of it
-        const parser = new EbmlParser(this, firstElement);
+        const parser = new EbmlParser(this, firstElementOffset, this.length);
         try {
             const actions = new Map<number, (e: EbmlElement) => void>([
-                [
-                    EbmlIds.EBML_HEADER,
-                    e => {
-                        this.readEbmlHeader(e);
-                        if (MatroskaFile.SUPPORTED_DOCTYPES.indexOf(this._header.docType) < 0) {
-                            throw new UnsupportedFormatError(
-                                `EBML doctype ${this._header.docType} is not supported by Matroska file loader`
-                            );
-                        }
-                    }
-                ],
+                [EbmlIds.EBML_HEADER, e => {
+                    this.readEbmlHeader(e)
+                    parser.setOptions(this._header.ebmlMaxIdLength, this._header.ebmlMaxSizeLength)
+                }],
                 [MatroskaIds.SEGMENT, e => this.readSegments(e, propertiesStyle)]
             ]);
             EbmlParser.processElements(parser, actions);
@@ -193,6 +186,12 @@ export default class MatroskaFile extends File {
             [EbmlIds.EBML_DOC_TYPE_READ_VERSION, e => result.docTypeReadVersion = e.getSafeUint()]
         ]);
         EbmlParser.processElements(headerElement.getParser(), headerParseActions);
+
+        if (MatroskaFile.SUPPORTED_DOCTYPES.indexOf(result.docType) < 0) {
+            throw new UnsupportedFormatError(
+                `EBML doctype ${result.docType} is not supported by Matroska file loader`
+            );
+        }
 
         this._header = result;
     }
@@ -253,6 +252,10 @@ export default class MatroskaFile extends File {
             ]
         ]);
         EbmlParser.processElements(tagElement.getParser(), parserActions);
+
+        if (!tagTarget) {
+            throw new CorruptFileError("Tag element is missing required targets element");
+        }
 
         // Create the tag wrapper objects
         return simpleTags.map(t => new MatroskaTag(t, tagTarget.clone()));
