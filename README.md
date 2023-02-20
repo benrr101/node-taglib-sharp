@@ -2,7 +2,8 @@
 
 | Master                                                                                                                                                                           | Develop                                                                                                                                                                            | Latest                                                                                                                                                      |
 |----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| [![Build Status](https://ci.appveyor.com/api/projects/status/7hdfrbc4ecvvruwv/branch/master?svg=true)](https://ci.appveyor.com/project/benrr101/node-taglib-sharp/branch/master) | [![Build Status](https://ci.appveyor.com/api/projects/status/7hdfrbc4ecvvruwv/branch/develop?svg=true)](https://ci.appveyor.com/project/benrr101/node-taglib-sharp/branch/develop) | [![Build Status](https://ci.appveyor.com/api/projects/status/7hdfrbc4ecvvruwv?svg=true)](https://ci.appveyor.com/project/benrr101/node-taglib-sharp)        |
+| [![Build Status](https://ci.appveyor.com/api/projects/status/7hdfrbc4ecvvruwv/branch/master?svg=true)](https://ci.appveyor.com/project/benrr101/node-taglib-sharp/branch/master) [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fbenrr101%2Fnode-taglib-sharp.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fbenrr101%2Fnode-taglib-sharp?ref=badge_shield)
+| [![Build Status](https://ci.appveyor.com/api/projects/status/7hdfrbc4ecvvruwv/branch/develop?svg=true)](https://ci.appveyor.com/project/benrr101/node-taglib-sharp/branch/develop) | [![Build Status](https://ci.appveyor.com/api/projects/status/7hdfrbc4ecvvruwv?svg=true)](https://ci.appveyor.com/project/benrr101/node-taglib-sharp)        |
 | [![Coverage Status](https://coveralls.io/repos/github/benrr101/node-taglib-sharp/badge.svg?branch=master)](https://coveralls.io/github/benrr101/node-taglib-sharp?branch=master) | [![Coverage Status](https://coveralls.io/repos/github/benrr101/node-taglib-sharp/badge.svg?branch=develop)](https://coveralls.io/github/benrr101/node-taglib-sharp?branch=develop) | [![Coverage Status](https://coveralls.io/repos/github/benrr101/node-taglib-sharp/badge.svg?latest)](https://coveralls.io/github/benrr101/node-taglib-sharp) |
 
 ## Description
@@ -87,3 +88,7 @@ myFile.dispose();
     `integer` types for position arguments, which safely goes up to `2^52 - 1`. Node 15 supports
     `number` or `biginteger` for position arguments which would increase supported sizes to 64-bit
     integers. Please create issue if this is a blocker.
+
+
+## License
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fbenrr101%2Fnode-taglib-sharp.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Fbenrr101%2Fnode-taglib-sharp?ref=badge_large)
