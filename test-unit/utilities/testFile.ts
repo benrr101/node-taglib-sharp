@@ -9,34 +9,40 @@ import {IFileAbstraction} from "../../src/fileAbstraction";
 
 export type TestFileAbstraction = IFileAbstraction & {allBytes: ByteVector};
 export default {
-    getFile: (data: ByteVector): File => {
+    mockFile: (): File => { return TypeMoq.Mock.ofType<File>().object; },
+    getFile: (data: ByteVector|number[]): File => {
         const mockFile = TypeMoq.Mock.ofType<File>();
         let position = 0;
-        mockFile.setup((f) => f.length).returns(() => data.length);
+
+        const dataBv = data instanceof ByteVector
+            ? data
+            : ByteVector.fromByteArray(data);
+
+        mockFile.setup((f) => f.length).returns(() => dataBv.length);
         mockFile.setup((f) => f.seek(TypeMoq.It.isAnyNumber(), <SeekOrigin>TypeMoq.It.isAny()))
             .returns((p: number, o: SeekOrigin) => {
                 switch (o || SeekOrigin.Begin) {
                     case SeekOrigin.Begin:
-                        position = Math.min(data.length, p);
+                        position = Math.min(dataBv.length, p);
                         break;
                     case SeekOrigin.Current:
-                        position = Math.min(data.length, position + p);
+                        position = Math.min(dataBv.length, position + p);
                         break;
                     case SeekOrigin.End:
-                        position = Math.min(data.length, data.length + p);
+                        position = Math.min(dataBv.length, dataBv.length + p);
                         break;
                 }
             });
         mockFile.setup((f) => f.readBlock(TypeMoq.It.isAnyNumber()))
             .returns((s: number) => {
-                if (position + s > data.length) {
-                    s = data.length - position;
+                if (position + s > dataBv.length) {
+                    s = dataBv.length - position;
                 }
                 if (s <= 0) {
                     return ByteVector.empty();
                 }
 
-                const output = data.subarray(position, s);
+                const output = dataBv.subarray(position, s);
                 position += s;
                 return output;
             });
@@ -44,6 +50,7 @@ export default {
             .returns(() => {
                 return position;
             });
+        mockFile.setup((f) => f.mode);
 
         return mockFile.object;
     },

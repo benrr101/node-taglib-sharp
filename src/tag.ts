@@ -279,7 +279,7 @@ export abstract class Tag {
     public set performersRole(value: string[]) { /* no-op in abstract case */ }
 
     /**
-     * Gets the band or artist who is credited credited in the creation of the entire album or
+     * Gets the band or artist who is credited in the creation of the entire album or
      * collection containing the media described by the current instance.
      * @remarks This field is typically optional but aids in the sorting of compilations or albums
      *     with multiple artist. For example, if an album has several artists, sorting by artist
@@ -294,7 +294,7 @@ export abstract class Tag {
      */
     public get albumArtists(): string[] { return[]; }
     /**
-     * Sets the bands or artists who is credited credited in the creation of the entire album or
+     * Sets the bands or artists who is credited in the creation of the entire album or
      * collection containing the media described by the current instance.
      * @remarks This field is typically optional but aids in the sorting of compilations or albums
      *     with multiple artist. For example, if an album has several artists, sorting by artist
@@ -314,7 +314,7 @@ export abstract class Tag {
      * album or collection containing the media described by the current instance.
      * @see albumArtists
      * @remarks This is used to provide more control over how the media is sorted. Typical uses are to
-     *     skip articles or sort by last by last name. For example "Ben Folds" might be sorted as
+     *     skip articles or sort by last name. For example "Ben Folds" might be sorted as
      *     "Folds, Ben".
      *     As this value is to be used as a sorting key, it should be used with less variation than
      *     {@link performers}. Where {@link performers} can be broken into multiple performers, it is
@@ -329,7 +329,7 @@ export abstract class Tag {
      * album or collection containing the media described by the current instance.
      * @see albumArtists
      * @remarks This is used to provide more control over how the media is sorted. Typical uses are to
-     *     skip articles or sort by last by last name. For example "Ben Folds" might be sorted as
+     *     skip articles or sort by last name. For example "Ben Folds" might be sorted as
      *     "Folds, Ben".
      *     As this value is to be used as a sorting key, it should be used with less variation than
      *     {@link performers}. Where {@link performers} can be broken into multiple performers, it is
@@ -342,7 +342,7 @@ export abstract class Tag {
 
     /**
      * Gets the composers of the media represented by the current instance.
-     * @remarks This field represents the composers, song writers, script writers, or persons who
+     * @remarks This field represents the composers, songwriters, scriptwriters, or persons who
      *     claim authorship of the media.
      * @returns Composers of the media represented by the current instance of an empty array if no
      *     value is present.
@@ -350,7 +350,7 @@ export abstract class Tag {
     public get composers(): string[] { return[]; }
     /**
      * Sets the composers of the media represented by the current instance.
-     * @remarks This field represents the composers, song writers, script writers, or persons who
+     * @remarks This field represents the composers, songwriters, scriptwriters, or persons who
      *     claim authorship of the media.
      * @param value Composers of the media represented by the current instance of an empty array if
      *     no value is present.

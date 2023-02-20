@@ -110,7 +110,7 @@ export class Testers {
         }
     }
 
-    public static bvEqual(actual: ByteVector, expected: ByteVector) {
+    public static bvEqual(actual: ByteVector, expected: ByteVector|Uint8Array|number[]) {
         const getPortion = (bv: ByteVector, pointer: number) => {
             const min = Math.max(pointer - 10, 0);
             const max = Math.min(pointer + 10, bv.length - 1);
@@ -134,6 +134,10 @@ export class Testers {
                  + `Expected: ${yPort.portion}\n`
                  + `          ${spacing}^ ${yByte}\n`;
         };
+
+        expected = expected instanceof ByteVector
+            ? expected
+            : ByteVector.fromByteArray(expected);
 
         let pos = 0;
         while (pos < actual.length && pos < expected.length) {

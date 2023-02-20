@@ -110,6 +110,9 @@ export {
     UserUrlLinkFrame as Id3v2UserUrlLinkFrame
 } from "./id3v2/frames/urlLinkFrame";
 
+// Matroska/webm ///////////////////////////////////////////////////////////
+export {default as MatroskaFile} from "./matroska/matroskaFile";
+
 // MPEG1/2 /////////////////////////////////////////////////////////////////
 export {default as MpegAudioFile} from "./mpeg/mpegAudioFile";
 export {default as MpegAudioHeader} from "./mpeg/mpegAudioHeader";

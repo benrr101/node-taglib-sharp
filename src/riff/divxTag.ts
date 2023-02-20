@@ -1,6 +1,6 @@
+import Genres from "../genres";
 import {ByteVector, StringType} from "../byteVector";
 import {CorruptFileError} from "../errors";
-import {Genres} from "../index";
 import {Tag, TagTypes} from "../tag";
 import {Guards} from "../utils";
 
