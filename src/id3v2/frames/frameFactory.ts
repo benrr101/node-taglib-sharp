@@ -36,7 +36,7 @@ let customFrameCreators: FrameCreator[] = [];
  * Performs the necessary operations to determine and create the correct child classes of
  * {@link Frame} for a given raw ID3v2 frame.
  * By default, this will only load frames contained in the library. To add additional frames to the
- * process, register a frame creator with {@see addFrameCreator}.
+ * process, register a frame creator with {@link addFrameCreator}.
  */
 export default {
     /**

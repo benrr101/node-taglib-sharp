@@ -13,7 +13,7 @@ import {Guards, NumberUtils} from "../utils";
  * @remarks The FLAC file specification states that tagging should be done via a XIPH comment block
  *     and any pictures should be stored in a FLAC picture block. However, tagging can be done via
  *     ID3 and APE tags at the beginning or end of the file, same as MP3 and other files. This
- *     class provides a unified access into all the tags a FLAC file may contain.
+ *     class provides a unified interface into all the tags a FLAC file may contain.
  */
 export default class FlacTag extends CombinedTag {
     private static readonly DEFAULT_TAG_LOCATION_MAPPING = new Map<TagTypes, () => boolean>([
@@ -65,8 +65,8 @@ export default class FlacTag extends CombinedTag {
 
     /**
      * @inheritDoc
-     * For FLAC files, FLAC-style pictures are preferentially returned. If those don't exist the
-     * pictures that are stored in the
+     * @remarks For FLAC files, FLAC-style pictures are preferentially returned. If those don't exist the
+     *     pictures that are stored in the combined tag.
      */
     public get pictures(): IPicture[] {
         // We want to preferentially get pictures from FLAC picture blocks. If there aren't any,
@@ -77,13 +77,14 @@ export default class FlacTag extends CombinedTag {
     }
     /**
      * @inheritDoc
-     * For FLAC files, pictures are preferentially stored in FLAC-style picture blocks.
+     * @remarks For FLAC files, pictures are preferentially stored in FLAC-style picture blocks.
      */
     public set pictures(value: IPicture[]) {
         // @TODO: Allow config to store pictures in flac only or in combined tags.
         this._pictures.splice(0, this._pictures.length, ...value);
     }
 
+    /** @inheritDoc */
     public get tagTypes(): TagTypes {
         return this._pictures && this._pictures.length > 0
             ? super.tagTypes | TagTypes.FlacPictures

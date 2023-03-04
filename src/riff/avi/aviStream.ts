@@ -168,10 +168,10 @@ export class AviStream {
     public get quality(): number { return this._quality; }
 
     /**
-     * Used with {@see scale} to specify the time scale that this stream will use.
-     * @remarks Dividing {@see rate} by this gives the number of samples per second. For video
+     * Used with {@link scale} to specify the time scale that this stream will use.
+     * @remarks Dividing {@link rate} by this gives the number of samples per second. For video
      *     streams, this is the frame rate. For audio streams, this rate corresponds to the time
-     *     needed to play {@see RiffWaveFormatEx.blockAlign} bytes of audio. For PCM audio this is
+     *     needed to play {@link RiffWaveFormatEx.blockAlign} bytes of audio. For PCM audio this is
      *     just the sample rate.
      */
     public get rate(): number { return this._rate; }
@@ -188,8 +188,8 @@ export class AviStream {
     public get sampleSize(): number { return this._sampleSize; }
 
     /**
-     * Used with {@see rate} to specify the time scale that this stream will use.
-     * @remarks Dividing {@see rate} by this gives the number of samples per second. For video
+     * Used with {@link rate} to specify the time scale that this stream will use.
+     * @remarks Dividing {@link rate} by this gives the number of samples per second. For video
      *     streams, this is the frame rate. For audio streams, this rate corresponds to the time
      *     needed to play `nBlockAlign` bytes of audio. For PCM audio is just the sample rate.
      */

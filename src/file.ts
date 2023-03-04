@@ -301,7 +301,7 @@ export abstract class File implements IDisposable {
      *     with a MimeType of `mimeType` is created.
      * @param override If `true` and a subclass of {@link File} was already registered to
      *     `mimeType`, it will be forcefully overridden. If `false`, an {@link Error} will be
-     *     thrown if a subclass already registered to the MimeType.}
+     *     thrown if a subclass already registered to the MimeType.
      */
     public static addFileType(mimeType: string, constructor: FileTypeConstructor, override: boolean = false): void {
         Guards.truthy(mimeType, "mimeType");

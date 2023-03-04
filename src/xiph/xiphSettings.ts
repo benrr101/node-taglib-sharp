@@ -12,13 +12,13 @@ export default class XiphSettings {
     private constructor() { /* private to prevent constructing instances */ }
 
     /**
-     * Gets whether to use "TEMPO" field to store {@see XiphComment.bpm} property. If `true`
+     * Gets whether to use "TEMPO" field to store {@link XiphComment.bpm} property. If `true`
      * "TEMPO" will be used, if `false` "BPM" will be used.
      * @default `true`
      */
     public static get useTempoToStoreBpm(): boolean { return this._useTempoToStoreBpm; }
     /**
-     * Sets whether to use "TEMPO" field to store {@see XiphComment.bpm} property. If `true`
+     * Sets whether to use "TEMPO" field to store {@link XiphComment.bpm} property. If `true`
      * "TEMPO" will be used, if `false` "BPM" will be used.
      */
     public static set useTempoToStoreBpm(value: boolean) { this._useTempoToStoreBpm = value; }

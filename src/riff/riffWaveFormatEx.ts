@@ -334,7 +334,7 @@ export default class RiffWaveFormatEx implements ILosslessAudioCodec {
 
     /**
      * Gets the block alignment, in bytes. Block alignment is the minimum atomic unit of data for
-     * {@see formatTag} format type.
+     * {@link formatTag} format type.
      */
     public get blockAlign(): number { return this._blockAlign; }
 

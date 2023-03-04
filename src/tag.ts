@@ -236,7 +236,7 @@ export abstract class Tag {
      * @remarks This is used to provide more control over how the media is sorted. Typical uses are to
      *     skip articles or sort by last name. For example, "The Pillows" might be sorted as
      *     "Pillows, The".
-     * @see performers
+     * @link performers
      * @returns Sortable names for the performers who performed in the media described by the
      *     current instance, or an empty array if no value is present.
      */
@@ -247,7 +247,7 @@ export abstract class Tag {
      * @remarks This is used to provide more control over how the media is sorted. Typical uses are to
      *     skip articles or sort by last name. For example, "The Pillows" might be sorted as
      *     "Pillows, The".
-     * @see performers
+     * @link performers
      * @param value Sortable names for the performers who performed in the media described by the
      *     current instance, or an empty array if no value is present.
      */
@@ -312,7 +312,7 @@ export abstract class Tag {
     /**
      * Gets the sortable names of the bands/artists who are credited with creating the entire
      * album or collection containing the media described by the current instance.
-     * @see albumArtists
+     * @link albumArtists
      * @remarks This is used to provide more control over how the media is sorted. Typical uses are to
      *     skip articles or sort by last name. For example "Ben Folds" might be sorted as
      *     "Folds, Ben".
@@ -327,7 +327,7 @@ export abstract class Tag {
     /**
      * Sets the sortable names of the bands/artists who are credited with creating the entire
      * album or collection containing the media described by the current instance.
-     * @see albumArtists
+     * @link albumArtists
      * @remarks This is used to provide more control over how the media is sorted. Typical uses are to
      *     skip articles or sort by last name. For example "Ben Folds" might be sorted as
      *     "Folds, Ben".
@@ -359,7 +359,7 @@ export abstract class Tag {
 
     /**
      * Gets the sortable names of the composers of the media represented by the current instance.
-     * @see composers
+     * @link composers
      * @remarks This field is typically optional but aids in the sorting of compilations or albums
      *     with multiple composers.
      * @returns Sortable names for the composers of the media represented by the current instance
@@ -368,7 +368,7 @@ export abstract class Tag {
     public get composersSort(): string[] { return[]; }
     /**
      * Sets the sortable names of the composers of the media represented by the current instance.
-     * @see composers
+     * @link composers
      * @remarks This field is typically optional but aids in the sorting of compilations or albums
      *     with multiple composers.
      * @param value Sortable names for the composers of the media represented by the current
@@ -405,7 +405,7 @@ export abstract class Tag {
 
     /**
      * Gets the sortable name of the album title of the media represented by the current instance.
-     * @see album
+     * @link album
      * @remarks This field is typically optional but aids in sort of compilations or albums with
      *     similar titles.
      * @returns Sortable name for the album title of the media or `undefined` if the value is not
@@ -414,7 +414,7 @@ export abstract class Tag {
     public get albumSort(): string { return undefined; }
     /**
      * Sets the sortable name of the album title of the media represented by the current instance.
-     * @see album
+     * @link album
      * @remarks This field is typically optional but aids in sort of compilations or albums with
      *     similar titles.
      * @param value Sortable name for the album title of the media or `undefined` if the value is

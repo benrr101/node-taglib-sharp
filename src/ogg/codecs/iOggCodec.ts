@@ -21,7 +21,7 @@ export default interface IOggCodec extends ICodec {
 
     /**
      * Sets the file offset information necessary for calculating the duration of the stream. Once
-     * called, the duration can be accessed by calling {@see ICodec.durationMilliseconds}.
+     * called, the duration can be accessed by calling {@link ICodec.durationMilliseconds}.
      * @param firstGranularPosition First granular position of the stream
      * @param lastGranularPosition Last granular position of the stream
      */

@@ -317,7 +317,7 @@ export default abstract class CombinedTag extends Tag {
 
     /**
      * @inheritDoc
-     * Clears all child tags.
+     * @remarks Clears all child tags.
      */
     public clear(): void {
         this._tags.forEach((t) => t.clear());

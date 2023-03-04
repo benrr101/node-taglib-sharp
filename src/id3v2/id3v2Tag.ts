@@ -249,29 +249,59 @@ export default class Id3v2Tag extends Tag {
     /** @inheritDoc */
     public get sizeOnDisk(): number { return this._header.completeTagSize; }
 
-    /** @inheritDoc via TIT2 frame */
+    /**
+     * @inheritDoc
+     * @remarks Stored in the `TIT2` frame
+     */
     public get title(): string { return this.getTextAsString(FrameIdentifiers.TIT2); }
-    /** @inheritDoc via TIT2 frame */
+    /**
+     * @inheritDoc
+     * @remarks Stored in the `TIT2` frame
+     */
     public set title(value: string) { this.setTextFrame(FrameIdentifiers.TIT2, value); }
 
-    /** @inheritDoc via TSOT frame */
+    /**
+     * @inheritDoc
+     * @remarks Stored in the `TSOT` frame
+     */
     get titleSort(): string { return this.getTextAsString(FrameIdentifiers.TSOT); }
-    /** @inheritDoc via TSOT frame */
+    /**
+     * @inheritDoc
+     * @remarks Stored in the `TSOT` frame
+     */
     set titleSort(value: string) { this.setTextFrame(FrameIdentifiers.TSOT, value); }
 
-    /** @inheritDoc via TIT3 frame */
+    /**
+     * @inheritDoc
+     * @remarks Stored in the `TIT3` frame
+     */
     get subtitle(): string { return this.getTextAsString(FrameIdentifiers.TIT3); }
-    /** @inheritDoc via TIT3 frame */
+    /**
+     * @inheritDoc
+     * @remarks Stored in the `TIT3` frame
+     */
     set subtitle(value: string) { this.setTextFrame(FrameIdentifiers.TIT3, value); }
 
-    /** @inheritDoc via user text frame "description" */
+    /**
+     * @inheritDoc
+     * @remarks via user text frame "description"
+     */
     get description(): string { return this.getUserTextAsString("Description"); }
-    /** @inheritDoc via user text frame "description" */
+    /**
+     * @inheritDoc
+     * @remarks via user text frame "description"
+     */
     set description(value: string) { this.setUserTextAsString("Description", value); }
 
-    /** @inheritDoc via TPE1 frame */
+    /**
+     * @inheritDoc
+     * @remarks Stored in the `TPE1` frame
+     */
     get performers(): string[] { return this.getTextAsArray(FrameIdentifiers.TPE1); }
-    /** @inheritDoc via TPE1 frame */
+    /**
+     * @inheritDoc
+     * @remarks Stored in the `TPE1` frame
+     */
     set performers(value: string[]) {
         this.setTextFrame(FrameIdentifiers.TPE1, ...value);
 
@@ -279,12 +309,21 @@ export default class Id3v2Tag extends Tag {
         this._performersRole = [];
     }
 
-    /** @inheritDoc via TSOP frame */
+    /**
+     * @inheritDoc
+     * @remarks Stored in the `TSOP` frame
+     */
     get performersSort(): string[] { return this.getTextAsArray(FrameIdentifiers.TSOP); }
-    /** @inheritDoc via TSOP frame */
+    /**
+     * @inheritDoc
+     * @remarks Stored in the `TSOP` frame
+     */
     set performersSort(value: string[]) { this.setTextFrame(FrameIdentifiers.TSOP, ...value); }
 
-    /** @inheritDoc via TMCL frame */
+    /**
+     * @inheritDoc
+     * @remarks Stored in the `TMCL` frame
+     */
     get performersRole(): string[] {
         // Use the temporary storage if it exists
         if (this._performersRole !== undefined && this._performersRole.length > 0) {
@@ -333,50 +372,95 @@ export default class Id3v2Tag extends Tag {
             .toArray();
         return this._performersRole;
     }
-    /** @inheritDoc via TMCL frame */
+    /**
+     * @inheritDoc
+     * @remarks Stored in the `TMCL` frame
+     */
     set performersRole(value: string[]) {
         // TODO: We should really just write this out to the frame instead of this temporary storage
         this.removeFrames(FrameIdentifiers.TMCL);
         this._performersRole = value ? value.slice(0) : [];
     }
 
-    /** @inheritDoc via TSO2 frame */
+    /**
+     * @inheritDoc
+     * @remarks Stored in the `TSO2` frame
+     */
     get albumArtists(): string[] { return this.getTextAsArray(FrameIdentifiers.TPE2); }
-    /** @inheritDoc via TSO2 frame */
+    /**
+     * @inheritDoc
+     * @remarks Stored in the `TSO2` frame
+     */
     set albumArtists(value: string[]) { this.setTextFrame(FrameIdentifiers.TPE2, ...value); }
 
-    /** @inheritDoc via TPE2 frame */
+    /**
+     * @inheritDoc
+     * @remarks Stored in the `TPE2` frame
+     */
     get albumArtistsSort(): string[] { return this.getTextAsArray(FrameIdentifiers.TSO2); }
-    /** @inheritDoc via TPE2 frame */
+    /**
+     * @inheritDoc
+     * @remarks Stored in the `TPE2` frame
+     */
     set albumArtistsSort(value: string[]) { this.setTextFrame(FrameIdentifiers.TSO2, ...value); }
 
-    /** @inheritDoc via TCOM frame */
+    /**
+     * @inheritDoc
+     * @remarks Stored in the `TCOM` frame
+     */
     get composers(): string[] { return this.getTextAsArray(FrameIdentifiers.TCOM); }
-    /** @inheritDoc via TCOM frame */
+    /**
+     * @inheritDoc
+     * @remarks Stored in the `TCOM` frame
+     */
     set composers(value: string[]) { this.setTextFrame(FrameIdentifiers.TCOM, ...value); }
 
-    /** @inheritDoc via TSOC frame */
+    /**
+     * @inheritDoc
+     * @remarks Stored in the `TSOC` frame
+     */
     get composersSort(): string[] { return this.getTextAsArray(FrameIdentifiers.TSOC); }
-    /** @inheritDoc via TSOC frame */
+    /**
+     * @inheritDoc
+     * @remarks Stored in the `TSOC` frame
+     */
     set composersSort(value: string[]) { this.setTextFrame(FrameIdentifiers.TSOC, ...value); }
 
-    /** @inheritDoc via TALB frame */
+    /**
+     * @inheritDoc
+     * @remarks Stored in the `TALB` frame
+     */
     get album(): string { return this.getTextAsString(FrameIdentifiers.TALB); }
-    /** @inheritDoc via TALB frame */
+    /**
+     * @inheritDoc
+     * @remarks Stored in the `TALB` frame
+     */
     set album(value: string) { this.setTextFrame(FrameIdentifiers.TALB, value); }
 
-    /** @inheritDoc via TSOA frame */
+    /**
+     * @inheritDoc
+     * @remarks Stored in the `TSOA` frame
+     */
     get albumSort(): string { return this.getTextAsString(FrameIdentifiers.TSOA); }
-    /** @inheritDoc via TSOA frame */
+    /**
+     * @inheritDoc
+     * @remarks Stored in the `TSOA` frame
+     */
     set albumSort(value: string) { this.setTextFrame(FrameIdentifiers.TSOA, value); }
 
-    /** @inheritDoc via COMM frame */
+    /**
+     * @inheritDoc
+     * @remarks Stored in the `COMM` frame
+     */
     get comment(): string {
         const frames = this.getFramesByClassType<CommentsFrame>(FrameClassType.CommentsFrame);
         const f = CommentsFrame.findPreferred(frames, "", Id3v2Tag.language);
         return f ? f.toString() : undefined;
     }
-    /** @inheritDoc via COMM frame */
+    /**
+     * @inheritDoc
+     * @remarks Stored in the `COMM` frame
+     */
     set comment(value: string) {
         const commentFrames = this.getFramesByClassType<CommentsFrame>(FrameClassType.CommentsFrame);
 
@@ -396,9 +480,15 @@ export default class Id3v2Tag extends Tag {
         frame.text = value;
     }
 
-    /** @inheritDoc via TCON frame */
+    /**
+     * @inheritDoc
+     * @remarks Stored in the `TCON` frame
+     */
     get genres(): string[] { return this.getTextAsArray(FrameIdentifiers.TCON); }
-    /** @inheritDoc via TCON frame */
+    /**
+     * @inheritDoc
+     * @remarks Stored in the `TCON` frame
+     */
     set genres(value: string[]) {
         if (!value || !Id3v2Settings.useNumericGenres) {
             this.setTextFrame(FrameIdentifiers.TCON, ...value);
@@ -411,9 +501,9 @@ export default class Id3v2Tag extends Tag {
 
     /**
      * @inheritDoc
-     * If a TDRC frame exists, the year will be read from that. If a TDRC frame doesn't exist and a
-     * TYER or TYE frame exists, the year will be read from that. Failing both cases, 0 will be
-     * returned.
+     * @remarks If a TDRC frame exists, the year will be read from that. If a TDRC frame doesn't exist and a
+     *     TYER or TYE frame exists, the year will be read from that. Failing both cases, 0 will be
+     *     returned.
      */
     get year(): number {
         // Case 1: We have a TDRC frame (v2.4), preferentially use that
@@ -437,7 +527,7 @@ export default class Id3v2Tag extends Tag {
     }
     /**
      * @inheritDoc
-     * NOTE: values >9999 will remove the frame
+     * @remarks NOTE: values >9999 will remove the frame
      */
     set year(value: number) {
         Guards.uint(value, "value");
@@ -478,33 +568,63 @@ export default class Id3v2Tag extends Tag {
 
     }
 
-    /** @inheritDoc via TRCK frame */
+    /**
+     * @inheritDoc
+     * @remarks Stored in the `TRCK` frame
+     */
     get track(): number { return this.getTextAsUint32(FrameIdentifiers.TRCK, 0); }
-    /** @inheritDoc via TRCK frame */
+    /**
+     * @inheritDoc
+     * @remarks Stored in the `TRCK` frame
+     */
     set track(value: number) { this.setNumberFrame(FrameIdentifiers.TRCK, value, this.trackCount, 2); }
 
-    /** @inheritDoc via TRCK frame */
+    /**
+     * @inheritDoc
+     * @remarks Stored in the `TRCK` frame
+     */
     get trackCount(): number { return this.getTextAsUint32(FrameIdentifiers.TRCK, 1); }
-    /** @inheritDoc via TRCK frame */
+    /**
+     * @inheritDoc
+     * @remarks Stored in the `TRCK` frame
+     */
     set trackCount(value: number) { this.setNumberFrame(FrameIdentifiers.TRCK, this.track, value); }
 
-    /** @inheritDoc via TPOS frame */
+    /**
+     * @inheritDoc
+     * @remarks Stored in the `TPOS` frame
+     */
     get disc(): number { return this.getTextAsUint32(FrameIdentifiers.TPOS, 0); }
-    /** @inheritDoc via TPOS frame */
+    /**
+     * @inheritDoc
+     * @remarks Stored in the `TPOS` frame
+     */
     set disc(value: number) { this.setNumberFrame(FrameIdentifiers.TPOS, value, this.discCount); }
 
-    /** @inheritDoc via TPOS frame */
+    /**
+     * @inheritDoc
+     * @remarks Stored in the `TPOS` frame
+     */
     get discCount(): number { return this.getTextAsUint32(FrameIdentifiers.TPOS, 1); }
-    /** @inheritDoc via TPOS frame */
+    /**
+     * @inheritDoc
+     * @remarks Stored in the `TPOS` frame
+     */
     set discCount(value: number) { this.setNumberFrame(FrameIdentifiers.TPOS, this.disc, value); }
 
-    /** @inheritDoc via USLT frame */
+    /**
+     * @inheritDoc
+     * @remarks Stored in the `USLT` frame
+     */
     get lyrics(): string {
         const frames = this.getFramesByClassType<UnsynchronizedLyricsFrame>(FrameClassType.UnsynchronizedLyricsFrame);
         const frame = UnsynchronizedLyricsFrame.findPreferred(frames, "", Id3v2Tag.language);
         return frame ? frame.toString() : undefined;
     }
-    /** @inheritDoc via USLT frame */
+    /**
+     * @inheritDoc
+     * @remarks Stored in the `USLT` frame
+     */
     set lyrics(value: string) {
         const frames = this.getFramesByClassType<UnsynchronizedLyricsFrame>(FrameClassType.UnsynchronizedLyricsFrame);
 
@@ -525,39 +645,69 @@ export default class Id3v2Tag extends Tag {
         frame.textEncoding = Id3v2Settings.defaultEncoding;
     }
 
-    /** @inheritDoc via TIT1 frame */
+    /**
+     * @inheritDoc
+     * @remarks Stored in the `TIT1` frame
+     */
     get grouping(): string { return this.getTextAsString(FrameIdentifiers.TIT1); }
-    /** @inheritDoc via TIT1 frame */
+    /**
+     * @inheritDoc
+     * @remarks Stored in the `TIT1` frame
+     */
     set grouping(value: string) { this.setTextFrame(FrameIdentifiers.TIT1, value); }
 
-    /** @inheritDoc via TBPM frame */
+    /**
+     * @inheritDoc
+     * @remarks Stored in the `TBPM` frame
+     */
     get beatsPerMinute(): number {
         const text = this.getTextAsString(FrameIdentifiers.TBPM);
         if (!text) { return 0; }
         const num = Number.parseFloat(text);
         return Number.isNaN(num) || num < 0.0 ? 0 : Math.round(num);
     }
-    /** @inheritDoc via TBPM frame */
+    /**
+     * @inheritDoc
+     * @remarks Stored in the `TBPM` frame
+     */
     set beatsPerMinute(value: number) { this.setNumberFrame(FrameIdentifiers.TBPM, value, 0); }
 
-    /** @inheritDoc via TPE3 frame */
+    /**
+     * @inheritDoc
+     * @remarks Stored in the `TPE3` frame
+     */
     get conductor(): string { return this.getTextAsString(FrameIdentifiers.TPE3); }
-    /** @inheritDoc via TPE3 frame */
+    /**
+     * @inheritDoc
+     * @remarks Stored in the `TPE3` frame
+     */
     set conductor(value: string) { this.setTextFrame(FrameIdentifiers.TPE3, value); }
 
-    /** @inheritDoc via TCOP frame */
+    /**
+     * @inheritDoc
+     * @remarks Stored in the `TCOP` frame
+     */
     get copyright(): string { return this.getTextAsString(FrameIdentifiers.TCOP); }
-    /** @inheritDoc via TCOP frame */
+    /**
+     * @inheritDoc
+     * @remarks Stored in the `TCOP` frame
+     */
     set copyright(value: string) { this.setTextFrame(FrameIdentifiers.TCOP, value); }
 
-    /** @inheritDoc via TDTG frame */
+    /**
+     * @inheritDoc
+     * @remarks Stored in the `TDTG` frame
+     */
     get dateTagged(): Date | undefined {
         const strValue = this.getTextAsString(FrameIdentifiers.TDTG);
         if (!strValue) { return undefined; }
         const dateValue = new Date(strValue);
         return isNaN(dateValue.getTime()) ? undefined : dateValue;
     }
-    /** @inheritDoc via TDTG frame */
+    /**
+     * @inheritDoc
+     * @remarks Stored in the `TDTG` frame
+     */
     set dateTagged(value: Date | undefined) {
         let strValue: string;
         if (value) {
@@ -567,64 +717,133 @@ export default class Id3v2Tag extends Tag {
         this.setTextFrame(FrameIdentifiers.TDTG, strValue);
     }
 
-    /** @inheritDoc via TXXX:MusicBrainz Artist Id frame */
+    /**
+     * @inheritDoc
+     * @remarks via TXXX:MusicBrainz Artist Id frame
+     */
     get musicBrainzArtistId(): string { return this.getUserTextAsString("MusicBrainz Artist Id"); }
-    /** @inheritDoc via TXXX:MusicBrainz Artist Id frame */
+    /**
+     * @inheritDoc
+     * @remarks via TXXX:MusicBrainz Artist Id frame
+     */
     set musicBrainzArtistId(value: string) { this.setUserTextAsString("MusicBrainz Artist Id", value); }
 
-    /** @inheritDoc via TXXX:MusicBrainz Release Group Id frame */
+    /**
+     * @inheritDoc
+     * @remarks via TXXX:MusicBrainz Release Group Id frame
+     */
     get musicBrainzReleaseGroupId(): string { return this.getUserTextAsString("MusicBrainz Release Group Id"); }
-    /** @inheritDoc via TXXX:MusicBrainz Release Group Id frame */
+    /**
+     * @inheritDoc
+     * @remarks via TXXX:MusicBrainz Release Group Id frame
+     */
     set musicBrainzReleaseGroupId(value: string) { this.setUserTextAsString("MusicBrainz Release Group Id", value); }
 
-    /** @inheritDoc via TXXX:MusicBrainz Album Id frame */
+    /**
+     * @inheritDoc
+     * @remarks via TXXX:MusicBrainz Album Id frame
+     */
     get musicBrainzReleaseId(): string { return this.getUserTextAsString("MusicBrainz Album Id"); }
-    /** @inheritDoc via TXXX:MusicBrainz Album Id frame */
+    /**
+     * @inheritDoc
+     * @remarks via TXXX:MusicBrainz Album Id frame
+     */
     set musicBrainzReleaseId(value: string) { this.setUserTextAsString("MusicBrainz Album Id", value); }
 
-    /** @inheritDoc via TXXX:MusicBrainz Album Artist Id frame */
+    /**
+     * @inheritDoc
+     * @remarks via TXXX:MusicBrainz Album Artist Id frame
+     */
     get musicBrainzReleaseArtistId(): string { return this.getUserTextAsString("MusicBrainz Album Artist Id"); }
-    /** @inheritDoc via TXXX:MusicBrainz Album Artist Id frame */
+    /**
+     * @inheritDoc
+     * @remarks via TXXX:MusicBrainz Album Artist Id frame
+     */
     set musicBrainzReleaseArtistId(value: string) { this.setUserTextAsString("MusicBrainz Album Artist Id", value); }
 
-    /** @inheritDoc via UFID:http://musicbrainz.org frame */
+    /**
+     * @inheritDoc
+     * @remarks via UFID:http://musicbrainz.org frame
+     */
     get musicBrainzTrackId(): string { return this.getUfidText("http://musicbrainz.org"); }
-    /** @inheritDoc via UFID:http://musicbrainz.org frame */
+    /**
+     * @inheritDoc
+     * @remarks via UFID:http://musicbrainz.org frame
+     */
     set musicBrainzTrackId(value: string) { this.setUfidText("http://musicbrainz.org", value); }
 
-    /** @inheritDoc via TXXX:MusicBrainz Disc Id frame */
+    /**
+     * @inheritDoc
+     * @remarks via TXXX:MusicBrainz Disc Id frame
+     */
     get musicBrainzDiscId(): string { return this.getUserTextAsString("MusicBrainz Disc Id"); }
-    /** @inheritDoc via TXXX:MusicBrainz Disc Id frame */
+    /**
+     * @inheritDoc
+     * @remarks via TXXX:MusicBrainz Disc Id frame
+     */
     set musicBrainzDiscId(value: string) { this.setUserTextAsString("MusicBrainz Disc Id", value); }
 
-    /** @inheritDoc via TXXX:MusicIP PUID frame */
+    /**
+     * @inheritDoc
+     * @remarks via TXXX:MusicIP PUID frame
+     */
     get musicIpId(): string { return this.getUserTextAsString("MusicIP PUID"); }
-    /** @inheritDoc via TXXX:MusicIP PUID frame */
+    /**
+     * @inheritDoc
+     * @remarks via TXXX:MusicIP PUID frame
+     */
     set musicIpId(value: string) { this.setUserTextAsString("MusicIP PUID", value); }
 
-    /** @inheritDoc via TXXX:ASIN */
+    /**
+     * @inheritDoc
+     * @remarks via TXXX:ASIN
+     */
     get amazonId(): string { return this.getUserTextAsString("ASIN"); }
-    /** @inheritDoc via TXXX:ASIN */
+    /**
+     * @inheritDoc
+     * @remarks via TXXX:ASIN
+     */
     set amazonId(value: string) { this.setUserTextAsString("ASIN", value); }
 
-    /** @inheritDoc via TXXX:MusicBrainz Album Status frame */
+    /**
+     * @inheritDoc
+     * @remarks via TXXX:MusicBrainz Album Status frame
+     */
     get musicBrainzReleaseStatus(): string { return this.getUserTextAsString("MusicBrainz Album Status"); }
-    /** @inheritDoc via TXXX:MusicBrainz Album Status frame */
+    /**
+     * @inheritDoc
+     * @remarks via TXXX:MusicBrainz Album Status frame
+     */
     set musicBrainzReleaseStatus(value: string) { this.setUserTextAsString("MusicBrainz Album Status", value); }
 
-    /** @inheritDoc via TXXX:MusicBrainz Album Type frame */
+    /**
+     * @inheritDoc
+     * @remarks via TXXX:MusicBrainz Album Type frame
+     */
     get musicBrainzReleaseType(): string { return this.getUserTextAsString("MusicBrainz Album Type"); }
-    /** @inheritDoc via TXXX:MusicBrainz Album Type frame */
+    /**
+     * @inheritDoc
+     * @remarks via TXXX:MusicBrainz Album Type frame
+     */
     set musicBrainzReleaseType(value: string) { this.setUserTextAsString("MusicBrainz Album Type", value); }
 
-    /** @inheritDoc via TXXX:MusicBrainz Album Release Country frame */
+    /**
+     * @inheritDoc
+     * @remarks via TXXX:MusicBrainz Album Release Country frame
+     */
     get musicBrainzReleaseCountry(): string { return this.getUserTextAsString("MusicBrainz Album Release Country"); }
-    /** @inheritDoc via TXXX:MusicBrainz Album Release Country frame */
+    /**
+     * @inheritDoc
+     * @remarks via TXXX:MusicBrainz Album Release Country frame
+     */
     set musicBrainzReleaseCountry(value: string) {
         this.setUserTextAsString("MusicBrainz Album Release Country", value);
     }
 
-    /** @inheritDoc via TXXX:REPLAY_GAIN_TRACK_GAIN frame */
+    /**
+     * @inheritDoc
+     * @remarks via TXXX:REPLAY_GAIN_TRACK_GAIN frame
+     */
     get replayGainTrackGain(): number {
         let text = this.getUserTextAsString("REPLAYGAIN_TRACK_GAIN", false);
         if (!text) { return NaN; }
@@ -634,7 +853,10 @@ export default class Id3v2Tag extends Tag {
 
         return Number.parseFloat(text);
     }
-    /** @inheritDoc via TXXX:REPLAY_GAIN_TRACK_GAIN frame */
+    /**
+     * @inheritDoc
+     * @remarks via TXXX:REPLAY_GAIN_TRACK_GAIN frame
+     */
     set replayGainTrackGain(value: number) {
         if (value === undefined || value === null || Number.isNaN(value)) {
             this.setUserTextAsString("REPLAYGAIN_TRACK_GAIN", undefined, false);
@@ -644,12 +866,18 @@ export default class Id3v2Tag extends Tag {
         }
     }
 
-    /** @inheritDoc via TXXX:REPLAYGAIN_TRACK_PEAK frame */
+    /**
+     * @inheritDoc
+     * @remarks via TXXX:REPLAYGAIN_TRACK_PEAK frame
+     */
     get replayGainTrackPeak(): number {
         const text: string = this.getUserTextAsString("REPLAYGAIN_TRACK_PEAK", false);
         return text ? Number.parseFloat(text) : NaN;
     }
-    /** @inheritDoc via TXXX:REPLAYGAIN_TRACK_PEAK frame */
+    /**
+     * @inheritDoc
+     * @remarks via TXXX:REPLAYGAIN_TRACK_PEAK frame
+     */
     set replayGainTrackPeak(value: number) {
         if (value === undefined || value === null || Number.isNaN(value)) {
             this.setUserTextAsString("REPLAYGAIN_TRACK_PEAK", undefined, false);
@@ -659,7 +887,10 @@ export default class Id3v2Tag extends Tag {
         }
     }
 
-    /** @inheritDoc via TXXX:REPLAYGAIN_ALBUM_GAIN frame */
+    /**
+     * @inheritDoc
+     * @remarks via TXXX:REPLAYGAIN_ALBUM_GAIN frame
+     */
     get replayGainAlbumGain(): number {
         let text = this.getUserTextAsString("REPLAYGAIN_ALBUM_GAIN", false);
         if (!text) { return NaN; }
@@ -669,7 +900,10 @@ export default class Id3v2Tag extends Tag {
 
         return Number.parseFloat(text);
     }
-    /** @inheritDoc via TXXX:REPLAYGAIN_ALBUM_GAIN frame */
+    /**
+     * @inheritDoc
+     * @remarks via TXXX:REPLAYGAIN_ALBUM_GAIN frame
+     */
     set replayGainAlbumGain(value: number) {
         if (value === undefined || value === null || Number.isNaN(value)) {
             this.setUserTextAsString("REPLAYGAIN_ALBUM_GAIN", undefined, false);
@@ -679,12 +913,18 @@ export default class Id3v2Tag extends Tag {
         }
     }
 
-    /** @inheritDoc via TXXX:REPLAYGAIN_ALBUM_PEAK frame */
+    /**
+     * @inheritDoc
+     * @remarks via TXXX:REPLAYGAIN_ALBUM_PEAK frame
+     */
     get replayGainAlbumPeak(): number {
         const text: string = this.getUserTextAsString("REPLAYGAIN_ALBUM_PEAK", false);
         return text ? Number.parseFloat(text) : NaN;
     }
-    /** @inheritDoc via TXXX:REPLAYGAIN_ALBUM_PEAK frame */
+    /**
+     * @inheritDoc
+     * @remarks via TXXX:REPLAYGAIN_ALBUM_PEAK frame
+     */
     set replayGainAlbumPeak(value: number) {
         if (value === undefined || value === null || Number.isNaN(value)) {
             this.setUserTextAsString("REPLAYGAIN_ALBUM_PEAK", undefined, false);
@@ -694,31 +934,61 @@ export default class Id3v2Tag extends Tag {
         }
     }
 
-    /** @inheritDoc via TKEY frame */
+    /**
+     * @inheritDoc
+     * @remarks Stored in the `TKEY` frame
+     */
     get initialKey(): string { return this.getTextAsString(FrameIdentifiers.TKEY); }
-    /** @inheritDoc via TKEY frame */
+    /**
+     * @inheritDoc
+     * @remarks Stored in the `TKEY` frame
+     */
     set initialKey(value: string) { this.setTextFrame(FrameIdentifiers.TKEY, value); }
 
-    /** @inheritDoc via TPE4 frame */
+    /**
+     * @inheritDoc
+     * @remarks Stored in the `TPE4` frame
+     */
     get remixedBy(): string { return this.getTextAsString(FrameIdentifiers.TPE4); }
-    /** @inheritDoc via TPE4 frame */
+    /**
+     * @inheritDoc
+     * @remarks Stored in the `TPE4` frame
+     */
     set remixedBy(value: string) { this.setTextFrame(FrameIdentifiers.TPE4, value); }
 
-    /** @inheritDoc via TPUB frame */
+    /**
+     * @inheritDoc
+     * @remarks Stored in the `TPUB` frame
+     */
     get publisher(): string { return this.getTextAsString(FrameIdentifiers.TPUB); }
-    /** @inheritDoc via TPUB frame */
+    /**
+     * @inheritDoc
+     * @remarks Stored in the `TPUB` frame
+     */
     set publisher(value: string) { this.setTextFrame(FrameIdentifiers.TPUB, value); }
 
-    /** @inheritDoc via TSRC frame */
+    /**
+     * @inheritDoc
+     * @remarks Stored in the `TSRC` frame
+     */
     get isrc(): string { return this.getTextAsString(FrameIdentifiers.TSRC); }
-    /** @inheritDoc via TSRC frame */
+    /**
+     * @inheritDoc
+     * @remarks Stored in the `TSRC` frame
+     */
     set isrc(value: string) { this.setTextFrame(FrameIdentifiers.TSRC, value); }
 
-    /** @inheritDoc via APIC frame */
+    /**
+     * @inheritDoc
+     * @remarks Stored in the `APIC` frame
+     */
     get pictures(): IPicture[] {
         return this.getFramesByClassType<AttachmentFrame>(FrameClassType.AttachmentFrame).slice(0);
     }
-    /** @inheritDoc via APIC frame */
+    /**
+     * @inheritDoc
+     * @remarks Stored in the `APIC` frame
+     */
     set pictures(value: IPicture[]) {
         this.removeFrames(FrameIdentifiers.APIC);
         this.removeFrames(FrameIdentifiers.GEOB);

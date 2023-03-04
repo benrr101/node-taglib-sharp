@@ -739,7 +739,7 @@ export default class RiffBitmapInfoHeader implements IVideoCodec {
      *     * `BI_BITFIELDS` = `0x00000003` => Uncompressed RGB with color masks, valid for 16 and
      *       32 bpp bitmaps.
      *
-     *     {@link description} makes a best guess attempt to determine the name of the compression
+     *     {@link description} makes a best-guess attempt to determine the name of the compression
      *     codec used.
      */
     public get compressionId(): number { return this._compressionId; }
@@ -760,7 +760,7 @@ export default class RiffBitmapInfoHeader implements IVideoCodec {
 
     /**
      * @inheritDoc
-     * The duration is not known from the video codec in a RIFF format file.
+     * @remarks The duration is not known from the video codec in a RIFF format file.
      */
     public get durationMilliseconds(): number { return 0; }
 

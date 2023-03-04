@@ -6,7 +6,7 @@ import {CorruptFileError} from "../../errors";
 import {File} from "../../file";
 
 /**
- * This class extends {@see BaseObject} to provide a representation of an ASF content description
+ * This class extends {@link BaseObject} to provide a representation of an ASF content description
  * object. The content description object is optional and provides standard bibliographic
  * information such as title, author, copyright, description, rating information.
  */

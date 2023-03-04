@@ -24,7 +24,7 @@ export enum FilePropertiesFlags {
 }
 
 /**
- * Extends {@see BaseObject} to provide a representation of an ASF file properties object. The
+ * Extends {@link BaseObject} to provide a representation of an ASF file properties object. The
  * file properties object defines the global characteristics of the combined digital media streams
  * found within the Data object.
  */

@@ -22,6 +22,9 @@
     "out": "docs/",
     "excludePrivate": true,
     "disableSources": true,
-    "listInvalidSymbolLinks": true
+    "validation": {
+      "invalidLink": true,
+      "notDocumented": true
+    }
   }
 }

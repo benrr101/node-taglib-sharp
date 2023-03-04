@@ -301,7 +301,7 @@ export class ByteVector {
      * @param bytes Uint8Array of the bytes to put in the ByteVector
      * @param length Optionally, number of bytes to read. If this is not provided, it will default
      *     to the full length of `bytes`. If it is less than the length of `bytes`, `bytes` will be
-     *     copied into the {@see ByteVector}.
+     *     copied into the {@link ByteVector}.
      */
     public static fromByteArray(
         bytes: Uint8Array | Buffer | number[],
