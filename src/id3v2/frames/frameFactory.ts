@@ -232,7 +232,7 @@ export default {
                 offset: frameEndIndex
             };
         } catch (e: unknown) {
-            if (CorruptFileError.errorIs(e) || NotImplementedError.errorIs(e)) {
+            if (e instanceof CorruptFileError || e instanceof NotImplementedError) {
                 throw e;
             }
 

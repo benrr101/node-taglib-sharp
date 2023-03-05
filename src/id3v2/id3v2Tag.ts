@@ -1217,9 +1217,9 @@ export default class Id3v2Tag extends Tag {
             try {
                 return frame.render(this._header.majorVersion);
             } catch (e) {
-                if (NotImplementedError.errorIs(e)) {
+                if (e instanceof NotImplementedError) {
                     // Swallow not implemented errors
-                } else if (NotSupportedError.errorIs(e) && !Id3v2Settings.strictFrameForVersion) {
+                } else if (e instanceof NotSupportedError && !Id3v2Settings.strictFrameForVersion) {
                     // Ignore not supported errors if we're not in strict frame mode
                 } else {
                     throw e;

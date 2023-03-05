@@ -1021,7 +1021,7 @@ export default class ApeTag extends Tag {
                 pos += item.size;
             }
         } catch (e: unknown) {
-            if (!CorruptFileError.errorIs(e)) {
+            if (!(e instanceof CorruptFileError)) {
                 throw e;
             }
 

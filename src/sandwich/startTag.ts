@@ -124,7 +124,7 @@ class StartTagParser extends TagParser {
                 }
             }
         } catch (e) {
-            if (!CorruptFileError.errorIs(e)) {
+            if (!(e instanceof CorruptFileError)) {
                 throw e;
             }
         }

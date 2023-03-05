@@ -367,7 +367,7 @@ export default class MpegAudioHeader implements IAudioCodec {
                         try {
                             return MpegAudioHeader.fromData(data, file, position + i);
                         } catch (e) {
-                            if (!CorruptFileError.errorIs(e)) {
+                            if (!(e instanceof CorruptFileError)) {
                                 throw e;
                             }
                         }
