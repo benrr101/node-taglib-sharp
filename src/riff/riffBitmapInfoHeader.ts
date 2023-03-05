@@ -9,13 +9,17 @@ import {Guards, NumberUtils} from "../utils";
  * @link https://docs.microsoft.com/en-us/windows/win32/api/wingdi/ns-wingdi-bitmapinfoheader
  */
 export default class RiffBitmapInfoHeader implements IVideoCodec {
-    // This list was cobbled together using
-    //   * The original .NET source
-    //   * https://omiod.com/codec/list.php
-    //   * https://www.fourcc.org/
-    //   * http://abcavi.kibi.ru/fourcc.php
-    //   If any FOURCCs are missing or wrong, submit a PR and include a link to some source saying
-    //   this FOURCC exists.
+    /**
+     * List of well known FOURCC codes and what they correspond to.
+     * @remarks
+     *     This list was cobbled together using
+     *     * The original .NET source
+     *     * https://omiod.com/codec/list.php
+     *     * https://www.fourcc.org/
+     *     * http://abcavi.kibi.ru/fourcc.php
+     *     If any FOURCCs are missing or wrong, submit a PR and include a link to some source saying
+     *     this FOURCC exists.
+     */
     public static readonly FOURCC_CODES: Map<number, string> = new Map<number, string>(
         [
             /* BI_RGB */       [0x00000000, "Windows Bitmap Format"],

@@ -9,10 +9,17 @@ import {Guards} from "../utils";
  * https://docs.microsoft.com/en-us/previous-versions/dd757713(v=vs.85)
  */
 export default class RiffWaveFormatEx implements ILosslessAudioCodec {
+    /**
+     * FOURCC code that indicates the chunk is a RiffWaveFormatEx object.
+     */
     public static readonly CHUNK_FOURCC = "fmt ";
 
-    // This list was put together from the Windows 10 SDK mmreg.h header file
-    // If any of these descriptions are wrong or out of date, please open a PR.
+    /**
+     * List of well-known wave format tags. This is similar to FOURCC codes but for audio codecs.
+     * @remarks
+     *     This list was put together from the Windows 10 SDK mmreg.h header file
+     *     If any of these descriptions are wrong or out of date, please open a PR.
+     */
     public static readonly WAVE_FORMAT_TAGS: Map<number, string> = new Map<number, string>([
         [0x0000, "Unknown Wave Format"],
         [0x0001, "PCM Audio"],
@@ -24,7 +31,7 @@ export default class RiffWaveFormatEx implements ILosslessAudioCodec {
         [0x0007, "Microsoft MULAW Audio"],
         [0x0008, "Microsoft DTS Audio"],
         [0x0009, "Microsoft DRM Encrypted Audio"],
-        [0x000A, "Microsoft Speech Ausio"],
+        [0x000A, "Microsoft Speech Audio"],
         [0x000B, "Microsoft Windows Media RT Voice Audio"],
         [0x0010, "OKI ADPCM Audio"],
         [0x0011, "Intel ADPCM Audio"],

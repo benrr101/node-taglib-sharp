@@ -122,7 +122,7 @@ export {
 } from "./id3v2/frames/textInformationFrame";
 export {default as Id3v2UniqueFileIdentifierFrame} from "./id3v2/frames/uniqueFileIdentifierFrame";
 export {default as Id3v2UnknownFrame} from "./id3v2/frames/unknownFrame";
-export {default as Id3v2UnsynchronizedFrame} from "./id3v2/frames/unsynchronizedLyricsFrame";
+export {default as Id3v2UnsynchronizedLyricsFrame} from "./id3v2/frames/unsynchronizedLyricsFrame";
 export {
     UrlLinkFrame as Id3v2UrlLinkFrame,
     UserUrlLinkFrame as Id3v2UserUrlLinkFrame

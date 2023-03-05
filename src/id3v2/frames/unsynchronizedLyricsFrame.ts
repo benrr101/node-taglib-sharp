@@ -6,6 +6,9 @@ import {Id3v2FrameHeader} from "./frameHeader";
 import {FrameIdentifiers} from "../frameIdentifiers";
 import {Guards} from "../../utils";
 
+/**
+ * Extends {@link Frame} implementing support for ID3v2 unsynchronized lyrics (USLT) frames.
+ */
 export default class UnsynchronizedLyricsFrame extends Frame {
     private _description: string;
     private _language: string;
@@ -216,6 +219,9 @@ export default class UnsynchronizedLyricsFrame extends Frame {
         return frame;
     }
 
+    /**
+     * Generates a string representation of the current instance.
+     */
     public toString(): string {
         return this.text;
     }

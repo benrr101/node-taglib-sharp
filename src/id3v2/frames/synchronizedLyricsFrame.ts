@@ -56,6 +56,10 @@ export class SynchronizedText {
         return new SynchronizedText(this.time, this.text);
     }
 
+    /**
+     * Generates a raw byte representation of the frame for writing to a file.
+     * @param encoding Encoding to use for encoding the text of the frame.
+     */
     public render(encoding: StringType): ByteVector {
         return ByteVector.concatenate(
             ByteVector.fromString(this.text, encoding),

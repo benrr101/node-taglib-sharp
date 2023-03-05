@@ -10,9 +10,7 @@ import {Guards} from "../../utils";
  * Class that extends {@link Frame}, implementing support for ID3v2 Comments (COMM) frames.
  * A {@link CommentsFrame} should be used for storing user readable comments on the media file.
  * When reading comments from a file, {@link CommentsFrame.findPreferred} should be used as it
- * gracefully falls back to comments that you, as a developer, may not be expecting. When writing
- * comments, however, it is best to use {@link get} as it forces it to be written in the exact
- * version you are specifying.
+ * gracefully falls back to comments that you, as a developer, may not be expecting.
  */
 export default class CommentsFrame extends Frame {
     private _description: string;

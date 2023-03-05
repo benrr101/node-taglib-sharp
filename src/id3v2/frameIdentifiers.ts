@@ -112,7 +112,9 @@ export class FrameIdentifier {
 
 /* eslint-disable @typescript-eslint/naming-convention */
 
-// Pre-create the unique identifiers
+/**
+ * Collection of well-known frame identifiers.
+ */
 const uniqueFrameIdentifiers: {[key: string]: FrameIdentifier} = {
     AENC: new FrameIdentifier("AENC", "AENC", "CRA"), // Audio encryption
     APIC: new FrameIdentifier("APIC", "APIC", "PIC"), // Attached picture

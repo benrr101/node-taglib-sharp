@@ -6,26 +6,101 @@ import {Id3v2FrameFlags, Id3v2FrameHeader} from "./frameHeader";
 import {FrameIdentifier} from "../frameIdentifiers";
 import {Guards, NumberUtils} from "../../utils";
 
+/**
+ * Enumeration of types of frames.
+ */
+// @TODO: We can probably get rid of this since instance of works quite well.
 export enum FrameClassType {
+    /**
+     * Indicates the frame is an attachment frame.
+     */
     AttachmentFrame,
+
+    /**
+     * Indicates the frame is a comments frame.
+     */
     CommentsFrame,
+
+    /**
+     * Indicates the frame is an event time code frame.
+     */
     EventTimeCodeFrame,
+
+    /**
+     * Indicates the frame is a music CD identifier frame.
+     */
     MusicCdIdentifierFrame,
+
+    /**
+     * Indicates the frame is a play count frame.
+     */
     PlayCountFrame,
+
+    /**
+     * Indicates the frame is a popularimeter frame.
+     */
     PopularimeterFrame,
+
+    /**
+     * Indicates the frame is a private frame.
+     */
     PrivateFrame,
+
+    /**
+     * Indicates the frame is relative volume frame.
+     */
     RelativeVolumeFrame,
+
+    /**
+     * Indicates the frame is a synchronized lyrics frame.
+     */
     SynchronizedLyricsFrame,
+
+    /**
+     * Indicates the frame is a terms of use frame.
+     */
     TermsOfUseFrame,
+
+    /**
+     * Indicates the frame is a text information frame.
+     */
     TextInformationFrame,
+
+    /**
+     * Indicates the frame is an unique file identifier frame.
+     */
     UniqueFileIdentifierFrame,
+
+    /**
+     * Indicates the frame is an unknown frame.
+     */
     UnknownFrame,
+
+    /**
+     * Indicates the frame is an attachment frame.
+     */
     UnsynchronizedLyricsFrame,
+
+    /**
+     * Indicates the frame is a URL link frame.
+     */
     UrlLinkFrame,
+
+    /**
+     * Indicates the frame is a user text information frame.
+     */
     UserTextInformationFrame,
+
+    /**
+     * Indicates the frame is an user URL link frame.
+     */
     UserUrlLinkFrame
 }
 
+/**
+ * Abstract class that represents an ID3v2 frame. Frames are the unit for storing information in
+ * an ID3v2 tag. There are various types of frames that store differently structured information.
+ */
 export abstract class Frame {
     // #region Member Variables
 
@@ -37,6 +112,11 @@ export abstract class Frame {
 
     // #region Constructors
 
+    /**
+     * Constructs and initializes a new instance with a frame header.
+     * @param header Header for the frame.
+     * @protected
+     */
     protected constructor(header: Id3v2FrameHeader) {
         this._header = header;
     }
@@ -94,6 +174,10 @@ export abstract class Frame {
      */
     protected set header(value: Id3v2FrameHeader) { this._header = value; }
 
+    /**
+     * Gets a flag indicating which type of frame the current instance is.
+     */
+    // @TODO: This can be removed as instanceof is pretty good now.
     public abstract get frameClassType(): FrameClassType;
 
     /**

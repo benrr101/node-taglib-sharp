@@ -5,6 +5,9 @@ import {CorruptFileError} from "../../errors";
 import {ICodec} from "../../properties";
 import {Guards} from "../../utils";
 
+/**
+ * IDs for a AVI stream types.
+ */
 export enum AviStreamType {
     /** Audio Stream */
     /* auds */ AudioStream = 0x73647561,
@@ -24,8 +27,17 @@ export enum AviStreamType {
  * stream list.
  */
 export class AviStream {
+    /**
+     * ID of a format chunk.
+     */
     public static readonly FORMAT_CHUNK_ID = "strf";
+    /**
+     * ID of a header chunk.
+     */
     public static readonly HEADER_CHUNK_ID = "strh";
+    /**
+     * ID of a list chunk.
+     */
     public static readonly LIST_TYPE = "strl";
 
     private readonly _bottom: number;

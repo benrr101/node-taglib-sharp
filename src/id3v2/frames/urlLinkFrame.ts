@@ -156,7 +156,9 @@ export class UrlLinkFrame extends Frame {
         return frame;
     }
 
-    /** @inheritDoc */
+    /**
+     * Generates a string representation of the URL link frame.
+     */
     public toString(): string {
         this.parseRawData();
         return this.text.join("; ");
@@ -169,6 +171,15 @@ export class UrlLinkFrame extends Frame {
         this._rawVersion = version;
     }
 
+    /**
+     * Performs the actual parsing of the raw data.
+     * @remarks
+     *     Because of the high parsing cost and relatively low usage of the class,
+     *     {@link parseFields} only stores the field data, so it can be parsed on demand. Whenever
+     *     a property or method is called which requires the data, this method is called, and only
+     *     on the first call does it actually parse the data.
+     * @protected
+     */
     protected parseRawData(): void {
         if (!this._rawData) {
             return;

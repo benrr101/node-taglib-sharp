@@ -119,6 +119,10 @@ export default class RiffList implements IRiffChunk, ILazy {
 
     // #region Methods
 
+    /**
+     * Determines if a given chunk is a list.
+     * @param c Chunk to check is a list.
+     */
     public static isChunkList(c: IRiffChunk): boolean {
         return c.fourcc === RiffList.IDENTIFIER_FOURCC;
     }

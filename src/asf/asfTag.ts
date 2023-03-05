@@ -141,26 +141,26 @@ export default class AsfTag extends Tag {
     /**
      * @inheritDoc
      * @remarks
-     *     Stored in the {@link ContentDescriptor.description}
+     *     Stored in the {@link ContentDescriptionObject.description}
      *     Some applications will use this field for storing comments.
      */
     public get description(): string { return this._contentDescriptionObject.description; }
     /**
      * @inheritDoc
      * @remarks
-     *     Stored in the {@link ContentDescriptor.description}
+     *     Stored in the {@link ContentDescriptionObject.description}
      *     Some applications will use this field for storing comments.
      */
     public set description(value: string) { this._contentDescriptionObject.description = value; }
 
     /**
      * @inheritDoc
-     * @remarks Stored in the {@link ContentDescriptor.author}
+     * @remarks Stored in the {@link ContentDescriptionObject.author}
      */
     public get performers(): string[] { return AsfTag.splitAndClean(this._contentDescriptionObject.author); }
     /**
      * @inheritDoc
-     * @remarks Stored in the {@link ContentDescriptor.author}
+     * @remarks Stored in the {@link ContentDescriptionObject.author}
      */
     public set performers(value: string[]) { this._contentDescriptionObject.author = value.join("; "); }
 

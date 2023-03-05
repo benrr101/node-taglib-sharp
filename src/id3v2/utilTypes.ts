@@ -68,6 +68,9 @@ export enum TimestampFormat {
     AbsoluteMilliseconds = 0x02
 }
 
+/**
+ * Indicates what type of event the event represents.
+ */
 export enum EventType {
     /**
      * Padding - no meaning

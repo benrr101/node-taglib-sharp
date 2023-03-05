@@ -14,6 +14,9 @@ import {Guards, NumberUtils} from "../utils";
 export default class MpegAudioHeader implements IAudioCodec {
     // @TODO: make an enum for header flags
 
+    /**
+     * Static instance of an audio header that has unknown information.
+     */
     public static readonly UNKNOWN: MpegAudioHeader = MpegAudioHeader.fromInfo(
         0,
         0,
