@@ -101,11 +101,12 @@ export default class StreamPropertiesObject extends BaseObject {
 
     /**
      * Gets the flags that apply to the current instance.
-     * @remarks The `flags` field a 16-bit, double word, defined as follows:
-     *     -- LSB
-     *     * Stream number - 7 bits
-     *     * Reserved - 8 bits
-     *     * Encrypted content flag - 1 bit
+     * @remarks
+     *     The `flags` field a 16-bit, double word, defined as follows:
+     *     * LSB
+     *       * Stream number - 7 bits
+     *       * Reserved - 8 bits
+     *       * Encrypted content flag - 1 bit
      */
     public get flags(): number { return this._flags; }
 

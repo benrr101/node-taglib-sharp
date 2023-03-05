@@ -138,7 +138,8 @@ export class FlacBlock implements ILazy {
     /**
      * Gets whether or not the block represented by the current instance is the last metadata block
      * in the FLAC stream.
-     * @returns `true` if the block represented by the current instance was the last one to appear
+     * @returns
+     *     `true` if the block represented by the current instance was the last one to appear
      *     in the file and is followed immediately by the audio data, or `false` if another block
      *     appears after the current one or the block was not read from disk.
      */

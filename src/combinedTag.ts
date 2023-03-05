@@ -56,7 +56,8 @@ export default abstract class CombinedTag extends Tag {
 
     /**
      * @inheritDoc
-     * @remarks Note that tags may not appear contiguously in a file. Access the {@link tags}
+     * @remarks
+     *     Note that tags may not appear contiguously in a file. Access the {@link tags}
      *     contained in this object to see the size of each tag on the disk.
      */
     public get sizeOnDisk(): number {
@@ -330,14 +331,14 @@ export default abstract class CombinedTag extends Tag {
      * @param tagType Type of tag to create
      * @param copy Whether or not to copy the contents of the current instance to the newly created
      *     tag instance
-     * @returns Tag The newly created tag
+     * @returns The newly created tag
      */
     public abstract createTag(tagType: TagTypes, copy: boolean): Tag;
 
     /**
      * Gets a tag of the specified tag type if a matching tag exists in the current instance.
      * @param tagType Type of tag to retrieve
-     * @returns Tag Tag with specified type, if it exists. `undefined` otherwise.
+     * @returns Tag with specified type, if it exists. `undefined` otherwise.
      */
     public getTag<TTag extends Tag>(tagType: TagTypes): TTag {
         // Make sure the tag type can possibly be stored here

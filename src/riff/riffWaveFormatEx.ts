@@ -327,7 +327,8 @@ export default class RiffWaveFormatEx implements ILosslessAudioCodec {
 
     /**
      * @inheritDoc
-     * @remarks Some compression schemes cannot define a value for this field, so it may be `0`.
+     * @remarks
+     *     Some compression schemes cannot define a value for this field, so it may be `0`.
      *     This is especially common for MP3 audio embedded in an AVI.
      */
     public get bitsPerSample(): number { return this._bitsPerSample; }
@@ -353,7 +354,8 @@ export default class RiffWaveFormatEx implements ILosslessAudioCodec {
 
     /**
      * Gets the format tag of the audio described by the current instance.
-     * @remarks Format tags indicate the codec of the audio contained in the file and are
+     * @remarks
+     *     Format tags indicate the codec of the audio contained in the file and are
      *     contained in a Microsoft registry. For a description of the format, use
      *     {@link description}. The complete list can be found in the Win32 mmreg.h SDK header file
      */
@@ -361,9 +363,10 @@ export default class RiffWaveFormatEx implements ILosslessAudioCodec {
 
     /**
      * @inheritDoc
-     * @remarks Technically any audio format can be encapsulated with a RIFF header since RIFF is
+     * @remarks
+     *     Technically any audio format can be encapsulated with a RIFF header since RIFF is
      *     simply a "Resource Interchange File Format". It is entirely possible to encapsulate a
-     *     lossy format (and indeed, lossy WMA must be encapsulated) with a RIFF header. Therefore
+     *     lossy format (and indeed, lossy WMA must be encapsulated) with a RIFF header. Therefore,
      *     this designation as lossless is somewhat misleading and checking {@link description} is
      *     necessary to verify the codec being used is lossless or not.
      */

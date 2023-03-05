@@ -14,7 +14,8 @@ export default interface IOggCodec extends ICodec {
     /**
      * Reads an Ogg packet that has been encountered in the stream, looking for the comment data.
      * @param packet Packet to read
-     * @returns boolean `true` if the codec has read all the necessary packets for the stream and
+     * @returns
+     *     `true` if the codec has read all the necessary packets for the stream and
      *     does not need to be called again,
      */
     readPacket(packet: ByteVector): boolean;

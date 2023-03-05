@@ -35,7 +35,8 @@ export default abstract class TagParser {
 
     /**
      * Reads the next tag from the file.
-     * @returns boolean `true` is returned if a tag is found, the tag can be accessed from
+     * @returns
+     *     `true` is returned if a tag is found, the tag can be accessed from
      *     {@link currentTag}. `false` is returned if no tag was found.
      */
     public abstract read(): boolean;

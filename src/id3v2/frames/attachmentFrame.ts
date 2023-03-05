@@ -85,11 +85,12 @@ export default class AttachmentFrame extends Frame implements IPicture {
     /**
      * Constructs and initializes a new attachment frame by populating it with the contents of
      * another {@link IPicture} object.
-     * @param picture Value to use in the new instance.
-     * @remarks When a frame is created, it is not automatically added to the tag. Consider
+     * @remarks
+     *     When a frame is created, it is not automatically added to the tag. Consider
      *     using {@link get} for more integrated frame creation.
      *     Additionally, see {@link Tag.pictures} provides a generic way of getting and setting
      *     attachments which is preferable to format specific code.
+     * @param picture Value to use in the new instance.
      */
     public static fromPicture(picture: IPicture): AttachmentFrame {
         Guards.truthy(picture, "picture");
@@ -258,8 +259,7 @@ export default class AttachmentFrame extends Frame implements IPicture {
      * @param frames List of attachment frames to search
      * @param description Description to match
      * @param type Picture type to match
-     * @returns Matching frame or `undefined` if a match wasn't found and `create` is
-     *     `false`
+     * @returns Matching frame or `undefined` if a match wasn't found and `create` is `false`
      */
     public static find(
         frames: AttachmentFrame[],

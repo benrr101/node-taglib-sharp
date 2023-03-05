@@ -2,9 +2,11 @@ import {ByteVector, StringType} from "../byteVector";
 import {NotSupportedError} from "../errors";
 
 /**
- * @summary Represents the identifier of a frame, depending on the version this may be 3 or 4
- *     bytes. Provides a simple way to switch between the identifiers used for different versions.
- * @remarks This class is implemented in an attempt to unify frame identifiers, make it easy to
+ * Represents the identifier of a frame, depending on the version this may be 3 or 4
+ * bytes. Provides a simple way to switch between the identifiers used for different versions.
+
+ * @remarks
+ *     This class is implemented in an attempt to unify frame identifiers, make it easy to
  *     switch versions, find frames between tags, and determine which frames are supported on which
  *     version of ID3v2.
  *     If you have a death wish, you can take your life into your own hands and construct your own

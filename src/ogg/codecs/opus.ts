@@ -48,14 +48,16 @@ export default class Opus implements IOggCodec, IAudioCodec {
 
     /**
      * @inheritDoc
-     * @remarks Always returns zero since bitrate is variable and no information is stored in the
+     * @remarks
+     *     Always returns zero since bitrate is variable and no information is stored in the
      *     Ogg header (unlike Vorbis).
      */
     public get audioBitrate(): number { return 0; }
 
     /**
      * @inheritDoc
-     * @remarks This is the *input* sample rate used when the file was created. Opus uses a variety
+     * @remarks
+     *     This is the *input* sample rate used when the file was created. Opus uses a variety
      *     of sample rates internally, and as such the output sample rate is dependent on the
      *     decoder used. In most modern hardware cases, this will be 48kHz.
      */

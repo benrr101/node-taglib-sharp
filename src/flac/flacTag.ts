@@ -10,7 +10,8 @@ import {Guards, NumberUtils} from "../utils";
 
 /**
  * Collection of tags that can be stored in a FLAC file.
- * @remarks The FLAC file specification states that tagging should be done via a XIPH comment block
+ * @remarks
+ *     The FLAC file specification states that tagging should be done via a XIPH comment block
  *     and any pictures should be stored in a FLAC picture block. However, tagging can be done via
  *     ID3 and APE tags at the beginning or end of the file, same as MP3 and other files. This
  *     class provides a unified interface into all the tags a FLAC file may contain.
@@ -65,7 +66,8 @@ export default class FlacTag extends CombinedTag {
 
     /**
      * @inheritDoc
-     * @remarks For FLAC files, FLAC-style pictures are preferentially returned. If those don't exist the
+     * @remarks
+     *     For FLAC files, FLAC-style pictures are preferentially returned. If those don't exist the
      *     pictures that are stored in the combined tag.
      */
     public get pictures(): IPicture[] {

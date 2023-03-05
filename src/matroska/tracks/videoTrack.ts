@@ -156,7 +156,8 @@ export enum VideoStereoMode {
 
 /**
  * Extension of {@link Track} that adds video information.
- * @remarks An earlier version of Matroska had a framerate field. This has since been deprecated
+ * @remarks
+ *     An earlier version of Matroska had a framerate field. This has since been deprecated
  *     and the only true way to calculate framerate it do calculate it based on time codes.
  */
 export class VideoTrack extends Track implements IVideoCodec {
@@ -235,7 +236,8 @@ export class VideoTrack extends Track implements IVideoCodec {
 
     /**
      * Height of the video frames to display. Applies to the video frame after cropping.
-     * @remarks If the {@link displayUnits} is {@link VideoDisplayUnits.Pixels}, then default
+     * @remarks
+     *     If the {@link displayUnits} is {@link VideoDisplayUnits.Pixels}, then default
      *     value for this is equal to {@link videoHeight} - {@link cropTop} - {@link cropBottom},
      *     otherwise there is no default value.
      */
@@ -248,7 +250,8 @@ export class VideoTrack extends Track implements IVideoCodec {
 
     /**
      * Width of the video frames to display. Applies to the video frame after cropping.
-     * @remarks If the {@link displayUnits} is {@link VideoDisplayUnits.Pixels}, then default
+     * @remarks
+     *     If the {@link displayUnits} is {@link VideoDisplayUnits.Pixels}, then default
      *     value for this is equal to {@link videoWidth} - {@link cropLeft} - {@link cropRight},
      *     otherwise there is no default value.
      */

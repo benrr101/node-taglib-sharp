@@ -113,7 +113,8 @@ export default class FilePropertiesObject extends BaseObject {
 
     /**
      * Gets whether the file described by the current instance is broadcast or seekable.
-     * @remarks This attribute applies to presentation descriptors for ASF content. The value is a
+     * @remarks
+     *     This attribute applies to presentation descriptors for ASF content. The value is a
      *     bitwise OR of the flags in {@link FilePropertiesFlags}.
      *     * If {@link FilePropertiesFlags.Broadcast} is set, the following properties are not
      *       valid

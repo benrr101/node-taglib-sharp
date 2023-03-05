@@ -97,8 +97,9 @@ export default class ApeTag extends Tag {
      * file.
      * @param file File to read the tag from
      * @param position Position where the tag header or footer begins
-     * @remarks If `position` points to the beginning of the tag footer, the footer will be read
-     *     and then the parser will backup and start reading from the beginning of the file.
+     * @remarks
+     *     If `position` points to the beginning of the tag footer, the footer will be read
+     *     and then the parser will back up and start reading from the beginning of the file.
      */
     public static fromFile(file: File, position: number): ApeTag {
         Guards.truthy(file, "file");
@@ -188,7 +189,7 @@ export default class ApeTag extends Tag {
     get subtitle(): string { return this.getStringValue("Subtitle"); }
     /**
      * @inheritDoc
-     * @remarks via Subtitle
+     * @remarks Stored in the `Subtitle`
      */
     set subtitle(value: string) { this.setStringValue("Subtitle", value); }
 
@@ -238,7 +239,8 @@ export default class ApeTag extends Tag {
 
     /**
      * @inheritDoc
-     * @remarks This property is implemented using the "Album Artist" item and "AlbumArtist" as a backup if
+     * @remarks
+     *     This property is implemented using the "Album Artist" item and "AlbumArtist" as a backup if
      *     it exists.
      */
     get albumArtists(): string[] {
@@ -250,7 +252,8 @@ export default class ApeTag extends Tag {
     }
     /**
      * @inheritDoc
-     * @remarks Will be stored in "Album Artist" primarily. If "AlbumArtist" exists, value will also be
+     * @remarks
+     *     Will be stored in "Album Artist" primarily. If "AlbumArtist" exists, value will also be
      *     stored there for compatibility.
      */
     set albumArtists(value: string[]) {
@@ -835,7 +838,8 @@ export default class ApeTag extends Tag {
     /**
      * Gets an item from the current instance identified by `key`.
      * @param key Identifier for the item to get
-     * @returns ApeTagItem Item specified by `key` if it exists, undefined is
+     * @returns
+     *     ApeTagItem Item specified by `key` if it exists, undefined is
      *     returned otherwise
      */
     public getItem(key: string): ApeTagItem {
@@ -871,7 +875,7 @@ export default class ApeTag extends Tag {
 
     /**
      * Renders the current instance as a raw APEv2 tag.
-     * @returns ByteVector Bytes that represent the current instance
+     * @returns Bytes that represent the current instance
      */
     public render(): ByteVector {
         // Start by rendering the items

@@ -99,142 +99,157 @@ export default class AsfTag extends Tag {
 
     /**
      *  @inheritDoc
-     *  @remarks via content description object
+     *  @remarks Stored in the content description object
      */
     public get title(): string { return this._contentDescriptionObject.title; }
     /**
      *  @inheritDoc
-     *  @remarks via content description object
+     *  @remarks Stored in the content description object
      */
     public set title(value: string) { this._contentDescriptionObject.title = value; }
 
     /**
      * @inheritDoc
-     * @remarks via `WM/SubTitle` descriptor
+     * @remarks
+     *     Stored in the `WM/SubTitle` descriptor
      *     https://msdn.microsoft.com/en-us/library/windows/desktop/dd757997(v=vs.85).aspx
      */
     public get subtitle(): string { return this.getDescriptorString("WM/SubTitle"); }
     /**
      * @inheritDoc
-     * @remarks via `WM/SubTitle` descriptor
+     * @remarks
+     *     Stored in the `WM/SubTitle` descriptor
      *     https://msdn.microsoft.com/en-us/library/windows/desktop/dd757997(v=vs.85).aspx
      */
     public set subtitle(value: string) { this.setDescriptorString(value, "WM/SubTitle"); }
 
     /**
      * @inheritDoc
-     * @remarks via "WM/TitleSortOrder"
+     * @remarks
+     *     Stored in the `WM/TitleSortOrder`
      *     http://msdn.microsoft.com/en-us/library/aa386866(VS.85).aspx
      */
     public get titleSort(): string { return this.getDescriptorString("WM/TitleSortOrder"); }
     /**
      * @inheritDoc
-     * @remarks via "WM/TitleSortOrder"
+     * @remarks
+     *     Stored in the `WM/TitleSortOrder`
      *     http://msdn.microsoft.com/en-us/library/aa386866(VS.85).aspx
      */
     public set titleSort(value: string) { this.setDescriptorString(value, "WM/TitleSortOrder"); }
 
     /**
      * @inheritDoc
-     * @remarks via {@link ContentDescriptor.description}
+     * @remarks
+     *     Stored in the {@link ContentDescriptor.description}
      *     Some applications will use this field for storing comments.
      */
     public get description(): string { return this._contentDescriptionObject.description; }
     /**
      * @inheritDoc
-     * @remarks via {@link ContentDescriptor.description}
+     * @remarks
+     *     Stored in the {@link ContentDescriptor.description}
      *     Some applications will use this field for storing comments.
      */
     public set description(value: string) { this._contentDescriptionObject.description = value; }
 
     /**
      * @inheritDoc
-     * @remarks via {@link ContentDescriptor.author}
+     * @remarks Stored in the {@link ContentDescriptor.author}
      */
     public get performers(): string[] { return AsfTag.splitAndClean(this._contentDescriptionObject.author); }
     /**
      * @inheritDoc
-     * @remarks via {@link ContentDescriptor.author}
+     * @remarks Stored in the {@link ContentDescriptor.author}
      */
     public set performers(value: string[]) { this._contentDescriptionObject.author = value.join("; "); }
 
     /**
      * @inheritDoc
-     * @remarks via "WM/ArtistSortOrder" descriptor
+     * @remarks
+     *     Stored in the `WM/ArtistSortOrder` descriptor
      *     http://msdn.microsoft.com/en-us/library/aa386866(VS.85).aspx
      */
     public get performersSort(): string[] { return this.getDescriptorStrings("WM/ArtistSortOrder"); }
     /**
      * @inheritDoc
-     * @remarks via "WM/ArtistSortOrder" descriptor
+     * @remarks
+     *     Stored in the `WM/ArtistSortOrder` descriptor
      *     http://msdn.microsoft.com/en-us/library/aa386866(VS.85).aspx
      */
     public set performersSort(value: string[]) { this.setDescriptorStrings(value, "WM/ArtistSortOrder"); }
 
     /**
      * @inheritDoc
-     * @remarks via `WM/AlbumArtist` or `AlbumArtist` descriptors
+     * @remarks Stored in the `WM/AlbumArtist` or `AlbumArtist` descriptors
      */
     public get albumArtists(): string[] { return this.getDescriptorStrings("WM/AlbumArtist", "AlbumArtist"); }
     /**
      * @inheritDoc
-     * @remarks via `WM/AlbumArtist` or `AlbumArtist` descriptors
+     * @remarks Stored in the `WM/AlbumArtist` or `AlbumArtist` descriptors
      */
     public set albumArtists(value: string[]) { this.setDescriptorStrings(value, "WM/AlbumArtist", "AlbumArtist"); }
 
     /**
      * @inheritDoc
-     * @remarks via `WM/AlbumArtistSortOrder` descriptor
+     * @remarks
+     *     Stored in the `WM/AlbumArtistSortOrder` descriptor
      *     http://msdn.microsoft.com/en-us/library/aa386866(VS.85).aspx
      */
     public get albumArtistsSort(): string[] { return this.getDescriptorStrings("WM/AlbumArtistSortOrder"); }
     /**
      * @inheritDoc
-     * @remarks via `WM/AlbumArtistSortOrder` descriptor
+     * @remarks
+     *     Stored in the `WM/AlbumArtistSortOrder` descriptor
      *     http://msdn.microsoft.com/en-us/library/aa386866(VS.85).aspx
      */
     public set albumArtistsSort(value: string[]) { this.setDescriptorStrings(value, "WM/AlbumArtistSortOrder"); }
 
     /**
      * @inheritDoc
-     * @remarks via `WM/Composer` or `Composer` descriptors
+     * @remarks
+     *     Stored in the `WM/Composer` or `Composer` descriptors
      *     https://docs.microsoft.com/en-us/windows/win32/wmformat/wm-composer
      */
     public get composers(): string[] { return this.getDescriptorStrings("WM/Composer", "Composer"); }
     /**
      * @inheritDoc
-     * @remarks via `WM/Composer` or `Composer` descriptors
+     * @remarks
+     *     Stored in the `WM/Composer` or `Composer` descriptors
      *     https://docs.microsoft.com/en-us/windows/win32/wmformat/wm-composer
      */
     public set composers(value: string[]) { this.setDescriptorStrings(value, "WM/Composer", "Composer"); }
 
     /**
      * @inheritDoc
-     * @remarks via `WM/AlbumTitle` or `Album` descriptors
+     * @remarks
+     *     Stored in the `WM/AlbumTitle` or `Album` descriptors
      *     https://docs.microsoft.com/en-us/windows/win32/wmformat/wm-albumtitle
      */
     public get album(): string { return this.getDescriptorString("WM/AlbumTitle", "Album"); }
     /**
      * @inheritDoc
-     * @remarks via `WM/AlbumTitle` or `Album` descriptors
+     * @remarks
+     *     Stored in the `WM/AlbumTitle` or `Album` descriptors
      *     https://docs.microsoft.com/en-us/windows/win32/wmformat/wm-albumtitle
      */
     public set album(value: string) { this.setDescriptorString(value, "WM/AlbumTitle", "Album"); }
 
     /**
      * @inheritDoc
-     * @remarks via `WM/AlbumSortOrder` descriptors
+     * @remarks Stored in the `WM/AlbumSortOrder` descriptors
      */
     public get albumSort(): string { return this.getDescriptorString("WM/AlbumSortOrder"); }
     /**
      * @inheritDoc
-     * @remarks via `WM/AlbumSortOrder` descriptors
+     * @remarks Stored in the `WM/AlbumSortOrder` descriptors
      */
     public set albumSort(value: string) { this.setDescriptorString(value, "WM/AlbumSortOrder"); }
 
     /**
      * @inheritDoc
-     * @remarks via `WM/Text` descriptor
+     * @remarks
+     *     Stored in the `WM/Text` descriptor
      *     https://docs.microsoft.com/en-us/windows/win32/wmformat/wm-text
      *     It should be noted that many applications store comments in the field read by
      *     {@link description}.
@@ -242,7 +257,8 @@ export default class AsfTag extends Tag {
     public get comment(): string { return this.getDescriptorString("WM/Text"); }
     /**
      * @inheritDoc
-     * @remarks via `WM/Text` descriptor
+     * @remarks
+     *     Stored in the `WM/Text` descriptor
      *     https://docs.microsoft.com/en-us/windows/win32/wmformat/wm-text
      *     It should be noted that many applications store comments in the field read by
      *     {@link description}.
@@ -251,9 +267,10 @@ export default class AsfTag extends Tag {
 
     /**
      * @inheritDoc
-     * @remarks via `WM/Genre`, `WM/GenreID`, or `Genre` descriptors
-     *      https://docs.microsoft.com/en-us/windows/win32/wmformat/wm-genre
-     *      https://docs.microsoft.com/en-us/windows/win32/wmformat/wm-genreid
+     * @remarks
+     *     Stored in the `WM/Genre`, `WM/GenreID`, or `Genre` descriptors
+     *     https://docs.microsoft.com/en-us/windows/win32/wmformat/wm-genre
+     *     https://docs.microsoft.com/en-us/windows/win32/wmformat/wm-genreid
      */
     public get genres(): string[] {
         // @TODO: Strings from genre should be combined with genreID and checked for duplicates
@@ -282,9 +299,10 @@ export default class AsfTag extends Tag {
     }
     /**
      * @inheritDoc
-     * @remarks via `WM/Genre`, `WM/GenreID`, or `Genre` descriptors
-     *      https://docs.microsoft.com/en-us/windows/win32/wmformat/wm-genre
-     *      https://docs.microsoft.com/en-us/windows/win32/wmformat/wm-genreid
+     * @remarks
+     *     Stored in the `WM/Genre`, `WM/GenreID`, or `Genre` descriptors
+     *     https://docs.microsoft.com/en-us/windows/win32/wmformat/wm-genre
+     *     https://docs.microsoft.com/en-us/windows/win32/wmformat/wm-genreid
      */
     public set genres(value: string[]) {
         // @TODO: Make it optional to write to WM/GenreID in addition to WM/Genre
@@ -294,8 +312,9 @@ export default class AsfTag extends Tag {
 
     /**
      * @inheritDoc
-     * @remarks via `WM/Year` descriptor
-     *      https://docs.microsoft.com/en-us/windows/win32/wmformat/wm-year
+     * @remarks
+     *     Stored in the `WM/Year` descriptor
+     *     https://docs.microsoft.com/en-us/windows/win32/wmformat/wm-year
      */
     public get year(): number {
         const text = this.getDescriptorString("WM/Year");
@@ -308,8 +327,9 @@ export default class AsfTag extends Tag {
     }
     /**
      * @inheritDoc
-     * @remarks via `WM/Year` descriptor
-     *      https://docs.microsoft.com/en-us/windows/win32/wmformat/wm-year
+     * @remarks
+     *     Stored in the `WM/Year` descriptor
+     *     https://docs.microsoft.com/en-us/windows/win32/wmformat/wm-year
      */
     public set year(value: number) {
         Guards.uint(value, "value");
@@ -318,13 +338,15 @@ export default class AsfTag extends Tag {
 
     /**
      * @inheritDoc
-     * @remarks via `WM/TrackNumber` descriptor
+     * @remarks
+     *     Stored in the `WM/TrackNumber` descriptor
      *     https://docs.microsoft.com/en-us/windows/win32/wmformat/wm-tracknumber
      */
     public get track(): number { return this.getDescriptorUint("WM/TrackNumber"); }
     /**
      * @inheritDoc
-     * @remarks via `WM/TrackNumber` descriptor
+     * @remarks
+     *     Stored in the `WM/TrackNumber` descriptor
      *     https://docs.microsoft.com/en-us/windows/win32/wmformat/wm-tracknumber
      */
     public set track(value: number) {
@@ -341,12 +363,12 @@ export default class AsfTag extends Tag {
 
     /**
      * @inheritDoc
-     * @remarks via `TrackTotal` descriptor
+     * @remarks Stored in the `TrackTotal` descriptor
      */
     public get trackCount(): number { return this.getDescriptorUint("TrackTotal"); }
     /**
      * @inheritDoc
-     * @remarks via `TrackTotal` descriptor
+     * @remarks Stored in the `TrackTotal` descriptor
      */
     public set trackCount(value: number) {
         Guards.uint(value, "value");
@@ -360,7 +382,8 @@ export default class AsfTag extends Tag {
 
     /**
      * @inheritDoc
-     * @remarks via `WM/PartOfSet` descriptor
+     * @remarks
+     *     Stored in the `WM/PartOfSet` descriptor
      *     https://docs.microsoft.com/en-us/windows/win32/wmformat/wm-partofset
      */
     public get disc(): number {
@@ -376,7 +399,8 @@ export default class AsfTag extends Tag {
     }
     /**
      * @inheritDoc
-     * @remarks via `WM/PartOfSet` descriptor
+     * @remarks
+     *     Stored in the `WM/PartOfSet` descriptor
      *     https://docs.microsoft.com/en-us/windows/win32/wmformat/wm-partofset
      */
     public set disc(value: number) {
@@ -394,7 +418,8 @@ export default class AsfTag extends Tag {
 
     /**
      * @inheritDoc
-     * @remarks via `WM/PartOfSet` descriptor
+     * @remarks
+     *     Stored in the `WM/PartOfSet` descriptor
      *     https://docs.microsoft.com/en-us/windows/win32/wmformat/wm-partofset
      */
     public get discCount(): number {
@@ -413,7 +438,8 @@ export default class AsfTag extends Tag {
     }
     /**
      * @inheritDoc
-     * @remarks via `WM/PartOfSet` descriptor
+     * @remarks
+     *     Stored in the `WM/PartOfSet` descriptor
      *     https://docs.microsoft.com/en-us/windows/win32/wmformat/wm-partofset
      */
     public set discCount(value: number) {
@@ -430,39 +456,45 @@ export default class AsfTag extends Tag {
 
     /**
      * @inheritDoc
-     * @remarks via `WM/Lyrics` descriptor
+     * @remarks
+     *     Stored in the `WM/Lyrics` descriptor
      *     https://docs.microsoft.com/en-us/windows/win32/wmformat/wm-lyrics
      */
     public get lyrics(): string { return this.getDescriptorString("WM/Lyrics"); }
     /**
      * @inheritDoc
-     * @remarks via `WM/Lyrics` descriptor
+     * @remarks
+     *     Stored in the `WM/Lyrics` descriptor
      *     https://docs.microsoft.com/en-us/windows/win32/wmformat/wm-lyrics
      */
     public set lyrics(value: string) { this.setDescriptorString(value, "WM/Lyrics"); }
 
     /**
      * @inheritDoc
-     * @remarks via `WM/ContentGroupDescription` descriptor
+     * @remarks
+     *     Stored in the `WM/ContentGroupDescription` descriptor
      *     https://docs.microsoft.com/en-us/windows/win32/wmformat/wm-contentgroupdescription
      */
     public get grouping(): string { return this.getDescriptorString("WM/ContentGroupDescription"); }
     /**
      * @inheritDoc
-     * @remarks via `WM/ContentGroupDescription` descriptor
+     * @remarks
+     *     Stored in the `WM/ContentGroupDescription` descriptor
      *     https://docs.microsoft.com/en-us/windows/win32/wmformat/wm-contentgroupdescription
      */
     public set grouping(value: string) { this.setDescriptorString(value, "WM/ContentGroupDescription"); }
 
     /**
      * @inheritDoc
-     * @remarks via `WM/BeatsPerMinute` descriptor
+     * @remarks
+     *     Stored in the `WM/BeatsPerMinute` descriptor
      *     https://docs.microsoft.com/en-us/windows/win32/wmformat/wm-beatsperminute
      */
     public get beatsPerMinute(): number { return this.getDescriptorUint("WM/BeatsPerMinute"); }
     /**
      * @inheritDoc
-     * @remarks via `WM/BeatsPerMinute` descriptor
+     * @remarks
+     *     Stored in the `WM/BeatsPerMinute` descriptor
      *     https://docs.microsoft.com/en-us/windows/win32/wmformat/wm-beatsperminute
      */
     public set beatsPerMinute(value: number) {
@@ -478,47 +510,49 @@ export default class AsfTag extends Tag {
 
     /**
      * @inheritDoc
-     * @remarks via `WM/Conductor` descriptor
+     * @remarks
+     *     Stored in the `WM/Conductor` descriptor
      *     https://docs.microsoft.com/en-us/windows/win32/wmformat/wm-conductor
      */
     public get conductor(): string { return this.getDescriptorString("WM/Conductor"); }
     /**
      * @inheritDoc
-     * @remarks via `WM/Conductor` descriptor
+     * @remarks
+     *     Stored in the `WM/Conductor` descriptor
      *     https://docs.microsoft.com/en-us/windows/win32/wmformat/wm-conductor
      */
     public set conductor(value: string) { this.setDescriptorString(value, "WM/Conductor"); }
 
     /**
      * @inheritDoc
-     * @remarks via {@link ContentDescriptionObject.copyright}
+     * @remarks Stored in the {@link ContentDescriptionObject.copyright}
      */
     public get copyright(): string { return this._contentDescriptionObject.copyright; }
     /**
      * @inheritDoc
-     * @remarks via {@link ContentDescriptionObject.copyright}
+     * @remarks Stored in the {@link ContentDescriptionObject.copyright}
      */
     public set copyright(value: string) { this._contentDescriptionObject.copyright = value; }
 
     /**
      * @inheritDoc
-     * @remarks via `MusicBrainz/Artist Id` descriptor
+     * @remarks Stored in the `MusicBrainz/Artist Id` descriptor
      */
     public get musicBrainzArtistId(): string { return this.getDescriptorString("MusicBrainz/Artist Id"); }
     /**
      * @inheritDoc
-     * @remarks via `MusicBrainz/Artist Id` descriptor
+     * @remarks Stored in the `MusicBrainz/Artist Id` descriptor
      */
     public set musicBrainzArtistId(value: string) { this.setDescriptorString(value, "MusicBrainz/Artist Id"); }
 
     /**
      * @inheritDoc
-     * @remarks via `MusicBrainz/Release Group Id` descriptor
+     * @remarks Stored in the `MusicBrainz/Release Group Id` descriptor
      */
     public get musicBrainzReleaseGroupId(): string { return this.getDescriptorString("MusicBrainz/Release Group Id"); }
     /**
      * @inheritDoc
-     * @remarks via `MusicBrainz/Release Group Id` descriptor
+     * @remarks Stored in the `MusicBrainz/Release Group Id` descriptor
      */
     public set musicBrainzReleaseGroupId(value: string) {
         this.setDescriptorString(value, "MusicBrainz/Release Group Id");
@@ -526,23 +560,23 @@ export default class AsfTag extends Tag {
 
     /**
      * @inheritDoc
-     * @remarks via `MusicBrainz/Album Id` descriptor
+     * @remarks Stored in the `MusicBrainz/Album Id` descriptor
      */
     public get musicBrainzReleaseId(): string { return this.getDescriptorString("MusicBrainz/Album Id"); }
     /**
      * @inheritDoc
-     * @remarks via `MusicBrainz/Album Id` descriptor
+     * @remarks Stored in the `MusicBrainz/Album Id` descriptor
      */
     public set musicBrainzReleaseId(value: string) { this.setDescriptorString(value, "MusicBrainz/Album Id"); }
 
     /**
      * @inheritDoc
-     * @remarks via `MusicBrainz/Album Artist Id` descriptor
+     * @remarks Stored in the `MusicBrainz/Album Artist Id` descriptor
      */
     public get musicBrainzAlbumArtistId(): string { return this.getDescriptorString("MusicBrainz/Album Artist Id"); }
     /**
      * @inheritDoc
-     * @remarks via `MusicBrainz/Artist Id` descriptor
+     * @remarks Stored in the `MusicBrainz/Artist Id` descriptor
      */
     public set musicBrainzAlbumArtistId(value: string) {
         this.setDescriptorString(value, "MusicBrainz/Album Artist Id");
@@ -550,69 +584,69 @@ export default class AsfTag extends Tag {
 
     /**
      * @inheritDoc
-     * @remarks via `MusicBrainz/Track Id` descriptor
+     * @remarks Stored in the `MusicBrainz/Track Id` descriptor
      */
     public get musicBrainzTrackId(): string { return this.getDescriptorString("MusicBrainz/Track Id"); }
     /**
      * @inheritDoc
-     * @remarks via `MusicBrainz/Track Id` descriptor
+     * @remarks Stored in the `MusicBrainz/Track Id` descriptor
      */
     public set musicBrainzTrackId(value: string) { this.setDescriptorString(value, "MusicBrainz/Track Id"); }
 
     /**
      * @inheritDoc
-     * @remarks via `MusicBrainz/Disc Id` descriptor
+     * @remarks Stored in the `MusicBrainz/Disc Id` descriptor
      */
     public get musicBrainzDiscId(): string { return this.getDescriptorString("MusicBrainz/Disc Id"); }
     /**
      * @inheritDoc
-     * @remarks via `MusicBrainz/Disc Id` descriptor
+     * @remarks Stored in the `MusicBrainz/Disc Id` descriptor
      */
     public set musicBrainzDiscId(value: string) { this.setDescriptorString(value, "MusicBrainz/Disc Id"); }
 
     /**
      * @inheritDoc
-     * @remarks via `MusicIP/PUID` descriptor
+     * @remarks Stored in the `MusicIP/PUID` descriptor
      */
     public get musicIpId(): string { return this.getDescriptorString("MusicIP/PUID"); }
     /**
      * @inheritDoc
-     * @remarks via `MusicIP/PUID` descriptor
+     * @remarks Stored in the `MusicIP/PUID` descriptor
      */
     public set musicIpId(value: string) { this.setDescriptorString(value, "MusicIP/PUID"); }
 
     /**
      * @inheritDoc
-     * @remarks via `MusicBrainz/Album Status` descriptor
+     * @remarks Stored in the `MusicBrainz/Album Status` descriptor
      */
     public get musicBrainzReleaseStatus(): string { return this.getDescriptorString("MusicBrainz/Album Status"); }
     /**
      * @inheritDoc
-     * @remarks via `MusicBrainz/Album Status` descriptor
+     * @remarks Stored in the `MusicBrainz/Album Status` descriptor
      */
     public set musicBrainzReleaseStatus(value: string) { this.setDescriptorString(value, "MusicBrainz/Album Status"); }
 
     /**
      * @inheritDoc
-     * @remarks via `MusicBrainz/Album Type` descriptor
+     * @remarks Stored in the `MusicBrainz/Album Type` descriptor
      */
     public get musicBrainzReleaseType(): string { return this.getDescriptorString("MusicBrainz/Album Type"); }
     /**
      * @inheritDoc
-     * @remarks via `MusicBrainz/Album Type` descriptor
+     * @remarks Stored in the `MusicBrainz/Album Type` descriptor
      */
     public set musicBrainzReleaseType(value: string) { this.setDescriptorString(value, "MusicBrainz/Album Type"); }
 
     /**
      * @inheritDoc
-     * @remarks via `MusicBrainz/Album Release Country` descriptor
+     * @remarks Stored in the `MusicBrainz/Album Release Country` descriptor
      */
     public get musicBrainzReleaseCountry(): string {
         return this.getDescriptorString("MusicBrainz/Album Release Country");
     }
     /**
      * @inheritDoc
-     * @remarks via `MusicBrainz/Album Release Country` descriptor
+     * @remarks Stored in the `MusicBrainz/Album Release Country` descriptor
      */
     public set musicBrainzReleaseCountry(value: string) {
         this.setDescriptorString(value, "MusicBrainz/Album Release Country");
@@ -620,7 +654,7 @@ export default class AsfTag extends Tag {
 
     /**
      * @inheritDoc
-     * @remarks via `ReplayGain/Track` descriptor
+     * @remarks Stored in the `ReplayGain/Track` descriptor
      */
     public get replayGainTrackGain(): number {
         let valueString = this.getDescriptorString("ReplayGain/Track");
@@ -635,7 +669,7 @@ export default class AsfTag extends Tag {
     }
     /**
      * @inheritDoc
-     * @remarks via `ReplayGain/Track` descriptor
+     * @remarks Stored in the `ReplayGain/Track` descriptor
      */
     public set replayGainTrackGain(value: number) {
         Guards.notNullOrUndefined(value, "value");
@@ -649,7 +683,7 @@ export default class AsfTag extends Tag {
 
     /**
      * @inheritDoc
-     * @remarks via `ReplayGain/Track Peak` descriptor
+     * @remarks Stored in the `ReplayGain/Track Peak` descriptor
      */
     public get replayGainTrackPeak(): number {
         const valueString = this.getDescriptorString("ReplayGain/Track Peak");
@@ -657,7 +691,7 @@ export default class AsfTag extends Tag {
     }
     /**
      * @inheritDoc
-     * @remarks via `ReplayGain/Track Peak` descriptor
+     * @remarks Stored in the `ReplayGain/Track Peak` descriptor
      */
     public set replayGainTrackPeak(value: number) {
         if (Number.isNaN(value)) {
@@ -670,7 +704,7 @@ export default class AsfTag extends Tag {
 
     /**
      * @inheritDoc
-     * @remarks via `ReplayGain/Album` descriptor
+     * @remarks Stored in the `ReplayGain/Album` descriptor
      */
     public get replayGainAlbumGain(): number {
         let valueString = this.getDescriptorString("ReplayGain/Album");
@@ -685,7 +719,7 @@ export default class AsfTag extends Tag {
     }
     /**
      * @inheritDoc
-     * @remarks via `ReplayGain/Album` descriptor
+     * @remarks Stored in the `ReplayGain/Album` descriptor
      */
     public set replayGainAlbumGain(value: number) {
         Guards.notNullOrUndefined(value, "value");
@@ -699,7 +733,7 @@ export default class AsfTag extends Tag {
 
     /**
      * @inheritDoc
-     * @remarks via `ReplayGain/Album Peak` descriptor
+     * @remarks Stored in the `ReplayGain/Album Peak` descriptor
      */
     public get replayGainAlbumPeak(): number {
         const valueString = this.getDescriptorString("ReplayGain/Album Peak");
@@ -707,7 +741,7 @@ export default class AsfTag extends Tag {
     }
     /**
      * @inheritDoc
-     * @remarks via `ReplayGain/Album Peak` descriptor
+     * @remarks Stored in the `ReplayGain/Album Peak` descriptor
      */
     public set replayGainAlbumPeak(value: number) {
         if (Number.isNaN(value)) {
@@ -720,9 +754,10 @@ export default class AsfTag extends Tag {
 
     /**
      * @inheritDoc
-     * @remarks via the `WM/Picture` content descriptor and description record.
+     * @remarks
+     *     Stored in the the `WM/Picture` content descriptor and description record.
      *     https://docs.microsoft.com/en-us/windows/win32/wmformat/wmpicture
-     *     Modifications to the returned array will not stored.
+     *     Modifications to the returned array will not be stored.
      */
     public get pictures(): IPicture[] {
         const records = [
@@ -734,7 +769,8 @@ export default class AsfTag extends Tag {
     }
     /**
      * @inheritDoc
-     * @remarks via the `WM/Picture` content descriptor and description record.
+     * @remarks
+     *     Stored in the `WM/Picture` content descriptor and description record.
      *     https://docs.microsoft.com/en-us/windows/win32/wmformat/wmpicture
      */
     public set pictures(value: IPicture[]) {
@@ -795,7 +831,8 @@ export default class AsfTag extends Tag {
      * Gets the string contained in a specific descriptor from the extended content description
      * object in the current instance.
      * @param names Names of the descriptors to look for
-     * @returns string The contents of the first descriptor found who's name is in the provided
+     * @returns
+     *     The contents of the first descriptor found whose name is in the provided
      *     collection of descriptor names
      */
     public getDescriptorString(... names: string[]): string {
@@ -836,7 +873,8 @@ export default class AsfTag extends Tag {
      * Gets the strings contained in a specific descriptor from the extended content description
      * object in the current instance, as split by `;`.
      * @param names Names of the descriptors to look for
-     * @returns string The contents of the first descriptor found who's name is in the provided
+     * @returns
+     *     The contents of the first descriptor found whose name is in the provided
      *     collection of descriptor names, split by `;`
      */
     public getDescriptorStrings(... names: string[]): string[] {
@@ -855,12 +893,13 @@ export default class AsfTag extends Tag {
     /**
      * Sets a collection of descriptors in the extended content description object for a given
      * name, removing the existing matching records.
-     * @param name Name of the descriptors to be added/removed
-     * @param descriptors Descriptors to add to the new instance
-     * @remarks All added descriptors should have their name set to `name` but this is not
+     * @remarks
+     *     All added descriptors should have their name set to `name` but this is not
      *     verified by the method. The descriptors will be added with their own names and not the
      *     one provided as an argument, which is only used for removing existing values and
      *     determining where to position the new descriptors.
+     * @param name Name of the descriptors to be added/removed
+     * @param descriptors Descriptors to add to the new instance
      */
     public setDescriptors(name: string, ... descriptors: ContentDescriptor[]): void {
         this._extendedDescriptionObject.setDescriptors(name, ... descriptors);
@@ -868,11 +907,12 @@ export default class AsfTag extends Tag {
 
     /**
      * Sets the string for a collection of descriptors in the current instance.
-     * @param value Value to store or `undefined` to clear the value
-     * @param names Names in which the value would be expected. For example, "WM/AlbumTitle" and
-     *     "Album"
-     * @remarks The value will be stored in the first value in `names` and the rest of the
+     * @remarks
+     *     The value will be stored in the first value in `names` and the rest of the
      *     descriptors with the matching names will be cleared.
+     * @param value Value to store or `undefined` to clear the value
+     * @param names Names in which the value would be expected. For example, `WM/AlbumTitle` and
+     *     `Album`
      */
     public setDescriptorString(value: string, ... names: string[]): void {
         Guards.truthy(names, "names");
@@ -894,11 +934,12 @@ export default class AsfTag extends Tag {
     /**
      * Sets the strings for a collection of descriptors in the current instance. The strings will
      * be stored as a single string, joined together with `; `.
-     * @param value Value to store or `undefined` to clear the value
-     * @param names Names in which the value would be expected. For example, "WM/AlbumTitle" and
-     *     "Album"
-     * @remarks The value will be stored in the first value in `names` and the rest of the
+     * @remarks
+     *     The value will be stored in the first value in `names` and the rest of the
      *     descriptors with the matching names will be cleared.
+     * @param value Value to store or `undefined` to clear the value
+     * @param names Names in which the value would be expected. For example, `WM/AlbumTitle` and
+     *     `Album`
      */
     public setDescriptorStrings(value: string[], ... names: string[]): void {
         this.setDescriptorString(value.join("; "), ...names);

@@ -10,7 +10,8 @@ import {Guards} from "../../utils";
 /**
  * This class provides a representation of an ASF description record to be used inside a
  * MetadataLibraryObject.
- * @remarks This class can store various types of information. Although {@link toString} provides
+ * @remarks
+ *     This class can store various types of information. Although {@link toString} provides
  *     a representation of all types of values, it is recommended to determine which of the `get*`
  *     methods to use by accessing {@link type}
  */
@@ -204,7 +205,8 @@ export class MetadataLibraryObject extends BaseObject {
 
     /**
      * Gets whether or not the current instance contains any records.
-     * @returns boolean `true` if the current instance does not contain any records, `false`
+     * @returns
+     *     `true` if the current instance does not contain any records, `false`
      *     otherwise.
      */
     public get isEmpty(): boolean { return this._records.length === 0; }
@@ -283,7 +285,8 @@ export class MetadataLibraryObject extends BaseObject {
     /**
      * Sets a collection of records for a given language, language, ane name, removing the existing
      * records that match.
-     * @remarks All added entries in `records` should match the provided `languageListIndex`,
+     * @remarks
+     *     All added entries in `records` should match the provided `languageListIndex`,
      *     `streamNumber`, and `name`, but this will not be verified by the method. The records
      *     will be added with their own values and not those provided in the method arguments. The
      *     arguments are only used for removing existing values and determining where to position

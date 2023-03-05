@@ -254,8 +254,7 @@ export class RelativeVolumeFrame extends Frame {
      * Gets a specified volume adjustment frame from the list of relative volume frames
      * @param frames List of frames to search
      * @param identification Identification to match
-     * @returns RelativeVolumeFrame Frame containing the matching user or `undefined` if a match was
-     *     not found
+     * @returns Frame containing the matching user or `undefined` if a match was not found
      */
     public static find(frames: RelativeVolumeFrame[], identification: string): RelativeVolumeFrame {
         Guards.truthy(frames, "frame");

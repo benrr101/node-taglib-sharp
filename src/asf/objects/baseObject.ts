@@ -79,9 +79,10 @@ export default abstract class BaseObject {
 
     /**
      * Renders the current instance as a raw ASF object containing the specified data.
-     * @param data Data to store in the rendered version of the current instance.
-     * @remarks Child classes implementing {@link render()} should render their contents and then
+     * @remarks
+     *     Child classes implementing {@link render()} should render their contents and then
      *     send the data through this method to produce the final output.
+     * @param data Data to store in the rendered version of the current instance.
      */
     protected renderInternal(data: ByteVector): ByteVector {
         const length = BigInt((!!data ? data.length : 0) + 24);

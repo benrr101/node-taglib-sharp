@@ -8,7 +8,8 @@ import {Guards} from "../utils";
 
 /**
  * Provides support for reading and writing Xiph comment-style tags.
- * @remarks Xiph comment tag properties are stored in "fields" of the form `KEY=value`, where `KEY`
+ * @remarks
+ *     Xiph comment tag properties are stored in "fields" of the form `KEY=value`, where `KEY`
  *     is the "field name". The field name can be defined multiple times in the tag which means
  *     each field can have multiple values.
  */
@@ -120,7 +121,8 @@ export default class XiphComment extends Tag {
 
     /**
      * Gets the names of the fields currently stored in the list of fields, excluding the pictures.
-     * @remarks This getter is useful for iterating over fields defined in this object in
+     * @remarks
+     *     This getter is useful for iterating over fields defined in this object in
      *     conjunction with {@link getField}.
      */
     public get fieldNames(): string[] { return Array.from(this._fields.keys()); }
@@ -220,7 +222,8 @@ export default class XiphComment extends Tag {
 
     /**
      * @inheritDoc
-     * @remarks Stored in the `ALBUMARTIST` as per standard, though `ALBUM ARTIST` and `ENSEMBLE` will be
+     * @remarks
+     *     Stored in the `ALBUMARTIST` as per standard, though `ALBUM ARTIST` and `ENSEMBLE` will be
      *     checked if `ALBUMARTIST` is not set.
      */
     public get albumArtists(): string[] {
@@ -371,7 +374,7 @@ export default class XiphComment extends Tag {
     }
     /**
      * @inheritDoc
-     * @remarks Stored in the `TRACKNUMBER` field 
+     * @remarks Stored in the `TRACKNUMBER` field
      */
     public set track(value: number) {
         // TODO: Option to store as fractional?
@@ -381,7 +384,8 @@ export default class XiphComment extends Tag {
 
     /**
      * @inheritDoc
-     * @remarks Stored in the `TRACKTOTAL` as per standard, but the denominator of `TRACKNUMBER` is also
+     * @remarks
+     *     Stored in the `TRACKTOTAL` as per standard, but the denominator of `TRACKNUMBER` is also
      *     used if `TRACKTOTAL` is not available.
      */
     public get trackCount(): number {
@@ -439,7 +443,8 @@ export default class XiphComment extends Tag {
 
     /**
      * @inheritDoc
-     * @remarks Stored in the `DISCTOTAL` as per standard, but the denominator of `DISCNUMBER` is also
+     * @remarks
+     *     Stored in the `DISCTOTAL` as per standard, but the denominator of `DISCNUMBER` is also
      *     used if `DISCTOTAL` is not available.
      */
     public get discCount(): number {
@@ -496,7 +501,8 @@ export default class XiphComment extends Tag {
 
     /**
      * @inheritDoc
-     * @remarks Stored in the `TEMPO` field preferentially, BPM field is used as a fallback.
+     * @remarks
+     *     Stored in the `TEMPO` field preferentially, BPM field is used as a fallback.
      *     The field that stores the value will be used when setting a BPM in the future. This
      *     behavior can be controlled Stored in the {@link XiphSettings.useTempoToStoreBpm}.
      */
@@ -511,7 +517,8 @@ export default class XiphComment extends Tag {
     }
     /**
      * @inheritDoc
-     * @remarks Value is stored in the `TEMPO` field if {@link XiphSettings.useTempoToStoreBpm} is
+     * @remarks
+     *     Value is stored in the `TEMPO` field if {@link XiphSettings.useTempoToStoreBpm} is
      *     `true`. Value is stored in the `BPM` if {@link XiphSettings.useTempoToStoreBpm} is `false`.
      *     The other field is removed when stored.
      */

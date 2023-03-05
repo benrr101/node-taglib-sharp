@@ -40,7 +40,8 @@ export default class OggTag extends CombinedTag {
      * Retrieves a Xiph comment for a given stream.
      * @param streamSerialNumber Serial number of the stream that contains the desired comment.
      *     Must be a positive 32-bit integer.
-     * @returns XiphComment Xiph comment of the provided stream is returned if it exists, otherwise
+     * @returns
+     *     Xiph comment of the provided stream is returned if it exists, otherwise
      *     `undefined` is returned.
      */
     public getComment(streamSerialNumber: number): XiphComment {
@@ -50,12 +51,13 @@ export default class OggTag extends CombinedTag {
 
     /**
      * Stores or removes a Xiph comment in a given stream.
+     * @remarks
+     *     As per Ogg spec, each stream must have a Xiph comment header. Therefore, comments
+     *     cannot be set to a falsy value.
      * @param streamSerialNumber Serial number of the stream in which to store the comment. Must be
      *     a positive 32-bit integer
      * @param comment Xiph comment to store in the stream. Use `undefined` to clear the comment
      *     from the stream
-     * @remarks As per Ogg spec, each stream must have a Xiph comment header. Therefore, comments
-     *     cannot be set to a falsy value.
      */
     public setComment(streamSerialNumber: number, comment: XiphComment): void {
         Guards.uint(streamSerialNumber, "streamSerialNumber");

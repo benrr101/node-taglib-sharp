@@ -71,7 +71,8 @@ export default {
      *     the `offset` property of the returned object
      * @param version ID3v2 version the frame is encoded with. Must be unsigned 8-bit int
      * @param alreadyUnsynced Whether or not the entire tag has already been unsynchronized
-     * @returns any Undefined is returned if there are no more frames to read.
+     * @returns
+     *     Undefined is returned if there are no more frames to read.
      *     Object is returned if a frame was found. Object has the following properties:
      *     * frame: {@link Frame} that was read
      *     * offset: updated offset where the next frame starts

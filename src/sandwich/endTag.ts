@@ -71,7 +71,7 @@ export default class EndTag extends CombinedTag {
 
     /**
      * Renders the tags contained in the current instance. ID3v1 tag always goes at the end.
-     * @returns ByteVector Physical representation of the tags stored in the current instance
+     * @returns Physical representation of the tags stored in the current instance
      */
     public render(): ByteVector {
         // Note: by sorting these in reverse order, we ensure that ID3v1 is rendered at the end

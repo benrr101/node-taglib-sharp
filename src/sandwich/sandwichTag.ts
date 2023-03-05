@@ -9,9 +9,10 @@ import {Guards} from "../utils";
  * This class represents a file that can have tags at the beginning and/or end of the file. Some
  * file types are fine with tags sandwiching the media contents of the file, but not all file
  * support this.
- * @remarks This was called `NonContainer` in the original .NET implementation, implying that files
+ * @remarks
+ *     This was called `NonContainer` in the original .NET implementation, implying that files
  *     utilizing this pattern could not be containers. This is not true - MPEG containers, for
- *     example, use this pattern. Therefore the name was changed to better represent the situation.
+ *     example, use this pattern. Therefore, the name was changed to better represent the situation.
  */
 export default class SandwichTag extends CombinedTag {
     public static readonly SUPPORTED_TAG_TYPES = TagTypes.Ape | TagTypes.Id3v1 | TagTypes.Id3v2;

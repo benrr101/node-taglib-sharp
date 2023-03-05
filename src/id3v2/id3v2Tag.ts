@@ -51,7 +51,7 @@ export default class Id3v2Tag extends Tag {
      * Constructs and initializes a new Tag by reading the contents from a specified
      * {@link ByteVector} object.
      * @param data Tag data to read into a tag object
-     * @returns Id3v2Tag Tag with the data from the byte vector read into it
+     * @returns Tag with the data from the byte vector read into it
      */
     public static fromData(data: ByteVector): Id3v2Tag {
         Guards.truthy(data, "data");
@@ -81,7 +81,7 @@ export default class Id3v2Tag extends Tag {
      * @param file File from which the contents of the new instance is to be read
      * @param position Offset into the file where the tag begins
      * @param style How the data is to be read into the current instance
-     * @returns Id3v2Tag Tag with the data from the file read into it
+     * @returns Tag with the data from the file read into it
      */
     public static fromFileStart(file: File, position: number, style: ReadStyle): Id3v2Tag {
         Guards.truthy(file, "file");
@@ -97,7 +97,8 @@ export default class Id3v2Tag extends Tag {
 
     /**
      * Constructs and initializes a new Tag by reading the end of the tag first.
-     * @remarks This method should only be used if reading tags at the end of a file. Only ID3v2.4
+     * @remarks
+     *     This method should only be used if reading tags at the end of a file. Only ID3v2.4
      *     tags support a footer, which is required to use this method.
      * @param file File from which the contents of the new instance is to be read
      * @param position Offset into the file where the tag ends
@@ -154,9 +155,10 @@ export default class Id3v2Tag extends Tag {
 
     /**
      * @inheritDoc
-     * @remarks This property is implemented using the TCMP Text Information Frame to provide
-     * support for a feature of the Apple iPod and iTunes products (ie, this is a non-standard
-     * field).
+     * @remarks
+     *     This property is implemented using the TCMP Text Information Frame to provide
+     *     support for a feature of the Apple iPod and iTunes products (ie, this is a non-standard
+     *     field).
      */
     public get isCompilation(): boolean {
         const val = this.getTextAsString(FrameIdentifiers.TCMP);
@@ -164,9 +166,10 @@ export default class Id3v2Tag extends Tag {
     }
     /**
      * @inheritDoc
-     * @remarks This property is implemented using the TCMP Text Information Frame to provide
-     * support for a feature of the Apple iPod and iTunes products (ie, this is a non-standard
-     * field).
+     * @remarks
+     *     This property is implemented using the TCMP Text Information Frame to provide
+     *     support for a feature of the Apple iPod and iTunes products (ie, this is a non-standard
+     *     field).
      * @param value Whether or not the album described by the current instance is a compilation
      */
     public set isCompilation(value: boolean) {
@@ -501,7 +504,8 @@ export default class Id3v2Tag extends Tag {
 
     /**
      * @inheritDoc
-     * @remarks If a TDRC frame exists, the year will be read from that. If a TDRC frame doesn't exist and a
+     * @remarks
+     *     If a TDRC frame exists, the year will be read from that. If a TDRC frame doesn't exist and a
      *     TYER or TYE frame exists, the year will be read from that. Failing both cases, 0 will be
      *     returned.
      */
@@ -1146,7 +1150,7 @@ export default class Id3v2Tag extends Tag {
      * version specified by {@link defaultVersion}. If {@link forceDefaultVersion} is `true`, all
      * tags will be rendered using that version, except for tags with footers which must be in
      * version 4.
-     * @returns ByteVector The rendered tag.
+     * @returns The rendered tag.
      */
     public render(): ByteVector {
         // Convert the performers role to the TMCL frame

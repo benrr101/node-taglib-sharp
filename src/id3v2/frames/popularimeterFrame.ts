@@ -119,8 +119,7 @@ export default class PopularimeterFrame extends Frame {
      * Gets a popularimeter frame from a specified tag that matches the given parameters
      * @param frames List of frames to search
      * @param user User email to use to match the frame in the `tag`
-     * @returns PopularimeterFrame Frame containing the matching user or `undefined` if a match was
-     *     not found
+     * @returns Frame containing the matching user or `undefined` if a match was not found
      */
     public static find(frames: PopularimeterFrame[], user: string): PopularimeterFrame {
         Guards.truthy(frames, "frames");

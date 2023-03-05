@@ -35,7 +35,8 @@ export default class OggBitStream {
     /**
      * Reads the next logical page in the stream.
      * @param page Next logical page in the stream
-     * @returns boolean `true` if the codec has read all the necessary packets in the stream.
+     * @returns
+     *     `true` if the codec has read all the necessary packets in the stream.
      *     `false` otherwise
      */
     public readPage(page: OggPage): boolean {

@@ -10,7 +10,8 @@ import {Guards} from "../utils";
 /**
  * Class that represents a collection of Matroska "tags". This class implements the {@link Tag}
  * unified tagging interface.
- * @remarks The Matroska tagging interface is very open-ended and allows a high level of
+ * @remarks
+ *     The Matroska tagging interface is very open-ended and allows a high level of
  *     customization. In particular, Matroska files may contain multiple subunits that can be
  *     independently tagged (eg, multiple episodes of a TV show in a single file). The unified
  *     tagging interface assumes that a file only represents a single unit (eg, episode). This
@@ -325,8 +326,9 @@ export default class MatroskaTagCollection extends Tag {
     /**
      * Looks for tags with the given {@paramref key} at the "file" target level. If no tags are
      * found, the process is repeated at the un-targeted level.
-     * @remarks The "file" target level is either {@link TagTargetValue.Track} or
-     *     {@link TagTargetValue.Episode} level, depending of whether the file is audio or video.
+     * @remarks
+     *     The "file" target level is either {@link MatroskaTagTarget.TRACK} or
+     *     {@link MatroskaTagTarget.EPISODE} level, depending of whether the file is audio or video.
      *     This is somewhat convention based due to Matroska tagging being so open-ended. This
      *     method should only be used for retrieving tags for the unified tagging interface, which
      *     is best-effort in following conventions.

@@ -3,15 +3,16 @@ import {Guards, NumberUtils} from "../utils";
 
 /**
  * Support for encoding and decoding unsynchronized data and numbers.
- * @remarks Unsynchronization is designed so that portions of the tag won't be misinterpreted
+ * @remarks
+ *     Unsynchronization is designed so that portions of the tag won't be misinterpreted
  *     as MPEG audio stream headers by removing the possibility of the sync bytes occurring in the
  *     tag.
  */
 export default {
     /**
-     * Encodes a unsigned int as synchronized integer data.
-     * @param value Number to encode. Must be an safe, positive integer
-     * @returns ByteVector The encoded number
+     * Encodes an unsigned int as synchronized integer data.
+     * @param value Number to encode. Must be a safe, positive integer
+     * @returns The encoded number
      * @throws Error if `value` is greater than 268435456
      */
     fromUint: (value: number): ByteVector => {
@@ -30,7 +31,8 @@ export default {
 
     /**
      * Resynchronizes a {@link ByteVector} object by removing the added bytes.
-     * @remarks In some cases (as determined by header flags), the metadata contains MPEG stream
+     * @remarks
+     *     In some cases (as determined by header flags), the metadata contains MPEG stream
      *     synchronization bytes that were "unsynchronized" by inserting empty bytes in between
      *     them. This method removes those bytes such that the original metadata bytes are
      *     returned.
@@ -86,7 +88,8 @@ export default {
 
     /**
      * Unsynchronizes a {@link ByteVector} object by inserting empty bytes where necessary.
-     * @remarks This is necessary in some cases in order for the MPEG parser to ignore bytes used
+     * @remarks
+     *     This is necessary in some cases in order for the MPEG parser to ignore bytes used
      *     for MPEG stream synchronization that occur accidentally in metadata from being treated
      *     as synchronization bytes.
      * @param data Object to unsynchronize

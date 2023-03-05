@@ -138,8 +138,7 @@ export class UrlLinkFrame extends Frame {
      * Gets the first frame that matches the provided type
      * @param frames Object to search in
      * @param ident Frame identifier to search for
-     * @returns UrlLinkFrame Frame containing the matching frameId, `undefined` if a match was
-     *     not found
+     * @returns Frame containing the matching frameId, `undefined` if a match was not found
      */
     public static findUrlLinkFrame(frames: UrlLinkFrame[], ident: FrameIdentifier): UrlLinkFrame {
         Guards.truthy(frames, "frames");
@@ -364,8 +363,7 @@ export class UserUrlLinkFrame extends UrlLinkFrame {
      * Gets a frame from a list of frames.
      * @param frames List of frames to search
      * @param description Description of the frame to match
-     * @returns UserUrlLinkFrame Frame containing the matching user, `undefined` if a match was not
-     *     found
+     * @returns Frame containing the matching user, `undefined` if a match was not found
      */
     public static findUserUrlLinkFrame(frames: UserUrlLinkFrame[], description: string): UserUrlLinkFrame {
         Guards.truthy(frames, "frames");

@@ -53,11 +53,8 @@ export enum FileAccessMode {
 /**
  * Delegate is used for intervening in {@link File.createFromPath} by resolving the filetype before
  * any standard resolution operations.
- * @param abstraction File to be read.
- * @param mimeType MimeType of the file.
- * @param style How to read media properties from the file
- * @return New instance of {@link File} or `undefined` if the resolver could not be matched
- * @remarks A FileTypeResolver is one way of altering the behavior of
+ * @remarks
+ *     A FileTypeResolver is one way of altering the behavior of
  *     {@link File.createFromPath} When {@link File.createFromPath} is called, the registered
  *     resolvers are invoked in reverse order in which they were registered. The resolver may then
  *     perform any operations necessary, including other type-finding methods. If the resolver
@@ -65,6 +62,10 @@ export enum FileAccessMode {
  *     it returns `undefined`, {@link File.createFromPath} will continue to process. If the resolver
  *     throws an exception, it will be uncaught. To register a resolver, use
  *     {@link File.addFileTypeResolver}.
+ * @param abstraction File to be read.
+ * @param mimeType MimeType of the file.
+ * @param style How to read media properties from the file
+ * @returns New instance of {@link File} or `undefined` if the resolver could not be matched
  */
 export type FileTypeResolver = (abstraction: IFileAbstraction, mimetype: string, style: ReadStyle) => File;
 
@@ -73,7 +74,8 @@ export type FileTypeConstructor = new (abstraction: IFileAbstraction, style: Rea
 /**
  * This abstract class provides a basic framework for reading and writing to a file, as well as
  * accessing basic tagging and media properties.
- * @remarks This class is agnostic to all specific media types. Its child classes, on the other
+ * @remarks
+ *     This class is agnostic to all specific media types. Its child classes, on the other
  *     hand, support the intricacies of different media and tagging formats. For example
  *     {@link Mpeg4File} supports the MPEG-4 specification and Apple's tagging format. Each file
  *     type can be created using its format specific constructors, but the preferred method is to
@@ -272,7 +274,8 @@ export abstract class File implements IDisposable {
 
     /**
      * Gets an abstract representation of all tags stored in the current instance.
-     * @remarks This property provides generic and general access to the most common tagging
+     * @remarks
+     *     This property provides generic and general access to the most common tagging
      *     features of a file. To access or add a specific type of tag in the file, use
      *     {@link File.getTag}.
      */
@@ -409,7 +412,8 @@ export abstract class File implements IDisposable {
      * @param create Whether or not to try and create the tag if one is not found. `true` does not
      *     guarantee the tag will be created. For example, trying to create an ID3v2 tag on an OGG
      *     Vorbis file will always fail.
-     * @returns Tag object containing the tag that was found in or added to the current instance.
+     * @returns
+     *     Tag object containing the tag that was found in or added to the current instance.
      *     If no matching tag was found and none was created, `undefined` is returned. It is safe
      *     to assume that if `undefined` is not returned, the returned tag can be cast to the
      *     appropriate type.
@@ -507,7 +511,7 @@ export abstract class File implements IDisposable {
      * This method reads the block of data at the current seek position. To change the seek
      * position, use {@link File.seek}.
      * @param length Number of bytes to read.
-     * @returns ByteVector Object containing the data read from the current instance.
+     * @returns Object containing the data read from the current instance.
      * @throws Error Thrown when `length` is not a positive, safe integer.
      */
     public readBlock(length: number): ByteVector {

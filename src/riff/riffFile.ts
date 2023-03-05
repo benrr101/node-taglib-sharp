@@ -23,7 +23,8 @@ import {NumberUtils} from "../utils";
 /**
  * This class extends {@link File} to provide tagging and properties support for RIFF files. These
  * are usually WAV and AVI file.
- * @remarks The RIFF standard supports a general purpose "chunk" system that software can use for
+ * @remarks
+ *     The RIFF standard supports a general purpose "chunk" system that software can use for
  *     whatever purpose. Tagging is accomplished using various types of chunks
  */
 export default class RiffFile extends File {

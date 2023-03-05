@@ -6,9 +6,10 @@ import {Guards, NumberUtils} from "./utils";
 
 /**
  * @summary Specifies the text encoding used when converting betweenInclusive a string and a
- *          {@link ByteVector}.
- * @remarks This enumeration is used by {@link ByteVector.fromString} and
- *          {@link ByteVector.toString}
+ *     {@link ByteVector}.
+ * @remarks
+ *     This enumeration is used by {@link ByteVector.fromString} and
+ *     {@link ByteVector.toString}
  */
 export enum StringType {
     /**
@@ -108,7 +109,8 @@ export class Encoding {
 
 /**
  * Wrapper around a `Uint8Array` that provides functionality for reading and writing byte arrays.
- * @remarks Implementation of this class uses a single `Uint8Array` to store bytes. Due to
+ * @remarks
+ *     Implementation of this class uses a single `Uint8Array` to store bytes. Due to
  *     `Uint8Array`s being fixed length, any operation that inserts or removes values into the
  *     instance will result in a copy of the internal array being made. If multiple additions will
  *     be made, rather than using multiple inserts/adds, the {@link ByteVector.concatenate} method
@@ -228,8 +230,9 @@ export class ByteVector {
      * vector being copied for each call.
      * @param vectors ByteVectors, byte arrays, or straight bytes to concatenate together into a
      *     new {@link ByteVector}
-     * @returns ByteVector Single byte vector with the contents of the byte vectors in
-     *     `vectors` concatenated together
+     * @returns
+     *     Single byte vector with the contents of the byte vectors in `vectors` concatenated
+     *     together
      */
     // @TODO Remove usages of .addX when this can be substituted
     public static concatenate(... vectors: Array<Uint8Array|ByteVector|number|undefined>): ByteVector {
@@ -625,7 +628,8 @@ export class ByteVector {
      * Compares two byte vectors. Returns a numeric value
      * @param a Byte vector to compare against `b`
      * @param b Byte vector to compare against `a`
-     * @returns number `0` if the two vectors are the same. Any other value indicates the two are
+     * @returns
+     *     `0` if the two vectors are the same. Any other value indicates the two are
      *     different. If the two vectors differ by length, this will be the length of `a` minus the
      *     length of `b`. If the lengths are the same it will be the difference between the first
      *     element that differs.
@@ -859,8 +863,9 @@ export class ByteVector {
     /**
      * Gets the index of the first occurrence of the specified value.
      * @param item A byte to find within the current instance.
-     * @returns An integer containing the first index at which the value was found, or -1 if it
-     *          was not found/
+     * @returns
+     *     An integer containing the first index at which the value was found, or -1 if it was not
+     *     found
      */
     public indexOf(item: number): number {
         return this._bytes.indexOf(item);
@@ -1050,7 +1055,8 @@ export class ByteVector {
     /**
      * Checks whether or not a pattern appears at the beginning of the current instance.
      * @param pattern ByteVector containing the pattern to check for in the current instance.
-     * @returns `true` if the pattern was found at the beginning of the current instance, `false`
+     * @returns
+     *     `true` if the pattern was found at the beginning of the current instance, `false`
      *     otherwise.
      */
     public startsWith(pattern: ByteVector): boolean {
@@ -1135,9 +1141,10 @@ export class ByteVector {
      * Converts the first eight bytes of the current instance to a signed long. If the current
      * instance is less than eight bytes, the most significant bytes will be filled with 0x00.
      * @param mostSignificantByteFirst If `true` the most significant byte appears first (big
-     *        endian format)
-     * @returns A signed long value containing the value read from the current instance,
-     *          represented as a BigInt due to JavaScript's 52-bit integer limitation.
+     *     endian format)
+     * @returns
+     *     A signed long value containing the value read from the current instance,
+     *     represented as a BigInt due to JavaScript's 52-bit integer limitation.
      */
     public toLong(mostSignificantByteFirst: boolean = true): bigint {
         const dv = this.getSizedDataView(8, mostSignificantByteFirst);
@@ -1148,7 +1155,7 @@ export class ByteVector {
      * Converts the first two bytes of the current instance to a signed short. If the current
      * instance is less than two bytes, the most significant bytes will be filled with 0x00.
      * @param mostSignificantByteFirst If `true` the most significant byte appears first (big
-     *        endian format)
+     *    endian format)
      * @returns A signed short value containing the value read from the current instance
      */
     public toShort(mostSignificantByteFirst: boolean = true): number {
@@ -1212,7 +1219,7 @@ export class ByteVector {
      * Converts the first four bytes of the current instance to an unsigned integer. If the current
      * instance is less than four bytes, the most significant bytes will be filled with 0x00.
      * @param mostSignificantByteFirst If `true` the most significant byte appears first (big
-     *        endian format)
+     *     endian format)
      * @returns An unsigned integer value containing the value read from the current instance
      */
     public toUint(mostSignificantByteFirst: boolean = true): number {
@@ -1224,9 +1231,10 @@ export class ByteVector {
      * Converts the first eight bytes of the current instance to an unsigned long. If the current
      * instance is less than eight bytes, the most significant bytes will be filled with 0x00.
      * @param mostSignificantByteFirst If `true` the most significant byte appears first (big
-     *        endian format)
-     * @returns An unsigned short value containing the value read from the current instance,
-     *          represented as a BigInt due to JavaScript's 32-bit integer limitation
+     *     endian format)
+     * @returns
+     *     An unsigned short value containing the value read from the current instance,
+     *     represented as a BigInt due to JavaScript's 32-bit integer limitation
      */
     public toUlong(mostSignificantByteFirst: boolean = true): bigint {
         const dv = this.getSizedDataView(8, mostSignificantByteFirst);
@@ -1237,7 +1245,7 @@ export class ByteVector {
      * Converts the first two bytes of the current instance to an unsigned short. If the current
      * instance is less than two bytes, the most significant bytes will be filled with 0x00.
      * @param mostSignificantByteFirst If `true` the most significant byte appears first (big
-     *        endian format)
+     *     endian format)
      * @returns An unsigned short value containing the value read from the current instance
      */
     public toUshort(mostSignificantByteFirst: boolean = true): number {

@@ -148,8 +148,7 @@ export default class CommentsFrame extends Frame {
      * @param frames Frames to search for best matching frame
      * @param description Description of the comments frame to match
      * @param language Optional, ISO-639-2 language code to match
-     * @returns CommentsFrame Object containing the matching frame or `undefined` if a match was
-     *     not found
+     * @returns Object containing the matching frame or `undefined` if a match was not found
      */
     public static find(frames: CommentsFrame[], description: string, language?: string): CommentsFrame {
         Guards.truthy(frames, "frames");
@@ -167,7 +166,8 @@ export default class CommentsFrame extends Frame {
      * @param frames Frames to search
      * @param description Description of the comments frame to match
      * @param language Optional, ISO-639-2 language code to match
-     * @returns CommentsFrame[] Array of comments frames that match the provided parameters or an
+     * @returns
+     *     Array of comments frames that match the provided parameters or an
      *     empty array if none were found
      */
     public static findAll(frames: CommentsFrame[], description: string, language?: string): CommentsFrame[] {

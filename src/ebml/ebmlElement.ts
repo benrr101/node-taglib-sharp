@@ -62,7 +62,7 @@ export default class EbmlElement implements ILazy {
 
     /**
      * Reads raw binary bytes from the current element's data section.
-     * @returns ByteVector Raw bytes contained in the element.
+     * @returns Raw bytes contained in the element.
      */
     public getBytes(): ByteVector {
         this.load();
@@ -109,7 +109,8 @@ export default class EbmlElement implements ILazy {
 
     /**
      * Read an integer from the current element's data section.
-     * @remarks The EBML spec supports up to 64-bit unsigned integers. Due to javascript's
+     * @remarks
+     *     The EBML spec supports up to 64-bit unsigned integers. Due to javascript's
      *     implementation of `number`s and wanting to avoid using `BigInt`s everywhere an integer
      *     is needed in this implementation, we will only support up to 52-bit unsigned integers.
      * @returns number A `safe` integer contained in the element.

@@ -730,7 +730,8 @@ export default class RiffBitmapInfoHeader implements IVideoCodec {
 
     /**
      * Gets the compression ID for the image.
-     * @remarks For compressed video and YUV formats, this is a FOURCC code, specified as a DWORD in
+     * @remarks
+     *     For compressed video and YUV formats, this is a FOURCC code, specified as a DWORD in
      *     little-endian order. For more information, see
      *     {@link https://docs.microsoft.com/en-us/windows/win32/directshow/fourcc-codes} and
      *     {@link https://www.fourcc.org/fourcc.php}. For uncompressed RGB formats, the following

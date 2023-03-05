@@ -10,7 +10,8 @@ import {Guards} from "../../utils";
 /**
  * This class provides a representation of an ASF content descriptor to be used in combination with
  * {@link ExtendedContentDescriptionObject}.
- * @remarks This class can store various types of information. Although {@link toString} provides
+ * @remarks
+ *     This class can store various types of information. Although {@link toString} provides
  *     a representation of all types of values, it is recommended to determine which of the `get*`
  *     methods to use by accessing {@link type}
  */
@@ -167,7 +168,8 @@ export class ExtendedContentDescriptionObject extends BaseObject {
 
     /**
      * Gets whether or not the current instance contains any records.
-     * @returns boolean `true` if the current instance does not contain any records, `false`
+     * @returns
+     *     `true` if the current instance does not contain any records, `false`
      *     otherwise.
      */
     public get isEmpty(): boolean { return this._descriptors.length === 0; }
@@ -234,12 +236,13 @@ export class ExtendedContentDescriptionObject extends BaseObject {
 
     /**
      * Sets a collection of descriptors for a given name, removing the existing matching records.
-     * @param name Name of the descriptors to be added/removed
-     * @param descriptors Descriptors to add to the new instance
-     * @remarks All added descriptors should have their name set to `name` but this is not
+     * @remarks
+     *     All added descriptors should have their name set to `name` but this is not
      *     verified by the method. The descriptors will be added with their own names and not the
      *     one provided as an argument, which is only used for removing existing values and
      *     determining where to position the new descriptors.
+     * @param name Name of the descriptors to be added/removed
+     * @param descriptors Descriptors to add to the new instance
      */
     public setDescriptors(name: string, ... descriptors: ContentDescriptor[]): void {
         Guards.notNullOrUndefined(name, "name");

@@ -130,8 +130,7 @@ export default class UnsynchronizedLyricsFrame extends Frame {
      * @param frames List of frames to search
      * @param description Description to match
      * @param language Optionally, ISO-639-2 language code to match
-     * @returns UnsynchronizedLyricsFrame Frame that matches provided parameters, `undefined` if a
-     *     match was not found
+     * @returns Frame that matches provided parameters, `undefined` if a match was not found
      */
     public static find(
         frames: UnsynchronizedLyricsFrame[],
@@ -153,8 +152,7 @@ export default class UnsynchronizedLyricsFrame extends Frame {
      * @param frames List of frames to search
      * @param description Description to match
      * @param language Optionally, ISO-639-2 language code to match
-     * @returns UnsynchronizedLyricsFrame[] List of frames matching provided parameters, empty
-     *     array if no matches were found
+     * @returns List of frames matching provided parameters, empty array if no matches were found
      */
     public static findAll(
         frames: UnsynchronizedLyricsFrame[],

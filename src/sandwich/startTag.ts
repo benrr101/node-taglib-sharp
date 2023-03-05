@@ -63,7 +63,7 @@ export default class StartTag extends CombinedTag {
     /**
      * Renders the tags contained in the current instance.
      * The tags are rendered in the order that they are stored in the current instance.
-     * @returns ByteVector Physical representation of the tags stored in the current instance
+     * @returns Physical representation of the tags stored in the current instance
      */
     public render(): ByteVector {
         const tagData = this.tags.map((t) => (<ApeTag|Id3v2Tag> t).render());

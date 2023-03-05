@@ -138,7 +138,8 @@ export class Track implements ICodec {
 
     /**
      * Language of the track.
-     * @remarks If the Matroska `LanguageIETF` field is available, it will be used preferentially.
+     * @remarks
+     *     If the Matroska `LanguageIETF` field is available, it will be used preferentially.
      *     This uses the BCP-47 IETF language tag, using the IANA language subtag registry. If it
      *     is not available, the `Language` field is used, if available. This uses the ISO 639-2
      *     format of the 3 letter or 3+2 letter configuration. Both fields are optional

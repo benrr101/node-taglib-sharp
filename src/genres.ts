@@ -220,8 +220,9 @@ export default {
      * @param index Index of the genre in the audio genre array. Can be a {@link Number},
      *     {@link string} or {@link string} wrapped in `( )`, if `allowParenthesis` is set
      *     to `true`
-     * @param allowParenthesis Whether or not a number wrapped in parenthesis is allowed
-     * @returns string Genre name if found, or `undefined` if `index` is outside the
+     * @param allowParenthesis Whether or not a number wrapped in parentheses is allowed
+     * @returns
+     *     Genre name if found, or `undefined` if `index` is outside the
      *     bounds of the audio genre array or if `index` is not valid.
      */
     indexToAudio: (index: number|string, allowParenthesis: boolean): string => {
@@ -239,7 +240,8 @@ export default {
      *     {@link string} or {@link string} wrapped in `( )` if `allowParenthesis` is set
      *     to `true`
      * @param allowParenthesis Whether or not a number wrapped in parenthesis is allowed
-     * @returns string Genre name if found, or `undefined` if `index` is outside the
+     * @returns
+     *     Genre name if found, or `undefined` if `index` is outside the
      *     bounds of the video genre array or if `index` is not valid.
      */
     indexToVideo: (index: number|string, allowParenthesis: boolean): string => {

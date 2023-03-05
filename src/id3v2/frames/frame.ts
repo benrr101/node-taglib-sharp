@@ -47,7 +47,8 @@ export abstract class Frame {
 
     /**
      * Gets the encryption ID applied to the current instance.
-     * @returns number Value containing the encryption identifier for the current instance or
+     * @returns
+     *     Value containing the encryption identifier for the current instance or
      *     `undefined` if not set.
      */
     public get encryptionId(): number | undefined {
@@ -97,13 +98,14 @@ export abstract class Frame {
 
     /**
      * Gets the frame ID for the current instance.
-     * @returns FrameIdentifier Object representing of the identifier of the frame
+     * @returns Object representing of the identifier of the frame
      */
     public get frameId(): FrameIdentifier { return this._header.frameId; }
 
     /**
      * Gets the grouping ID applied to the current instance.
-     * @returns number Value containing the grouping identifier for the current instance, or
+     * @returns
+     *     Value containing the grouping identifier for the current instance, or
      *     `undefined` if not set.
      */
     public get groupId(): number | undefined {
@@ -219,7 +221,8 @@ export abstract class Frame {
      * Converts an encoding to be a supported encoding for a specified tag version.
      * @param type Value containing the original encoding
      * @param version Value containing the ID3v2 version to be encoded.
-     * @returns StringType Value containing the correct encoding to use, based on
+     * @returns
+     *     Value containing the correct encoding to use, based on
      *     {@link Id3v2Settings.forceDefaultEncoding} and what is supported by
      *     `version`
      */

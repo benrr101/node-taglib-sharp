@@ -139,49 +139,56 @@ export abstract class DescriptorBase {
 
     /**
      * Gets the boolean value of the current instance.
-     * @returns boolean Boolean value of the current instance is returned if {@link type} is
+     * @returns
+     *     Boolean value of the current instance is returned if {@link type} is
      *     {@link DataType.Bool}. `undefined` is returned otherwise.
      */
     public get boolValue(): boolean { return this._boolValue; }
 
     /**
      * Gets the binary contents of the current instance.
-     * @returns ByteVector Byte contents of the current instance, if {@link type} is
+     * @returns
+     *     Byte contents of the current instance, if {@link type} is
      *     {@link DataType.Bytes}. `undefined` is returned otherwise.
      */
     public get byteValue(): ByteVector { return this._byteValue; }
 
     /**
      * Gets the guid contents of the current instance.
-     * @returns UuidWrapper GUID contents of the current instance, if {@link type} is
+     * @returns
+     *     GUID contents of the current instance, if {@link type} is
      *     {@link DataType.Guid}. `undefined` is returned otherwise.
      */
     public get guidValue(): UuidWrapper { return this._guidValue; }
 
     /**
      * Gets the string contents of the current instance.
-     * @returns string String contents of the current instance if {@link type} is
+     * @returns
+     *     String contents of the current instance if {@link type} is
      *     {@link DataType.Unicode}. `undefined` is returned otherwise.
      */
     public get stringValue(): string { return this._stringValue; }
 
     /**
      * Gets the 32-bit double word contents of the current instance.
-     * @returns number Double word contents of the current instance, if {@link type} is
-     *      {@link DataType.DWord}. `undefined` is returned otherwise.
+     * @returns
+     *     Double word contents of the current instance, if {@link type} is
+     *     {@link DataType.DWord}. `undefined` is returned otherwise.
      */
     public get uintValue(): number { return this._dWordValue; }
 
     /**
      * Gets the 64-bit quad word contents of the current instance.
-     * @returns bigint Quad word contents of the current instance, if {@link type} is
+     * @returns
+     *     Quad word contents of the current instance, if {@link type} is
      *     {@link DataType.QWord}. `undefined` is returned otherwise.
      */
     public get ulongValue(): bigint { return this._qWordValue; }
 
     /**
      * Gets the 16-bit word contents of the current instance.
-     * @returns number Word contents of the current instance, if {@link type} is
+     * @returns
+     *     Word contents of the current instance, if {@link type} is
      *     {@link DataType.Word}. `undefined` is returned otherwise.
      */
     public get ushortValue(): number { return this._wordValue; }

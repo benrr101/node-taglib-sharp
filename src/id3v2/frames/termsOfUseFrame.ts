@@ -123,8 +123,7 @@ export default class TermsOfUseFrame extends Frame {
      * Gets a specified terms of use frame from the list of frames
      * @param frames List of frames to search
      * @param language Optionally, the ISO-639-2 language code to match
-     * @returns TermsOfUseFrame A matching frame if found or `undefined` if a matching frame was
-     *     not found
+     * @returns A matching frame if found or `undefined` if a matching frame was not found
      */
     public static find(frames: TermsOfUseFrame[], language?: string): TermsOfUseFrame {
         Guards.truthy(frames, "frames");
@@ -136,8 +135,7 @@ export default class TermsOfUseFrame extends Frame {
      * accepting one with a different language if a match was not found.
      * @param frames List of frames to search
      * @param language ISO-639-2 language code to match
-     * @returns TermsOfUseFrame Frame containing the matching frame or `undefined` if a match was
-     *     not found
+     * @returns Frame containing the matching frame or `undefined` if a match was not found
      */
     public static findPreferred(frames: TermsOfUseFrame[], language: string): TermsOfUseFrame {
         Guards.truthy(frames, "frames");

@@ -146,12 +146,12 @@ export default class MatroskaAttachment implements IPicture, ILazy {
     }
     /**
      * @inheritDoc
-     * @remarks Although this value can be set to anything, it is recommended if creating an
-     *     attachment from an {@link IPicture} to not change this value. Matroska does not have a
+     * @remarks
+     *     Although this value can be set to anything, it is recommended if creating an
+     *     attachment from a {@link IPicture} to not change this value. Matroska does not have a
      *     concept of attachment "type", so node-taglib-sharp embeds the type in the filename
      *     field.
      */
-
     public set filename(value: string) {
         this.load();
         this._filename = value;
@@ -180,7 +180,8 @@ export default class MatroskaAttachment implements IPicture, ILazy {
     }
     /**
      * @inheritDoc
-     * @remarks Since Matroska attachments do not have a concept of "type", in order for this
+     * @remarks
+     *     Since Matroska attachments do not have a concept of "type", in order for this
      *     value to be preserved, the string representation of the type will be embedded in the
      *     {@link filename}.
      */
