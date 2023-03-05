@@ -1,6 +1,10 @@
 import {StringType} from "../byteVector";
 import {Guards} from "../utils";
 
+/**
+ * This class contains settings related to ID3v2 tag operations. Open files will need to be
+ * re-read in order for changes to take effect.
+ */
 export default class Id3v2Settings {
     private static _defaultEncoding: StringType = StringType.UTF8;
     private static _defaultVersion: number = 3;

@@ -62,10 +62,19 @@ export default class Id3v1Tag extends Tag {
         return output;
     }
 
+    /**
+     * Constructs and initializes a new instance from the provided data.
+     * @param data Raw data for the ID3v1 tag
+     */
     public static fromData(data: ByteVector): Id3v1Tag {
         return new Id3v1Tag(data);
     }
 
+    /**
+     * Constructs and initializes a new instance by reading from a position in a file.
+     * @param file File to read the tag from
+     * @param position Offset into the file where the tag begins
+     */
     public static fromFile(file: File, position: number): Id3v1Tag {
         Guards.truthy(file, "file");
         Guards.safeUint(position, "position");

@@ -18,6 +18,9 @@ import {Guards} from "../utils";
  * file but could be used by other classes. It currently supports ID3v2 and APE tags.
  */
 export default class StartTag extends CombinedTag {
+    /**
+     * List of tag types that are supported by a sandwich tag's start tag.
+     */
     public static readonly SUPPORTED_TAG_TYPES: TagTypes = TagTypes.Ape | TagTypes.Id3v2;
 
     /**
@@ -109,6 +112,7 @@ class StartTagParser extends TagParser {
         super(file, readStyle, 0);
     }
 
+    /** @inheritDoc */
     public read(): boolean {
         try {
             // Read a header from the file

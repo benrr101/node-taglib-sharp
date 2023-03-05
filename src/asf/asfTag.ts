@@ -851,6 +851,14 @@ export default class AsfTag extends Tag {
         return undefined;
     }
 
+    /**
+     * Gets the unsigned integer contained in a specific descriptor from the extended content
+     * description object in the current instance.
+     * @param names Names of the descriptors to look for
+     * @returns
+     *     The contents of the first descriptor found whose name is in the provided
+     *     collection of descriptor names
+     */
     public getDescriptorUint(... names: string[]): number {
         for (const descriptor of this.getDescriptors(... names)) {
             if (descriptor.type === DataType.DWord) {

@@ -290,6 +290,11 @@ export abstract class File implements IDisposable {
      * Gets the tag types contained in the physical file represented by the current instance.
      */
     public get tagTypesOnDisk(): TagTypes { return this._tagTypesOnDisk; }
+    /**
+     * Sets the tag types contained in the physical file represented by the current instance.
+     * @param value
+     * @protected
+     */
     protected set tagTypesOnDisk(value: TagTypes) { this._tagTypesOnDisk = value; }
 
     // #endregion

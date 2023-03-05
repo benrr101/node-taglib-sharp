@@ -151,5 +151,10 @@ export default abstract class SandwichFile extends File implements ISandwichFile
 
     // #endregion
 
+    /**
+     * Reads the properties of the file.
+     * @param readStyle Indicates what degree of accuracy the file properties are read, if at all.
+     * @protected
+     */
     protected abstract readProperties(readStyle: ReadStyle): Properties;
 }

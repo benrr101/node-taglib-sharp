@@ -53,7 +53,7 @@ export default class EbmlElement implements ILazy {
 
     /**
      * Reads a boolean from the current element's data section.
-     * @returns boolean `true` if the data stored in the element is > 0, `false` if 0 is stored
+     * @returns `true` if the data stored in the element is > 0, `false` if 0 is stored
      */
     public getBool(): boolean {
         this.load();
@@ -71,7 +71,7 @@ export default class EbmlElement implements ILazy {
 
     /**
      * Reads a double-precision or single-precision number from the current element's data section.
-     * @returns number Floating point value contained in the element.
+     * @returns Floating point value contained in the element.
      */
     public getDouble(): number {
         this.load();
@@ -87,7 +87,7 @@ export default class EbmlElement implements ILazy {
     }
 
     /**
-     * Creates a parser from the
+     * Creates a parser for reading the elements contained inside the current instance.
      */
     public getParser(): EbmlParser {
         return new EbmlParser(this._file, this._dataOffset, this._dataOffset + this._dataSize, this._options);
@@ -113,7 +113,7 @@ export default class EbmlElement implements ILazy {
      *     The EBML spec supports up to 64-bit unsigned integers. Due to javascript's
      *     implementation of `number`s and wanting to avoid using `BigInt`s everywhere an integer
      *     is needed in this implementation, we will only support up to 52-bit unsigned integers.
-     * @returns number A `safe` integer contained in the element.
+     * @returns A `safe` integer contained in the element.
      */
     public getSafeUint(): number {
         this.load();
@@ -130,7 +130,7 @@ export default class EbmlElement implements ILazy {
     /**
      * Read an integer from the data section.
      * @remarks Use this method if there's a high likelihood that the data will be >52 bits.
-     * @returns number A `safe` integer contained in the element.
+     * @returns A `safe` integer contained in the element.
      */
     public getUlong(): bigint {
         this.load();

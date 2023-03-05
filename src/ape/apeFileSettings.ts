@@ -6,7 +6,10 @@ import {NumberUtils} from "../utils";
  * in order for changes to take effect.
  */
 export default class ApeFileSettings {
-    public static readonly SUPPORTED_TAG_TYPES = TagTypes.Ape | TagTypes.Id3v1 | TagTypes.Id3v2;
+    /**
+     * List of tag types that are supported by the APE file.
+     */
+    public static readonly SUPPORTED_TAG_TYPES: TagTypes = TagTypes.Ape | TagTypes.Id3v1 | TagTypes.Id3v2;
 
     private static _defaultTagTypes = TagTypes.Ape;
     private static _preferApeTagAtFileEnd = true;

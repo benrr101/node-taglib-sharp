@@ -23,6 +23,9 @@ import {TextInformationFrame, UserTextInformationFrame} from "./frames/textInfor
 import {UrlLinkFrame} from "./frames/urlLinkFrame";
 import {Guards} from "../utils";
 
+/**
+ * Extends {@link Tag} to provide support for reading and writing tags stored in the ID3v2 format.
+ */
 export default class Id3v2Tag extends Tag {
     private static _language: string = undefined;       // @TODO: Use the os-locale module to supply a
                                                         // lazily loaded "default" locale
@@ -34,13 +37,13 @@ export default class Id3v2Tag extends Tag {
 
     // #region Constructors
 
-    /**
-     * Constructs an empty ID3v2 tag
-     */
     private constructor() {
         super();
     }
 
+    /**
+     * Constructs and initializes an empty ID3v2 tag.
+     */
     public static fromEmpty(): Id3v2Tag {
         const tag = new Id3v2Tag();
         tag._header = new Id3v2TagHeader();
@@ -1099,7 +1102,7 @@ export default class Id3v2Tag extends Tag {
      * Gets the text value from a specified text information frame (or URL frame if that was
      * specified).
      * @param ident Frame identifier of the text information frame to get the value from
-     * @returns string Text of the specified frame, or `undefined` if no value was found
+     * @returns Text of the specified frame, or `undefined` if no value was found
      */
     public getTextAsString(ident: FrameIdentifier): string {
         Guards.truthy(ident, "ident");
@@ -1363,8 +1366,9 @@ export default class Id3v2Tag extends Tag {
     // #endregion
 
     // #region Protected/Private Methods
+
     // @TODO: Split into parseFromFile and parseFromData
-    protected parse(data: ByteVector, file: File, position: number, style: ReadStyle): void {
+    private parse(data: ByteVector, file: File, position: number, style: ReadStyle): void {
         // If the entire tag is marked as unsynchronized, and this tag is version ID3v2.3 or lower,
         // resynchronize it.
         const fullTagUnsync = this._header.majorVersion < 4
@@ -1426,7 +1430,7 @@ export default class Id3v2Tag extends Tag {
         }
     }
 
-    protected readFromStart(file: File, position: number, style: ReadStyle): void {
+    private readFromStart(file: File, position: number, style: ReadStyle): void {
         file.seek(position);
 
         const headerBlock = file.readBlock(Id3v2Settings.headerSize);
@@ -1441,7 +1445,7 @@ export default class Id3v2Tag extends Tag {
         this.parse(undefined, file, position, style);
     }
 
-    protected readFromEnd(file: File, position: number, style: ReadStyle): void {
+    private readFromEnd(file: File, position: number, style: ReadStyle): void {
         file.seek(position - Id3v2Settings.footerSize);
 
         const footerBlock = file.readBlock(Id3v2Settings.footerSize);

@@ -6,7 +6,10 @@ import {NumberUtils} from "../utils";
  * in order for changes to take effect.
  */
 export default class AacFileSettings {
-    public static readonly SUPPORTED_TAG_TYPES = TagTypes.Id3v1 | TagTypes.Id3v2 | TagTypes.Ape;
+    /**
+     * List of the tag types that are supported by the AAC file.
+     */
+    public static readonly SUPPORTED_TAG_TYPES: TagTypes = TagTypes.Id3v1 | TagTypes.Id3v2 | TagTypes.Ape;
 
     private static _defaultTagTypes = TagTypes.Id3v1 | TagTypes.Id3v2;
     private static _preferApeTagAtFileEnd = true;

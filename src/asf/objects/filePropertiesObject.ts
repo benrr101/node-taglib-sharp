@@ -53,6 +53,11 @@ export default class FilePropertiesObject extends BaseObject {
         super();
     }
 
+    /**
+     * Constructs a new instance by reading from a file.
+     * @param file File to read the file properties object from
+     * @param position Offset into the file where the object begins
+     */
     public static fromFile(file: File, position: number): FilePropertiesObject {
         const instance = new FilePropertiesObject();
         instance.initializeFromFile(file, position);

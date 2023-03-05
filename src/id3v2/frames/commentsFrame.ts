@@ -243,7 +243,7 @@ export default class CommentsFrame extends Frame {
 
     /**
      * Gets a string representation of the current instance.
-     * @returns string String with the comment text
+     * @returns String with the comment text
      */
     public toString(): string {
         return this.text;

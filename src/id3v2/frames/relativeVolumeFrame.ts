@@ -276,7 +276,7 @@ export class RelativeVolumeFrame extends Frame {
     /**
      * Gets the volume adjustment for the specified channel.
      * @param type Which channel to get the value for
-     * @returns number Volume adjustment for the channel, can be betweenInclusive -64 and +64 decibels
+     * @returns Volume adjustment for the channel, can be betweenInclusive -64 and +64 decibels
      */
     public getVolumeAdjustment(type: ChannelType): number { return this._channels[type].volumeAdjustment; }
 

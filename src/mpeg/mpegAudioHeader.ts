@@ -336,7 +336,7 @@ export default class MpegAudioHeader implements IAudioCodec {
      * @param position Position in `file` at which to start searching
      * @param length Maximum number of bytes to search before giving up. Defaults to `-1` to
      *     have no maximum
-     * @returns the header that was found or `undefined` if a header was not found
+     * @returns The header that was found or `undefined` if a header was not found
      */
     public static find(file: File, position: number, length?: number): MpegAudioHeader {
         Guards.truthy(file, "file");

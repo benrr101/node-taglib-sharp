@@ -20,6 +20,9 @@ import {Guards} from "../utils";
  * but could be used by other classes. It currently supports ID3v1, ID3v2, and APE tags.
  */
 export default class EndTag extends CombinedTag {
+    /**
+     * List of tag types supported by the sandwich file's end tag.
+     */
     public static readonly SUPPORTED_TAG_TYPES: TagTypes = TagTypes.Ape | TagTypes.Id3v1 | TagTypes.Id3v2;
 
     /**

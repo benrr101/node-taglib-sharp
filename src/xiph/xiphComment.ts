@@ -896,7 +896,7 @@ export default class XiphComment extends Tag {
     /**
      * Gets the field data for a given field identifier.
      * @param key Field identifier to look up
-     * @returns string[] Field data or undefined if the field cannot be found
+     * @returns Field data or undefined if the field cannot be found
      */
     public getField(key: string): string[] {
         Guards.notNullOrUndefined(key, "key");
@@ -911,7 +911,7 @@ export default class XiphComment extends Tag {
     /**
      * Gets the first value in a field for a given field identifier.
      * @param key Field identifier to look up
-     * @returns string Field data or `undefined` if the field was notfound
+     * @returns Field data or `undefined` if the field was notfound
      */
     public getFieldFirstValue(key: string): string {
         Guards.notNullOrUndefined(key, "key");

@@ -10,7 +10,9 @@ import {Guards} from "../../utils";
  * written to disk.
  */
 export default class PaddingObject extends BaseObject {
-
+    /**
+     * Length of the padding object header in bytes.
+     */
     public static readonly HEADER_LENGTH = 24;
 
     private _size: number;

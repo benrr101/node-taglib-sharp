@@ -1137,12 +1137,12 @@ export abstract class Tag {
 
     /**
      * Gets the ISRC (International Standard Recording Code) of the track.
-     * @returns the ISRC of the track or `undefined` if no value is set
+     * @returns ISRC of the track or `undefined` if no value is set
      */
     public get isrc(): string { return undefined; }
     /**
      * Sets the ISRC (International Standard Recording Code) of the track.
-     * @param value the ISRC of the track or `undefined` if no value is set
+     * @param value ISRC of the track or `undefined` if no value is set
      */
     public set isrc(value: string) { /* no-op in abstract case */ }
 

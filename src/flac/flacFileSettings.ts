@@ -6,7 +6,11 @@ import {NumberUtils} from "../utils";
  * re-read in order for changes to take effect.
  */
 export default class FlacFileSettings {
-    public static readonly SUPPORTED_TAG_TYPES = TagTypes.Id3v1 | TagTypes.Id3v2 | TagTypes.Ape | TagTypes.Xiph;
+    /**
+     * List of tag types that are supported by the FLAC file.
+     */
+    public static readonly SUPPORTED_TAG_TYPES: TagTypes =
+        TagTypes.Id3v1 | TagTypes.Id3v2 | TagTypes.Ape | TagTypes.Xiph;
 
     private static _defaultTagTypes = TagTypes.Xiph;
     private static _preferApeTagAtFileEnd = true;

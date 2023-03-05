@@ -21,6 +21,14 @@ export class MetadataDescriptor extends DescriptorBase {
 
     // #region Constructors
 
+    /**
+     * Constructs and initializes a new instance.
+     * @param languageListIndex Index of the language
+     * @param streamNumber Index of the stream
+     * @param name Name of the metadata library object
+     * @param type Datatype of the object
+     * @param value Value to store in the instance
+     */
     public constructor(
         languageListIndex: number,
         streamNumber: number,
@@ -180,6 +188,11 @@ export class MetadataLibraryObject extends BaseObject {
         return instance;
     }
 
+    /**
+     * Constructs and initializes a new instance by reading the object from a file.
+     * @param file File to read the instance from
+     * @param position Offset into the file where the object begins
+     */
     public static fromFile(file: File, position: number): MetadataLibraryObject {
         const instance = new MetadataLibraryObject();
         instance.initializeFromFile(file, position);

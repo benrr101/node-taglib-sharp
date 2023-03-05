@@ -850,7 +850,7 @@ export default class ApeTag extends Tag {
     /**
      * Determines if any items with the specified `key` exist in the current instance.
      * @param key Identifier for looking up a matching item
-     * @returns boolean `true` if an item with the specified key exists, `false` otherwise
+     * @returns `true` if an item with the specified key exists, `false` otherwise
      */
     public hasItem(key: string): boolean {
         Guards.notNullOrUndefined(key, "key");

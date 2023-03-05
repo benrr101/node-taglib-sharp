@@ -382,6 +382,11 @@ export default abstract class CombinedTag extends Tag {
 
     // #region Protected/Private Methods
 
+    /**
+     * Adds the provided tag to the list of tags contained in the current instance.
+     * @param tag Tag to add to the current instance.
+     * @protected
+     */
     protected addTag(tag: Tag): void {
         if (tag) {
             this._tags.push(tag);
@@ -402,6 +407,7 @@ export default abstract class CombinedTag extends Tag {
      * * A tag of the given tag type does not already exist
      * * The given tag type is supported by the current instance
      * @param tagType Tag type that the caller wants to create
+     * @protected
      */
     protected validateTagCreation(tagType: TagTypes): void {
         if (!NumberUtils.hasFlag(this._supportedTagTypes, tagType)) {

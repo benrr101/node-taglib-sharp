@@ -47,6 +47,9 @@ export enum FlacBlockType {
  * Represents a FLAC metadata block
  */
 export class FlacBlock implements ILazy {
+    /**
+     * Length of a FLAC block header in bytes.
+     */
     public static readonly HEADER_SIZE = 4;
 
     private _blockStart: number;

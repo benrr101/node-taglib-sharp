@@ -26,6 +26,9 @@ import {NumberUtils} from "../utils";
  *     {@link FlacFileSettings}.
  */
 export default class FlacFile extends File implements ISandwichFile {
+    /**
+     * Magic string that indicates the file is a FLAC file.
+     */
     public static readonly FILE_IDENTIFIER = ByteVector.fromString("fLaC", StringType.Latin1).makeReadOnly();
 
     private readonly _properties: Properties;

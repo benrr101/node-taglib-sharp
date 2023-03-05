@@ -1166,7 +1166,7 @@ export class ByteVector {
     /**
      * Converts a portion of the current instance to a string using a specified encoding
      * @param type Value indicating the encoding to use when converting to a string.
-     * @returns string String containing the converted bytes
+     * @returns String containing the converted bytes
      */
     public toString(type: StringType): string {
         // @TODO: Would it be useful to have a null terminated version that finds first null
@@ -1184,7 +1184,7 @@ export class ByteVector {
      * @param type A {@link StringType} value indicating the encoding to use when converting
      * @param count Value specifying a limit to the number of strings to create. Once the limit has
      *        been reached, the last string will be filled by the remainder of the data
-     * @returns string[] Array of strings containing the converted text.
+     * @returns Array of strings containing the converted text.
      */
     public toStrings(type: StringType, count: number = Number.MAX_SAFE_INTEGER): string[] {
         Guards.safeUint(count, "count");
