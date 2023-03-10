@@ -10,9 +10,7 @@ import {Guards} from "../../utils";
  * Class that extends {@link Frame}, implementing support for ID3v2 Comments (COMM) frames.
  * A {@link CommentsFrame} should be used for storing user readable comments on the media file.
  * When reading comments from a file, {@link CommentsFrame.findPreferred} should be used as it
- * gracefully falls back to comments that you, as a developer, may not be expecting. When writing
- * comments, however, it is best to use {@link get} as it forces it to be written in the exact
- * version you are specifying.
+ * gracefully falls back to comments that you, as a developer, may not be expecting.
  */
 export default class CommentsFrame extends Frame {
     private _description: string;
@@ -148,8 +146,7 @@ export default class CommentsFrame extends Frame {
      * @param frames Frames to search for best matching frame
      * @param description Description of the comments frame to match
      * @param language Optional, ISO-639-2 language code to match
-     * @returns CommentsFrame Object containing the matching frame or `undefined` if a match was
-     *     not found
+     * @returns Object containing the matching frame or `undefined` if a match was not found
      */
     public static find(frames: CommentsFrame[], description: string, language?: string): CommentsFrame {
         Guards.truthy(frames, "frames");
@@ -167,7 +164,8 @@ export default class CommentsFrame extends Frame {
      * @param frames Frames to search
      * @param description Description of the comments frame to match
      * @param language Optional, ISO-639-2 language code to match
-     * @returns CommentsFrame[] Array of comments frames that match the provided parameters or an
+     * @returns
+     *     Array of comments frames that match the provided parameters or an
      *     empty array if none were found
      */
     public static findAll(frames: CommentsFrame[], description: string, language?: string): CommentsFrame[] {
@@ -243,7 +241,7 @@ export default class CommentsFrame extends Frame {
 
     /**
      * Gets a string representation of the current instance.
-     * @returns string String with the comment text
+     * @returns String with the comment text
      */
     public toString(): string {
         return this.text;

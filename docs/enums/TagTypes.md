@@ -6,7 +6,7 @@ Indicates the tag types used by a file.
 
 ## Table of contents
 
-### Enumeration members
+### Enumeration Members
 
 - [AllTags](TagTypes.md#alltags)
 - [Ape](TagTypes.md#ape)
@@ -29,162 +29,202 @@ Indicates the tag types used by a file.
 - [XMP](TagTypes.md#xmp)
 - [Xiph](TagTypes.md#xiph)
 
-## Enumeration members
+## Enumeration Members
 
 ### AllTags
 
-• **AllTags** = `4294967295`
+• **AllTags** = ``4294967295``
 
-**`summary`** All tag types.
+**`Summary`**
+
+All tag types.
 
 ___
 
 ### Ape
 
-• **Ape** = `8`
+• **Ape** = ``8``
 
-**`summary`** APE Tag
+**`Summary`**
+
+APE Tag
 
 ___
 
 ### Apple
 
-• **Apple** = `16`
+• **Apple** = ``16``
 
-**`summary`** Apple's ILST Tag Format
+**`Summary`**
+
+Apple's ILST Tag Format
 
 ___
 
 ### Asf
 
-• **Asf** = `32`
+• **Asf** = ``32``
 
-**`summary`** ASF Tag
+**`Summary`**
+
+ASF Tag
 
 ___
 
 ### AudibleMetadata
 
-• **AudibleMetadata** = `65536`
+• **AudibleMetadata** = ``65536``
 
-**`summary`** Audible Metadata Blocks Tag
+**`Summary`**
+
+Audible Metadata Blocks Tag
 
 ___
 
 ### DivX
 
-• **DivX** = `256`
+• **DivX** = ``256``
 
-**`summary`** DivX Tag
+**`Summary`**
+
+DivX Tag
 
 ___
 
 ### FlacPictures
 
-• **FlacPictures** = `512`
+• **FlacPictures** = ``512``
 
-**`summary`** FLAC Metadata Block Pictures
+**`Summary`**
+
+FLAC Metadata Block Pictures
 
 ___
 
 ### GifComment
 
-• **GifComment** = `8192`
+• **GifComment** = ``8192``
 
-**`summary`** Gif Comment Tag
+**`Summary`**
+
+Gif Comment Tag
 
 ___
 
 ### IPTCIIM
 
-• **IPTCIIM** = `32768`
+• **IPTCIIM** = ``32768``
 
-**`summary`** IPTC-IIM tag
+**`Summary`**
+
+IPTC-IIM tag
 
 ___
 
 ### Id3v1
 
-• **Id3v1** = `2`
+• **Id3v1** = ``2``
 
-**`summary`** ID3v1 Tag
+**`Summary`**
+
+ID3v1 Tag
 
 ___
 
 ### Id3v2
 
-• **Id3v2** = `4`
+• **Id3v2** = ``4``
 
-**`summary`** ID3v2 Tag
+**`Summary`**
+
+ID3v2 Tag
 
 ___
 
 ### JpegComment
 
-• **JpegComment** = `4096`
+• **JpegComment** = ``4096``
 
-**`summary`** Jpeg Comment Tag
+**`Summary`**
+
+Jpeg Comment Tag
 
 ___
 
 ### Matroska
 
-• **Matroska** = `131072`
+• **Matroska** = ``131072``
 
-**`summary`** Matroska native tag
+**`Summary`**
+
+Matroska native tag
 
 ___
 
 ### MovieId
 
-• **MovieId** = `128`
+• **MovieId** = ``128``
 
-**`summary`** RIFF Movie ID List Tag
+**`Summary`**
+
+RIFF Movie ID List Tag
 
 ___
 
 ### None
 
-• **None** = `0`
+• **None** = ``0``
 
-**`summary`** No tag types.
+**`Summary`**
+
+No tag types.
 
 ___
 
 ### Png
 
-• **Png** = `16384`
+• **Png** = ``16384``
 
-**`summary`** native PNG keywords
+**`Summary`**
+
+native PNG keywords
 
 ___
 
 ### RiffInfo
 
-• **RiffInfo** = `64`
+• **RiffInfo** = ``64``
 
-**`summary`** Standard RIFF INFO List Tag
+**`Summary`**
+
+Standard RIFF INFO List Tag
 
 ___
 
 ### TiffIFD
 
-• **TiffIFD** = `1024`
+• **TiffIFD** = ``1024``
 
-**`summary`** TIFF IFD Tag
+**`Summary`**
+
+TIFF IFD Tag
 
 ___
 
 ### XMP
 
-• **XMP** = `2048`
+• **XMP** = ``2048``
 
-**`summary`** XMP Tag
+**`Summary`**
+
+XMP Tag
 
 ___
 
 ### Xiph
 
-• **Xiph** = `1`
+• **Xiph** = ``1``
 
-**`summary`** Xiph Vorbis Comment
+**`Summary`**
+
+Xiph Vorbis Comment

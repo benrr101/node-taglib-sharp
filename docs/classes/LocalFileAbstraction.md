@@ -2,13 +2,13 @@
 
 # Class: LocalFileAbstraction
 
-This class implements {@link IFileAbstraction} to provide support for accessing the local/
+This class implements [IFileAbstraction](../interfaces/IFileAbstraction.md) to provide support for accessing the local/
 standard file.
 This class is used as the standard file abstraction throughout the library.
 
 ## Implements
 
-- `IFileAbstraction`
+- [`IFileAbstraction`](../interfaces/IFileAbstraction.md)
 
 ## Table of contents
 
@@ -34,7 +34,9 @@ This class is used as the standard file abstraction throughout the library.
 
 Constructs and initializes a new instance from a specified path in the local file system
 
-**`throws`** Error Thrown if `path` is falsy
+**`Throws`**
+
+Error Thrown if `path` is falsy
 
 #### Parameters
 
@@ -48,7 +50,7 @@ Constructs and initializes a new instance from a specified path in the local fil
 
 • `get` **name**(): `string`
 
-**`inheritdoc`**
+Name or identifier used by the implementation
 
 #### Returns
 
@@ -56,39 +58,39 @@ Constructs and initializes a new instance from a specified path in the local fil
 
 #### Implementation of
 
-IFileAbstraction.name
+[IFileAbstraction](../interfaces/IFileAbstraction.md).[name](../interfaces/IFileAbstraction.md#name)
 
 ___
 
 ### readStream
 
-• `get` **readStream**(): `IStream`
+• `get` **readStream**(): [`IStream`](../interfaces/IStream.md)
 
-**`inheritdoc`**
+Readable, seekable stream for the file referenced by the current instance.
 
 #### Returns
 
-`IStream`
+[`IStream`](../interfaces/IStream.md)
 
 #### Implementation of
 
-IFileAbstraction.readStream
+[IFileAbstraction](../interfaces/IFileAbstraction.md).[readStream](../interfaces/IFileAbstraction.md#readstream)
 
 ___
 
 ### writeStream
 
-• `get` **writeStream**(): `IStream`
+• `get` **writeStream**(): [`IStream`](../interfaces/IStream.md)
 
-**`inheritdoc`**
+Writable, seekable stream for the file referenced by the current instance.
 
 #### Returns
 
-`IStream`
+[`IStream`](../interfaces/IStream.md)
 
 #### Implementation of
 
-IFileAbstraction.writeStream
+[IFileAbstraction](../interfaces/IFileAbstraction.md).[writeStream](../interfaces/IFileAbstraction.md#writestream)
 
 ## Methods
 
@@ -96,13 +98,13 @@ IFileAbstraction.writeStream
 
 ▸ **closeStream**(`stream`): `void`
 
-**`inheritdoc`**
+Closes a stream created by the current instance.
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `stream` | `IStream` |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `stream` | [`IStream`](../interfaces/IStream.md) | Stream created by the current instance. |
 
 #### Returns
 
@@ -110,4 +112,4 @@ IFileAbstraction.writeStream
 
 #### Implementation of
 
-IFileAbstraction.closeStream
+[IFileAbstraction](../interfaces/IFileAbstraction.md).[closeStream](../interfaces/IFileAbstraction.md#closestream)

@@ -6,6 +6,9 @@ import {Id3v2FrameHeader} from "./frameHeader";
 import {FrameIdentifiers} from "../frameIdentifiers";
 import {Guards} from "../../utils";
 
+/**
+ * Extends {@link Frame} implementing support for ID3v2 unsynchronized lyrics (USLT) frames.
+ */
 export default class UnsynchronizedLyricsFrame extends Frame {
     private _description: string;
     private _language: string;
@@ -130,8 +133,7 @@ export default class UnsynchronizedLyricsFrame extends Frame {
      * @param frames List of frames to search
      * @param description Description to match
      * @param language Optionally, ISO-639-2 language code to match
-     * @returns UnsynchronizedLyricsFrame Frame that matches provided parameters, `undefined` if a
-     *     match was not found
+     * @returns Frame that matches provided parameters, `undefined` if a match was not found
      */
     public static find(
         frames: UnsynchronizedLyricsFrame[],
@@ -153,8 +155,7 @@ export default class UnsynchronizedLyricsFrame extends Frame {
      * @param frames List of frames to search
      * @param description Description to match
      * @param language Optionally, ISO-639-2 language code to match
-     * @returns UnsynchronizedLyricsFrame[] List of frames matching provided parameters, empty
-     *     array if no matches were found
+     * @returns List of frames matching provided parameters, empty array if no matches were found
      */
     public static findAll(
         frames: UnsynchronizedLyricsFrame[],
@@ -218,6 +219,9 @@ export default class UnsynchronizedLyricsFrame extends Frame {
         return frame;
     }
 
+    /**
+     * Generates a string representation of the current instance.
+     */
     public toString(): string {
         return this.text;
     }

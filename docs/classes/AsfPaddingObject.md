@@ -7,7 +7,7 @@ written to disk.
 
 ## Hierarchy
 
-- `default`
+- [`AsfBaseObject`](AsfBaseObject.md)
 
   ↳ **`AsfPaddingObject`**
 
@@ -39,17 +39,19 @@ written to disk.
 
 ▪ `Static` `Readonly` **HEADER\_LENGTH**: ``24``
 
+Length of the padding object header in bytes.
+
 ## Accessors
 
 ### guid
 
-• `get` **guid**(): `default`
+• `get` **guid**(): [`UuidWrapper`](UuidWrapper.md)
 
 Gets the GUID that identifies the current instance.
 
 #### Returns
 
-`default`
+[`UuidWrapper`](UuidWrapper.md)
 
 #### Inherited from
 
@@ -59,13 +61,13 @@ ___
 
 ### objectType
 
-• `get` **objectType**(): `ObjectType`
+• `get` **objectType**(): [`AsfObjectType`](../enums/AsfObjectType.md)
 
-**`inheritdoc`**
+Gets the type of the object for easy comparison.
 
 #### Returns
 
-`ObjectType`
+[`AsfObjectType`](../enums/AsfObjectType.md)
 
 #### Overrides
 
@@ -137,7 +139,7 @@ file.
 
 #### Inherited from
 
-BaseObject.initializeFromFile
+[AsfBaseObject](AsfBaseObject.md).[initializeFromFile](AsfBaseObject.md#initializefromfile)
 
 ___
 
@@ -151,7 +153,7 @@ Initializes a new instance with a specified GUID.
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `guid` | `default` | GUID to use for the new instance. |
+| `guid` | [`UuidWrapper`](UuidWrapper.md) | GUID to use for the new instance. |
 
 #### Returns
 
@@ -159,7 +161,7 @@ Initializes a new instance with a specified GUID.
 
 #### Inherited from
 
-BaseObject.initializeFromGuid
+[AsfBaseObject](AsfBaseObject.md).[initializeFromGuid](AsfBaseObject.md#initializefromguid)
 
 ___
 
@@ -167,7 +169,7 @@ ___
 
 ▸ **render**(): [`ByteVector`](ByteVector.md)
 
-**`inheritdoc`**
+Renders the current instance as a raw ASF object.
 
 #### Returns
 
@@ -175,7 +177,7 @@ ___
 
 #### Overrides
 
-BaseObject.render
+[AsfBaseObject](AsfBaseObject.md).[render](AsfBaseObject.md#render)
 
 ___
 
@@ -185,7 +187,9 @@ ___
 
 Renders the current instance as a raw ASF object containing the specified data.
 
-**`remarks`** Child classes implementing {@see render()} should render their contents and then
+**`Remarks`**
+
+Child classes implementing [()](AsfPaddingObject.md#render) should render their contents and then
     send the data through this method to produce the final output.
 
 #### Parameters
@@ -200,7 +204,7 @@ Renders the current instance as a raw ASF object containing the specified data.
 
 #### Inherited from
 
-BaseObject.renderInternal
+[AsfBaseObject](AsfBaseObject.md).[renderInternal](AsfBaseObject.md#renderinternal)
 
 ___
 
@@ -233,7 +237,7 @@ Constructs and initializes a new instance with a fixed size.
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `size` | `number` | Number of padding bytes to store in the object not including the size of the     header |
+| `size` | `number` | Number of padding bytes to store in the object not including the size of the header |
 
 #### Returns
 

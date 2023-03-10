@@ -8,14 +8,16 @@ export default class OggFileSettings {
     /**
      * Gets whether changes to Ogg tag fields should be written to all Xiph comments or just the
      * first Xiph comment in the file.
-     * @remarks Ogg files are required to have one Xiph comment per stream. In files with multiple
+     * @remarks
+     *     Ogg files are required to have one Xiph comment per stream. In files with multiple
      *     streams, this means there are multiple Xiph comments per file.
      */
     public static get writeToAllComments(): boolean { return this._writeToAllComments; }
     /**
      * Sets whether changes to Ogg tag fields should be written to all Xiph comments or just the
      * first Xiph comment in the file.
-     * @remarks Ogg files are required to have one Xiph comment per stream. In files with multiple
+     * @remarks
+     *     Ogg files are required to have one Xiph comment per stream. In files with multiple
      *     streams, this means there are multiple Xiph comments per file.
      */
     public static set writeToAllComments(value: boolean) { this._writeToAllComments = value; }

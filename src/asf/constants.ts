@@ -4,36 +4,159 @@ import UuidWrapper from "../uuidWrapper";
  * Enum of different types of objects that are part of the ASF specification
  */
 export enum ObjectType {
+    /**
+     * Indicates the type of the object is not known.
+     */
     UnknownObject = 0,
+
+    /**
+     * Indicates that the object is a {@link HeaderObject}.
+     */
     HeaderObject,
+
+    /**
+     * Indicates that the object is a {@link FilePropertiesObject}.
+     */
     FilePropertiesObject,
+
+    /**
+     * Indicates that the object is a {@link StreamPropertiesObject}.
+     */
     StreamPropertiesObject,
+
+    /**
+     * Indicates that the object is a {@link HeaderExtensionObject}.
+     */
     HeaderExtensionObject,
+
+    /**
+     * Indicates that the object is a codec list object.
+     */
     CodecListObject,
+
+    /**
+     * Indicates that the object is a script command object.
+     */
     ScriptCommandObject,
+
+    /**
+     * Indicates that the object is a marker object.
+     */
     MarkerObject,
+
+    /**
+     * Indicates that the object is a bitrate mutual exclusion object.
+     */
     BitrateMutualExclusionObject,
+
+    /**
+     * Indicates that the object is an error correction object.
+     */
     ErrorCorrectionObject,
+
+    /**
+     * Indicates that an object is a {@link ContentDescriptionObject}.
+     */
     ContentDescriptionObject,
+
+    /**
+     * Indicates that an object is a {@link ExtendedContentDescriptionObject}.
+     */
     ExtendedContentDescriptionObject,
+
+    /**
+     * Indicates that an object is a stream bitrate properties object.
+     */
     StreamBitratePropertiesObject,
+
+    /**
+     * Indicates that an object is a content branding object.
+     */
     ContentBrandingObject,
+
+    /**
+     * Indicates that an object is a content encryption object.
+     */
     ContentEncryptionObject,
+
+    /**
+     * Indicates that an object is an extended content encryption object.
+     */
     ExtendedContentEncryptionObject,
+
+    /**
+     * Indicates that an object is a digital signature object.
+     */
     DigitalSignatureObject,
+
+    /**
+     * Indicates that an object is a {@link PaddingObject}.
+     */
     PaddingObject,
+
+    /**
+     * Indicates that an object is an extended stream properties object.
+     */
     ExtendedStreamPropertiesObject,
+
+    /**
+     * Indicates that the object is an advanced mutual exclusion object.
+     */
     AdvancedMutualExclusionObject,
+
+    /**
+     * Indicates that the object is a group mutual exclusion object.
+     */
     GroupMutualExclusionObject,
+
+    /**
+     * Indicates that the object is a stream prioritization object.
+     */
     StreamPrioritizationObject,
+
+    /**
+     * Indicates that the object is a bandwidth sharing object.
+     */
     BandwidthSharingObject,
+
+    /**
+     * Indicates that the object is a language list object.
+     */
     LanguageListObject,
+
+    /**
+     * Indicates that the object is a metadata object.
+     */
     MetadataObject,
+
+    /**
+     * Indicates that the object is a metadata library object.
+     */
     MetadataLibraryObject,
+
+    /**
+     * Indicates that the object is an index parameters object.
+     */
     IndexParametersObject,
+
+    /**
+     * Indicates that the object is a media object index parameters object.
+     */
     MediaObjectIndexParametersObject,
+
+    /**
+     * Indicates that the object is a timecode index parameters object.
+     */
     TimecodeIndexParametersObject,
+
+    /**
+     * Indicates that the object is a compatibility object.
+     */
     CompatibilityObject,
+
+    /**
+     * Indicates that the object is an advanced content encryption object.
+     */
     AdvancedContentEncryptionObject
 }
 

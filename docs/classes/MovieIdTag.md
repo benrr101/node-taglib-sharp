@@ -93,7 +93,6 @@ Provides support for reading and writing MovieID tags.
 - [getValuesAsStrings](MovieIdTag.md#getvaluesasstrings)
 - [removeValue](MovieIdTag.md#removevalue)
 - [render](MovieIdTag.md#render)
-- [setInfoTag](MovieIdTag.md#setinfotag)
 - [setValueFromUint](MovieIdTag.md#setvaluefromuint)
 - [setValues](MovieIdTag.md#setvalues)
 - [setValuesFromStrings](MovieIdTag.md#setvaluesfromstrings)
@@ -110,6 +109,8 @@ Provides support for reading and writing MovieID tags.
 
 ▪ `Static` `Readonly` **LIST\_TYPE**: ``"MID "``
 
+List type for a MovieID tag list chunk.
+
 ## Accessors
 
 ### album
@@ -119,12 +120,13 @@ Provides support for reading and writing MovieID tags.
 Gets the album of the media represented by the current instance. For video media, this
 represents the collection the video belongs to.
 
-**`remarks`** This field represents the name of the album the media belongs to. In the case of a
-    boxed set, it should be the name of the entire set rather than the individual disc. In
-    the case of a series, this should be the name of the series, rather than the season of a
-    series.
-    For example, "Kintsugi" (an album by Death Cab for Cutie), "The Complete Red Green Show"
-    (a boxed set of TV episodes), or "Shark Tank" (a series with several seasons).
+This field represents the name of the album the media belongs to. In the case of a
+boxed set, it should be the name of the entire set rather than the individual disc. In
+the case of a series, this should be the name of the series, rather than the season of a
+series.
+
+For example, "Kintsugi" (an album by Death Cab for Cutie), "The Complete Red Green Show"
+(a boxed set of TV episodes), or "Shark Tank" (a series with several seasons).
 
 #### Returns
 
@@ -142,25 +144,23 @@ RiffListTag.album
 Sets the album of the media represented by the current instance. For video media, this
 represents the collection the video belongs to.
 
-**`remarks`** This field represents the name of the album the media belongs to. In the case of a
-    boxed set, it should be the name of the entire set rather than the individual disc. In
-    the case of a series, this should be the name of the series, rather than the season of a
-    series.
-    For example, "Kintsugi" (an album by Death Cab for Cutie), "The Complete Red Green Show"
-    (a boxed set of TV episodes), or "Shark Tank" (a series with several seasons).
+This field represents the name of the album the media belongs to. In the case of a
+boxed set, it should be the name of the entire set rather than the individual disc. In
+the case of a series, this should be the name of the series, rather than the season of a
+series.
+
+For example, "Kintsugi" (an album by Death Cab for Cutie), "The Complete Red Green Show"
+(a boxed set of TV episodes), or "Shark Tank" (a series with several seasons).
 
 #### Parameters
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `value` | `string` | of the media represented by the current instance or `undefined` if no value     is present |
+| `value` | `string` | of the media represented by the current instance or `undefined` if no value is present |
 
 #### Returns
 
 `void`
-
-Album of the media represented by the current instance or `undefined` if no value
-    is present
 
 #### Inherited from
 
@@ -172,16 +172,16 @@ ___
 
 • `get` **albumArtists**(): `string`[]
 
-Gets the band or artist who is credited credited in the creation of the entire album or
+Gets the band or artist who is credited in the creation of the entire album or
 collection containing the media described by the current instance.
 
-**`remarks`** This field is typically optional but aids in the sorting of compilations or albums
-    with multiple artist. For example, if an album has several artists, sorting by artist
-    will split up albums by the same artist. Having a single album artist for an entire
-    album solves this problem.
-    As this value is to be used as a sorting key, it should be used with less variation
-    than [performers](MovieIdTag.md#performers). Where performers can be broken into multiple artists, it is
-    best to stick to a single name. Eg, "Super8 & Tab"
+This field is typically optional but aids in the sorting of compilations or albums
+with multiple artist. For example, if an album has several artists, sorting by artist
+will split up albums by the same artist. Having a single album artist for an entire
+album solves this problem.
+As this value is to be used as a sorting key, it should be used with less variation
+than [performers](MovieIdTag.md#performers). Where performers can be broken into multiple artists, it is
+best to stick to a single name. Eg, "Super8 & Tab"
 
 #### Returns
 
@@ -197,30 +197,26 @@ RiffListTag.albumArtists
 
 • `set` **albumArtists**(`value`): `void`
 
-Sets the bands or artists who is credited credited in the creation of the entire album or
+Sets the bands or artists who is credited in the creation of the entire album or
 collection containing the media described by the current instance.
 
-**`remarks`** This field is typically optional but aids in the sorting of compilations or albums
-    with multiple artist. For example, if an album has several artists, sorting by artist
-    will split up albums by the same artist. Having a single album artist for an entire
-    album solves this problem.
-    As this value is to be used as a sorting key, it should be used with less variation
-    than [performers](MovieIdTag.md#performers). Where performers can be broken into multiple artists, it is
-    best to stick to a single name. Eg, "Super8 & Tab"
+This field is typically optional but aids in the sorting of compilations or albums
+with multiple artist. For example, if an album has several artists, sorting by artist
+will split up albums by the same artist. Having a single album artist for an entire
+album solves this problem.
+As this value is to be used as a sorting key, it should be used with less variation
+than [performers](MovieIdTag.md#performers). Where performers can be broken into multiple artists, it is
+best to stick to a single name. Eg, "Super8 & Tab"
 
 #### Parameters
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `value` | `string`[] | Band or artist credited with the creation of the entire album or collection     containing the media described by the current instance or an empty array if no value is     present |
+| `value` | `string`[] | Band or artist credited with the creation of the entire album or collection containing the media described by the current instance or an empty array if no value is present |
 
 #### Returns
 
 `void`
-
-Band or artist credited with the creation of the entire album or collection
-    containing the media described by the current instance or an empty array if no value is
-    present
 
 #### Inherited from
 
@@ -233,16 +229,15 @@ ___
 • `get` **albumArtistsSort**(): `string`[]
 
 Gets the sortable names of the bands/artists who are credited with creating the entire
-album or collection containing the media described by the current instance.
+album or collection containing the media described by the current instance. See also:
+[albumArtists](MovieIdTag.md#albumartists)
 
-**`see`** albumArtists
-
-**`remarks`** This is used to provide more control over how the media is sorted. Typical uses are to
-    skip articles or sort by last by last name. For example "Ben Folds" might be sorted as
-    "Folds, Ben".
-    As this value is to be used as a sorting key, it should be used with less variation than
-    [performers](MovieIdTag.md#performers). Where [performers](MovieIdTag.md#performers) can be broken into multiple performers, it is
-    best to stick to a single album artist. Eg, "Van Buuren, Armin"
+This is used to provide more control over how the media is sorted. Typical uses are to
+skip articles or sort by last name. For example "Ben Folds" might be sorted as
+"Folds, Ben".
+As this value is to be used as a sorting key, it should be used with less variation than
+[performers](MovieIdTag.md#performers). Where [performers](MovieIdTag.md#performers) can be broken into multiple performers, it is
+best to stick to a single album artist. Eg, "Van Buuren, Armin"
 
 #### Returns
 
@@ -259,30 +254,25 @@ RiffListTag.albumArtistsSort
 • `set` **albumArtistsSort**(`value`): `void`
 
 Sets the sortable names of the bands/artists who are credited with creating the entire
-album or collection containing the media described by the current instance.
+album or collection containing the media described by the current instance. See also:
+[albumArtists](MovieIdTag.md#albumartists)
 
-**`see`** albumArtists
-
-**`remarks`** This is used to provide more control over how the media is sorted. Typical uses are to
-    skip articles or sort by last by last name. For example "Ben Folds" might be sorted as
-    "Folds, Ben".
-    As this value is to be used as a sorting key, it should be used with less variation than
-    [performers](MovieIdTag.md#performers). Where [performers](MovieIdTag.md#performers) can be broken into multiple performers, it is
-    best to stick to a single album artist. Eg, "Van Buuren, Armin"
+This is used to provide more control over how the media is sorted. Typical uses are to
+skip articles or sort by last name. For example "Ben Folds" might be sorted as
+"Folds, Ben".
+As this value is to be used as a sorting key, it should be used with less variation than
+[performers](MovieIdTag.md#performers). Where [performers](MovieIdTag.md#performers) can be broken into multiple performers, it is
+best to stick to a single album artist. Eg, "Van Buuren, Armin"
 
 #### Parameters
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `value` | `string`[] | Sortable names for the bands/artists are credited with the creation of the     entire album or collection containing the media described by the current instance, or an     empty array if no value is present. |
+| `value` | `string`[] | Sortable names for the bands/artists are credited with the creation of the entire album or collection containing the media described by the current instance, or an empty array if no value is present. |
 
 #### Returns
 
 `void`
-
-Sortable names for the bands/artists are credited with the creation of the entire
-    album or collection containing the media described by the current instance, or an empty
-    array if no value is present.
 
 #### Inherited from
 
@@ -295,11 +285,10 @@ ___
 • `get` **albumSort**(): `string`
 
 Gets the sortable name of the album title of the media represented by the current instance.
+See also: [album](MovieIdTag.md#album)
 
-**`see`** album
-
-**`remarks`** This field is typically optional but aids in sort of compilations or albums with
-    similar titles.
+This field is typically optional but aids in sort of compilations or albums with
+similar titles.
 
 #### Returns
 
@@ -315,24 +304,20 @@ RiffListTag.albumSort
 • `set` **albumSort**(`value`): `void`
 
 Sets the sortable name of the album title of the media represented by the current instance.
+See also: [album](MovieIdTag.md#album)
 
-**`see`** album
-
-**`remarks`** This field is typically optional but aids in sort of compilations or albums with
-    similar titles.
+This field is typically optional but aids in sort of compilations or albums with
+similar titles.
 
 #### Parameters
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `value` | `string` | Sortable name for the album title of the media or `undefined` if the value is     not present |
+| `value` | `string` | Sortable name for the album title of the media or `undefined` if the value is not present |
 
 #### Returns
 
 `void`
-
-Sortable name for the album title of the media or `undefined` if the value is not
-    present
 
 #### Inherited from
 
@@ -346,8 +331,8 @@ ___
 
 Gets the Amazon ID of the media represented by the current instance.
 
-**`remarks`** This field represents the AmazonID, also called the ASIN, and is used to uniquely
-    identify the particular track or album in the Amazon catalog.
+This field represents the AmazonID, also called the ASIN, and is used to uniquely
+identify the particular track or album in the Amazon catalog.
 
 #### Returns
 
@@ -364,21 +349,18 @@ RiffListTag.amazonId
 
 Sets the Amazon ID of the media represented by the current instance.
 
-**`remarks`** This field represents the AmazonID, also called the ASIN, and is used to uniquely
-    identify the particular track or album in the Amazon catalog.
+This field represents the AmazonID, also called the ASIN, and is used to uniquely
+identify the particular track or album in the Amazon catalog.
 
 #### Parameters
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `value` | `string` | Amazon ID of the media represented by the current instance or `undefined` if no     value is present |
+| `value` | `string` | Amazon ID of the media represented by the current instance or `undefined` if no value is present |
 
 #### Returns
 
 `void`
-
-Amazon ID of the media represented by the current instance or `undefined` if no
-    value is present
 
 #### Inherited from
 
@@ -393,8 +375,8 @@ ___
 Gets the number of beats per minute in the audio of the media represented by the current
 instance.
 
-**`remarks`** This field is useful for DJ's who are trying to beat match tracks. It should be
-    calculated from the audio or pulled from a database.
+This field is useful for DJ's who are trying to beat match tracks. It should be
+calculated from the audio or pulled from a database.
 
 #### Returns
 
@@ -412,21 +394,18 @@ RiffListTag.beatsPerMinute
 Sets the number of beats per minute in the audio of the media represented by the current
 instance.
 
-**`remarks`** This field is useful for DJ's who are trying to beat match tracks. It should be
-    calculated from the audio or pulled from a database.
+This field is useful for DJ's who are trying to beat match tracks. It should be
+calculated from the audio or pulled from a database.
 
 #### Parameters
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `value` | `number` | Beats per minute of the audio in the media represented by the current instance,     or `0` if not specified |
+| `value` | `number` | Beats per minute of the audio in the media represented by the current instance, or `0` if not specified |
 
 #### Returns
 
 `void`
-
-Beats per minute of the audio in the media represented by the current instance, or
-    `0` if not specified
 
 #### Inherited from
 
@@ -438,9 +417,17 @@ ___
 
 • `get` **comment**(): `string`
 
-**`inheritdoc`**
+Gets a user comment on the media represented by the current instance.
 
-**`remarks`** Implemented via the `COMM` item.
+This field should be used to store user notes and comments. There is no constraint on
+what text can be stored here, but it should not contain programmatic data.
+Because this field contains notes the the user might think of while consuming the media,
+it may be useful for an application to make this field easily accessible, perhaps even
+including it in the main interface.
+
+**`Remarks`**
+
+Implemented via the `COMM` item.
 
 #### Returns
 
@@ -452,15 +439,23 @@ RiffListTag.comment
 
 • `set` **comment**(`value`): `void`
 
-**`inheritdoc`**
+Sets a user comment on the media represented by the current instance.
 
-**`remarks`** Implemented via the `COMM` item.
+This field should be used to store user notes and comments. There is no constraint on
+what text can be stored here, but it should not contain programmatic data.
+Because this field contains notes the the user might think of while consuming the media,
+it may be useful for an application to make this field easily accessible, perhaps even
+including it in the main interface.
+
+**`Remarks`**
+
+Implemented via the `COMM` item.
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `value` | `string` |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `value` | `string` | User comments on the media represented by the current instance or `undefined` if the value is not present |
 
 #### Returns
 
@@ -478,8 +473,8 @@ ___
 
 Gets the composers of the media represented by the current instance.
 
-**`remarks`** This field represents the composers, song writers, script writers, or persons who
-    claim authorship of the media.
+This field represents the composers, songwriters, scriptwriters, or persons who
+claim authorship of the media.
 
 #### Returns
 
@@ -496,21 +491,18 @@ RiffListTag.composers
 
 Sets the composers of the media represented by the current instance.
 
-**`remarks`** This field represents the composers, song writers, script writers, or persons who
-    claim authorship of the media.
+This field represents the composers, songwriters, scriptwriters, or persons who
+claim authorship of the media.
 
 #### Parameters
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `value` | `string`[] | Composers of the media represented by the current instance of an empty array if     no value is present. |
+| `value` | `string`[] | Composers of the media represented by the current instance of an empty array if no value is present. |
 
 #### Returns
 
 `void`
-
-Composers of the media represented by the current instance of an empty array if no
-    value is present.
 
 #### Inherited from
 
@@ -523,11 +515,10 @@ ___
 • `get` **composersSort**(): `string`[]
 
 Gets the sortable names of the composers of the media represented by the current instance.
+See also: [composers](MovieIdTag.md#composers)
 
-**`see`** composers
-
-**`remarks`** This field is typically optional but aids in the sorting of compilations or albums
-    with multiple composers.
+This field is typically optional but aids in the sorting of compilations or albums
+with multiple composers.
 
 #### Returns
 
@@ -543,24 +534,20 @@ RiffListTag.composersSort
 • `set` **composersSort**(`value`): `void`
 
 Sets the sortable names of the composers of the media represented by the current instance.
+See also: [composers](MovieIdTag.md#composers)
 
-**`see`** composers
-
-**`remarks`** This field is typically optional but aids in the sorting of compilations or albums
-    with multiple composers.
+This field is typically optional but aids in the sorting of compilations or albums
+with multiple composers.
 
 #### Parameters
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `value` | `string`[] | Sortable names for the composers of the media represented by the current     instance or an empty array if no value is present. |
+| `value` | `string`[] | Sortable names for the composers of the media represented by the current instance or an empty array if no value is present. |
 
 #### Returns
 
 `void`
-
-Sortable names for the composers of the media represented by the current instance
-    or an empty array if no value is present.
 
 #### Inherited from
 
@@ -574,7 +561,7 @@ ___
 
 Gets the conductor or director of the media represented by the current instance.
 
-**`remarks`** This field is most useful for organizing classical music and movies.
+This field is most useful for organizing classical music and movies.
 
 #### Returns
 
@@ -591,20 +578,17 @@ RiffListTag.conductor
 
 Sets the conductor or director of the media represented by the current instance.
 
-**`remarks`** This field is most useful for organizing classical music and movies.
+This field is most useful for organizing classical music and movies.
 
 #### Parameters
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `value` | `string` | Conductor or director of the media represented by the current instance or     `undefined` if no value present. |
+| `value` | `string` | Conductor or director of the media represented by the current instance or `undefined` if no value present. |
 
 #### Returns
 
 `void`
-
-Conductor or director of the media represented by the current instance or
-    `undefined` if no value present.
 
 #### Inherited from
 
@@ -618,10 +602,10 @@ ___
 
 Gets the copyright information for the media represented by the current instance.
 
-**`remarks`** This field should be used for storing copyright information. It may be useful to show
-    this information somewhere in the program while the media is playing.
-    Players should not support editing this field, but media creation tools should
-    definitely allow modification.
+This field should be used for storing copyright information. It may be useful to show
+this information somewhere in the program while the media is playing.
+Players should not support editing this field, but media creation tools should
+definitely allow modification.
 
 #### Returns
 
@@ -638,23 +622,20 @@ RiffListTag.copyright
 
 Sets the copyright information for the media represented by the current instance.
 
-**`remarks`** This field should be used for storing copyright information. It may be useful to show
-    this information somewhere in the program while the media is playing.
-    Players should not support editing this field, but media creation tools should
-    definitely allow modification.
+This field should be used for storing copyright information. It may be useful to show
+this information somewhere in the program while the media is playing.
+Players should not support editing this field, but media creation tools should
+definitely allow modification.
 
 #### Parameters
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `value` | `string` | Copyright information for the media represented by the current instance or     `undefined` if no value is present. |
+| `value` | `string` | Copyright information for the media represented by the current instance or `undefined` if no value is present. |
 
 #### Returns
 
 `void`
-
-Copyright information for the media represented by the current instance or
-    `undefined` if no value is present.
 
 #### Inherited from
 
@@ -686,13 +667,11 @@ Sets the date and time at which the tag has been written.
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `value` | `Date` | Date/time at which the tag has been written, or `undefined` if no value is     present |
+| `value` | `Date` | Date/time at which the tag has been written, or `undefined` if no value is present |
 
 #### Returns
 
 `void`
-
-Date/time at which the tag has been written, or `undefined` if no value is present
 
 #### Inherited from
 
@@ -708,9 +687,9 @@ Gets a short description of the media. For music, this could be the comment that
 made of his/her work. For a video, this should be a short summary of the story/plot, but
 generally no spoliers. This should give the impression of what to expect in the media.
 
-**`remarks`** This is especially relevant for a movie. For example, for "Fear and Loathing in Las
-    Vegas", this could be "An oddball journalist and his psychopathic lawyer travel to Las
-    Vegas for a series of psychedelic escapades."
+This is especially relevant for a movie. For example, for "Fear and Loathing in Las
+Vegas", this could be "An oddball journalist and his psychopathic lawyer travel to Las
+Vegas for a series of psychedelic escapades."
 
 #### Returns
 
@@ -729,22 +708,19 @@ Sets a short description of the media. For music, this could be the comment that
 made of his/her work. For a video, this should be a short summary of the story/plot, but
 generally no spoliers. This should give the impression of what to expect in the media.
 
-**`remarks`** This is especially relevant for a movie. For example, for "Fear and Loathing in Las
-    Vegas", this could be "An oddball journalist and his psychopathic lawyer travel to Las
-    Vegas for a series of psychedelic escapades."
+This is especially relevant for a movie. For example, for "Fear and Loathing in Las
+Vegas", this could be "An oddball journalist and his psychopathic lawyer travel to Las
+Vegas for a series of psychedelic escapades."
 
 #### Parameters
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `value` | `string` | Description of the media represented by the current instance or `undefined` if     no value is present |
+| `value` | `string` | Description of the media represented by the current instance or `undefined` if no value is present |
 
 #### Returns
 
 `void`
-
-Description of the media represented by the current instance or `undefined` if no
-    value is present
 
 #### Inherited from
 
@@ -759,9 +735,9 @@ ___
 Gets the number of the disc containing the media represented by the current instance in the
 boxed set. For a series, this represents the season number.
 
-**`remarks`** This value should be the same as the number that appears on the disc. For example, if
-    the disc is the first of three, the value should be `1`. It should be no more than
-    [discCount](MovieIdTag.md#disccount) if [discCount](MovieIdTag.md#disccount) is non-zero.
+This value should be the same as the number that appears on the disc. For example, if
+the disc is the first of three, the value should be `1`. It should be no more than
+[discCount](MovieIdTag.md#disccount) if [discCount](MovieIdTag.md#disccount) is non-zero.
 
 #### Returns
 
@@ -779,22 +755,19 @@ RiffListTag.disc
 Sets the number of the disc containing the media represented by the current instance in the
 boxed set. For a series, this represents the season number.
 
-**`remarks`** This value should be the same as the number that appears on the disc. For example, if
-    the disc is the first of three, the value should be `1`. It should be no more than
-    [discCount](MovieIdTag.md#disccount) if [discCount](MovieIdTag.md#disccount) is non-zero.
+This value should be the same as the number that appears on the disc. For example, if
+the disc is the first of three, the value should be `1`. It should be no more than
+[discCount](MovieIdTag.md#disccount) if [discCount](MovieIdTag.md#disccount) is non-zero.
 
 #### Parameters
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `value` | `number` | Number of the disc or season of the media represented by the current instance     in a boxed set. |
+| `value` | `number` | Number of the disc or season of the media represented by the current instance in a boxed set. |
 
 #### Returns
 
 `void`
-
-Number of the disc or season of the media represented by the current instance in a
-    boxed set.
 
 #### Inherited from
 
@@ -809,8 +782,8 @@ ___
 Gets the number of discs or seasons in the boxed set containing the media represented by the
 current instance.
 
-**`remarks`** If non-zero, this should be at least equal to [disc](MovieIdTag.md#disc). If [disc](MovieIdTag.md#disc) is zero,
-    this value should also be zero.
+If non-zero, this should be at least equal to [disc](MovieIdTag.md#disc). If [disc](MovieIdTag.md#disc) is zero,
+this value should also be zero.
 
 #### Returns
 
@@ -828,21 +801,18 @@ RiffListTag.discCount
 Sets the number of discs or seasons in the boxed set containing the media represented by the
 current instance.
 
-**`remarks`** If non-zero, this should be at least equal to [disc](MovieIdTag.md#disc). If [disc](MovieIdTag.md#disc) is zero,
-    this value should also be zero.
+If non-zero, this should be at least equal to [disc](MovieIdTag.md#disc). If [disc](MovieIdTag.md#disc) is zero,
+this value should also be zero.
 
 #### Parameters
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `value` | `number` | Number of discs or seasons in the boxed set containing the media represented by     the current instance or `0` if not specified. |
+| `value` | `number` | Number of discs or seasons in the boxed set containing the media represented by the current instance or `0` if not specified. |
 
 #### Returns
 
 `void`
-
-Number of discs or seasons in the boxed set containing the media represented by the
-    current instance or `0` if not specified.
 
 #### Inherited from
 
@@ -966,9 +936,16 @@ ___
 
 • `get` **genres**(): `string`[]
 
-**`inheritdoc`**
+Gets the genres of the media represented by the current instance.
 
-**`remarks`** Implemented via the `GENR` item.
+This field represents genres that apply to the song, album, or video. This is often
+used for filtering media.
+A list of common audio genres as popularized by ID3v1 is stored in `genres.ts`.
+Additionally, `genres.ts` contains video genres as used by DivX.
+
+**`Remarks`**
+
+Implemented via the `GENR` item.
 
 #### Returns
 
@@ -980,15 +957,22 @@ RiffListTag.genres
 
 • `set` **genres**(`value`): `void`
 
-**`inheritdoc`**
+Sets the genres of the media represented by the current instance.
 
-**`remarks`** Implemented via the `GENR` item.
+This field represents genres that apply to the song, album, or video. This is often
+used for filtering media.
+A list of common audio genres as popularized by ID3v1 is stored in `genres.ts.
+Additionally, `genres.ts` contains video genres as used by DivX.
+
+**`Remarks`**
+
+Implemented via the `GENR` item.
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `value` | `string`[] |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `value` | `string`[] | Genres of the media represented by the current instance or an empty array if no value is present. |
 
 #### Returns
 
@@ -1006,9 +990,9 @@ ___
 
 Gets the grouping on the album which the media in the current instance belongs to.
 
-**`remarks`** This field contains a non-physical group to which the track belongs. In classical
-    music this could be a movement. It could also be parts of a series like "Introduction",
-    "Closing Remarks", etc.
+This field contains a non-physical group to which the track belongs. In classical
+music this could be a movement. It could also be parts of a series like "Introduction",
+"Closing Remarks", etc.
 
 #### Returns
 
@@ -1025,22 +1009,19 @@ RiffListTag.grouping
 
 Sets the grouping on the album which the media in the current instance belongs to.
 
-**`remarks`** This field contains a non-physical group to which the track belongs. In classical
-    music this could be a movement. It could also be parts of a series like "Introduction",
-    "Closing Remarks", etc.
+This field contains a non-physical group to which the track belongs. In classical
+music this could be a movement. It could also be parts of a series like "Introduction",
+"Closing Remarks", etc.
 
 #### Parameters
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `value` | `string` | Grouping on the album which the media in the current instance belongs to or     `undefined` if no value is present. |
+| `value` | `string` | Grouping on the album which the media in the current instance belongs to or `undefined` if no value is present. |
 
 #### Returns
 
 `void`
-
-Grouping on the album which the media in the current instance belongs to or
-    `undefined` if no value is present.
 
 #### Inherited from
 
@@ -1077,8 +1058,6 @@ Sets the initial key of the track.
 #### Returns
 
 `void`
-
-Initial key of the track or `undefined` if no value is set
 
 #### Inherited from
 
@@ -1124,7 +1103,7 @@ ___
 
 • `get` **isEmpty**(): `boolean`
 
-**`inheritdoc`**
+Gets whether or not the current instance is empty.
 
 #### Returns
 
@@ -1146,7 +1125,7 @@ Gets the ISRC (International Standard Recording Code) of the track.
 
 `string`
 
-the ISRC of the track or `undefined` if no value is set
+ISRC of the track or `undefined` if no value is set
 
 #### Inherited from
 
@@ -1160,13 +1139,11 @@ Sets the ISRC (International Standard Recording Code) of the track.
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `value` | `string` | the ISRC of the track or `undefined` if no value is set |
+| `value` | `string` | ISRC of the track or `undefined` if no value is set |
 
 #### Returns
 
 `void`
-
-the ISRC of the track or `undefined` if no value is set
 
 #### Inherited from
 
@@ -1260,7 +1237,9 @@ ___
 
 Gets the [RiffList](RiffList.md) that backs the data for this tag.
 
-**`remarks`** Tags based on RiffLists are only supposed to support certain fields. Modify at your
+**`Remarks`**
+
+Tags based on RiffLists are only supposed to support certain fields. Modify at your
     own risk.
 
 #### Returns
@@ -1279,10 +1258,10 @@ ___
 
 Gets the lyrics or script of the media represented by the current instance.
 
-**`remarks`** This field contains a plain text representation of the lyrics or scripts with line
-    breaks and whitespace being the only formatting marks.
-    Some formats support more advanced lyrics, like synchronized lyrics, but those must be
-    accessed using format-specific implementations.
+This field contains a plain text representation of the lyrics or scripts with line
+breaks and whitespace being the only formatting marks.
+Some formats support more advanced lyrics, like synchronized lyrics, but those must be
+accessed using format-specific implementations.
 
 #### Returns
 
@@ -1299,23 +1278,20 @@ RiffListTag.lyrics
 
 Sets the lyrics or script of the media represented by the current instance.
 
-**`remarks`** This field contains a plain text representation of the lyrics or scripts with line
-    breaks and whitespace being the only formatting marks.
-    Some formats support more advanced lyrics, like synchronized lyrics, but those must be
-    accessed using format-specific implementations.
+This field contains a plain text representation of the lyrics or scripts with line
+breaks and whitespace being the only formatting marks.
+Some formats support more advanced lyrics, like synchronized lyrics, but those must be
+accessed using format-specific implementations.
 
 #### Parameters
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `value` | `string` | Lyrics or script of the media represented by the current instance or     `undefined` if no value is present |
+| `value` | `string` | Lyrics or script of the media represented by the current instance or `undefined` if no value is present |
 
 #### Returns
 
 `void`
-
-Lyrics or script of the media represented by the current instance or `undefined` if
-    no value is present
 
 #### Inherited from
 
@@ -1329,8 +1305,8 @@ ___
 
 Gets the MusicBrainz artist ID of the media represented by the current instance.
 
-**`remarks`** This field represents the MusicBrainz ArtistID, and is used to uniquely identify a
-    particular artist of the track.
+This field represents the MusicBrainz ArtistID, and is used to uniquely identify a
+particular artist of the track.
 
 #### Returns
 
@@ -1347,21 +1323,18 @@ RiffListTag.musicBrainzArtistId
 
 Sets the MusicBrainz artist ID of the media represented by the current instance.
 
-**`remarks`** This field represents the MusicBrainz ArtistID, and is used to uniquely identify a
-    particular artist of the track.
+This field represents the MusicBrainz ArtistID, and is used to uniquely identify a
+particular artist of the track.
 
 #### Parameters
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `value` | `string` | MusicBrainz ArtistID of the media represented by the current instance or     `undefined` if no value is present |
+| `value` | `string` | MusicBrainz ArtistID of the media represented by the current instance or `undefined` if no value is present |
 
 #### Returns
 
 `void`
-
-MusicBrainz ArtistID of the media represented by the current instance or
-    `undefined` if no value is present
 
 #### Inherited from
 
@@ -1375,8 +1348,8 @@ ___
 
 Gets the MusicBrainz disc ID of the media represented by the current instance.
 
-**`remarks`** This field represents the MusicBrainz DiscID and is used to uniquely identify the
-    particular released media associated with this track.
+This field represents the MusicBrainz DiscID and is used to uniquely identify the
+particular released media associated with this track.
 
 #### Returns
 
@@ -1393,21 +1366,18 @@ RiffListTag.musicBrainzDiscId
 
 Sets the MusicBrainz disc ID of the media represented by the current instance.
 
-**`remarks`** This field represents the MusicBrainz DiscID and is used to uniquely identify the
-    particular released media associated with this track.
+This field represents the MusicBrainz DiscID and is used to uniquely identify the
+particular released media associated with this track.
 
 #### Parameters
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `value` | `string` | MusicBrainz DiscID of the media represented by the current instance or     `undefined` if no value is present |
+| `value` | `string` | MusicBrainz DiscID of the media represented by the current instance or `undefined` if no value is present |
 
 #### Returns
 
 `void`
-
-MusicBrainz DiscID of the media represented by the current instance or `undefined`
-    if no value is present
 
 #### Inherited from
 
@@ -1421,8 +1391,8 @@ ___
 
 Gets the MusicBrainz release artist ID of the media represented by the current instance.
 
-**`remarks`** This field represents the MusicBrainz ReleaseArtistID, and is used to uniquely
-    identify a particular album artist credited with the album.
+This field represents the MusicBrainz ReleaseArtistID, and is used to uniquely
+identify a particular album artist credited with the album.
 
 #### Returns
 
@@ -1439,21 +1409,18 @@ RiffListTag.musicBrainzReleaseArtistId
 
 Sets the MusicBrainz release artist ID of the media represented by the current instance.
 
-**`remarks`** This field represents the MusicBrainz ReleaseArtistID, and is used to uniquely
-    identify a particular album artist credited with the album.
+This field represents the MusicBrainz ReleaseArtistID, and is used to uniquely
+identify a particular album artist credited with the album.
 
 #### Parameters
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `value` | `string` | MusicBrainz ReleaseArtistID of the media represented by the current instance or     `undefined` if no value is present |
+| `value` | `string` | MusicBrainz ReleaseArtistID of the media represented by the current instance or `undefined` if no value is present |
 
 #### Returns
 
 `void`
-
-MusicBrainz ReleaseArtistID of the media represented by the current instance or
-    `undefined` if no value is present
 
 #### Inherited from
 
@@ -1467,11 +1434,11 @@ ___
 
 Gets the MusicBrainz release country of the media represented by the current instance.
 
-**`remarks`** This field represents the MusicBrainz ReleaseCountry which describes the country in
-    which an album was released. Note that the release country of an album is not
-    necessarily the country in which it was produced. The label itself will typically be
-    more relevant. Eg, a release on "Foo Records UK" that has "Made in Austria" printed on
-    it will likely be a UK release.
+This field represents the MusicBrainz ReleaseCountry which describes the country in
+which an album was released. Note that the release country of an album is not
+necessarily the country in which it was produced. The label itself will typically be
+more relevant. Eg, a release on "Foo Records UK" that has "Made in Austria" printed on
+it will likely be a UK release.
 
 #### Returns
 
@@ -1488,24 +1455,21 @@ RiffListTag.musicBrainzReleaseCountry
 
 Sets the MusicBrainz release country of the media represented by the current instance.
 
-**`remarks`** This field represents the MusicBrainz ReleaseCountry which describes the country in
-    which an album was released. Note that the release country of an album is not
-    necessarily the country in which it was produced. The label itself will typically be
-    more relevant. Eg, a release on "Foo Records UK" that has "Made in Austria" printed on
-    it will likely be a UK release.
+This field represents the MusicBrainz ReleaseCountry which describes the country in
+which an album was released. Note that the release country of an album is not
+necessarily the country in which it was produced. The label itself will typically be
+more relevant. Eg, a release on "Foo Records UK" that has "Made in Austria" printed on
+it will likely be a UK release.
 
 #### Parameters
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `value` | `string` | MusicBrainz ReleaseCountry of the media represented by the current instance or     `undefined` if no value is present |
+| `value` | `string` | MusicBrainz ReleaseCountry of the media represented by the current instance or `undefined` if no value is present |
 
 #### Returns
 
 `void`
-
-MusicBrainz ReleaseCountry of the media represented by the current instance or
-    `undefined` if no value is present
 
 #### Inherited from
 
@@ -1519,8 +1483,8 @@ ___
 
 Gets the MusicBrainz release group ID of the media represented by the current instance.
 
-**`remarks`** This field represents the MusicBrainz ReleaseGroupID and is used to uniquely identify
-    a particular release group to which this track belongs.
+This field represents the MusicBrainz ReleaseGroupID and is used to uniquely identify
+a particular release group to which this track belongs.
 
 #### Returns
 
@@ -1537,21 +1501,18 @@ RiffListTag.musicBrainzReleaseGroupId
 
 Sets the MusicBrainz release group ID of the media represented by the current instance.
 
-**`remarks`** This field represents the MusicBrainz ReleaseGroupID and is used to uniquely identify
-    a particular release group to which this track belongs.
+This field represents the MusicBrainz ReleaseGroupID and is used to uniquely identify
+a particular release group to which this track belongs.
 
 #### Parameters
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `value` | `string` | MusicBrainz ReleaseGroupID of the media represented by the current instance or     `undefined` if no value is present |
+| `value` | `string` | MusicBrainz ReleaseGroupID of the media represented by the current instance or `undefined` if no value is present |
 
 #### Returns
 
 `void`
-
-MusicBrainz ReleaseGroupID of the media represented by the current instance or
-    `undefined` if no value is present
 
 #### Inherited from
 
@@ -1565,8 +1526,8 @@ ___
 
 Gets the MusicBrainz release ID of the media represented by the current instance.
 
-**`remarks`** This field represents the MusicBrains ReleaseID and is used to uniquely identify a
-    particular release to which this track belongs.
+This field represents the MusicBrains ReleaseID and is used to uniquely identify a
+particular release to which this track belongs.
 
 #### Returns
 
@@ -1583,21 +1544,18 @@ RiffListTag.musicBrainzReleaseId
 
 Sets the MusicBrainz release ID of the media represented by the current instance.
 
-**`remarks`** This field represents the MusicBrains ReleaseID and is used to uniquely identify a
-    particular release to which this track belongs.
+This field represents the MusicBrains ReleaseID and is used to uniquely identify a
+particular release to which this track belongs.
 
 #### Parameters
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `value` | `string` | MusicBrainz ReleaseID of the media represented by the current instance or     `undefined` if no value is present |
+| `value` | `string` | MusicBrainz ReleaseID of the media represented by the current instance or `undefined` if no value is present |
 
 #### Returns
 
 `void`
-
-MusicBrainz ReleaseID of the media represented by the current instance or
-    `undefined` if no value is present
 
 #### Inherited from
 
@@ -1611,8 +1569,8 @@ ___
 
 Gets the MusicBrainz release status of the media represented by the current instance.
 
-**`remarks`** This field represents the MusicBrainz ReleaseStatus used to describe how 'official' a
-    release is. Common statuses are: `Official`, `Promotion`, `Bootleg`, `Pseudo-release`.
+This field represents the MusicBrainz ReleaseStatus used to describe how 'official' a
+release is. Common statuses are: `Official`, `Promotion`, `Bootleg`, `Pseudo-release`.
 
 #### Returns
 
@@ -1629,21 +1587,18 @@ RiffListTag.musicBrainzReleaseStatus
 
 Sets the MusicBrainz release status of the media represented by the current instance.
 
-**`remarks`** This field represents the MusicBrainz ReleaseStatus used to describe how 'official' a
-    release is. Common statuses are: `Official`, `Promotion`, `Bootleg`, `Pseudo-release`.
+This field represents the MusicBrainz ReleaseStatus used to describe how 'official' a
+release is. Common statuses are: `Official`, `Promotion`, `Bootleg`, `Pseudo-release`.
 
 #### Parameters
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `value` | `string` | MusicBrainz ReleaseStatus of the media represented by the current instance or     `undefined` if no value is present |
+| `value` | `string` | MusicBrainz ReleaseStatus of the media represented by the current instance or `undefined` if no value is present |
 
 #### Returns
 
 `void`
-
-MusicBrainz ReleaseStatus of the media represented by the current instance or
-    `undefined` if no value is present
 
 #### Inherited from
 
@@ -1657,17 +1612,18 @@ ___
 
 Gets the MusicBrainz release type of the media represented by the current instance.
 
-**`remarks`** This field represents the MusicBrainz ReleaseType that describes what kind of release
-    a release is. Common types are: `Single`, `Album`, `EP`, `Compilation`, `Soundtrack,
-    `SpokenWord`, `Interview`, `Audiobook`, `Live`, `Remix`, and `Other`. Careful thought
-    must be given when using this field to decide if a particular track "is a compilation".
+This field represents the MusicBrainz ReleaseType that describes what kind of release
+ a release is. Common types are: `Single`, `Album`, `EP`, `Compilation`, `Soundtrack,
+ `SpokenWord`, `Interview`, `Audiobook`, `Live`, `Remix`, and `Other`. Careful thought
+ must be given when using this field to decide if a particular track "is a compilation".
+
+@returns
+    MusicBrainz ReleaseType of the media represented by the current instance or
+    `undefined` if no value is present
 
 #### Returns
 
 `string`
-
-MusicBrainz ReleaseType of the media represented by the current instance or
-    `undefined` if no value is present
 
 #### Inherited from
 
@@ -1677,23 +1633,23 @@ RiffListTag.musicBrainzReleaseType
 
 Sets the MusicBrainz release type of the media represented by the current instance.
 
-**`remarks`** This field represents the MusicBrainz ReleaseType that describes what kind of release
-    a release is. Common types are: `Single`, `Album`, `EP`, `Compilation`, `Soundtrack,
-    `SpokenWord`, `Interview`, `Audiobook`, `Live`, `Remix`, and `Other`. Careful thought
-    must be given when using this field to decide if a particular track "is a compilation".
+This field represents the MusicBrainz ReleaseType that describes what kind of release
+a release is. Common types are: `Single`, `Album`, `EP`, `Compilation`, `Soundtrack,
+`SpokenWord`, `Interview`, `Audiobook`, `Live`, `Remix`, and `Other`. Careful thought
+must be given when using this field to decide if a particular track "is a compilation".
+
+@param value MusicBrainz ReleaseType of the media represented by the current instance or
+    `undefined` if no value is present
 
 #### Parameters
 
-| Name | Type | Description |
-| :------ | :------ | :------ |
-| `value` | `string` | MusicBrainz ReleaseType of the media represented by the current instance or     `undefined` if no value is present |
+| Name | Type |
+| :------ | :------ |
+| `value` | `string` |
 
 #### Returns
 
 `void`
-
-MusicBrainz ReleaseType of the media represented by the current instance or
-    `undefined` if no value is present
 
 #### Inherited from
 
@@ -1708,8 +1664,8 @@ ___
 Gets the MusicBrainz track ID of the media represented by the media represented by the
 current instance.
 
-**`remarks`** This field represents the MusicBrainz TrackID and is used to uniquely identify a
-    particular track.
+This field represents the MusicBrainz TrackID and is used to uniquely identify a
+particular track.
 
 #### Returns
 
@@ -1727,21 +1683,18 @@ RiffListTag.musicBrainzTrackId
 Sets the MusicBrainz track ID of the media represented by the media represented by the
 current instance.
 
-**`remarks`** This field represents the MusicBrainz TrackID and is used to uniquely identify a
-    particular track.
+This field represents the MusicBrainz TrackID and is used to uniquely identify a
+particular track.
 
 #### Parameters
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `value` | `string` | MusicBrainz TrackID of the media represented by the current instance or     `undefined` if no value is present |
+| `value` | `string` | MusicBrainz TrackID of the media represented by the current instance or `undefined` if no value is present |
 
 #### Returns
 
 `void`
-
-MusicBrainz TrackID of the media represented by the current instance or `undefined`
-    if no value is present
 
 #### Inherited from
 
@@ -1755,8 +1708,8 @@ ___
 
 Gets the MusicIP PUID of the media represented by the current instance.
 
-**`remarks`** This field represents the MusicIP PUID, an acoustic fingerprint identifier. It
-    identifies wht this track "sounds like".
+This field represents the MusicIP PUID, an acoustic fingerprint identifier. It
+identifies wht this track "sounds like".
 
 #### Returns
 
@@ -1773,21 +1726,18 @@ RiffListTag.musicIpId
 
 Sets the MusicIP PUID of the media represented by the current instance.
 
-**`remarks`** This field represents the MusicIP PUID, an acoustic fingerprint identifier. It
-    identifies wht this track "sounds like".
+This field represents the MusicIP PUID, an acoustic fingerprint identifier. It
+identifies wht this track "sounds like".
 
 #### Parameters
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `value` | `string` | MusicIP PUID of the media represented by the current instance or `undefined`     if no value is present |
+| `value` | `string` | MusicIP PUID of the media represented by the current instance or `undefined` if no value is present |
 
 #### Returns
 
 `void`
-
-MusicIP PUID of the media represented by the current instance or `undefined` if no
-    value is present
 
 #### Inherited from
 
@@ -1799,9 +1749,19 @@ ___
 
 • `get` **performers**(): `string`[]
 
-**`inheritdoc`**
+Gets the performers or artists who performed in the media described by the current instance.
 
-**`remarks`** Implemented via the `IART` item.
+This field is most commonly called "Artists" in audio media or "Actors" in video
+media, and should be used to represent each artist/actor appearing in the media. It can
+be simple in the form of "Above & Beyond" or more complicated in the form of
+"Jono Grant, Tony McGuinness, Paavo Siljamäki", depending on the preferences of the
+user and the degree to which they organize their media collection.
+As the preference of the user may vary, applications should avoid limiting the user in
+what constitutes the performers field - especially in regard to number of performers.
+
+**`Remarks`**
+
+Implemented via the `IART` item.
 
 #### Returns
 
@@ -1813,15 +1773,25 @@ RiffListTag.performers
 
 • `set` **performers**(`value`): `void`
 
-**`inheritdoc`**
+Sets the performers or artists who performed in the media described by the current instance.
 
-**`remarks`** Implemented via the `IART` item.
+This field is most commonly called "Artists" in audio media or "Actors" in video
+media, and should be used to represent each artist/actor appearing in the media. It can
+be simple in the form of "Above & Beyond" or more complicated in the form of
+"Jono Grant, Tony McGuinness, Paavo Siljamäki", depending on the preferences of the
+user and the degree to which they organize their media collection.
+As the preference of the user may vary, applications should avoid limiting the user in
+what constitutes the performers field - especially with regards to number of performers.
+
+**`Remarks`**
+
+Implemented via the `IART` item.
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `value` | `string`[] |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `value` | `string`[] | Performers who performed in the media described by the current instance or an empty array if no value is present. |
 
 #### Returns
 
@@ -1842,9 +1812,9 @@ for music. This must match the [performers](MovieIdTag.md#performers) array (for
 role). Several roles for the same artist/actor can be separated with semicolons. For
 example: "Bass; Backing Vocals; Vibraphone".
 
-**`remarks`** It is highly important to match each role to the performers. This means that an entry
-    in the [performersRole](MovieIdTag.md#performersrole) array is `undefined` to maintain the relationship between
-    `performers[i]` and `performersRole[i]`.
+It is highly important to match each role to the performers. This means that an entry
+in the [performersRole](MovieIdTag.md#performersrole) array is `undefined` to maintain the relationship between
+`performers[i]` and `performersRole[i]`.
 
 #### Returns
 
@@ -1864,22 +1834,19 @@ for music. This must match the [performers](MovieIdTag.md#performers) array (for
 role). Several roles for the same artist/actor can be separated with semicolons. For
 example: "Bass; Backing Vocals; Vibraphone".
 
-**`remarks`** It is highly important to match each role to the performers. This means that an entry
-    in the [performersRole](MovieIdTag.md#performersrole) array is `undefined` to maintain the relationship between
-    `performers[i]` and `performersRole[i]`.
+It is highly important to match each role to the performers. This means that an entry
+in the [performersRole](MovieIdTag.md#performersrole) array is `undefined` to maintain the relationship between
+`performers[i]` and `performersRole[i]`.
 
 #### Parameters
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `value` | `string`[] | Array containing the roles played by the performers in the media described by     the current instance, or an empty array if no value is present. |
+| `value` | `string`[] | Array containing the roles played by the performers in the media described by the current instance, or an empty array if no value is present. |
 
 #### Returns
 
 `void`
-
-Array containing the roles played by the performers in the media described by the
-    current instance, or an empty array if no value is present.
 
 #### Inherited from
 
@@ -1894,11 +1861,9 @@ ___
 Gets the sortable names of the performers or artists who performed in the media described by
 the current instance.
 
-**`remarks`** This is used to provide more control over how the media is sorted. Typical uses are to
-    skip articles or sort by last name. For example, "The Pillows" might be sorted as
-    "Pillows, The".
-
-**`see`** performers
+This is used to provide more control over how the media is sorted. Typical uses are to
+skip articles or sort by last name. For example, "The Pillows" might be sorted as
+"Pillows, The". See also: [performers](MovieIdTag.md#performers)
 
 #### Returns
 
@@ -1916,24 +1881,19 @@ RiffListTag.performersSort
 Gets the sortable names of the performers or artists who performed in the media described by
 the current instance.
 
-**`remarks`** This is used to provide more control over how the media is sorted. Typical uses are to
-    skip articles or sort by last name. For example, "The Pillows" might be sorted as
-    "Pillows, The".
-
-**`see`** performers
+This is used to provide more control over how the media is sorted. Typical uses are to
+skip articles or sort by last name. For example, "The Pillows" might be sorted as
+"Pillows, The". See also: [performers](MovieIdTag.md#performers)
 
 #### Parameters
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `value` | `string`[] | Sortable names for the performers who performed in the media described by the     current instance, or an empty array if no value is present. |
+| `value` | `string`[] | Sortable names for the performers who performed in the media described by the current instance, or an empty array if no value is present. |
 
 #### Returns
 
 `void`
-
-Sortable names for the performers who performed in the media described by the
-    current instance, or an empty array if no value is present.
 
 #### Inherited from
 
@@ -1947,9 +1907,9 @@ ___
 
 Gets a collection of pictures associated with the media represented by the current instance.
 
-**`remarks`** Typically, this value is used to store an album cover or icon to use for the file, but
-    it is capable of holding any type of image or file, including pictures of the band, the
-    recording studio, the concert, etc.
+Typically, this value is used to store an album cover or icon to use for the file, but
+it is capable of holding any type of image or file, including pictures of the band, the
+recording studio, the concert, etc.
 
 #### Returns
 
@@ -1966,22 +1926,19 @@ RiffListTag.pictures
 
 Sets a collection of pictures associated with the media represented by the current instance.
 
-**`remarks`** Typically, this value is used to store an album cover or icon to use for the file, but
-    it is capable of holding any type of image or file, including pictures of the band, the
-    recording studio, the concert, etc.
+Typically, this value is used to store an album cover or icon to use for the file, but
+it is capable of holding any type of image or file, including pictures of the band, the
+recording studio, the concert, etc.
 
 #### Parameters
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `value` | [`IPicture`](../interfaces/IPicture.md)[] | Array containing a collection of pictures associated with the media represented by     the current instance or an empty array if no pictures are present. |
+| `value` | [`IPicture`](../interfaces/IPicture.md)[] | Array containing a collection of pictures associated with the media represented by the current instance or an empty array if no pictures are present. |
 
 #### Returns
 
 `void`
-
-Array containing a collection of pictures associated with the media represented by
-    the current instance or an empty array if no pictures are present.
 
 #### Inherited from
 
@@ -2019,8 +1976,6 @@ Sets the publisher of the track.
 
 `void`
 
-Publisher of the track or `undefined` if no value is set
-
 #### Inherited from
 
 RiffListTag.publisher
@@ -2057,8 +2012,6 @@ Sets the remixer of the track.
 
 `void`
 
-Remixer of the track or `undefined` if no value is set
-
 #### Inherited from
 
 RiffListTag.remixedBy
@@ -2089,13 +2042,11 @@ Sets the ReplayGain album gain in dB.
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `value` | `number` | Album gain as per the ReplayGain specifications, in dB, or `NaN` if no value is     set |
+| `value` | `number` | Album gain as per the ReplayGain specifications, in dB, or `NaN` if no value is set |
 
 #### Returns
 
 `void`
-
-Album gain as per the ReplayGain specifications, in dB, or `NaN` if no value is set
 
 #### Inherited from
 
@@ -2133,8 +2084,6 @@ Sets the ReplayGain album peak sample.
 
 `void`
 
-Album peak as per the ReplayGain specifications, or `NaN` if no value is set
-
 #### Inherited from
 
 RiffListTag.replayGainAlbumPeak
@@ -2170,8 +2119,6 @@ Sets the ReplayGain track gain in dB.
 #### Returns
 
 `void`
-
-Track gain as per ReplayGain specifications, in dB, or `NaN` if no value is set
 
 #### Inherited from
 
@@ -2209,8 +2156,6 @@ Sets the ReplayGain track peak sample.
 
 `void`
 
-Track peak as per the ReplayGain specifications, or `NaN` if no value is set
-
 #### Inherited from
 
 RiffListTag.replayGainTrackPeak
@@ -2221,7 +2166,7 @@ ___
 
 • `get` **sizeOnDisk**(): `number`
 
-**`inheritdoc`**
+Gets the size of the tag in bytes on disk as it was read from disk.
 
 #### Returns
 
@@ -2251,7 +2196,9 @@ RiffListTag.stringType
 
 Sets the type of string used for parsing and rendering the contents of this tag.
 
-**`remarks`** The value must be `StringType.Latin1` or `StringType.UTF8`.
+**`Remarks`**
+
+The value must be `StringType.Latin1` or `StringType.UTF8`.
 
 #### Parameters
 
@@ -2275,9 +2222,9 @@ ___
 
 Gets a description, one-line. It represents the tagline of the vide/music.
 
-**`remarks`** This field gives a nice/short precision to the title, which is typically below the
-    title on the front cover of the media. For example for "Ocean's 13", this would be
-    "Revenge is a funny thing".
+This field gives a nice/short precision to the title, which is typically below the
+title on the front cover of the media. For example for "Ocean's 13", this would be
+"Revenge is a funny thing".
 
 #### Returns
 
@@ -2294,22 +2241,19 @@ RiffListTag.subtitle
 
 Sets a description, one-line. It represents the tagline of the vide/music.
 
-**`remarks`** This field gives a nice/short precision to the title, which is typically below the
-    title on the front cover of the media. For example for "Ocean's 13", this would be
-    "Revenge is a funny thing".
+This field gives a nice/short precision to the title, which is typically below the
+title on the front cover of the media. For example for "Ocean's 13", this would be
+"Revenge is a funny thing".
 
 #### Parameters
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `value` | `string` | Subtitle of the media represented by the current instance or `undefined` if no     value is present |
+| `value` | `string` | Subtitle of the media represented by the current instance or `undefined` if no value is present |
 
 #### Returns
 
 `void`
-
-Subtitle of the media represented by the current instance or `undefined` if no
-    value is present
 
 #### Inherited from
 
@@ -2321,7 +2265,8 @@ ___
 
 • `get` **tagTypes**(): [`TagTypes`](../enums/TagTypes.md)
 
-**`inheritdoc`**
+Gets the tag types contained in the current instance. A bit wise combined [TagTypes](../enums/TagTypes.md)
+containing the tag types contained in the current instance.
 
 #### Returns
 
@@ -2337,9 +2282,11 @@ ___
 
 • `get` **title**(): `string`
 
-**`inheritdoc`**
+Gets the title for the media described by the current instance.
 
-**`remarks`** Implemented via the `TITL` item.
+**`Remarks`**
+
+Implemented via the `TITL` item.
 
 #### Returns
 
@@ -2351,15 +2298,21 @@ RiffListTag.title
 
 • `set` **title**(`value`): `void`
 
-**`inheritdoc`**
+Sets the title for the media described by the current instance.
 
-**`remarks`** Implemented via the `TITL` item.
+The title is most commonly the name of the song, episode or a movie title. For example
+"Time Won't Me Go" (a song by The Bravery), "Three Stories" (an episode of House MD), or
+"Fear and Loathing In Las Vegas" (a movie).
+
+**`Remarks`**
+
+Implemented via the `TITL` item.
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `value` | `string` |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `value` | `string` | Title of the media described by the current instance or `undefined` if no value is present. |
 
 #### Returns
 
@@ -2377,7 +2330,7 @@ ___
 
 Gets the sortable name for the title of the media described by the current instance.
 
-**`remarks`** Possibly used to sort compilations or episodic content.
+Possibly used to sort compilations or episodic content.
 
 #### Returns
 
@@ -2394,20 +2347,17 @@ RiffListTag.titleSort
 
 Sets the sortable name for the title of the media described by the current instance.
 
-**`remarks`** Possibly used to sort compilations or episodic content.
+Possibly used to sort compilations or episodic content.
 
 #### Parameters
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `value` | `string` | Sortable name of the media described by the current instance or `undefined` if     no value is present |
+| `value` | `string` | Sortable name of the media described by the current instance or `undefined` if no value is present |
 
 #### Returns
 
 `void`
-
-Sortable name of the media described by the current instance or `undefined` if no
-    value is present
 
 #### Inherited from
 
@@ -2419,9 +2369,18 @@ ___
 
 • `get` **track**(): `number`
 
-**`inheritdoc`**
+Gets the position of the media represented by the current instance in its containing album
+or season (for a series).
 
-**`remarks`** Implemented via the `PRT1` item.
+This value should be the same as is listed on the album cover and no more than
+[trackCount](MovieIdTag.md#trackcount), if [trackCount](MovieIdTag.md#trackcount) is non-zero.
+Most tagging formats store this as a string. To help sorting, a two-digit zero-padded
+value is used in the resulting tag.
+For a series, this property represents the episodes in a season of the series.
+
+**`Remarks`**
+
+Implemented via the `PRT1` item.
 
 #### Returns
 
@@ -2433,15 +2392,24 @@ RiffListTag.track
 
 • `set` **track**(`value`): `void`
 
-**`inheritdoc`**
+Sets the position of the media represented by the current instance in its containing album
+or season (for a series).
 
-**`remarks`** Implemented via the `PRT1` item.
+This value should be the same as is listed on the album cover and no more than
+[trackCount](MovieIdTag.md#trackcount), if [trackCount](MovieIdTag.md#trackcount) is non-zero.
+Most tagging formats store this as a string. To help sorting, a two-digit zero-padded
+value is used in the resulting tag.
+For a series, this property represents the episodes in a season of the series.
+
+**`Remarks`**
+
+Implemented via the `PRT1` item.
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `value` | `number` |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `value` | `number` | Position of the media represented by the current instance in its containing album or `0` if not specified. |
 
 #### Returns
 
@@ -2457,9 +2425,15 @@ ___
 
 • `get` **trackCount**(): `number`
 
-**`inheritdoc`**
+Gets the number of tracks on the album or the number of episodes in a series of the media
+represented by the current instance.
 
-**`remarks`** Implemented via the `PRT2` item.
+If non-zero, this value should be equal to or greater than [track](MovieIdTag.md#track). If
+[track](MovieIdTag.md#track) is `0`, this value should also be `0`.
+
+**`Remarks`**
+
+Implemented via the `PRT2` item.
 
 #### Returns
 
@@ -2471,15 +2445,21 @@ RiffListTag.trackCount
 
 • `set` **trackCount**(`value`): `void`
 
-**`inheritdoc`**
+Sets the number of tracks on the album or the number of episodes in a series of the media
+represented by the current instance.
 
-**`remarks`** Implemented via the `PRT2` item.
+If non-zero, this value should be equal to or greater than [track](MovieIdTag.md#track). If
+[track](MovieIdTag.md#track) is `0`, this value should also be `0`.
+
+**`Remarks`**
+
+Implemented via the `PRT2` item.
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `value` | `number` |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `value` | `number` | Number of tracks on the album or number of episodes in a series of the media represented by the current instance or `0` if not specified. |
 
 #### Returns
 
@@ -2497,10 +2477,10 @@ ___
 
 Gets the year that the media represented by the current instance was recorded.
 
-**`remarks`** Years greater than 9999 cannot be stored by most tagging formats and will be cleared
-    if a higher value is set. Some tagging formats store higher precision dates which will
-    be truncated when this property is set. Format specific implementations are necessary to
-    access the higher precision values.
+Years greater than 9999 cannot be stored by most tagging formats and will be cleared
+if a higher value is set. Some tagging formats store higher precision dates which will
+be truncated when this property is set. Format specific implementations are necessary to
+access the higher precision values.
 
 #### Returns
 
@@ -2517,23 +2497,20 @@ RiffListTag.year
 
 Sets the year that the media represented by the current instance was recorded.
 
-**`remarks`** Years greater than 9999 cannot be stored by most tagging formats and will be cleared
-    if a higher value is set. Some tagging formats store higher precision dates which will
-    be truncated when this property is set. Format specific implementations are necessary to
-    access the higher precision values.
+Years greater than 9999 cannot be stored by most tagging formats and will be cleared
+if a higher value is set. Some tagging formats store higher precision dates which will
+be truncated when this property is set. Format specific implementations are necessary to
+access the higher precision values.
 
 #### Parameters
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `value` | `number` | Year that the media represented by the current instance was created or `0` if no     value is present. |
+| `value` | `number` | Year that the media represented by the current instance was created or `0` if no value is present. |
 
 #### Returns
 
 `void`
-
-Year that the media represented by the current instance was created or `0` if no
-    value is present.
 
 #### Inherited from
 
@@ -2546,8 +2523,6 @@ RiffListTag.year
 ▸ **clear**(): `void`
 
 Clears all values stored in the current instance.
-
-**`remarks`** The clearing procedure is format specific and should clear all values.
 
 #### Returns
 
@@ -2564,12 +2539,12 @@ ___
 ▸ **copyTo**(`target`, `overwrite`): `void`
 
 Copies the values from the current instance to another [Tag](Tag.md), optionally overwriting
-    existing values.
+existing values.
 
-**`remarks`** This method only copies the most basic values when copying between different tag
-    formats. However, if `target` is of the same type as the current instance,
-    more advanced copying may be done. For example if both `this` and `target` are
-    [Id3v2Tag](Id3v2Tag.md), all frames will be copied to the target.
+This method only copies the most basic values when copying between different tag
+formats. However, if `target` is of the same type as the current instance,
+more advanced copying may be done. For example if both `this` and `target` are
+[Id3v2Tag](Id3v2Tag.md), all frames will be copied to the target.
 
 #### Parameters
 
@@ -2713,24 +2688,6 @@ to a file.
 #### Inherited from
 
 [RiffListTag](RiffListTag.md).[render](RiffListTag.md#render)
-
-___
-
-### setInfoTag
-
-▸ **setInfoTag**(): `void`
-
-Set the tags that represent the tagger software (node-taglib-sharp) itself.
-
-**`remarks`** This is typically a method to call just before saving a tag.
-
-#### Returns
-
-`void`
-
-#### Inherited from
-
-[RiffListTag](RiffListTag.md).[setInfoTag](RiffListTag.md#setinfotag)
 
 ___
 
@@ -2914,11 +2871,13 @@ ___
 
 ▸ `Static` **tagTypeFlagsToArray**(`tagTypes`): [`TagTypes`](../enums/TagTypes.md)[]
 
+Generates an array of tag types that are set in the provided flags value.
+
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `tagTypes` | [`TagTypes`](../enums/TagTypes.md) |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `tagTypes` | [`TagTypes`](../enums/TagTypes.md) | Tag types that have been OR'd together. |
 
 #### Returns
 

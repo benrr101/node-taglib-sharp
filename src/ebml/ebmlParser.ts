@@ -96,7 +96,7 @@ export default class EbmlParser implements IDisposable {
 
     /**
      * Reads the next element in the file at the current level.
-     * @returns boolean `true` if an element was successfully read. `false` otherwise.
+     * @returns `true` if an element was successfully read. `false` otherwise.
      */
     public read(): boolean {
         // if (this._childParser) {

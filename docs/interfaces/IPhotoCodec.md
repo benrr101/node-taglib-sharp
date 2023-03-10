@@ -3,8 +3,8 @@
 # Interface: IPhotoCodec
 
 Interface that inherits the common codec information and adds photo-specific information.
-When dealing with an [ICodec](ICodec.md), if [ICodec.mediaTypes](ICodec.md#mediatypes) contains
-[MediaTypes.Photo](../enums/MediaTypes.md#photo), it is safe to assume that the object also inherits [IPhotoCodec](IPhotoCodec.md)
+When dealing with an [ICodec](ICodec.md), if [mediaTypes](ICodec.md#mediatypes) contains
+[Photo](../enums/MediaTypes.md#photo), it is safe to assume that the object also inherits [IPhotoCodec](IPhotoCodec.md)
 and can be recast without issue.
 
 ## Hierarchy
@@ -48,7 +48,9 @@ ___
 
 Duration of the media in milliseconds represented by the current instance.
 
-**`todo`** Ensure milliseconds is the right way to interpret this field
+**`TODO`**
+
+Ensure milliseconds is the right way to interpret this field
 
 #### Inherited from
 

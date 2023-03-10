@@ -56,7 +56,8 @@ export interface IStream {
      * @param offset Zero-based byte offset in `buffer` at which to begin storing data
      *     from the current stream
      * @param length The maximum number of bytes to read
-     * @returns number Total number of bytes written to the buffer. This can be less than the
+     * @returns
+     *     Total number of bytes written to the buffer. This can be less than the
      *     number of bytes requested if that number of bytes are not currently available or zero if
      *     the end of the stream is reached before any bytes are read
      */

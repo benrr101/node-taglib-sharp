@@ -2,13 +2,13 @@
 
 # Class: AsfContentDescriptionObject
 
-This class extends {@see BaseObject} to provide a representation of an ASF content description
+This class extends BaseObject to provide a representation of an ASF content description
 object. The content description object is optional and provides standard bibliographic
 information such as title, author, copyright, description, rating information.
 
 ## Hierarchy
 
-- `default`
+- [`AsfBaseObject`](AsfBaseObject.md)
 
   ↳ **`AsfContentDescriptionObject`**
 
@@ -63,8 +63,6 @@ Sets the author of the media described by the current instance.
 
 `void`
 
-Author of the media or `undefined` if it is not set.
-
 ___
 
 ### copyright
@@ -92,8 +90,6 @@ Sets the copyright information of the media described by the current instance.
 #### Returns
 
 `void`
-
-Copyright information of the media or `undefined` if it is not set.
 
 ___
 
@@ -123,19 +119,17 @@ Sets the description of the media described by the current instance.
 
 `void`
 
-Description of the media or `undefined` if it is not set.
-
 ___
 
 ### guid
 
-• `get` **guid**(): `default`
+• `get` **guid**(): [`UuidWrapper`](UuidWrapper.md)
 
 Gets the GUID that identifies the current instance.
 
 #### Returns
 
-`default`
+[`UuidWrapper`](UuidWrapper.md)
 
 #### Inherited from
 
@@ -159,13 +153,13 @@ ___
 
 ### objectType
 
-• `get` **objectType**(): `ObjectType`
+• `get` **objectType**(): [`AsfObjectType`](../enums/AsfObjectType.md)
 
-**`inheritdoc`**
+Gets the type of the object for easy comparison.
 
 #### Returns
 
-`ObjectType`
+[`AsfObjectType`](../enums/AsfObjectType.md)
 
 #### Overrides
 
@@ -215,8 +209,6 @@ Sets the rating of the media described by the current instance.
 
 `void`
 
-Rating of the media or `undefined` if it is not set.
-
 ___
 
 ### title
@@ -245,8 +237,6 @@ Sets the title of the media described by the current instance.
 
 `void`
 
-Title of the media or `undefined` if it is not set.
-
 ## Methods
 
 ### initializeFromFile
@@ -269,7 +259,7 @@ file.
 
 #### Inherited from
 
-BaseObject.initializeFromFile
+[AsfBaseObject](AsfBaseObject.md).[initializeFromFile](AsfBaseObject.md#initializefromfile)
 
 ___
 
@@ -283,7 +273,7 @@ Initializes a new instance with a specified GUID.
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `guid` | `default` | GUID to use for the new instance. |
+| `guid` | [`UuidWrapper`](UuidWrapper.md) | GUID to use for the new instance. |
 
 #### Returns
 
@@ -291,7 +281,7 @@ Initializes a new instance with a specified GUID.
 
 #### Inherited from
 
-BaseObject.initializeFromGuid
+[AsfBaseObject](AsfBaseObject.md).[initializeFromGuid](AsfBaseObject.md#initializefromguid)
 
 ___
 
@@ -307,7 +297,7 @@ Renders the current instance as a raw ASF object.
 
 #### Overrides
 
-BaseObject.render
+[AsfBaseObject](AsfBaseObject.md).[render](AsfBaseObject.md#render)
 
 ___
 
@@ -317,7 +307,9 @@ ___
 
 Renders the current instance as a raw ASF object containing the specified data.
 
-**`remarks`** Child classes implementing {@see render()} should render their contents and then
+**`Remarks`**
+
+Child classes implementing [()](AsfContentDescriptionObject.md#render) should render their contents and then
     send the data through this method to produce the final output.
 
 #### Parameters
@@ -332,13 +324,15 @@ Renders the current instance as a raw ASF object containing the specified data.
 
 #### Inherited from
 
-BaseObject.renderInternal
+[AsfBaseObject](AsfBaseObject.md).[renderInternal](AsfBaseObject.md#renderinternal)
 
 ___
 
 ### fromEmpty
 
 ▸ `Static` **fromEmpty**(): [`AsfContentDescriptionObject`](AsfContentDescriptionObject.md)
+
+Constructs a blank content description object.
 
 #### Returns
 
@@ -350,12 +344,14 @@ ___
 
 ▸ `Static` **fromFile**(`file`, `position`): [`AsfContentDescriptionObject`](AsfContentDescriptionObject.md)
 
+Constructs a new instance by reading from a file.
+
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `file` | [`File`](File.md) |
-| `position` | `number` |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `file` | [`File`](File.md) | File to read the content description object from |
+| `position` | `number` | Offset into the file where the object begins |
 
 #### Returns
 

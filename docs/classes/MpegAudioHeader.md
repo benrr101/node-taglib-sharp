@@ -30,7 +30,6 @@ header, see http://www.mpgedit.org/mpgedit/mpeg_format/mpeghdr.htm
 - [isPadded](MpegAudioHeader.md#ispadded)
 - [isProtected](MpegAudioHeader.md#isprotected)
 - [mediaTypes](MpegAudioHeader.md#mediatypes)
-- [streamLength](MpegAudioHeader.md#streamlength)
 - [vbriHeader](MpegAudioHeader.md#vbriheader)
 - [version](MpegAudioHeader.md#version)
 - [xingHeader](MpegAudioHeader.md#xingheader)
@@ -46,6 +45,8 @@ header, see http://www.mpgedit.org/mpgedit/mpeg_format/mpeghdr.htm
 ### UNKNOWN
 
 ▪ `Static` `Readonly` **UNKNOWN**: [`MpegAudioHeader`](MpegAudioHeader.md)
+
+Static instance of an audio header that has unknown information.
 
 ## Accessors
 
@@ -229,32 +230,11 @@ Types of media represented by the current instance, bitwise combined.
 
 ___
 
-### streamLength
-
-• `set` **streamLength**(`value`): `void`
-
-Sets the length of the audio stream represented by the current instance.
-If this value has not been set, [durationMilliseconds](MpegAudioHeader.md#durationmilliseconds) will return an incorrect value.
-
-**`internal`** This is intended to be set when the file is read.
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `value` | `number` |
-
-#### Returns
-
-`void`
-
-___
-
 ### vbriHeader
 
 • `get` **vbriHeader**(): [`MpegVbriHeader`](MpegVbriHeader.md)
 
-Gets the VBRI header found in the audio. {@link VbriHeader.UNKNOWN} is returned if no header
+Gets the VBRI header found in the audio. VbriHeader.UNKNOWN is returned if no header
 was found.
 
 #### Returns
@@ -279,7 +259,7 @@ ___
 
 • `get` **xingHeader**(): [`MpegXingHeader`](MpegXingHeader.md)
 
-Gets the Xing header found in the audio. {@link XingHeader.UNKNOWN} is returned if no header
+Gets the Xing header found in the audio. XingHeader.UNKNOWN is returned if no header
 was found.
 
 #### Returns
@@ -301,13 +281,13 @@ through a specified number of bytes.
 | :------ | :------ | :------ |
 | `file` | [`File`](File.md) | File to search |
 | `position` | `number` | Position in `file` at which to start searching |
-| `length?` | `number` | Maximum number of bytes to search before giving up. Defaults to `-1` to     have no maximum |
+| `length?` | `number` | Maximum number of bytes to search before giving up. Defaults to `-1` to have no maximum |
 
 #### Returns
 
 [`MpegAudioHeader`](MpegAudioHeader.md)
 
-the header that was found or `undefined` if a header was not found
+The header that was found or `undefined` if a header was not found
 
 ___
 
@@ -325,7 +305,7 @@ specified file.
 | :------ | :------ | :------ |
 | `data` | [`ByteVector`](ByteVector.md) | The header data to read |
 | `file` | [`File`](File.md) | File to read the Xing/VBRI header from |
-| `position` | `number` | Position into `file` where the header begins, must be a positive     8-bit integer. |
+| `position` | `number` | Position into `file` where the header begins, must be a positive 8-bit integer. |
 
 #### Returns
 

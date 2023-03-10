@@ -75,14 +75,15 @@ export default class OggPage {
     /**
      * Overwrites all page headers in a file starting at a specified position, shifting the page
      * sequence numbers a set amount.
+     * @remarks
+     *     When the number of pages in a stream changes, all subsequent pages in the stream
+     *     need to have their page sequence numbers updated in order to remain valid. Additionally,
+     *     when the page sequence number changes, the page needs to have its checksum recomputed.
+     *     This makes for a costly calculation if large comment data is added.
      * @param file File to update
      * @param position Offset into the file to begin updating
      * @param shiftTable Map where the key is the serial number of the stream to update and the
      *     value is the amount to offset the page sequence numbers in the stream
-     * @remarks When the number of pages in a stream changes, all subsequent pages in the stream
-     *     need to have their page sequence numbers updated in order to remain valid. Additionally,
-     *     when the page sequence number changes, the page needs to have its checksum recomputed.
-     *     This makes for a costly calculation if large comment data is added.
      * @internal
      */
     public static overwriteSequenceNumbers(file: File, position: number, shiftTable: Map<number, number>): void {

@@ -7,7 +7,7 @@ and written to disk.
 
 ## Hierarchy
 
-- `default`
+- [`AsfBaseObject`](AsfBaseObject.md)
 
   ↳ **`AsfMetadataLibraryObject`**
 
@@ -38,13 +38,13 @@ and written to disk.
 
 ### guid
 
-• `get` **guid**(): `default`
+• `get` **guid**(): [`UuidWrapper`](UuidWrapper.md)
 
 Gets the GUID that identifies the current instance.
 
 #### Returns
 
-`default`
+[`UuidWrapper`](UuidWrapper.md)
 
 #### Inherited from
 
@@ -62,20 +62,20 @@ Gets whether or not the current instance contains any records.
 
 `boolean`
 
-boolean `true` if the current instance does not contain any records, `false`
+`true` if the current instance does not contain any records, `false`
     otherwise.
 
 ___
 
 ### objectType
 
-• `get` **objectType**(): `ObjectType`
+• `get` **objectType**(): [`AsfObjectType`](../enums/AsfObjectType.md)
 
-**`inheritdoc`**
+Gets the type of the object for easy comparison.
 
 #### Returns
 
-`ObjectType`
+[`AsfObjectType`](../enums/AsfObjectType.md)
 
 #### Overrides
 
@@ -131,7 +131,7 @@ ___
 
 ### getRecords
 
-▸ **getRecords**(`languageListIndex`, `streamNumber`, ...`names`): [`AsfMetadataDescriptor`](AsfMetadataDescriptor.md)[]
+▸ **getRecords**(`languageListIndex`, `streamNumber`, `...names`): [`AsfMetadataDescriptor`](AsfMetadataDescriptor.md)[]
 
 Gets all records with a given language, stream, and any of a collection of names from the
 current instance.
@@ -170,7 +170,7 @@ file.
 
 #### Inherited from
 
-BaseObject.initializeFromFile
+[AsfBaseObject](AsfBaseObject.md).[initializeFromFile](AsfBaseObject.md#initializefromfile)
 
 ___
 
@@ -184,7 +184,7 @@ Initializes a new instance with a specified GUID.
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `guid` | `default` | GUID to use for the new instance. |
+| `guid` | [`UuidWrapper`](UuidWrapper.md) | GUID to use for the new instance. |
 
 #### Returns
 
@@ -192,7 +192,7 @@ Initializes a new instance with a specified GUID.
 
 #### Inherited from
 
-BaseObject.initializeFromGuid
+[AsfBaseObject](AsfBaseObject.md).[initializeFromGuid](AsfBaseObject.md#initializefromguid)
 
 ___
 
@@ -220,7 +220,7 @@ ___
 
 ▸ **render**(): [`ByteVector`](ByteVector.md)
 
-**`inheritdoc`**
+Renders the current instance as a raw ASF object.
 
 #### Returns
 
@@ -228,7 +228,7 @@ ___
 
 #### Overrides
 
-BaseObject.render
+[AsfBaseObject](AsfBaseObject.md).[render](AsfBaseObject.md#render)
 
 ___
 
@@ -238,7 +238,9 @@ ___
 
 Renders the current instance as a raw ASF object containing the specified data.
 
-**`remarks`** Child classes implementing {@see render()} should render their contents and then
+**`Remarks`**
+
+Child classes implementing [()](AsfMetadataLibraryObject.md#render) should render their contents and then
     send the data through this method to produce the final output.
 
 #### Parameters
@@ -253,18 +255,20 @@ Renders the current instance as a raw ASF object containing the specified data.
 
 #### Inherited from
 
-BaseObject.renderInternal
+[AsfBaseObject](AsfBaseObject.md).[renderInternal](AsfBaseObject.md#renderinternal)
 
 ___
 
 ### setRecords
 
-▸ **setRecords**(`languageListIndex`, `streamNumber`, `name`, ...`records`): `void`
+▸ **setRecords**(`languageListIndex`, `streamNumber`, `name`, `...records`): `void`
 
 Sets a collection of records for a given language, language, ane name, removing the existing
 records that match.
 
-**`remarks`** All added entries in `records` should match the provided `languageListIndex`,
+**`Remarks`**
+
+All added entries in `records` should match the provided `languageListIndex`,
     `streamNumber`, and `name`, but this will not be verified by the method. The records
     will be added with their own values and not those provided in the method arguments. The
     arguments are only used for removing existing values and determining where to position
@@ -301,12 +305,14 @@ ___
 
 ▸ `Static` **fromFile**(`file`, `position`): [`AsfMetadataLibraryObject`](AsfMetadataLibraryObject.md)
 
+Constructs and initializes a new instance by reading the object from a file.
+
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `file` | [`File`](File.md) |
-| `position` | `number` |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `file` | [`File`](File.md) | File to read the instance from |
+| `position` | `number` | Offset into the file where the object begins |
 
 #### Returns
 

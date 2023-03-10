@@ -8,7 +8,6 @@ import {File} from "../../src/file";
 import {OggPageFlags, OggPageHeader} from "../../src/ogg/oggPageHeader";
 import {Testers} from "../utilities/testers";
 
-
 @suite class Ogg_PageHeaderTests {
     @test
     public fromFile_invalidParams() {

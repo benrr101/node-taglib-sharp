@@ -2,6 +2,10 @@ import SyncData from "./syncData";
 import {ByteVector} from "../byteVector";
 import {Guards} from "../utils";
 
+/**
+ * This class is a filler until support for reading and writing the ID3v2 extended header is
+ * implemented.
+ */
 export default class Id3v2ExtendedHeader {
     private _size: number;
 
@@ -33,7 +37,7 @@ export default class Id3v2ExtendedHeader {
      */
     public get size(): number { return this._size; }
 
-    protected parse(data: ByteVector, version: number): void {
+    private parse(data: ByteVector, version: number): void {
         this._size = (version === 3 ? 4 : 0)
             + SyncData.toUint(data.subarray(0, 4));
 

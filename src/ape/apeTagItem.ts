@@ -140,7 +140,8 @@ export class ApeTagItem {
 
     /**
      * Gets the key that specified the contents of the item.
-     * @remarks This value is used for specifying the contents of the item in a common and
+     * @remarks
+     *     This value is used for specifying the contents of the item in a common and
      *     consistent fashion. For example, `TITLE` specifies that the item contains the title of
      *     the track.
      */

@@ -119,6 +119,10 @@ export default class RiffList implements IRiffChunk, ILazy {
 
     // #region Methods
 
+    /**
+     * Determines if a given chunk is a list.
+     * @param c Chunk to check is a list.
+     */
     public static isChunkList(c: IRiffChunk): boolean {
         return c.fourcc === RiffList.IDENTIFIER_FOURCC;
     }
@@ -135,7 +139,8 @@ export default class RiffList implements IRiffChunk, ILazy {
     /**
      * Retrieves a collection of lists by the lists' key.
      * @param id Key for looking up the desired lists
-     * @returns RiffList[] Array of the nested lists with the provided key, or an empty array if
+     * @returns
+     *     Array of the nested lists with the provided key, or an empty array if
      *     the key does not exist in this instance.
      */
     public getLists(id: string): RiffList[] {
@@ -146,7 +151,8 @@ export default class RiffList implements IRiffChunk, ILazy {
     /**
      * Retrieves a collection of values by the values' key.
      * @param id Key for looking up the desired values
-     * @returns ByteVector[] Array of the values with the provided key, or an empty array if the
+     * @returns
+     *     Array of the values with the provided key, or an empty array if the
      *     key does not exist in the instance.
      */
     public getValues(id: string): ByteVector[] {

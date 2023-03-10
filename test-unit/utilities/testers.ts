@@ -55,8 +55,6 @@ export class Testers {
         assert.throws(() => testFunc(-1));
         assert.throws(() => testFunc(1.23));
         assert.throws(() => testFunc(Number.MAX_SAFE_INTEGER + 1));
-
-
         if (!NumberUtils.hasFlag(allow, Allow.Null)) {
             assert.throws(() => testFunc(null));
         }

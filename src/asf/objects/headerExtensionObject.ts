@@ -53,7 +53,8 @@ export default class HeaderExtensionObject extends BaseObject {
 
     /**
      * Gets the child ASF objects contained in the current instance.
-     * @remarks The returned array is a copy of the array of children inside this object. Any
+     * @remarks
+     *     The returned array is a copy of the array of children inside this object. Any
      *     changes to this array will not be reflected in the object.
      *
      *     Only certain objects are valid inside a header extension object. Any objects that are

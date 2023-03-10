@@ -138,8 +138,7 @@ export class UrlLinkFrame extends Frame {
      * Gets the first frame that matches the provided type
      * @param frames Object to search in
      * @param ident Frame identifier to search for
-     * @returns UrlLinkFrame Frame containing the matching frameId, `undefined` if a match was
-     *     not found
+     * @returns Frame containing the matching frameId, `undefined` if a match was not found
      */
     public static findUrlLinkFrame(frames: UrlLinkFrame[], ident: FrameIdentifier): UrlLinkFrame {
         Guards.truthy(frames, "frames");
@@ -157,7 +156,9 @@ export class UrlLinkFrame extends Frame {
         return frame;
     }
 
-    /** @inheritDoc */
+    /**
+     * Generates a string representation of the URL link frame.
+     */
     public toString(): string {
         this.parseRawData();
         return this.text.join("; ");
@@ -170,6 +171,15 @@ export class UrlLinkFrame extends Frame {
         this._rawVersion = version;
     }
 
+    /**
+     * Performs the actual parsing of the raw data.
+     * @remarks
+     *     Because of the high parsing cost and relatively low usage of the class,
+     *     {@link parseFields} only stores the field data, so it can be parsed on demand. Whenever
+     *     a property or method is called which requires the data, this method is called, and only
+     *     on the first call does it actually parse the data.
+     * @protected
+     */
     protected parseRawData(): void {
         if (!this._rawData) {
             return;
@@ -364,8 +374,7 @@ export class UserUrlLinkFrame extends UrlLinkFrame {
      * Gets a frame from a list of frames.
      * @param frames List of frames to search
      * @param description Description of the frame to match
-     * @returns UserUrlLinkFrame Frame containing the matching user, `undefined` if a match was not
-     *     found
+     * @returns Frame containing the matching user, `undefined` if a match was not found
      */
     public static findUserUrlLinkFrame(frames: UserUrlLinkFrame[], description: string): UserUrlLinkFrame {
         Guards.truthy(frames, "frames");

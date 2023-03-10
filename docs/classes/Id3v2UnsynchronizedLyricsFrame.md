@@ -1,45 +1,47 @@
-[node-taglib-sharp](../README.md) / [Exports](../modules.md) / Id3v2UnsynchronizedFrame
+[node-taglib-sharp](../README.md) / [Exports](../modules.md) / Id3v2UnsynchronizedLyricsFrame
 
-# Class: Id3v2UnsynchronizedFrame
+# Class: Id3v2UnsynchronizedLyricsFrame
+
+Extends Frame implementing support for ID3v2 unsynchronized lyrics (USLT) frames.
 
 ## Hierarchy
 
 - [`Id3v2Frame`](Id3v2Frame.md)
 
-  ↳ **`Id3v2UnsynchronizedFrame`**
+  ↳ **`Id3v2UnsynchronizedLyricsFrame`**
 
 ## Table of contents
 
 ### Accessors
 
-- [description](Id3v2UnsynchronizedFrame.md#description)
-- [encryptionId](Id3v2UnsynchronizedFrame.md#encryptionid)
-- [flags](Id3v2UnsynchronizedFrame.md#flags)
-- [frameClassType](Id3v2UnsynchronizedFrame.md#frameclasstype)
-- [frameId](Id3v2UnsynchronizedFrame.md#frameid)
-- [groupId](Id3v2UnsynchronizedFrame.md#groupid)
-- [header](Id3v2UnsynchronizedFrame.md#header)
-- [language](Id3v2UnsynchronizedFrame.md#language)
-- [size](Id3v2UnsynchronizedFrame.md#size)
-- [text](Id3v2UnsynchronizedFrame.md#text)
-- [textEncoding](Id3v2UnsynchronizedFrame.md#textencoding)
+- [description](Id3v2UnsynchronizedLyricsFrame.md#description)
+- [encryptionId](Id3v2UnsynchronizedLyricsFrame.md#encryptionid)
+- [flags](Id3v2UnsynchronizedLyricsFrame.md#flags)
+- [frameClassType](Id3v2UnsynchronizedLyricsFrame.md#frameclasstype)
+- [frameId](Id3v2UnsynchronizedLyricsFrame.md#frameid)
+- [groupId](Id3v2UnsynchronizedLyricsFrame.md#groupid)
+- [header](Id3v2UnsynchronizedLyricsFrame.md#header)
+- [language](Id3v2UnsynchronizedLyricsFrame.md#language)
+- [size](Id3v2UnsynchronizedLyricsFrame.md#size)
+- [text](Id3v2UnsynchronizedLyricsFrame.md#text)
+- [textEncoding](Id3v2UnsynchronizedLyricsFrame.md#textencoding)
 
 ### Methods
 
-- [clone](Id3v2UnsynchronizedFrame.md#clone)
-- [fieldData](Id3v2UnsynchronizedFrame.md#fielddata)
-- [parseFields](Id3v2UnsynchronizedFrame.md#parsefields)
-- [render](Id3v2UnsynchronizedFrame.md#render)
-- [renderFields](Id3v2UnsynchronizedFrame.md#renderfields)
-- [setData](Id3v2UnsynchronizedFrame.md#setdata)
-- [toString](Id3v2UnsynchronizedFrame.md#tostring)
-- [correctEncoding](Id3v2UnsynchronizedFrame.md#correctencoding)
-- [find](Id3v2UnsynchronizedFrame.md#find)
-- [findAll](Id3v2UnsynchronizedFrame.md#findall)
-- [findPreferred](Id3v2UnsynchronizedFrame.md#findpreferred)
-- [fromData](Id3v2UnsynchronizedFrame.md#fromdata)
-- [fromOffsetRawData](Id3v2UnsynchronizedFrame.md#fromoffsetrawdata)
-- [fromRawData](Id3v2UnsynchronizedFrame.md#fromrawdata)
+- [clone](Id3v2UnsynchronizedLyricsFrame.md#clone)
+- [fieldData](Id3v2UnsynchronizedLyricsFrame.md#fielddata)
+- [parseFields](Id3v2UnsynchronizedLyricsFrame.md#parsefields)
+- [render](Id3v2UnsynchronizedLyricsFrame.md#render)
+- [renderFields](Id3v2UnsynchronizedLyricsFrame.md#renderfields)
+- [setData](Id3v2UnsynchronizedLyricsFrame.md#setdata)
+- [toString](Id3v2UnsynchronizedLyricsFrame.md#tostring)
+- [correctEncoding](Id3v2UnsynchronizedLyricsFrame.md#correctencoding)
+- [find](Id3v2UnsynchronizedLyricsFrame.md#find)
+- [findAll](Id3v2UnsynchronizedLyricsFrame.md#findall)
+- [findPreferred](Id3v2UnsynchronizedLyricsFrame.md#findpreferred)
+- [fromData](Id3v2UnsynchronizedLyricsFrame.md#fromdata)
+- [fromOffsetRawData](Id3v2UnsynchronizedLyricsFrame.md#fromoffsetrawdata)
+- [fromRawData](Id3v2UnsynchronizedLyricsFrame.md#fromrawdata)
 
 ## Accessors
 
@@ -80,7 +82,7 @@ Gets the encryption ID applied to the current instance.
 
 `number`
 
-number Value containing the encryption identifier for the current instance or
+Value containing the encryption identifier for the current instance or
     `undefined` if not set.
 
 #### Inherited from
@@ -95,14 +97,11 @@ Sets the encryption ID applied to the current instance.
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `value` | `number` | Value containing the encryption identifier for the current instance. Must be an     8-bit unsigned integer. Setting to `undefined` will remove the encryption header and ID |
+| `value` | `number` | Value containing the encryption identifier for the current instance. Must be an 8-bit unsigned integer. Setting to `undefined` will remove the encryption header and ID |
 
 #### Returns
 
 `void`
-
-number Value containing the encryption identifier for the current instance or
-    `undefined` if not set.
 
 #### Inherited from
 
@@ -127,8 +126,8 @@ Frame.flags
 • `set` **flags**(`value`): `void`
 
 Sets the frame flags applied to the current instance.
-If the value includes either [Id3v2FrameFlags.Encryption](../enums/Id3v2FrameFlags.md#encryption) or
-[Id3v2FrameFlags.Compression](../enums/Id3v2FrameFlags.md#compression), [render](Id3v2UnsynchronizedFrame.md#render) will throw.
+If the value includes either [Encryption](../enums/Id3v2FrameFlags.md#encryption) or
+[Compression](../enums/Id3v2FrameFlags.md#compression), [render](Id3v2UnsynchronizedLyricsFrame.md#render) will throw.
 
 #### Parameters
 
@@ -150,7 +149,7 @@ ___
 
 • `get` **frameClassType**(): [`Id3v2FrameClassType`](../enums/Id3v2FrameClassType.md)
 
-**`inheritdoc`**
+Gets a flag indicating which type of frame the current instance is.
 
 #### Returns
 
@@ -172,7 +171,7 @@ Gets the frame ID for the current instance.
 
 [`Id3v2FrameIdentifier`](Id3v2FrameIdentifier.md)
 
-FrameIdentifier Object representing of the identifier of the frame
+Object representing of the identifier of the frame
 
 #### Inherited from
 
@@ -190,7 +189,7 @@ Gets the grouping ID applied to the current instance.
 
 `number`
 
-number Value containing the grouping identifier for the current instance, or
+Value containing the grouping identifier for the current instance, or
     `undefined` if not set.
 
 #### Inherited from
@@ -205,14 +204,11 @@ Sets the grouping ID applied to the current instance.
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `value` | `number` | Grouping identifier for the current instance. Must be a 8-bit unsigned integer.     Setting to `undefined` will remove the grouping identity header and ID |
+| `value` | `number` | Grouping identifier for the current instance. Must be a 8-bit unsigned integer. Setting to `undefined` will remove the grouping identity header and ID |
 
 #### Returns
 
 `void`
-
-number Value containing the grouping identifier for the current instance, or
-    `undefined` if not set.
 
 #### Inherited from
 
@@ -384,7 +380,7 @@ grouping ID.
 | `frameData` | [`ByteVector`](ByteVector.md) | Raw frame data |
 | `offset` | `number` | Index at which the data is contained |
 | `version` | `number` | Version of the ID3v2 tag the data was originally encoded with |
-| `dataIncludesHeader` | `boolean` | `true` if `frameData` includes the header, `false`     otherwise |
+| `dataIncludesHeader` | `boolean` | `true` if `frameData` includes the header, `false` otherwise |
 
 #### Returns
 
@@ -492,6 +488,8 @@ ___
 
 ▸ **toString**(): `string`
 
+Generates a string representation of the current instance.
+
 #### Returns
 
 `string`
@@ -515,8 +513,8 @@ Converts an encoding to be a supported encoding for a specified tag version.
 
 [`StringType`](../enums/StringType.md)
 
-StringType Value containing the correct encoding to use, based on
-    [Id3v2Settings.forceDefaultEncoding](Id3v2Settings.md#forcedefaultencoding) and what is supported by
+Value containing the correct encoding to use, based on
+    [forceDefaultEncoding](Id3v2Settings.md#forcedefaultencoding) and what is supported by
     `version`
 
 #### Inherited from
@@ -527,7 +525,7 @@ ___
 
 ### find
 
-▸ `Static` **find**(`frames`, `description`, `language`): [`Id3v2UnsynchronizedFrame`](Id3v2UnsynchronizedFrame.md)
+▸ `Static` **find**(`frames`, `description`, `language`): [`Id3v2UnsynchronizedLyricsFrame`](Id3v2UnsynchronizedLyricsFrame.md)
 
 Gets the first unsynchronized lyrics frame from a list of frames that matches the provided
 parameters.
@@ -536,22 +534,21 @@ parameters.
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `frames` | [`Id3v2UnsynchronizedFrame`](Id3v2UnsynchronizedFrame.md)[] | List of frames to search |
+| `frames` | [`Id3v2UnsynchronizedLyricsFrame`](Id3v2UnsynchronizedLyricsFrame.md)[] | List of frames to search |
 | `description` | `string` | Description to match |
 | `language` | `string` | Optionally, ISO-639-2 language code to match |
 
 #### Returns
 
-[`Id3v2UnsynchronizedFrame`](Id3v2UnsynchronizedFrame.md)
+[`Id3v2UnsynchronizedLyricsFrame`](Id3v2UnsynchronizedLyricsFrame.md)
 
-UnsynchronizedLyricsFrame Frame that matches provided parameters, `undefined` if a
-    match was not found
+Frame that matches provided parameters, `undefined` if a match was not found
 
 ___
 
 ### findAll
 
-▸ `Static` **findAll**(`frames`, `description`, `language`): [`Id3v2UnsynchronizedFrame`](Id3v2UnsynchronizedFrame.md)[]
+▸ `Static` **findAll**(`frames`, `description`, `language`): [`Id3v2UnsynchronizedLyricsFrame`](Id3v2UnsynchronizedLyricsFrame.md)[]
 
 Gets all unsynchronized lyrics frames that match the provided parameters from a list of
 frames
@@ -560,22 +557,21 @@ frames
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `frames` | [`Id3v2UnsynchronizedFrame`](Id3v2UnsynchronizedFrame.md)[] | List of frames to search |
+| `frames` | [`Id3v2UnsynchronizedLyricsFrame`](Id3v2UnsynchronizedLyricsFrame.md)[] | List of frames to search |
 | `description` | `string` | Description to match |
 | `language` | `string` | Optionally, ISO-639-2 language code to match |
 
 #### Returns
 
-[`Id3v2UnsynchronizedFrame`](Id3v2UnsynchronizedFrame.md)[]
+[`Id3v2UnsynchronizedLyricsFrame`](Id3v2UnsynchronizedLyricsFrame.md)[]
 
-UnsynchronizedLyricsFrame[] List of frames matching provided parameters, empty
-    array if no matches were found
+List of frames matching provided parameters, empty array if no matches were found
 
 ___
 
 ### findPreferred
 
-▸ `Static` **findPreferred**(`frames`, `description`, `language`): [`Id3v2UnsynchronizedFrame`](Id3v2UnsynchronizedFrame.md)
+▸ `Static` **findPreferred**(`frames`, `description`, `language`): [`Id3v2UnsynchronizedLyricsFrame`](Id3v2UnsynchronizedLyricsFrame.md)
 
 Gets a specified unsynchronized frame from the list of frames, trying to match the
 description and language but, failing a perfect match, accepting an incomplete match.
@@ -589,19 +585,19 @@ The method tries matching with the following order of precedence:
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `frames` | [`Id3v2UnsynchronizedFrame`](Id3v2UnsynchronizedFrame.md)[] | List of frames to search |
+| `frames` | [`Id3v2UnsynchronizedLyricsFrame`](Id3v2UnsynchronizedLyricsFrame.md)[] | List of frames to search |
 | `description` | `string` | Description to match |
 | `language` | `string` | ISO-639-2 language code to match |
 
 #### Returns
 
-[`Id3v2UnsynchronizedFrame`](Id3v2UnsynchronizedFrame.md)
+[`Id3v2UnsynchronizedLyricsFrame`](Id3v2UnsynchronizedLyricsFrame.md)
 
 ___
 
 ### fromData
 
-▸ `Static` **fromData**(`description`, `language?`, `encoding?`): [`Id3v2UnsynchronizedFrame`](Id3v2UnsynchronizedFrame.md)
+▸ `Static` **fromData**(`description`, `language?`, `encoding?`): [`Id3v2UnsynchronizedLyricsFrame`](Id3v2UnsynchronizedLyricsFrame.md)
 
 Constructs and initializes a new instance from the provided data
 
@@ -615,13 +611,13 @@ Constructs and initializes a new instance from the provided data
 
 #### Returns
 
-[`Id3v2UnsynchronizedFrame`](Id3v2UnsynchronizedFrame.md)
+[`Id3v2UnsynchronizedLyricsFrame`](Id3v2UnsynchronizedLyricsFrame.md)
 
 ___
 
 ### fromOffsetRawData
 
-▸ `Static` **fromOffsetRawData**(`data`, `offset`, `header`, `version`): [`Id3v2UnsynchronizedFrame`](Id3v2UnsynchronizedFrame.md)
+▸ `Static` **fromOffsetRawData**(`data`, `offset`, `header`, `version`): [`Id3v2UnsynchronizedLyricsFrame`](Id3v2UnsynchronizedLyricsFrame.md)
 
 Constructs and initializes a new instance by reading its raw data in a specified ID3v2
 version. This method allows for offset reading from the data byte vector.
@@ -631,19 +627,19 @@ version. This method allows for offset reading from the data byte vector.
 | Name | Type | Description |
 | :------ | :------ | :------ |
 | `data` | [`ByteVector`](ByteVector.md) | Raw representation of the new frame |
-| `offset` | `number` | What offset in `data` the frame actually begins. Must be positive,     safe integer |
+| `offset` | `number` | What offset in `data` the frame actually begins. Must be positive, safe integer |
 | `header` | [`Id3v2FrameHeader`](Id3v2FrameHeader.md) | Header of the frame found at `data` in the data |
 | `version` | `number` | ID3v2 version the frame was originally encoded with |
 
 #### Returns
 
-[`Id3v2UnsynchronizedFrame`](Id3v2UnsynchronizedFrame.md)
+[`Id3v2UnsynchronizedLyricsFrame`](Id3v2UnsynchronizedLyricsFrame.md)
 
 ___
 
 ### fromRawData
 
-▸ `Static` **fromRawData**(`data`, `version`): [`Id3v2UnsynchronizedFrame`](Id3v2UnsynchronizedFrame.md)
+▸ `Static` **fromRawData**(`data`, `version`): [`Id3v2UnsynchronizedLyricsFrame`](Id3v2UnsynchronizedLyricsFrame.md)
 
 Constructs and initializes a new instance by reading its raw data in a specified
 ID3v2 version.
@@ -657,4 +653,4 @@ ID3v2 version.
 
 #### Returns
 
-[`Id3v2UnsynchronizedFrame`](Id3v2UnsynchronizedFrame.md)
+[`Id3v2UnsynchronizedLyricsFrame`](Id3v2UnsynchronizedLyricsFrame.md)

@@ -29,7 +29,8 @@ export default abstract class RiffListTag extends Tag {
 
     /**
      * Gets the {@link RiffList} that backs the data for this tag.
-     * @remarks Tags based on RiffLists are only supposed to support certain fields. Modify at your
+     * @remarks
+     *     Tags based on RiffLists are only supposed to support certain fields. Modify at your
      *     own risk.
      */
     public get list(): RiffList { return this._list; }

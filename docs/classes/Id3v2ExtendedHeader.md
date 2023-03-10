@@ -2,6 +2,9 @@
 
 # Class: Id3v2ExtendedHeader
 
+This class is a filler until support for reading and writing the ID3v2 extended header is
+implemented.
+
 ## Table of contents
 
 ### Accessors
@@ -10,7 +13,6 @@
 
 ### Methods
 
-- [parse](Id3v2ExtendedHeader.md#parse)
 - [fromData](Id3v2ExtendedHeader.md#fromdata)
 - [fromEmpty](Id3v2ExtendedHeader.md#fromempty)
 
@@ -27,23 +29,6 @@ Gets the size of the data on disk in bytes.
 `number`
 
 ## Methods
-
-### parse
-
-▸ `Protected` **parse**(`data`, `version`): `void`
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `data` | [`ByteVector`](ByteVector.md) |
-| `version` | `number` |
-
-#### Returns
-
-`void`
-
-___
 
 ### fromData
 

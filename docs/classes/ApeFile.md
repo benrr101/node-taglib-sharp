@@ -4,12 +4,12 @@
 
 Provides tagging and properties support for Monkey's Audio APE files.
 Note, a [ApeTag](ApeTag.md) will be added automatically to any file that doesn't contain one. This
-change does not affect the physical file until [File.save](File.md#save) is called and can be reversed
+change does not affect the physical file until [save](File.md#save) is called and can be reversed
 using the following method: `file.removeTags(file.tagTypes & ~file.tagTypesOnDisk);`
 
 ## Hierarchy
 
-- `default`
+- [`SandwichFile`](SandwichFile.md)
 
   ↳ **`ApeFile`**
 
@@ -71,18 +71,18 @@ using the following method: `file.removeTags(file.tagTypes & ~file.tagTypesOnDis
 
 • **new ApeFile**(`file`, `propertiesStyle`)
 
-**`inheritdoc`**
+**`Inherit Doc`**
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `file` | `string` \| `IFileAbstraction` |
+| `file` | `string` \| [`IFileAbstraction`](../interfaces/IFileAbstraction.md) |
 | `propertiesStyle` | [`ReadStyle`](../enums/ReadStyle.md) |
 
 #### Overrides
 
-SandwichFile.constructor
+[SandwichFile](SandwichFile.md).[constructor](SandwichFile.md#constructor)
 
 ## Accessors
 
@@ -104,13 +104,13 @@ ___
 
 ### endTag
 
-• `Protected` `get` **endTag**(): `default`
+• `Protected` `get` **endTag**(): [`EndTag`](EndTag.md)
 
 Gets the collection of tags appearing at the end of the file.
 
 #### Returns
 
-`default`
+[`EndTag`](EndTag.md)
 
 #### Inherited from
 
@@ -120,13 +120,13 @@ ___
 
 ### fileAbstraction
 
-• `get` **fileAbstraction**(): `IFileAbstraction`
+• `get` **fileAbstraction**(): [`IFileAbstraction`](../interfaces/IFileAbstraction.md)
 
-Gets the {@link IFileAbstraction} representing the file.
+Gets the [IFileAbstraction](../interfaces/IFileAbstraction.md) representing the file.
 
 #### Returns
 
-`IFileAbstraction`
+[`IFileAbstraction`](../interfaces/IFileAbstraction.md)
 
 #### Inherited from
 
@@ -205,7 +205,7 @@ ___
 
 • `get` **mediaEndPosition**(): `number`
 
-**`inheritdoc`**
+Gets the position at which the media content of this file ends.
 
 #### Returns
 
@@ -221,7 +221,7 @@ ___
 
 • `get` **mediaStartPosition**(): `number`
 
-**`inheritdoc`**
+Gets the position at which the media content of this file starts.
 
 #### Returns
 
@@ -267,7 +267,7 @@ SandwichFile.mode
 
 Sets the file access mode in use by the current instance. Changing the value will cause the
 stream currently in use to be closed, except when a change is made from
-[FileAccessMode.Write](../enums/FileAccessMode.md#write) to [FileAccessMode.Read](../enums/FileAccessMode.md#read) which has no effect.
+[Write](../enums/FileAccessMode.md#write) to [Read](../enums/FileAccessMode.md#read) which has no effect.
 
 #### Parameters
 
@@ -336,13 +336,13 @@ ___
 
 ### startTag
 
-• `Protected` `get` **startTag**(): `default`
+• `Protected` `get` **startTag**(): [`StartTag`](StartTag.md)
 
 Gets the collection of tags appearing at the start of the file.
 
 #### Returns
 
-`default`
+[`StartTag`](StartTag.md)
 
 #### Inherited from
 
@@ -352,13 +352,13 @@ ___
 
 ### tag
 
-• `get` **tag**(): `default`
+• `get` **tag**(): [`SandwichTag`](SandwichTag.md)
 
 Gets an abstract representation of all tags stored in the current instance.
 
 #### Returns
 
-`default`
+[`SandwichTag`](SandwichTag.md)
 
 #### Inherited from
 
@@ -398,7 +398,7 @@ SandwichFile.tagTypesOnDisk
 
 • `set` **tagTypesOnDisk**(`value`): `void`
 
-Gets the tag types contained in the physical file represented by the current instance.
+Sets the tag types contained in the physical file represented by the current instance.
 
 #### Parameters
 
@@ -444,7 +444,7 @@ Dispose the current instance. Equivalent to setting the mode to closed.
 
 #### Inherited from
 
-SandwichFile.dispose
+[SandwichFile](SandwichFile.md).[dispose](SandwichFile.md#dispose)
 
 ___
 
@@ -454,7 +454,9 @@ ___
 
 Searches forward through a file for a specified pattern, starting at a specified offset.
 
-**`throws`** Error Thrown if `pattern` is not provided or `startPosition` is not a
+**`Throws`**
+
+Error Thrown if `pattern` is not provided or `startPosition` is not a
     positive, safe integer.
 
 #### Parameters
@@ -463,7 +465,7 @@ Searches forward through a file for a specified pattern, starting at a specified
 | :------ | :------ | :------ | :------ |
 | `pattern` | [`ByteVector`](ByteVector.md) | `undefined` | Pattern to search for in the current instance. Must be smaller than the |
 | `startPosition` | `number` | `0` | Seek position to start searching. Must be positive, safe integer. |
-| `before?` | [`ByteVector`](ByteVector.md) | `undefined` | Optional pattern that the searched for pattern must appear before. If this     pattern is found first, `-1` is returned. |
+| `before?` | [`ByteVector`](ByteVector.md) | `undefined` | Optional pattern that the searched for pattern must appear before. If this pattern is found first, `-1` is returned. |
 
 #### Returns
 
@@ -473,7 +475,7 @@ Index at which the value was found. If not found, `-1` is returned.
 
 #### Inherited from
 
-SandwichFile.find
+[SandwichFile](SandwichFile.md).[find](SandwichFile.md#find)
 
 ___
 
@@ -481,14 +483,15 @@ ___
 
 ▸ **getTag**(`type`, `create`): [`Tag`](Tag.md)
 
-**`inheritdoc`**
+Gets a tag of the specified type from the current instance, optionally creating a new tag if
+possible.
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `type` | [`TagTypes`](../enums/TagTypes.md) |
-| `create` | `boolean` |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `type` | [`TagTypes`](../enums/TagTypes.md) | Type of tag to read. |
+| `create` | `boolean` | Whether or not to try and create the tag if one is not found. `true` does not guarantee the tag will be created. For example, trying to create an ID3v2 tag on an OGG Vorbis file will always fail. |
 
 #### Returns
 
@@ -496,7 +499,7 @@ ___
 
 #### Inherited from
 
-SandwichFile.getTag
+[SandwichFile](SandwichFile.md).[getTag](SandwichFile.md#gettag)
 
 ___
 
@@ -507,7 +510,9 @@ ___
 Inserts a specified block of data into the file represented by the current instance, at a
 specified location, replacing a specified number of bytes.
 
-**`throws`** Error Thrown when: 1) data is falsey, 2) start is not a safe, positive number, or 3)
+**`Throws`**
+
+Error Thrown when: 1) data is falsey, 2) start is not a safe, positive number, or 3)
     replace is not a safe, positive number
 
 #### Parameters
@@ -516,7 +521,7 @@ specified location, replacing a specified number of bytes.
 | :------ | :------ | :------ | :------ |
 | `data` | [`ByteVector`](ByteVector.md) | `undefined` | Data to insert into the file. |
 | `start` | `number` | `undefined` | Index into the file at which to insert the data. Must be safe positive integer. |
-| `replace` | `number` | `0` | Number of bytes to replace. Typically this is the original size of the data     block so that a new block will replace the old one. |
+| `replace` | `number` | `0` | Number of bytes to replace. Typically this is the original size of the data block so that a new block will replace the old one. |
 
 #### Returns
 
@@ -524,7 +529,7 @@ specified location, replacing a specified number of bytes.
 
 #### Inherited from
 
-SandwichFile.insert
+[SandwichFile](SandwichFile.md).[insert](SandwichFile.md#insert)
 
 ___
 
@@ -546,7 +551,7 @@ Mark the current instance as corrupt. NOTE: Not intended to be used outside of t
 
 #### Inherited from
 
-SandwichFile.markAsCorrupt
+[SandwichFile](SandwichFile.md).[markAsCorrupt](SandwichFile.md#markascorrupt)
 
 ___
 
@@ -562,7 +567,7 @@ Prepares to save the file. This must be called at the beginning of every File.sa
 
 #### Inherited from
 
-SandwichFile.preSave
+[SandwichFile](SandwichFile.md).[preSave](SandwichFile.md#presave)
 
 ___
 
@@ -572,14 +577,16 @@ ___
 
 Searches backwards through a file for a specified pattern, starting at a specified offset.
 
-**`throws`** Error Thrown if `pattern` was not provided or if `startPosition` is
+**`Throws`**
+
+Error Thrown if `pattern` was not provided or if `startPosition` is
     not a safe, positive integer.
 
 #### Parameters
 
 | Name | Type | Default value | Description |
 | :------ | :------ | :------ | :------ |
-| `pattern` | [`ByteVector`](ByteVector.md) | `undefined` | Pattern to search for in the current instance. Must be shorter than the     [bufferSize](ApeFile.md#buffersize) |
+| `pattern` | [`ByteVector`](ByteVector.md) | `undefined` | Pattern to search for in the current instance. Must be shorter than the [bufferSize](ApeFile.md#buffersize) |
 | `startPosition` | `number` | `0` | Number of bytes from end of the file to begin searching. |
 
 #### Returns
@@ -590,7 +597,7 @@ Index at which the value wa found. If not found, `-1` is returned.
 
 #### Inherited from
 
-SandwichFile.rFind
+[SandwichFile](SandwichFile.md).[rFind](SandwichFile.md#rfind)
 
 ___
 
@@ -600,9 +607,11 @@ ___
 
 Reads a specified number of bytes at the current seek position from the current position.
 This method reads the block of data at the current seek position. To change the seek
-position, use [File.seek](File.md#seek).
+position, use [seek](File.md#seek).
 
-**`throws`** Error Thrown when `length` is not a positive, safe integer.
+**`Throws`**
+
+Error Thrown when `length` is not a positive, safe integer.
 
 #### Parameters
 
@@ -614,11 +623,11 @@ position, use [File.seek](File.md#seek).
 
 [`ByteVector`](ByteVector.md)
 
-ByteVector Object containing the data read from the current instance.
+Object containing the data read from the current instance.
 
 #### Inherited from
 
-SandwichFile.readBlock
+[SandwichFile](SandwichFile.md).[readBlock](SandwichFile.md#readblock)
 
 ___
 
@@ -626,13 +635,13 @@ ___
 
 ▸ `Protected` **readProperties**(`readStyle`): [`Properties`](Properties.md)
 
-**`inheritdoc`**
+Reads the properties of the file.
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `readStyle` | [`ReadStyle`](../enums/ReadStyle.md) |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `readStyle` | [`ReadStyle`](../enums/ReadStyle.md) | Indicates what degree of accuracy the file properties are read, if at all. |
 
 #### Returns
 
@@ -640,7 +649,7 @@ ___
 
 #### Overrides
 
-SandwichFile.readProperties
+[SandwichFile](SandwichFile.md).[readProperties](SandwichFile.md#readproperties)
 
 ___
 
@@ -650,7 +659,9 @@ ___
 
 Removes a specified block of data from the file represented by the current instance.
 
-**`throws`** Error thrown if 1) start is not a safe, positive integer or 2) length must be a safe
+**`Throws`**
+
+Error thrown if 1) start is not a safe, positive integer or 2) length must be a safe
     integer.
 
 #### Parameters
@@ -666,7 +677,7 @@ Removes a specified block of data from the file represented by the current insta
 
 #### Inherited from
 
-SandwichFile.removeBlock
+[SandwichFile](SandwichFile.md).[removeBlock](SandwichFile.md#removeblock)
 
 ___
 
@@ -674,13 +685,14 @@ ___
 
 ▸ **removeTags**(`types`): `void`
 
-**`inheritdoc`**
+Removes a set of tag types from the current instance. In order to remove all tags from a
+file, pass [AllTags](../enums/TagTypes.md#alltags) as `types`
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `types` | [`TagTypes`](../enums/TagTypes.md) |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `types` | [`TagTypes`](../enums/TagTypes.md) | Bitwise combined [TagTypes](../enums/TagTypes.md) value containing the tag types to be removed from the file |
 
 #### Returns
 
@@ -688,7 +700,7 @@ ___
 
 #### Inherited from
 
-SandwichFile.removeTags
+[SandwichFile](SandwichFile.md).[removeTags](SandwichFile.md#removetags)
 
 ___
 
@@ -696,7 +708,7 @@ ___
 
 ▸ **save**(): `void`
 
-**`inheritdoc`**
+Saves the changes made in the current instance to the file it represents.
 
 #### Returns
 
@@ -704,7 +716,7 @@ ___
 
 #### Inherited from
 
-SandwichFile.save
+[SandwichFile](SandwichFile.md).[save](SandwichFile.md#save)
 
 ___
 
@@ -720,7 +732,7 @@ specified origin.
 | Name | Type | Default value | Description |
 | :------ | :------ | :------ | :------ |
 | `offset` | `number` | `undefined` | Byte offset to seek to. Must be a safe, positive integer. |
-| `origin` | `SeekOrigin` | `SeekOrigin.Begin` | Origin from which to seek |
+| `origin` | [`SeekOrigin`](../enums/SeekOrigin.md) | `SeekOrigin.Begin` | Origin from which to seek |
 
 #### Returns
 
@@ -728,7 +740,7 @@ specified origin.
 
 #### Inherited from
 
-SandwichFile.seek
+[SandwichFile](SandwichFile.md).[seek](SandwichFile.md#seek)
 
 ___
 
@@ -750,7 +762,7 @@ Resizes the current instance to a specific number of bytes.
 
 #### Inherited from
 
-SandwichFile.truncate
+[SandwichFile](SandwichFile.md).[truncate](SandwichFile.md#truncate)
 
 ___
 
@@ -762,7 +774,9 @@ Writes a block of data to the file represented by the current instance at the cu
 position. This will overwrite any existing data at the seek position and append new data to
 the file if writing past the current end.
 
-**`throws`** Error Thrown when `data` is not provided.
+**`Throws`**
+
+Error Thrown when `data` is not provided.
 
 #### Parameters
 
@@ -776,7 +790,7 @@ the file if writing past the current end.
 
 #### Inherited from
 
-SandwichFile.writeBlock
+[SandwichFile](SandwichFile.md).[writeBlock](SandwichFile.md#writeblock)
 
 ___
 
@@ -792,8 +806,8 @@ with. Optionally, the MimeType can be forcefully overridden if it was already re
 | Name | Type | Default value | Description |
 | :------ | :------ | :------ | :------ |
 | `mimeType` | `string` | `undefined` | MimeType to register this subclass constructor to. |
-| `constructor` | [`FileTypeConstructor`](../modules.md#filetypeconstructor) | `undefined` | Constructor for a subclass of [File](File.md) that will be called if a file     with a MimeType of `mimeType` is created. |
-| `override` | `boolean` | `false` | If `true` and a subclass of [File](File.md) was already registered to     `mimeType`, it will be forcefully overridden. If `false`, an {@link Error} will be     thrown if a subclass already registered to the MimeType.} |
+| `constructor` | [`FileTypeConstructor`](../modules.md#filetypeconstructor) | `undefined` | Constructor for a subclass of [File](File.md) that will be called if a file with a MimeType of `mimeType` is created. |
+| `override` | `boolean` | `false` | If `true` and a subclass of [File](File.md) was already registered to `mimeType`, it will be forcefully overridden. If `false`, an Error will be thrown if a subclass already registered to the MimeType. |
 
 #### Returns
 
@@ -801,7 +815,7 @@ with. Optionally, the MimeType can be forcefully overridden if it was already re
 
 #### Inherited from
 
-SandwichFile.addFileType
+[SandwichFile](SandwichFile.md).[addFileType](SandwichFile.md#addfiletype)
 
 ___
 
@@ -815,7 +829,7 @@ Registers a [FileTypeResolver](../modules.md#filetyperesolver) to the front of t
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `resolver` | [`FileTypeResolver`](../modules.md#filetyperesolver) | Function to handle resolving a subclass of [File](File.md) from an     {@link IFileAbstraction} |
+| `resolver` | [`FileTypeResolver`](../modules.md#filetyperesolver) | Function to handle resolving a subclass of [File](File.md) from an [IFileAbstraction](../interfaces/IFileAbstraction.md) |
 
 #### Returns
 
@@ -823,7 +837,7 @@ Registers a [FileTypeResolver](../modules.md#filetyperesolver) to the front of t
 
 #### Inherited from
 
-SandwichFile.addFileTypeResolver
+[SandwichFile](SandwichFile.md).[addFileTypeResolver](SandwichFile.md#addfiletyperesolver)
 
 ___
 
@@ -838,9 +852,9 @@ and property read style.
 
 | Name | Type | Default value | Description |
 | :------ | :------ | :------ | :------ |
-| `abstraction` | `IFileAbstraction` | `undefined` | Object to use when reading/writing from the current instance. |
-| `mimeType?` | `string` | `undefined` | Optional, MimeType to use for determining the subclass of [File](File.md) to     return. If omitted, the MimeType will be guessed based on the file's extension. |
-| `propertiesStyle` | [`ReadStyle`](../enums/ReadStyle.md) | `ReadStyle.Average` | Optional, level of detail to use when reading the media information     from the new instance. If omitted, [ReadStyle.Average](../enums/ReadStyle.md#average) is used. |
+| `abstraction` | [`IFileAbstraction`](../interfaces/IFileAbstraction.md) | `undefined` | Object to use when reading/writing from the current instance. |
+| `mimeType?` | `string` | `undefined` | Optional, MimeType to use for determining the subclass of [File](File.md) to return. If omitted, the MimeType will be guessed based on the file's extension. |
+| `propertiesStyle` | [`ReadStyle`](../enums/ReadStyle.md) | `ReadStyle.Average` | Optional, level of detail to use when reading the media information from the new instance. If omitted, [Average](../enums/ReadStyle.md#average) is used. |
 
 #### Returns
 
@@ -850,7 +864,7 @@ New instance of [File](File.md) as read from the specified abstraction.
 
 #### Inherited from
 
-SandwichFile.createFromAbstraction
+[SandwichFile](SandwichFile.md).[createFromAbstraction](SandwichFile.md#createfromabstraction)
 
 ___
 
@@ -866,8 +880,8 @@ property read style.
 | Name | Type | Default value | Description |
 | :------ | :------ | :------ | :------ |
 | `filePath` | `string` | `undefined` | Path to the file to read/write. |
-| `mimeType?` | `string` | `undefined` | Optional, MimeType to use for determining the subclass of [File](File.md) to     return. If omitted, the MimeType will be guessed based on the file's extension. |
-| `propertiesStyle` | [`ReadStyle`](../enums/ReadStyle.md) | `ReadStyle.Average` | Optional, level of detail to use when reading the media information     from the new instance. If omitted [ReadStyle.Average](../enums/ReadStyle.md#average) is used. |
+| `mimeType?` | `string` | `undefined` | Optional, MimeType to use for determining the subclass of [File](File.md) to return. If omitted, the MimeType will be guessed based on the file's extension. |
+| `propertiesStyle` | [`ReadStyle`](../enums/ReadStyle.md) | `ReadStyle.Average` | Optional, level of detail to use when reading the media information from the new instance. If omitted [Average](../enums/ReadStyle.md#average) is used. |
 
 #### Returns
 
@@ -877,7 +891,7 @@ New instance of [File](File.md) as read from the specified path.
 
 #### Inherited from
 
-SandwichFile.createFromPath
+[SandwichFile](SandwichFile.md).[createFromPath](SandwichFile.md#createfrompath)
 
 ___
 
@@ -899,7 +913,7 @@ Used for removing a file type constructor during unit testing
 
 #### Inherited from
 
-SandwichFile.removeFileType
+[SandwichFile](SandwichFile.md).[removeFileType](SandwichFile.md#removefiletype)
 
 ___
 
@@ -921,4 +935,4 @@ Used for removing a file type resolver during unit testing
 
 #### Inherited from
 
-SandwichFile.removeFileTypeResolver
+[SandwichFile](SandwichFile.md).[removeFileTypeResolver](SandwichFile.md#removefiletyperesolver)

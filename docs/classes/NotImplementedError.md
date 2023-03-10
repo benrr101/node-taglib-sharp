@@ -2,6 +2,8 @@
 
 # Class: NotImplementedError
 
+Error class that indicates a piece of functionality is not implemented in the current version.
+
 ## Hierarchy
 
 - `Error`
@@ -16,17 +18,15 @@
 
 ### Properties
 
-- [isNotImplementedError](NotImplementedError.md#isnotimplementederror)
 - [message](NotImplementedError.md#message)
 - [name](NotImplementedError.md#name)
 - [stack](NotImplementedError.md#stack)
+- [prepareStackTrace](NotImplementedError.md#preparestacktrace)
 - [stackTraceLimit](NotImplementedError.md#stacktracelimit)
 
 ### Methods
 
 - [captureStackTrace](NotImplementedError.md#capturestacktrace)
-- [errorIs](NotImplementedError.md#erroris)
-- [prepareStackTrace](NotImplementedError.md#preparestacktrace)
 
 ## Constructors
 
@@ -45,12 +45,6 @@
 Error.constructor
 
 ## Properties
-
-### isNotImplementedError
-
-• `Readonly` **isNotImplementedError**: `boolean` = `true`
-
-___
 
 ### message
 
@@ -79,6 +73,37 @@ ___
 #### Inherited from
 
 Error.stack
+
+___
+
+### prepareStackTrace
+
+▪ `Static` `Optional` **prepareStackTrace**: (`err`: `Error`, `stackTraces`: `CallSite`[]) => `any`
+
+#### Type declaration
+
+▸ (`err`, `stackTraces`): `any`
+
+Optional override for formatting stack traces
+
+**`See`**
+
+https://v8.dev/docs/stack-trace-api#customizing-stack-traces
+
+##### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `err` | `Error` |
+| `stackTraces` | `CallSite`[] |
+
+##### Returns
+
+`any`
+
+#### Inherited from
+
+Error.prepareStackTrace
 
 ___
 
@@ -112,44 +137,3 @@ Create .stack property on a target object
 #### Inherited from
 
 Error.captureStackTrace
-
-___
-
-### errorIs
-
-▸ `Static` **errorIs**(`e`): `boolean`
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `e` | `unknown` |
-
-#### Returns
-
-`boolean`
-
-___
-
-### prepareStackTrace
-
-▸ `Static` `Optional` **prepareStackTrace**(`err`, `stackTraces`): `any`
-
-Optional override for formatting stack traces
-
-**`see`** https://v8.dev/docs/stack-trace-api#customizing-stack-traces
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `err` | `Error` |
-| `stackTraces` | `CallSite`[] |
-
-#### Returns
-
-`any`
-
-#### Inherited from
-
-Error.prepareStackTrace

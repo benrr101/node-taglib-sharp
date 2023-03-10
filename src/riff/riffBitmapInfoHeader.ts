@@ -9,13 +9,17 @@ import {Guards, NumberUtils} from "../utils";
  * @link https://docs.microsoft.com/en-us/windows/win32/api/wingdi/ns-wingdi-bitmapinfoheader
  */
 export default class RiffBitmapInfoHeader implements IVideoCodec {
-    // This list was cobbled together using
-    //   * The original .NET source
-    //   * https://omiod.com/codec/list.php
-    //   * https://www.fourcc.org/
-    //   * http://abcavi.kibi.ru/fourcc.php
-    //   If any FOURCCs are missing or wrong, submit a PR and include a link to some source saying
-    //   this FOURCC exists.
+    /**
+     * List of well known FOURCC codes and what they correspond to.
+     * @remarks
+     *     This list was cobbled together using
+     *     * The original .NET source
+     *     * https://omiod.com/codec/list.php
+     *     * https://www.fourcc.org/
+     *     * http://abcavi.kibi.ru/fourcc.php
+     *     If any FOURCCs are missing or wrong, submit a PR and include a link to some source saying
+     *     this FOURCC exists.
+     */
     public static readonly FOURCC_CODES: Map<number, string> = new Map<number, string>(
         [
             /* BI_RGB */       [0x00000000, "Windows Bitmap Format"],
@@ -730,7 +734,8 @@ export default class RiffBitmapInfoHeader implements IVideoCodec {
 
     /**
      * Gets the compression ID for the image.
-     * @remarks For compressed video and YUV formats, this is a FOURCC code, specified as a DWORD in
+     * @remarks
+     *     For compressed video and YUV formats, this is a FOURCC code, specified as a DWORD in
      *     little-endian order. For more information, see
      *     {@link https://docs.microsoft.com/en-us/windows/win32/directshow/fourcc-codes} and
      *     {@link https://www.fourcc.org/fourcc.php}. For uncompressed RGB formats, the following
@@ -739,7 +744,7 @@ export default class RiffBitmapInfoHeader implements IVideoCodec {
      *     * `BI_BITFIELDS` = `0x00000003` => Uncompressed RGB with color masks, valid for 16 and
      *       32 bpp bitmaps.
      *
-     *     {@link description} makes a best guess attempt to determine the name of the compression
+     *     {@link description} makes a best-guess attempt to determine the name of the compression
      *     codec used.
      */
     public get compressionId(): number { return this._compressionId; }
@@ -760,7 +765,7 @@ export default class RiffBitmapInfoHeader implements IVideoCodec {
 
     /**
      * @inheritDoc
-     * The duration is not known from the video codec in a RIFF format file.
+     * @remarks The duration is not known from the video codec in a RIFF format file.
      */
     public get durationMilliseconds(): number { return 0; }
 

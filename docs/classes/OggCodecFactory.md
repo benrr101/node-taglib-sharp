@@ -4,8 +4,10 @@
 
 Factory for creating codecs from the first packet of the Ogg bitstream.
 
-**`remarks`** By default, only codecs provided by the library will be matched. However, custom codec
-    support can be added by using {@see addCodecProvider}.
+**`Remarks`**
+
+By default, only codecs provided by the library will be matched. However, custom codec
+    support can be added by using [addCodecProvider](OggCodecFactory.md#addcodecprovider).
 
 ## Table of contents
 
@@ -39,7 +41,7 @@ formats can be added. They are executed in reverse order in which they are added
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `provider` | `CodecProvider` | Codec provider function     * firstPacket: ByteVector First packet of the bitstream     * returns IOggCodec if method was able to match the packet, falsy otherwise |
+| `provider` | [`OggCodecProvider`](../modules.md#oggcodecprovider) | Codec provider function * firstPacket: ByteVector First packet of the bitstream * returns IOggCodec if method was able to match the packet, falsy otherwise |
 
 #### Returns
 
@@ -61,7 +63,7 @@ ___
 
 ### getCodec
 
-▸ `Static` **getCodec**(`packet`): `default`
+▸ `Static` **getCodec**(`packet`): [`IOggCodec`](../interfaces/IOggCodec.md)
 
 Determines the correc codec to use for a stream header packet.
 
@@ -73,4 +75,4 @@ Determines the correc codec to use for a stream header packet.
 
 #### Returns
 
-`default`
+[`IOggCodec`](../interfaces/IOggCodec.md)

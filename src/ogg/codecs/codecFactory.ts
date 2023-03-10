@@ -10,15 +10,17 @@ import {Guards} from "../../utils";
  * Type shortcut for a method that can generate a codec object based on the first packet of the
  * bit stream.
  * @param firstPacket First packet in the bit stream
- * @returns (IOggCodec | undefined) Generated {@see IOggCodec} is returned if a codec could be
+ * @returns
+ *     Generated {@link IOggCodec} is returned if a codec could be
  *     constructed from the first packet, otherwise `undefined` is returned.
  */
 export type CodecProvider = (firstPacket: ByteVector) => IOggCodec | undefined;
 
 /**
  * Factory for creating codecs from the first packet of the Ogg bitstream.
- * @remarks By default, only codecs provided by the library will be matched. However, custom codec
- *     support can be added by using {@see addCodecProvider}.
+ * @remarks
+ *     By default, only codecs provided by the library will be matched. However, custom codec
+ *     support can be added by using {@link addCodecProvider}.
  */
 export default class CodecFactory {
     private static _customCodecProviders: CodecProvider[] = [];

@@ -6,7 +6,7 @@ Represents an Ogg Opus bitstream for use within an Ogg file.
 
 ## Implements
 
-- `default`
+- [`IOggCodec`](../interfaces/IOggCodec.md)
 - [`IAudioCodec`](../interfaces/IAudioCodec.md)
 
 ## Table of contents
@@ -56,7 +56,9 @@ codec's header information.
 
 Bitrate of the audio in kilobits per second represented by the current instance.
 
-**`remarks`** Always returns zero since bitrate is variable and no information is stored in the
+**`Remarks`**
+
+Always returns zero since bitrate is variable and no information is stored in the
     Ogg header (unlike Vorbis).
 
 #### Returns
@@ -91,7 +93,9 @@ ___
 
 Sample rate of the audio represented by the current instance.
 
-**`remarks`** This is the *input* sample rate used when the file was created. Opus uses a variety
+**`Remarks`**
+
+This is the *input* sample rate used when the file was created. Opus uses a variety
     of sample rates internally, and as such the output sample rate is dependent on the
     decoder used. In most modern hardware cases, this will be 48kHz.
 
@@ -185,13 +189,13 @@ Gets the number of streams contained in the bitstream.
 
 ▸ **readPacket**(`packet`): `boolean`
 
-**`inheritdoc`**
+Reads an Ogg packet that has been encountered in the stream, looking for the comment data.
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `packet` | [`ByteVector`](ByteVector.md) |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `packet` | [`ByteVector`](ByteVector.md) | Packet to read |
 
 #### Returns
 
@@ -199,7 +203,7 @@ Gets the number of streams contained in the bitstream.
 
 #### Implementation of
 
-IOggCodec.readPacket
+[IOggCodec](../interfaces/IOggCodec.md).[readPacket](../interfaces/IOggCodec.md#readpacket)
 
 ___
 
@@ -207,12 +211,15 @@ ___
 
 ▸ **setDuration**(`firstGranularPosition`, `lastGranularPosition`): `void`
 
+Sets the file offset information necessary for calculating the duration of the stream. Once
+called, the duration can be accessed by calling [durationMilliseconds](../interfaces/ICodec.md#durationmilliseconds).
+
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `firstGranularPosition` | `number` |
-| `lastGranularPosition` | `number` |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `firstGranularPosition` | `number` | First granular position of the stream |
+| `lastGranularPosition` | `number` | Last granular position of the stream |
 
 #### Returns
 
@@ -220,7 +227,7 @@ ___
 
 #### Implementation of
 
-IOggCodec.setDuration
+[IOggCodec](../interfaces/IOggCodec.md).[setDuration](../interfaces/IOggCodec.md#setduration)
 
 ___
 
@@ -228,14 +235,14 @@ ___
 
 ▸ **writeCommentPacket**(`packets`, `comment`): `void`
 
-**`inheritdoc`**
+Renders and write the provided comment into the provided list of packets.
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `packets` | [`ByteVector`](ByteVector.md)[] |
-| `comment` | [`XiphComment`](XiphComment.md) |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `packets` | [`ByteVector`](ByteVector.md)[] | List of packets the comment packet should be written into. |
+| `comment` | [`XiphComment`](XiphComment.md) | Xiph comment to write into the list of packets. |
 
 #### Returns
 
@@ -243,7 +250,7 @@ ___
 
 #### Implementation of
 
-IOggCodec.writeCommentPacket
+[IOggCodec](../interfaces/IOggCodec.md).[writeCommentPacket](../interfaces/IOggCodec.md#writecommentpacket)
 
 ___
 

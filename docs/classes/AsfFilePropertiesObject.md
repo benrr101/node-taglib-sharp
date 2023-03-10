@@ -2,13 +2,13 @@
 
 # Class: AsfFilePropertiesObject
 
-Extends {@see BaseObject} to provide a representation of an ASF file properties object. The
+Extends BaseObject to provide a representation of an ASF file properties object. The
 file properties object defines the global characteristics of the combined digital media streams
 found within the Data object.
 
 ## Hierarchy
 
-- `default`
+- [`AsfBaseObject`](AsfBaseObject.md)
 
   ↳ **`AsfFilePropertiesObject`**
 
@@ -68,13 +68,13 @@ ___
 
 ### fileId
 
-• `get` **fileId**(): `default`
+• `get` **fileId**(): [`UuidWrapper`](UuidWrapper.md)
 
 Gets the GUID for the file described by the current instance.
 
 #### Returns
 
-`default`
+[`UuidWrapper`](UuidWrapper.md)
 
 ___
 
@@ -96,9 +96,11 @@ ___
 
 Gets whether the file described by the current instance is broadcast or seekable.
 
-**`remarks`** This attribute applies to presentation descriptors for ASF content. The value is a
-    bitwise OR of the flags in {@link FilePropertiesFlags}.
-    * If {@link FilePropertiesFlags.Broadcast} is set, the following properties are not
+**`Remarks`**
+
+This attribute applies to presentation descriptors for ASF content. The value is a
+    bitwise OR of the flags in FilePropertiesFlags.
+    * If FilePropertiesFlags.Broadcast is set, the following properties are not
       valid
       * [fileId](AsfFilePropertiesObject.md#fileid)
       * [creationDate](AsfFilePropertiesObject.md#creationdate)
@@ -107,7 +109,7 @@ Gets whether the file described by the current instance is broadcast or seekable
       * [sendDurationMilliseconds](AsfFilePropertiesObject.md#senddurationmilliseconds)
       * [maximumDataPacketSize](AsfFilePropertiesObject.md#maximumdatapacketsize) and [minimumDataPacketSize](AsfFilePropertiesObject.md#minimumdatapacketsize) are set to the
         actual packet size
-    * If {@link FilePropertiesFlags.Seekable} is set, an audio stream is present and the
+    * If FilePropertiesFlags.Seekable is set, an audio stream is present and the
       [maximumDataPacketSize](AsfFilePropertiesObject.md#maximumdatapacketsize) and [minimumDataPacketSize](AsfFilePropertiesObject.md#minimumdatapacketsize) are set to the same
       size. It can also be seekable if the file has an audio stream and a video stream with
       a matching simple index object.
@@ -120,13 +122,13 @@ ___
 
 ### guid
 
-• `get` **guid**(): `default`
+• `get` **guid**(): [`UuidWrapper`](UuidWrapper.md)
 
 Gets the GUID that identifies the current instance.
 
 #### Returns
 
-`default`
+[`UuidWrapper`](UuidWrapper.md)
 
 #### Inherited from
 
@@ -173,13 +175,13 @@ ___
 
 ### objectType
 
-• `get` **objectType**(): `ObjectType`
+• `get` **objectType**(): [`AsfObjectType`](../enums/AsfObjectType.md)
 
-**`inheritdoc`**
+Gets the type of the object for easy comparison.
 
 #### Returns
 
-`ObjectType`
+[`AsfObjectType`](../enums/AsfObjectType.md)
 
 #### Overrides
 
@@ -262,7 +264,7 @@ file.
 
 #### Inherited from
 
-BaseObject.initializeFromFile
+[AsfBaseObject](AsfBaseObject.md).[initializeFromFile](AsfBaseObject.md#initializefromfile)
 
 ___
 
@@ -276,7 +278,7 @@ Initializes a new instance with a specified GUID.
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `guid` | `default` | GUID to use for the new instance. |
+| `guid` | [`UuidWrapper`](UuidWrapper.md) | GUID to use for the new instance. |
 
 #### Returns
 
@@ -284,7 +286,7 @@ Initializes a new instance with a specified GUID.
 
 #### Inherited from
 
-BaseObject.initializeFromGuid
+[AsfBaseObject](AsfBaseObject.md).[initializeFromGuid](AsfBaseObject.md#initializefromguid)
 
 ___
 
@@ -292,7 +294,7 @@ ___
 
 ▸ **render**(): [`ByteVector`](ByteVector.md)
 
-**`inheritdoc`**
+Renders the current instance as a raw ASF object.
 
 #### Returns
 
@@ -300,7 +302,7 @@ ___
 
 #### Overrides
 
-BaseObject.render
+[AsfBaseObject](AsfBaseObject.md).[render](AsfBaseObject.md#render)
 
 ___
 
@@ -310,7 +312,9 @@ ___
 
 Renders the current instance as a raw ASF object containing the specified data.
 
-**`remarks`** Child classes implementing {@see render()} should render their contents and then
+**`Remarks`**
+
+Child classes implementing [()](AsfFilePropertiesObject.md#render) should render their contents and then
     send the data through this method to produce the final output.
 
 #### Parameters
@@ -325,7 +329,7 @@ Renders the current instance as a raw ASF object containing the specified data.
 
 #### Inherited from
 
-BaseObject.renderInternal
+[AsfBaseObject](AsfBaseObject.md).[renderInternal](AsfBaseObject.md#renderinternal)
 
 ___
 
@@ -333,12 +337,14 @@ ___
 
 ▸ `Static` **fromFile**(`file`, `position`): [`AsfFilePropertiesObject`](AsfFilePropertiesObject.md)
 
+Constructs a new instance by reading from a file.
+
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `file` | [`File`](File.md) |
-| `position` | `number` |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `file` | [`File`](File.md) | File to read the file properties object from |
+| `position` | `number` | Offset into the file where the object begins |
 
 #### Returns
 

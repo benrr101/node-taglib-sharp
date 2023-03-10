@@ -18,6 +18,9 @@ import {Guards} from "../utils";
  * file but could be used by other classes. It currently supports ID3v2 and APE tags.
  */
 export default class StartTag extends CombinedTag {
+    /**
+     * List of tag types that are supported by a sandwich tag's start tag.
+     */
     public static readonly SUPPORTED_TAG_TYPES: TagTypes = TagTypes.Ape | TagTypes.Id3v2;
 
     /**
@@ -63,7 +66,7 @@ export default class StartTag extends CombinedTag {
     /**
      * Renders the tags contained in the current instance.
      * The tags are rendered in the order that they are stored in the current instance.
-     * @returns ByteVector Physical representation of the tags stored in the current instance
+     * @returns Physical representation of the tags stored in the current instance
      */
     public render(): ByteVector {
         const tagData = this.tags.map((t) => (<ApeTag|Id3v2Tag> t).render());
@@ -109,6 +112,7 @@ class StartTagParser extends TagParser {
         super(file, readStyle, 0);
     }
 
+    /** @inheritDoc */
     public read(): boolean {
         try {
             // Read a header from the file
@@ -124,7 +128,7 @@ class StartTagParser extends TagParser {
                 }
             }
         } catch (e) {
-            if (!CorruptFileError.errorIs(e)) {
+            if (!(e instanceof CorruptFileError)) {
                 throw e;
             }
         }

@@ -116,7 +116,8 @@ export abstract class Tag {
     /**
      * Gets the tag types contained in the current instance. A bit wise combined {@link TagTypes}
      * containing the tag types contained in the current instance.
-     * @remarks For a standard tag, the value should be intuitive. For example, Id3v2Tag objects have
+     * @remarks
+     *     For a standard tag, the value should be intuitive. For example, Id3v2Tag objects have
      *     a value of {@link TagTypes.Id3v2}. However, for CombinedTag type objects, they may
      *     contain multiple or no types.
      */
@@ -129,18 +130,22 @@ export abstract class Tag {
 
     /**
      * Gets the title for the media described by the current instance.
-     * @remarks The title is most commonly the name of the song, episode or a movie title. For example
+     * @remarks
+     *     The title is most commonly the name of the song, episode or a movie title. For example
      *     "Time Won't Me Go" (a song by The Bravery), "Three Stories" (an episode of House MD), or
      *     "Fear and Loathing In Las Vegas" (a movie).
-     * @returns Title of the media described by the current instance or `undefined` if no value is
+     * @returns
+     *     Title of the media described by the current instance or `undefined` if no value is
      *     present.
      */
     public get title(): string { return undefined; }
     /**
      * Sets the title for the media described by the current instance.
-     * @remarks The title is most commonly the name of the song, episode or a movie title. For example
-     *     "Time Won't Me Go" (a song by The Bravery), "Three Stories" (an episode of House MD), or
-     *     "Fear and Loathing In Las Vegas" (a movie).
+     *
+     * The title is most commonly the name of the song, episode or a movie title. For example
+     * "Time Won't Me Go" (a song by The Bravery), "Three Stories" (an episode of House MD), or
+     * "Fear and Loathing In Las Vegas" (a movie).
+     *
      * @param value Title of the media described by the current instance or `undefined` if no value
      *     is present.
      */
@@ -148,14 +153,19 @@ export abstract class Tag {
 
     /**
      * Gets the sortable name for the title of the media described by the current instance.
-     * @remarks Possibly used to sort compilations or episodic content.
-     * @returns Sortable name of the media described by the current instance or `undefined` if no
+     *
+     * Possibly used to sort compilations or episodic content.
+     *
+     * @returns
+     *     Sortable name of the media described by the current instance or `undefined` if no
      *     value is present
      */
     public get titleSort(): string { return undefined; }
     /**
      * Sets the sortable name for the title of the media described by the current instance.
-     * @remarks Possibly used to sort compilations or episodic content.
+     *
+     * Possibly used to sort compilations or episodic content.
+     *
      * @param value Sortable name of the media described by the current instance or `undefined` if
      *     no value is present
      */
@@ -163,18 +173,23 @@ export abstract class Tag {
 
     /**
      * Gets a description, one-line. It represents the tagline of the vide/music.
-     * @remarks This field gives a nice/short precision to the title, which is typically below the
-     *     title on the front cover of the media. For example for "Ocean's 13", this would be
-     *     "Revenge is a funny thing".
-     * @returns Subtitle of the media represented by the current instance or `undefined` if no
+     *
+     * This field gives a nice/short precision to the title, which is typically below the
+     * title on the front cover of the media. For example for "Ocean's 13", this would be
+     * "Revenge is a funny thing".
+     *
+     * @returns
+     *     Subtitle of the media represented by the current instance or `undefined` if no
      *     value is present
      */
     public get subtitle(): string { return undefined; }
     /**
      * Sets a description, one-line. It represents the tagline of the vide/music.
-     * @remarks This field gives a nice/short precision to the title, which is typically below the
-     *     title on the front cover of the media. For example for "Ocean's 13", this would be
-     *     "Revenge is a funny thing".
+     *
+     * This field gives a nice/short precision to the title, which is typically below the
+     * title on the front cover of the media. For example for "Ocean's 13", this would be
+     * "Revenge is a funny thing".
+     *
      * @param value Subtitle of the media represented by the current instance or `undefined` if no
      *     value is present
      */
@@ -184,10 +199,13 @@ export abstract class Tag {
      * Gets a short description of the media. For music, this could be the comment that the artist
      * made of his/her work. For a video, this should be a short summary of the story/plot, but
      * generally no spoliers. This should give the impression of what to expect in the media.
-     * @remarks This is especially relevant for a movie. For example, for "Fear and Loathing in Las
-     *     Vegas", this could be "An oddball journalist and his psychopathic lawyer travel to Las
-     *     Vegas for a series of psychedelic escapades."
-     * @returns Description of the media represented by the current instance or `undefined` if no
+     *
+     * This is especially relevant for a movie. For example, for "Fear and Loathing in Las
+     * Vegas", this could be "An oddball journalist and his psychopathic lawyer travel to Las
+     * Vegas for a series of psychedelic escapades."
+     *
+     * @returns
+     *     Description of the media represented by the current instance or `undefined` if no
      *     value is present
      */
     public get description(): string { return undefined; }
@@ -195,9 +213,11 @@ export abstract class Tag {
      * Sets a short description of the media. For music, this could be the comment that the artist
      * made of his/her work. For a video, this should be a short summary of the story/plot, but
      * generally no spoliers. This should give the impression of what to expect in the media.
-     * @remarks This is especially relevant for a movie. For example, for "Fear and Loathing in Las
-     *     Vegas", this could be "An oddball journalist and his psychopathic lawyer travel to Las
-     *     Vegas for a series of psychedelic escapades."
+     *
+     * This is especially relevant for a movie. For example, for "Fear and Loathing in Las
+     * Vegas", this could be "An oddball journalist and his psychopathic lawyer travel to Las
+     * Vegas for a series of psychedelic escapades."
+     *
      * @param value Description of the media represented by the current instance or `undefined` if
      *     no value is present
      */
@@ -205,26 +225,31 @@ export abstract class Tag {
 
     /**
      * Gets the performers or artists who performed in the media described by the current instance.
-     * @remarks This field is most commonly called "Artists" in audio media or "Actors" in video
-     *     media, and should be used to represent each artist/actor appearing in the media. It can
-     *     be simple in the form of "Above & Beyond" or more complicated in the form of
-     *     "Jono Grant, Tony McGuinness, Paavo Siljamäki", depending on the preferences of the
-     *     user and the degree to which they organize their media collection.
-     *     As the preference of the user may vary, applications should avoid limiting the user in
-     *     what constitutes the performers field - especially with regards to number of performers.
-     * @returns Performers who performed in the media described by the current instance or an empty
+     *
+     * This field is most commonly called "Artists" in audio media or "Actors" in video
+     * media, and should be used to represent each artist/actor appearing in the media. It can
+     * be simple in the form of "Above & Beyond" or more complicated in the form of
+     * "Jono Grant, Tony McGuinness, Paavo Siljamäki", depending on the preferences of the
+     * user and the degree to which they organize their media collection.
+     * As the preference of the user may vary, applications should avoid limiting the user in
+     * what constitutes the performers field - especially in regard to number of performers.
+     *
+     * @returns
+     *     Performers who performed in the media described by the current instance or an empty
      *     array if no value is present.
      */
     public get performers(): string[] { return []; }
     /**
      * Sets the performers or artists who performed in the media described by the current instance.
-     * @remarks This field is most commonly called "Artists" in audio media or "Actors" in video
-     *     media, and should be used to represent each artist/actor appearing in the media. It can
-     *     be simple in the form of "Above & Beyond" or more complicated in the form of
-     *     "Jono Grant, Tony McGuinness, Paavo Siljamäki", depending on the preferences of the
-     *     user and the degree to which they organize their media collection.
-     *     As the preference of the user may vary, applications should avoid limiting the user in
-     *     what constitutes the performers field - especially with regards to number of performers.
+     *
+     * This field is most commonly called "Artists" in audio media or "Actors" in video
+     * media, and should be used to represent each artist/actor appearing in the media. It can
+     * be simple in the form of "Above & Beyond" or more complicated in the form of
+     * "Jono Grant, Tony McGuinness, Paavo Siljamäki", depending on the preferences of the
+     * user and the degree to which they organize their media collection.
+     * As the preference of the user may vary, applications should avoid limiting the user in
+     * what constitutes the performers field - especially with regards to number of performers.
+     *
      * @param value Performers who performed in the media described by the current instance or an
      *     empty array if no value is present.
      */
@@ -233,21 +258,24 @@ export abstract class Tag {
     /**
      * Gets the sortable names of the performers or artists who performed in the media described by
      * the current instance.
-     * @remarks This is used to provide more control over how the media is sorted. Typical uses are to
-     *     skip articles or sort by last name. For example, "The Pillows" might be sorted as
-     *     "Pillows, The".
-     * @see performers
-     * @returns Sortable names for the performers who performed in the media described by the
+     *
+     * This is used to provide more control over how the media is sorted. Typical uses are to
+     * skip articles or sort by last name. For example, "The Pillows" might be sorted as
+     * "Pillows, The". See also: {@link performers}
+     *
+     * @returns
+     *     Sortable names for the performers who performed in the media described by the
      *     current instance, or an empty array if no value is present.
      */
     public get performersSort(): string[] { return []; }
     /**
      * Gets the sortable names of the performers or artists who performed in the media described by
      * the current instance.
-     * @remarks This is used to provide more control over how the media is sorted. Typical uses are to
-     *     skip articles or sort by last name. For example, "The Pillows" might be sorted as
-     *     "Pillows, The".
-     * @see performers
+     *
+     * This is used to provide more control over how the media is sorted. Typical uses are to
+     * skip articles or sort by last name. For example, "The Pillows" might be sorted as
+     * "Pillows, The". See also: {@link performers}
+     *
      * @param value Sortable names for the performers who performed in the media described by the
      *     current instance, or an empty array if no value is present.
      */
@@ -258,10 +286,13 @@ export abstract class Tag {
      * for music. This must match the {@link performers} array (for each person, correspond one/more
      * role). Several roles for the same artist/actor can be separated with semicolons. For
      * example: "Bass; Backing Vocals; Vibraphone".
-     * @remarks It is highly important to match each role to the performers. This means that an entry
-     *     in the {@link performersRole} array is `undefined` to maintain the relationship between
-     *     `performers[i]` and `performersRole[i]`.
-     * @returns Array containing the roles played by the performers in the media described by the
+     *
+     * It is highly important to match each role to the performers. This means that an entry
+     * in the {@link performersRole} array is `undefined` to maintain the relationship between
+     * `performers[i]` and `performersRole[i]`.
+     *
+     * @returns
+     *     Array containing the roles played by the performers in the media described by the
      *     current instance, or an empty array if no value is present.
      */
     public get performersRole(): string[] { return[]; }
@@ -270,9 +301,11 @@ export abstract class Tag {
      * for music. This must match the {@link performers} array (for each person, correspond one/more
      * role). Several roles for the same artist/actor can be separated with semicolons. For
      * example: "Bass; Backing Vocals; Vibraphone".
-     * @remarks It is highly important to match each role to the performers. This means that an entry
-     *     in the {@link performersRole} array is `undefined` to maintain the relationship between
-     *     `performers[i]` and `performersRole[i]`.
+     *
+     * It is highly important to match each role to the performers. This means that an entry
+     * in the {@link performersRole} array is `undefined` to maintain the relationship between
+     * `performers[i]` and `performersRole[i]`.
+     *
      * @param value Array containing the roles played by the performers in the media described by
      *     the current instance, or an empty array if no value is present.
      */
@@ -281,14 +314,17 @@ export abstract class Tag {
     /**
      * Gets the band or artist who is credited in the creation of the entire album or
      * collection containing the media described by the current instance.
-     * @remarks This field is typically optional but aids in the sorting of compilations or albums
-     *     with multiple artist. For example, if an album has several artists, sorting by artist
-     *     will split up albums by the same artist. Having a single album artist for an entire
-     *     album solves this problem.
-     *     As this value is to be used as a sorting key, it should be used with less variation
-     *     than {@link performers}. Where performers can be broken into multiple artists, it is
-     *     best to stick to a single name. Eg, "Super8 & Tab"
-     * @returns Band or artist credited with the creation of the entire album or collection
+     *
+     * This field is typically optional but aids in the sorting of compilations or albums
+     * with multiple artist. For example, if an album has several artists, sorting by artist
+     * will split up albums by the same artist. Having a single album artist for an entire
+     * album solves this problem.
+     * As this value is to be used as a sorting key, it should be used with less variation
+     * than {@link performers}. Where performers can be broken into multiple artists, it is
+     * best to stick to a single name. Eg, "Super8 & Tab"
+     *
+     * @returns
+     *     Band or artist credited with the creation of the entire album or collection
      *     containing the media described by the current instance or an empty array if no value is
      *     present
      */
@@ -296,13 +332,15 @@ export abstract class Tag {
     /**
      * Sets the bands or artists who is credited in the creation of the entire album or
      * collection containing the media described by the current instance.
-     * @remarks This field is typically optional but aids in the sorting of compilations or albums
-     *     with multiple artist. For example, if an album has several artists, sorting by artist
-     *     will split up albums by the same artist. Having a single album artist for an entire
-     *     album solves this problem.
-     *     As this value is to be used as a sorting key, it should be used with less variation
-     *     than {@link performers}. Where performers can be broken into multiple artists, it is
-     *     best to stick to a single name. Eg, "Super8 & Tab"
+     *
+     * This field is typically optional but aids in the sorting of compilations or albums
+     * with multiple artist. For example, if an album has several artists, sorting by artist
+     * will split up albums by the same artist. Having a single album artist for an entire
+     * album solves this problem.
+     * As this value is to be used as a sorting key, it should be used with less variation
+     * than {@link performers}. Where performers can be broken into multiple artists, it is
+     * best to stick to a single name. Eg, "Super8 & Tab"
+     *
      * @param value Band or artist credited with the creation of the entire album or collection
      *     containing the media described by the current instance or an empty array if no value is
      *     present
@@ -311,29 +349,34 @@ export abstract class Tag {
 
     /**
      * Gets the sortable names of the bands/artists who are credited with creating the entire
-     * album or collection containing the media described by the current instance.
-     * @see albumArtists
-     * @remarks This is used to provide more control over how the media is sorted. Typical uses are to
-     *     skip articles or sort by last name. For example "Ben Folds" might be sorted as
-     *     "Folds, Ben".
-     *     As this value is to be used as a sorting key, it should be used with less variation than
-     *     {@link performers}. Where {@link performers} can be broken into multiple performers, it is
-     *     best to stick to a single album artist. Eg, "Van Buuren, Armin"
-     * @returns Sortable names for the bands/artists are credited with the creation of the entire
+     * album or collection containing the media described by the current instance. See also:
+     * {@link albumArtists}
+     *
+     * This is used to provide more control over how the media is sorted. Typical uses are to
+     * skip articles or sort by last name. For example "Ben Folds" might be sorted as
+     * "Folds, Ben".
+     * As this value is to be used as a sorting key, it should be used with less variation than
+     * {@link performers}. Where {@link performers} can be broken into multiple performers, it is
+     * best to stick to a single album artist. Eg, "Van Buuren, Armin"
+     *
+     * @returns
+     *     Sortable names for the bands/artists are credited with the creation of the entire
      *     album or collection containing the media described by the current instance, or an empty
      *     array if no value is present.
      */
     public get albumArtistsSort(): string[] { return[]; }
     /**
      * Sets the sortable names of the bands/artists who are credited with creating the entire
-     * album or collection containing the media described by the current instance.
-     * @see albumArtists
-     * @remarks This is used to provide more control over how the media is sorted. Typical uses are to
-     *     skip articles or sort by last name. For example "Ben Folds" might be sorted as
-     *     "Folds, Ben".
-     *     As this value is to be used as a sorting key, it should be used with less variation than
-     *     {@link performers}. Where {@link performers} can be broken into multiple performers, it is
-     *     best to stick to a single album artist. Eg, "Van Buuren, Armin"
+     * album or collection containing the media described by the current instance. See also:
+     * {@link albumArtists}
+     *
+     * This is used to provide more control over how the media is sorted. Typical uses are to
+     * skip articles or sort by last name. For example "Ben Folds" might be sorted as
+     * "Folds, Ben".
+     * As this value is to be used as a sorting key, it should be used with less variation than
+     * {@link performers}. Where {@link performers} can be broken into multiple performers, it is
+     * best to stick to a single album artist. Eg, "Van Buuren, Armin"
+     *
      * @param value Sortable names for the bands/artists are credited with the creation of the
      *     entire album or collection containing the media described by the current instance, or an
      *     empty array if no value is present.
@@ -342,16 +385,21 @@ export abstract class Tag {
 
     /**
      * Gets the composers of the media represented by the current instance.
-     * @remarks This field represents the composers, songwriters, scriptwriters, or persons who
-     *     claim authorship of the media.
-     * @returns Composers of the media represented by the current instance of an empty array if no
+     *
+     * This field represents the composers, songwriters, scriptwriters, or persons who
+     * claim authorship of the media.
+     *
+     * @returns
+     *     Composers of the media represented by the current instance of an empty array if no
      *     value is present.
      */
     public get composers(): string[] { return[]; }
     /**
      * Sets the composers of the media represented by the current instance.
-     * @remarks This field represents the composers, songwriters, scriptwriters, or persons who
-     *     claim authorship of the media.
+     *
+     * This field represents the composers, songwriters, scriptwriters, or persons who
+     * claim authorship of the media.
+     *
      * @param value Composers of the media represented by the current instance of an empty array if
      *     no value is present.
      */
@@ -359,18 +407,23 @@ export abstract class Tag {
 
     /**
      * Gets the sortable names of the composers of the media represented by the current instance.
-     * @see composers
-     * @remarks This field is typically optional but aids in the sorting of compilations or albums
-     *     with multiple composers.
-     * @returns Sortable names for the composers of the media represented by the current instance
+     * See also: {@link composers}
+     *
+     * This field is typically optional but aids in the sorting of compilations or albums
+     * with multiple composers.
+     *
+     * @returns
+     *     Sortable names for the composers of the media represented by the current instance
      *     or an empty array if no value is present.
      */
     public get composersSort(): string[] { return[]; }
     /**
      * Sets the sortable names of the composers of the media represented by the current instance.
-     * @see composers
-     * @remarks This field is typically optional but aids in the sorting of compilations or albums
-     *     with multiple composers.
+     * See also: {@link composers}
+     *
+     * This field is typically optional but aids in the sorting of compilations or albums
+     * with multiple composers.
+     *
      * @param value Sortable names for the composers of the media represented by the current
      *     instance or an empty array if no value is present.
      */
@@ -379,25 +432,32 @@ export abstract class Tag {
     /**
      * Gets the album of the media represented by the current instance. For video media, this
      * represents the collection the video belongs to.
-     * @remarks This field represents the name of the album the media belongs to. In the case of a
-     *     boxed set, it should be the name of the entire set rather than the individual disc. In
-     *     the case of a series, this should be the name of the series, rather than the season of a
-     *     series.
-     *     For example, "Kintsugi" (an album by Death Cab for Cutie), "The Complete Red Green Show"
-     *     (a boxed set of TV episodes), or "Shark Tank" (a series with several seasons).
-     * @returns Album of the media represented by the current instance or `undefined` if no value
+     *
+     * This field represents the name of the album the media belongs to. In the case of a
+     * boxed set, it should be the name of the entire set rather than the individual disc. In
+     * the case of a series, this should be the name of the series, rather than the season of a
+     * series.
+     *
+     * For example, "Kintsugi" (an album by Death Cab for Cutie), "The Complete Red Green Show"
+     * (a boxed set of TV episodes), or "Shark Tank" (a series with several seasons).
+     *
+     * @returns
+     *     Album of the media represented by the current instance or `undefined` if no value
      *     is present
      */
     public get album(): string { return undefined; }
     /**
      * Sets the album of the media represented by the current instance. For video media, this
      * represents the collection the video belongs to.
-     * @remarks This field represents the name of the album the media belongs to. In the case of a
-     *     boxed set, it should be the name of the entire set rather than the individual disc. In
-     *     the case of a series, this should be the name of the series, rather than the season of a
-     *     series.
-     *     For example, "Kintsugi" (an album by Death Cab for Cutie), "The Complete Red Green Show"
-     *     (a boxed set of TV episodes), or "Shark Tank" (a series with several seasons).
+     *
+     * This field represents the name of the album the media belongs to. In the case of a
+     * boxed set, it should be the name of the entire set rather than the individual disc. In
+     * the case of a series, this should be the name of the series, rather than the season of a
+     * series.
+     *
+     * For example, "Kintsugi" (an album by Death Cab for Cutie), "The Complete Red Green Show"
+     * (a boxed set of TV episodes), or "Shark Tank" (a series with several seasons).
+     *
      * @param value of the media represented by the current instance or `undefined` if no value
      *     is present
      */
@@ -405,18 +465,23 @@ export abstract class Tag {
 
     /**
      * Gets the sortable name of the album title of the media represented by the current instance.
-     * @see album
-     * @remarks This field is typically optional but aids in sort of compilations or albums with
-     *     similar titles.
-     * @returns Sortable name for the album title of the media or `undefined` if the value is not
+     * See also: {@link album}
+     *
+     * This field is typically optional but aids in sort of compilations or albums with
+     * similar titles.
+     *
+     * @returns
+     *     Sortable name for the album title of the media or `undefined` if the value is not
      *     present
      */
     public get albumSort(): string { return undefined; }
     /**
      * Sets the sortable name of the album title of the media represented by the current instance.
-     * @see album
-     * @remarks This field is typically optional but aids in sort of compilations or albums with
-     *     similar titles.
+     * See also: {@link album}
+     *
+     * This field is typically optional but aids in sort of compilations or albums with
+     * similar titles.
+     *
      * @param value Sortable name for the album title of the media or `undefined` if the value is
      *     not present
      */
@@ -424,22 +489,27 @@ export abstract class Tag {
 
     /**
      * Gets a user comment on the media represented by the current instance.
-     * @remarks This field should be used to store user notes and comments. There is no constraint on
-     *     what text can be stored here, but it should not contain programmatic data.
-     *     Because this field contains notes the the user might think of while consuming the media,
-     *     it may be useful for an application to make this field easily accessible, perhaps even
-     *     including it in the main interface.
-     * @returns User comments on the media represented by the current instance or `undefined` if
+     *
+     * This field should be used to store user notes and comments. There is no constraint on
+     * what text can be stored here, but it should not contain programmatic data.
+     * Because this field contains notes the the user might think of while consuming the media,
+     * it may be useful for an application to make this field easily accessible, perhaps even
+     * including it in the main interface.
+     *
+     * @returns
+     *     User comments on the media represented by the current instance or `undefined` if
      *     the value is not present
      */
     public get comment(): string { return undefined; }
     /**
      * Sets a user comment on the media represented by the current instance.
-     * @remarks This field should be used to store user notes and comments. There is no constraint on
-     *     what text can be stored here, but it should not contain programmatic data.
-     *     Because this field contains notes the the user might think of while consuming the media,
-     *     it may be useful for an application to make this field easily accessible, perhaps even
-     *     including it in the main interface.
+     *
+     * This field should be used to store user notes and comments. There is no constraint on
+     * what text can be stored here, but it should not contain programmatic data.
+     * Because this field contains notes the the user might think of while consuming the media,
+     * it may be useful for an application to make this field easily accessible, perhaps even
+     * including it in the main interface.
+     *
      * @param value User comments on the media represented by the current instance or `undefined`
      *     if the value is not present
      */
@@ -447,20 +517,25 @@ export abstract class Tag {
 
     /**
      * Gets the genres of the media represented by the current instance.
-     * @remarks This field represents genres that apply to the song, album, or video. This is often
-     *     used for filtering media.
-     *     A list of common audio genres as popularized by ID3v1 is stored in `genres.ts`.
-     *     Additionally, `genres.ts` contains video genres as used by DivX.
-     * @returns Genres of the media represented by the current instance or an empty array if no
+     *
+     * This field represents genres that apply to the song, album, or video. This is often
+     * used for filtering media.
+     * A list of common audio genres as popularized by ID3v1 is stored in `genres.ts`.
+     * Additionally, `genres.ts` contains video genres as used by DivX.
+     *
+     * @returns
+     *     Genres of the media represented by the current instance or an empty array if no
      *     value is present.
      */
     public get genres(): string[] { return undefined; }
     /**
      * Sets the genres of the media represented by the current instance.
-     * @remarks This field represents genres that apply to the song, album, or video. This is often
-     *     used for filtering media.
-     *     A list of common audio genres as popularized by ID3v1 is stored in `genres.ts.
-     *     Additionally, `genres.ts` contains video genres as used by DivX.
+     *
+     * This field represents genres that apply to the song, album, or video. This is often
+     * used for filtering media.
+     * A list of common audio genres as popularized by ID3v1 is stored in `genres.ts.
+     * Additionally, `genres.ts` contains video genres as used by DivX.
+     *
      * @param value Genres of the media represented by the current instance or an empty array if no
      *     value is present.
      */
@@ -468,20 +543,25 @@ export abstract class Tag {
 
     /**
      * Gets the year that the media represented by the current instance was recorded.
-     * @remarks Years greater than 9999 cannot be stored by most tagging formats and will be cleared
-     *     if a higher value is set. Some tagging formats store higher precision dates which will
-     *     be truncated when this property is set. Format specific implementations are necessary to
-     *     access the higher precision values.
-     * @returns Year that the media represented by the current instance was created or `0` if no
+     *
+     * Years greater than 9999 cannot be stored by most tagging formats and will be cleared
+     * if a higher value is set. Some tagging formats store higher precision dates which will
+     * be truncated when this property is set. Format specific implementations are necessary to
+     * access the higher precision values.
+     *
+     * @returns
+     *     Year that the media represented by the current instance was created or `0` if no
      *     value is present.
      */
     public get year(): number { return 0; }
     /**
      * Sets the year that the media represented by the current instance was recorded.
-     * @remarks Years greater than 9999 cannot be stored by most tagging formats and will be cleared
-     *     if a higher value is set. Some tagging formats store higher precision dates which will
-     *     be truncated when this property is set. Format specific implementations are necessary to
-     *     access the higher precision values.
+     *
+     * Years greater than 9999 cannot be stored by most tagging formats and will be cleared
+     * if a higher value is set. Some tagging formats store higher precision dates which will
+     * be truncated when this property is set. Format specific implementations are necessary to
+     * access the higher precision values.
+     *
      * @param value Year that the media represented by the current instance was created or `0` if no
      *     value is present.
      */
@@ -490,43 +570,53 @@ export abstract class Tag {
     /**
      * Gets the position of the media represented by the current instance in its containing album
      * or season (for a series).
-     * @remarks This value should be the same as is listed on the album cover and no more than
-     *     {@link trackCount}, if {@link trackCount} is non-zero.
-     *     Most tagging formats store this as a string. To help sorting, a two-digit zero-padded
-     *     value is used in the resulting tag.
-     *     For a series, this property represents the episodes in a season of the series.
-     * @returns Position of the media represented by the current instance in its containing album
+     *
+     * This value should be the same as is listed on the album cover and no more than
+     * {@link trackCount}, if {@link trackCount} is non-zero.
+     * Most tagging formats store this as a string. To help sorting, a two-digit zero-padded
+     * value is used in the resulting tag.
+     * For a series, this property represents the episodes in a season of the series.
+     *
+     * @returns
+     *     Position of the media represented by the current instance in its containing album
      *     or `0` if not specified.
      */
     public get track(): number { return 0; }
     /**
      * Sets the position of the media represented by the current instance in its containing album
      * or season (for a series).
-     * @remarks This value should be the same as is listed on the album cover and no more than
-     *     {@link trackCount}, if {@link trackCount} is non-zero.
-     *     Most tagging formats store this as a string. To help sorting, a two-digit zero-padded
-     *     value is used in the resulting tag.
-     *     For a series, this property represents the episodes in a season of the series.
+     *
+     * This value should be the same as is listed on the album cover and no more than
+     * {@link trackCount}, if {@link trackCount} is non-zero.
+     * Most tagging formats store this as a string. To help sorting, a two-digit zero-padded
+     * value is used in the resulting tag.
+     * For a series, this property represents the episodes in a season of the series.
+     *
      * @param value Position of the media represented by the current instance in its containing
      *     album or `0` if not specified.
      */
     public set track(value: number) { /* no-op in abstract case */ }
 
     /**
-     * Gets the number of tracks in the album or the number of episodes in a series of the media
+     * Gets the number of tracks on the album or the number of episodes in a series of the media
      * represented by the current instance.
-     * @remarks If non-zero, this value should be equal to or greater than {@link track}. If
-     *     {@link track} is `0`, this value should also be `0`.
-     * @returns Number of tracks in the album or number of episodes in a series of the media
+     *
+     * If non-zero, this value should be equal to or greater than {@link track}. If
+     * {@link track} is `0`, this value should also be `0`.
+     *
+     * @returns
+     *     Number of tracks on the album or number of episodes in a series of the media
      *     represented by the current instance or `0` if not specified.
      */
     public get trackCount(): number { return 0; }
     /**
-     * Sets the number of tracks in the album or the number of episodes in a series of the media
+     * Sets the number of tracks on the album or the number of episodes in a series of the media
      * represented by the current instance.
-     * @remarks If non-zero, this value should be equal to or greater than {@link track}. If
-     *     {@link track} is `0`, this value should also be `0`.
-     * @param value Number of tracks in the album or number of episodes in a series of the media
+     *
+     * If non-zero, this value should be equal to or greater than {@link track}. If
+     * {@link track} is `0`, this value should also be `0`.
+     *
+     * @param value Number of tracks on the album or number of episodes in a series of the media
      *     represented by the current instance or `0` if not specified.
      */
     public set trackCount(value: number) { /* no-op in abstract case */ }
@@ -534,19 +624,24 @@ export abstract class Tag {
     /**
      * Gets the number of the disc containing the media represented by the current instance in the
      * boxed set. For a series, this represents the season number.
-     * @remarks This value should be the same as the number that appears on the disc. For example, if
-     *     the disc is the first of three, the value should be `1`. It should be no more than
-     *     {@link discCount} if {@link discCount} is non-zero.
-     * @returns Number of the disc or season of the media represented by the current instance in a
+     *
+     * This value should be the same as the number that appears on the disc. For example, if
+     * the disc is the first of three, the value should be `1`. It should be no more than
+     * {@link discCount} if {@link discCount} is non-zero.
+     *
+     * @returns
+     *     Number of the disc or season of the media represented by the current instance in a
      *     boxed set.
      */
     public get disc(): number { return 0; }
     /**
      * Sets the number of the disc containing the media represented by the current instance in the
      * boxed set. For a series, this represents the season number.
-     * @remarks This value should be the same as the number that appears on the disc. For example, if
-     *     the disc is the first of three, the value should be `1`. It should be no more than
-     *     {@link discCount} if {@link discCount} is non-zero.
+     *
+     * This value should be the same as the number that appears on the disc. For example, if
+     * the disc is the first of three, the value should be `1`. It should be no more than
+     * {@link discCount} if {@link discCount} is non-zero.
+     *
      * @param value Number of the disc or season of the media represented by the current instance
      *     in a boxed set.
      */
@@ -555,17 +650,22 @@ export abstract class Tag {
     /**
      * Gets the number of discs or seasons in the boxed set containing the media represented by the
      * current instance.
-     * @remarks If non-zero, this should be at least equal to {@link disc}. If {@link disc} is zero,
-     *     this value should also be zero.
-     * @returns Number of discs or seasons in the boxed set containing the media represented by the
+     *
+     * If non-zero, this should be at least equal to {@link disc}. If {@link disc} is zero,
+     * this value should also be zero.
+     *
+     * @returns
+     *     Number of discs or seasons in the boxed set containing the media represented by the
      *     current instance or `0` if not specified.
      */
     public get discCount(): number { return 0; }
     /**
      * Sets the number of discs or seasons in the boxed set containing the media represented by the
      * current instance.
-     * @remarks If non-zero, this should be at least equal to {@link disc}. If {@link disc} is zero,
-     *     this value should also be zero.
+     *
+     * If non-zero, this should be at least equal to {@link disc}. If {@link disc} is zero,
+     * this value should also be zero.
+     *
      * @param value Number of discs or seasons in the boxed set containing the media represented by
      *     the current instance or `0` if not specified.
      */
@@ -573,20 +673,25 @@ export abstract class Tag {
 
     /**
      * Gets the lyrics or script of the media represented by the current instance.
-     * @remarks This field contains a plain text representation of the lyrics or scripts with line
-     *     breaks and whitespace being the only formatting marks.
-     *     Some formats support more advanced lyrics, like synchronized lyrics, but those must be
-     *     accessed using format-specific implementations.
-     * @returns Lyrics or script of the media represented by the current instance or `undefined` if
+     *
+     * This field contains a plain text representation of the lyrics or scripts with line
+     * breaks and whitespace being the only formatting marks.
+     * Some formats support more advanced lyrics, like synchronized lyrics, but those must be
+     * accessed using format-specific implementations.
+     *
+     * @returns
+     *     Lyrics or script of the media represented by the current instance or `undefined` if
      *     no value is present
      */
     public get lyrics(): string { return undefined; }
     /**
      * Sets the lyrics or script of the media represented by the current instance.
-     * @remarks This field contains a plain text representation of the lyrics or scripts with line
-     *     breaks and whitespace being the only formatting marks.
-     *     Some formats support more advanced lyrics, like synchronized lyrics, but those must be
-     *     accessed using format-specific implementations.
+     *
+     * This field contains a plain text representation of the lyrics or scripts with line
+     * breaks and whitespace being the only formatting marks.
+     * Some formats support more advanced lyrics, like synchronized lyrics, but those must be
+     * accessed using format-specific implementations.
+     *
      * @param value Lyrics or script of the media represented by the current instance or
      *     `undefined` if no value is present
      */
@@ -594,18 +699,23 @@ export abstract class Tag {
 
     /**
      * Gets the grouping on the album which the media in the current instance belongs to.
-     * @remarks This field contains a non-physical group to which the track belongs. In classical
-     *     music this could be a movement. It could also be parts of a series like "Introduction",
-     *     "Closing Remarks", etc.
-     * @returns Grouping on the album which the media in the current instance belongs to or
+     *
+     * This field contains a non-physical group to which the track belongs. In classical
+     * music this could be a movement. It could also be parts of a series like "Introduction",
+     * "Closing Remarks", etc.
+     *
+     * @returns
+     *     Grouping on the album which the media in the current instance belongs to or
      *     `undefined` if no value is present.
      */
     public get grouping(): string { return undefined; }
     /**
      * Sets the grouping on the album which the media in the current instance belongs to.
-     * @remarks This field contains a non-physical group to which the track belongs. In classical
-     *     music this could be a movement. It could also be parts of a series like "Introduction",
-     *     "Closing Remarks", etc.
+     *
+     * This field contains a non-physical group to which the track belongs. In classical
+     * music this could be a movement. It could also be parts of a series like "Introduction",
+     * "Closing Remarks", etc.
+     *
      * @param value Grouping on the album which the media in the current instance belongs to or
      *     `undefined` if no value is present.
      */
@@ -614,17 +724,22 @@ export abstract class Tag {
     /**
      * Gets the number of beats per minute in the audio of the media represented by the current
      * instance.
-     * @remarks This field is useful for DJ's who are trying to beat match tracks. It should be
-     *     calculated from the audio or pulled from a database.
-     * @returns Beats per minute of the audio in the media represented by the current instance, or
+     *
+     * This field is useful for DJ's who are trying to beat match tracks. It should be
+     * calculated from the audio or pulled from a database.
+     *
+     * @returns
+     *     Beats per minute of the audio in the media represented by the current instance, or
      *     `0` if not specified
      */
     public get beatsPerMinute(): number { return 0; }
     /**
      * Sets the number of beats per minute in the audio of the media represented by the current
      * instance.
-     * @remarks This field is useful for DJ's who are trying to beat match tracks. It should be
-     *     calculated from the audio or pulled from a database.
+     *
+     * This field is useful for DJ's who are trying to beat match tracks. It should be
+     * calculated from the audio or pulled from a database.
+     *
      * @param value Beats per minute of the audio in the media represented by the current instance,
      *     or `0` if not specified
      */
@@ -632,14 +747,19 @@ export abstract class Tag {
 
     /**
      * Gets the conductor or director of the media represented by the current instance.
-     * @remarks This field is most useful for organizing classical music and movies.
-     * @returns Conductor or director of the media represented by the current instance or
+     *
+     * This field is most useful for organizing classical music and movies.
+     *
+     * @returns
+     *     Conductor or director of the media represented by the current instance or
      *     `undefined` if no value present.
      */
     public get conductor(): string { return undefined; }
     /**
      * Sets the conductor or director of the media represented by the current instance.
-     * @remarks This field is most useful for organizing classical music and movies.
+     *
+     * This field is most useful for organizing classical music and movies.
+     *
      * @param value Conductor or director of the media represented by the current instance or
      *     `undefined` if no value present.
      */
@@ -647,20 +767,25 @@ export abstract class Tag {
 
     /**
      * Gets the copyright information for the media represented by the current instance.
-     * @remarks This field should be used for storing copyright information. It may be useful to show
-     *     this information somewhere in the program while the media is playing.
-     *     Players should not support editing this field, but media creation tools should
-     *     definitely allow modification.
-     * @returns Copyright information for the media represented by the current instance or
+     *
+     * This field should be used for storing copyright information. It may be useful to show
+     * this information somewhere in the program while the media is playing.
+     * Players should not support editing this field, but media creation tools should
+     * definitely allow modification.
+     *
+     * @returns
+     *     Copyright information for the media represented by the current instance or
      *     `undefined` if no value is present.
      */
     public get copyright(): string { return undefined; }
     /**
      * Sets the copyright information for the media represented by the current instance.
-     * @remarks This field should be used for storing copyright information. It may be useful to show
-     *     this information somewhere in the program while the media is playing.
-     *     Players should not support editing this field, but media creation tools should
-     *     definitely allow modification.
+     *
+     * This field should be used for storing copyright information. It may be useful to show
+     * this information somewhere in the program while the media is playing.
+     * Players should not support editing this field, but media creation tools should
+     * definitely allow modification.
+     *
      * @param value Copyright information for the media represented by the current instance or
      *     `undefined` if no value is present.
      */
@@ -680,16 +805,21 @@ export abstract class Tag {
 
     /**
      * Gets the MusicBrainz artist ID of the media represented by the current instance.
-     * @remarks This field represents the MusicBrainz ArtistID, and is used to uniquely identify a
-     *     particular artist of the track.
-     * @returns MusicBrainz ArtistID of the media represented by the current instance or
+     *
+     * This field represents the MusicBrainz ArtistID, and is used to uniquely identify a
+     * particular artist of the track.
+     *
+     * @returns
+     *     MusicBrainz ArtistID of the media represented by the current instance or
      *     `undefined` if no value is present
      */
     public get musicBrainzArtistId(): string { return undefined; }
     /**
      * Sets the MusicBrainz artist ID of the media represented by the current instance.
-     * @remarks This field represents the MusicBrainz ArtistID, and is used to uniquely identify a
-     *     particular artist of the track.
+     *
+     * This field represents the MusicBrainz ArtistID, and is used to uniquely identify a
+     * particular artist of the track.
+     *
      * @param value MusicBrainz ArtistID of the media represented by the current instance or
      *     `undefined` if no value is present
      */
@@ -697,16 +827,21 @@ export abstract class Tag {
 
     /**
      * Gets the MusicBrainz release group ID of the media represented by the current instance.
-     * @remarks This field represents the MusicBrainz ReleaseGroupID and is used to uniquely identify
-     *     a particular release group to which this track belongs.
-     * @returns MusicBrainz ReleaseGroupID of the media represented by the current instance or
+     *
+     * This field represents the MusicBrainz ReleaseGroupID and is used to uniquely identify
+     * a particular release group to which this track belongs.
+     *
+     * @returns
+     *     MusicBrainz ReleaseGroupID of the media represented by the current instance or
      *     `undefined` if no value is present
      */
     public get musicBrainzReleaseGroupId(): string { return undefined; }
     /**
      * Sets the MusicBrainz release group ID of the media represented by the current instance.
-     * @remarks This field represents the MusicBrainz ReleaseGroupID and is used to uniquely identify
-     *     a particular release group to which this track belongs.
+     *
+     * This field represents the MusicBrainz ReleaseGroupID and is used to uniquely identify
+     * a particular release group to which this track belongs.
+     *
      * @param value MusicBrainz ReleaseGroupID of the media represented by the current instance or
      *     `undefined` if no value is present
      */
@@ -714,16 +849,21 @@ export abstract class Tag {
 
     /**
      * Gets the MusicBrainz release ID of the media represented by the current instance.
-     * @remarks This field represents the MusicBrains ReleaseID and is used to uniquely identify a
-     *     particular release to which this track belongs.
-     * @returns MusicBrainz ReleaseID of the media represented by the current instance or
+     *
+     * This field represents the MusicBrains ReleaseID and is used to uniquely identify a
+     * particular release to which this track belongs.
+     *
+     * @returns
+     *     MusicBrainz ReleaseID of the media represented by the current instance or
      *     `undefined` if no value is present
      */
     public get musicBrainzReleaseId(): string { return undefined; }
     /**
      * Sets the MusicBrainz release ID of the media represented by the current instance.
-     * @remarks This field represents the MusicBrains ReleaseID and is used to uniquely identify a
-     *     particular release to which this track belongs.
+     *
+     * This field represents the MusicBrains ReleaseID and is used to uniquely identify a
+     * particular release to which this track belongs.
+     *
      * @param value MusicBrainz ReleaseID of the media represented by the current instance or
      *     `undefined` if no value is present
      */
@@ -731,16 +871,21 @@ export abstract class Tag {
 
     /**
      * Gets the MusicBrainz release artist ID of the media represented by the current instance.
-     * @remarks This field represents the MusicBrainz ReleaseArtistID, and is used to uniquely
-     *     identify a particular album artist credited with the album.
-     * @returns MusicBrainz ReleaseArtistID of the media represented by the current instance or
+     *
+     * This field represents the MusicBrainz ReleaseArtistID, and is used to uniquely
+     * identify a particular album artist credited with the album.
+     *
+     * @returns
+     *     MusicBrainz ReleaseArtistID of the media represented by the current instance or
      *     `undefined` if no value is present
      */
     public get musicBrainzReleaseArtistId(): string { return undefined; }
     /**
      * Sets the MusicBrainz release artist ID of the media represented by the current instance.
-     * @remarks This field represents the MusicBrainz ReleaseArtistID, and is used to uniquely
-     *     identify a particular album artist credited with the album.
+     *
+     * This field represents the MusicBrainz ReleaseArtistID, and is used to uniquely
+     * identify a particular album artist credited with the album.
+     *
      * @param value MusicBrainz ReleaseArtistID of the media represented by the current instance or
      *     `undefined` if no value is present
      */
@@ -749,17 +894,22 @@ export abstract class Tag {
     /**
      * Gets the MusicBrainz track ID of the media represented by the media represented by the
      * current instance.
-     * @remarks This field represents the MusicBrainz TrackID and is used to uniquely identify a
-     *     particular track.
-     * @returns MusicBrainz TrackID of the media represented by the current instance or `undefined`
+     *
+     * This field represents the MusicBrainz TrackID and is used to uniquely identify a
+     * particular track.
+     *
+     * @returns
+     *     MusicBrainz TrackID of the media represented by the current instance or `undefined`
      *     if no value is present
      */
     public get musicBrainzTrackId(): string { return undefined; }
     /**
      * Sets the MusicBrainz track ID of the media represented by the media represented by the
      * current instance.
-     * @remarks This field represents the MusicBrainz TrackID and is used to uniquely identify a
-     *     particular track.
+     *
+     * This field represents the MusicBrainz TrackID and is used to uniquely identify a
+     * particular track.
+     *
      * @param value MusicBrainz TrackID of the media represented by the current instance or
      *     `undefined` if no value is present
      */
@@ -767,16 +917,21 @@ export abstract class Tag {
 
     /**
      * Gets the MusicBrainz disc ID of the media represented by the current instance.
-     * @remarks This field represents the MusicBrainz DiscID and is used to uniquely identify the
-     *     particular released media associated with this track.
-     * @returns MusicBrainz DiscID of the media represented by the current instance or `undefined`
+     *
+     * This field represents the MusicBrainz DiscID and is used to uniquely identify the
+     * particular released media associated with this track.
+     *
+     * @returns
+     *     MusicBrainz DiscID of the media represented by the current instance or `undefined`
      *     if no value is present
      */
     public get musicBrainzDiscId(): string { return undefined; }
     /**
      * Sets the MusicBrainz disc ID of the media represented by the current instance.
-     * @remarks This field represents the MusicBrainz DiscID and is used to uniquely identify the
-     *     particular released media associated with this track.
+     *
+     * This field represents the MusicBrainz DiscID and is used to uniquely identify the
+     * particular released media associated with this track.
+     *
      * @param value MusicBrainz DiscID of the media represented by the current instance or
      *     `undefined` if no value is present
      */
@@ -784,16 +939,21 @@ export abstract class Tag {
 
     /**
      * Gets the MusicIP PUID of the media represented by the current instance.
-     * @remarks This field represents the MusicIP PUID, an acoustic fingerprint identifier. It
-     *     identifies wht this track "sounds like".
-     * @returns MusicIP PUID of the media represented by the current instance or `undefined` if no
+     *
+     * This field represents the MusicIP PUID, an acoustic fingerprint identifier. It
+     * identifies wht this track "sounds like".
+     *
+     * @returns
+     *     MusicIP PUID of the media represented by the current instance or `undefined` if no
      *     value is present
      */
     public get musicIpId(): string { return undefined; }
     /**
      * Sets the MusicIP PUID of the media represented by the current instance.
-     * @remarks This field represents the MusicIP PUID, an acoustic fingerprint identifier. It
-     *     identifies wht this track "sounds like".
+     *
+     * This field represents the MusicIP PUID, an acoustic fingerprint identifier. It
+     * identifies wht this track "sounds like".
+     *
      * @param value MusicIP PUID of the media represented by the current instance or `undefined`
      *     if no value is present
      */
@@ -801,16 +961,21 @@ export abstract class Tag {
 
     /**
      * Gets the Amazon ID of the media represented by the current instance.
-     * @remarks This field represents the AmazonID, also called the ASIN, and is used to uniquely
-     *     identify the particular track or album in the Amazon catalog.
-     * @returns Amazon ID of the media represented by the current instance or `undefined` if no
+     *
+     * This field represents the AmazonID, also called the ASIN, and is used to uniquely
+     * identify the particular track or album in the Amazon catalog.
+     *
+     * @returns
+     *     Amazon ID of the media represented by the current instance or `undefined` if no
      *     value is present
      */
     public get amazonId(): string { return undefined; }
     /**
      * Sets the Amazon ID of the media represented by the current instance.
-     * @remarks This field represents the AmazonID, also called the ASIN, and is used to uniquely
-     *     identify the particular track or album in the Amazon catalog.
+     *
+     * This field represents the AmazonID, also called the ASIN, and is used to uniquely
+     * identify the particular track or album in the Amazon catalog.
+     *
      * @param value Amazon ID of the media represented by the current instance or `undefined` if no
      *     value is present
      */
@@ -818,16 +983,21 @@ export abstract class Tag {
 
     /**
      * Gets the MusicBrainz release status of the media represented by the current instance.
-     * @remarks This field represents the MusicBrainz ReleaseStatus used to describe how 'official' a
-     *     release is. Common statuses are: `Official`, `Promotion`, `Bootleg`, `Pseudo-release`.
-     * @returns MusicBrainz ReleaseStatus of the media represented by the current instance or
+     *
+     * This field represents the MusicBrainz ReleaseStatus used to describe how 'official' a
+     * release is. Common statuses are: `Official`, `Promotion`, `Bootleg`, `Pseudo-release`.
+     *
+     * @returns
+     *     MusicBrainz ReleaseStatus of the media represented by the current instance or
      *     `undefined` if no value is present
      */
     public get musicBrainzReleaseStatus(): string { return undefined; }
     /**
      * Sets the MusicBrainz release status of the media represented by the current instance.
-     * @remarks This field represents the MusicBrainz ReleaseStatus used to describe how 'official' a
-     *     release is. Common statuses are: `Official`, `Promotion`, `Bootleg`, `Pseudo-release`.
+     *
+     * This field represents the MusicBrainz ReleaseStatus used to describe how 'official' a
+     * release is. Common statuses are: `Official`, `Promotion`, `Bootleg`, `Pseudo-release`.
+     *
      * @param value MusicBrainz ReleaseStatus of the media represented by the current instance or
      *     `undefined` if no value is present
      */
@@ -835,20 +1005,25 @@ export abstract class Tag {
 
     /**
      * Gets the MusicBrainz release type of the media represented by the current instance.
-     * @remarks This field represents the MusicBrainz ReleaseType that describes what kind of release
-     *     a release is. Common types are: `Single`, `Album`, `EP`, `Compilation`, `Soundtrack,
-     *     `SpokenWord`, `Interview`, `Audiobook`, `Live`, `Remix`, and `Other`. Careful thought
-     *     must be given when using this field to decide if a particular track "is a compilation".
-     * @returns MusicBrainz ReleaseType of the media represented by the current instance or
+     *
+     * This field represents the MusicBrainz ReleaseType that describes what kind of release
+     *  a release is. Common types are: `Single`, `Album`, `EP`, `Compilation`, `Soundtrack,
+     *  `SpokenWord`, `Interview`, `Audiobook`, `Live`, `Remix`, and `Other`. Careful thought
+     *  must be given when using this field to decide if a particular track "is a compilation".
+     *
+     * @returns
+     *     MusicBrainz ReleaseType of the media represented by the current instance or
      *     `undefined` if no value is present
      */
     public get musicBrainzReleaseType(): string { return undefined; }
     /**
      * Sets the MusicBrainz release type of the media represented by the current instance.
-     * @remarks This field represents the MusicBrainz ReleaseType that describes what kind of release
-     *     a release is. Common types are: `Single`, `Album`, `EP`, `Compilation`, `Soundtrack,
-     *     `SpokenWord`, `Interview`, `Audiobook`, `Live`, `Remix`, and `Other`. Careful thought
-     *     must be given when using this field to decide if a particular track "is a compilation".
+     *
+     * This field represents the MusicBrainz ReleaseType that describes what kind of release
+     * a release is. Common types are: `Single`, `Album`, `EP`, `Compilation`, `Soundtrack,
+     * `SpokenWord`, `Interview`, `Audiobook`, `Live`, `Remix`, and `Other`. Careful thought
+     * must be given when using this field to decide if a particular track "is a compilation".
+     *
      * @param value MusicBrainz ReleaseType of the media represented by the current instance or
      *     `undefined` if no value is present
      */
@@ -856,22 +1031,27 @@ export abstract class Tag {
 
     /**
      * Gets the MusicBrainz release country of the media represented by the current instance.
-     * @remarks This field represents the MusicBrainz ReleaseCountry which describes the country in
-     *     which an album was released. Note that the release country of an album is not
-     *     necessarily the country in which it was produced. The label itself will typically be
-     *     more relevant. Eg, a release on "Foo Records UK" that has "Made in Austria" printed on
-     *     it will likely be a UK release.
-     * @returns MusicBrainz ReleaseCountry of the media represented by the current instance or
+     *
+     * This field represents the MusicBrainz ReleaseCountry which describes the country in
+     * which an album was released. Note that the release country of an album is not
+     * necessarily the country in which it was produced. The label itself will typically be
+     * more relevant. Eg, a release on "Foo Records UK" that has "Made in Austria" printed on
+     * it will likely be a UK release.
+     *
+     * @returns
+     *     MusicBrainz ReleaseCountry of the media represented by the current instance or
      *     `undefined` if no value is present
      */
     public get musicBrainzReleaseCountry(): string { return undefined; }
     /**
      * Sets the MusicBrainz release country of the media represented by the current instance.
-     * @remarks This field represents the MusicBrainz ReleaseCountry which describes the country in
-     *     which an album was released. Note that the release country of an album is not
-     *     necessarily the country in which it was produced. The label itself will typically be
-     *     more relevant. Eg, a release on "Foo Records UK" that has "Made in Austria" printed on
-     *     it will likely be a UK release.
+     *
+     * This field represents the MusicBrainz ReleaseCountry which describes the country in
+     * which an album was released. Note that the release country of an album is not
+     * necessarily the country in which it was produced. The label itself will typically be
+     * more relevant. Eg, a release on "Foo Records UK" that has "Made in Austria" printed on
+     * it will likely be a UK release.
+     *
      * @param value MusicBrainz ReleaseCountry of the media represented by the current instance or
      *     `undefined` if no value is present
      */
@@ -957,29 +1137,34 @@ export abstract class Tag {
 
     /**
      * Gets the ISRC (International Standard Recording Code) of the track.
-     * @returns the ISRC of the track or `undefined` if no value is set
+     * @returns ISRC of the track or `undefined` if no value is set
      */
     public get isrc(): string { return undefined; }
     /**
      * Sets the ISRC (International Standard Recording Code) of the track.
-     * @param value the ISRC of the track or `undefined` if no value is set
+     * @param value ISRC of the track or `undefined` if no value is set
      */
     public set isrc(value: string) { /* no-op in abstract case */ }
 
     /**
      * Gets a collection of pictures associated with the media represented by the current instance.
-     * @remarks Typically, this value is used to store an album cover or icon to use for the file, but
-     *     it is capable of holding any type of image or file, including pictures of the band, the
-     *     recording studio, the concert, etc.
-     * @returns Array containing a collection of pictures associated with the media represented by
+     *
+     * Typically, this value is used to store an album cover or icon to use for the file, but
+     * it is capable of holding any type of image or file, including pictures of the band, the
+     * recording studio, the concert, etc.
+     *
+     * @returns
+     *     Array containing a collection of pictures associated with the media represented by
      *     the current instance or an empty array if no pictures are present.
      */
     public get pictures(): IPicture[] { return []; }
     /**
      * Sets a collection of pictures associated with the media represented by the current instance.
-     * @remarks Typically, this value is used to store an album cover or icon to use for the file, but
-     *     it is capable of holding any type of image or file, including pictures of the band, the
-     *     recording studio, the concert, etc.
+     *
+     * Typically, this value is used to store an album cover or icon to use for the file, but
+     * it is capable of holding any type of image or file, including pictures of the band, the
+     * recording studio, the concert, etc.
+     *
      * @param value Array containing a collection of pictures associated with the media represented by
      *     the current instance or an empty array if no pictures are present.
      */
@@ -1058,7 +1243,8 @@ export abstract class Tag {
 
     /**
      * Gets whether or not the current instance is empty.
-     * @remarks In the default implementation, this checks the values supported by {@link Tag}, but it
+     * @remarks
+     *     In the default implementation, this checks the values supported by {@link Tag}, but it
      *     may be extended by child classes to support other values.
      * @returns `true` if the current instance does not contain any values. `false` otherwise
      */
@@ -1081,6 +1267,10 @@ export abstract class Tag {
             this.discCount === 0;
     }
 
+    /**
+     * Generates an array of tag types that are set in the provided flags value.
+     * @param tagTypes Tag types that have been OR'd together.
+     */
     public static tagTypeFlagsToArray(tagTypes: TagTypes): TagTypes[] {
         const output = [];
         for (const tagType of Object.values(TagTypes)) {
@@ -1097,52 +1287,20 @@ export abstract class Tag {
     }
 
     /**
-     * Gets the first string in an array.
-     * @param group Array of strings to get the first string from.
-     * @returns First string contained in `group` or `undefined` if the array is
-     *     `undefined` or empty
-     * @protected
-     */
-    protected static firstInGroup(group: string[]): string {
-        return !group || group.length === 0
-            ? undefined
-            : group[0];
-    }
-
-    /**
-     * Joins an array of string into a single, semicolon and space separated string.
-     * @param group Array of string to join
-     * @returns A semicolon and space separated string containing the values from `group`
-     *     or undefined if the array is `undefined` or empty.
-     * @protected
-     */
-    protected static joinGroup(group: string[]): string {
-        return !group || group.length === 0
-            ? undefined
-            : group.join("; ");
-    }
-
-    /**
      * Clears all values stored in the current instance.
      * @remarks The clearing procedure is format specific and should clear all values.
      */
     public abstract clear(): void;
 
     /**
-     * Set the tags that represent the tagger software (node-taglib-sharp) itself.
-     * @remarks This is typically a method to call just before saving a tag.
-     */
-    public setInfoTag(): void {
-        this.dateTagged = new Date();
-    }
-
-    /**
      * Copies the values from the current instance to another {@link Tag}, optionally overwriting
-     *     existing values.
-     * @remarks This method only copies the most basic values when copying between different tag
-     *     formats. However, if `target` is of the same type as the current instance,
-     *     more advanced copying may be done. For example if both `this` and `target` are
-     *     {@link Id3v2Tag}, all frames will be copied to the target.
+     * existing values.
+     *
+     * This method only copies the most basic values when copying between different tag
+     * formats. However, if `target` is of the same type as the current instance,
+     * more advanced copying may be done. For example if both `this` and `target` are
+     * {@link Id3v2Tag}, all frames will be copied to the target.
+     *
      * @param target Target tag to copy values to
      * @param overwrite Whether or not to copy values over existing ones
      */
@@ -1177,9 +1335,24 @@ export abstract class Tag {
     }
 
     /**
+     * Gets the first string in an array.
+     * @param group Array of strings to get the first string from.
+     * @returns
+     *     First string contained in `group` or `undefined` if the array is
+     *     `undefined` or empty
+     * @protected
+     */
+    protected static firstInGroup(group: string[]): string {
+        return !group || group.length === 0
+            ? undefined
+            : group[0];
+    }
+
+    /**
      * Checks if a value is falsy or empty.
      * @param value Object to check
-     * @returns If `value` is a string, `true` is returned if the value is falsy or all
+     * @returns
+     *     If `value` is a string, `true` is returned if the value is falsy or all
      *     whitespace, `false` is returned otherwise. If `value` is an array of strings,
      *     the array must be falsy or all elements must be falsy or whitespace to return `true`.
      * @protected
@@ -1203,5 +1376,19 @@ export abstract class Tag {
 
         // All elements of the array are falsy
         return true;
+    }
+
+    /**
+     * Joins an array of string into a single, semicolon and space separated string.
+     * @param group Array of string to join
+     * @returns
+     *     A semicolon and space separated string containing the values from `group`
+     *     or undefined if the array is `undefined` or empty.
+     * @protected
+     */
+    protected static joinGroup(group: string[]): string {
+        return !group || group.length === 0
+            ? undefined
+            : group.join("; ");
     }
 }

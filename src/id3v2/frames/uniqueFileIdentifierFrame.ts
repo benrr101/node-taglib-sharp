@@ -109,8 +109,7 @@ export default class UniqueFileIdentifierFrame extends Frame {
      * Gets a unique file identifier frame from a list of frames
      * @param frames List of frames to search
      * @param owner Owner to match
-     * @returns PopularimeterFrame Frame containing the matching user, `undefined` if a match was
-     *     not found
+     * @returns Frame containing the matching user, `undefined` if a match was not found
      */
     public static find(frames: UniqueFileIdentifierFrame[], owner: string): UniqueFileIdentifierFrame {
         Guards.truthy(frames, "frames");

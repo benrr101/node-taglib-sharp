@@ -127,7 +127,8 @@ export default class MatroskaTagValue {
     public get languageCode(): string { return this._languageCode; }
     /**
      * Sets the language code that the tag is stored in.
-     * @remarks BCP-47 is only allowed in Matroska version 4, otherwise ISO 639-2 is the required
+     * @remarks
+     *     BCP-47 is only allowed in Matroska version 4, otherwise ISO 639-2 is the required
      *     format for language codes.
      */
     public set languageCode(value) {

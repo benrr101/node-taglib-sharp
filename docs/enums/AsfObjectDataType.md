@@ -2,11 +2,11 @@
 
 # Enumeration: AsfObjectDataType
 
-Indicates the type of data stored in a {@link ContentDescriptor} or {@link MetadataDescriptor} object.
+Indicates the type of data stored in a ContentDescriptor or MetadataDescriptor object.
 
 ## Table of contents
 
-### Enumeration members
+### Enumeration Members
 
 - [Bool](AsfObjectDataType.md#bool)
 - [Bytes](AsfObjectDataType.md#bytes)
@@ -16,11 +16,11 @@ Indicates the type of data stored in a {@link ContentDescriptor} or {@link Metad
 - [Unicode](AsfObjectDataType.md#unicode)
 - [Word](AsfObjectDataType.md#word)
 
-## Enumeration members
+## Enumeration Members
 
 ### Bool
 
-• **Bool** = `2`
+• **Bool** = ``2``
 
 The descriptor contains a boolean value.
 
@@ -28,7 +28,7 @@ ___
 
 ### Bytes
 
-• **Bytes** = `1`
+• **Bytes** = ``1``
 
 The descriptor contains binary data.
 
@@ -36,7 +36,7 @@ ___
 
 ### DWord
 
-• **DWord** = `3`
+• **DWord** = ``3``
 
 The descriptor contains a 4-byte DWORD value.
 
@@ -44,7 +44,7 @@ ___
 
 ### Guid
 
-• **Guid** = `6`
+• **Guid** = ``6``
 
 The descriptor contains a 16-byte GUID value.
 
@@ -52,7 +52,7 @@ ___
 
 ### QWord
 
-• **QWord** = `4`
+• **QWord** = ``4``
 
 The descriptor contains a 8-byte QWORD value.
 
@@ -60,7 +60,7 @@ ___
 
 ### Unicode
 
-• **Unicode** = `0`
+• **Unicode** = ``0``
 
 The descriptor contains Unicode (UTF-16LE) text.
 
@@ -68,6 +68,6 @@ ___
 
 ### Word
 
-• **Word** = `5`
+• **Word** = ``5``
 
 The descriptor contains a 2-byte WORD value.

@@ -85,11 +85,11 @@ export default class AttachmentFrame extends Frame implements IPicture {
     /**
      * Constructs and initializes a new attachment frame by populating it with the contents of
      * another {@link IPicture} object.
-     * @param picture Value to use in the new instance.
-     * @remarks When a frame is created, it is not automatically added to the tag. Consider
-     *     using {@link get} for more integrated frame creation.
+     * @remarks
+     *     When a frame is created, it is not automatically added to the tag.
      *     Additionally, see {@link Tag.pictures} provides a generic way of getting and setting
      *     attachments which is preferable to format specific code.
+     * @param picture Value to use in the new instance.
      */
     public static fromPicture(picture: IPicture): AttachmentFrame {
         Guards.truthy(picture, "picture");
@@ -258,8 +258,7 @@ export default class AttachmentFrame extends Frame implements IPicture {
      * @param frames List of attachment frames to search
      * @param description Description to match
      * @param type Picture type to match
-     * @returns Matching frame or `undefined` if a match wasn't found and `create` is
-     *     `false`
+     * @returns Matching frame or `undefined` if a match wasn't found and `create` is `false`
      */
     public static find(
         frames: AttachmentFrame[],
@@ -275,6 +274,10 @@ export default class AttachmentFrame extends Frame implements IPicture {
             });
     }
 
+    /**
+     * Generates a string representation of the current instance.
+     * @deprecated No need for this.
+     */
     public toString(): string {
         this.parseFromRaw();
 
@@ -290,6 +293,7 @@ export default class AttachmentFrame extends Frame implements IPicture {
 
     // #endregion
 
+    /** @inheritDoc */
     protected parseFields(data: ByteVector, version: number): void {
         if (data.length < 5) {
             throw new CorruptFileError("A picture frame must contain at least 5 bytes");
@@ -299,6 +303,7 @@ export default class AttachmentFrame extends Frame implements IPicture {
         this._rawVersion = version;
     }
 
+    /** @inheritDoc */
     protected renderFields(version: number): ByteVector {
         this.parseFromRaw();
 

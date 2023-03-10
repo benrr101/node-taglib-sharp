@@ -7,7 +7,7 @@ read from and written to disk.
 
 ## Hierarchy
 
-- `default`
+- [`AsfBaseObject`](AsfBaseObject.md)
 
   ↳ **`AsfExtendedContentDescriptionObject`**
 
@@ -50,13 +50,13 @@ ___
 
 ### guid
 
-• `get` **guid**(): `default`
+• `get` **guid**(): [`UuidWrapper`](UuidWrapper.md)
 
 Gets the GUID that identifies the current instance.
 
 #### Returns
 
-`default`
+[`UuidWrapper`](UuidWrapper.md)
 
 #### Inherited from
 
@@ -74,20 +74,20 @@ Gets whether or not the current instance contains any records.
 
 `boolean`
 
-boolean `true` if the current instance does not contain any records, `false`
+`true` if the current instance does not contain any records, `false`
     otherwise.
 
 ___
 
 ### objectType
 
-• `get` **objectType**(): `ObjectType`
+• `get` **objectType**(): [`AsfObjectType`](../enums/AsfObjectType.md)
 
-**`inheritdoc`**
+Gets the type of the object for easy comparison.
 
 #### Returns
 
-`ObjectType`
+[`AsfObjectType`](../enums/AsfObjectType.md)
 
 #### Overrides
 
@@ -131,7 +131,7 @@ ___
 
 ### getDescriptors
 
-▸ **getDescriptors**(...`names`): [`AsfContentDescriptor`](AsfContentDescriptor.md)[]
+▸ **getDescriptors**(`...names`): [`AsfContentDescriptor`](AsfContentDescriptor.md)[]
 
 Gets all descriptors with a name matching one of the provided collection of names the
 current instance.
@@ -168,7 +168,7 @@ file.
 
 #### Inherited from
 
-BaseObject.initializeFromFile
+[AsfBaseObject](AsfBaseObject.md).[initializeFromFile](AsfBaseObject.md#initializefromfile)
 
 ___
 
@@ -182,7 +182,7 @@ Initializes a new instance with a specified GUID.
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `guid` | `default` | GUID to use for the new instance. |
+| `guid` | [`UuidWrapper`](UuidWrapper.md) | GUID to use for the new instance. |
 
 #### Returns
 
@@ -190,7 +190,7 @@ Initializes a new instance with a specified GUID.
 
 #### Inherited from
 
-BaseObject.initializeFromGuid
+[AsfBaseObject](AsfBaseObject.md).[initializeFromGuid](AsfBaseObject.md#initializefromguid)
 
 ___
 
@@ -216,7 +216,7 @@ ___
 
 ▸ **render**(): [`ByteVector`](ByteVector.md)
 
-**`inheritdoc`**
+Renders the current instance as a raw ASF object.
 
 #### Returns
 
@@ -224,7 +224,7 @@ ___
 
 #### Overrides
 
-BaseObject.render
+[AsfBaseObject](AsfBaseObject.md).[render](AsfBaseObject.md#render)
 
 ___
 
@@ -234,7 +234,9 @@ ___
 
 Renders the current instance as a raw ASF object containing the specified data.
 
-**`remarks`** Child classes implementing {@see render()} should render their contents and then
+**`Remarks`**
+
+Child classes implementing [()](AsfExtendedContentDescriptionObject.md#render) should render their contents and then
     send the data through this method to produce the final output.
 
 #### Parameters
@@ -249,17 +251,19 @@ Renders the current instance as a raw ASF object containing the specified data.
 
 #### Inherited from
 
-BaseObject.renderInternal
+[AsfBaseObject](AsfBaseObject.md).[renderInternal](AsfBaseObject.md#renderinternal)
 
 ___
 
 ### setDescriptors
 
-▸ **setDescriptors**(`name`, ...`descriptors`): `void`
+▸ **setDescriptors**(`name`, `...descriptors`): `void`
 
 Sets a collection of descriptors for a given name, removing the existing matching records.
 
-**`remarks`** All added descriptors should have their name set to `name` but this is not
+**`Remarks`**
+
+All added descriptors should have their name set to `name` but this is not
     verified by the method. The descriptors will be added with their own names and not the
     one provided as an argument, which is only used for removing existing values and
     determining where to position the new descriptors.
@@ -301,7 +305,7 @@ provided position.
 | Name | Type | Description |
 | :------ | :------ | :------ |
 | `file` | [`File`](File.md) | File to read the instance from. Must not be falsey |
-| `position` | `number` | Position in the file where the instance begins. Must be a positive, safe     integer. |
+| `position` | `number` | Position in the file where the instance begins. Must be a positive, safe integer. |
 
 #### Returns
 

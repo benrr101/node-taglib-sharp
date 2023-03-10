@@ -27,9 +27,10 @@ export interface ISandwichFile {
  * Abstract class that provides tagging and properties for files that can have tags at the
  * beginning and/or end of the file. The tags are added generically and are not part of the media
  * format. As such, the tags sandwich the media.
- * @remarks This was called `NonContainer` in the original .NET implementation, implying that files
+ * @remarks
+ *     This was called `NonContainer` in the original .NET implementation, implying that files
  *     utilizing this pattern could not be containers. This is not true - MPEG containers, for
- *     example, use this pattern. Therefore the name was changed to better represent the situation.
+ *     example, use this pattern. Therefore, the name was changed to better represent the situation.
  */
 export default abstract class SandwichFile extends File implements ISandwichFile {
     private readonly _properties: Properties;
@@ -150,5 +151,10 @@ export default abstract class SandwichFile extends File implements ISandwichFile
 
     // #endregion
 
+    /**
+     * Reads the properties of the file.
+     * @param readStyle Indicates what degree of accuracy the file properties are read, if at all.
+     * @protected
+     */
     protected abstract readProperties(readStyle: ReadStyle): Properties;
 }

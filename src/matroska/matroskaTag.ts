@@ -4,7 +4,8 @@ import {Guards} from "../utils";
 
 /**
  * Abstraction on that represents the combination of a Matroska simple tag and a tag target.
- * @remarks This is different from the tag concept in Matroska. This is a 1:1 relation between
+ * @remarks
+ *     This is different from the tag concept in Matroska. This is a 1:1 relation between
  *     target and value while Matroska tags are 1:many relationship of target to tag. Therefore,
  *     the target must be cloned when constructing >1 tag with the same target.
  */

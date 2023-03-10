@@ -5,6 +5,10 @@ import {CorruptFileError} from "../errors";
 import {Id3v2TagHeader, Id3v2TagHeaderFlags} from "./id3v2TagHeader";
 import {Guards, NumberUtils} from "../utils";
 
+/**
+ * This class provides a representation of an ID3v2 tag footer which can be read from and written
+ * to disk.
+ */
 export default class Id3v2TagFooter {
     /**
      * Identifier used to recognize an ID3v2 footer.
@@ -165,6 +169,9 @@ export default class Id3v2TagFooter {
 
     // #endregion
 
+    /**
+     * Renders the current instance as a raw byte vector.
+     */
     public render(): ByteVector {
         return ByteVector.concatenate(
             Id3v2TagFooter.FILE_IDENTIFIER,

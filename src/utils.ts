@@ -69,7 +69,7 @@ export class Guards {
 
     /**
      * Throws if the provided value is not a safe, integer. Use this method instead of
-     * {@see Guards.int()} if validating an argument for use in file manipulation.
+     * {@link Guards.int()} if validating an argument for use in file manipulation.
      * @param value Value to validate
      * @param name Name of the parameter in calling function
      */
@@ -81,7 +81,7 @@ export class Guards {
 
     /**
      * Throws if the provided value is not a safe, positive integer. Use this method instead of
-     * {@see Guards.uint()} if validating an argument for use in file manipulation.
+     * {@link Guards.uint()} if validating an argument for use in file manipulation.
      * @param value Value to validate
      * @param name Name of the parameter in calling function
      */

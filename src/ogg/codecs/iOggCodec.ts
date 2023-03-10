@@ -14,14 +14,15 @@ export default interface IOggCodec extends ICodec {
     /**
      * Reads an Ogg packet that has been encountered in the stream, looking for the comment data.
      * @param packet Packet to read
-     * @returns boolean `true` if the codec has read all the necessary packets for the stream and
+     * @returns
+     *     `true` if the codec has read all the necessary packets for the stream and
      *     does not need to be called again,
      */
     readPacket(packet: ByteVector): boolean;
 
     /**
      * Sets the file offset information necessary for calculating the duration of the stream. Once
-     * called, the duration can be accessed by calling {@see ICodec.durationMilliseconds}.
+     * called, the duration can be accessed by calling {@link ICodec.durationMilliseconds}.
      * @param firstGranularPosition First granular position of the stream
      * @param lastGranularPosition Last granular position of the stream
      */

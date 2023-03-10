@@ -2,7 +2,7 @@
 
 # Class: Id3v2PlayCountFrame
 
-This class extends {@link Frame} implementing support for ID3v2 play count (PCNT) frames.
+This class extends Frame implementing support for ID3v2 play count (PCNT) frames.
 
 ## Hierarchy
 
@@ -48,7 +48,7 @@ Gets the encryption ID applied to the current instance.
 
 `number`
 
-number Value containing the encryption identifier for the current instance or
+Value containing the encryption identifier for the current instance or
     `undefined` if not set.
 
 #### Inherited from
@@ -63,14 +63,11 @@ Sets the encryption ID applied to the current instance.
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `value` | `number` | Value containing the encryption identifier for the current instance. Must be an     8-bit unsigned integer. Setting to `undefined` will remove the encryption header and ID |
+| `value` | `number` | Value containing the encryption identifier for the current instance. Must be an 8-bit unsigned integer. Setting to `undefined` will remove the encryption header and ID |
 
 #### Returns
 
 `void`
-
-number Value containing the encryption identifier for the current instance or
-    `undefined` if not set.
 
 #### Inherited from
 
@@ -95,8 +92,8 @@ Frame.flags
 • `set` **flags**(`value`): `void`
 
 Sets the frame flags applied to the current instance.
-If the value includes either [Id3v2FrameFlags.Encryption](../enums/Id3v2FrameFlags.md#encryption) or
-[Id3v2FrameFlags.Compression](../enums/Id3v2FrameFlags.md#compression), [render](Id3v2PlayCountFrame.md#render) will throw.
+If the value includes either [Encryption](../enums/Id3v2FrameFlags.md#encryption) or
+[Compression](../enums/Id3v2FrameFlags.md#compression), [render](Id3v2PlayCountFrame.md#render) will throw.
 
 #### Parameters
 
@@ -118,7 +115,7 @@ ___
 
 • `get` **frameClassType**(): [`Id3v2FrameClassType`](../enums/Id3v2FrameClassType.md)
 
-**`inheritdoc`**
+Gets a flag indicating which type of frame the current instance is.
 
 #### Returns
 
@@ -140,7 +137,7 @@ Gets the frame ID for the current instance.
 
 [`Id3v2FrameIdentifier`](Id3v2FrameIdentifier.md)
 
-FrameIdentifier Object representing of the identifier of the frame
+Object representing of the identifier of the frame
 
 #### Inherited from
 
@@ -158,7 +155,7 @@ Gets the grouping ID applied to the current instance.
 
 `number`
 
-number Value containing the grouping identifier for the current instance, or
+Value containing the grouping identifier for the current instance, or
     `undefined` if not set.
 
 #### Inherited from
@@ -173,14 +170,11 @@ Sets the grouping ID applied to the current instance.
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `value` | `number` | Grouping identifier for the current instance. Must be a 8-bit unsigned integer.     Setting to `undefined` will remove the grouping identity header and ID |
+| `value` | `number` | Grouping identifier for the current instance. Must be a 8-bit unsigned integer. Setting to `undefined` will remove the grouping identity header and ID |
 
 #### Returns
 
 `void`
-
-number Value containing the grouping identifier for the current instance, or
-    `undefined` if not set.
 
 #### Inherited from
 
@@ -300,7 +294,7 @@ grouping ID.
 | `frameData` | [`ByteVector`](ByteVector.md) | Raw frame data |
 | `offset` | `number` | Index at which the data is contained |
 | `version` | `number` | Version of the ID3v2 tag the data was originally encoded with |
-| `dataIncludesHeader` | `boolean` | `true` if `frameData` includes the header, `false`     otherwise |
+| `dataIncludesHeader` | `boolean` | `true` if `frameData` includes the header, `false` otherwise |
 
 #### Returns
 
@@ -415,8 +409,8 @@ Converts an encoding to be a supported encoding for a specified tag version.
 
 [`StringType`](../enums/StringType.md)
 
-StringType Value containing the correct encoding to use, based on
-    [Id3v2Settings.forceDefaultEncoding](Id3v2Settings.md#forcedefaultencoding) and what is supported by
+Value containing the correct encoding to use, based on
+    [forceDefaultEncoding](Id3v2Settings.md#forcedefaultencoding) and what is supported by
     `version`
 
 #### Inherited from
@@ -449,7 +443,7 @@ ID3v2 version starting at a specified offset.
 | Name | Type | Description |
 | :------ | :------ | :------ |
 | `data` | [`ByteVector`](ByteVector.md) | Raw representation of the new frame. |
-| `offset` | `number` | Offset into `data` where the frame actually begins. Must be a     positive, safe integer |
+| `offset` | `number` | Offset into `data` where the frame actually begins. Must be a positive, safe integer |
 | `header` | [`Id3v2FrameHeader`](Id3v2FrameHeader.md) | Header of the frame found at `offset` in the data |
 | `version` | `number` | ID3v2 version the frame was originally encoded with |
 

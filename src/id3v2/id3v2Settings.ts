@@ -1,6 +1,10 @@
 import {StringType} from "../byteVector";
 import {Guards} from "../utils";
 
+/**
+ * This class contains settings related to ID3v2 tag operations. Open files will need to be
+ * re-read in order for changes to take effect.
+ */
 export default class Id3v2Settings {
     private static _defaultEncoding: StringType = StringType.UTF8;
     private static _defaultVersion: number = 3;
@@ -101,7 +105,8 @@ export default class Id3v2Settings {
      * If `true`, the TCO/TCON frame value will be separated by `;` and/or `/`, empty values will
      * be thrown out. If `false`, the TCO/TCON frame value will be returned as-is (after processing
      * standard, escaped numeric genres).
-     * @remarks The official ID3v2 standard makes no mention of separators for genres, one of the
+     * @remarks
+     *     The official ID3v2 standard makes no mention of separators for genres, one of the
      *     inherent flaws fixed in ID3v2.4. However, various media players, as well as the original
      *     implementation of TagLib#, support using `;` and `/` to separate genres. In order to
      *     maintain compatibility, this functionality is preserved, but can be disabled by setting
@@ -115,7 +120,8 @@ export default class Id3v2Settings {
      * If `true`, the TCO/TCON frame value will be separated by `;` and/or `/`, empty values will
      * be thrown out. If `false`, the TCO/TCON frame value will be returned as-is (after processing
      * standard, escaped numeric genres).
-     * @remarks The official ID3v2 standard makes no mention of separators for genres, one of the
+     * @remarks
+     *     The official ID3v2 standard makes no mention of separators for genres, one of the
      *     inherent flaws fixed in ID3v2.4. However, various media players, as well as the original
      *     implementation of TagLib#, support using `;` and `/` to separate genres. In order to
      *     maintain compatibility, this functionality is preserved, but can be disabled by setting
@@ -129,7 +135,8 @@ export default class Id3v2Settings {
      * Gets whether or not to use non-standard numeric genre parsing on ID3v2.2 and ID3v2.3. If
      * `true`, a purely numeric TCO/TCON frame value will attempt to be parsed as a numeric genre.
      * If `false`, the TCO/TCON frame value will be returned without parsing purely numeric genres.
-     * @remarks The official ID3v2.2/ID3v2.3 standard only supports numeric genres if they are
+     * @remarks
+     *     The official ID3v2.2/ID3v2.3 standard only supports numeric genres if they are
      *     escaped inside parenthesis (eg, `(12)`). However, the original implementation of TagLib#
      *     allowed ID3v2.2 and ID3v2.3 tags to parse unescaped numeric genres. In order to maintain
      *     compatibility, this functionality is preserved, but can be disabled by setting
@@ -142,7 +149,8 @@ export default class Id3v2Settings {
      * Sets whether or not to use non-standard numeric genre parsing on ID3v2.2 and ID3v2.3. If
      * `true`, a purely numeric TCO/TCON frame value will attempt to be parsed as a numeric genre.
      * If `false`, the TCO/TCON frame value will be returned without parsing purely numeric genres.
-     * @remarks The official ID3v2.2/ID3v2.3 standard only supports numeric genres if they are
+     * @remarks
+     *     The official ID3v2.2/ID3v2.3 standard only supports numeric genres if they are
      *     escaped inside parenthesis (eg, `(12)`). However, the original implementation of TagLib#
      *     allowed ID3v2.2 and ID3v2.3 tags to parse unescaped numeric genres. In order to maintain
      *     compatibility, this functionality is preserved, but can be disabled by setting

@@ -3,8 +3,8 @@
 # Interface: IAudioCodec
 
 Interface that inherits the common codec information and adds audio-specific information.
-When dealing with an [ICodec](ICodec.md), if [ICodec.mediaTypes](ICodec.md#mediatypes) contains
-[MediaTypes.Audio](../enums/MediaTypes.md#audio), it is safe to assume that the object also inherits [IAudioCodec](IAudioCodec.md)
+When dealing with an [ICodec](ICodec.md), if [mediaTypes](ICodec.md#mediatypes) contains
+[Audio](../enums/MediaTypes.md#audio), it is safe to assume that the object also inherits [IAudioCodec](IAudioCodec.md)
 and can be recast without issue.
 
 ## Hierarchy
@@ -76,7 +76,9 @@ ___
 
 Duration of the media in milliseconds represented by the current instance.
 
-**`todo`** Ensure milliseconds is the right way to interpret this field
+**`TODO`**
+
+Ensure milliseconds is the right way to interpret this field
 
 #### Inherited from
 

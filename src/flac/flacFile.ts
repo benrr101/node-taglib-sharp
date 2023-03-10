@@ -18,13 +18,17 @@ import {NumberUtils} from "../utils";
 
 /**
  * This class extends {@link File} to provide tagging and properties for FLAC audio files.
- * @remarks A FLAC file is usually tagged using a Xiph comment block with pictures stored in
+ * @remarks
+ *     A FLAC file is usually tagged using a Xiph comment block with pictures stored in
  *     special FLAC picture blocks. Additionally, like many other file types, ID3v1, ID3v2, and APE
  *     tags can be added to used to tag a FLAC file by storing them at the beginning or end of the
  *     file. To control the type of tags that are created by default when opening the file, see
  *     {@link FlacFileSettings}.
  */
 export default class FlacFile extends File implements ISandwichFile {
+    /**
+     * Magic string that indicates the file is a FLAC file.
+     */
     public static readonly FILE_IDENTIFIER = ByteVector.fromString("fLaC", StringType.Latin1).makeReadOnly();
 
     private readonly _properties: Properties;

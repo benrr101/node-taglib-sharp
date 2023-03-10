@@ -5,6 +5,9 @@ import {CorruptFileError} from "../../errors";
 import {ICodec} from "../../properties";
 import {Guards} from "../../utils";
 
+/**
+ * IDs for a AVI stream types.
+ */
 export enum AviStreamType {
     /** Audio Stream */
     /* auds */ AudioStream = 0x73647561,
@@ -24,8 +27,17 @@ export enum AviStreamType {
  * stream list.
  */
 export class AviStream {
+    /**
+     * ID of a format chunk.
+     */
     public static readonly FORMAT_CHUNK_ID = "strf";
+    /**
+     * ID of a header chunk.
+     */
     public static readonly HEADER_CHUNK_ID = "strh";
+    /**
+     * ID of a list chunk.
+     */
     public static readonly LIST_TYPE = "strl";
 
     private readonly _bottom: number;
@@ -162,16 +174,18 @@ export class AviStream {
     /**
      * Gets an indicator of the quality of the data in the stream. Quality is represented as a
      * number between `0` and `10000`. -1 indicates the default quality values should be used.
-     * @remarks For compressed data, this typically represents the value of the quality parameter
+     * @remarks
+     *     For compressed data, this typically represents the value of the quality parameter
      *     passed to the compression software.
      */
     public get quality(): number { return this._quality; }
 
     /**
-     * Used with {@see scale} to specify the time scale that this stream will use.
-     * @remarks Dividing {@see rate} by this gives the number of samples per second. For video
+     * Used with {@link scale} to specify the timescale that this stream will use.
+     * @remarks
+     *     Dividing {@link rate} by this gives the number of samples per second. For video
      *     streams, this is the frame rate. For audio streams, this rate corresponds to the time
-     *     needed to play {@see RiffWaveFormatEx.blockAlign} bytes of audio. For PCM audio this is
+     *     needed to play {@link RiffWaveFormatEx.blockAlign} bytes of audio. For PCM audio this is
      *     just the sample rate.
      */
     public get rate(): number { return this._rate; }
@@ -188,8 +202,9 @@ export class AviStream {
     public get sampleSize(): number { return this._sampleSize; }
 
     /**
-     * Used with {@see rate} to specify the time scale that this stream will use.
-     * @remarks Dividing {@see rate} by this gives the number of samples per second. For video
+     * Used with {@link rate} to specify the timescale that this stream will use.
+     * @remarks
+     *     Dividing {@link rate} by this gives the number of samples per second. For video
      *     streams, this is the frame rate. For audio streams, this rate corresponds to the time
      *     needed to play `nBlockAlign` bytes of audio. For PCM audio is just the sample rate.
      */
@@ -198,14 +213,16 @@ export class AviStream {
     /**
      * Gets the starting time for this stream. The units are defined by `rate` and `scale` in the
      * main file header.
-     * @remarks Usually this is zero, but it can specify a delay time for a stream that does not
+     * @remarks
+     *     Usually this is zero, but it can specify a delay time for a stream that does not
      *     start concurrently with the file.
      */
     public get start(): number { return this._start; }
 
     /**
      * Gets how large of a buffer should be used to read this stream.
-     * @remarks Typically, this contains a value corresponding to the largest chunk present in the
+     * @remarks
+     *     Typically, this contains a value corresponding to the largest chunk present in the
      *     stream.
      */
     public get suggestedSampleSize(): number { return this._suggestedBufferSize; }

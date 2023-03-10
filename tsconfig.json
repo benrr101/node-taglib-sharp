@@ -20,8 +20,12 @@
   "typedocOptions": {
     "entryPoints": ["./src/index.ts"],
     "out": "docs/",
+    "excludeInternal": true,
     "excludePrivate": true,
     "disableSources": true,
-    "listInvalidSymbolLinks": true
+    "validation": {
+      "invalidLink": true,
+      "notDocumented": true
+    }
   }
 }

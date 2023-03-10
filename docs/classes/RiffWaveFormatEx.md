@@ -55,11 +55,20 @@ data.
 
 ▪ `Static` `Readonly` **CHUNK\_FOURCC**: ``"fmt "``
 
+FOURCC code that indicates the chunk is a RiffWaveFormatEx object.
+
 ___
 
 ### WAVE\_FORMAT\_TAGS
 
 ▪ `Static` `Readonly` **WAVE\_FORMAT\_TAGS**: `Map`<`number`, `string`\>
+
+List of well-known wave format tags. This is similar to FOURCC codes but for audio codecs.
+
+**`Remarks`**
+
+This list was put together from the Windows 10 SDK mmreg.h header file
+    If any of these descriptions are wrong or out of date, please open a PR.
 
 ## Accessors
 
@@ -130,7 +139,9 @@ ___
 
 Number of bits per sample in the audio represented by the current instance.
 
-**`remarks`** Some compression schemes cannot define a value for this field, so it may be `0`.
+**`Remarks`**
+
+Some compression schemes cannot define a value for this field, so it may be `0`.
     This is especially common for MP3 audio embedded in an AVI.
 
 #### Returns
@@ -148,7 +159,7 @@ ___
 • `get` **blockAlign**(): `number`
 
 Gets the block alignment, in bytes. Block alignment is the minimum atomic unit of data for
-{@see formatTag} format type.
+[formatTag](RiffWaveFormatEx.md#formattag) format type.
 
 #### Returns
 
@@ -178,7 +189,9 @@ ___
 
 Duration of the media in milliseconds represented by the current instance.
 
-**`remarks`** Duration cannot be found from this object
+**`Remarks`**
+
+Duration cannot be found from this object
 
 #### Returns
 
@@ -196,7 +209,9 @@ ___
 
 Gets the format tag of the audio described by the current instance.
 
-**`remarks`** Format tags indicate the codec of the audio contained in the file and are
+**`Remarks`**
+
+Format tags indicate the codec of the audio contained in the file and are
     contained in a Microsoft registry. For a description of the format, use
     [description](RiffWaveFormatEx.md#description). The complete list can be found in the Win32 mmreg.h SDK header file
 
@@ -212,9 +227,11 @@ ___
 
 Types of media represented by the current instance, bitwise combined.
 
-**`remarks`** Technically any audio format can be encapsulated with a RIFF header since RIFF is
+**`Remarks`**
+
+Technically any audio format can be encapsulated with a RIFF header since RIFF is
     simply a "Resource Interchange File Format". It is entirely possible to encapsulate a
-    lossy format (and indeed, lossy WMA must be encapsulated) with a RIFF header. Therefore
+    lossy format (and indeed, lossy WMA must be encapsulated) with a RIFF header. Therefore,
     this designation as lossless is somewhat misleading and checking [description](RiffWaveFormatEx.md#description) is
     necessary to verify the codec being used is lossless or not.
 

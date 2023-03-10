@@ -7,7 +7,7 @@ to disk.
 
 ## Hierarchy
 
-- `default`
+- [`AsfBaseObject`](AsfBaseObject.md)
 
   ↳ **`AsfHeaderObject`**
 
@@ -37,19 +37,21 @@ to disk.
 
 ### children
 
-• `get` **children**(): `default`[]
+• `get` **children**(): [`AsfBaseObject`](AsfBaseObject.md)[]
 
 Gets that child objects of this instance.
 
-**`remarks`** The returned array is a copy of the array of children inside this object. Any
+**`Remarks`**
+
+The returned array is a copy of the array of children inside this object. Any
     changes to this array will not be reflected in the object.
 
     Only certain objects are valid inside a header object. Any objects that are not valid or
-    not supported are read as {@link UnknownObject}.
+    not supported are read as UnknownObject.
 
 #### Returns
 
-`default`[]
+[`AsfBaseObject`](AsfBaseObject.md)[]
 
 ___
 
@@ -63,20 +65,20 @@ Gets the header extension object contained in the current instance.
 
 [`AsfHeaderExtensionObject`](AsfHeaderExtensionObject.md)
 
-HeaderExtensionObject Header extension contained in this instance, if it exists.
+Header extension contained in this instance, if it exists.
     `undefined` is returned if it doesn't exist
 
 ___
 
 ### guid
 
-• `get` **guid**(): `default`
+• `get` **guid**(): [`UuidWrapper`](UuidWrapper.md)
 
 Gets the GUID that identifies the current instance.
 
 #### Returns
 
-`default`
+[`UuidWrapper`](UuidWrapper.md)
 
 #### Inherited from
 
@@ -94,20 +96,20 @@ Gets whether or not the current instance contains either type of content descrip
 
 `boolean`
 
-boolean `true` if a content description object or extended content description
+`true` if a content description object or extended content description
     object exists in this instance. `false` otherwise
 
 ___
 
 ### objectType
 
-• `get` **objectType**(): `ObjectType`
+• `get` **objectType**(): [`AsfObjectType`](../enums/AsfObjectType.md)
 
-**`inheritdoc`**
+Gets the type of the object for easy comparison.
 
 #### Returns
 
-`ObjectType`
+[`AsfObjectType`](../enums/AsfObjectType.md)
 
 #### Overrides
 
@@ -153,7 +155,7 @@ Adds a unique child object to the current instance, replacing an existing child 
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `obj` | `default` | Object to add to the current instance |
+| `obj` | [`AsfBaseObject`](AsfBaseObject.md) | Object to add to the current instance |
 
 #### Returns
 
@@ -181,7 +183,7 @@ file.
 
 #### Inherited from
 
-BaseObject.initializeFromFile
+[AsfBaseObject](AsfBaseObject.md).[initializeFromFile](AsfBaseObject.md#initializefromfile)
 
 ___
 
@@ -195,7 +197,7 @@ Initializes a new instance with a specified GUID.
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `guid` | `default` | GUID to use for the new instance. |
+| `guid` | [`UuidWrapper`](UuidWrapper.md) | GUID to use for the new instance. |
 
 #### Returns
 
@@ -203,7 +205,7 @@ Initializes a new instance with a specified GUID.
 
 #### Inherited from
 
-BaseObject.initializeFromGuid
+[AsfBaseObject](AsfBaseObject.md).[initializeFromGuid](AsfBaseObject.md#initializefromguid)
 
 ___
 
@@ -223,7 +225,7 @@ ___
 
 ▸ **render**(): [`ByteVector`](ByteVector.md)
 
-**`inheritdoc`**
+Renders the current instance as a raw ASF object.
 
 #### Returns
 
@@ -231,7 +233,7 @@ ___
 
 #### Overrides
 
-BaseObject.render
+[AsfBaseObject](AsfBaseObject.md).[render](AsfBaseObject.md#render)
 
 ___
 
@@ -241,7 +243,9 @@ ___
 
 Renders the current instance as a raw ASF object containing the specified data.
 
-**`remarks`** Child classes implementing {@see render()} should render their contents and then
+**`Remarks`**
+
+Child classes implementing [()](AsfHeaderObject.md#render) should render their contents and then
     send the data through this method to produce the final output.
 
 #### Parameters
@@ -256,7 +260,7 @@ Renders the current instance as a raw ASF object containing the specified data.
 
 #### Inherited from
 
-BaseObject.renderInternal
+[AsfBaseObject](AsfBaseObject.md).[renderInternal](AsfBaseObject.md#renderinternal)
 
 ___
 

@@ -56,6 +56,10 @@ export class SynchronizedText {
         return new SynchronizedText(this.time, this.text);
     }
 
+    /**
+     * Generates a raw byte representation of the frame for writing to a file.
+     * @param encoding Encoding to use for encoding the text of the frame.
+     */
     public render(encoding: StringType): ByteVector {
         return ByteVector.concatenate(
             ByteVector.fromString(this.text, encoding),
@@ -228,8 +232,7 @@ export class SynchronizedLyricsFrame extends Frame {
      * @param description Description to match
      * @param textType Text type to match
      * @param language Optionally, ISO-639-2 language code to match
-     * @returns SynchronizedLyricsFrame Frame containing the matching user, `undefined` if a match
-     *     was not found
+     * @returns Frame containing the matching user, `undefined` if a match was not found
      */
     public static find(
         frames: SynchronizedLyricsFrame[],
@@ -261,7 +264,7 @@ export class SynchronizedLyricsFrame extends Frame {
      * @param description Description to match
      * @param language ISO-639-2 language code to match
      * @param textType Text type to match
-     * @returns SynchronizedLyricsFrame The matching frame or `undefined` if a match was not found
+     * @returns The matching frame or `undefined` if a match was not found
      */
     public static findPreferred(
         frames: SynchronizedLyricsFrame[],

@@ -7,7 +7,7 @@ written to disk.
 
 ## Hierarchy
 
-- `default`
+- [`AsfBaseObject`](AsfBaseObject.md)
 
   ↳ **`AsfStreamPropertiesObject`**
 
@@ -63,13 +63,13 @@ ___
 
 ### errorCorrectionType
 
-• `get` **errorCorrectionType**(): `default`
+• `get` **errorCorrectionType**(): [`UuidWrapper`](UuidWrapper.md)
 
 Gets the error correction type GUID of the current instance.
 
 #### Returns
 
-`default`
+[`UuidWrapper`](UuidWrapper.md)
 
 ___
 
@@ -79,11 +79,13 @@ ___
 
 Gets the flags that apply to the current instance.
 
-**`remarks`** The `flags` field a 16-bit, double word, defined as follows:
-    -- LSB
-    * Stream number - 7 bits
-    * Reserved - 8 bits
-    * Encrypted content flag - 1 bit
+**`Remarks`**
+
+The `flags` field a 16-bit, double word, defined as follows:
+    * LSB
+      * Stream number - 7 bits
+      * Reserved - 8 bits
+      * Encrypted content flag - 1 bit
 
 #### Returns
 
@@ -93,13 +95,13 @@ ___
 
 ### guid
 
-• `get` **guid**(): `default`
+• `get` **guid**(): [`UuidWrapper`](UuidWrapper.md)
 
 Gets the GUID that identifies the current instance.
 
 #### Returns
 
-`default`
+[`UuidWrapper`](UuidWrapper.md)
 
 #### Inherited from
 
@@ -109,13 +111,13 @@ ___
 
 ### objectType
 
-• `get` **objectType**(): `ObjectType`
+• `get` **objectType**(): [`AsfObjectType`](../enums/AsfObjectType.md)
 
-**`inheritdoc`**
+Gets the type of the object for easy comparison.
 
 #### Returns
 
-`ObjectType`
+[`AsfObjectType`](../enums/AsfObjectType.md)
 
 #### Overrides
 
@@ -153,13 +155,13 @@ ___
 
 ### streamType
 
-• `get` **streamType**(): `default`
+• `get` **streamType**(): [`UuidWrapper`](UuidWrapper.md)
 
 Gets the stream type GUID of the current instance.
 
 #### Returns
 
-`default`
+[`UuidWrapper`](UuidWrapper.md)
 
 ___
 
@@ -181,7 +183,9 @@ ___
 
 Gets the type specific data contained in the current instance.
 
-**`remarks`** The parsed version of this data is available in [codec](AsfStreamPropertiesObject.md#codec).
+**`Remarks`**
+
+The parsed version of this data is available in [codec](AsfStreamPropertiesObject.md#codec).
 
 #### Returns
 
@@ -209,7 +213,7 @@ file.
 
 #### Inherited from
 
-BaseObject.initializeFromFile
+[AsfBaseObject](AsfBaseObject.md).[initializeFromFile](AsfBaseObject.md#initializefromfile)
 
 ___
 
@@ -223,7 +227,7 @@ Initializes a new instance with a specified GUID.
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `guid` | `default` | GUID to use for the new instance. |
+| `guid` | [`UuidWrapper`](UuidWrapper.md) | GUID to use for the new instance. |
 
 #### Returns
 
@@ -231,7 +235,7 @@ Initializes a new instance with a specified GUID.
 
 #### Inherited from
 
-BaseObject.initializeFromGuid
+[AsfBaseObject](AsfBaseObject.md).[initializeFromGuid](AsfBaseObject.md#initializefromguid)
 
 ___
 
@@ -239,7 +243,7 @@ ___
 
 ▸ **render**(): [`ByteVector`](ByteVector.md)
 
-**`inheritdoc`**
+Renders the current instance as a raw ASF object.
 
 #### Returns
 
@@ -247,7 +251,7 @@ ___
 
 #### Overrides
 
-BaseObject.render
+[AsfBaseObject](AsfBaseObject.md).[render](AsfBaseObject.md#render)
 
 ___
 
@@ -257,7 +261,9 @@ ___
 
 Renders the current instance as a raw ASF object containing the specified data.
 
-**`remarks`** Child classes implementing {@see render()} should render their contents and then
+**`Remarks`**
+
+Child classes implementing [()](AsfStreamPropertiesObject.md#render) should render their contents and then
     send the data through this method to produce the final output.
 
 #### Parameters
@@ -272,7 +278,7 @@ Renders the current instance as a raw ASF object containing the specified data.
 
 #### Inherited from
 
-BaseObject.renderInternal
+[AsfBaseObject](AsfBaseObject.md).[renderInternal](AsfBaseObject.md#renderinternal)
 
 ___
 

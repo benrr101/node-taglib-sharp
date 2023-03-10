@@ -2,6 +2,9 @@
 
 # Class: Id3v2FrameHeader
 
+This class provides a representation of an ID3v2 frame header which can be read from and
+written to disk.
+
 ## Table of contents
 
 ### Constructors
@@ -34,8 +37,8 @@ Constructs and initializes a new instance by processing the data for the frame h
 | Name | Type | Default value | Description |
 | :------ | :------ | :------ | :------ |
 | `id` | [`Id3v2FrameIdentifier`](Id3v2FrameIdentifier.md) | `undefined` | Identifier of the frame |
-| `flags` | [`Id3v2FrameFlags`](../enums/Id3v2FrameFlags.md) | `Id3v2FrameFlags.None` | Flags to assign to the frame (if omitted, defaults to     [Id3v2FrameFlags.None](../enums/Id3v2FrameFlags.md#none)) |
-| `frameSize` | `number` | `0` | Size of the frame in bytes, excluding the size of the header (if omitted,     defaults to 0) |
+| `flags` | [`Id3v2FrameFlags`](../enums/Id3v2FrameFlags.md) | `Id3v2FrameFlags.None` | Flags to assign to the frame (if omitted, defaults to [None](../enums/Id3v2FrameFlags.md#none)) |
+| `frameSize` | `number` | `0` | Size of the frame in bytes, excluding the size of the header (if omitted, defaults to 0) |
 
 ## Accessors
 
@@ -147,7 +150,7 @@ header data of a specified version.
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `data` | [`ByteVector`](ByteVector.md) | Raw data to build the new instance from.     If the data size is smaller than the size of a full header, the data is just treated as     a frame identifier and the remaining values are zeroed. |
+| `data` | [`ByteVector`](ByteVector.md) | Raw data to build the new instance from. If the data size is smaller than the size of a full header, the data is just treated as a frame identifier and the remaining values are zeroed. |
 | `version` | `number` | ID3v2 version with which the data in `data` was encoded. |
 
 #### Returns
@@ -160,11 +163,14 @@ ___
 
 ▸ `Static` **fromFrameIdentifier**(`id`): [`Id3v2FrameHeader`](Id3v2FrameHeader.md)
 
+Constructs and initializes a new, blank frame header of size 0, with the
+provided frame identifier.
+
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `id` | [`Id3v2FrameIdentifier`](Id3v2FrameIdentifier.md) |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `id` | [`Id3v2FrameIdentifier`](Id3v2FrameIdentifier.md) | Identifier for the frame |
 
 #### Returns
 

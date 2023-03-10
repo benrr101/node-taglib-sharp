@@ -145,7 +145,8 @@ export default class XiphPicture implements IPicture, ILazy {
 
     /**
      * @inheritDoc
-     * @remarks This value is not stored in a XIPH picture and is only available if copied from
+     * @remarks
+     *     This value is not stored in a XIPH picture and is only available if copied from
      *     another picture.
      */
     public get filename(): string {

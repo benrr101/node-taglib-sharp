@@ -10,7 +10,7 @@ needed. This saves time and memory if the picture loading is not required.
 ## Implements
 
 - [`IPicture`](../interfaces/IPicture.md)
-- `ILazy`
+- [`ILazy`](../interfaces/ILazy.md)
 
 ## Table of contents
 
@@ -138,7 +138,7 @@ ___
 
 • `get` **isLoaded**(): `boolean`
 
-**`inheritdoc`**
+Gets whether the object has been loaded.
 
 #### Returns
 
@@ -146,7 +146,7 @@ ___
 
 #### Implementation of
 
-ILazy.isLoaded
+[ILazy](../interfaces/ILazy.md).[isLoaded](../interfaces/ILazy.md#isloaded)
 
 ___
 
@@ -222,7 +222,7 @@ Gets and sets the type of the content visible in the picture stored in the curre
 
 ▸ **load**(): `void`
 
-**`inheritdoc`**
+Loads the object.
 
 #### Returns
 
@@ -230,7 +230,7 @@ Gets and sets the type of the content visible in the picture stored in the curre
 
 #### Implementation of
 
-ILazy.load
+[ILazy](../interfaces/ILazy.md).[load](../interfaces/ILazy.md#load)
 
 ___
 
@@ -263,9 +263,9 @@ Constructs a new instance from a file abstraction. The content will be lazily lo
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `file` | `IFileAbstraction` | File abstraction containing the file to read |
+| `file` | [`IFileAbstraction`](../interfaces/IFileAbstraction.md) | File abstraction containing the file to read |
 | `offset` | `number` | Index into the file where the picture is located, must be a 32-bit integer |
-| `size?` | `number` | Optionally, size of the picture in bytes. If omitted, all bytes of file will be     read when lazily loaded. Must be a 32-bit integer or `undefined` |
+| `size?` | `number` | Optionally, size of the picture in bytes. If omitted, all bytes of file will be read when lazily loaded. Must be a 32-bit integer or `undefined` |
 
 #### Returns
 

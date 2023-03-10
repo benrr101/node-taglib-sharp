@@ -6,7 +6,7 @@ Represents a FLAC metadata block
 
 ## Implements
 
-- `ILazy`
+- [`ILazy`](../interfaces/ILazy.md)
 
 ## Table of contents
 
@@ -37,6 +37,8 @@ Represents a FLAC metadata block
 
 ▪ `Static` `Readonly` **HEADER\_SIZE**: ``4``
 
+Length of a FLAC block header in bytes.
+
 ## Accessors
 
 ### blockStart
@@ -49,23 +51,6 @@ constructed directly from data.
 #### Returns
 
 `number`
-
-• `set` **blockStart**(`value`): `void`
-
-Offset into the file where the block begins. This is `undefined` if the instance is
-constructed directly from data.
-
-**`internal`**
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `value` | `number` |
-
-#### Returns
-
-`void`
 
 ___
 
@@ -114,7 +99,7 @@ ___
 
 • `get` **isLoaded**(): `boolean`
 
-**`inheritdoc`**
+Gets whether the object has been loaded.
 
 #### Returns
 
@@ -122,7 +107,7 @@ ___
 
 #### Implementation of
 
-ILazy.isLoaded
+[ILazy](../interfaces/ILazy.md).[isLoaded](../interfaces/ILazy.md#isloaded)
 
 ___
 
@@ -141,13 +126,13 @@ ___
 
 ### type
 
-• `get` **type**(): `FlacBlockType`
+• `get` **type**(): [`FlacBlockType`](../enums/FlacBlockType.md)
 
 Gets the type of data contained in the current instance.
 
 #### Returns
 
-`FlacBlockType`
+[`FlacBlockType`](../enums/FlacBlockType.md)
 
 ## Methods
 
@@ -155,7 +140,7 @@ Gets the type of data contained in the current instance.
 
 ▸ **load**(): `void`
 
-**`inheritdoc`**
+Loads the object.
 
 #### Returns
 
@@ -163,7 +148,7 @@ Gets the type of data contained in the current instance.
 
 #### Implementation of
 
-ILazy.load
+[ILazy](../interfaces/ILazy.md).[load](../interfaces/ILazy.md#load)
 
 ___
 
@@ -196,7 +181,7 @@ contained in the block.
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `type` | `FlacBlockType` | Type of the block to construct |
+| `type` | [`FlacBlockType`](../enums/FlacBlockType.md) | Type of the block to construct |
 | `data` | [`ByteVector`](ByteVector.md) | Data the block will contain |
 
 #### Returns

@@ -12,7 +12,8 @@ export class MatroskaIds
 
     /**
      * Identifier for a Matroska CRC-32 EBML element.
-     * @remarks The CRC is computed on all the data of the Master-element it's in. The CRC Element
+     * @remarks
+     *     The CRC is computed on all the data of the Master-element it's in. The CRC Element
      *     should be the first in its parent master for easier reading. All level 1 Elements
      *     should include a CRC-32. The CRC in use is the IEEE CRC32 Little Endian.
      */

@@ -24,7 +24,7 @@ export enum FilePropertiesFlags {
 }
 
 /**
- * Extends {@see BaseObject} to provide a representation of an ASF file properties object. The
+ * Extends {@link BaseObject} to provide a representation of an ASF file properties object. The
  * file properties object defines the global characteristics of the combined digital media streams
  * found within the Data object.
  */
@@ -53,6 +53,11 @@ export default class FilePropertiesObject extends BaseObject {
         super();
     }
 
+    /**
+     * Constructs a new instance by reading from a file.
+     * @param file File to read the file properties object from
+     * @param position Offset into the file where the object begins
+     */
     public static fromFile(file: File, position: number): FilePropertiesObject {
         const instance = new FilePropertiesObject();
         instance.initializeFromFile(file, position);
@@ -113,7 +118,8 @@ export default class FilePropertiesObject extends BaseObject {
 
     /**
      * Gets whether the file described by the current instance is broadcast or seekable.
-     * @remarks This attribute applies to presentation descriptors for ASF content. The value is a
+     * @remarks
+     *     This attribute applies to presentation descriptors for ASF content. The value is a
      *     bitwise OR of the flags in {@link FilePropertiesFlags}.
      *     * If {@link FilePropertiesFlags.Broadcast} is set, the following properties are not
      *       valid

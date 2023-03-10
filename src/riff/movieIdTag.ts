@@ -7,6 +7,9 @@ import {Guards} from "../utils";
  * Provides support for reading and writing MovieID tags.
  */
 export default class MovieIdTag extends RiffListTag {
+    /**
+     * List type for a MovieID tag list chunk.
+     */
     public static readonly LIST_TYPE = "MID ";
 
     // #region Constructors

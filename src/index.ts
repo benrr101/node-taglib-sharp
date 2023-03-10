@@ -3,7 +3,10 @@
 export {ByteVector, StringType} from "./byteVector";
 export {CorruptFileError, NotImplementedError} from "./errors";
 export {File, FileAccessMode, FileTypeConstructor, FileTypeResolver, ReadStyle} from "./file";
-export {LocalFileAbstraction} from "./fileAbstraction";
+export {IDisposable, ILazy} from "./interfaces";
+export {IFileAbstraction, LocalFileAbstraction} from "./fileAbstraction";
+export {IStream, SeekOrigin} from "./stream";
+export {default as UuidWrapper} from "./uuidWrapper";
 
 // Base Tag Classes
 export {default as CombinedTag} from "./combinedTag";
@@ -11,6 +14,12 @@ export {default as Genres} from "./genres";
 export {IPicture, Picture, PictureLazy, PictureType} from "./picture";
 export {ICodec, IAudioCodec, ILosslessAudioCodec, IVideoCodec, IPhotoCodec, MediaTypes, Properties} from "./properties";
 export {Tag, TagTypes} from "./tag";
+
+// Sandwich tag files
+export {default as EndTag} from "./sandwich/endTag"
+export {default as SandwichFile, ISandwichFile} from "./sandwich/sandwichFile";
+export {default as SandwichTag} from "./sandwich/sandwichTag";
+export {default as StartTag} from "./sandwich/startTag";
 
 // AAC /////////////////////////////////////////////////////////////////////
 export {default as AacFile} from "./aac/aacFile";
@@ -23,14 +32,20 @@ export {default as AiffFile} from "./aiff/aiffFile";
 export {default as ApeFile} from "./ape/apeFile";
 export {default as ApeFileSettings} from "./ape/apeFileSettings";
 export {default as ApeTag} from "./ape/apeTag";
+export {ApeTagItem, ApeTagItemType} from "./ape/apeTagItem";
 
 // ASF /////////////////////////////////////////////////////////////////////
 export {default as AsfFile} from "./asf/asfFile";
 export {default as AsfTag} from "./asf/asfTag";
+export {ObjectType as AsfObjectType} from "./asf/constants";
 
 // Objects
+export {default as AsfBaseObject} from "./asf/objects/baseObject";
 export {default as AsfContentDescriptionObject} from "./asf/objects/contentDescriptionObject";
-export {DataType as AsfObjectDataType} from "./asf/objects/descriptorBase";
+export {
+    DataType as AsfObjectDataType,
+    DescriptorValue as AsfDescriptorValue
+} from "./asf/objects/descriptorBase";
 export {
     ContentDescriptor as AsfContentDescriptor,
     ExtendedContentDescriptionObject as AsfExtendedContentDescriptionObject
@@ -47,7 +62,7 @@ export { default as AsfStreamPropertiesObject } from "./asf/objects/streamProper
 export { default as AsfUnknownObject } from "./asf/objects/unknownObject";
 
 // FLAC ////////////////////////////////////////////////////////////////////
-export {FlacBlock} from "./flac/flacBlock";
+export {FlacBlock, FlacBlockType} from "./flac/flacBlock";
 export {default as FlacFile} from "./flac/flacFile";
 export {default as FlacFileSettings} from "./flac/flacFileSettings";
 export {default as FlacTag} from "./flac/flacTag";
@@ -57,7 +72,6 @@ export {default as Id3v1Tag} from "./id3v1/id3v1Tag";
 
 // ID3v2 ///////////////////////////////////////////////////////////////////
 export {default as Id3v2ExtendedHeader} from "./id3v2/id3v2ExtendedHeader";
-export {default as Id3v2FrameFactory} from "./id3v2/frames/frameFactory";
 export {
     FrameIdentifier as Id3v2FrameIdentifier,
     FrameIdentifiers as Id3v2FrameIdentifiers,
@@ -83,6 +97,10 @@ export {
     Frame as Id3v2Frame,
     FrameClassType as Id3v2FrameClassType
 } from "./id3v2/frames/frame";
+export {
+    default as Id3v2FrameFactory,
+    FrameCreator as Id3v2FrameCreator
+} from "./id3v2/frames/frameFactory";
 export {Id3v2FrameFlags, Id3v2FrameHeader} from "./id3v2/frames/frameHeader";
 export {default as Id3v2MusicCdIdentifierFrame} from "./id3v2/frames/musicCdIdentifierFrame";
 export {default as Id3v2PlayCountFrame} from "./id3v2/frames/playCountFrame";
@@ -104,7 +122,7 @@ export {
 } from "./id3v2/frames/textInformationFrame";
 export {default as Id3v2UniqueFileIdentifierFrame} from "./id3v2/frames/uniqueFileIdentifierFrame";
 export {default as Id3v2UnknownFrame} from "./id3v2/frames/unknownFrame";
-export {default as Id3v2UnsynchronizedFrame} from "./id3v2/frames/unsynchronizedLyricsFrame";
+export {default as Id3v2UnsynchronizedLyricsFrame} from "./id3v2/frames/unsynchronizedLyricsFrame";
 export {
     UrlLinkFrame as Id3v2UrlLinkFrame,
     UserUrlLinkFrame as Id3v2UserUrlLinkFrame
@@ -130,7 +148,11 @@ export {default as OggFile} from "./ogg/oggFile";
 export {default as OggFileSettings} from "./ogg/oggFileSettings";
 export {default as OggTag} from "./ogg/oggTag";
 
-export {default as OggCodecFactory} from "./ogg/codecs/codecFactory";
+export {
+    default as OggCodecFactory,
+    CodecProvider as OggCodecProvider
+} from "./ogg/codecs/codecFactory";
+export {default as IOggCodec} from "./ogg/codecs/iOggCodec";
 export {default as OggOpusCodec} from "./ogg/codecs/opus";
 export {default as OggTheoraCodec} from "./ogg/codecs/theora";
 export {default as OggVorbisCodec} from "./ogg/codecs/vorbis";
@@ -143,6 +165,7 @@ export {
 } from "./riff/avi/aviStream";
 export {default as DivxTag} from "./riff/divxTag";
 export {default as InfoTag} from "./riff/infoTag";
+export {default as IRiffChunk} from "./riff/iRiffChunk";
 export {default as MovieIdTag} from "./riff/movieIdTag";
 export {default as RiffBitmapInfoHeader} from "./riff/riffBitmapInfoHeader";
 export {default as RiffList} from "./riff/riffList";
