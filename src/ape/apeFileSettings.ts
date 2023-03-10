@@ -6,7 +6,10 @@ import {NumberUtils} from "../utils";
  * in order for changes to take effect.
  */
 export default class ApeFileSettings {
-    public static readonly SUPPORTED_TAG_TYPES = TagTypes.Ape | TagTypes.Id3v1 | TagTypes.Id3v2;
+    /**
+     * List of tag types that are supported by the APE file.
+     */
+    public static readonly SUPPORTED_TAG_TYPES: TagTypes = TagTypes.Ape | TagTypes.Id3v1 | TagTypes.Id3v2;
 
     private static _defaultTagTypes = TagTypes.Ape;
     private static _preferApeTagAtFileEnd = true;
@@ -55,9 +58,10 @@ export default class ApeFileSettings {
      * ID3v2 tags will be stored at the end of the file. If `false` new ID3v2 tags will be stored
      * at the beginning of the file. Note, this only affects *new* ID3v2 tags. Existing ID3v2 tags
      * will not be moved unless removed and re-added.
-     * * @remarks In order to store an ID3v2 tag at the end of a file, it must have a tag footer. Tag
-     *     footers are only supported in ID3v2.4. If the ID3v2 version is changed, it will cause an
-     *     error to be thrown when the tag is rendered.
+     * @remarks
+     *   In order to store an ID3v2 tag at the end of a file, it must have a tag footer. Tag
+     *   footers are only supported in ID3v2.4. If the ID3v2 version is changed, it will cause an
+     *   error to be thrown when the tag is rendered.
      * @default `false`
      */
     public static get preferId3v2TagAtFileEnd(): boolean { return this._preferId3v2TagAtFileEnd; }
@@ -66,9 +70,10 @@ export default class ApeFileSettings {
      * ID3v2 tags will be stored at the end of the file. If `false` new ID3v2 tags will be stored
      * at the beginning of the file. Note, this only affects *new* ID3v2 tags. Existing ID3v2 tags
      * will not be moved unless removed and re-added.
-     * * @remarks In order to store an ID3v2 tag at the end of a file, it must have a tag footer. Tag
-     *     footers are only supported in ID3v2.4. If the ID3v2 version is changed, it will cause an
-     *     error to be thrown when the tag is rendered.
+     * @remarks
+     *   In order to store an ID3v2 tag at the end of a file, it must have a tag footer. Tag
+     *   footers are only supported in ID3v2.4. If the ID3v2 version is changed, it will cause an
+     *   error to be thrown when the tag is rendered.
      * @default `false`
      */
     public static set preferId3v2TagAtFileEnd(value: boolean) { this._preferId3v2TagAtFileEnd = value; }

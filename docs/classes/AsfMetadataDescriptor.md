@@ -5,7 +5,9 @@
 This class provides a representation of an ASF description record to be used inside a
 MetadataLibraryObject.
 
-**`remarks`** This class can store various types of information. Although [toString](AsfMetadataDescriptor.md#tostring) provides
+**`Remarks`**
+
+This class can store various types of information. Although [toString](AsfMetadataDescriptor.md#tostring) provides
     a representation of all types of values, it is recommended to determine which of the `get*`
     methods to use by accessing [type](AsfMetadataDescriptor.md#type)
 
@@ -39,7 +41,6 @@ MetadataLibraryObject.
 
 - [render](AsfMetadataDescriptor.md#render)
 - [toString](AsfMetadataDescriptor.md#tostring)
-- [fromFile](AsfMetadataDescriptor.md#fromfile)
 
 ## Constructors
 
@@ -47,15 +48,17 @@ MetadataLibraryObject.
 
 • **new AsfMetadataDescriptor**(`languageListIndex`, `streamNumber`, `name`, `type`, `value`)
 
+Constructs and initializes a new instance.
+
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `languageListIndex` | `number` |
-| `streamNumber` | `number` |
-| `name` | `string` |
-| `type` | [`AsfObjectDataType`](../enums/AsfObjectDataType.md) |
-| `value` | `DescriptorValue` |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `languageListIndex` | `number` | Index of the language |
+| `streamNumber` | `number` | Index of the stream |
+| `name` | `string` | Name of the metadata library object |
+| `type` | [`AsfObjectDataType`](../enums/AsfObjectDataType.md) | Datatype of the object |
+| `value` | [`AsfDescriptorValue`](../modules.md#asfdescriptorvalue) | Value to store in the instance |
 
 #### Overrides
 
@@ -73,8 +76,8 @@ Gets the boolean value of the current instance.
 
 `boolean`
 
-boolean Boolean value of the current instance is returned if [type](AsfMetadataDescriptor.md#type) is
-    {@link DataType.Bool}. `undefined` is returned otherwise.
+Boolean value of the current instance is returned if [type](AsfMetadataDescriptor.md#type) is
+    DataType.Bool. `undefined` is returned otherwise.
 
 #### Inherited from
 
@@ -92,8 +95,8 @@ Gets the binary contents of the current instance.
 
 [`ByteVector`](ByteVector.md)
 
-ByteVector Byte contents of the current instance, if [type](AsfMetadataDescriptor.md#type) is
-    {@link DataType.Bytes}. `undefined` is returned otherwise.
+Byte contents of the current instance, if [type](AsfMetadataDescriptor.md#type) is
+    DataType.Bytes. `undefined` is returned otherwise.
 
 #### Inherited from
 
@@ -103,16 +106,16 @@ ___
 
 ### guidValue
 
-• `get` **guidValue**(): `default`
+• `get` **guidValue**(): [`UuidWrapper`](UuidWrapper.md)
 
 Gets the guid contents of the current instance.
 
 #### Returns
 
-`default`
+[`UuidWrapper`](UuidWrapper.md)
 
-UuidWrapper GUID contents of the current instance, if [type](AsfMetadataDescriptor.md#type) is
-    {@link DataType.Guid}. `undefined` is returned otherwise.
+GUID contents of the current instance, if [type](AsfMetadataDescriptor.md#type) is
+    DataType.Guid. `undefined` is returned otherwise.
 
 #### Inherited from
 
@@ -170,8 +173,8 @@ Gets the string contents of the current instance.
 
 `string`
 
-string String contents of the current instance if [type](AsfMetadataDescriptor.md#type) is
-    {@link DataType.Unicode}. `undefined` is returned otherwise.
+String contents of the current instance if [type](AsfMetadataDescriptor.md#type) is
+    DataType.Unicode. `undefined` is returned otherwise.
 
 #### Inherited from
 
@@ -205,8 +208,8 @@ Gets the 32-bit double word contents of the current instance.
 
 `number`
 
-number Double word contents of the current instance, if [type](AsfMetadataDescriptor.md#type) is
-     {@link DataType.DWord}. `undefined` is returned otherwise.
+Double word contents of the current instance, if [type](AsfMetadataDescriptor.md#type) is
+    DataType.DWord. `undefined` is returned otherwise.
 
 #### Inherited from
 
@@ -224,8 +227,8 @@ Gets the 64-bit quad word contents of the current instance.
 
 `bigint`
 
-bigint Quad word contents of the current instance, if [type](AsfMetadataDescriptor.md#type) is
-    {@link DataType.QWord}. `undefined` is returned otherwise.
+Quad word contents of the current instance, if [type](AsfMetadataDescriptor.md#type) is
+    DataType.QWord. `undefined` is returned otherwise.
 
 #### Inherited from
 
@@ -243,8 +246,8 @@ Gets the 16-bit word contents of the current instance.
 
 `number`
 
-number Word contents of the current instance, if [type](AsfMetadataDescriptor.md#type) is
-    {@link DataType.Word}. `undefined` is returned otherwise.
+Word contents of the current instance, if [type](AsfMetadataDescriptor.md#type) is
+    DataType.Word. `undefined` is returned otherwise.
 
 #### Inherited from
 
@@ -256,7 +259,7 @@ DescriptorBase.ushortValue
 
 ▸ **render**(): [`ByteVector`](ByteVector.md)
 
-**`inheritdoc`**
+**`Inherit Doc`**
 
 #### Returns
 
@@ -272,7 +275,7 @@ ___
 
 ▸ **toString**(): `string`
 
-**`inheritdoc`**
+**`Inherit Doc`**
 
 #### Returns
 
@@ -281,23 +284,3 @@ ___
 #### Inherited from
 
 DescriptorBase.toString
-
-___
-
-### fromFile
-
-▸ `Static` **fromFile**(`file`): [`AsfMetadataDescriptor`](AsfMetadataDescriptor.md)
-
-Instantiates a new instance by reading in the contents from a file.
-
-**`internal`**
-
-#### Parameters
-
-| Name | Type | Description |
-| :------ | :------ | :------ |
-| `file` | [`File`](File.md) | The file to read the raw ASF description record from |
-
-#### Returns
-
-[`AsfMetadataDescriptor`](AsfMetadataDescriptor.md)

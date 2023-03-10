@@ -3,8 +3,8 @@
 # Interface: IVideoCodec
 
 Interface that inherits the common codec information and adds video-specific information.
-When dealing with an [ICodec](ICodec.md), if [ICodec.mediaTypes](ICodec.md#mediatypes) contains
-[MediaTypes.Video](../enums/MediaTypes.md#video), it is safe to assume that the object also inherits [IVideoCodec](IVideoCodec.md)
+When dealing with an [ICodec](ICodec.md), if [mediaTypes](ICodec.md#mediatypes) contains
+[Video](../enums/MediaTypes.md#video), it is safe to assume that the object also inherits [IVideoCodec](IVideoCodec.md)
 and can be recast without issue.
 
 ## Hierarchy
@@ -50,7 +50,9 @@ ___
 
 Duration of the media in milliseconds represented by the current instance.
 
-**`todo`** Ensure milliseconds is the right way to interpret this field
+**`TODO`**
+
+Ensure milliseconds is the right way to interpret this field
 
 #### Inherited from
 

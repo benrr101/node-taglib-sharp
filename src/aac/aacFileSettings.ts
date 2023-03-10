@@ -6,7 +6,10 @@ import {NumberUtils} from "../utils";
  * in order for changes to take effect.
  */
 export default class AacFileSettings {
-    public static readonly SUPPORTED_TAG_TYPES = TagTypes.Id3v1 | TagTypes.Id3v2 | TagTypes.Ape;
+    /**
+     * List of the tag types that are supported by the AAC file.
+     */
+    public static readonly SUPPORTED_TAG_TYPES: TagTypes = TagTypes.Id3v1 | TagTypes.Id3v2 | TagTypes.Ape;
 
     private static _defaultTagTypes = TagTypes.Id3v1 | TagTypes.Id3v2;
     private static _preferApeTagAtFileEnd = true;
@@ -55,7 +58,8 @@ export default class AacFileSettings {
      * ID3v2 tags will be stored at the end of the file. If `false` new ID3v2 tags will be stored
      * at the beginning of the file. Note, this only affects *new* ID3v2 tags. Existing ID3v2 tags
      * will not be moved unless removed and re-added.
-     * @remarks In order to store an ID3v2 tag at the end of a file, it must have a tag footer. Tag
+     * @remarks
+     *     In order to store an ID3v2 tag at the end of a file, it must have a tag footer. Tag
      *     footers are only supported in ID3v2.4. If the ID3v2 version is changed, it will cause an
      *     error to be thrown when the tag is rendered.
      * @default `false`
@@ -66,9 +70,10 @@ export default class AacFileSettings {
      * ID3v2 tags will be stored at the end of the file. If `false` new ID3v2 tags will be stored
      * at the beginning of the file. Note, this only affects *new* ID3v2 tags. Existing ID3v2 tags
      * will not be moved unless removed and re-added.
-     * * @remarks In order to store an ID3v2 tag at the end of a file, it must have a tag footer. Tag
-     *     footers are only supported in ID3v2.4. If the ID3v2 version is changed, it will cause an
-     *     error to be thrown when the tag is rendered.
+     * @remarks
+     *   In order to store an ID3v2 tag at the end of a file, it must have a tag footer. Tag
+     *   footers are only supported in ID3v2.4. If the ID3v2 version is changed, it will cause an
+     *   error to be thrown when the tag is rendered.
      * @default `false`
      */
     public static set preferId3v2TagAtFileEnd(value: boolean) { this._preferId3v2TagAtFileEnd = value; }

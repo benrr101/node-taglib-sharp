@@ -5,7 +5,9 @@
 This class provides a representation of a Microsoft BitmapInfoHeader structure which provides
 information about the dimensions and color format of a device-independent bitmap.
 
-**`link`** https://docs.microsoft.com/en-us/windows/win32/api/wingdi/ns-wingdi-bitmapinfoheader
+**`Link`**
+
+https://docs.microsoft.com/en-us/windows/win32/api/wingdi/ns-wingdi-bitmapinfoheader
 
 ## Implements
 
@@ -51,13 +53,25 @@ position in the provided [ByteVector](ByteVector.md).
 | Name | Type | Description |
 | :------ | :------ | :------ |
 | `data` | [`ByteVector`](ByteVector.md) | ByteVector containing the raw data structure |
-| `offset` | `number` | Index into `data` where the raw bitmap info header begins. Must be a positive,     32-bit integer. |
+| `offset` | `number` | Index into `data` where the raw bitmap info header begins. Must be a positive, 32-bit integer. |
 
 ## Properties
 
 ### FOURCC\_CODES
 
 ▪ `Static` `Readonly` **FOURCC\_CODES**: `Map`<`number`, `string`\>
+
+List of well known FOURCC codes and what they correspond to.
+
+**`Remarks`**
+
+This list was cobbled together using
+    * The original .NET source
+    * https://omiod.com/codec/list.php
+    * https://www.fourcc.org/
+    * http://abcavi.kibi.ru/fourcc.php
+    If any FOURCCs are missing or wrong, submit a PR and include a link to some source saying
+    this FOURCC exists.
 
 ## Accessors
 
@@ -93,7 +107,9 @@ ___
 
 Gets the compression ID for the image.
 
-**`remarks`** For compressed video and YUV formats, this is a FOURCC code, specified as a DWORD in
+**`Remarks`**
+
+For compressed video and YUV formats, this is a FOURCC code, specified as a DWORD in
     little-endian order. For more information, see
     [https://docs.microsoft.com/en-us/windows/win32/directshow/fourcc-codes](https://docs.microsoft.com/en-us/windows/win32/directshow/fourcc-codes) and
     [https://www.fourcc.org/fourcc.php](https://www.fourcc.org/fourcc.php). For uncompressed RGB formats, the following
@@ -102,7 +118,7 @@ Gets the compression ID for the image.
     * `BI_BITFIELDS` = `0x00000003` => Uncompressed RGB with color masks, valid for 16 and
       32 bpp bitmaps.
 
-    [description](RiffBitmapInfoHeader.md#description) makes a best guess attempt to determine the name of the compression
+    [description](RiffBitmapInfoHeader.md#description) makes a best-guess attempt to determine the name of the compression
     codec used.
 
 #### Returns
@@ -132,6 +148,10 @@ ___
 • `get` **durationMilliseconds**(): `number`
 
 Duration of the media in milliseconds represented by the current instance.
+
+**`Remarks`**
+
+The duration is not known from the video codec in a RIFF format file.
 
 #### Returns
 

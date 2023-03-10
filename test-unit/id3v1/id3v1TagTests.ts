@@ -188,7 +188,6 @@ import Id3v1Tag from "../../src/id3v1/id3v1Tag";
         assert.notOk(tag.comment);
     }
 
-
     @test
     public testTrack() {
         // New tag must be empty

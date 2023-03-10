@@ -22,6 +22,7 @@ improved on the original TagLib, hence why this project exists.
 * DIVX: `AVI`, `DIVX`, `WAV`
 * [ID3v1](https://id3.org/ID3v1): `AAC`, `FLAC`, `M2A`, `MP1`, `MP2`, `MP3`
 * [ID3v2](https://id3.org/Developer%20Information): `AAC`, `AIF`, `AIFF`, `AVI`, `DIVX`, `FLAC`, `M2A`, `MP1`, `MP2`, `MP3`, `WAV`
+* [Matroska/WebM](https://www.matroska.org/technical/tagging.html): `MK3D`, `MKA`, `MKS`, `MKV`, `WEBM` _read-only_
 * MovieID: `AVI`, `DIVX`, `WAV`
 * [RIFF Info](https://www.exiftool.org/TagNames/RIFF.html#Info): `AVI`, `DIVX`, `WAV`
 * [Xiph Comment](https://www.xiph.org/vorbis/doc/v-comment.html): `FLAC`, `OGA`, `OGG`, `OGV`, `OPUS`
@@ -32,11 +33,13 @@ improved on the original TagLib, hence why this project exists.
 * Advanced Systems Format (ASF): `ASF`, `WMA`, `WMV`
 * Audio Interchange Format (AIFF): `AIF`, `AIFF`
 * Free Lossless Audio Codec (FLAC): `FLAC`
+* Matroska: `MK3D`, `MKA`, `MKS`, `MKV`
 * MPEG-1/2 Audio: `M2A`, `MP1`, `MP2`, `MP3`
 * MPEG-1/2 Video: `M2V`, `MPE`, `MPEG`, `MPG`, `MPV2`
 * Monkey's Audio: `APE`
 * Ogg: `OGA`, `OGG`, `OGV`, `OPUS`
 * Resource Interchange File Format (RIFF): `AVI`, `DIVX`, `WAV`
+* WebM: `WEBM`
 * ... More coming soon
 
 ## Installation
@@ -59,7 +62,7 @@ The `File` class provides factory methods for generating instances of classes th
 for Monkey's Audio files). The `File` class has exposes the `properties` and `tag` properties to
 allow manipulation of the tagging information and reading audio/video properties. 
 
-See the docs for [the File class](docs/classes/file.md) for complete details of the
+See the docs for [the File class](docs/classes/File.md) for complete details of the
 available properties.
 
 ```typescript
@@ -71,7 +74,7 @@ The `Tag` base class provides a tagging-format agnostic interface to modify tag(
 object. Set tag properties as needed and they will be stored in a tagging format that is supported
 by the file type. The changes can be easily written back to the file with `save()`.
 
-See the docs for [the Tag class](docs/classes/tag.md) for complete details of the fields
+See the docs for [the Tag class](docs/classes/Tag.md) for complete details of the fields
 supported by the format-agnostic `Tag` class. 
 
 ```typescript

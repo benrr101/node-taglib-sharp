@@ -2,7 +2,7 @@
 
 # Class: Id3v2SynchronizedLyricsFrame
 
-This structure contains a single entry in a [SynchronizedLyricsFrame](../enums/Id3v2FrameClassType.md#synchronizedlyricsframe) object.
+This structure contains a single entry in a SynchronizedLyricsFrame object.
 
 ## Table of contents
 
@@ -35,7 +35,7 @@ Constructs and initializes a new instance with a specified time and text.
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `time` | `number` | Offset into the media that owns this element when this element should be     displayed. See {@link TimestampFormat} for possible values. |
+| `time` | `number` | Offset into the media that owns this element when this element should be displayed. See TimestampFormat for possible values. |
 | `text` | `string` | Text for the point in time |
 
 ## Properties
@@ -53,7 +53,7 @@ Text for the point in time represented by the current instance.
 • `get` **time**(): `number`
 
 Gets time offset of the current instance. The specific format this text element is defined
-in {@link SynchronizedLyricsFrame.format} of the frame that owns this element.
+in SynchronizedLyricsFrame.format of the frame that owns this element.
 
 #### Returns
 
@@ -62,7 +62,7 @@ in {@link SynchronizedLyricsFrame.format} of the frame that owns this element.
 • `set` **time**(`value`): `void`
 
 Sets time offset of the current instance. The specific format this text element is defined
-in {@link SynchronizedLyricsFrame.format} of the frame that owns this element.
+in SynchronizedLyricsFrame.format of the frame that owns this element.
 
 #### Parameters
 
@@ -92,11 +92,13 @@ ___
 
 ▸ **render**(`encoding`): [`ByteVector`](ByteVector.md)
 
+Generates a raw byte representation of the frame for writing to a file.
+
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `encoding` | [`StringType`](../enums/StringType.md) |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `encoding` | [`StringType`](../enums/StringType.md) | Encoding to use for encoding the text of the frame. |
 
 #### Returns
 

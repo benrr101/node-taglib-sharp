@@ -3,8 +3,8 @@
 # Interface: ILosslessAudioCodec
 
 This interface provides information specific to lossless audio codecs.
-When dealing with an [ICodec](ICodec.md), if [ICodec.mediaTypes](ICodec.md#mediatypes) contains
-[MediaTypes.LosslessAudio](../enums/MediaTypes.md#losslessaudio), it is safe to assume that the object also inherits
+When dealing with an [ICodec](ICodec.md), if [mediaTypes](ICodec.md#mediatypes) contains
+[LosslessAudio](../enums/MediaTypes.md#losslessaudio), it is safe to assume that the object also inherits
 [ILosslessAudioCodec](ILosslessAudioCodec.md) and can be recast without issue.
 
 ## Hierarchy
@@ -94,7 +94,9 @@ ___
 
 Duration of the media in milliseconds represented by the current instance.
 
-**`todo`** Ensure milliseconds is the right way to interpret this field
+**`TODO`**
+
+Ensure milliseconds is the right way to interpret this field
 
 #### Inherited from
 

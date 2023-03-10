@@ -2,10 +2,12 @@
 
 # Class: RiffList
 
+Interface for chunks that appear in a RIFF file.
+
 ## Implements
 
-- `default`
-- `ILazy`
+- [`IRiffChunk`](../interfaces/IRiffChunk.md)
+- [`ILazy`](../interfaces/ILazy.md)
 
 ## Table of contents
 
@@ -51,7 +53,8 @@ FOURCC code for a list chunk
 
 • `get` **chunkStart**(): `number`
 
-**`inheritdoc`**
+Offset into the file where the chunk begins. This is `undefined` if the object was
+constructed directly from data.
 
 #### Returns
 
@@ -59,11 +62,12 @@ FOURCC code for a list chunk
 
 #### Implementation of
 
-IRiffChunk.chunkStart
+[IRiffChunk](../interfaces/IRiffChunk.md).[chunkStart](../interfaces/IRiffChunk.md#chunkstart)
 
 • `set` **chunkStart**(`value`): `void`
 
-**`inheritdoc`**
+Offset into the file where the chunk begins. This is `undefined` if the object was
+constructed directly from data.
 
 #### Parameters
 
@@ -77,7 +81,7 @@ IRiffChunk.chunkStart
 
 #### Implementation of
 
-IRiffChunk.chunkStart
+[IRiffChunk](../interfaces/IRiffChunk.md).[chunkStart](../interfaces/IRiffChunk.md#chunkstart)
 
 ___
 
@@ -85,7 +89,7 @@ ___
 
 • `get` **fourcc**(): `string`
 
-**`inheritdoc`**
+FOURCC code for the chunk.
 
 #### Returns
 
@@ -93,7 +97,7 @@ ___
 
 #### Implementation of
 
-IRiffChunk.fourcc
+[IRiffChunk](../interfaces/IRiffChunk.md).[fourcc](../interfaces/IRiffChunk.md#fourcc)
 
 ___
 
@@ -101,7 +105,7 @@ ___
 
 • `get` **isLoaded**(): `boolean`
 
-**`inheritdoc`**
+Gets whether the object has been loaded.
 
 #### Returns
 
@@ -109,7 +113,7 @@ ___
 
 #### Implementation of
 
-ILazy.isLoaded
+[ILazy](../interfaces/ILazy.md).[isLoaded](../interfaces/ILazy.md#isloaded)
 
 ___
 
@@ -129,7 +133,8 @@ ___
 
 • `get` **originalDataSize**(): `number`
 
-**`inheritdoc`**
+Size of just the data contained within the current instance. Does not include the header or
+padding byte. This value does not update if contents of the chunk changes.
 
 #### Returns
 
@@ -137,7 +142,7 @@ ___
 
 #### Implementation of
 
-IRiffChunk.originalDataSize
+[IRiffChunk](../interfaces/IRiffChunk.md).[originalDataSize](../interfaces/IRiffChunk.md#originaldatasize)
 
 ___
 
@@ -145,7 +150,8 @@ ___
 
 • `get` **originalTotalSize**(): `number`
 
-**`inheritdoc`**
+Original size of the chunk, including header and padding byte. This value does not update if
+the contents of the chunk changes.
 
 #### Returns
 
@@ -153,25 +159,7 @@ ___
 
 #### Implementation of
 
-IRiffChunk.originalTotalSize
-
-• `set` **originalTotalSize**(`value`): `void`
-
-**`internal`**
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `value` | `number` |
-
-#### Returns
-
-`void`
-
-#### Implementation of
-
-IRiffChunk.originalTotalSize
+[IRiffChunk](../interfaces/IRiffChunk.md).[originalTotalSize](../interfaces/IRiffChunk.md#originaltotalsize)
 
 ___
 
@@ -227,7 +215,7 @@ Retrieves a collection of lists by the lists' key.
 
 [`RiffList`](RiffList.md)[]
 
-RiffList[] Array of the nested lists with the provided key, or an empty array if
+Array of the nested lists with the provided key, or an empty array if
     the key does not exist in this instance.
 
 ___
@@ -248,7 +236,7 @@ Retrieves a collection of values by the values' key.
 
 [`ByteVector`](ByteVector.md)[]
 
-ByteVector[] Array of the values with the provided key, or an empty array if the
+Array of the values with the provided key, or an empty array if the
     key does not exist in the instance.
 
 ___
@@ -257,7 +245,7 @@ ___
 
 ▸ **load**(): `void`
 
-**`inheritdoc`**
+Loads the object.
 
 #### Returns
 
@@ -265,7 +253,7 @@ ___
 
 #### Implementation of
 
-ILazy.load
+[ILazy](../interfaces/ILazy.md).[load](../interfaces/ILazy.md#load)
 
 ___
 
@@ -273,7 +261,7 @@ ___
 
 ▸ **render**(): [`ByteVector`](ByteVector.md)
 
-**`inheritdoc`**
+Renders the chunk, including the header and padding byte.
 
 #### Returns
 
@@ -281,7 +269,7 @@ ___
 
 #### Implementation of
 
-IRiffChunk.render
+[IRiffChunk](../interfaces/IRiffChunk.md).[render](../interfaces/IRiffChunk.md#render)
 
 ___
 
@@ -364,11 +352,13 @@ ___
 
 ▸ `Static` **isChunkList**(`c`): `boolean`
 
+Determines if a given chunk is a list.
+
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `c` | `default` |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `c` | [`IRiffChunk`](../interfaces/IRiffChunk.md) | Chunk to check is a list. |
 
 #### Returns
 

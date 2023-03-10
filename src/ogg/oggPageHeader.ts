@@ -4,7 +4,7 @@ import {File} from "../file";
 import {Guards, NumberUtils} from "../utils";
 
 /**
- * Indicates the special properties of a {@see OggPageHeader}.
+ * Indicates the special properties of a {@link OggPageHeader}.
  */
 export enum OggPageFlags {
     /** The page is a normal page. */

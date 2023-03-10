@@ -69,7 +69,7 @@ export class Guards {
 
     /**
      * Throws if the provided value is not a safe, integer. Use this method instead of
-     * {@see Guards.int()} if validating an argument for use in file manipulation.
+     * {@link Guards.int()} if validating an argument for use in file manipulation.
      * @param value Value to validate
      * @param name Name of the parameter in calling function
      */
@@ -81,7 +81,7 @@ export class Guards {
 
     /**
      * Throws if the provided value is not a safe, positive integer. Use this method instead of
-     * {@see Guards.uint()} if validating an argument for use in file manipulation.
+     * {@link Guards.uint()} if validating an argument for use in file manipulation.
      * @param value Value to validate
      * @param name Name of the parameter in calling function
      */
@@ -167,6 +167,7 @@ export class NumberUtils {
 
     public static bigPow(x: bigint, y: number): bigint {
         Guards.uint(y, "y");
+        // @TODO: Consider upgrading target to es2016 to get the ** syntax
 
         let result = BigInt(1);
         for (let i = 0; i < y; i++) {
@@ -292,12 +293,8 @@ export class NumberUtils {
 }
 
 export class StringUtils {
-    public static trimStart(toTrim: string, chars: string): string {
-        while (toTrim.length > 0 && chars.indexOf(toTrim[0]) > -1) {
-            toTrim = toTrim.substring(0);
-        }
-        return toTrim;
-    }
+    public static readonly BCP47_REGEX = new RegExp(/^[a-z]{2,3}(-[a-z]{2,8})*$/i)
+    public static readonly ISO369_2_REGEX = new RegExp(/^[a-z]{2,3}([-\/][a-z]{2,3})?$/i);
 
     public static findLastByteFromRight(haystack: string, needle: number): number {
         let length = haystack.length;
@@ -305,5 +302,20 @@ export class StringUtils {
             length--;
         }
         return length;
+    }
+
+    public static isBcp47(value: string): boolean {
+        return this.BCP47_REGEX.test(value);
+    }
+
+    public static isIso3692(value: string): boolean {
+        return this.ISO369_2_REGEX.test(value);
+    }
+
+    public static trimStart(toTrim: string, chars: string): string {
+        while (toTrim.length > 0 && chars.indexOf(toTrim[0]) > -1) {
+            toTrim = toTrim.substring(0);
+        }
+        return toTrim;
     }
 }

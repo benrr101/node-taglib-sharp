@@ -3,6 +3,13 @@ import {IMock} from "typemoq";
 
 import {Tag} from "../../src/tag";
 import {ByteVector, StringType} from "../../src/byteVector";
+import {NumberUtils} from "../../src/utils";
+
+export enum Allow {
+    Nothing = 0,
+    Undefined = 1,
+    Null = 2
+}
 
 export class Testers {
     public static testByte(testFunc: (testValue: number) => void): void {
@@ -11,13 +18,16 @@ export class Testers {
         assert.throws(() => testFunc(0x100));
     }
 
-    public static testInt(testFunc: (testValue: number) => void, allowUndefined = false): void {
+    public static testInt(testFunc: (testValue: number) => void, allow: Allow = Allow.Nothing): void {
         assert.throws(() => testFunc(-2147483648 - 1));
         assert.throws(() => testFunc(1.23));
         assert.throws(() => testFunc(2147483647 + 1));
-        assert.throws(() => testFunc(null));
 
-        if (!allowUndefined) {
+        if (!NumberUtils.hasFlag(allow, Allow.Null)) {
+            assert.throws(() => testFunc(null));
+        }
+
+        if (!NumberUtils.hasFlag(allow, Allow.Undefined)) {
             assert.throws(() => testFunc(undefined));
         }
     }
@@ -27,24 +37,29 @@ export class Testers {
         assert.throws(() => testFunc(""));
     }
 
-    public static testSafeInt(testFunc: (testValue: number) => void, allowUndefined = false): void {
+    public static testSafeInt(testFunc: (testValue: number) => void, allow: Allow = Allow.Nothing): void {
         assert.throws(() => testFunc(Number.MIN_SAFE_INTEGER - 1));
         assert.throws(() => testFunc(1.23));
         assert.throws(() => testFunc(Number.MAX_SAFE_INTEGER + 1));
-        assert.throws(() => testFunc(null));
 
-        if (!allowUndefined) {
+        if (!NumberUtils.hasFlag(allow, Allow.Null)) {
+            assert.throws(() => testFunc(null));
+        }
+
+        if (!NumberUtils.hasFlag(allow, Allow.Undefined)) {
             assert.throws(() => testFunc(undefined));
         }
     }
 
-    public static testSafeUint(testFunc: (testValue: number) => void, allowUndefined = false): void {
+    public static testSafeUint(testFunc: (testValue: number) => void, allow: Allow = Allow.Nothing): void {
         assert.throws(() => testFunc(-1));
         assert.throws(() => testFunc(1.23));
         assert.throws(() => testFunc(Number.MAX_SAFE_INTEGER + 1));
-        assert.throws(() => testFunc(null));
+        if (!NumberUtils.hasFlag(allow, Allow.Null)) {
+            assert.throws(() => testFunc(null));
+        }
 
-        if (!allowUndefined) {
+        if (!NumberUtils.hasFlag(allow, Allow.Undefined)) {
             assert.throws(() => testFunc(undefined));
         }
     }
@@ -54,24 +69,30 @@ export class Testers {
         assert.throws(() => testFunc(null));
     }
 
-    public static testUint(testFunc: (testValue: number) => void, allowUndefined = false): void {
+    public static testUint(testFunc: (testValue: number) => void, allow: Allow = Allow.Nothing): void {
         assert.throws(() => testFunc(-1));
         assert.throws(() => testFunc(1.23));
         assert.throws(() => testFunc(0xFFFFFFFF + 1));
-        assert.throws(() => testFunc(null));
 
-        if (!allowUndefined) {
+        if (!NumberUtils.hasFlag(allow, Allow.Null)) {
+            assert.throws(() => testFunc(null));
+        }
+
+        if (!NumberUtils.hasFlag(allow, Allow.Undefined)) {
             assert.throws(() => testFunc(undefined));
         }
     }
 
-    public static testUlong(testFunc: (testValue: bigint) => void, allowUndefined = false): void {
+    public static testUlong(testFunc: (testValue: bigint) => void, allow: Allow = Allow.Nothing): void {
         assert.throws(() => testFunc(BigInt(-1)));
         assert.throws(() => testFunc(BigInt(1.23)));
         assert.throws(() => testFunc(BigInt("18446744073709551615") + BigInt(1)));
-        assert.throws(() => testFunc(null));
 
-        if (!allowUndefined) {
+        if (!NumberUtils.hasFlag(allow, Allow.Null)) {
+            assert.throws(() => testFunc(null));
+        }
+
+        if (!NumberUtils.hasFlag(allow, Allow.Undefined)) {
             assert.throws(() => testFunc(undefined));
         }
     }
@@ -87,7 +108,7 @@ export class Testers {
         }
     }
 
-    public static bvEqual(actual: ByteVector, expected: ByteVector) {
+    public static bvEqual(actual: ByteVector, expected: ByteVector|Uint8Array|number[]) {
         const getPortion = (bv: ByteVector, pointer: number) => {
             const min = Math.max(pointer - 10, 0);
             const max = Math.min(pointer + 10, bv.length - 1);
@@ -111,6 +132,10 @@ export class Testers {
                  + `Expected: ${yPort.portion}\n`
                  + `          ${spacing}^ ${yByte}\n`;
         };
+
+        expected = expected instanceof ByteVector
+            ? expected
+            : ByteVector.fromByteArray(expected);
 
         let pos = 0;
         while (pos < actual.length && pos < expected.length) {

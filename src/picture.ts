@@ -367,7 +367,8 @@ export class Picture implements IPicture {
      * Retrieve a mimetype from raw file data by reading the first few bytes of the file. Less
      * accurate than {@link getExtensionFromMimeType} since this is limited to image file types.
      * @param data Bytes of the file to read to identify the extension
-     * @returns string Extension of the file with dot at the beginning based on the first few bytes
+     * @returns
+     *     Extension of the file with dot at the beginning based on the first few bytes
      *     of the data. If the extension cannot be determined, `undefined` is returned
      */
     public static getExtensionFromData(data: ByteVector): string {
@@ -391,8 +392,9 @@ export class Picture implements IPicture {
 
     /**
      * Gets the file extension for a specific mimetype.
-     * @param mime Mimetype to lookup the extension for
-     * @returns string Extension of the file based on the mimetype with a dot at the beginning. If
+     * @param mime Mimetype to look up the extension for
+     * @returns
+     *     Extension of the file based on the mimetype with a dot at the beginning. If
      *     the extension cannot be determined, `undefined` is returned
      */
     public static getExtensionFromMimeType(mime: string): string {
@@ -412,7 +414,8 @@ export class Picture implements IPicture {
      * Gets the mimetype of a file based on its extension. If the mimetype cannot be determined, it
      * is assumed to be a basic binary file.
      * @param name Filename with extension or just the extension of the file
-     * @returns string Mimetype of the file based on the extension. If mimetype cannot be
+     * @returns
+     *     Mimetype of the file based on the extension. If mimetype cannot be
      *     determined, application/octet-stream is returned.
      */
     public static getMimeTypeFromFilename(name: string): string {

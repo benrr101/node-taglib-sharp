@@ -59,7 +59,8 @@ export default class HeaderObject extends BaseObject {
 
     /**
      * Gets that child objects of this instance.
-     * @remarks The returned array is a copy of the array of children inside this object. Any
+     * @remarks
+     *     The returned array is a copy of the array of children inside this object. Any
      *     changes to this array will not be reflected in the object.
      *
      *     Only certain objects are valid inside a header object. Any objects that are not valid or
@@ -69,7 +70,8 @@ export default class HeaderObject extends BaseObject {
 
     /**
      * Gets the header extension object contained in the current instance.
-     * @returns HeaderExtensionObject Header extension contained in this instance, if it exists.
+     * @returns
+     *     Header extension contained in this instance, if it exists.
      *     `undefined` is returned if it doesn't exist
      */
     public get extension(): HeaderExtensionObject {
@@ -79,7 +81,8 @@ export default class HeaderObject extends BaseObject {
 
     /**
      * Gets whether or not the current instance contains either type of content descriptors.
-     * @returns boolean `true` if a content description object or extended content description
+     * @returns
+     *     `true` if a content description object or extended content description
      *     object exists in this instance. `false` otherwise
      */
     public get hasContentDescriptors(): boolean {
@@ -174,11 +177,12 @@ export default class HeaderObject extends BaseObject {
 
     /**
      * Reads a single object from the current instance.
-     * @remarks If the object read is invalid to be under the top level header object, the object
+     * @remarks
+     *     If the object read is invalid to be under the top level header object, the object
      *     will be read in as an {@link UnknownObject}.
      * @param file File to read the objects from
      * @param position Position within the file at which the object begins
-     * @returns BaseObject An object of the appropriate type as read from the current instance
+     * @returns An object of the appropriate type as read from the current instance
      */
     private static readObject(file: File, position: number): BaseObject {
         file.seek(position);

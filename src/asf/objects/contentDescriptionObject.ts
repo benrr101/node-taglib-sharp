@@ -6,7 +6,7 @@ import {CorruptFileError} from "../../errors";
 import {File} from "../../file";
 
 /**
- * This class extends {@see BaseObject} to provide a representation of an ASF content description
+ * This class extends {@link BaseObject} to provide a representation of an ASF content description
  * object. The content description object is optional and provides standard bibliographic
  * information such as title, author, copyright, description, rating information.
  */
@@ -23,6 +23,9 @@ export default class ContentDescriptionObject extends BaseObject {
         super();
     }
 
+    /**
+     * Constructs a blank content description object.
+     */
     public static fromEmpty(): ContentDescriptionObject {
         const instance = new ContentDescriptionObject();
         instance.initializeFromGuid(Guids.ASF_CONTENT_DESCRIPTION_OBJECT);
@@ -30,6 +33,11 @@ export default class ContentDescriptionObject extends BaseObject {
         return instance;
     }
 
+    /**
+     * Constructs a new instance by reading from a file.
+     * @param file File to read the content description object from
+     * @param position Offset into the file where the object begins
+     */
     public static fromFile(file: File, position: number): ContentDescriptionObject {
         const instance = new ContentDescriptionObject();
         instance.initializeFromFile(file, position);

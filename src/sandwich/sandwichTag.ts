@@ -9,11 +9,15 @@ import {Guards} from "../utils";
  * This class represents a file that can have tags at the beginning and/or end of the file. Some
  * file types are fine with tags sandwiching the media contents of the file, but not all file
  * support this.
- * @remarks This was called `NonContainer` in the original .NET implementation, implying that files
+ * @remarks
+ *     This was called `NonContainer` in the original .NET implementation, implying that files
  *     utilizing this pattern could not be containers. This is not true - MPEG containers, for
- *     example, use this pattern. Therefore the name was changed to better represent the situation.
+ *     example, use this pattern. Therefore, the name was changed to better represent the situation.
  */
 export default class SandwichTag extends CombinedTag {
+    /**
+     * List of the tag types that are supported by a sandwich file tag.
+     */
     public static readonly SUPPORTED_TAG_TYPES = TagTypes.Ape | TagTypes.Id3v1 | TagTypes.Id3v2;
 
     private readonly _defaultTagMappingTable: Map<TagTypes, () => boolean>;
@@ -22,8 +26,6 @@ export default class SandwichTag extends CombinedTag {
 
     /**
      * Constructs a new instance for a specified file.
-     * Constructing a new instance does not automatically read the contents from the disk.
-     * {@link read} must be called to read the tags
      * @param file File to read tags from the beginning and end of
      * @param readStyle How in-depth to read the tags from the file
      * @param defaultTagMappingTable Mapping of tag type to boolean function, used to determine

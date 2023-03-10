@@ -120,7 +120,7 @@ of the file are determined by the name of the abstraction.
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `abstraction` | `IFileAbstraction` | File abstraction to load the picture from. |
+| `abstraction` | [`IFileAbstraction`](../interfaces/IFileAbstraction.md) | File abstraction to load the picture from. |
 
 #### Returns
 
@@ -186,7 +186,7 @@ accurate than [getExtensionFromMimeType](Picture.md#getextensionfrommimetype) si
 
 `string`
 
-string Extension of the file with dot at the beginning based on the first few bytes
+Extension of the file with dot at the beginning based on the first few bytes
     of the data. If the extension cannot be determined, `undefined` is returned
 
 ___
@@ -201,13 +201,13 @@ Gets the file extension for a specific mimetype.
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `mime` | `string` | Mimetype to lookup the extension for |
+| `mime` | `string` | Mimetype to look up the extension for |
 
 #### Returns
 
 `string`
 
-string Extension of the file based on the mimetype with a dot at the beginning. If
+Extension of the file based on the mimetype with a dot at the beginning. If
     the extension cannot be determined, `undefined` is returned
 
 ___
@@ -229,5 +229,5 @@ is assumed to be a basic binary file.
 
 `string`
 
-string Mimetype of the file based on the extension. If mimetype cannot be
+Mimetype of the file based on the extension. If mimetype cannot be
     determined, application/octet-stream is returned.

@@ -4,6 +4,9 @@ import {CorruptFileError} from "../../errors";
 import {FrameIdentifier, FrameIdentifiers} from "../frameIdentifiers";
 import {Guards, NumberUtils} from "../../utils";
 
+/**
+ * Indicates the flags applied to a {@link Id3v2FrameHeader} object.
+ */
 export enum Id3v2FrameFlags {
     /**
      * Header contains no flags.
@@ -51,6 +54,10 @@ export enum Id3v2FrameFlags {
     DataLengthIndicator = 0x0001
 }
 
+/**
+ * This class provides a representation of an ID3v2 frame header which can be read from and
+ * written to disk.
+ */
 export class Id3v2FrameHeader {
     private _flags: Id3v2FrameFlags;
     private _frameId: FrameIdentifier;
@@ -156,6 +163,11 @@ export class Id3v2FrameHeader {
         return new Id3v2FrameHeader(frameId, flags, frameSize);
     }
 
+    /**
+     * Constructs and initializes a new, blank frame header of size 0, with the
+     * provided frame identifier.
+     * @param id Identifier for the frame
+     */
     public static fromFrameIdentifier(id: FrameIdentifier): Id3v2FrameHeader {
         return new Id3v2FrameHeader(id, Id3v2FrameFlags.None, 0);
     }

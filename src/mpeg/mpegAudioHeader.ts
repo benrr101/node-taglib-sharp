@@ -14,6 +14,9 @@ import {Guards, NumberUtils} from "../utils";
 export default class MpegAudioHeader implements IAudioCodec {
     // @TODO: make an enum for header flags
 
+    /**
+     * Static instance of an audio header that has unknown information.
+     */
     public static readonly UNKNOWN: MpegAudioHeader = MpegAudioHeader.fromInfo(
         0,
         0,
@@ -139,7 +142,7 @@ export default class MpegAudioHeader implements IAudioCodec {
 
     // #region Properties
 
-    /** @inheritDoc IAudioCodec.audioBitrate */
+    /** @inheritDoc */
     public get audioBitrate(): number {
         // NOTE: Although it would be *amazing* to store `this.durationMilliseconds / 1000` in a
         //    variable, we can't b/c it causes a stack overflow. Oh well.
@@ -164,7 +167,7 @@ export default class MpegAudioHeader implements IAudioCodec {
         return MpegAudioHeader.BITRATES[index1][index2][index3];
     }
 
-    /** @inheritDoc IAudioCodec.audioChannels */
+    /** @inheritDoc */
     public get audioChannels(): number { return this.channelMode === ChannelMode.SingleChannel ? 1 : 2; }
 
     /**
@@ -198,7 +201,7 @@ export default class MpegAudioHeader implements IAudioCodec {
         }
     }
 
-    /** @inheritDoc IAudioCodec.audioSampleRate */
+    /** @inheritDoc */
     public get audioSampleRate(): number {
         const index1 = this.version;
         const index2 = NumberUtils.uintAnd(NumberUtils.uintRShift(this._flags, 10), 0x03);
@@ -210,7 +213,7 @@ export default class MpegAudioHeader implements IAudioCodec {
      */
     public get channelMode(): ChannelMode { return NumberUtils.uintAnd(NumberUtils.uintRShift(this._flags, 6), 0x03); }
 
-    /** @inheritDoc ICodec.description */
+    /** @inheritDoc */
     public get description(): string {
         let builder = "MPEG Version ";
         switch (this.version) {
@@ -233,7 +236,7 @@ export default class MpegAudioHeader implements IAudioCodec {
         return builder;
     }
 
-    /** @inheritDoc ICodec.duration */
+    /** @inheritDoc */
     public get durationMilliseconds(): number {
         if (this._durationMilliseconds > 0) { return this._durationMilliseconds; }
 
@@ -283,7 +286,7 @@ export default class MpegAudioHeader implements IAudioCodec {
      */
     public get isProtected(): boolean { return ((this._flags >> 16) & 1) === 0; }
 
-    /** @inheritDoc ICodec.mediaTypes */
+    /** @inheritDoc */
     public get mediaTypes(): MediaTypes { return MediaTypes.Audio; }
 
     /**
@@ -336,7 +339,7 @@ export default class MpegAudioHeader implements IAudioCodec {
      * @param position Position in `file` at which to start searching
      * @param length Maximum number of bytes to search before giving up. Defaults to `-1` to
      *     have no maximum
-     * @returns the header that was found or `undefined` if a header was not found
+     * @returns The header that was found or `undefined` if a header was not found
      */
     public static find(file: File, position: number, length?: number): MpegAudioHeader {
         Guards.truthy(file, "file");
@@ -367,7 +370,7 @@ export default class MpegAudioHeader implements IAudioCodec {
                         try {
                             return MpegAudioHeader.fromData(data, file, position + i);
                         } catch (e) {
-                            if (!CorruptFileError.errorIs(e)) {
+                            if (!(e instanceof CorruptFileError)) {
                                 throw e;
                             }
                         }

@@ -36,7 +36,7 @@ let customFrameCreators: FrameCreator[] = [];
  * Performs the necessary operations to determine and create the correct child classes of
  * {@link Frame} for a given raw ID3v2 frame.
  * By default, this will only load frames contained in the library. To add additional frames to the
- * process, register a frame creator with {@see addFrameCreator}.
+ * process, register a frame creator with {@link addFrameCreator}.
  */
 export default {
     /**
@@ -71,7 +71,8 @@ export default {
      *     the `offset` property of the returned object
      * @param version ID3v2 version the frame is encoded with. Must be unsigned 8-bit int
      * @param alreadyUnsynced Whether or not the entire tag has already been unsynchronized
-     * @returns any Undefined is returned if there are no more frames to read.
+     * @returns
+     *     Undefined is returned if there are no more frames to read.
      *     Object is returned if a frame was found. Object has the following properties:
      *     * frame: {@link Frame} that was read
      *     * offset: updated offset where the next frame starts
@@ -231,7 +232,7 @@ export default {
                 offset: frameEndIndex
             };
         } catch (e: unknown) {
-            if (CorruptFileError.errorIs(e) || NotImplementedError.errorIs(e)) {
+            if (e instanceof CorruptFileError || e instanceof NotImplementedError) {
                 throw e;
             }
 

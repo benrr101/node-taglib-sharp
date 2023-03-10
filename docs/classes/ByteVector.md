@@ -4,10 +4,12 @@
 
 Wrapper around a `Uint8Array` that provides functionality for reading and writing byte arrays.
 
-**`remarks`** Implementation of this class uses a single `Uint8Array` to store bytes. Due to
+**`Remarks`**
+
+Implementation of this class uses a single `Uint8Array` to store bytes. Due to
     `Uint8Array`s being fixed length, any operation that inserts or removes values into the
     instance will result in a copy of the internal array being made. If multiple additions will
-    be made, rather than using multiple inserts/adds, the [ByteVector.concatenate](ByteVector.md#concatenate) method
+    be made, rather than using multiple inserts/adds, the [concatenate](ByteVector.md#concatenate) method
     is provided to group additions/inserts and therefore improve performance.
 
     The original .NET implementation had an ubiquitous `mid` method that would return a subset
@@ -20,10 +22,10 @@ Wrapper around a `Uint8Array` that provides functionality for reading and writin
     referencing a `Uint8Array` that is much larger than the view.
 
     With this in mind, best practices for using `ByteVectors`:
-    * Calling [ByteVector.subarray](ByteVector.md#subarray) is cheap, use it when possible
-    * If storing a subset of a `ByteVector`, store a copy with [ByteVector.toByteVector](ByteVector.md#tobytevector)
-    * If building a `ByteVector`, use [ByteVector.concatenate](ByteVector.md#concatenate) when possible
-    * If the instance should be immutable, use [ByteVector.makeReadOnly](ByteVector.md#makereadonly)
+    * Calling [subarray](ByteVector.md#subarray) is cheap, use it when possible
+    * If storing a subset of a `ByteVector`, store a copy with [toByteVector](ByteVector.md#tobytevector)
+    * If building a `ByteVector`, use [concatenate](ByteVector.md#concatenate) when possible
+    * If the instance should be immutable, use [makeReadOnly](ByteVector.md#makereadonly)
 
 ## Table of contents
 
@@ -60,7 +62,6 @@ Wrapper around a `Uint8Array` that provides functionality for reading and writin
 - [startsWith](ByteVector.md#startswith)
 - [subarray](ByteVector.md#subarray)
 - [toBase64String](ByteVector.md#tobase64string)
-- [toByteArray](ByteVector.md#tobytearray)
 - [toByteVector](ByteVector.md#tobytevector)
 - [toDouble](ByteVector.md#todouble)
 - [toFloat](ByteVector.md#tofloat)
@@ -75,7 +76,7 @@ Wrapper around a `Uint8Array` that provides functionality for reading and writin
 - [compare](ByteVector.md#compare)
 - [concatenate](ByteVector.md#concatenate)
 - [empty](ByteVector.md#empty)
-- [equals](ByteVector.md#equals)
+- [equals](ByteVector.md#equals-1)
 - [fromBase64String](ByteVector.md#frombase64string)
 - [fromByteArray](ByteVector.md#frombytearray)
 - [fromFileAbstraction](ByteVector.md#fromfileabstraction)
@@ -228,7 +229,9 @@ ___
 
 Removes all elements from this [ByteVector](ByteVector.md)
 
-**`remarks`** This method replaces the internal byte array with a new one.
+**`Remarks`**
+
+This method replaces the internal byte array with a new one.
 
 #### Returns
 
@@ -265,7 +268,7 @@ Determines if `pattern` exists at a certain `offset` in this byte vector.
 | Name | Type | Default value | Description |
 | :------ | :------ | :------ | :------ |
 | `pattern` | [`ByteVector`](ByteVector.md) | `undefined` | ByteVector to search for at in this byte vector |
-| `offset` | `number` | `0` | Position in this byte vector to search for the pattern. If omitted, defaults     to `0` |
+| `offset` | `number` | `0` | Position in this byte vector to search for the pattern. If omitted, defaults to `0` |
 
 #### Returns
 
@@ -387,8 +390,8 @@ Gets the index of the first occurrence of the specified value.
 
 `number`
 
-An integer containing the first index at which the value was found, or -1 if it
-         was not found/
+An integer containing the first index at which the value was found, or -1 if it was not
+    found
 
 ___
 
@@ -507,9 +510,9 @@ and/or adding new elements.
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `start` | `number` | Index at which to start changing the array. Must be less than the length of     the instance |
-| `deleteCount` | `number` | Number of elements in the array to remove from start. If greater than     the remaining length of the element, it will be capped at the remaining length |
-| `items?` | [`ByteVector`](ByteVector.md) \| `Uint8Array` \| `number`[] | Elements to add to the array beginning from start. If omitted, the method will     only remove elements from the current instance. |
+| `start` | `number` | Index at which to start changing the array. Must be less than the length of the instance |
+| `deleteCount` | `number` | Number of elements in the array to remove from start. If greater than the remaining length of the element, it will be capped at the remaining length |
+| `items?` | [`ByteVector`](ByteVector.md) \| `Uint8Array` \| `number`[] | Elements to add to the array beginning from start. If omitted, the method will only remove elements from the current instance. |
 
 #### Returns
 
@@ -528,8 +531,8 @@ Splits this byte vector into a list of byte vectors using a separator
 | Name | Type | Default value | Description |
 | :------ | :------ | :------ | :------ |
 | `separator` | [`ByteVector`](ByteVector.md) | `undefined` | Object to use to split this byte vector |
-| `byteAlign` | `number` | `1` | Byte align to use when splitting. in order to split when a pattern is     encountered, the index at which it is found must be divisible by this value. |
-| `max` | `number` | `0` | Maximum number of objects to return or 0 to not limit the number. If that number     is reached, the last value will contain the remainder of the file even if it contains     more instances of `separator`. |
+| `byteAlign` | `number` | `1` | Byte align to use when splitting. in order to split when a pattern is encountered, the index at which it is found must be divisible by this value. |
+| `max` | `number` | `0` | Maximum number of objects to return or 0 to not limit the number. If that number is reached, the last value will contain the remainder of the file even if it contains more instances of `separator`. |
 
 #### Returns
 
@@ -571,7 +574,7 @@ Returns a window over the current instance.
 | Name | Type | Description |
 | :------ | :------ | :------ |
 | `startIndex` | `number` | Offset into this instance where the comprehension begins |
-| `length` | `number` | Number of elements from the instance to include. If omitted, defaults to the     remainder of the instance |
+| `length` | `number` | Number of elements from the instance to include. If omitted, defaults to the remainder of the instance |
 
 #### Returns
 
@@ -591,29 +594,15 @@ Returns the current instance as a base64 encoded string.
 
 ___
 
-### toByteArray
-
-▸ **toByteArray**(): `Uint8Array`
-
-Returns the bytes for the instance. Don't use it unless you need to.
-
-**`internal`**
-
-**`deprecated`** DON'T USE IT UNLESS YOU HAVE NO CHOICE.
-
-#### Returns
-
-`Uint8Array`
-
-___
-
 ### toByteVector
 
 ▸ **toByteVector**(): [`ByteVector`](ByteVector.md)
 
 Returns a writable copy of the bytes represented by this instance.
 
-**`remarks`** This is a **copy** of the data. Use sparingly.
+**`Remarks`**
+
+This is a **copy** of the data. Use sparingly.
 
 #### Returns
 
@@ -628,13 +617,15 @@ ___
 Converts the first eight bytes of the current instance to a double-precision floating-point
 value.
 
-**`throws`** Error If there are less than eight bytes in the current instance.
+**`Throws`**
+
+Error If there are less than eight bytes in the current instance.
 
 #### Parameters
 
 | Name | Type | Default value | Description |
 | :------ | :------ | :------ | :------ |
-| `mostSignificantByteFirst` | `boolean` | `true` | If `true` the most significant byte appears first (big        endian format). |
+| `mostSignificantByteFirst` | `boolean` | `true` | If `true` the most significant byte appears first (big endian format). |
 
 #### Returns
 
@@ -651,13 +642,15 @@ ___
 Converts the first four bytes of the current instance to a single-precision floating-point
 value.
 
-**`throws`** Error If there are less than four bytes in the current instance
+**`Throws`**
+
+Error If there are less than four bytes in the current instance
 
 #### Parameters
 
 | Name | Type | Default value | Description |
 | :------ | :------ | :------ | :------ |
-| `mostSignificantByteFirst` | `boolean` | `true` | If `true` the most significant byte appears first (big        endian format). |
+| `mostSignificantByteFirst` | `boolean` | `true` | If `true` the most significant byte appears first (big endian format). |
 
 #### Returns
 
@@ -678,7 +671,7 @@ instance is less than four bytes, the most significant bytes will be filled with
 
 | Name | Type | Default value | Description |
 | :------ | :------ | :------ | :------ |
-| `mostSignificantByteFirst` | `boolean` | `true` | If `true` the most significant byte appears first (big        endian format) |
+| `mostSignificantByteFirst` | `boolean` | `true` | If `true` the most significant byte appears first (big endian format) |
 
 #### Returns
 
@@ -699,14 +692,14 @@ instance is less than eight bytes, the most significant bytes will be filled wit
 
 | Name | Type | Default value | Description |
 | :------ | :------ | :------ | :------ |
-| `mostSignificantByteFirst` | `boolean` | `true` | If `true` the most significant byte appears first (big        endian format) |
+| `mostSignificantByteFirst` | `boolean` | `true` | If `true` the most significant byte appears first (big endian format) |
 
 #### Returns
 
 `bigint`
 
 A signed long value containing the value read from the current instance,
-         represented as a BigInt due to JavaScript's 52-bit integer limitation.
+    represented as a BigInt due to JavaScript's 52-bit integer limitation.
 
 ___
 
@@ -721,7 +714,7 @@ instance is less than two bytes, the most significant bytes will be filled with 
 
 | Name | Type | Default value | Description |
 | :------ | :------ | :------ | :------ |
-| `mostSignificantByteFirst` | `boolean` | `true` | If `true` the most significant byte appears first (big        endian format) |
+| `mostSignificantByteFirst` | `boolean` | `true` | If `true` the most significant byte appears first (big endian format) |
 
 #### Returns
 
@@ -747,7 +740,7 @@ Converts a portion of the current instance to a string using a specified encodin
 
 `string`
 
-string String containing the converted bytes
+String containing the converted bytes
 
 ___
 
@@ -764,13 +757,13 @@ specified number of items.
 | Name | Type | Default value | Description |
 | :------ | :------ | :------ | :------ |
 | `type` | [`StringType`](../enums/StringType.md) | `undefined` | A [StringType](../enums/StringType.md) value indicating the encoding to use when converting |
-| `count` | `number` | `Number.MAX_SAFE_INTEGER` | Value specifying a limit to the number of strings to create. Once the limit has        been reached, the last string will be filled by the remainder of the data |
+| `count` | `number` | `Number.MAX_SAFE_INTEGER` | Value specifying a limit to the number of strings to create. Once the limit has been reached, the last string will be filled by the remainder of the data |
 
 #### Returns
 
 `string`[]
 
-string[] Array of strings containing the converted text.
+Array of strings containing the converted text.
 
 ___
 
@@ -785,7 +778,7 @@ instance is less than four bytes, the most significant bytes will be filled with
 
 | Name | Type | Default value | Description |
 | :------ | :------ | :------ | :------ |
-| `mostSignificantByteFirst` | `boolean` | `true` | If `true` the most significant byte appears first (big        endian format) |
+| `mostSignificantByteFirst` | `boolean` | `true` | If `true` the most significant byte appears first (big endian format) |
 
 #### Returns
 
@@ -806,14 +799,14 @@ instance is less than eight bytes, the most significant bytes will be filled wit
 
 | Name | Type | Default value | Description |
 | :------ | :------ | :------ | :------ |
-| `mostSignificantByteFirst` | `boolean` | `true` | If `true` the most significant byte appears first (big        endian format) |
+| `mostSignificantByteFirst` | `boolean` | `true` | If `true` the most significant byte appears first (big endian format) |
 
 #### Returns
 
 `bigint`
 
 An unsigned short value containing the value read from the current instance,
-         represented as a BigInt due to JavaScript's 32-bit integer limitation
+    represented as a BigInt due to JavaScript's 32-bit integer limitation
 
 ___
 
@@ -828,7 +821,7 @@ instance is less than two bytes, the most significant bytes will be filled with 
 
 | Name | Type | Default value | Description |
 | :------ | :------ | :------ | :------ |
-| `mostSignificantByteFirst` | `boolean` | `true` | If `true` the most significant byte appears first (big        endian format) |
+| `mostSignificantByteFirst` | `boolean` | `true` | If `true` the most significant byte appears first (big endian format) |
 
 #### Returns
 
@@ -855,7 +848,7 @@ Compares two byte vectors. Returns a numeric value
 
 `number`
 
-number `0` if the two vectors are the same. Any other value indicates the two are
+`0` if the two vectors are the same. Any other value indicates the two are
     different. If the two vectors differ by length, this will be the length of `a` minus the
     length of `b`. If the lengths are the same it will be the difference between the first
     element that differs.
@@ -864,25 +857,25 @@ ___
 
 ### concatenate
 
-▸ `Static` **concatenate**(...`vectors`): [`ByteVector`](ByteVector.md)
+▸ `Static` **concatenate**(`...vectors`): [`ByteVector`](ByteVector.md)
 
 Creates a [ByteVector](ByteVector.md) from a collection of bytes, byte arrays, and byte vectors. This
 method is better to use when a known quantity of byte vectors will be concatenated together,
-since doing multiple calls to [ByteVector.addByteVector](ByteVector.md#addbytevector) results in the entire byte
+since doing multiple calls to [addByteVector](ByteVector.md#addbytevector) results in the entire byte
 vector being copied for each call.
 
 #### Parameters
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `...vectors` | (`number` \| [`ByteVector`](ByteVector.md) \| `Uint8Array`)[] | ByteVectors, byte arrays, or straight bytes to concatenate together into a     new [ByteVector](ByteVector.md) |
+| `...vectors` | (`number` \| [`ByteVector`](ByteVector.md) \| `Uint8Array`)[] | ByteVectors, byte arrays, or straight bytes to concatenate together into a new [ByteVector](ByteVector.md) |
 
 #### Returns
 
 [`ByteVector`](ByteVector.md)
 
-ByteVector Single byte vector with the contents of the byte vectors in
-    `vectors` concatenated together
+Single byte vector with the contents of the byte vectors in `vectors` concatenated
+    together
 
 ___
 
@@ -947,7 +940,7 @@ Creates a [ByteVector](ByteVector.md) from a `Uint8Array` or `Buffer`
 | Name | Type | Default value | Description |
 | :------ | :------ | :------ | :------ |
 | `bytes` | `Uint8Array` \| `Buffer` \| `number`[] | `undefined` | Uint8Array of the bytes to put in the ByteVector |
-| `length` | `number` | `bytes.length` | Optionally, number of bytes to read. If this is not provided, it will default     to the full length of `bytes`. If it is less than the length of `bytes`, `bytes` will be     copied into the {@see ByteVector}. |
+| `length` | `number` | `bytes.length` | Optionally, number of bytes to read. If this is not provided, it will default to the full length of `bytes`. If it is less than the length of `bytes`, `bytes` will be copied into the [ByteVector](ByteVector.md). |
 
 #### Returns
 
@@ -965,7 +958,7 @@ Creates a new instance by reading in the contents of a specified file abstractio
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `abstraction` | `IFileAbstraction` | File abstraction to read |
+| `abstraction` | [`IFileAbstraction`](../interfaces/IFileAbstraction.md) | File abstraction to read |
 
 #### Returns
 
@@ -984,7 +977,7 @@ Creates a 4 byte [ByteVector](ByteVector.md) with a signed 32-bit integer as the
 | Name | Type | Default value | Description |
 | :------ | :------ | :------ | :------ |
 | `value` | `number` | `undefined` | Signed 32-bit integer to use as the data. |
-| `isBigEndian` | `boolean` | `true` | If `true`, `value` will be stored in big endian format. If `false`,     `value` will be stored in little endian format |
+| `isBigEndian` | `boolean` | `true` | If `true`, `value` will be stored in big endian format. If `false`, `value` will be stored in little endian format |
 
 #### Returns
 
@@ -1003,7 +996,7 @@ method reads from the current offset of the stream, not the beginning of the str
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `stream` | `IStream` | TagLibSharp-node internal stream object |
+| `stream` | [`IStream`](../interfaces/IStream.md) | TagLibSharp-node internal stream object |
 
 #### Returns
 
@@ -1021,8 +1014,8 @@ Creates an 8 byte [ByteVector](ByteVector.md) with a signed 64-bit integer as th
 
 | Name | Type | Default value | Description |
 | :------ | :------ | :------ | :------ |
-| `value` | `number` \| `bigint` | `undefined` | Signed 64-bit integer to use as the data. If using a `bigint`, it must fit     within 8 bytes. If using a `number`, it must be a safe integer. |
-| `isBigEndian` | `boolean` | `true` | If `true`, `value` will be stored in big endian format. If `false`,     `value` will be stored in little endian format |
+| `value` | `number` \| `bigint` | `undefined` | Signed 64-bit integer to use as the data. If using a `bigint`, it must fit within 8 bytes. If using a `number`, it must be a safe integer. |
+| `isBigEndian` | `boolean` | `true` | If `true`, `value` will be stored in big endian format. If `false`, `value` will be stored in little endian format |
 
 #### Returns
 
@@ -1059,7 +1052,7 @@ Creates a 2 byte [ByteVector](ByteVector.md) with a signed 16-bit integer as the
 | Name | Type | Default value | Description |
 | :------ | :------ | :------ | :------ |
 | `value` | `number` | `undefined` | Signed 16-bit integer to use as the data. |
-| `isBigEndian` | `boolean` | `true` | If `true`, `value` will be stored in big endian format. If `false`,     `value` will be stored in little endian format |
+| `isBigEndian` | `boolean` | `true` | If `true`, `value` will be stored in big endian format. If `false`, `value` will be stored in little endian format |
 
 #### Returns
 
@@ -1116,8 +1109,8 @@ Creates [ByteVector](ByteVector.md) with the byte representation of a string as 
 | Name | Type | Default value | Description |
 | :------ | :------ | :------ | :------ |
 | `text` | `string` | `undefined` | String to store in the ByteVector |
-| `type` | [`StringType`](../enums/StringType.md) | `undefined` | StringType to use to encode the string. If [StringType.UTF16](../enums/StringType.md#utf16) is used, the        string will be encoded as UTF16-LE. |
-| `length` | `number` | `Number.MAX_SAFE_INTEGER` | Number of characters from the string to store in the ByteVector. Must be a        positive 32-bit integer. |
+| `type` | [`StringType`](../enums/StringType.md) | `undefined` | StringType to use to encode the string. If [UTF16](../enums/StringType.md#utf16) is used, the string will be encoded as UTF16-LE. |
+| `length` | `number` | `Number.MAX_SAFE_INTEGER` | Number of characters from the string to store in the ByteVector. Must be a positive 32-bit integer. |
 
 #### Returns
 
@@ -1136,7 +1129,7 @@ Creates a 4 byte [ByteVector](ByteVector.md) with a positive 32-bit integer as t
 | Name | Type | Default value | Description |
 | :------ | :------ | :------ | :------ |
 | `value` | `number` | `undefined` | Positive 32-bit integer to use as the data |
-| `isBigEndian` | `boolean` | `true` | If `true`, `value` will be stored in big endian format. If `false`,     `value` will be stored in little endian format |
+| `isBigEndian` | `boolean` | `true` | If `true`, `value` will be stored in big endian format. If `false`, `value` will be stored in little endian format |
 
 #### Returns
 
@@ -1154,8 +1147,8 @@ Creates an 8 byte [ByteVector](ByteVector.md) with a positive 64-bit integer as 
 
 | Name | Type | Default value | Description |
 | :------ | :------ | :------ | :------ |
-| `value` | `number` \| `bigint` | `undefined` | Positive 64-bit integer to use as the data. If using a `bigint` it must fit     within 8 bytes. |
-| `isBigEndian` | `boolean` | `true` | If `true`, `value` will be stored in big endian format. If `false`,     `value` will be stored in little endian format |
+| `value` | `number` \| `bigint` | `undefined` | Positive 64-bit integer to use as the data. If using a `bigint` it must fit within 8 bytes. |
+| `isBigEndian` | `boolean` | `true` | If `true`, `value` will be stored in big endian format. If `false`, `value` will be stored in little endian format |
 
 #### Returns
 
@@ -1174,7 +1167,7 @@ Creates a 2 byte [ByteVector](ByteVector.md) with a positive 16-bit integer as t
 | Name | Type | Default value | Description |
 | :------ | :------ | :------ | :------ |
 | `value` | `number` | `undefined` | Positive 16-bit integer to use as the data. |
-| `isBigEndian` | `boolean` | `true` | If `true`, `value` will be stored in big endian format. If `false`,     `value` will be stored in little endian format |
+| `isBigEndian` | `boolean` | `true` | If `true`, `value` will be stored in big endian format. If `false`, `value` will be stored in little endian format |
 
 #### Returns
 

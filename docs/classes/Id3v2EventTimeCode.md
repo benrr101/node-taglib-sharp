@@ -2,6 +2,8 @@
 
 # Class: Id3v2EventTimeCode
 
+Class that represents an event for usage in a EventTimeCodeFrame.
+
 ## Table of contents
 
 ### Constructors
@@ -25,12 +27,14 @@
 
 • **new Id3v2EventTimeCode**(`eventType`, `time`)
 
+Constructs and initializes a new instance.
+
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `eventType` | [`Id3v2EventType`](../enums/Id3v2EventType.md) |
-| `time` | `number` |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `eventType` | [`Id3v2EventType`](../enums/Id3v2EventType.md) | Type of event the instance represents |
+| `time` | `number` | Timestamp when the event occurs |
 
 ## Accessors
 
@@ -38,17 +42,21 @@
 
 • `get` **eventType**(): [`Id3v2EventType`](../enums/Id3v2EventType.md)
 
+Gets the type of the event the current instance represents.
+
 #### Returns
 
 [`Id3v2EventType`](../enums/Id3v2EventType.md)
 
 • `set` **eventType**(`value`): `void`
 
+Sets the type of the event the current instance represents.
+
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `value` | [`Id3v2EventType`](../enums/Id3v2EventType.md) |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `value` | [`Id3v2EventType`](../enums/Id3v2EventType.md) | Type of the event |
 
 #### Returns
 
@@ -60,17 +68,23 @@ ___
 
 • `get` **time**(): `number`
 
+Gets the timestamp when the event occurs. The format of the value is determined by the
+frame that contains the timecode event.
+
 #### Returns
 
 `number`
 
 • `set` **time**(`value`): `void`
 
+Sets the timestamp when the event occurs. The format of the value is determined by the
+frame that contains the timecode event.
+
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `value` | `number` |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `value` | `number` | Timestamp when the event occurs. |
 
 #### Returns
 
@@ -94,6 +108,8 @@ ___
 
 ▸ **render**(): [`ByteVector`](ByteVector.md)
 
+Generates the byte representation of the event time code.
+
 #### Returns
 
 [`ByteVector`](ByteVector.md)
@@ -103,6 +119,8 @@ ___
 ### fromEmpty
 
 ▸ `Static` **fromEmpty**(): [`Id3v2EventTimeCode`](Id3v2EventTimeCode.md)
+
+Constructs and initializes a blank new instance of type EventType.Padding at time 0.
 
 #### Returns
 

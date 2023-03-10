@@ -4,6 +4,9 @@ import {ByteVector, StringType} from "../byteVector";
 import {CorruptFileError} from "../errors";
 import {Guards, NumberUtils} from "../utils";
 
+/**
+ * Indicates the flags applied to a {@link Id3v2TagHeader} object.
+ */
 export enum Id3v2TagHeaderFlags {
     /**
      * The header contains no flags.
@@ -32,6 +35,10 @@ export enum Id3v2TagHeaderFlags {
     Unsynchronization = 0x80,
 }
 
+/**
+ * This class provides a representation of an ID3v2 tag header which can be read from and written
+ * to disk.
+ */
 export class Id3v2TagHeader {
     /**
      * The identifier used to recognize an ID3v2 header.

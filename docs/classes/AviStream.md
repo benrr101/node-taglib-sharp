@@ -58,17 +58,23 @@ Constructs and initializes a new instance with a specified stream header.
 
 ▪ `Static` `Readonly` **FORMAT\_CHUNK\_ID**: ``"strf"``
 
+ID of a format chunk.
+
 ___
 
 ### HEADER\_CHUNK\_ID
 
 ▪ `Static` `Readonly` **HEADER\_CHUNK\_ID**: ``"strh"``
 
+ID of a header chunk.
+
 ___
 
 ### LIST\_TYPE
 
 ▪ `Static` `Readonly` **LIST\_TYPE**: ``"strl"``
+
+ID of a list chunk.
 
 ## Accessors
 
@@ -194,7 +200,9 @@ ___
 Gets an indicator of the quality of the data in the stream. Quality is represented as a
 number between `0` and `10000`. -1 indicates the default quality values should be used.
 
-**`remarks`** For compressed data, this typically represents the value of the quality parameter
+**`Remarks`**
+
+For compressed data, this typically represents the value of the quality parameter
     passed to the compression software.
 
 #### Returns
@@ -207,11 +215,13 @@ ___
 
 • `get` **rate**(): `number`
 
-Used with {@see scale} to specify the time scale that this stream will use.
+Used with [scale](AviStream.md#scale) to specify the timescale that this stream will use.
 
-**`remarks`** Dividing {@see rate} by this gives the number of samples per second. For video
+**`Remarks`**
+
+Dividing [rate](AviStream.md#rate) by this gives the number of samples per second. For video
     streams, this is the frame rate. For audio streams, this rate corresponds to the time
-    needed to play {@see RiffWaveFormatEx.blockAlign} bytes of audio. For PCM audio this is
+    needed to play [blockAlign](RiffWaveFormatEx.md#blockalign) bytes of audio. For PCM audio this is
     just the sample rate.
 
 #### Returns
@@ -249,9 +259,11 @@ ___
 
 • `get` **scale**(): `number`
 
-Used with {@see rate} to specify the time scale that this stream will use.
+Used with [rate](AviStream.md#rate) to specify the timescale that this stream will use.
 
-**`remarks`** Dividing {@see rate} by this gives the number of samples per second. For video
+**`Remarks`**
+
+Dividing [rate](AviStream.md#rate) by this gives the number of samples per second. For video
     streams, this is the frame rate. For audio streams, this rate corresponds to the time
     needed to play `nBlockAlign` bytes of audio. For PCM audio is just the sample rate.
 
@@ -268,7 +280,9 @@ ___
 Gets the starting time for this stream. The units are defined by `rate` and `scale` in the
 main file header.
 
-**`remarks`** Usually this is zero, but it can specify a delay time for a stream that does not
+**`Remarks`**
+
+Usually this is zero, but it can specify a delay time for a stream that does not
     start concurrently with the file.
 
 #### Returns
@@ -283,7 +297,9 @@ ___
 
 Gets how large of a buffer should be used to read this stream.
 
-**`remarks`** Typically, this contains a value corresponding to the largest chunk present in the
+**`Remarks`**
+
+Typically, this contains a value corresponding to the largest chunk present in the
     stream.
 
 #### Returns

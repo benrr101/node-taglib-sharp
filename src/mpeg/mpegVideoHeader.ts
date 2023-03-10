@@ -46,9 +46,9 @@ export default class MpegVideoHeader implements IVideoCodec {
 
     /**
      * @inheritDoc
-     * For MPEG, this is always 0
-     * @TODO: Can we calculate the duration?
+     * @remarks For MPEG, this is always 0
      */
+    // @TODO: Can we calculate the duration?
     public get durationMilliseconds(): number { return 0; }
 
     /** @inheritDoc */

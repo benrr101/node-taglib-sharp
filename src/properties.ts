@@ -153,7 +153,8 @@ export class Properties implements ILosslessAudioCodec, IVideoCodec, IPhotoCodec
 
     /**
      * Gets the codecs contained in the current instance.
-     * @remarks The list of codecs should not be modified. As such, the returned codec list is a
+     * @remarks
+     *     The list of codecs should not be modified. As such, the returned codec list is a
      *     copy of codec list stored in this instance.
      */
     public get codecs(): ICodec[] { return this._codecs.slice(); }
@@ -162,7 +163,7 @@ export class Properties implements ILosslessAudioCodec, IVideoCodec, IPhotoCodec
 
     /**
      * Gets a string description of the media represented by the current instance. Values are
-     * joined by semi-colons.
+     * joined by semicolons.
      */
     public get description(): string {
         const descriptions = this._codecs.filter((e) => !!e).map((e) => e.description);

@@ -2,9 +2,11 @@ import {ByteVector, StringType} from "../byteVector";
 import {NotSupportedError} from "../errors";
 
 /**
- * @summary Represents the identifier of a frame, depending on the version this may be 3 or 4
- *     bytes. Provides a simple way to switch between the identifiers used for different versions.
- * @remarks This class is implemented in an attempt to unify frame identifiers, make it easy to
+ * Represents the identifier of a frame, depending on the version this may be 3 or 4
+ * bytes. Provides a simple way to switch between the identifiers used for different versions.
+
+ * @remarks
+ *     This class is implemented in an attempt to unify frame identifiers, make it easy to
  *     switch versions, find frames between tags, and determine which frames are supported on which
  *     version of ID3v2.
  *     If you have a death wish, you can take your life into your own hands and construct your own
@@ -21,6 +23,15 @@ export class FrameIdentifier {
     private readonly _version3: ByteVector;
     private readonly _version4: ByteVector
 
+    /**
+     * Constructs and initializes a new instance.
+     * @param v4 Identifier string to use on ID3v2.4 tags. If not supplied, frame type is not valid
+     *     for ID3v2.4 tags.
+     * @param v3 Identifier string to use on ID3v2.3 tags. If not supplied, frame type is not valid
+     *     for ID3v2.4 tags.
+     * @param v2 Identifier string to use on ID3v2.2 tags. If not supplied, frame type is not valid
+     *     for ID3v2.2 tags.
+     */
     public constructor(v4: string, v3: string, v2: string) {
         if (!v4 && !v3 && !v2) {
             throw new Error("A frame identifier for at least one ID3v2 version must be supplied");
@@ -37,6 +48,9 @@ export class FrameIdentifier {
             : undefined;
     }
 
+    /**
+     * Whether the frame identifier indicates the frame is a text frame.
+     */
     public get isTextFrame(): boolean {
         const t = 0x54; // T
         return (this._version2?.get(0) === t)
@@ -44,6 +58,9 @@ export class FrameIdentifier {
             || (this._version4?.get(0) === t);
     }
 
+    /**
+     * Whether the frame identifier indicates the frame is a URL frame.
+     */
     public get isUrlFrame(): boolean {
         const w = 0x57; // W
         return (this._version2?.get(0) === w)
@@ -51,6 +68,13 @@ export class FrameIdentifier {
             || (this._version4?.get(0) === w);
     }
 
+    /**
+     * Renders the frame identifier by returning the identifier string for the specified ID3v2
+     * version.
+     * @param version Version of ID3v2 to render the current instance for
+     * @throws NotSupportedError Thrown if the frame identifier does not contain a string for the
+     *     provided ID3v2 version.
+     */
     public render(version: number): ByteVector {
         let bytesForVersion;
         switch (version) {
@@ -74,6 +98,12 @@ export class FrameIdentifier {
         return bytesForVersion;
     }
 
+    /**
+     * Generates a string representation of the frame identifier.
+     * @remarks
+     *     This always returns the string for the newest version of ID3v2. Therefore, this method
+     *     should only be used for diagnostic purposes, and not for generating file contents.
+     */
     public toString(): string {
         const newest = this._version4 || this._version3 || this._version2;
         return newest.toString(StringType.Latin1);
@@ -82,7 +112,9 @@ export class FrameIdentifier {
 
 /* eslint-disable @typescript-eslint/naming-convention */
 
-// Pre-create the unique identifiers
+/**
+ * Collection of well-known frame identifiers.
+ */
 const uniqueFrameIdentifiers: {[key: string]: FrameIdentifier} = {
     AENC: new FrameIdentifier("AENC", "AENC", "CRA"), // Audio encryption
     APIC: new FrameIdentifier("APIC", "APIC", "PIC"), // Attached picture

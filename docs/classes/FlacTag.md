@@ -4,10 +4,12 @@
 
 Collection of tags that can be stored in a FLAC file.
 
-**`remarks`** The FLAC file specification states that tagging should be done via a XIPH comment block
+**`Remarks`**
+
+The FLAC file specification states that tagging should be done via a XIPH comment block
     and any pictures should be stored in a FLAC picture block. However, tagging can be done via
     ID3 and APE tags at the beginning or end of the file, same as MP3 and other files. This
-    class provides a unified access into all the tags a FLAC file may contain.
+    class provides a unified interface into all the tags a FLAC file may contain.
 
 ## Hierarchy
 
@@ -100,7 +102,6 @@ Collection of tags that can be stored in a FLAC file.
 - [getTag](FlacTag.md#gettag)
 - [removeTags](FlacTag.md#removetags)
 - [replaceTag](FlacTag.md#replacetag)
-- [setInfoTag](FlacTag.md#setinfotag)
 - [validateTagCreation](FlacTag.md#validatetagcreation)
 - [firstInGroup](FlacTag.md#firstingroup)
 - [isFalsyOrLikeEmpty](FlacTag.md#isfalsyorlikeempty)
@@ -119,8 +120,8 @@ Constructs and initializes a new FLAC tag using the component tags provided.
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `startTag` | `default` | Required, collection of tags at the start of the file |
-| `endTag` | `default` | Required, collection of tags at the end of the file |
+| `startTag` | [`StartTag`](StartTag.md) | Required, collection of tags at the start of the file |
+| `endTag` | [`EndTag`](EndTag.md) | Required, collection of tags at the end of the file |
 | `xiphTag` | [`XiphComment`](XiphComment.md) | Optional, Xiph comment tag from the FLAC file |
 | `flacPictures` | [`XiphPicture`](XiphPicture.md)[] | Optional, array of pictures found in the file |
 
@@ -137,7 +138,13 @@ Constructs and initializes a new FLAC tag using the component tags provided.
 Gets the album of the media represented by the current instance. For video media, this
 represents the collection the video belongs to.
 
-**`inheritdoc`**
+This field represents the name of the album the media belongs to. In the case of a
+boxed set, it should be the name of the entire set rather than the individual disc. In
+the case of a series, this should be the name of the series, rather than the season of a
+series.
+
+For example, "Kintsugi" (an album by Death Cab for Cutie), "The Complete Red Green Show"
+(a boxed set of TV episodes), or "Shark Tank" (a series with several seasons).
 
 #### Returns
 
@@ -149,16 +156,22 @@ CombinedTag.album
 
 • `set` **album**(`val`): `void`
 
-Gets the album of the media represented by the current instance. For video media, this
+Sets the album of the media represented by the current instance. For video media, this
 represents the collection the video belongs to.
 
-**`inheritdoc`**
+This field represents the name of the album the media belongs to. In the case of a
+boxed set, it should be the name of the entire set rather than the individual disc. In
+the case of a series, this should be the name of the series, rather than the season of a
+series.
+
+For example, "Kintsugi" (an album by Death Cab for Cutie), "The Complete Red Green Show"
+(a boxed set of TV episodes), or "Shark Tank" (a series with several seasons).
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `val` | `string` |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `val` | `string` | of the media represented by the current instance or `undefined` if no value is present |
 
 #### Returns
 
@@ -174,10 +187,16 @@ ___
 
 • `get` **albumArtists**(): `string`[]
 
-Gets the band or artist who is credited credited in the creation of the entire album or
+Gets the band or artist who is credited in the creation of the entire album or
 collection containing the media described by the current instance.
 
-**`inheritdoc`**
+This field is typically optional but aids in the sorting of compilations or albums
+with multiple artist. For example, if an album has several artists, sorting by artist
+will split up albums by the same artist. Having a single album artist for an entire
+album solves this problem.
+As this value is to be used as a sorting key, it should be used with less variation
+than [performers](FlacTag.md#performers). Where performers can be broken into multiple artists, it is
+best to stick to a single name. Eg, "Super8 & Tab"
 
 #### Returns
 
@@ -189,16 +208,22 @@ CombinedTag.albumArtists
 
 • `set` **albumArtists**(`val`): `void`
 
-Gets the band or artist who is credited credited in the creation of the entire album or
+Sets the bands or artists who is credited in the creation of the entire album or
 collection containing the media described by the current instance.
 
-**`inheritdoc`**
+This field is typically optional but aids in the sorting of compilations or albums
+with multiple artist. For example, if an album has several artists, sorting by artist
+will split up albums by the same artist. Having a single album artist for an entire
+album solves this problem.
+As this value is to be used as a sorting key, it should be used with less variation
+than [performers](FlacTag.md#performers). Where performers can be broken into multiple artists, it is
+best to stick to a single name. Eg, "Super8 & Tab"
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `val` | `string`[] |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `val` | `string`[] | Band or artist credited with the creation of the entire album or collection containing the media described by the current instance or an empty array if no value is present |
 
 #### Returns
 
@@ -215,9 +240,15 @@ ___
 • `get` **albumArtistsSort**(): `string`[]
 
 Gets the sortable names of the bands/artists who are credited with creating the entire
-album or collection containing the media described by the current instance.
+album or collection containing the media described by the current instance. See also:
+[albumArtists](FlacTag.md#albumartists)
 
-**`inheritdoc`**
+This is used to provide more control over how the media is sorted. Typical uses are to
+skip articles or sort by last name. For example "Ben Folds" might be sorted as
+"Folds, Ben".
+As this value is to be used as a sorting key, it should be used with less variation than
+[performers](FlacTag.md#performers). Where [performers](FlacTag.md#performers) can be broken into multiple performers, it is
+best to stick to a single album artist. Eg, "Van Buuren, Armin"
 
 #### Returns
 
@@ -229,16 +260,22 @@ CombinedTag.albumArtistsSort
 
 • `set` **albumArtistsSort**(`val`): `void`
 
-Gets the sortable names of the bands/artists who are credited with creating the entire
-album or collection containing the media described by the current instance.
+Sets the sortable names of the bands/artists who are credited with creating the entire
+album or collection containing the media described by the current instance. See also:
+[albumArtists](FlacTag.md#albumartists)
 
-**`inheritdoc`**
+This is used to provide more control over how the media is sorted. Typical uses are to
+skip articles or sort by last name. For example "Ben Folds" might be sorted as
+"Folds, Ben".
+As this value is to be used as a sorting key, it should be used with less variation than
+[performers](FlacTag.md#performers). Where [performers](FlacTag.md#performers) can be broken into multiple performers, it is
+best to stick to a single album artist. Eg, "Van Buuren, Armin"
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `val` | `string`[] |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `val` | `string`[] | Sortable names for the bands/artists are credited with the creation of the entire album or collection containing the media described by the current instance, or an empty array if no value is present. |
 
 #### Returns
 
@@ -255,8 +292,10 @@ ___
 • `get` **albumSort**(): `string`
 
 Gets the sortable name of the album title of the media represented by the current instance.
+See also: [album](FlacTag.md#album)
 
-**`inheritdoc`**
+This field is typically optional but aids in sort of compilations or albums with
+similar titles.
 
 #### Returns
 
@@ -268,15 +307,17 @@ CombinedTag.albumSort
 
 • `set` **albumSort**(`val`): `void`
 
-Gets the sortable name of the album title of the media represented by the current instance.
+Sets the sortable name of the album title of the media represented by the current instance.
+See also: [album](FlacTag.md#album)
 
-**`inheritdoc`**
+This field is typically optional but aids in sort of compilations or albums with
+similar titles.
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `val` | `string` |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `val` | `string` | Sortable name for the album title of the media or `undefined` if the value is not present |
 
 #### Returns
 
@@ -294,7 +335,8 @@ ___
 
 Gets the Amazon ID of the media represented by the current instance.
 
-**`inheritdoc`**
+This field represents the AmazonID, also called the ASIN, and is used to uniquely
+identify the particular track or album in the Amazon catalog.
 
 #### Returns
 
@@ -306,15 +348,16 @@ CombinedTag.amazonId
 
 • `set` **amazonId**(`val`): `void`
 
-Gets the Amazon ID of the media represented by the current instance.
+Sets the Amazon ID of the media represented by the current instance.
 
-**`inheritdoc`**
+This field represents the AmazonID, also called the ASIN, and is used to uniquely
+identify the particular track or album in the Amazon catalog.
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `val` | `string` |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `val` | `string` | Amazon ID of the media represented by the current instance or `undefined` if no value is present |
 
 #### Returns
 
@@ -333,7 +376,8 @@ ___
 Gets the number of beats per minute in the audio of the media represented by the current
 instance.
 
-**`inheritdoc`**
+This field is useful for DJ's who are trying to beat match tracks. It should be
+calculated from the audio or pulled from a database.
 
 #### Returns
 
@@ -345,16 +389,17 @@ CombinedTag.beatsPerMinute
 
 • `set` **beatsPerMinute**(`val`): `void`
 
-Gets the number of beats per minute in the audio of the media represented by the current
+Sets the number of beats per minute in the audio of the media represented by the current
 instance.
 
-**`inheritdoc`**
+This field is useful for DJ's who are trying to beat match tracks. It should be
+calculated from the audio or pulled from a database.
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `val` | `number` |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `val` | `number` | Beats per minute of the audio in the media represented by the current instance, or `0` if not specified |
 
 #### Returns
 
@@ -372,7 +417,11 @@ ___
 
 Gets a user comment on the media represented by the current instance.
 
-**`inheritdoc`**
+This field should be used to store user notes and comments. There is no constraint on
+what text can be stored here, but it should not contain programmatic data.
+Because this field contains notes the the user might think of while consuming the media,
+it may be useful for an application to make this field easily accessible, perhaps even
+including it in the main interface.
 
 #### Returns
 
@@ -384,15 +433,19 @@ CombinedTag.comment
 
 • `set` **comment**(`val`): `void`
 
-Gets a user comment on the media represented by the current instance.
+Sets a user comment on the media represented by the current instance.
 
-**`inheritdoc`**
+This field should be used to store user notes and comments. There is no constraint on
+what text can be stored here, but it should not contain programmatic data.
+Because this field contains notes the the user might think of while consuming the media,
+it may be useful for an application to make this field easily accessible, perhaps even
+including it in the main interface.
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `val` | `string` |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `val` | `string` | User comments on the media represented by the current instance or `undefined` if the value is not present |
 
 #### Returns
 
@@ -410,7 +463,8 @@ ___
 
 Gets the composers of the media represented by the current instance.
 
-**`inheritdoc`**
+This field represents the composers, songwriters, scriptwriters, or persons who
+claim authorship of the media.
 
 #### Returns
 
@@ -422,15 +476,16 @@ CombinedTag.composers
 
 • `set` **composers**(`val`): `void`
 
-Gets the composers of the media represented by the current instance.
+Sets the composers of the media represented by the current instance.
 
-**`inheritdoc`**
+This field represents the composers, songwriters, scriptwriters, or persons who
+claim authorship of the media.
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `val` | `string`[] |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `val` | `string`[] | Composers of the media represented by the current instance of an empty array if no value is present. |
 
 #### Returns
 
@@ -447,8 +502,10 @@ ___
 • `get` **composersSort**(): `string`[]
 
 Gets the sortable names of the composers of the media represented by the current instance.
+See also: [composers](FlacTag.md#composers)
 
-**`inheritdoc`**
+This field is typically optional but aids in the sorting of compilations or albums
+with multiple composers.
 
 #### Returns
 
@@ -460,15 +517,17 @@ CombinedTag.composersSort
 
 • `set` **composersSort**(`val`): `void`
 
-Gets the sortable names of the composers of the media represented by the current instance.
+Sets the sortable names of the composers of the media represented by the current instance.
+See also: [composers](FlacTag.md#composers)
 
-**`inheritdoc`**
+This field is typically optional but aids in the sorting of compilations or albums
+with multiple composers.
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `val` | `string`[] |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `val` | `string`[] | Sortable names for the composers of the media represented by the current instance or an empty array if no value is present. |
 
 #### Returns
 
@@ -486,7 +545,7 @@ ___
 
 Gets the conductor or director of the media represented by the current instance.
 
-**`inheritdoc`**
+This field is most useful for organizing classical music and movies.
 
 #### Returns
 
@@ -498,15 +557,15 @@ CombinedTag.conductor
 
 • `set` **conductor**(`val`): `void`
 
-Gets the conductor or director of the media represented by the current instance.
+Sets the conductor or director of the media represented by the current instance.
 
-**`inheritdoc`**
+This field is most useful for organizing classical music and movies.
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `val` | `string` |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `val` | `string` | Conductor or director of the media represented by the current instance or `undefined` if no value present. |
 
 #### Returns
 
@@ -524,7 +583,10 @@ ___
 
 Gets the copyright information for the media represented by the current instance.
 
-**`inheritdoc`**
+This field should be used for storing copyright information. It may be useful to show
+this information somewhere in the program while the media is playing.
+Players should not support editing this field, but media creation tools should
+definitely allow modification.
 
 #### Returns
 
@@ -536,15 +598,18 @@ CombinedTag.copyright
 
 • `set` **copyright**(`val`): `void`
 
-Gets the copyright information for the media represented by the current instance.
+Sets the copyright information for the media represented by the current instance.
 
-**`inheritdoc`**
+This field should be used for storing copyright information. It may be useful to show
+this information somewhere in the program while the media is playing.
+Players should not support editing this field, but media creation tools should
+definitely allow modification.
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `val` | `string` |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `val` | `string` | Copyright information for the media represented by the current instance or `undefined` if no value is present. |
 
 #### Returns
 
@@ -562,8 +627,6 @@ ___
 
 Gets the date and time at which the tag has been written.
 
-**`inheritdoc`**
-
 #### Returns
 
 `Date`
@@ -574,15 +637,13 @@ CombinedTag.dateTagged
 
 • `set` **dateTagged**(`val`): `void`
 
-Gets the date and time at which the tag has been written.
-
-**`inheritdoc`**
+Sets the date and time at which the tag has been written.
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `val` | `Date` |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `val` | `Date` | Date/time at which the tag has been written, or `undefined` if no value is present |
 
 #### Returns
 
@@ -602,7 +663,9 @@ Gets a short description of the media. For music, this could be the comment that
 made of his/her work. For a video, this should be a short summary of the story/plot, but
 generally no spoliers. This should give the impression of what to expect in the media.
 
-**`inheritdoc`**
+This is especially relevant for a movie. For example, for "Fear and Loathing in Las
+Vegas", this could be "An oddball journalist and his psychopathic lawyer travel to Las
+Vegas for a series of psychedelic escapades."
 
 #### Returns
 
@@ -614,17 +677,19 @@ CombinedTag.description
 
 • `set` **description**(`val`): `void`
 
-Gets a short description of the media. For music, this could be the comment that the artist
+Sets a short description of the media. For music, this could be the comment that the artist
 made of his/her work. For a video, this should be a short summary of the story/plot, but
 generally no spoliers. This should give the impression of what to expect in the media.
 
-**`inheritdoc`**
+This is especially relevant for a movie. For example, for "Fear and Loathing in Las
+Vegas", this could be "An oddball journalist and his psychopathic lawyer travel to Las
+Vegas for a series of psychedelic escapades."
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `val` | `string` |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `val` | `string` | Description of the media represented by the current instance or `undefined` if no value is present |
 
 #### Returns
 
@@ -643,7 +708,9 @@ ___
 Gets the number of the disc containing the media represented by the current instance in the
 boxed set. For a series, this represents the season number.
 
-**`inheritdoc`**
+This value should be the same as the number that appears on the disc. For example, if
+the disc is the first of three, the value should be `1`. It should be no more than
+[discCount](FlacTag.md#disccount) if [discCount](FlacTag.md#disccount) is non-zero.
 
 #### Returns
 
@@ -655,16 +722,18 @@ CombinedTag.disc
 
 • `set` **disc**(`val`): `void`
 
-Gets the number of the disc containing the media represented by the current instance in the
+Sets the number of the disc containing the media represented by the current instance in the
 boxed set. For a series, this represents the season number.
 
-**`inheritdoc`**
+This value should be the same as the number that appears on the disc. For example, if
+the disc is the first of three, the value should be `1`. It should be no more than
+[discCount](FlacTag.md#disccount) if [discCount](FlacTag.md#disccount) is non-zero.
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `val` | `number` |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `val` | `number` | Number of the disc or season of the media represented by the current instance in a boxed set. |
 
 #### Returns
 
@@ -683,7 +752,8 @@ ___
 Gets the number of discs or seasons in the boxed set containing the media represented by the
 current instance.
 
-**`inheritdoc`**
+If non-zero, this should be at least equal to [disc](FlacTag.md#disc). If [disc](FlacTag.md#disc) is zero,
+this value should also be zero.
 
 #### Returns
 
@@ -695,16 +765,17 @@ CombinedTag.discCount
 
 • `set` **discCount**(`val`): `void`
 
-Gets the number of discs or seasons in the boxed set containing the media represented by the
+Sets the number of discs or seasons in the boxed set containing the media represented by the
 current instance.
 
-**`inheritdoc`**
+If non-zero, this should be at least equal to [disc](FlacTag.md#disc). If [disc](FlacTag.md#disc) is zero,
+this value should also be zero.
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `val` | `number` |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `val` | `number` | Number of discs or seasons in the boxed set containing the media represented by the current instance or `0` if not specified. |
 
 #### Returns
 
@@ -718,13 +789,13 @@ ___
 
 ### endTag
 
-• `get` **endTag**(): `default`
+• `get` **endTag**(): [`EndTag`](EndTag.md)
 
 Gets the collection of tags appearing at the end of the file.
 
 #### Returns
 
-`default`
+[`EndTag`](EndTag.md)
 
 ___
 
@@ -846,7 +917,10 @@ ___
 
 Gets the genres of the media represented by the current instance.
 
-**`inheritdoc`**
+This field represents genres that apply to the song, album, or video. This is often
+used for filtering media.
+A list of common audio genres as popularized by ID3v1 is stored in `genres.ts`.
+Additionally, `genres.ts` contains video genres as used by DivX.
 
 #### Returns
 
@@ -858,15 +932,18 @@ CombinedTag.genres
 
 • `set` **genres**(`val`): `void`
 
-Gets the genres of the media represented by the current instance.
+Sets the genres of the media represented by the current instance.
 
-**`inheritdoc`**
+This field represents genres that apply to the song, album, or video. This is often
+used for filtering media.
+A list of common audio genres as popularized by ID3v1 is stored in `genres.ts.
+Additionally, `genres.ts` contains video genres as used by DivX.
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `val` | `string`[] |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `val` | `string`[] | Genres of the media represented by the current instance or an empty array if no value is present. |
 
 #### Returns
 
@@ -884,7 +961,9 @@ ___
 
 Gets the grouping on the album which the media in the current instance belongs to.
 
-**`inheritdoc`**
+This field contains a non-physical group to which the track belongs. In classical
+music this could be a movement. It could also be parts of a series like "Introduction",
+"Closing Remarks", etc.
 
 #### Returns
 
@@ -896,15 +975,17 @@ CombinedTag.grouping
 
 • `set` **grouping**(`val`): `void`
 
-Gets the grouping on the album which the media in the current instance belongs to.
+Sets the grouping on the album which the media in the current instance belongs to.
 
-**`inheritdoc`**
+This field contains a non-physical group to which the track belongs. In classical
+music this could be a movement. It could also be parts of a series like "Introduction",
+"Closing Remarks", etc.
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `val` | `string` |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `val` | `string` | Grouping on the album which the media in the current instance belongs to or `undefined` if no value is present. |
 
 #### Returns
 
@@ -922,8 +1003,6 @@ ___
 
 Gets the initial key of the track.
 
-**`inheritdoc`**
-
 #### Returns
 
 `string`
@@ -934,15 +1013,13 @@ CombinedTag.initialKey
 
 • `set` **initialKey**(`val`): `void`
 
-Gets the initial key of the track.
-
-**`inheritdoc`**
+Sets the initial key of the track.
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `val` | `string` |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `val` | `string` | Initial key of the track or `undefined` if no value is set |
 
 #### Returns
 
@@ -960,8 +1037,6 @@ ___
 
 Gets whether or not the album described by the current instance is a compilation.
 
-**`inheritdoc`**
-
 #### Returns
 
 `boolean`
@@ -974,13 +1049,11 @@ CombinedTag.isCompilation
 
 Gets whether or not the album described by the current instance is a compilation.
 
-**`inheritdoc`**
-
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `val` | `boolean` |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `val` | `boolean` | Whether or not the album described by the current instance is a compilation |
 
 #### Returns
 
@@ -998,8 +1071,6 @@ ___
 
 Gets whether or not the current instance is empty.
 
-**`inheritdoc`**
-
 #### Returns
 
 `boolean`
@@ -1016,8 +1087,6 @@ ___
 
 Gets the ISRC (International Standard Recording Code) of the track.
 
-**`inheritdoc`**
-
 #### Returns
 
 `string`
@@ -1028,15 +1097,13 @@ CombinedTag.isrc
 
 • `set` **isrc**(`val`): `void`
 
-Gets the ISRC (International Standard Recording Code) of the track.
-
-**`inheritdoc`**
+Sets the ISRC (International Standard Recording Code) of the track.
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `val` | `string` |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `val` | `string` | ISRC of the track or `undefined` if no value is set |
 
 #### Returns
 
@@ -1134,7 +1201,10 @@ ___
 
 Gets the lyrics or script of the media represented by the current instance.
 
-**`inheritdoc`**
+This field contains a plain text representation of the lyrics or scripts with line
+breaks and whitespace being the only formatting marks.
+Some formats support more advanced lyrics, like synchronized lyrics, but those must be
+accessed using format-specific implementations.
 
 #### Returns
 
@@ -1146,15 +1216,18 @@ CombinedTag.lyrics
 
 • `set` **lyrics**(`val`): `void`
 
-Gets the lyrics or script of the media represented by the current instance.
+Sets the lyrics or script of the media represented by the current instance.
 
-**`inheritdoc`**
+This field contains a plain text representation of the lyrics or scripts with line
+breaks and whitespace being the only formatting marks.
+Some formats support more advanced lyrics, like synchronized lyrics, but those must be
+accessed using format-specific implementations.
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `val` | `string` |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `val` | `string` | Lyrics or script of the media represented by the current instance or `undefined` if no value is present |
 
 #### Returns
 
@@ -1172,7 +1245,8 @@ ___
 
 Gets the MusicBrainz artist ID of the media represented by the current instance.
 
-**`inheritdoc`**
+This field represents the MusicBrainz ArtistID, and is used to uniquely identify a
+particular artist of the track.
 
 #### Returns
 
@@ -1184,15 +1258,16 @@ CombinedTag.musicBrainzArtistId
 
 • `set` **musicBrainzArtistId**(`val`): `void`
 
-Gets the MusicBrainz artist ID of the media represented by the current instance.
+Sets the MusicBrainz artist ID of the media represented by the current instance.
 
-**`inheritdoc`**
+This field represents the MusicBrainz ArtistID, and is used to uniquely identify a
+particular artist of the track.
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `val` | `string` |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `val` | `string` | MusicBrainz ArtistID of the media represented by the current instance or `undefined` if no value is present |
 
 #### Returns
 
@@ -1210,7 +1285,8 @@ ___
 
 Gets the MusicBrainz disc ID of the media represented by the current instance.
 
-**`inheritdoc`**
+This field represents the MusicBrainz DiscID and is used to uniquely identify the
+particular released media associated with this track.
 
 #### Returns
 
@@ -1222,15 +1298,16 @@ CombinedTag.musicBrainzDiscId
 
 • `set` **musicBrainzDiscId**(`val`): `void`
 
-Gets the MusicBrainz disc ID of the media represented by the current instance.
+Sets the MusicBrainz disc ID of the media represented by the current instance.
 
-**`inheritdoc`**
+This field represents the MusicBrainz DiscID and is used to uniquely identify the
+particular released media associated with this track.
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `val` | `string` |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `val` | `string` | MusicBrainz DiscID of the media represented by the current instance or `undefined` if no value is present |
 
 #### Returns
 
@@ -1248,7 +1325,8 @@ ___
 
 Gets the MusicBrainz release artist ID of the media represented by the current instance.
 
-**`inheritdoc`**
+This field represents the MusicBrainz ReleaseArtistID, and is used to uniquely
+identify a particular album artist credited with the album.
 
 #### Returns
 
@@ -1260,15 +1338,16 @@ CombinedTag.musicBrainzReleaseArtistId
 
 • `set` **musicBrainzReleaseArtistId**(`val`): `void`
 
-Gets the MusicBrainz release artist ID of the media represented by the current instance.
+Sets the MusicBrainz release artist ID of the media represented by the current instance.
 
-**`inheritdoc`**
+This field represents the MusicBrainz ReleaseArtistID, and is used to uniquely
+identify a particular album artist credited with the album.
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `val` | `string` |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `val` | `string` | MusicBrainz ReleaseArtistID of the media represented by the current instance or `undefined` if no value is present |
 
 #### Returns
 
@@ -1286,7 +1365,11 @@ ___
 
 Gets the MusicBrainz release country of the media represented by the current instance.
 
-**`inheritdoc`**
+This field represents the MusicBrainz ReleaseCountry which describes the country in
+which an album was released. Note that the release country of an album is not
+necessarily the country in which it was produced. The label itself will typically be
+more relevant. Eg, a release on "Foo Records UK" that has "Made in Austria" printed on
+it will likely be a UK release.
 
 #### Returns
 
@@ -1298,15 +1381,19 @@ CombinedTag.musicBrainzReleaseCountry
 
 • `set` **musicBrainzReleaseCountry**(`val`): `void`
 
-Gets the MusicBrainz release country of the media represented by the current instance.
+Sets the MusicBrainz release country of the media represented by the current instance.
 
-**`inheritdoc`**
+This field represents the MusicBrainz ReleaseCountry which describes the country in
+which an album was released. Note that the release country of an album is not
+necessarily the country in which it was produced. The label itself will typically be
+more relevant. Eg, a release on "Foo Records UK" that has "Made in Austria" printed on
+it will likely be a UK release.
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `val` | `string` |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `val` | `string` | MusicBrainz ReleaseCountry of the media represented by the current instance or `undefined` if no value is present |
 
 #### Returns
 
@@ -1324,7 +1411,8 @@ ___
 
 Gets the MusicBrainz release group ID of the media represented by the current instance.
 
-**`inheritdoc`**
+This field represents the MusicBrainz ReleaseGroupID and is used to uniquely identify
+a particular release group to which this track belongs.
 
 #### Returns
 
@@ -1336,15 +1424,16 @@ CombinedTag.musicBrainzReleaseGroupId
 
 • `set` **musicBrainzReleaseGroupId**(`val`): `void`
 
-Gets the MusicBrainz release group ID of the media represented by the current instance.
+Sets the MusicBrainz release group ID of the media represented by the current instance.
 
-**`inheritdoc`**
+This field represents the MusicBrainz ReleaseGroupID and is used to uniquely identify
+a particular release group to which this track belongs.
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `val` | `string` |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `val` | `string` | MusicBrainz ReleaseGroupID of the media represented by the current instance or `undefined` if no value is present |
 
 #### Returns
 
@@ -1362,7 +1451,8 @@ ___
 
 Gets the MusicBrainz release ID of the media represented by the current instance.
 
-**`inheritdoc`**
+This field represents the MusicBrains ReleaseID and is used to uniquely identify a
+particular release to which this track belongs.
 
 #### Returns
 
@@ -1374,15 +1464,16 @@ CombinedTag.musicBrainzReleaseId
 
 • `set` **musicBrainzReleaseId**(`val`): `void`
 
-Gets the MusicBrainz release ID of the media represented by the current instance.
+Sets the MusicBrainz release ID of the media represented by the current instance.
 
-**`inheritdoc`**
+This field represents the MusicBrains ReleaseID and is used to uniquely identify a
+particular release to which this track belongs.
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `val` | `string` |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `val` | `string` | MusicBrainz ReleaseID of the media represented by the current instance or `undefined` if no value is present |
 
 #### Returns
 
@@ -1400,7 +1491,8 @@ ___
 
 Gets the MusicBrainz release status of the media represented by the current instance.
 
-**`inheritdoc`**
+This field represents the MusicBrainz ReleaseStatus used to describe how 'official' a
+release is. Common statuses are: `Official`, `Promotion`, `Bootleg`, `Pseudo-release`.
 
 #### Returns
 
@@ -1412,15 +1504,16 @@ CombinedTag.musicBrainzReleaseStatus
 
 • `set` **musicBrainzReleaseStatus**(`val`): `void`
 
-Gets the MusicBrainz release status of the media represented by the current instance.
+Sets the MusicBrainz release status of the media represented by the current instance.
 
-**`inheritdoc`**
+This field represents the MusicBrainz ReleaseStatus used to describe how 'official' a
+release is. Common statuses are: `Official`, `Promotion`, `Bootleg`, `Pseudo-release`.
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `val` | `string` |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `val` | `string` | MusicBrainz ReleaseStatus of the media represented by the current instance or `undefined` if no value is present |
 
 #### Returns
 
@@ -1438,7 +1531,14 @@ ___
 
 Gets the MusicBrainz release type of the media represented by the current instance.
 
-**`inheritdoc`**
+This field represents the MusicBrainz ReleaseType that describes what kind of release
+ a release is. Common types are: `Single`, `Album`, `EP`, `Compilation`, `Soundtrack,
+ `SpokenWord`, `Interview`, `Audiobook`, `Live`, `Remix`, and `Other`. Careful thought
+ must be given when using this field to decide if a particular track "is a compilation".
+
+@returns
+    MusicBrainz ReleaseType of the media represented by the current instance or
+    `undefined` if no value is present
 
 #### Returns
 
@@ -1450,9 +1550,15 @@ CombinedTag.musicBrainzReleaseType
 
 • `set` **musicBrainzReleaseType**(`val`): `void`
 
-Gets the MusicBrainz release type of the media represented by the current instance.
+Sets the MusicBrainz release type of the media represented by the current instance.
 
-**`inheritdoc`**
+This field represents the MusicBrainz ReleaseType that describes what kind of release
+a release is. Common types are: `Single`, `Album`, `EP`, `Compilation`, `Soundtrack,
+`SpokenWord`, `Interview`, `Audiobook`, `Live`, `Remix`, and `Other`. Careful thought
+must be given when using this field to decide if a particular track "is a compilation".
+
+@param value MusicBrainz ReleaseType of the media represented by the current instance or
+    `undefined` if no value is present
 
 #### Parameters
 
@@ -1477,7 +1583,8 @@ ___
 Gets the MusicBrainz track ID of the media represented by the media represented by the
 current instance.
 
-**`inheritdoc`**
+This field represents the MusicBrainz TrackID and is used to uniquely identify a
+particular track.
 
 #### Returns
 
@@ -1489,16 +1596,17 @@ CombinedTag.musicBrainzTrackId
 
 • `set` **musicBrainzTrackId**(`val`): `void`
 
-Gets the MusicBrainz track ID of the media represented by the media represented by the
+Sets the MusicBrainz track ID of the media represented by the media represented by the
 current instance.
 
-**`inheritdoc`**
+This field represents the MusicBrainz TrackID and is used to uniquely identify a
+particular track.
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `val` | `string` |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `val` | `string` | MusicBrainz TrackID of the media represented by the current instance or `undefined` if no value is present |
 
 #### Returns
 
@@ -1516,7 +1624,8 @@ ___
 
 Gets the MusicIP PUID of the media represented by the current instance.
 
-**`inheritdoc`**
+This field represents the MusicIP PUID, an acoustic fingerprint identifier. It
+identifies wht this track "sounds like".
 
 #### Returns
 
@@ -1528,15 +1637,16 @@ CombinedTag.musicIpId
 
 • `set` **musicIpId**(`val`): `void`
 
-Gets the MusicIP PUID of the media represented by the current instance.
+Sets the MusicIP PUID of the media represented by the current instance.
 
-**`inheritdoc`**
+This field represents the MusicIP PUID, an acoustic fingerprint identifier. It
+identifies wht this track "sounds like".
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `val` | `string` |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `val` | `string` | MusicIP PUID of the media represented by the current instance or `undefined` if no value is present |
 
 #### Returns
 
@@ -1554,7 +1664,13 @@ ___
 
 Gets the performers or artists who performed in the media described by the current instance.
 
-**`inheritdoc`**
+This field is most commonly called "Artists" in audio media or "Actors" in video
+media, and should be used to represent each artist/actor appearing in the media. It can
+be simple in the form of "Above & Beyond" or more complicated in the form of
+"Jono Grant, Tony McGuinness, Paavo Siljamäki", depending on the preferences of the
+user and the degree to which they organize their media collection.
+As the preference of the user may vary, applications should avoid limiting the user in
+what constitutes the performers field - especially in regard to number of performers.
 
 #### Returns
 
@@ -1566,15 +1682,21 @@ CombinedTag.performers
 
 • `set` **performers**(`val`): `void`
 
-Gets the performers or artists who performed in the media described by the current instance.
+Sets the performers or artists who performed in the media described by the current instance.
 
-**`inheritdoc`**
+This field is most commonly called "Artists" in audio media or "Actors" in video
+media, and should be used to represent each artist/actor appearing in the media. It can
+be simple in the form of "Above & Beyond" or more complicated in the form of
+"Jono Grant, Tony McGuinness, Paavo Siljamäki", depending on the preferences of the
+user and the degree to which they organize their media collection.
+As the preference of the user may vary, applications should avoid limiting the user in
+what constitutes the performers field - especially with regards to number of performers.
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `val` | `string`[] |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `val` | `string`[] | Performers who performed in the media described by the current instance or an empty array if no value is present. |
 
 #### Returns
 
@@ -1595,7 +1717,9 @@ for music. This must match the [performers](FlacTag.md#performers) array (for ea
 role). Several roles for the same artist/actor can be separated with semicolons. For
 example: "Bass; Backing Vocals; Vibraphone".
 
-**`inheritdoc`**
+It is highly important to match each role to the performers. This means that an entry
+in the [performersRole](FlacTag.md#performersrole) array is `undefined` to maintain the relationship between
+`performers[i]` and `performersRole[i]`.
 
 #### Returns
 
@@ -1607,18 +1731,20 @@ CombinedTag.performersRole
 
 • `set` **performersRole**(`val`): `void`
 
-Gets the characters portrayed by an actor for a video or instruments played by a musician
+Sets the characters portrayed by an actor for a video or instruments played by a musician
 for music. This must match the [performers](FlacTag.md#performers) array (for each person, correspond one/more
 role). Several roles for the same artist/actor can be separated with semicolons. For
 example: "Bass; Backing Vocals; Vibraphone".
 
-**`inheritdoc`**
+It is highly important to match each role to the performers. This means that an entry
+in the [performersRole](FlacTag.md#performersrole) array is `undefined` to maintain the relationship between
+`performers[i]` and `performersRole[i]`.
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `val` | `string`[] |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `val` | `string`[] | Array containing the roles played by the performers in the media described by the current instance, or an empty array if no value is present. |
 
 #### Returns
 
@@ -1637,7 +1763,9 @@ ___
 Gets the sortable names of the performers or artists who performed in the media described by
 the current instance.
 
-**`inheritdoc`**
+This is used to provide more control over how the media is sorted. Typical uses are to
+skip articles or sort by last name. For example, "The Pillows" might be sorted as
+"Pillows, The". See also: [performers](FlacTag.md#performers)
 
 #### Returns
 
@@ -1652,13 +1780,15 @@ CombinedTag.performersSort
 Gets the sortable names of the performers or artists who performed in the media described by
 the current instance.
 
-**`inheritdoc`**
+This is used to provide more control over how the media is sorted. Typical uses are to
+skip articles or sort by last name. For example, "The Pillows" might be sorted as
+"Pillows, The". See also: [performers](FlacTag.md#performers)
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `val` | `string`[] |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `val` | `string`[] | Sortable names for the performers who performed in the media described by the current instance, or an empty array if no value is present. |
 
 #### Returns
 
@@ -1676,9 +1806,14 @@ ___
 
 Gets a collection of pictures associated with the media represented by the current instance.
 
-**`inheritdoc`**
+Typically, this value is used to store an album cover or icon to use for the file, but
+it is capable of holding any type of image or file, including pictures of the band, the
+recording studio, the concert, etc.
+
+**`Remarks`**
+
 For FLAC files, FLAC-style pictures are preferentially returned. If those don't exist the
-pictures that are stored in the
+    pictures that are stored in the combined tag.
 
 #### Returns
 
@@ -1690,16 +1825,21 @@ CombinedTag.pictures
 
 • `set` **pictures**(`value`): `void`
 
-Gets a collection of pictures associated with the media represented by the current instance.
+Sets a collection of pictures associated with the media represented by the current instance.
 
-**`inheritdoc`**
+Typically, this value is used to store an album cover or icon to use for the file, but
+it is capable of holding any type of image or file, including pictures of the band, the
+recording studio, the concert, etc.
+
+**`Remarks`**
+
 For FLAC files, pictures are preferentially stored in FLAC-style picture blocks.
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `value` | [`IPicture`](../interfaces/IPicture.md)[] |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `value` | [`IPicture`](../interfaces/IPicture.md)[] | Array containing a collection of pictures associated with the media represented by the current instance or an empty array if no pictures are present. |
 
 #### Returns
 
@@ -1717,8 +1857,6 @@ ___
 
 Gets the publisher of the track.
 
-**`inheritdoc`**
-
 #### Returns
 
 `string`
@@ -1729,15 +1867,13 @@ CombinedTag.publisher
 
 • `set` **publisher**(`val`): `void`
 
-Gets the publisher of the track.
-
-**`inheritdoc`**
+Sets the publisher of the track.
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `val` | `string` |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `val` | `string` | Publisher of the track or `undefined` if no value is set |
 
 #### Returns
 
@@ -1755,8 +1891,6 @@ ___
 
 Gets the remixer of the track.
 
-**`inheritdoc`**
-
 #### Returns
 
 `string`
@@ -1767,15 +1901,13 @@ CombinedTag.remixedBy
 
 • `set` **remixedBy**(`val`): `void`
 
-Gets the remixer of the track.
-
-**`inheritdoc`**
+Sets the remixer of the track.
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `val` | `string` |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `val` | `string` | Remixer of the track or `undefined` if no value is set |
 
 #### Returns
 
@@ -1793,8 +1925,6 @@ ___
 
 Gets the ReplayGain album gain in dB.
 
-**`inheritdoc`**
-
 #### Returns
 
 `number`
@@ -1805,15 +1935,13 @@ CombinedTag.replayGainAlbumGain
 
 • `set` **replayGainAlbumGain**(`val`): `void`
 
-Gets the ReplayGain album gain in dB.
-
-**`inheritdoc`**
+Sets the ReplayGain album gain in dB.
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `val` | `number` |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `val` | `number` | Album gain as per the ReplayGain specifications, in dB, or `NaN` if no value is set |
 
 #### Returns
 
@@ -1831,8 +1959,6 @@ ___
 
 Gets the ReplayGain album peak sample.
 
-**`inheritdoc`**
-
 #### Returns
 
 `number`
@@ -1843,15 +1969,13 @@ CombinedTag.replayGainAlbumPeak
 
 • `set` **replayGainAlbumPeak**(`val`): `void`
 
-Gets the ReplayGain album peak sample.
-
-**`inheritdoc`**
+Sets the ReplayGain album peak sample.
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `val` | `number` |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `val` | `number` | Album peak as per the ReplayGain specifications, or `NaN` if no value is set |
 
 #### Returns
 
@@ -1869,8 +1993,6 @@ ___
 
 Gets the ReplayGain track gain in dB.
 
-**`inheritdoc`**
-
 #### Returns
 
 `number`
@@ -1881,15 +2003,13 @@ CombinedTag.replayGainTrackGain
 
 • `set` **replayGainTrackGain**(`val`): `void`
 
-Gets the ReplayGain track gain in dB.
-
-**`inheritdoc`**
+Sets the ReplayGain track gain in dB.
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `val` | `number` |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `val` | `number` | Track gain as per ReplayGain specifications, in dB, or `NaN` if no value is set |
 
 #### Returns
 
@@ -1907,8 +2027,6 @@ ___
 
 Gets the ReplayGain track peak sample.
 
-**`inheritdoc`**
-
 #### Returns
 
 `number`
@@ -1919,15 +2037,13 @@ CombinedTag.replayGainTrackPeak
 
 • `set` **replayGainTrackPeak**(`val`): `void`
 
-Gets the ReplayGain track peak sample.
-
-**`inheritdoc`**
+Sets the ReplayGain track peak sample.
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `val` | `number` |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `val` | `number` | Track peak as per the ReplayGain specifications, or `NaN` if no value is set |
 
 #### Returns
 
@@ -1945,9 +2061,9 @@ ___
 
 Gets the size of the tag in bytes on disk as it was read from disk.
 
-**`inheritdoc`**
+**`Remarks`**
 
-**`remarks`** Note that tags may not appear contiguously in a file. Access the [tags](FlacTag.md#tags)
+Note that tags may not appear contiguously in a file. Access the [tags](FlacTag.md#tags)
     contained in this object to see the size of each tag on the disk.
 
 #### Returns
@@ -1962,13 +2078,13 @@ ___
 
 ### startTag
 
-• `get` **startTag**(): `default`
+• `get` **startTag**(): [`StartTag`](StartTag.md)
 
 Gets the collection of tags appearing at the start of the file.
 
 #### Returns
 
-`default`
+[`StartTag`](StartTag.md)
 
 ___
 
@@ -1978,7 +2094,9 @@ ___
 
 Gets a description, one-line. It represents the tagline of the vide/music.
 
-**`inheritdoc`**
+This field gives a nice/short precision to the title, which is typically below the
+title on the front cover of the media. For example for "Ocean's 13", this would be
+"Revenge is a funny thing".
 
 #### Returns
 
@@ -1990,15 +2108,17 @@ CombinedTag.subtitle
 
 • `set` **subtitle**(`val`): `void`
 
-Gets a description, one-line. It represents the tagline of the vide/music.
+Sets a description, one-line. It represents the tagline of the vide/music.
 
-**`inheritdoc`**
+This field gives a nice/short precision to the title, which is typically below the
+title on the front cover of the media. For example for "Ocean's 13", this would be
+"Revenge is a funny thing".
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `val` | `string` |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `val` | `string` | Subtitle of the media represented by the current instance or `undefined` if no value is present |
 
 #### Returns
 
@@ -2034,10 +2154,6 @@ ___
 Gets the tag types contained in the current instance. A bit wise combined [TagTypes](../enums/TagTypes.md)
 containing the tag types contained in the current instance.
 
-**`remarks`** For a standard tag, the value should be intuitive. For example, Id3v2Tag objects have
-    a value of [TagTypes.Id3v2](../enums/TagTypes.md#id3v2). However, for CombinedTag type objects, they may
-    contain multiple or no types.
-
 #### Returns
 
 [`TagTypes`](../enums/TagTypes.md)
@@ -2055,7 +2171,9 @@ ___
 Gets all tags contained within the current instance. If the tags within this tag are also
 [CombinedTag](CombinedTag.md)s, the retrieval will recurse and return a flat list of nested tags.
 
-**`remarks`** Modifications of the returned array will not be retained.
+**`Remarks`**
+
+Modifications of the returned array will not be retained.
 
 #### Returns
 
@@ -2073,8 +2191,6 @@ ___
 
 Gets the title for the media described by the current instance.
 
-**`inheritdoc`**
-
 #### Returns
 
 `string`
@@ -2085,15 +2201,17 @@ CombinedTag.title
 
 • `set` **title**(`val`): `void`
 
-Gets the title for the media described by the current instance.
+Sets the title for the media described by the current instance.
 
-**`inheritdoc`**
+The title is most commonly the name of the song, episode or a movie title. For example
+"Time Won't Me Go" (a song by The Bravery), "Three Stories" (an episode of House MD), or
+"Fear and Loathing In Las Vegas" (a movie).
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `val` | `string` |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `val` | `string` | Title of the media described by the current instance or `undefined` if no value is present. |
 
 #### Returns
 
@@ -2111,7 +2229,7 @@ ___
 
 Gets the sortable name for the title of the media described by the current instance.
 
-**`inheritdoc`**
+Possibly used to sort compilations or episodic content.
 
 #### Returns
 
@@ -2123,15 +2241,15 @@ CombinedTag.titleSort
 
 • `set` **titleSort**(`val`): `void`
 
-Gets the sortable name for the title of the media described by the current instance.
+Sets the sortable name for the title of the media described by the current instance.
 
-**`inheritdoc`**
+Possibly used to sort compilations or episodic content.
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `val` | `string` |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `val` | `string` | Sortable name of the media described by the current instance or `undefined` if no value is present |
 
 #### Returns
 
@@ -2150,7 +2268,11 @@ ___
 Gets the position of the media represented by the current instance in its containing album
 or season (for a series).
 
-**`inheritdoc`**
+This value should be the same as is listed on the album cover and no more than
+[trackCount](FlacTag.md#trackcount), if [trackCount](FlacTag.md#trackcount) is non-zero.
+Most tagging formats store this as a string. To help sorting, a two-digit zero-padded
+value is used in the resulting tag.
+For a series, this property represents the episodes in a season of the series.
 
 #### Returns
 
@@ -2162,16 +2284,20 @@ CombinedTag.track
 
 • `set` **track**(`val`): `void`
 
-Gets the position of the media represented by the current instance in its containing album
+Sets the position of the media represented by the current instance in its containing album
 or season (for a series).
 
-**`inheritdoc`**
+This value should be the same as is listed on the album cover and no more than
+[trackCount](FlacTag.md#trackcount), if [trackCount](FlacTag.md#trackcount) is non-zero.
+Most tagging formats store this as a string. To help sorting, a two-digit zero-padded
+value is used in the resulting tag.
+For a series, this property represents the episodes in a season of the series.
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `val` | `number` |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `val` | `number` | Position of the media represented by the current instance in its containing album or `0` if not specified. |
 
 #### Returns
 
@@ -2187,10 +2313,11 @@ ___
 
 • `get` **trackCount**(): `number`
 
-Gets the number of tracks in the album or the number of episodes in a series of the media
+Gets the number of tracks on the album or the number of episodes in a series of the media
 represented by the current instance.
 
-**`inheritdoc`**
+If non-zero, this value should be equal to or greater than [track](FlacTag.md#track). If
+[track](FlacTag.md#track) is `0`, this value should also be `0`.
 
 #### Returns
 
@@ -2202,16 +2329,17 @@ CombinedTag.trackCount
 
 • `set` **trackCount**(`val`): `void`
 
-Gets the number of tracks in the album or the number of episodes in a series of the media
+Sets the number of tracks on the album or the number of episodes in a series of the media
 represented by the current instance.
 
-**`inheritdoc`**
+If non-zero, this value should be equal to or greater than [track](FlacTag.md#track). If
+[track](FlacTag.md#track) is `0`, this value should also be `0`.
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `val` | `number` |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `val` | `number` | Number of tracks on the album or number of episodes in a series of the media represented by the current instance or `0` if not specified. |
 
 #### Returns
 
@@ -2241,7 +2369,10 @@ ___
 
 Gets the year that the media represented by the current instance was recorded.
 
-**`inheritdoc`**
+Years greater than 9999 cannot be stored by most tagging formats and will be cleared
+if a higher value is set. Some tagging formats store higher precision dates which will
+be truncated when this property is set. Format specific implementations are necessary to
+access the higher precision values.
 
 #### Returns
 
@@ -2253,15 +2384,18 @@ CombinedTag.year
 
 • `set` **year**(`val`): `void`
 
-Gets the year that the media represented by the current instance was recorded.
+Sets the year that the media represented by the current instance was recorded.
 
-**`inheritdoc`**
+Years greater than 9999 cannot be stored by most tagging formats and will be cleared
+if a higher value is set. Some tagging formats store higher precision dates which will
+be truncated when this property is set. Format specific implementations are necessary to
+access the higher precision values.
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `val` | `number` |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `val` | `number` | Year that the media represented by the current instance was created or `0` if no value is present. |
 
 #### Returns
 
@@ -2277,11 +2411,13 @@ CombinedTag.year
 
 ▸ `Protected` **addTag**(`tag`): `void`
 
+Adds the provided tag to the list of tags contained in the current instance.
+
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `tag` | [`Tag`](Tag.md) |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `tag` | [`Tag`](Tag.md) | Tag to add to the current instance. |
 
 #### Returns
 
@@ -2299,8 +2435,6 @@ ___
 
 Clears all values stored in the current instance.
 
-**`remarks`** The clearing procedure is format specific and should clear all values.
-
 #### Returns
 
 `void`
@@ -2316,12 +2450,12 @@ ___
 ▸ **copyTo**(`target`, `overwrite`): `void`
 
 Copies the values from the current instance to another [Tag](Tag.md), optionally overwriting
-    existing values.
+existing values.
 
-**`remarks`** This method only copies the most basic values when copying between different tag
-    formats. However, if `target` is of the same type as the current instance,
-    more advanced copying may be done. For example if both `this` and `target` are
-    [Id3v2Tag](Id3v2Tag.md), all frames will be copied to the target.
+This method only copies the most basic values when copying between different tag
+formats. However, if `target` is of the same type as the current instance,
+more advanced copying may be done. For example if both `this` and `target` are
+[Id3v2Tag](Id3v2Tag.md), all frames will be copied to the target.
 
 #### Parameters
 
@@ -2353,13 +2487,11 @@ be thrown.
 | Name | Type | Description |
 | :------ | :------ | :------ |
 | `tagType` | [`TagTypes`](../enums/TagTypes.md) | Type of tag to create |
-| `copy` | `boolean` | Whether or not to copy the contents of the current instance to the newly created     tag instance |
+| `copy` | `boolean` | Whether or not to copy the contents of the current instance to the newly created tag instance |
 
 #### Returns
 
 [`Tag`](Tag.md)
-
-Tag The newly created tag
 
 #### Overrides
 
@@ -2389,7 +2521,7 @@ Gets a tag of the specified tag type if a matching tag exists in the current ins
 
 `TTag`
 
-Tag Tag with specified type, if it exists. `undefined` otherwise.
+Tag with specified type, if it exists. `undefined` otherwise.
 
 #### Inherited from
 
@@ -2440,24 +2572,6 @@ This is used for special cases where the order of tags is important.
 #### Inherited from
 
 [CombinedTag](CombinedTag.md).[replaceTag](CombinedTag.md#replacetag)
-
-___
-
-### setInfoTag
-
-▸ **setInfoTag**(): `void`
-
-Set the tags that represent the tagger software (node-taglib-sharp) itself.
-
-**`remarks`** This is typically a method to call just before saving a tag.
-
-#### Returns
-
-`void`
-
-#### Inherited from
-
-[CombinedTag](CombinedTag.md).[setInfoTag](CombinedTag.md#setinfotag)
 
 ___
 
@@ -2565,11 +2679,13 @@ ___
 
 ▸ `Static` **tagTypeFlagsToArray**(`tagTypes`): [`TagTypes`](../enums/TagTypes.md)[]
 
+Generates an array of tag types that are set in the provided flags value.
+
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `tagTypes` | [`TagTypes`](../enums/TagTypes.md) |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `tagTypes` | [`TagTypes`](../enums/TagTypes.md) | Tag types that have been OR'd together. |
 
 #### Returns
 

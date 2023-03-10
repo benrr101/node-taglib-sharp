@@ -308,8 +308,6 @@ import {SynchronizedTextType, TimestampFormat} from "../../src/id3v2/utilTypes";
         const frame = UrlLinkFrame.fromIdentity(FrameIdentifiers.WCOM);
         frame.text = ["foo"];
         const data = frame.render(4);
-
-
         // Act
         const output = FrameFactory.createFrame(data, undefined, 0, 4, false);
 

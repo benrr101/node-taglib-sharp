@@ -70,7 +70,8 @@ export default class AacAudioHeader implements IAudioCodec {
 
     /**
      * @inheritDoc
-     * @remarks Until the stream length has been set ({@link streamLength}), this will return
+     * @remarks
+     *     Until the stream length has been set ({@link streamLength}), this will return
      *     `undefined`.
      */
     public get durationMilliseconds(): number { return this._durationMilliseconds; }
@@ -101,7 +102,7 @@ export default class AacAudioHeader implements IAudioCodec {
      * @param length maximum number of bytes to search before aborting. Omit to search entire file.
      *     Searching the entire file may take a very long time, it is recommended to always use a
      *     reasonable length here
-     * @returns AacAudioHeader Header found or `undefined` if a header could not be found
+     * @returns Header found or `undefined` if a header could not be found
      */
     public static find(file: File, position: number, length?: number): AacAudioHeader {
         Guards.truthy(file, "file");

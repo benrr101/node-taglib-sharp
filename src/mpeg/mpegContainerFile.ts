@@ -64,10 +64,6 @@ enum MpegFileMarker {
 /**
  * This class extends {@link SandwichFile} to provide tagging and properties support for
  * MPEG-1, MPEG-2, and MPEG-2.5 containerized video files.
- * @remarks A {@link Id3v1Tag} and {@link Id3v2Tag} will be added automatically to any file that
- *     does not contain one. This change does not affect the file until it is saved and can be
- *     reversed using the following method:
- *     `file.removeTags(file.tagTypes & ~file.tagTypesOnDisk);`
  */
 export default class MpegContainerFile extends SandwichFile {
     private static readonly DEFAULT_TAG_LOCATION_MAPPING = new Map<TagTypes, () => boolean>([

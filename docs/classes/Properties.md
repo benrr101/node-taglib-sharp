@@ -2,6 +2,11 @@
 
 # Class: Properties
 
+This interface provides information specific to lossless audio codecs.
+When dealing with an [ICodec](../interfaces/ICodec.md), if [mediaTypes](../interfaces/ICodec.md#mediatypes) contains
+[LosslessAudio](../enums/MediaTypes.md#losslessaudio), it is safe to assume that the object also inherits
+[ILosslessAudioCodec](../interfaces/ILosslessAudioCodec.md) and can be recast without issue.
+
 ## Implements
 
 - [`ILosslessAudioCodec`](../interfaces/ILosslessAudioCodec.md)
@@ -43,7 +48,7 @@ duration.
 
 | Name | Type | Default value | Description |
 | :------ | :------ | :------ | :------ |
-| `durationMilli` | `number` | `0` | Duration of the media in milliseconds or 0 if the duration is to be        read from the codecs. |
+| `durationMilli` | `number` | `0` | Duration of the media in milliseconds or 0 if the duration is to be read from the codecs. |
 | `codecs` | [`ICodec`](../interfaces/ICodec.md)[] | `[]` | Array of codecs to be used in the new instance. |
 
 ## Accessors
@@ -122,7 +127,9 @@ ___
 
 Gets the codecs contained in the current instance.
 
-**`remarks`** The list of codecs should not be modified. As such, the returned codec list is a
+**`Remarks`**
+
+The list of codecs should not be modified. As such, the returned codec list is a
     copy of codec list stored in this instance.
 
 #### Returns
@@ -136,7 +143,7 @@ ___
 • `get` **description**(): `string`
 
 Gets a string description of the media represented by the current instance. Values are
-joined by semi-colons.
+joined by semicolons.
 
 #### Returns
 

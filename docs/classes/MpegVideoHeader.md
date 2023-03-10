@@ -64,7 +64,9 @@ ___
 
 Duration of the media in milliseconds represented by the current instance.
 
-**`todo:`** Can we calculate the duration?
+**`Remarks`**
+
+For MPEG, this is always 0
 
 #### Returns
 
@@ -96,7 +98,7 @@ ___
 
 • `get` **videoBitrate**(): `number`
 
-**`inheritdoc`**
+**`Inherit Doc`**
 
 #### Returns
 
@@ -108,7 +110,7 @@ ___
 
 • `get` **videoFrameRate**(): `number`
 
-**`inheritdoc`**
+**`Inherit Doc`**
 
 #### Returns
 

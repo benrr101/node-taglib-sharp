@@ -262,8 +262,7 @@ export class TextInformationFrame extends Frame {
      * list of text information frames.
      * @param frames List of frames to search
      * @param ident Frame identifier to search for
-     * @returns TextInformationFrame Matching frame if it exists in `tag`, `undefined` if
-     *     a matching frame was not found
+     * @returns Matching frame if it exists in `tag`, `undefined` if a matching frame was not found
      */
     public static findTextInformationFrame(
         frames: TextInformationFrame[],
@@ -290,7 +289,7 @@ export class TextInformationFrame extends Frame {
      * Renders the current instance, encoded in a specified ID3v2 version.
      * @param version ID3v2 version to use when encoding the current instance. Must be a positive
      *     8-bit integer.
-     * @returns ByteVector Rendered version of the current instance.
+     * @returns Rendered version of the current instance.
      */
     public render(version: number): ByteVector {
         Guards.byte(version, "version");
@@ -699,8 +698,7 @@ export class UserTextInformationFrame extends TextInformationFrame {
      * @param frames Object to search in
      * @param description Description to use to match the frame in the `tag`
      * @param caseSensitive Whether or not to search for the frame case-sensitively.
-     * @returns UserTextInformationFrame Frame containing the matching user, `undefined` if a match
-     *     was not found
+     * @returns Frame containing the matching user, `undefined` if a match was not found
      */
     public static findUserTextInformationFrame(
         frames: UserTextInformationFrame[],

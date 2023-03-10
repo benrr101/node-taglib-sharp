@@ -2,6 +2,9 @@
 
 # Class: Id3v2TagHeader
 
+This class provides a representation of an ID3v2 tag header which can be read from and written
+to disk.
+
 ## Table of contents
 
 ### Constructors
@@ -72,7 +75,7 @@ Sets the flags applied to the current instance.
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `value` | [`Id3v2TagHeaderFlags`](../enums/Id3v2TagHeaderFlags.md) | Bitwise combined [Id3v2TagHeaderFlags](../enums/Id3v2TagHeaderFlags.md) value containing the flags to apply to the     current instance. |
+| `value` | [`Id3v2TagHeaderFlags`](../enums/Id3v2TagHeaderFlags.md) | Bitwise combined [Id3v2TagHeaderFlags](../enums/Id3v2TagHeaderFlags.md) value containing the flags to apply to the current instance. |
 
 #### Returns
 
@@ -129,7 +132,7 @@ node-taglib-sharp. Some software may refuse to read tags with a non-zero value.
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `value` | `number` | Version revision number of the tag represented by the current instance. Must be     an 8-bit unsigned integer. |
+| `value` | `number` | Version revision number of the tag represented by the current instance. Must be an 8-bit unsigned integer. |
 
 #### Returns
 

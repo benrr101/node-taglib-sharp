@@ -2,6 +2,8 @@
 
 # Class: Id3v2Tag
 
+Extends [Tag](Tag.md) to provide support for reading and writing tags stored in the ID3v2 format.
+
 ## Hierarchy
 
 - [`Tag`](Tag.md)
@@ -87,14 +89,10 @@
 - [getFramesByClassType](Id3v2Tag.md#getframesbyclasstype)
 - [getFramesByIdentifier](Id3v2Tag.md#getframesbyidentifier)
 - [getTextAsString](Id3v2Tag.md#gettextasstring)
-- [parse](Id3v2Tag.md#parse)
-- [readFromEnd](Id3v2Tag.md#readfromend)
-- [readFromStart](Id3v2Tag.md#readfromstart)
 - [removeFrame](Id3v2Tag.md#removeframe)
 - [removeFrames](Id3v2Tag.md#removeframes)
 - [render](Id3v2Tag.md#render)
 - [replaceFrame](Id3v2Tag.md#replaceframe)
-- [setInfoTag](Id3v2Tag.md#setinfotag)
 - [setNumberFrame](Id3v2Tag.md#setnumberframe)
 - [setTextFrame](Id3v2Tag.md#settextframe)
 - [firstInGroup](Id3v2Tag.md#firstingroup)
@@ -112,7 +110,20 @@
 
 • `get` **album**(): `string`
 
-**`inheritdoc`** TALB frame
+Gets the album of the media represented by the current instance. For video media, this
+represents the collection the video belongs to.
+
+This field represents the name of the album the media belongs to. In the case of a
+boxed set, it should be the name of the entire set rather than the individual disc. In
+the case of a series, this should be the name of the series, rather than the season of a
+series.
+
+For example, "Kintsugi" (an album by Death Cab for Cutie), "The Complete Red Green Show"
+(a boxed set of TV episodes), or "Shark Tank" (a series with several seasons).
+
+**`Remarks`**
+
+Stored in the `TALB` frame
 
 #### Returns
 
@@ -124,13 +135,26 @@ Tag.album
 
 • `set` **album**(`value`): `void`
 
-**`inheritdoc`** TALB frame
+Sets the album of the media represented by the current instance. For video media, this
+represents the collection the video belongs to.
+
+This field represents the name of the album the media belongs to. In the case of a
+boxed set, it should be the name of the entire set rather than the individual disc. In
+the case of a series, this should be the name of the series, rather than the season of a
+series.
+
+For example, "Kintsugi" (an album by Death Cab for Cutie), "The Complete Red Green Show"
+(a boxed set of TV episodes), or "Shark Tank" (a series with several seasons).
+
+**`Remarks`**
+
+Stored in the `TALB` frame
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `value` | `string` |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `value` | `string` | of the media represented by the current instance or `undefined` if no value is present |
 
 #### Returns
 
@@ -146,7 +170,20 @@ ___
 
 • `get` **albumArtists**(): `string`[]
 
-**`inheritdoc`** TSO2 frame
+Gets the band or artist who is credited in the creation of the entire album or
+collection containing the media described by the current instance.
+
+This field is typically optional but aids in the sorting of compilations or albums
+with multiple artist. For example, if an album has several artists, sorting by artist
+will split up albums by the same artist. Having a single album artist for an entire
+album solves this problem.
+As this value is to be used as a sorting key, it should be used with less variation
+than [performers](Id3v2Tag.md#performers). Where performers can be broken into multiple artists, it is
+best to stick to a single name. Eg, "Super8 & Tab"
+
+**`Remarks`**
+
+Stored in the `TSO2` frame
 
 #### Returns
 
@@ -158,13 +195,26 @@ Tag.albumArtists
 
 • `set` **albumArtists**(`value`): `void`
 
-**`inheritdoc`** TSO2 frame
+Sets the bands or artists who is credited in the creation of the entire album or
+collection containing the media described by the current instance.
+
+This field is typically optional but aids in the sorting of compilations or albums
+with multiple artist. For example, if an album has several artists, sorting by artist
+will split up albums by the same artist. Having a single album artist for an entire
+album solves this problem.
+As this value is to be used as a sorting key, it should be used with less variation
+than [performers](Id3v2Tag.md#performers). Where performers can be broken into multiple artists, it is
+best to stick to a single name. Eg, "Super8 & Tab"
+
+**`Remarks`**
+
+Stored in the `TSO2` frame
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `value` | `string`[] |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `value` | `string`[] | Band or artist credited with the creation of the entire album or collection containing the media described by the current instance or an empty array if no value is present |
 
 #### Returns
 
@@ -180,7 +230,20 @@ ___
 
 • `get` **albumArtistsSort**(): `string`[]
 
-**`inheritdoc`** TPE2 frame
+Gets the sortable names of the bands/artists who are credited with creating the entire
+album or collection containing the media described by the current instance. See also:
+[albumArtists](Id3v2Tag.md#albumartists)
+
+This is used to provide more control over how the media is sorted. Typical uses are to
+skip articles or sort by last name. For example "Ben Folds" might be sorted as
+"Folds, Ben".
+As this value is to be used as a sorting key, it should be used with less variation than
+[performers](Id3v2Tag.md#performers). Where [performers](Id3v2Tag.md#performers) can be broken into multiple performers, it is
+best to stick to a single album artist. Eg, "Van Buuren, Armin"
+
+**`Remarks`**
+
+Stored in the `TPE2` frame
 
 #### Returns
 
@@ -192,13 +255,26 @@ Tag.albumArtistsSort
 
 • `set` **albumArtistsSort**(`value`): `void`
 
-**`inheritdoc`** TPE2 frame
+Sets the sortable names of the bands/artists who are credited with creating the entire
+album or collection containing the media described by the current instance. See also:
+[albumArtists](Id3v2Tag.md#albumartists)
+
+This is used to provide more control over how the media is sorted. Typical uses are to
+skip articles or sort by last name. For example "Ben Folds" might be sorted as
+"Folds, Ben".
+As this value is to be used as a sorting key, it should be used with less variation than
+[performers](Id3v2Tag.md#performers). Where [performers](Id3v2Tag.md#performers) can be broken into multiple performers, it is
+best to stick to a single album artist. Eg, "Van Buuren, Armin"
+
+**`Remarks`**
+
+Stored in the `TPE2` frame
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `value` | `string`[] |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `value` | `string`[] | Sortable names for the bands/artists are credited with the creation of the entire album or collection containing the media described by the current instance, or an empty array if no value is present. |
 
 #### Returns
 
@@ -214,7 +290,15 @@ ___
 
 • `get` **albumSort**(): `string`
 
-**`inheritdoc`** TSOA frame
+Gets the sortable name of the album title of the media represented by the current instance.
+See also: [album](Id3v2Tag.md#album)
+
+This field is typically optional but aids in sort of compilations or albums with
+similar titles.
+
+**`Remarks`**
+
+Stored in the `TSOA` frame
 
 #### Returns
 
@@ -226,13 +310,21 @@ Tag.albumSort
 
 • `set` **albumSort**(`value`): `void`
 
-**`inheritdoc`** TSOA frame
+Sets the sortable name of the album title of the media represented by the current instance.
+See also: [album](Id3v2Tag.md#album)
+
+This field is typically optional but aids in sort of compilations or albums with
+similar titles.
+
+**`Remarks`**
+
+Stored in the `TSOA` frame
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `value` | `string` |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `value` | `string` | Sortable name for the album title of the media or `undefined` if the value is not present |
 
 #### Returns
 
@@ -248,7 +340,14 @@ ___
 
 • `get` **amazonId**(): `string`
 
-**`inheritdoc`** TXXX:ASIN
+Gets the Amazon ID of the media represented by the current instance.
+
+This field represents the AmazonID, also called the ASIN, and is used to uniquely
+identify the particular track or album in the Amazon catalog.
+
+**`Remarks`**
+
+via TXXX:ASIN
 
 #### Returns
 
@@ -260,13 +359,20 @@ Tag.amazonId
 
 • `set` **amazonId**(`value`): `void`
 
-**`inheritdoc`** TXXX:ASIN
+Sets the Amazon ID of the media represented by the current instance.
+
+This field represents the AmazonID, also called the ASIN, and is used to uniquely
+identify the particular track or album in the Amazon catalog.
+
+**`Remarks`**
+
+via TXXX:ASIN
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `value` | `string` |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `value` | `string` | Amazon ID of the media represented by the current instance or `undefined` if no value is present |
 
 #### Returns
 
@@ -282,7 +388,15 @@ ___
 
 • `get` **beatsPerMinute**(): `number`
 
-**`inheritdoc`** TBPM frame
+Gets the number of beats per minute in the audio of the media represented by the current
+instance.
+
+This field is useful for DJ's who are trying to beat match tracks. It should be
+calculated from the audio or pulled from a database.
+
+**`Remarks`**
+
+Stored in the `TBPM` frame
 
 #### Returns
 
@@ -294,13 +408,21 @@ Tag.beatsPerMinute
 
 • `set` **beatsPerMinute**(`value`): `void`
 
-**`inheritdoc`** TBPM frame
+Sets the number of beats per minute in the audio of the media represented by the current
+instance.
+
+This field is useful for DJ's who are trying to beat match tracks. It should be
+calculated from the audio or pulled from a database.
+
+**`Remarks`**
+
+Stored in the `TBPM` frame
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `value` | `number` |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `value` | `number` | Beats per minute of the audio in the media represented by the current instance, or `0` if not specified |
 
 #### Returns
 
@@ -316,7 +438,17 @@ ___
 
 • `get` **comment**(): `string`
 
-**`inheritdoc`** COMM frame
+Gets a user comment on the media represented by the current instance.
+
+This field should be used to store user notes and comments. There is no constraint on
+what text can be stored here, but it should not contain programmatic data.
+Because this field contains notes the the user might think of while consuming the media,
+it may be useful for an application to make this field easily accessible, perhaps even
+including it in the main interface.
+
+**`Remarks`**
+
+Stored in the `COMM` frame
 
 #### Returns
 
@@ -328,13 +460,23 @@ Tag.comment
 
 • `set` **comment**(`value`): `void`
 
-**`inheritdoc`** COMM frame
+Sets a user comment on the media represented by the current instance.
+
+This field should be used to store user notes and comments. There is no constraint on
+what text can be stored here, but it should not contain programmatic data.
+Because this field contains notes the the user might think of while consuming the media,
+it may be useful for an application to make this field easily accessible, perhaps even
+including it in the main interface.
+
+**`Remarks`**
+
+Stored in the `COMM` frame
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `value` | `string` |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `value` | `string` | User comments on the media represented by the current instance or `undefined` if the value is not present |
 
 #### Returns
 
@@ -350,7 +492,14 @@ ___
 
 • `get` **composers**(): `string`[]
 
-**`inheritdoc`** TCOM frame
+Gets the composers of the media represented by the current instance.
+
+This field represents the composers, songwriters, scriptwriters, or persons who
+claim authorship of the media.
+
+**`Remarks`**
+
+Stored in the `TCOM` frame
 
 #### Returns
 
@@ -362,13 +511,20 @@ Tag.composers
 
 • `set` **composers**(`value`): `void`
 
-**`inheritdoc`** TCOM frame
+Sets the composers of the media represented by the current instance.
+
+This field represents the composers, songwriters, scriptwriters, or persons who
+claim authorship of the media.
+
+**`Remarks`**
+
+Stored in the `TCOM` frame
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `value` | `string`[] |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `value` | `string`[] | Composers of the media represented by the current instance of an empty array if no value is present. |
 
 #### Returns
 
@@ -384,7 +540,15 @@ ___
 
 • `get` **composersSort**(): `string`[]
 
-**`inheritdoc`** TSOC frame
+Gets the sortable names of the composers of the media represented by the current instance.
+See also: [composers](Id3v2Tag.md#composers)
+
+This field is typically optional but aids in the sorting of compilations or albums
+with multiple composers.
+
+**`Remarks`**
+
+Stored in the `TSOC` frame
 
 #### Returns
 
@@ -396,13 +560,21 @@ Tag.composersSort
 
 • `set` **composersSort**(`value`): `void`
 
-**`inheritdoc`** TSOC frame
+Sets the sortable names of the composers of the media represented by the current instance.
+See also: [composers](Id3v2Tag.md#composers)
+
+This field is typically optional but aids in the sorting of compilations or albums
+with multiple composers.
+
+**`Remarks`**
+
+Stored in the `TSOC` frame
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `value` | `string`[] |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `value` | `string`[] | Sortable names for the composers of the media represented by the current instance or an empty array if no value is present. |
 
 #### Returns
 
@@ -418,7 +590,13 @@ ___
 
 • `get` **conductor**(): `string`
 
-**`inheritdoc`** TPE3 frame
+Gets the conductor or director of the media represented by the current instance.
+
+This field is most useful for organizing classical music and movies.
+
+**`Remarks`**
+
+Stored in the `TPE3` frame
 
 #### Returns
 
@@ -430,13 +608,19 @@ Tag.conductor
 
 • `set` **conductor**(`value`): `void`
 
-**`inheritdoc`** TPE3 frame
+Sets the conductor or director of the media represented by the current instance.
+
+This field is most useful for organizing classical music and movies.
+
+**`Remarks`**
+
+Stored in the `TPE3` frame
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `value` | `string` |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `value` | `string` | Conductor or director of the media represented by the current instance or `undefined` if no value present. |
 
 #### Returns
 
@@ -452,7 +636,16 @@ ___
 
 • `get` **copyright**(): `string`
 
-**`inheritdoc`** TCOP frame
+Gets the copyright information for the media represented by the current instance.
+
+This field should be used for storing copyright information. It may be useful to show
+this information somewhere in the program while the media is playing.
+Players should not support editing this field, but media creation tools should
+definitely allow modification.
+
+**`Remarks`**
+
+Stored in the `TCOP` frame
 
 #### Returns
 
@@ -464,13 +657,22 @@ Tag.copyright
 
 • `set` **copyright**(`value`): `void`
 
-**`inheritdoc`** TCOP frame
+Sets the copyright information for the media represented by the current instance.
+
+This field should be used for storing copyright information. It may be useful to show
+this information somewhere in the program while the media is playing.
+Players should not support editing this field, but media creation tools should
+definitely allow modification.
+
+**`Remarks`**
+
+Stored in the `TCOP` frame
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `value` | `string` |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `value` | `string` | Copyright information for the media represented by the current instance or `undefined` if no value is present. |
 
 #### Returns
 
@@ -486,7 +688,11 @@ ___
 
 • `get` **dateTagged**(): `Date`
 
-**`inheritdoc`** TDTG frame
+Gets the date and time at which the tag has been written.
+
+**`Remarks`**
+
+Stored in the `TDTG` frame
 
 #### Returns
 
@@ -498,13 +704,17 @@ Tag.dateTagged
 
 • `set` **dateTagged**(`value`): `void`
 
-**`inheritdoc`** TDTG frame
+Sets the date and time at which the tag has been written.
+
+**`Remarks`**
+
+Stored in the `TDTG` frame
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `value` | `Date` |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `value` | `Date` | Date/time at which the tag has been written, or `undefined` if no value is present |
 
 #### Returns
 
@@ -520,7 +730,17 @@ ___
 
 • `get` **description**(): `string`
 
-**`inheritdoc`** user text frame "description"
+Gets a short description of the media. For music, this could be the comment that the artist
+made of his/her work. For a video, this should be a short summary of the story/plot, but
+generally no spoliers. This should give the impression of what to expect in the media.
+
+This is especially relevant for a movie. For example, for "Fear and Loathing in Las
+Vegas", this could be "An oddball journalist and his psychopathic lawyer travel to Las
+Vegas for a series of psychedelic escapades."
+
+**`Remarks`**
+
+via user text frame "description"
 
 #### Returns
 
@@ -532,13 +752,23 @@ Tag.description
 
 • `set` **description**(`value`): `void`
 
-**`inheritdoc`** user text frame "description"
+Sets a short description of the media. For music, this could be the comment that the artist
+made of his/her work. For a video, this should be a short summary of the story/plot, but
+generally no spoliers. This should give the impression of what to expect in the media.
+
+This is especially relevant for a movie. For example, for "Fear and Loathing in Las
+Vegas", this could be "An oddball journalist and his psychopathic lawyer travel to Las
+Vegas for a series of psychedelic escapades."
+
+**`Remarks`**
+
+via user text frame "description"
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `value` | `string` |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `value` | `string` | Description of the media represented by the current instance or `undefined` if no value is present |
 
 #### Returns
 
@@ -554,7 +784,16 @@ ___
 
 • `get` **disc**(): `number`
 
-**`inheritdoc`** TPOS frame
+Gets the number of the disc containing the media represented by the current instance in the
+boxed set. For a series, this represents the season number.
+
+This value should be the same as the number that appears on the disc. For example, if
+the disc is the first of three, the value should be `1`. It should be no more than
+[discCount](Id3v2Tag.md#disccount) if [discCount](Id3v2Tag.md#disccount) is non-zero.
+
+**`Remarks`**
+
+Stored in the `TPOS` frame
 
 #### Returns
 
@@ -566,13 +805,22 @@ Tag.disc
 
 • `set` **disc**(`value`): `void`
 
-**`inheritdoc`** TPOS frame
+Sets the number of the disc containing the media represented by the current instance in the
+boxed set. For a series, this represents the season number.
+
+This value should be the same as the number that appears on the disc. For example, if
+the disc is the first of three, the value should be `1`. It should be no more than
+[discCount](Id3v2Tag.md#disccount) if [discCount](Id3v2Tag.md#disccount) is non-zero.
+
+**`Remarks`**
+
+Stored in the `TPOS` frame
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `value` | `number` |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `value` | `number` | Number of the disc or season of the media represented by the current instance in a boxed set. |
 
 #### Returns
 
@@ -588,7 +836,15 @@ ___
 
 • `get` **discCount**(): `number`
 
-**`inheritdoc`** TPOS frame
+Gets the number of discs or seasons in the boxed set containing the media represented by the
+current instance.
+
+If non-zero, this should be at least equal to [disc](Id3v2Tag.md#disc). If [disc](Id3v2Tag.md#disc) is zero,
+this value should also be zero.
+
+**`Remarks`**
+
+Stored in the `TPOS` frame
 
 #### Returns
 
@@ -600,13 +856,21 @@ Tag.discCount
 
 • `set` **discCount**(`value`): `void`
 
-**`inheritdoc`** TPOS frame
+Sets the number of discs or seasons in the boxed set containing the media represented by the
+current instance.
+
+If non-zero, this should be at least equal to [disc](Id3v2Tag.md#disc). If [disc](Id3v2Tag.md#disc) is zero,
+this value should also be zero.
+
+**`Remarks`**
+
+Stored in the `TPOS` frame
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `value` | `number` |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `value` | `number` | Number of discs or seasons in the boxed set containing the media represented by the current instance or `0` if not specified. |
 
 #### Returns
 
@@ -748,7 +1012,7 @@ Sets the header flags applied to the current instance
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `value` | [`Id3v2TagHeaderFlags`](../enums/Id3v2TagHeaderFlags.md) | Bitwise combined [Id3v2TagHeaderFlags](../enums/Id3v2TagHeaderFlags.md) value containing flags applied to the     current instance. |
+| `value` | [`Id3v2TagHeaderFlags`](../enums/Id3v2TagHeaderFlags.md) | Bitwise combined [Id3v2TagHeaderFlags](../enums/Id3v2TagHeaderFlags.md) value containing flags applied to the current instance. |
 
 #### Returns
 
@@ -772,7 +1036,16 @@ ___
 
 • `get` **genres**(): `string`[]
 
-**`inheritdoc`** TCON frame
+Gets the genres of the media represented by the current instance.
+
+This field represents genres that apply to the song, album, or video. This is often
+used for filtering media.
+A list of common audio genres as popularized by ID3v1 is stored in `genres.ts`.
+Additionally, `genres.ts` contains video genres as used by DivX.
+
+**`Remarks`**
+
+Stored in the `TCON` frame
 
 #### Returns
 
@@ -784,13 +1057,22 @@ Tag.genres
 
 • `set` **genres**(`value`): `void`
 
-**`inheritdoc`** TCON frame
+Sets the genres of the media represented by the current instance.
+
+This field represents genres that apply to the song, album, or video. This is often
+used for filtering media.
+A list of common audio genres as popularized by ID3v1 is stored in `genres.ts.
+Additionally, `genres.ts` contains video genres as used by DivX.
+
+**`Remarks`**
+
+Stored in the `TCON` frame
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `value` | `string`[] |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `value` | `string`[] | Genres of the media represented by the current instance or an empty array if no value is present. |
 
 #### Returns
 
@@ -806,7 +1088,15 @@ ___
 
 • `get` **grouping**(): `string`
 
-**`inheritdoc`** TIT1 frame
+Gets the grouping on the album which the media in the current instance belongs to.
+
+This field contains a non-physical group to which the track belongs. In classical
+music this could be a movement. It could also be parts of a series like "Introduction",
+"Closing Remarks", etc.
+
+**`Remarks`**
+
+Stored in the `TIT1` frame
 
 #### Returns
 
@@ -818,13 +1108,21 @@ Tag.grouping
 
 • `set` **grouping**(`value`): `void`
 
-**`inheritdoc`** TIT1 frame
+Sets the grouping on the album which the media in the current instance belongs to.
+
+This field contains a non-physical group to which the track belongs. In classical
+music this could be a movement. It could also be parts of a series like "Introduction",
+"Closing Remarks", etc.
+
+**`Remarks`**
+
+Stored in the `TIT1` frame
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `value` | `string` |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `value` | `string` | Grouping on the album which the media in the current instance belongs to or `undefined` if no value is present. |
 
 #### Returns
 
@@ -840,7 +1138,11 @@ ___
 
 • `get` **initialKey**(): `string`
 
-**`inheritdoc`** TKEY frame
+Gets the initial key of the track.
+
+**`Remarks`**
+
+Stored in the `TKEY` frame
 
 #### Returns
 
@@ -852,13 +1154,17 @@ Tag.initialKey
 
 • `set` **initialKey**(`value`): `void`
 
-**`inheritdoc`** TKEY frame
+Sets the initial key of the track.
+
+**`Remarks`**
+
+Stored in the `TKEY` frame
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `value` | `string` |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `value` | `string` | Initial key of the track or `undefined` if no value is set |
 
 #### Returns
 
@@ -874,11 +1180,13 @@ ___
 
 • `get` **isCompilation**(): `boolean`
 
-**`inheritdoc`**
+Gets whether or not the album described by the current instance is a compilation.
 
-**`remarks`** This property is implemented using the TCMP Text Information Frame to provide
-support for a feature of the Apple iPod and iTunes products (ie, this is a non-standard
-field).
+**`Remarks`**
+
+This property is implemented using the TCMP Text Information Frame to provide
+    support for a feature of the Apple iPod and iTunes products (ie, this is a non-standard
+    field).
 
 #### Returns
 
@@ -890,11 +1198,13 @@ Tag.isCompilation
 
 • `set` **isCompilation**(`value`): `void`
 
-**`inheritdoc`**
+Gets whether or not the album described by the current instance is a compilation.
 
-**`remarks`** This property is implemented using the TCMP Text Information Frame to provide
-support for a feature of the Apple iPod and iTunes products (ie, this is a non-standard
-field).
+**`Remarks`**
+
+This property is implemented using the TCMP Text Information Frame to provide
+    support for a feature of the Apple iPod and iTunes products (ie, this is a non-standard
+    field).
 
 #### Parameters
 
@@ -916,7 +1226,7 @@ ___
 
 • `get` **isEmpty**(): `boolean`
 
-**`inheritdoc`**
+Gets whether or not the current instance is empty.
 
 #### Returns
 
@@ -932,7 +1242,11 @@ ___
 
 • `get` **isrc**(): `string`
 
-**`inheritdoc`** TSRC frame
+Gets the ISRC (International Standard Recording Code) of the track.
+
+**`Remarks`**
+
+Stored in the `TSRC` frame
 
 #### Returns
 
@@ -944,13 +1258,17 @@ Tag.isrc
 
 • `set` **isrc**(`value`): `void`
 
-**`inheritdoc`** TSRC frame
+Sets the ISRC (International Standard Recording Code) of the track.
+
+**`Remarks`**
+
+Stored in the `TSRC` frame
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `value` | `string` |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `value` | `string` | ISRC of the track or `undefined` if no value is set |
 
 #### Returns
 
@@ -1046,7 +1364,16 @@ ___
 
 • `get` **lyrics**(): `string`
 
-**`inheritdoc`** USLT frame
+Gets the lyrics or script of the media represented by the current instance.
+
+This field contains a plain text representation of the lyrics or scripts with line
+breaks and whitespace being the only formatting marks.
+Some formats support more advanced lyrics, like synchronized lyrics, but those must be
+accessed using format-specific implementations.
+
+**`Remarks`**
+
+Stored in the `USLT` frame
 
 #### Returns
 
@@ -1058,13 +1385,22 @@ Tag.lyrics
 
 • `set` **lyrics**(`value`): `void`
 
-**`inheritdoc`** USLT frame
+Sets the lyrics or script of the media represented by the current instance.
+
+This field contains a plain text representation of the lyrics or scripts with line
+breaks and whitespace being the only formatting marks.
+Some formats support more advanced lyrics, like synchronized lyrics, but those must be
+accessed using format-specific implementations.
+
+**`Remarks`**
+
+Stored in the `USLT` frame
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `value` | `string` |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `value` | `string` | Lyrics or script of the media represented by the current instance or `undefined` if no value is present |
 
 #### Returns
 
@@ -1080,7 +1416,14 @@ ___
 
 • `get` **musicBrainzArtistId**(): `string`
 
-**`inheritdoc`** TXXX:MusicBrainz Artist Id frame
+Gets the MusicBrainz artist ID of the media represented by the current instance.
+
+This field represents the MusicBrainz ArtistID, and is used to uniquely identify a
+particular artist of the track.
+
+**`Remarks`**
+
+via TXXX:MusicBrainz Artist Id frame
 
 #### Returns
 
@@ -1092,13 +1435,20 @@ Tag.musicBrainzArtistId
 
 • `set` **musicBrainzArtistId**(`value`): `void`
 
-**`inheritdoc`** TXXX:MusicBrainz Artist Id frame
+Sets the MusicBrainz artist ID of the media represented by the current instance.
+
+This field represents the MusicBrainz ArtistID, and is used to uniquely identify a
+particular artist of the track.
+
+**`Remarks`**
+
+via TXXX:MusicBrainz Artist Id frame
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `value` | `string` |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `value` | `string` | MusicBrainz ArtistID of the media represented by the current instance or `undefined` if no value is present |
 
 #### Returns
 
@@ -1114,7 +1464,14 @@ ___
 
 • `get` **musicBrainzDiscId**(): `string`
 
-**`inheritdoc`** TXXX:MusicBrainz Disc Id frame
+Gets the MusicBrainz disc ID of the media represented by the current instance.
+
+This field represents the MusicBrainz DiscID and is used to uniquely identify the
+particular released media associated with this track.
+
+**`Remarks`**
+
+via TXXX:MusicBrainz Disc Id frame
 
 #### Returns
 
@@ -1126,13 +1483,20 @@ Tag.musicBrainzDiscId
 
 • `set` **musicBrainzDiscId**(`value`): `void`
 
-**`inheritdoc`** TXXX:MusicBrainz Disc Id frame
+Sets the MusicBrainz disc ID of the media represented by the current instance.
+
+This field represents the MusicBrainz DiscID and is used to uniquely identify the
+particular released media associated with this track.
+
+**`Remarks`**
+
+via TXXX:MusicBrainz Disc Id frame
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `value` | `string` |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `value` | `string` | MusicBrainz DiscID of the media represented by the current instance or `undefined` if no value is present |
 
 #### Returns
 
@@ -1148,7 +1512,14 @@ ___
 
 • `get` **musicBrainzReleaseArtistId**(): `string`
 
-**`inheritdoc`** TXXX:MusicBrainz Album Artist Id frame
+Gets the MusicBrainz release artist ID of the media represented by the current instance.
+
+This field represents the MusicBrainz ReleaseArtistID, and is used to uniquely
+identify a particular album artist credited with the album.
+
+**`Remarks`**
+
+via TXXX:MusicBrainz Album Artist Id frame
 
 #### Returns
 
@@ -1160,13 +1531,20 @@ Tag.musicBrainzReleaseArtistId
 
 • `set` **musicBrainzReleaseArtistId**(`value`): `void`
 
-**`inheritdoc`** TXXX:MusicBrainz Album Artist Id frame
+Sets the MusicBrainz release artist ID of the media represented by the current instance.
+
+This field represents the MusicBrainz ReleaseArtistID, and is used to uniquely
+identify a particular album artist credited with the album.
+
+**`Remarks`**
+
+via TXXX:MusicBrainz Album Artist Id frame
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `value` | `string` |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `value` | `string` | MusicBrainz ReleaseArtistID of the media represented by the current instance or `undefined` if no value is present |
 
 #### Returns
 
@@ -1182,7 +1560,17 @@ ___
 
 • `get` **musicBrainzReleaseCountry**(): `string`
 
-**`inheritdoc`** TXXX:MusicBrainz Album Release Country frame
+Gets the MusicBrainz release country of the media represented by the current instance.
+
+This field represents the MusicBrainz ReleaseCountry which describes the country in
+which an album was released. Note that the release country of an album is not
+necessarily the country in which it was produced. The label itself will typically be
+more relevant. Eg, a release on "Foo Records UK" that has "Made in Austria" printed on
+it will likely be a UK release.
+
+**`Remarks`**
+
+via TXXX:MusicBrainz Album Release Country frame
 
 #### Returns
 
@@ -1194,13 +1582,23 @@ Tag.musicBrainzReleaseCountry
 
 • `set` **musicBrainzReleaseCountry**(`value`): `void`
 
-**`inheritdoc`** TXXX:MusicBrainz Album Release Country frame
+Sets the MusicBrainz release country of the media represented by the current instance.
+
+This field represents the MusicBrainz ReleaseCountry which describes the country in
+which an album was released. Note that the release country of an album is not
+necessarily the country in which it was produced. The label itself will typically be
+more relevant. Eg, a release on "Foo Records UK" that has "Made in Austria" printed on
+it will likely be a UK release.
+
+**`Remarks`**
+
+via TXXX:MusicBrainz Album Release Country frame
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `value` | `string` |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `value` | `string` | MusicBrainz ReleaseCountry of the media represented by the current instance or `undefined` if no value is present |
 
 #### Returns
 
@@ -1216,7 +1614,14 @@ ___
 
 • `get` **musicBrainzReleaseGroupId**(): `string`
 
-**`inheritdoc`** TXXX:MusicBrainz Release Group Id frame
+Gets the MusicBrainz release group ID of the media represented by the current instance.
+
+This field represents the MusicBrainz ReleaseGroupID and is used to uniquely identify
+a particular release group to which this track belongs.
+
+**`Remarks`**
+
+via TXXX:MusicBrainz Release Group Id frame
 
 #### Returns
 
@@ -1228,13 +1633,20 @@ Tag.musicBrainzReleaseGroupId
 
 • `set` **musicBrainzReleaseGroupId**(`value`): `void`
 
-**`inheritdoc`** TXXX:MusicBrainz Release Group Id frame
+Sets the MusicBrainz release group ID of the media represented by the current instance.
+
+This field represents the MusicBrainz ReleaseGroupID and is used to uniquely identify
+a particular release group to which this track belongs.
+
+**`Remarks`**
+
+via TXXX:MusicBrainz Release Group Id frame
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `value` | `string` |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `value` | `string` | MusicBrainz ReleaseGroupID of the media represented by the current instance or `undefined` if no value is present |
 
 #### Returns
 
@@ -1250,7 +1662,14 @@ ___
 
 • `get` **musicBrainzReleaseId**(): `string`
 
-**`inheritdoc`** TXXX:MusicBrainz Album Id frame
+Gets the MusicBrainz release ID of the media represented by the current instance.
+
+This field represents the MusicBrains ReleaseID and is used to uniquely identify a
+particular release to which this track belongs.
+
+**`Remarks`**
+
+via TXXX:MusicBrainz Album Id frame
 
 #### Returns
 
@@ -1262,13 +1681,20 @@ Tag.musicBrainzReleaseId
 
 • `set` **musicBrainzReleaseId**(`value`): `void`
 
-**`inheritdoc`** TXXX:MusicBrainz Album Id frame
+Sets the MusicBrainz release ID of the media represented by the current instance.
+
+This field represents the MusicBrains ReleaseID and is used to uniquely identify a
+particular release to which this track belongs.
+
+**`Remarks`**
+
+via TXXX:MusicBrainz Album Id frame
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `value` | `string` |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `value` | `string` | MusicBrainz ReleaseID of the media represented by the current instance or `undefined` if no value is present |
 
 #### Returns
 
@@ -1284,7 +1710,14 @@ ___
 
 • `get` **musicBrainzReleaseStatus**(): `string`
 
-**`inheritdoc`** TXXX:MusicBrainz Album Status frame
+Gets the MusicBrainz release status of the media represented by the current instance.
+
+This field represents the MusicBrainz ReleaseStatus used to describe how 'official' a
+release is. Common statuses are: `Official`, `Promotion`, `Bootleg`, `Pseudo-release`.
+
+**`Remarks`**
+
+via TXXX:MusicBrainz Album Status frame
 
 #### Returns
 
@@ -1296,13 +1729,20 @@ Tag.musicBrainzReleaseStatus
 
 • `set` **musicBrainzReleaseStatus**(`value`): `void`
 
-**`inheritdoc`** TXXX:MusicBrainz Album Status frame
+Sets the MusicBrainz release status of the media represented by the current instance.
+
+This field represents the MusicBrainz ReleaseStatus used to describe how 'official' a
+release is. Common statuses are: `Official`, `Promotion`, `Bootleg`, `Pseudo-release`.
+
+**`Remarks`**
+
+via TXXX:MusicBrainz Album Status frame
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `value` | `string` |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `value` | `string` | MusicBrainz ReleaseStatus of the media represented by the current instance or `undefined` if no value is present |
 
 #### Returns
 
@@ -1318,7 +1758,20 @@ ___
 
 • `get` **musicBrainzReleaseType**(): `string`
 
-**`inheritdoc`** TXXX:MusicBrainz Album Type frame
+Gets the MusicBrainz release type of the media represented by the current instance.
+
+This field represents the MusicBrainz ReleaseType that describes what kind of release
+ a release is. Common types are: `Single`, `Album`, `EP`, `Compilation`, `Soundtrack,
+ `SpokenWord`, `Interview`, `Audiobook`, `Live`, `Remix`, and `Other`. Careful thought
+ must be given when using this field to decide if a particular track "is a compilation".
+
+@returns
+    MusicBrainz ReleaseType of the media represented by the current instance or
+    `undefined` if no value is present
+
+**`Remarks`**
+
+via TXXX:MusicBrainz Album Type frame
 
 #### Returns
 
@@ -1330,7 +1783,19 @@ Tag.musicBrainzReleaseType
 
 • `set` **musicBrainzReleaseType**(`value`): `void`
 
-**`inheritdoc`** TXXX:MusicBrainz Album Type frame
+Sets the MusicBrainz release type of the media represented by the current instance.
+
+This field represents the MusicBrainz ReleaseType that describes what kind of release
+a release is. Common types are: `Single`, `Album`, `EP`, `Compilation`, `Soundtrack,
+`SpokenWord`, `Interview`, `Audiobook`, `Live`, `Remix`, and `Other`. Careful thought
+must be given when using this field to decide if a particular track "is a compilation".
+
+@param value MusicBrainz ReleaseType of the media represented by the current instance or
+    `undefined` if no value is present
+
+**`Remarks`**
+
+via TXXX:MusicBrainz Album Type frame
 
 #### Parameters
 
@@ -1352,7 +1817,15 @@ ___
 
 • `get` **musicBrainzTrackId**(): `string`
 
-**`inheritdoc`** UFID:http://musicbrainz.org frame
+Gets the MusicBrainz track ID of the media represented by the media represented by the
+current instance.
+
+This field represents the MusicBrainz TrackID and is used to uniquely identify a
+particular track.
+
+**`Remarks`**
+
+via UFID:http://musicbrainz.org frame
 
 #### Returns
 
@@ -1364,13 +1837,21 @@ Tag.musicBrainzTrackId
 
 • `set` **musicBrainzTrackId**(`value`): `void`
 
-**`inheritdoc`** UFID:http://musicbrainz.org frame
+Sets the MusicBrainz track ID of the media represented by the media represented by the
+current instance.
+
+This field represents the MusicBrainz TrackID and is used to uniquely identify a
+particular track.
+
+**`Remarks`**
+
+via UFID:http://musicbrainz.org frame
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `value` | `string` |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `value` | `string` | MusicBrainz TrackID of the media represented by the current instance or `undefined` if no value is present |
 
 #### Returns
 
@@ -1386,7 +1867,14 @@ ___
 
 • `get` **musicIpId**(): `string`
 
-**`inheritdoc`** TXXX:MusicIP PUID frame
+Gets the MusicIP PUID of the media represented by the current instance.
+
+This field represents the MusicIP PUID, an acoustic fingerprint identifier. It
+identifies wht this track "sounds like".
+
+**`Remarks`**
+
+via TXXX:MusicIP PUID frame
 
 #### Returns
 
@@ -1398,13 +1886,20 @@ Tag.musicIpId
 
 • `set` **musicIpId**(`value`): `void`
 
-**`inheritdoc`** TXXX:MusicIP PUID frame
+Sets the MusicIP PUID of the media represented by the current instance.
+
+This field represents the MusicIP PUID, an acoustic fingerprint identifier. It
+identifies wht this track "sounds like".
+
+**`Remarks`**
+
+via TXXX:MusicIP PUID frame
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `value` | `string` |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `value` | `string` | MusicIP PUID of the media represented by the current instance or `undefined` if no value is present |
 
 #### Returns
 
@@ -1420,7 +1915,19 @@ ___
 
 • `get` **performers**(): `string`[]
 
-**`inheritdoc`** TPE1 frame
+Gets the performers or artists who performed in the media described by the current instance.
+
+This field is most commonly called "Artists" in audio media or "Actors" in video
+media, and should be used to represent each artist/actor appearing in the media. It can
+be simple in the form of "Above & Beyond" or more complicated in the form of
+"Jono Grant, Tony McGuinness, Paavo Siljamäki", depending on the preferences of the
+user and the degree to which they organize their media collection.
+As the preference of the user may vary, applications should avoid limiting the user in
+what constitutes the performers field - especially in regard to number of performers.
+
+**`Remarks`**
+
+Stored in the `TPE1` frame
 
 #### Returns
 
@@ -1432,13 +1939,25 @@ Tag.performers
 
 • `set` **performers**(`value`): `void`
 
-**`inheritdoc`** TPE1 frame
+Sets the performers or artists who performed in the media described by the current instance.
+
+This field is most commonly called "Artists" in audio media or "Actors" in video
+media, and should be used to represent each artist/actor appearing in the media. It can
+be simple in the form of "Above & Beyond" or more complicated in the form of
+"Jono Grant, Tony McGuinness, Paavo Siljamäki", depending on the preferences of the
+user and the degree to which they organize their media collection.
+As the preference of the user may vary, applications should avoid limiting the user in
+what constitutes the performers field - especially with regards to number of performers.
+
+**`Remarks`**
+
+Stored in the `TPE1` frame
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `value` | `string`[] |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `value` | `string`[] | Performers who performed in the media described by the current instance or an empty array if no value is present. |
 
 #### Returns
 
@@ -1454,7 +1973,18 @@ ___
 
 • `get` **performersRole**(): `string`[]
 
-**`inheritdoc`** TMCL frame
+Gets the characters portrayed by an actor for a video or instruments played by a musician
+for music. This must match the [performers](Id3v2Tag.md#performers) array (for each person, correspond one/more
+role). Several roles for the same artist/actor can be separated with semicolons. For
+example: "Bass; Backing Vocals; Vibraphone".
+
+It is highly important to match each role to the performers. This means that an entry
+in the [performersRole](Id3v2Tag.md#performersrole) array is `undefined` to maintain the relationship between
+`performers[i]` and `performersRole[i]`.
+
+**`Remarks`**
+
+Stored in the `TMCL` frame
 
 #### Returns
 
@@ -1466,13 +1996,24 @@ Tag.performersRole
 
 • `set` **performersRole**(`value`): `void`
 
-**`inheritdoc`** TMCL frame
+Sets the characters portrayed by an actor for a video or instruments played by a musician
+for music. This must match the [performers](Id3v2Tag.md#performers) array (for each person, correspond one/more
+role). Several roles for the same artist/actor can be separated with semicolons. For
+example: "Bass; Backing Vocals; Vibraphone".
+
+It is highly important to match each role to the performers. This means that an entry
+in the [performersRole](Id3v2Tag.md#performersrole) array is `undefined` to maintain the relationship between
+`performers[i]` and `performersRole[i]`.
+
+**`Remarks`**
+
+Stored in the `TMCL` frame
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `value` | `string`[] |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `value` | `string`[] | Array containing the roles played by the performers in the media described by the current instance, or an empty array if no value is present. |
 
 #### Returns
 
@@ -1488,7 +2029,16 @@ ___
 
 • `get` **performersSort**(): `string`[]
 
-**`inheritdoc`** TSOP frame
+Gets the sortable names of the performers or artists who performed in the media described by
+the current instance.
+
+This is used to provide more control over how the media is sorted. Typical uses are to
+skip articles or sort by last name. For example, "The Pillows" might be sorted as
+"Pillows, The". See also: [performers](Id3v2Tag.md#performers)
+
+**`Remarks`**
+
+Stored in the `TSOP` frame
 
 #### Returns
 
@@ -1500,13 +2050,22 @@ Tag.performersSort
 
 • `set` **performersSort**(`value`): `void`
 
-**`inheritdoc`** TSOP frame
+Gets the sortable names of the performers or artists who performed in the media described by
+the current instance.
+
+This is used to provide more control over how the media is sorted. Typical uses are to
+skip articles or sort by last name. For example, "The Pillows" might be sorted as
+"Pillows, The". See also: [performers](Id3v2Tag.md#performers)
+
+**`Remarks`**
+
+Stored in the `TSOP` frame
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `value` | `string`[] |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `value` | `string`[] | Sortable names for the performers who performed in the media described by the current instance, or an empty array if no value is present. |
 
 #### Returns
 
@@ -1522,7 +2081,15 @@ ___
 
 • `get` **pictures**(): [`IPicture`](../interfaces/IPicture.md)[]
 
-**`inheritdoc`** APIC frame
+Gets a collection of pictures associated with the media represented by the current instance.
+
+Typically, this value is used to store an album cover or icon to use for the file, but
+it is capable of holding any type of image or file, including pictures of the band, the
+recording studio, the concert, etc.
+
+**`Remarks`**
+
+Stored in the `APIC` frame
 
 #### Returns
 
@@ -1534,13 +2101,21 @@ Tag.pictures
 
 • `set` **pictures**(`value`): `void`
 
-**`inheritdoc`** APIC frame
+Sets a collection of pictures associated with the media represented by the current instance.
+
+Typically, this value is used to store an album cover or icon to use for the file, but
+it is capable of holding any type of image or file, including pictures of the band, the
+recording studio, the concert, etc.
+
+**`Remarks`**
+
+Stored in the `APIC` frame
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `value` | [`IPicture`](../interfaces/IPicture.md)[] |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `value` | [`IPicture`](../interfaces/IPicture.md)[] | Array containing a collection of pictures associated with the media represented by the current instance or an empty array if no pictures are present. |
 
 #### Returns
 
@@ -1556,7 +2131,11 @@ ___
 
 • `get` **publisher**(): `string`
 
-**`inheritdoc`** TPUB frame
+Gets the publisher of the track.
+
+**`Remarks`**
+
+Stored in the `TPUB` frame
 
 #### Returns
 
@@ -1568,13 +2147,17 @@ Tag.publisher
 
 • `set` **publisher**(`value`): `void`
 
-**`inheritdoc`** TPUB frame
+Sets the publisher of the track.
+
+**`Remarks`**
+
+Stored in the `TPUB` frame
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `value` | `string` |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `value` | `string` | Publisher of the track or `undefined` if no value is set |
 
 #### Returns
 
@@ -1590,7 +2173,11 @@ ___
 
 • `get` **remixedBy**(): `string`
 
-**`inheritdoc`** TPE4 frame
+Gets the remixer of the track.
+
+**`Remarks`**
+
+Stored in the `TPE4` frame
 
 #### Returns
 
@@ -1602,13 +2189,17 @@ Tag.remixedBy
 
 • `set` **remixedBy**(`value`): `void`
 
-**`inheritdoc`** TPE4 frame
+Sets the remixer of the track.
+
+**`Remarks`**
+
+Stored in the `TPE4` frame
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `value` | `string` |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `value` | `string` | Remixer of the track or `undefined` if no value is set |
 
 #### Returns
 
@@ -1624,7 +2215,11 @@ ___
 
 • `get` **replayGainAlbumGain**(): `number`
 
-**`inheritdoc`** TXXX:REPLAYGAIN_ALBUM_GAIN frame
+Gets the ReplayGain album gain in dB.
+
+**`Remarks`**
+
+via TXXX:REPLAYGAIN_ALBUM_GAIN frame
 
 #### Returns
 
@@ -1636,13 +2231,17 @@ Tag.replayGainAlbumGain
 
 • `set` **replayGainAlbumGain**(`value`): `void`
 
-**`inheritdoc`** TXXX:REPLAYGAIN_ALBUM_GAIN frame
+Sets the ReplayGain album gain in dB.
+
+**`Remarks`**
+
+via TXXX:REPLAYGAIN_ALBUM_GAIN frame
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `value` | `number` |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `value` | `number` | Album gain as per the ReplayGain specifications, in dB, or `NaN` if no value is set |
 
 #### Returns
 
@@ -1658,7 +2257,11 @@ ___
 
 • `get` **replayGainAlbumPeak**(): `number`
 
-**`inheritdoc`** TXXX:REPLAYGAIN_ALBUM_PEAK frame
+Gets the ReplayGain album peak sample.
+
+**`Remarks`**
+
+via TXXX:REPLAYGAIN_ALBUM_PEAK frame
 
 #### Returns
 
@@ -1670,13 +2273,17 @@ Tag.replayGainAlbumPeak
 
 • `set` **replayGainAlbumPeak**(`value`): `void`
 
-**`inheritdoc`** TXXX:REPLAYGAIN_ALBUM_PEAK frame
+Sets the ReplayGain album peak sample.
+
+**`Remarks`**
+
+via TXXX:REPLAYGAIN_ALBUM_PEAK frame
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `value` | `number` |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `value` | `number` | Album peak as per the ReplayGain specifications, or `NaN` if no value is set |
 
 #### Returns
 
@@ -1692,7 +2299,11 @@ ___
 
 • `get` **replayGainTrackGain**(): `number`
 
-**`inheritdoc`** TXXX:REPLAY_GAIN_TRACK_GAIN frame
+Gets the ReplayGain track gain in dB.
+
+**`Remarks`**
+
+via TXXX:REPLAY_GAIN_TRACK_GAIN frame
 
 #### Returns
 
@@ -1704,13 +2315,17 @@ Tag.replayGainTrackGain
 
 • `set` **replayGainTrackGain**(`value`): `void`
 
-**`inheritdoc`** TXXX:REPLAY_GAIN_TRACK_GAIN frame
+Sets the ReplayGain track gain in dB.
+
+**`Remarks`**
+
+via TXXX:REPLAY_GAIN_TRACK_GAIN frame
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `value` | `number` |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `value` | `number` | Track gain as per ReplayGain specifications, in dB, or `NaN` if no value is set |
 
 #### Returns
 
@@ -1726,7 +2341,11 @@ ___
 
 • `get` **replayGainTrackPeak**(): `number`
 
-**`inheritdoc`** TXXX:REPLAYGAIN_TRACK_PEAK frame
+Gets the ReplayGain track peak sample.
+
+**`Remarks`**
+
+via TXXX:REPLAYGAIN_TRACK_PEAK frame
 
 #### Returns
 
@@ -1738,13 +2357,17 @@ Tag.replayGainTrackPeak
 
 • `set` **replayGainTrackPeak**(`value`): `void`
 
-**`inheritdoc`** TXXX:REPLAYGAIN_TRACK_PEAK frame
+Sets the ReplayGain track peak sample.
+
+**`Remarks`**
+
+via TXXX:REPLAYGAIN_TRACK_PEAK frame
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `value` | `number` |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `value` | `number` | Track peak as per the ReplayGain specifications, or `NaN` if no value is set |
 
 #### Returns
 
@@ -1760,7 +2383,7 @@ ___
 
 • `get` **sizeOnDisk**(): `number`
 
-**`inheritdoc`**
+Gets the size of the tag in bytes on disk as it was read from disk.
 
 #### Returns
 
@@ -1776,7 +2399,15 @@ ___
 
 • `get` **subtitle**(): `string`
 
-**`inheritdoc`** TIT3 frame
+Gets a description, one-line. It represents the tagline of the vide/music.
+
+This field gives a nice/short precision to the title, which is typically below the
+title on the front cover of the media. For example for "Ocean's 13", this would be
+"Revenge is a funny thing".
+
+**`Remarks`**
+
+Stored in the `TIT3` frame
 
 #### Returns
 
@@ -1788,13 +2419,21 @@ Tag.subtitle
 
 • `set` **subtitle**(`value`): `void`
 
-**`inheritdoc`** TIT3 frame
+Sets a description, one-line. It represents the tagline of the vide/music.
+
+This field gives a nice/short precision to the title, which is typically below the
+title on the front cover of the media. For example for "Ocean's 13", this would be
+"Revenge is a funny thing".
+
+**`Remarks`**
+
+Stored in the `TIT3` frame
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `value` | `string` |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `value` | `string` | Subtitle of the media represented by the current instance or `undefined` if no value is present |
 
 #### Returns
 
@@ -1813,8 +2452,6 @@ ___
 Gets the tag types contained in the current instance. A bit wise combined [TagTypes](../enums/TagTypes.md)
 containing the tag types contained in the current instance.
 
-**`inheritdoc`**
-
 #### Returns
 
 [`TagTypes`](../enums/TagTypes.md)
@@ -1829,7 +2466,11 @@ ___
 
 • `get` **title**(): `string`
 
-**`inheritdoc`** TIT2 frame
+Gets the title for the media described by the current instance.
+
+**`Remarks`**
+
+Stored in the `TIT2` frame
 
 #### Returns
 
@@ -1841,13 +2482,21 @@ Tag.title
 
 • `set` **title**(`value`): `void`
 
-**`inheritdoc`** TIT2 frame
+Sets the title for the media described by the current instance.
+
+The title is most commonly the name of the song, episode or a movie title. For example
+"Time Won't Me Go" (a song by The Bravery), "Three Stories" (an episode of House MD), or
+"Fear and Loathing In Las Vegas" (a movie).
+
+**`Remarks`**
+
+Stored in the `TIT2` frame
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `value` | `string` |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `value` | `string` | Title of the media described by the current instance or `undefined` if no value is present. |
 
 #### Returns
 
@@ -1863,7 +2512,13 @@ ___
 
 • `get` **titleSort**(): `string`
 
-**`inheritdoc`** TSOT frame
+Gets the sortable name for the title of the media described by the current instance.
+
+Possibly used to sort compilations or episodic content.
+
+**`Remarks`**
+
+Stored in the `TSOT` frame
 
 #### Returns
 
@@ -1875,13 +2530,19 @@ Tag.titleSort
 
 • `set` **titleSort**(`value`): `void`
 
-**`inheritdoc`** TSOT frame
+Sets the sortable name for the title of the media described by the current instance.
+
+Possibly used to sort compilations or episodic content.
+
+**`Remarks`**
+
+Stored in the `TSOT` frame
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `value` | `string` |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `value` | `string` | Sortable name of the media described by the current instance or `undefined` if no value is present |
 
 #### Returns
 
@@ -1897,7 +2558,18 @@ ___
 
 • `get` **track**(): `number`
 
-**`inheritdoc`** TRCK frame
+Gets the position of the media represented by the current instance in its containing album
+or season (for a series).
+
+This value should be the same as is listed on the album cover and no more than
+[trackCount](Id3v2Tag.md#trackcount), if [trackCount](Id3v2Tag.md#trackcount) is non-zero.
+Most tagging formats store this as a string. To help sorting, a two-digit zero-padded
+value is used in the resulting tag.
+For a series, this property represents the episodes in a season of the series.
+
+**`Remarks`**
+
+Stored in the `TRCK` frame
 
 #### Returns
 
@@ -1909,13 +2581,24 @@ Tag.track
 
 • `set` **track**(`value`): `void`
 
-**`inheritdoc`** TRCK frame
+Sets the position of the media represented by the current instance in its containing album
+or season (for a series).
+
+This value should be the same as is listed on the album cover and no more than
+[trackCount](Id3v2Tag.md#trackcount), if [trackCount](Id3v2Tag.md#trackcount) is non-zero.
+Most tagging formats store this as a string. To help sorting, a two-digit zero-padded
+value is used in the resulting tag.
+For a series, this property represents the episodes in a season of the series.
+
+**`Remarks`**
+
+Stored in the `TRCK` frame
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `value` | `number` |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `value` | `number` | Position of the media represented by the current instance in its containing album or `0` if not specified. |
 
 #### Returns
 
@@ -1931,7 +2614,15 @@ ___
 
 • `get` **trackCount**(): `number`
 
-**`inheritdoc`** TRCK frame
+Gets the number of tracks on the album or the number of episodes in a series of the media
+represented by the current instance.
+
+If non-zero, this value should be equal to or greater than [track](Id3v2Tag.md#track). If
+[track](Id3v2Tag.md#track) is `0`, this value should also be `0`.
+
+**`Remarks`**
+
+Stored in the `TRCK` frame
 
 #### Returns
 
@@ -1943,13 +2634,21 @@ Tag.trackCount
 
 • `set` **trackCount**(`value`): `void`
 
-**`inheritdoc`** TRCK frame
+Sets the number of tracks on the album or the number of episodes in a series of the media
+represented by the current instance.
+
+If non-zero, this value should be equal to or greater than [track](Id3v2Tag.md#track). If
+[track](Id3v2Tag.md#track) is `0`, this value should also be `0`.
+
+**`Remarks`**
+
+Stored in the `TRCK` frame
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `value` | `number` |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `value` | `number` | Number of tracks on the album or number of episodes in a series of the media represented by the current instance or `0` if not specified. |
 
 #### Returns
 
@@ -1991,10 +2690,18 @@ ___
 
 • `get` **year**(): `number`
 
-**`inheritdoc`**
+Gets the year that the media represented by the current instance was recorded.
+
+Years greater than 9999 cannot be stored by most tagging formats and will be cleared
+if a higher value is set. Some tagging formats store higher precision dates which will
+be truncated when this property is set. Format specific implementations are necessary to
+access the higher precision values.
+
+**`Remarks`**
+
 If a TDRC frame exists, the year will be read from that. If a TDRC frame doesn't exist and a
-TYER or TYE frame exists, the year will be read from that. Failing both cases, 0 will be
-returned.
+    TYER or TYE frame exists, the year will be read from that. Failing both cases, 0 will be
+    returned.
 
 #### Returns
 
@@ -2006,14 +2713,22 @@ Tag.year
 
 • `set` **year**(`value`): `void`
 
-**`inheritdoc`**
+Sets the year that the media represented by the current instance was recorded.
+
+Years greater than 9999 cannot be stored by most tagging formats and will be cleared
+if a higher value is set. Some tagging formats store higher precision dates which will
+be truncated when this property is set. Format specific implementations are necessary to
+access the higher precision values.
+
+**`Remarks`**
+
 NOTE: values >9999 will remove the frame
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `value` | `number` |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `value` | `number` | Year that the media represented by the current instance was created or `0` if no value is present. |
 
 #### Returns
 
@@ -2045,7 +2760,7 @@ values.
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `value` | `string` | ISO-639-2 language code to use. If the language is unknown `"   "` is the     appropriate filler |
+| `value` | `string` | ISO-639-2 language code to use. If the language is unknown `" "` is the appropriate filler |
 
 #### Returns
 
@@ -2077,8 +2792,6 @@ ___
 
 Clears all values stored in the current instance.
 
-**`remarks`** The clearing procedure is format specific and should clear all values.
-
 #### Returns
 
 `void`
@@ -2094,12 +2807,12 @@ ___
 ▸ **copyTo**(`target`, `overwrite`): `void`
 
 Copies the values from the current instance to another [Tag](Tag.md), optionally overwriting
-    existing values.
+existing values.
 
-**`remarks`** This method only copies the most basic values when copying between different tag
-    formats. However, if `target` is of the same type as the current instance,
-    more advanced copying may be done. For example if both `this` and `target` are
-    [Id3v2Tag](Id3v2Tag.md), all frames will be copied to the target.
+This method only copies the most basic values when copying between different tag
+formats. However, if `target` is of the same type as the current instance,
+more advanced copying may be done. For example if both `this` and `target` are
+[Id3v2Tag](Id3v2Tag.md), all frames will be copied to the target.
 
 #### Parameters
 
@@ -2195,62 +2908,7 @@ specified).
 
 `string`
 
-string Text of the specified frame, or `undefined` if no value was found
-
-___
-
-### parse
-
-▸ `Protected` **parse**(`data`, `file`, `position`, `style`): `void`
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `data` | [`ByteVector`](ByteVector.md) |
-| `file` | [`File`](File.md) |
-| `position` | `number` |
-| `style` | [`ReadStyle`](../enums/ReadStyle.md) |
-
-#### Returns
-
-`void`
-
-___
-
-### readFromEnd
-
-▸ `Protected` **readFromEnd**(`file`, `position`, `style`): `void`
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `file` | [`File`](File.md) |
-| `position` | `number` |
-| `style` | [`ReadStyle`](../enums/ReadStyle.md) |
-
-#### Returns
-
-`void`
-
-___
-
-### readFromStart
-
-▸ `Protected` **readFromStart**(`file`, `position`, `style`): `void`
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `file` | [`File`](File.md) |
-| `position` | `number` |
-| `style` | [`ReadStyle`](../enums/ReadStyle.md) |
-
-#### Returns
-
-`void`
+Text of the specified frame, or `undefined` if no value was found
 
 ___
 
@@ -2296,7 +2954,7 @@ ___
 
 Renders the current instance as a raw ID3v2 tag.
 By default, tags will be rendered in the version they were loaded in and new tags using the
-version specified by [defaultVersion](Id3v2Settings.md#defaultversion). If [forceDefaultVersion](Id3v2Settings.md#forcedefaultversion) is `true`, all
+version specified by defaultVersion. If forceDefaultVersion is `true`, all
 tags will be rendered using that version, except for tags with footers which must be in
 version 4.
 
@@ -2304,7 +2962,7 @@ version 4.
 
 [`ByteVector`](ByteVector.md)
 
-ByteVector The rendered tag.
+The rendered tag.
 
 ___
 
@@ -2328,24 +2986,6 @@ adds a new one if the existing one is not contained.
 
 ___
 
-### setInfoTag
-
-▸ **setInfoTag**(): `void`
-
-Set the tags that represent the tagger software (node-taglib-sharp) itself.
-
-**`remarks`** This is typically a method to call just before saving a tag.
-
-#### Returns
-
-`void`
-
-#### Inherited from
-
-[Tag](Tag.md).[setInfoTag](Tag.md#setinfotag)
-
-___
-
 ### setNumberFrame
 
 ▸ **setNumberFrame**(`ident`, `numerator`, `denominator`, `minPlaces?`): `void`
@@ -2360,9 +3000,9 @@ itself. Otherwise the values will be stored as `{numerator}/{denominator}`.
 | Name | Type | Default value | Description |
 | :------ | :------ | :------ | :------ |
 | `ident` | [`Id3v2FrameIdentifier`](Id3v2FrameIdentifier.md) | `undefined` | Identity of the frame to set |
-| `numerator` | `number` | `undefined` | Value containing the top half of the fraction, or the number if     `denominator` is zero |
+| `numerator` | `number` | `undefined` | Value containing the top half of the fraction, or the number if `denominator` is zero |
 | `denominator` | `number` | `undefined` | Value containing the bottom half of the fraction |
-| `minPlaces` | `number` | `1` | Minimum number of digits to use to display the `numerator`, if     the numerator has less than this number of digits, it will be filled with leading zeroes. |
+| `minPlaces` | `number` | `1` | Minimum number of digits to use to display the `numerator`, if the numerator has less than this number of digits, it will be filled with leading zeroes. |
 
 #### Returns
 
@@ -2372,7 +3012,7 @@ ___
 
 ### setTextFrame
 
-▸ **setTextFrame**(`ident`, ...`text`): `void`
+▸ **setTextFrame**(`ident`, `...text`): `void`
 
 Sets the text for a specified text information frame.
 
@@ -2381,7 +3021,7 @@ Sets the text for a specified text information frame.
 | Name | Type | Description |
 | :------ | :------ | :------ |
 | `ident` | [`Id3v2FrameIdentifier`](Id3v2FrameIdentifier.md) | Identifier of the frame to set the data for |
-| `...text` | `string`[] | Text to set for the specified frame or `undefined`/`null`/`""` to remove all     frames with that identifier. |
+| `...text` | `string`[] | Text to set for the specified frame or `undefined`/`null`/`""` to remove all frames with that identifier. |
 
 #### Returns
 
@@ -2431,13 +3071,15 @@ Constructs and initializes a new Tag by reading the contents from a specified
 
 [`Id3v2Tag`](Id3v2Tag.md)
 
-Id3v2Tag Tag with the data from the byte vector read into it
+Tag with the data from the byte vector read into it
 
 ___
 
 ### fromEmpty
 
 ▸ `Static` **fromEmpty**(): [`Id3v2Tag`](Id3v2Tag.md)
+
+Constructs and initializes an empty ID3v2 tag.
 
 #### Returns
 
@@ -2451,7 +3093,9 @@ ___
 
 Constructs and initializes a new Tag by reading the end of the tag first.
 
-**`remarks`** This method should only be used if reading tags at the end of a file. Only ID3v2.4
+**`Remarks`**
+
+This method should only be used if reading tags at the end of a file. Only ID3v2.4
     tags support a footer, which is required to use this method.
 
 #### Parameters
@@ -2474,7 +3118,9 @@ ___
 
 Constructs and initializes a new Tag by reading the beginning of the tag.
 
-**`remarks`** This method is the most flexible way of reading ID3v2 tags.
+**`Remarks`**
+
+This method is the most flexible way of reading ID3v2 tags.
 
 #### Parameters
 
@@ -2488,7 +3134,7 @@ Constructs and initializes a new Tag by reading the beginning of the tag.
 
 [`Id3v2Tag`](Id3v2Tag.md)
 
-Id3v2Tag Tag with the data from the file read into it
+Tag with the data from the file read into it
 
 ___
 
@@ -2547,11 +3193,13 @@ ___
 
 ▸ `Static` **tagTypeFlagsToArray**(`tagTypes`): [`TagTypes`](../enums/TagTypes.md)[]
 
+Generates an array of tag types that are set in the provided flags value.
+
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `tagTypes` | [`TagTypes`](../enums/TagTypes.md) |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `tagTypes` | [`TagTypes`](../enums/TagTypes.md) | Tag types that have been OR'd together. |
 
 #### Returns
 

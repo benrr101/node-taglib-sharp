@@ -20,6 +20,9 @@ import {Guards} from "../utils";
  * but could be used by other classes. It currently supports ID3v1, ID3v2, and APE tags.
  */
 export default class EndTag extends CombinedTag {
+    /**
+     * List of tag types supported by the sandwich file's end tag.
+     */
     public static readonly SUPPORTED_TAG_TYPES: TagTypes = TagTypes.Ape | TagTypes.Id3v1 | TagTypes.Id3v2;
 
     /**
@@ -71,7 +74,7 @@ export default class EndTag extends CombinedTag {
 
     /**
      * Renders the tags contained in the current instance. ID3v1 tag always goes at the end.
-     * @returns ByteVector Physical representation of the tags stored in the current instance
+     * @returns Physical representation of the tags stored in the current instance
      */
     public render(): ByteVector {
         // Note: by sorting these in reverse order, we ensure that ID3v1 is rendered at the end
@@ -160,7 +163,7 @@ class EndTagParser extends TagParser {
                 }
             }
         } catch (e) {
-            if (!CorruptFileError.errorIs(e)) {
+            if (!(e instanceof CorruptFileError)) {
                 throw e;
             }
         }

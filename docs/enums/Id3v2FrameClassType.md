@@ -2,9 +2,11 @@
 
 # Enumeration: Id3v2FrameClassType
 
+Enumeration of types of frames.
+
 ## Table of contents
 
-### Enumeration members
+### Enumeration Members
 
 - [AttachmentFrame](Id3v2FrameClassType.md#attachmentframe)
 - [CommentsFrame](Id3v2FrameClassType.md#commentsframe)
@@ -24,104 +26,138 @@
 - [UserTextInformationFrame](Id3v2FrameClassType.md#usertextinformationframe)
 - [UserUrlLinkFrame](Id3v2FrameClassType.md#userurllinkframe)
 
-## Enumeration members
+## Enumeration Members
 
 ### AttachmentFrame
 
-• **AttachmentFrame** = `0`
+• **AttachmentFrame** = ``0``
+
+Indicates the frame is an attachment frame.
 
 ___
 
 ### CommentsFrame
 
-• **CommentsFrame** = `1`
+• **CommentsFrame** = ``1``
+
+Indicates the frame is a comments frame.
 
 ___
 
 ### EventTimeCodeFrame
 
-• **EventTimeCodeFrame** = `2`
+• **EventTimeCodeFrame** = ``2``
+
+Indicates the frame is an event time code frame.
 
 ___
 
 ### MusicCdIdentifierFrame
 
-• **MusicCdIdentifierFrame** = `3`
+• **MusicCdIdentifierFrame** = ``3``
+
+Indicates the frame is a music CD identifier frame.
 
 ___
 
 ### PlayCountFrame
 
-• **PlayCountFrame** = `4`
+• **PlayCountFrame** = ``4``
+
+Indicates the frame is a play count frame.
 
 ___
 
 ### PopularimeterFrame
 
-• **PopularimeterFrame** = `5`
+• **PopularimeterFrame** = ``5``
+
+Indicates the frame is a popularimeter frame.
 
 ___
 
 ### PrivateFrame
 
-• **PrivateFrame** = `6`
+• **PrivateFrame** = ``6``
+
+Indicates the frame is a private frame.
 
 ___
 
 ### RelativeVolumeFrame
 
-• **RelativeVolumeFrame** = `7`
+• **RelativeVolumeFrame** = ``7``
+
+Indicates the frame is relative volume frame.
 
 ___
 
 ### SynchronizedLyricsFrame
 
-• **SynchronizedLyricsFrame** = `8`
+• **SynchronizedLyricsFrame** = ``8``
+
+Indicates the frame is a synchronized lyrics frame.
 
 ___
 
 ### TermsOfUseFrame
 
-• **TermsOfUseFrame** = `9`
+• **TermsOfUseFrame** = ``9``
+
+Indicates the frame is a terms of use frame.
 
 ___
 
 ### TextInformationFrame
 
-• **TextInformationFrame** = `10`
+• **TextInformationFrame** = ``10``
+
+Indicates the frame is a text information frame.
 
 ___
 
 ### UniqueFileIdentifierFrame
 
-• **UniqueFileIdentifierFrame** = `11`
+• **UniqueFileIdentifierFrame** = ``11``
+
+Indicates the frame is an unique file identifier frame.
 
 ___
 
 ### UnknownFrame
 
-• **UnknownFrame** = `12`
+• **UnknownFrame** = ``12``
+
+Indicates the frame is an unknown frame.
 
 ___
 
 ### UnsynchronizedLyricsFrame
 
-• **UnsynchronizedLyricsFrame** = `13`
+• **UnsynchronizedLyricsFrame** = ``13``
+
+Indicates the frame is an attachment frame.
 
 ___
 
 ### UrlLinkFrame
 
-• **UrlLinkFrame** = `14`
+• **UrlLinkFrame** = ``14``
+
+Indicates the frame is a URL link frame.
 
 ___
 
 ### UserTextInformationFrame
 
-• **UserTextInformationFrame** = `15`
+• **UserTextInformationFrame** = ``15``
+
+Indicates the frame is a user text information frame.
 
 ___
 
 ### UserUrlLinkFrame
 
-• **UserUrlLinkFrame** = `16`
+• **UserUrlLinkFrame** = ``16``
+
+Indicates the frame is an user URL link frame.

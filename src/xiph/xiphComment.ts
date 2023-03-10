@@ -8,7 +8,8 @@ import {Guards} from "../utils";
 
 /**
  * Provides support for reading and writing Xiph comment-style tags.
- * @remarks Xiph comment tag properties are stored in "fields" of the form `KEY=value`, where `KEY`
+ * @remarks
+ *     Xiph comment tag properties are stored in "fields" of the form `KEY=value`, where `KEY`
  *     is the "field name". The field name can be defined multiple times in the tag which means
  *     each field can have multiple values.
  */
@@ -120,7 +121,8 @@ export default class XiphComment extends Tag {
 
     /**
      * Gets the names of the fields currently stored in the list of fields, excluding the pictures.
-     * @remarks This getter is useful for iterating over fields defined in this object in
+     * @remarks
+     *     This getter is useful for iterating over fields defined in this object in
      *     conjunction with {@link getField}.
      */
     public get fieldNames(): string[] { return Array.from(this._fields.keys()); }
@@ -134,7 +136,7 @@ export default class XiphComment extends Tag {
 
     // #region Generic Tag Properties
 
-    /** @inheritDoc Always returns {@link TagTypes.Xiph} */
+    /** @inheritDoc */
     public get tagTypes(): TagTypes { return TagTypes.Xiph; }
 
     /** @inheritDoc */
@@ -142,70 +144,86 @@ export default class XiphComment extends Tag {
     public get sizeOnDisk(): number { return this._sizeOnDisk; }
 
     /**
-     * @inheritDoc via `TITLE` field
+     * @inheritDoc
+     * @remarks Stored in the `TITLE` field
      */
     public get title(): string { return this.getFieldFirstValue("TITLE"); }
     /**
-     * @inheritDoc via `TITLE` field
+     * @inheritDoc
+     * @remarks Stored in the `TITLE` field
      */
     public set title(value: string) { this.setFieldAsStrings("TITLE", value); }
 
     /**
-     * @inheritDoc via `TITLESORT` field
+     * @inheritDoc
+     * @remarks Stored in the `TITLESORT` field
      */
     public get titleSort(): string { return this.getFieldFirstValue("TITLESORT"); }
     /**
-     * @inheritDoc via `TITLESORT` field
+     * @inheritDoc
+     * @remarks Stored in the `TITLESORT` field
      */
     public set titleSort(value: string) { this.setFieldAsStrings("TITLESORT", value); }
 
     /**
-     * @inheritDoc via `SUBTITLE` field
+     * @inheritDoc
+     * @remarks Stored in the `SUBTITLE` field
      */
     public get subtitle(): string { return this.getFieldFirstValue("SUBTITLE"); }
     /**
-     * @inheritDoc via `SUBTITLE` field
+     * @inheritDoc
+     * @remarks Stored in the `SUBTITLE` field
      */
     public set subtitle(value: string) { this.setFieldAsStrings("SUBTITLE", value); }
 
     /**
-     * @inheritDoc via `DESCRIPTION` field
+     * @inheritDoc
+     * @remarks Stored in the `DESCRIPTION` field
      */
     public get description(): string { return this.getFieldFirstValue("DESCRIPTION"); }
     /**
-     * @inheritDoc via `DESCRIPTION` field
+     * @inheritDoc
+     * @remarks Stored in the `DESCRIPTION` field
      */
     public set description(value: string) { this.setFieldAsStrings("DESCRIPTION", value); }
 
     /**
-     * @inheritDoc via `ARTIST` field
+     * @inheritDoc
+     * @remarks Stored in the `ARTIST` field
      */
     public get performers(): string[] { return this.getField("ARTIST"); }
     /**
-     * @inheritDoc via `ARTIST` field
+     * @inheritDoc
+     * @remarks Stored in the `ARTIST` field
      */
     public set performers(value: string[]) { this.setFieldAsStrings("ARTIST", ... value); }
 
     /**
-     * @inheritDoc via `ARTISTSORT` field
+     * @inheritDoc
+     * @remarks Stored in the `ARTISTSORT` field
      */
     public get performersSort(): string[] { return this.getField("ARTISTSORT"); }
     /**
-     * @inheritDoc via `ARTIST` field
+     * @inheritDoc
+     * @remarks Stored in the `ARTIST` field
      */
     public set performersSort(value: string[]) { this.setFieldAsStrings("ARTISTSORT", ... value); }
 
     /**
-     * @inheritDoc via `ARTISTROLE` field
+     * @inheritDoc
+     * @remarks Stored in the `ARTISTROLE` field
      */
     public get performersRole(): string[] { return this.getField("ARTISTROLE"); }
     /**
-     * @inheritDoc via `ARTISTROLE` field
+     * @inheritDoc
+     * @remarks Stored in the `ARTISTROLE` field
      */
     public set performersRole(value: string[]) { this.setFieldAsStrings("ARTISTROLE", ... value); }
 
     /**
-     * @inheritDoc via `ALBUMARTIST` as per standard, though `ALBUM ARTIST` and `ENSEMBLE` will be
+     * @inheritDoc
+     * @remarks
+     *     Stored in the `ALBUMARTIST` as per standard, though `ALBUM ARTIST` and `ENSEMBLE` will be
      *     checked if `ALBUMARTIST` is not set.
      */
     public get albumArtists(): string[] {
@@ -226,7 +244,8 @@ export default class XiphComment extends Tag {
         return this.getField("ENSEMBLE");
     }
     /**
-     * @inheritDoc via `ALBUMARTIST`, as per the standard
+     * @inheritDoc
+     * @remarks Stored in the `ALBUMARTIST`, as per the standard
      */
     public set albumArtists(value: string[]) {
         // @TODO: Coalesce non-standard values?
@@ -240,70 +259,85 @@ export default class XiphComment extends Tag {
     }
 
     /**
-     * @inheritDoc via `ALBUMARTISTSORT` field
+     * @inheritDoc
+     * @remarks Stored in the `ALBUMARTISTSORT` field
      */
     public get albumArtistsSort(): string[] { return this.getField("ALBUMARTISTSORT"); }
     /**
-     * @inheritDoc via `ALBUMARTISTSORT` field
+     * @inheritDoc
+     * @remarks Stored in the `ALBUMARTISTSORT` field
      */
     public set albumArtistsSort(value: string[]) { this.setFieldAsStrings("ALBUMARTISTSORT", ... value); }
 
     /**
-     * @inheritDoc via `COMPOSER` field
+     * @inheritDoc
+     * @remarks Stored in the `COMPOSER` field
      */
     public get composers(): string[] { return this.getField("COMPOSER"); }
     /**
-     * @inheritDoc via `COMPOSER` field
+     * @inheritDoc
+     * @remarks Stored in the `COMPOSER` field
      */
     public set composers(value: string[]) { this.setFieldAsStrings("COMPOSER", ... value); }
 
     /**
-     * @inheritDoc via `COMPOSERSORT` field
+     * @inheritDoc
+     * @remarks Stored in the `COMPOSERSORT` field
      */
     public get composersSort(): string[] { return this.getField("COMPOSERSORT"); }
     /**
-     * @inheritDoc via `COMPOSERSORT` field
+     * @inheritDoc
+     * @remarks Stored in the `COMPOSERSORT` field
      */
     public set composersSort(value: string[]) { this.setFieldAsStrings("COMPOSERSORT", ... value); }
 
     /**
-     * @inheritDoc via `ALBUM` field
+     * @inheritDoc
+     * @remarks Stored in the `ALBUM` field
      */
     public get album(): string { return this.getFieldFirstValue("ALBUM"); }
     /**
-     * @inheritDoc via `ALBUM` field
+     * @inheritDoc
+     * @remarks Stored in the `ALBUM` field
      */
     public set album(value: string) { this.setFieldAsStrings("ALBUM", value); }
 
     /**
-     * @inheritDoc via `ALBUMSORT` field
+     * @inheritDoc
+     * @remarks Stored in the `ALBUMSORT` field
      */
     public get albumSort(): string { return this.getFieldFirstValue("ALBUMSORT"); }
     /**
-     * @inheritDoc via `ALBUMSORT` field
+     * @inheritDoc
+     * @remarks Stored in the `ALBUMSORT` field
      */
     public set albumSort(value: string) { this.setFieldAsStrings("ALBUMSORT", value); }
 
     /**
-     * @inheritDoc via `COMMENT` field
+     * @inheritDoc
+     * @remarks Stored in the `COMMENT` field
      */
     public get comment(): string { return this.getFieldFirstValue("COMMENT"); }
     /**
-     * @inheritDoc via `COMMENT` field
+     * @inheritDoc
+     * @remarks Stored in the `COMMENT` field
      */
     public set comment(value: string) { this.setFieldAsStrings("COMMENT", value); }
 
     /**
-     * @inheritDoc via `GENRE` field
+     * @inheritDoc
+     * @remarks Stored in the `GENRE` field
      */
     public get genres(): string[] { return this.getField("GENRE"); }
     /**
-     * @inheritDoc via `GENRE` field
+     * @inheritDoc
+     * @remarks Stored in the `GENRE` field
      */
     public set genres(value: string[]) { this.setFieldAsStrings("GENRE", ... value); }
 
     /**
-     * @inheritDoc via `DATE` field
+     * @inheritDoc
+     * @remarks Stored in the `DATE` field
      */
     public get year(): number {
         const text = this.getFieldFirstValue("DATE");
@@ -313,7 +347,8 @@ export default class XiphComment extends Tag {
         return Number.isNaN(parsedText) ? 0 : parsedText;
     }
     /**
-     * @inheritDoc via `DATE` field
+     * @inheritDoc
+     * @remarks Stored in the `DATE` field
      */
     public set year(value: number) {
         Guards.uint(value, "value");
@@ -324,7 +359,10 @@ export default class XiphComment extends Tag {
         }
     }
 
-    /** @inheritDoc via `TRACKNUMBER` field */
+    /**
+     * @inheritDoc
+     * @remarks Stored in the `TRACKNUMBER` field 
+     */
     public get track(): number {
         const text = this.getFieldFirstValue("TRACKNUMBER");
         if (!text) { return 0; }
@@ -334,7 +372,10 @@ export default class XiphComment extends Tag {
         const parsedText = Number.parseInt(splitText[0], 10);
         return Number.isNaN(parsedText) ? 0 : parsedText;
     }
-    /** @inheritDoc via `TRACKNUMBER` field */
+    /**
+     * @inheritDoc
+     * @remarks Stored in the `TRACKNUMBER` field
+     */
     public set track(value: number) {
         // TODO: Option to store as fractional?
         this.setFieldAsUint("TRACKTOTAL", this.trackCount);
@@ -342,7 +383,9 @@ export default class XiphComment extends Tag {
     }
 
     /**
-     * @inheritDoc via `TRACKTOTAL` as per standard, but the denominator of `TRACKNUMBER` is also
+     * @inheritDoc
+     * @remarks
+     *     Stored in the `TRACKTOTAL` as per standard, but the denominator of `TRACKNUMBER` is also
      *     used if `TRACKTOTAL` is not available.
      */
     public get trackCount(): number {
@@ -366,7 +409,8 @@ export default class XiphComment extends Tag {
         return 0;
     }
     /**
-     * @inheritDoc via `TRACKNUMBER` field
+     * @inheritDoc
+     * @remarks Stored in the `TRACKNUMBER` field
      */
     public set trackCount(value: number) {
         // TODO: Option to store as fractional?
@@ -374,7 +418,10 @@ export default class XiphComment extends Tag {
         this.setFieldAsUint("TRACKTOTAL", value);
     }
 
-    /** @inheritDoc via `DISCNUMBER` field */
+    /**
+     * @inheritDoc
+     * @remarks Stored in the `DISCNUMBER` field 
+     */
     public get disc(): number {
         const text = this.getFieldFirstValue("DISCNUMBER");
         if (!text) { return 0; }
@@ -384,7 +431,10 @@ export default class XiphComment extends Tag {
         const parsedText = Number.parseInt(splitText[0], 10);
         return Number.isNaN(parsedText) ? 0 : parsedText;
     }
-    /** @inheritDoc via `DISCNUMBER` field */
+    /**
+     * @inheritDoc
+     * @remarks Stored in the `DISCNUMBER` field 
+     */
     public set disc(value: number) {
         // TODO: Option to store as fractional?
         this.setFieldAsUint("DISCTOTAL", this.discCount);
@@ -392,7 +442,9 @@ export default class XiphComment extends Tag {
     }
 
     /**
-     * @inheritDoc via `DISCTOTAL` as per standard, but the denominator of `DISCNUMBER` is also
+     * @inheritDoc
+     * @remarks
+     *     Stored in the `DISCTOTAL` as per standard, but the denominator of `DISCNUMBER` is also
      *     used if `DISCTOTAL` is not available.
      */
     public get discCount(): number {
@@ -416,7 +468,8 @@ export default class XiphComment extends Tag {
         return 0;
     }
     /**
-     * @inheritDoc via `DISCTOTAL` field
+     * @inheritDoc
+     * @remarks Stored in the `DISCTOTAL` field
      */
     public set discCount(value: number) {
         // TODO: Option to store as fractional?
@@ -425,27 +478,33 @@ export default class XiphComment extends Tag {
     }
 
     /**
-     * @inheritDoc via `LYRICS` field
+     * @inheritDoc
+     * @remarks Stored in the `LYRICS` field
      */
     public get lyrics(): string { return this.getFieldFirstValue("LYRICS"); }
     /**
-     * @inheritDoc via `LYRICS` field
+     * @inheritDoc
+     * @remarks Stored in the `LYRICS` field
      */
     public set lyrics(value: string) { this.setFieldAsStrings("LYRICS", value); }
 
     /**
-     * @inheritDoc via `GROUPING` field
+     * @inheritDoc
+     * @remarks Stored in the `GROUPING` field
      */
     public get grouping(): string { return this.getFieldFirstValue("GROUPING"); }
     /**
-     * @inheritDoc via `GROUPING` field
+     * @inheritDoc
+     * @remarks Stored in the `GROUPING` field
      */
     public set grouping(value: string) { this.setFieldAsStrings("GROUPING", value); }
 
     /**
-     * @inheritDoc via `TEMPO` field preferentially, BPM field is used as a fallback.
-     * @remarks The field that stores the value will be used when setting a BPM in the future. This
-     *     behavior can be controlled via {@link XiphSettings.useTempoToStoreBpm}.
+     * @inheritDoc
+     * @remarks
+     *     Stored in the `TEMPO` field preferentially, BPM field is used as a fallback.
+     *     The field that stores the value will be used when setting a BPM in the future. This
+     *     behavior can be controlled Stored in the {@link XiphSettings.useTempoToStoreBpm}.
      */
     public get beatsPerMinute(): number {
         let text = this.getFieldFirstValue("TEMPO");
@@ -458,12 +517,13 @@ export default class XiphComment extends Tag {
     }
     /**
      * @inheritDoc
-     * @remarks Value is stored via `TEMPO` field if {@link XiphSettings.useTempoToStoreBpm} is
-     *     `true`. Value is stored via `BPM` if {@link XiphSettings.useTempoToStoreBpm} is `false`.
+     * @remarks
+     *     Value is stored in the `TEMPO` field if {@link XiphSettings.useTempoToStoreBpm} is
+     *     `true`. Value is stored in the `BPM` if {@link XiphSettings.useTempoToStoreBpm} is `false`.
      *     The other field is removed when stored.
      */
     public set beatsPerMinute(value: number) {
-        // @TODO: Allow existing field to be used via config
+        // @TODO: Allow existing field to be used Stored in the config
         if (XiphSettings.useTempoToStoreBpm) {
             this.setFieldAsUint("TEMPO", value);
             this.removeField("BPM");
@@ -474,25 +534,30 @@ export default class XiphComment extends Tag {
     }
 
     /**
-     * @inheritDoc via `CONDUCTOR` field
+     * @inheritDoc
+     * @remarks Stored in the `CONDUCTOR` field
      */
     public get conductor(): string { return this.getFieldFirstValue("CONDUCTOR"); }
     /**
-     * @inheritDoc via `CONDUCTOR` field
+     * @inheritDoc
+     * @remarks Stored in the `CONDUCTOR` field
      */
     public set conductor(value: string) { this.setFieldAsStrings("CONDUCTOR", value); }
 
     /**
-     * @inheritDoc via `COPYRIGHT` field
+     * @inheritDoc
+     * @remarks Stored in the `COPYRIGHT` field
      */
     public get copyright(): string { return this.getFieldFirstValue("COPYRIGHT"); }
     /**
-     * @inheritDoc via `GROUPING` field
+     * @inheritDoc
+     * @remarks Stored in the `GROUPING` field
      */
     public set copyright(value: string) { this.setFieldAsStrings("COPYRIGHT", value); }
 
     /**
-     * @inheritDoc via `DATETAGGED` field
+     * @inheritDoc
+     * @remarks Stored in the `DATETAGGED` field
      */
     public get dateTagged(): Date {
         const text = this.getFieldFirstValue("DATETAGGED");
@@ -500,7 +565,8 @@ export default class XiphComment extends Tag {
         return Number.isNaN(date.getTime()) ? undefined : date;
     }
     /**
-     * @inheritDoc via `DATETAGGED` field
+     * @inheritDoc
+     * @remarks Stored in the `DATETAGGED` field
      */
     public set dateTagged(value: Date) {
         if (!value || Number.isNaN(value.getTime())) {
@@ -513,101 +579,123 @@ export default class XiphComment extends Tag {
     }
 
     /**
-     * @inheritDoc via `MUSICBRAINZ_ARTISTID` field
+     * @inheritDoc
+     * @remarks Stored in the `MUSICBRAINZ_ARTISTID` field
      */
     public get musicBrainzArtistId(): string { return this.getFieldFirstValue("MUSICBRAINZ_ARTISTID"); }
     /**
-     * @inheritDoc via `MUSICBRAINZ_ARTISTID` field
+     * @inheritDoc
+     * @remarks Stored in the `MUSICBRAINZ_ARTISTID` field
      */
     public set musicBrainzArtistId(value: string) { this.setFieldAsStrings("MUSICBRAINZ_ARTISTID", value); }
 
     /**
-     * @inheritDoc via `MUSICBRAINZ_RELEASEGROUPID` field
+     * @inheritDoc
+     * @remarks Stored in the `MUSICBRAINZ_RELEASEGROUPID` field
      */
     public get musicBrainzReleaseGroupId(): string { return this.getFieldFirstValue("MUSICBRAINZ_RELEASEGROUPID"); }
     /**
-     * @inheritDoc via `MUSICBRAINZ_RELEASEGROUPID` field
+     * @inheritDoc
+     * @remarks Stored in the `MUSICBRAINZ_RELEASEGROUPID` field
      */
     public set musicBrainzReleaseGroupId(value: string) { this.setFieldAsStrings("MUSICBRAINZ_RELEASEGROUPID", value); }
 
     /**
-     * @inheritDoc via `MUSICBRAINZ_ALBUMID` field
+     * @inheritDoc
+     * @remarks Stored in the `MUSICBRAINZ_ALBUMID` field
      */
     public get musicBrainzReleaseId(): string { return this.getFieldFirstValue("MUSICBRAINZ_ALBUMID"); }
     /**
-     * @inheritDoc via `MUSICBRAINZ_ALBUMID` field
+     * @inheritDoc
+     * @remarks Stored in the `MUSICBRAINZ_ALBUMID` field
      */
     public set musicBrainzReleaseId(value: string) { this.setFieldAsStrings("MUSICBRAINZ_ALBUMID", value); }
 
     /**
-     * @inheritDoc via `MUSICBRAINZ_ALBUMARTISTID` field
+     * @inheritDoc
+     * @remarks Stored in the `MUSICBRAINZ_ALBUMARTISTID` field
      */
     public get musicBrainzReleaseArtistId(): string { return this.getFieldFirstValue("MUSICBRAINZ_ALBUMARTISTID"); }
     /**
-     * @inheritDoc via `MUSICBRAINZ_ALBUMARTISTID` field
+     * @inheritDoc
+     * @remarks Stored in the `MUSICBRAINZ_ALBUMARTISTID` field
      */
     public set musicBrainzReleaseArtistId(value: string) { this.setFieldAsStrings("MUSICBRAINZ_ALBUMARTISTID", value); }
 
     /**
-     * @inheritDoc via `MUSICBRAINZ_TRACKID` field
+     * @inheritDoc
+     * @remarks Stored in the `MUSICBRAINZ_TRACKID` field
      */
     public get musicBrainzTrackId(): string { return this.getFieldFirstValue("MUSICBRAINZ_TRACKID"); }
     /**
-     * @inheritDoc via `MUSICBRAINZ_TRACKID` field
+     * @inheritDoc
+     * @remarks Stored in the `MUSICBRAINZ_TRACKID` field
      */
     public set musicBrainzTrackId(value: string) { this.setFieldAsStrings("MUSICBRAINZ_TRACKID", value); }
 
     /**
-     * @inheritDoc via `MUSICBRAINZ_DISCID` field
+     * @inheritDoc
+     * @remarks Stored in the `MUSICBRAINZ_DISCID` field
      */
     public get musicBrainzDiscId(): string { return this.getFieldFirstValue("MUSICBRAINZ_DISCID"); }
     /**
-     * @inheritDoc via `MUSICBRAINZ_DISCID` field
+     * @inheritDoc
+     * @remarks Stored in the `MUSICBRAINZ_DISCID` field
      */
     public set musicBrainzDiscId(value: string) { this.setFieldAsStrings("MUSICBRAINZ_DISCID", value); }
 
     /**
-     * @inheritDoc via `MUSICIP_PUID` field
+     * @inheritDoc
+     * @remarks Stored in the `MUSICIP_PUID` field
      */
     public get musicIpId(): string { return this.getFieldFirstValue("MUSICIP_PUID"); }
     /**
-     * @inheritDoc via `MUSICID_PUID` field
+     * @inheritDoc
+     * @remarks Stored in the `MUSICID_PUID` field
      */
     public set musicIpId(value: string) { this.setFieldAsStrings("MUSICIP_PUID", value); }
 
     /**
-     * @inheritDoc via `ASIN` field
+     * @inheritDoc
+     * @remarks Stored in the `ASIN` field
      */
     public get amazonId(): string { return this.getFieldFirstValue("ASIN"); }
     /**
-     * @inheritDoc via `ASIN` field
+     * @inheritDoc
+     * @remarks Stored in the `ASIN` field
      */
     public set amazonId(value: string) { this.setFieldAsStrings("ASIN", value); }
 
     /**
-     * @inheritDoc via `MUSICBRAINZ_ALBUMSTATUS` field
+     * @inheritDoc
+     * @remarks Stored in the `MUSICBRAINZ_ALBUMSTATUS` field
      */
     public get musicBrainzReleaseStatus(): string { return this.getFieldFirstValue("MUSICBRAINZ_ALBUMSTATUS"); }
     /**
-     * @inheritDoc via `MUSICBRAINZ_ALBUMSTATUS` field
+     * @inheritDoc
+     * @remarks Stored in the `MUSICBRAINZ_ALBUMSTATUS` field
      */
     public set musicBrainzReleaseStatus(value: string) { this.setFieldAsStrings("MUSICBRAINZ_ALBUMSTATUS", value); }
 
     /**
-     * @inheritDoc via `MUSICBRAINZ_ALBUMTYPE` field
+     * @inheritDoc
+     * @remarks Stored in the `MUSICBRAINZ_ALBUMTYPE` field
      */
     public get musicBrainzReleaseType(): string { return this.getFieldFirstValue("MUSICBRAINZ_ALBUMTYPE"); }
     /**
-     * @inheritDoc via `MUSICBRAINZ_ALBUMTYPE` field
+     * @inheritDoc
+     * @remarks Stored in the `MUSICBRAINZ_ALBUMTYPE` field
      */
     public set musicBrainzReleaseType(value: string) { this.setFieldAsStrings("MUSICBRAINZ_ALBUMTYPE", value); }
 
     /**
-     * @inheritDoc via `RELEASECOUNTRY` field
+     * @inheritDoc
+     * @remarks Stored in the `RELEASECOUNTRY` field
      */
     public get musicBrainzReleaseCountry(): string { return this.getFieldFirstValue("RELEASECOUNTRY"); }
     /**
-     * @inheritDoc via `RELEASECOUNTRY` field
+     * @inheritDoc
+     * @remarks Stored in the `RELEASECOUNTRY` field
      */
     public set musicBrainzReleaseCountry(value: string) { this.setFieldAsStrings("RELEASECOUNTRY", value); }
 
@@ -624,11 +712,13 @@ export default class XiphComment extends Tag {
     }
 
     /**
-     * @inheritDoc via `COMPILATION` field
+     * @inheritDoc
+     * @remarks Stored in the `COMPILATION` field
      */
     public get isCompilation(): boolean { return this.getFieldFirstValue("COMPILATION") === "1"; }
     /**
-     * @inheritDoc via `COMPILATION` field
+     * @inheritDoc
+     * @remarks Stored in the `COMPILATION` field
      */
     public set isCompilation(value: boolean) {
         if (value) {
@@ -639,7 +729,8 @@ export default class XiphComment extends Tag {
     }
 
     /**
-     * @inheritDoc via `REPLAYGAIN_TRACK_GAIN` field
+     * @inheritDoc
+     * @remarks Stored in the `REPLAYGAIN_TRACK_GAIN` field
      */
     public get replayGainTrackGain(): number {
         // NOTE: don't forget that falsy parses as NaN and invalid characters after valid float are
@@ -648,7 +739,8 @@ export default class XiphComment extends Tag {
         return Number.parseFloat(text);
     }
     /**
-     * @inheritDoc via `REPLAYGAIN_TRACK_GAIN` field
+     * @inheritDoc
+     * @remarks Stored in the `REPLAYGAIN_TRACK_GAIN` field
      */
     public set replayGainTrackGain(value: number) {
         if (value === undefined || value === null || Number.isNaN(value)) {
@@ -659,14 +751,16 @@ export default class XiphComment extends Tag {
     }
 
     /**
-     * @inheritDoc via `REPLAYGAIN_TRACK_PEAK` field
+     * @inheritDoc
+     * @remarks Stored in the `REPLAYGAIN_TRACK_PEAK` field
      */
     public get replayGainTrackPeak(): number {
         const text = this.getFieldFirstValue("REPLAYGAIN_TRACK_PEAK");
         return Number.parseFloat(text);
     }
     /**
-     * @inheritDoc via `REPLAYGAIN_TRACK_PEAK` field
+     * @inheritDoc
+     * @remarks Stored in the `REPLAYGAIN_TRACK_PEAK` field
      */
     public set replayGainTrackPeak(value: number) {
         if (value === undefined || value === null || Number.isNaN(value)) {
@@ -677,7 +771,8 @@ export default class XiphComment extends Tag {
     }
 
     /**
-     * @inheritDoc via `REPLAYGAIN_ALBUM_GAIN` field
+     * @inheritDoc
+     * @remarks Stored in the `REPLAYGAIN_ALBUM_GAIN` field
      */
     public get replayGainAlbumGain(): number {
         // NOTE: don't forget that falsy parses as NaN and invalid characters after valid float are
@@ -686,7 +781,8 @@ export default class XiphComment extends Tag {
         return Number.parseFloat(text);
     }
     /**
-     * @inheritDoc via `REPLAYGAIN_ALBUM_GAIN` field
+     * @inheritDoc
+     * @remarks Stored in the `REPLAYGAIN_ALBUM_GAIN` field
      */
     public set replayGainAlbumGain(value: number) {
         if (value === undefined || value === null || Number.isNaN(value)) {
@@ -697,14 +793,16 @@ export default class XiphComment extends Tag {
     }
 
     /**
-     * @inheritDoc via `REPLAYGAIN_ALBUM_PEAK` field
+     * @inheritDoc
+     * @remarks Stored in the `REPLAYGAIN_ALBUM_PEAK` field
      */
     public get replayGainAlbumPeak(): number {
         const text = this.getFieldFirstValue("REPLAYGAIN_ALBUM_PEAK");
         return Number.parseFloat(text);
     }
     /**
-     * @inheritDoc via `REPLAYGAIN_TRACK_PEAK` field
+     * @inheritDoc
+     * @remarks Stored in the `REPLAYGAIN_TRACK_PEAK` field
      */
     public set replayGainAlbumPeak(value: number) {
         if (value === undefined || value === null || Number.isNaN(value)) {
@@ -715,38 +813,46 @@ export default class XiphComment extends Tag {
     }
 
     /**
-     * @inheritDoc via `INITIALKEY` field
+     * @inheritDoc
+     * @remarks Stored in the `INITIALKEY` field
      */
     public get initialKey(): string { return this.getFieldFirstValue("INITIALKEY"); }
     /**
-     * @inheritDoc via `INITIALKEY` field
+     * @inheritDoc
+     * @remarks Stored in the `INITIALKEY` field
      */
     public set initialKey(value: string) { this.setFieldAsStrings("INITIALKEY", value); }
 
     /**
-     * @inheritDoc via `REMIXEDBY` field
+     * @inheritDoc
+     * @remarks Stored in the `REMIXEDBY` field
      */
     public get remixedBy(): string { return this.getFieldFirstValue("REMIXEDBY"); }
     /**
-     * @inheritDoc via `REMIXEDBY` field
+     * @inheritDoc
+     * @remarks Stored in the `REMIXEDBY` field
      */
     public set remixedBy(value: string) { this.setFieldAsStrings("REMIXEDBY", value); }
 
     /**
-     * @inheritDoc via `ORGANIZATION` field
+     * @inheritDoc
+     * @remarks Stored in the `ORGANIZATION` field
      */
     public get publisher(): string { return this.getFieldFirstValue("ORGANIZATION"); }
     /**
-     * @inheritDoc via `ORGANIZATION` field
+     * @inheritDoc
+     * @remarks Stored in the `ORGANIZATION` field
      */
     public set publisher(value: string) { this.setFieldAsStrings("ORGANIZATION", value); }
 
     /**
-     * @inheritDoc via `ISRC` field
+     * @inheritDoc
+     * @remarks Stored in the `ISRC` field
      */
     public get isrc(): string { return this.getFieldFirstValue("ISRC"); }
     /**
-     * @inheritDoc via `ISRC` field
+     * @inheritDoc
+     * @remarks Stored in the `ISRC` field
      */
     public set isrc(value: string) { this.setFieldAsStrings("ISRC", value); }
 
@@ -790,7 +896,7 @@ export default class XiphComment extends Tag {
     /**
      * Gets the field data for a given field identifier.
      * @param key Field identifier to look up
-     * @returns string[] Field data or undefined if the field cannot be found
+     * @returns Field data or undefined if the field cannot be found
      */
     public getField(key: string): string[] {
         Guards.notNullOrUndefined(key, "key");
@@ -805,7 +911,7 @@ export default class XiphComment extends Tag {
     /**
      * Gets the first value in a field for a given field identifier.
      * @param key Field identifier to look up
-     * @returns string Field data or `undefined` if the field was notfound
+     * @returns Field data or `undefined` if the field was notfound
      */
     public getFieldFirstValue(key: string): string {
         Guards.notNullOrUndefined(key, "key");

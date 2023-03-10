@@ -5,27 +5,54 @@ import {FrameIdentifiers} from "../frameIdentifiers";
 import {Guards} from "../../utils";
 import {EventType, TimestampFormat} from "../utilTypes";
 
+/**
+ * Class that represents an event for usage in a {@link EventTimeCodeFrame}.
+ */
 export class EventTimeCode {
     private _time: number;
     private _eventType: EventType;
 
+    /**
+     * Constructs and initializes a new instance.
+     * @param eventType Type of event the instance represents
+     * @param time Timestamp when the event occurs
+     */
     public constructor(eventType: EventType, time: number) {
         Guards.int(time, "time");
         this._eventType = eventType;
         this._time = time;
     }
 
+    /**
+     * Constructs and initializes a blank new instance of type {@link EventType.Padding} at time 0.
+     */
     public static fromEmpty(): EventTimeCode {
         return new EventTimeCode(EventType.Padding, 0);
     }
 
+    /**
+     * Gets the timestamp when the event occurs. The format of the value is determined by the
+     * frame that contains the timecode event.
+     */
     public get time(): number { return this._time; }
+    /**
+     * Sets the timestamp when the event occurs. The format of the value is determined by the
+     * frame that contains the timecode event.
+     * @param value Timestamp when the event occurs.
+     */
     public set time(value: number) {
         Guards.int(value, "value");
         this._time = value;
     }
 
+    /**
+     * Gets the type of the event the current instance represents.
+     */
     public get eventType(): EventType { return this._eventType; }
+    /**
+     * Sets the type of the event the current instance represents.
+     * @param value Type of the event
+     */
     public set eventType(value: EventType) { this._eventType = value; }
 
     /**
@@ -35,6 +62,9 @@ export class EventTimeCode {
         return new EventTimeCode(this.eventType, this.time);
     }
 
+    /**
+     * Generates the byte representation of the event time code.
+     */
     public render(): ByteVector {
         // @TODO: Do we need to store 0 time as one byte 0? It's in the docs like that
         return ByteVector.concatenate(
@@ -44,6 +74,10 @@ export class EventTimeCode {
     }
 }
 
+/**
+ * Represents an ID3v2 event time code frame, which is used to store a timestamps for events within
+ * a track.
+ */
 export class EventTimeCodeFrame extends Frame {
     private _events: EventTimeCode[] = [];
     private _timestampFormat: TimestampFormat = TimestampFormat.Unknown;

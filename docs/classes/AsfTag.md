@@ -95,14 +95,11 @@ and written to disk.
 - [setDescriptorString](AsfTag.md#setdescriptorstring)
 - [setDescriptorStrings](AsfTag.md#setdescriptorstrings)
 - [setDescriptors](AsfTag.md#setdescriptors)
-- [setInfoTag](AsfTag.md#setinfotag)
 - [firstInGroup](AsfTag.md#firstingroup)
 - [fromEmpty](AsfTag.md#fromempty)
 - [fromHeader](AsfTag.md#fromheader)
 - [isFalsyOrLikeEmpty](AsfTag.md#isfalsyorlikeempty)
 - [joinGroup](AsfTag.md#joingroup)
-- [pictureFromData](AsfTag.md#picturefromdata)
-- [pictureToData](AsfTag.md#picturetodata)
 - [tagTypeFlagsToArray](AsfTag.md#tagtypeflagstoarray)
 
 ## Accessors
@@ -111,9 +108,20 @@ and written to disk.
 
 • `get` **album**(): `string`
 
-**`inheritdoc`**
+Gets the album of the media represented by the current instance. For video media, this
+represents the collection the video belongs to.
 
-**`remarks`** via `WM/AlbumTitle` or `Album` descriptors
+This field represents the name of the album the media belongs to. In the case of a
+boxed set, it should be the name of the entire set rather than the individual disc. In
+the case of a series, this should be the name of the series, rather than the season of a
+series.
+
+For example, "Kintsugi" (an album by Death Cab for Cutie), "The Complete Red Green Show"
+(a boxed set of TV episodes), or "Shark Tank" (a series with several seasons).
+
+**`Remarks`**
+
+Stored in the `WM/AlbumTitle` or `Album` descriptors
     https://docs.microsoft.com/en-us/windows/win32/wmformat/wm-albumtitle
 
 #### Returns
@@ -126,16 +134,27 @@ Tag.album
 
 • `set` **album**(`value`): `void`
 
-**`inheritdoc`**
+Sets the album of the media represented by the current instance. For video media, this
+represents the collection the video belongs to.
 
-**`remarks`** via `WM/AlbumTitle` or `Album` descriptors
+This field represents the name of the album the media belongs to. In the case of a
+boxed set, it should be the name of the entire set rather than the individual disc. In
+the case of a series, this should be the name of the series, rather than the season of a
+series.
+
+For example, "Kintsugi" (an album by Death Cab for Cutie), "The Complete Red Green Show"
+(a boxed set of TV episodes), or "Shark Tank" (a series with several seasons).
+
+**`Remarks`**
+
+Stored in the `WM/AlbumTitle` or `Album` descriptors
     https://docs.microsoft.com/en-us/windows/win32/wmformat/wm-albumtitle
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `value` | `string` |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `value` | `string` | of the media represented by the current instance or `undefined` if no value is present |
 
 #### Returns
 
@@ -151,9 +170,20 @@ ___
 
 • `get` **albumArtists**(): `string`[]
 
-**`inheritdoc`**
+Gets the band or artist who is credited in the creation of the entire album or
+collection containing the media described by the current instance.
 
-**`remarks`** via `WM/AlbumArtist` or `AlbumArtist` descriptors
+This field is typically optional but aids in the sorting of compilations or albums
+with multiple artist. For example, if an album has several artists, sorting by artist
+will split up albums by the same artist. Having a single album artist for an entire
+album solves this problem.
+As this value is to be used as a sorting key, it should be used with less variation
+than [performers](AsfTag.md#performers). Where performers can be broken into multiple artists, it is
+best to stick to a single name. Eg, "Super8 & Tab"
+
+**`Remarks`**
+
+Stored in the `WM/AlbumArtist` or `AlbumArtist` descriptors
 
 #### Returns
 
@@ -165,15 +195,26 @@ Tag.albumArtists
 
 • `set` **albumArtists**(`value`): `void`
 
-**`inheritdoc`**
+Sets the bands or artists who is credited in the creation of the entire album or
+collection containing the media described by the current instance.
 
-**`remarks`** via `WM/AlbumArtist` or `AlbumArtist` descriptors
+This field is typically optional but aids in the sorting of compilations or albums
+with multiple artist. For example, if an album has several artists, sorting by artist
+will split up albums by the same artist. Having a single album artist for an entire
+album solves this problem.
+As this value is to be used as a sorting key, it should be used with less variation
+than [performers](AsfTag.md#performers). Where performers can be broken into multiple artists, it is
+best to stick to a single name. Eg, "Super8 & Tab"
+
+**`Remarks`**
+
+Stored in the `WM/AlbumArtist` or `AlbumArtist` descriptors
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `value` | `string`[] |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `value` | `string`[] | Band or artist credited with the creation of the entire album or collection containing the media described by the current instance or an empty array if no value is present |
 
 #### Returns
 
@@ -189,9 +230,20 @@ ___
 
 • `get` **albumArtistsSort**(): `string`[]
 
-**`inheritdoc`**
+Gets the sortable names of the bands/artists who are credited with creating the entire
+album or collection containing the media described by the current instance. See also:
+[albumArtists](AsfTag.md#albumartists)
 
-**`remarks`** via `WM/AlbumArtistSortOrder` descriptor
+This is used to provide more control over how the media is sorted. Typical uses are to
+skip articles or sort by last name. For example "Ben Folds" might be sorted as
+"Folds, Ben".
+As this value is to be used as a sorting key, it should be used with less variation than
+[performers](AsfTag.md#performers). Where [performers](AsfTag.md#performers) can be broken into multiple performers, it is
+best to stick to a single album artist. Eg, "Van Buuren, Armin"
+
+**`Remarks`**
+
+Stored in the `WM/AlbumArtistSortOrder` descriptor
     http://msdn.microsoft.com/en-us/library/aa386866(VS.85).aspx
 
 #### Returns
@@ -204,16 +256,27 @@ Tag.albumArtistsSort
 
 • `set` **albumArtistsSort**(`value`): `void`
 
-**`inheritdoc`**
+Sets the sortable names of the bands/artists who are credited with creating the entire
+album or collection containing the media described by the current instance. See also:
+[albumArtists](AsfTag.md#albumartists)
 
-**`remarks`** via `WM/AlbumArtistSortOrder` descriptor
+This is used to provide more control over how the media is sorted. Typical uses are to
+skip articles or sort by last name. For example "Ben Folds" might be sorted as
+"Folds, Ben".
+As this value is to be used as a sorting key, it should be used with less variation than
+[performers](AsfTag.md#performers). Where [performers](AsfTag.md#performers) can be broken into multiple performers, it is
+best to stick to a single album artist. Eg, "Van Buuren, Armin"
+
+**`Remarks`**
+
+Stored in the `WM/AlbumArtistSortOrder` descriptor
     http://msdn.microsoft.com/en-us/library/aa386866(VS.85).aspx
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `value` | `string`[] |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `value` | `string`[] | Sortable names for the bands/artists are credited with the creation of the entire album or collection containing the media described by the current instance, or an empty array if no value is present. |
 
 #### Returns
 
@@ -229,9 +292,15 @@ ___
 
 • `get` **albumSort**(): `string`
 
-**`inheritdoc`**
+Gets the sortable name of the album title of the media represented by the current instance.
+See also: [album](AsfTag.md#album)
 
-**`remarks`** via `WM/AlbumSortOrder` descriptors
+This field is typically optional but aids in sort of compilations or albums with
+similar titles.
+
+**`Remarks`**
+
+Stored in the `WM/AlbumSortOrder` descriptors
 
 #### Returns
 
@@ -243,15 +312,21 @@ Tag.albumSort
 
 • `set` **albumSort**(`value`): `void`
 
-**`inheritdoc`**
+Sets the sortable name of the album title of the media represented by the current instance.
+See also: [album](AsfTag.md#album)
 
-**`remarks`** via `WM/AlbumSortOrder` descriptors
+This field is typically optional but aids in sort of compilations or albums with
+similar titles.
+
+**`Remarks`**
+
+Stored in the `WM/AlbumSortOrder` descriptors
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `value` | `string` |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `value` | `string` | Sortable name for the album title of the media or `undefined` if the value is not present |
 
 #### Returns
 
@@ -269,8 +344,8 @@ ___
 
 Gets the Amazon ID of the media represented by the current instance.
 
-**`remarks`** This field represents the AmazonID, also called the ASIN, and is used to uniquely
-    identify the particular track or album in the Amazon catalog.
+This field represents the AmazonID, also called the ASIN, and is used to uniquely
+identify the particular track or album in the Amazon catalog.
 
 #### Returns
 
@@ -287,21 +362,18 @@ Tag.amazonId
 
 Sets the Amazon ID of the media represented by the current instance.
 
-**`remarks`** This field represents the AmazonID, also called the ASIN, and is used to uniquely
-    identify the particular track or album in the Amazon catalog.
+This field represents the AmazonID, also called the ASIN, and is used to uniquely
+identify the particular track or album in the Amazon catalog.
 
 #### Parameters
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `value` | `string` | Amazon ID of the media represented by the current instance or `undefined` if no     value is present |
+| `value` | `string` | Amazon ID of the media represented by the current instance or `undefined` if no value is present |
 
 #### Returns
 
 `void`
-
-Amazon ID of the media represented by the current instance or `undefined` if no
-    value is present
 
 #### Inherited from
 
@@ -313,9 +385,15 @@ ___
 
 • `get` **beatsPerMinute**(): `number`
 
-**`inheritdoc`**
+Gets the number of beats per minute in the audio of the media represented by the current
+instance.
 
-**`remarks`** via `WM/BeatsPerMinute` descriptor
+This field is useful for DJ's who are trying to beat match tracks. It should be
+calculated from the audio or pulled from a database.
+
+**`Remarks`**
+
+Stored in the `WM/BeatsPerMinute` descriptor
     https://docs.microsoft.com/en-us/windows/win32/wmformat/wm-beatsperminute
 
 #### Returns
@@ -328,16 +406,22 @@ Tag.beatsPerMinute
 
 • `set` **beatsPerMinute**(`value`): `void`
 
-**`inheritdoc`**
+Sets the number of beats per minute in the audio of the media represented by the current
+instance.
 
-**`remarks`** via `WM/BeatsPerMinute` descriptor
+This field is useful for DJ's who are trying to beat match tracks. It should be
+calculated from the audio or pulled from a database.
+
+**`Remarks`**
+
+Stored in the `WM/BeatsPerMinute` descriptor
     https://docs.microsoft.com/en-us/windows/win32/wmformat/wm-beatsperminute
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `value` | `number` |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `value` | `number` | Beats per minute of the audio in the media represented by the current instance, or `0` if not specified |
 
 #### Returns
 
@@ -353,9 +437,17 @@ ___
 
 • `get` **comment**(): `string`
 
-**`inheritdoc`**
+Gets a user comment on the media represented by the current instance.
 
-**`remarks`** via `WM/Text` descriptor
+This field should be used to store user notes and comments. There is no constraint on
+what text can be stored here, but it should not contain programmatic data.
+Because this field contains notes the the user might think of while consuming the media,
+it may be useful for an application to make this field easily accessible, perhaps even
+including it in the main interface.
+
+**`Remarks`**
+
+Stored in the `WM/Text` descriptor
     https://docs.microsoft.com/en-us/windows/win32/wmformat/wm-text
     It should be noted that many applications store comments in the field read by
     [description](AsfTag.md#description).
@@ -370,18 +462,26 @@ Tag.comment
 
 • `set` **comment**(`value`): `void`
 
-**`inheritdoc`**
+Sets a user comment on the media represented by the current instance.
 
-**`remarks`** via `WM/Text` descriptor
+This field should be used to store user notes and comments. There is no constraint on
+what text can be stored here, but it should not contain programmatic data.
+Because this field contains notes the the user might think of while consuming the media,
+it may be useful for an application to make this field easily accessible, perhaps even
+including it in the main interface.
+
+**`Remarks`**
+
+Stored in the `WM/Text` descriptor
     https://docs.microsoft.com/en-us/windows/win32/wmformat/wm-text
     It should be noted that many applications store comments in the field read by
     [description](AsfTag.md#description).
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `value` | `string` |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `value` | `string` | User comments on the media represented by the current instance or `undefined` if the value is not present |
 
 #### Returns
 
@@ -397,9 +497,14 @@ ___
 
 • `get` **composers**(): `string`[]
 
-**`inheritdoc`**
+Gets the composers of the media represented by the current instance.
 
-**`remarks`** via `WM/Composer` or `Composer` descriptors
+This field represents the composers, songwriters, scriptwriters, or persons who
+claim authorship of the media.
+
+**`Remarks`**
+
+Stored in the `WM/Composer` or `Composer` descriptors
     https://docs.microsoft.com/en-us/windows/win32/wmformat/wm-composer
 
 #### Returns
@@ -412,16 +517,21 @@ Tag.composers
 
 • `set` **composers**(`value`): `void`
 
-**`inheritdoc`**
+Sets the composers of the media represented by the current instance.
 
-**`remarks`** via `WM/Composer` or `Composer` descriptors
+This field represents the composers, songwriters, scriptwriters, or persons who
+claim authorship of the media.
+
+**`Remarks`**
+
+Stored in the `WM/Composer` or `Composer` descriptors
     https://docs.microsoft.com/en-us/windows/win32/wmformat/wm-composer
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `value` | `string`[] |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `value` | `string`[] | Composers of the media represented by the current instance of an empty array if no value is present. |
 
 #### Returns
 
@@ -438,11 +548,10 @@ ___
 • `get` **composersSort**(): `string`[]
 
 Gets the sortable names of the composers of the media represented by the current instance.
+See also: [composers](AsfTag.md#composers)
 
-**`see`** composers
-
-**`remarks`** This field is typically optional but aids in the sorting of compilations or albums
-    with multiple composers.
+This field is typically optional but aids in the sorting of compilations or albums
+with multiple composers.
 
 #### Returns
 
@@ -458,24 +567,20 @@ Tag.composersSort
 • `set` **composersSort**(`value`): `void`
 
 Sets the sortable names of the composers of the media represented by the current instance.
+See also: [composers](AsfTag.md#composers)
 
-**`see`** composers
-
-**`remarks`** This field is typically optional but aids in the sorting of compilations or albums
-    with multiple composers.
+This field is typically optional but aids in the sorting of compilations or albums
+with multiple composers.
 
 #### Parameters
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `value` | `string`[] | Sortable names for the composers of the media represented by the current     instance or an empty array if no value is present. |
+| `value` | `string`[] | Sortable names for the composers of the media represented by the current instance or an empty array if no value is present. |
 
 #### Returns
 
 `void`
-
-Sortable names for the composers of the media represented by the current instance
-    or an empty array if no value is present.
 
 #### Inherited from
 
@@ -487,9 +592,13 @@ ___
 
 • `get` **conductor**(): `string`
 
-**`inheritdoc`**
+Gets the conductor or director of the media represented by the current instance.
 
-**`remarks`** via `WM/Conductor` descriptor
+This field is most useful for organizing classical music and movies.
+
+**`Remarks`**
+
+Stored in the `WM/Conductor` descriptor
     https://docs.microsoft.com/en-us/windows/win32/wmformat/wm-conductor
 
 #### Returns
@@ -502,16 +611,20 @@ Tag.conductor
 
 • `set` **conductor**(`value`): `void`
 
-**`inheritdoc`**
+Sets the conductor or director of the media represented by the current instance.
 
-**`remarks`** via `WM/Conductor` descriptor
+This field is most useful for organizing classical music and movies.
+
+**`Remarks`**
+
+Stored in the `WM/Conductor` descriptor
     https://docs.microsoft.com/en-us/windows/win32/wmformat/wm-conductor
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `value` | `string` |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `value` | `string` | Conductor or director of the media represented by the current instance or `undefined` if no value present. |
 
 #### Returns
 
@@ -539,9 +652,16 @@ ___
 
 • `get` **copyright**(): `string`
 
-**`inheritdoc`**
+Gets the copyright information for the media represented by the current instance.
 
-**`remarks`** via {@link ContentDescriptionObject.copyright}
+This field should be used for storing copyright information. It may be useful to show
+this information somewhere in the program while the media is playing.
+Players should not support editing this field, but media creation tools should
+definitely allow modification.
+
+**`Remarks`**
+
+Stored in the ContentDescriptionObject.copyright
 
 #### Returns
 
@@ -553,15 +673,22 @@ Tag.copyright
 
 • `set` **copyright**(`value`): `void`
 
-**`inheritdoc`**
+Sets the copyright information for the media represented by the current instance.
 
-**`remarks`** via {@link ContentDescriptionObject.copyright}
+This field should be used for storing copyright information. It may be useful to show
+this information somewhere in the program while the media is playing.
+Players should not support editing this field, but media creation tools should
+definitely allow modification.
+
+**`Remarks`**
+
+Stored in the ContentDescriptionObject.copyright
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `value` | `string` |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `value` | `string` | Copyright information for the media represented by the current instance or `undefined` if no value is present. |
 
 #### Returns
 
@@ -597,13 +724,11 @@ Sets the date and time at which the tag has been written.
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `value` | `Date` | Date/time at which the tag has been written, or `undefined` if no value is     present |
+| `value` | `Date` | Date/time at which the tag has been written, or `undefined` if no value is present |
 
 #### Returns
 
 `void`
-
-Date/time at which the tag has been written, or `undefined` if no value is present
 
 #### Inherited from
 
@@ -615,9 +740,17 @@ ___
 
 • `get` **description**(): `string`
 
-**`inheritdoc`**
+Gets a short description of the media. For music, this could be the comment that the artist
+made of his/her work. For a video, this should be a short summary of the story/plot, but
+generally no spoliers. This should give the impression of what to expect in the media.
 
-**`remarks`** via {@link ContentDescriptor.description}
+This is especially relevant for a movie. For example, for "Fear and Loathing in Las
+Vegas", this could be "An oddball journalist and his psychopathic lawyer travel to Las
+Vegas for a series of psychedelic escapades."
+
+**`Remarks`**
+
+Stored in the ContentDescriptionObject.description
     Some applications will use this field for storing comments.
 
 #### Returns
@@ -630,16 +763,24 @@ Tag.description
 
 • `set` **description**(`value`): `void`
 
-**`inheritdoc`**
+Sets a short description of the media. For music, this could be the comment that the artist
+made of his/her work. For a video, this should be a short summary of the story/plot, but
+generally no spoliers. This should give the impression of what to expect in the media.
 
-**`remarks`** via {@link ContentDescriptor.description}
+This is especially relevant for a movie. For example, for "Fear and Loathing in Las
+Vegas", this could be "An oddball journalist and his psychopathic lawyer travel to Las
+Vegas for a series of psychedelic escapades."
+
+**`Remarks`**
+
+Stored in the ContentDescriptionObject.description
     Some applications will use this field for storing comments.
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `value` | `string` |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `value` | `string` | Description of the media represented by the current instance or `undefined` if no value is present |
 
 #### Returns
 
@@ -655,9 +796,16 @@ ___
 
 • `get` **disc**(): `number`
 
-**`inheritdoc`**
+Gets the number of the disc containing the media represented by the current instance in the
+boxed set. For a series, this represents the season number.
 
-**`remarks`** via `WM/PartOfSet` descriptor
+This value should be the same as the number that appears on the disc. For example, if
+the disc is the first of three, the value should be `1`. It should be no more than
+[discCount](AsfTag.md#disccount) if [discCount](AsfTag.md#disccount) is non-zero.
+
+**`Remarks`**
+
+Stored in the `WM/PartOfSet` descriptor
     https://docs.microsoft.com/en-us/windows/win32/wmformat/wm-partofset
 
 #### Returns
@@ -670,16 +818,23 @@ Tag.disc
 
 • `set` **disc**(`value`): `void`
 
-**`inheritdoc`**
+Sets the number of the disc containing the media represented by the current instance in the
+boxed set. For a series, this represents the season number.
 
-**`remarks`** via `WM/PartOfSet` descriptor
+This value should be the same as the number that appears on the disc. For example, if
+the disc is the first of three, the value should be `1`. It should be no more than
+[discCount](AsfTag.md#disccount) if [discCount](AsfTag.md#disccount) is non-zero.
+
+**`Remarks`**
+
+Stored in the `WM/PartOfSet` descriptor
     https://docs.microsoft.com/en-us/windows/win32/wmformat/wm-partofset
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `value` | `number` |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `value` | `number` | Number of the disc or season of the media represented by the current instance in a boxed set. |
 
 #### Returns
 
@@ -695,9 +850,15 @@ ___
 
 • `get` **discCount**(): `number`
 
-**`inheritdoc`**
+Gets the number of discs or seasons in the boxed set containing the media represented by the
+current instance.
 
-**`remarks`** via `WM/PartOfSet` descriptor
+If non-zero, this should be at least equal to [disc](AsfTag.md#disc). If [disc](AsfTag.md#disc) is zero,
+this value should also be zero.
+
+**`Remarks`**
+
+Stored in the `WM/PartOfSet` descriptor
     https://docs.microsoft.com/en-us/windows/win32/wmformat/wm-partofset
 
 #### Returns
@@ -710,16 +871,22 @@ Tag.discCount
 
 • `set` **discCount**(`value`): `void`
 
-**`inheritdoc`**
+Sets the number of discs or seasons in the boxed set containing the media represented by the
+current instance.
 
-**`remarks`** via `WM/PartOfSet` descriptor
+If non-zero, this should be at least equal to [disc](AsfTag.md#disc). If [disc](AsfTag.md#disc) is zero,
+this value should also be zero.
+
+**`Remarks`**
+
+Stored in the `WM/PartOfSet` descriptor
     https://docs.microsoft.com/en-us/windows/win32/wmformat/wm-partofset
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `value` | `number` |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `value` | `number` | Number of discs or seasons in the boxed set containing the media represented by the current instance or `0` if not specified. |
 
 #### Returns
 
@@ -859,11 +1026,18 @@ ___
 
 • `get` **genres**(): `string`[]
 
-**`inheritdoc`**
+Gets the genres of the media represented by the current instance.
 
-**`remarks`** via `WM/Genre`, `WM/GenreID`, or `Genre` descriptors
-     https://docs.microsoft.com/en-us/windows/win32/wmformat/wm-genre
-     https://docs.microsoft.com/en-us/windows/win32/wmformat/wm-genreid
+This field represents genres that apply to the song, album, or video. This is often
+used for filtering media.
+A list of common audio genres as popularized by ID3v1 is stored in `genres.ts`.
+Additionally, `genres.ts` contains video genres as used by DivX.
+
+**`Remarks`**
+
+Stored in the `WM/Genre`, `WM/GenreID`, or `Genre` descriptors
+    https://docs.microsoft.com/en-us/windows/win32/wmformat/wm-genre
+    https://docs.microsoft.com/en-us/windows/win32/wmformat/wm-genreid
 
 #### Returns
 
@@ -875,17 +1049,24 @@ Tag.genres
 
 • `set` **genres**(`value`): `void`
 
-**`inheritdoc`**
+Sets the genres of the media represented by the current instance.
 
-**`remarks`** via `WM/Genre`, `WM/GenreID`, or `Genre` descriptors
-     https://docs.microsoft.com/en-us/windows/win32/wmformat/wm-genre
-     https://docs.microsoft.com/en-us/windows/win32/wmformat/wm-genreid
+This field represents genres that apply to the song, album, or video. This is often
+used for filtering media.
+A list of common audio genres as popularized by ID3v1 is stored in `genres.ts.
+Additionally, `genres.ts` contains video genres as used by DivX.
+
+**`Remarks`**
+
+Stored in the `WM/Genre`, `WM/GenreID`, or `Genre` descriptors
+    https://docs.microsoft.com/en-us/windows/win32/wmformat/wm-genre
+    https://docs.microsoft.com/en-us/windows/win32/wmformat/wm-genreid
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `value` | `string`[] |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `value` | `string`[] | Genres of the media represented by the current instance or an empty array if no value is present. |
 
 #### Returns
 
@@ -901,9 +1082,15 @@ ___
 
 • `get` **grouping**(): `string`
 
-**`inheritdoc`**
+Gets the grouping on the album which the media in the current instance belongs to.
 
-**`remarks`** via `WM/ContentGroupDescription` descriptor
+This field contains a non-physical group to which the track belongs. In classical
+music this could be a movement. It could also be parts of a series like "Introduction",
+"Closing Remarks", etc.
+
+**`Remarks`**
+
+Stored in the `WM/ContentGroupDescription` descriptor
     https://docs.microsoft.com/en-us/windows/win32/wmformat/wm-contentgroupdescription
 
 #### Returns
@@ -916,16 +1103,22 @@ Tag.grouping
 
 • `set` **grouping**(`value`): `void`
 
-**`inheritdoc`**
+Sets the grouping on the album which the media in the current instance belongs to.
 
-**`remarks`** via `WM/ContentGroupDescription` descriptor
+This field contains a non-physical group to which the track belongs. In classical
+music this could be a movement. It could also be parts of a series like "Introduction",
+"Closing Remarks", etc.
+
+**`Remarks`**
+
+Stored in the `WM/ContentGroupDescription` descriptor
     https://docs.microsoft.com/en-us/windows/win32/wmformat/wm-contentgroupdescription
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `value` | `string` |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `value` | `string` | Grouping on the album which the media in the current instance belongs to or `undefined` if no value is present. |
 
 #### Returns
 
@@ -966,8 +1159,6 @@ Sets the initial key of the track.
 #### Returns
 
 `void`
-
-Initial key of the track or `undefined` if no value is set
 
 #### Inherited from
 
@@ -1013,7 +1204,7 @@ ___
 
 • `get` **isEmpty**(): `boolean`
 
-**`inheritdoc`**
+Gets whether or not the current instance is empty.
 
 #### Returns
 
@@ -1035,7 +1226,7 @@ Gets the ISRC (International Standard Recording Code) of the track.
 
 `string`
 
-the ISRC of the track or `undefined` if no value is set
+ISRC of the track or `undefined` if no value is set
 
 #### Inherited from
 
@@ -1049,13 +1240,11 @@ Sets the ISRC (International Standard Recording Code) of the track.
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `value` | `string` | the ISRC of the track or `undefined` if no value is set |
+| `value` | `string` | ISRC of the track or `undefined` if no value is set |
 
 #### Returns
 
 `void`
-
-the ISRC of the track or `undefined` if no value is set
 
 #### Inherited from
 
@@ -1147,9 +1336,16 @@ ___
 
 • `get` **lyrics**(): `string`
 
-**`inheritdoc`**
+Gets the lyrics or script of the media represented by the current instance.
 
-**`remarks`** via `WM/Lyrics` descriptor
+This field contains a plain text representation of the lyrics or scripts with line
+breaks and whitespace being the only formatting marks.
+Some formats support more advanced lyrics, like synchronized lyrics, but those must be
+accessed using format-specific implementations.
+
+**`Remarks`**
+
+Stored in the `WM/Lyrics` descriptor
     https://docs.microsoft.com/en-us/windows/win32/wmformat/wm-lyrics
 
 #### Returns
@@ -1162,16 +1358,23 @@ Tag.lyrics
 
 • `set` **lyrics**(`value`): `void`
 
-**`inheritdoc`**
+Sets the lyrics or script of the media represented by the current instance.
 
-**`remarks`** via `WM/Lyrics` descriptor
+This field contains a plain text representation of the lyrics or scripts with line
+breaks and whitespace being the only formatting marks.
+Some formats support more advanced lyrics, like synchronized lyrics, but those must be
+accessed using format-specific implementations.
+
+**`Remarks`**
+
+Stored in the `WM/Lyrics` descriptor
     https://docs.microsoft.com/en-us/windows/win32/wmformat/wm-lyrics
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `value` | `string` |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `value` | `string` | Lyrics or script of the media represented by the current instance or `undefined` if no value is present |
 
 #### Returns
 
@@ -1199,9 +1402,11 @@ ___
 
 • `get` **musicBrainzAlbumArtistId**(): `string`
 
-**`inheritdoc`**
+**`Inherit Doc`**
 
-**`remarks`** via `MusicBrainz/Album Artist Id` descriptor
+**`Remarks`**
+
+Stored in the `MusicBrainz/Album Artist Id` descriptor
 
 #### Returns
 
@@ -1209,9 +1414,11 @@ ___
 
 • `set` **musicBrainzAlbumArtistId**(`value`): `void`
 
-**`inheritdoc`**
+**`Inherit Doc`**
 
-**`remarks`** via `MusicBrainz/Artist Id` descriptor
+**`Remarks`**
+
+Stored in the `MusicBrainz/Artist Id` descriptor
 
 #### Parameters
 
@@ -1229,9 +1436,14 @@ ___
 
 • `get` **musicBrainzArtistId**(): `string`
 
-**`inheritdoc`**
+Gets the MusicBrainz artist ID of the media represented by the current instance.
 
-**`remarks`** via `MusicBrainz/Artist Id` descriptor
+This field represents the MusicBrainz ArtistID, and is used to uniquely identify a
+particular artist of the track.
+
+**`Remarks`**
+
+Stored in the `MusicBrainz/Artist Id` descriptor
 
 #### Returns
 
@@ -1243,15 +1455,20 @@ Tag.musicBrainzArtistId
 
 • `set` **musicBrainzArtistId**(`value`): `void`
 
-**`inheritdoc`**
+Sets the MusicBrainz artist ID of the media represented by the current instance.
 
-**`remarks`** via `MusicBrainz/Artist Id` descriptor
+This field represents the MusicBrainz ArtistID, and is used to uniquely identify a
+particular artist of the track.
+
+**`Remarks`**
+
+Stored in the `MusicBrainz/Artist Id` descriptor
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `value` | `string` |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `value` | `string` | MusicBrainz ArtistID of the media represented by the current instance or `undefined` if no value is present |
 
 #### Returns
 
@@ -1267,9 +1484,14 @@ ___
 
 • `get` **musicBrainzDiscId**(): `string`
 
-**`inheritdoc`**
+Gets the MusicBrainz disc ID of the media represented by the current instance.
 
-**`remarks`** via `MusicBrainz/Disc Id` descriptor
+This field represents the MusicBrainz DiscID and is used to uniquely identify the
+particular released media associated with this track.
+
+**`Remarks`**
+
+Stored in the `MusicBrainz/Disc Id` descriptor
 
 #### Returns
 
@@ -1281,15 +1503,20 @@ Tag.musicBrainzDiscId
 
 • `set` **musicBrainzDiscId**(`value`): `void`
 
-**`inheritdoc`**
+Sets the MusicBrainz disc ID of the media represented by the current instance.
 
-**`remarks`** via `MusicBrainz/Disc Id` descriptor
+This field represents the MusicBrainz DiscID and is used to uniquely identify the
+particular released media associated with this track.
+
+**`Remarks`**
+
+Stored in the `MusicBrainz/Disc Id` descriptor
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `value` | `string` |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `value` | `string` | MusicBrainz DiscID of the media represented by the current instance or `undefined` if no value is present |
 
 #### Returns
 
@@ -1307,8 +1534,8 @@ ___
 
 Gets the MusicBrainz release artist ID of the media represented by the current instance.
 
-**`remarks`** This field represents the MusicBrainz ReleaseArtistID, and is used to uniquely
-    identify a particular album artist credited with the album.
+This field represents the MusicBrainz ReleaseArtistID, and is used to uniquely
+identify a particular album artist credited with the album.
 
 #### Returns
 
@@ -1325,21 +1552,18 @@ Tag.musicBrainzReleaseArtistId
 
 Sets the MusicBrainz release artist ID of the media represented by the current instance.
 
-**`remarks`** This field represents the MusicBrainz ReleaseArtistID, and is used to uniquely
-    identify a particular album artist credited with the album.
+This field represents the MusicBrainz ReleaseArtistID, and is used to uniquely
+identify a particular album artist credited with the album.
 
 #### Parameters
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `value` | `string` | MusicBrainz ReleaseArtistID of the media represented by the current instance or     `undefined` if no value is present |
+| `value` | `string` | MusicBrainz ReleaseArtistID of the media represented by the current instance or `undefined` if no value is present |
 
 #### Returns
 
 `void`
-
-MusicBrainz ReleaseArtistID of the media represented by the current instance or
-    `undefined` if no value is present
 
 #### Inherited from
 
@@ -1351,9 +1575,17 @@ ___
 
 • `get` **musicBrainzReleaseCountry**(): `string`
 
-**`inheritdoc`**
+Gets the MusicBrainz release country of the media represented by the current instance.
 
-**`remarks`** via `MusicBrainz/Album Release Country` descriptor
+This field represents the MusicBrainz ReleaseCountry which describes the country in
+which an album was released. Note that the release country of an album is not
+necessarily the country in which it was produced. The label itself will typically be
+more relevant. Eg, a release on "Foo Records UK" that has "Made in Austria" printed on
+it will likely be a UK release.
+
+**`Remarks`**
+
+Stored in the `MusicBrainz/Album Release Country` descriptor
 
 #### Returns
 
@@ -1365,15 +1597,23 @@ Tag.musicBrainzReleaseCountry
 
 • `set` **musicBrainzReleaseCountry**(`value`): `void`
 
-**`inheritdoc`**
+Sets the MusicBrainz release country of the media represented by the current instance.
 
-**`remarks`** via `MusicBrainz/Album Release Country` descriptor
+This field represents the MusicBrainz ReleaseCountry which describes the country in
+which an album was released. Note that the release country of an album is not
+necessarily the country in which it was produced. The label itself will typically be
+more relevant. Eg, a release on "Foo Records UK" that has "Made in Austria" printed on
+it will likely be a UK release.
+
+**`Remarks`**
+
+Stored in the `MusicBrainz/Album Release Country` descriptor
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `value` | `string` |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `value` | `string` | MusicBrainz ReleaseCountry of the media represented by the current instance or `undefined` if no value is present |
 
 #### Returns
 
@@ -1389,9 +1629,14 @@ ___
 
 • `get` **musicBrainzReleaseGroupId**(): `string`
 
-**`inheritdoc`**
+Gets the MusicBrainz release group ID of the media represented by the current instance.
 
-**`remarks`** via `MusicBrainz/Release Group Id` descriptor
+This field represents the MusicBrainz ReleaseGroupID and is used to uniquely identify
+a particular release group to which this track belongs.
+
+**`Remarks`**
+
+Stored in the `MusicBrainz/Release Group Id` descriptor
 
 #### Returns
 
@@ -1403,15 +1648,20 @@ Tag.musicBrainzReleaseGroupId
 
 • `set` **musicBrainzReleaseGroupId**(`value`): `void`
 
-**`inheritdoc`**
+Sets the MusicBrainz release group ID of the media represented by the current instance.
 
-**`remarks`** via `MusicBrainz/Release Group Id` descriptor
+This field represents the MusicBrainz ReleaseGroupID and is used to uniquely identify
+a particular release group to which this track belongs.
+
+**`Remarks`**
+
+Stored in the `MusicBrainz/Release Group Id` descriptor
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `value` | `string` |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `value` | `string` | MusicBrainz ReleaseGroupID of the media represented by the current instance or `undefined` if no value is present |
 
 #### Returns
 
@@ -1427,9 +1677,14 @@ ___
 
 • `get` **musicBrainzReleaseId**(): `string`
 
-**`inheritdoc`**
+Gets the MusicBrainz release ID of the media represented by the current instance.
 
-**`remarks`** via `MusicBrainz/Album Id` descriptor
+This field represents the MusicBrains ReleaseID and is used to uniquely identify a
+particular release to which this track belongs.
+
+**`Remarks`**
+
+Stored in the `MusicBrainz/Album Id` descriptor
 
 #### Returns
 
@@ -1441,15 +1696,20 @@ Tag.musicBrainzReleaseId
 
 • `set` **musicBrainzReleaseId**(`value`): `void`
 
-**`inheritdoc`**
+Sets the MusicBrainz release ID of the media represented by the current instance.
 
-**`remarks`** via `MusicBrainz/Album Id` descriptor
+This field represents the MusicBrains ReleaseID and is used to uniquely identify a
+particular release to which this track belongs.
+
+**`Remarks`**
+
+Stored in the `MusicBrainz/Album Id` descriptor
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `value` | `string` |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `value` | `string` | MusicBrainz ReleaseID of the media represented by the current instance or `undefined` if no value is present |
 
 #### Returns
 
@@ -1465,9 +1725,14 @@ ___
 
 • `get` **musicBrainzReleaseStatus**(): `string`
 
-**`inheritdoc`**
+Gets the MusicBrainz release status of the media represented by the current instance.
 
-**`remarks`** via `MusicBrainz/Album Status` descriptor
+This field represents the MusicBrainz ReleaseStatus used to describe how 'official' a
+release is. Common statuses are: `Official`, `Promotion`, `Bootleg`, `Pseudo-release`.
+
+**`Remarks`**
+
+Stored in the `MusicBrainz/Album Status` descriptor
 
 #### Returns
 
@@ -1479,15 +1744,20 @@ Tag.musicBrainzReleaseStatus
 
 • `set` **musicBrainzReleaseStatus**(`value`): `void`
 
-**`inheritdoc`**
+Sets the MusicBrainz release status of the media represented by the current instance.
 
-**`remarks`** via `MusicBrainz/Album Status` descriptor
+This field represents the MusicBrainz ReleaseStatus used to describe how 'official' a
+release is. Common statuses are: `Official`, `Promotion`, `Bootleg`, `Pseudo-release`.
+
+**`Remarks`**
+
+Stored in the `MusicBrainz/Album Status` descriptor
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `value` | `string` |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `value` | `string` | MusicBrainz ReleaseStatus of the media represented by the current instance or `undefined` if no value is present |
 
 #### Returns
 
@@ -1503,9 +1773,20 @@ ___
 
 • `get` **musicBrainzReleaseType**(): `string`
 
-**`inheritdoc`**
+Gets the MusicBrainz release type of the media represented by the current instance.
 
-**`remarks`** via `MusicBrainz/Album Type` descriptor
+This field represents the MusicBrainz ReleaseType that describes what kind of release
+ a release is. Common types are: `Single`, `Album`, `EP`, `Compilation`, `Soundtrack,
+ `SpokenWord`, `Interview`, `Audiobook`, `Live`, `Remix`, and `Other`. Careful thought
+ must be given when using this field to decide if a particular track "is a compilation".
+
+@returns
+    MusicBrainz ReleaseType of the media represented by the current instance or
+    `undefined` if no value is present
+
+**`Remarks`**
+
+Stored in the `MusicBrainz/Album Type` descriptor
 
 #### Returns
 
@@ -1517,9 +1798,19 @@ Tag.musicBrainzReleaseType
 
 • `set` **musicBrainzReleaseType**(`value`): `void`
 
-**`inheritdoc`**
+Sets the MusicBrainz release type of the media represented by the current instance.
 
-**`remarks`** via `MusicBrainz/Album Type` descriptor
+This field represents the MusicBrainz ReleaseType that describes what kind of release
+a release is. Common types are: `Single`, `Album`, `EP`, `Compilation`, `Soundtrack,
+`SpokenWord`, `Interview`, `Audiobook`, `Live`, `Remix`, and `Other`. Careful thought
+must be given when using this field to decide if a particular track "is a compilation".
+
+@param value MusicBrainz ReleaseType of the media represented by the current instance or
+    `undefined` if no value is present
+
+**`Remarks`**
+
+Stored in the `MusicBrainz/Album Type` descriptor
 
 #### Parameters
 
@@ -1541,9 +1832,15 @@ ___
 
 • `get` **musicBrainzTrackId**(): `string`
 
-**`inheritdoc`**
+Gets the MusicBrainz track ID of the media represented by the media represented by the
+current instance.
 
-**`remarks`** via `MusicBrainz/Track Id` descriptor
+This field represents the MusicBrainz TrackID and is used to uniquely identify a
+particular track.
+
+**`Remarks`**
+
+Stored in the `MusicBrainz/Track Id` descriptor
 
 #### Returns
 
@@ -1555,15 +1852,21 @@ Tag.musicBrainzTrackId
 
 • `set` **musicBrainzTrackId**(`value`): `void`
 
-**`inheritdoc`**
+Sets the MusicBrainz track ID of the media represented by the media represented by the
+current instance.
 
-**`remarks`** via `MusicBrainz/Track Id` descriptor
+This field represents the MusicBrainz TrackID and is used to uniquely identify a
+particular track.
+
+**`Remarks`**
+
+Stored in the `MusicBrainz/Track Id` descriptor
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `value` | `string` |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `value` | `string` | MusicBrainz TrackID of the media represented by the current instance or `undefined` if no value is present |
 
 #### Returns
 
@@ -1579,9 +1882,14 @@ ___
 
 • `get` **musicIpId**(): `string`
 
-**`inheritdoc`**
+Gets the MusicIP PUID of the media represented by the current instance.
 
-**`remarks`** via `MusicIP/PUID` descriptor
+This field represents the MusicIP PUID, an acoustic fingerprint identifier. It
+identifies wht this track "sounds like".
+
+**`Remarks`**
+
+Stored in the `MusicIP/PUID` descriptor
 
 #### Returns
 
@@ -1593,15 +1901,20 @@ Tag.musicIpId
 
 • `set` **musicIpId**(`value`): `void`
 
-**`inheritdoc`**
+Sets the MusicIP PUID of the media represented by the current instance.
 
-**`remarks`** via `MusicIP/PUID` descriptor
+This field represents the MusicIP PUID, an acoustic fingerprint identifier. It
+identifies wht this track "sounds like".
+
+**`Remarks`**
+
+Stored in the `MusicIP/PUID` descriptor
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `value` | `string` |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `value` | `string` | MusicIP PUID of the media represented by the current instance or `undefined` if no value is present |
 
 #### Returns
 
@@ -1617,9 +1930,19 @@ ___
 
 • `get` **performers**(): `string`[]
 
-**`inheritdoc`**
+Gets the performers or artists who performed in the media described by the current instance.
 
-**`remarks`** via {@link ContentDescriptor.author}
+This field is most commonly called "Artists" in audio media or "Actors" in video
+media, and should be used to represent each artist/actor appearing in the media. It can
+be simple in the form of "Above & Beyond" or more complicated in the form of
+"Jono Grant, Tony McGuinness, Paavo Siljamäki", depending on the preferences of the
+user and the degree to which they organize their media collection.
+As the preference of the user may vary, applications should avoid limiting the user in
+what constitutes the performers field - especially in regard to number of performers.
+
+**`Remarks`**
+
+Stored in the ContentDescriptionObject.author
 
 #### Returns
 
@@ -1631,15 +1954,25 @@ Tag.performers
 
 • `set` **performers**(`value`): `void`
 
-**`inheritdoc`**
+Sets the performers or artists who performed in the media described by the current instance.
 
-**`remarks`** via {@link ContentDescriptor.author}
+This field is most commonly called "Artists" in audio media or "Actors" in video
+media, and should be used to represent each artist/actor appearing in the media. It can
+be simple in the form of "Above & Beyond" or more complicated in the form of
+"Jono Grant, Tony McGuinness, Paavo Siljamäki", depending on the preferences of the
+user and the degree to which they organize their media collection.
+As the preference of the user may vary, applications should avoid limiting the user in
+what constitutes the performers field - especially with regards to number of performers.
+
+**`Remarks`**
+
+Stored in the ContentDescriptionObject.author
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `value` | `string`[] |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `value` | `string`[] | Performers who performed in the media described by the current instance or an empty array if no value is present. |
 
 #### Returns
 
@@ -1660,9 +1993,9 @@ for music. This must match the [performers](AsfTag.md#performers) array (for eac
 role). Several roles for the same artist/actor can be separated with semicolons. For
 example: "Bass; Backing Vocals; Vibraphone".
 
-**`remarks`** It is highly important to match each role to the performers. This means that an entry
-    in the [performersRole](AsfTag.md#performersrole) array is `undefined` to maintain the relationship between
-    `performers[i]` and `performersRole[i]`.
+It is highly important to match each role to the performers. This means that an entry
+in the [performersRole](AsfTag.md#performersrole) array is `undefined` to maintain the relationship between
+`performers[i]` and `performersRole[i]`.
 
 #### Returns
 
@@ -1682,22 +2015,19 @@ for music. This must match the [performers](AsfTag.md#performers) array (for eac
 role). Several roles for the same artist/actor can be separated with semicolons. For
 example: "Bass; Backing Vocals; Vibraphone".
 
-**`remarks`** It is highly important to match each role to the performers. This means that an entry
-    in the [performersRole](AsfTag.md#performersrole) array is `undefined` to maintain the relationship between
-    `performers[i]` and `performersRole[i]`.
+It is highly important to match each role to the performers. This means that an entry
+in the [performersRole](AsfTag.md#performersrole) array is `undefined` to maintain the relationship between
+`performers[i]` and `performersRole[i]`.
 
 #### Parameters
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `value` | `string`[] | Array containing the roles played by the performers in the media described by     the current instance, or an empty array if no value is present. |
+| `value` | `string`[] | Array containing the roles played by the performers in the media described by the current instance, or an empty array if no value is present. |
 
 #### Returns
 
 `void`
-
-Array containing the roles played by the performers in the media described by the
-    current instance, or an empty array if no value is present.
 
 #### Inherited from
 
@@ -1709,9 +2039,16 @@ ___
 
 • `get` **performersSort**(): `string`[]
 
-**`inheritdoc`**
+Gets the sortable names of the performers or artists who performed in the media described by
+the current instance.
 
-**`remarks`** via "WM/ArtistSortOrder" descriptor
+This is used to provide more control over how the media is sorted. Typical uses are to
+skip articles or sort by last name. For example, "The Pillows" might be sorted as
+"Pillows, The". See also: [performers](AsfTag.md#performers)
+
+**`Remarks`**
+
+Stored in the `WM/ArtistSortOrder` descriptor
     http://msdn.microsoft.com/en-us/library/aa386866(VS.85).aspx
 
 #### Returns
@@ -1724,16 +2061,23 @@ Tag.performersSort
 
 • `set` **performersSort**(`value`): `void`
 
-**`inheritdoc`**
+Gets the sortable names of the performers or artists who performed in the media described by
+the current instance.
 
-**`remarks`** via "WM/ArtistSortOrder" descriptor
+This is used to provide more control over how the media is sorted. Typical uses are to
+skip articles or sort by last name. For example, "The Pillows" might be sorted as
+"Pillows, The". See also: [performers](AsfTag.md#performers)
+
+**`Remarks`**
+
+Stored in the `WM/ArtistSortOrder` descriptor
     http://msdn.microsoft.com/en-us/library/aa386866(VS.85).aspx
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `value` | `string`[] |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `value` | `string`[] | Sortable names for the performers who performed in the media described by the current instance, or an empty array if no value is present. |
 
 #### Returns
 
@@ -1749,11 +2093,17 @@ ___
 
 • `get` **pictures**(): [`IPicture`](../interfaces/IPicture.md)[]
 
-**`inheritdoc`**
+Gets a collection of pictures associated with the media represented by the current instance.
 
-**`remarks`** via the `WM/Picture` content descriptor and description record.
+Typically, this value is used to store an album cover or icon to use for the file, but
+it is capable of holding any type of image or file, including pictures of the band, the
+recording studio, the concert, etc.
+
+**`Remarks`**
+
+Stored in the the `WM/Picture` content descriptor and description record.
     https://docs.microsoft.com/en-us/windows/win32/wmformat/wmpicture
-    Modifications to the returned array will not stored.
+    Modifications to the returned array will not be stored.
 
 #### Returns
 
@@ -1765,16 +2115,22 @@ Tag.pictures
 
 • `set` **pictures**(`value`): `void`
 
-**`inheritdoc`**
+Sets a collection of pictures associated with the media represented by the current instance.
 
-**`remarks`** via the `WM/Picture` content descriptor and description record.
+Typically, this value is used to store an album cover or icon to use for the file, but
+it is capable of holding any type of image or file, including pictures of the band, the
+recording studio, the concert, etc.
+
+**`Remarks`**
+
+Stored in the `WM/Picture` content descriptor and description record.
     https://docs.microsoft.com/en-us/windows/win32/wmformat/wmpicture
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `value` | [`IPicture`](../interfaces/IPicture.md)[] |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `value` | [`IPicture`](../interfaces/IPicture.md)[] | Array containing a collection of pictures associated with the media represented by the current instance or an empty array if no pictures are present. |
 
 #### Returns
 
@@ -1816,8 +2172,6 @@ Sets the publisher of the track.
 
 `void`
 
-Publisher of the track or `undefined` if no value is set
-
 #### Inherited from
 
 Tag.publisher
@@ -1854,8 +2208,6 @@ Sets the remixer of the track.
 
 `void`
 
-Remixer of the track or `undefined` if no value is set
-
 #### Inherited from
 
 Tag.remixedBy
@@ -1866,9 +2218,11 @@ ___
 
 • `get` **replayGainAlbumGain**(): `number`
 
-**`inheritdoc`**
+Gets the ReplayGain album gain in dB.
 
-**`remarks`** via `ReplayGain/Album` descriptor
+**`Remarks`**
+
+Stored in the `ReplayGain/Album` descriptor
 
 #### Returns
 
@@ -1880,15 +2234,17 @@ Tag.replayGainAlbumGain
 
 • `set` **replayGainAlbumGain**(`value`): `void`
 
-**`inheritdoc`**
+Sets the ReplayGain album gain in dB.
 
-**`remarks`** via `ReplayGain/Album` descriptor
+**`Remarks`**
+
+Stored in the `ReplayGain/Album` descriptor
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `value` | `number` |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `value` | `number` | Album gain as per the ReplayGain specifications, in dB, or `NaN` if no value is set |
 
 #### Returns
 
@@ -1904,9 +2260,11 @@ ___
 
 • `get` **replayGainAlbumPeak**(): `number`
 
-**`inheritdoc`**
+Gets the ReplayGain album peak sample.
 
-**`remarks`** via `ReplayGain/Album Peak` descriptor
+**`Remarks`**
+
+Stored in the `ReplayGain/Album Peak` descriptor
 
 #### Returns
 
@@ -1918,15 +2276,17 @@ Tag.replayGainAlbumPeak
 
 • `set` **replayGainAlbumPeak**(`value`): `void`
 
-**`inheritdoc`**
+Sets the ReplayGain album peak sample.
 
-**`remarks`** via `ReplayGain/Album Peak` descriptor
+**`Remarks`**
+
+Stored in the `ReplayGain/Album Peak` descriptor
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `value` | `number` |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `value` | `number` | Album peak as per the ReplayGain specifications, or `NaN` if no value is set |
 
 #### Returns
 
@@ -1942,9 +2302,11 @@ ___
 
 • `get` **replayGainTrackGain**(): `number`
 
-**`inheritdoc`**
+Gets the ReplayGain track gain in dB.
 
-**`remarks`** via `ReplayGain/Track` descriptor
+**`Remarks`**
+
+Stored in the `ReplayGain/Track` descriptor
 
 #### Returns
 
@@ -1956,15 +2318,17 @@ Tag.replayGainTrackGain
 
 • `set` **replayGainTrackGain**(`value`): `void`
 
-**`inheritdoc`**
+Sets the ReplayGain track gain in dB.
 
-**`remarks`** via `ReplayGain/Track` descriptor
+**`Remarks`**
+
+Stored in the `ReplayGain/Track` descriptor
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `value` | `number` |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `value` | `number` | Track gain as per ReplayGain specifications, in dB, or `NaN` if no value is set |
 
 #### Returns
 
@@ -1980,9 +2344,11 @@ ___
 
 • `get` **replayGainTrackPeak**(): `number`
 
-**`inheritdoc`**
+Gets the ReplayGain track peak sample.
 
-**`remarks`** via `ReplayGain/Track Peak` descriptor
+**`Remarks`**
+
+Stored in the `ReplayGain/Track Peak` descriptor
 
 #### Returns
 
@@ -1994,15 +2360,17 @@ Tag.replayGainTrackPeak
 
 • `set` **replayGainTrackPeak**(`value`): `void`
 
-**`inheritdoc`**
+Sets the ReplayGain track peak sample.
 
-**`remarks`** via `ReplayGain/Track Peak` descriptor
+**`Remarks`**
+
+Stored in the `ReplayGain/Track Peak` descriptor
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `value` | `number` |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `value` | `number` | Track peak as per the ReplayGain specifications, or `NaN` if no value is set |
 
 #### Returns
 
@@ -2018,7 +2386,7 @@ ___
 
 • `get` **sizeOnDisk**(): `number`
 
-**`inheritdoc`**
+Gets the size of the tag in bytes on disk as it was read from disk.
 
 #### Returns
 
@@ -2034,9 +2402,15 @@ ___
 
 • `get` **subtitle**(): `string`
 
-**`inheritdoc`**
+Gets a description, one-line. It represents the tagline of the vide/music.
 
-**`remarks`** via `WM/SubTitle` descriptor
+This field gives a nice/short precision to the title, which is typically below the
+title on the front cover of the media. For example for "Ocean's 13", this would be
+"Revenge is a funny thing".
+
+**`Remarks`**
+
+Stored in the `WM/SubTitle` descriptor
     https://msdn.microsoft.com/en-us/library/windows/desktop/dd757997(v=vs.85).aspx
 
 #### Returns
@@ -2049,16 +2423,22 @@ Tag.subtitle
 
 • `set` **subtitle**(`value`): `void`
 
-**`inheritdoc`**
+Sets a description, one-line. It represents the tagline of the vide/music.
 
-**`remarks`** via `WM/SubTitle` descriptor
+This field gives a nice/short precision to the title, which is typically below the
+title on the front cover of the media. For example for "Ocean's 13", this would be
+"Revenge is a funny thing".
+
+**`Remarks`**
+
+Stored in the `WM/SubTitle` descriptor
     https://msdn.microsoft.com/en-us/library/windows/desktop/dd757997(v=vs.85).aspx
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `value` | `string` |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `value` | `string` | Subtitle of the media represented by the current instance or `undefined` if no value is present |
 
 #### Returns
 
@@ -2077,8 +2457,6 @@ ___
 Gets the tag types contained in the current instance. A bit wise combined [TagTypes](../enums/TagTypes.md)
 containing the tag types contained in the current instance.
 
-**`inheritdoc`**
-
 #### Returns
 
 [`TagTypes`](../enums/TagTypes.md)
@@ -2093,9 +2471,11 @@ ___
 
 • `get` **title**(): `string`
 
-**`inheritdoc`**
+Gets the title for the media described by the current instance.
 
-**`remarks`** via content description object
+**`Remarks`**
+
+Stored in the content description object
 
 #### Returns
 
@@ -2107,15 +2487,21 @@ Tag.title
 
 • `set` **title**(`value`): `void`
 
-**`inheritdoc`**
+Sets the title for the media described by the current instance.
 
-**`remarks`** via content description object
+The title is most commonly the name of the song, episode or a movie title. For example
+"Time Won't Me Go" (a song by The Bravery), "Three Stories" (an episode of House MD), or
+"Fear and Loathing In Las Vegas" (a movie).
+
+**`Remarks`**
+
+Stored in the content description object
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `value` | `string` |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `value` | `string` | Title of the media described by the current instance or `undefined` if no value is present. |
 
 #### Returns
 
@@ -2131,9 +2517,13 @@ ___
 
 • `get` **titleSort**(): `string`
 
-**`inheritdoc`**
+Gets the sortable name for the title of the media described by the current instance.
 
-**`remarks`** via "WM/TitleSortOrder"
+Possibly used to sort compilations or episodic content.
+
+**`Remarks`**
+
+Stored in the `WM/TitleSortOrder`
     http://msdn.microsoft.com/en-us/library/aa386866(VS.85).aspx
 
 #### Returns
@@ -2146,16 +2536,20 @@ Tag.titleSort
 
 • `set` **titleSort**(`value`): `void`
 
-**`inheritdoc`**
+Sets the sortable name for the title of the media described by the current instance.
 
-**`remarks`** via "WM/TitleSortOrder"
+Possibly used to sort compilations or episodic content.
+
+**`Remarks`**
+
+Stored in the `WM/TitleSortOrder`
     http://msdn.microsoft.com/en-us/library/aa386866(VS.85).aspx
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `value` | `string` |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `value` | `string` | Sortable name of the media described by the current instance or `undefined` if no value is present |
 
 #### Returns
 
@@ -2171,9 +2565,18 @@ ___
 
 • `get` **track**(): `number`
 
-**`inheritdoc`**
+Gets the position of the media represented by the current instance in its containing album
+or season (for a series).
 
-**`remarks`** via `WM/TrackNumber` descriptor
+This value should be the same as is listed on the album cover and no more than
+[trackCount](AsfTag.md#trackcount), if [trackCount](AsfTag.md#trackcount) is non-zero.
+Most tagging formats store this as a string. To help sorting, a two-digit zero-padded
+value is used in the resulting tag.
+For a series, this property represents the episodes in a season of the series.
+
+**`Remarks`**
+
+Stored in the `WM/TrackNumber` descriptor
     https://docs.microsoft.com/en-us/windows/win32/wmformat/wm-tracknumber
 
 #### Returns
@@ -2186,16 +2589,25 @@ Tag.track
 
 • `set` **track**(`value`): `void`
 
-**`inheritdoc`**
+Sets the position of the media represented by the current instance in its containing album
+or season (for a series).
 
-**`remarks`** via `WM/TrackNumber` descriptor
+This value should be the same as is listed on the album cover and no more than
+[trackCount](AsfTag.md#trackcount), if [trackCount](AsfTag.md#trackcount) is non-zero.
+Most tagging formats store this as a string. To help sorting, a two-digit zero-padded
+value is used in the resulting tag.
+For a series, this property represents the episodes in a season of the series.
+
+**`Remarks`**
+
+Stored in the `WM/TrackNumber` descriptor
     https://docs.microsoft.com/en-us/windows/win32/wmformat/wm-tracknumber
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `value` | `number` |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `value` | `number` | Position of the media represented by the current instance in its containing album or `0` if not specified. |
 
 #### Returns
 
@@ -2211,9 +2623,15 @@ ___
 
 • `get` **trackCount**(): `number`
 
-**`inheritdoc`**
+Gets the number of tracks on the album or the number of episodes in a series of the media
+represented by the current instance.
 
-**`remarks`** via `TrackTotal` descriptor
+If non-zero, this value should be equal to or greater than [track](AsfTag.md#track). If
+[track](AsfTag.md#track) is `0`, this value should also be `0`.
+
+**`Remarks`**
+
+Stored in the `TrackTotal` descriptor
 
 #### Returns
 
@@ -2225,15 +2643,21 @@ Tag.trackCount
 
 • `set` **trackCount**(`value`): `void`
 
-**`inheritdoc`**
+Sets the number of tracks on the album or the number of episodes in a series of the media
+represented by the current instance.
 
-**`remarks`** via `TrackTotal` descriptor
+If non-zero, this value should be equal to or greater than [track](AsfTag.md#track). If
+[track](AsfTag.md#track) is `0`, this value should also be `0`.
+
+**`Remarks`**
+
+Stored in the `TrackTotal` descriptor
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `value` | `number` |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `value` | `number` | Number of tracks on the album or number of episodes in a series of the media represented by the current instance or `0` if not specified. |
 
 #### Returns
 
@@ -2249,10 +2673,17 @@ ___
 
 • `get` **year**(): `number`
 
-**`inheritdoc`**
+Gets the year that the media represented by the current instance was recorded.
 
-**`remarks`** via `WM/Year` descriptor
-     https://docs.microsoft.com/en-us/windows/win32/wmformat/wm-year
+Years greater than 9999 cannot be stored by most tagging formats and will be cleared
+if a higher value is set. Some tagging formats store higher precision dates which will
+be truncated when this property is set. Format specific implementations are necessary to
+access the higher precision values.
+
+**`Remarks`**
+
+Stored in the `WM/Year` descriptor
+    https://docs.microsoft.com/en-us/windows/win32/wmformat/wm-year
 
 #### Returns
 
@@ -2264,16 +2695,23 @@ Tag.year
 
 • `set` **year**(`value`): `void`
 
-**`inheritdoc`**
+Sets the year that the media represented by the current instance was recorded.
 
-**`remarks`** via `WM/Year` descriptor
-     https://docs.microsoft.com/en-us/windows/win32/wmformat/wm-year
+Years greater than 9999 cannot be stored by most tagging formats and will be cleared
+if a higher value is set. Some tagging formats store higher precision dates which will
+be truncated when this property is set. Format specific implementations are necessary to
+access the higher precision values.
+
+**`Remarks`**
+
+Stored in the `WM/Year` descriptor
+    https://docs.microsoft.com/en-us/windows/win32/wmformat/wm-year
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `value` | `number` |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `value` | `number` | Year that the media represented by the current instance was created or `0` if no value is present. |
 
 #### Returns
 
@@ -2309,8 +2747,6 @@ ___
 
 Clears all values stored in the current instance.
 
-**`remarks`** The clearing procedure is format specific and should clear all values.
-
 #### Returns
 
 `void`
@@ -2326,12 +2762,12 @@ ___
 ▸ **copyTo**(`target`, `overwrite`): `void`
 
 Copies the values from the current instance to another [Tag](Tag.md), optionally overwriting
-    existing values.
+existing values.
 
-**`remarks`** This method only copies the most basic values when copying between different tag
-    formats. However, if `target` is of the same type as the current instance,
-    more advanced copying may be done. For example if both `this` and `target` are
-    [Id3v2Tag](Id3v2Tag.md), all frames will be copied to the target.
+This method only copies the most basic values when copying between different tag
+formats. However, if `target` is of the same type as the current instance,
+more advanced copying may be done. For example if both `this` and `target` are
+[Id3v2Tag](Id3v2Tag.md), all frames will be copied to the target.
 
 #### Parameters
 
@@ -2352,7 +2788,7 @@ ___
 
 ### getDescriptorString
 
-▸ **getDescriptorString**(...`names`): `string`
+▸ **getDescriptorString**(`...names`): `string`
 
 Gets the string contained in a specific descriptor from the extended content description
 object in the current instance.
@@ -2367,14 +2803,14 @@ object in the current instance.
 
 `string`
 
-string The contents of the first descriptor found who's name is in the provided
+The contents of the first descriptor found whose name is in the provided
     collection of descriptor names
 
 ___
 
 ### getDescriptorStrings
 
-▸ **getDescriptorStrings**(...`names`): `string`[]
+▸ **getDescriptorStrings**(`...names`): `string`[]
 
 Gets the strings contained in a specific descriptor from the extended content description
 object in the current instance, as split by `;`.
@@ -2389,30 +2825,36 @@ object in the current instance, as split by `;`.
 
 `string`[]
 
-string The contents of the first descriptor found who's name is in the provided
+The contents of the first descriptor found whose name is in the provided
     collection of descriptor names, split by `;`
 
 ___
 
 ### getDescriptorUint
 
-▸ **getDescriptorUint**(...`names`): `number`
+▸ **getDescriptorUint**(`...names`): `number`
+
+Gets the unsigned integer contained in a specific descriptor from the extended content
+description object in the current instance.
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `...names` | `string`[] |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `...names` | `string`[] | Names of the descriptors to look for |
 
 #### Returns
 
 `number`
 
+The contents of the first descriptor found whose name is in the provided
+    collection of descriptor names
+
 ___
 
 ### getDescriptors
 
-▸ **getDescriptors**(...`names`): [`AsfContentDescriptor`](AsfContentDescriptor.md)[]
+▸ **getDescriptors**(`...names`): [`AsfContentDescriptor`](AsfContentDescriptor.md)[]
 
 Gets all descriptors in the extended description object with names matching any of the names
 in the provided collection of names.
@@ -2450,11 +2892,13 @@ ___
 
 ### setDescriptorString
 
-▸ **setDescriptorString**(`value`, ...`names`): `void`
+▸ **setDescriptorString**(`value`, `...names`): `void`
 
 Sets the string for a collection of descriptors in the current instance.
 
-**`remarks`** The value will be stored in the first value in `names` and the rest of the
+**`Remarks`**
+
+The value will be stored in the first value in `names` and the rest of the
     descriptors with the matching names will be cleared.
 
 #### Parameters
@@ -2462,7 +2906,7 @@ Sets the string for a collection of descriptors in the current instance.
 | Name | Type | Description |
 | :------ | :------ | :------ |
 | `value` | `string` | Value to store or `undefined` to clear the value |
-| `...names` | `string`[] | Names in which the value would be expected. For example, "WM/AlbumTitle" and     "Album" |
+| `...names` | `string`[] | Names in which the value would be expected. For example, `WM/AlbumTitle` and `Album` |
 
 #### Returns
 
@@ -2472,12 +2916,14 @@ ___
 
 ### setDescriptorStrings
 
-▸ **setDescriptorStrings**(`value`, ...`names`): `void`
+▸ **setDescriptorStrings**(`value`, `...names`): `void`
 
 Sets the strings for a collection of descriptors in the current instance. The strings will
 be stored as a single string, joined together with `; `.
 
-**`remarks`** The value will be stored in the first value in `names` and the rest of the
+**`Remarks`**
+
+The value will be stored in the first value in `names` and the rest of the
     descriptors with the matching names will be cleared.
 
 #### Parameters
@@ -2485,7 +2931,7 @@ be stored as a single string, joined together with `; `.
 | Name | Type | Description |
 | :------ | :------ | :------ |
 | `value` | `string`[] | Value to store or `undefined` to clear the value |
-| `...names` | `string`[] | Names in which the value would be expected. For example, "WM/AlbumTitle" and     "Album" |
+| `...names` | `string`[] | Names in which the value would be expected. For example, `WM/AlbumTitle` and `Album` |
 
 #### Returns
 
@@ -2495,12 +2941,14 @@ ___
 
 ### setDescriptors
 
-▸ **setDescriptors**(`name`, ...`descriptors`): `void`
+▸ **setDescriptors**(`name`, `...descriptors`): `void`
 
 Sets a collection of descriptors in the extended content description object for a given
 name, removing the existing matching records.
 
-**`remarks`** All added descriptors should have their name set to `name` but this is not
+**`Remarks`**
+
+All added descriptors should have their name set to `name` but this is not
     verified by the method. The descriptors will be added with their own names and not the
     one provided as an argument, which is only used for removing existing values and
     determining where to position the new descriptors.
@@ -2515,24 +2963,6 @@ name, removing the existing matching records.
 #### Returns
 
 `void`
-
-___
-
-### setInfoTag
-
-▸ **setInfoTag**(): `void`
-
-Set the tags that represent the tagger software (node-taglib-sharp) itself.
-
-**`remarks`** This is typically a method to call just before saving a tag.
-
-#### Returns
-
-`void`
-
-#### Inherited from
-
-[Tag](Tag.md).[setInfoTag](Tag.md#setinfotag)
 
 ___
 
@@ -2577,7 +3007,7 @@ ___
 
 ▸ `Static` **fromHeader**(`header`): [`AsfTag`](AsfTag.md)
 
-Constructs and initializes a new instance using the children of a {@link HeaderObject}
+Constructs and initializes a new instance using the children of a HeaderObject
 object.
 
 #### Parameters
@@ -2643,51 +3073,17 @@ A semicolon and space separated string containing the values from `group`
 
 ___
 
-### pictureFromData
-
-▸ `Static` **pictureFromData**(`data`): [`Picture`](Picture.md)
-
-**`internal`**
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `data` | [`ByteVector`](ByteVector.md) |
-
-#### Returns
-
-[`Picture`](Picture.md)
-
-___
-
-### pictureToData
-
-▸ `Static` **pictureToData**(`picture`): [`ByteVector`](ByteVector.md)
-
-**`internal`**
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `picture` | [`IPicture`](../interfaces/IPicture.md) |
-
-#### Returns
-
-[`ByteVector`](ByteVector.md)
-
-___
-
 ### tagTypeFlagsToArray
 
 ▸ `Static` **tagTypeFlagsToArray**(`tagTypes`): [`TagTypes`](../enums/TagTypes.md)[]
 
+Generates an array of tag types that are set in the provided flags value.
+
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `tagTypes` | [`TagTypes`](../enums/TagTypes.md) |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `tagTypes` | [`TagTypes`](../enums/TagTypes.md) | Tag types that have been OR'd together. |
 
 #### Returns
 

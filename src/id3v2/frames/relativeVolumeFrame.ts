@@ -54,16 +54,28 @@ export enum ChannelType {
     Subwoofer = 0x08
 }
 
+/**
+ * Represents the relative volume data that applies to a specific channel of the audio.
+ */
 export class ChannelData {
     private readonly _channel: ChannelType;
     private _peakBits: number;
     private _peakVolume: bigint;
     private _volumeAdjustment: number;
 
+    /**
+     * Constructs a new instance of relative volume information that applies to the provided
+     * audio channel.
+     * @param channel Channel that the relative volume information applies to
+     */
     public constructor(channel: ChannelType) {
         this._channel = channel;
     }
 
+    /**
+     * Constructs a new instance from the raw bytes of channel data.
+     * @param bytes Raw bytes that contain the channel data object.
+     */
     public static fromData(bytes: ByteVector): ChannelData {
         Guards.truthy(bytes, "bytes");
 
@@ -75,8 +87,14 @@ export class ChannelData {
         return channelData;
     }
 
+    /**
+     * Gets the channel that the current instance applies to.
+     */
     public get channelType(): ChannelType { return this._channel; }
 
+    /**
+     * Gets whether the current instance actually contains a relative volume adjustment.
+     */
     public get isSet(): boolean {
         const volumeAdjustSet = !!this._volumeAdjustment;
         const peakSet = !!this._peakVolume && this._peakVolume !== NumberUtils.BIG_ZERO;
@@ -138,6 +156,9 @@ export class ChannelData {
         this._volumeAdjustment = Math.floor(value * 512);
     }
 
+    /**
+     * Generates a raw byte representation of the current instance.
+     */
     public render(): ByteVector {
         if (!this.isSet) {
             return ByteVector.empty();
@@ -157,6 +178,9 @@ export class ChannelData {
     }
 }
 
+/**
+ * Extends {@link Frame}, implementing support for ID3v2 relative volume (RVA2) frames.
+ */
 export class RelativeVolumeFrame extends Frame {
     private readonly _channels: ChannelData[] = new Array<ChannelData>(9);
     private _identification: string;
@@ -254,8 +278,7 @@ export class RelativeVolumeFrame extends Frame {
      * Gets a specified volume adjustment frame from the list of relative volume frames
      * @param frames List of frames to search
      * @param identification Identification to match
-     * @returns RelativeVolumeFrame Frame containing the matching user or `undefined` if a match was
-     *     not found
+     * @returns Frame containing the matching user or `undefined` if a match was not found
      */
     public static find(frames: RelativeVolumeFrame[], identification: string): RelativeVolumeFrame {
         Guards.truthy(frames, "frame");
@@ -277,7 +300,7 @@ export class RelativeVolumeFrame extends Frame {
     /**
      * Gets the volume adjustment for the specified channel.
      * @param type Which channel to get the value for
-     * @returns number Volume adjustment for the channel, can be betweenInclusive -64 and +64 decibels
+     * @returns Volume adjustment for the channel, can be betweenInclusive -64 and +64 decibels
      */
     public getVolumeAdjustment(type: ChannelType): number { return this._channels[type].volumeAdjustment; }
 

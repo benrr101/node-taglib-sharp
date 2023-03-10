@@ -63,13 +63,13 @@ Provides tagging and properties support for Ogg files.
 
 • **new OggFile**(`file`, `readStyle`)
 
-**`inheritdoc`**
+**`Inherit Doc`**
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `file` | `string` \| `IFileAbstraction` |
+| `file` | `string` \| [`IFileAbstraction`](../interfaces/IFileAbstraction.md) |
 | `readStyle` | [`ReadStyle`](../enums/ReadStyle.md) |
 
 #### Overrides
@@ -96,13 +96,13 @@ ___
 
 ### fileAbstraction
 
-• `get` **fileAbstraction**(): `IFileAbstraction`
+• `get` **fileAbstraction**(): [`IFileAbstraction`](../interfaces/IFileAbstraction.md)
 
-Gets the {@link IFileAbstraction} representing the file.
+Gets the [IFileAbstraction](../interfaces/IFileAbstraction.md) representing the file.
 
 #### Returns
 
-`IFileAbstraction`
+[`IFileAbstraction`](../interfaces/IFileAbstraction.md)
 
 #### Inherited from
 
@@ -211,7 +211,7 @@ File.mode
 
 Sets the file access mode in use by the current instance. Changing the value will cause the
 stream currently in use to be closed, except when a change is made from
-[FileAccessMode.Write](../enums/FileAccessMode.md#write) to [FileAccessMode.Read](../enums/FileAccessMode.md#read) which has no effect.
+[Write](../enums/FileAccessMode.md#write) to [Read](../enums/FileAccessMode.md#read) which has no effect.
 
 #### Parameters
 
@@ -266,7 +266,7 @@ ___
 
 • `get` **properties**(): [`Properties`](Properties.md)
 
-**`inheritdoc`**
+Gets the media properties of the file represented by the current instance.
 
 #### Returns
 
@@ -282,7 +282,7 @@ ___
 
 • `get` **tag**(): [`Tag`](Tag.md)
 
-**`inheritdoc`**
+Gets an abstract representation of all tags stored in the current instance.
 
 #### Returns
 
@@ -326,7 +326,7 @@ File.tagTypesOnDisk
 
 • `set` **tagTypesOnDisk**(`value`): `void`
 
-Gets the tag types contained in the physical file represented by the current instance.
+Sets the tag types contained in the physical file represented by the current instance.
 
 #### Parameters
 
@@ -382,7 +382,9 @@ ___
 
 Searches forward through a file for a specified pattern, starting at a specified offset.
 
-**`throws`** Error Thrown if `pattern` is not provided or `startPosition` is not a
+**`Throws`**
+
+Error Thrown if `pattern` is not provided or `startPosition` is not a
     positive, safe integer.
 
 #### Parameters
@@ -391,7 +393,7 @@ Searches forward through a file for a specified pattern, starting at a specified
 | :------ | :------ | :------ | :------ |
 | `pattern` | [`ByteVector`](ByteVector.md) | `undefined` | Pattern to search for in the current instance. Must be smaller than the |
 | `startPosition` | `number` | `0` | Seek position to start searching. Must be positive, safe integer. |
-| `before?` | [`ByteVector`](ByteVector.md) | `undefined` | Optional pattern that the searched for pattern must appear before. If this     pattern is found first, `-1` is returned. |
+| `before?` | [`ByteVector`](ByteVector.md) | `undefined` | Optional pattern that the searched for pattern must appear before. If this pattern is found first, `-1` is returned. |
 
 #### Returns
 
@@ -422,11 +424,6 @@ possible.
 
 [`Tag`](Tag.md)
 
-Tag object containing the tag that was found in or added to the current instance.
-    If no matching tag was found and none was created, `undefined` is returned. It is safe
-    to assume that if `undefined` is not returned, the returned tag can be cast to the
-    appropriate type.
-
 #### Overrides
 
 [File](File.md).[getTag](File.md#gettag)
@@ -440,7 +437,9 @@ ___
 Inserts a specified block of data into the file represented by the current instance, at a
 specified location, replacing a specified number of bytes.
 
-**`throws`** Error Thrown when: 1) data is falsey, 2) start is not a safe, positive number, or 3)
+**`Throws`**
+
+Error Thrown when: 1) data is falsey, 2) start is not a safe, positive number, or 3)
     replace is not a safe, positive number
 
 #### Parameters
@@ -449,7 +448,7 @@ specified location, replacing a specified number of bytes.
 | :------ | :------ | :------ | :------ |
 | `data` | [`ByteVector`](ByteVector.md) | `undefined` | Data to insert into the file. |
 | `start` | `number` | `undefined` | Index into the file at which to insert the data. Must be safe positive integer. |
-| `replace` | `number` | `0` | Number of bytes to replace. Typically this is the original size of the data     block so that a new block will replace the old one. |
+| `replace` | `number` | `0` | Number of bytes to replace. Typically this is the original size of the data block so that a new block will replace the old one. |
 
 #### Returns
 
@@ -505,14 +504,16 @@ ___
 
 Searches backwards through a file for a specified pattern, starting at a specified offset.
 
-**`throws`** Error Thrown if `pattern` was not provided or if `startPosition` is
+**`Throws`**
+
+Error Thrown if `pattern` was not provided or if `startPosition` is
     not a safe, positive integer.
 
 #### Parameters
 
 | Name | Type | Default value | Description |
 | :------ | :------ | :------ | :------ |
-| `pattern` | [`ByteVector`](ByteVector.md) | `undefined` | Pattern to search for in the current instance. Must be shorter than the     [bufferSize](OggFile.md#buffersize) |
+| `pattern` | [`ByteVector`](ByteVector.md) | `undefined` | Pattern to search for in the current instance. Must be shorter than the [bufferSize](OggFile.md#buffersize) |
 | `startPosition` | `number` | `0` | Number of bytes from end of the file to begin searching. |
 
 #### Returns
@@ -533,9 +534,11 @@ ___
 
 Reads a specified number of bytes at the current seek position from the current position.
 This method reads the block of data at the current seek position. To change the seek
-position, use [File.seek](File.md#seek).
+position, use [seek](File.md#seek).
 
-**`throws`** Error Thrown when `length` is not a positive, safe integer.
+**`Throws`**
+
+Error Thrown when `length` is not a positive, safe integer.
 
 #### Parameters
 
@@ -547,7 +550,7 @@ position, use [File.seek](File.md#seek).
 
 [`ByteVector`](ByteVector.md)
 
-ByteVector Object containing the data read from the current instance.
+Object containing the data read from the current instance.
 
 #### Inherited from
 
@@ -561,7 +564,9 @@ ___
 
 Removes a specified block of data from the file represented by the current instance.
 
-**`throws`** Error thrown if 1) start is not a safe, positive integer or 2) length must be a safe
+**`Throws`**
+
+Error thrown if 1) start is not a safe, positive integer or 2) length must be a safe
     integer.
 
 #### Parameters
@@ -586,13 +591,13 @@ ___
 ▸ **removeTags**(`types`): `void`
 
 Removes a set of tag types from the current instance. In order to remove all tags from a
-file, pass [TagTypes.AllTags](../enums/TagTypes.md#alltags) as `types`
+file, pass [AllTags](../enums/TagTypes.md#alltags) as `types`
 
 #### Parameters
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `types` | [`TagTypes`](../enums/TagTypes.md) | Bitwise combined [TagTypes](../enums/TagTypes.md) value containing the tag types to be removed     from the file |
+| `types` | [`TagTypes`](../enums/TagTypes.md) | Bitwise combined [TagTypes](../enums/TagTypes.md) value containing the tag types to be removed from the file |
 
 #### Returns
 
@@ -632,7 +637,7 @@ specified origin.
 | Name | Type | Default value | Description |
 | :------ | :------ | :------ | :------ |
 | `offset` | `number` | `undefined` | Byte offset to seek to. Must be a safe, positive integer. |
-| `origin` | `SeekOrigin` | `SeekOrigin.Begin` | Origin from which to seek |
+| `origin` | [`SeekOrigin`](../enums/SeekOrigin.md) | `SeekOrigin.Begin` | Origin from which to seek |
 
 #### Returns
 
@@ -674,7 +679,9 @@ Writes a block of data to the file represented by the current instance at the cu
 position. This will overwrite any existing data at the seek position and append new data to
 the file if writing past the current end.
 
-**`throws`** Error Thrown when `data` is not provided.
+**`Throws`**
+
+Error Thrown when `data` is not provided.
 
 #### Parameters
 
@@ -704,8 +711,8 @@ with. Optionally, the MimeType can be forcefully overridden if it was already re
 | Name | Type | Default value | Description |
 | :------ | :------ | :------ | :------ |
 | `mimeType` | `string` | `undefined` | MimeType to register this subclass constructor to. |
-| `constructor` | [`FileTypeConstructor`](../modules.md#filetypeconstructor) | `undefined` | Constructor for a subclass of [File](File.md) that will be called if a file     with a MimeType of `mimeType` is created. |
-| `override` | `boolean` | `false` | If `true` and a subclass of [File](File.md) was already registered to     `mimeType`, it will be forcefully overridden. If `false`, an {@link Error} will be     thrown if a subclass already registered to the MimeType.} |
+| `constructor` | [`FileTypeConstructor`](../modules.md#filetypeconstructor) | `undefined` | Constructor for a subclass of [File](File.md) that will be called if a file with a MimeType of `mimeType` is created. |
+| `override` | `boolean` | `false` | If `true` and a subclass of [File](File.md) was already registered to `mimeType`, it will be forcefully overridden. If `false`, an Error will be thrown if a subclass already registered to the MimeType. |
 
 #### Returns
 
@@ -727,7 +734,7 @@ Registers a [FileTypeResolver](../modules.md#filetyperesolver) to the front of t
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `resolver` | [`FileTypeResolver`](../modules.md#filetyperesolver) | Function to handle resolving a subclass of [File](File.md) from an     {@link IFileAbstraction} |
+| `resolver` | [`FileTypeResolver`](../modules.md#filetyperesolver) | Function to handle resolving a subclass of [File](File.md) from an [IFileAbstraction](../interfaces/IFileAbstraction.md) |
 
 #### Returns
 
@@ -750,9 +757,9 @@ and property read style.
 
 | Name | Type | Default value | Description |
 | :------ | :------ | :------ | :------ |
-| `abstraction` | `IFileAbstraction` | `undefined` | Object to use when reading/writing from the current instance. |
-| `mimeType?` | `string` | `undefined` | Optional, MimeType to use for determining the subclass of [File](File.md) to     return. If omitted, the MimeType will be guessed based on the file's extension. |
-| `propertiesStyle` | [`ReadStyle`](../enums/ReadStyle.md) | `ReadStyle.Average` | Optional, level of detail to use when reading the media information     from the new instance. If omitted, [ReadStyle.Average](../enums/ReadStyle.md#average) is used. |
+| `abstraction` | [`IFileAbstraction`](../interfaces/IFileAbstraction.md) | `undefined` | Object to use when reading/writing from the current instance. |
+| `mimeType?` | `string` | `undefined` | Optional, MimeType to use for determining the subclass of [File](File.md) to return. If omitted, the MimeType will be guessed based on the file's extension. |
+| `propertiesStyle` | [`ReadStyle`](../enums/ReadStyle.md) | `ReadStyle.Average` | Optional, level of detail to use when reading the media information from the new instance. If omitted, [Average](../enums/ReadStyle.md#average) is used. |
 
 #### Returns
 
@@ -778,8 +785,8 @@ property read style.
 | Name | Type | Default value | Description |
 | :------ | :------ | :------ | :------ |
 | `filePath` | `string` | `undefined` | Path to the file to read/write. |
-| `mimeType?` | `string` | `undefined` | Optional, MimeType to use for determining the subclass of [File](File.md) to     return. If omitted, the MimeType will be guessed based on the file's extension. |
-| `propertiesStyle` | [`ReadStyle`](../enums/ReadStyle.md) | `ReadStyle.Average` | Optional, level of detail to use when reading the media information     from the new instance. If omitted [ReadStyle.Average](../enums/ReadStyle.md#average) is used. |
+| `mimeType?` | `string` | `undefined` | Optional, MimeType to use for determining the subclass of [File](File.md) to return. If omitted, the MimeType will be guessed based on the file's extension. |
+| `propertiesStyle` | [`ReadStyle`](../enums/ReadStyle.md) | `ReadStyle.Average` | Optional, level of detail to use when reading the media information from the new instance. If omitted [Average](../enums/ReadStyle.md#average) is used. |
 
 #### Returns
 

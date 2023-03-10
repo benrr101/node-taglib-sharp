@@ -2,6 +2,9 @@
 
 # Class: Id3v2Settings
 
+This class contains settings related to ID3v2 tag operations. Open files will need to be
+re-read in order for changes to take effect.
+
 ## Table of contents
 
 ### Accessors
@@ -105,7 +108,7 @@ original encoding.
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `value` | `boolean` | If `true` frames will be rendered using [defaultEncoding](Id3v2Settings.md#defaultencoding) rather than     their original encoding. |
+| `value` | `boolean` | If `true` frames will be rendered using [defaultEncoding](Id3v2Settings.md#defaultencoding) rather than their original encoding. |
 
 #### Returns
 
@@ -133,7 +136,7 @@ version.
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `value` | `boolean` | If `true`, tags will be saved in the version defined in [defaultVersion](Id3v2Settings.md#defaultversion)     rather than their original format, with the exception of tags with footers which will     always be saved in version 4 |
+| `value` | `boolean` | If `true`, tags will be saved in the version defined in [defaultVersion](Id3v2Settings.md#defaultversion) rather than their original format, with the exception of tags with footers which will always be saved in version 4 |
 
 #### Returns
 
@@ -196,7 +199,9 @@ If `true`, the TCO/TCON frame value will be separated by `;` and/or `/`, empty v
 be thrown out. If `false`, the TCO/TCON frame value will be returned as-is (after processing
 standard, escaped numeric genres).
 
-**`remarks`** The official ID3v2 standard makes no mention of separators for genres, one of the
+**`Remarks`**
+
+The official ID3v2 standard makes no mention of separators for genres, one of the
     inherent flaws fixed in ID3v2.4. However, various media players, as well as the original
     implementation of TagLib#, support using `;` and `/` to separate genres. In order to
     maintain compatibility, this functionality is preserved, but can be disabled by setting
@@ -213,7 +218,9 @@ If `true`, the TCO/TCON frame value will be separated by `;` and/or `/`, empty v
 be thrown out. If `false`, the TCO/TCON frame value will be returned as-is (after processing
 standard, escaped numeric genres).
 
-**`remarks`** The official ID3v2 standard makes no mention of separators for genres, one of the
+**`Remarks`**
+
+The official ID3v2 standard makes no mention of separators for genres, one of the
     inherent flaws fixed in ID3v2.4. However, various media players, as well as the original
     implementation of TagLib#, support using `;` and `/` to separate genres. In order to
     maintain compatibility, this functionality is preserved, but can be disabled by setting
@@ -239,7 +246,9 @@ Gets whether or not to use non-standard numeric genre parsing on ID3v2.2 and ID3
 `true`, a purely numeric TCO/TCON frame value will attempt to be parsed as a numeric genre.
 If `false`, the TCO/TCON frame value will be returned without parsing purely numeric genres.
 
-**`remarks`** The official ID3v2.2/ID3v2.3 standard only supports numeric genres if they are
+**`Remarks`**
+
+The official ID3v2.2/ID3v2.3 standard only supports numeric genres if they are
     escaped inside parenthesis (eg, `(12)`). However, the original implementation of TagLib#
     allowed ID3v2.2 and ID3v2.3 tags to parse unescaped numeric genres. In order to maintain
     compatibility, this functionality is preserved, but can be disabled by setting
@@ -255,7 +264,9 @@ Sets whether or not to use non-standard numeric genre parsing on ID3v2.2 and ID3
 `true`, a purely numeric TCO/TCON frame value will attempt to be parsed as a numeric genre.
 If `false`, the TCO/TCON frame value will be returned without parsing purely numeric genres.
 
-**`remarks`** The official ID3v2.2/ID3v2.3 standard only supports numeric genres if they are
+**`Remarks`**
+
+The official ID3v2.2/ID3v2.3 standard only supports numeric genres if they are
     escaped inside parenthesis (eg, `(12)`). However, the original implementation of TagLib#
     allowed ID3v2.2 and ID3v2.3 tags to parse unescaped numeric genres. In order to maintain
     compatibility, this functionality is preserved, but can be disabled by setting

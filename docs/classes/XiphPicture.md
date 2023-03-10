@@ -2,10 +2,13 @@
 
 # Class: XiphPicture
 
+Interface that provides generic information about a picture, including its contents, as used by
+various formats.
+
 ## Implements
 
 - [`IPicture`](../interfaces/IPicture.md)
-- `ILazy`
+- [`ILazy`](../interfaces/ILazy.md)
 
 ## Table of contents
 
@@ -133,7 +136,9 @@ ___
 
 Gets and sets a filename of the picture stored in the current instance. Optional.
 
-**`remarks`** This value is not stored in a XIPH picture and is only available if copied from
+**`Remarks`**
+
+This value is not stored in a XIPH picture and is only available if copied from
     another picture.
 
 #### Returns
@@ -148,7 +153,9 @@ Gets and sets a filename of the picture stored in the current instance. Optional
 
 Gets and sets a filename of the picture stored in the current instance. Optional.
 
-**`remarks`** This value is not stored in a XIPH picture so setting it has no impact.
+**`Remarks`**
+
+This value is not stored in a XIPH picture so setting it has no impact.
 
 #### Parameters
 
@@ -210,7 +217,7 @@ Sets the number of indexed colors in the picture represented by the current inst
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `value` | `number` | Number of indexed colors in the pictures or `0` if the picture is not stored in     an indexed format. Must be a positive 32-bit integer |
+| `value` | `number` | Number of indexed colors in the pictures or `0` if the picture is not stored in an indexed format. Must be a positive 32-bit integer |
 
 #### Returns
 
@@ -222,7 +229,7 @@ ___
 
 • `get` **isLoaded**(): `boolean`
 
-**`inheritdoc`**
+Gets whether the object has been loaded.
 
 #### Returns
 
@@ -230,7 +237,7 @@ ___
 
 #### Implementation of
 
-ILazy.isLoaded
+[ILazy](../interfaces/ILazy.md).[isLoaded](../interfaces/ILazy.md#isloaded)
 
 ___
 
@@ -332,7 +339,7 @@ Sets the width of the picture in the current instance.
 
 ▸ **load**(): `void`
 
-**`inheritdoc`**
+Loads the object.
 
 #### Returns
 
@@ -340,7 +347,7 @@ Sets the width of the picture in the current instance.
 
 #### Implementation of
 
-ILazy.load
+[ILazy](../interfaces/ILazy.md).[load](../interfaces/ILazy.md#load)
 
 ___
 
@@ -381,7 +388,7 @@ block. Intended to be used by the [FlacTag](FlacTag.md) class.
 | Name | Type | Default value | Description |
 | :------ | :------ | :------ | :------ |
 | `block` | [`FlacBlock`](FlacBlock.md) | `undefined` | FLAC block containing the Xiph image. |
-| `isLazy` | `boolean` | `false` | Whether or not to lazily load the data. For FLAC blocks, this will chain into     the lazy loading capabilities of the block |
+| `isLazy` | `boolean` | `false` | Whether or not to lazily load the data. For FLAC blocks, this will chain into the lazy loading capabilities of the block |
 
 #### Returns
 
@@ -420,7 +427,7 @@ image structure. Intended to be used by the [XiphComment](XiphComment.md) class.
 | Name | Type | Default value | Description |
 | :------ | :------ | :------ | :------ |
 | `data` | `string` | `undefined` | Object containing the raw, base64 encoded Xiph image |
-| `isLazy` | `boolean` | `false` | Whether or not to lazily load the data. For xiph comments, this only delays     decoding the data from base64 |
+| `isLazy` | `boolean` | `false` | Whether or not to lazily load the data. For xiph comments, this only delays decoding the data from base64 |
 
 #### Returns
 

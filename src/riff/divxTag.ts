@@ -1,6 +1,6 @@
+import Genres from "../genres";
 import {ByteVector, StringType} from "../byteVector";
 import {CorruptFileError} from "../errors";
-import {Genres} from "../index";
 import {Tag, TagTypes} from "../tag";
 import {Guards} from "../utils";
 
@@ -95,8 +95,8 @@ export default class DivxTag extends Tag {
 
     /**
      * @inheritDoc
-     * @remarks Genre is stored as a numeric genre. This is translated into the human-
-     *     readable genre.
+     * @remarks
+     *     Genre is stored as a numeric genre. This is translated into the human-readable genre.
      */
     public get genres(): string[] {
         const genreName = Genres.indexToVideo(this._genre, false);
@@ -104,8 +104,9 @@ export default class DivxTag extends Tag {
     }
     /**
      * @inheritDoc
-     * @remarks Genre is stored as a numeric genre, so only video genres are supported. Only
-     *     one genre can be stored.
+     * @remarks
+     *     Genre is stored as a numeric genre, so only video genres are supported. Only one genre
+     *     can be stored.
      */
     public set genres(value: string[]) {
         this._genre = value && value.length > 0

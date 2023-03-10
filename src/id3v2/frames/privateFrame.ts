@@ -101,7 +101,7 @@ export default class PrivateFrame extends Frame {
      * parameters.
      * @param frames List of frames to search
      * @param owner Owner to match when searching
-     * @returns PrivateFrame Matching frame or `undefined` if a match was not found
+     * @returns Matching frame or `undefined` if a match was not found
      */
     public static find(frames: PrivateFrame[], owner: string): PrivateFrame {
         Guards.truthy(frames, "frames");

@@ -55,8 +55,9 @@ export default class Vorbis implements IOggCodec, IAudioCodec {
 
     /**
      * @inheritDoc
-     * @remarks For Vorbis files, this is the nominal bitrate as specified in the identification
-     *     header. This may be significantly different than the actual average since this header
+     * @remarks
+     *     For Vorbis files, this is the nominal bitrate as specified in the identification
+     *     header. This may be significantly different from the actual average since this header
      *     only provides decoding hints.
      */
     public get audioBitrate(): number {

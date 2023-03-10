@@ -31,7 +31,9 @@ re-read in order for changes to take effect.
 
 ### SUPPORTED\_TAG\_TYPES
 
-▪ `Static` `Readonly` **SUPPORTED\_TAG\_TYPES**: `number`
+▪ `Static` `Readonly` **SUPPORTED\_TAG\_TYPES**: [`TagTypes`](../enums/TagTypes.md)
+
+List of tag types that are supported by the FLAC file.
 
 ## Accessors
 
@@ -73,7 +75,9 @@ APE tags will be stored at the end of the file. If `false` new APE tags will be 
 the beginning of the file (not recommended). Note, this only affects *new* APE tags.
 Existing APE tags will not be moved unless removed and re-added.
 
-**`default`** `true`
+**`Default`**
+
+`true`
 
 #### Returns
 
@@ -86,7 +90,9 @@ APE tags will be stored at the end of the file. If `false` new APE tags will be 
 the beginning of the file (not recommended). Note, this only affects *new* APE tags.
 Existing APE tags will not be moved unless removed and re-added.
 
-**`default`** `true`
+**`Default`**
+
+`true`
 
 #### Parameters
 
@@ -109,11 +115,15 @@ ID3v2 tags will be stored at the end of the file. If `false` new ID3v2 tags will
 at the beginning of the file. Note, this only affects *new* ID3v2 tags. Existing ID3v2 tags
 will not be moved unless removed and re-added.
 
-**`remarks`** In order to store an ID3v2 tag at the end of a file, it must have a tag footer. Tag
+**`Remarks`**
+
+In order to store an ID3v2 tag at the end of a file, it must have a tag footer. Tag
     footers are only supported in ID3v2.4. If the ID3v2 version is changed, it will cause an
     error to be thrown when the tag is rendered.
 
-**`default`** `false`
+**`Default`**
+
+`false`
 
 #### Returns
 
@@ -126,11 +136,15 @@ ID3v2 tags will be stored at the end of the file. If `false` new ID3v2 tags will
 at the beginning of the file. Note, this only affects *new* ID3v2 tags. Existing ID3v2 tags
 will not be moved unless removed and re-added.
 
-**`remarks`** In order to store an ID3v2 tag at the end of a file, it must have a tag footer. Tag
+**`Remarks`**
+
+In order to store an ID3v2 tag at the end of a file, it must have a tag footer. Tag
     footers are only supported in ID3v2.4. If the ID3v2 version is changed, it will cause an
     error to be thrown when the tag is rendered.
 
-**`default`** `false`
+**`Default`**
+
+`false`
 
 #### Parameters
 

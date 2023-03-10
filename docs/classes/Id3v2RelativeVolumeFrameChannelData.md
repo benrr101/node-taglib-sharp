@@ -2,6 +2,8 @@
 
 # Class: Id3v2RelativeVolumeFrameChannelData
 
+Represents the relative volume data that applies to a specific channel of the audio.
+
 ## Table of contents
 
 ### Constructors
@@ -27,17 +29,22 @@
 
 • **new Id3v2RelativeVolumeFrameChannelData**(`channel`)
 
+Constructs a new instance of relative volume information that applies to the provided
+audio channel.
+
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `channel` | [`Id3v2RelativeVolumeFrameChannelType`](../enums/Id3v2RelativeVolumeFrameChannelType.md) |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `channel` | [`Id3v2RelativeVolumeFrameChannelType`](../enums/Id3v2RelativeVolumeFrameChannelType.md) | Channel that the relative volume information applies to |
 
 ## Accessors
 
 ### channelType
 
 • `get` **channelType**(): [`Id3v2RelativeVolumeFrameChannelType`](../enums/Id3v2RelativeVolumeFrameChannelType.md)
+
+Gets the channel that the current instance applies to.
 
 #### Returns
 
@@ -48,6 +55,8 @@ ___
 ### isSet
 
 • `get` **isSet**(): `boolean`
+
+Gets whether the current instance actually contains a relative volume adjustment.
 
 #### Returns
 
@@ -142,6 +151,8 @@ betweenInclusive -64 and 64. Don't worry about the math, we'll do it for you.
 
 ▸ **render**(): [`ByteVector`](ByteVector.md)
 
+Generates a raw byte representation of the current instance.
+
 #### Returns
 
 [`ByteVector`](ByteVector.md)
@@ -152,11 +163,13 @@ ___
 
 ▸ `Static` **fromData**(`bytes`): [`Id3v2RelativeVolumeFrameChannelData`](Id3v2RelativeVolumeFrameChannelData.md)
 
+Constructs a new instance from the raw bytes of channel data.
+
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `bytes` | [`ByteVector`](ByteVector.md) |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `bytes` | [`ByteVector`](ByteVector.md) | Raw bytes that contain the channel data object. |
 
 #### Returns
 

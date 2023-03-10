@@ -14,6 +14,8 @@ Interface that provides basic information common to all media codecs
 
   ↳ [`IPhotoCodec`](IPhotoCodec.md)
 
+  ↳ [`IOggCodec`](IOggCodec.md)
+
 ## Table of contents
 
 ### Properties
@@ -38,7 +40,9 @@ ___
 
 Duration of the media in milliseconds represented by the current instance.
 
-**`todo`** Ensure milliseconds is the right way to interpret this field
+**`TODO`**
+
+Ensure milliseconds is the right way to interpret this field
 
 ___
 

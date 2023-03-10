@@ -6,9 +6,12 @@
 
 ### Enumerations
 
+- [ApeTagItemType](enums/ApeTagItemType.md)
 - [AsfObjectDataType](enums/AsfObjectDataType.md)
+- [AsfObjectType](enums/AsfObjectType.md)
 - [AviStreamType](enums/AviStreamType.md)
 - [FileAccessMode](enums/FileAccessMode.md)
+- [FlacBlockType](enums/FlacBlockType.md)
 - [Id3v2EventType](enums/Id3v2EventType.md)
 - [Id3v2FrameClassType](enums/Id3v2FrameClassType.md)
 - [Id3v2FrameFlags](enums/Id3v2FrameFlags.md)
@@ -21,6 +24,7 @@
 - [MpegVersion](enums/MpegVersion.md)
 - [PictureType](enums/PictureType.md)
 - [ReadStyle](enums/ReadStyle.md)
+- [SeekOrigin](enums/SeekOrigin.md)
 - [StringType](enums/StringType.md)
 - [TagTypes](enums/TagTypes.md)
 
@@ -32,6 +36,8 @@
 - [ApeFile](classes/ApeFile.md)
 - [ApeFileSettings](classes/ApeFileSettings.md)
 - [ApeTag](classes/ApeTag.md)
+- [ApeTagItem](classes/ApeTagItem.md)
+- [AsfBaseObject](classes/AsfBaseObject.md)
 - [AsfContentDescriptionObject](classes/AsfContentDescriptionObject.md)
 - [AsfContentDescriptor](classes/AsfContentDescriptor.md)
 - [AsfExtendedContentDescriptionObject](classes/AsfExtendedContentDescriptionObject.md)
@@ -50,11 +56,13 @@
 - [CombinedTag](classes/CombinedTag.md)
 - [CorruptFileError](classes/CorruptFileError.md)
 - [DivxTag](classes/DivxTag.md)
+- [EndTag](classes/EndTag.md)
 - [File](classes/File.md)
 - [FlacBlock](classes/FlacBlock.md)
 - [FlacFile](classes/FlacFile.md)
 - [FlacFileSettings](classes/FlacFileSettings.md)
 - [FlacTag](classes/FlacTag.md)
+- [Genres](classes/Genres.md)
 - [Id3v1Tag](classes/Id3v1Tag.md)
 - [Id3v2AttachmentFrame](classes/Id3v2AttachmentFrame.md)
 - [Id3v2CommentsFrame](classes/Id3v2CommentsFrame.md)
@@ -80,12 +88,13 @@
 - [Id3v2TextInformationFrame](classes/Id3v2TextInformationFrame.md)
 - [Id3v2UniqueFileIdentifierFrame](classes/Id3v2UniqueFileIdentifierFrame.md)
 - [Id3v2UnknownFrame](classes/Id3v2UnknownFrame.md)
-- [Id3v2UnsynchronizedFrame](classes/Id3v2UnsynchronizedFrame.md)
+- [Id3v2UnsynchronizedLyricsFrame](classes/Id3v2UnsynchronizedLyricsFrame.md)
 - [Id3v2UrlLinkFrame](classes/Id3v2UrlLinkFrame.md)
 - [Id3v2UserTextInformationFrame](classes/Id3v2UserTextInformationFrame.md)
 - [Id3v2UserUrlLinkFrame](classes/Id3v2UserUrlLinkFrame.md)
 - [InfoTag](classes/InfoTag.md)
 - [LocalFileAbstraction](classes/LocalFileAbstraction.md)
+- [MatroskaFile](classes/MatroskaFile.md)
 - [MovieIdTag](classes/MovieIdTag.md)
 - [MpegAudioFile](classes/MpegAudioFile.md)
 - [MpegAudioHeader](classes/MpegAudioHeader.md)
@@ -109,7 +118,11 @@
 - [RiffList](classes/RiffList.md)
 - [RiffListTag](classes/RiffListTag.md)
 - [RiffWaveFormatEx](classes/RiffWaveFormatEx.md)
+- [SandwichFile](classes/SandwichFile.md)
+- [SandwichTag](classes/SandwichTag.md)
+- [StartTag](classes/StartTag.md)
 - [Tag](classes/Tag.md)
+- [UuidWrapper](classes/UuidWrapper.md)
 - [XiphComment](classes/XiphComment.md)
 - [XiphPicture](classes/XiphPicture.md)
 
@@ -117,30 +130,44 @@
 
 - [IAudioCodec](interfaces/IAudioCodec.md)
 - [ICodec](interfaces/ICodec.md)
+- [IDisposable](interfaces/IDisposable.md)
+- [IFileAbstraction](interfaces/IFileAbstraction.md)
+- [ILazy](interfaces/ILazy.md)
 - [ILosslessAudioCodec](interfaces/ILosslessAudioCodec.md)
+- [IOggCodec](interfaces/IOggCodec.md)
 - [IPhotoCodec](interfaces/IPhotoCodec.md)
 - [IPicture](interfaces/IPicture.md)
+- [IRiffChunk](interfaces/IRiffChunk.md)
+- [ISandwichFile](interfaces/ISandwichFile.md)
+- [IStream](interfaces/IStream.md)
 - [IVideoCodec](interfaces/IVideoCodec.md)
 
-### Type aliases
+### Type Aliases
 
+- [AsfDescriptorValue](modules.md#asfdescriptorvalue)
 - [FileTypeConstructor](modules.md#filetypeconstructor)
 - [FileTypeResolver](modules.md#filetyperesolver)
-
-### Properties
-
-- [Genres](modules.md#genres)
-- [Id3v2FrameFactory](modules.md#id3v2framefactory)
+- [Id3v2FrameCreator](modules.md#id3v2framecreator)
+- [OggCodecProvider](modules.md#oggcodecprovider)
 
 ### Variables
 
+- [Id3v2FrameFactory](modules.md#id3v2framefactory)
 - [Id3v2FrameIdentifiers](modules.md#id3v2frameidentifiers)
 
-## Type aliases
+## Type Aliases
+
+### AsfDescriptorValue
+
+Ƭ **AsfDescriptorValue**: `bigint` \| `boolean` \| [`ByteVector`](classes/ByteVector.md) \| `number` \| `string` \| [`UuidWrapper`](classes/UuidWrapper.md)
+
+Type shortcut for all the types a descriptor can contain
+
+___
 
 ### FileTypeConstructor
 
-Ƭ **FileTypeConstructor**: (`abstraction`: `IFileAbstraction`, `style`: [`ReadStyle`](enums/ReadStyle.md)) => [`File`](classes/File.md)
+Ƭ **FileTypeConstructor**: (`abstraction`: [`IFileAbstraction`](interfaces/IFileAbstraction.md), `style`: [`ReadStyle`](enums/ReadStyle.md)) => [`File`](classes/File.md)
 
 #### Type declaration
 
@@ -150,36 +177,38 @@
 
 | Name | Type |
 | :------ | :------ |
-| `abstraction` | `IFileAbstraction` |
+| `abstraction` | [`IFileAbstraction`](interfaces/IFileAbstraction.md) |
 | `style` | [`ReadStyle`](enums/ReadStyle.md) |
 
 ___
 
 ### FileTypeResolver
 
-Ƭ **FileTypeResolver**: (`abstraction`: `IFileAbstraction`, `mimetype`: `string`, `style`: [`ReadStyle`](enums/ReadStyle.md)) => [`File`](classes/File.md)
+Ƭ **FileTypeResolver**: (`abstraction`: [`IFileAbstraction`](interfaces/IFileAbstraction.md), `mimetype`: `string`, `style`: [`ReadStyle`](enums/ReadStyle.md)) => [`File`](classes/File.md)
 
 #### Type declaration
 
 ▸ (`abstraction`, `mimetype`, `style`): [`File`](classes/File.md)
 
-Delegate is used for intervening in [File.createFromPath](classes/File.md#createfrompath) by resolving the filetype before
+Delegate is used for intervening in [createFromPath](classes/File.md#createfrompath) by resolving the filetype before
 any standard resolution operations.
 
-**`remarks`** A FileTypeResolver is one way of altering the behavior of
-    [File.createFromPath](classes/File.md#createfrompath) When [File.createFromPath](classes/File.md#createfrompath) is called, the registered
+**`Remarks`**
+
+A FileTypeResolver is one way of altering the behavior of
+    [createFromPath](classes/File.md#createfrompath) When [createFromPath](classes/File.md#createfrompath) is called, the registered
     resolvers are invoked in reverse order in which they were registered. The resolver may then
     perform any operations necessary, including other type-finding methods. If the resolver
-    returns a new [File](classes/File.md) it will instantly be returned, by [File.createFromPath](classes/File.md#createfrompath). If
-    it returns `undefined`, [File.createFromPath](classes/File.md#createfrompath) will continue to process. If the resolver
+    returns a new [File](classes/File.md) it will instantly be returned, by [createFromPath](classes/File.md#createfrompath). If
+    it returns `undefined`, [createFromPath](classes/File.md#createfrompath) will continue to process. If the resolver
     throws an exception, it will be uncaught. To register a resolver, use
-    [File.addFileTypeResolver](classes/File.md#addfiletyperesolver).
+    [addFileTypeResolver](classes/File.md#addfiletyperesolver).
 
 ##### Parameters
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `abstraction` | `IFileAbstraction` | File to be read. |
+| `abstraction` | [`IFileAbstraction`](interfaces/IFileAbstraction.md) | File to be read. |
 | `mimetype` | `string` | - |
 | `style` | [`ReadStyle`](enums/ReadStyle.md) | How to read media properties from the file |
 
@@ -189,36 +218,77 @@ any standard resolution operations.
 
 New instance of [File](classes/File.md) or `undefined` if the resolver could not be matched
 
-## Properties
+___
 
-### Genres
+### Id3v2FrameCreator
 
-• **Genres**: `Object`
+Ƭ **Id3v2FrameCreator**: (`data`: [`ByteVector`](classes/ByteVector.md), `offset`: `number`, `header`: [`Id3v2FrameHeader`](classes/Id3v2FrameHeader.md), `version`: `number`) => [`Id3v2Frame`](classes/Id3v2Frame.md)
 
 #### Type declaration
 
-| Name | Type |
-| :------ | :------ |
-| `audioToIndex` | (`name`: `string`) => `number` |
-| `indexToAudio` | (`index`: `string` \| `number`, `allowParenthesis`: `boolean`) => `string` |
-| `indexToVideo` | (`index`: `string` \| `number`, `allowParenthesis`: `boolean`) => `string` |
-| `videoToIndex` | (`name`: `string`) => `number` |
+▸ (`data`, `offset`, `header`, `version`): [`Id3v2Frame`](classes/Id3v2Frame.md)
+
+Type shortcut for a method that returns a Frame.
+
+##### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `data` | [`ByteVector`](classes/ByteVector.md) | Byte vector that contains the frame |
+| `offset` | `number` | Position into the byte vector where the frame begins |
+| `header` | [`Id3v2FrameHeader`](classes/Id3v2FrameHeader.md) | The header that describes the frame |
+| `version` | `number` | ID3v2 version the frame is encoded with. Must be unsigned 8-bit int |
+
+##### Returns
+
+[`Id3v2Frame`](classes/Id3v2Frame.md)
 
 ___
+
+### OggCodecProvider
+
+Ƭ **OggCodecProvider**: (`firstPacket`: [`ByteVector`](classes/ByteVector.md)) => [`IOggCodec`](interfaces/IOggCodec.md) \| `undefined`
+
+#### Type declaration
+
+▸ (`firstPacket`): [`IOggCodec`](interfaces/IOggCodec.md) \| `undefined`
+
+Type shortcut for a method that can generate a codec object based on the first packet of the
+bit stream.
+
+##### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `firstPacket` | [`ByteVector`](classes/ByteVector.md) | First packet in the bit stream |
+
+##### Returns
+
+[`IOggCodec`](interfaces/IOggCodec.md) \| `undefined`
+
+Generated [IOggCodec](interfaces/IOggCodec.md) is returned if a codec could be
+    constructed from the first packet, otherwise `undefined` is returned.
+
+## Variables
 
 ### Id3v2FrameFactory
 
 • **Id3v2FrameFactory**: `Object`
 
+Performs the necessary operations to determine and create the correct child classes of
+Frame for a given raw ID3v2 frame.
+By default, this will only load frames contained in the library. To add additional frames to the
+process, register a frame creator with addFrameCreator.
+
 #### Type declaration
 
 | Name | Type |
 | :------ | :------ |
-| `addFrameCreator` | (`creator`: `FrameCreator`) => `void` |
+| `addFrameCreator` | (`creator`: [`Id3v2FrameCreator`](modules.md#id3v2framecreator)) => `void` |
 | `clearFrameCreators` | () => `void` |
 | `createFrame` | (`data`: [`ByteVector`](classes/ByteVector.md), `file`: [`File`](classes/File.md), `offset`: `number`, `version`: `number`, `alreadyUnsynced`: `boolean`) => { `frame`: [`Id3v2Frame`](classes/Id3v2Frame.md) ; `offset`: `number`  } |
 
-## Variables
+___
 
 ### Id3v2FrameIdentifiers
 
