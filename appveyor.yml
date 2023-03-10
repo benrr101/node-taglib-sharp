@@ -1,7 +1,7 @@
 version: 5.1.0-{branch}.{build}
 
 environment:
-  nodejs_version: "14.21.3"
+  nodejs_version: "14.21"
 
 install:
   - ps: Install-Product node $env:nodejs_version
