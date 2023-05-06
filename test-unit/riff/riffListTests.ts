@@ -5,7 +5,7 @@ import {Mock} from "typemoq";
 import RiffList from "../../src/riff/riffList";
 import TestFile from "../utilities/testFile";
 import {ByteVector, StringType} from "../../src/byteVector";
-import {File} from "../../src/File";
+import {File} from "../../src/file";
 import {Testers} from "../utilities/testers";
 
 const data1 = ByteVector.fromString("foo", StringType.UTF8);
