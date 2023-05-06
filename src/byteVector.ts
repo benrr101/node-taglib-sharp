@@ -404,6 +404,20 @@ export class ByteVector {
     }
 
     /**
+     * Creates a 1 byte {@link ByteVector} with an 8-bit integer as the data
+     * @param value 8-bit integer to use as the data.
+     */
+    public static fromByte(value: number): ByteVector {
+        Guards.short(value, "value");
+
+        const bytes = new Uint8Array(1);
+        const dv = new DataView(bytes.buffer);
+        dv.setInt8(0, value);
+
+        return new ByteVector(bytes);
+    }
+
+    /**
      * Creates a {@link ByteVector} using the contents of a file as the data
      * @param path Path to the file to store in the ByteVector
      */
@@ -622,6 +636,21 @@ export class ByteVector {
         return type === StringType.UTF16 || type === StringType.UTF16BE || type === StringType.UTF16LE
             ? ByteVector.TD2
             : ByteVector.TD1;
+    }
+
+    /**
+     * Inserts the contents of another ByteVector object into the current instance.
+     * @param index A number value specifying the index at which to insert the data.
+     * @param data A ByteVector object containing data to insert into the current instance.
+     */
+    public insert(index: number, data: ByteVector): void {
+        if (this.isReadOnly) {
+            throw new Error("Cannot edit readonly objects.");
+        }
+
+        if (data !== null && data !== undefined) {
+            this.splice(index, 0, data);
+        }
     }
 
     /**

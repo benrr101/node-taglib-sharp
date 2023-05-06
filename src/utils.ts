@@ -36,6 +36,12 @@ export class Guards {
         }
     }
 
+    public static equals(value: number, expectedValue: number, name: string): void {
+        if (value !== expectedValue) {
+            throw new Error(`Argument out of range: ${name} must equal ${expectedValue}`);
+        }
+    }
+
     public static int(value: number, name: string): void {
         if (!Number.isInteger(value) || value < -2147483648 || value > 2147483647) {
             throw new Error(`Argument out of range: ${name} must be a 32-bit integer`);
