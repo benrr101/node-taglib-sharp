@@ -866,7 +866,7 @@ export default class AppleTag extends Tag {
          */
         for (const box of this._ilstBox.children) {
             for (const byteVector of types) {
-                if (ByteVector.compare(Mpeg4Utils.fixId(byteVector).makeReadOnly(), box.boxType) !== 0) {
+                if (!ByteVector.equals(Mpeg4Utils.fixId(byteVector).makeReadOnly(), box.boxType)) {
                     continue;
                 }
 
@@ -899,7 +899,7 @@ export default class AppleTag extends Tag {
     public DataBoxesFromMeanAndName(mean: string, name: string): AppleDataBox[] {
         // These children will have a box type of "----"
         for (const box of this._ilstBox.children) {
-            if (ByteVector.compare(box.boxType, Mpeg4BoxType.DASH) !== 0) {
+            if (!ByteVector.equals(box.boxType, Mpeg4BoxType.DASH)) {
                 continue;
             }
 
@@ -966,7 +966,7 @@ export default class AppleTag extends Tag {
         let added: boolean = false;
 
         for (const box of this._ilstBox.children) {
-            if (ByteVector.compare(type, box.boxType) === 0) {
+            if (ByteVector.equals(type, box.boxType)) {
                 // Clear the box's children.
                 box.clearChildren();
 
@@ -1215,7 +1215,7 @@ export default class AppleTag extends Tag {
      */
     private getDashAtom(meanstring: string, namestring: string): AppleDataBox {
         for (const box of this._ilstBox.children) {
-            if (ByteVector.compare(box.boxType, Mpeg4BoxType.DASH) !== 0) {
+            if (!ByteVector.equals(box.boxType, Mpeg4BoxType.DASH)) {
                 continue;
             }
 
@@ -1250,7 +1250,7 @@ export default class AppleTag extends Tag {
      */
     private getDashAtoms(meanstring: string, namestring: string): AppleDataBox[] {
         for (const box of this._ilstBox.children) {
-            if (ByteVector.compare(box.boxType, Mpeg4BoxType.DASH) !== 0) {
+            if (!ByteVector.equals(box.boxType, Mpeg4BoxType.DASH)) {
                 continue;
             }
 
@@ -1285,7 +1285,7 @@ export default class AppleTag extends Tag {
      */
     private getParentDashBox(meanstring: string, namestring: string): AppleAnnotationBox {
         for (const box of this._ilstBox.children) {
-            if (ByteVector.compare(box.boxType, Mpeg4BoxType.DASH) !== 0) {
+            if (!ByteVector.equals(box.boxType, Mpeg4BoxType.DASH)) {
                 continue;
             }
 

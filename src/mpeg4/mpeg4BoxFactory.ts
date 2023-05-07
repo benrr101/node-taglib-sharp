@@ -47,24 +47,24 @@ export default class Mpeg4BoxFactory {
     ): Mpeg4Box {
         // The first few children of an "stsd" are sample entries.
         if (
-            ByteVector.compare(parent.boxType, Mpeg4BoxType.Stsd) === 0 &&
+            ByteVector.equals(parent.boxType, Mpeg4BoxType.Stsd) &&
             parent.box instanceof IsoSampleDescriptionBox &&
             index < (parent.box as IsoSampleDescriptionBox).entryCount
         ) {
-            if (handler !== null && handler !== undefined && ByteVector.compare(handler.handlerType, Mpeg4BoxType.Soun) === 0) {
+            if (handler !== null && handler !== undefined && ByteVector.equals(handler.handlerType, Mpeg4BoxType.Soun)) {
                 return IsoAudioSampleEntry.fromHeaderFileAndHandler(header, file, handler);
             }
 
-            if (handler !== null && handler !== undefined && ByteVector.compare(handler.handlerType, Mpeg4BoxType.Vide) === 0) {
+            if (handler !== null && handler !== undefined && ByteVector.equals(handler.handlerType, Mpeg4BoxType.Vide)) {
                 return IsoVisualSampleEntry.fromHeaderFileAndHandler(header, file, handler);
             }
 
-            if (handler !== null && handler !== undefined && ByteVector.compare(handler.handlerType, Mpeg4BoxType.Alis) === 0) {
-                if (ByteVector.compare(header.boxType, Mpeg4BoxType.Text) === 0) {
+            if (handler !== null && handler !== undefined && ByteVector.equals(handler.handlerType, Mpeg4BoxType.Alis)) {
+                if (ByteVector.equals(header.boxType, Mpeg4BoxType.Text)) {
                     return TextBox.fromHeaderFileAndHandler(header, file, handler);
                 }
 
-                if (ByteVector.compare(header.boxType, Mpeg4BoxType.Url) === 0) {
+                if (ByteVector.equals(header.boxType, Mpeg4BoxType.Url)) {
                     return UrlBox.fromHeaderFileAndHandler(header, file, handler);
                 }
 
@@ -78,36 +78,36 @@ export default class Mpeg4BoxFactory {
         // Standard items...
         const type: ByteVector = header.boxType;
 
-        if (ByteVector.compare(type, Mpeg4BoxType.Mvhd) === 0) {
+        if (ByteVector.equals(type, Mpeg4BoxType.Mvhd)) {
             return IsoMovieHeaderBox.fromHeaderFileAndHandler(header, file, handler);
-        } else if (ByteVector.compare(type, Mpeg4BoxType.Stbl) === 0) {
+        } else if (ByteVector.equals(type, Mpeg4BoxType.Stbl)) {
             return IsoSampleTableBox.fromHeaderFileAndHandler(header, file, handler);
-        } else if (ByteVector.compare(type, Mpeg4BoxType.Stsd) === 0) {
+        } else if (ByteVector.equals(type, Mpeg4BoxType.Stsd)) {
             return IsoSampleDescriptionBox.fromHeaderFileAndHandler(header, file, handler);
-        } else if (ByteVector.compare(type, Mpeg4BoxType.Stco) === 0) {
+        } else if (ByteVector.equals(type, Mpeg4BoxType.Stco)) {
             return IsoChunkOffsetBox.fromHeaderFileAndHandler(header, file, handler);
-        } else if (ByteVector.compare(type, Mpeg4BoxType.Co64) === 0) {
+        } else if (ByteVector.equals(type, Mpeg4BoxType.Co64)) {
             return IsoChunkLargeOffsetBox.fromHeaderFileAndHandler(header, file, handler);
-        } else if (ByteVector.compare(type, Mpeg4BoxType.Hdlr) === 0) {
+        } else if (ByteVector.equals(type, Mpeg4BoxType.Hdlr)) {
             return IsoHandlerBox.fromHeaderFileAndHandler(header, file, handler);
-        } else if (ByteVector.compare(type, Mpeg4BoxType.Udta) === 0) {
+        } else if (ByteVector.equals(type, Mpeg4BoxType.Udta)) {
             return IsoUserDataBox.fromHeaderFileAndHandler(header, file, handler);
-        } else if (ByteVector.compare(type, Mpeg4BoxType.Meta) === 0) {
+        } else if (ByteVector.equals(type, Mpeg4BoxType.Meta)) {
             return IsoMetaBox.fromHeaderFileAndHandler(header, file, handler);
-        } else if (ByteVector.compare(type, Mpeg4BoxType.Ilst) === 0) {
+        } else if (ByteVector.equals(type, Mpeg4BoxType.Ilst)) {
             return AppleItemListBox.fromHeaderFileAndHandler(header, file, handler);
-        } else if (ByteVector.compare(type, Mpeg4BoxType.Data) === 0) {
+        } else if (ByteVector.equals(type, Mpeg4BoxType.Data)) {
             return AppleDataBox.fromHeaderFileAndHandler(header, file, handler);
-        } else if (ByteVector.compare(type, Mpeg4BoxType.Esds) === 0) {
+        } else if (ByteVector.equals(type, Mpeg4BoxType.Esds)) {
             return AppleElementaryStreamDescriptor.fromHeaderFileAndHandler(header, file, handler);
-        } else if (ByteVector.compare(type, Mpeg4BoxType.Free) === 0 || ByteVector.compare(type, Mpeg4BoxType.Skip) === 0) {
+        } else if (ByteVector.equals(type, Mpeg4BoxType.Free) || ByteVector.equals(type, Mpeg4BoxType.Skip)) {
             return IsoFreeSpaceBox.fromHeaderFileAndHandler(header, file, handler);
-        } else if (ByteVector.compare(type, Mpeg4BoxType.Mean) === 0 || ByteVector.compare(type, Mpeg4BoxType.Name) === 0) {
+        } else if (ByteVector.equals(type, Mpeg4BoxType.Mean) || ByteVector.equals(type, Mpeg4BoxType.Name)) {
             return AppleAdditionalInfoBox.fromHeaderFileAndHandler(header, file, handler);
         }
 
         // If we still don't have a tag, and we're inside an ItemListBox, load the box as an AnnotationBox (Apple tag item).
-        if (ByteVector.compare(parent.boxType, Mpeg4BoxType.Ilst) === 0) {
+        if (ByteVector.equals(parent.boxType, Mpeg4BoxType.Ilst)) {
             return AppleAnnotationBox.fromHeaderFileAndHandler(header, file, handler);
         }
 

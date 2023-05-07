@@ -82,7 +82,7 @@ export class Mpeg4Box {
     /**
      * Protected constructor to force construction via static functions.
      */
-    protected constructor() {}
+    protected constructor() { }
 
     /**
      * Initializes a new instance of @see Mpeg4Box with a specified header and handler.
@@ -184,7 +184,7 @@ export class Mpeg4Box {
         }
 
         for (const box of this.children) {
-            if (ByteVector.compare(box.boxType, type) === 0) {
+            if (ByteVector.equals(box.boxType, type)) {
                 return box;
             }
         }
@@ -205,7 +205,7 @@ export class Mpeg4Box {
         const boxes: Mpeg4Box[] = [];
 
         for (const box of this.children) {
-            if (ByteVector.compare(box.boxType, type) === 0) {
+            if (ByteVector.equals(box.boxType, type)) {
                 boxes.push(box);
             }
         }
@@ -228,7 +228,7 @@ export class Mpeg4Box {
         }
 
         for (const box of this.children) {
-            if (ByteVector.compare(box.boxType, type) === 0) {
+            if (ByteVector.equals(box.boxType, type)) {
                 return box;
             }
         }
@@ -254,7 +254,7 @@ export class Mpeg4Box {
         }
 
         for (const box of this.children) {
-            if (ByteVector.compare(box.boxType, type) === 0) {
+            if (ByteVector.equals(box.boxType, type)) {
                 const index = this.children.indexOf(box);
 
                 if (index > -1) {
@@ -376,7 +376,7 @@ export class Mpeg4Box {
         }
 
         // If there was a free, don't take it away, and let meta be a special case.
-        if (freeFound || ByteVector.compare(this.boxType, Mpeg4BoxType.Meta) === 0) {
+        if (freeFound || ByteVector.equals(this.boxType, Mpeg4BoxType.Meta)) {
             const sizeDifference: number = this.dataSize - output.length;
 
             if (this._header.dataSize !== 0 && sizeDifference >= 8) {
