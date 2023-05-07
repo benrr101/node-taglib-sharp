@@ -674,7 +674,7 @@ export default class AppleTag extends Tag {
             text = text.substring(0, text.length - 2).trim();
         }
 
-        const value: number = Number.parseInt(text, 10);
+        const value: number = Number.parseFloat(text);
 
         if (!Number.isNaN(value)) {
             return value;
@@ -697,7 +697,7 @@ export default class AppleTag extends Tag {
             return NaN;
         }
 
-        const value: number = Number.parseInt(text, 10);
+        const value: number = Number.parseFloat(text);
 
         if (!Number.isNaN(value)) {
             return value;
@@ -724,7 +724,7 @@ export default class AppleTag extends Tag {
             text = text.substring(0, text.length - 2).trim();
         }
 
-        const value: number = Number.parseInt(text, 10);
+        const value: number = Number.parseFloat(text);
 
         if (!Number.isNaN(value)) {
             return value;
@@ -747,7 +747,7 @@ export default class AppleTag extends Tag {
             return NaN;
         }
 
-        const value: number = Number.parseInt(text, 10);
+        const value: number = Number.parseFloat(text);
 
         if (!Number.isNaN(value)) {
             return value;

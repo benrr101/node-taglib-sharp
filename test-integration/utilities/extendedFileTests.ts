@@ -25,10 +25,10 @@ export default class ExtendedFileTests {
     }
 
     private static checkTags(tag: Tag): void {
-        assert.strictEqual(-10.28, tag.replayGainTrackGain);
-        assert.strictEqual(0.999969, tag.replayGainTrackPeak);
-        assert.strictEqual(-9.98, tag.replayGainAlbumGain);
-        assert.strictEqual(0.999980, tag.replayGainAlbumPeak);
+        assert.strictEqual(tag.replayGainTrackGain, -10.28);
+        assert.strictEqual(tag.replayGainTrackPeak, 0.999969);
+        assert.strictEqual(tag.replayGainAlbumGain, -9.98);
+        assert.strictEqual(tag.replayGainAlbumPeak, 0.999980);
     }
 
     private static setTags(tag: Tag): void {
