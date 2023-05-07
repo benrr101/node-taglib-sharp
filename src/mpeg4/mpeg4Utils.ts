@@ -4,16 +4,20 @@ import Mpeg4BoxHeader from "./mpeg4BoxHeader";
 export default class Mpeg4Utils {
     /**
      * Fixes a 3 byte ID.
-     * @param id A <see cref="ByteVector" /> object containing an ID to fix.
+     * @param id A @see ByteVector object containing an ID to fix.
      * @returns A fixed @see ByteVector or undefined if the ID could not be fixed.
      */
     public static fixId(id: ByteVector): ByteVector {
         if (id.length === 4) {
-            return id;
+            if(id.isReadOnly){
+                return id;
+            }
+            
+            return id.toByteVector().makeReadOnly();
         }
 
         if (id.length === 3) {
-            return ByteVector.fromByteArray([0xa9, id.get(0), id.get(1), id.get(2)]);
+            return ByteVector.fromByteArray([0xa9, id.get(0), id.get(1), id.get(2)]).makeReadOnly();
         }
 
         return undefined;
