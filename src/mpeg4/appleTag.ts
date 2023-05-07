@@ -129,9 +129,9 @@ export default class AppleTag extends Tag {
     }
 
     /**
-     * Gets and sets the Charaters for a video media, or
+     * Gets and sets the Characters for a video media, or
      * instruments played for music media.
-     * This should match the <see cref="Performers"/> array (for
+     * This should match the @see Performers array (for
      * each person correspond one/more role). Several roles for
      * the same artist/actor can be made up with semicolons.
      * For example, "Marty McFly; Marty McFly Jr.; Marlene McFly".
@@ -149,7 +149,7 @@ export default class AppleTag extends Tag {
 
         return ret;
     }
-    public set value(v: string[]) {
+    public set performersRole(v: string[]) {
         const ret: string[] = v;
 
         if (ret !== null && ret !== undefined) {
