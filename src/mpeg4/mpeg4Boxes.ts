@@ -1133,7 +1133,7 @@ export class IsoAudioSampleEntry extends IsoSampleEntry implements IAudioCodec {
      *  Gets a text description of the media represented by the current instance.
      */
     public get description(): string {
-        return `MPEG-4 Audio (${this.boxType})`;
+        return `MPEG-4 Audio (${this.boxType.toString(StringType.Latin1)})`;
     }
 
     /**
@@ -1853,7 +1853,7 @@ export class IsoVisualSampleEntry extends IsoSampleEntry implements IVideoCodec 
      * Gets a text description of the media represented by the current instance.
      */
     public get description(): string {
-        return `MPEG-4 Video (${this.boxType})`;
+        return `MPEG-4 Video (${this.boxType.toString(StringType.Latin1)})`;
     }
 }
 

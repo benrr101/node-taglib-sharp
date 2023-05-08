@@ -74,6 +74,7 @@ class Mpeg4TestFile extends Mpeg4File {
         assert.equal(Mpeg4_m4a_FileTests.file.properties.audioSampleRate, 44100);
         assert.equal(Mpeg4_m4a_FileTests.file.properties.bitsPerSample, 0);
         assert.approximately(Mpeg4_m4a_FileTests.file.properties.durationMilliseconds, 5253, 1);
+        assert.equal(Mpeg4_m4a_FileTests.file.properties.description, "MPEG-4 Audio (mp4a)");
     }
 
     // @test
