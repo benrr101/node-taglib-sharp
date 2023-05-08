@@ -62,19 +62,19 @@ class Mpeg4TestFile extends Mpeg4File {
         assert.instanceOf(first.children[0], AppleAdditionalInfoBox);
         const child: AppleAdditionalInfoBox = <AppleAdditionalInfoBox>first.children[0];
         const readOnlyNameBoxType: ByteVector = ByteVector.fromString("name", StringType.UTF8).makeReadOnly();
-        // assert.isTrue(child.boxType.isReadOnly); // TODO: ins C# this is a ReadOnlyByteVector. So I expect isReadOnly to be true but it isn't.
+        // assert.isTrue(child.boxType.isReadOnly); // TODO: in C# this is a ReadOnlyByteVector. So I expect isReadOnly to be true but it isn't.
         assert.isTrue(ByteVector.equals(child.boxType, readOnlyNameBoxType));
         assert.equal(child.data.length, 0);
     }
 
-    // @test
-    // public readAudioProperties() {
-    //     assert.approximately(Mpeg4_m4a_FileTests.file.properties.audioBitrate, 56, 1);
-    //     assert.equal(Mpeg4_m4a_FileTests.file.properties.audioChannels, 2);
-    //     // assert.equal(Mpeg4_m4a_FileTests.file.properties.audioSampleRate, 44100); // TODO: fails
-    //     assert.equal(Mpeg4_m4a_FileTests.file.properties.bitsPerSample, 0);
-    //     assert.approximately(Mpeg4_m4a_FileTests.file.properties.durationMilliseconds, 5253, 1);
-    // }
+    @test
+    public readAudioProperties() {
+        assert.approximately(Mpeg4_m4a_FileTests.file.properties.audioBitrate, 56, 1);
+        assert.equal(Mpeg4_m4a_FileTests.file.properties.audioChannels, 2);
+        assert.equal(Mpeg4_m4a_FileTests.file.properties.audioSampleRate, 44100);
+        assert.equal(Mpeg4_m4a_FileTests.file.properties.bitsPerSample, 0);
+        assert.approximately(Mpeg4_m4a_FileTests.file.properties.durationMilliseconds, 5253, 1);
+    }
 
     // @test
     // public readTags() {
@@ -91,7 +91,7 @@ class Mpeg4TestFile extends Mpeg4File {
     // @test
     // public readReplayGain() {
     //     const fileWithRg: File = File.createFromPath(TestConstants.getSampleFilePath("sample_replaygain.m4a"));
-    //     assert.approximately(fileWithRg.tag.replayGainTrackGain, -1.43, 0.01); // TODO: fails
+    //     assert.approximately(fileWithRg.tag.replayGainTrackGain, -1.43, 0.01);
     // }
 
     // @test

@@ -1152,7 +1152,7 @@ export class IsoAudioSampleEntry extends IsoSampleEntry implements IAudioCodec {
     }
 
     public static calculateAudioSampleRate(sampleRate: number): number {
-        return <number>(sampleRate >> 16);
+        return <number>(sampleRate >>> 16);
     }
 }
 
