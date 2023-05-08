@@ -98,7 +98,7 @@ export default class Mpeg4File extends File {
             }
 
             this._appleTag = new AppleTag(udtaBox);
-            this._tag.addTag(this._appleTag);
+            this._tag.setTags(this._appleTag);
 
             // If we're not reading properties, we're done.
             if ((readStyle & ReadStyle.Average) === 0) {

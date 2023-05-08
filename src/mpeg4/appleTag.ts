@@ -866,7 +866,7 @@ export default class AppleTag extends Tag {
          */
         for (const box of this._ilstBox.children) {
             for (const byteVector of types) {
-                if (!ByteVector.equals(Mpeg4Utils.fixId(byteVector).makeReadOnly(), box.boxType)) {
+                if (!ByteVector.equals(Mpeg4Utils.fixId(byteVector), box.boxType)) {
                     continue;
                 }
 
@@ -961,7 +961,7 @@ export default class AppleTag extends Tag {
      */
     public setDataFromTypeAndBoxes(type: ByteVector, boxes: AppleDataBox[]): void {
         // Fix the type.
-        type = Mpeg4Utils.fixId(type).makeReadOnly();
+        type = Mpeg4Utils.fixId(type);
 
         let added: boolean = false;
 
@@ -1040,7 +1040,7 @@ export default class AppleTag extends Tag {
     public setTextFromTypeAndTextCollection(type: ByteVector, textCollection: string[]): void {
         // Remove empty data and return.
         if (textCollection === null || textCollection === undefined) {
-            this._ilstBox.removeChildByType(Mpeg4Utils.fixId(type).makeReadOnly());
+            this._ilstBox.removeChildByType(Mpeg4Utils.fixId(type));
 
             return;
         }
@@ -1056,7 +1056,7 @@ export default class AppleTag extends Tag {
     public setTextFromTypeAndText(type: ByteVector, text: string): void {
         // Remove empty data and return.
         if (!text) {
-            this._ilstBox.removeChildByType(Mpeg4Utils.fixId(type).makeReadOnly());
+            this._ilstBox.removeChildByType(Mpeg4Utils.fixId(type));
 
             return;
         }
@@ -1071,7 +1071,7 @@ export default class AppleTag extends Tag {
      * @param type A @see ByteVector object containing the type of box to remove from the current instance.
      */
     public clearData(type: ByteVector): void {
-        this._ilstBox.removeChildByType(Mpeg4Utils.fixId(type).makeReadOnly());
+        this._ilstBox.removeChildByType(Mpeg4Utils.fixId(type));
     }
 
     /**
