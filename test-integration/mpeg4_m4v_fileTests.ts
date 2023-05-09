@@ -1,12 +1,11 @@
 import { assert } from "chai";
 import { suite, test } from "@testdeck/mocha";
-
-import ExtendedFileTests from "./utilities/extendedFileTests";
+import * as fs from "fs";
 import TestConstants from "./utilities/testConstants";
-import { ByteVector, File, MediaTypes, Mpeg4File, Properties, StringType, Tag, TagTypes } from "../src";
-import { StandardFileTests, TestTagLevel } from "./utilities/standardFileTests";
-import { AppleAdditionalInfoBox, IsoUserDataBox } from "../src/mpeg4/mpeg4Boxes";
+import { ByteVector, File, Mpeg4File, StringType, TagTypes } from "../src";
+import { AppleDataBox, IsoUserDataBox } from "../src/mpeg4/mpeg4Boxes";
 import AppleTag from "../src/mpeg4/appleTag";
+import { AppleDataBoxFlagType } from "../src/mpeg4/appleDataBoxFlagType";
 
 class Mpeg4TestFile extends Mpeg4File {
 
@@ -22,7 +21,6 @@ class Mpeg4TestFile extends Mpeg4File {
 
     private static readonly longDesc: string = "American comedy luminaries talk about the influence of Monty Python.";
     private static readonly purdDate: string = "2009-01-26 08:14:10";
-    private static readonly tvShow: string = "Ask An Astronomer";
 
     private static readonly sampleFilePath: string = TestConstants.getSampleFilePath("sample.m4v");
     private static readonly tmpFilePath: string = TestConstants.getTempFilePath("tmpwrite.m4v");
@@ -37,6 +35,43 @@ class Mpeg4TestFile extends Mpeg4File {
         if (Mpeg4_m4v_FileTests.file) { Mpeg4_m4v_FileTests.file.dispose(); }
     }
 
+    private setTags(tag: AppleTag) {
+        tag.title = "TEST title";
+        tag.performers = ["TEST performer 1", "TEST performer 2"];
+        tag.comment = "TEST comment";
+        tag.copyright = "TEST copyright";
+        tag.genres = ["TEST genre 1", "TEST genre 2"];
+        tag.year = 1999;
+
+        const aTag: AppleTag = tag;
+        assert.isDefined(aTag);
+
+        const newBox1 = AppleDataBox.fromDataAndFlags(ByteVector.fromString("TEST Long Description", StringType.UTF8), <number>AppleDataBoxFlagType.ContainsText);
+        const newBox2 = AppleDataBox.fromDataAndFlags(ByteVector.fromString("TEST TV Show", StringType.UTF8), <number>AppleDataBoxFlagType.ContainsText);
+        aTag.setDataFromTypeAndBoxes(Mpeg4_m4v_FileTests.boxTypeLdes, [newBox1]);
+        aTag.setDataFromTypeAndBoxes(Mpeg4_m4v_FileTests.boxTypeTvsh, [newBox2]);
+    }
+
+    private checkTags(tag: AppleTag) {
+        assert.equal(tag.title, "TEST title");
+        assert.equal(tag.joinedPerformers, "TEST performer 1; TEST performer 2");
+        assert.equal(tag.comment, "TEST comment");
+        assert.equal(tag.copyright, "TEST copyright");
+        assert.equal(tag.joinedGenres, "TEST genre 1; TEST genre 2");
+        assert.equal(tag.year, 1999);
+
+        const aTag: AppleTag = tag;
+        assert.isDefined(aTag);
+
+        for (const adBox of tag.dataBoxesFromTypes([Mpeg4_m4v_FileTests.boxTypeLdes])) {
+            assert.equal(adBox.text, "TEST Long Description");
+        }
+
+        for (const adBox of tag.dataBoxesFromTypes([Mpeg4_m4v_FileTests.boxTypeTvsh])) {
+            assert.equal(adBox.text, "TEST TV Show");
+        }
+    }
+
     @test
     public readAudioProperties() {
         assert.equal(Mpeg4_m4v_FileTests.file.properties.videoWidth, 632);
@@ -45,8 +80,8 @@ class Mpeg4TestFile extends Mpeg4File {
 
     @test
     public readTags() {
-        const gotLongDesc: boolean = false;
-        const gotPurdDate: boolean = false;
+        let gotLongDesc: boolean = false;
+        let gotPurdDate: boolean = false;
 
         assert.equal(Mpeg4_m4v_FileTests.file.tag.firstPerformer, "Will Yapp");
         assert.equal(Mpeg4_m4v_FileTests.file.tag.title, "Why I Love Monty Python");
@@ -55,5 +90,40 @@ class Mpeg4TestFile extends Mpeg4File {
         // Test Apple tags
         const tag: AppleTag = <AppleTag>Mpeg4_m4v_FileTests.file.getTag(TagTypes.Apple, false);
         assert.isDefined(tag);
+
+        for (const adBox of tag.dataBoxesFromTypes([Mpeg4_m4v_FileTests.boxTypeLdes])) {
+            assert.equal(adBox.text, Mpeg4_m4v_FileTests.longDesc);
+            gotLongDesc = true;
+        }
+
+        for (const adBox of tag.dataBoxesFromTypes([Mpeg4_m4v_FileTests.boxTypePurd])) {
+            assert.equal(adBox.text, Mpeg4_m4v_FileTests.purdDate);
+            gotPurdDate = true;
+        }
+
+        assert.isTrue(gotLongDesc);
+        assert.isTrue(gotPurdDate);
+    }
+
+    @test
+    public writeAppleTags() {
+        if (Mpeg4_m4v_FileTests.sampleFilePath !== Mpeg4_m4v_FileTests.tmpFilePath && fs.existsSync(Mpeg4_m4v_FileTests.tmpFilePath)) {
+            fs.unlinkSync(Mpeg4_m4v_FileTests.tmpFilePath);
+        }
+
+        const shouldCreateTemp = Mpeg4_m4v_FileTests.sampleFilePath !== Mpeg4_m4v_FileTests.tmpFilePath;
+
+        if (shouldCreateTemp) {
+            fs.copyFileSync(Mpeg4_m4v_FileTests.sampleFilePath, Mpeg4_m4v_FileTests.tmpFilePath);
+        }
+
+        let tmpFile: File = File.createFromPath(Mpeg4_m4v_FileTests.tmpFilePath);
+        let tag: AppleTag = <AppleTag>tmpFile.getTag(TagTypes.Apple, false);
+        this.setTags(tag);
+        tmpFile.save();
+
+        tmpFile = File.createFromPath(Mpeg4_m4v_FileTests.tmpFilePath);
+        tag = <AppleTag>tmpFile.getTag(TagTypes.Apple, false);
+        this.checkTags(tag);
     }
 }
