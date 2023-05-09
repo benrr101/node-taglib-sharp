@@ -41,7 +41,7 @@ export default class Mpeg4BoxHeader {
     /**
      * Private constructor to force construction via static functions.
      */
-    private constructor() {}
+    private constructor() { }
 
     /**
      * Gets and sets the box represented by the current instance as a means of temporary storage for internal uses.
@@ -140,18 +140,18 @@ export default class Mpeg4BoxHeader {
             header._headerSize += 8;
             offset += 8;
             header._boxSize = Number(data.subarray(offset, 8).toUlong());
+        }
 
-            // UUID has a special header with 16 extra bytes.
-            if (ByteVector.equals(header.boxType, Mpeg4BoxType.Uuid)) {
-                if (data.length < 16 + offset) {
-                    throw new Error("Not enough data in box header.");
-                }
-
-                header._headerSize += 16;
-                header._extendedType = data.subarray(offset, 16);
-            } else {
-                header._extendedType = undefined;
+        // UUID has a special header with 16 extra bytes.
+        if (ByteVector.equals(header.boxType, Mpeg4BoxType.Uuid)) {
+            if (data.length < 16 + offset) {
+                throw new Error("Not enough data in box header.");
             }
+
+            header._headerSize += 16;
+            header._extendedType = data.subarray(offset, 16);
+        } else {
+            header._extendedType = undefined;
 
             if (header._boxSize > file.length - position) {
                 throw new Error(

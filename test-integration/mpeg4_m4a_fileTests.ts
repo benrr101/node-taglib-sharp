@@ -40,7 +40,7 @@ class Mpeg4TestFile extends Mpeg4File {
     public bgo_676934() {
         // This file contains an atom which says its 800MB in size
         const file: File = File.createFromPath(TestConstants.getSampleFilePath("bgo_676934.m4a"));
-        // assert.isTrue(file.isPossiblyCorrupt); // TODO: fails
+        assert.isTrue(file.isPossiblyCorrupt);
     }
 
     @test
