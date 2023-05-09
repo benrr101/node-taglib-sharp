@@ -77,38 +77,38 @@ class Mpeg4TestFile extends Mpeg4File {
         assert.equal(Mpeg4_m4a_FileTests.file.properties.description, "MPEG-4 Audio (mp4a)");
     }
 
-    // @test
-    // public readTags() {
-    //     assert.equal(Mpeg4_m4a_FileTests.file.tag.album, "M4A album");
-    //     assert.equal(Mpeg4_m4a_FileTests.file.tag.firstPerformer, "M4A artist");
-    //     assert.equal(Mpeg4_m4a_FileTests.file.tag.comment, "M4A comment");
-    //     assert.equal(Mpeg4_m4a_FileTests.file.tag.firstGenre, "Acid Punk");
-    //     assert.equal(Mpeg4_m4a_FileTests.file.tag.title, "M4A title");
-    //     assert.equal(Mpeg4_m4a_FileTests.file.tag.track, 6);
-    //     assert.equal(Mpeg4_m4a_FileTests.file.tag.trackCount, 7);
-    //     assert.equal(Mpeg4_m4a_FileTests.file.tag.year, 1234);
-    // }
+    @test
+    public readTags() {
+        assert.equal(Mpeg4_m4a_FileTests.file.tag.album, "M4A album");
+        assert.equal(Mpeg4_m4a_FileTests.file.tag.firstPerformer, "M4A artist");
+        assert.equal(Mpeg4_m4a_FileTests.file.tag.comment, "M4A comment");
+        assert.equal(Mpeg4_m4a_FileTests.file.tag.firstGenre, "Acid Punk");
+        assert.equal(Mpeg4_m4a_FileTests.file.tag.title, "M4A title");
+        assert.equal(Mpeg4_m4a_FileTests.file.tag.track, 6);
+        assert.equal(Mpeg4_m4a_FileTests.file.tag.trackCount, 7);
+        assert.equal(Mpeg4_m4a_FileTests.file.tag.year, 1234);
+    }
 
-    // @test
-    // public readReplayGain() {
-    //     const fileWithRg: File = File.createFromPath(TestConstants.getSampleFilePath("sample_replaygain.m4a"));
-    //     assert.approximately(fileWithRg.tag.replayGainTrackGain, -1.43, 0.01);
-    // }
+    @test
+    public readReplayGain() {
+        const fileWithRg: File = File.createFromPath(TestConstants.getSampleFilePath("sample_replaygain.m4a"));
+        assert.approximately(fileWithRg.tag.replayGainTrackGain, -1.43, 0.01);
+    }
 
-    // @test
-    // public writeStandardTags() {
-    //     const tmpFilePath = TestConstants.getTempFilePath(Mpeg4_m4a_FileTests.tmpFileName);
-    //     StandardFileTests.writeStandardTags(Mpeg4_m4a_FileTests.sampleFilePath, tmpFilePath, TestTagLevel.Medium);
-    // }
+    @test
+    public writeStandardTags() {
+        const tmpFilePath = TestConstants.getTempFilePath(Mpeg4_m4a_FileTests.tmpFileName);
+        StandardFileTests.writeStandardTags(Mpeg4_m4a_FileTests.sampleFilePath, tmpFilePath, TestTagLevel.Medium);
+    }
 
-    // @test
-    // public writeExtendedTags() {
-    //     const tmpFilePath = TestConstants.getTempFilePath(Mpeg4_m4a_FileTests.tmpFileName);
-    //     ExtendedFileTests.writeExtendedTags(Mpeg4_m4a_FileTests.sampleFilePath, tmpFilePath);
-    // }
+    @test
+    public writeExtendedTags() {
+        const tmpFilePath = TestConstants.getTempFilePath(Mpeg4_m4a_FileTests.tmpFileName);
+        ExtendedFileTests.writeExtendedTags(Mpeg4_m4a_FileTests.sampleFilePath, tmpFilePath);
+    }
 
-    // @test
-    // public testCorruptionResistance() {
-    //     StandardFileTests.testCorruptionResistance(TestConstants.getCorruptFilePath("corrupt.m4a"));
-    // }
+    @test
+    public testCorruptionResistance() {
+        StandardFileTests.testCorruptionResistance(TestConstants.getCorruptFilePath("corrupt.m4a"));
+    }
 }

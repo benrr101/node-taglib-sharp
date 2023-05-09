@@ -93,11 +93,11 @@ export default class AppleTag extends Tag {
     /**
      * Gets and sets a short description, one-liner. It represents the tagline of the Video/music.
      */
-    public get subTitle(): string {
+    public get subtitle(): string {
         const text: string[] = this.getText(Mpeg4BoxType.Subt);
         return text.length === 0 ? undefined : text[0];
     }
-    public set subTitle(v: string) {
+    public set subtitle(v: string) {
         this.setTextFromTypeAndText(Mpeg4BoxType.Subt, v);
     }
 
