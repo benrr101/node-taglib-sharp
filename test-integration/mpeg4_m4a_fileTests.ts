@@ -3,7 +3,7 @@ import { suite, test } from "@testdeck/mocha";
 
 import ExtendedFileTests from "./utilities/extendedFileTests";
 import TestConstants from "./utilities/testConstants";
-import { ByteVector, File, MediaTypes, Mpeg4File, Properties, StringType, Tag, TagTypes } from "../src";
+import { ByteVector, File, Mpeg4File, StringType } from "../src";
 import { StandardFileTests, TestTagLevel } from "./utilities/standardFileTests";
 import { AppleAdditionalInfoBox, IsoUserDataBox } from "../src/mpeg4/mpeg4Boxes";
 
@@ -15,8 +15,8 @@ class Mpeg4TestFile extends Mpeg4File {
 }
 
 @suite class Mpeg4_m4a_FileTests {
-    private static readonly sampleFilePath = TestConstants.getSampleFilePath("sample.m4a");
-    private static readonly tmpFileName = "tmpwrite.m4a";
+    private static readonly sampleFilePath: string = TestConstants.getSampleFilePath("sample.m4a");
+    private static readonly tmpFilePath: string = TestConstants.getTempFilePath("tmpwrite.m4a");
 
     private static file: File;
 
@@ -97,14 +97,12 @@ class Mpeg4TestFile extends Mpeg4File {
 
     @test
     public writeStandardTags() {
-        const tmpFilePath = TestConstants.getTempFilePath(Mpeg4_m4a_FileTests.tmpFileName);
-        StandardFileTests.writeStandardTags(Mpeg4_m4a_FileTests.sampleFilePath, tmpFilePath, TestTagLevel.Medium);
+        StandardFileTests.writeStandardTags(Mpeg4_m4a_FileTests.sampleFilePath, Mpeg4_m4a_FileTests.tmpFilePath, TestTagLevel.Medium);
     }
 
     @test
     public writeExtendedTags() {
-        const tmpFilePath = TestConstants.getTempFilePath(Mpeg4_m4a_FileTests.tmpFileName);
-        ExtendedFileTests.writeExtendedTags(Mpeg4_m4a_FileTests.sampleFilePath, tmpFilePath);
+        ExtendedFileTests.writeExtendedTags(Mpeg4_m4a_FileTests.sampleFilePath, Mpeg4_m4a_FileTests.tmpFilePath);
     }
 
     @test
