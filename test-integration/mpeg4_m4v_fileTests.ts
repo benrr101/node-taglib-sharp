@@ -6,6 +6,7 @@ import { ByteVector, File, Mpeg4File, StringType, TagTypes } from "../src";
 import { AppleDataBox, IsoUserDataBox } from "../src/mpeg4/mpeg4Boxes";
 import AppleTag from "../src/mpeg4/appleTag";
 import { AppleDataBoxFlagType } from "../src/mpeg4/appleDataBoxFlagType";
+import Utilities from "./utilities/utilities";
 
 class Mpeg4TestFile extends Mpeg4File {
 
@@ -117,13 +118,17 @@ class Mpeg4TestFile extends Mpeg4File {
             fs.copyFileSync(Mpeg4_m4v_FileTests.sampleFilePath, Mpeg4_m4v_FileTests.tmpFilePath);
         }
 
-        let tmpFile: File = File.createFromPath(Mpeg4_m4v_FileTests.tmpFilePath);
-        let tag: AppleTag = <AppleTag>tmpFile.getTag(TagTypes.Apple, false);
-        this.setTags(tag);
-        tmpFile.save();
+        try {
+            let tmpFile: File = File.createFromPath(Mpeg4_m4v_FileTests.tmpFilePath);
+            let tag: AppleTag = <AppleTag>tmpFile.getTag(TagTypes.Apple, false);
+            this.setTags(tag);
+            tmpFile.save();
 
-        tmpFile = File.createFromPath(Mpeg4_m4v_FileTests.tmpFilePath);
-        tag = <AppleTag>tmpFile.getTag(TagTypes.Apple, false);
-        this.checkTags(tag);
+            tmpFile = File.createFromPath(Mpeg4_m4v_FileTests.tmpFilePath);
+            tag = <AppleTag>tmpFile.getTag(TagTypes.Apple, false);
+            this.checkTags(tag);
+        } finally {
+            Utilities.deleteBestEffort(Mpeg4_m4v_FileTests.tmpFilePath);
+        }
     }
 }
