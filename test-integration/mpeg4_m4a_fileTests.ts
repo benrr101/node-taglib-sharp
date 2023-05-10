@@ -62,7 +62,6 @@ class Mpeg4TestFile extends Mpeg4File {
         assert.instanceOf(first.children[0], AppleAdditionalInfoBox);
         const child: AppleAdditionalInfoBox = <AppleAdditionalInfoBox>first.children[0];
         const readOnlyNameBoxType: ByteVector = ByteVector.fromString("name", StringType.UTF8).makeReadOnly();
-        // assert.isTrue(child.boxType.isReadOnly); // TODO: in C# this is a ReadOnlyByteVector. So I expect isReadOnly to be true but it isn't.
         assert.isTrue(ByteVector.equals(child.boxType, readOnlyNameBoxType));
         assert.equal(child.data.length, 0);
     }
