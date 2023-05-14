@@ -318,10 +318,13 @@ export default class AppleTag extends Tag {
             return;
         }
 
-        const data = ByteVector.fromUshort(0);
-        data.addByteVector(ByteVector.fromUshort(localTrack));
-        data.addByteVector(ByteVector.fromUshort(v));
-        data.addByteVector(ByteVector.fromUshort(0));
+        const data = ByteVector.concatenate(
+            ByteVector.fromUshort(0),
+            ByteVector.fromUshort(localTrack),
+            ByteVector.fromUshort(v),
+            ByteVector.fromUshort(0)
+        );
+        
         this.setDataFromTypeDataAndFlags(Mpeg4BoxType.Trkn, data, <number>AppleDataBoxFlagType.ContainsData);
     }
 
