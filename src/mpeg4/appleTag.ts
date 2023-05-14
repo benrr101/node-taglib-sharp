@@ -3,7 +3,7 @@ import { Genres } from "..";
 import { ByteVector, StringType } from "../byteVector";
 import { IPicture, Picture } from "../picture";
 import { Tag, TagTypes } from "../tag";
-import { Guards } from "../utils";
+import { Guards, NumberUtils } from "../utils";
 import { AppleDataBoxFlagType } from "./appleDataBoxFlagType";
 import AppleAnnotationBox, {
     AppleAdditionalInfoBox,
@@ -324,7 +324,7 @@ export default class AppleTag extends Tag {
             ByteVector.fromUshort(v),
             ByteVector.fromUshort(0)
         );
-        
+
         this.setDataFromTypeDataAndFlags(Mpeg4BoxType.Trkn, data, <number>AppleDataBoxFlagType.ContainsData);
     }
 
@@ -333,7 +333,7 @@ export default class AppleTag extends Tag {
      */
     public get disc(): number {
         for (const box of this.dataBoxesFromTypeParams(Mpeg4BoxType.Disk)) {
-            if (box.flags === <number>AppleDataBoxFlagType.ContainsData && box.data.length >= 4) {
+            if (NumberUtils.hasFlag(box.flags, AppleDataBoxFlagType.ContainsData, true) && box.data.length >= 4) {
                 return box.data.subarray(2, 2).toUshort();
             }
         }
