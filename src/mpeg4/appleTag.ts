@@ -910,14 +910,7 @@ export default class AppleTag extends Tag {
             const meanBox: AppleAdditionalInfoBox = <AppleAdditionalInfoBox>box.getChild(Mpeg4BoxType.Mean);
             const nameBox: AppleAdditionalInfoBox = <AppleAdditionalInfoBox>box.getChild(Mpeg4BoxType.Name);
 
-            if (
-                meanBox === null ||
-                meanBox === undefined ||
-                nameBox === null ||
-                nameBox === undefined ||
-                meanBox.text !== mean ||
-                nameBox.text !== name
-            ) {
+            if (!meanBox || !nameBox || meanBox.text !== mean || nameBox.text !== name) {
                 continue;
             }
 
@@ -1090,7 +1083,7 @@ export default class AppleTag extends Tag {
     public getDashBox(meanstring: string, namestring: string): string {
         const dataBoxes: AppleDataBox[] = this.getDashAtoms(meanstring, namestring);
 
-        if (dataBoxes !== null && dataBoxes !== undefined) {
+        if (dataBoxes) {
             return dataBoxes[0].text;
         } else {
             return undefined;
