@@ -408,7 +408,7 @@ export class ByteVector {
      * @param value 8-bit integer to use as the data.
      */
     public static fromByte(value: number): ByteVector {
-        Guards.short(value, "value");
+        Guards.byte(value, "value");
 
         const bytes = new Uint8Array(1);
         const dv = new DataView(bytes.buffer);
