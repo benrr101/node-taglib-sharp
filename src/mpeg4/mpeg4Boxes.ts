@@ -1651,7 +1651,7 @@ export class IsoMovieHeaderBox extends FullBox {
             instance.volume = IsoMovieHeaderBox.calculateVolume(data.subarray(4, 2).toUshort());
         }
 
-        file.seek(file.tell + 70);
+        file.seek(file.position + 70);
         bytesRemaining -= 76;
 
         data = file.readBlock(Math.min(4, bytesRemaining));

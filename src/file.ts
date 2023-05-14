@@ -202,11 +202,6 @@ export abstract class File implements IDisposable {
     public get isWritable(): boolean { return !this.isPossiblyCorrupt; }
 
     /**
-     * Gets the seek position in the internal stream used by the current instance.
-     */
-    public get tell(): number { return this.mode === FileAccessMode.Closed ? 0 : this._fileStream.position; }
-
-    /**
      * Gets the length of the file represented by the current instance. Value will be 0 if the file
      * is not open for reading;
      */
