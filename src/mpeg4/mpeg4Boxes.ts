@@ -942,7 +942,7 @@ export class AppleElementaryStreamDescriptor extends FullBox {
      * position following the size data.
      * @returns A value containing the length that was read.
      */
-    public readLength(data: ByteVector, offset: NumberWrapper): number {
+    private readLength(data: ByteVector, offset: NumberWrapper): number {
         let b: number = 0;
         const end: number = offset.value + 4;
         let length: number = 0;
