@@ -644,11 +644,9 @@ export class ByteVector {
      * @param data A ByteVector object containing data to insert into the current instance.
      */
     public insert(index: number, data: ByteVector): void {
-        if (this.isReadOnly) {
-            throw new Error("Cannot edit readonly objects.");
-        }
+        this.throwIfReadOnly();
 
-        if (data !== null && data !== undefined) {
+        if (data) {
             this.splice(index, 0, data);
         }
     }
