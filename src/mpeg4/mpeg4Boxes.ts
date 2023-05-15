@@ -1,9 +1,9 @@
 import { ByteVector, StringType } from "../byteVector";
 import { File } from "../file";
-import NumberWrapper from "../numberWrapper";
 import { IAudioCodec, IVideoCodec, MediaTypes } from "../properties";
 import { Guards, NumberUtils, StringUtils } from "../utils";
 import { AppleDataBoxFlagType } from "./appleDataBoxFlagType";
+import { DescriptorTagReader } from "./descriptorTagReader";
 import { DescriptorTag } from "./descriptorTag";
 import Mpeg4BoxFactory from "./mpeg4BoxFactory";
 import Mpeg4BoxHeader from "./mpeg4BoxHeader";
@@ -775,36 +775,36 @@ export class AppleElementaryStreamDescriptor extends FullBox {
         instance.initializeFromHeaderFileAndHandler(header, file, handler);
         const boxData: ByteVector = file.readBlock(instance.dataSize);
         instance.decoderConfig = ByteVector.empty();
-        const offset: NumberWrapper = new NumberWrapper(0);
+        const reader: DescriptorTagReader = new DescriptorTagReader(boxData);
 
         // Elementary Stream Descriptor Tag
-        if (<DescriptorTag>boxData.get(offset.value++) !== DescriptorTag.ES_DescrTag) {
+        if (<DescriptorTag>boxData.get(reader.increaseOffset(1)) !== DescriptorTag.ES_DescrTag) {
             throw new Error("Invalid Elementary Stream Descriptor, missing tag.");
         }
 
         // We have a descriptor tag. Check that the remainder of the tag is at least
         // [Base (3 bytes) + DecoderConfigDescriptor (15 bytes) + SLConfigDescriptor (3 bytes) + OtherDescriptors] bytes long
-        const esLength: number = instance.readLength(boxData, offset);
+        const esLength: number = reader.readLength();
         let minEsLength: number = 3 + 15 + 3; // Base minimum length
 
         if (esLength < minEsLength) {
             throw new Error("Insufficient data present.");
         }
 
-        instance.streamId = boxData.subarray(offset.value, 2).toUshort();
-        offset.value += 2; // Done with ES_ID
+        instance.streamId = boxData.subarray(reader.offset, 2).toUshort();
+        reader.increaseOffset(2); // Done with ES_ID
 
         // 1st bit
-        instance.streamDependenceFlag = (NumberUtils.uintAnd(NumberUtils.uintRShift(boxData.get(offset.value),7), 0x1)) === 0x1;
+        instance.streamDependenceFlag = (NumberUtils.uintAnd(NumberUtils.uintRShift(boxData.get(reader.offset), 7), 0x1)) === 0x1;
 
         // 2nd bit
-        instance.urlFlag = (NumberUtils.uintAnd(NumberUtils.uintRShift(boxData.get(offset.value), 6), 0x1)) === 0x1;
+        instance.urlFlag = (NumberUtils.uintAnd(NumberUtils.uintRShift(boxData.get(reader.offset), 6), 0x1)) === 0x1;
 
         // 3rd bit
-        instance.ocrStreamFlag = (NumberUtils.uintAnd(NumberUtils.uintRShift(boxData.get(offset.value), 5), 0x1)) === 0x1;
+        instance.ocrStreamFlag = (NumberUtils.uintAnd(NumberUtils.uintRShift(boxData.get(reader.offset), 5), 0x1)) === 0x1;
 
         // Last 5 bits and we're done with this byte
-        instance.streamPriority = (NumberUtils.uintAnd(boxData.get(offset.value++), 0x1f));
+        instance.streamPriority = (NumberUtils.uintAnd(boxData.get(reader.increaseOffset(1)), 0x1f));
 
         if (instance.streamDependenceFlag) {
             minEsLength += 2; // We need 2 more bytes
@@ -813,8 +813,8 @@ export class AppleElementaryStreamDescriptor extends FullBox {
                 throw new Error("Insufficient data present.");
             }
 
-            instance.dependsOnEsId = boxData.subarray(offset.value, 2).toUshort();
-            offset.value += 2; // Done with stream dependence
+            instance.dependsOnEsId = boxData.subarray(reader.offset, 2).toUshort();
+            reader.increaseOffset(2); // Done with stream dependence
         }
 
         if (instance.urlFlag) {
@@ -824,15 +824,15 @@ export class AppleElementaryStreamDescriptor extends FullBox {
                 throw new Error("Insufficient data present.");
             }
 
-            instance.urlLength = boxData.get(offset.value++); // URL Length
+            instance.urlLength = boxData.get(reader.increaseOffset(1)); // URL Length
             minEsLength += instance.urlLength; // We need URLength more bytes
 
             if (esLength < minEsLength) {
                 throw new Error("Insufficient data present.");
             }
 
-            instance.urlString = boxData.subarray(offset.value, instance.urlLength).toString(StringType.UTF8); // URL name
-            offset.value += instance.urlLength; // Done with URL name
+            instance.urlString = boxData.subarray(reader.offset, instance.urlLength).toString(StringType.UTF8); // URL name
+            reader.increaseOffset(instance.urlLength); // Done with URL name
         }
 
         if (instance.ocrStreamFlag) {
@@ -842,13 +842,13 @@ export class AppleElementaryStreamDescriptor extends FullBox {
                 throw new Error("Insufficient data present.");
             }
 
-            instance.ocrEsId = boxData.subarray(offset.value, 2).toUshort();
-            offset.value += 2; // Done with OCR
+            instance.ocrEsId = boxData.subarray(reader.offset, 2).toUshort();
+            reader.increaseOffset(2); // Done with OCR
         }
 
         // Loop through all trailing Descriptors Tags
-        while (offset.value < instance.dataSize) {
-            const tag: DescriptorTag = <DescriptorTag>boxData.get(offset.value++);
+        while (reader.offset < instance.dataSize) {
+            const tag: DescriptorTag = <DescriptorTag>boxData.get(reader.increaseOffset(1));
 
             switch (tag) {
                 case DescriptorTag.DecoderConfigDescrTag: // DecoderConfigDescriptor
@@ -857,29 +857,29 @@ export class AppleElementaryStreamDescriptor extends FullBox {
                          * Check that the remainder of the tag is at least 13 bytes long
                          * (13 + DecoderSpecificInfo[] + profileLevelIndicationIndexDescriptor[])
                          */
-                        if (instance.readLength(boxData, offset) < 13) {
+                        if (reader.readLength() < 13) {
                             throw new Error("Could not read data. Too small.");
                         }
 
                         // Read a lot of good info.
-                        instance.objectTypeId = boxData.get(offset.value++);
+                        instance.objectTypeId = boxData.get(reader.increaseOffset(1));
 
                         // First 6 bits
-                        instance.streamType = NumberUtils.uintRShift(boxData.get(offset.value), 2);
+                        instance.streamType = NumberUtils.uintRShift(boxData.get(reader.offset), 2);
 
                         // 7th bit and we're done with the stream bits
-                        instance.upStream = (NumberUtils.uintAnd(NumberUtils.uintRShift(boxData.get(offset.value++), 1), 0x1)) === 0x1;
+                        instance.upStream = (NumberUtils.uintAnd(NumberUtils.uintRShift(boxData.get(reader.increaseOffset(1)), 1), 0x1)) === 0x1;
 
-                        instance.bufferSizeDB = boxData.subarray(offset.value, 3).toUint();
-                        offset.value += 3; // Done with bufferSizeDB
+                        instance.bufferSizeDB = boxData.subarray(reader.offset, 3).toUint();
+                        reader.increaseOffset(3); // Done with bufferSizeDB
 
-                        const maximumBitrate: number = boxData.subarray(offset.value, 4).toUint();
+                        const maximumBitrate: number = boxData.subarray(reader.offset, 4).toUint();
                         instance.maximumBitrate = AppleElementaryStreamDescriptor.calculateBitRate(maximumBitrate);
-                        offset.value += 4; // Done with maxBitrate
+                        reader.increaseOffset(4); // Done with maxBitrate
 
-                        const averageBitrate: number = boxData.subarray(offset.value, 4).toUint();
+                        const averageBitrate: number = boxData.subarray(reader.offset, 4).toUint();
                         instance.averageBitrate = AppleElementaryStreamDescriptor.calculateBitRate(averageBitrate);
-                        offset.value += 4; // Done with avgBitrate
+                        reader.increaseOffset(4); // Done with avgBitrate
 
                         // If there's a DecoderSpecificInfo[] array at the end it'll pick it up in the while loop
                     }
@@ -888,20 +888,20 @@ export class AppleElementaryStreamDescriptor extends FullBox {
                 case DescriptorTag.DecSpecificInfoTag: // DecoderSpecificInfo
                     {
                         // The rest of the info is decoder specific.
-                        const length: number = instance.readLength(boxData, offset);
+                        const length: number = reader.readLength();
 
-                        instance.decoderConfig = boxData.subarray(offset.value, length);
-                        offset.value += length; // We're done with the config
+                        instance.decoderConfig = boxData.subarray(reader.offset, length);
+                        reader.increaseOffset(length); // We're done with the config
                     }
                     break;
 
                 case DescriptorTag.SLConfigDescrTag: // SLConfigDescriptor
                     {
                         // The rest of the info is SL specific.
-                        const length: number = instance.readLength(boxData, offset);
+                        const length: number = reader.readLength();
 
                         // Skip the rest of the descriptor as reported in the length so we can move onto the next one
-                        offset.value += length;
+                        reader.increaseOffset(length);
                     }
                     break;
 
@@ -918,10 +918,10 @@ export class AppleElementaryStreamDescriptor extends FullBox {
                      * QoS_Descriptor qosDescr[0 .. 1];
                      */
                     // Every descriptor starts with a length
-                    const length: number = instance.readLength(boxData, offset);
+                    const length: number = reader.readLength();
 
                     // Skip the rest of the descriptor as reported in the length so we can move onto the next one
-                    offset.value += length;
+                    reader.increaseOffset(length);
 
                     break;
                 }
@@ -933,26 +933,6 @@ export class AppleElementaryStreamDescriptor extends FullBox {
 
     public static calculateBitRate(bitrate: number): number {
         return bitrate / 1000;
-    }
-
-    /**
-     * Reads a section length and updates the offset to the end of of the length block.
-     * @param data A @see ByteVector object to read from.
-     * @param offset A value reference specifying the offset at which to read. This value gets updated to the
-     * position following the size data.
-     * @returns A value containing the length that was read.
-     */
-    private readLength(data: ByteVector, offset: NumberWrapper): number {
-        let b: number = 0;
-        const end: number = offset.value + 4;
-        let length: number = 0;
-
-        do {
-            b = data.get(offset.value++);
-            length = NumberUtils.uintOr(NumberUtils.uintLShift(length, 7), NumberUtils.uintAnd(b, 0x7f));
-        } while (NumberUtils.uintAnd(b, 0x80) !== 0 && offset.value <= end); // The Length could be between 1 and 4 bytes for each descriptor
-
-        return length;
     }
 }
 
