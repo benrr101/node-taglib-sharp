@@ -16,9 +16,7 @@ import AppleAnnotationBox, {
 import Mpeg4BoxType from "./mpeg4BoxType";
 import Mpeg4Utils from "./mpeg4Utils";
 export default class AppleTag extends Tag {
-    /**
-     * Gets the size of the tag in bytes on disk as it was read from disk.
-     */
+    /** @inheritDoc */
     public get sizeOnDisk(): number {
         // TODO: no idea what to do here. This isn't in the original implementation.
         return 0;
@@ -58,9 +56,7 @@ export default class AppleTag extends Tag {
         }
     }
 
-    /**
-     *  Gets and sets whether or not the album described by the current instance is a compilation.
-     */
+    /** @inheritDoc */
     public get isCompilation(): boolean {
         for (const box of this.dataBoxesFromTypeParams(Mpeg4BoxType.Cpil)) {
             return box.data.toUint() !== 0;
@@ -72,16 +68,12 @@ export default class AppleTag extends Tag {
         this.setDataFromTypeDataAndFlags(Mpeg4BoxType.Cpil, ByteVector.fromByte(v ? 1 : 0), <number>AppleDataBoxFlagType.ForTempo);
     }
 
-    /**
-     * Gets the tag types contained in the current instance.
-     */
+    /** @inheritDoc */
     public get tagTypes(): TagTypes {
         return TagTypes.Apple;
     }
 
-    /**
-     * Gets and sets the title for the media described by the current instance.
-     */
+    /** @inheritDoc */
     public get title(): string {
         const text: string[] = this.getText(Mpeg4BoxType.Nam);
         return text.length === 0 ? undefined : text[0];
@@ -90,9 +82,7 @@ export default class AppleTag extends Tag {
         this.setTextFromTypeAndText(Mpeg4BoxType.Nam, v);
     }
 
-    /**
-     * Gets and sets a short description, one-liner. It represents the tagline of the Video/music.
-     */
+    /** @inheritDoc */
     public get subtitle(): string {
         const text: string[] = this.getText(Mpeg4BoxType.Subt);
         return text.length === 0 ? undefined : text[0];
@@ -101,14 +91,7 @@ export default class AppleTag extends Tag {
         this.setTextFromTypeAndText(Mpeg4BoxType.Subt, v);
     }
 
-    /**
-     * Gets and sets a short description of the media.
-     * For a music, this could be the comment that the artist
-     * made of its artwork. For a video, this should be a
-     * short summary of the story/plot, but a spoiler. This
-     * should give the impression of what to expect in the
-     * media.
-     */
+    /** @inheritDoc */
     public get description(): string {
         const text: string[] = this.getText(Mpeg4BoxType.Desc);
         return text.length === 0 ? undefined : text[0];
@@ -117,10 +100,7 @@ export default class AppleTag extends Tag {
         this.setTextFromTypeAndText(Mpeg4BoxType.Desc, v);
     }
 
-    /**
-     * Gets and sets the performers or artists who performed in
-     * the media described by the current instance.
-     */
+    /** @inheritDoc */
     public get performers(): string[] {
         return this.getText(Mpeg4BoxType.Art);
     }
@@ -128,14 +108,7 @@ export default class AppleTag extends Tag {
         this.setTextFromTypeAndTextCollection(Mpeg4BoxType.Art, v);
     }
 
-    /**
-     * Gets and sets the Characters for a video media, or
-     * instruments played for music media.
-     * This should match the @see Performers array (for
-     * each person correspond one/more role). Several roles for
-     * the same artist/actor can be made up with semicolons.
-     * For example, "Marty McFly; Marty McFly Jr.; Marlene McFly".
-     */
+    /** @inheritDoc */
     public get performersRole(): string[] {
         const ret: string[] = this.getText(Mpeg4BoxType.Role);
         if (!ret) {
@@ -162,11 +135,7 @@ export default class AppleTag extends Tag {
         this.setTextFromTypeAndTextCollection(Mpeg4BoxType.Role, v);
     }
 
-    /**
-     *  Gets and sets the band or artist who is credited in the
-     * creation of the entire album or collection containing the
-     * media described by the current instance.
-     */
+    /** @inheritDoc */
     public get albumArtists(): string[] {
         return this.getText(Mpeg4BoxType.Aart);
     }
@@ -174,9 +143,7 @@ export default class AppleTag extends Tag {
         this.setTextFromTypeAndTextCollection(Mpeg4BoxType.Aart, v);
     }
 
-    /**
-     *  Gets and sets the composers of the media represented by the current instance.
-     */
+    /** @inheritDoc */
     public get composers(): string[] {
         return this.getText(Mpeg4BoxType.Wrt);
     }
@@ -184,9 +151,7 @@ export default class AppleTag extends Tag {
         this.setTextFromTypeAndTextCollection(Mpeg4BoxType.Wrt, v);
     }
 
-    /**
-     *  Gets and sets the album of the media represented by the current instance.
-     */
+    /** @inheritDoc */
     public get album(): string {
         const text: string[] = this.getText(Mpeg4BoxType.Alb);
         return text.length === 0 ? undefined : text[0];
@@ -195,9 +160,7 @@ export default class AppleTag extends Tag {
         this.setTextFromTypeAndText(Mpeg4BoxType.Alb, v);
     }
 
-    /**
-     *  Gets and sets a user comment on the media represented by the current instance.
-     */
+    /** @inheritDoc */
     public get comment(): string {
         const text: string[] = this.getText(Mpeg4BoxType.Cmt);
         return text.length === 0 ? undefined : text[0];
@@ -206,9 +169,7 @@ export default class AppleTag extends Tag {
         this.setTextFromTypeAndText(Mpeg4BoxType.Cmt, v);
     }
 
-    /**
-     *  Gets and sets the genres of the media represented by the current instance.
-     */
+    /** @inheritDoc */
     public get genres(): string[] {
         let text: string[] = this.getText(Mpeg4BoxType.Gen);
         if (text.length > 0) {
@@ -243,9 +204,7 @@ export default class AppleTag extends Tag {
         this.setTextFromTypeAndTextCollection(Mpeg4BoxType.Gen, v);
     }
 
-    /**
-     * Gets and sets the year that the media represented by the current instance was recorded.
-     */
+    /** @inheritDoc */
     public get year(): number {
         for (const box of this.dataBoxesFromTypeParams(Mpeg4BoxType.Day)) {
             if (box.text) {
@@ -268,9 +227,7 @@ export default class AppleTag extends Tag {
         }
     }
 
-    /**
-     *  Gets and sets the position of the media represented by the current instance in its containing album.
-     */
+    /** @inheritDoc */
     public get track(): number {
         for (const box of this.dataBoxesFromTypeParams(Mpeg4BoxType.Trkn)) {
             if (box.flags === <number>AppleDataBoxFlagType.ContainsData && box.data.length >= 4) {
@@ -297,9 +254,7 @@ export default class AppleTag extends Tag {
         this.setDataFromTypeDataAndFlags(Mpeg4BoxType.Trkn, data, <number>AppleDataBoxFlagType.ContainsData);
     }
 
-    /**
-     * Gets and sets the number of tracks in the album containing the media represented by the current instance.
-     */
+    /** @inheritDoc */
     public get trackCount(): number {
         for (const box of this.dataBoxesFromTypeParams(Mpeg4BoxType.Trkn)) {
             if (box.flags === <number>AppleDataBoxFlagType.ContainsData && box.data.length >= 6) {
@@ -328,9 +283,7 @@ export default class AppleTag extends Tag {
         this.setDataFromTypeDataAndFlags(Mpeg4BoxType.Trkn, data, <number>AppleDataBoxFlagType.ContainsData);
     }
 
-    /**
-     *   Gets and sets the number of the disc containing the media represented by the current instance in the boxed set.
-     */
+    /** @inheritDoc */
     public get disc(): number {
         for (const box of this.dataBoxesFromTypeParams(Mpeg4BoxType.Disk)) {
             if (NumberUtils.hasFlag(box.flags, AppleDataBoxFlagType.ContainsData, true) && box.data.length >= 4) {
@@ -356,9 +309,7 @@ export default class AppleTag extends Tag {
         this.setDataFromTypeDataAndFlags(Mpeg4BoxType.Disk, data, <number>AppleDataBoxFlagType.ContainsData);
     }
 
-    /**
-     *  Gets and sets the number of discs in the boxed set containing the media represented by the current instance.
-     */
+    /** @inheritDoc */
     public get discCount(): number {
         for (const box of this.dataBoxesFromTypeParams(Mpeg4BoxType.Disk)) {
             if (box.flags === <number>AppleDataBoxFlagType.ContainsData && box.data.length >= 6) {
@@ -384,9 +335,7 @@ export default class AppleTag extends Tag {
         this.setDataFromTypeDataAndFlags(Mpeg4BoxType.Disk, data, <number>AppleDataBoxFlagType.ContainsData);
     }
 
-    /**
-     * Gets and sets the lyrics or script of the media represented by the current instance.
-     */
+    /** @inheritDoc */
     public get lyrics(): string {
         for (const box of this.dataBoxesFromTypeParams(Mpeg4BoxType.Lyr)) {
             return box.text;
@@ -398,9 +347,7 @@ export default class AppleTag extends Tag {
         this.setTextFromTypeAndText(Mpeg4BoxType.Lyr, v);
     }
 
-    /**
-     *  Gets and sets the grouping on the album which the media in the current instance belongs to.
-     */
+    /** @inheritDoc */
     public get grouping(): string {
         for (const box of this.dataBoxesFromTypeParams(Mpeg4BoxType.Grp)) {
             return box.text;
@@ -412,9 +359,7 @@ export default class AppleTag extends Tag {
         this.setTextFromTypeAndText(Mpeg4BoxType.Grp, v);
     }
 
-    /**
-     * Gets and sets the number of beats per minute in the audio of the media represented by the current instance.
-     */
+    /** @inheritDoc */
     public get beatsPerMinute(): number {
         for (const box of this.dataBoxesFromTypeParams(Mpeg4BoxType.Tmpo)) {
             if (box.flags === <number>AppleDataBoxFlagType.ForTempo) {
@@ -434,9 +379,7 @@ export default class AppleTag extends Tag {
         this.setDataFromTypeDataAndFlags(Mpeg4BoxType.Tmpo, ByteVector.fromUshort(v), <number>AppleDataBoxFlagType.ForTempo);
     }
 
-    /**
-     *  Gets and sets the conductor or director of the media represented by the current instance.
-     */
+    /** @inheritDoc */
     public get conductor(): string {
         for (const box of this.dataBoxesFromTypeParams(Mpeg4BoxType.Cond)) {
             return box.text;
@@ -448,9 +391,7 @@ export default class AppleTag extends Tag {
         this.setTextFromTypeAndText(Mpeg4BoxType.Cond, v);
     }
 
-    /**
-     *  Gets and sets the copyright information for the media represented by the current instance.
-     */
+    /** @inheritDoc */
     public get copyright(): string {
         for (const box of this.dataBoxesFromTypeParams(Mpeg4BoxType.Cprt)) {
             return box.text;
@@ -462,9 +403,7 @@ export default class AppleTag extends Tag {
         this.setTextFromTypeAndText(Mpeg4BoxType.Cprt, v);
     }
 
-    /**
-     * Gets and sets the date at which the tag has been written.
-     */
+    /** @inheritDoc */
     public get dateTagged(): Date | undefined {
         const text: string[] = this.getText(Mpeg4BoxType.Dtag);
         const strValue: string = text.length === 0 ? undefined : text[0];
@@ -488,10 +427,7 @@ export default class AppleTag extends Tag {
         this.setTextFromTypeAndText(Mpeg4BoxType.Dtag, strValue);
     }
 
-    /**
-     * Gets and sets the sort names for the band or artist who is credited in the creation of the entire album or
-     * collection containing the media described by the current instance.
-     */
+    /** @inheritDoc */
     public get albumArtistsSort(): string[] {
         return this.getText(Mpeg4BoxType.Soaa);
     }
@@ -499,10 +435,7 @@ export default class AppleTag extends Tag {
         this.setTextFromTypeAndTextCollection(Mpeg4BoxType.Soaa, v);
     }
 
-    /**
-     * Gets and sets the sort names of the performers or artists
-     * who performed in the media described by the current instance.
-     */
+    /** @inheritDoc */
     public get performersSort(): string[] {
         return this.getText(Mpeg4BoxType.Soar);
     }
@@ -510,10 +443,7 @@ export default class AppleTag extends Tag {
         this.setTextFromTypeAndTextCollection(Mpeg4BoxType.Soar, v);
     }
 
-    /**
-     * Gets and sets the sort names of the Composer credited
-     * in the media described by the current instance.
-     */
+    /** @inheritDoc */
     public get composersSort(): string[] {
         return this.getText(Mpeg4BoxType.Soco);
     }
@@ -521,10 +451,7 @@ export default class AppleTag extends Tag {
         this.setTextFromTypeAndTextCollection(Mpeg4BoxType.Soco, v);
     }
 
-    /**
-     * Gets and sets the sort names of the Album Title of
-     * the media described by the current instance.
-     */
+    /** @inheritDoc */
     public get albumSort(): string {
         const text: string[] = this.getText(Mpeg4BoxType.Soal);
 
@@ -534,10 +461,7 @@ export default class AppleTag extends Tag {
         this.setTextFromTypeAndText(Mpeg4BoxType.Soal, v);
     }
 
-    /**
-     * Gets and sets the sort names of the Track Title in the
-     * media described by the current instance.
-     */
+    /** @inheritDoc */
     public get titleSort(): string {
         const text: string[] = this.getText(Mpeg4BoxType.Sonm);
 
@@ -547,9 +471,7 @@ export default class AppleTag extends Tag {
         this.setTextFromTypeAndText(Mpeg4BoxType.Sonm, v);
     }
 
-    /**
-     * Gets and sets the MusicBrainz ArtistID
-     */
+    /** @inheritDoc */
     public get musicBrainzArtistId(): string {
         const artistIds: string[] = this.getDashBoxes("com.apple.iTunes", "MusicBrainz Artist Id");
 
@@ -560,9 +482,7 @@ export default class AppleTag extends Tag {
         this.setDashBoxes("com.apple.iTunes", "MusicBrainz Artist Id", artistIds);
     }
 
-    /**
-     * Gets and sets the MusicBrainz ReleaseGroupID
-     */
+    /** @inheritDoc */
     public get musicBrainzReleaseGroupId(): string {
         return this.getDashBox("com.apple.iTunes", "MusicBrainz Release Group Id");
     }
@@ -570,9 +490,7 @@ export default class AppleTag extends Tag {
         this.setDashBox("com.apple.iTunes", "MusicBrainz Release Group Id", v);
     }
 
-    /**
-     * Gets and sets the MusicBrainz ReleaseID
-     */
+    /** @inheritDoc */
     public get musicBrainzReleaseId(): string {
         return this.getDashBox("com.apple.iTunes", "MusicBrainz Album Id");
     }
@@ -580,9 +498,7 @@ export default class AppleTag extends Tag {
         this.setDashBox("com.apple.iTunes", "MusicBrainz Album Id", v);
     }
 
-    /**
-     * Gets and sets the MusicBrainz ReleaseArtistID
-     */
+    /** @inheritDoc */
     public get musicBrainzReleaseArtistId(): string {
         const releaseArtistIds: string[] = this.getDashBoxes("com.apple.iTunes", "MusicBrainz Album Artist Id");
 
@@ -593,9 +509,7 @@ export default class AppleTag extends Tag {
         this.setDashBoxes("com.apple.iTunes", "MusicBrainz Album Artist Id", releaseArtistIds);
     }
 
-    /**
-     * Gets and sets the MusicBrainz TrackID
-     */
+    /** @inheritDoc */
     public get musicBrainzTrackId(): string {
         return this.getDashBox("com.apple.iTunes", "MusicBrainz Track Id");
     }
@@ -603,9 +517,7 @@ export default class AppleTag extends Tag {
         this.setDashBox("com.apple.iTunes", "MusicBrainz Track Id", v);
     }
 
-    /**
-     * Gets and sets the MusicBrainz DiscID
-     */
+    /** @inheritDoc */
     public get musicBrainzDiscId(): string {
         return this.getDashBox("com.apple.iTunes", "MusicBrainz Disc Id");
     }
@@ -613,9 +525,7 @@ export default class AppleTag extends Tag {
         this.setDashBox("com.apple.iTunes", "MusicBrainz Disc Id", v);
     }
 
-    /**
-     * Gets and sets the MusicIP PUID
-     */
+    /** @inheritDoc */
     public get musicIpId(): string {
         return this.getDashBox("com.apple.iTunes", "MusicIP PUID");
     }
@@ -623,9 +533,7 @@ export default class AppleTag extends Tag {
         this.setDashBox("com.apple.iTunes", "MusicIP PUID", v);
     }
 
-    /**
-     * Gets and sets the AmazonID
-     */
+    /** @inheritDoc */
     public get amazonId(): string {
         return this.getDashBox("com.apple.iTunes", "ASIN");
     }
@@ -633,9 +541,7 @@ export default class AppleTag extends Tag {
         this.setDashBox("com.apple.iTunes", "ASIN", v);
     }
 
-    /**
-     * Gets and sets the MusicBrainz ReleaseStatus
-     */
+    /** @inheritDoc */
     public get musicBrainzReleaseStatus(): string {
         return this.getDashBox("com.apple.iTunes", "MusicBrainz Album Status");
     }
@@ -643,9 +549,7 @@ export default class AppleTag extends Tag {
         this.setDashBox("com.apple.iTunes", "MusicBrainz Album Status", v);
     }
 
-    /**
-     * Gets and sets the MusicBrainz ReleaseType
-     */
+    /** @inheritDoc */
     public get musicBrainzReleaseType(): string {
         return this.getDashBox("com.apple.iTunes", "MusicBrainz Album Type");
     }
@@ -653,9 +557,7 @@ export default class AppleTag extends Tag {
         this.setDashBox("com.apple.iTunes", "MusicBrainz Album Type", v);
     }
 
-    /**
-     * Gets and sets the MusicBrainz Release Country
-     */
+    /** @inheritDoc */
     public get musicBrainzReleaseCountry(): string {
         return this.getDashBox("com.apple.iTunes", "MusicBrainz Album Release Country");
     }
@@ -663,9 +565,7 @@ export default class AppleTag extends Tag {
         this.setDashBox("com.apple.iTunes", "MusicBrainz Album Release Country", v);
     }
 
-    /**
-     * Gets and sets the ReplayGain Track Value of the media represented by the current instance.
-     */
+    /** @inheritDoc */
     public get replayGainTrackGain(): number {
         let text: string = this.getDashBox("com.apple.iTunes", "REPLAYGAIN_TRACK_GAIN");
 
@@ -690,9 +590,7 @@ export default class AppleTag extends Tag {
         this.setDashBox("com.apple.iTunes", "REPLAYGAIN_TRACK_GAIN", text);
     }
 
-    /**
-     * Gets and sets the ReplayGain Peak Value of the media represented by the current instance.
-     */
+    /** @inheritDoc */
     public get replayGainTrackPeak(): number {
         const text: string = this.getDashBox("com.apple.iTunes", "REPLAYGAIN_TRACK_PEAK");
 
@@ -713,9 +611,7 @@ export default class AppleTag extends Tag {
         this.setDashBox("com.apple.iTunes", "REPLAYGAIN_TRACK_PEAK", text);
     }
 
-    /**
-     * Gets and sets the ReplayGain Album Value of the media represented by the current instance.
-     */
+    /** @inheritDoc */
     public get replayGainAlbumGain(): number {
         let text: string = this.getDashBox("com.apple.iTunes", "REPLAYGAIN_ALBUM_GAIN");
 
@@ -740,9 +636,7 @@ export default class AppleTag extends Tag {
         this.setDashBox("com.apple.iTunes", "REPLAYGAIN_ALBUM_GAIN", text);
     }
 
-    /**
-     * Gets and sets the ReplayGain Album Peak Value of the media represented by the current instance.
-     */
+    /** @inheritDoc */
     public get replayGainAlbumPeak(): number {
         const text: string = this.getDashBox("com.apple.iTunes", "REPLAYGAIN_ALBUM_PEAK");
 
@@ -763,9 +657,7 @@ export default class AppleTag extends Tag {
         this.setDashBox("com.apple.iTunes", "REPLAYGAIN_ALBUM_PEAK", text);
     }
 
-    /**
-     * Gets and sets the InitialKey
-     */
+    /** @inheritDoc */
     public get initialKey(): string {
         return this.getDashBox("com.apple.iTunes", "initialkey");
     }
@@ -773,9 +665,7 @@ export default class AppleTag extends Tag {
         this.setDashBox("com.apple.iTunes", "initialkey", v);
     }
 
-    /**
-     * Gets and sets the ISRC
-     */
+    /** @inheritDoc */
     public get isrc(): string {
         return this.getDashBox("com.apple.iTunes", "ISRC");
     }
@@ -783,9 +673,7 @@ export default class AppleTag extends Tag {
         this.setDashBox("com.apple.iTunes", "ISRC", v);
     }
 
-    /**
-     * Gets and sets the Publisher
-     */
+    /** @inheritDoc */
     public get publisher(): string {
         return this.getDashBox("com.apple.iTunes", "publisher");
     }
@@ -793,9 +681,7 @@ export default class AppleTag extends Tag {
         this.setDashBox("com.apple.iTunes", "publisher", v);
     }
 
-    /**
-     * Gets and sets the Remixer
-     */
+    /** @inheritDoc */
     public get remixedBy(): string {
         return this.getDashBox("com.apple.iTunes", "REMIXEDBY");
     }
@@ -803,9 +689,7 @@ export default class AppleTag extends Tag {
         this.setDashBox("com.apple.iTunes", "REMIXEDBY", v);
     }
 
-    /**
-     * Gets and sets a collection of pictures associated with the media represented by the current instance.
-     */
+    /** @inheritDoc */
     public get pictures(): IPicture[] {
         const l: IPicture[] = [];
 
@@ -841,16 +725,12 @@ export default class AppleTag extends Tag {
         this.setDataFromTypeAndBoxes(Mpeg4BoxType.Covr, boxes);
     }
 
-    /**
-     * Gets whether or not the current instance is empty.
-     */
+    /** @inheritDoc */
     public get isEmpty(): boolean {
         return !this._ilstBox.hasChildren;
     }
 
-    /**
-     * Clears the values stored in the current instance.
-     */
+    /** @inheritDoc */
     public clear(): void {
         this._ilstBox.clearChildren();
     }
@@ -899,7 +779,7 @@ export default class AppleTag extends Tag {
      * @param name A @see string object containing the name to match.
      * @returns A @see AppleDataBox[] object enumerating the matching boxes.
      */
-    public DataBoxesFromMeanAndName(mean: string, name: string): AppleDataBox[] {
+    public dataBoxesFromMeanAndName(mean: string, name: string): AppleDataBox[] {
         // These children will have a box type of "----"
         for (const box of this._ilstBox.children) {
             if (!ByteVector.equals(box.boxType, Mpeg4BoxType.DASH)) {
