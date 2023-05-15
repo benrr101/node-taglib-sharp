@@ -93,7 +93,7 @@ export default class Mpeg4File extends File {
 
             // Find the udta box with the Apple Tag ILST
             let udtaBox: IsoUserDataBox = this.findAppleTagUdta();
-            if (udtaBox === null || udtaBox === undefined) {
+            if (!udtaBox) {
                 udtaBox = IsoUserDataBox.fromEmpty();
             }
 
@@ -110,7 +110,7 @@ export default class Mpeg4File extends File {
             // Get the movie header box.
             const mvhd_box: IsoMovieHeaderBox = parser.movieHeaderBox;
 
-            if (mvhd_box === null || mvhd_box === undefined) {
+            if (!mvhd_box) {
                 this.mode = FileAccessMode.Closed;
                 throw new Error("mvhd box not found.");
             }
@@ -142,10 +142,10 @@ export default class Mpeg4File extends File {
     /** @inheritDoc */
     public getTag(types: TagTypes, create: boolean): Tag {
         if (types === TagTypes.Apple) {
-            if ((this._appleTag === null || this._appleTag === undefined) && create) {
+            if (!this._appleTag && create) {
                 let udtaBox: IsoUserDataBox = this.findAppleTagUdta();
 
-                if (udtaBox === null || udtaBox === undefined) {
+                if (!udtaBox) {
                     udtaBox = IsoUserDataBox.fromEmpty();
                 }
 
@@ -161,7 +161,7 @@ export default class Mpeg4File extends File {
 
     /** @inheritDoc */
     public removeTags(types: TagTypes): void {
-        if ((types & TagTypes.Apple) !== TagTypes.Apple || this._appleTag === null || this._appleTag === undefined) {
+        if ((types & TagTypes.Apple) !== TagTypes.Apple || !this._appleTag) {
             return;
         }
 
@@ -202,14 +202,14 @@ export default class Mpeg4File extends File {
 
             let udtaBox: IsoUserDataBox = this.findAppleTagUdta();
 
-            if (udtaBox === null || udtaBox === undefined) {
+            if (!udtaBox) {
                 udtaBox = IsoUserDataBox.fromEmpty();
             }
 
             const tagData: ByteVector = udtaBox.render();
 
             // If we don't have a "udta" box to overwrite...
-            if (udtaBox.parentTree === null || udtaBox.parentTree === undefined || udtaBox.parentTree.length === 0) {
+            if (!udtaBox.parentTree || udtaBox.parentTree.length === 0) {
                 // Stick the box at the end of the moov box.
                 const moovHeader: Mpeg4BoxHeader = parser.moovTree[parser.moovTree.length - 1];
                 sizeChange = tagData.length;
@@ -281,7 +281,7 @@ export default class Mpeg4File extends File {
 
         // Multiple udta: pick out the shallowest node which has an ILst tag
         const possibleUdtaBoxes: IsoUserDataBox[] = this.udtaBoxes
-            .filter((box) => box.getChildRecursively(Mpeg4BoxType.Ilst) !== undefined)
+            .filter((box) => box.getChildRecursively(Mpeg4BoxType.Ilst))
             .sort((box1, box2) => (box1.parentTree.length < box2.parentTree.length ? -1 : 1));
 
         if (possibleUdtaBoxes.length > 0) {
@@ -297,12 +297,7 @@ export default class Mpeg4File extends File {
      */
     private isAppleTagUdtaPresent(): boolean {
         for (const udtaBox of this._udtaBoxes) {
-            if (
-                udtaBox.getChild(Mpeg4BoxType.Meta) !== null &&
-                udtaBox.getChild(Mpeg4BoxType.Meta) !== undefined &&
-                udtaBox.getChild(Mpeg4BoxType.Meta).getChild(Mpeg4BoxType.Ilst) !== null &&
-                udtaBox.getChild(Mpeg4BoxType.Meta).getChild(Mpeg4BoxType.Ilst) !== undefined
-            ) {
+            if (udtaBox.getChild(Mpeg4BoxType.Meta) && udtaBox.getChild(Mpeg4BoxType.Meta).getChild(Mpeg4BoxType.Ilst)) {
                 return true;
             }
         }

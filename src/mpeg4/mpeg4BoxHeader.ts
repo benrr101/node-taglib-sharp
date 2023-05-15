@@ -192,7 +192,7 @@ export default class Mpeg4BoxHeader {
         header._headerSize = 8;
 
         if (!ByteVector.equals(type, Mpeg4BoxType.Uuid)) {
-            if (extendedType !== null && extendedType !== undefined) {
+            if (extendedType) {
                 throw new Error("Extended type only permitted for 'uuid'.");
             }
 

@@ -141,7 +141,7 @@ export class Mpeg4Box {
      * Gets whether or not the current instance has children.
      */
     public get hasChildren(): boolean {
-        return this.children !== null && this.children !== undefined && this.children.length > 0;
+        return this.children && this.children.length > 0;
     }
 
     /**
@@ -179,7 +179,7 @@ export class Mpeg4Box {
      * @returns  A @see Mpeg4Box object containing the matched box, or undefined if no matching box was found.
      */
     public getChild(type: ByteVector): Mpeg4Box {
-        if (this.children === null || this.children === undefined) {
+        if (!this.children) {
             return undefined;
         }
 
@@ -198,7 +198,7 @@ export class Mpeg4Box {
      * @returns A @see Mpeg4Box[] object containing the matched box, or undefined if no matching boxes was found.
      */
     public getChildren(type: ByteVector): Mpeg4Box[] {
-        if (this.children === null || this.children === undefined) {
+        if (!this.children) {
             return undefined;
         }
 
@@ -223,7 +223,7 @@ export class Mpeg4Box {
      * @returns A @see Mpeg4Box object containing the matched box, or undefined if no matching box was found.
      */
     public getChildRecursively(type: ByteVector): Mpeg4Box {
-        if (this.children === null || this.children === undefined) {
+        if (!this.children) {
             return undefined;
         }
 
@@ -236,7 +236,7 @@ export class Mpeg4Box {
         for (const box of this.children) {
             const childBox: Mpeg4Box = box.getChildRecursively(type);
 
-            if (childBox !== null && childBox !== undefined) {
+            if (childBox) {
                 return childBox;
             }
         }
@@ -249,7 +249,7 @@ export class Mpeg4Box {
      * @param type A @see ByteVector object containing the box type to remove.
      */
     public removeChildByType(type: ByteVector): void {
-        if (this.children === null || this.children === undefined) {
+        if (!this.children) {
             return;
         }
 
@@ -269,7 +269,7 @@ export class Mpeg4Box {
      * @param box A @see Mpeg4Box object to remove from the current instance.
      */
     public removeChildByBox(box: Mpeg4Box): void {
-        if (this.children === null || this.children === undefined) {
+        if (!this.children) {
             return;
         }
 
@@ -285,7 +285,7 @@ export class Mpeg4Box {
      * @param box A @see Mpeg4Box object to add to the current instance.
      */
     public addChild(box: Mpeg4Box): void {
-        if (this.children === null || this.children === undefined) {
+        if (!this.children) {
             return;
         }
 
@@ -296,7 +296,7 @@ export class Mpeg4Box {
      * Removes all children from the current instance.
      */
     public clearChildren(): void {
-        if (this.children === null || this.children === undefined) {
+        if (!this.children) {
             return;
         }
 
@@ -363,7 +363,7 @@ export class Mpeg4Box {
         let freeFound = false;
         const output: ByteVector = ByteVector.empty();
 
-        if (this.children !== null && this.children !== undefined) {
+        if (this.children) {
             for (const box of this.children) {
                 if (box instanceof IsoFreeSpaceBox) {
                     freeFound = true;
@@ -371,7 +371,7 @@ export class Mpeg4Box {
                     output.addByteVector(box.render());
                 }
             }
-        } else if (this.data !== null && this.data !== undefined) {
+        } else if (this.data) {
             output.addByteVector(this.data);
         }
 
@@ -1380,7 +1380,7 @@ export class IsoFreeSpaceBox extends Mpeg4Box {
         return ByteVector.fromSize(this.padding);
     }
     public set data(v: ByteVector) {
-        this.padding = v !== null && v !== undefined ? v.length : 0;
+        this.padding = v ? v.length : 0;
     }
 
     /**

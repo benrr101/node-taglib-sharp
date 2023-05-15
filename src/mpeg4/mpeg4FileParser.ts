@@ -234,7 +234,7 @@ export default class Mpeg4FileParser {
         for (let position = start; position < end; position += header.totalBoxSize) {
             header = Mpeg4BoxHeader.fromFileAndPosition(this._file, position);
 
-            if ((this._moovTree === null || this._moovTree === undefined) && ByteVector.equals(header.boxType, Mpeg4BoxType.Moov)) {
+            if (!this._moovTree && ByteVector.equals(header.boxType, Mpeg4BoxType.Moov)) {
                 const newParents: Mpeg4BoxHeader[] = Mpeg4Utils.addParent(parents, header);
                 this._moovTree = newParents;
                 this.parseBoxHeadersFromStartEndAndParents(header.headerSize + position, header.totalBoxSize + position, newParents);
@@ -249,10 +249,7 @@ export default class Mpeg4FileParser {
                     header.totalBoxSize + position,
                     Mpeg4Utils.addParent(parents, header)
                 );
-            } else if (
-                (this._udtaTree === null || this._udtaTree === undefined) &&
-                ByteVector.equals(header.boxType, Mpeg4BoxType.Udta)
-            ) {
+            } else if (!this._udtaTree && ByteVector.equals(header.boxType, Mpeg4BoxType.Udta)) {
                 // For compatibility, we still store the tree to the first udta
                 // block. The proper way to get this info is from the individual
                 // IsoUserDataBox.ParentTree member.
@@ -358,7 +355,7 @@ export default class Mpeg4FileParser {
                 this._stsdBoxes.push(Mpeg4BoxFactory.createBoxFromFileHeaderAndHandler(this._file, header, handler));
             } else if (ByteVector.equals(type, Mpeg4BoxType.Hdlr)) {
                 handler = Mpeg4BoxFactory.createBoxFromFileHeaderAndHandler(this._file, header, handler) as IsoHandlerBox;
-            } else if ((this._mvhdBox === null || this._mvhdBox === undefined) && ByteVector.equals(type, Mpeg4BoxType.Mvhd)) {
+            } else if (!this._mvhdBox && ByteVector.equals(type, Mpeg4BoxType.Mvhd)) {
                 this._mvhdBox = Mpeg4BoxFactory.createBoxFromFileHeaderAndHandler(this._file, header, handler) as IsoMovieHeaderBox;
             } else if (ByteVector.equals(type, Mpeg4BoxType.Udta)) {
                 const udtaBox: IsoUserDataBox = Mpeg4BoxFactory.createBoxFromFileHeaderAndHandler(

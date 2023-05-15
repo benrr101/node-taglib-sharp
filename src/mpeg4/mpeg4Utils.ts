@@ -33,7 +33,7 @@ export default class Mpeg4Utils {
     public static addParent(parents: Mpeg4BoxHeader[], current: Mpeg4BoxHeader): Mpeg4BoxHeader[] {
         const boxes: Mpeg4BoxHeader[] = [];
 
-        if (parents !== null && parents !== undefined) {
+        if (parents) {
             boxes.push(...parents);
         }
 
