@@ -51,15 +51,15 @@ export default class Mpeg4BoxFactory {
             parent.box instanceof IsoSampleDescriptionBox &&
             index < (parent.box as IsoSampleDescriptionBox).entryCount
         ) {
-            if (handler !== null && handler !== undefined && ByteVector.equals(handler.handlerType, Mpeg4BoxType.Soun)) {
+            if (handler && ByteVector.equals(handler.handlerType, Mpeg4BoxType.Soun)) {
                 return IsoAudioSampleEntry.fromHeaderFileAndHandler(header, file, handler);
             }
 
-            if (handler !== null && handler !== undefined && ByteVector.equals(handler.handlerType, Mpeg4BoxType.Vide)) {
+            if (handler && ByteVector.equals(handler.handlerType, Mpeg4BoxType.Vide)) {
                 return IsoVisualSampleEntry.fromHeaderFileAndHandler(header, file, handler);
             }
 
-            if (handler !== null && handler !== undefined && ByteVector.equals(handler.handlerType, Mpeg4BoxType.Alis)) {
+            if (handler && ByteVector.equals(handler.handlerType, Mpeg4BoxType.Alis)) {
                 if (ByteVector.equals(header.boxType, Mpeg4BoxType.Text)) {
                     return TextBox.fromHeaderFileAndHandler(header, file, handler);
                 }
