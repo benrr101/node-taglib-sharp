@@ -2,7 +2,7 @@ import { ByteVector, StringType } from "../byteVector";
 import { File } from "../file";
 import NumberWrapper from "../numberWrapper";
 import { IAudioCodec, IVideoCodec, MediaTypes } from "../properties";
-import { Guards, StringUtils } from "../utils";
+import { Guards, NumberUtils, StringUtils } from "../utils";
 import { AppleDataBoxFlagType } from "./appleDataBoxFlagType";
 import { DescriptorTag } from "./descriptorTag";
 import Mpeg4BoxFactory from "./mpeg4BoxFactory";
@@ -795,16 +795,16 @@ export class AppleElementaryStreamDescriptor extends FullBox {
         offset.value += 2; // Done with ES_ID
 
         // 1st bit
-        instance.streamDependenceFlag = <number>((boxData.get(offset.value) >> 7) & 0x1) === 0x1 ? true : false;
+        instance.streamDependenceFlag = (NumberUtils.uintAnd(NumberUtils.uintRShift(boxData.get(offset.value),7), 0x1)) === 0x1;
 
         // 2nd bit
-        instance.urlFlag = <number>((boxData.get(offset.value) >> 6) & 0x1) === 0x1 ? true : false;
+        instance.urlFlag = (NumberUtils.uintAnd(NumberUtils.uintRShift(boxData.get(offset.value), 6), 0x1)) === 0x1;
 
         // 3rd bit
-        instance.ocrStreamFlag = <number>((boxData.get(offset.value) >> 5) & 0x1) === 0x1 ? true : false;
+        instance.ocrStreamFlag = (NumberUtils.uintAnd(NumberUtils.uintRShift(boxData.get(offset.value), 5), 0x1)) === 0x1;
 
         // Last 5 bits and we're done with this byte
-        instance.streamPriority = <number>(boxData.get(offset.value++) & 0x1f);
+        instance.streamPriority = (NumberUtils.uintAnd(boxData.get(offset.value++), 0x1f));
 
         if (instance.streamDependenceFlag) {
             minEsLength += 2; // We need 2 more bytes
@@ -865,10 +865,10 @@ export class AppleElementaryStreamDescriptor extends FullBox {
                         instance.objectTypeId = boxData.get(offset.value++);
 
                         // First 6 bits
-                        instance.streamType = <number>(boxData.get(offset.value) >> 2);
+                        instance.streamType = NumberUtils.uintRShift(boxData.get(offset.value), 2);
 
                         // 7th bit and we're done with the stream bits
-                        instance.upStream = ((boxData.get(offset.value++) >> 1) & 0x1) === 0x1 ? true : false;
+                        instance.upStream = (NumberUtils.uintAnd(NumberUtils.uintRShift(boxData.get(offset.value++), 1), 0x1)) === 0x1;
 
                         instance.bufferSizeDB = boxData.subarray(offset.value, 3).toUint();
                         offset.value += 3; // Done with bufferSizeDB
@@ -949,8 +949,8 @@ export class AppleElementaryStreamDescriptor extends FullBox {
 
         do {
             b = data.get(offset.value++);
-            length = (<number>(length << 7)) | (<number>(b & 0x7f));
-        } while ((b & 0x80) !== 0 && offset.value <= end); // The Length could be between 1 and 4 bytes for each descriptor
+            length = NumberUtils.uintOr(NumberUtils.uintLShift(length, 7), NumberUtils.uintAnd(b, 0x7f));
+        } while (NumberUtils.uintAnd(b, 0x80) !== 0 && offset.value <= end); // The Length could be between 1 and 4 bytes for each descriptor
 
         return length;
     }
