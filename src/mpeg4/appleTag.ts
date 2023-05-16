@@ -741,27 +741,22 @@ export default class AppleTag extends Tag {
      * @returns A @see AppleDataBox[] object enumerating the matching boxes.
      */
     public dataBoxesFromTypes(types: ByteVector[]): AppleDataBox[] {
-        const dataBoxes: AppleDataBox[] = [];
-
         /**
          * Check each box to see if the match any of the provided types.
          * If a match is found, loop through the children and add any data box.
          */
         for (const box of this._ilstBox.children) {
+            
             for (const byteVector of types) {
                 if (!ByteVector.equals(Mpeg4Utils.fixId(byteVector), box.boxType)) {
                     continue;
                 }
 
-                for (const dataBox of box.children) {
-                    if (dataBox instanceof AppleDataBox) {
-                        dataBoxes.push(dataBox as AppleDataBox);
-                    }
-                }
+                return this.getAppleDataBoxes(box.children);
             }
         }
 
-        return dataBoxes;
+        return [];
     }
 
     /**
@@ -797,16 +792,10 @@ export default class AppleTag extends Tag {
                 continue;
             }
 
-            const dataBoxes: AppleDataBox[] = [];
-
-            for (const dataBox of box.children) {
-                if (dataBox instanceof AppleDataBox) {
-                    dataBoxes.push(dataBox as AppleDataBox);
-                }
-            }
-
-            return dataBoxes;
+            return this.getAppleDataBoxes(box.children);
         }
+
+        return [];
     }
 
     /**
@@ -1082,6 +1071,23 @@ export default class AppleTag extends Tag {
                 this._ilstBox.addChild(wholeBox);
             }
         }
+    }
+
+    /**
+     * Gets all boxes of type @see AppleDataBox from a collection of @see Mpeg4Box
+     * @param boxes A collection of @see Mpeg4Box
+     * @returns A collection of @see AppleDataBox
+     */
+    private getAppleDataBoxes(boxes: Mpeg4Box[]): AppleDataBox[] {
+        const dataBoxes: AppleDataBox[] = [];
+
+        for (const dataBox of boxes) {
+            if (dataBox instanceof AppleDataBox) {
+                dataBoxes.push(dataBox as AppleDataBox);
+            }
+        }
+
+        return dataBoxes;
     }
 
     /**
