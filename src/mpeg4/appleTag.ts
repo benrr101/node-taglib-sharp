@@ -16,11 +16,9 @@ import AppleAnnotationBox, {
 import Mpeg4BoxType from "./mpeg4BoxType";
 import Mpeg4Utils from "./mpeg4Utils";
 export default class AppleTag extends Tag {
-    /** @inheritDoc */
-    public get sizeOnDisk(): number {
-        // TODO: no idea what to do here. This isn't in the original implementation.
-        return 0;
-    }
+     /** @inheritDoc */
+    // @TODO: Reliably calculate size on disk during reading
+    public get sizeOnDisk(): number { return undefined; }
 
     /**
      * Contains the ISO meta box in which that tag will be stored.
