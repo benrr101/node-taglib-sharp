@@ -639,19 +639,6 @@ export class ByteVector {
     }
 
     /**
-     * Inserts the contents of another ByteVector object into the current instance.
-     * @param index A number value specifying the index at which to insert the data.
-     * @param data A ByteVector object containing data to insert into the current instance.
-     */
-    public insert(index: number, data: ByteVector): void {
-        this.throwIfReadOnly();
-
-        if (data) {
-            this.splice(index, 0, data);
-        }
-    }
-
-    /**
      * Compares two byte vectors. Returns a numeric value
      * @param a Byte vector to compare against `b`
      * @param b Byte vector to compare against `a`

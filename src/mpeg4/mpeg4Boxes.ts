@@ -392,8 +392,8 @@ export class Mpeg4Box {
         this._header.dataSize = topData.length + output.length;
 
         // Render the full box.
-        output.insert(0, topData);
-        output.insert(0, this._header.render());
+        output.splice(0, 0, topData);
+        output.splice(0, 0, this._header.render());
 
         return output;
     }
