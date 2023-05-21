@@ -739,22 +739,27 @@ export default class AppleTag extends Tag {
      * @returns A @see AppleDataBox[] object enumerating the matching boxes.
      */
     public dataBoxesFromTypes(types: ByteVector[]): AppleDataBox[] {
+        const dataBoxes: AppleDataBox[] = [];
+
         /**
          * Check each box to see if the match any of the provided types.
          * If a match is found, loop through the children and add any data box.
          */
         for (const box of this._ilstBox.children) {
-            
             for (const byteVector of types) {
                 if (!ByteVector.equals(Mpeg4Utils.fixId(byteVector), box.boxType)) {
                     continue;
                 }
 
-                return this.getAppleDataBoxes(box.children);
+                for (const dataBox of box.children) {
+                    if (dataBox instanceof AppleDataBox) {
+                        dataBoxes.push(dataBox as AppleDataBox);
+                    }
+                }
             }
         }
 
-        return [];
+        return dataBoxes;
     }
 
     /**
@@ -778,22 +783,26 @@ export default class AppleTag extends Tag {
             if (!ByteVector.equals(box.boxType, Mpeg4BoxType.DASH)) {
                 continue;
             }
-
             // Get the mean and name boxes, make sure
             // they're legit, and make sure that they match
             // what we want. Then loop through and add all
             // the data box children to our output.
             const meanBox: AppleAdditionalInfoBox = <AppleAdditionalInfoBox>box.getChild(Mpeg4BoxType.Mean);
             const nameBox: AppleAdditionalInfoBox = <AppleAdditionalInfoBox>box.getChild(Mpeg4BoxType.Name);
-
             if (!meanBox || !nameBox || meanBox.text !== mean || nameBox.text !== name) {
                 continue;
             }
 
-            return this.getAppleDataBoxes(box.children);
-        }
+            const dataBoxes: AppleDataBox[] = [];
 
-        return [];
+            for (const dataBox of box.children) {
+                if (dataBox instanceof AppleDataBox) {
+                    dataBoxes.push(dataBox as AppleDataBox);
+                }
+            }
+
+            return dataBoxes;
+        }
     }
 
     /**
@@ -1069,23 +1078,6 @@ export default class AppleTag extends Tag {
                 this._ilstBox.addChild(wholeBox);
             }
         }
-    }
-
-    /**
-     * Gets all boxes of type @see AppleDataBox from a collection of @see Mpeg4Box
-     * @param boxes A collection of @see Mpeg4Box
-     * @returns A collection of @see AppleDataBox
-     */
-    private getAppleDataBoxes(boxes: Mpeg4Box[]): AppleDataBox[] {
-        const dataBoxes: AppleDataBox[] = [];
-
-        for (const dataBox of boxes) {
-            if (dataBox instanceof AppleDataBox) {
-                dataBoxes.push(dataBox as AppleDataBox);
-            }
-        }
-
-        return dataBoxes;
     }
 
     /**
