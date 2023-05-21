@@ -16,7 +16,6 @@ import {
 import Mpeg4BoxHeader from "./mpeg4BoxHeader";
 import Mpeg4BoxType from "./mpeg4BoxType";
 import Mpeg4FileParser from "./mpeg4FileParser";
-import Mpeg4Tag from "./mpeg4Tag";
 
 /**
  * Provides tagging and properties support for Mpeg4 files.
@@ -25,12 +24,7 @@ export default class Mpeg4File extends File {
     /**
      * Contains the Apple tag.
      */
-    private _appleTag: AppleTag;
-
-    /**
-     * Contains the combined tag.
-     */
-    private _tag: Mpeg4Tag;
+    private _tag: AppleTag;
 
     /**
      * Contains the media properties.
@@ -60,8 +54,6 @@ export default class Mpeg4File extends File {
     }
 
     private read(readStyle: ReadStyle): void {
-        // TODO: Support Id3v2 boxes!!!
-        this._tag = new Mpeg4Tag();
         this.mode = FileAccessMode.Read;
 
         try {
@@ -97,8 +89,7 @@ export default class Mpeg4File extends File {
                 udtaBox = IsoUserDataBox.fromEmpty();
             }
 
-            this._appleTag = new AppleTag(udtaBox);
-            this._tag.setTags(this._appleTag);
+            this._tag = new AppleTag(udtaBox);
 
             // If we're not reading properties, we're done.
             if ((readStyle & ReadStyle.Average) === 0) {
@@ -126,7 +117,7 @@ export default class Mpeg4File extends File {
     }
 
     /** @inheritDoc */
-    public get tag(): Mpeg4Tag {
+    public get tag(): AppleTag {
         return this._tag;
     }
 
@@ -142,18 +133,17 @@ export default class Mpeg4File extends File {
     /** @inheritDoc */
     public getTag(types: TagTypes, create: boolean): Tag {
         if (types === TagTypes.Apple) {
-            if (!this._appleTag && create) {
+            if (!this._tag && create) {
                 let udtaBox: IsoUserDataBox = this.findAppleTagUdta();
 
                 if (!udtaBox) {
                     udtaBox = IsoUserDataBox.fromEmpty();
                 }
 
-                this._appleTag = new AppleTag(udtaBox);
-                this.tag.setTags(this._appleTag);
+                this._tag = new AppleTag(udtaBox);
             }
 
-            return this._appleTag;
+            return this._tag;
         }
 
         return undefined;
@@ -161,13 +151,12 @@ export default class Mpeg4File extends File {
 
     /** @inheritDoc */
     public removeTags(types: TagTypes): void {
-        if ((types & TagTypes.Apple) !== TagTypes.Apple || !this._appleTag) {
+        if ((types & TagTypes.Apple) !== TagTypes.Apple || !this._tag) {
             return;
         }
 
-        this._appleTag.detachIlst();
-        this._appleTag = undefined;
-        this.tag.setTags();
+        this._tag.detachIlst();
+        this._tag = undefined;
     }
 
     /** @inheritDoc */
