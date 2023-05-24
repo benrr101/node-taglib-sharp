@@ -15,8 +15,9 @@ import AppleAnnotationBox, {
 } from "./mpeg4Boxes";
 import Mpeg4BoxType from "./mpeg4BoxType";
 import Mpeg4Utils from "./mpeg4Utils";
+import { Mpeg4BoxClassType } from "./mpeg4BoxClassType";
 export default class AppleTag extends Tag {
-     /** @inheritDoc */
+    /** @inheritDoc */
     // @TODO: Reliably calculate size on disk during reading
     public get sizeOnDisk(): number { return undefined; }
 
@@ -751,11 +752,7 @@ export default class AppleTag extends Tag {
                     continue;
                 }
 
-                for (const dataBox of box.children) {
-                    if (dataBox instanceof AppleDataBox) {
-                        dataBoxes.push(dataBox as AppleDataBox);
-                    }
-                }
+                dataBoxes.push(...box.getChildrenByBoxClassType<AppleDataBox>(Mpeg4BoxClassType.AppleDataBox));
             }
         }
 
@@ -793,15 +790,7 @@ export default class AppleTag extends Tag {
                 continue;
             }
 
-            const dataBoxes: AppleDataBox[] = [];
-
-            for (const dataBox of box.children) {
-                if (dataBox instanceof AppleDataBox) {
-                    dataBoxes.push(dataBox as AppleDataBox);
-                }
-            }
-
-            return dataBoxes;
+            return box.getChildrenByBoxClassType<AppleDataBox>(Mpeg4BoxClassType.AppleDataBox);
         }
     }
 

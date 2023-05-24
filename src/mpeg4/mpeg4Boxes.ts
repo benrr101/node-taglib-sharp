@@ -8,6 +8,7 @@ import { DescriptorTag } from "./descriptorTag";
 import Mpeg4BoxFactory from "./mpeg4BoxFactory";
 import Mpeg4BoxHeader from "./mpeg4BoxHeader";
 import Mpeg4BoxType from "./mpeg4BoxType";
+import { Mpeg4BoxClassType } from "./mpeg4BoxClassType";
 
 /**
  * This file contains all boxes. All boxes had to be grouped into a single file due to circular dependencies
@@ -41,7 +42,7 @@ import Mpeg4BoxType from "./mpeg4BoxType";
 /**
  * This class provides a generic implementation of a ISO/IEC 14496-12 box.
  */
-export class Mpeg4Box {
+export abstract class Mpeg4Box {
     /**
      * Contains he data contained in the current instance.
      */
@@ -78,6 +79,11 @@ export class Mpeg4Box {
      * The children of the current instance.
      */
     public children: Mpeg4Box[];
+
+    /**
+     * Gets a flag indicating which type of box the current instance is.
+     */
+    public abstract get boxClassType(): Mpeg4BoxClassType;
 
     /**
      * Protected constructor to force construction via static functions.
@@ -174,7 +180,7 @@ export class Mpeg4Box {
     }
 
     /**
-     *  Gets a child box from the current instance by finding a matching box type.
+     * Gets a child box from the current instance by finding a matching box type.
      * @param type  A @see ByteVector object containing the box type to match.
      * @returns  A @see Mpeg4Box object containing the matched box, or undefined if no matching box was found.
      */
@@ -190,6 +196,17 @@ export class Mpeg4Box {
         }
 
         return undefined;
+    }
+
+    /**
+     * Gets all child boxes with a specific box class type.
+     * @param boxClassType Box class type of the child boxes to find
+     * @returns TBox[] Array of child boxes with the specified box class type
+     */
+    public getChildrenByBoxClassType<TBox extends Mpeg4Box>(boxClassType: Mpeg4BoxClassType): TBox[] {
+        Guards.notNullOrUndefined(boxClassType, "boxClassType");
+
+        return <TBox[]>this.children.filter((c) => c.boxClassType === boxClassType);
     }
 
     /**
@@ -419,7 +436,7 @@ export class Mpeg4Box {
 /**
  * This class extends @see Mpeg4Box to provide an implementation of a ISO/IEC 14496-12 FullBox.
  */
-export class FullBox extends Mpeg4Box {
+export abstract class FullBox extends Mpeg4Box {
     /**
      * Gets and sets the version number of the current instance.
      */
@@ -500,6 +517,9 @@ export class FullBox extends Mpeg4Box {
  *  This class extends @see FullBox to provide an implementation of an Apple AdditionalInfoBox.
  */
 export class AppleAdditionalInfoBox extends FullBox {
+    /** @inheritDoc */
+    public get boxClassType(): Mpeg4BoxClassType { return Mpeg4BoxClassType.AppleAdditionalInfoBox; }
+
     /**
      * Private constructor to force construction via static functions.
      */
@@ -554,6 +574,9 @@ export class AppleAdditionalInfoBox extends FullBox {
  * This class extends @see Mpeg4Box to provide an implementation of an Apple AnnotationBox.
  */
 export default class AppleAnnotationBox extends Mpeg4Box {
+    /** @inheritDoc */
+    public get boxClassType(): Mpeg4BoxClassType { return Mpeg4BoxClassType.AppleAnnotationBox; }
+
     /**
      * Private constructor to force construction via static functions.
      */
@@ -599,6 +622,9 @@ export default class AppleAnnotationBox extends Mpeg4Box {
  * This class extends @see FullBox to provide an implementation of an Apple DataBox.
  */
 export class AppleDataBox extends FullBox {
+    /** @inheritDoc */
+    public get boxClassType(): Mpeg4BoxClassType { return Mpeg4BoxClassType.AppleDataBox; }
+
     /**
      * Private constructor to force construction via static functions.
      */
@@ -750,6 +776,9 @@ export class AppleElementaryStreamDescriptor extends FullBox {
      * The decoder config data of stream described by the current instance.
      */
     public decoderConfig: ByteVector;
+
+    /** @inheritDoc */
+    public get boxClassType(): Mpeg4BoxClassType { return Mpeg4BoxClassType.AppleElementaryStreamDescriptor; }
 
     /**
      * Private constructor to force construction via static functions.
@@ -942,6 +971,9 @@ export class AppleElementaryStreamDescriptor extends FullBox {
  * This class extends @see Mpeg4Box to provide an implementation of an Apple ItemListBox.
  */
 export class AppleItemListBox extends Mpeg4Box {
+    /** @inheritDoc */
+    public get boxClassType(): Mpeg4BoxClassType { return Mpeg4BoxClassType.AppleItemListBox; }
+
     /**
      * Private constructor to force construction via static functions.
      */
@@ -987,6 +1019,9 @@ export class AppleItemListBox extends Mpeg4Box {
  * This class extends @see Mpeg4Box to provide an implementation of a ISO/IEC 14496-12 SampleEntry.
  */
 export class IsoSampleEntry extends Mpeg4Box {
+    /** @inheritDoc */
+    public get boxClassType(): Mpeg4BoxClassType { return Mpeg4BoxClassType.IsoSampleEntry; }
+
     /**
      * The data reference index of the current instance.
      */
@@ -1062,6 +1097,9 @@ export class IsoAudioSampleEntry extends IsoSampleEntry implements IAudioCodec {
      * The sample rate of the audio represented by the current instance.
      */
     public audioSampleRate: number;
+
+    /** @inheritDoc */
+    public get boxClassType(): Mpeg4BoxClassType { return Mpeg4BoxClassType.IsoAudioSampleEntry; }
 
     /**
      * Private constructor to force construction via static functions.
@@ -1147,6 +1185,9 @@ export class IsoChunkLargeOffsetBox extends FullBox {
      */
     public offsets: number[];
 
+    /** @inheritDoc */
+    public get boxClassType(): Mpeg4BoxClassType { return Mpeg4BoxClassType.IsoChunkLargeOffsetBox; }
+
     /**
      * Private constructor to force construction via static functions.
      */
@@ -1230,6 +1271,9 @@ export class IsoChunkOffsetBox extends FullBox {
      * The offset table contained in the current instance.
      */
     public offsets: number[];
+
+    /** @inheritDoc */
+    public get boxClassType(): Mpeg4BoxClassType { return Mpeg4BoxClassType.IsoChunkOffsetBox; }
 
     /**
      * Private constructor to force construction via static functions.
@@ -1316,6 +1360,9 @@ export class IsoFreeSpaceBox extends Mpeg4Box {
      */
     public padding: number;
 
+    /** @inheritDoc */
+    public get boxClassType(): Mpeg4BoxClassType { return Mpeg4BoxClassType.IsoFreeSpaceBox; }
+
     /**
      * Private constructor to force construction via static functions.
      */
@@ -1390,6 +1437,9 @@ export class IsoHandlerBox extends FullBox {
      * Contains the name of the current instance.
      */
     public name: string;
+
+    /** @inheritDoc */
+    public get boxClassType(): Mpeg4BoxClassType { return Mpeg4BoxClassType.IsoHandlerBox; }
 
     /**
      * Private constructor to force construction via static functions.
@@ -1469,6 +1519,16 @@ export class IsoHandlerBox extends FullBox {
  * This class extends @see FullBox to provide an implementation of a ISO/IEC 14496-12 MetaBox.
  */
 export class IsoMetaBox extends FullBox {
+    /** @inheritDoc */
+    public get boxClassType(): Mpeg4BoxClassType { return Mpeg4BoxClassType.IsoMetaBox; }
+
+    /**
+     * Private constructor to force construction via static functions.
+     */
+    private constructor() {
+        super();
+    }
+
     /**
      * Constructs and initializes a new instance of @see IsoMetaBox with a provided header and
      * handler by reading the contents from a specified file.
@@ -1542,6 +1602,9 @@ export class IsoMovieHeaderBox extends FullBox {
      *  Contains the playback volume of the movie represented by the current instance.
      */
     public volume: number;
+
+    /** @inheritDoc */
+    public get boxClassType(): Mpeg4BoxClassType { return Mpeg4BoxClassType.IsoMovieHeaderBox; }
 
     /**
      * Private constructor to force construction via static functions.
@@ -1669,6 +1732,9 @@ export class IsoSampleDescriptionBox extends FullBox {
      */
     public entryCount: number;
 
+    /** @inheritDoc */
+    public get boxClassType(): Mpeg4BoxClassType { return Mpeg4BoxClassType.IsoSampleDescriptionBox; }
+
     /**
      * Private constructor to force construction via static functions.
      */
@@ -1703,6 +1769,9 @@ export class IsoSampleDescriptionBox extends FullBox {
  * This class extends @see Mpeg4Box to provide an implementation of a ISO/IEC 14496-12 SampleTableBox.
  */
 export class IsoSampleTableBox extends Mpeg4Box {
+    /** @inheritDoc */
+    public get boxClassType(): Mpeg4BoxClassType { return Mpeg4BoxClassType.IsoSampleTableBox; }
+
     /**
      * Private constructor to force construction via static functions.
      */
@@ -1739,6 +1808,9 @@ export class IsoUserDataBox extends Mpeg4Box {
      *  Gets the box headers for the current "udta" box and all parent boxes up to the top of the file.
      */
     public parentTree: Mpeg4BoxHeader[];
+
+    /** @inheritDoc */
+    public get boxClassType(): Mpeg4BoxClassType { return Mpeg4BoxClassType.IsoUserDataBox; }
 
     /**
      * Private constructor to force construction via static functions.
@@ -1795,6 +1867,9 @@ export class IsoVisualSampleEntry extends IsoSampleEntry implements IVideoCodec 
      */
     public videoHeight: number;
 
+    /** @inheritDoc */
+    public get boxClassType(): Mpeg4BoxClassType { return Mpeg4BoxClassType.IsoVisualSampleEntry; }
+
     /**
      * Private constructor to force construction via static functions.
      */
@@ -1843,6 +1918,9 @@ export class IsoVisualSampleEntry extends IsoSampleEntry implements IVideoCodec 
  * Represents an MP4 text box
  */
 export class TextBox extends Mpeg4Box {
+    /** @inheritDoc */
+    public get boxClassType(): Mpeg4BoxClassType { return Mpeg4BoxClassType.TextBox; }
+
     /**
      * Private constructor to force construction via static functions.
      */
@@ -1873,6 +1951,9 @@ export class TextBox extends Mpeg4Box {
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 export class UnknownBox extends Mpeg4Box {
+    /** @inheritDoc */
+    public get boxClassType(): Mpeg4BoxClassType { return Mpeg4BoxClassType.UnknownBox; }
+
     /**
      * Private constructor to force construction via static functions.
      */
@@ -1905,6 +1986,9 @@ export class UnknownBox extends Mpeg4Box {
  * Represent a MP4 URL box
  */
 export class UrlBox extends Mpeg4Box {
+    /** @inheritDoc */
+    public get boxClassType(): Mpeg4BoxClassType { return Mpeg4BoxClassType.UrlBox; }
+
     /**
      * Private constructor to force construction via static functions.
      */
