@@ -404,6 +404,20 @@ export class ByteVector {
     }
 
     /**
+     * Creates a 1 byte {@link ByteVector} with an unsigned 8-bit integer as the data
+     * @param value Unsigned 8-bit integer to use as the data.
+     */
+    public static fromByte(value: number): ByteVector {
+        Guards.byte(value, "value");
+
+        const bytes = new Uint8Array(1);
+        const dv = new DataView(bytes.buffer);
+        dv.setUint8(0, value);
+
+        return new ByteVector(bytes);
+    }
+
+    /**
      * Creates a {@link ByteVector} using the contents of a file as the data
      * @param path Path to the file to store in the ByteVector
      */

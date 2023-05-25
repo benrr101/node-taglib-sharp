@@ -2,7 +2,7 @@ import {suite, test} from "@testdeck/mocha";
 import {assert} from "chai";
 
 import ObjectTests from "./objectTests";
-import PaddingObject from "../../src/asf/objects/PaddingObject";
+import PaddingObject from "../../src/asf/objects/paddingObject";
 import PropertyTests from "../utilities/propertyTests";
 import TestFile from "../utilities/testFile";
 import UuidWrapper from "../../src/uuidWrapper";

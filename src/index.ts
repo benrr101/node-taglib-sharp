@@ -143,6 +143,9 @@ export {default as MpegVbriHeader} from "./mpeg/vbriHeader";
 export {default as MpegVideoHeader} from "./mpeg/mpegVideoHeader";
 export {default as MpegXingHeader} from "./mpeg/xingHeader";
 
+// MPEG4 ///////////////////////////////////////////////////////////////////
+export { default as Mpeg4File } from "./mpeg4/mpeg4File";
+
 // OGG /////////////////////////////////////////////////////////////////////
 export {default as OggFile} from "./ogg/oggFile";
 export {default as OggFileSettings} from "./ogg/oggFileSettings";
