@@ -129,14 +129,21 @@ export default class Opus implements IOggCodec, IAudioCodec {
         }
     }
 
-    public setDuration(firstGranularPosition: number, lastGranularPosition: number): void {
-        Guards.safeUint(firstGranularPosition, "firstGranularPosition");
-        Guards.safeUint(lastGranularPosition, "lastGranularPosition");
+    public setDuration(firstGranularPosition: ByteVector, lastGranularPosition: ByteVector): void {
+        const firstLong = firstGranularPosition.toUlong(false);
+        const lastLong = lastGranularPosition.toUlong(false);
 
         // NOTE: It probably looks wrong to use 48kHz all the time, but this is actually correct as
         //    per the Opus guide https://wiki.xiph.org/OpusFAQ
-        const durationSeconds = (lastGranularPosition - firstGranularPosition - this._preSkip) / 48000;
-        this._durationMilliseconds = durationSeconds * 1000;
+        const durationSeconds = (lastLong - firstLong - BigInt(this._preSkip)) / BigInt(48000);
+        const durationMilliseconds = durationSeconds * BigInt(1000);
+
+        // NOTE: If milliseconds is greater than max safe integer, we can't reliably determine
+        //    duration so return -1.
+        // @TODO: Allow user to configure this behavior?
+        this._durationMilliseconds = durationMilliseconds > Number.MAX_SAFE_INTEGER
+            ? -1
+            : Number(durationMilliseconds);
     }
 
     // #endregion

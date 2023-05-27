@@ -91,9 +91,9 @@ export default class Theora implements IOggCodec, IVideoCodec {
     }
 
     /** @inheritDoc */
-    public setDuration(firstGranularPosition: number, lastGranularPosition: number): void {
-        Guards.safeUint(firstGranularPosition, "firstGranularPosition");
-        Guards.safeUint(lastGranularPosition, "lastGranularPosition");
+    public setDuration(firstGranularPosition: ByteVector, lastGranularPosition: ByteVector): void {
+        Guards.truthy(firstGranularPosition, "firstGranularPosition");
+        Guards.truthy(lastGranularPosition, "lastGranularPosition");
 
         const durationSeconds = this.getGranuleTime(lastGranularPosition) - this.getGranuleTime(firstGranularPosition);
         this._durationMilliseconds = durationSeconds * 1000;

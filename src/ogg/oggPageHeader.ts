@@ -1,5 +1,5 @@
 import {ByteVector, StringType} from "../byteVector";
-import {CorruptFileError, UnsupportedFormatError} from "../errors";
+import {CorruptFileError} from "../errors";
 import {File} from "../file";
 import {Guards, NumberUtils} from "../utils";
 
@@ -37,7 +37,7 @@ export class OggPageHeader {
         0xFF
     ]);
 
-    private _absoluteGranularPosition: number;
+    private _absoluteGranularPosition: ByteVector;
     private _dataSize: number;
     private _flags: OggPageFlags;
     private _lastPacketComplete: boolean;
@@ -74,20 +74,7 @@ export class OggPageHeader {
         header._version = data.get(4);
         header._flags = data.get(5);
 
-        const absoluteGranularPositionBytes = data.subarray(6, 8);
-        if (absoluteGranularPositionBytes.equals(this.NO_PACKETS_END_IN_PAGE)) {
-            // Handle special condition where no packets end in the current page
-            header._absoluteGranularPosition = -1;
-        } else {
-            const absoluteGranularPosition = absoluteGranularPositionBytes.toUlong(false);
-            if (absoluteGranularPosition > Number.MAX_SAFE_INTEGER ) {
-                throw new UnsupportedFormatError(
-                    "Granular position is too large to be handled with this version of node-taglib-sharp"
-                );
-            }
-            header._absoluteGranularPosition = Number(absoluteGranularPosition);
-        }
-
+        header._absoluteGranularPosition = data.subarray(6, 8);
         header._streamSerialNumber = data.subarray(14, 4).toUint(false);
         header._pageSequenceNumber = data.subarray(18, 4).toUint(false);
 
@@ -143,7 +130,7 @@ export class OggPageHeader {
         const header = new OggPageHeader();
         header._version = 0;
         header._flags = flags;
-        header._absoluteGranularPosition = 0;
+        header._absoluteGranularPosition = ByteVector.fromSize(8);
         header._streamSerialNumber = streamSerialNumber;
         header._pageSequenceNumber = pageNumber;
         header._size = 0;
@@ -194,7 +181,7 @@ export class OggPageHeader {
     /**
      * Gets the absolute granular position of the page described by the current instance.
      */
-    public get absoluteGranularPosition(): number { return this._absoluteGranularPosition; }
+    public get absoluteGranularPosition(): ByteVector { return this._absoluteGranularPosition; }
 
     /**
      * Gets the size of the data portion of the page described by the current instance as it
@@ -262,15 +249,11 @@ export class OggPageHeader {
         }, <Array<ByteVector|number>> []);
         const lacingBytes = ByteVector.concatenate(...lacingValues);
 
-        const absoluteGranularPositionBytes = this._absoluteGranularPosition === -1
-            ? OggPageHeader.NO_PACKETS_END_IN_PAGE
-            : ByteVector.fromUlong(this._absoluteGranularPosition, false);
-
         return ByteVector.concatenate(
             OggPageHeader.HEADER_IDENTIFIER,
             this._version,
             this._flags,
-            absoluteGranularPositionBytes,
+            this._absoluteGranularPosition,
             ByteVector.fromUint(this._streamSerialNumber, false),
             ByteVector.fromUint(this._pageSequenceNumber, false),
             ByteVector.fromSize(4), // Checksum to be filled later

@@ -26,7 +26,7 @@ export default interface IOggCodec extends ICodec {
      * @param firstGranularPosition First granular position of the stream
      * @param lastGranularPosition Last granular position of the stream
      */
-    setDuration(firstGranularPosition: number, lastGranularPosition: number): void;
+    setDuration(firstGranularPosition: ByteVector, lastGranularPosition: ByteVector): void;
 
     /**
      * Renders and write the provided comment into the provided list of packets.
