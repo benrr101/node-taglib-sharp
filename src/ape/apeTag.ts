@@ -525,14 +525,14 @@ export default class ApeTag extends Tag {
 
     /**
      * @inheritDoc
-     * @remarks Stored in the `MUSICBRAINZ_ARTISTID` item
+     * @remarks Stored in the `MUSICBRAINZ_ALBUMARTISTID` item
      */
-    get musicBrainzReleaseArtistId(): string { return this.getStringValue("MUSICBRAINZ_ARTISTID"); }
+    get musicBrainzReleaseArtistId(): string { return this.getStringValue("MUSICBRAINZ_ALBUMARTISTID"); }
     /**
      * @inheritDoc
-     * @remarks Stored in the `MUSICBRAINZ_ARTISTID` item
+     * @remarks Stored in the `MUSICBRAINZ_ALBUMARTISTID` item
      */
-    set musicBrainzReleaseArtistId(value: string) { this.setStringValue("MUSICBRAINZ_ARTISTID", value); }
+    set musicBrainzReleaseArtistId(value: string) { this.setStringValue("MUSICBRAINZ_ALBUMARTISTID", value); }
 
     /**
      * @inheritDoc

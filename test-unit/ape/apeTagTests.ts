@@ -496,8 +496,8 @@ const getTestTagFooter = (flags: ApeTagFooterFlags, itemCount: number, itemPlusF
     public musicBrainzReleaseArtistId() {
         this.testTextItem(
             (t, v) => { t.musicBrainzReleaseArtistId = v; },
-            (t) => t.musicBrainzArtistId,
-            "MUSICBRAINZ_ARTISTID"
+            (t) => t.musicBrainzReleaseArtistId,
+            "MUSICBRAINZ_ALBUMARTISTID"
         );
     }
 
