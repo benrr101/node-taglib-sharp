@@ -2,7 +2,7 @@ import IOggCodec from "./iOggCodec";
 import XiphComment from "../../xiph/xiphComment";
 import {ByteVector, StringType} from "../../byteVector";
 import {IAudioCodec, MediaTypes} from "../../properties";
-import {Guards} from "../../utils";
+import {Guards, NumberUtils} from "../../utils";
 
 /**
  * Types of packets that occur within an Ogg Vorbis bitstream.
@@ -114,14 +114,22 @@ export default class Vorbis implements IOggCodec, IAudioCodec {
     }
 
     /** @inheritDoc */
-    public setDuration(firstGranularPosition: number, lastGranularPosition: number): void {
-        Guards.safeUint(firstGranularPosition, "firstGranularPosition");
-        Guards.safeUint(lastGranularPosition, "lastGranularPosition");
+    public setDuration(firstGranularPosition: ByteVector, lastGranularPosition: ByteVector): void {
+        Guards.truthy(firstGranularPosition, "firstGranularPosition");
+        Guards.truthy(lastGranularPosition, "lastGranularPosition");
 
-        const durationSeconds = this._sampleRate === 0
+        const firstLong = firstGranularPosition.toUlong(false);
+        const lastLong = lastGranularPosition.toUlong(false);
+
+        const durationMilliseconds = this._sampleRate === 0
+            ? NumberUtils.BIG_ZERO
+            : ((lastLong - firstLong) * BigInt(1000)) / BigInt(this._sampleRate);
+
+        // Note: if duration is > max safe, we cannot safely report the duration
+        // @TODO: Make this configurable by the user
+        this._durationMilliseconds = durationMilliseconds > Number.MAX_SAFE_INTEGER
             ? 0
-            : (lastGranularPosition - firstGranularPosition) / this._sampleRate;
-        this._durationMilliseconds = durationSeconds * 1000;
+            : Number(durationMilliseconds);
     }
 
     /** @inheritDoc */

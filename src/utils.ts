@@ -168,6 +168,7 @@ export class NumberUtils {
     public static readonly BIG_ZERO = BigInt(0);
     public static readonly BIG_ONE = BigInt(1);
     public static readonly BIG_TWO = BigInt(2);
+    public static readonly BIG_ONE_THOUSAND = BigInt(1000);
     public static readonly TICKS_PER_MILLISECOND_BIG = BigInt(10000);
     public static readonly TICKS_PER_MILLISECOND_NUM = 10000;
 

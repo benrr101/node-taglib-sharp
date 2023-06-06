@@ -11,7 +11,7 @@ import {OggPageFlags} from "./oggPageHeader";
  */
 export default class OggBitStream {
     private readonly _codec: IOggCodec;
-    private readonly _firstAbsoluteGranularPosition: number;
+    private readonly _firstAbsoluteGranularPosition: ByteVector;
     private _previousPacket: ByteVector;
 
     /**
@@ -75,9 +75,7 @@ export default class OggBitStream {
      * granular position of the stream.
      * @internal
      */
-    public setDuration(lastAbsoluteGranularPosition: number): void {
-        Guards.safeUint(lastAbsoluteGranularPosition, "lastAbsoluteGranularPosition");
-
+    public setDuration(lastAbsoluteGranularPosition: ByteVector): void {
         this._codec.setDuration(this._firstAbsoluteGranularPosition, lastAbsoluteGranularPosition);
     }
 }
