@@ -2,7 +2,7 @@ import IOggCodec from "./iOggCodec";
 import XiphComment from "../../xiph/xiphComment";
 import {ByteVector, StringType} from "../../byteVector";
 import {IAudioCodec, MediaTypes} from "../../properties";
-import {Guards} from "../../utils";
+import {Guards, NumberUtils} from "../../utils";
 
 /**
  * Represents an Ogg Opus bitstream for use within an Ogg file.
@@ -135,8 +135,8 @@ export default class Opus implements IOggCodec, IAudioCodec {
 
         // NOTE: It probably looks wrong to use 48kHz all the time, but this is actually correct as
         //    per the Opus guide https://wiki.xiph.org/OpusFAQ
-        const durationSeconds = (lastLong - firstLong - BigInt(this._preSkip)) / BigInt(48000);
-        const durationMilliseconds = durationSeconds * BigInt(1000);
+        const durationNumerator = lastLong - firstLong - BigInt(this._preSkip);
+        const durationMilliseconds = durationNumerator * NumberUtils.BIG_ONE_THOUSAND / BigInt(48000)
 
         // NOTE: If milliseconds is greater than max safe integer, we can't reliably determine
         //    duration so return -1.
