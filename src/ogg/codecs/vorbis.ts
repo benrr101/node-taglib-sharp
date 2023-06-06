@@ -121,10 +121,9 @@ export default class Vorbis implements IOggCodec, IAudioCodec {
         const firstLong = firstGranularPosition.toUlong(false);
         const lastLong = lastGranularPosition.toUlong(false);
 
-        const durationSeconds = this._sampleRate === 0
+        const durationMilliseconds = this._sampleRate === 0
             ? NumberUtils.BIG_ZERO
-            : (firstLong - lastLong) / BigInt(this._sampleRate);
-        const durationMilliseconds = durationSeconds * BigInt(1000);
+            : ((lastLong - firstLong) * BigInt(1000)) / BigInt(this._sampleRate);
 
         // Note: if duration is > max safe, we cannot safely report the duration
         // @TODO: Make this configurable by the user
