@@ -129,8 +129,9 @@ export default class Theora implements IOggCodec, IVideoCodec {
         const iFrame = granuleNumber >> this._keyframeGranuleShift;
         const pFrame = granuleNumber - (iFrame << this._keyframeGranuleShift);
 
-        // Since bigint is an integer we multiply the fps by an extra 100 then divide it by 100. If
-        // this is not done, the fps will be 0.
-        return (iFrame + pFrame) * BigInt(Math.floor(this._fpsDenominator / this._fpsNumerator * 100000)) / BigInt(100);
+        // Since bigint is an integer we multiply the fps by an extra 10000 then divide it by
+        // 10000. If this is not done, the fps will be 0.
+        const fpsFactor = BigInt(Math.floor(this._fpsDenominator / this._fpsNumerator * 10000000))
+        return (iFrame + pFrame) * fpsFactor / BigInt(10000);
     }
 }

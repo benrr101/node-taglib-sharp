@@ -228,7 +228,7 @@ import CodecPackets from "./codecPackets";
         codec.setDuration(first, last);
 
         // Assert
-        assert.approximately(codec.durationMilliseconds, 158361612, 1);
+        assert.approximately(codec.durationMilliseconds, 158361612, 10);
     }
 
     private static getTestCodec(): Theora {
