@@ -198,6 +198,10 @@ export abstract class Mpeg4Box {
         return undefined;
     }
 
+    public getChildByBoxClassType<TBox extends Mpeg4Box>(boxClassType: Mpeg4BoxClassType, type: ByteVector): TBox {
+        return <TBox>this.children.find(b => b.boxClassType === boxClassType && ByteVector.equals(b.boxType, type));
+    }
+
     /**
      * Gets all child boxes with a specific box class type.
      * @param boxClassType Box class type of the child boxes to find

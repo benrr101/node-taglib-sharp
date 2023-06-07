@@ -16,9 +16,9 @@ class Mpeg4TestFile extends Mpeg4File {
 }
 
 @suite class Mpeg4_m4v_FileTests {
-    private static readonly boxTypeLdes: ByteVector = ByteVector.fromString("ldes", StringType.UTF8).makeReadOnly(); // long description
-    private static readonly boxTypeTvsh: ByteVector = ByteVector.fromString("tvsh", StringType.UTF8).makeReadOnly(); // TV Show or series
-    private static readonly boxTypePurd: ByteVector = ByteVector.fromString("purd", StringType.UTF8).makeReadOnly(); // purchase date
+    private static readonly boxTypeLdes = ByteVector.fromString("ldes", StringType.UTF8).makeReadOnly(); // long description
+    private static readonly boxTypeTvsh = ByteVector.fromString("tvsh", StringType.UTF8).makeReadOnly(); // TV Show or series
+    private static readonly boxTypePurd = ByteVector.fromString("purd", StringType.UTF8).makeReadOnly(); // purchase date
 
     private static readonly longDesc: string = "American comedy luminaries talk about the influence of Monty Python.";
     private static readonly purdDate: string = "2009-01-26 08:14:10";
@@ -64,11 +64,11 @@ class Mpeg4TestFile extends Mpeg4File {
         const aTag: AppleTag = tag;
         assert.isDefined(aTag);
 
-        for (const adBox of tag.dataBoxesFromTypes([Mpeg4_m4v_FileTests.boxTypeLdes])) {
+        for (const adBox of tag.getDataBoxesFromType(Mpeg4_m4v_FileTests.boxTypeLdes)) {
             assert.equal(adBox.text, "TEST Long Description");
         }
 
-        for (const adBox of tag.dataBoxesFromTypes([Mpeg4_m4v_FileTests.boxTypeTvsh])) {
+        for (const adBox of tag.getDataBoxesFromType(Mpeg4_m4v_FileTests.boxTypeTvsh)) {
             assert.equal(adBox.text, "TEST TV Show");
         }
     }
@@ -92,12 +92,12 @@ class Mpeg4TestFile extends Mpeg4File {
         const tag: AppleTag = <AppleTag>Mpeg4_m4v_FileTests.file.getTag(TagTypes.Apple, false);
         assert.isDefined(tag);
 
-        for (const adBox of tag.dataBoxesFromTypes([Mpeg4_m4v_FileTests.boxTypeLdes])) {
+        for (const adBox of tag.getDataBoxesFromType(Mpeg4_m4v_FileTests.boxTypeLdes)) {
             assert.equal(adBox.text, Mpeg4_m4v_FileTests.longDesc);
             gotLongDesc = true;
         }
 
-        for (const adBox of tag.dataBoxesFromTypes([Mpeg4_m4v_FileTests.boxTypePurd])) {
+        for (const adBox of tag.getDataBoxesFromType(Mpeg4_m4v_FileTests.boxTypePurd)) {
             assert.equal(adBox.text, Mpeg4_m4v_FileTests.purdDate);
             gotPurdDate = true;
         }
