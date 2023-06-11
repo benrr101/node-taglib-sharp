@@ -1,7 +1,8 @@
 import { ByteVector } from "../byteVector";
 import { File } from "../file";
-import AppleAnnotationBox, {
+import {
     AppleAdditionalInfoBox,
+    AppleAnnotationBox,
     AppleDataBox,
     AppleElementaryStreamDescriptor,
     AppleItemListBox,
@@ -31,12 +32,12 @@ import Mpeg4BoxType from "./mpeg4BoxType";
 export default class Mpeg4BoxFactory {
     /**
      * Creates a box by reading it from a file given its header, parent header, handler, and index in its parent.
-     * @param file A @see File object containing the file to read from.
-     * @param header A @see Mpeg4BoxHeader object containing the header of the box to create.
-     * @param parent A @see Mpeg4BoxHeader object containing the header of the parent box.
-     * @param handler A @see IsoHandlerBox object containing the handler that applies to the new box.
+     * @param file A {@see File} object containing the file to read from.
+     * @param header A {@see Mpeg4BoxHeader} object containing the header of the box to create.
+     * @param parent A {@see Mpeg4BoxHeader} object containing the header of the parent box.
+     * @param handler A {@see IsoHandlerBox} object containing the handler that applies to the new box.
      * @param index  A value containing the index of the new box in its parent.
-     * @returns A newly created @see Mpeg4Box object.
+     * @returns A newly created {@see Mpeg4Box} object.
      */
     public static createBoxFromFileHeaderParentHandlerAndIndex(
         file: File,
@@ -76,7 +77,7 @@ export default class Mpeg4BoxFactory {
         }
 
         // Standard items...
-        const type: ByteVector = header.boxType;
+        const type = header.boxType;
 
         if (ByteVector.equals(type, Mpeg4BoxType.Mvhd)) {
             return IsoMovieHeaderBox.fromHeaderFileAndHandler(header, file, handler);
@@ -106,7 +107,8 @@ export default class Mpeg4BoxFactory {
             return AppleAdditionalInfoBox.fromHeaderFileAndHandler(header, file, handler);
         }
 
-        // If we still don't have a tag, and we're inside an ItemListBox, load the box as an AnnotationBox (Apple tag item).
+        // If we still don't have a tag, and we're inside an ItemListBox, load the box as an
+        // AnnotationBox (Apple tag item).
         if (ByteVector.equals(parent.boxType, Mpeg4BoxType.Ilst)) {
             return AppleAnnotationBox.fromHeaderFileAndHandler(header, file, handler);
         }
@@ -116,13 +118,14 @@ export default class Mpeg4BoxFactory {
     }
 
     /**
-     * Creates a box by reading it from a file given its position in the file, parent header, handler, and index in its parent.
-     * @param file A @see File object containing the file to read from.
+     * Creates a box by reading it from a file given its position in the file, parent header,
+     * handler, and index in its parent.
+     * @param file A {@see File} object containing the file to read from.
      * @param position  A value specifying at what seek position in file to start reading.
-     * @param parent A @see Mpeg4BoxHeader object containing the header of the parent box.
-     * @param handler A @see IsoHandlerBox object containing the handler that applies to the new box.
+     * @param parent A {@see Mpeg4BoxHeader} object containing the header of the parent box.
+     * @param handler A {@see IsoHandlerBox} object containing the handler that applies to the new box.
      * @param index A value containing the index of the new box in its parent.
-     * @returns A newly created @see Mpeg4Box object.
+     * @returns A newly created {@see Mpeg4Box} object.
      */
     public static createBoxFromFilePositionParentHandlerAndIndex(
         file: File,
@@ -131,17 +134,16 @@ export default class Mpeg4BoxFactory {
         handler: IsoHandlerBox,
         index: number
     ): Mpeg4Box {
-        const header: Mpeg4BoxHeader = Mpeg4BoxHeader.fromFileAndPosition(file, position);
-
+        const header = Mpeg4BoxHeader.fromFileAndPosition(file, position);
         return Mpeg4BoxFactory.createBoxFromFileHeaderParentHandlerAndIndex(file, header, parent, handler, index);
     }
 
     /**
      * Creates a box by reading it from a file given its position in the file and handler.
-     * @param file A @see File object containing the file to read from.
+     * @param file A {@see File} object containing the file to read from.
      * @param position A value specifying at what seek position in file to start reading.
-     * @param handler A @see IsoHandlerBox object containing the handler that applies to the new box.
-     * @returns A newly created @see Mpeg4Box object.
+     * @param handler A {@see IsoHandlerBox} object containing the handler that applies to the new box.
+     * @returns A newly created {@see Mpeg4Box} object.
      */
     public static createBoxFromFilePositionAndHandler(file: File, position: number, handler: IsoHandlerBox): Mpeg4Box {
         return Mpeg4BoxFactory.createBoxFromFilePositionAndHandler(file, position, handler);
@@ -149,9 +151,9 @@ export default class Mpeg4BoxFactory {
 
     /**
      *  Creates a box by reading it from a file given its position in the file.
-     * @param file A @see File object containing the file to read from.
+     * @param file A {@see File} object containing the file to read from.
      * @param position A value specifying at what seek position in file to start reading.
-     * @returns A newly created @see Mpeg4Box object.
+     * @returns A newly created {@see Mpeg4Box} object.
      */
     public static createBoxFromFileAndPosition(file: File, position: number): Mpeg4Box {
         return Mpeg4BoxFactory.createBoxFromFilePositionAndHandler(file, position, undefined);
@@ -159,20 +161,30 @@ export default class Mpeg4BoxFactory {
 
     /**
      * Creates a box by reading it from a file given its header and handler.
-     * @param file A @see File object containing the file to read from.
-     * @param header A @see Mpeg4BoxHeader object containing the header of the box to create.
-     * @param handler A @see IsoHandlerBox object containing the handler that applies to the new box.
-     * @returns A newly created @see Mpeg4Box object.
+     * @param file A {@see File} object containing the file to read from.
+     * @param header A {@see Mpeg4BoxHeader} object containing the header of the box to create.
+     * @param handler A {@see IsoHandlerBox} object containing the handler that applies to the new box.
+     * @returns A newly created {@see Mpeg4Box} object.
      */
-    public static createBoxFromFileHeaderAndHandler(file: File, header: Mpeg4BoxHeader, handler: IsoHandlerBox): Mpeg4Box {
-        return Mpeg4BoxFactory.createBoxFromFileHeaderParentHandlerAndIndex(file, header, Mpeg4BoxHeader.fromEmpty(), handler, -1);
+    public static createBoxFromFileHeaderAndHandler(
+        file: File,
+        header: Mpeg4BoxHeader,
+        handler: IsoHandlerBox
+    ): Mpeg4Box {
+        return Mpeg4BoxFactory.createBoxFromFileHeaderParentHandlerAndIndex(
+            file,
+            header,
+            Mpeg4BoxHeader.fromEmpty(),
+            handler,
+            -1
+        );
     }
 
     /**
      * Creates a box by reading it from a file given its header and handler.
-     * @param file A @see File object containing the file to read from.
-     * @param header A @see Mpeg4BoxHeader object containing the header of the box to create.
-     * @returns A newly created @see Mpeg4Box object.
+     * @param file A {@see File} object containing the file to read from.
+     * @param header A {@see Mpeg4BoxHeader} object containing the header of the box to create.
+     * @returns A newly created {@see Mpeg4Box} object.
      */
     public static createBoxFromFileAndHeader(file: File, header: Mpeg4BoxHeader): Mpeg4Box {
         return Mpeg4BoxFactory.createBoxFromFileHeaderAndHandler(file, header, undefined);

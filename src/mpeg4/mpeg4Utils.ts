@@ -1,6 +1,9 @@
-import { ByteVector } from "../byteVector";
 import Mpeg4BoxHeader from "./mpeg4BoxHeader";
+import { ByteVector } from "../byteVector";
 
+/**
+ * Collection of utilities for interacting with MPEG4 files.
+ */
 export default class Mpeg4Utils {
     /**
      * Fixes a 3 byte ID.
@@ -12,7 +15,7 @@ export default class Mpeg4Utils {
             if(id.isReadOnly){
                 return id;
             }
-            
+
             return id.toByteVector().makeReadOnly();
         }
 
