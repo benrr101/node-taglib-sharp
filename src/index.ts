@@ -133,12 +133,14 @@ export {default as MatroskaFile} from "./matroska/matroskaFile";
 
 // MPEG1/2 /////////////////////////////////////////////////////////////////
 export {default as MpegAudioFile} from "./mpeg/mpegAudioFile";
+export {default as MpegAudioFileSettings} from "./mpeg/mpegAudioFileSettings";
 export {default as MpegAudioHeader} from "./mpeg/mpegAudioHeader";
 export {
     ChannelMode as MpegAudioChannelMode,
     MpegVersion as MpegVersion
 } from "./mpeg/mpegEnums";
 export {default as MpegContainerFile} from "./mpeg/mpegContainerFile";
+export {default as MpegContainerFileSettings} from "./mpeg/mpegAudioFileSettings";
 export {default as MpegVbriHeader} from "./mpeg/vbriHeader";
 export {default as MpegVideoHeader} from "./mpeg/mpegVideoHeader";
 export {default as MpegXingHeader} from "./mpeg/xingHeader";
@@ -166,6 +168,7 @@ export {
     AviStream,
     AviStreamType
 } from "./riff/avi/aviStream";
+export {default as AviFileSettings} from "./riff/aviFileSettings";
 export {default as DivxTag} from "./riff/divxTag";
 export {default as InfoTag} from "./riff/infoTag";
 export {default as IRiffChunk} from "./riff/iRiffChunk";
@@ -174,6 +177,7 @@ export {default as RiffBitmapInfoHeader} from "./riff/riffBitmapInfoHeader";
 export {default as RiffList} from "./riff/riffList";
 export {default as RiffListTag} from "./riff/riffListTag";
 export {default as RiffWaveFormatEx} from "./riff/riffWaveFormatEx";
+export {default as WaveFileSettings} from "./riff/waveFileSettings";
 
 // XIPH ////////////////////////////////////////////////////////////////////
 export {default as XiphComment} from "./xiph/xiphComment";
