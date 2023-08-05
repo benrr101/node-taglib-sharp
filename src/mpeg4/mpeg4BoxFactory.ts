@@ -32,12 +32,12 @@ import Mpeg4BoxType from "./mpeg4BoxType";
 export default class Mpeg4BoxFactory {
     /**
      * Creates a box by reading it from a file given its header, parent header, handler, and index in its parent.
-     * @param file A {@see File} object containing the file to read from.
-     * @param header A {@see Mpeg4BoxHeader} object containing the header of the box to create.
-     * @param parent A {@see Mpeg4BoxHeader} object containing the header of the parent box.
-     * @param handler A {@see IsoHandlerBox} object containing the handler that applies to the new box.
+     * @param file A {@link File} object containing the file to read from.
+     * @param header A {@link Mpeg4BoxHeader} object containing the header of the box to create.
+     * @param parent A {@link Mpeg4BoxHeader} object containing the header of the parent box.
+     * @param handler A {@link IsoHandlerBox} object containing the handler that applies to the new box.
      * @param index  A value containing the index of the new box in its parent.
-     * @returns A newly created {@see Mpeg4Box} object.
+     * @returns A newly created {@link Mpeg4Box} object.
      */
     public static createBoxFromFileHeaderParentHandlerAndIndex(
         file: File,
@@ -48,24 +48,24 @@ export default class Mpeg4BoxFactory {
     ): Mpeg4Box {
         // The first few children of an "stsd" are sample entries.
         if (
-            ByteVector.equals(parent.boxType, Mpeg4BoxType.Stsd) &&
+            ByteVector.equals(parent.boxType, Mpeg4BoxType.STSD) &&
             parent.box instanceof IsoSampleDescriptionBox &&
             index < (parent.box as IsoSampleDescriptionBox).entryCount
         ) {
-            if (handler && ByteVector.equals(handler.handlerType, Mpeg4BoxType.Soun)) {
+            if (handler && ByteVector.equals(handler.handlerType, Mpeg4BoxType.SOUN)) {
                 return IsoAudioSampleEntry.fromHeaderFileAndHandler(header, file, handler);
             }
 
-            if (handler && ByteVector.equals(handler.handlerType, Mpeg4BoxType.Vide)) {
+            if (handler && ByteVector.equals(handler.handlerType, Mpeg4BoxType.VIDE)) {
                 return IsoVisualSampleEntry.fromHeaderFileAndHandler(header, file, handler);
             }
 
-            if (handler && ByteVector.equals(handler.handlerType, Mpeg4BoxType.Alis)) {
-                if (ByteVector.equals(header.boxType, Mpeg4BoxType.Text)) {
+            if (handler && ByteVector.equals(handler.handlerType, Mpeg4BoxType.ALIS)) {
+                if (ByteVector.equals(header.boxType, Mpeg4BoxType.TEXT)) {
                     return TextBox.fromHeaderFileAndHandler(header, file, handler);
                 }
 
-                if (ByteVector.equals(header.boxType, Mpeg4BoxType.Url)) {
+                if (ByteVector.equals(header.boxType, Mpeg4BoxType.URL)) {
                     return UrlBox.fromHeaderFileAndHandler(header, file, handler);
                 }
 
@@ -79,37 +79,37 @@ export default class Mpeg4BoxFactory {
         // Standard items...
         const type = header.boxType;
 
-        if (ByteVector.equals(type, Mpeg4BoxType.Mvhd)) {
+        if (ByteVector.equals(type, Mpeg4BoxType.MVHD)) {
             return IsoMovieHeaderBox.fromHeaderFileAndHandler(header, file, handler);
-        } else if (ByteVector.equals(type, Mpeg4BoxType.Stbl)) {
+        } else if (ByteVector.equals(type, Mpeg4BoxType.STBL)) {
             return IsoSampleTableBox.fromHeaderFileAndHandler(header, file, handler);
-        } else if (ByteVector.equals(type, Mpeg4BoxType.Stsd)) {
+        } else if (ByteVector.equals(type, Mpeg4BoxType.STSD)) {
             return IsoSampleDescriptionBox.fromHeaderFileAndHandler(header, file, handler);
-        } else if (ByteVector.equals(type, Mpeg4BoxType.Stco)) {
+        } else if (ByteVector.equals(type, Mpeg4BoxType.STCO)) {
             return IsoChunkOffsetBox.fromHeaderFileAndHandler(header, file, handler);
-        } else if (ByteVector.equals(type, Mpeg4BoxType.Co64)) {
+        } else if (ByteVector.equals(type, Mpeg4BoxType.CO64)) {
             return IsoChunkLargeOffsetBox.fromHeaderFileAndHandler(header, file, handler);
-        } else if (ByteVector.equals(type, Mpeg4BoxType.Hdlr)) {
+        } else if (ByteVector.equals(type, Mpeg4BoxType.HDLR)) {
             return IsoHandlerBox.fromHeaderFileAndHandler(header, file, handler);
-        } else if (ByteVector.equals(type, Mpeg4BoxType.Udta)) {
+        } else if (ByteVector.equals(type, Mpeg4BoxType.UDTA)) {
             return IsoUserDataBox.fromHeaderFileAndHandler(header, file, handler);
-        } else if (ByteVector.equals(type, Mpeg4BoxType.Meta)) {
+        } else if (ByteVector.equals(type, Mpeg4BoxType.META)) {
             return IsoMetaBox.fromHeaderFileAndHandler(header, file, handler);
-        } else if (ByteVector.equals(type, Mpeg4BoxType.Ilst)) {
+        } else if (ByteVector.equals(type, Mpeg4BoxType.ILST)) {
             return AppleItemListBox.fromHeaderFileAndHandler(header, file, handler);
-        } else if (ByteVector.equals(type, Mpeg4BoxType.Data)) {
+        } else if (ByteVector.equals(type, Mpeg4BoxType.DATA)) {
             return AppleDataBox.fromHeaderFileAndHandler(header, file, handler);
-        } else if (ByteVector.equals(type, Mpeg4BoxType.Esds)) {
+        } else if (ByteVector.equals(type, Mpeg4BoxType.ESDS)) {
             return AppleElementaryStreamDescriptor.fromHeaderFileAndHandler(header, file, handler);
-        } else if (ByteVector.equals(type, Mpeg4BoxType.Free) || ByteVector.equals(type, Mpeg4BoxType.Skip)) {
+        } else if (ByteVector.equals(type, Mpeg4BoxType.FREE) || ByteVector.equals(type, Mpeg4BoxType.SKIP)) {
             return IsoFreeSpaceBox.fromHeaderFileAndHandler(header, file, handler);
-        } else if (ByteVector.equals(type, Mpeg4BoxType.Mean) || ByteVector.equals(type, Mpeg4BoxType.Name)) {
+        } else if (ByteVector.equals(type, Mpeg4BoxType.MEAN) || ByteVector.equals(type, Mpeg4BoxType.NAME)) {
             return AppleAdditionalInfoBox.fromHeaderFileAndHandler(header, file, handler);
         }
 
         // If we still don't have a tag, and we're inside an ItemListBox, load the box as an
         // AnnotationBox (Apple tag item).
-        if (ByteVector.equals(parent.boxType, Mpeg4BoxType.Ilst)) {
+        if (ByteVector.equals(parent.boxType, Mpeg4BoxType.ILST)) {
             return AppleAnnotationBox.fromHeaderFileAndHandler(header, file, handler);
         }
 
@@ -120,12 +120,12 @@ export default class Mpeg4BoxFactory {
     /**
      * Creates a box by reading it from a file given its position in the file, parent header,
      * handler, and index in its parent.
-     * @param file A {@see File} object containing the file to read from.
+     * @param file A {@link File} object containing the file to read from.
      * @param position  A value specifying at what seek position in file to start reading.
-     * @param parent A {@see Mpeg4BoxHeader} object containing the header of the parent box.
-     * @param handler A {@see IsoHandlerBox} object containing the handler that applies to the new box.
+     * @param parent A {@link Mpeg4BoxHeader} object containing the header of the parent box.
+     * @param handler A {@link IsoHandlerBox} object containing the handler that applies to the new box.
      * @param index A value containing the index of the new box in its parent.
-     * @returns A newly created {@see Mpeg4Box} object.
+     * @returns A newly created {@link Mpeg4Box} object.
      */
     public static createBoxFromFilePositionParentHandlerAndIndex(
         file: File,
@@ -140,10 +140,10 @@ export default class Mpeg4BoxFactory {
 
     /**
      * Creates a box by reading it from a file given its position in the file and handler.
-     * @param file A {@see File} object containing the file to read from.
+     * @param file A {@link File} object containing the file to read from.
      * @param position A value specifying at what seek position in file to start reading.
-     * @param handler A {@see IsoHandlerBox} object containing the handler that applies to the new box.
-     * @returns A newly created {@see Mpeg4Box} object.
+     * @param handler A {@link IsoHandlerBox} object containing the handler that applies to the new box.
+     * @returns A newly created {@link Mpeg4Box} object.
      */
     public static createBoxFromFilePositionAndHandler(file: File, position: number, handler: IsoHandlerBox): Mpeg4Box {
         return Mpeg4BoxFactory.createBoxFromFilePositionAndHandler(file, position, handler);
@@ -151,9 +151,9 @@ export default class Mpeg4BoxFactory {
 
     /**
      *  Creates a box by reading it from a file given its position in the file.
-     * @param file A {@see File} object containing the file to read from.
+     * @param file A {@link File} object containing the file to read from.
      * @param position A value specifying at what seek position in file to start reading.
-     * @returns A newly created {@see Mpeg4Box} object.
+     * @returns A newly created {@link Mpeg4Box} object.
      */
     public static createBoxFromFileAndPosition(file: File, position: number): Mpeg4Box {
         return Mpeg4BoxFactory.createBoxFromFilePositionAndHandler(file, position, undefined);
@@ -161,10 +161,10 @@ export default class Mpeg4BoxFactory {
 
     /**
      * Creates a box by reading it from a file given its header and handler.
-     * @param file A {@see File} object containing the file to read from.
-     * @param header A {@see Mpeg4BoxHeader} object containing the header of the box to create.
-     * @param handler A {@see IsoHandlerBox} object containing the handler that applies to the new box.
-     * @returns A newly created {@see Mpeg4Box} object.
+     * @param file A {@link File} object containing the file to read from.
+     * @param header A {@link Mpeg4BoxHeader} object containing the header of the box to create.
+     * @param handler A {@link IsoHandlerBox} object containing the handler that applies to the new box.
+     * @returns A newly created {@link Mpeg4Box} object.
      */
     public static createBoxFromFileHeaderAndHandler(
         file: File,
@@ -182,9 +182,9 @@ export default class Mpeg4BoxFactory {
 
     /**
      * Creates a box by reading it from a file given its header and handler.
-     * @param file A {@see File} object containing the file to read from.
-     * @param header A {@see Mpeg4BoxHeader} object containing the header of the box to create.
-     * @returns A newly created {@see Mpeg4Box} object.
+     * @param file A {@link File} object containing the file to read from.
+     * @param header A {@link Mpeg4BoxHeader} object containing the header of the box to create.
+     * @returns A newly created {@link Mpeg4Box} object.
      */
     public static createBoxFromFileAndHeader(file: File, header: Mpeg4BoxHeader): Mpeg4Box {
         return Mpeg4BoxFactory.createBoxFromFileHeaderAndHandler(file, header, undefined);

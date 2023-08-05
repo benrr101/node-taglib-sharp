@@ -388,7 +388,7 @@ export abstract class Mpeg4Box {
         }
 
         // If there was a free, don't take it away, and let meta be a special case.
-        if (freeFound || ByteVector.equals(this.boxType, Mpeg4BoxType.Meta)) {
+        if (freeFound || ByteVector.equals(this.boxType, Mpeg4BoxType.META)) {
             const sizeDifference: number = this.dataSize - output.length;
 
             if (this._header.dataSize !== 0 && sizeDifference >= 8) {

@@ -171,6 +171,7 @@ export class NumberUtils {
     public static readonly BIG_ONE_THOUSAND = BigInt(1000);
     public static readonly TICKS_PER_MILLISECOND_BIG = BigInt(10000);
     public static readonly TICKS_PER_MILLISECOND_NUM = 10000;
+    public static readonly MAX_UINT = 4294967295;
 
     public static bigPow(x: bigint, y: number): bigint {
         Guards.uint(y, "y");
