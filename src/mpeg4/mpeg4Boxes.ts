@@ -10,7 +10,7 @@ import Mpeg4BoxHeader from "./mpeg4BoxHeader";
 import Mpeg4BoxType from "./mpeg4BoxType";
 import { Mpeg4BoxClassType } from "./mpeg4BoxClassType";
 
-/**
+/*
  * This file contains all boxes. All boxes had to be grouped into a single file due to circular dependencies
  * (e.g.: Mpeg4Box imports IsoHandlerBox while IsoHandlerBox extends Mpeg4Box and thus imports Mpeg4Box).
  * These circular dependencies cause runtime error: "Cannot access Mpeg4Box before initialization".
@@ -44,7 +44,7 @@ import { Mpeg4BoxClassType } from "./mpeg4BoxClassType";
  */
 export abstract class Mpeg4Box {
     /**
-     * Contains he data contained in the current instance.
+     * Contains the data contained in the current instance.
      */
     private _data: ByteVector;
 
@@ -88,7 +88,7 @@ export abstract class Mpeg4Box {
     /**
      * Protected constructor to force construction via static functions.
      */
-    protected constructor() { }
+    protected constructor() { /* no-op */ }
 
     /**
      * Initializes a new instance of @see Mpeg4Box with a specified header and handler.
@@ -134,42 +134,33 @@ export abstract class Mpeg4Box {
     }
 
     /**
-     * Gets and sets the data contained in the current instance.
+     * Gets the data contained in the current instance.
      */
-    public get data(): ByteVector {
-        return this._data;
-    }
-    public set data(v: ByteVector) {
-        this._data = v;
-    }
+    public get data(): ByteVector { return this._data; }
+    /**
+     * Sets the data contained in the current instance.
+     */
+    public set data(v: ByteVector) { this._data = v; }
 
     /**
      * Gets whether or not the current instance has children.
      */
-    public get hasChildren(): boolean {
-        return this.children && this.children.length > 0;
-    }
+    public get hasChildren(): boolean { return this.children && this.children.length > 0; }
 
     /**
      * Gets the handler box that applies to the current instance.
      */
-    public get handler(): IsoHandlerBox {
-        return this._handler;
-    }
+    public get handler(): IsoHandlerBox { return this._handler; }
 
     /**
      * Gets the size of the data contained in the current instance, minus the size of any box specific headers.
      */
-    protected get dataSize(): number {
-        return this._header.dataSize + this._baseDataPosition - this.dataPosition;
-    }
+    protected get dataSize(): number { return this._header.dataSize + this._baseDataPosition - this.dataPosition; }
 
     /**
      * Gets the header of the current instance.
      */
-    protected get header(): Mpeg4BoxHeader {
-        return this._header;
-    }
+    protected get header(): Mpeg4BoxHeader { return this._header; }
 
     /**
      * Renders the current instance, including its children, to a new ByteVector object.
@@ -435,7 +426,7 @@ export abstract class Mpeg4Box {
     }
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// /////////////////////////////////////////////////////////////////////////
 
 /**
  * This class extends @see Mpeg4Box to provide an implementation of a ISO/IEC 14496-12 FullBox.
@@ -482,6 +473,7 @@ export abstract class FullBox extends Mpeg4Box {
      * Initializes a new instance of @see FullBox with a provided header, version, and flags.
      * @param header A @see Mpeg4BoxHeader object containing the header to use for the new instance.
      * @param version A value containing the version of the new instance.
+     * @param flags Flags for the box
      */
     protected initializeFromHeaderVersionAndFlags(header: Mpeg4BoxHeader, version: number, flags: number): void {
         this.initializeFromHeader(header);
@@ -509,21 +501,22 @@ export abstract class FullBox extends Mpeg4Box {
      * @returns A @see ByteVector object containing the rendered version of the current instance.
      */
     protected renderUsingTopData(topData: ByteVector): ByteVector {
-        const output: ByteVector = ByteVector.concatenate(this.version, ByteVector.fromUint(this.flags).subarray(1, 3), topData);
+        const output: ByteVector = ByteVector.concatenate(
+            this.version,
+            ByteVector.fromUint(this.flags).subarray(1, 3),
+            topData
+        );
 
         return super.renderUsingTopData(output);
     }
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// /////////////////////////////////////////////////////////////////////////
 
 /**
  *  This class extends @see FullBox to provide an implementation of an Apple AdditionalInfoBox.
  */
 export class AppleAdditionalInfoBox extends FullBox {
-    /** @inheritDoc */
-    public get boxClassType(): Mpeg4BoxClassType { return Mpeg4BoxClassType.AppleAdditionalInfoBox; }
-
     /**
      * Private constructor to force construction via static functions.
      */
@@ -539,12 +532,32 @@ export class AppleAdditionalInfoBox extends FullBox {
      * @param handler A @see IsoHandlerBox object containing the handler that applies to the new instance.
      * @returns A new instance of @see AppleAdditionalInfoBox.
      */
-    public static fromHeaderFileAndHandler(header: Mpeg4BoxHeader, file: File, handler: IsoHandlerBox): AppleAdditionalInfoBox {
+    public static fromHeaderFileAndHandler(
+        header: Mpeg4BoxHeader,
+        file: File,
+        handler: IsoHandlerBox
+    ): AppleAdditionalInfoBox {
         const instance: AppleAdditionalInfoBox = new AppleAdditionalInfoBox();
         instance.initializeFromHeaderFileAndHandler(header, file, handler);
         instance.data = file.readBlock(instance.dataSize > 0 ? instance.dataSize : 0);
 
         return instance;
+    }
+
+    /** @inheritDoc */
+    public get boxClassType(): Mpeg4BoxClassType { return Mpeg4BoxClassType.AppleAdditionalInfoBox; }
+
+    /**
+     * Gets the text contained in the current instance.
+     */
+    public get text(): string {
+        return StringUtils.trimStart(this.data.toString(StringType.Latin1), "\0");
+    }
+    /**
+     * Sets the text contained in the current instance.
+     */
+    public set text(v: string) {
+        this.data = ByteVector.fromString(v, StringType.Latin1);
     }
 
     /**
@@ -560,27 +573,14 @@ export class AppleAdditionalInfoBox extends FullBox {
 
         return instance;
     }
-
-    /**
-     * Gets and sets the text contained in the current instance.
-     */
-    public get text(): string {
-        return StringUtils.trimStart(this.data.toString(StringType.Latin1), "\0");
-    }
-    public set text(v: string) {
-        this.data = ByteVector.fromString(v, StringType.Latin1);
-    }
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// /////////////////////////////////////////////////////////////////////////
 
 /**
  * This class extends @see Mpeg4Box to provide an implementation of an Apple AnnotationBox.
  */
-export default class AppleAnnotationBox extends Mpeg4Box {
-    /** @inheritDoc */
-    public get boxClassType(): Mpeg4BoxClassType { return Mpeg4BoxClassType.AppleAnnotationBox; }
-
+export class AppleAnnotationBox extends Mpeg4Box {
     /**
      * Private constructor to force construction via static functions.
      */
@@ -596,7 +596,11 @@ export default class AppleAnnotationBox extends Mpeg4Box {
      * @param handler A @see IsoHandlerBox object containing the handler that applies to the new instance.
      * @returns A new instance of @see AppleAnnotationBox
      */
-    public static fromHeaderFileAndHandler(header: Mpeg4BoxHeader, file: File, handler: IsoHandlerBox): AppleAnnotationBox {
+    public static fromHeaderFileAndHandler(
+        header: Mpeg4BoxHeader,
+        file: File,
+        handler: IsoHandlerBox
+    ): AppleAnnotationBox {
         Guards.notNullOrUndefined(file, "file");
 
         const instance: AppleAnnotationBox = new AppleAnnotationBox();
@@ -618,17 +622,17 @@ export default class AppleAnnotationBox extends Mpeg4Box {
 
         return instance;
     }
+
+    /** @inheritDoc */
+    public get boxClassType(): Mpeg4BoxClassType { return Mpeg4BoxClassType.AppleAnnotationBox; }
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// /////////////////////////////////////////////////////////////////////////
 
 /**
  * This class extends @see FullBox to provide an implementation of an Apple DataBox.
  */
 export class AppleDataBox extends FullBox {
-    /** @inheritDoc */
-    public get boxClassType(): Mpeg4BoxClassType { return Mpeg4BoxClassType.AppleDataBox; }
-
     /**
      * Private constructor to force construction via static functions.
      */
@@ -670,12 +674,20 @@ export class AppleDataBox extends FullBox {
         return instance;
     }
 
+    /** @inheritDoc */
+    public get boxClassType(): Mpeg4BoxClassType { return Mpeg4BoxClassType.AppleDataBox; }
+
     /**
-     * Gets and sets the text contained in the current instance.
+     * Gets the text contained in the current instance.
      */
     public get text(): string {
-        return (this.flags & (<number>AppleDataBoxFlagType.ContainsText)) !== 0 ? this.data.toString(StringType.UTF8) : undefined;
+        return NumberUtils.hasFlag(this.flags, AppleDataBoxFlagType.ContainsText)
+            ? this.data.toString(StringType.UTF8)
+            : undefined;
     }
+    /**
+     * Sets the text contained in the current instance.
+     */
     public set text(v: string) {
         this.flags = <number>AppleDataBoxFlagType.ContainsText;
         this.data = ByteVector.fromString(v, StringType.UTF8);
@@ -694,7 +706,7 @@ export class AppleDataBox extends FullBox {
     }
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// /////////////////////////////////////////////////////////////////////////
 
 /**
  * This class extends @see FullBox to provide an implementation of an Apple ElementaryStreamDescriptor.
@@ -781,9 +793,6 @@ export class AppleElementaryStreamDescriptor extends FullBox {
      */
     public decoderConfig: ByteVector;
 
-    /** @inheritDoc */
-    public get boxClassType(): Mpeg4BoxClassType { return Mpeg4BoxClassType.AppleElementaryStreamDescriptor; }
-
     /**
      * Private constructor to force construction via static functions.
      */
@@ -799,7 +808,11 @@ export class AppleElementaryStreamDescriptor extends FullBox {
      * @param handler A @see IsoHandlerBox object containing the handler that applies to the new instance.
      * @returns A new instance of @see AppleElementaryStreamDescriptor
      */
-    public static fromHeaderFileAndHandler(header: Mpeg4BoxHeader, file: File, handler: IsoHandlerBox): AppleElementaryStreamDescriptor {
+    public static fromHeaderFileAndHandler(
+        header: Mpeg4BoxHeader,
+        file: File,
+        handler: IsoHandlerBox
+    ): AppleElementaryStreamDescriptor {
         /* ES_Descriptor Specifications
          *  Section 7.2.6.5 http://ecee.colorado.edu/~ecen5653/ecen5653/papers/ISO%2014496-1%202004.PDF
          */
@@ -816,7 +829,11 @@ export class AppleElementaryStreamDescriptor extends FullBox {
         }
 
         // We have a descriptor tag. Check that the remainder of the tag is at least
-        // [Base (3 bytes) + DecoderConfigDescriptor (15 bytes) + SLConfigDescriptor (3 bytes) + OtherDescriptors] bytes long
+        // [
+        //   Base (3 bytes) +
+        //   DecoderConfigDescriptor (15 bytes) +
+        //   SLConfigDescriptor (3 bytes) + OtherDescriptors
+        // ] bytes long
         const esLength: number = reader.readLength();
         let minEsLength: number = 3 + 15 + 3; // Base minimum length
 
@@ -828,16 +845,19 @@ export class AppleElementaryStreamDescriptor extends FullBox {
         reader.increaseOffset(2); // Done with ES_ID
 
         // 1st bit
-        instance.streamDependenceFlag = (NumberUtils.uintAnd(NumberUtils.uintRShift(boxData.get(reader.offset), 7), 0x1)) === 0x1;
+        const flagByte = boxData.get(reader.offset);
+        instance.streamDependenceFlag = NumberUtils.uintAnd(NumberUtils.uintRShift(flagByte, 7),0x1) === 0x1;
 
         // 2nd bit
-        instance.urlFlag = (NumberUtils.uintAnd(NumberUtils.uintRShift(boxData.get(reader.offset), 6), 0x1)) === 0x1;
+        instance.urlFlag = NumberUtils.uintAnd(NumberUtils.uintRShift(flagByte, 6), 0x1) === 0x1;
 
         // 3rd bit
-        instance.ocrStreamFlag = (NumberUtils.uintAnd(NumberUtils.uintRShift(boxData.get(reader.offset), 5), 0x1)) === 0x1;
+        instance.ocrStreamFlag = NumberUtils.uintAnd(NumberUtils.uintRShift(flagByte, 5), 0x1) === 0x1;
 
         // Last 5 bits and we're done with this byte
-        instance.streamPriority = (NumberUtils.uintAnd(boxData.get(reader.increaseOffset(1)), 0x1f));
+        instance.streamPriority = NumberUtils.uintAnd(flagByte, 0x1f);
+
+        reader.increaseOffset(1);
 
         if (instance.streamDependenceFlag) {
             minEsLength += 2; // We need 2 more bytes
@@ -864,8 +884,9 @@ export class AppleElementaryStreamDescriptor extends FullBox {
                 throw new Error("Insufficient data present.");
             }
 
-            instance.urlString = boxData.subarray(reader.offset, instance.urlLength).toString(StringType.UTF8); // URL name
-            reader.increaseOffset(instance.urlLength); // Done with URL name
+            // URL name
+            instance.urlString = boxData.subarray(reader.offset, instance.urlLength).toString(StringType.UTF8);
+            reader.increaseOffset(instance.urlLength);
         }
 
         if (instance.ocrStreamFlag) {
@@ -895,13 +916,16 @@ export class AppleElementaryStreamDescriptor extends FullBox {
                         }
 
                         // Read a lot of good info.
-                        instance.objectTypeId = boxData.get(reader.increaseOffset(1));
+                        instance.objectTypeId = boxData.get(reader.offset);
+                        reader.increaseOffset(1);
 
                         // First 6 bits
-                        instance.streamType = NumberUtils.uintRShift(boxData.get(reader.offset), 2);
+                        const streamByte = boxData.get(reader.offset);
+                        instance.streamType = NumberUtils.uintRShift(streamByte, 2);
 
                         // 7th bit and we're done with the stream bits
-                        instance.upStream = (NumberUtils.uintAnd(NumberUtils.uintRShift(boxData.get(reader.increaseOffset(1)), 1), 0x1)) === 0x1;
+                        instance.upStream = NumberUtils.uintAnd(NumberUtils.uintRShift(streamByte, 1), 0x1) === 0x1;
+                        reader.increaseOffset(1);
 
                         instance.bufferSizeDB = boxData.subarray(reader.offset, 3).toUint();
                         reader.increaseOffset(3); // Done with bufferSizeDB
@@ -964,20 +988,20 @@ export class AppleElementaryStreamDescriptor extends FullBox {
         return instance;
     }
 
+    /** @inheritDoc */
+    public get boxClassType(): Mpeg4BoxClassType { return Mpeg4BoxClassType.AppleElementaryStreamDescriptor; }
+
     public static calculateBitRate(bitrate: number): number {
         return bitrate / 1000;
     }
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// /////////////////////////////////////////////////////////////////////////
 
 /**
  * This class extends @see Mpeg4Box to provide an implementation of an Apple ItemListBox.
  */
 export class AppleItemListBox extends Mpeg4Box {
-    /** @inheritDoc */
-    public get boxClassType(): Mpeg4BoxClassType { return Mpeg4BoxClassType.AppleItemListBox; }
-
     /**
      * Private constructor to force construction via static functions.
      */
@@ -993,7 +1017,11 @@ export class AppleItemListBox extends Mpeg4Box {
      * @param handler A @see IsoHandlerBox object containing the handler that applies to the new instance.
      * @returns A new instance of @see AppleItemListBox
      */
-    public static fromHeaderFileAndHandler(header: Mpeg4BoxHeader, file: File, handler: IsoHandlerBox): AppleItemListBox {
+    public static fromHeaderFileAndHandler(
+        header: Mpeg4BoxHeader,
+        file: File,
+        handler: IsoHandlerBox
+    ): AppleItemListBox {
         Guards.notNullOrUndefined(file, "file");
 
         const instance: AppleItemListBox = new AppleItemListBox();
@@ -1015,17 +1043,17 @@ export class AppleItemListBox extends Mpeg4Box {
 
         return instance;
     }
+
+    /** @inheritDoc */
+    public get boxClassType(): Mpeg4BoxClassType { return Mpeg4BoxClassType.AppleItemListBox; }
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// /////////////////////////////////////////////////////////////////////////
 
 /**
  * This class extends @see Mpeg4Box to provide an implementation of a ISO/IEC 14496-12 SampleEntry.
  */
 export class IsoSampleEntry extends Mpeg4Box {
-    /** @inheritDoc */
-    public get boxClassType(): Mpeg4BoxClassType { return Mpeg4BoxClassType.IsoSampleEntry; }
-
     /**
      * The data reference index of the current instance.
      */
@@ -1055,6 +1083,9 @@ export class IsoSampleEntry extends Mpeg4Box {
         return instance;
     }
 
+    /** @inheritDoc */
+    public get boxClassType(): Mpeg4BoxClassType { return Mpeg4BoxClassType.IsoSampleEntry; }
+
     /**
      * Constructs and initializes a new instance of @see IsoSampleEntry with a provided header and
      * handler by reading the contents from a specified file.
@@ -1080,7 +1111,7 @@ export class IsoSampleEntry extends Mpeg4Box {
     }
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// /////////////////////////////////////////////////////////////////////////
 
 /**
  * This class extends @see IsoSampleEntry and implements @see IAudioCodec to provide an implementation of a
@@ -1102,9 +1133,6 @@ export class IsoAudioSampleEntry extends IsoSampleEntry implements IAudioCodec {
      */
     public audioSampleRate: number;
 
-    /** @inheritDoc */
-    public get boxClassType(): Mpeg4BoxClassType { return Mpeg4BoxClassType.IsoAudioSampleEntry; }
-
     /**
      * Private constructor to force construction via static functions.
      */
@@ -1120,15 +1148,21 @@ export class IsoAudioSampleEntry extends IsoSampleEntry implements IAudioCodec {
      * @param handler A @see IsoHandlerBox object containing the handler that applies to the new instance.
      * @returns A new instance of @see IsoVisualSampleEntry
      */
-    public static fromHeaderFileAndHandler(header: Mpeg4BoxHeader, file: File, handler: IsoHandlerBox): IsoAudioSampleEntry {
+    public static fromHeaderFileAndHandler(
+        header: Mpeg4BoxHeader,
+        file: File,
+        handler: IsoHandlerBox
+    ): IsoAudioSampleEntry {
         Guards.notNullOrUndefined(file, "file");
 
         const instance: IsoAudioSampleEntry = new IsoAudioSampleEntry();
         instance.initializeFromHeaderFileAndHandler(header, file, handler);
         const dataPositionBeforeIncrease: number = instance.increaseDataPosition(20);
+
         file.seek(dataPositionBeforeIncrease + 8);
         instance.audioChannels = file.readBlock(2).toUshort();
         instance.audioSampleSize = file.readBlock(2).toUshort();
+
         file.seek(dataPositionBeforeIncrease + 16);
         const sampleRate: number = file.readBlock(4).toUint();
         instance.audioSampleRate = IsoAudioSampleEntry.calculateAudioSampleRate(sampleRate);
@@ -1137,26 +1171,23 @@ export class IsoAudioSampleEntry extends IsoSampleEntry implements IAudioCodec {
         return instance;
     }
 
+    /** @inheritDoc */
+    public get boxClassType(): Mpeg4BoxClassType { return Mpeg4BoxClassType.IsoAudioSampleEntry; }
+
     /**
      * Gets the duration of the media represented by the current instance.
      */
-    public get durationMilliseconds(): number {
-        return 0;
-    }
+    public get durationMilliseconds(): number { return 0; }
 
     /**
      *  Gets the types of media represented by the current instance.
      */
-    public get mediaTypes(): MediaTypes {
-        return MediaTypes.Audio;
-    }
+    public get mediaTypes(): MediaTypes { return MediaTypes.Audio; }
 
     /**
      *  Gets a text description of the media represented by the current instance.
      */
-    public get description(): string {
-        return `MPEG-4 Audio (${this.boxType.toString(StringType.Latin1)})`;
-    }
+    public get description(): string { return `MPEG-4 Audio (${this.boxType.toString(StringType.Latin1)})`; }
 
     /**
      * Gets the bitrate of the audio represented by the current instance.
@@ -1164,7 +1195,7 @@ export class IsoAudioSampleEntry extends IsoSampleEntry implements IAudioCodec {
     public get audioBitrate(): number {
         const esds: Mpeg4Box = this.getChildRecursively(ByteVector.fromString("esds", StringType.UTF8));
 
-        // If we don't have an stream descriptor, we don't know what's what.
+        // If we don't have a stream descriptor, we don't know what's what.
         if (!(esds instanceof AppleElementaryStreamDescriptor)) {
             return 0;
         }
@@ -1178,7 +1209,7 @@ export class IsoAudioSampleEntry extends IsoSampleEntry implements IAudioCodec {
     }
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// /////////////////////////////////////////////////////////////////////////
 
 /**
  *  This class extends @see FullBox to provide an implementation of a ISO/IEC 14496-12 ChunkLargeOffsetBox.
@@ -1188,9 +1219,6 @@ export class IsoChunkLargeOffsetBox extends FullBox {
      * The offset table contained in the current instance.
      */
     public offsets: number[];
-
-    /** @inheritDoc */
-    public get boxClassType(): Mpeg4BoxClassType { return Mpeg4BoxClassType.IsoChunkLargeOffsetBox; }
 
     /**
      * Private constructor to force construction via static functions.
@@ -1207,7 +1235,11 @@ export class IsoChunkLargeOffsetBox extends FullBox {
      * @param handler A @see IsoHandlerBox object containing the handler that applies to the new instance.
      * @returns
      */
-    public static fromHeaderFileAndHandler(header: Mpeg4BoxHeader, file: File, handler: IsoHandlerBox): IsoChunkLargeOffsetBox {
+    public static fromHeaderFileAndHandler(
+        header: Mpeg4BoxHeader,
+        file: File,
+        handler: IsoHandlerBox
+    ): IsoChunkLargeOffsetBox {
         const instance: IsoChunkLargeOffsetBox = new IsoChunkLargeOffsetBox();
         instance.initializeFromHeaderFileAndHandler(header, file, handler);
 
@@ -1221,6 +1253,9 @@ export class IsoChunkLargeOffsetBox extends FullBox {
 
         return instance;
     }
+
+    /** @inheritDoc */
+    public get boxClassType(): Mpeg4BoxClassType { return Mpeg4BoxClassType.IsoChunkLargeOffsetBox; }
 
     /**
      * Gets and sets the data contained in the current instance.
@@ -1236,8 +1271,8 @@ export class IsoChunkLargeOffsetBox extends FullBox {
 
     /**
      * Overwrites the existing box in the file after updating the table for a size change.
-     * @param file A @see File object containing the file to which the current instance belongs and wo which modifications
-     * must be applied.
+     * @param file A @see File object containing the file to which the current instance belongs
+     *    and wo which modifications must be applied.
      * @param sizeDifference A value containing the size change that occurred in the file.
      * @param after A value containing the position in the file after which offsets will be invalidated. If an
      * offset is before this point, it won't be updated.
@@ -1265,7 +1300,7 @@ export class IsoChunkLargeOffsetBox extends FullBox {
     }
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// /////////////////////////////////////////////////////////////////////////
 
 /**
  * This class extends @see FullBox to provide an implementation of a ISO/IEC 14496-12 ChunkOffsetBox.
@@ -1275,9 +1310,6 @@ export class IsoChunkOffsetBox extends FullBox {
      * The offset table contained in the current instance.
      */
     public offsets: number[];
-
-    /** @inheritDoc */
-    public get boxClassType(): Mpeg4BoxClassType { return Mpeg4BoxClassType.IsoChunkOffsetBox; }
 
     /**
      * Private constructor to force construction via static functions.
@@ -1294,7 +1326,11 @@ export class IsoChunkOffsetBox extends FullBox {
      * @param handler A @see IsoHandlerBox object containing the handler that applies to the new instance.
      * @returns
      */
-    public static fromHeaderFileAndHandler(header: Mpeg4BoxHeader, file: File, handler: IsoHandlerBox): IsoChunkOffsetBox {
+    public static fromHeaderFileAndHandler(
+        header: Mpeg4BoxHeader,
+        file: File,
+        handler: IsoHandlerBox
+    ): IsoChunkOffsetBox {
         const instance: IsoChunkOffsetBox = new IsoChunkOffsetBox();
         instance.initializeFromHeaderFileAndHandler(header, file, handler);
 
@@ -1308,6 +1344,9 @@ export class IsoChunkOffsetBox extends FullBox {
 
         return instance;
     }
+
+    /** @inheritDoc */
+    public get boxClassType(): Mpeg4BoxClassType { return Mpeg4BoxClassType.IsoChunkOffsetBox; }
 
     /**
      * Gets and sets the data contained in the current instance.
@@ -1324,8 +1363,8 @@ export class IsoChunkOffsetBox extends FullBox {
 
     /**
      * Overwrites the existing box in the file after updating the table for a size change.
-     * @param file A @see File object containing the file to which the current instance belongs and wo which modifications
-     * must be applied.
+     * @param file A @see File object containing the file to which the current instance belongs and
+     *     wo which modifications must be applied.
      * @param sizeDifference A value containing the size change that occurred in the file.
      * @param after A value containing the position in the file after which offsets will be invalidated. If an
      * offset is before this point, it won't be updated.
@@ -1353,7 +1392,7 @@ export class IsoChunkOffsetBox extends FullBox {
     }
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// /////////////////////////////////////////////////////////////////////////
 
 /**
  *  This class extends @see Mpeg4Box to provide an implementation of a ISO/IEC 14496-12 FreeSpaceBox.
@@ -1363,9 +1402,6 @@ export class IsoFreeSpaceBox extends Mpeg4Box {
      * Contains the size of the padding.
      */
     public padding: number;
-
-    /** @inheritDoc */
-    public get boxClassType(): Mpeg4BoxClassType { return Mpeg4BoxClassType.IsoFreeSpaceBox; }
 
     /**
      * Private constructor to force construction via static functions.
@@ -1382,7 +1418,11 @@ export class IsoFreeSpaceBox extends Mpeg4Box {
      * @param handler A @see IsoHandlerBox object containing the handler that applies to the new instance.
      * @returns A new instance of @see IsoFreeSpaceBox
      */
-    public static fromHeaderFileAndHandler(header: Mpeg4BoxHeader, file: File, handler: IsoHandlerBox): IsoFreeSpaceBox {
+    public static fromHeaderFileAndHandler(
+        header: Mpeg4BoxHeader,
+        file: File,
+        handler: IsoHandlerBox
+    ): IsoFreeSpaceBox {
         const instance: IsoFreeSpaceBox = new IsoFreeSpaceBox();
         instance.initializeFromHeaderAndHandler(header, handler);
         instance.padding = instance.dataSize;
@@ -1403,30 +1443,38 @@ export class IsoFreeSpaceBox extends Mpeg4Box {
         return instance;
     }
 
+    /** @inheritDoc */
+    public get boxClassType(): Mpeg4BoxClassType { return Mpeg4BoxClassType.IsoFreeSpaceBox; }
+
     /**
-     * Gets and sets the data contained in the current instance.
-     * @returns A @see ByteVector object containing the data contained in the current instance.
+     * Gets the data contained in the current instance.
      */
     public get data(): ByteVector {
         return ByteVector.fromSize(this.padding);
     }
+    /**
+     * Sets the data contained in the current instance.
+     */
     public set data(v: ByteVector) {
         this.padding = v ? v.length : 0;
     }
 
     /**
-     * Gets and sets the size the current instance will occupy when rendered.
+     * Gets the size the current instance will occupy when rendered.
      * @returns A value containing the size the current instance will occupy when rendered.
      */
     public get paddingSize(): number {
         return this.padding + 8;
     }
+    /**
+     * Sets the size the current instance will occupy when rendered.
+     */
     public set paddingSize(v: number) {
         this.padding = v - 8;
     }
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// /////////////////////////////////////////////////////////////////////////
 
 /**
  * This class extends @see FullBox to provide an implementation of a ISO/IEC 14496-12 FullBox.
@@ -1441,9 +1489,6 @@ export class IsoHandlerBox extends FullBox {
      * Contains the name of the current instance.
      */
     public name: string;
-
-    /** @inheritDoc */
-    public get boxClassType(): Mpeg4BoxClassType { return Mpeg4BoxClassType.IsoHandlerBox; }
 
     /**
      * Private constructor to force construction via static functions.
@@ -1501,31 +1546,29 @@ export class IsoHandlerBox extends FullBox {
         return instance;
     }
 
+    /** @inheritDoc */
+    public get boxClassType(): Mpeg4BoxClassType { return Mpeg4BoxClassType.IsoHandlerBox; }
+
     /**
      * Gets the data contained in the current instance.
      */
     public get data(): ByteVector {
-        const output: ByteVector = ByteVector.concatenate(
+        return ByteVector.concatenate(
             ByteVector.fromSize(4),
             this.handlerType,
             ByteVector.fromSize(12),
             ByteVector.fromString(this.name, StringType.UTF8),
             ByteVector.fromSize(2)
         );
-
-        return output;
     }
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// /////////////////////////////////////////////////////////////////////////
 
 /**
  * This class extends @see FullBox to provide an implementation of a ISO/IEC 14496-12 MetaBox.
  */
 export class IsoMetaBox extends FullBox {
-    /** @inheritDoc */
-    public get boxClassType(): Mpeg4BoxClassType { return Mpeg4BoxClassType.IsoMetaBox; }
-
     /**
      * Private constructor to force construction via static functions.
      */
@@ -1569,9 +1612,12 @@ export class IsoMetaBox extends FullBox {
 
         return instance;
     }
+
+    /** @inheritDoc */
+    public get boxClassType(): Mpeg4BoxClassType { return Mpeg4BoxClassType.IsoMetaBox; }
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// /////////////////////////////////////////////////////////////////////////
 
 /**
  * This class extends @see FullBox to provide an implementation of a ISO/IEC 14496-12 MovieHeaderBox.
@@ -1607,9 +1653,6 @@ export class IsoMovieHeaderBox extends FullBox {
      */
     public volume: number;
 
-    /** @inheritDoc */
-    public get boxClassType(): Mpeg4BoxClassType { return Mpeg4BoxClassType.IsoMovieHeaderBox; }
-
     /**
      * Private constructor to force construction via static functions.
      */
@@ -1625,7 +1668,11 @@ export class IsoMovieHeaderBox extends FullBox {
      * @param handler A @see IsoHandlerBox object containing the handler that applies to the new instance.
      * @returns A new instance of @see IsoMovieHeaderBox
      */
-    public static fromHeaderFileAndHandler(header: Mpeg4BoxHeader, file: File, handler: IsoHandlerBox): IsoMovieHeaderBox {
+    public static fromHeaderFileAndHandler(
+        header: Mpeg4BoxHeader,
+        file: File,
+        handler: IsoHandlerBox
+    ): IsoMovieHeaderBox {
         Guards.notNullOrUndefined(file, "file");
 
         const instance: IsoMovieHeaderBox = new IsoMovieHeaderBox();
@@ -1656,7 +1703,10 @@ export class IsoMovieHeaderBox extends FullBox {
 
             if (data.length >= 28) {
                 duration = Number(data.subarray(20, 8).toUlong());
-                instance.durationInMilliseconds = IsoMovieHeaderBox.calculateDurationInMilliseconds(duration, timescale);
+                instance.durationInMilliseconds = IsoMovieHeaderBox.calculateDurationInMilliseconds(
+                    duration,
+                    timescale
+                );
             }
 
             bytesRemaining -= 28;
@@ -1682,7 +1732,10 @@ export class IsoMovieHeaderBox extends FullBox {
 
             if (data.length >= 16) {
                 duration = data.subarray(12, 4).toUint();
-                instance.durationInMilliseconds = IsoMovieHeaderBox.calculateDurationInMilliseconds(duration, timescale);
+                instance.durationInMilliseconds = IsoMovieHeaderBox.calculateDurationInMilliseconds(
+                    duration,
+                    timescale
+                );
             }
 
             bytesRemaining -= 16;
@@ -1710,6 +1763,9 @@ export class IsoMovieHeaderBox extends FullBox {
         return instance;
     }
 
+    /** @inheritDoc */
+    public get boxClassType(): Mpeg4BoxClassType { return Mpeg4BoxClassType.IsoMovieHeaderBox; }
+
     private static calculateDurationInMilliseconds(duration: number, timescale: number): number {
         // The length is the number of ticks divided by ticks per second.
         return (duration / timescale) * 1000;
@@ -1724,7 +1780,7 @@ export class IsoMovieHeaderBox extends FullBox {
     }
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// /////////////////////////////////////////////////////////////////////////
 
 /**
  * This class extends @see FullBox to provide an implementation of a ISO/IEC 14496-12 SampleDescriptionBox.
@@ -1735,9 +1791,6 @@ export class IsoSampleDescriptionBox extends FullBox {
      * of @see IsoVisualSampleEntry" objects, depending on the handler.
      */
     public entryCount: number;
-
-    /** @inheritDoc */
-    public get boxClassType(): Mpeg4BoxClassType { return Mpeg4BoxClassType.IsoSampleDescriptionBox; }
 
     /**
      * Private constructor to force construction via static functions.
@@ -1754,7 +1807,11 @@ export class IsoSampleDescriptionBox extends FullBox {
      * @param handler A @see IsoHandlerBox object containing the handler that applies to the new instance.
      * @returns A new instance of @see IsoSampleDescriptionBox
      */
-    public static fromHeaderFileAndHandler(header: Mpeg4BoxHeader, file: File, handler: IsoHandlerBox): IsoSampleDescriptionBox {
+    public static fromHeaderFileAndHandler(
+        header: Mpeg4BoxHeader,
+        file: File,
+        handler: IsoHandlerBox
+    ): IsoSampleDescriptionBox {
         Guards.notNullOrUndefined(file, "file");
 
         const instance: IsoSampleDescriptionBox = new IsoSampleDescriptionBox();
@@ -1765,17 +1822,17 @@ export class IsoSampleDescriptionBox extends FullBox {
 
         return instance;
     }
+
+    /** @inheritDoc */
+    public get boxClassType(): Mpeg4BoxClassType { return Mpeg4BoxClassType.IsoSampleDescriptionBox; }
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// /////////////////////////////////////////////////////////////////////////
 
 /**
  * This class extends @see Mpeg4Box to provide an implementation of a ISO/IEC 14496-12 SampleTableBox.
  */
 export class IsoSampleTableBox extends Mpeg4Box {
-    /** @inheritDoc */
-    public get boxClassType(): Mpeg4BoxClassType { return Mpeg4BoxClassType.IsoSampleTableBox; }
-
     /**
      * Private constructor to force construction via static functions.
      */
@@ -1791,7 +1848,11 @@ export class IsoSampleTableBox extends Mpeg4Box {
      * @param handler A @see IsoHandlerBox object containing the handler that applies to the new instance.
      * @returns A new instance of @see IsoSampleTableBox
      */
-    public static fromHeaderFileAndHandler(header: Mpeg4BoxHeader, file: File, handler: IsoHandlerBox): IsoSampleTableBox {
+    public static fromHeaderFileAndHandler(
+        header: Mpeg4BoxHeader,
+        file: File,
+        handler: IsoHandlerBox
+    ): IsoSampleTableBox {
         Guards.notNullOrUndefined(file, "file");
 
         const instance: IsoSampleTableBox = new IsoSampleTableBox();
@@ -1800,9 +1861,12 @@ export class IsoSampleTableBox extends Mpeg4Box {
 
         return instance;
     }
+
+    /** @inheritDoc */
+    public get boxClassType(): Mpeg4BoxClassType { return Mpeg4BoxClassType.IsoSampleTableBox; }
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// /////////////////////////////////////////////////////////////////////////
 
 /**
  * This class extends @see Mpeg4Box to provide an implementation of a ISO/IEC 14496-12 UserDataBox.
@@ -1812,9 +1876,6 @@ export class IsoUserDataBox extends Mpeg4Box {
      *  Gets the box headers for the current "udta" box and all parent boxes up to the top of the file.
      */
     public parentTree: Mpeg4BoxHeader[];
-
-    /** @inheritDoc */
-    public get boxClassType(): Mpeg4BoxClassType { return Mpeg4BoxClassType.IsoUserDataBox; }
 
     /**
      * Private constructor to force construction via static functions.
@@ -1852,9 +1913,12 @@ export class IsoUserDataBox extends Mpeg4Box {
 
         return instance;
     }
+
+    /** @inheritDoc */
+    public get boxClassType(): Mpeg4BoxClassType { return Mpeg4BoxClassType.IsoUserDataBox; }
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// /////////////////////////////////////////////////////////////////////////
 
 /**
  * This class extends @see IsoSampleEntry and implements @see IVideoCodec to provide an implementation of a
@@ -1871,9 +1935,6 @@ export class IsoVisualSampleEntry extends IsoSampleEntry implements IVideoCodec 
      */
     public videoHeight: number;
 
-    /** @inheritDoc */
-    public get boxClassType(): Mpeg4BoxClassType { return Mpeg4BoxClassType.IsoVisualSampleEntry; }
-
     /**
      * Private constructor to force construction via static functions.
      */
@@ -1881,7 +1942,11 @@ export class IsoVisualSampleEntry extends IsoSampleEntry implements IVideoCodec 
         super();
     }
 
-    public static fromHeaderFileAndHandler(header: Mpeg4BoxHeader, file: File, handler: IsoHandlerBox): IsoVisualSampleEntry {
+    public static fromHeaderFileAndHandler(
+        header: Mpeg4BoxHeader,
+        file: File,
+        handler: IsoHandlerBox
+    ): IsoVisualSampleEntry {
         Guards.notNullOrUndefined(file, "file");
 
         const instance: IsoVisualSampleEntry = new IsoVisualSampleEntry();
@@ -1893,6 +1958,9 @@ export class IsoVisualSampleEntry extends IsoSampleEntry implements IVideoCodec 
 
         return instance;
     }
+
+    /** @inheritDoc */
+    public get boxClassType(): Mpeg4BoxClassType { return Mpeg4BoxClassType.IsoVisualSampleEntry; }
 
     /**
      * Gets the duration of the media represented by the current instance.
@@ -1916,15 +1984,12 @@ export class IsoVisualSampleEntry extends IsoSampleEntry implements IVideoCodec 
     }
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// /////////////////////////////////////////////////////////////////////////
 
 /**
  * Represents an MP4 text box
  */
 export class TextBox extends Mpeg4Box {
-    /** @inheritDoc */
-    public get boxClassType(): Mpeg4BoxClassType { return Mpeg4BoxClassType.TextBox; }
-
     /**
      * Private constructor to force construction via static functions.
      */
@@ -1950,14 +2015,14 @@ export class TextBox extends Mpeg4Box {
 
         return instance;
     }
+
+    /** @inheritDoc */
+    public get boxClassType(): Mpeg4BoxClassType { return Mpeg4BoxClassType.TextBox; }
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// /////////////////////////////////////////////////////////////////////////
 
 export class UnknownBox extends Mpeg4Box {
-    /** @inheritDoc */
-    public get boxClassType(): Mpeg4BoxClassType { return Mpeg4BoxClassType.UnknownBox; }
-
     /**
      * Private constructor to force construction via static functions.
      */
@@ -1982,17 +2047,17 @@ export class UnknownBox extends Mpeg4Box {
 
         return instance;
     }
+
+    /** @inheritDoc */
+    public get boxClassType(): Mpeg4BoxClassType { return Mpeg4BoxClassType.UnknownBox; }
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// /////////////////////////////////////////////////////////////////////////
 
 /**
  * Represent a MP4 URL box
  */
 export class UrlBox extends Mpeg4Box {
-    /** @inheritDoc */
-    public get boxClassType(): Mpeg4BoxClassType { return Mpeg4BoxClassType.UrlBox; }
-
     /**
      * Private constructor to force construction via static functions.
      */
@@ -2017,4 +2082,7 @@ export class UrlBox extends Mpeg4Box {
 
         return instance;
     }
+
+    /** @inheritDoc */
+    public get boxClassType(): Mpeg4BoxClassType { return Mpeg4BoxClassType.UrlBox; }
 }
