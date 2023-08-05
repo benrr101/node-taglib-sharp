@@ -1,21 +1,21 @@
+import AppleTag from "./appleTag";
+import Mpeg4FileParser from "./mpeg4FileParser";
+import Mpeg4BoxHeader from "./mpeg4BoxHeader";
+import Mpeg4BoxType from "./mpeg4BoxType";
 import { ByteVector } from "../byteVector";
 import { File, FileAccessMode, ReadStyle } from "../file";
 import { IFileAbstraction } from "../fileAbstraction";
-import { Properties } from "../properties";
-import { Tag, TagTypes } from "../tag";
-import { NumberUtils } from "../utils";
-import AppleTag from "./appleTag";
 import {
     IsoAudioSampleEntry,
     IsoChunkLargeOffsetBox,
     IsoChunkOffsetBox,
     IsoMovieHeaderBox,
     IsoUserDataBox,
-    IsoVisualSampleEntry,
+    IsoVisualSampleEntry, Mpeg4Box,
 } from "./mpeg4Boxes";
-import Mpeg4BoxHeader from "./mpeg4BoxHeader";
-import Mpeg4BoxType from "./mpeg4BoxType";
-import Mpeg4FileParser from "./mpeg4FileParser";
+import { Properties } from "../properties";
+import { Tag, TagTypes } from "../tag";
+import { NumberUtils } from "../utils";
 
 /**
  * Provides tagging and properties support for Mpeg4 files.
@@ -99,18 +99,18 @@ export default class Mpeg4File extends File {
             }
 
             // Get the movie header box.
-            const mvhd_box: IsoMovieHeaderBox = parser.movieHeaderBox;
+            const mvhdBox = parser.movieHeaderBox;
 
-            if (!mvhd_box) {
+            if (!mvhdBox) {
                 this.mode = FileAccessMode.Closed;
                 throw new Error("mvhd box not found.");
             }
 
-            const audio_sample_entry: IsoAudioSampleEntry = parser.audioSampleEntry;
-            const visual_sample_entry: IsoVisualSampleEntry = parser.visualSampleEntry;
+            const audioSampleEntry = parser.audioSampleEntry;
+            const visualSampleEntry = parser.visualSampleEntry;
 
             // Read the properties.
-            this._properties = new Properties(mvhd_box.durationInMilliseconds, [audio_sample_entry, visual_sample_entry]);
+            this._properties = new Properties(mvhdBox.durationInMilliseconds, [audioSampleEntry, visualSampleEntry]);
         } finally {
             this.mode = FileAccessMode.Closed;
         }
@@ -230,14 +230,9 @@ export default class Mpeg4File extends File {
                 this._invariantEndPosition = parser.mdatEndPosition;
 
                 for (const box of parser.chunkOffsetBoxes) {
-                    if (box instanceof IsoChunkLargeOffsetBox) {
+                    if (box instanceof IsoChunkLargeOffsetBox ||
+                        box instanceof IsoChunkOffsetBox) {
                         box.overwrite(this, sizeChange, writePosition);
-                        continue;
-                    }
-
-                    if (box instanceof IsoChunkOffsetBox) {
-                        box.overwrite(this, sizeChange, writePosition);
-                        continue;
                     }
                 }
             }
@@ -246,17 +241,6 @@ export default class Mpeg4File extends File {
         } finally {
             this.mode = FileAccessMode.Closed;
         }
-    }
-
-    /**
-     * Gets the position at which the invariant portion of the current instance begins.
-     */
-    public get invariantStartPosition(): number {
-        return this._invariantStartPosition;
-    }
-
-    public get invariantEndPosition(): number {
-        return this._invariantEndPosition;
     }
 
     /**
@@ -270,7 +254,7 @@ export default class Mpeg4File extends File {
 
         // Multiple udta: pick out the shallowest node which has an ILst tag
         const possibleUdtaBoxes: IsoUserDataBox[] = this.udtaBoxes
-            .filter((box) => box.getChildRecursively(Mpeg4BoxType.Ilst))
+            .filter((box) => box.getChildRecursively(Mpeg4BoxType.ILST))
             .sort((box1, box2) => (box1.parentTree.length < box2.parentTree.length ? -1 : 1));
 
         if (possibleUdtaBoxes.length > 0) {
@@ -286,7 +270,7 @@ export default class Mpeg4File extends File {
      */
     private isAppleTagUdtaPresent(): boolean {
         for (const udtaBox of this._udtaBoxes) {
-            if (udtaBox.getChild(Mpeg4BoxType.Meta) && udtaBox.getChild(Mpeg4BoxType.Meta).getChild(Mpeg4BoxType.Ilst)) {
+            if (udtaBox.getChild(Mpeg4BoxType.META)?.getChild(Mpeg4BoxType.ILST)) {
                 return true;
             }
         }
@@ -296,6 +280,16 @@ export default class Mpeg4File extends File {
 
 // /////////////////////////////////////////////////////////////////////////
 // Register the file type
-["taglib/m4a", "taglib/m4b", "taglib/m4v", "taglib/m4p", "taglib/mp4", "audio/mp4", "audio/x-m4a", "video/mp4", "video/x-m4v"].forEach(
+[
+    "taglib/m4a",
+    "taglib/m4b",
+    "taglib/m4v",
+    "taglib/m4p",
+    "taglib/mp4",
+    "audio/mp4",
+    "audio/x-m4a",
+    "video/mp4",
+    "video/x-m4v"
+].forEach(
     (mt) => File.addFileType(mt, Mpeg4File)
 );

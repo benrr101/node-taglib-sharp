@@ -4,8 +4,9 @@ import Mpeg4BoxType from "./mpeg4BoxType";
 import Mpeg4Utils from "./mpeg4Utils";
 import {AppleDataBoxFlagType} from "./appleDataBoxFlagType";
 import {ByteVector, StringType} from "../byteVector";
-import AppleAnnotationBox, {
+import {
     AppleAdditionalInfoBox,
+    AppleAnnotationBox,
     AppleDataBox,
     AppleItemListBox,
     IsoMetaBox,
@@ -37,7 +38,7 @@ export default class AppleTag extends Tag {
 
         Guards.notNullOrUndefined(box, "box");
 
-        this._metaBox = box.getChild(Mpeg4BoxType.Meta) as IsoMetaBox;
+        this._metaBox = box.getChild(Mpeg4BoxType.META) as IsoMetaBox;
 
         if (!this._metaBox) {
             this._metaBox = IsoMetaBox.fromHandlerTypeAndHandlerName(
@@ -47,7 +48,7 @@ export default class AppleTag extends Tag {
             box.addChild(this._metaBox);
         }
 
-        this._ilstBox = this._metaBox.getChild(Mpeg4BoxType.Ilst) as AppleItemListBox;
+        this._ilstBox = this._metaBox.getChild(Mpeg4BoxType.ILST) as AppleItemListBox;
 
         if (!this._ilstBox) {
             this._ilstBox = AppleItemListBox.fromEmpty();
@@ -64,28 +65,28 @@ export default class AppleTag extends Tag {
     public get sizeOnDisk(): number { return undefined; }
 
     /** @inheritDoc */
-    public get title(): string { return this.getText(Mpeg4BoxType.Nam)[0]; }
+    public get title(): string { return this.getText(Mpeg4BoxType.NAM)[0]; }
     /** @inheritDoc */
-    public set title(v: string) { this.setTextFromTypeAndText(Mpeg4BoxType.Nam, v); }
+    public set title(v: string) { this.setTextFromTypeAndText(Mpeg4BoxType.NAM, v); }
 
     /** @inheritDoc */
-    public get subtitle(): string { return this.getText(Mpeg4BoxType.Subt)[0]; }
+    public get subtitle(): string { return this.getText(Mpeg4BoxType.SUBT)[0]; }
     /** @inheritDoc */
-    public set subtitle(v: string) { this.setTextFromTypeAndText(Mpeg4BoxType.Subt, v); }
+    public set subtitle(v: string) { this.setTextFromTypeAndText(Mpeg4BoxType.SUBT, v); }
 
     /** @inheritDoc */
-    public get description(): string { return this.getText(Mpeg4BoxType.Desc)[0]; }
+    public get description(): string { return this.getText(Mpeg4BoxType.DESC)[0]; }
     /** @inheritDoc */
-    public set description(v: string) { this.setTextFromTypeAndText(Mpeg4BoxType.Desc, v); }
+    public set description(v: string) { this.setTextFromTypeAndText(Mpeg4BoxType.DESC, v); }
 
     /** @inheritDoc */
-    public get performers(): string[] { return this.getText(Mpeg4BoxType.Art); }
+    public get performers(): string[] { return this.getText(Mpeg4BoxType.ART); }
     /** @inheritDoc */
-    public set performers(v: string[]) { this.setTextFromTypeAndTextCollection(Mpeg4BoxType.Art, v); }
+    public set performers(v: string[]) { this.setTextFromTypeAndTextCollection(Mpeg4BoxType.ART, v); }
 
     /** @inheritDoc */
     public get performersRole(): string[] {
-        const ret: string[] = this.getText(Mpeg4BoxType.Role);
+        const ret: string[] = this.getText(Mpeg4BoxType.ROLE);
         if (!ret) {
             return ret;
         }
@@ -108,37 +109,37 @@ export default class AppleTag extends Tag {
             }
         }
 
-        this.setTextFromTypeAndTextCollection(Mpeg4BoxType.Role, v);
+        this.setTextFromTypeAndTextCollection(Mpeg4BoxType.ROLE, v);
     }
 
     /** @inheritDoc */
-    public get albumArtists(): string[] { return this.getText(Mpeg4BoxType.Aart); }
+    public get albumArtists(): string[] { return this.getText(Mpeg4BoxType.AART); }
     /** @inheritDoc */
-    public set albumArtists(v: string[]) { this.setTextFromTypeAndTextCollection(Mpeg4BoxType.Aart, v); }
+    public set albumArtists(v: string[]) { this.setTextFromTypeAndTextCollection(Mpeg4BoxType.AART, v); }
 
     /** @inheritDoc */
-    public get composers(): string[] { return this.getText(Mpeg4BoxType.Wrt); }
+    public get composers(): string[] { return this.getText(Mpeg4BoxType.WRT); }
     /** @inheritDoc */
-    public set composers(v: string[]) { this.setTextFromTypeAndTextCollection(Mpeg4BoxType.Wrt, v); }
+    public set composers(v: string[]) { this.setTextFromTypeAndTextCollection(Mpeg4BoxType.WRT, v); }
 
     /** @inheritDoc */
-    public get album(): string { return this.getText(Mpeg4BoxType.Alb)[0]; }
+    public get album(): string { return this.getText(Mpeg4BoxType.ALB)[0]; }
     /** @inheritDoc */
-    public set album(v: string) { this.setTextFromTypeAndText(Mpeg4BoxType.Alb, v); }
+    public set album(v: string) { this.setTextFromTypeAndText(Mpeg4BoxType.ALB, v); }
 
     /** @inheritDoc */
-    public get comment(): string { return this.getText(Mpeg4BoxType.Cmt)[0]; }
+    public get comment(): string { return this.getText(Mpeg4BoxType.CMT)[0]; }
     /** @inheritDoc */
-    public set comment(v: string) { this.setTextFromTypeAndText(Mpeg4BoxType.Cmt, v); }
+    public set comment(v: string) { this.setTextFromTypeAndText(Mpeg4BoxType.CMT, v); }
 
     /** @inheritDoc */
     public get genres(): string[] {
-        let text: string[] = this.getText(Mpeg4BoxType.Gen);
+        let text: string[] = this.getText(Mpeg4BoxType.GEN);
         if (text.length > 0) {
             return text;
         }
 
-        for (const box of this.getDataBoxesFromType(Mpeg4BoxType.Gnre)) {
+        for (const box of this.getDataBoxesFromType(Mpeg4BoxType.GNRE)) {
             if (box.flags !== <number>AppleDataBoxFlagType.ContainsData) {
                 continue;
             }
@@ -163,13 +164,13 @@ export default class AppleTag extends Tag {
     }
     /** @inheritDoc */
     public set genres(v: string[]) {
-        this.clearData(Mpeg4BoxType.Gnre);
-        this.setTextFromTypeAndTextCollection(Mpeg4BoxType.Gen, v);
+        this.clearData(Mpeg4BoxType.GNRE);
+        this.setTextFromTypeAndTextCollection(Mpeg4BoxType.GEN, v);
     }
 
     /** @inheritDoc */
     public get year(): number {
-        for (const box of this.getDataBoxesFromType(Mpeg4BoxType.Day)) {
+        for (const box of this.getDataBoxesFromType(Mpeg4BoxType.DAY)) {
             if (box.text) {
                 const textWithMaxLengthOfFour: string = box.text.length > 4 ? box.text.substring(0, 4) : box.text;
                 const value: number = Number.parseInt(textWithMaxLengthOfFour, 10);
@@ -185,15 +186,15 @@ export default class AppleTag extends Tag {
     /** @inheritDoc */
     public set year(v: number) {
         if (v === 0) {
-            this.clearData(Mpeg4BoxType.Day);
+            this.clearData(Mpeg4BoxType.DAY);
         } else {
-            this.setTextFromTypeAndText(Mpeg4BoxType.Day, v.toString());
+            this.setTextFromTypeAndText(Mpeg4BoxType.DAY, v.toString());
         }
     }
 
     /** @inheritDoc */
     public get track(): number {
-        for (const box of this.getDataBoxesFromType(Mpeg4BoxType.Trkn)) {
+        for (const box of this.getDataBoxesFromType(Mpeg4BoxType.TRKN)) {
             if (box.flags === <number>AppleDataBoxFlagType.ContainsData && box.data.length >= 4) {
                 return box.data.subarray(2, 2).toUshort();
             }
@@ -205,7 +206,7 @@ export default class AppleTag extends Tag {
     public set track(v: number) {
         const count: number = this.trackCount;
         if (v === 0 && count === 0) {
-            this.clearData(Mpeg4BoxType.Trkn);
+            this.clearData(Mpeg4BoxType.TRKN);
             return;
         }
 
@@ -215,12 +216,12 @@ export default class AppleTag extends Tag {
             ByteVector.fromUshort(count),
             ByteVector.fromUshort(0)
         );
-        this.setDataFromTypeDataAndFlags(Mpeg4BoxType.Trkn, data, AppleDataBoxFlagType.ContainsData);
+        this.setDataFromTypeDataAndFlags(Mpeg4BoxType.TRKN, data, AppleDataBoxFlagType.ContainsData);
     }
 
     /** @inheritDoc */
     public get trackCount(): number {
-        for (const box of this.getDataBoxesFromType(Mpeg4BoxType.Trkn)) {
+        for (const box of this.getDataBoxesFromType(Mpeg4BoxType.TRKN)) {
             if (box.flags === <number>AppleDataBoxFlagType.ContainsData && box.data.length >= 6) {
                 return box.data.subarray(4, 2).toUshort();
             }
@@ -233,7 +234,7 @@ export default class AppleTag extends Tag {
         const localTrack = this.track;
 
         if (v === 0 && localTrack === 0) {
-            this.clearData(Mpeg4BoxType.Trkn);
+            this.clearData(Mpeg4BoxType.TRKN);
 
             return;
         }
@@ -245,12 +246,12 @@ export default class AppleTag extends Tag {
             ByteVector.fromUshort(0)
         );
 
-        this.setDataFromTypeDataAndFlags(Mpeg4BoxType.Trkn, data, AppleDataBoxFlagType.ContainsData);
+        this.setDataFromTypeDataAndFlags(Mpeg4BoxType.TRKN, data, AppleDataBoxFlagType.ContainsData);
     }
 
     /** @inheritDoc */
     public get disc(): number {
-        for (const box of this.getDataBoxesFromType(Mpeg4BoxType.Disk)) {
+        for (const box of this.getDataBoxesFromType(Mpeg4BoxType.DISK)) {
             if (NumberUtils.hasFlag(box.flags, AppleDataBoxFlagType.ContainsData, true) && box.data.length >= 4) {
                 return box.data.subarray(2, 2).toUshort();
             }
@@ -262,7 +263,7 @@ export default class AppleTag extends Tag {
     public set disc(v: number) {
         const localCount = this.discCount;
         if (v === 0 && localCount === 0) {
-            this.clearData(Mpeg4BoxType.Disk);
+            this.clearData(Mpeg4BoxType.DISK);
             return;
         }
 
@@ -272,12 +273,12 @@ export default class AppleTag extends Tag {
             ByteVector.fromUshort(localCount),
             ByteVector.fromUshort(0)
         );
-        this.setDataFromTypeDataAndFlags(Mpeg4BoxType.Disk, data, AppleDataBoxFlagType.ContainsData);
+        this.setDataFromTypeDataAndFlags(Mpeg4BoxType.DISK, data, AppleDataBoxFlagType.ContainsData);
     }
 
     /** @inheritDoc */
     public get discCount(): number {
-        for (const box of this.getDataBoxesFromType(Mpeg4BoxType.Disk)) {
+        for (const box of this.getDataBoxesFromType(Mpeg4BoxType.DISK)) {
             if (box.flags === <number>AppleDataBoxFlagType.ContainsData && box.data.length >= 6) {
                 return box.data.subarray(4, 2).toUshort();
             }
@@ -289,7 +290,7 @@ export default class AppleTag extends Tag {
     public set discCount(v: number) {
         const localDisc = this.disc;
         if (v === 0 && localDisc === 0) {
-            this.clearData(Mpeg4BoxType.Disk);
+            this.clearData(Mpeg4BoxType.DISK);
             return;
         }
 
@@ -299,22 +300,22 @@ export default class AppleTag extends Tag {
             ByteVector.fromUshort(v),
             ByteVector.fromUshort(0)
         );
-        this.setDataFromTypeDataAndFlags(Mpeg4BoxType.Disk, data, AppleDataBoxFlagType.ContainsData);
+        this.setDataFromTypeDataAndFlags(Mpeg4BoxType.DISK, data, AppleDataBoxFlagType.ContainsData);
     }
 
     /** @inheritDoc */
-    public get lyrics(): string { return this.getDataBoxesFromType(Mpeg4BoxType.Lyr)[0]?.text; }
+    public get lyrics(): string { return this.getDataBoxesFromType(Mpeg4BoxType.LYR)[0]?.text; }
     /** @inheritDoc */
-    public set lyrics(v: string) { this.setTextFromTypeAndText(Mpeg4BoxType.Lyr, v); }
+    public set lyrics(v: string) { this.setTextFromTypeAndText(Mpeg4BoxType.LYR, v); }
 
     /** @inheritDoc */
-    public get grouping(): string { return this.getDataBoxesFromType(Mpeg4BoxType.Grp)[0]?.text; }
+    public get grouping(): string { return this.getDataBoxesFromType(Mpeg4BoxType.GRP)[0]?.text; }
     /** @inheritDoc */
-    public set grouping(v: string) { this.setTextFromTypeAndText(Mpeg4BoxType.Grp, v); }
+    public set grouping(v: string) { this.setTextFromTypeAndText(Mpeg4BoxType.GRP, v); }
 
     /** @inheritDoc */
     public get beatsPerMinute(): number {
-        for (const box of this.getDataBoxesFromType(Mpeg4BoxType.Tmpo)) {
+        for (const box of this.getDataBoxesFromType(Mpeg4BoxType.TMPO)) {
             if (box.flags === <number>AppleDataBoxFlagType.ForTempo) {
                 return box.data.toUint();
             }
@@ -325,26 +326,26 @@ export default class AppleTag extends Tag {
     /** @inheritDoc */
     public set beatsPerMinute(v: number) {
         if (v === 0) {
-            this.clearData(Mpeg4BoxType.Tmpo);
+            this.clearData(Mpeg4BoxType.TMPO);
             return;
         }
 
-        this.setDataFromTypeDataAndFlags(Mpeg4BoxType.Tmpo, ByteVector.fromUshort(v), AppleDataBoxFlagType.ForTempo);
+        this.setDataFromTypeDataAndFlags(Mpeg4BoxType.TMPO, ByteVector.fromUshort(v), AppleDataBoxFlagType.ForTempo);
     }
 
     /** @inheritDoc */
-    public get conductor(): string { return this.getDataBoxesFromType(Mpeg4BoxType.Cond)[0]?.text; }
+    public get conductor(): string { return this.getDataBoxesFromType(Mpeg4BoxType.COND)[0]?.text; }
     /** @inheritDoc */
-    public set conductor(v: string) { this.setTextFromTypeAndText(Mpeg4BoxType.Cond, v); }
+    public set conductor(v: string) { this.setTextFromTypeAndText(Mpeg4BoxType.COND, v); }
 
     /** @inheritDoc */
-    public get copyright(): string { return this.getDataBoxesFromType(Mpeg4BoxType.Cprt)[0]?.text; }
+    public get copyright(): string { return this.getDataBoxesFromType(Mpeg4BoxType.CPRT)[0]?.text; }
     /** @inheritDoc */
-    public set copyright(v: string) { this.setTextFromTypeAndText(Mpeg4BoxType.Cprt, v); }
+    public set copyright(v: string) { this.setTextFromTypeAndText(Mpeg4BoxType.CPRT, v); }
 
     /** @inheritDoc */
     public get dateTagged(): Date|undefined {
-        const text = this.getText(Mpeg4BoxType.Dtag)[0];
+        const text = this.getText(Mpeg4BoxType.DTAG)[0];
         if (text) {
             const dateValue = new Date(text);
             return isNaN(dateValue.getTime()) ? undefined : dateValue;
@@ -361,33 +362,33 @@ export default class AppleTag extends Tag {
             strValue = strValue.replace(" ", "T");
         }
 
-        this.setTextFromTypeAndText(Mpeg4BoxType.Dtag, strValue);
+        this.setTextFromTypeAndText(Mpeg4BoxType.DTAG, strValue);
     }
 
     /** @inheritDoc */
-    public get albumArtistsSort(): string[] { return this.getText(Mpeg4BoxType.Soaa); }
+    public get albumArtistsSort(): string[] { return this.getText(Mpeg4BoxType.SOAA); }
     /** @inheritDoc */
-    public set albumArtistsSort(v: string[]) { this.setTextFromTypeAndTextCollection(Mpeg4BoxType.Soaa, v); }
+    public set albumArtistsSort(v: string[]) { this.setTextFromTypeAndTextCollection(Mpeg4BoxType.SOAA, v); }
 
     /** @inheritDoc */
-    public get performersSort(): string[] { return this.getText(Mpeg4BoxType.Soar); }
+    public get performersSort(): string[] { return this.getText(Mpeg4BoxType.SOAR); }
     /** @inheritDoc */
-    public set performersSort(v: string[]) { this.setTextFromTypeAndTextCollection(Mpeg4BoxType.Soar, v); }
+    public set performersSort(v: string[]) { this.setTextFromTypeAndTextCollection(Mpeg4BoxType.SOAR, v); }
 
     /** @inheritDoc */
-    public get composersSort(): string[] { return this.getText(Mpeg4BoxType.Soco); }
+    public get composersSort(): string[] { return this.getText(Mpeg4BoxType.SOCO); }
     /** @inheritDoc */
-    public set composersSort(v: string[]) { this.setTextFromTypeAndTextCollection(Mpeg4BoxType.Soco, v); }
+    public set composersSort(v: string[]) { this.setTextFromTypeAndTextCollection(Mpeg4BoxType.SOCO, v); }
 
     /** @inheritDoc */
-    public get albumSort(): string { return this.getText(Mpeg4BoxType.Soal)[0]; }
+    public get albumSort(): string { return this.getText(Mpeg4BoxType.SOAL)[0]; }
     /** @inheritDoc */
-    public set albumSort(v: string) { this.setTextFromTypeAndText(Mpeg4BoxType.Soal, v); }
+    public set albumSort(v: string) { this.setTextFromTypeAndText(Mpeg4BoxType.SOAL, v); }
 
     /** @inheritDoc */
-    public get titleSort(): string { return this.getText(Mpeg4BoxType.Sonm)[0]; }
+    public get titleSort(): string { return this.getText(Mpeg4BoxType.SONM)[0]; }
     /** @inheritDoc */
-    public set titleSort(v: string) { this.setTextFromTypeAndText(Mpeg4BoxType.Sonm, v); }
+    public set titleSort(v: string) { this.setTextFromTypeAndText(Mpeg4BoxType.SONM, v); }
 
     /** @inheritDoc */
     public get musicBrainzArtistId(): string {
@@ -609,13 +610,13 @@ export default class AppleTag extends Tag {
 
     /** @inheritDoc */
     public get pictures(): IPicture[] {
-        return this.getDataBoxesFromType(Mpeg4BoxType.Covr)
+        return this.getDataBoxesFromType(Mpeg4BoxType.COVR)
             .map(b => { return Picture.fromData(b.data); });
     }
     /** @inheritDoc */
     public set pictures(v: IPicture[]) {
         if (!v || v.length === 0) {
-            this.clearData(Mpeg4BoxType.Covr);
+            this.clearData(Mpeg4BoxType.COVR);
             return;
         }
 
@@ -639,12 +640,12 @@ export default class AppleTag extends Tag {
             return AppleDataBox.fromDataAndFlags(picture.data, flags);
         });
 
-        this.setDataFromTypeAndBoxes(Mpeg4BoxType.Covr, boxes);
+        this.setDataFromTypeAndBoxes(Mpeg4BoxType.COVR, boxes);
     }
 
     /** @inheritDoc */
     public get isCompilation(): boolean {
-        const cpilBoxes = this.getDataBoxesFromType(Mpeg4BoxType.Cpil);
+        const cpilBoxes = this.getDataBoxesFromType(Mpeg4BoxType.CPIL);
         const firstBox = cpilBoxes[0];
         return firstBox
             ? firstBox.data.toUint() !== 0
@@ -654,7 +655,7 @@ export default class AppleTag extends Tag {
     /** @inheritDoc */
     public set isCompilation(v: boolean) {
         this.setDataFromTypeDataAndFlags(
-            Mpeg4BoxType.Cpil,
+            Mpeg4BoxType.CPIL,
             ByteVector.fromByte(v ? 1 : 0),
             AppleDataBoxFlagType.ForTempo
         );
@@ -888,13 +889,13 @@ export default class AppleTag extends Tag {
             dataBox.text = datastring;
         } else {
             // Create the new boxes, should use 1 for text as a flag
-            const ameanBox = AppleAdditionalInfoBox.fromTypeVersionAndFlags(Mpeg4BoxType.Mean, 0, 1);
+            const ameanBox = AppleAdditionalInfoBox.fromTypeVersionAndFlags(Mpeg4BoxType.MEAN, 0, 1);
             ameanBox.text = meanstring;
 
-            const anameBox = AppleAdditionalInfoBox.fromTypeVersionAndFlags(Mpeg4BoxType.Name, 0, 1);
+            const anameBox = AppleAdditionalInfoBox.fromTypeVersionAndFlags(Mpeg4BoxType.NAME, 0, 1);
             anameBox.text = namestring;
 
-            const adataBox = AppleDataBox.fromDataAndFlags(Mpeg4BoxType.Data, 1);
+            const adataBox = AppleDataBox.fromDataAndFlags(Mpeg4BoxType.DATA, 1);
             adataBox.text = datastring;
 
             const wholeBox = AppleAnnotationBox.fromType(Mpeg4BoxType.DASH);
@@ -942,13 +943,13 @@ export default class AppleTag extends Tag {
 
             for (const text of datastring) {
                 // Create the new boxes, should use 1 for text as a flag.
-                const ameanBox = AppleAdditionalInfoBox.fromTypeVersionAndFlags(Mpeg4BoxType.Mean, 0, 1);
+                const ameanBox = AppleAdditionalInfoBox.fromTypeVersionAndFlags(Mpeg4BoxType.MEAN, 0, 1);
                 ameanBox.text = meanString;
 
-                const anameBox = AppleAdditionalInfoBox.fromTypeVersionAndFlags(Mpeg4BoxType.Name, 0, 1);
+                const anameBox = AppleAdditionalInfoBox.fromTypeVersionAndFlags(Mpeg4BoxType.NAME, 0, 1);
                 anameBox.text = nameString;
 
-                const adataBox = AppleDataBox.fromDataAndFlags(Mpeg4BoxType.Data, 1);
+                const adataBox = AppleDataBox.fromDataAndFlags(Mpeg4BoxType.DATA, 1);
                 adataBox.text = text;
 
                 wholeBox.addChild(ameanBox);
@@ -973,14 +974,14 @@ export default class AppleTag extends Tag {
 
             // Get the mean and name boxes, make sure they're legit, check the Text fields for a match.
             // If we have a match return the AppleDataBox containing the data.
-            const meanBox = <AppleAdditionalInfoBox>box.getChild(Mpeg4BoxType.Mean);
-            const nameBox = <AppleAdditionalInfoBox>box.getChild(Mpeg4BoxType.Name);
+            const meanBox = <AppleAdditionalInfoBox>box.getChild(Mpeg4BoxType.MEAN);
+            const nameBox = <AppleAdditionalInfoBox>box.getChild(Mpeg4BoxType.NAME);
 
             if (meanBox && nameBox &&
                 meanBox.text === meanString &&
                 nameBox.text.toLowerCase() === nameString.toLowerCase()
             ) {
-                return <AppleDataBox>box.getChild(Mpeg4BoxType.Data);
+                return <AppleDataBox>box.getChild(Mpeg4BoxType.DATA);
             }
         }
 
@@ -1002,14 +1003,14 @@ export default class AppleTag extends Tag {
 
             // Get the mean and name boxes, make sure they're legit, check the Text fields for a match.
             // If we have a match return the AppleDataBox containing the data.
-            const meanBox = <AppleAdditionalInfoBox>box.getChild(Mpeg4BoxType.Mean);
-            const nameBox = <AppleAdditionalInfoBox>box.getChild(Mpeg4BoxType.Name);
+            const meanBox = <AppleAdditionalInfoBox>box.getChild(Mpeg4BoxType.MEAN);
+            const nameBox = <AppleAdditionalInfoBox>box.getChild(Mpeg4BoxType.NAME);
 
             if (meanBox && nameBox &&
                 meanBox.text === meanString &&
                 nameBox.text.toLowerCase() === nameString.toLowerCase()
             ) {
-                return <AppleDataBox[]>box.getChildren(Mpeg4BoxType.Data)
+                return <AppleDataBox[]>box.getChildren(Mpeg4BoxType.DATA)
             }
         }
 
@@ -1031,8 +1032,8 @@ export default class AppleTag extends Tag {
 
             // Get the mean and name boxes, make sure they're legit, check the Text fields for a match.
             // If we have a match return the AppleAnnotationBox that is the Parent.
-            const meanBox = <AppleAdditionalInfoBox>box.getChild(Mpeg4BoxType.Mean);
-            const nameBox = <AppleAdditionalInfoBox>box.getChild(Mpeg4BoxType.Name);
+            const meanBox = <AppleAdditionalInfoBox>box.getChild(Mpeg4BoxType.MEAN);
+            const nameBox = <AppleAdditionalInfoBox>box.getChild(Mpeg4BoxType.NAME);
 
             if (meanBox && nameBox &&
                 meanBox.text === meanString &&

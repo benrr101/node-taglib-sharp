@@ -4,7 +4,6 @@ import Mpeg4BoxType from "./mpeg4BoxType";
 import Mpeg4Utils from "./mpeg4Utils";
 import { ByteVector, StringType } from "../byteVector";
 import { File } from "../file";
-import { Guards } from "../utils";
 import {
     IsoAudioSampleEntry,
     IsoHandlerBox,
@@ -13,6 +12,7 @@ import {
     IsoVisualSampleEntry,
     Mpeg4Box
 } from "./mpeg4Boxes";
+import { Guards } from "../utils";
 
 /**
  * This class provides methods for reading important information from an MPEG-4 file.
@@ -241,7 +241,7 @@ export default class Mpeg4FileParser {
         for (let position = start; position < end; position += header.totalBoxSize) {
             header = Mpeg4BoxHeader.fromFileAndPosition(this._file, position);
 
-            if (!this._moovTree && ByteVector.equals(header.boxType, Mpeg4BoxType.Moov)) {
+            if (!this._moovTree && ByteVector.equals(header.boxType, Mpeg4BoxType.MOOV)) {
                 const newParents: Mpeg4BoxHeader[] = Mpeg4Utils.addParent(parents, header);
                 this._moovTree = newParents;
                 this.parseBoxHeadersFromStartEndAndParents(
@@ -249,22 +249,22 @@ export default class Mpeg4FileParser {
                     header.totalBoxSize + position, newParents
                 );
             } else if (
-                ByteVector.equals(header.boxType, Mpeg4BoxType.Mdia) ||
-                ByteVector.equals(header.boxType, Mpeg4BoxType.Minf) ||
-                ByteVector.equals(header.boxType, Mpeg4BoxType.Stbl) ||
-                ByteVector.equals(header.boxType, Mpeg4BoxType.Trak)
+                ByteVector.equals(header.boxType, Mpeg4BoxType.MDIA) ||
+                ByteVector.equals(header.boxType, Mpeg4BoxType.MINF) ||
+                ByteVector.equals(header.boxType, Mpeg4BoxType.STBL) ||
+                ByteVector.equals(header.boxType, Mpeg4BoxType.TRAK)
             ) {
                 this.parseBoxHeadersFromStartEndAndParents(
                     header.headerSize + position,
                     header.totalBoxSize + position,
                     Mpeg4Utils.addParent(parents, header)
                 );
-            } else if (!this._udtaTree && ByteVector.equals(header.boxType, Mpeg4BoxType.Udta)) {
+            } else if (!this._udtaTree && ByteVector.equals(header.boxType, Mpeg4BoxType.UDTA)) {
                 // For compatibility, we still store the tree to the first udta
                 // block. The proper way to get this info is from the individual
                 // IsoUserDataBox.ParentTree member.
                 this._udtaTree = Mpeg4Utils.addParent(parents, header);
-            } else if (ByteVector.equals(header.boxType, Mpeg4BoxType.Mdat)) {
+            } else if (ByteVector.equals(header.boxType, Mpeg4BoxType.MDAT)) {
                 this._mdatStart = position;
                 this._mdatEnd = position + header.totalBoxSize;
             }
@@ -287,31 +287,31 @@ export default class Mpeg4FileParser {
         for (let position = start; position < end; position += header.totalBoxSize) {
             header = Mpeg4BoxHeader.fromFileAndPosition(this._file, position);
 
-            if (ByteVector.equals(header.boxType, Mpeg4BoxType.Moov)) {
+            if (ByteVector.equals(header.boxType, Mpeg4BoxType.MOOV)) {
                 this.parseTagFromStartEndAndParents(
                     header.headerSize + position,
                     header.totalBoxSize + position,
                     Mpeg4Utils.addParent(parents, header)
                 );
             } else if (
-                ByteVector.equals(header.boxType, Mpeg4BoxType.Mdia) ||
-                ByteVector.equals(header.boxType, Mpeg4BoxType.Minf) ||
-                ByteVector.equals(header.boxType, Mpeg4BoxType.Stbl) ||
-                ByteVector.equals(header.boxType, Mpeg4BoxType.Trak)
+                ByteVector.equals(header.boxType, Mpeg4BoxType.MDIA) ||
+                ByteVector.equals(header.boxType, Mpeg4BoxType.MINF) ||
+                ByteVector.equals(header.boxType, Mpeg4BoxType.STBL) ||
+                ByteVector.equals(header.boxType, Mpeg4BoxType.TRAK)
             ) {
                 this.parseTagFromStartEndAndParents(
                     header.headerSize + position,
                     header.totalBoxSize + position,
                     Mpeg4Utils.addParent(parents, header)
                 );
-            } else if (ByteVector.equals(header.boxType, Mpeg4BoxType.Udta)) {
+            } else if (ByteVector.equals(header.boxType, Mpeg4BoxType.UDTA)) {
                 const udtaBox = Mpeg4BoxFactory.createBoxFromFileAndHeader(this._file, header) as IsoUserDataBox;
 
                 // Since we can have multiple udta boxes, save the parent for each one
                 udtaBox.parentTree = Mpeg4Utils.addParent(parents, header);
 
                 this._udtaBoxes.push(udtaBox);
-            } else if (ByteVector.equals(header.boxType, Mpeg4BoxType.Mdat)) {
+            } else if (ByteVector.equals(header.boxType, Mpeg4BoxType.MDAT)) {
                 this._mdatStart = position;
                 this._mdatEnd = position + header.totalBoxSize;
             }
@@ -341,7 +341,7 @@ export default class Mpeg4FileParser {
             header = Mpeg4BoxHeader.fromFileAndPosition(this._file, position);
             const type: ByteVector = header.boxType;
 
-            if (ByteVector.equals(type, Mpeg4BoxType.Moov)) {
+            if (ByteVector.equals(type, Mpeg4BoxType.MOOV)) {
                 this.parseTagAndPropertiesFromStartEndHandlerAndParents(
                     header.headerSize + position,
                     header.totalBoxSize + position,
@@ -349,10 +349,10 @@ export default class Mpeg4FileParser {
                     Mpeg4Utils.addParent(parents, header)
                 );
             } else if (
-                ByteVector.equals(type, Mpeg4BoxType.Mdia) ||
-                ByteVector.equals(type, Mpeg4BoxType.Minf) ||
-                ByteVector.equals(type, Mpeg4BoxType.Stbl) ||
-                ByteVector.equals(type, Mpeg4BoxType.Trak)
+                ByteVector.equals(type, Mpeg4BoxType.MDIA) ||
+                ByteVector.equals(type, Mpeg4BoxType.MINF) ||
+                ByteVector.equals(type, Mpeg4BoxType.STBL) ||
+                ByteVector.equals(type, Mpeg4BoxType.TRAK)
             ) {
                 this.parseTagAndPropertiesFromStartEndHandlerAndParents(
                     header.headerSize + position,
@@ -360,21 +360,21 @@ export default class Mpeg4FileParser {
                     handler,
                     Mpeg4Utils.addParent(parents, header)
                 );
-            } else if (ByteVector.equals(type, Mpeg4BoxType.Stsd)) {
+            } else if (ByteVector.equals(type, Mpeg4BoxType.STSD)) {
                 this._stsdBoxes.push(Mpeg4BoxFactory.createBoxFromFileHeaderAndHandler(this._file, header, handler));
-            } else if (ByteVector.equals(type, Mpeg4BoxType.Hdlr)) {
+            } else if (ByteVector.equals(type, Mpeg4BoxType.HDLR)) {
                 handler = <IsoHandlerBox>Mpeg4BoxFactory.createBoxFromFileHeaderAndHandler(
                     this._file,
                     header,
                     handler
                 );
-            } else if (!this._mvhdBox && ByteVector.equals(type, Mpeg4BoxType.Mvhd)) {
+            } else if (!this._mvhdBox && ByteVector.equals(type, Mpeg4BoxType.MVHD)) {
                 this._mvhdBox = <IsoMovieHeaderBox>Mpeg4BoxFactory.createBoxFromFileHeaderAndHandler(
                     this._file,
                     header,
                     handler
                 );
-            } else if (ByteVector.equals(type, Mpeg4BoxType.Udta)) {
+            } else if (ByteVector.equals(type, Mpeg4BoxType.UDTA)) {
                 const udtaBox = <IsoUserDataBox>Mpeg4BoxFactory.createBoxFromFileHeaderAndHandler(
                     this._file,
                     header,
@@ -385,7 +385,7 @@ export default class Mpeg4FileParser {
                 udtaBox.parentTree = Mpeg4Utils.addParent(parents, header);
 
                 this._udtaBoxes.push(udtaBox);
-            } else if (ByteVector.equals(type, Mpeg4BoxType.Mdat)) {
+            } else if (ByteVector.equals(type, Mpeg4BoxType.MDAT)) {
                 this._mdatStart = position;
                 this._mdatEnd = position + header.totalBoxSize;
             }
@@ -407,22 +407,22 @@ export default class Mpeg4FileParser {
         for (let position = start; position < end; position += header.totalBoxSize) {
             header = Mpeg4BoxHeader.fromFileAndPosition(this._file, position);
 
-            if (ByteVector.equals(header.boxType, Mpeg4BoxType.Moov)) {
+            if (ByteVector.equals(header.boxType, Mpeg4BoxType.MOOV)) {
                 this.parseChunkOffsetsFromStartAndEnd(header.headerSize + position, header.totalBoxSize + position);
             } else if (
-                ByteVector.equals(header.boxType, Mpeg4BoxType.Moov) ||
-                ByteVector.equals(header.boxType, Mpeg4BoxType.Mdia) ||
-                ByteVector.equals(header.boxType, Mpeg4BoxType.Minf) ||
-                ByteVector.equals(header.boxType, Mpeg4BoxType.Stbl) ||
-                ByteVector.equals(header.boxType, Mpeg4BoxType.Trak)
+                ByteVector.equals(header.boxType, Mpeg4BoxType.MOOV) ||
+                ByteVector.equals(header.boxType, Mpeg4BoxType.MDIA) ||
+                ByteVector.equals(header.boxType, Mpeg4BoxType.MINF) ||
+                ByteVector.equals(header.boxType, Mpeg4BoxType.STBL) ||
+                ByteVector.equals(header.boxType, Mpeg4BoxType.TRAK)
             ) {
                 this.parseChunkOffsetsFromStartAndEnd(header.headerSize + position, header.totalBoxSize + position);
             } else if (
-                ByteVector.equals(header.boxType, Mpeg4BoxType.Stco) ||
-                ByteVector.equals(header.boxType, Mpeg4BoxType.Co64)
+                ByteVector.equals(header.boxType, Mpeg4BoxType.STCO) ||
+                ByteVector.equals(header.boxType, Mpeg4BoxType.CO64)
             ) {
                 this._stcoBoxes.push(Mpeg4BoxFactory.createBoxFromFileAndHeader(this._file, header));
-            } else if (ByteVector.equals(header.boxType, Mpeg4BoxType.Mdat)) {
+            } else if (ByteVector.equals(header.boxType, Mpeg4BoxType.MDAT)) {
                 this._mdatStart = position;
                 this._mdatEnd = position + header.totalBoxSize;
             }

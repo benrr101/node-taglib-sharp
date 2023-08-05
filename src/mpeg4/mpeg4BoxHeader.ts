@@ -43,19 +43,19 @@ export default class Mpeg4BoxHeader {
     private constructor() { /* Private to enforce construction via static methods */ }
 
     /**
-     * Constructs and initializes a new instance of {@see Mpeg4BoxHeader} that is empty.
-     * @returns A new instance of {@see Mpeg4BoxHeader} that is empty.
+     * Constructs and initializes a new instance of {@link Mpeg4BoxHeader} that is empty.
+     * @returns A new instance of {@link Mpeg4BoxHeader} that is empty.
      */
     public static fromEmpty(): Mpeg4BoxHeader {
         return Mpeg4BoxHeader.fromType(ByteVector.fromString("xxxx", StringType.UTF8));
     }
 
     /**
-     * Constructs and initializes a new instance of {@see Mpeg4BoxHeader} by reading it from a
+     * Constructs and initializes a new instance of {@link Mpeg4BoxHeader} by reading it from a
      * specified seek position in a specified file.
-     * @param file A {@see File} object to read the new instance from.
+     * @param file A {@link File} object to read the new instance from.
      * @param position A value specifying the seek position in File at which to start reading.
-     * @returns A new instance of {@see Mpeg4BoxHeader} by reading it from a specified seek position
+     * @returns A new instance of {@link Mpeg4BoxHeader} by reading it from a specified seek position
      *     in a specified file.
      */
     public static fromFileAndPosition(file: File, position: number): Mpeg4BoxHeader {
@@ -90,7 +90,7 @@ export default class Mpeg4BoxHeader {
         }
 
         // UUID has a special header with 16 extra bytes.
-        if (ByteVector.equals(header.boxType, Mpeg4BoxType.Uuid)) {
+        if (ByteVector.equals(header.boxType, Mpeg4BoxType.UUID)) {
             if (data.length < 16 + offset) {
                 throw new Error("Not enough data in box header.");
             }
@@ -112,7 +112,7 @@ export default class Mpeg4BoxHeader {
     }
 
     /**
-     * Constructs and initializes a new instance of {@see Mpeg4BoxHeader} with a specified box type.
+     * Constructs and initializes a new instance of {@link Mpeg4BoxHeader} with a specified box type.
      * @param type A ByteVector object containing the four byte box type.
      * @returns A new instance of Mpeg4BoxHeader with a specified box type.
      */
@@ -121,11 +121,11 @@ export default class Mpeg4BoxHeader {
     }
 
     /**
-     * Constructs and initializes a new instance of {@see Mpeg4BoxHeader} with a specified box type
+     * Constructs and initializes a new instance of {@link Mpeg4BoxHeader} with a specified box type
      * and optionally extended type.
-     * @param type A {@see ByteVector} object containing the four byte box type.
-     * @param extendedType A {@see ByteVector} object containing the four byte box type.
-     * @returns A new instance of {@see Mpeg4BoxHeader} with a specified box type and optionally extended type.
+     * @param type A {@link ByteVector} object containing the four byte box type.
+     * @param extendedType A {@link ByteVector} object containing the four byte box type.
+     * @returns A new instance of {@link Mpeg4BoxHeader} with a specified box type and optionally extended type.
      */
     public static fromTypeAndExtendedType(type: ByteVector, extendedType: ByteVector): Mpeg4BoxHeader {
         Guards.notNullOrUndefined(type, "type");
@@ -139,7 +139,7 @@ export default class Mpeg4BoxHeader {
         header._boxSize = 8;
         header._headerSize = 8;
 
-        if (!ByteVector.equals(type, Mpeg4BoxType.Uuid)) {
+        if (!ByteVector.equals(type, Mpeg4BoxType.UUID)) {
             if (extendedType) {
                 throw new Error("Extended type only permitted for 'uuid'.");
             }
@@ -205,7 +205,7 @@ export default class Mpeg4BoxHeader {
 
     /**
      *  Overwrites the header on disk, updating it to include a change in the size of the box.
-     * @param file  A {@see File} object containing the file from which the box originates.
+     * @param file  A {@link File} object containing the file from which the box originates.
      * @param sizeChange A value indicating the change in the size of the box described by the
      *     current instance.
      * @returns  The size change encountered by the box that parents the box described the current
@@ -228,7 +228,7 @@ export default class Mpeg4BoxHeader {
 
     /**
      * Renders the header represented by the current instance.
-     * @returns A {@see ByteVector} object containing the rendered version of the current instance.
+     * @returns A {@link ByteVector} object containing the rendered version of the current instance.
      */
     public render(): ByteVector {
         // Enlarge for size if necessary.
