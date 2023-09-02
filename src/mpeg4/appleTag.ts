@@ -1,18 +1,16 @@
 import * as DateFormat from "dateformat";
+import AppleAdditionalInfoBox from "./boxes/appleAdditionalInfoBox";
+import AppleAnnotationBox from "./boxes/appleAnnotationBox";
+import AppleDataBox from "./boxes/appleDataBox";
+import AppleItemListBox from "./boxes/appleItemListBox";
 import Genres from "../genres";
+import IsoMetaBox from "./boxes/isoMetaBox";
+import IsoUserDataBox from "./boxes/isoUserDataBox";
+import Mpeg4Box from "./boxes/mpeg4Box";
 import Mpeg4BoxType from "./mpeg4BoxType";
 import Mpeg4Utils from "./mpeg4Utils";
 import {AppleDataBoxFlagType} from "./appleDataBoxFlagType";
 import {ByteVector, StringType} from "../byteVector";
-import {
-    AppleAdditionalInfoBox,
-    AppleAnnotationBox,
-    AppleDataBox,
-    AppleItemListBox,
-    IsoMetaBox,
-    IsoUserDataBox,
-    Mpeg4Box
-} from "./mpeg4Boxes";
 import {Mpeg4BoxClassType} from "./mpeg4BoxClassType";
 import {IPicture, Picture} from "../picture";
 import {Tag, TagTypes} from "../tag";

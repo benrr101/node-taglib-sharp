@@ -1,18 +1,13 @@
 import AppleTag from "./appleTag";
-import Mpeg4FileParser from "./mpeg4FileParser";
+import IsoChunkLargeOffsetBox from "./boxes/isoChunkLargeOffsetBox";
+import IsoChunkOffsetBox from "./boxes/isoChunkOffsetBox";
+import IsoUserDataBox from "./boxes/isoUserDataBox";
 import Mpeg4BoxHeader from "./mpeg4BoxHeader";
 import Mpeg4BoxType from "./mpeg4BoxType";
+import Mpeg4FileParser from "./mpeg4FileParser";
 import { ByteVector } from "../byteVector";
 import { File, FileAccessMode, ReadStyle } from "../file";
 import { IFileAbstraction } from "../fileAbstraction";
-import {
-    IsoAudioSampleEntry,
-    IsoChunkLargeOffsetBox,
-    IsoChunkOffsetBox,
-    IsoMovieHeaderBox,
-    IsoUserDataBox,
-    IsoVisualSampleEntry, Mpeg4Box,
-} from "./mpeg4Boxes";
 import { Properties } from "../properties";
 import { Tag, TagTypes } from "../tag";
 import { NumberUtils } from "../utils";
@@ -179,8 +174,8 @@ export default class Mpeg4File extends File {
             this._invariantStartPosition = parser.mdatStartPosition;
             this._invariantEndPosition = parser.mdatEndPosition;
 
-            let sizeChange: number = 0;
-            let writePosition: number = 0;
+            let sizeChange: number;
+            let writePosition: number;
 
             // To avoid rewriting udta blocks which might not have been modified,
             // the code here will work correctly if:
@@ -230,9 +225,10 @@ export default class Mpeg4File extends File {
                 this._invariantEndPosition = parser.mdatEndPosition;
 
                 for (const box of parser.chunkOffsetBoxes) {
-                    if (box instanceof IsoChunkLargeOffsetBox ||
-                        box instanceof IsoChunkOffsetBox) {
-                        box.overwrite(this, sizeChange, writePosition);
+                    if (box instanceof IsoChunkLargeOffsetBox) {
+                        (<IsoChunkLargeOffsetBox>box).overwrite(this, sizeChange, writePosition);
+                    } else if (box instanceof IsoChunkOffsetBox) {
+                        (<IsoChunkOffsetBox>box).overwrite(this, sizeChange, writePosition);
                     }
                 }
             }

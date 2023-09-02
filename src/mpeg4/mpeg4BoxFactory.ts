@@ -1,30 +1,28 @@
-import { ByteVector } from "../byteVector";
-import { File } from "../file";
-import {
-    AppleAdditionalInfoBox,
-    AppleAnnotationBox,
-    AppleDataBox,
-    AppleElementaryStreamDescriptor,
-    AppleItemListBox,
-    IsoAudioSampleEntry,
-    IsoChunkLargeOffsetBox,
-    IsoChunkOffsetBox,
-    IsoFreeSpaceBox,
-    IsoHandlerBox,
-    IsoMetaBox,
-    IsoMovieHeaderBox,
-    IsoSampleDescriptionBox,
-    IsoSampleEntry,
-    IsoSampleTableBox,
-    IsoUserDataBox,
-    IsoVisualSampleEntry,
-    Mpeg4Box,
-    TextBox,
-    UnknownBox,
-    UrlBox,
-} from "./mpeg4Boxes";
+import AppleAdditionalInfoBox from "./boxes/appleAdditionalInfoBox";
+import AppleAnnotationBox from "./boxes/appleAnnotationBox";
+import AppleDataBox from "./boxes/appleDataBox";
+import AppleElementaryStreamDescriptor from "./boxes/appleElementaryStreamDescriptor";
+import AppleItemListBox from "./boxes/appleItemListBox";
+import IsoAudioSampleEntry from "./boxes/isoAudioSampleEntry";
+import IsoChunkLargeOffsetBox from "./boxes/isoChunkLargeOffsetBox";
+import IsoChunkOffsetBox from "./boxes/isoChunkOffsetBox";
+import IsoFreeSpaceBox from "./boxes/isoFreeSpaceBox";
+import IsoHandlerBox from "./boxes/isoHandlerBox";
+import IsoMetaBox from "./boxes/isoMetaBox";
+import IsoMovieHeaderBox from "./boxes/isoMovieHeaderBox";
+import IsoSampleDescriptionBox from "./boxes/isoSampleDescriptionBox";
+import IsoSampleTableBox from "./boxes/isoSampleTableBox";
+import IsoUnknownSampleEntry from "./boxes/isoUnknownSampleEntry";
+import IsoUserDataBox from "./boxes/isoUserDataBox";
+import IsoVisualSampleEntry from "./boxes/isoVisualSampleEntry";
+import Mpeg4Box from "./boxes/mpeg4Box";
 import Mpeg4BoxHeader from "./mpeg4BoxHeader";
 import Mpeg4BoxType from "./mpeg4BoxType";
+import TextBox from "./boxes/textBox";
+import UnknownBox from "./boxes/unknownBox";
+import UrlBox from "./boxes/urlBox";
+import { ByteVector } from "../byteVector";
+import { File } from "../file";
 
 /**
  * This class provides support for reading boxes from a file.
@@ -53,7 +51,12 @@ export default class Mpeg4BoxFactory {
             index < (parent.box as IsoSampleDescriptionBox).entryCount
         ) {
             if (handler && ByteVector.equals(handler.handlerType, Mpeg4BoxType.SOUN)) {
-                return IsoAudioSampleEntry.fromHeaderFileAndHandler(header, file, handler);
+                return IsoAudioSampleEntry.fromHeaderFileAndHandler(
+                    header,
+                    file,
+                    handler,
+                    this.createBoxFromFilePositionParentHandlerAndIndex
+                );
             }
 
             if (handler && ByteVector.equals(handler.handlerType, Mpeg4BoxType.VIDE)) {
@@ -73,7 +76,7 @@ export default class Mpeg4BoxFactory {
                 return UnknownBox.fromHeaderFileAndHandler(header, file, handler);
             }
 
-            return IsoSampleEntry.fromHeaderFileAndHandler(header, file, handler);
+            return IsoUnknownSampleEntry.fromHeaderFileAndHandler(header, file, handler);
         }
 
         // Standard items...
@@ -82,9 +85,19 @@ export default class Mpeg4BoxFactory {
         if (ByteVector.equals(type, Mpeg4BoxType.MVHD)) {
             return IsoMovieHeaderBox.fromHeaderFileAndHandler(header, file, handler);
         } else if (ByteVector.equals(type, Mpeg4BoxType.STBL)) {
-            return IsoSampleTableBox.fromHeaderFileAndHandler(header, file, handler);
+            return IsoSampleTableBox.fromHeaderFileAndHandler(
+                header,
+                file,
+                handler,
+                this.createBoxFromFilePositionParentHandlerAndIndex
+            );
         } else if (ByteVector.equals(type, Mpeg4BoxType.STSD)) {
-            return IsoSampleDescriptionBox.fromHeaderFileAndHandler(header, file, handler);
+            return IsoSampleDescriptionBox.fromHeaderFileAndHandler(
+                header,
+                file,
+                handler,
+                this.createBoxFromFilePositionParentHandlerAndIndex
+            );
         } else if (ByteVector.equals(type, Mpeg4BoxType.STCO)) {
             return IsoChunkOffsetBox.fromHeaderFileAndHandler(header, file, handler);
         } else if (ByteVector.equals(type, Mpeg4BoxType.CO64)) {
@@ -92,11 +105,25 @@ export default class Mpeg4BoxFactory {
         } else if (ByteVector.equals(type, Mpeg4BoxType.HDLR)) {
             return IsoHandlerBox.fromHeaderFileAndHandler(header, file, handler);
         } else if (ByteVector.equals(type, Mpeg4BoxType.UDTA)) {
-            return IsoUserDataBox.fromHeaderFileAndHandler(header, file, handler);
+            return IsoUserDataBox.fromHeaderFileAndHandler(
+                header,
+                file,
+                handler,
+                this.createBoxFromFilePositionParentHandlerAndIndex
+            );
         } else if (ByteVector.equals(type, Mpeg4BoxType.META)) {
-            return IsoMetaBox.fromHeaderFileAndHandler(header, file, handler);
+            return IsoMetaBox.fromHeaderFileAndHandler(
+                header,
+                file,
+                handler,
+                this.createBoxFromFilePositionParentHandlerAndIndex
+            );
         } else if (ByteVector.equals(type, Mpeg4BoxType.ILST)) {
-            return AppleItemListBox.fromHeaderFileAndHandler(header, file, handler);
+            return AppleItemListBox.fromHeaderFileAndHandler(
+                header,
+                file,
+                handler,
+                this.createBoxFromFilePositionParentHandlerAndIndex);
         } else if (ByteVector.equals(type, Mpeg4BoxType.DATA)) {
             return AppleDataBox.fromHeaderFileAndHandler(header, file, handler);
         } else if (ByteVector.equals(type, Mpeg4BoxType.ESDS)) {
@@ -110,7 +137,11 @@ export default class Mpeg4BoxFactory {
         // If we still don't have a tag, and we're inside an ItemListBox, load the box as an
         // AnnotationBox (Apple tag item).
         if (ByteVector.equals(parent.boxType, Mpeg4BoxType.ILST)) {
-            return AppleAnnotationBox.fromHeaderFileAndHandler(header, file, handler);
+            return AppleAnnotationBox.fromHeaderFileAndHandler(
+                header,
+                file,
+                handler,
+                this.createBoxFromFilePositionParentHandlerAndIndex);
         }
 
         // Nothing good. Go generic.

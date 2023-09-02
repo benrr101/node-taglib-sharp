@@ -1,17 +1,15 @@
+import IsoAudioSampleEntry from "./boxes/isoAudioSampleEntry";
+import IsoHandlerBox from "./boxes/isoHandlerBox";
+import IsoMovieHeaderBox from "./boxes/isoMovieHeaderBox";
+import IsoUserDataBox from "./boxes/isoUserDataBox";
+import IsoVisualSampleEntry from "./boxes/isoVisualSampleEntry";
+import Mpeg4Box from "./boxes/mpeg4Box";
 import Mpeg4BoxFactory from "./mpeg4BoxFactory";
 import Mpeg4BoxHeader from "./mpeg4BoxHeader";
 import Mpeg4BoxType from "./mpeg4BoxType";
 import Mpeg4Utils from "./mpeg4Utils";
 import { ByteVector, StringType } from "../byteVector";
 import { File } from "../file";
-import {
-    IsoAudioSampleEntry,
-    IsoHandlerBox,
-    IsoMovieHeaderBox,
-    IsoUserDataBox,
-    IsoVisualSampleEntry,
-    Mpeg4Box
-} from "./mpeg4Boxes";
 import { Guards } from "../utils";
 
 /**
