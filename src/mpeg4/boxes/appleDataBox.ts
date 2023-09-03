@@ -1,15 +1,49 @@
 import FullBox from "./fullBox";
 import Mpeg4BoxHeader from "../mpeg4BoxHeader";
-import {AppleDataBoxFlagType} from "../appleDataBoxFlagType";
 import {ByteVector, StringType} from "../../byteVector";
 import {File} from "../../file";
 import {Mpeg4BoxClassType} from "../mpeg4BoxClassType";
 import {Guards, NumberUtils} from "../../utils";
 
 /**
+ * Specifies the type of data contained in a box.
+ */
+export enum AppleDataBoxFlagType {
+    /**
+     * The box contains UTF-8 text.
+     */
+    ContainsText = 0x01,
+
+    /**
+     * The box contains binary data.
+     */
+    ContainsData = 0x00,
+
+    /**
+     * The box contains data for a tempo box.
+     */
+    ForTempo = 0x15,
+
+    /**
+     * The box contains a raw JPEG image.
+     */
+    ContainsJpegData = 0x0d,
+
+    /**
+     * The box contains a raw PNG image.
+     */
+    ContainsPngData = 0x0e,
+
+    /**
+     * The box contains a raw BMP image.
+     */
+    ContainsBmpData = 0x1b,
+}
+
+/**
  * This class extends @see FullBox to provide an implementation of an Apple DataBox.
  */
-export default class AppleDataBox extends FullBox {
+export class AppleDataBox extends FullBox {
     /**
      * Private constructor to force construction via static functions.
      */

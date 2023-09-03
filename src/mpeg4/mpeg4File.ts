@@ -88,8 +88,6 @@ export default class Mpeg4File extends File {
 
             // If we're not reading properties, we're done.
             if ((readStyle & ReadStyle.Average) === 0) {
-                this.mode = FileAccessMode.Closed;
-
                 return;
             }
 
@@ -97,7 +95,6 @@ export default class Mpeg4File extends File {
             const mvhdBox = parser.movieHeaderBox;
 
             if (!mvhdBox) {
-                this.mode = FileAccessMode.Closed;
                 throw new Error("mvhd box not found.");
             }
 

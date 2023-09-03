@@ -1,6 +1,5 @@
 import AppleAdditionalInfoBox from "./boxes/appleAdditionalInfoBox";
 import AppleAnnotationBox from "./boxes/appleAnnotationBox";
-import AppleDataBox from "./boxes/appleDataBox";
 import AppleElementaryStreamDescriptor from "./boxes/appleElementaryStreamDescriptor";
 import AppleItemListBox from "./boxes/appleItemListBox";
 import IsoAudioSampleEntry from "./boxes/isoAudioSampleEntry";
@@ -21,8 +20,9 @@ import Mpeg4BoxType from "./mpeg4BoxType";
 import TextBox from "./boxes/textBox";
 import UnknownBox from "./boxes/unknownBox";
 import UrlBox from "./boxes/urlBox";
-import { ByteVector } from "../byteVector";
-import { File } from "../file";
+import {AppleDataBox} from "./boxes/appleDataBox";
+import {ByteVector} from "../byteVector";
+import {File} from "../file";
 
 /**
  * This class provides support for reading boxes from a file.

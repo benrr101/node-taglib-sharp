@@ -1,18 +1,10 @@
-import { assert } from "chai";
-import { suite, test } from "@testdeck/mocha";
+import {assert} from "chai";
+import {suite, test} from "@testdeck/mocha";
 
 import ExtendedFileTests from "./utilities/extendedFileTests";
 import TestConstants from "./utilities/testConstants";
-import { ByteVector, File, Mpeg4File, StringType } from "../src";
-import { StandardFileTests, TestTagLevel } from "./utilities/standardFileTests";
-import { AppleAdditionalInfoBox, IsoUserDataBox } from "../src/mpeg4/mpeg4Boxes";
-
-class Mpeg4TestFile extends Mpeg4File {
-
-    public get udtaBoxes(): IsoUserDataBox[] {
-        return super.udtaBoxes;
-    }
-}
+import {ByteVector, File, Mpeg4AppleAdditionalInfoBox, Mpeg4File, StringType} from "../src";
+import {StandardFileTests, TestTagLevel} from "./utilities/standardFileTests";
 
 @suite class Mpeg4_m4a_FileTests {
     private static readonly sampleFilePath: string = TestConstants.getSampleFilePath("sample.m4a");
@@ -53,14 +45,16 @@ class Mpeg4TestFile extends Mpeg4File {
 
     @test
     public readAppleAacTags() {
-        const file: Mpeg4TestFile = <Mpeg4TestFile>File.createFromPath(TestConstants.getSampleFilePath("bgo_658920.m4a"));
-        assert.equal(file.udtaBoxes.length, 2);
+        const file = <Mpeg4File>File.createFromPath(TestConstants.getSampleFilePath("bgo_658920.m4a"));
+        // eslint-disable-next-line dot-notation
+        assert.equal(file['udtaBoxes'].length, 2);
 
-        const first: IsoUserDataBox = file.udtaBoxes[0];
+        // eslint-disable-next-line dot-notation
+        const first = file['udtaBoxes'][0];
         assert.equal(first.children.length, 1);
 
-        assert.instanceOf(first.children[0], AppleAdditionalInfoBox);
-        const child: AppleAdditionalInfoBox = <AppleAdditionalInfoBox>first.children[0];
+        assert.instanceOf(first.children[0], Mpeg4AppleAdditionalInfoBox);
+        const child = <Mpeg4AppleAdditionalInfoBox>first.children[0];
         const readOnlyNameBoxType: ByteVector = ByteVector.fromString("name", StringType.UTF8).makeReadOnly();
         assert.isTrue(ByteVector.equals(child.boxType, readOnlyNameBoxType));
         assert.equal(child.data.length, 0);
@@ -90,13 +84,17 @@ class Mpeg4TestFile extends Mpeg4File {
 
     @test
     public readReplayGain() {
-        const fileWithRg: File = File.createFromPath(TestConstants.getSampleFilePath("sample_replaygain.m4a"));
+        const fileWithRg = File.createFromPath(TestConstants.getSampleFilePath("sample_replaygain.m4a"));
         assert.approximately(fileWithRg.tag.replayGainTrackGain, -1.43, 0.01);
     }
 
     @test
     public writeStandardTags() {
-        StandardFileTests.writeStandardTags(Mpeg4_m4a_FileTests.sampleFilePath, Mpeg4_m4a_FileTests.tmpFilePath, TestTagLevel.Medium);
+        StandardFileTests.writeStandardTags(
+            Mpeg4_m4a_FileTests.sampleFilePath,
+            Mpeg4_m4a_FileTests.tmpFilePath,
+            TestTagLevel.Medium
+        );
     }
 
     @test
