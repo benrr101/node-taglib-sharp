@@ -1,5 +1,4 @@
 import FullBox from "./fullBox";
-import IsoHandlerBox from "./isoHandlerBox";
 import Mpeg4BoxHeader from "../mpeg4BoxHeader";
 import {ByteVector, StringType} from "../../byteVector";
 import {DescriptorTag} from "../descriptorTag";
@@ -105,20 +104,21 @@ export default class AppleElementaryStreamDescriptor extends FullBox {
      * header and handler by reading the contents from a specified file.
      * @param header A @see Mpeg4BoxHeader object containing the header to use for the new instance.
      * @param file A @see File object to read the contents of the box from.
-     * @param handler A @see IsoHandlerBox object containing the handler that applies to the new instance.
+     * @param handlerType Type of the handler box object containing the handler that applies to the
+     *     new instance, or undefined if no handler applies.
      * @returns A new instance of @see AppleElementaryStreamDescriptor
      */
     public static fromHeaderFileAndHandler(
         header: Mpeg4BoxHeader,
         file: File,
-        handler: IsoHandlerBox
+        handlerType: ByteVector
     ): AppleElementaryStreamDescriptor {
         /* ES_Descriptor Specifications
          *  Section 7.2.6.5 http://ecee.colorado.edu/~ecen5653/ecen5653/papers/ISO%2014496-1%202004.PDF
          */
 
         const instance: AppleElementaryStreamDescriptor = new AppleElementaryStreamDescriptor();
-        instance.initializeFromHeaderFileAndHandler(header, file, handler);
+        instance.initializeFromHeaderFileAndHandler(header, file, handlerType);
         const boxData: ByteVector = file.readBlock(instance.dataSize);
         instance.decoderConfig = ByteVector.empty();
         const reader: DescriptorTagReader = new DescriptorTagReader(boxData);

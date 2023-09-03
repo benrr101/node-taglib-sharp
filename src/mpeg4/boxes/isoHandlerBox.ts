@@ -12,12 +12,14 @@ export default class IsoHandlerBox extends FullBox {
     /**
      * Contains the handler type of the current instance.
      */
-    public handlerType: ByteVector;
+    public handlerType1: ByteVector;
 
     /**
      * Contains the name of the current instance.
      */
     public name: string;
+
+    // #region Constructors
 
     /**
      * Private constructor to force construction via static functions.
@@ -31,17 +33,18 @@ export default class IsoHandlerBox extends FullBox {
      * handler by reading the contents from a specified file.
      * @param header A @see Mpeg4BoxHeader object containing the header to use for the new instance.
      * @param file A @see File object to read the contents of the box from.
-     * @param handler A @see IsoHandlerBox object containing the handler that applies to the new instance.
+     * @param handlerType Type of the handler box object containing the handler that applies to the
+     *     new instance, or undefined if no handler applies.
      * @returns A new instance of @see IsoHandlerBox
      */
-    public static fromHeaderFileAndHandler(header: Mpeg4BoxHeader, file: File, handler: IsoHandlerBox): IsoHandlerBox {
+    public static fromHeaderFileAndHandler(header: Mpeg4BoxHeader, file: File, handlerType: ByteVector): IsoHandlerBox {
         Guards.notNullOrUndefined(file, "file");
 
         const instance: IsoHandlerBox = new IsoHandlerBox();
-        instance.initializeFromHeaderFileAndHandler(header, file, handler);
+        instance.initializeFromHeaderFileAndHandler(header, file, handlerType);
         file.seek(instance.dataPosition + 4);
         const boxData: ByteVector = file.readBlock(instance.dataSize - 4);
-        instance.handlerType = boxData.subarray(0, 4);
+        instance.handlerType1 = boxData.subarray(0, 4);
 
         let end: number = boxData.offsetFind(ByteVector.fromByte(0), 16);
 
@@ -69,11 +72,13 @@ export default class IsoHandlerBox extends FullBox {
 
         const instance: IsoHandlerBox = new IsoHandlerBox();
         instance.initializeFromTypeVersionAndFlags(ByteVector.fromString("hdlr", StringType.UTF8), 0, 0);
-        instance.handlerType = handlerType.subarray(0, 4);
+        instance.handlerType1 = handlerType.subarray(0, 4);
         instance.name = name;
 
         return instance;
     }
+
+    // #endregion
 
     /** @inheritDoc */
     public get boxClassType(): Mpeg4BoxClassType { return Mpeg4BoxClassType.IsoHandlerBox; }

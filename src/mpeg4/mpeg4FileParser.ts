@@ -359,24 +359,28 @@ export default class Mpeg4FileParser {
                     Mpeg4Utils.addParent(parents, header)
                 );
             } else if (ByteVector.equals(type, Mpeg4BoxType.STSD)) {
-                this._stsdBoxes.push(Mpeg4BoxFactory.createBoxFromFileHeaderAndHandler(this._file, header, handler));
+                this._stsdBoxes.push(Mpeg4BoxFactory.createBoxFromFileHeaderAndHandler(
+                    this._file,
+                    header,
+                    handler.handlerType1
+                ));
             } else if (ByteVector.equals(type, Mpeg4BoxType.HDLR)) {
                 handler = <IsoHandlerBox>Mpeg4BoxFactory.createBoxFromFileHeaderAndHandler(
                     this._file,
                     header,
-                    handler
+                    handler.handlerType1
                 );
             } else if (!this._mvhdBox && ByteVector.equals(type, Mpeg4BoxType.MVHD)) {
                 this._mvhdBox = <IsoMovieHeaderBox>Mpeg4BoxFactory.createBoxFromFileHeaderAndHandler(
                     this._file,
                     header,
-                    handler
+                    handler.handlerType1
                 );
             } else if (ByteVector.equals(type, Mpeg4BoxType.UDTA)) {
                 const udtaBox = <IsoUserDataBox>Mpeg4BoxFactory.createBoxFromFileHeaderAndHandler(
                     this._file,
                     header,
-                    handler
+                    handler.handlerType1
                 );
 
                 // Since we can have multiple udta boxes, save the parent for each one

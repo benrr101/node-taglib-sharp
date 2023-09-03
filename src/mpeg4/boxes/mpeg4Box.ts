@@ -1,5 +1,4 @@
 import IsoFreeSpaceBox from "./isoFreeSpaceBox";
-import IsoHandlerBox from "./isoHandlerBox";
 import Mpeg4BoxHeader from "../mpeg4BoxHeader";
 import Mpeg4BoxType from "../mpeg4BoxType";
 import {ByteVector} from "../../byteVector";
@@ -11,7 +10,7 @@ export type ChildFactory = (
     file: File,
     position: number,
     parentHeader: Mpeg4BoxHeader,
-    handler: IsoHandlerBox,
+    handlerType: ByteVector,
     index: number
 ) => Mpeg4Box;
 
@@ -47,9 +46,9 @@ export default abstract class Mpeg4Box {
     }
 
     /**
-     * The handler box that applies to the current instance.
+     * The type of the handler box that applies to the current instance.
      */
-    private _handler: IsoHandlerBox;
+    private _handlerType: ByteVector;
 
     /**
      * The children of the current instance.
@@ -69,14 +68,14 @@ export default abstract class Mpeg4Box {
     /**
      * Initializes a new instance of @see Mpeg4Box with a specified header and handler.
      * @param header A @see Mpeg4BoxHeader object describing the new instance.
-     * @param handler A @see IsoHandlerBox object containing the handler that applies to the new instance,
-     * or undefined if no handler applies.
+     * @param handlerType Type of the handler box object containing the handler that applies to the
+     * new instance, or undefined if no handler applies.
      */
-    protected initializeFromHeaderAndHandler(header: Mpeg4BoxHeader, handler: IsoHandlerBox): void {
+    protected initializeFromHeaderAndHandler(header: Mpeg4BoxHeader, handlerType: ByteVector): void {
         this._header = header;
         this._baseDataPosition = header.position + header.headerSize;
         this._dataPosition = this._baseDataPosition;
-        this._handler = handler;
+        this._handlerType = handlerType;
     }
 
     /**
@@ -124,9 +123,9 @@ export default abstract class Mpeg4Box {
     public get hasChildren(): boolean { return this.children && this.children.length > 0; }
 
     /**
-     * Gets the handler box that applies to the current instance.
+     * Gets the type of the handler box that applies to the current instance.
      */
-    public get handler(): IsoHandlerBox { return this._handler; }
+    public get handlerType(): ByteVector { return this._handlerType; }
 
     /**
      * Gets the size of the data contained in the current instance, minus the size of any box specific headers.
@@ -307,7 +306,7 @@ export default abstract class Mpeg4Box {
         this._header.box = this;
 
         while (position < end) {
-            const child: Mpeg4Box = childFactory(file, position, this._header, this.handler, children.length);
+            const child: Mpeg4Box = childFactory(file, position, this._header, this._handlerType, children.length);
             if (child.size === 0) {
                 break;
             }

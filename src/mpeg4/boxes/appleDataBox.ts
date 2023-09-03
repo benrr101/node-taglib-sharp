@@ -1,5 +1,4 @@
 import FullBox from "./fullBox";
-import IsoHandlerBox from "./isoHandlerBox";
 import Mpeg4BoxHeader from "../mpeg4BoxHeader";
 import {AppleDataBoxFlagType} from "../appleDataBoxFlagType";
 import {ByteVector, StringType} from "../../byteVector";
@@ -23,14 +22,15 @@ export default class AppleDataBox extends FullBox {
      * by reading the contents from a specified file.
      * @param header A @see Mpeg4BoxHeader  object containing the header to use for the new instance.
      * @param file A @see File object to read the contents of the box from.
-     * @param handler A @see IsoHandlerBox object containing the handler that applies to the new instance.
+     * @param handlerType Type of the handler box object containing the handler that applies to the
+     *     new instance, or undefined if no handler applies.
      * @returns A new instance of @see AppleDataBox
      */
-    public static fromHeaderFileAndHandler(header: Mpeg4BoxHeader, file: File, handler: IsoHandlerBox): AppleDataBox {
+    public static fromHeaderFileAndHandler(header: Mpeg4BoxHeader, file: File, handlerType: ByteVector): AppleDataBox {
         Guards.notNullOrUndefined(file, "file");
 
         const instance: AppleDataBox = new AppleDataBox();
-        instance.initializeFromHeaderFileAndHandler(header, file, handler);
+        instance.initializeFromHeaderFileAndHandler(header, file, handlerType);
         instance.increaseDataPosition(4);
         instance.data = instance.loadData(file);
 

@@ -1,7 +1,6 @@
-import IsoHandlerBox from "./isoHandlerBox";
 import IsoSampleEntry from "./isoSampleEntry";
 import Mpeg4BoxHeader from "../mpeg4BoxHeader";
-import {StringType} from "../../byteVector";
+import {ByteVector, StringType} from "../../byteVector";
 import {File} from "../../file";
 import {Mpeg4BoxClassType} from "../mpeg4BoxClassType";
 import {IVideoCodec, MediaTypes} from "../../properties";
@@ -32,12 +31,12 @@ export default class IsoVisualSampleEntry extends IsoSampleEntry implements IVid
     public static fromHeaderFileAndHandler(
         header: Mpeg4BoxHeader,
         file: File,
-        handler: IsoHandlerBox
+        handlerType: ByteVector
     ): IsoVisualSampleEntry {
         Guards.notNullOrUndefined(file, "file");
 
         const instance: IsoVisualSampleEntry = new IsoVisualSampleEntry();
-        instance.initializeFromHeaderFileAndHandler(header, file, handler);
+        instance.initializeFromHeaderFileAndHandler(header, file, handlerType);
         const dataPositionBeforeIncrease: number = instance.increaseDataPosition(62);
         file.seek(dataPositionBeforeIncrease + 16);
         instance.videoWidth = file.readBlock(2).toUshort();

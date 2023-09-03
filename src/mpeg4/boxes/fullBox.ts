@@ -1,4 +1,3 @@
-import IsoHandlerBox from "./isoHandlerBox";
 import Mpeg4Box from "./mpeg4Box";
 import Mpeg4BoxHeader from "../mpeg4BoxHeader";
 import {ByteVector} from "../../byteVector";
@@ -31,12 +30,13 @@ export default abstract class FullBox extends Mpeg4Box {
      * by reading the contents from a specified file.
      * @param header A @see Mpeg4BoxHeader object containing the header to use for the new instance.
      * @param file A @see File object to read the contents of the box from.
-     * @param handler A @see IsoHandlerBox object containing the handler that applies to the new instance.
+     * @param handlerType Type of the handler box object containing the handler that applies to the
+     *     new instance, or undefined if no handler applies.
      */
-    protected initializeFromHeaderFileAndHandler(header: Mpeg4BoxHeader, file: File, handler: IsoHandlerBox): void {
+    protected initializeFromHeaderFileAndHandler(header: Mpeg4BoxHeader, file: File, handlerType: ByteVector): void {
         Guards.notNullOrUndefined(file, "file");
 
-        this.initializeFromHeaderAndHandler(header, handler);
+        this.initializeFromHeaderAndHandler(header, handlerType);
         const dataPositionBeforeIncrease: number = this.increaseDataPosition(4);
 
         file.seek(dataPositionBeforeIncrease);
