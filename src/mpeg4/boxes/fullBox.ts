@@ -2,7 +2,7 @@ import Mpeg4Box from "./mpeg4Box";
 import Mpeg4BoxHeader from "../mpeg4BoxHeader";
 import {ByteVector} from "../../byteVector";
 import {File} from "../../file";
-import {Guards} from "../../utils";
+import {Guards, NumberUtils} from "../../utils";
 
 /**
  * This class extends @see Mpeg4Box to provide an implementation of a ISO/IEC 14496-12 FullBox.
@@ -71,19 +71,12 @@ export default abstract class FullBox extends Mpeg4Box {
         return this.initializeFromHeaderVersionAndFlags(Mpeg4BoxHeader.fromType(type), version, flags);
     }
 
-    /**
-     * Renders the current instance, including its children, to a new @see ByteVector object, preceding the
-     * contents with a specified block of data.
-     * @param topData A @see ByteVector object containing box specific header data to precede the content.
-     * @returns A @see ByteVector object containing the rendered version of the current instance.
-     */
-    protected renderUsingTopData(topData: ByteVector): ByteVector {
-        const output: ByteVector = ByteVector.concatenate(
-            this.version,
-            ByteVector.fromUint(this.flags).subarray(1, 3),
-            topData
+    public renderBoxHeaders(): ByteVector[] {
+        // Generate |<ver>|<    |flags|    >|
+        const flagsWithVersion = NumberUtils.uintOr(
+            this.flags,
+            NumberUtils.uintLShift(this.version, 24)
         );
-
-        return super.renderUsingTopData(output);
+        return [ByteVector.fromUint(flagsWithVersion)];
     }
 }

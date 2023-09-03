@@ -1,6 +1,4 @@
-import IsoFreeSpaceBox from "./isoFreeSpaceBox";
 import Mpeg4BoxHeader from "../mpeg4BoxHeader";
-import Mpeg4BoxType from "../mpeg4BoxType";
 import {ByteVector} from "../../byteVector";
 import {File} from "../../file";
 import {Mpeg4BoxClassType} from "../mpeg4BoxClassType";
@@ -118,6 +116,11 @@ export default abstract class Mpeg4Box {
     public set data(v: ByteVector) { this._data = v; }
 
     /**
+     * Gets the size of the data contained in the current instance, minus the size of any box specific headers.
+     */
+    public get dataSize(): number { return this._header.dataSize + this._baseDataPosition - this.dataPosition; }
+
+    /**
      * Gets whether or not the current instance has children.
      */
     public get hasChildren(): boolean { return this.children && this.children.length > 0; }
@@ -128,22 +131,9 @@ export default abstract class Mpeg4Box {
     public get handlerType(): ByteVector { return this._handlerType; }
 
     /**
-     * Gets the size of the data contained in the current instance, minus the size of any box specific headers.
-     */
-    protected get dataSize(): number { return this._header.dataSize + this._baseDataPosition - this.dataPosition; }
-
-    /**
      * Gets the header of the current instance.
      */
-    protected get header(): Mpeg4BoxHeader { return this._header; }
-
-    /**
-     * Renders the current instance, including its children, to a new ByteVector object.
-     * @returns A @see ByteVector object containing the rendered version of the current instance.
-     */
-    public render(): ByteVector {
-        return this.renderUsingTopData(ByteVector.empty());
-    }
+    public get header(): Mpeg4BoxHeader { return this._header; }
 
     /**
      * Gets a child box from the current instance by finding a matching box type.
@@ -334,51 +324,6 @@ export default abstract class Mpeg4Box {
     }
 
     /**
-     * Renders the current instance, including its children, to a new @see ByteVector object, preceding the
-     * contents with a specified block of data.
-     * @param topData  A @see ByteVector object containing box specific header data to precede the content.
-     * @returns A @see ByteVector object containing the rendered version of the current instance.
-     */
-    protected renderUsingTopData(topData: ByteVector): ByteVector {
-        let freeFound = false;
-        const output: ByteVector = ByteVector.empty();
-
-        if (this.children) {
-            for (const box of this.children) {
-                if (box instanceof IsoFreeSpaceBox) {
-                    freeFound = true;
-                } else {
-                    output.addByteVector(box.render());
-                }
-            }
-        } else if (this.data) {
-            output.addByteVector(this.data);
-        }
-
-        // If there was a free, don't take it away, and let meta be a special case.
-        if (freeFound || ByteVector.equals(this.boxType, Mpeg4BoxType.META)) {
-            const sizeDifference: number = this.dataSize - output.length;
-
-            if (this._header.dataSize !== 0 && sizeDifference >= 8) {
-                // If we have room for free space, add it so we don't have to resize the file.
-                output.addByteVector(IsoFreeSpaceBox.fromPadding(sizeDifference).render());
-            } else {
-                // If we're getting bigger, get a lot bigger so we might not have to again.
-                output.addByteVector(IsoFreeSpaceBox.fromPadding(2048).render());
-            }
-        }
-
-        // Adjust the header's data size to match the content.
-        this._header.dataSize = topData.length + output.length;
-
-        // Render the full box.
-        output.splice(0, 0, topData);
-        output.splice(0, 0, this._header.render());
-
-        return output;
-    }
-
-    /**
      * Increases the data position by a given value. This function can be used by boxes
      * which extend from @see Mpeg4Box to increase the data position, because the data
      * is located after their box specific headers.
@@ -392,4 +337,14 @@ export default abstract class Mpeg4Box {
 
         return dataPositionBeforeIncrease;
     }
+
+    /**
+     * Generates the headers that are specific to the box type for use in rendering.
+     * @internal
+     */
+    public renderBoxHeaders(): ByteVector[] {
+        return undefined;
+    }
 }
+
+

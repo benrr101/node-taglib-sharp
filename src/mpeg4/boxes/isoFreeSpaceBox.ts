@@ -60,27 +60,19 @@ export default class IsoFreeSpaceBox extends Mpeg4Box {
     /**
      * Gets the data contained in the current instance.
      */
-    public get data(): ByteVector {
-        return ByteVector.fromSize(this.padding);
-    }
+    public get data(): ByteVector { return ByteVector.fromSize(this.padding); }
     /**
      * Sets the data contained in the current instance.
      */
-    public set data(v: ByteVector) {
-        this.padding = v ? v.length : 0;
-    }
+    public set data(v: ByteVector) { this.padding = v ? v.length : 0; }
 
     /**
      * Gets the size the current instance will occupy when rendered.
      * @returns A value containing the size the current instance will occupy when rendered.
      */
-    public get paddingSize(): number {
-        return this.padding + 8;
-    }
+    public get paddingSize(): number { return this.padding + 8; }
     /**
      * Sets the size the current instance will occupy when rendered.
      */
-    public set paddingSize(v: number) {
-        this.padding = v - 8;
-    }
+    public set paddingSize(v: number) { this.padding = v - 8; }
 }

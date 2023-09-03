@@ -3,9 +3,9 @@ import IsoChunkLargeOffsetBox from "./boxes/isoChunkLargeOffsetBox";
 import IsoChunkOffsetBox from "./boxes/isoChunkOffsetBox";
 import IsoUserDataBox from "./boxes/isoUserDataBox";
 import Mpeg4BoxHeader from "./mpeg4BoxHeader";
+import Mpeg4BoxRenderer from "./mpeg4BoxRenderer";
 import Mpeg4BoxType from "./mpeg4BoxType";
 import Mpeg4FileParser from "./mpeg4FileParser";
-import { ByteVector } from "../byteVector";
 import { File, FileAccessMode, ReadStyle } from "../file";
 import { IFileAbstraction } from "../fileAbstraction";
 import { Properties } from "../properties";
@@ -190,7 +190,7 @@ export default class Mpeg4File extends File {
                 udtaBox = IsoUserDataBox.fromEmpty();
             }
 
-            const tagData: ByteVector = udtaBox.render();
+            const tagData = Mpeg4BoxRenderer.renderBox(udtaBox);
 
             // If we don't have a "udta" box to overwrite...
             if (!udtaBox.parentTree || udtaBox.parentTree.length === 0) {
@@ -226,9 +226,15 @@ export default class Mpeg4File extends File {
 
                 for (const box of parser.chunkOffsetBoxes) {
                     if (box instanceof IsoChunkLargeOffsetBox) {
-                        (<IsoChunkLargeOffsetBox>box).overwrite(this, sizeChange, writePosition);
+                        (<IsoChunkLargeOffsetBox>box).updatePosition(sizeChange, writePosition);
+
+                        const updatedBox = Mpeg4BoxRenderer.renderBox(box);
+                        this.insert(updatedBox, box.header.position, box.size);
                     } else if (box instanceof IsoChunkOffsetBox) {
-                        (<IsoChunkOffsetBox>box).overwrite(this, sizeChange, writePosition);
+                        (<IsoChunkOffsetBox>box).updatePositions(sizeChange, writePosition);
+
+                        const updatedBox = Mpeg4BoxRenderer.renderBox(box);
+                        this.insert(updatedBox, box.header.position, box.size);
                     }
                 }
             }

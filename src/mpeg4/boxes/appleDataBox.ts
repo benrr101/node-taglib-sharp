@@ -71,15 +71,10 @@ export default class AppleDataBox extends FullBox {
         this.data = ByteVector.fromString(v, StringType.UTF8);
     }
 
-    /**
-     * Renders the current instance, including its children, to a new @see ByteVector object, preceding the
-     * contents with a specified block of data.
-     * @param topData A @see ByteVector object containing box specific header data to precede the content.
-     * @returns
-     */
-    protected renderUsingTopData(topData: ByteVector): ByteVector {
-        const output: ByteVector = ByteVector.concatenate(ByteVector.fromSize(4), topData);
-
-        return super.renderUsingTopData(output);
+    public renderBoxHeaders(): ByteVector[] {
+        return [
+            ...super.renderBoxHeaders(),
+            ByteVector.fromSize(4)
+        ];
     }
 }
