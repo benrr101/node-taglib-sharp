@@ -48,66 +48,6 @@ export default class Mpeg4File extends File {
         this.read(readStyle);
     }
 
-    private read(readStyle: ReadStyle): void {
-        this.mode = FileAccessMode.Read;
-
-        try {
-            // Read the file
-            const parser = new Mpeg4FileParser(this);
-
-            if ((readStyle & ReadStyle.Average) === 0) {
-                parser.parseTag();
-            } else {
-                parser.parseTagAndProperties();
-            }
-
-            this._invariantStartPosition = parser.mdatStartPosition;
-            this._invariantEndPosition = parser.mdatEndPosition;
-
-            this._udtaBoxes.push(...parser.userDataBoxes);
-
-            // Ensure our collection contains at least a single empty box
-            if (this._udtaBoxes.length === 0) {
-                const dummy = IsoUserDataBox.fromEmpty();
-                this._udtaBoxes.push(dummy);
-            }
-
-            // Check if a udta with ILST actually exists
-            if (this.isAppleTagUdtaPresent()) {
-                // There is an udta present with ILST info
-                this.tagTypesOnDisk = NumberUtils.uintOr(this.tagTypesOnDisk, TagTypes.Apple);
-            }
-
-            // Find the udta box with the Apple Tag ILST
-            let udtaBox: IsoUserDataBox = this.findAppleTagUdta();
-            if (!udtaBox) {
-                udtaBox = IsoUserDataBox.fromEmpty();
-            }
-
-            this._tag = new AppleTag(udtaBox);
-
-            // If we're not reading properties, we're done.
-            if ((readStyle & ReadStyle.Average) === 0) {
-                return;
-            }
-
-            // Get the movie header box.
-            const mvhdBox = parser.movieHeaderBox;
-
-            if (!mvhdBox) {
-                throw new Error("mvhd box not found.");
-            }
-
-            const audioSampleEntry = parser.audioSampleEntry;
-            const visualSampleEntry = parser.visualSampleEntry;
-
-            // Read the properties.
-            this._properties = new Properties(mvhdBox.durationInMilliseconds, [audioSampleEntry, visualSampleEntry]);
-        } finally {
-            this.mode = FileAccessMode.Closed;
-        }
-    }
-
     /** @inheritDoc */
     public get tag(): AppleTag {
         return this._tag;
@@ -274,6 +214,66 @@ export default class Mpeg4File extends File {
             }
         }
         return false;
+    }
+
+    private read(readStyle: ReadStyle): void {
+        this.mode = FileAccessMode.Read;
+
+        try {
+            // Read the file
+            const parser = new Mpeg4FileParser(this);
+
+            if ((readStyle & ReadStyle.Average) === 0) {
+                parser.parseTag();
+            } else {
+                parser.parseTagAndProperties();
+            }
+
+            this._invariantStartPosition = parser.mdatStartPosition;
+            this._invariantEndPosition = parser.mdatEndPosition;
+
+            this._udtaBoxes.push(...parser.userDataBoxes);
+
+            // Ensure our collection contains at least a single empty box
+            if (this._udtaBoxes.length === 0) {
+                const dummy = IsoUserDataBox.fromEmpty();
+                this._udtaBoxes.push(dummy);
+            }
+
+            // Check if a udta with ILST actually exists
+            if (this.isAppleTagUdtaPresent()) {
+                // There is an udta present with ILST info
+                this.tagTypesOnDisk = NumberUtils.uintOr(this.tagTypesOnDisk, TagTypes.Apple);
+            }
+
+            // Find the udta box with the Apple Tag ILST
+            let udtaBox: IsoUserDataBox = this.findAppleTagUdta();
+            if (!udtaBox) {
+                udtaBox = IsoUserDataBox.fromEmpty();
+            }
+
+            this._tag = new AppleTag(udtaBox);
+
+            // If we're not reading properties, we're done.
+            if ((readStyle & ReadStyle.Average) === 0) {
+                return;
+            }
+
+            // Get the movie header box.
+            const mvhdBox = parser.movieHeaderBox;
+
+            if (!mvhdBox) {
+                throw new Error("mvhd box not found.");
+            }
+
+            const audioSampleEntry = parser.audioSampleEntry;
+            const visualSampleEntry = parser.visualSampleEntry;
+
+            // Read the properties.
+            this._properties = new Properties(mvhdBox.durationInMilliseconds, [audioSampleEntry, visualSampleEntry]);
+        } finally {
+            this.mode = FileAccessMode.Closed;
+        }
     }
 }
 

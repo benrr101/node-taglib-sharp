@@ -1,5 +1,6 @@
 import FullBox from "./fullBox";
 import Mpeg4BoxHeader from "../mpeg4BoxHeader";
+import Mpeg4BoxType from "../mpeg4BoxType";
 import {ByteVector, StringType} from "../../byteVector";
 import {File} from "../../file";
 import {Mpeg4BoxClassType} from "../mpeg4BoxClassType";
@@ -9,15 +10,8 @@ import {Guards} from "../../utils";
  * This class extends @see FullBox to provide an implementation of a ISO/IEC 14496-12 FullBox.
  */
 export default class IsoHandlerBox extends FullBox {
-    /**
-     * Contains the handler type of the current instance.
-     */
-    public handlerType1: ByteVector;
-
-    /**
-     * Contains the name of the current instance.
-     */
-    public name: string;
+    private _dataHandlerType: ByteVector;
+    private _name: string;
 
     // #region Constructors
 
@@ -40,19 +34,21 @@ export default class IsoHandlerBox extends FullBox {
     public static fromHeaderFileAndHandler(header: Mpeg4BoxHeader, file: File, handlerType: ByteVector): IsoHandlerBox {
         Guards.notNullOrUndefined(file, "file");
 
-        const instance: IsoHandlerBox = new IsoHandlerBox();
+        const instance = new IsoHandlerBox();
         instance.initializeFromHeaderFileAndHandler(header, file, handlerType);
+
         file.seek(instance.dataPosition + 4);
-        const boxData: ByteVector = file.readBlock(instance.dataSize - 4);
-        instance.handlerType1 = boxData.subarray(0, 4);
+        const boxData = file.readBlock(instance.dataSize - 4);
+        instance._dataHandlerType = boxData.subarray(0, 4);
 
-        let end: number = boxData.offsetFind(ByteVector.fromByte(0), 16);
-
+        let end = boxData.offsetFind(ByteVector.fromByte(0), 16);
         if (end < 16) {
             end = boxData.length;
         }
 
-        instance.name = end > 16 ? boxData.subarray(16, end - 16).toString(StringType.UTF8) : "";
+        instance._name = end > 16
+            ? boxData.subarray(16, end - 16).toString(StringType.UTF8)
+            : "";
 
         return instance;
     }
@@ -65,15 +61,14 @@ export default class IsoHandlerBox extends FullBox {
      */
     public static fromHandlerTypeAndHandlerName(handlerType: ByteVector, name: string): IsoHandlerBox {
         Guards.notNullOrUndefined(handlerType, "handlerType");
-
         if (handlerType.length < 4) {
             throw new Error("The handler type must be four bytes long.");
         }
 
         const instance: IsoHandlerBox = new IsoHandlerBox();
-        instance.initializeFromTypeVersionAndFlags(ByteVector.fromString("hdlr", StringType.UTF8), 0, 0);
-        instance.handlerType1 = handlerType.subarray(0, 4);
-        instance.name = name;
+        instance.initializeFromTypeVersionAndFlags(Mpeg4BoxType.HDLR, 0, 0);
+        instance._dataHandlerType = handlerType.subarray(0, 4);
+        instance._name = name;
 
         return instance;
     }
@@ -89,10 +84,20 @@ export default class IsoHandlerBox extends FullBox {
     public get data(): ByteVector {
         return ByteVector.concatenate(
             ByteVector.fromSize(4),
-            this.handlerType,
+            this.dataHandlerType,
             ByteVector.fromSize(12),
             ByteVector.fromString(this.name, StringType.UTF8),
             ByteVector.fromSize(2)
         );
     }
+
+    /**
+     * Gets the handler type as described in the data of the current instance.
+     */
+    public get dataHandlerType(): ByteVector { return this._dataHandlerType; }
+
+    /**
+     * Gets the name of the current instance.
+     */
+    public get name(): string { return this._name; }
 }
