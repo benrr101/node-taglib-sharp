@@ -10,11 +10,7 @@ import {ByteVector} from "../../byteVector";
  * This class extends @see FullBox to provide an implementation of a ISO/IEC 14496-12 SampleDescriptionBox.
  */
 export default class IsoSampleDescriptionBox extends FullBox {
-    /**
-     * The number of boxes at the beginning of the children that will be stored as @see IsoAudioSampleEntry
-     * of @see IsoVisualSampleEntry" objects, depending on the handler.
-     */
-    public entryCount: number;
+    private _entryCount: number;
 
     /**
      * Private constructor to force construction via static functions.
@@ -44,7 +40,8 @@ export default class IsoSampleDescriptionBox extends FullBox {
         const instance: IsoSampleDescriptionBox = new IsoSampleDescriptionBox();
         instance.initializeFromHeaderFileAndHandler(header, file, handlerType);
         instance.increaseDataPosition(4);
-        instance.entryCount = file.readBlock(4).toUint();
+        instance._entryCount = file.readBlock(4).toUint();
+
         instance.children = instance.loadChildren(file, childFactory);
 
         return instance;
@@ -52,4 +49,10 @@ export default class IsoSampleDescriptionBox extends FullBox {
 
     /** @inheritDoc */
     public get boxClassType(): Mpeg4BoxClassType { return Mpeg4BoxClassType.IsoSampleDescriptionBox; }
+
+    /**
+     * The number of boxes at the beginning of the children that will be stored as @see IsoAudioSampleEntry
+     * of @see IsoVisualSampleEntry objects, depending on the handler.
+     */
+    public get entryCount(): number { return this._entryCount; }
 }

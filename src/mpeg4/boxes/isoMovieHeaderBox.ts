@@ -9,36 +9,12 @@ import {Guards} from "../../utils";
  * This class extends @see FullBox to provide an implementation of a ISO/IEC 14496-12 MovieHeaderBox.
  */
 export default class IsoMovieHeaderBox extends FullBox {
-    /**
-     * Contains the ID of the next track in the movie represented by the current instance.
-     */
-    public nextTrackId: number;
-
-    /**
-     * Contains the creation time of the movie.
-     */
-    public creationTime: number;
-
-    /**
-     * Contains the modification time of the movie.
-     */
-    public modificationTime: number;
-
-    /**
-     * Contains the duration of the movie represented by the current instance.
-     */
-    public durationInMilliseconds: number;
-
-    /**
-     *  Contains the playback rate of the movie represented by the current instance.
-     */
-    public rate: number;
-
-    /**
-     *  Contains the playback volume of the movie represented by the current instance.
-     */
-    public volume: number;
-
+    private _nextTrackId: number;
+    private _creationTime: number;
+    private _modificationTime: number;
+    private _durationInMilliseconds: number;
+    private _rate: number;
+    private _volume: number;
     /**
      * Private constructor to force construction via static functions.
      */
@@ -73,11 +49,11 @@ export default class IsoMovieHeaderBox extends FullBox {
             data = file.readBlock(Math.min(28, bytesRemaining));
 
             if (data.length >= 8) {
-                instance.creationTime = Number(data.subarray(0, 8).toUlong());
+                instance._creationTime = Number(data.subarray(0, 8).toUlong());
             }
 
             if (data.length >= 16) {
-                instance.modificationTime = Number(data.subarray(8, 8).toUlong());
+                instance._modificationTime = Number(data.subarray(8, 8).toUlong());
             }
 
             let timescale: number = 0;
@@ -90,10 +66,7 @@ export default class IsoMovieHeaderBox extends FullBox {
 
             if (data.length >= 28) {
                 duration = Number(data.subarray(20, 8).toUlong());
-                instance.durationInMilliseconds = IsoMovieHeaderBox.calculateDurationInMilliseconds(
-                    duration,
-                    timescale
-                );
+                instance._durationInMilliseconds = (duration / timescale) * 1000;
             }
 
             bytesRemaining -= 28;
@@ -102,11 +75,11 @@ export default class IsoMovieHeaderBox extends FullBox {
             data = file.readBlock(Math.min(16, bytesRemaining));
 
             if (data.length >= 4) {
-                instance.creationTime = data.subarray(0, 4).toUint();
+                instance._creationTime = data.subarray(0, 4).toUint();
             }
 
             if (data.length >= 8) {
-                instance.modificationTime = data.subarray(4, 4).toUint();
+                instance._modificationTime = data.subarray(4, 4).toUint();
             }
 
             let timescale: number = 0;
@@ -119,10 +92,7 @@ export default class IsoMovieHeaderBox extends FullBox {
 
             if (data.length >= 16) {
                 duration = data.subarray(12, 4).toUint();
-                instance.durationInMilliseconds = IsoMovieHeaderBox.calculateDurationInMilliseconds(
-                    duration,
-                    timescale
-                );
+                instance._durationInMilliseconds = (duration / timescale) * 1000;
             }
 
             bytesRemaining -= 16;
@@ -131,11 +101,11 @@ export default class IsoMovieHeaderBox extends FullBox {
         data = file.readBlock(Math.min(6, bytesRemaining));
 
         if (data.length >= 4) {
-            instance.rate = IsoMovieHeaderBox.calculateRate(data.subarray(0, 4).toUint());
+            instance._rate = data.subarray(0, 4).toUint() / 0x10000;
         }
 
         if (data.length >= 6) {
-            instance.volume = IsoMovieHeaderBox.calculateVolume(data.subarray(4, 2).toUshort());
+            instance._volume = data.subarray(4, 2).toUshort() / 0x100;
         }
 
         file.seek(file.position + 70);
@@ -144,7 +114,7 @@ export default class IsoMovieHeaderBox extends FullBox {
         data = file.readBlock(Math.min(4, bytesRemaining));
 
         if (data.length >= 4) {
-            instance.nextTrackId = data.subarray(0, 4).toUint();
+            instance._nextTrackId = data.subarray(0, 4).toUint();
         }
 
         return instance;
@@ -153,16 +123,33 @@ export default class IsoMovieHeaderBox extends FullBox {
     /** @inheritDoc */
     public get boxClassType(): Mpeg4BoxClassType { return Mpeg4BoxClassType.IsoMovieHeaderBox; }
 
-    private static calculateDurationInMilliseconds(duration: number, timescale: number): number {
-        // The length is the number of ticks divided by ticks per second.
-        return (duration / timescale) * 1000;
-    }
+    /**
+     * Gets the ID of the next track in the movie represented by the current instance.
+     */
+    public get nextTrackId(): number { return this._nextTrackId; }
 
-    private static calculateRate(rate: number): number {
-        return rate / 0x10000;
-    }
+    /**
+     * Gets the creation time of the movie.
+     */
+    public get creationTime(): number { return this._creationTime; }
 
-    private static calculateVolume(volume: number): number {
-        return volume / 0x100;
-    }
+    /**
+     * Gets the modification time of the movie.
+     */
+    public get modificationTime(): number { return this._modificationTime; }
+
+    /**
+     * Gets the duration of the movie represented by the current instance.
+     */
+    public get durationInMilliseconds(): number { return this._durationInMilliseconds; }
+
+    /**
+     * Gets the playback rate of the movie represented by the current instance.
+     */
+    public get rate(): number { return this._rate; }
+
+    /**
+     * Gets the playback volume of the movie represented by the current instance.
+     */
+    public get volume(): number { return this._volume; }
 }

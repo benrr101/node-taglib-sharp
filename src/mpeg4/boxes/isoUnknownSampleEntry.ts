@@ -9,7 +9,6 @@ import {ByteVector} from "../../byteVector";
  * This class extends @see Mpeg4Box to provide an implementation of a ISO/IEC 14496-12 SampleEntry.
  */
 export default class IsoUnknownSampleEntry extends IsoSampleEntry {
-
     /**
      * Protected constructor to force construction via static functions.
      */

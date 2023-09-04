@@ -8,15 +8,10 @@ import {Guards, NumberUtils} from "../../utils";
  * This class extends @see Mpeg4Box to provide an implementation of a ISO/IEC 14496-12 FullBox.
  */
 export default abstract class FullBox extends Mpeg4Box {
-    /**
-     * Gets and sets the version number of the current instance.
-     */
-    public version: number;
+    private _version: number;
+    private _flags: number;
 
-    /**
-     * Gets and sets the flags that apply to the current instance.
-     */
-    public flags: number;
+    // #region Constructors
 
     /**
      * Protected constructor to force construction via static functions.
@@ -42,22 +37,8 @@ export default abstract class FullBox extends Mpeg4Box {
         file.seek(dataPositionBeforeIncrease);
         const headerData: ByteVector = file.readBlock(4);
 
-        this.version = headerData.get(0);
-        this.flags = headerData.subarray(1, 3).toUint();
-    }
-
-    /**
-     * Initializes a new instance of @see FullBox with a provided header, version, and flags.
-     * @param header A @see Mpeg4BoxHeader object containing the header to use for the new instance.
-     * @param version A value containing the version of the new instance.
-     * @param flags Flags for the box
-     */
-    protected initializeFromHeaderVersionAndFlags(header: Mpeg4BoxHeader, version: number, flags: number): void {
-        this.initializeFromHeader(header);
-        this.increaseDataPosition(4);
-
-        this.version = version;
-        this.flags = flags;
+        this._version = headerData.get(0);
+        this._flags = headerData.subarray(1, 3).toUint();
     }
 
     /**
@@ -68,9 +49,34 @@ export default abstract class FullBox extends Mpeg4Box {
      * @returns A new instance of @see FullBox.
      */
     protected initializeFromTypeVersionAndFlags(type: ByteVector, version: number, flags: number): void {
-        return this.initializeFromHeaderVersionAndFlags(Mpeg4BoxHeader.fromType(type), version, flags);
+        this.initializeFromHeader(Mpeg4BoxHeader.fromType(type));
+        this.increaseDataPosition(4);
+
+        this._version = version;
+        this._flags = flags;
     }
 
+    // #endregion
+
+    /**
+     * Gets the flags that apply to the current instance.
+     */
+    public get flags(): number { return this._flags; }
+    /**
+     * Sets the flags that apply to the current instance.
+     * @protected
+     */
+    protected set flags(value: number) { this._flags = value; }
+
+    /**
+     * Gets the version number of the current instance.
+     */
+    public get version(): number { return this._version; }
+
+    /**
+     * @inheritDoc
+     * @internal
+     */
     public renderBoxHeaders(): ByteVector[] {
         // Generate |<ver>|<    |flags|    >|
         const flagsWithVersion = NumberUtils.uintOr(

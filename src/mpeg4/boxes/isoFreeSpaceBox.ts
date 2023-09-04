@@ -8,10 +8,7 @@ import {Mpeg4BoxClassType} from "../mpeg4BoxClassType";
  *  This class extends @see Mpeg4Box to provide an implementation of a ISO/IEC 14496-12 FreeSpaceBox.
  */
 export default class IsoFreeSpaceBox extends Mpeg4Box {
-    /**
-     * Contains the size of the padding.
-     */
-    public padding: number;
+    private _padding: number;
 
     /**
      * Private constructor to force construction via static functions.
@@ -36,7 +33,7 @@ export default class IsoFreeSpaceBox extends Mpeg4Box {
     ): IsoFreeSpaceBox {
         const instance: IsoFreeSpaceBox = new IsoFreeSpaceBox();
         instance.initializeFromHeaderAndHandler(header, handlerType);
-        instance.padding = instance.dataSize;
+        instance._padding = instance.dataSize;
 
         return instance;
     }
@@ -60,19 +57,19 @@ export default class IsoFreeSpaceBox extends Mpeg4Box {
     /**
      * Gets the data contained in the current instance.
      */
-    public get data(): ByteVector { return ByteVector.fromSize(this.padding); }
+    public get data(): ByteVector { return ByteVector.fromSize(this._padding); }
     /**
      * Sets the data contained in the current instance.
      */
-    public set data(v: ByteVector) { this.padding = v ? v.length : 0; }
+    public set data(v: ByteVector) { this._padding = v ? v.length : 0; }
 
     /**
      * Gets the size the current instance will occupy when rendered.
      * @returns A value containing the size the current instance will occupy when rendered.
      */
-    public get paddingSize(): number { return this.padding + 8; }
+    public get paddingSize(): number { return this._padding + 8; }
     /**
      * Sets the size the current instance will occupy when rendered.
      */
-    public set paddingSize(v: number) { this.padding = v - 8; }
+    public set paddingSize(v: number) { this._padding = v - 8; }
 }

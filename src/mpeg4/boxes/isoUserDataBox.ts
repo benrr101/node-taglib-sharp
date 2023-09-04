@@ -9,10 +9,7 @@ import {Guards} from "../../utils";
  * This class extends @see Mpeg4Box to provide an implementation of a ISO/IEC 14496-12 UserDataBox.
  */
 export default class IsoUserDataBox extends Mpeg4Box {
-    /**
-     *  Gets the box headers for the current "udta" box and all parent boxes up to the top of the file.
-     */
-    public parentTree: Mpeg4BoxHeader[];
+    private _parentTree: Mpeg4BoxHeader[];
 
     /**
      * Private constructor to force construction via static functions.
@@ -61,4 +58,15 @@ export default class IsoUserDataBox extends Mpeg4Box {
 
     /** @inheritDoc */
     public get boxClassType(): Mpeg4BoxClassType { return Mpeg4BoxClassType.IsoUserDataBox; }
+
+    /**
+     * Gets the box headers for the current "udta" box and all parent boxes up to the top of the file.
+     * @remarks Changes to the returned object will not be honored. Set the property to change it.
+     */
+    public get parentTree(): Mpeg4BoxHeader[] { return this._parentTree.slice(); }
+    /**
+     * Sets the box headers for the current "udta" box and all parent boxes up to the top of the file.
+     * @internal
+     */
+    public set parentTree(v: Mpeg4BoxHeader[]) { this._parentTree = v; }
 }

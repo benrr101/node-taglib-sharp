@@ -101,7 +101,7 @@ export class AppleDataBox extends FullBox {
      * Sets the text contained in the current instance.
      */
     public set text(v: string) {
-        this.flags = <number>AppleDataBoxFlagType.ContainsText;
+        this.flags = AppleDataBoxFlagType.ContainsText;
         this.data = ByteVector.fromString(v, StringType.UTF8);
     }
 

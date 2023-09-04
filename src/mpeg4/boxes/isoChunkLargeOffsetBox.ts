@@ -7,12 +7,10 @@ import {Guards} from "../../utils";
 
 /**
  *  This class extends @see FullBox to provide an implementation of a ISO/IEC 14496-12 ChunkLargeOffsetBox.
+ *  @TODO: Is this pretty much the same as the non-large offset box?
  */
 export default class IsoChunkLargeOffsetBox extends FullBox {
-    /**
-     * The offset table contained in the current instance.
-     */
-    public offsets: number[];
+    private _offsetTable: number[];
 
     /**
      * Private constructor to force construction via static functions.
@@ -38,12 +36,11 @@ export default class IsoChunkLargeOffsetBox extends FullBox {
         const instance: IsoChunkLargeOffsetBox = new IsoChunkLargeOffsetBox();
         instance.initializeFromHeaderFileAndHandler(header, file, handlerType);
 
-        const boxData: ByteVector = file.readBlock(instance.dataSize);
+        const boxData = file.readBlock(instance.dataSize);
+        instance._offsetTable = new Array(boxData.subarray(0, 4).toUint());
 
-        instance.offsets = [boxData.subarray(0, 4).toUint()];
-
-        for (let i = 0; i < instance.offsets.length; i++) {
-            instance.offsets[i] = Number(boxData.subarray(4 + i * 8, 8).toUlong());
+        for (let i = 0; i < instance._offsetTable.length; i++) {
+            instance._offsetTable[i] = Number(boxData.subarray(4 + i * 8, 8).toUlong());
         }
 
         return instance;
@@ -56,9 +53,9 @@ export default class IsoChunkLargeOffsetBox extends FullBox {
      * Gets and sets the data contained in the current instance.
      */
     public get data(): ByteVector {
-        const output: ByteVector = ByteVector.fromUint(this.offsets.length);
-        for (let i = 0; i < this.offsets.length; i++) {
-            output.addByteVector(ByteVector.fromUlong(this.offsets[i]));
+        const output: ByteVector = ByteVector.fromUint(this._offsetTable.length);
+        for (let i = 0; i < this._offsetTable.length; i++) {
+            output.addByteVector(ByteVector.fromUlong(this._offsetTable[i]));
         }
 
         return output;
@@ -75,9 +72,9 @@ export default class IsoChunkLargeOffsetBox extends FullBox {
         Guards.safeUint(sizeDifference, "sizeDifference");
         Guards.safeUint(after, "after");
 
-        for (let i = 0; i < this.offsets.length; i++) {
-            if (this.offsets[i] >= after) {
-                this.offsets[i] = this.offsets[i] + sizeDifference;
+        for (let i = 0; i < this._offsetTable.length; i++) {
+            if (this._offsetTable[i] >= after) {
+                this._offsetTable[i] = this._offsetTable[i] + sizeDifference;
             }
         }
     }

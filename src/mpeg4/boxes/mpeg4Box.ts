@@ -16,24 +16,9 @@ export type ChildFactory = (
  * This class provides a generic implementation of a ISO/IEC 14496-12 box.
  */
 export default abstract class Mpeg4Box {
-    /**
-     * Contains the data contained in the current instance.
-     */
     private _data: ByteVector;
-
-    /**
-     * Contains the box header.
-     */
     private _header: Mpeg4BoxHeader;
-
-    /**
-     * Contains the position of the box data.
-     */
     private _baseDataPosition: number;
-
-    /**
-     * Contains the position of the data contained in the current instance, after any box specific headers.
-     */
     private _dataPosition: number;
 
     /**

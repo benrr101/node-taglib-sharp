@@ -11,15 +11,8 @@ import {Guards} from "../../utils";
  * ISO/IEC 14496-12 VisualSampleEntry and support for reading MPEG-4 video properties.
  */
 export default class IsoVisualSampleEntry extends IsoSampleEntry implements IVideoCodec {
-    /**
-     * Contains the width of the visual.
-     */
-    public videoWidth: number;
-
-    /**
-     * Contains the height of the visual.
-     */
-    public videoHeight: number;
+    private _videoHeight: number;
+    private _videoWidth: number;
 
     /**
      * Private constructor to force construction via static functions.
@@ -37,10 +30,11 @@ export default class IsoVisualSampleEntry extends IsoSampleEntry implements IVid
 
         const instance: IsoVisualSampleEntry = new IsoVisualSampleEntry();
         instance.initializeFromHeaderFileAndHandler(header, file, handlerType);
+
         const dataPositionBeforeIncrease: number = instance.increaseDataPosition(62);
         file.seek(dataPositionBeforeIncrease + 16);
-        instance.videoWidth = file.readBlock(2).toUshort();
-        instance.videoHeight = file.readBlock(2).toUshort();
+        instance._videoWidth = file.readBlock(2).toUshort();
+        instance._videoHeight = file.readBlock(2).toUshort();
 
         return instance;
     }
@@ -48,24 +42,18 @@ export default class IsoVisualSampleEntry extends IsoSampleEntry implements IVid
     /** @inheritDoc */
     public get boxClassType(): Mpeg4BoxClassType { return Mpeg4BoxClassType.IsoVisualSampleEntry; }
 
-    /**
-     * Gets the duration of the media represented by the current instance.
-     */
-    public get durationMilliseconds(): number {
-        return 0;
-    }
+    /** @inheritDoc */
+    public get durationMilliseconds(): number { return 0; }
 
-    /**
-     * Gets the types of media represented by the current instance.
-     */
-    public get mediaTypes(): MediaTypes {
-        return MediaTypes.Video;
-    }
+    /** @inheritDoc */
+    public get mediaTypes(): MediaTypes { return MediaTypes.Video; }
 
-    /**
-     * Gets a text description of the media represented by the current instance.
-     */
-    public get description(): string {
-        return `MPEG-4 Video (${this.boxType.toString(StringType.Latin1)})`;
-    }
+    /** @inheritDoc */
+    public get description(): string { return `MPEG-4 Video (${this.boxType.toString(StringType.Latin1)})`; }
+
+    /** @inheritDoc */
+    public get videoHeight(): number { return this._videoHeight };
+
+    /** @inheritDoc */
+    public get videoWidth(): number { return this._videoWidth; }
 }

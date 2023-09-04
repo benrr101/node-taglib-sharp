@@ -12,85 +12,22 @@ import {NumberUtils} from "../../utils";
  * This box may appear as a child of a @see IsoAudioSampleEntry and provided further information about an audio stream.
  */
 export default class AppleElementaryStreamDescriptor extends FullBox {
-    /**
-     * The ES_ID of another elementary stream on which this elementary stream depends
-     */
-    public dependsOnEsId: number;
-
-    /**
-     * Indicates that a dependsOn_ES_ID will follow
-     */
-    public streamDependenceFlag: boolean;
-
-    /**
-     * OCR Stream Flag
-     */
-    public ocrStreamFlag: boolean;
-
-    /**
-     * OCR ES_ID
-     */
-    public ocrEsId: number;
-
-    /**
-     * Indicates that a URLstring will follow
-     */
-    public urlFlag: boolean;
-
-    /**
-     * Length of URL String
-     */
-    public urlLength: number;
-
-    /**
-     * URL String of URLlength, contains a URL that shall point to the location of an SL-packetized stream by name.
-     */
-    public urlString: string;
-
-    /**
-     * Indicates that this stream is used for upstream information
-     */
-    public upStream: boolean;
-
-    /**
-     *  The maximum bitrate the stream described by the current instance.
-     */
-    public maximumBitrate: number;
-
-    /**
-     * The maximum average the stream described by the current instance.
-     */
-    public averageBitrate: number;
-
-    /**
-     * The ID of the stream described by the current instance.
-     */
-    public streamId: number;
-
-    /**
-     * The priority of the stream described by the current instance.
-     */
-    public streamPriority: number;
-
-    /**
-     * The object type ID of the stream described by the current instance.
-     */
-    public objectTypeId: number;
-
-    /**
-     * The type the stream described by the current instance.
-     */
-    public streamType: number;
-
-    /**
-     * The buffer size DB value the stream described by the current instance.
-     */
-    public bufferSizeDB: number;
-
-    /**
-     * The decoder config data of stream described by the current instance.
-     */
-    public decoderConfig: ByteVector;
+    private _dependsOnEsId: number;
+    private _streamDependenceFlag: boolean;
+    private _ocrStreamFlag: boolean;
+    private _ocrEsId: number;
+    private _urlFlag: boolean;
+    private _urlLength: number;
+    private _urlString: string;
+    private _upStream: boolean;
+    private _maximumBitrate: number;
+    private _averageBitrate: number;
+    private _streamId: number;
+    private _streamPriority: number;
+    private _objectTypeId: number;
+    private _streamType: number;
+    private _bufferSizeDB: number;
+    private _decoderConfig: ByteVector;
 
     /**
      * Private constructor to force construction via static functions.
@@ -113,14 +50,13 @@ export default class AppleElementaryStreamDescriptor extends FullBox {
         file: File,
         handlerType: ByteVector
     ): AppleElementaryStreamDescriptor {
-        /* ES_Descriptor Specifications
-         *  Section 7.2.6.5 http://ecee.colorado.edu/~ecen5653/ecen5653/papers/ISO%2014496-1%202004.PDF
-         */
+        // ES_Descriptor Specifications
+        // Section 7.2.6.5 http://ecee.colorado.edu/~ecen5653/ecen5653/papers/ISO%2014496-1%202004.PDF
 
-        const instance: AppleElementaryStreamDescriptor = new AppleElementaryStreamDescriptor();
+        const instance = new AppleElementaryStreamDescriptor();
         instance.initializeFromHeaderFileAndHandler(header, file, handlerType);
         const boxData: ByteVector = file.readBlock(instance.dataSize);
-        instance.decoderConfig = ByteVector.empty();
+        instance._decoderConfig = ByteVector.empty();
         const reader: DescriptorTagReader = new DescriptorTagReader(boxData);
 
         // Elementary Stream Descriptor Tag
@@ -141,62 +77,62 @@ export default class AppleElementaryStreamDescriptor extends FullBox {
             throw new Error("Insufficient data present.");
         }
 
-        instance.streamId = boxData.subarray(reader.offset, 2).toUshort();
+        instance._streamId = boxData.subarray(reader.offset, 2).toUshort();
         reader.increaseOffset(2); // Done with ES_ID
 
         // 1st bit
         const flagByte = boxData.get(reader.offset);
-        instance.streamDependenceFlag = NumberUtils.uintAnd(NumberUtils.uintRShift(flagByte, 7),0x1) === 0x1;
+        instance._streamDependenceFlag = NumberUtils.uintAnd(NumberUtils.uintRShift(flagByte, 7),0x1) === 0x1;
 
         // 2nd bit
-        instance.urlFlag = NumberUtils.uintAnd(NumberUtils.uintRShift(flagByte, 6), 0x1) === 0x1;
+        instance._urlFlag = NumberUtils.uintAnd(NumberUtils.uintRShift(flagByte, 6), 0x1) === 0x1;
 
         // 3rd bit
-        instance.ocrStreamFlag = NumberUtils.uintAnd(NumberUtils.uintRShift(flagByte, 5), 0x1) === 0x1;
+        instance._ocrStreamFlag = NumberUtils.uintAnd(NumberUtils.uintRShift(flagByte, 5), 0x1) === 0x1;
 
         // Last 5 bits and we're done with this byte
-        instance.streamPriority = NumberUtils.uintAnd(flagByte, 0x1f);
+        instance._streamPriority = NumberUtils.uintAnd(flagByte, 0x1f);
 
         reader.increaseOffset(1);
 
-        if (instance.streamDependenceFlag) {
+        if (instance._streamDependenceFlag) {
             minEsLength += 2; // We need 2 more bytes
 
             if (esLength < minEsLength) {
                 throw new Error("Insufficient data present.");
             }
 
-            instance.dependsOnEsId = boxData.subarray(reader.offset, 2).toUshort();
+            instance._dependsOnEsId = boxData.subarray(reader.offset, 2).toUshort();
             reader.increaseOffset(2); // Done with stream dependence
         }
 
-        if (instance.urlFlag) {
+        if (instance._urlFlag) {
             minEsLength += 2; // We need 1 more byte
 
             if (esLength < minEsLength) {
                 throw new Error("Insufficient data present.");
             }
 
-            instance.urlLength = boxData.get(reader.increaseOffset(1)); // URL Length
-            minEsLength += instance.urlLength; // We need URLength more bytes
+            instance._urlLength = boxData.get(reader.increaseOffset(1)); // URL Length
+            minEsLength += instance._urlLength; // We need URLength more bytes
 
             if (esLength < minEsLength) {
                 throw new Error("Insufficient data present.");
             }
 
             // URL name
-            instance.urlString = boxData.subarray(reader.offset, instance.urlLength).toString(StringType.UTF8);
-            reader.increaseOffset(instance.urlLength);
+            instance._urlString = boxData.subarray(reader.offset, instance._urlLength).toString(StringType.UTF8);
+            reader.increaseOffset(instance._urlLength);
         }
 
-        if (instance.ocrStreamFlag) {
+        if (instance._ocrStreamFlag) {
             minEsLength += 2; // We need 2 more bytes
 
             if (esLength < minEsLength) {
                 throw new Error("Insufficient data present.");
             }
 
-            instance.ocrEsId = boxData.subarray(reader.offset, 2).toUshort();
+            instance._ocrEsId = boxData.subarray(reader.offset, 2).toUshort();
             reader.increaseOffset(2); // Done with OCR
         }
 
@@ -216,26 +152,26 @@ export default class AppleElementaryStreamDescriptor extends FullBox {
                     }
 
                     // Read a lot of good info.
-                    instance.objectTypeId = boxData.get(reader.offset);
+                    instance._objectTypeId = boxData.get(reader.offset);
                     reader.increaseOffset(1);
 
                     // First 6 bits
                     const streamByte = boxData.get(reader.offset);
-                    instance.streamType = NumberUtils.uintRShift(streamByte, 2);
+                    instance._streamType = NumberUtils.uintRShift(streamByte, 2);
 
                     // 7th bit and we're done with the stream bits
-                    instance.upStream = NumberUtils.uintAnd(NumberUtils.uintRShift(streamByte, 1), 0x1) === 0x1;
+                    instance._upStream = NumberUtils.uintAnd(NumberUtils.uintRShift(streamByte, 1), 0x1) === 0x1;
                     reader.increaseOffset(1);
 
-                    instance.bufferSizeDB = boxData.subarray(reader.offset, 3).toUint();
+                    instance._bufferSizeDB = boxData.subarray(reader.offset, 3).toUint();
                     reader.increaseOffset(3); // Done with bufferSizeDB
 
                     const maximumBitrate: number = boxData.subarray(reader.offset, 4).toUint();
-                    instance.maximumBitrate = AppleElementaryStreamDescriptor.calculateBitRate(maximumBitrate);
+                    instance._maximumBitrate = AppleElementaryStreamDescriptor.calculateBitRate(maximumBitrate);
                     reader.increaseOffset(4); // Done with maxBitrate
 
                     const averageBitrate: number = boxData.subarray(reader.offset, 4).toUint();
-                    instance.averageBitrate = AppleElementaryStreamDescriptor.calculateBitRate(averageBitrate);
+                    instance._averageBitrate = AppleElementaryStreamDescriptor.calculateBitRate(averageBitrate);
                     reader.increaseOffset(4); // Done with avgBitrate
 
                     // If there's a DecoderSpecificInfo[] array at the end it'll pick it up in the while loop
@@ -247,7 +183,7 @@ export default class AppleElementaryStreamDescriptor extends FullBox {
                     // The rest of the info is decoder specific.
                     const length: number = reader.readLength();
 
-                    instance.decoderConfig = boxData.subarray(reader.offset, length);
+                    instance._decoderConfig = boxData.subarray(reader.offset, length);
                     reader.increaseOffset(length); // We're done with the config
                 }
                     break;
@@ -274,7 +210,7 @@ export default class AppleElementaryStreamDescriptor extends FullBox {
                      * IP_IdentificationDataSet ipIDS[0 .. 1];
                      * QoS_Descriptor qosDescr[0 .. 1];
                      */
-                        // Every descriptor starts with a length
+                    // Every descriptor starts with a length
                     const length: number = reader.readLength();
 
                     // Skip the rest of the descriptor as reported in the length so we can move onto the next one
@@ -291,7 +227,87 @@ export default class AppleElementaryStreamDescriptor extends FullBox {
     /** @inheritDoc */
     public get boxClassType(): Mpeg4BoxClassType { return Mpeg4BoxClassType.AppleElementaryStreamDescriptor; }
 
-    public static calculateBitRate(bitrate: number): number {
+    /**
+     * Gets the maximum average the stream described by the current instance.
+     */
+    public get averageBitrate(): number { return this._averageBitrate; }
+
+    /**
+     * Gets the buffer size DB value the stream described by the current instance.
+     */
+    public get bufferSizeDB(): number { return this._bufferSizeDB; }
+
+    /**
+     * Gets the decoder config data of stream described by the current instance.
+     */
+    public get decoderConfig(): ByteVector { return this._decoderConfig; }
+
+    /**
+     * Gets the ES_ID of another elementary stream on which this elementary stream depends
+     */
+    public get dependsOnEsId(): number { return this._dependsOnEsId; }
+
+    /**
+     * Gets the maximum bitrate the stream described by the current instance.
+     */
+    public get maximumBitrate(): number { return this._maximumBitrate; }
+
+    /**
+     * Gets the object type ID of the stream described by the current instance.
+     */
+    public get objectTypeId(): number { return this._objectTypeId; }
+
+    /**
+     * Gets the OCR ES_ID
+     */
+    public get ocrEsId(): number { return this._ocrEsId; }
+
+    /**
+     * Gets the OCR Stream Flag
+     */
+    public get ocrStreamFlag(): boolean { return this._ocrStreamFlag; }
+
+    /**
+     * Gets a value indicating that a dependsOn_ES_ID will follow
+     */
+    public get streamDependenceFlag(): boolean { return this._streamDependenceFlag; }
+
+    /**
+     * Gets the ID of the stream described by the current instance.
+     */
+    public get streamId(): number { return this._streamId; }
+
+    /**
+     * Gets the type of stream described by the current instance.
+     */
+    public get streamType(): number { return this._streamType; }
+
+    /**
+     * Gets the priority of the stream described by the current instance.
+     */
+    public get streamPriority(): number { return this._streamPriority; }
+
+    /**
+     * Gets a value indicating that this stream is used for upstream information
+     */
+    public get upStream(): boolean { return this._upStream; }
+
+    /**
+     * Gets a value indicating that a URL string will follow
+     */
+    public get urlFlag(): boolean { return this._urlFlag; }
+
+    /**
+     * Gets the length of URL String
+     */
+    public get urlLength(): number { return this._urlLength; }
+
+    /**
+     * Gets the URL string that points to the location of an SL-packetized stream by name.
+     */
+    public get urlString(): string { return this._urlString; }
+
+    private static calculateBitRate(bitrate: number): number {
         return bitrate / 1000;
     }
 }

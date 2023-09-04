@@ -1,7 +1,6 @@
 import Mpeg4Box from "./mpeg4Box";
 import Mpeg4BoxHeader from "../mpeg4BoxHeader";
 import {File} from "../../file";
-import {Mpeg4BoxClassType} from "../mpeg4BoxClassType";
 import {Guards} from "../../utils";
 import {ByteVector} from "../../byteVector";
 
@@ -9,9 +8,6 @@ import {ByteVector} from "../../byteVector";
  * This class extends @see Mpeg4Box to provide an implementation of a ISO/IEC 14496-12 SampleEntry.
  */
 export default abstract class IsoSampleEntry extends Mpeg4Box {
-    /**
-     * The data reference index of the current instance.
-     */
     private _dataReferenceIndex: number;
 
     /**
@@ -20,9 +16,6 @@ export default abstract class IsoSampleEntry extends Mpeg4Box {
     protected constructor() {
         super();
     }
-
-    /** @inheritDoc */
-    public abstract get boxClassType(): Mpeg4BoxClassType;
 
     /**
      * Constructs and initializes a new instance of @see IsoSampleEntry with a provided header and
