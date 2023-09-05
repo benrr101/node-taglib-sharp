@@ -137,7 +137,7 @@ export default class AppleTag extends Tag {
         }
 
         for (const box of this.getDataBoxesFromType(Mpeg4BoxType.GNRE)) {
-            if (box.flags !== <number>AppleDataBoxFlagType.ContainsData) {
+            if (box.flags !== AppleDataBoxFlagType.ContainsData) {
                 continue;
             }
 
@@ -191,7 +191,7 @@ export default class AppleTag extends Tag {
     /** @inheritDoc */
     public get track(): number {
         for (const box of this.getDataBoxesFromType(Mpeg4BoxType.TRKN)) {
-            if (box.flags === <number>AppleDataBoxFlagType.ContainsData && box.data.length >= 4) {
+            if (box.flags === AppleDataBoxFlagType.ContainsData && box.data.length >= 4) {
                 return box.data.subarray(2, 2).toUshort();
             }
         }
@@ -218,7 +218,7 @@ export default class AppleTag extends Tag {
     /** @inheritDoc */
     public get trackCount(): number {
         for (const box of this.getDataBoxesFromType(Mpeg4BoxType.TRKN)) {
-            if (box.flags === <number>AppleDataBoxFlagType.ContainsData && box.data.length >= 6) {
+            if (box.flags === AppleDataBoxFlagType.ContainsData && box.data.length >= 6) {
                 return box.data.subarray(4, 2).toUshort();
             }
         }
@@ -275,7 +275,7 @@ export default class AppleTag extends Tag {
     /** @inheritDoc */
     public get discCount(): number {
         for (const box of this.getDataBoxesFromType(Mpeg4BoxType.DISK)) {
-            if (box.flags === <number>AppleDataBoxFlagType.ContainsData && box.data.length >= 6) {
+            if (box.flags === AppleDataBoxFlagType.ContainsData && box.data.length >= 6) {
                 return box.data.subarray(4, 2).toUshort();
             }
         }
@@ -312,7 +312,7 @@ export default class AppleTag extends Tag {
     /** @inheritDoc */
     public get beatsPerMinute(): number {
         for (const box of this.getDataBoxesFromType(Mpeg4BoxType.TMPO)) {
-            if (box.flags === <number>AppleDataBoxFlagType.ForTempo) {
+            if (box.flags === AppleDataBoxFlagType.ForTempo) {
                 return box.data.toUint();
             }
         }

@@ -60,7 +60,7 @@ export default class AppleElementaryStreamDescriptor extends FullBox {
         const reader = new DescriptorTagReader(boxData);
 
         // Elementary Stream Descriptor Tag
-        if (<DescriptorTag>boxData.get(reader.increaseOffset(1)) !== DescriptorTag.ES_DescrTag) {
+        if (boxData.get(reader.increaseOffset(1)) !== DescriptorTag.ES_DescrTag) {
             throw new Error("Invalid Elementary Stream Descriptor, missing tag.");
         }
 
@@ -138,7 +138,7 @@ export default class AppleElementaryStreamDescriptor extends FullBox {
 
         // Loop through all trailing Descriptors Tags
         while (reader.offset < instance.dataSize) {
-            const tag = <DescriptorTag>boxData.get(reader.increaseOffset(1));
+            const tag = boxData.get(reader.increaseOffset(1));
             switch (tag) {
                 case DescriptorTag.DecoderConfigDescrTag: // DecoderConfigDescriptor
                 {
