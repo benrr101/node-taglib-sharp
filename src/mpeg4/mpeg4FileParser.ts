@@ -59,12 +59,12 @@ export default class Mpeg4FileParser {
     /**
      * Contains the position at which the "mdat" box starts.
      */
-    private _mdatStart: number = -1;
+    private _mdatStart = -1;
 
     /**
      * Contains the position at which the "mdat" box ends.
      */
-    private _mdatEnd: number = -1;
+    private _mdatEnd = -1;
 
     /**
      * Constructs and initializes a new instance of {@see FileParser} for a specified file.
@@ -240,7 +240,7 @@ export default class Mpeg4FileParser {
             header = Mpeg4BoxHeader.fromFileAndPosition(this._file, position);
 
             if (!this._moovTree && ByteVector.equals(header.boxType, Mpeg4BoxType.MOOV)) {
-                const newParents: Mpeg4BoxHeader[] = Mpeg4Utils.addParent(parents, header);
+                const newParents = Mpeg4Utils.addParent(parents, header);
                 this._moovTree = newParents;
                 this.parseBoxHeadersFromStartEndAndParents(
                     header.headerSize + position,
@@ -337,7 +337,7 @@ export default class Mpeg4FileParser {
 
         for (let position = start; position < end; position += header.totalBoxSize) {
             header = Mpeg4BoxHeader.fromFileAndPosition(this._file, position);
-            const type: ByteVector = header.boxType;
+            const type = header.boxType;
 
             if (ByteVector.equals(type, Mpeg4BoxType.MOOV)) {
                 this.parseTagAndPropertiesFromStartEndHandlerAndParents(

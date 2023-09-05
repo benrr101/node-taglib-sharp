@@ -63,7 +63,7 @@ export class AppleDataBox extends FullBox {
     public static fromHeaderFileAndHandler(header: Mpeg4BoxHeader, file: File, handlerType: ByteVector): AppleDataBox {
         Guards.notNullOrUndefined(file, "file");
 
-        const instance: AppleDataBox = new AppleDataBox();
+        const instance = new AppleDataBox();
         instance.initializeFromHeaderFileAndHandler(header, file, handlerType);
         instance.increaseDataPosition(4);
         instance.data = instance.loadData(file);
@@ -78,7 +78,7 @@ export class AppleDataBox extends FullBox {
      * @returns
      */
     public static fromDataAndFlags(data: ByteVector, flags: number): AppleDataBox {
-        const instance: AppleDataBox = new AppleDataBox();
+        const instance = new AppleDataBox();
         instance.initializeFromTypeVersionAndFlags(ByteVector.fromString("data", StringType.UTF8), 0, flags);
         instance.increaseDataPosition(4);
         instance.data = data;

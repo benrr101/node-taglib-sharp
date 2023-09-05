@@ -83,7 +83,7 @@ export default class AppleTag extends Tag {
 
     /** @inheritDoc */
     public get performersRole(): string[] {
-        const ret: string[] = this.getText(Mpeg4BoxType.ROLE);
+        const ret = this.getText(Mpeg4BoxType.ROLE);
         if (!ret) {
             return ret;
         }
@@ -97,7 +97,7 @@ export default class AppleTag extends Tag {
     }
     /** @inheritDoc */
     public set performersRole(v: string[]) {
-        const ret: string[] = v;
+        const ret = v;
 
         if (ret) {
             // Reformat ';' to '/'
@@ -131,7 +131,7 @@ export default class AppleTag extends Tag {
 
     /** @inheritDoc */
     public get genres(): string[] {
-        let text: string[] = this.getText(Mpeg4BoxType.GEN);
+        let text = this.getText(Mpeg4BoxType.GEN);
         if (text.length > 0) {
             return text;
         }
@@ -142,13 +142,12 @@ export default class AppleTag extends Tag {
             }
 
             // iTunes stores genre's in the GNRE box as (ID3# + 1).
-            const index: number = box.data.toUshort(true);
+            const index = box.data.toUshort(true);
             if (index === 0) {
                 continue;
             }
 
-            const str: string = Genres.indexToAudio(index - 1, false);
-
+            const str = Genres.indexToAudio(index - 1, false);
             if (!str) {
                 continue;
             }
@@ -169,8 +168,8 @@ export default class AppleTag extends Tag {
     public get year(): number {
         for (const box of this.getDataBoxesFromType(Mpeg4BoxType.DAY)) {
             if (box.text) {
-                const textWithMaxLengthOfFour: string = box.text.length > 4 ? box.text.substring(0, 4) : box.text;
-                const value: number = Number.parseInt(textWithMaxLengthOfFour, 10);
+                const textWithMaxLengthOfFour = box.text.length > 4 ? box.text.substring(0, 4) : box.text;
+                const value = Number.parseInt(textWithMaxLengthOfFour, 10);
 
                 if (!Number.isNaN(value)) {
                     return value;
@@ -201,7 +200,7 @@ export default class AppleTag extends Tag {
     }
     /** @inheritDoc */
     public set track(v: number) {
-        const count: number = this.trackCount;
+        const count = this.trackCount;
         if (v === 0 && count === 0) {
             this.clearData(Mpeg4BoxType.TRKN);
             return;
@@ -418,12 +417,12 @@ export default class AppleTag extends Tag {
 
     /** @inheritDoc */
     public get musicBrainzReleaseArtistId(): string {
-        const releaseArtistIds: string[] = this.getDashBoxes("com.apple.iTunes", "MusicBrainz Album Artist Id");
+        const releaseArtistIds = this.getDashBoxes("com.apple.iTunes", "MusicBrainz Album Artist Id");
         return releaseArtistIds?.join("/");
     }
     /** @inheritDoc */
     public set musicBrainzReleaseArtistId(v: string) {
-        const releaseArtistIds: string[] = v.split("/");
+        const releaseArtistIds = v.split("/");
         this.setDashBoxes("com.apple.iTunes", "MusicBrainz Album Artist Id", releaseArtistIds);
     }
 
@@ -524,13 +523,7 @@ export default class AppleTag extends Tag {
             return NaN;
         }
 
-        const value: number = Number.parseFloat(text);
-
-        if (!Number.isNaN(value)) {
-            return value;
-        }
-
-        return NaN;
+        return Number.parseFloat(text);
     }
     /** @inheritDoc */
     public set replayGainTrackPeak(v: number) {
@@ -550,13 +543,7 @@ export default class AppleTag extends Tag {
             text = text.substring(0, text.length - 2).trim();
         }
 
-        const value: number = Number.parseFloat(text);
-
-        if (!Number.isNaN(value)) {
-            return value;
-        }
-
-        return NaN;
+        return Number.parseFloat(text);
     }
     public set replayGainAlbumGain(v: number) {
         const text = `${v.toFixed(2)} dB`;
@@ -711,8 +698,7 @@ export default class AppleTag extends Tag {
         // Fix the type.
         type = Mpeg4Utils.fixId(type);
 
-        let added: boolean = false;
-
+        let added = false;
         for (const box of this._ilstBox.children) {
             if (ByteVector.equals(type, box.boxType)) {
                 // Clear the box's children.
@@ -736,7 +722,7 @@ export default class AppleTag extends Tag {
             return;
         }
 
-        const box2: Mpeg4Box = AppleAnnotationBox.fromType(type);
+        const box2 = AppleAnnotationBox.fromType(type);
         this._ilstBox.addChild(box2);
 
         for (const appleDataBox of boxes) {
@@ -831,13 +817,10 @@ export default class AppleTag extends Tag {
      * @returns Text string from data box
      */
     public getDashBox(meanString: string, nameString: string): string {
-        const dataBoxes: AppleDataBox[] = this.getDashAtoms(meanString, nameString);
-
-        if (dataBoxes) {
-            return dataBoxes[0].text;
-        } else {
-            return undefined;
-        }
+        const dataBoxes = this.getDashAtoms(meanString, nameString);
+        return dataBoxes
+            ? dataBoxes[0].text
+            : undefined;
     }
 
     /**
@@ -847,11 +830,9 @@ export default class AppleTag extends Tag {
      * @returns Text string from data box
      */
     public getDashBoxes(meanstring: string, namestring: string): string[] {
-        const dataBoxes: AppleDataBox[] = this.getDashAtoms(meanstring, namestring);
-
+        const dataBoxes = this.getDashAtoms(meanstring, namestring);
         if (dataBoxes) {
             const boxText: string[] = [];
-
             for (const dataBox of dataBoxes) {
                 boxText.push(dataBox.text);
             }
@@ -871,11 +852,11 @@ export default class AppleTag extends Tag {
      * @param datastring String specifying text for data box
      */
     public setDashBox(meanstring: string, namestring: string, datastring: string): void {
-        const dataBox: AppleDataBox = this.getDashAtom(meanstring, namestring);
+        const dataBox = this.getDashAtom(meanstring, namestring);
 
         // If we did find a data_box and we have an empty datastring we should remove the entire dash box.
         if (dataBox && !datastring) {
-            const dashBox: AppleAnnotationBox = this.getParentDashBox(meanstring, namestring);
+            const dashBox = this.getParentDashBox(meanstring, namestring);
             dashBox.clearChildren();
             this._ilstBox.removeChildByBox(dashBox);
 
@@ -912,11 +893,11 @@ export default class AppleTag extends Tag {
      * @param datastring String values specifying text for data boxes
      */
     public setDashBoxes(meanString: string, nameString: string, datastring: string[]): void {
-        const dataBoxes: AppleDataBox[] = this.getDashAtoms(meanString, nameString);
+        const dataBoxes = this.getDashAtoms(meanString, nameString);
 
         // If we did find a data_box and we have an empty datastring we should remove the entire dash box.
         if (dataBoxes && !datastring[0]) {
-            const dashBox: AppleAnnotationBox = this.getParentDashBox(meanString, nameString);
+            const dashBox = this.getParentDashBox(meanString, nameString);
             dashBox.clearChildren();
             this._ilstBox.removeChildByBox(dashBox);
 
@@ -929,14 +910,13 @@ export default class AppleTag extends Tag {
             }
         } else {
             // Remove all Boxes
-            const dashBox: AppleAnnotationBox = this.getParentDashBox(meanString, nameString);
-
+            const dashBox = this.getParentDashBox(meanString, nameString);
             if (dashBox) {
                 dashBox.clearChildren();
                 this._ilstBox.removeChildByBox(dashBox);
             }
 
-            const wholeBox: AppleAnnotationBox = AppleAnnotationBox.fromType(Mpeg4BoxType.DASH);
+            const wholeBox = AppleAnnotationBox.fromType(Mpeg4BoxType.DASH);
 
             for (const text of datastring) {
                 // Create the new boxes, should use 1 for text as a flag.

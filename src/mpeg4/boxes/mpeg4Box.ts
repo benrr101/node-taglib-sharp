@@ -196,7 +196,7 @@ export default abstract class Mpeg4Box {
         }
 
         for (const box of this.children) {
-            const childBox: Mpeg4Box = box.getChildRecursively(type);
+            const childBox = box.getChildRecursively(type);
 
             if (childBox) {
                 return childBox;
@@ -275,13 +275,13 @@ export default abstract class Mpeg4Box {
 
         const children: Mpeg4Box[] = [];
 
-        let position: number = this.dataPosition;
-        const end: number = position + this.dataSize;
+        let position = this.dataPosition;
+        const end = position + this.dataSize;
 
         this._header.box = this;
 
         while (position < end) {
-            const child: Mpeg4Box = childFactory(file, position, this._header, this._handlerType, children.length);
+            const child = childFactory(file, position, this._header, this._handlerType, children.length);
             if (child.size === 0) {
                 break;
             }
@@ -316,7 +316,7 @@ export default abstract class Mpeg4Box {
      * @returns The value of the data position before the increase.
      */
     public increaseDataPosition(value: number): number {
-        const dataPositionBeforeIncrease: number = this._dataPosition;
+        const dataPositionBeforeIncrease = this._dataPosition;
 
         this._dataPosition += value;
 

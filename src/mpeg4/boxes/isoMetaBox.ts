@@ -34,7 +34,7 @@ export default class IsoMetaBox extends FullBox {
         handlerType : ByteVector,
         childFactory: ChildFactory
     ): IsoMetaBox {
-        const instance: IsoMetaBox = new IsoMetaBox();
+        const instance = new IsoMetaBox();
         instance.initializeFromHeaderFileAndHandler(header, file, handlerType);
         instance.children = instance.loadChildren(file, childFactory);
 
@@ -54,7 +54,7 @@ export default class IsoMetaBox extends FullBox {
             throw new Error("The handler type must be four bytes long.");
         }
 
-        const instance: IsoMetaBox = new IsoMetaBox();
+        const instance = new IsoMetaBox();
         instance.initializeFromTypeVersionAndFlags(ByteVector.fromString("meta", StringType.UTF8), 0, 0);
         instance.children = [];
         instance.addChild(IsoHandlerBox.fromHandlerTypeAndHandlerName(handlerType, handlerName));

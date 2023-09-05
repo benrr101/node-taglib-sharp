@@ -34,7 +34,7 @@ export default class AppleAnnotationBox extends Mpeg4Box {
     ): AppleAnnotationBox {
         Guards.notNullOrUndefined(file, "file");
 
-        const instance: AppleAnnotationBox = new AppleAnnotationBox();
+        const instance = new AppleAnnotationBox();
         instance.initializeFromHeaderAndHandler(header, handlerType);
         instance.children = instance.loadChildren(file, childFactory);
 
@@ -47,7 +47,7 @@ export default class AppleAnnotationBox extends Mpeg4Box {
      * @returns A new instance of @see AppleAnnotationBox
      */
     public static fromType(type: ByteVector): AppleAnnotationBox {
-        const instance: AppleAnnotationBox = new AppleAnnotationBox();
+        const instance = new AppleAnnotationBox();
         instance.initializeFromType(type);
         instance.children = [];
 

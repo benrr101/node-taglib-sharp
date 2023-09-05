@@ -34,7 +34,7 @@ export default class IsoSampleTableBox extends Mpeg4Box {
     ): IsoSampleTableBox {
         Guards.notNullOrUndefined(file, "file");
 
-        const instance: IsoSampleTableBox = new IsoSampleTableBox();
+        const instance = new IsoSampleTableBox();
         instance.initializeFromHeaderAndHandler(header, handlerType);
         instance.children = instance.loadChildren(file, childFactory);
 

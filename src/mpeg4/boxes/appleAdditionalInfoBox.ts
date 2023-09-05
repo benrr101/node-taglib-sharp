@@ -30,7 +30,7 @@ export default class AppleAdditionalInfoBox extends FullBox {
         file: File,
         handlerType: ByteVector
     ): AppleAdditionalInfoBox {
-        const instance: AppleAdditionalInfoBox = new AppleAdditionalInfoBox();
+        const instance = new AppleAdditionalInfoBox();
         instance.initializeFromHeaderFileAndHandler(header, file, handlerType);
         instance.data = file.readBlock(instance.dataSize > 0 ? instance.dataSize : 0);
 
@@ -61,7 +61,7 @@ export default class AppleAdditionalInfoBox extends FullBox {
      * @returns A new instance of @see FullBox.
      */
     public static fromTypeVersionAndFlags(type: ByteVector, version: number, flags: number): AppleAdditionalInfoBox {
-        const instance: AppleAdditionalInfoBox = new AppleAdditionalInfoBox();
+        const instance = new AppleAdditionalInfoBox();
         instance.initializeFromTypeVersionAndFlags(type, version, flags);
 
         return instance;

@@ -38,10 +38,10 @@ export default class IsoMovieHeaderBox extends FullBox {
     ): IsoMovieHeaderBox {
         Guards.notNullOrUndefined(file, "file");
 
-        const instance: IsoMovieHeaderBox = new IsoMovieHeaderBox();
+        const instance = new IsoMovieHeaderBox();
         instance.initializeFromHeaderFileAndHandler(header, file, handlerType);
 
-        let bytesRemaining: number = instance.dataSize;
+        let bytesRemaining = instance.dataSize;
         let data: ByteVector;
 
         if (instance.version === 1) {
@@ -56,14 +56,11 @@ export default class IsoMovieHeaderBox extends FullBox {
                 instance._modificationTime = Number(data.subarray(8, 8).toUlong());
             }
 
-            let timescale: number = 0;
+            const timescale = data.length >= 20
+                ? data.subarray(16, 4).toUint()
+                : 0;
 
-            if (data.length >= 20) {
-                timescale = data.subarray(16, 4).toUint();
-            }
-
-            let duration: number = 0;
-
+            let duration = 0;
             if (data.length >= 28) {
                 duration = Number(data.subarray(20, 8).toUlong());
                 instance._durationInMilliseconds = (duration / timescale) * 1000;
@@ -82,14 +79,11 @@ export default class IsoMovieHeaderBox extends FullBox {
                 instance._modificationTime = data.subarray(4, 4).toUint();
             }
 
-            let timescale: number = 0;
+            const timescale = data.length >= 12
+                ? data.subarray(8, 4).toUint()
+                : 0;
 
-            if (data.length >= 12) {
-                timescale = data.subarray(8, 4).toUint();
-            }
-
-            let duration: number = 0;
-
+            let duration = 0;
             if (data.length >= 16) {
                 duration = data.subarray(12, 4).toUint();
                 instance._durationInMilliseconds = (duration / timescale) * 1000;

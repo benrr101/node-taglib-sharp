@@ -34,8 +34,7 @@ export default class AppleItemListBox extends Mpeg4Box {
     ): AppleItemListBox {
         Guards.notNullOrUndefined(file, "file");
 
-        const instance: AppleItemListBox = new AppleItemListBox();
-
+        const instance = new AppleItemListBox();
         instance.initializeFromHeaderAndHandler(header, handlerType);
         instance.children = instance.loadChildren(file, childFactory);
 
@@ -47,7 +46,7 @@ export default class AppleItemListBox extends Mpeg4Box {
      * @returns A new instance of @see AppleItemListBox
      */
     public static fromEmpty(): AppleItemListBox {
-        const instance: AppleItemListBox = new AppleItemListBox();
+        const instance = new AppleItemListBox();
         instance.initializeFromType(ByteVector.fromString("ilst", StringType.UTF8));
         instance.children = [];
 

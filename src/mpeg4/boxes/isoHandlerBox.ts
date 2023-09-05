@@ -65,7 +65,7 @@ export default class IsoHandlerBox extends FullBox {
             throw new Error("The handler type must be four bytes long.");
         }
 
-        const instance: IsoHandlerBox = new IsoHandlerBox();
+        const instance = new IsoHandlerBox();
         instance.initializeFromTypeVersionAndFlags(Mpeg4BoxType.HDLR, 0, 0);
         instance._dataHandlerType = handlerType.subarray(0, 4);
         instance._name = name;

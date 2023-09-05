@@ -55,9 +55,9 @@ export default class AppleElementaryStreamDescriptor extends FullBox {
 
         const instance = new AppleElementaryStreamDescriptor();
         instance.initializeFromHeaderFileAndHandler(header, file, handlerType);
-        const boxData: ByteVector = file.readBlock(instance.dataSize);
+        const boxData = file.readBlock(instance.dataSize);
         instance._decoderConfig = ByteVector.empty();
-        const reader: DescriptorTagReader = new DescriptorTagReader(boxData);
+        const reader = new DescriptorTagReader(boxData);
 
         // Elementary Stream Descriptor Tag
         if (<DescriptorTag>boxData.get(reader.increaseOffset(1)) !== DescriptorTag.ES_DescrTag) {
@@ -70,8 +70,8 @@ export default class AppleElementaryStreamDescriptor extends FullBox {
         //   DecoderConfigDescriptor (15 bytes) +
         //   SLConfigDescriptor (3 bytes) + OtherDescriptors
         // ] bytes long
-        const esLength: number = reader.readLength();
-        let minEsLength: number = 3 + 15 + 3; // Base minimum length
+        const esLength = reader.readLength();
+        let minEsLength = 3 + 15 + 3; // Base minimum length
 
         if (esLength < minEsLength) {
             throw new Error("Insufficient data present.");
@@ -138,8 +138,7 @@ export default class AppleElementaryStreamDescriptor extends FullBox {
 
         // Loop through all trailing Descriptors Tags
         while (reader.offset < instance.dataSize) {
-            const tag: DescriptorTag = <DescriptorTag>boxData.get(reader.increaseOffset(1));
-
+            const tag = <DescriptorTag>boxData.get(reader.increaseOffset(1));
             switch (tag) {
                 case DescriptorTag.DecoderConfigDescrTag: // DecoderConfigDescriptor
                 {
@@ -166,11 +165,11 @@ export default class AppleElementaryStreamDescriptor extends FullBox {
                     instance._bufferSizeDB = boxData.subarray(reader.offset, 3).toUint();
                     reader.increaseOffset(3); // Done with bufferSizeDB
 
-                    const maximumBitrate: number = boxData.subarray(reader.offset, 4).toUint();
+                    const maximumBitrate = boxData.subarray(reader.offset, 4).toUint();
                     instance._maximumBitrate = AppleElementaryStreamDescriptor.calculateBitRate(maximumBitrate);
                     reader.increaseOffset(4); // Done with maxBitrate
 
-                    const averageBitrate: number = boxData.subarray(reader.offset, 4).toUint();
+                    const averageBitrate = boxData.subarray(reader.offset, 4).toUint();
                     instance._averageBitrate = AppleElementaryStreamDescriptor.calculateBitRate(averageBitrate);
                     reader.increaseOffset(4); // Done with avgBitrate
 
@@ -181,7 +180,7 @@ export default class AppleElementaryStreamDescriptor extends FullBox {
                 case DescriptorTag.DecSpecificInfoTag: // DecoderSpecificInfo
                 {
                     // The rest of the info is decoder specific.
-                    const length: number = reader.readLength();
+                    const length = reader.readLength();
 
                     instance._decoderConfig = boxData.subarray(reader.offset, length);
                     reader.increaseOffset(length); // We're done with the config
@@ -191,7 +190,7 @@ export default class AppleElementaryStreamDescriptor extends FullBox {
                 case DescriptorTag.SLConfigDescrTag: // SLConfigDescriptor
                 {
                     // The rest of the info is SL specific.
-                    const length: number = reader.readLength();
+                    const length = reader.readLength();
 
                     // Skip the rest of the descriptor as reported in the length so we can move onto the next one
                     reader.increaseOffset(length);
@@ -211,7 +210,7 @@ export default class AppleElementaryStreamDescriptor extends FullBox {
                      * QoS_Descriptor qosDescr[0 .. 1];
                      */
                     // Every descriptor starts with a length
-                    const length: number = reader.readLength();
+                    const length = reader.readLength();
 
                     // Skip the rest of the descriptor as reported in the length so we can move onto the next one
                     reader.increaseOffset(length);

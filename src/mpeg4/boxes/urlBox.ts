@@ -28,7 +28,7 @@ export default class UrlBox extends Mpeg4Box {
     public static fromHeaderFileAndHandler(header: Mpeg4BoxHeader, file: File, handlerType: ByteVector): UrlBox {
         Guards.notNullOrUndefined(file, "file");
 
-        const instance: UrlBox = new UrlBox();
+        const instance = new UrlBox();
         instance.initializeFromHeaderAndHandler(header, handlerType);
         instance.data = instance.loadData(file);
 

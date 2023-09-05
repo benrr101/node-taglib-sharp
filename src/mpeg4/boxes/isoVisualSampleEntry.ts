@@ -28,10 +28,10 @@ export default class IsoVisualSampleEntry extends IsoSampleEntry implements IVid
     ): IsoVisualSampleEntry {
         Guards.notNullOrUndefined(file, "file");
 
-        const instance: IsoVisualSampleEntry = new IsoVisualSampleEntry();
+        const instance = new IsoVisualSampleEntry();
         instance.initializeFromHeaderFileAndHandler(header, file, handlerType);
 
-        const dataPositionBeforeIncrease: number = instance.increaseDataPosition(62);
+        const dataPositionBeforeIncrease = instance.increaseDataPosition(62);
         file.seek(dataPositionBeforeIncrease + 16);
         instance._videoWidth = file.readBlock(2).toUshort();
         instance._videoHeight = file.readBlock(2).toUshort();

@@ -31,7 +31,7 @@ export default class IsoFreeSpaceBox extends Mpeg4Box {
         file: File,
         handlerType: ByteVector
     ): IsoFreeSpaceBox {
-        const instance: IsoFreeSpaceBox = new IsoFreeSpaceBox();
+        const instance = new IsoFreeSpaceBox();
         instance.initializeFromHeaderAndHandler(header, handlerType);
         instance._padding = instance.dataSize;
 
@@ -44,7 +44,7 @@ export default class IsoFreeSpaceBox extends Mpeg4Box {
      * @returns A new instance of @see IsoFreeSpaceBox
      */
     public static fromPadding(padding: number): IsoFreeSpaceBox {
-        const instance: IsoFreeSpaceBox = new IsoFreeSpaceBox();
+        const instance = new IsoFreeSpaceBox();
         instance.initializeFromType(ByteVector.fromString("free", StringType.UTF8));
         instance.paddingSize = padding;
 

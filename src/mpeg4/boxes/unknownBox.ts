@@ -25,7 +25,7 @@ export default class UnknownBox extends Mpeg4Box {
     public static fromHeaderFileAndHandler(header: Mpeg4BoxHeader, file: File, handlerType: ByteVector): UnknownBox {
         Guards.notNullOrUndefined(file, "file");
 
-        const instance: UnknownBox = new UnknownBox();
+        const instance = new UnknownBox();
         instance.initializeFromHeaderAndHandler(header, handlerType);
         instance.data = file.readBlock(instance.dataSize > 0 ? instance.dataSize : 0);
 

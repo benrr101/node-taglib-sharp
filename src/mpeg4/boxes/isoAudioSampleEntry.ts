@@ -42,16 +42,16 @@ export default class IsoAudioSampleEntry extends IsoSampleEntry implements IAudi
     ): IsoAudioSampleEntry {
         Guards.notNullOrUndefined(file, "file");
 
-        const instance: IsoAudioSampleEntry = new IsoAudioSampleEntry();
+        const instance = new IsoAudioSampleEntry();
         instance.initializeFromHeaderFileAndHandler(header, file, handlerType);
-        const dataPositionBeforeIncrease: number = instance.increaseDataPosition(20);
+        const dataPositionBeforeIncrease = instance.increaseDataPosition(20);
 
         file.seek(dataPositionBeforeIncrease + 8);
         instance._audioChannels = file.readBlock(2).toUshort();
         instance._audioSampleSize = file.readBlock(2).toUshort();
 
         file.seek(dataPositionBeforeIncrease + 16);
-        const sampleRate: number = file.readBlock(4).toUint();
+        const sampleRate = file.readBlock(4).toUint();
         instance._audioSampleRate = NumberUtils.uintRShift(sampleRate, 16);
 
         instance.children = instance.loadChildren(file, childFactory);

@@ -32,7 +32,7 @@ export default class IsoChunkOffsetBox extends FullBox {
         file: File,
         handlerType: ByteVector
     ): IsoChunkOffsetBox {
-        const instance: IsoChunkOffsetBox = new IsoChunkOffsetBox();
+        const instance = new IsoChunkOffsetBox();
         instance.initializeFromHeaderFileAndHandler(header, file, handlerType);
 
         const boxData = file.readBlock(instance.dataSize);
@@ -52,7 +52,7 @@ export default class IsoChunkOffsetBox extends FullBox {
      * Gets and sets the data contained in the current instance.
      */
     public get data(): ByteVector {
-        const output: ByteVector = ByteVector.fromUint(this._offsetTable.length);
+        const output = ByteVector.fromUint(this._offsetTable.length);
 
         for (let i = 0; i < this._offsetTable.length; i++) {
             output.addByteVector(ByteVector.fromUint(this._offsetTable[i]));

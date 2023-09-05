@@ -29,7 +29,7 @@ export default abstract class IsoSampleEntry extends Mpeg4Box {
         Guards.notNullOrUndefined(file, "file");
 
         this.initializeFromHeaderAndHandler(header, handlerType);
-        const dataPositionBeforeIncrease: number = this.increaseDataPosition(8);
+        const dataPositionBeforeIncrease = this.increaseDataPosition(8);
         file.seek(dataPositionBeforeIncrease + 6);
         this._dataReferenceIndex = file.readBlock(2).toUshort();
     }

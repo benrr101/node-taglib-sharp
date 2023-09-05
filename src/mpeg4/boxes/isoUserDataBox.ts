@@ -37,7 +37,7 @@ export default class IsoUserDataBox extends Mpeg4Box {
     ): IsoUserDataBox {
         Guards.notNullOrUndefined(file, "file");
 
-        const instance: IsoUserDataBox = new IsoUserDataBox();
+        const instance = new IsoUserDataBox();
         instance.initializeFromHeaderAndHandler(header, handlerType);
         instance.children = instance.loadChildren(file, childFactory);
 
@@ -49,7 +49,7 @@ export default class IsoUserDataBox extends Mpeg4Box {
      * @returns A new instance of @see IsoUserDataBox
      */
     public static fromEmpty(): IsoUserDataBox {
-        const instance: IsoUserDataBox = new IsoUserDataBox();
+        const instance = new IsoUserDataBox();
         instance.initializeFromType(ByteVector.fromString("udta", StringType.UTF8));
         instance.children = [];
 

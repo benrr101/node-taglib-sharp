@@ -34,12 +34,12 @@ export default class Mpeg4File extends File {
     /**
      * The position at which the invariant portion of the current instance begins.
      */
-    private _invariantStartPosition: number = -1;
+    private _invariantStartPosition = -1;
 
     /**
      * The position at which the invariant portion of the current instance ends.
      */
-    private _invariantEndPosition: number = -1;
+    private _invariantEndPosition = -1;
 
     /** @inheritDoc */
     public constructor(file: IFileAbstraction | string, readStyle: ReadStyle) {
@@ -66,8 +66,7 @@ export default class Mpeg4File extends File {
     public getTag(types: TagTypes, create: boolean): Tag {
         if (types === TagTypes.Apple) {
             if (!this._tag && create) {
-                let udtaBox: IsoUserDataBox = this.findAppleTagUdta();
-
+                let udtaBox = this.findAppleTagUdta();
                 if (!udtaBox) {
                     udtaBox = IsoUserDataBox.fromEmpty();
                 }
@@ -121,7 +120,7 @@ export default class Mpeg4File extends File {
             // 2. There are multiple utdtas, but only 1 of them contains the Apple ILST box.
             // We should be OK in the vast majority of cases
 
-            let udtaBox: IsoUserDataBox = this.findAppleTagUdta();
+            let udtaBox = this.findAppleTagUdta();
 
             if (!udtaBox) {
                 udtaBox = IsoUserDataBox.fromEmpty();
@@ -132,7 +131,7 @@ export default class Mpeg4File extends File {
             // If we don't have a "udta" box to overwrite...
             if (!udtaBox.parentTree || udtaBox.parentTree.length === 0) {
                 // Stick the box at the end of the moov box.
-                const moovHeader: Mpeg4BoxHeader = parser.moovTree[parser.moovTree.length - 1];
+                const moovHeader = parser.moovTree[parser.moovTree.length - 1];
                 sizeChange = tagData.length;
                 writePosition = moovHeader.position + moovHeader.totalBoxSize;
                 this.insert(tagData, writePosition, 0);
@@ -143,7 +142,7 @@ export default class Mpeg4File extends File {
                 }
             } else {
                 // Overwrite the old box.
-                const udtaHeader: Mpeg4BoxHeader = udtaBox.parentTree[udtaBox.parentTree.length - 1];
+                const udtaHeader = udtaBox.parentTree[udtaBox.parentTree.length - 1];
                 sizeChange = tagData.length - udtaHeader.totalBoxSize;
                 writePosition = udtaHeader.position;
                 this.insert(tagData, writePosition, udtaHeader.totalBoxSize);
@@ -192,7 +191,7 @@ export default class Mpeg4File extends File {
         }
 
         // Multiple udta: pick out the shallowest node which has an ILst tag
-        const possibleUdtaBoxes: IsoUserDataBox[] = this.udtaBoxes
+        const possibleUdtaBoxes = this.udtaBoxes
             .filter((box) => box.getChildRecursively(Mpeg4BoxType.ILST))
             .sort((box1, box2) => (box1.parentTree.length < box2.parentTree.length ? -1 : 1));
 
@@ -247,7 +246,7 @@ export default class Mpeg4File extends File {
             }
 
             // Find the udta box with the Apple Tag ILST
-            let udtaBox: IsoUserDataBox = this.findAppleTagUdta();
+            let udtaBox = this.findAppleTagUdta();
             if (!udtaBox) {
                 udtaBox = IsoUserDataBox.fromEmpty();
             }

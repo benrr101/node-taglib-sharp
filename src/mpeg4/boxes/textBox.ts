@@ -28,7 +28,7 @@ export default class TextBox extends Mpeg4Box {
     public static fromHeaderFileAndHandler(header: Mpeg4BoxHeader, file: File, handlerType: ByteVector): TextBox {
         Guards.notNullOrUndefined(file, "file");
 
-        const instance: TextBox = new TextBox();
+        const instance = new TextBox();
         instance.initializeFromHeaderAndHandler(header, handlerType);
 
         instance.data = instance.loadData(file);

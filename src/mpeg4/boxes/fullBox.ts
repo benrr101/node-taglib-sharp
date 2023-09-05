@@ -32,10 +32,10 @@ export default abstract class FullBox extends Mpeg4Box {
         Guards.notNullOrUndefined(file, "file");
 
         this.initializeFromHeaderAndHandler(header, handlerType);
-        const dataPositionBeforeIncrease: number = this.increaseDataPosition(4);
+        const dataPositionBeforeIncrease = this.increaseDataPosition(4);
 
         file.seek(dataPositionBeforeIncrease);
-        const headerData: ByteVector = file.readBlock(4);
+        const headerData = file.readBlock(4);
 
         this._version = headerData.get(0);
         this._flags = headerData.subarray(1, 3).toUint();

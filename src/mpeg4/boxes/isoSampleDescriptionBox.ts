@@ -37,7 +37,7 @@ export default class IsoSampleDescriptionBox extends FullBox {
     ): IsoSampleDescriptionBox {
         Guards.notNullOrUndefined(file, "file");
 
-        const instance: IsoSampleDescriptionBox = new IsoSampleDescriptionBox();
+        const instance = new IsoSampleDescriptionBox();
         instance.initializeFromHeaderFileAndHandler(header, file, handlerType);
         instance.increaseDataPosition(4);
         instance._entryCount = file.readBlock(4).toUint();
