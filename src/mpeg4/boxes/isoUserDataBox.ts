@@ -1,4 +1,4 @@
-import Mpeg4Box, {ChildFactory} from "./mpeg4Box";
+import Mpeg4Box from "./mpeg4Box";
 import Mpeg4BoxHeader from "../mpeg4BoxHeader";
 import {ByteVector, StringType} from "../../byteVector";
 import {File} from "../../file";
@@ -26,20 +26,13 @@ export default class IsoUserDataBox extends Mpeg4Box {
      *    new instance, or undefined if no handler applies.
      * @param handlerType Type of the handler box object containing the handler that applies to the
      *     new instance, or undefined if no handler applies.
-     * @param childFactory Factory for creating child boxes
      * @returns A new instance of @see IsoUserDataBox
      */
-    public static fromHeaderFileAndHandler(
-        header: Mpeg4BoxHeader,
-        file: File,
-        handlerType: ByteVector,
-        childFactory: ChildFactory
-    ): IsoUserDataBox {
+    public static fromFile(file: File, header: Mpeg4BoxHeader, handlerType: ByteVector): IsoUserDataBox {
         Guards.notNullOrUndefined(file, "file");
 
         const instance = new IsoUserDataBox();
         instance.initializeFromHeaderAndHandler(header, handlerType);
-        instance.children = instance.loadChildren(file, childFactory);
 
         return instance;
     }

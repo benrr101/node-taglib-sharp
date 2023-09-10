@@ -47,45 +47,63 @@ export default class Mpeg4BoxFactory {
 
         if (ByteVector.equals(type, Mpeg4BoxType.MVHD)) {
             return IsoMovieHeaderBox.fromHeaderFileAndHandler(header, file, handlerType);
-        } else if (ByteVector.equals(type, Mpeg4BoxType.STBL)) {
-            return IsoSampleTableBox.fromHeaderFileAndHandler(
-                header,
-                file,
-                handlerType,
-                this.createBoxFromFilePositionParentHandlerAndIndex
-            );
-        } else if (ByteVector.equals(type, Mpeg4BoxType.STSD)) {
+        }
+        else if (ByteVector.equals(type, Mpeg4BoxType.STBL))
+        {
+            const box = IsoSampleTableBox.fromFile(file, header, handlerType);
+            this.loadChildren(file, box);
+            return box;
+        }
+        else if (ByteVector.equals(type, Mpeg4BoxType.STSD))
+        {
             const box = IsoSampleDescriptionBox.fromFile(file, header, handlerType);
             this.loadSampleDescriptors(file, box);
             return box;
-        } else if (ByteVector.equals(type, Mpeg4BoxType.STCO)) {
+        }
+        else if (ByteVector.equals(type, Mpeg4BoxType.STCO))
+        {
             return IsoChunkOffsetBox.fromHeaderFileAndHandler(header, file, handlerType);
-        } else if (ByteVector.equals(type, Mpeg4BoxType.CO64)) {
+        }
+        else if (ByteVector.equals(type, Mpeg4BoxType.CO64))
+        {
             return IsoChunkLargeOffsetBox.fromHeaderFileAndHandler(header, file, handlerType);
-        } else if (ByteVector.equals(type, Mpeg4BoxType.HDLR)) {
+        }
+        else if (ByteVector.equals(type, Mpeg4BoxType.HDLR))
+        {
             return IsoHandlerBox.fromHeaderFileAndHandler(header, file, handlerType);
-        } else if (ByteVector.equals(type, Mpeg4BoxType.UDTA)) {
-            return IsoUserDataBox.fromHeaderFileAndHandler(
-                header,
-                file,
-                handlerType,
-                this.createBoxFromFilePositionParentHandlerAndIndex
-            );
-        } else if (ByteVector.equals(type, Mpeg4BoxType.META)) {
+        }
+        else if (ByteVector.equals(type, Mpeg4BoxType.UDTA))
+        {
+            const box = IsoUserDataBox.fromFile(file, header, handlerType);
+            this.loadChildren(file, box);
+            return box;
+        }
+        else if (ByteVector.equals(type, Mpeg4BoxType.META))
+        {
             const box = IsoMetaBox.fromFile(file, header, handlerType);
             this.loadChildren(file, box);
             return box;
-        } else if (ByteVector.equals(type, Mpeg4BoxType.ILST)) {
+        }
+        else if (ByteVector.equals(type, Mpeg4BoxType.ILST))
+        {
             const box = AppleItemListBox.fromFile(file, header, handlerType);
             this.loadChildren(file, box);
             return box;
-        } else if (ByteVector.equals(type, Mpeg4BoxType.DATA)) {
+        }
+        else if (ByteVector.equals(type, Mpeg4BoxType.DATA))
+        {
             return AppleDataBox.fromHeaderFileAndHandler(header, file, handlerType);
-        } else if (ByteVector.equals(type, Mpeg4BoxType.ESDS)) {
+        }
+        else if (ByteVector.equals(type, Mpeg4BoxType.ESDS))
+        {
             return AppleElementaryStreamDescriptor.fromHeaderFileAndHandler(header, file, handlerType);
-        } else if (ByteVector.equals(type, Mpeg4BoxType.FREE) || ByteVector.equals(type, Mpeg4BoxType.SKIP)) {
+        }
+        else if (ByteVector.equals(type, Mpeg4BoxType.FREE) || ByteVector.equals(type, Mpeg4BoxType.SKIP))
+        {
             return IsoFreeSpaceBox.fromHeaderFileAndHandler(header, file, handlerType);
-        } else if (ByteVector.equals(type, Mpeg4BoxType.MEAN) || ByteVector.equals(type, Mpeg4BoxType.NAME)) {
+        }
+        else if (ByteVector.equals(type, Mpeg4BoxType.MEAN) || ByteVector.equals(type, Mpeg4BoxType.NAME))
+        {
             return AppleAdditionalInfoBox.fromHeaderFileAndHandler(header, file, handlerType);
         }
 
