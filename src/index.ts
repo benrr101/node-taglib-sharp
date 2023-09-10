@@ -148,6 +148,7 @@ export {default as Mpeg4File} from "./mpeg4/mpeg4File";
 export {default as Mpeg4AppleTag} from "./mpeg4/appleTag";
 
 // Boxes
+export {default as Mpeg4BoxType} from "./mpeg4/mpeg4BoxType";
 export {default as Mpeg4AppleAdditionalInfoBox} from "./mpeg4/boxes/appleAdditionalInfoBox";
 export {default as Mpeg4AppleAnnotationBox} from "./mpeg4/boxes/appleAnnotationBox";
 export {

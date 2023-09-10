@@ -46,7 +46,9 @@ export default abstract class Mpeg4Box {
     /**
      * Protected constructor to force construction via static functions.
      */
-    protected constructor() { /* no-op */ }
+    protected constructor() {
+        this.children = [];
+    }
 
     /**
      * Initializes a new instance of @see Mpeg4Box with a specified header and handler.
@@ -247,10 +249,6 @@ export default abstract class Mpeg4Box {
      * @param box A @see Mpeg4Box object to add to the current instance.
      */
     public addChild(box: Mpeg4Box): void {
-        if (!this.children) {
-            return;
-        }
-
         this.children.push(box);
     }
 

@@ -51,12 +51,9 @@ export default class Mpeg4BoxFactory {
             index < (<IsoSampleDescriptionBox>parentHeader.box).entryCount
         ) {
             if (ByteVector.equals(handlerType, Mpeg4BoxType.SOUN)) {
-                return IsoAudioSampleEntry.fromHeaderFileAndHandler(
-                    header,
-                    file,
-                    handlerType,
-                    this.createBoxFromFilePositionParentHandlerAndIndex
-                );
+                const box = IsoAudioSampleEntry.fromFile(file, header, handlerType);
+                this.loadChildren(file, box);
+                return box;
             }
 
             if (ByteVector.equals(handlerType, Mpeg4BoxType.VIDE)) {
@@ -220,5 +217,28 @@ export default class Mpeg4BoxFactory {
      */
     public static createBoxFromFileAndHeader(file: File, header: Mpeg4BoxHeader): Mpeg4Box {
         return Mpeg4BoxFactory.createBoxFromFileHeaderAndHandler(file, header, undefined);
+    }
+
+    private static loadChildren(file: File, box: Mpeg4Box): void {
+        let position = box.dataPosition;
+        const end = position + box.dataSize;
+
+        while (position < end) {
+            const header = Mpeg4BoxHeader.fromFileAndPosition(file, position);
+            const child = this.createBoxFromFileHeaderParentHandlerAndIndex(
+                file,
+                header,
+                box.header,
+                box.handlerType,
+                -1
+            );
+
+            if (child.size === 0) {
+                break;
+            }
+
+            box.addChild(child);
+            position += child.size;
+        }
     }
 }
