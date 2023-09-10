@@ -134,11 +134,9 @@ export default class Mpeg4BoxFactory {
         // If we still don't have a tag, and we're inside an ItemListBox, load the box as an
         // AnnotationBox (Apple tag item).
         if (ByteVector.equals(parentHeader.boxType, Mpeg4BoxType.ILST)) {
-            return AppleAnnotationBox.fromHeaderFileAndHandler(
-                header,
-                file,
-                handlerType,
-                this.createBoxFromFilePositionParentHandlerAndIndex);
+            const box = AppleAnnotationBox.fromFile(file, header, handlerType);
+            this.loadChildren(file, box);
+            return box;
         }
 
         // Nothing good. Go generic.
