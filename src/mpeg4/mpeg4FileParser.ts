@@ -303,7 +303,7 @@ export default class Mpeg4FileParser {
                     Mpeg4Utils.addParent(parents, header)
                 );
             } else if (ByteVector.equals(header.boxType, Mpeg4BoxType.UDTA)) {
-                const udtaBox = Mpeg4BoxFactory.createBoxFromFileAndHeader(this._file, header) as IsoUserDataBox;
+                const udtaBox = Mpeg4BoxFactory.createBox(this._file, header) as IsoUserDataBox;
 
                 // Since we can have multiple udta boxes, save the parent for each one
                 udtaBox.parentTree = Mpeg4Utils.addParent(parents, header);
@@ -359,25 +359,25 @@ export default class Mpeg4FileParser {
                     Mpeg4Utils.addParent(parents, header)
                 );
             } else if (ByteVector.equals(type, Mpeg4BoxType.STSD)) {
-                this._stsdBoxes.push(Mpeg4BoxFactory.createBoxFromFileHeaderAndHandler(
+                this._stsdBoxes.push(Mpeg4BoxFactory.createBox(
                     this._file,
                     header,
                     handler?.dataHandlerType
                 ));
             } else if (ByteVector.equals(type, Mpeg4BoxType.HDLR)) {
-                handler = <IsoHandlerBox>Mpeg4BoxFactory.createBoxFromFileHeaderAndHandler(
+                handler = <IsoHandlerBox>Mpeg4BoxFactory.createBox(
                     this._file,
                     header,
                     handler?.dataHandlerType
                 );
             } else if (!this._mvhdBox && ByteVector.equals(type, Mpeg4BoxType.MVHD)) {
-                this._mvhdBox = <IsoMovieHeaderBox>Mpeg4BoxFactory.createBoxFromFileHeaderAndHandler(
+                this._mvhdBox = <IsoMovieHeaderBox>Mpeg4BoxFactory.createBox(
                     this._file,
                     header,
                     handler?.dataHandlerType
                 );
             } else if (ByteVector.equals(type, Mpeg4BoxType.UDTA)) {
-                const udtaBox = <IsoUserDataBox>Mpeg4BoxFactory.createBoxFromFileHeaderAndHandler(
+                const udtaBox = <IsoUserDataBox>Mpeg4BoxFactory.createBox(
                     this._file,
                     header,
                     handler?.dataHandlerType
@@ -423,7 +423,7 @@ export default class Mpeg4FileParser {
                 ByteVector.equals(header.boxType, Mpeg4BoxType.STCO) ||
                 ByteVector.equals(header.boxType, Mpeg4BoxType.CO64)
             ) {
-                this._stcoBoxes.push(Mpeg4BoxFactory.createBoxFromFileAndHeader(this._file, header));
+                this._stcoBoxes.push(Mpeg4BoxFactory.createBox(this._file, header));
             } else if (ByteVector.equals(header.boxType, Mpeg4BoxType.MDAT)) {
                 this._mdatStart = position;
                 this._mdatEnd = position + header.totalBoxSize;

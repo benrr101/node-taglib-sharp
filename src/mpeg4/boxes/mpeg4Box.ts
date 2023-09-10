@@ -4,13 +4,6 @@ import {File} from "../../file";
 import {Mpeg4BoxClassType} from "../mpeg4BoxClassType";
 import {Guards} from "../../utils";
 
-export type ChildFactory = (
-    file: File,
-    position: number,
-    parentHeader: Mpeg4BoxHeader,
-    handlerType: ByteVector
-) => Mpeg4Box;
-
 /**
  * This class provides a generic implementation of a ISO/IEC 14496-12 box.
  */
@@ -255,37 +248,7 @@ export default abstract class Mpeg4Box {
      * Removes all children from the current instance.
      */
     public clearChildren(): void {
-        if (!this.children) {
-            return;
-        }
-
-        this.children = [];
-    }
-
-    /**
-     * Loads the children of the current instance from a specified file using the internal data position and size.
-     * @param file The File from which the current instance was read and from which to read the children.
-     * @returns A @see Mpeg4Box[] object enumerating the boxes read from the file.
-     */
-    public loadChildren(file: File, childFactory: ChildFactory): Mpeg4Box[] {
-        Guards.notNullOrUndefined(file, "file");
-
-        const children: Mpeg4Box[] = [];
-
-        let position = this.dataPosition;
-        const end = position + this.dataSize;
-
-        while (position < end) {
-            const child = childFactory(file, position, this._header, this._handlerType);
-            if (child.size === 0) {
-                break;
-            }
-
-            children.push(child);
-            position += child.size;
-        }
-
-        return children;
+        this.children.splice(0, this.children.length);
     }
 
     /**

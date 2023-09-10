@@ -32,15 +32,15 @@ export default class Mpeg4BoxFactory {
      * Creates a box by reading it from a file given its header, parent header, handler, and index in its parent.
      * @param file A {@link File} object containing the file to read from.
      * @param header A {@link Mpeg4BoxHeader} object containing the header of the box to create.
-     * @param parentHeader A {@link Mpeg4BoxHeader} object containing the header of the parent box.
-     * @param handlerType Type of the handler box containing the handler that applies to the new box.
+     * @param handlerType? Type of the handler box containing the handler that applies to the new box.
+     * @param parentHeader? A
      * @returns A newly created {@link Mpeg4Box} object.
      */
-    public static createBoxFromFileHeaderParentHandler(
+    public static createBox(
         file: File,
         header: Mpeg4BoxHeader,
-        parentHeader: Mpeg4BoxHeader,
-        handlerType: ByteVector,
+        handlerType?: ByteVector,
+        parentHeader?: Mpeg4BoxHeader,
     ): Mpeg4Box {
         // Standard items...
         const type = header.boxType;
@@ -119,78 +119,6 @@ export default class Mpeg4BoxFactory {
         return UnknownBox.fromHeaderFileAndHandler(header, file, handlerType);
     }
 
-    /**
-     * Creates a box by reading it from a file given its position in the file, parent header,
-     * handler, and index in its parent.
-     * @param file A {@link File} object containing the file to read from.
-     * @param position  A value specifying at what seek position in file to start reading.
-     * @param parent A {@link Mpeg4BoxHeader} object containing the header of the parent box.
-     * @param handler A {@link IsoHandlerBox} object containing the handler that applies to the new box.
-     * @param index A value containing the index of the new box in its parent.
-     * @returns A newly created {@link Mpeg4Box} object.
-     */
-    public static createBoxFromFilePositionParentHandlerAndIndex(
-        file: File,
-        position: number,
-        parent: Mpeg4BoxHeader,
-        handlerType: ByteVector
-    ): Mpeg4Box {
-        const header = Mpeg4BoxHeader.fromFileAndPosition(file, position);
-        return Mpeg4BoxFactory.createBoxFromFileHeaderParentHandler(file, header, parent, handlerType);
-    }
-
-    /**
-     * Creates a box by reading it from a file given its position in the file and handler.
-     * @param file A {@link File} object containing the file to read from.
-     * @param position A value specifying at what seek position in file to start reading.
-     * @param handler A {@link IsoHandlerBox} object containing the handler that applies to the new box.
-     * @returns A newly created {@link Mpeg4Box} object.
-     */
-    public static createBoxFromFilePositionAndHandler(file: File, position: number, handler: IsoHandlerBox): Mpeg4Box {
-        return Mpeg4BoxFactory.createBoxFromFilePositionAndHandler(file, position, handler);
-    }
-
-    /**
-     *  Creates a box by reading it from a file given its position in the file.
-     * @param file A {@link File} object containing the file to read from.
-     * @param position A value specifying at what seek position in file to start reading.
-     * @returns A newly created {@link Mpeg4Box} object.
-     */
-    public static createBoxFromFileAndPosition(file: File, position: number): Mpeg4Box {
-        return Mpeg4BoxFactory.createBoxFromFilePositionAndHandler(file, position, undefined);
-    }
-
-    /**
-     * Creates a box by reading it from a file given its header and handler.
-     * @param file A {@link File} object containing the file to read from.
-     * @param header A {@link Mpeg4BoxHeader} object containing the header of the box to create.
-     * @param handlerType Type of the handler box object containing the handler that applies to the
-     *     new instance, or undefined if no handler applies.
-     * @returns A newly created {@link Mpeg4Box} object.
-     */
-    public static createBoxFromFileHeaderAndHandler(
-        file: File,
-        header: Mpeg4BoxHeader,
-        handlerType: ByteVector
-    ): Mpeg4Box {
-        return Mpeg4BoxFactory.createBoxFromFileHeaderParentHandler(
-            file,
-            header,
-            Mpeg4BoxHeader.fromEmpty(),
-            handlerType
-        );
-    }
-
-    /**
-     * Creates a box by reading it from a file given its header and handler.
-     * @param file A {@link File} object containing the file to read from.
-     * @param header A {@link Mpeg4BoxHeader} object containing the header of the box to create.
-     * @returns A newly created {@link Mpeg4Box} object.
-     */
-    public static createBoxFromFileAndHeader(file: File, header: Mpeg4BoxHeader): Mpeg4Box {
-        return Mpeg4BoxFactory.createBoxFromFileHeaderAndHandler(file, header, undefined);
-    }
-
     private static loadSampleDescriptors(file: File, box: IsoSampleDescriptionBox): void {
         let position = box.dataPosition
         for (let i = 0; i < box.entryCount; i++) {
@@ -239,12 +167,7 @@ export default class Mpeg4BoxFactory {
 
         while (position < end) {
             const header = Mpeg4BoxHeader.fromFileAndPosition(file, position);
-            const child = this.createBoxFromFileHeaderParentHandler(
-                file,
-                header,
-                box.header,
-                box.handlerType
-            );
+            const child = this.createBox(file, header, box.handlerType, box.header);
 
             if (child.size === 0) {
                 break;

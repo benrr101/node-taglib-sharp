@@ -3,7 +3,7 @@ import {suite, test} from "@testdeck/mocha";
 
 import ExtendedFileTests from "./utilities/extendedFileTests";
 import TestConstants from "./utilities/testConstants";
-import {ByteVector, File, Mpeg4AppleAdditionalInfoBox, Mpeg4File, StringType} from "../src";
+import {ByteVector, File, Mpeg4AppleAdditionalInfoBox, Mpeg4BoxType, Mpeg4File} from "../src";
 import {StandardFileTests, TestTagLevel} from "./utilities/standardFileTests";
 
 @suite class Mpeg4_m4a_FileTests {
@@ -51,12 +51,12 @@ import {StandardFileTests, TestTagLevel} from "./utilities/standardFileTests";
 
         // eslint-disable-next-line dot-notation
         const first = file['udtaBoxes'][0];
-        assert.equal(first.children.length, 1);
+        const firstChildren = first.children;
+        assert.equal(firstChildren.length, 1);
 
-        assert.instanceOf(first.children[0], Mpeg4AppleAdditionalInfoBox);
-        const child = <Mpeg4AppleAdditionalInfoBox>first.children[0];
-        const readOnlyNameBoxType: ByteVector = ByteVector.fromString("name", StringType.UTF8).makeReadOnly();
-        assert.isTrue(ByteVector.equals(child.boxType, readOnlyNameBoxType));
+        assert.instanceOf(firstChildren[0], Mpeg4AppleAdditionalInfoBox);
+        const child = <Mpeg4AppleAdditionalInfoBox>firstChildren[0];
+        assert.isTrue(ByteVector.equals(child.boxType, Mpeg4BoxType.NAME));
         assert.equal(child.data.length, 0);
     }
 
