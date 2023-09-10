@@ -8,8 +8,7 @@ export type ChildFactory = (
     file: File,
     position: number,
     parentHeader: Mpeg4BoxHeader,
-    handlerType: ByteVector,
-    index: number
+    handlerType: ByteVector
 ) => Mpeg4Box;
 
 /**
@@ -276,10 +275,8 @@ export default abstract class Mpeg4Box {
         let position = this.dataPosition;
         const end = position + this.dataSize;
 
-        this._header.box = this;
-
         while (position < end) {
-            const child = childFactory(file, position, this._header, this._handlerType, children.length);
+            const child = childFactory(file, position, this._header, this._handlerType);
             if (child.size === 0) {
                 break;
             }
@@ -287,8 +284,6 @@ export default abstract class Mpeg4Box {
             children.push(child);
             position += child.size;
         }
-
-        this._header.box = undefined;
 
         return children;
     }

@@ -62,7 +62,6 @@ export default class Mpeg4BoxHeader {
         Guards.notNullOrUndefined(file, "file");
 
         const header = new Mpeg4BoxHeader();
-        header.box = undefined;
         header._fromDisk = true;
         header._position = position;
         file.seek(position);
@@ -133,7 +132,6 @@ export default class Mpeg4BoxHeader {
 
         const header = new Mpeg4BoxHeader();
         header._position = -1;
-        header.box = undefined;
         header._fromDisk = false;
         header._boxType = type;
         header._boxSize = 8;
@@ -161,11 +159,6 @@ export default class Mpeg4BoxHeader {
     // #endregion
 
     // #region Properties
-
-    /**
-     * Gets and sets the box represented by the current instance as a means of temporary storage for internal uses.
-     */
-    public box: Mpeg4Box;
 
     /**
      * Gets the type of box represented by the current instance.

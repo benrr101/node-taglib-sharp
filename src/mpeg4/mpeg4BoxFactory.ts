@@ -34,48 +34,14 @@ export default class Mpeg4BoxFactory {
      * @param header A {@link Mpeg4BoxHeader} object containing the header of the box to create.
      * @param parentHeader A {@link Mpeg4BoxHeader} object containing the header of the parent box.
      * @param handlerType Type of the handler box containing the handler that applies to the new box.
-     * @param index  A value containing the index of the new box in its parent.
      * @returns A newly created {@link Mpeg4Box} object.
      */
-    public static createBoxFromFileHeaderParentHandlerAndIndex(
+    public static createBoxFromFileHeaderParentHandler(
         file: File,
         header: Mpeg4BoxHeader,
         parentHeader: Mpeg4BoxHeader,
         handlerType: ByteVector,
-        index: number
     ): Mpeg4Box {
-        // The first few children of an "stsd" are sample entries.
-        if (
-            ByteVector.equals(parentHeader.boxType, Mpeg4BoxType.STSD) &&
-            parentHeader.box instanceof IsoSampleDescriptionBox &&
-            index < (<IsoSampleDescriptionBox>parentHeader.box).entryCount
-        ) {
-            if (ByteVector.equals(handlerType, Mpeg4BoxType.SOUN)) {
-                const box = IsoAudioSampleEntry.fromFile(file, header, handlerType);
-                this.loadChildren(file, box);
-                return box;
-            }
-
-            if (ByteVector.equals(handlerType, Mpeg4BoxType.VIDE)) {
-                return IsoVisualSampleEntry.fromHeaderFileAndHandler(header, file, handlerType);
-            }
-
-            if (ByteVector.equals(handlerType, Mpeg4BoxType.ALIS)) {
-                if (ByteVector.equals(header.boxType, Mpeg4BoxType.TEXT)) {
-                    return TextBox.fromHeaderFileAndHandler(header, file, handlerType);
-                }
-
-                if (ByteVector.equals(header.boxType, Mpeg4BoxType.URL)) {
-                    return UrlBox.fromHeaderFileAndHandler(header, file, handlerType);
-                }
-
-                // This could be anything, so just parse it.
-                return UnknownBox.fromHeaderFileAndHandler(header, file, handlerType);
-            }
-
-            return IsoUnknownSampleEntry.fromHeaderFileAndHandler(header, file, handlerType);
-        }
-
         // Standard items...
         const type = header.boxType;
 
@@ -89,12 +55,9 @@ export default class Mpeg4BoxFactory {
                 this.createBoxFromFilePositionParentHandlerAndIndex
             );
         } else if (ByteVector.equals(type, Mpeg4BoxType.STSD)) {
-            return IsoSampleDescriptionBox.fromHeaderFileAndHandler(
-                header,
-                file,
-                handlerType,
-                this.createBoxFromFilePositionParentHandlerAndIndex
-            );
+            const box = IsoSampleDescriptionBox.fromFile(file, header, handlerType);
+            this.loadSampleDescriptors(file, box);
+            return box;
         } else if (ByteVector.equals(type, Mpeg4BoxType.STCO)) {
             return IsoChunkOffsetBox.fromHeaderFileAndHandler(header, file, handlerType);
         } else if (ByteVector.equals(type, Mpeg4BoxType.CO64)) {
@@ -152,11 +115,10 @@ export default class Mpeg4BoxFactory {
         file: File,
         position: number,
         parent: Mpeg4BoxHeader,
-        handlerType: ByteVector,
-        index: number
+        handlerType: ByteVector
     ): Mpeg4Box {
         const header = Mpeg4BoxHeader.fromFileAndPosition(file, position);
-        return Mpeg4BoxFactory.createBoxFromFileHeaderParentHandlerAndIndex(file, header, parent, handlerType, index);
+        return Mpeg4BoxFactory.createBoxFromFileHeaderParentHandler(file, header, parent, handlerType);
     }
 
     /**
@@ -193,12 +155,11 @@ export default class Mpeg4BoxFactory {
         header: Mpeg4BoxHeader,
         handlerType: ByteVector
     ): Mpeg4Box {
-        return Mpeg4BoxFactory.createBoxFromFileHeaderParentHandlerAndIndex(
+        return Mpeg4BoxFactory.createBoxFromFileHeaderParentHandler(
             file,
             header,
             Mpeg4BoxHeader.fromEmpty(),
-            handlerType,
-            -1
+            handlerType
         );
     }
 
@@ -212,18 +173,59 @@ export default class Mpeg4BoxFactory {
         return Mpeg4BoxFactory.createBoxFromFileHeaderAndHandler(file, header, undefined);
     }
 
+    private static loadSampleDescriptors(file: File, box: IsoSampleDescriptionBox): void {
+        let position = box.dataPosition
+        for (let i = 0; i < box.entryCount; i++) {
+            const header = Mpeg4BoxHeader.fromFileAndPosition(file, position);
+            let child: Mpeg4Box;
+
+            // I know this isn't the right formatting, but it is damn near unreadable without some spacing
+            if (ByteVector.equals(box.handlerType, Mpeg4BoxType.SOUN))
+            {
+                child = IsoAudioSampleEntry.fromFile(file, header, box.handlerType);
+                this.loadChildren(file, child);
+            }
+            else if (ByteVector.equals(box.handlerType, Mpeg4BoxType.VIDE))
+            {
+                child = IsoVisualSampleEntry.fromHeaderFileAndHandler(header, file, box.handlerType);
+            }
+            else if (ByteVector.equals(box.handlerType, Mpeg4BoxType.ALIS))
+            {
+                if (ByteVector.equals(header.boxType, Mpeg4BoxType.TEXT))
+                {
+                    child = TextBox.fromHeaderFileAndHandler(header, file, box.handlerType);
+                }
+                else if (ByteVector.equals(header.boxType, Mpeg4BoxType.URL))
+                {
+                    child = UrlBox.fromHeaderFileAndHandler(header, file, box.handlerType);
+                }
+                else
+                {
+                    // This could be anything, so just parse it.
+                    child = UnknownBox.fromHeaderFileAndHandler(header, file, box.handlerType);
+                }
+            }
+            else
+            {
+                child = IsoUnknownSampleEntry.fromHeaderFileAndHandler(header, file, box.handlerType);
+            }
+
+            box.addChild(child);
+            position += child.size;
+        }
+    }
+
     private static loadChildren(file: File, box: Mpeg4Box): void {
         let position = box.dataPosition;
         const end = position + box.dataSize;
 
         while (position < end) {
             const header = Mpeg4BoxHeader.fromFileAndPosition(file, position);
-            const child = this.createBoxFromFileHeaderParentHandlerAndIndex(
+            const child = this.createBoxFromFileHeaderParentHandler(
                 file,
                 header,
                 box.header,
-                box.handlerType,
-                -1
+                box.handlerType
             );
 
             if (child.size === 0) {

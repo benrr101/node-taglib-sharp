@@ -1,7 +1,6 @@
 import FullBox from "./fullBox";
 import Mpeg4BoxHeader from "../mpeg4BoxHeader";
 import {File} from "../../file";
-import {ChildFactory} from "./mpeg4Box";
 import {Mpeg4BoxClassType} from "../mpeg4BoxClassType";
 import {Guards} from "../../utils";
 import {ByteVector} from "../../byteVector";
@@ -26,23 +25,15 @@ export default class IsoSampleDescriptionBox extends FullBox {
      * @param file A @see File object to read the contents of the box from.
      * @param handlerType Type of the handler box object containing the handler that applies to the
      *     new instance, or undefined if no handler applies.
-     * @param childFactory Factory for creating child boxes
      * @returns A new instance of @see IsoSampleDescriptionBox
      */
-    public static fromHeaderFileAndHandler(
-        header: Mpeg4BoxHeader,
-        file: File,
-        handlerType: ByteVector,
-        childFactory: ChildFactory
-    ): IsoSampleDescriptionBox {
+    public static fromFile(file: File, header: Mpeg4BoxHeader, handlerType: ByteVector): IsoSampleDescriptionBox {
         Guards.notNullOrUndefined(file, "file");
 
         const instance = new IsoSampleDescriptionBox();
         instance.initializeFromHeaderFileAndHandler(header, file, handlerType);
         instance.increaseDataPosition(4);
         instance._entryCount = file.readBlock(4).toUint();
-
-        instance.children = instance.loadChildren(file, childFactory);
 
         return instance;
     }
