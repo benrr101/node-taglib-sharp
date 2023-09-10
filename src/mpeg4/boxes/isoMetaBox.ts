@@ -3,7 +3,6 @@ import IsoHandlerBox from "./isoHandlerBox";
 import Mpeg4BoxHeader from "../mpeg4BoxHeader";
 import {ByteVector, StringType} from "../../byteVector";
 import {File} from "../../file";
-import {ChildFactory} from "./mpeg4Box";
 import {Mpeg4BoxClassType} from "../mpeg4BoxClassType";
 import {Guards} from "../../utils";
 
@@ -21,22 +20,15 @@ export default class IsoMetaBox extends FullBox {
     /**
      * Constructs and initializes a new instance of @see IsoMetaBox with a provided header and
      * handler by reading the contents from a specified file.
-     * @param header A @see Mpeg4BoxHeader object containing the header to use for the new instance.
      * @param file A @see File object to read the contents of the box from.
-     * @param handlerType Type of the handler box object containing the handler that applies to the
      *     new instance, or undefined if no handler applies.
-     * @param childFactory Factory for creating child boxes
+     * @param header A @see Mpeg4BoxHeader object containing the header to use for the new instance.
+     * @param handlerType Type of the handler box object containing the handler that applies to the
      * @returns A new instance of @see IsoMetaBox
      */
-    public static fromHeaderFileAndHandler(
-        header: Mpeg4BoxHeader,
-        file: File,
-        handlerType : ByteVector,
-        childFactory: ChildFactory
-    ): IsoMetaBox {
+    public static fromFile(file: File, header: Mpeg4BoxHeader, handlerType: ByteVector): IsoMetaBox {
         const instance = new IsoMetaBox();
         instance.initializeFromHeaderFileAndHandler(header, file, handlerType);
-        instance.children = instance.loadChildren(file, childFactory);
 
         return instance;
     }

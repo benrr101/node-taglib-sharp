@@ -1,4 +1,4 @@
-import Mpeg4Box, {ChildFactory} from "./mpeg4Box";
+import Mpeg4Box from "./mpeg4Box";
 import Mpeg4BoxHeader from "../mpeg4BoxHeader";
 import {ByteVector} from "../../byteVector";
 import {File} from "../../file";
@@ -42,7 +42,6 @@ export default class AppleAnnotationBox extends Mpeg4Box {
     public static fromType(type: ByteVector): AppleAnnotationBox {
         const instance = new AppleAnnotationBox();
         instance.initializeFromType(type);
-        instance.children = [];
 
         return instance;
     }

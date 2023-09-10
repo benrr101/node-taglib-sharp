@@ -109,18 +109,13 @@ export default class Mpeg4BoxFactory {
                 this.createBoxFromFilePositionParentHandlerAndIndex
             );
         } else if (ByteVector.equals(type, Mpeg4BoxType.META)) {
-            return IsoMetaBox.fromHeaderFileAndHandler(
-                header,
-                file,
-                handlerType,
-                this.createBoxFromFilePositionParentHandlerAndIndex
-            );
+            const box = IsoMetaBox.fromFile(file, header, handlerType);
+            this.loadChildren(file, box);
+            return box;
         } else if (ByteVector.equals(type, Mpeg4BoxType.ILST)) {
-            return AppleItemListBox.fromHeaderFileAndHandler(
-                header,
-                file,
-                handlerType,
-                this.createBoxFromFilePositionParentHandlerAndIndex);
+            const box = AppleItemListBox.fromFile(file, header, handlerType);
+            this.loadChildren(file, box);
+            return box;
         } else if (ByteVector.equals(type, Mpeg4BoxType.DATA)) {
             return AppleDataBox.fromHeaderFileAndHandler(header, file, handlerType);
         } else if (ByteVector.equals(type, Mpeg4BoxType.ESDS)) {

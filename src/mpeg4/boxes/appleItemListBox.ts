@@ -1,4 +1,4 @@
-import Mpeg4Box, {ChildFactory} from "./mpeg4Box";
+import Mpeg4Box from "./mpeg4Box";
 import Mpeg4BoxHeader from "../mpeg4BoxHeader";
 import {ByteVector, StringType} from "../../byteVector";
 import {File} from "../../file";
@@ -19,24 +19,17 @@ export default class AppleItemListBox extends Mpeg4Box {
     /**
      * Constructs and initializes a new instance of @see AppleItemListBox with a provided header and
      * handler by reading the contents from a specified file.
-     * @param header A @see Mpeg4BoxHeader object containing the header to use for the new instance.
      * @param file A @see File object to read the contents of the box from.
-     * @param handlerType Type of the handler box object containing the handler that applies to the
      *     new instance, or undefined if no handler applies.
-     * @param childFactory Factory for creating child boxes
+     * @param header A @see Mpeg4BoxHeader object containing the header to use for the new instance.
+     * @param handlerType Type of the handler box object containing the handler that applies to the
      * @returns A new instance of @see AppleItemListBox
      */
-    public static fromHeaderFileAndHandler(
-        header: Mpeg4BoxHeader,
-        file: File,
-        handlerType: ByteVector,
-        childFactory: ChildFactory
-    ): AppleItemListBox {
+    public static fromFile(file: File, header: Mpeg4BoxHeader, handlerType: ByteVector): AppleItemListBox {
         Guards.notNullOrUndefined(file, "file");
 
         const instance = new AppleItemListBox();
         instance.initializeFromHeaderAndHandler(header, handlerType);
-        instance.children = instance.loadChildren(file, childFactory);
 
         return instance;
     }
@@ -48,7 +41,6 @@ export default class AppleItemListBox extends Mpeg4Box {
     public static fromEmpty(): AppleItemListBox {
         const instance = new AppleItemListBox();
         instance.initializeFromType(ByteVector.fromString("ilst", StringType.UTF8));
-        instance.children = [];
 
         return instance;
     }
