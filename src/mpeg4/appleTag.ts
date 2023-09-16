@@ -14,6 +14,7 @@ import {Mpeg4BoxClassType} from "./mpeg4BoxClassType";
 import {IPicture, Picture} from "../picture";
 import {Tag, TagTypes} from "../tag";
 import {Guards, NumberUtils} from "../utils";
+import Mpeg4HandlerType from "./mpeg4HandlerType";
 
 export default class AppleTag extends Tag {
     /**
@@ -142,6 +143,7 @@ export default class AppleTag extends Tag {
             }
 
             // iTunes stores genre's in the GNRE box as (ID3# + 1).
+            // @TODO This is not true, see list of genres https://exiftool.org/TagNames/QuickTime.html
             const index = box.data.toUshort(true);
             if (index === 0) {
                 continue;
@@ -876,7 +878,7 @@ export default class AppleTag extends Tag {
             const adataBox = AppleDataBox.fromDataAndFlags(Mpeg4BoxType.DATA, 1);
             adataBox.text = datastring;
 
-            const wholeBox = AppleAnnotationBox.fromType(Mpeg4BoxType.DASH);
+            const wholeBox = AppleAnnotationBox.fromType(Mpeg4BoxType.ITUNES_TAG_BOX);
             wholeBox.addChild(ameanBox);
             wholeBox.addChild(anameBox);
             wholeBox.addChild(adataBox);
@@ -916,7 +918,7 @@ export default class AppleTag extends Tag {
                 this._ilstBox.removeChildByBox(dashBox);
             }
 
-            const wholeBox = AppleAnnotationBox.fromType(Mpeg4BoxType.DASH);
+            const wholeBox = AppleAnnotationBox.fromType(Mpeg4BoxType.ITUNES_TAG_BOX);
 
             for (const text of datastring) {
                 // Create the new boxes, should use 1 for text as a flag.
@@ -945,7 +947,7 @@ export default class AppleTag extends Tag {
      */
     private getDashAtom(meanString: string, nameString: string): AppleDataBox {
         for (const box of this._ilstBox.children) {
-            if (!ByteVector.equals(box.boxType, Mpeg4BoxType.DASH)) {
+            if (!ByteVector.equals(box.boxType, Mpeg4BoxType.ITUNES_TAG_BOX)) {
                 continue;
             }
 
@@ -974,7 +976,7 @@ export default class AppleTag extends Tag {
      */
     private getDashAtoms(meanString: string, nameString: string): AppleDataBox[] {
         for (const box of this._ilstBox.children) {
-            if (!ByteVector.equals(box.boxType, Mpeg4BoxType.DASH)) {
+            if (!ByteVector.equals(box.boxType, Mpeg4BoxType.ITUNES_TAG_BOX)) {
                 continue;
             }
 
@@ -1003,7 +1005,7 @@ export default class AppleTag extends Tag {
      */
     private getParentDashBox(meanString: string, nameString: string): AppleAnnotationBox {
         for (const box of this._ilstBox.children) {
-            if (!ByteVector.equals(box.boxType, Mpeg4BoxType.DASH)) {
+            if (!ByteVector.equals(box.boxType, Mpeg4BoxType.ITUNES_TAG_BOX)) {
                 continue;
             }
 
