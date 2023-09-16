@@ -2,7 +2,6 @@ import AppleTag from "./appleTag";
 import IsoChunkLargeOffsetBox from "./boxes/isoChunkLargeOffsetBox";
 import IsoChunkOffsetBox from "./boxes/isoChunkOffsetBox";
 import IsoUserDataBox from "./boxes/isoUserDataBox";
-import Mpeg4BoxHeader from "./mpeg4BoxHeader";
 import Mpeg4BoxRenderer from "./mpeg4BoxRenderer";
 import Mpeg4BoxType from "./mpeg4BoxType";
 import Mpeg4FileParser from "./mpeg4FileParser";
@@ -30,16 +29,6 @@ export default class Mpeg4File extends File {
      * Contains the UDTA Boxes
      */
     private readonly _udtaBoxes: IsoUserDataBox[] = [];
-
-    /**
-     * The position at which the invariant portion of the current instance begins.
-     */
-    private _invariantStartPosition = -1;
-
-    /**
-     * The position at which the invariant portion of the current instance ends.
-     */
-    private _invariantEndPosition = -1;
 
     /** @inheritDoc */
     public constructor(file: IFileAbstraction | string, readStyle: ReadStyle) {
@@ -107,9 +96,6 @@ export default class Mpeg4File extends File {
             const parser = new Mpeg4FileParser(this);
             parser.parseBoxHeaders();
 
-            this._invariantStartPosition = parser.mdatStartPosition;
-            this._invariantEndPosition = parser.mdatEndPosition;
-
             let sizeChange: number;
             let writePosition: number;
 
@@ -157,8 +143,6 @@ export default class Mpeg4File extends File {
             if (sizeChange !== 0) {
                 // We may have moved the offset boxes, so we need to reread.
                 parser.parseChunkOffsets();
-                this._invariantStartPosition = parser.mdatStartPosition;
-                this._invariantEndPosition = parser.mdatEndPosition;
 
                 for (const box of parser.chunkOffsetBoxes) {
                     if (box instanceof IsoChunkLargeOffsetBox) {
@@ -227,9 +211,6 @@ export default class Mpeg4File extends File {
             } else {
                 parser.parseTagAndProperties();
             }
-
-            this._invariantStartPosition = parser.mdatStartPosition;
-            this._invariantEndPosition = parser.mdatEndPosition;
 
             this._udtaBoxes.push(...parser.userDataBoxes);
 

@@ -1,6 +1,7 @@
 import AppleElementaryStreamDescriptor from "./appleElementaryStreamDescriptor";
 import IsoSampleEntry from "./isoSampleEntry";
 import Mpeg4BoxHeader from "../mpeg4BoxHeader";
+import Mpeg4BoxType from "../mpeg4BoxType";
 import {ByteVector, StringType} from "../../byteVector";
 import {File} from "../../file";
 import {Mpeg4BoxClassType} from "../mpeg4BoxClassType";
@@ -57,7 +58,7 @@ export default class IsoAudioSampleEntry extends IsoSampleEntry implements IAudi
      * Gets the bitrate of the audio represented by the current instance.
      */
     public get audioBitrate(): number {
-        const esds = this.getChildRecursively(ByteVector.fromString("esds", StringType.UTF8));
+        const esds = this.getChildRecursively(Mpeg4BoxType.ESDS);
 
         // If we don't have a stream descriptor, we don't know what's what.
         if (!(esds instanceof AppleElementaryStreamDescriptor)) {
@@ -72,7 +73,7 @@ export default class IsoAudioSampleEntry extends IsoSampleEntry implements IAudi
     public get audioChannels(): number { return this._audioChannels; }
 
     /** @inheritDoc */
-    public get audioSampleRate(): number { return this._audioSampleRate};
+    public get audioSampleRate(): number { return this._audioSampleRate; }
 
     /** @inheritDoc */
     public get audioSampleSize(): number { return this._audioSampleSize; }

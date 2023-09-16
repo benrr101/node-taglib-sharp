@@ -1,7 +1,6 @@
-import Mpeg4Box from "./boxes/mpeg4Box";
 import Mpeg4BoxType from "./mpeg4BoxType";
-import { ByteVector, StringType } from "../byteVector";
-import { File } from "../file";
+import {ByteVector} from "../byteVector";
+import {File} from "../file";
 import {Guards, NumberUtils} from "../utils";
 
 /**
@@ -41,14 +40,6 @@ export default class Mpeg4BoxHeader {
     // #region Constructors
 
     private constructor() { /* Private to enforce construction via static methods */ }
-
-    /**
-     * Constructs and initializes a new instance of {@link Mpeg4BoxHeader} that is empty.
-     * @returns A new instance of {@link Mpeg4BoxHeader} that is empty.
-     */
-    public static fromEmpty(): Mpeg4BoxHeader {
-        return Mpeg4BoxHeader.fromType(ByteVector.fromString("xxxx", StringType.UTF8));
-    }
 
     /**
      * Constructs and initializes a new instance of {@link Mpeg4BoxHeader} by reading it from a

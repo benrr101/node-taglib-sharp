@@ -1,5 +1,6 @@
 import FullBox from "./fullBox";
 import Mpeg4BoxHeader from "../mpeg4BoxHeader";
+import Mpeg4BoxType from "../mpeg4BoxType";
 import {ByteVector, StringType} from "../../byteVector";
 import {File} from "../../file";
 import {Mpeg4BoxClassType} from "../mpeg4BoxClassType";
@@ -79,7 +80,7 @@ export class AppleDataBox extends FullBox {
      */
     public static fromDataAndFlags(data: ByteVector, flags: number): AppleDataBox {
         const instance = new AppleDataBox();
-        instance.initializeFromTypeVersionAndFlags(ByteVector.fromString("data", StringType.UTF8), 0, flags);
+        instance.initializeFromTypeVersionAndFlags(Mpeg4BoxType.DATA, 0, flags);
         instance.increaseDataPosition(4);
         instance.data = data;
 

@@ -1,6 +1,7 @@
 import Mpeg4Box from "./mpeg4Box";
 import Mpeg4BoxHeader from "../mpeg4BoxHeader";
-import {ByteVector, StringType} from "../../byteVector";
+import Mpeg4BoxType from "../mpeg4BoxType";
+import {ByteVector} from "../../byteVector";
 import {File} from "../../file";
 import {Mpeg4BoxClassType} from "../mpeg4BoxClassType";
 
@@ -45,7 +46,7 @@ export default class IsoFreeSpaceBox extends Mpeg4Box {
      */
     public static fromPadding(padding: number): IsoFreeSpaceBox {
         const instance = new IsoFreeSpaceBox();
-        instance.initializeFromType(ByteVector.fromString("free", StringType.UTF8));
+        instance.initializeFromType(Mpeg4BoxType.FREE);
         instance.paddingSize = padding;
 
         return instance;

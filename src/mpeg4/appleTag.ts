@@ -7,6 +7,7 @@ import IsoMetaBox from "./boxes/isoMetaBox";
 import IsoUserDataBox from "./boxes/isoUserDataBox";
 import Mpeg4Box from "./boxes/mpeg4Box";
 import Mpeg4BoxType from "./mpeg4BoxType";
+import Mpeg4HandlerType from "./mpeg4HandlerType";
 import Mpeg4Utils from "./mpeg4Utils";
 import {AppleDataBox, AppleDataBoxFlagType} from "./boxes/appleDataBox";
 import {ByteVector, StringType} from "../byteVector";
@@ -14,7 +15,6 @@ import {Mpeg4BoxClassType} from "./mpeg4BoxClassType";
 import {IPicture, Picture} from "../picture";
 import {Tag, TagTypes} from "../tag";
 import {Guards, NumberUtils} from "../utils";
-import Mpeg4HandlerType from "./mpeg4HandlerType";
 
 export default class AppleTag extends Tag {
     /**
@@ -39,10 +39,7 @@ export default class AppleTag extends Tag {
         this._metaBox = box.getChild(Mpeg4BoxType.META) as IsoMetaBox;
 
         if (!this._metaBox) {
-            this._metaBox = IsoMetaBox.fromHandlerTypeAndHandlerName(
-                ByteVector.fromString("mdir", StringType.UTF8),
-                undefined
-            );
+            this._metaBox = IsoMetaBox.fromHandler(Mpeg4HandlerType.MDIR);
             box.addChild(this._metaBox);
         }
 

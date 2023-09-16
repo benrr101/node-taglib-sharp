@@ -8,7 +8,7 @@ import Mpeg4BoxFactory from "./mpeg4BoxFactory";
 import Mpeg4BoxHeader from "./mpeg4BoxHeader";
 import Mpeg4BoxType from "./mpeg4BoxType";
 import Mpeg4Utils from "./mpeg4Utils";
-import { ByteVector, StringType } from "../byteVector";
+import { ByteVector } from "../byteVector";
 import { File } from "../file";
 import { Guards } from "../utils";
 
@@ -76,7 +76,7 @@ export default class Mpeg4FileParser {
         this._file = file;
         this._firstHeader = Mpeg4BoxHeader.fromFileAndPosition(file, 0);
 
-        if (this._firstHeader.boxType.toString(StringType.UTF8) !== "ftyp") {
+        if (!ByteVector.equals(this._firstHeader.boxType, Mpeg4BoxType.FTYP)) {
             throw new Error("File does not start with 'ftyp' box.");
         }
     }

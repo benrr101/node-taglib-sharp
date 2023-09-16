@@ -1,7 +1,8 @@
 import FullBox from "./fullBox";
 import IsoHandlerBox from "./isoHandlerBox";
 import Mpeg4BoxHeader from "../mpeg4BoxHeader";
-import {ByteVector, StringType} from "../../byteVector";
+import Mpeg4BoxType from "../mpeg4BoxType";
+import {ByteVector} from "../../byteVector";
 import {File} from "../../file";
 import {Mpeg4BoxClassType} from "../mpeg4BoxClassType";
 import {Guards} from "../../utils";
@@ -39,7 +40,7 @@ export default class IsoMetaBox extends FullBox {
      * @param handlerName A @see string object specifying the handler name.
      * @returns A new instance of @see IsoMetaBox
      */
-    public static fromHandlerTypeAndHandlerName(handlerType: ByteVector, handlerName: string): IsoMetaBox {
+    public static fromHandler(handlerType: ByteVector, handlerName?: string): IsoMetaBox {
         Guards.notNullOrUndefined(handlerType, "handlerType");
 
         if (handlerType.length < 4) {
@@ -47,8 +48,7 @@ export default class IsoMetaBox extends FullBox {
         }
 
         const instance = new IsoMetaBox();
-        instance.initializeFromTypeVersionAndFlags(ByteVector.fromString("meta", StringType.UTF8), 0, 0);
-        instance.children = [];
+        instance.initializeFromTypeVersionAndFlags(Mpeg4BoxType.META, 0, 0);
         instance.addChild(IsoHandlerBox.fromHandlerTypeAndHandlerName(handlerType, handlerName));
 
         return instance;

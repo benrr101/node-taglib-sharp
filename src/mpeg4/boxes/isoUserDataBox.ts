@@ -1,6 +1,7 @@
 import Mpeg4Box from "./mpeg4Box";
 import Mpeg4BoxHeader from "../mpeg4BoxHeader";
-import {ByteVector, StringType} from "../../byteVector";
+import Mpeg4BoxType from "../mpeg4BoxType";
+import {ByteVector} from "../../byteVector";
 import {File} from "../../file";
 import {Mpeg4BoxClassType} from "../mpeg4BoxClassType";
 import {Guards} from "../../utils";
@@ -43,8 +44,7 @@ export default class IsoUserDataBox extends Mpeg4Box {
      */
     public static fromEmpty(): IsoUserDataBox {
         const instance = new IsoUserDataBox();
-        instance.initializeFromType(ByteVector.fromString("udta", StringType.UTF8));
-        instance.children = [];
+        instance.initializeFromType(Mpeg4BoxType.UDTA);
 
         return instance;
     }
