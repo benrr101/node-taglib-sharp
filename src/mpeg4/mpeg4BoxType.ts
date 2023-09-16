@@ -57,11 +57,4 @@ export default class Mpeg4BoxType {
     public static readonly UUID = ByteVector.fromString("uuid", StringType.UTF8).makeReadOnly();
     public static readonly WRT = Mpeg4Utils.fixId(ByteVector.fromString("wrt", StringType.UTF8));
     public static readonly DASH = ByteVector.fromString("----", StringType.UTF8).makeReadOnly();
-
-    // Handler types.
-    public static readonly SOUN = ByteVector.fromString("soun", StringType.UTF8).makeReadOnly();
-    public static readonly VIDE = ByteVector.fromString("vide", StringType.UTF8).makeReadOnly();
-
-    // Another handler type, found in wild in audio file ripped using iTunes.
-    public static readonly ALIS = ByteVector.fromString("alis", StringType.UTF8).makeReadOnly();
 }

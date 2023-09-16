@@ -17,6 +17,7 @@ import IsoVisualSampleEntry from "./boxes/isoVisualSampleEntry";
 import Mpeg4Box from "./boxes/mpeg4Box";
 import Mpeg4BoxHeader from "./mpeg4BoxHeader";
 import Mpeg4BoxType from "./mpeg4BoxType";
+import Mpeg4HandlerType from "./mpeg4HandlerType";
 import TextBox from "./boxes/textBox";
 import UnknownBox from "./boxes/unknownBox";
 import UrlBox from "./boxes/urlBox";
@@ -126,16 +127,16 @@ export default class Mpeg4BoxFactory {
             let child: Mpeg4Box;
 
             // I know this isn't the right formatting, but it is damn near unreadable without some spacing
-            if (ByteVector.equals(box.handlerType, Mpeg4BoxType.SOUN))
+            if (ByteVector.equals(box.handlerType, Mpeg4HandlerType.SOUN))
             {
                 child = IsoAudioSampleEntry.fromFile(file, header, box.handlerType);
                 this.loadChildren(file, child);
             }
-            else if (ByteVector.equals(box.handlerType, Mpeg4BoxType.VIDE))
+            else if (ByteVector.equals(box.handlerType, Mpeg4HandlerType.VIDE))
             {
                 child = IsoVisualSampleEntry.fromHeaderFileAndHandler(header, file, box.handlerType);
             }
-            else if (ByteVector.equals(box.handlerType, Mpeg4BoxType.ALIS))
+            else if (ByteVector.equals(box.handlerType, Mpeg4HandlerType.ALIS))
             {
                 if (ByteVector.equals(header.boxType, Mpeg4BoxType.TEXT))
                 {
