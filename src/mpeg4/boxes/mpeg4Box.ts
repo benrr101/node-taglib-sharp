@@ -2,7 +2,7 @@ import Mpeg4BoxHeader from "../mpeg4BoxHeader";
 import {ByteVector} from "../../byteVector";
 import {File} from "../../file";
 import {Mpeg4BoxClassType} from "../mpeg4BoxClassType";
-import {Guards} from "../../utils";
+import {ArrayUtils, Guards} from "../../utils";
 
 /**
  * This class provides a generic implementation of a ISO/IEC 14496-12 box.
@@ -28,7 +28,7 @@ export default abstract class Mpeg4Box {
     /**
      * The children of the current instance.
      */
-    public children: Mpeg4Box[];
+    private _children: Mpeg4Box[];
 
     /**
      * Gets a flag indicating which type of box the current instance is.
@@ -39,7 +39,7 @@ export default abstract class Mpeg4Box {
      * Protected constructor to force construction via static functions.
      */
     protected constructor() {
-        this.children = [];
+        this._children = [];
     }
 
     /**
@@ -71,19 +71,17 @@ export default abstract class Mpeg4Box {
         return this.initializeFromHeader(Mpeg4BoxHeader.fromType(type));
     }
 
+    // #region Properties
+
     /**
      * Gets the MPEG-4 box type of the current instance.
      */
-    public get boxType(): ByteVector {
-        return this._header.boxType;
-    }
+    public get boxType(): ByteVector { return this._header.boxType; }
 
     /**
      * Gets the total size of the current instance as it last appeared on disk.
      */
-    public get size(): number {
-        return this._header.totalBoxSize;
-    }
+    public get size(): number { return this._header.totalBoxSize; }
 
     /**
      * Gets the data contained in the current instance.
@@ -102,7 +100,7 @@ export default abstract class Mpeg4Box {
     /**
      * Gets whether or not the current instance has children.
      */
-    public get hasChildren(): boolean { return this.children && this.children.length > 0; }
+    public get hasChildren(): boolean { return this._children.length > 0; }
 
     /**
      * Gets the type of the handler box that applies to the current instance.
@@ -114,38 +112,17 @@ export default abstract class Mpeg4Box {
      */
     public get header(): Mpeg4BoxHeader { return this._header; }
 
+    // #endregion
+
     /**
      * Gets a child box from the current instance by finding a matching box type.
      * @param type  A @see ByteVector object containing the box type to match.
      * @returns  A @see Mpeg4Box object containing the matched box, or undefined if no matching box was found.
      */
-    public getChild(type: ByteVector): Mpeg4Box {
-        if (!this.children) {
-            return undefined;
-        }
-
-        for (const box of this.children) {
-            if (ByteVector.equals(box.boxType, type)) {
-                return box;
-            }
-        }
-
-        return undefined;
-    }
-
-    public getChildByBoxClassType<TBox extends Mpeg4Box>(boxClassType: Mpeg4BoxClassType, type: ByteVector): TBox {
-        return <TBox>this.children.find(b => b.boxClassType === boxClassType && ByteVector.equals(b.boxType, type));
-    }
-
-    /**
-     * Gets all child boxes with a specific box class type.
-     * @param boxClassType Box class type of the child boxes to find
-     * @returns TBox[] Array of child boxes with the specified box class type
-     */
-    public getChildrenByBoxClassType<TBox extends Mpeg4Box>(boxClassType: Mpeg4BoxClassType): TBox[] {
-        Guards.notNullOrUndefined(boxClassType, "boxClassType");
-
-        return <TBox[]>this.children.filter((c) => c.boxClassType === boxClassType);
+    public getChild<TBox extends Mpeg4Box>(type: ByteVector, predicate?: (b: TBox) => boolean): TBox {
+        return <TBox>this._children.find((b) => {
+            return ByteVector.equals(b.boxType, type) && (!predicate || predicate(<TBox>b));
+        });
     }
 
     /**
@@ -153,24 +130,10 @@ export default abstract class Mpeg4Box {
      * @param type A @see ByteVector object containing the box type to match.
      * @returns A @see Mpeg4Box[] object containing the matched box, or undefined if no matching boxes was found.
      */
-    public getChildren(type: ByteVector): Mpeg4Box[] {
-        if (!this.children) {
-            return undefined;
-        }
-
-        const boxes: Mpeg4Box[] = [];
-
-        for (const box of this.children) {
-            if (ByteVector.equals(box.boxType, type)) {
-                boxes.push(box);
-            }
-        }
-
-        if (boxes.length > 0) {
-            return boxes;
-        }
-
-        return undefined;
+    public getChildren<TBox extends Mpeg4Box>(type: ByteVector, predicate?: (b: TBox) => boolean): TBox[] {
+        return <TBox[]>this._children.filter((b) => {
+            return ByteVector.equals(b.boxType, type) && (!predicate || predicate(<TBox>b));
+        });
     }
 
     /**
@@ -179,17 +142,13 @@ export default abstract class Mpeg4Box {
      * @returns A @see Mpeg4Box object containing the matched box, or undefined if no matching box was found.
      */
     public getChildRecursively(type: ByteVector): Mpeg4Box {
-        if (!this.children) {
-            return undefined;
-        }
-
-        for (const box of this.children) {
+        for (const box of this._children) {
             if (ByteVector.equals(box.boxType, type)) {
                 return box;
             }
         }
 
-        for (const box of this.children) {
+        for (const box of this._children) {
             const childBox = box.getChildRecursively(type);
 
             if (childBox) {
@@ -205,16 +164,12 @@ export default abstract class Mpeg4Box {
      * @param type A @see ByteVector object containing the box type to remove.
      */
     public removeChildByType(type: ByteVector): void {
-        if (!this.children) {
-            return;
-        }
-
-        for (const box of this.children) {
+        for (const box of this._children) {
             if (ByteVector.equals(box.boxType, type)) {
-                const index = this.children.indexOf(box);
+                const index = this._children.indexOf(box);
 
                 if (index > -1) {
-                    this.children.splice(index, 1);
+                    this._children.splice(index, 1);
                 }
             }
         }
@@ -225,15 +180,20 @@ export default abstract class Mpeg4Box {
      * @param box A @see Mpeg4Box object to remove from the current instance.
      */
     public removeChildByBox(box: Mpeg4Box): void {
-        if (!this.children) {
+        const index = this._children.indexOf(box);
+
+        if (index > -1) {
+            this._children.splice(index, 1);
+        }
+    }
+
+    public removeChildrenByBox(boxes: Mpeg4Box[]): void {
+        if (ArrayUtils.isFalsyOrEmpty(boxes)) {
+            // Nothing to do.
             return;
         }
 
-        const index = this.children.indexOf(box);
-
-        if (index > -1) {
-            this.children.splice(index, 1);
-        }
+        ArrayUtils.remove(this._children, e => boxes.includes(e));
     }
 
     /**
@@ -241,14 +201,14 @@ export default abstract class Mpeg4Box {
      * @param box A @see Mpeg4Box object to add to the current instance.
      */
     public addChild(box: Mpeg4Box): void {
-        this.children.push(box);
+        this._children.push(box);
     }
 
     /**
      * Removes all children from the current instance.
      */
     public clearChildren(): void {
-        this.children.splice(0, this.children.length);
+        this._children.splice(0, this._children.length);
     }
 
     /**

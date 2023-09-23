@@ -162,6 +162,16 @@ export class ArrayUtils {
             }
         }
     }
+
+    public static isFalsyOrEmpty(array: unknown[]): boolean {
+        return !array || array.length === 0;
+    }
+
+    public static safePush<T extends object>(array: T[], element: T): void {
+        if (element) {
+            array.push(element);
+        }
+    }
 }
 
 export class NumberUtils {
