@@ -79,28 +79,24 @@ export default abstract class Mpeg4Box {
     public get boxType(): ByteVector { return this._header.boxType; }
 
     /**
-     * Gets the total size of the current instance as it last appeared on disk.
+     * Gets the child boxes of the current instance.
+     * @internal
      */
-    public get size(): number { return this._header.totalBoxSize; }
+    public get children(): Mpeg4Box[] { return this._children.slice(0); }
 
     /**
      * Gets the data contained in the current instance.
      */
     public get data(): ByteVector { return this._data; }
+
     /**
      * Sets the data contained in the current instance.
      */
     public set data(v: ByteVector) { this._data = v; }
-
     /**
      * Gets the size of the data contained in the current instance, minus the size of any box specific headers.
      */
     public get dataSize(): number { return this._header.dataSize + this._baseDataPosition - this.dataPosition; }
-
-    /**
-     * Gets whether or not the current instance has children.
-     */
-    public get hasChildren(): boolean { return this._children.length > 0; }
 
     /**
      * Gets the type of the handler box that applies to the current instance.
@@ -108,93 +104,23 @@ export default abstract class Mpeg4Box {
     public get handlerType(): ByteVector { return this._handlerType; }
 
     /**
+     * Gets whether or not the current instance has children.
+     */
+    public get hasChildren(): boolean { return this._children.length > 0; }
+
+    /**
      * Gets the header of the current instance.
      */
     public get header(): Mpeg4BoxHeader { return this._header; }
 
+    /**
+     * Gets the total size of the current instance as it last appeared on disk.
+     */
+    public get size(): number { return this._header.totalBoxSize; }
+
     // #endregion
 
-    /**
-     * Gets a child box from the current instance by finding a matching box type.
-     * @param type  A @see ByteVector object containing the box type to match.
-     * @returns  A @see Mpeg4Box object containing the matched box, or undefined if no matching box was found.
-     */
-    public getChild<TBox extends Mpeg4Box>(type: ByteVector, predicate?: (b: TBox) => boolean): TBox {
-        return <TBox>this._children.find((b) => {
-            return ByteVector.equals(b.boxType, type) && (!predicate || predicate(<TBox>b));
-        });
-    }
-
-    /**
-     * Gets all child boxes from the current instance by finding a matching box type.
-     * @param type A @see ByteVector object containing the box type to match.
-     * @returns A @see Mpeg4Box[] object containing the matched box, or undefined if no matching boxes was found.
-     */
-    public getChildren<TBox extends Mpeg4Box>(type: ByteVector, predicate?: (b: TBox) => boolean): TBox[] {
-        return <TBox[]>this._children.filter((b) => {
-            return ByteVector.equals(b.boxType, type) && (!predicate || predicate(<TBox>b));
-        });
-    }
-
-    /**
-     * Gets a child box from the current instance by finding a matching box type, searching recursively.
-     * @param type  A @see ByteVector object containing the box type to match.
-     * @returns A @see Mpeg4Box object containing the matched box, or undefined if no matching box was found.
-     */
-    public getChildRecursively(type: ByteVector): Mpeg4Box {
-        for (const box of this._children) {
-            if (ByteVector.equals(box.boxType, type)) {
-                return box;
-            }
-        }
-
-        for (const box of this._children) {
-            const childBox = box.getChildRecursively(type);
-
-            if (childBox) {
-                return childBox;
-            }
-        }
-
-        return undefined;
-    }
-
-    /**
-     * Removes all children with a specified box type from the current instance.
-     * @param type A @see ByteVector object containing the box type to remove.
-     */
-    public removeChildByType(type: ByteVector): void {
-        for (const box of this._children) {
-            if (ByteVector.equals(box.boxType, type)) {
-                const index = this._children.indexOf(box);
-
-                if (index > -1) {
-                    this._children.splice(index, 1);
-                }
-            }
-        }
-    }
-
-    /**
-     * Removes a specified box from the current instance.
-     * @param box A @see Mpeg4Box object to remove from the current instance.
-     */
-    public removeChildByBox(box: Mpeg4Box): void {
-        const index = this._children.indexOf(box);
-
-        if (index > -1) {
-            this._children.splice(index, 1);
-        }
-    }
-
-    public removeChildrenByBox(boxes: Mpeg4Box[]): void {
-        if (ArrayUtils.isFalsyOrEmpty(boxes)) {
-            // Nothing to do.
-            return;
-        }
-
-        ArrayUtils.remove(this._children, e => boxes.includes(e));
-    }
+    // #region Public Methods
 
     /**
      * Adds a specified box to the current instance.
@@ -210,6 +136,87 @@ export default abstract class Mpeg4Box {
     public clearChildren(): void {
         this._children.splice(0, this._children.length);
     }
+
+    /**
+     * Gets a child box from the current instance by finding a matching box type.
+     * @param type  A @see ByteVector object containing the box type to match.
+     * @returns  A @see Mpeg4Box object containing the matched box, or undefined if no matching box was found.
+     */
+    public getChild<TBox extends Mpeg4Box>(type: ByteVector, predicate?: (b: TBox) => boolean): TBox {
+        return <TBox>this._children.find((b) => {
+            return ByteVector.equals(b.boxType, type) && (!predicate || predicate(<TBox>b));
+        });
+    }
+
+    /**
+     * Gets a child box from the current instance by finding a matching box type, searching recursively.
+     * @param type  A @see ByteVector object containing the box type to match.
+     * @returns A @see Mpeg4Box object containing the matched box, or undefined if no matching box was found.
+     */
+    public getChildRecursively(type: ByteVector): Mpeg4Box {
+        // Check local children for a match
+        const localMatch = this._children.find(b => ByteVector.equals(b.boxType, type));
+        if (localMatch) {
+            return localMatch;
+        }
+
+        // Recurse
+        for (const box of this._children) {
+            const childBox = box.getChildRecursively(type);
+
+            if (childBox) {
+                return childBox;
+            }
+        }
+
+        return undefined;
+    }
+
+    /**
+     * Gets all child boxes from the current instance by finding a matching box type.
+     * @param type A @see ByteVector object containing the box type to match.
+     * @returns A @see Mpeg4Box[] object containing the matched box, or undefined if no matching boxes was found.
+     */
+    public getChildren<TBox extends Mpeg4Box>(type: ByteVector, predicate?: (b: TBox) => boolean): TBox[] {
+        return <TBox[]>this._children.filter((b) => {
+            return ByteVector.equals(b.boxType, type) && (!predicate || predicate(<TBox>b));
+        });
+    }
+
+    /**
+     * Removes a specified box from the current instance.
+     * @param box A @see Mpeg4Box object to remove from the current instance.
+     */
+    public removeChildByBox(box: Mpeg4Box): void {
+        const index = this._children.indexOf(box);
+
+        if (index > -1) {
+            this._children.splice(index, 1);
+        }
+    }
+
+    /**
+     * Removes all children with a specified box type from the current instance.
+     * @param type A @see ByteVector object containing the box type to remove.
+     */
+    public removeChildByType(type: ByteVector): void {
+        for (let i = this._children.length - 1; i >= 0; i--) {
+            if (ByteVector.equals(this._children[i].boxType, type)) {
+                this._children.splice(i, 1);
+            }
+        }
+    }
+
+    public removeChildrenByBox(boxes: Mpeg4Box[]): void {
+        if (ArrayUtils.isFalsyOrEmpty(boxes)) {
+            // Nothing to do.
+            return;
+        }
+
+        ArrayUtils.remove(this._children, e => boxes.includes(e));
+    }
+
+    // #endregion
 
     /**
      * Loads the data of the current instance from a specified file using the internal data position and size.

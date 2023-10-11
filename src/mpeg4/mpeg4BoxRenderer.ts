@@ -1,7 +1,7 @@
-import Mpeg4Box from "./boxes/mpeg4Box";
-import {ByteVector} from "../byteVector";
 import IsoFreeSpaceBox from "./boxes/isoFreeSpaceBox";
+import Mpeg4Box from "./boxes/mpeg4Box";
 import Mpeg4BoxType from "./mpeg4BoxType";
+import {ByteVector} from "../byteVector";
 
 export default class Mpeg4BoxRenderer {
     public static renderBox(box: Mpeg4Box): ByteVector {

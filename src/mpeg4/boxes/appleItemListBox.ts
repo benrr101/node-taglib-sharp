@@ -104,10 +104,10 @@ export default class AppleItemListBox extends Mpeg4Box {
         }, []);
     }
 
-    public getQuickTimeBoxes(type: ByteVector): AppleDataBox[] {
+    public getQuickTimeDataBoxes(type: ByteVector): AppleDataBox[] {
         return this.getChildren<AppleAnnotationBox>(type).reduce((accum, b) => {
-            const dataBox = b.getChild<AppleDataBox>(Mpeg4BoxType.DATA);
-            ArrayUtils.safePush(accum, dataBox);
+            const dataBoxes = b.getChildren<AppleDataBox>(Mpeg4BoxType.DATA);
+            ArrayUtils.safePushRange(accum, dataBoxes);
             return accum;
         }, []);
     }
@@ -158,12 +158,16 @@ export default class AppleItemListBox extends Mpeg4Box {
         const itunesTagBoxes = this.getItunesTagBoxes(meanString, nameString);
         this.removeChildrenByBox(itunesTagBoxes);
 
-        if (ArrayUtils.isFalsyOrEmpty(dataStrings)) {
+        if (!dataStrings) {
             // Nothing to store. Stop processing.
             return;
         }
 
         for (const dataString of dataStrings) {
+            if (!dataString) {
+                continue;
+            }
+
             // Create new box for each string
             const meanBox = AppleAdditionalInfoBox.fromTypeVersionAndFlags(
                 Mpeg4BoxType.MEAN,
@@ -187,6 +191,28 @@ export default class AppleItemListBox extends Mpeg4Box {
             wholeBox.addChild(nameBox);
             wholeBox.addChild(dataBox);
             this.addChild(wholeBox);
+        }
+    }
+
+    public setQuickTimeBoxes(type: ByteVector, dataBoxes: AppleDataBox[]): void {
+        // Clear existing boxes
+        this.removeChildByType(type);
+
+        // If there's no boxes, stop processing
+        if (!dataBoxes) {
+            return;
+        }
+
+        // Create boxes of the type for each provided data box and add to the current instance
+        for (const dataBox of dataBoxes) {
+            if (!dataBox) {
+                continue;
+            }
+
+            const parentBox = AppleAnnotationBox.fromType(type);
+            parentBox.addChild(dataBox);
+
+            this.addChild(parentBox);
         }
     }
 }

@@ -172,6 +172,14 @@ export class ArrayUtils {
             array.push(element);
         }
     }
+
+    public static safePushRange<T extends object>(array: T[], elements: T[]): void {
+        if (elements) {
+            for (const element of elements) {
+                ArrayUtils.safePush(array, element);
+            }
+        }
+    }
 }
 
 export class NumberUtils {

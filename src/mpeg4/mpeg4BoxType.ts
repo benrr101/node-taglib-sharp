@@ -108,7 +108,7 @@ export default class Mpeg4BoxType {
     /** ISO user extension box */
     public static readonly UUID = this.getType("uuid");
     /** QuickTime composer box */
-    public static readonly WRT = this.getType("wrt");
+    public static readonly WRT = this.getType("©wrt");
 
     private static getType(id: string): ByteVector {
         return ByteVector.fromString(id, StringType.Latin1).makeReadOnly();
