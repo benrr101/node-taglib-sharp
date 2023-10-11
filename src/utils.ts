@@ -155,7 +155,7 @@ export class FileUtils {
 
 export class ArrayUtils {
     public static remove<T>(array: T[], callbackFn: (e: T, i: number) => boolean): void {
-        let i = this.length;
+        let i = array.length;
         while (i--) {
             if (callbackFn(array[i], i)) {
                 array.splice(i, 1);

@@ -174,7 +174,7 @@ export default class AppleItemListBox extends Mpeg4Box {
                 0,
                 AppleDataBoxFlagType.ContainsText
             );
-            meanBox.text = dataString;
+            meanBox.text = meanString;
 
             const nameBox = AppleAdditionalInfoBox.fromTypeVersionAndFlags(
                 Mpeg4BoxType.NAME,

@@ -11,6 +11,7 @@ import AppleItemListBox from "../../src/mpeg4/boxes/appleItemListBox";
 import PropertyTests from "../utilities/propertyTests";
 import AppleAnnotationBox from "../../src/mpeg4/boxes/appleAnnotationBox";
 import {AppleDataBox, AppleDataBoxFlagType} from "../../src/mpeg4/boxes/appleDataBox";
+import AppleAdditionalInfoBox from "../../src/mpeg4/boxes/appleAdditionalInfoBox";
 
 @suite class AppleTag_ConstructorTests {
     @test
@@ -113,6 +114,8 @@ import {AppleDataBox, AppleDataBoxFlagType} from "../../src/mpeg4/boxes/appleDat
 
     // @TODO: Genres
 
+    // @TODO: Year
+
     @test
     public track() {
         this.testQuickTimeFractionalShort(
@@ -133,6 +136,260 @@ import {AppleDataBox, AppleDataBoxFlagType} from "../../src/mpeg4/boxes/appleDat
             (t) => t.discCount,
             Mpeg4BoxType.DISK
         );
+    }
+
+    @test
+    public lyrics() {
+        this.testQuickTimeString((t, v) => t.lyrics = v, (t) => t.lyrics, Mpeg4BoxType.LYR);
+    }
+
+    @test
+    public grouping() {
+        this.testQuickTimeString((t, v) => t.grouping = v, (t) => t.grouping, Mpeg4BoxType.GRP);
+    }
+
+    // @TODO: BPM
+
+    @test
+    public conductor() {
+        this.testQuickTimeString((t, v) => t.conductor = v, (t) => t.conductor, Mpeg4BoxType.COND);
+    }
+
+    @test
+    public copyright() {
+        this.testQuickTimeString((t, v) => t.copyright = v, (t) => t.copyright, Mpeg4BoxType.CPRT);
+    }
+
+    // @TODO: date tagged
+
+    @test
+    public albumArtistsSort() {
+        this.testQuickTimeStrings((t, v) => t.albumArtistsSort = v, (t) => t.albumArtistsSort, Mpeg4BoxType.SOAA);
+    }
+
+    @test
+    public perfoemrsSort() {
+        this.testQuickTimeStrings((t, v) => t.performersSort = v, (t) => t.performersSort, Mpeg4BoxType.SOAR);
+    }
+
+    @test
+    public composersSort() {
+        this.testQuickTimeStrings((t, v) => t.composersSort = v, (t) => t.composersSort, Mpeg4BoxType.SOCO);
+    }
+
+    @test
+    public albumSort() {
+        this.testQuickTimeString((t, v) => t.albumSort = v, (t) => t.albumSort, Mpeg4BoxType.SOAL);
+    }
+
+    @test
+    public titleSort() {
+        this.testQuickTimeString((t, v) => t.titleSort = v, (t) => t.titleSort, Mpeg4BoxType.SONM);
+    }
+
+    // @TODO musicbrainz artistid
+
+    @test
+    public musicBrainzReleaseGroupid() {
+        this.testItunesString(
+            (t, v) => t.musicBrainzReleaseGroupId = v,
+            (t) => t.musicBrainzReleaseGroupId,
+            "com.apple.iTunes",
+            "MusicBrainz Release Group Id"
+        );
+    }
+
+    @test
+    public musicBrainzReleaseId() {
+        this.testItunesString(
+            (t, v) => t.musicBrainzReleaseId = v,
+            (t) => t.musicBrainzReleaseId,
+            "com.apple.iTunes",
+            "MusicBrainz Album Id"
+        );
+    }
+
+    // @TODO musicbrainz release artist id
+
+    @test
+    public musicBrainzTrackId() {
+        this.testItunesString(
+            (t, v) => t.musicBrainzTrackId = v,
+            (t) => t.musicBrainzTrackId,
+            "com.apple.iTunes",
+            "MusicBrainz Track Id"
+        );
+    }
+
+    @test
+    public musicBrainzDiscId() {
+        this.testItunesString(
+            (t, v) => t.musicBrainzDiscId = v,
+            (t) => t.musicBrainzDiscId,
+            "com.apple.iTunes",
+            "MusicBrainz Disc Id"
+        );
+    }
+
+    @test
+    public musicIdId() {
+        this.testItunesString(
+            (t, v) => t.musicIpId = v,
+            (t) => t.musicIpId,
+            "com.apple.iTunes",
+            "MusicIP PUID"
+        );
+    }
+
+    @test
+    public amazonId() {
+        this.testItunesString(
+            (t, v) => t.amazonId = v,
+            (t) => t.amazonId,
+            "com.apple.iTunes",
+            "ASIN"
+        );
+    }
+
+    @test
+    public musicBrainzReleaseStatus() {
+        this.testItunesString(
+            (t, v) => t.musicBrainzReleaseStatus = v,
+            (t) => t.musicBrainzReleaseStatus,
+            "com.apple.iTunes",
+            "MusicBrainz Album Status"
+        );
+    }
+
+    @test
+    public musicBrainzReleaseType() {
+        this.testItunesString(
+            (t, v) => t.musicBrainzReleaseType = v,
+            (t) => t.musicBrainzReleaseType,
+            "com.apple.iTunes",
+            "MusicBrainz Album Type"
+        );
+    }
+
+    @test
+    public musicBrainzReleaseCountry() {
+        this.testItunesString(
+            (t, v) => t.musicBrainzReleaseCountry = v,
+            (t) => t.musicBrainzReleaseCountry,
+            "com.apple.iTunes",
+            "MusicBrainz Album Release Country"
+        );
+    }
+
+    // @TODO Replay gain
+
+    @test
+    public initialKey() {
+        this.testItunesString(
+            (t, v) => t.initialKey = v,
+            (t) => t.initialKey,
+            "com.apple.iTunes",
+            "initialkey"
+        );
+    }
+
+    @test
+    public isrc() {
+        this.testItunesString(
+            (t, v) => t.isrc = v,
+            (t) => t.isrc,
+            "com.apple.iTunes",
+            "ISRC"
+        );
+    }
+
+    @test
+    public publisher() {
+        this.testItunesString(
+            (t, v) => t.publisher = v,
+            (t) => t.publisher,
+            "com.apple.iTunes",
+            "publisher"
+        );
+    }
+
+    @test
+    public remixedBy() {
+        this.testItunesString(
+            (t, v) => t.remixedBy = v,
+            (t) => t.remixedBy,
+            "com.apple.iTunes",
+            "REMIXEDBY"
+        );
+    }
+
+    // @TODO: Pictures
+
+    private testItunesString(
+        setter: (t: AppleTag, v: string) => void,
+        getter: (t: AppleTag) => string,
+        mean: string,
+        name: string
+    ) {
+        // TEST CASE 1: Undefined when empty -------------------------------
+        // Arrange
+        const testTag1 = this.getEmptyTag();
+
+        // Act / Assert
+        assert.isUndefined(getter(testTag1.tag));
+
+        // TEST CASE 2: Round trip from empty ------------------------------
+        // Act / Assert
+        PropertyTests.propertyRoundTrip(
+            (v: string) => setter(testTag1.tag, v),
+            () => getter(testTag1.tag),
+            "foo");
+        this.assertItunesBox(testTag1.ilst, mean, name, "foo");
+
+        // TEST CASE 3: Multiple boxes return first instance ---------------
+        // Arrange
+        const box1 = this.getItunesBox(mean, name, "foo");
+        const box2 = this.getItunesBox(mean, name, "bar");
+        const box3 = this.getItunesBox(mean, "foo", "baz");
+        const box4 = this.getItunesBox("foo", name, "floo");
+
+        const meanBox5 = AppleAdditionalInfoBox.fromTypeVersionAndFlags(
+            Mpeg4BoxType.MEAN,
+            0,
+            AppleDataBoxFlagType.ContainsData);
+        meanBox5.text = mean;
+        const nameBox5 = AppleAdditionalInfoBox.fromTypeVersionAndFlags(
+            Mpeg4BoxType.NAME,
+            0,
+            AppleDataBoxFlagType.ContainsData);
+        nameBox5.text = name;
+        const box5 = AppleAnnotationBox.fromType(Mpeg4BoxType.ITUNES_TAG_BOX);
+        box5.addChild(meanBox5);
+        box5.addChild(nameBox5);
+        box5.addChild(box1.dataBox);
+        box5.addChild(box2.dataBox);
+        box5.addChild(box3.dataBox);
+        box5.addChild(box4.dataBox);
+
+        const testTag2 = this.getEmptyTag([box1.box, box2.box, box3.box, box4.box, box5]);
+
+        // Act / Assert
+        assert.strictEqual(getter(testTag2.tag), "foo");
+
+        // TEST CASE 4: Setting multiple boxes should clear them -----------
+        // Act / Assert
+        PropertyTests.propertyRoundTrip((v) => setter(testTag2.tag, v), () => getter(testTag2.tag), "fux");
+        this.assertItunesBox(testTag2.ilst, mean, name, "fux");
+
+        // TEST CASE 5: Setting to undefined should remove boxes -----------
+        // Act / Assert
+        PropertyTests.propertyRoundTrip((v) => setter(testTag2.tag, v), () => getter(testTag2.tag), undefined);
+        PropertyTests.propertyNormalized((v) => setter(testTag2.tag, v), () => getter(testTag2.tag), null, undefined);
+        PropertyTests.propertyNormalized((v) => setter(testTag2.tag, v), () => getter(testTag2.tag), "", undefined);
+
+        const childBoxes = testTag2.ilst.getItunesTagBoxes(mean, name);
+        assert.isOk(childBoxes);
+        assert.isEmpty(childBoxes);
     }
 
     private testQuickTimeFractionalShort(
@@ -404,6 +661,40 @@ import {AppleDataBox, AppleDataBoxFlagType} from "../../src/mpeg4/boxes/appleDat
         assert.isEmpty(childBoxes);
     }
 
+    private assertItunesBox(
+        ilst: AppleItemListBox,
+        mean: string,
+        name: string,
+        expectedValue: string
+    ): void {
+        const childBoxes = ilst.getItunesTagBoxes(mean, name);
+        assert.isOk(childBoxes);
+        assert.strictEqual(childBoxes.length, 1);
+        const childBox = childBoxes[0];
+        Testers.bvEqual(childBox.boxType, Mpeg4BoxType.ITUNES_TAG_BOX);
+
+        const meanBoxes = childBox.getChildren<AppleAdditionalInfoBox>(Mpeg4BoxType.MEAN);
+        assert.isOk(meanBoxes);
+        assert.strictEqual(meanBoxes.length, 1);
+        const meanBox = meanBoxes[0];
+        Testers.bvEqual(meanBox.boxType, Mpeg4BoxType.MEAN);
+        assert.strictEqual(meanBox.text, mean);
+
+        const nameBoxes = childBox.getChildren<AppleAdditionalInfoBox>(Mpeg4BoxType.NAME);
+        assert.isOk(nameBoxes);
+        assert.strictEqual(nameBoxes.length, 1);
+        const nameBox = nameBoxes[0];
+        Testers.bvEqual(nameBox.boxType, Mpeg4BoxType.NAME);
+        assert.strictEqual(nameBox.text, name);
+
+        const dataBoxes = childBox.getChildren<AppleDataBox>(Mpeg4BoxType.DATA);
+        assert.isOk(dataBoxes);
+        assert.strictEqual(nameBoxes.length, 1);
+        const dataBox = dataBoxes[0];
+        Testers.bvEqual(dataBox.boxType, Mpeg4BoxType.DATA);
+        assert.strictEqual(dataBox.text, expectedValue);
+    }
+
     private assertQuickTimeBox(
         ilst: AppleItemListBox,
         boxType: ByteVector,
@@ -438,6 +729,35 @@ import {AppleDataBox, AppleDataBoxFlagType} from "../../src/mpeg4/boxes/appleDat
             ilst: ilstBox,
             tag: new AppleTag(udtaBox)
         };
+    }
+
+    private getItunesBox(
+        mean: string,
+        name: string,
+        value: string
+    ): {box: AppleAnnotationBox, dataBox: AppleDataBox} {
+        const meanBox = AppleAdditionalInfoBox.fromTypeVersionAndFlags(
+            Mpeg4BoxType.MEAN,
+            0,
+            AppleDataBoxFlagType.ContainsData
+        );
+        meanBox.text = mean;
+        const nameBox = AppleAdditionalInfoBox.fromTypeVersionAndFlags(
+            Mpeg4BoxType.NAME,
+            0,
+            AppleDataBoxFlagType.ContainsData
+        );
+        nameBox.text = name;
+        const dataBox = AppleDataBox.fromDataAndFlags(
+            ByteVector.fromString(value, StringType.UTF8),
+            AppleDataBoxFlagType.ContainsText
+        );
+        const box = AppleAnnotationBox.fromType(Mpeg4BoxType.ITUNES_TAG_BOX);
+        box.addChild(meanBox);
+        box.addChild(nameBox);
+        box.addChild(dataBox);
+
+        return { box: box, dataBox: dataBox };
     }
 
     private getQuickTimeBox(
