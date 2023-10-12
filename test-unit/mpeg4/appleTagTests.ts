@@ -1,10 +1,11 @@
+import * as TypeMoq from "typemoq";
 import {suite, test} from "@testdeck/mocha";
 import {assert} from "chai";
 
 import {TagTesters, Testers} from "../utilities/testers";
 import IsoUserDataBox from "../../src/mpeg4/boxes/isoUserDataBox";
 import AppleTag from "../../src/mpeg4/appleTag";
-import {ByteVector, Mpeg4BoxType, StringType, TagTypes} from "../../src";
+import {ByteVector, IPicture, Mpeg4BoxType, PictureType, StringType, TagTypes} from "../../src";
 import IsoMetaBox from "../../src/mpeg4/boxes/isoMetaBox";
 import Mpeg4HandlerType from "../../src/mpeg4/mpeg4HandlerType";
 import AppleItemListBox from "../../src/mpeg4/boxes/appleItemListBox";
@@ -90,7 +91,36 @@ import AppleAdditionalInfoBox from "../../src/mpeg4/boxes/appleAdditionalInfoBox
         this.testQuickTimeStrings((t, v) => t.performers = v, (t) => t.performers, Mpeg4BoxType.ART);
     }
 
-    // TODO: Perfomers role
+    @test
+    public performersRole() {
+        // TEST CASE 1: Return empty array on empty ------------------------
+        // Arrange
+        const tag1 = this.getEmptyTag();
+        const setter = (v: string[]) => tag1.tag.performersRole = v;
+        const getter = () => tag1.tag.performersRole;
+
+        // Act / Assert
+        assert.isOk(tag1.tag.performersRole);
+        assert.isEmpty(tag1.tag.performersRole);
+
+        // TEST CASE 2: Round trip from empty ------------------------------
+        // Act / Assert
+        PropertyTests.propertyRoundTrip(setter, getter,["foo; bar; baz", "floo; blarr", "fux"]);
+
+        let childBoxes = tag1.ilst.getQuickTimeDataBoxes(Mpeg4BoxType.ROLE);
+        assert.strictEqual(childBoxes.length, 1);
+        const expectedString = ByteVector.fromString("foo/ bar/ baz; floo/ blarr; fux", StringType.UTF8);
+        Testers.bvEqual(childBoxes[0].data, expectedString);
+
+        // TEST CASE 3: Boxes are cleared on falsy data --------------------
+        // Act / Assert
+        PropertyTests.propertyRoundTrip(setter, getter, []);
+        PropertyTests.propertyNormalized(setter, getter,undefined,[]);
+        PropertyTests.propertyNormalized(setter, getter,null,[]);
+
+        childBoxes = tag1.ilst.getQuickTimeDataBoxes(Mpeg4BoxType.ROLE);
+        assert.isEmpty(childBoxes);
+    }
 
     @test
     public albumArtists() {
@@ -112,7 +142,94 @@ import AppleAdditionalInfoBox from "../../src/mpeg4/boxes/appleAdditionalInfoBox
         this.testQuickTimeString((t, v) => t.comment = v, (t) => t.comment, Mpeg4BoxType.CMT);
     }
 
-    // @TODO: Genres
+    @test
+    public genres_genOnly() {
+        this.testQuickTimeStrings((t, v) => t.genres = v, (t) => t.genres, Mpeg4BoxType.GEN);
+    }
+
+    @test
+    public genres_gnreOnly() {
+        // TEST CASE 1: Reading existing genre boxes -----------------------
+        // Arrange
+        const box1 = this.getQuickTimeBox(
+            Mpeg4BoxType.GNRE,
+            ByteVector.fromShort(1),
+            AppleDataBoxFlagType.ContainsData
+        );
+        const box2 = this.getQuickTimeBox(
+            Mpeg4BoxType.GNRE,
+            ByteVector.fromShort(88),
+            AppleDataBoxFlagType.ContainsData
+        );
+        const box3 = this.getQuickTimeBox(
+            Mpeg4BoxType.GNRE,
+            ByteVector.fromShort(0),
+            AppleDataBoxFlagType.ContainsData
+        );
+        const box4 = this.getQuickTimeBox(Mpeg4BoxType.GNRE, ByteVector.fromString("foo", StringType.UTF8));
+        const tag = this.getEmptyTag([box3.box, box4.box, box1.box, box2.box]);
+
+        // Act
+        let result = tag.tag.genres;
+
+        // Assert
+        assert.deepStrictEqual(result, ["Blues"]);
+
+        // TEST CASE 2: Writing values writes them to GNRE -----------------
+        // Act
+        tag.tag.genres = ["foo", "bar", "baz"];
+        result = tag.tag.genres;
+
+        // Assert
+        assert.deepStrictEqual(result, ["foo", "bar", "baz"]);
+        let dataBoxes = tag.ilst.getQuickTimeDataBoxes(Mpeg4BoxType.GEN);
+        assert.strictEqual(dataBoxes.length, 1);
+        assert.strictEqual(dataBoxes[0].text, "foo; bar; baz");
+
+        dataBoxes = tag.ilst.getQuickTimeDataBoxes(Mpeg4BoxType.GNRE);
+        assert.isEmpty(dataBoxes);
+
+        // TEST CASE 3: Writing falsy data clears boxes --------------------
+        // Act / Assert
+        PropertyTests.propertyRoundTrip((v) => tag.tag.genres = v, () => tag.tag.genres, []);
+        PropertyTests.propertyNormalized((v) => tag.tag.genres = v, () => tag.tag.genres, undefined, []);
+        PropertyTests.propertyNormalized((v) => tag.tag.genres = v, () => tag.tag.genres, null, []);
+
+        dataBoxes = tag.ilst.getQuickTimeDataBoxes(Mpeg4BoxType.GEN);
+        assert.isEmpty(dataBoxes);
+        dataBoxes = tag.ilst.getQuickTimeDataBoxes(Mpeg4BoxType.GNRE);
+        assert.isEmpty(dataBoxes);
+    }
+
+    @test
+    public genres_bothGenAndGrne() {
+        // TEST CASE 1: Reading existing genre boxes -----------------------
+        // Arrange
+        const box1 = this.getQuickTimeBox(Mpeg4BoxType.GNRE, ByteVector.fromShort(1));
+        const value2 = "foo; bar; baz";
+        const box2 = this.getQuickTimeBox(Mpeg4BoxType.GEN, ByteVector.fromString(value2, StringType.UTF8));
+        const tag = this.getEmptyTag([box1.box, box2.box]);
+
+        // Act
+        let result = tag.tag.genres;
+
+        // Assert
+        assert.deepStrictEqual(result, ["foo", "bar", "baz"]);
+
+        // TEST CASE 2: Writing values writes them to GNRE -----------------
+        // Act
+        tag.tag.genres = ["floo", "blarr", "blagg"];
+        result = tag.tag.genres;
+
+        // Assert
+        assert.deepStrictEqual(result, ["floo", "blarr", "blagg"]);
+        let dataBoxes = tag.ilst.getQuickTimeDataBoxes(Mpeg4BoxType.GEN);
+        assert.strictEqual(dataBoxes.length, 1);
+        assert.strictEqual(dataBoxes[0].text, "floo; blarr; blagg");
+
+        dataBoxes = tag.ilst.getQuickTimeDataBoxes(Mpeg4BoxType.GNRE);
+        assert.isEmpty(dataBoxes);
+    }
 
     // @TODO: Year
 
@@ -323,7 +440,55 @@ import AppleAdditionalInfoBox from "../../src/mpeg4/boxes/appleAdditionalInfoBox
         );
     }
 
-    // @TODO: Pictures
+    @test
+    public pictures() {
+        // Arrange
+        const tag = this.getEmptyTag();
+        const mockPicture1 = TypeMoq.Mock.ofType<IPicture>();
+        mockPicture1.setup((p) => p.description).returns(() => "foo");
+        mockPicture1.setup((p) => p.type).returns(() => PictureType.ColoredFish);
+        mockPicture1.setup((p) => p.data).returns(() => ByteVector.fromString("bar", StringType.UTF8));
+        const mockPicture2 = TypeMoq.Mock.ofType<IPicture>();
+        mockPicture2.setup((p) => p.description).returns(() => "fux");
+        mockPicture2.setup((p) => p.type).returns(() => PictureType.NotAPicture);
+        mockPicture2.setup((p) => p.data).returns(() => ByteVector.fromString("bux", StringType.UTF8));
+
+        // TEST CASE 1: Pictures is empty on empty tag ---------------------
+        // Act / Assert
+        assert.ok(tag.tag.pictures);
+        assert.isEmpty(tag.tag.pictures);
+
+        // TEST CASE 2: Pictures are stored after setting them -------------
+        // Act
+        tag.tag.pictures = [mockPicture1.object, mockPicture2.object];
+
+         // Assert
+        const pictures = tag.tag.pictures;
+        assert.strictEqual(pictures.length, 2);
+        assert.isUndefined(pictures[0].description);
+        assert.strictEqual(pictures[0].type, PictureType.NotAPicture);
+        Testers.bvEqual(pictures[0].data, ByteVector.fromString("bar", StringType.UTF8));
+        assert.isUndefined(pictures[1].description);
+        assert.strictEqual(pictures[1].type, PictureType.NotAPicture);
+        Testers.bvEqual(pictures[1].data, ByteVector.fromString("bux", StringType.UTF8));
+
+        this.assertQuickTimeBoxes(
+            tag.ilst,
+            Mpeg4BoxType.COVR,
+            [
+                {value: mockPicture1.object.data, flags: AppleDataBoxFlagType.ContainsData},
+                {value: mockPicture2.object.data, flags: AppleDataBoxFlagType.ContainsData}
+            ]
+        );
+
+        // TEST CASE 3: Pictures are cleared after setting them as undefined
+        // Act / Assert
+        PropertyTests.propertyNormalized((v) => tag.tag.pictures = v, () => tag.tag.pictures, undefined, []);
+        PropertyTests.propertyNormalized((v) => tag.tag.pictures = v, () => tag.tag.pictures, null, []);
+        PropertyTests.propertyNormalized((v) => tag.tag.pictures = v, () => tag.tag.pictures, [], []);
+
+        assert.isEmpty(tag.ilst.children);
+    }
 
     private testItunesString(
         setter: (t: AppleTag, v: string) => void,
@@ -712,6 +877,23 @@ import AppleAdditionalInfoBox from "../../src/mpeg4/boxes/appleAdditionalInfoBox
         assert.strictEqual(dataBox.flags, expectedFlags);
         Testers.bvEqual(dataBox.boxType, Mpeg4BoxType.DATA);
         Testers.bvEqual(dataBox.data, expectedValue);
+    }
+
+    private assertQuickTimeBoxes(
+        ilst: AppleItemListBox,
+        boxType: ByteVector,
+        expectedValues: {value: ByteVector, flags: AppleDataBoxFlagType}[]
+    ): void {
+        const childBoxes = ilst.getQuickTimeDataBoxes(boxType);
+        assert.isOk(childBoxes);
+        assert.strictEqual(childBoxes.length, expectedValues.length);
+
+        for (let i = 0; i < expectedValues.length; i++) {
+            const dataBox = childBoxes[i];
+            assert.strictEqual(dataBox.flags, expectedValues[i].flags);
+            Testers.bvEqual(dataBox.boxType, Mpeg4BoxType.DATA);
+            Testers.bvEqual(dataBox.data, expectedValues[i].value);
+        }
     }
 
     private getEmptyTag(boxes?: AppleAnnotationBox[]): {tag: AppleTag, ilst: AppleItemListBox} {

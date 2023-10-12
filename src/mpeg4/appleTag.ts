@@ -73,11 +73,12 @@ export default class AppleTag extends Tag {
     /** @inheritDoc */
     public get performersRole(): string[] {
         return this.getQuickTimeStrings(Mpeg4BoxType.ROLE)
-            .map(s => s.replace("/", ";").trim());
+            .map(s => s.replace(/\//g, ";").trim());
     }
     /** @inheritDoc */
     public set performersRole(v: string[]) {
-        v = v.map(e => e.replace(";", "/"))
+        // @TODO: handle undefined performers better
+        v = v?.map(e => e.replace(/;/g, "/"))
         this.setQuickTimeStrings(Mpeg4BoxType.ROLE, v);
     }
 
