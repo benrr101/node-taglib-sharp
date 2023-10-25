@@ -147,6 +147,7 @@ export default class AppleTag extends Tag {
     }
     /** @inheritDoc */
     public set year(v: number) {
+        Guards.uint(v, "v");
         if (v === 0) {
             this._ilstBox.removeChildByType(Mpeg4BoxType.DAY);
         } else {
@@ -219,16 +220,20 @@ export default class AppleTag extends Tag {
 
     /** @inheritDoc */
     public get dateTagged(): Date|undefined {
-        const text = this.getFirstQuickTimeString(Mpeg4BoxType.DTAG);
-        const date = new Date(text);
-        return isNaN(date.getTime()) ? undefined : date;
+        for (const text of this.getQuickTimeStrings(Mpeg4BoxType.DTAG)) {
+            const date = new Date(text);
+            if (!isNaN(date.getTime())) {
+                return date;
+            }
+        }
+
+        return undefined;
     }
     /** @inheritDoc */
     public set dateTagged(v: Date|undefined) {
         let strValue: string;
 
         if (v) {
-            // @TODO: Remove reference
             strValue = DateFormat(v, "yyyy-mm-dd HH:MM:ss");
             strValue = strValue.replace(" ", "T");
         }
@@ -386,8 +391,8 @@ export default class AppleTag extends Tag {
     }
     /** @inheritDoc */
     public set replayGainTrackGain(v: number) {
-        const text = `${v.toFixed(2)} dB`;
-        this.setItunesStrings("com.apple.iTunes", "REPLAYGAIN_TRACK_GAIN", text);
+        const value = Number.isNaN(v) ? undefined : `${v.toFixed(2)} dB`;
+        this.setItunesStrings("com.apple.iTunes", "REPLAYGAIN_TRACK_GAIN", value);
     }
 
     /** @inheritDoc */
@@ -397,7 +402,7 @@ export default class AppleTag extends Tag {
     }
     /** @inheritDoc */
     public set replayGainTrackPeak(v: number) {
-        const text = v.toFixed(6);
+        const text = Number.isNaN(v) ? undefined : v.toFixed(6);
         this.setItunesStrings("com.apple.iTunes", "REPLAYGAIN_TRACK_PEAK", text);
     }
 
@@ -416,8 +421,8 @@ export default class AppleTag extends Tag {
         return Number.parseFloat(text);
     }
     public set replayGainAlbumGain(v: number) {
-        const text = `${v.toFixed(2)} dB`;
-        this.setItunesStrings("com.apple.iTunes", "REPLAYGAIN_ALBUM_GAIN", text);
+        const value = Number.isNaN(v) ? undefined : `${v.toFixed(2)} dB`;
+        this.setItunesStrings("com.apple.iTunes", "REPLAYGAIN_ALBUM_GAIN", value);
     }
 
     /** @inheritDoc */
@@ -427,7 +432,7 @@ export default class AppleTag extends Tag {
     }
     /** @inheritDoc */
     public set replayGainAlbumPeak(v: number) {
-        const text = Number(v).toFixed(6);
+        const text = Number.isNaN(v) ? undefined : v.toFixed(6);
         this.setItunesStrings("com.apple.iTunes", "REPLAYGAIN_ALBUM_PEAK", text);
     }
 
@@ -487,10 +492,14 @@ export default class AppleTag extends Tag {
     }
 
     /** @inheritDoc */
-    public get isCompilation(): boolean { return this.getFirstQuickTimeData(Mpeg4BoxType.CPIL).toUint() !== 0; }
+    public get isCompilation(): boolean {
+        const data = this.getFirstQuickTimeData(Mpeg4BoxType.CPIL);
+        return !!data && data.toUint() !== 0;
+    }
     /** @inheritDoc */
     public set isCompilation(v: boolean) {
-        this.setQuickTimeData(Mpeg4BoxType.CPIL, [ByteVector.fromByte(v ? 1 : 0)], AppleDataBoxFlagType.ForTempo);
+        const data = v ? [ByteVector.fromByte(1)] : [];
+        this.setQuickTimeData(Mpeg4BoxType.CPIL, data, AppleDataBoxFlagType.ForTempo);
     }
 
     /** @inheritDoc */

@@ -2,17 +2,20 @@ import * as TypeMoq from "typemoq";
 import {suite, test} from "@testdeck/mocha";
 import {assert} from "chai";
 
-import {TagTesters, Testers} from "../utilities/testers";
-import IsoUserDataBox from "../../src/mpeg4/boxes/isoUserDataBox";
-import AppleTag from "../../src/mpeg4/appleTag";
-import {ByteVector, IPicture, Mpeg4BoxType, PictureType, StringType, TagTypes} from "../../src";
-import IsoMetaBox from "../../src/mpeg4/boxes/isoMetaBox";
-import Mpeg4HandlerType from "../../src/mpeg4/mpeg4HandlerType";
-import AppleItemListBox from "../../src/mpeg4/boxes/appleItemListBox";
-import PropertyTests from "../utilities/propertyTests";
-import AppleAnnotationBox from "../../src/mpeg4/boxes/appleAnnotationBox";
-import {AppleDataBox, AppleDataBoxFlagType} from "../../src/mpeg4/boxes/appleDataBox";
 import AppleAdditionalInfoBox from "../../src/mpeg4/boxes/appleAdditionalInfoBox";
+import AppleAnnotationBox from "../../src/mpeg4/boxes/appleAnnotationBox";
+import AppleItemListBox from "../../src/mpeg4/boxes/appleItemListBox";
+import AppleTag from "../../src/mpeg4/appleTag";
+import IsoMetaBox from "../../src/mpeg4/boxes/isoMetaBox";
+import IsoUserDataBox from "../../src/mpeg4/boxes/isoUserDataBox";
+import PropertyTests from "../utilities/propertyTests";
+import Mpeg4BoxType from "../../src/mpeg4/mpeg4BoxType";
+import Mpeg4HandlerType from "../../src/mpeg4/mpeg4HandlerType";
+import {AppleDataBox, AppleDataBoxFlagType} from "../../src/mpeg4/boxes/appleDataBox";
+import {ByteVector, StringType} from "../../src/byteVector";
+import {IPicture, PictureType} from "../../src/picture";
+import {TagTesters, Testers} from "../utilities/testers";
+import {TagTypes} from "../../src/tag";
 
 @suite class AppleTag_ConstructorTests {
     @test
@@ -231,7 +234,68 @@ import AppleAdditionalInfoBox from "../../src/mpeg4/boxes/appleAdditionalInfoBox
         assert.isEmpty(dataBoxes);
     }
 
-    // @TODO: Year
+    @test
+    public year_invalid() {
+        // Arrange
+        const testTag = this.getEmptyTag().tag;
+
+        // Act / Assert
+        Testers.testUint((v) => testTag.year = v);
+    }
+
+    @test
+    public year_empty_returnsZero() {
+        // Arrange
+        const testTag = this.getEmptyTag().tag;
+
+        // Act / Assert
+        assert.strictEqual(testTag.year, 0);
+    }
+
+    @test
+    public year_roundTripFromEmpty() {
+        // Arrange
+        const testTag = this.getEmptyTag();
+
+        // Act / Assert
+        PropertyTests.propertyRoundTrip((v) => testTag.tag.year = v, () => testTag.tag.year, 123);
+        this.assertQuickTimeBox(testTag.ilst, Mpeg4BoxType.DAY, ByteVector.fromString("123", StringType.UTF8));
+    }
+
+    @test
+    public year_multipleBoxes() {
+        // Arrange
+        const box1 = this.getQuickTimeBox(Mpeg4BoxType.DAY, ByteVector.fromString("asdf", StringType.UTF8));
+        const box2 = this.getQuickTimeBox(Mpeg4BoxType.DAY, ByteVector.fromString("123456", StringType.UTF8));
+        const box3 = this.getQuickTimeBox(Mpeg4BoxType.DAY, ByteVector.fromString("234", StringType.UTF8));
+        const testTag = this.getEmptyTag([box1.box, box2.box, box3.box]);
+
+        // Act / Assert
+        assert.strictEqual(testTag.tag.year, 1234);
+    }
+
+    @test
+    public year_setMultipleBoxes() {
+        // Arrange
+        const box1 = this.getQuickTimeBox(Mpeg4BoxType.DAY, ByteVector.fromString("1234", StringType.UTF8));
+        const testTag = this.getEmptyTag([box1.box, box1.box, box1.box]);
+
+        // Act / Assert
+        PropertyTests.propertyRoundTrip((v) => testTag.tag.year = v, () => testTag.tag.year, 234);
+        assert.strictEqual(testTag.tag.year, 234)
+        this.assertQuickTimeBox(testTag.ilst, Mpeg4BoxType.DAY, ByteVector.fromString("234", StringType.UTF8));
+    }
+
+    @test
+    public year_setZero_clearsMultiple() {
+        // Arrange
+        const box1 = this.getQuickTimeBox(Mpeg4BoxType.DAY, ByteVector.fromString("1234", StringType.UTF8));
+        const testTag = this.getEmptyTag([box1.box, box1.box, box1.box]);
+
+        // Act / Assert
+        PropertyTests.propertyRoundTrip((v) => testTag.tag.year = v, () => testTag.tag.year, 0);
+        assert.isEmpty(testTag.ilst.children);
+    }
 
     @test
     public track() {
@@ -265,7 +329,103 @@ import AppleAdditionalInfoBox from "../../src/mpeg4/boxes/appleAdditionalInfoBox
         this.testQuickTimeString((t, v) => t.grouping = v, (t) => t.grouping, Mpeg4BoxType.GRP);
     }
 
-    // @TODO: BPM
+    @test
+    public bpm_invalid() {
+        // Arrange
+        const testTag = this.getEmptyTag().tag;
+
+        // Act / Assert
+        Testers.testUint((v) => testTag.beatsPerMinute = v);
+    }
+
+    @test
+    public bpm_empty_returnsZero() {
+        // Arrange
+        const testTag = this.getEmptyTag().tag;
+
+        // Act / Assert
+        assert.strictEqual(testTag.beatsPerMinute, 0);
+    }
+
+    @test
+    public bpm_roundTripFromEmpty() {
+        // Arrange
+        const testTag = this.getEmptyTag();
+
+        // Act / Assert
+        PropertyTests.propertyRoundTrip((v) => testTag.tag.beatsPerMinute = v, () => testTag.tag.beatsPerMinute, 138);
+        this.assertQuickTimeBox(
+            testTag.ilst,
+            Mpeg4BoxType.TMPO,
+            ByteVector.fromUshort(138),
+            AppleDataBoxFlagType.ForTempo
+        );
+    }
+
+    @test
+    public bpm_multipleBoxes() {
+        // Arrange
+        const box1 = this.getQuickTimeBox(
+            Mpeg4BoxType.TMPO,
+            ByteVector.fromUshort(123),
+            AppleDataBoxFlagType.ContainsText
+        );
+        const box2 = this.getQuickTimeBox(
+            Mpeg4BoxType.TMPO,
+            ByteVector.fromUshort(234),
+            AppleDataBoxFlagType.ContainsData
+        );
+        const box3 = this.getQuickTimeBox(
+            Mpeg4BoxType.TMPO,
+            ByteVector.fromUshort(345),
+            AppleDataBoxFlagType.ForTempo
+        );
+        const box4 = this.getQuickTimeBox(
+            Mpeg4BoxType.TMPO,
+            ByteVector.fromUshort(456),
+            AppleDataBoxFlagType.ForTempo
+        );
+        const testTag = this.getEmptyTag([box1.box, box2.box, box3.box, box4.box]);
+
+        // Act / Assert
+        assert.strictEqual(testTag.tag.beatsPerMinute, 345);
+    }
+
+    @test
+    public bpm_setMultipleBoxes() {
+        // Arrange
+        const box1 = this.getQuickTimeBox(
+            Mpeg4BoxType.TMPO,
+            ByteVector.fromUshort(1234),
+            AppleDataBoxFlagType.ForTempo
+        );
+        const testTag = this.getEmptyTag([box1.box, box1.box, box1.box]);
+
+        // Act / Assert
+        PropertyTests.propertyRoundTrip((v) => testTag.tag.beatsPerMinute = v, () => testTag.tag.beatsPerMinute, 138);
+        assert.strictEqual(testTag.tag.beatsPerMinute, 138)
+        this.assertQuickTimeBox(
+            testTag.ilst,
+            Mpeg4BoxType.TMPO,
+            ByteVector.fromUshort(138),
+            AppleDataBoxFlagType.ForTempo
+        );
+    }
+
+    @test
+    public bpm_setZero_clearsMultiple() {
+        // Arrange
+        const box1 = this.getQuickTimeBox(
+            Mpeg4BoxType.TMPO,
+            ByteVector.fromUshort(1234),
+            AppleDataBoxFlagType.ForTempo
+        );
+        const testTag = this.getEmptyTag([box1.box, box1.box, box1.box]);
+
+        // Act / Assert
+        PropertyTests.propertyRoundTrip((v) => testTag.tag.beatsPerMinute = v, () => testTag.tag.beatsPerMinute, 0);
+        assert.isEmpty(testTag.ilst.children);
+    }
 
     @test
     public conductor() {
@@ -277,7 +437,93 @@ import AppleAdditionalInfoBox from "../../src/mpeg4/boxes/appleAdditionalInfoBox
         this.testQuickTimeString((t, v) => t.copyright = v, (t) => t.copyright, Mpeg4BoxType.CPRT);
     }
 
-    // @TODO: date tagged
+    @test
+    public dateTagged_empty_returnsZero() {
+        // Arrange
+        const testTag = this.getEmptyTag().tag;
+
+        // Act / Assert
+        assert.isUndefined(testTag.dateTagged);
+    }
+
+    @test
+    public dateTagged_roundTripFromEmpty() {
+        // Arrange
+        const testTag = this.getEmptyTag();
+        const testValue = new Date("2023-10-21 10:46:00");
+
+        // Act / Assert
+        PropertyTests.propertyRoundTrip((v) => testTag.tag.dateTagged = v, () => testTag.tag.dateTagged, testValue);
+        this.assertQuickTimeBox(
+            testTag.ilst,
+            Mpeg4BoxType.DTAG,
+            ByteVector.fromString("2023-10-21T10:46:00", StringType.UTF8)
+        );
+    }
+
+    @test
+    public dateTagged_multipleBoxes() {
+        // Arrange
+        const box1 = this.getQuickTimeBox(
+            Mpeg4BoxType.DTAG,
+            ByteVector.fromString("asdf", StringType.UTF8)
+        );
+        const box2 = this.getQuickTimeBox(
+            Mpeg4BoxType.DTAG,
+            ByteVector.fromString("2023-10-21T10:46:00", StringType.UTF8)
+        );
+        const box3 = this.getQuickTimeBox(
+            Mpeg4BoxType.DTAG,
+            ByteVector.fromString("2023-10-21", StringType.UTF8)
+        );
+        const testTag = this.getEmptyTag([box1.box, box2.box, box3.box]);
+
+        // Act / Assert
+        assert.strictEqual(testTag.tag.dateTagged.getTime(), new Date("2023-10-21 10:46:00").getTime());
+    }
+
+    @test
+    public dateTagged_setMultipleBoxes() {
+        // Arrange
+        const box1 = this.getQuickTimeBox(
+            Mpeg4BoxType.DTAG,
+            ByteVector.fromString("1900-10-21T10:56:00", StringType.UTF8)
+        );
+        const testTag = this.getEmptyTag([box1.box, box1.box, box1.box]);
+        const testValue = new Date("2023-10-21 10:59:00");
+
+        // Act / Assert
+        PropertyTests.propertyRoundTrip((v) => testTag.tag.dateTagged = v, () => testTag.tag.dateTagged, testValue);
+        this.assertQuickTimeBox(
+            testTag.ilst,
+            Mpeg4BoxType.DTAG,
+            ByteVector.fromString("2023-10-21T10:59:00", StringType.UTF8)
+        );
+    }
+
+    @test
+    public dateTagged_setZero_clearsMultiple() {
+        // Arrange
+        const box1 = this.getQuickTimeBox(
+            Mpeg4BoxType.DTAG,
+            ByteVector.fromString("2021-10-21T11:04:00", StringType.UTF8)
+        );
+        const testTag = this.getEmptyTag([box1.box, box1.box, box1.box]);
+
+        // Act / Assert
+        PropertyTests.propertyRoundTrip(
+            (v) => testTag.tag.dateTagged = v,
+            () => testTag.tag.dateTagged,
+            undefined
+        );
+        PropertyTests.propertyNormalized(
+            (v) => testTag.tag.dateTagged = v,
+            () => testTag.tag.dateTagged,
+            null,
+            undefined
+        );
+        assert.isEmpty(testTag.ilst.children);
+    }
 
     @test
     public albumArtistsSort() {
@@ -398,7 +644,45 @@ import AppleAdditionalInfoBox from "../../src/mpeg4/boxes/appleAdditionalInfoBox
         );
     }
 
-    // @TODO Replay gain
+    @test
+    public replayGainTrackGainTest() {
+        this.testReplayGainGain(
+            (t, v) => t.replayGainTrackGain = v,
+            (t) => t.replayGainTrackGain,
+            "com.apple.iTunes",
+            "REPLAYGAIN_TRACK_GAIN"
+        );
+    }
+
+    @test
+    public replayGainTrackPeakTest() {
+        this.testReplayGainPeak(
+            (t, v) => t.replayGainTrackPeak = v,
+            (t) => t.replayGainTrackPeak,
+            "com.apple.iTunes",
+            "REPLAYGAIN_TRACK_PEAK"
+        );
+    }
+
+    @test
+    public replayGainAlbumGainTest() {
+        this.testReplayGainGain(
+            (t, v) => t.replayGainAlbumGain = v,
+            (t) => t.replayGainAlbumGain,
+            "com.apple.iTunes",
+            "REPLAYGAIN_ALBUM_GAIN"
+        );
+    }
+
+    @test
+    public replayGainAlbumPeakTest() {
+        this.testReplayGainPeak(
+            (t, v) => t.replayGainAlbumPeak = v,
+            (t) => t.replayGainAlbumPeak,
+            "com.apple.iTunes",
+            "REPLAYGAIN_ALBUM_PEAK"
+        );
+    }
 
     @test
     public initialKey() {
@@ -440,8 +724,16 @@ import AppleAdditionalInfoBox from "../../src/mpeg4/boxes/appleAdditionalInfoBox
         );
     }
 
-    @test
-    public pictures() {
+    public pictures_empty() {
+        // Arrange
+        const tag = this.getEmptyTag();
+
+        // Act / Assert
+        assert.isOk(tag.tag.pictures);
+        assert.isEmpty(tag.tag.pictures);
+    }
+
+    public pictures_roundTrip() {
         // Arrange
         const tag = this.getEmptyTag();
         const mockPicture1 = TypeMoq.Mock.ofType<IPicture>();
@@ -453,16 +745,10 @@ import AppleAdditionalInfoBox from "../../src/mpeg4/boxes/appleAdditionalInfoBox
         mockPicture2.setup((p) => p.type).returns(() => PictureType.NotAPicture);
         mockPicture2.setup((p) => p.data).returns(() => ByteVector.fromString("bux", StringType.UTF8));
 
-        // TEST CASE 1: Pictures is empty on empty tag ---------------------
-        // Act / Assert
-        assert.ok(tag.tag.pictures);
-        assert.isEmpty(tag.tag.pictures);
-
-        // TEST CASE 2: Pictures are stored after setting them -------------
         // Act
         tag.tag.pictures = [mockPicture1.object, mockPicture2.object];
 
-         // Assert
+        // Assert
         const pictures = tag.tag.pictures;
         assert.strictEqual(pictures.length, 2);
         assert.isUndefined(pictures[0].description);
@@ -480,8 +766,15 @@ import AppleAdditionalInfoBox from "../../src/mpeg4/boxes/appleAdditionalInfoBox
                 {value: mockPicture2.object.data, flags: AppleDataBoxFlagType.ContainsData}
             ]
         );
+    }
 
-        // TEST CASE 3: Pictures are cleared after setting them as undefined
+    @test
+    public pictures_clear() {
+        // Arrange
+        const tag = this.getEmptyTag();
+        const mockPicture1 = TypeMoq.Mock.ofType<IPicture>();
+        tag.tag.pictures = [mockPicture1.object, mockPicture1.object, mockPicture1.object];
+
         // Act / Assert
         PropertyTests.propertyNormalized((v) => tag.tag.pictures = v, () => tag.tag.pictures, undefined, []);
         PropertyTests.propertyNormalized((v) => tag.tag.pictures = v, () => tag.tag.pictures, null, []);
@@ -489,6 +782,128 @@ import AppleAdditionalInfoBox from "../../src/mpeg4/boxes/appleAdditionalInfoBox
 
         assert.isEmpty(tag.ilst.children);
     }
+
+    @test
+    public pictures_jpeg() {
+        // Arrange
+        const tag = this.getEmptyTag();
+        const mockPicture = TypeMoq.Mock.ofType<IPicture>();
+        mockPicture.setup((p) => p.description).returns(() => "foo");
+        mockPicture.setup((p) => p.type).returns(() => PictureType.ColoredFish);
+        mockPicture.setup((p) => p.mimeType).returns(() => "image/jpeg");
+        mockPicture.setup((p) => p.data).returns(() => ByteVector.fromString("foo", StringType.UTF8));
+
+        // At
+        tag.tag.pictures = [mockPicture.object];
+
+        // Assert
+        const pictures = tag.tag.pictures;
+        assert.strictEqual(pictures.length, 1);
+        assert.isUndefined(pictures[0].description);
+        assert.strictEqual(pictures[0].type, PictureType.NotAPicture);
+        Testers.bvEqual(pictures[0].data, mockPicture.object.data);
+
+        this.assertQuickTimeBox(
+            tag.ilst,
+            Mpeg4BoxType.COVR,
+            mockPicture.object.data,
+            AppleDataBoxFlagType.ContainsJpegData
+        );
+    }
+
+    @test
+    public pictures_png() {
+        // Arrange
+        const tag = this.getEmptyTag();
+        const mockPicture = TypeMoq.Mock.ofType<IPicture>();
+        mockPicture.setup((p) => p.description).returns(() => "foo");
+        mockPicture.setup((p) => p.type).returns(() => PictureType.ColoredFish);
+        mockPicture.setup((p) => p.mimeType).returns(() => "image/png");
+        mockPicture.setup((p) => p.data).returns(() => ByteVector.fromString("foo", StringType.UTF8));
+
+        // At
+        tag.tag.pictures = [mockPicture.object];
+
+        // Assert
+        const pictures = tag.tag.pictures;
+        assert.strictEqual(pictures.length, 1);
+        assert.isUndefined(pictures[0].description);
+        assert.strictEqual(pictures[0].type, PictureType.NotAPicture);
+        Testers.bvEqual(pictures[0].data, mockPicture.object.data);
+
+        this.assertQuickTimeBox(
+            tag.ilst,
+            Mpeg4BoxType.COVR,
+            mockPicture.object.data,
+            AppleDataBoxFlagType.ContainsPngData
+        );
+    }
+
+    @test
+    public pictures_bmp() {
+        // Arrange
+        const tag = this.getEmptyTag();
+        const mockPicture = TypeMoq.Mock.ofType<IPicture>();
+        mockPicture.setup((p) => p.description).returns(() => "foo");
+        mockPicture.setup((p) => p.type).returns(() => PictureType.ColoredFish);
+        mockPicture.setup((p) => p.mimeType).returns(() => "image/x-windows-bmp");
+        mockPicture.setup((p) => p.data).returns(() => ByteVector.fromString("foo", StringType.UTF8));
+
+        // At
+        tag.tag.pictures = [mockPicture.object];
+
+        // Assert
+        const pictures = tag.tag.pictures;
+        assert.strictEqual(pictures.length, 1);
+        assert.isUndefined(pictures[0].description);
+        assert.strictEqual(pictures[0].type, PictureType.NotAPicture);
+        Testers.bvEqual(pictures[0].data, mockPicture.object.data);
+
+        this.assertQuickTimeBox(
+            tag.ilst,
+            Mpeg4BoxType.COVR,
+            mockPicture.object.data,
+            AppleDataBoxFlagType.ContainsBmpData
+        );
+    }
+
+    @test
+    public isCompilation_empty() {
+        // Arrange
+        const testTag = this.getEmptyTag();
+
+        // Act / Assert
+        assert.isFalse(testTag.tag.isCompilation);
+    }
+
+    @test
+    public isCompilation_roundTripFromEmpty() {
+        // Arrange
+        const testTag = this.getEmptyTag();
+
+        // Act / Assert
+        PropertyTests.propertyRoundTrip((v) => testTag.tag.isCompilation = v, () => testTag.tag.isCompilation, true);
+        this.assertQuickTimeBox(
+            testTag.ilst,
+            Mpeg4BoxType.CPIL,
+            ByteVector.fromByte(0x01),
+            AppleDataBoxFlagType.ForTempo
+        );
+    }
+
+    @test
+    public isCompilation_falseClears() {
+        // Arrange
+        const box = this.getQuickTimeBox(Mpeg4BoxType.CPIL, ByteVector.fromByte(0x01), AppleDataBoxFlagType.ForTempo);
+        const testTag = this.getEmptyTag([box.box, box.box]);
+
+        // Act / Assert
+        PropertyTests.propertyRoundTrip((v) => testTag.tag.isCompilation = v, () => testTag.tag.isCompilation, false);
+        assert.isOk(testTag.ilst.children);
+        assert.isEmpty(testTag.ilst.children);
+    }
+
+    // #region TESTERS
 
     private testItunesString(
         setter: (t: AppleTag, v: string) => void,
@@ -826,6 +1241,101 @@ import AppleAdditionalInfoBox from "../../src/mpeg4/boxes/appleAdditionalInfoBox
         assert.isEmpty(childBoxes);
     }
 
+    private testReplayGainGain(
+        setter: (t: AppleTag, v: number) => void,
+        getter: (t: AppleTag) => number,
+        mean: string,
+        name: string,
+    ) {
+        // TEST CASE 1: Empty ----------------------------------------------
+        // Arrange
+        const testTag1 = this.getEmptyTag();
+
+        // Act / Assert
+        assert.isNaN(getter(testTag1.tag));
+
+        // TEST CASE 2: NaN value returns NaN ------------------------------
+        // Arrange
+        const box1 = this.getItunesBox(mean, name, "nan");
+        const testTag2 = this.getEmptyTag([box1.box]);
+
+        // Act / Assert
+        assert.isNaN(getter(testTag2.tag));
+
+        // TEST CASE 3: Round trip from zero -------------------------------
+        PropertyTests.propertyRoundTrip((v) => setter(testTag1.tag, v),() => getter(testTag1.tag),1.23);
+        this.assertItunesBox(testTag1.ilst, mean, name, "1.23 dB");
+
+        // TEST CASE 4: Reading value without db returns value -------------
+        // Arrange
+        const box2 = this.getItunesBox(mean, name, "2.34");
+        const testTag3 = this.getEmptyTag([box2.box]);
+
+        // Act / Assert
+        assert.strictEqual(getter(testTag3.tag), 2.34);
+
+        // TEST CASE 5: Setting multiple boxes should clear them -----------
+        // Arrange
+        const testTag4 = this.getEmptyTag([box1.box, box2.box]);
+
+        // Act / Assert
+        PropertyTests.propertyRoundTrip((v) => setter(testTag4.tag, v), () => getter(testTag4.tag), 3.45);
+        this.assertItunesBox(testTag4.ilst, mean, name, "3.45 dB");
+
+        // TEST CASE 6: Setting to NaN will clear --------------------------
+        // Act / Assert
+        PropertyTests.propertyRoundTrip((v) => setter(testTag4.tag, v), () => getter(testTag4.tag), NaN);
+        assert.isOk(testTag4.ilst.children);
+        assert.isEmpty(testTag4.ilst.children);
+    }
+
+    private testReplayGainPeak(
+        setter: (t: AppleTag, v: number) => void,
+        getter: (t: AppleTag) => number,
+        mean: string,
+        name: string,
+    ) {
+        // TEST CASE 1: Empty ----------------------------------------------
+        // Arrange
+        const testTag1 = this.getEmptyTag();
+
+        // Act / Assert
+        assert.isNaN(getter(testTag1.tag));
+
+        // TEST CASE 2: NaN value returns NaN ------------------------------
+        // Arrange
+        const box1 = this.getItunesBox(mean, name, "nan");
+        const testTag2 = this.getEmptyTag([box1.box]);
+
+        // Act / Assert
+        assert.isNaN(getter(testTag2.tag));
+
+        // TEST CASE 3: Round trip from zero -------------------------------
+        PropertyTests.propertyNormalized(
+            (v) => setter(testTag1.tag, v),
+            () => getter(testTag1.tag),
+            1.23456789,
+            1.234568);
+        this.assertItunesBox(testTag1.ilst, mean, name, "1.234568");
+
+        // TEST CASE 4: Setting multiple boxes should clear them -----------
+        // Arrange
+        const testTag4 = this.getEmptyTag([box1.box, box1.box]);
+
+        // Act / Assert
+        PropertyTests.propertyRoundTrip((v) => setter(testTag4.tag, v), () => getter(testTag4.tag), 3.456);
+        this.assertItunesBox(testTag4.ilst, mean, name, "3.456000");
+
+        // TEST CASE 5: Setting to NaN will clear --------------------------
+        // Act / Assert
+        PropertyTests.propertyRoundTrip((v) => setter(testTag4.tag, v), () => getter(testTag4.tag), NaN);
+        assert.isOk(testTag4.ilst.children);
+        assert.isEmpty(testTag4.ilst.children);
+    }
+
+    // #endregion
+    // #region Helpers
+
     private assertItunesBox(
         ilst: AppleItemListBox,
         mean: string,
@@ -882,7 +1392,7 @@ import AppleAdditionalInfoBox from "../../src/mpeg4/boxes/appleAdditionalInfoBox
     private assertQuickTimeBoxes(
         ilst: AppleItemListBox,
         boxType: ByteVector,
-        expectedValues: {value: ByteVector, flags: AppleDataBoxFlagType}[]
+        expectedValues: Array<{value: ByteVector, flags: AppleDataBoxFlagType}>
     ): void {
         const childBoxes = ilst.getQuickTimeDataBoxes(boxType);
         assert.isOk(childBoxes);
@@ -953,4 +1463,6 @@ import AppleAdditionalInfoBox from "../../src/mpeg4/boxes/appleAdditionalInfoBox
 
         return {box: box, dataBox: dataBox};
     }
+
+    // #endregion
 }
