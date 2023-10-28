@@ -40,7 +40,7 @@ export default class IsoMetaBox extends FullBox {
      * @returns A new instance of @see IsoMetaBox
      */
     public static fromHandler(handlerType: ByteVector, handlerName?: string): IsoMetaBox {
-        Guards.notNullOrUndefined(handlerType, "handlerType");
+        Guards.truthy(handlerType, "handlerType");
         if (handlerType.length < 4) {
             throw new Error("The handler type must be four bytes long.");
         }

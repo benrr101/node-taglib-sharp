@@ -128,7 +128,7 @@ export default class Mpeg4BoxHeader {
             return header;
         }
 
-        Guards.notNullOrUndefined(extendedType, "extendedType");
+        Guards.truthy(extendedType, "extendedType");
         Guards.equals(extendedType.length, 16, "extendedType.length");
 
         header._boxSize = 24;
