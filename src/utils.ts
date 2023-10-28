@@ -155,10 +155,28 @@ export class FileUtils {
 
 export class ArrayUtils {
     public static remove<T>(array: T[], callbackFn: (e: T, i: number) => boolean): void {
-        let i = this.length;
+        let i = array.length;
         while (i--) {
             if (callbackFn(array[i], i)) {
                 array.splice(i, 1);
+            }
+        }
+    }
+
+    public static isFalsyOrEmpty(array: unknown[]): boolean {
+        return !array || array.length === 0;
+    }
+
+    public static safePush<T extends object>(array: T[], element: T): void {
+        if (element) {
+            array.push(element);
+        }
+    }
+
+    public static safePushRange<T extends object>(array: T[], elements: T[]): void {
+        if (elements) {
+            for (const element of elements) {
+                ArrayUtils.safePush(array, element);
             }
         }
     }
@@ -171,6 +189,7 @@ export class NumberUtils {
     public static readonly BIG_ONE_THOUSAND = BigInt(1000);
     public static readonly TICKS_PER_MILLISECOND_BIG = BigInt(10000);
     public static readonly TICKS_PER_MILLISECOND_NUM = 10000;
+    public static readonly MAX_UINT = 4294967295;
 
     public static bigPow(x: bigint, y: number): bigint {
         Guards.uint(y, "y");

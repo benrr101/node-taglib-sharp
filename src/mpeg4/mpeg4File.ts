@@ -1,119 +1,28 @@
-import { ByteVector } from "../byteVector";
+import AppleTag from "./appleTag";
+import IsoChunkLargeOffsetBox from "./boxes/isoChunkLargeOffsetBox";
+import IsoChunkOffsetBox from "./boxes/isoChunkOffsetBox";
+import IsoUserDataBox from "./boxes/isoUserDataBox";
+import Mpeg4BoxRenderer from "./mpeg4BoxRenderer";
+import Mpeg4BoxType from "./mpeg4BoxType";
+import Mpeg4FileParser from "./mpeg4FileParser";
 import { File, FileAccessMode, ReadStyle } from "../file";
 import { IFileAbstraction } from "../fileAbstraction";
 import { Properties } from "../properties";
 import { Tag, TagTypes } from "../tag";
 import { NumberUtils } from "../utils";
-import AppleTag from "./appleTag";
-import {
-    IsoAudioSampleEntry,
-    IsoChunkLargeOffsetBox,
-    IsoChunkOffsetBox,
-    IsoMovieHeaderBox,
-    IsoUserDataBox,
-    IsoVisualSampleEntry,
-} from "./mpeg4Boxes";
-import Mpeg4BoxHeader from "./mpeg4BoxHeader";
-import Mpeg4BoxType from "./mpeg4BoxType";
-import Mpeg4FileParser from "./mpeg4FileParser";
 
 /**
  * Provides tagging and properties support for Mpeg4 files.
  */
 export default class Mpeg4File extends File {
-    /**
-     * Contains the Apple tag.
-     */
-    private _tag: AppleTag;
-
-    /**
-     * Contains the media properties.
-     */
-    private _properties: Properties;
-
-    /**
-     * Contains the UDTA Boxes
-     */
     private readonly _udtaBoxes: IsoUserDataBox[] = [];
-
-    /**
-     * The position at which the invariant portion of the current instance begins.
-     */
-    private _invariantStartPosition: number = -1;
-
-    /**
-     * The position at which the invariant portion of the current instance ends.
-     */
-    private _invariantEndPosition: number = -1;
+    private _tag: AppleTag;
+    private _properties: Properties;
 
     /** @inheritDoc */
     public constructor(file: IFileAbstraction | string, readStyle: ReadStyle) {
         super(file);
-
         this.read(readStyle);
-    }
-
-    private read(readStyle: ReadStyle): void {
-        this.mode = FileAccessMode.Read;
-
-        try {
-            // Read the file
-            const parser = new Mpeg4FileParser(this);
-
-            if ((readStyle & ReadStyle.Average) === 0) {
-                parser.parseTag();
-            } else {
-                parser.parseTagAndProperties();
-            }
-
-            this._invariantStartPosition = parser.mdatStartPosition;
-            this._invariantEndPosition = parser.mdatEndPosition;
-
-            this._udtaBoxes.push(...parser.userDataBoxes);
-
-            // Ensure our collection contains at least a single empty box
-            if (this._udtaBoxes.length === 0) {
-                const dummy = IsoUserDataBox.fromEmpty();
-                this._udtaBoxes.push(dummy);
-            }
-
-            // Check if a udta with ILST actually exists
-            if (this.isAppleTagUdtaPresent()) {
-                // There is an udta present with ILST info
-                this.tagTypesOnDisk = NumberUtils.uintOr(this.tagTypesOnDisk, TagTypes.Apple);
-            }
-
-            // Find the udta box with the Apple Tag ILST
-            let udtaBox: IsoUserDataBox = this.findAppleTagUdta();
-            if (!udtaBox) {
-                udtaBox = IsoUserDataBox.fromEmpty();
-            }
-
-            this._tag = new AppleTag(udtaBox);
-
-            // If we're not reading properties, we're done.
-            if ((readStyle & ReadStyle.Average) === 0) {
-                this.mode = FileAccessMode.Closed;
-
-                return;
-            }
-
-            // Get the movie header box.
-            const mvhd_box: IsoMovieHeaderBox = parser.movieHeaderBox;
-
-            if (!mvhd_box) {
-                this.mode = FileAccessMode.Closed;
-                throw new Error("mvhd box not found.");
-            }
-
-            const audio_sample_entry: IsoAudioSampleEntry = parser.audioSampleEntry;
-            const visual_sample_entry: IsoVisualSampleEntry = parser.visualSampleEntry;
-
-            // Read the properties.
-            this._properties = new Properties(mvhd_box.durationInMilliseconds, [audio_sample_entry, visual_sample_entry]);
-        } finally {
-            this.mode = FileAccessMode.Closed;
-        }
     }
 
     /** @inheritDoc */
@@ -134,8 +43,7 @@ export default class Mpeg4File extends File {
     public getTag(types: TagTypes, create: boolean): Tag {
         if (types === TagTypes.Apple) {
             if (!this._tag && create) {
-                let udtaBox: IsoUserDataBox = this.findAppleTagUdta();
-
+                let udtaBox = this.findAppleTagUdta();
                 if (!udtaBox) {
                     udtaBox = IsoUserDataBox.fromEmpty();
                 }
@@ -151,7 +59,7 @@ export default class Mpeg4File extends File {
 
     /** @inheritDoc */
     public removeTags(types: TagTypes): void {
-        if ((types & TagTypes.Apple) !== TagTypes.Apple || !this._tag) {
+        if (!NumberUtils.hasFlag(types, TagTypes.Apple) || !this._tag) {
             return;
         }
 
@@ -176,11 +84,8 @@ export default class Mpeg4File extends File {
             const parser = new Mpeg4FileParser(this);
             parser.parseBoxHeaders();
 
-            this._invariantStartPosition = parser.mdatStartPosition;
-            this._invariantEndPosition = parser.mdatEndPosition;
-
-            let sizeChange: number = 0;
-            let writePosition: number = 0;
+            let sizeChange: number;
+            let writePosition: number;
 
             // To avoid rewriting udta blocks which might not have been modified,
             // the code here will work correctly if:
@@ -189,18 +94,18 @@ export default class Mpeg4File extends File {
             // 2. There are multiple utdtas, but only 1 of them contains the Apple ILST box.
             // We should be OK in the vast majority of cases
 
-            let udtaBox: IsoUserDataBox = this.findAppleTagUdta();
+            let udtaBox = this.findAppleTagUdta();
 
             if (!udtaBox) {
                 udtaBox = IsoUserDataBox.fromEmpty();
             }
 
-            const tagData: ByteVector = udtaBox.render();
+            const tagData = Mpeg4BoxRenderer.renderBox(udtaBox);
 
             // If we don't have a "udta" box to overwrite...
             if (!udtaBox.parentTree || udtaBox.parentTree.length === 0) {
                 // Stick the box at the end of the moov box.
-                const moovHeader: Mpeg4BoxHeader = parser.moovTree[parser.moovTree.length - 1];
+                const moovHeader = parser.moovTree[parser.moovTree.length - 1];
                 sizeChange = tagData.length;
                 writePosition = moovHeader.position + moovHeader.totalBoxSize;
                 this.insert(tagData, writePosition, 0);
@@ -211,7 +116,7 @@ export default class Mpeg4File extends File {
                 }
             } else {
                 // Overwrite the old box.
-                const udtaHeader: Mpeg4BoxHeader = udtaBox.parentTree[udtaBox.parentTree.length - 1];
+                const udtaHeader = udtaBox.parentTree[udtaBox.parentTree.length - 1];
                 sizeChange = tagData.length - udtaHeader.totalBoxSize;
                 writePosition = udtaHeader.position;
                 this.insert(tagData, writePosition, udtaHeader.totalBoxSize);
@@ -226,18 +131,18 @@ export default class Mpeg4File extends File {
             if (sizeChange !== 0) {
                 // We may have moved the offset boxes, so we need to reread.
                 parser.parseChunkOffsets();
-                this._invariantStartPosition = parser.mdatStartPosition;
-                this._invariantEndPosition = parser.mdatEndPosition;
 
                 for (const box of parser.chunkOffsetBoxes) {
                     if (box instanceof IsoChunkLargeOffsetBox) {
-                        box.overwrite(this, sizeChange, writePosition);
-                        continue;
-                    }
+                        (<IsoChunkLargeOffsetBox>box).updatePosition(sizeChange, writePosition);
 
-                    if (box instanceof IsoChunkOffsetBox) {
-                        box.overwrite(this, sizeChange, writePosition);
-                        continue;
+                        const updatedBox = Mpeg4BoxRenderer.renderBox(box);
+                        this.insert(updatedBox, box.header.position, box.size);
+                    } else if (box instanceof IsoChunkOffsetBox) {
+                        (<IsoChunkOffsetBox>box).updatePositions(sizeChange, writePosition);
+
+                        const updatedBox = Mpeg4BoxRenderer.renderBox(box);
+                        this.insert(updatedBox, box.header.position, box.size);
                     }
                 }
             }
@@ -246,17 +151,6 @@ export default class Mpeg4File extends File {
         } finally {
             this.mode = FileAccessMode.Closed;
         }
-    }
-
-    /**
-     * Gets the position at which the invariant portion of the current instance begins.
-     */
-    public get invariantStartPosition(): number {
-        return this._invariantStartPosition;
-    }
-
-    public get invariantEndPosition(): number {
-        return this._invariantEndPosition;
     }
 
     /**
@@ -269,8 +163,8 @@ export default class Mpeg4File extends File {
         }
 
         // Multiple udta: pick out the shallowest node which has an ILst tag
-        const possibleUdtaBoxes: IsoUserDataBox[] = this.udtaBoxes
-            .filter((box) => box.getChildRecursively(Mpeg4BoxType.Ilst))
+        const possibleUdtaBoxes = this.udtaBoxes
+            .filter((box) => box.getChildRecursively(Mpeg4BoxType.ILST))
             .sort((box1, box2) => (box1.parentTree.length < box2.parentTree.length ? -1 : 1));
 
         if (possibleUdtaBoxes.length > 0) {
@@ -286,16 +180,83 @@ export default class Mpeg4File extends File {
      */
     private isAppleTagUdtaPresent(): boolean {
         for (const udtaBox of this._udtaBoxes) {
-            if (udtaBox.getChild(Mpeg4BoxType.Meta) && udtaBox.getChild(Mpeg4BoxType.Meta).getChild(Mpeg4BoxType.Ilst)) {
+            if (udtaBox.getChild(Mpeg4BoxType.META)?.getChild(Mpeg4BoxType.ILST)) {
                 return true;
             }
         }
         return false;
     }
+
+    private read(readStyle: ReadStyle): void {
+        this.mode = FileAccessMode.Read;
+
+        try {
+            // Read the file
+            const parser = new Mpeg4FileParser(this);
+
+            if ((readStyle & ReadStyle.Average) === 0) {
+                parser.parseTag();
+            } else {
+                parser.parseTagAndProperties();
+            }
+
+            this._udtaBoxes.push(...parser.userDataBoxes);
+
+            // Ensure our collection contains at least a single empty box
+            if (this._udtaBoxes.length === 0) {
+                const dummy = IsoUserDataBox.fromEmpty();
+                this._udtaBoxes.push(dummy);
+            }
+
+            // Check if a udta with ILST actually exists
+            if (this.isAppleTagUdtaPresent()) {
+                // There is an udta present with ILST info
+                this.tagTypesOnDisk = NumberUtils.uintOr(this.tagTypesOnDisk, TagTypes.Apple);
+            }
+
+            // Find the udta box with the Apple Tag ILST
+            let udtaBox = this.findAppleTagUdta();
+            if (!udtaBox) {
+                udtaBox = IsoUserDataBox.fromEmpty();
+            }
+
+            this._tag = new AppleTag(udtaBox);
+
+            // If we're not reading properties, we're done.
+            if ((readStyle & ReadStyle.Average) === 0) {
+                return;
+            }
+
+            // Get the movie header box.
+            const mvhdBox = parser.movieHeaderBox;
+
+            if (!mvhdBox) {
+                throw new Error("mvhd box not found.");
+            }
+
+            const audioSampleEntry = parser.audioSampleEntry;
+            const visualSampleEntry = parser.visualSampleEntry;
+
+            // Read the properties.
+            this._properties = new Properties(mvhdBox.durationInMilliseconds, [audioSampleEntry, visualSampleEntry]);
+        } finally {
+            this.mode = FileAccessMode.Closed;
+        }
+    }
 }
 
 // /////////////////////////////////////////////////////////////////////////
 // Register the file type
-["taglib/m4a", "taglib/m4b", "taglib/m4v", "taglib/m4p", "taglib/mp4", "audio/mp4", "audio/x-m4a", "video/mp4", "video/x-m4v"].forEach(
+[
+    "taglib/m4a",
+    "taglib/m4b",
+    "taglib/m4v",
+    "taglib/m4p",
+    "taglib/mp4",
+    "audio/mp4",
+    "audio/x-m4a",
+    "video/mp4",
+    "video/x-m4v"
+].forEach(
     (mt) => File.addFileType(mt, Mpeg4File)
 );

@@ -35,18 +35,26 @@ export enum StringType {
     /**
      * @summary The string is to be UTF-16LE encoded.
      */
-    UTF16LE = 4
+    UTF16LE = 4,
+
+    /**
+     * @summary The string is to be encoded as a hex string for each byte (eg, 0x00, 0x12, 0xAF).
+     *     Intended to be used for debugging purposes, only.
+     */
+    Hex = 5
 }
 
 /**
  * Wrapper around the `iconv-lite` library to provide string encoding and decoding functionality.
  */
 export class Encoding {
+    private static readonly HEX_ENCODING_KEY = "hex";
     private static readonly ENCODINGS = new Map<StringType, Encoding>([
         [StringType.Latin1, new Encoding("latin1")],
         [StringType.UTF8, new Encoding("utf8")],
         [StringType.UTF16BE, new Encoding("utf16-be")],
-        [StringType.UTF16LE, new Encoding("utf16-le")]
+        [StringType.UTF16LE, new Encoding("utf16-le")],
+        [StringType.Hex, new Encoding(Encoding.HEX_ENCODING_KEY)]
     ]);
 
     /**
@@ -96,6 +104,13 @@ export class Encoding {
     }
 
     public decode(data: Uint8Array): string {
+        if (this._encoding === Encoding.HEX_ENCODING_KEY) {
+            // Special case for HEX string
+            return data.reduce<string>((accum: string, currentValue) => {
+                return accum + `0x${currentValue.toString(16).padStart(2, "0")} `;
+            }, "");
+        }
+
         // @TODO: The next version of iconv-lite will add Uint8Array to the types for decode. Until
         //    then, I have word it should work w/an 'unsafe' cast. See
         //    https://github.com/ashtuchkin/iconv-lite/issues/293
