@@ -26,6 +26,7 @@ export default class Mpeg4BoxRenderer {
                 }
             }
         } else if (box.data) {
+            // @TODO: If the box generates the data property on get, we should change it to a render method.
             outputVectors.push(box.data);
         }
 
