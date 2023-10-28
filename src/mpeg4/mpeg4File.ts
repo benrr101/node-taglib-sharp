@@ -15,25 +15,13 @@ import { NumberUtils } from "../utils";
  * Provides tagging and properties support for Mpeg4 files.
  */
 export default class Mpeg4File extends File {
-    /**
-     * Contains the Apple tag.
-     */
-    private _tag: AppleTag;
-
-    /**
-     * Contains the media properties.
-     */
-    private _properties: Properties;
-
-    /**
-     * Contains the UDTA Boxes
-     */
     private readonly _udtaBoxes: IsoUserDataBox[] = [];
+    private _tag: AppleTag;
+    private _properties: Properties;
 
     /** @inheritDoc */
     public constructor(file: IFileAbstraction | string, readStyle: ReadStyle) {
         super(file);
-
         this.read(readStyle);
     }
 
@@ -71,7 +59,7 @@ export default class Mpeg4File extends File {
 
     /** @inheritDoc */
     public removeTags(types: TagTypes): void {
-        if ((types & TagTypes.Apple) !== TagTypes.Apple || !this._tag) {
+        if (!NumberUtils.hasFlag(types, TagTypes.Apple) || !this._tag) {
             return;
         }
 

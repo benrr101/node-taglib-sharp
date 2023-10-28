@@ -3,7 +3,6 @@ import Mpeg4BoxHeader from "../mpeg4BoxHeader";
 import Mpeg4BoxType from "../mpeg4BoxType";
 import {ByteVector} from "../../byteVector";
 import {File} from "../../file";
-import {Mpeg4BoxClassType} from "../mpeg4BoxClassType";
 import {Guards} from "../../utils";
 
 /**
@@ -23,17 +22,13 @@ export default class IsoUserDataBox extends Mpeg4Box {
      * Constructs and initializes a new instance of @see IsoUserDataBox with a provided header and
      * handler by reading the contents from a specified file.
      * @param header A @see Mpeg4BoxHeader object containing the header to use for the new instance.
-     * @param file A @see File object to read the contents of the box from.
-     *    new instance, or undefined if no handler applies.
      * @param handlerType Type of the handler box object containing the handler that applies to the
      *     new instance, or undefined if no handler applies.
      * @returns A new instance of @see IsoUserDataBox
      */
-    public static fromFile(file: File, header: Mpeg4BoxHeader, handlerType: ByteVector): IsoUserDataBox {
-        Guards.notNullOrUndefined(file, "file");
-
+    public static fromHeader(header: Mpeg4BoxHeader, handlerType: ByteVector): IsoUserDataBox {
         const instance = new IsoUserDataBox();
-        instance.initializeFromHeaderAndHandler(header, handlerType);
+        instance.initializeFromHeader(header, handlerType);
 
         return instance;
     }
@@ -48,9 +43,6 @@ export default class IsoUserDataBox extends Mpeg4Box {
 
         return instance;
     }
-
-    /** @inheritDoc */
-    public get boxClassType(): Mpeg4BoxClassType { return Mpeg4BoxClassType.IsoUserDataBox; }
 
     /**
      * Gets the box headers for the current "udta" box and all parent boxes up to the top of the file.

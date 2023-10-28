@@ -1,39 +1,19 @@
 import Mpeg4BoxHeader from "../mpeg4BoxHeader";
 import {ByteVector} from "../../byteVector";
 import {File} from "../../file";
-import {Mpeg4BoxClassType} from "../mpeg4BoxClassType";
 import {ArrayUtils, Guards} from "../../utils";
 
 /**
  * This class provides a generic implementation of a ISO/IEC 14496-12 box.
  */
 export default abstract class Mpeg4Box {
+    private readonly _children: Mpeg4Box[];
+
     private _data: ByteVector;
+    private _handlerType: ByteVector;
     private _header: Mpeg4BoxHeader;
     private _baseDataPosition: number;
     private _dataPosition: number;
-
-    /**
-     * Gets the position of the data contained in the current instance, after any box specific headers.
-     */
-    public get dataPosition(): number {
-        return this._dataPosition;
-    }
-
-    /**
-     * The type of the handler box that applies to the current instance.
-     */
-    private _handlerType: ByteVector;
-
-    /**
-     * The children of the current instance.
-     */
-    private _children: Mpeg4Box[];
-
-    /**
-     * Gets a flag indicating which type of box the current instance is.
-     */
-    public abstract get boxClassType(): Mpeg4BoxClassType;
 
     /**
      * Protected constructor to force construction via static functions.
@@ -48,19 +28,13 @@ export default abstract class Mpeg4Box {
      * @param handlerType Type of the handler box object containing the handler that applies to the
      * new instance, or undefined if no handler applies.
      */
-    protected initializeFromHeaderAndHandler(header: Mpeg4BoxHeader, handlerType: ByteVector): void {
+    protected initializeFromHeader(header: Mpeg4BoxHeader, handlerType?: ByteVector): void {
+        Guards.truthy(header, "header");
+
         this._header = header;
         this._baseDataPosition = header.position + header.headerSize;
         this._dataPosition = this._baseDataPosition;
         this._handlerType = handlerType;
-    }
-
-    /**
-     * Initializes a new instance of @see Mpeg4Box with a specified header.
-     * @param header A @see Mpeg4BoxHeader object describing the new instance.
-     */
-    protected initializeFromHeader(header: Mpeg4BoxHeader): void {
-        return this.initializeFromHeaderAndHandler(header, undefined);
     }
 
     /**
@@ -88,11 +62,20 @@ export default abstract class Mpeg4Box {
      * Gets the data contained in the current instance.
      */
     public get data(): ByteVector { return this._data; }
-
     /**
      * Sets the data contained in the current instance.
      */
-    public set data(v: ByteVector) { this._data = v; }
+    public set data(v: ByteVector) {
+        Guards.truthy(v, "v");
+        this._data = v;
+    }
+
+    /**
+     * Gets the position of the data contained in the current instance, after any box specific headers.
+     */
+    public get dataPosition(): number {
+        return this._dataPosition;
+    }
     /**
      * Gets the size of the data contained in the current instance, minus the size of any box specific headers.
      */
@@ -127,6 +110,7 @@ export default abstract class Mpeg4Box {
      * @param box A @see Mpeg4Box object to add to the current instance.
      */
     public addChild(box: Mpeg4Box): void {
+        Guards.truthy(box, "box");
         this._children.push(box);
     }
 
@@ -140,7 +124,8 @@ export default abstract class Mpeg4Box {
     /**
      * Gets a child box from the current instance by finding a matching box type.
      * @param type  A @see ByteVector object containing the box type to match.
-     * @returns  A @see Mpeg4Box object containing the matched box, or undefined if no matching box was found.
+     * @param predicate Optional predicate to filter boxes with the provided type.
+     * @returns A @see Mpeg4Box object containing the matched box, or undefined if no matching box was found.
      */
     public getChild<TBox extends Mpeg4Box>(type: ByteVector, predicate?: (b: TBox) => boolean): TBox {
         return <TBox>this._children.find((b) => {
@@ -175,6 +160,7 @@ export default abstract class Mpeg4Box {
     /**
      * Gets all child boxes from the current instance by finding a matching box type.
      * @param type A @see ByteVector object containing the box type to match.
+     * @param predicate Optional predicate to filter boxes with the provided type.
      * @returns A @see Mpeg4Box[] object containing the matched box, or undefined if no matching boxes was found.
      */
     public getChildren<TBox extends Mpeg4Box>(type: ByteVector, predicate?: (b: TBox) => boolean): TBox[] {
@@ -207,6 +193,10 @@ export default abstract class Mpeg4Box {
         }
     }
 
+    /**
+     * Removes all specified boxes from the current instance.
+     * @param boxes Boxes to remove from the current instance.
+     */
     public removeChildrenByBox(boxes: Mpeg4Box[]): void {
         if (ArrayUtils.isFalsyOrEmpty(boxes)) {
             // Nothing to do.
@@ -224,7 +214,7 @@ export default abstract class Mpeg4Box {
      * @returns A @see ByteVector object containing the data read from the file.
      */
     public loadData(file: File): ByteVector {
-        Guards.notNullOrUndefined(file, "file");
+        Guards.truthy(file, "file");
 
         file.seek(this.dataPosition);
 
@@ -239,8 +229,9 @@ export default abstract class Mpeg4Box {
      * @returns The value of the data position before the increase.
      */
     public increaseDataPosition(value: number): number {
-        const dataPositionBeforeIncrease = this._dataPosition;
+        Guards.safeUint(value, "value");
 
+        const dataPositionBeforeIncrease = this._dataPosition;
         this._dataPosition += value;
 
         return dataPositionBeforeIncrease;

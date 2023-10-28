@@ -2,9 +2,16 @@ import IsoFreeSpaceBox from "./boxes/isoFreeSpaceBox";
 import Mpeg4Box from "./boxes/mpeg4Box";
 import Mpeg4BoxType from "./mpeg4BoxType";
 import {ByteVector} from "../byteVector";
+import {Guards} from "../utils";
 
+/**
+ * Renderer for {@link Mpeg4Box} objects.
+ * @remarks Written this way to break a circular dependency from child {@link Mpeg4Box} classes and
+ *     the root {@link Mpeg4Box} class.
+ */
 export default class Mpeg4BoxRenderer {
     public static renderBox(box: Mpeg4Box): ByteVector {
+        Guards.truthy(box, "box");
 
         let freeFound = false;
         const outputVectors: ByteVector[] = [];

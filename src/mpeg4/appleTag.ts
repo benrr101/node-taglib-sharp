@@ -204,6 +204,7 @@ export default class AppleTag extends Tag {
     }
     /** @inheritDoc */
     public set beatsPerMinute(v: number) {
+        Guards.uint(v, "v");
         const data = v === 0 ? undefined : [ByteVector.fromUshort(v)];
         this.setQuickTimeData(Mpeg4BoxType.TMPO, data, AppleDataBoxFlagType.ForTempo);
     }
@@ -381,13 +382,7 @@ export default class AppleTag extends Tag {
             text = text.substring(0, text.length - 2).trim();
         }
 
-        const value = Number.parseFloat(text);
-
-        if (!Number.isNaN(value)) {
-            return value;
-        }
-
-        return NaN;
+        return Number.parseFloat(text);
     }
     /** @inheritDoc */
     public set replayGainTrackGain(v: number) {
@@ -598,6 +593,9 @@ export default class AppleTag extends Tag {
     }
 
     private setFractionalNumber(boxType: ByteVector, numerator: number, denominator: number): void {
+        Guards.uint(numerator, "numerator");
+        Guards.uint(denominator, "denominator");
+
         const data = numerator === 0 && denominator === 0
             ? undefined
             : [ByteVector.concatenate(

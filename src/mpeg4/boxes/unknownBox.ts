@@ -1,9 +1,7 @@
 import Mpeg4Box from "./mpeg4Box";
 import Mpeg4BoxHeader from "../mpeg4BoxHeader";
-import {File} from "../../file";
-import {Mpeg4BoxClassType} from "../mpeg4BoxClassType";
-import {Guards} from "../../utils";
 import {ByteVector} from "../../byteVector";
+import {File} from "../../file";
 
 export default class UnknownBox extends Mpeg4Box {
     /**
@@ -22,16 +20,11 @@ export default class UnknownBox extends Mpeg4Box {
      *     new instance, or undefined if no handler applies.
      * @returns A new instance of @see UnknownBox
      */
-    public static fromHeaderFileAndHandler(header: Mpeg4BoxHeader, file: File, handlerType: ByteVector): UnknownBox {
-        Guards.notNullOrUndefined(file, "file");
-
+    public static fromFile(header: Mpeg4BoxHeader, file: File, handlerType: ByteVector): UnknownBox {
         const instance = new UnknownBox();
-        instance.initializeFromHeaderAndHandler(header, handlerType);
+        instance.initializeFromHeader(header, handlerType);
         instance.data = file.readBlock(instance.dataSize > 0 ? instance.dataSize : 0);
 
         return instance;
     }
-
-    /** @inheritDoc */
-    public get boxClassType(): Mpeg4BoxClassType { return Mpeg4BoxClassType.UnknownBox; }
 }

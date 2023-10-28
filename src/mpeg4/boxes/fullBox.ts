@@ -29,9 +29,10 @@ export default abstract class FullBox extends Mpeg4Box {
      *     new instance, or undefined if no handler applies.
      */
     protected initializeFromHeaderFileAndHandler(header: Mpeg4BoxHeader, file: File, handlerType: ByteVector): void {
-        Guards.notNullOrUndefined(file, "file");
+        Guards.truthy(header, "header");
+        Guards.truthy(file, "file");
 
-        this.initializeFromHeaderAndHandler(header, handlerType);
+        this.initializeFromHeader(header, handlerType);
         const dataPositionBeforeIncrease = this.increaseDataPosition(4);
 
         file.seek(dataPositionBeforeIncrease);
@@ -49,6 +50,9 @@ export default abstract class FullBox extends Mpeg4Box {
      * @returns A new instance of @see FullBox.
      */
     protected initializeFromTypeVersionAndFlags(type: ByteVector, version: number, flags: number): void {
+        Guards.byte(version, "version");
+        Guards.byte(flags, "flags");
+
         this.initializeFromHeader(Mpeg4BoxHeader.fromType(type));
         this.increaseDataPosition(4);
 

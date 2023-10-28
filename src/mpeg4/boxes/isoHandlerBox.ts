@@ -3,7 +3,6 @@ import Mpeg4BoxHeader from "../mpeg4BoxHeader";
 import Mpeg4BoxType from "../mpeg4BoxType";
 import {ByteVector, StringType} from "../../byteVector";
 import {File} from "../../file";
-import {Mpeg4BoxClassType} from "../mpeg4BoxClassType";
 import {Guards} from "../../utils";
 
 /**
@@ -31,10 +30,8 @@ export default class IsoHandlerBox extends FullBox {
      *     new instance, or undefined if no handler applies.
      * @returns A new instance of @see IsoHandlerBox
      */
-    public static fromHeaderFileAndHandler(header: Mpeg4BoxHeader, file: File, handlerType: ByteVector): IsoHandlerBox {
-        Guards.notNullOrUndefined(file, "file");
-
-        const instance = new IsoHandlerBox();
+    public static fromFile(header: Mpeg4BoxHeader, file: File, handlerType: ByteVector): IsoHandlerBox {
+                const instance = new IsoHandlerBox();
         instance.initializeFromHeaderFileAndHandler(header, file, handlerType);
 
         file.seek(instance.dataPosition + 4);
@@ -60,7 +57,7 @@ export default class IsoHandlerBox extends FullBox {
      * @returns A new instance of @see IsoHandlerBox
      */
     public static fromHandlerTypeAndHandlerName(handlerType: ByteVector, name: string): IsoHandlerBox {
-        Guards.notNullOrUndefined(handlerType, "handlerType");
+        Guards.truthy(handlerType, "handlerType");
         if (handlerType.length < 4) {
             throw new Error("The handler type must be four bytes long.");
         }
@@ -74,9 +71,6 @@ export default class IsoHandlerBox extends FullBox {
     }
 
     // #endregion
-
-    /** @inheritDoc */
-    public get boxClassType(): Mpeg4BoxClassType { return Mpeg4BoxClassType.IsoHandlerBox; }
 
     /**
      * Gets the data contained in the current instance.

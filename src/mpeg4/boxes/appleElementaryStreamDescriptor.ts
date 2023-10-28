@@ -4,7 +4,6 @@ import {ByteVector, StringType} from "../../byteVector";
 import {DescriptorTag} from "../descriptorTag";
 import {DescriptorTagReader} from "../descriptorTagReader";
 import {File} from "../../file";
-import {Mpeg4BoxClassType} from "../mpeg4BoxClassType";
 import {NumberUtils} from "../../utils";
 
 /**
@@ -45,7 +44,7 @@ export default class AppleElementaryStreamDescriptor extends FullBox {
      *     new instance, or undefined if no handler applies.
      * @returns A new instance of @see AppleElementaryStreamDescriptor
      */
-    public static fromHeaderFileAndHandler(
+    public static fromFile(
         header: Mpeg4BoxHeader,
         file: File,
         handlerType: ByteVector
@@ -139,9 +138,9 @@ export default class AppleElementaryStreamDescriptor extends FullBox {
         // Loop through all trailing Descriptors Tags
         while (reader.offset < instance.dataSize) {
             const tag = boxData.get(reader.increaseOffset(1));
+            let length: number;
             switch (tag) {
                 case DescriptorTag.DecoderConfigDescrTag: // DecoderConfigDescriptor
-                {
                     /**
                      * Check that the remainder of the tag is at least 13 bytes long
                      * (13 + DecoderSpecificInfo[] + profileLevelIndicationIndexDescriptor[])
@@ -174,33 +173,28 @@ export default class AppleElementaryStreamDescriptor extends FullBox {
                     reader.increaseOffset(4); // Done with avgBitrate
 
                     // If there's a DecoderSpecificInfo[] array at the end it'll pick it up in the while loop
-                }
                     break;
 
                 case DescriptorTag.DecSpecificInfoTag: // DecoderSpecificInfo
-                {
                     // The rest of the info is decoder specific.
-                    const length = reader.readLength();
+                    length = reader.readLength();
 
                     instance._decoderConfig = boxData.subarray(reader.offset, length);
                     reader.increaseOffset(length); // We're done with the config
-                }
                     break;
 
                 case DescriptorTag.SLConfigDescrTag: // SLConfigDescriptor
-                {
                     // The rest of the info is SL specific.
-                    const length = reader.readLength();
+                    length = reader.readLength();
 
                     // Skip the rest of the descriptor as reported in the length so we can move onto the next one
                     reader.increaseOffset(length);
-                }
                     break;
 
                 case DescriptorTag.Forbidden_00:
                 case DescriptorTag.Forbidden_FF:
                     throw new Error("Invalid Descriptor tag.");
-                default: {
+                default:
                     /**
                      * TODO: Should we handle other optional descriptor tags?
                      * ExtensionDescriptor extDescr[0 .. 255];
@@ -210,21 +204,17 @@ export default class AppleElementaryStreamDescriptor extends FullBox {
                      * QoS_Descriptor qosDescr[0 .. 1];
                      */
                     // Every descriptor starts with a length
-                    const length = reader.readLength();
+                    length = reader.readLength();
 
                     // Skip the rest of the descriptor as reported in the length so we can move onto the next one
                     reader.increaseOffset(length);
 
                     break;
-                }
             }
         }
 
         return instance;
     }
-
-    /** @inheritDoc */
-    public get boxClassType(): Mpeg4BoxClassType { return Mpeg4BoxClassType.AppleElementaryStreamDescriptor; }
 
     /**
      * Gets the maximum average the stream described by the current instance.

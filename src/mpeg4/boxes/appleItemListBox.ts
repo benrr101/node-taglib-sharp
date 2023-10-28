@@ -5,8 +5,6 @@ import Mpeg4BoxHeader from "../mpeg4BoxHeader";
 import Mpeg4BoxType from "../mpeg4BoxType";
 import {AppleDataBox, AppleDataBoxFlagType} from "./appleDataBox";
 import {ByteVector} from "../../byteVector";
-import {File} from "../../file";
-import {Mpeg4BoxClassType} from "../mpeg4BoxClassType";
 import {ArrayUtils, Guards} from "../../utils";
 
 /**
@@ -23,17 +21,14 @@ export default class AppleItemListBox extends Mpeg4Box {
     /**
      * Constructs and initializes a new instance of @see AppleItemListBox with a provided header and
      * handler by reading the contents from a specified file.
-     * @param file A @see File object to read the contents of the box from.
-     *     new instance, or undefined if no handler applies.
      * @param header A @see Mpeg4BoxHeader object containing the header to use for the new instance.
      * @param handlerType Type of the handler box object containing the handler that applies to the
+     *     new instance, or undefined if no handler applies.
      * @returns A new instance of @see AppleItemListBox
      */
-    public static fromFile(file: File, header: Mpeg4BoxHeader, handlerType: ByteVector): AppleItemListBox {
-        Guards.notNullOrUndefined(file, "file");
-
+    public static fromHeader(header: Mpeg4BoxHeader, handlerType: ByteVector): AppleItemListBox {
         const instance = new AppleItemListBox();
-        instance.initializeFromHeaderAndHandler(header, handlerType);
+        instance.initializeFromHeader(header, handlerType);
 
         return instance;
     }
@@ -48,9 +43,6 @@ export default class AppleItemListBox extends Mpeg4Box {
 
         return instance;
     }
-
-    /** @inheritDoc */
-    public get boxClassType(): Mpeg4BoxClassType { return Mpeg4BoxClassType.AppleItemListBox; }
 
     /**
      * Returns the Parent Dash box object for a given mean/name combination
@@ -113,6 +105,9 @@ export default class AppleItemListBox extends Mpeg4Box {
     }
 
     public setItunesTagBox(meanString: string, nameString: string, dataString: string): void {
+        Guards.notNullOrUndefined(meanString, "meanString");
+        Guards.notNullOrUndefined(nameString, "nameString");
+
         // @TODO: This does not take into consideration scenario where multiple boxes exist with same name/meaning
         const itunesTagBox = this.getItunesTagBox(meanString, nameString);
         if (!itunesTagBox && !dataString) {
@@ -150,6 +145,9 @@ export default class AppleItemListBox extends Mpeg4Box {
     }
 
     public setItunesTagBoxes(meanString: string, nameString: string, dataStrings: string[]): void {
+        Guards.notNullOrUndefined(meanString, "meanString");
+        Guards.notNullOrUndefined(nameString, "nameString");
+
         // Clear existing boxes
         // Note: this is a departure from the original implementation which would try to update
         //    existing boxes. However, this leaves invalid scenarios in place (itunes boxes with >1
@@ -195,6 +193,8 @@ export default class AppleItemListBox extends Mpeg4Box {
     }
 
     public setQuickTimeBoxes(type: ByteVector, dataBoxes: AppleDataBox[]): void {
+        Guards.truthy(type, "type");
+
         // Clear existing boxes
         this.removeChildByType(type);
 
@@ -205,7 +205,7 @@ export default class AppleItemListBox extends Mpeg4Box {
 
         // Create boxes of the type for each provided data box and add to the current instance
         for (const dataBox of dataBoxes) {
-            if (!dataBox) {
+            if (!dataBox || !ByteVector.equals(dataBox.boxType, Mpeg4BoxType.DATA)) {
                 continue;
             }
 

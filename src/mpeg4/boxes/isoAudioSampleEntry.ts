@@ -4,7 +4,6 @@ import Mpeg4BoxHeader from "../mpeg4BoxHeader";
 import Mpeg4BoxType from "../mpeg4BoxType";
 import {ByteVector, StringType} from "../../byteVector";
 import {File} from "../../file";
-import {Mpeg4BoxClassType} from "../mpeg4BoxClassType";
 import {IAudioCodec, MediaTypes} from "../../properties";
 import {Guards, NumberUtils} from "../../utils";
 
@@ -34,8 +33,6 @@ export default class IsoAudioSampleEntry extends IsoSampleEntry implements IAudi
      * @returns A new instance of @see IsoVisualSampleEntry
      */
     public static fromFile(file: File, header: Mpeg4BoxHeader, handlerType: ByteVector): IsoAudioSampleEntry {
-        Guards.notNullOrUndefined(file, "file");
-
         const instance = new IsoAudioSampleEntry();
         instance.initializeFromHeaderFileAndHandler(header, file, handlerType);
         const dataPositionBeforeIncrease = instance.increaseDataPosition(20);
@@ -50,9 +47,6 @@ export default class IsoAudioSampleEntry extends IsoSampleEntry implements IAudi
 
         return instance;
     }
-
-    /** @inheritDoc */
-    public get boxClassType(): Mpeg4BoxClassType { return Mpeg4BoxClassType.IsoAudioSampleEntry; }
 
     /**
      * Gets the bitrate of the audio represented by the current instance.
@@ -79,6 +73,7 @@ export default class IsoAudioSampleEntry extends IsoSampleEntry implements IAudi
     public get audioSampleSize(): number { return this._audioSampleSize; }
 
     /** @inheritDoc */
+    // @TODO I'm sure we can get a better description than this
     public get description(): string { return `MPEG-4 Audio (${this.boxType.toString(StringType.Latin1)})`; }
 
     /** @inheritDoc */

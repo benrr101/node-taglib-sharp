@@ -14,6 +14,7 @@ import { Guards } from "../utils";
 
 /**
  * This class provides methods for reading important information from an MPEG-4 file.
+ * @internal
  */
 export default class Mpeg4FileParser {
     /**
@@ -42,11 +43,6 @@ export default class Mpeg4FileParser {
     private _moovTree: Mpeg4BoxHeader[];
 
     /**
-     * Contains the box headers from the top of the file to the "udta" box.
-     */
-    private _udtaTree: Mpeg4BoxHeader[];
-
-    /**
      * Contains the "stco" boxes found in the file.
      */
     private _stcoBoxes: Mpeg4Box[] = [];
@@ -57,21 +53,11 @@ export default class Mpeg4FileParser {
     private _stsdBoxes: Mpeg4Box[] = [];
 
     /**
-     * Contains the position at which the "mdat" box starts.
-     */
-    private _mdatStart = -1;
-
-    /**
-     * Contains the position at which the "mdat" box ends.
-     */
-    private _mdatEnd = -1;
-
-    /**
      * Constructs and initializes a new instance of {@see FileParser} for a specified file.
      * @param file A {@see File} object to perform operations on.
      */
     public constructor(file: File) {
-        Guards.notNullOrUndefined(file, "File");
+        Guards.truthy(file, "File");
 
         this._file = file;
         this._firstHeader = Mpeg4BoxHeader.fromFileAndPosition(file, 0);
@@ -84,16 +70,12 @@ export default class Mpeg4FileParser {
     /**
      * Gets the movie header box read by the current instance.
      */
-    public get movieHeaderBox(): IsoMovieHeaderBox {
-        return this._mvhdBox;
-    }
+    public get movieHeaderBox(): IsoMovieHeaderBox { return this._mvhdBox; }
 
     /**
      * Gets all user data boxes read by the current instance.
      */
-    public get userDataBoxes(): IsoUserDataBox[] {
-        return this._udtaBoxes;
-    }
+    public get userDataBoxes(): IsoUserDataBox[] { return this._udtaBoxes; }
 
     /**
      * Gets the audio sample entry read by the current instance.
@@ -130,46 +112,12 @@ export default class Mpeg4FileParser {
      * all parent boxes up to the top of the file as read by the
      * current instance.
      */
-    public get moovTree(): Mpeg4BoxHeader[] {
-        return this._moovTree;
-    }
-
-    /**
-     * Gets the box headers for the first "udta" box and
-     * all parent boxes up to the top of the file as read by the
-     * current instance.
-     */
-    public get udtaTree(): Mpeg4BoxHeader[] {
-        return this._udtaTree;
-    }
+    public get moovTree(): Mpeg4BoxHeader[] { return this._moovTree; }
 
     /**
      * Gets all chunk offset boxes read by the current instance.
      */
-    public get chunkOffsetBoxes(): Mpeg4Box[] {
-        return this._stcoBoxes;
-    }
-
-    /**
-     * Gets the position at which the mdat box starts.
-     */
-    public get mdatStartPosition(): number {
-        return this._mdatStart;
-    }
-
-    /**
-     * Gets the position at which the mdat box ends.
-     */
-    public get mdatEndPosition(): number {
-        return this._mdatEnd;
-    }
-
-    /**
-     * Get the User Data Box
-     */
-    public get userDataBox(): IsoUserDataBox {
-        return this.userDataBoxes.length === 0 ? undefined : this.userDataBoxes[0];
-    }
+    public get chunkOffsetBoxes(): Mpeg4Box[] { return this._stcoBoxes; }
 
     /**
      * Parses the file referenced by the current instance,
@@ -257,14 +205,6 @@ export default class Mpeg4FileParser {
                     header.totalBoxSize + position,
                     Mpeg4Utils.addParent(parents, header)
                 );
-            } else if (!this._udtaTree && ByteVector.equals(header.boxType, Mpeg4BoxType.UDTA)) {
-                // For compatibility, we still store the tree to the first udta
-                // block. The proper way to get this info is from the individual
-                // IsoUserDataBox.ParentTree member.
-                this._udtaTree = Mpeg4Utils.addParent(parents, header);
-            } else if (ByteVector.equals(header.boxType, Mpeg4BoxType.MDAT)) {
-                this._mdatStart = position;
-                this._mdatEnd = position + header.totalBoxSize;
             }
 
             if (header.totalBoxSize === 0) {
@@ -309,9 +249,6 @@ export default class Mpeg4FileParser {
                 udtaBox.parentTree = Mpeg4Utils.addParent(parents, header);
 
                 this._udtaBoxes.push(udtaBox);
-            } else if (ByteVector.equals(header.boxType, Mpeg4BoxType.MDAT)) {
-                this._mdatStart = position;
-                this._mdatEnd = position + header.totalBoxSize;
             }
 
             if (header.totalBoxSize === 0) {
@@ -387,9 +324,6 @@ export default class Mpeg4FileParser {
                 udtaBox.parentTree = Mpeg4Utils.addParent(parents, header);
 
                 this._udtaBoxes.push(udtaBox);
-            } else if (ByteVector.equals(type, Mpeg4BoxType.MDAT)) {
-                this._mdatStart = position;
-                this._mdatEnd = position + header.totalBoxSize;
             }
 
             if (header.totalBoxSize === 0) {
@@ -424,9 +358,6 @@ export default class Mpeg4FileParser {
                 ByteVector.equals(header.boxType, Mpeg4BoxType.CO64)
             ) {
                 this._stcoBoxes.push(Mpeg4BoxFactory.createBox(this._file, header));
-            } else if (ByteVector.equals(header.boxType, Mpeg4BoxType.MDAT)) {
-                this._mdatStart = position;
-                this._mdatEnd = position + header.totalBoxSize;
             }
 
             if (header.totalBoxSize === 0) {
@@ -442,10 +373,7 @@ export default class Mpeg4FileParser {
         this._mvhdBox = undefined;
         this._udtaBoxes = [];
         this._moovTree = undefined;
-        this._udtaTree = undefined;
         this._stcoBoxes = [];
         this._stsdBoxes = [];
-        this._mdatStart = -1;
-        this._mdatEnd = -1;
     }
 }

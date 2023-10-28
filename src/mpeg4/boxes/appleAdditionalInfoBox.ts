@@ -2,8 +2,7 @@ import FullBox from "./fullBox";
 import Mpeg4BoxHeader from "../mpeg4BoxHeader";
 import {ByteVector, StringType} from "../../byteVector";
 import {File} from "../../file";
-import {Mpeg4BoxClassType} from "../mpeg4BoxClassType";
-import {StringUtils} from "../../utils";
+import {Guards, StringUtils} from "../../utils";
 
 /**
  *  This class extends @see FullBox to provide an implementation of an Apple AdditionalInfoBox.
@@ -25,32 +24,12 @@ export default class AppleAdditionalInfoBox extends FullBox {
      *     new instance, or undefined if no handler applies.
      * @returns A new instance of @see AppleAdditionalInfoBox.
      */
-    public static fromHeaderFileAndHandler(
-        header: Mpeg4BoxHeader,
-        file: File,
-        handlerType: ByteVector
-    ): AppleAdditionalInfoBox {
+    public static fromFile(header: Mpeg4BoxHeader, file: File, handlerType: ByteVector): AppleAdditionalInfoBox {
         const instance = new AppleAdditionalInfoBox();
         instance.initializeFromHeaderFileAndHandler(header, file, handlerType);
         instance.data = file.readBlock(instance.dataSize > 0 ? instance.dataSize : 0);
 
         return instance;
-    }
-
-    /** @inheritDoc */
-    public get boxClassType(): Mpeg4BoxClassType { return Mpeg4BoxClassType.AppleAdditionalInfoBox; }
-
-    /**
-     * Gets the text contained in the current instance.
-     */
-    public get text(): string {
-        return StringUtils.trimStart(this.data.toString(StringType.Latin1), "\0");
-    }
-    /**
-     * Sets the text contained in the current instance.
-     */
-    public set text(v: string) {
-        this.data = ByteVector.fromString(v, StringType.Latin1);
     }
 
     /**
@@ -65,5 +44,17 @@ export default class AppleAdditionalInfoBox extends FullBox {
         instance.initializeFromTypeVersionAndFlags(type, version, flags);
 
         return instance;
+    }
+
+    /**
+     * Gets the text contained in the current instance.
+     */
+    public get text(): string { return StringUtils.trimStart(this.data.toString(StringType.Latin1), "\0"); }
+    /**
+     * Sets the text contained in the current instance.
+     */
+    public set text(v: string) {
+        Guards.notNullOrUndefined(v, "v");
+        this.data = ByteVector.fromString(v, StringType.Latin1);
     }
 }

@@ -1,7 +1,6 @@
 import FullBox from "./fullBox";
 import Mpeg4BoxHeader from "../mpeg4BoxHeader";
 import {File} from "../../file";
-import {Mpeg4BoxClassType} from "../mpeg4BoxClassType";
 import {Guards} from "../../utils";
 import {ByteVector} from "../../byteVector";
 
@@ -28,8 +27,6 @@ export default class IsoSampleDescriptionBox extends FullBox {
      * @returns A new instance of @see IsoSampleDescriptionBox
      */
     public static fromFile(file: File, header: Mpeg4BoxHeader, handlerType: ByteVector): IsoSampleDescriptionBox {
-        Guards.notNullOrUndefined(file, "file");
-
         const instance = new IsoSampleDescriptionBox();
         instance.initializeFromHeaderFileAndHandler(header, file, handlerType);
         instance.increaseDataPosition(4);
@@ -37,9 +34,6 @@ export default class IsoSampleDescriptionBox extends FullBox {
 
         return instance;
     }
-
-    /** @inheritDoc */
-    public get boxClassType(): Mpeg4BoxClassType { return Mpeg4BoxClassType.IsoSampleDescriptionBox; }
 
     /**
      * The number of boxes at the beginning of the children that will be stored as @see IsoAudioSampleEntry

@@ -2,7 +2,6 @@ import FullBox from "./fullBox";
 import Mpeg4BoxHeader from "../mpeg4BoxHeader";
 import {ByteVector} from "../../byteVector";
 import {File} from "../../file";
-import {Mpeg4BoxClassType} from "../mpeg4BoxClassType";
 import {Guards} from "../../utils";
 
 /**
@@ -31,13 +30,7 @@ export default class IsoMovieHeaderBox extends FullBox {
      *     new instance, or undefined if no handler applies.
      * @returns A new instance of @see IsoMovieHeaderBox
      */
-    public static fromHeaderFileAndHandler(
-        header: Mpeg4BoxHeader,
-        file: File,
-        handlerType: ByteVector
-    ): IsoMovieHeaderBox {
-        Guards.notNullOrUndefined(file, "file");
-
+    public static fromFile(header: Mpeg4BoxHeader, file: File, handlerType: ByteVector): IsoMovieHeaderBox {
         const instance = new IsoMovieHeaderBox();
         instance.initializeFromHeaderFileAndHandler(header, file, handlerType);
 
@@ -113,9 +106,6 @@ export default class IsoMovieHeaderBox extends FullBox {
 
         return instance;
     }
-
-    /** @inheritDoc */
-    public get boxClassType(): Mpeg4BoxClassType { return Mpeg4BoxClassType.IsoMovieHeaderBox; }
 
     /**
      * Gets the ID of the next track in the movie represented by the current instance.

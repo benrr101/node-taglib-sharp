@@ -1,9 +1,7 @@
 import Mpeg4Box from "./mpeg4Box";
 import Mpeg4BoxHeader from "../mpeg4BoxHeader";
-import {File} from "../../file";
-import {Mpeg4BoxClassType} from "../mpeg4BoxClassType";
-import {Guards} from "../../utils";
 import {ByteVector} from "../../byteVector";
+import {File} from "../../file";
 
 /**
  * Represents an MP4 text box
@@ -25,17 +23,11 @@ export default class TextBox extends Mpeg4Box {
      *     new instance, or undefined if no handler applies.
      * @returns A new instance of @see TextBox
      */
-    public static fromHeaderFileAndHandler(header: Mpeg4BoxHeader, file: File, handlerType: ByteVector): TextBox {
-        Guards.notNullOrUndefined(file, "file");
-
+    public static fromFile(header: Mpeg4BoxHeader, file: File, handlerType: ByteVector): TextBox {
         const instance = new TextBox();
-        instance.initializeFromHeaderAndHandler(header, handlerType);
-
+        instance.initializeFromHeader(header, handlerType);
         instance.data = instance.loadData(file);
 
         return instance;
     }
-
-    /** @inheritDoc */
-    public get boxClassType(): Mpeg4BoxClassType { return Mpeg4BoxClassType.TextBox; }
 }

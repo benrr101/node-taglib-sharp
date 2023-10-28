@@ -2,9 +2,7 @@ import IsoSampleEntry from "./isoSampleEntry";
 import Mpeg4BoxHeader from "../mpeg4BoxHeader";
 import {ByteVector, StringType} from "../../byteVector";
 import {File} from "../../file";
-import {Mpeg4BoxClassType} from "../mpeg4BoxClassType";
 import {IVideoCodec, MediaTypes} from "../../properties";
-import {Guards} from "../../utils";
 
 /**
  * This class extends @see IsoSampleEntry and implements @see IVideoCodec to provide an implementation of a
@@ -26,8 +24,6 @@ export default class IsoVisualSampleEntry extends IsoSampleEntry implements IVid
         file: File,
         handlerType: ByteVector
     ): IsoVisualSampleEntry {
-        Guards.notNullOrUndefined(file, "file");
-
         const instance = new IsoVisualSampleEntry();
         instance.initializeFromHeaderFileAndHandler(header, file, handlerType);
 
@@ -40,15 +36,13 @@ export default class IsoVisualSampleEntry extends IsoSampleEntry implements IVid
     }
 
     /** @inheritDoc */
-    public get boxClassType(): Mpeg4BoxClassType { return Mpeg4BoxClassType.IsoVisualSampleEntry; }
-
-    /** @inheritDoc */
     public get durationMilliseconds(): number { return 0; }
 
     /** @inheritDoc */
     public get mediaTypes(): MediaTypes { return MediaTypes.Video; }
 
     /** @inheritDoc */
+    // @TODO: I'm sure we can get a better description than this
     public get description(): string { return `MPEG-4 Video (${this.boxType.toString(StringType.Latin1)})`; }
 
     /** @inheritDoc */

@@ -2,7 +2,6 @@ import FullBox from "./fullBox";
 import Mpeg4BoxHeader from "../mpeg4BoxHeader";
 import {ByteVector} from "../../byteVector";
 import {File} from "../../file";
-import {Mpeg4BoxClassType} from "../mpeg4BoxClassType";
 import {Guards} from "../../utils";
 
 /**
@@ -28,11 +27,7 @@ export default class IsoChunkLargeOffsetBox extends FullBox {
      *     new instance, or undefined if no handler applies.
      * @returns
      */
-    public static fromHeaderFileAndHandler(
-        header: Mpeg4BoxHeader,
-        file: File,
-        handlerType: ByteVector
-    ): IsoChunkLargeOffsetBox {
+    public static fromFile(header: Mpeg4BoxHeader, file: File, handlerType: ByteVector): IsoChunkLargeOffsetBox {
         const instance = new IsoChunkLargeOffsetBox();
         instance.initializeFromHeaderFileAndHandler(header, file, handlerType);
 
@@ -45,9 +40,6 @@ export default class IsoChunkLargeOffsetBox extends FullBox {
 
         return instance;
     }
-
-    /** @inheritDoc */
-    public get boxClassType(): Mpeg4BoxClassType { return Mpeg4BoxClassType.IsoChunkLargeOffsetBox; }
 
     /**
      * Gets and sets the data contained in the current instance.

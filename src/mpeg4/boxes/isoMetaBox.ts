@@ -4,7 +4,6 @@ import Mpeg4BoxHeader from "../mpeg4BoxHeader";
 import Mpeg4BoxType from "../mpeg4BoxType";
 import {ByteVector} from "../../byteVector";
 import {File} from "../../file";
-import {Mpeg4BoxClassType} from "../mpeg4BoxClassType";
 import {Guards} from "../../utils";
 
 /**
@@ -42,18 +41,16 @@ export default class IsoMetaBox extends FullBox {
      */
     public static fromHandler(handlerType: ByteVector, handlerName?: string): IsoMetaBox {
         Guards.notNullOrUndefined(handlerType, "handlerType");
-
         if (handlerType.length < 4) {
             throw new Error("The handler type must be four bytes long.");
         }
 
         const instance = new IsoMetaBox();
         instance.initializeFromTypeVersionAndFlags(Mpeg4BoxType.META, 0, 0);
-        instance.addChild(IsoHandlerBox.fromHandlerTypeAndHandlerName(handlerType, handlerName));
+
+        const handlerBox = IsoHandlerBox.fromHandlerTypeAndHandlerName(handlerType, handlerName);
+        instance.addChild(handlerBox);
 
         return instance;
     }
-
-    /** @inheritDoc */
-    public get boxClassType(): Mpeg4BoxClassType { return Mpeg4BoxClassType.IsoMetaBox; }
 }

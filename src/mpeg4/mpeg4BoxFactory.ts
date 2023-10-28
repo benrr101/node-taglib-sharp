@@ -27,14 +27,15 @@ import {File} from "../file";
 
 /**
  * This class provides support for reading boxes from a file.
+ * @internal
  */
 export default class Mpeg4BoxFactory {
     /**
      * Creates a box by reading it from a file given its header, parent header, handler, and index in its parent.
      * @param file A {@link File} object containing the file to read from.
      * @param header A {@link Mpeg4BoxHeader} object containing the header of the box to create.
-     * @param handlerType? Type of the handler box containing the handler that applies to the new box.
-     * @param parentHeader? A
+     * @param handlerType Type of the handler box containing the handler that applies to the new box.
+     * @param parentHeader Header of the parent of this box. Optional.
      * @returns A newly created {@link Mpeg4Box} object.
      */
     public static createBox(
@@ -47,11 +48,11 @@ export default class Mpeg4BoxFactory {
         const type = header.boxType;
 
         if (ByteVector.equals(type, Mpeg4BoxType.MVHD)) {
-            return IsoMovieHeaderBox.fromHeaderFileAndHandler(header, file, handlerType);
+            return IsoMovieHeaderBox.fromFile(header, file, handlerType);
         }
         else if (ByteVector.equals(type, Mpeg4BoxType.STBL))
         {
-            const box = IsoSampleTableBox.fromFile(file, header, handlerType);
+            const box = IsoSampleTableBox.fromHeader(header, handlerType);
             this.loadChildren(file, box);
             return box;
         }
@@ -63,19 +64,19 @@ export default class Mpeg4BoxFactory {
         }
         else if (ByteVector.equals(type, Mpeg4BoxType.STCO))
         {
-            return IsoChunkOffsetBox.fromHeaderFileAndHandler(header, file, handlerType);
+            return IsoChunkOffsetBox.fromFile(header, file, handlerType);
         }
         else if (ByteVector.equals(type, Mpeg4BoxType.CO64))
         {
-            return IsoChunkLargeOffsetBox.fromHeaderFileAndHandler(header, file, handlerType);
+            return IsoChunkLargeOffsetBox.fromFile(header, file, handlerType);
         }
         else if (ByteVector.equals(type, Mpeg4BoxType.HDLR))
         {
-            return IsoHandlerBox.fromHeaderFileAndHandler(header, file, handlerType);
+            return IsoHandlerBox.fromFile(header, file, handlerType);
         }
         else if (ByteVector.equals(type, Mpeg4BoxType.UDTA))
         {
-            const box = IsoUserDataBox.fromFile(file, header, handlerType);
+            const box = IsoUserDataBox.fromHeader(header, handlerType);
             this.loadChildren(file, box);
             return box;
         }
@@ -87,37 +88,37 @@ export default class Mpeg4BoxFactory {
         }
         else if (ByteVector.equals(type, Mpeg4BoxType.ILST))
         {
-            const box = AppleItemListBox.fromFile(file, header, handlerType);
+            const box = AppleItemListBox.fromHeader(header, handlerType);
             this.loadChildren(file, box);
             return box;
         }
         else if (ByteVector.equals(type, Mpeg4BoxType.DATA))
         {
-            return AppleDataBox.fromHeaderFileAndHandler(header, file, handlerType);
+            return AppleDataBox.fromFile(header, file, handlerType);
         }
         else if (ByteVector.equals(type, Mpeg4BoxType.ESDS))
         {
-            return AppleElementaryStreamDescriptor.fromHeaderFileAndHandler(header, file, handlerType);
+            return AppleElementaryStreamDescriptor.fromFile(header, file, handlerType);
         }
         else if (ByteVector.equals(type, Mpeg4BoxType.FREE) || ByteVector.equals(type, Mpeg4BoxType.SKIP))
         {
-            return IsoFreeSpaceBox.fromHeaderFileAndHandler(header, file, handlerType);
+            return IsoFreeSpaceBox.fromHeader(header, handlerType);
         }
         else if (ByteVector.equals(type, Mpeg4BoxType.MEAN) || ByteVector.equals(type, Mpeg4BoxType.NAME))
         {
-            return AppleAdditionalInfoBox.fromHeaderFileAndHandler(header, file, handlerType);
+            return AppleAdditionalInfoBox.fromFile(header, file, handlerType);
         }
 
         // If we still don't have a tag, and we're inside an ItemListBox, load the box as an
         // AnnotationBox (Apple tag item).
         if (ByteVector.equals(parentHeader.boxType, Mpeg4BoxType.ILST)) {
-            const box = AppleAnnotationBox.fromFile(file, header, handlerType);
+            const box = AppleAnnotationBox.fromHeader(header, handlerType);
             this.loadChildren(file, box);
             return box;
         }
 
         // Nothing good. Go generic.
-        return UnknownBox.fromHeaderFileAndHandler(header, file, handlerType);
+        return UnknownBox.fromFile(header, file, handlerType);
     }
 
     private static loadSampleDescriptors(file: File, box: IsoSampleDescriptionBox): void {
@@ -140,7 +141,7 @@ export default class Mpeg4BoxFactory {
             {
                 if (ByteVector.equals(header.boxType, Mpeg4BoxType.TEXT))
                 {
-                    child = TextBox.fromHeaderFileAndHandler(header, file, box.handlerType);
+                    child = TextBox.fromFile(header, file, box.handlerType);
                 }
                 else if (ByteVector.equals(header.boxType, Mpeg4BoxType.URL))
                 {
@@ -149,12 +150,12 @@ export default class Mpeg4BoxFactory {
                 else
                 {
                     // This could be anything, so just parse it.
-                    child = UnknownBox.fromHeaderFileAndHandler(header, file, box.handlerType);
+                    child = UnknownBox.fromFile(header, file, box.handlerType);
                 }
             }
             else
             {
-                child = IsoUnknownSampleEntry.fromHeaderFileAndHandler(header, file, box.handlerType);
+                child = IsoUnknownSampleEntry.fromFile(header, file, box.handlerType);
             }
 
             box.addChild(child);

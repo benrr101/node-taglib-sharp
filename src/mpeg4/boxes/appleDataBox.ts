@@ -3,7 +3,6 @@ import Mpeg4BoxHeader from "../mpeg4BoxHeader";
 import Mpeg4BoxType from "../mpeg4BoxType";
 import {ByteVector, StringType} from "../../byteVector";
 import {File} from "../../file";
-import {Mpeg4BoxClassType} from "../mpeg4BoxClassType";
 import {Guards, NumberUtils} from "../../utils";
 
 /**
@@ -61,9 +60,7 @@ export class AppleDataBox extends FullBox {
      *     new instance, or undefined if no handler applies.
      * @returns A new instance of @see AppleDataBox
      */
-    public static fromHeaderFileAndHandler(header: Mpeg4BoxHeader, file: File, handlerType: ByteVector): AppleDataBox {
-        Guards.notNullOrUndefined(file, "file");
-
+    public static fromFile(header: Mpeg4BoxHeader, file: File, handlerType: ByteVector): AppleDataBox {
         const instance = new AppleDataBox();
         instance.initializeFromHeaderFileAndHandler(header, file, handlerType);
         instance.increaseDataPosition(4);
@@ -79,6 +76,8 @@ export class AppleDataBox extends FullBox {
      * @returns
      */
     public static fromDataAndFlags(data: ByteVector, flags: number): AppleDataBox {
+        Guards.truthy(data, "data");
+
         const instance = new AppleDataBox();
         instance.initializeFromTypeVersionAndFlags(Mpeg4BoxType.DATA, 0, flags);
         instance.increaseDataPosition(4);
@@ -86,9 +85,6 @@ export class AppleDataBox extends FullBox {
 
         return instance;
     }
-
-    /** @inheritDoc */
-    public get boxClassType(): Mpeg4BoxClassType { return Mpeg4BoxClassType.AppleDataBox; }
 
     /**
      * Gets the text contained in the current instance.
@@ -102,6 +98,7 @@ export class AppleDataBox extends FullBox {
      * Sets the text contained in the current instance.
      */
     public set text(v: string) {
+        Guards.notNullOrUndefined(v, "v");
         this.flags = AppleDataBoxFlagType.ContainsText;
         this.data = ByteVector.fromString(v, StringType.UTF8);
     }

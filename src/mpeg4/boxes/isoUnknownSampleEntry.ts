@@ -1,8 +1,6 @@
 import IsoSampleEntry from "./isoSampleEntry";
 import Mpeg4BoxHeader from "../mpeg4BoxHeader";
 import {File} from "../../file";
-import {Mpeg4BoxClassType} from "../mpeg4BoxClassType";
-import {Guards} from "../../utils";
 import {ByteVector} from "../../byteVector";
 
 /**
@@ -16,9 +14,6 @@ export default class IsoUnknownSampleEntry extends IsoSampleEntry {
         super();
     }
 
-    /** @inheritDoc */
-    public get boxClassType(): Mpeg4BoxClassType { return Mpeg4BoxClassType.IsoSampleEntry; }
-
     /**
      * Constructs and initializes a new instance of @see IsoUnknownSampleEntry with a provided header and
      * handler by reading the contents from a specified file.
@@ -29,13 +24,7 @@ export default class IsoUnknownSampleEntry extends IsoSampleEntry {
      *     new instance, or undefined if no handler applies.
      * @returns A new instance of @see IsoUnknownSampleEntry
      */
-    public static fromHeaderFileAndHandler(
-        header: Mpeg4BoxHeader,
-        file: File,
-        handlerType: ByteVector
-    ): IsoUnknownSampleEntry {
-        Guards.notNullOrUndefined(file, "file");
-
+    public static fromFile(header: Mpeg4BoxHeader, file: File, handlerType: ByteVector): IsoUnknownSampleEntry {
         const instance = new IsoUnknownSampleEntry();
         instance.initializeFromHeaderFileAndHandler(header, file, handlerType);
         return instance;

@@ -26,9 +26,9 @@ export default abstract class IsoSampleEntry extends Mpeg4Box {
      *     new instance, or undefined if no handler applies.
      */
     public initializeFromHeaderFileAndHandler(header: Mpeg4BoxHeader, file: File, handlerType: ByteVector): void {
-        Guards.notNullOrUndefined(file, "file");
+        Guards.truthy(file, "file");
 
-        this.initializeFromHeaderAndHandler(header, handlerType);
+        this.initializeFromHeader(header, handlerType);
         const dataPositionBeforeIncrease = this.increaseDataPosition(8);
         file.seek(dataPositionBeforeIncrease + 6);
         this._dataReferenceIndex = file.readBlock(2).toUshort();
@@ -38,7 +38,5 @@ export default abstract class IsoSampleEntry extends Mpeg4Box {
      * Gets the data reference index of the current instance.
      * @return A value containing the data reference index of the current instance.
      */
-    public get dataReferenceIndex(): number {
-        return this._dataReferenceIndex;
-    }
+    public get dataReferenceIndex(): number { return this._dataReferenceIndex; }
 }

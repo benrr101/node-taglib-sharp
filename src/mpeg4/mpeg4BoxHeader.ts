@@ -50,7 +50,7 @@ export default class Mpeg4BoxHeader {
      *     in a specified file.
      */
     public static fromFileAndPosition(file: File, position: number): Mpeg4BoxHeader {
-        Guards.notNullOrUndefined(file, "file");
+        Guards.truthy(file, "file");
 
         const header = new Mpeg4BoxHeader();
         header._fromDisk = true;
@@ -102,23 +102,14 @@ export default class Mpeg4BoxHeader {
     }
 
     /**
-     * Constructs and initializes a new instance of {@link Mpeg4BoxHeader} with a specified box type.
-     * @param type A ByteVector object containing the four byte box type.
-     * @returns A new instance of Mpeg4BoxHeader with a specified box type.
-     */
-    public static fromType(type: ByteVector): Mpeg4BoxHeader {
-        return Mpeg4BoxHeader.fromTypeAndExtendedType(type, undefined);
-    }
-
-    /**
      * Constructs and initializes a new instance of {@link Mpeg4BoxHeader} with a specified box type
      * and optionally extended type.
      * @param type A {@link ByteVector} object containing the four byte box type.
      * @param extendedType A {@link ByteVector} object containing the four byte box type.
      * @returns A new instance of {@link Mpeg4BoxHeader} with a specified box type and optionally extended type.
      */
-    public static fromTypeAndExtendedType(type: ByteVector, extendedType: ByteVector): Mpeg4BoxHeader {
-        Guards.notNullOrUndefined(type, "type");
+    public static fromType(type: ByteVector, extendedType?: ByteVector): Mpeg4BoxHeader {
+        Guards.truthy(type, "type");
         Guards.equals(type.length, 4, "type.length");
 
         const header = new Mpeg4BoxHeader();
@@ -172,8 +163,12 @@ export default class Mpeg4BoxHeader {
     public get dataSize(): number { return this._boxSize - this._headerSize; }
     /**
      * Gets the size of the data in the box described by the current instance.
+     * @internal
      */
-    public set dataSize(v: number) { this._boxSize = v + this._headerSize; }
+    public set dataSize(v: number) {
+        Guards.safeUint(v, "v");
+        this._boxSize = v + this._headerSize;
+    }
 
     /**
      * Gets the total size of the box described by the current instance.
@@ -197,7 +192,8 @@ export default class Mpeg4BoxHeader {
      *     the header.
      */
     public overwrite(file: File, sizeChange: number): number {
-        Guards.notNullOrUndefined(file, "file");
+        Guards.truthy(file, "file");
+        Guards.safeUint(sizeChange, "sizeChange");
 
         if (!this._fromDisk) {
             throw new Error("Cannot overwrite headers not on disk.");
