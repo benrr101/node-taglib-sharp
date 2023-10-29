@@ -442,7 +442,7 @@ import {Testers} from "../utilities/testers";
             assert.isTrue(file.tag.isEmpty);
 
             assert.strictEqual(file.mode, FileAccessMode.Closed);
-            assert.strictEqual(file.tagTypes,  WaveFileSettings.SUPPORTED_TAG_TYPES);
+            assert.strictEqual(file.tagTypes, WaveFileSettings.SUPPORTED_TAG_TYPES);
             assert.strictEqual(file.tagTypesOnDisk, TagTypes.None);
         } finally {
             // Cleanup

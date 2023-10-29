@@ -18,7 +18,6 @@ export default class UnknownBox extends Mpeg4Box {
      * @param file A @see File object to read the contents of the box from.
      * @param handlerType Type of the handler box object containing the handler that applies to the
      *     new instance, or undefined if no handler applies.
-     * @returns A new instance of @see UnknownBox
      */
     public static fromFile(header: Mpeg4BoxHeader, file: File, handlerType: ByteVector): UnknownBox {
         const instance = new UnknownBox();

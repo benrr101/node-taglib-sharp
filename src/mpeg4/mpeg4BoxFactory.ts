@@ -36,7 +36,7 @@ export default class Mpeg4BoxFactory {
      * @param header A {@link Mpeg4BoxHeader} object containing the header of the box to create.
      * @param handlerType Type of the handler box containing the handler that applies to the new box.
      * @param parentHeader Header of the parent of this box. Optional.
-     * @returns A newly created {@link Mpeg4Box} object.
+     * @returns Mpeg4Box {@link Mpeg4Box} box created from the position in the file
      */
     public static createBox(
         file: File,
@@ -135,7 +135,7 @@ export default class Mpeg4BoxFactory {
             }
             else if (ByteVector.equals(box.handlerType, Mpeg4HandlerType.VIDE))
             {
-                child = IsoVisualSampleEntry.fromHeaderFileAndHandler(header, file, box.handlerType);
+                child = IsoVisualSampleEntry.fromFile(header, file, box.handlerType);
             }
             else if (ByteVector.equals(box.handlerType, Mpeg4HandlerType.ALIS))
             {
@@ -145,7 +145,7 @@ export default class Mpeg4BoxFactory {
                 }
                 else if (ByteVector.equals(header.boxType, Mpeg4BoxType.URL))
                 {
-                    child = UrlBox.fromHeaderFileAndHandler(header, file, box.handlerType);
+                    child = UrlBox.fromFile(header, file, box.handlerType);
                 }
                 else
                 {

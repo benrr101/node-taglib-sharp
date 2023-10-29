@@ -7,16 +7,16 @@ import {ByteVector, Encoding, StringType} from "../src/byteVector";
 const assert = Chai.assert;
 
 @suite class ByteVector_ConversionTests {
-    private readonly doublePositiveBV = ByteVector.fromByteArray(  // 56.12
+    private readonly doublePositiveBV = ByteVector.fromByteArray( // 56.12
         new Uint8Array([0x8F, 0xC2, 0xF5, 0x28, 0x5C, 0x0F, 0x4C, 0x40, 0xAA])
     );
-    private readonly doubleNegativeBV = ByteVector.fromByteArray(  // -12.34
+    private readonly doubleNegativeBV = ByteVector.fromByteArray( // -12.34
         new Uint8Array([0xAE, 0x47, 0xE1, 0x7A, 0x14, 0xAE, 0x28, 0xC0, 0xAA])
     );
-    private readonly floatPositiveBV = ByteVector.fromByteArray(  // 56.12
+    private readonly floatPositiveBV = ByteVector.fromByteArray( // 56.12
         new Uint8Array([0xE1, 0x7A, 0x60, 0x42, 0xAA])
     );
-    private readonly floatNegativeBV = ByteVector.fromByteArray(  // -12.34
+    private readonly floatNegativeBV = ByteVector.fromByteArray( // -12.34
         new Uint8Array([0xA4, 0x70, 0x45, 0xC1, 0xAA])
     );
     private readonly intNegativeCompleteBV = ByteVector.fromByteArray(
@@ -521,7 +521,7 @@ const assert = Chai.assert;
     public toLong_zero_complete() {
         const long = ByteVector.fromByteArray([0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xAA]
         ).toLong();
-        assert.strictEqual(long,  BigInt(0));
+        assert.strictEqual(long, BigInt(0));
     }
 
     @test
@@ -529,14 +529,14 @@ const assert = Chai.assert;
         const long = ByteVector.fromByteArray([0xAA, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xAA])
             .subarray(1, 8)
             .toLong();
-        assert.strictEqual(long,  BigInt(0));
+        assert.strictEqual(long, BigInt(0));
     }
 
     @test
     public toLong_zero_incomplete() {
         const long = ByteVector.fromByteArray([0x00, 0x00, 0x00, 0x00])
             .toLong();
-        assert.strictEqual(long,  BigInt(0));
+        assert.strictEqual(long, BigInt(0));
     }
 
     @test
@@ -544,7 +544,7 @@ const assert = Chai.assert;
         const long = ByteVector.fromByteArray([0xAA, 0x00, 0x00, 0x00, 0x00, 0xAA])
             .subarray(1, 4)
             .toLong();
-        assert.strictEqual(long,  BigInt(0));
+        assert.strictEqual(long, BigInt(0));
     }
 
     @test
@@ -685,7 +685,7 @@ const assert = Chai.assert;
         const short = ByteVector.fromByteArray([0xAA, 0x00, 0x00, 0xAA])
             .subarray(1, 2)
             .toShort();
-        assert.strictEqual(short,  0);
+        assert.strictEqual(short, 0);
     }
 
     @test
@@ -700,7 +700,7 @@ const assert = Chai.assert;
         const short = ByteVector.fromByteArray([0xAA, 0x00, 0xAA])
             .subarray(1, 1)
             .toShort();
-        assert.strictEqual(short,  0);
+        assert.strictEqual(short, 0);
     }
 
     @test
@@ -714,7 +714,7 @@ const assert = Chai.assert;
         const short = ByteVector.concatenate(0xAA, this.shortPositiveCompleteBV, 0xAA)
             .subarray(1, this.shortPositiveCompleteBV.length)
             .toShort();
-        assert.strictEqual(short,  0x0102);
+        assert.strictEqual(short, 0x0102);
     }
 
     @test
@@ -728,7 +728,7 @@ const assert = Chai.assert;
         const short = ByteVector.concatenate(0xAA, this.shortPositiveIncompleteBV, 0xAA)
             .subarray(1, this.shortPositiveIncompleteBV.length)
             .toShort();
-        assert.strictEqual(short,  0x01);
+        assert.strictEqual(short, 0x01);
     }
 
     @test
@@ -742,7 +742,7 @@ const assert = Chai.assert;
         const short = ByteVector.concatenate(0xAA, this.shortPositiveCompleteBV, 0xAA)
             .subarray(1, this.shortPositiveCompleteBV.length)
             .toShort(false);
-        assert.strictEqual(short,  0x0201);
+        assert.strictEqual(short, 0x0201);
     }
 
     @test
@@ -756,7 +756,7 @@ const assert = Chai.assert;
         const short = ByteVector.concatenate(0xAA, this.shortPositiveIncompleteBV, 0xAA)
             .subarray(1, this.shortPositiveIncompleteBV.length)
             .toShort();
-        assert.strictEqual(short,  0x01);
+        assert.strictEqual(short, 0x01);
     }
 
     @test
@@ -770,7 +770,7 @@ const assert = Chai.assert;
         const short = ByteVector.concatenate(0xAA, this.shortNegativeCompleteBV, 0xAA)
             .subarray(1, this.shortNegativeCompleteBV.length)
             .toShort();
-        assert.strictEqual(short,  -0x0103);
+        assert.strictEqual(short, -0x0103);
     }
 
     @test
@@ -784,7 +784,7 @@ const assert = Chai.assert;
         const short = ByteVector.concatenate(0xAA, this.shortNegativeIncompleteBV, 0xAA)
             .subarray(1, this.shortNegativeIncompleteBV.length)
             .toShort();
-        assert.strictEqual(short,  0x00FC);
+        assert.strictEqual(short, 0x00FC);
     }
 
     @test
@@ -798,7 +798,7 @@ const assert = Chai.assert;
         const short = ByteVector.concatenate(0xAA, this.shortNegativeCompleteBV, 0xAA)
             .subarray(1, this.shortNegativeCompleteBV.length)
             .toShort(false);
-        assert.strictEqual(short,  -0x0202);
+        assert.strictEqual(short, -0x0202);
     }
 
     @test
@@ -812,7 +812,7 @@ const assert = Chai.assert;
         const short = ByteVector.concatenate(0xAA, this.shortNegativeIncompleteBV, 0xAA)
             .subarray(1, this.shortNegativeIncompleteBV.length)
             .toShort(false);
-        assert.strictEqual(short,  0x00FC);
+        assert.strictEqual(short, 0x00FC);
     }
 
     @test
@@ -1072,7 +1072,7 @@ const assert = Chai.assert;
         const short = ByteVector.fromByteArray([0xAA, 0x0, 0x0, 0x0, 0x0, 0xAA])
             .subarray(1, 4)
             .toShort();
-        assert.strictEqual(short,  0);
+        assert.strictEqual(short, 0);
     }
 
     @test
@@ -1087,7 +1087,7 @@ const assert = Chai.assert;
         const short = ByteVector.fromByteArray([0xAA, 0x0, 0x0, 0xAA])
             .subarray(1, 2)
             .toShort();
-        assert.strictEqual(short,  0);
+        assert.strictEqual(short, 0);
     }
 
     @test
@@ -1101,7 +1101,7 @@ const assert = Chai.assert;
         const short = ByteVector.concatenate(0xAA, this.uintPositiveCompleteBV, 0xAA)
             .subarray(1, this.uintPositiveCompleteBV.length)
             .toUint();
-        assert.strictEqual(short,  0x01020304);
+        assert.strictEqual(short, 0x01020304);
     }
 
     @test
@@ -1115,7 +1115,7 @@ const assert = Chai.assert;
         const short = ByteVector.concatenate(0xAA, this.uintPositiveIncompleteBV, 0xAA)
             .subarray(1, this.uintPositiveIncompleteBV.length)
             .toUint();
-        assert.strictEqual(short,  0x00000102);
+        assert.strictEqual(short, 0x00000102);
     }
 
     @test
@@ -1129,7 +1129,7 @@ const assert = Chai.assert;
         const short = ByteVector.concatenate(0xAA, this.uintPositiveCompleteBV, 0xAA)
             .subarray(1, this.uintPositiveCompleteBV.length)
             .toUint(false);
-        assert.strictEqual(short,  0x04030201);
+        assert.strictEqual(short, 0x04030201);
     }
 
     @test
@@ -1143,7 +1143,7 @@ const assert = Chai.assert;
         const short = ByteVector.concatenate(0xAA, this.uintPositiveIncompleteBV, 0xAA)
             .subarray(1, this.uintPositiveIncompleteBV.length)
             .toShort(false);
-        assert.strictEqual(short,  0x00000201);
+        assert.strictEqual(short, 0x00000201);
     }
 
     @test

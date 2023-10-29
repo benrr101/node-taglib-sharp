@@ -120,8 +120,8 @@ called, the duration can be accessed by calling [durationMilliseconds](ICodec.md
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `firstGranularPosition` | `number` | First granular position of the stream |
-| `lastGranularPosition` | `number` | Last granular position of the stream |
+| `firstGranularPosition` | [`ByteVector`](../classes/ByteVector.md) | First granular position of the stream |
+| `lastGranularPosition` | [`ByteVector`](../classes/ByteVector.md) | Last granular position of the stream |
 
 #### Returns
 

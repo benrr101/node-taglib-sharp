@@ -4,6 +4,10 @@
 
 ## Table of contents
 
+### References
+
+- [MpegContainerFileSettings](modules.md#mpegcontainerfilesettings)
+
 ### Enumerations
 
 - [ApeTagItemType](enums/ApeTagItemType.md)
@@ -20,6 +24,7 @@
 - [Id3v2TagHeaderFlags](enums/Id3v2TagHeaderFlags.md)
 - [Id3v2TimestampFormat](enums/Id3v2TimestampFormat.md)
 - [MediaTypes](enums/MediaTypes.md)
+- [Mpeg4AppleDataBoxFlagType](enums/Mpeg4AppleDataBoxFlagType.md)
 - [MpegAudioChannelMode](enums/MpegAudioChannelMode.md)
 - [MpegVersion](enums/MpegVersion.md)
 - [PictureType](enums/PictureType.md)
@@ -51,6 +56,7 @@
 - [AsfStreamPropertiesObject](classes/AsfStreamPropertiesObject.md)
 - [AsfTag](classes/AsfTag.md)
 - [AsfUnknownObject](classes/AsfUnknownObject.md)
+- [AviFileSettings](classes/AviFileSettings.md)
 - [AviStream](classes/AviStream.md)
 - [ByteVector](classes/ByteVector.md)
 - [CombinedTag](classes/CombinedTag.md)
@@ -96,7 +102,35 @@
 - [LocalFileAbstraction](classes/LocalFileAbstraction.md)
 - [MatroskaFile](classes/MatroskaFile.md)
 - [MovieIdTag](classes/MovieIdTag.md)
+- [Mpeg4AppleAdditionalInfoBox](classes/Mpeg4AppleAdditionalInfoBox.md)
+- [Mpeg4AppleAnnotationBox](classes/Mpeg4AppleAnnotationBox.md)
+- [Mpeg4AppleDataBox](classes/Mpeg4AppleDataBox.md)
+- [Mpeg4AppleElementaryStreamDescriptor](classes/Mpeg4AppleElementaryStreamDescriptor.md)
+- [Mpeg4AppleItemListBox](classes/Mpeg4AppleItemListBox.md)
+- [Mpeg4AppleTag](classes/Mpeg4AppleTag.md)
+- [Mpeg4Box](classes/Mpeg4Box.md)
+- [Mpeg4BoxHeader](classes/Mpeg4BoxHeader.md)
+- [Mpeg4BoxType](classes/Mpeg4BoxType.md)
+- [Mpeg4File](classes/Mpeg4File.md)
+- [Mpeg4FullBox](classes/Mpeg4FullBox.md)
+- [Mpeg4IsoAudioSampleEntry](classes/Mpeg4IsoAudioSampleEntry.md)
+- [Mpeg4IsoChunkLargeOffset](classes/Mpeg4IsoChunkLargeOffset.md)
+- [Mpeg4IsoChunkOffsetBox](classes/Mpeg4IsoChunkOffsetBox.md)
+- [Mpeg4IsoFreeSpaceBox](classes/Mpeg4IsoFreeSpaceBox.md)
+- [Mpeg4IsoHandlerBox](classes/Mpeg4IsoHandlerBox.md)
+- [Mpeg4IsoMetaBox](classes/Mpeg4IsoMetaBox.md)
+- [Mpeg4IsoMovieHeaderBox](classes/Mpeg4IsoMovieHeaderBox.md)
+- [Mpeg4IsoSampleDescriptionBox](classes/Mpeg4IsoSampleDescriptionBox.md)
+- [Mpeg4IsoSampleEntry](classes/Mpeg4IsoSampleEntry.md)
+- [Mpeg4IsoSampleTableBox](classes/Mpeg4IsoSampleTableBox.md)
+- [Mpeg4IsoUnknownSampleEntry](classes/Mpeg4IsoUnknownSampleEntry.md)
+- [Mpeg4IsoUserDataBox](classes/Mpeg4IsoUserDataBox.md)
+- [Mpeg4IsoVisualSampleEntry](classes/Mpeg4IsoVisualSampleEntry.md)
+- [Mpeg4TextBox](classes/Mpeg4TextBox.md)
+- [Mpeg4UnknownBox](classes/Mpeg4UnknownBox.md)
+- [Mpeg4UrlBox](classes/Mpeg4UrlBox.md)
 - [MpegAudioFile](classes/MpegAudioFile.md)
+- [MpegAudioFileSettings](classes/MpegAudioFileSettings.md)
 - [MpegAudioHeader](classes/MpegAudioHeader.md)
 - [MpegContainerFile](classes/MpegContainerFile.md)
 - [MpegVbriHeader](classes/MpegVbriHeader.md)
@@ -123,6 +157,7 @@
 - [StartTag](classes/StartTag.md)
 - [Tag](classes/Tag.md)
 - [UuidWrapper](classes/UuidWrapper.md)
+- [WaveFileSettings](classes/WaveFileSettings.md)
 - [XiphComment](classes/XiphComment.md)
 - [XiphPicture](classes/XiphPicture.md)
 
@@ -154,6 +189,12 @@
 
 - [Id3v2FrameFactory](modules.md#id3v2framefactory)
 - [Id3v2FrameIdentifiers](modules.md#id3v2frameidentifiers)
+
+## References
+
+### MpegContainerFileSettings
+
+Renames and re-exports [MpegAudioFileSettings](classes/MpegAudioFileSettings.md)
 
 ## Type Aliases
 
@@ -293,6 +334,8 @@ ___
 ### Id3v2FrameIdentifiers
 
 • `Const` **Id3v2FrameIdentifiers**: `Object`
+
+Collection of all well-known frame identifiers.
 
 #### Index signature
 

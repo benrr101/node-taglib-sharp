@@ -517,7 +517,7 @@ export default class Id3v2Tag extends Tag {
         const tdrcText = this.getTextAsString(FrameIdentifiers.TDRC);
         if (tdrcText && tdrcText.length >= 4) {
             // @TODO: Check places where we use this pattern... .parseInt doesn't parse the whole string if it started
-            //  with good data
+            //     with good data
             return Number.parseInt(tdrcText.substring(0, 4), 10);
         }
 
@@ -525,7 +525,7 @@ export default class Id3v2Tag extends Tag {
         const tyerText = this.getTextAsString(FrameIdentifiers.TYER);
         if (tyerText && tyerText.length >= 4) {
             // @TODO: Check places where we use this pattern... .parseInt doesn't parse the whole string if it started
-            //  with good data
+            //     with good data
             return Number.parseInt(tyerText.substring(0, 4), 10);
         }
 

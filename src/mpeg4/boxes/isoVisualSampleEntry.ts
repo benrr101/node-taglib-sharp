@@ -5,7 +5,7 @@ import {File} from "../../file";
 import {IVideoCodec, MediaTypes} from "../../properties";
 
 /**
- * This class extends @see IsoSampleEntry and implements @see IVideoCodec to provide an implementation of a
+ * This class extends {@link IsoSampleEntry} and implements {@link IVideoCodec} to provide an implementation of a
  * ISO/IEC 14496-12 VisualSampleEntry and support for reading MPEG-4 video properties.
  */
 export default class IsoVisualSampleEntry extends IsoSampleEntry implements IVideoCodec {
@@ -19,11 +19,13 @@ export default class IsoVisualSampleEntry extends IsoSampleEntry implements IVid
         super();
     }
 
-    public static fromHeaderFileAndHandler(
-        header: Mpeg4BoxHeader,
-        file: File,
-        handlerType: ByteVector
-    ): IsoVisualSampleEntry {
+    /**
+     * Initializes the instance using the box's header, and additional information read from the file.
+     * @param header Header for the box.
+     * @param file File to read additional information from.
+     * @param handlerType Type of the handler for the box. Optional.
+     */
+    public static fromFile(header: Mpeg4BoxHeader, file: File, handlerType: ByteVector): IsoVisualSampleEntry {
         const instance = new IsoVisualSampleEntry();
         instance.initializeFromHeaderFileAndHandler(header, file, handlerType);
 

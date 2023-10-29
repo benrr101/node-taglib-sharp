@@ -16,6 +16,7 @@ This enumeration is used by [fromString](../classes/ByteVector.md#fromstring) an
 
 ### Enumeration Members
 
+- [Hex](StringType.md#hex)
 - [Latin1](StringType.md#latin1)
 - [UTF16](StringType.md#utf16)
 - [UTF16BE](StringType.md#utf16be)
@@ -23,6 +24,17 @@ This enumeration is used by [fromString](../classes/ByteVector.md#fromstring) an
 - [UTF8](StringType.md#utf8)
 
 ## Enumeration Members
+
+### Hex
+
+• **Hex** = ``5``
+
+**`Summary`**
+
+The string is to be encoded as a hex string for each byte (eg, 0x00, 0x12, 0xAF).
+    Intended to be used for debugging purposes, only.
+
+___
 
 ### Latin1
 

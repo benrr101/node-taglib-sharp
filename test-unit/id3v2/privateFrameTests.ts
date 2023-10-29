@@ -95,7 +95,7 @@ import {Testers} from "../utilities/testers";
         );
 
         // Act
-        const frame = PrivateFrame.fromOffsetRawData(data, 2, header,  4);
+        const frame = PrivateFrame.fromOffsetRawData(data, 2, header, 4);
 
         // Assert
         Id3v2_PrivateFrame_ConstructorTests.assertFrame(

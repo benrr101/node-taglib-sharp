@@ -8,7 +8,7 @@ export enum MediaTypes {
     /**
      * No media is present
      */
-    None  = 0,
+    None = 0,
 
     /**
      * Audio is present
@@ -28,7 +28,7 @@ export enum MediaTypes {
     /**
      * Text is present
      */
-    Text  = 8,
+    Text = 8,
 
     /**
      * Lossless audio is present. This also implies audio is present.

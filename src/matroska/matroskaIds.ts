@@ -1255,7 +1255,7 @@ export class MatroskaIds
     public static readonly TARGETS = 0x63C0;
 
     /**
-     * Identifier for a Matroska Target Type Value  EBML element (UINT).
+     * Identifier for a Matroska Target Type Value EBML element (UINT).
      */
     public static readonly TARGET_TYPE_VALUE = 0x68CA;
 

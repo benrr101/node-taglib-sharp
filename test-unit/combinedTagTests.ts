@@ -487,7 +487,7 @@ import {IPicture} from "../src";
 
         // Assert
         assert.sameMembers(tag.tags, [newTag]);
-        assert.strictEqual(tag.tagTypes,  TagTypes.Id3v2);
+        assert.strictEqual(tag.tagTypes, TagTypes.Id3v2);
         assert.strictEqual(tag.sizeOnDisk, newTag.sizeOnDisk);
     }
 

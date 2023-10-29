@@ -10,6 +10,11 @@ import {Guards} from "../utils";
  *     the root {@link Mpeg4Box} class.
  */
 export default class Mpeg4BoxRenderer {
+    /**
+     * Renders the provided `box` for output into a file.
+     * @param box Box to render
+     * @returns ByteVector Box as rendered for output into a file.
+     */
     public static renderBox(box: Mpeg4Box): ByteVector {
         Guards.truthy(box, "box");
 

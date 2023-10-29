@@ -4,13 +4,6 @@
 
 This class extends [File](File.md) to provide tagging and properties for ADTS AAC audio files.
 
-**`Remarks`**
-
-A [Id3v1Tag](Id3v1Tag.md) and [Id3v2Tag](Id3v2Tag.md) will be added automatically to any file
-    that doesn't contain one. This change does not affect the file until it is saved and can be
-    reversed using the following method:
-    `file.removeTags(file.tagTypes & ~file.tagTypesOnDisk);`
-
 ## Hierarchy
 
 - [`SandwichFile`](SandwichFile.md)
@@ -811,7 +804,7 @@ with. Optionally, the MimeType can be forcefully overridden if it was already re
 | :------ | :------ | :------ | :------ |
 | `mimeType` | `string` | `undefined` | MimeType to register this subclass constructor to. |
 | `constructor` | [`FileTypeConstructor`](../modules.md#filetypeconstructor) | `undefined` | Constructor for a subclass of [File](File.md) that will be called if a file with a MimeType of `mimeType` is created. |
-| `override` | `boolean` | `false` | If `true` and a subclass of [File](File.md) was already registered to `mimeType`, it will be forcefully overridden. If `false`, an Error will be thrown if a subclass already registered to the MimeType. |
+| `override` | `boolean` | `false` | If `true` and a subclass of [File](File.md) was already registered to `mimeType`, it will be forcefully overridden. If `false`, an `Error` will be thrown if a subclass already registered to the MimeType. |
 
 #### Returns
 

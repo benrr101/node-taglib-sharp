@@ -79,7 +79,7 @@ export class Encoding {
         // the BOM. In that case, this field will inform the file what encoding to use for the
         // second string.
         if (type === StringType.UTF16) {
-            // If we have a BOM, return the appropriate encoding.  Otherwise, assume we're
+            // If we have a BOM, return the appropriate encoding. Otherwise, assume we're
             // reading from a string that was already identified. In that case, we'll use
             // the last used encoding.
             if (bom && bom.length >= 2) {

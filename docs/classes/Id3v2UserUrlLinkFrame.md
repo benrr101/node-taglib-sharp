@@ -56,6 +56,8 @@ Provides support for ID3v2 User URL Link frames (WXXX).
 
 • `Protected` **\_encoding**: [`StringType`](../enums/StringType.md) = `StringType.Latin1`
 
+Text encoding to use to store the text contents of the current instance.
+
 #### Inherited from
 
 [Id3v2UrlLinkFrame](Id3v2UrlLinkFrame.md).[_encoding](Id3v2UrlLinkFrame.md#_encoding)
@@ -65,6 +67,8 @@ ___
 ### \_rawData
 
 • `Protected` **\_rawData**: [`ByteVector`](ByteVector.md)
+
+Raw data contents in the current instance.
 
 #### Inherited from
 
@@ -76,6 +80,8 @@ ___
 
 • `Protected` **\_rawVersion**: `number`
 
+ID3v2 version of the current instance.
+
 #### Inherited from
 
 [Id3v2UrlLinkFrame](Id3v2UrlLinkFrame.md).[_rawVersion](Id3v2UrlLinkFrame.md#_rawversion)
@@ -85,6 +91,8 @@ ___
 ### \_textFields
 
 • `Protected` **\_textFields**: `string`[] = `[]`
+
+Decoded text contained in the current instance.
 
 #### Inherited from
 

@@ -33,9 +33,25 @@ import {Guards} from "../../utils";
  */
 export class UrlLinkFrame extends Frame {
     // @TODO: Don't allow protected member variables
+    /**
+     * Text encoding to use to store the text contents of the current instance.
+     * @protected
+     */
     protected _encoding: StringType = StringType.Latin1;
+    /**
+     * Raw data contents in the current instance.
+     * @protected
+     */
     protected _rawData: ByteVector;
+    /**
+     * ID3v2 version of the current instance.
+     * @protected
+     */
     protected _rawVersion: number;
+    /**
+     * Decoded text contained in the current instance.
+     * @protected
+     */
     protected _textFields: string[] = [];
 
     // #region Constructors
