@@ -496,8 +496,8 @@ const getTestTagFooter = (flags: ApeTagFooterFlags, itemCount: number, itemPlusF
     public musicBrainzReleaseArtistId() {
         this.testTextItem(
             (t, v) => { t.musicBrainzReleaseArtistId = v; },
-            (t) => t.musicBrainzArtistId,
-            "MUSICBRAINZ_ARTISTID"
+            (t) => t.musicBrainzReleaseArtistId,
+            "MUSICBRAINZ_ALBUMARTISTID"
         );
     }
 
@@ -1303,7 +1303,7 @@ const getTestTagFooter = (flags: ApeTagFooterFlags, itemCount: number, itemPlusF
         assert.throws(() => { tag.setNumericValue("foo", 1.23, 0); });
         assert.throws(() => { tag.setNumericValue("foo", Number.MAX_SAFE_INTEGER + 1, 0); });
         assert.throws(() => { tag.setNumericValue("foo", 0, -1); });
-        assert.throws(() => { tag.setNumericValue("foo", 0,  1.23); });
+        assert.throws(() => { tag.setNumericValue("foo", 0, 1.23); });
         assert.throws(() => { tag.setNumericValue("foo", 0, Number.MAX_SAFE_INTEGER + 1); });
     }
 

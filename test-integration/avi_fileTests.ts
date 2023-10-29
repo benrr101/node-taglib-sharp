@@ -28,7 +28,7 @@ const assert = Chai.assert;
         assert.strictEqual(Avi_FileTests.file.properties.audioChannels, 2);
         assert.strictEqual(Avi_FileTests.file.properties.audioBitrate, 32);
         assert.strictEqual(Avi_FileTests.file.properties.audioSampleRate, 44100);
-        assert.strictEqual(Avi_FileTests.file.properties.bitsPerSample,  0);
+        assert.strictEqual(Avi_FileTests.file.properties.bitsPerSample, 0);
         assert.approximately(Avi_FileTests.file.properties.durationMilliseconds, 5800, 1);
         assert.strictEqual(Avi_FileTests.file.properties.mediaTypes, MediaTypes.LosslessAudio | MediaTypes.Video);
         assert.strictEqual(Avi_FileTests.file.properties.videoHeight, 120);

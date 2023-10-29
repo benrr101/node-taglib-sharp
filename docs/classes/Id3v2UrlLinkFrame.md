@@ -99,11 +99,15 @@ specification.
 
 • `Protected` **\_encoding**: [`StringType`](../enums/StringType.md) = `StringType.Latin1`
 
+Text encoding to use to store the text contents of the current instance.
+
 ___
 
 ### \_rawData
 
 • `Protected` **\_rawData**: [`ByteVector`](ByteVector.md)
+
+Raw data contents in the current instance.
 
 ___
 
@@ -111,11 +115,15 @@ ___
 
 • `Protected` **\_rawVersion**: `number`
 
+ID3v2 version of the current instance.
+
 ___
 
 ### \_textFields
 
 • `Protected` **\_textFields**: `string`[] = `[]`
+
+Decoded text contained in the current instance.
 
 ## Accessors
 

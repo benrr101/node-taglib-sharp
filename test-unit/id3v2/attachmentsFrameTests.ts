@@ -452,7 +452,7 @@ const getCustomTestFrame = (
         mockPicture.setup((p) => p.mimeType).returns(() => "application/octet-stream");
         mockPicture.setup((p) => p.type).returns(() => PictureType.FrontCover);
 
-        const frame =  AttachmentFrame.fromPicture(mockPicture.object);
+        const frame = AttachmentFrame.fromPicture(mockPicture.object);
 
         // Act
         const output = <AttachmentFrame> frame.clone();

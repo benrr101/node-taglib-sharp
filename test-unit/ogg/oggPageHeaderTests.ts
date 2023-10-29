@@ -61,7 +61,7 @@ import {Testers} from "../utilities/testers";
             OggPageHeader.HEADER_IDENTIFIER,
             0x05, // Version
             0x07, // Flags,
-            ByteVector.fromUlong(0x123456, false), // Absolute granular position
+            0x56, 0x34, 0x12, 0x00, 0x00, 0x00, 0x00, 0x00, // Absolute granular position
             ByteVector.fromUint(0x1234, false), // Stream serial number
             ByteVector.fromUint(0x2345, false), // Page sequence number
             ByteVector.fromSize(4), // Checksum
@@ -82,7 +82,7 @@ import {Testers} from "../utilities/testers";
             OggPageHeader.HEADER_IDENTIFIER,
             0x05, // Version
             0x07, // Flags,
-            ByteVector.fromUlong(0x123456, false), // Absolute granular position
+            0x56, 0x34, 0x12, 0x00, 0x00, 0x00, 0x00, 0x00, // Absolute granular position
             ByteVector.fromUint(0x1234, false), // Stream serial number
             ByteVector.fromUint(0x2345, false), // Page sequence number
             ByteVector.fromSize(4), // Checksum
@@ -98,7 +98,7 @@ import {Testers} from "../utilities/testers";
 
         // Assert
         assert.ok(header);
-        assert.strictEqual(header.absoluteGranularPosition, 0x123456);
+        Testers.bvEqual(header.absoluteGranularPosition, [0x56, 0x34, 0x12, 0x00, 0x00, 0x00, 0x00, 0x00]);
         assert.strictEqual(header.dataSize, 325);
         assert.strictEqual(header.flags, 0x07);
         assert.isTrue(header.lastPacketComplete);
@@ -116,7 +116,7 @@ import {Testers} from "../utilities/testers";
             OggPageHeader.HEADER_IDENTIFIER,
             0x05, // Version
             0x07, // Flags,
-            ByteVector.fromUlong(0x123456, false), // Absolute granular position
+            0x56, 0x34, 0x12, 0x00, 0x00, 0x00, 0x00, 0x00, // Absolute granular position
             ByteVector.fromUint(0x1234, false), // Stream serial number
             ByteVector.fromUint(0x2345, false), // Page sequence number
             ByteVector.fromSize(4), // Checksum
@@ -132,7 +132,7 @@ import {Testers} from "../utilities/testers";
 
         // Assert
         assert.ok(header);
-        assert.strictEqual(header.absoluteGranularPosition, 0x123456);
+        Testers.bvEqual(header.absoluteGranularPosition, [0x56, 0x34, 0x12, 0x00, 0x00, 0x00, 0x00, 0x00]);
         assert.strictEqual(header.dataSize, 528);
         assert.strictEqual(header.flags, 0x07);
         assert.isFalse(header.lastPacketComplete);
@@ -164,7 +164,7 @@ import {Testers} from "../utilities/testers";
 
         // Assert
         assert.ok(header);
-        assert.strictEqual(header.absoluteGranularPosition, -1);
+        Testers.bvEqual(header.absoluteGranularPosition, [0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF]);
         assert.strictEqual(header.dataSize, 255);
         assert.strictEqual(header.flags, 0x07);
         assert.isFalse(header.lastPacketComplete);
@@ -192,7 +192,7 @@ import {Testers} from "../utilities/testers";
 
         // Assert
         assert.ok(header);
-        assert.strictEqual(header.absoluteGranularPosition, 0);
+        Testers.bvEqual(header.absoluteGranularPosition, [0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00]);
         assert.strictEqual(header.dataSize, 0);
         assert.strictEqual(header.flags, OggPageFlags.None);
         assert.isFalse(header.lastPacketComplete);
@@ -209,7 +209,7 @@ import {Testers} from "../utilities/testers";
 
         // Assert
         assert.ok(header);
-        assert.strictEqual(header.absoluteGranularPosition, 0);
+        Testers.bvEqual(header.absoluteGranularPosition, [0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00]);
         assert.strictEqual(header.dataSize, 0);
         assert.strictEqual(header.flags, OggPageFlags.FirstPageOfStream);
         assert.isFalse(header.lastPacketComplete);
@@ -226,7 +226,7 @@ import {Testers} from "../utilities/testers";
 
         // Assert
         assert.ok(header);
-        assert.strictEqual(header.absoluteGranularPosition, 0);
+        Testers.bvEqual(header.absoluteGranularPosition, [0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00]);
         assert.strictEqual(header.dataSize, 0);
         assert.strictEqual(header.flags, OggPageFlags.FirstPacketContinued);
         assert.isFalse(header.lastPacketComplete);
@@ -254,7 +254,7 @@ import {Testers} from "../utilities/testers";
             OggPageHeader.HEADER_IDENTIFIER,
             0x05, // Version
             0x07, // Flags,
-            ByteVector.fromUlong(0x123456, false), // Absolute granular position
+            0x56, 0x34, 0x12, 0x00, 0x00, 0x00, 0x00, 0x00, // Absolute granular position
             ByteVector.fromUint(0x1234, false), // Stream serial number
             ByteVector.fromUint(0x2345, false), // Page sequence number
             ByteVector.fromSize(4), // Checksum
@@ -271,7 +271,7 @@ import {Testers} from "../utilities/testers";
 
         // Assert
         assert.ok(header);
-        assert.strictEqual(header.absoluteGranularPosition, 0x123456);
+        Testers.bvEqual(header.absoluteGranularPosition, [0x56, 0x34, 0x12, 0x00, 0x00, 0x00, 0x00, 0x00]);
         assert.strictEqual(header.dataSize, 528);
         assert.strictEqual(header.flags, OggPageFlags.None);
         assert.isFalse(header.lastPacketComplete);
@@ -289,7 +289,7 @@ import {Testers} from "../utilities/testers";
             OggPageHeader.HEADER_IDENTIFIER,
             0x05, // Version
             0x07, // Flags,
-            ByteVector.fromUlong(0x123456, false), // Absolute granular position
+            0x56, 0x34, 0x12, 0x00, 0x00, 0x00, 0x00, 0x00, // Absolute granular position
             ByteVector.fromUint(0x1234, false), // Stream serial number
             ByteVector.fromUint(0x00, false), // Page sequence number
             ByteVector.fromSize(4), // Checksum
@@ -306,7 +306,7 @@ import {Testers} from "../utilities/testers";
 
         // Assert
         assert.ok(header);
-        assert.strictEqual(header.absoluteGranularPosition, 0x123456);
+        Testers.bvEqual(header.absoluteGranularPosition, [0x56, 0x34, 0x12, 0x00, 0x00, 0x00, 0x00, 0x00]);
         assert.strictEqual(header.dataSize, 528);
         assert.strictEqual(header.flags, OggPageFlags.FirstPageOfStream);
         assert.isFalse(header.lastPacketComplete);
@@ -324,7 +324,7 @@ import {Testers} from "../utilities/testers";
             OggPageHeader.HEADER_IDENTIFIER,
             0x05, // Version
             0x07, // Flags,
-            ByteVector.fromUlong(0x123456, false), // Absolute granular position
+            0x56, 0x34, 0x12, 0x00, 0x00, 0x00, 0x00, 0x00, // Absolute granular position
             ByteVector.fromUint(0x1234, false), // Stream serial number
             ByteVector.fromUint(0x00, false), // Page sequence number
             ByteVector.fromSize(4), // Checksum
@@ -341,7 +341,7 @@ import {Testers} from "../utilities/testers";
 
         // Assert
         assert.ok(header);
-        assert.strictEqual(header.absoluteGranularPosition, 0x123456);
+        Testers.bvEqual(header.absoluteGranularPosition, [0x56, 0x34, 0x12, 0x00, 0x00, 0x00, 0x00, 0x00]);
         assert.strictEqual(header.dataSize, 528);
         assert.strictEqual(header.flags, OggPageFlags.FirstPacketContinued);
         assert.isFalse(header.lastPacketComplete);

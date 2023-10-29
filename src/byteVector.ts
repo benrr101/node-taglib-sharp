@@ -35,18 +35,26 @@ export enum StringType {
     /**
      * @summary The string is to be UTF-16LE encoded.
      */
-    UTF16LE = 4
+    UTF16LE = 4,
+
+    /**
+     * @summary The string is to be encoded as a hex string for each byte (eg, 0x00, 0x12, 0xAF).
+     *     Intended to be used for debugging purposes, only.
+     */
+    Hex = 5
 }
 
 /**
  * Wrapper around the `iconv-lite` library to provide string encoding and decoding functionality.
  */
 export class Encoding {
+    private static readonly HEX_ENCODING_KEY = "hex";
     private static readonly ENCODINGS = new Map<StringType, Encoding>([
         [StringType.Latin1, new Encoding("latin1")],
         [StringType.UTF8, new Encoding("utf8")],
         [StringType.UTF16BE, new Encoding("utf16-be")],
-        [StringType.UTF16LE, new Encoding("utf16-le")]
+        [StringType.UTF16LE, new Encoding("utf16-le")],
+        [StringType.Hex, new Encoding(Encoding.HEX_ENCODING_KEY)]
     ]);
 
     /**
@@ -71,7 +79,7 @@ export class Encoding {
         // the BOM. In that case, this field will inform the file what encoding to use for the
         // second string.
         if (type === StringType.UTF16) {
-            // If we have a BOM, return the appropriate encoding.  Otherwise, assume we're
+            // If we have a BOM, return the appropriate encoding. Otherwise, assume we're
             // reading from a string that was already identified. In that case, we'll use
             // the last used encoding.
             if (bom && bom.length >= 2) {
@@ -96,6 +104,13 @@ export class Encoding {
     }
 
     public decode(data: Uint8Array): string {
+        if (this._encoding === Encoding.HEX_ENCODING_KEY) {
+            // Special case for HEX string
+            return data.reduce<string>((accum: string, currentValue) => {
+                return accum + `0x${currentValue.toString(16).padStart(2, "0")} `;
+            }, "");
+        }
+
         // @TODO: The next version of iconv-lite will add Uint8Array to the types for decode. Until
         //    then, I have word it should work w/an 'unsafe' cast. See
         //    https://github.com/ashtuchkin/iconv-lite/issues/293
@@ -399,6 +414,20 @@ export class ByteVector {
         const bytes = new Uint8Array(8);
         const dv = new DataView(bytes.buffer);
         dv.setBigInt64(0, bigIntValue, !isBigEndian);
+
+        return new ByteVector(bytes);
+    }
+
+    /**
+     * Creates a 1 byte {@link ByteVector} with an unsigned 8-bit integer as the data
+     * @param value Unsigned 8-bit integer to use as the data.
+     */
+    public static fromByte(value: number): ByteVector {
+        Guards.byte(value, "value");
+
+        const bytes = new Uint8Array(1);
+        const dv = new DataView(bytes.buffer);
+        dv.setUint8(0, value);
 
         return new ByteVector(bytes);
     }

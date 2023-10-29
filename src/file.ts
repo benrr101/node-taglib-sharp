@@ -308,7 +308,7 @@ export abstract class File implements IDisposable {
      * @param constructor Constructor for a subclass of {@link File} that will be called if a file
      *     with a MimeType of `mimeType` is created.
      * @param override If `true` and a subclass of {@link File} was already registered to
-     *     `mimeType`, it will be forcefully overridden. If `false`, an {@link Error} will be
+     *     `mimeType`, it will be forcefully overridden. If `false`, an `Error` will be
      *     thrown if a subclass already registered to the MimeType.
      */
     public static addFileType(mimeType: string, constructor: FileTypeConstructor, override: boolean = false): void {

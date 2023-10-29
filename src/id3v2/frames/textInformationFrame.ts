@@ -148,9 +148,25 @@ export class TextInformationFrame extends Frame {
     ];
 
     // @TODO: no protected access to members
+    /**
+     * Text encoding to use to store the text contents of the current instance.
+     * @protected
+     */
     protected _encoding: StringType = Id3v2Settings.defaultEncoding;
+    /**
+     * Raw data contents in the current instance.
+     * @protected
+     */
     protected _rawData: ByteVector;
+    /**
+     * ID3v2 version of the current instance.
+     * @protected
+     */
     protected _rawVersion: number;
+    /**
+     * Decoded text contained in the current instance.
+     * @protected
+     */
     protected _textFields: string[] = [];
 
     // #region Constructors

@@ -98,13 +98,13 @@ export default class AsfTag extends Tag {
     public get sizeOnDisk(): number { return undefined; }
 
     /**
-     *  @inheritDoc
-     *  @remarks Stored in the content description object
+     * @inheritDoc
+     * @remarks Stored in the content description object
      */
     public get title(): string { return this._contentDescriptionObject.title; }
     /**
-     *  @inheritDoc
-     *  @remarks Stored in the content description object
+     * @inheritDoc
+     * @remarks Stored in the content description object
      */
     public set title(value: string) { this._contentDescriptionObject.title = value; }
 
@@ -665,7 +665,7 @@ export default class AsfTag extends Tag {
             valueString = valueString.substring(0, valueString.length - 2).trim();
         }
 
-        return  Number.parseFloat(valueString);
+        return Number.parseFloat(valueString);
     }
     /**
      * @inheritDoc
@@ -715,7 +715,7 @@ export default class AsfTag extends Tag {
             valueString = valueString.substring(0, valueString.length - 2).trim();
         }
 
-        return  Number.parseFloat(valueString);
+        return Number.parseFloat(valueString);
     }
     /**
      * @inheritDoc

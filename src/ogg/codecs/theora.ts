@@ -21,7 +21,7 @@ export default class Theora implements IOggCodec, IVideoCodec {
     private readonly _fpsDenominator: number;
     private readonly _fpsNumerator: number;
     private readonly _height: number;
-    private readonly _keyframeGranuleShift: number;
+    private readonly _keyframeGranuleShift: bigint;
     private readonly _majorVersion: number;
     private readonly _minorVersion: number;
     private readonly _reversionVersion: number;
@@ -50,7 +50,7 @@ export default class Theora implements IOggCodec, IVideoCodec {
         this._fpsDenominator = headerPacket.subarray(26, 4).toUint();
 
         const lastBits = headerPacket.subarray(40, 2).toShort();
-        this._keyframeGranuleShift = NumberUtils.uintAnd(NumberUtils.uintRShift(lastBits, 5), 0x1F);
+        this._keyframeGranuleShift = BigInt(NumberUtils.uintAnd(NumberUtils.uintRShift(lastBits, 5), 0x1F));
     }
 
     /** @inheritDoc */
@@ -91,12 +91,19 @@ export default class Theora implements IOggCodec, IVideoCodec {
     }
 
     /** @inheritDoc */
-    public setDuration(firstGranularPosition: number, lastGranularPosition: number): void {
-        Guards.safeUint(firstGranularPosition, "firstGranularPosition");
-        Guards.safeUint(lastGranularPosition, "lastGranularPosition");
+    public setDuration(firstGranularPosition: ByteVector, lastGranularPosition: ByteVector): void {
+        Guards.truthy(firstGranularPosition, "firstGranularPosition");
+        Guards.truthy(lastGranularPosition, "lastGranularPosition");
 
-        const durationSeconds = this.getGranuleTime(lastGranularPosition) - this.getGranuleTime(firstGranularPosition);
-        this._durationMilliseconds = durationSeconds * 1000;
+        const durationMilli = this.getGranuleTime(lastGranularPosition) - this.getGranuleTime(firstGranularPosition);
+        // const durationMilliseconds = durationSeconds * BigInt(1000);
+
+        // Note: if the duration is determined to be too big for safe int, just report it as
+        //    unknown duration.
+        // @TODO: Maybe expose this to the user for config?
+        this._durationMilliseconds = durationMilli > Number.MAX_SAFE_INTEGER
+            ? 0
+            : Number(durationMilli);
     }
 
     /** @inheritDoc */
@@ -117,9 +124,14 @@ export default class Theora implements IOggCodec, IVideoCodec {
         }
     }
 
-    private getGranuleTime(granularPosition: number): number {
-        const iFrame = NumberUtils.uintRShift(granularPosition, this._keyframeGranuleShift);
-        const pFrame = granularPosition - NumberUtils.uintLShift(iFrame, this._keyframeGranuleShift);
-        return (iFrame + pFrame) * (this._fpsDenominator / this._fpsNumerator);
+    private getGranuleTime(granularPosition: ByteVector): bigint {
+        const granuleNumber = granularPosition.toUlong(false);
+        const iFrame = granuleNumber >> this._keyframeGranuleShift;
+        const pFrame = granuleNumber - (iFrame << this._keyframeGranuleShift);
+
+        // Since bigint is an integer we multiply the fps by an extra 10000 then divide it by
+        // 10000. If this is not done, the fps will be 0.
+        const fpsFactor = BigInt(Math.floor(this._fpsDenominator / this._fpsNumerator * 10000000))
+        return (iFrame + pFrame) * fpsFactor / BigInt(10000);
     }
 }

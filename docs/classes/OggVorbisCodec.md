@@ -199,8 +199,8 @@ called, the duration can be accessed by calling [durationMilliseconds](../interf
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `firstGranularPosition` | `number` | First granular position of the stream |
-| `lastGranularPosition` | `number` | Last granular position of the stream |
+| `firstGranularPosition` | [`ByteVector`](ByteVector.md) | First granular position of the stream |
+| `lastGranularPosition` | [`ByteVector`](ByteVector.md) | Last granular position of the stream |
 
 #### Returns
 

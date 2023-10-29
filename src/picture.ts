@@ -214,8 +214,8 @@ export class Picture implements IPicture {
         "svg", "image/svg+xml", // Scalable Vector Graphics (SVG)
         "swf", "application/x-shockwave-flash", // Small web format (SWF) or Adobe Flash document
         "tar", "application/x-tar", // Tape Archive (TAR)
-        "tif", "image/tiff", //  Tagged Image File Format(TIFF)
-        "tiff", "image/tiff", //  Tagged Image File Format(TIFF)
+        "tif", "image/tiff", // Tagged Image File Format(TIFF)
+        "tiff", "image/tiff", // Tagged Image File Format(TIFF)
         "ts", "video/vnd.dlna.mpeg-tts", // Typescript file @TODO: Uh not in this context...
         "ttf", "font/ttf", // TrueType Font
         "vsd", "application/vnd.visio", // Microsoft Visio
@@ -421,7 +421,7 @@ export class Picture implements IPicture {
     public static getMimeTypeFromFilename(name: string): string {
         let mimeType: string = "application/octet-stream";
 
-        if (!name)  {
+        if (!name) {
             return mimeType;
         }
 

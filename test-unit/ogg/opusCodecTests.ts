@@ -268,8 +268,8 @@ import {Testers} from "../utilities/testers";
         const codec = Ogg_OpusTests.getTestCodec();
 
         // Act / Assert
-        Testers.testSafeUint((v) => codec.setDuration(v, 123));
-        Testers.testSafeUint((v) => codec.setDuration(123, v));
+        Testers.testTruthy((v: ByteVector) => codec.setDuration(v, ByteVector.fromUlong(123)));
+        Testers.testTruthy((v: ByteVector) => codec.setDuration(ByteVector.fromUlong(123), v));
 
         assert.strictEqual(codec.durationMilliseconds, 0);
     }
@@ -278,9 +278,11 @@ import {Testers} from "../utilities/testers";
     public setDuration_validParameters() {
         // Arrange
         const codec = Ogg_OpusTests.getTestCodec();
+        const first = ByteVector.fromUlong(0, false);
+        const last = ByteVector.fromUlong(123456789, false);
 
         // Act
-        codec.setDuration(0, 123456789);
+        codec.setDuration(first, last);
 
         // Assert
         assert.approximately(codec.durationMilliseconds, 2571995, 0.5);

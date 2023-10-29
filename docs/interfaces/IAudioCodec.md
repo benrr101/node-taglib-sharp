@@ -17,6 +17,7 @@ and can be recast without issue.
 
 ## Implemented by
 
+- [`Mpeg4IsoAudioSampleEntry`](../classes/Mpeg4IsoAudioSampleEntry.md)
 - [`MpegAudioHeader`](../classes/MpegAudioHeader.md)
 - [`OggOpusCodec`](../classes/OggOpusCodec.md)
 - [`OggVorbisCodec`](../classes/OggVorbisCodec.md)

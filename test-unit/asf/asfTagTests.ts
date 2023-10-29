@@ -2,7 +2,7 @@ import {suite, test} from "@testdeck/mocha";
 import {assert} from "chai";
 import {Mock} from "typemoq";
 
-import AsfTag from "../../src/asf/AsfTag";
+import AsfTag from "../../src/asf/asfTag";
 import BaseObject from "../../src/asf/objects/baseObject";
 import ContentDescriptionObject from "../../src/asf/objects/contentDescriptionObject";
 import HeaderObject from "../../src/asf/objects/headerObject";
