@@ -77,7 +77,7 @@ Gets the audio genre name for a specified index.
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `index` | `string` \| `number` | Index of the genre in the audio genre array. Can be a Number, string or string wrapped in `( )`, if `allowParenthesis` is set to `true` |
+| `index` | `string` \| `number` | Index of the genre in the audio genre array. Can be a `number`, `string` or `string` wrapped in `( )`, if `allowParenthesis` is set to `true` |
 | `allowParenthesis` | `boolean` | Whether or not a number wrapped in parentheses is allowed |
 
 #### Returns
@@ -99,7 +99,7 @@ Gets the video genre name for a specified index.
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `index` | `string` \| `number` | Index of the genre in the video genre array. Can be a Number, string or string wrapped in `( )` if `allowParenthesis` is set to `true` |
+| `index` | `string` \| `number` | Index of the genre in the video genre array. Can be a `number`, `string` or `string` wrapped in `( )` if `allowParenthesis` is set to `true` |
 | `allowParenthesis` | `boolean` | Whether or not a number wrapped in parentheses is allowed |
 
 #### Returns

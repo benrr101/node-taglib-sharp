@@ -24,7 +24,7 @@ export default class AppleTag extends Tag {
 
     /**
      * Constructs and initializes a new instance of {@link AppleTag} for a specified ISO user data box.
-     * @param box  A {@link IsoUserDataBox} from which the tag is to be read.
+     * @param box A {@link IsoUserDataBox} from which the tag is to be read.
      */
     public constructor(box: IsoUserDataBox) {
         super();
@@ -581,7 +581,7 @@ export default class AppleTag extends Tag {
      * Gets the raw data contents of the first box within this tag's ILST box that matches the
      * provided `boxType`, optionally matching `flags` and a predicate.
      * @param boxType Type of box to search for
-     * @param flags Optional flags to match, defaults to {@see AppleDataBoxFlagType.ContainsData}
+     * @param flags Optional flags to match, defaults to {@link AppleDataBoxFlagType.ContainsData}
      * @param predicate Optional additional criteria the box must match
      * @returns ByteVector Raw data contents of the first matching box. `undefined` if no matches
      *     are found

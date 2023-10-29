@@ -88,14 +88,16 @@ This was called `NonContainer` in the original .NET implementation, implying tha
 
 • `Protected` **new SandwichFile**(`fileToRead`, `readStyle`, `defaultTagMappingTable`, `defaultTags`)
 
+Constructs and initializes a new instance based on the provided file.
+
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `fileToRead` | `string` \| [`IFileAbstraction`](../interfaces/IFileAbstraction.md) |
-| `readStyle` | [`ReadStyle`](../enums/ReadStyle.md) |
-| `defaultTagMappingTable` | `Map`<[`TagTypes`](../enums/TagTypes.md), () => `boolean`\> |
-| `defaultTags` | [`TagTypes`](../enums/TagTypes.md) |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `fileToRead` | `string` \| [`IFileAbstraction`](../interfaces/IFileAbstraction.md) | File to read tags from |
+| `readStyle` | [`ReadStyle`](../enums/ReadStyle.md) | How detailed the file read should be |
+| `defaultTagMappingTable` | `Map`<[`TagTypes`](../enums/TagTypes.md), () => `boolean`\> | Mapping indicating where default tags should be created in the file. If `true` is returned by the function (value of the map), a default tag of the tag type (key of the map) will be stored at the end of the file. This is only honored if the file does not already contain a tag of that type and the tag is specified in `defaultTags`. |
+| `defaultTags` | [`TagTypes`](../enums/TagTypes.md) | Tags to create on the file if it does not already contain them |
 
 #### Overrides
 
@@ -812,7 +814,7 @@ with. Optionally, the MimeType can be forcefully overridden if it was already re
 | :------ | :------ | :------ | :------ |
 | `mimeType` | `string` | `undefined` | MimeType to register this subclass constructor to. |
 | `constructor` | [`FileTypeConstructor`](../modules.md#filetypeconstructor) | `undefined` | Constructor for a subclass of [File](File.md) that will be called if a file with a MimeType of `mimeType` is created. |
-| `override` | `boolean` | `false` | If `true` and a subclass of [File](File.md) was already registered to `mimeType`, it will be forcefully overridden. If `false`, an Error will be thrown if a subclass already registered to the MimeType. |
+| `override` | `boolean` | `false` | If `true` and a subclass of [File](File.md) was already registered to `mimeType`, it will be forcefully overridden. If `false`, an `Error` will be thrown if a subclass already registered to the MimeType. |
 
 #### Returns
 

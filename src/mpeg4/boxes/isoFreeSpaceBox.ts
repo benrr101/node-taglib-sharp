@@ -5,7 +5,7 @@ import {ByteVector} from "../../byteVector";
 import {Guards} from "../../utils";
 
 /**
- *  This class extends {@link Mpeg4Box} to provide an implementation of a ISO/IEC 14496-12 FreeSpaceBox.
+ * This class extends {@link Mpeg4Box} to provide an implementation of a ISO/IEC 14496-12 FreeSpaceBox.
  */
 export default class IsoFreeSpaceBox extends Mpeg4Box {
     private _padding: number;
@@ -34,7 +34,7 @@ export default class IsoFreeSpaceBox extends Mpeg4Box {
 
     /**
      * Constructs and initializes a new instance of {@link IsoFreeSpaceBox} to occupy a specified number of bytes.
-     * @param padding  A value specifying the number of bytes the new instance should occupy when rendered.
+     * @param padding A value specifying the number of bytes the new instance should occupy when rendered.
      */
     public static fromPadding(padding: number): IsoFreeSpaceBox {
         const instance = new IsoFreeSpaceBox();

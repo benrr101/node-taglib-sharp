@@ -21,6 +21,8 @@ is stored by re-reading the property after it is set.
 
   ↳ [`Id3v2Tag`](Id3v2Tag.md)
 
+  ↳ [`Mpeg4AppleTag`](Mpeg4AppleTag.md)
+
   ↳ [`DivxTag`](DivxTag.md)
 
   ↳ [`RiffListTag`](RiffListTag.md)
@@ -1333,9 +1335,9 @@ ___
 Gets the MusicBrainz release type of the media represented by the current instance.
 
 This field represents the MusicBrainz ReleaseType that describes what kind of release
- a release is. Common types are: `Single`, `Album`, `EP`, `Compilation`, `Soundtrack,
- `SpokenWord`, `Interview`, `Audiobook`, `Live`, `Remix`, and `Other`. Careful thought
- must be given when using this field to decide if a particular track "is a compilation".
+a release is. Common types are: `Single`, `Album`, `EP`, `Compilation`, `Soundtrack,
+`SpokenWord`, `Interview`, `Audiobook`, `Live`, `Remix`, and `Other`. Careful thought
+must be given when using this field to decide if a particular track "is a compilation".
 
 @returns
     MusicBrainz ReleaseType of the media represented by the current instance or

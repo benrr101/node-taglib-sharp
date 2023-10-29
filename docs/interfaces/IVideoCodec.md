@@ -15,6 +15,7 @@ and can be recast without issue.
 
 ## Implemented by
 
+- [`Mpeg4IsoVisualSampleEntry`](../classes/Mpeg4IsoVisualSampleEntry.md)
 - [`MpegVideoHeader`](../classes/MpegVideoHeader.md)
 - [`OggTheoraCodec`](../classes/OggTheoraCodec.md)
 - [`Properties`](../classes/Properties.md)

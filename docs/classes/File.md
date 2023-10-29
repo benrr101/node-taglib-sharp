@@ -9,7 +9,7 @@ accessing basic tagging and media properties.
 
 This class is agnostic to all specific media types. Its child classes, on the other
     hand, support the intricacies of different media and tagging formats. For example
-    Mpeg4File supports the MPEG-4 specification and Apple's tagging format. Each file
+    [Mpeg4File](Mpeg4File.md) supports the MPEG-4 specification and Apple's tagging format. Each file
     type can be created using its format specific constructors, but the preferred method is to
     use [createFromPath](File.md#createfrompath) or [createFromAbstraction](File.md#createfromabstraction) as it automatically
     detects the appropriate class from the file extension or provided MimeType.
@@ -27,6 +27,8 @@ This class is agnostic to all specific media types. Its child classes, on the ot
   ↳ [`FlacFile`](FlacFile.md)
 
   ↳ [`MatroskaFile`](MatroskaFile.md)
+
+  ↳ [`Mpeg4File`](Mpeg4File.md)
 
   ↳ [`OggFile`](OggFile.md)
 
@@ -636,7 +638,7 @@ with. Optionally, the MimeType can be forcefully overridden if it was already re
 | :------ | :------ | :------ | :------ |
 | `mimeType` | `string` | `undefined` | MimeType to register this subclass constructor to. |
 | `constructor` | [`FileTypeConstructor`](../modules.md#filetypeconstructor) | `undefined` | Constructor for a subclass of [File](File.md) that will be called if a file with a MimeType of `mimeType` is created. |
-| `override` | `boolean` | `false` | If `true` and a subclass of [File](File.md) was already registered to `mimeType`, it will be forcefully overridden. If `false`, an Error will be thrown if a subclass already registered to the MimeType. |
+| `override` | `boolean` | `false` | If `true` and a subclass of [File](File.md) was already registered to `mimeType`, it will be forcefully overridden. If `false`, an `Error` will be thrown if a subclass already registered to the MimeType. |
 
 #### Returns
 

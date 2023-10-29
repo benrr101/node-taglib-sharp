@@ -38,6 +38,18 @@ export default abstract class SandwichFile extends File implements ISandwichFile
     private _mediaEndPosition: number;
     private _mediaStartPosition: number;
 
+    /**
+     * Constructs and initializes a new instance based on the provided file.
+     * @param fileToRead File to read tags from
+     * @param readStyle How detailed the file read should be
+     * @param defaultTagMappingTable Mapping indicating where default tags should be created in the
+     *     file. If `true` is returned by the function (value of the map), a default tag of the tag
+     *     type (key of the map) will be stored at the end of the file. This is only honored if the
+     *     file does not already contain a tag of that type and the tag is specified in
+     *     `defaultTags`.
+     * @param defaultTags Tags to create on the file if it does not already contain them
+     * @protected
+     */
     protected constructor(
         fileToRead: IFileAbstraction | string,
         readStyle: ReadStyle,

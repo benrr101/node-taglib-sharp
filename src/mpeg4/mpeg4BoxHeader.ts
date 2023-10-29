@@ -8,7 +8,7 @@ import {Guards, NumberUtils} from "../utils";
  */
 export default class Mpeg4BoxHeader {
     /**
-     *  Contains the box size.
+     * Contains the box size.
      */
     private _boxSize: number;
 
@@ -23,12 +23,12 @@ export default class Mpeg4BoxHeader {
     private _extendedType: ByteVector;
 
     /**
-     *  Contains the header size.
+     * Contains the header size.
      */
     private _headerSize: number;
 
     /**
-     *  Contains the position of the header.
+     * Contains the position of the header.
      */
     private _position: number;
 
@@ -180,8 +180,8 @@ export default class Mpeg4BoxHeader {
     // #endregion
 
     /**
-     *  Overwrites the header on disk, updating it to include a change in the size of the box.
-     * @param file  A {@link File} object containing the file from which the box originates.
+     * Overwrites the header on disk, updating it to include a change in the size of the box.
+     * @param file A {@link File} object containing the file from which the box originates.
      * @param sizeChange A value indicating the change in the size of the box described by the
      *     current instance.
      * @returns number Size change encountered by the box that parents the box described the current

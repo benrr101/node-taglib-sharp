@@ -6,6 +6,9 @@ import {NumberUtils} from "../utils";
  * in order for changes to take effect.
  */
 export default class WaveFileSettings {
+    /**
+     * The types of tags that are supported by WAV files.
+     */
     public static readonly SUPPORTED_TAG_TYPES = TagTypes.DivX | TagTypes.Id3v2 | TagTypes.RiffInfo | TagTypes.MovieId;
 
     private static _defaultTagTypes = WaveFileSettings.SUPPORTED_TAG_TYPES;

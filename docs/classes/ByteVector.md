@@ -78,6 +78,7 @@ Implementation of this class uses a single `Uint8Array` to store bytes. Due to
 - [empty](ByteVector.md#empty)
 - [equals](ByteVector.md#equals-1)
 - [fromBase64String](ByteVector.md#frombase64string)
+- [fromByte](ByteVector.md#frombyte)
 - [fromByteArray](ByteVector.md#frombytearray)
 - [fromFileAbstraction](ByteVector.md#fromfileabstraction)
 - [fromInt](ByteVector.md#fromint)
@@ -922,6 +923,24 @@ Creates a [ByteVector](ByteVector.md) from a base64 string.
 | Name | Type | Description |
 | :------ | :------ | :------ |
 | `str` | `string` | Base64 string to convert into a byte vector |
+
+#### Returns
+
+[`ByteVector`](ByteVector.md)
+
+___
+
+### fromByte
+
+▸ `Static` **fromByte**(`value`): [`ByteVector`](ByteVector.md)
+
+Creates a 1 byte [ByteVector](ByteVector.md) with an unsigned 8-bit integer as the data
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `value` | `number` | Unsigned 8-bit integer to use as the data. |
 
 #### Returns
 

@@ -15,7 +15,7 @@ export default class UrlBox extends Mpeg4Box {
     }
 
     /**
-     *  Constructs and initializes a new instance of @see UrlBox with a provided header and handler
+     * Constructs and initializes a new instance of @see UrlBox with a provided header and handler
      * by reading the contents from a specified file.
      * @param header A @see Mpeg4BoxHeader object containing the header to use for the new instance.
      * @param file A @see File object to read the contents of the box from.

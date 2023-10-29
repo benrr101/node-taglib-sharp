@@ -35,7 +35,7 @@ export default class IsoMetaBox extends FullBox {
     /**
      * Constructs and initializes a new instance of {@link IsoMetaBox} with a specified handler.
      * @param handlerType A {@link ByteVector} object specifying a 4 byte handler type.
-     * @param handlerName A {@link string} object specifying the handler name.
+     * @param handlerName A `string` object specifying the handler name.
      */
     public static fromHandler(handlerType: ByteVector, handlerName?: string): IsoMetaBox {
         Guards.truthy(handlerType, "handlerType");

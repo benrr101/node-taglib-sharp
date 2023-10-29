@@ -123,7 +123,7 @@ export default abstract class Mpeg4Box {
 
     /**
      * Gets a child box from the current instance by finding a matching box type.
-     * @param type  A @see ByteVector object containing the box type to match.
+     * @param type A @see ByteVector object containing the box type to match.
      * @param predicate Optional predicate to filter boxes with the provided type.
      * @returns TBox Box containing the matched box, or `undefined` if no match was found.
      */

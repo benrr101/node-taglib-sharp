@@ -49,7 +49,7 @@ export default class PrivateFrame extends Frame {
         Guards.truthy(data, "data");
         Guards.uint(offset, "offset");
         Guards.truthy(header, "header");
-        Guards.byte(version,  "version");
+        Guards.byte(version, "version");
 
         const frame = new PrivateFrame(header);
         frame.setData(data, offset, false, version);

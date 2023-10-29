@@ -5,8 +5,8 @@ import {File} from "../../file";
 import {Guards} from "../../utils";
 
 /**
- *  This class extends {@link FullBox} to provide an implementation of a ISO/IEC 14496-12 ChunkLargeOffsetBox.
- *  @TODO: Is this pretty much the same as the non-large offset box?
+ * This class extends {@link FullBox} to provide an implementation of a ISO/IEC 14496-12 ChunkLargeOffsetBox.
+ * @TODO: Is this pretty much the same as the non-large offset box?
  */
 export default class IsoChunkLargeOffsetBox extends FullBox {
     private _offsetTable: number[];

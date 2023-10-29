@@ -148,6 +148,7 @@ export {default as MpegXingHeader} from "./mpeg/xingHeader";
 // MPEG4 ///////////////////////////////////////////////////////////////////
 export {default as Mpeg4File} from "./mpeg4/mpeg4File";
 export {default as Mpeg4AppleTag} from "./mpeg4/appleTag";
+export {default as Mpeg4BoxHeader} from "./mpeg4/mpeg4BoxHeader"
 
 // Boxes
 export {default as Mpeg4BoxType} from "./mpeg4/mpeg4BoxType";

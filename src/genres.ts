@@ -215,8 +215,8 @@ export default class Genres {
 
     /**
      * Gets the audio genre name for a specified index.
-     * @param index Index of the genre in the audio genre array. Can be a {@link Number},
-     *     {@link string} or {@link string} wrapped in `( )`, if `allowParenthesis` is set
+     * @param index Index of the genre in the audio genre array. Can be a `number`,
+     *     `string` or `string` wrapped in `( )`, if `allowParenthesis` is set
      *     to `true`
      * @param allowParenthesis Whether or not a number wrapped in parentheses is allowed
      * @returns
@@ -234,8 +234,8 @@ export default class Genres {
 
     /**
      * Gets the video genre name for a specified index.
-     * @param index Index of the genre in the video genre array. Can be a {@link Number},
-     *     {@link string} or {@link string} wrapped in `( )` if `allowParenthesis` is set
+     * @param index Index of the genre in the video genre array. Can be a `number`,
+     *     `string` or `string` wrapped in `( )` if `allowParenthesis` is set
      *     to `true`
      * @param allowParenthesis Whether or not a number wrapped in parentheses is allowed
      * @returns

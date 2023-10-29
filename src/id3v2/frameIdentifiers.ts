@@ -210,7 +210,9 @@ const uniqueFrameIdentifiers: {[key: string]: FrameIdentifier} = {
     WXXX: new FrameIdentifier("WXXX", "WXXX", "WXX"), // User defined URL link frame
 };
 
-// Export all the frame identifiers
+/**
+ * Collection of all well-known frame identifiers.
+ */
 export const FrameIdentifiers: {[key: string]: FrameIdentifier} = {
     AENC: uniqueFrameIdentifiers.AENC,
     APIC: uniqueFrameIdentifiers.APIC,

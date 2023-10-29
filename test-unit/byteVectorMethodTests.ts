@@ -1171,7 +1171,7 @@ const assert = Chai.assert;
     public find_multibyteInViewWithAlign() {
         // Arrange
         const bv = ByteVector.fromString("000abc0", StringType.Latin1)
-            .subarray(1,  5);
+            .subarray(1, 5);
         const pattern = ByteVector.fromString("ab", StringType.Latin1);
 
         // Act / Assert
@@ -1416,7 +1416,7 @@ const assert = Chai.assert;
     public offsetFind_multibyteInViewWithAlign() {
         // Arrange
         const bv = ByteVector.fromString("0000abc0", StringType.Latin1)
-            .subarray(1,  5);
+            .subarray(1, 5);
         const pattern = ByteVector.fromString("ab", StringType.Latin1);
 
         // Act / Assert
@@ -1674,7 +1674,7 @@ const assert = Chai.assert;
     public rFind_multibyteInViewWithAlign() {
         // Arrange
         const bv = ByteVector.fromString("000abc0", StringType.Latin1)
-            .subarray(1,  5);
+            .subarray(1, 5);
         const pattern = ByteVector.fromString("ab", StringType.Latin1);
 
         // Act / Assert

@@ -5,7 +5,7 @@ import {File} from "../../file";
 import {Guards, StringUtils} from "../../utils";
 
 /**
- *  This class extends {@link FullBox} to provide an implementation of an Apple AdditionalInfoBox.
+ * This class extends {@link FullBox} to provide an implementation of an Apple AdditionalInfoBox.
  */
 export default class AppleAdditionalInfoBox extends FullBox {
     /**
