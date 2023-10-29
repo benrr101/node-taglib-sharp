@@ -16,6 +16,7 @@ improved on the original TagLib, hence why this project exists.
 
 ## Supported Tagging Formats
 * [APE](http://wiki.hydrogenaud.io/index.php?title=APE_key): `AAC`, `APE`, `FLAC`, `M2A`, `MP1`, `MP2`, `MP3`
+* [Apple QuickTime/iTunes](https://developer.apple.com/documentation/quicktime-file-format/metadata_atoms_and_types) MPEG4: `M4A`, `M4B`, `M4P`, `M4V`, `MP4`
 * [ASF](https://docs.microsoft.com/en-us/windows/win32/wmformat/overview-of-the-asf-format): `ASF`, `WMA`, `WMV`
 * DIVX: `AVI`, `DIVX`, `WAV`
 * [ID3v1](https://id3.org/ID3v1): `AAC`, `FLAC`, `M2A`, `MP1`, `MP2`, `MP3`
@@ -34,6 +35,7 @@ improved on the original TagLib, hence why this project exists.
 * Matroska: `MK3D`, `MKA`, `MKS`, `MKV`
 * MPEG-1/2 Audio: `M2A`, `MP1`, `MP2`, `MP3`
 * MPEG-1/2 Video: `M2V`, `MPE`, `MPEG`, `MPG`, `MPV2`
+* MPEG4: `M4A`, `M4B`, `M4P`, `M4V`, `MP4`
 * Monkey's Audio: `APE`
 * Ogg: `OGA`, `OGG`, `OGV`, `OPUS`
 * Resource Interchange File Format (RIFF): `AVI`, `DIVX`, `WAV`
