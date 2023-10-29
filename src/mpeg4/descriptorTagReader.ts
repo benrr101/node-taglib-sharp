@@ -10,6 +10,11 @@ export class DescriptorTagReader {
     private _length: number;
     private _offset: number;
 
+    /**
+     * Constructs and initializes a new descriptor tag reader with the data from which to read the
+     * descriptor tag.
+     * @param data Data from which the descriptor tag should be read
+     */
     public constructor(data: ByteVector) {
         Guards.truthy(data, "data");
 
@@ -18,13 +23,19 @@ export class DescriptorTagReader {
         this._offset = 0;
     }
 
+    /**
+     * Gets the length of the descriptor tag.
+     */
     public get length(): number { return this._length; }
 
+    /**
+     * Gets the offset of the descriptor tag.
+     */
     public get offset(): number { return this._offset; }
 
     /**
      * Reads a section length and updates the offset to the end of of the length block.
-     * @returns A value containing the length that was read.
+     * @returns number Length that was read.
      */
     public readLength(): number {
         let b = 0;
@@ -42,7 +53,7 @@ export class DescriptorTagReader {
     /**
      * Increases the current offset by a given value
      * @param value A number by which the offset should be increased
-     * @returns A value containing the offset before increase
+     * @returns number Offset before increase
      */
     public increaseOffset(value: number): number {
         Guards.safeUint(value, "value");

@@ -8,7 +8,7 @@ import {ByteVector} from "../../byteVector";
 import {ArrayUtils, Guards} from "../../utils";
 
 /**
- * This class extends @see Mpeg4Box to provide an implementation of an Apple ItemListBox.
+ * This class extends {@link Mpeg4Box} to provide an implementation of an Apple ItemListBox.
  */
 export default class AppleItemListBox extends Mpeg4Box {
     /**
@@ -19,12 +19,11 @@ export default class AppleItemListBox extends Mpeg4Box {
     }
 
     /**
-     * Constructs and initializes a new instance of @see AppleItemListBox with a provided header and
+     * Constructs and initializes a new instance of {@link AppleItemListBox} with a provided header and
      * handler by reading the contents from a specified file.
-     * @param header A @see Mpeg4BoxHeader object containing the header to use for the new instance.
+     * @param header A {@link Mpeg4BoxHeader} object containing the header to use for the new instance.
      * @param handlerType Type of the handler box object containing the handler that applies to the
      *     new instance, or undefined if no handler applies.
-     * @returns A new instance of @see AppleItemListBox
      */
     public static fromHeader(header: Mpeg4BoxHeader, handlerType: ByteVector): AppleItemListBox {
         const instance = new AppleItemListBox();
@@ -34,8 +33,7 @@ export default class AppleItemListBox extends Mpeg4Box {
     }
 
     /**
-     * Constructs and initializes a new instance of @see AppleItemListBox with no children.
-     * @returns A new instance of @see AppleItemListBox
+     * Constructs and initializes a new instance of {@link AppleItemListBox} with no children.
      */
     public static fromEmpty(): AppleItemListBox {
         const instance = new AppleItemListBox();
@@ -45,10 +43,11 @@ export default class AppleItemListBox extends Mpeg4Box {
     }
 
     /**
-     * Returns the Parent Dash box object for a given mean/name combination
+     * Returns the first itunes box object for a given mean/name combination
      * @param meanString String specifying text for mean box
      * @param nameString String specifying text for name box
-     * @returns AppleAnnotationBox object that is the parent for the mean/name combination
+     * @returns AppleAnnotationBox First iTunes box that contains the desired mean/name combination
+     *     or `undefined` if desired box was not found.
      */
     public getItunesTagBox(meanString: string, nameString: string): AppleAnnotationBox {
         return this.getChild<AppleAnnotationBox>(Mpeg4BoxType.ITUNES_TAG_BOX, (b) => {
@@ -61,6 +60,13 @@ export default class AppleItemListBox extends Mpeg4Box {
         });
     }
 
+    /**
+     * Returns all itunes boxes for a given mean/name string.
+     * @param meanString MEAN box contents to search for
+     * @param nameString NAME box contents to search for
+     * @returns AppleAnnotationBox[] All iTunes boxes that contain the desired mean/name
+     *     combination. `[]` is returned if no matches were found.
+     */
     public getItunesTagBoxes(meanString: string, nameString: string): AppleAnnotationBox[] {
         return this.getChildren<AppleAnnotationBox>(Mpeg4BoxType.ITUNES_TAG_BOX, (b) => {
             // Get the mean and name boxes, make sure they're legit, check the Text fields for a match.
@@ -73,20 +79,11 @@ export default class AppleItemListBox extends Mpeg4Box {
     }
 
     /**
-     * Gets the AppleDataBox that corresponds to the specified mean and name values.
-     * @param meanString String specifying text for mean box
-     * @param nameString String specifying text for name box
-     * @returns Existing AppleDataBox or undefined if one does not exist
-     */
-    public getItunesTagDataBox(meanString: string, nameString: string): AppleDataBox {
-        return this.getItunesTagBox(meanString, nameString)?.getChild<AppleDataBox>(Mpeg4BoxType.DATA);
-    }
-
-    /**
-     * Gets the AppleDataBox instances that corresponds to the specified mean and name values.
-     * @param meanString String specifying text for mean box
-     * @param nameString String specifying text for name box
-     * @returns Existing AppleDataBox or null if one does not exist
+     * Gets all DATA boxes that correspond to the specified iTunes MEAN and NAME values.
+     * @param meanString String specifying text for MEAN box
+     * @param nameString String specifying text for NAME box
+     * @returns AppleDataBox[] DATA boxes contained within the iTunes boxes with the given
+     *     MEAN/NAME values. `[]` is returned if no matches are found.
      */
     public getItunesTagDataBoxes(meanString: string, nameString: string): AppleDataBox[] {
         return this.getItunesTagBoxes(meanString, nameString).reduce((accum, b) => {
@@ -96,6 +93,12 @@ export default class AppleItemListBox extends Mpeg4Box {
         }, []);
     }
 
+    /**
+     * Gets all DATA boxes that correspond to the specified QuickTime box type.
+     * @param type Box type to search for
+     * @returns AppleDataBox[] DATA boxes contained within the boxes with the givem type. `[]` is
+     *     returned if no matches were found.
+     */
     public getQuickTimeDataBoxes(type: ByteVector): AppleDataBox[] {
         return this.getChildren<AppleAnnotationBox>(type).reduce((accum, b) => {
             const dataBoxes = b.getChildren<AppleDataBox>(Mpeg4BoxType.DATA);
@@ -104,46 +107,25 @@ export default class AppleItemListBox extends Mpeg4Box {
         }, []);
     }
 
-    public setItunesTagBox(meanString: string, nameString: string, dataString: string): void {
-        Guards.notNullOrUndefined(meanString, "meanString");
-        Guards.notNullOrUndefined(nameString, "nameString");
-
-        // @TODO: This does not take into consideration scenario where multiple boxes exist with same name/meaning
-        const itunesTagBox = this.getItunesTagBox(meanString, nameString);
-        if (!itunesTagBox && !dataString) {
-            // No itunes box, and nothing to store, so just stop processing
-            return;
-        }
-
-        if (!dataString) {
-            // Itunes box exists, but we want to clear it
-            this.removeChildByBox(itunesTagBox);
-            return;
-        }
-
-        const dataBox = itunesTagBox.getChild<AppleDataBox>(Mpeg4BoxType.DATA);
-        if (dataBox) {
-            // Data box was found, update the contents
-            dataBox.text = dataString;
-        } else {
-            // Create the new boxes, should use 1 for text as a flag
-            const ameanBox = AppleAdditionalInfoBox.fromTypeVersionAndFlags(Mpeg4BoxType.MEAN, 0, 1);
-            ameanBox.text = dataString;
-
-            const anameBox = AppleAdditionalInfoBox.fromTypeVersionAndFlags(Mpeg4BoxType.NAME, 0, 1);
-            anameBox.text = nameString;
-
-            const adataBox = AppleDataBox.fromDataAndFlags(Mpeg4BoxType.DATA, 1);
-            adataBox.text = dataString;
-
-            const wholeBox = AppleAnnotationBox.fromType(Mpeg4BoxType.ITUNES_TAG_BOX);
-            wholeBox.addChild(ameanBox);
-            wholeBox.addChild(anameBox);
-            wholeBox.addChild(adataBox);
-            this.addChild(wholeBox);
-        }
-    }
-
+    /**
+     * Stores the given `dataStrings` as separate iTunes boxes. It clears any existing iTunes
+     * boxes and replaces them with the provided data. Structure will look like:
+     * ```
+     * - this
+     *   - ----
+     *     - MEAN meanString
+     *     - NAME nameString
+     *     - DATA dataStrings[0]
+     *   - ----
+     *     - MEAN meanString
+     *     - NAME nameString
+     *     - DATA dataStrings[1]
+     *   ...
+     * ```
+     * @param meanString String to use for MEAN box.
+     * @param nameString String to use for NAME box.
+     * @param dataStrings Strings to store in the DATA boxes.
+     */
     public setItunesTagBoxes(meanString: string, nameString: string, dataStrings: string[]): void {
         Guards.notNullOrUndefined(meanString, "meanString");
         Guards.notNullOrUndefined(nameString, "nameString");
@@ -192,6 +174,19 @@ export default class AppleItemListBox extends Mpeg4Box {
         }
     }
 
+    /**
+     * Stores the given `dataBoxes` in the current instance inside a single box of the given
+     * `type`. Any existing boxes of the given `type` will be removed. Structure will look like:
+     * ```
+     * - this
+     *   - type
+     *     - dataBoxes[0]
+     *     - dataBoxes[1]
+     *     ...
+     * ```
+     * @param type Type of the parent box that will house `dataBoxes`
+     * @param dataBoxes DATA boxes to store in a new parent box.
+     */
     public setQuickTimeBoxes(type: ByteVector, dataBoxes: AppleDataBox[]): void {
         Guards.truthy(type, "type");
 

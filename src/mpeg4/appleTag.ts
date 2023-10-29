@@ -23,8 +23,8 @@ export default class AppleTag extends Tag {
     private readonly _ilstBox: AppleItemListBox;
 
     /**
-     * Constructs and initializes a new instance of @see AppleTag for a specified ISO user data box.
-     * @param box  A @see IsoUserDataBox from which the tag is to be read.
+     * Constructs and initializes a new instance of {@link AppleTag} for a specified ISO user data box.
+     * @param box  A {@link IsoUserDataBox} from which the tag is to be read.
      */
     public constructor(box: IsoUserDataBox) {
         super();
@@ -505,16 +505,37 @@ export default class AppleTag extends Tag {
 
     // #region Public Methods
 
+    /**
+     * Gets all strings from the iTunes boxes with the given MEAN/NAME combination.
+     * @param meanString MEAN box contents to look for
+     * @param nameString NAME box contents to look for
+     * @returns string[] Text contents of the iTunes boxes with the given NAME/MEAN combination or
+     *     `[]` if there are no matches.
+     */
     public getItunesStrings(meanString: string, nameString: string): string[] {
+        // @TODO: You know, MEAN is the same for every known box. Maybe we can just drop it.
         return this._ilstBox.getItunesTagDataBoxes(meanString, nameString)
             .filter(b => NumberUtils.hasFlag(b.flags, AppleDataBoxFlagType.ContainsText, true))
             .map(b => b.text);
     }
 
+    /**
+     * Gets the first string from the iTunes boxes with the given MEAN/NAME combination.
+     * @param meanString MEAN box contents to search for
+     * @param nameString NAME box contents to search for
+     * @returns string Text contents of the first iTunes box found with the given MEAN/NAME
+     *     combination or `undefined` if no matches found.
+     */
     public getFirstItunesString(meanString: string, nameString: string): string {
         return this.getItunesStrings(meanString, nameString)[0];
     }
 
+    /**
+     * Gets the text contents of all boxes with the given `boxType` inside the tag's ILST box.
+     * @param boxType Type of box to search for
+     * @returns string[] Text contents of all boxes with the given `boxType` or `undefined` if no
+     *     matches were found.
+     */
     public getQuickTimeStrings(boxType: ByteVector): string[] {
         return this._ilstBox.getQuickTimeDataBoxes(boxType)
             .filter(b => NumberUtils.hasFlag(b.flags, AppleDataBoxFlagType.ContainsText, true))
@@ -529,6 +550,14 @@ export default class AppleTag extends Tag {
             }, []);
     }
 
+    /**
+     * Gets the raw data of all boxes within this tag's ILST box of the given `boxType`, optionally
+     * matching the provided `flags
+     * @param boxType Type of box to search for
+     * @param flags Optional, box flags to search for. Defaults to
+     *     {@link AppleDataBoxFlagType.ContainsData}
+     * @returns ByteVector[] Raw contents of the matching boxes, `[]` if no matches are found.
+     */
     public getQuickTimeData(
         boxType: ByteVector,
         flags: AppleDataBoxFlagType = AppleDataBoxFlagType.ContainsData
@@ -538,10 +567,25 @@ export default class AppleTag extends Tag {
             .map(b => b.data);
     }
 
+    /**
+     * Gets the text contents of the first box within this tag's ILST box that matches the provided
+     * `boxType`.
+     * @param boxType Type of the box to search for.
+     * @returns string Text contents of the first matching box. `undefined` if no matches are found
+     */
     public getFirstQuickTimeString(boxType: ByteVector): string {
         return this.getQuickTimeStrings(boxType)[0];
     }
 
+    /**
+     * Gets the raw data contents of the first box within this tag's ILST box that matches the
+     * provided `boxType`, optionally matching `flags` and a predicate.
+     * @param boxType Type of box to search for
+     * @param flags Optional flags to match, defaults to {@see AppleDataBoxFlagType.ContainsData}
+     * @param predicate Optional additional criteria the box must match
+     * @returns ByteVector Raw data contents of the first matching box. `undefined` if no matches
+     *     are found
+     */
     public getFirstQuickTimeData(
         boxType: ByteVector,
         flags: AppleDataBoxFlagType = AppleDataBoxFlagType.ContainsData,
@@ -553,10 +597,26 @@ export default class AppleTag extends Tag {
             : data[0];
     }
 
+    /**
+     * Stores the provided `dataStrings` in iTunes boxes with the provided MEAN and NAME strings.
+     * This replaces any existing boxes.
+     * @param meanString MEAN box contents to set
+     * @param nameString NAME box contents to set
+     * @param dataStrings Contents of the iTunes box to store. Use `[]` or `undefined` to clear
+     *     the existing contents and leave empty.
+     */
     public setItunesStrings(meanString: string, nameString: string, ...dataStrings: string[]): void {
         this._ilstBox.setItunesTagBoxes(meanString, nameString, dataStrings);
     }
 
+    /**
+     * Stores the provided `data` in boxes with the provided box type. If `flags` are provided, the
+     * DATA boxes created to store `data` will have the `flags` applied to them. This replaces all
+     * existing boxes of the given type.
+     * @param boxType Type of the box to set
+     * @param data Data to store in the boxes
+     * @param flags Optional, flags to set on the DATA boxes
+     */
     public setQuickTimeData(
         boxType: ByteVector,
         data: ByteVector[],
@@ -566,10 +626,23 @@ export default class AppleTag extends Tag {
         this._ilstBox.setQuickTimeBoxes(boxType, dataBoxes);
     }
 
+    /**
+     * Stores the provided string in a box with the provided box type. This replaces all boxes of
+     * the given type with a single box containing the provided data.
+     * @param boxType Type of box to set
+     * @param dataString Contents to store in the box
+     */
     public setQuickTimeString(boxType: ByteVector, dataString: string): void {
         this.setQuickTimeStrings(boxType, dataString ? [dataString] : undefined);
     }
 
+    /**
+     * Stores the provided strings in boxes with the provided box type. This replaces all boxes of
+     * the given type with a single box of the given type containing a DATA box for each of the
+     * provided `dataStrings`.
+     * @param boxType Type of box to set
+     * @param dataStrings Contents to store in the box
+     */
     public setQuickTimeStrings(boxType: ByteVector, dataStrings: string[]): void {
         let dataBoxes: AppleDataBox[];
         if (!ArrayUtils.isFalsyOrEmpty(dataStrings)) {
@@ -587,6 +660,7 @@ export default class AppleTag extends Tag {
 
     /**
      * Detaches the internal "ilst" box from its parent element.
+     * @internal
      */
     public detachIlst(): void {
         this._metaBox.removeChildByBox(this._ilstBox);

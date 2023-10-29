@@ -47,10 +47,10 @@ import {StandardFileTests, TestTagLevel} from "./utilities/standardFileTests";
     public readAppleAacTags() {
         const file = <Mpeg4File>File.createFromPath(TestConstants.getSampleFilePath("bgo_658920.m4a"));
         // eslint-disable-next-line dot-notation
-        assert.equal(file['udtaBoxes'].length, 2);
+        assert.equal(file['_udtaBoxes'].length, 2);
 
         // eslint-disable-next-line dot-notation
-        const first = file['udtaBoxes'][0];
+        const first = file['_udtaBoxes'][0];
         const firstChildren = first.children;
         assert.equal(firstChildren.length, 1);
 

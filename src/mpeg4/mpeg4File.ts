@@ -35,10 +35,6 @@ export default class Mpeg4File extends File {
         return this._properties;
     }
 
-    protected get udtaBoxes(): IsoUserDataBox[] {
-        return this._udtaBoxes;
-    }
-
     /** @inheritDoc */
     public getTag(types: TagTypes, create: boolean): Tag {
         if (types === TagTypes.Apple) {
@@ -72,9 +68,9 @@ export default class Mpeg4File extends File {
         // Boilerplate
         this.preSave();
 
-        if (this.udtaBoxes.length === 0) {
+        if (this._udtaBoxes.length === 0) {
             const udtaBox = IsoUserDataBox.fromEmpty();
-            this.udtaBoxes.push(udtaBox);
+            this._udtaBoxes.push(udtaBox);
         }
 
         // Try to get into write mode.
@@ -155,15 +151,15 @@ export default class Mpeg4File extends File {
 
     /**
      * Find the udta box within our collection that contains the Apple ILST data.
-     * @returns The udta box within our collection that contains the Apple ILST data.
+     * @returns IsoUserDataBox UDTA box within our collection that contains the Apple ILST data.
      */
     private findAppleTagUdta(): IsoUserDataBox {
-        if (this.udtaBoxes.length === 1) {
-            return this.udtaBoxes[0]; // Single udta - just return it
+        if (this._udtaBoxes.length === 1) {
+            return this._udtaBoxes[0]; // Single udta - just return it
         }
 
         // Multiple udta: pick out the shallowest node which has an ILst tag
-        const possibleUdtaBoxes = this.udtaBoxes
+        const possibleUdtaBoxes = this._udtaBoxes
             .filter((box) => box.getChildRecursively(Mpeg4BoxType.ILST))
             .sort((box1, box2) => (box1.parentTree.length < box2.parentTree.length ? -1 : 1));
 
@@ -176,9 +172,10 @@ export default class Mpeg4File extends File {
 
     /**
      * Gets if there is a udta with ILST present in our collection
-     * @returns True if there is a udta with ILST present in our collection
+     * @returns boolean `true` if there is a UDTA with ILST present in our collection
      */
     private isAppleTagUdtaPresent(): boolean {
+        // @TODO: This can probably be replaced with a call to findAppleTagUdta
         for (const udtaBox of this._udtaBoxes) {
             if (udtaBox.getChild(Mpeg4BoxType.META)?.getChild(Mpeg4BoxType.ILST)) {
                 return true;

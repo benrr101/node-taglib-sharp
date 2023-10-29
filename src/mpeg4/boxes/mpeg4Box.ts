@@ -125,7 +125,7 @@ export default abstract class Mpeg4Box {
      * Gets a child box from the current instance by finding a matching box type.
      * @param type  A @see ByteVector object containing the box type to match.
      * @param predicate Optional predicate to filter boxes with the provided type.
-     * @returns A @see Mpeg4Box object containing the matched box, or undefined if no matching box was found.
+     * @returns TBox Box containing the matched box, or `undefined` if no match was found.
      */
     public getChild<TBox extends Mpeg4Box>(type: ByteVector, predicate?: (b: TBox) => boolean): TBox {
         return <TBox>this._children.find((b) => {
@@ -135,8 +135,8 @@ export default abstract class Mpeg4Box {
 
     /**
      * Gets a child box from the current instance by finding a matching box type, searching recursively.
-     * @param type  A @see ByteVector object containing the box type to match.
-     * @returns A @see Mpeg4Box object containing the matched box, or undefined if no matching box was found.
+     * @param type A @see ByteVector object containing the box type to match.
+     * @returns Mpeg4Box Matching box, or `undefined` if no matching box was found
      */
     public getChildRecursively(type: ByteVector): Mpeg4Box {
         // Check local children for a match
@@ -161,7 +161,7 @@ export default abstract class Mpeg4Box {
      * Gets all child boxes from the current instance by finding a matching box type.
      * @param type A @see ByteVector object containing the box type to match.
      * @param predicate Optional predicate to filter boxes with the provided type.
-     * @returns A @see Mpeg4Box[] object containing the matched box, or undefined if no matching boxes was found.
+     * @returns Mpeg4Box[] Array of matching boxes, or `undefined` if no matching boxes was found.
      */
     public getChildren<TBox extends Mpeg4Box>(type: ByteVector, predicate?: (b: TBox) => boolean): TBox[] {
         return <TBox[]>this._children.filter((b) => {
@@ -171,7 +171,7 @@ export default abstract class Mpeg4Box {
 
     /**
      * Removes a specified box from the current instance.
-     * @param box A @see Mpeg4Box object to remove from the current instance.
+     * @param box Box to remove from the current instance.
      */
     public removeChildByBox(box: Mpeg4Box): void {
         const index = this._children.indexOf(box);
@@ -183,7 +183,7 @@ export default abstract class Mpeg4Box {
 
     /**
      * Removes all children with a specified box type from the current instance.
-     * @param type A @see ByteVector object containing the box type to remove.
+     * @param type Type of box to remove
      */
     public removeChildByType(type: ByteVector): void {
         for (let i = this._children.length - 1; i >= 0; i--) {
@@ -195,7 +195,7 @@ export default abstract class Mpeg4Box {
 
     /**
      * Removes all specified boxes from the current instance.
-     * @param boxes Boxes to remove from the current instance.
+     * @param boxes Collection of boxes to remove from the current instance.
      */
     public removeChildrenByBox(boxes: Mpeg4Box[]): void {
         if (ArrayUtils.isFalsyOrEmpty(boxes)) {
@@ -211,7 +211,7 @@ export default abstract class Mpeg4Box {
     /**
      * Loads the data of the current instance from a specified file using the internal data position and size.
      * @param file The @see File from which the current instance was read and from which to read the data.
-     * @returns A @see ByteVector object containing the data read from the file.
+     * @returns ByteVector Data read from the file.
      */
     public loadData(file: File): ByteVector {
         Guards.truthy(file, "file");
@@ -226,7 +226,7 @@ export default abstract class Mpeg4Box {
      * which extend from @see Mpeg4Box to increase the data position, because the data
      * is located after their box specific headers.
      * @param value The value to add to the data position.
-     * @returns The value of the data position before the increase.
+     * @returns number Data position before the increase.
      */
     public increaseDataPosition(value: number): number {
         Guards.safeUint(value, "value");

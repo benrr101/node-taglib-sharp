@@ -4,7 +4,7 @@ import {File} from "../file";
 import {Guards, NumberUtils} from "../utils";
 
 /**
- *  Provides support for reading and writing headers for ISO/IEC 14496-12 boxes.
+ * Provides support for reading and writing headers for ISO/IEC 14496-12 boxes.
  */
 export default class Mpeg4BoxHeader {
     /**
@@ -46,8 +46,6 @@ export default class Mpeg4BoxHeader {
      * specified seek position in a specified file.
      * @param file A {@link File} object to read the new instance from.
      * @param position A value specifying the seek position in File at which to start reading.
-     * @returns A new instance of {@link Mpeg4BoxHeader} by reading it from a specified seek position
-     *     in a specified file.
      */
     public static fromFileAndPosition(file: File, position: number): Mpeg4BoxHeader {
         Guards.truthy(file, "file");
@@ -106,7 +104,6 @@ export default class Mpeg4BoxHeader {
      * and optionally extended type.
      * @param type A {@link ByteVector} object containing the four byte box type.
      * @param extendedType A {@link ByteVector} object containing the four byte box type.
-     * @returns A new instance of {@link Mpeg4BoxHeader} with a specified box type and optionally extended type.
      */
     public static fromType(type: ByteVector, extendedType?: ByteVector): Mpeg4BoxHeader {
         Guards.truthy(type, "type");
@@ -187,9 +184,10 @@ export default class Mpeg4BoxHeader {
      * @param file  A {@link File} object containing the file from which the box originates.
      * @param sizeChange A value indicating the change in the size of the box described by the
      *     current instance.
-     * @returns  The size change encountered by the box that parents the box described the current
+     * @returns number Size change encountered by the box that parents the box described the current
      *     instance, equal to the size change of the box plus any size change that should happen in
      *     the header.
+     * @internal
      */
     public overwrite(file: File, sizeChange: number): number {
         Guards.truthy(file, "file");
@@ -208,7 +206,7 @@ export default class Mpeg4BoxHeader {
 
     /**
      * Renders the header represented by the current instance.
-     * @returns A {@link ByteVector} object containing the rendered version of the current instance.
+     * @returns ByteVector Rendered version of the current instance.
      */
     public render(): ByteVector {
         // Enlarge for size if necessary.

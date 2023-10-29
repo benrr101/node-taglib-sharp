@@ -53,8 +53,8 @@ export default class Mpeg4FileParser {
     private _stsdBoxes: Mpeg4Box[] = [];
 
     /**
-     * Constructs and initializes a new instance of {@see FileParser} for a specified file.
-     * @param file A {@see File} object to perform operations on.
+     * Constructs and initializes a new instance of {{@link FileParser}} for a specified file.
+     * @param file A {{@link File}} object to perform operations on.
      */
     public constructor(file: File) {
         Guards.truthy(file, "File");
@@ -178,7 +178,7 @@ export default class Mpeg4FileParser {
      * Parses boxes for a specified range, looking for headers.
      * @param start A value specifying the seek position at which to start reading.
      * @param end A value specifying the seek position at which to stop reading.
-     * @param parents An array of {@see Mpeg4BoxHeader} containing all the parent handlers that
+     * @param parents An array of {{@link Mpeg4BoxHeader}} containing all the parent handlers that
      *     apply to the range.
      */
     private parseBoxHeadersFromStartEndAndParents(start: number, end: number, parents: Mpeg4BoxHeader[]): void {
@@ -217,7 +217,7 @@ export default class Mpeg4FileParser {
      * Parses boxes for a specified range, looking for tags.
      * @param start A value specifying the seek position at which to start reading.
      * @param end A value specifying the seek position at which to stop reading.
-     * @param parents An array of {@see Mpeg4BoxHeader} parents.
+     * @param parents An array of {{@link Mpeg4BoxHeader}} parents.
      */
     private parseTagFromStartEndAndParents(start: number, end: number, parents: Mpeg4BoxHeader[]): void {
         let header: Mpeg4BoxHeader;
@@ -261,8 +261,8 @@ export default class Mpeg4FileParser {
      * Parses boxes for a specified range, looking for tags and properties.
      * @param start A value specifying the seek position at which to start reading.
      * @param end A value specifying the seek position at which to stop reading.
-     * @param handler A {@see IsoHandlerBox} object that applied to the range being searched.
-     * @param parents An array of {@see Mpeg4BoxHeader} parents.
+     * @param handler A {{@link IsoHandlerBox}} object that applied to the range being searched.
+     * @param parents An array of {{@link Mpeg4BoxHeader}} parents.
      */
     private parseTagAndPropertiesFromStartEndHandlerAndParents(
         start: number,

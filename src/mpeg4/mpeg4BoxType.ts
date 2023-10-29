@@ -2,7 +2,7 @@ import {ByteVector, StringType} from "../byteVector";
 
 /**
  * Provides references to different box types used by the library. This class is used to severely reduce the number
- * of times these types are created in @see AppleTag, greatly improving the speed at which warm files are read.
+ * of times these types are created in {@link AppleTag,} greatly improving the speed at which warm files are read.
  */
 export default class Mpeg4BoxType {
     /** QuickTime album artist box */
