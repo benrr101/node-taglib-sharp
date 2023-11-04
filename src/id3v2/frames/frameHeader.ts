@@ -97,7 +97,8 @@ export class Id3v2FrameHeader {
             throw new Error("Data must contain at least a frame ID");
         }
 
-        let frameId;
+        let rawFrameId: string;
+        let frameId: FrameIdentifier;
         let flags = 0;
         let frameSize = 0;
         switch (version) {
@@ -107,7 +108,8 @@ export class Id3v2FrameHeader {
                 }
 
                 // Set frame ID -- first 3 bytes
-                frameId = FrameIdentifiers[data.subarray(0, 3).toString(StringType.Latin1)];
+                rawFrameId = data.subarray(0, 3).toString(StringType.Latin1);
+                frameId = FrameIdentifiers[rawFrameId] || new FrameIdentifier(undefined, undefined, rawFrameId);
 
                 // If the full header information was not passed in, do not continue to the steps
                 // to parse the frame size and flags.
@@ -124,7 +126,8 @@ export class Id3v2FrameHeader {
                 }
 
                 // Set the frame ID -- first 4 bytes
-                frameId = FrameIdentifiers[data.subarray(0, 4).toString(StringType.Latin1)];
+                rawFrameId = data.subarray(0, 4).toString(StringType.Latin1);
+                frameId = FrameIdentifiers[rawFrameId] || new FrameIdentifier(undefined, rawFrameId, undefined);
 
                 // If the full header information was not passed in, do not continue to the steps
                 // to parse the frame size and flags.
@@ -147,12 +150,13 @@ export class Id3v2FrameHeader {
                 }
 
                 // Set the frame ID -- the first 4 bytes
-                frameId = FrameIdentifiers[data.subarray(0, 4).toString(StringType.Latin1)];
+                rawFrameId = data.subarray(0, 4).toString(StringType.Latin1);
+                frameId = FrameIdentifiers[rawFrameId] || new FrameIdentifier(rawFrameId, undefined, undefined);
 
                 // If the full header information was not passed in, do not continue to the steps to
                 // ... eh, you probably get it by now.
                 if (data.length < 10) {
-                    return;
+                    break;
                 }
 
                 frameSize = SyncData.toUint(data.subarray(4, 4));
