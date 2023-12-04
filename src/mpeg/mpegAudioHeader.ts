@@ -90,7 +90,7 @@ export default class MpegAudioHeader implements IAudioCodec {
         file.seek(position + XingHeader.xingHeaderOffset(header.version, header.channelMode));
 
         const xingData = file.readBlock(16);
-        if (xingData.length === 16 && xingData.startsWith(XingHeader.FILE_IDENTIFIER)) {
+        if (xingData.length === 16 && (xingData.startsWith(XingHeader.FILE_IDENTIFIER) || xingData.startsWith(XingHeader.FILE_IDENTIFIER_INFO))) {
             header._xingHeader = XingHeader.fromData(xingData);
         }
 

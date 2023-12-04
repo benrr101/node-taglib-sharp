@@ -11,6 +11,7 @@ export default class XingHeader {
      * Identifier that appears in a file to indicate the start of a Xing header.
      */
     public static readonly FILE_IDENTIFIER = ByteVector.fromString("Xing", StringType.Latin1).makeReadOnly();
+    public static readonly FILE_IDENTIFIER_INFO = ByteVector.fromString("Info", StringType.Latin1).makeReadOnly();
 
     /**
      * An empty an unset Xing header
@@ -49,7 +50,7 @@ export default class XingHeader {
         Guards.truthy(data, "data");
 
         // Check to see if a valid Xing header is available
-        if (!data.startsWith(XingHeader.FILE_IDENTIFIER)) {
+        if (!data.startsWith(XingHeader.FILE_IDENTIFIER) && !data.startsWith(XingHeader.FILE_IDENTIFIER_INFO)) {
             throw new CorruptFileError("Not a valid Xing header");
         }
 
