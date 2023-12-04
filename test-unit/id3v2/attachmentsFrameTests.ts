@@ -240,7 +240,7 @@ const getCustomTestFrame = (
     }
 
     @test
-    public fromRawData_geob() {
+    public fromRawData_geob_nonLatinEncoding() {
         // Arrange
         const testData = ByteVector.fromString("fuxbuxqux", StringType.Latin1);
         const header = new Id3v2FrameHeader(FrameIdentifiers.GEOB);
@@ -269,6 +269,40 @@ const getCustomTestFrame = (
             "image.gif",
             "image/gif",
             StringType.UTF16BE,
+            PictureType.NotAPicture
+        );
+    }
+
+    @test
+    public fromRawData_geob_latinEncoding() {
+        // Arrange
+        const testData = ByteVector.fromString("fuxbuxqux", StringType.Latin1);
+        const header = new Id3v2FrameHeader(FrameIdentifiers.GEOB);
+        header.frameSize = 60;
+        const data = ByteVector.concatenate(
+            header.render(4),
+            StringType.Latin1,
+            ByteVector.fromString("image/gif", StringType.Latin1),
+            ByteVector.getTextDelimiter(StringType.Latin1),
+            ByteVector.fromString("image.gif", StringType.Latin1),
+            ByteVector.getTextDelimiter(StringType.Latin1),
+            ByteVector.fromString("foobarbaz", StringType.Latin1),
+            ByteVector.getTextDelimiter(StringType.Latin1),
+            testData
+        );
+
+        // Act
+        const frame = AttachmentFrame.fromRawData(data, 4);
+
+        // Assert
+        Id3v2_AttachmentFrame_ConstructorTests.verifyFrame(
+            frame,
+            FrameIdentifiers.GEOB,
+            testData,
+            "foobarbaz",
+            "image.gif",
+            "image/gif",
+            StringType.Latin1,
             PictureType.NotAPicture
         );
     }
