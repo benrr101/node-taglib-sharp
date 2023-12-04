@@ -1,5 +1,3 @@
-import itiriri from "itiriri";
-
 import CombinedTag from "../combinedTag";
 import OggFileSettings from "./oggFileSettings";
 import XiphComment from "../xiph/xiphComment";
@@ -79,7 +77,7 @@ export default class OggTag extends CombinedTag {
     /** @inheritDoc */
     // TODO: This value is never updated after a save!!
     public get sizeOnDisk(): number {
-        return itiriri(this._comments.values()).reduce((accum, c) => accum + c.sizeOnDisk, 0);
+        return Array.from(this._comments.values()).reduce((accum, c) => accum + c.sizeOnDisk, 0);
     }
 
     /**

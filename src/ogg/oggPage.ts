@@ -1,4 +1,3 @@
-import itiriri from "itiriri";
 import {ByteVector} from "../byteVector";
 import {File} from "../file";
 import {OggPageHeader} from "./oggPageHeader";
@@ -92,7 +91,7 @@ export default class OggPage {
         Guards.safeUint(position, "position");
 
         // Check to see if there are any changes to be made
-        if (itiriri(shiftTable.values()).every((e) => e === 0)) {
+        if (Array.from(shiftTable.values()).every((e) => e === 0)) {
             return;
         }
 

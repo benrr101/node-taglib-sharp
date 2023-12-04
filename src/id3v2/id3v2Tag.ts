@@ -1,5 +1,4 @@
 import * as DateFormat from "dateformat";
-import itiriri from "itiriri";
 
 import AttachmentFrame from "./frames/attachmentFrame";
 import CommentsFrame from "./frames/commentsFrame";
@@ -373,9 +372,8 @@ export default class Id3v2Tag extends Tag {
         }
 
         // Collapse the instrument lists and return that
-        this._performersRole = itiriri(map.values())
-            .map((e: string[]) => e.length > 0 ? e.join("; ") : undefined)
-            .toArray();
+        this._performersRole = Array.from(map.values())
+            .map((e: string[]) => e.length > 0 ? e.join("; ") : undefined);
         return this._performersRole;
     }
     /**
