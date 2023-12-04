@@ -22,7 +22,6 @@
     "node": ">=12.16.1"
   },
   "dependencies": {
-    "dateformat": "^3.0.3",
     "iconv-lite": "^0.6.3",
     "os-locale": "^4.0.0",
     "uuid": "^8.3.2"
@@ -32,7 +31,6 @@
     "@testdeck/mocha": "^0.3.3",
     "@types/chai": "^4.3.0",
     "@types/chai-as-promised": "^7.1.0",
-    "@types/dateformat": "^3.0.0",
     "@types/stream-buffers": "^3.0.2",
     "@types/uuid": "^8.3.4",
     "@typescript-eslint/eslint-plugin": "^5.15.0",

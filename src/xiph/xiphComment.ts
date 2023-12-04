@@ -1,10 +1,9 @@
-import * as DateFormat from "dateformat";
 import XiphPicture from "./xiphPicture";
 import XiphSettings from "./xiphSettings";
 import {ByteVector, StringType} from "../byteVector";
 import {IPicture, Picture} from "../picture";
 import {Tag, TagTypes} from "../tag";
-import {Guards} from "../utils";
+import {DateUtils, Guards} from "../utils";
 
 /**
  * Provides support for reading and writing Xiph comment-style tags.
@@ -568,13 +567,11 @@ export default class XiphComment extends Tag {
      * @inheritDoc
      * @remarks Stored in the `DATETAGGED` field
      */
-    public set dateTagged(value: Date) {
+    public set dateTagged(value: Date | undefined) {
         if (!value || Number.isNaN(value.getTime())) {
             this.removeField("DATETAGGED");
         } else {
-            let dateString = DateFormat(value, "yyyy-mm-dd HH:MM:ss");
-            dateString = dateString.replace(" ", "T");
-            this.setFieldAsStrings("DATETAGGED", dateString);
+            this.setFieldAsStrings("DATETAGGED", DateUtils.format(value));
         }
     }
 

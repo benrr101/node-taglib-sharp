@@ -1,5 +1,3 @@
-import * as DateFormat from "dateformat";
-
 import AttachmentFrame from "./frames/attachmentFrame";
 import CommentsFrame from "./frames/commentsFrame";
 import FrameFactory from "./frames/frameFactory";
@@ -20,7 +18,7 @@ import {IPicture} from "../picture";
 import {Tag, TagTypes} from "../tag";
 import {TextInformationFrame, UserTextInformationFrame} from "./frames/textInformationFrame";
 import {UrlLinkFrame} from "./frames/urlLinkFrame";
-import {Guards} from "../utils";
+import {DateUtils, Guards} from "../utils";
 
 /**
  * Extends {@link Tag} to provide support for reading and writing tags stored in the ID3v2 format.
@@ -714,12 +712,7 @@ export default class Id3v2Tag extends Tag {
      * @remarks Stored in the `TDTG` frame
      */
     set dateTagged(value: Date | undefined) {
-        let strValue: string;
-        if (value) {
-            strValue = DateFormat(value, "yyyy-mm-dd HH:MM:ss");
-            strValue = strValue.replace(" ", "T");
-        }
-        this.setTextFrame(FrameIdentifiers.TDTG, strValue);
+        this.setTextFrame(FrameIdentifiers.TDTG, DateUtils.format(value));
     }
 
     /**
