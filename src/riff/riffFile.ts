@@ -1,4 +1,3 @@
-import itiriri from "itiriri";
 import AviFileSettings from "./aviFileSettings";
 import AviHeader from "./avi/aviHeader";
 import DivxTag from "./divxTag";
@@ -151,10 +150,16 @@ export default class RiffFile extends File {
             const renderedTagBytes = ByteVector.concatenate(... renderedTags);
 
             // Determine the boundaries of the tagging chunks
-            const taggingChunkIndexes = itiriri(this._taggingChunkIndexes.values())
-                .filter((i) => i >= 0)
-                .sort()
-                .toArray();
+            // Array.from(this._taggingChunkIndexes.values())
+            //     .filter((i) => i >= 0)
+            //     .sort();
+            const taggingChunkIndexes: number[] = []
+            for (const index of this._taggingChunkIndexes.values()) {
+                if (index >= 0) {
+                    taggingChunkIndexes.push(index)
+                }
+            }
+            taggingChunkIndexes.sort()
 
             let taggingChunkStartIndex: number;
             let taggingChunkStart: number;

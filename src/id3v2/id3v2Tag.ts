@@ -1,6 +1,3 @@
-import * as DateFormat from "dateformat";
-import itiriri from "itiriri";
-
 import AttachmentFrame from "./frames/attachmentFrame";
 import CommentsFrame from "./frames/commentsFrame";
 import FrameFactory from "./frames/frameFactory";
@@ -21,7 +18,7 @@ import {IPicture} from "../picture";
 import {Tag, TagTypes} from "../tag";
 import {TextInformationFrame, UserTextInformationFrame} from "./frames/textInformationFrame";
 import {UrlLinkFrame} from "./frames/urlLinkFrame";
-import {Guards} from "../utils";
+import {DateUtils, Guards} from "../utils";
 
 /**
  * Extends {@link Tag} to provide support for reading and writing tags stored in the ID3v2 format.
@@ -373,9 +370,17 @@ export default class Id3v2Tag extends Tag {
         }
 
         // Collapse the instrument lists and return that
-        this._performersRole = itiriri(map.values())
-            .map((e: string[]) => e.length > 0 ? e.join("; ") : undefined)
-            .toArray();
+        // this._performersRole = Array.from(map.values())
+        //     .map((e: string[]) => e.length > 0 ? e.join("; ") : undefined);
+        const performersRole = []
+        for (const roles of map.values()) {
+            if (roles.length > 0) {
+                performersRole.push(roles.join('; '))
+            } else {
+                performersRole.push(undefined)
+            }
+        }
+        this._performersRole = performersRole
         return this._performersRole;
     }
     /**
@@ -716,12 +721,7 @@ export default class Id3v2Tag extends Tag {
      * @remarks Stored in the `TDTG` frame
      */
     set dateTagged(value: Date | undefined) {
-        let strValue: string;
-        if (value) {
-            strValue = DateFormat(value, "yyyy-mm-dd HH:MM:ss");
-            strValue = strValue.replace(" ", "T");
-        }
-        this.setTextFrame(FrameIdentifiers.TDTG, strValue);
+        this.setTextFrame(FrameIdentifiers.TDTG, DateUtils.format(value));
     }
 
     /**
