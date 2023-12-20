@@ -91,8 +91,13 @@ export default class OggPage {
         Guards.safeUint(position, "position");
 
         // Check to see if there are any changes to be made
-        if (Array.from(shiftTable.values()).every((e) => e === 0)) {
-            return;
+        // if (Array.from(shiftTable.values()).every((e) => e === 0)) {
+        //     return;
+        // }
+        for (const value of shiftTable.values()) {
+            if (value !== 0) {
+                return
+            }
         }
 
         while (position < file.length - OggPageHeader.MINIMUM_SIZE) {

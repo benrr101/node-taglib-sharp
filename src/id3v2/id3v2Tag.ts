@@ -370,8 +370,17 @@ export default class Id3v2Tag extends Tag {
         }
 
         // Collapse the instrument lists and return that
-        this._performersRole = Array.from(map.values())
-            .map((e: string[]) => e.length > 0 ? e.join("; ") : undefined);
+        // this._performersRole = Array.from(map.values())
+        //     .map((e: string[]) => e.length > 0 ? e.join("; ") : undefined);
+        const performersRole = []
+        for (const roles of map.values()) {
+            if (roles.length > 0) {
+                performersRole.push(roles.join('; '))
+            } else {
+                performersRole.push(undefined)
+            }
+        }
+        this._performersRole = performersRole
         return this._performersRole;
     }
     /**

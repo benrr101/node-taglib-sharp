@@ -77,7 +77,12 @@ export default class OggTag extends CombinedTag {
     /** @inheritDoc */
     // TODO: This value is never updated after a save!!
     public get sizeOnDisk(): number {
-        return Array.from(this._comments.values()).reduce((accum, c) => accum + c.sizeOnDisk, 0);
+        // return Array.from(this._comments.values()).reduce((accum, c) => accum + c.sizeOnDisk, 0);
+        let sum = 0
+        for (const comments of this._comments.values()) {
+            sum += comments.sizeOnDisk
+        }
+        return sum
     }
 
     /**
