@@ -49,8 +49,10 @@ export default class XingHeader {
     public static fromData(data: ByteVector): XingHeader {
         Guards.truthy(data, "data");
 
+        const isInfoHeader = data.startsWith(XingHeader.FILE_IDENTIFIER_INFO);
+
         // Check to see if a valid Xing header is available
-        if (!data.startsWith(XingHeader.FILE_IDENTIFIER) && !data.startsWith(XingHeader.FILE_IDENTIFIER_INFO)) {
+        if (!data.startsWith(XingHeader.FILE_IDENTIFIER) && !isInfoHeader) {
             throw new CorruptFileError("Not a valid Xing header");
         }
 
@@ -70,7 +72,7 @@ export default class XingHeader {
             header._totalSize = 0;
         }
 
-        header._isPresent = true;
+        header._isPresent = !isInfoHeader;
 
         return header;
     }
