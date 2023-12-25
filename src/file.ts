@@ -481,7 +481,7 @@ export abstract class File implements IDisposable {
         this._fileStream.setLength(this._fileStream.length + bytesToAdd);
 
         // Step 3: Shuffle bytes to the end
-        const _bufferSize = File.BUFFER_SIZE * 1024
+        const _bufferSize = Math.min(bytesToAdd, File.BUFFER_SIZE * 1024);
         const buffer = new Uint8Array(_bufferSize);
         const stopShufflingIndex = start + replace + bytesToAdd;
         let shuffleIndex = this._fileStream.length;
