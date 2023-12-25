@@ -374,9 +374,9 @@ export default class RiffFile extends File {
                 }
 
                 codecs = [waveHeader];
-                // durationMilliseconds = dataChunk.originalDataSize * 8000
-                //     / waveHeader.bitsPerSample / waveHeader.audioSampleRate;
-                durationMilliseconds = dataChunk.originalDataSize * 1000 / waveHeader.averageBytesPerSecond
+                durationMilliseconds = waveHeader.averageBytesPerSecond
+                    ? dataChunk.originalDataSize * 1000 / waveHeader.averageBytesPerSecond
+                    : dataChunk.originalDataSize * 8000 / waveHeader.bitsPerSample / waveHeader.audioSampleRate;
                 break;
 
             case "AVI ":
