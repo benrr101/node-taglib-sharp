@@ -359,7 +359,7 @@ import {Testers} from "../utilities/testers";
             assert.strictEqual(file.properties.codecs.length, 1);
             assert.isOk(file.properties.codecs.find((c) => c instanceof RiffWaveFormatEx));
             assert.isNotOk(file.properties.codecs.find((c) => c instanceof RiffBitmapInfoHeader));
-            assert.approximately(file.properties.durationMilliseconds, 405, 1);
+            assert.approximately(file.properties.durationMilliseconds, 426, 1);
 
             assert.isOk(file.tag);
             assert.instanceOf(file.tag, RiffTags);
@@ -399,7 +399,7 @@ import {Testers} from "../utilities/testers";
             assert.strictEqual(file.properties.codecs.length, 1);
             assert.isOk(file.properties.codecs.find((c) => c instanceof RiffWaveFormatEx));
             assert.isNotOk(file.properties.codecs.find((c) => c instanceof RiffBitmapInfoHeader));
-            assert.approximately(file.properties.durationMilliseconds, 405, 1);
+            assert.approximately(file.properties.durationMilliseconds, 426, 1);
 
             assert.isOk(file.tag);
             assert.instanceOf(file.tag, RiffTags);
@@ -507,7 +507,7 @@ import {Testers} from "../utilities/testers";
         assert.isOk(file.properties.codecs);
         assert.strictEqual(file.properties.codecs.length, 1);
         assert.isOk(file.properties.codecs.find((c) => c instanceof RiffWaveFormatEx));
-        assert.approximately(file.properties.durationMilliseconds, 405, 1);
+        assert.approximately(file.properties.durationMilliseconds, 426, 1);
 
         assert.isOk(file.tag);
         assert.instanceOf(file.tag, RiffTags);

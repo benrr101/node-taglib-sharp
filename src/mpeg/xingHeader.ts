@@ -11,6 +11,7 @@ export default class XingHeader {
      * Identifier that appears in a file to indicate the start of a Xing header.
      */
     public static readonly FILE_IDENTIFIER = ByteVector.fromString("Xing", StringType.Latin1).makeReadOnly();
+    public static readonly FILE_IDENTIFIER_INFO = ByteVector.fromString("Info", StringType.Latin1).makeReadOnly();
 
     /**
      * An empty an unset Xing header
@@ -48,8 +49,10 @@ export default class XingHeader {
     public static fromData(data: ByteVector): XingHeader {
         Guards.truthy(data, "data");
 
+        const isInfoHeader = data.startsWith(XingHeader.FILE_IDENTIFIER_INFO);
+
         // Check to see if a valid Xing header is available
-        if (!data.startsWith(XingHeader.FILE_IDENTIFIER)) {
+        if (!data.startsWith(XingHeader.FILE_IDENTIFIER) && !isInfoHeader) {
             throw new CorruptFileError("Not a valid Xing header");
         }
 
@@ -69,7 +72,7 @@ export default class XingHeader {
             header._totalSize = 0;
         }
 
-        header._isPresent = true;
+        header._isPresent = !isInfoHeader;
 
         return header;
     }
