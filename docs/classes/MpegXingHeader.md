@@ -9,6 +9,7 @@ Information about a variable bitrate MPEG audio stream
 ### Properties
 
 - [FILE\_IDENTIFIER](MpegXingHeader.md#file_identifier)
+- [FILE\_IDENTIFIER\_INFO](MpegXingHeader.md#file_identifier_info)
 - [UNKNOWN](MpegXingHeader.md#unknown)
 
 ### Accessors
@@ -30,6 +31,12 @@ Information about a variable bitrate MPEG audio stream
 ▪ `Static` `Readonly` **FILE\_IDENTIFIER**: [`ByteVector`](ByteVector.md)
 
 Identifier that appears in a file to indicate the start of a Xing header.
+
+___
+
+### FILE\_IDENTIFIER\_INFO
+
+▪ `Static` `Readonly` **FILE\_IDENTIFIER\_INFO**: [`ByteVector`](ByteVector.md)
 
 ___
 

@@ -627,7 +627,7 @@ Gets the date and time at which the tag has been written.
 
 Tag.dateTagged
 
-• `set` **dateTagged**(`v`): `void`
+• `set` **dateTagged**(`value`): `void`
 
 Sets the date and time at which the tag has been written.
 
@@ -635,7 +635,7 @@ Sets the date and time at which the tag has been written.
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `v` | `Date` | Date/time at which the tag has been written, or `undefined` if no value is present |
+| `value` | `Date` | Date/time at which the tag has been written, or `undefined` if no value is present |
 
 #### Returns
 
