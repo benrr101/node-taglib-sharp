@@ -81,7 +81,6 @@ export default class Mpeg4File extends File {
             parser.parseBoxHeaders();
 
             let sizeChange: number;
-            let writePosition: number;
 
             // To avoid rewriting udta blocks which might not have been modified,
             // the code here will work correctly if:
@@ -95,6 +94,10 @@ export default class Mpeg4File extends File {
             if (!udtaBox) {
                 udtaBox = IsoUserDataBox.fromEmpty();
             }
+
+            const udtaHeader = udtaBox.parentTree[udtaBox.parentTree.length - 1];
+            const totalBoxSize = udtaHeader.totalBoxSize;
+            let writePosition = udtaHeader.position;
 
             const tagData = Mpeg4BoxRenderer.renderBox(udtaBox);
 
@@ -112,10 +115,8 @@ export default class Mpeg4File extends File {
                 }
             } else {
                 // Overwrite the old box.
-                const udtaHeader = udtaBox.parentTree[udtaBox.parentTree.length - 1];
-                sizeChange = tagData.length - udtaHeader.totalBoxSize;
-                writePosition = udtaHeader.position;
-                this.insert(tagData, writePosition, udtaHeader.totalBoxSize);
+                sizeChange = tagData.length - totalBoxSize;
+                this.insert(tagData, writePosition, totalBoxSize);
 
                 // Overwrite the parent box sizes.
                 for (let i = udtaBox.parentTree.length - 2; i >= 0; i--) {
