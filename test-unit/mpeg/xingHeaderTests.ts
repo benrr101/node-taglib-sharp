@@ -22,7 +22,7 @@ import {Testers} from "../utilities/testers";
         // Assert
         assert.isOk(header);
         assert.strictEqual(header.totalFrames, 123);
-        assert.strictEqual(header.totalSize, 234);
+        assert.strictEqual(header.totalBytes, 234);
         assert.isFalse(header.isPresent);
     }
 

@@ -1,7 +1,7 @@
 import XingHeader from "./xingHeader";
+import VbrHeader from "./vbrHeader";
 import VbriHeader from "./vbriHeader";
 import {ByteVector} from "../byteVector";
-import {CorruptFileError} from "../errors";
 import {File} from "../file";
 import {IAudioCodec, MediaTypes} from "../properties";
 import {ChannelMode, MpegVersion} from "./mpegEnums";
@@ -12,18 +12,6 @@ import {Guards, NumberUtils} from "../utils";
  * header, see http://www.mpgedit.org/mpgedit/mpeg_format/mpeghdr.htm
  */
 export default class MpegAudioHeader implements IAudioCodec {
-    // @TODO: make an enum for header flags
-
-    /**
-     * Static instance of an audio header that has unknown information.
-     */
-    public static readonly UNKNOWN: MpegAudioHeader = MpegAudioHeader.fromInfo(
-        0,
-        0,
-        XingHeader.UNKNOWN,
-        VbriHeader.UNKNOWN
-    );
-
     private static readonly BITRATES: number[][][] = [
         [ // Version 1
             [0, 32, 64, 96, 128, 160, 192, 224, 256, 288, 320, 352, 384, 416, 448, -1], // layer 1
@@ -49,366 +37,271 @@ export default class MpegAudioHeader implements IAudioCodec {
         [11025, 12000,  8000, 0]  // Version 2.5
     ];
 
-    private _durationMilliseconds: number;
-    private _flags: number;
-    private _streamLength: number;
-    private _vbriHeader: VbriHeader;
-    private _xingHeader: XingHeader;
+    private readonly _bitrate: number;
+    private readonly _channelMode: ChannelMode;
+    private readonly _layer: number;
+    private readonly _isCopyrighted: boolean;
+    private readonly _isOriginal: boolean;
+    private readonly _isProtected: boolean;
+    private readonly _sampleRate: number;
+    private readonly _samplesPerFrame: number;
+    private readonly _streamLength: number;
+    private readonly _version: MpegVersion;
+    private readonly _versionString: string;
+
+    private _vbrHeader: VbrHeader;
 
     // #region Constructors
 
-    private constructor() { /* private to enforce construction via static methods */ }
+    private constructor(flags: number, streamLength: number) {
+        this._streamLength = streamLength;
 
-    /**
-     * Constructs and initializes a new instance by reading its contents from a data
-     * {@link ByteVector} and its Xing header from the appropriate location in the
-     * specified file.
-     * @param data The header data to read
-     * @param file File to read the Xing/VBRI header from
-     * @param position Position into `file` where the header begins, must be a positive
-     *     8-bit integer.
-     */
-    public static fromData(data: ByteVector, file: File, position: number): MpegAudioHeader {
-        Guards.truthy(data, "data");
+        // TODO: These could be moved to C#-like Lazy instances
+        // TODO: Introduce an MPEG flags enum
+
+        // Bit 19: Version
+        switch (NumberUtils.uintAnd(NumberUtils.uintRShift(flags, 19), 0x03)) {
+            case 0:
+                this._version = MpegVersion.Version25;
+                this._versionString = "2.5";
+                break;
+            case 2:
+                this._version = MpegVersion.Version2;
+                this._versionString = "2";
+                break;
+            default:
+                this._version = MpegVersion.Version1;
+                this._versionString = "1";
+                break;
+        }
+
+        // Bits 18-17: Audio layer
+        switch (NumberUtils.uintAnd(NumberUtils.uintRShift(flags, 17), 0x03)) {
+            case 1:
+                this._layer = 3;
+                break;
+            case 2:
+                this._layer = 2;
+                break;
+            default:
+                this._layer = 1;
+                break;
+        }
+
+        // Bit 16: Error protection
+        this._isProtected = NumberUtils.hasFlag(flags, 0x10000);
+
+        // Bits 15-12: Bit rate (as per header)
+        const bitrateIndex1 = this._version === MpegVersion.Version1 ? 0 : 1;
+        const bitrateIndex2 = this._layer - 1;
+        const bitrateIndex3 = NumberUtils.uintAnd(NumberUtils.uintRShift(flags, 12), 0x0F);
+        this._bitrate = MpegAudioHeader.BITRATES[bitrateIndex1][bitrateIndex2][bitrateIndex3];
+
+        // Bits 11-10: Sample rate
+        const sampleRateIndex2 = NumberUtils.uintAnd(NumberUtils.uintRShift(flags, 10), 0x03);
+        this._sampleRate = MpegAudioHeader.SAMPLE_RATES[this._version][sampleRateIndex2];
+
+        // Bit 9: Frame padding - not needed today (maybe if we support accurate reading someday we will)
+
+        // Bit 8: Private bit - unknown meaning, skipping
+
+        // Bit 7-6: Channel mode
+        this._channelMode = NumberUtils.uintAnd(NumberUtils.uintRShift(flags, 6), 0x03);
+
+        // Bit 5-4: Join stereo mode extension - not useful here, skipping
+
+        // Bit 3: Copyright
+        this._isCopyrighted = NumberUtils.hasFlag(flags, 0x08);
+
+        // Bit 2: Original
+        this._isOriginal = NumberUtils.hasFlag(flags, 0x04);
+
+        // Bit 1-0: Emphasis - not useful here, skipping
+
+        // Lookup samples per frame
+        this._samplesPerFrame = MpegAudioHeader.BLOCK_SIZES[this._version][this._layer];
+    }
+
+    public static fromFile(file: File, startPosition: number, endPosition: number, maxLength?: number): MpegAudioHeader {
         Guards.truthy(file, "file");
-        Guards.safeUint(position, "position");
-
-        const header = new MpegAudioHeader();
-        header._durationMilliseconds = 0;
-        header._streamLength = 0;
-
-        const error = this.getHeaderError(data);
-        if (error) {
-            throw new CorruptFileError(error);
+        Guards.safeUint(startPosition, "startPosition");
+        Guards.safeUint(endPosition, "endPosition");
+        if (maxLength !== undefined) {
+            Guards.safeUint(maxLength, "maxLength");
         }
 
-        header._flags = data.toUint();
-        header._xingHeader = XingHeader.UNKNOWN;
-        header._vbriHeader = VbriHeader.UNKNOWN;
+        // Scan the file to find the header
+        let flags: number;
+        let filePosition = startPosition;
+        const searchEnd = maxLength > 0 ? startPosition + maxLength : endPosition;
+        while (filePosition < searchEnd) {
+            // Read a buffer worth of bytes, at least 4, from the file
+            file.seek(filePosition);
+            const buffer = file.readBlock(File.bufferSize);
+            if (buffer.length < 4) {
+                break;
+            }
 
-        // Check for a Xing header that will help us in gathering info about a VBR stream
-        file.seek(position + XingHeader.xingHeaderOffset(header.version, header.channelMode));
+            // Scan the buffer for the header signature
+            // Note: We need at least 4 bytes to check for a header, so once we get less than 4
+            //     bytes left in the buffer just skip it to avoid the subarray allocation and
+            //     function call to check it.
+            for (let i = 0; i < buffer.length - 4; i++) {
+                const headerBytes = buffer.subarray(i, 4);
+                if (this.isHeaderValid(headerBytes)) {
+                    flags = headerBytes.toUint();
+                    filePosition += i;
 
-        const xingData = file.readBlock(16);
-        if (xingData.length === 16 && (xingData.startsWith(XingHeader.FILE_IDENTIFIER) || xingData.startsWith(XingHeader.FILE_IDENTIFIER_INFO))) {
-            header._xingHeader = XingHeader.fromData(xingData);
+                    break;
+                }
+            }
+
+            if (flags) {
+                break;
+            }
+
+            // Advance to the end of the buffer, minus the 3 bytes we didn't try to check
+            filePosition += buffer.length - 3;
         }
 
-        if (header._xingHeader.isPresent) {
-            return header;
+        if (!flags) {
+            return undefined;
         }
 
-        // A Xing header could not be found, next check for a Fraunhofer VBRI header
-        file.seek(position + VbriHeader.VBRI_HEADER_OFFSET);
+        // Create the header from the flags
+        const header = new MpegAudioHeader(flags, endPosition - startPosition);
 
-        // Only get the first 24 bytes of the header. We're not interested in the TOC entries.
-        const vbriData = file.readBlock(24);
-        if (vbriData.length === 24 && vbriData.startsWith(VbriHeader.FILE_IDENTIFIER)) {
-            header._vbriHeader = VbriHeader.fromData(vbriData);
-        }
+        header._vbrHeader =
+            XingHeader.fromFile(
+                file,
+                filePosition,
+                header._version,
+                header._channelMode,
+                header._samplesPerFrame,
+                header._sampleRate,
+                header._streamLength
+            ) || VbriHeader.fromFile(
+                file,
+                filePosition,
+                header._samplesPerFrame,
+                header._sampleRate
+            );
 
         return header;
     }
 
-    /**
-     * Constructs and initializes a new instance by populating it with specified values.
-     * @param flags Flags for the new instance
-     * @param streamLength Stream length of the new instance
-     * @param xingHeader Xing header associated with the new instance
-     * @param vbriHeader VBRI header associated with the new instance
-     */
-    public static fromInfo(
-        flags: number,
-        streamLength: number,
-        xingHeader: XingHeader,
-        vbriHeader: VbriHeader
-    ): MpegAudioHeader {
-        Guards.uint(flags, "flags");
-        Guards.safeUint(streamLength, "streamLength");
-        Guards.truthy(xingHeader, "xingHeader");
-        Guards.truthy(vbriHeader, "vbriHeader");
-
-        const header = new MpegAudioHeader();
-        header._flags = flags;
-        header._streamLength = streamLength;
-        header._xingHeader = xingHeader;
-        header._vbriHeader = vbriHeader;
-        header._durationMilliseconds = 0;
-
-        return header;
-    }
+    // /**
+    //  * Constructs and initializes a new instance by populating it with specified values.
+    //  * @param flags Flags for the new instance
+    //  * @param streamLength Stream length of the new instance
+    //  * @param xingHeader Xing header associated with the new instance
+    //  * @param vbriHeader VBRI header associated with the new instance
+    //  */
+    // public static fromInfo(
+    //     flags: number,
+    //     streamLength: number,
+    //     xingHeader: XingHeader,
+    //     vbriHeader: VbriHeader
+    // ): MpegAudioHeader {
+    //     Guards.uint(flags, "flags");
+    //     Guards.safeUint(streamLength, "streamLength");
+    //     Guards.truthy(xingHeader, "xingHeader");
+    //     Guards.truthy(vbriHeader, "vbriHeader");
+    //
+    //     const header = new MpegAudioHeader();
+    //     header._flags = flags;
+    //     header._streamLength = streamLength;
+    //     header._xingHeader = xingHeader;
+    //     header._vbriHeader = vbriHeader;
+    //     header._durationMilliseconds = 0;
+    //
+    //     return header;
+    // }
 
     // #endregion
 
     // #region Properties
 
     /** @inheritDoc */
-    public get audioBitrate(): number {
-        // NOTE: Although it would be *amazing* to store `this.durationMilliseconds / 1000` in a
-        //    variable, we can't b/c it causes a stack overflow. Oh well.
-        if (
-            this._xingHeader.totalSize > 0 &&
-            this._xingHeader.totalFrames > 0 &&
-            this.durationMilliseconds / 1000 > 0
-        ) {
-            return Math.round(this._xingHeader.totalSize * 8 / (this.durationMilliseconds / 1000) / 1000);
-        }
-        if (
-            this._vbriHeader.totalSize > 0 &&
-            this._vbriHeader.totalFrames > 0 &&
-            this.durationMilliseconds / 1000 > 0
-        ) {
-            return Math.round(this._vbriHeader.totalSize * 8 / (this.durationMilliseconds / 1000) / 1000);
-        }
-
-        const index1 = this.version === MpegVersion.Version1 ? 0 : 1;
-        const index2 = this.audioLayer - 1;
-        const index3 = NumberUtils.uintAnd(NumberUtils.uintRShift(this._flags, 12), 0x0f);
-        return MpegAudioHeader.BITRATES[index1][index2][index3];
-    }
+    public get audioBitrate(): number { return this._vbrHeader?.bitrateKilobytes || this._bitrate; }
 
     /** @inheritDoc */
     public get audioChannels(): number { return this.channelMode === ChannelMode.SingleChannel ? 1 : 2; }
 
     /**
-     * Gets the length of the frames in the audio represented by the current instance.
-     */
-    public get audioFrameLength(): number {
-        const audioLayer = this.audioLayer;
-        if (audioLayer === 1) {
-            return Math.floor(48000 * this.audioBitrate / this.audioSampleRate) + (this.isPadded ? 4 : 0);
-        }
-        if (audioLayer === 2 || this.version === MpegVersion.Version1) {
-            return Math.floor(144000 * this.audioBitrate / this.audioSampleRate) + (this.isPadded ? 1 : 0);
-        }
-        if (audioLayer === 3) {
-            return Math.floor(72000 * this.audioBitrate / this.audioSampleRate) + (this.isPadded ? 1 : 0);
-        }
-        return 0;
-    }
-
-    /**
      * Gets the MPEG audio layer used to encode the audio represented by the current instance.
      */
-    public get audioLayer(): number {
-        switch (NumberUtils.uintAnd(NumberUtils.uintRShift(this._flags, 17), 0x03)) {
-            case 1:
-                return 3;
-            case 2:
-                return 2;
-            default:
-                return 1;
-        }
-    }
+    public get audioLayer(): number { return this._layer; }
 
     /** @inheritDoc */
-    public get audioSampleRate(): number {
-        const index1 = this.version;
-        const index2 = NumberUtils.uintAnd(NumberUtils.uintRShift(this._flags, 10), 0x03);
-        return MpegAudioHeader.SAMPLE_RATES[index1][index2];
-    }
+    public get audioSampleRate(): number { return this._sampleRate; }
 
     /**
      * Gets the MPEG audio channel mode of the audio represented by the current instance.
      */
-    public get channelMode(): ChannelMode { return NumberUtils.uintAnd(NumberUtils.uintRShift(this._flags, 6), 0x03); }
+    public get channelMode(): ChannelMode { return this._channelMode; }
 
     /** @inheritDoc */
     public get description(): string {
-        let builder = "MPEG Version ";
-        switch (this.version) {
-            case MpegVersion.Version1:
-                builder += "1";
-                break;
-            case MpegVersion.Version2:
-                builder += "2";
-                break;
-            case MpegVersion.Version25:
-                builder += "2.5";
-                break;
-        }
-        builder += ` Audio, Layer ${this.audioLayer}`;
-
-        if (this._xingHeader.isPresent || this._vbriHeader.isPresent) {
-            builder += " VBR";
+        let result = `MPEG Version ${this._versionString} Audio, Layer ${this._layer}`;
+        if (this._vbrHeader?.bitrateKilobytes) {
+            result += " VBR";
         }
 
-        return builder;
+        return result;
     }
 
     /** @inheritDoc */
     public get durationMilliseconds(): number {
-        if (this._durationMilliseconds > 0) { return this._durationMilliseconds; }
-
-        const blockSizeForVersionAndLayer = MpegAudioHeader.BLOCK_SIZES[this.version][this.audioLayer];
-        if (this._xingHeader.totalFrames > 0) {
-            // Read the length and the bitrate from the Xing header
-            const timePerFrameSeconds = blockSizeForVersionAndLayer / this.audioSampleRate;
-            const durationSeconds = timePerFrameSeconds * this._xingHeader.totalFrames;
-            this._durationMilliseconds = durationSeconds * 1000;
-        } else if (this._vbriHeader.totalFrames > 0) {
-            // Read the length and the bitrate from the VBRI header
-            const timePerFrameSeconds = blockSizeForVersionAndLayer / this.audioSampleRate;
-            const durationSeconds = Math.round(timePerFrameSeconds * this._vbriHeader.totalFrames);
-            this._durationMilliseconds = durationSeconds * 1000;
-        } else if (this.audioFrameLength > 0 && this.audioBitrate > 0) {
-            // Since there was no valid Xing or VBRI header found, we hope that we're in a constant
-            // bitrate file
-
-            // Round off to upper integer value
-            const frames = Math.floor((this._streamLength + this.audioFrameLength - 1) / this.audioFrameLength);
-            const durationSeconds = (this.audioFrameLength * frames) / (this.audioBitrate * 125);
-            this._durationMilliseconds = durationSeconds * 1000;
-        }
-
-        return this._durationMilliseconds;
+        return this._vbrHeader?.durationMilliseconds || (this._streamLength * 8) / this.audioBitrate;
     }
 
-    // TODO: Introduce an MPEG flags enum
+    /**
+     * Whether the current audio is copyrighted.
+     */
+    public get isCopyrighted(): boolean { return this._isCopyrighted }
 
     /**
-     * Whether or not the current audio is copyrighted.
+     * Whether the current audio is original.
      */
-    public get isCopyrighted(): boolean { return ((this._flags >> 3) & 1) === 1; }
-
-    /**
-     * Whether or not the current audio is original.
-     */
-    public get isOriginal(): boolean { return ((this._flags >> 2) & 1) === 1; }
-
-    /**
-     * Whether or not the audio represented by the current instance is padded.
-     */
-    public get isPadded(): boolean { return ((this._flags >> 9) & 1) === 1; }
+    public get isOriginal(): boolean { return this._isOriginal; }
 
     /**
      * Gets whether the audio represented by the current instance is protected by CRC.
      */
-    public get isProtected(): boolean { return ((this._flags >> 16) & 1) === 0; }
+    public get isProtected(): boolean { return this._isProtected; }
 
     /** @inheritDoc */
     public get mediaTypes(): MediaTypes { return MediaTypes.Audio; }
 
     /**
-     * Sets the length of the audio stream represented by the current instance.
-     * If this value has not been set, {@link durationMilliseconds} will return an incorrect value.
-     * @internal This is intended to be set when the file is read.
-     */
-    public set streamLength(value: number) {
-        Guards.safeUint(value, "value");
-        this._streamLength = value;
-
-        // Force the recalculation of duration if it depends on the stream length.
-        if (this._xingHeader.totalFrames === 0 && this._vbriHeader.totalFrames === 0) {
-            this._durationMilliseconds = 0;
-        }
-    }
-
-    /**
-     * Gets the VBRI header found in the audio. {@link VbriHeader.UNKNOWN} is returned if no header
-     * was found.
-     */
-    public get vbriHeader(): VbriHeader { return this._vbriHeader; }
-
-    /**
      * Gets the MPEG version used to encode the audio represented by the current instance.
      */
-    public get version(): MpegVersion {
-        switch ((this._flags >> 19) & 0x03) {
-            case 0:
-                return MpegVersion.Version25;
-            case 2:
-                return MpegVersion.Version2;
-            default:
-                return MpegVersion.Version1;
-        }
-    }
-
-    /**
-     * Gets the Xing header found in the audio. {@link XingHeader.UNKNOWN} is returned if no header
-     * was found.
-     */
-    public get xingHeader(): XingHeader { return this._xingHeader; }
+    public get version(): MpegVersion { return this._version }
 
     // #endregion
 
-    /**
-     * Searches for an audio header in a file starting at a specified position and searching
-     * through a specified number of bytes.
-     * @param file File to search
-     * @param position Position in `file` at which to start searching
-     * @param length Maximum number of bytes to search before giving up. Defaults to `-1` to
-     *     have no maximum
-     * @returns The header that was found or `undefined` if a header was not found
-     */
-    public static find(file: File, position: number, length?: number): MpegAudioHeader {
-        Guards.truthy(file, "file");
-        Guards.safeUint(position, "position");
-        if (length !== undefined) {
-            Guards.uint(length, "length");
+    private static isHeaderValid(data: ByteVector): boolean {
+        // We assume that data is at least 4 bytes long.
+        if (data.get(0) != 0xFF) {
+            // First byte must be FF
+            return false;
         }
 
-        const end = position + (length || 0);
-
-        file.seek(position);
-        let buffer = file.readBlock(3);
-
-        if (buffer.length < 3) {
-            return undefined;
+        const byte1 = data.get(1);
+        if (NumberUtils.uintAnd(byte1, 0xE0) != 0xE0) {
+            // First 3 bits of second byte (highest) must be set
+            return false;
+        }
+        if (NumberUtils.uintAnd(byte1, 0x18) === 0x08) {
+            // Bits 4 and 5 cannot be 0b01
+            return false;
+        }
+        if (NumberUtils.uintAnd(byte1, 0x06) === 0x00) {
+            // Bits 6 and 7 cannot be 0b00
+            return false;
         }
 
-        do {
-            // @TODO: ugh, this has that bizarre 3 byteoffset into each read, remove it
-            file.seek(position + 3);
-            buffer = buffer.subarray(buffer.length - 3);
-            buffer.addByteVector(file.readBlock(File.bufferSize));
-
-            for (let i = 0; i < buffer.length - 3 && (length === undefined || position + i < end); i++) {
-                if (buffer.get(i) === 0xFF && buffer.get(i + 1) > 0xE0) {
-                    const data = buffer.subarray(i, 4);
-                    if (!this.getHeaderError(data)) {
-                        try {
-                            return MpegAudioHeader.fromData(data, file, position + i);
-                        } catch (e) {
-                            if (!(e instanceof CorruptFileError)) {
-                                throw e;
-                            }
-                        }
-                    }
-                }
-            }
-
-            position += File.bufferSize;
-        } while (buffer.length > 3 && (length === undefined || position < end));
-
-        return undefined;
-    }
-
-    private static getHeaderError(data: ByteVector): string {
-        if (data.length < 4) {
-            return "Insufficient header length";
-        }
-        if (data.get(0) !== 0xFF) {
-            return "First byte did not match MPEG sync";
-        }
-
-        // Checking bits from high to low:
-        // - First 3 bytes MUST be set
-        // - Bits 4 and 5 can be 00, 10, or 11 but not 01
-        // - One or more of bits 6 and 7 must be set
-        // - Bit 8 can be anything
-        if (NumberUtils.uintAnd(data.get(1), 0xE6) <= 0xE0 || NumberUtils.uintAnd(data.get(1), 0x18) === 0x08) {
-            return "Second byte did not match MPEG sync";
-        }
-
-        const flags = data.toUint();
-        if (NumberUtils.hasFlag(NumberUtils.uintRShift(flags, 12), 0x0F, true)) {
-            return "Header uses invalid bitrate index";
-        }
-        if (NumberUtils.hasFlag(NumberUtils.uintRShift(flags, 10), 0x03, true)) {
-            return "Invalid sample rate";
-        }
-
-        return undefined;
+        return true;
     }
 }
