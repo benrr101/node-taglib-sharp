@@ -29,14 +29,14 @@ export default class VbriHeader extends VbrHeader {
         }
 
         // Parse the header
+        const delay = vbriData.subarray(6, 2).toUshort();
         const totalBytes = vbriData.subarray(10, 4).toUint();
         const totalFrames = vbriData.subarray(14, 4).toUint();
 
-        // @TODO: Subtract delay from total total samples calculation
-
         // Calculate the rest of the values
-        const bitrateBytes = (totalBytes * 8) / (totalFrames * samplesPerFrame / samplesPerSecond);
-        const durationSeconds = totalFrames * samplesPerFrame / samplesPerSecond;
+        const totalSamples = (totalFrames * samplesPerFrame);
+        const bitrateBytes = (totalBytes * 8) / (totalSamples / samplesPerSecond);
+        const durationSeconds = (totalSamples - delay) / samplesPerSecond;
 
         return new VbriHeader(totalFrames, totalBytes, durationSeconds, bitrateBytes);
     }

@@ -47,7 +47,7 @@ import {File, ReadStyle} from "../src";
         assert.approximately(properties.audioBitrate, 45, 1);
         assert.strictEqual(properties.audioChannels, 2);
         assert.strictEqual(properties.audioSampleRate, 44100);
-        assert.strictEqual(properties.durationMilliseconds, 3000);
+        assert.approximately(properties.durationMilliseconds, 3029, 5);
     }
 
     @test
