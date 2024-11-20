@@ -31,7 +31,7 @@ import {File, ReadStyle} from "../src";
         assert.strictEqual(properties.audioBitrate, 128);
         assert.strictEqual(properties.audioChannels, 2);
         assert.strictEqual(properties.audioSampleRate, 44100);
-        assert.strictEqual(properties.durationMilliseconds, 3000)
+        assert.approximately(properties.durationMilliseconds, 3000, 10)
     }
 
     @test
@@ -44,7 +44,7 @@ import {File, ReadStyle} from "../src";
         const properties = file.properties;
 
         // Assert
-        assert.strictEqual(properties.audioBitrate, 45);
+        assert.approximately(properties.audioBitrate, 45, 1);
         assert.strictEqual(properties.audioChannels, 2);
         assert.strictEqual(properties.audioSampleRate, 44100);
         assert.strictEqual(properties.durationMilliseconds, 3000);
@@ -60,7 +60,7 @@ import {File, ReadStyle} from "../src";
         const properties = file.properties;
 
         // Assert
-        assert.strictEqual(properties.audioBitrate, 48);
+        assert.approximately(properties.audioBitrate, 48, 1);
         assert.strictEqual(properties.audioChannels, 2);
         assert.strictEqual(properties.audioSampleRate, 44100);
         assert.strictEqual(properties.durationMilliseconds, 3000);
@@ -79,7 +79,7 @@ import {File, ReadStyle} from "../src";
         assert.strictEqual(properties.audioBitrate, 96);
         assert.strictEqual(properties.audioChannels, 2);
         assert.strictEqual(properties.audioSampleRate, 44100);
-        assert.strictEqual(properties.durationMilliseconds, 3000, 50)
+        assert.strictEqual(properties.durationMilliseconds, 3000)
     }
 
     @test
@@ -92,7 +92,7 @@ import {File, ReadStyle} from "../src";
         const properties = file.properties;
 
         // Assert
-        assert.strictEqual(properties.audioBitrate, 50);
+        assert.approximately(properties.audioBitrate, 50, 1);
         assert.strictEqual(properties.audioChannels, 2);
         assert.strictEqual(properties.audioSampleRate, 44100);
         assert.strictEqual(properties.durationMilliseconds, 3000);

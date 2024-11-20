@@ -319,8 +319,9 @@ export class NumberUtils {
 }
 
 export class StringUtils {
-    public static readonly BCP47_REGEX = new RegExp(/^[a-z]{2,3}(-[a-z]{2,8})*$/i)
+    public static readonly BCP47_REGEX = new RegExp(/^[a-z]{2,3}(-[a-z]{2,8})*$/i);
     public static readonly ISO369_2_REGEX = new RegExp(/^[a-z]{2,3}([-\/][a-z]{2,3})?$/i);
+    public static readonly PRINTABLE_REGEX = new RegExp(/^[a-z0-9!"#$%&'()*+,.\/:;<=>?@\[\] ^_`{|}~-]*$/i);
 
     public static findLastByteFromRight(haystack: string, needle: number): number {
         let length = haystack.length;

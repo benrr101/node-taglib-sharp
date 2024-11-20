@@ -12,11 +12,24 @@ enum XingHeaderFlags {
 }
 
 /**
- * Information about a variable bitrate MPEG audio stream
+ * Information about a Xing variable bitrate MPEG audio stream. This provides a much more accurate
+ * determination of bitrate and duration than just using the first MPEG frame header alone.
+ *
+ * @remarks There is a tiny, known bug in this implementation. According to Hydrogenaudio, for LAME
+ *     v3.99.1, they tried to change the version string to start with L instead of LAME. This was
+ *     rolled back in v3.99.2 due to backwards compat issues with decoders. However, to simplify
+ *     the code here, I've just decided to only check for LAME. Thus, for files encoded with this
+ *     broken version of LAME (or indeed with other encoders like Gogo), the file bitrate and
+ *     duration will be slightly inaccurate.
+ *     Please raise a GitHub issue if this is not good enough and make sure to say "I told you not
+ *     to half-ass it, Ben".
  */
 export default class XingHeader extends VbrHeader {
-    private static readonly FILE_IDENTIFIER_CBR = ByteVector.fromString("Info", StringType.Latin1).makeReadOnly();
-    private static readonly FILE_IDENTIFIER_VBR = ByteVector.fromString("Xing", StringType.Latin1).makeReadOnly();
+    private static readonly IDENTIFIER_CBR = ByteVector.fromString("Info", StringType.Latin1).makeReadOnly();
+    private static readonly IDENTIFIER_LAME = ByteVector.fromString("LAME", StringType.Latin1).makeReadOnly();
+    private static readonly IDENTIFIER_VBR = ByteVector.fromString("Xing", StringType.Latin1).makeReadOnly();
+    private static readonly LAME_HEADER_LENGTH = 36;
+    private static readonly XING_HEADER_LENGTH = 16;
 
     private constructor(totalFrames?: number, totalBytes?: number, durationSeconds?: number, bitrateBytes?: number) {
         super(totalFrames, totalBytes, durationSeconds, bitrateBytes);
@@ -45,12 +58,12 @@ export default class XingHeader extends VbrHeader {
 
         // Seek to position in the file and read Xing header data
         file.seek(mpegHeaderPosition + xingOffset);
-        const xingData = file.readBlock(16);
+        const xingData = file.readBlock(this.XING_HEADER_LENGTH);
 
         // Determine if there is a header here
-        const isCbrHeader = xingData.startsWith(this.FILE_IDENTIFIER_CBR);
-        const isVbrHeader = xingData.startsWith(this.FILE_IDENTIFIER_VBR);
-        if (xingData.length !== 16 || (!isCbrHeader && !isVbrHeader)) {
+        const isCbrHeader = xingData.startsWith(this.IDENTIFIER_CBR);
+        const isVbrHeader = xingData.startsWith(this.IDENTIFIER_VBR);
+        if (xingData.length !== this.XING_HEADER_LENGTH || (!isCbrHeader && !isVbrHeader)) {
             return undefined;
         }
 
@@ -59,13 +72,22 @@ export default class XingHeader extends VbrHeader {
         let totalFrames: number;
         let totalBytes: number;
 
-        let bufferPosition = 8
+        let xingDataPosition = 8
         if (NumberUtils.hasFlag(flags, XingHeaderFlags.FrameCount)) {
-            totalFrames = xingData.subarray(bufferPosition, 4).toUint();
-            bufferPosition += 4;
+            totalFrames = xingData.subarray(xingDataPosition, 4).toUint();
+            xingDataPosition += 4;
         }
         if (NumberUtils.hasFlag(flags, XingHeaderFlags.FileSize)) {
-            totalBytes = xingData.subarray(bufferPosition, 4).toUint();
+            totalBytes = xingData.subarray(xingDataPosition, 4).toUint();
+            xingDataPosition += 4
+        }
+        if (NumberUtils.hasFlag(flags, XingHeaderFlags.TableOfContents)) {
+            // Yes, this does put us past the end of the Xing data, but it will be used to jump to
+            // the offset of the LAME tag
+            xingDataPosition += 100;
+        }
+        if (NumberUtils.hasFlag(flags, XingHeaderFlags.VbrScale)) {
+            xingDataPosition += 4;
         }
 
         // NOTE: I spent a *long* time trying to sort this out. Lesson #1 don't fucking trust
@@ -77,20 +99,39 @@ export default class XingHeader extends VbrHeader {
         //    displayed bitrate and the actual average bitrate must still be calculated.
         // For details on the LAME header, see http://gabriel.mp3-tech.org/mp3infotag.html
 
-        // @TODO Read the ENC_DELAY and ENC_PADDING fields to adjust total samples
+        // Try to read LAME extensions to the Xing header
+        file.seek(mpegHeaderPosition + xingOffset + xingDataPosition);
+        const lameData = file.readBlock(this.LAME_HEADER_LENGTH);
 
-        // Attempt to calculate duration if we can
-        let durationSeconds: number;
-        if (totalFrames) {
-            durationSeconds = totalFrames * samplesPerFrame / samplesPerSecond;
+        let samplesAdjustment = 0;
+        if (
+            lameData.length === 36 &&
+            lameData.startsWith(this.IDENTIFIER_LAME) &&
+            lameData.find(ByteVector.fromByte(0xFF)) < 0 // No MPEG synchronization bytes found
+        ) {
+            const lameVersionString = lameData.subarray(0, 9).toString(StringType.Latin1);
+
+            // [xxxxxxxx xxxxyyyy yyyyyyyy]
+            // Where x is encoder delay and y is encoder padding
+            const delayPadding = lameData.subarray(21, 3).toUint();
+            const encoderDelay = NumberUtils.uintRShift(delayPadding, 12);
+            const encoderPadding = NumberUtils.uintAnd(delayPadding, 0xFFF);
+            samplesAdjustment = encoderDelay + encoderPadding;
         }
 
-        // Attempt to calculate the bitrate if we can
+        // Calculate duration and bitrate based on the data we collected
+        let durationSeconds: number;
         let bitrateBytes: number;
-        if (isVbrHeader && totalFrames) {
-            bitrateBytes = totalBytes
-                ? (totalBytes * 8) / (totalFrames * samplesPerFrame / samplesPerSecond)
-                : (fallbackFileSize * 8) / (totalFrames * samplesPerFrame / samplesPerSecond);
+        if (totalFrames) {
+            // We can calculate duration if we have total frames
+            const totalSamples = (totalFrames * samplesPerFrame) - samplesAdjustment;
+            durationSeconds = totalSamples / samplesPerSecond;
+
+            // If we have a VBR encoded file, we should try to calculate bitrate
+            if (isVbrHeader) {
+                const streamBits = totalBytes ? (totalBytes * 8) : (fallbackFileSize * 8);
+                bitrateBytes = streamBits / durationSeconds;
+            }
         }
 
         return new XingHeader(totalFrames, totalBytes, durationSeconds, bitrateBytes);
@@ -110,4 +151,5 @@ export default class XingHeader extends VbrHeader {
     //     header._totalSize = size;
     //     return header;
     // }
+
 }
