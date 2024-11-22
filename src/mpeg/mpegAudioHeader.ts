@@ -89,7 +89,7 @@ export default class MpegAudioHeader implements IAudioCodec {
         }
 
         // Bit 16: Error protection
-        this._isProtected = NumberUtils.hasFlag(flags, 0x10000);
+        this._isProtected = !NumberUtils.hasFlag(flags, 0x10000);
 
         // Bits 15-12: Bit rate (as per header)
         const bitrateIndex1 = this._version === MpegVersion.Version1 ? 0 : 1;
@@ -133,11 +133,12 @@ export default class MpegAudioHeader implements IAudioCodec {
         // Scan the file to find the header
         let flags: number;
         let filePosition = startPosition;
-        const searchEnd = maxLength > 0 ? startPosition + maxLength : endPosition;
+        const searchEnd = maxLength ? startPosition + maxLength : endPosition;
         while (filePosition < searchEnd) {
             // Read a buffer worth of bytes, at least 4, from the file
             file.seek(filePosition);
-            const buffer = file.readBlock(File.bufferSize);
+            const bufferSize = Math.min(File.bufferSize, endPosition - filePosition);
+            const buffer = file.readBlock(bufferSize);
             if (buffer.length < 4) {
                 break;
             }
@@ -146,7 +147,7 @@ export default class MpegAudioHeader implements IAudioCodec {
             // Note: We need at least 4 bytes to check for a header, so once we get less than 4
             //     bytes left in the buffer just skip it to avoid the subarray allocation and
             //     function call to check it.
-            for (let i = 0; i < buffer.length - 4; i++) {
+            for (let i = 0; i <= buffer.length - 4; i++) {
                 const headerBytes = buffer.subarray(i, 4);
                 if (this.isHeaderValid(headerBytes)) {
                     flags = headerBytes.toUint();
@@ -190,34 +191,6 @@ export default class MpegAudioHeader implements IAudioCodec {
         return header;
     }
 
-    // /**
-    //  * Constructs and initializes a new instance by populating it with specified values.
-    //  * @param flags Flags for the new instance
-    //  * @param streamLength Stream length of the new instance
-    //  * @param xingHeader Xing header associated with the new instance
-    //  * @param vbriHeader VBRI header associated with the new instance
-    //  */
-    // public static fromInfo(
-    //     flags: number,
-    //     streamLength: number,
-    //     xingHeader: XingHeader,
-    //     vbriHeader: VbriHeader
-    // ): MpegAudioHeader {
-    //     Guards.uint(flags, "flags");
-    //     Guards.safeUint(streamLength, "streamLength");
-    //     Guards.truthy(xingHeader, "xingHeader");
-    //     Guards.truthy(vbriHeader, "vbriHeader");
-    //
-    //     const header = new MpegAudioHeader();
-    //     header._flags = flags;
-    //     header._streamLength = streamLength;
-    //     header._xingHeader = xingHeader;
-    //     header._vbriHeader = vbriHeader;
-    //     header._durationMilliseconds = 0;
-    //
-    //     return header;
-    // }
-
     // #endregion
 
     // #region Properties
@@ -227,11 +200,6 @@ export default class MpegAudioHeader implements IAudioCodec {
 
     /** @inheritDoc */
     public get audioChannels(): number { return this.channelMode === ChannelMode.SingleChannel ? 1 : 2; }
-
-    /**
-     * Gets the MPEG audio layer used to encode the audio represented by the current instance.
-     */
-    public get audioLayer(): number { return this._layer; }
 
     /** @inheritDoc */
     public get audioSampleRate(): number { return this._sampleRate; }
@@ -253,7 +221,15 @@ export default class MpegAudioHeader implements IAudioCodec {
 
     /** @inheritDoc */
     public get durationMilliseconds(): number {
-        return this._vbrHeader?.durationMilliseconds || (this._streamLength * 8) / this.audioBitrate;
+        if (this._vbrHeader && this._vbrHeader.durationMilliseconds) {
+            return this._vbrHeader.durationMilliseconds;
+        }
+
+        if (this.audioBitrate) {
+            return (this._streamLength * 8) / this.audioBitrate
+        }
+
+        return 0;
     }
 
     /**
@@ -271,8 +247,18 @@ export default class MpegAudioHeader implements IAudioCodec {
      */
     public get isProtected(): boolean { return this._isProtected; }
 
+    /**
+     * Gets the MPEG audio layer used to encode the audio represented by the current instance.
+     */
+    public get layer(): number { return this._layer; }
+
     /** @inheritDoc */
     public get mediaTypes(): MediaTypes { return MediaTypes.Audio; }
+
+    /**
+     * Gets the variable bitrate header (VBR) if the MPEG audio frame contains one.
+     */
+    public get vbrHeader(): VbrHeader { return this._vbrHeader; }
 
     /**
      * Gets the MPEG version used to encode the audio represented by the current instance.
@@ -294,11 +280,11 @@ export default class MpegAudioHeader implements IAudioCodec {
             return false;
         }
         if (NumberUtils.uintAnd(byte1, 0x18) === 0x08) {
-            // Bits 4 and 5 cannot be 0b01
+            // Bits 4 and 5 cannot be 0b01 (reserved MPEG version)
             return false;
         }
         if (NumberUtils.uintAnd(byte1, 0x06) === 0x00) {
-            // Bits 6 and 7 cannot be 0b00
+            // Bits 6 and 7 cannot be 0b00 (reserved layer)
             return false;
         }
 

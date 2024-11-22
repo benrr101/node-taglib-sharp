@@ -31,7 +31,7 @@ export default class MpegAudioFile extends SandwichFile {
         }
 
         // @TODO: if readStyle is higher than average, scan the entire file to accurately calculate
-        //    the duration.
+        //    the duration and bitrate
 
         // Skip if we're not reading the properties
         this._firstHeader = MpegAudioHeader.fromFile(this, this.mediaStartPosition, this.mediaEndPosition, 0x4000);
