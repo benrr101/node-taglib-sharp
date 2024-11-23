@@ -8,7 +8,7 @@ import {Guards} from "../utils";
  */
 export default class VbriHeader extends VbrHeader {
     private static readonly FILE_IDENTIFIER = ByteVector.fromString("VBRI", StringType.Latin1).makeReadOnly();
-    private static readonly HEADER_OFFSET = 0x24;
+    private static readonly HEADER_OFFSET = 36;
 
     private constructor(totalFrames: number, totalBytes: number, durationSeconds: number, bitrateBytes: number) {
         super(totalFrames, totalBytes, durationSeconds, bitrateBytes);
@@ -17,8 +17,8 @@ export default class VbriHeader extends VbrHeader {
     public static fromFile(file: File, mpegHeaderPosition: number, samplesPerFrame: number, samplesPerSecond: number) {
         Guards.truthy(file, "files");
         Guards.safeUint(mpegHeaderPosition, "mpegHeaderPosition");
-        Guards.safeUint(samplesPerFrame, "samplesPerFrame");
-        Guards.safeUint(samplesPerSecond, "samplesPerSecond");
+        Guards.safeUint(samplesPerFrame, "samplesPerFrame", false);
+        Guards.safeUint(samplesPerSecond, "samplesPerSecond", false);
 
         // Seek to the position in the file where the VBRI header should be and read it
         file.seek(mpegHeaderPosition + this.HEADER_OFFSET);
@@ -40,20 +40,4 @@ export default class VbriHeader extends VbrHeader {
 
         return new VbriHeader(totalFrames, totalBytes, durationSeconds, bitrateBytes);
     }
-
-    // /**
-    //  * Constructs a new instance with a specified frame count and size.
-    //  * @param frames Frame count of the audio
-    //  * @param size Stream size of the audio
-    //  */
-    // public static fromInfo(frames: number, size: number): VbriHeader {
-    //     Guards.uint(frames, "frame");
-    //     Guards.uint(size, "size");
-    //
-    //     const header = new VbriHeader();
-    //     header._isPresent = false;
-    //     header._totalFrames = frames;
-    //     header._totalSize = size;
-    //     return header;
-    // }
 }
