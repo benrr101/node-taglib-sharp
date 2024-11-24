@@ -33,8 +33,11 @@ export default class MpegAudioFile extends SandwichFile {
         // @TODO: if readStyle is higher than average, scan the entire file to accurately calculate
         //    the duration and bitrate
 
-        // Skip if we're not reading the properties
-        this._firstHeader = MpegAudioHeader.fromFile(this, this.mediaStartPosition, this.mediaEndPosition, 0x4000);
+        const searchStart = this.mediaStartPosition;
+        const searchEnd = searchStart + 0x400;
+        const streamLength = this.mediaEndPosition - this.mediaStartPosition;
+
+        this._firstHeader = MpegAudioHeader.fromFile(this, searchStart, searchEnd, streamLength);
         if (!this._firstHeader) {
             throw new CorruptFileError("MPEG audio header not found");
         }

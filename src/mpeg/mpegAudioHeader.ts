@@ -126,22 +126,33 @@ export default class MpegAudioHeader implements IAudioCodec {
         this._samplesPerFrame = MpegAudioHeader.BLOCK_SIZES[this._version][this._layer];
     }
 
-    public static fromFile(file: File, startPosition: number, endPosition: number, maxLength?: number): MpegAudioHeader {
+    /**
+     * Constructs an MPEG audio header by searching the provided file for an MPEG sync signature
+     * and reading the header that immediately follows.
+     * @param file File from which to read the audio header
+     * @param searchStart Offset into the file to begin searching
+     * @param searchEnd Offset into the file to stop searching
+     * @param streamBytes Total number of bytes in the audio stream. Used to calculate duration if
+     *     a VBR header does not additionally specify it. If VBR header is not present and
+     *     {@link streamBytes} is `undefined`, then duration will be 0.
+     * @returns MpegAudioHeader Header as read from the file, `undefined` if not found.
+     */
+    public static fromFile(file: File, searchStart: number, searchEnd: number, streamBytes?: number): MpegAudioHeader {
         Guards.truthy(file, "file");
-        Guards.safeUint(startPosition, "startPosition");
-        Guards.safeUint(endPosition, "endPosition");
-        if (maxLength !== undefined) {
-            Guards.safeUint(maxLength, "maxLength");
+        Guards.safeUint(searchStart, "searchStart");
+        Guards.safeUint(searchEnd, "searchEnd");
+        Guards.greaterThanInclusive(searchEnd, searchStart, "searchEnd");
+        if (streamBytes) {
+            Guards.safeUint(streamBytes, "totalBytes");
         }
 
         // Scan the file to find the header
         let flags: number;
-        let filePosition = startPosition;
-        const searchEnd = maxLength ? startPosition + maxLength : endPosition;
+        let filePosition = searchStart;
         while (filePosition < searchEnd) {
             // Read a buffer worth of bytes, at least 4, from the file
             file.seek(filePosition);
-            const bufferSize = Math.min(File.bufferSize, endPosition - filePosition);
+            const bufferSize = Math.min(File.bufferSize, searchEnd - filePosition);
             const buffer = file.readBlock(bufferSize);
             if (buffer.length < 4) {
                 break;
@@ -173,7 +184,7 @@ export default class MpegAudioHeader implements IAudioCodec {
         }
 
         // Create the header from the flags
-        const header = new MpegAudioHeader(flags, endPosition - startPosition);
+        const header = new MpegAudioHeader(flags, streamBytes);
 
         header._vbrHeader =
             XingHeader.fromFile(
@@ -224,11 +235,12 @@ export default class MpegAudioHeader implements IAudioCodec {
 
     /** @inheritDoc */
     public get durationMilliseconds(): number {
-        if (this._vbrHeader && this._vbrHeader.durationMilliseconds) {
+        if (this._vbrHeader?.durationMilliseconds) {
             return this._vbrHeader.durationMilliseconds;
         }
 
-        if (this.audioBitrate) {
+        // @TODO: Consider returning undefined if duration cannot be determined
+        if (this._streamLength && this.audioBitrate) {
             return (this._streamLength * 8) / this.audioBitrate
         }
 

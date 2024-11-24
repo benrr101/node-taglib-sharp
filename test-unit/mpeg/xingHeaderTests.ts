@@ -7,7 +7,7 @@ import XingHeader from "../../src/mpeg/xingHeader";
 import {ByteVector, StringType} from "../../src/byteVector";
 import {File} from "../../src/file";
 import {ChannelMode, MpegVersion} from "../../src/mpeg/mpegEnums";
-import {Testers} from "../utilities/testers";
+import {Allow, Testers} from "../utilities/testers";
 
 @suite class Mpeg_XingHeaderTests {
     @test
@@ -28,7 +28,7 @@ import {Testers} from "../utilities/testers";
         assert.throws(() =>
             XingHeader.fromFile(mockFile, 0, MpegVersion.Version1, ChannelMode.Stereo, 1, 0, 0));
         Testers.testSafeUint((v: number) =>
-            XingHeader.fromFile(mockFile, 0, MpegVersion.Version1, ChannelMode.Stereo, 1, 1, v));
+            XingHeader.fromFile(mockFile, 0, MpegVersion.Version1, ChannelMode.Stereo, 1, 1, v), Allow.Undefined);
     }
 
     @test
@@ -80,7 +80,35 @@ import {Testers} from "../utilities/testers";
     }
 
     @test
-    public bitrate_withTotalFrames_noTotalSize() {
+    public bitrate_withTotalFrames_noSize() {
+        // Arrange
+        const file = TestFile.getFile(ByteVector.concatenate(
+            ByteVector.fromSize(36),
+            ByteVector.fromString('Xing', StringType.Latin1),
+            0x00, 0x00, 0x00, 0x0C,    // Flags (TOC, VBR Scale)
+            ByteVector.fromSize(100),  // TOC
+            ByteVector.fromUint(2345)  // VBR Scale
+        ));
+        const samplesPerFrame = 1152;
+        const samplesPerSecond = 44100;
+
+        // Act
+        const header = XingHeader.fromFile(
+            file,
+            0,
+            MpegVersion.Version1,
+            ChannelMode.Stereo,
+            samplesPerFrame,
+            samplesPerSecond,
+            undefined);
+
+        // Assert
+        assert.isOk(header);
+        assert.isUndefined(header.bitrateKilobytes);
+    }
+
+    @test
+    public bitrate_withTotalFrames_withFallbackSize() {
         // Arrange
         const file = TestFile.getFile(ByteVector.concatenate(
             ByteVector.fromSize(36),
@@ -398,5 +426,4 @@ import {Testers} from "../utilities/testers";
             );
         }
     }
-
 }

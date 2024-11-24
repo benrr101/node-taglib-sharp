@@ -48,7 +48,9 @@ export default class XingHeader extends VbrHeader {
         Guards.safeUint(mpegHeaderPosition, "mpegHeaderPosition");
         Guards.uint(samplesPerFrame, "samplesPerFrame", false);
         Guards.uint(samplesPerSecond, "samplesPerSecond", false);
-        Guards.safeUint(fallbackFileSize, "fallbackFileSize");
+        if (fallbackFileSize) {
+            Guards.safeUint(fallbackFileSize, "fallbackFileSize");
+        }
 
         // Determine offset from MPEG header where Xing header should be
         const singleChannel = mpegChannelMode === ChannelMode.SingleChannel;
@@ -129,9 +131,14 @@ export default class XingHeader extends VbrHeader {
             durationSeconds = totalSamples / samplesPerSecond;
 
             // If we have a VBR encoded file, we should try to calculate bitrate
+
             if (isVbrHeader) {
-                const streamBits = totalBytes ? (totalBytes * 8) : (fallbackFileSize * 8);
-                bitrateBytes = streamBits / durationSeconds;
+                // NOTE: MPEG container files cannot accurately return audio stream size, so
+                //    fallback size will be falsy in this case.
+                const streamBytes = totalBytes || fallbackFileSize;
+                if (streamBytes) {
+                    bitrateBytes = streamBytes * 8 / durationSeconds;
+                }
             }
         }
 

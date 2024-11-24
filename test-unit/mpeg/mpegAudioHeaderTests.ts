@@ -415,7 +415,7 @@ import {Allow, Testers} from "../utilities/testers";
         const file = TestFile.getFile(fileBytes);
 
         // Act
-        const header = MpegAudioHeader.fromFile(file, 0, file.length);
+        const header = MpegAudioHeader.fromFile(file, 0, file.length, file.length);
 
         // Assert
         assert.isOk(header);
@@ -423,7 +423,7 @@ import {Allow, Testers} from "../utilities/testers";
     }
 
     @test
-    public duration_noVbrHeader() {
+    public duration_noVbrHeader_noStreamSize() {
         // Arrange
         const fileBytes = ByteVector.concatenate(
             ByteVector.fromByteArray([0xFF, 0xE2, 0xE0, 0x00]), // MPEG 2.5, layer 3, 160kbps, 11025Hz 576spf
@@ -433,6 +433,23 @@ import {Allow, Testers} from "../utilities/testers";
 
         // Act
         const header = MpegAudioHeader.fromFile(file, 0, file.length);
+
+        // Assert
+        assert.isOk(header);
+        assert.strictEqual(header.durationMilliseconds, 0);
+    }
+
+    @test
+    public duration_noVbrHeader_streamSize() {
+        // Arrange
+        const fileBytes = ByteVector.concatenate(
+            ByteVector.fromByteArray([0xFF, 0xE2, 0xE0, 0x00]), // MPEG 2.5, layer 3, 160kbps, 11025Hz 576spf
+            ByteVector.fromSize(4192 - 4)                       // 4k total file size
+        );
+        const file = TestFile.getFile(fileBytes);
+
+        // Act
+        const header = MpegAudioHeader.fromFile(file, 0, file.length, file.length);
 
         // Assert
         assert.isOk(header);
@@ -457,7 +474,7 @@ import {Allow, Testers} from "../utilities/testers";
         const file = TestFile.getFile(fileBytes);
 
         // Act
-        const header = MpegAudioHeader.fromFile(file, 0, file.length);
+        const header = MpegAudioHeader.fromFile(file, 0, file.length, file.length);
 
         // Assert
         assert.isOk(header);
@@ -482,7 +499,7 @@ import {Allow, Testers} from "../utilities/testers";
         const file = TestFile.getFile(fileBytes);
 
         // Act
-        const header = MpegAudioHeader.fromFile(file, 0, file.length);
+        const header = MpegAudioHeader.fromFile(file, 0, file.length, file.length);
 
         // Assert
         assert.isOk(header);
