@@ -8,7 +8,7 @@ import {StandardFileTests} from "./utilities/standardFileTests";
 
 @suite class Ape_FileTests {
     private static readonly sampleFilePath = TestConstants.getSampleFilePath("sample.ape");
-    private static readonly tmpFileName = "tmpwrite.mp3";
+    private static readonly tmpFileName = "tmpwrite.ape";
 
     private static file: File;
 
