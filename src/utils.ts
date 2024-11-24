@@ -90,14 +90,10 @@ export class Guards {
      * {@link Guards.uint()} if validating an argument for use in file manipulation.
      * @param value Value to validate
      * @param name Name of the parameter in calling function
-     * @param allowZero Whether zero is an allowed value.
      */
-    public static safeUint(value: number, name: string, allowZero: boolean = true): void {
+    public static safeUint(value: number, name: string): void {
         if (!Number.isSafeInteger(value) || value < 0) {
             throw new Error(`Argument out of range ${name} must be a safe, positive JS integer`);
-        }
-        if (!allowZero && value === 0) {
-            throw new Error(`Argument out of range ${name} cannot be zero`);
         }
     }
 

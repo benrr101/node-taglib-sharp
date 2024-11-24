@@ -7,7 +7,7 @@ import XingHeader from "../../src/mpeg/xingHeader";
 import {ByteVector, StringType} from "../../src/byteVector";
 import {File} from "../../src/file";
 import {ChannelMode, MpegVersion} from "../../src/mpeg/mpegEnums";
-import {Allow, Testers} from "../utilities/testers";
+import {Testers} from "../utilities/testers";
 
 @suite class Mpeg_XingHeaderTests {
     @test
@@ -20,9 +20,13 @@ import {Allow, Testers} from "../utilities/testers";
         Testers.testUint((v: number) =>
             XingHeader.fromFile(mockFile, v, MpegVersion.Version1, ChannelMode.Stereo, 1, 1, 0));
         Testers.testUint((v: number) =>
-            XingHeader.fromFile(mockFile, 0, MpegVersion.Version1, ChannelMode.Stereo, v, 1, 0), Allow.Nothing);
+            XingHeader.fromFile(mockFile, 0, MpegVersion.Version1, ChannelMode.Stereo, v, 1, 0));
+        assert.throws(() =>
+            XingHeader.fromFile(mockFile, 0, MpegVersion.Version1, ChannelMode.Stereo, 0, 1, 0))
         Testers.testUint((v: number) =>
-            XingHeader.fromFile(mockFile, 0, MpegVersion.Version1, ChannelMode.Stereo, 1, v, 0), Allow.Nothing);
+            XingHeader.fromFile(mockFile, 0, MpegVersion.Version1, ChannelMode.Stereo, 1, v, 0));
+        assert.throws(() =>
+            XingHeader.fromFile(mockFile, 0, MpegVersion.Version1, ChannelMode.Stereo, 1, 0, 0));
         Testers.testSafeUint((v: number) =>
             XingHeader.fromFile(mockFile, 0, MpegVersion.Version1, ChannelMode.Stereo, 1, 1, v));
     }

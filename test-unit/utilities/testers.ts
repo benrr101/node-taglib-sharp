@@ -6,11 +6,9 @@ import {ByteVector, StringType} from "../../src/byteVector";
 import {NumberUtils} from "../../src/utils";
 
 export enum Allow {
+    Nothing = 0,
     Undefined = 1,
-    Null = 2,
-    Zero = 4,
-
-    Nothing = 0
+    Null = 2
 }
 
 export class Testers {
@@ -20,7 +18,7 @@ export class Testers {
         assert.throws(() => testFunc(0x100));
     }
 
-    public static testInt(testFunc: (testValue: number) => void, allow: Allow = Allow.Zero): void {
+    public static testInt(testFunc: (testValue: number) => void, allow: Allow = Allow.Nothing): void {
         assert.throws(() => testFunc(-2147483648 - 1));
         assert.throws(() => testFunc(1.23));
         assert.throws(() => testFunc(2147483647 + 1));
@@ -32,11 +30,6 @@ export class Testers {
         if (!NumberUtils.hasFlag(allow, Allow.Undefined)) {
             assert.throws(() => testFunc(undefined));
         }
-
-
-        if (!NumberUtils.hasFlag(allow, Allow.Zero)) {
-            assert.throws(() => testFunc(0));
-        }
     }
 
     public static testString(testFunc: (testValue: string) => void): void {
@@ -44,7 +37,7 @@ export class Testers {
         assert.throws(() => testFunc(""));
     }
 
-    public static testSafeInt(testFunc: (testValue: number) => void, allow: Allow = Allow.Zero): void {
+    public static testSafeInt(testFunc: (testValue: number) => void, allow: Allow = Allow.Nothing): void {
         assert.throws(() => testFunc(Number.MIN_SAFE_INTEGER - 1));
         assert.throws(() => testFunc(1.23));
         assert.throws(() => testFunc(Number.MAX_SAFE_INTEGER + 1));
@@ -56,13 +49,9 @@ export class Testers {
         if (!NumberUtils.hasFlag(allow, Allow.Undefined)) {
             assert.throws(() => testFunc(undefined));
         }
-
-        if (!NumberUtils.hasFlag(allow, Allow.Zero)) {
-            assert.throws(() => testFunc(0));
-        }
     }
 
-    public static testSafeUint(testFunc: (testValue: number) => void, allow: Allow = Allow.Zero): void {
+    public static testSafeUint(testFunc: (testValue: number) => void, allow: Allow = Allow.Nothing): void {
         assert.throws(() => testFunc(-1));
         assert.throws(() => testFunc(1.23));
         assert.throws(() => testFunc(Number.MAX_SAFE_INTEGER + 1));
@@ -73,11 +62,6 @@ export class Testers {
         if (!NumberUtils.hasFlag(allow, Allow.Undefined)) {
             assert.throws(() => testFunc(undefined));
         }
-
-
-        if (!NumberUtils.hasFlag(allow, Allow.Zero)) {
-            assert.throws(() => testFunc(0));
-        }
     }
 
     public static testTruthy<T>(testFunc: (testValue: T) => void): void {
@@ -85,7 +69,7 @@ export class Testers {
         assert.throws(() => testFunc(null));
     }
 
-    public static testUint(testFunc: (testValue: number) => void, allow: Allow = Allow.Zero): void {
+    public static testUint(testFunc: (testValue: number) => void, allow: Allow = Allow.Nothing): void {
         assert.throws(() => testFunc(-1));
         assert.throws(() => testFunc(1.23));
         assert.throws(() => testFunc(0xFFFFFFFF + 1));
@@ -97,14 +81,9 @@ export class Testers {
         if (!NumberUtils.hasFlag(allow, Allow.Undefined)) {
             assert.throws(() => testFunc(undefined));
         }
-
-
-        if (!NumberUtils.hasFlag(allow, Allow.Zero)) {
-            assert.throws(() => testFunc(0));
-        }
     }
 
-    public static testUlong(testFunc: (testValue: bigint) => void, allow: Allow = Allow.Zero): void {
+    public static testUlong(testFunc: (testValue: bigint) => void, allow: Allow = Allow.Nothing): void {
         assert.throws(() => testFunc(BigInt(-1)));
         assert.throws(() => testFunc(BigInt(1.23)));
         assert.throws(() => testFunc(BigInt("18446744073709551615") + BigInt(1)));
@@ -116,30 +95,16 @@ export class Testers {
         if (!NumberUtils.hasFlag(allow, Allow.Undefined)) {
             assert.throws(() => testFunc(undefined));
         }
-
-
-        if (!NumberUtils.hasFlag(allow, Allow.Zero)) {
-            assert.throws(() => testFunc(NumberUtils.BIG_ZERO));
-        }
     }
 
-    public static testUshort(testFunc: (testValue: number) => void, allow: Allow = Allow.Zero): void {
+    public static testUshort(testFunc: (testValue: number) => void, allowUndefined = false): void {
         assert.throws(() => testFunc(-1));
         assert.throws(() => testFunc(1.23));
         assert.throws(() => testFunc(0xFFFF + 1));
         assert.throws(() => testFunc(null));
 
-        if (!NumberUtils.hasFlag(allow, Allow.Null)) {
-            assert.throws(() => testFunc(null));
-        }
-
-        if (!NumberUtils.hasFlag(allow, Allow.Undefined)) {
+        if (!allowUndefined) {
             assert.throws(() => testFunc(undefined));
-        }
-
-
-        if (!NumberUtils.hasFlag(allow, Allow.Zero)) {
-            assert.throws(() => testFunc(0));
         }
     }
 

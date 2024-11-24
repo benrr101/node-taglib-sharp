@@ -15,9 +15,6 @@ import {Allow, Testers} from "../utilities/testers";
 
     @test
     public fromFile_invalidArguments() {
-        // Arrange
-        const data = ByteVector.empty();
-
         // Act / Assert
         Testers.testTruthy((v: File) => {
             MpegAudioHeader.fromFile(v, 1, 2);

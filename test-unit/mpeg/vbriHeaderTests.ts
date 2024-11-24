@@ -6,7 +6,7 @@ import TestFile from "../utilities/testFile";
 import VbriHeader from "../../src/mpeg/vbriHeader";
 import {ByteVector, StringType} from "../../src/byteVector";
 import {File} from "../../src/file";
-import {Allow, Testers} from "../utilities/testers";
+import {Testers} from "../utilities/testers";
 
 @suite class Mpeg_XingHeaderTests {
 
@@ -18,8 +18,10 @@ import {Allow, Testers} from "../utilities/testers";
         // Act / Assert
         Testers.testTruthy((f: File) => VbriHeader.fromFile(f, 0, 1, 1, ));
         Testers.testUint((v: number) => VbriHeader.fromFile(mockFile, v, 1, 1));
-        Testers.testUint((v: number) => VbriHeader.fromFile(mockFile, 0, v, 1), Allow.Nothing);
-        Testers.testUint((v: number) => VbriHeader.fromFile(mockFile, 0, 1, v), Allow.Nothing);
+        Testers.testUint((v: number) => VbriHeader.fromFile(mockFile, 0, v, 1));
+        assert.throws(() => VbriHeader.fromFile(mockFile, 0, 0, 1));
+        Testers.testUint((v: number) => VbriHeader.fromFile(mockFile, 0, 1, v));
+        assert.throws(() => VbriHeader.fromFile(mockFile, 0, 1, 0));
     }
 
     @test
