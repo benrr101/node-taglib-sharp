@@ -10,7 +10,7 @@ import {MediaTypes} from "../../src/properties";
 import {ChannelMode, MpegVersion} from "../../src/mpeg/mpegEnums";
 import {Allow, Testers} from "../utilities/testers";
 
-@suite class Mpeg_AudioHeaderTests {
+@suite class Mpeg_AudioHeader_ConstructorTests {
     private mockFile = TypeMoq.Mock.ofType<File>().object;
 
     @test
@@ -57,7 +57,7 @@ import {Allow, Testers} from "../utilities/testers";
     }
 
     @test
-    public fromFile_fileDoesNotContainMpegSyncByte2_first3BitsNotSet() {
+    public fromFile_fileDoesNotContainMpegSyncByte2() {
         // Arrange
         // Note: bytes 0-1 and 5-6 are valid, but should be excluded by start/end bounds
         const file = TestFile.getFile([0xFF, 0xE6, 0xFF, 0xD6, 0xFF, 0xFF, 0xE6]);
@@ -67,27 +67,44 @@ import {Allow, Testers} from "../utilities/testers";
     }
 
     @test
-    public fromFile_fileDoesNotContainMpegSyncByte2_reservedVersion() {
+    public fromFile_reservedVersion() {
         // Arrange
-        // Note: bytes 0-1 and 5-6 are valid, but should be excluded by start/end bounds
-        const file = TestFile.getFile([0xFF, 0xE6, 0xFF, 0xF8, 0xFF, 0xFF, 0xE6]);
+        const file = TestFile.getFile([0xFF, 0xEE, 0x00, 0x00]);
 
         // Act / Assert
-        assert.isUndefined(MpegAudioHeader.fromFile(file, 1, 6));
+        assert.isUndefined(MpegAudioHeader.fromFile(file, 0, file.length));
     }
 
     @test
-    public fromFile_fileDoesNotContainMpegSyncByte2_reservedBitrate() {
+    public fromFile_reservedLayer() {
         // Arrange
-        // Note: bytes 0-1 and 5-6 are valid, but should be excluded by start/end bounds
-        const file = TestFile.getFile([0xFF, 0xE6, 0xFF, 0xE9, 0xFF, 0xFF, 0xE6]);
+        const file = TestFile.getFile([0xFF, 0xF8, 0x00, 0x00]);
 
         // Act / Assert
-        assert.isUndefined(MpegAudioHeader.fromFile(file, 1, 6));
+        assert.isUndefined(MpegAudioHeader.fromFile(file, 0, file.length));
     }
 
     @test
-    public fromFile_bitrate_noVbrHeader() {
+    public fromFile_reservedBitrate() {
+        // Arrange
+        const file = TestFile.getFile([0xFF, 0xFA, 0xF0, 0x00]);
+
+        // Act / Assert
+        assert.isUndefined(MpegAudioHeader.fromFile(file, 0, file.length));
+    }
+
+    public fromFile_reservedSampleRate() {
+        // Arrange
+        const file = TestFile.getFile([0xFF, 0xFA, 0x0C, 0x00]);
+
+        // Act / Assert
+        assert.isUndefined(MpegAudioHeader.fromFile(file, 0, file.length));
+    }
+}
+
+@suite class Mpeg_AudioHeader_PropertyTests {
+    @test
+    public bitrate_noVbrHeader() {
         const testCases = [
             {bytes: [0xFE, 0x00], bitrate: 0},   // V1, L1
             {bytes: [0xFE, 0x10], bitrate: 32},
@@ -245,7 +262,7 @@ import {Allow, Testers} from "../utilities/testers";
     }
 
     @test
-    public fromFile_bitrate_vbrHeaderSpecifiesBitrate() {
+    public bitrate_vbrHeaderSpecifiesBitrate() {
         // Arrange
         const headerBytes = ByteVector.fromByteArray([0xFF, 0xE2, 0xE0, 0x00]); // 160kbps
         const vbrBytes = ByteVector.concatenate(
@@ -270,7 +287,7 @@ import {Allow, Testers} from "../utilities/testers";
     }
 
     @test
-    public fromFile_bitrate_vbrHeaderDoesNotSpecifyBitrate() {
+    public bitrate_vbrHeaderDoesNotSpecifyBitrate() {
         // Arrange
         const headerBytes = ByteVector.fromByteArray([0xFF, 0xE2, 0xE0, 0x00]);
         const vbrBytes = ByteVector.concatenate(
@@ -294,20 +311,17 @@ import {Allow, Testers} from "../utilities/testers";
     }
 
     @test
-    public fromFile_audioSampleRate() {
+    public audioSampleRate() {
         const testCases = [
             {bytes: [0xFE, 0x00], sampleRate: 44100}, // V1
             {bytes: [0xFE, 0x04], sampleRate: 48000},
             {bytes: [0xFE, 0x08], sampleRate: 32000},
-            {bytes: [0xFE, 0x0C], sampleRate: 0},
             {bytes: [0xF6, 0x00], sampleRate: 22050}, // V2
             {bytes: [0xF6, 0x04], sampleRate: 24000},
             {bytes: [0xF6, 0x08], sampleRate: 16000},
-            {bytes: [0xF6, 0x0C], sampleRate: 0},
             {bytes: [0xE6, 0x00], sampleRate: 11025}, // V2.5
             {bytes: [0xE6, 0x04], sampleRate: 12000},
-            {bytes: [0xE6, 0x08], sampleRate: 8000},
-            {bytes: [0xE6, 0x0C], sampleRate: 0}
+            {bytes: [0xE6, 0x08], sampleRate: 8000}
         ];
 
         for (const c of testCases) {
@@ -324,7 +338,7 @@ import {Allow, Testers} from "../utilities/testers";
     }
 
     @test
-    public fromFile_audioChannelsAndChannelMode() {
+    public audioChannelsAndChannelMode() {
         const testCases = [
             {byte: 0xC0, channels: 1, mode: ChannelMode.SingleChannel},
             {byte: 0x80, channels: 2, mode: ChannelMode.DualChannel},
@@ -347,7 +361,7 @@ import {Allow, Testers} from "../utilities/testers";
     }
 
     @test
-    public fromFile_description_vbrHeaderVariableBitrate() {
+    public description_vbrHeaderVariableBitrate() {
         // Arrange
         const headerBytes = ByteVector.fromByteArray([0xFF, 0xE2, 0xE0, 0x00]);
         const vbrBytes = ByteVector.concatenate(
@@ -372,7 +386,7 @@ import {Allow, Testers} from "../utilities/testers";
     }
 
     @test
-    public fromFile_description_vbrHeaderIsConstantBitrate() {
+    public description_vbrHeaderIsConstantBitrate() {
         // Arrange
         const headerBytes = ByteVector.fromByteArray([0xFF, 0xE2, 0xE0, 0x00]);
         const vbrBytes = ByteVector.concatenate(
@@ -395,7 +409,7 @@ import {Allow, Testers} from "../utilities/testers";
     }
 
     @test
-    public fromFile_duration_freeBitrate() {
+    public duration_freeBitrate() {
         // Arrange
         const fileBytes = ByteVector.concatenate(
             ByteVector.fromByteArray([0xFF, 0xE2, 0x00, 0x00]), // MPEG 2.5, Layer 3, free bitrate
@@ -412,7 +426,7 @@ import {Allow, Testers} from "../utilities/testers";
     }
 
     @test
-    public fromFile_duration_noVbrHeader() {
+    public duration_noVbrHeader() {
         // Arrange
         const fileBytes = ByteVector.concatenate(
             ByteVector.fromByteArray([0xFF, 0xE2, 0xE0, 0x00]), // MPEG 2.5, layer 3, 160kbps, 11025Hz 576spf
@@ -429,7 +443,7 @@ import {Allow, Testers} from "../utilities/testers";
     }
 
     @test
-    public fromFile_duration_vbrHeaderSpecifiesDuration() {
+    public duration_vbrHeaderSpecifiesDuration() {
         // Arrange
         const headerBytes = ByteVector.fromByteArray([0xFF, 0xE2, 0xE0, 0x00]);
         const vbrBytes = ByteVector.concatenate(
@@ -454,7 +468,7 @@ import {Allow, Testers} from "../utilities/testers";
     }
 
     @test
-    public fromFile_duration_vbrHeaderDoesNotSpecifyDuration() {
+    public duration_vbrHeaderDoesNotSpecifyDuration() {
         // Arrange
         const headerBytes = ByteVector.fromByteArray([0xFF, 0xE2, 0xE0, 0x00]);
         const vbrBytes = ByteVector.concatenate(
@@ -479,7 +493,7 @@ import {Allow, Testers} from "../utilities/testers";
     }
 
     @test
-    public fromFile_isCopyrighted() {
+    public isCopyrighted() {
         // Case 1: Audio is not copyrighted
         // Arrange / Act / Assert
         let file = TestFile.getFile([0xFF, 0xFE, 0x00, 0x00]);
@@ -493,7 +507,7 @@ import {Allow, Testers} from "../utilities/testers";
     }
 
     @test
-    public fromFile_isOriginal() {
+    public isOriginal() {
         // Case 1: Audio is a copy
         // Arrange / Act / Assert
         let file = TestFile.getFile([0xFF, 0xFE, 0x00, 0x00]);
@@ -507,7 +521,7 @@ import {Allow, Testers} from "../utilities/testers";
     }
 
     @test
-    public fromFile_isProtected() {
+    public isProtected() {
         // Case 1: True
         // Arrange / Act / Assert
         let file = TestFile.getFile([0xFF, 0xE2, 0x00, 0x00]);
@@ -522,7 +536,7 @@ import {Allow, Testers} from "../utilities/testers";
     }
 
     @test
-    public fromFile_layer() {
+    public layerAndDescription() {
         const testCases = [
             {byte: 0xE6, layer: 1, description: "MPEG Version 2.5 Audio, Layer 1"},
             {byte: 0xE4, layer: 2, description: "MPEG Version 2.5 Audio, Layer 2"},
@@ -544,7 +558,7 @@ import {Allow, Testers} from "../utilities/testers";
     }
 
     @test
-    public fromFile_mediaType() {
+    public mediaType() {
         // Arrange
         const file = TestFile.getFile([0xFF, 0xE6, 0x00, 0x00]);
 
@@ -557,7 +571,7 @@ import {Allow, Testers} from "../utilities/testers";
     }
 
     @test
-    public fromFile_vbrHeader_hasHeader() {
+    public vbrHeader_hasHeader() {
         // Arrange
         const fileBytes = ByteVector.concatenate(
             0xFF, 0xE2, 0xE0, 0x00,
@@ -576,7 +590,7 @@ import {Allow, Testers} from "../utilities/testers";
     }
 
     @test
-    public fromFile_vbrHeader_noHeader() {
+    public vbrHeader_noHeader() {
         // Arrange
         const file = TestFile.getFile([0xFF, 0xE2, 0xE0, 0x00]);
 
@@ -589,7 +603,7 @@ import {Allow, Testers} from "../utilities/testers";
     }
 
     @test
-    public fromFile_version() {
+    public versionAndDescription() {
         const testCases = [
             {byte: 0xFA, description: "MPEG Version 1 Audio, Layer 3", version: MpegVersion.Version1},
             {byte: 0xF2, description: "MPEG Version 2 Audio, Layer 3", version: MpegVersion.Version2},

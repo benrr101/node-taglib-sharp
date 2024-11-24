@@ -14,14 +14,14 @@ import {Guards, NumberUtils} from "../utils";
 export default class MpegAudioHeader implements IAudioCodec {
     private static readonly BITRATES: number[][][] = [
         [ // Version 1
-            [0, 32, 64, 96, 128, 160, 192, 224, 256, 288, 320, 352, 384, 416, 448, -1], // layer 1
-            [0, 32, 48, 56,  64,  80,  96, 112, 128, 160, 192, 224, 256, 320, 384, -1], // layer 2
-            [0, 32, 40, 48,  56,  64,  80,  96, 112, 128, 160, 192, 224, 256, 320, -1]  // layer 3
+            [0 /*free*/, 32, 64, 96, 128, 160, 192, 224, 256, 288, 320, 352, 384, 416, 448, /*reserved*/], // layer 1
+            [0 /*free*/, 32, 48, 56,  64,  80,  96, 112, 128, 160, 192, 224, 256, 320, 384, /*reserved*/], // layer 2
+            [0 /*free*/, 32, 40, 48,  56,  64,  80,  96, 112, 128, 160, 192, 224, 256, 320, /*reserved*/]  // layer 3
         ],
         [ // Version 2 or 2.5
-            [0, 32, 48, 56, 64, 80, 96, 112, 128, 144, 160, 176, 192, 224, 256, -1], // layer 1
-            [0,  8, 16, 24, 32, 40, 48,  56,  64,  80,  96, 112, 128, 144, 160, -1], // layer 2
-            [0,  8, 16, 24, 32, 40, 48,  56,  64,  80,  96, 112, 128, 144, 160, -1]  // layer 3
+            [0 /*free*/, 32, 48, 56,  64,  80,  96, 112, 128, 144, 160, 176, 192, 224, 256, /*reserved*/], // layer 1
+            [0 /*free*/,  8, 16, 24,  32,  40,  48,  56,  64,  80,  96, 112, 128, 144, 160, /*reserved*/], // layer 2
+            [0 /*free*/,  8, 16, 24,  32,  40,  48,  56,  64,  80,  96, 112, 128, 144, 160, /*reserved*/]  // layer 3
         ]
     ];
 
@@ -32,9 +32,9 @@ export default class MpegAudioHeader implements IAudioCodec {
     ];
 
     private static readonly SAMPLE_RATES: number[][] = [
-        [44100, 48000, 32000, 0], // Version 1
-        [22050, 24000, 16000, 0], // Version 2
-        [11025, 12000,  8000, 0]  // Version 2.5
+        [44100, 48000, 32000, /*reserved*/], // Version 1
+        [22050, 24000, 16000, /*reserved*/], // Version 2
+        [11025, 12000,  8000, /*reserved*/]  // Version 2.5
     ];
 
     private readonly _bitrate: number;
@@ -70,6 +70,7 @@ export default class MpegAudioHeader implements IAudioCodec {
                 this._versionString = "2";
                 break;
             default:
+                // 1: Protected against by IsValidHeader
                 this._version = MpegVersion.Version1;
                 this._versionString = "1";
                 break;
@@ -84,6 +85,7 @@ export default class MpegAudioHeader implements IAudioCodec {
                 this._layer = 2;
                 break;
             default:
+                // 3: Protected against by IsValidHeader
                 this._layer = 1;
                 break;
         }
@@ -92,12 +94,14 @@ export default class MpegAudioHeader implements IAudioCodec {
         this._isProtected = !NumberUtils.hasFlag(flags, 0x10000);
 
         // Bits 15-12: Bit rate (as per header)
+        // NOTE: IsValidHeader protects against reserved bitrate index
         const bitrateIndex1 = this._version === MpegVersion.Version1 ? 0 : 1;
         const bitrateIndex2 = this._layer - 1;
         const bitrateIndex3 = NumberUtils.uintAnd(NumberUtils.uintRShift(flags, 12), 0x0F);
         this._bitrate = MpegAudioHeader.BITRATES[bitrateIndex1][bitrateIndex2][bitrateIndex3];
 
         // Bits 11-10: Sample rate
+        // NOTE: IsValidHeader protects against reserved sample rate index
         const sampleRateIndex2 = NumberUtils.uintAnd(NumberUtils.uintRShift(flags, 10), 0x03);
         this._sampleRate = MpegAudioHeader.SAMPLE_RATES[this._version][sampleRateIndex2];
 
@@ -152,7 +156,6 @@ export default class MpegAudioHeader implements IAudioCodec {
                 if (this.isHeaderValid(headerBytes)) {
                     flags = headerBytes.toUint();
                     filePosition += i;
-
                     break;
                 }
             }
@@ -274,17 +277,29 @@ export default class MpegAudioHeader implements IAudioCodec {
             return false;
         }
 
+        // Check for the second byte for reserved values
         const byte1 = data.get(1);
         if (NumberUtils.uintAnd(byte1, 0xE0) != 0xE0) {
-            // First 3 bits of second byte (highest) must be set
+            // Highest 3 bits must be 0b111 for second byte of sync sequence
             return false;
         }
         if (NumberUtils.uintAnd(byte1, 0x18) === 0x08) {
-            // Bits 4 and 5 cannot be 0b01 (reserved MPEG version)
+            // MPEG version cannot be 0b01 (reserved)
             return false;
         }
         if (NumberUtils.uintAnd(byte1, 0x06) === 0x00) {
-            // Bits 6 and 7 cannot be 0b00 (reserved layer)
+            // Layer cannot be 0b00 (reserved)
+            return false;
+        }
+
+        // Check the third byte for reserved values
+        const byte2 = data.get(2);
+        if (NumberUtils.uintAnd(byte2, 0xF0) === 0xF0) {
+            // Bitrate index cannot be 0b1111 (reserved)
+            return false;
+        }
+        if (NumberUtils.uintAnd(byte2, 0x0C) === 0x0C) {
+            // Sample rate index cannot be 0b11 (reserved)
             return false;
         }
 
