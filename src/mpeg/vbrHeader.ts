@@ -12,8 +12,8 @@ export default abstract class VbrHeader {
     ) {
         this._totalFrames = totalFrames;
         this._totalBytes = totalBytes;
-        this._durationMilliseconds = durationSeconds * 1000;
-        this._bitrateKilobytes = Math.floor(bitrateBytes / 1000);
+        this._durationMilliseconds = durationSeconds ? durationSeconds * 1000 : undefined;
+        this._bitrateKilobytes = bitrateBytes ? Math.floor(bitrateBytes / 1000) : undefined;
     }
 
     /**

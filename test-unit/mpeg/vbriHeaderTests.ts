@@ -32,7 +32,7 @@ import {Allow, Testers} from "../utilities/testers";
     }
 
     @test
-    public fromFile_DoesNotStartWithIdentifier() {
+    public fromFile_doesNotStartWithIdentifier() {
         // Arrange
         const file = TestFile.getFile(ByteVector.fromSize(60));
 

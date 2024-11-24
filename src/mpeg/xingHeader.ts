@@ -46,8 +46,8 @@ export default class XingHeader extends VbrHeader {
     ): XingHeader | undefined {
         Guards.truthy(file, "file");
         Guards.safeUint(mpegHeaderPosition, "mpegHeaderPosition");
-        Guards.safeUint(samplesPerFrame, "samplesPerFrame");
-        Guards.safeUint(samplesPerSecond, "samplesPerSecond");
+        Guards.uint(samplesPerFrame, "samplesPerFrame", false);
+        Guards.uint(samplesPerSecond, "samplesPerSecond", false);
         Guards.safeUint(fallbackFileSize, "fallbackFileSize");
 
         // Determine offset from MPEG header where Xing header should be
@@ -64,6 +64,9 @@ export default class XingHeader extends VbrHeader {
         const isCbrHeader = xingData.startsWith(this.IDENTIFIER_CBR);
         const isVbrHeader = xingData.startsWith(this.IDENTIFIER_VBR);
         if (xingData.length !== this.XING_HEADER_LENGTH || (!isCbrHeader && !isVbrHeader)) {
+            // NOTE: It is possible though incredibly unlikely that the Xing header can technically
+            //     be smaller than 16 bytes, if only one field is present. In this case, it's
+            //     probably ok to just ignore the header.
             return undefined;
         }
 
@@ -72,25 +75,23 @@ export default class XingHeader extends VbrHeader {
         let totalFrames: number;
         let totalBytes: number;
 
-        let xingDataPosition = 8
+        let xingLength = 8
         if (NumberUtils.hasFlag(flags, XingHeaderFlags.FrameCount)) {
-            totalFrames = xingData.subarray(xingDataPosition, 4).toUint();
-            xingDataPosition += 4;
+            totalFrames = xingData.subarray(xingLength, 4).toUint();
+            xingLength += 4;
         }
         if (NumberUtils.hasFlag(flags, XingHeaderFlags.FileSize)) {
-            totalBytes = xingData.subarray(xingDataPosition, 4).toUint();
-            xingDataPosition += 4
+            totalBytes = xingData.subarray(xingLength, 4).toUint();
+            xingLength += 4
         }
         if (NumberUtils.hasFlag(flags, XingHeaderFlags.TableOfContents)) {
-            // Yes, this does put us past the end of the Xing data, but it will be used to jump to
-            // the offset of the LAME tag
-            xingDataPosition += 100;
+            xingLength += 100;
         }
         if (NumberUtils.hasFlag(flags, XingHeaderFlags.VbrScale)) {
-            xingDataPosition += 4;
+            xingLength += 4;
         }
 
-        // NOTE: I spent a *long* time trying to sort this out. Lesson #1 don't fucking trust
+        // NOTE: I spent a *long* time trying to sort this out. Lesson #1: don't fucking trust
         //    chatgpt. Xing header specification will only reliably provide the total frames of
         //    the file and the total size in bytes of the audio portion of the file. Bitrate must
         //    be calculated based on this.
@@ -100,7 +101,7 @@ export default class XingHeader extends VbrHeader {
         // For details on the LAME header, see http://gabriel.mp3-tech.org/mp3infotag.html
 
         // Try to read LAME extensions to the Xing header
-        file.seek(mpegHeaderPosition + xingOffset + xingDataPosition);
+        file.seek(mpegHeaderPosition + xingOffset + xingLength);
         const lameData = file.readBlock(this.LAME_HEADER_LENGTH);
 
         let samplesAdjustment = 0;
@@ -136,20 +137,4 @@ export default class XingHeader extends VbrHeader {
 
         return new XingHeader(totalFrames, totalBytes, durationSeconds, bitrateBytes);
     }
-
-    // /**
-    //  * Constructs a new instance with a specified frame count and size.
-    //  * @param frames Frame count of the audio
-    //  * @param size Stream size of the audio
-    //  */
-    // public static fromInfo(frames: number, size: number): XingHeader {
-    //     Guards.uint(frames, "frames");
-    //     Guards.uint(size, "size");
-    //
-    //     const header = new XingHeader();
-    //     header._totalFrames = frames;
-    //     header._totalSize = size;
-    //     return header;
-    // }
-
 }

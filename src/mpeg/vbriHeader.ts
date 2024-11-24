@@ -17,8 +17,8 @@ export default class VbriHeader extends VbrHeader {
     public static fromFile(file: File, mpegHeaderPosition: number, samplesPerFrame: number, samplesPerSecond: number) {
         Guards.truthy(file, "files");
         Guards.safeUint(mpegHeaderPosition, "mpegHeaderPosition");
-        Guards.safeUint(samplesPerFrame, "samplesPerFrame", false);
-        Guards.safeUint(samplesPerSecond, "samplesPerSecond", false);
+        Guards.uint(samplesPerFrame, "samplesPerFrame", false);
+        Guards.uint(samplesPerSecond, "samplesPerSecond", false);
 
         // Seek to the position in the file where the VBRI header should be and read it
         file.seek(mpegHeaderPosition + this.HEADER_OFFSET);

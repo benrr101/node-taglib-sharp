@@ -113,9 +113,12 @@ export class Guards {
         }
     }
 
-    public static uint(value: number, name: string): void {
+    public static uint(value: number, name: string, allowZero: boolean = true): void {
         if (!Number.isSafeInteger(value) || value > 4294967295 || value < 0) {
             throw new Error(`Argument out of range: ${name} must be a positive, 32-bit integer`);
+        }
+        if (!allowZero && value === 0) {
+            throw new Error(`Argument out of range ${name} cannot be zero`);
         }
     }
 
