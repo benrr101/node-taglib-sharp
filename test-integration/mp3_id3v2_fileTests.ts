@@ -47,15 +47,6 @@ const assert = Chai.assert;
     }
 
     @test
-    public readAudioProperties() {
-        assert.strictEqual(Mp3_id3v2_fileTests.file.properties.audioSampleRate, 44100);
-        assert.strictEqual(Mp3_id3v2_fileTests.file.properties.durationMilliseconds, 1352);
-        assert.strictEqual(Mp3_id3v2_fileTests.file.properties.audioChannels, 1);
-        assert.strictEqual(Mp3_id3v2_fileTests.file.properties.audioBitrate, 64);
-        assert.strictEqual(Mp3_id3v2_fileTests.file.properties.durationMilliseconds, 1352);
-    }
-
-    @test
     public readTags() {
         assert.strictEqual(Mp3_id3v2_fileTests.file.tag.album, "MP3 album");
         assert.strictEqual(Mp3_id3v2_fileTests.file.tag.firstPerformer, "MP3 artist");

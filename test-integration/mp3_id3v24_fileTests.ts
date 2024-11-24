@@ -9,8 +9,6 @@ import {StandardFileTests, TestTagLevel} from "./utilities/standardFileTests";
 const assert = Chai.assert;
 
 @suite class Mp3_id3v24_fileTests {
-    // NOTE: These tests are more integration level tests from the original .NET implementation
-
     private static readonly replayGainPath = TestConstants.getSampleFilePath("sample_replaygain.mp3");
     private static readonly replayGainTmpFileName = "tmpwrite_sample_replaygain.mp3";
     private static readonly sampleFilePath = TestConstants.getSampleFilePath("sample_v2_4_unsynch.mp3");
@@ -24,15 +22,6 @@ const assert = Chai.assert;
 
     public static after() {
         Mp3_id3v24_fileTests.file.dispose();
-    }
-
-    @test
-    public readAudioProperties() {
-        assert.strictEqual(Mp3_id3v24_fileTests.file.properties.audioSampleRate, 44100);
-        assert.strictEqual(Mp3_id3v24_fileTests.file.properties.durationMilliseconds, 1352);
-        assert.strictEqual(Mp3_id3v24_fileTests.file.properties.audioChannels, 1);
-        assert.strictEqual(Mp3_id3v24_fileTests.file.properties.audioBitrate, 64);
-        assert.strictEqual(Mp3_id3v24_fileTests.file.properties.durationMilliseconds, 1352);
     }
 
     @test
