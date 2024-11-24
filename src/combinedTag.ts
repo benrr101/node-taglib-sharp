@@ -432,8 +432,12 @@ export default abstract class CombinedTag extends Tag {
             if (!t) { return false; }
 
             // Block falsy values (false, 0, null, undefined, NaN), allow ""
-            const val = propertyFn(t);
-            return val || (typeof(val) === "string" &&  val === "");
+            const value = propertyFn(t);
+
+            // @TODO: Just return undefined if the field isn't set... this is a pain
+            return value !== undefined
+                && value !== null
+                && !this.isDefaultValue(value, defaultValue);
         });
         return tagWithProperty ? propertyFn(tagWithProperty) : defaultValue;
     }
@@ -458,6 +462,14 @@ export default abstract class CombinedTag extends Tag {
                 propertyFn(this._tags[0], val);
             }
         }
+    }
+
+    private isDefaultValue<T>(value: T, defaultValue: T) {
+        if (Number.isNaN(defaultValue) && Number.isNaN(value)) {
+            return true;
+        }
+
+        return value === defaultValue;
     }
 
     // #endregion
