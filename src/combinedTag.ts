@@ -305,7 +305,7 @@ export default abstract class CombinedTag extends Tag {
     public set pictures(val: IPicture[]) { this.setValues((t, v) => { t.pictures = v; }, val); }
 
     /** @inheritDoc */
-    public get isCompilation(): boolean { return this.getFirstValue((t) => t.isCompilation); }
+    public get isCompilation(): boolean { return this.getFirstValue((t) => t.isCompilation, false); }
     /** @inheritDoc */
     public set isCompilation(val: boolean) { this.setValues((t, v) => { t.isCompilation = v; }, val); }
 
@@ -430,8 +430,10 @@ export default abstract class CombinedTag extends Tag {
     private getFirstValue<T>(propertyFn: (t: Tag) => T, defaultValue?: T): T {
         const tagWithProperty = this._tags.find((t) => {
             if (!t) { return false; }
+
+            // Block falsy values (false, 0, null, undefined, NaN), allow ""
             const val = propertyFn(t);
-            return val !== undefined && val !== null && val !== defaultValue;
+            return val || (typeof(val) === "string" &&  val === "");
         });
         return tagWithProperty ? propertyFn(tagWithProperty) : defaultValue;
     }

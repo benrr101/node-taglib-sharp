@@ -93,7 +93,7 @@ export class ApeTagItem {
         item._size = keyEndIndex - offset + 1 + valueLength;
 
         if (item._type === ApeTagItemType.Binary) {
-            item._data = data.subarray(keyEndIndex + 1).toByteVector();
+            item._data = data.subarray(keyEndIndex + 1, valueLength).toByteVector();
         } else {
             item._text = data.subarray(keyEndIndex + 1, valueLength).toStrings(StringType.UTF8);
         }
