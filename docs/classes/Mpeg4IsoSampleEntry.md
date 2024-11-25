@@ -178,7 +178,7 @@ ___
 
 • `get` **hasChildren**(): `boolean`
 
-Gets whether or not the current instance has children.
+Gets whether the current instance has children.
 
 #### Returns
 

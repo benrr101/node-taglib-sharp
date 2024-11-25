@@ -34,6 +34,6 @@ ___
 
 • **PictureLazy** = ``4``
 
-Use the [PictureLazy](../classes/PictureLazy.md) class in the the property [pictures](../classes/Tag.md#pictures). This will avoid
+Use the [PictureLazy](../classes/PictureLazy.md) class in the property [pictures](../classes/Tag.md#pictures). This will avoid
 loading picture content when reading the tag. Picture will be read lazily, when the picture
 content is accessed.

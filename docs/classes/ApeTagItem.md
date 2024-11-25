@@ -31,7 +31,7 @@ Class that represents a property in an APE tag.
 
 • `get` **isEmpty**(): `boolean`
 
-Gets whether or not the current instance is empty.
+Gets whether the current instance is empty.
 
 #### Returns
 
@@ -43,7 +43,7 @@ ___
 
 • `get` **isReadOnly**(): `boolean`
 
-Gets whether or not the current instance is flagged as read-only on disk.
+Gets whether the current instance is flagged as read-only on disk.
 
 #### Returns
 

@@ -259,7 +259,7 @@ Sets the grouping ID applied to the current instance.
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `value` | `number` | Grouping identifier for the current instance. Must be a 8-bit unsigned integer. Setting to `undefined` will remove the grouping identity header and ID |
+| `value` | `number` | Grouping identifier for the current instance. Must be an 8-bit unsigned integer. Setting to `undefined` will remove the grouping identity header and ID |
 
 #### Returns
 

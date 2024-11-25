@@ -22,7 +22,7 @@ Wrapper around the UUID package to make it easier to handle UUIDs.
 
 • **new UuidWrapper**(`source?`)
 
-Constructs a instance using either the supplied UUID or generating a new, random one.
+Constructs an instance using either the supplied UUID or generating a new, random one.
 
 #### Parameters
 

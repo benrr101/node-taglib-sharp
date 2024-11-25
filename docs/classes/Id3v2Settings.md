@@ -92,7 +92,7 @@ ___
 
 • `Static` `get` **forceDefaultEncoding**(): `boolean`
 
-Gets whether or not to render all frames with the default encoding rather than their
+Gets whether to render all frames with the default encoding rather than their
 original encoding.
 
 #### Returns
@@ -101,7 +101,7 @@ original encoding.
 
 • `Static` `set` **forceDefaultEncoding**(`value`): `void`
 
-Sets whether or not to render all frames with the default encoding rather than their
+Sets whether to render all frames with the default encoding rather than their
 original encoding.
 
 #### Parameters
@@ -120,7 +120,7 @@ ___
 
 • `Static` `get` **forceDefaultVersion**(): `boolean`
 
-Gets whether or not to save all tags in the default version rather than their original
+Gets whether to save all tags in the default version rather than their original
 version.
 
 #### Returns
@@ -129,14 +129,14 @@ version.
 
 • `Static` `set` **forceDefaultVersion**(`value`): `void`
 
-Sets whether or not to save all tags in the default version rather than their original
+Sets whether to save all tags in the default version rather than their original
 version.
 
 #### Parameters
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `value` | `boolean` | If `true`, tags will be saved in the version defined in [defaultVersion](Id3v2Settings.md#defaultversion) rather than their original format, with the exception of tags with footers which will always be saved in version 4 |
+| `value` | `boolean` | If `true`, tags will be saved in the version defined in [defaultVersion](Id3v2Settings.md#defaultversion) rather than their original format, except tags with footers which will always be saved in version 4 |
 
 #### Returns
 
@@ -160,7 +160,7 @@ ___
 
 • `Static` `get` **strictFrameForVersion**(): `boolean`
 
-Gets whether or not attempting to write a frame that is unsupported in the desired version
+Gets whether attempting to write a frame that is unsupported in the desired version
 will throw an error.
 If `true` writing a frame that is not supported in the desired version will throw an error
 during the render process. If `false` if a frame is not supported in the desired version it
@@ -172,7 +172,7 @@ will be omitted from rendering and no error will be thrown.
 
 • `Static` `set` **strictFrameForVersion**(`value`): `void`
 
-Sets whether or not attempting to write a frame that is unsupported in the desired version
+Sets whether attempting to write a frame that is unsupported in the desired version
 will throw an error.
 If `true` writing a frame that is not supported in the desired version will throw an error
 during the render process. If `false` if a frame is not supported in the desired version it
@@ -194,7 +194,7 @@ ___
 
 • `Static` `get` **useNonStandardV2V3GenreSeparators**(): `boolean`
 
-Gets whether or not to use non-standard genre separators on ID3v2.2 and ID3v2.4.
+Gets whether to use non-standard genre separators on ID3v2.2 and ID3v2.4.
 If `true`, the TCO/TCON frame value will be separated by `;` and/or `/`, empty values will
 be thrown out. If `false`, the TCO/TCON frame value will be returned as-is (after processing
 standard, escaped numeric genres).
@@ -213,7 +213,7 @@ The official ID3v2 standard makes no mention of separators for genres, one of th
 
 • `Static` `set` **useNonStandardV2V3GenreSeparators**(`value`): `void`
 
-Sets whether or not to use non-standard genre separators on ID3v2.2 and ID3v2.3.
+Sets whether to use non-standard genre separators on ID3v2.2 and ID3v2.3.
 If `true`, the TCO/TCON frame value will be separated by `;` and/or `/`, empty values will
 be thrown out. If `false`, the TCO/TCON frame value will be returned as-is (after processing
 standard, escaped numeric genres).
@@ -242,7 +242,7 @@ ___
 
 • `Static` `get` **useNonStandardV2V3NumericGenres**(): `boolean`
 
-Gets whether or not to use non-standard numeric genre parsing on ID3v2.2 and ID3v2.3. If
+Gets whether to use non-standard numeric genre parsing on ID3v2.2 and ID3v2.3. If
 `true`, a purely numeric TCO/TCON frame value will attempt to be parsed as a numeric genre.
 If `false`, the TCO/TCON frame value will be returned without parsing purely numeric genres.
 
@@ -260,7 +260,7 @@ The official ID3v2.2/ID3v2.3 standard only supports numeric genres if they are
 
 • `Static` `set` **useNonStandardV2V3NumericGenres**(`value`): `void`
 
-Sets whether or not to use non-standard numeric genre parsing on ID3v2.2 and ID3v2.3. If
+Sets whether to use non-standard numeric genre parsing on ID3v2.2 and ID3v2.3. If
 `true`, a purely numeric TCO/TCON frame value will attempt to be parsed as a numeric genre.
 If `false`, the TCO/TCON frame value will be returned without parsing purely numeric genres.
 
@@ -288,7 +288,7 @@ ___
 
 • `Static` `get` **useNumericGenres**(): `boolean`
 
-Gets whether or not to use ID3v1 style numeric genres when possible.
+Gets whether to use ID3v1 style numeric genres when possible.
 If `true`, the library will try looking up the numeric genre code when storing the value.
 for ID3v2.2 and ID3v2.3 "Rock" would be stored as "(17)" and for ID3v2.4, it would be
 stored as "17".
@@ -299,7 +299,7 @@ stored as "17".
 
 • `Static` `set` **useNumericGenres**(`value`): `void`
 
-Sets whether or not to use ID3v1 style numeric genres when possible.
+Sets whether to use ID3v1 style numeric genres when possible.
 If `true`, the library will try looking up the numeric genre code when storing the value.
 for ID3v2.2 and ID3v2.3 "Rock" would be stored as "(17)" and for ID3v2.4, it would be
 stored as "17".
@@ -308,7 +308,7 @@ stored as "17".
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `value` | `boolean` | Whether or not to use genres with numeric values when values when possible |
+| `value` | `boolean` | Whether or not to use genres with numeric values when possible |
 
 #### Returns
 
