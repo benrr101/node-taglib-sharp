@@ -189,7 +189,9 @@ export default class MpegContainerFile extends SandwichFile {
             + (NumberUtils.hasFlag(timestampFlags, 0x10) ? 4 : 0); // Decode timestamp
 
         // Decode the MPEG audio header
-        this._audioHeader = MpegAudioHeader.find(this, position + dataOffset, length - 9);
+        const searchStart = position + dataOffset;
+        const searchEnd = searchStart + length - 9;
+        this._audioHeader = MpegAudioHeader.fromFile(this, searchStart, searchEnd);
         this._audioFound = !!this._audioHeader;
 
         return position + length;

@@ -173,7 +173,7 @@ Sets the grouping ID applied to the current instance.
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `value` | `number` | Grouping identifier for the current instance. Must be a 8-bit unsigned integer. Setting to `undefined` will remove the grouping identity header and ID |
+| `value` | `number` | Grouping identifier for the current instance. Must be an 8-bit unsigned integer. Setting to `undefined` will remove the grouping identity header and ID |
 
 #### Returns
 
@@ -263,7 +263,7 @@ Sets the rating of the current instance
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `value` | `number` | Rating of the current instance, must be a 8-bit unsigned integer. |
+| `value` | `number` | Rating of the current instance, must be an 8-bit unsigned integer. |
 
 #### Returns
 

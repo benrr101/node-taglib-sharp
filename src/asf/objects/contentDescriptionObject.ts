@@ -99,8 +99,8 @@ export default class ContentDescriptionObject extends BaseObject {
     public set description(value: string) { this._description = value ?? ""; }
 
     /**
-     * Gets whether or not the current instance is empty.
-     * @returns `true` if all the values are cleared. Otherwise `false` is returned.
+     * Gets whether the current instance is empty.
+     * @returns `true` if all the values are cleared. Otherwise, `false` is returned.
      */
     public get isEmpty(): boolean {
         return !this._title

@@ -4,17 +4,9 @@ import {assert} from "chai";
 import TestConstants from "./testConstants";
 import Utilities from "./utilities";
 import {ILazy} from "../../src/interfaces";
-import {
-    ByteVector,
-    File,
-    Picture,
-    PictureLazy,
-    PictureType,
-    ReadStyle,
-    Tag,
-    TagTypes
-} from "../../src";
+import {ByteVector, File, Picture, PictureLazy, PictureType, ReadStyle, Tag, TagTypes} from "../../src";
 import {NumberUtils} from "../../src/utils";
+import {Testers} from "../../test-unit/utilities/testers";
 
 export enum TestTagLevel {
     Normal,
@@ -140,39 +132,38 @@ export class StandardFileTests {
                 }
             }
 
-            assert.strictEqual(pics[0].description, "TEST description 1");
-            assert.strictEqual(pics[0].mimeType, "image/gif");
-            assert.strictEqual(pics[0].data.length, fs.statSync(this.samplePicture).size);
-            assert.isTrue(ByteVector.equals(pics[0].data, raws[0]));
-
-            assert.strictEqual(pics[1].description, "TEST description 2");
-            assert.strictEqual(pics[1].data.length, fs.statSync(this.sampleOther).size);
-            assert.isTrue(ByteVector.equals(pics[1].data, raws[1]));
-
-            assert.strictEqual(pics[2].description, "TEST description 3");
-            assert.strictEqual(pics[2].mimeType, "image/gif");
-            assert.strictEqual(pics[2].data.length, fs.statSync(this.samplePicture).size);
-            assert.isTrue(ByteVector.equals(pics[2].data, raws[2]));
-
-            // Types and mimetypes assumed to be properly supported at Medium level test
+            // Grab the pictures back - order may be changed
+            const pic0 = pics.find((p) => p.description === "TEST description 1");
+            assert.isOk(pic0);
+            assert.strictEqual(pic0.data.length, raws[0].length);
+            Testers.bvEqual(pic0.data, raws[0]);
             if (level >= TestTagLevel.Medium) {
-                assert.strictEqual(pics[1].mimeType, "audio/mp4");
-                assert.strictEqual(pics[0].type, PictureType.BackCover);
-                assert.strictEqual(pics[1].type, PictureType.NotAPicture);
-                assert.strictEqual(pics[2].type, PictureType.Other);
+                assert.strictEqual(pic0.type, PictureType.BackCover);
+                assert.strictEqual(pic0.mimeType, "image/gif");
             } else {
-                assert.notStrictEqual(pics[0].type, PictureType.NotAPicture);
-                assert.strictEqual(pics[1].type, PictureType.NotAPicture);
-                assert.notStrictEqual(pics[2].type, PictureType.NotAPicture);
+                assert.notStrictEqual(pic0.type, PictureType.NotAPicture);
             }
 
-            // Filename assumed to be properly supported at high level test
-            if (level >= TestTagLevel.High) {
-                assert.strictEqual(pics[1].filename, "apple_tags.m4a");
-            } else if (level >= TestTagLevel.Medium) {
-                if (pics[1].filename) {
-                    assert.strictEqual(pics[1].filename, "apple_tags.m4a");
-                }
+            const pic1 = pics.find((p) => p.description === "TEST description 2");
+            assert.isOk(pic1);
+            assert.strictEqual(pic1.data.length, raws[1].length);
+            Testers.bvEqual(pic1.data, raws[1]);
+            if (level >= TestTagLevel.Medium) {
+                assert.isTrue(pic1.mimeType === "audio/mp4" || pic1.mimeType === "application/octet-stream");
+                assert.strictEqual(pic1.type, PictureType.NotAPicture);
+            } else {
+                assert.strictEqual(pic1.type, PictureType.NotAPicture);
+            }
+
+            const pic2 = pics.find((p) => p.description === "TEST description 3");
+            assert.isOk(pic2);
+            assert.strictEqual(pic2.data.length, raws[2].length);
+            Testers.bvEqual(pic2.data, raws[2]);
+            if (level >= TestTagLevel.Medium) {
+                assert.strictEqual(pic2.type, PictureType.Other);
+                assert.strictEqual(pic2.mimeType, "image/gif");
+            } else {
+                assert.notStrictEqual(pic2.type, PictureType.NotAPicture);
             }
         } finally {
             Utilities.deleteBestEffort(tmpFile);

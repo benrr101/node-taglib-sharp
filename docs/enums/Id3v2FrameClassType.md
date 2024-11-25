@@ -160,4 +160,4 @@ ___
 
 • **UserUrlLinkFrame** = ``16``
 
-Indicates the frame is an user URL link frame.
+Indicates the frame is a user URL link frame.

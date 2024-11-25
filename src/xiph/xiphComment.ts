@@ -1,10 +1,9 @@
-import * as DateFormat from "dateformat";
 import XiphPicture from "./xiphPicture";
 import XiphSettings from "./xiphSettings";
 import {ByteVector, StringType} from "../byteVector";
 import {IPicture, Picture} from "../picture";
 import {Tag, TagTypes} from "../tag";
-import {Guards} from "../utils";
+import {DateUtils, Guards} from "../utils";
 
 /**
  * Provides support for reading and writing Xiph comment-style tags.
@@ -361,7 +360,7 @@ export default class XiphComment extends Tag {
 
     /**
      * @inheritDoc
-     * @remarks Stored in the `TRACKNUMBER` field 
+     * @remarks Stored in the `TRACKNUMBER` field
      */
     public get track(): number {
         const text = this.getFieldFirstValue("TRACKNUMBER");
@@ -420,7 +419,7 @@ export default class XiphComment extends Tag {
 
     /**
      * @inheritDoc
-     * @remarks Stored in the `DISCNUMBER` field 
+     * @remarks Stored in the `DISCNUMBER` field
      */
     public get disc(): number {
         const text = this.getFieldFirstValue("DISCNUMBER");
@@ -433,7 +432,7 @@ export default class XiphComment extends Tag {
     }
     /**
      * @inheritDoc
-     * @remarks Stored in the `DISCNUMBER` field 
+     * @remarks Stored in the `DISCNUMBER` field
      */
     public set disc(value: number) {
         // TODO: Option to store as fractional?
@@ -568,13 +567,11 @@ export default class XiphComment extends Tag {
      * @inheritDoc
      * @remarks Stored in the `DATETAGGED` field
      */
-    public set dateTagged(value: Date) {
+    public set dateTagged(value: Date | undefined) {
         if (!value || Number.isNaN(value.getTime())) {
             this.removeField("DATETAGGED");
         } else {
-            let dateString = DateFormat(value, "yyyy-mm-dd HH:MM:ss");
-            dateString = dateString.replace(" ", "T");
-            this.setFieldAsStrings("DATETAGGED", dateString);
+            this.setFieldAsStrings("DATETAGGED", DateUtils.format(value));
         }
     }
 
@@ -944,8 +941,8 @@ export default class XiphComment extends Tag {
      */
     public render(addFramingBit: boolean): ByteVector {
         // Add the vendor ID length and the vendor ID. It's important to use the length of the
-        // vendor ID as a byte vector rather than the string length because UTF8 can include multi-
-        // byte characters.
+        // vendor ID as a byte vector rather than the string length because UTF8 can include
+        // multibyte characters.
         const vendor = ByteVector.fromString(this._vendorId || "", StringType.UTF8);
 
         // Encode the field data

@@ -1,5 +1,3 @@
-import * as DateFormat from "dateformat";
-
 import {ApeTagFooter, ApeTagFooterFlags} from "./apeTagFooter";
 import {ApeTagItem, ApeTagItemType} from "./apeTagItem";
 import {ByteVector, StringType} from "../byteVector";
@@ -7,7 +5,7 @@ import {CorruptFileError} from "../errors";
 import {File, FileAccessMode} from "../file";
 import {IPicture, Picture, PictureType} from "../picture";
 import {Tag, TagTypes} from "../tag";
-import {Guards, NumberUtils, StringComparison} from "../utils";
+import {DateUtils, Guards, NumberUtils, StringComparison} from "../utils";
 
 /**
  * Provides a representation of an APEv2 tag which can be read from and written to disk.
@@ -129,13 +127,13 @@ export default class ApeTag extends Tag {
     // #region Ape Tag Properties
 
     /**
-     * Gets whether or not the current instance has a header when rendered.
+     * Gets whether the current instance has a header when rendered.
      */
     public get isHeaderPresent(): boolean {
         return !!this._footer && NumberUtils.hasFlag(this._footer.flags, ApeTagFooterFlags.HeaderPresent);
     }
     /**
-     * Sets whether or not the current instance has a header when rendered.
+     * Sets whether the current instance has a header when rendered.
      */
     public set isHeaderPresent(value: boolean) {
         if (value) {
@@ -482,12 +480,7 @@ export default class ApeTag extends Tag {
      * @remarks Stored in the `DateTagged` item
      */
     set dateTagged(value: Date | undefined) {
-        let strValue: string;
-        if (value) {
-            strValue = DateFormat(value, "yyyy-mm-dd HH:MM:ss");
-            strValue = strValue.replace(" ", "T");
-        }
-        this.setStringValue("DateTagged", strValue);
+        this.setStringValue("DateTagged", DateUtils.format(value));
     }
 
     /**

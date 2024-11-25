@@ -165,7 +165,7 @@ export default {
                     };
                 }
 
-                // Read remaining part of the frame for the non lazy Frame
+                // Read remaining part of the frame for the non-lazy Frame
                 file.seek(frameStartIndex);
                 data = ByteVector.concatenate(
                     data,

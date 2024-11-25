@@ -2,54 +2,88 @@
 
 # Class: MpegXingHeader
 
-Information about a variable bitrate MPEG audio stream
+Information about a Xing variable bitrate MPEG audio stream. This provides a much more accurate
+determination of bitrate and duration than just using the first MPEG frame header alone.
+
+**`Remarks`**
+
+There is a tiny, known bug in this implementation. According to Hydrogenaudio, for LAME
+    v3.99.1, they tried to change the version string to start with L instead of LAME. This was
+    rolled back in v3.99.2 due to backwards compat issues with decoders. However, to simplify
+    the code here, I've just decided to only check for LAME. Thus, for files encoded with this
+    broken version of LAME (or indeed with other encoders like Gogo), the file bitrate and
+    duration will be slightly inaccurate.
+    Please raise a GitHub issue if this is not good enough and make sure to say "I told you not
+    to half-ass it, Ben".
+
+## Hierarchy
+
+- `default`
+
+  ↳ **`MpegXingHeader`**
 
 ## Table of contents
 
-### Properties
-
-- [FILE\_IDENTIFIER](MpegXingHeader.md#file_identifier)
-- [UNKNOWN](MpegXingHeader.md#unknown)
-
 ### Accessors
 
-- [isPresent](MpegXingHeader.md#ispresent)
+- [bitrateKilobytes](MpegXingHeader.md#bitratekilobytes)
+- [durationMilliseconds](MpegXingHeader.md#durationmilliseconds)
+- [totalBytes](MpegXingHeader.md#totalbytes)
 - [totalFrames](MpegXingHeader.md#totalframes)
-- [totalSize](MpegXingHeader.md#totalsize)
 
 ### Methods
 
-- [fromData](MpegXingHeader.md#fromdata)
-- [fromInfo](MpegXingHeader.md#frominfo)
-- [xingHeaderOffset](MpegXingHeader.md#xingheaderoffset)
-
-## Properties
-
-### FILE\_IDENTIFIER
-
-▪ `Static` `Readonly` **FILE\_IDENTIFIER**: [`ByteVector`](ByteVector.md)
-
-Identifier that appears in a file to indicate the start of a Xing header.
-
-___
-
-### UNKNOWN
-
-▪ `Static` `Readonly` **UNKNOWN**: [`MpegXingHeader`](MpegXingHeader.md)
-
-An empty an unset Xing header
+- [fromFile](MpegXingHeader.md#fromfile)
 
 ## Accessors
 
-### isPresent
+### bitrateKilobytes
 
-• `get` **isPresent**(): `boolean`
+• `get` **bitrateKilobytes**(): `number`
 
-Whether or not a physical VBRI header is present in the file.
+Gets the bitrate of the ile in kilobytes per second, if it could be calculated using the
+current instance. `undefined`, otherwise.
 
 #### Returns
 
-`boolean`
+`number`
+
+#### Inherited from
+
+VbrHeader.bitrateKilobytes
+
+___
+
+### durationMilliseconds
+
+• `get` **durationMilliseconds**(): `number`
+
+Gets the duration of the file in milliseconds, if it could be calculated using the current
+instance. `undefined`, otherwise.
+
+#### Returns
+
+`number`
+
+#### Inherited from
+
+VbrHeader.durationMilliseconds
+
+___
+
+### totalBytes
+
+• `get` **totalBytes**(): `number`
+
+Gets the total size of the file in bytes, as indicated by the current instance.
+
+#### Returns
+
+`number`
+
+#### Inherited from
+
+VbrHeader.totalBytes
 
 ___
 
@@ -63,73 +97,28 @@ Gets the total number of frames in the file, as indicated by the current instanc
 
 `number`
 
-___
+#### Inherited from
 
-### totalSize
-
-• `get` **totalSize**(): `number`
-
-Gets the total size of the file, as indicated by the current instance.
-
-#### Returns
-
-`number`
+VbrHeader.totalFrames
 
 ## Methods
 
-### fromData
+### fromFile
 
-▸ `Static` **fromData**(`data`): [`MpegXingHeader`](MpegXingHeader.md)
-
-Constructs a new instance by reading its raw contents.
+▸ `Static` **fromFile**(`file`, `mpegHeaderPosition`, `mpegVersion`, `mpegChannelMode`, `samplesPerFrame`, `samplesPerSecond`, `fallbackFileSize`): [`MpegXingHeader`](MpegXingHeader.md)
 
 #### Parameters
 
-| Name | Type | Description |
-| :------ | :------ | :------ |
-| `data` | [`ByteVector`](ByteVector.md) | Raw data of the Xing header |
+| Name | Type |
+| :------ | :------ |
+| `file` | [`File`](File.md) |
+| `mpegHeaderPosition` | `number` |
+| `mpegVersion` | [`MpegVersion`](../enums/MpegVersion.md) |
+| `mpegChannelMode` | [`MpegAudioChannelMode`](../enums/MpegAudioChannelMode.md) |
+| `samplesPerFrame` | `number` |
+| `samplesPerSecond` | `number` |
+| `fallbackFileSize` | `number` |
 
 #### Returns
 
 [`MpegXingHeader`](MpegXingHeader.md)
-
-___
-
-### fromInfo
-
-▸ `Static` **fromInfo**(`frames`, `size`): [`MpegXingHeader`](MpegXingHeader.md)
-
-Constructs a new instance with a specified frame count and size.
-
-#### Parameters
-
-| Name | Type | Description |
-| :------ | :------ | :------ |
-| `frames` | `number` | Frame count of the audio |
-| `size` | `number` | Stream size of the audio |
-
-#### Returns
-
-[`MpegXingHeader`](MpegXingHeader.md)
-
-___
-
-### xingHeaderOffset
-
-▸ `Static` **xingHeaderOffset**(`version`, `channelModel`): `number`
-
-Gets the offset at which a Xing header would appear in an MPEG audio packet based on the
-version and channel mode.
-
-#### Parameters
-
-| Name | Type | Description |
-| :------ | :------ | :------ |
-| `version` | [`MpegVersion`](../enums/MpegVersion.md) | Version of the MPEG audio packet |
-| `channelModel` | [`MpegAudioChannelMode`](../enums/MpegAudioChannelMode.md) | Channel mode of the MPEG audio packet |
-
-#### Returns
-
-`number`
-
-Offset into an MPEG audio packet where the Xing header would appear.

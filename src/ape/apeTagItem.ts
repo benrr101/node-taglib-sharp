@@ -93,7 +93,7 @@ export class ApeTagItem {
         item._size = keyEndIndex - offset + 1 + valueLength;
 
         if (item._type === ApeTagItemType.Binary) {
-            item._data = data.subarray(keyEndIndex + 1).toByteVector();
+            item._data = data.subarray(keyEndIndex + 1, valueLength).toByteVector();
         } else {
             item._text = data.subarray(keyEndIndex + 1, valueLength).toStrings(StringType.UTF8);
         }
@@ -123,7 +123,7 @@ export class ApeTagItem {
     // #region Properties
 
     /**
-     * Gets whether or not the current instance is empty.
+     * Gets whether the current instance is empty.
      */
     public get isEmpty(): boolean {
         if (this._type === ApeTagItemType.Binary) {
@@ -134,7 +134,7 @@ export class ApeTagItem {
     }
 
     /**
-     * Gets whether or not the current instance is flagged as read-only on disk.
+     * Gets whether the current instance is flagged as read-only on disk.
      */
     public get isReadOnly(): boolean { return this._isReadonly; }
 

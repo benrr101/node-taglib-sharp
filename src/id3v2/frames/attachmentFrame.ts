@@ -221,7 +221,7 @@ export default class AttachmentFrame extends Frame implements IPicture {
     public set type(value: PictureType) {
         this.parseFromRaw();
 
-        // Change the frame type depending if this is a picture or a general object
+        // Change the frame type depending on whether this is a picture or a general object
         const frameId = value === PictureType.NotAPicture
             ? FrameIdentifiers.GEOB
             : FrameIdentifiers.APIC;

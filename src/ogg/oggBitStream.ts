@@ -59,7 +59,7 @@ export default class OggBitStream {
             this._previousPacket = undefined;
 
             if (i === packets.length - 1 && !page.header.lastPacketComplete) {
-                // We're at the last packet of the page and it's continued on the next page. Store it.
+                // We're at the last packet of the page, and it's continued on the next page. Store it.
                 this._previousPacket = packet;
             } else if (this._codec.readPacket(packet)) {
                 // This isn't the last packet, we need to process it.

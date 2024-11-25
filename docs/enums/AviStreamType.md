@@ -2,7 +2,7 @@
 
 # Enumeration: AviStreamType
 
-IDs for a AVI stream types.
+IDs for an AVI stream types.
 
 ## Table of contents
 

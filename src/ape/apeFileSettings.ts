@@ -37,7 +37,7 @@ export default class ApeFileSettings {
     }
 
     /**
-     * Gets whether or not *new* APE tags should be stored at the end of the file. If `true` new
+     * Gets whether *new* APE tags should be stored at the end of the file. If `true` new
      * APE tags will be stored at the end of the file. If `false` new APE tags will be stored at
      * the beginning of the file (not recommended). Note, this only affects *new* APE tags.
      * Existing APE tags will not be moved unless removed and re-added.
@@ -45,7 +45,7 @@ export default class ApeFileSettings {
      */
     public static get preferApeTagAtFileEnd(): boolean { return this._preferApeTagAtFileEnd; }
     /**
-     * Gets whether or not *new* APE tags should be stored at the end of the file. If `true` new
+     * Gets whether *new* APE tags should be stored at the end of the file. If `true` new
      * APE tags will be stored at the end of the file. If `false` new APE tags will be stored at
      * the beginning of the file (not recommended). Note, this only affects *new* APE tags.
      * Existing APE tags will not be moved unless removed and re-added.
@@ -54,7 +54,7 @@ export default class ApeFileSettings {
     public static set preferApeTagAtFileEnd(value: boolean) { this._preferApeTagAtFileEnd = value; }
 
     /**
-     * Gets whether or not *new* ID3v2 tags should be stored at the end of the file. If `true` new
+     * Gets whether *new* ID3v2 tags should be stored at the end of the file. If `true` new
      * ID3v2 tags will be stored at the end of the file. If `false` new ID3v2 tags will be stored
      * at the beginning of the file. Note, this only affects *new* ID3v2 tags. Existing ID3v2 tags
      * will not be moved unless removed and re-added.
@@ -66,7 +66,7 @@ export default class ApeFileSettings {
      */
     public static get preferId3v2TagAtFileEnd(): boolean { return this._preferId3v2TagAtFileEnd; }
     /**
-     * Sets whether or not *new* ID3v2 tags should be stored at the end of the file. If `true` new
+     * Sets whether *new* ID3v2 tags should be stored at the end of the file. If `true` new
      * ID3v2 tags will be stored at the end of the file. If `false` new ID3v2 tags will be stored
      * at the beginning of the file. Note, this only affects *new* ID3v2 tags. Existing ID3v2 tags
      * will not be moved unless removed and re-added.

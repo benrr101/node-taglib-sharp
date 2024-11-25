@@ -195,7 +195,7 @@ export class OggPageHeader {
     public get flags(): OggPageFlags { return this._flags; }
 
     /**
-     * Gets whether or not the final packet is continued on the next page. If `true`, the final
+     * Gets whether the final packet is continued on the next page. If `true`, the final
      * packet is complete and not continued on the next page.
      */
     public get lastPacketComplete(): boolean { return this._lastPacketComplete; }

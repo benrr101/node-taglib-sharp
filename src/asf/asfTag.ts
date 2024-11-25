@@ -755,7 +755,7 @@ export default class AsfTag extends Tag {
     /**
      * @inheritDoc
      * @remarks
-     *     Stored in the the `WM/Picture` content descriptor and description record.
+     *     Stored in the `WM/Picture` content descriptor and description record.
      *     https://docs.microsoft.com/en-us/windows/win32/wmformat/wmpicture
      *     Modifications to the returned array will not be stored.
      */

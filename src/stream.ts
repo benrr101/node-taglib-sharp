@@ -187,6 +187,7 @@ export class Stream implements IStream {
     public write(buffer: Uint8Array | ByteVector, bufferOffset: number, length: number): number {
         // Make sure we standardize on a Uint8Array
         if (buffer instanceof ByteVector) {
+            // noinspection JSDeprecatedSymbols - As far as I know, we have no choice here.
             buffer = buffer.toByteArray();
         }
 

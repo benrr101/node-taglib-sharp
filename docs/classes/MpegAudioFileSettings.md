@@ -70,7 +70,7 @@ ___
 
 • `Static` `get` **preferApeTagAtFileEnd**(): `boolean`
 
-Gets whether or not *new* APE tags should be stored at the end of the file. If `true` new
+Gets whether *new* APE tags should be stored at the end of the file. If `true` new
 APE tags will be stored at the end of the file. If `false` new APE tags will be stored at
 the beginning of the file (not recommended). Note, this only affects *new* APE tags.
 Existing APE tags will not be moved unless removed and re-added.
@@ -85,7 +85,7 @@ Existing APE tags will not be moved unless removed and re-added.
 
 • `Static` `set` **preferApeTagAtFileEnd**(`value`): `void`
 
-Gets whether or not *new* APE tags should be stored at the end of the file. If `true` new
+Gets whether *new* APE tags should be stored at the end of the file. If `true` new
 APE tags will be stored at the end of the file. If `false` new APE tags will be stored at
 the beginning of the file (not recommended). Note, this only affects *new* APE tags.
 Existing APE tags will not be moved unless removed and re-added.
@@ -110,7 +110,7 @@ ___
 
 • `Static` `get` **preferId3v2TagAtFileEnd**(): `boolean`
 
-Gets whether or not *new* ID3v2 tags should be stored at the end of the file. If `true` new
+Gets whether *new* ID3v2 tags should be stored at the end of the file. If `true` new
 ID3v2 tags will be stored at the end of the file. If `false` new ID3v2 tags will be stored
 at the beginning of the file. Note, this only affects *new* ID3v2 tags. Existing ID3v2 tags
 will not be moved unless removed and re-added.
@@ -131,7 +131,7 @@ In order to store an ID3v2 tag at the end of a file, it must have a tag footer. 
 
 • `Static` `set` **preferId3v2TagAtFileEnd**(`value`): `void`
 
-Sets whether or not *new* ID3v2 tags should be stored at the end of the file. If `true` new
+Sets whether *new* ID3v2 tags should be stored at the end of the file. If `true` new
 ID3v2 tags will be stored at the end of the file. If `false` new ID3v2 tags will be stored
 at the beginning of the file. Note, this only affects *new* ID3v2 tags. Existing ID3v2 tags
 will not be moved unless removed and re-added.

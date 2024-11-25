@@ -35,8 +35,8 @@ export class MatroskaTagTargetType {
 
     // #endregion
 
-    private _str: string;
-    private _val: number;
+    private readonly _str: string;
+    private readonly _val: number;
 
     public constructor(value: number, str?: string) {
         Guards.byte(value, "value");
@@ -60,7 +60,7 @@ export class MatroskaTagTargetType {
 }
 
 /**
- * Representation of the target of a tag. This is indicates what a tag applies to.
+ * Representation of the target of a tag. This is indicating what a tag applies to.
  */
 export class MatroskaTagTarget {
     private _attachmentUids: bigint[] = [];

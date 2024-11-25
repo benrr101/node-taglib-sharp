@@ -305,7 +305,7 @@ export default abstract class CombinedTag extends Tag {
     public set pictures(val: IPicture[]) { this.setValues((t, v) => { t.pictures = v; }, val); }
 
     /** @inheritDoc */
-    public get isCompilation(): boolean { return this.getFirstValue((t) => t.isCompilation); }
+    public get isCompilation(): boolean { return this.getFirstValue((t) => t.isCompilation, false); }
     /** @inheritDoc */
     public set isCompilation(val: boolean) { this.setValues((t, v) => { t.isCompilation = v; }, val); }
 
@@ -430,8 +430,14 @@ export default abstract class CombinedTag extends Tag {
     private getFirstValue<T>(propertyFn: (t: Tag) => T, defaultValue?: T): T {
         const tagWithProperty = this._tags.find((t) => {
             if (!t) { return false; }
-            const val = propertyFn(t);
-            return val !== undefined && val !== null && val !== defaultValue;
+
+            // Block falsy values (false, 0, null, undefined, NaN), allow ""
+            const value = propertyFn(t);
+
+            // @TODO: Just return undefined if the field isn't set... this is a pain
+            return value !== undefined
+                && value !== null
+                && !this.isDefaultValue(value, defaultValue);
         });
         return tagWithProperty ? propertyFn(tagWithProperty) : defaultValue;
     }
@@ -456,6 +462,14 @@ export default abstract class CombinedTag extends Tag {
                 propertyFn(this._tags[0], val);
             }
         }
+    }
+
+    private isDefaultValue<T>(value: T, defaultValue: T): boolean {
+        if (Number.isNaN(defaultValue) && Number.isNaN(value)) {
+            return true;
+        }
+
+        return value === defaultValue;
     }
 
     // #endregion

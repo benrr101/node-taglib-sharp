@@ -109,9 +109,12 @@ export class Guards {
         }
     }
 
-    public static uint(value: number, name: string): void {
+    public static uint(value: number, name: string, allowZero: boolean = true): void {
         if (!Number.isSafeInteger(value) || value > 4294967295 || value < 0) {
             throw new Error(`Argument out of range: ${name} must be a positive, 32-bit integer`);
+        }
+        if (!allowZero && value === 0) {
+            throw new Error(`Argument out of range ${name} cannot be zero`);
         }
     }
 
@@ -319,8 +322,9 @@ export class NumberUtils {
 }
 
 export class StringUtils {
-    public static readonly BCP47_REGEX = new RegExp(/^[a-z]{2,3}(-[a-z]{2,8})*$/i)
+    public static readonly BCP47_REGEX = new RegExp(/^[a-z]{2,3}(-[a-z]{2,8})*$/i);
     public static readonly ISO369_2_REGEX = new RegExp(/^[a-z]{2,3}([-\/][a-z]{2,3})?$/i);
+    public static readonly PRINTABLE_REGEX = new RegExp(/^[a-z0-9!"#$%&'()*+,.\/:;<=>?@\[\] ^_`{|}~-]*$/i);
 
     public static findLastByteFromRight(haystack: string, needle: number): number {
         let length = haystack.length;
@@ -343,5 +347,29 @@ export class StringUtils {
             toTrim = toTrim.substring(0);
         }
         return toTrim;
+    }
+}
+
+export class DateUtils {
+    /**
+     * Formats a date as a YYYY-MM-ddThh:mm:ss.
+     */
+    public static format(date: Date | undefined): string | undefined {
+        if (!date) {
+            return undefined
+        }
+
+        const year = date.getFullYear();
+        const month = this.padNumber(date.getMonth() + 1);
+        const day = this.padNumber(date.getDate());
+        const hours = this.padNumber(date.getHours());
+        const minutes = this.padNumber(date.getMinutes());
+        const seconds = this.padNumber(date.getSeconds());
+
+        return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}`;
+    }
+
+    private static padNumber(value: number): string {
+        return String(value).padStart(2, '0');
     }
 }

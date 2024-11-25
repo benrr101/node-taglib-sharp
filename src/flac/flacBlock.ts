@@ -139,7 +139,7 @@ export class FlacBlock implements ILazy {
     public get dataSize(): number { return this._dataSize; }
 
     /**
-     * Gets whether or not the block represented by the current instance is the last metadata block
+     * Gets whether the block represented by the current instance is the last metadata block
      * in the FLAC stream.
      * @returns
      *     `true` if the block represented by the current instance was the last one to appear

@@ -58,7 +58,7 @@ Gets the description of the contents of the current instance.
 • `set` **description**(`value`): `void`
 
 Sets the description of the contents of the current instance.
-There should only be one frame with a this description and ISO-639-2 code per tag.
+There should only be one frame with this description and ISO-639-2 code per tag.
 
 #### Parameters
 
@@ -204,7 +204,7 @@ Sets the grouping ID applied to the current instance.
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `value` | `number` | Grouping identifier for the current instance. Must be a 8-bit unsigned integer. Setting to `undefined` will remove the grouping identity header and ID |
+| `value` | `number` | Grouping identifier for the current instance. Must be an 8-bit unsigned integer. Setting to `undefined` will remove the grouping identity header and ID |
 
 #### Returns
 

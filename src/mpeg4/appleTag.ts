@@ -1,4 +1,3 @@
-import * as DateFormat from "dateformat";
 import AppleItemListBox from "./boxes/appleItemListBox";
 import Genres from "../genres";
 import IsoMetaBox from "./boxes/isoMetaBox";
@@ -9,7 +8,7 @@ import {AppleDataBox, AppleDataBoxFlagType} from "./boxes/appleDataBox";
 import {ByteVector, StringType} from "../byteVector";
 import {IPicture, Picture} from "../picture";
 import {Tag, TagTypes} from "../tag";
-import {ArrayUtils, Guards, NumberUtils} from "../utils";
+import {ArrayUtils, DateUtils, Guards, NumberUtils} from "../utils";
 
 export default class AppleTag extends Tag {
     /**
@@ -231,15 +230,8 @@ export default class AppleTag extends Tag {
         return undefined;
     }
     /** @inheritDoc */
-    public set dateTagged(v: Date|undefined) {
-        let strValue: string;
-
-        if (v) {
-            strValue = DateFormat(v, "yyyy-mm-dd HH:MM:ss");
-            strValue = strValue.replace(" ", "T");
-        }
-
-        this.setQuickTimeString(Mpeg4BoxType.DTAG, strValue);
+    public set dateTagged(value: Date|undefined) {
+        this.setQuickTimeString(Mpeg4BoxType.DTAG, DateUtils.format(value));
     }
 
     /** @inheritDoc */

@@ -167,7 +167,7 @@ export class ExtendedContentDescriptionObject extends BaseObject {
     public get descriptors(): ContentDescriptor[] { return this._descriptors; }
 
     /**
-     * Gets whether or not the current instance contains any records.
+     * Gets whether the current instance contains any records.
      * @returns
      *     `true` if the current instance does not contain any records, `false`
      *     otherwise.
