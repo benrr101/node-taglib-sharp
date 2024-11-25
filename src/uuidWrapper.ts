@@ -11,7 +11,7 @@ export default class UuidWrapper {
     private readonly _bytes: ByteVector;
 
     /**
-     * Constructs a instance using either the supplied UUID or generating a new, random one.
+     * Constructs an instance using either the supplied UUID or generating a new, random one.
      * @param source If provided, it is used as the bytes of the instance. If a falsy value is
      *     provided, a new v4 UUID will be generated.
      */

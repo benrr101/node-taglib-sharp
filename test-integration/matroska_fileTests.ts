@@ -6,7 +6,6 @@ import {File, MediaTypes} from "../src";
 
 @suite class Matroska_FileTests {
     private static readonly sampleFilePath = TestConstants.getSampleFilePath("sample.mkv");
-    private static readonly tmpFileName = "tmpwrite.mkv";
 
     private static file: File;
 

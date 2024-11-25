@@ -10,8 +10,8 @@ import {Guards} from "../utils";
  *     the target must be cloned when constructing >1 tag with the same target.
  */
 export default class MatroskaTag {
-    private _value: MatroskaTagValue;
-    private _target: MatroskaTagTarget;
+    private readonly _value: MatroskaTagValue;
+    private readonly _target: MatroskaTagTarget;
 
     /**
      * Constructs and initializes a new instance using a simple tag and a target.

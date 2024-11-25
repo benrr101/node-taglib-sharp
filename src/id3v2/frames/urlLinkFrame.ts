@@ -23,7 +23,7 @@ import {Guards} from "../../utils";
  *   official webpage. There may be more than one WOAR frame in a tag if the audio contains more
  *   than one performer, but not with the same content.
  * * WOAS - THe 'Official audio source webpage' frame is a URL pointing at the official webpage of
- *   the source of the audio file, eg. a movie.
+ *   the source of the audio file, eg, a movie.
  * * WORS - The 'Official internet radio station homepage' frame contains a URL pointing at the
  *   homepage of the internet radio station.
  * * WPAY - The 'Payment' frame is a URL pointing at a webpage that will handle the process of

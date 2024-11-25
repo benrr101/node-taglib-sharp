@@ -48,19 +48,19 @@ class Matroska_AttachmentTests {
     public load_fromElement_notAPicture() {
         // Arrange
         const bytes = [
-            0x46, 0x7E,       // Id (FILE_DESCRIPTION)
+            0x46, 0x7E,       // ID (FILE_DESCRIPTION)
             0x83,             // Size (3)
             0x41, 0x42, 0x43, // Value (ABC)
-            0x46, 0x6E,       // Id (FILE_NAME)
+            0x46, 0x6E,       // ID (FILE_NAME)
             0x83,             // Size (3)
             0x42, 0x43, 0x44, // Value (BCD)
             0x46, 0x60,       // Id (FILE_MIME_TYPE)
             0x83,             // Size (3)
             0x43, 0x44, 0x45, // Value (CDE)
-            0x46, 0xAE,       // Id (FILE_UID)
+            0x46, 0xAE,       // ID (FILE_UID)
             0x88,             // Size (8)
             0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08,
-            0x46, 0x5C,       // Id (FILE_DATA)
+            0x46, 0x5C,       // ID (FILE_DATA)
             0x83,             // Size (3)
             0x44, 0x45, 0x46  // Value (DEF)
         ];
@@ -115,10 +115,10 @@ class Matroska_AttachmentTests {
             0x89,
             // Value (CDE)
             ByteVector.fromString("image/gif", StringType.UTF8),
-            0x46, 0x6E,       // Id (FILE_NAME)
+            0x46, 0x6E,       // ID (FILE_NAME)
             0x8F,             // Size (3)
             ByteVector.fromString("ColoredFISH.gif", StringType.UTF8), // Value (BCD)
-            0x46, 0x5C,       // Id (FILE_DATA)
+            0x46, 0x5C,       // ID (FILE_DATA)
             0x83,             // Size (3)
             0x44, 0x45, 0x46  // Value (DEF)
         );

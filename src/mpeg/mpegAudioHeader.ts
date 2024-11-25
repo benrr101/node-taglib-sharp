@@ -13,15 +13,23 @@ import {Guards, NumberUtils} from "../utils";
  */
 export default class MpegAudioHeader implements IAudioCodec {
     private static readonly BITRATES: number[][][] = [
-        [ // Version 1
-            [0 /*free*/, 32, 64, 96, 128, 160, 192, 224, 256, 288, 320, 352, 384, 416, 448, /*reserved*/], // layer 1
-            [0 /*free*/, 32, 48, 56,  64,  80,  96, 112, 128, 160, 192, 224, 256, 320, 384, /*reserved*/], // layer 2
-            [0 /*free*/, 32, 40, 48,  56,  64,  80,  96, 112, 128, 160, 192, 224, 256, 320, /*reserved*/]  // layer 3
+        // Version 1
+        [
+            // Layer 1
+            [0 /* free */, 32, 64, 96, 128, 160, 192, 224, 256, 288, 320, 352, 384, 416, 448, /* reserved */],
+            // Layer 2
+            [0 /* free */, 32, 48, 56,  64,  80,  96, 112, 128, 160, 192, 224, 256, 320, 384, /* reserved */],
+            // Layer 3
+            [0 /* free */, 32, 40, 48,  56,  64,  80,  96, 112, 128, 160, 192, 224, 256, 320, /* reserved */]
         ],
-        [ // Version 2 or 2.5
-            [0 /*free*/, 32, 48, 56,  64,  80,  96, 112, 128, 144, 160, 176, 192, 224, 256, /*reserved*/], // layer 1
-            [0 /*free*/,  8, 16, 24,  32,  40,  48,  56,  64,  80,  96, 112, 128, 144, 160, /*reserved*/], // layer 2
-            [0 /*free*/,  8, 16, 24,  32,  40,  48,  56,  64,  80,  96, 112, 128, 144, 160, /*reserved*/]  // layer 3
+        // Version 2 or 2.5
+        [
+            // Layer 1
+            [0 /* free */, 32, 48, 56,  64,  80,  96, 112, 128, 144, 160, 176, 192, 224, 256, /* reserved */],
+            // Layer 2
+            [0 /* free */,  8, 16, 24,  32,  40,  48,  56,  64,  80,  96, 112, 128, 144, 160, /* reserved */],
+            // Layer 3
+            [0 /* free */,  8, 16, 24,  32,  40,  48,  56,  64,  80,  96, 112, 128, 144, 160, /* reserved */]
         ]
     ];
 
@@ -32,9 +40,9 @@ export default class MpegAudioHeader implements IAudioCodec {
     ];
 
     private static readonly SAMPLE_RATES: number[][] = [
-        [44100, 48000, 32000, /*reserved*/], // Version 1
-        [22050, 24000, 16000, /*reserved*/], // Version 2
-        [11025, 12000,  8000, /*reserved*/]  // Version 2.5
+        [44100, 48000, 32000, /* reserved */], // Version 1
+        [22050, 24000, 16000, /* reserved */], // Version 2
+        [11025, 12000,  8000, /* reserved */]  // Version 2.5
     ];
 
     private readonly _bitrate: number;
@@ -284,14 +292,14 @@ export default class MpegAudioHeader implements IAudioCodec {
 
     private static isHeaderValid(data: ByteVector): boolean {
         // We assume that data is at least 4 bytes long.
-        if (data.get(0) != 0xFF) {
+        if (data.get(0) !== 0xFF) {
             // First byte must be FF
             return false;
         }
 
         // Check for the second byte for reserved values
         const byte1 = data.get(1);
-        if (NumberUtils.uintAnd(byte1, 0xE0) != 0xE0) {
+        if (NumberUtils.uintAnd(byte1, 0xE0) !== 0xE0) {
             // Highest 3 bits must be 0b111 for second byte of sync sequence
             return false;
         }
@@ -310,6 +318,7 @@ export default class MpegAudioHeader implements IAudioCodec {
             // Bitrate index cannot be 0b1111 (reserved)
             return false;
         }
+        // noinspection RedundantIfStatementJS - It is easier to understand as a sequence of if statements
         if (NumberUtils.uintAnd(byte2, 0x0C) === 0x0C) {
             // Sample rate index cannot be 0b11 (reserved)
             return false;

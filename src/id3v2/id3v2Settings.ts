@@ -53,12 +53,12 @@ export default class Id3v2Settings {
     public static get footerSize(): number { return 10; }
 
     /**
-     * Gets whether or not to render all frames with the default encoding rather than their
+     * Gets whether to render all frames with the default encoding rather than their
      * original encoding.
      */
     public static get forceDefaultEncoding(): boolean { return Id3v2Settings._forceDefaultEncoding; }
     /**
-     * Sets whether or not to render all frames with the default encoding rather than their
+     * Sets whether to render all frames with the default encoding rather than their
      * original encoding.
      * @param value If `true` frames will be rendered using {@link defaultEncoding} rather than
      *     their original encoding.
@@ -66,16 +66,16 @@ export default class Id3v2Settings {
     public static set forceDefaultEncoding(value: boolean) { Id3v2Settings._forceDefaultEncoding = value; }
 
     /**
-     * Gets whether or not to save all tags in the default version rather than their original
+     * Gets whether to save all tags in the default version rather than their original
      * version.
      */
     public static get forceDefaultVersion(): boolean { return this._forceDefaultVersion; }
     /**
-     * Sets whether or not to save all tags in the default version rather than their original
+     * Sets whether to save all tags in the default version rather than their original
      * version.
      * @param value If `true`, tags will be saved in the version defined in {@link defaultVersion}
-     *     rather than their original format, with the exception of tags with footers which will
-     *     always be saved in version 4
+     *     rather than their original format, except tags with footers which will always be saved
+     *     in version 4
      */
     public static set forceDefaultVersion(value: boolean) { this._forceDefaultVersion = value; }
 
@@ -85,23 +85,23 @@ export default class Id3v2Settings {
     public static get headerSize(): number { return 10; }
 
     /**
-     * Gets whether or not to use ID3v1 style numeric genres when possible.
+     * Gets whether to use ID3v1 style numeric genres when possible.
      * If `true`, the library will try looking up the numeric genre code when storing the value.
      * for ID3v2.2 and ID3v2.3 "Rock" would be stored as "(17)" and for ID3v2.4, it would be
      * stored as "17".
      */
     public static get useNumericGenres(): boolean { return this._useNumericGenres; }
     /**
-     * Sets whether or not to use ID3v1 style numeric genres when possible.
+     * Sets whether to use ID3v1 style numeric genres when possible.
      * If `true`, the library will try looking up the numeric genre code when storing the value.
      * for ID3v2.2 and ID3v2.3 "Rock" would be stored as "(17)" and for ID3v2.4, it would be
      * stored as "17".
-     * @param value Whether or not to use genres with numeric values when values when possible
+     * @param value Whether or not to use genres with numeric values when possible
      */
     public static set useNumericGenres(value: boolean) { this._useNumericGenres = value; }
 
     /**
-     * Gets whether or not to use non-standard genre separators on ID3v2.2 and ID3v2.4.
+     * Gets whether to use non-standard genre separators on ID3v2.2 and ID3v2.4.
      * If `true`, the TCO/TCON frame value will be separated by `;` and/or `/`, empty values will
      * be thrown out. If `false`, the TCO/TCON frame value will be returned as-is (after processing
      * standard, escaped numeric genres).
@@ -116,7 +116,7 @@ export default class Id3v2Settings {
         return this._useNonstandardV2V3GenreSeparators;
     }
     /**
-     * Sets whether or not to use non-standard genre separators on ID3v2.2 and ID3v2.3.
+     * Sets whether to use non-standard genre separators on ID3v2.2 and ID3v2.3.
      * If `true`, the TCO/TCON frame value will be separated by `;` and/or `/`, empty values will
      * be thrown out. If `false`, the TCO/TCON frame value will be returned as-is (after processing
      * standard, escaped numeric genres).
@@ -132,7 +132,7 @@ export default class Id3v2Settings {
     }
 
     /**
-     * Gets whether or not to use non-standard numeric genre parsing on ID3v2.2 and ID3v2.3. If
+     * Gets whether to use non-standard numeric genre parsing on ID3v2.2 and ID3v2.3. If
      * `true`, a purely numeric TCO/TCON frame value will attempt to be parsed as a numeric genre.
      * If `false`, the TCO/TCON frame value will be returned without parsing purely numeric genres.
      * @remarks
@@ -146,7 +146,7 @@ export default class Id3v2Settings {
         return this._useNonstandardV2V3NumericGenres;
     }
     /**
-     * Sets whether or not to use non-standard numeric genre parsing on ID3v2.2 and ID3v2.3. If
+     * Sets whether to use non-standard numeric genre parsing on ID3v2.2 and ID3v2.3. If
      * `true`, a purely numeric TCO/TCON frame value will attempt to be parsed as a numeric genre.
      * If `false`, the TCO/TCON frame value will be returned without parsing purely numeric genres.
      * @remarks
@@ -161,7 +161,7 @@ export default class Id3v2Settings {
     }
 
     /**
-     * Gets whether or not attempting to write a frame that is unsupported in the desired version
+     * Gets whether attempting to write a frame that is unsupported in the desired version
      * will throw an error.
      * If `true` writing a frame that is not supported in the desired version will throw an error
      * during the render process. If `false` if a frame is not supported in the desired version it
@@ -169,7 +169,7 @@ export default class Id3v2Settings {
      */
     public static get strictFrameForVersion(): boolean { return this._strictFramesForVersion; }
     /**
-     * Sets whether or not attempting to write a frame that is unsupported in the desired version
+     * Sets whether attempting to write a frame that is unsupported in the desired version
      * will throw an error.
      * If `true` writing a frame that is not supported in the desired version will throw an error
      * during the render process. If `false` if a frame is not supported in the desired version it

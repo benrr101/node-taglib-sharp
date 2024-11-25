@@ -141,13 +141,13 @@ ___
 
 • `get` **isEmpty**(): `boolean`
 
-Gets whether or not the current instance is empty.
+Gets whether the current instance is empty.
 
 #### Returns
 
 `boolean`
 
-`true` if all the values are cleared. Otherwise `false` is returned.
+`true` if all the values are cleared. Otherwise, `false` is returned.
 
 ___
 

@@ -217,7 +217,7 @@ export class MetadataLibraryObject extends BaseObject {
     // #region Properties
 
     /**
-     * Gets whether or not the current instance contains any records.
+     * Gets whether the current instance contains any records.
      * @returns
      *     `true` if the current instance does not contain any records, `false`
      *     otherwise.

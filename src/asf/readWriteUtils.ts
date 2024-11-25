@@ -36,7 +36,7 @@ export default {
      * byte is found before the end of specified end of the string, the string will be shortened
      * at the null byte.
      * @param length Length in bytes to read as the string
-     * @param file File to read unicode from
+     * @param file File to read Unicode from
      */
     readUnicode: (file: File, length: number): string => {
         const string = file.readBlock(length).toString(StringType.UTF16LE);

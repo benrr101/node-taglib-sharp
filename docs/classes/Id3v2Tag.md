@@ -195,7 +195,7 @@ Tag.albumArtists
 
 • `set` **albumArtists**(`value`): `void`
 
-Sets the bands or artists who is credited in the creation of the entire album or
+Sets the bands or artists who are credited in the creation of the entire album or
 collection containing the media described by the current instance.
 
 This field is typically optional but aids in the sorting of compilations or albums
@@ -347,7 +347,7 @@ identify the particular track or album in the Amazon catalog.
 
 **`Remarks`**
 
-via TXXX:ASIN
+via a TXXX `ASIN` frame
 
 #### Returns
 
@@ -366,7 +366,7 @@ identify the particular track or album in the Amazon catalog.
 
 **`Remarks`**
 
-via TXXX:ASIN
+via a TXXX `ASIN` frame
 
 #### Parameters
 
@@ -442,7 +442,7 @@ Gets a user comment on the media represented by the current instance.
 
 This field should be used to store user notes and comments. There is no constraint on
 what text can be stored here, but it should not contain programmatic data.
-Because this field contains notes the the user might think of while consuming the media,
+Because this field contains notes the user might think of while consuming the media,
 it may be useful for an application to make this field easily accessible, perhaps even
 including it in the main interface.
 
@@ -464,7 +464,7 @@ Sets a user comment on the media represented by the current instance.
 
 This field should be used to store user notes and comments. There is no constraint on
 what text can be stored here, but it should not contain programmatic data.
-Because this field contains notes the the user might think of while consuming the media,
+Because this field contains notes the user might think of while consuming the media,
 it may be useful for an application to make this field easily accessible, perhaps even
 including it in the main interface.
 
@@ -1180,7 +1180,7 @@ ___
 
 • `get` **isCompilation**(): `boolean`
 
-Gets whether or not the album described by the current instance is a compilation.
+Gets whether the album described by the current instance is a compilation.
 
 **`Remarks`**
 
@@ -1198,7 +1198,7 @@ Tag.isCompilation
 
 • `set` **isCompilation**(`value`): `void`
 
-Gets whether or not the album described by the current instance is a compilation.
+Gets whether the album described by the current instance is a compilation.
 
 **`Remarks`**
 
@@ -1226,7 +1226,7 @@ ___
 
 • `get` **isEmpty**(): `boolean`
 
-Gets whether or not the current instance is empty.
+Gets whether the current instance is empty.
 
 #### Returns
 
@@ -1471,7 +1471,7 @@ particular released media associated with this track.
 
 **`Remarks`**
 
-via TXXX:MusicBrainz Disc Id frame
+via a TXXX `MusicBrainz Disc Id` frame
 
 #### Returns
 
@@ -1490,7 +1490,7 @@ particular released media associated with this track.
 
 **`Remarks`**
 
-via TXXX:MusicBrainz Disc Id frame
+via a TXXX `MusicBrainz Disc Id` frame
 
 #### Parameters
 
@@ -1519,7 +1519,7 @@ identify a particular album artist credited with the album.
 
 **`Remarks`**
 
-via TXXX:MusicBrainz Album Artist Id frame
+via a TXXX `MusicBrainz Album Artist Id` frame
 
 #### Returns
 
@@ -1538,7 +1538,7 @@ identify a particular album artist credited with the album.
 
 **`Remarks`**
 
-via TXXX:MusicBrainz Album Artist Id frame
+via a TXXX `MusicBrainz Album Artist Id` frame
 
 #### Parameters
 
@@ -1570,7 +1570,7 @@ it will likely be a UK release.
 
 **`Remarks`**
 
-via TXXX:MusicBrainz Album Release Country frame
+via a TXXX `MusicBrainz Album Release Country` frame
 
 #### Returns
 
@@ -1592,7 +1592,7 @@ it will likely be a UK release.
 
 **`Remarks`**
 
-via TXXX:MusicBrainz Album Release Country frame
+via a TXXX `MusicBrainz Album Release Country` frame
 
 #### Parameters
 
@@ -1621,7 +1621,7 @@ a particular release group to which this track belongs.
 
 **`Remarks`**
 
-via TXXX:MusicBrainz Release Group Id frame
+via a TXXX `MusicBrainz Release Group Id` frame
 
 #### Returns
 
@@ -1640,7 +1640,7 @@ a particular release group to which this track belongs.
 
 **`Remarks`**
 
-via TXXX:MusicBrainz Release Group Id frame
+via a TXXX `MusicBrainz Release Group Id` frame
 
 #### Parameters
 
@@ -1669,7 +1669,7 @@ particular release to which this track belongs.
 
 **`Remarks`**
 
-via TXXX:MusicBrainz Album Id frame
+via a TXXX `MusicBrainz Album Id` frame
 
 #### Returns
 
@@ -1688,7 +1688,7 @@ particular release to which this track belongs.
 
 **`Remarks`**
 
-via TXXX:MusicBrainz Album Id frame
+via a TXXX `MusicBrainz Album Id` frame
 
 #### Parameters
 
@@ -1717,7 +1717,7 @@ release is. Common statuses are: `Official`, `Promotion`, `Bootleg`, `Pseudo-rel
 
 **`Remarks`**
 
-via TXXX:MusicBrainz Album Status frame
+via a TXXX `MusicBrainz Album Status` frame
 
 #### Returns
 
@@ -1736,7 +1736,7 @@ release is. Common statuses are: `Official`, `Promotion`, `Bootleg`, `Pseudo-rel
 
 **`Remarks`**
 
-via TXXX:MusicBrainz Album Status frame
+via a TXXX `MusicBrainz Album Status` frame
 
 #### Parameters
 
@@ -1771,7 +1771,7 @@ must be given when using this field to decide if a particular track "is a compil
 
 **`Remarks`**
 
-via TXXX:MusicBrainz Album Type frame
+via a TXXX `MusicBrainz Album Type` frame
 
 #### Returns
 
@@ -1795,7 +1795,7 @@ must be given when using this field to decide if a particular track "is a compil
 
 **`Remarks`**
 
-via TXXX:MusicBrainz Album Type frame
+via a TXXX `MusicBrainz Album Type` frame
 
 #### Parameters
 
@@ -1825,7 +1825,7 @@ particular track.
 
 **`Remarks`**
 
-via UFID:http://musicbrainz.org frame
+via a UFID `http://musicbrainz.org` frame
 
 #### Returns
 
@@ -1845,7 +1845,7 @@ particular track.
 
 **`Remarks`**
 
-via UFID:http://musicbrainz.org frame
+via a UFID `http://musicbrainz.org` frame
 
 #### Parameters
 
@@ -1874,7 +1874,7 @@ identifies wht this track "sounds like".
 
 **`Remarks`**
 
-via TXXX:MusicIP PUID frame
+via a TXXX `MusicIP PUID` frame
 
 #### Returns
 
@@ -1893,7 +1893,7 @@ identifies wht this track "sounds like".
 
 **`Remarks`**
 
-via TXXX:MusicIP PUID frame
+via a TXXX `MusicIP PUID` frame
 
 #### Parameters
 
@@ -1947,7 +1947,7 @@ be simple in the form of "Above & Beyond" or more complicated in the form of
 "Jono Grant, Tony McGuinness, Paavo Siljamäki", depending on the preferences of the
 user and the degree to which they organize their media collection.
 As the preference of the user may vary, applications should avoid limiting the user in
-what constitutes the performers field - especially with regards to number of performers.
+what constitutes the performers field - especially regarding the number of performers.
 
 **`Remarks`**
 
@@ -2219,7 +2219,7 @@ Gets the ReplayGain album gain in dB.
 
 **`Remarks`**
 
-via TXXX:REPLAYGAIN_ALBUM_GAIN frame
+via a TXXX `REPLAYGAIN_ALBUM_GAIN` frame
 
 #### Returns
 
@@ -2235,7 +2235,7 @@ Sets the ReplayGain album gain in dB.
 
 **`Remarks`**
 
-via TXXX:REPLAYGAIN_ALBUM_GAIN frame
+via a TXXX `REPLAYGAIN_ALBUM_GAIN` frame
 
 #### Parameters
 
@@ -2261,7 +2261,7 @@ Gets the ReplayGain album peak sample.
 
 **`Remarks`**
 
-via TXXX:REPLAYGAIN_ALBUM_PEAK frame
+via a TXXX `REPLAYGAIN_ALBUM_PEAK` frame
 
 #### Returns
 
@@ -2277,7 +2277,7 @@ Sets the ReplayGain album peak sample.
 
 **`Remarks`**
 
-via TXXX:REPLAYGAIN_ALBUM_PEAK frame
+via a TXXX `REPLAYGAIN_ALBUM_PEAK` frame
 
 #### Parameters
 
@@ -2303,7 +2303,7 @@ Gets the ReplayGain track gain in dB.
 
 **`Remarks`**
 
-via TXXX:REPLAY_GAIN_TRACK_GAIN frame
+via a TXXX `REPLAY_GAIN_TRACK_GAIN` frame
 
 #### Returns
 
@@ -2319,7 +2319,7 @@ Sets the ReplayGain track gain in dB.
 
 **`Remarks`**
 
-via TXXX:REPLAY_GAIN_TRACK_GAIN frame
+via a TXXX `REPLAY_GAIN_TRACK_GAIN` frame
 
 #### Parameters
 
@@ -2345,7 +2345,7 @@ Gets the ReplayGain track peak sample.
 
 **`Remarks`**
 
-via TXXX:REPLAYGAIN_TRACK_PEAK frame
+via a TXXX `REPLAYGAIN_TRACK_PEAK` frame
 
 #### Returns
 
@@ -2361,7 +2361,7 @@ Sets the ReplayGain track peak sample.
 
 **`Remarks`**
 
-via TXXX:REPLAYGAIN_TRACK_PEAK frame
+via a TXXX `REPLAYGAIN_TRACK_PEAK` frame
 
 #### Parameters
 
@@ -2760,7 +2760,7 @@ values.
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `value` | `string` | ISO-639-2 language code to use. If the language is unknown `" "` is the appropriate filler |
+| `value` | `string` | ISO-639-2 language code to use. If the language is unknown ` ` (that is, three spaces) is the appropriate filler |
 
 #### Returns
 
@@ -2837,7 +2837,7 @@ ___
 
 Gets all frames with a specific frame class type.
 NOTE: This diverges from the .NET implementation due to the inability to do type checking
-like in .NET (ie `x is y`). Instead type guards are added to each frame class which provides
+like in .NET (ie `x is y`). Instead, type guards are added to each frame class which provides
 the same functionality.
 
 #### Type parameters
@@ -2993,7 +2993,7 @@ ___
 Sets the numerical values for a specified text information frame.
 If both `numerator` and `denominator` are `0`, the frame will be removed
 from the tag. If `denominator` is zero, `numerator` will be stored by
-itself. Otherwise the values will be stored as `{numerator}/{denominator}`.
+itself. Otherwise, the values will be stored as `{numerator}/{denominator}`.
 
 #### Parameters
 

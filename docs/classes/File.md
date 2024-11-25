@@ -140,7 +140,7 @@ ___
 
 • `get` **isPossiblyCorrupt**(): `boolean`
 
-Indicates whether or not this file may be corrupt. Files with unknown corruptions should not
+Indicates whether this file may be corrupt. Files with unknown corruptions should not
 be written.
 
 #### Returns
@@ -153,7 +153,7 @@ ___
 
 • `get` **isWritable**(): `boolean`
 
-Indicates whether or not tags can be written back to the current file.
+Indicates whether tags can be written back to the current file.
 
 #### Returns
 
@@ -418,7 +418,7 @@ Error Thrown when: 1) data is falsey, 2) start is not a safe, positive number, o
 | :------ | :------ | :------ | :------ |
 | `data` | [`ByteVector`](ByteVector.md) | `undefined` | Data to insert into the file. |
 | `start` | `number` | `undefined` | Index into the file at which to insert the data. Must be safe positive integer. |
-| `replace` | `number` | `0` | Number of bytes to replace. Typically this is the original size of the data block so that a new block will replace the old one. |
+| `replace` | `number` | `0` | Number of bytes to replace. Typically, this is the original size of the data block so that a new block will replace the old one. |
 
 #### Returns
 

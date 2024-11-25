@@ -80,7 +80,7 @@ export default class HeaderObject extends BaseObject {
     }
 
     /**
-     * Gets whether or not the current instance contains either type of content descriptors.
+     * Gets whether the current instance contains either type of content descriptors.
      * @returns
      *     `true` if a content description object or extended content description
      *     object exists in this instance. `false` otherwise

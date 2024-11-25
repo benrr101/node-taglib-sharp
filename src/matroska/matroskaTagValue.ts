@@ -34,8 +34,8 @@ export default class MatroskaTagValue {
     /**
      * Constructs and initializes a new, empty tag.
      * @param matroskaVersion Version of Matroska file the tag should be written for
-     * @param name: Name of the tag value
-     * @param value: Value to store in the tag value
+     * @param name Name of the tag value
+     * @param value Value to store in the tag value
      */
     public static fromValue(matroskaVersion: number, name: string, value: string|ByteVector): MatroskaTagValue {
         Guards.byte(matroskaVersion, "matroskaVersion");

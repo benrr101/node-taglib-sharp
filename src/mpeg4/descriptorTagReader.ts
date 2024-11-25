@@ -34,7 +34,7 @@ export class DescriptorTagReader {
     public get offset(): number { return this._offset; }
 
     /**
-     * Reads a section length and updates the offset to the end of of the length block.
+     * Reads a section length and updates the offset to the end of the length block.
      * @returns number Length that was read.
      */
     public readLength(): number {

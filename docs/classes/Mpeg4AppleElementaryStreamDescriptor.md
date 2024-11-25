@@ -2,8 +2,9 @@
 
 # Class: Mpeg4AppleElementaryStreamDescriptor
 
-This class extends FullBox to provide an implementation of an Apple ElementaryStreamDescriptor.
-This box may appear as a child of a IsoAudioSampleEntry and provided further information about an audio stream.
+This class extends FullBox to provide an implementation of an Apple
+ElementaryStreamDescriptor. This box may appear as a child of a IsoAudioSampleEntry and
+provided further information about an audio stream.
 
 ## Hierarchy
 
@@ -246,7 +247,7 @@ ___
 
 • `get` **hasChildren**(): `boolean`
 
-Gets whether or not the current instance has children.
+Gets whether the current instance has children.
 
 #### Returns
 

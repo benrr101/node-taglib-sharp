@@ -112,8 +112,6 @@ export default class XingHeader extends VbrHeader {
             lameData.startsWith(this.IDENTIFIER_LAME) &&
             lameData.find(ByteVector.fromByte(0xFF)) < 0 // No MPEG synchronization bytes found
         ) {
-            const lameVersionString = lameData.subarray(0, 9).toString(StringType.Latin1);
-
             // [xxxxxxxx xxxxyyyy yyyyyyyy]
             // Where x is encoder delay and y is encoder padding
             const delayPadding = lameData.subarray(21, 3).toUint();

@@ -96,7 +96,7 @@ export default class PopularimeterFrame extends Frame {
     public get rating(): number { return this._rating || 0; }
     /**
      * Sets the rating of the current instance
-     * @param value Rating of the current instance, must be a 8-bit unsigned integer.
+     * @param value Rating of the current instance, must be an 8-bit unsigned integer.
      */
     public set rating(value: number) {
         Guards.byte(value, "value");

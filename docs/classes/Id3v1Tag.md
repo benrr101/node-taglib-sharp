@@ -199,7 +199,7 @@ Tag.albumArtists
 
 • `set` **albumArtists**(`value`): `void`
 
-Sets the bands or artists who is credited in the creation of the entire album or
+Sets the bands or artists who are credited in the creation of the entire album or
 collection containing the media described by the current instance.
 
 This field is typically optional but aids in the sorting of compilations or albums
@@ -423,7 +423,7 @@ Gets a user comment on the media represented by the current instance.
 
 This field should be used to store user notes and comments. There is no constraint on
 what text can be stored here, but it should not contain programmatic data.
-Because this field contains notes the the user might think of while consuming the media,
+Because this field contains notes the user might think of while consuming the media,
 it may be useful for an application to make this field easily accessible, perhaps even
 including it in the main interface.
 
@@ -441,7 +441,7 @@ Sets a user comment on the media represented by the current instance.
 
 This field should be used to store user notes and comments. There is no constraint on
 what text can be stored here, but it should not contain programmatic data.
-Because this field contains notes the the user might think of while consuming the media,
+Because this field contains notes the user might think of while consuming the media,
 it may be useful for an application to make this field easily accessible, perhaps even
 including it in the main interface.
 
@@ -1065,7 +1065,7 @@ ___
 
 • `get` **isCompilation**(): `boolean`
 
-Gets whether or not the album described by the current instance is a compilation.
+Gets whether the album described by the current instance is a compilation.
 
 #### Returns
 
@@ -1077,13 +1077,13 @@ Tag.isCompilation
 
 • `set` **isCompilation**(`value`): `void`
 
-Gets whether or not the album described by the current instance is a compilation.
+Gets whether the album described by the current instance is a compilation.
 
 #### Parameters
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `value` | `boolean` | Whether or not the album described by the current instance is a compilation |
+| `value` | `boolean` | Whether the album described by the current instance is a compilation |
 
 #### Returns
 
@@ -1099,7 +1099,7 @@ ___
 
 • `get` **isEmpty**(): `boolean`
 
-Gets whether or not the current instance is empty.
+Gets whether the current instance is empty.
 
 **`Remarks`**
 
@@ -1759,7 +1759,7 @@ be simple in the form of "Above & Beyond" or more complicated in the form of
 "Jono Grant, Tony McGuinness, Paavo Siljamäki", depending on the preferences of the
 user and the degree to which they organize their media collection.
 As the preference of the user may vary, applications should avoid limiting the user in
-what constitutes the performers field - especially with regards to number of performers.
+what constitutes the performers field - especially regarding the number of performers.
 
 **`Remarks`**
 

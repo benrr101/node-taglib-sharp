@@ -35,7 +35,7 @@ export default class EbmlParser implements IDisposable {
      * file, `length` can be provided.
      * @param file EBML file to process
      * @param offset Position in the file to begin parsing
-     * @param maxOffset: Maximum position in the file to read up to
+     * @param maxOffset Maximum position in the file to read up to
      * @param options Optional options for reading the EBML file
      */
     public constructor(file: File, offset: number, maxOffset: number, options?: EbmlParserOptions) {

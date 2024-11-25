@@ -10,11 +10,11 @@ types and descriptions as found in the ID3 2.4.0 native frames specification (Co
 Nilsson 2000).
 * TIT1 - The "Content Group Description" frame is used if the sound belongs to a larger category
   of sounds/music. For example, classical music is often sorted in different musical sections
-  (eg. "Piano Concerto", "Weather - Hurricane").
-* TIT2 - The "Title/Song name/Content description" frame is the actual name of the piece (eg.
+  (eg, "Piano Concerto", "Weather - Hurricane").
+* TIT2 - The "Title/Song name/Content description" frame is the actual name of the piece (eg,
   "Adagio", "Hurricane Donna").
 * TIT3 - The "Subtitle/Description refinement" frame is used for information directly related to
-  the contents title (eg. "Op. 16" or "Performed Live at Wembley").
+  the contents title (eg, "Op. 16" or "Performed Live at Wembley").
 * TALB - The "Album/Movie/Show title" frame is intended for the title of the recording (or
   source of sound) from which the audio in the file is taken.
 * TOAL - The "Original album/movie/show title" frame is intended for the title of the original
@@ -26,8 +26,8 @@ Nilsson 2000).
   (eg "4/9").
 * TPOS - The "Part of a set" frame is a numeric string that describes which part of a set the
   audio came from. This frame is used if the source described in the "TLAB" frame is divided
-  into several mediums, eg. a double CD. The value MAY be extended with a "/" character and a
-  numeric string containing the total number of parts in the set (eg. "1/2").
+  into several mediums, eg, a double CD. The value MAY be extended with a "/" character and a
+  numeric string containing the total number of parts in the set (eg, "1/2").
 * TSST - The "Set Subtitle" frame is intended for the subtitle of the part of a set this track
   belongs to.
 * TSRC - The "ISRC" frame should contain the International Standard Recording Code (12 chars).
@@ -47,9 +47,9 @@ Nilsson 2000).
   original recording, if for example the music in the file should be a cover of a previously
   released song.
 * TCOM - The "composer" frame is intended for the name of the composer.
-* TMCL - The "musician credits list" frame is intended as a mapping betweenInclusive instruments and the
-  musician who played it. Every odd field is an instrument and every even is an artist of a comma
-  delimited list of artists.
+* TMCL - The "musician credits list" frame is intended as a mapping betweenInclusive instruments
+  and the musician who played it. Every odd field is an instrument and every even is an artist
+  of a comma-delimited list of artists.
 * TIPL - The "Involved people list" frame is very similar to the musician credits list, but maps
   betweenInclusive functions, like producer, and names.
 * TENC - The "Encoded by" frame contains the name of the person or organization that encoded the
@@ -61,21 +61,21 @@ Nilsson 2000).
   as a numeric string.
 * TKEY - The "Initial key" frame contains the musical key in which the sound starts. It is
   represented as a string with a maximum length of 3 characters. The ground keys are represented
-  with "A" - "G" and half keys are represented with "b" or "#". Minor is represented as "m", eg.
-  "Dbm". Off key is represented with an "o" only.
+  with "A" - "G" and half keys are represented with "b" or "#". Minor is represented as "m", eg,
+  "Dbm". Off-key is represented with an "o" only.
 * TLAN - The "language" frame should contain the languages of the text or lyrics spoken or sung
   in the audio. The language is represented with three characters according to ISO-639-2. If
   more than one language is used in the text, the language codes should follow according to the
   amount of usage.
 * TCON - The "Content type" frame, which in ID3v1 was stored as one byte numeric value only, is
   now a string. You may use one or several of the ID3v1 types as numeric strings, or, since the
-  category list would be impossible to maintain with accurate and up to date categories, define
+  category list would be impossible to maintain with accurate and up-to-date categories, define
   your own.
 * TFLT - The "File type" frame indicates which type of audio this tag defines. (see the
   specification for more details)
 * TMED - The "Media type" frame describes from which media the sound originated. (see the
   specification for more details)
-* TMOO - The "mood" frame is intended to reflect the mood of the audio with a few keywords (eg.
+* TMOO - The "mood" frame is intended to reflect the mood of the audio with a few keywords (eg,
   "Romantic" or "Sad").
 * TCOP - The "Copyright message" frame, in which the string must begin with a year and a space
   character (making 5 characters), is intended for the copyright holder of the original sound,
@@ -96,7 +96,7 @@ Nilsson 2000).
 * TRSO - The "Internet radio station owner" frame contains the name of the owner of the internet
   radio station from which the audio is streamed.
 * TOFN - The "Original filename" frame contains the preferred filename for the file, since some
-  media doesn't allow the desired length of the filename. The filename is case sensitive and
+  media doesn't allow the desired length of the filename. The filename is case-sensitive and
   includes its extension.
 * TDLY - The "Playlist delay" frame defines the numbers of milliseconds of silence that should
   be inserted before this audio. The value zero indicates that this is a part of a multi-file
@@ -113,7 +113,7 @@ Nilsson 2000).
   Timestamp format is described in the ID3v2 structure document.
 * TSSE - The "Software/Hardware and settings used for encoding" frame includes the used audio
   encoder and its settings when the file was encoded. Hardware refers to hardware encoders, not
-  the computer on which a program was ran.
+  the computer on which an encoding program ran.
 * TSOA - The "Album sort order" frame defines a string which should be used instead of the album
   name (TALB) for sorting purposes. For example, an album named "A Soundtrack" might be
   preferably sorted as "Soundtrack".
@@ -377,7 +377,7 @@ Sets the grouping ID applied to the current instance.
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `value` | `number` | Grouping identifier for the current instance. Must be a 8-bit unsigned integer. Setting to `undefined` will remove the grouping identity header and ID |
+| `value` | `number` | Grouping identifier for the current instance. Must be an 8-bit unsigned integer. Setting to `undefined` will remove the grouping identity header and ID |
 
 #### Returns
 

@@ -56,7 +56,7 @@ ___
 
 • `get` **isEmpty**(): `boolean`
 
-Gets whether or not the current instance contains any records.
+Gets whether the current instance contains any records.
 
 #### Returns
 

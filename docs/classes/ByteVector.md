@@ -12,7 +12,7 @@ Implementation of this class uses a single `Uint8Array` to store bytes. Due to
     be made, rather than using multiple inserts/adds, the [concatenate](ByteVector.md#concatenate) method
     is provided to group additions/inserts and therefore improve performance.
 
-    The original .NET implementation had an ubiquitous `mid` method that would return a subset
+    The original .NET implementation had a ubiquitous `mid` method that would return a subset
     of the bytes in the current instance. In versions <5 of the node port, `mid` would make a
     copy of the subset of the bytes. Since this was frequently done right before reading a
     number or string, this copy was extremely wasteful. In version 5, the `mid` method was
@@ -547,7 +547,7 @@ ___
 
 ▸ **startsWith**(`pattern`): `boolean`
 
-Checks whether or not a pattern appears at the beginning of the current instance.
+Checks whether a pattern appears at the beginning of the current instance.
 
 #### Parameters
 

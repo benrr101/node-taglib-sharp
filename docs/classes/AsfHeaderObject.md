@@ -90,7 +90,7 @@ ___
 
 • `get` **hasContentDescriptors**(): `boolean`
 
-Gets whether or not the current instance contains either type of content descriptors.
+Gets whether the current instance contains either type of content descriptors.
 
 #### Returns
 

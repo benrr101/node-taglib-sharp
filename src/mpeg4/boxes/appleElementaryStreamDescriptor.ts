@@ -7,8 +7,9 @@ import {File} from "../../file";
 import {NumberUtils} from "../../utils";
 
 /**
- * This class extends {@link FullBox} to provide an implementation of an Apple ElementaryStreamDescriptor.
- * This box may appear as a child of a {@link IsoAudioSampleEntry} and provided further information about an audio stream.
+ * This class extends {@link FullBox} to provide an implementation of an Apple
+ * ElementaryStreamDescriptor. This box may appear as a child of a {@link IsoAudioSampleEntry} and
+ * provided further information about an audio stream.
  */
 export default class AppleElementaryStreamDescriptor extends FullBox {
     private _dependsOnEsId: number;
@@ -58,7 +59,7 @@ export default class AppleElementaryStreamDescriptor extends FullBox {
         const reader = new DescriptorTagReader(boxData);
 
         // Elementary Stream Descriptor Tag
-        if (boxData.get(reader.increaseOffset(1)) !== DescriptorTag.ES_DescrTag) {
+        if (boxData.get(reader.increaseOffset(1)) !== DescriptorTag.EsDescriptorTag) {
             throw new Error("Invalid Elementary Stream Descriptor, missing tag.");
         }
 
@@ -139,7 +140,7 @@ export default class AppleElementaryStreamDescriptor extends FullBox {
             const tag = boxData.get(reader.increaseOffset(1));
             let length: number;
             switch (tag) {
-                case DescriptorTag.DecoderConfigDescrTag: // DecoderConfigDescriptor
+                case DescriptorTag.DecoderConfigDescriptorTag: // DecoderConfigDescriptor
                     /**
                      * Check that the remainder of the tag is at least 13 bytes long
                      * (13 + DecoderSpecificInfo[] + profileLevelIndicationIndexDescriptor[])
@@ -182,7 +183,7 @@ export default class AppleElementaryStreamDescriptor extends FullBox {
                     reader.increaseOffset(length); // We're done with the config
                     break;
 
-                case DescriptorTag.SLConfigDescrTag: // SLConfigDescriptor
+                case DescriptorTag.SlConfigDescriptorTag: // SLConfigDescriptor
                     // The rest of the info is SL specific.
                     length = reader.readLength();
 
@@ -190,8 +191,8 @@ export default class AppleElementaryStreamDescriptor extends FullBox {
                     reader.increaseOffset(length);
                     break;
 
-                case DescriptorTag.Forbidden_00:
-                case DescriptorTag.Forbidden_FF:
+                case DescriptorTag.Forbidden0:
+                case DescriptorTag.Forbidden255:
                     throw new Error("Invalid Descriptor tag.");
                 default:
                     /**
