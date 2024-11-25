@@ -1,116 +1,147 @@
+import VbrHeader from "./vbrHeader";
 import {ByteVector, StringType} from "../byteVector";
-import {CorruptFileError} from "../errors";
+import {File} from "../file";
 import {ChannelMode, MpegVersion} from "./mpegEnums";
 import {Guards, NumberUtils} from "../utils";
 
+enum XingHeaderFlags {
+    FrameCount = 0x01,
+    FileSize = 0x02,
+    TableOfContents = 0x04,
+    VbrScale = 0x08,
+}
+
 /**
- * Information about a variable bitrate MPEG audio stream
+ * Information about a Xing variable bitrate MPEG audio stream. This provides a much more accurate
+ * determination of bitrate and duration than just using the first MPEG frame header alone.
+ *
+ * @remarks There is a tiny, known bug in this implementation. According to Hydrogenaudio, for LAME
+ *     v3.99.1, they tried to change the version string to start with L instead of LAME. This was
+ *     rolled back in v3.99.2 due to backwards compat issues with decoders. However, to simplify
+ *     the code here, I've just decided to only check for LAME. Thus, for files encoded with this
+ *     broken version of LAME (or indeed with other encoders like Gogo), the file bitrate and
+ *     duration will be slightly inaccurate.
+ *     Please raise a GitHub issue if this is not good enough and make sure to say "I told you not
+ *     to half-ass it, Ben".
  */
-export default class XingHeader {
-    /**
-     * Identifier that appears in a file to indicate the start of a Xing header.
-     */
-    public static readonly FILE_IDENTIFIER = ByteVector.fromString("Xing", StringType.Latin1).makeReadOnly();
-    public static readonly FILE_IDENTIFIER_INFO = ByteVector.fromString("Info", StringType.Latin1).makeReadOnly();
+export default class XingHeader extends VbrHeader {
+    private static readonly IDENTIFIER_CBR = ByteVector.fromString("Info", StringType.Latin1).makeReadOnly();
+    private static readonly IDENTIFIER_LAME = ByteVector.fromString("LAME", StringType.Latin1).makeReadOnly();
+    private static readonly IDENTIFIER_VBR = ByteVector.fromString("Xing", StringType.Latin1).makeReadOnly();
+    private static readonly LAME_HEADER_LENGTH = 36;
+    private static readonly XING_HEADER_LENGTH = 16;
 
-    /**
-     * An empty an unset Xing header
-     */
-    public static readonly UNKNOWN = XingHeader.fromInfo(0, 0);
-
-    private _isPresent: boolean;
-    private _totalFrames: number;
-    private _totalSize: number;
-
-    // #region Constructors
-
-    private constructor() { /* private to enforce construction via static methods */ }
-
-    /**
-     * Constructs a new instance with a specified frame count and size.
-     * @param frames Frame count of the audio
-     * @param size Stream size of the audio
-     */
-    public static fromInfo(frames: number, size: number): XingHeader {
-        Guards.uint(frames, "frames");
-        Guards.uint(size, "size");
-
-        const header = new XingHeader();
-        header._isPresent = false;
-        header._totalFrames = frames;
-        header._totalSize = size;
-        return header;
+    private constructor(totalFrames?: number, totalBytes?: number, durationSeconds?: number, bitrateBytes?: number) {
+        super(totalFrames, totalBytes, durationSeconds, bitrateBytes);
     }
 
-    /**
-     * Constructs a new instance by reading its raw contents.
-     * @param data Raw data of the Xing header
-     */
-    public static fromData(data: ByteVector): XingHeader {
-        Guards.truthy(data, "data");
-
-        const isInfoHeader = data.startsWith(XingHeader.FILE_IDENTIFIER_INFO);
-
-        // Check to see if a valid Xing header is available
-        if (!data.startsWith(XingHeader.FILE_IDENTIFIER) && !isInfoHeader) {
-            throw new CorruptFileError("Not a valid Xing header");
+    public static fromFile(
+        file: File,
+        mpegHeaderPosition: number,
+        mpegVersion: MpegVersion,
+        mpegChannelMode: ChannelMode,
+        samplesPerFrame: number,
+        samplesPerSecond: number,
+        fallbackFileSize: number
+    ): XingHeader | undefined {
+        Guards.truthy(file, "file");
+        Guards.safeUint(mpegHeaderPosition, "mpegHeaderPosition");
+        Guards.uint(samplesPerFrame, "samplesPerFrame", false);
+        Guards.uint(samplesPerSecond, "samplesPerSecond", false);
+        if (fallbackFileSize) {
+            Guards.safeUint(fallbackFileSize, "fallbackFileSize");
         }
 
-        const header = new XingHeader();
-        let position = 8;
-
-        if (NumberUtils.hasFlag(data.get(7), 0x01)) {
-            header._totalFrames = data.subarray(position, 4).toUint();
-            position += 4;
-        } else {
-            header._totalFrames = 0;
-        }
-
-        if (NumberUtils.hasFlag(data.get(7), 0x02)) {
-            header._totalSize = data.subarray(position, 4).toUint();
-        } else {
-            header._totalSize = 0;
-        }
-
-        header._isPresent = !isInfoHeader;
-
-        return header;
-    }
-
-    // #endregion
-
-    // #region Properties
-
-    /**
-     * Whether or not a physical VBRI header is present in the file.
-     */
-    public get isPresent(): boolean { return this._isPresent; }
-
-    /**
-     * Gets the total number of frames in the file, as indicated by the current instance.
-     */
-    public get totalFrames(): number { return this._totalFrames; }
-
-    /**
-     * Gets the total size of the file, as indicated by the current instance.
-     */
-    public get totalSize(): number { return this._totalSize; }
-
-    // #endregion
-
-    /**
-     * Gets the offset at which a Xing header would appear in an MPEG audio packet based on the
-     * version and channel mode.
-     * @param version Version of the MPEG audio packet
-     * @param channelModel Channel mode of the MPEG audio packet
-     * @returns Offset into an MPEG audio packet where the Xing header would appear.
-     */
-    public static xingHeaderOffset(version: MpegVersion, channelModel: ChannelMode): number {
-        const singleChannel = channelModel === ChannelMode.SingleChannel;
-
-        return version === MpegVersion.Version1
+        // Determine offset from MPEG header where Xing header should be
+        const singleChannel = mpegChannelMode === ChannelMode.SingleChannel;
+        const xingOffset = mpegVersion === MpegVersion.Version1
             ? (singleChannel ? 0x15 : 0x24)
             : (singleChannel ? 0x0D : 0x15);
-    }
 
+        // Seek to position in the file and read Xing header data
+        file.seek(mpegHeaderPosition + xingOffset);
+        const xingData = file.readBlock(this.XING_HEADER_LENGTH);
+
+        // Determine if there is a header here
+        const isCbrHeader = xingData.startsWith(this.IDENTIFIER_CBR);
+        const isVbrHeader = xingData.startsWith(this.IDENTIFIER_VBR);
+        if (xingData.length !== this.XING_HEADER_LENGTH || (!isCbrHeader && !isVbrHeader)) {
+            // NOTE: It is possible though incredibly unlikely that the Xing header can technically
+            //     be smaller than 16 bytes, if only one field is present. In this case, it's
+            //     probably ok to just ignore the header.
+            return undefined;
+        }
+
+        // We have a header, parse the header data
+        const flags = xingData.get(7);
+        let totalFrames: number;
+        let totalBytes: number;
+
+        let xingLength = 8
+        if (NumberUtils.hasFlag(flags, XingHeaderFlags.FrameCount)) {
+            totalFrames = xingData.subarray(xingLength, 4).toUint();
+            xingLength += 4;
+        }
+        if (NumberUtils.hasFlag(flags, XingHeaderFlags.FileSize)) {
+            totalBytes = xingData.subarray(xingLength, 4).toUint();
+            xingLength += 4
+        }
+        if (NumberUtils.hasFlag(flags, XingHeaderFlags.TableOfContents)) {
+            xingLength += 100;
+        }
+        if (NumberUtils.hasFlag(flags, XingHeaderFlags.VbrScale)) {
+            xingLength += 4;
+        }
+
+        // NOTE: I spent a *long* time trying to sort this out. Lesson #1: don't fucking trust
+        //    chatgpt. Xing header specification will only reliably provide the total frames of
+        //    the file and the total size in bytes of the audio portion of the file. Bitrate must
+        //    be calculated based on this.
+        //    LAME adds an extension to the header with a bunch of junk. This includes the encoding
+        //    method and *target* bitrate. However, these values are not traditionally used as the
+        //    displayed bitrate and the actual average bitrate must still be calculated.
+        // For details on the LAME header, see http://gabriel.mp3-tech.org/mp3infotag.html
+
+        // Try to read LAME extensions to the Xing header
+        file.seek(mpegHeaderPosition + xingOffset + xingLength);
+        const lameData = file.readBlock(this.LAME_HEADER_LENGTH);
+
+        let samplesAdjustment = 0;
+        if (
+            lameData.length === 36 &&
+            lameData.startsWith(this.IDENTIFIER_LAME) &&
+            lameData.find(ByteVector.fromByte(0xFF)) < 0 // No MPEG synchronization bytes found
+        ) {
+            const lameVersionString = lameData.subarray(0, 9).toString(StringType.Latin1);
+
+            // [xxxxxxxx xxxxyyyy yyyyyyyy]
+            // Where x is encoder delay and y is encoder padding
+            const delayPadding = lameData.subarray(21, 3).toUint();
+            const encoderDelay = NumberUtils.uintRShift(delayPadding, 12);
+            const encoderPadding = NumberUtils.uintAnd(delayPadding, 0xFFF);
+            samplesAdjustment = encoderDelay + encoderPadding;
+        }
+
+        // Calculate duration and bitrate based on the data we collected
+        let durationSeconds: number;
+        let bitrateBytes: number;
+        if (totalFrames) {
+            // We can calculate duration if we have total frames
+            const totalSamples = (totalFrames * samplesPerFrame) - samplesAdjustment;
+            durationSeconds = totalSamples / samplesPerSecond;
+
+            // If we have a VBR encoded file, we should try to calculate bitrate
+
+            if (isVbrHeader) {
+                // NOTE: MPEG container files cannot accurately return audio stream size, so
+                //    fallback size will be falsy in this case.
+                const streamBytes = totalBytes || fallbackFileSize;
+                if (streamBytes) {
+                    bitrateBytes = streamBytes * 8 / durationSeconds;
+                }
+            }
+        }
+
+        return new XingHeader(totalFrames, totalBytes, durationSeconds, bitrateBytes);
+    }
 }

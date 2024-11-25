@@ -109,9 +109,12 @@ export class Guards {
         }
     }
 
-    public static uint(value: number, name: string): void {
+    public static uint(value: number, name: string, allowZero: boolean = true): void {
         if (!Number.isSafeInteger(value) || value > 4294967295 || value < 0) {
             throw new Error(`Argument out of range: ${name} must be a positive, 32-bit integer`);
+        }
+        if (!allowZero && value === 0) {
+            throw new Error(`Argument out of range ${name} cannot be zero`);
         }
     }
 
@@ -319,8 +322,9 @@ export class NumberUtils {
 }
 
 export class StringUtils {
-    public static readonly BCP47_REGEX = new RegExp(/^[a-z]{2,3}(-[a-z]{2,8})*$/i)
+    public static readonly BCP47_REGEX = new RegExp(/^[a-z]{2,3}(-[a-z]{2,8})*$/i);
     public static readonly ISO369_2_REGEX = new RegExp(/^[a-z]{2,3}([-\/][a-z]{2,3})?$/i);
+    public static readonly PRINTABLE_REGEX = new RegExp(/^[a-z0-9!"#$%&'()*+,.\/:;<=>?@\[\] ^_`{|}~-]*$/i);
 
     public static findLastByteFromRight(haystack: string, needle: number): number {
         let length = haystack.length;
