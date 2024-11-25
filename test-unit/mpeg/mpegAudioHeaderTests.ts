@@ -90,6 +90,7 @@ import {Allow, Testers} from "../utilities/testers";
         assert.isUndefined(MpegAudioHeader.fromFile(file, 0, file.length));
     }
 
+    @test
     public fromFile_reservedSampleRate() {
         // Arrange
         const file = TestFile.getFile([0xFF, 0xFA, 0x0C, 0x00]);
