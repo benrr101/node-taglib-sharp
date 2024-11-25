@@ -128,8 +128,8 @@ export default class Id3v2Tag extends Tag {
     /**
      * Gets the ISO-639-2 language code to use when searching for and storing language specific
      * values.
-     * @param value ISO-639-2 language code to use. If the language is unknown `"   "` is the
-     *     appropriate filler
+     * @param value ISO-639-2 language code to use. If the language is unknown `   ` (that is,
+     *     three spaces) is the appropriate filler
      */
     public static set language(value: string) {
         Id3v2Tag._language = !value || value.length < 3
@@ -737,111 +737,111 @@ export default class Id3v2Tag extends Tag {
 
     /**
      * @inheritDoc
-     * @remarks via TXXX:MusicBrainz Release Group Id frame
+     * @remarks via a TXXX `MusicBrainz Release Group Id` frame
      */
     get musicBrainzReleaseGroupId(): string { return this.getUserTextAsString("MusicBrainz Release Group Id"); }
     /**
      * @inheritDoc
-     * @remarks via TXXX:MusicBrainz Release Group Id frame
+     * @remarks via a TXXX `MusicBrainz Release Group Id` frame
      */
     set musicBrainzReleaseGroupId(value: string) { this.setUserTextAsString("MusicBrainz Release Group Id", value); }
 
     /**
      * @inheritDoc
-     * @remarks via TXXX:MusicBrainz Album Id frame
+     * @remarks via a TXXX `MusicBrainz Album Id` frame
      */
     get musicBrainzReleaseId(): string { return this.getUserTextAsString("MusicBrainz Album Id"); }
     /**
      * @inheritDoc
-     * @remarks via TXXX:MusicBrainz Album Id frame
+     * @remarks via a TXXX `MusicBrainz Album Id` frame
      */
     set musicBrainzReleaseId(value: string) { this.setUserTextAsString("MusicBrainz Album Id", value); }
 
     /**
      * @inheritDoc
-     * @remarks via TXXX:MusicBrainz Album Artist Id frame
+     * @remarks via a TXXX `MusicBrainz Album Artist Id` frame
      */
     get musicBrainzReleaseArtistId(): string { return this.getUserTextAsString("MusicBrainz Album Artist Id"); }
     /**
      * @inheritDoc
-     * @remarks via TXXX:MusicBrainz Album Artist Id frame
+     * @remarks via a TXXX `MusicBrainz Album Artist Id` frame
      */
     set musicBrainzReleaseArtistId(value: string) { this.setUserTextAsString("MusicBrainz Album Artist Id", value); }
 
     /**
      * @inheritDoc
-     * @remarks via UFID:http://musicbrainz.org frame
+     * @remarks via a UFID `http://musicbrainz.org` frame
      */
     get musicBrainzTrackId(): string { return this.getUfidText("http://musicbrainz.org"); }
     /**
      * @inheritDoc
-     * @remarks via UFID:http://musicbrainz.org frame
+     * @remarks via a UFID `http://musicbrainz.org` frame
      */
     set musicBrainzTrackId(value: string) { this.setUfidText("http://musicbrainz.org", value); }
 
     /**
      * @inheritDoc
-     * @remarks via TXXX:MusicBrainz Disc Id frame
+     * @remarks via a TXXX `MusicBrainz Disc Id` frame
      */
     get musicBrainzDiscId(): string { return this.getUserTextAsString("MusicBrainz Disc Id"); }
     /**
      * @inheritDoc
-     * @remarks via TXXX:MusicBrainz Disc Id frame
+     * @remarks via a TXXX `MusicBrainz Disc Id` frame
      */
     set musicBrainzDiscId(value: string) { this.setUserTextAsString("MusicBrainz Disc Id", value); }
 
     /**
      * @inheritDoc
-     * @remarks via TXXX:MusicIP PUID frame
+     * @remarks via a TXXX `MusicIP PUID` frame
      */
     get musicIpId(): string { return this.getUserTextAsString("MusicIP PUID"); }
     /**
      * @inheritDoc
-     * @remarks via TXXX:MusicIP PUID frame
+     * @remarks via a TXXX `MusicIP PUID` frame
      */
     set musicIpId(value: string) { this.setUserTextAsString("MusicIP PUID", value); }
 
     /**
      * @inheritDoc
-     * @remarks via TXXX:ASIN
+     * @remarks via a TXXX `ASIN` frame
      */
     get amazonId(): string { return this.getUserTextAsString("ASIN"); }
     /**
      * @inheritDoc
-     * @remarks via TXXX:ASIN
+     * @remarks via a TXXX `ASIN` frame
      */
     set amazonId(value: string) { this.setUserTextAsString("ASIN", value); }
 
     /**
      * @inheritDoc
-     * @remarks via TXXX:MusicBrainz Album Status frame
+     * @remarks via a TXXX `MusicBrainz Album Status` frame
      */
     get musicBrainzReleaseStatus(): string { return this.getUserTextAsString("MusicBrainz Album Status"); }
     /**
      * @inheritDoc
-     * @remarks via TXXX:MusicBrainz Album Status frame
+     * @remarks via a TXXX `MusicBrainz Album Status` frame
      */
     set musicBrainzReleaseStatus(value: string) { this.setUserTextAsString("MusicBrainz Album Status", value); }
 
     /**
      * @inheritDoc
-     * @remarks via TXXX:MusicBrainz Album Type frame
+     * @remarks via a TXXX `MusicBrainz Album Type` frame
      */
     get musicBrainzReleaseType(): string { return this.getUserTextAsString("MusicBrainz Album Type"); }
     /**
      * @inheritDoc
-     * @remarks via TXXX:MusicBrainz Album Type frame
+     * @remarks via a TXXX `MusicBrainz Album Type` frame
      */
     set musicBrainzReleaseType(value: string) { this.setUserTextAsString("MusicBrainz Album Type", value); }
 
     /**
      * @inheritDoc
-     * @remarks via TXXX:MusicBrainz Album Release Country frame
+     * @remarks via a TXXX `MusicBrainz Album Release Country` frame
      */
     get musicBrainzReleaseCountry(): string { return this.getUserTextAsString("MusicBrainz Album Release Country"); }
     /**
      * @inheritDoc
-     * @remarks via TXXX:MusicBrainz Album Release Country frame
+     * @remarks via a TXXX `MusicBrainz Album Release Country` frame
      */
     set musicBrainzReleaseCountry(value: string) {
         this.setUserTextAsString("MusicBrainz Album Release Country", value);
@@ -849,7 +849,7 @@ export default class Id3v2Tag extends Tag {
 
     /**
      * @inheritDoc
-     * @remarks via TXXX:REPLAY_GAIN_TRACK_GAIN frame
+     * @remarks via a TXXX `REPLAY_GAIN_TRACK_GAIN` frame
      */
     get replayGainTrackGain(): number {
         let text = this.getUserTextAsString("REPLAYGAIN_TRACK_GAIN", false);
@@ -862,7 +862,7 @@ export default class Id3v2Tag extends Tag {
     }
     /**
      * @inheritDoc
-     * @remarks via TXXX:REPLAY_GAIN_TRACK_GAIN frame
+     * @remarks via a TXXX `REPLAY_GAIN_TRACK_GAIN` frame
      */
     set replayGainTrackGain(value: number) {
         if (value === undefined || value === null || Number.isNaN(value)) {
@@ -875,7 +875,7 @@ export default class Id3v2Tag extends Tag {
 
     /**
      * @inheritDoc
-     * @remarks via TXXX:REPLAYGAIN_TRACK_PEAK frame
+     * @remarks via a TXXX `REPLAYGAIN_TRACK_PEAK` frame
      */
     get replayGainTrackPeak(): number {
         const text: string = this.getUserTextAsString("REPLAYGAIN_TRACK_PEAK", false);
@@ -883,7 +883,7 @@ export default class Id3v2Tag extends Tag {
     }
     /**
      * @inheritDoc
-     * @remarks via TXXX:REPLAYGAIN_TRACK_PEAK frame
+     * @remarks via a TXXX `REPLAYGAIN_TRACK_PEAK` frame
      */
     set replayGainTrackPeak(value: number) {
         if (value === undefined || value === null || Number.isNaN(value)) {
@@ -896,7 +896,7 @@ export default class Id3v2Tag extends Tag {
 
     /**
      * @inheritDoc
-     * @remarks via TXXX:REPLAYGAIN_ALBUM_GAIN frame
+     * @remarks via a TXXX `REPLAYGAIN_ALBUM_GAIN` frame
      */
     get replayGainAlbumGain(): number {
         let text = this.getUserTextAsString("REPLAYGAIN_ALBUM_GAIN", false);
@@ -909,7 +909,7 @@ export default class Id3v2Tag extends Tag {
     }
     /**
      * @inheritDoc
-     * @remarks via TXXX:REPLAYGAIN_ALBUM_GAIN frame
+     * @remarks via a TXXX `REPLAYGAIN_ALBUM_GAIN` frame
      */
     set replayGainAlbumGain(value: number) {
         if (value === undefined || value === null || Number.isNaN(value)) {
@@ -922,7 +922,7 @@ export default class Id3v2Tag extends Tag {
 
     /**
      * @inheritDoc
-     * @remarks via TXXX:REPLAYGAIN_ALBUM_PEAK frame
+     * @remarks via a TXXX `REPLAYGAIN_ALBUM_PEAK` frame
      */
     get replayGainAlbumPeak(): number {
         const text: string = this.getUserTextAsString("REPLAYGAIN_ALBUM_PEAK", false);
@@ -930,7 +930,7 @@ export default class Id3v2Tag extends Tag {
     }
     /**
      * @inheritDoc
-     * @remarks via TXXX:REPLAYGAIN_ALBUM_PEAK frame
+     * @remarks via a TXXX `REPLAYGAIN_ALBUM_PEAK` frame
      */
     set replayGainAlbumPeak(value: number) {
         if (value === undefined || value === null || Number.isNaN(value)) {
@@ -1069,7 +1069,7 @@ export default class Id3v2Tag extends Tag {
     /**
      * Gets all frames with a specific frame class type.
      * NOTE: This diverges from the .NET implementation due to the inability to do type checking
-     * like in .NET (ie `x is y`). Instead type guards are added to each frame class which provides
+     * like in .NET (ie `x is y`). Instead, type guards are added to each frame class which provides
      * the same functionality.
      * @param type Class type of the frame to find
      * @returns TFrame[] Array of frames with the specified class type
@@ -1291,7 +1291,7 @@ export default class Id3v2Tag extends Tag {
      * Sets the numerical values for a specified text information frame.
      * If both `numerator` and `denominator` are `0`, the frame will be removed
      * from the tag. If `denominator` is zero, `numerator` will be stored by
-     * itself. Otherwise the values will be stored as `{numerator}/{denominator}`.
+     * itself. Otherwise, the values will be stored as `{numerator}/{denominator}`.
      * @param ident Identity of the frame to set
      * @param numerator Value containing the top half of the fraction, or the number if
      *     `denominator` is zero

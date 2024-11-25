@@ -48,7 +48,7 @@ export default class IsoVisualSampleEntry extends IsoSampleEntry implements IVid
     public get description(): string { return `MPEG-4 Video (${this.boxType.toString(StringType.Latin1)})`; }
 
     /** @inheritDoc */
-    public get videoHeight(): number { return this._videoHeight };
+    public get videoHeight(): number { return this._videoHeight; }
 
     /** @inheritDoc */
     public get videoWidth(): number { return this._videoWidth; }

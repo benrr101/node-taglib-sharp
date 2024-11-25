@@ -99,7 +99,7 @@ export class Encoding {
         //       uses Encoding.Default. I have removed it in this port because 1) this behavior is
         //       not used anywhere in the library, 2) Encoding.Default could be anything depending
         //       on the machine's region, 3) in .NET Core this is always UTF8.
-        //       If it turns out we need support for other non unicode encodings, we'll want to
+        //       If it turns out we need support for other non Unicode encodings, we'll want to
         //       revisit this.
     }
 
@@ -131,7 +131,7 @@ export class Encoding {
  *     be made, rather than using multiple inserts/adds, the {@link ByteVector.concatenate} method
  *     is provided to group additions/inserts and therefore improve performance.
  *
- *     The original .NET implementation had an ubiquitous `mid` method that would return a subset
+ *     The original .NET implementation had a ubiquitous `mid` method that would return a subset
  *     of the bytes in the current instance. In versions <5 of the node port, `mid` would make a
  *     copy of the subset of the bytes. Since this was frequently done right before reading a
  *     number or string, this copy was extremely wasteful. In version 5, the `mid` method was
@@ -486,10 +486,10 @@ export class ByteVector {
                 fail(new Error("Null argument exception: Stream was not provided"));
             }
 
-            // Setup the output
+            // Set up the output
             const output = ByteVector.empty();
 
-            // Setup the events to read the stream
+            // Set up the events to read the stream
             readStream.on("readable", () => {
                 const bytes = <Buffer> readStream.read();
                 if (bytes) {
@@ -1082,7 +1082,7 @@ export class ByteVector {
     }
 
     /**
-     * Checks whether or not a pattern appears at the beginning of the current instance.
+     * Checks whether a pattern appears at the beginning of the current instance.
      * @param pattern ByteVector containing the pattern to check for in the current instance.
      * @returns
      *     `true` if the pattern was found at the beginning of the current instance, `false`

@@ -2,7 +2,7 @@ import {assert} from "chai";
 import {suite, test} from "@testdeck/mocha";
 
 import TestConstants from "./utilities/testConstants";
-import {File, ReadStyle} from "../src";
+import {File} from "../src";
 
 @suite class Mp3_propertiesTest {
 

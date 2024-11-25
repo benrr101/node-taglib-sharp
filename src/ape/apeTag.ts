@@ -127,13 +127,13 @@ export default class ApeTag extends Tag {
     // #region Ape Tag Properties
 
     /**
-     * Gets whether or not the current instance has a header when rendered.
+     * Gets whether the current instance has a header when rendered.
      */
     public get isHeaderPresent(): boolean {
         return !!this._footer && NumberUtils.hasFlag(this._footer.flags, ApeTagFooterFlags.HeaderPresent);
     }
     /**
-     * Sets whether or not the current instance has a header when rendered.
+     * Sets whether the current instance has a header when rendered.
      */
     public set isHeaderPresent(value: boolean) {
         if (value) {

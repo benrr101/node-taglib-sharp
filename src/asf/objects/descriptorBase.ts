@@ -28,7 +28,7 @@ export enum DataType {
     DWord = 3,
 
     /**
-     * The descriptor contains a 8-byte QWORD value.
+     * The descriptor contains an 8-byte QWORD value.
      */
     QWord = 4,
 

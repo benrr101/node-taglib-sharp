@@ -351,20 +351,25 @@ export class StringUtils {
 }
 
 export class DateUtils {
+    /**
+     * Formats a date as a YYYY-MM-ddThh:mm:ss.
+     */
     public static format(date: Date | undefined): string | undefined {
         if (!date) {
             return undefined
         }
-        
-        const pad = (num: number) => `${num}`.padStart(2, '0')
 
         const year = date.getFullYear();
-        const month = pad(date.getMonth() + 1);
-        const day = pad(date.getDate());
-        const hours = pad(date.getHours());
-        const minutes = pad(date.getMinutes());
-        const seconds = pad(date.getSeconds());
+        const month = this.padNumber(date.getMonth() + 1);
+        const day = this.padNumber(date.getDate());
+        const hours = this.padNumber(date.getHours());
+        const minutes = this.padNumber(date.getMinutes());
+        const seconds = this.padNumber(date.getSeconds());
 
         return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}`;
+    }
+
+    private static padNumber(value: number): string {
+        return String(value).padStart(2, '0');
     }
 }

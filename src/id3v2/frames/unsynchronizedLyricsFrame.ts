@@ -92,7 +92,7 @@ export default class UnsynchronizedLyricsFrame extends Frame {
     public get description(): string { return this._description || ""; }
     /**
      * Sets the description of the contents of the current instance.
-     * There should only be one frame with a this description and ISO-639-2 code per tag.
+     * There should only be one frame with this description and ISO-639-2 code per tag.
      */
     public set description(value: string) { this._description = value; }
 

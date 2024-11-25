@@ -53,7 +53,7 @@ export default class Mpeg4FileParser {
     private _stsdBoxes: Mpeg4Box[] = [];
 
     /**
-     * Constructs and initializes a new instance of {{@link FileParser}} for a specified file.
+     * Constructs and initializes a new instance of {{@link Mpeg4FileParser}} for a specified file.
      * @param file A {{@link File}} object to perform operations on.
      */
     public constructor(file: File) {

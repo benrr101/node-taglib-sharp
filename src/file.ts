@@ -23,7 +23,7 @@ export enum ReadStyle {
     Average = 2,
 
     /**
-     * Use the {@link PictureLazy} class in the the property {@link Tag.pictures}. This will avoid
+     * Use the {@link PictureLazy} class in the property {@link Tag.pictures}. This will avoid
      * loading picture content when reading the tag. Picture will be read lazily, when the picture
      * content is accessed.
      */
@@ -191,13 +191,13 @@ export abstract class File implements IDisposable {
     public get hasTags(): boolean { return this.tagTypes !== TagTypes.None; }
 
     /**
-     * Indicates whether or not this file may be corrupt. Files with unknown corruptions should not
+     * Indicates whether this file may be corrupt. Files with unknown corruptions should not
      * be written.
      */
     public get isPossiblyCorrupt(): boolean { return this._corruptionReasons && this._corruptionReasons.length > 0; }
 
     /**
-     * Indicates whether or not tags can be written back to the current file.
+     * Indicates whether tags can be written back to the current file.
      */
     public get isWritable(): boolean { return !this.isPossiblyCorrupt; }
 
@@ -441,7 +441,7 @@ export abstract class File implements IDisposable {
      * specified location, replacing a specified number of bytes.
      * @param data Data to insert into the file.
      * @param start Index into the file at which to insert the data. Must be safe positive integer.
-     * @param replace Number of bytes to replace. Typically this is the original size of the data
+     * @param replace Number of bytes to replace. Typically, this is the original size of the data
      *     block so that a new block will replace the old one.
      * @throws Error Thrown when: 1) data is falsey, 2) start is not a safe, positive number, or 3)
      *     replace is not a safe, positive number
@@ -481,12 +481,12 @@ export abstract class File implements IDisposable {
         this._fileStream.setLength(this._fileStream.length + bytesToAdd);
 
         // Step 3: Shuffle bytes to the end
-        const _bufferSize = Math.min(bytesToAdd, File.BUFFER_SIZE * 1024);
-        const buffer = new Uint8Array(_bufferSize);
+        const bufferSize = Math.min(bytesToAdd, File.BUFFER_SIZE * 1024);
+        const buffer = new Uint8Array(bufferSize);
         const stopShufflingIndex = start + replace + bytesToAdd;
         let shuffleIndex = this._fileStream.length;
         while (shuffleIndex > stopShufflingIndex) {
-            const bytesToReplace = Math.min(shuffleIndex - stopShufflingIndex, _bufferSize);
+            const bytesToReplace = Math.min(shuffleIndex - stopShufflingIndex, bufferSize);
 
             // Fill up the buffer
             this._fileStream.seek(shuffleIndex - bytesToReplace - bytesToAdd, SeekOrigin.Begin);

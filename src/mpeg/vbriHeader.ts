@@ -14,7 +14,12 @@ export default class VbriHeader extends VbrHeader {
         super(totalFrames, totalBytes, durationSeconds, bitrateBytes);
     }
 
-    public static fromFile(file: File, mpegHeaderPosition: number, samplesPerFrame: number, samplesPerSecond: number) {
+    public static fromFile(
+        file: File,
+        mpegHeaderPosition: number,
+        samplesPerFrame: number,
+        samplesPerSecond: number
+    ): VbriHeader {
         Guards.truthy(file, "files");
         Guards.safeUint(mpegHeaderPosition, "mpegHeaderPosition");
         Guards.uint(samplesPerFrame, "samplesPerFrame");

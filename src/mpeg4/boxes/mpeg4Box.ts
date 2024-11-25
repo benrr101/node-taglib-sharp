@@ -87,7 +87,7 @@ export default abstract class Mpeg4Box {
     public get handlerType(): ByteVector { return this._handlerType; }
 
     /**
-     * Gets whether or not the current instance has children.
+     * Gets whether the current instance has children.
      */
     public get hasChildren(): boolean { return this._children.length > 0; }
 

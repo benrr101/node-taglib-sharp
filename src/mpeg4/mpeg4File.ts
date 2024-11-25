@@ -172,7 +172,7 @@ export default class Mpeg4File extends File {
     }
 
     /**
-     * Gets if there is a udta with ILST present in our collection
+     * Gets if there is a "udta" with ILST present in our collection
      * @returns boolean `true` if there is a UDTA with ILST present in our collection
      */
     private isAppleTagUdtaPresent(): boolean {

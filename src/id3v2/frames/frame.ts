@@ -92,7 +92,7 @@ export enum FrameClassType {
     UserTextInformationFrame,
 
     /**
-     * Indicates the frame is an user URL link frame.
+     * Indicates the frame is a user URL link frame.
      */
     UserUrlLinkFrame
 }
@@ -199,7 +199,7 @@ export abstract class Frame {
     }
     /**
      * Sets the grouping ID applied to the current instance.
-     * @param value Grouping identifier for the current instance. Must be a 8-bit unsigned integer.
+     * @param value Grouping identifier for the current instance. Must be an 8-bit unsigned integer.
      *     Setting to `undefined` will remove the grouping identity header and ID
      */
     public set groupId(value: number | undefined) {

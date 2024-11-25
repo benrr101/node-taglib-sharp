@@ -5,7 +5,7 @@ module.exports = {
         "@typescript-eslint/explicit-function-return-type": "off",
         "@typescript-eslint/naming-convention": "off",
         "@typescript-eslint/no-unsafe-argument": "off",
-        "@typescript-esline/no-unsafe-member-access": "off",
+        "@typescript-eslint/no-unsafe-member-access": "off",
         "@typescript-eslint/no-unused-vars": "off",
         "dot-notation": "off"
     }

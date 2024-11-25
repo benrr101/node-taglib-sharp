@@ -29,16 +29,15 @@ export default class MatroskaTagCollection extends Tag {
 
     private static readonly PERFORMER_AUDIO_KEY = "PERFORMER";
     private static readonly PERFORMER_VIDEO_KEY = "ACTOR";
-    private static readonly NUMERIC_GENRE_REGEX = new RegExp(/\((\d+)\)/);
 
     private readonly _albumPartTagLevel: number;
     private readonly _albumTagLevel: number;
     private readonly _isVideo: boolean;
     private readonly _fileTagLevel: number;
     private readonly _performerKey: string;
+    private readonly _sizeOnDisk: number = 0;
 
     private _attachments: MatroskaAttachment[];
-    private _sizeOnDisk: number = 0;
     private _tags: MatroskaTag[] = [];
 
     /**
@@ -328,7 +327,7 @@ export default class MatroskaTagCollection extends Tag {
      * found, the process is repeated at the un-targeted level.
      * @remarks
      *     The "file" target level is either {@link MatroskaTagTarget.TRACK} or
-     *     {@link MatroskaTagTarget.EPISODE} level, depending of whether the file is audio or video.
+     *     {@link MatroskaTagTarget.EPISODE} level, depending on whether the file is audio or video.
      *     This is somewhat convention based due to Matroska tagging being so open-ended. This
      *     method should only be used for retrieving tags for the unified tagging interface, which
      *     is best-effort in following conventions.

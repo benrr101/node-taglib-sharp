@@ -247,7 +247,7 @@ class Ebml_ParserTests {
             [0x4282, (e) => { assert.strictEqual(e.id, 0x4282); validation[4] = true;}],
             [0x4287, (e) => { assert.strictEqual(e.id, 0x4287); validation[5] = true;}],
             [0x4285, (e) => { assert.strictEqual(e.id, 0x4285); validation[6] = true;}],
-            [0x1234, (e) => { validation[7] = false; }]
+            [0x1234, ()  => { validation[7] = false; }]
         ])
 
         // Act

@@ -6,7 +6,7 @@ import {ICodec} from "../../properties";
 import {Guards} from "../../utils";
 
 /**
- * IDs for a AVI stream types.
+ * IDs for an AVI stream types.
  */
 export enum AviStreamType {
     /** Audio Stream */
@@ -111,8 +111,8 @@ export class AviStream {
                 break;
             case AviStreamType.MidiStream:
             case AviStreamType.TextStream:
-                // These types don't have codecs, but we still care about the headers, I think
-                // If there's more information needed for these types, please open a issue
+                // These types don't have codecs, but we still care about the headers, I think.
+                // If there's more information needed for these types, please open an issue.
                 break;
         }
     }
