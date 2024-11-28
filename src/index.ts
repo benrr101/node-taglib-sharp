@@ -98,8 +98,8 @@ export {
     FrameClassType as Id3v2FrameClassType
 } from "./id3v2/frames/frame";
 export {
-    default as Id3v2FrameFactory,
-    FrameCreator as Id3v2FrameCreator
+    FrameCreator as Id3v2FrameCreator,
+    Id3v2FrameFactory
 } from "./id3v2/frames/frameFactory";
 export {Id3v2FrameFlags, Id3v2FrameHeader} from "./id3v2/frames/frameHeader";
 export {default as Id3v2MusicCdIdentifierFrame} from "./id3v2/frames/musicCdIdentifierFrame";

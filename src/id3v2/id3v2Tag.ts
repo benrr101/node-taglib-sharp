@@ -1,6 +1,5 @@
 import AttachmentFrame from "./frames/attachmentFrame";
 import CommentsFrame from "./frames/commentsFrame";
-import FrameFactory from "./frames/frameFactory";
 import Id3v2ExtendedHeader from "./id3v2ExtendedHeader";
 import Id3v2TagFooter from "./id3v2TagFooter";
 import Id3v2Settings from "./id3v2Settings";
@@ -11,6 +10,7 @@ import {ByteVector, StringType} from "../byteVector";
 import {CorruptFileError, NotImplementedError, NotSupportedError} from "../errors";
 import {File, ReadStyle} from "../file";
 import {Frame, FrameClassType} from "./frames/frame";
+import {Id3v2FrameFactory} from "./frames/frameFactory";
 import {FrameIdentifier, FrameIdentifiers} from "./frameIdentifiers";
 import {Id3v2FrameFlags} from "./frames/frameHeader";
 import {Id3v2TagHeader, Id3v2TagHeaderFlags} from "./id3v2TagHeader";
@@ -1394,6 +1394,7 @@ export default class Id3v2Tag extends Tag {
         let frameDataEndPosition = (data ? data.length : this._header.tagSize) + frameDataPosition;
 
         // Check for the extended header
+        // @TODO: Replace with NumberUtils.hasFlags
         if ((this._header.flags & Id3v2TagHeaderFlags.ExtendedHeader) !== 0) {
             this._extendedHeader = Id3v2ExtendedHeader.fromData(data, this._header.majorVersion);
 
@@ -1405,7 +1406,7 @@ export default class Id3v2Tag extends Tag {
 
         // Parse the frames
         while (frameDataPosition < frameDataEndPosition) {
-            const frameRead = FrameFactory.createFrame(
+            const frameRead = Id3v2FrameFactory.createFrame(
                 data,
                 file,
                 frameDataPosition,
