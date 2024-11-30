@@ -1406,28 +1406,41 @@ export default class Id3v2Tag extends Tag {
 
         // Parse the frames
         while (frameDataPosition < frameDataEndPosition) {
-            const frameRead = Id3v2FrameFactory.createFrame(
-                data,
-                file,
-                frameDataPosition,
-                this._header.majorVersion,
-                fullTagUnsync
-            );
+            try {
+                const frameRead = Id3v2FrameFactory.createFrame(
+                    data,
+                    file,
+                    frameDataPosition,
+                    this._header.majorVersion,
+                    fullTagUnsync
+                );
 
-            // If the frame factory returned undefined, that means we've hit the end of frames
-            if (!frameRead) {
+                // If the frame factory returned undefined, that means we've hit the end of frames
+                if (!frameRead) {
+                    break;
+                }
+
+                // We found a frame, deconstruct the read result
+                const frame = frameRead.frame;
+                frameDataPosition = frameRead.offset;
+
+                // Only add frames that contain data
+                if (!frame || frame.size === 0) {
+                    continue;
+                }
+                this.addFrame(frame);
+            } catch (e: unknown) {
+                // If we fail at any point while trying to read the frames of the tag, we will have
+                // lost our place in the file and will have to give up reading the tag.
+                // Ok, technically we could use some heuristics to try to recover (eg, Foobar can
+                // do this), but it is a lot of effort for minimal reward.
+
+                // NOTE: It's important to not let this error propagate to the file level, else
+                // the user will not be able to recover the file.
+
+                // this.markCorrupt(e); @TODO: Add corruption reasons.
                 break;
             }
-
-            // We found a frame, deconstruct the read result
-            const frame = frameRead.frame;
-            frameDataPosition = frameRead.offset;
-
-            // Only add frames that contain data
-            if (!frame || frame.size === 0) {
-                continue;
-            }
-            this.addFrame(frame);
         }
     }
 
