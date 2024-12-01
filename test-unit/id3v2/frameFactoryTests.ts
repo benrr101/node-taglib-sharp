@@ -3,7 +3,6 @@ import {suite, test} from "@testdeck/mocha";
 import {assert} from "chai";
 
 import CommentsFrame from "../../src/id3v2/frames/commentsFrame";
-import FrameFactory, {FrameCreator} from "../../src/id3v2/frames/frameFactory";
 import PlayCountFrame from "../../src/id3v2/frames/playCountFrame";
 import PopularimeterFrame from "../../src/id3v2/frames/popularimeterFrame";
 import PrivateFrame from "../../src/id3v2/frames/privateFrame";
@@ -14,6 +13,7 @@ import UnsynchronizedLyricsFrame from "../../src/id3v2/frames/unsynchronizedLyri
 import {ByteVector, StringType} from "../../src/byteVector";
 import {EventTimeCodeFrame} from "../../src/id3v2/frames/eventTimeCodeFrame";
 import {Frame, FrameClassType} from "../../src/id3v2/frames/frame";
+import {FrameCreator, Id3v2FrameFactory} from "../../src/id3v2/frames/frameFactory";
 import {Id3v2FrameFlags, Id3v2FrameHeader} from "../../src/id3v2/frames/frameHeader";
 import {FrameIdentifiers} from "../../src/id3v2/frameIdentifiers";
 import {PictureType} from "../../src/picture";
@@ -31,9 +31,9 @@ import {SynchronizedTextType, TimestampFormat} from "../../src/id3v2/utilTypes";
         const data = ByteVector.empty();
 
         // Act / Assert
-        assert.throws(() => { FrameFactory.createFrame(data, undefined, 0, -1, false); });
-        assert.throws(() => { FrameFactory.createFrame(data, undefined, 0, 1.23, false); });
-        assert.throws(() => { FrameFactory.createFrame(data, undefined, 0, 0x100, false); });
+        assert.throws(() => { Id3v2FrameFactory.createFrame(data, undefined, 0, -1, false); });
+        assert.throws(() => { Id3v2FrameFactory.createFrame(data, undefined, 0, 1.23, false); });
+        assert.throws(() => { Id3v2FrameFactory.createFrame(data, undefined, 0, 0x100, false); });
     }
 
     @test
@@ -42,16 +42,16 @@ import {SynchronizedTextType, TimestampFormat} from "../../src/id3v2/utilTypes";
         const data = ByteVector.empty();
 
         // Act / Assert
-        assert.throws(() => { FrameFactory.createFrame(data, undefined, -1, 4, false); });
-        assert.throws(() => { FrameFactory.createFrame(data, undefined, 1.23, 4, false); });
-        assert.throws(() => { FrameFactory.createFrame(data, undefined, Number.MAX_SAFE_INTEGER + 1, 4, false); });
+        assert.throws(() => { Id3v2FrameFactory.createFrame(data, undefined, -1, 4, false); });
+        assert.throws(() => { Id3v2FrameFactory.createFrame(data, undefined, 1.23, 4, false); });
+        assert.throws(() => { Id3v2FrameFactory.createFrame(data, undefined, Number.MAX_SAFE_INTEGER + 1, 4, false); });
     }
 
     @test
     public createFrame_missingSource() {
         // Act / Assert
-        assert.throws(() => { FrameFactory.createFrame(undefined, undefined, 0, 4, false); });
-        assert.throws(() => { FrameFactory.createFrame(null, null, 0, 4, false); });
+        assert.throws(() => { Id3v2FrameFactory.createFrame(undefined, undefined, 0, 4, false); });
+        assert.throws(() => { Id3v2FrameFactory.createFrame(null, null, 0, 4, false); });
     }
 
     @test
@@ -60,7 +60,7 @@ import {SynchronizedTextType, TimestampFormat} from "../../src/id3v2/utilTypes";
         const data = ByteVector.fromSize(10, 0x00);
 
         // Act
-        const output = FrameFactory.createFrame(data, undefined, 0, 4, false);
+        const output = Id3v2FrameFactory.createFrame(data, undefined, 0, 4, false);
 
         // Assert
         assert.isUndefined(output);
@@ -77,7 +77,7 @@ import {SynchronizedTextType, TimestampFormat} from "../../src/id3v2/utilTypes";
         );
 
         // Act / Assert
-        assert.throws(() => { FrameFactory.createFrame(data, undefined, 0, 4, false); });
+        assert.throws(() => { Id3v2FrameFactory.createFrame(data, undefined, 0, 4, false); });
     }
 
     @test
@@ -91,7 +91,7 @@ import {SynchronizedTextType, TimestampFormat} from "../../src/id3v2/utilTypes";
         );
 
         // Act / Assert
-        assert.throws(() => { FrameFactory.createFrame(data, undefined, 0, 4, false); });
+        assert.throws(() => { Id3v2FrameFactory.createFrame(data, undefined, 0, 4, false); });
     }
 
     @test
@@ -100,7 +100,7 @@ import {SynchronizedTextType, TimestampFormat} from "../../src/id3v2/utilTypes";
         const data = UserTextInformationFrame.fromDescription("foo").render(4);
 
         // Act
-        const output = FrameFactory.createFrame(data, undefined, 0, 4, false);
+        const output = Id3v2FrameFactory.createFrame(data, undefined, 0, 4, false);
 
         // Assert
         FrameFactoryTests.validateOutput(output, FrameClassType.UserTextInformationFrame, data.length);
@@ -112,7 +112,7 @@ import {SynchronizedTextType, TimestampFormat} from "../../src/id3v2/utilTypes";
         const data = TextInformationFrame.fromIdentifier(FrameIdentifiers.TCOM).render(4);
 
         // Act
-        const output = FrameFactory.createFrame(data, undefined, 0, 4, false);
+        const output = Id3v2FrameFactory.createFrame(data, undefined, 0, 4, false);
 
         // Assert
         FrameFactoryTests.validateOutput(output, FrameClassType.TextInformationFrame, data.length);
@@ -124,7 +124,7 @@ import {SynchronizedTextType, TimestampFormat} from "../../src/id3v2/utilTypes";
         const data = UniqueFileIdentifierFrame.fromData("foo", ByteVector.empty()).render(4);
 
         // Act
-        const output = FrameFactory.createFrame(data, undefined, 0, 4, false);
+        const output = Id3v2FrameFactory.createFrame(data, undefined, 0, 4, false);
 
         // Assert
         FrameFactoryTests.validateOutput(output, FrameClassType.UniqueFileIdentifierFrame, data.length);
@@ -141,7 +141,7 @@ import {SynchronizedTextType, TimestampFormat} from "../../src/id3v2/utilTypes";
         );
 
         // Act
-        const output = FrameFactory.createFrame(data, undefined, 0, 4, false);
+        const output = Id3v2FrameFactory.createFrame(data, undefined, 0, 4, false);
 
         // Assert
         FrameFactoryTests.validateOutput(output, FrameClassType.MusicCdIdentifierFrame, data.length);
@@ -153,7 +153,7 @@ import {SynchronizedTextType, TimestampFormat} from "../../src/id3v2/utilTypes";
         const data = UnsynchronizedLyricsFrame.fromData("foo").render(4);
 
         // Act
-        const output = FrameFactory.createFrame(data, undefined, 0, 4, false);
+        const output = Id3v2FrameFactory.createFrame(data, undefined, 0, 4, false);
 
         // Assert
         FrameFactoryTests.validateOutput(output, FrameClassType.UnsynchronizedLyricsFrame, data.length);
@@ -165,7 +165,7 @@ import {SynchronizedTextType, TimestampFormat} from "../../src/id3v2/utilTypes";
         const data = SynchronizedLyricsFrame.fromInfo("foo", "bar", SynchronizedTextType.Lyrics).render(4);
 
         // Act
-        const output = FrameFactory.createFrame(data, undefined, 0, 4, false);
+        const output = Id3v2FrameFactory.createFrame(data, undefined, 0, 4, false);
 
         // Assert
         FrameFactoryTests.validateOutput(output, FrameClassType.SynchronizedLyricsFrame, data.length);
@@ -177,7 +177,7 @@ import {SynchronizedTextType, TimestampFormat} from "../../src/id3v2/utilTypes";
         const data = CommentsFrame.fromDescription("foo").render(4);
 
         // Act
-        const output = FrameFactory.createFrame(data, undefined, 0, 4, false);
+        const output = Id3v2FrameFactory.createFrame(data, undefined, 0, 4, false);
 
         // Assert
         FrameFactoryTests.validateOutput(output, FrameClassType.CommentsFrame, data.length);
@@ -189,7 +189,7 @@ import {SynchronizedTextType, TimestampFormat} from "../../src/id3v2/utilTypes";
         const data = RelativeVolumeFrame.fromIdentification("foo").render(4);
 
         // Act
-        const output = FrameFactory.createFrame(data, undefined, 0, 4, false);
+        const output = Id3v2FrameFactory.createFrame(data, undefined, 0, 4, false);
 
         // Assert
         FrameFactoryTests.validateOutput(output, FrameClassType.RelativeVolumeFrame, data.length);
@@ -212,7 +212,7 @@ import {SynchronizedTextType, TimestampFormat} from "../../src/id3v2/utilTypes";
         );
 
         // Act
-        const output = FrameFactory.createFrame(data, undefined, 0, 4, false);
+        const output = Id3v2FrameFactory.createFrame(data, undefined, 0, 4, false);
 
         // Assert
         FrameFactoryTests.validateOutput(output, FrameClassType.AttachmentFrame, data.length);
@@ -236,7 +236,7 @@ import {SynchronizedTextType, TimestampFormat} from "../../src/id3v2/utilTypes";
         );
 
         // Act
-        const output = FrameFactory.createFrame(data, undefined, 0, 4, false);
+        const output = Id3v2FrameFactory.createFrame(data, undefined, 0, 4, false);
 
         // Assert
         FrameFactoryTests.validateOutput(output, FrameClassType.AttachmentFrame, data.length);
@@ -248,7 +248,7 @@ import {SynchronizedTextType, TimestampFormat} from "../../src/id3v2/utilTypes";
         const data = PlayCountFrame.fromEmpty().render(4);
 
         // Act
-        const output = FrameFactory.createFrame(data, undefined, 0, 4, false);
+        const output = Id3v2FrameFactory.createFrame(data, undefined, 0, 4, false);
 
         // Assert
         FrameFactoryTests.validateOutput(output, FrameClassType.PlayCountFrame, data.length);
@@ -260,7 +260,7 @@ import {SynchronizedTextType, TimestampFormat} from "../../src/id3v2/utilTypes";
         const data = PopularimeterFrame.fromUser("foo").render(4);
 
         // Act
-        const output = FrameFactory.createFrame(data, undefined, 0, 4, false);
+        const output = Id3v2FrameFactory.createFrame(data, undefined, 0, 4, false);
 
         // Assert
         FrameFactoryTests.validateOutput(output, FrameClassType.PopularimeterFrame, data.length);
@@ -272,7 +272,7 @@ import {SynchronizedTextType, TimestampFormat} from "../../src/id3v2/utilTypes";
         const data = TermsOfUseFrame.fromFields("foo").render(4);
 
         // Act
-        const output = FrameFactory.createFrame(data, undefined, 0, 4, false);
+        const output = Id3v2FrameFactory.createFrame(data, undefined, 0, 4, false);
 
         // Assert
         FrameFactoryTests.validateOutput(output, FrameClassType.TermsOfUseFrame, data.length);
@@ -284,7 +284,7 @@ import {SynchronizedTextType, TimestampFormat} from "../../src/id3v2/utilTypes";
         const data = PrivateFrame.fromOwner("foo").render(4);
 
         // Act
-        const output = FrameFactory.createFrame(data, undefined, 0, 4, false);
+        const output = Id3v2FrameFactory.createFrame(data, undefined, 0, 4, false);
 
         // Assert
         FrameFactoryTests.validateOutput(output, FrameClassType.PrivateFrame, data.length);
@@ -296,7 +296,7 @@ import {SynchronizedTextType, TimestampFormat} from "../../src/id3v2/utilTypes";
         const data = UserUrlLinkFrame.fromDescription("foo").render(4);
 
         // Act
-        const output = FrameFactory.createFrame(data, undefined, 0, 4, false);
+        const output = Id3v2FrameFactory.createFrame(data, undefined, 0, 4, false);
 
         // Assert
         FrameFactoryTests.validateOutput(output, FrameClassType.UserUrlLinkFrame, data.length);
@@ -309,7 +309,7 @@ import {SynchronizedTextType, TimestampFormat} from "../../src/id3v2/utilTypes";
         frame.text = ["foo"];
         const data = frame.render(4);
         // Act
-        const output = FrameFactory.createFrame(data, undefined, 0, 4, false);
+        const output = Id3v2FrameFactory.createFrame(data, undefined, 0, 4, false);
 
         // Assert
         FrameFactoryTests.validateOutput(output, FrameClassType.UrlLinkFrame, data.length);
@@ -321,7 +321,7 @@ import {SynchronizedTextType, TimestampFormat} from "../../src/id3v2/utilTypes";
         const data = EventTimeCodeFrame.fromTimestampFormat(TimestampFormat.AbsoluteMilliseconds).render(4);
 
         // Act
-        const output = FrameFactory.createFrame(data, undefined, 0, 4, false);
+        const output = Id3v2FrameFactory.createFrame(data, undefined, 0, 4, false);
 
         // Assert
         FrameFactoryTests.validateOutput(output, FrameClassType.EventTimeCodeFrame, data.length);
@@ -338,7 +338,7 @@ import {SynchronizedTextType, TimestampFormat} from "../../src/id3v2/utilTypes";
         );
 
         // Act
-        const output = FrameFactory.createFrame(data, undefined, 0, 4, false);
+        const output = Id3v2FrameFactory.createFrame(data, undefined, 0, 4, false);
 
         // Assert
         FrameFactoryTests.validateOutput(output, FrameClassType.UnknownFrame, data.length);
@@ -353,7 +353,7 @@ import {SynchronizedTextType, TimestampFormat} from "../../src/id3v2/utilTypes";
         );
 
         // Act
-        const output = FrameFactory.createFrame(data, undefined, 2, 4, false);
+        const output = Id3v2FrameFactory.createFrame(data, undefined, 2, 4, false);
 
         // Assert
         FrameFactoryTests.validateOutput(output, FrameClassType.UniqueFileIdentifierFrame, data.length);
@@ -366,7 +366,7 @@ import {SynchronizedTextType, TimestampFormat} from "../../src/id3v2/utilTypes";
         const file = TestFile.getFile(data);
 
         // Act
-        const output = FrameFactory.createFrame(undefined, file, 0, 4, false);
+        const output = Id3v2FrameFactory.createFrame(undefined, file, 0, 4, false);
 
         // Assert
         FrameFactoryTests.validateOutput(output, FrameClassType.UniqueFileIdentifierFrame, data.length);
@@ -382,7 +382,7 @@ import {SynchronizedTextType, TimestampFormat} from "../../src/id3v2/utilTypes";
         const file = TestFile.getFile(data);
 
         // Act
-        const output = FrameFactory.createFrame(undefined, file, 2, 4, false);
+        const output = Id3v2FrameFactory.createFrame(undefined, file, 2, 4, false);
 
         // Assert
         FrameFactoryTests.validateOutput(output, FrameClassType.UniqueFileIdentifierFrame, data.length);
@@ -406,7 +406,7 @@ import {SynchronizedTextType, TimestampFormat} from "../../src/id3v2/utilTypes";
         const file = TestFile.getFile(data);
 
         // Act
-        const output = FrameFactory.createFrame(undefined, file, 0, 4, false);
+        const output = Id3v2FrameFactory.createFrame(undefined, file, 0, 4, false);
 
         // Assert
         FrameFactoryTests.validateOutput(output, FrameClassType.AttachmentFrame, data.length);
@@ -431,7 +431,7 @@ import {SynchronizedTextType, TimestampFormat} from "../../src/id3v2/utilTypes";
         const file = TestFile.getFile(data);
 
         // Act
-        const output = FrameFactory.createFrame(undefined, file, 0, 4, false);
+        const output = Id3v2FrameFactory.createFrame(undefined, file, 0, 4, false);
 
         // Assert
         FrameFactoryTests.validateOutput(output, FrameClassType.AttachmentFrame, data.length);
@@ -445,7 +445,7 @@ import {SynchronizedTextType, TimestampFormat} from "../../src/id3v2/utilTypes";
         const file = TestFile.getFile(data);
 
         // Act
-        const output = FrameFactory.createFrame(undefined, file, 0, 4, false);
+        const output = Id3v2FrameFactory.createFrame(undefined, file, 0, 4, false);
 
         // Assert
         FrameFactoryTests.validateOutput(output, FrameClassType.PlayCountFrame, data.length);
@@ -463,8 +463,8 @@ import {SynchronizedTextType, TimestampFormat} from "../../src/id3v2/utilTypes";
             ).returns(() => frame);
 
             // Act
-            FrameFactory.addFrameCreator(mockCreator.object);
-            const output = FrameFactory.createFrame(data, undefined, 0, 4, false);
+            Id3v2FrameFactory.addFrameCreator(mockCreator.object);
+            const output = Id3v2FrameFactory.createFrame(data, undefined, 0, 4, false);
 
             // Assert
             assert.isOk(output);
@@ -481,7 +481,7 @@ import {SynchronizedTextType, TimestampFormat} from "../../src/id3v2/utilTypes";
                 TypeMoq.Times.once()
             );
         } finally {
-            FrameFactory.clearFrameCreators();
+            Id3v2FrameFactory.clearFrameCreators();
         }
     }
 
@@ -497,8 +497,8 @@ import {SynchronizedTextType, TimestampFormat} from "../../src/id3v2/utilTypes";
             ).returns(() => undefined);
 
             // Act
-            FrameFactory.addFrameCreator(mockCreator.object);
-            const output = FrameFactory.createFrame(data, undefined, 0, 4, false);
+            Id3v2FrameFactory.addFrameCreator(mockCreator.object);
+            const output = Id3v2FrameFactory.createFrame(data, undefined, 0, 4, false);
 
             // Assert
             FrameFactoryTests.validateOutput(output, FrameClassType.PlayCountFrame, data.length);
@@ -514,7 +514,7 @@ import {SynchronizedTextType, TimestampFormat} from "../../src/id3v2/utilTypes";
                 TypeMoq.Times.once()
             );
         } finally {
-            FrameFactory.clearFrameCreators();
+            Id3v2FrameFactory.clearFrameCreators();
         }
     }
 

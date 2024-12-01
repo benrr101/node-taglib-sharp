@@ -30,15 +30,17 @@ import {Guards, NumberUtils} from "../../utils";
  */
 export type FrameCreator = (data: ByteVector, offset: number, header: Id3v2FrameHeader, version: number) => Frame;
 
-let customFrameCreators: FrameCreator[] = [];
-
 /**
  * Performs the necessary operations to determine and create the correct child classes of
  * {@link Frame} for a given raw ID3v2 frame.
  * By default, this will only load frames contained in the library. To add additional frames to the
  * process, register a frame creator with {@link addFrameCreator}.
  */
-export default {
+export class Id3v2FrameFactory {
+
+
+    private static readonly CUSTOM_FRAME_CREATORS: FrameCreator[] = [];
+
     /**
      * Adds a custom frame creator to try before using standard frame creation methods.
      * Frame creators are used before standard methods so custom checking can be used and new
@@ -50,17 +52,17 @@ export default {
      *     * version: number ID3v2 version the raw frame data is stored in (should be byte)
      *     * returns Frame if method was able to match the frame, falsy otherwise
      */
-    addFrameCreator: (creator: FrameCreator): void => {
+    public static addFrameCreator(creator: FrameCreator): void {
         Guards.truthy(creator, "creator");
-        customFrameCreators.unshift(creator);
-    },
+        this.CUSTOM_FRAME_CREATORS.unshift(creator);
+    }
 
     /**
      * Removes all custom frame creators
      */
-    clearFrameCreators: (): void => {
-        customFrameCreators = [];
-    },
+    public static clearFrameCreators(): void {
+        this.CUSTOM_FRAME_CREATORS.length = 0;
+    }
 
     /**
      * Creates a {@link Frame} object by reading it from raw ID3v2 frame data.
@@ -78,13 +80,13 @@ export default {
      *     * offset: updated offset where the next frame starts
      */
     // @TODO: Split into fromFile and fromData
-    createFrame: (
+    public static createFrame(
         data: ByteVector,
         file: File,
         offset: number,
         version: number,
         alreadyUnsynced: boolean
-    ): {frame: Frame, offset: number} => {
+    ): {frame: Frame, offset: number} {
         Guards.uint(offset, "offset");
         Guards.byte(version, "version");
 
@@ -132,7 +134,7 @@ export default {
 
         try {
             // Try to find a custom creator
-            for (const creator of customFrameCreators) {
+            for (const creator of this.CUSTOM_FRAME_CREATORS) {
                 // @TODO: If we're reading from a file, data will only ever contain the header
                 const frame = creator(data, position, header, version);
                 if (frame) {
@@ -243,4 +245,4 @@ export default {
             };
         }
     }
-};
+}
