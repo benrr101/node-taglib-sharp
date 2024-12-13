@@ -76,6 +76,7 @@
 - [Id3v2EventTimeCodeFrame](classes/Id3v2EventTimeCodeFrame.md)
 - [Id3v2ExtendedHeader](classes/Id3v2ExtendedHeader.md)
 - [Id3v2Frame](classes/Id3v2Frame.md)
+- [Id3v2FrameFactory](classes/Id3v2FrameFactory.md)
 - [Id3v2FrameHeader](classes/Id3v2FrameHeader.md)
 - [Id3v2FrameIdentifier](classes/Id3v2FrameIdentifier.md)
 - [Id3v2MusicCdIdentifierFrame](classes/Id3v2MusicCdIdentifierFrame.md)
@@ -187,7 +188,6 @@
 
 ### Variables
 
-- [Id3v2FrameFactory](modules.md#id3v2framefactory)
 - [Id3v2FrameIdentifiers](modules.md#id3v2frameidentifiers)
 
 ## References
@@ -311,25 +311,6 @@ Generated [IOggCodec](interfaces/IOggCodec.md) is returned if a codec could be
     constructed from the first packet, otherwise `undefined` is returned.
 
 ## Variables
-
-### Id3v2FrameFactory
-
-• **Id3v2FrameFactory**: `Object`
-
-Performs the necessary operations to determine and create the correct child classes of
-Frame for a given raw ID3v2 frame.
-By default, this will only load frames contained in the library. To add additional frames to the
-process, register a frame creator with addFrameCreator.
-
-#### Type declaration
-
-| Name | Type |
-| :------ | :------ |
-| `addFrameCreator` | (`creator`: [`Id3v2FrameCreator`](modules.md#id3v2framecreator)) => `void` |
-| `clearFrameCreators` | () => `void` |
-| `createFrame` | (`data`: [`ByteVector`](classes/ByteVector.md), `file`: [`File`](classes/File.md), `offset`: `number`, `version`: `number`, `alreadyUnsynced`: `boolean`) => { `frame`: [`Id3v2Frame`](classes/Id3v2Frame.md) ; `offset`: `number`  } |
-
-___
 
 ### Id3v2FrameIdentifiers
 
