@@ -410,74 +410,24 @@ export class TextInformationFrame extends Frame {
                 // Some frames are designed to be split into multiple parts by a /
                 fieldList.push(... value.split("/"));
             } else if (this.frameId === FrameIdentifiers.TCON) {
-                // @TODO: Can we just make a separate class for TCON?
-                // TCON in ID3v2.2 and ID3v2.3 is specified as
-                // * (xx) - where xx is a number from the ID3v1 genre list
-                // * (xx)yy - where xx is a number from the ID3v1 genre list and yyy is a
-                //   "refinement" of the genre
-                // * (RX) - "Remix"
-                // * (CR) - "Cover"
-                // * (( - used to escape a "(" in a refinement/genre name
-
-                // NOTE: This encoding has an inherent flaw around how multiple genres should be
-                //    encoded. Since multiple genres are already an edge case, I'm just going to
-                //    say yolo to this whole block of code copied over from the .NET implementation
-                while (value.length > 1 && value[0] === "(") {
-                    const closing = value.indexOf(")");
-                    if (closing < 0) {
-                        break;
-                    }
+                while (value.length > 1 && value[0] === '(') {
+                    const closing = value.indexOf(')');
+                    if (closing < 0) break;
 
                     const number = value.substring(1, closing);
+                    fieldList.push(number);
 
-                    let text: string;
-                    if (number === TextInformationFrame.COVER_ABBREV) {
-                        text = TextInformationFrame.COVER_STRING;
-                    } else if (number === TextInformationFrame.REMIX_ABBREV) {
-                        text = TextInformationFrame.REMIX_STRING;
-                    } else {
-                        text = Genres.indexToAudio(number, true);
-                    }
+                    value = StringUtils.trimStart(value.substring(closing + 1), ' ').replace(/^\/+/, '');
 
-                    if (!text) {
-                        // Number in parentheses was not a numeric genre but part of a larger bit
-                        // of text?
-                        break;
-                    }
-
-                    // Number in parentheses was a numeric genre
-                    fieldList.push(text);
-                    value = StringUtils.trimStart(value.substring(closing + 1), "/ ");
-
-                    // Ignore genre if the same genre appears after the numeric genre
-                    if (value.startsWith(text)) {
-                        value = StringUtils.trimStart(value.substring(text.length), "/ ");
+                    const text = Genres.indexToAudio(number, true);
+                    if (text && value.startsWith(text)) {
+                        value = StringUtils.trimStart(value.substring(text.length),' ').replace(/^\/+/, '');
                     }
                 }
 
-                // Process whatever's left
                 if (value.length > 0) {
-                    // Split the remaining genre value by dividers if the setting is turned on
-                    let splitValue = Id3v2Settings.useNonStandardV2V3GenreSeparators
-                        ? value.split(/[\/;]/).filter((v) => !!v)
-                        : [value];
-
-                    splitValue = splitValue.map((v) => {
-                        // Unescape escaped opening parenthesis
-                        let v2 = v.replace(/\(\(/, "(");
-
-                        // If non-standard numeric genres is enabled, parse them
-                        if (Id3v2Settings.useNonStandardV2V3NumericGenres) {
-                            const text = Genres.indexToAudio(v2, false);
-                            if (text) {
-                                v2 = text;
-                            }
-                        }
-
-                        return v2;
-                    });
-
-                    fieldList.push(...splitValue);
+                    const remainingGenres = value.split(/[\/;]/);
+                    fieldList.push(...remainingGenres);
                 }
             } else {
                 fieldList.push(value);
