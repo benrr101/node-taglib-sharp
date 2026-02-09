@@ -1,7 +1,7 @@
 {
   "name": "@digimezzo/node-taglib-sharp",
   "description": "Fork of node-taglib-sharp with extra bug fixes",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "license": "LGPL-2.1-or-later",
   "author": "Ben Russell <benrr101@outlook.com> (https://github.com/benrr101)",
   "maintainers": [
