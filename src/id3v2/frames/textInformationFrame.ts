@@ -419,65 +419,29 @@ export class TextInformationFrame extends Frame {
                 // * (CR) - "Cover"
                 // * (( - used to escape a "(" in a refinement/genre name
 
-                // NOTE: This encoding has an inherent flaw around how multiple genres should be
-                //    encoded. Since multiple genres are already an edge case, I'm just going to
-                //    say yolo to this whole block of code copied over from the .NET implementation
-                while (value.length > 1 && value[0] === "(") {
-                    const closing = value.indexOf(")");
-                    if (closing < 0) {
-                        break;
+                // Treat each term separately
+                const terms = Id3v2Settings.useNonStandardV2V3GenreSeparators
+                    ? value.split(/[;\/]/)
+                    : [value];
+                for (const term of terms) {
+                    // Attempt to process it according to our best understanding of the spec
+                    const numericGenres = this.parseTconAsStandardNumeric(term);
+                    if (numericGenres !== undefined) {
+                        fieldList.push(... numericGenres);
+                        continue;
                     }
 
-                    const number = value.substring(1, closing);
-
-                    let text: string;
-                    if (number === TextInformationFrame.COVER_ABBREV) {
-                        text = TextInformationFrame.COVER_STRING;
-                    } else if (number === TextInformationFrame.REMIX_ABBREV) {
-                        text = TextInformationFrame.REMIX_STRING;
-                    } else {
-                        text = Genres.indexToAudio(number, true);
-                    }
-
-                    if (!text) {
-                        // Number in parentheses was not a numeric genre but part of a larger bit
-                        // of text?
-                        break;
-                    }
-
-                    // Number in parentheses was a numeric genre
-                    fieldList.push(text);
-                    value = StringUtils.trimStart(value.substring(closing + 1), "/ ");
-
-                    // Ignore genre if the same genre appears after the numeric genre
-                    if (value.startsWith(text)) {
-                        value = StringUtils.trimStart(value.substring(text.length), "/ ");
-                    }
-                }
-
-                // Process whatever's left
-                if (value.length > 0) {
-                    // Split the remaining genre value by dividers if the setting is turned on
-                    let splitValue = Id3v2Settings.useNonStandardV2V3GenreSeparators
-                        ? value.split(/[\/;]/).map((v) => v.trim()).filter((v) => !!v)
-                        : [value];
-
-                    splitValue = splitValue.map((v) => {
-                        // Unescape escaped opening parenthesis
-                        let v2 = v.replace(/\(\(/, "(");
-
-                        // If non-standard numeric genres is enabled, parse them
-                        if (Id3v2Settings.useNonStandardV2V3NumericGenres) {
-                            const text = Genres.indexToAudio(v2, false);
-                            if (text) {
-                                v2 = text;
-                            }
+                    if (Id3v2Settings.useNonStandardV2V3NumericGenres) {
+                        // Attempt to process it as a non-standard numeric genre
+                        const numericGenre = Genres.indexToAudioDirect(term);
+                        if (numericGenre !== undefined) {
+                            fieldList.push(numericGenre);
+                            continue;
                         }
+                    }
 
-                        return v2;
-                    });
-
-                    fieldList.push(...splitValue);
+                    // Yeah we can't do anything smart, just treat it as a string
+                    fieldList.push(term);
                 }
             } else {
                 fieldList.push(value);
@@ -590,6 +554,95 @@ export class TextInformationFrame extends Frame {
     }
 
     // #endregion
+
+    private parseTconAsStandardNumeric(field: string): string[]|undefined {
+        // @TODO: CX/RX
+
+        // Don't even bother setting up the state machine if we aren't starting with an opening
+        // parenthesis.
+        if (field[0] !== "(") {
+            return undefined;
+        }
+
+        const results: string[] = [];
+        let inParentheses = true;
+        let refinementAdded = false;
+        let open = 0;
+        let close = 0;
+
+        const appendToLastResult = (chunk: string): void => {
+            if (!chunk) {
+                return;
+            }
+
+            const lastResult = results[results.length - 1];
+            results[results.length - 1] = refinementAdded
+                ? `${lastResult}${chunk}`
+                : `${lastResult} ${chunk}`;
+        }
+
+        for (let i = 1; i < field.length; i++) {
+            if (inParentheses) {
+                // Inside parentheses ----------------------------------
+                if (field[i] === ")") {
+                    // Closing parenthesis found
+                    close = i;
+
+                    // Attempt to parse the inside as a number
+                    const parenContents = field.substring(open + 1, close);
+                    const numericGenre = Genres.indexToAudioDirect(parenContents);
+                    if (numericGenre !== undefined) {
+                        // Numeric genre found! Store it in the results
+                        results.push(numericGenre);
+
+                        // Transition to refinement processing
+                        inParentheses = false;
+                        refinementAdded = false;
+                        open = i+1;
+                    } else {
+                        // What we expected to be a numeric genre was not. We will assume this
+                        // field is not using standard numeric genres, and dump the remainder.
+                        break;
+                    }
+                }
+
+                // If we didn't find the closing paren, just increment and try again.
+            } else {
+                // Processing refinement  ------------------------------
+                let refinementChunk: string;
+                if (field[i] === "(") {
+                    if (field[i + 1] === "(") {
+                        // This is an escape sequence
+                        // Take the current refinement chunk + the first paren (eg: `xyz(`)
+                        refinementChunk = field.substring(open, i + 1);
+
+
+                        // Skip over the next character (ie, `(`)
+                        open = i + 2;
+                        i++;
+                    } else {
+                        // This is possibly the start of a numeric genre.
+                        // Take the current refinement chunk
+                        refinementChunk = field.substring(open, i);
+
+                        // Transition back to numeric genre processing.
+                        inParentheses = true;
+                        open = i;
+                    }
+
+                    // Add the refinement chunk to the last result
+                    appendToLastResult(refinementChunk);
+                    refinementAdded = true;
+                }
+
+                // If we didn't find an opening paren, just increment and try again
+            }
+        }
+
+        // Process the remainder
+        appendToLastResult(field.substring(open));
+        return results;
+    }
 }
 
 export class UserTextInformationFrame extends TextInformationFrame {

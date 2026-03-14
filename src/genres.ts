@@ -231,6 +231,11 @@ export default class Genres {
             ? Genres.AUDIO_GENRES[safeIndex]
             : undefined;
     }
+    
+    public static indexToAudioDirect(index: number|string): string {
+        const indexNumber = Number(index);
+        return Genres.AUDIO_GENRES[indexNumber];
+    }
 
     /**
      * Gets the video genre name for a specified index.
@@ -266,7 +271,13 @@ export default class Genres {
             const trimRegex = /^\(+|\)+$/g;
             text = text.replace(trimRegex, "");
         }
-        const index = parseInt(text, 10);
+
+        const normalized = text.trim();
+        if (!/^\d+$/.test(normalized)) {
+            return 255;
+        }
+
+        const index = parseInt(normalized, 10);
         return Number.isNaN(index) ? 255 : index;
     }
 }
