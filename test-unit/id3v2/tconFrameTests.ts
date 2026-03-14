@@ -15,8 +15,19 @@ class Id3v2_TconFrameTests {
     }
 
     @test
+    public singleTerm_invalidParentheses() {
+        this.testFrameV2V3("(foo)", ["(foo)"]);
+    }
+
+    @test
     public singleTerm_singleStandardNumber() {
         this.testFrameV2V3("(32)", ["Classical"]);
+    }
+
+    @test
+    public singleTerm_singleRemixCover() {
+        this.testFrameV2V3("(CR)", ["Cover"]);
+        this.testFrameV2V3("(RX)", ["Remix"]);
     }
 
     @test
@@ -37,6 +48,11 @@ class Id3v2_TconFrameTests {
     @test
     public singleTerm_multipleStandardNumber() {
         this.testFrameV2V3("(32)(33)", ["Classical", "Instrumental"]);
+    }
+
+    @test
+    public singleTerm_multipleRemixCover() {
+        this.testFrameV2V3("(CR)(RX)", ["Cover", "Remix"]);
     }
 
     @test
@@ -70,6 +86,11 @@ class Id3v2_TconFrameTests {
     }
 
     @test
+    public singleTerm_multipleRemixCover_stringRefinementWithEscapeOnBoth() {
+        this.testFrameV2V3("(CR)f((oo(RX)b((ar", ["Cover f(oo", "Remix b(ar"]);
+    }
+
+    @test
     public singleTerm_multipleStandardNumber_stringRefinementWithoutEscapeOnFirst() {
         this.testFrameV2V3("(32)f(oo(33)", ["Classical f(oo(33)"]);
     }
@@ -82,6 +103,11 @@ class Id3v2_TconFrameTests {
     @test
     public singleTerm_multipleStandardNumber_stringRefinementWithoutEscapeOnBoth() {
         this.testFrameV2V3("(32)f(oo(33)b(ar", ["Classical f(oo(33)b(ar"]);
+    }
+
+    @test
+    public singleTerm_multipleRemixCover_stringRefinementWithoutEscapeOnBoth() {
+        this.testFrameV2V3("(CR)f(oo(RX)b(ar", ["Cover f(oo(RX)b(ar"]);
     }
 
     @test
@@ -120,6 +146,26 @@ class Id3v2_TconFrameTests {
         this.testFrameV2V3WithSettings(partialSettings, "32foo33bar", ["32foo33bar"]);
     }
 
+    @test
+    public multipleTerms_nonStandardSeparatorEnabled() {
+        const partialSettings: PartialSettings = {useNonStandardV2V3GenreSeparators: true};
+        this.testFrameV2V3WithSettings(
+            partialSettings,
+            "(32)Fux(33)Bux;34/Foo;Bar/Baz",
+            ["Classical Fux", "Instrumental Bux", "Acid", "Foo", "Bar", "Baz"]
+        );
+    }
+
+    @test
+    public multipleTerms_nonStandardSeparatorDisabled() {
+        const partialSettings: PartialSettings = {useNonStandardV2V3GenreSeparators: false};
+        this.testFrameV2V3WithSettings(
+            partialSettings,
+            "(32)Fux(33)Bux;34/Foo;Bar/Baz",
+            ["Classical Fux", "Instrumental Bux;34/Foo;Bar/Baz"]
+        );
+    }
+
     private testFrame(tagVersion: number, payload: string|ByteVector, expected: string[]) {
         // Arrange
         const payloadBytes = payload instanceof ByteVector
@@ -149,8 +195,8 @@ class Id3v2_TconFrameTests {
     private testFrameV2V3WithSettings(settings: PartialSettings, payload: string, expected: string[]) {
         // Setup
         const originalUseNonStandardV2V3GenreSeparators = Id3v2Settings.useNonStandardV2V3GenreSeparators;
-        if (settings.useNonStandardV2V3NumericGenres !== undefined) {
-            Id3v2Settings.useNonStandardV2V3GenreSeparators = settings.useNonStandardV2V3NumericGenres;
+        if (settings.useNonStandardV2V3GenreSeparators !== undefined) {
+            Id3v2Settings.useNonStandardV2V3GenreSeparators = settings.useNonStandardV2V3GenreSeparators;
         }
 
         const originalUseNonStandardV2V3NumericGenres = Id3v2Settings.useNonStandardV2V3NumericGenres;

@@ -4,7 +4,7 @@ import {ByteVector, StringType} from "../../byteVector";
 import {Frame, FrameClassType} from "./frame";
 import {Id3v2FrameHeader} from "./frameHeader";
 import {FrameIdentifier, FrameIdentifiers} from "../frameIdentifiers";
-import {Guards, StringComparison, StringUtils} from "../../utils";
+import {Guards, StringComparison} from "../../utils";
 
 /**
  * This class provides support for ID3v2 text information frames (section 4.2) covering `T000` to
@@ -440,7 +440,7 @@ export class TextInformationFrame extends Frame {
                         }
                     }
 
-                    // Yeah we can't do anything smart, just treat it as a string
+                    // Yeah, we can't do anything smart, just treat it as a string
                     fieldList.push(term);
                 }
             } else {
@@ -556,8 +556,6 @@ export class TextInformationFrame extends Frame {
     // #endregion
 
     private parseTconAsStandardNumeric(field: string): string[]|undefined {
-        // @TODO: CX/RX
-
         // Don't even bother setting up the state machine if we aren't starting with an opening
         // parenthesis.
         if (field[0] !== "(") {
@@ -592,18 +590,21 @@ export class TextInformationFrame extends Frame {
                     const parenContents = field.substring(open + 1, close);
                     const numericGenre = Genres.indexToAudioDirect(parenContents);
                     if (numericGenre !== undefined) {
-                        // Numeric genre found! Store it in the results
                         results.push(numericGenre);
-
-                        // Transition to refinement processing
-                        inParentheses = false;
-                        refinementAdded = false;
-                        open = i+1;
+                    } else if (parenContents === TextInformationFrame.COVER_ABBREV) {
+                        results.push(TextInformationFrame.COVER_STRING);
+                    } else if (parenContents === TextInformationFrame.REMIX_ABBREV) {
+                        results.push(TextInformationFrame.REMIX_STRING);
                     } else {
                         // What we expected to be a numeric genre was not. We will assume this
                         // field is not using standard numeric genres, and dump the remainder.
                         break;
                     }
+
+                    // Transition to refinement processing
+                    inParentheses = false;
+                    refinementAdded = false;
+                    open = i + 1;
                 }
 
                 // If we didn't find the closing paren, just increment and try again.
@@ -640,6 +641,11 @@ export class TextInformationFrame extends Frame {
         }
 
         // Process the remainder
+        // If we didn't find any results, then just return undefined.
+        if (results.length === 0) {
+            return undefined;
+        }
+
         appendToLastResult(field.substring(open));
         return results;
     }
