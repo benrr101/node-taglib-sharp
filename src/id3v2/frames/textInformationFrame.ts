@@ -421,7 +421,7 @@ export class TextInformationFrame extends Frame {
 
                 // Treat each term separately
                 const terms = Id3v2Settings.useNonStandardV2V3GenreSeparators
-                    ? value.split(/[;\/]/)
+                    ? value.split(/[;\/]/).filter(t => !!t)
                     : [value];
                 for (const term of terms) {
                     // Attempt to process it according to our best understanding of the spec

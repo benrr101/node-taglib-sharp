@@ -233,8 +233,19 @@ export default class Genres {
     }
     
     public static indexToAudioDirect(index: number|string): string {
-        const indexNumber = Number(index);
-        return Genres.AUDIO_GENRES[indexNumber];
+        if (typeof(index) === "string") {
+            if (!(/\d+/).test(index)) {
+                // Non numeric string
+                return undefined;
+            }
+
+            // Numeric string
+            const indexNumber = Number(index);
+            return Genres.AUDIO_GENRES[indexNumber];
+        }
+
+        // Number
+        return Genres.AUDIO_GENRES[index];
     }
 
     /**

@@ -325,6 +325,7 @@ class Id3v2_TconFrameTests {
             // Cleanup
             Id3v2Settings.useNonStandardV2V3GenreSeparators = originalUseNonStandardV2V3GenreSeparators;
             Id3v2Settings.useNonStandardV2V3NumericGenres = originalUseNonStandardV2V3NumericGenres;
+            Id3v2Settings.useNumericGenres = originalUseNumericGenres;
         }
     }
 }
