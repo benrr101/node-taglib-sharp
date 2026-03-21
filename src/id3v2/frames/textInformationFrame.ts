@@ -522,24 +522,28 @@ export class TextInformationFrame extends Frame {
             const numericGenres = [];
             const textGenres = [];
             for (const s of text) {
-                switch (s) {
-                    case TextInformationFrame.COVER_STRING:
-                        numericGenres.push(`(${TextInformationFrame.COVER_ABBREV})`);
-                        break;
-                    case TextInformationFrame.REMIX_STRING:
-                        numericGenres.push(`(${TextInformationFrame.REMIX_ABBREV})`);
-                        break;
-                    default:
-                        if (Id3v2Settings.useNumericGenres) {
+                if (Id3v2Settings.useNumericGenres) {
+                    // Try to process it as a numeric genre
+                    switch (s) {
+                        case TextInformationFrame.COVER_STRING:
+                            numericGenres.push(`(${TextInformationFrame.COVER_ABBREV})`);
+                            continue;
+                        case TextInformationFrame.REMIX_STRING:
+                            numericGenres.push(`(${TextInformationFrame.REMIX_ABBREV})`);
+                            continue;
+                        default:
                             const numericGenre = Genres.audioToIndex(s);
                             if (numericGenre !== 255) {
                                 numericGenres.push(`(${numericGenre})`);
-                                break;
+                                continue;
                             }
-                        }
-                        textGenres.push(s.replace(/\(/, "(("));
-                        break;
+                            break;
+                    }
                 }
+
+                // Process it as a text genre
+                const escapedGenre = s.replace(/\(/g, "((");
+                textGenres.push(escapedGenre);
             }
 
             // Put the entire string together
