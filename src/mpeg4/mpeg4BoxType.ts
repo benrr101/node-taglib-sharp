@@ -1,8 +1,11 @@
 import {ByteVector, StringType} from "../byteVector";
 
 /**
- * Provides references to different box types used by the library. This class is used to severely reduce the number
- * of times these types are created in {@link AppleTag,} greatly improving the speed at which warm files are read.
+ * Provides references to different box types used by the library. This class is used to severely
+ * reduce the number of times these types are created in {@link AppleTag,} greatly improving the
+ * speed at which warm files are read.
+ *
+ * These box types were cross-referenced with FFMPEG source and Exiftool database.
  */
 export default class Mpeg4BoxType {
     /** QuickTime album artist box */
@@ -13,8 +16,11 @@ export default class Mpeg4BoxType {
     public static readonly ART = this.getType("©ART");
     /** QuickTime comment box */
     public static readonly CMT = this.getType("©cmt");
-    /** QuickTime conductor box? @TODO: Verify this works should not be ©con */
-    public static readonly COND = this.getType("cond");
+    /**
+     * QuickTime conductor box
+     * @remarks "cond" in .NET source, but Exiftool says should be ©con.
+     */
+    public static readonly COND = this.getType("©con");
     /** QuickTime cover art box */
     public static readonly COVR = this.getType("covr");
     /** ISO 64-bit chunk offset box */
@@ -91,19 +97,25 @@ export default class Mpeg4BoxType {
     public static readonly STCO = this.getType("stco");
     /** ISO sample description box */
     public static readonly STSD = this.getType("stsd");
-    /** Subtitle box? @TODO: There's no record of this one */
-    public static readonly SUBT = this.getType("Subt");
+    /**
+     * QuickTime subtitle box
+     * @remarks "Subt" in .NET source, but this appears to be for subtitle tracks, not metadata.
+     */
+    public static readonly SUBT = this.getType("©st3");
     /** Alias text box? @TODO: There's no record of this one */
     public static readonly TEXT = this.getType("text");
     /** QuickTime BPM box */
     public static readonly TMPO = this.getType("tmpo");
     /** ISO track container box */
     public static readonly TRAK = this.getType("trak");
-    /** QuickTime track number box */
+    /** QuickTime track number box @TODO: What about ©TRK as per FFMPEG source? */
     public static readonly TRKN = this.getType("trkn");
     /** ISO User data box */
     public static readonly UDTA = this.getType("udta");
-    /** Alias URL box? @TODO: There's no record of this one */
+    /**
+     * Alias URL box?
+     * @remarks Specified in FFMPEG source but no in Exiftool.
+     */
     public static readonly URL = this.getType("©url");
     /** ISO user extension box */
     public static readonly UUID = this.getType("uuid");
