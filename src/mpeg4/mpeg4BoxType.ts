@@ -114,7 +114,7 @@ export default class Mpeg4BoxType {
     public static readonly UDTA = this.getType("udta");
     /**
      * Alias URL box?
-     * @remarks Specified in FFMPEG source but no in Exiftool.
+     * @remarks Specified in FFMPEG source but not in Exiftool.
      */
     public static readonly URL = this.getType("©url");
     /** ISO user extension box */
