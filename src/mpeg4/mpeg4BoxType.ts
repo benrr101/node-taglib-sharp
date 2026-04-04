@@ -17,10 +17,15 @@ export default class Mpeg4BoxType {
     /** QuickTime comment box */
     public static readonly CMT = this.getType("©cmt");
     /**
-     * QuickTime conductor box
-     * @remarks "cond" in .NET source, but Exiftool says should be ©con.
+     * QuickTime conductor box. This is listed in the FFMPEG source and Exiftool.
      */
-    public static readonly COND = this.getType("©con");
+    public static readonly CON = this.getType("©con");
+    /**
+     * Conductor box from original .NET source. This is not listed anywhere in the Exiftool or
+     * FFMPEG docs.
+     * @TODO: Remove this when backwards compat time has ended.
+     */
+    public static readonly COND = this.getType("cond");
     /** QuickTime cover art box */
     public static readonly COVR = this.getType("covr");
     /** ISO 64-bit chunk offset box */
@@ -98,10 +103,15 @@ export default class Mpeg4BoxType {
     /** ISO sample description box */
     public static readonly STSD = this.getType("stsd");
     /**
-     * QuickTime subtitle box
-     * @remarks "Subt" in .NET source, but this appears to be for subtitle tracks, not metadata.
+     * QuickTime subtitle box. This is listed in the FFMPEG source and Exiftool.
      */
-    public static readonly SUBT = this.getType("©st3");
+    public static readonly ST3 = this.getType("©st3")
+    /**
+     * Subtitle box from original .NET source. This is not listed anywhere in the Exiftool or
+     * FFMPEG docs.
+     * @TODO: Remove this when backwards compat time has ended.
+     */
+    public static readonly SUBT = this.getType("Subt");
     /** Alias text box? @TODO: There's no record of this one */
     public static readonly TEXT = this.getType("text");
     /** QuickTime BPM box */

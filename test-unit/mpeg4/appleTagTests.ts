@@ -81,7 +81,17 @@ import {TagTypes} from "../../src/tag";
 
     @test
     public subtitle() {
-        this.testQuickTimeString((t, v) => t.subtitle = v, (t) => t.subtitle, Mpeg4BoxType.SUBT);
+        this.testQuickTimeString((t, v) => t.subtitle = v, (t) => t.subtitle, Mpeg4BoxType.ST3);
+    }
+
+    @test
+    public subtitle_existingSubt() {
+        // Arrange
+        const box1 = this.getQuickTimeBox(Mpeg4BoxType.SUBT, "foobarbaz");
+        const testTag = this.getEmptyTag([box1.box]);
+
+        // Act / Assert
+        assert.strictEqual(testTag.tag.subtitle, "foobarbaz");
     }
 
     @test
@@ -169,7 +179,7 @@ import {TagTypes} from "../../src/tag";
             ByteVector.fromShort(0),
             AppleDataBoxFlagType.ContainsData
         );
-        const box4 = this.getQuickTimeBox(Mpeg4BoxType.GNRE, ByteVector.fromString("foo", StringType.UTF8));
+        const box4 = this.getQuickTimeBox(Mpeg4BoxType.GNRE, "foo");
         const tag = this.getEmptyTag([box3.box, box4.box, box1.box, box2.box]);
 
         // Act
@@ -210,7 +220,7 @@ import {TagTypes} from "../../src/tag";
         // Arrange
         const box1 = this.getQuickTimeBox(Mpeg4BoxType.GNRE, ByteVector.fromShort(1));
         const value2 = "foo; bar; baz";
-        const box2 = this.getQuickTimeBox(Mpeg4BoxType.GEN, ByteVector.fromString(value2, StringType.UTF8));
+        const box2 = this.getQuickTimeBox(Mpeg4BoxType.GEN, value2);
         const tag = this.getEmptyTag([box1.box, box2.box]);
 
         // Act
@@ -265,9 +275,9 @@ import {TagTypes} from "../../src/tag";
     @test
     public year_multipleBoxes() {
         // Arrange
-        const box1 = this.getQuickTimeBox(Mpeg4BoxType.DAY, ByteVector.fromString("asdf", StringType.UTF8));
-        const box2 = this.getQuickTimeBox(Mpeg4BoxType.DAY, ByteVector.fromString("123456", StringType.UTF8));
-        const box3 = this.getQuickTimeBox(Mpeg4BoxType.DAY, ByteVector.fromString("234", StringType.UTF8));
+        const box1 = this.getQuickTimeBox(Mpeg4BoxType.DAY, "asdf");
+        const box2 = this.getQuickTimeBox(Mpeg4BoxType.DAY, "123456");
+        const box3 = this.getQuickTimeBox(Mpeg4BoxType.DAY, "234");
         const testTag = this.getEmptyTag([box1.box, box2.box, box3.box]);
 
         // Act / Assert
@@ -277,7 +287,7 @@ import {TagTypes} from "../../src/tag";
     @test
     public year_setMultipleBoxes() {
         // Arrange
-        const box1 = this.getQuickTimeBox(Mpeg4BoxType.DAY, ByteVector.fromString("1234", StringType.UTF8));
+        const box1 = this.getQuickTimeBox(Mpeg4BoxType.DAY, "1234");
         const testTag = this.getEmptyTag([box1.box, box1.box, box1.box]);
 
         // Act / Assert
@@ -289,7 +299,7 @@ import {TagTypes} from "../../src/tag";
     @test
     public year_setZero_clearsMultiple() {
         // Arrange
-        const box1 = this.getQuickTimeBox(Mpeg4BoxType.DAY, ByteVector.fromString("1234", StringType.UTF8));
+        const box1 = this.getQuickTimeBox(Mpeg4BoxType.DAY, "1234");
         const testTag = this.getEmptyTag([box1.box, box1.box, box1.box]);
 
         // Act / Assert
@@ -429,7 +439,17 @@ import {TagTypes} from "../../src/tag";
 
     @test
     public conductor() {
-        this.testQuickTimeString((t, v) => t.conductor = v, (t) => t.conductor, Mpeg4BoxType.COND);
+        this.testQuickTimeString((t, v) => t.conductor = v, (t) => t.conductor, Mpeg4BoxType.CON);
+    }
+
+    @test
+    public conductor_existingCondBox() {
+        // Arrange
+        const box1 = this.getQuickTimeBox(Mpeg4BoxType.COND, "foobarbaz");
+        const testTag = this.getEmptyTag([box1.box]);
+
+        // Act / Assert
+        assert.strictEqual(testTag.tag.conductor, "foobarbaz");
     }
 
     @test
@@ -464,18 +484,9 @@ import {TagTypes} from "../../src/tag";
     @test
     public dateTagged_multipleBoxes() {
         // Arrange
-        const box1 = this.getQuickTimeBox(
-            Mpeg4BoxType.DTAG,
-            ByteVector.fromString("asdf", StringType.UTF8)
-        );
-        const box2 = this.getQuickTimeBox(
-            Mpeg4BoxType.DTAG,
-            ByteVector.fromString("2023-10-21T10:46:00", StringType.UTF8)
-        );
-        const box3 = this.getQuickTimeBox(
-            Mpeg4BoxType.DTAG,
-            ByteVector.fromString("2023-10-21", StringType.UTF8)
-        );
+        const box1 = this.getQuickTimeBox(Mpeg4BoxType.DTAG, "asdf");
+        const box2 = this.getQuickTimeBox(Mpeg4BoxType.DTAG, "2023-10-21T10:46:00");
+        const box3 = this.getQuickTimeBox(Mpeg4BoxType.DTAG, "2023-10-21");
         const testTag = this.getEmptyTag([box1.box, box2.box, box3.box]);
 
         // Act / Assert
@@ -485,10 +496,7 @@ import {TagTypes} from "../../src/tag";
     @test
     public dateTagged_setMultipleBoxes() {
         // Arrange
-        const box1 = this.getQuickTimeBox(
-            Mpeg4BoxType.DTAG,
-            ByteVector.fromString("1900-10-21T10:56:00", StringType.UTF8)
-        );
+        const box1 = this.getQuickTimeBox(Mpeg4BoxType.DTAG, "1900-10-21T10:56:00");
         const testTag = this.getEmptyTag([box1.box, box1.box, box1.box]);
         const testValue = new Date("2023-10-21 10:59:00");
 
@@ -504,10 +512,7 @@ import {TagTypes} from "../../src/tag";
     @test
     public dateTagged_setZero_clearsMultiple() {
         // Arrange
-        const box1 = this.getQuickTimeBox(
-            Mpeg4BoxType.DTAG,
-            ByteVector.fromString("2021-10-21T11:04:00", StringType.UTF8)
-        );
+        const box1 = this.getQuickTimeBox(Mpeg4BoxType.DTAG, "2021-10-21T11:04:00");
         const testTag = this.getEmptyTag([box1.box, box1.box, box1.box]);
 
         // Act / Assert
@@ -1187,9 +1192,9 @@ import {TagTypes} from "../../src/tag";
 
         // TEST CASE 3: Multiple boxes return all valid instances ----------
         // Valid box type and flags
-        const box1 = this.getQuickTimeBox(boxType, ByteVector.fromString("foo", StringType.UTF8));
+        const box1 = this.getQuickTimeBox(boxType, "foo");
         // Valid box type and flags
-        const box2 = this.getQuickTimeBox(boxType, ByteVector.fromString("bar", StringType.UTF8));
+        const box2 = this.getQuickTimeBox(boxType, "bar");
         // Valid box type, invalid flags
         const box3 = this.getQuickTimeBox(
             boxType,
@@ -1202,7 +1207,7 @@ import {TagTypes} from "../../src/tag";
         box4.addChild(box2.dataBox);
         box4.addChild(box3.dataBox);
         // Multiple values in single data box
-        const box5 = this.getQuickTimeBox(boxType, ByteVector.fromString("fux; bux; quxx", StringType.UTF8));
+        const box5 = this.getQuickTimeBox(boxType, "fux; bux; quxx");
 
         const testTag2 = this.getEmptyTag([box1.box, box2.box, box3.box, box4, box5.box]);
 
@@ -1454,10 +1459,14 @@ import {TagTypes} from "../../src/tag";
 
     private getQuickTimeBox(
         boxType: ByteVector,
-        value: ByteVector,
+        value: ByteVector|string,
         flags: AppleDataBoxFlagType = AppleDataBoxFlagType.ContainsText
     ): {box: AppleAnnotationBox, dataBox: AppleDataBox} {
+        value = typeof(value) === "string"
+            ? ByteVector.fromString(value, StringType.UTF8)
+            : value;
         const dataBox = AppleDataBox.fromDataAndFlags(value, flags);
+
         const box = AppleAnnotationBox.fromType(boxType);
         box.addChild(dataBox);
 
