@@ -105,7 +105,7 @@ export default class Mpeg4BoxType {
     /**
      * QuickTime subtitle box. This is listed in the FFMPEG source and Exiftool.
      */
-    public static readonly ST3 = this.getType("©st3")
+    public static readonly ST3 = this.getType("©st3");
     /**
      * Subtitle box from original .NET source. This is not listed anywhere in the Exiftool or
      * FFMPEG docs.
