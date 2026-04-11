@@ -55,9 +55,16 @@ export default class AppleTag extends Tag {
     public set title(v: string) { this.setQuickTimeString(Mpeg4BoxType.NAM, v); }
 
     /** @inheritDoc */
-    public get subtitle(): string { return this.getFirstQuickTimeString(Mpeg4BoxType.SUBT); }
+    public get subtitle(): string {
+        return this.getFirstQuickTimeString(Mpeg4BoxType.SUBT) // @TODO: Backwards compat for pre-6.0.2 releases
+            || this.getFirstQuickTimeString(Mpeg4BoxType.ST3);
+    }
     /** @inheritDoc */
-    public set subtitle(v: string) { this.setQuickTimeString(Mpeg4BoxType.SUBT, v); }
+    public set subtitle(v: string) {
+        // Clear out existing boxes for conductor (@TODO: Backwards compat for pre-6.0.2 releases)
+        this.setQuickTimeData(Mpeg4BoxType.SUBT, undefined);
+        this.setQuickTimeString(Mpeg4BoxType.ST3, v);
+    }
 
     /** @inheritDoc */
     public get description(): string { return this.getFirstQuickTimeString(Mpeg4BoxType.DESC); }
@@ -209,9 +216,16 @@ export default class AppleTag extends Tag {
     }
 
     /** @inheritDoc */
-    public get conductor(): string { return this.getFirstQuickTimeString(Mpeg4BoxType.COND); }
+    public get conductor(): string {
+        return this.getFirstQuickTimeString(Mpeg4BoxType.COND) // @TODO: Backwards compat for pre-6.0.2 releases
+            || this.getFirstQuickTimeString(Mpeg4BoxType.CON);
+    }
     /** @inheritDoc */
-    public set conductor(v: string) { this.setQuickTimeString(Mpeg4BoxType.COND, v); }
+    public set conductor(v: string) {
+        // Clear out existing boxes for conductor (@TODO: Backwards compat for pre-6.0.2 releases)
+        this.setQuickTimeData(Mpeg4BoxType.COND, undefined);
+        this.setQuickTimeString(Mpeg4BoxType.CON, v);
+    }
 
     /** @inheritDoc */
     public get copyright(): string { return this.getFirstQuickTimeString(Mpeg4BoxType.CPRT); }
