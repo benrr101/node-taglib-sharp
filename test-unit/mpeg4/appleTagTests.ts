@@ -80,18 +80,35 @@ import {TagTypes} from "../../src/tag";
     }
 
     @test
-    public subtitle() {
+    public subtitle_fromEmpty() {
         this.testQuickTimeString((t, v) => t.subtitle = v, (t) => t.subtitle, Mpeg4BoxType.ST3);
     }
 
     @test
-    public subtitle_existingSubt() {
+    public subtitle_get_existingSubt() {
         // Arrange
         const box1 = this.getQuickTimeBox(Mpeg4BoxType.SUBT, "foobarbaz");
         const testTag = this.getEmptyTag([box1.box]);
 
         // Act / Assert
         assert.strictEqual(testTag.tag.subtitle, "foobarbaz");
+    }
+
+    @test
+    public subtitle_set_existingSubt() {
+        // Arrange
+        const box1 = this.getQuickTimeBox(Mpeg4BoxType.SUBT, "foobarbaz");
+        const testTag = this.getEmptyTag([box1.box]);
+
+        // Act
+        testTag.tag.subtitle = "fuxbuxquxx";
+
+        // Assert
+        const subtBoxes = testTag.ilst.getQuickTimeDataBoxes(Mpeg4BoxType.SUBT);
+        assert.isEmpty(subtBoxes);
+
+        const st3Boxes = testTag.ilst.getQuickTimeDataBoxes(Mpeg4BoxType.ST3);
+        assert.isNotEmpty(st3Boxes);
     }
 
     @test
@@ -443,13 +460,30 @@ import {TagTypes} from "../../src/tag";
     }
 
     @test
-    public conductor_existingCondBox() {
+    public conductor_get_existingCondBox() {
         // Arrange
         const box1 = this.getQuickTimeBox(Mpeg4BoxType.COND, "foobarbaz");
         const testTag = this.getEmptyTag([box1.box]);
 
         // Act / Assert
         assert.strictEqual(testTag.tag.conductor, "foobarbaz");
+    }
+
+    @test
+    public conductor_set_existingCondBox() {
+        // Arrange
+        const box1 = this.getQuickTimeBox(Mpeg4BoxType.COND, "foobarbaz");
+        const testTag = this.getEmptyTag([box1.box]);
+
+        // Act
+        testTag.tag.conductor = "fuxbuxquxx";
+
+        // Assert
+        const condBoxes = testTag.ilst.getQuickTimeDataBoxes(Mpeg4BoxType.COND);
+        assert.isEmpty(condBoxes);
+
+        const conBoxes = testTag.ilst.getQuickTimeDataBoxes(Mpeg4BoxType.CON);
+        assert.isNotEmpty(conBoxes);
     }
 
     @test

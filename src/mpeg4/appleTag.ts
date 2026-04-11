@@ -60,7 +60,11 @@ export default class AppleTag extends Tag {
             || this.getFirstQuickTimeString(Mpeg4BoxType.ST3);
     }
     /** @inheritDoc */
-    public set subtitle(v: string) { this.setQuickTimeString(Mpeg4BoxType.ST3, v); }
+    public set subtitle(v: string) {
+        // Clear out existing boxes for conductor (@TODO: Backwards compat for pre-6.0.2 releases)
+        this.setQuickTimeData(Mpeg4BoxType.SUBT, undefined);
+        this.setQuickTimeString(Mpeg4BoxType.ST3, v);
+    }
 
     /** @inheritDoc */
     public get description(): string { return this.getFirstQuickTimeString(Mpeg4BoxType.DESC); }
@@ -217,7 +221,11 @@ export default class AppleTag extends Tag {
             || this.getFirstQuickTimeString(Mpeg4BoxType.CON);
     }
     /** @inheritDoc */
-    public set conductor(v: string) { this.setQuickTimeString(Mpeg4BoxType.CON, v); }
+    public set conductor(v: string) {
+        // Clear out existing boxes for conductor (@TODO: Backwards compat for pre-6.0.2 releases)
+        this.setQuickTimeData(Mpeg4BoxType.COND, undefined);
+        this.setQuickTimeString(Mpeg4BoxType.CON, v);
+    }
 
     /** @inheritDoc */
     public get copyright(): string { return this.getFirstQuickTimeString(Mpeg4BoxType.CPRT); }
