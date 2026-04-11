@@ -20,6 +20,7 @@ string representation of them.
 
 - [audioToIndex](Genres.md#audiotoindex)
 - [indexToAudio](Genres.md#indextoaudio)
+- [indexToAudioDirect](Genres.md#indextoaudiodirect)
 - [indexToVideo](Genres.md#indextovideo)
 - [videoToIndex](Genres.md#videotoindex)
 
@@ -86,6 +87,22 @@ Gets the audio genre name for a specified index.
 
 Genre name if found, or `undefined` if `index` is outside the
     bounds of the audio genre array or if `index` is not valid.
+
+___
+
+### indexToAudioDirect
+
+▸ `Static` **indexToAudioDirect**(`index`): `string`
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `index` | `string` \| `number` |
+
+#### Returns
+
+`string`
 
 ___
 
