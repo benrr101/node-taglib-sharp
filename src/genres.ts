@@ -231,7 +231,7 @@ export default class Genres {
             ? Genres.AUDIO_GENRES[safeIndex]
             : undefined;
     }
-    
+
     public static indexToAudioDirect(index: number|string): string {
         if (typeof(index) === "string") {
             if (!(/\d+/).test(index)) {
