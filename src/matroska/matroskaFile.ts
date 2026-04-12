@@ -96,7 +96,7 @@ export default class MatroskaFile extends File {
 
         this.mode = FileAccessMode.Read;
         try {
-            this.read(propertiesStyle);
+            this.read();
 
             this._properties = new Properties(this._readState.durationMilliseconds, this._tracks);
             this._tag = new MatroskaTagCollection(
@@ -139,7 +139,7 @@ export default class MatroskaFile extends File {
 
     // #region Private Methods
 
-    private read(propertiesStyle: ReadStyle): void {
+    private read(): void {
         // Look up the EBML 0-level ID
         // @TODO: This should only search like a couple kilobytes. File is supposed to *start* with this
         const firstElementOffset = this.find(ByteVector.fromByteArray([0x1A, 0x45, 0xDF, 0xA3]));
@@ -155,7 +155,7 @@ export default class MatroskaFile extends File {
                     this.readEbmlHeader(e)
                     parser.setOptions(this._header.ebmlMaxIdLength, this._header.ebmlMaxSizeLength)
                 }],
-                [MatroskaIds.SEGMENT, e => this.readSegments(e, propertiesStyle)]
+                [MatroskaIds.SEGMENT, e => this.readSegments(e)]
             ]);
             EbmlParser.processElements(parser, actions);
         } finally {
@@ -196,7 +196,7 @@ export default class MatroskaFile extends File {
         this._header = result;
     }
 
-    private readSegmentInfo(infoElement: EbmlElement, readState: TagReadState, readStyle: ReadStyle): void {
+    private readSegmentInfo(infoElement: EbmlElement, readState: TagReadState): void {
         // @TODO: If read style is too low, don't read
         let duration: number = 0;
         let timeCodeScale: number;
@@ -216,7 +216,7 @@ export default class MatroskaFile extends File {
         }
     }
 
-    private readSegments(segmentsElement: EbmlElement, readStyle: ReadStyle): void {
+    private readSegments(segmentsElement: EbmlElement): void {
         // Read the children of the segment element
         this._readState = {
             attachments: [],
@@ -226,7 +226,7 @@ export default class MatroskaFile extends File {
         };
         const segmentParseActions = new Map<number, (e: EbmlElement) => void>([
             [MatroskaIds.SEEK_HEAD, undefined],
-            [MatroskaIds.INFO, e => this.readSegmentInfo(e, this._readState, readStyle)],
+            [MatroskaIds.INFO, e => this.readSegmentInfo(e, this._readState)],
             [MatroskaIds.CLUSTER, undefined],
             [MatroskaIds.TRACKS, e => this.readTracks(e)],
             [MatroskaIds.CUES, undefined],

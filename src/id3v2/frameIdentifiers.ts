@@ -4,7 +4,7 @@ import {NotSupportedError} from "../errors";
 /**
  * Represents the identifier of a frame, depending on the version this may be 3 or 4
  * bytes. Provides a simple way to switch between the identifiers used for different versions.
-
+ *
  * @remarks
  *     This class is implemented in an attempt to unify frame identifiers, make it easy to
  *     switch versions, find frames between tags, and determine which frames are supported on which
