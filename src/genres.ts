@@ -232,6 +232,22 @@ export default class Genres {
             : undefined;
     }
 
+    public static indexToAudioDirect(index: number|string): string {
+        if (typeof(index) === "string") {
+            if (!(/\d+/).test(index)) {
+                // Non numeric string
+                return undefined;
+            }
+
+            // Numeric string
+            const indexNumber = Number(index);
+            return Genres.AUDIO_GENRES[indexNumber];
+        }
+
+        // Number
+        return Genres.AUDIO_GENRES[index];
+    }
+
     /**
      * Gets the video genre name for a specified index.
      * @param index Index of the genre in the video genre array. Can be a `number`,
@@ -266,7 +282,13 @@ export default class Genres {
             const trimRegex = /^\(+|\)+$/g;
             text = text.replace(trimRegex, "");
         }
-        const index = parseInt(text, 10);
+
+        const normalized = text.trim();
+        if (!/^\d+$/.test(normalized)) {
+            return 255;
+        }
+
+        const index = parseInt(normalized, 10);
         return Number.isNaN(index) ? 255 : index;
     }
 }
