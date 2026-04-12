@@ -1,4 +1,4 @@
-version: 6.0.2-{branch}.{build}
+version: 6.0.3-{branch}.{build}
 
 environment:
   nodejs_version: "12.22"
