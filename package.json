@@ -19,12 +19,12 @@
     "test-unit-with-coverage": "nyc mocha test-unit --ui bdd"
   },
   "engines": {
-    "node": ">=12.16.1"
+    "node": ">=20.20.2"
   },
   "dependencies": {
-    "iconv-lite": "^0.6.3",
-    "os-locale": "^6.0.2",
-    "uuid": "^8.3.2"
+    "iconv-lite": "^0.7.2",
+    "os-locale": "^8.0.0",
+    "uuid": "^13.0.0"
   },
   "devDependencies": {
     "@istanbuljs/nyc-config-typescript": "^1.0.2",
