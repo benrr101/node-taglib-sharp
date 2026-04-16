@@ -71,6 +71,7 @@ export class Encoding {
     /**
      * Gets the appropriate encoding instance for encoding and decoding strings, based on the
      * provided `type`.
+     * @throws Error If the desired encoding cannot be found.
      * @param type Type of string to get an {@link Encoding} class instance for
      * @param bom Optional, the byte order marker for the string. Used to determine UTF16 endianess
      */
@@ -93,7 +94,12 @@ export class Encoding {
             type = this._lastUtf16Encoding;
         }
 
-        return this.ENCODINGS.get(type);
+        const encoding = this.ENCODINGS.get(type);
+        if (!encoding) {
+            throw new Error(`Key not found: Invalid encoding ${type}`);
+        }
+
+        return encoding;
 
         // NOTE: The original .NET implementation has the notion of "broken" latin behavior that
         //       uses Encoding.Default. I have removed it in this port because 1) this behavior is
@@ -520,9 +526,7 @@ export class ByteVector {
     ): ByteVector {
         // @TODO: Allow adding delimiters and find usages that immediately add a delimiter
         Guards.notNullOrUndefined(text, "text");
-        if (!Number.isInteger(length) || !Number.isSafeInteger(length) || length < 0) {
-            throw new Error("Argument out of range exception: length is invalid");
-        }
+        Guards.safeUint(length, "length");
 
         // If we're doing UTF16 w/o specifying an endian-ness, inject a BOM which also coerces
         // the converter to use UTF16LE
