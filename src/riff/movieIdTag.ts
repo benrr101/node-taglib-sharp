@@ -12,7 +12,7 @@ export default class MovieIdTag extends RiffListTag {
      */
     public static readonly LIST_TYPE = "MID ";
 
-    // #region Constructors
+    //#region Constructors
 
     private constructor(list: RiffList) {
         super(list);
@@ -35,9 +35,9 @@ export default class MovieIdTag extends RiffListTag {
         return new MovieIdTag(RiffList.fromEmpty(MovieIdTag.LIST_TYPE));
     }
 
-    // #endregion
+    //#endregion
 
-    // #region Properties
+    //#region Properties
 
     /** @inheritDoc */
     public get tagTypes(): TagTypes { return TagTypes.MovieId; }
@@ -108,5 +108,5 @@ export default class MovieIdTag extends RiffListTag {
      */
     public set trackCount(value: number) { this.setValueFromUint("PRT2", value); }
 
-    // #endregion
+    //#endregion
 }

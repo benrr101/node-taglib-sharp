@@ -14,7 +14,7 @@ export default class RiffChunk implements IRiffChunk, ILazy {
     private _fourcc: string;
     private _originalDataSize: number;
 
-    // #region Constructors
+    //#region Constructors
 
     private constructor() { /* private to enforce construction via static methods */ }
 
@@ -63,9 +63,9 @@ export default class RiffChunk implements IRiffChunk, ILazy {
         return chunk;
     }
 
-    // #endregion
+    //#endregion
 
-    // #region Properties
+    //#region Properties
 
     /** @inheritDoc */
     public get chunkStart(): number|undefined { return this._chunkStart; }
@@ -102,9 +102,9 @@ export default class RiffChunk implements IRiffChunk, ILazy {
         this._originalDataSize = value - 8;
     }
 
-    // #endregion
+    //#endregion
 
-    // #region Methods
+    //#region Methods
 
     /** @inheritDoc */
     public load(): void {
@@ -129,5 +129,5 @@ export default class RiffChunk implements IRiffChunk, ILazy {
         );
     }
 
-    // #endregion
+    //#endregion
 }

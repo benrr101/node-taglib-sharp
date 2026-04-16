@@ -59,7 +59,7 @@ export default class MpegAudioHeader implements IAudioCodec {
 
     private _vbrHeader: VbrHeader;
 
-    // #region Constructors
+    //#region Constructors
 
     private constructor(flags: number, streamLength: number) {
         this._streamLength = streamLength;
@@ -213,9 +213,9 @@ export default class MpegAudioHeader implements IAudioCodec {
         return header;
     }
 
-    // #endregion
+    //#endregion
 
-    // #region Properties
+    //#region Properties
 
     /** @inheritDoc */
     public get audioBitrate(): number { return this._vbrHeader?.bitrateKilobytes || this._bitrate; }
@@ -288,7 +288,7 @@ export default class MpegAudioHeader implements IAudioCodec {
      */
     public get version(): MpegVersion { return this._version }
 
-    // #endregion
+    //#endregion
 
     private static isHeaderValid(data: ByteVector): boolean {
         // We assume that data is at least 4 bytes long.

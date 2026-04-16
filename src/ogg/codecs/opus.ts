@@ -44,7 +44,7 @@ export default class Opus implements IOggCodec, IAudioCodec {
         }
     }
 
-    // #region Properties
+    //#region Properties
 
     /**
      * @inheritDoc
@@ -85,9 +85,9 @@ export default class Opus implements IOggCodec, IAudioCodec {
      */
     public get streamCount(): number { return this._streamCount; }
 
-    // #endregion
+    //#endregion
 
-    // #region Methods
+    //#region Methods
 
     /**
      * Determines whether an Opus header packet based on the presence of the Opus header
@@ -146,5 +146,5 @@ export default class Opus implements IOggCodec, IAudioCodec {
             : Number(durationMilliseconds);
     }
 
-    // #endregion
+    //#endregion
 }

@@ -120,7 +120,7 @@ export default class MpegContainerFile extends SandwichFile {
         return new Properties(durationMilliseconds, codecs);
     }
 
-    // #region Private Methods
+    //#region Private Methods
 
     private findFirstMarker(position: number): {marker: MpegFileMarker, position: number} {
         position = this.find(MpegContainerFile.MARKER_START, position);
@@ -323,7 +323,7 @@ export default class MpegContainerFile extends SandwichFile {
         return position;
     }
 
-    // #endregion
+    //#endregion
 }
 
 // /////////////////////////////////////////////////////////////////////////

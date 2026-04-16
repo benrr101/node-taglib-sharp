@@ -18,7 +18,7 @@ export default class CommentsFrame extends Frame {
     private _text: string;
     private _textEncoding: StringType = Id3v2Settings.defaultEncoding;
 
-    // #region
+    //#region
 
     private constructor(frameHeader: Id3v2FrameHeader) {
         super(frameHeader);
@@ -70,9 +70,9 @@ export default class CommentsFrame extends Frame {
         return frame;
     }
 
-    // #endregion
+    //#endregion
 
-    // #region Public Properties
+    //#region Public Properties
 
     /** @inheritDoc */
     public get frameClassType(): FrameClassType { return FrameClassType.CommentsFrame; }
@@ -123,7 +123,7 @@ export default class CommentsFrame extends Frame {
      */
     public set textEncoding(value: StringType) { this._textEncoding = value; }
 
-    // #endregion
+    //#endregion
 
     /**
      * Gets a comment frame that matched the provided parameters from the list of frames

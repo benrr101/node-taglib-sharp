@@ -11,7 +11,7 @@ export default class TermsOfUseFrame extends Frame {
     private _text: string;
     private _textEncoding: StringType = Id3v2Settings.defaultEncoding;
 
-    // #region Constructors
+    //#region Constructors
 
     private constructor(header: Id3v2FrameHeader) {
         super(header);
@@ -58,9 +58,9 @@ export default class TermsOfUseFrame extends Frame {
         return frame;
     }
 
-    // #endregion
+    //#endregion
 
-    // #region Properties
+    //#region Properties
 
     /** @inheritDoc */
     public get frameClassType(): FrameClassType { return FrameClassType.TermsOfUseFrame; }
@@ -100,9 +100,9 @@ export default class TermsOfUseFrame extends Frame {
      */
     public set textEncoding(value: StringType) { this._textEncoding = value; }
 
-    // #endregion
+    //#endregion
 
-    // #region Public Methods
+    //#region Public Methods
 
     /**
      * Gets a specified terms of use frame from the list of frames
@@ -150,9 +150,9 @@ export default class TermsOfUseFrame extends Frame {
      */
     public toString(): string { return this._text; }
 
-    // #endregion
+    //#endregion
 
-    // #region Protected Methods
+    //#region Protected Methods
 
     /** @inheritDoc */
     protected parseFields(data: ByteVector): void {
@@ -176,5 +176,5 @@ export default class TermsOfUseFrame extends Frame {
         );
     }
 
-    // #endregion
+    //#endregion
 }

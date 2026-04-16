@@ -27,7 +27,7 @@ export default class EbmlParser implements IDisposable {
     private _offset: number;
     // private _parent: EbmlParser;
 
-    // #region Constructors
+    //#region Constructors
 
     /**
      * Constructs and initializes a new instance using a file and optionally a position within the
@@ -50,15 +50,15 @@ export default class EbmlParser implements IDisposable {
         this.setOptions(options?.maxIdLength ?? 4, options?.maxSizeLength ?? 8);
     }
 
-    // #endregion
+    //#endregion
 
-    // #region Properties
+    //#region Properties
 
     public get currentElement(): EbmlElement { return this._currentElement; }
 
-    // #endregion
+    //#endregion
 
-    // #region Methods
+    //#region Methods
 
     public static getAllElements(parser: EbmlParser): Map<number, EbmlElement> {
         try {
@@ -314,5 +314,5 @@ export default class EbmlParser implements IDisposable {
         return bytes.subarray(0, additionalBytes + 1);
     }
 
-    // #endregion
+    //#endregion
 }

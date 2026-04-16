@@ -8,7 +8,7 @@ import {Guards} from "../utils";
  * collection of well-known target type combinations
  */
 export class MatroskaTagTargetType {
-    // #region Well Known Targets
+    //#region Well Known Targets
 
     public static readonly ALBUM = new MatroskaTagTargetType(50, "ALBUM");
     public static readonly ALBUM_PART = new MatroskaTagTargetType(40, "PART");
@@ -33,7 +33,7 @@ export class MatroskaTagTargetType {
     public static readonly TRACK_PART = new MatroskaTagTargetType(20, "PART");
     public static readonly VOLUME = new MatroskaTagTargetType(60, "VOLUME");
 
-    // #endregion
+    //#endregion
 
     private readonly _str: string;
     private readonly _val: number;

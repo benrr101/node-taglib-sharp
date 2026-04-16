@@ -49,7 +49,7 @@ export default class FlacTag extends CombinedTag {
         this._pictures = flacPictures || [];
     }
 
-    // #region Properties
+    //#region Properties
 
     /**
      * Gets the collection of tags appearing at the end of the file.
@@ -93,7 +93,7 @@ export default class FlacTag extends CombinedTag {
             : super.tagTypes;
     }
 
-    // #endregion
+    //#endregion
 
     /** @inheritDoc */
     public clear(): void {

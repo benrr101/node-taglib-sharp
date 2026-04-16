@@ -509,7 +509,7 @@ export default class AppleTag extends Tag {
     /** @inheritDoc */
     public clear(): void { this._ilstBox.clearChildren(); }
 
-    // #region Public Methods
+    //#region Public Methods
 
     /**
      * Gets all strings from the iTunes boxes with the given MEAN/NAME combination.
@@ -662,7 +662,7 @@ export default class AppleTag extends Tag {
         this._ilstBox.setQuickTimeBoxes(boxType, dataBoxes);
     }
 
-    // #endregion
+    //#endregion
 
     /**
      * Detaches the internal "ilst" box from its parent element.

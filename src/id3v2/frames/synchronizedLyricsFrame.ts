@@ -25,7 +25,7 @@ export class SynchronizedText {
         this._time = time;
     }
 
-    // #region Properties
+    //#region Properties
 
     /**
      * Text for the point in time represented by the current instance.
@@ -47,7 +47,7 @@ export class SynchronizedText {
         this._time = value;
     }
 
-    // #endregion
+    //#endregion
 
     /**
      * Creates a copy of this instance.
@@ -81,7 +81,7 @@ export class SynchronizedLyricsFrame extends Frame {
     private _textEncoding: StringType = Id3v2Settings.defaultEncoding;
     private _textType: SynchronizedTextType = SynchronizedTextType.Other;
 
-    // #region Constructors
+    //#region Constructors
 
     private constructor(header: Id3v2FrameHeader) {
         super(header);
@@ -132,9 +132,9 @@ export class SynchronizedLyricsFrame extends Frame {
         return frame;
     }
 
-    // #endregion
+    //#endregion
 
-    // #region Properties
+    //#region Properties
 
     /** @inheritDoc */
     public get frameClassType(): FrameClassType { return FrameClassType.SynchronizedLyricsFrame; }
@@ -207,9 +207,9 @@ export class SynchronizedLyricsFrame extends Frame {
     // @TODO: Rename to Content Type to match spec
     public set textType(value: SynchronizedTextType) { this._textType = value; }
 
-    // #endregion
+    //#endregion
 
-    // #region Public Methods
+    //#region Public Methods
 
     /**
      * Gets a specified lyrics frame from a list of synchronized lyrics frames
@@ -300,7 +300,7 @@ export class SynchronizedLyricsFrame extends Frame {
         return frame;
     }
 
-    // #endregion
+    //#endregion
 
     /** @inheritDoc */
     protected parseFields(data: ByteVector): void {

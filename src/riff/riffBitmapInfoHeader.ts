@@ -718,7 +718,7 @@ export default class RiffBitmapInfoHeader implements IVideoCodec {
         this._importantColors = data.subarray(offset + 36, 4).toUint(false);
     }
 
-    // #region Properties
+    //#region Properties
 
     /**
      * Gets the number of bits per pixel (bpp). For uncompressed formats, this value is the average
@@ -804,5 +804,5 @@ export default class RiffBitmapInfoHeader implements IVideoCodec {
      */
     public get yPixelsPerMeter(): number { return this._yPixelsPerMeter; }
 
-    // #endregion
+    //#endregion
 }

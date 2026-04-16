@@ -169,7 +169,7 @@ export class TextInformationFrame extends Frame {
      */
     protected _textFields: string[] = [];
 
-    // #region Constructors
+    //#region Constructors
 
     protected constructor(header: Id3v2FrameHeader) {
         super(header);
@@ -214,9 +214,9 @@ export class TextInformationFrame extends Frame {
         return frame;
     }
 
-    // #endregion
+    //#endregion
 
-    // #region Properties
+    //#region Properties
 
     /** @inheritDoc */
     public get frameClassType(): FrameClassType { return FrameClassType.TextInformationFrame; }
@@ -254,9 +254,9 @@ export class TextInformationFrame extends Frame {
         this._encoding = value;
     }
 
-    // #endregion
+    //#endregion
 
-    // #region Public Methods
+    //#region Public Methods
 
     /**
      * Gets a {@link TextInformationFrame} object of a specified type from a specified type from a
@@ -332,9 +332,9 @@ export class TextInformationFrame extends Frame {
         return this.text.join("; ");
     }
 
-    // #endregion
+    //#endregion
 
-    // #region Protected Methods
+    //#region Protected Methods
 
     /** @inheritDoc */
     protected parseFields(data: ByteVector, version: number): void {
@@ -542,7 +542,7 @@ export class TextInformationFrame extends Frame {
         return v;
     }
 
-    // #endregion
+    //#endregion
 
     private parseTconAsStandardNumeric(field: string): string[]|undefined {
         // Don't even bother setting up the state machine if we aren't starting with an opening
@@ -641,7 +641,7 @@ export class TextInformationFrame extends Frame {
 }
 
 export class UserTextInformationFrame extends TextInformationFrame {
-    // #region Constructors
+    //#region Constructors
 
     private constructor(header: Id3v2FrameHeader) {
         super(header);
@@ -687,9 +687,9 @@ export class UserTextInformationFrame extends TextInformationFrame {
         return frame;
     }
 
-    // #endregion
+    //#endregion
 
-    // #region Properties
+    //#region Properties
 
     public get frameClassType(): FrameClassType { return FrameClassType.UserTextInformationFrame; }
 
@@ -738,9 +738,9 @@ export class UserTextInformationFrame extends TextInformationFrame {
         super.text = newValue;
     }
 
-    // #endregion
+    //#endregion
 
-    // #region Public Methods
+    //#region Public Methods
 
     /**
      * Gets a user text information frame from a specified tag
@@ -776,5 +776,5 @@ export class UserTextInformationFrame extends TextInformationFrame {
         return `[${this.description}] ${super.toString()}`;
     }
 
-    // #endregion
+    //#endregion
 }

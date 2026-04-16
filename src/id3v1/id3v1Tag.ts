@@ -9,7 +9,7 @@ import {Guards} from "../utils";
  * Extends {@link Tag} to provide support for reading and writing tags stored in the ID3v1.1 format.
  */
 export default class Id3v1Tag extends Tag {
-    // #region Member Fields
+    //#region Member Fields
 
     private static readonly COMMENT_LENGTH = 28;
     private static readonly TITLE_ARTIST_ALBUM_LENGTH = 30;
@@ -33,9 +33,9 @@ export default class Id3v1Tag extends Tag {
     private _track: number;
     private _year: string;
 
-    // #endregion
+    //#endregion
 
-    // #region Constructors
+    //#region Constructors
 
     private constructor(data: ByteVector | undefined) {
         super();
@@ -93,7 +93,7 @@ export default class Id3v1Tag extends Tag {
         return new Id3v1Tag(data);
     }
 
-    // #endregion
+    //#endregion
 
     /**
      * Renders the current instance as a raw ID3v1 tag.
@@ -112,7 +112,7 @@ export default class Id3v1Tag extends Tag {
         );
     }
 
-    // #region Tag Overrides
+    //#region Tag Overrides
 
     /** @inheritDoc */
     public get tagTypes(): TagTypes { return TagTypes.Id3v1; }
@@ -218,9 +218,9 @@ export default class Id3v1Tag extends Tag {
         this._genre = 255;
     }
 
-    // #endregion
+    //#endregion
 
-    // #region Private Helpers
+    //#region Private Helpers
 
     private parse(data: ByteVector): void {
         this._title = Id3v1Tag.parseString(data.subarray(3, Id3v1Tag.TITLE_ARTIST_ALBUM_LENGTH));
@@ -263,5 +263,5 @@ export default class Id3v1Tag extends Tag {
         ];
     }
 
-    // #endregion
+    //#endregion
 }

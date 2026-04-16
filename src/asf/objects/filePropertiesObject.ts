@@ -31,7 +31,7 @@ export enum FilePropertiesFlags {
 export default class FilePropertiesObject extends BaseObject {
     private static readonly FILE_TIME_TO_UNIX_EPOCH = BigInt(116444736000000000);
 
-    // #region Member Variables
+    //#region Member Variables
 
     private _creationDateTicks: bigint;
     private _dataPacketsCount: bigint;
@@ -45,9 +45,9 @@ export default class FilePropertiesObject extends BaseObject {
     private _prerollMilliseconds: bigint;
     private _sendDurationTicks: bigint;
 
-    // #endregion
+    //#endregion
 
-    // #region Constructors
+    //#region Constructors
 
     private constructor() {
         super();
@@ -85,9 +85,9 @@ export default class FilePropertiesObject extends BaseObject {
         return instance;
     }
 
-    // #endregion
+    //#endregion
 
-    // #region Properties
+    //#region Properties
 
     /**
      * Gets the creation date of the file described by the current instance.
@@ -174,7 +174,7 @@ export default class FilePropertiesObject extends BaseObject {
      */
     public get sendDurationMilliseconds(): number { return NumberUtils.ticksToMilli(this._sendDurationTicks); }
 
-    // #endregion
+    //#endregion
 
     /** @inheritDoc */
     public render(): ByteVector {

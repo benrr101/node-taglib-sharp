@@ -159,7 +159,7 @@ export class Properties implements ILosslessAudioCodec, IVideoCodec, IPhotoCodec
      */
     public get codecs(): ICodec[] { return this._codecs.slice(); }
 
-    // #region ICodec
+    //#region ICodec
 
     /**
      * Gets a string description of the media represented by the current instance. Values are
@@ -190,9 +190,9 @@ export class Properties implements ILosslessAudioCodec, IVideoCodec, IPhotoCodec
         return this._codecs.filter((e) => !!e).reduce((types, e) => types | e.mediaTypes, MediaTypes.None);
     }
 
-    // #endregion
+    //#endregion
 
-    // #region ILosslessAudioCodec
+    //#region ILosslessAudioCodec
 
     /**
      * Gets the bitrate of the audio represented by the current instance. This value is equal to
@@ -226,9 +226,9 @@ export class Properties implements ILosslessAudioCodec, IVideoCodec, IPhotoCodec
         return this.findCodecProperty<ILosslessAudioCodec>(MediaTypes.LosslessAudio, (c) => c.bitsPerSample, 0);
     }
 
-    // #endregion
+    //#endregion
 
-    // #region IPhotoCodec
+    //#region IPhotoCodec
 
     /**
      * Gets the height of the photo in pixels represented by the current instance.
@@ -252,9 +252,9 @@ export class Properties implements ILosslessAudioCodec, IVideoCodec, IPhotoCodec
         return this.findCodecProperty<IPhotoCodec>(MediaTypes.Photo, (c) => c.photoWidth, 0);
     }
 
-    // #endregion
+    //#endregion
 
-    // #region IVideoCodec
+    //#region IVideoCodec
 
     /**
      * Gets the height of the video represented by the current instance.
@@ -274,9 +274,9 @@ export class Properties implements ILosslessAudioCodec, IVideoCodec, IPhotoCodec
 
     // @TODO: Add support for framerate
 
-    // #endregion
+    //#endregion
 
-    // #region Private Helpers
+    //#region Private Helpers
 
     private findCodecProperty<TCodec extends ICodec>(
         mediaType: MediaTypes,
@@ -289,5 +289,5 @@ export class Properties implements ILosslessAudioCodec, IVideoCodec, IPhotoCodec
             : defaultValue;
     }
 
-    // #endregion
+    //#endregion
 }

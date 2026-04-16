@@ -11,7 +11,7 @@ export default abstract class FullBox extends Mpeg4Box {
     private _version: number;
     private _flags: number;
 
-    // #region Constructors
+    //#region Constructors
 
     /**
      * Protected constructor to force construction via static functions.
@@ -59,7 +59,7 @@ export default abstract class FullBox extends Mpeg4Box {
         this._flags = flags;
     }
 
-    // #endregion
+    //#endregion
 
     /**
      * Gets the flags that apply to the current instance.

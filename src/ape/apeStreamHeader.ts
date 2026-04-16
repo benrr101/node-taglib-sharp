@@ -52,7 +52,7 @@ export class ApeStreamHeader implements IAudioCodec, ILosslessAudioCodec {
      */
     public static readonly SIZE = 76;
 
-    // #region Member variables
+    //#region Member variables
 
     /**
      * Contains the number of bits per sample, stored in bytes (67-68) and is typically 16.
@@ -105,7 +105,7 @@ export class ApeStreamHeader implements IAudioCodec, ILosslessAudioCodec {
      */
     private readonly _version: number;
 
-    // #endregion
+    //#endregion
 
     /**
      * Constructs and initializes a new {@link ApeStreamHeader} from a raw header block and stream
@@ -135,7 +135,7 @@ export class ApeStreamHeader implements IAudioCodec, ILosslessAudioCodec {
         this._sampleRate = data.subarray(72, 4).toUint(false);
     }
 
-    // #region Properties
+    //#region Properties
 
     /** @inheritDoc */
     public get audioBitrate(): number {
@@ -181,5 +181,5 @@ export class ApeStreamHeader implements IAudioCodec, ILosslessAudioCodec {
      */
     public get version(): number { return this._version / 1000; }
 
-    // #endregion
+    //#endregion
 }

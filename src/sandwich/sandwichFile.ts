@@ -84,7 +84,7 @@ export default abstract class SandwichFile extends File implements ISandwichFile
         }
     }
 
-    // #region Properties
+    //#region Properties
 
     /**
      * Gets the collection of tags appearing at the end of the file.
@@ -116,9 +116,9 @@ export default abstract class SandwichFile extends File implements ISandwichFile
      */
     public get properties(): Properties { return this._properties; }
 
-    // #endregion
+    //#endregion
 
-    // #region Public Methods
+    //#region Public Methods
 
     /** @inheritDoc */
     public getTag(type: TagTypes, create: boolean): Tag {
@@ -161,7 +161,7 @@ export default abstract class SandwichFile extends File implements ISandwichFile
         }
     }
 
-    // #endregion
+    //#endregion
 
     /**
      * Reads the properties of the file.

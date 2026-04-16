@@ -117,7 +117,7 @@ export class AviStream {
         }
     }
 
-    // #region Properties
+    //#region Properties
 
     /**
      * Gets the offset from the bottom of the main movie rectangle where this stream should be
@@ -238,5 +238,5 @@ export class AviStream {
      */
     public get type(): AviStreamType { return this._type; }
 
-    // #endregion
+    //#endregion
 }

@@ -19,7 +19,7 @@ export class MetadataDescriptor extends DescriptorBase {
     private readonly _languageListIndex: number;
     private readonly _streamNumber: number;
 
-    // #region Constructors
+    //#region Constructors
 
     /**
      * Constructs and initializes a new instance.
@@ -105,9 +105,9 @@ export class MetadataDescriptor extends DescriptorBase {
         return new MetadataDescriptor(languageListIndex, streamNumber, name, dataType, value);
     }
 
-    // #endregion
+    //#endregion
 
-    // #region Properties
+    //#region Properties
 
     /**
      * Gets the index of the language associated with the current instance.
@@ -119,9 +119,9 @@ export class MetadataDescriptor extends DescriptorBase {
      */
     public get streamNumber(): number { return this._streamNumber; }
 
-    // #endregion
+    //#endregion
 
-    // #region Methods
+    //#region Methods
 
     /** @inheritDoc */
     public render(): ByteVector {
@@ -163,7 +163,7 @@ export class MetadataDescriptor extends DescriptorBase {
         );
     }
 
-    // #endregion
+    //#endregion
 }
 
 /**
@@ -173,7 +173,7 @@ export class MetadataDescriptor extends DescriptorBase {
 export class MetadataLibraryObject extends BaseObject {
     private readonly _records: MetadataDescriptor[] = [];
 
-    // #region Constructors
+    //#region Constructors
 
     private constructor() {
         super();
@@ -212,9 +212,9 @@ export class MetadataLibraryObject extends BaseObject {
         return instance;
     }
 
-    // #endregion
+    //#endregion
 
-    // #region Properties
+    //#region Properties
 
     /**
      * Gets whether the current instance contains any records.
@@ -232,9 +232,9 @@ export class MetadataLibraryObject extends BaseObject {
      */
     public get records(): MetadataDescriptor[] { return this._records; }
 
-    // #endregion
+    //#endregion
 
-    // #region Methods
+    //#region Methods
 
     /**
      * Adds a record to the current instance.
@@ -336,5 +336,5 @@ export class MetadataLibraryObject extends BaseObject {
         this._records.splice(position, 0, ... records);
     }
 
-    // #endregion
+    //#endregion
 }

@@ -14,7 +14,7 @@ export default abstract class BaseObject {
     private _id: UuidWrapper;
     private _originalSize: number = 0;
 
-    // #region Initializers
+    //#region Initializers
 
     protected constructor() { /* empty to only allow construction via static constructors */ }
 
@@ -49,9 +49,9 @@ export default abstract class BaseObject {
         this._id = guid;
     }
 
-    // #endregion
+    //#endregion
 
-    // #region Properties
+    //#region Properties
 
     /**
      * Gets the GUID that identifies the current instance.
@@ -68,9 +68,9 @@ export default abstract class BaseObject {
      */
     public get originalSize(): number { return this._originalSize; }
 
-    // #endregion
+    //#endregion
 
-    // #region Methods
+    //#region Methods
 
     /**
      * Renders the current instance as a raw ASF object.
@@ -93,5 +93,5 @@ export default abstract class BaseObject {
         );
     }
 
-    // #endregion
+    //#endregion
 }

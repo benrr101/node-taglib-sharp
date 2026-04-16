@@ -22,7 +22,7 @@ export default class AttachmentFrame extends Frame implements IPicture {
     private _rawVersion: number;
     private _type: PictureType;
 
-    // #region Constructors
+    //#region Constructors
 
     private constructor(frameHeader: Id3v2FrameHeader) {
         super(frameHeader);
@@ -101,9 +101,9 @@ export default class AttachmentFrame extends Frame implements IPicture {
         return frame;
     }
 
-    // #endregion
+    //#endregion
 
-    // #region Properties
+    //#region Properties
 
     /** @inheritDoc */
     public get frameClassType(): FrameClassType { return FrameClassType.AttachmentFrame; }
@@ -217,9 +217,9 @@ export default class AttachmentFrame extends Frame implements IPicture {
         this._type = value;
     }
 
-    // #endregion
+    //#endregion
 
-    // #region Public Methods
+    //#region Public Methods
 
     /** @inheritDoc */
     public clone(): Frame {
@@ -276,7 +276,7 @@ export default class AttachmentFrame extends Frame implements IPicture {
         return builder;
     }
 
-    // #endregion
+    //#endregion
 
     /** @inheritDoc */
     protected parseFields(data: ByteVector, version: number): void {

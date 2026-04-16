@@ -942,7 +942,7 @@ import {TagTypes} from "../../src/tag";
         assert.isEmpty(testTag.ilst.children);
     }
 
-    // #region TESTERS
+    //#region TESTERS
 
     private testItunesString(
         setter: (t: AppleTag, v: string) => void,
@@ -1372,8 +1372,8 @@ import {TagTypes} from "../../src/tag";
         assert.isEmpty(testTag4.ilst.children);
     }
 
-    // #endregion
-    // #region Helpers
+    //#endregion
+    //#region Helpers
 
     private assertItunesBox(
         ilst: AppleItemListBox,
@@ -1507,5 +1507,5 @@ import {TagTypes} from "../../src/tag";
         return {box: box, dataBox: dataBox};
     }
 
-    // #endregion
+    //#endregion
 }

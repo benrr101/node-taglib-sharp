@@ -116,7 +116,7 @@ export default class MatroskaFile extends File {
     /** @inheritDoc */
     public get tag(): Tag { return this._tag; }
 
-    // #region Public Methods
+    //#region Public Methods
 
     /** @inheritDoc */
     public getTag(types: TagTypes): Tag {
@@ -135,9 +135,9 @@ export default class MatroskaFile extends File {
         throw new NotImplementedError("Saving matroska/webm files is not supported, yet.");
     }
 
-    // #endregion
+    //#endregion
 
-    // #region Private Methods
+    //#region Private Methods
 
     private read(): void {
         // Look up the EBML 0-level ID
@@ -282,7 +282,7 @@ export default class MatroskaFile extends File {
         EbmlParser.processElements(tracksElement.getParser(), trackParseActions);
     }
 
-    // #endregion
+    //#endregion
 }
 
 // /////////////////////////////////////////////////////////////////////////

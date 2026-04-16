@@ -56,7 +56,7 @@ export default class FlacStreamHeader implements ILosslessAudioCodec {
         this._streamLength = streamLength;
     }
 
-    // #region Properties
+    //#region Properties
 
     /**
      * @inheritDoc
@@ -93,5 +93,5 @@ export default class FlacStreamHeader implements ILosslessAudioCodec {
     /** @inheritDoc */
     public get mediaTypes(): MediaTypes { return MediaTypes.LosslessAudio; }
 
-    // #endregion
+    //#endregion
 }

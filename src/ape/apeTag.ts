@@ -44,7 +44,7 @@ export default class ApeTag extends Tag {
     private _footer: ApeTagFooter;
     private _items: ApeTagItem[] = [];
 
-    // #region Constructors
+    //#region Constructors
 
     private constructor() {
         super();
@@ -122,9 +122,9 @@ export default class ApeTag extends Tag {
         return tag;
     }
 
-    // #endregion
+    //#endregion
 
-    // #region Ape Tag Properties
+    //#region Ape Tag Properties
 
     /**
      * Gets whether the current instance has a header when rendered.
@@ -148,9 +148,9 @@ export default class ApeTag extends Tag {
      */
     public get items(): ApeTagItem[] { return this._items; }
 
-    // #endregion
+    //#endregion
 
-    // #region Generic Tag Properties
+    //#region Generic Tag Properties
 
     /** @inheritDoc */
     public get tagTypes(): TagTypes { return TagTypes.Ape; }
@@ -765,9 +765,9 @@ export default class ApeTag extends Tag {
     /** @inheritDoc */
     public get isEmpty(): boolean { return this._items.length === 0; }
 
-    // #endregion
+    //#endregion
 
-    // #region Public Methods
+    //#region Public Methods
 
     /**
      * Adds a single value to the contents of an item. Creates a new item if one does not exist.
@@ -968,9 +968,9 @@ export default class ApeTag extends Tag {
         }
     }
 
-    // #endregion
+    //#endregion
 
-    // #region Private Methods
+    //#region Private Methods
 
     private getStringValue(key: string): string {
         const item = this.getItem(key);
@@ -1022,5 +1022,5 @@ export default class ApeTag extends Tag {
         }
     }
 
-    // #endregion
+    //#endregion
 }

@@ -12,7 +12,7 @@ export default class IsoHandlerBox extends FullBox {
     private _dataHandlerType: ByteVector;
     private _name: string;
 
-    // #region Constructors
+    //#region Constructors
 
     /**
      * Private constructor to force construction via static functions.
@@ -68,7 +68,7 @@ export default class IsoHandlerBox extends FullBox {
         return instance;
     }
 
-    // #endregion
+    //#endregion
 
     /**
      * Gets the data contained in the current instance.

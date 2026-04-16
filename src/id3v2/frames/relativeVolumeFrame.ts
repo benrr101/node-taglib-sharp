@@ -185,7 +185,7 @@ export class RelativeVolumeFrame extends Frame {
     private readonly _channels: ChannelData[] = new Array<ChannelData>(9);
     private _identification: string;
 
-    // #region Constructors
+    //#region Constructors
 
     private constructor(header: Id3v2FrameHeader) {
         super(header);
@@ -229,9 +229,9 @@ export class RelativeVolumeFrame extends Frame {
         return frame;
     }
 
-    // #endregion
+    //#endregion
 
-    // #region Properties
+    //#region Properties
 
     /** @inheritDoc */
     public get frameClassType(): FrameClassType { return FrameClassType.RelativeVolumeFrame; }
@@ -246,9 +246,9 @@ export class RelativeVolumeFrame extends Frame {
      */
     public get identification(): string { return this._identification; }
 
-    // #endregion
+    //#endregion
 
-    // #region Public Methods
+    //#region Public Methods
 
     /** @inheritDoc */
     public clone(): Frame {
@@ -319,9 +319,9 @@ export class RelativeVolumeFrame extends Frame {
         return this.identification;
     }
 
-    // #endregion
+    //#endregion
 
-    // #region Protected/Private Methods
+    //#region Protected/Private Methods
 
     /** @inheritDoc */
     protected parseFields(data: ByteVector): void {
@@ -364,5 +364,5 @@ export class RelativeVolumeFrame extends Frame {
         return data;
     }
 
-    // #endregion
+    //#endregion
 }

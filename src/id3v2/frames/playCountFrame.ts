@@ -15,7 +15,7 @@ export default class PlayCountFrame extends Frame {
         this._playCount = BigInt(0);
     }
 
-    // #region Constructors
+    //#region Constructors
 
     /**
      * Constructs and initializes a new instance with a count of zero
@@ -49,9 +49,9 @@ export default class PlayCountFrame extends Frame {
         return frame;
     }
 
-    // #endregion
+    //#endregion
 
-    // #region Public Properties
+    //#region Public Properties
 
     /** @inheritDoc */
     public get frameClassType(): FrameClassType { return FrameClassType.PlayCountFrame; }
@@ -69,7 +69,7 @@ export default class PlayCountFrame extends Frame {
         this._playCount = value;
     }
 
-    // #endregion
+    //#endregion
 
     /** @inheritDoc */
     public clone(): Frame {

@@ -90,7 +90,7 @@ export class Id3v2TagHeader {
         return header;
     }
 
-    // #region Properties
+    //#region Properties
 
     /**
      * Gets the complete size of the tag described by the current instance including the header
@@ -190,7 +190,7 @@ export class Id3v2TagHeader {
         this._tagSize = value;
     }
 
-    // #endregion
+    //#endregion
 
     /**
      * Renders the current instance as a raw ID3v2 header

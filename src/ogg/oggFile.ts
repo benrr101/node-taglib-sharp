@@ -70,7 +70,7 @@ export default class OggFile extends File {
         }
     }
 
-    // #region Properties
+    //#region Properties
 
     /** @inheritDoc */
     public get properties(): Properties { return this._properties; }
@@ -78,9 +78,9 @@ export default class OggFile extends File {
     /** @inheritDoc */
     public get tag(): Tag { return this._tag; }
 
-    // #endregion
+    //#endregion
 
-    // #region Methods
+    //#region Methods
 
     /** @inheritDoc */
     public getTag(type: TagTypes): Tag {
@@ -199,7 +199,7 @@ export default class OggFile extends File {
         };
     }
 
-    // #endregion
+    //#endregion
 }
 
 // /////////////////////////////////////////////////////////////////////////

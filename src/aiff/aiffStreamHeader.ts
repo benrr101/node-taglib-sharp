@@ -19,7 +19,7 @@ export default class AiffStreamHeader implements ILosslessAudioCodec {
      */
     public static readonly SIZE = 26;
 
-    // #region Private members
+    //#region Private members
 
     private readonly _channels: number;
     private readonly _bitsPerSample: number;
@@ -27,7 +27,7 @@ export default class AiffStreamHeader implements ILosslessAudioCodec {
     private readonly _streamLength: number;
     private readonly _totalFrames: number;
 
-    // #endregion
+    //#endregion
 
     /**
      * Constructs and initializes a new instance of {@link AiffStreamHeader} for a specified header
@@ -52,7 +52,7 @@ export default class AiffStreamHeader implements ILosslessAudioCodec {
         this._sampleRate = NumberUtils.convertFromIeeeExtended(data.subarray(16, 10));
     }
 
-    // #region Properties
+    //#region Properties
 
     /** @inheritDoc */
     // @TODO: streamlength is total file data length, not sound length.
@@ -85,5 +85,5 @@ export default class AiffStreamHeader implements ILosslessAudioCodec {
     /** @inheritDoc */
     public get mediaTypes(): MediaTypes { return MediaTypes.Audio; }
 
-    // #endregion
+    //#endregion
 }

@@ -17,7 +17,7 @@ export default class XiphPicture implements IPicture, ILazy {
     private _type: PictureType;
     private _width: number = 0;
 
-    // #region Constructors
+    //#region Constructors
 
     private constructor() { /* private to enforce construction via static methods */ }
 
@@ -95,9 +95,9 @@ export default class XiphPicture implements IPicture, ILazy {
         return instance;
     }
 
-    // #endregion
+    //#endregion
 
-    // #region Properties
+    //#region Properties
 
     /**
      * Gets the color depth of the picture in the current instance.
@@ -244,9 +244,9 @@ export default class XiphPicture implements IPicture, ILazy {
         this._width = value;
     }
 
-    // #endregion
+    //#endregion
 
-    // #region Methods
+    //#region Methods
 
     /** @inheritDoc */
     public load(): void {
@@ -314,5 +314,5 @@ export default class XiphPicture implements IPicture, ILazy {
         return this.renderForFlacBlock().toBase64String();
     }
 
-    // #endregion
+    //#endregion
 }

@@ -38,7 +38,7 @@ export default class EndTag extends CombinedTag {
         this.read(file, readStyle);
     }
 
-    // #region Public Methods
+    //#region Public Methods
 
     /** @inheritDoc */
     public createTag(type: TagTypes, copy: boolean): Tag {
@@ -83,7 +83,7 @@ export default class EndTag extends CombinedTag {
         return ByteVector.concatenate(... tagBytes);
     }
 
-    // #endregion
+    //#endregion
 
     private read(file: File, style: ReadStyle): void {
         const parser = new EndTagParser(file, style);

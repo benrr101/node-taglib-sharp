@@ -54,7 +54,7 @@ export class UrlLinkFrame extends Frame {
      */
     protected _textFields: string[] = [];
 
-    // #region Constructors
+    //#region Constructors
 
     protected constructor(header: Id3v2FrameHeader) {
         super(header);
@@ -94,9 +94,9 @@ export class UrlLinkFrame extends Frame {
         return frame;
     }
 
-    // #endregion
+    //#endregion
 
-    // #region Properties
+    //#region Properties
 
     public get frameClassType(): FrameClassType { return FrameClassType.UrlLinkFrame; }
 
@@ -131,9 +131,9 @@ export class UrlLinkFrame extends Frame {
      */
     public set textEncoding(value: StringType) { this._encoding = value; }
 
-    // #endregion
+    //#endregion
 
-    // #region Methods
+    //#region Methods
 
     /**
      * Gets the first frame that matches the provided type
@@ -248,14 +248,14 @@ export class UrlLinkFrame extends Frame {
         );
     }
 
-    // #endregion
+    //#endregion
 }
 
 /**
  * Provides support for ID3v2 User URL Link frames (WXXX).
  */
 export class UserUrlLinkFrame extends UrlLinkFrame {
-    // #region Constructors
+    //#region Constructors
 
     private constructor(header: Id3v2FrameHeader) {
         super(header);
@@ -296,9 +296,9 @@ export class UserUrlLinkFrame extends UrlLinkFrame {
         return frame;
     }
 
-    // #endregion
+    //#endregion
 
-    // #region Properties
+    //#region Properties
 
     /** @inheritDoc */
     public get frameClassType(): FrameClassType { return FrameClassType.UserUrlLinkFrame; }
@@ -352,9 +352,9 @@ export class UserUrlLinkFrame extends UrlLinkFrame {
         super.text = newValue;
     }
 
-    // #endregion
+    //#endregion
 
-    // #region Methods
+    //#region Methods
 
     /**
      * Gets a frame from a list of frames.
@@ -384,5 +384,5 @@ export class UserUrlLinkFrame extends UrlLinkFrame {
         return `[${this.description}] ${super.toString()}`;
     }
 
-    // #endregion
+    //#endregion
 }

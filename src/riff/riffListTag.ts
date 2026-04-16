@@ -13,16 +13,16 @@ export default abstract class RiffListTag extends Tag {
     private readonly _list: RiffList;
     private _stringType: StringType = StringType.UTF8;
 
-    // #region Constructors
+    //#region Constructors
 
     protected constructor(list: RiffList) {
         super();
         this._list = list;
     }
 
-    // #endregion
+    //#endregion
 
-    // #region Properties
+    //#region Properties
 
     /** @inheritDoc */
     public get isEmpty(): boolean { return this._list.valueCount === 0; }
@@ -51,9 +51,9 @@ export default abstract class RiffListTag extends Tag {
         this._stringType = value;
     }
 
-    // #endregion
+    //#endregion
 
-    // #region Methods
+    //#region Methods
 
     /** @inheritDoc */
     public clear(): void {
@@ -152,6 +152,6 @@ export default abstract class RiffListTag extends Tag {
         return this.getValuesAsStrings(id).find((v) => !!v) || undefined;
     }
 
-    // #endregion
+    //#endregion
 
 }

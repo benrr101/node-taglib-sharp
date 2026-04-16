@@ -176,7 +176,7 @@ export class Id3v2FrameHeader {
         return new Id3v2FrameHeader(id, Id3v2FrameFlags.None, 0);
     }
 
-    // #region Properties
+    //#region Properties
 
     /**
      * Gets the flags applied to the current instance.
@@ -217,9 +217,9 @@ export class Id3v2FrameHeader {
         this._frameSize = value;
     }
 
-    // #endregion
+    //#endregion
 
-    // #region Public Methods
+    //#region Public Methods
 
     /**
      * Gets the size of a header for a specified ID3v2 version.
@@ -266,5 +266,5 @@ export class Id3v2FrameHeader {
         return ByteVector.concatenate(... byteVectors);
     }
 
-    // #endregion
+    //#endregion
 }

@@ -27,7 +27,7 @@ export default class UnknownObject extends BaseObject {
         return instance;
     }
 
-    // #region Properties
+    //#region Properties
 
     /**
      * Gets the data contained in the current instance.
@@ -45,7 +45,7 @@ export default class UnknownObject extends BaseObject {
     /** @inheritDoc */
     public get objectType(): ObjectType { return ObjectType.UnknownObject; }
 
-    // #endregion
+    //#endregion
 
     /** @inheritDoc */
     public render(): ByteVector {

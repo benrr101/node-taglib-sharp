@@ -32,7 +32,7 @@ export default class Id3v2Tag extends Tag {
     private _header: Id3v2TagHeader;
     private _performersRole: string[];
 
-    // #region Constructors
+    //#region Constructors
 
     private constructor() {
         super();
@@ -116,9 +116,9 @@ export default class Id3v2Tag extends Tag {
         return tag;
     }
 
-    // #endregion
+    //#endregion
 
-    // #region Properties
+    //#region Properties
 
     /**
      * Gets the ISO-639-2 language code to use when searching for and storing language specific
@@ -244,7 +244,7 @@ export default class Id3v2Tag extends Tag {
         }
     }
 
-    // #region Tag Implementations
+    //#region Tag Implementations
 
     /** @inheritDoc */
     public get tagTypes(): TagTypes { return TagTypes.Id3v2; }
@@ -1010,9 +1010,9 @@ export default class Id3v2Tag extends Tag {
     /** @inheritDoc */
     public get isEmpty(): boolean { return this._frameList.length === 0; }
 
-    // #endregion
+    //#endregion
 
-    // #region Public Methods
+    //#region Public Methods
 
     /**
      * Adds a frame to the current instance.
@@ -1363,9 +1363,9 @@ export default class Id3v2Tag extends Tag {
         }
     }
 
-    // #endregion
+    //#endregion
 
-    // #region Protected/Private Methods
+    //#region Protected/Private Methods
 
     // @TODO: Split into parseFromFile and parseFromData
     private parse(data: ByteVector, file: File, position: number, style: ReadStyle): void {
@@ -1550,5 +1550,5 @@ export default class Id3v2Tag extends Tag {
         }
     }
 
-    // #endregion
+    //#endregion
 }

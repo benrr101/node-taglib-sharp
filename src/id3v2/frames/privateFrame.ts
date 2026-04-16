@@ -14,7 +14,7 @@ export default class PrivateFrame extends Frame {
     private _owner: string;
     private _privateData: ByteVector;
 
-    // #region Constructors
+    //#region Constructors
 
     private constructor(header: Id3v2FrameHeader) {
         super(header);
@@ -56,9 +56,9 @@ export default class PrivateFrame extends Frame {
         return frame;
     }
 
-    // #endregion
+    //#endregion
 
-    // #region Public Properties
+    //#region Public Properties
 
     /** @inheritDoc */
     public get frameClassType(): FrameClassType { return FrameClassType.PrivateFrame; }
@@ -79,7 +79,7 @@ export default class PrivateFrame extends Frame {
      */
     public set privateData(value: ByteVector) { this._privateData = value; }
 
-    // #endregion
+    //#endregion
 
     /**
      * Get a specified private frame from the list of private frames that matches the provided

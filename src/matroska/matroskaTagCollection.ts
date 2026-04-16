@@ -71,7 +71,7 @@ export default class MatroskaTagCollection extends Tag {
         this._tags = tags || [];
     }
 
-    // #region Properties
+    //#region Properties
 
     /**
      * Gets the list of attachments that are stored in the file.
@@ -97,9 +97,9 @@ export default class MatroskaTagCollection extends Tag {
         this._tags = value;
     }
 
-    // #endregion
+    //#endregion
 
-    // #region Tag Implementation
+    //#region Tag Implementation
 
     /** @inheritDoc */
     public get tagTypes(): TagTypes { return TagTypes.Matroska; }
@@ -288,9 +288,9 @@ export default class MatroskaTagCollection extends Tag {
             && this._tags.length === 0;
     }
 
-    // #endregion
+    //#endregion
 
-    // #region Methods
+    //#region Methods
 
     /** @inheritDoc */
     public clear(): void {
@@ -298,9 +298,9 @@ export default class MatroskaTagCollection extends Tag {
         this._tags.splice(0, this._tags.length);
     }
 
-    // #endregion
+    //#endregion
 
-    // #region Helper Methods
+    //#region Helper Methods
 
     /**
      * Looks for tags with the given {@paramref key} starting at the provided {@paramref level}. If
@@ -373,7 +373,7 @@ export default class MatroskaTagCollection extends Tag {
         return new FilteredTags(matchingTagValues);
     }
 
-    // #endregion
+    //#endregion
 }
 
 /**

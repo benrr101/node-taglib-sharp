@@ -45,7 +45,7 @@ export default abstract class Mpeg4Box {
         return this.initializeFromHeader(Mpeg4BoxHeader.fromType(type));
     }
 
-    // #region Properties
+    //#region Properties
 
     /**
      * Gets the MPEG-4 box type of the current instance.
@@ -101,9 +101,9 @@ export default abstract class Mpeg4Box {
      */
     public get size(): number { return this._header.totalBoxSize; }
 
-    // #endregion
+    //#endregion
 
-    // #region Public Methods
+    //#region Public Methods
 
     /**
      * Adds a specified box to the current instance.
@@ -206,7 +206,7 @@ export default abstract class Mpeg4Box {
         ArrayUtils.remove(this._children, e => boxes.includes(e));
     }
 
-    // #endregion
+    //#endregion
 
     /**
      * Loads the data of the current instance from a specified file using the internal data position and size.

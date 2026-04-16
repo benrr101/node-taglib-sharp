@@ -20,7 +20,7 @@ export default class OggTag extends CombinedTag {
         this._comments = comments;
     }
 
-    // #region Methods
+    //#region Methods
 
     /**
      * Gets the list of comments in the current instance, in the order they were added.
@@ -70,9 +70,9 @@ export default class OggTag extends CombinedTag {
         this._comments.set(streamSerialNumber, comment);
     }
 
-    // #endregion
+    //#endregion
 
-    // #region Tag Implementation
+    //#region Tag Implementation
 
     /** @inheritDoc */
     // TODO: This value is never updated after a save!!
@@ -101,5 +101,5 @@ export default class OggTag extends CombinedTag {
         /* no-op */
     }
 
-    // #endregion
+    //#endregion
 }

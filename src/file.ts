@@ -83,7 +83,7 @@ export type FileTypeConstructor = new (abstraction: IFileAbstraction, style: Rea
  *     detects the appropriate class from the file extension or provided MimeType.
  */
 export abstract class File implements IDisposable {
-    // #region Member Variables
+    //#region Member Variables
 
     private static readonly BUFFER_SIZE: number = 1024;
     private static _fileTypes: {[mimeType: string]: FileTypeConstructor} = {};
@@ -97,7 +97,7 @@ export abstract class File implements IDisposable {
     private _corruptionReasons: string[] = [];
     private _mimeType: string;
 
-    // #endregion
+    //#endregion
 
     protected constructor(file: IFileAbstraction | string) {
         Guards.truthy(file, "file");
@@ -167,7 +167,7 @@ export abstract class File implements IDisposable {
         return new fileType(abstraction, propertiesStyle);
     }
 
-    // #region Properties
+    //#region Properties
 
     /**
      * Gets the buffer size to use when reading large blocks of data
@@ -297,9 +297,9 @@ export abstract class File implements IDisposable {
      */
     protected set tagTypesOnDisk(value: TagTypes) { this._tagTypesOnDisk = value; }
 
-    // #endregion
+    //#endregion
 
-    // #region Public Methods
+    //#region Public Methods
 
     /**
      * Registers the constructor for a subclass of {@link File} with the MimeType it is associated
@@ -670,9 +670,9 @@ export abstract class File implements IDisposable {
         this._fileStream.write(data, 0, data.length);
     }
 
-    // #endregion
+    //#endregion
 
-    // #region Protected / Private Helpers
+    //#region Protected / Private Helpers
 
     /**
      * Prepares to save the file. This must be called at the beginning of every File.save() method.
@@ -700,5 +700,5 @@ export abstract class File implements IDisposable {
         this.mode = oldMode;
     }
 
-    // #endregion
+    //#endregion
 }

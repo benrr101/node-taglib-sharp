@@ -17,7 +17,7 @@ export default class PaddingObject extends BaseObject {
 
     private _size: number;
 
-    // #region Constructors
+    //#region Constructors
 
     private constructor() {
         super();
@@ -55,9 +55,9 @@ export default class PaddingObject extends BaseObject {
         return instance;
     }
 
-    // #endregion
+    //#endregion
 
-    // #region Properties
+    //#region Properties
 
     /** @inheritDoc */
     public get objectType(): ObjectType { return ObjectType.PaddingObject; }
@@ -77,7 +77,7 @@ export default class PaddingObject extends BaseObject {
         this._size = value;
     }
 
-    // #endregion
+    //#endregion
 
     /** @inheritDoc */
     public render(): ByteVector {

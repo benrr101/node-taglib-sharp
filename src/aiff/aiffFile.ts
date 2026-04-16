@@ -12,7 +12,7 @@ import {NumberUtils} from "../utils";
 
 export default class AiffFile extends File {
 
-    // #region Constants
+    //#region Constants
 
     /**
      * Identifier used to recognize an AIFF form type.
@@ -40,7 +40,7 @@ export default class AiffFile extends File {
      */
     public static readonly SOUND_IDENTIFIER = ByteVector.fromString("SSND", StringType.UTF8).makeReadOnly();
 
-    // #endregion
+    //#endregion
 
     private _headerBlock: ByteVector;
     private _properties: Properties;
@@ -71,7 +71,7 @@ export default class AiffFile extends File {
         }
     }
 
-    // #region Properties
+    //#region Properties
 
     /** @inheritDoc */
     public get properties(): Properties { return this._properties; }
@@ -79,9 +79,9 @@ export default class AiffFile extends File {
     /** @inheritDoc */
     public get tag(): Tag { return this._tag; }
 
-    // #endregion
+    //#endregion
 
-    // #region Public Methods
+    //#region Public Methods
 
     /** @inheritDoc */
     public getTag(type: TagTypes, create: boolean): Tag {
@@ -152,9 +152,9 @@ export default class AiffFile extends File {
         }
     }
 
-    // #endregion
+    //#endregion
 
-    // #region Private Helpers
+    //#region Private Helpers
 
     private findChunk(chunkName: ByteVector, startPos: number): number {
         const initialPosition = this.position;
@@ -243,7 +243,7 @@ export default class AiffFile extends File {
         };
     }
 
-    // #endregion
+    //#endregion
 }
 
 // /////////////////////////////////////////////////////////////////////////

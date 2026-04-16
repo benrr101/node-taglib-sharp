@@ -131,7 +131,11 @@ module.exports = {
         "prefer-arrow/prefer-arrow-functions": "error",
         "prefer-const": "error",
         "radix": "error",
-        "spaced-comment": [ "error", "always" ],
+        "spaced-comment": [
+            "error",
+            "always",
+            { "line": { "markers": ["#region", "#endregion"] } }
+        ],
         "use-isnan": "error",
         "valid-typeof": "error"
     }

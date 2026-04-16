@@ -55,7 +55,7 @@ export default class HeaderObject extends BaseObject {
         return instance;
     }
 
-    // #region Properties
+    //#region Properties
 
     /**
      * Gets that child objects of this instance.
@@ -118,9 +118,9 @@ export default class HeaderObject extends BaseObject {
         return this._properties;
     }
 
-    // #endregion
+    //#endregion
 
-    // #region Methods
+    //#region Methods
 
     /**
      * Adds a unique child object to the current instance, replacing an existing child if present.
@@ -235,5 +235,5 @@ export default class HeaderObject extends BaseObject {
         return objects;
     }
 
-    // #endregion
+    //#endregion
 }

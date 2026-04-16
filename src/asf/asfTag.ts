@@ -23,7 +23,7 @@ export default class AsfTag extends Tag {
 
     private static readonly GENRE_REGEX = new RegExp(/\((\d+)\)/);
 
-    // #region Constructors
+    //#region Constructors
 
     private constructor() {
         super();
@@ -65,9 +65,9 @@ export default class AsfTag extends Tag {
         return instance;
     }
 
-    // #endregion
+    //#endregion
 
-    // #region Properties
+    //#region Properties
 
     /**
      * Gets the ASF content description object used by the current instance.
@@ -86,9 +86,9 @@ export default class AsfTag extends Tag {
      */
     public get metadataLibraryObject(): MetadataLibraryObject { return this._metadataLibraryObject; }
 
-    // #endregion
+    //#endregion
 
-    // #region Tag Properties
+    //#region Tag Properties
 
     /** @inheritDoc */
     public get tagTypes(): TagTypes { return TagTypes.Asf; }
@@ -799,9 +799,9 @@ export default class AsfTag extends Tag {
         return this._contentDescriptionObject.isEmpty && this._extendedDescriptionObject.isEmpty;
     }
 
-    // #endregion
+    //#endregion
 
-    // #region Methods
+    //#region Methods
 
     /**
      * Adds a descriptor to the current instance's extended content description object.
@@ -1008,5 +1008,5 @@ export default class AsfTag extends Tag {
             : str.split(";").map((s) => s.trim());
     }
 
-    // #endregion
+    //#endregion
 }

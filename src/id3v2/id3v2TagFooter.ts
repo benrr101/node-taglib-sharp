@@ -77,7 +77,7 @@ export default class Id3v2TagFooter {
         return footer;
     }
 
-    // #region Properties
+    //#region Properties
 
     /**
      * Gets the complete size of the tag described by the current instance including the header
@@ -167,7 +167,7 @@ export default class Id3v2TagFooter {
         this._tagSize = value;
     }
 
-    // #endregion
+    //#endregion
 
     /**
      * Renders the current instance as a raw byte vector.

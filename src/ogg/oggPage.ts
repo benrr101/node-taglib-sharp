@@ -7,7 +7,7 @@ export default class OggPage {
     private readonly _header: OggPageHeader;
     private readonly _packets: ByteVector[];
 
-    // #region Constructors
+    //#region Constructors
 
     private constructor(header: OggPageHeader) {
         this._header = header;
@@ -50,9 +50,9 @@ export default class OggPage {
         return page;
     }
 
-    // #endregion
+    //#endregion
 
-    // #region Properties
+    //#region Properties
 
     /**
      * Gets the header of the current instance.
@@ -69,7 +69,7 @@ export default class OggPage {
      */
     public get size(): number { return this._header.size + this._header.dataSize; }
 
-    // #endregion
+    //#endregion
 
     /**
      * Overwrites all page headers in a file starting at a specified position, shifting the page

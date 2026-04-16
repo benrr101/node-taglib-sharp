@@ -34,7 +34,7 @@ export class Track implements ICodec {
     private readonly _trackUid: bigint;
     private readonly _type: number;
 
-    // #region Constructors
+    //#region Constructors
 
     /**
      * Constructor for a generic {@link Track} object. Not intended to be called from outside the
@@ -68,9 +68,9 @@ export class Track implements ICodec {
         }
     }
 
-    // #endregion
+    //#endregion
 
-    // #region Properties
+    //#region Properties
 
     /**
      * An ID corresponding to the codec see
@@ -170,5 +170,5 @@ export class Track implements ICodec {
      */
     public get type(): MatroskaTrackType { return this._type; }
 
-    // #endregion
+    //#endregion
 }

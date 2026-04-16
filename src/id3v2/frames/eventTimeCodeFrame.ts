@@ -82,7 +82,7 @@ export class EventTimeCodeFrame extends Frame {
     private _events: EventTimeCode[] = [];
     private _timestampFormat: TimestampFormat = TimestampFormat.Unknown;
 
-    // #region Constructors
+    //#region Constructors
 
     private constructor(header: Id3v2FrameHeader) {
         super(header);
@@ -133,9 +133,9 @@ export class EventTimeCodeFrame extends Frame {
         return frame;
     }
 
-    // #endregion
+    //#endregion
 
-    // #region Properties
+    //#region Properties
 
     /** @inheritDoc */
     public get frameClassType(): FrameClassType { return FrameClassType.EventTimeCodeFrame; }
@@ -159,9 +159,9 @@ export class EventTimeCodeFrame extends Frame {
      */
     public set timestampFormat(value: TimestampFormat) { this._timestampFormat = value; }
 
-    // #endregion
+    //#endregion
 
-    // #region Methods
+    //#region Methods
 
     /** @inheritDoc */
     public clone(): Frame {
@@ -203,5 +203,5 @@ export class EventTimeCodeFrame extends Frame {
         );
     }
 
-    // #endregion
+    //#endregion
 }

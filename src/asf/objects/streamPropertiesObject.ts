@@ -24,7 +24,7 @@ export default class StreamPropertiesObject extends BaseObject {
     private _timeOffset: bigint;
     private _typeSpecificData: ByteVector;
 
-    // #region Constructors
+    //#region Constructors
 
     private constructor() {
         super();
@@ -63,9 +63,9 @@ export default class StreamPropertiesObject extends BaseObject {
         return instance;
     }
 
-    // #endregion
+    //#endregion
 
-    // #region Public Properties
+    //#region Public Properties
 
     /**
      * Gets the codec information contained in the current instance.
@@ -134,7 +134,7 @@ export default class StreamPropertiesObject extends BaseObject {
      */
     public get typeSpecificData(): ByteVector { return this._typeSpecificData; }
 
-    // #endregion
+    //#endregion
 
     /** @inheritDoc */
     public render(): ByteVector {

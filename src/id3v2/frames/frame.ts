@@ -102,15 +102,15 @@ export enum FrameClassType {
  * an ID3v2 tag. There are various types of frames that store differently structured information.
  */
 export abstract class Frame {
-    // #region Member Variables
+    //#region Member Variables
 
     private _encryptionId: number;
     private _header: Id3v2FrameHeader;
     private _groupId: number;
 
-    // #endregion
+    //#endregion
 
-    // #region Constructors
+    //#region Constructors
 
     /**
      * Constructs and initializes a new instance with a frame header.
@@ -121,9 +121,9 @@ export abstract class Frame {
         this._header = header;
     }
 
-    // #endregion Constructors
+    //#endregion Constructors
 
-    // #region Properties
+    //#region Properties
 
     /**
      * Gets the encryption ID applied to the current instance.
@@ -219,7 +219,7 @@ export abstract class Frame {
      */
     public get size(): number { return this._header.frameSize; }
 
-    // #endregion
+    //#endregion
 
     /**
      * Creates a deep copy of the current instance.
@@ -299,7 +299,7 @@ export abstract class Frame {
         );
     }
 
-    // #region Protected Methods
+    //#region Protected Methods
 
     /**
      * Converts an encoding to be a supported encoding for a specified tag version.
@@ -416,5 +416,5 @@ export abstract class Frame {
         this.parseFields(this.fieldData(data, offset, version, true), version);
     }
 
-    // #endregion
+    //#endregion
 }

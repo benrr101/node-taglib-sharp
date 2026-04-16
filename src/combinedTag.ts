@@ -25,7 +25,7 @@ export default abstract class CombinedTag extends Tag {
         this._writeToAll = writeToAllTags;
     }
 
-    // #region Properties
+    //#region Properties
 
     /**
      * Gets all tags contained within the current instance. If the tags within this tag are also
@@ -314,7 +314,7 @@ export default abstract class CombinedTag extends Tag {
         return this._tags.every((t) => t.isEmpty);
     }
 
-    // #endregion
+    //#endregion
 
     /**
      * @inheritDoc
@@ -380,7 +380,7 @@ export default abstract class CombinedTag extends Tag {
         }
     }
 
-    // #region Protected/Private Methods
+    //#region Protected/Private Methods
 
     /**
      * Adds the provided tag to the list of tags contained in the current instance.
@@ -472,5 +472,5 @@ export default abstract class CombinedTag extends Tag {
         return value === defaultValue;
     }
 
-    // #endregion
+    //#endregion
 }

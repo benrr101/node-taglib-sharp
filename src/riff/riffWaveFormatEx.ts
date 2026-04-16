@@ -315,7 +315,7 @@ export default class RiffWaveFormatEx implements ILosslessAudioCodec {
         this._bitsPerSample = data.subarray(14, 2).toUshort(false);
     }
 
-    // #region Properties
+    //#region Properties
 
     /** @inheritDoc */
     public get audioBitrate(): number { return this.averageBytesPerSecond * 8 / 1000; }
@@ -383,5 +383,5 @@ export default class RiffWaveFormatEx implements ILosslessAudioCodec {
         return MediaTypes.LosslessAudio;
     }
 
-    // #endregion
+    //#endregion
 }

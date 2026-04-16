@@ -39,7 +39,7 @@ export default class MpegVideoHeader implements IVideoCodec {
         this._videoBitrate = NumberUtils.uintAnd(NumberUtils.uintRShift(data.subarray(4, 3).toUint(), 6), 0x3FFFF);
     }
 
-    // #region
+    //#region
 
     /** @inheritDoc */
     public get description(): string { return "MPEG Video"; }
@@ -68,5 +68,5 @@ export default class MpegVideoHeader implements IVideoCodec {
     /** @inheritDoc */
     public get videoWidth(): number { return this._videoWidth; }
 
-    // #endregion
+    //#endregion
 }

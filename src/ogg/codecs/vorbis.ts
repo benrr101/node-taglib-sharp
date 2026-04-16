@@ -51,7 +51,7 @@ export default class Vorbis implements IOggCodec, IAudioCodec {
         this._bitrateMinimum = headerPacket.subarray(24, 4).toInt(false);
     }
 
-    // #region Properties
+    //#region Properties
 
     /**
      * @inheritDoc
@@ -86,9 +86,9 @@ export default class Vorbis implements IOggCodec, IAudioCodec {
     /** @inheritDoc */
     public get mediaTypes(): MediaTypes { return MediaTypes.Audio; }
 
-    // #endregion
+    //#endregion
 
-    // #region Methods
+    //#region Methods
 
     /**
      * Determines if a packet is a Vorbis header packet.
@@ -149,5 +149,5 @@ export default class Vorbis implements IOggCodec, IAudioCodec {
         }
     }
 
-    // #endregion
+    //#endregion
 }

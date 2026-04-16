@@ -59,7 +59,7 @@ export class FlacBlock implements ILazy {
     private _isLastBlock: boolean;
     private _type: FlacBlockType;
 
-    // #region Constructors
+    //#region Constructors
 
     private constructor() { /* private to enforce creation via static constructors */ }
 
@@ -110,9 +110,9 @@ export class FlacBlock implements ILazy {
         return block;
     }
 
-    // #endregion
+    //#endregion
 
-    // #region Properties
+    //#region Properties
 
     /**
      * Offset into the file where the block begins. This is `undefined` if the instance is
@@ -167,9 +167,9 @@ export class FlacBlock implements ILazy {
      */
     public get type(): FlacBlockType { return this._type; }
 
-    // #endregion
+    //#endregion
 
-    // #region Methods
+    //#region Methods
 
     /** @inheritDoc */
     public load(): void {
@@ -211,5 +211,5 @@ export class FlacBlock implements ILazy {
         );
     }
 
-    // #endregion
+    //#endregion
 }

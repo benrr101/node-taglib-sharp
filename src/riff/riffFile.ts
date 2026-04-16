@@ -82,7 +82,7 @@ export default class RiffFile extends File {
         }
     }
 
-    // #region Properties
+    //#region Properties
 
     /** @inheritDoc */
     public get properties(): Properties { return this._properties; }
@@ -90,9 +90,9 @@ export default class RiffFile extends File {
     /** @inheritDoc */
     public get tag(): Tag { return this._tag; }
 
-    // #endregion
+    //#endregion
 
-    // #region Methods
+    //#region Methods
 
     /** @inheritDoc */
     public getTag(type: TagTypes, create: boolean): Tag {
@@ -433,7 +433,7 @@ export default class RiffFile extends File {
         );
     }
 
-    // #endregion
+    //#endregion
 }
 
 // /////////////////////////////////////////////////////////////////////////

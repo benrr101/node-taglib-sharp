@@ -35,7 +35,7 @@ export default class StartTag extends CombinedTag {
         this.read(file, readStyle);
     }
 
-    // #region Public Methods
+    //#region Public Methods
 
     /** @inheritDoc */
     public createTag(type: TagTypes, copy: boolean): Tag {
@@ -73,7 +73,7 @@ export default class StartTag extends CombinedTag {
         return ByteVector.concatenate(... tagData);
     }
 
-    // #endregion
+    //#endregion
 
     /**
      * Reads the tags stored at the start of the file into the current instance.

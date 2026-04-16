@@ -41,7 +41,7 @@ export default class AsfFile extends File {
 
     // @TODO: Add access to the header object
 
-    // #region Methods
+    //#region Methods
 
     /** @inheritDoc */
     public getTag(type: TagTypes): Tag {
@@ -84,7 +84,7 @@ export default class AsfFile extends File {
         }
     }
 
-    // #endregion
+    //#endregion
 }
 
 // /////////////////////////////////////////////////////////////////////////

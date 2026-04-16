@@ -125,7 +125,7 @@ export abstract class DescriptorBase {
         }
     }
 
-    // #region Properties
+    //#region Properties
 
     /**
      * Gets the name of the current instance.
@@ -216,5 +216,5 @@ export abstract class DescriptorBase {
         return undefined;
     }
 
-    // #endregion
+    //#endregion
 }

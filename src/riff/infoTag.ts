@@ -12,7 +12,7 @@ export default class InfoTag extends RiffListTag {
      */
     public static readonly LIST_TYPE = "INFO";
 
-    // #region Constructors
+    //#region Constructors
 
     private constructor(list: RiffList) {
         super(list);
@@ -35,9 +35,9 @@ export default class InfoTag extends RiffListTag {
         return new InfoTag(list);
     }
 
-    // #endregion
+    //#endregion
 
-    // #region Properties
+    //#region Properties
 
     /** @inheritDoc */
     public get tagTypes(): TagTypes { return TagTypes.RiffInfo; }
@@ -203,5 +203,5 @@ export default class InfoTag extends RiffListTag {
      */
     public set copyright(value: string) { this.setValuesFromStrings("ICOP", value ? [value] : undefined); }
 
-    // #endregion
+    //#endregion
 }

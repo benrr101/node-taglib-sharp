@@ -45,7 +45,7 @@ export default class SandwichTag extends CombinedTag {
         this.addTag(this._endTag);
     }
 
-    // #region Properties
+    //#region Properties
 
     /**
      * Gets the collection of tags appearing at the end of the file.
@@ -57,7 +57,7 @@ export default class SandwichTag extends CombinedTag {
      */
     public get startTag(): StartTag { return this._startTag; }
 
-    // #endregion
+    //#endregion
 
     /** @inheritDoc */
     public createTag(tagType: TagTypes, copy: boolean): Tag {

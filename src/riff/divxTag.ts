@@ -30,7 +30,7 @@ export default class DivxTag extends Tag {
     private _title: string = "";
     private _year: string = "";
 
-    // #region Constructors
+    //#region Constructors
 
     private constructor() {
         super();
@@ -68,9 +68,9 @@ export default class DivxTag extends Tag {
         return new DivxTag();
     }
 
-    // #endregion
+    //#endregion
 
-    // #region Properties
+    //#region Properties
 
     /** @inheritDoc */
     public get tagTypes(): TagTypes { return TagTypes.DivX; }
@@ -127,9 +127,9 @@ export default class DivxTag extends Tag {
             : "";
     }
 
-    // #endregion
+    //#endregion
 
-    // #region Methods
+    //#region Methods
 
     /** @inheritDoc */
     public clear(): void {
@@ -156,5 +156,5 @@ export default class DivxTag extends Tag {
         );
     }
 
-    // #endregion
+    //#endregion
 }

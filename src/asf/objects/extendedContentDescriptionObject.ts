@@ -17,7 +17,7 @@ import {Guards} from "../../utils";
  */
 export class ContentDescriptor extends DescriptorBase {
 
-    // #region Constructors
+    //#region Constructors
 
     public constructor(name: string, type: DataType, value: DescriptorValue) {
         super (name, type, value);
@@ -68,7 +68,7 @@ export class ContentDescriptor extends DescriptorBase {
         return new ContentDescriptor(name, type, value);
     }
 
-    // #endregion
+    //#endregion
 
     /** @inheritDoc */
     public render(): ByteVector {
@@ -116,7 +116,7 @@ export class ContentDescriptor extends DescriptorBase {
 export class ExtendedContentDescriptionObject extends BaseObject {
     private _descriptors: ContentDescriptor[] = [];
 
-    // #region Constructors
+    //#region Constructors
 
     private constructor() {
         super();
@@ -157,9 +157,9 @@ export class ExtendedContentDescriptionObject extends BaseObject {
         return instance;
     }
 
-    // #endregion
+    //#endregion
 
-    // #region properties
+    //#region properties
 
     /**
      * Gets all descriptors stored in the current instance.
@@ -177,9 +177,9 @@ export class ExtendedContentDescriptionObject extends BaseObject {
     /** @inheritDoc */
     public get objectType(): ObjectType { return ObjectType.ExtendedContentDescriptionObject; }
 
-    // #endregion
+    //#endregion
 
-    // #region Methods
+    //#region Methods
 
     /**
      * Adds a descriptor to the current instance.
@@ -261,5 +261,5 @@ export class ExtendedContentDescriptionObject extends BaseObject {
         this._descriptors.splice(position, 0, ... descriptors);
     }
 
-    // #endregion
+    //#endregion
 }

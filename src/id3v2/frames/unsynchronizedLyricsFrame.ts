@@ -15,7 +15,7 @@ export default class UnsynchronizedLyricsFrame extends Frame {
     private _text: string;
     private _textEncoding: StringType = Id3v2Settings.defaultEncoding;
 
-    // #region Constructors
+    //#region Constructors
 
     private constructor(header: Id3v2FrameHeader) {
         super(header);
@@ -64,9 +64,9 @@ export default class UnsynchronizedLyricsFrame extends Frame {
         return frame;
     }
 
-    // #endregion
+    //#endregion
 
-    // #region Properties
+    //#region Properties
 
     /** @inheritDoc */
     public get frameClassType(): FrameClassType { return FrameClassType.UnsynchronizedLyricsFrame; }
@@ -108,9 +108,9 @@ export default class UnsynchronizedLyricsFrame extends Frame {
      */
     public set textEncoding(value: StringType) { this._textEncoding = value; }
 
-    // #endregion
+    //#endregion
 
-    // #region Public Methods
+    //#region Public Methods
 
     /**
      * Gets the first unsynchronized lyrics frame from a list of frames that matches the provided

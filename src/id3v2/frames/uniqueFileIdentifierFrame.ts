@@ -11,7 +11,7 @@ export default class UniqueFileIdentifierFrame extends Frame {
     private _identifier: ByteVector;
     private _owner: string;
 
-    // #region Constructors
+    //#region Constructors
 
     private constructor(header: Id3v2FrameHeader) {
         super(header);
@@ -59,9 +59,9 @@ export default class UniqueFileIdentifierFrame extends Frame {
         return frame;
     }
 
-    // #endregion
+    //#endregion
 
-    // #region Properties
+    //#region Properties
 
     /** @inheritDoc */
     public get frameClassType(): FrameClassType { return FrameClassType.UniqueFileIdentifierFrame; }
@@ -86,9 +86,9 @@ export default class UniqueFileIdentifierFrame extends Frame {
         this._identifier = value;
     }
 
-    // #endregion
+    //#endregion
 
-    // #region Methods
+    //#region Methods
 
     /**
      * Gets a unique file identifier frame from a list of frames
@@ -129,5 +129,5 @@ export default class UniqueFileIdentifierFrame extends Frame {
         );
     }
 
-    // #endregion
+    //#endregion
 }

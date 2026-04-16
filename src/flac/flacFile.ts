@@ -83,7 +83,7 @@ export default class FlacFile extends File implements ISandwichFile {
         }
     }
 
-    // #region Properties
+    //#region Properties
 
     public get mediaEndPosition(): number { return this._mediaEndPosition; }
 
@@ -93,9 +93,9 @@ export default class FlacFile extends File implements ISandwichFile {
 
     public get tag(): FlacTag { return this._tag; }
 
-    // #endregion
+    //#endregion
 
-    // #region Methods
+    //#region Methods
 
     /** @inheritDoc */
     public getTag(type: TagTypes, create: boolean): Tag {
@@ -265,7 +265,7 @@ export default class FlacFile extends File implements ISandwichFile {
         );
     }
 
-    // #endregion
+    //#endregion
 }
 
 // /////////////////////////////////////////////////////////////////////////

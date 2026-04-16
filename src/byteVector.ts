@@ -148,7 +148,7 @@ export class Encoding {
  */
 export class ByteVector {
 
-    // #region Members
+    //#region Members
 
     private static readonly CRC_TABLE: Uint32Array = new Uint32Array([
         0x00000000, 0x04c11db7, 0x09823b6e, 0x0d4326d9,
@@ -230,9 +230,9 @@ export class ByteVector {
     private _bytes: Uint8Array;
     private _isReadOnly: boolean = false;
 
-    // #endregion
+    //#endregion
 
-    // #region Constructors
+    //#region Constructors
 
     private constructor(bytes: Uint8Array) {
         this._bytes = bytes;
@@ -600,9 +600,9 @@ export class ByteVector {
         return new ByteVector(bytes);
     }
 
-    // #endregion
+    //#endregion
 
-    // #region Properties
+    //#region Properties
 
     /**
      * Calculates the CRC32 of the current instance.
@@ -639,9 +639,9 @@ export class ByteVector {
      */
     public get length(): number { return this._bytes.length; }
 
-    // #endregion
+    //#endregion
 
-    // #region Static Methods
+    //#region Static Methods
 
     /**
      * Gets the appropriate length null-byte text delimiter for the specified `type`.
@@ -697,9 +697,9 @@ export class ByteVector {
         return ByteVector.compare(first, second) === 0;
     }
 
-    // #endregion
+    //#endregion
 
-    // #region Public Methods
+    //#region Public Methods
 
     /**
      * Gets iterator for iterating over bytes in the current instance.
@@ -1282,7 +1282,7 @@ export class ByteVector {
         return dv.getUint16(0, !mostSignificantByteFirst);
     }
 
-    // #endregion
+    //#endregion
 
     private getSizedDataView(size: number, mostSignificantByteFirst: boolean): DataView {
         const difference = size - this._bytes.length;

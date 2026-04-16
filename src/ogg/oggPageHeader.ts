@@ -47,7 +47,7 @@ export class OggPageHeader {
     private _streamSerialNumber: number;
     private _version: number;
 
-    // #region Constructors
+    //#region Constructors
 
     private constructor() { /* private to enforce construction via static methods */ }
 
@@ -174,9 +174,9 @@ export class OggPageHeader {
         return header;
     }
 
-    // #endregion
+    //#endregion
 
-    // #region Properties
+    //#region Properties
 
     /**
      * Gets the absolute granular position of the page described by the current instance.
@@ -229,9 +229,9 @@ export class OggPageHeader {
      */
     public get streamSerialNumber(): number { return this._streamSerialNumber; }
 
-    // #endregion
+    //#endregion
 
-    // #region Methods
+    //#region Methods
 
     public render(): ByteVector {
         const lacingValues = this._packetSizes.reduce((accum, ps, i) => {
@@ -262,6 +262,6 @@ export class OggPageHeader {
         );
     }
 
-    // #endregion
+    //#endregion
 }
 

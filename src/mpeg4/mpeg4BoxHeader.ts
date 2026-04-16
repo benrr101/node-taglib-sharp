@@ -37,7 +37,7 @@ export default class Mpeg4BoxHeader {
      */
     private _fromDisk: boolean;
 
-    // #region Constructors
+    //#region Constructors
 
     private constructor() { /* Private to enforce construction via static methods */ }
 
@@ -135,9 +135,9 @@ export default class Mpeg4BoxHeader {
         return header;
     }
 
-    // #endregion
+    //#endregion
 
-    // #region Properties
+    //#region Properties
 
     /**
      * Gets the type of box represented by the current instance.
@@ -177,7 +177,7 @@ export default class Mpeg4BoxHeader {
      */
     public get position(): number { return this._fromDisk ? this._position : -1; }
 
-    // #endregion
+    //#endregion
 
     /**
      * Overwrites the header on disk, updating it to include a change in the size of the box.

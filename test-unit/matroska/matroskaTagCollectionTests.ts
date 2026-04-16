@@ -42,7 +42,7 @@ class Matroska_TagCollectionTests {
         TagTesters.testTagProperties(collection, {});
     }
 
-    // #region Property Tests
+    //#region Property Tests
 
     @test
     public title() {
@@ -418,7 +418,7 @@ class Matroska_TagCollectionTests {
         assert.sameOrderedMembers(pictures, [picture1, picture2]);
     }
 
-    // #endregion
+    //#endregion
 
     @test
     public clear() {
@@ -436,7 +436,7 @@ class Matroska_TagCollectionTests {
         assert.isEmpty(collection.tags);
     }
 
-    // #region Private Helpers
+    //#region Private Helpers
 
     private testNumberTag(
         propertyFunc: (c: MatroskaTagCollection) => number,
@@ -597,5 +597,5 @@ class Matroska_TagCollectionTests {
         }
     }
 
-    // #endregion
+    //#endregion
 }

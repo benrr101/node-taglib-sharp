@@ -21,7 +21,7 @@ export default class MatroskaAttachment implements IPicture, ILazy {
     private _type: PictureType;
     private _uid: bigint;
 
-    // #region Constructors
+    //#region Constructors
 
     private constructor() { /* private to enforce construction via static methods */ }
 
@@ -109,9 +109,9 @@ export default class MatroskaAttachment implements IPicture, ILazy {
         return attachment;
     }
 
-    // #endregion
+    //#endregion
 
-    // #region Properties
+    //#region Properties
 
     /** @inheritDoc */
     public get data(): ByteVector {
@@ -199,7 +199,7 @@ export default class MatroskaAttachment implements IPicture, ILazy {
         return this._uid;
     }
 
-    // #endregion
+    //#endregion
 
     /** @inheritDoc */
     load(): void {

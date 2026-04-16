@@ -155,7 +155,7 @@ export interface IPicture {
  * This class implements {@link IPicture} and provides a mechanism for loading pictures from files.
  */
 export class Picture implements IPicture {
-    // #region Constants
+    //#region Constants
 
     // @TODO: Just do this as a friggin dictionary
     private static readonly EXTENSION_TO_MIMETYPES: string[] = [
@@ -236,9 +236,9 @@ export class Picture implements IPicture {
         "7z", "application/x-7z-compressed", // 7-zip archive
     ];
 
-    // #endregion
+    //#endregion
 
-    // #region Constructors
+    //#region Constructors
 
     private constructor() { /* private to enforce construction via static methods */ }
 
@@ -338,9 +338,9 @@ export class Picture implements IPicture {
         return picture;
     }
 
-    // #endregion
+    //#endregion
 
-    // #region Public Properties
+    //#region Public Properties
 
     /** @inheritDoc */
     public data: ByteVector;
@@ -359,9 +359,9 @@ export class Picture implements IPicture {
      */
     public type: PictureType;
 
-    // #endregion
+    //#endregion
 
-    // #region Public Static Methods
+    //#region Public Static Methods
 
     /**
      * Retrieve a mimetype from raw file data by reading the first few bytes of the file. Less
@@ -436,7 +436,7 @@ export class Picture implements IPicture {
         return mimeType;
     }
 
-    // #endregion
+    //#endregion
 }
 
 /**
@@ -455,7 +455,7 @@ export class PictureLazy implements IPicture, ILazy {
     private _streamSize: number;
     private _type: PictureType;
 
-    // #region Constructors
+    //#region Constructors
 
     private constructor() { /* private to enforce construction via static methods */ }
 
@@ -530,9 +530,9 @@ export class PictureLazy implements IPicture, ILazy {
         return picture;
     }
 
-    // #endregion
+    //#endregion
 
-    // #region Properties
+    //#region Properties
 
     /** @inheritDoc */
     public get data(): ByteVector {
@@ -574,9 +574,9 @@ export class PictureLazy implements IPicture, ILazy {
     /** @inheritDoc */
     public set type(value: PictureType) { this._type = value; }
 
-    // #endregion
+    //#endregion
 
-    // #region Methods
+    //#region Methods
 
     /** @inheritDoc */
     public load(): void {
@@ -641,5 +641,5 @@ export class PictureLazy implements IPicture, ILazy {
         }
     }
 
-    // #endregion
+    //#endregion
 }

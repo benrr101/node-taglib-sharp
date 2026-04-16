@@ -18,7 +18,7 @@ export default class RiffList implements IRiffChunk, ILazy {
     private _type: string;
     private _values: Map<string, ByteVector[]> = new Map<string, ByteVector[]>();
 
-    // #region Constructors
+    //#region Constructors
 
     private constructor() { /* private to enforce construction via static methods */ }
 
@@ -62,9 +62,9 @@ export default class RiffList implements IRiffChunk, ILazy {
         return list;
     }
 
-    // #endregion
+    //#endregion
 
-    // #region Properties
+    //#region Properties
 
     /** @inheritDoc */
     public get chunkStart(): number|undefined { return this._chunkStart; }
@@ -115,9 +115,9 @@ export default class RiffList implements IRiffChunk, ILazy {
         return this._values.size;
     }
 
-    // #endregion
+    //#endregion
 
-    // #region Methods
+    //#region Methods
 
     /**
      * Determines if a given chunk is a list.
@@ -279,5 +279,5 @@ export default class RiffList implements IRiffChunk, ILazy {
         );
     }
 
-    // #endregion
+    //#endregion
 }

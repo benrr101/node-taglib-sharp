@@ -54,7 +54,7 @@ export default class AacAudioHeader implements IAudioCodec {
         this._mpeg4AudioTypeIndex = mpegAudioType;
     }
 
-    // #region Properties
+    //#region Properties
 
     /** @inheritDoc */
     public get audioBitrate(): number { return this._audioBitrate; }
@@ -92,7 +92,7 @@ export default class AacAudioHeader implements IAudioCodec {
         this._durationMilliseconds = this._streamLength * 8 / this.audioBitrate;
     }
 
-    // #endregion
+    //#endregion
 
     /**
      * Searches for an audio header in a {@link File} starting at a specified position and

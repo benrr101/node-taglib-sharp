@@ -21,7 +21,7 @@ export default class XiphComment extends Tag {
     private _sizeOnDisk: number = 0;
     private _vendorId: string;
 
-    // #region Constructors
+    //#region Constructors
 
     private constructor() {
         super();
@@ -104,9 +104,9 @@ export default class XiphComment extends Tag {
         return new XiphComment();
     }
 
-    // #endregion
+    //#endregion
 
-    // #region Xiph Comment Properties
+    //#region Xiph Comment Properties
 
     /**
      * Gets the total number of values contained in the current instance, including the pictures.
@@ -131,9 +131,9 @@ export default class XiphComment extends Tag {
      */
     public get vendorId(): string { return this._vendorId; }
 
-    // #endregion
+    //#endregion
 
-    // #region Generic Tag Properties
+    //#region Generic Tag Properties
 
     /** @inheritDoc */
     public get tagTypes(): TagTypes { return TagTypes.Xiph; }
@@ -858,9 +858,9 @@ export default class XiphComment extends Tag {
      */
     public get isEmpty(): boolean { return this.fieldValueCount === 0; }
 
-    // #endregion
+    //#endregion
 
-    // #region Public Methods
+    //#region Public Methods
 
     /** @inheritDoc */
     public clear(): void {
@@ -1036,14 +1036,14 @@ export default class XiphComment extends Tag {
         }
     }
 
-    // #endregion
+    //#endregion
 
-    // #region Private Methods
+    //#region Private Methods
 
     private static isPictureField(fieldName: string): boolean {
         return fieldName === XiphComment.OLD_PICTURE_FIELD
             || fieldName === XiphComment.NEW_PICTURE_FIELD;
     }
 
-    // #endregion
+    //#endregion
 }

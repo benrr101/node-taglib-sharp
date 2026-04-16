@@ -13,7 +13,7 @@ export default class PopularimeterFrame extends Frame {
     private _rating: number;
     private _user: string = "";
 
-    // #region Constructors
+    //#region Constructors
 
     private constructor(header: Id3v2FrameHeader) {
         super(header);
@@ -55,9 +55,9 @@ export default class PopularimeterFrame extends Frame {
         return frame;
     }
 
-    // #endregion
+    //#endregion
 
-    // #region Properties
+    //#region Properties
 
     /** @inheritDoc */
     public get frameClassType(): FrameClassType { return FrameClassType.PopularimeterFrame; }
@@ -98,7 +98,7 @@ export default class PopularimeterFrame extends Frame {
      */
     public set user(value: string) { this._user = value || ""; }
 
-    // #endregion
+    //#endregion
 
     /**
      * Gets a popularimeter frame from a specified tag that matches the given parameters

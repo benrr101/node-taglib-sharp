@@ -42,7 +42,7 @@ export class ApeTagFooter {
     private _itemSize: number = 0;
     private _version: number = 0;
 
-    // #region Constructors
+    //#region Constructors
 
     private constructor() { /* empty to enforce static construction */ }
 
@@ -85,9 +85,9 @@ export class ApeTagFooter {
         return footer;
     }
 
-    // #endregion
+    //#endregion
 
-    // #region Properties
+    //#region Properties
 
     /**
      * Gets the flags that apply to the current instance.
@@ -145,9 +145,9 @@ export class ApeTagFooter {
      */
     public get version(): number { return this._version === 0 ? 2000 : this._version; }
 
-    // #endregion
+    //#endregion
 
-    // #region Methods
+    //#region Methods
 
     public renderFooter(): ByteVector {
         return this.render(false);
@@ -195,5 +195,5 @@ export class ApeTagFooter {
         return v;
     }
 
-    // #endregion
+    //#endregion
 }

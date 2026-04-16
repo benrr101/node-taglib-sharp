@@ -17,7 +17,7 @@ export default class ContentDescriptionObject extends BaseObject {
     private _rating: string = "";
     private _title: string = "";
 
-    // #region Constructors
+    //#region Constructors
 
     private constructor() {
         super();
@@ -64,9 +64,9 @@ export default class ContentDescriptionObject extends BaseObject {
         return instance;
     }
 
-    // #endregion
+    //#endregion
 
-    // #region Properties
+    //#region Properties
 
     /**
      * Gets the author of the media described by the current instance.
@@ -133,7 +133,7 @@ export default class ContentDescriptionObject extends BaseObject {
      */
     public set title(value: string) { this._title = value ?? ""; }
 
-    // #endregion
+    //#endregion
 
     /**
      * Renders the current instance as a raw ASF object.

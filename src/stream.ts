@@ -96,7 +96,7 @@ export class Stream implements IStream {
     private _length: number;
     private _position: number;
 
-    // #region Constructors
+    //#region Constructors
 
     private constructor(fd: number, canWrite: boolean) {
         this._canWrite = canWrite;
@@ -115,9 +115,9 @@ export class Stream implements IStream {
         return new Stream(fd, true);
     }
 
-    // #endregion
+    //#endregion
 
-    // #region Properties
+    //#region Properties
 
     /** @inheritDoc */
     public get canWrite(): boolean { return this._canWrite; }
@@ -133,9 +133,9 @@ export class Stream implements IStream {
         this._position = position;
     }
 
-    // #endregion
+    //#endregion
 
-    // #region Public Methods
+    //#region Public Methods
 
     /** @inheritDoc */
     public close(): void {
@@ -206,5 +206,5 @@ export class Stream implements IStream {
         return bytes;
     }
 
-    // #endregion
+    //#endregion
 }

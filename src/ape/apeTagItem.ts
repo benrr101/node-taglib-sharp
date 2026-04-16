@@ -33,7 +33,7 @@ export class ApeTagItem {
     private _text: string[];
     private _type: ApeTagItemType = ApeTagItemType.Text;
 
-    // #region Constructors
+    //#region Constructors
 
     private constructor() { /* empty to enforce static construction */ }
 
@@ -118,9 +118,9 @@ export class ApeTagItem {
         return item;
     }
 
-    // #endregion
+    //#endregion
 
-    // #region Properties
+    //#region Properties
 
     /**
      * Gets whether the current instance is empty.
@@ -173,9 +173,9 @@ export class ApeTagItem {
      */
     public get value(): ByteVector { return this._type === ApeTagItemType.Binary ? this._data : undefined; }
 
-    // #endregion
+    //#endregion
 
-    // #region Methods
+    //#region Methods
 
     /**
      * Creates a deep copy of the current instance.
@@ -246,5 +246,5 @@ export class ApeTagItem {
             : this._text.join(", ");
     }
 
-    // #endregion
+    //#endregion
 }
