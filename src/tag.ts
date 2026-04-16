@@ -139,7 +139,7 @@ export abstract class Tag {
      *     Title of the media described by the current instance or `undefined` if no value is
      *     present.
      */
-    public get title(): string { return undefined; }
+    public get title(): string|undefined { return undefined; }
     /**
      * Sets the title for the media described by the current instance.
      *
@@ -150,7 +150,7 @@ export abstract class Tag {
      * @param value Title of the media described by the current instance or `undefined` if no value
      *     is present.
      */
-    public set title(value: string) { /* no-op in abstract case */ }
+    public set title(value: string|undefined) { /* no-op in abstract case */ }
 
     /**
      * Gets the sortable name for the title of the media described by the current instance.
@@ -161,7 +161,7 @@ export abstract class Tag {
      *     Sortable name of the media described by the current instance or `undefined` if no
      *     value is present
      */
-    public get titleSort(): string { return undefined; }
+    public get titleSort(): string|undefined { return undefined; }
     /**
      * Sets the sortable name for the title of the media described by the current instance.
      *
@@ -170,7 +170,7 @@ export abstract class Tag {
      * @param value Sortable name of the media described by the current instance or `undefined` if
      *     no value is present
      */
-    public set titleSort(value: string) { /* no-op in abstract case */ }
+    public set titleSort(value: string|undefined) { /* no-op in abstract case */ }
 
     /**
      * Gets a description, one-line. It represents the tagline of the vide/music.
@@ -183,7 +183,7 @@ export abstract class Tag {
      *     Subtitle of the media represented by the current instance or `undefined` if no
      *     value is present
      */
-    public get subtitle(): string { return undefined; }
+    public get subtitle(): string|undefined { return undefined; }
     /**
      * Sets a description, one-line. It represents the tagline of the vide/music.
      *
@@ -194,7 +194,7 @@ export abstract class Tag {
      * @param value Subtitle of the media represented by the current instance or `undefined` if no
      *     value is present
      */
-    public set subtitle(value: string) { /* no-op in abstract case */ }
+    public set subtitle(value: string|undefined) { /* no-op in abstract case */ }
 
     /**
      * Gets a short description of the media. For music, this could be the comment that the artist
@@ -209,7 +209,7 @@ export abstract class Tag {
      *     Description of the media represented by the current instance or `undefined` if no
      *     value is present
      */
-    public get description(): string { return undefined; }
+    public get description(): string|undefined { return undefined; }
     /**
      * Sets a short description of the media. For music, this could be the comment that the artist
      * made of his/her work. For a video, this should be a short summary of the story/plot, but
@@ -222,7 +222,7 @@ export abstract class Tag {
      * @param value Description of the media represented by the current instance or `undefined` if
      *     no value is present
      */
-    public set description(value: string) { /* no-op in abstract case */ }
+    public set description(value: string|undefined) { /* no-op in abstract case */ }
 
     /**
      * Gets the performers or artists who performed in the media described by the current instance.
@@ -296,7 +296,7 @@ export abstract class Tag {
      *     Array containing the roles played by the performers in the media described by the
      *     current instance, or an empty array if no value is present.
      */
-    public get performersRole(): string[] { return[]; }
+    public get performersRole(): string[] { return []; }
     /**
      * Sets the characters portrayed by an actor for a video or instruments played by a musician
      * for music. This must match the {@link performers} array (for each person, correspond one/more
@@ -329,7 +329,7 @@ export abstract class Tag {
      *     containing the media described by the current instance or an empty array if no value is
      *     present
      */
-    public get albumArtists(): string[] { return[]; }
+    public get albumArtists(): string[] { return []; }
     /**
      * Sets the bands or artists who are credited in the creation of the entire album or
      * collection containing the media described by the current instance.
@@ -365,7 +365,7 @@ export abstract class Tag {
      *     album or collection containing the media described by the current instance, or an empty
      *     array if no value is present.
      */
-    public get albumArtistsSort(): string[] { return[]; }
+    public get albumArtistsSort(): string[] { return []; }
     /**
      * Sets the sortable names of the bands/artists who are credited with creating the entire
      * album or collection containing the media described by the current instance. See also:
@@ -394,7 +394,7 @@ export abstract class Tag {
      *     Composers of the media represented by the current instance of an empty array if no
      *     value is present.
      */
-    public get composers(): string[] { return[]; }
+    public get composers(): string[] { return []; }
     /**
      * Sets the composers of the media represented by the current instance.
      *
@@ -417,7 +417,7 @@ export abstract class Tag {
      *     Sortable names for the composers of the media represented by the current instance
      *     or an empty array if no value is present.
      */
-    public get composersSort(): string[] { return[]; }
+    public get composersSort(): string[] { return []; }
     /**
      * Sets the sortable names of the composers of the media represented by the current instance.
      * See also: {@link composers}
@@ -446,7 +446,7 @@ export abstract class Tag {
      *     Album of the media represented by the current instance or `undefined` if no value
      *     is present
      */
-    public get album(): string { return undefined; }
+    public get album(): string|undefined { return undefined; }
     /**
      * Sets the album of the media represented by the current instance. For video media, this
      * represents the collection the video belongs to.
@@ -462,7 +462,7 @@ export abstract class Tag {
      * @param value of the media represented by the current instance or `undefined` if no value
      *     is present
      */
-    public set album(value: string) { /* no-op in abstract case */ }
+    public set album(value: string|undefined) { /* no-op in abstract case */ }
 
     /**
      * Gets the sortable name of the album title of the media represented by the current instance.
@@ -475,7 +475,7 @@ export abstract class Tag {
      *     Sortable name for the album title of the media or `undefined` if the value is not
      *     present
      */
-    public get albumSort(): string { return undefined; }
+    public get albumSort(): string|undefined { return undefined; }
     /**
      * Sets the sortable name of the album title of the media represented by the current instance.
      * See also: {@link album}
@@ -486,7 +486,7 @@ export abstract class Tag {
      * @param value Sortable name for the album title of the media or `undefined` if the value is
      *     not present
      */
-    public set albumSort(value: string) { /* no-op in abstract case */ }
+    public set albumSort(value: string|undefined) { /* no-op in abstract case */ }
 
     /**
      * Gets a user comment on the media represented by the current instance.
@@ -501,7 +501,7 @@ export abstract class Tag {
      *     User comments on the media represented by the current instance or `undefined` if
      *     the value is not present
      */
-    public get comment(): string { return undefined; }
+    public get comment(): string|undefined { return undefined; }
     /**
      * Sets a user comment on the media represented by the current instance.
      *
@@ -514,7 +514,7 @@ export abstract class Tag {
      * @param value User comments on the media represented by the current instance or `undefined`
      *     if the value is not present
      */
-    public set comment(value: string) { /* no-op in abstract case */ }
+    public set comment(value: string|undefined) { /* no-op in abstract case */ }
 
     /**
      * Gets the genres of the media represented by the current instance.
@@ -528,7 +528,7 @@ export abstract class Tag {
      *     Genres of the media represented by the current instance or an empty array if no
      *     value is present.
      */
-    public get genres(): string[] { return undefined; }
+    public get genres(): string[] { return []; }
     /**
      * Sets the genres of the media represented by the current instance.
      *
@@ -554,6 +554,7 @@ export abstract class Tag {
      *     Year that the media represented by the current instance was created or `0` if no
      *     value is present.
      */
+    // @TODO: Return undefined if no value is present.
     public get year(): number { return 0; }
     /**
      * Sets the year that the media represented by the current instance was recorded.
@@ -566,6 +567,7 @@ export abstract class Tag {
      * @param value Year that the media represented by the current instance was created or `0` if no
      *     value is present.
      */
+    // @TODO: Use undefined to remove
     public set year(value: number) { /* no-op in abstract case */ }
 
     /**
@@ -582,6 +584,7 @@ export abstract class Tag {
      *     Position of the media represented by the current instance in its containing album
      *     or `0` if not specified.
      */
+    // @TODO: Return undefined if no value
     public get track(): number { return 0; }
     /**
      * Sets the position of the media represented by the current instance in its containing album
@@ -596,6 +599,7 @@ export abstract class Tag {
      * @param value Position of the media represented by the current instance in its containing
      *     album or `0` if not specified.
      */
+    // @TODO: Use undefined to remove
     public set track(value: number) { /* no-op in abstract case */ }
 
     /**
@@ -609,6 +613,7 @@ export abstract class Tag {
      *     Number of tracks on the album or number of episodes in a series of the media
      *     represented by the current instance or `0` if not specified.
      */
+    // @TODO: Return undefined if no value
     public get trackCount(): number { return 0; }
     /**
      * Sets the number of tracks on the album or the number of episodes in a series of the media
@@ -620,6 +625,7 @@ export abstract class Tag {
      * @param value Number of tracks on the album or number of episodes in a series of the media
      *     represented by the current instance or `0` if not specified.
      */
+    // @TODO: Use undefined to remove
     public set trackCount(value: number) { /* no-op in abstract case */ }
 
     /**
@@ -634,6 +640,7 @@ export abstract class Tag {
      *     Number of the disc or season of the media represented by the current instance in a
      *     boxed set.
      */
+    // @TODO: Return undefined if no value
     public get disc(): number { return 0; }
     /**
      * Sets the number of the disc containing the media represented by the current instance in the
@@ -646,6 +653,7 @@ export abstract class Tag {
      * @param value Number of the disc or season of the media represented by the current instance
      *     in a boxed set.
      */
+    // @TODO: Use undefined to remove
     public set disc(value: number) { /* no-op in abstract case */ }
 
     /**
@@ -659,6 +667,7 @@ export abstract class Tag {
      *     Number of discs or seasons in the boxed set containing the media represented by the
      *     current instance or `0` if not specified.
      */
+    // @TODO: Return undefined if not set
     public get discCount(): number { return 0; }
     /**
      * Sets the number of discs or seasons in the boxed set containing the media represented by the
@@ -670,6 +679,7 @@ export abstract class Tag {
      * @param value Number of discs or seasons in the boxed set containing the media represented by
      *     the current instance or `0` if not specified.
      */
+    // @TODO: Use undefined to remove
     public set discCount(value: number) { /* no-op in abstract case */ }
 
     /**
@@ -684,7 +694,7 @@ export abstract class Tag {
      *     Lyrics or script of the media represented by the current instance or `undefined` if
      *     no value is present
      */
-    public get lyrics(): string { return undefined; }
+    public get lyrics(): string|undefined { return undefined; }
     /**
      * Sets the lyrics or script of the media represented by the current instance.
      *
@@ -696,7 +706,7 @@ export abstract class Tag {
      * @param value Lyrics or script of the media represented by the current instance or
      *     `undefined` if no value is present
      */
-    public set lyrics(value: string) { /* no-op in abstract case */ }
+    public set lyrics(value: string|undefined) { /* no-op in abstract case */ }
 
     /**
      * Gets the grouping on the album which the media in the current instance belongs to.
@@ -709,7 +719,7 @@ export abstract class Tag {
      *     Grouping on the album which the media in the current instance belongs to or
      *     `undefined` if no value is present.
      */
-    public get grouping(): string { return undefined; }
+    public get grouping(): string|undefined { return undefined; }
     /**
      * Sets the grouping on the album which the media in the current instance belongs to.
      *
@@ -720,7 +730,7 @@ export abstract class Tag {
      * @param value Grouping on the album which the media in the current instance belongs to or
      *     `undefined` if no value is present.
      */
-    public set grouping(value: string) { /* no-op in abstract case */ }
+    public set grouping(value: string|undefined) { /* no-op in abstract case */ }
 
     /**
      * Gets the number of beats per minute in the audio of the media represented by the current
@@ -733,6 +743,7 @@ export abstract class Tag {
      *     Beats per minute of the audio in the media represented by the current instance, or
      *     `0` if not specified
      */
+    // @TODO: Return undefined if not set
     public get beatsPerMinute(): number { return 0; }
     /**
      * Sets the number of beats per minute in the audio of the media represented by the current
@@ -744,6 +755,7 @@ export abstract class Tag {
      * @param value Beats per minute of the audio in the media represented by the current instance,
      *     or `0` if not specified
      */
+    // @TODO: Use undefined to unset
     public set beatsPerMinute(value: number) { /* no-op in abstract case */ }
 
     /**
@@ -755,7 +767,7 @@ export abstract class Tag {
      *     Conductor or director of the media represented by the current instance or
      *     `undefined` if no value present.
      */
-    public get conductor(): string { return undefined; }
+    public get conductor(): string|undefined { return undefined; }
     /**
      * Sets the conductor or director of the media represented by the current instance.
      *
@@ -764,7 +776,7 @@ export abstract class Tag {
      * @param value Conductor or director of the media represented by the current instance or
      *     `undefined` if no value present.
      */
-    public set conductor(value: string) { /* no-op in abstract case */ }
+    public set conductor(value: string|undefined) { /* no-op in abstract case */ }
 
     /**
      * Gets the copyright information for the media represented by the current instance.
@@ -778,7 +790,7 @@ export abstract class Tag {
      *     Copyright information for the media represented by the current instance or
      *     `undefined` if no value is present.
      */
-    public get copyright(): string { return undefined; }
+    public get copyright(): string|undefined { return undefined; }
     /**
      * Sets the copyright information for the media represented by the current instance.
      *
@@ -790,7 +802,7 @@ export abstract class Tag {
      * @param value Copyright information for the media represented by the current instance or
      *     `undefined` if no value is present.
      */
-    public set copyright(value: string) { /* no-op in abstract case */ }
+    public set copyright(value: string|undefined) { /* no-op in abstract case */ }
 
     /**
      * Gets the date and time at which the tag has been written.
@@ -814,7 +826,7 @@ export abstract class Tag {
      *     MusicBrainz ArtistID of the media represented by the current instance or
      *     `undefined` if no value is present
      */
-    public get musicBrainzArtistId(): string { return undefined; }
+    public get musicBrainzArtistId(): string|undefined { return undefined; }
     /**
      * Sets the MusicBrainz artist ID of the media represented by the current instance.
      *
@@ -824,7 +836,7 @@ export abstract class Tag {
      * @param value MusicBrainz ArtistID of the media represented by the current instance or
      *     `undefined` if no value is present
      */
-    public set musicBrainzArtistId(value: string) { /* no-op in abstract case */ }
+    public set musicBrainzArtistId(value: string|undefined) { /* no-op in abstract case */ }
 
     /**
      * Gets the MusicBrainz release group ID of the media represented by the current instance.
@@ -836,7 +848,7 @@ export abstract class Tag {
      *     MusicBrainz ReleaseGroupID of the media represented by the current instance or
      *     `undefined` if no value is present
      */
-    public get musicBrainzReleaseGroupId(): string { return undefined; }
+    public get musicBrainzReleaseGroupId(): string|undefined { return undefined; }
     /**
      * Sets the MusicBrainz release group ID of the media represented by the current instance.
      *
@@ -846,7 +858,7 @@ export abstract class Tag {
      * @param value MusicBrainz ReleaseGroupID of the media represented by the current instance or
      *     `undefined` if no value is present
      */
-    public set musicBrainzReleaseGroupId(value: string) { /* no-op in abstract case */ }
+    public set musicBrainzReleaseGroupId(value: string|undefined) { /* no-op in abstract case */ }
 
     /**
      * Gets the MusicBrainz release ID of the media represented by the current instance.
@@ -858,7 +870,7 @@ export abstract class Tag {
      *     MusicBrainz ReleaseID of the media represented by the current instance or
      *     `undefined` if no value is present
      */
-    public get musicBrainzReleaseId(): string { return undefined; }
+    public get musicBrainzReleaseId(): string|undefined { return undefined; }
     /**
      * Sets the MusicBrainz release ID of the media represented by the current instance.
      *
@@ -868,7 +880,7 @@ export abstract class Tag {
      * @param value MusicBrainz ReleaseID of the media represented by the current instance or
      *     `undefined` if no value is present
      */
-    public set musicBrainzReleaseId(value: string) { /* no-op in abstract case */ }
+    public set musicBrainzReleaseId(value: string|undefined) { /* no-op in abstract case */ }
 
     /**
      * Gets the MusicBrainz release artist ID of the media represented by the current instance.
@@ -880,7 +892,7 @@ export abstract class Tag {
      *     MusicBrainz ReleaseArtistID of the media represented by the current instance or
      *     `undefined` if no value is present
      */
-    public get musicBrainzReleaseArtistId(): string { return undefined; }
+    public get musicBrainzReleaseArtistId(): string|undefined { return undefined; }
     /**
      * Sets the MusicBrainz release artist ID of the media represented by the current instance.
      *
@@ -890,7 +902,7 @@ export abstract class Tag {
      * @param value MusicBrainz ReleaseArtistID of the media represented by the current instance or
      *     `undefined` if no value is present
      */
-    public set musicBrainzReleaseArtistId(value: string) { /* no-op in abstract case */ }
+    public set musicBrainzReleaseArtistId(value: string|undefined) { /* no-op in abstract case */ }
 
     /**
      * Gets the MusicBrainz track ID of the media represented by the media represented by the
@@ -903,7 +915,7 @@ export abstract class Tag {
      *     MusicBrainz TrackID of the media represented by the current instance or `undefined`
      *     if no value is present
      */
-    public get musicBrainzTrackId(): string { return undefined; }
+    public get musicBrainzTrackId(): string|undefined { return undefined; }
     /**
      * Sets the MusicBrainz track ID of the media represented by the media represented by the
      * current instance.
@@ -914,7 +926,7 @@ export abstract class Tag {
      * @param value MusicBrainz TrackID of the media represented by the current instance or
      *     `undefined` if no value is present
      */
-    public set musicBrainzTrackId(value: string) { /* no-op in abstract case */ }
+    public set musicBrainzTrackId(value: string|undefined) { /* no-op in abstract case */ }
 
     /**
      * Gets the MusicBrainz disc ID of the media represented by the current instance.
@@ -926,7 +938,7 @@ export abstract class Tag {
      *     MusicBrainz DiscID of the media represented by the current instance or `undefined`
      *     if no value is present
      */
-    public get musicBrainzDiscId(): string { return undefined; }
+    public get musicBrainzDiscId(): string|undefined { return undefined; }
     /**
      * Sets the MusicBrainz disc ID of the media represented by the current instance.
      *
@@ -936,7 +948,7 @@ export abstract class Tag {
      * @param value MusicBrainz DiscID of the media represented by the current instance or
      *     `undefined` if no value is present
      */
-    public set musicBrainzDiscId(value: string) { /* no-op in abstract case */ }
+    public set musicBrainzDiscId(value: string|undefined) { /* no-op in abstract case */ }
 
     /**
      * Gets the MusicIP PUID of the media represented by the current instance.
@@ -948,7 +960,7 @@ export abstract class Tag {
      *     MusicIP PUID of the media represented by the current instance or `undefined` if no
      *     value is present
      */
-    public get musicIpId(): string { return undefined; }
+    public get musicIpId(): string|undefined { return undefined; }
     /**
      * Sets the MusicIP PUID of the media represented by the current instance.
      *
@@ -958,7 +970,7 @@ export abstract class Tag {
      * @param value MusicIP PUID of the media represented by the current instance or `undefined`
      *     if no value is present
      */
-    public set musicIpId(value: string) { /* no-op in abstract case */ }
+    public set musicIpId(value: string|undefined) { /* no-op in abstract case */ }
 
     /**
      * Gets the Amazon ID of the media represented by the current instance.
@@ -970,7 +982,7 @@ export abstract class Tag {
      *     Amazon ID of the media represented by the current instance or `undefined` if no
      *     value is present
      */
-    public get amazonId(): string { return undefined; }
+    public get amazonId(): string|undefined { return undefined; }
     /**
      * Sets the Amazon ID of the media represented by the current instance.
      *
@@ -980,7 +992,7 @@ export abstract class Tag {
      * @param value Amazon ID of the media represented by the current instance or `undefined` if no
      *     value is present
      */
-    public set amazonId(value: string) { /* no-op in abstract case */ }
+    public set amazonId(value: string|undefined) { /* no-op in abstract case */ }
 
     /**
      * Gets the MusicBrainz release status of the media represented by the current instance.
@@ -992,7 +1004,7 @@ export abstract class Tag {
      *     MusicBrainz ReleaseStatus of the media represented by the current instance or
      *     `undefined` if no value is present
      */
-    public get musicBrainzReleaseStatus(): string { return undefined; }
+    public get musicBrainzReleaseStatus(): string|undefined { return undefined; }
     /**
      * Sets the MusicBrainz release status of the media represented by the current instance.
      *
@@ -1002,7 +1014,7 @@ export abstract class Tag {
      * @param value MusicBrainz ReleaseStatus of the media represented by the current instance or
      *     `undefined` if no value is present
      */
-    public set musicBrainzReleaseStatus(value: string) { /* no-op in abstract case */ }
+    public set musicBrainzReleaseStatus(value: string|undefined) { /* no-op in abstract case */ }
 
     /**
      * Gets the MusicBrainz release type of the media represented by the current instance.
@@ -1016,7 +1028,7 @@ export abstract class Tag {
      *     MusicBrainz ReleaseType of the media represented by the current instance or
      *     `undefined` if no value is present
      */
-    public get musicBrainzReleaseType(): string { return undefined; }
+    public get musicBrainzReleaseType(): string|undefined { return undefined; }
     /**
      * Sets the MusicBrainz release type of the media represented by the current instance.
      *
@@ -1028,7 +1040,7 @@ export abstract class Tag {
      * @param value MusicBrainz ReleaseType of the media represented by the current instance or
      *     `undefined` if no value is present
      */
-    public set musicBrainzReleaseType(value: string) { /* no-op in abstract case */ }
+    public set musicBrainzReleaseType(value: string|undefined) { /* no-op in abstract case */ }
 
     /**
      * Gets the MusicBrainz release country of the media represented by the current instance.
@@ -1043,7 +1055,7 @@ export abstract class Tag {
      *     MusicBrainz ReleaseCountry of the media represented by the current instance or
      *     `undefined` if no value is present
      */
-    public get musicBrainzReleaseCountry(): string { return undefined; }
+    public get musicBrainzReleaseCountry(): string|undefined { return undefined; }
     /**
      * Sets the MusicBrainz release country of the media represented by the current instance.
      *
@@ -1056,96 +1068,104 @@ export abstract class Tag {
      * @param value MusicBrainz ReleaseCountry of the media represented by the current instance or
      *     `undefined` if no value is present
      */
-    public set musicBrainzReleaseCountry(value: string) { /* no-op in abstract case */ }
+    public set musicBrainzReleaseCountry(value: string|undefined) { /* no-op in abstract case */ }
 
     /**
      * Gets the ReplayGain track gain in dB.
      * @returns Track gain as per ReplayGain specifications, in dB, or `NaN` if no value is set
      */
+    // @TODO: Return undefined if no value set
     public get replayGainTrackGain(): number { return NaN; }
     /**
      * Sets the ReplayGain track gain in dB.
      * @param value Track gain as per ReplayGain specifications, in dB, or `NaN` if no value is set
      */
+    // @TODO: Use undefined to unset
     public set replayGainTrackGain(value: number) { /* no-op in abstract case */ }
 
     /**
      * Gets the ReplayGain track peak sample.
      * @returns Track peak as per the ReplayGain specifications, or `NaN` if no value is set
      */
+    // @TODO: Return undefined if no value set
     public get replayGainTrackPeak(): number { return NaN; }
     /**
      * Sets the ReplayGain track peak sample.
      * @param value Track peak as per the ReplayGain specifications, or `NaN` if no value is set
      */
+    // @TODO: Use undefined to unset
     public set replayGainTrackPeak(value: number) { /* no-op in abstract case */ }
 
     /**
      * Gets the ReplayGain album gain in dB.
      * @returns Album gain as per the ReplayGain specifications, in dB, or `NaN` if no value is set
      */
+    // @TODO: Return undefined if no value set
     public get replayGainAlbumGain(): number { return NaN; }
     /**
      * Sets the ReplayGain album gain in dB.
      * @param value Album gain as per the ReplayGain specifications, in dB, or `NaN` if no value is
      *     set
      */
+    // @TODO: Use undefined to unset
     public set replayGainAlbumGain(value: number) { /* no-op in abstract case */ }
 
     /**
      * Gets the ReplayGain album peak sample.
      * @returns Album peak as per the ReplayGain specifications, or `NaN` if no value is set
      */
+    // @TODO: Return undefined if no value set
     public get replayGainAlbumPeak(): number { return NaN; }
     /**
      * Sets the ReplayGain album peak sample.
      * @param value Album peak as per the ReplayGain specifications, or `NaN` if no value is set
      */
+    // @TODO: Use undefined to unset
     public set replayGainAlbumPeak(value: number) { /* no-op in abstract case */ }
 
     /**
      * Gets the initial key of the track.
      * @returns Initial key of the track or `undefined` if no value is set
      */
-    public get initialKey(): string { return undefined; }
+    public get initialKey(): string|undefined { return undefined; }
     /**
      * Sets the initial key of the track.
      * @param value Initial key of the track or `undefined` if no value is set
      */
-    public set initialKey(value: string) { /* no-op in abstract case */ }
+    public set initialKey(value: string|undefined) { /* no-op in abstract case */ }
 
     /**
      * Gets the remixer of the track.
      * @returns Remixer of the track or `undefined` if no value is set
      */
-    public get remixedBy(): string { return undefined; }
+    public get remixedBy(): string|undefined { return undefined; }
     /**
      * Sets the remixer of the track.
      * @param value Remixer of the track or `undefined` if no value is set
      */
-    public set remixedBy(value: string) { /* no-op in abstract case */ }
+    public set remixedBy(value: string|undefined) { /* no-op in abstract case */ }
 
     /**
      * Gets the publisher of the track.
      * @returns Publisher of the track or `undefined` if no value is set
      */
-    public get publisher(): string { return undefined; }
+    public get publisher(): string|undefined { return undefined; }
     /**
      * Sets the publisher of the track.
      * @param value Publisher of the track or `undefined` if no value is set
      */
-    public set publisher(value: string) { /* no-op in abstract case */ }
+    public set publisher(value: string|undefined) { /* no-op in abstract case */ }
 
     /**
      * Gets the ISRC (International Standard Recording Code) of the track.
      * @returns ISRC of the track or `undefined` if no value is set
      */
-    public get isrc(): string { return undefined; }
+    public get isrc(): string|undefined { return undefined; }
     /**
      * Sets the ISRC (International Standard Recording Code) of the track.
      * @param value ISRC of the track or `undefined` if no value is set
      */
-    public set isrc(value: string) { /* no-op in abstract case */ }
+    public set isrc(value: string|undefined) { /* no-op in abstract case */ }
 
     /**
      * Gets a collection of pictures associated with the media represented by the current instance.
@@ -1183,64 +1203,73 @@ export abstract class Tag {
     public set isCompilation(value: boolean) { /* no-op in abstract case */ }
 
     /**
-     * Gets the first value contained in {@link albumArtists}.
+     * Gets the first value contained in {@link albumArtists} or `undefined` if no such values
+     * exist.
      */
-    public get firstAlbumArtist(): string { return Tag.firstInGroup(this.albumArtists); }
+    public get firstAlbumArtist(): string|undefined { return Tag.firstInGroup(this.albumArtists); }
 
     /**
-     * Gets the first value contained in {@link albumArtistsSort}
+     * Gets the first value contained in {@link albumArtistsSort} or `undefined` if no such values
+     * exist.
      */
-    public get firstAlbumArtistSort(): string { return Tag.firstInGroup(this.albumArtists); }
+    public get firstAlbumArtistSort(): string|undefined { return Tag.firstInGroup(this.albumArtists); }
 
     /**
-     * Gets the first value contained in {@link performers}
+     * Gets the first value contained in {@link performers} or `undefined` if no such values exist.
      */
-    public get firstPerformer(): string { return Tag.firstInGroup(this.performers); }
+    public get firstPerformer(): string|undefined { return Tag.firstInGroup(this.performers); }
 
     /**
-     * Gets the first value contained in {@link performersSort}
+     * Gets the first value contained in {@link performersSort} or `undefined` if no such values
+     * exist.
      */
-    public get firstPerformerSort(): string { return Tag.firstInGroup(this.performersSort); }
+    public get firstPerformerSort(): string|undefined { return Tag.firstInGroup(this.performersSort); }
 
     /**
-     * Gets the first value contained in {@link composers}
+     * Gets the first value contained in {@link composers} or `undefined` if no such values exist.
      */
-    public get firstComposer(): string { return Tag.firstInGroup(this.composers); }
+    public get firstComposer(): string|undefined { return Tag.firstInGroup(this.composers); }
 
     /**
-     * Gets the first value contained in {@link composersSort}
+     * Gets the first value contained in {@link composersSort} or `undefined` if no such values
+     * exist.
      */
-    public get firstComposerSort(): string { return Tag.firstInGroup(this.composersSort); }
+    public get firstComposerSort(): string|undefined { return Tag.firstInGroup(this.composersSort); }
 
     /**
-     * Gets the first value contained in {@link genres}
+     * Gets the first value contained in {@link genres} or `undefined` if no such values exist.
      */
-    public get firstGenre(): string { return Tag.firstInGroup(this.genres); }
+    public get firstGenre(): string|undefined { return Tag.firstInGroup(this.genres); }
 
     /**
      * Gets a semicolon and space separated string containing the values in {@link albumArtists}
+     * @deprecated Will be removed in next major release. Use `albumArtists.join("; ")` instead.
      */
-    public get joinedAlbumArtists(): string { return Tag.joinGroup(this.albumArtists); }
+    public get joinedAlbumArtists(): string|undefined { return Tag.joinGroup(this.albumArtists); }
 
     /**
      * Gets a semicolon and space separated string containing the values in {@link performers}
+     * @deprecated Will be removed in next major release. Use `performers.join("; ")` instead.
      */
-    public get joinedPerformers(): string { return Tag.joinGroup(this.performers); }
+    public get joinedPerformers(): string|undefined { return Tag.joinGroup(this.performers); }
 
     /**
      * Gets a semicolon and space separated string containing the values in {@link performersSort}
+     * @deprecated Will be removed in next major release. Use `performersSort.join("; ")` instead.
      */
-    public get joinedPerformersSort(): string { return Tag.joinGroup(this.performersSort); }
+    public get joinedPerformersSort(): string|undefined { return Tag.joinGroup(this.performersSort); }
 
     /**
      * Gets a semicolon and space separated string containing the values in {@link composers}
+     * @deprecated Will be removed in next major release. Use `composers.join("; ")` instead.
      */
-    public get joinedComposers(): string { return Tag.joinGroup(this.composers); }
+    public get joinedComposers(): string|undefined { return Tag.joinGroup(this.composers); }
 
     /**
      * Gets a semicolon and space separated string containing the values in {@link genres}
+     * @deprecated Will be removed in next major release. Use `genres.join("; ")` instead.
      */
-    public get joinedGenres(): string { return Tag.joinGroup(this.genres); }
+    public get joinedGenres(): string|undefined { return Tag.joinGroup(this.genres); }
 
     /**
      * Gets whether the current instance is empty.
@@ -1250,6 +1279,7 @@ export abstract class Tag {
      * @returns `true` if the current instance does not contain any values. `false` otherwise
      */
     public get isEmpty(): boolean {
+        // @TODO: This doesn't cover all tags ... and it should be abstract.
         return Tag.isFalsyOrLikeEmpty(this.title) &&
             Tag.isFalsyOrLikeEmpty(this.grouping) &&
             Tag.isFalsyOrLikeEmpty(this.albumArtists) &&
@@ -1308,6 +1338,7 @@ export abstract class Tag {
     public copyTo(target: Tag, overwrite: boolean): void {
         Guards.truthy(target, "target");
         // @TODO: Allow for overwriting existing values or all values
+        // @TODO: This doesn't cover all tag values...
 
         if (overwrite || Tag.isFalsyOrLikeEmpty(target.title)) { target.title = this.title; }
         if (overwrite || Tag.isFalsyOrLikeEmpty(target.subtitle)) { target.subtitle = this.subtitle; }
@@ -1343,7 +1374,7 @@ export abstract class Tag {
      *     `undefined` or empty
      * @protected
      */
-    protected static firstInGroup(group: string[]): string {
+    protected static firstInGroup(group: string[]): string|undefined {
         return !group || group.length === 0
             ? undefined
             : group[0];
@@ -1358,7 +1389,7 @@ export abstract class Tag {
      *     the array must be falsy or all elements must be falsy or whitespace to return `true`.
      * @protected
      */
-    protected static isFalsyOrLikeEmpty(value: string|string[]): boolean {
+    protected static isFalsyOrLikeEmpty(value: string|string[]|null|undefined): boolean {
         // This should match `undefined`, `null`, and `""`
         if (!value) { return true; }
 
@@ -1387,9 +1418,7 @@ export abstract class Tag {
      *     or undefined if the array is `undefined` or empty.
      * @protected
      */
-    protected static joinGroup(group: string[]): string {
-        return !group || group.length === 0
-            ? undefined
-            : group.join("; ");
+    protected static joinGroup(group: string[]): string|undefined {
+        return group?.join("; ");
     }
 }
