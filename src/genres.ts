@@ -223,7 +223,7 @@ export default class Genres {
      *     Genre name if found, or `undefined` if `index` is outside the
      *     bounds of the audio genre array or if `index` is not valid.
      */
-    public static indexToAudio(index: number|string, allowParenthesis: boolean): string {
+    public static indexToAudio(index: number|string, allowParenthesis: boolean): string|undefined {
         const safeIndex = typeof(index) === "string"
             ? Genres.stringToByte(index, allowParenthesis)
             : index;
@@ -232,7 +232,7 @@ export default class Genres {
             : undefined;
     }
 
-    public static indexToAudioDirect(index: number|string): string {
+    public static indexToAudioDirect(index: number|string): string|undefined {
         if (typeof(index) === "string") {
             if (!(/\d+/).test(index)) {
                 // Non numeric string
@@ -258,7 +258,7 @@ export default class Genres {
      *     Genre name if found, or `undefined` if `index` is outside the
      *     bounds of the video genre array or if `index` is not valid.
      */
-    public static indexToVideo(index: number|string, allowParenthesis: boolean): string {
+    public static indexToVideo(index: number|string, allowParenthesis: boolean): string|undefined {
         const safeIndex = typeof(index) === "string"
             ? Genres.stringToByte(index, allowParenthesis)
             : index;
