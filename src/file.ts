@@ -35,19 +35,19 @@ export enum ReadStyle {
  */
 export enum FileAccessMode {
     /**
+     * The file is closed for both read and write operations
+     */
+    Closed = 0,
+
+    /**
      * Read operations can be performed.
      */
-    Read,
+    Read = 1,
 
     /**
      * Read and write operations can be performed
      */
-    Write,
-
-    /**
-     * The file is closed for both read and write operations
-     */
-    Closed
+    Write = 2,
 }
 
 /**
@@ -92,10 +92,16 @@ export abstract class File implements IDisposable {
     // @TODO: Remove protected member variables
     private readonly _fileAbstraction: IFileAbstraction;
 
-    private _fileStream: IStream;
+    private readonly _corruptionReasons: string[] = [];
+
+    /**
+     * The stream that this object is currently connected to. If undefined, the current mode should
+     * be {@link FileAccessMode.Closed}.
+     * @private
+     */
+    private _fileStream: IStream|undefined;
+    private _mimeType!: string;
     private _tagTypesOnDisk: TagTypes = TagTypes.None;
-    private _corruptionReasons: string[] = [];
-    private _mimeType: string;
 
     //#endregion
 
@@ -142,11 +148,16 @@ export abstract class File implements IDisposable {
         return File.createInternal(new LocalFileAbstraction(filePath), mimeType, propertiesStyle);
     }
 
-    private static createInternal(abstraction: IFileAbstraction, mimeType: string, propertiesStyle: ReadStyle): File {
+    private static createInternal(
+        abstraction: IFileAbstraction,
+        mimeType: string|undefined,
+        propertiesStyle: ReadStyle
+    ): File {
         Guards.truthy(abstraction, "abstraction");
 
         // Step 1) Calculate the MimeType based on the extension of the file if it was not provided
         if (!mimeType) {
+            // @TODO: Replace with mmmagic
             const ext = FileUtils.getExtension(abstraction.name);
             mimeType = `taglib/${ext.toLowerCase()}`;
         }
@@ -194,7 +205,7 @@ export abstract class File implements IDisposable {
      * Indicates whether this file may be corrupt. Files with unknown corruptions should not
      * be written.
      */
-    public get isPossiblyCorrupt(): boolean { return this._corruptionReasons && this._corruptionReasons.length > 0; }
+    public get isPossiblyCorrupt(): boolean { return this._corruptionReasons.length > 0; }
 
     /**
      * Indicates whether tags can be written back to the current file.
@@ -205,11 +216,12 @@ export abstract class File implements IDisposable {
      * Gets the length of the file represented by the current instance. Value will be 0 if the file
      * is not open for reading;
      */
-    public get length(): number { return this.mode === FileAccessMode.Closed ? 0 : this._fileStream.length; }
+    public get length(): number { return this._fileStream?.length ?? 0; }
 
     /**
      * Gets the MimeType of the file as determined during creation of the instance.
      */
+    // @TODO: Verify that the instances where this is set are necessary (and closed / opened)
     public get mimeType(): string { return this._mimeType; }
 
     /**
@@ -219,10 +231,10 @@ export abstract class File implements IDisposable {
         if (!this._fileStream) {
             return FileAccessMode.Closed;
         }
-        if (this._fileStream.canWrite) {
-            return FileAccessMode.Write;
-        }
-        return FileAccessMode.Read;
+
+        return this._fileStream.canWrite
+            ? FileAccessMode.Write
+            : FileAccessMode.Read;
     }
 
     /**
@@ -234,8 +246,8 @@ export abstract class File implements IDisposable {
     public set mode(val: FileAccessMode) {
         // Skip processing if the mode we're changing to is the same as what we're already on, or
         // if we're in write mode changing to read mode (requesting less access)
-        if (this.mode === val || (this.mode === FileAccessMode.Write && val === FileAccessMode.Read)) {
-            return;
+        if (val !== FileAccessMode.Closed && val <= this.mode) {
+            return
         }
 
         // Close any existing stream
@@ -265,7 +277,7 @@ export abstract class File implements IDisposable {
      * Gets the seek position in the internal stream used by the current instance. Value will be 0
      * if the file is not open for reading
      */
-    public get position(): number { return this.mode === FileAccessMode.Closed ? 0 : this._fileStream.position; }
+    public get position(): number { return this._fileStream?.position ?? 0 }
 
     /**
      * Gets the media properties of the file represented by the current instance.
@@ -367,8 +379,7 @@ export abstract class File implements IDisposable {
     public find(pattern: ByteVector, startPosition: number = 0, before?: ByteVector): number {
         Guards.truthy(pattern, "pattern");
         Guards.safeUint(startPosition, "startPosition");
-
-        this.mode = FileAccessMode.Read;
+        this.guardOnFileOpen(this._fileStream);
 
         if (pattern.length > File.BUFFER_SIZE) {
             return -1;
@@ -450,8 +461,8 @@ export abstract class File implements IDisposable {
         Guards.truthy(data, "data");
         Guards.safeUint(start, "start");
         Guards.safeUint(replace, "replace");
+        this.guardOnFileOpen(this._fileStream);
 
-        this.mode = FileAccessMode.Write;
         this._fileStream.position = start;
 
         if (data.length === replace) {
@@ -522,11 +533,11 @@ export abstract class File implements IDisposable {
      */
     public readBlock(length: number): ByteVector {
         Guards.safeUint(length, "length");
+        this.guardOnFileOpen(this._fileStream);
+
         if (length === 0) {
             return ByteVector.empty();
         }
-
-        this.mode = FileAccessMode.Read;
 
         const buffer = new Uint8Array(length);
         let count = 0;
@@ -551,6 +562,7 @@ export abstract class File implements IDisposable {
     public removeBlock(start: number, length: number): void {
         Guards.safeUint(start, "start");
         Guards.safeInt(length, "length");
+        this.guardOnFileOpen(this._fileStream);
 
         if (length <= 0) {
             return;
@@ -561,8 +573,7 @@ export abstract class File implements IDisposable {
         const bufferLength = File.BUFFER_SIZE;
         let readPosition = start + length;
         let writePosition = start;
-        let buffer: ByteVector;
-        // noinspection JSUnusedAssignment Short circuit evaluation prevents attempt to access uninitialized variable
+        let buffer: ByteVector|undefined;
         while (!buffer || buffer.length !== 0) {
             this._fileStream.position = readPosition;
             buffer = this.readBlock(bufferLength);
@@ -596,8 +607,7 @@ export abstract class File implements IDisposable {
     public rFind(pattern: ByteVector, startPosition: number = 0): number {
         Guards.truthy(pattern, "pattern");
         Guards.safeUint(startPosition, "startPosition");
-
-        this.mode = FileAccessMode.Read;
+        this.guardOnFileOpen(this._fileStream);
 
         if (pattern.length > File.BUFFER_SIZE) {
             return -1;
@@ -649,10 +659,7 @@ export abstract class File implements IDisposable {
      * @param origin Origin from which to seek
      */
     public seek(offset: number, origin: SeekOrigin = SeekOrigin.Begin): void {
-        if (this.mode === FileAccessMode.Closed) {
-            return;
-        }
-        this._fileStream.seek(offset, origin);
+        this._fileStream?.seek(offset, origin);
     }
 
     /**
@@ -664,8 +671,7 @@ export abstract class File implements IDisposable {
      */
     public writeBlock(data: ByteVector): void {
         Guards.truthy(data, "data");
-
-        this.mode = FileAccessMode.Write;
+        this.guardOnFileOpen(this._fileStream);
 
         this._fileStream.write(data, 0, data.length);
     }
@@ -694,10 +700,14 @@ export abstract class File implements IDisposable {
      * @param length Number of bytes to resize the file to, must be a safe, positive integer.
      */
     protected truncate(length: number): void {
-        const oldMode = this.mode;
-        this.mode = FileAccessMode.Write;
+        this.guardOnFileOpen(this._fileStream);
         this._fileStream.setLength(length);
-        this.mode = oldMode;
+    }
+
+    private guardOnFileOpen(file: IStream|undefined): asserts file is IStream {
+        if (!file) {
+            throw new Error("File is closed.");
+        }
     }
 
     //#endregion
