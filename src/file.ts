@@ -293,8 +293,12 @@ export abstract class File implements IDisposable {
      *     This property provides generic and general access to the most common tagging
      *     features of a file. To access or add a specific type of tag in the file, use
      *     {@link File.getTag}.
+     *
+     *     If a file only supports one type of optional tag and does not contain it, this will be
+     *     `undefined`. Files that support multiple types of tags, will always be an instance of
+     *     {@link CombinedTag} that manages the different tag types.
      */
-    public abstract get tag(): Tag;
+    public abstract get tag(): Tag|undefined;
 
     /**
      * Gets the tag types contained in the current instance.
