@@ -24,7 +24,7 @@ export default class AacAudioHeader implements IAudioCodec {
     private readonly _audioSampleRate: number;
     private readonly _mpeg4AudioTypeIndex: number;
 
-    private _durationMilliseconds: number;
+    private _durationMilliseconds: number|undefined;
     private _streamLength: number;
 
     /**
@@ -71,10 +71,9 @@ export default class AacAudioHeader implements IAudioCodec {
     /**
      * @inheritDoc
      * @remarks
-     *     Until the stream length has been set ({@link streamLength}), this will return
-     *     `undefined`.
+     *     Until the stream length has been set via {@link streamLength}, this will return `undefined`.
      */
-    public get durationMilliseconds(): number { return this._durationMilliseconds; }
+    public get durationMilliseconds(): number|undefined { return this._durationMilliseconds; }
 
     /** @inheritDoc */
     public get mediaTypes(): MediaTypes { return MediaTypes.Audio; }
@@ -104,14 +103,16 @@ export default class AacAudioHeader implements IAudioCodec {
      *     reasonable length here
      * @returns Header found or `undefined` if a header could not be found
      */
-    public static find(file: File, position: number, length?: number): AacAudioHeader {
+    public static find(file: File, position: number, length?: number): AacAudioHeader|undefined {
         Guards.truthy(file, "file");
         Guards.safeUint(position, "position");
         if (length !== undefined) {
             Guards.uint(length, "length");
         }
 
-        const end = position + length;
+        const end = typeof(length) === "number"
+            ? position + length
+            : file.length;
         file.seek(position);
 
         // NOTE: The original .NET implementation used some bizarre (to me) 3 byte offset into each
@@ -121,7 +122,7 @@ export default class AacAudioHeader implements IAudioCodec {
         // NOTE: We're guaranteed to read in an entire buffer, but not scan the entire thing if
         //    there was a max number of bytes set to read.
         let buffer: ByteVector;
-        while ((buffer = file.readBlock(File.bufferSize)).length > 0 && (length === undefined || position < end)) {
+        while ((buffer = file.readBlock(File.bufferSize)).length > 0 && position < end) {
             for (let i = 0; i < buffer.length && (length === undefined || position + i < end); i++) {
                 // Skip if sync word can't be found
                 if (buffer.get(i) !== 0xFF || buffer.get(i + 1) < 0xF0) {
