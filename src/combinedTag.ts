@@ -65,24 +65,24 @@ export default abstract class CombinedTag extends Tag {
     }
 
     /** @inheritDoc */
-    public get title(): string { return this.getFirstValue((t) => t.title); }
+    public get title(): string|undefined { return this.getFirstValue((t) => t.title); }
     /** @inheritDoc */
-    public set title(val: string) { this.setValues((t, v) => { t.title = v; }, val); }
+    public set title(val: string|undefined) { this.setValues((t, v) => { t.title = v; }, val); }
 
     /** @inheritDoc */
-    public get titleSort(): string { return this.getFirstValue((t) => t.titleSort); }
+    public get titleSort(): string|undefined { return this.getFirstValue((t) => t.titleSort); }
     /** @inheritDoc */
-    public set titleSort(val: string) { this.setValues((t, v) => { t.titleSort = v; }, val); }
+    public set titleSort(val: string|undefined) { this.setValues((t, v) => { t.titleSort = v; }, val); }
 
     /** @inheritDoc */
-    public get subtitle(): string { return this.getFirstValue((t) => t.subtitle); }
+    public get subtitle(): string|undefined { return this.getFirstValue((t) => t.subtitle); }
     /** @inheritDoc */
-    public set subtitle(val: string) { this.setValues((t, v) => { t.subtitle = v; }, val); }
+    public set subtitle(val: string|undefined) { this.setValues((t, v) => { t.subtitle = v; }, val); }
 
     /** @inheritDoc */
-    public get description(): string { return this.getFirstValue((t) => t.description); }
+    public get description(): string|undefined { return this.getFirstValue((t) => t.description); }
     /** @inheritDoc */
-    public set description(val: string) { this.setValues((t, v) => { t.description = v; }, val); }
+    public set description(val: string|undefined) { this.setValues((t, v) => { t.description = v; }, val); }
 
     /** @inheritDoc */
     public get performers(): string[] { return this.getFirstArray((t) => t.performers); }
@@ -120,19 +120,19 @@ export default abstract class CombinedTag extends Tag {
     public set composersSort(val: string[]) { this.setValues((t, v) => { t.composersSort = v; }, val); }
 
     /** @inheritDoc */
-    public get album(): string { return this.getFirstValue((t) => t.album); }
+    public get album(): string|undefined { return this.getFirstValue((t) => t.album); }
     /** @inheritDoc */
-    public set album(val: string) { this.setValues((t, v) => { t.album = v; }, val); }
+    public set album(val: string|undefined) { this.setValues((t, v) => { t.album = v; }, val); }
 
     /** @inheritDoc */
-    public get albumSort(): string { return this.getFirstValue((t) => t.albumSort); }
+    public get albumSort(): string|undefined { return this.getFirstValue((t) => t.albumSort); }
     /** @inheritDoc */
-    public set albumSort(val: string) { this.setValues((t, v) => { t.albumSort = v; }, val); }
+    public set albumSort(val: string|undefined) { this.setValues((t, v) => { t.albumSort = v; }, val); }
 
     /** @inheritDoc */
-    public get comment(): string { return this.getFirstValue((t) => t.comment); }
+    public get comment(): string|undefined { return this.getFirstValue((t) => t.comment); }
     /** @inheritDoc */
-    public set comment(val: string) { this.setValues((t, v) => { t.comment = v; }, val); }
+    public set comment(val: string|undefined) { this.setValues((t, v) => { t.comment = v; }, val); }
 
     /** @inheritDoc */
     public get genres(): string[] { return this.getFirstArray((t) => t.genres); }
@@ -165,12 +165,12 @@ export default abstract class CombinedTag extends Tag {
     public set discCount(val: number) { this.setUint((t, v) => { t.discCount = v; }, val); }
 
     /** @inheritDoc */
-    public get lyrics(): string { return this.getFirstValue((t) => t.lyrics); }
+    public get lyrics(): string|undefined { return this.getFirstValue((t) => t.lyrics); }
     /** @inheritDoc */
     public set lyrics(val: string) { this.setValues((t, v) => { t.lyrics = v; }, val); }
 
     /** @inheritDoc */
-    public get grouping(): string { return this.getFirstValue((t) => t.grouping); }
+    public get grouping(): string|undefined { return this.getFirstValue((t) => t.grouping); }
     /** @inheritDoc */
     public set grouping(val: string) { this.setValues((t, v) => { t.grouping = v; }, val); }
 
@@ -180,82 +180,106 @@ export default abstract class CombinedTag extends Tag {
     public set beatsPerMinute(val: number) { this.setUint((t, v) => { t.beatsPerMinute = v; }, val); }
 
     /** @inheritDoc */
-    public get conductor(): string { return this.getFirstValue((t) => t.conductor); }
+    public get conductor(): string|undefined { return this.getFirstValue((t) => t.conductor); }
     /** @inheritDoc */
-    public set conductor(val: string) { this.setValues((t, v) => { t.conductor = v; }, val); }
+    public set conductor(val: string|undefined) { this.setValues((t, v) => { t.conductor = v; }, val); }
 
     /** @inheritDoc */
-    public get copyright(): string { return this.getFirstValue((t) => t.copyright); }
+    public get copyright(): string|undefined { return this.getFirstValue((t) => t.copyright); }
     /** @inheritDoc */
-    public set copyright(val: string) { this.setValues((t, v) => { t.copyright = v; }, val); }
+    public set copyright(val: string|undefined) { this.setValues((t, v) => { t.copyright = v; }, val); }
 
     /** @inheritDoc */
-    public get dateTagged(): Date { return this.getFirstValue((t) => t.dateTagged); }
+    public get dateTagged(): Date|undefined { return this.getFirstValue((t) => t.dateTagged); }
     /** @inheritDoc */
-    public set dateTagged(val: Date) { this.setValues((t, v) => { t.dateTagged = v; }, val); }
+    public set dateTagged(val: Date|undefined) { this.setValues((t, v) => { t.dateTagged = v; }, val); }
 
     /** @inheritDoc */
-    public get musicBrainzArtistId(): string { return this.getFirstValue((t) => t.musicBrainzArtistId); }
+    public get musicBrainzArtistId(): string|undefined { return this.getFirstValue((t) => t.musicBrainzArtistId); }
     /** @inheritDoc */
-    public set musicBrainzArtistId(val: string) { this.setValues((t, v) => { t.musicBrainzArtistId = v; }, val); }
+    public set musicBrainzArtistId(val: string|undefined) {
+        this.setValues((t, v) => { t.musicBrainzArtistId = v; }, val);
+    }
 
     /** @inheritDoc */
-    public get musicBrainzReleaseGroupId(): string { return this.getFirstValue((t) => t.musicBrainzReleaseGroupId); }
+    public get musicBrainzReleaseGroupId(): string|undefined {
+        return this.getFirstValue((t) => t.musicBrainzReleaseGroupId);
+    }
     /** @inheritDoc */
-    public set musicBrainzReleaseGroupId(val: string) {
+    public set musicBrainzReleaseGroupId(val: string|undefined) {
         this.setValues((t, v) => { t.musicBrainzReleaseGroupId = v; }, val);
     }
 
     /** @inheritDoc */
-    public get musicBrainzReleaseId(): string { return this.getFirstValue((t) => t.musicBrainzReleaseId); }
+    public get musicBrainzReleaseId(): string|undefined {
+        return this.getFirstValue((t) => t.musicBrainzReleaseId);
+    }
     /** @inheritDoc */
-    public set musicBrainzReleaseId(val: string) { this.setValues((t, v) => { t.musicBrainzReleaseId = v; }, val); }
+    public set musicBrainzReleaseId(val: string|undefined) {
+        this.setValues((t, v) => { t.musicBrainzReleaseId = v; }, val);
+    }
 
     /** @inheritDoc */
-    public get musicBrainzReleaseArtistId(): string { return this.getFirstValue((t) => t.musicBrainzReleaseArtistId); }
+    public get musicBrainzReleaseArtistId(): string|undefined {
+        return this.getFirstValue((t) => t.musicBrainzReleaseArtistId);
+    }
     /** @inheritDoc */
-    public set musicBrainzReleaseArtistId(val: string) {
+    public set musicBrainzReleaseArtistId(val: string|undefined) {
         this.setValues((t, v) => { t.musicBrainzReleaseArtistId = v; }, val);
     }
 
     /** @inheritDoc */
-    public get musicBrainzTrackId(): string { return this.getFirstValue((t) => t.musicBrainzTrackId); }
+    public get musicBrainzTrackId(): string|undefined {
+        return this.getFirstValue((t) => t.musicBrainzTrackId);
+    }
     /** @inheritDoc */
-    public set musicBrainzTrackId(val: string) { this.setValues((t, v) => { t.musicBrainzTrackId = v; }, val); }
+    public set musicBrainzTrackId(val: string|undefined) {
+        this.setValues((t, v) => { t.musicBrainzTrackId = v; }, val);
+    }
 
     /** @inheritDoc */
-    public get musicBrainzDiscId(): string { return this.getFirstValue((t) => t.musicBrainzDiscId); }
+    public get musicBrainzDiscId(): string|undefined {
+        return this.getFirstValue((t) => t.musicBrainzDiscId);
+    }
     /** @inheritDoc */
-    public set musicBrainzDiscId(val: string) { this.setValues((t, v) => { t.musicBrainzDiscId = v; }, val); }
+    public set musicBrainzDiscId(val: string|undefined) {
+        this.setValues((t, v) => { t.musicBrainzDiscId = v; }, val);
+    }
 
     /** @inheritDoc */
-    public get musicIpId(): string { return this.getFirstValue((t) => t.musicIpId); }
+    public get musicIpId(): string|undefined { return this.getFirstValue((t) => t.musicIpId); }
     /** @inheritDoc */
-    public set musicIpId(val: string) { this.setValues((t, v) => { t.musicIpId = v; }, val); }
+    public set musicIpId(val: string|undefined) { this.setValues((t, v) => { t.musicIpId = v; }, val); }
 
     /** @inheritDoc */
-    public get amazonId(): string { return this.getFirstValue((t) => t.amazonId); }
+    public get amazonId(): string|undefined { return this.getFirstValue((t) => t.amazonId); }
     /** @inheritDoc */
-    public set amazonId(val: string) { this.setValues((t, v) => { t.amazonId = v; }, val); }
+    public set amazonId(val: string|undefined) { this.setValues((t, v) => { t.amazonId = v; }, val); }
 
     /** @inheritDoc */
-    public get musicBrainzReleaseStatus(): string { return this.getFirstValue((t) => t.musicBrainzReleaseStatus); }
+    public get musicBrainzReleaseStatus(): string|undefined {
+        return this.getFirstValue((t) => t.musicBrainzReleaseStatus);
+    }
     /** @inheritDoc */
-    public set musicBrainzReleaseStatus(val: string) {
+    public set musicBrainzReleaseStatus(val: string|undefined) {
         this.setValues((t, v) => { t.musicBrainzReleaseStatus = v; }, val);
     }
 
     /** @inheritDoc */
-    public get musicBrainzReleaseType(): string { return this.getFirstValue((t) => t.musicBrainzReleaseType); }
+    public get musicBrainzReleaseType(): string|undefined {
+        return this.getFirstValue((t) => t.musicBrainzReleaseType);
+    }
     /** @inheritDoc */
-    public set musicBrainzReleaseType(val: string) {
+    public set musicBrainzReleaseType(val: string|undefined) {
         this.setValues((t, v) => { t.musicBrainzReleaseType = v; }, val);
     }
 
     /** @inheritDoc */
-    public get musicBrainzReleaseCountry(): string { return this.getFirstValue((t) => t.musicBrainzReleaseCountry); }
+    public get musicBrainzReleaseCountry(): string|undefined {
+        return this.getFirstValue((t) => t.musicBrainzReleaseCountry);
+    }
     /** @inheritDoc */
-    public set musicBrainzReleaseCountry(val: string) {
+    public set musicBrainzReleaseCountry(val: string|undefined) {
         this.setValues((t, v) => { t.musicBrainzReleaseCountry = v; }, val);
     }
 
@@ -280,24 +304,24 @@ export default abstract class CombinedTag extends Tag {
     public set replayGainAlbumPeak(val: number) { this.setValues((t, v) => { t.replayGainAlbumPeak = v; }, val); }
 
     /** @inheritDoc */
-    public get initialKey(): string { return this.getFirstValue((t) => t.initialKey); }
+    public get initialKey(): string|undefined { return this.getFirstValue((t) => t.initialKey); }
     /** @inheritDoc */
-    public set initialKey(val: string) { this.setValues((t, v) => { t.initialKey = v; }, val); }
+    public set initialKey(val: string|undefined) { this.setValues((t, v) => { t.initialKey = v; }, val); }
 
     /** @inheritDoc */
-    public get remixedBy(): string { return this.getFirstValue((t) => t.remixedBy); }
+    public get remixedBy(): string|undefined { return this.getFirstValue((t) => t.remixedBy); }
     /** @inheritDoc */
-    public set remixedBy(val: string) { this.setValues((t, v) => { t.remixedBy = v; }, val); }
+    public set remixedBy(val: string|undefined) { this.setValues((t, v) => { t.remixedBy = v; }, val); }
 
     /** @inheritDoc */
-    public get publisher(): string { return this.getFirstValue((t) => t.publisher); }
+    public get publisher(): string|undefined { return this.getFirstValue((t) => t.publisher); }
     /** @inheritDoc */
-    public set publisher(val: string) { this.setValues((t, v) => { t.publisher = v; }, val); }
+    public set publisher(val: string|undefined) { this.setValues((t, v) => { t.publisher = v; }, val); }
 
     /** @inheritDoc */
-    public get isrc(): string { return this.getFirstValue((t) => t.isrc); }
+    public get isrc(): string|undefined { return this.getFirstValue((t) => t.isrc); }
     /** @inheritDoc */
-    public set isrc(val: string) { this.setValues((t, v) => { t.isrc = v; }, val); }
+    public set isrc(val: string|undefined) { this.setValues((t, v) => { t.isrc = v; }, val); }
 
     /** @inheritDoc */
     public get pictures(): IPicture[] { return this.getFirstArray((t) => t.pictures); }
@@ -340,7 +364,7 @@ export default abstract class CombinedTag extends Tag {
      * @param tagType Type of tag to retrieve
      * @returns Tag with specified type, if it exists. `undefined` otherwise.
      */
-    public getTag<TTag extends Tag>(tagType: TagTypes): TTag {
+    public getTag<TTag extends Tag>(tagType: TagTypes): TTag|undefined {
         // Make sure the tag type can possibly be stored here
         if (!NumberUtils.hasFlag(this._supportedTagTypes, tagType)) {
             return undefined;
@@ -427,7 +451,9 @@ export default abstract class CombinedTag extends Tag {
         return tagWithProperty ? propertyFn(tagWithProperty) : [];
     }
 
-    private getFirstValue<T>(propertyFn: (t: Tag) => T, defaultValue?: T): T {
+    private getFirstValue<T>(propertyFn: (t: Tag) => T|undefined): T|undefined;
+    private getFirstValue<T>(propertyFn: (t: Tag) => T, defaultValue: T): T;
+    private getFirstValue<T>(propertyFn: (t: Tag) => T|undefined, defaultValue?: T): T|undefined {
         const tagWithProperty = this._tags.find((t) => {
             if (!t) { return false; }
 
