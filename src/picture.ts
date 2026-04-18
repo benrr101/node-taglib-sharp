@@ -126,6 +126,21 @@ export enum PictureType {
  */
 export interface IPicture {
     /**
+     * Gets and sets the picture data stored in the current instance.
+     */
+    data: ByteVector;
+
+    /**
+     * Gets and sets a description of the picture stored in the current instance. Optional.
+     */
+    description: string|undefined;
+
+    /**
+     * Gets and sets a filename of the picture stored in the current instance. Optional.
+     */
+    filename: string|undefined;
+
+    /**
      * Gets and sets the mime-type of the picture data stored in the current instance.
      */
     mimeType: string;
@@ -134,21 +149,6 @@ export interface IPicture {
      * Gets and sets the type of the content visible in the picture stored in the current instance.
      */
     type: PictureType;
-
-    /**
-     * Gets and sets a filename of the picture stored in the current instance. Optional.
-     */
-    filename: string;
-
-    /**
-     * Gets and sets a description of the picture stored in the current instance. Optional.
-     */
-    description: string;
-
-    /**
-     * Gets and sets the picture data stored in the current instance.
-     */
-    data: ByteVector;
 }
 
 /**
@@ -158,6 +158,7 @@ export class Picture implements IPicture {
     //#region Constants
 
     // @TODO: Just do this as a friggin dictionary
+    // @TODO: Replace with mmmagic
     private static readonly EXTENSION_TO_MIMETYPES: string[] = [
         "bin", "application/octet-stream", // Any kind of binary data - placed at top to act as default
         "aac", "audio/aac", // AAC audio file
@@ -241,6 +242,8 @@ export class Picture implements IPicture {
     //#region Constructors
 
     private constructor() { /* private to enforce construction via static methods */ }
+
+    // @TODO: Add fromPath with eg type override.
 
     /**
      * Constructs and initializes a new instance from a file located at the provided path. The type
@@ -343,21 +346,23 @@ export class Picture implements IPicture {
     //#region Public Properties
 
     /** @inheritDoc */
-    public data: ByteVector;
+    public data!: ByteVector;
 
     /** @inheritDoc */
-    public description: string;
+    public description: string|undefined;
 
     /** @inheritDoc */
-    public filename: string;
+    public filename: string|undefined;
 
     /** @inheritDoc */
-    public mimeType: string;
+    public mimeType!: string;
 
     /**
      * Gets and sets the type of the content visible in the picture stored in the current instance.
      */
-    public type: PictureType;
+    // @TODO: Evaluate whether picture type should be part of all pictures or just picture tag types that support types
+    //    (eg, ID3v2).
+    public type!: PictureType;
 
     //#endregion
 
@@ -371,8 +376,8 @@ export class Picture implements IPicture {
      *     Extension of the file with dot at the beginning based on the first few bytes
      *     of the data. If the extension cannot be determined, `undefined` is returned
      */
-    public static getExtensionFromData(data: ByteVector): string {
-        let ext: string;
+    public static getExtensionFromData(data: ByteVector): string|undefined {
+        let ext: string|undefined;
 
         // No picture unless it is corrupted, can fit in a file of less than 4 bytes
         if (data && data.length >= 4) {
@@ -397,8 +402,8 @@ export class Picture implements IPicture {
      *     Extension of the file based on the mimetype with a dot at the beginning. If
      *     the extension cannot be determined, `undefined` is returned
      */
-    public static getExtensionFromMimeType(mime: string): string {
-        let ext: string;
+    public static getExtensionFromMimeType(mime: string): string|undefined {
+        let ext: string|undefined;
 
         for (let i = 0; i < this.EXTENSION_TO_MIMETYPES.length; i += 2) {
             if (this.EXTENSION_TO_MIMETYPES[i + 1] === mime) {
@@ -418,7 +423,7 @@ export class Picture implements IPicture {
      *     Mimetype of the file based on the extension. If mimetype cannot be
      *     determined, application/octet-stream is returned.
      */
-    public static getMimeTypeFromFilename(name: string): string {
+    public static getMimeTypeFromFilename(name: string|undefined): string {
         let mimeType: string = "application/octet-stream";
 
         if (!name) {
@@ -446,14 +451,14 @@ export class Picture implements IPicture {
  * needed. This saves time and memory if the picture loading is not required.
  */
 export class PictureLazy implements IPicture, ILazy {
-    private _data: ByteVector;
-    private _description: string;
-    private _file: IFileAbstraction;
-    private _filename: string;
-    private _mimeType: string;
-    private _streamOffset: number;
-    private _streamSize: number;
-    private _type: PictureType;
+    private _data: ByteVector|undefined;
+    private _description: string|undefined;
+    private _file: IFileAbstraction|undefined;
+    private _filename: string|undefined;
+    private _mimeType: string|undefined;
+    private _streamOffset: number|undefined;
+    private _streamSize: number|undefined;
+    private _type: PictureType = PictureType.Other;
 
     //#region Constructors
 
@@ -470,6 +475,7 @@ export class PictureLazy implements IPicture, ILazy {
         const picture = new PictureLazy();
         picture._data = data.toByteVector();
 
+        // @TODO: Use mmmagic
         const extension = Picture.getExtensionFromData(data);
         if (extension) {
             picture._type = PictureType.FrontCover;
@@ -498,6 +504,11 @@ export class PictureLazy implements IPicture, ILazy {
             Guards.safeUint(offset, "size");
         }
 
+        // @TODO: Look into how this constructor is being used. It seems that if this constructor is being used, then
+        //    a subset of the file is meant to be the picture. If so, then we can't use the file's name as a source
+        //    for the mimetype and picture type. Instead we need to either have the caller provider a mimetype or in
+        //    the absence of that, use mmmagic to determine mimetype.
+
         const picture = new PictureLazy();
         picture._file = file;
         picture._streamOffset = offset;
@@ -505,10 +516,10 @@ export class PictureLazy implements IPicture, ILazy {
         picture._filename = file.name;
         picture._description = file.name;
 
-        if (picture._filename && picture._filename.indexOf(".") > -1) {
-            picture._mimeType = Picture.getMimeTypeFromFilename(picture._filename);
-            picture._type = picture._mimeType.startsWith("image/") ? PictureType.FrontCover : PictureType.NotAPicture;
-        }
+        picture._mimeType = Picture.getMimeTypeFromFilename(picture._filename);
+        picture._type = picture._mimeType.startsWith("image/")
+            ? PictureType.FrontCover
+            : PictureType.NotAPicture;
 
         return picture;
     }
@@ -524,8 +535,11 @@ export class PictureLazy implements IPicture, ILazy {
         picture._file = new LocalFileAbstraction(filePath);
         picture._filename = path.basename(filePath);
         picture._description = picture._filename;
+
         picture._mimeType = Picture.getMimeTypeFromFilename(picture._filename);
-        picture._type = picture._mimeType.startsWith("image/") ? PictureType.FrontCover : PictureType.NotAPicture;
+        picture._type = picture._mimeType.startsWith("image/")
+            ? PictureType.FrontCover
+            : PictureType.NotAPicture;
 
         return picture;
     }
@@ -537,23 +551,24 @@ export class PictureLazy implements IPicture, ILazy {
     /** @inheritDoc */
     public get data(): ByteVector {
         this.load();
+        this.throwOnLoadFail(this._data);
         return this._data;
     }
     /** @inheritDoc */
     public set data(value: ByteVector) { this._data = value; }
 
     /** @inheritDoc */
-    public get description(): string { return this._description; }
+    public get description(): string|undefined { return this._description; }
     /** @inheritDoc */
-    public set description(value: string) { this._description = value; }
+    public set description(value: string|undefined) { this._description = value; }
 
     /** @inheritDoc */
-    public get filename(): string {
+    public get filename(): string|undefined {
         this.load();
         return this._filename;
     }
     /** @inheritDoc */
-    public set filename(value: string) { this._filename = value; }
+    public set filename(value: string|undefined) { this._filename = value; }
 
     /** @inheritDoc */
     public get isLoaded(): boolean { return !!this._data; }
@@ -561,6 +576,7 @@ export class PictureLazy implements IPicture, ILazy {
     /** @inheritDoc */
     public get mimeType(): string {
         if (!this._mimeType) { this.load(); }
+        this.throwOnLoadFail(this._mimeType);
         return this._mimeType;
     }
     /** @inheritDoc */
@@ -583,6 +599,14 @@ export class PictureLazy implements IPicture, ILazy {
         // Already loaded?
         if (this._data) {
             return;
+        }
+
+        if (!this._file) {
+            throw new Error("Invalid operation: Cannot load picture without a file.");
+        }
+
+        if (this._streamOffset === undefined) {
+            throw new Error("Invalid operation: Cannot load picture without a file offset.");
         }
 
         // Load the picture from the stream for the file
@@ -638,6 +662,12 @@ export class PictureLazy implements IPicture, ILazy {
                     this._filename = "UnknownType";
                 }
             }
+        }
+    }
+
+    private throwOnLoadFail<T>(field: T|undefined): asserts field is T {
+        if (field === undefined) {
+            throw new Error("Lazy loading of picture failed")
         }
     }
 
