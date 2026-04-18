@@ -50,6 +50,8 @@ export default class AiffStreamHeader implements ILosslessAudioCodec {
         this._totalFrames = data.subarray(10, 4).toUint(true);
         this._bitsPerSample = data.subarray(14, 2).toUshort(true);
         this._sampleRate = NumberUtils.convertFromIeeeExtended(data.subarray(16, 10));
+
+        // @TODO: If frames, bits per sample, or sample rate are 0, the file is probably corrupt?
     }
 
     //#region Properties
@@ -57,7 +59,7 @@ export default class AiffStreamHeader implements ILosslessAudioCodec {
     /** @inheritDoc */
     // @TODO: streamlength is total file data length, not sound length.
     public get audioBitrate(): number {
-        return this.durationMilliseconds <= 0
+        return !this.durationMilliseconds
             ? 0
             : (this._streamLength * 8) / (this.durationMilliseconds / 1000) / 1000;
     }
@@ -76,9 +78,9 @@ export default class AiffStreamHeader implements ILosslessAudioCodec {
     public get description(): string { return "AIFF Audio"; }
 
     /** @inheritDoc */
-    public get durationMilliseconds(): number {
+    public get durationMilliseconds(): number|undefined {
         return this._sampleRate <= 0 || this._totalFrames <= 0
-            ? 0
+            ? undefined
             : this._totalFrames / this._sampleRate * 1000;
     }
 

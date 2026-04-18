@@ -42,9 +42,8 @@ export default class AiffFile extends File {
 
     //#endregion
 
-    private _headerBlock: ByteVector;
-    private _properties: Properties;
-    private _tag: Id3v2Tag;
+    private readonly _properties: Properties|undefined;
+    private _tag: Id3v2Tag|undefined;
 
     /**
      * Constructs and initializes a new instance of {@link AiffFile} for a specified file
@@ -59,7 +58,13 @@ export default class AiffFile extends File {
         // Read the file
         this.mode = FileAccessMode.Read;
         try {
-            this.read(true, propertiesStyle);
+            const readResults = this.read(NumberUtils.hasFlag(propertiesStyle, ReadStyle.Average));
+            if (readResults.properties) {
+                this._properties = readResults.properties;
+            }
+            if (readResults.tagOffsets) {
+                this._tag = Id3v2Tag.fromFileStart(this, readResults.tagOffsets.start + 8, propertiesStyle);
+            }
         } finally {
             this.mode = FileAccessMode.Closed;
         }
@@ -74,18 +79,18 @@ export default class AiffFile extends File {
     //#region Properties
 
     /** @inheritDoc */
-    public get properties(): Properties { return this._properties; }
+    public get properties(): Properties|undefined { return this._properties; }
 
     /** @inheritDoc */
-    public get tag(): Tag { return this._tag; }
+    public get tag(): Tag|undefined { return this._tag; }
 
     //#endregion
 
     //#region Public Methods
 
     /** @inheritDoc */
-    public getTag(type: TagTypes, create: boolean): Tag {
-        let id3v2Tag: Tag;
+    public getTag(type: TagTypes, create: boolean): Tag|undefined {
+        let id3v2Tag: Tag|undefined;
 
         switch (type) {
             case TagTypes.Id3v2:
@@ -130,16 +135,15 @@ export default class AiffFile extends File {
                 }
             }
 
-            const readResult = this.read(false, ReadStyle.None);
+            const readResult = this.read(false);
 
             // If tagging info cannot be found, place it at the end of the file
-            if (readResult.tagStart < 0 || readResult.tagEnd < 0) {
-                readResult.tagStart = readResult.tagEnd = this.length;
-            }
-            const originalTagChunkLength = readResult.tagEnd - readResult.tagStart + 8;
+            const tagOffsets = readResult.tagOffsets
+                ?? { end: this.length, start: this.length };
+            const originalTagChunkLength = tagOffsets.end - tagOffsets.start + 8;
 
             // Insert the tagging data
-            this.insert(id3Chunk, readResult.tagStart, originalTagChunkLength);
+            this.insert(id3Chunk, tagOffsets.start, originalTagChunkLength);
 
             // Update the AIFF size
             const aiffSize = this.length - 8;
@@ -184,15 +188,13 @@ export default class AiffFile extends File {
         }
     }
 
-    private read(readTags: boolean, style: ReadStyle): {fileSize: number, tagEnd: number, tagStart: number} {
+    private read(readProperties: boolean): IAiffFileReadResult {
         this.seek(0);
         if (!this.readBlock(4).equals(AiffFile.FILE_IDENTIFIER)) {
             throw new CorruptFileError("File does not begin with AIFF identifier");
         }
 
         const aiffSize = this.readBlock(4).toUint(true);
-        let tagStart = -1;
-        let tagEnd = -1;
 
         // Check form type
         if (!this.readBlock(4).equals(AiffFile.AIFF_FORM_TYPE)) {
@@ -200,17 +202,17 @@ export default class AiffFile extends File {
         }
 
         // Read the properties of the file
-        if (!this._headerBlock && style !== ReadStyle.None) {
+        let properties;
+        if (readProperties) {
             const commonChunkPos = this.findChunk(AiffFile.COMM_IDENTIFIER, this.position);
-            if (commonChunkPos === -1) {
+            if (commonChunkPos < 0) {
                 throw new CorruptFileError("No common chunk available in this AIFF file");
             }
 
             this.seek(commonChunkPos);
-            this._headerBlock = this.readBlock(AiffStreamHeader.SIZE);
-
-            const header = new AiffStreamHeader(this._headerBlock, aiffSize);
-            this._properties = new Properties(0, [header]);
+            const headerBlock = this.readBlock(AiffStreamHeader.SIZE);
+            const header = new AiffStreamHeader(headerBlock, aiffSize);
+            properties = new Properties(undefined, [header]);
         }
 
         // Search for the sound chunk
@@ -218,32 +220,30 @@ export default class AiffFile extends File {
         if (soundChunkPos === -1) {
             throw new CorruptFileError("No sound chunk available in this AIFF file");
         }
+
         this.seek(this.position + 4);
         const soundChunkLength = this.readBlock(4).toUint();
 
         // Search for the ID3 chunk
+        let tagOffsets;
         const id3ChunkPos = this.findChunk(AiffFile.ID3_IDENTIFIER, this.position + soundChunkLength);
         if (id3ChunkPos >= 0) {
-            if (readTags && !this._tag) {
-                this._tag = Id3v2Tag.fromFileStart(this, id3ChunkPos + 8, style);
-            }
-
             // Get the length of the tag from the ID3 chunk
             this.seek(id3ChunkPos + 4);
             const tagSize = this.readBlock(4).toUint(true) + 8;
 
-            tagStart = id3ChunkPos;
-            tagEnd = tagStart + tagSize;
+            tagOffsets = {end: id3ChunkPos + tagSize, start: id3ChunkPos};
         }
 
-        return {
-            fileSize: this.length,
-            tagEnd: tagEnd,
-            tagStart: tagStart
-        };
+        return { properties: properties, tagOffsets: tagOffsets };
     }
 
     //#endregion
+}
+
+interface IAiffFileReadResult {
+    properties: Properties|undefined;
+    tagOffsets: {end: number, start: number}|undefined;
 }
 
 // /////////////////////////////////////////////////////////////////////////
