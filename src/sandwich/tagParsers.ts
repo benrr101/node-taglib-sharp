@@ -5,12 +5,12 @@ import {File, ReadStyle} from "../file";
  * Common logic for parsing sequential tags at the start or end of a file. Classes that inherit
  * from this class are expected to provide `while(parser.read())` functionality. If {@link read}
  * returns `true` the tag that was just read can be read from {@link currentTag}.
+ * @internal
  */
 export default abstract class TagParser {
-    // @TODO: Don't allow access to member variables
     private readonly _file: File;
     private readonly _readStyle: ReadStyle;
-    private _currentTag: Tag;
+    private _currentTag: Tag|undefined;
     private _fileOffset: number;
 
     protected constructor(file: File, readStyle: ReadStyle, initialOffset: number) {
@@ -23,7 +23,13 @@ export default abstract class TagParser {
      * Tag that was just read from the file. This will be `undefined` until {@link read} is called.
      * The value is not guaranteed if {@link read} returns `false`
      */
-    public get currentTag(): Tag { return this._currentTag; }
+    public get currentTag(): Tag {
+        if (!this._currentTag) {
+            throw new Error("Invalid operation: No tags have been read.")
+        }
+
+        return this._currentTag;
+    }
     protected set currentTag(value: Tag) { this._currentTag = value; }
 
     protected get file(): File { return this._file; }

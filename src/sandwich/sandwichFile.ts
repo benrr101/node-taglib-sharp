@@ -33,7 +33,7 @@ export interface ISandwichFile {
  *     example, use this pattern. Therefore, the name was changed to better represent the situation.
  */
 export default abstract class SandwichFile extends File implements ISandwichFile {
-    private readonly _properties: Properties;
+    private readonly _properties: Properties|undefined;
     private readonly _tag: SandwichTag;
     private _mediaEndPosition: number;
     private _mediaStartPosition: number;
@@ -64,8 +64,12 @@ export default abstract class SandwichFile extends File implements ISandwichFile
             this._tag = new SandwichTag(this, readStyle, defaultTagMappingTable);
             this._mediaStartPosition = this.startTag.sizeOnDisk;
             this._mediaEndPosition = this.length - this.endTag.sizeOnDisk;
-            this._properties = this.readProperties(readStyle);
             this.tagTypesOnDisk = this.tagTypes;
+
+            // Only load properties if it was requested
+            this._properties = NumberUtils.hasFlag(readStyle, ReadStyle.Average)
+                ? this.readProperties(readStyle)
+                : undefined;
         } finally {
             this.mode = FileAccessMode.Closed;
         }
@@ -114,14 +118,14 @@ export default abstract class SandwichFile extends File implements ISandwichFile
     /**
      * Gets the media properties of the file represented by the current instance.
      */
-    public get properties(): Properties { return this._properties; }
+    public get properties(): Properties|undefined { return this._properties; }
 
     //#endregion
 
     //#region Public Methods
 
     /** @inheritDoc */
-    public getTag(type: TagTypes, create: boolean): Tag {
+    public getTag(type: TagTypes, create: boolean): Tag|undefined {
         // Try to get the tag in question
         const tag = this._tag.getTag(type);
         if (tag || !create) {

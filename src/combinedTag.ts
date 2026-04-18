@@ -412,9 +412,7 @@ export default abstract class CombinedTag extends Tag {
      * @protected
      */
     protected addTag(tag: Tag): void {
-        if (tag) {
-            this._tags.push(tag);
-        }
+        this._tags.push(tag);
     }
 
     /**

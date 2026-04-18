@@ -64,7 +64,12 @@ export default class SandwichTag extends CombinedTag {
         this.validateTagCreation(tagType);
 
         // Determine where the tag goes and create it
-        const destinationTag = this._defaultTagMappingTable.get(tagType)() ? this._endTag : this._startTag;
+        const destinationTagFunc = this._defaultTagMappingTable.get(tagType);
+        if (!destinationTagFunc) {
+            throw new Error(`BUG! Default tag mapping table does not contain entry for ${tagType}`)
+        }
+
+        const destinationTag = destinationTagFunc() ? this._endTag : this._startTag;
         const newTag = destinationTag.createTag(tagType, false);
 
         if (copy) {

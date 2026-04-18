@@ -9,6 +9,7 @@ import {FileUtils, Guards} from "./utils";
 /**
  * Specifies the options to use when reading the media. Can be treated as flags.
  */
+// @TODO: Consider splitting into PropertyReadStyle and TagReadStyle
 export enum ReadStyle {
     /**
      * The media properties will not be read.
@@ -281,8 +282,10 @@ export abstract class File implements IDisposable {
 
     /**
      * Gets the media properties of the file represented by the current instance.
+     * This will only be populated if the file was opened with {@link ReadStyle.Average}, otherwise
+     * this property will be `undefined`.
      */
-    public abstract get properties(): Properties;
+    public abstract get properties(): Properties|undefined;
 
     /**
      * Gets an abstract representation of all tags stored in the current instance.
@@ -445,7 +448,7 @@ export abstract class File implements IDisposable {
      * ```
      */
     // @TODO Implementation should define a default for create
-    public abstract getTag(types: TagTypes, create: boolean): Tag;
+    public abstract getTag(types: TagTypes, create: boolean): Tag|undefined;
 
     /**
      * Inserts a specified block of data into the file represented by the current instance, at a

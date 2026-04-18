@@ -94,6 +94,8 @@ export default class EndTag extends CombinedTag {
 
         // HACK: We want to make sure ID3v1 tags go at the back of the list. ID3v1 will truncate
         //    the contents of fields, so we need to make sure it is not preferentially chosen.
+        // @TODO: Introduce a "quality" or "support" property to tag classes - like Xiph has full support while ID3v1
+        //    only has partial support.
         tags.sort((t1, t2) => t2.tagTypes - t1.tagTypes)
             .forEach((t) => this.addTag(t));
     }
