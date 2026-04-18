@@ -39,6 +39,7 @@ export enum MediaTypes {
 /**
  * Interface that provides basic information common to all media codecs
  */
+// @TODO: Create a IDurationCodec that eliminates the need for undefined behavior in durationMilliseconds field.
 export interface ICodec {
     /**
      * Gets a text description of the media represented by the current instance.
@@ -46,10 +47,10 @@ export interface ICodec {
     description: string;
 
     /**
-     * Duration of the media in milliseconds represented by the current instance.
-     * @TODO Ensure milliseconds is the right way to interpret this field
+     * Duration of the media in milliseconds represented by the current instance. `undefined` is
+     * returned if the duration cannot be determined.
      */
-    durationMilliseconds: number;
+    durationMilliseconds: number|undefined;
 
     /**
      * Types of media represented by the current instance, bitwise combined.
@@ -137,17 +138,17 @@ export interface IPhotoCodec extends ICodec {
 
 export class Properties implements ILosslessAudioCodec, IVideoCodec, IPhotoCodec {
     private readonly _codecs: ICodec[];
-    private readonly _duration: number;
+    private readonly _durationMilliseconds: number|undefined;
 
     /**
      * Constructs and initializes a new instance of {@link Properties} with the specified codecs and
      * duration.
-     * @param durationMilli Duration of the media in milliseconds or 0 if the duration is to be
-     *        read from the codecs.
+     * @param durationMilliseconds Duration of the media in milliseconds or `undefined` if the
+     *     duration is to be read from the codecs. O
      * @param codecs Array of codecs to be used in the new instance.
      */
-    public constructor(durationMilli: number = 0, codecs: ICodec[] = []) {
-        this._duration = durationMilli;
+    public constructor(durationMilliseconds: number|undefined, codecs: ICodec[] = []) {
+        this._durationMilliseconds = durationMilliseconds;
         this._codecs = codecs;
     }
 
@@ -162,35 +163,43 @@ export class Properties implements ILosslessAudioCodec, IVideoCodec, IPhotoCodec
     //#region ICodec
 
     /**
-     * Gets a string description of the media represented by the current instance. Values are
-     * joined by semicolons.
+     * @inheritDoc
+     * @remarks Values are joined by semicolons.
      */
     public get description(): string {
-        const descriptions = this._codecs.filter((e) => !!e).map((e) => e.description);
+        const descriptions = this._codecs.map((codec) => codec.description);
         return descriptions.join("; ");
     }
 
     /**
-     * Gets the duration of the media represented by the current instance. If the value was set in
-     * the constructor, that value is returned, otherwise the longest codec duration is used.
+     * @inheritDoc
+     * @remarks If the file set the duration, that value is used. Otherwise, the largest duration
+     *     of the codecs in the file is returned. If no codecs can provide a duration, `undefined`
+     *     is returned.
      */
-    public get durationMilliseconds(): number {
-        if (this._duration !== 0) {
-            return this._duration;
-        }
+    // @TODO: Does it make sense to have a duration at the properties level, or should it always come from the codecs?
+    public get durationMilliseconds(): number|undefined {
+        // If the file provided duration, use that instead
+        if (this._durationMilliseconds !== undefined) { return this._durationMilliseconds; }
 
-        return this._codecs.filter((e) => !!e)
-            .reduce((maxDuration, e) => Math.max(maxDuration, e.durationMilliseconds), 0);
+        // Find codecs that have durations, and then pick the max of those.
+        const durationCodecs = this._codecs.filter(codec => codec.durationMilliseconds !== undefined);
+        if (durationCodecs.length === 0) { return undefined; }
+
+        return durationCodecs.reduce((maxDuration, codec) => Math.max(maxDuration, codec.durationMilliseconds!), 0);
     }
 
     /**
-     * Gets the types of media represented by the current instance.
+     * @inheritDoc
      */
     public get mediaTypes(): MediaTypes {
-        return this._codecs.filter((e) => !!e).reduce((types, e) => types | e.mediaTypes, MediaTypes.None);
+        return this._codecs.reduce((types, codec) => types | codec.mediaTypes, MediaTypes.None);
     }
 
     //#endregion
+
+    // @TODO: The below fields return 0 if an appropriate codec cannot be found. It'd be better to just
+    //     not expose the fields if, eg, it's a audio file and video properties are exposed.
 
     //#region ILosslessAudioCodec
 

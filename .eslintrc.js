@@ -70,6 +70,7 @@ module.exports = {
         "@typescript-eslint/no-inferrable-types": 0,
         "@typescript-eslint/no-misused-new": "error",
         "@typescript-eslint/no-namespace": "error",
+        "@typescript-eslint/no-non-null-assertion": "off",
         "@typescript-eslint/no-parameter-properties": "warn",
         "@typescript-eslint/no-shadow": "error",
         "@typescript-eslint/prefer-namespace-keyword": "error",
