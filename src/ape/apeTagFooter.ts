@@ -7,6 +7,11 @@ import {Guards, NumberUtils} from "../utils";
  */
 export enum ApeTagFooterFlags {
     /**
+     * This footer is actually a header.
+     */
+    IsHeader = 0x20000000,
+
+    /**
      * Tag lacks a footer.
      */
     FooterAbsent = 0x40000000,
@@ -15,11 +20,6 @@ export enum ApeTagFooterFlags {
      * Tag contains a header.
      */
     HeaderPresent = 0x80000000,
-
-    /**
-     * This footer is actually a header.
-     */
-    IsHeader = 0x20000000
 }
 
 // @TODO: Verify that this is specifically APEv2.
@@ -37,7 +37,7 @@ export class ApeTagFooter {
      */
     public static readonly SIZE = 32;
 
-    private _flags: ApeTagFooterFlags = 0;
+    private _flags: ApeTagFooterFlags = <ApeTagFooterFlags>0;
     private _itemCount: number = 0;
     private _itemSize: number = 0;
     private _version: number = 0;
@@ -63,7 +63,7 @@ export class ApeTagFooter {
         const footer = new ApeTagFooter();
         footer._version = data.subarray(8, 4).toUint(false);
         footer._itemCount = data.subarray(16, 4).toUint(false);
-        footer._flags = <ApeTagFooterFlags> data.subarray(20, 4).toUint(false);
+        footer._flags = <ApeTagFooterFlags>data.subarray(20, 4).toUint(false);
 
         const itemPlusFooterSize = footer._itemSize = data.subarray(12, 4).toUint(false);
         if (itemPlusFooterSize < ApeTagFooter.SIZE) {

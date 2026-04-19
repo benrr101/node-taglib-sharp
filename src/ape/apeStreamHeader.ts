@@ -133,6 +133,8 @@ export class ApeStreamHeader implements IAudioCodec, ILosslessAudioCodec {
         this._bitsPerSample = data.subarray(68, 2).toUshort(false);
         this._channels = data.subarray(70, 2).toUshort(false);
         this._sampleRate = data.subarray(72, 4).toUint(false);
+
+        // @TODO: Calculate duration and bitrate now.
     }
 
     //#region Properties
@@ -140,7 +142,7 @@ export class ApeStreamHeader implements IAudioCodec, ILosslessAudioCodec {
     /** @inheritDoc */
     public get audioBitrate(): number {
         const durationMilliseconds = this.durationMilliseconds;
-        if (durationMilliseconds <= 0) { return 0; }
+        if (!durationMilliseconds) { return 0; }
 
         const durationSeconds = durationMilliseconds / 1000;
         return (this._streamLength * 8 / durationSeconds) / 1000;
@@ -165,8 +167,8 @@ export class ApeStreamHeader implements IAudioCodec, ILosslessAudioCodec {
     public get description(): string { return `Monkey's Audio APE Version ${this.version.toFixed(3)}`; }
 
     /** @inheritDoc */
-    public get durationMilliseconds(): number {
-        if (this._sampleRate <= 0) { return 0; }
+    public get durationMilliseconds(): number|undefined {
+        if (this._sampleRate <= 0) { return undefined; }
 
         const samples = (this._totalFrames - 1) * this._blocksPerFrame + this._finalFrameBlocks;
         const durationSeconds = samples / this._sampleRate;

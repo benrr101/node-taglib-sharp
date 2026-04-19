@@ -25,17 +25,24 @@ export enum ApeTagItemType {
 /**
  * Class that represents a property in an APE tag.
  */
+// @TODO: Locator types are not properly supported.
+// @TODO: Refactor class so that contents are either using typescript "discriminated union" or type is derived from
+//    which content property is set.
+// eg of discriminated union `type Payload = | {type: Binary; data: ByteVector} | {type: Text; text: string[]}...
 export class ApeTagItem {
-    private _data: ByteVector;
+    private readonly _key: string;
+
+    private _data: ByteVector|undefined;
     private _isReadonly: boolean = false;
-    private _key: string;
     private _size: number = 0;
-    private _text: string[];
+    private _text: string[]|undefined;
     private _type: ApeTagItemType = ApeTagItemType.Text;
 
     //#region Constructors
 
-    private constructor() { /* empty to enforce static construction */ }
+    private constructor(key: string) {
+        this._key = key;
+    }
 
     /**
      * Constructs and initializes a new instance of {@link ApeTagItem} with a specified key and binary
@@ -47,10 +54,11 @@ export class ApeTagItem {
         Guards.notNullOrUndefined(key, "key");
         Guards.truthy(value, "value");
 
-        const item = new ApeTagItem();
-        item._key = key;
-        item._type = ApeTagItemType.Binary;
+        // @TODO: from strings copies the contents of the string array. from binary value does not, so the value can be
+        //      changed externally.
+        const item = new ApeTagItem(key);
         item._data = value;
+        item._type = ApeTagItemType.Binary;
 
         return item;
     }
@@ -65,29 +73,29 @@ export class ApeTagItem {
         Guards.truthy(data, "data");
         Guards.uint(offset, "offset");
 
-        const item = new ApeTagItem();
-
         // 11 bytes is the minimum size for an APE item
         if (data.length < offset + 11) {
             throw new CorruptFileError("Not enough data for APE item");
         }
 
+        // Read length and flags
         const valueLength = data.subarray(offset, 4).toUint(false);
         const flags = data.subarray(offset + 4, 4).toUint(false);
-
-        // Read flag data
-        item._isReadonly = NumberUtils.hasFlag(flags, 1);
-        item._type = <ApeTagItemType> NumberUtils.uintAnd(NumberUtils.uintRShift(flags, 1), 3);
 
         // Read key
         const keyStartIndex = offset + 8;
         const keyEndIndex = data.offsetFind(ByteVector.getTextDelimiter(StringType.UTF8), offset + 8);
         const keyLength = keyEndIndex - keyStartIndex;
-        item._key = data.subarray(keyStartIndex, keyLength).toString(StringType.UTF8);
+        const key = data.subarray(keyStartIndex, keyLength).toString(StringType.UTF8);
 
         if (valueLength > data.length - keyEndIndex - 1) {
             throw new CorruptFileError("Invalid data length");
         }
+
+        // Create the item
+        const item = new ApeTagItem(key);
+        item._isReadonly = NumberUtils.hasFlag(flags, 1);
+        item._type = <ApeTagItemType> NumberUtils.uintAnd(NumberUtils.uintRShift(flags, 1), 3);
 
         // [length of key + flags/size - offset]+[key delimiter]+[value length]
         item._size = keyEndIndex - offset + 1 + valueLength;
@@ -111,8 +119,7 @@ export class ApeTagItem {
         Guards.notNullOrUndefined(key, "name");
         Guards.truthy(values, "values");
 
-        const item = new ApeTagItem();
-        item._key = key;
+        const item = new ApeTagItem(key);
         item._text = values.slice();
 
         return item;
@@ -154,13 +161,9 @@ export class ApeTagItem {
 
     /**
      * Gets the string values stored in the current item, if the current item is a text item, or
-     * an empty array if the current item is a binary item or no text is stored.
+     * `undefined` if the item is binary.
      */
-    public get text(): string[] {
-        return this._type === ApeTagItemType.Binary || !this._text
-            ? []
-            : this._text;
-    }
+    public get text(): string[]|undefined { return this._text; }
 
     /**
      * Gets the type of value contained in the current instance.
@@ -171,7 +174,7 @@ export class ApeTagItem {
      * Gets the binary value stored in the current item, if the current item is a binary item, or
      * `undefined` if the current item is a text item.
      */
-    public get value(): ByteVector { return this._type === ApeTagItemType.Binary ? this._data : undefined; }
+    public get value(): ByteVector|undefined { return this._data; }
 
     //#endregion
 
@@ -181,13 +184,12 @@ export class ApeTagItem {
      * Creates a deep copy of the current instance.
      */
     public clone(): ApeTagItem {
-        const newItem = new ApeTagItem();
-        newItem._type = this._type;
-        newItem._key = this._key;
-        newItem._data = this._data ? this._data.toByteVector() : undefined;
-        newItem._text = this._text ? this._text.slice() : undefined;
+        const newItem = new ApeTagItem(this._key);
+        newItem._data = this._data?.toByteVector();
+        newItem._text = this._text?.slice();
         newItem._isReadonly = this._isReadonly;
         newItem._size = this._size;
+        newItem._type = this._type;
 
         return newItem;
     }
@@ -196,23 +198,29 @@ export class ApeTagItem {
      * Renders the current instance as an APEv2 item.
      */
     public render(): ByteVector {
-        if (this.isEmpty) {
-            return ByteVector.empty();
-        }
-
-        // Build the byte vector for the value of the item
         let value: ByteVector;
+
         if (this._type === ApeTagItemType.Binary) {
-            value = this._data;
+            const data = this._data;
+            if (!data || data.isEmpty) {
+                return ByteVector.empty();
+            }
+
+            value = data;
         } else {
-            const vectors = this._text.reduce<ByteVector[]>((acc, e, i) => {
+            const text = this._text;
+            if (!text || text.length === 0) {
+                return ByteVector.empty();
+            }
+
+            const renderedText = text.reduce<ByteVector[]>((acc, t, i) => {
                 if (i > 0) {
                     acc.push(ByteVector.getTextDelimiter(StringType.UTF8));
                 }
-                acc.push(ByteVector.fromString(e, StringType.UTF8));
+                acc.push(ByteVector.fromString(t, StringType.UTF8));
                 return acc;
-            }, []);
-            value = ByteVector.concatenate(...vectors);
+            }, [])
+            value = ByteVector.concatenate(... renderedText);
         }
 
         // Calculate the flags and length
@@ -240,10 +248,9 @@ export class ApeTagItem {
      * does not have a text array, `undefined` will be returned. Otherwise, the text values will be
      * joined into a single, comma separated list.
      */
-    public toString(): string {
-        return this._type === ApeTagItemType.Binary || !this._text
-            ? undefined
-            : this._text.join(", ");
+    // @TODO: This is kinda not very useful - it doesn't handle binary scenarios.
+    public toString(): string|undefined {
+        return this._text?.join(", ");
     }
 
     //#endregion

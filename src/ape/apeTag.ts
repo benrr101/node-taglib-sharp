@@ -41,13 +41,15 @@ export default class ApeTag extends Tag {
     ];
     private static readonly NOT_PICTURE_ITEM_TYPE_ID = 21;
 
-    private _footer: ApeTagFooter;
+    private readonly _footer: ApeTagFooter;
     private _items: ApeTagItem[] = [];
 
     //#region Constructors
 
-    private constructor() {
+    private constructor(footer: ApeTagFooter) {
         super();
+
+        this._footer = footer;
     }
 
     /**
@@ -61,21 +63,20 @@ export default class ApeTag extends Tag {
             throw new CorruptFileError("Does not contain enough footer data");
         }
 
-        const tag = new ApeTag();
-
-        // Read the footer
-        tag._footer = ApeTagFooter.fromData(data.subarray(data.length - ApeTagFooter.SIZE));
+        // Read the footer and create the tag
+        const footer = ApeTagFooter.fromData(data.subarray(data.length - ApeTagFooter.SIZE));
+        const tag = new ApeTag(footer);
 
         // If we've read a header at the end of the block, the block is invalid
-        if (NumberUtils.hasFlag(tag._footer.flags, ApeTagFooterFlags.IsHeader)) {
+        if (NumberUtils.hasFlag(footer.flags, ApeTagFooterFlags.IsHeader)) {
             throw new CorruptFileError("Footer was actually a header");
         }
-        if ((data.length < tag._footer.requiredDataSize)) {
+        if ((data.length < footer.requiredDataSize)) {
             throw new CorruptFileError("Does not contain enough tag data");
         }
 
-        const startIndex = data.length - tag._footer.requiredDataSize;
-        const length = tag._footer.requiredDataSize - ApeTagFooter.SIZE;
+        const startIndex = data.length - footer.requiredDataSize;
+        const length = footer.requiredDataSize - ApeTagFooter.SIZE;
         tag.parse(data.subarray(startIndex, length));
 
         return tag;
@@ -85,9 +86,8 @@ export default class ApeTag extends Tag {
      * Constructs an empty APEv2 tag.
      */
     public static fromEmpty(): ApeTag {
-        const tag = new ApeTag();
-        tag._footer = ApeTagFooter.fromEmpty();
-        return tag;
+        const footer = ApeTagFooter.fromEmpty();
+        return new ApeTag(footer);
     }
 
     /**
@@ -107,17 +107,16 @@ export default class ApeTag extends Tag {
         file.mode = FileAccessMode.Read;
         file.seek(position);
 
-        const tag = new ApeTag();
-
-        // Read the header/footer in
-        tag._footer = ApeTagFooter.fromData(file.readBlock(ApeTagFooter.SIZE));
+        // Read footer and create tag
+        const footer = ApeTagFooter.fromData(file.readBlock(ApeTagFooter.SIZE));
+        const tag = new ApeTag(footer);
 
         // If we've read a header, we don't have to seek to read the content. If we've read a
         // footer, we need to move back to the start of the tag.
-        if (!NumberUtils.hasFlag(tag._footer.flags, ApeTagFooterFlags.IsHeader)) {
-            file.seek(position - tag._footer.itemSize);
+        if (!NumberUtils.hasFlag(footer.flags, ApeTagFooterFlags.IsHeader)) {
+            file.seek(position - footer.itemSize);
         }
-        tag.parse(file.readBlock(tag._footer.requiredDataSize - ApeTagFooter.SIZE));
+        tag.parse(file.readBlock(footer.requiredDataSize - ApeTagFooter.SIZE));
 
         return tag;
     }
@@ -162,45 +161,45 @@ export default class ApeTag extends Tag {
      * @inheritDoc
      * @remarks Stored in the `Title` item
      */
-    public get title(): string { return this.getStringValue("Title"); }
+    public get title(): string|undefined { return this.getStringValue("Title"); }
     /**
      * @inheritDoc
      * @remarks Stored in the `Title` item
      */
-    public set title(value: string) { this.setStringValue("Title", value); }
+    public set title(value: string|undefined) { this.setStringValue("Title", value); }
 
     /**
      * @inheritDoc
      * @remarks Stored in the `TitleSort` item
      */
-    get titleSort(): string { return this.getStringValue("TitleSort"); }
+    get titleSort(): string|undefined { return this.getStringValue("TitleSort"); }
     /**
      * @inheritDoc
      * @remarks Stored in the `TitleSort` item
      */
-    set titleSort(value: string) { this.setStringValue("TitleSort", value); }
+    set titleSort(value: string|undefined) { this.setStringValue("TitleSort", value); }
 
     /**
      * @inheritDoc
      * @remarks Stored in the `Subtitle` item
      */
-    get subtitle(): string { return this.getStringValue("Subtitle"); }
+    get subtitle(): string|undefined { return this.getStringValue("Subtitle"); }
     /**
      * @inheritDoc
      * @remarks Stored in the `Subtitle`
      */
-    set subtitle(value: string) { this.setStringValue("Subtitle", value); }
+    set subtitle(value: string|undefined) { this.setStringValue("Subtitle", value); }
 
     /**
      * @inheritDoc
      * @remarks Stored in the `Description` item
      */
-    get description(): string { return this.getStringValue("Description"); }
+    get description(): string|undefined { return this.getStringValue("Description"); }
     /**
      * @inheritDoc
      * @remarks Stored in the `Description` item
      */
-    set description(value: string) { this.setStringValue("Description", value); }
+    set description(value: string|undefined) { this.setStringValue("Description", value); }
 
     /**
      * @inheritDoc
@@ -299,34 +298,34 @@ export default class ApeTag extends Tag {
      * @inheritDoc
      * @remarks Stored in the `Album` item
      */
-    get album(): string { return this.getStringValue("Album"); }
+    get album(): string|undefined { return this.getStringValue("Album"); }
     /**
      * @inheritDoc
      * @remarks Stored in the `Album` item
      */
-    set album(value: string) { this.setStringValue("Album", value); }
+    set album(value: string|undefined) { this.setStringValue("Album", value); }
 
     /**
      * @inheritDoc
      * @remarks Stored in the `AlbumSort` item
      */
-    get albumSort(): string { return this.getStringValue("AlbumSort"); }
+    get albumSort(): string|undefined { return this.getStringValue("AlbumSort"); }
     /**
      * @inheritDoc
      * @remarks Stored in the `AlbumSort` item
      */
-    set albumSort(value: string) { this.setStringValue("AlbumSort", value); }
+    set albumSort(value: string|undefined) { this.setStringValue("AlbumSort", value); }
 
     /**
      * @inheritDoc
      * @remarks Stored in the `Comment` item
      */
-    get comment(): string { return this.getStringValue("Comment"); }
+    get comment(): string|undefined { return this.getStringValue("Comment"); }
     /**
      * @inheritDoc
      * @remarks Stored in the `Comment` item
      */
-    set comment(value: string) { this.setStringValue("Comment", value); }
+    set comment(value: string|undefined) { this.setStringValue("Comment", value); }
 
     /**
      * @inheritDoc
@@ -414,23 +413,23 @@ export default class ApeTag extends Tag {
      * @inheritDoc
      * @remarks Stored in the `Lyrics` item
      */
-    get lyrics(): string { return this.getStringValue("Lyrics"); }
+    get lyrics(): string|undefined { return this.getStringValue("Lyrics"); }
     /**
      * @inheritDoc
      * @remarks Stored in the `Lyrics` item
      */
-    set lyrics(value: string) { this.setStringValue("Lyrics", value); }
+    set lyrics(value: string|undefined) { this.setStringValue("Lyrics", value); }
 
     /**
      * @inheritDoc
      * @remarks Stored in the `Grouping` item
      */
-    get grouping(): string { return this.getStringValue("Grouping"); }
+    get grouping(): string|undefined { return this.getStringValue("Grouping"); }
     /**
      * @inheritDoc
      * @remarks Stored in the `Grouping` item
      */
-    set grouping(value: string) { this.setStringValue("Grouping", value); }
+    set grouping(value: string|undefined) { this.setStringValue("Grouping", value); }
 
     /**
      * @inheritDoc
@@ -447,29 +446,29 @@ export default class ApeTag extends Tag {
      * @inheritDoc
      * @remarks Stored in the `Conductor` item
      */
-    get conductor(): string { return this.getStringValue("Conductor"); }
+    get conductor(): string|undefined { return this.getStringValue("Conductor"); }
     /**
      * @inheritDoc
      * @remarks Stored in the `Conductor` item
      */
-    set conductor(value: string) { this.setStringValue("Conductor", value); }
+    set conductor(value: string|undefined) { this.setStringValue("Conductor", value); }
 
     /**
      * @inheritDoc
      * @remarks Stored in the `Copyright` item
      */
-    get copyright(): string { return this.getStringValue("Copyright"); }
+    get copyright(): string|undefined { return this.getStringValue("Copyright"); }
     /**
      * @inheritDoc
      * @remarks Stored in the `Copyright` item
      */
-    set copyright(value: string) { this.setStringValue("Copyright", value); }
+    set copyright(value: string|undefined) { this.setStringValue("Copyright", value); }
 
     /**
      * @inheritDoc
      * @remarks Stored in the `DateTagged` item
      */
-    get dateTagged(): Date | undefined {
+    get dateTagged(): Date|undefined {
         const strValue = this.getStringValue("DateTagged");
         if (!strValue) { return undefined; }
         const dateValue = new Date(strValue);
@@ -479,7 +478,7 @@ export default class ApeTag extends Tag {
      * @inheritDoc
      * @remarks Stored in the `DateTagged` item
      */
-    set dateTagged(value: Date | undefined) {
+    set dateTagged(value: Date|undefined) {
         this.setStringValue("DateTagged", DateUtils.format(value));
     }
 
@@ -487,122 +486,122 @@ export default class ApeTag extends Tag {
      * @inheritDoc
      * @remarks Stored in the `MUSICBRAINZ_ARTISTID` item
      */
-    get musicBrainzArtistId(): string { return this.getStringValue("MUSICBRAINZ_ARTISTID"); }
+    get musicBrainzArtistId(): string|undefined { return this.getStringValue("MUSICBRAINZ_ARTISTID"); }
     /**
      * @inheritDoc
      * @remarks Stored in the `MUSICBRAINZ_ARTISTID` item
      */
-    set musicBrainzArtistId(value: string) { this.setStringValue("MUSICBRAINZ_ARTISTID", value); }
+    set musicBrainzArtistId(value: string|undefined) { this.setStringValue("MUSICBRAINZ_ARTISTID", value); }
 
     /**
      * @inheritDoc
      * @remarks Stored in the `MUSICBRAINZ_RELEASEGROUPID` item
      */
-    get musicBrainzReleaseGroupId(): string { return this.getStringValue("MUSICBRAINZ_RELEASEGROUPID"); }
+    get musicBrainzReleaseGroupId(): string|undefined { return this.getStringValue("MUSICBRAINZ_RELEASEGROUPID"); }
     /**
      * @inheritDoc
      * @remarks Stored in the `MUSICBRAINZ_RELEASEGROUPID` item
      */
-    set musicBrainzReleaseGroupId(value: string) { this.setStringValue("MUSICBRAINZ_RELEASEGROUPID", value); }
+    set musicBrainzReleaseGroupId(value: string|undefined) { this.setStringValue("MUSICBRAINZ_RELEASEGROUPID", value); }
 
     /**
      * @inheritDoc
      * @remarks Stored in the `MUSICBRAINZ_ALBUMID` item
      */
-    get musicBrainzReleaseId(): string { return this.getStringValue("MUSICBRAINZ_ALBUMID"); }
+    get musicBrainzReleaseId(): string|undefined { return this.getStringValue("MUSICBRAINZ_ALBUMID"); }
     /**
      * @inheritDoc
      * @remarks Stored in the `MUSICBRAINZ_ALBUMID` item
      */
-    set musicBrainzReleaseId(value: string) { this.setStringValue("MUSICBRAINZ_ALBUMID", value); }
+    set musicBrainzReleaseId(value: string|undefined) { this.setStringValue("MUSICBRAINZ_ALBUMID", value); }
 
     /**
      * @inheritDoc
      * @remarks Stored in the `MUSICBRAINZ_ALBUMARTISTID` item
      */
-    get musicBrainzReleaseArtistId(): string { return this.getStringValue("MUSICBRAINZ_ALBUMARTISTID"); }
+    get musicBrainzReleaseArtistId(): string|undefined { return this.getStringValue("MUSICBRAINZ_ALBUMARTISTID"); }
     /**
      * @inheritDoc
      * @remarks Stored in the `MUSICBRAINZ_ALBUMARTISTID` item
      */
-    set musicBrainzReleaseArtistId(value: string) { this.setStringValue("MUSICBRAINZ_ALBUMARTISTID", value); }
+    set musicBrainzReleaseArtistId(value: string|undefined) { this.setStringValue("MUSICBRAINZ_ALBUMARTISTID", value); }
 
     /**
      * @inheritDoc
      * @remarks Stored in the `MUSICBRAINZ_TRACKID` item
      */
-    get musicBrainzTrackId(): string { return this.getStringValue("MUSICBRAINZ_TRACKID"); }
+    get musicBrainzTrackId(): string|undefined { return this.getStringValue("MUSICBRAINZ_TRACKID"); }
     /**
      * @inheritDoc
      * @remarks Stored in the `MUSICBRAINZ_TRACKID` item
      */
-    set musicBrainzTrackId(value: string) { this.setStringValue("MUSICBRAINZ_TRACKID", value); }
+    set musicBrainzTrackId(value: string|undefined) { this.setStringValue("MUSICBRAINZ_TRACKID", value); }
 
     /**
      * @inheritDoc
      * @remarks Stored in the `MUSICBRAINZ_DISCID` item
      */
-    get musicBrainzDiscId(): string { return this.getStringValue("MUSICBRAINZ_DISCID"); }
+    get musicBrainzDiscId(): string|undefined { return this.getStringValue("MUSICBRAINZ_DISCID"); }
     /**
      * @inheritDoc
      * @remarks Stored in the `MUSICBRAINZ_DISCID` item
      */
-    set musicBrainzDiscId(value: string) { this.setStringValue("MUSICBRAINZ_DISCID", value); }
+    set musicBrainzDiscId(value: string|undefined) { this.setStringValue("MUSICBRAINZ_DISCID", value); }
 
     /**
      * @inheritDoc
      * @remarks Stored in the `MUSICIP_PUID` item
      */
-    get musicIpId(): string { return this.getStringValue("MUSICIP_PUID"); }
+    get musicIpId(): string|undefined { return this.getStringValue("MUSICIP_PUID"); }
     /**
      * @inheritDoc
      * @remarks Stored in the `MUSICIP_PUID` item
      */
-    set musicIpId(value: string) { this.setStringValue("MUSICIP_PUID", value); }
+    set musicIpId(value: string|undefined) { this.setStringValue("MUSICIP_PUID", value); }
 
     /**
      * @inheritDoc
      * @remarks Stored in the `ASIN` item
      */
-    get amazonId(): string { return this.getStringValue("ASIN"); }
+    get amazonId(): string|undefined { return this.getStringValue("ASIN"); }
     /**
      * @inheritDoc
      * @remarks Stored in the `ASIN` item
      */
-    set amazonId(value: string) { this.setStringValue("ASIN", value); }
+    set amazonId(value: string|undefined) { this.setStringValue("ASIN", value); }
 
     /**
      * @inheritDoc
      * @remarks Stored in the `MUSICBRAINZ_ALBUMSTATUS` item
      */
-    get musicBrainzReleaseStatus(): string { return this.getStringValue("MUSICBRAINZ_ALBUMSTATUS"); }
+    get musicBrainzReleaseStatus(): string|undefined { return this.getStringValue("MUSICBRAINZ_ALBUMSTATUS"); }
     /**
      * @inheritDoc
      * @remarks Stored in the `MUSICBRAINZ_ALBUMSTATUS` item
      */
-    set musicBrainzReleaseStatus(value: string) { this.setStringValue("MUSICBRAINZ_ALBUMSTATUS", value); }
+    set musicBrainzReleaseStatus(value: string|undefined) { this.setStringValue("MUSICBRAINZ_ALBUMSTATUS", value); }
 
     /**
      * @inheritDoc
      * @remarks Stored in the `MUSICBRAINZ_ALBUMTYPE` item
      */
-    get musicBrainzReleaseType(): string { return this.getStringValue("MUSICBRAINZ_ALBUMTYPE"); }
+    get musicBrainzReleaseType(): string|undefined { return this.getStringValue("MUSICBRAINZ_ALBUMTYPE"); }
     /**
      * @inheritDoc
      * @remarks Stored in the `MUSICBRAINZ_ALBUMTYPE` item
      */
-    set musicBrainzReleaseType(value: string) { this.setStringValue("MUSICBRAINZ_ALBUMTYPE", value); }
+    set musicBrainzReleaseType(value: string|undefined) { this.setStringValue("MUSICBRAINZ_ALBUMTYPE", value); }
 
     /**
      * @inheritDoc
      * @remarks Stored in the `RELEASECOUNTRY` item
      */
-    get musicBrainzReleaseCountry(): string { return this.getStringValue("RELEASECOUNTRY"); }
+    get musicBrainzReleaseCountry(): string|undefined { return this.getStringValue("RELEASECOUNTRY"); }
     /**
      * @inheritDoc
      * @remarks Stored in the `RELEASECOUNTRY` item
      */
-    set musicBrainzReleaseCountry(value: string) { this.setStringValue("RELEASECOUNTRY", value); }
+    set musicBrainzReleaseCountry(value: string|undefined) { this.setStringValue("RELEASECOUNTRY", value); }
 
     /**
      * @inheritDoc
@@ -635,7 +634,7 @@ export default class ApeTag extends Tag {
      * @remarks Stored in the `REPLAYGAIN_TRACK_PEAK` item
      */
     get replayGainTrackPeak(): number {
-        const text: string = this.getStringValue("REPLAYGAIN_TRACK_PEAK");
+        const text = this.getStringValue("REPLAYGAIN_TRACK_PEAK");
         return text ? Number.parseFloat(text) : NaN;
     }
     /**
@@ -682,7 +681,7 @@ export default class ApeTag extends Tag {
      * @remarks Stored in the `REPLAYGAIN_ALBUM_PEAK` item
      */
     get replayGainAlbumPeak(): number {
-        const text: string = this.getStringValue("REPLAYGAIN_ALBUM_PEAK");
+        const text = this.getStringValue("REPLAYGAIN_ALBUM_PEAK");
         return text ? Number.parseFloat(text) : NaN;
     }
     /**
@@ -705,25 +704,33 @@ export default class ApeTag extends Tag {
     get pictures(): IPicture[] {
         // TODO: Parse pictures either lazily (see xiph) or at tag parsing
         const pictures = [];
-        for (const item of this._items) {
-            if (!item || item.type !== ApeTagItemType.Binary) {
-                continue;
-            }
 
+        for (const item of this._items) {
+            // Determine if item is a picture item
             const comparison = (e: string): boolean => StringComparison.caseInsensitive(item.key, e);
             const pictureTypeId = ApeTag.PICTURE_ITEM_NAMES.findIndex(comparison);
             if (pictureTypeId < 0) {
                 continue;
             }
 
+            // Make sure item has data
+            if (!item.value) {
+                continue;
+            }
+
+            // Find delimiter for where the description ends
             const descriptionEndIndex = item.value.find(ByteVector.getTextDelimiter(StringType.UTF8));
             if (descriptionEndIndex < 0) {
                 continue;
             }
 
-            const pic = Picture.fromData(item.value.subarray(descriptionEndIndex + 1));
+            // Create the picture object
+            const picData = item.value.subarray(descriptionEndIndex + 1);
+            const pic = Picture.fromData(picData);
             pic.description = item.value.subarray(0, descriptionEndIndex).toString(StringType.UTF8);
-            pic.type = pictureTypeId !== ApeTag.NOT_PICTURE_ITEM_TYPE_ID ? pictureTypeId : PictureType.NotAPicture;
+            pic.type = pictureTypeId !== ApeTag.NOT_PICTURE_ITEM_TYPE_ID
+                ? pictureTypeId
+                : PictureType.NotAPicture;
 
             pictures.push(pic);
         }
@@ -752,8 +759,9 @@ export default class ApeTag extends Tag {
                 continue;
             }
 
+            // @TODO: Verify that no description is a valid description
             const data = ByteVector.concatenate(
-                ByteVector.fromString(pic.description, StringType.UTF8),
+                ByteVector.fromString(pic.description ?? "", StringType.UTF8),
                 ByteVector.getTextDelimiter(StringType.UTF8),
                 pic.data
             );
@@ -786,6 +794,7 @@ export default class ApeTag extends Tag {
     /**
      * Adds a lists of strings to the values stored in a specified item. Creates a new item if one
      * does not already exist.
+     * @throws Error When attempting to append items to a non-text item.
      * @param key Key to use to look up the item
      * @param values Values to add to the item
      */
@@ -795,18 +804,20 @@ export default class ApeTag extends Tag {
             return;
         }
 
-        const index = this.getItemIndex(key);
-
-        values = values.filter((v) => !!v);
-        if (index >= 0) {
-            values.unshift(...this._items[index].text);
-        }
-
-        const item = ApeTagItem.fromTextValues(key, ...values);
-        if (index >= 0) {
-            this._items[index] = item;
+        const item = this.getItem(key);
+        if (!item) {
+            // Item doesn't exist, so create a new one
+            const newItem = ApeTagItem.fromTextValues(key, ...values);
+            this._items.push(newItem);
         } else {
-            this._items.push(item);
+            // Item does exist, so append the new values to the existing item
+            if (!item.text) {
+                throw new Error(
+                    "Invalid operation: Cannot append text values to non-text APE item. Item must be replaced."
+                );
+            }
+
+            item.text.push(... values);
         }
     }
 
@@ -815,6 +826,7 @@ export default class ApeTag extends Tag {
         this._items.splice(0, this._items.length);
     }
 
+    /** @inheritDoc */
     public copyTo(target: Tag, overwrite: boolean): void {
         Guards.truthy(target, "target");
 
@@ -835,7 +847,8 @@ export default class ApeTag extends Tag {
      *     ApeTagItem Item specified by `key` if it exists, undefined is
      *     returned otherwise
      */
-    public getItem(key: string): ApeTagItem {
+    // @TODO: Is it possible (ie, allowed by the spec) to have multiple items with the same key?
+    public getItem(key: string): ApeTagItem|undefined {
         Guards.notNullOrUndefined(key, "key");
         return this._items.find((e) => StringComparison.caseInsensitive(e.key, key));
     }
@@ -845,6 +858,7 @@ export default class ApeTag extends Tag {
      * @param key Identifier for looking up a matching item
      * @returns `true` if an item with the specified key exists, `false` otherwise
      */
+    // @TODO: Deprecate - just use getItem and check for not undefined.
     public hasItem(key: string): boolean {
         Guards.notNullOrUndefined(key, "key");
         return this.getItemIndex(key) >= 0;
@@ -881,6 +895,7 @@ export default class ApeTag extends Tag {
         this.isHeaderPresent = true;
 
         // Add the header/footer
+        // @TODO: no need reconcatenate the rendered items
         return ByteVector.concatenate(
             this._footer.renderHeader(),
             ... renderedItems,
@@ -889,7 +904,7 @@ export default class ApeTag extends Tag {
     }
 
     /**
-     * Adds an item to the current instance, replacing an existing one with the same key.
+     * Adds an item to the current instance or replaces an existing one with the same key.
      * @param item Item to add to the current instance
      */
     public setItem(item: ApeTagItem): void {
@@ -935,7 +950,7 @@ export default class ApeTag extends Tag {
      * @param key Item to set the value of
      * @param value String to store in the item. If falsy, the specified item will be removed
      */
-    public setStringValue(key: string, value: string): void {
+    public setStringValue(key: string, value: string|undefined): void {
         Guards.notNullOrUndefined(key, "key");
 
         if (!value) {
@@ -959,12 +974,7 @@ export default class ApeTag extends Tag {
             this.removeItem(key);
         } else {
             const item = ApeTagItem.fromTextValues(key, ...values.filter((v) => !!v));
-            const index = this.getItemIndex(key);
-            if (index >= 0) {
-                this._items[index] = item;
-            } else {
-                this._items.push(item);
-            }
+            this.setItem(item);
         }
     }
 
@@ -972,14 +982,14 @@ export default class ApeTag extends Tag {
 
     //#region Private Methods
 
-    private getStringValue(key: string): string {
+    private getStringValue(key: string): string|undefined {
         const item = this.getItem(key);
-        return item ? item.toString() : undefined;
+        return item?.toString() ?? undefined;
     }
 
     private getStringValues(key: string): string[] {
         const item = this.getItem(key);
-        return item ? item.text : [];
+        return item?.text ?? [];
     }
 
     private getUint32Value(key: string, index: number): number {

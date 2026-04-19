@@ -27,11 +27,6 @@ export default class ApeFile extends SandwichFile {
 
     /** @inheritDoc */
     protected readProperties(readStyle: ReadStyle): Properties {
-        // Skip if we're not reading the properties
-        if (!NumberUtils.hasFlag(readStyle, ReadStyle.Average)) {
-            return undefined;
-        }
-
         // Find the header and use it to generate the properties
         this.seek(this.mediaStartPosition);
         const headerBlock = this.readBlock(ApeStreamHeader.SIZE);
