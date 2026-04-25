@@ -15,7 +15,7 @@ import {Guards} from "../../utils";
  *     a representation of all types of values, it is recommended to determine which of the `get*`
  *     methods to use by accessing {@link type}
  */
-export class MetadataDescriptor extends DescriptorBase {
+export class MetadataDescriptor<T extends DescriptorValue = DescriptorValue> extends DescriptorBase<T> {
     private readonly _languageListIndex: number;
     private readonly _streamNumber: number;
 
@@ -30,11 +30,11 @@ export class MetadataDescriptor extends DescriptorBase {
      * @param value Value to store in the instance
      */
     public constructor(
-        languageListIndex: number,
-        streamNumber: number,
         name: string,
         type: DataType,
-        value: DescriptorValue
+        value: T,
+        languageListIndex: number,
+        streamNumber: number,
     ) {
         super(name, type, value);
         Guards.ushort(languageListIndex, "languageListIndex");
@@ -66,43 +66,9 @@ export class MetadataDescriptor extends DescriptorBase {
         const dataType = ReadWriteUtils.readWord(file);
         const dataLength = ReadWriteUtils.readDWord(file);
         const name = ReadWriteUtils.readUnicode(file, nameLength);
+        const value = this.readValue(file, dataType, dataLength, this.readBoolean);
 
-        let value: DescriptorValue;
-        switch (dataType) {
-            case DataType.Word:
-                value = ReadWriteUtils.readWord(file);
-                break;
-            case DataType.Bool:
-                // NOTE: The ASF specification says metadata description objects should be 2 bytes
-                //    however the original .NET implementation reads them as DWORDs. It might be a
-                //    bug in the .NET implementation, or could be some apps read/write them as
-                //    DWORDs. So, let's hedge our bets and try to read either.
-                if (dataLength === 4) {
-                    value = ReadWriteUtils.readDWord(file) > 0;
-                } else {
-                    value = ReadWriteUtils.readWord(file) > 0;
-                }
-                break;
-            case DataType.DWord:
-                value = ReadWriteUtils.readDWord(file);
-                break;
-            case DataType.QWord:
-                value = ReadWriteUtils.readQWord(file);
-                break;
-            case DataType.Unicode:
-                value = ReadWriteUtils.readUnicode(file, dataLength);
-                break;
-            case DataType.Bytes:
-                value = file.readBlock(dataLength);
-                break;
-            case DataType.Guid:
-                value = ReadWriteUtils.readGuid(file);
-                break;
-            default:
-                throw new CorruptFileError("Failed to parse description record.");
-        }
-
-        return new MetadataDescriptor(languageListIndex, streamNumber, name, dataType, value);
+        return new MetadataDescriptor(name, dataType, value, languageListIndex, streamNumber);
     }
 
     //#endregion
@@ -125,42 +91,33 @@ export class MetadataDescriptor extends DescriptorBase {
 
     /** @inheritDoc */
     public render(): ByteVector {
-        let value: ByteVector;
-        switch (this.type) {
-            case DataType.QWord:
-                value = ReadWriteUtils.renderQWord(this.ulongValue);
-                break;
-            case DataType.DWord:
-                value = ReadWriteUtils.renderDWord(this.uintValue);
-                break;
-            case DataType.Word:
-                value = ReadWriteUtils.renderWord(this.ushortValue);
-                break;
-            case DataType.Bool:
-                // NOTE: For whatever reason metadata content descriptions are WORDs.
-                value = ReadWriteUtils.renderWord(this.boolValue ? 1 : 0);
-                break;
-            case DataType.Unicode:
-                value = ReadWriteUtils.renderUnicode(this.stringValue);
-                break;
-            case DataType.Bytes:
-                value = this.byteValue;
-                break;
-            case DataType.Guid:
-                value = this.guidValue.toBytes();
-                break;
-        }
-
         const nameBytes = ReadWriteUtils.renderUnicode(this.name);
+        const valueBytes = this.renderValue(MetadataDescriptor.renderBoolean);
         return ByteVector.concatenate(
             ReadWriteUtils.renderWord(this._languageListIndex),
             ReadWriteUtils.renderWord(this._streamNumber),
             ReadWriteUtils.renderWord(nameBytes.length),
             ReadWriteUtils.renderWord(this.type),
-            ReadWriteUtils.renderDWord(value.length),
+            ReadWriteUtils.renderDWord(valueBytes.length),
             nameBytes,
-            value
+            valueBytes
         );
+    }
+
+    private static readBoolean(file: File, dataLength: number): boolean {
+        // NOTE: The ASF specification says metadata description objects should be 2 bytes
+        //    however the original .NET implementation reads them as DWORDs. It might be a
+        //    bug in the .NET implementation, or could be some apps read/write them as
+        //    DWORDs. So, let's hedge our bets and try to read either.
+        return dataLength === 4
+            ? ReadWriteUtils.readDWord(file) > 0
+            : ReadWriteUtils.readWord(file) > 0;
+    }
+
+    private static renderBoolean(value: boolean): ByteVector {
+        // NOTE: For whatever reason metadata content descriptions use WORDs for boolean?
+        // @TODO: Verify this.
+        return ReadWriteUtils.renderWord(value ? 1 : 0);
     }
 
     //#endregion
@@ -175,17 +132,15 @@ export class MetadataLibraryObject extends BaseObject {
 
     //#region Constructors
 
-    private constructor() {
-        super();
+    private constructor(originalSize: number) {
+        super(Guids.ASF_METADATA_LIBRARY_OBJECT, originalSize);
     }
 
     /**
      * Constructs and initializes a new instance that does not contain any records.
      */
     public static fromEmpty(): MetadataLibraryObject {
-        const instance = new MetadataLibraryObject();
-        instance.initializeFromGuid(Guids.ASF_METADATA_LIBRARY_OBJECT);
-        return instance;
+        return new MetadataLibraryObject(0);
     }
 
     /**
@@ -194,16 +149,15 @@ export class MetadataLibraryObject extends BaseObject {
      * @param position Offset into the file where the object begins
      */
     public static fromFile(file: File, position: number): MetadataLibraryObject {
-        const instance = new MetadataLibraryObject();
-        instance.initializeFromFile(file, position);
-
-        if (!instance.guid.equals(Guids.ASF_METADATA_LIBRARY_OBJECT)) {
+        const baseProperties = this.readBaseProperties(file, position);
+        if (!baseProperties.id.equals(Guids.ASF_METADATA_LIBRARY_OBJECT)) {
             throw new CorruptFileError("Object GUID does not match expected metadata library object GUID");
         }
-        if (instance.originalSize < 26) {
+        if (baseProperties.originalSize < 26) {
             throw new CorruptFileError("Metadata library object is too small");
         }
 
+        const instance = new MetadataLibraryObject(baseProperties.originalSize);
         const count = ReadWriteUtils.readWord(file);
         for (let i = 0; i < count; i++) {
             instance._records.push(MetadataDescriptor.fromFile(file));

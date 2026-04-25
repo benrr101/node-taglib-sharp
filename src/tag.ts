@@ -127,7 +127,7 @@ export abstract class Tag {
     /**
      * Gets the size of the tag in bytes on disk as it was read from disk.
      */
-    public abstract get sizeOnDisk(): number;
+    public abstract get sizeOnDisk(): number|undefined;
 
     /**
      * Gets the title for the media described by the current instance.

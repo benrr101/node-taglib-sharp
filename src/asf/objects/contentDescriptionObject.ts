@@ -11,6 +11,8 @@ import {File} from "../../file";
  * information such as title, author, copyright, description, rating information.
  */
 export default class ContentDescriptionObject extends BaseObject {
+    // @TODO: Since the fields *must* exist on this one, empty string is equivalent to undefined. Should we normalize
+    //    it at read/render or at get/set? I'm leaning towards read/render.
     private _author: string = "";
     private _copyright: string = "";
     private _description: string = "";
@@ -19,18 +21,15 @@ export default class ContentDescriptionObject extends BaseObject {
 
     //#region Constructors
 
-    private constructor() {
-        super();
+    private constructor(originalSize: number) {
+        super(Guids.ASF_CONTENT_DESCRIPTION_OBJECT, originalSize);
     }
 
     /**
      * Constructs a blank content description object.
      */
     public static fromEmpty(): ContentDescriptionObject {
-        const instance = new ContentDescriptionObject();
-        instance.initializeFromGuid(Guids.ASF_CONTENT_DESCRIPTION_OBJECT);
-
-        return instance;
+        return new ContentDescriptionObject(0);
     }
 
     /**
@@ -39,15 +38,15 @@ export default class ContentDescriptionObject extends BaseObject {
      * @param position Offset into the file where the object begins
      */
     public static fromFile(file: File, position: number): ContentDescriptionObject {
-        const instance = new ContentDescriptionObject();
-        instance.initializeFromFile(file, position);
-
-        if (!instance.guid.equals(Guids.ASF_CONTENT_DESCRIPTION_OBJECT)) {
+        const objectProperties = this.readBaseProperties(file, position);
+        if (!objectProperties.id.equals(Guids.ASF_CONTENT_DESCRIPTION_OBJECT)) {
             throw new CorruptFileError("Object GUID is not the expected content description object guid");
         }
-        if (instance.originalSize < 34) {
+        if (objectProperties.originalSize < 34) {
             throw new CorruptFileError("Object size too small for content description object");
         }
+
+        const instance = new ContentDescriptionObject(objectProperties.originalSize);
 
         const titleLength = ReadWriteUtils.readWord(file);
         const authorLength = ReadWriteUtils.readWord(file);
@@ -72,31 +71,31 @@ export default class ContentDescriptionObject extends BaseObject {
      * Gets the author of the media described by the current instance.
      * @returns Author of the media or `undefined` if it is not set.
      */
-    public get author(): string { return this._author || undefined; }
+    public get author(): string|undefined { return this._author || undefined; }
     /**
      * Sets the author of the media described by the current instance.
      */
-    public set author(value: string) { this._author = value ?? ""; }
+    public set author(value: string|undefined) { this._author = value ?? ""; }
 
     /**
      * Gets the copyright information of the media described by the current instance.
      * @returns Copyright information of the media or `undefined` if it is not set.
      */
-    public get copyright(): string { return this._copyright || undefined; }
+    public get copyright(): string|undefined { return this._copyright || undefined; }
     /**
      * Sets the copyright information of the media described by the current instance.
      */
-    public set copyright(value: string) { this._copyright = value ?? ""; }
+    public set copyright(value: string|undefined) { this._copyright = value ?? ""; }
 
     /**
      * Gets the description of the media described by the current instance.
      * @returns Description of the media or `undefined` if it is not set.
      */
-    public get description(): string { return this._description || undefined; }
+    public get description(): string|undefined { return this._description || undefined; }
     /**
      * Sets the description of the media described by the current instance.
      */
-    public set description(value: string) { this._description = value ?? ""; }
+    public set description(value: string|undefined) { this._description = value ?? ""; }
 
     /**
      * Gets whether the current instance is empty.
@@ -117,21 +116,21 @@ export default class ContentDescriptionObject extends BaseObject {
      * Gets the rating of the media described by the current instance.
      * @returns Rating of the media or `undefined` if it is not set.
      */
-    public get rating(): string { return this._rating || undefined; }
+    public get rating(): string|undefined { return this._rating || undefined; }
     /**
      * Sets the rating of the media described by the current instance.
      */
-    public set rating(value: string) { this._rating = value ?? ""; }
+    public set rating(value: string|undefined) { this._rating = value ?? ""; }
 
     /**
      * Gets the title of the media described by the current instance.
      * @returns Title of the media or `undefined` if it is not set.
      */
-    public get title(): string { return this._title || undefined; }
+    public get title(): string|undefined { return this._title || undefined; }
     /**
      * Sets the title of the media described by the current instance.
      */
-    public set title(value: string) { this._title = value ?? ""; }
+    public set title(value: string|undefined) { this._title = value ?? ""; }
 
     //#endregion
 

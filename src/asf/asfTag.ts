@@ -95,18 +95,18 @@ export default class AsfTag extends Tag {
 
     /** @inheritDoc */
     // @TODO: Reliably calculate size on disk during reading
-    public get sizeOnDisk(): number { return undefined; }
+    public get sizeOnDisk(): number|undefined { return undefined; }
 
     /**
      * @inheritDoc
      * @remarks Stored in the content description object
      */
-    public get title(): string { return this._contentDescriptionObject.title; }
+    public get title(): string|undefined { return this._contentDescriptionObject.title; }
     /**
      * @inheritDoc
      * @remarks Stored in the content description object
      */
-    public set title(value: string) { this._contentDescriptionObject.title = value; }
+    public set title(value: string|undefined) { this._contentDescriptionObject.title = value; }
 
     /**
      * @inheritDoc
@@ -114,14 +114,14 @@ export default class AsfTag extends Tag {
      *     Stored in the `WM/SubTitle` descriptor
      *     https://msdn.microsoft.com/en-us/library/windows/desktop/dd757997(v=vs.85).aspx
      */
-    public get subtitle(): string { return this.getDescriptorString("WM/SubTitle"); }
+    public get subtitle(): string|undefined { return this.getDescriptorString("WM/SubTitle"); }
     /**
      * @inheritDoc
      * @remarks
      *     Stored in the `WM/SubTitle` descriptor
      *     https://msdn.microsoft.com/en-us/library/windows/desktop/dd757997(v=vs.85).aspx
      */
-    public set subtitle(value: string) { this.setDescriptorString(value, "WM/SubTitle"); }
+    public set subtitle(value: string|undefined) { this.setDescriptorString(value, "WM/SubTitle"); }
 
     /**
      * @inheritDoc
@@ -129,14 +129,14 @@ export default class AsfTag extends Tag {
      *     Stored in the `WM/TitleSortOrder`
      *     http://msdn.microsoft.com/en-us/library/aa386866(VS.85).aspx
      */
-    public get titleSort(): string { return this.getDescriptorString("WM/TitleSortOrder"); }
+    public get titleSort(): string|undefined { return this.getDescriptorString("WM/TitleSortOrder"); }
     /**
      * @inheritDoc
      * @remarks
      *     Stored in the `WM/TitleSortOrder`
      *     http://msdn.microsoft.com/en-us/library/aa386866(VS.85).aspx
      */
-    public set titleSort(value: string) { this.setDescriptorString(value, "WM/TitleSortOrder"); }
+    public set titleSort(value: string|undefined) { this.setDescriptorString(value, "WM/TitleSortOrder"); }
 
     /**
      * @inheritDoc
@@ -144,14 +144,14 @@ export default class AsfTag extends Tag {
      *     Stored in the {@link ContentDescriptionObject.description}
      *     Some applications will use this field for storing comments.
      */
-    public get description(): string { return this._contentDescriptionObject.description; }
+    public get description(): string|undefined { return this._contentDescriptionObject.description; }
     /**
      * @inheritDoc
      * @remarks
      *     Stored in the {@link ContentDescriptionObject.description}
      *     Some applications will use this field for storing comments.
      */
-    public set description(value: string) { this._contentDescriptionObject.description = value; }
+    public set description(value: string|undefined) { this._contentDescriptionObject.description = value; }
 
     /**
      * @inheritDoc
@@ -226,25 +226,25 @@ export default class AsfTag extends Tag {
      *     Stored in the `WM/AlbumTitle` or `Album` descriptors
      *     https://docs.microsoft.com/en-us/windows/win32/wmformat/wm-albumtitle
      */
-    public get album(): string { return this.getDescriptorString("WM/AlbumTitle", "Album"); }
+    public get album(): string|undefined { return this.getDescriptorString("WM/AlbumTitle", "Album"); }
     /**
      * @inheritDoc
      * @remarks
      *     Stored in the `WM/AlbumTitle` or `Album` descriptors
      *     https://docs.microsoft.com/en-us/windows/win32/wmformat/wm-albumtitle
      */
-    public set album(value: string) { this.setDescriptorString(value, "WM/AlbumTitle", "Album"); }
+    public set album(value: string|undefined) { this.setDescriptorString(value, "WM/AlbumTitle", "Album"); }
 
     /**
      * @inheritDoc
      * @remarks Stored in the `WM/AlbumSortOrder` descriptors
      */
-    public get albumSort(): string { return this.getDescriptorString("WM/AlbumSortOrder"); }
+    public get albumSort(): string|undefined { return this.getDescriptorString("WM/AlbumSortOrder"); }
     /**
      * @inheritDoc
      * @remarks Stored in the `WM/AlbumSortOrder` descriptors
      */
-    public set albumSort(value: string) { this.setDescriptorString(value, "WM/AlbumSortOrder"); }
+    public set albumSort(value: string|undefined) { this.setDescriptorString(value, "WM/AlbumSortOrder"); }
 
     /**
      * @inheritDoc
@@ -254,7 +254,7 @@ export default class AsfTag extends Tag {
      *     It should be noted that many applications store comments in the field read by
      *     {@link description}.
      */
-    public get comment(): string { return this.getDescriptorString("WM/Text"); }
+    public get comment(): string|undefined { return this.getDescriptorString("WM/Text"); }
     /**
      * @inheritDoc
      * @remarks
@@ -263,7 +263,7 @@ export default class AsfTag extends Tag {
      *     It should be noted that many applications store comments in the field read by
      *     {@link description}.
      */
-    public set comment(value: string) { this.setDescriptorString(value, "WM/Text"); }
+    public set comment(value: string|undefined) { this.setDescriptorString(value, "WM/Text"); }
 
     /**
      * @inheritDoc
@@ -286,9 +286,9 @@ export default class AsfTag extends Tag {
             // Attempt to find a numeric genre in here
             const genreMatch = AsfTag.GENRE_REGEX.exec(genre);
             if (genreMatch) {
-                const numericGenre = Number.parseInt(genreMatch[1], 10);
-                if (!Number.isNaN(numericGenre)) {
-                    genre = Genres.indexToAudio(genreMatch[1], false);
+                const numericGenre = Genres.indexToAudioDirect(genreMatch[1]);
+                if (numericGenre !== undefined) {
+                    genre = numericGenre;
                 }
             }
 
@@ -460,14 +460,14 @@ export default class AsfTag extends Tag {
      *     Stored in the `WM/Lyrics` descriptor
      *     https://docs.microsoft.com/en-us/windows/win32/wmformat/wm-lyrics
      */
-    public get lyrics(): string { return this.getDescriptorString("WM/Lyrics"); }
+    public get lyrics(): string|undefined { return this.getDescriptorString("WM/Lyrics"); }
     /**
      * @inheritDoc
      * @remarks
      *     Stored in the `WM/Lyrics` descriptor
      *     https://docs.microsoft.com/en-us/windows/win32/wmformat/wm-lyrics
      */
-    public set lyrics(value: string) { this.setDescriptorString(value, "WM/Lyrics"); }
+    public set lyrics(value: string|undefined) { this.setDescriptorString(value, "WM/Lyrics"); }
 
     /**
      * @inheritDoc
@@ -475,14 +475,14 @@ export default class AsfTag extends Tag {
      *     Stored in the `WM/ContentGroupDescription` descriptor
      *     https://docs.microsoft.com/en-us/windows/win32/wmformat/wm-contentgroupdescription
      */
-    public get grouping(): string { return this.getDescriptorString("WM/ContentGroupDescription"); }
+    public get grouping(): string|undefined { return this.getDescriptorString("WM/ContentGroupDescription"); }
     /**
      * @inheritDoc
      * @remarks
      *     Stored in the `WM/ContentGroupDescription` descriptor
      *     https://docs.microsoft.com/en-us/windows/win32/wmformat/wm-contentgroupdescription
      */
-    public set grouping(value: string) { this.setDescriptorString(value, "WM/ContentGroupDescription"); }
+    public set grouping(value: string|undefined) { this.setDescriptorString(value, "WM/ContentGroupDescription"); }
 
     /**
      * @inheritDoc
@@ -514,47 +514,51 @@ export default class AsfTag extends Tag {
      *     Stored in the `WM/Conductor` descriptor
      *     https://docs.microsoft.com/en-us/windows/win32/wmformat/wm-conductor
      */
-    public get conductor(): string { return this.getDescriptorString("WM/Conductor"); }
+    public get conductor(): string|undefined { return this.getDescriptorString("WM/Conductor"); }
     /**
      * @inheritDoc
      * @remarks
      *     Stored in the `WM/Conductor` descriptor
      *     https://docs.microsoft.com/en-us/windows/win32/wmformat/wm-conductor
      */
-    public set conductor(value: string) { this.setDescriptorString(value, "WM/Conductor"); }
+    public set conductor(value: string|undefined) { this.setDescriptorString(value, "WM/Conductor"); }
 
     /**
      * @inheritDoc
      * @remarks Stored in the {@link ContentDescriptionObject.copyright}
      */
-    public get copyright(): string { return this._contentDescriptionObject.copyright; }
+    public get copyright(): string|undefined { return this._contentDescriptionObject.copyright; }
     /**
      * @inheritDoc
      * @remarks Stored in the {@link ContentDescriptionObject.copyright}
      */
-    public set copyright(value: string) { this._contentDescriptionObject.copyright = value; }
+    public set copyright(value: string|undefined) { this._contentDescriptionObject.copyright = value; }
 
     /**
      * @inheritDoc
      * @remarks Stored in the `MusicBrainz/Artist Id` descriptor
      */
-    public get musicBrainzArtistId(): string { return this.getDescriptorString("MusicBrainz/Artist Id"); }
+    public get musicBrainzArtistId(): string|undefined { return this.getDescriptorString("MusicBrainz/Artist Id"); }
     /**
      * @inheritDoc
      * @remarks Stored in the `MusicBrainz/Artist Id` descriptor
      */
-    public set musicBrainzArtistId(value: string) { this.setDescriptorString(value, "MusicBrainz/Artist Id"); }
+    public set musicBrainzArtistId(value: string|undefined) {
+        this.setDescriptorString(value, "MusicBrainz/Artist Id");
+    }
 
     /**
      * @inheritDoc
      * @remarks Stored in the `MusicBrainz/Release Group Id` descriptor
      */
-    public get musicBrainzReleaseGroupId(): string { return this.getDescriptorString("MusicBrainz/Release Group Id"); }
+    public get musicBrainzReleaseGroupId(): string|undefined {
+        return this.getDescriptorString("MusicBrainz/Release Group Id");
+    }
     /**
      * @inheritDoc
      * @remarks Stored in the `MusicBrainz/Release Group Id` descriptor
      */
-    public set musicBrainzReleaseGroupId(value: string) {
+    public set musicBrainzReleaseGroupId(value: string|undefined) {
         this.setDescriptorString(value, "MusicBrainz/Release Group Id");
     }
 
@@ -562,23 +566,27 @@ export default class AsfTag extends Tag {
      * @inheritDoc
      * @remarks Stored in the `MusicBrainz/Album Id` descriptor
      */
-    public get musicBrainzReleaseId(): string { return this.getDescriptorString("MusicBrainz/Album Id"); }
+    public get musicBrainzReleaseId(): string|undefined { return this.getDescriptorString("MusicBrainz/Album Id"); }
     /**
      * @inheritDoc
      * @remarks Stored in the `MusicBrainz/Album Id` descriptor
      */
-    public set musicBrainzReleaseId(value: string) { this.setDescriptorString(value, "MusicBrainz/Album Id"); }
+    public set musicBrainzReleaseId(value: string|undefined) {
+        this.setDescriptorString(value, "MusicBrainz/Album Id");
+    }
 
     /**
      * @inheritDoc
      * @remarks Stored in the `MusicBrainz/Album Artist Id` descriptor
      */
-    public get musicBrainzAlbumArtistId(): string { return this.getDescriptorString("MusicBrainz/Album Artist Id"); }
+    public get musicBrainzAlbumArtistId(): string|undefined {
+        return this.getDescriptorString("MusicBrainz/Album Artist Id");
+    }
     /**
      * @inheritDoc
      * @remarks Stored in the `MusicBrainz/Artist Id` descriptor
      */
-    public set musicBrainzAlbumArtistId(value: string) {
+    public set musicBrainzAlbumArtistId(value: string|undefined) {
         this.setDescriptorString(value, "MusicBrainz/Album Artist Id");
     }
 
@@ -586,69 +594,75 @@ export default class AsfTag extends Tag {
      * @inheritDoc
      * @remarks Stored in the `MusicBrainz/Track Id` descriptor
      */
-    public get musicBrainzTrackId(): string { return this.getDescriptorString("MusicBrainz/Track Id"); }
+    public get musicBrainzTrackId(): string|undefined { return this.getDescriptorString("MusicBrainz/Track Id"); }
     /**
      * @inheritDoc
      * @remarks Stored in the `MusicBrainz/Track Id` descriptor
      */
-    public set musicBrainzTrackId(value: string) { this.setDescriptorString(value, "MusicBrainz/Track Id"); }
+    public set musicBrainzTrackId(value: string|undefined) { this.setDescriptorString(value, "MusicBrainz/Track Id"); }
 
     /**
      * @inheritDoc
      * @remarks Stored in the `MusicBrainz/Disc Id` descriptor
      */
-    public get musicBrainzDiscId(): string { return this.getDescriptorString("MusicBrainz/Disc Id"); }
+    public get musicBrainzDiscId(): string|undefined { return this.getDescriptorString("MusicBrainz/Disc Id"); }
     /**
      * @inheritDoc
      * @remarks Stored in the `MusicBrainz/Disc Id` descriptor
      */
-    public set musicBrainzDiscId(value: string) { this.setDescriptorString(value, "MusicBrainz/Disc Id"); }
+    public set musicBrainzDiscId(value: string|undefined) { this.setDescriptorString(value, "MusicBrainz/Disc Id"); }
 
     /**
      * @inheritDoc
      * @remarks Stored in the `MusicIP/PUID` descriptor
      */
-    public get musicIpId(): string { return this.getDescriptorString("MusicIP/PUID"); }
+    public get musicIpId(): string|undefined { return this.getDescriptorString("MusicIP/PUID"); }
     /**
      * @inheritDoc
      * @remarks Stored in the `MusicIP/PUID` descriptor
      */
-    public set musicIpId(value: string) { this.setDescriptorString(value, "MusicIP/PUID"); }
+    public set musicIpId(value: string|undefined) { this.setDescriptorString(value, "MusicIP/PUID"); }
 
     /**
      * @inheritDoc
      * @remarks Stored in the `MusicBrainz/Album Status` descriptor
      */
-    public get musicBrainzReleaseStatus(): string { return this.getDescriptorString("MusicBrainz/Album Status"); }
+    public get musicBrainzReleaseStatus(): string|undefined {
+        return this.getDescriptorString("MusicBrainz/Album Status");
+    }
     /**
      * @inheritDoc
      * @remarks Stored in the `MusicBrainz/Album Status` descriptor
      */
-    public set musicBrainzReleaseStatus(value: string) { this.setDescriptorString(value, "MusicBrainz/Album Status"); }
+    public set musicBrainzReleaseStatus(value: string|undefined) {
+        this.setDescriptorString(value, "MusicBrainz/Album Status");
+    }
 
     /**
      * @inheritDoc
      * @remarks Stored in the `MusicBrainz/Album Type` descriptor
      */
-    public get musicBrainzReleaseType(): string { return this.getDescriptorString("MusicBrainz/Album Type"); }
+    public get musicBrainzReleaseType(): string|undefined { return this.getDescriptorString("MusicBrainz/Album Type"); }
     /**
      * @inheritDoc
      * @remarks Stored in the `MusicBrainz/Album Type` descriptor
      */
-    public set musicBrainzReleaseType(value: string) { this.setDescriptorString(value, "MusicBrainz/Album Type"); }
+    public set musicBrainzReleaseType(value: string|undefined) {
+        this.setDescriptorString(value, "MusicBrainz/Album Type");
+    }
 
     /**
      * @inheritDoc
      * @remarks Stored in the `MusicBrainz/Album Release Country` descriptor
      */
-    public get musicBrainzReleaseCountry(): string {
+    public get musicBrainzReleaseCountry(): string|undefined {
         return this.getDescriptorString("MusicBrainz/Album Release Country");
     }
     /**
      * @inheritDoc
      * @remarks Stored in the `MusicBrainz/Album Release Country` descriptor
      */
-    public set musicBrainzReleaseCountry(value: string) {
+    public set musicBrainzReleaseCountry(value: string|undefined) {
         this.setDescriptorString(value, "MusicBrainz/Album Release Country");
     }
 
@@ -764,7 +778,9 @@ export default class AsfTag extends Tag {
             ... this.getDescriptors("WM/Picture"),
             ... this._metadataLibraryObject.getRecords(0, 0, "WM/Picture")
         ];
-        return records.map((r) => AsfTag.pictureFromData(r.byteValue))
+        return records
+            .filter((r) => r.isBinary())
+            .map((r) => AsfTag.pictureFromData(r.value))
             .filter((p) => !!p);
     }
     /**
@@ -784,7 +800,7 @@ export default class AsfTag extends Tag {
         const bigPics = data.some((d) => d.length > 0xFFFF);
 
         if (bigPics) {
-            const descriptors = data.map((d) => new MetadataDescriptor(0, 0, "WM/Picture", DataType.Bytes, d));
+            const descriptors = data.map((d) => new MetadataDescriptor("WM/Picture", DataType.Bytes, d, 0, 0));
             this.removeDescriptors("WM/Picture");
             this._metadataLibraryObject.setRecords(0, 0, "WM/Picture", ...descriptors);
         } else {
@@ -813,6 +829,8 @@ export default class AsfTag extends Tag {
 
     /** @inheritDoc */
     public clear(): void {
+        // @TODO: Note, if the header object is ever exposed directly, this will need to be updated to clear the
+        //     existing header instead of just replacing it with new, empty ones.
         this._contentDescriptionObject = ContentDescriptionObject.fromEmpty();
         this._extendedDescriptionObject = ExtendedContentDescriptionObject.fromEmpty();
         this._metadataLibraryObject.removeRecords(0, 0, "WM/Picture");
@@ -835,20 +853,12 @@ export default class AsfTag extends Tag {
      *     The contents of the first descriptor found whose name is in the provided
      *     collection of descriptor names
      */
-    public getDescriptorString(... names: string[]): string {
+    public getDescriptorString(... names: string[]): string|undefined {
         Guards.truthy(names, "names");
-        for (const descriptor of this.getDescriptors(... names)) {
-            if (descriptor === null || descriptor.type !== DataType.Unicode) {
-                continue;
-            }
 
-            const value = descriptor.stringValue;
-            if (value !== undefined) {
-                return value;
-            }
-        }
-
-        return undefined;
+        return this.getDescriptors(... names)
+            .filter(d => d.isString())
+            .find(d => d.value !== undefined)?.value;
     }
 
     /**
@@ -861,16 +871,10 @@ export default class AsfTag extends Tag {
      */
     public getDescriptorUint(... names: string[]): number {
         for (const descriptor of this.getDescriptors(... names)) {
-            if (descriptor.type === DataType.DWord) {
-                const uintValue = descriptor.uintValue;
-                if (uintValue !== 0) {
-                    return uintValue;
-                }
-            } else if (descriptor.type === DataType.Unicode) {
-                const numericValue = Number.parseInt(descriptor.stringValue.trim(), 10);
-                if (numericValue !== 0) {
-                    return numericValue;
-                }
+            if (descriptor.isNumber()) {
+                return descriptor.value;
+            } else if (descriptor.isString()) {
+                return Number.parseInt(descriptor.value.trim(), 10);
             }
         }
 
@@ -886,7 +890,10 @@ export default class AsfTag extends Tag {
      *     collection of descriptor names, split by `;`
      */
     public getDescriptorStrings(... names: string[]): string[] {
-        return AsfTag.splitAndClean(this.getDescriptorString(... names));
+        const descriptorString = this.getDescriptorString(... names);
+        return descriptorString !== undefined
+            ? AsfTag.splitAndClean(descriptorString)
+            : [];
     }
 
     /**
@@ -922,7 +929,7 @@ export default class AsfTag extends Tag {
      * @param names Names in which the value would be expected. For example, `WM/AlbumTitle` and
      *     `Album`
      */
-    public setDescriptorString(value: string, ... names: string[]): void {
+    public setDescriptorString(value: string|undefined, ... names: string[]): void {
         Guards.truthy(names, "names");
 
         let index = 0;
@@ -954,7 +961,7 @@ export default class AsfTag extends Tag {
     }
 
     /** @internal */
-    public static pictureFromData(data: ByteVector): Picture {
+    public static pictureFromData(data: ByteVector): Picture|undefined {
         if (data.length < 9) {
             return undefined;
         }
@@ -997,12 +1004,12 @@ export default class AsfTag extends Tag {
             picture.type,
             ReadWriteUtils.renderDWord(picture.data.length),
             ReadWriteUtils.renderUnicode(picture.mimeType),
-            ReadWriteUtils.renderUnicode(picture.description),
+            ReadWriteUtils.renderUnicode(picture.description ?? ""),
             picture.data
         );
     }
 
-    private static splitAndClean(str: string): string[] {
+    private static splitAndClean(str: string|undefined): string[] {
         return !str
             ? []
             : str.split(";").map((s) => s.trim());

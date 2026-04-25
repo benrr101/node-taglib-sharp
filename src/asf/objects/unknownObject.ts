@@ -1,4 +1,5 @@
 import BaseObject from "./baseObject";
+import UuidWrapper from "../../uuidWrapper";
 import {ByteVector} from "../../byteVector";
 import {ObjectType} from "../constants";
 import {File} from "../../file";
@@ -11,8 +12,9 @@ import {Guards} from "../../utils";
 export default class UnknownObject extends BaseObject {
     private _data: ByteVector;
 
-    private constructor() {
-        super();
+    private constructor(id: UuidWrapper, originalSize: number, data: ByteVector) {
+        super(id, originalSize);
+        this._data = data;
     }
 
     /**
@@ -21,10 +23,10 @@ export default class UnknownObject extends BaseObject {
      * @param position Index into the file where the object begins
      */
     public static fromFile(file: File, position: number): UnknownObject {
-        const instance = new UnknownObject();
-        instance.initializeFromFile(file, position);
-        instance._data = file.readBlock(instance.originalSize - 24).toByteVector();
-        return instance;
+        const objectProperties = this.readBaseProperties(file, position);
+
+        const data = file.readBlock(objectProperties.originalSize - 24);
+        return new UnknownObject(objectProperties.id, objectProperties.originalSize, data);
     }
 
     //#region Properties

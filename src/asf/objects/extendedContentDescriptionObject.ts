@@ -15,12 +15,12 @@ import {Guards} from "../../utils";
  *     a representation of all types of values, it is recommended to determine which of the `get*`
  *     methods to use by accessing {@link type}
  */
-export class ContentDescriptor extends DescriptorBase {
+export class ContentDescriptor<T extends DescriptorValue = DescriptorValue> extends DescriptorBase<T> {
 
     //#region Constructors
 
-    public constructor(name: string, type: DataType, value: DescriptorValue) {
-        super (name, type, value);
+    public constructor(name: string, type: DataType, value: T) {
+        super(name, type, value);
     }
 
     /**
@@ -33,79 +33,36 @@ export class ContentDescriptor extends DescriptorBase {
 
         const nameLength = ReadWriteUtils.readWord(file);
         const name = ReadWriteUtils.readUnicode(file, nameLength);
+        const dataType = <DataType> ReadWriteUtils.readWord(file);
+        const dataLength = ReadWriteUtils.readWord(file);
+        const value = this.readValue(file, dataType, dataLength, this.readBoolean);
 
-        const type = <DataType> ReadWriteUtils.readWord(file);
-
-        const valueLength = ReadWriteUtils.readWord(file);
-        let value: DescriptorValue;
-        switch (type) {
-            case DataType.Word:
-                value = ReadWriteUtils.readWord(file);
-                break;
-            case DataType.Bool:
-                // NOTE: for content descriptors, bool is a DWORD!!!!
-                value = ReadWriteUtils.readDWord(file) > 0;
-                break;
-            case DataType.DWord:
-                value = ReadWriteUtils.readDWord(file);
-                break;
-            case DataType.QWord:
-                value = ReadWriteUtils.readQWord(file);
-                break;
-            case DataType.Unicode:
-                value = ReadWriteUtils.readUnicode(file, valueLength);
-                break;
-            case DataType.Bytes:
-                value = file.readBlock(valueLength);
-                break;
-            case DataType.Guid:
-                value = ReadWriteUtils.readGuid(file);
-                break;
-            default:
-                throw new CorruptFileError("Failed to parse description record.");
-        }
-
-        return new ContentDescriptor(name, type, value);
+        return new ContentDescriptor(name, dataType, value);
     }
 
     //#endregion
 
     /** @inheritDoc */
     public render(): ByteVector {
-        let value: ByteVector;
-        switch (this.type) {
-            case DataType.QWord:
-                value = ReadWriteUtils.renderQWord(this.ulongValue);
-                break;
-            case DataType.DWord:
-                value = ReadWriteUtils.renderDWord(this.uintValue);
-                break;
-            case DataType.Word:
-                value = ReadWriteUtils.renderWord(this.ushortValue);
-                break;
-            case DataType.Bool:
-                // NOTE: for content descriptors, bool is a DWORD!!!!
-                value = ReadWriteUtils.renderDWord(this.boolValue ? 1 : 0);
-                break;
-            case DataType.Unicode:
-                value = ReadWriteUtils.renderUnicode(this.stringValue);
-                break;
-            case DataType.Bytes:
-                value = this.byteValue;
-                break;
-            case DataType.Guid:
-                value = this.guidValue.toBytes();
-                break;
-        }
-
         const nameBytes = ReadWriteUtils.renderUnicode(this.name);
+        const valueBytes = this.renderValue(ContentDescriptor.renderBoolean);
         return ByteVector.concatenate(
             ReadWriteUtils.renderWord(nameBytes.length),
             nameBytes,
             ReadWriteUtils.renderWord(this.type),
-            ReadWriteUtils.renderWord(value.length),
-            value
+            ReadWriteUtils.renderWord(valueBytes.length),
+            valueBytes
         );
+    }
+
+    private static readBoolean(file: File, _dataLength: number): boolean {
+        // NOTE: for content descriptors, bool is a DWORD!!!!
+        return ReadWriteUtils.readDWord(file) > 0;
+    }
+
+    private static renderBoolean(value: boolean): ByteVector {
+        // NOTE: for content descriptors, bool is a DWORD!!!!
+        return ReadWriteUtils.renderDWord(value ? 1 : 0);
     }
 }
 
@@ -118,17 +75,15 @@ export class ExtendedContentDescriptionObject extends BaseObject {
 
     //#region Constructors
 
-    private constructor() {
-        super();
+    private constructor(originalSize: number) {
+        super(Guids.ASF_EXTENDED_CONTENT_DESCRIPTION_OBJECT, originalSize);
     }
 
     /**
      * Constructs and initializes a new, empty extended content description object.
      */
     public static fromEmpty(): ExtendedContentDescriptionObject {
-        const instance = new ExtendedContentDescriptionObject();
-        instance.initializeFromGuid(Guids.ASF_EXTENDED_CONTENT_DESCRIPTION_OBJECT);
-        return instance;
+        return new ExtendedContentDescriptionObject(0);
     }
 
     /**
@@ -139,16 +94,15 @@ export class ExtendedContentDescriptionObject extends BaseObject {
      *     integer.
      */
     public static fromFile(file: File, position: number): ExtendedContentDescriptionObject {
-        const instance = new ExtendedContentDescriptionObject();
-        instance.initializeFromFile(file, position);
-
-        if (!instance.guid.equals(Guids.ASF_EXTENDED_CONTENT_DESCRIPTION_OBJECT)) {
+        const baseProperties = BaseObject.readBaseProperties(file, position);
+        if (!baseProperties.id.equals(Guids.ASF_EXTENDED_CONTENT_DESCRIPTION_OBJECT)) {
             throw new CorruptFileError("Object GUID does not match expected content description object GUID");
         }
-        if (instance.originalSize < 26) {
+        if (baseProperties.originalSize < 26) {
             throw new CorruptFileError("Metadata library object is too small");
         }
 
+        const instance = new ExtendedContentDescriptionObject(baseProperties.originalSize);
         const count = ReadWriteUtils.readWord(file);
         for (let i = 0; i < count; i++) {
             instance._descriptors.push(ContentDescriptor.fromFile(file));

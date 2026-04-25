@@ -14,8 +14,8 @@ import {MetadataLibraryObject} from "./metadataLibraryObject";
 export default class HeaderExtensionObject extends BaseObject {
     private _children: BaseObject[] = [];
 
-    private constructor() {
-        super();
+    private constructor(originalSize: number) {
+        super(Guids.ASF_HEADER_EXTENSION_OBJECT, originalSize);
     }
 
     /**
@@ -25,12 +25,11 @@ export default class HeaderExtensionObject extends BaseObject {
      * @param position Position in the file where the instance begins
      */
     public static fromFile(file: File, position: number): HeaderExtensionObject {
-        const instance = new HeaderExtensionObject();
-        instance.initializeFromFile(file, position);
-
-        if (!instance.guid.equals(Guids.ASF_HEADER_EXTENSION_OBJECT)) {
+        const baseProperties = this.readBaseProperties(file, position);
+        if (!baseProperties.id.equals(Guids.ASF_HEADER_EXTENSION_OBJECT)) {
             throw new CorruptFileError("Object GUID does not match expected header extension object GUID");
         }
+
         if (!ReadWriteUtils.readGuid(file).equals(Guids.ASF_RESERVED)) {
             throw new CorruptFileError("Expected reserved1 GUID was not found");
         }
@@ -41,6 +40,7 @@ export default class HeaderExtensionObject extends BaseObject {
         let sizeRemaining = ReadWriteUtils.readDWord(file);
         position += 0x170 / 8;
 
+        const instance = new HeaderExtensionObject(baseProperties.originalSize);
         while (sizeRemaining > 0) {
             const obj = HeaderExtensionObject.readObject(file, position);
             position += obj.originalSize;

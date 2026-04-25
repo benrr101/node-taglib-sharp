@@ -11,8 +11,15 @@ import {NumberUtils} from "../utils";
  */
 export default class AsfFile extends File {
     private readonly _asfTag: AsfTag;
-    private readonly _properties: Properties;
+    private readonly _properties: Properties|undefined;
 
+    /**
+     * Constructs and initializes a new instance of {@link AsfFile} for a specified file
+     * abstraction and specified read style.
+     * @param file File abstraction to use when reading and writing to the file
+     * @param propertiesStyle Level of accuracy to read the media properties, or
+     *     {@link ReadStyle.None} to ignore the properties
+     */
     public constructor(file: IFileAbstraction|string, propertiesStyle: ReadStyle) {
         super(file);
 
@@ -31,20 +38,22 @@ export default class AsfFile extends File {
         } finally {
             this.mode = FileAccessMode.Closed;
         }
+
+        // @TODO: Does this always have a tag?
     }
 
     /** @inheritDoc */
-    public get properties(): Properties { return this._properties; }
+    public get properties(): Properties|undefined { return this._properties; }
 
     /** @inheritDoc */
-    public get tag(): AsfTag { return this._asfTag; }
+    public get tag(): AsfTag|undefined { return this._asfTag; }
 
     // @TODO: Add access to the header object
 
     //#region Methods
 
     /** @inheritDoc */
-    public getTag(type: TagTypes): Tag {
+    public getTag(type: TagTypes): Tag|undefined {
         return type === TagTypes.Asf ? this._asfTag : undefined;
     }
 
@@ -63,6 +72,7 @@ export default class AsfFile extends File {
             // Re-read the header
             const header = HeaderObject.fromFile(this, 0);
 
+            // @TODO: Wait a sec, _asfTag can't be undefined!
             if (!this._asfTag) {
                 // This file doesn't have a tag, but clear it just to be safe
                 header.removeContentDescriptor();

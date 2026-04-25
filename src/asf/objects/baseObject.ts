@@ -11,42 +11,17 @@ import {Guards} from "../../utils";
  * read from the disk.
  */
 export default abstract class BaseObject {
-    private _id: UuidWrapper;
-    private _originalSize: number = 0;
+    // @TODO: Should _originalSize be 0 if it's not written to disk?
+    // @TODO: Double check that we reset _originalSize after we save to disk (probably via re-reading after save)
+
+    private readonly _id: UuidWrapper;
+    private readonly _originalSize: number;
 
     //#region Initializers
 
-    protected constructor() { /* empty to only allow construction via static constructors */ }
-
-    /**
-     * Initializes a new instance by reading the contents from a specified position in a specified
-     * file.
-     * @param file File which contains the details of the new instance to create
-     * @param position Position in `file` where the object begins
-     * @protected
-     */
-    protected initializeFromFile(file: File, position: number): void {
-        Guards.truthy(file, "file");
-        Guards.uint(position, "position");
-        Guards.lessThanInclusive(position, file.length - 24, "position");
-
-        file.seek(position);
-        this._id = ReadWriteUtils.readGuid(file);
-
-        const bigOriginalSize = ReadWriteUtils.readQWord(file);
-        if (bigOriginalSize > BigInt(Number.MAX_SAFE_INTEGER)) {
-            throw new UnsupportedFormatError("Object is too large to be handled with this version of library.");
-        }
-        this._originalSize = Number(bigOriginalSize);
-    }
-
-    /**
-     * Initializes a new instance with a specified GUID.
-     * @param guid GUID to use for the new instance.
-     * @protected
-     */
-    protected initializeFromGuid(guid: UuidWrapper): void {
-        this._id = guid;
+    protected constructor(id: UuidWrapper, originalSize: number) {
+        this._id = id;
+        this._originalSize = originalSize;
     }
 
     //#endregion
@@ -76,6 +51,23 @@ export default abstract class BaseObject {
      * Renders the current instance as a raw ASF object.
      */
     public abstract render(): ByteVector;
+
+    protected static readBaseProperties(file: File, position: number): {id: UuidWrapper, originalSize: number} {
+        Guards.truthy(file, "file");
+        Guards.uint(position, "position");
+        Guards.lessThanInclusive(position, file.length - 24, "position");
+
+        file.seek(position);
+        const id = ReadWriteUtils.readGuid(file);
+
+        const bigOriginalSize = ReadWriteUtils.readQWord(file);
+        if (bigOriginalSize > BigInt(Number.MAX_SAFE_INTEGER)) {
+            throw new UnsupportedFormatError("Object is too large to be handled with this version of library.");
+        }
+        const originalSize = Number(bigOriginalSize);
+
+        return {id: id, originalSize: originalSize};
+    }
 
     /**
      * Renders the current instance as a raw ASF object containing the specified data.

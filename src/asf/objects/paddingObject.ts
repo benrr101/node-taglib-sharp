@@ -19,8 +19,10 @@ export default class PaddingObject extends BaseObject {
 
     //#region Constructors
 
-    private constructor() {
-        super();
+    private constructor(originalSize: number, currentSize: number) {
+        super(Guids.ASF_PADDING_OBJECT, originalSize);
+
+        this._size = currentSize;
     }
 
     /**
@@ -29,15 +31,13 @@ export default class PaddingObject extends BaseObject {
      * @param position Index into the file where the padding object starts from
      */
     public static fromFile(file: File, position: number): PaddingObject {
-        const instance = new PaddingObject();
-        instance.initializeFromFile(file, position);
-
-        if (!instance.guid.equals(Guids.ASF_PADDING_OBJECT)) {
+        const objectProperties = this.readBaseProperties(file, position);
+        if (!objectProperties.id.equals(Guids.ASF_PADDING_OBJECT)) {
             throw new CorruptFileError("Object GUID does not match expected padding object GUID");
         }
 
-        instance._size = instance.originalSize - PaddingObject.HEADER_LENGTH;
-        return instance;
+        const currentSize = objectProperties.originalSize - PaddingObject.HEADER_LENGTH;
+        return new PaddingObject(objectProperties.originalSize, currentSize);
     }
 
     /**
@@ -48,11 +48,7 @@ export default class PaddingObject extends BaseObject {
     public static fromSize(size: number): PaddingObject {
         Guards.safeUint(size, "size");
 
-        const instance = new PaddingObject();
-        instance.initializeFromGuid(Guids.ASF_PADDING_OBJECT);
-        instance._size = size;
-
-        return instance;
+        return new PaddingObject(0, size);
     }
 
     //#endregion

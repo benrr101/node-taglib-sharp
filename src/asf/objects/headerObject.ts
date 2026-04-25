@@ -19,12 +19,14 @@ import {ExtendedContentDescriptionObject} from "./extendedContentDescriptionObje
  * to disk.
  */
 export default class HeaderObject extends BaseObject {
-    private readonly _children: BaseObject[] = [];
-    private _properties: Properties;
-    private _reserved: number;
+    private static readonly RESERVED_BYTES = 0x0201;
 
-    private constructor() {
-        super();
+    private readonly _children: BaseObject[];
+    private _properties: Properties|undefined;
+
+    private constructor(originalSize: number, children: BaseObject[]) {
+        super(Guids.ASF_HEADER_OBJECT, originalSize);
+        this._children = children;
     }
 
     /**
@@ -34,25 +36,22 @@ export default class HeaderObject extends BaseObject {
      * @param position Position in the file where the instance begins
      */
     public static fromFile(file: File, position: number): HeaderObject {
-        const instance = new HeaderObject();
-        instance.initializeFromFile(file, position);
-
-        if (!instance.guid.equals(Guids.ASF_HEADER_OBJECT)) {
+        const baseProperties = this.readBaseProperties(file, position);
+        if (!baseProperties.id.equals(Guids.ASF_HEADER_OBJECT)) {
             throw new CorruptFileError("Object GUID does not match expected header object GUID");
         }
-        if (instance.originalSize < 26) {
+        if (baseProperties.originalSize < 26) {
             throw new CorruptFileError("Header object is too small");
         }
 
         const childCount = ReadWriteUtils.readDWord(file);
-        instance._reserved = ReadWriteUtils.readWord(file);
-        if (instance._reserved !== 0x0201) {
+        const reserved = ReadWriteUtils.readWord(file);
+        if (reserved !== this.RESERVED_BYTES) {
             throw new CorruptFileError("Header object is missing reserved bytes");
         }
 
-        instance._children.push(... HeaderObject.readObjects(file, childCount, file.position));
-
-        return instance;
+        const children = HeaderObject.readObjects(file, childCount, file.position);
+        return new HeaderObject(baseProperties.originalSize, children);
     }
 
     //#region Properties
@@ -101,14 +100,18 @@ export default class HeaderObject extends BaseObject {
     public get properties(): Properties {
         if (!this._properties) {
             const codecs: ICodec[] = [];
-            let durationMilliseconds = 0;
+            let durationMilliseconds;
 
             for (const obj of this._children) {
+                // @TOD: Replace with instanceof
                 if (obj.objectType === ObjectType.FilePropertiesObject) {
                     const fpObj = <FilePropertiesObject> obj;
                     durationMilliseconds = fpObj.playDurationMilliseconds - fpObj.prerollMilliseconds;
                 } else if (obj.objectType === ObjectType.StreamPropertiesObject) {
-                    codecs.push((<StreamPropertiesObject> obj).codec);
+                    const castObj = (<StreamPropertiesObject>obj);
+                    if (castObj.codec) {
+                        codecs.push(castObj.codec);
+                    }
                 }
             }
 
@@ -169,7 +172,7 @@ export default class HeaderObject extends BaseObject {
         // Put it all together
         const output = ByteVector.concatenate(
             ReadWriteUtils.renderDWord(childCount),
-            ReadWriteUtils.renderWord(this._reserved),
+            ReadWriteUtils.renderWord(HeaderObject.RESERVED_BYTES),
             childrenData
         );
         return super.renderInternal(output);

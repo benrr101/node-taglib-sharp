@@ -155,7 +155,7 @@ export default class ApeTag extends Tag {
     public get tagTypes(): TagTypes { return TagTypes.Ape; }
 
     /** @inheritDoc */
-    public get sizeOnDisk(): number { return this._footer.tagSize; }
+    public get sizeOnDisk(): number|undefined { return this._footer.tagSize; }
 
     /**
      * @inheritDoc

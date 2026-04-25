@@ -15,19 +15,43 @@ import {NumberUtils} from "../../utils";
  * written to disk.
  */
 export default class StreamPropertiesObject extends BaseObject {
-    private _codec: ICodec;
-    private _errorCorrectionData: ByteVector;
-    private _errorCorrectionType: UuidWrapper;
-    private _flags: number;
-    private _reserved: number;
-    private _streamType: UuidWrapper;
-    private _timeOffset: bigint;
-    private _typeSpecificData: ByteVector;
+    private readonly _errorCorrectionData: ByteVector;
+    private readonly _errorCorrectionType: UuidWrapper;
+    private readonly _flags: number;
+    private readonly _reserved: number;
+    private readonly _streamType: UuidWrapper;
+    private readonly _timeOffset: bigint;
+    private readonly _typeSpecificData: ByteVector;
+
+    private _codec: ICodec|undefined;
 
     //#region Constructors
 
-    private constructor() {
-        super();
+    private constructor(file: File, position: number) {
+        // Validate
+        const baseProperties = BaseObject.readBaseProperties(file, position);
+        if (!baseProperties.id.equals(Guids.ASF_STREAM_PROPERTIES_OBJECT)) {
+            throw new CorruptFileError("Object GUID is not the expected stream properties object GUID");
+        }
+        if (baseProperties.originalSize < 78) {
+            throw new CorruptFileError("Object size too small for stream properties object");
+        }
+
+        // Instantiate
+        super(baseProperties.id, baseProperties.originalSize);
+
+        // Read properties
+        this._streamType = ReadWriteUtils.readGuid(file);
+        this._errorCorrectionType = ReadWriteUtils.readGuid(file);
+        this._timeOffset = ReadWriteUtils.readQWord(file);
+
+        const typeSpecificDataLength = ReadWriteUtils.readDWord(file);
+        const errorSpecificDataLength = ReadWriteUtils.readDWord(file);
+
+        this._flags = ReadWriteUtils.readWord(file);
+        this._reserved = ReadWriteUtils.readDWord(file);
+        this._typeSpecificData = file.readBlock(typeSpecificDataLength).toByteVector();
+        this._errorCorrectionData = file.readBlock(errorSpecificDataLength).toByteVector();
     }
 
     /**
@@ -37,30 +61,8 @@ export default class StreamPropertiesObject extends BaseObject {
      * @param position Index into the file where the stream properties object begins
      */
     public static fromFile(file: File, position: number): StreamPropertiesObject {
-        const instance = new StreamPropertiesObject();
-        instance.initializeFromFile(file, position);
-
-        if (!instance.guid.equals(Guids.ASF_STREAM_PROPERTIES_OBJECT)) {
-            throw new CorruptFileError("Object GUID is not the expected stream properties object GUID");
-        }
-
-        if (instance.originalSize < 78) {
-            throw new CorruptFileError("Object size too small for stream properties object");
-        }
-
-        instance._streamType = ReadWriteUtils.readGuid(file);
-        instance._errorCorrectionType = ReadWriteUtils.readGuid(file);
-        instance._timeOffset = ReadWriteUtils.readQWord(file);
-
-        const typeSpecificDataLength = ReadWriteUtils.readDWord(file);
-        const errorSpecificDataLength = ReadWriteUtils.readDWord(file);
-
-        instance._flags = ReadWriteUtils.readWord(file);
-        instance._reserved = ReadWriteUtils.readDWord(file);
-        instance._typeSpecificData = file.readBlock(typeSpecificDataLength).toByteVector();
-        instance._errorCorrectionData = file.readBlock(errorSpecificDataLength).toByteVector();
-
-        return instance;
+        // Note: There are too many small properties to set, it's cleaner to just do it in the ctor.
+        return new StreamPropertiesObject(file, position);
     }
 
     //#endregion
@@ -70,7 +72,7 @@ export default class StreamPropertiesObject extends BaseObject {
     /**
      * Gets the codec information contained in the current instance.
      */
-    public get codec(): ICodec {
+    public get codec(): ICodec|undefined {
         if (!this._codec) {
             // Read the codec info from the type specific data
             if (this._streamType.equals(Guids.ASF_AUDIO_MEDIA)) {
@@ -84,6 +86,8 @@ export default class StreamPropertiesObject extends BaseObject {
             //    codec being used, if it is available. However, doing so would require making a new
             //    class for ASF codec info and using it to wrap the stream properties object and the
             //    codec list object.
+
+            // @TODO: Is undefined a valid value to release? Are there types of streams we can't read?
         }
 
         return this._codec;

@@ -29,28 +29,52 @@ export enum FilePropertiesFlags {
  * found within the Data object.
  */
 export default class FilePropertiesObject extends BaseObject {
+    // @TODO: This number can't be accurately represented as a js number.
     private static readonly FILE_TIME_TO_UNIX_EPOCH = BigInt(116444736000000000);
 
     //#region Member Variables
 
-    private _creationDateTicks: bigint;
-    private _dataPacketsCount: bigint;
-    private _fileId: UuidWrapper;
-    private _fileSize: bigint;
-    private _flags: number;
-    private _maximumBitrate: number;
-    private _maximumDataPacketSize: number;
-    private _minimumDataPacketSize: number;
-    private _playDurationTicks: bigint;
-    private _prerollMilliseconds: bigint;
-    private _sendDurationTicks: bigint;
+    private readonly _creationDateTicks: bigint;
+    private readonly _dataPacketsCount: bigint;
+    private readonly _fileId: UuidWrapper;
+    private readonly _fileSize: bigint;
+    private readonly _flags: number;
+    private readonly _maximumBitrate: number;
+    private readonly _maximumDataPacketSize: number;
+    private readonly _minimumDataPacketSize: number;
+    private readonly _playDurationTicks: bigint;
+    private readonly _prerollMilliseconds: bigint;
+    private readonly _sendDurationTicks: bigint;
 
     //#endregion
 
     //#region Constructors
 
-    private constructor() {
-        super();
+    private constructor(file: File, position: number) {
+        // Validate
+        const baseProperties = BaseObject.readBaseProperties(file, position);
+        if (!baseProperties.id.equals(Guids.ASF_FILE_PROPERTIES_OBJECT)) {
+            throw new CorruptFileError("Object GUID is not the expected file properties object GUID");
+        }
+        if (baseProperties.originalSize < 104) {
+            throw new CorruptFileError("Object size too small for file properties object");
+        }
+
+        // Instantiate
+        super(baseProperties.id, baseProperties.originalSize);
+
+        // Read properties
+        this._fileId = ReadWriteUtils.readGuid(file);
+        this._fileSize = ReadWriteUtils.readQWord(file);
+        this._creationDateTicks = ReadWriteUtils.readQWord(file);
+        this._dataPacketsCount = ReadWriteUtils.readQWord(file);
+        this._playDurationTicks = ReadWriteUtils.readQWord(file);
+        this._sendDurationTicks = ReadWriteUtils.readQWord(file);
+        this._prerollMilliseconds = ReadWriteUtils.readQWord(file);
+        this._flags = ReadWriteUtils.readDWord(file);
+        this._minimumDataPacketSize = ReadWriteUtils.readDWord(file);
+        this._maximumDataPacketSize = ReadWriteUtils.readDWord(file);
+        this._maximumBitrate = ReadWriteUtils.readDWord(file);
     }
 
     /**
@@ -59,30 +83,8 @@ export default class FilePropertiesObject extends BaseObject {
      * @param position Offset into the file where the object begins
      */
     public static fromFile(file: File, position: number): FilePropertiesObject {
-        const instance = new FilePropertiesObject();
-        instance.initializeFromFile(file, position);
-
-        if (!instance.guid.equals(Guids.ASF_FILE_PROPERTIES_OBJECT)) {
-            throw new CorruptFileError("Object GUID is not the expected file properties object GUID");
-        }
-
-        if (instance.originalSize < 104) {
-            throw new CorruptFileError("Object size too small for file properties object");
-        }
-
-        instance._fileId = ReadWriteUtils.readGuid(file);
-        instance._fileSize = ReadWriteUtils.readQWord(file);
-        instance._creationDateTicks = ReadWriteUtils.readQWord(file);
-        instance._dataPacketsCount = ReadWriteUtils.readQWord(file);
-        instance._playDurationTicks = ReadWriteUtils.readQWord(file);
-        instance._sendDurationTicks = ReadWriteUtils.readQWord(file);
-        instance._prerollMilliseconds = ReadWriteUtils.readQWord(file);
-        instance._flags = ReadWriteUtils.readDWord(file);
-        instance._minimumDataPacketSize = ReadWriteUtils.readDWord(file);
-        instance._maximumDataPacketSize = ReadWriteUtils.readDWord(file);
-        instance._maximumBitrate = ReadWriteUtils.readDWord(file);
-
-        return instance;
+        // Note: There are too many small properties to set, it's cleaner to just do it in the ctor.
+        return new FilePropertiesObject(file, position);
     }
 
     //#endregion
