@@ -97,6 +97,18 @@ export class Guards {
         }
     }
 
+    /**
+     * Throws if the provided value is not a safe, positive integer or `undefined`.
+     * @param value Value to validate
+     * @param name Name of the parameter in calling function
+     */
+    // @TODO: Sweep usages of safeUint to see if we can move them to this method
+    public static safeUintOrUndefined(value: number|undefined, name: string): void {
+        if (value !== undefined) {
+            this.safeUint(value, name);
+        }
+    }
+
     public static short(value: number, name: string): void {
         if (!Number.isSafeInteger(value) || value > 32767 || value < -32768) {
             throw new Error(`Argument out of range: ${name} must be a 16-bit integer`);

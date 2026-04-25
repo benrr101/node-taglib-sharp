@@ -1,5 +1,4 @@
 import EbmlParser from "./ebmlParser";
-import EbmlParserOptions from "./ebmlParserOptions";
 import {ByteVector, StringType} from "../byteVector";
 import {File, FileAccessMode} from "../file";
 import {ILazy} from "../interfaces";
@@ -13,8 +12,10 @@ export default class EbmlElement implements ILazy {
     private readonly _dataSize: number;
     private readonly _file: File;
     private readonly _id: number;
-    private readonly _options: EbmlParserOptions;
-    private _data: ByteVector;
+    private readonly _maxIdLength: number;
+    private readonly _maxSizeLength: number;
+
+    private _data: ByteVector|undefined;
 
     /**
      * Constructs and initializes a new instance using a file, an offset where the target data
@@ -23,19 +24,30 @@ export default class EbmlElement implements ILazy {
      * @param dataOffset Offset into the file where the data begins, must be a safe, positive integer
      * @param id ID of the EBML element
      * @param dataSize Size of the data in bytes, must be a safe, positive integer
-     * @param parserOptions Options from the parser that read the element
+     * @param maxIdLength Maximum permitted length of element ID in bytes
+     * @param maxSizeLength Maximum permitted length in bytes of element size
      * @internal
      */
-    public constructor(file: File, dataOffset: number, id: number, dataSize: number, parserOptions: EbmlParserOptions) {
+    public constructor(
+        file: File,
+        dataOffset: number,
+        id: number,
+        dataSize: number,
+        maxIdLength: number,
+        maxSizeLength: number
+    ) {
         Guards.truthy(file, "file");
         Guards.safeUint(dataOffset, "offset");
-        Guards.safeUint(dataSize, "size")
+        Guards.safeUint(dataSize, "size");
+        Guards.safeUint(maxIdLength, "maxIdLength");
+        Guards.safeUint(maxSizeLength, "maxSizeLength");
 
         this._file = file;
         this._dataOffset = dataOffset;
         this._dataSize = dataSize;
         this._id = id;
-        this._options = parserOptions;
+        this._maxIdLength = maxIdLength;
+        this._maxSizeLength = maxSizeLength;
     }
 
     /**
@@ -57,6 +69,7 @@ export default class EbmlElement implements ILazy {
      */
     public getBool(): boolean {
         this.load();
+        this.throwOnLoadFail(this._data);
         return this._data.toUint() > 0;
     }
 
@@ -66,6 +79,8 @@ export default class EbmlElement implements ILazy {
      */
     public getBytes(): ByteVector {
         this.load();
+        this.throwOnLoadFail(this._data);
+
         return this._data;
     }
 
@@ -75,6 +90,7 @@ export default class EbmlElement implements ILazy {
      */
     public getDouble(): number {
         this.load();
+        this.throwOnLoadFail(this._data);
 
         switch (this._data.length) {
             case 4:
@@ -90,7 +106,13 @@ export default class EbmlElement implements ILazy {
      * Creates a parser for reading the elements contained inside the current instance.
      */
     public getParser(): EbmlParser {
-        return new EbmlParser(this._file, this._dataOffset, this._dataOffset + this._dataSize, this._options);
+        return new EbmlParser(
+            this._file,
+            this._dataOffset,
+            this._dataOffset + this._dataSize,
+            this._maxIdLength,
+            this._maxSizeLength
+        );
     }
 
     /**
@@ -99,6 +121,7 @@ export default class EbmlElement implements ILazy {
      */
     public getString(): string {
         this.load();
+        this.throwOnLoadFail(this._data);
 
         // Look for null termination
         const nullIndex = this._data.indexOf(0x00);
@@ -117,6 +140,7 @@ export default class EbmlElement implements ILazy {
      */
     public getSafeUint(): number {
         this.load();
+        this.throwOnLoadFail(this._data);
 
         // Cast to a "safe" integer
         const bigInt = this._data.toUlong();
@@ -134,6 +158,8 @@ export default class EbmlElement implements ILazy {
      */
     public getUlong(): bigint {
         this.load();
+        this.throwOnLoadFail(this._data);
+
         return this._data.toUlong();
     }
 
@@ -151,6 +177,12 @@ export default class EbmlElement implements ILazy {
             this._data = this._file.readBlock(this._dataSize).toByteVector();
         } finally {
             this._file.mode = originalFileMode;
+        }
+    }
+
+    private throwOnLoadFail<T>(field: T|undefined): asserts field is T {
+        if (field === undefined) {
+            throw new Error(`Lazy loading of EBML element ${this._id} failed`)
         }
     }
 }

@@ -1,7 +1,6 @@
 import EbmlElement from "./ebmlElement";
-import EbmlParserOptions from "./ebmlParserOptions";
 import {ByteVector} from "../byteVector";
-import {UnsupportedFormatError} from "../errors";
+import {NotSupportedError} from "../errors";
 import {File} from "../file";
 import {IDisposable} from "../interfaces"
 import {Guards, NumberUtils} from "../utils";
@@ -11,13 +10,15 @@ export default class EbmlParser implements IDisposable {
     private readonly _file: File;
     private readonly _maxOffset: number;
 
+    private _maxIdLength!: number;
+    private _maxSizeLength!: number;
+
     // private _childParser: EbmlParser;
-    private _currentElement: EbmlElement;
-    private _dataOffset: number;
-    private _dataSize: number;
-    private _headerSize: number;
-    private _id: number;
-    private _options: EbmlParserOptions;
+    private _currentElement: EbmlElement|undefined;
+    private _dataOffset: number|undefined;
+    private _dataSize: number|undefined;
+    private _headerSize: number|undefined;
+    private _id: number|undefined;
 
     /**
      * Absolute position within the file where the reader is currently pointing. This will always
@@ -36,25 +37,54 @@ export default class EbmlParser implements IDisposable {
      * @param file EBML file to process
      * @param offset Position in the file to begin parsing
      * @param maxOffset Maximum position in the file to read up to
-     * @param options Optional options for reading the EBML file
+     * @param maxIdLength Optional maximum permitted length of element ID in bytes. If not
+     *     provided, defaults to 4
+     * @param maxSizeLength Optional maximum permitted length in bytes of element size. If not
+     *     provided, defaults to 8
      */
-    public constructor(file: File, offset: number, maxOffset: number, options?: EbmlParserOptions) {
+    public constructor(file: File, offset: number, maxOffset: number, maxIdLength?: number, maxSizeLength?: number) {
         Guards.truthy(file, "file");
         Guards.safeUint(offset, "offset");
-        Guards.safeUint(maxOffset, "maxOffset");
+        Guards.safeUintOrUndefined(maxOffset, "maxOffset");
+
+        Guards.safeUintOrUndefined(maxSizeLength, "maxSizeLength");
 
         this._file = file;
         this._offset = offset;
         this._maxOffset = maxOffset;
 
-        this.setOptions(options?.maxIdLength ?? 4, options?.maxSizeLength ?? 8);
+        this.maxIdLength = maxIdLength;
+        this.maxSizeLength = maxSizeLength;
     }
 
     //#endregion
 
     //#region Properties
 
-    public get currentElement(): EbmlElement { return this._currentElement; }
+    public get currentElement(): EbmlElement {
+        if (!this._currentElement) {
+            throw new Error("Invalid operation: No element loaded, call read() first.");
+        }
+        return this._currentElement;
+    }
+
+    public set maxIdLength(value: number|undefined) {
+        Guards.safeUintOrUndefined(value, "value");
+        if (value !== undefined && value > 8) {
+            throw new NotSupportedError("This EBML file is not supported in this version of node-taglib-sharp.");
+        }
+
+        this._maxIdLength = value ?? 4;
+    }
+
+    public set maxSizeLength(value: number|undefined) {
+        Guards.safeUintOrUndefined(value, "value");
+        if (value !== undefined && value > 8) {
+            throw new NotSupportedError("This EBML file is not supported in this version of node-taglib-sharp.");
+        }
+
+        this._maxSizeLength = value ?? 8;
+    }
 
     //#endregion
 
@@ -110,36 +140,27 @@ export default class EbmlParser implements IDisposable {
 
         // Read the ID
         this._file.seek(this._offset);
-        const idReadResult = this.readElementId(this._options.maxIdLength);
+        const idReadResult = this.readElementId(this._maxIdLength);
         this._id = idReadResult.value;
 
         // Read the data size
         this._file.seek(this._offset + idReadResult.bytes);
-        const dataSizeReadResult = this.readVariableInteger(this._options.maxSizeLength);
+        const dataSizeReadResult = this.readVariableInteger(this._maxSizeLength);
         this._dataSize = dataSizeReadResult.value;
 
         // Update the state of the reader within the file
         this._headerSize = idReadResult.bytes + dataSizeReadResult.bytes;
         this._dataOffset = this._offset + this._headerSize;
         this._offset = this._dataOffset + this._dataSize;
-        this._currentElement = new EbmlElement(this._file, this._dataOffset, this._id, this._dataSize, this._options)
+        this._currentElement = new EbmlElement(
+            this._file,
+            this._dataOffset,
+            this._id,
+            this._dataSize,
+            this._maxIdLength,
+            this._maxSizeLength);
 
         return true;
-    }
-
-    public setOptions(maxIdLength: number|undefined, maxSizeLength: number|undefined): void {
-        Guards.safeUint(maxIdLength, "options.maxIdLength");
-        Guards.safeUint(maxSizeLength, "options.maxSizeLength");
-        if (maxIdLength > 8 || maxSizeLength > 8) {
-            throw new UnsupportedFormatError(
-                "Not supported: This EBML file is not supported in this version of node-taglib-sharp."
-            )
-        }
-
-        this._options = <EbmlParserOptions>{
-            maxIdLength: maxIdLength,
-            maxSizeLength: maxSizeLength
-        };
     }
 
     // /**
@@ -294,7 +315,7 @@ export default class EbmlParser implements IDisposable {
 
         // Determine how many bytes are needed to store the value
         let mask = 0x80;
-        let additionalBytes = 0
+        let additionalBytes = 0;
         while (additionalBytes <= maxBytes) {
             if (NumberUtils.hasFlag(bytes.get(0), mask)) {
                 break;
