@@ -82,7 +82,7 @@ export default class AiffFile extends File {
     public get properties(): Properties|undefined { return this._properties; }
 
     /** @inheritDoc */
-    public get tag(): Tag|undefined { return this._tag; }
+    public get tag(): Id3v2Tag|undefined { return this._tag; }
 
     //#endregion
 
