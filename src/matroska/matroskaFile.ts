@@ -6,7 +6,7 @@ import MatroskaTagCollection from "./matroskaTagCollection";
 import MatroskaTagValue from "./matroskaTagValue";
 import TrackFactory from "./tracks/trackFactory";
 import {ByteVector} from "../byteVector";
-import {CorruptFileError, NotImplementedError, UnsupportedFormatError} from "../errors";
+import {CorruptFileError, NotImplementedError, NotSupportedError, UnsupportedFormatError} from "../errors";
 import {File, FileAccessMode, ReadStyle} from "../file";
 import {IFileAbstraction} from "../fileAbstraction";
 import {EbmlIds} from "../ebml/ids";
@@ -59,14 +59,15 @@ interface EbmlHeader {
 }
 
 /**
- * Object that contains information obtained by reading the EBML file.
+ * Object that contains information obtained by reading a Segment element of the EBML file.
  * @internal
  */
-interface TagReadState {
+interface SegmentReadResults {
     attachments: MatroskaAttachment[],
-    durationMilliseconds: number,
+    durationMilliseconds: number|undefined,
     tags: MatroskaTag[]
-    tagSizeOnDisk: number;
+    tagSizeOnDisk: number|undefined;
+    tracks: Track[]
 }
 
 /**
@@ -79,13 +80,6 @@ export default class MatroskaFile extends File {
     private readonly _properties: Properties;
     private readonly _tag: MatroskaTagCollection;
 
-    private _header: EbmlHeader;
-    private _tracks: Track[] = [];
-
-    // TEST CODE
-    private _readState : TagReadState;
-    // /TEST CODE
-
     /**
      * Constructs and initializes a new instance of a Matroska/Webm file based on the provided file.
      * @param file File abstraction or path to a file to open as a Matroska/WebM file
@@ -96,14 +90,14 @@ export default class MatroskaFile extends File {
 
         this.mode = FileAccessMode.Read;
         try {
-            this.read();
+            const readResult = this.read();
 
-            this._properties = new Properties(this._readState.durationMilliseconds, this._tracks);
+            this._properties = new Properties(readResult.durationMilliseconds, readResult.tracks);
             this._tag = new MatroskaTagCollection(
-                this._readState.tagSizeOnDisk,
+                readResult.tagSizeOnDisk ?? 0,
                 NumberUtils.hasFlag(this._properties.mediaTypes, MediaTypes.Video),
-                this._readState.tags,
-                this._readState.attachments
+                readResult.tags,
+                readResult.attachments
             );
         } finally {
             this.mode = FileAccessMode.Closed;
@@ -119,7 +113,7 @@ export default class MatroskaFile extends File {
     //#region Public Methods
 
     /** @inheritDoc */
-    public getTag(types: TagTypes): Tag {
+    public getTag(types: TagTypes): MatroskaTagCollection|undefined {
         return types === TagTypes.Matroska ? this._tag : undefined;
     }
 
@@ -139,7 +133,7 @@ export default class MatroskaFile extends File {
 
     //#region Private Methods
 
-    private read(): void {
+    private read(): SegmentReadResults {
         // Look up the EBML 0-level ID
         // @TODO: This should only search like a couple kilobytes. File is supposed to *start* with this
         const firstElementOffset = this.find(ByteVector.fromByteArray([0x1A, 0x45, 0xDF, 0xA3]));
@@ -147,30 +141,61 @@ export default class MatroskaFile extends File {
             throw new CorruptFileError("Invalid EBML file, missing header element");
         }
 
+        // The general structure of the file that we care about will look like this:
+        // https://www.matroska.org/technical/diagram.html
+        //
+        // - EBML_HEADER (= 1)
+        //   - EBML_DOC_TYPE
+        //   - EBML_DOC_TYPE_VERSION
+        //   - EBML_DOC_TYPE_READ_VERSION
+        //   - EBML_MAX_ID_LENGTH
+        //   - EBML_MAX_SIZE_LENGTH
+        //   - EBML_READ_VERSION
+        //   - EBML_VERSION
+        // - SEGMENT (=1)
+        //   - ATTACHMENTS (>=0)
+        //     - ATTACHED_FILE (>=0)
+        //   - INFO (=1)
+        //     - DURATION
+        //     - TIME_CODE_SCALE
+        //   - TAGS
+        //     - TAG (>=1)
+        //       - SIMPLE_TAG (>=1)
+        //       - TARGETS (=1)
+        //   - TRACKS
+        //     - TRACK_ENTRY
+
         // Read the header first in order to determine information for parsing the rest of it
         const parser = new EbmlParser(this, firstElementOffset, this.length);
         try {
+            const segmentReadResults: SegmentReadResults[] = [];
             const actions = new Map<number, (e: EbmlElement) => void>([
                 [EbmlIds.EBML_HEADER, e => {
-                    this.readEbmlHeader(e)
-                    parser.setOptions(this._header.ebmlMaxIdLength, this._header.ebmlMaxSizeLength)
+                    const header = this.readEbmlHeader(e);
+                    parser.maxIdLength = header.ebmlMaxIdLength;
+                    parser.maxSizeLength = header.ebmlMaxSizeLength;
                 }],
-                [MatroskaIds.SEGMENT, e => this.readSegments(e)]
+                [MatroskaIds.SEGMENT, e => {
+                    segmentReadResults.push(this.readSegment(e));
+                }]
             ]);
             EbmlParser.processElements(parser, actions);
+
+            if (segmentReadResults.length > 1) {
+                throw new UnsupportedFormatError(
+                    "Matroska files with >1 segment element are not supported by this version of the library."
+                );
+            } else if (segmentReadResults.length === 0) {
+                throw new CorruptFileError("Matroska file is missing required segment element");
+            }
+
+            return segmentReadResults[0];
         } finally {
             parser.dispose();
         }
     }
 
-    private readAttachments(attachmentsElement: EbmlElement, state: TagReadState): void {
-        const attachmentParseActions = new Map<number, (e: EbmlElement) => void>([
-            [MatroskaIds.ATTACHED_FILE, e => state.attachments.push(MatroskaAttachment.fromAttachmentElement(e))]
-        ]);
-        EbmlParser.processElements(attachmentsElement.getParser(), attachmentParseActions);
-    }
-
-    private readEbmlHeader(headerElement: EbmlElement): void {
+    private readEbmlHeader(headerElement: EbmlElement): EbmlHeader {
         // NOTE: If it ever becomes necessary to separate EBML functionality from Matroska/WebM
         // functionality, this method should be moved.
 
@@ -179,7 +204,7 @@ export default class MatroskaFile extends File {
         const headerParseActions = new Map<number, (element: EbmlElement) => void>([
             [EbmlIds.EBML_VERSION, e => result.ebmlVersion = e.getSafeUint()],
             [EbmlIds.EBML_READ_VERSION, e => result.ebmlReadVersion = e.getSafeUint()],
-            [EbmlIds.EBML_MAX_IDLENGTH, e => result.ebmlMaxIdLength = e.getSafeUint()],
+            [EbmlIds.EBML_MAX_ID_LENGTH, e => result.ebmlMaxIdLength = e.getSafeUint()],
             [EbmlIds.EBML_MAX_SIZE_LENGTH, e => result.ebmlMaxSizeLength = e.getSafeUint()],
             [EbmlIds.EBML_DOC_TYPE, e => result.docType = e.getString()],
             [EbmlIds.EBML_DOC_TYPE_VERSION, e => result.docTypeVersion = e.getSafeUint()],
@@ -187,99 +212,140 @@ export default class MatroskaFile extends File {
         ]);
         EbmlParser.processElements(headerElement.getParser(), headerParseActions);
 
-        if (MatroskaFile.SUPPORTED_DOCTYPES.indexOf(result.docType) < 0) {
+        if (!result.docType || !MatroskaFile.SUPPORTED_DOCTYPES.includes(result.docType)) {
             throw new UnsupportedFormatError(
                 `EBML doctype ${result.docType} is not supported by Matroska file loader`
             );
         }
 
-        this._header = result;
+        return result;
     }
 
-    private readSegmentInfo(infoElement: EbmlElement, readState: TagReadState): void {
+    private readSegment(segmentsElement: EbmlElement): SegmentReadResults {
+        // Read the children of the segment element
+        const attachments: MatroskaAttachment[] = [];
+        const tags: MatroskaTag[] = [];
+        const tracks: Track[] = [];
+        let durationMilliseconds;
+        let tagSizeOnDisk;
+
+        const segmentParseActions = new Map<number, (e: EbmlElement) => void>([
+            [MatroskaIds.ATTACHMENTS, e => {
+                attachments.push(...this.readSegmentAttachments(e))
+            }],
+            [MatroskaIds.INFO, e => {
+                durationMilliseconds = this.readSegmentInfo(e);
+            }],
+            [MatroskaIds.TAGS, e => {
+                if (tags.length > 0) {
+                    // @TODO: Add support for this.
+                    throw new NotImplementedError("Multiple tags elements within segment is not supported");
+                }
+                const tagResults = this.readSegmentTags(e);
+                tags.push(... tagResults.tags);
+                tagSizeOnDisk = tagResults.sizeOnDisk;
+            }],
+            [MatroskaIds.TRACKS, e => {
+                tracks.push(... this.readSegmentTracks(e));
+            }]
+
+            // [MatroskaIds.CHAPTERS, undefined],
+            // [MatroskaIds.CLUSTER, undefined],
+            // [MatroskaIds.CUES, undefined],
+            // [MatroskaIds.SEEK_HEAD, undefined],
+        ]);
+        EbmlParser.processElements(segmentsElement.getParser(), segmentParseActions);
+
+        return <SegmentReadResults>{
+            attachments: attachments,
+            durationMilliseconds: durationMilliseconds,
+            tags: tags,
+            tagSizeOnDisk: tagSizeOnDisk,
+            tracks: tracks,
+        };
+    }
+
+    private readSegmentAttachments(attachmentsElement: EbmlElement): MatroskaAttachment[] {
+        const attachments: MatroskaAttachment[] = [];
+        const attachmentParseActions = new Map<number, (e: EbmlElement) => void>([
+            [MatroskaIds.ATTACHED_FILE, e => attachments.push(MatroskaAttachment.fromAttachmentElement(e))]
+        ]);
+        EbmlParser.processElements(attachmentsElement.getParser(), attachmentParseActions);
+
+        return attachments;
+    }
+
+    private readSegmentInfo(infoElement: EbmlElement): number|undefined {
         // @TODO: If read style is too low, don't read
-        let duration: number = 0;
-        let timeCodeScale: number;
+        let segmentTicks: number|undefined;
+        let timestampScale: number|undefined;
 
         const segmentInfoParseActions = new Map<number, (parser: EbmlElement) => void>([
-            [MatroskaIds.DURATION, e => duration = e.getDouble()],
-            [MatroskaIds.TIME_CODE_SCALE, e => timeCodeScale = e.getSafeUint()],
-            [MatroskaIds.TITLE, undefined] // @TODO Is this used? If so how do we use it?
+            [MatroskaIds.DURATION, e => segmentTicks = e.getDouble()],
+            [MatroskaIds.TIME_CODE_SCALE, e => timestampScale = e.getSafeUint()],
+            // [MatroskaIds.TITLE, undefined] @TODO Is this used? If so how do we use it?
         ]);
         EbmlParser.processElements(infoElement.getParser(), segmentInfoParseActions);
+
+        // @TODO: Verify that the logic for determining duration is correct.
 
         // Calculate duration in milliseconds
         // Matroska stores duration as nanoseconds when multiplied by the timecode scale. There are
         // 1,000,000 ns per ms.
-        if (timeCodeScale) {
-            readState.durationMilliseconds = duration * timeCodeScale / 1000000;
-        }
+        return timestampScale && segmentTicks
+            ? segmentTicks * timestampScale / 1000000
+            : segmentTicks;
     }
 
-    private readSegments(segmentsElement: EbmlElement): void {
-        // Read the children of the segment element
-        this._readState = {
-            attachments: [],
-            durationMilliseconds: 0,
-            tags: [],
-            tagSizeOnDisk: 0
-        };
-        const segmentParseActions = new Map<number, (e: EbmlElement) => void>([
-            [MatroskaIds.SEEK_HEAD, undefined],
-            [MatroskaIds.INFO, e => this.readSegmentInfo(e, this._readState)],
-            [MatroskaIds.CLUSTER, undefined],
-            [MatroskaIds.TRACKS, e => this.readTracks(e)],
-            [MatroskaIds.CUES, undefined],
-            [MatroskaIds.ATTACHMENTS, e => this.readAttachments(e, this._readState)],
-            [MatroskaIds.CHAPTERS, undefined],
-            [MatroskaIds.TAGS, e => this.readTags(e, this._readState)]
-        ]);
-        EbmlParser.processElements(segmentsElement.getParser(), segmentParseActions);
-    }
-
-    private readTag(tagElement: EbmlElement): MatroskaTag[] {
+    private readSegmentTag(tagElement: EbmlElement, docTypeVersion: number): MatroskaTag[] {
         const simpleTags: MatroskaTagValue[] = [];
-        let tagTarget: MatroskaTagTarget;
+        let tagTarget: MatroskaTagTarget|undefined;
 
         const parserActions = new Map<number, (e: EbmlElement) => void>([
-            [
-                MatroskaIds.SIMPLE_TAG,
-                e => simpleTags.push(MatroskaTagValue.fromSimpleTagElement(e, this._header.docTypeVersion))
-            ],
-            [
-                MatroskaIds.TARGETS,
-                e => { tagTarget = MatroskaTagTarget.fromTargetsElement(e); }
-            ]
+            [MatroskaIds.SIMPLE_TAG, e => {
+                simpleTags.push(MatroskaTagValue.fromSimpleTagElement(e, docTypeVersion))
+            }],
+            [MatroskaIds.TARGETS, e => {
+                tagTarget = MatroskaTagTarget.fromTargetsElement(e);
+            }]
         ]);
         EbmlParser.processElements(tagElement.getParser(), parserActions);
 
+        // @TODO: Allow omitted target element by setting target to "everything"
+        // @TODO: Maybe add setting to prefer writing to "everything" position
+
         if (!tagTarget) {
-            throw new CorruptFileError("Tag element is missing required targets element");
+            throw new NotImplementedError(
+                "This version of node-taglib-sharp does not support tags without target element"
+            );
         }
 
         // Create the tag wrapper objects
-        return simpleTags.map(t => new MatroskaTag(t, tagTarget.clone()));
+        // @TODO: Why does it think tagTarget can be undefined at this point?
+        return simpleTags.map(t => new MatroskaTag(t, tagTarget!.clone()));
     }
 
-    private readTags(tagsElement: EbmlElement, readState: TagReadState): void {
-        const tagCollections: MatroskaTag[][] = [];
+    private readSegmentTags(tagsElement: EbmlElement): {tags: MatroskaTag[], sizeOnDisk: number} {
+        const tags: MatroskaTag[] = [];
 
         const parserActions = new Map<number, (e: EbmlElement) => void>([
-            [MatroskaIds.TAG, e => tagCollections.push(this.readTag(e))]
+            [MatroskaIds.TAG, e => tags.push(... this.readSegmentTag(e))]
         ]);
         EbmlParser.processElements(tagsElement.getParser(), parserActions);
 
-        readState.tags = readState.tags.concat(... tagCollections);
-        readState.tagSizeOnDisk = tagsElement.length;
+        return {tags: tags, sizeOnDisk: tagsElement.length};
     }
 
-    private readTracks(tracksElement: EbmlElement): void {
+    private readSegmentTracks(tracksElement: EbmlElement): Track[] {
         // @TODO: Only read if read style is > average
 
+        const tracks: Track[] = [];
         const trackParseActions = new Map<number, (e: EbmlElement) => void>([
-            [MatroskaIds.TRACK_ENTRY, e => this._tracks.push(TrackFactory.fromTrackElement(e))]
+            [MatroskaIds.TRACK_ENTRY, e => tracks.push(TrackFactory.fromTrackElement(e))]
         ]);
         EbmlParser.processElements(tracksElement.getParser(), trackParseActions);
+
+        return tracks;
     }
 
     //#endregion

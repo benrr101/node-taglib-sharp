@@ -17,7 +17,7 @@ export class EbmlIds {
     /**
      * Indicates an EBML Max ID Length element.
      */
-    public static readonly EBML_MAX_IDLENGTH = 0x42F2;
+    public static readonly EBML_MAX_ID_LENGTH = 0x42F2;
 
     /**
      * Indicates an EBML Max Size Length element.
