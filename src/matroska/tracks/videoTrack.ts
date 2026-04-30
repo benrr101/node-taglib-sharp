@@ -3,6 +3,8 @@ import {MatroskaIds} from "../matroskaIds";
 import {IVideoCodec, MediaTypes} from "../../properties";
 import {MatroskaTrackType, Track} from "./track";
 import {Guards} from "../../utils";
+import {CorruptFileError} from "../../errors";
+import EbmlParser from "../../ebml/ebmlParser";
 
 /**
  * Possible modifications to the aspect ratio.
@@ -161,14 +163,14 @@ export enum VideoStereoMode {
  *     and the only true way to calculate framerate it do calculate it based on time codes.
  */
 export class VideoTrack extends Track implements IVideoCodec {
-    private readonly _aspectRatioType: VideoAspectRatioMode;
+    private readonly _aspectRatioType: VideoAspectRatioMode|undefined;
     private readonly _cropBottom: number;
     private readonly _cropLeft: number;
     private readonly _cropRight: number;
     private readonly _cropTop: number;
-    private readonly _displayHeight: number;
+    private readonly _displayHeight: number|undefined;
     private readonly _displayUnits: VideoDisplayUnits;
-    private readonly _displayWidth: number;
+    private readonly _displayWidth: number|undefined;
     private readonly _height: number;
     private readonly _isInterlaced: VideoInterlaceFlag;
     private readonly _stereoMode: VideoStereoMode;
@@ -176,43 +178,68 @@ export class VideoTrack extends Track implements IVideoCodec {
 
     /**
      * Constructs and initializes a new instance from a dictionary of elements from a video track element.
-     * @param trackElements All elements in the track root element
-     * @param videoElements All elements in the video root elements
+     * @param elements All elements in the track root element
      */
-    public constructor(trackElements: Map<number, EbmlElement>, videoElements: Map<number, EbmlElement>) {
-        super(trackElements);
+    public constructor(elements: Map<number, EbmlElement>) {
+        super(elements);
 
-        Guards.truthy(videoElements, "videoElements");
         if (this.type !== MatroskaTrackType.Video) {
             throw new Error(`Video track constructor used to construct type ${this.type} track.`);
         }
 
-        this._aspectRatioType = videoElements.get(MatroskaIds.ASPECT_RATIO_TYPE)?.getSafeUint();
-        this._cropBottom = videoElements.get(MatroskaIds.PIXEL_CROP_BOTTOM)?.getSafeUint();
-        this._cropLeft = videoElements.get(MatroskaIds.PIXEL_CROP_LEFT)?.getSafeUint();
-        this._cropRight = videoElements.get(MatroskaIds.PIXEL_CROP_RIGHT)?.getSafeUint();
-        this._cropTop = videoElements.get(MatroskaIds.PIXEL_CROP_TOP)?.getSafeUint();
-        this._displayHeight = videoElements.get(MatroskaIds.DISPLAY_HEIGHT)?.getSafeUint();
-        this._displayWidth = videoElements.get(MatroskaIds.DISPLAY_WIDTH)?.getSafeUint();
-        this._displayUnits = videoElements.get(MatroskaIds.DISPLAY_UNIT)?.getSafeUint();
-        this._height = videoElements.get(MatroskaIds.PIXEL_HEIGHT)?.getSafeUint();
-        this._width = videoElements.get(MatroskaIds.PIXEL_WIDTH)?.getSafeUint();
+        const videoElement = elements.get(MatroskaIds.VIDEO);
+        if (!videoElement) {
+            throw new CorruptFileError("Matroska video track is missing required video master element");
+        }
 
-        const interlacingModeValue = videoElements.get(MatroskaIds.FLAG_INTERLACED)?.getSafeUint();
-        this._isInterlaced = interlacingModeValue && interlacingModeValue <= VideoInterlaceFlag.Progressive
-            ? interlacingModeValue
-            : VideoInterlaceFlag.Undetermined;
+        const videoElements = EbmlParser.getAllElements(videoElement.getParser());
 
-        const stereoModeValue = videoElements.get(MatroskaIds.STEREO_MODE)?.getSafeUint();
-        this._stereoMode = stereoModeValue && stereoModeValue <= VideoStereoMode.LacedRightFirst
-            ? stereoModeValue
-            : VideoStereoMode.Mono;
+        // Required elements without defaults
+        const heightElement = videoElements.get(MatroskaIds.PIXEL_HEIGHT);
+        if (!heightElement) {
+            throw new CorruptFileError("Matroska video element is missing pixel height element.");
+        }
+        this._height = heightElement.getSafeUint();
+
+        const widthElement = videoElements.get(MatroskaIds.PIXEL_WIDTH);
+        if (!widthElement) {
+            throw new CorruptFileError("Matroska video element is missing pixel width element.");
+        }
+        this._width = widthElement.getSafeUint();
+
+        // Required elements with defaults
+        this._cropBottom = videoElements.get(MatroskaIds.PIXEL_CROP_BOTTOM)?.getSafeUint() ?? 0;
+        this._cropLeft = videoElements.get(MatroskaIds.PIXEL_CROP_LEFT)?.getSafeUint() ?? 0;
+        this._cropRight = videoElements.get(MatroskaIds.PIXEL_CROP_RIGHT)?.getSafeUint() ?? 0;
+        this._cropTop = videoElements.get(MatroskaIds.PIXEL_CROP_TOP)?.getSafeUint() ?? 0;
+        this._displayUnits = videoElements.get(MatroskaIds.DISPLAY_UNIT)?.getSafeUint() ?? VideoDisplayUnits.Pixels;
+        this._isInterlaced = videoElements.get(MatroskaIds.FLAG_INTERLACED)?.getSafeUint()
+            ?? VideoInterlaceFlag.Undetermined;
+        this._stereoMode = videoElements.get(MatroskaIds.STEREO_MODE)?.getSafeUint()
+            ?? VideoStereoMode.Mono;
+
+        // Elements that are not required
+        const displayHeightElement = videoElements.get(MatroskaIds.DISPLAY_HEIGHT);
+        this._displayHeight = displayHeightElement
+            ? displayHeightElement.getSafeUint()
+            : this._displayUnits === VideoDisplayUnits.Pixels
+                ? this._height - this._cropTop - this._cropBottom
+                : undefined;
+
+        const displayWidthElement = videoElements.get(MatroskaIds.DISPLAY_WIDTH);
+        this._displayWidth = displayWidthElement
+            ? displayWidthElement.getSafeUint()
+            : this._displayUnits === VideoDisplayUnits.Pixels
+                ? this._width - this._cropLeft - this._cropRight
+                : undefined;
     }
 
     /**
      * Specifies the possible modifications to the aspect ratio.
+     * @remarks
+     *     This was removed after v2 of the Matroska specification.
      */
-    public get aspectRatioType(): VideoAspectRatioMode { return this._aspectRatioType; }
+    public get aspectRatioType(): VideoAspectRatioMode|undefined { return this._aspectRatioType; }
 
     /**
      * Number of pixels to remove at the bottom of the image.
@@ -241,12 +268,12 @@ export class VideoTrack extends Track implements IVideoCodec {
      *     value for this is equal to {@link videoHeight} - {@link cropTop} - {@link cropBottom},
      *     otherwise there is no default value.
      */
-    public get displayHeight(): number { return this._displayHeight; }
+    public get displayHeight(): number|undefined { return this._displayHeight; }
 
     /**
      * How {@link displayWidth} and {@link displayHeight} are interpreted.
      */
-    public get displayUnits(): number { return this._displayUnits; }
+    public get displayUnits(): VideoDisplayUnits { return this._displayUnits; }
 
     /**
      * Width of the video frames to display. Applies to the video frame after cropping.
@@ -255,7 +282,7 @@ export class VideoTrack extends Track implements IVideoCodec {
      *     value for this is equal to {@link videoWidth} - {@link cropLeft} - {@link cropRight},
      *     otherwise there is no default value.
      */
-    public get displayWidth(): number { return this._displayWidth; }
+    public get displayWidth(): number|undefined { return this._displayWidth; }
 
     /**
      * Mode for interlacing the video.

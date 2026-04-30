@@ -13,13 +13,9 @@ export default class TrackFactory {
         // Parse the elements into a track object
         switch (elements.get(MatroskaIds.TRACK_TYPE)?.getSafeUint()) {
             case MatroskaTrackType.Audio:
-                const audioElementParser = elements.get(MatroskaIds.AUDIO).getParser();
-                const audioElements = EbmlParser.getAllElements(audioElementParser);
-                return new AudioTrack(elements, audioElements);
+                return new AudioTrack(elements);
             case MatroskaTrackType.Video:
-                const videoElementParser = elements.get(MatroskaIds.VIDEO).getParser();
-                const videoElements = EbmlParser.getAllElements(videoElementParser);
-                return new VideoTrack(elements, videoElements);
+                return new VideoTrack(elements);
             default:
                 return new Track(elements);
         }

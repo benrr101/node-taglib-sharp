@@ -1,9 +1,13 @@
 import EbmlElement from "../../ebml/ebmlElement";
 import {ByteVector} from "../../byteVector";
+import {CorruptFileError} from "../../errors";
 import {MatroskaIds} from "../matroskaIds";
 import {ICodec, MediaTypes} from "../../properties";
 import {Guards} from "../../utils";
 
+/**
+ * Types of Matroska tracks.
+ */
 export enum MatroskaTrackType {
     Video = 1,
     Audio = 2,
@@ -16,20 +20,19 @@ export enum MatroskaTrackType {
 }
 
 export class Track implements ICodec {
-
-    private readonly _codecPrivateData: ByteVector;
+    private readonly _codecPrivateData: ByteVector|undefined;
     private readonly _codecId: string;
-    private readonly _codecName: string;
-    private readonly _isCommentary: boolean;
+    private readonly _codecName: string|undefined;
+    private readonly _isCommentary: boolean|undefined;
     private readonly _isDefault: boolean;
     private readonly _isEnabled: boolean;
     private readonly _isForced: boolean;
-    private readonly _isHearingImpaired: boolean;
-    private readonly _isTranslation: boolean;
-    private readonly _isVisualImpaired: boolean;
+    private readonly _isHearingImpaired: boolean|undefined;
+    private readonly _isTranslation: boolean|undefined;
+    private readonly _isVisualImpaired: boolean|undefined;
     private readonly _language: string;
-    private readonly _languageIetf: string;
-    private readonly _trackName: string;
+    private readonly _languageIetf: string|undefined;
+    private readonly _trackName: string|undefined;
     private readonly _trackNumber: number;
     private readonly _trackUid: bigint;
     private readonly _type: number;
@@ -45,27 +48,50 @@ export class Track implements ICodec {
     public constructor(elements: Map<number, EbmlElement>) {
         Guards.truthy(elements, "elements");
 
-        // Read general-purpose elements
-        this._codecId = elements.get(MatroskaIds.CODEC_ID)?.getString();
+        // Required elements without defaults
+        const codecIdElement = elements.get(MatroskaIds.CODEC_ID);
+        if (!codecIdElement) {
+            throw new CorruptFileError("Matroska track element is missing codec ID element.");
+        }
+        this._codecId = codecIdElement.getString();
+
+        const trackNumberElement = elements.get(MatroskaIds.TRACK_NUMBER);
+        if (!trackNumberElement) {
+            throw new CorruptFileError("Matroska track element is missing track number element.");
+        }
+        this._trackNumber = trackNumberElement.getSafeUint();
+
+        const trackUidElement = elements.get(MatroskaIds.TRACK_UID);
+        if (!trackUidElement) {
+            throw new CorruptFileError("Matroska track element is missing track UID element.");
+        }
+        this._trackUid = trackUidElement?.getUlong();
+
+        const typeElement = elements.get(MatroskaIds.TRACK_TYPE);
+        if (!typeElement) {
+            throw new CorruptFileError("Matroska track element is missing track type element.");
+        }
+        this._type = typeElement.getSafeUint();
+
+        // Required elements with defaults
+        this._isDefault = elements.get(MatroskaIds.FLAG_DEFAULT)?.getBool() ?? true;
+        this._isEnabled = elements.get(MatroskaIds.FLAG_ENABLED)?.getBool() ?? true;
+        this._isForced = elements.get(MatroskaIds.FLAG_FORCED)?.getBool() ?? false;
+        this._language = elements.get(MatroskaIds.LANGUAGE)?.getString() ?? "eng";
+
+        // Completely optional elements
         this._codecName = elements.get(MatroskaIds.CODEC_NAME)?.getString();
         this._codecPrivateData = elements.get(MatroskaIds.CODEC_PRIVATE)?.getBytes();
         this._isCommentary = elements.get(MatroskaIds.FLAG_COMMENTARY)?.getBool();
-        this._isDefault = elements.get(MatroskaIds.FLAG_DEFAULT)?.getBool();
-        this._isEnabled = elements.get(MatroskaIds.FLAG_ENABLED)?.getBool();
-        this._isForced = elements.get(MatroskaIds.FLAG_FORCED)?.getBool();
         this._isHearingImpaired = elements.get(MatroskaIds.FLAG_HEARING_IMPAIRED)?.getBool();
         this._isVisualImpaired = elements.get(MatroskaIds.FLAG_VISUAL_IMPAIRED)?.getBool();
-        this._language = elements.get(MatroskaIds.LANGUAGE)?.getString();
         this._languageIetf = elements.get(MatroskaIds.LANGUAGE_BCP47)?.getString();
         this._trackName = elements.get(MatroskaIds.NAME)?.getString();
-        this._trackNumber = elements.get(MatroskaIds.TRACK_NUMBER)?.getSafeUint();
-        this._trackUid = elements.get(MatroskaIds.TRACK_UID)?.getUlong();
-        this._type = elements.get(MatroskaIds.TRACK_TYPE)?.getSafeUint();
 
-        const flagOriginal = elements.get(MatroskaIds.FLAG_ORIGINAL);
-        if (flagOriginal) {
-            this._isTranslation = !flagOriginal.getBool();
-        }
+        const originalElement = elements.get(MatroskaIds.FLAG_ORIGINAL);
+        this._isTranslation = originalElement
+            ? !(originalElement.getBool())
+            : undefined;
     }
 
     //#endregion
@@ -81,12 +107,12 @@ export class Track implements ICodec {
     /**
      * Human-readable string specifying the codec. This field is optional.
      */
-    public get codecName(): string { return this._codecName; }
+    public get codecName(): string|undefined { return this._codecName; }
 
     /**
      * Private data to help the codec.
      */
-    public get codecPrivateData(): ByteVector { return this._codecPrivateData; }
+    public get codecPrivateData(): ByteVector|undefined { return this._codecPrivateData; }
 
     /** @inheritDoc */
     public get description(): string {
@@ -95,12 +121,12 @@ export class Track implements ICodec {
     }
 
     /** @inheritDoc */
-    public get durationMilliseconds(): number { return 0; }
+    public get durationMilliseconds(): number|undefined { return undefined; }
 
     /**
      * Is `true` if the track contains commentary.
      */
-    public get isCommentary(): boolean { return this._isCommentary; }
+    public get isCommentary(): boolean|undefined { return this._isCommentary; }
 
     /**
      * Is `true` if the track should be eligible for automatic selection by the player.
@@ -124,17 +150,17 @@ export class Track implements ICodec {
     /**
      * Is `true` if the track is suitable for users with hearing impairments.
      */
-    public get isHearingImpaired(): boolean { return this._isHearingImpaired; }
+    public get isHearingImpaired(): boolean|undefined { return this._isHearingImpaired; }
 
     /**
      * Is `true` if the track is suitable for users with visual impairments.
      */
-    public get isVisualImpaired(): boolean { return this._isVisualImpaired; }
+    public get isVisualImpaired(): boolean|undefined { return this._isVisualImpaired; }
 
     /**
      * Is `true` if the track is a translation of the content's original language.
      */
-    public get isTranslation(): boolean { return this._isTranslation; }
+    public get isTranslation(): boolean|undefined { return this._isTranslation; }
 
     /**
      * Language of the track.
@@ -153,7 +179,7 @@ export class Track implements ICodec {
     /**
      * Human-readable track name. This field is optional.
      */
-    public get trackName(): string { return this._trackName; }
+    public get trackName(): string|undefined { return this._trackName; }
 
     /**
      * Track number as is used in the block header.
