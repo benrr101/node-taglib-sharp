@@ -66,9 +66,9 @@ export default class MatroskaTagCollection extends Tag {
             ? MatroskaTagCollection.PERFORMER_VIDEO_KEY
             : MatroskaTagCollection.PERFORMER_AUDIO_KEY;
 
-        this._attachments = attachments || [];
+        this._attachments = attachments ?? [];
         this._sizeOnDisk = sizeOnDisk;
-        this._tags = tags || [];
+        this._tags = tags ?? [];
     }
 
     //#region Properties
@@ -108,23 +108,23 @@ export default class MatroskaTagCollection extends Tag {
     public get sizeOnDisk(): number { return this._sizeOnDisk; }
 
     /** @inheritDoc */
-    public get title(): string {
+    public get title(): string|undefined {
         return this.getFileTagValues("TITLE").firstString;
     }
 
     /** @inheritDoc */
-    public get titleSort(): string {
+    public get titleSort(): string|undefined {
         return this.getFileTagValues("TITLE")
             .getSubtags("SORT_WITH").firstString;
     }
 
     /** @inheritDoc */
-    public get subtitle(): string {
+    public get subtitle(): string|undefined {
         return this.getFileTagValues("SUBTITLE").firstString;
     }
 
     /** @inheritDoc */
-    public get description(): string {
+    public get description(): string|undefined {
         return this.getFileTagValues("SUMMARY").firstString;
     }
 
@@ -169,18 +169,18 @@ export default class MatroskaTagCollection extends Tag {
     }
 
     /** @inheritDoc */
-    public get album(): string {
+    public get album(): string|undefined {
         return this.getTagValues(this._albumTagLevel, "TITLE").firstString;
     }
 
     /** @inheritDoc */
-    public get albumSort(): string {
+    public get albumSort(): string|undefined {
         return this.getTagValues(this._albumTagLevel, "TITLE")
             .getSubtags("SORT_WITH").firstString;
     }
 
     /** @inheritDoc */
-    public get comment(): string {
+    public get comment(): string|undefined {
         return this.getTagValuesRecursively(this._fileTagLevel, "COMMENT").firstString;
     }
 
@@ -227,52 +227,52 @@ export default class MatroskaTagCollection extends Tag {
 
     /** @inheritDoc */
     public get track(): number {
-        return this.getFileTagValues("PART_NUMBER").firstUintFromString || 0;
+        return this.getFileTagValues("PART_NUMBER").firstUintFromString ?? 0;
     }
 
     /** @inheritDoc */
     public get trackCount(): number {
-        return this.getTagValues(this._albumPartTagLevel, "TOTAL_PARTS").firstUintFromString || 0;
+        return this.getTagValues(this._albumPartTagLevel, "TOTAL_PARTS").firstUintFromString ?? 0;
     }
 
     /** @inheritDoc */
     public get disc(): number {
-        return this.getTagValues(this._albumPartTagLevel, "PART_NUMBER").firstUintFromString || 0;
+        return this.getTagValues(this._albumPartTagLevel, "PART_NUMBER").firstUintFromString ?? 0;
     }
 
     /** @inheritDoc */
     public get discCount(): number {
-        return this.getTagValues(this._albumTagLevel, "TOTAL_PARTS").firstUintFromString || 0;
+        return this.getTagValues(this._albumTagLevel, "TOTAL_PARTS").firstUintFromString ?? 0;
     }
 
     /** @inheritDoc */
-    public get lyrics(): string {
+    public get lyrics(): string|undefined {
         return this.getFileTagValues("LYRICS").firstString;
     }
 
     /** @inheritDoc */
-    public get grouping(): string {
+    public get grouping(): string|undefined {
         return this.getTagValues(this._albumTagLevel, "GROUPING").firstString;
     }
 
     /** @inheritDoc */
     public get beatsPerMinute(): number {
-        return this.getTagValuesRecursively(this._fileTagLevel, "BPM").firstUintFromString || 0;
+        return this.getTagValuesRecursively(this._fileTagLevel, "BPM").firstUintFromString ?? 0;
     }
 
     /** @inheritDoc */
-    public get conductor(): string {
+    public get conductor(): string|undefined {
         const key = this._isVideo ? "DIRECTOR" : "CONDUCTOR";
         return this.getTagValuesRecursively(this._fileTagLevel, key).firstString;
     }
 
     /** @inheritDoc */
-    public get copyright(): string {
+    public get copyright(): string|undefined {
         return this.getTagValuesRecursively(this._fileTagLevel, "COPYRIGHT").firstString;
     }
 
     /** @inheritDoc */
-    public get dateTagged(): Date {
+    public get dateTagged(): Date|undefined {
         const str = this.getTagValuesRecursively(this._fileTagLevel, "DATE_TAGGED").firstString;
         if (!str) { return undefined; }
         const dateValue = new Date(str);
@@ -391,14 +391,14 @@ class FilteredTags {
             .map(t => <string>t.value);
     }
 
-    public get firstString(): string {
+    public get firstString(): string|undefined {
         const firstStringTag = this._tags.find(t => t.isString);
         return firstStringTag === undefined
             ? undefined
             : <string>firstStringTag.value;
     }
 
-    public get firstUintFromString(): number {
+    public get firstUintFromString(): number|undefined {
         const str = this.firstString;
         return str
             ? parseInt(str, 10)

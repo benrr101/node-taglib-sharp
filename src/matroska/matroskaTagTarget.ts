@@ -1,5 +1,6 @@
 import EbmlElement from "../ebml/ebmlElement";
 import EbmlParser from "../ebml/ebmlParser";
+import {NotImplementedError} from "../errors";
 import {MatroskaIds} from "./matroskaIds";
 import {Guards} from "../utils";
 
@@ -32,10 +33,11 @@ export class MatroskaTagTargetType {
     public static readonly TRACK = new MatroskaTagTargetType(30, "TRACK");
     public static readonly TRACK_PART = new MatroskaTagTargetType(20, "PART");
     public static readonly VOLUME = new MatroskaTagTargetType(60, "VOLUME");
+    // @TODO: Put these in a hashset so we're not creating a new one for every single tag in the file
 
     //#endregion
 
-    private readonly _str: string;
+    private readonly _str: string|undefined;
     private readonly _val: number;
 
     public constructor(value: number, str?: string) {
@@ -51,7 +53,7 @@ export class MatroskaTagTargetType {
     /**
      * Gets the string representation of the target type.
      */
-    public get string(): string { return this._str; }
+    public get string(): string|undefined { return this._str; }
 
     /**
      * Gets the numeric representation of the target type.
@@ -62,24 +64,27 @@ export class MatroskaTagTargetType {
 /**
  * Representation of the target of a tag. This is indicating what a tag applies to.
  */
+// @TODO: I don't think this follows the intention of the spec - users can write willy-nilly to the UID fields, and
+//     could end up mixing/matching UIDs that they apply to. Or maybe it's no big deal. I don't really know.
 export class MatroskaTagTarget {
+    private readonly _targetType: MatroskaTagTargetType|undefined;
     private _attachmentUids: bigint[] = [];
     private _chapterUids: bigint[] = [];
     private _editionUids: bigint[] = [];
-    private _targetType: MatroskaTagTargetType;
     private _trackUids: bigint[] = [];
 
-    private constructor() { /* No implementation to enforce private constructor */ }
+    private constructor(targetType: MatroskaTagTargetType|undefined) {
+        this._targetType = targetType;
+    }
 
     /**
      * Constructs a tag target using the provided {@paramref value} and {@paramref str}.
      * @param targetType target type for the tag's target. If `undefined` this indicated the tag
      *     applies to the entire file.
      */
+    // @TODO: Make sure that `undefined` behavior is correct.
     public static fromEmpty(targetType?: MatroskaTagTargetType): MatroskaTagTarget {
-        const target = new MatroskaTagTarget();
-        target._targetType = targetType
-        return target;
+        return new MatroskaTagTarget(targetType);
     }
 
     /**
@@ -93,21 +98,34 @@ export class MatroskaTagTarget {
             throw new Error(`Target constructor was provided element of type ${element.id}`);
         }
 
-        const target = new MatroskaTagTarget();
-
         let targetTypeValue;
         let targetTypeString;
+        const attachmentUids: bigint[] = [];
+        const chapterUids: bigint[] = [];
+        const editionUids: bigint[] = [];
+        const trackUids: bigint[] = [];
         const parserActions = new Map<number, (e: EbmlElement) => void>([
             [MatroskaIds.TARGET_TYPE_VALUE, e => targetTypeValue = e.getSafeUint()],
             [MatroskaIds.TARGET_TYPE, e => targetTypeString = e.getString()],
-            [MatroskaIds.TAG_TRACK_UID, e => target._trackUids.push(e.getUlong())],
-            [MatroskaIds.TAG_EDITION_UID, e => target._editionUids.push(e.getUlong())],
-            [MatroskaIds.TAG_CHAPTER_UID, e => target._chapterUids.push(e.getUlong())],
-            [MatroskaIds.TAG_ATTACHMENT_UID, e => target._attachmentUids.push(e.getUlong())]
+            [MatroskaIds.TAG_ATTACHMENT_UID, e => attachmentUids.push(e.getUlong())],
+            [MatroskaIds.TAG_CHAPTER_UID, e => chapterUids.push(e.getUlong())],
+            [MatroskaIds.TAG_EDITION_UID, e => editionUids.push(e.getUlong())],
+            [MatroskaIds.TAG_TRACK_UID, e => trackUids.push(e.getUlong())]
         ]);
         EbmlParser.processElements(element.getParser(), parserActions);
 
-        target._targetType = new MatroskaTagTargetType(targetTypeValue, targetTypeString);
+        // @TODO: What happens if there are more than one type of UID?
+        // @TODO: Spec allows for empty targets element to indicate it applies to everything in the segment.
+        if (targetTypeValue === undefined) {
+            throw new NotImplementedError("Support for empty tag targets element is not available yet");
+        }
+
+        const targetType = new MatroskaTagTargetType(targetTypeValue, targetTypeString);
+        const target = new MatroskaTagTarget(targetType);
+        target._attachmentUids.push(... attachmentUids);
+        target._chapterUids.push(... chapterUids);
+        target._editionUids.push(... editionUids);
+        target._trackUids.push(... trackUids);
 
         return target;
     }
@@ -116,11 +134,10 @@ export class MatroskaTagTarget {
      * Clones the current instance.
      */
     public clone(): MatroskaTagTarget {
-        const clone = new MatroskaTagTarget();
+        const clone = new MatroskaTagTarget(this._targetType);
         clone._attachmentUids = this._attachmentUids.slice();
         clone._chapterUids = this._chapterUids.slice();
         clone._editionUids = this._editionUids.slice();
-        clone._targetType = this.targetType;
         clone._trackUids = this._trackUids.slice();
         return clone;
     }
@@ -144,7 +161,7 @@ export class MatroskaTagTarget {
      * Gets the tag target type for the current instance. This is a value that indicates the
      * "level" that the target belongs to.
      */
-    public get targetType(): MatroskaTagTargetType { return this._targetType; }
+    public get targetType(): MatroskaTagTargetType|undefined { return this._targetType; }
 
     /**
      * Gets a collection of track UIDs that tags with this target apply to.

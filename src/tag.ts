@@ -268,6 +268,8 @@ export abstract class Tag {
      *     Sortable names for the performers who performed in the media described by the
      *     current instance, or an empty array if no value is present.
      */
+    // @TODO: Maybe we should have a type that acts as a [] but handles callbacks to update the underlying structure of
+    //     the file representation? Or maybe we just yknow have read only arrays.
     public get performersSort(): string[] { return []; }
     /**
      * Gets the sortable names of the performers or artists who performed in the media described by

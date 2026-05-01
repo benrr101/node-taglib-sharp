@@ -1,7 +1,7 @@
 import EbmlElement from "../ebml/ebmlElement";
 import EbmlParser from "../ebml/ebmlParser";
 import {ByteVector} from "../byteVector";
-import {UnsupportedFormatError} from "../errors";
+import {CorruptFileError, UnsupportedFormatError} from "../errors";
 import {MatroskaIds} from "./matroskaIds";
 import {Guards, StringUtils} from "../utils";
 
@@ -11,42 +11,30 @@ import {Guards, StringUtils} from "../utils";
 export default class MatroskaTagValue {
     public static readonly DEFAULT_LANGUAGE_CODE = "und";
 
-    private readonly _matroskaVersion: number
+    private readonly _matroskaVersion: number;
 
     private _isDefaultLanguage: boolean = true;
     private _isLanguageCodeBcp47: boolean = false;
     private _languageCode: string = MatroskaTagValue.DEFAULT_LANGUAGE_CODE;
     private _name: string;
     private _nestedTags: MatroskaTagValue[] = [];
-    private _value: string | ByteVector;
+    private _value: string|ByteVector;
 
     /**
      * Constructs and initializes a new instance.
      * @param matroskaVersion Version of Matroska file the tag should be written for
+     * @param name Name of the tag
+     * @param value Value of the tag
      * @private
      */
-    private constructor(matroskaVersion: number) {
-        Guards.byte(matroskaVersion, "matroskaVersion");
-
-        this._matroskaVersion = matroskaVersion;
-    }
-
-    /**
-     * Constructs and initializes a new, empty tag.
-     * @param matroskaVersion Version of Matroska file the tag should be written for
-     * @param name Name of the tag value
-     * @param value Value to store in the tag value
-     */
-    public static fromValue(matroskaVersion: number, name: string, value: string|ByteVector): MatroskaTagValue {
+    private constructor(matroskaVersion: number, name: string, value: string|ByteVector) {
         Guards.byte(matroskaVersion, "matroskaVersion");
         Guards.truthy(name, "name");
         Guards.notNullOrUndefined(value, "value");
 
-        const obj = new MatroskaTagValue(matroskaVersion);
-        obj._name = name;
-        obj._value = value;
-
-        return obj;
+        this._matroskaVersion = matroskaVersion;
+        this._name = name;
+        this._value = value;
     }
 
     /**
@@ -61,19 +49,20 @@ export default class MatroskaTagValue {
             throw new Error(`Tag value constructor was provided element of type ${element.id}`);
         }
 
-        const simpleTag = new MatroskaTagValue(matroskaVersion);
-
         let languageCodeBcp47;
         let languageCodeIso639;
-        let binaryValue;
-        let stringValue;
+        let languageIsDefault;
+        let name: string|undefined;
+        let valueBinary: ByteVector|undefined;
+        let valueString: string|undefined;
+        const nestedTags: MatroskaTagValue[] = [];
         const simpleTagParseActions = new Map<number, (e: EbmlElement) => void>([
-            [MatroskaIds.TAG_NAME, e => simpleTag._name = e.getString()],
+            [MatroskaIds.TAG_NAME, e => name = e.getString()],
             [MatroskaIds.TAG_LANGUAGE, e => languageCodeIso639 = e.getString()],
             [MatroskaIds.TAG_LANGUAGE_BCP47, e => languageCodeBcp47 = e.getString()],
-            [MatroskaIds.TAG_DEFAULT, e => simpleTag._isDefaultLanguage = e.getBool()],
-            [MatroskaIds.TAG_STRING, e => stringValue = e.getString()],
-            [MatroskaIds.TAG_BINARY, e => binaryValue = e.getBytes()],
+            [MatroskaIds.TAG_DEFAULT, e => languageIsDefault = e.getBool()],
+            [MatroskaIds.TAG_STRING, e => valueString = e.getString()],
+            [MatroskaIds.TAG_BINARY, e => valueBinary = e.getBytes()],
             [
                 MatroskaIds.SIMPLE_TAG,
                 e => simpleTag._nestedTags.push(MatroskaTagValue.fromSimpleTagElement(e, matroskaVersion))
@@ -81,25 +70,53 @@ export default class MatroskaTagValue {
         ]);
         EbmlParser.processElements(element.getParser(), simpleTagParseActions);
 
+        if (name === undefined) {
+            throw new CorruptFileError("Matroska tag is missing required name element");
+        }
+
+        // Prefer string over binary
+        let value;
+        if (valueBinary !== undefined && valueString !== undefined) {
+            // @TODO: This situation is not compliant with the spec - we should have one or the other. But raising an
+            //    exception here would make it impossible to correct the situation with this library (as is the case
+            //    with a bunch of other exceptions in the library. How should this be addressed? I think a "possible
+            //    corruptions" list would allow us to recover while still reporting it to the user.
+            value = valueString;
+        } else if (valueBinary === undefined && valueString === undefined) {
+            // @TODO: This situation is also not compliant with the spec, and throwing out the tag is an easy recovery,
+            //    but we have no way or reporting this is invalid.
+            throw new CorruptFileError("Matroska tag is missing required string/binary value element");
+        } else {
+            value = (valueBinary ?? valueString)!;
+        }
+
+        const simpleTag = new MatroskaTagValue(matroskaVersion, name, value);
+        simpleTag._isDefaultLanguage = languageIsDefault ?? true;
+        simpleTag._nestedTags.push(... nestedTags);
+
         // Prefer BCP 47 over ISO 639
         if (languageCodeBcp47) {
             simpleTag._languageCode = languageCodeBcp47;
             simpleTag._isLanguageCodeBcp47 = true;
+        } else if (languageCodeIso639) {
+            simpleTag._languageCode = languageCodeIso639;
+            simpleTag._isLanguageCodeBcp47 = false;
         } else {
-            simpleTag._languageCode = languageCodeIso639 ?? this.DEFAULT_LANGUAGE_CODE;
+            simpleTag._languageCode = this.DEFAULT_LANGUAGE_CODE;
             simpleTag._isLanguageCodeBcp47 = false;
         }
 
-        // Prefer string over binary
-        if (binaryValue && stringValue) {
-            simpleTag._value = stringValue;
-        } else if (binaryValue) {
-            simpleTag._value = binaryValue;
-        } else {
-            simpleTag._value = stringValue;
-        }
-
         return simpleTag;
+    }
+
+    /**
+     * Constructs and initializes a new, empty tag.
+     * @param matroskaVersion Version of Matroska file the tag should be written for
+     * @param name Name of the tag value
+     * @param value Value to store in the tag value
+     */
+    public static fromValue(matroskaVersion: number, name: string, value: string|ByteVector): MatroskaTagValue {
+        return new MatroskaTagValue(matroskaVersion, name, value);
     }
 
     /**
