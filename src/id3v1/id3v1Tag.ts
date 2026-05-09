@@ -25,41 +25,53 @@ export default class Id3v1Tag extends Tag {
      */
     public static readonly TOTAL_SIZE = 128;
 
-    private _album: string;
-    private _artist: string;
-    private _comment: string;
-    private _genre: number;
-    private _title: string;
-    private _track: number;
-    private _year: string;
+    private _album: string|undefined = undefined;
+    private _artist: string|undefined = undefined;
+    private _comment: string|undefined = undefined;
+    private _genre: number = 255;
+    private _title: string|undefined = undefined;
+    private _track: number = 0;
+    private _year: string|undefined = undefined;
 
     //#endregion
 
     //#region Constructors
 
-    private constructor(data: ByteVector | undefined) {
+    private constructor(data: ByteVector|undefined) {
         super();
 
-        if (data === undefined) {
+        if (!data) {
             return;
         }
 
-        // Some initial sanity checking
-        Guards.truthy(data, "data");
-        if (!data.startsWith(Id3v1Tag.FILE_IDENTIFIER)) {
-            throw new CorruptFileError("Id3v1 data does not start with identifier");
+        // Data is the raw data of the tag
+        // @TODO: Define constants for the field offsets
+        this._title = Id3v1Tag.parseString(data.subarray(3, Id3v1Tag.TITLE_ARTIST_ALBUM_LENGTH));
+        this._artist = Id3v1Tag.parseString(data.subarray(33, Id3v1Tag.TITLE_ARTIST_ALBUM_LENGTH));
+        this._album = Id3v1Tag.parseString(data.subarray(63, Id3v1Tag.TITLE_ARTIST_ALBUM_LENGTH));
+        this._year = Id3v1Tag.parseString(data.subarray(93, Id3v1Tag.YEAR_LENGTH));
+
+        // Check for ID3v1.1
+        // NOTE: ID3v1 does not support "track zero", this is not a bug in TagLib. Since a zeroed
+        //     byte is what we would expect at the end of a C-string, specifically the comment
+        //     string, a value of zero must be assumed to be just that.
+        if (data.get(125) === 0 && data.get(126) !== 0) {
+            // ID3v1.1 detected
+            this._comment = Id3v1Tag.parseString(data.subarray(97, Id3v1Tag.COMMENT_LENGTH));
+            this._track = data.get(126);
+        } else {
+            this._comment = Id3v1Tag.parseString(data.subarray(97, Id3v1Tag.TITLE_ARTIST_ALBUM_LENGTH));
+            this._track = 0;
         }
 
-        this.parse(data);
+        this._genre = data.get(127);
     }
 
     /**
      * Constructs and initializes a new instance of {@link Id3v1Tag} with no contents.
      */
     public static fromEmpty(): Id3v1Tag {
-        const output = new Id3v1Tag(undefined);
-        output.clear();
-        return output;
+        return new Id3v1Tag(undefined);
     }
 
     /**
@@ -67,6 +79,11 @@ export default class Id3v1Tag extends Tag {
      * @param data Raw data for the ID3v1 tag
      */
     public static fromData(data: ByteVector): Id3v1Tag {
+        Guards.truthy(data, "data");
+        if (!data.startsWith(Id3v1Tag.FILE_IDENTIFIER)) {
+            throw new CorruptFileError("Id3v1 data does not start with identifier");
+        }
+
         return new Id3v1Tag(data);
     }
 
@@ -114,21 +131,24 @@ export default class Id3v1Tag extends Tag {
 
     //#region Tag Overrides
 
+    // @TODO: I think we should flip this around so we do the blank strings/default values are used only when
+    //    reading/writing the values.
+
     /** @inheritDoc */
     public get tagTypes(): TagTypes { return TagTypes.Id3v1; }
 
     /** @inheritDoc */
-    public get sizeOnDisk(): number { return Id3v1Tag.TOTAL_SIZE; }
+    public get sizeOnDisk(): number|undefined { return Id3v1Tag.TOTAL_SIZE; }
 
     /** @inheritDoc */
-    public get title(): string { return this._title || undefined; }
+    public get title(): string|undefined { return this._title || undefined; }
     /**
      * @inheritDoc
      * @remarks
      *     When stored on disk, only the first 30 bytes of the latin-1 encoded value will
      *     be stored. This may result in lost data.
      */
-    public set title(value: string) { this._title = value ? value.trim() : ""; }
+    public set title(value: string|undefined) { this._title = value ? value.trim() : ""; }
 
     /** @inheritDoc */
     public get performers(): string[] { return this._artist ? this._artist.split(";") : []; }
@@ -142,24 +162,24 @@ export default class Id3v1Tag extends Tag {
     public set performers(value: string[]) { this._artist = value ? value.join(";") : ""; }
 
     /** @inheritDoc */
-    public get album(): string { return this._album || undefined; }
+    public get album(): string|undefined { return this._album || undefined; }
     /**
      * @inheritDoc
      * @remarks
      *     When stored on disk, only the first 30 bytes of the latin-1 encoded value will
      *     be stored. This may result in data loss.
      */
-    public set album(value: string) { this._album = value ? value.trim() : ""; }
+    public set album(value: string|undefined) { this._album = value ? value.trim() : ""; }
 
     /** @inheritDoc */
-    public get comment(): string { return this._comment || undefined; }
+    public get comment(): string|undefined { return this._comment || undefined; }
     /**
      * @inheritDoc
      * @remarks
      *     When stored on disk, only the first 28 bytes of the latin-1 encoded value will
      *     be stored. This may result in lost data.
      */
-    public set comment(value: string) { this._comment = value ? value.trim() : ""; }
+    public set comment(value: string|undefined) { this._comment = value ? value.trim() : ""; }
 
     /** @inheritDoc */
     public get genres(): string[] {
@@ -180,7 +200,7 @@ export default class Id3v1Tag extends Tag {
 
     /** @inheritDoc */
     public get year(): number {
-        const value = parseInt(this._year, 10);
+        const value = Number(this._year);
         return Number.isNaN(value) ? 0 : value;
     }
     /**
@@ -222,28 +242,6 @@ export default class Id3v1Tag extends Tag {
 
     //#region Private Helpers
 
-    private parse(data: ByteVector): void {
-        this._title = Id3v1Tag.parseString(data.subarray(3, Id3v1Tag.TITLE_ARTIST_ALBUM_LENGTH));
-        this._artist = Id3v1Tag.parseString(data.subarray(33, Id3v1Tag.TITLE_ARTIST_ALBUM_LENGTH));
-        this._album = Id3v1Tag.parseString(data.subarray(63, Id3v1Tag.TITLE_ARTIST_ALBUM_LENGTH));
-        this._year = Id3v1Tag.parseString(data.subarray(93, Id3v1Tag.YEAR_LENGTH));
-
-        // Check for ID3v1.1
-        // NOTE: ID3v1 does not support "track zero", this is not a bug in TagLib. Since a zeroed
-        //     byte is what we would expect at the end of a C-string, specifically the comment
-        //     string, a value of zero must be assumed to be just that.
-        if (data.get(125) === 0 && data.get(126) !== 0) {
-            // ID3v1.1 detected
-            this._comment = Id3v1Tag.parseString(data.subarray(97, Id3v1Tag.COMMENT_LENGTH));
-            this._track = data.get(126);
-        } else {
-            this._comment = Id3v1Tag.parseString(data.subarray(97, Id3v1Tag.TITLE_ARTIST_ALBUM_LENGTH));
-            this._track = 0;
-        }
-
-        this._genre = data.get(127);
-    }
-
     private static parseString(data: ByteVector): string {
         Guards.truthy(data, "data");
 
@@ -254,13 +252,16 @@ export default class Id3v1Tag extends Tag {
             : output;
     }
 
-    private static renderField(value: string, maxLength: number): ByteVector[] {
+    private static renderField(value: string|undefined, maxLength: number): ByteVector[] {
         const valueToWrite = value?.substring(0, maxLength) || "";
         const remainingBytes = maxLength - valueToWrite.length;
-        return [
-            ByteVector.fromString(valueToWrite, StringType.Latin1),
-            remainingBytes > 0 ? ByteVector.fromSize(remainingBytes) : undefined
-        ];
+
+        const results = [ByteVector.fromString(valueToWrite, StringType.Latin1)];
+        if (remainingBytes > 0) {
+            results.push(ByteVector.fromSize(remainingBytes));
+        }
+
+        return results;
     }
 
     //#endregion
