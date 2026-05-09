@@ -52,16 +52,21 @@ export class FlacBlock implements ILazy {
      */
     public static readonly HEADER_SIZE = 4;
 
-    private _blockStart: number;
-    private _data: ByteVector;
-    private _dataSize: number;
-    private _file: File;
-    private _isLastBlock: boolean;
-    private _type: FlacBlockType;
+    private readonly _dataSize: number;
+    private readonly _isLastBlock: boolean;
+    private readonly _type: FlacBlockType;
+
+    private _data: ByteVector|undefined;
+    private _file: File|undefined;
+    private _filePosition: number|undefined;
 
     //#region Constructors
 
-    private constructor() { /* private to enforce creation via static constructors */ }
+    private constructor(type: FlacBlockType, dataSize: number, isLastBlock: boolean) {
+        this._dataSize = dataSize;
+        this._isLastBlock = isLastBlock;
+        this._type = type;
+    }
 
     /**
      * Constructs and initializes a new instance, lazily, by reading it from a file.
@@ -77,14 +82,14 @@ export class FlacBlock implements ILazy {
 
         file.seek(position);
 
-        const block = new FlacBlock();
-        block._file = file;
-        block._blockStart = position;
-
         const headerBytes = file.readBlock(4).toUint();
-        block._dataSize = NumberUtils.uintAnd(headerBytes, 0x00ffffff);
-        block._isLastBlock = !!NumberUtils.uintAnd(headerBytes, 0x80000000);
-        block._type = NumberUtils.uintAnd(headerBytes, 0x7f000000) >>> 24;
+        const isLastBlock = !!NumberUtils.uintAnd(headerBytes, 0x80000000);
+        const type = NumberUtils.uintAnd(headerBytes, 0x7f000000) >>> 24;
+        const dataSize = NumberUtils.uintAnd(headerBytes, 0x00ffffff);
+
+        const block = new FlacBlock(type, dataSize, isLastBlock);
+        block._file = file;
+        block._filePosition = position;
 
         return block;
     }
@@ -101,11 +106,8 @@ export class FlacBlock implements ILazy {
             throw new Error("Argument out of range: FLAC block data cannot be larger than 2^24 bytes");
         }
 
-        const block = new FlacBlock();
-        block._type = type;
+        const block = new FlacBlock(type, data.length, false);
         block._data = data.toByteVector();
-        block._dataSize = data.length;
-        block._isLastBlock = false;
 
         return block;
     }
@@ -114,22 +116,24 @@ export class FlacBlock implements ILazy {
 
     //#region Properties
 
-    /**
-     * Offset into the file where the block begins. This is `undefined` if the instance is
-     * constructed directly from data.
-     */
-    public get blockStart(): number { return this._blockStart; }
-    /** @internal */
-    public set blockStart(value: number) {
-        Guards.safeUint(value, "value");
-        this._blockStart = value;
+    /** @internal **/
+    // @TODO: It would be nice if this information was tracked in the flac file class, so we don't need to
+    //    make it updatable here.
+    public get bockStart(): number {
+        if (this._filePosition === undefined) {
+            throw new Error("FLAC block does not exist on disk yet.");
+        }
+
+        return this._filePosition;
     }
+    /** @internal **/
+    public set blockStart(value: number) { this._filePosition = value; }
 
     /**
      * Gets the data contained in the current instance.
      */
     public get data(): ByteVector {
-        this.load();
+        this.loadWithAssert(this._data);
         return this._data;
     }
 
@@ -146,6 +150,8 @@ export class FlacBlock implements ILazy {
      *     in the file and is followed immediately by the audio data, or `false` if another block
      *     appears after the current one or the block was not read from disk.
      */
+    // @TODO: UH... how are we tracking which block is the last?? Maybe we're just gambling that metadata will
+    //     always at the top of the file?
     public get isLastBlock(): boolean {
         // DEV NOTE: We don't really care about the value after reading the file, and because we
         //    don't expose the raw blocks to the user, it's not useful to make it modifiable.
@@ -172,16 +178,21 @@ export class FlacBlock implements ILazy {
     //#region Methods
 
     /** @inheritDoc */
+    // @TODO: I think we could avoid a lot of the nullsy nonsense with lazy loading by implementing a Lazy type.
     public load(): void {
         if (this.isLoaded) {
             return;
+        }
+
+        if (!this._file || this._filePosition === undefined) {
+            throw new Error("Cannot load FLAC block without file and position data");
         }
 
         // Read the data from the file
         const originalFileMode = this._file.mode;
         try {
             this._file.mode = FileAccessMode.Read;
-            this._file.seek(this._blockStart + FlacBlock.HEADER_SIZE);
+            this._file.seek(this._filePosition + FlacBlock.HEADER_SIZE);
             this._data = this._file.readBlock(this._dataSize).toByteVector();
         } finally {
             this._file.mode = originalFileMode;
@@ -193,7 +204,7 @@ export class FlacBlock implements ILazy {
      * @param isLastBlock Whether or not the block should be marked as the last metadata block.
      */
     public render(isLastBlock: boolean): ByteVector {
-        this.load();
+        this.loadWithAssert(this._data);
 
         // One last sanity check before we render
         if (this._data.length > Math.pow(2, 24) - 1) {
@@ -209,6 +220,18 @@ export class FlacBlock implements ILazy {
             ByteVector.fromUint(header),
             this._data
         );
+    }
+
+    /**
+     * Calls the load method and asserts the passed in field is not `undefined`.
+     * @param field Field to validate is not undefined.
+     * @private
+     */
+    private loadWithAssert<T>(field: T|undefined): asserts field is T {
+        this.load();
+        if (field === undefined) {
+            throw new Error("Lazy loading of Matroska attachment failed");
+        }
     }
 
     //#endregion

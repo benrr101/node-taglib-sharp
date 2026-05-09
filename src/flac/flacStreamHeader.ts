@@ -64,8 +64,9 @@ export default class FlacStreamHeader implements ILosslessAudioCodec {
      *     This value is calculated based on duration which may be zero if total number
      *     of samples is unknown. Therefore, the bitrate may be 0 indicating it is unknown.
      */
+    // @TODO: Figure out if we can avoid the issue
     public get audioBitrate(): number {
-        return this.durationMilliseconds > 0
+        return !!this.durationMilliseconds
             ? (this._streamLength * 8) / (this.durationMilliseconds / 1000) / 1000
             : 0;
     }
@@ -88,7 +89,7 @@ export default class FlacStreamHeader implements ILosslessAudioCodec {
      *     This value is calculated based on total samples, which may be 0 if the number of
      *     samples is unknown. Therefore, the duration may be unknown.
      */
-    public get durationMilliseconds(): number { return this._totalSamples / this._audioSampleRate * 1000; }
+    public get durationMilliseconds(): number|undefined { return this._totalSamples / this._audioSampleRate * 1000; }
 
     /** @inheritDoc */
     public get mediaTypes(): MediaTypes { return MediaTypes.LosslessAudio; }

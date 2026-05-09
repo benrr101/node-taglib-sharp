@@ -8,6 +8,12 @@ import {IPicture} from "../picture";
 import {Tag, TagTypes} from "../tag";
 import {Guards, NumberUtils} from "../utils";
 
+// @TODO: Move this to sandwich tag file.
+export type SandwichTagType = TagTypes.Ape|TagTypes.Id3v1|TagTypes.Id3v2;
+
+// @TODO: Ensure this is the right place to put this - since we have this in multiple places.
+export type FlacTagTypes = SandwichTagType|TagTypes.Xiph;
+
 /**
  * Collection of tags that can be stored in a FLAC file.
  * @remarks
@@ -17,16 +23,16 @@ import {Guards, NumberUtils} from "../utils";
  *     class provides a unified interface into all the tags a FLAC file may contain.
  */
 export default class FlacTag extends CombinedTag {
-    private static readonly DEFAULT_TAG_LOCATION_MAPPING = new Map<TagTypes, () => boolean>([
-        [TagTypes.Ape, () => FlacFileSettings.preferApeTagAtFileEnd],
-        [TagTypes.Id3v1, () => true],
-        [TagTypes.Id3v2, () => FlacFileSettings.preferId3v2TagAtFileEnd]
-    ]);
+    private static readonly DEFAULT_TAG_LOCATION_MAPPING: Readonly<Record<SandwichTagType, () => boolean>> = {
+        [TagTypes.Ape]: () => FlacFileSettings.preferApeTagAtFileEnd,
+        [TagTypes.Id3v1]: () => true,
+        [TagTypes.Id3v2]: () => FlacFileSettings.preferId3v2TagAtFileEnd
+    };
 
     private readonly _endTag: EndTag;
     private readonly _pictures: IPicture[];
     private readonly _startTag: StartTag;
-    private _xiphComment: XiphComment;
+    private _xiphComment: XiphComment|undefined;
 
     /**
      * Constructs and initializes a new FLAC tag using the component tags provided.
@@ -35,18 +41,27 @@ export default class FlacTag extends CombinedTag {
      * @param xiphTag Optional, Xiph comment tag from the FLAC file
      * @param flacPictures Optional, array of pictures found in the file
      */
-    public constructor(startTag: StartTag, endTag: EndTag, xiphTag: XiphComment, flacPictures: XiphPicture[]) {
+    public constructor(
+        startTag: StartTag,
+        endTag: EndTag,
+        xiphTag: XiphComment|undefined,
+        flacPictures: XiphPicture[]|undefined
+    ) {
         super(FlacFileSettings.SUPPORTED_TAG_TYPES, true);
         Guards.truthy(startTag, "startTag");
         Guards.truthy(endTag, "endTag");
 
-        this._xiphComment = xiphTag;
-        this.addTag(this._xiphComment);
         this._startTag = startTag;
         this.addTag(this._startTag);
         this._endTag = endTag;
         this.addTag(this._endTag);
-        this._pictures = flacPictures || [];
+
+        if (xiphTag) {
+            this._xiphComment = xiphTag;
+            this.addTag(this._xiphComment);
+        }
+
+        this._pictures = flacPictures ?? [];
     }
 
     //#region Properties
@@ -62,7 +77,7 @@ export default class FlacTag extends CombinedTag {
     public get startTag(): StartTag { return this._startTag; }
 
     /** Gets the Xiph comment that is stored in the current instance. */
-    public get xiphComment(): XiphComment { return this._xiphComment; }
+    public get xiphComment(): XiphComment|undefined { return this._xiphComment; }
 
     /**
      * @inheritDoc
@@ -103,7 +118,7 @@ export default class FlacTag extends CombinedTag {
 
     /** @inheritDoc */
     public createTag(tagType: TagTypes, copy: boolean): Tag {
-        this.validateTagCreation(tagType);
+        this.validateCreatableTagType(tagType);
 
         // Create the desired tag
         let tag: Tag;
@@ -118,7 +133,9 @@ export default class FlacTag extends CombinedTag {
             case TagTypes.Id3v2:
             case TagTypes.Ape:
                 // Sandwich tags, we farm out to the start/end tags
-                const targetTag = FlacTag.DEFAULT_TAG_LOCATION_MAPPING.get(tagType)() ? this._endTag : this._startTag;
+                const targetTag = FlacTag.DEFAULT_TAG_LOCATION_MAPPING[tagType]()
+                    ? this._endTag
+                    : this._startTag;
                 tag = targetTag.createTag(tagType, false);
         }
 
@@ -140,5 +157,9 @@ export default class FlacTag extends CombinedTag {
         }
 
         super.removeTags(tagTypes);
+    }
+
+    private validateCreatableTagType(tagType: TagTypes): asserts tagType is FlacTagTypes {
+        this.validateTagCreation(tagType);
     }
 }

@@ -31,7 +31,7 @@ export default class FlacFile extends File implements ISandwichFile {
      */
     public static readonly FILE_IDENTIFIER = ByteVector.fromString("fLaC", StringType.Latin1).makeReadOnly();
 
-    private readonly _properties: Properties;
+    private readonly _properties: Properties|undefined;
     private readonly _tag: FlacTag;
     private _metadataBlocks: FlacBlock[];
     private _mediaEndPosition: number;
@@ -57,11 +57,15 @@ export default class FlacFile extends File implements ISandwichFile {
             this._metadataBlocks = this.readMetadataBlocks();
 
             // Read properties, flac pictures, and Xiph comment
-            this._properties = this.readProperties(propertiesStyle);
+            // Read properties if it was requested
+            this._properties = NumberUtils.hasFlag(propertiesStyle, ReadStyle.Average)
+                ? this.readProperties(propertiesStyle)
+                : undefined;
+
             const pictures = this.readPictures(propertiesStyle);
             const xiphComment = this.readXiphComments(propertiesStyle);
-
             this._tag = new FlacTag(startTag, endTag, xiphComment, pictures);
+
             this.tagTypesOnDisk = this._tag.tagTypes;
         } finally {
             this.mode = FileAccessMode.Closed;
@@ -89,7 +93,7 @@ export default class FlacFile extends File implements ISandwichFile {
 
     public get mediaStartPosition(): number { return this._mediaStartPosition; }
 
-    public get properties(): Properties { return this._properties; }
+    public get properties(): Properties|undefined { return this._properties; }
 
     public get tag(): FlacTag { return this._tag; }
 
@@ -98,7 +102,7 @@ export default class FlacFile extends File implements ISandwichFile {
     //#region Methods
 
     /** @inheritDoc */
-    public getTag(type: TagTypes, create: boolean): Tag {
+    public getTag(type: TagTypes, create: boolean): Tag|undefined {
         // Try to get the desired tag
         const tag = this._tag.getTag(type);
         if (tag || !create) {
@@ -152,6 +156,7 @@ export default class FlacFile extends File implements ISandwichFile {
             const metadataBlocksBytes = this._metadataBlocks.map((b) => b.render(false));
             const metadataBytes = ByteVector.concatenate(... metadataBlocksBytes);
 
+            // @TODO: Does this handle non-contiguous metadata blocks? Is that even supported by the FLAC spec?
             // Step 4) Add padding block as necessary
             let paddingLength: number;
             if (metadataBytes.length < oldMetadataLength) {
@@ -196,6 +201,7 @@ export default class FlacFile extends File implements ISandwichFile {
         }
     }
 
+    // @TODO: This is actually reading all blocks, afaict. That's critical for understanding how this file class works.
     private readMetadataBlocks(): FlacBlock[] {
         // Make sure we've got the header at the beginning of the file
         this.seek(this._mediaStartPosition);
@@ -217,15 +223,12 @@ export default class FlacFile extends File implements ISandwichFile {
     }
 
     private readPictures(readStyle: ReadStyle): XiphPicture[] {
-        return this._metadataBlocks.filter((b) => b.type === FlacBlockType.Picture)
+        return this._metadataBlocks
+            .filter((b) => b.type === FlacBlockType.Picture)
             .map((b) => XiphPicture.fromFlacBlock(b, NumberUtils.hasFlag(readStyle, ReadStyle.PictureLazy)));
     }
 
     private readProperties(readStyle: ReadStyle): Properties {
-        if (!NumberUtils.hasFlag(readStyle, ReadStyle.Average)) {
-            return undefined;
-        }
-
         // Check that the first block is a METADATA_BLOCK_STREAMINFO
         if (this._metadataBlocks.length === 0 || this._metadataBlocks[0].type !== FlacBlockType.StreamInfo) {
             throw new CorruptFileError("FLAC stream does not begin with StreamInfo block");
@@ -240,10 +243,11 @@ export default class FlacFile extends File implements ISandwichFile {
         return new Properties(header.durationMilliseconds, [header]);
     }
 
-    private readXiphComments(readStyle: ReadStyle): XiphComment {
+    private readXiphComments(readStyle: ReadStyle): XiphComment|undefined {
         // Collect all the xiph comments
-        const xiphComments = this._metadataBlocks.filter((b) => b.type === FlacBlockType.XiphComment)
-            .map((b) => XiphComment.fromData(b.data, (readStyle & ReadStyle.PictureLazy) !== 0));
+        const xiphComments = this._metadataBlocks
+            .filter((b) => b.type === FlacBlockType.XiphComment)
+            .map((b) => XiphComment.fromData(b.data, NumberUtils.hasFlag(readStyle, ReadStyle.PictureLazy)));
 
         // If we don't have any Xiph comments, just return undefined
         if (xiphComments.length === 0) {
