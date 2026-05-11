@@ -23,7 +23,7 @@ const getTestFrame = (): CommentsFrame => {
         ByteVector.fromString("bar", StringType.Latin1)
     );
 
-    return CommentsFrame.fromRawData(data, 4);
+    return CommentsFrame.fromOffsetRawData(data, 0, header, 4);
 }
 
 @suite class Id3v2_CommentsFrame_ConstructorTests extends FrameConstructorTests {
@@ -31,9 +31,7 @@ const getTestFrame = (): CommentsFrame => {
         return CommentsFrame.fromOffsetRawData;
     }
 
-    public get fromRawData(): (d: ByteVector, v: number) => Frame {
-        return CommentsFrame.fromRawData;
-    }
+    public get fromRawData(): (d: ByteVector, v: number) => Frame { return undefined; }
 
     @test
     public fromDescription_falsyDescription() {
@@ -185,98 +183,6 @@ const getTestFrame = (): CommentsFrame => {
 
         // Act
         const frame = CommentsFrame.fromOffsetRawData(data, 2, header, 4);
-
-        // Assert
-        Id3v2_CommentsFrame_ConstructorTests.validateFrame(frame, "fux", "eng", StringType.Latin1, "bux");
-    }
-
-    @test
-    public fromRawData_tooFewBytes_throws() {
-        // Arrange
-        const header = new Id3v2FrameHeader(FrameIdentifiers.COMM);
-        header.frameSize = 1;
-        const data = ByteVector.concatenate(
-            header.render(4),
-            StringType.Latin1
-        );
-
-        // Act/Assert
-        assert.throws(() => { CommentsFrame.fromRawData(data, 4); });
-    }
-
-    @test
-    public fromRawData_noData_returnsEmptyFrame() {
-        // Arrange
-        const header = new Id3v2FrameHeader(FrameIdentifiers.COMM);
-        header.frameSize = 4;
-        const data = ByteVector.concatenate(
-            header.render(4),
-            StringType.Latin1,
-            ByteVector.fromString("eng", StringType.Latin1)
-        );
-
-        // Act
-        const frame = CommentsFrame.fromRawData(data, 4);
-
-        // Assert
-        Id3v2_CommentsFrame_ConstructorTests.validateFrame(frame, "", "eng", StringType.Latin1, "");
-    }
-
-    @test
-    public fromRawData_oneData_returnsFrameWithoutDescription() {
-        // Arrange
-        const header = new Id3v2FrameHeader(FrameIdentifiers.COMM);
-        header.frameSize = 7;
-        const data = ByteVector.concatenate(
-            header.render(4),
-            StringType.Latin1,
-            ByteVector.fromString("eng", StringType.Latin1),
-            ByteVector.fromString("fux", StringType.Latin1),
-        );
-
-        // Act
-        const frame = CommentsFrame.fromRawData(data, 4);
-
-        // Assert
-        Id3v2_CommentsFrame_ConstructorTests.validateFrame(frame, "", "eng", StringType.Latin1, "fux");
-    }
-
-    @test
-    public fromRawData_twoData_returnsFrameWithDescriptionAndText() {
-        const header = new Id3v2FrameHeader(FrameIdentifiers.COMM);
-        header.frameSize = 11;
-        const data = ByteVector.concatenate(
-            header.render(4),
-            StringType.Latin1,
-            ByteVector.fromString("eng", StringType.Latin1),
-            ByteVector.fromString("fux", StringType.Latin1),
-            ByteVector.getTextDelimiter(StringType.Latin1),
-            ByteVector.fromString("bux", StringType.Latin1)
-        );
-
-        // Act
-        const frame = CommentsFrame.fromRawData(data, 4);
-
-        // Assert
-        Id3v2_CommentsFrame_ConstructorTests.validateFrame(frame, "fux", "eng", StringType.Latin1, "bux");
-    }
-
-    @test
-    public fromRawData_threeData_returnsFrameWithDescriptionAndText() {
-        const header = new Id3v2FrameHeader(FrameIdentifiers.COMM);
-        header.frameSize = 12;
-        const data = ByteVector.concatenate(
-            header.render(4),
-            StringType.Latin1,
-            ByteVector.fromString("eng", StringType.Latin1),
-            ByteVector.fromString("fux", StringType.Latin1),
-            ByteVector.getTextDelimiter(StringType.Latin1),
-            ByteVector.fromString("bux", StringType.Latin1),
-            ByteVector.getTextDelimiter(StringType.Latin1)
-        );
-
-        // Act
-        const frame = CommentsFrame.fromRawData(data, 4);
 
         // Assert
         Id3v2_CommentsFrame_ConstructorTests.validateFrame(frame, "fux", "eng", StringType.Latin1, "bux");
@@ -576,7 +482,7 @@ const getTestFrame = (): CommentsFrame => {
             ByteVector.getTextDelimiter(StringType.Latin1),
             ByteVector.fromString("bux", StringType.Latin1)
         );
-        const frame = CommentsFrame.fromRawData(data, 4);
+        const frame = CommentsFrame.fromOffsetRawData(data, 0, header, 4);
 
         // Act
         const output = frame.render(4);
