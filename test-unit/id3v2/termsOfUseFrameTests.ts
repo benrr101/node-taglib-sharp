@@ -236,7 +236,7 @@ import {Testers} from "../utilities/testers";
     @test
     public render() {
         // Arrange
-        const header = new Id3v2FrameHeader(FrameIdentifiers.SYLT);
+        const header = new Id3v2FrameHeader(FrameIdentifiers.USER);
         header.frameSize = 10;
         const data = ByteVector.concatenate(
             header.render(4),
