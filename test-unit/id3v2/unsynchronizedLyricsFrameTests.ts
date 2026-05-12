@@ -25,8 +25,10 @@ const getTestFrameData = (): ByteVector => {
 };
 
 const getTestUnsynchronizedLyricsFrame = (): UnsynchronizedLyricsFrame => {
+    const header = new Id3v2FrameHeader(FrameIdentifiers.USLT);
+    header.frameSize = 11;
     const frameData = getTestFrameData();
-    return UnsynchronizedLyricsFrame.fromRawData(frameData, 4);
+    return UnsynchronizedLyricsFrame.fromOffsetRawData(frameData, 0, header, 4);
 };
 
 @suite class Id3v2_UnsynchronizedLyricsFrame_ConstructorTests extends FrameConstructorTests {
@@ -34,9 +36,7 @@ const getTestUnsynchronizedLyricsFrame = (): UnsynchronizedLyricsFrame => {
         return UnsynchronizedLyricsFrame.fromOffsetRawData;
     }
 
-    public get fromRawData(): (d: ByteVector, v: number) => Frame {
-        return UnsynchronizedLyricsFrame.fromRawData;
-    }
+    public get fromRawData(): (d: ByteVector, v: number) => Frame { return undefined; }
 
     @test
     public fromData() {
@@ -89,46 +89,6 @@ const getTestUnsynchronizedLyricsFrame = (): UnsynchronizedLyricsFrame => {
 
         // Act
         const frame = UnsynchronizedLyricsFrame.fromOffsetRawData(data, 2, header, 4);
-
-        // Assert
-        Id3v2_UnsynchronizedLyricsFrame_ConstructorTests.assertFrame(frame, "foo", "eng", "bar", StringType.Latin1);
-    }
-
-    @test
-    public fromRawData_missingDescription_returnsValidFrame() {
-        // Arrange
-        const header = new Id3v2FrameHeader(FrameIdentifiers.USLT);
-        header.frameSize = 7;
-        const data = ByteVector.concatenate(
-            header.render(4),                               // Header
-            StringType.Latin1,                                      // Encoding
-            ByteVector.fromString("eng", StringType.Latin1),    // Language
-            ByteVector.fromString("foo", StringType.UTF8)      // Content
-        );
-
-        // Act
-        const frame = UnsynchronizedLyricsFrame.fromRawData(data, 4);
-
-        // Assert
-        Id3v2_UnsynchronizedLyricsFrame_ConstructorTests.assertFrame(frame, "", "eng", "foo", StringType.Latin1);
-    }
-
-    @test
-    public fromRawData_withDescription_returnsValidFrame() {
-        // Arrange
-        const header = new Id3v2FrameHeader(FrameIdentifiers.USLT);
-        header.frameSize = 11;
-        const data = ByteVector.concatenate(
-            header.render(4),                               // Header
-            StringType.Latin1,                                      // Encoding
-            ByteVector.fromString("eng", StringType.Latin1),    // Language
-            ByteVector.fromString("foo", StringType.UTF8),     // Description
-            ByteVector.getTextDelimiter(StringType.Latin1),         // Delimiter
-            ByteVector.fromString("bar", StringType.UTF8)      // Content
-        );
-
-        // Act
-        const frame = UnsynchronizedLyricsFrame.fromRawData(data, 4);
 
         // Assert
         Id3v2_UnsynchronizedLyricsFrame_ConstructorTests.assertFrame(frame, "foo", "eng", "bar", StringType.Latin1);
