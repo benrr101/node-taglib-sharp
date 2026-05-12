@@ -277,9 +277,7 @@ import {Testers} from "../utilities/testers";
         return RelativeVolumeFrame.fromOffsetRawData;
     }
 
-    public get fromRawData(): (d: ByteVector, v: number) => Frame {
-        return RelativeVolumeFrame.fromRawData;
-    }
+    public get fromRawData(): (d: ByteVector, v: number) => Frame { return undefined; }
 
     @test
     public fromIdentification() {
@@ -291,51 +289,21 @@ import {Testers} from "../utilities/testers";
     }
 
     @test
-    public fromRawData_noDelimiter_emptyFrame() {
+    public fromOffsetRawData_noDelimiter_emptyFrame() {
         // Arrange
         const header = new Id3v2FrameHeader(FrameIdentifiers.RVA2);
         header.frameSize = 3;
         const data = ByteVector.concatenate(
             header.render(4),
+            0x00, 0x00,
             ByteVector.fromString("foo", StringType.Latin1)
         );
 
         // Act
-        const frame = RelativeVolumeFrame.fromRawData(data, 4);
+        const frame = RelativeVolumeFrame.fromOffsetRawData(data, 2, header, 4);
 
         // Assert
         Id3v2_RelativeVolumeFrame_ConstructorTests.assertFrame(frame, [], undefined);
-    }
-
-    @test
-    public fromRawData_withChannelData_hasChannelData() {
-        // Arrange
-        const header = new Id3v2FrameHeader(FrameIdentifiers.RVA2);
-        header.frameSize = 15;
-
-        const channel1 = new ChannelData(ChannelType.Subwoofer);
-        channel1.volumeAdjustment = 32;
-        channel1.peakBits = 8;
-        channel1.peakVolume = BigInt(12);
-
-        const channel2 = new ChannelData(ChannelType.BackCenter);
-        channel2.volumeAdjustment = 62;
-        channel2.peakBits = 16;
-        channel2.peakVolume = BigInt(123);
-
-        const data = ByteVector.concatenate(
-            header.render(4),
-            ByteVector.fromString("foo", StringType.Latin1),
-            ByteVector.getTextDelimiter(StringType.Latin1),
-            channel1.render(),
-            channel2.render()
-        );
-
-        // Act
-        const frame = RelativeVolumeFrame.fromRawData(data, 4);
-
-        // Assert
-        Id3v2_RelativeVolumeFrame_ConstructorTests.assertFrame(frame, [channel2, channel1], "foo");
     }
 
     @test
@@ -482,7 +450,7 @@ import {Testers} from "../utilities/testers";
             channel2.render(),
             channel1.render()
         );
-        const frame = RelativeVolumeFrame.fromRawData(data, 4);
+        const frame = RelativeVolumeFrame.fromOffsetRawData(data, 0, header, 4);
 
         // Act
         const output = frame.render(4);
