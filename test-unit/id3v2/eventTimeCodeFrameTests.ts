@@ -92,9 +92,7 @@ import {EventType, TimestampFormat} from "../../src/id3v2/utilTypes";
         return EventTimeCodeFrame.fromOffsetRawData;
     }
 
-    public get fromRawData(): (d: ByteVector, v: number) => Frame {
-        return EventTimeCodeFrame.fromRawData;
-    }
+    public get fromRawData(): (d: ByteVector, v: number) => Frame { return undefined; }
 
     @test
     public fromEmpty() {
@@ -112,48 +110,6 @@ import {EventType, TimestampFormat} from "../../src/id3v2/utilTypes";
 
         // Assert
         Id3v2_EventTimeCodeFrame_ConstructorTests.assertFrame(output, [], TimestampFormat.AbsoluteMilliseconds);
-    }
-
-    @test
-    public fromRawData_noEvents() {
-        // Arrange
-        const header = new Id3v2FrameHeader(FrameIdentifiers.ETCO);
-        header.frameSize = 1;
-        const data = ByteVector.concatenate(
-            header.render(4),
-            TimestampFormat.AbsoluteMilliseconds
-        );
-
-        // Act
-        const frame = EventTimeCodeFrame.fromRawData(data, 4);
-
-        // Assert
-        Id3v2_EventTimeCodeFrame_ConstructorTests.assertFrame(frame, [], TimestampFormat.AbsoluteMilliseconds);
-    }
-
-    @test
-    public fromRawData_withEvents() {
-        // Arrange
-        const header = new Id3v2FrameHeader(FrameIdentifiers.ETCO);
-        header.frameSize = 11;
-        const event1 = new EventTimeCode(EventType.Profanity, 123);
-        const event2 = new EventTimeCode(EventType.KeyChange, 456);
-        const data = ByteVector.concatenate(
-            header.render(4),
-            TimestampFormat.AbsoluteMilliseconds,
-            event1.render(),
-            event2.render()
-        );
-
-        // Act
-        const frame = EventTimeCodeFrame.fromRawData(data, 4);
-
-        // Assert
-        Id3v2_EventTimeCodeFrame_ConstructorTests.assertFrame(
-            frame,
-            [event1, event2],
-            TimestampFormat.AbsoluteMilliseconds
-        );
     }
 
     @test
@@ -275,7 +231,7 @@ import {EventType, TimestampFormat} from "../../src/id3v2/utilTypes";
             event2.render(),    // Force events to be sorted
             event1.render()
         );
-        const frame = EventTimeCodeFrame.fromRawData(data, 4);
+        const frame = EventTimeCodeFrame.fromOffsetRawData(data, 0, header, 4);
 
         // Act
         const output = frame.render(4);
