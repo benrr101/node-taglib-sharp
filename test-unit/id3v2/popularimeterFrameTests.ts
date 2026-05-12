@@ -15,9 +15,7 @@ import {Testers} from "../utilities/testers";
         return PopularimeterFrame.fromOffsetRawData;
     }
 
-    public get fromRawData(): (d: ByteVector, v: number) => Frame {
-        return PopularimeterFrame.fromRawData;
-    }
+    public get fromRawData(): (d: ByteVector, v: number) => Frame { return undefined; }
 
     @test
     public fromUser() {
@@ -29,60 +27,64 @@ import {Testers} from "../utilities/testers";
     }
 
     @test
-    public fromRawData_noDelimiter() {
+    public fromOffsetRawData_noDelimiter() {
         // Arrange
         const header = new Id3v2FrameHeader(FrameIdentifiers.POPM);
         header.frameSize = 3;
         const data = ByteVector.concatenate(
             header.render(4),
+            0x00, 0x00,
             0x01, 0x02, 0x03
         );
 
         // Act / Assert
-        assert.throws(() => { PopularimeterFrame.fromRawData(data, 4); });
+        assert.throws(() => { PopularimeterFrame.fromOffsetRawData(data, 2, header, 4); });
     }
 
     @test
-    public fromRawData_tooShort() {
+    public fromOffsetRawData_tooShort() {
         // Arrange
         const header = new Id3v2FrameHeader(FrameIdentifiers.POPM);
         header.frameSize = 3;
         const data = ByteVector.concatenate(
             header.render(4),
+            0x00, 0x00,
             0x01,
             ByteVector.getTextDelimiter(StringType.Latin1)
         );
 
         // Act / Assert
-        assert.throws(() => { PopularimeterFrame.fromRawData(data, 4); });
+        assert.throws(() => { PopularimeterFrame.fromOffsetRawData(data, 2, header, 4); });
     }
 
     @test
-    public fromRawData_noPlayCount() {
+    public fromOffsetRawData_noPlayCount() {
         // Arrange
         const header = new Id3v2FrameHeader(FrameIdentifiers.POPM);
         header.frameSize = 9;
         const data = ByteVector.concatenate(
             header.render(4),
+            0x00, 0x00,
             ByteVector.fromString("fux", StringType.Latin1),
             ByteVector.getTextDelimiter(StringType.Latin1),
             0x05
         );
 
         // Act
-        const frame = PopularimeterFrame.fromRawData(data, 4);
+        const frame = PopularimeterFrame.fromOffsetRawData(data, 2, header, 4);
 
         // Assert
         this.assertFrame(frame, "fux", undefined, 0x05);
     }
 
     @test
-    public fromRawData_invalidPlayCountBytes() {
+    public fromOffsetRawData_invalidPlayCountBytes() {
         // Arrange
         const header = new Id3v2FrameHeader(FrameIdentifiers.POPM);
         header.frameSize = 9;
         const data = ByteVector.concatenate(
             header.render(4),
+            0x00, 0x00,
             ByteVector.fromString("fux", StringType.Latin1),
             ByteVector.getTextDelimiter(StringType.Latin1),
             0x05,
@@ -90,16 +92,17 @@ import {Testers} from "../utilities/testers";
         );
 
         // Act / Assert
-        assert.throws(() => { PopularimeterFrame.fromRawData(data, 4); });
+        assert.throws(() => { PopularimeterFrame.fromOffsetRawData(data, 2, header, 4); });
     }
 
     @test
-    public fromRawData_intSizedPlayCount() {
+    public fromOffsetRawData_intSizedPlayCount() {
         // Arrange
         const header = new Id3v2FrameHeader(FrameIdentifiers.POPM);
         header.frameSize = 9;
         const data = ByteVector.concatenate(
             header.render(4),
+            0x00, 0x00,
             ByteVector.fromString("fux", StringType.Latin1),
             ByteVector.getTextDelimiter(StringType.Latin1),
             0x05,
@@ -107,27 +110,7 @@ import {Testers} from "../utilities/testers";
         );
 
         // Act
-        const frame = PopularimeterFrame.fromRawData(data, 4);
-
-        // Assert
-        this.assertFrame(frame, "fux", BigInt(1234), 0x05);
-    }
-
-    @test
-    public fromRawData_longSizedPlayCount() {
-        // Arrange
-        const header = new Id3v2FrameHeader(FrameIdentifiers.POPM);
-        header.frameSize = 13;
-        const data = ByteVector.concatenate(
-            header.render(4),
-            ByteVector.fromString("fux", StringType.Latin1),
-            ByteVector.getTextDelimiter(StringType.Latin1),
-            0x05,
-            ByteVector.fromUlong(BigInt(1234))
-        );
-
-        // Act
-        const frame = PopularimeterFrame.fromRawData(data, 4);
+        const frame = PopularimeterFrame.fromOffsetRawData(data, 2, header, 4);
 
         // Assert
         this.assertFrame(frame, "fux", BigInt(1234), 0x05);
@@ -293,7 +276,7 @@ import {Testers} from "../utilities/testers";
             ByteVector.getTextDelimiter(StringType.Latin1),
             0x05
         );
-        const frame = PopularimeterFrame.fromRawData(data, 4);
+        const frame = PopularimeterFrame.fromOffsetRawData(data, 0, header, 4);
 
         // Act
         const output = frame.render(4);
@@ -315,7 +298,7 @@ import {Testers} from "../utilities/testers";
             0x05,
             ByteVector.fromUint(1234)
         );
-        const frame = PopularimeterFrame.fromRawData(data, 4);
+        const frame = PopularimeterFrame.fromOffsetRawData(data, 0, header, 4);
 
         // Act
         const output = frame.render(4);
@@ -337,7 +320,7 @@ import {Testers} from "../utilities/testers";
             0x05,
             0x01, 0x02, 0x03, 0x04, 0x05
         );
-        const frame = PopularimeterFrame.fromRawData(data, 4);
+        const frame = PopularimeterFrame.fromOffsetRawData(data, 0, header, 4);
 
         // Act
         const output = frame.render(4);
@@ -359,7 +342,7 @@ import {Testers} from "../utilities/testers";
             0x05,
             0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08
         );
-        const frame = PopularimeterFrame.fromRawData(data, 4);
+        const frame = PopularimeterFrame.fromOffsetRawData(data, 0, header, 4);
 
         // Act
         const output = frame.render(4);
@@ -369,4 +352,3 @@ import {Testers} from "../utilities/testers";
         Testers.bvEqual(output, data);
     }
 }
-
