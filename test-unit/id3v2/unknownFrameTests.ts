@@ -14,8 +14,6 @@ import {Testers} from "../utilities/testers";
         return UnknownFrame.fromOffsetRawData;
     }
 
-    public get fromRawData(): (d: ByteVector, v: number) => Frame { return undefined; }
-
     @test
     public fromData_falsyType_throws() {
         // Act/Assert

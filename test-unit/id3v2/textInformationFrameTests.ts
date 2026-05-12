@@ -32,8 +32,6 @@ const getTestFrame = (): TextInformationFrame => {
         return TextInformationFrame.fromOffsetRawData;
     }
 
-    public get fromRawData(): (d: ByteVector, v: number) => Frame { return undefined; }
-
     @test
     public fromIdentifier_noEncoding_returnsFrameWithDefaultEncoding() {
         // Act

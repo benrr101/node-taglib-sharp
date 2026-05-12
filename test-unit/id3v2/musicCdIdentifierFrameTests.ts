@@ -15,8 +15,6 @@ import {Testers} from "../utilities/testers";
         return MusicCdIdentifierFrame.fromOffsetRawData;
     }
 
-    public get fromRawData(): (d: ByteVector, v: number) => Frame { return undefined; }
-
     @test
     public fromOffsetRawData_validParameters() {
         // Arrange

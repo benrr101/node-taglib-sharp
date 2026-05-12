@@ -42,7 +42,6 @@ const getCustomTestFrame = (
     get fromOffsetRawData(): (d: ByteVector, o: number, h: Id3v2FrameHeader, v: number) => Frame {
         return AttachmentFrame.fromOffsetRawData;
     }
-    get fromRawData(): (d: ByteVector, v: number) => Frame { return undefined; }
 
     @test
     public fromPicture_falsyPicture() {

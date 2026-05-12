@@ -19,8 +19,6 @@ const testOwner = "https://github.com/benrr101/node-taglib-sharp";
         return UniqueFileIdentifierFrame.fromOffsetRawData;
     }
 
-    public get fromRawData(): (d: ByteVector, v: number) => Frame { return undefined; }
-
     @test
     public fromData_invalidOwner_throws() {
         // Arrange

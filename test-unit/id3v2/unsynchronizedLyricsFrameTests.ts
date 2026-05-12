@@ -36,8 +36,6 @@ const getTestUnsynchronizedLyricsFrame = (): UnsynchronizedLyricsFrame => {
         return UnsynchronizedLyricsFrame.fromOffsetRawData;
     }
 
-    public get fromRawData(): (d: ByteVector, v: number) => Frame { return undefined; }
-
     @test
     public fromData() {
         // Arrange

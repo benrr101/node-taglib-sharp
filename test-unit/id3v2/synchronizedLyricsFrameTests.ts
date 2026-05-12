@@ -46,8 +46,6 @@ import {SynchronizedTextType, TimestampFormat} from "../../src/id3v2/utilTypes";
         return SynchronizedLyricsFrame.fromOffsetRawData;
     }
 
-    public get fromRawData(): (d: ByteVector, v: number) => Frame { return undefined; }
-
     @test
     public fromInfo_withoutEncoding() {
         // Arrange

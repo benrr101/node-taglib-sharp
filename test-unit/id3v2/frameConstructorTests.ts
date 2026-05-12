@@ -9,7 +9,6 @@ import {Testers} from "../utilities/testers";
 export default abstract class FrameConstructorTests {
 
     public abstract get fromOffsetRawData(): (d: ByteVector, o: number, h: Id3v2FrameHeader, v: number) => Frame;
-    public abstract get fromRawData(): (d: ByteVector, v: number) => Frame;
 
     @test
     public fromOffsetRawData_falsyData_throws() {
@@ -37,20 +36,5 @@ export default abstract class FrameConstructorTests {
 
         // Act/Assert
         Testers.testTruthy((v: Id3v2FrameHeader) => { this.fromOffsetRawData(data, 2, v, 4); });
-    }
-
-    @test
-    public fromRawData_falsyData_throws() {
-        // Act/Assert
-        Testers.testTruthy((v: ByteVector) => { this.fromRawData(v, 2); });
-    }
-
-    @test
-    public fromRawData_invalidVersion_throws() {
-        // Arrange
-        const data = ByteVector.empty();
-
-        // Act/Assert
-        Testers.testByte((v: number) => { this.fromRawData(data, v); });
     }
 }

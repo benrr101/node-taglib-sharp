@@ -92,8 +92,6 @@ import {EventType, TimestampFormat} from "../../src/id3v2/utilTypes";
         return EventTimeCodeFrame.fromOffsetRawData;
     }
 
-    public get fromRawData(): (d: ByteVector, v: number) => Frame { return undefined; }
-
     @test
     public fromEmpty() {
         // Act

@@ -29,8 +29,6 @@ const getTestFrame = (): UserTextInformationFrame => {
         return UserTextInformationFrame.fromOffsetRawData;
     }
 
-    public get fromRawData(): (d: ByteVector, v: number) => Frame { return undefined; }
-
     @test
     public fromDescription_noEncoding_returnsFrameWithDefaultEncoding() {
         // Act

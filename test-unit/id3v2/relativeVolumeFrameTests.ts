@@ -277,8 +277,6 @@ import {Testers} from "../utilities/testers";
         return RelativeVolumeFrame.fromOffsetRawData;
     }
 
-    public get fromRawData(): (d: ByteVector, v: number) => Frame { return undefined; }
-
     @test
     public fromIdentification() {
         // Act

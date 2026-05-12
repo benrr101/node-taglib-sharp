@@ -16,8 +16,6 @@ import {Testers} from "../utilities/testers";
         return TermsOfUseFrame.fromOffsetRawData;
     }
 
-    public get fromRawData(): (d: ByteVector, v: number) => Frame { return undefined; }
-
     @test
     public fromFields_withoutTextEncoding() {
         // Act

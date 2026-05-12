@@ -36,8 +36,6 @@ const getTestUrlLinkFrame = (): UrlLinkFrame => {
         return UrlLinkFrame.fromOffsetRawData;
     }
 
-    public get fromRawData(): (d: ByteVector, v: number) => Frame { return undefined; }
-
     @test
     public fromIdentity_falsyIdentity() {
         // Act/Assert
