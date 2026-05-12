@@ -116,8 +116,8 @@ const getCustomTestFrame = (
         const header = new Id3v2FrameHeader(FrameIdentifiers.APIC);
         header.frameSize = 41;
         const data = ByteVector.concatenate(
-            header.render(4),
             0x00, 0x00,
+            header.render(4),
             StringType.Latin1,
             ByteVector.fromString("image/gif", StringType.Latin1),
             ByteVector.getTextDelimiter(StringType.Latin1),
@@ -150,8 +150,8 @@ const getCustomTestFrame = (
         const header = new Id3v2FrameHeader(FrameIdentifiers.APIC);
         header.frameSize = 41;
         const data = ByteVector.concatenate(
-            header.render(4),
             0x00, 0x00,
+            header.render(4),
             StringType.UTF16BE,
             ByteVector.fromString("image/gif", StringType.Latin1),
             ByteVector.getTextDelimiter(StringType.Latin1),
@@ -184,8 +184,8 @@ const getCustomTestFrame = (
         const header = new Id3v2FrameHeader(FrameIdentifiers.APIC);
         header.frameSize = 34;
         const data = ByteVector.concatenate(
-            header.render(2),
             0x00, 0x00,
+            header.render(2),
             StringType.UTF16BE,
             ByteVector.fromString("GIF", StringType.Latin1),
             PictureType.Artist,
@@ -217,8 +217,8 @@ const getCustomTestFrame = (
         const header = new Id3v2FrameHeader(FrameIdentifiers.GEOB);
         header.frameSize = 60;
         const data = ByteVector.concatenate(
-            header.render(4),
             0x00, 0x00,
+            header.render(4),
             StringType.UTF16BE,
             ByteVector.fromString("image/gif", StringType.Latin1),
             ByteVector.getTextDelimiter(StringType.Latin1),
@@ -252,8 +252,8 @@ const getCustomTestFrame = (
         const header = new Id3v2FrameHeader(FrameIdentifiers.GEOB);
         header.frameSize = 60;
         const data = ByteVector.concatenate(
-            header.render(4),
             0x00, 0x00,
+            header.render(4),
             StringType.Latin1,
             ByteVector.fromString("image/gif", StringType.Latin1),
             ByteVector.getTextDelimiter(StringType.Latin1),
@@ -287,8 +287,8 @@ const getCustomTestFrame = (
         const header = new Id3v2FrameHeader(FrameIdentifiers.APIC);
         header.frameSize = 41;
         const data = ByteVector.concatenate(
-            header.render(4),
             0x00, 0x00,
+            header.render(4),
             StringType.UTF16BE,
             ByteVector.fromString("image/gif", StringType.Latin1),
             ByteVector.getTextDelimiter(StringType.Latin1),
@@ -484,8 +484,8 @@ const getCustomTestFrame = (
         const header = new Id3v2FrameHeader(FrameIdentifiers.APIC);
         header.frameSize = 41;
         const data = ByteVector.concatenate(
-            header.render(4),
             0x00, 0x00,
+            header.render(4),
             StringType.UTF16BE,
             ByteVector.fromString("image/gif", StringType.Latin1),
             ByteVector.getTextDelimiter(StringType.Latin1),

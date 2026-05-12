@@ -42,8 +42,8 @@ import {Testers} from "../utilities/testers";
         const header = new Id3v2FrameHeader(FrameIdentifiers.USER);
         header.frameSize = 2;
         const data = ByteVector.concatenate(
-            header.render(4),
             0x00, 0x00, // Offset data
+            header.render(4),
             0x00, 0x00
         );
 
@@ -57,8 +57,8 @@ import {Testers} from "../utilities/testers";
         const header = new Id3v2FrameHeader(FrameIdentifiers.USER);
         header.frameSize = 10;
         const data = ByteVector.concatenate(
-            header.render(4),
             0x01, 0x00, // Offset data
+            header.render(4),
             StringType.Latin1,
             ByteVector.fromString("fux", StringType.Latin1),
             ByteVector.fromString("buxqux", StringType.Latin1)

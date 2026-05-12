@@ -32,8 +32,8 @@ import {Testers} from "../utilities/testers";
         const header = new Id3v2FrameHeader(FrameIdentifiers.PRIV);
         header.frameSize = 0;
         const data = ByteVector.concatenate(
-            header.render(4),
-            0x00, 0x00
+            0x00, 0x00,
+            header.render(4)
         );
 
         // Act / Assert
@@ -46,8 +46,8 @@ import {Testers} from "../utilities/testers";
         const header = new Id3v2FrameHeader(FrameIdentifiers.PRIV);
         header.frameSize = 4;
         const data = ByteVector.concatenate(
-            header.render(4),
             0x00, 0x00,
+            header.render(4),
             ByteVector.fromString("fux", StringType.Latin1)
         );
 
@@ -64,8 +64,8 @@ import {Testers} from "../utilities/testers";
         const header = new Id3v2FrameHeader(FrameIdentifiers.PRIV);
         header.frameSize = 8;
         const data = ByteVector.concatenate(
-            header.render(4),
             0x00, 0x00,
+            header.render(4),
             ByteVector.fromString("fux", StringType.Latin1),
             ByteVector.getTextDelimiter(StringType.Latin1),
             0x01, 0x02, 0x03, 0x04

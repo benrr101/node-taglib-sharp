@@ -99,8 +99,8 @@ import {SynchronizedTextType, TimestampFormat} from "../../src/id3v2/utilTypes";
         const header = new Id3v2FrameHeader(FrameIdentifiers.SYLT);
         header.frameSize = 5;
         const data = ByteVector.concatenate(
-            header.render(4),
             0x00, 0x00,
+            header.render(4),
             0x00, 0x00, 0x00, 0x00, 0x00
         );
 
@@ -114,8 +114,8 @@ import {SynchronizedTextType, TimestampFormat} from "../../src/id3v2/utilTypes";
         const header = new Id3v2FrameHeader(FrameIdentifiers.SYLT);
         header.frameSize = 10;
         const data = ByteVector.concatenate(
-            header.render(4),
             0x00, 0x00,
+            header.render(4),
             0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
             0x01, 0x02, 0x03, 0x04, 0x05
         );
@@ -130,8 +130,8 @@ import {SynchronizedTextType, TimestampFormat} from "../../src/id3v2/utilTypes";
         const header = new Id3v2FrameHeader(FrameIdentifiers.SYLT);
         header.frameSize = 16;
         const data = ByteVector.concatenate(
-            header.render(4),
             0x00, 0x00,
+            header.render(4),
             StringType.UTF16BE,
             ByteVector.fromString("fux", StringType.Latin1),
             TimestampFormat.AbsoluteMilliseconds,
@@ -152,8 +152,8 @@ import {SynchronizedTextType, TimestampFormat} from "../../src/id3v2/utilTypes";
         const content1 = new SynchronizedText(123, "qux");
         const content2 = new SynchronizedText(456, "zux");
         const data = ByteVector.concatenate(
-            header.render(4),
             0x00, 0x00,
+            header.render(4),
             StringType.UTF16BE,
             ByteVector.fromString("fux", StringType.Latin1),
             TimestampFormat.AbsoluteMilliseconds,
@@ -185,8 +185,8 @@ import {SynchronizedTextType, TimestampFormat} from "../../src/id3v2/utilTypes";
         const header = new Id3v2FrameHeader(FrameIdentifiers.SYLT);
         header.frameSize = 14;
         const data = ByteVector.concatenate(
-            header.render(4),
             0x00, 0x00,
+            header.render(4),
             StringType.UTF16BE,
             ByteVector.fromString("fux", StringType.Latin1),
             TimestampFormat.AbsoluteMilliseconds,
@@ -217,8 +217,8 @@ import {SynchronizedTextType, TimestampFormat} from "../../src/id3v2/utilTypes";
         header.frameSize = 26;
         const content1 = new SynchronizedText(123, "qux");
         const data = ByteVector.concatenate(
-            header.render(4),
             0x00, 0x00,
+            header.render(4),
             StringType.UTF16BE,
             ByteVector.fromString("fux", StringType.Latin1),
             TimestampFormat.AbsoluteMilliseconds,
@@ -251,8 +251,8 @@ import {SynchronizedTextType, TimestampFormat} from "../../src/id3v2/utilTypes";
         const content1 = new SynchronizedText(123, "qux");
         const content2 = new SynchronizedText(456, "zux");
         const data = ByteVector.concatenate(
-            header.render(4),
             0x00, 0x00,
+            header.render(4),
             StringType.UTF16BE,
             ByteVector.fromString("fux", StringType.Latin1),
             TimestampFormat.AbsoluteMilliseconds,

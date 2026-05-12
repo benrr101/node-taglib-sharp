@@ -32,8 +32,8 @@ import {Testers} from "../utilities/testers";
         const header = new Id3v2FrameHeader(FrameIdentifiers.PCNT);
         header.frameSize = 4;
         const data = ByteVector.concatenate(
-            header.render(4),
             0x00, 0x00,
+            header.render(4),
             ByteVector.fromUint(1234)
         );
 
@@ -50,8 +50,8 @@ import {Testers} from "../utilities/testers";
         const header = new Id3v2FrameHeader(FrameIdentifiers.PCNT);
         header.frameSize = 6;
         const data = ByteVector.concatenate(
-            header.render(4),
             0x00, 0x00,
+            header.render(4),
             0x00, 0x00, ByteVector.fromUint(1234)
         );
 
@@ -68,8 +68,8 @@ import {Testers} from "../utilities/testers";
         const header = new Id3v2FrameHeader(FrameIdentifiers.PCNT);
         header.frameSize = 8;
         const data = ByteVector.concatenate(
-            header.render(4),
             0x00, 0x00,
+            header.render(4),
             ByteVector.fromUlong(BigInt("4294967296"))
         );
 
@@ -86,8 +86,8 @@ import {Testers} from "../utilities/testers";
         const header = new Id3v2FrameHeader(FrameIdentifiers.PCNT);
         header.frameSize = 8;
         const data = ByteVector.concatenate(
-            header.render(4),
             0x00, 0x00,
+            header.render(4),
             ByteVector.fromUlong(BigInt("4294967296"))
         );
 

@@ -23,8 +23,8 @@ import {Testers} from "../utilities/testers";
         const header = new Id3v2FrameHeader(FrameIdentifiers.MCDI);
         header.frameSize = 9;
         const data = ByteVector.concatenate(
-            header.render(4),
             0x00, 0x00,
+            header.render(4),
             ByteVector.fromString("12345abcd", StringType.Latin1)
         );
 

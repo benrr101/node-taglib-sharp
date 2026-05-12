@@ -65,8 +65,8 @@ import {Testers} from "../utilities/testers";
         const header = new Id3v2FrameHeader(FrameIdentifiers.WXXX);
         header.frameSize = 11;
         const data = ByteVector.concatenate(
-            header.render(4),
             0x0, 0x0,
+            header.render(4),
             ByteVector.fromString("foo bar baz", StringType.UTF8)
         );
 

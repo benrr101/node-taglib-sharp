@@ -58,8 +58,8 @@ const testOwner = "https://github.com/benrr101/node-taglib-sharp";
         const header = new Id3v2FrameHeader(FrameIdentifiers.UFID);
         header.frameSize = 9;
         const data = ByteVector.concatenate(
-            header.render(4),
             0x0, 0x0,
+            header.render(4),
             testIdentifier
         );
 
@@ -76,8 +76,8 @@ const testOwner = "https://github.com/benrr101/node-taglib-sharp";
         const header = new Id3v2FrameHeader(FrameIdentifiers.UFID);
         header.frameSize = 29;
         const data = ByteVector.concatenate(
-            header.render(4),
             0x0, 0x0,
+            header.render(4),
             testIdentifier,
             ByteVector.getTextDelimiter(StringType.Latin1),
             testIdentifier,
@@ -99,8 +99,8 @@ const testOwner = "https://github.com/benrr101/node-taglib-sharp";
         const header = new Id3v2FrameHeader(FrameIdentifiers.UFID);
         header.frameSize = 55;
         const data = ByteVector.concatenate(
-            header.render(4),
             0x0, 0x0,
+            header.render(4),
             ByteVector.fromString(testOwner, StringType.UTF8),
             ByteVector.getTextDelimiter(StringType.Latin1),
             testIdentifier

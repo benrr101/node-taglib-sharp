@@ -118,8 +118,8 @@ import {EventType, TimestampFormat} from "../../src/id3v2/utilTypes";
         const header = new Id3v2FrameHeader(FrameIdentifiers.ETCO);
         header.frameSize = 1;
         const data = ByteVector.concatenate(
-            header.render(4),
             0x00, 0x00,
+            header.render(4),
             TimestampFormat.AbsoluteMilliseconds
         );
 
@@ -138,8 +138,8 @@ import {EventType, TimestampFormat} from "../../src/id3v2/utilTypes";
         const event1 = new EventTimeCode(EventType.Profanity, 123);
         const event2 = new EventTimeCode(EventType.KeyChange, 456);
         const data = ByteVector.concatenate(
-            header.render(4),
             0x00, 0x00,
+            header.render(4),
             TimestampFormat.AbsoluteMilliseconds,
             event1.render(),
             event2.render()

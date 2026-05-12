@@ -55,8 +55,8 @@ const getTestFrame = (): UserTextInformationFrame => {
         const header = new Id3v2FrameHeader(FrameIdentifiers.TXXX);
         header.frameSize = 8;
         const data = ByteVector.concatenate(
-            header.render(4),
             0x00, 0x00,
+            header.render(4),
             StringType.Latin1,
             ByteVector.fromString("foo", StringType.UTF8),
             ByteVector.getTextDelimiter(StringType.Latin1),

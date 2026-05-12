@@ -65,8 +65,8 @@ const getTestFrame = (): TextInformationFrame => {
         const header = new Id3v2FrameHeader(FrameIdentifiers.TCOP);
         header.frameSize = 1;
         const data = ByteVector.concatenate(
-            header.render(3),
             0x00, 0x00,
+            header.render(3),
             StringType.Latin1
         );
 
@@ -83,8 +83,8 @@ const getTestFrame = (): TextInformationFrame => {
         const header = new Id3v2FrameHeader(FrameIdentifiers.TCOP);
         header.frameSize = 3;
         const data = ByteVector.concatenate(
-            header.render(3),
             0x00, 0x00,
+            header.render(3),
             StringType.Latin1,
             0x0, 0x0
         );
@@ -102,8 +102,8 @@ const getTestFrame = (): TextInformationFrame => {
         const header = new Id3v2FrameHeader(FrameIdentifiers.TXXX);
         header.frameSize = 17;
         const data = ByteVector.concatenate(
-            header.render(4),
             0x00, 0x00,
+            header.render(4),
             StringType.UTF16BE,
             ByteVector.fromString("fux", StringType.UTF16BE),
             ByteVector.getTextDelimiter(StringType.UTF16BE),
@@ -129,8 +129,8 @@ const getTestFrame = (): TextInformationFrame => {
         const header = new Id3v2FrameHeader(FrameIdentifiers.TCOM);
         header.frameSize = 8;
         const data = ByteVector.concatenate(
-            header.render(3),
             0x00, 0x00,
+            header.render(3),
             StringType.Latin1,
             ByteVector.fromString("fux/bux", StringType.Latin1)
         );
@@ -148,8 +148,8 @@ const getTestFrame = (): TextInformationFrame => {
         const header = new Id3v2FrameHeader(FrameIdentifiers.TCON);
         header.frameSize = 37;
         const data = ByteVector.concatenate(
-            header.render(4),
             0x00, 0x00,
+            header.render(4),
             StringType.UTF16BE,
             ByteVector.fromString("32", StringType.UTF16BE),
             ByteVector.getTextDelimiter(StringType.UTF16BE),
@@ -180,8 +180,8 @@ const getTestFrame = (): TextInformationFrame => {
         const header = new Id3v2FrameHeader(FrameIdentifiers.TCOP);
         header.frameSize = 19;
         const data = ByteVector.concatenate(
-            header.render(4),
             0x00, 0x00,
+            header.render(4),
             StringType.UTF16BE,
             ByteVector.fromString("fux", StringType.UTF16BE),
             ByteVector.getTextDelimiter(StringType.UTF16BE),

@@ -294,8 +294,8 @@ import {Testers} from "../utilities/testers";
         const header = new Id3v2FrameHeader(FrameIdentifiers.RVA2);
         header.frameSize = 3;
         const data = ByteVector.concatenate(
-            header.render(4),
             0x00, 0x00,
+            header.render(4),
             ByteVector.fromString("foo", StringType.Latin1)
         );
 
@@ -323,8 +323,8 @@ import {Testers} from "../utilities/testers";
         channel2.peakVolume = BigInt(123);
 
         const data = ByteVector.concatenate(
-            header.render(4),
             0x00, 0x00,
+            header.render(4),
             ByteVector.fromString("foo", StringType.Latin1),
             ByteVector.getTextDelimiter(StringType.Latin1),
             channel1.render(),
