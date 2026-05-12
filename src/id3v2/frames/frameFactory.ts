@@ -15,7 +15,7 @@ import {EventTimeCodeFrame} from "./eventTimeCodeFrame";
 import {File} from "../../file";
 import {Frame} from "./frame";
 import {Id3v2FrameFlags, Id3v2FrameHeader} from "./frameHeader";
-import {FrameIdentifiers} from "../frameIdentifiers";
+import {FrameIdentifier, FrameIdentifiers} from "../frameIdentifiers";
 import {RelativeVolumeFrame} from "./relativeVolumeFrame";
 import {SynchronizedLyricsFrame} from "./synchronizedLyricsFrame";
 import {TextInformationFrame, UserTextInformationFrame} from "./textInformationFrame";
@@ -38,6 +38,26 @@ export type FrameCreator = (data: ByteVector, offset: number, header: Id3v2Frame
  * process, register a frame creator with {@link addFrameCreator}.
  */
 export class Id3v2FrameFactory {
+
+    private static readonly DEFAULT_FRAME_CREATORS: Readonly<Map<FrameIdentifier, FrameCreator>> =
+        new Map<FrameIdentifier, FrameCreator>([
+            [FrameIdentifiers.APIC, AttachmentFrame.fromOffsetRawData],
+            [FrameIdentifiers.COMM, CommentsFrame.fromOffsetRawData],
+            [FrameIdentifiers.ETCO, EventTimeCodeFrame.fromOffsetRawData],
+            [FrameIdentifiers.GEOB, AttachmentFrame.fromOffsetRawData],
+            [FrameIdentifiers.MCDI, MusicCdIdentifierFrame.fromOffsetRawData],
+            [FrameIdentifiers.PCNT, PlayCountFrame.fromOffsetRawData],
+            [FrameIdentifiers.POPM, PopularimeterFrame.fromOffsetRawData],
+            [FrameIdentifiers.PRIV, PrivateFrame.fromOffsetRawData],
+            [FrameIdentifiers.RVA2, RelativeVolumeFrame.fromOffsetRawData],
+            [FrameIdentifiers.SYLT, SynchronizedLyricsFrame.fromOffsetRawData],
+            [FrameIdentifiers.TCON, GenreFrame.fromOffsetRawData],
+            [FrameIdentifiers.TXXX, UserTextInformationFrame.fromOffsetRawData],
+            [FrameIdentifiers.UFID, UniqueFileIdentifierFrame.fromOffsetRawData],
+            [FrameIdentifiers.USER, TermsOfUseFrame.fromOffsetRawData],
+            [FrameIdentifiers.USLT, UnsynchronizedLyricsFrame.fromOffsetRawData],
+            [FrameIdentifiers.WXXX, UserUrlLinkFrame.fromOffsetRawData]
+        ]);
 
 
     private static readonly CUSTOM_FRAME_CREATORS: FrameCreator[] = [];
@@ -146,10 +166,6 @@ export class Id3v2FrameFactory {
                 }
             }
 
-            // This is where things get necessarily nasty. Here we determine which frame subclass (or
-            // if none is found, simply a frame) based on the frame ID. Since there are a lot of
-            // possibilities, that means a lot of if statements.
-
             // Lazy object loading handling
             if (file) {
                 // Attached picture (frames 4.14)
@@ -176,77 +192,22 @@ export class Id3v2FrameFactory {
                 );
             }
 
-            let func: FrameCreator;
-            if (header.frameId === FrameIdentifiers.TCON) {
-                // Content type frame
-                func = GenreFrame.fromOffsetRawData;
-            } else if (header.frameId === FrameIdentifiers.TXXX) {
-                // User text identification frame
-                func = UserTextInformationFrame.fromOffsetRawData;
-            } else if (header.frameId.isTextFrame) {
-                // Text identification frame (frames 4.2)
-                func = TextInformationFrame.fromOffsetRawData;
-            } else if (header.frameId === FrameIdentifiers.UFID) {
-                // Unique file identifier (frames 4.1)
-                func = UniqueFileIdentifierFrame.fromOffsetRawData;
-            } else if (header.frameId === FrameIdentifiers.MCDI) {
-                // Music CD identifier (frames 4.5)
-                func = MusicCdIdentifierFrame.fromOffsetRawData;
-            } else if (header.frameId === FrameIdentifiers.USLT) {
-                // Unsynchronized lyrics (frames 4.8)
-                func = UnsynchronizedLyricsFrame.fromOffsetRawData;
-            } else if (header.frameId === FrameIdentifiers.SYLT) {
-                // Synchronized lyrics (frames 4.8)
-                func = SynchronizedLyricsFrame.fromOffsetRawData;
-            } else if (header.frameId === FrameIdentifiers.COMM) {
-                // Comments (frames 4.10)
-                func = CommentsFrame.fromOffsetRawData;
-            } else if (header.frameId === FrameIdentifiers.RVA2) {
-                // Relative volume adjustment (frames 4.11)
-                func = RelativeVolumeFrame.fromOffsetRawData;
-            } else if (header.frameId === FrameIdentifiers.APIC || header.frameId === FrameIdentifiers.GEOB) {
-                // Attached picture (frames 4.14)
-                func = AttachmentFrame.fromOffsetRawData;
-            } else if (header.frameId === FrameIdentifiers.PCNT) {
-                // Play count (frames 4.16)
-                func = PlayCountFrame.fromOffsetRawData;
-            } else if (header.frameId === FrameIdentifiers.POPM) {
-                // Popularimeter (frames 4.17)
-                func = PopularimeterFrame.fromOffsetRawData;
-            } else if (header.frameId === FrameIdentifiers.USER) {
-                // Terms of Use (frames 4.22)
-                func = TermsOfUseFrame.fromOffsetRawData;
-            } else if (header.frameId === FrameIdentifiers.PRIV) {
-                // Private (frames 4.27)
-                func = PrivateFrame.fromOffsetRawData;
-            } else if (header.frameId === FrameIdentifiers.WXXX) {
-                // User URL link
-                func = UserUrlLinkFrame.fromOffsetRawData;
-            } else if (header.frameId.isUrlFrame) {
-                // URL link (frame 4.3.1)
-                func = UrlLinkFrame.fromOffsetRawData;
-            } else if (header.frameId === FrameIdentifiers.ETCO) {
-                // Event timing codes (frames 4.6)
-                func = EventTimeCodeFrame.fromOffsetRawData;
-            } else {
-                // Return unknown
-                func = UnknownFrame.fromOffsetRawData;
-            }
+            // Find the default frame constructors
+            let func = this.DEFAULT_FRAME_CREATORS.get(header.frameId);
+            func ??= header.frameId.isTextFrame ? TextInformationFrame.fromOffsetRawData : undefined;
+            func ??= header.frameId.isUrlFrame ? UrlLinkFrame.fromOffsetRawData : undefined;
+            func ??= UnknownFrame.fromOffsetRawData;
 
-            return {
-                frame: func(data, position, header, version),
-                offset: frameEndIndex
-            };
+            const frame = func(data, position, header, version);
+            return { frame: frame, offset: frameEndIndex };
+
         } catch (e: unknown) {
             if (e instanceof CorruptFileError || e instanceof NotImplementedError) {
                 throw e;
             }
 
             // Other exceptions will just mean we ignore the frame
-            return {
-                frame: undefined,
-                offset: frameEndIndex
-            };
+            return { frame: undefined, offset: frameEndIndex };
         }
     }
 }
