@@ -14,9 +14,7 @@ import {Testers} from "../utilities/testers";
         return UnknownFrame.fromOffsetRawData;
     }
 
-    public get fromRawData(): (d: ByteVector, v: number) => Frame {
-        return UnknownFrame.fromRawData;
-    }
+    public get fromRawData(): (d: ByteVector, v: number) => Frame { return undefined; }
 
     @test
     public fromData_falsyType_throws() {
@@ -83,27 +81,6 @@ import {Testers} from "../utilities/testers";
         );
     }
 
-    @test
-    public fromRawData_validParams_returnsFrame() {
-        // Arrange
-        const header = new Id3v2FrameHeader(FrameIdentifiers.WXXX);
-        header.frameSize = 11;
-        const data = ByteVector.concatenate(
-            header.render(4),
-            ByteVector.fromString("foo bar baz", StringType.UTF8)
-        );
-
-        // Act
-        const frame = UnknownFrame.fromRawData(data, 4);
-
-        // Assert
-        Id3v2_UnknownFrame_ConstructorTests.assertFrame(
-            frame,
-            FrameIdentifiers.WXXX,
-            ByteVector.fromString("foo bar baz", StringType.UTF8)
-        );
-    }
-
     private static assertFrame(frame: UnknownFrame, fi: FrameIdentifier, d: ByteVector) {
         assert.ok(frame);
         assert.strictEqual(frame.frameClassType, FrameClassType.UnknownFrame);
@@ -127,7 +104,7 @@ import {Testers} from "../utilities/testers";
             header.render(4),
             ByteVector.fromString("foo bar baz", StringType.UTF8)
         );
-        const frame = UnknownFrame.fromRawData(data, 4);
+        const frame = UnknownFrame.fromOffsetRawData(data, 0, header, 4);
 
         // Act
         const result = <UnknownFrame> frame.clone();
@@ -149,7 +126,7 @@ import {Testers} from "../utilities/testers";
             header.render(4),
             ByteVector.fromString("foo bar baz", StringType.UTF8)
         );
-        const frame = UnknownFrame.fromRawData(data, 4);
+        const frame = UnknownFrame.fromOffsetRawData(data, 0, header, 4);
 
         // Act
         const result = frame.render(4);
