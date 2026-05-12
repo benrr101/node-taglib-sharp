@@ -229,21 +229,6 @@ export class RelativeVolumeFrame extends Frame {
         return frame;
     }
 
-    /**
-     * Constructs and initializes a new instance by reading its raw data in a specified ID3v2
-     * version.
-     * @param data Raw representation of the new frame
-     * @param version ID3v2 version the frame is encoded with. Must be a positive 8-bit integer.
-     */
-    public static fromRawData(data: ByteVector, version: number): RelativeVolumeFrame {
-        Guards.truthy(data, "data");
-        Guards.byte(version, "version");
-
-        const frame = new RelativeVolumeFrame(Id3v2FrameHeader.fromData(data, version));
-        frame.setData(data, 0, true, version);
-        return frame;
-    }
-
     // #endregion
 
     // #region Properties

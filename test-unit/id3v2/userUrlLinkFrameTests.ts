@@ -23,17 +23,15 @@ const getTestFrameData = (): ByteVector => {
 };
 
 const getTestUserUrlLinkFrame = (): UserUrlLinkFrame => {
+    const header = new Id3v2FrameHeader(FrameIdentifiers.WXXX);
+    header.frameSize = 12;
     const frameData = getTestFrameData();
-    return UserUrlLinkFrame.fromRawData(frameData, 4);
+    return UserUrlLinkFrame.fromOffsetRawData(frameData, 0, header, 4);
 };
 
 @suite class Id3v2_UserUrlLinkFrame_ConstructorTests extends FrameConstructorTests {
     public get fromOffsetRawData(): (d: ByteVector, o: number, h: Id3v2FrameHeader, v: number) => Frame {
         return UserUrlLinkFrame.fromOffsetRawData;
-    }
-
-    public get fromRawData(): (d: ByteVector, v: number) => Frame {
-        return UserUrlLinkFrame.fromRawData;
     }
 
     @test
@@ -63,39 +61,15 @@ const getTestUserUrlLinkFrame = (): UserUrlLinkFrame => {
         assert.equal(output.textEncoding, StringType.Latin1);
     }
 
-    @test
-    public fromRawData_userFrame() {
-        // Arrange
-        const header = new Id3v2FrameHeader(FrameIdentifiers.WXXX);
-        header.frameSize = 8;
-        const data = ByteVector.concatenate(
-            header.render(4),
-            StringType.Latin1,
-            ByteVector.fromString("foo", StringType.Latin1),   // - String 1
-            ByteVector.getTextDelimiter(StringType.Latin1),         // - String separator
-            ByteVector.fromString("bar", StringType.Latin1)    // - String 2
-        );
-
-        // Act
-        const output = UserUrlLinkFrame.fromRawData(data, 4);
-
-        // Assert
-        assert.ok(output);
-        assert.equal(output.frameClassType, FrameClassType.UserUrlLinkFrame);
-        assert.strictEqual(output.frameId, FrameIdentifiers.WXXX);
-
-        assert.strictEqual(output.description, "foo");
-        assert.deepEqual(output.text, ["bar"]);
-        assert.equal(output.textEncoding, StringType.Latin1);
-    }
 }
 
 @suite class Id3v2_UserUrlLinkFrame_PropertyTests {
     @test
     public getDescription_emptyText_returnsUndefined() {
         // Arrange
-        const data = new Id3v2FrameHeader(FrameIdentifiers.WXXX).render(4);
-        const frame = UserUrlLinkFrame.fromRawData(data, 4);
+        const header = new Id3v2FrameHeader(FrameIdentifiers.WXXX);
+        const data = header.render(4);
+        const frame = UserUrlLinkFrame.fromOffsetRawData(data, 0, header, 4);
 
         // Act
         const result = frame.description;
@@ -152,7 +126,7 @@ const getTestUserUrlLinkFrame = (): UserUrlLinkFrame => {
             header.render(4),
             0x00, 0x00,                 // - Frame flags
         );
-        const frame = UserUrlLinkFrame.fromRawData(data, 4);
+        const frame = UserUrlLinkFrame.fromOffsetRawData(data, 0, header, 4);
 
         // Act
         frame.description = "fux";

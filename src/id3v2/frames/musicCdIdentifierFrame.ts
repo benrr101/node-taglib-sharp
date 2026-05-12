@@ -40,21 +40,6 @@ export default class MusicCdIdentifierFrame extends Frame {
         return frame;
     }
 
-    /**
-     * Constructs and initializes a new instance of MusicCdIdentifierFrame by reading its raw data
-     * in a specified ID3v2 version.
-     * @param data ByteVector object starting with the raw representation of the new frame
-     * @param version The ID3v2 version the raw frame is encoded in. Must be positive 8-bit integer
-     */
-    public static fromRawData(data: ByteVector, version: number): MusicCdIdentifierFrame {
-        Guards.truthy(data, "data");
-        Guards.byte(version, "version");
-
-        const frame = new MusicCdIdentifierFrame(Id3v2FrameHeader.fromData(data, version));
-        frame.setData(data, 0, true, version);
-        return frame;
-    }
-
     /** @inheritDoc */
     public get frameClassType(): FrameClassType { return FrameClassType.MusicCdIdentifierFrame; }
 

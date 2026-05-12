@@ -338,6 +338,7 @@ export abstract class Frame {
         version: number,
         dataIncludesHeader: boolean
     ): ByteVector {
+        // @TODO: Subarrays are cheap now, we could do this all without an offset.
         let dataOffset = offset + (dataIncludesHeader ? Id3v2FrameHeader.getSize(version) : 0);
         let dataLength = this.size;
 
@@ -410,6 +411,8 @@ export abstract class Frame {
         if (readHeader) {
             this._header = Id3v2FrameHeader.fromData(data, version);
         }
+
+        // @TODO: If we don't have a header to read, why are we saying the data includes a header?
         this.parseFields(this.fieldData(data, offset, version, true), version);
     }
 

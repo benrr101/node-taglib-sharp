@@ -24,16 +24,12 @@ const getTestFrame = (): TextInformationFrame => {
         ByteVector.fromString("bar", StringType.Latin1),
     );
 
-    return TextInformationFrame.fromRawData(data, 4);
+    return TextInformationFrame.fromOffsetRawData(data, 0, header, 4);
 }
 
 @suite class Id3v2_TextInformationFrame_ConstructorTests extends FrameConstructorTests {
     public get fromOffsetRawData(): (d: ByteVector, o: number, h: Id3v2FrameHeader, v: number) => Frame {
         return TextInformationFrame.fromOffsetRawData;
-    }
-
-    public get fromRawData(): (d: ByteVector, v: number) => Frame {
-        return TextInformationFrame.fromRawData;
     }
 
     @test
@@ -62,72 +58,49 @@ const getTestFrame = (): TextInformationFrame => {
     }
 
     @test
-    public fromRawData_emptyFrameByLength_returnsEmptyFrame() {
+    public fromOffsetRawData_emptyFrameByLength_returnsEmptyFrame() {
         // Arrange
         const header = new Id3v2FrameHeader(FrameIdentifiers.TCOP);
         header.frameSize = 1;
         const data = ByteVector.concatenate(
+            0x00, 0x00,
             header.render(3),
             StringType.Latin1
         );
 
         // Act
-        const frame = TextInformationFrame.fromRawData(data, 3);
+        const frame = TextInformationFrame.fromOffsetRawData(data, 2, header, 3);
 
         // Assert
         Id3v2_TextInformationFrame_ConstructorTests.assertFrame(frame, FrameIdentifiers.TCOP, []);
     }
 
     @test
-    public fromRawData_emptyFrameByContents_returnsEmptyFrame() {
+    public fromOffsetRawData_emptyFrameByContents_returnsEmptyFrame() {
         // Arrange
         const header = new Id3v2FrameHeader(FrameIdentifiers.TCOP);
         header.frameSize = 3;
         const data = ByteVector.concatenate(
+            0x00, 0x00,
             header.render(3),
             StringType.Latin1,
             0x0, 0x0
         );
 
         // Act
-        const frame = TextInformationFrame.fromRawData(data, 3);
+        const frame = TextInformationFrame.fromOffsetRawData(data, 2, header, 3);
 
         // Assert
         Id3v2_TextInformationFrame_ConstructorTests.assertFrame(frame, FrameIdentifiers.TCOP, []);
     }
 
     @test
-    public fromRawData_v4NotTxxx_returnsFrameSplitByDelimiter() {
-        // Arrange
-        const header = new Id3v2FrameHeader(FrameIdentifiers.TCOP);
-        header.frameSize = 17;
-        const data = ByteVector.concatenate(
-            header.render(4),
-            StringType.UTF16BE,
-            ByteVector.fromString("fux", StringType.UTF16BE),
-            ByteVector.getTextDelimiter(StringType.UTF16BE),
-            ByteVector.fromString("bux", StringType.UTF16BE),
-            0x0, 0x0,   // Extra nulls to trigger null stripping logic
-        );
-
-        // Act
-        const frame = TextInformationFrame.fromRawData(data, 4);
-
-        // Assert
-        Id3v2_TextInformationFrame_ConstructorTests.assertFrame(
-            frame,
-            FrameIdentifiers.TCOP,
-            ["fux", "bux"],
-            StringType.UTF16BE
-        );
-    }
-
-    @test
-    public fromRawData_txxx_returnsFrameSplitByDelimiter() {
+    public fromOffsetRawData_txxx_returnsFrameSplitByDelimiter() {
         // Arrange
         const header = new Id3v2FrameHeader(FrameIdentifiers.TXXX);
         header.frameSize = 17;
         const data = ByteVector.concatenate(
+            0x00, 0x00,
             header.render(4),
             StringType.UTF16BE,
             ByteVector.fromString("fux", StringType.UTF16BE),
@@ -137,7 +110,7 @@ const getTestFrame = (): TextInformationFrame => {
         );
 
         // Act
-        const frame = TextInformationFrame.fromRawData(data, 4);
+        const frame = TextInformationFrame.fromOffsetRawData(data, 2, header, 4);
 
         // Assert
         Id3v2_TextInformationFrame_ConstructorTests.assertFrame(
@@ -149,29 +122,31 @@ const getTestFrame = (): TextInformationFrame => {
     }
 
     @test
-    public fromRawData_v3SplitType_returnsFrameSplitBySlash() {
+    public fromOffsetRawData_v3SplitType_returnsFrameSplitBySlash() {
         // Arrange
         const header = new Id3v2FrameHeader(FrameIdentifiers.TCOM);
         header.frameSize = 8;
         const data = ByteVector.concatenate(
+            0x00, 0x00,
             header.render(3),
             StringType.Latin1,
             ByteVector.fromString("fux/bux", StringType.Latin1)
         );
 
         // Act
-        const frame = TextInformationFrame.fromRawData(data, 3);
+        const frame = TextInformationFrame.fromOffsetRawData(data, 2, header, 3);
 
         // Assert
         Id3v2_TextInformationFrame_ConstructorTests.assertFrame(frame, FrameIdentifiers.TCOM, ["fux", "bux"]);
     }
 
     @test
-    public fromRawData_v4Tcon_returnsListOfStrings() {
+    public fromOffsetRawData_v4Tcon_returnsListOfStrings() {
         // Arrange
         const header = new Id3v2FrameHeader(FrameIdentifiers.TCON);
         header.frameSize = 37;
         const data = ByteVector.concatenate(
+            0x00, 0x00,
             header.render(4),
             StringType.UTF16BE,
             ByteVector.fromString("32", StringType.UTF16BE),
@@ -182,7 +157,7 @@ const getTestFrame = (): TextInformationFrame => {
         );
 
         // Act
-        const frame = TextInformationFrame.fromRawData(data, 4);
+        const frame = TextInformationFrame.fromOffsetRawData(data, 2, header, 4);
 
         // Assert
         Id3v2_TextInformationFrame_ConstructorTests.assertFrame(
@@ -203,8 +178,8 @@ const getTestFrame = (): TextInformationFrame => {
         const header = new Id3v2FrameHeader(FrameIdentifiers.TCOP);
         header.frameSize = 19;
         const data = ByteVector.concatenate(
-            header.render(4),
             0x00, 0x00,
+            header.render(4),
             StringType.UTF16BE,
             ByteVector.fromString("fux", StringType.UTF16BE),
             ByteVector.getTextDelimiter(StringType.UTF16BE),
@@ -378,7 +353,7 @@ const getTestFrame = (): TextInformationFrame => {
             ByteVector.getTextDelimiter(StringType.Latin1),
             ByteVector.fromString("bux", StringType.Latin1),
         );
-        const frame = TextInformationFrame.fromRawData(data, 4);
+        const frame = TextInformationFrame.fromOffsetRawData(data, 0, header, 4);
 
         // Act
         const output = frame.render(4);
@@ -402,7 +377,7 @@ const getTestFrame = (): TextInformationFrame => {
             ByteVector.getTextDelimiter(StringType.UTF16BE),
             ByteVector.fromString("bux", StringType.UTF16BE),
         );
-        const frame = TextInformationFrame.fromRawData(data, 4);
+        const frame = TextInformationFrame.fromOffsetRawData(data, 0, header, 4);
         const _ = frame.text; // Force a read
 
         // Act
@@ -422,7 +397,7 @@ const getTestFrame = (): TextInformationFrame => {
             header.render(3),
             StringType.UTF8
         );
-        const frame = TextInformationFrame.fromRawData(data, 3);
+        const frame = TextInformationFrame.fromOffsetRawData(data, 0, header, 3);
         const _ = frame.text; // Force a read
 
         // Act
@@ -452,7 +427,7 @@ const getTestFrame = (): TextInformationFrame => {
             StringType.UTF16BE,
             ByteVector.fromString("fux", StringType.UTF16BE)
         );
-        const frame = TextInformationFrame.fromRawData(data, 3);
+        const frame = TextInformationFrame.fromOffsetRawData(data, 0, header, 3);
         const _ = frame.text; // Force a read
 
         // Act
@@ -483,7 +458,7 @@ const getTestFrame = (): TextInformationFrame => {
             StringType.UTF16BE,
             ByteVector.fromString("fux/bux", StringType.UTF16BE)
         );
-        const frame = TextInformationFrame.fromRawData(data, 3);
+        const frame = TextInformationFrame.fromOffsetRawData(data, 0, header, 3);
         const _ = frame.text; // Force a read
 
         // Act
@@ -504,7 +479,7 @@ const getTestFrame = (): TextInformationFrame => {
             StringType.UTF16BE,
             ByteVector.fromString("fux", StringType.UTF16BE)
         );
-        const frame = TextInformationFrame.fromRawData(data, 3);
+        const frame = TextInformationFrame.fromOffsetRawData(data, 0, header, 3);
         const _ = frame.text; // Force a read
 
         // Act
@@ -515,4 +490,3 @@ const getTestFrame = (): TextInformationFrame => {
         Testers.bvEqual(output, data);
     }
 }
-

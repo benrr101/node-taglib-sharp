@@ -46,10 +46,6 @@ import {SynchronizedTextType, TimestampFormat} from "../../src/id3v2/utilTypes";
         return SynchronizedLyricsFrame.fromOffsetRawData;
     }
 
-    public get fromRawData(): (d: ByteVector, v: number) => Frame {
-        return SynchronizedLyricsFrame.fromRawData;
-    }
-
     @test
     public fromInfo_withoutEncoding() {
         // Arrange
@@ -96,40 +92,43 @@ import {SynchronizedTextType, TimestampFormat} from "../../src/id3v2/utilTypes";
     }
 
     @test
-    public fromRawData_notEnoughBytes() {
+    public fromOffsetRawData_notEnoughBytes() {
         // Arrange
         const header = new Id3v2FrameHeader(FrameIdentifiers.SYLT);
         header.frameSize = 5;
         const data = ByteVector.concatenate(
+            0x00, 0x00,
             header.render(4),
             0x00, 0x00, 0x00, 0x00, 0x00
         );
 
         // Act / Assert
-        assert.throws(() => { SynchronizedLyricsFrame.fromRawData(data, 4); });
+        assert.throws(() => { SynchronizedLyricsFrame.fromOffsetRawData(data, 2, header, 4); });
     }
 
     @test
-    public fromRawData_missingDelimiter() {
+    public fromOffsetRawData_missingDelimiter() {
         // Arrange
         const header = new Id3v2FrameHeader(FrameIdentifiers.SYLT);
         header.frameSize = 10;
         const data = ByteVector.concatenate(
+            0x00, 0x00,
             header.render(4),
             0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
             0x01, 0x02, 0x03, 0x04, 0x05
         );
 
         // Act / Assert
-        assert.throws(() => { SynchronizedLyricsFrame.fromRawData(data, 4); });
+        assert.throws(() => { SynchronizedLyricsFrame.fromOffsetRawData(data, 2, header, 4); });
     }
 
     @test
-    public fromRawData_noDelimiterForSynchronizedText() {
+    public fromOffsetRawData_noDelimiterForSynchronizedText() {
         // Arrange
         const header = new Id3v2FrameHeader(FrameIdentifiers.SYLT);
         header.frameSize = 16;
         const data = ByteVector.concatenate(
+            0x00, 0x00,
             header.render(4),
             StringType.UTF16BE,
             ByteVector.fromString("fux", StringType.Latin1),
@@ -140,17 +139,18 @@ import {SynchronizedTextType, TimestampFormat} from "../../src/id3v2/utilTypes";
         );
 
         // Act / Assert
-        assert.throws(() => { SynchronizedLyricsFrame.fromRawData(data, 4); });
+        assert.throws(() => { SynchronizedLyricsFrame.fromOffsetRawData(data, 2, header, 4); });
     }
 
     @test
-    public fromRawData_incompleteSynchronizedText() {
+    public fromOffsetRawData_incompleteSynchronizedText() {
         // Arrange
         const header = new Id3v2FrameHeader(FrameIdentifiers.SYLT);
         header.frameSize = 34;
         const content1 = new SynchronizedText(123, "qux");
         const content2 = new SynchronizedText(456, "zux");
         const data = ByteVector.concatenate(
+            0x00, 0x00,
             header.render(4),
             StringType.UTF16BE,
             ByteVector.fromString("fux", StringType.Latin1),
@@ -163,7 +163,7 @@ import {SynchronizedTextType, TimestampFormat} from "../../src/id3v2/utilTypes";
         );
 
         // Act
-        const frame = SynchronizedLyricsFrame.fromRawData(data, 4);
+        const frame = SynchronizedLyricsFrame.fromOffsetRawData(data, 2, header, 4);
 
         // Assert
         Id3v2_SynchronizedLyricsFrame_ConstructorTests.assertFrame(
@@ -178,11 +178,12 @@ import {SynchronizedTextType, TimestampFormat} from "../../src/id3v2/utilTypes";
     }
 
     @test
-    public fromRawData_noData() {
+    public fromOffsetRawData_noData() {
         // Arrange
         const header = new Id3v2FrameHeader(FrameIdentifiers.SYLT);
         header.frameSize = 14;
         const data = ByteVector.concatenate(
+            0x00, 0x00,
             header.render(4),
             StringType.UTF16BE,
             ByteVector.fromString("fux", StringType.Latin1),
@@ -193,7 +194,7 @@ import {SynchronizedTextType, TimestampFormat} from "../../src/id3v2/utilTypes";
         );
 
         // Act
-        const frame = SynchronizedLyricsFrame.fromRawData(data, 4);
+        const frame = SynchronizedLyricsFrame.fromOffsetRawData(data, 2, header, 4);
 
         // Assert
         Id3v2_SynchronizedLyricsFrame_ConstructorTests.assertFrame(
@@ -208,12 +209,13 @@ import {SynchronizedTextType, TimestampFormat} from "../../src/id3v2/utilTypes";
     }
 
     @test
-    public fromRawData_singleData() {
+    public fromOffsetRawData_singleData() {
         // Arrange
         const header = new Id3v2FrameHeader(FrameIdentifiers.SYLT);
         header.frameSize = 26;
         const content1 = new SynchronizedText(123, "qux");
         const data = ByteVector.concatenate(
+            0x00, 0x00,
             header.render(4),
             StringType.UTF16BE,
             ByteVector.fromString("fux", StringType.Latin1),
@@ -225,7 +227,7 @@ import {SynchronizedTextType, TimestampFormat} from "../../src/id3v2/utilTypes";
         );
 
         // Act
-        const frame = SynchronizedLyricsFrame.fromRawData(data, 4);
+        const frame = SynchronizedLyricsFrame.fromOffsetRawData(data, 2, header, 4);
 
         // Assert
         Id3v2_SynchronizedLyricsFrame_ConstructorTests.assertFrame(
@@ -240,40 +242,6 @@ import {SynchronizedTextType, TimestampFormat} from "../../src/id3v2/utilTypes";
     }
 
     @test
-    public fromRawData_multipleData() {
-        // Arrange
-        const header = new Id3v2FrameHeader(FrameIdentifiers.SYLT);
-        header.frameSize = 38;
-        const content1 = new SynchronizedText(123, "qux");
-        const content2 = new SynchronizedText(456, "zux");
-        const data = ByteVector.concatenate(
-            header.render(4),
-            StringType.UTF16BE,
-            ByteVector.fromString("fux", StringType.Latin1),
-            TimestampFormat.AbsoluteMilliseconds,
-            SynchronizedTextType.Trivia,
-            ByteVector.fromString("bux", StringType.UTF16BE),
-            ByteVector.getTextDelimiter(StringType.UTF16BE),
-            content1.render(StringType.UTF16BE),
-            content2.render(StringType.UTF16BE)
-        );
-
-        // Act
-        const frame = SynchronizedLyricsFrame.fromRawData(data, 4);
-
-        // Assert
-        Id3v2_SynchronizedLyricsFrame_ConstructorTests.assertFrame(
-            frame,
-            "bux",
-            TimestampFormat.AbsoluteMilliseconds,
-            "fux",
-            [content1, content2],
-            StringType.UTF16BE,
-            SynchronizedTextType.Trivia
-        );
-    }
-
-    @test
     public fromOffsetRawData_multipleData() {
         // Arrange
         const header = new Id3v2FrameHeader(FrameIdentifiers.SYLT);
@@ -281,8 +249,8 @@ import {SynchronizedTextType, TimestampFormat} from "../../src/id3v2/utilTypes";
         const content1 = new SynchronizedText(123, "qux");
         const content2 = new SynchronizedText(456, "zux");
         const data = ByteVector.concatenate(
-            header.render(4),
             0x00, 0x00,
+            header.render(4),
             StringType.UTF16BE,
             ByteVector.fromString("fux", StringType.Latin1),
             TimestampFormat.AbsoluteMilliseconds,
@@ -640,7 +608,7 @@ import {SynchronizedTextType, TimestampFormat} from "../../src/id3v2/utilTypes";
             content1.render(StringType.UTF16BE),
             content2.render(StringType.UTF16BE)
         );
-        const frame = SynchronizedLyricsFrame.fromRawData(data, 4);
+        const frame = SynchronizedLyricsFrame.fromOffsetRawData(data, 0, header, 4);
 
         // Act
         const output = frame.render(4);
@@ -649,4 +617,3 @@ import {SynchronizedTextType, TimestampFormat} from "../../src/id3v2/utilTypes";
         Testers.bvEqual(output, data);
     }
 }
-

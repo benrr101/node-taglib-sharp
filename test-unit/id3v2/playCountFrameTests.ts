@@ -15,10 +15,6 @@ import {Testers} from "../utilities/testers";
         return PlayCountFrame.fromOffsetRawData;
     }
 
-    public get fromRawData(): (d: ByteVector, v: number) => Frame {
-        return PlayCountFrame.fromRawData;
-    }
-
     @test
     public fromEmpty() {
         // Act
@@ -29,51 +25,54 @@ import {Testers} from "../utilities/testers";
     }
 
     @test
-    public fromRawData_fourBytePlayCount() {
+    public fromOffsetRawData_fourBytePlayCount() {
         // Arrange
         const header = new Id3v2FrameHeader(FrameIdentifiers.PCNT);
         header.frameSize = 4;
         const data = ByteVector.concatenate(
+            0x00, 0x00,
             header.render(4),
             ByteVector.fromUint(1234)
         );
 
         // Act
-        const frame = PlayCountFrame.fromRawData(data, 4);
+        const frame = PlayCountFrame.fromOffsetRawData(data, 2, header, 4);
 
         // Assert
         this.assertFrame(frame, BigInt(1234));
     }
 
     @test
-    public fromRawData_sixBytePlayCount() {
+    public fromOffsetRawData_sixBytePlayCount() {
         // Arrange
         const header = new Id3v2FrameHeader(FrameIdentifiers.PCNT);
         header.frameSize = 6;
         const data = ByteVector.concatenate(
+            0x00, 0x00,
             header.render(4),
             0x00, 0x00, ByteVector.fromUint(1234)
         );
 
         // Act
-        const frame = PlayCountFrame.fromRawData(data, 4);
+        const frame = PlayCountFrame.fromOffsetRawData(data, 2, header, 4);
 
         // Assert
         this.assertFrame(frame, BigInt(1234));
     }
 
     @test
-    public fromRawData_eightBytePlayCount() {
+    public fromOffsetRawData_eightBytePlayCount() {
         // Arrange
         const header = new Id3v2FrameHeader(FrameIdentifiers.PCNT);
         header.frameSize = 8;
         const data = ByteVector.concatenate(
+            0x00, 0x00,
             header.render(4),
             ByteVector.fromUlong(BigInt("4294967296"))
         );
 
         // Act
-        const frame = PlayCountFrame.fromRawData(data, 4);
+        const frame = PlayCountFrame.fromOffsetRawData(data, 2, header, 4);
 
         // Assert
         this.assertFrame(frame, BigInt("4294967296"));
@@ -85,8 +84,8 @@ import {Testers} from "../utilities/testers";
         const header = new Id3v2FrameHeader(FrameIdentifiers.PCNT);
         header.frameSize = 8;
         const data = ByteVector.concatenate(
-            header.render(4),
             0x00, 0x00,
+            header.render(4),
             ByteVector.fromUlong(BigInt("4294967296"))
         );
 
@@ -149,7 +148,7 @@ import {Testers} from "../utilities/testers";
             header.render(4),
             ByteVector.fromUint(1234)
         );
-        const frame = PlayCountFrame.fromRawData(data, 4);
+        const frame = PlayCountFrame.fromOffsetRawData(data, 0, header, 4);
 
         // Act
         const output = frame.render(4);
@@ -168,7 +167,7 @@ import {Testers} from "../utilities/testers";
             header.render(4),
             0x12, 0x34, 0x45, 0x56, 0x78, 0x90
         );
-        const frame = PlayCountFrame.fromRawData(data, 4);
+        const frame = PlayCountFrame.fromOffsetRawData(data, 0, header, 4);
 
         // Act
         const output = frame.render(4);
@@ -187,7 +186,7 @@ import {Testers} from "../utilities/testers";
             header.render(4),
             0x12, 0x34, 0x45, 0x56, 0x78, 0x90, 0xAB, 0xCD
         );
-        const frame = PlayCountFrame.fromRawData(data, 4);
+        const frame = PlayCountFrame.fromOffsetRawData(data, 0, header, 4);
 
         // Act
         const output = frame.render(4);

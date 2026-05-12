@@ -21,16 +21,12 @@ const getTestFrame = (): UserTextInformationFrame => {
         ByteVector.fromString("bar", StringType.UTF8)
     );
 
-    return UserTextInformationFrame.fromRawData(data, 4);
+    return UserTextInformationFrame.fromOffsetRawData(data, 0, header, 4);
 }
 
 @suite class Id3v2_UserInformationFrame_ConstructorTests extends FrameConstructorTests {
     public get fromOffsetRawData(): (d: ByteVector, o: number, h: Id3v2FrameHeader, v: number) => Frame {
         return UserTextInformationFrame.fromOffsetRawData;
-    }
-
-    public get fromRawData(): (d: ByteVector, v: number) => Frame {
-        return UserTextInformationFrame.fromRawData;
     }
 
     @test
@@ -57,8 +53,8 @@ const getTestFrame = (): UserTextInformationFrame => {
         const header = new Id3v2FrameHeader(FrameIdentifiers.TXXX);
         header.frameSize = 8;
         const data = ByteVector.concatenate(
-            header.render(4),
             0x00, 0x00,
+            header.render(4),
             StringType.Latin1,
             ByteVector.fromString("foo", StringType.UTF8),
             ByteVector.getTextDelimiter(StringType.Latin1),
@@ -67,26 +63,6 @@ const getTestFrame = (): UserTextInformationFrame => {
 
         // Act
         const frame = UserTextInformationFrame.fromOffsetRawData(data, 2, header, 4);
-
-        // Assert
-        Id3v2_UserInformationFrame_ConstructorTests.assertFrame(frame, "foo", ["bar"], StringType.Latin1);
-    }
-
-    @test
-    public fromRawData_returnsFrame() {
-        // Assert
-        const header = new Id3v2FrameHeader(FrameIdentifiers.TXXX);
-        header.frameSize = 8;
-        const data = ByteVector.concatenate(
-            header.render(4),
-            StringType.Latin1,
-            ByteVector.fromString("foo", StringType.UTF8),
-            ByteVector.getTextDelimiter(StringType.Latin1),
-            ByteVector.fromString("bar", StringType.UTF8)
-        );
-
-        // Act
-        const frame = UserTextInformationFrame.fromRawData(data, 4);
 
         // Assert
         Id3v2_UserInformationFrame_ConstructorTests.assertFrame(frame, "foo", ["bar"], StringType.Latin1);

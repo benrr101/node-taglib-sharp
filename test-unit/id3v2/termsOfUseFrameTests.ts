@@ -16,10 +16,6 @@ import {Testers} from "../utilities/testers";
         return TermsOfUseFrame.fromOffsetRawData;
     }
 
-    public get fromRawData(): (d: ByteVector, v: number) => Frame {
-        return TermsOfUseFrame.fromRawData;
-    }
-
     @test
     public fromFields_withoutTextEncoding() {
         // Act
@@ -44,8 +40,8 @@ import {Testers} from "../utilities/testers";
         const header = new Id3v2FrameHeader(FrameIdentifiers.USER);
         header.frameSize = 2;
         const data = ByteVector.concatenate(
-            header.render(4),
             0x00, 0x00, // Offset data
+            header.render(4),
             0x00, 0x00
         );
 
@@ -59,8 +55,8 @@ import {Testers} from "../utilities/testers";
         const header = new Id3v2FrameHeader(FrameIdentifiers.USER);
         header.frameSize = 10;
         const data = ByteVector.concatenate(
-            header.render(4),
             0x01, 0x00, // Offset data
+            header.render(4),
             StringType.Latin1,
             ByteVector.fromString("fux", StringType.Latin1),
             ByteVector.fromString("buxqux", StringType.Latin1)
@@ -68,39 +64,6 @@ import {Testers} from "../utilities/testers";
 
         // Act
         const output = TermsOfUseFrame.fromOffsetRawData(data, 2, header, 4);
-
-        // Assert
-        Id3v2_TermsOfUseFrame_ConstructorTests.assertFrame(output, "fux", "buxqux", StringType.Latin1);
-    }
-
-    @test
-    public fromRawData_notEnoughBytes() {
-        // Arrange
-        const header = new Id3v2FrameHeader(FrameIdentifiers.USER);
-        header.frameSize = 2;
-        const data = ByteVector.concatenate(
-            header.render(4),
-            0x01, 0x02
-        );
-
-        // Act / Assert
-        assert.throws(() => { TermsOfUseFrame.fromRawData(data, 4); });
-    }
-
-    @test
-    public fromRawData_enoughData() {
-        // Arrange
-        const header = new Id3v2FrameHeader(FrameIdentifiers.USER);
-        header.frameSize = 10;
-        const data = ByteVector.concatenate(
-            header.render(4),
-            StringType.Latin1,
-            ByteVector.fromString("fux", StringType.Latin1),
-            ByteVector.fromString("buxqux", StringType.Latin1)
-        );
-
-        // Act
-        const output = TermsOfUseFrame.fromRawData(data, 4);
 
         // Assert
         Id3v2_TermsOfUseFrame_ConstructorTests.assertFrame(output, "fux", "buxqux", StringType.Latin1);
@@ -273,7 +236,7 @@ import {Testers} from "../utilities/testers";
     @test
     public render() {
         // Arrange
-        const header = new Id3v2FrameHeader(FrameIdentifiers.SYLT);
+        const header = new Id3v2FrameHeader(FrameIdentifiers.USER);
         header.frameSize = 10;
         const data = ByteVector.concatenate(
             header.render(4),
@@ -281,7 +244,7 @@ import {Testers} from "../utilities/testers";
             ByteVector.fromString("fux", StringType.Latin1),
             ByteVector.fromString("buxqux", StringType.Latin1)
         );
-        const frame = TermsOfUseFrame.fromRawData(data, 4);
+        const frame = TermsOfUseFrame.fromOffsetRawData(data, 0, header, 4);
 
         // Act
         const output = frame.render(4);

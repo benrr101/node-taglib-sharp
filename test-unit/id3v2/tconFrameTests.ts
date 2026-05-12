@@ -246,7 +246,7 @@ class Id3v2_TconFrameTests {
         const header = new Id3v2FrameHeader(FrameIdentifiers.TCON, Id3v2FrameFlags.None, bodyBytes.length);
 
         const frameBytes = ByteVector.concatenate(header.render(tagVersion), bodyBytes);
-        const frame = TextInformationFrame.fromRawData(frameBytes, tagVersion);
+        const frame = TextInformationFrame.fromOffsetRawData(frameBytes, 0, header, tagVersion);
 
         // Act
         const values = frame.text;

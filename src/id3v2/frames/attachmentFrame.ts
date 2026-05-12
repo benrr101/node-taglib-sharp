@@ -101,21 +101,6 @@ export default class AttachmentFrame extends Frame implements IPicture {
         return frame;
     }
 
-    /**
-     * Constructs and initializes a new attachment frame by reading its raw data in a specified
-     * Id3v2 version.
-     * @param data ByteVector starting with the raw representation of the new frame
-     * @param version ID3v2 version the raw frame is encoded with.
-     */
-    public static fromRawData(data: ByteVector, version: number): AttachmentFrame {
-        Guards.truthy(data, "data");
-        Guards.byte(version, "version");
-
-        const frame = new AttachmentFrame(Id3v2FrameHeader.fromData(data, version));
-        frame.setData(data, 0, true, version);
-        return frame;
-    }
-
     // #endregion
 
     // #region Properties

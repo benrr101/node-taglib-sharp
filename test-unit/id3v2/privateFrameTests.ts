@@ -15,10 +15,6 @@ import {Testers} from "../utilities/testers";
         return PrivateFrame.fromOffsetRawData;
     }
 
-    public get fromRawData(): (d: ByteVector, v: number) => Frame {
-        return PrivateFrame.fromRawData;
-    }
-
     @test
     public fromOwner() {
         // Act
@@ -29,56 +25,35 @@ import {Testers} from "../utilities/testers";
     }
 
     @test
-    public fromRawData_tooFewBytes() {
+    public fromOffsetRawData_tooFewBytes() {
         // Arrange
         const header = new Id3v2FrameHeader(FrameIdentifiers.PRIV);
         header.frameSize = 0;
         const data = ByteVector.concatenate(
+            0x00, 0x00,
             header.render(4)
         );
 
         // Act / Assert
-        assert.throws(() => { PrivateFrame.fromRawData(data, 4); });
+        assert.throws(() => { PrivateFrame.fromOffsetRawData(data, 2, header, 4); });
     }
 
     @test
-    public fromRawData_owner() {
+    public fromOffsetRawData_owner() {
         // Arrange
         const header = new Id3v2FrameHeader(FrameIdentifiers.PRIV);
         header.frameSize = 4;
         const data = ByteVector.concatenate(
+            0x00, 0x00,
             header.render(4),
             ByteVector.fromString("fux", StringType.Latin1)
         );
 
         // Act
-        const frame = PrivateFrame.fromRawData(data, 4);
+        const frame = PrivateFrame.fromOffsetRawData(data, 2, header, 4);
 
         // Assert
         Id3v2_PrivateFrame_ConstructorTests.assertFrame(frame, "fux", ByteVector.empty());
-    }
-
-    @test
-    public fromRawData_ownerAndData() {
-        // Arrange
-        const header = new Id3v2FrameHeader(FrameIdentifiers.PRIV);
-        header.frameSize = 9;
-        const data = ByteVector.concatenate(
-            header.render(4),
-            ByteVector.fromString("fux", StringType.Latin1),
-            ByteVector.getTextDelimiter(StringType.Latin1),
-            0x01, 0x02, 0x03, 0x04
-        );
-
-        // Act
-        const frame = PrivateFrame.fromRawData(data, 4);
-
-        // Assert
-        Id3v2_PrivateFrame_ConstructorTests.assertFrame(
-            frame,
-            "fux",
-            ByteVector.fromByteArray(new Uint8Array([0x01, 0x02, 0x03, 0x04]))
-        );
     }
 
     @test
@@ -87,8 +62,8 @@ import {Testers} from "../utilities/testers";
         const header = new Id3v2FrameHeader(FrameIdentifiers.PRIV);
         header.frameSize = 8;
         const data = ByteVector.concatenate(
-            header.render(4),
             0x00, 0x00,
+            header.render(4),
             ByteVector.fromString("fux", StringType.Latin1),
             ByteVector.getTextDelimiter(StringType.Latin1),
             0x01, 0x02, 0x03, 0x04
@@ -203,7 +178,7 @@ import {Testers} from "../utilities/testers";
             ByteVector.getTextDelimiter(StringType.Latin1),
             0x01, 0x02, 0x03, 0x04
         );
-        const frame = PrivateFrame.fromRawData(data, 4);
+        const frame = PrivateFrame.fromOffsetRawData(data, 0, header, 4);
 
         // Act
         const output = frame.render(4);
@@ -224,7 +199,7 @@ import {Testers} from "../utilities/testers";
             ByteVector.getTextDelimiter(StringType.Latin1),
             0x01, 0x02, 0x03, 0x04
         );
-        const frame = PrivateFrame.fromRawData(data, 4);
+        const frame = PrivateFrame.fromOffsetRawData(data, 0, header, 4);
 
         // Act / Assert
         assert.throws(() => frame.render(2));

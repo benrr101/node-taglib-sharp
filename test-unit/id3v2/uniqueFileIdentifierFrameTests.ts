@@ -19,10 +19,6 @@ const testOwner = "https://github.com/benrr101/node-taglib-sharp";
         return UniqueFileIdentifierFrame.fromOffsetRawData;
     }
 
-    public get fromRawData(): (d: ByteVector, v: number) => Frame {
-        return UniqueFileIdentifierFrame.fromRawData;
-    }
-
     @test
     public fromData_invalidOwner_throws() {
         // Arrange
@@ -60,8 +56,8 @@ const testOwner = "https://github.com/benrr101/node-taglib-sharp";
         const header = new Id3v2FrameHeader(FrameIdentifiers.UFID);
         header.frameSize = 9;
         const data = ByteVector.concatenate(
-            header.render(4),
             0x0, 0x0,
+            header.render(4),
             testIdentifier
         );
 
@@ -78,8 +74,8 @@ const testOwner = "https://github.com/benrr101/node-taglib-sharp";
         const header = new Id3v2FrameHeader(FrameIdentifiers.UFID);
         header.frameSize = 29;
         const data = ByteVector.concatenate(
-            header.render(4),
             0x0, 0x0,
+            header.render(4),
             testIdentifier,
             ByteVector.getTextDelimiter(StringType.Latin1),
             testIdentifier,
@@ -101,8 +97,8 @@ const testOwner = "https://github.com/benrr101/node-taglib-sharp";
         const header = new Id3v2FrameHeader(FrameIdentifiers.UFID);
         header.frameSize = 55;
         const data = ByteVector.concatenate(
-            header.render(4),
             0x0, 0x0,
+            header.render(4),
             ByteVector.fromString(testOwner, StringType.UTF8),
             ByteVector.getTextDelimiter(StringType.Latin1),
             testIdentifier
@@ -110,64 +106,6 @@ const testOwner = "https://github.com/benrr101/node-taglib-sharp";
 
         // Act
         const frame = UniqueFileIdentifierFrame.fromOffsetRawData(data, 2, header, 4);
-
-        // Assert
-        Id3v2_UniqueFileIdentifierFrame_ConstructorTests.assertFrame(frame, testOwner, testIdentifier);
-    }
-
-    @test
-    public fromRawData_tooFewFields_returnsEmptyFrame() {
-        // Arrange
-        const header = new Id3v2FrameHeader(FrameIdentifiers.UFID);
-        header.frameSize = 9;
-        const data = ByteVector.concatenate(
-            header.render(4),
-            testIdentifier
-        );
-
-        // Act
-        const frame = UniqueFileIdentifierFrame.fromRawData(data, 4);
-
-        // Assert
-        Id3v2_UniqueFileIdentifierFrame_ConstructorTests.assertFrame(frame, undefined, undefined);
-    }
-
-    @test
-    public fromRawData_tooManyFields_returnsEmptyFrame() {
-        // Arrange
-        const header = new Id3v2FrameHeader(FrameIdentifiers.UFID);
-        header.frameSize = 29;
-        const data = ByteVector.concatenate(
-            header.render(4),
-            testIdentifier,
-            ByteVector.getTextDelimiter(StringType.Latin1),
-            testIdentifier,
-            ByteVector.getTextDelimiter(StringType.Latin1),
-            testIdentifier,
-            ByteVector.getTextDelimiter(StringType.Latin1)
-        );
-
-        // Act
-        const frame = UniqueFileIdentifierFrame.fromRawData(data, 4);
-
-        // Assert
-        Id3v2_UniqueFileIdentifierFrame_ConstructorTests.assertFrame(frame, undefined, undefined);
-    }
-
-    @test
-    public fromRawData_validData_returnsFrame() {
-        // Arrange
-        const header = new Id3v2FrameHeader(FrameIdentifiers.UFID);
-        header.frameSize = 55;
-        const data = ByteVector.concatenate(
-            header.render(4),
-            ByteVector.fromString(testOwner, StringType.UTF8),
-            ByteVector.getTextDelimiter(StringType.Latin1),
-            testIdentifier
-        );
-
-        // Act
-        const frame = UniqueFileIdentifierFrame.fromRawData(data, 4);
 
         // Assert
         Id3v2_UniqueFileIdentifierFrame_ConstructorTests.assertFrame(frame, testOwner, testIdentifier);
@@ -286,7 +224,7 @@ const testOwner = "https://github.com/benrr101/node-taglib-sharp";
             ByteVector.getTextDelimiter(StringType.Latin1),
             testIdentifier
         );
-        const frame = UniqueFileIdentifierFrame.fromRawData(data, 4);
+        const frame = UniqueFileIdentifierFrame.fromOffsetRawData(data, 0, header, 4);
 
         // Act
         const result = frame.render(4);

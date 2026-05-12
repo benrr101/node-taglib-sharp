@@ -15,35 +15,14 @@ import {Testers} from "../utilities/testers";
         return MusicCdIdentifierFrame.fromOffsetRawData;
     }
 
-    public get fromRawData(): (d: ByteVector, v: number) => Frame {
-        return MusicCdIdentifierFrame.fromRawData;
-    }
-
-    @test
-    public fromRawData_validParameters() {
-        // Arrange
-        const header = new Id3v2FrameHeader(FrameIdentifiers.MCDI);
-        header.frameSize = 9;
-        const data = ByteVector.concatenate(
-            header.render(4),
-            ByteVector.fromString("12345abcd", StringType.Latin1)
-        );
-
-        // Act
-        const frame = MusicCdIdentifierFrame.fromRawData(data, 4);
-
-        // Assert
-        Id3v2_MusicCdIdentifierFrameTests.assertFrame(frame, ByteVector.fromString("12345abcd", StringType.Latin1));
-    }
-
     @test
     public fromOffsetRawData_validParameters() {
         // Arrange
         const header = new Id3v2FrameHeader(FrameIdentifiers.MCDI);
         header.frameSize = 9;
         const data = ByteVector.concatenate(
-            header.render(4),
             0x00, 0x00,
+            header.render(4),
             ByteVector.fromString("12345abcd", StringType.Latin1)
         );
 
@@ -82,7 +61,7 @@ import {Testers} from "../utilities/testers";
         // Arrange
         const header = new Id3v2FrameHeader(FrameIdentifiers.MCDI);
         header.frameSize = 0;
-        const frame = MusicCdIdentifierFrame.fromRawData(header.render(4), 4);
+        const frame = MusicCdIdentifierFrame.fromOffsetRawData(header.render(4), 0, header, 4);
 
         // Act
         const output = <MusicCdIdentifierFrame> frame.clone();
@@ -100,7 +79,7 @@ import {Testers} from "../utilities/testers";
             header.render(4),
             ByteVector.fromString("12345abcd", StringType.Latin1)
         );
-        const frame = MusicCdIdentifierFrame.fromRawData(data, 4);
+        const frame = MusicCdIdentifierFrame.fromOffsetRawData(data, 0, header, 4);
 
         // Act
         const output = frame.render(4);
@@ -114,7 +93,7 @@ import {Testers} from "../utilities/testers";
         // Arrange
         const header = new Id3v2FrameHeader(FrameIdentifiers.MCDI);
         header.frameSize = 0;
-        const frame = MusicCdIdentifierFrame.fromRawData(header.render(4), 4);
+        const frame = MusicCdIdentifierFrame.fromOffsetRawData(header.render(4), 0, header, 4);
 
         // Act
         const output = frame.render(4);
@@ -138,6 +117,6 @@ import {Testers} from "../utilities/testers";
             header.render(4),
             ByteVector.fromString("12345abcd", StringType.Latin1)
         );
-        return MusicCdIdentifierFrame.fromRawData(data, 4);
+        return MusicCdIdentifierFrame.fromOffsetRawData(data, 0, header, 4);
     }
 }

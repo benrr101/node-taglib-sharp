@@ -43,10 +43,6 @@ const getCustomTestFrame = (
         return AttachmentFrame.fromOffsetRawData;
     }
 
-    get fromRawData(): (d: ByteVector, v: number) => Frame {
-        return AttachmentFrame.fromRawData;
-    }
-
     @test
     public fromPicture_falsyPicture() {
         // Act / Assert
@@ -107,47 +103,19 @@ const getCustomTestFrame = (
         );
     }
 
-    @test
-    public fromRawData_invalidFrameIdentifier() {
-        // Arrange
-        const header = new Id3v2FrameHeader(FrameIdentifiers.TXXX);
-        header.frameSize = 10;
-        const data = ByteVector.concatenate(
-            header.render(4),
-            ByteVector.fromSize(10)
-        );
-
-        // Act / Assert
-        const frame = AttachmentFrame.fromRawData(data, 4);
-        assert.throws(() => frame.type);
-    }
-
-    @test
-    public fromRawData_dataTooShort() {
-        // Arrange
-        const header = new Id3v2FrameHeader(FrameIdentifiers.APIC);
-        header.frameSize = 3;
-        const data = ByteVector.concatenate(
-            header.render(4),
-            ByteVector.fromSize(3, 0x00)
-        );
-
-        // Act / Assert
-        assert.throws(() => AttachmentFrame.fromRawData(data, 4));
-    }
-
     // NOTE: If you're wondering why we have a test for latin1 vs other encodings, it's b/c the
     //    mimetype detection looks for a 0 to mark the end of the mimetype. If encoding is Latin1,
     //    the first byte of the picture is 0, which we want to make sure isn't mistaken for the end
     //    of the mimetype.
 
     @test
-    public fromRawData_apicV4_latin1Encoding() {
+    public fromOffsetRawData_apicV4_latin1Encoding() {
         // Arrange
         const testData = ByteVector.fromString("fuxbuxqux", StringType.Latin1);
         const header = new Id3v2FrameHeader(FrameIdentifiers.APIC);
         header.frameSize = 41;
         const data = ByteVector.concatenate(
+            0x00, 0x00,
             header.render(4),
             StringType.Latin1,
             ByteVector.fromString("image/gif", StringType.Latin1),
@@ -159,7 +127,7 @@ const getCustomTestFrame = (
         );
 
         // Act
-        const frame = AttachmentFrame.fromRawData(data, 4);
+        const frame = AttachmentFrame.fromOffsetRawData(data, 2, header, 4);
 
         // Assert
         Id3v2_AttachmentFrame_ConstructorTests.verifyFrame(
@@ -175,12 +143,13 @@ const getCustomTestFrame = (
     }
 
     @test
-    public fromRawData_apicV4_nonLatinEncoding() {
+    public fromOffsetRawData_apicV4_nonLatinEncoding() {
         // Arrange
         const testData = ByteVector.fromString("fuxbuxqux", StringType.Latin1);
         const header = new Id3v2FrameHeader(FrameIdentifiers.APIC);
         header.frameSize = 41;
         const data = ByteVector.concatenate(
+            0x00, 0x00,
             header.render(4),
             StringType.UTF16BE,
             ByteVector.fromString("image/gif", StringType.Latin1),
@@ -192,7 +161,7 @@ const getCustomTestFrame = (
         );
 
         // Act
-        const frame = AttachmentFrame.fromRawData(data, 4);
+        const frame = AttachmentFrame.fromOffsetRawData(data, 2, header, 4);
 
         // Assert
         Id3v2_AttachmentFrame_ConstructorTests.verifyFrame(
@@ -208,12 +177,13 @@ const getCustomTestFrame = (
     }
 
     @test
-    public fromRawData_apicV2() {
+    public fromOffsetRawData_apicV2() {
         // Arrange
         const testData = ByteVector.fromString("fuxbuxqux", StringType.Latin1);
         const header = new Id3v2FrameHeader(FrameIdentifiers.APIC);
         header.frameSize = 34;
         const data = ByteVector.concatenate(
+            0x00, 0x00,
             header.render(2),
             StringType.UTF16BE,
             ByteVector.fromString("GIF", StringType.Latin1),
@@ -224,7 +194,7 @@ const getCustomTestFrame = (
         );
 
         // Act
-        const frame = AttachmentFrame.fromRawData(data, 2);
+        const frame = AttachmentFrame.fromOffsetRawData(data, 2, header, 2);
 
         // Assert
         Id3v2_AttachmentFrame_ConstructorTests.verifyFrame(
@@ -240,12 +210,13 @@ const getCustomTestFrame = (
     }
 
     @test
-    public fromRawData_geob_nonLatinEncoding() {
+    public fromOffsetRawData_geob_nonLatinEncoding() {
         // Arrange
         const testData = ByteVector.fromString("fuxbuxqux", StringType.Latin1);
         const header = new Id3v2FrameHeader(FrameIdentifiers.GEOB);
         header.frameSize = 60;
         const data = ByteVector.concatenate(
+            0x00, 0x00,
             header.render(4),
             StringType.UTF16BE,
             ByteVector.fromString("image/gif", StringType.Latin1),
@@ -258,7 +229,7 @@ const getCustomTestFrame = (
         );
 
         // Act
-        const frame = AttachmentFrame.fromRawData(data, 4);
+        const frame = AttachmentFrame.fromOffsetRawData(data, 2, header, 4);
 
         // Assert
         Id3v2_AttachmentFrame_ConstructorTests.verifyFrame(
@@ -274,12 +245,13 @@ const getCustomTestFrame = (
     }
 
     @test
-    public fromRawData_geob_latinEncoding() {
+    public fromOffsetRawData_geob_latinEncoding() {
         // Arrange
         const testData = ByteVector.fromString("fuxbuxqux", StringType.Latin1);
         const header = new Id3v2FrameHeader(FrameIdentifiers.GEOB);
         header.frameSize = 60;
         const data = ByteVector.concatenate(
+            0x00, 0x00,
             header.render(4),
             StringType.Latin1,
             ByteVector.fromString("image/gif", StringType.Latin1),
@@ -292,7 +264,7 @@ const getCustomTestFrame = (
         );
 
         // Act
-        const frame = AttachmentFrame.fromRawData(data, 4);
+        const frame = AttachmentFrame.fromOffsetRawData(data, 2, header, 4);
 
         // Assert
         Id3v2_AttachmentFrame_ConstructorTests.verifyFrame(
@@ -314,8 +286,8 @@ const getCustomTestFrame = (
         const header = new Id3v2FrameHeader(FrameIdentifiers.APIC);
         header.frameSize = 41;
         const data = ByteVector.concatenate(
-            header.render(4),
             0x00, 0x00,
+            header.render(4),
             StringType.UTF16BE,
             ByteVector.fromString("image/gif", StringType.Latin1),
             ByteVector.getTextDelimiter(StringType.Latin1),
@@ -505,12 +477,13 @@ const getCustomTestFrame = (
     }
 
     @test
-    public clone_fromRawDataUnread() {
+    public clone_fromOffsetRawDataUnread() {
         // Arrange
         const testData = ByteVector.fromString("fuxbuxqux", StringType.Latin1);
         const header = new Id3v2FrameHeader(FrameIdentifiers.APIC);
         header.frameSize = 41;
         const data = ByteVector.concatenate(
+            0x00, 0x00,
             header.render(4),
             StringType.UTF16BE,
             ByteVector.fromString("image/gif", StringType.Latin1),
@@ -520,7 +493,7 @@ const getCustomTestFrame = (
             ByteVector.getTextDelimiter(StringType.UTF16BE),
             testData
         );
-        const frame = AttachmentFrame.fromRawData(data, 4);
+        const frame = AttachmentFrame.fromOffsetRawData(data, 2, header, 4);
 
         // Act
         const output = <AttachmentFrame> frame.clone();
