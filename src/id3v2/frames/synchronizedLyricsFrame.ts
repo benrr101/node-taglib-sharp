@@ -132,21 +132,6 @@ export class SynchronizedLyricsFrame extends Frame {
         return frame;
     }
 
-    /**
-     * Constructs and initializes a new instance by reading its raw data in a specified ID3v2
-     * format.
-     * @param data Raw representation of the new instance
-     * @param version ID3v2 version the raw frame is encoded with. Must be unsigned 8-bit integer.
-     */
-    public static fromRawData(data: ByteVector, version: number): SynchronizedLyricsFrame {
-        Guards.truthy(data, "data");
-        Guards.byte(version, "version");
-
-        const frame = new SynchronizedLyricsFrame(Id3v2FrameHeader.fromData(data, version));
-        frame.setData(data, 0, true, version);
-        return frame;
-    }
-
     // #endregion
 
     // #region Properties
