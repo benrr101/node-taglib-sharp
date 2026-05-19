@@ -196,7 +196,7 @@ export class UserUrlLinkFrame extends UrlLinkFrame {
     /**
      * Gets the description stored in the current instance.
      */
-    public get description(): string { return this._text; }
+    public get description(): string { return this._description; }
     /**
      * Sets the description stored in the current instance.
      * There should only be one frame with a matching description per tag.
@@ -253,21 +253,30 @@ export class UserUrlLinkFrame extends UrlLinkFrame {
         // Description      <text string according to encoding> $00 (00)
         // URL              <text string>
 
-        const encoding = <StringType>data.get(0);
+        this._encoding = <StringType>data.get(0);
 
-        let splitText = data.toStrings(encoding, 2);
-        if (splitText.length < 2) {
-            // Ill-formed frame. Attempt to split by "/" like TagLib# encodes WXXX frames.
-            splitText = splitText[0].split("/");
-        }
-        if (splitText.length < 2) {
-            // Ill-formed frame. Assume description was omitted.
-            this._description = "";
-            this._text = splitText[0];
+        // Note: Although it would be nice to just split the data, because the first string is
+        //    encoded as per the encoding field and the second is always in Latin1, we cannot use
+        //    the toStrings method.
+        const textBytes = data.subarray(1);
+        const delimiter = ByteVector.getTextDelimiter(this._encoding);
+        const descriptionLength = textBytes.find(delimiter);
+        if (descriptionLength < 0) {
+            // Ill-formed frame.
+            const splitText = textBytes.toString(this._encoding).split("/");
+            if (splitText.length > 1) {
+                // Data was probably encoded using old TagLib# behavior.
+                this._description = splitText[0];
+                this._text = splitText[0];
+            } else {
+                // Data has only one field, let's assume it only has a url.
+                this._description = "";
+                this._text = splitText[0];
+            }
         } else {
-            // Well-formed frame.
-            this._description = splitText[0];
-            this._text = splitText[1];
+            // Well-formed frame
+            this._description = textBytes.subarray(0, descriptionLength).toString(this._encoding);
+            this._text = textBytes.subarray(descriptionLength + delimiter.length).toString(StringType.Latin1);
         }
     }
 

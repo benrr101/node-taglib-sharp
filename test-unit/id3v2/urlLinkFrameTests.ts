@@ -48,7 +48,7 @@ const getTestUrlLinkFrame = (): UrlLinkFrame => {
         const output = UrlLinkFrame.fromIdentity(FrameIdentifiers.WCOM);
 
         // Assert
-        Id3v2_UrlLinkFrame_ConstructorTests.assertFrame(output, FrameIdentifiers.WCOM, [], StringType.Latin1);
+        Id3v2_UrlLinkFrame_ConstructorTests.assertFrame(output, FrameIdentifiers.WCOM, undefined);
     }
 
     @test
@@ -67,101 +67,40 @@ const getTestUrlLinkFrame = (): UrlLinkFrame => {
         const output = UrlLinkFrame.fromOffsetRawData(data, 2, header, 4);
 
         // Assert
-        Id3v2_UrlLinkFrame_ConstructorTests.assertFrame(output, FrameIdentifiers.WCOM, ["foobar"], StringType.Latin1);
+        Id3v2_UrlLinkFrame_ConstructorTests.assertFrame(output, FrameIdentifiers.WCOM, "foobar");
     }
 
-    @test
-    public fromOffsetRawData_userFrame() {
-        // Arrange
-        const header = new Id3v2FrameHeader(FrameIdentifiers.WXXX);
-        header.frameSize = 12;
-        const data = ByteVector.concatenate(
-            0x00, 0x00,
-            header.render(4),
-            StringType.UTF16BE,
-            ByteVector.fromString("foo", StringType.UTF16BE),
-            ByteVector.getTextDelimiter(StringType.UTF16BE),
-            ByteVector.fromString("bar", StringType.Latin1)
-        );
-
-        // Act
-        const output = UrlLinkFrame.fromOffsetRawData(data, 2, header, 4);
-
-        // Assert
-        Id3v2_UrlLinkFrame_ConstructorTests.assertFrame(
-            output,
-            FrameIdentifiers.WXXX,
-            ["foo", "bar"],
-            StringType.Latin1
-        );
-    }
-
-    private static assertFrame(frame: UrlLinkFrame, ft: FrameIdentifier, t: string[], te: StringType) {
+    private static assertFrame(frame: UrlLinkFrame, ft: FrameIdentifier, t: string) {
         assert.ok(frame);
         assert.strictEqual(frame.frameClassType, FrameClassType.UrlLinkFrame);
         assert.strictEqual(frame.frameId, ft);
-
-        assert.deepEqual(frame.text, t);
-        assert.equal(frame.textEncoding, te);
+        assert.strictEqual(frame.text, t);
     }
 }
 
 @suite class Id3v2_UrlLinkFrame_PropertyTests {
     @test
-    public getText_outputIsClone() {
-        // Arrange
-        const frame = getTestUrlLinkFrame();
-
-        // Act
-        const text = frame.text;
-        text.push("baz");
-
-        // Assert
-        assert.deepEqual(frame.text, ["foo", "bar"]);
-    }
-
-    @test
     public setText_falsyValues() {
         // Arrange
         const frame = getTestUrlLinkFrame();
-        const set = (v: string[]) => { frame.text = v; };
+        const set = (v: string) => { frame.text = v; };
         const get = () => frame.text;
 
         // Act / Assert
-        PropertyTests.propertyNormalized(set, get, undefined, []);
-        PropertyTests.propertyNormalized(set, get, null, []);
+        PropertyTests.propertyNormalized(set, get, undefined, "");
+        PropertyTests.propertyNormalized(set, get, null, "");
     }
 
     @test
     public setText_values() {
         // Arrange
         const frame = getTestUrlLinkFrame();
-        const values = ["fux", "qux"];
 
         // Act
-        frame.text = values;
+        frame.text = "fux";
 
         // Assert
-        assert.deepEqual(frame.text, values);
-
-        // -- Ensure values are cloned
-        // Act 2
-        values.push("bux");
-
-        // Assert 2
-        assert.deepEqual(frame.text, ["fux", "qux"]);
-    }
-
-    @test
-    public setEncoding() {
-        // Arrange
-        const frame = getTestUrlLinkFrame();
-
-        // Act
-        frame.textEncoding = StringType.UTF8;
-
-        // Assert
-        assert.equal(frame.textEncoding, StringType.UTF8);
+        assert.strictEqual(frame.text, "fux");
     }
 }
 
@@ -230,8 +169,7 @@ const getTestUrlLinkFrame = (): UrlLinkFrame => {
         // Assert
         assert.isOk(result);
         assert.strictEqual(result.frameId, frame.frameId);
-        assert.deepEqual(result.text, frame.text);
-        assert.deepEqual(result.textEncoding, frame.textEncoding);
+        assert.strictEqual(result.text, frame.text);
     }
 
     @test
@@ -247,8 +185,7 @@ const getTestUrlLinkFrame = (): UrlLinkFrame => {
         // Assert
         assert.isOk(result);
         assert.strictEqual(result.frameId, frame.frameId);
-        assert.deepEqual(result.text, frame.text);
-        assert.deepEqual(result.textEncoding, frame.textEncoding);
+        assert.strictEqual(result.text, frame.text);
     }
 
     @test
