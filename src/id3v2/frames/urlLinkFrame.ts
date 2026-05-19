@@ -270,7 +270,7 @@ export class UserUrlLinkFrame extends UrlLinkFrame {
                 this._text = splitText[0];
             } else {
                 // Data has only one field, let's assume it only has a url.
-                this._description = "";
+                this._description = undefined;
                 this._text = splitText[0];
             }
         } else {
@@ -285,6 +285,7 @@ export class UserUrlLinkFrame extends UrlLinkFrame {
         return ByteVector.concatenate(
             UrlLinkFrame.correctEncoding(this._encoding, version),
             ByteVector.fromString(this._description, encoding),
+            ByteVector.getTextDelimiter(this._encoding),
             ByteVector.fromString(this._text, StringType.Latin1)
         );
     }

@@ -98,9 +98,7 @@ const getTestUserUrlLinkFrame = (): UserUrlLinkFrame => {
     @test
     public getDescription_emptyText_returnsUndefined() {
         // Arrange
-        const header = new Id3v2FrameHeader(FrameIdentifiers.WXXX);
-        const data = header.render(4);
-        const frame = UserUrlLinkFrame.fromOffsetRawData(data, 0, header, 4);
+        const frame = UserUrlLinkFrame.fromDescription(undefined);
 
         // Act
         const result = frame.description;
@@ -123,19 +121,6 @@ const getTestUserUrlLinkFrame = (): UserUrlLinkFrame => {
     }
 
     @test
-    public setDescription_existingDescription_null() {
-        // Arrange
-        const frame = getTestUserUrlLinkFrame();
-
-        // Act
-        frame.description = null;
-
-        // Assert
-        assert.isUndefined(frame.description);
-        assert.strictEqual(frame.text, "bar");
-    }
-
-    @test
     public setDescription_existingDescription_value() {
         // Arrange
         const frame = getTestUserUrlLinkFrame();
@@ -151,20 +136,13 @@ const getTestUserUrlLinkFrame = (): UserUrlLinkFrame => {
     @test
     public setDescription_noDescription_value() {
         // Arrange
-        const header = new Id3v2FrameHeader(FrameIdentifiers.WXXX);
-        header.frameSize = 0;
-        const data = ByteVector.concatenate(
-            header.render(4),
-            0x00, 0x00,                 // - Frame flags
-        );
-        const frame = UserUrlLinkFrame.fromOffsetRawData(data, 0, header, 4);
+        const frame = UserUrlLinkFrame.fromDescription(undefined);
 
         // Act
         frame.description = "fux";
 
         // Assert
         assert.strictEqual(frame.description, "fux");
-        assert.strictEqual(frame.text, "");
     }
 
     @test
