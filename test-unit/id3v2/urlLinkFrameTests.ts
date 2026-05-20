@@ -1,4 +1,4 @@
-import {suite, test} from "@testdeck/mocha";
+import {params, suite, test} from "@testdeck/mocha";
 import {assert} from "chai";
 
 import FrameConstructorTests from "./frameConstructorTests";
@@ -199,5 +199,19 @@ const getTestUrlLinkFrame = (): UrlLinkFrame => {
         // Assert
         assert.isOk(result);
         Testers.bvEqual(result, getTestFrameData());
+    }
+
+    @params("", "empty string")
+    @params("foo", "foo")
+    public toString_returnsText(text: string) {
+        // Arrange
+        const frame = UrlLinkFrame.fromIdentity(FrameIdentifiers.WCOM);
+        frame.text = text;
+
+        // Act
+        const result = frame.toString();
+
+        // Assert
+        assert.strictEqual(result, text);
     }
 }

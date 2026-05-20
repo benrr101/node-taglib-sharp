@@ -272,7 +272,7 @@ export class UserUrlLinkFrame extends UrlLinkFrame {
             if (splitText.length > 1) {
                 // Data was probably encoded using old TagLib# behavior.
                 this._description = splitText[0];
-                this._text = splitText[0];
+                this._text = splitText[1];
             } else {
                 // Data has only one field, let's assume it only has a url.
                 this._description = undefined;

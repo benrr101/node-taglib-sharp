@@ -1,4 +1,4 @@
-import {suite, test} from "@testdeck/mocha";
+import {params, suite, test} from "@testdeck/mocha";
 import {assert} from "chai";
 
 import FrameConstructorTests from "./frameConstructorTests";
@@ -7,7 +7,7 @@ import {Frame, FrameClassType} from "../../src/id3v2/frames/frame";
 import {Id3v2FrameFlags, Id3v2FrameHeader} from "../../src/id3v2/frames/frameHeader";
 import {FrameIdentifiers} from "../../src/id3v2/frameIdentifiers";
 import {Testers} from "../utilities/testers";
-import {UserUrlLinkFrame} from "../../src/id3v2/frames/urlLinkFrame";
+import {UrlLinkFrame, UserUrlLinkFrame} from "../../src/id3v2/frames/urlLinkFrame";
 
 const getTestFrameData = (): ByteVector => {
     const header = new Id3v2FrameHeader(FrameIdentifiers.WXXX);
@@ -32,6 +32,17 @@ const getTestUserUrlLinkFrame = (): UserUrlLinkFrame => {
 @suite class Id3v2_UserUrlLinkFrame_ConstructorTests extends FrameConstructorTests {
     public get fromOffsetRawData(): (d: ByteVector, o: number, h: Id3v2FrameHeader, v: number) => Frame {
         return UserUrlLinkFrame.fromOffsetRawData;
+    }
+
+    @test
+    public fromOffsetRawData_tooSmall() {
+        // Arrange
+        const bodyBytes = ByteVector.fromSize(1);
+        const header = new Id3v2FrameHeader(FrameIdentifiers.WXXX, Id3v2FrameFlags.None, bodyBytes.length);
+        const data = ByteVector.concatenate(header.render(4), bodyBytes);
+
+        // Act / Assert
+        assert.throws(() => UserUrlLinkFrame.fromOffsetRawData(data, 0, header, 4));
     }
 
     @test
@@ -92,6 +103,51 @@ const getTestUserUrlLinkFrame = (): UserUrlLinkFrame => {
         assert.strictEqual(output.textEncoding, StringType.UTF16BE);
     }
 
+    @test
+    public fromOffsetRawData_illFormedTagLib() {
+        // Arrange
+        const bodyBytes = ByteVector.concatenate(
+            StringType.UTF16BE,
+            ByteVector.fromString("foo/bar", StringType.UTF16BE)
+        );
+        const header = new Id3v2FrameHeader(FrameIdentifiers.WXXX, Id3v2FrameFlags.None, bodyBytes.length);
+        const data = ByteVector.concatenate(header.render(4), bodyBytes);
+
+        // Act
+        const output = UserUrlLinkFrame.fromOffsetRawData(data, 0, header, 4);
+
+        // Assert
+        assert.ok(output);
+        assert.equal(output.frameClassType, FrameClassType.UserUrlLinkFrame);
+        assert.strictEqual(output.frameId, FrameIdentifiers.WXXX);
+
+        assert.strictEqual(output.description, "foo");
+        assert.strictEqual(output.text, "bar");
+        assert.strictEqual(output.textEncoding, StringType.UTF16BE);
+    }
+
+    @test
+    public fromOffsetRawData_illFormedOneField() {
+        // Arrange
+        const bodyBytes = ByteVector.concatenate(
+            StringType.UTF16BE,
+            ByteVector.fromString("foo", StringType.UTF16BE)
+        );
+        const header = new Id3v2FrameHeader(FrameIdentifiers.WXXX, Id3v2FrameFlags.None, bodyBytes.length);
+        const data = ByteVector.concatenate(header.render(4), bodyBytes);
+
+        // Act
+        const output = UserUrlLinkFrame.fromOffsetRawData(data, 0, header, 4);
+
+        // Assert
+        assert.ok(output);
+        assert.equal(output.frameClassType, FrameClassType.UserUrlLinkFrame);
+        assert.strictEqual(output.frameId, FrameIdentifiers.WXXX);
+
+        assert.strictEqual(output.description, undefined);
+        assert.strictEqual(output.text, "foo");
+        assert.strictEqual(output.textEncoding, StringType.UTF16BE);
+    }
 }
 
 @suite class Id3v2_UserUrlLinkFrame_PropertyTests {
@@ -297,5 +353,21 @@ const getTestUserUrlLinkFrame = (): UserUrlLinkFrame => {
         // Assert
         assert.isOk(result);
         Testers.bvEqual(result, getTestFrameData());
+    }
+
+    @params(["", ""], "empty string")
+    @params(["foo", ""], "foo+empty string")
+    @params(["", "foo"], "empty string+foo")
+    @params(["foo", "bar"], "foo+bar")
+    public toString_returnsText([description, text]: [string, string]) {
+        // Arrange
+        const frame = UserUrlLinkFrame.fromDescription(description);
+        frame.text = text;
+
+        // Act
+        const result = frame.toString();
+
+        // Assert
+        assert.strictEqual(result, `[${description}] ${text}`);
     }
 }

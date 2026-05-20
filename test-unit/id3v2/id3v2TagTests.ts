@@ -25,7 +25,6 @@ import {Testers} from "../utilities/testers";
 import {TextInformationFrame, UserTextInformationFrame} from "../../src/id3v2/frames/textInformationFrame";
 import {UrlLinkFrame} from "../../src/id3v2/frames/urlLinkFrame";
 import PrivateFrame from "../../src/id3v2/frames/privateFrame";
-import {Id3v2FrameIdentifier, Id3v2FrameIdentifiers, Id3v2UrlLinkFrame} from "../../src";
 
 const getTestTagHeader = (version: number, flags: Id3v2TagHeaderFlags, tagSize: number): ByteVector => {
     return ByteVector.concatenate(
@@ -2157,7 +2156,7 @@ const getTestTagHeader = (version: number, flags: Id3v2TagHeaderFlags, tagSize: 
         const tag = Id3v2Tag.fromEmpty();
 
         // Act / Assert
-        Testers.testTruthy((ident: Id3v2FrameIdentifier) => tag.setUrlFrame(ident, ""));
+        Testers.testTruthy((ident: FrameIdentifier) => tag.setUrlFrame(ident, ""));
     }
 
     @test
@@ -2166,9 +2165,9 @@ const getTestTagHeader = (version: number, flags: Id3v2TagHeaderFlags, tagSize: 
         const tag = Id3v2Tag.fromEmpty();
 
         // Act / Assert
-        assert.throws(() => tag.setUrlFrame(Id3v2FrameIdentifiers.TXXX, ""));
-        assert.throws(() => tag.setUrlFrame(Id3v2FrameIdentifiers.RVRB, ""));
-        assert.throws(() => tag.setUrlFrame(Id3v2FrameIdentifiers.SYLT, ""));
+        assert.throws(() => tag.setUrlFrame(FrameIdentifiers.TXXX, ""));
+        assert.throws(() => tag.setUrlFrame(FrameIdentifiers.RVRB, ""));
+        assert.throws(() => tag.setUrlFrame(FrameIdentifiers.SYLT, ""));
     }
 
     @params("", "empty string")
@@ -2176,16 +2175,16 @@ const getTestTagHeader = (version: number, flags: Id3v2TagHeaderFlags, tagSize: 
     @params(undefined, "undefined")
     public setUrlFrame_falsy_removesFrame(text: string) {
         // Arrange
-        const frame1 = UrlLinkFrame.fromIdentity(Id3v2FrameIdentifiers.WCOM);
+        const frame1 = UrlLinkFrame.fromIdentity(FrameIdentifiers.WCOM);
         frame1.text = "foo";
-        const frame2 = UrlLinkFrame.fromIdentity(Id3v2FrameIdentifiers.WCOM);
+        const frame2 = UrlLinkFrame.fromIdentity(FrameIdentifiers.WCOM);
         frame2.text = "bar";
 
         const tag = Id3v2Tag.fromEmpty();
         tag.frames.push(frame1, frame2);
 
         // Act
-        tag.setUrlFrame(Id3v2FrameIdentifiers.WCOM, text);
+        tag.setUrlFrame(FrameIdentifiers.WCOM, text);
 
         // Assert
         assert.isTrue(tag.isEmpty);
