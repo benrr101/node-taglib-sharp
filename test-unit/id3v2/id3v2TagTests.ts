@@ -1,5 +1,5 @@
 import * as TypeMoq from "typemoq";
-import {suite, test} from "@testdeck/mocha";
+import {params, suite, test} from "@testdeck/mocha";
 import {assert} from "chai";
 
 import CommentsFrame from "../../src/id3v2/frames/commentsFrame";
@@ -25,6 +25,7 @@ import {Testers} from "../utilities/testers";
 import {TextInformationFrame, UserTextInformationFrame} from "../../src/id3v2/frames/textInformationFrame";
 import {UrlLinkFrame} from "../../src/id3v2/frames/urlLinkFrame";
 import PrivateFrame from "../../src/id3v2/frames/privateFrame";
+import {Id3v2FrameIdentifier, Id3v2FrameIdentifiers, Id3v2UrlLinkFrame} from "../../src";
 
 const getTestTagHeader = (version: number, flags: Id3v2TagHeaderFlags, tagSize: number): ByteVector => {
     return ByteVector.concatenate(
@@ -1711,9 +1712,9 @@ const getTestTagHeader = (version: number, flags: Id3v2TagHeaderFlags, tagSize: 
         const tag = Id3v2Tag.fromEmpty();
         const frame1 = TextInformationFrame.fromIdentifier(FrameIdentifiers.TCOM);
         const frame2 = UrlLinkFrame.fromIdentity(FrameIdentifiers.WCOM);
-        frame2.text = ["foo"];
+        frame2.text = "foo";
         const frame3 = UrlLinkFrame.fromIdentity(FrameIdentifiers.WCOM);
-        frame3.text = ["bar"];
+        frame3.text = "bar";
         tag.frames.push(frame1, frame2, frame3);
 
         // Act
@@ -2121,36 +2122,6 @@ const getTestTagHeader = (version: number, flags: Id3v2TagHeaderFlags, tagSize: 
     }
 
     @test
-    public setTextFrame_urlFrameNoMatch() {
-        // Arrange
-        const tag = Id3v2Tag.fromEmpty();
-
-        // Act
-        tag.setTextFrame(FrameIdentifiers.WCOM, "foo", "bar");
-
-        // Assert
-        assert.strictEqual(tag.frames.length, 1);
-        assert.strictEqual(tag.frames[0].frameId, FrameIdentifiers.WCOM);
-        assert.deepStrictEqual((<UrlLinkFrame> tag.frames[0]).text, ["foo", "bar"]);
-    }
-
-    @test
-    public setTextFrame_urlFrameWithMatch() {
-        // Arrange
-        const tag = Id3v2Tag.fromEmpty();
-        const frame = UrlLinkFrame.fromIdentity(FrameIdentifiers.WCOM);
-        frame.text = ["fux", "qux"];
-
-        // Act
-        tag.setTextFrame(FrameIdentifiers.WCOM, "foo", "bar");
-
-        // Assert
-        assert.strictEqual(tag.frames.length, 1);
-        assert.strictEqual(tag.frames[0].frameId, FrameIdentifiers.WCOM);
-        assert.deepStrictEqual((<UrlLinkFrame> tag.frames[0]).text, ["foo", "bar"]);
-    }
-
-    @test
     public setTextFrame_textFrameNoMatch() {
         // Arrange
         const tag = Id3v2Tag.fromEmpty();
@@ -2178,5 +2149,75 @@ const getTestTagHeader = (version: number, flags: Id3v2TagHeaderFlags, tagSize: 
         assert.strictEqual(tag.frames.length, 1);
         assert.strictEqual(tag.frames[0].frameId, FrameIdentifiers.TCOM);
         assert.deepStrictEqual((<TextInformationFrame> tag.frames[0]).text, ["foo", "bar"]);
+    }
+
+    @test
+    public setUrlFrame_falsyIdentifier() {
+        // Arrange
+        const tag = Id3v2Tag.fromEmpty();
+
+        // Act / Assert
+        Testers.testTruthy((ident: Id3v2FrameIdentifier) => tag.setUrlFrame(ident, ""));
+    }
+
+    @test
+    public setUrlFrame_notUrlFrame() {
+        // Arrange
+        const tag = Id3v2Tag.fromEmpty();
+
+        // Act / Assert
+        assert.throws(() => tag.setUrlFrame(Id3v2FrameIdentifiers.TXXX, ""));
+        assert.throws(() => tag.setUrlFrame(Id3v2FrameIdentifiers.RVRB, ""));
+        assert.throws(() => tag.setUrlFrame(Id3v2FrameIdentifiers.SYLT, ""));
+    }
+
+    @params("", "empty string")
+    @params(null, "null")
+    @params(undefined, "undefined")
+    public setUrlFrame_falsy_removesFrame(text: string) {
+        // Arrange
+        const frame1 = UrlLinkFrame.fromIdentity(Id3v2FrameIdentifiers.WCOM);
+        frame1.text = "foo";
+        const frame2 = UrlLinkFrame.fromIdentity(Id3v2FrameIdentifiers.WCOM);
+        frame2.text = "bar";
+
+        const tag = Id3v2Tag.fromEmpty();
+        tag.frames.push(frame1, frame2);
+
+        // Act
+        tag.setUrlFrame(Id3v2FrameIdentifiers.WCOM, text);
+
+        // Assert
+        assert.isTrue(tag.isEmpty);
+    }
+
+    @test
+    public setUrlFrame_withoutMatchingFrames_addsFrame() {
+        // Arrange
+        const tag = Id3v2Tag.fromEmpty();
+
+        // Act
+        tag.setUrlFrame(FrameIdentifiers.WCOM, "foo");
+
+        // Assert
+        assert.strictEqual(tag.frames.length, 1);
+        assert.strictEqual(tag.frames[0].frameId, FrameIdentifiers.WCOM);
+        assert.strictEqual((<UrlLinkFrame>tag.frames[0]).text, "foo");
+    }
+
+    @test
+    public setTextFrame_withMatchingFrames_updatesFrame() {
+        // Arrange
+        const tag = Id3v2Tag.fromEmpty();
+        const frame = UrlLinkFrame.fromIdentity(FrameIdentifiers.WCOM);
+        frame.text = "fux";
+
+        // Act
+        tag.setUrlFrame(FrameIdentifiers.WCOM, "foo");
+
+        // Assert
+        assert.strictEqual(tag.frames.length, 1);
+        assert.strictEqual(tag.frames[0].frameId, FrameIdentifiers.WCOM);
+        assert.strictEqual((<UrlLinkFrame>tag.frames[0]).text, "foo");
     }
 }

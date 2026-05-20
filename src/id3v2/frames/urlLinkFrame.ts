@@ -121,6 +121,11 @@ export class UrlLinkFrame extends Frame {
     }
 
     /** @inheritDoc */
+    public toString(): string {
+        return this.text;
+    }
+
+    /** @inheritDoc */
     protected parseFields(data: ByteVector, _version: number): void {
         // Read the url from the data
         let url = data.toString(StringType.Latin1);
