@@ -1,3 +1,4 @@
+import Id3v2Settings from "../id3v2Settings";
 import {ByteVector, StringType} from "../../byteVector";
 import {Frame, FrameClassType} from "./frame";
 import {Id3v2FrameHeader} from "./frameHeader";
@@ -87,14 +88,12 @@ export class UrlLinkFrame extends Frame {
 
     /**
      * Gets the text contained in the current instance.
-     * Modifying the contents of the returned value will not modify the contents of the current
-     * instance. The value must be reassigned for the value to change.
      */
     public get text(): string { return this._text; }
     /**
      * Sets the text contained in the current instance.
      */
-    public set text(value: string) { this._text = value ?? ""; }
+    public set text(value: string) { this._text = value; }
 
     // #endregion
 
@@ -136,7 +135,11 @@ export class UrlLinkFrame extends Frame {
 
     /** @inheritDoc */
     protected renderFields(_version: number): ByteVector {
-        return ByteVector.fromString(this._text, StringType.Latin1);
+        if (!this._text) {
+            return ByteVector.empty();
+        }
+
+        return ByteVector.fromString(this.text, StringType.Latin1);
     }
 
     // #endregion
@@ -147,7 +150,7 @@ export class UrlLinkFrame extends Frame {
  */
 export class UserUrlLinkFrame extends UrlLinkFrame {
     private _description: string;
-    private _encoding: StringType = StringType.Latin1;
+    private _encoding: StringType = Id3v2Settings.defaultEncoding;
 
     // #region Constructors
 
@@ -156,14 +159,15 @@ export class UserUrlLinkFrame extends UrlLinkFrame {
     }
 
     /**
-     * Constructs and initializes a new instance using the provided description as the text
-     * of the frame.
-     * @param description Description to use as text of the frame.
+     * Constructs and initializes a new instance using the provided description and url to populate
+     * the fields of the frame.
+     * @param description Description to store in the frame
+     * @param url URL to store in the frame
      */
-    public static fromDescription(description: string): UserUrlLinkFrame {
+    public static fromFields(description: string, url: string): UserUrlLinkFrame {
         const frame = new UserUrlLinkFrame(new Id3v2FrameHeader(FrameIdentifiers.WXXX));
         frame._description = description;
-        frame._text = "";
+        frame._text = url;
         return frame;
     }
 
@@ -238,9 +242,8 @@ export class UserUrlLinkFrame extends UrlLinkFrame {
 
     /** @inheritDoc */
     public clone(): UserUrlLinkFrame {
-        const frame = UserUrlLinkFrame.fromDescription(this._description);
+        const frame = UserUrlLinkFrame.fromFields(this._description, this._text);
         frame._encoding = this._encoding;
-        frame._text = this._text;
         return frame;
     }
 
@@ -289,9 +292,9 @@ export class UserUrlLinkFrame extends UrlLinkFrame {
         const encoding = UrlLinkFrame.correctEncoding(this.textEncoding, version);
         return ByteVector.concatenate(
             UrlLinkFrame.correctEncoding(this._encoding, version),
-            ByteVector.fromString(this._description, encoding),
+            ByteVector.fromString(this._description ?? "", encoding),
             ByteVector.getTextDelimiter(this._encoding),
-            ByteVector.fromString(this._text, StringType.Latin1)
+            ByteVector.fromString(this._text ?? "", StringType.Latin1)
         );
     }
 

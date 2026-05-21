@@ -293,7 +293,7 @@ import {SynchronizedTextType, TimestampFormat} from "../../src/id3v2/utilTypes";
     @test
     public createFrame_fromData_wxxx() {
         // Arrange
-        const data = UserUrlLinkFrame.fromDescription("foo").render(4);
+        const data = UserUrlLinkFrame.fromFields("foo", "bar").render(4);
 
         // Act
         const output = Id3v2FrameFactory.createFrame(data, undefined, 0, 4, false);
