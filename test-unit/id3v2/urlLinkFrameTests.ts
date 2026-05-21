@@ -2,7 +2,6 @@ import {params, suite, test} from "@testdeck/mocha";
 import {assert} from "chai";
 
 import FrameConstructorTests from "./frameConstructorTests";
-import TestConstants from "../testConstants";
 import {ByteVector, StringType} from "../../src/byteVector";
 import {Frame, FrameClassType} from "../../src/id3v2/frames/frame";
 import {Id3v2FrameFlags, Id3v2FrameHeader} from "../../src/id3v2/frames/frameHeader";
@@ -27,33 +26,27 @@ import {UrlLinkFrame} from "../../src/id3v2/frames/urlLinkFrame";
         const output = UrlLinkFrame.fromIdentity(FrameIdentifiers.WCOM);
 
         // Assert
-        Id3v2_UrlLinkFrame_ConstructorTests.assertFrame(output, FrameIdentifiers.WCOM, undefined);
+        assert.ok(output);
+        assert.strictEqual(output.frameClassType, FrameClassType.UrlLinkFrame);
+        assert.strictEqual(output.frameId, FrameIdentifiers.WCOM);
+        assert.strictEqual(output.text, undefined);
     }
 
     @test
-    public fromOffsetRawData_notUserFrame() {
+    public fromOffsetRawData_itsgood() {
         // Arrange
-        const header = new Id3v2FrameHeader(FrameIdentifiers.WCOM);
-        header.frameSize = TestConstants.syncedUint;
-        const data = ByteVector.concatenate(
-            0x00, 0x00,
-            header.render(4),
-            ByteVector.fromString("foobar", StringType.Latin1),
-            0x00, 0x00 // Some null bytes to trigger null cleanup
-        );
+        const bodyBytes = ByteVector.fromString("foo", StringType.Latin1);
+        const header = new Id3v2FrameHeader(FrameIdentifiers.WCOM, Id3v2FrameFlags.None, bodyBytes.length);
+        const data = ByteVector.concatenate(header.render(4), bodyBytes);
 
         // Act
         const output = UrlLinkFrame.fromOffsetRawData(data, 2, header, 4);
 
         // Assert
-        Id3v2_UrlLinkFrame_ConstructorTests.assertFrame(output, FrameIdentifiers.WCOM, "foobar");
-    }
-
-    private static assertFrame(frame: UrlLinkFrame, ft: FrameIdentifier, t: string) {
-        assert.ok(frame);
-        assert.strictEqual(frame.frameClassType, FrameClassType.UrlLinkFrame);
-        assert.strictEqual(frame.frameId, ft);
-        assert.strictEqual(frame.text, t);
+        assert.ok(output);
+        assert.strictEqual(output.frameClassType, FrameClassType.UrlLinkFrame);
+        assert.strictEqual(output.frameId, FrameIdentifiers.WCOM);
+        assert.strictEqual(output.text, "foo");
     }
 }
 

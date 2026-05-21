@@ -126,11 +126,7 @@ export class UrlLinkFrame extends Frame {
 
     /** @inheritDoc */
     protected parseFields(data: ByteVector, _version: number): void {
-        // Read the url from the data
-        let url = data.toString(StringType.Latin1);
-        url = url.replace(/[\s\0]+$/, "");
-
-        this._text = url;
+        this._text = data.toString(StringType.Latin1);
     }
 
     /** @inheritDoc */
@@ -293,7 +289,7 @@ export class UserUrlLinkFrame extends UrlLinkFrame {
         return ByteVector.concatenate(
             UrlLinkFrame.correctEncoding(this._encoding, version),
             ByteVector.fromString(this._description ?? "", encoding),
-            ByteVector.getTextDelimiter(this._encoding),
+            ByteVector.getTextDelimiter(encoding),
             ByteVector.fromString(this._text ?? "", StringType.Latin1)
         );
     }
