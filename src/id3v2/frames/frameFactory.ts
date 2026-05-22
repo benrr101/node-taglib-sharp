@@ -1,5 +1,6 @@
 import AttachmentFrame from "./attachmentFrame";
 import CommentsFrame from "./commentsFrame";
+import GenreFrame from "./genreFrame";
 import MusicCdIdentifierFrame from "./musicCdIdentifierFrame";
 import PlayCountFrame from "./playCountFrame";
 import PopularimeterFrame from "./popularimeterFrame";
@@ -176,7 +177,10 @@ export class Id3v2FrameFactory {
             }
 
             let func: FrameCreator;
-            if (header.frameId === FrameIdentifiers.TXXX) {
+            if (header.frameId === FrameIdentifiers.TCON) {
+                // Content type frame
+                func = GenreFrame.fromOffsetRawData;
+            } else if (header.frameId === FrameIdentifiers.TXXX) {
                 // User text identification frame
                 func = UserTextInformationFrame.fromOffsetRawData;
             } else if (header.frameId.isTextFrame) {

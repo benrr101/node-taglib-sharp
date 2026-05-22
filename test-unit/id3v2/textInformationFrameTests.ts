@@ -141,38 +141,6 @@ const getTestFrame = (): TextInformationFrame => {
     }
 
     @test
-    public fromOffsetRawData_v4Tcon_returnsListOfStrings() {
-        // Arrange
-        const header = new Id3v2FrameHeader(FrameIdentifiers.TCON);
-        header.frameSize = 37;
-        const data = ByteVector.concatenate(
-            0x00, 0x00,
-            header.render(4),
-            StringType.UTF16BE,
-            ByteVector.fromString("32", StringType.UTF16BE),
-            ByteVector.getTextDelimiter(StringType.UTF16BE),
-            ByteVector.fromString("(32)", StringType.UTF16BE),
-            ByteVector.getTextDelimiter(StringType.UTF16BE),
-            ByteVector.fromString("some genre", StringType.UTF16BE)
-        );
-
-        // Act
-        const frame = TextInformationFrame.fromOffsetRawData(data, 2, header, 4);
-
-        // Assert
-        Id3v2_TextInformationFrame_ConstructorTests.assertFrame(
-            frame,
-            FrameIdentifiers.TCON,
-            [
-                "Classical",
-                "(32)",
-                "some genre"
-            ],
-            StringType.UTF16BE
-        );
-    }
-
-    @test
     public fromOffsetRawData_v4_returnsFrameSplitByDelimiter() {
         // Arrange
         const header = new Id3v2FrameHeader(FrameIdentifiers.TCOP);

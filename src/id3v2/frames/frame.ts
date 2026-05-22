@@ -27,6 +27,11 @@ export enum FrameClassType {
     EventTimeCodeFrame,
 
     /**
+     * Indicates the frame is a genre frame.
+     */
+    GenreFrame,
+
+    /**
      * Indicates the frame is a music CD identifier frame.
      */
     MusicCdIdentifierFrame,
@@ -94,7 +99,7 @@ export enum FrameClassType {
     /**
      * Indicates the frame is a user URL link frame.
      */
-    UserUrlLinkFrame
+    UserUrlLinkFrame,
 }
 
 /**

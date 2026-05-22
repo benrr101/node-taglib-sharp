@@ -116,6 +116,7 @@ export {
     SynchronizedText as Id3v2SynchronizedLyricsFrame
 } from "./id3v2/frames/synchronizedLyricsFrame";
 export {default as Id3v2TermsOfUseFrame} from "./id3v2/frames/termsOfUseFrame";
+export {default as Id3v2GenreFrame} from "./id3v2/frames/genreFrame";
 export {
     TextInformationFrame as Id3v2TextInformationFrame,
     UserTextInformationFrame as Id3v2UserTextInformationFrame

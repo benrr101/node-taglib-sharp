@@ -2,14 +2,70 @@ import {suite, test} from "@testdeck/mocha";
 import {assert} from "chai";
 
 import Id3v2Settings from "../../src/id3v2/id3v2Settings";
+import GenreFrame from "../../src/id3v2/frames/genreFrame";
 import {ByteVector, StringType} from "../../src/byteVector";
+import {FrameClassType} from "../../src/id3v2/frames/frame";
 import {Id3v2FrameFlags, Id3v2FrameHeader} from "../../src/id3v2/frames/frameHeader";
 import {FrameIdentifiers} from "../../src/id3v2/frameIdentifiers";
-import {TextInformationFrame} from "../../src/id3v2/frames/textInformationFrame";
 import {Testers} from "../utilities/testers";
 
 @suite
-class Id3v2_TconFrameTests {
+class Id3v2_GenreFrameTests {
+
+    // region Property tests
+
+    @test
+    public fromEncoding() {
+        // Act
+        const frame = GenreFrame.fromEncoding(StringType.UTF16BE);
+
+        // Assert
+        assert.isOk(frame);
+        assert.strictEqual(frame.frameClassType, FrameClassType.GenreFrame);
+        assert.strictEqual(frame.frameId, FrameIdentifiers.TCON);
+        assert.deepStrictEqual(frame.text, []);
+        assert.strictEqual(frame.textEncoding, StringType.UTF16BE);
+    }
+
+    @test
+    public text_returnsCopy() {
+        // Arrange
+        const frame = GenreFrame.fromEncoding();
+        frame.text = ["foo", "bar"];
+
+        // Act
+        const text = frame.text;
+        text.push("baz");
+
+        // Assert
+        assert.deepStrictEqual(frame.text, ["foo", "bar"]);
+    }
+
+    @test
+    public text_setFalsyReturnsEmptyArray() {
+        // Arrange
+        const frame = GenreFrame.fromEncoding();
+
+        // Act
+        frame.text = undefined;
+
+        // Assert
+        assert.deepStrictEqual(frame.text, []);
+    }
+
+    @test
+    public textEncoding() {
+        // Arrange
+        const frame = GenreFrame.fromEncoding();
+
+        // Act
+        frame.textEncoding = StringType.UTF16BE;
+
+        // Assert
+        assert.strictEqual(frame.textEncoding, StringType.UTF16BE);
+    }
+
+    // endregion
 
     // region Parse Tests
 
@@ -170,6 +226,93 @@ class Id3v2_TconFrameTests {
         );
     }
 
+    @test
+    public parse_v2V3EmptyFrame() {
+        this.testFrameParseV2V3(ByteVector.concatenate(StringType.UTF16BE), []);
+    }
+
+    @test
+    public parse_v2V3StartsWithDelimiter() {
+        const payload = ByteVector.concatenate(
+            StringType.UTF16BE,
+            ByteVector.getTextDelimiter(StringType.UTF16BE),
+            ByteVector.fromString("foo", StringType.UTF16BE)
+        );
+
+        this.testFrameParseV2V3(payload, []);
+    }
+
+    @test
+    public parse_v4ListOfStrings() {
+        const payload = ByteVector.concatenate(
+            StringType.UTF16BE,
+            ByteVector.fromString("32", StringType.UTF16BE),
+            ByteVector.getTextDelimiter(StringType.UTF16BE),
+            ByteVector.fromString("(32)", StringType.UTF16BE),
+            ByteVector.getTextDelimiter(StringType.UTF16BE),
+            ByteVector.fromString("some genre", StringType.UTF16BE)
+        );
+
+        this.testFrameParse(4, payload, [
+            "Classical",
+            "(32)",
+            "some genre"
+        ]);
+    }
+
+    @test
+    public parse_v4CoverRemix() {
+        this.testFrameParseV4(["CR"], ["Cover"]);
+        this.testFrameParseV4(["RX"], ["Remix"]);
+    }
+
+    @test
+    public parse_v4CoverRemixWithRefinement() {
+        this.testFrameParseV4(["CR foo", "RX bar"], ["CR foo", "RX bar"]);
+    }
+
+    @test
+    public parse_v4CoverRemixWithParentheses() {
+        this.testFrameParseV4(["(CR)", "(RX)"], ["(CR)", "(RX)"]);
+    }
+
+    @test
+    public parse_v4CoverRemixWithEscapedParentheses() {
+        this.testFrameParseV4(["CR f((oo", "RX b((ar"], ["CR f((oo", "RX b((ar"]);
+    }
+
+    @test
+    public parse_v4CoverRemixWithUnescapedParentheses() {
+        this.testFrameParseV4(["CR f(oo", "RX b(ar"], ["CR f(oo", "RX b(ar"]);
+    }
+
+    @test
+    public parse_v2V3WithTrailingNulls() {
+        const payload = ByteVector.concatenate(
+            StringType.UTF16BE,
+            ByteVector.fromString("(32)", StringType.UTF16BE),
+            ByteVector.getTextDelimiter(StringType.UTF16BE),
+            ByteVector.getTextDelimiter(StringType.UTF16BE)
+        );
+
+        this.testFrameParse(2, payload, ["Classical"]);
+        this.testFrameParse(3, payload, ["Classical"]);
+    }
+
+    @test
+    public parse_v4WithTrailingNulls() {
+        const payload = ByteVector.concatenate(
+            StringType.UTF16BE,
+            ByteVector.fromString("32", StringType.UTF16BE),
+            ByteVector.getTextDelimiter(StringType.UTF16BE),
+            ByteVector.fromString("CR", StringType.UTF16BE),
+            ByteVector.getTextDelimiter(StringType.UTF16BE),
+            ByteVector.getTextDelimiter(StringType.UTF16BE)
+        );
+
+        this.testFrameParse(4, payload, ["Classical", "Cover"]);
+    }
+
     // endregion
 
     // region Render tests
@@ -232,6 +375,137 @@ class Id3v2_TconFrameTests {
         this.testFrameRenderV2V3(["Classical foo", "Instrumental bar"], "Classical foo;Instrumental bar");
     }
 
+    @test
+    public render_v4SingleTermString() {
+        this.testFrameRenderV4(["foobarbaz"], ["foobarbaz"]);
+    }
+
+    @test
+    public render_v4MultipleTermsString() {
+        this.testFrameRenderV4(["foo","bar","baz"], ["foo","bar","baz"]);
+    }
+
+    @test
+    public render_v4SingleTerm_numericString_useNumericGenresEnabled() {
+        const settings: PartialSettings = { useNumericGenres: true };
+        this.testFrameRenderV4WithSettings(settings, ["Classical"], ["32"]);
+    }
+
+    @test
+    public render_v4SingleTerm_numericString_useNumericGenresDisabled() {
+        const settings: PartialSettings = { useNumericGenres: false };
+        this.testFrameRenderV4WithSettings(settings, ["Classical"], ["Classical"]);
+    }
+
+    @test
+    public render_v4SingleTerm_coverRemixString_useNumericGenresEnabled() {
+        const settings: PartialSettings = { useNumericGenres: true };
+        this.testFrameRenderV4WithSettings(settings, ["Cover"], ["CR"]);
+        this.testFrameRenderV4WithSettings(settings, ["Remix"], ["RX"]);
+    }
+
+    @test
+    public render_v4SingleTerm_coverRemixString_useNumericGenresDisabled() {
+        const settings: PartialSettings = { useNumericGenres: false };
+        this.testFrameRenderV4WithSettings(settings, ["Cover"], ["CR"]);
+        this.testFrameRenderV4WithSettings(settings, ["Remix"], ["RX"]);
+    }
+
+    @test
+    public render_v4MultipleTerms_numericGenre_useNumericGenresEnabled() {
+        const settings: PartialSettings = { useNumericGenres: true };
+        this.testFrameRenderV4WithSettings(
+            settings,
+            ["Classical", "Instrumental", "foo"],
+            ["32", "33", "foo"]
+        );
+    }
+
+    @test
+    public render_v4MultipleTerms_numericGenre_useNumericGenresDisabled() {
+        const settings: PartialSettings = { useNumericGenres: false };
+        this.testFrameRenderV4WithSettings(
+            settings,
+            ["Classical", "Instrumental", "foo"],
+            ["Classical", "Instrumental", "foo"]
+        );
+    }
+
+    @test
+    public render_v4MultipleTerms_numericGenreWithRefinement() {
+        this.testFrameRenderV4(
+            ["Classical foo", "Instrumental bar"],
+            ["Classical foo", "Instrumental bar"]
+        );
+    }
+
+    @test
+    public render_v4EmptyTerms() {
+        this.testFrameRenderV4(["foo", undefined, "", "bar"], ["foo", undefined, "", "bar"]);
+    }
+
+    // endregion
+
+    // region Method tests
+
+    @test
+    public clone_returnsCopy() {
+        // Arrange
+        const frame = GenreFrame.fromEncoding(StringType.UTF16BE);
+        frame.text = ["foo", "bar"];
+
+        // Act
+        const output = <GenreFrame> frame.clone();
+
+        // Assert
+        assert.isOk(output);
+        assert.notStrictEqual(output, frame);
+        assert.strictEqual(output.frameClassType, FrameClassType.GenreFrame);
+        assert.strictEqual(output.frameId, FrameIdentifiers.TCON);
+        assert.deepStrictEqual(output.text, ["foo", "bar"]);
+        assert.strictEqual(output.textEncoding, StringType.UTF16BE);
+    }
+
+    @test
+    public find_falsyFrames() {
+        // Act/Assert
+        Testers.testTruthy((v: GenreFrame[]) => { GenreFrame.findGenreFrame(v); });
+    }
+
+    @test
+    public find_frameExists() {
+        // Arrange
+        const frame = GenreFrame.fromEncoding();
+
+        // Act
+        const output = GenreFrame.findGenreFrame([frame]);
+
+        // Assert
+        assert.strictEqual(output, frame);
+    }
+
+    @test
+    public find_frameDoesNotExist() {
+        // Act
+        const output = GenreFrame.findGenreFrame([]);
+
+        // Assert
+        assert.isUndefined(output);
+    }
+
+    @test
+    public toString_returnsSemicolonSeparatedText() {
+        // Arrange
+        const frame = GenreFrame.fromEncoding();
+        frame.text = ["foo", "bar"];
+
+        // Act
+        const output = frame.toString();
+
+        // Assert
+        assert.strictEqual(output, "foo; bar");
+    }
+
     // endregion
 
     private testFrameParse(tagVersion: number, payload: string|ByteVector, expected: string[]) {
@@ -246,7 +520,7 @@ class Id3v2_TconFrameTests {
         const header = new Id3v2FrameHeader(FrameIdentifiers.TCON, Id3v2FrameFlags.None, bodyBytes.length);
 
         const frameBytes = ByteVector.concatenate(header.render(tagVersion), bodyBytes);
-        const frame = TextInformationFrame.fromOffsetRawData(frameBytes, 0, header, tagVersion);
+        const frame = GenreFrame.fromOffsetRawData(frameBytes, 0, header, tagVersion);
 
         // Act
         const values = frame.text;
@@ -255,7 +529,7 @@ class Id3v2_TconFrameTests {
         assert.deepStrictEqual(values, expected);
     }
 
-    private testFrameParseV2V3(payload: string, expected: string[]) {
+    private testFrameParseV2V3(payload: string|ByteVector, expected: string[]) {
         this.testFrameParse(2, payload, expected);
         this.testFrameParse(3, payload, expected);
     }
@@ -265,9 +539,18 @@ class Id3v2_TconFrameTests {
         this.testWithSettings(settings, action);
     }
 
+    private testFrameParseV4(fields: string[], expected: string[]) {
+        const payload = ByteVector.concatenate(
+            StringType.UTF16BE,
+            ... this.getDelimitedStrings(fields)
+        );
+
+        this.testFrameParse(4, payload, expected);
+    }
+
     private testFrameRender(tagVersion: number, fields: string[], expected: string) {
         // Arrange
-        const frame = TextInformationFrame.fromIdentifier(FrameIdentifiers.TCON);
+        const frame = GenreFrame.fromEncoding();
         frame.textEncoding = StringType.UTF16BE;
         frame.text = fields;
 
@@ -291,6 +574,32 @@ class Id3v2_TconFrameTests {
         Testers.bvEqual(result, expectedBytes);
     }
 
+    private testFrameRenderV4(fields: string[], expected: string[]) {
+        // Arrange
+        const frame = GenreFrame.fromEncoding();
+        frame.textEncoding = StringType.UTF16BE;
+        frame.text = fields;
+
+        // Act
+        const result = frame.render(4);
+
+        // Assert
+        const expectedBody = ByteVector.concatenate(
+            StringType.UTF16BE,
+            ... this.getDelimitedStrings(expected)
+        );
+
+        const expectedHeader = Id3v2FrameHeader.fromFrameIdentifier(FrameIdentifiers.TCON);
+        expectedHeader.frameSize = expectedBody.length;
+
+        const expectedBytes = ByteVector.concatenate(
+            expectedHeader.render(4),
+            expectedBody
+        );
+
+        Testers.bvEqual(result, expectedBytes);
+    }
+
     private testFrameRenderV2V3(fields: string[], expected: string) {
         this.testFrameRender(2, fields, expected);
         this.testFrameRender(3, fields, expected);
@@ -299,6 +608,26 @@ class Id3v2_TconFrameTests {
     private testFrameRenderV2V3WithSettings(settings: PartialSettings, fields: string[], expected: string) {
         const action = () => { this.testFrameRenderV2V3(fields, expected); };
         this.testWithSettings(settings, action);
+    }
+
+    private testFrameRenderV4WithSettings(settings: PartialSettings, fields: string[], expected: string[]) {
+        const action = () => { this.testFrameRenderV4(fields, expected); };
+        this.testWithSettings(settings, action);
+    }
+
+    private getDelimitedStrings(fields: string[]): Array<ByteVector|number> {
+        const parts = [];
+        for (let i = 0; i < fields.length; i++) {
+            if (i !== 0) {
+                parts.push(ByteVector.getTextDelimiter(StringType.UTF16BE));
+            }
+
+            if (fields[i]) {
+                parts.push(ByteVector.fromString(fields[i], StringType.UTF16BE));
+            }
+        }
+
+        return parts;
     }
 
     private testWithSettings(settings: PartialSettings, action: () => void) {

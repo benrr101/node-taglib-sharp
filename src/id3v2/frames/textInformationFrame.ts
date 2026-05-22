@@ -1,4 +1,3 @@
-import Genres from "../../genres";
 import Id3v2Settings from "../id3v2Settings";
 import {ByteVector, StringType} from "../../byteVector";
 import {Frame, FrameClassType} from "./frame";
@@ -128,10 +127,6 @@ import {Guards, StringComparison} from "../../utils";
  *   (TIT2) for sorting purposes.
  */
 export class TextInformationFrame extends Frame {
-    private static readonly COVER_ABBREV = "CR";
-    private static readonly COVER_STRING = "Cover";
-    private static readonly REMIX_ABBREV = "RX";
-    private static readonly REMIX_STRING = "Remix";
     private static readonly SPLIT_FRAME_TYPES = [
         FrameIdentifiers.TCOM,
         FrameIdentifiers.TEXT,
@@ -363,24 +358,7 @@ export class TextInformationFrame extends Frame {
         const fieldList = [];
         const delim = ByteVector.getTextDelimiter(this._encoding);
 
-        if (this._rawVersion > 3 && this.frameId === FrameIdentifiers.TCON) {
-            // TCON on ID3v2.4 is encoded as a separate field for each genre. Fields can either be
-            // the old numeric ID3v1 genres (no parenthesis) or free text. RX/CR can also be used.
-            // This way is **much** better...
-            const genres = data.subarray(1).toStrings(this._encoding);
-            const textGenres = genres.map((g) => {
-                switch (g) {
-                    case TextInformationFrame.COVER_ABBREV:
-                        return TextInformationFrame.COVER_STRING;
-                    case TextInformationFrame.REMIX_ABBREV:
-                        return TextInformationFrame.REMIX_STRING;
-                    default:
-                        const textGenre = Genres.indexToAudio(g, false);
-                        return textGenre || g;
-                }
-            });
-            fieldList.push(...textGenres);
-        } else if (this._rawVersion > 3 || this.frameId === FrameIdentifiers.TXXX) {
+        if (this._rawVersion > 3 || this.frameId === FrameIdentifiers.TXXX) {
             fieldList.push(...data.subarray(1).toStrings(this._encoding));
         } else if (data.length > 1 && !data.containsAt(delim, 1)) {
             let value = data.subarray(1).toString(this._encoding);
@@ -394,40 +372,6 @@ export class TextInformationFrame extends Frame {
             if (TextInformationFrame.SPLIT_FRAME_TYPES.some((ft) => ft === this.frameId)) {
                 // Some frames are designed to be split into multiple parts by a /
                 fieldList.push(... value.split("/"));
-            } else if (this.frameId === FrameIdentifiers.TCON) {
-                // @TODO: Can we just make a separate class for TCON?
-                // TCON in ID3v2.2 and ID3v2.3 is specified as
-                // * (xx) - where xx is a number from the ID3v1 genre list
-                // * (xx)yy - where xx is a number from the ID3v1 genre list and yyy is a
-                //   "refinement" of the genre
-                // * (RX) - "Remix"
-                // * (CR) - "Cover"
-                // * (( - used to escape a "(" in a refinement/genre name
-
-                // Treat each term separately
-                const terms = Id3v2Settings.useNonStandardV2V3GenreSeparators
-                    ? value.split(/[;\/]/).filter(t => !!t)
-                    : [value];
-                for (const term of terms) {
-                    // Attempt to process it according to our best understanding of the spec
-                    const numericGenres = this.parseTconAsStandardNumeric(term);
-                    if (numericGenres !== undefined) {
-                        fieldList.push(... numericGenres);
-                        continue;
-                    }
-
-                    if (Id3v2Settings.useNonStandardV2V3NumericGenres) {
-                        // Attempt to process it as a non-standard numeric genre
-                        const numericGenre = Genres.indexToAudioDirect(term);
-                        if (numericGenre !== undefined) {
-                            fieldList.push(numericGenre);
-                            continue;
-                        }
-                    }
-
-                    // Yeah, we can't do anything smart, just treat it as a string
-                    fieldList.push(term);
-                }
             } else {
                 fieldList.push(value);
             }
@@ -455,27 +399,6 @@ export class TextInformationFrame extends Frame {
 
         v.addByte(encoding);
 
-        // Pre-process ID3v2.4 TCON frames
-        if (version > 3 && this.frameId === FrameIdentifiers.TCON) {
-            // For ID3v2.4, we should encode any genres that can be numeric as numeric by
-            // themselves. This then gets encoded the same as any other ID3v2.4 text frame (ie,
-            // with delimiters in between values)
-            text = text.map((g) => {
-                switch (g) {
-                    case TextInformationFrame.COVER_STRING:
-                        return TextInformationFrame.COVER_ABBREV;
-                    case TextInformationFrame.REMIX_STRING:
-                        return TextInformationFrame.REMIX_ABBREV;
-                    default:
-                        if (Id3v2Settings.useNumericGenres) {
-                            const numericGenre = Genres.audioToIndex(g);
-                            return numericGenre === 255 ? g : numericGenre.toString();
-                        }
-                        return g;
-                }
-            });
-        }
-
         // Main processing
         const isTxxx = this.frameId === FrameIdentifiers.TXXX;
         if (version > 3 || isTxxx) {
@@ -498,42 +421,6 @@ export class TextInformationFrame extends Frame {
                     v.addByteVector(ByteVector.fromString(text[i], encoding));
                 }
             }
-        } else if (this.frameId === FrameIdentifiers.TCON) {
-            // ID3v2.2 and ID3v2.3 TCON frames are going to be written with numeric genres first
-            // (if enabled) and multiple text-based genres separated by ;.
-            // NOTE: This doesn't follow the actual conventions for ID3v2.2/3 but nobody does this
-            //    correctly. This implementation will at least work with MinimServer
-            //    https://forum.minimserver.com/showthread.php?tid=2575
-            const numericGenres = [];
-            const textGenres = [];
-            for (const s of text) {
-                if (Id3v2Settings.useNumericGenres) {
-                    // Try to process it as a numeric genre
-                    switch (s) {
-                        case TextInformationFrame.COVER_STRING:
-                            numericGenres.push(`(${TextInformationFrame.COVER_ABBREV})`);
-                            continue;
-                        case TextInformationFrame.REMIX_STRING:
-                            numericGenres.push(`(${TextInformationFrame.REMIX_ABBREV})`);
-                            continue;
-                        default:
-                            const numericGenre = Genres.audioToIndex(s);
-                            if (numericGenre !== 255) {
-                                numericGenres.push(`(${numericGenre})`);
-                                continue;
-                            }
-                            break;
-                    }
-                }
-
-                // Process it as a text genre
-                const escapedGenre = s.replace(/\(/g, "((");
-                textGenres.push(escapedGenre);
-            }
-
-            // Put the entire string together
-            const genreString = `${numericGenres.join("")}${textGenres.join(";")}`;
-            v.addByteVector(ByteVector.fromString(genreString, encoding));
         } else {
             // Fields that have slashes in them and fields that don't
             v.addByteVector(ByteVector.fromString(text.join("/"), encoding));
@@ -543,101 +430,6 @@ export class TextInformationFrame extends Frame {
     }
 
     // #endregion
-
-    private parseTconAsStandardNumeric(field: string): string[]|undefined {
-        // Don't even bother setting up the state machine if we aren't starting with an opening
-        // parenthesis.
-        if (field[0] !== "(") {
-            return undefined;
-        }
-
-        const results: string[] = [];
-        let inParentheses = true;
-        let refinementAdded = false;
-        let open = 0;
-        let close = 0;
-
-        const appendToLastResult = (chunk: string): void => {
-            if (!chunk) {
-                return;
-            }
-
-            const lastResult = results[results.length - 1];
-            results[results.length - 1] = refinementAdded
-                ? `${lastResult}${chunk}`
-                : `${lastResult} ${chunk}`;
-        }
-
-        for (let i = 1; i < field.length; i++) {
-            if (inParentheses) {
-                // Inside parentheses ----------------------------------
-                if (field[i] === ")") {
-                    // Closing parenthesis found
-                    close = i;
-
-                    // Attempt to parse the inside as a number
-                    const parenContents = field.substring(open + 1, close);
-                    const numericGenre = Genres.indexToAudioDirect(parenContents);
-                    if (numericGenre !== undefined) {
-                        results.push(numericGenre);
-                    } else if (parenContents === TextInformationFrame.COVER_ABBREV) {
-                        results.push(TextInformationFrame.COVER_STRING);
-                    } else if (parenContents === TextInformationFrame.REMIX_ABBREV) {
-                        results.push(TextInformationFrame.REMIX_STRING);
-                    } else {
-                        // What we expected to be a numeric genre was not. We will assume this
-                        // field is not using standard numeric genres, and dump the remainder.
-                        break;
-                    }
-
-                    // Transition to refinement processing
-                    inParentheses = false;
-                    refinementAdded = false;
-                    open = i + 1;
-                }
-
-                // If we didn't find the closing paren, just increment and try again.
-            } else {
-                // Processing refinement  ------------------------------
-                let refinementChunk: string;
-                if (field[i] === "(") {
-                    if (field[i + 1] === "(") {
-                        // This is an escape sequence
-                        // Take the current refinement chunk + the first paren (eg: `xyz(`)
-                        refinementChunk = field.substring(open, i + 1);
-
-
-                        // Skip over the next character (ie, `(`)
-                        open = i + 2;
-                        i++;
-                    } else {
-                        // This is possibly the start of a numeric genre.
-                        // Take the current refinement chunk
-                        refinementChunk = field.substring(open, i);
-
-                        // Transition back to numeric genre processing.
-                        inParentheses = true;
-                        open = i;
-                    }
-
-                    // Add the refinement chunk to the last result
-                    appendToLastResult(refinementChunk);
-                    refinementAdded = true;
-                }
-
-                // If we didn't find an opening paren, just increment and try again
-            }
-        }
-
-        // Process the remainder
-        // If we didn't find any results, then just return undefined.
-        if (results.length === 0) {
-            return undefined;
-        }
-
-        appendToLastResult(field.substring(open));
-        return results;
-    }
 }
 
 export class UserTextInformationFrame extends TextInformationFrame {
