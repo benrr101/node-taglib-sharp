@@ -1,5 +1,6 @@
 import AttachmentFrame from "./frames/attachmentFrame";
 import CommentsFrame from "./frames/commentsFrame";
+import GenreFrame from "./frames/genreFrame";
 import Id3v2ExtendedHeader from "./id3v2ExtendedHeader";
 import Id3v2TagFooter from "./id3v2TagFooter";
 import Id3v2Settings from "./id3v2Settings";
@@ -1111,6 +1112,9 @@ export default class Id3v2Tag extends Tag {
         if (ident.isUrlFrame) {
             const frames = this.getFramesByClassType<UrlLinkFrame>(FrameClassType.UrlLinkFrame);
             frame = UrlLinkFrame.findUrlLinkFrame(frames, ident);
+        } else if (ident === FrameIdentifiers.TCON) {
+            const frames = this.getFramesByClassType<GenreFrame>(FrameClassType.GenreFrame);
+            frame = GenreFrame.findGenreFrame(frames);
         } else {
             const frames = this.getFramesByClassType<TextInformationFrame>(FrameClassType.TextInformationFrame);
             frame = TextInformationFrame.findTextInformationFrame(frames, ident);
@@ -1338,11 +1342,21 @@ export default class Id3v2Tag extends Tag {
             return;
         }
 
-        const frames = this.getFramesByClassType<TextInformationFrame>(FrameClassType.TextInformationFrame);
-        let frame = TextInformationFrame.findTextInformationFrame(frames, ident);
-        if (!frame) {
-            frame = TextInformationFrame.fromIdentifier(ident);
-            this.addFrame(frame);
+        let frame: TextInformationFrame|GenreFrame;
+        if (ident === FrameIdentifiers.TCON) {
+            const frames = this.getFramesByClassType<GenreFrame>(FrameClassType.GenreFrame);
+            frame = GenreFrame.findGenreFrame(frames);
+            if (!frame) {
+                frame = GenreFrame.fromEncoding();
+                this.addFrame(frame);
+            }
+        } else {
+            const frames = this.getFramesByClassType<TextInformationFrame>(FrameClassType.TextInformationFrame);
+            frame = TextInformationFrame.findTextInformationFrame(frames, ident);
+            if (!frame) {
+                frame = TextInformationFrame.fromIdentifier(ident);
+                this.addFrame(frame);
+            }
         }
 
         frame.text = text;
@@ -1488,6 +1502,12 @@ export default class Id3v2Tag extends Tag {
     }
 
     private getTextAsArray(ident: FrameIdentifier): string[] {
+        if (ident === FrameIdentifiers.TCON) {
+            const frames = this.getFramesByClassType<GenreFrame>(FrameClassType.GenreFrame);
+            const frame = GenreFrame.findGenreFrame(frames);
+            return frame ? frame.text : [];
+        }
+
         const frames = this.getFramesByClassType<TextInformationFrame>(FrameClassType.TextInformationFrame);
         const frame = TextInformationFrame.findTextInformationFrame(frames, ident);
         return frame ? frame.text : [];
