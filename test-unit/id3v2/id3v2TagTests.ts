@@ -3,6 +3,7 @@ import {params, suite, test} from "@testdeck/mocha";
 import {assert} from "chai";
 
 import CommentsFrame from "../../src/id3v2/frames/commentsFrame";
+import GenreFrame from "../../src/id3v2/frames/genreFrame";
 import Id3v2Settings from "../../src/id3v2/id3v2Settings";
 import Id3v2Tag from "../../src/id3v2/id3v2Tag";
 import Id3v2TagFooter from "../../src/id3v2/id3v2TagFooter";
@@ -603,7 +604,7 @@ const getTestTagHeader = (version: number, flags: Id3v2TagHeaderFlags, tagSize: 
     public genres_withFrame() {
         // Arrange
         const tag = Id3v2Tag.fromEmpty();
-        const frame = TextInformationFrame.fromIdentifier(FrameIdentifiers.TCON);
+        const frame = GenreFrame.fromEncoding();
         frame.text = ["Classical", "foo"];
         tag.addFrame(frame);
 
@@ -624,16 +625,16 @@ const getTestTagHeader = (version: number, flags: Id3v2TagHeaderFlags, tagSize: 
 
         // Assert
         assert.strictEqual(tag.frames.length, 1);
-        assert.strictEqual(tag.frames[0].frameClassType, FrameClassType.TextInformationFrame);
+        assert.strictEqual(tag.frames[0].frameClassType, FrameClassType.GenreFrame);
         assert.strictEqual(tag.frames[0].frameId, FrameIdentifiers.TCON);
-        assert.deepStrictEqual((<TextInformationFrame> tag.frames[0]).text, ["Classical", "foo"]);
+        assert.deepStrictEqual((<GenreFrame> tag.frames[0]).text, ["Classical", "foo"]);
     }
 
     @test
     public genres_setValueWithFrame() {
         // Arrange
         const tag = Id3v2Tag.fromEmpty();
-        const frame = TextInformationFrame.fromIdentifier(FrameIdentifiers.TCON);
+        const frame = GenreFrame.fromEncoding();
         frame.text = ["qux"];
         tag.addFrame(frame);
 
@@ -642,9 +643,9 @@ const getTestTagHeader = (version: number, flags: Id3v2TagHeaderFlags, tagSize: 
 
         // Assert
         assert.strictEqual(tag.frames.length, 1);
-        assert.strictEqual(tag.frames[0].frameClassType, FrameClassType.TextInformationFrame);
+        assert.strictEqual(tag.frames[0].frameClassType, FrameClassType.GenreFrame);
         assert.strictEqual(tag.frames[0].frameId, FrameIdentifiers.TCON);
-        assert.deepStrictEqual((<TextInformationFrame> tag.frames[0]).text, ["Classical", "foo"]);
+        assert.deepStrictEqual((<GenreFrame> tag.frames[0]).text, ["Classical", "foo"]);
     }
 
     @test
@@ -660,9 +661,9 @@ const getTestTagHeader = (version: number, flags: Id3v2TagHeaderFlags, tagSize: 
 
             // Assert
             assert.strictEqual(tag.frames.length, 1);
-            assert.strictEqual(tag.frames[0].frameClassType, FrameClassType.TextInformationFrame);
+            assert.strictEqual(tag.frames[0].frameClassType, FrameClassType.GenreFrame);
             assert.strictEqual(tag.frames[0].frameId, FrameIdentifiers.TCON);
-            assert.deepStrictEqual((<TextInformationFrame> tag.frames[0]).text, ["Classical", "foo"]);
+            assert.deepStrictEqual((<GenreFrame> tag.frames[0]).text, ["Classical", "foo"]);
         } finally {
             Id3v2Settings.useNumericGenres = initialSetting;
         }

@@ -2,10 +2,10 @@ import {suite, test} from "@testdeck/mocha";
 import {assert} from "chai";
 
 import Id3v2Settings from "../../src/id3v2/id3v2Settings";
+import GenreFrame from "../../src/id3v2/frames/genreFrame";
 import {ByteVector, StringType} from "../../src/byteVector";
 import {Id3v2FrameFlags, Id3v2FrameHeader} from "../../src/id3v2/frames/frameHeader";
 import {FrameIdentifiers} from "../../src/id3v2/frameIdentifiers";
-import {TextInformationFrame} from "../../src/id3v2/frames/textInformationFrame";
 import {Testers} from "../utilities/testers";
 
 @suite
@@ -170,6 +170,24 @@ class Id3v2_TconFrameTests {
         );
     }
 
+    @test
+    public parse_v4ListOfStrings() {
+        const payload = ByteVector.concatenate(
+            StringType.UTF16BE,
+            ByteVector.fromString("32", StringType.UTF16BE),
+            ByteVector.getTextDelimiter(StringType.UTF16BE),
+            ByteVector.fromString("(32)", StringType.UTF16BE),
+            ByteVector.getTextDelimiter(StringType.UTF16BE),
+            ByteVector.fromString("some genre", StringType.UTF16BE)
+        );
+
+        this.testFrameParse(4, payload, [
+            "Classical",
+            "(32)",
+            "some genre"
+        ]);
+    }
+
     // endregion
 
     // region Render tests
@@ -246,7 +264,7 @@ class Id3v2_TconFrameTests {
         const header = new Id3v2FrameHeader(FrameIdentifiers.TCON, Id3v2FrameFlags.None, bodyBytes.length);
 
         const frameBytes = ByteVector.concatenate(header.render(tagVersion), bodyBytes);
-        const frame = TextInformationFrame.fromOffsetRawData(frameBytes, 0, header, tagVersion);
+        const frame = GenreFrame.fromOffsetRawData(frameBytes, 0, header, tagVersion);
 
         // Act
         const values = frame.text;
@@ -267,7 +285,7 @@ class Id3v2_TconFrameTests {
 
     private testFrameRender(tagVersion: number, fields: string[], expected: string) {
         // Arrange
-        const frame = TextInformationFrame.fromIdentifier(FrameIdentifiers.TCON);
+        const frame = GenreFrame.fromEncoding();
         frame.textEncoding = StringType.UTF16BE;
         frame.text = fields;
 
