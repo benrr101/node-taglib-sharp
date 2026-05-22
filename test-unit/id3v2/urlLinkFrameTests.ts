@@ -1,35 +1,13 @@
-import {suite, test} from "@testdeck/mocha";
+import {params, suite, test} from "@testdeck/mocha";
 import {assert} from "chai";
 
 import FrameConstructorTests from "./frameConstructorTests";
-import PropertyTests from "../utilities/propertyTests";
-import TestConstants from "../testConstants";
 import {ByteVector, StringType} from "../../src/byteVector";
 import {Frame, FrameClassType} from "../../src/id3v2/frames/frame";
-import {Id3v2FrameHeader} from "../../src/id3v2/frames/frameHeader";
+import {Id3v2FrameFlags, Id3v2FrameHeader} from "../../src/id3v2/frames/frameHeader";
 import {FrameIdentifier, FrameIdentifiers} from "../../src/id3v2/frameIdentifiers";
 import {Testers} from "../utilities/testers";
 import {UrlLinkFrame} from "../../src/id3v2/frames/urlLinkFrame";
-
-const getTestFrameData = (): ByteVector => {
-    const header = new Id3v2FrameHeader(FrameIdentifiers.WXXX);
-    header.frameSize = 8;
-
-    return ByteVector.concatenate(
-        header.render(4),
-        StringType.Latin1,
-        ByteVector.fromString("foo", StringType.Latin1),
-        ByteVector.getTextDelimiter(StringType.Latin1),
-        ByteVector.fromString("bar", StringType.Latin1)
-    );
-};
-
-const getTestUrlLinkFrame = (): UrlLinkFrame => {
-    const header = new Id3v2FrameHeader(FrameIdentifiers.WXXX);
-    header.frameSize = 8;
-    const frameData = getTestFrameData();
-    return UrlLinkFrame.fromOffsetRawData(frameData, 0, header, 4);
-};
 
 @suite class Id3v2_UrlLinkFrame_ConstructorTests extends FrameConstructorTests {
     public get fromOffsetRawData(): (d: ByteVector, o: number, h: Id3v2FrameHeader, v: number) => Frame {
@@ -48,120 +26,86 @@ const getTestUrlLinkFrame = (): UrlLinkFrame => {
         const output = UrlLinkFrame.fromIdentity(FrameIdentifiers.WCOM);
 
         // Assert
-        Id3v2_UrlLinkFrame_ConstructorTests.assertFrame(output, FrameIdentifiers.WCOM, [], StringType.Latin1);
+        assert.ok(output);
+        assert.strictEqual(output.frameClassType, FrameClassType.UrlLinkFrame);
+        assert.strictEqual(output.frameId, FrameIdentifiers.WCOM);
+        assert.strictEqual(output.text, undefined);
     }
 
     @test
-    public fromOffsetRawData_notUserFrame() {
+    public fromOffsetRawData_itsGood() {
         // Arrange
-        const header = new Id3v2FrameHeader(FrameIdentifiers.WCOM);
-        header.frameSize = TestConstants.syncedUint;
-        const data = ByteVector.concatenate(
-            0x00, 0x00,
-            header.render(4),
-            ByteVector.fromString("foobar", StringType.Latin1),
-            0x00, 0x00 // Some null bytes to trigger null cleanup
-        );
+        const bodyBytes = ByteVector.fromString("foo", StringType.Latin1);
+        const header = new Id3v2FrameHeader(FrameIdentifiers.WCOM, Id3v2FrameFlags.None, bodyBytes.length);
+        const data = ByteVector.concatenate(header.render(4), bodyBytes);
 
         // Act
-        const output = UrlLinkFrame.fromOffsetRawData(data, 2, header, 4);
+        const output = UrlLinkFrame.fromOffsetRawData(data, 0, header, 4);
 
         // Assert
-        Id3v2_UrlLinkFrame_ConstructorTests.assertFrame(output, FrameIdentifiers.WCOM, ["foobar"], StringType.Latin1);
+        assert.ok(output);
+        assert.strictEqual(output.frameClassType, FrameClassType.UrlLinkFrame);
+        assert.strictEqual(output.frameId, FrameIdentifiers.WCOM);
+        assert.strictEqual(output.text, "foo");
     }
 
     @test
-    public fromOffsetRawData_userFrame() {
+    public fromOffsetRawData_trailingNullBytes() {
         // Arrange
-        const header = new Id3v2FrameHeader(FrameIdentifiers.WXXX);
-        header.frameSize = 12;
-        const data = ByteVector.concatenate(
-            0x00, 0x00,
-            header.render(4),
-            StringType.UTF16BE,
-            ByteVector.fromString("foo", StringType.UTF16BE),
-            ByteVector.getTextDelimiter(StringType.UTF16BE),
-            ByteVector.fromString("bar", StringType.Latin1)
+        const bodyBytes = ByteVector.concatenate(
+            ByteVector.fromString("foo", StringType.Latin1),
+            0x00, 0x00
         );
+        const header = new Id3v2FrameHeader(FrameIdentifiers.WCOM, Id3v2FrameFlags.None, bodyBytes.length);
+        const data = ByteVector.concatenate(header.render(4), bodyBytes);
 
         // Act
-        const output = UrlLinkFrame.fromOffsetRawData(data, 2, header, 4);
+        const output = UrlLinkFrame.fromOffsetRawData(data, 0, header, 4);
 
         // Assert
-        Id3v2_UrlLinkFrame_ConstructorTests.assertFrame(
-            output,
-            FrameIdentifiers.WXXX,
-            ["foo", "bar"],
-            StringType.Latin1
-        );
+        assert.ok(output);
+        assert.strictEqual(output.frameClassType, FrameClassType.UrlLinkFrame);
+        assert.strictEqual(output.frameId, FrameIdentifiers.WCOM);
+        assert.strictEqual(output.text, "foo");
     }
 
-    private static assertFrame(frame: UrlLinkFrame, ft: FrameIdentifier, t: string[], te: StringType) {
-        assert.ok(frame);
-        assert.strictEqual(frame.frameClassType, FrameClassType.UrlLinkFrame);
-        assert.strictEqual(frame.frameId, ft);
+    @test
+    public fromOffsetRawData_multipleFields() {
+        // Arrange
+        const bodyBytes = ByteVector.concatenate(
+            ByteVector.fromString("foo", StringType.Latin1),
+            0x00,
+            ByteVector.fromString("bar", StringType.Latin1),
+            0x00, 0x00
+        );
+        const header = new Id3v2FrameHeader(FrameIdentifiers.WCOM, Id3v2FrameFlags.None, bodyBytes.length);
+        const data = ByteVector.concatenate(header.render(4), bodyBytes);
 
-        assert.deepEqual(frame.text, t);
-        assert.equal(frame.textEncoding, te);
+        // Act
+        const output = UrlLinkFrame.fromOffsetRawData(data, 0, header, 4);
+
+        // Assert
+        assert.ok(output);
+        assert.strictEqual(output.frameClassType, FrameClassType.UrlLinkFrame);
+        assert.strictEqual(output.frameId, FrameIdentifiers.WCOM);
+        assert.strictEqual(output.text, "foo");
     }
 }
 
 @suite class Id3v2_UrlLinkFrame_PropertyTests {
-    @test
-    public getText_outputIsClone() {
+    @params(undefined, "undefined")
+    @params(null, "null")
+    @params("", "empty_string")
+    @params("bar", "truthy")
+    public setText_falsyValues(value: string) {
         // Arrange
-        const frame = getTestUrlLinkFrame();
+        const frame = UrlLinkFrame.fromIdentity(FrameIdentifiers.WCOM);
 
         // Act
-        const text = frame.text;
-        text.push("baz");
+        frame.text = value;
 
         // Assert
-        assert.deepEqual(frame.text, ["foo", "bar"]);
-    }
-
-    @test
-    public setText_falsyValues() {
-        // Arrange
-        const frame = getTestUrlLinkFrame();
-        const set = (v: string[]) => { frame.text = v; };
-        const get = () => frame.text;
-
-        // Act / Assert
-        PropertyTests.propertyNormalized(set, get, undefined, []);
-        PropertyTests.propertyNormalized(set, get, null, []);
-    }
-
-    @test
-    public setText_values() {
-        // Arrange
-        const frame = getTestUrlLinkFrame();
-        const values = ["fux", "qux"];
-
-        // Act
-        frame.text = values;
-
-        // Assert
-        assert.deepEqual(frame.text, values);
-
-        // -- Ensure values are cloned
-        // Act 2
-        values.push("bux");
-
-        // Assert 2
-        assert.deepEqual(frame.text, ["fux", "qux"]);
-    }
-
-    @test
-    public setEncoding() {
-        // Arrange
-        const frame = getTestUrlLinkFrame();
-
-        // Act
-        frame.textEncoding = StringType.UTF8;
-
-        // Assert
-        assert.equal(frame.textEncoding, StringType.UTF8);
+        assert.strictEqual(frame.text, value);
     }
 }
 
@@ -175,7 +119,7 @@ const getTestUrlLinkFrame = (): UrlLinkFrame => {
     @test
     public findUrlLinkFrame_falsyIdentity_throws(): void {
         // Arrange
-        const frames = [getTestUrlLinkFrame()];
+        const frames = [UrlLinkFrame.fromIdentity(FrameIdentifiers.WCOM)];
 
         // Act/Assert
         Testers.testTruthy((v: FrameIdentifier) => { UrlLinkFrame.findUrlLinkFrame(frames, v); });
@@ -196,10 +140,13 @@ const getTestUrlLinkFrame = (): UrlLinkFrame => {
     @test
     public findUrlLinkFrame_noMatch_returnsUndefined() {
         // Arrange
-        const frames = [getTestUrlLinkFrame(), getTestUrlLinkFrame()]; // Type is WXXX
+        const frames = [
+            UrlLinkFrame.fromIdentity(FrameIdentifiers.WCOM),
+            UrlLinkFrame.fromIdentity(FrameIdentifiers.WCOP)
+        ];
 
         // Act
-        const result = UrlLinkFrame.findUrlLinkFrame(frames, FrameIdentifiers.WCOM);
+        const result = UrlLinkFrame.findUrlLinkFrame(frames, FrameIdentifiers.WPAY);
 
         // Assert
         assert.isUndefined(result);
@@ -208,21 +155,22 @@ const getTestUrlLinkFrame = (): UrlLinkFrame => {
     @test
     public findUrlLinkFrame_match_returnsFirstMatch() {
         // Arrange
-        const frame1 = getTestUrlLinkFrame();
-        const frame2 = getTestUrlLinkFrame();
+        const frame1 = UrlLinkFrame.fromIdentity(FrameIdentifiers.WCOM);
+        const frame2 = UrlLinkFrame.fromIdentity(FrameIdentifiers.WCOM);
         const frames = [frame1, frame2];
 
         // Act
-        const result = UrlLinkFrame.findUrlLinkFrame(frames, FrameIdentifiers.WXXX);
+        const result = UrlLinkFrame.findUrlLinkFrame(frames, FrameIdentifiers.WCOM);
 
         // Assert
         assert.equal(result, frame1);
     }
 
     @test
-    public clone_withRawData_returnsCloneUsingRawData() {
+    public clone_returnsCloneUsingRawData() {
         // Arrange
-        const frame = getTestUrlLinkFrame();
+        const frame = UrlLinkFrame.fromIdentity(FrameIdentifiers.WCOM);
+        frame.text = "foo";
 
         // Act
         const result = frame.clone();
@@ -230,37 +178,54 @@ const getTestUrlLinkFrame = (): UrlLinkFrame => {
         // Assert
         assert.isOk(result);
         assert.strictEqual(result.frameId, frame.frameId);
-        assert.deepEqual(result.text, frame.text);
-        assert.deepEqual(result.textEncoding, frame.textEncoding);
+        assert.strictEqual(result.text, frame.text);
     }
 
     @test
-    public clone_withoutRawData_returnsClone() {
+    public render_withoutText() {
         // Arrange
-        const frame = getTestUrlLinkFrame();
-        // noinspection JSUnusedLocalSymbols Forces a read of the raw data
-        const _ = frame.text;
-
-        // Act
-        const result = frame.clone();
-
-        // Assert
-        assert.isOk(result);
-        assert.strictEqual(result.frameId, frame.frameId);
-        assert.deepEqual(result.text, frame.text);
-        assert.deepEqual(result.textEncoding, frame.textEncoding);
-    }
-
-    @test
-    public render_returnsByteVector() {
-        // Arrange
-        const frame = getTestUrlLinkFrame();
+        const frame = UrlLinkFrame.fromIdentity(FrameIdentifiers.WCOM);
 
         // Act
         const result = frame.render(4);
 
         // Assert
         assert.isOk(result);
-        Testers.bvEqual(result, getTestFrameData());
+        assert.strictEqual(result.length, 0);
+    }
+
+    @test
+    public render_withText() {
+        // Arrange
+        const frame = UrlLinkFrame.fromIdentity(FrameIdentifiers.WCOM);
+        frame.text = "foo";
+
+        // Act
+        const result = frame.render(4);
+
+        // Assert
+        assert.isOk(result);
+
+        const expectedBytes = ByteVector.concatenate(
+            FrameIdentifiers.WCOM.render(4),
+            ByteVector.fromUint(3),
+            ByteVector.fromUshort(Id3v2FrameFlags.None),
+            ByteVector.fromString("foo", StringType.Latin1)
+        );
+        Testers.bvEqual(result, expectedBytes);
+    }
+
+    @params("", "empty_string")
+    @params("foo", "foo")
+    public toString_returnsText(text: string) {
+        // Arrange
+        const frame = UrlLinkFrame.fromIdentity(FrameIdentifiers.WCOM);
+        frame.text = text;
+
+        // Act
+        const result = frame.toString();
+
+        // Assert
+        assert.strictEqual(result, text);
     }
 }

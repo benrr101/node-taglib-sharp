@@ -1321,46 +1321,64 @@ export default class Id3v2Tag extends Tag {
      * @param text Text to set for the specified frame or `undefined`/`null`/`""` to remove all
      *     frames with that identifier.
      */
+    // @TODO: These methods don't cover all situations - what happens if there is >1 frame with the identity?
+    //    what happens if the user specifies a TXXX frame?
     public setTextFrame(ident: FrameIdentifier, ...text: string[]): void {
         Guards.truthy(ident, "ident");
-
-        // Check if all the elements provided are empty. If they are, remove the frame.
-        let empty = true;
-
-        if (text) {
-            for (let i = 0; empty && i < text.length; i++) {
-                if (text[i]) {
-                    empty = false;
-                }
-            }
+        if (!ident.isTextFrame) {
+            throw new Error("Argument error: Identifier is not a text frame.");
+        }
+        if (ident === FrameIdentifiers.TXXX) {
+            throw new Error("Argument error: TXXX frames cannot be set using this method.");
         }
 
-        if (empty) {
+        // Check if all the elements provided are empty. If they are, remove the frame.
+        if (!text.some(t => !!t)) {
             this.removeFrames(ident);
             return;
         }
 
-        if (ident.isUrlFrame) {
-            const frames = this.getFramesByClassType<UrlLinkFrame>(FrameClassType.UrlLinkFrame);
-            let urlFrame = UrlLinkFrame.findUrlLinkFrame(frames, ident);
-            if (!urlFrame) {
-                urlFrame = UrlLinkFrame.fromIdentity(ident);
-                this.addFrame(urlFrame);
-            }
-
-            urlFrame.text = text;
-            urlFrame.textEncoding = Id3v2Settings.defaultEncoding;
-        } else {
-            const frames = this.getFramesByClassType<TextInformationFrame>(FrameClassType.TextInformationFrame);
-            let frame = TextInformationFrame.findTextInformationFrame(frames, ident);
-            if (!frame) {
-                frame = TextInformationFrame.fromIdentifier(ident);
-                this.addFrame(frame);
-            }
-
-            frame.text = text;
-            frame.textEncoding = Id3v2Settings.defaultEncoding;
+        const frames = this.getFramesByClassType<TextInformationFrame>(FrameClassType.TextInformationFrame);
+        let frame = TextInformationFrame.findTextInformationFrame(frames, ident);
+        if (!frame) {
+            frame = TextInformationFrame.fromIdentifier(ident);
+            this.addFrame(frame);
         }
+
+        frame.text = text;
+        frame.textEncoding = Id3v2Settings.defaultEncoding;
+    }
+
+    /**
+     * Sets the text for a specified URL frame.
+     * @param ident Identifier of the frame to set the data for
+     * @param text URL to set for the specified frame or `undefined`/`null`/`""` to remove all
+     *     frames with that identifier.
+     */
+    // @TODO: These methods don't cover all situations - what happens if there is >1 frame with the identity?
+    //     what happens if the user specifies a WXXX frame?
+    public setUrlFrame(ident: FrameIdentifier, text: string): void {
+        Guards.truthy(ident, "ident");
+        if (!ident.isUrlFrame) {
+            throw new Error("Argument error: Identifier is not a URL frame.");
+        }
+        if (ident === FrameIdentifiers.WXXX) {
+            throw new Error("Argument error: WXXX frames cannot be set using this method.");
+        }
+
+        if (!text) {
+            this.removeFrames(ident);
+            return;
+        }
+
+        const frames = this.getFramesByClassType<UrlLinkFrame>(FrameClassType.UrlLinkFrame);
+        let urlFrame = UrlLinkFrame.findUrlLinkFrame(frames, ident);
+        if (!urlFrame) {
+            urlFrame = UrlLinkFrame.fromIdentity(ident);
+            this.addFrame(urlFrame);
+        }
+
+        urlFrame.text = text;
     }
 
     // #endregion

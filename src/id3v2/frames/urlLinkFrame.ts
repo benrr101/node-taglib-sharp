@@ -1,3 +1,4 @@
+import Id3v2Settings from "../id3v2Settings";
 import {ByteVector, StringType} from "../../byteVector";
 import {Frame, FrameClassType} from "./frame";
 import {Id3v2FrameHeader} from "./frameHeader";
@@ -34,25 +35,10 @@ import {Guards} from "../../utils";
 export class UrlLinkFrame extends Frame {
     // @TODO: Don't allow protected member variables
     /**
-     * Text encoding to use to store the text contents of the current instance.
-     * @protected
-     */
-    protected _encoding: StringType = StringType.Latin1;
-    /**
-     * Raw data contents in the current instance.
-     * @protected
-     */
-    protected _rawData: ByteVector;
-    /**
-     * ID3v2 version of the current instance.
-     * @protected
-     */
-    protected _rawVersion: number;
-    /**
      * Decoded text contained in the current instance.
      * @protected
      */
-    protected _textFields: string[] = [];
+    protected _text: string;
 
     // #region Constructors
 
@@ -102,34 +88,12 @@ export class UrlLinkFrame extends Frame {
 
     /**
      * Gets the text contained in the current instance.
-     * Modifying the contents of the returned value will not modify the contents of the current
-     * instance. The value must be reassigned for the value to change.
      */
-    public get text(): string[] {
-        this.parseRawData();
-        return this._textFields.slice(0);
-    }
+    public get text(): string { return this._text; }
     /**
      * Sets the text contained in the current instance.
      */
-    public set text(value: string[]) {
-        this._rawData = undefined;
-        this._textFields = value ? value.slice() : [];
-    }
-
-    /**
-     * Gets the text encoding to use when rendering the current instance.
-     */
-    public get textEncoding(): StringType {
-        this.parseRawData();
-        return this._encoding;
-    }
-    /**
-     * Sets the text encoding to use when rendering the current instance.
-     * NOTE: This value will be overwritten if {@link Id3v2Settings.forceDefaultEncoding} is `true`.
-     * @param value
-     */
-    public set textEncoding(value: StringType) { this._encoding = value; }
+    public set text(value: string) { this._text = value; }
 
     // #endregion
 
@@ -151,101 +115,29 @@ export class UrlLinkFrame extends Frame {
     /** @inheritDoc */
     public clone(): UrlLinkFrame {
         const frame = UrlLinkFrame.fromIdentity(this.frameId);
-        frame._textFields = this._textFields.slice();
-        frame._rawData = this._rawData?.toByteVector();
-        frame._rawVersion = this._rawVersion;
+        frame._text = this._text;
         return frame;
     }
 
-    /**
-     * Generates a string representation of the URL link frame.
-     */
+    /** @inheritDoc */
     public toString(): string {
-        this.parseRawData();
-        return this.text.join("; ");
+        return this.text;
     }
 
     /** @inheritDoc */
-    protected parseFields(data: ByteVector, version: number): void {
-        Guards.byte(version, "version");
-        this._rawData = data.toByteVector();
-        this._rawVersion = version;
-    }
-
-    /**
-     * Performs the actual parsing of the raw data.
-     * @remarks
-     *     Because of the high parsing cost and relatively low usage of the class,
-     *     {@link parseFields} only stores the field data, so it can be parsed on demand. Whenever
-     *     a property or method is called which requires the data, this method is called, and only
-     *     on the first call does it actually parse the data.
-     * @protected
-     */
-    protected parseRawData(): void {
-        if (!this._rawData) {
-            return;
-        }
-
-        const data = this._rawData;
-        this._rawData = undefined;
-
-        const fieldList = [];
-        let index = 0;
-        if (this.frameId === FrameIdentifiers.WXXX && data.length > 0) {
-            // Text Encoding    $xx
-            // Description      <text string according to encoding> $00 (00)
-            // URL              <text string>
-            const encoding = <StringType> data.get(index);
-            const delim = ByteVector.getTextDelimiter(encoding);
-            index++;
-
-            const delimIndex = data.offsetFind(delim, index, delim.length);
-            if (delimIndex >= 0) {
-                const descriptionLength = delimIndex - index;
-                const description = data.subarray(index, descriptionLength).toString(encoding);
-                fieldList.push(description);
-                index += descriptionLength + delim.length;
-            }
-        }
-
-        if (index < data.length) {
-
-            // Read the url from the data
-            let url = data.subarray(index).toString(StringType.Latin1);
-            url = url.replace(/[\s\0]+$/, "");
-
-            fieldList.push(url);
-        }
-        this._textFields = fieldList;
+    protected parseFields(data: ByteVector, _version: number): void {
+        // If data contains a string terminator, ignore everything after it.
+        const splitData = data.split(ByteVector.getTextDelimiter(StringType.Latin1));
+        this._text = splitData[0].toString(StringType.Latin1);
     }
 
     /** @inheritDoc */
-    protected renderFields(version: number): ByteVector {
-        // @TODO: Move WXXX rendering to WXXX class
-        if (this._rawData && this._rawVersion === version) {
-            return this._rawData;
+    protected renderFields(_version: number): ByteVector {
+        if (!this._text) {
+            return ByteVector.empty();
         }
 
-        const encoding = UrlLinkFrame.correctEncoding(this.textEncoding, version);
-        const isWxxx = this.frameId === FrameIdentifiers.WXXX;
-
-        let textFields = this._textFields;
-        if (version > 3 || isWxxx) {
-            if (isWxxx) {
-                if (textFields.length === 0) {
-                    textFields = [undefined, undefined];
-                } else if (textFields.length === 1) {
-                    textFields = [textFields[0], undefined];
-                }
-            }
-        }
-        // @TODO: is this correct formatting?
-        const text = textFields.join("/");
-
-        return ByteVector.concatenate(
-            isWxxx ? encoding : undefined,
-            ByteVector.fromString(text, StringType.Latin1)
-        );
+        return ByteVector.fromString(this.text, StringType.Latin1);
     }
 
     // #endregion
@@ -255,6 +147,9 @@ export class UrlLinkFrame extends Frame {
  * Provides support for ID3v2 User URL Link frames (WXXX).
  */
 export class UserUrlLinkFrame extends UrlLinkFrame {
+    private _description: string;
+    private _encoding: StringType = Id3v2Settings.defaultEncoding;
+
     // #region Constructors
 
     private constructor(header: Id3v2FrameHeader) {
@@ -262,13 +157,15 @@ export class UserUrlLinkFrame extends UrlLinkFrame {
     }
 
     /**
-     * Constructs and initializes a new instance using the provided description as the text
-     * of the frame.
-     * @param description Description to use as text of the frame.
+     * Constructs and initializes a new instance using the provided description and url to populate
+     * the fields of the frame.
+     * @param description Description to store in the frame
+     * @param url URL to store in the frame
      */
-    public static fromDescription(description: string): UserUrlLinkFrame {
+    public static fromFields(description: string, url: string): UserUrlLinkFrame {
         const frame = new UserUrlLinkFrame(new Id3v2FrameHeader(FrameIdentifiers.WXXX));
-        frame.text = [description];
+        frame._description = description;
+        frame._text = url;
         return frame;
     }
 
@@ -306,51 +203,23 @@ export class UserUrlLinkFrame extends UrlLinkFrame {
     /**
      * Gets the description stored in the current instance.
      */
-    public get description(): string {
-        const text = super.text;
-        return text.length > 0 ? text[0] : undefined;
-    }
+    public get description(): string { return this._description; }
     /**
      * Sets the description stored in the current instance.
      * There should only be one frame with a matching description per tag.
      */
-    public set description(value: string) {
-        const normalizedValue = value || undefined;
-
-        let text = super.text;
-        if (text.length > 0) {
-            text[0] = normalizedValue;
-        } else {
-            text = [normalizedValue];
-        }
-        super.text = text;
-    }
+    public set description(value: string) { this._description = value; }
 
     /**
-     * Gets the text contained in the current instance.
-     * NOTE: Modifying the contents of the returned value will not modify the contents of the
-     * current instance. The value must be reassigned for the value to change.
+     * Gets the text encoding to use when rendering the current instance.
      */
-    public get text(): string[] {
-        const text = super.text;
-        if (text.length < 2) { return []; }
-
-        const newText = new Array<string>(text.length - 1);
-        for (let i = 0; i < newText.length; i++) {
-            newText[i] = text[i + 1];
-        }
-        return newText;
-    }
+    public get textEncoding(): StringType { return this._encoding; }
     /**
-     * Sets the text contained in the current instance.
+     * Sets the text encoding to use when rendering the current instance.
+     * NOTE: This value will be overwritten if {@link Id3v2Settings.forceDefaultEncoding} is `true`.
+     * @param value
      */
-    public set text(value: string[]) {
-        const newValue = [this.description];
-        if (value) {
-            newValue.push(... value);
-        }
-        super.text = newValue;
-    }
+    public set textEncoding(value: StringType) { this._encoding = value; }
 
     // #endregion
 
@@ -371,17 +240,68 @@ export class UserUrlLinkFrame extends UrlLinkFrame {
 
     /** @inheritDoc */
     public clone(): UserUrlLinkFrame {
-        const frame = UserUrlLinkFrame.fromDescription(undefined);
+        const frame = UserUrlLinkFrame.fromFields(this._description, this._text);
         frame._encoding = this._encoding;
-        frame._textFields = this._textFields.slice();
-        frame._rawData = this._rawData?.toByteVector();
-        frame._rawVersion = this._rawVersion;
         return frame;
     }
 
     /** @inheritDoc */
     public toString(): string {
         return `[${this.description}] ${super.toString()}`;
+    }
+
+    protected parseFields(data: ByteVector, _version: number): void {
+        if (data.length < 3) {
+            throw new Error("User URL link frame is smaller than minimum size.");
+        }
+
+        // Text Encoding    $xx
+        // Description      <text string according to encoding> $00 (00)
+        // URL              <text string>
+
+        this._encoding = <StringType>data.get(0);
+
+        // Note: Although it would be nice to just split the data, because the first string is
+        //    encoded as per the encoding field and the second is always in Latin1, we cannot use
+        //    the toStrings method.
+        const descriptionAndTextBytes = data.subarray(1);
+        const delimiter = ByteVector.getTextDelimiter(this._encoding);
+        const descriptionLength = descriptionAndTextBytes.find(delimiter);
+        if (descriptionLength < 0) {
+            // Ill-formed frame.
+            const splitText = descriptionAndTextBytes.toString(this._encoding).split("/");
+            if (splitText.length > 1) {
+                // Data was probably encoded using old TagLib# behavior.
+                this._description = splitText[0];
+                this._text = splitText[1];
+            } else {
+                // Data has only one field, let's assume it only has a url.
+                this._description = undefined;
+                this._text = splitText[0];
+            }
+        } else {
+            // Well-formed frame (or >2 fields, the latter of which will be ignored)
+            const descriptionBytes = descriptionAndTextBytes.subarray(0, descriptionLength);
+            this._description = descriptionBytes.toString(this._encoding);
+
+            const textBytes = descriptionAndTextBytes.subarray(descriptionLength + delimiter.length);
+            const splitTextBytes = textBytes.split(ByteVector.getTextDelimiter(StringType.Latin1));
+            this._text = splitTextBytes[0].toString(StringType.Latin1);
+        }
+    }
+
+    protected renderFields(version: number): ByteVector {
+        if (!this._description && !this._text) {
+            return ByteVector.empty();
+        }
+
+        const encoding = UrlLinkFrame.correctEncoding(this.textEncoding, version);
+        return ByteVector.concatenate(
+            UrlLinkFrame.correctEncoding(this._encoding, version),
+            ByteVector.fromString(this._description ?? "", encoding),
+            ByteVector.getTextDelimiter(encoding),
+            ByteVector.fromString(this._text ?? "", StringType.Latin1)
+        );
     }
 
     // #endregion
