@@ -342,9 +342,18 @@ export class StringUtils {
         return this.ISO369_2_REGEX.test(value);
     }
 
+    public static trimEnd(toTrim: string, chars: string): string {
+        // @TODO: Would a regex be faster?
+        while (toTrim.length > 0 && chars.indexOf(toTrim[toTrim.length - 1]) > -1) {
+            toTrim = toTrim.substring(0, toTrim.length - 1);
+        }
+        return toTrim;
+    }
+
     public static trimStart(toTrim: string, chars: string): string {
+        // @TODO: Would a regex be faster?
         while (toTrim.length > 0 && chars.indexOf(toTrim[0]) > -1) {
-            toTrim = toTrim.substring(0);
+            toTrim = toTrim.substring(1);
         }
         return toTrim;
     }
