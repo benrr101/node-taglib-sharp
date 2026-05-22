@@ -4,7 +4,7 @@ import {ByteVector, StringType} from "../../byteVector";
 import {Frame, FrameClassType} from "./frame";
 import {Id3v2FrameHeader} from "./frameHeader";
 import {FrameIdentifiers} from "../frameIdentifiers";
-import {Guards} from "../../utils";
+import {Guards, StringUtils} from "../../utils";
 
 /**
  * This class provides support for ID3v2 TCON content type frames.
@@ -129,28 +129,32 @@ export default class GenreFrame extends Frame {
         this._encoding = data.get(0);
 
         const fieldList = [];
-        const delim = ByteVector.getTextDelimiter(this._encoding);
-
         if (version > 3) {
             // TCON on ID3v2.4 is encoded as a separate field for each genre. Fields can either be
             // the old numeric ID3v1 genres (no parenthesis) or free text. RX/CR can also be used.
             const genres = data.subarray(1).toStrings(this._encoding);
-            const textGenres = genres.map((g) => {
-                switch (g) {
-                    case GenreFrame.COVER_ABBREV:
-                        return GenreFrame.COVER_STRING;
-                    case GenreFrame.REMIX_ABBREV:
-                        return GenreFrame.REMIX_STRING;
-                    default:
-                        const textGenre = Genres.indexToAudio(g, false);
-                        return textGenre || g;
-                }
-            });
+            const textGenres = genres
+                .map(g => {
+                    // Trim trailing whitespace and null bytes
+                    g = StringUtils.trimEnd(g, " \t\r\n\0");
+
+                    // Parse special cases or fallback to just returning the value
+                    switch (g) {
+                        case GenreFrame.COVER_ABBREV:
+                            return GenreFrame.COVER_STRING;
+                        case GenreFrame.REMIX_ABBREV:
+                            return GenreFrame.REMIX_STRING;
+                        default:
+                            const textGenre = Genres.indexToAudio(g, false);
+                            return textGenre || g;
+                    }
+                })
+                .filter(g => !!g);
             fieldList.push(...textGenres);
-        } else if (data.length > 1 && !data.containsAt(delim, 1)) {
+        } else {
             let value = data.subarray(1).toString(this._encoding);
 
-            // Truncate values containing NULL bytes
+            // Truncate values containing NULL bytes (ie, ignore everything after a null byte)
             const nullIndex = value.indexOf("\x00");
             if (nullIndex >= 0) {
                 value = value.substring(0, nullIndex);
@@ -188,13 +192,6 @@ export default class GenreFrame extends Frame {
                 // Yeah, we can't do anything smart, just treat it as a string
                 fieldList.push(term);
             }
-        }
-
-        // Bad tags may have one or more null characters at the end of a string, resulting in
-        // empty strings at the end of the FieldList. Strip them off.
-        while (fieldList.length !== 0
-            && (!fieldList[fieldList.length - 1] || fieldList[fieldList.length - 1].length === 0)) {
-            fieldList.splice(fieldList.length - 1, 1);
         }
 
         this._textFields = fieldList;
