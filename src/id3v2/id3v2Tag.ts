@@ -1328,6 +1328,9 @@ export default class Id3v2Tag extends Tag {
         if (!ident.isTextFrame) {
             throw new Error("Argument error: Identifier is not a text frame.");
         }
+        if (ident === FrameIdentifiers.TXXX) {
+            throw new Error("Argument error: TXXX frames cannot be set using this method.");
+        }
 
         // Check if all the elements provided are empty. If they are, remove the frame.
         if (!text.some(t => !!t)) {
