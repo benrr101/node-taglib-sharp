@@ -142,6 +142,34 @@ import {UserUrlLinkFrame} from "../../src/id3v2/frames/urlLinkFrame";
         assert.strictEqual(output.text, "foo");
         assert.strictEqual(output.textEncoding, StringType.UTF16BE);
     }
+
+    @test
+    public fromOffsetRawData_illFormedThreeFields() {
+        // Arrange
+        const bodyBytes = ByteVector.concatenate(
+            StringType.UTF16BE,
+            ByteVector.fromString("foo", StringType.UTF16BE), // Description
+            ByteVector.getTextDelimiter(StringType.UTF16BE),  // Description delimiter
+            ByteVector.fromString("bar", StringType.Latin1),  // Text
+            ByteVector.getTextDelimiter(StringType.Latin1),   // Bogus
+            ByteVector.fromString("baz", StringType.Latin1),  // Bogus
+            ByteVector.getTextDelimiter(StringType.Latin1),   // Bogus
+        );
+        const header = new Id3v2FrameHeader(FrameIdentifiers.WXXX, Id3v2FrameFlags.None, bodyBytes.length);
+        const data = ByteVector.concatenate(header.render(4), bodyBytes);
+
+        // Act
+        const output = UserUrlLinkFrame.fromOffsetRawData(data, 0, header, 4);
+
+        // Assert
+        assert.ok(output);
+        assert.equal(output.frameClassType, FrameClassType.UserUrlLinkFrame);
+        assert.strictEqual(output.frameId, FrameIdentifiers.WXXX);
+
+        assert.strictEqual(output.description, "foo");
+        assert.strictEqual(output.text, "bar");
+        assert.strictEqual(output.textEncoding, StringType.UTF16BE);
+    }
 }
 
 @suite class Id3v2_UserUrlLinkFrame_PropertyTests {
@@ -275,15 +303,7 @@ import {UserUrlLinkFrame} from "../../src/id3v2/frames/urlLinkFrame";
 
         // Assert
         assert.isOk(result);
-
-        const expectedBytes = ByteVector.concatenate(
-            FrameIdentifiers.WXXX.render(4),
-            ByteVector.fromUint(2),
-            ByteVector.fromUshort(Id3v2FrameFlags.None),
-            ByteVector.fromByte(StringType.Latin1),
-            ByteVector.getTextDelimiter(StringType.Latin1)
-        );
-        Testers.bvEqual(result, expectedBytes);
+        assert.strictEqual(result.length, 0);
     }
 
     @test

@@ -126,7 +126,9 @@ export class UrlLinkFrame extends Frame {
 
     /** @inheritDoc */
     protected parseFields(data: ByteVector, _version: number): void {
-        this._text = data.toString(StringType.Latin1);
+        // If data contains a string terminator, ignore everything after it.
+        const splitData = data.split(ByteVector.getTextDelimiter(StringType.Latin1));
+        this._text = splitData[0].toString(StringType.Latin1);
     }
 
     /** @inheritDoc */
@@ -262,12 +264,12 @@ export class UserUrlLinkFrame extends UrlLinkFrame {
         // Note: Although it would be nice to just split the data, because the first string is
         //    encoded as per the encoding field and the second is always in Latin1, we cannot use
         //    the toStrings method.
-        const textBytes = data.subarray(1);
+        const descriptionAndTextBytes = data.subarray(1);
         const delimiter = ByteVector.getTextDelimiter(this._encoding);
-        const descriptionLength = textBytes.find(delimiter);
+        const descriptionLength = descriptionAndTextBytes.find(delimiter);
         if (descriptionLength < 0) {
             // Ill-formed frame.
-            const splitText = textBytes.toString(this._encoding).split("/");
+            const splitText = descriptionAndTextBytes.toString(this._encoding).split("/");
             if (splitText.length > 1) {
                 // Data was probably encoded using old TagLib# behavior.
                 this._description = splitText[0];
@@ -278,13 +280,21 @@ export class UserUrlLinkFrame extends UrlLinkFrame {
                 this._text = splitText[0];
             }
         } else {
-            // Well-formed frame
-            this._description = textBytes.subarray(0, descriptionLength).toString(this._encoding);
-            this._text = textBytes.subarray(descriptionLength + delimiter.length).toString(StringType.Latin1);
+            // Well-formed frame (or >2 fields, the latter of which will be ignored)
+            const descriptionBytes = descriptionAndTextBytes.subarray(0, descriptionLength);
+            this._description = descriptionBytes.toString(this._encoding);
+
+            const textBytes = descriptionAndTextBytes.subarray(descriptionLength + delimiter.length);
+            const splitTextBytes = textBytes.split(ByteVector.getTextDelimiter(StringType.Latin1));
+            this._text = splitTextBytes[0].toString(StringType.Latin1);
         }
     }
 
     protected renderFields(version: number): ByteVector {
+        if (!this._description && !this._text) {
+            return ByteVector.empty();
+        }
+
         const encoding = UrlLinkFrame.correctEncoding(this.textEncoding, version);
         return ByteVector.concatenate(
             UrlLinkFrame.correctEncoding(this._encoding, version),

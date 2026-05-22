@@ -2205,7 +2205,7 @@ const getTestTagHeader = (version: number, flags: Id3v2TagHeaderFlags, tagSize: 
     }
 
     @test
-    public setTextFrame_withMatchingFrames_updatesFrame() {
+    public setUrlFrame_withMatchingFrames_updatesFrame() {
         // Arrange
         const tag = Id3v2Tag.fromEmpty();
         const frame = UrlLinkFrame.fromIdentity(FrameIdentifiers.WCOM);

@@ -33,14 +33,56 @@ import {UrlLinkFrame} from "../../src/id3v2/frames/urlLinkFrame";
     }
 
     @test
-    public fromOffsetRawData_itsgood() {
+    public fromOffsetRawData_itsGood() {
         // Arrange
         const bodyBytes = ByteVector.fromString("foo", StringType.Latin1);
         const header = new Id3v2FrameHeader(FrameIdentifiers.WCOM, Id3v2FrameFlags.None, bodyBytes.length);
         const data = ByteVector.concatenate(header.render(4), bodyBytes);
 
         // Act
-        const output = UrlLinkFrame.fromOffsetRawData(data, 2, header, 4);
+        const output = UrlLinkFrame.fromOffsetRawData(data, 0, header, 4);
+
+        // Assert
+        assert.ok(output);
+        assert.strictEqual(output.frameClassType, FrameClassType.UrlLinkFrame);
+        assert.strictEqual(output.frameId, FrameIdentifiers.WCOM);
+        assert.strictEqual(output.text, "foo");
+    }
+
+    @test
+    public fromOffsetRawData_trailingNullBytes() {
+        // Arrange
+        const bodyBytes = ByteVector.concatenate(
+            ByteVector.fromString("foo", StringType.Latin1),
+            0x00, 0x00
+        );
+        const header = new Id3v2FrameHeader(FrameIdentifiers.WCOM, Id3v2FrameFlags.None, bodyBytes.length);
+        const data = ByteVector.concatenate(header.render(4), bodyBytes);
+
+        // Act
+        const output = UrlLinkFrame.fromOffsetRawData(data, 0, header, 4);
+
+        // Assert
+        assert.ok(output);
+        assert.strictEqual(output.frameClassType, FrameClassType.UrlLinkFrame);
+        assert.strictEqual(output.frameId, FrameIdentifiers.WCOM);
+        assert.strictEqual(output.text, "foo");
+    }
+
+    @test
+    public fromOffsetRawData_multipleFields() {
+        // Arrange
+        const bodyBytes = ByteVector.concatenate(
+            ByteVector.fromString("foo", StringType.Latin1),
+            0x00,
+            ByteVector.fromString("bar", StringType.Latin1),
+            0x00, 0x00
+        );
+        const header = new Id3v2FrameHeader(FrameIdentifiers.WCOM, Id3v2FrameFlags.None, bodyBytes.length);
+        const data = ByteVector.concatenate(header.render(4), bodyBytes);
+
+        // Act
+        const output = UrlLinkFrame.fromOffsetRawData(data, 0, header, 4);
 
         // Assert
         assert.ok(output);
