@@ -10,7 +10,7 @@ import {FrameIdentifiers} from "../../src/id3v2/frameIdentifiers";
 import {Testers} from "../utilities/testers";
 
 @suite
-class Id3v2_TconFrameTests {
+class Id3v2_GenreFrameTests {
 
     // region Property tests
 
