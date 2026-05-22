@@ -310,7 +310,7 @@ const getTestFrame = (): TextInformationFrame => {
     }
 
     @test
-    public render_notRead_returnsRawData() {
+    public render_eagerLoaded_returnsRenderedFields() {
         // Arrange
         const header = new Id3v2FrameHeader(FrameIdentifiers.TCOP);
         header.frameSize = 8;
@@ -331,7 +331,41 @@ const getTestFrame = (): TextInformationFrame => {
         Testers.bvEqual(output, data);
     }
 
-    // @TODO: Test for render version not same as input w/o read forces a read
+    @test
+    public render_eagerLoaded_preservesTrailingEmptyValues() {
+        // Arrange
+        let header = new Id3v2FrameHeader(FrameIdentifiers.TCOP);
+        header.frameSize = 10;
+        const data = ByteVector.concatenate(
+            header.render(4),
+            StringType.Latin1,
+            ByteVector.fromString("fux", StringType.Latin1),
+            ByteVector.getTextDelimiter(StringType.Latin1),
+            ByteVector.fromString("bux", StringType.Latin1),
+            0x0,
+            0x0
+        );
+        const frame = TextInformationFrame.fromOffsetRawData(data, 0, header, 4);
+
+        // Act
+        const output = frame.render(4);
+
+        // Assert
+        assert.ok(output);
+
+        header = new Id3v2FrameHeader(FrameIdentifiers.TCOP);
+        header.frameSize = 9;
+        const expected = ByteVector.concatenate(
+            header.render(4),
+            StringType.Latin1,
+            ByteVector.fromString("fux", StringType.Latin1),
+            ByteVector.getTextDelimiter(StringType.Latin1),
+            ByteVector.fromString("bux", StringType.Latin1),
+            ByteVector.getTextDelimiter(StringType.Latin1)
+        );
+
+        Testers.bvEqual(output, expected);
+    }
 
     @test
     public render_readV4NotTxxx() {

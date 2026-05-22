@@ -149,16 +149,6 @@ export class TextInformationFrame extends Frame {
      */
     protected _encoding: StringType = Id3v2Settings.defaultEncoding;
     /**
-     * Raw data contents in the current instance.
-     * @protected
-     */
-    protected _rawData: ByteVector;
-    /**
-     * ID3v2 version of the current instance.
-     * @protected
-     */
-    protected _rawVersion: number;
-    /**
      * Decoded text contained in the current instance.
      * @protected
      */
@@ -222,14 +212,12 @@ export class TextInformationFrame extends Frame {
      * current instance. The value must be reassigned for the value to change.
      */
     public get text(): string[] {
-        this.parseRawData();
         return this._textFields.slice();
     }
     /**
      * Sets the text contained in the current instance.
      */
     public set text(value: string[]) {
-        this.parseRawData();
         this._textFields = value ? value.slice() : [];
     }
 
@@ -237,7 +225,6 @@ export class TextInformationFrame extends Frame {
      * Gets the text encoding to use when rendering the current instance.
      */
     public get textEncoding(): StringType {
-        this.parseRawData();
         return this._encoding;
     }
     /**
@@ -245,7 +232,6 @@ export class TextInformationFrame extends Frame {
      * This value will be overridden if {@link Id3v2Settings.forceDefaultEncoding} is `true`.
      */
     public set textEncoding(value: StringType) {
-        this.parseRawData();
         this._encoding = value;
     }
 
@@ -274,10 +260,6 @@ export class TextInformationFrame extends Frame {
     public clone(): Frame {
         const frame = TextInformationFrame.fromIdentifier(this.frameId, this._encoding);
         frame._textFields = this._textFields.slice();
-        if (this._rawData) {
-            frame._rawData = this._rawData.toByteVector();
-        }
-        frame._rawVersion = this._rawVersion;
         return frame;
     }
 
@@ -323,7 +305,6 @@ export class TextInformationFrame extends Frame {
      * Returns a text representation of the current instance by combining the text with semicolons.
      */
     public toString(): string {
-        this.parseRawData();
         return this.text.join("; ");
     }
 
@@ -333,24 +314,10 @@ export class TextInformationFrame extends Frame {
 
     /** @inheritDoc */
     protected parseFields(data: ByteVector, version: number): void {
-        this._rawData = data;
-        this._rawVersion = version;
-    }
-
-    /**
-     * Performs the actual parsing of the raw data.
-     * Because of the high parsing cost and relatively low usage of the class {@link parseFields}
-     * only stores the field data so it can be parsed on demand. Whenever a property or method is
-     * called which requires the data, this method is called, and only on the first call does it
-     * actually parse the data.
-     */
-    protected parseRawData(): void {
-        if (!this._rawData) {
+        if (data.length === 0) {
+            this._textFields = [];
             return;
         }
-
-        const data = this._rawData;
-        this._rawData = undefined;
 
         // Read the string data type (first byte of the field data)
         this._encoding = data.get(0);
@@ -358,7 +325,7 @@ export class TextInformationFrame extends Frame {
         const fieldList = [];
         const delim = ByteVector.getTextDelimiter(this._encoding);
 
-        if (this._rawVersion > 3 || this.frameId === FrameIdentifiers.TXXX) {
+        if (version > 3 || this.frameId === FrameIdentifiers.TXXX) {
             fieldList.push(...data.subarray(1).toStrings(this._encoding));
         } else if (data.length > 1 && !data.containsAt(delim, 1)) {
             let value = data.subarray(1).toString(this._encoding);
@@ -377,23 +344,12 @@ export class TextInformationFrame extends Frame {
             }
         }
 
-        // Bad tags may have one or more null characters at the end of a string, resulting in
-        // empty strings at the end of the FieldList. Strip them off.
-        while (fieldList.length !== 0
-            && (!fieldList[fieldList.length - 1] || fieldList[fieldList.length - 1].length === 0)) {
-            fieldList.splice(fieldList.length - 1, 1);
-        }
-
         this._textFields = fieldList;
     }
 
     /** @inheritDoc */
     protected renderFields(version: number): ByteVector {
-        if (this._rawData && this._rawVersion === version) {
-            return this._rawData;
-        }
-
-        const encoding = TextInformationFrame.correctEncoding(this.textEncoding, version);
+        const encoding = TextInformationFrame.correctEncoding(this._encoding, version);
         const v = ByteVector.empty();
         let text = this._textFields;
 
@@ -433,6 +389,8 @@ export class TextInformationFrame extends Frame {
 }
 
 export class UserTextInformationFrame extends TextInformationFrame {
+    private _description: string;
+
     // #region Constructors
 
     private constructor(header: Id3v2FrameHeader) {
@@ -450,7 +408,7 @@ export class UserTextInformationFrame extends TextInformationFrame {
     ): UserTextInformationFrame {
         const frame = new UserTextInformationFrame(new Id3v2FrameHeader(FrameIdentifiers.TXXX));
         frame._encoding = encoding;
-        frame.description = description;
+        frame._description = description;
         return frame;
     }
 
@@ -489,8 +447,7 @@ export class UserTextInformationFrame extends TextInformationFrame {
      * Gets the description stored in the current instance.
      */
     public get description(): string {
-        const text = super.text;
-        return text.length > 0 ? text[0] : undefined;
+        return this._description;
     }
     /**
      * Sets the description stored in the current instance.
@@ -498,13 +455,7 @@ export class UserTextInformationFrame extends TextInformationFrame {
      * @param value Description to store in the current instance.
      */
     public set description(value: string) {
-        let text = super.text;
-        if (text.length > 0) {
-            text[0] = value;
-        } else {
-            text = [ value ];
-        }
-        super.text = text;
+        this._description = value;
     }
 
     /**
@@ -513,21 +464,14 @@ export class UserTextInformationFrame extends TextInformationFrame {
      * current instance. The value must be reassigned for the value to change.
      */
     public get text(): string[] {
-        const text = super.text;
-        if (text.length < 2) {
-            return [];
-        }
-
-        return text.slice(1);
+        return this._textFields.slice();
     }
     /**
      * Sets the text contained in the current instance.
      * @param value Array of text values to store in the current instance
      */
     public set text(value: string[]) {
-        const newValue = [this.description];
-        newValue.push(... value);
-        super.text = newValue;
+        this._textFields = value ? value.slice() : [];
     }
 
     // #endregion
@@ -554,18 +498,55 @@ export class UserTextInformationFrame extends TextInformationFrame {
 
     /** @inheritDoc */
     public clone(): Frame {
-        const frame = UserTextInformationFrame.fromDescription(undefined, this._encoding);
+        const frame = UserTextInformationFrame.fromDescription(this._description, this._encoding);
         frame._textFields = this._textFields.slice();
-        if (this._rawData) {
-            frame._rawData = this._rawData.toByteVector();
-        }
-        frame._rawVersion = this._rawVersion;
         return frame;
     }
 
     /** @inheritDoc */
     public toString(): string {
         return `[${this.description}] ${super.toString()}`;
+    }
+
+    /** @inheritDoc */
+    protected parseFields(data: ByteVector, version: number): void {
+        Guards.byte(version, "version");
+
+        if (data.length === 0) {
+            this._description = undefined;
+            this._textFields = [];
+            return;
+        }
+
+        this._encoding = data.get(0);
+        const fields = data.subarray(1).toStrings(this._encoding);
+        this._description = fields.length > 0 ? fields[0] : undefined;
+        this._textFields = fields.slice(1);
+    }
+
+    /** @inheritDoc */
+    protected renderFields(version: number): ByteVector {
+        if (!this._description && this._textFields.length === 0) {
+            return ByteVector.empty();
+        }
+
+        const encoding = TextInformationFrame.correctEncoding(this._encoding, version);
+        const v = ByteVector.empty();
+        v.addByte(encoding);
+        v.addByteVector(ByteVector.fromString(this._description ?? "", encoding));
+
+        for (const text of this._textFields) {
+            v.addByteVector(ByteVector.getTextDelimiter(encoding));
+            if (text) {
+                v.addByteVector(ByteVector.fromString(text, encoding));
+            }
+        }
+
+        if (this._textFields.length === 0) {
+            v.addByteVector(ByteVector.getTextDelimiter(encoding));
+        }
+
+        return v;
     }
 
     // #endregion

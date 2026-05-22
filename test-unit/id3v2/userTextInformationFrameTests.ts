@@ -6,7 +6,7 @@ import Id3v2Settings from "../../src/id3v2/id3v2Settings";
 import {UserTextInformationFrame} from "../../src/id3v2/frames/textInformationFrame";
 import {ByteVector, StringType} from "../../src/byteVector";
 import {Frame, FrameClassType} from "../../src/id3v2/frames/frame";
-import {Id3v2FrameHeader} from "../../src/id3v2/frames/frameHeader";
+import {Id3v2FrameFlags, Id3v2FrameHeader} from "../../src/id3v2/frames/frameHeader";
 import {FrameIdentifiers} from "../../src/id3v2/frameIdentifiers";
 import {Testers} from "../utilities/testers";
 
@@ -214,5 +214,54 @@ const getTestFrame = (): UserTextInformationFrame => {
         assert.strictEqual(frame.description, output.description);
         assert.deepStrictEqual(frame.text, output.text);
         assert.strictEqual(frame.textEncoding, output.textEncoding);
+    }
+
+    @test
+    public render_usesDescriptionAndTextFields() {
+        // Arrange
+        const frame = UserTextInformationFrame.fromDescription("foo", StringType.Latin1);
+        frame.text = ["bar", "baz"];
+
+        // Act
+        const result = frame.render(4);
+
+        // Assert
+        assert.isOk(result);
+
+        const expected = ByteVector.concatenate(
+            FrameIdentifiers.TXXX.render(4),
+            ByteVector.fromUint(12),
+            ByteVector.fromUshort(Id3v2FrameFlags.None),
+            StringType.Latin1,
+            ByteVector.fromString("foo", StringType.Latin1),
+            ByteVector.getTextDelimiter(StringType.Latin1),
+            ByteVector.fromString("bar", StringType.Latin1),
+            ByteVector.getTextDelimiter(StringType.Latin1),
+            ByteVector.fromString("baz", StringType.Latin1)
+        );
+        Testers.bvEqual(result, expected);
+    }
+
+    @test
+    public render_withoutDescriptionWithText() {
+        // Arrange
+        const frame = UserTextInformationFrame.fromDescription(undefined, StringType.Latin1);
+        frame.text = ["foo"];
+
+        // Act
+        const result = frame.render(4);
+
+        // Assert
+        assert.isOk(result);
+
+        const expected = ByteVector.concatenate(
+            FrameIdentifiers.TXXX.render(4),
+            ByteVector.fromUint(5),
+            ByteVector.fromUshort(Id3v2FrameFlags.None),
+            StringType.Latin1,
+            ByteVector.getTextDelimiter(StringType.Latin1),
+            ByteVector.fromString("foo", StringType.Latin1)
+        );
+        Testers.bvEqual(result, expected);
     }
 }
