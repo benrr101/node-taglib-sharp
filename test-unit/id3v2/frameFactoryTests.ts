@@ -109,7 +109,9 @@ import {SynchronizedTextType, TimestampFormat} from "../../src/id3v2/utilTypes";
     @test
     public createFrame_fromData_textFrame() {
         // Arrange
-        const data = TextInformationFrame.fromIdentifier(FrameIdentifiers.TCOM).render(4);
+        const frame = TextInformationFrame.fromIdentifier(FrameIdentifiers.TCOM);
+        frame.text = ["foo"];
+        const data = frame.render(4);
 
         // Act
         const output = Id3v2FrameFactory.createFrame(data, undefined, 0, 4, false);

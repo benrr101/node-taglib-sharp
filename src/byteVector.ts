@@ -907,7 +907,7 @@ export class ByteVector {
      */
     public get(index: number): number {
         Guards.uint(index, "index");
-        Guards.lessThanInclusive(index, this.length - 1, "index");
+        Guards.lessThanInclusive(index, this.length - 1, "index"); // @TODO: This behaves weird when vector is empty
         return this._bytes[index];
     }
 
