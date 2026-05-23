@@ -107,13 +107,8 @@ export enum FrameClassType {
  * an ID3v2 tag. There are various types of frames that store differently structured information.
  */
 export abstract class Frame {
-    // #region Member Variables
 
-    private _encryptionId: number;
     private _header: Id3v2FrameHeader;
-    private _groupId: number;
-
-    // #endregion
 
     // #region Constructors
 
@@ -131,41 +126,9 @@ export abstract class Frame {
     // #region Properties
 
     /**
-     * Gets the encryption ID applied to the current instance.
-     * @returns
-     *     Value containing the encryption identifier for the current instance or
-     *     `undefined` if not set.
-     */
-    public get encryptionId(): number | undefined {
-        return NumberUtils.hasFlag(this.flags, Id3v2FrameFlags.Encryption)
-            ? this._encryptionId
-            : undefined;
-    }
-    /**
-     * Sets the encryption ID applied to the current instance.
-     * @param value Value containing the encryption identifier for the current instance. Must be an
-     *     8-bit unsigned integer. Setting to `undefined` will remove the encryption header and ID
-     */
-    public set encryptionId(value: number | undefined) {
-        Guards.optionalByte(value, "value");
-        this._encryptionId = value;
-        if (value !== undefined) {
-            this.flags |= Id3v2FrameFlags.Encryption;
-        } else {
-            this.flags &= ~Id3v2FrameFlags.Encryption;
-        }
-    }
-
-    /**
      * Gets the frame flags applied to the current instance.
      */
     public get flags(): Id3v2FrameFlags { return this._header.flags; }
-    /**
-     * Sets the frame flags applied to the current instance.
-     * If the value includes either {@link Id3v2FrameFlags.Encryption} or
-     * {@link Id3v2FrameFlags.Compression}, {@link render} will throw.
-     */
-    public set flags(value: Id3v2FrameFlags) { this._header.flags = value; }
 
     /**
      * Gets the header for the frame. For new frames this should not exist.
@@ -192,32 +155,6 @@ export abstract class Frame {
     public get frameId(): FrameIdentifier { return this._header.frameId; }
 
     /**
-     * Gets the grouping ID applied to the current instance.
-     * @returns
-     *     Value containing the grouping identifier for the current instance, or
-     *     `undefined` if not set.
-     */
-    public get groupId(): number | undefined {
-        return NumberUtils.hasFlag(this.flags, Id3v2FrameFlags.GroupingIdentity)
-            ? this._groupId
-            : undefined;
-    }
-    /**
-     * Sets the grouping ID applied to the current instance.
-     * @param value Grouping identifier for the current instance. Must be an 8-bit unsigned integer.
-     *     Setting to `undefined` will remove the grouping identity header and ID
-     */
-    public set groupId(value: number | undefined) {
-        Guards.optionalByte(value, "value");
-        this._groupId = value;
-        if (value !== undefined) {
-            this.flags |= Id3v2FrameFlags.GroupingIdentity;
-        } else {
-            this.flags &= ~Id3v2FrameFlags.GroupingIdentity;
-        }
-    }
-
-    /**
      * Gets the size of the current instance as it was last stored on disk.
      * NOTE: This value is not used outside of reading a frame from disk, so newly created frames
      *     should not have this value set.
@@ -241,6 +178,14 @@ export abstract class Frame {
     public render(version: number): ByteVector {
         Guards.byte(version, "version");
 
+        // 1) Render the body
+        let bodyBytes = this.renderFields(version);
+        if (bodyBytes.length === 0) {
+            // If we don't have any content, don't render anything.
+            return ByteVector.empty();
+        }
+
+        // 2) Render the extended header and process with the body
         // Remove flags that are not supported by older versions of ID3v2
         if (version < 4) {
             const v4Flags = Id3v2FrameFlags.DataLengthIndicator | Id3v2FrameFlags.Unsynchronized;
@@ -256,52 +201,24 @@ export abstract class Frame {
             this.flags &= ~(v3Flags);
         }
 
-        let fieldData = this.renderFields(version);
+        // Render extended header bytes
+        const extendedHeaderBytes = this._header.renderExtendedHeader(version);
 
-        // If we don't have any content, don't render anything. This will cause the frame to not be
-        // rendered
-        if (fieldData.length === 0) {
-            return ByteVector.empty();
-        }
-
-        const frontData: Array<ByteVector|number> = [];
-        if (NumberUtils.hasFlag(this.flags, (Id3v2FrameFlags.Compression | Id3v2FrameFlags.DataLengthIndicator))) {
-            frontData.push(ByteVector.fromUint(fieldData.length));
-        }
-        if (NumberUtils.hasFlag(this.flags, Id3v2FrameFlags.GroupingIdentity)) {
-            frontData.push(this._groupId);
-        }
-        if (NumberUtils.hasFlag(this.flags, Id3v2FrameFlags.Encryption)) {
-            frontData.push(this._encryptionId);
-        }
-        // @TODO: Implement compression
-        if (NumberUtils.hasFlag(this.flags, Id3v2FrameFlags.Compression)) {
-            throw new NotImplementedError("Compression is not yet supported");
-        }
-        // @TODO: Implement encryption
-        if (NumberUtils.hasFlag(this.flags, Id3v2FrameFlags.Encryption)) {
-            throw new NotImplementedError("Encryption is not yet supported");
-        }
+        // Combine extended header with body bytes to form complete body. Unsynchronize if necessary.
+        bodyBytes = ByteVector.concatenate(extendedHeaderBytes, bodyBytes);
         if (NumberUtils.hasFlag(this.flags, Id3v2FrameFlags.Unsynchronized)) {
-            fieldData = SyncData.unsyncByteVector(fieldData);
+            bodyBytes = SyncData.unsyncByteVector(bodyBytes);
         }
 
-        // Update the header size with the size of the rendered bytes and any "front" data
-        const frontDataSize = frontData.reduce<number>(
-            (accum, e) => {
-                accum += e instanceof ByteVector ? e.length : 1;
-                return accum;
-            },
-            0
-        );
-        this._header.frameSize = fieldData.length + frontDataSize;
+        // Update size of the body in the header
+        this._header.frameSize = bodyBytes.length;
+
+        // 3) Render the header
+        const headerBytes = this._header.render(version);
 
 
-        return ByteVector.concatenate(
-            this._header.render(version),
-            ...frontData,
-            fieldData
-        );
+        // 4) Combine all and return
+        return ByteVector.concatenate(headerBytes, bodyBytes);
     }
 
     // #region Protected Methods
@@ -418,7 +335,7 @@ export abstract class Frame {
         }
 
         // @TODO: If we don't have a header to read, why are we saying the data includes a header?
-        this.parseFields(this.fieldData(data, offset, version, true), version);
+        this.parseFields(this.fieldData(data, offset, version, false), version);
     }
 
     // #endregion

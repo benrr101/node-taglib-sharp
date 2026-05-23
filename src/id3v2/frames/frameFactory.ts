@@ -21,6 +21,7 @@ import {SynchronizedLyricsFrame} from "./synchronizedLyricsFrame";
 import {TextInformationFrame, UserTextInformationFrame} from "./textInformationFrame";
 import {UrlLinkFrame, UserUrlLinkFrame} from "./urlLinkFrame";
 import {Guards, NumberUtils} from "../../utils";
+import SyncData from "../syncData";
 
 /**
  * Type shortcut for a method that returns a {@link Frame}.
@@ -38,6 +39,8 @@ export type FrameCreator = (data: ByteVector, offset: number, header: Id3v2Frame
  * process, register a frame creator with {@link addFrameCreator}.
  */
 export class Id3v2FrameFactory {
+
+    private static readonly CUSTOM_FRAME_CREATORS: FrameCreator[] = [];
 
     private static readonly DEFAULT_FRAME_CREATORS: Readonly<Map<FrameIdentifier, FrameCreator>> =
         new Map<FrameIdentifier, FrameCreator>([
@@ -59,8 +62,6 @@ export class Id3v2FrameFactory {
             [FrameIdentifiers.WXXX, UserUrlLinkFrame.fromOffsetRawData]
         ]);
 
-
-    private static readonly CUSTOM_FRAME_CREATORS: FrameCreator[] = [];
 
     /**
      * Adds a custom frame creator to try before using standard frame creation methods.
