@@ -1,4 +1,4 @@
-import {suite, test} from "@testdeck/mocha";
+import {params, suite, test} from "@testdeck/mocha";
 import {assert} from "chai";
 
 import FrameConstructorTests from "./frameConstructorTests";
@@ -45,6 +45,18 @@ const getTestFrame = (): UserTextInformationFrame => {
 
         // Assert
         Id3v2_UserInformationFrame_ConstructorTests.assertFrame(frame, "foo", [], StringType.UTF16);
+    }
+
+    @params([undefined, StringType.Latin1], "undefined")
+    @params([null, StringType.Latin1], "null")
+    @params(["", StringType.Latin1], "empty_string")
+    @params(["foo", StringType.Latin1], "truthy")
+    public fromDescription_descriptionValues([description, encoding]: [string, StringType]) {
+        // Act
+        const frame = UserTextInformationFrame.fromDescription(description, encoding);
+
+        // Assert
+        Id3v2_UserInformationFrame_ConstructorTests.assertFrame(frame, description, [], encoding);
     }
 
     @test
@@ -99,6 +111,23 @@ const getTestFrame = (): UserTextInformationFrame => {
         assert.deepStrictEqual(frame.text, ["bar"]);
     }
 
+    @params(undefined, "undefined")
+    @params(null, "null")
+    @params("", "empty_string")
+    @params("fux", "truthy")
+    public setDescription_values(value: string) {
+        // Arrange
+        const frame = UserTextInformationFrame.fromDescription("foo");
+        frame.text = ["bar"];
+
+        // Act
+        frame.description = value;
+
+        // Assert
+        assert.strictEqual(frame.description, value);
+        assert.deepStrictEqual(frame.text, ["bar"]);
+    }
+
     @test
     public getText() {
         // Arrange
@@ -125,6 +154,34 @@ const getTestFrame = (): UserTextInformationFrame => {
         assert.strictEqual(frame.description, "foo");
         assert.deepStrictEqual(frame.text, ["bux", "qux"]);
     }
+
+    @params(undefined, "undefined")
+    @params(null, "null")
+    @params([], "empty_array")
+    @params(["bux"], "truthy")
+    public setText_values(value: string[]) {
+        // Arrange
+        const frame = UserTextInformationFrame.fromDescription("foo");
+
+        // Act
+        frame.text = value;
+
+        // Assert
+        assert.strictEqual(frame.description, "foo");
+        assert.deepStrictEqual(frame.text, value ?? []);
+    }
+
+    @test
+    public setEncoding() {
+        // Arrange
+        const frame = UserTextInformationFrame.fromDescription("foo");
+
+        // Act
+        frame.textEncoding = StringType.UTF8;
+
+        // Assert
+        assert.strictEqual(frame.textEncoding, StringType.UTF8);
+    }
 }
 
 @suite class Id3v2_UserTextInformationFrame_MethodTests {
@@ -134,6 +191,27 @@ const getTestFrame = (): UserTextInformationFrame => {
         Testers.testTruthy((v: UserTextInformationFrame[]) => {
             UserTextInformationFrame.findUserTextInformationFrame(v, "foo");
         });
+    }
+
+    @test
+    public findUserTextInformationFrame_falsyDescription() {
+        // Arrange
+        const frames = [UserTextInformationFrame.fromDescription("foo")];
+
+        // Act/Assert
+        Testers.testTruthy((v: string) => { UserTextInformationFrame.findUserTextInformationFrame(frames, v); });
+    }
+
+    @test
+    public findUserTextInformationFrame_emptyFrames_returnsUndefined() {
+        // Arrange
+        const frames: UserTextInformationFrame[] = [];
+
+        // Act
+        const output = UserTextInformationFrame.findUserTextInformationFrame(frames, "foo");
+
+        // Assert
+        assert.isUndefined(output);
     }
 
     @test
@@ -199,6 +277,20 @@ const getTestFrame = (): UserTextInformationFrame => {
     }
 
     @test
+    public findUserTextInformationFrame_match_returnsFirstMatch() {
+        // Arrange
+        const frame1 = UserTextInformationFrame.fromDescription("foo");
+        const frame2 = UserTextInformationFrame.fromDescription("foo");
+        const frames = [frame1, frame2];
+
+        // Act
+        const output = UserTextInformationFrame.findUserTextInformationFrame(frames, "foo");
+
+        // Assert
+        assert.strictEqual(output, frame1);
+    }
+
+    @test
     public clone_returnsCopy() {
         // Arrange
         const frame = getTestFrame();
@@ -243,6 +335,19 @@ const getTestFrame = (): UserTextInformationFrame => {
     }
 
     @test
+    public render_withoutDescriptionWithoutText() {
+        // Arrange
+        const frame = UserTextInformationFrame.fromDescription(undefined, StringType.Latin1);
+
+        // Act
+        const result = frame.render(4);
+
+        // Assert
+        assert.isOk(result);
+        assert.strictEqual(result.length, 0);
+    }
+
+    @test
     public render_withoutDescriptionWithText() {
         // Arrange
         const frame = UserTextInformationFrame.fromDescription(undefined, StringType.Latin1);
@@ -263,5 +368,67 @@ const getTestFrame = (): UserTextInformationFrame => {
             ByteVector.fromString("foo", StringType.Latin1)
         );
         Testers.bvEqual(result, expected);
+    }
+
+    @test
+    public render_withDescriptionWithoutText() {
+        // Arrange
+        const frame = UserTextInformationFrame.fromDescription("foo", StringType.Latin1);
+
+        // Act
+        const result = frame.render(4);
+
+        // Assert
+        assert.isOk(result);
+
+        const expected = ByteVector.concatenate(
+            FrameIdentifiers.TXXX.render(4),
+            ByteVector.fromUint(5),
+            ByteVector.fromUshort(Id3v2FrameFlags.None),
+            StringType.Latin1,
+            ByteVector.fromString("foo", StringType.Latin1),
+            ByteVector.getTextDelimiter(StringType.Latin1)
+        );
+        Testers.bvEqual(result, expected);
+    }
+
+    @test
+    public render_withDescriptionWithText_twoByteEncoding() {
+        // Arrange
+        const frame = UserTextInformationFrame.fromDescription("foo", StringType.UTF16LE);
+        frame.text = ["bar"];
+
+        // Act
+        const result = frame.render(4);
+
+        // Assert
+        assert.isOk(result);
+
+        const expected = ByteVector.concatenate(
+            FrameIdentifiers.TXXX.render(4),
+            ByteVector.fromUint(15),
+            ByteVector.fromUshort(Id3v2FrameFlags.None),
+            StringType.UTF16LE,
+            ByteVector.fromString("foo", StringType.UTF16LE),
+            ByteVector.getTextDelimiter(StringType.UTF16LE),
+            ByteVector.fromString("bar", StringType.UTF16LE)
+        );
+        Testers.bvEqual(result, expected);
+    }
+
+    @params(["", [] as string[]], "empty_string")
+    @params(["foo", [] as string[]], "foo_empty_text")
+    @params(["", ["foo"]], "empty_string_foo")
+    @params(["foo", ["bar"]], "foo_bar")
+    public toString_returnsText([description, text]: [string, string[]]) {
+        // Arrange
+        const frame = UserTextInformationFrame.fromDescription(description);
+        frame.text = text;
+
+        // Act
+        const result = frame.toString();
+
+        // Assert
+        assert.strictEqual(result, `[${description}] ${text.join("; ")}`);
     }
 }

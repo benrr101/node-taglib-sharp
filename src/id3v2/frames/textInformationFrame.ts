@@ -491,6 +491,7 @@ export class UserTextInformationFrame extends TextInformationFrame {
         caseSensitive: boolean = true
     ): UserTextInformationFrame {
         Guards.truthy(frames, "frames");
+        Guards.truthy(description, "description");
 
         const comparison = caseSensitive ? StringComparison.caseSensitive : StringComparison.caseInsensitive;
         return frames.find((f) => comparison(f.description, description));

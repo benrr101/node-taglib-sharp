@@ -1,6 +1,4 @@
-// noinspection JSUnusedLocalSymbols Used extensibely to force a read
-
-import {suite, test} from "@testdeck/mocha";
+import {params, suite, test} from "@testdeck/mocha";
 import {assert} from "chai";
 
 import FrameConstructorTests from "./frameConstructorTests";
@@ -9,7 +7,7 @@ import PropertyTests from "../utilities/propertyTests";
 import {TextInformationFrame} from "../../src/id3v2/frames/textInformationFrame";
 import {ByteVector, StringType} from "../../src/byteVector";
 import {Frame, FrameClassType} from "../../src/id3v2/frames/frame";
-import {Id3v2FrameHeader} from "../../src/id3v2/frames/frameHeader";
+import {Id3v2FrameFlags, Id3v2FrameHeader} from "../../src/id3v2/frames/frameHeader";
 import {FrameIdentifier, FrameIdentifiers} from "../../src/id3v2/frameIdentifiers";
 import {Testers} from "../utilities/testers";
 
@@ -46,6 +44,12 @@ const getTestFrame = (): TextInformationFrame => {
         assert.isArray(frame.text);
         assert.isEmpty(frame.text);
         assert.strictEqual(frame.textEncoding, Id3v2Settings.defaultEncoding);
+    }
+
+    @test
+    public fromIdentifier_falsyIdentifier() {
+        // Act/Assert
+        Testers.testTruthy((v: FrameIdentifier) => { TextInformationFrame.fromIdentifier(v); });
     }
 
     @test
@@ -207,6 +211,21 @@ const getTestFrame = (): TextInformationFrame => {
         PropertyTests.propertyRoundTrip((v) => { frame.text = v; }, () => frame.text, ["bux", "fux"]);
     }
 
+    @params(undefined, "undefined")
+    @params(null, "null")
+    @params([], "empty_array")
+    @params(["bar"], "truthy")
+    public setText_values(value: string[]) {
+        // Arrange
+        const frame = TextInformationFrame.fromIdentifier(FrameIdentifiers.TCOP);
+
+        // Act
+        frame.text = value;
+
+        // Assert
+        assert.deepStrictEqual(frame.text, value ?? []);
+    }
+
     @test
     public setEncoding_notRead() {
         // Arrange
@@ -268,6 +287,18 @@ const getTestFrame = (): TextInformationFrame => {
     }
 
     @test
+    public find_emptyFrames_returnsUndefined() {
+        // Arrange
+        const frames: TextInformationFrame[] = [];
+
+        // Act
+        const output = TextInformationFrame.findTextInformationFrame(frames, FrameIdentifiers.TCOM);
+
+        // Assert
+        assert.isUndefined(output);
+    }
+
+    @test
     public find_frameExists() {
         // Arrange
         const frames = [
@@ -281,6 +312,20 @@ const getTestFrame = (): TextInformationFrame => {
         // Assert
         assert.isOk(output);
         assert.equal(output, frames[1]);
+    }
+
+    @test
+    public find_frameExists_returnsFirstMatch() {
+        // Arrange
+        const frame1 = TextInformationFrame.fromIdentifier(FrameIdentifiers.TCOM);
+        const frame2 = TextInformationFrame.fromIdentifier(FrameIdentifiers.TCOM);
+        const frames = [frame1, frame2];
+
+        // Act
+        const output = TextInformationFrame.findTextInformationFrame(frames, FrameIdentifiers.TCOM);
+
+        // Assert
+        assert.strictEqual(output, frame1);
     }
 
     @test
@@ -307,6 +352,50 @@ const getTestFrame = (): TextInformationFrame => {
         assert.throws(() => { frame.render(-1); });
         assert.throws(() => { frame.render(1.23); });
         assert.throws(() => { frame.render(0x100); });
+    }
+
+    @test
+    public render_withoutText() {
+        // Arrange
+        const frame = TextInformationFrame.fromIdentifier(FrameIdentifiers.TCOP, StringType.Latin1);
+
+        // Act
+        const result = frame.render(4);
+
+        // Assert
+        assert.isOk(result);
+
+        const expected = ByteVector.concatenate(
+            FrameIdentifiers.TCOP.render(4),
+            ByteVector.fromUint(1),
+            ByteVector.fromUshort(Id3v2FrameFlags.None),
+            StringType.Latin1
+        );
+        Testers.bvEqual(result, expected);
+    }
+
+    @test
+    public render_withText() {
+        // Arrange
+        const frame = TextInformationFrame.fromIdentifier(FrameIdentifiers.TCOP, StringType.Latin1);
+        frame.text = ["foo", "bar"];
+
+        // Act
+        const result = frame.render(4);
+
+        // Assert
+        assert.isOk(result);
+
+        const expected = ByteVector.concatenate(
+            FrameIdentifiers.TCOP.render(4),
+            ByteVector.fromUint(8),
+            ByteVector.fromUshort(Id3v2FrameFlags.None),
+            StringType.Latin1,
+            ByteVector.fromString("foo", StringType.Latin1),
+            ByteVector.getTextDelimiter(StringType.Latin1),
+            ByteVector.fromString("bar", StringType.Latin1)
+        );
+        Testers.bvEqual(result, expected);
     }
 
     @test
@@ -490,5 +579,20 @@ const getTestFrame = (): TextInformationFrame => {
         // Assert
         assert.ok(output);
         Testers.bvEqual(output, data);
+    }
+
+    @params([[], ""], "empty")
+    @params([["foo"], "foo"], "single")
+    @params([["foo", "bar"], "foo; bar"], "multiple")
+    public toString_returnsText([text, expected]: [string[], string]) {
+        // Arrange
+        const frame = TextInformationFrame.fromIdentifier(FrameIdentifiers.TCOP);
+        frame.text = text;
+
+        // Act
+        const result = frame.toString();
+
+        // Assert
+        assert.strictEqual(result, expected);
     }
 }
