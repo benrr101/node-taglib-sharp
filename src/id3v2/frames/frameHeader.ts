@@ -221,6 +221,11 @@ export class Id3v2FrameHeader {
      * Gets the flags applied to the current instance.
      */
     public get flags(): Id3v2FrameFlags { return this._flags; }
+    /**
+     * @TODO: It should not be necessary to update the flags manually like this.
+     * @internal
+     */
+    public set flags(value: Id3v2FrameFlags) { this._flags = value; }
 
     /**
      * Gets the identifier of the frame described by the current instance.

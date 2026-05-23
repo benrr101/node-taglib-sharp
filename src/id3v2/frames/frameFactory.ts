@@ -5,6 +5,7 @@ import MusicCdIdentifierFrame from "./musicCdIdentifierFrame";
 import PlayCountFrame from "./playCountFrame";
 import PopularimeterFrame from "./popularimeterFrame";
 import PrivateFrame from "./privateFrame";
+import SyncData from "../syncData";
 import TermsOfUseFrame from "./termsOfUseFrame";
 import UniqueFileIdentifierFrame from "./uniqueFileIdentifierFrame";
 import UnknownFrame from "./unknownFrame";
@@ -21,7 +22,6 @@ import {SynchronizedLyricsFrame} from "./synchronizedLyricsFrame";
 import {TextInformationFrame, UserTextInformationFrame} from "./textInformationFrame";
 import {UrlLinkFrame, UserUrlLinkFrame} from "./urlLinkFrame";
 import {Guards, NumberUtils} from "../../utils";
-import SyncData from "../syncData";
 
 /**
  * Type shortcut for a method that returns a {@link Frame}.
@@ -87,6 +87,88 @@ export class Id3v2FrameFactory {
     }
 
     /**
+     * Creates a {@link Frame} object by reading it from raw frame data.
+     * @param data Block of data containing at least one frame.
+     * @param offset Index into the data block where the frame header begins.
+     * @param version ID3v2 version the frame is encoded with. Must be unsigned 8-bit int
+     * @param alreadyUnsynced Whether the entire tag has already been unsynchronized
+     * @returns Frame|undefined
+     *     Frame read from the file is returned if it was read, `undefined` is returned if no frame
+     *     could be found at the given position.
+     */
+    public static createFrameFromTagBytes(
+        data: ByteVector,
+        offset: number,
+        version: number,
+        alreadyUnsynced: boolean
+    ): {frame: Frame, totalSize: number}|undefined {
+        Guards.truthy(data, "data");
+        Guards.safeUint(offset, "offset");
+        Guards.byte(version, "version");
+
+        // 1) Read the basic frame header
+        const headerSize = Id3v2FrameHeader.getBaseSize(version);
+        const headerBytes = data.subarray(offset, headerSize);
+        if (headerBytes.length < headerSize) {
+            throw new Error("Argument error: data does not contain enough bytes for an ID3v2 frame header");
+        }
+
+        // If the next data's position is 0, assume that we've hit the padding portion of the frame
+        // @TODO: what happens if there isn't any padding?
+        if (headerBytes.get(0) === 0) {
+            return undefined;
+        }
+
+        const header = Id3v2FrameHeader.fromData(headerBytes, version);
+        this.assertSupportedFlags(header.flags);
+
+        // 2) Read the body bytes
+        let bodyBytes = data.subarray(offset + headerSize, header.frameSize);
+        if (bodyBytes.length < header.frameSize) {
+            throw new CorruptFileError(
+                `ID3v2 frame header specified body is ${header.frameSize} bytes, ` +
+                `but only ${bodyBytes.length} remain in data.`
+            );
+        }
+
+        // Mark the frame as unsynchronized if the entire tag is already unsynchronized
+        // @TODO: Is this how the spec is written? Or was this to correct for invalid flags?
+        if (alreadyUnsynced) {
+            header.flags &= ~Id3v2FrameFlags.Unsynchronized;
+        }
+
+        // Unsynchronize if necessary
+        if (header.isUnsynchronizationApplied) {
+            bodyBytes = SyncData.resyncByteVector(bodyBytes);
+        }
+
+        // 3) Read extended header fields if they exist
+        const extendedHeaderSize = header.getExtendedSize(version);
+        if (extendedHeaderSize > 0) {
+            header.readExtendedHeader(bodyBytes.subarray(0, extendedHeaderSize), version);
+            bodyBytes = bodyBytes.subarray(extendedHeaderSize);
+        }
+
+        // 3) Construct the frame from file
+        // 3.1) Try with a custom constructor @TODO:
+
+        // 3.2) No matching custom constructors found, use built-in/default constructors
+        let func = this.DEFAULT_FRAME_CREATORS.get(header.frameId);
+        func ??= header.frameId.isTextFrame ? TextInformationFrame.fromOffsetRawData : undefined;
+        func ??= header.frameId.isUrlFrame ? UrlLinkFrame.fromOffsetRawData : undefined;
+        func ??= UnknownFrame.fromOffsetRawData;
+
+        let frame;
+        try {
+            frame = func(bodyBytes, 0, header, version);
+        } catch {
+            frame = UnknownFrame.fromOffsetRawData(bodyBytes, 0, header, version);
+        }
+
+        return { frame: frame, totalSize: frame.size + headerSize };
+    }
+
+    /**
      * Creates a {@link Frame} object by reading it from raw ID3v2 frame data.
      * @param data Raw ID3v2 frame
      * @param file File to read the frame from if `data` is falsy
@@ -113,7 +195,7 @@ export class Id3v2FrameFactory {
         Guards.byte(version, "version");
 
         let position = 0;
-        const frameHeaderSize = Id3v2FrameHeader.getSize(version);
+        const frameHeaderSize = Id3v2FrameHeader.getBaseSize(version);
 
         if (!data && !file) {
             throw new Error("Argument exception: data or file must be provided");
@@ -210,5 +292,19 @@ export class Id3v2FrameFactory {
             // Other exceptions will just mean we ignore the frame
             return { frame: undefined, offset: frameEndIndex };
         }
+    }
+
+    private static assertSupportedFlags(headerFlags: Id3v2FrameFlags): void {
+        // TODO: Support compression
+        if (NumberUtils.hasFlag(headerFlags, Id3v2FrameFlags.Compression)) {
+            throw new NotImplementedError("Compression is not supported");
+        }
+
+        // TODO: Support encryption
+        if (NumberUtils.hasFlag(headerFlags, Id3v2FrameFlags.Encryption)) {
+            throw new NotImplementedError("Encryption is not supported");
+        }
+
+        // @TODO: Consider reading these frames as unknown.
     }
 }
