@@ -276,6 +276,7 @@ export class TextInformationFrame extends Frame {
             return super.render(version);
         }
 
+        // @TODO: This code should be taken out when we migrate to immutable tag versions.
         const text = this.toString();
         if (text.length < 10 || text[4] !== "-" || text[7] !== "-") {
             return super.render(version);
@@ -325,7 +326,7 @@ export class TextInformationFrame extends Frame {
         const fieldList = [];
         const delim = ByteVector.getTextDelimiter(this._encoding);
 
-        if (version > 3 || this.frameId === FrameIdentifiers.TXXX) {
+        if (version > 3) {
             fieldList.push(...data.subarray(1).toStrings(this._encoding));
         } else if (data.length > 1 && !data.containsAt(delim, 1)) {
             let value = data.subarray(1).toString(this._encoding);
@@ -349,40 +350,25 @@ export class TextInformationFrame extends Frame {
 
     /** @inheritDoc */
     protected renderFields(version: number): ByteVector {
-        const encoding = TextInformationFrame.correctEncoding(this._encoding, version);
-        const v = ByteVector.empty();
-        let text = this._textFields;
-
-        v.addByte(encoding);
-
-        // Main processing
-        const isTxxx = this.frameId === FrameIdentifiers.TXXX;
-        if (version > 3 || isTxxx) {
-            if (isTxxx) {
-                if (text.length === 0) {
-                    text = [null, null];
-                } else if (text.length === 1) {
-                    text = [text[0], null];
-                }
-            }
-
-            for (let i = 0; i < text.length; i++) {
-                // Since the field list is null delimited, if this is not the first element in the
-                // list, append the appropriate delimiter for this encoding.
-                if (i !== 0) {
-                    v.addByteVector(ByteVector.getTextDelimiter(encoding));
-                }
-
-                if (text[i]) {
-                    v.addByteVector(ByteVector.fromString(text[i], encoding));
-                }
-            }
-        } else {
-            // Fields that have slashes in them and fields that don't
-            v.addByteVector(ByteVector.fromString(text.join("/"), encoding));
+        const truthyFields = this._textFields.filter(tf => !!tf);
+        if (truthyFields.length === 0) {
+            return ByteVector.empty();
         }
 
-        return v;
+        const encoding = TextInformationFrame.correctEncoding(this._encoding, version);
+
+        let fieldBytes;
+        if (version > 3) {
+            // v4 frames have each field separated by a delimiter
+            const truthyVectors = truthyFields.map(tf => ByteVector.fromString(tf, encoding));
+            fieldBytes = ByteVector.join(ByteVector.getTextDelimiter(encoding), truthyVectors);
+        } else {
+            // v3, v2 frames have multiple fields separated by a /
+            const joinedFields = this._textFields.join("/");
+            fieldBytes = ByteVector.fromString(joinedFields, encoding);
+        }
+
+        return ByteVector.concatenate(encoding, fieldBytes);
     }
 
     // #endregion
