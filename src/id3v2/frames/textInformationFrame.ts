@@ -149,16 +149,6 @@ export class TextInformationFrame extends Frame {
      */
     protected _encoding: StringType = Id3v2Settings.defaultEncoding;
     /**
-     * Raw data contents in the current instance.
-     * @protected
-     */
-    protected _rawData: ByteVector;
-    /**
-     * ID3v2 version of the current instance.
-     * @protected
-     */
-    protected _rawVersion: number;
-    /**
      * Decoded text contained in the current instance.
      * @protected
      */
@@ -222,14 +212,12 @@ export class TextInformationFrame extends Frame {
      * current instance. The value must be reassigned for the value to change.
      */
     public get text(): string[] {
-        this.parseRawData();
         return this._textFields.slice();
     }
     /**
      * Sets the text contained in the current instance.
      */
     public set text(value: string[]) {
-        this.parseRawData();
         this._textFields = value ? value.slice() : [];
     }
 
@@ -237,7 +225,6 @@ export class TextInformationFrame extends Frame {
      * Gets the text encoding to use when rendering the current instance.
      */
     public get textEncoding(): StringType {
-        this.parseRawData();
         return this._encoding;
     }
     /**
@@ -245,7 +232,6 @@ export class TextInformationFrame extends Frame {
      * This value will be overridden if {@link Id3v2Settings.forceDefaultEncoding} is `true`.
      */
     public set textEncoding(value: StringType) {
-        this.parseRawData();
         this._encoding = value;
     }
 
@@ -274,10 +260,6 @@ export class TextInformationFrame extends Frame {
     public clone(): Frame {
         const frame = TextInformationFrame.fromIdentifier(this.frameId, this._encoding);
         frame._textFields = this._textFields.slice();
-        if (this._rawData) {
-            frame._rawData = this._rawData.toByteVector();
-        }
-        frame._rawVersion = this._rawVersion;
         return frame;
     }
 
@@ -294,6 +276,7 @@ export class TextInformationFrame extends Frame {
             return super.render(version);
         }
 
+        // @TODO: This code should be taken out when we migrate to immutable tag versions.
         const text = this.toString();
         if (text.length < 10 || text[4] !== "-" || text[7] !== "-") {
             return super.render(version);
@@ -323,7 +306,6 @@ export class TextInformationFrame extends Frame {
      * Returns a text representation of the current instance by combining the text with semicolons.
      */
     public toString(): string {
-        this.parseRawData();
         return this.text.join("; ");
     }
 
@@ -333,24 +315,10 @@ export class TextInformationFrame extends Frame {
 
     /** @inheritDoc */
     protected parseFields(data: ByteVector, version: number): void {
-        this._rawData = data;
-        this._rawVersion = version;
-    }
-
-    /**
-     * Performs the actual parsing of the raw data.
-     * Because of the high parsing cost and relatively low usage of the class {@link parseFields}
-     * only stores the field data so it can be parsed on demand. Whenever a property or method is
-     * called which requires the data, this method is called, and only on the first call does it
-     * actually parse the data.
-     */
-    protected parseRawData(): void {
-        if (!this._rawData) {
+        if (data.length === 0) {
+            this._textFields = [];
             return;
         }
-
-        const data = this._rawData;
-        this._rawData = undefined;
 
         // Read the string data type (first byte of the field data)
         this._encoding = data.get(0);
@@ -358,7 +326,7 @@ export class TextInformationFrame extends Frame {
         const fieldList = [];
         const delim = ByteVector.getTextDelimiter(this._encoding);
 
-        if (this._rawVersion > 3 || this.frameId === FrameIdentifiers.TXXX) {
+        if (version > 3) {
             fieldList.push(...data.subarray(1).toStrings(this._encoding));
         } else if (data.length > 1 && !data.containsAt(delim, 1)) {
             let value = data.subarray(1).toString(this._encoding);
@@ -377,62 +345,38 @@ export class TextInformationFrame extends Frame {
             }
         }
 
-        // Bad tags may have one or more null characters at the end of a string, resulting in
-        // empty strings at the end of the FieldList. Strip them off.
-        while (fieldList.length !== 0
-            && (!fieldList[fieldList.length - 1] || fieldList[fieldList.length - 1].length === 0)) {
-            fieldList.splice(fieldList.length - 1, 1);
-        }
-
         this._textFields = fieldList;
     }
 
     /** @inheritDoc */
     protected renderFields(version: number): ByteVector {
-        if (this._rawData && this._rawVersion === version) {
-            return this._rawData;
+        const truthyFields = this._textFields.filter(tf => !!tf);
+        if (truthyFields.length === 0) {
+            return ByteVector.empty();
         }
 
-        const encoding = TextInformationFrame.correctEncoding(this.textEncoding, version);
-        const v = ByteVector.empty();
-        let text = this._textFields;
+        const encoding = TextInformationFrame.correctEncoding(this._encoding, version);
 
-        v.addByte(encoding);
-
-        // Main processing
-        const isTxxx = this.frameId === FrameIdentifiers.TXXX;
-        if (version > 3 || isTxxx) {
-            if (isTxxx) {
-                if (text.length === 0) {
-                    text = [null, null];
-                } else if (text.length === 1) {
-                    text = [text[0], null];
-                }
-            }
-
-            for (let i = 0; i < text.length; i++) {
-                // Since the field list is null delimited, if this is not the first element in the
-                // list, append the appropriate delimiter for this encoding.
-                if (i !== 0) {
-                    v.addByteVector(ByteVector.getTextDelimiter(encoding));
-                }
-
-                if (text[i]) {
-                    v.addByteVector(ByteVector.fromString(text[i], encoding));
-                }
-            }
+        let fieldBytes;
+        if (version > 3) {
+            // v4 frames have each field separated by a delimiter
+            const truthyVectors = truthyFields.map(tf => ByteVector.fromString(tf, encoding));
+            fieldBytes = ByteVector.join(ByteVector.getTextDelimiter(encoding), truthyVectors);
         } else {
-            // Fields that have slashes in them and fields that don't
-            v.addByteVector(ByteVector.fromString(text.join("/"), encoding));
+            // v3, v2 frames have multiple fields separated by a /
+            const joinedFields = this._textFields.join("/");
+            fieldBytes = ByteVector.fromString(joinedFields, encoding);
         }
 
-        return v;
+        return ByteVector.concatenate(encoding, fieldBytes);
     }
 
     // #endregion
 }
 
 export class UserTextInformationFrame extends TextInformationFrame {
+    private _description: string;
+
     // #region Constructors
 
     private constructor(header: Id3v2FrameHeader) {
@@ -450,7 +394,7 @@ export class UserTextInformationFrame extends TextInformationFrame {
     ): UserTextInformationFrame {
         const frame = new UserTextInformationFrame(new Id3v2FrameHeader(FrameIdentifiers.TXXX));
         frame._encoding = encoding;
-        frame.description = description;
+        frame._description = description;
         return frame;
     }
 
@@ -488,47 +432,25 @@ export class UserTextInformationFrame extends TextInformationFrame {
     /**
      * Gets the description stored in the current instance.
      */
-    public get description(): string {
-        const text = super.text;
-        return text.length > 0 ? text[0] : undefined;
-    }
+    public get description(): string { return this._description; }
     /**
      * Sets the description stored in the current instance.
      * There should only be one frame with the specified description per tag.
      * @param value Description to store in the current instance.
      */
-    public set description(value: string) {
-        let text = super.text;
-        if (text.length > 0) {
-            text[0] = value;
-        } else {
-            text = [ value ];
-        }
-        super.text = text;
-    }
+    public set description(value: string) { this._description = value; }
 
     /**
      * Gets the text contained in the current instance.
      * NOTE: Modifying the contents of the returned value will not modify the contents of the
      * current instance. The value must be reassigned for the value to change.
      */
-    public get text(): string[] {
-        const text = super.text;
-        if (text.length < 2) {
-            return [];
-        }
-
-        return text.slice(1);
-    }
+    public get text(): string[] { return this._textFields.slice(); }
     /**
      * Sets the text contained in the current instance.
      * @param value Array of text values to store in the current instance
      */
-    public set text(value: string[]) {
-        const newValue = [this.description];
-        newValue.push(... value);
-        super.text = newValue;
-    }
+    public set text(value: string[]) { this._textFields = value ? value.slice() : []; }
 
     // #endregion
 
@@ -547,6 +469,7 @@ export class UserTextInformationFrame extends TextInformationFrame {
         caseSensitive: boolean = true
     ): UserTextInformationFrame {
         Guards.truthy(frames, "frames");
+        Guards.truthy(description, "description");
 
         const comparison = caseSensitive ? StringComparison.caseSensitive : StringComparison.caseInsensitive;
         return frames.find((f) => comparison(f.description, description));
@@ -554,18 +477,65 @@ export class UserTextInformationFrame extends TextInformationFrame {
 
     /** @inheritDoc */
     public clone(): Frame {
-        const frame = UserTextInformationFrame.fromDescription(undefined, this._encoding);
+        const frame = UserTextInformationFrame.fromDescription(this._description, this._encoding);
         frame._textFields = this._textFields.slice();
-        if (this._rawData) {
-            frame._rawData = this._rawData.toByteVector();
-        }
-        frame._rawVersion = this._rawVersion;
         return frame;
     }
 
     /** @inheritDoc */
     public toString(): string {
         return `[${this.description}] ${super.toString()}`;
+    }
+
+    /** @inheritDoc */
+    protected parseFields(data: ByteVector, _version: number): void {
+        if (data.length === 0) {
+            this._description = undefined;
+            this._textFields = [];
+            return;
+        }
+
+        // Text encoding     $xx
+        // Description       <text string according to encoding> $00 (00)
+        // Value             <text string according to encoding>
+
+        this._encoding = data.get(0);
+
+        const fields = data.subarray(1).toStrings(this._encoding);
+        if (fields.length < 2) {
+            // Ill-formed frame, assume an undefined description
+            this._description = undefined;
+            this._textFields = fields;
+        } else {
+            // Well-formed frame, field 1 is description, field 2+ is data
+            this._description = fields[0];
+            this._textFields = fields.slice(1);
+        }
+    }
+
+    /** @inheritDoc */
+    protected renderFields(version: number): ByteVector {
+        if (!this._description && this._textFields.length === 0) {
+            return ByteVector.empty();
+        }
+
+        const encoding = TextInformationFrame.correctEncoding(this._encoding, version);
+        const v = ByteVector.empty();
+        v.addByte(encoding);
+        v.addByteVector(ByteVector.fromString(this._description ?? "", encoding));
+
+        for (const text of this._textFields) {
+            v.addByteVector(ByteVector.getTextDelimiter(encoding));
+            if (text) {
+                v.addByteVector(ByteVector.fromString(text, encoding));
+            }
+        }
+
+        if (this._textFields.length === 0) {
+            v.addByteVector(ByteVector.getTextDelimiter(encoding));
+        }
+
+        return v;
     }
 
     // #endregion

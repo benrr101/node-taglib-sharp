@@ -600,6 +600,28 @@ export class ByteVector {
         return new ByteVector(bytes);
     }
 
+    /**
+     * Creates a {@link ByteVector} composed up of the `values` with `separator` inserted between
+     * each element.
+     * @param separator {@link ByteVector} to insert between elements
+     * @param values List of {@link ByteVector} to join with the separator
+     */
+    public static join(separator: ByteVector, values: ByteVector[]): ByteVector {
+        Guards.truthy(separator, "separator");
+        Guards.truthy(values, "values");
+
+        const vectors = [];
+        for (let i = 0; i < values.length; i++) {
+            if (i !== 0) {
+                vectors.push(separator);
+            }
+
+            vectors.push(values[i]);
+        }
+
+        return ByteVector.concatenate(... vectors);
+    }
+
     // #endregion
 
     // #region Properties
@@ -885,7 +907,7 @@ export class ByteVector {
      */
     public get(index: number): number {
         Guards.uint(index, "index");
-        Guards.lessThanInclusive(index, this.length - 1, "index");
+        Guards.lessThanInclusive(index, this.length - 1, "index"); // @TODO: This behaves weird when vector is empty
         return this._bytes[index];
     }
 
