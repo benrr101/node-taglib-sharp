@@ -1938,6 +1938,7 @@ const getTestTagHeader = (version: number, flags: Id3v2TagHeaderFlags, tagSize: 
         Id3v2Settings.strictFrameForVersion = true;
 
         const frame1 = TextInformationFrame.fromIdentifier(FrameIdentifiers.TYER);
+        frame1.text = ["foo"];
         tag.frames.push(frame1);
 
         try {

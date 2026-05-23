@@ -41,19 +41,19 @@ import {UserUrlLinkFrame} from "../../src/id3v2/frames/urlLinkFrame";
 
     @params(StringType.Latin1, "latin1")
     @params(StringType.UTF16BE, "utf16be")
-    public fromOffsetRawData_wellFormed(encoding: StringType) {
+    public fromOffsetRawData_wellFormed(encoding: StringType = StringType.UTF16BE) {
         // Arrange
         const bodyBytes = ByteVector.concatenate(
             encoding,
             ByteVector.fromString("foo", encoding),
             ByteVector.getTextDelimiter(encoding),
-            ByteVector.fromString("bar", encoding)
+            ByteVector.fromString("bar", StringType.Latin1)
         );
         const header = new Id3v2FrameHeader(FrameIdentifiers.WXXX, Id3v2FrameFlags.None, bodyBytes.length);
         const data = ByteVector.concatenate(header.render(4), bodyBytes);
 
         // Act
-        const output = UserUrlLinkFrame.fromOffsetRawData(data, 2, header, 4);
+        const output = UserUrlLinkFrame.fromOffsetRawData(data, 0, header, 4);
 
         // Assert
         assert.ok(output);
