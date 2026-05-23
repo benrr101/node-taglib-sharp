@@ -432,33 +432,25 @@ export class UserTextInformationFrame extends TextInformationFrame {
     /**
      * Gets the description stored in the current instance.
      */
-    public get description(): string {
-        return this._description;
-    }
+    public get description(): string { return this._description; }
     /**
      * Sets the description stored in the current instance.
      * There should only be one frame with the specified description per tag.
      * @param value Description to store in the current instance.
      */
-    public set description(value: string) {
-        this._description = value;
-    }
+    public set description(value: string) { this._description = value; }
 
     /**
      * Gets the text contained in the current instance.
      * NOTE: Modifying the contents of the returned value will not modify the contents of the
      * current instance. The value must be reassigned for the value to change.
      */
-    public get text(): string[] {
-        return this._textFields.slice();
-    }
+    public get text(): string[] { return this._textFields.slice(); }
     /**
      * Sets the text contained in the current instance.
      * @param value Array of text values to store in the current instance
      */
-    public set text(value: string[]) {
-        this._textFields = value ? value.slice() : [];
-    }
+    public set text(value: string[]) { this._textFields = value ? value.slice() : []; }
 
     // #endregion
 
@@ -496,19 +488,29 @@ export class UserTextInformationFrame extends TextInformationFrame {
     }
 
     /** @inheritDoc */
-    protected parseFields(data: ByteVector, version: number): void {
-        Guards.byte(version, "version");
-
+    protected parseFields(data: ByteVector, _version: number): void {
         if (data.length === 0) {
             this._description = undefined;
             this._textFields = [];
             return;
         }
 
+        // Text encoding     $xx
+        // Description       <text string according to encoding> $00 (00)
+        // Value             <text string according to encoding>
+
         this._encoding = data.get(0);
+
         const fields = data.subarray(1).toStrings(this._encoding);
-        this._description = fields.length > 0 ? fields[0] : undefined;
-        this._textFields = fields.slice(1);
+        if (fields.length < 2) {
+            // Ill-formed frame, assume an undefined description
+            this._description = undefined;
+            this._textFields = fields;
+        } else {
+            // Well-formed frame, field 1 is description, field 2+ is data
+            this._description = fields[0];
+            this._textFields = fields.slice(1);
+        }
     }
 
     /** @inheritDoc */

@@ -29,34 +29,126 @@ const getTestFrame = (): UserTextInformationFrame => {
         return UserTextInformationFrame.fromOffsetRawData;
     }
 
-    @test
-    public fromDescription_noEncoding_returnsFrameWithDefaultEncoding() {
+    @params(undefined, "undefined")
+    @params(null, "null")
+    @params("", "empty_string")
+    @params("foo", "truthy")
+    public fromDescription_withoutEncoding(description: string) {
         // Act
-        const frame = UserTextInformationFrame.fromDescription("foo");
+        const frame = UserTextInformationFrame.fromDescription(description);
 
         // Assert
-        Id3v2_UserInformationFrame_ConstructorTests.assertFrame(frame, "foo", [], Id3v2Settings.defaultEncoding);
+        Id3v2_UserInformationFrame_ConstructorTests.assertFrame(frame, description, [], Id3v2Settings.defaultEncoding);
+    }
+
+    @params(undefined, "undefined")
+    @params(null, "null")
+    @params("", "empty_string")
+    @params("foo", "truthy")
+    public fromDescription_withEncoding(description: string) {
+        // Act
+        const frame = UserTextInformationFrame.fromDescription(description, StringType.UTF16BE);
+
+        // Assert
+        Id3v2_UserInformationFrame_ConstructorTests.assertFrame(frame, description, [], StringType.UTF16BE);
     }
 
     @test
-    public fromDescription_withEncoding_returnsFrameWithProvidedEncoding() {
+    public fromOffsetRawData_emptyFrame_returnsEmptyFrame() {
+        // Arrange
+        const bodyBytes = ByteVector.empty();
+        const header = new Id3v2FrameHeader(FrameIdentifiers.TXXX, Id3v2FrameFlags.None, bodyBytes.length);
+        const data = ByteVector.concatenate(
+            0x00, 0x00,
+            header.render(3),
+            bodyBytes
+        );
+
         // Act
-        const frame = UserTextInformationFrame.fromDescription("foo", StringType.UTF16);
+        const frame = UserTextInformationFrame.fromOffsetRawData(data, 2, header, 3);
 
         // Assert
-        Id3v2_UserInformationFrame_ConstructorTests.assertFrame(frame, "foo", [], StringType.UTF16);
+        assert.isOk(frame);
+        assert.strictEqual(frame.description, undefined);
+        assert.strictEqual(frame.frameId, FrameIdentifiers.TXXX);
+        assert.deepEqual(frame.text, []);
+        assert.strictEqual(frame.textEncoding, Id3v2Settings.defaultEncoding);
     }
 
-    @params([undefined, StringType.Latin1], "undefined")
-    @params([null, StringType.Latin1], "null")
-    @params(["", StringType.Latin1], "empty_string")
-    @params(["foo", StringType.Latin1], "truthy")
-    public fromDescription_descriptionValues([description, encoding]: [string, StringType]) {
+    @params(StringType.Latin1, "latin1")
+    @params(StringType.UTF16BE, "utf16be")
+    public fromOffsetRawData_wellFormed(encoding: StringType) {
+        // Arrange
+        const bodyBytes = ByteVector.concatenate(
+            encoding,
+            ByteVector.fromString("foo", encoding),
+            ByteVector.getTextDelimiter(encoding),
+            ByteVector.fromString("bar", encoding)
+        );
+        const header = new Id3v2FrameHeader(FrameIdentifiers.TXXX, Id3v2FrameFlags.None, bodyBytes.length);
+        const data = ByteVector.concatenate(header.render(4), bodyBytes);
+
         // Act
-        const frame = UserTextInformationFrame.fromDescription(description, encoding);
+        const output = UserTextInformationFrame.fromOffsetRawData(data, 0, header, 4);
 
         // Assert
-        Id3v2_UserInformationFrame_ConstructorTests.assertFrame(frame, description, [], encoding);
+        assert.isOk(output);
+        assert.equal(output.frameClassType, FrameClassType.UserTextInformationFrame);
+        assert.strictEqual(output.frameId, FrameIdentifiers.TXXX);
+
+        assert.strictEqual(output.description, "foo");
+        assert.deepEqual(output.text, ["bar"])
+        assert.strictEqual(output.textEncoding, encoding);
+    }
+
+    @test
+    public fromOffsetRawData_illFormedOneField() {
+        // Arrange
+        const bodyBytes = ByteVector.concatenate(
+            StringType.UTF16BE,
+            ByteVector.fromString("foo", StringType.UTF16BE)
+        );
+        const header = new Id3v2FrameHeader(FrameIdentifiers.TXXX, Id3v2FrameFlags.None, bodyBytes.length);
+        const data = ByteVector.concatenate(header.render(4), bodyBytes);
+
+        // Act
+        const output = UserTextInformationFrame.fromOffsetRawData(data, 0, header, 4);
+
+        // Assert
+        assert.isOk(output);
+        assert.equal(output.frameClassType, FrameClassType.UserTextInformationFrame);
+        assert.strictEqual(output.frameId, FrameIdentifiers.TXXX);
+
+        assert.strictEqual(output.description, undefined);
+        assert.deepEqual(output.text, ["foo"])
+        assert.strictEqual(output.textEncoding, StringType.UTF16BE);
+    }
+
+    @test
+    public fromOffsetRawData_illFormedThreeFields() {
+        // Arrange
+        const bodyBytes = ByteVector.concatenate(
+            StringType.UTF16BE,
+            ByteVector.fromString("foo", StringType.UTF16BE),
+            ByteVector.getTextDelimiter(StringType.UTF16BE),
+            ByteVector.fromString("bar", StringType.UTF16BE),
+            ByteVector.getTextDelimiter(StringType.UTF16BE),
+            ByteVector.fromString("baz", StringType.UTF16BE),
+        );
+        const header = new Id3v2FrameHeader(FrameIdentifiers.TXXX, Id3v2FrameFlags.None, bodyBytes.length);
+        const data = ByteVector.concatenate(header.render(4), bodyBytes);
+
+        // Act
+        const output = UserTextInformationFrame.fromOffsetRawData(data, 0, header, 4);
+
+        // Assert
+        assert.isOk(output);
+        assert.equal(output.frameClassType, FrameClassType.UserTextInformationFrame);
+        assert.strictEqual(output.frameId, FrameIdentifiers.TXXX);
+
+        assert.strictEqual(output.description, "foo");
+        assert.deepEqual(output.text, ["bar", "baz"])
+        assert.strictEqual(output.textEncoding, StringType.UTF16BE);
     }
 
     @test

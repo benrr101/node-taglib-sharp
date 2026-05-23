@@ -31,6 +31,12 @@ const getTestFrame = (): TextInformationFrame => {
     }
 
     @test
+    public fromIdentifier_falsyIdentifier() {
+        // Act/Assert
+        Testers.testTruthy((v: FrameIdentifier) => { TextInformationFrame.fromIdentifier(v); });
+    }
+
+    @test
     public fromIdentifier_noEncoding_returnsFrameWithDefaultEncoding() {
         // Act
         const frame = TextInformationFrame.fromIdentifier(FrameIdentifiers.TCOP);
@@ -44,12 +50,6 @@ const getTestFrame = (): TextInformationFrame => {
         assert.isArray(frame.text);
         assert.isEmpty(frame.text);
         assert.strictEqual(frame.textEncoding, Id3v2Settings.defaultEncoding);
-    }
-
-    @test
-    public fromIdentifier_falsyIdentifier() {
-        // Act/Assert
-        Testers.testTruthy((v: FrameIdentifier) => { TextInformationFrame.fromIdentifier(v); });
     }
 
     @test
