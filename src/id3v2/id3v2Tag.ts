@@ -19,7 +19,7 @@ import {IPicture} from "../picture";
 import {Tag, TagTypes} from "../tag";
 import {TextInformationFrame, UserTextInformationFrame} from "./frames/textInformationFrame";
 import {UrlLinkFrame} from "./frames/urlLinkFrame";
-import {DateUtils, Guards} from "../utils";
+import {DateUtils, Guards, NumberUtils} from "../utils";
 
 /**
  * Extends {@link Tag} to provide support for reading and writing tags stored in the ID3v2 format.
@@ -72,7 +72,8 @@ export default class Id3v2Tag extends Tag {
             throw new CorruptFileError("Provided data does not enough tag data");
         }
 
-        tag.parse(data.subarray(Id3v2Settings.headerSize, tag._header.tagSize), undefined, 0, ReadStyle.None);
+        const tagBodyBytes = data.subarray(Id3v2Settings.headerSize, tag._header.tagSize);
+        tag.parseFromData(tagBodyBytes, ReadStyle.None);
         return tag;
     }
 
@@ -1398,6 +1399,64 @@ export default class Id3v2Tag extends Tag {
     // #endregion
 
     // #region Protected/Private Methods
+
+    private parseFromData(data: ByteVector, style: ReadStyle): void {
+        // Determine if the entire tag needs to be resynchronized.
+        // @TODO: How imporant is it to check if the version is < 4?
+        const fullTagUnsync = this.version < 4 &&
+                              NumberUtils.hasFlag(this._header.flags, Id3v2TagHeaderFlags.Unsynchronization);
+
+        // Resynchronize the entire tag if required
+        if (fullTagUnsync) {
+            data = SyncData.resyncByteVector(data);
+        }
+
+        this.parseFromResynchronizedData(data, style, fullTagUnsync);
+    }
+
+    private parseFromResynchronizedData(data: ByteVector, style: ReadStyle, fullTagUnsync: boolean): void {
+        let position = 0;
+
+        // 1) Check for extended header
+        if (NumberUtils.hasFlag(this._header.flags, Id3v2TagHeaderFlags.ExtendedHeader)) {
+            // Extended header exists, read it and skip over it
+            this._extendedHeader = Id3v2ExtendedHeader.fromData(data, this.version)
+            position += this._extendedHeader.size;
+        }
+
+        // 2) Parse the frames
+        while (position < data.length) {
+            try {
+                const result = Id3v2FrameFactory.createFrameFromTagBytes(data, position, this.version, fullTagUnsync);
+
+                // If the frame factory returned undefined, that means we've hit the end of frames
+                if (!result) {
+                    break;
+                }
+
+                // Only add the frame if its size is > 0
+                // @TODO: How is this ever possible?
+                if (result.frame.size === 0) {
+                    continue;
+                }
+
+                this.addFrame(result.frame);
+                position += result.totalSize;
+
+            } catch (e: unknown) {
+                // If we fail at any point while trying to read the frames of the tag, we will have
+                // lost our place in the file and will have to give up reading the tag.
+                // Ok, technically we could use some heuristics to try to recover (eg, Foobar can
+                // do this), but it is a lot of effort for minimal reward.
+
+                // NOTE: It's important to not let this error propagate to the file level, else
+                // the user will not be able to recover the file.
+
+                // this.markCorrupt(e); @TODO: Add corruption reasons.
+                break;
+            }
+        }
+    }
 
     // @TODO: Split into parseFromFile and parseFromData
     private parse(data: ByteVector, file: File, position: number, style: ReadStyle): void {
