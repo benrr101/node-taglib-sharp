@@ -1984,6 +1984,95 @@ const assert = Chai.assert;
         );
     }
 
+    @test
+    public join_falsySeparator_throws() {
+        // Act / Assert
+        Testers.testTruthy((s: ByteVector) => ByteVector.join(s, []));
+    }
+
+    @test
+    public join_falsyValues_throws() {
+        // Act / Assert
+        Testers.testTruthy((v: ByteVector[]) => ByteVector.join(ByteVector.empty(), v));
+    }
+
+    @test
+    public join_emptyValues() {
+        // Act
+        const output = ByteVector.join(ByteVector.fromSize(1), []);
+
+        // Assert
+        assert.isOk(output);
+        assert.strictEqual(output.length, 0);
+    }
+
+    @test
+    public join_emptySeparator() {
+        // Arrange
+        const bv1 = ByteVector.fromString("foo", StringType.Latin1);
+        const bv2 = ByteVector.fromString("bar", StringType.Latin1);
+
+        // Act
+        const output = ByteVector.join(ByteVector.empty(), [bv1, bv2]);
+
+        // Assert
+        assert.isOk(output);
+
+        const expected = ByteVector.fromString("foobar", StringType.Latin1);
+        Testers.bvEqual(output, expected);
+    }
+
+    @test
+    public join_oneVectors() {
+        // Arrange
+        const bv1 = ByteVector.fromString("foo", StringType.Latin1);
+        const sep = ByteVector.fromString(",", StringType.Latin1);
+
+        // Act
+        const output = ByteVector.join(sep, [bv1]);
+
+        // Assert
+        assert.isOk(output);
+
+        const expected = ByteVector.fromString("foo", StringType.Latin1);
+        Testers.bvEqual(output, expected);
+    }
+
+    @test
+    public join_twoVectors() {
+        // Arrange
+        const bv1 = ByteVector.fromString("foo", StringType.Latin1);
+        const bv2 = ByteVector.fromString("bar", StringType.Latin1);
+        const sep = ByteVector.fromString(",", StringType.Latin1);
+
+        // Act
+        const output = ByteVector.join(sep, [bv1, bv2]);
+
+        // Assert
+        assert.isOk(output);
+
+        const expected = ByteVector.fromString("foo,bar", StringType.Latin1);
+        Testers.bvEqual(output, expected);
+    }
+
+    @test
+    public join_threeVectors() {
+        // Arrange
+        const bv1 = ByteVector.fromString("foo", StringType.Latin1);
+        const bv2 = ByteVector.fromString("bar", StringType.Latin1);
+        const bv3 = ByteVector.fromString("baz", StringType.Latin1);
+        const sep = ByteVector.fromString(",", StringType.Latin1);
+
+        // Act
+        const output = ByteVector.join(sep, [bv1, bv2, bv3]);
+
+        // Assert
+        assert.isOk(output);
+
+        const expected = ByteVector.fromString("foo,bar,baz", StringType.Latin1);
+        Testers.bvEqual(output, expected);
+    }
+
     private static equalContents(bv: ByteVector, expected: ArrayLike<number>): void {
         assert.strictEqual(bv.length, expected.length);
         for (let i = 0; i < bv.length; i++) {
