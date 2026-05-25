@@ -1414,6 +1414,66 @@ export default class Id3v2Tag extends Tag {
         this.parseFromResynchronizedData(data, style, fullTagUnsync);
     }
 
+    private parseFromFile(file: File, offset: number, style: ReadStyle): void {
+        // Determine if the entire tag needs to be rewynchronized.
+        // @TODO: How imporant is it to check if the version is < 4?
+        const fullTagUnsync = this.version < 4 &&
+                              NumberUtils.hasFlag(this._header.flags, Id3v2TagHeaderFlags.Unsynchronization);
+
+        // 1) Resynchronize the entire tag if required
+        if (fullTagUnsync) {
+            // Full tag needs to be resynchronized. No point in trying to lazy load anything...
+            let data = file.readBlock(this._header.tagSize);
+            data = SyncData.resyncByteVector(data);
+
+            return this.parseFromResynchronizedData(data, style, true);
+        }
+
+        let position = offset;
+
+        // 2) Read extended header if required
+        if (NumberUtils.hasFlag(this._header.flags, Id3v2TagHeaderFlags.ExtendedHeader)) {
+            // Extended header exists, read it and skip over it
+            this._extendedHeader = Id3v2ExtendedHeader.fromFile(file, position, this.version);
+            position += this._extendedHeader.size;
+        }
+
+        // 3) Full tag does not need to be resynchronized. We can load frames.
+        const bodyEndPosition = offset + this._header.tagSize;
+        while (position < bodyEndPosition) {
+            try {
+                const result = Id3v2FrameFactory.createFrameFromFile(file, position, this.version, fullTagUnsync);
+
+                // If the frame factory returned undefined, that means we've hit the end of frames
+                if (!result) {
+                    break;
+                }
+
+                // Only add the frame if its size is > 0
+                // @TODO: How is this ever possible?
+                if (result.frame.size === 0) {
+                    continue;
+                }
+
+                this.addFrame(result.frame);
+                position += result.totalSize;
+
+            } catch (e: unknown) {
+                // If we fail at any point while trying to read the frames of the tag, we will have
+                // lost our place in the file and will have to give up reading the tag.
+                // Ok, technically we could use some heuristics to try to recover (eg, Foobar can
+                // do this), but it is a lot of effort for minimal reward.
+
+                // NOTE: It's important to not let this error propagate to the file level, else
+                // the user will not be able to recover the file.
+
+                // this.markCorrupt(e); @TODO: Add corruption reasons.
+                break;
+            }
+        }
+
+    }
+
     private parseFromResynchronizedData(data: ByteVector, style: ReadStyle, fullTagUnsync: boolean): void {
         let position = 0;
 
@@ -1547,7 +1607,7 @@ export default class Id3v2Tag extends Tag {
         }
 
         position += Id3v2Settings.headerSize;
-        this.parse(undefined, file, position, style);
+        this.parseFromFile(file, position, style);
     }
 
     private readFromEnd(file: File, position: number, style: ReadStyle): void {
