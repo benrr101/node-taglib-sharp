@@ -268,29 +268,29 @@ export abstract class Frame {
         dataIncludesHeader: boolean
     ): ByteVector {
         // @TODO: Subarrays are cheap now, we could do this all without an offset.
-        let dataOffset = offset + (dataIncludesHeader ? Id3v2FrameHeader.getSize(version) : 0);
+        let dataOffset = offset + (dataIncludesHeader ? Id3v2FrameHeader.getBaseSize(version) : 0);
         let dataLength = this.size;
 
-        if (NumberUtils.hasFlag(this.flags, (Id3v2FrameFlags.Compression | Id3v2FrameFlags.DataLengthIndicator))) {
-            dataOffset += 4;
-            dataLength -= 4;
-        }
+        // if (NumberUtils.hasFlag(this.flags, (Id3v2FrameFlags.Compression | Id3v2FrameFlags.DataLengthIndicator))) {
+        //     dataOffset += 4;
+        //     dataLength -= 4;
+        // }
 
-        if (NumberUtils.hasFlag(this.flags, Id3v2FrameFlags.GroupingIdentity)) {
-            if (frameData.length <= dataOffset) {
-                throw new CorruptFileError("Frame data incomplete");
-            }
-            this.groupId = frameData.get(dataOffset++);
-            dataLength--;
-        }
-
-        if (NumberUtils.hasFlag(this.flags, Id3v2FrameFlags.Encryption)) {
-            if (frameData.length <= dataOffset) {
-                throw new CorruptFileError("Frame data incomplete");
-            }
-            this._encryptionId = frameData.get(dataOffset++);
-            dataLength--;
-        }
+        // if (NumberUtils.hasFlag(this.flags, Id3v2FrameFlags.GroupingIdentity)) {
+        //     if (frameData.length <= dataOffset) {
+        //         throw new CorruptFileError("Frame data incomplete");
+        //     }
+        //     this.groupId = frameData.get(dataOffset++);
+        //     dataLength--;
+        // }
+        //
+        // if (NumberUtils.hasFlag(this.flags, Id3v2FrameFlags.Encryption)) {
+        //     if (frameData.length <= dataOffset) {
+        //         throw new CorruptFileError("Frame data incomplete");
+        //     }
+        //     this._encryptionId = frameData.get(dataOffset++);
+        //     dataLength--;
+        // }
 
         dataLength = Math.min(dataLength, frameData.length - dataOffset);
         if (dataLength < 0) {

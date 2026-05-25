@@ -457,7 +457,7 @@ export default class AttachmentFrame extends Frame implements IPicture {
 
         // Switch the frame ID if we discovered the attachment isn't an image
         if (this._type === PictureType.NotAPicture) {
-            this.header.frameId = FrameIdentifiers.GEOB;
+            this.header = new Id3v2FrameHeader(FrameIdentifiers.GEOB, this.header.flags, this.header.frameSize);
         }
     }
 }
