@@ -13,6 +13,22 @@ export default class UnknownFrame extends Frame {
     }
 
     /**
+     * Constructs and initialized a new instance by storing the body bytes.
+     * @param header Header of the frame
+     * @param bodyBytes Bytes that contain the body of the frame
+     * @param version ID3v2 version the frame was originally encoded with
+     */
+    public static fromBodyBytes(header: Id3v2FrameHeader, bodyBytes: ByteVector, version: number): UnknownFrame {
+        Guards.truthy(header, "header");
+        Guards.truthy(bodyBytes, "bodyBytes");
+        Guards.byte(version, "version");
+
+        const frame = new UnknownFrame(header);
+        frame.data = bodyBytes;
+        return frame;
+    }
+
+    /**
      * Constructs and initializes a new instance with a specified type
      * @param identifier ID3v2 frame identifier
      * @param data Contents of the frame
@@ -22,31 +38,6 @@ export default class UnknownFrame extends Frame {
 
         const frame = new UnknownFrame(new Id3v2FrameHeader(identifier));
         frame.data = data?.toByteVector();
-        return frame;
-    }
-
-    /**
-     * Constructs and initializes a new instance by reading its raw data in a specified ID3v2
-     * version. This method allows for offset reading from the data byte vector.
-     * @param data Raw representation of the new frame
-     * @param offset What offset in `data` the frame actually begins. Must be positive,
-     *     safe integer
-     * @param header Header of the frame found at `data` in the data
-     * @param version ID3v2 version the frame was originally encoded with
-     */
-    public static fromOffsetRawData(
-        data: ByteVector,
-        offset: number,
-        header: Id3v2FrameHeader,
-        version: number
-    ): UnknownFrame {
-        Guards.truthy(data, "data");
-        Guards.uint(offset, "offset");
-        Guards.truthy(header, "header");
-        Guards.byte(version, "version");
-
-        const frame = new UnknownFrame(header);
-        frame.setData(data, offset, false, version);
         return frame;
     }
 
@@ -64,9 +55,7 @@ export default class UnknownFrame extends Frame {
     }
 
     /** @inheritDoc */
-    protected parseFields(data: ByteVector): void {
-        this.data = data.toByteVector();
-    }
+    protected parseFields(data: ByteVector): void { }
 
     /** @inheritDoc */
     protected renderFields(): ByteVector {

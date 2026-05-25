@@ -227,13 +227,13 @@ export class Id3v2FrameFactory {
         let func = this.DEFAULT_FRAME_CREATORS.get(header.frameId);
         func ??= header.frameId.isTextFrame ? TextInformationFrame.fromOffsetRawData : undefined;
         func ??= header.frameId.isUrlFrame ? UrlLinkFrame.fromOffsetRawData : undefined;
-        func ??= UnknownFrame.fromOffsetRawData;
+        func ??= (a, b, c, d) => UnknownFrame.fromBodyBytes(c, a, d);
 
         let frame;
         try {
             frame = func(bodyBytes, 0, header, version);
         } catch {
-            frame = UnknownFrame.fromOffsetRawData(bodyBytes, 0, header, version);
+            frame = UnknownFrame.fromBodyBytes(header, bodyBytes, version);
         }
 
         return frame;

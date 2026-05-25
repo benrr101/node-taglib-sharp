@@ -26,7 +26,7 @@ export default abstract class FrameConstructorTests {
         const header = new Id3v2FrameHeader(FrameIdentifiers.WCOM);
 
         // Act/Assert
-        Testers.testUint((v: number) => { this.fromOffsetRawData(data, v, header, 4); });
+        Testers.testByte((v: number) => { this.fromOffsetRawData(data, 0, header, v); });
     }
 
     @test

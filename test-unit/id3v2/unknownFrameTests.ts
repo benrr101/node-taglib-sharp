@@ -1,17 +1,17 @@
-import {suite, test} from "@testdeck/mocha";
+import {params, suite, test} from "@testdeck/mocha";
 import {assert} from "chai";
 
 import FrameConstructorTests from "./frameConstructorTests";
 import UnknownFrame from "../../src/id3v2/frames/unknownFrame";
 import {ByteVector, StringType} from "../../src/byteVector";
 import {Frame, FrameClassType} from "../../src/id3v2/frames/frame";
-import {Id3v2FrameHeader} from "../../src/id3v2/frames/frameHeader";
+import {Id3v2FrameFlags, Id3v2FrameHeader} from "../../src/id3v2/frames/frameHeader";
 import {FrameIdentifier, FrameIdentifiers} from "../../src/id3v2/frameIdentifiers";
 import {Testers} from "../utilities/testers";
 
 @suite class Id3v2_UnknownFrame_ConstructorTests extends FrameConstructorTests {
     public get fromOffsetRawData(): (d: ByteVector, o: number, h: Id3v2FrameHeader, v: number) => Frame {
-        return UnknownFrame.fromOffsetRawData;
+        return (a, b, c, d) => UnknownFrame.fromBodyBytes(c, a, d);
     }
 
     @test
@@ -20,25 +20,14 @@ import {Testers} from "../utilities/testers";
         Testers.testTruthy((v: FrameIdentifier) => { UnknownFrame.fromData(v, undefined); });
     }
 
-    @test
-    public fromData_undefinedData_frameHasNoData() {
+    @params(undefined, "undefined")
+    @params(null, "null")
+    public fromData_falsyData_frameHasNoData(value: ByteVector) {
         // Arrange
         const frameType = FrameIdentifiers.WXXX;
 
         // Act
-        const frame = UnknownFrame.fromData(frameType, undefined);
-
-        // Assert
-        Id3v2_UnknownFrame_ConstructorTests.assertFrame(frame, FrameIdentifiers.WXXX, undefined);
-    }
-
-    @test
-    public fromData_nullData_frameHasNoData() {
-        // Arrange
-        const frameType = FrameIdentifiers.WXXX;
-
-        // Act
-        const frame = UnknownFrame.fromData(frameType, null);
+        const frame = UnknownFrame.fromData(frameType, value);
 
         // Assert
         Id3v2_UnknownFrame_ConstructorTests.assertFrame(frame, FrameIdentifiers.WXXX, undefined);
@@ -57,19 +46,16 @@ import {Testers} from "../utilities/testers";
         Id3v2_UnknownFrame_ConstructorTests.assertFrame(frame, FrameIdentifiers.WXXX, data);
     }
 
-    @test
-    public fromOffsetData_validParams_returnsFrame() {
+    @params(2, "v2")
+    @params(3, "v3")
+    @params(4, "v4")
+    public fromBodyBytes_validParams_returnsFrame(version: number) {
         // Arrange
-        const header = new Id3v2FrameHeader(FrameIdentifiers.WXXX);
-        header.frameSize = 11;
-        const data = ByteVector.concatenate(
-            0x0, 0x0,
-            header.render(4),
-            ByteVector.fromString("foo bar baz", StringType.UTF8)
-        );
+        const bodyBytes = ByteVector.fromString("foo bar baz", StringType.UTF8);
+        const header = new Id3v2FrameHeader(FrameIdentifiers.WXXX, Id3v2FrameFlags.None, bodyBytes.length);
 
         // Act
-        const frame = UnknownFrame.fromOffsetRawData(data, 2, header, 4);
+        const frame = UnknownFrame.fromBodyBytes(header, bodyBytes, version);
 
         // Assert
         Id3v2_UnknownFrame_ConstructorTests.assertFrame(
@@ -93,16 +79,14 @@ import {Testers} from "../utilities/testers";
 }
 
 @suite class Id3v2_UnknownFrame_MethodTests {
-    @test
-    public clone_returnsCopy() {
+    @params(2, "v2")
+    @params(3, "v3")
+    @params(4, "v4")
+    public clone_returnsCopy(version: number) {
         // Arrange
-        const header = new Id3v2FrameHeader(FrameIdentifiers.WXXX);
-        header.frameSize = 11;
-        const data = ByteVector.concatenate(
-            header.render(4),
-            ByteVector.fromString("foo bar baz", StringType.UTF8)
-        );
-        const frame = UnknownFrame.fromOffsetRawData(data, 0, header, 4);
+        const bodyBytes = ByteVector.fromString("foo bar baz", StringType.UTF8);
+        const header = new Id3v2FrameHeader(FrameIdentifiers.WXXX, Id3v2FrameFlags.None, bodyBytes.length);
+        const frame = UnknownFrame.fromBodyBytes(header, bodyBytes, version);
 
         // Act
         const result = <UnknownFrame> frame.clone();
@@ -115,22 +99,22 @@ import {Testers} from "../utilities/testers";
         Testers.bvEqual(result.data, result.data);
     }
 
-    @test
-    public render_returnsByteVector() {
+    @params(2, "v2")
+    @params(3, "v3")
+    @params(4, "v4")
+    public render_returnsByteVector(version: number) {
         // Arrange
-        const header = new Id3v2FrameHeader(FrameIdentifiers.WXXX);
-        header.frameSize = 11;
-        const data = ByteVector.concatenate(
-            header.render(4),
-            ByteVector.fromString("foo bar baz", StringType.UTF8)
-        );
-        const frame = UnknownFrame.fromOffsetRawData(data, 0, header, 4);
+        const bodyBytes = ByteVector.fromString("foo bar baz", StringType.UTF8);
+        const header = new Id3v2FrameHeader(FrameIdentifiers.WXXX, Id3v2FrameFlags.None, bodyBytes.length);
+        const frame = UnknownFrame.fromBodyBytes(header, bodyBytes, version);
 
         // Act
-        const result = frame.render(4);
+        const result = frame.render(version);
 
         // Assert
         assert.ok(result);
-        Testers.bvEqual(data, result);
+
+        const expected = ByteVector.concatenate(header.render(version), bodyBytes);
+        Testers.bvEqual(result, expected);
     }
 }
