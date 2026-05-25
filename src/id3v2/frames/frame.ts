@@ -129,6 +129,13 @@ export abstract class Frame {
      * Gets the frame flags applied to the current instance.
      */
     public get flags(): Id3v2FrameFlags { return this._header.flags; }
+    /**
+     * Sets the frame flags applied to the current instance.
+     * If the value includes either {@link Id3v2FrameFlags.Encryption} or
+     * {@link Id3v2FrameFlags.Compression}, {@link render} will throw.
+     */
+    // @TODO: This shouldn't be necessary, but removing it braks mroe things than I want to fix right now.
+    public set flags(value: Id3v2FrameFlags) { this._header.flags = value; }
 
     /**
      * Gets the header for the frame. For new frames this should not exist.
