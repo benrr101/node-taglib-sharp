@@ -51,7 +51,7 @@ export class Id3v2FrameFactory {
             [FrameIdentifiers.MCDI, MusicCdIdentifierFrame.fromOffsetRawData],
             [FrameIdentifiers.PCNT, PlayCountFrame.fromOffsetRawData],
             [FrameIdentifiers.POPM, PopularimeterFrame.fromOffsetRawData],
-            [FrameIdentifiers.PRIV, PrivateFrame.fromOffsetRawData],
+            [FrameIdentifiers.PRIV, (a, b, c, d) => PrivateFrame.fromFieldBytes(c, a, d)],
             [FrameIdentifiers.RVA2, RelativeVolumeFrame.fromOffsetRawData],
             [FrameIdentifiers.SYLT, SynchronizedLyricsFrame.fromOffsetRawData],
             [FrameIdentifiers.TCON, GenreFrame.fromOffsetRawData],

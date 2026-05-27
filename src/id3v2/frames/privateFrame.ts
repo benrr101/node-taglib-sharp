@@ -21,6 +21,34 @@ export default class PrivateFrame extends Frame {
     }
 
     /**
+     * Constructs and initialized a new instance by parsing the owner and private data from the
+     * provided fields bytes.
+     * @param header Header of the frame
+     * @param fieldBytes Bytes that contain the fields of the frame
+     * @param version ID3v2 version the frame was originally encoded with
+     */
+    public static fromFieldBytes(header: Id3v2FrameHeader, fieldBytes: ByteVector, version: number): PrivateFrame {
+        Guards.truthy(header, "header");
+        Guards.truthy(fieldBytes, "fieldBytes");
+        Guards.byte(version, "version");
+
+        if (fieldBytes.length < 1) {
+            throw new CorruptFileError("A private frame must contain at least 1 byte");
+        }
+
+        // Owner identifier      <text string> $00
+        // The private data      <binary data>
+
+        const frame = new PrivateFrame(header);
+
+        const fields = fieldBytes.split(ByteVector.getTextDelimiter(StringType.Latin1), 1, 2);
+        frame._owner = fields[0].toString(StringType.Latin1)
+        frame._privateData = fields[1]?.toByteVector() ?? ByteVector.empty();
+
+        return frame;
+    }
+
+    /**
      * Constructs and initializes a new instance with the provided owner
      * @param owner Owner of the private frame
      */
@@ -28,31 +56,6 @@ export default class PrivateFrame extends Frame {
         const frame = new PrivateFrame(new Id3v2FrameHeader(FrameIdentifiers.PRIV));
         frame._owner = owner;
         frame._privateData = ByteVector.empty();
-        return frame;
-    }
-
-    /**
-     * Constructs and initializes a new instance by reading its raw data in a specified ID3v2
-     * version. This method allows for offset reading from the data byte vector.
-     * @param data Raw representation of the new frame
-     * @param offset What offset in `data` the frame actually begins. Must be positive,
-     *     safe integer
-     * @param header Header of the frame found at `data` in the data
-     * @param version ID3v2 version the frame was originally encoded with
-     */
-    public static fromOffsetRawData(
-        data: ByteVector,
-        offset: number,
-        header: Id3v2FrameHeader,
-        version: number
-    ): PrivateFrame {
-        Guards.truthy(data, "data");
-        Guards.uint(offset, "offset");
-        Guards.truthy(header, "header");
-        Guards.byte(version, "version");
-
-        const frame = new PrivateFrame(header);
-        frame.setData(data, offset, false, version);
         return frame;
     }
 
@@ -102,20 +105,13 @@ export default class PrivateFrame extends Frame {
     }
 
     /** @inheritDoc */
-    protected parseFields(data: ByteVector): void {
-        if (data.length < 1) {
-            throw new CorruptFileError("A private frame must contain at least 1 byte");
-        }
-
-        const l = data.split(ByteVector.getTextDelimiter(StringType.Latin1), 1, 2);
-        this._owner = l[0].toString(StringType.Latin1);
-        this._privateData = l[1]?.toByteVector() || ByteVector.empty();
-    }
+    protected parseFields(data: ByteVector): void { }
 
     /** @inheritDoc */
     protected renderFields(version: number): ByteVector {
         if (version < 3) {
             throw new NotImplementedError();
+            // @TODO: I don't think this should throw ... maybe return nothing?
         }
 
         return ByteVector.concatenate(

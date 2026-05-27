@@ -1,4 +1,4 @@
-import {suite, test} from "@testdeck/mocha";
+import {params, suite, test} from "@testdeck/mocha";
 import {assert} from "chai";
 
 import FrameConstructorTests from "./frameConstructorTests";
@@ -6,17 +6,17 @@ import PropertyTests from "../utilities/propertyTests";
 import PrivateFrame from "../../src/id3v2/frames/privateFrame";
 import {ByteVector, StringType} from "../../src/byteVector";
 import {Frame, FrameClassType} from "../../src/id3v2/frames/frame";
-import {Id3v2FrameHeader} from "../../src/id3v2/frames/frameHeader";
+import {Id3v2FrameFlags, Id3v2FrameHeader} from "../../src/id3v2/frames/frameHeader";
 import {FrameIdentifiers} from "../../src/id3v2/frameIdentifiers";
 import {Testers} from "../utilities/testers";
 
 @suite class Id3v2_PrivateFrame_ConstructorTests extends FrameConstructorTests {
     public get fromOffsetRawData(): (d: ByteVector, o: number, h: Id3v2FrameHeader, v: number) => Frame {
-        return PrivateFrame.fromOffsetRawData;
+        return (a, b, c, d) => PrivateFrame.fromFieldBytes(c, a, d);
     }
 
     @test
-    public fromOwner() {
+    public fromOwner_validParams_returnsFrame() {
         // Act
         const frame = PrivateFrame.fromOwner("foo");
 
@@ -25,59 +25,70 @@ import {Testers} from "../utilities/testers";
     }
 
     @test
-    public fromOffsetRawData_tooFewBytes() {
+    public fromFieldBytes_tooFewBytes_throws() {
         // Arrange
-        const header = new Id3v2FrameHeader(FrameIdentifiers.PRIV);
-        header.frameSize = 0;
-        const data = ByteVector.concatenate(
-            0x00, 0x00,
-            header.render(4)
-        );
+        const fieldBytes = ByteVector.empty();
+        const header = new Id3v2FrameHeader(FrameIdentifiers.PRIV, Id3v2FrameFlags.None, fieldBytes.length);
 
         // Act / Assert
-        assert.throws(() => { PrivateFrame.fromOffsetRawData(data, 2, header, 4); });
+        assert.throws(() => { PrivateFrame.fromFieldBytes(header, fieldBytes, 4); });
     }
 
-    @test
-    public fromOffsetRawData_owner() {
+    @params(2, "v2")
+    @params(3, "v3")
+    @params(4, "v4")
+    public fromFieldBytes_ownerOnly(version: number) {
         // Arrange
-        const header = new Id3v2FrameHeader(FrameIdentifiers.PRIV);
-        header.frameSize = 4;
-        const data = ByteVector.concatenate(
-            0x00, 0x00,
-            header.render(4),
-            ByteVector.fromString("fux", StringType.Latin1)
+        const fieldBytes = ByteVector.concatenate(
+            ByteVector.fromString("fux", StringType.Latin1), // Owner
+            0x00                                             // Separator
         );
+        const header = new Id3v2FrameHeader(FrameIdentifiers.PRIV, Id3v2FrameFlags.None, fieldBytes.length);
 
         // Act
-        const frame = PrivateFrame.fromOffsetRawData(data, 2, header, 4);
+        const frame = PrivateFrame.fromFieldBytes(header, fieldBytes, version);
 
         // Assert
         Id3v2_PrivateFrame_ConstructorTests.assertFrame(frame, "fux", ByteVector.empty());
     }
 
-    @test
-    public fromOffsetRawData_ownerAndData() {
+    @params(2, "v2")
+    @params(3, "v3")
+    @params(4, "v4")
+    public fromBodyBytes_dataOnly(version: number) {
         // Arrange
-        const header = new Id3v2FrameHeader(FrameIdentifiers.PRIV);
-        header.frameSize = 8;
-        const data = ByteVector.concatenate(
-            0x00, 0x00,
-            header.render(4),
-            ByteVector.fromString("fux", StringType.Latin1),
-            ByteVector.getTextDelimiter(StringType.Latin1),
-            0x01, 0x02, 0x03, 0x04
+        const dataBytes = ByteVector.concatenate(0x01, 0x02, 0x03, 0x04);
+        const fieldBytes = ByteVector.concatenate(
+            0x00,      // Separator
+            dataBytes  // Data
         );
+        const header = new Id3v2FrameHeader(FrameIdentifiers.PRIV, Id3v2FrameFlags.None, fieldBytes.length);
 
         // Act
-        const frame = PrivateFrame.fromOffsetRawData(data, 2, header, 4);
+        const frame = PrivateFrame.fromFieldBytes(header, fieldBytes, version);
 
         // Assert
-        Id3v2_PrivateFrame_ConstructorTests.assertFrame(
-            frame,
-            "fux",
-            ByteVector.fromByteArray(new Uint8Array([0x01, 0x02, 0x03, 0x04]))
+        Id3v2_PrivateFrame_ConstructorTests.assertFrame(frame, "", dataBytes);
+    }
+
+    @params(2, "v2")
+    @params(3, "v3")
+    @params(4, "v4")
+    public fromFieldBytes_ownerAndData(version: number) {
+        // Arrange
+        const dataBytes = ByteVector.concatenate(0x01, 0x02, 0x03, 0x04);
+        const fieldBytes = ByteVector.concatenate(
+            ByteVector.fromString("foo", StringType.Latin1), // Owner
+            0x00,                                            // Separator
+            dataBytes                                        // Data
         );
+        const header = new Id3v2FrameHeader(FrameIdentifiers.PRIV, Id3v2FrameFlags.None, fieldBytes.length);
+
+        // Act
+        const frame = PrivateFrame.fromFieldBytes(header, fieldBytes, version);
+
+        // Assert
+        Id3v2_PrivateFrame_ConstructorTests.assertFrame(frame, "foo", dataBytes);
     }
 
     private static assertFrame(frame: PrivateFrame, o: string, d: ByteVector) {
@@ -168,40 +179,75 @@ import {Testers} from "../utilities/testers";
     }
 
     @test
-    public render_v4() {
+    public render_v2_throws() {
         // Arrange
-        const header = new Id3v2FrameHeader(FrameIdentifiers.PRIV);
-        header.frameSize = 8;
-        const data = ByteVector.concatenate(
-            header.render(4),
-            ByteVector.fromString("fux", StringType.Latin1),
-            ByteVector.getTextDelimiter(StringType.Latin1),
-            0x01, 0x02, 0x03, 0x04
+        const frame = PrivateFrame.fromOwner("foo");
+
+        // Act / Assert
+        assert.throws(() => frame.render(2));
+    }
+
+    @params(3, "v3")
+    @params(4, "v4")
+    public render_v34(version: number) {
+        // Arrange
+        const dataBytes = ByteVector.fromByteArray([0x01, 0x02, 0x03, 0x04]);
+        const fieldBytes = ByteVector.concatenate(
+            ByteVector.fromString("fux", StringType.Latin1), // Owner
+            0x00,                                            // Separator
+            dataBytes                                        // Data
         );
-        const frame = PrivateFrame.fromOffsetRawData(data, 0, header, 4);
+        const header = new Id3v2FrameHeader(FrameIdentifiers.PRIV, Id3v2FrameFlags.None, fieldBytes.length);
+        const frame = PrivateFrame.fromFieldBytes(header, fieldBytes, version);
+
+        // Act
+        const output = frame.render(version);
+
+        // Assert
+        assert.isOk(output);
+
+        const expected = ByteVector.concatenate(header.render(version), fieldBytes);
+        Testers.bvEqual(output, expected);
+    }
+
+    @test
+    public render_ownerOnly() {
+        // Arrange
+        const fieldBytes = ByteVector.concatenate(
+            ByteVector.fromString("fux", StringType.Latin1), // Owner
+            0x00                                             // Separator
+        );
+        const header = new Id3v2FrameHeader(FrameIdentifiers.PRIV, Id3v2FrameFlags.None, fieldBytes.length);
+        const frame = PrivateFrame.fromFieldBytes(header, fieldBytes, 4);
 
         // Act
         const output = frame.render(4);
 
         // Assert
         assert.isOk(output);
-        Testers.bvEqual(output, data);
+
+        const expected = ByteVector.concatenate(header.render(4), fieldBytes);
+        Testers.bvEqual(output, expected);
     }
 
     @test
-    public render_v2_throws() {
+    public render_dataOnly() {
         // Arrange
-        const header = new Id3v2FrameHeader(FrameIdentifiers.PRIV);
-        header.frameSize = 9;
-        const data = ByteVector.concatenate(
-            header.render(4),
-            ByteVector.fromString("fux", StringType.Latin1),
-            ByteVector.getTextDelimiter(StringType.Latin1),
-            0x01, 0x02, 0x03, 0x04
+        const dataBytes = ByteVector.concatenate(0x01, 0x02, 0x03, 0x04);
+        const fieldBytes = ByteVector.concatenate(
+            0x00,      // Separator
+            dataBytes  // Data
         );
-        const frame = PrivateFrame.fromOffsetRawData(data, 0, header, 4);
+        const header = new Id3v2FrameHeader(FrameIdentifiers.PRIV, Id3v2FrameFlags.None, fieldBytes.length);
+        const frame = PrivateFrame.fromFieldBytes(header, fieldBytes, 4);
 
-        // Act / Assert
-        assert.throws(() => frame.render(2));
+        // Act
+        const output = frame.render(4);
+
+        // Assert
+        assert.isOk(output);
+
+        const expected = ByteVector.concatenate(header.render(4), fieldBytes);
+        Testers.bvEqual(output, expected);
     }
 }
