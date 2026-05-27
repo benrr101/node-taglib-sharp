@@ -33,34 +33,52 @@ export default class UnsynchronizedLyricsFrame extends Frame {
         encoding: StringType = Id3v2Settings.defaultEncoding
     ): UnsynchronizedLyricsFrame {
         const frame = new UnsynchronizedLyricsFrame(new Id3v2FrameHeader(FrameIdentifiers.USLT));
-        frame.textEncoding = encoding;
+        frame._textEncoding = encoding;
         frame._language = language;
         frame._description = description;
         return frame;
     }
 
     /**
-     * Constructs and initializes a new instance by reading its raw data in a specified ID3v2
-     * version. This method allows for offset reading from the data byte vector.
-     * @param data Raw representation of the new frame
-     * @param offset What offset in `data` the frame actually begins. Must be positive,
-     *     safe integer
-     * @param header Header of the frame found at `data` in the data
+     * Constructs and initializes a new instance by parsing the fields from the field bytes.
+     * @param header Header of the frame
+     * @param fieldBytes Bytes that contain the fields of the frame
      * @param version ID3v2 version the frame was originally encoded with
      */
-    public static fromOffsetRawData(
-        data: ByteVector,
-        offset: number,
+    public static fromFieldBytes(
         header: Id3v2FrameHeader,
+        fieldBytes: ByteVector,
         version: number
     ): UnsynchronizedLyricsFrame {
-        Guards.truthy(data, "data");
-        Guards.uint(offset, "offset");
         Guards.truthy(header, "header");
-        Guards.byte(version, "version");
+        Guards.truthy(fieldBytes, "fieldBytes");
+        Guards.byte(version, "number");
+
+        if (fieldBytes.length < 4) {
+            throw new CorruptFileError("Unsynchronized lyrics frame must contain at least 4 bytes.");
+        }
+
+        // Text encoding        $xx
+        // Language             $xx xx xx
+        // Content descriptor   <text string according to encoding> $00 (00)
+        // Lyrics/text          <full text string according to encoding>
 
         const frame = new UnsynchronizedLyricsFrame(header);
-        frame.setData(data, offset, false, version);
+
+        frame._textEncoding = fieldBytes.get(0);
+        frame._language = fieldBytes.subarray(1, 3).toString(StringType.Latin1);
+
+        const split = fieldBytes.subarray(4).toStrings(frame._textEncoding, 2);
+        if (split.length === 1) {
+            // Ill-formed frame. Assume it lacks a description
+            frame._description = undefined;
+            frame._text = split[0];
+        } else {
+            // Well-formed frame.
+            frame._description = split[0];
+            frame._text = split[1];
+        }
+
         return frame;
     }
 
@@ -88,6 +106,7 @@ export default class UnsynchronizedLyricsFrame extends Frame {
     /**
      * Sets the ISO-639-2 language code for the contents of this instance.
      */
+    // @TODO: Add validation?
     public set language(value: string) { this._language = value; }
 
     /**
@@ -212,24 +231,7 @@ export default class UnsynchronizedLyricsFrame extends Frame {
     }
 
     /** @inheritDoc */
-    protected parseFields(data: ByteVector): void {
-        if (data.length < 4) {
-            throw new CorruptFileError("Not enough bytes in field.");
-        }
-
-        this.textEncoding = data.get(0);
-        this._language = data.subarray(1, 3).toString(StringType.Latin1);
-
-        const split = data.subarray(4).toStrings(this.textEncoding, 2);
-        if (split.length === 1) {
-            // Bad lyrics frame. Assume that it lacks a description
-            this._description = "";
-            this._text = split[0];
-        } else {
-            this._description = split[0];
-            this._text = split[1];
-        }
-    }
+    protected parseFields(data: ByteVector): void { }
 
     /** @inheritDoc */
     protected renderFields(version: number): ByteVector {
