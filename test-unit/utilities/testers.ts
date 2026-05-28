@@ -109,6 +109,12 @@ export class Testers {
     }
 
     public static bvEqual(actual: ByteVector, expected: ByteVector|Uint8Array|number[]) {
+        // Allow falsy values to be checked
+        if (!expected) {
+            assert.notOk(actual);
+            return;
+        }
+
         const getPortion = (bv: ByteVector, pointer: number) => {
             const min = Math.max(pointer - 10, 0);
             const max = Math.min(pointer + 10, bv.length - 1);
