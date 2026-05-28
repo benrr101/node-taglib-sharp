@@ -510,19 +510,13 @@ class Id3v2_GenreFrameTests {
 
     private testFrameParse(tagVersion: number, payload: string|ByteVector, expected: string[]) {
         // Arrange
-        const bodyBytes = payload instanceof ByteVector
+        const fieldBytes = payload instanceof ByteVector
             ? payload
-            : ByteVector.concatenate(
-                StringType.UTF16BE,
-                ByteVector.fromString(payload, StringType.UTF16BE),
-            );
-
-        const header = new Id3v2FrameHeader(FrameIdentifiers.TCON, Id3v2FrameFlags.None, bodyBytes.length);
-
-        const frameBytes = ByteVector.concatenate(header.render(tagVersion), bodyBytes);
-        const frame = GenreFrame.fromOffsetRawData(frameBytes, 0, header, tagVersion);
+            : ByteVector.concatenate(StringType.UTF16BE, ByteVector.fromString(payload, StringType.UTF16BE));
+        const header = new Id3v2FrameHeader(FrameIdentifiers.TCON, Id3v2FrameFlags.None, fieldBytes.length);
 
         // Act
+        const frame = GenreFrame.fromFieldBytes(header, fieldBytes, tagVersion);
         const values = frame.text;
 
         // Assert
