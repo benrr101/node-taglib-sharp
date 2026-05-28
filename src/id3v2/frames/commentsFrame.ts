@@ -35,8 +35,6 @@ export default class CommentsFrame extends Frame {
         language?: string,
         encoding: StringType = Id3v2Settings.defaultEncoding
     ): CommentsFrame {
-        Guards.notNullOrUndefined(description, "description");
-
         const frame = new CommentsFrame(new Id3v2FrameHeader(FrameIdentifiers.COMM));
         frame.textEncoding = encoding;
         frame._language = language;
@@ -46,27 +44,42 @@ export default class CommentsFrame extends Frame {
     }
 
     /**
-     * Constructs and initializes a new CommentsFrame by reading its raw data in a specified ID3v2
-     * version. This method allows for offset reading from the data byte vector.
-     * @param data Raw representation of the new frame
-     * @param offset What offset in `data` the frame actually begins. Must be positive,
-     *     safe integer
-     * @param header Header of the frame found at `data` in the data
+     * Constructs and initializes a new instance by parsing the fields from the field bytes.
+     * @param header Header of the frame
+     * @param fieldBytes Bytes that contain the fields of the frame
      * @param version ID3v2 version the frame was originally encoded with
      */
-    public static fromOffsetRawData(
-        data: ByteVector,
-        offset: number,
-        header: Id3v2FrameHeader,
-        version: number
-    ): CommentsFrame {
-        Guards.truthy(data, "data");
-        Guards.uint(offset, "offset");
+    public static fromFieldBytes(header: Id3v2FrameHeader, fieldBytes: ByteVector, version: number): CommentsFrame {
         Guards.truthy(header, "header");
+        Guards.truthy(fieldBytes, "fieldBytes");
         Guards.byte(version, "version");
 
+        if (fieldBytes.length < 4) {
+            throw new CorruptFileError("Comment frame must contain at least 4 bytes.");
+        }
+
+        // Text encoding          $xx
+        // Language               $xx xx xx
+        // Description            <text string according to encoding> $00 (00)
+        // Text                   <full text string according to encoding>
+
         const frame = new CommentsFrame(header);
-        frame.setData(data, offset, false, version);
+
+        frame._textEncoding = fieldBytes.get(0);
+        frame._language = fieldBytes.subarray(1, 3).toString(StringType.Latin1);
+
+        // @TODO: Should we worry about trimming null stuff (applies to all frames with this format)
+        const split = fieldBytes.subarray(4).toStrings(frame._textEncoding);
+        if (split.length === 1) {
+            // Ill-formed frame, assume no description.
+            frame._description = undefined;
+            frame._text = split[0];
+        } else {
+            // Well-formed frame.
+            frame._description = split[0];
+            frame._text = split[1];
+        }
+
         return frame;
     }
 
@@ -93,6 +106,7 @@ export default class CommentsFrame extends Frame {
      * Gets the ISO-639-2 language code stored in the current instance or 'XXX' if not set
      */
     public get language(): string {
+        // @TODO: is XXX specified in the spec or ISO-639-2 spec?
         return this._language && this._language.length > 2
             ? this._language.substring(0, 3)
             : "XXX";
@@ -231,31 +245,7 @@ export default class CommentsFrame extends Frame {
         return this.text;
     }
 
-    protected parseFields(data: ByteVector): void {
-        if (data.length < 4) {
-            throw new CorruptFileError("Not enough bytes in field");
-        }
-
-        this.textEncoding = data.get(0);
-        this._language = data.subarray(1, 3).toString(StringType.Latin1);
-
-        // Instead of splitting into two strings, in the format [{desc}\0{value}], try splitting
-        // into three strings in case of a malformatted [{desc}\0{value}\0].
-        const split = data.subarray(4).toStrings(this.textEncoding, 3);
-
-        if (split.length === 0) {
-            // No data in the frame.
-            this._description = "";
-            this._text = "";
-        } else if (split.length === 1) {
-            // Bad comment frame. Assume it lacks a description.
-            this._description = "";
-            this._text = split[0];
-        } else {
-            this._description = split[0];
-            this._text = split[1];
-        }
-    }
+    protected parseFields(data: ByteVector): void { }
 
     protected renderFields(version: number): ByteVector {
         const encoding = Frame.correctEncoding(this.textEncoding, version);
