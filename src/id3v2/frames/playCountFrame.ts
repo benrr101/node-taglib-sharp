@@ -3,6 +3,7 @@ import {Frame, FrameClassType} from "./frame";
 import {Id3v2FrameHeader} from "./frameHeader";
 import {FrameIdentifiers} from "../frameIdentifiers";
 import {Guards} from "../../utils";
+import {CorruptFileError, NotSupportedError} from "../../errors";
 
 /**
  * This class extends {@link Frame} implementing support for ID3v2 play count (PCNT) frames.
@@ -25,27 +26,27 @@ export default class PlayCountFrame extends Frame {
     }
 
     /**
-     * Constructs and initializes a new instance of frame by reading its raw data in a specified
-     * ID3v2 version starting at a specified offset.
-     * @param data Raw representation of the new frame.
-     * @param offset Offset into `data` where the frame actually begins. Must be a
-     *     positive, safe integer
-     * @param header Header of the frame found at `offset` in the data
+     * Constructs and initialized a new instance by parsing values from the field data.
+     * @param header Header of the frame
+     * @param fieldBytes Bytes that contain the body of the frame
      * @param version ID3v2 version the frame was originally encoded with
      */
-    public static fromOffsetRawData(
-        data: ByteVector,
-        offset: number,
-        header: Id3v2FrameHeader,
-        version: number
-    ): PlayCountFrame {
-        Guards.truthy(data, "data");
-        Guards.uint(offset, "offset");
+    public static fromFieldBytes(header: Id3v2FrameHeader, fieldBytes: ByteVector, version: number): PlayCountFrame {
         Guards.truthy(header, "header");
+        Guards.truthy(fieldBytes, "fieldBytes");
         Guards.byte(version, "version");
 
+        if (fieldBytes.length < 4) {
+            throw new CorruptFileError("Genre frame must contain at least 4 bytes.");
+        }
+        if (fieldBytes.length > 8) {
+            throw new NotSupportedError("node-taglib-sharp only supports up to 64-bits of play count values.");
+        }
+
+        // Counter        $xx xx xx xx (xx ...)
+
         const frame = new PlayCountFrame(header);
-        frame.setData(data, offset, false, version);
+        frame._playCount = fieldBytes.toUlong();
         return frame;
     }
 
@@ -79,9 +80,7 @@ export default class PlayCountFrame extends Frame {
     }
 
     /** @inheritDoc */
-    protected parseFields(data: ByteVector): void {
-        this.playCount = data.toUlong();
-    }
+    protected parseFields(data: ByteVector): void { }
 
     /** @inheritDoc */
     protected renderFields(): ByteVector {
