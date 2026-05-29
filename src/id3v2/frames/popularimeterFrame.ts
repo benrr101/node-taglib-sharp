@@ -1,5 +1,5 @@
 import {ByteVector, StringType} from "../../byteVector";
-import {CorruptFileError} from "../../errors";
+import {CorruptFileError, NotSupportedError} from "../../errors";
 import {Frame, FrameClassType} from "./frame";
 import {Id3v2FrameHeader} from "./frameHeader";
 import {FrameIdentifiers} from "../frameIdentifiers";
@@ -20,27 +20,50 @@ export default class PopularimeterFrame extends Frame {
     }
 
     /**
-     * Constructs and initializes a new instance by reading its raw data in a specified ID3v2
-     * version. This method allows for offset reading from the data byte vector.
-     * @param data Raw representation of the new frame
-     * @param offset What offset in `data` the frame actually begins. Must be positive,
-     *     safe integer
-     * @param header Header of the frame found at `data` in the data
+     * Constructs and initialized a new instance by parsing values from the field data.
+     * @param header Header of the frame
+     * @param fieldBytes Bytes that contain the body of the frame
      * @param version ID3v2 version the frame was originally encoded with
      */
-    public static fromOffsetRawData(
-        data: ByteVector,
-        offset: number,
+    public static fromFieldBytes(
         header: Id3v2FrameHeader,
+        fieldBytes: ByteVector,
         version: number
     ): PopularimeterFrame {
-        Guards.truthy(data, "data");
-        Guards.uint(offset, "offset");
         Guards.truthy(header, "header");
+        Guards.truthy(fieldBytes, "fieldBytes");
         Guards.byte(version, "version");
 
+        // Email to user   <text string> $00
+        // Rating          $xx
+        // Counter         $xx xx xx xx (xx ...)
+
         const frame = new PopularimeterFrame(header);
-        frame.setData(data, offset, false, version);
+
+        const delim = ByteVector.getTextDelimiter(StringType.Latin1);
+        const split = fieldBytes.split(delim, 1, 2);
+        if (split.length === 1) {
+            throw new CorruptFileError("Popularimeter frame does not contain text delimiter.");
+        }
+
+        frame._user = split[0].toString(StringType.Latin1);
+
+        if (split[1].length < 1) {
+            throw new CorruptFileError("Popularimeter frame does not contain rating byte.");
+        }
+
+        frame._rating = split[1].get(0);
+
+        const counterBytes = split[1].subarray(1);
+        if (counterBytes.length < 4) {
+            // Assume playcount wasn't provided
+            frame._playCount = undefined;
+        } else if (counterBytes.length > 8) {
+            throw new NotSupportedError("node-taglib-sharp only supports up to 64-bits of play count values.");
+        } else {
+            frame._playCount = counterBytes.toUlong();
+        }
+
         return frame;
     }
 
@@ -120,30 +143,7 @@ export default class PopularimeterFrame extends Frame {
     }
 
     /** @inheritDoc */
-    protected parseFields(data: ByteVector): void {
-        const delim = ByteVector.getTextDelimiter(StringType.Latin1);
-
-        const delimIndex = data.find(delim);
-        if (delimIndex < 0) {
-            throw new CorruptFileError("Popularimeter frame does not contain a text delimiter");
-        }
-
-        const bytesAfterOwner = data.length - delimIndex - 1;
-        if (bytesAfterOwner < 1) {
-            throw new CorruptFileError("Popularimeter frame is missing rating");
-        }
-        if (bytesAfterOwner > 1 && bytesAfterOwner < 5) {
-            throw new CorruptFileError("Popularimeter frame with play count must have at least 4 bytes of play count");
-        }
-
-        this._user = data.subarray(0, delimIndex).toString(StringType.Latin1);
-        this._rating = data.get(delimIndex + 1);
-
-        // Play count may be omitted
-        if (bytesAfterOwner > 1) {
-            this._playCount = data.subarray(delimIndex + 2).toUlong();
-        }
-    }
+    protected parseFields(data: ByteVector): void { }
 
     /** @inheritDoc */
     protected renderFields(): ByteVector {
