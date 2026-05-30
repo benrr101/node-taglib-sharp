@@ -3,6 +3,7 @@ import {Frame, FrameClassType} from "./frame";
 import {Id3v2FrameHeader} from "./frameHeader";
 import {FrameIdentifiers} from "../frameIdentifiers";
 import {Guards, NumberUtils} from "../../utils";
+import {CorruptFileError} from "../../errors";
 
 /**
  * Type of channel data to get from or set to a {@link RelativeVolumeFrame} object
@@ -195,37 +196,67 @@ export class RelativeVolumeFrame extends Frame {
     }
 
     /**
+     * Constructs and initialized a new instance by parsing values from the field data.
+     * @param header Header of the frame
+     * @param fieldBytes Bytes that contain the body of the frame
+     * @param version ID3v2 version the frame was originally encoded with
+     */
+    public static fromFieldBytes(
+        header: Id3v2FrameHeader,
+        fieldBytes: ByteVector,
+        version: number
+    ): RelativeVolumeFrame {
+        Guards.truthy(header, "header");
+        Guards.truthy(fieldBytes, "fieldBytes");
+        Guards.byte(version, "version");
+
+        // Identification          <text string> $00
+        // ---- Repeated for each channel --------------
+        // Type of channel         $xx
+        // Volume adjustment       $xx xx
+        // Bits representing peak  $xx
+        // Peak volume             $xx (xx ...)
+        // ---- Repeated for each channel --------------
+
+        const frame = new RelativeVolumeFrame(header);
+
+        const identifierEndIndex = fieldBytes.find(ByteVector.getTextDelimiter(StringType.Latin1));
+        if (identifierEndIndex < 0) {
+            throw new CorruptFileError("Relative volume frame does not contain text delimiter.");
+        }
+
+        frame._identification = fieldBytes.subarray(0, identifierEndIndex).toString(StringType.Latin1);
+
+        let pos = identifierEndIndex + 1;
+        while (pos < fieldBytes.length) {
+            // We need at least 4 bytes to determine how long the channel data is
+            if (fieldBytes.length - pos < 4) {
+                break;
+            }
+
+            const dataLength = 4 + Math.ceil(fieldBytes.get(pos + 3) / 8);
+            const dataBytes = fieldBytes.subarray(pos, dataLength);
+
+            // If we're at the end of the vector, we'll just end processing
+            if (dataBytes.length !== dataLength) {
+                break;
+            }
+
+            const channelData = ChannelData.fromData(dataBytes);
+            frame._channels[channelData.channelType] = channelData;
+            pos += dataLength;
+        }
+
+        return frame;
+    }
+
+    /**
      * Constructs and initializes a new instance with a specified identifier
      * @param identification Identification ot use for the new frame
      */
     public static fromIdentification(identification: string): RelativeVolumeFrame {
         const frame = new RelativeVolumeFrame(new Id3v2FrameHeader(FrameIdentifiers.RVA2));
         frame._identification = identification;
-        return frame;
-    }
-
-    /**
-     * Constructs and initializes a new instance by reading its raw data in a specified ID3v2
-     * version starting a specified offset.
-     * @param data Raw representation of the new frame
-     * @param offset Offset into `data` where the frame actually begins. Must be a
-     *     positive, 32-bit integer
-     * @param header Header of the frame found at `offset` in `data`
-     * @param version ID3v2 version the frame was originally encoded with
-     */
-    public static fromOffsetRawData(
-        data: ByteVector,
-        offset: number,
-        header: Id3v2FrameHeader,
-        version: number
-    ): RelativeVolumeFrame {
-        Guards.truthy(data, "data");
-        Guards.uint(offset, "offset");
-        Guards.truthy(header, "header");
-        Guards.byte(version, "version");
-
-        const frame = new RelativeVolumeFrame(header);
-        frame.setData(data, offset, false, version);
         return frame;
     }
 
@@ -239,6 +270,7 @@ export class RelativeVolumeFrame extends Frame {
     /**
      * Gets the channels in the current instance that have a value
      */
+    // @TODO: Why the heck can't we just write to this.
     public get channels(): ChannelData[] { return this._channels.filter((c) => c.isSet); }
 
     /**
@@ -324,29 +356,7 @@ export class RelativeVolumeFrame extends Frame {
     // #region Protected/Private Methods
 
     /** @inheritDoc */
-    protected parseFields(data: ByteVector): void {
-        const identifierEndIndex = data.find(ByteVector.getTextDelimiter(StringType.Latin1));
-        if (identifierEndIndex < 0) {
-            return;
-        }
-
-        this._identification = data.subarray(0, identifierEndIndex).toString(StringType.Latin1);
-
-        let pos = identifierEndIndex + 1;
-        while (pos < data.length) {
-            const dataLength = 4 + Math.ceil(data.get(pos + 3) / 8);
-            const dataBytes = data.subarray(pos, dataLength);
-
-            // If we're at the end of the vector, we'll just end processing
-            if (dataBytes.length !== dataLength) {
-                break;
-            }
-
-            const channelData = ChannelData.fromData(dataBytes);
-            this._channels[channelData.channelType] = channelData;
-            pos += dataLength;
-        }
-    }
+    protected parseFields(data: ByteVector): void { }
 
     /** @inheritDoc */
     protected renderFields(): ByteVector {

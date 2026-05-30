@@ -1,4 +1,4 @@
-import {suite, test} from "@testdeck/mocha";
+import {params, suite, test} from "@testdeck/mocha";
 import {assert} from "chai";
 
 import ConstructorTests from "./frameConstructorTests";
@@ -6,7 +6,7 @@ import PropertyTests from "../utilities/propertyTests";
 import {ChannelData, ChannelType, RelativeVolumeFrame} from "../../src/id3v2/frames/relativeVolumeFrame";
 import {ByteVector, StringType} from "../../src/byteVector";
 import {Frame, FrameClassType} from "../../src/id3v2/frames/frame";
-import {Id3v2FrameHeader} from "../../src/id3v2/frames/frameHeader";
+import {Id3v2FrameFlags, Id3v2FrameHeader} from "../../src/id3v2/frames/frameHeader";
 import {FrameIdentifiers} from "../../src/id3v2/frameIdentifiers";
 import {Testers} from "../utilities/testers";
 
@@ -274,7 +274,7 @@ import {Testers} from "../utilities/testers";
 
 @suite class Id3v2_RelativeVolumeFrame_ConstructorTests extends ConstructorTests {
     public get fromOffsetRawData(): (d: ByteVector, o: number, h: Id3v2FrameHeader, v: number) => Frame {
-        return RelativeVolumeFrame.fromOffsetRawData;
+        return (a, b, c, d) => RelativeVolumeFrame.fromFieldBytes(c, a, d);
     }
 
     @test
@@ -286,54 +286,152 @@ import {Testers} from "../utilities/testers";
         Id3v2_RelativeVolumeFrame_ConstructorTests.assertFrame(frame, [], "foo");
     }
 
-    @test
-    public fromOffsetRawData_noDelimiter_emptyFrame() {
+    @params(2, "v2")
+    @params(3, "v3")
+    @params(4, "v4")
+    public fromOffsetRawData_emptyFrame_throws(version: number) {
         // Arrange
-        const header = new Id3v2FrameHeader(FrameIdentifiers.RVA2);
-        header.frameSize = 3;
-        const data = ByteVector.concatenate(
-            0x00, 0x00,
-            header.render(4),
-            ByteVector.fromString("foo", StringType.Latin1)
-        );
+        const fieldBytes = ByteVector.empty();
+        const header = new Id3v2FrameHeader(FrameIdentifiers.RVA2, Id3v2FrameFlags.None, fieldBytes.length);
 
-        // Act
-        const frame = RelativeVolumeFrame.fromOffsetRawData(data, 2, header, 4);
-
-        // Assert
-        Id3v2_RelativeVolumeFrame_ConstructorTests.assertFrame(frame, [], undefined);
+        // Act / Assert
+        assert.throws(() => RelativeVolumeFrame.fromFieldBytes(header, fieldBytes, version));
     }
 
-    @test
-    public fromOffsetRawData_withChannelData_hasChannelData() {
+    @params(2, "v2")
+    @params(3, "v3")
+    @params(4, "v4")
+    public fromOffsetRawData_identifierOnly(version: number) {
         // Arrange
-        const header = new Id3v2FrameHeader(FrameIdentifiers.RVA2);
-        header.frameSize = 15;
-
-        const channel1 = new ChannelData(ChannelType.Subwoofer);
-        channel1.volumeAdjustment = 32;
-        channel1.peakBits = 8;
-        channel1.peakVolume = BigInt(12);
-
-        const channel2 = new ChannelData(ChannelType.BackCenter);
-        channel2.volumeAdjustment = 62;
-        channel2.peakBits = 16;
-        channel2.peakVolume = BigInt(123);
-
-        const data = ByteVector.concatenate(
-            0x00, 0x00,
-            header.render(4),
-            ByteVector.fromString("foo", StringType.Latin1),
-            ByteVector.getTextDelimiter(StringType.Latin1),
-            channel1.render(),
-            channel2.render()
-        );
+        const fieldBytes = ByteVector.concatenate(ByteVector.fromString("foobarbaz", StringType.Latin1), 0x00);
+        const header = new Id3v2FrameHeader(FrameIdentifiers.RVA2, Id3v2FrameFlags.None, fieldBytes.length);
 
         // Act
-        const frame = RelativeVolumeFrame.fromOffsetRawData(data, 2, header, 4);
+        const frame = RelativeVolumeFrame.fromFieldBytes(header, fieldBytes, version);
 
         // Assert
-        Id3v2_RelativeVolumeFrame_ConstructorTests.assertFrame(frame, [channel2, channel1], "foo");
+        Id3v2_RelativeVolumeFrame_ConstructorTests.assertFrame(frame, [], "foobarbaz");
+    }
+
+    @params(2, "v2")
+    @params(3, "v3")
+    @params(4, "v4")
+    public fromOffsetRawData_oneChannelData(version: number) {
+        // Arrange
+        const fieldBytes = ByteVector.concatenate(
+            ByteVector.fromString("foobarbaz", StringType.Latin1), 0x00, // Identifier + delimiter
+            ChannelType.Subwoofer,                                            // Channel type
+            ByteVector.fromShort(1.23),                                       // Volume adjustment
+            0x20,                                                             // Bits representing peak (32)
+            0x01, 0x02, 0x03, 0x04                                            // Peak volume
+        );
+        const header = new Id3v2FrameHeader(FrameIdentifiers.RVA2, Id3v2FrameFlags.None, fieldBytes.length);
+
+        // Act
+        const frame = RelativeVolumeFrame.fromFieldBytes(header, fieldBytes, version);
+
+        // Assert
+        const channelData = new ChannelData(ChannelType.Subwoofer);
+        channelData.peakBits = 32;
+        channelData.peakVolume = BigInt(16909060);
+        channelData.volumeAdjustment = 1.23;
+        Id3v2_RelativeVolumeFrame_ConstructorTests.assertFrame(frame, [channelData], "foobarbaz");
+    }
+
+    @params(2, "v2")
+    @params(3, "v3")
+    @params(4, "v4")
+    public fromOffsetRawData_twoChannelData(version: number) {
+        // Arrange
+        const fieldBytes = ByteVector.concatenate(
+            ByteVector.fromString("foobarbaz", StringType.Latin1), 0x00, // Identifier + delimiter
+            // ---------
+            ChannelType.Subwoofer,                                            // Channel type
+            ByteVector.fromShort(1.23),                                       // Volume adjustment
+            0x20,                                                             // Bits representing peak (32)
+            0x01, 0x02, 0x03, 0x04,                                           // Peak volume
+            // ---------
+            ChannelType.BackRight,                                            // Channel type
+            ByteVector.fromShort(2.34),                                       // Volume adjustment
+            0x20,                                                             // Bits representing peak (32)
+            0x02, 0x03, 0x04, 0x05                                            // Peak volume
+        );
+        const header = new Id3v2FrameHeader(FrameIdentifiers.RVA2, Id3v2FrameFlags.None, fieldBytes.length);
+
+        // Act
+        const frame = RelativeVolumeFrame.fromFieldBytes(header, fieldBytes, version);
+
+        // Assert
+        const cd1 = new ChannelData(ChannelType.Subwoofer);
+        cd1.peakBits = 32;
+        cd1.peakVolume = BigInt(16909060);
+        cd1.volumeAdjustment = 1.23;
+
+        const cd2 = new ChannelData(ChannelType.Subwoofer);
+        cd2.peakBits = 32;
+        cd2.peakVolume = BigInt(33752069);
+        cd2.volumeAdjustment = 1.23;
+        Id3v2_RelativeVolumeFrame_ConstructorTests.assertFrame(frame, [cd1, cd2], "foobarbaz");
+    }
+
+    @params(2, "v2")
+    @params(3, "v3")
+    @params(4, "v4")
+    public fromOffsetRawData_incompleteChannelDataAtBits(version: number) {
+        // Arrange
+        const fieldBytes = ByteVector.concatenate(
+            ByteVector.fromString("foobarbaz", StringType.Latin1), 0x00, // Identifier + delimiter
+            // ---------
+            ChannelType.Subwoofer,                                            // Channel type
+            ByteVector.fromShort(1.23),                                       // Volume adjustment
+            0x20,                                                             // Bits representing peak (32)
+            0x01, 0x02, 0x03, 0x04,                                           // Peak volume
+            // ---------
+            ChannelType.BackRight,                                            // Channel type
+            ByteVector.fromShort(2.34),                                       // Volume adjustment
+        );
+        const header = new Id3v2FrameHeader(FrameIdentifiers.RVA2, Id3v2FrameFlags.None, fieldBytes.length);
+
+        // Act
+        const frame = RelativeVolumeFrame.fromFieldBytes(header, fieldBytes, version);
+
+        // Assert
+        const cd1 = new ChannelData(ChannelType.Subwoofer);
+        cd1.peakBits = 32;
+        cd1.peakVolume = BigInt(16909060);
+        cd1.volumeAdjustment = 1.23;
+        Id3v2_RelativeVolumeFrame_ConstructorTests.assertFrame(frame, [cd1], "foobarbaz");
+    }
+
+    @params(2, "v2")
+    @params(3, "v3")
+    @params(4, "v4")
+    public fromOffsetRawData_incompleteChannelDataAtPeak(version: number) {
+        // Arrange
+        const fieldBytes = ByteVector.concatenate(
+            ByteVector.fromString("foobarbaz", StringType.Latin1), 0x00, // Identifier + delimiter
+            // ---------
+            ChannelType.Subwoofer,                                            // Channel type
+            ByteVector.fromShort(1.23),                                       // Volume adjustment
+            0x20,                                                             // Bits representing peak (32)
+            0x01, 0x02, 0x03, 0x04,                                           // Peak volume
+            // ---------
+            ChannelType.BackRight,                                            // Channel type
+            ByteVector.fromShort(2.34),                                       // Volume adjustment
+            0x30,                                                             // Bits representing peak (48)
+            0x02, 0x03, 0x04, 0x05                                            // Peak volume (not enough)
+        );
+        const header = new Id3v2FrameHeader(FrameIdentifiers.RVA2, Id3v2FrameFlags.None, fieldBytes.length);
+
+        // Act
+        const frame = RelativeVolumeFrame.fromFieldBytes(header, fieldBytes, version);
+
+        // Assert
+        const cd1 = new ChannelData(ChannelType.Subwoofer);
+        cd1.peakBits = 32;
+        cd1.peakVolume = BigInt(16909060);
+        cd1.volumeAdjustment = 1.23;
+        Id3v2_RelativeVolumeFrame_ConstructorTests.assertFrame(frame, [cd1], "foobarbaz");
     }
 
     private static assertFrame(frame: RelativeVolumeFrame, c: ChannelData[], i: string) {
@@ -425,36 +523,79 @@ import {Testers} from "../utilities/testers";
         );
     }
 
-    @test
-    public render() {
+    @params(2, "v2")
+    @params(3, "v3")
+    @params(4, "v4")
+    public render_noChannelData(version: number) {
         // Arrange
-        const header = new Id3v2FrameHeader(FrameIdentifiers.RVA2);
-        header.frameSize = 15;
-
-        const channel1 = new ChannelData(ChannelType.Subwoofer);
-        channel1.volumeAdjustment = 32;
-        channel1.peakBits = 8;
-        channel1.peakVolume = BigInt(12);
-
-        const channel2 = new ChannelData(ChannelType.BackCenter);
-        channel2.volumeAdjustment = 62;
-        channel2.peakBits = 16;
-        channel2.peakVolume = BigInt(123);
-
-        const data = ByteVector.concatenate(
-            header.render(4),
-            ByteVector.fromString("foo", StringType.Latin1),
-            ByteVector.getTextDelimiter(StringType.Latin1),
-            channel2.render(),
-            channel1.render()
-        );
-        const frame = RelativeVolumeFrame.fromOffsetRawData(data, 0, header, 4);
+        const frame = RelativeVolumeFrame.fromIdentification("foobarbaz");
 
         // Act
-        const output = frame.render(4);
+        const output = frame.render(version);
 
         // Assert
-        assert.ok(output);
-        Testers.bvEqual(output, data);
+        const fieldBytes = ByteVector.concatenate(ByteVector.fromString("foobarbaz", StringType.Latin1), 0x00);
+        const header = new Id3v2FrameHeader(FrameIdentifiers.RVA2, Id3v2FrameFlags.None, fieldBytes.length);
+        const expected = ByteVector.concatenate(header.render(version), fieldBytes);
+        Testers.bvEqual(output, expected);
+    }
+
+    @params(2, "v2")
+    @params(3, "v3")
+    @params(4, "v4")
+    public render_oneChannelData() {
+        // Arrange
+        const frame = RelativeVolumeFrame.fromIdentification("foobarbaz");
+        frame.setPeakBits(ChannelType.Subwoofer, 32);
+        frame.setPeakVolume(ChannelType.Subwoofer, BigInt(12345));
+        frame.setVolumeAdjustment(ChannelType.Subwoofer, -1.23);
+
+        // Act
+        const result = frame.render(version);
+
+        // Assert
+        const cd1 = new ChannelData(ChannelType.Subwoofer);
+        cd1.peakVolume = BigInt(12345);
+        cd1.peakBits = 32;
+        cd1.volumeAdjustment = -1.23;
+        const fieldBytes = ByteVector.concatenate(
+            ByteVector.fromString("foobarbaz", StringType.Latin1), 0x00, // Identifier + delimiter
+            cd1.render()                                                 // Channel data
+        );
+        const header = new Id3v2FrameHeader(FrameIdentifiers.RVA2, Id3v2FrameFlags.None, fieldBytes.length);
+        const expected = ByteVector.concatenate(header.render(version), fieldBytes);
+        Testers.bvEqual(result, expected);
+    }
+
+    @params(2, "v2")
+    @params(3, "v3")
+    @params(4, "v4")
+    public render_twoChannelData() {
+        // Arrange
+        const frame = RelativeVolumeFrame.fromIdentification("foobarbaz");
+        frame.setPeakBits(ChannelType.Subwoofer, 32);
+        frame.setPeakVolume(ChannelType.Subwoofer, BigInt(12345));
+        frame.setVolumeAdjustment(ChannelType.Subwoofer, -1.23);
+
+        // Act
+        const result = frame.render(version);
+
+        // Assert
+        const cd1 = new ChannelData(ChannelType.Subwoofer);
+        cd1.peakVolume = BigInt(12345);
+        cd1.peakBits = 32;
+        cd1.volumeAdjustment = -1.23;
+        const cd2 = new ChannelData(ChannelType.Subwoofer);
+        cd2.peakVolume = BigInt(23456);
+        cd2.peakBits = 48;
+        cd2.volumeAdjustment = 1.23;
+        const fieldBytes = ByteVector.concatenate(
+            ByteVector.fromString("foobarbaz", StringType.Latin1), 0x00, // Identifier + delimiter
+            cd1.render(),                                                // Channel data
+            cd2.render()                                                 // Channel data
+        );
+        const header = new Id3v2FrameHeader(FrameIdentifiers.RVA2, Id3v2FrameFlags.None, fieldBytes.length);
+        const expected = ByteVector.concatenate(header.render(version), fieldBytes);
+        Testers.bvEqual(result, expected);
     }
 }
