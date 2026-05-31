@@ -84,7 +84,6 @@ import {Testers} from "../utilities/testers";
         const channel = new ChannelData(0);
 
         // Act / Assert
-        Testers.testInt((v: number) => { channel.volumeAdjustment = v; });
         assert.throws(() => { channel.volumeAdjustment = -64; });
         assert.throws(() => { channel.volumeAdjustment = 64; });
     }
@@ -289,7 +288,7 @@ import {Testers} from "../utilities/testers";
     @params(2, "v2")
     @params(3, "v3")
     @params(4, "v4")
-    public fromOffsetRawData_emptyFrame_throws(version: number) {
+    public fromFieldBytes_emptyFrame_throws(version: number) {
         // Arrange
         const fieldBytes = ByteVector.empty();
         const header = new Id3v2FrameHeader(FrameIdentifiers.RVA2, Id3v2FrameFlags.None, fieldBytes.length);
@@ -301,7 +300,7 @@ import {Testers} from "../utilities/testers";
     @params(2, "v2")
     @params(3, "v3")
     @params(4, "v4")
-    public fromOffsetRawData_identifierOnly(version: number) {
+    public fromFieldBytes_identifierOnly(version: number) {
         // Arrange
         const fieldBytes = ByteVector.concatenate(ByteVector.fromString("foobarbaz", StringType.Latin1), 0x00);
         const header = new Id3v2FrameHeader(FrameIdentifiers.RVA2, Id3v2FrameFlags.None, fieldBytes.length);
@@ -316,12 +315,12 @@ import {Testers} from "../utilities/testers";
     @params(2, "v2")
     @params(3, "v3")
     @params(4, "v4")
-    public fromOffsetRawData_oneChannelData(version: number) {
+    public fromFieldBytes_oneChannelData(version: number) {
         // Arrange
         const fieldBytes = ByteVector.concatenate(
             ByteVector.fromString("foobarbaz", StringType.Latin1), 0x00, // Identifier + delimiter
             ChannelType.Subwoofer,                                            // Channel type
-            ByteVector.fromShort(1.23),                                       // Volume adjustment
+            ByteVector.fromShort(123),                                        // Volume adjustment
             0x20,                                                             // Bits representing peak (32)
             0x01, 0x02, 0x03, 0x04                                            // Peak volume
         );
@@ -334,25 +333,25 @@ import {Testers} from "../utilities/testers";
         const channelData = new ChannelData(ChannelType.Subwoofer);
         channelData.peakBits = 32;
         channelData.peakVolume = BigInt(16909060);
-        channelData.volumeAdjustment = 1.23;
+        channelData.volumeAdjustment = 123/512;
         Id3v2_RelativeVolumeFrame_ConstructorTests.assertFrame(frame, [channelData], "foobarbaz");
     }
 
     @params(2, "v2")
     @params(3, "v3")
     @params(4, "v4")
-    public fromOffsetRawData_twoChannelData(version: number) {
+    public fromFieldBytes_twoChannelData(version: number) {
         // Arrange
         const fieldBytes = ByteVector.concatenate(
             ByteVector.fromString("foobarbaz", StringType.Latin1), 0x00, // Identifier + delimiter
             // ---------
             ChannelType.Subwoofer,                                            // Channel type
-            ByteVector.fromShort(1.23),                                       // Volume adjustment
+            ByteVector.fromShort(123),                                        // Volume adjustment
             0x20,                                                             // Bits representing peak (32)
             0x01, 0x02, 0x03, 0x04,                                           // Peak volume
             // ---------
             ChannelType.BackRight,                                            // Channel type
-            ByteVector.fromShort(2.34),                                       // Volume adjustment
+            ByteVector.fromShort(234),                                        // Volume adjustment
             0x20,                                                             // Bits representing peak (32)
             0x02, 0x03, 0x04, 0x05                                            // Peak volume
         );
@@ -365,30 +364,30 @@ import {Testers} from "../utilities/testers";
         const cd1 = new ChannelData(ChannelType.Subwoofer);
         cd1.peakBits = 32;
         cd1.peakVolume = BigInt(16909060);
-        cd1.volumeAdjustment = 1.23;
+        cd1.volumeAdjustment = 123 / 512;
 
-        const cd2 = new ChannelData(ChannelType.Subwoofer);
+        const cd2 = new ChannelData(ChannelType.BackRight);
         cd2.peakBits = 32;
         cd2.peakVolume = BigInt(33752069);
-        cd2.volumeAdjustment = 1.23;
-        Id3v2_RelativeVolumeFrame_ConstructorTests.assertFrame(frame, [cd1, cd2], "foobarbaz");
+        cd2.volumeAdjustment = 234 / 512;
+        Id3v2_RelativeVolumeFrame_ConstructorTests.assertFrame(frame, [cd2, cd1], "foobarbaz");
     }
 
     @params(2, "v2")
     @params(3, "v3")
     @params(4, "v4")
-    public fromOffsetRawData_incompleteChannelDataAtBits(version: number) {
+    public fromFieldBytes_incompleteChannelDataAtBits(version: number) {
         // Arrange
         const fieldBytes = ByteVector.concatenate(
             ByteVector.fromString("foobarbaz", StringType.Latin1), 0x00, // Identifier + delimiter
             // ---------
             ChannelType.Subwoofer,                                            // Channel type
-            ByteVector.fromShort(1.23),                                       // Volume adjustment
+            ByteVector.fromShort(123),                                        // Volume adjustment
             0x20,                                                             // Bits representing peak (32)
             0x01, 0x02, 0x03, 0x04,                                           // Peak volume
             // ---------
             ChannelType.BackRight,                                            // Channel type
-            ByteVector.fromShort(2.34),                                       // Volume adjustment
+            ByteVector.fromShort(234),                                        // Volume adjustment
         );
         const header = new Id3v2FrameHeader(FrameIdentifiers.RVA2, Id3v2FrameFlags.None, fieldBytes.length);
 
@@ -399,25 +398,25 @@ import {Testers} from "../utilities/testers";
         const cd1 = new ChannelData(ChannelType.Subwoofer);
         cd1.peakBits = 32;
         cd1.peakVolume = BigInt(16909060);
-        cd1.volumeAdjustment = 1.23;
+        cd1.volumeAdjustment = 123 / 512;
         Id3v2_RelativeVolumeFrame_ConstructorTests.assertFrame(frame, [cd1], "foobarbaz");
     }
 
     @params(2, "v2")
     @params(3, "v3")
     @params(4, "v4")
-    public fromOffsetRawData_incompleteChannelDataAtPeak(version: number) {
+    public fromFieldBytes_incompleteChannelDataAtPeak(version: number) {
         // Arrange
         const fieldBytes = ByteVector.concatenate(
             ByteVector.fromString("foobarbaz", StringType.Latin1), 0x00, // Identifier + delimiter
             // ---------
             ChannelType.Subwoofer,                                            // Channel type
-            ByteVector.fromShort(1.23),                                       // Volume adjustment
+            ByteVector.fromShort(123),                                        // Volume adjustment
             0x20,                                                             // Bits representing peak (32)
             0x01, 0x02, 0x03, 0x04,                                           // Peak volume
             // ---------
             ChannelType.BackRight,                                            // Channel type
-            ByteVector.fromShort(2.34),                                       // Volume adjustment
+            ByteVector.fromShort(234),                                        // Volume adjustment
             0x30,                                                             // Bits representing peak (48)
             0x02, 0x03, 0x04, 0x05                                            // Peak volume (not enough)
         );
@@ -430,7 +429,7 @@ import {Testers} from "../utilities/testers";
         const cd1 = new ChannelData(ChannelType.Subwoofer);
         cd1.peakBits = 32;
         cd1.peakVolume = BigInt(16909060);
-        cd1.volumeAdjustment = 1.23;
+        cd1.volumeAdjustment = 123 / 512;
         Id3v2_RelativeVolumeFrame_ConstructorTests.assertFrame(frame, [cd1], "foobarbaz");
     }
 
@@ -543,7 +542,7 @@ import {Testers} from "../utilities/testers";
     @params(2, "v2")
     @params(3, "v3")
     @params(4, "v4")
-    public render_oneChannelData() {
+    public render_oneChannelData(version: number) {
         // Arrange
         const frame = RelativeVolumeFrame.fromIdentification("foobarbaz");
         frame.setPeakBits(ChannelType.Subwoofer, 32);
@@ -555,8 +554,8 @@ import {Testers} from "../utilities/testers";
 
         // Assert
         const cd1 = new ChannelData(ChannelType.Subwoofer);
-        cd1.peakVolume = BigInt(12345);
         cd1.peakBits = 32;
+        cd1.peakVolume = BigInt(12345);
         cd1.volumeAdjustment = -1.23;
         const fieldBytes = ByteVector.concatenate(
             ByteVector.fromString("foobarbaz", StringType.Latin1), 0x00, // Identifier + delimiter
@@ -570,29 +569,32 @@ import {Testers} from "../utilities/testers";
     @params(2, "v2")
     @params(3, "v3")
     @params(4, "v4")
-    public render_twoChannelData() {
+    public render_twoChannelData(version: number) {
         // Arrange
         const frame = RelativeVolumeFrame.fromIdentification("foobarbaz");
         frame.setPeakBits(ChannelType.Subwoofer, 32);
         frame.setPeakVolume(ChannelType.Subwoofer, BigInt(12345));
         frame.setVolumeAdjustment(ChannelType.Subwoofer, -1.23);
+        frame.setPeakBits(ChannelType.BackCenter, 48);
+        frame.setPeakVolume(ChannelType.BackCenter, BigInt(23456));
+        frame.setVolumeAdjustment(ChannelType.BackCenter, 1.23);
 
         // Act
         const result = frame.render(version);
 
         // Assert
         const cd1 = new ChannelData(ChannelType.Subwoofer);
-        cd1.peakVolume = BigInt(12345);
         cd1.peakBits = 32;
+        cd1.peakVolume = BigInt(12345);
         cd1.volumeAdjustment = -1.23;
-        const cd2 = new ChannelData(ChannelType.Subwoofer);
-        cd2.peakVolume = BigInt(23456);
+        const cd2 = new ChannelData(ChannelType.BackCenter);
         cd2.peakBits = 48;
+        cd2.peakVolume = BigInt(23456);
         cd2.volumeAdjustment = 1.23;
         const fieldBytes = ByteVector.concatenate(
             ByteVector.fromString("foobarbaz", StringType.Latin1), 0x00, // Identifier + delimiter
-            cd1.render(),                                                // Channel data
-            cd2.render()                                                 // Channel data
+            cd2.render(),                                                // Channel data
+            cd1.render()                                                 // Channel data
         );
         const header = new Id3v2FrameHeader(FrameIdentifiers.RVA2, Id3v2FrameFlags.None, fieldBytes.length);
         const expected = ByteVector.concatenate(header.render(version), fieldBytes);

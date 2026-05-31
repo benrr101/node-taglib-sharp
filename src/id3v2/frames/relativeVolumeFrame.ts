@@ -152,7 +152,6 @@ export class ChannelData {
      * @param value Volume adjustment. Must be between -64 and 64, inclusive.
      */
     public set volumeAdjustment(value: number) {
-        Guards.int(value, "value");
         Guards.betweenExclusive(value, -64, 64, "value");
         this._volumeAdjustment = Math.floor(value * 512);
     }
@@ -167,7 +166,8 @@ export class ChannelData {
 
         // NOTE: According to the docs, peak volume is to be stored in as few bytes as possible for
         // the number of bits used to encode it. For instance, 1-8 bits peak volume must be stored
-        // in 1 byte, 8-16 in 2 bytes, etc.
+        // in 1 byte, 8-16 in 2 bytes, etc. @TODO: This is not currently being calculated as the peak
+        //                                         bits are provided by the user.
 
         const peakByteCount = Math.ceil(this._peakBits / 8);
         return ByteVector.concatenate(
@@ -182,7 +182,9 @@ export class ChannelData {
 /**
  * Extends {@link Frame}, implementing support for ID3v2 relative volume (RVA2) frames.
  */
+// @TODO: RVA2 only exists in v2.4, RVAD exists in v2.3, but it is a different format.
 export class RelativeVolumeFrame extends Frame {
+    // @TODO: Get rid of this whole "is set" malarky and just store a map of channels that are set.
     private readonly _channels: ChannelData[] = new Array<ChannelData>(9);
     private _identification: string;
 
@@ -360,18 +362,15 @@ export class RelativeVolumeFrame extends Frame {
 
     /** @inheritDoc */
     protected renderFields(): ByteVector {
-        const data = ByteVector.fromString(this.identification, StringType.Latin1);
-        data.addByteVector(ByteVector.getTextDelimiter(StringType.Latin1));
+        const channelVectors = this._channels
+            .filter(c => !!c && c.isSet)
+            .map(c => c.render());
 
-        for (let i = 0; i < 9; i++) {
-            if (!this._channels[i] || !this._channels[i].isSet) {
-                continue;
-            }
-
-            data.addByteVector(this._channels[i].render());
-        }
-
-        return data;
+        return ByteVector.concatenate(
+            ByteVector.fromString(this._identification, StringType.Latin1), // Identifier
+            ByteVector.getTextDelimiter(StringType.Latin1),                 // Delimiter
+            ... channelVectors                                              // Channel data
+        );
     }
 
     // #endregion
