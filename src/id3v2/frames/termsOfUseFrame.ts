@@ -17,6 +17,28 @@ export default class TermsOfUseFrame extends Frame {
         super(header);
     }
 
+    public static fromFieldBytes(header: Id3v2FrameHeader, fieldBytes: ByteVector, version: number): TermsOfUseFrame {
+        Guards.truthy(header, "header");
+        Guards.truthy(fieldBytes, "fieldBytes");
+        Guards.byte(version, "version");
+
+        if (fieldBytes.length < 4) {
+            throw new CorruptFileError("Terms of use frame must contain at least 4 bytes.");
+        }
+
+        // Text encoding        $xx
+        // Language             $xx xx xx
+        // The actual text      <text string according to encoding>
+
+        const frame = new TermsOfUseFrame(header);
+
+        frame._textEncoding = fieldBytes.get(0);
+        frame._language = fieldBytes.subarray(1, 3).toString(StringType.Latin1);
+        frame._text = fieldBytes.subarray(4).toString(frame._textEncoding);
+
+        return frame;
+    }
+
     /**
      * Constructs and initializes a new instance with a specified language.
      * @param language ISO-639-2 language code for the new frame
@@ -31,31 +53,6 @@ export default class TermsOfUseFrame extends Frame {
         f.textEncoding = textEncoding;
         f._language = language;
         return f;
-    }
-
-    /**
-     * Constructs and initializes a new instance by reading its raw data in a specified ID3v2
-     * version. This method allows for offset reading from the data byte vector.
-     * @param data Raw representation of the new frame
-     * @param offset What offset in `data` the frame actually begins. Must be positive,
-     *     safe integer
-     * @param header Header of the frame found at `data` in the data
-     * @param version ID3v2 version the frame was originally encoded with
-     */
-    public static fromOffsetRawData(
-        data: ByteVector,
-        offset: number,
-        header: Id3v2FrameHeader,
-        version: number
-    ): TermsOfUseFrame {
-        Guards.truthy(data, "data");
-        Guards.uint(offset, "offset");
-        Guards.truthy(header, "header");
-        Guards.byte(version, "version");
-
-        const frame = new TermsOfUseFrame(header);
-        frame.setData(data, offset, false, version);
-        return frame;
     }
 
     // #endregion
@@ -155,15 +152,7 @@ export default class TermsOfUseFrame extends Frame {
     // #region Protected Methods
 
     /** @inheritDoc */
-    protected parseFields(data: ByteVector): void {
-        if (data.length < 4) {
-            throw new CorruptFileError("Not enough bytes in field");
-        }
-
-        this.textEncoding = data.get(0);
-        this._language = data.subarray(1, 3).toString(StringType.Latin1);
-        this.text = data.subarray(4).toString(this.textEncoding);
-    }
+    protected parseFields(data: ByteVector): void { }
 
     /** @inheritDoc */
     protected renderFields(version: number): ByteVector {
