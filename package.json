@@ -44,7 +44,7 @@
     "eslint-plugin-jsdoc": "^38.0.4",
     "eslint-plugin-prefer-arrow": "^1.2.3",
     "madge": "^4.0.1",
-    "mocha": "^10.2.0",
+    "mocha": "^9.2.2",
     "nyc": "^15.1.0",
     "source-map-support": "^0.5.16",
     "stream-buffers": "^3.0.2",
