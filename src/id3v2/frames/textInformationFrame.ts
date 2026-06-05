@@ -4,6 +4,7 @@ import {Frame, FrameClassType} from "./frame";
 import {Id3v2FrameHeader} from "./frameHeader";
 import {FrameIdentifier, FrameIdentifiers} from "../frameIdentifiers";
 import {Guards, StringComparison} from "../../utils";
+import {CorruptFileError} from "../../errors";
 
 /**
  * This class provides support for ID3v2 text information frames (section 4.2) covering `T000` to
@@ -161,6 +162,57 @@ export class TextInformationFrame extends Frame {
     }
 
     /**
+     * Constructs and initializes a new instance by parsing the fields from the field bytes.
+     * @param header Header of the frame
+     * @param fieldBytes Bytes that contain the fields of the frame
+     * @param version ID3v2 version the frame was originally encoded with
+     */
+    public static fromFieldBytes(
+        header: Id3v2FrameHeader,
+        fieldBytes: ByteVector,
+        version: number
+    ): TextInformationFrame {
+        Guards.truthy(header, "header");
+        Guards.truthy(fieldBytes, "fieldBytes");
+        Guards.byte(version, "version");
+
+        if (fieldBytes.length < 1) {
+            throw new CorruptFileError("Text identifier frame must contain at least 1 byte.");
+        }
+
+        // Text encoding                $xx
+        // Information                  <text string(s) according to encoding>
+
+        const frame = new TextInformationFrame(header);
+
+        // Read the encoding of the text in the frame
+        frame._encoding = fieldBytes.get(0);
+
+        // Split the text if required
+        const textBytes = fieldBytes.subarray(1);
+        if (version >= 4) {
+            // @TODO: Should we filter out empty? We currently do it when rendering...
+            frame._textFields = textBytes.toStrings(frame._encoding)
+                .filter(t => !!t);
+        } else {
+            // Truncate anything after a null byte
+            const text = textBytes.toString(frame._encoding).split("\0")[0];
+
+            if (text.length === 0) {
+                // Empty array
+                frame._textFields = [];
+            } else {
+                // Some frames are meant to be split by a /
+                frame._textFields = TextInformationFrame.SPLIT_FRAME_TYPES.includes(frame.frameId)
+                    ? text.split("/")
+                    : [text];
+            }
+        }
+
+        return frame;
+    }
+
+    /**
      * Constructs and initializes a new instance with a specified identifier
      * @param identifier Byte vector containing the identifier for the frame
      * @param encoding Optionally, the encoding to use for the new instance. If omitted, defaults
@@ -172,30 +224,6 @@ export class TextInformationFrame extends Frame {
     ): TextInformationFrame {
         const frame = new TextInformationFrame(new Id3v2FrameHeader(identifier));
         frame._encoding = encoding;
-        return frame;
-    }
-
-    /**
-     * Constructs and initializes a new instance by reading its raw data in a specified ID3v2
-     * version. This method allows for offset reading from the data byte vector.
-     * @param data Raw representation of the new frame
-     * @param offset What offset in `data` the frame actually begins. Must be positive,
-     *     safe integer
-     * @param header Header of the frame found at `data` in the data
-     * @param version ID3v2 version the frame was originally encoded with
-     */
-    public static fromOffsetRawData(
-        data: ByteVector,
-        offset: number,
-        header: Id3v2FrameHeader,
-        version: number
-    ): TextInformationFrame {
-        Guards.truthy(data, "data");
-        Guards.uint(offset, "offset");
-        Guards.truthy(header, "header");
-
-        const frame = new TextInformationFrame(header);
-        frame.setData(data, offset, false, version);
         return frame;
     }
 
@@ -314,39 +342,7 @@ export class TextInformationFrame extends Frame {
     // #region Protected Methods
 
     /** @inheritDoc */
-    protected parseFields(data: ByteVector, version: number): void {
-        if (data.length === 0) {
-            this._textFields = [];
-            return;
-        }
-
-        // Read the string data type (first byte of the field data)
-        this._encoding = data.get(0);
-
-        const fieldList = [];
-        const delim = ByteVector.getTextDelimiter(this._encoding);
-
-        if (version > 3) {
-            fieldList.push(...data.subarray(1).toStrings(this._encoding));
-        } else if (data.length > 1 && !data.containsAt(delim, 1)) {
-            let value = data.subarray(1).toString(this._encoding);
-
-            // Truncate values containing NULL bytes
-            const nullIndex = value.indexOf("\x00");
-            if (nullIndex >= 0) {
-                value = value.substring(0, nullIndex);
-            }
-
-            if (TextInformationFrame.SPLIT_FRAME_TYPES.some((ft) => ft === this.frameId)) {
-                // Some frames are designed to be split into multiple parts by a /
-                fieldList.push(... value.split("/"));
-            } else {
-                fieldList.push(value);
-            }
-        }
-
-        this._textFields = fieldList;
-    }
+    protected parseFields(data: ByteVector, version: number): void { }
 
     /** @inheritDoc */
     protected renderFields(version: number): ByteVector {
