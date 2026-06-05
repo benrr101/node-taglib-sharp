@@ -3,7 +3,7 @@ import {ByteVector, StringType} from "../../byteVector";
 import {Frame, FrameClassType} from "./frame";
 import {Id3v2FrameHeader} from "./frameHeader";
 import {FrameIdentifier, FrameIdentifiers} from "../frameIdentifiers";
-import {Guards, StringComparison} from "../../utils";
+import {Guards} from "../../utils";
 import {CorruptFileError} from "../../errors";
 
 /**
@@ -127,7 +127,7 @@ import {CorruptFileError} from "../../errors";
  * * TSOT - The "Title sort order" frame defines a string which should be used instead of the title
  *   (TIT2) for sorting purposes.
  */
-export class TextInformationFrame extends Frame {
+export default class TextInformationFrame extends Frame {
     private static readonly SPLIT_FRAME_TYPES = [
         FrameIdentifiers.TCOM,
         FrameIdentifiers.TEXT,
@@ -365,173 +365,6 @@ export class TextInformationFrame extends Frame {
         }
 
         return ByteVector.concatenate(encoding, fieldBytes);
-    }
-
-    // #endregion
-}
-
-export class UserTextInformationFrame extends TextInformationFrame {
-    private _description: string;
-
-    // #region Constructors
-
-    private constructor(header: Id3v2FrameHeader) {
-        super(header);
-    }
-
-    /**
-     * Constructs and initializes a new instance with a specified description and text encoding.
-     * @param description Description of the new frame
-     * @param encoding Text encoding to use when rendering the new frame
-     */
-    public static fromDescription(
-        description: string,
-        encoding: StringType = Id3v2Settings.defaultEncoding
-    ): UserTextInformationFrame {
-        const frame = new UserTextInformationFrame(new Id3v2FrameHeader(FrameIdentifiers.TXXX));
-        frame._encoding = encoding;
-        frame._description = description;
-        return frame;
-    }
-
-    /**
-     * Constructs and initializes a new instance by reading its raw data in a specified ID3v2
-     * version. This method allows for offset reading from the data byte vector.
-     * @param data Raw representation of the new frame
-     * @param offset What offset in `data` the frame actually begins. Must be positive,
-     *     safe integer
-     * @param header Header of the frame found at `data` in the data
-     * @param version ID3v2 version the frame was originally encoded with
-     */
-    public static fromOffsetRawData(
-        data: ByteVector,
-        offset: number,
-        header: Id3v2FrameHeader,
-        version: number
-    ): UserTextInformationFrame {
-        Guards.truthy(data, "data");
-        Guards.uint(offset, "offset");
-        Guards.truthy(header, "header");
-        Guards.byte(version, "version");
-
-        const frame = new UserTextInformationFrame(header);
-        frame.setData(data, offset, false, version);
-        return frame;
-    }
-
-    // #endregion
-
-    // #region Properties
-
-    public get frameClassType(): FrameClassType { return FrameClassType.UserTextInformationFrame; }
-
-    /**
-     * Gets the description stored in the current instance.
-     */
-    public get description(): string { return this._description; }
-    /**
-     * Sets the description stored in the current instance.
-     * There should only be one frame with the specified description per tag.
-     * @param value Description to store in the current instance.
-     */
-    public set description(value: string) { this._description = value; }
-
-    /**
-     * Gets the text contained in the current instance.
-     * NOTE: Modifying the contents of the returned value will not modify the contents of the
-     * current instance. The value must be reassigned for the value to change.
-     */
-    public get text(): string[] { return this._textFields.slice(); }
-    /**
-     * Sets the text contained in the current instance.
-     * @param value Array of text values to store in the current instance
-     */
-    public set text(value: string[]) { this._textFields = value ? value.slice() : []; }
-
-    // #endregion
-
-    // #region Public Methods
-
-    /**
-     * Gets a user text information frame from a specified tag
-     * @param frames Object to search in
-     * @param description Description to use to match the frame in the `tag`
-     * @param caseSensitive Whether or not to search for the frame case-sensitively.
-     * @returns Frame containing the matching user, `undefined` if a match was not found
-     */
-    public static findUserTextInformationFrame(
-        frames: UserTextInformationFrame[],
-        description: string,
-        caseSensitive: boolean = true
-    ): UserTextInformationFrame {
-        Guards.truthy(frames, "frames");
-        Guards.truthy(description, "description");
-
-        const comparison = caseSensitive ? StringComparison.caseSensitive : StringComparison.caseInsensitive;
-        return frames.find((f) => comparison(f.description, description));
-    }
-
-    /** @inheritDoc */
-    public clone(): Frame {
-        const frame = UserTextInformationFrame.fromDescription(this._description, this._encoding);
-        frame._textFields = this._textFields.slice();
-        return frame;
-    }
-
-    /** @inheritDoc */
-    public toString(): string {
-        return `[${this.description}] ${super.toString()}`;
-    }
-
-    /** @inheritDoc */
-    protected parseFields(data: ByteVector, _version: number): void {
-        if (data.length === 0) {
-            this._description = undefined;
-            this._textFields = [];
-            return;
-        }
-
-        // Text encoding     $xx
-        // Description       <text string according to encoding> $00 (00)
-        // Value             <text string according to encoding>
-
-        this._encoding = data.get(0);
-
-        const fields = data.subarray(1).toStrings(this._encoding);
-        if (fields.length < 2) {
-            // Ill-formed frame, assume an undefined description
-            this._description = undefined;
-            this._textFields = fields;
-        } else {
-            // Well-formed frame, field 1 is description, field 2+ is data
-            this._description = fields[0];
-            this._textFields = fields.slice(1);
-        }
-    }
-
-    /** @inheritDoc */
-    protected renderFields(version: number): ByteVector {
-        if (!this._description && this._textFields.length === 0) {
-            return ByteVector.empty();
-        }
-
-        const encoding = TextInformationFrame.correctEncoding(this._encoding, version);
-        const v = ByteVector.empty();
-        v.addByte(encoding);
-        v.addByteVector(ByteVector.fromString(this._description ?? "", encoding));
-
-        for (const text of this._textFields) {
-            v.addByteVector(ByteVector.getTextDelimiter(encoding));
-            if (text) {
-                v.addByteVector(ByteVector.fromString(text, encoding));
-            }
-        }
-
-        if (this._textFields.length === 0) {
-            v.addByteVector(ByteVector.getTextDelimiter(encoding));
-        }
-
-        return v;
     }
 
     // #endregion
