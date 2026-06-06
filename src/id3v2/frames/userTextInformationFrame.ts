@@ -5,8 +5,9 @@ import {Frame, FrameClassType} from "./frame";
 import {Id3v2FrameHeader} from "./frameHeader";
 import {FrameIdentifiers} from "../frameIdentifiers";
 import {Guards, StringComparison} from "../../utils";
+import {CorruptFileError} from "../../errors";
 
-export class UserTextInformationFrame extends TextInformationFrame {
+export default class UserTextInformationFrame extends TextInformationFrame {
     private _description: string;
 
     // #region Constructors
@@ -31,27 +32,44 @@ export class UserTextInformationFrame extends TextInformationFrame {
     }
 
     /**
-     * Constructs and initializes a new instance by reading its raw data in a specified ID3v2
-     * version. This method allows for offset reading from the data byte vector.
-     * @param data Raw representation of the new frame
-     * @param offset What offset in `data` the frame actually begins. Must be positive,
-     *     safe integer
-     * @param header Header of the frame found at `data` in the data
+     * Constructs and initializes a new instance by parsing the fields from the field bytes.
+     * @param header Header of the frame
+     * @param fieldBytes Bytes that contain the fields of the frame
      * @param version ID3v2 version the frame was originally encoded with
      */
-    public static fromOffsetRawData(
-        data: ByteVector,
-        offset: number,
+    public static fromFieldBytes(
         header: Id3v2FrameHeader,
+        fieldBytes: ByteVector,
         version: number
     ): UserTextInformationFrame {
-        Guards.truthy(data, "data");
-        Guards.uint(offset, "offset");
         Guards.truthy(header, "header");
+        Guards.truthy(fieldBytes, "fieldBytes");
         Guards.byte(version, "version");
 
+        if (fieldBytes.length < 1) {
+            throw new CorruptFileError("User text identifier frame must contain at least 1 byte.");
+        }
+
+        // Text encoding     $xx
+        // Description       <text string according to encoding> $00 (00)
+        // Value             <text string according to encoding>
+
         const frame = new UserTextInformationFrame(header);
-        frame.setData(data, offset, false, version);
+
+        // Read the encoding of the text in the frame
+        frame._encoding = fieldBytes.get(0);
+
+        const fields = fieldBytes.subarray(1).toStrings(frame._encoding);
+        if (fields.length < 2) {
+            // Ill-formed frame, assume an undefined description
+            frame._description = undefined;
+            frame._textFields = fields;
+        } else {
+            // Well-formed frame, field 1 is description, field 2+ is data
+            frame._description = fields[0];
+            frame._textFields = fields.slice(1);
+        }
+
         return frame;
     }
 
@@ -120,30 +138,7 @@ export class UserTextInformationFrame extends TextInformationFrame {
     }
 
     /** @inheritDoc */
-    protected parseFields(data: ByteVector, _version: number): void {
-        if (data.length === 0) {
-            this._description = undefined;
-            this._textFields = [];
-            return;
-        }
-
-        // Text encoding     $xx
-        // Description       <text string according to encoding> $00 (00)
-        // Value             <text string according to encoding>
-
-        this._encoding = data.get(0);
-
-        const fields = data.subarray(1).toStrings(this._encoding);
-        if (fields.length < 2) {
-            // Ill-formed frame, assume an undefined description
-            this._description = undefined;
-            this._textFields = fields;
-        } else {
-            // Well-formed frame, field 1 is description, field 2+ is data
-            this._description = fields[0];
-            this._textFields = fields.slice(1);
-        }
-    }
+    protected parseFields(data: ByteVector, _version: number): void { }
 
     /** @inheritDoc */
     protected renderFields(version: number): ByteVector {
