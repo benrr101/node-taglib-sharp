@@ -46,37 +46,32 @@ export default class UrlLinkFrame extends Frame {
     }
 
     /**
+     * Constructs and initializes a new instance by parsing the fields from the field bytes.
+     * @param header Header of the frame
+     * @param fieldBytes Bytes that contain the fields of the frame
+     * @param version ID3v2 version the frame was originally encoded with
+     */
+    public static fromFieldBytes(header: Id3v2FrameHeader, fieldBytes: ByteVector, version: number): UrlLinkFrame {
+        Guards.truthy(header, "header");
+        Guards.truthy(fieldBytes, "fieldBytes");
+        Guards.byte(version, "version");
+
+        const frame = new UrlLinkFrame(header);
+
+        // If data contains a string terminator, ignore everything after it.
+        const splitData = fieldBytes.split(ByteVector.getTextDelimiter(StringType.Latin1));
+        frame._text = splitData[0].toString(StringType.Latin1);
+
+        return frame;
+    }
+
+    /**
      * Constructs and initializes an empty frame with the provided frame identity
      * @param ident Identity of the frame to construct
      */
     public static fromIdentity(ident: FrameIdentifier): UrlLinkFrame {
         Guards.truthy(ident, "ident");
         return new UrlLinkFrame(new Id3v2FrameHeader(ident));
-    }
-
-    /**
-     * Constructs and initializes a new instance by reading its raw data in a specified ID3v2
-     * version. This method allows for offset reading from the data byte vector.
-     * @param data Raw representation of the new frame
-     * @param offset What offset in `data` the frame actually begins. Must be positive,
-     *     safe integer
-     * @param header Header of the frame found at `data` in the data
-     * @param version ID3v2 version the frame was originally encoded with
-     */
-    public static fromOffsetRawData(
-        data: ByteVector,
-        offset: number,
-        header: Id3v2FrameHeader,
-        version: number
-    ): UrlLinkFrame {
-        Guards.truthy(data, "data");
-        Guards.uint(offset, "offset");
-        Guards.truthy(header, "header");
-        Guards.byte(version, "version");
-
-        const frame = new UrlLinkFrame(header);
-        frame.setData(data, offset, false, version);
-        return frame;
     }
 
     // #endregion
@@ -124,11 +119,7 @@ export default class UrlLinkFrame extends Frame {
     }
 
     /** @inheritDoc */
-    protected parseFields(data: ByteVector, _version: number): void {
-        // If data contains a string terminator, ignore everything after it.
-        const splitData = data.split(ByteVector.getTextDelimiter(StringType.Latin1));
-        this._text = splitData[0].toString(StringType.Latin1);
-    }
+    protected parseFields(data: ByteVector, _version: number): void { }
 
     /** @inheritDoc */
     protected renderFields(_version: number): ByteVector {
