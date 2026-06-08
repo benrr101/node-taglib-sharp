@@ -3,16 +3,16 @@ import {assert} from "chai";
 
 import FrameConstructorTests from "./frameConstructorTests";
 import Id3v2Settings from "../../src/id3v2/id3v2Settings";
+import UserUrlLinkFrame from "../../src/id3v2/frames/userUrlLinkFrame";
 import {ByteVector, StringType} from "../../src/byteVector";
 import {Frame, FrameClassType} from "../../src/id3v2/frames/frame";
 import {Id3v2FrameFlags, Id3v2FrameHeader} from "../../src/id3v2/frames/frameHeader";
 import {FrameIdentifiers} from "../../src/id3v2/frameIdentifiers";
 import {Testers} from "../utilities/testers";
-import {UserUrlLinkFrame} from "../../src/id3v2/frames/urlLinkFrame";
 
 @suite class Id3v2_UserUrlLinkFrame_ConstructorTests extends FrameConstructorTests {
     public get fromOffsetRawData(): (d: ByteVector, o: number, h: Id3v2FrameHeader, v: number) => Frame {
-        return UserUrlLinkFrame.fromOffsetRawData;
+        return (a, b, c, d) => UserUrlLinkFrame.fromFieldBytes(c, a, d);
     }
 
     @test
@@ -28,94 +28,61 @@ import {UserUrlLinkFrame} from "../../src/id3v2/frames/urlLinkFrame";
         assert.strictEqual(frame.textEncoding, Id3v2Settings.defaultEncoding);
     }
 
-    @test
-    public fromOffsetRawData_tooSmall() {
+    @params(2, "v2")
+    @params(3, "v3")
+    @params(4, "v4")
+    public fromOffsetRawData_tooSmall(version: number) {
         // Arrange
-        const bodyBytes = ByteVector.fromSize(1);
-        const header = new Id3v2FrameHeader(FrameIdentifiers.WXXX, Id3v2FrameFlags.None, bodyBytes.length);
-        const data = ByteVector.concatenate(header.render(4), bodyBytes);
+        const fieldBytes = ByteVector.fromSize(1);
+        const header = new Id3v2FrameHeader(FrameIdentifiers.WXXX, Id3v2FrameFlags.None, fieldBytes.length);
 
         // Act / Assert
-        assert.throws(() => UserUrlLinkFrame.fromOffsetRawData(data, 0, header, 4));
+        assert.throws(() => UserUrlLinkFrame.fromFieldBytes(header, fieldBytes, version));
     }
 
-    @params(StringType.Latin1, "latin1")
-    @params(StringType.UTF16BE, "utf16be")
-    public fromOffsetRawData_wellFormed(encoding: StringType = StringType.UTF16BE) {
+    @params(2, "v2")
+    @params(3, "v3")
+    @params(4, "v4")
+    public fromOffsetRawData_illFormedTagLib(version: number) {
         // Arrange
-        const bodyBytes = ByteVector.concatenate(
-            encoding,
-            ByteVector.fromString("foo", encoding),
-            ByteVector.getTextDelimiter(encoding),
-            ByteVector.fromString("bar", StringType.Latin1)
+        const fieldBytes = ByteVector.concatenate(
+            StringType.Latin1,
+            ByteVector.fromString("foo/bar", StringType.Latin1)
         );
-        const header = new Id3v2FrameHeader(FrameIdentifiers.WXXX, Id3v2FrameFlags.None, bodyBytes.length);
-        const data = ByteVector.concatenate(header.render(4), bodyBytes);
+        const header = new Id3v2FrameHeader(FrameIdentifiers.WXXX, Id3v2FrameFlags.None, fieldBytes.length);
 
         // Act
-        const output = UserUrlLinkFrame.fromOffsetRawData(data, 0, header, 4);
+        const output = UserUrlLinkFrame.fromFieldBytes(header, fieldBytes, version);
 
         // Assert
-        assert.ok(output);
-        assert.equal(output.frameClassType, FrameClassType.UserUrlLinkFrame);
-        assert.strictEqual(output.frameId, FrameIdentifiers.WXXX);
-
-        assert.strictEqual(output.description, "foo");
-        assert.strictEqual(output.text, "bar");
-        assert.equal(output.textEncoding, encoding);
+        this.assertFrame(output, "foo", "bar", StringType.Latin1);
     }
 
-    @test
-    public fromOffsetRawData_illFormedTagLib() {
+    @params(2, "v2")
+    @params(3, "v3")
+    @params(4, "v4")
+    public fromOffsetRawData_illFormedOneField(version: number) {
         // Arrange
-        const bodyBytes = ByteVector.concatenate(
-            StringType.UTF16BE,
-            ByteVector.fromString("foo/bar", StringType.UTF16BE)
-        );
-        const header = new Id3v2FrameHeader(FrameIdentifiers.WXXX, Id3v2FrameFlags.None, bodyBytes.length);
-        const data = ByteVector.concatenate(header.render(4), bodyBytes);
-
-        // Act
-        const output = UserUrlLinkFrame.fromOffsetRawData(data, 0, header, 4);
-
-        // Assert
-        assert.ok(output);
-        assert.equal(output.frameClassType, FrameClassType.UserUrlLinkFrame);
-        assert.strictEqual(output.frameId, FrameIdentifiers.WXXX);
-
-        assert.strictEqual(output.description, "foo");
-        assert.strictEqual(output.text, "bar");
-        assert.strictEqual(output.textEncoding, StringType.UTF16BE);
-    }
-
-    @test
-    public fromOffsetRawData_illFormedOneField() {
-        // Arrange
-        const bodyBytes = ByteVector.concatenate(
+        const fieldBytes = ByteVector.concatenate(
             StringType.UTF16BE,
             ByteVector.fromString("foo", StringType.UTF16BE)
         );
-        const header = new Id3v2FrameHeader(FrameIdentifiers.WXXX, Id3v2FrameFlags.None, bodyBytes.length);
-        const data = ByteVector.concatenate(header.render(4), bodyBytes);
+        const header = new Id3v2FrameHeader(FrameIdentifiers.WXXX, Id3v2FrameFlags.None, fieldBytes.length);
 
         // Act
-        const output = UserUrlLinkFrame.fromOffsetRawData(data, 0, header, 4);
+        const output = UserUrlLinkFrame.fromFieldBytes(header, fieldBytes, version);
 
         // Assert
-        assert.ok(output);
-        assert.equal(output.frameClassType, FrameClassType.UserUrlLinkFrame);
-        assert.strictEqual(output.frameId, FrameIdentifiers.WXXX);
-
-        assert.strictEqual(output.description, undefined);
-        assert.strictEqual(output.text, "foo");
-        assert.strictEqual(output.textEncoding, StringType.UTF16BE);
+        this.assertFrame(output, undefined, "foo", StringType.UTF16BE);
     }
 
-    @test
-    public fromOffsetRawData_illFormedThreeFields() {
+    @params(2, "v2")
+    @params(3, "v3")
+    @params(4, "v4")
+    public fromOffsetRawData_illFormedThreeFields(version: number) {
         // Arrange
-        const bodyBytes = ByteVector.concatenate(
-            StringType.UTF16BE,
+        const fieldBytes = ByteVector.concatenate(
+            StringType.UTF16BE,                               // Encoding
             ByteVector.fromString("foo", StringType.UTF16BE), // Description
             ByteVector.getTextDelimiter(StringType.UTF16BE),  // Description delimiter
             ByteVector.fromString("bar", StringType.Latin1),  // Text
@@ -123,20 +90,62 @@ import {UserUrlLinkFrame} from "../../src/id3v2/frames/urlLinkFrame";
             ByteVector.fromString("baz", StringType.Latin1),  // Bogus
             ByteVector.getTextDelimiter(StringType.Latin1),   // Bogus
         );
-        const header = new Id3v2FrameHeader(FrameIdentifiers.WXXX, Id3v2FrameFlags.None, bodyBytes.length);
-        const data = ByteVector.concatenate(header.render(4), bodyBytes);
+        const header = new Id3v2FrameHeader(FrameIdentifiers.WXXX, Id3v2FrameFlags.None, fieldBytes.length);
 
         // Act
-        const output = UserUrlLinkFrame.fromOffsetRawData(data, 0, header, 4);
+        const output = UserUrlLinkFrame.fromFieldBytes(header, fieldBytes, version);
 
         // Assert
-        assert.ok(output);
-        assert.equal(output.frameClassType, FrameClassType.UserUrlLinkFrame);
-        assert.strictEqual(output.frameId, FrameIdentifiers.WXXX);
+        this.assertFrame(output, "foo", "bar", StringType.UTF16BE);
+    }
 
-        assert.strictEqual(output.description, "foo");
-        assert.strictEqual(output.text, "bar");
-        assert.strictEqual(output.textEncoding, StringType.UTF16BE);
+    @params(2, "v2")
+    @params(3, "v3")
+    @params(4, "v4")
+    public fromOffsetRawData_wellFormed(version: number) {
+        // Arrange
+        const fieldBytes = ByteVector.concatenate(
+            StringType.Latin1,
+            ByteVector.fromString("foo", StringType.Latin1),
+            ByteVector.getTextDelimiter(StringType.Latin1),
+            ByteVector.fromString("bar", StringType.Latin1)
+        );
+        const header = new Id3v2FrameHeader(FrameIdentifiers.WXXX, Id3v2FrameFlags.None, fieldBytes.length);
+
+        // Act
+        const output = UserUrlLinkFrame.fromFieldBytes(header, fieldBytes, version);
+
+        // Assert
+        this.assertFrame(output, "foo", "bar", StringType.Latin1);
+    }
+    
+    @params(StringType.Latin1, "single_byte")
+    @params(StringType.UTF16BE, "multi_byte")
+    public fromOffsetRawData_encodingTest(encoding: StringType) {
+        // Arrange
+        const fieldBytes = ByteVector.concatenate(
+            encoding,
+            ByteVector.fromString("foo", encoding),
+            ByteVector.getTextDelimiter(encoding),
+            ByteVector.fromString("bar", StringType.Latin1)
+        );
+        const header = new Id3v2FrameHeader(FrameIdentifiers.WXXX, Id3v2FrameFlags.None, fieldBytes.length);
+
+        // Act
+        const output = UserUrlLinkFrame.fromFieldBytes(header, fieldBytes, 4);
+
+        // Assert
+        this.assertFrame(output, "foo", "bar", encoding);
+    }
+
+    private assertFrame(frame: UserUrlLinkFrame, description: string, text: string, encoding: StringType) {
+        assert.ok(frame);
+        assert.equal(frame.frameClassType, FrameClassType.UserUrlLinkFrame);
+        assert.strictEqual(frame.frameId, FrameIdentifiers.WXXX);
+
+        assert.strictEqual(frame.description, description);
+        assert.strictEqual(frame.text, text);
+        assert.equal(frame.textEncoding, encoding);
     }
 }
 
