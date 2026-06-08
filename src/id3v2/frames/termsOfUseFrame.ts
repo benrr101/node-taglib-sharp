@@ -17,6 +17,12 @@ export default class TermsOfUseFrame extends Frame {
         super(header);
     }
 
+    /**
+     * Constructs and initializes a new instance by parsing the fields from the field bytes.
+     * @param header Header of the frame
+     * @param fieldBytes Bytes that contain the fields of the frame
+     * @param version ID3v2 version the frame was originally encoded with
+     */
     public static fromFieldBytes(header: Id3v2FrameHeader, fieldBytes: ByteVector, version: number): TermsOfUseFrame {
         Guards.truthy(header, "header");
         Guards.truthy(fieldBytes, "fieldBytes");
