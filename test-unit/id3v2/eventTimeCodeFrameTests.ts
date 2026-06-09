@@ -1,4 +1,4 @@
-import {suite, test} from "@testdeck/mocha";
+import {params, suite, test} from "@testdeck/mocha";
 import {assert} from "chai";
 
 import FrameConstructorTests from "./frameConstructorTests";
@@ -89,7 +89,7 @@ import {EventType, TimestampFormat} from "../../src/id3v2/utilTypes";
 
 @suite class Id3v2_EventTimeCodeFrame_ConstructorTests extends FrameConstructorTests {
     public get fromOffsetRawData(): (d: ByteVector, o: number, h: Id3v2FrameHeader, v: number) => Frame {
-        return EventTimeCodeFrame.fromOffsetRawData;
+        return (a, b, c, d) => EventTimeCodeFrame.fromFieldBytes(c, a, d);
     }
 
     @test
@@ -110,41 +110,49 @@ import {EventType, TimestampFormat} from "../../src/id3v2/utilTypes";
         Id3v2_EventTimeCodeFrame_ConstructorTests.assertFrame(output, [], TimestampFormat.AbsoluteMilliseconds);
     }
 
-    @test
-    public fromOffsetRawData_noEvents() {
+    @params(2, "v2")
+    @params(3, "v3")
+    @params(3, "v3")
+    public fromOffsetRawData_notEnoughBytes(version: number) {
         // Arrange
-        const header = new Id3v2FrameHeader(FrameIdentifiers.ETCO);
-        header.frameSize = 1;
-        const data = ByteVector.concatenate(
-            0x00, 0x00,
-            header.render(4),
-            TimestampFormat.AbsoluteMilliseconds
-        );
+        const fieldBytes = ByteVector.empty();
+        const header = new Id3v2FrameHeader(FrameIdentifiers.ETCO, Id3v2FrameFlags.None, fieldBytes.length);
+
+        // Act / Assert
+        assert.throws(() => { EventTimeCodeFrame.fromFieldBytes(header, fieldBytes, version); });
+    }
+
+    @params(2, "v2")
+    @params(3, "v3")
+    @params(3, "v3")
+    public fromOffsetRawData_noEvents(version: number) {
+        // Arrange
+        const fieldBytes = ByteVector.fromByte(TimestampFormat.AbsoluteMilliseconds);
+        const header = new Id3v2FrameHeader(FrameIdentifiers.ETCO, Id3v2FrameFlags.None, fieldBytes.length);
 
         // Act
-        const frame = EventTimeCodeFrame.fromOffsetRawData(data, 2, header, 4);
+        const frame = EventTimeCodeFrame.fromFieldBytes(header, fieldBytes, version);
 
         // Assert
         Id3v2_EventTimeCodeFrame_ConstructorTests.assertFrame(frame, [], TimestampFormat.AbsoluteMilliseconds);
     }
 
-    @test
-    public fromOffsetRawData_withEvents() {
+    @params(2, "v2")
+    @params(3, "v3")
+    @params(3, "v3")
+    public fromOffsetRawData_withEvents(version: number) {
         // Arrange
-        const header = new Id3v2FrameHeader(FrameIdentifiers.ETCO);
-        header.frameSize = 11;
         const event1 = new EventTimeCode(EventType.Profanity, 123);
         const event2 = new EventTimeCode(EventType.KeyChange, 456);
-        const data = ByteVector.concatenate(
-            0x00, 0x00,
-            header.render(4),
-            TimestampFormat.AbsoluteMilliseconds,
-            event1.render(),
-            event2.render()
+        const fieldBytes = ByteVector.concatenate(
+            TimestampFormat.AbsoluteMilliseconds, // Timecode format
+            event1.render(),                      // Event 1
+            event2.render()                       // Event 2
         );
+        const header = new Id3v2FrameHeader(FrameIdentifiers.ETCO, Id3v2FrameFlags.None, fieldBytes.length);
 
         // Act
-        const frame = EventTimeCodeFrame.fromOffsetRawData(data, 2, header, 4);
+        const frame = EventTimeCodeFrame.fromFieldBytes(header, fieldBytes, version);
 
         // Assert
         Id3v2_EventTimeCodeFrame_ConstructorTests.assertFrame(
@@ -152,6 +160,24 @@ import {EventType, TimestampFormat} from "../../src/id3v2/utilTypes";
             [event1, event2],
             TimestampFormat.AbsoluteMilliseconds
         );
+    }
+
+    @params(2, "v2")
+    @params(3, "v3")
+    @params(3, "v3")
+    public fromOffsetRawData_incompleteEvent(version: number) {
+        // Arrange
+        const event1 = new EventTimeCode(EventType.Profanity, 123);
+        const event2 = new EventTimeCode(EventType.KeyChange, 456);
+        const fieldBytes = ByteVector.concatenate(
+            TimestampFormat.AbsoluteMilliseconds, // Timecode type
+            event1.render(),                      // Event 1
+            event2.render().subarray(0, 3)        // Event 2 (incomplete)
+        );
+        const header = new Id3v2FrameHeader(FrameIdentifiers.ETCO, Id3v2FrameFlags.None, fieldBytes.length);
+
+        // Act / Assert
+        assert.throws(() => EventTimeCodeFrame.fromFieldBytes(header, fieldBytes, version));
     }
 
     private static assertFrame(frame: EventTimeCodeFrame, e: EventTimeCode[], t: TimestampFormat) {
@@ -216,33 +242,61 @@ import {EventType, TimestampFormat} from "../../src/id3v2/utilTypes";
         assert.strictEqual(output.timestampFormat, frame.timestampFormat);
     }
 
-    @test
-    public render() {
+    @params(2, "v2")
+    @params(3, "v3")
+    @params(4, "v4")
+    public render_withoutEvents(version: number) {
         // Arrange
-        const header = new Id3v2FrameHeader(FrameIdentifiers.ETCO);
-        header.frameSize = 11;
-        const event2 = new EventTimeCode(EventType.KeyChange, 456);
-        const event1 = new EventTimeCode(EventType.Profanity, 123);
-        const data = ByteVector.concatenate(
-            header.render(4),
-            TimestampFormat.AbsoluteMilliseconds,
-            event2.render(),    // Force events to be sorted
-            event1.render()
-        );
-        const frame = EventTimeCodeFrame.fromOffsetRawData(data, 0, header, 4);
+        const frame = EventTimeCodeFrame.fromEmpty();
+        frame.timestampFormat = TimestampFormat.AbsoluteMpegFrames;
+        frame.events = [];
 
         // Act
-        const output = frame.render(4);
+        const output = frame.render(version);
 
         // Assert
-        const expected = ByteVector.concatenate(
-            header.render(4),
-            TimestampFormat.AbsoluteMilliseconds,
-            event1.render(),
-            event2.render()
-        );
-
         assert.isOk(output);
+
+        const fieldBytes = ByteVector.fromByte(TimestampFormat.AbsoluteMpegFrames);
+        const header = new Id3v2FrameHeader(
+            FrameIdentifiers.ETCO,
+            Id3v2FrameFlags.FileAlterPreservation,
+            fieldBytes.length
+        );
+        const expected = ByteVector.concatenate(header.render(version), fieldBytes);
+        Testers.bvEqual(output, expected);
+    }
+
+    // @params(2, "v2")
+    // @params(3, "v3")
+    // @params(4, "v4")
+    @test
+    public render_withEvents(version: number = 3) {
+        // Arrange
+        const event1 = new EventTimeCode(EventType.Profanity, 123);
+        const event2 = new EventTimeCode(EventType.KeyChange, 456);
+
+        const frame = EventTimeCodeFrame.fromEmpty();
+        frame.timestampFormat = TimestampFormat.AbsoluteMpegFrames;
+        frame.events = [event2, event1]; // Force events to be sorted
+
+        // Act
+        const output = frame.render(version);
+
+        // Assert
+        assert.isOk(output);
+
+        const fieldBytes = ByteVector.concatenate(
+            TimestampFormat.AbsoluteMpegFrames, // Timecode format
+            event1.render(),                    // Event 1
+            event2.render()                     // Event 2
+        );
+        const header = new Id3v2FrameHeader(
+            FrameIdentifiers.ETCO,
+            Id3v2FrameFlags.FileAlterPreservation,
+            fieldBytes.length
+        );
+        const expected = ByteVector.concatenate(header.render(version), fieldBytes);
         Testers.bvEqual(output, expected);
     }
 }

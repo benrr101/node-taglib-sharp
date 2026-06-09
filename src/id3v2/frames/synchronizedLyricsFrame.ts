@@ -139,6 +139,8 @@ export class SynchronizedLyricsFrame extends Frame {
         let offset = descriptorEndLength + delimiter.length;
         const lyrics: SynchronizedText[] = [];
         while (offset < variableLengthBytes.length) {
+            // @TODO: Allow ignoring invalid lyrics
+
             // Reset bytes so we are working with the next lyric at position 0
             const workingBytes = variableLengthBytes.subarray(offset);
 
@@ -151,14 +153,14 @@ export class SynchronizedLyricsFrame extends Frame {
             const lyric = workingBytes.subarray(0, lyricLength).toString(frame._textEncoding);
 
             // Read time code
-            const timeCodeBytes = workingBytes.subarray(lyricLength + delimiter.length, 4)
-            if (timeCodeBytes.length < 4) {
+            const timeStampBytes = workingBytes.subarray(lyricLength + delimiter.length, 4)
+            if (timeStampBytes.length < 4) {
                 throw new CorruptFileError(`Synchronized lyrics frame does not contain time code for lyric '${lyric}`);
             }
 
-            const timeCode = timeCodeBytes.toUint();
+            const timeStamp = timeStampBytes.toUint();
 
-            lyrics.push(new SynchronizedText(timeCode, lyric));
+            lyrics.push(new SynchronizedText(timeStamp, lyric));
             offset += lyricLength + delimiter.length + 4;
         }
 
