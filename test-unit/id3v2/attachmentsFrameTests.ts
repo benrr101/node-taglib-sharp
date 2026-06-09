@@ -1,5 +1,5 @@
 import * as TypeMoq from "typemoq";
-import {suite, test} from "@testdeck/mocha";
+import {params, suite, test} from "@testdeck/mocha";
 import {assert} from "chai";
 
 import AttachmentFrame from "../../src/id3v2/frames/attachmentFrame";
@@ -8,7 +8,7 @@ import Id3v2Settings from "../../src/id3v2/id3v2Settings";
 import PropertyTests from "../utilities/propertyTests";
 import {ByteVector, StringType} from "../../src/byteVector";
 import {Frame, FrameClassType} from "../../src/id3v2/frames/frame";
-import {Id3v2FrameHeader} from "../../src/id3v2/frames/frameHeader";
+import {Id3v2FrameFlags, Id3v2FrameHeader} from "../../src/id3v2/frames/frameHeader";
 import {FrameIdentifier, FrameIdentifiers} from "../../src/id3v2/frameIdentifiers";
 import {IPicture, PictureType} from "../../src/picture";
 import {Testers} from "../utilities/testers";
@@ -40,7 +40,7 @@ const getCustomTestFrame = (
 
 @suite class Id3v2_AttachmentFrame_ConstructorTests extends FrameConstructorTests {
     get fromOffsetRawData(): (d: ByteVector, o: number, h: Id3v2FrameHeader, v: number) => Frame {
-        return AttachmentFrame.fromOffsetRawData;
+        return (a, b, c, d) => AttachmentFrame.fromFieldBytes(c, a, d);
     }
 
     @test
@@ -108,26 +108,24 @@ const getCustomTestFrame = (
     //    the first byte of the picture is 0, which we want to make sure isn't mistaken for the end
     //    of the mimetype.
 
-    @test
-    public fromOffsetRawData_apicV4_latin1Encoding() {
+    @params(3, "v3")
+    @params(4, "v4")
+    public fromOffsetRawData_apicV34_latin1Encoding(version: number) {
         // Arrange
         const testData = ByteVector.fromString("fuxbuxqux", StringType.Latin1);
-        const header = new Id3v2FrameHeader(FrameIdentifiers.APIC);
-        header.frameSize = 41;
-        const data = ByteVector.concatenate(
-            0x00, 0x00,
-            header.render(4),
-            StringType.Latin1,
-            ByteVector.fromString("image/gif", StringType.Latin1),
-            ByteVector.getTextDelimiter(StringType.Latin1),
-            PictureType.Artist,
-            ByteVector.fromString("foobarbaz", StringType.Latin1),
-            ByteVector.getTextDelimiter(StringType.Latin1),
-            testData
+        const fieldBytes = ByteVector.concatenate(
+            StringType.Latin1,                                      // Text encoding
+            ByteVector.fromString("image/gif", StringType.Latin1),  // Mimetype
+            ByteVector.getTextDelimiter(StringType.Latin1),         // Mimetype delimiter
+            PictureType.Artist,                                     // Type
+            ByteVector.fromString("foobarbaz", StringType.Latin1),  // Description
+            ByteVector.getTextDelimiter(StringType.Latin1),         // Description delimiter
+            testData                                                // Picture bytes
         );
+        const header = new Id3v2FrameHeader(FrameIdentifiers.APIC, Id3v2FrameFlags.None, fieldBytes.length);
 
         // Act
-        const frame = AttachmentFrame.fromOffsetRawData(data, 2, header, 4);
+        const frame = AttachmentFrame.fromFieldBytes(header, fieldBytes, version);
 
         // Assert
         Id3v2_AttachmentFrame_ConstructorTests.verifyFrame(
@@ -142,26 +140,24 @@ const getCustomTestFrame = (
         );
     }
 
-    @test
-    public fromOffsetRawData_apicV4_nonLatinEncoding() {
+    @params(3, "v3")
+    @params(4, "v4")
+    public fromOffsetRawData_apicV34_nonLatinEncoding(version: number) {
         // Arrange
         const testData = ByteVector.fromString("fuxbuxqux", StringType.Latin1);
-        const header = new Id3v2FrameHeader(FrameIdentifiers.APIC);
-        header.frameSize = 41;
-        const data = ByteVector.concatenate(
-            0x00, 0x00,
-            header.render(4),
-            StringType.UTF16BE,
-            ByteVector.fromString("image/gif", StringType.Latin1),
-            ByteVector.getTextDelimiter(StringType.Latin1),
-            PictureType.Artist,
-            ByteVector.fromString("foobarbaz", StringType.UTF16BE),
-            ByteVector.getTextDelimiter(StringType.UTF16BE),
-            testData
+        const fieldBytes = ByteVector.concatenate(
+            StringType.UTF16BE,                                     // Text encoding
+            ByteVector.fromString("image/gif", StringType.Latin1),  // Mimetype
+            ByteVector.getTextDelimiter(StringType.Latin1),         // Mimetype delimiter
+            PictureType.Artist,                                     // Type
+            ByteVector.fromString("foobarbaz", StringType.UTF16BE), // Description
+            ByteVector.getTextDelimiter(StringType.UTF16BE),        // Description delimiter
+            testData                                                // Picture bytes
         );
+        const header = new Id3v2FrameHeader(FrameIdentifiers.APIC, Id3v2FrameFlags.None, fieldBytes.length);
 
         // Act
-        const frame = AttachmentFrame.fromOffsetRawData(data, 2, header, 4);
+        const frame = AttachmentFrame.fromFieldBytes(header, fieldBytes, version);
 
         // Assert
         Id3v2_AttachmentFrame_ConstructorTests.verifyFrame(
@@ -176,25 +172,23 @@ const getCustomTestFrame = (
         );
     }
 
-    @test
-    public fromOffsetRawData_apicV2() {
+    @params(StringType.Latin1, "single_byte")
+    @params(StringType.UTF16BE, "multi_byte")
+    public fromOffsetRawData_apicV2(encoding: StringType) {
         // Arrange
         const testData = ByteVector.fromString("fuxbuxqux", StringType.Latin1);
-        const header = new Id3v2FrameHeader(FrameIdentifiers.APIC);
-        header.frameSize = 34;
-        const data = ByteVector.concatenate(
-            0x00, 0x00,
-            header.render(2),
-            StringType.UTF16BE,
-            ByteVector.fromString("GIF", StringType.Latin1),
-            PictureType.Artist,
-            ByteVector.fromString("foobarbaz", StringType.UTF16BE),
-            ByteVector.getTextDelimiter(StringType.UTF16BE),
-            testData
+        const fieldBytes = ByteVector.concatenate(
+            encoding,                                        // Text encoding
+            ByteVector.fromString("GIF", StringType.Latin1), // File extension
+            PictureType.Artist,                              // Type
+            ByteVector.fromString("foobarbaz", encoding),    // Description
+            ByteVector.getTextDelimiter(encoding),           // Description delimiter
+            testData                                         // Picture bytes
         );
+        const header = new Id3v2FrameHeader(FrameIdentifiers.APIC, Id3v2FrameFlags.None, fieldBytes.length);
 
         // Act
-        const frame = AttachmentFrame.fromOffsetRawData(data, 2, header, 2);
+        const frame = AttachmentFrame.fromFieldBytes(header, fieldBytes, 2);
 
         // Assert
         Id3v2_AttachmentFrame_ConstructorTests.verifyFrame(
@@ -204,67 +198,31 @@ const getCustomTestFrame = (
             "foobarbaz",
             undefined,
             "image/gif",
-            StringType.UTF16BE,
+            encoding,
             PictureType.Artist
         );
     }
 
-    @test
-    public fromOffsetRawData_geob_nonLatinEncoding() {
+    @params(2, "v2")
+    @params(3, "v3")
+    @params(4, "v4")
+    public fromOffsetRawData_geob_latinEncoding(version: number) {
         // Arrange
         const testData = ByteVector.fromString("fuxbuxqux", StringType.Latin1);
-        const header = new Id3v2FrameHeader(FrameIdentifiers.GEOB);
-        header.frameSize = 60;
-        const data = ByteVector.concatenate(
-            0x00, 0x00,
-            header.render(4),
-            StringType.UTF16BE,
-            ByteVector.fromString("image/gif", StringType.Latin1),
-            ByteVector.getTextDelimiter(StringType.Latin1),
-            ByteVector.fromString("image.gif", StringType.UTF16BE),
-            ByteVector.getTextDelimiter(StringType.UTF16BE),
-            ByteVector.fromString("foobarbaz", StringType.UTF16BE),
-            ByteVector.getTextDelimiter(StringType.UTF16BE),
-            testData
+        const fieldBytes = ByteVector.concatenate(
+            StringType.Latin1,                                     // Encoding
+            ByteVector.fromString("image/gif", StringType.Latin1), // Mimetype
+            ByteVector.getTextDelimiter(StringType.Latin1),        // Mimetype delimiter
+            ByteVector.fromString("image.gif", StringType.Latin1), // Filename
+            ByteVector.getTextDelimiter(StringType.Latin1),        // Filename delimiter
+            ByteVector.fromString("foobarbaz", StringType.Latin1), // Description
+            ByteVector.getTextDelimiter(StringType.Latin1),        // Description delimiter
+            testData                                               // Attachment bytes
         );
+        const header = new Id3v2FrameHeader(FrameIdentifiers.GEOB, Id3v2FrameFlags.None, fieldBytes.length);
 
         // Act
-        const frame = AttachmentFrame.fromOffsetRawData(data, 2, header, 4);
-
-        // Assert
-        Id3v2_AttachmentFrame_ConstructorTests.verifyFrame(
-            frame,
-            FrameIdentifiers.GEOB,
-            testData,
-            "foobarbaz",
-            "image.gif",
-            "image/gif",
-            StringType.UTF16BE,
-            PictureType.NotAPicture
-        );
-    }
-
-    @test
-    public fromOffsetRawData_geob_latinEncoding() {
-        // Arrange
-        const testData = ByteVector.fromString("fuxbuxqux", StringType.Latin1);
-        const header = new Id3v2FrameHeader(FrameIdentifiers.GEOB);
-        header.frameSize = 60;
-        const data = ByteVector.concatenate(
-            0x00, 0x00,
-            header.render(4),
-            StringType.Latin1,
-            ByteVector.fromString("image/gif", StringType.Latin1),
-            ByteVector.getTextDelimiter(StringType.Latin1),
-            ByteVector.fromString("image.gif", StringType.Latin1),
-            ByteVector.getTextDelimiter(StringType.Latin1),
-            ByteVector.fromString("foobarbaz", StringType.Latin1),
-            ByteVector.getTextDelimiter(StringType.Latin1),
-            testData
-        );
-
-        // Act
-        const frame = AttachmentFrame.fromOffsetRawData(data, 2, header, 4);
+        const frame = AttachmentFrame.fromFieldBytes(header, fieldBytes, version);
 
         // Assert
         Id3v2_AttachmentFrame_ConstructorTests.verifyFrame(
@@ -279,37 +237,37 @@ const getCustomTestFrame = (
         );
     }
 
-    @test
-    public fromOffsetRawData_apicV4() {
+    @params(2, "v2")
+    @params(3, "v3")
+    @params(4, "v4")
+    public fromOffsetRawData_geob_nonLatinEncoding(version: number) {
         // Arrange
         const testData = ByteVector.fromString("fuxbuxqux", StringType.Latin1);
-        const header = new Id3v2FrameHeader(FrameIdentifiers.APIC);
-        header.frameSize = 41;
-        const data = ByteVector.concatenate(
-            0x00, 0x00,
-            header.render(4),
-            StringType.UTF16BE,
-            ByteVector.fromString("image/gif", StringType.Latin1),
-            ByteVector.getTextDelimiter(StringType.Latin1),
-            PictureType.Artist,
-            ByteVector.fromString("foobarbaz", StringType.UTF16BE),
-            ByteVector.getTextDelimiter(StringType.UTF16BE),
-            testData
+        const fieldBytes = ByteVector.concatenate(
+            StringType.UTF16BE,                                     // Encoding
+            ByteVector.fromString("image/gif", StringType.Latin1),  // Mimetype
+            ByteVector.getTextDelimiter(StringType.Latin1),         // Mimetype delimiter
+            ByteVector.fromString("image.gif", StringType.UTF16BE), // Filename
+            ByteVector.getTextDelimiter(StringType.UTF16BE),        // Filename delimiter
+            ByteVector.fromString("foobarbaz", StringType.UTF16BE), // Description
+            ByteVector.getTextDelimiter(StringType.UTF16BE),        // Description delimiter
+            testData                                                // Attachment bytes
         );
+        const header = new Id3v2FrameHeader(FrameIdentifiers.GEOB, Id3v2FrameFlags.None, fieldBytes.length);
 
         // Act
-        const frame = AttachmentFrame.fromOffsetRawData(data, 2, header, 4);
+        const frame = AttachmentFrame.fromFieldBytes(header, fieldBytes, version);
 
         // Assert
         Id3v2_AttachmentFrame_ConstructorTests.verifyFrame(
             frame,
-            FrameIdentifiers.APIC,
+            FrameIdentifiers.GEOB,
             testData,
             "foobarbaz",
-            undefined,
+            "image.gif",
             "image/gif",
             StringType.UTF16BE,
-            PictureType.Artist
+            PictureType.NotAPicture
         );
     }
 
@@ -480,20 +438,17 @@ const getCustomTestFrame = (
     public clone_fromOffsetRawDataUnread() {
         // Arrange
         const testData = ByteVector.fromString("fuxbuxqux", StringType.Latin1);
-        const header = new Id3v2FrameHeader(FrameIdentifiers.APIC);
-        header.frameSize = 41;
-        const data = ByteVector.concatenate(
-            0x00, 0x00,
-            header.render(4),
-            StringType.UTF16BE,
-            ByteVector.fromString("image/gif", StringType.Latin1),
-            ByteVector.getTextDelimiter(StringType.Latin1),
-            PictureType.Artist,
-            ByteVector.fromString("foobarbaz", StringType.UTF16BE),
-            ByteVector.getTextDelimiter(StringType.UTF16BE),
-            testData
+        const fieldBytes = ByteVector.concatenate(
+            StringType.UTF16BE,                                     // Encoding
+            ByteVector.fromString("image/gif", StringType.Latin1),  // Mimetype
+            ByteVector.getTextDelimiter(StringType.Latin1),         // Mimetype delimiter
+            PictureType.Artist,                                     // Type
+            ByteVector.fromString("foobarbaz", StringType.UTF16BE), // Description
+            ByteVector.getTextDelimiter(StringType.UTF16BE),        // Description delimiter
+            testData                                                // Picture bytes
         );
-        const frame = AttachmentFrame.fromOffsetRawData(data, 2, header, 4);
+        const header = new Id3v2FrameHeader(FrameIdentifiers.APIC, Id3v2FrameFlags.None, fieldBytes.length);
+        const frame = AttachmentFrame.fromFieldBytes(header, fieldBytes, 4);
 
         // Act
         const output = <AttachmentFrame> frame.clone();
@@ -652,17 +607,16 @@ const getCustomTestFrame = (
         const output = frame.render(2);
 
         // Assert
-        const header = new Id3v2FrameHeader(FrameIdentifiers.APIC);
-        header.frameSize = 24;
-        const expected = ByteVector.concatenate(
-            header.render(2),
-            StringType.UTF16,
-            ByteVector.fromString("XXX", StringType.Latin1),
-            PictureType.FrontCover,
-            ByteVector.fromString("foo", StringType.UTF16),
-            ByteVector.getTextDelimiter(StringType.UTF16),
-            data
+        const fieldBytes = ByteVector.concatenate(
+            StringType.UTF16,                                // Text encoding
+            ByteVector.fromString("XXX", StringType.Latin1), // File extension
+            PictureType.FrontCover,                          // Type
+            ByteVector.fromString("foo", StringType.UTF16),  // Description
+            ByteVector.getTextDelimiter(StringType.UTF16),   // Description delimiter
+            data                                             // Picture bytes
         );
+        const header = new Id3v2FrameHeader(FrameIdentifiers.APIC, Id3v2FrameFlags.None, fieldBytes.length);
+        const expected = ByteVector.concatenate(header.render(2), fieldBytes);
         Testers.bvEqual(output, expected);
     }
 
@@ -676,17 +630,40 @@ const getCustomTestFrame = (
         const output = frame.render(2);
 
         // Assert
-        const header = new Id3v2FrameHeader(FrameIdentifiers.APIC);
-        header.frameSize = 24;
-        const expected = ByteVector.concatenate(
-            header.render(2),
-            StringType.UTF16,
-            ByteVector.fromString("GIF", StringType.Latin1),
-            PictureType.FrontCover,
-            ByteVector.fromString("foo", StringType.UTF16),
-            ByteVector.getTextDelimiter(StringType.UTF16),
-            data
+        const fieldBytes = ByteVector.concatenate(
+            StringType.UTF16,                                // Text encoding (corrected)
+            ByteVector.fromString("GIF", StringType.Latin1), // File extension
+            PictureType.FrontCover,                          // Type
+            ByteVector.fromString("foo", StringType.UTF16),  // Description
+            ByteVector.getTextDelimiter(StringType.UTF16),   // Description delimiter
+            data                                             // Picture bytes
         );
+        const header = new Id3v2FrameHeader(FrameIdentifiers.APIC, Id3v2FrameFlags.None, fieldBytes.length);
+        const expected = ByteVector.concatenate(header.render(2), fieldBytes);
+        Testers.bvEqual(output, expected);
+    }
+
+    @test
+    public render_apic_v3() {
+        // Arrange
+        const data = ByteVector.fromString("fuxbuxqux", StringType.UTF8);
+        const frame = getCustomTestFrame(data, "foo", "bar", "image/gif", PictureType.FrontCover);
+
+        // Act
+        const output = frame.render(3);
+
+        // Assert
+        const fieldBytes = ByteVector.concatenate(
+            StringType.UTF16,                                      // Encoding
+            ByteVector.fromString("image/gif", StringType.Latin1), // Mimetype
+            ByteVector.getTextDelimiter(StringType.Latin1),        // Mimetype delimiter
+            PictureType.FrontCover,                                // Type
+            ByteVector.fromString("foo", StringType.UTF16),        // Description
+            ByteVector.getTextDelimiter(StringType.UTF16),         // Description delimiter
+            data                                                   // Picture bytes
+        );
+        const header = new Id3v2FrameHeader(FrameIdentifiers.APIC, Id3v2FrameFlags.None, fieldBytes.length);
+        const expected = ByteVector.concatenate(header.render(3), fieldBytes);
         Testers.bvEqual(output, expected);
     }
 
@@ -700,23 +677,45 @@ const getCustomTestFrame = (
         const output = frame.render(4);
 
         // Assert
-        const header = new Id3v2FrameHeader(FrameIdentifiers.APIC);
-        header.frameSize = 25;
-        const expected = ByteVector.concatenate(
-            header.render(4),
-            Id3v2Settings.defaultEncoding,
-            ByteVector.fromString("image/gif", StringType.Latin1),
-            ByteVector.getTextDelimiter(StringType.Latin1),
-            PictureType.FrontCover,
-            ByteVector.fromString("foo", StringType.Latin1),
-            ByteVector.getTextDelimiter(StringType.Latin1),
-            data
+        const fieldBytes = ByteVector.concatenate(
+            Id3v2Settings.defaultEncoding,                         // Encoding
+            ByteVector.fromString("image/gif", StringType.Latin1), // Mimetype
+            ByteVector.getTextDelimiter(StringType.Latin1),        // Mimetype delimiter
+            PictureType.FrontCover,                                // Type
+            ByteVector.fromString("foo", StringType.Latin1),       // Description
+            ByteVector.getTextDelimiter(StringType.Latin1),        // Description delimiter
+            data                                                   // Picture bytes
         );
+        const header = new Id3v2FrameHeader(FrameIdentifiers.APIC, Id3v2FrameFlags.None, fieldBytes.length);
+        const expected = ByteVector.concatenate(header.render(4), fieldBytes);
+        Testers.bvEqual(output, expected);
+    }
+
+    @params(2, "v2")
+    @params(3, "v3")
+    public render_geobWithoutMimeType_v23(version: number) {
+        // Arrange
+        const data = ByteVector.fromString("fuxbuxqux", StringType.UTF8);
+        const frame = getCustomTestFrame(data, undefined, undefined, undefined, PictureType.NotAPicture);
+
+        // Act
+        const output = frame.render(version);
+
+        // Assert
+        const fieldBytes = ByteVector.concatenate(
+            StringType.UTF16,                               // Encoding (corrected)
+            ByteVector.getTextDelimiter(StringType.Latin1), // Mimetype delimiter
+            ByteVector.getTextDelimiter(StringType.UTF16),  // Filename delimiter
+            ByteVector.getTextDelimiter(StringType.UTF16),  // Description delimiter
+            data                                            // Attachment bytes
+        );
+        const header = new Id3v2FrameHeader(FrameIdentifiers.GEOB, Id3v2FrameFlags.None, fieldBytes.length);
+        const expected = ByteVector.concatenate(header.render(version), fieldBytes);
         Testers.bvEqual(output, expected);
     }
 
     @test
-    public render_geobNoMimeType() {
+    public render_geobWithoutMimeType_v4() {
         // Arrange
         const data = ByteVector.fromString("fuxbuxqux", StringType.UTF8);
         const frame = getCustomTestFrame(data, undefined, undefined, undefined, PictureType.NotAPicture);
@@ -725,21 +724,43 @@ const getCustomTestFrame = (
         const output = frame.render(4);
 
         // Assert
-        const header = new Id3v2FrameHeader(FrameIdentifiers.GEOB);
-        header.frameSize = 13;
-        const expected = ByteVector.concatenate(
-            header.render(4),
-            Id3v2Settings.defaultEncoding,
-            ByteVector.getTextDelimiter(Id3v2Settings.defaultEncoding),
-            ByteVector.getTextDelimiter(Id3v2Settings.defaultEncoding),
-            ByteVector.getTextDelimiter(Id3v2Settings.defaultEncoding),
-            data
+        const fieldBytes = ByteVector.concatenate(Id3v2Settings.defaultEncoding,
+            ByteVector.getTextDelimiter(Id3v2Settings.defaultEncoding), // Mimetype delimiter
+            ByteVector.getTextDelimiter(Id3v2Settings.defaultEncoding), // Filename delimiter
+            ByteVector.getTextDelimiter(Id3v2Settings.defaultEncoding), // Description delimiter
+            data                                                        // Attachment bytes
         );
+        const header = new Id3v2FrameHeader(FrameIdentifiers.GEOB, Id3v2FrameFlags.None, fieldBytes.length);
+        const expected = ByteVector.concatenate(header.render(4), fieldBytes);
+        Testers.bvEqual(output, expected);
+    }
+
+    @params(2, "v2")
+    @params(3, "v3")
+    public render_geobWithMimeType_v23(version: number) {
+        // Arrange
+        const data = ByteVector.fromString("fuxbuxqux", StringType.UTF8);
+        const frame = getCustomTestFrame(data, undefined, undefined, "image/gif", PictureType.NotAPicture);
+
+        // Act
+        const output = frame.render(version);
+
+        // Assert
+        const fieldBytes = ByteVector.concatenate(
+            StringType.UTF16,                                      // Encoding (corrected)
+            ByteVector.fromString("image/gif", StringType.Latin1), // Mimetype
+            ByteVector.getTextDelimiter(StringType.Latin1),        // Mimetype delimiter
+            ByteVector.getTextDelimiter(StringType.UTF16),         // Filename delimiter
+            ByteVector.getTextDelimiter(StringType.UTF16),         // Description delimiter
+            data                                                   // Attachment bytes
+        );
+        const header = new Id3v2FrameHeader(FrameIdentifiers.GEOB, Id3v2FrameFlags.None, fieldBytes.length);
+        const expected = ByteVector.concatenate(header.render(version), fieldBytes);
         Testers.bvEqual(output, expected);
     }
 
     @test
-    public render_geobWithMimeType() {
+    public render_geobWithMimeType_v4() {
         // Arrange
         const data = ByteVector.fromString("fuxbuxqux", StringType.UTF8);
         const frame = getCustomTestFrame(data, undefined, undefined, "image/gif", PictureType.NotAPicture);
@@ -748,22 +769,46 @@ const getCustomTestFrame = (
         const output = frame.render(4);
 
         // Assert
-        const header = new Id3v2FrameHeader(FrameIdentifiers.GEOB);
-        header.frameSize = 22;
-        const expected = ByteVector.concatenate(
-            header.render(4),
-            Id3v2Settings.defaultEncoding,
-            ByteVector.fromString("image/gif", Id3v2Settings.defaultEncoding),
-            ByteVector.getTextDelimiter(Id3v2Settings.defaultEncoding),
-            ByteVector.getTextDelimiter(Id3v2Settings.defaultEncoding),
-            ByteVector.getTextDelimiter(Id3v2Settings.defaultEncoding),
-            data
+        const fieldBytes = ByteVector.concatenate(
+            Id3v2Settings.defaultEncoding,                              // Encoding
+            ByteVector.fromString("image/gif", StringType.Latin1),      // Mimetype
+            ByteVector.getTextDelimiter(Id3v2Settings.defaultEncoding), // Mimetype delimiter
+            ByteVector.getTextDelimiter(Id3v2Settings.defaultEncoding), // Filename delimiter
+            ByteVector.getTextDelimiter(Id3v2Settings.defaultEncoding), // Description delimiter
+            data                                                        // Attachment bytes
         );
+        const header = new Id3v2FrameHeader(FrameIdentifiers.GEOB, Id3v2FrameFlags.None, fieldBytes.length);
+        const expected = ByteVector.concatenate(header.render(4), fieldBytes);
+        Testers.bvEqual(output, expected);
+    }
+
+    @params(2, "v2")
+    @params(3, "v3")
+    public render_geobWithMimeTypeAndFileName_v23(version: number) {
+        // Arrange
+        const data = ByteVector.fromString("fuxbuxqux", StringType.UTF8);
+        const frame = getCustomTestFrame(data, undefined, "file.gif", "image/gif", PictureType.NotAPicture);
+
+        // Act
+        const output = frame.render(version);
+
+        // Assert
+        const fieldBytes = ByteVector.concatenate(
+            StringType.UTF16,                                      // Encoding (encoding)
+            ByteVector.fromString("image/gif", StringType.Latin1), // Mimetype
+            ByteVector.getTextDelimiter(StringType.Latin1),        // Mimetype delimiter
+            ByteVector.fromString("file.gif", StringType.UTF16),   // Filename
+            ByteVector.getTextDelimiter(StringType.UTF16),         // Filename delimiter
+            ByteVector.getTextDelimiter(StringType.UTF16),         // Description delimiter
+            data                                                   // Attachment bytes
+        )
+        const header = new Id3v2FrameHeader(FrameIdentifiers.GEOB, Id3v2FrameFlags.None, fieldBytes.length);
+        const expected = ByteVector.concatenate(header.render(version), fieldBytes);
         Testers.bvEqual(output, expected);
     }
 
     @test
-    public render_geobWithMimeTypeAndFileName() {
+    public render_geobWithMimeTypeAndFileName_v4() {
         // Arrange
         const data = ByteVector.fromString("fuxbuxqux", StringType.UTF8);
         const frame = getCustomTestFrame(data, undefined, "file.gif", "image/gif", PictureType.NotAPicture);
@@ -772,23 +817,48 @@ const getCustomTestFrame = (
         const output = frame.render(4);
 
         // Assert
-        const header = new Id3v2FrameHeader(FrameIdentifiers.GEOB);
-        header.frameSize = 30;
-        const expected = ByteVector.concatenate(
-            header.render(4),
-            Id3v2Settings.defaultEncoding,
-            ByteVector.fromString("image/gif", StringType.Latin1),
-            ByteVector.getTextDelimiter(StringType.Latin1),
-            ByteVector.fromString("file.gif", Id3v2Settings.defaultEncoding),
-            ByteVector.getTextDelimiter(Id3v2Settings.defaultEncoding),
-            ByteVector.getTextDelimiter(Id3v2Settings.defaultEncoding),
-            data
-        );
+        const fieldBytes = ByteVector.concatenate(
+            Id3v2Settings.defaultEncoding,                                    // Encoding
+            ByteVector.fromString("image/gif", StringType.Latin1),            // Mimetype
+            ByteVector.getTextDelimiter(StringType.Latin1),                   // Mimetype delimiter
+            ByteVector.fromString("file.gif", Id3v2Settings.defaultEncoding), // Filename
+            ByteVector.getTextDelimiter(Id3v2Settings.defaultEncoding),       // Filename delimiter
+            ByteVector.getTextDelimiter(Id3v2Settings.defaultEncoding),       // Description delimiter
+            data                                                              // Attachment bytes
+        )
+        const header = new Id3v2FrameHeader(FrameIdentifiers.GEOB, Id3v2FrameFlags.None, fieldBytes.length);
+        const expected = ByteVector.concatenate(header.render(4), fieldBytes);
         Testers.bvEqual(output, expected);
     }
 
-    @test
-    public render_geobWithMimeTypeAndFileNameAndDescription() {
+    @params(2, "v2")
+    @params(3, "v3")
+    public render_geobWithMimeTypeAndFileNameAndDescription_v23(version: number) {
+        // Arrange
+        const data = ByteVector.fromString("fuxbuxqux", StringType.UTF8);
+        const frame = getCustomTestFrame(data, "foobarbaz", "file.gif", "image/gif", PictureType.NotAPicture);
+
+        // Act
+        const output = frame.render(version);
+
+        // Assert
+        const fieldBytes = ByteVector.concatenate(
+            StringType.UTF16,                                      // Encoding (corrected)
+            ByteVector.fromString("image/gif", StringType.Latin1), // Mimetype
+            ByteVector.getTextDelimiter(StringType.Latin1),        // Mimetype delimiter
+            ByteVector.fromString("file.gif", StringType.UTF16),   // Filename
+            ByteVector.getTextDelimiter(StringType.UTF16),         // Filename delimiter
+            ByteVector.fromString("foobarbaz", StringType.UTF16),  // Description
+            ByteVector.getTextDelimiter(StringType.UTF16),         // Description delimiter
+            data                                                   // Attachment bytes
+        );
+        const header = new Id3v2FrameHeader(FrameIdentifiers.GEOB, Id3v2FrameFlags.None, fieldBytes.length);
+        const expected = ByteVector.concatenate(header.render(version), fieldBytes);
+        Testers.bvEqual(output, expected);
+    }
+
+    @params(4, "v4")
+    public render_geobWithMimeTypeAndFileNameAndDescription_v4() {
         // Arrange
         const data = ByteVector.fromString("fuxbuxqux", StringType.UTF8);
         const frame = getCustomTestFrame(data, "foobarbaz", "file.gif", "image/gif", PictureType.NotAPicture);
@@ -797,19 +867,18 @@ const getCustomTestFrame = (
         const output = frame.render(4);
 
         // Assert
-        const header = new Id3v2FrameHeader(FrameIdentifiers.GEOB);
-        header.frameSize = 39;
-        const expected = ByteVector.concatenate(
-            header.render(4),
-            Id3v2Settings.defaultEncoding,
-            ByteVector.fromString("image/gif", StringType.Latin1),
-            ByteVector.getTextDelimiter(StringType.Latin1),
-            ByteVector.fromString("file.gif", Id3v2Settings.defaultEncoding),
-            ByteVector.getTextDelimiter(Id3v2Settings.defaultEncoding),
-            ByteVector.fromString("foobarbaz", Id3v2Settings.defaultEncoding),
-            ByteVector.getTextDelimiter(Id3v2Settings.defaultEncoding),
-            data
+        const fieldBytes = ByteVector.concatenate(
+            Id3v2Settings.defaultEncoding,                                     // Encoding
+            ByteVector.fromString("image/gif", StringType.Latin1),             // Mimetype
+            ByteVector.getTextDelimiter(StringType.Latin1),                    // Mimetype delimiter
+            ByteVector.fromString("file.gif", Id3v2Settings.defaultEncoding),  // Filename
+            ByteVector.getTextDelimiter(Id3v2Settings.defaultEncoding),        // Filename delimiter
+            ByteVector.fromString("foobarbaz", Id3v2Settings.defaultEncoding), // Description
+            ByteVector.getTextDelimiter(Id3v2Settings.defaultEncoding),        // Description delimiter
+            data                                                               // Attachment bytes
         );
+        const header = new Id3v2FrameHeader(FrameIdentifiers.GEOB, Id3v2FrameFlags.None, fieldBytes.length);
+        const expected = ByteVector.concatenate(header.render(4), fieldBytes);
         Testers.bvEqual(output, expected);
     }
 }
