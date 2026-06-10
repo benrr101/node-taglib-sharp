@@ -316,34 +316,10 @@ export abstract class Frame {
     }
 
     /**
-     * Populates the values in this frame by parsing its field data in a specified version.
-     * @param data Extracted field data
-     * @param version ID3v2 version the field data is encoded in
-     */
-    protected abstract parseFields(data: ByteVector, version: number): void;
-
-    /**
      * Renders the values in the current instance into field data for a specified version.
      * @param version ID3v2 version the field data is to be encoded in.
      */
     protected abstract renderFields(version: number): ByteVector;
-
-    /**
-     * Populates the current instance by reading the raw frame from disk, optionally reading the
-     * header.
-     * @param data Raw ID3v2 frame
-     * @param offset Offset in `data` at which the frame begins.
-     * @param readHeader Whether or not to read the reader into the current instance.
-     * @param version Version of the ID3v2 tag the data was encoded with
-     */
-    protected setData(data: ByteVector, offset: number, readHeader: boolean, version: number): void {
-        if (readHeader) {
-            this._header = Id3v2FrameHeader.fromData(data, version);
-        }
-
-        // @TODO: If we don't have a header to read, why are we saying the data includes a header?
-        this.parseFields(this.fieldData(data, offset, version, false), version);
-    }
 
     // #endregion
 }

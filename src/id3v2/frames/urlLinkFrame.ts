@@ -119,9 +119,6 @@ export default class UrlLinkFrame extends Frame {
     }
 
     /** @inheritDoc */
-    protected parseFields(data: ByteVector, _version: number): void { }
-
-    /** @inheritDoc */
     protected renderFields(_version: number): ByteVector {
         if (!this._text) {
             return ByteVector.empty();

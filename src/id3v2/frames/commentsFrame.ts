@@ -245,8 +245,6 @@ export default class CommentsFrame extends Frame {
         return this.text;
     }
 
-    protected parseFields(data: ByteVector): void { }
-
     protected renderFields(version: number): ByteVector {
         const encoding = Frame.correctEncoding(this.textEncoding, version);
         return ByteVector.concatenate(

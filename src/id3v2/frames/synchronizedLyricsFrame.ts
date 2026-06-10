@@ -362,9 +362,6 @@ export class SynchronizedLyricsFrame extends Frame {
     // #endregion
 
     /** @inheritDoc */
-    protected parseFields(data: ByteVector): void { }
-
-    /** @inheritDoc */
     protected renderFields(version: number): ByteVector {
         const encoding = SynchronizedLyricsFrame.correctEncoding(this.textEncoding, version);
         const renderedText = this.text

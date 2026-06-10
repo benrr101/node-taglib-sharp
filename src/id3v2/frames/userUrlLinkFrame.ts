@@ -143,8 +143,6 @@ export default class UserUrlLinkFrame extends UrlLinkFrame {
         return `[${this.description}] ${super.toString()}`;
     }
 
-    protected parseFields(data: ByteVector, _version: number): void { }
-
     protected renderFields(version: number): ByteVector {
         if (!this._description && !this._text) {
             return ByteVector.empty();

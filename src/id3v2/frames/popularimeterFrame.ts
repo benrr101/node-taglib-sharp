@@ -143,9 +143,6 @@ export default class PopularimeterFrame extends Frame {
     }
 
     /** @inheritDoc */
-    protected parseFields(data: ByteVector): void { }
-
-    /** @inheritDoc */
     protected renderFields(): ByteVector {
         // Only include personal play count if it's desired
         let playCountData: ByteVector;

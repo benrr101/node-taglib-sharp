@@ -24,10 +24,6 @@ class TestFrame extends Frame {
         return undefined;
     }
 
-    public callFieldData(data: ByteVector, offset: number, version: number, includesHeader: boolean): ByteVector {
-        return this.fieldData(data, offset, version, includesHeader);
-    }
-
     public clone(): Frame {
         return undefined;
     }

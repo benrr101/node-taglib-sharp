@@ -55,9 +55,6 @@ export default class UnknownFrame extends Frame {
     }
 
     /** @inheritDoc */
-    protected parseFields(data: ByteVector): void { }
-
-    /** @inheritDoc */
     protected renderFields(): ByteVector {
         return this.data || ByteVector.empty();
     }

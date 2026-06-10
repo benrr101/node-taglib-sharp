@@ -193,9 +193,6 @@ export default class GenreFrame extends Frame {
     // #region Protected Methods
 
     /** @inheritDoc */
-    protected parseFields(data: ByteVector, version: number): void { }
-
-    /** @inheritDoc */
     protected renderFields(version: number): ByteVector {
         const encoding = GenreFrame.correctEncoding(this.textEncoding, version);
         const v = ByteVector.empty();

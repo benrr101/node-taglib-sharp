@@ -201,9 +201,6 @@ export class EventTimeCodeFrame extends Frame {
     }
 
     /** @inheritDoc */
-    protected parseFields(data: ByteVector): void { }
-
-    /** @inheritDoc */
     protected renderFields(): ByteVector {
         // Docs state event codes must be sorted chronologically
         const events = this.events

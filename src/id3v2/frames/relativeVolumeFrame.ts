@@ -358,9 +358,6 @@ export class RelativeVolumeFrame extends Frame {
     // #region Protected/Private Methods
 
     /** @inheritDoc */
-    protected parseFields(data: ByteVector): void { }
-
-    /** @inheritDoc */
     protected renderFields(): ByteVector {
         const channelVectors = this._channels
             .filter(c => !!c && c.isSet)

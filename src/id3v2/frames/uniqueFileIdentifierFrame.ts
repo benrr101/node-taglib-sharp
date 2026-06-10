@@ -117,9 +117,6 @@ export default class UniqueFileIdentifierFrame extends Frame {
     }
 
     /** @inheritDoc */
-    protected parseFields(data: ByteVector): void { }
-
-    /** @inheritDoc */
     protected renderFields(): ByteVector {
         return ByteVector.concatenate(
             ByteVector.fromString(this._owner, StringType.Latin1),

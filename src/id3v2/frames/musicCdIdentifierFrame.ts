@@ -69,9 +69,6 @@ export default class MusicCdIdentifierFrame extends Frame {
     }
 
     /** @inheritDoc */
-    protected parseFields(data: ByteVector): void { }
-
-    /** @inheritDoc */
     protected renderFields(): ByteVector {
         return this._data || ByteVector.empty();
     }

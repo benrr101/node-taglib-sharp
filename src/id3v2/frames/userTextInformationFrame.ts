@@ -138,9 +138,6 @@ export default class UserTextInformationFrame extends TextInformationFrame {
     }
 
     /** @inheritDoc */
-    protected parseFields(data: ByteVector, _version: number): void { }
-
-    /** @inheritDoc */
     protected renderFields(version: number): ByteVector {
         if (!this._description && this._textFields.length === 0) {
             return ByteVector.empty();

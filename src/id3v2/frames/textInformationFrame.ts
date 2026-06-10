@@ -342,9 +342,6 @@ export default class TextInformationFrame extends Frame {
     // #region Protected Methods
 
     /** @inheritDoc */
-    protected parseFields(data: ByteVector, version: number): void { }
-
-    /** @inheritDoc */
     protected renderFields(version: number): ByteVector {
         const truthyFields = this._textFields.filter(tf => !!tf);
         if (truthyFields.length === 0) {

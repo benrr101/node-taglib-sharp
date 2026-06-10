@@ -105,9 +105,6 @@ export default class PrivateFrame extends Frame {
     }
 
     /** @inheritDoc */
-    protected parseFields(data: ByteVector): void { }
-
-    /** @inheritDoc */
     protected renderFields(version: number): ByteVector {
         if (version < 3) {
             throw new NotImplementedError();

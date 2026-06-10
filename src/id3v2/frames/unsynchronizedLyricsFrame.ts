@@ -231,9 +231,6 @@ export default class UnsynchronizedLyricsFrame extends Frame {
     }
 
     /** @inheritDoc */
-    protected parseFields(data: ByteVector): void { }
-
-    /** @inheritDoc */
     protected renderFields(version: number): ByteVector {
         const encoding = UnsynchronizedLyricsFrame.correctEncoding(this.textEncoding, version);
         return ByteVector.concatenate(

@@ -158,9 +158,6 @@ export default class TermsOfUseFrame extends Frame {
     // #region Protected Methods
 
     /** @inheritDoc */
-    protected parseFields(data: ByteVector): void { }
-
-    /** @inheritDoc */
     protected renderFields(version: number): ByteVector {
         const encoding = Frame.correctEncoding(this.textEncoding, version);
 

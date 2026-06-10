@@ -292,9 +292,6 @@ export default class AttachmentFrame extends Frame implements IPicture {
     // #endregion
 
     /** @inheritDoc */
-    protected parseFields(data: ByteVector, version: number): void { }
-
-    /** @inheritDoc */
     protected renderFields(version: number): ByteVector {
         this.parseFromRaw();
 
