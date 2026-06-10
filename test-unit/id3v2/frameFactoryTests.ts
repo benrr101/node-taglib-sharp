@@ -7,8 +7,12 @@ import PopularimeterFrame from "../../src/id3v2/frames/popularimeterFrame";
 import PrivateFrame from "../../src/id3v2/frames/privateFrame";
 import TermsOfUseFrame from "../../src/id3v2/frames/termsOfUseFrame";
 import TestFile from "../utilities/testFile";
+import TextInformationFrame from "../../src/id3v2/frames/textInformationFrame";
 import UniqueFileIdentifierFrame from "../../src/id3v2/frames/uniqueFileIdentifierFrame";
 import UnsynchronizedLyricsFrame from "../../src/id3v2/frames/unsynchronizedLyricsFrame";
+import UrlLinkFrame from "../../src/id3v2/frames/urlLinkFrame";
+import UserTextInformationFrame from "../../src/id3v2/frames/userTextInformationFrame";
+import UserUrlLinkFrame from "../../src/id3v2/frames/userUrlLinkFrame";
 import {ByteVector, StringType} from "../../src/byteVector";
 import {EventTimeCodeFrame} from "../../src/id3v2/frames/eventTimeCodeFrame";
 import {File} from "../../src/file";
@@ -18,9 +22,7 @@ import {Id3v2FrameFlags, Id3v2FrameHeader} from "../../src/id3v2/frames/frameHea
 import {FrameIdentifier, FrameIdentifiers} from "../../src/id3v2/frameIdentifiers";
 import {PictureType} from "../../src/picture";
 import {RelativeVolumeFrame} from "../../src/id3v2/frames/relativeVolumeFrame";
-import {TextInformationFrame, UserTextInformationFrame} from "../../src/id3v2/frames/textInformationFrame";
 import {SynchronizedLyricsFrame} from "../../src/id3v2/frames/synchronizedLyricsFrame";
-import {UrlLinkFrame, UserUrlLinkFrame} from "../../src/id3v2/frames/urlLinkFrame";
 import {SynchronizedTextType, TimestampFormat} from "../../src/id3v2/utilTypes";
 import {Testers} from "../utilities/testers";
 
@@ -107,7 +109,7 @@ import {Testers} from "../utilities/testers";
     @test
     public createFrame_fromFileNoOffset_ufid() {
         // Arrange
-        const data = UniqueFileIdentifierFrame.fromData("foo", ByteVector.empty()).render(4);
+        const data = UniqueFileIdentifierFrame.fromData("foo", ByteVector.fromByte(0x05)).render(4);
         const file = TestFile.getFile(data);
 
         // Act
@@ -122,7 +124,7 @@ import {Testers} from "../utilities/testers";
         // Arrange
         const data = ByteVector.concatenate(
             FrameFactoryTests.TWO_BYTE_OFFSET,
-            UniqueFileIdentifierFrame.fromData("foo", ByteVector.empty()).render(4)
+            UniqueFileIdentifierFrame.fromData("foo", ByteVector.fromByte(0x05)).render(4)
         );
         const file = TestFile.getFile(data);
 
@@ -299,7 +301,7 @@ import {Testers} from "../utilities/testers";
     @test
     public createFrameFromFile_ufid() {
         // Arrange
-        const data = UniqueFileIdentifierFrame.fromData("foo", ByteVector.empty()).render(4);
+        const data = UniqueFileIdentifierFrame.fromData("foo", ByteVector.fromByte(0x05)).render(4);
         const file = TestFile.getFile(data);
 
         // Act
@@ -539,7 +541,7 @@ import {Testers} from "../utilities/testers";
     @test
     public createFrameFromRawData_ufid() {
         // Arrange
-        const data = UniqueFileIdentifierFrame.fromData("foo", ByteVector.empty()).render(4);
+        const data = UniqueFileIdentifierFrame.fromData("foo", ByteVector.fromByte(0x08)).render(4);
 
         // Act
         const output = Id3v2FrameFactory.createFrameFromTagBytes(data, 0, 4, false);

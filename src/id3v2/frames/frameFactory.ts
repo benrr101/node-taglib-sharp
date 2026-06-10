@@ -7,9 +7,13 @@ import PopularimeterFrame from "./popularimeterFrame";
 import PrivateFrame from "./privateFrame";
 import SyncData from "../syncData";
 import TermsOfUseFrame from "./termsOfUseFrame";
+import TextInformationFrame from "./textInformationFrame";
 import UniqueFileIdentifierFrame from "./uniqueFileIdentifierFrame";
 import UnknownFrame from "./unknownFrame";
 import UnsynchronizedLyricsFrame from "./unsynchronizedLyricsFrame";
+import UrlLinkFrame from "./urlLinkFrame";
+import UserTextInformationFrame from "./userTextInformationFrame";
+import UserUrlLinkFrame from "./userUrlLinkFrame";
 import {ByteVector} from "../../byteVector";
 import {CorruptFileError, NotImplementedError} from "../../errors";
 import {EventTimeCodeFrame} from "./eventTimeCodeFrame";
@@ -19,8 +23,6 @@ import {Id3v2FrameFlags, Id3v2FrameHeader} from "./frameHeader";
 import {FrameIdentifier, FrameIdentifiers} from "../frameIdentifiers";
 import {RelativeVolumeFrame} from "./relativeVolumeFrame";
 import {SynchronizedLyricsFrame} from "./synchronizedLyricsFrame";
-import {TextInformationFrame, UserTextInformationFrame} from "./textInformationFrame";
-import {UrlLinkFrame, UserUrlLinkFrame} from "./urlLinkFrame";
 import {Guards, NumberUtils} from "../../utils";
 
 /**
@@ -32,6 +34,8 @@ import {Guards, NumberUtils} from "../../utils";
  */
 export type FrameCreator = (data: ByteVector, offset: number, header: Id3v2FrameHeader, version: number) => Frame;
 
+type InternalFrameCreator = (header: Id3v2FrameHeader, fieldBytes: ByteVector, version: number) => Frame;
+
 /**
  * Performs the necessary operations to determine and create the correct child classes of
  * {@link Frame} for a given raw ID3v2 frame.
@@ -42,24 +46,24 @@ export class Id3v2FrameFactory {
 
     private static readonly CUSTOM_FRAME_CREATORS: FrameCreator[] = [];
 
-    private static readonly DEFAULT_FRAME_CREATORS: Readonly<Map<FrameIdentifier, FrameCreator>> =
-        new Map<FrameIdentifier, FrameCreator>([
-            [FrameIdentifiers.APIC, AttachmentFrame.fromOffsetRawData],
-            [FrameIdentifiers.COMM, CommentsFrame.fromOffsetRawData],
-            [FrameIdentifiers.ETCO, EventTimeCodeFrame.fromOffsetRawData],
-            [FrameIdentifiers.GEOB, AttachmentFrame.fromOffsetRawData],
-            [FrameIdentifiers.MCDI, MusicCdIdentifierFrame.fromOffsetRawData],
-            [FrameIdentifiers.PCNT, PlayCountFrame.fromOffsetRawData],
-            [FrameIdentifiers.POPM, PopularimeterFrame.fromOffsetRawData],
-            [FrameIdentifiers.PRIV, (a, b, c, d) => PrivateFrame.fromFieldBytes(c, a, d)],
-            [FrameIdentifiers.RVA2, RelativeVolumeFrame.fromOffsetRawData],
-            [FrameIdentifiers.SYLT, SynchronizedLyricsFrame.fromOffsetRawData],
-            [FrameIdentifiers.TCON, GenreFrame.fromOffsetRawData],
-            [FrameIdentifiers.TXXX, UserTextInformationFrame.fromOffsetRawData],
-            [FrameIdentifiers.UFID, UniqueFileIdentifierFrame.fromOffsetRawData],
-            [FrameIdentifiers.USER, TermsOfUseFrame.fromOffsetRawData],
-            [FrameIdentifiers.USLT, UnsynchronizedLyricsFrame.fromOffsetRawData],
-            [FrameIdentifiers.WXXX, UserUrlLinkFrame.fromOffsetRawData]
+    private static readonly DEFAULT_FRAME_CREATORS: Readonly<Map<FrameIdentifier, InternalFrameCreator>> =
+        new Map<FrameIdentifier, InternalFrameCreator>([
+            [FrameIdentifiers.APIC, AttachmentFrame.fromFieldBytes],
+            [FrameIdentifiers.COMM, CommentsFrame.fromFieldBytes],
+            [FrameIdentifiers.ETCO, EventTimeCodeFrame.fromFieldBytes],
+            [FrameIdentifiers.GEOB, AttachmentFrame.fromFieldBytes],
+            [FrameIdentifiers.MCDI, MusicCdIdentifierFrame.fromFieldBytes],
+            [FrameIdentifiers.PCNT, PlayCountFrame.fromFieldBytes],
+            [FrameIdentifiers.POPM, PopularimeterFrame.fromFieldBytes],
+            [FrameIdentifiers.PRIV, PrivateFrame.fromFieldBytes],
+            [FrameIdentifiers.RVA2, RelativeVolumeFrame.fromFieldBytes],
+            [FrameIdentifiers.SYLT, SynchronizedLyricsFrame.fromFieldBytes],
+            [FrameIdentifiers.TCON, GenreFrame.fromFieldBytes],
+            [FrameIdentifiers.TXXX, UserTextInformationFrame.fromFieldBytes],
+            [FrameIdentifiers.UFID, UniqueFileIdentifierFrame.fromFieldBytes],
+            [FrameIdentifiers.USER, TermsOfUseFrame.fromFieldBytes],
+            [FrameIdentifiers.USLT, UnsynchronizedLyricsFrame.fromFieldBytes],
+            [FrameIdentifiers.WXXX, UserUrlLinkFrame.fromFieldBytes],
         ]);
 
 
@@ -225,13 +229,13 @@ export class Id3v2FrameFactory {
 
         // 3.2) No matching custom constructors found, use built-in/default constructor
         let func = this.DEFAULT_FRAME_CREATORS.get(header.frameId);
-        func ??= header.frameId.isTextFrame ? TextInformationFrame.fromOffsetRawData : undefined;
-        func ??= header.frameId.isUrlFrame ? UrlLinkFrame.fromOffsetRawData : undefined;
-        func ??= (a, b, c, d) => UnknownFrame.fromBodyBytes(c, a, d);
+        func ??= header.frameId.isTextFrame ? TextInformationFrame.fromFieldBytes : undefined;
+        func ??= header.frameId.isUrlFrame ? UrlLinkFrame.fromFieldBytes : undefined;
+        func ??= UnknownFrame.fromBodyBytes;
 
         let frame;
         try {
-            frame = func(bodyBytes, 0, header, version);
+            frame = func(header, bodyBytes, version);
         } catch {
             frame = UnknownFrame.fromBodyBytes(header, bodyBytes, version);
         }
