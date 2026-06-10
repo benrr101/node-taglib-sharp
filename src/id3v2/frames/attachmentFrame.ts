@@ -341,23 +341,15 @@ export default class AttachmentFrame extends Frame implements IPicture {
 
     private parseFromRaw(): void {
         if (this._rawData) {
-            this.parseFromRawData(false);
+            this.parseFromRawData();
         } else if (this._rawPicture) {
-            if (this._rawVersion !== undefined) {
-                this._rawData = this._rawPicture.data.toByteVector();
-                this._rawPicture = undefined;
-                this.parseFromRawData(true);
-            } else {
-                this.parseFromRawPicture();
-            }
+            this.parseFromRawPicture();
         }
     }
 
-    private parseFromRawData(shouldRunFieldData: boolean): void {
+    private parseFromRawData(): void {
         // Indicate raw data has been processed
-        const data = shouldRunFieldData
-            ? super.fieldData(this._rawData, 0, this._rawVersion, false)
-            : this._rawData;
+        const data = this._rawData;
         this._rawData = undefined;
 
         // Determine encoding
