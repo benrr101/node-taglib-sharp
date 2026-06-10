@@ -5,8 +5,11 @@ import Id3v2ExtendedHeader from "./id3v2ExtendedHeader";
 import Id3v2TagFooter from "./id3v2TagFooter";
 import Id3v2Settings from "./id3v2Settings";
 import SyncData from "./syncData";
+import TextInformationFrame from "./frames/textInformationFrame";
 import UniqueFileIdentifierFrame from "./frames/uniqueFileIdentifierFrame";
 import UnsynchronizedLyricsFrame from "./frames/unsynchronizedLyricsFrame";
+import UrlLinkFrame from "./frames/urlLinkFrame";
+import UserTextInformationFrame from "./frames/userTextInformationFrame";
 import {ByteVector, StringType} from "../byteVector";
 import {CorruptFileError, NotImplementedError, NotSupportedError} from "../errors";
 import {File, ReadStyle} from "../file";
@@ -17,8 +20,6 @@ import {Id3v2FrameFlags} from "./frames/frameHeader";
 import {Id3v2TagHeader, Id3v2TagHeaderFlags} from "./id3v2TagHeader";
 import {IPicture} from "../picture";
 import {Tag, TagTypes} from "../tag";
-import {TextInformationFrame, UserTextInformationFrame} from "./frames/textInformationFrame";
-import {UrlLinkFrame} from "./frames/urlLinkFrame";
 import {DateUtils, Guards, NumberUtils} from "../utils";
 
 /**

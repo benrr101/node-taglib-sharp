@@ -11,9 +11,12 @@ import PlayCountFrame from "../../src/id3v2/frames/playCountFrame";
 import PropertyTests from "../utilities/propertyTests";
 import SyncData from "../../src/id3v2/syncData";
 import TestFile from "../utilities/testFile";
+import TextInformationFrame from "../../src/id3v2/frames/textInformationFrame";
 import UniqueFileIdentifierFrame from "../../src/id3v2/frames/uniqueFileIdentifierFrame";
 import UnknownFrame from "../../src/id3v2/frames/unknownFrame";
 import UnsynchronizedLyricsFrame from "../../src/id3v2/frames/unsynchronizedLyricsFrame";
+import UrlLinkFrame from "../../src/id3v2/frames/urlLinkFrame";
+import UserTextInformationFrame from "../../src/id3v2/frames/userTextInformationFrame";
 import {ByteVector, StringType} from "../../src/byteVector";
 import {File, ReadStyle} from "../../src/file";
 import {FrameClassType} from "../../src/id3v2/frames/frame";
@@ -23,8 +26,6 @@ import {Id3v2TagHeader, Id3v2TagHeaderFlags} from "../../src/id3v2/id3v2TagHeade
 import {IPicture} from "../../src/picture";
 import {TagTypes} from "../../src/tag";
 import {Testers} from "../utilities/testers";
-import {TextInformationFrame, UserTextInformationFrame} from "../../src/id3v2/frames/textInformationFrame";
-import {UrlLinkFrame} from "../../src/id3v2/frames/urlLinkFrame";
 import PrivateFrame from "../../src/id3v2/frames/privateFrame";
 
 const getTestTagHeader = (version: number, flags: Id3v2TagHeaderFlags, tagSize: number): ByteVector => {
