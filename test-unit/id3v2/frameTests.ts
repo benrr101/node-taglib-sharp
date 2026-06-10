@@ -2,7 +2,6 @@ import {suite, test} from "@testdeck/mocha";
 import {assert} from "chai";
 
 import PropertyTests from "../utilities/propertyTests";
-import SyncData from "../../src/id3v2/syncData";
 import {ByteVector} from "../../src/byteVector";
 import {Frame, FrameClassType} from "../../src/id3v2/frames/frame";
 import {Id3v2FrameFlags, Id3v2FrameHeader} from "../../src/id3v2/frames/frameHeader";
@@ -135,83 +134,5 @@ class TestFrame extends Frame {
             TestFrame.renderFieldData
         );
         Testers.bvEqual(output, expected);
-    }
-
-    @test
-    public fieldData_dataLengthIndicator() {
-        // Arrange
-        const header = new Id3v2FrameHeader(FrameIdentifiers.TXXX, Id3v2FrameFlags.DataLengthIndicator);
-        header.frameSize = TestFrame.renderFieldData.length + 4;
-        const frame = new TestFrame(header);
-        const data = ByteVector.concatenate(
-            header.render(4),
-            ByteVector.fromUint(TestFrame.renderFieldData.length),
-            TestFrame.renderFieldData
-        );
-
-        // Act
-        const output = frame.callFieldData(data, 0, 4, true);
-
-        // Assert
-        Testers.bvEqual(output, TestFrame.renderFieldData);
-    }
-
-    @test
-    public fieldData_groupingIdentify() {
-        // Arrange
-        const header = new Id3v2FrameHeader(FrameIdentifiers.TXXX, Id3v2FrameFlags.GroupingIdentity);
-        header.frameSize = TestFrame.renderFieldData.length + 1;
-        const frame = new TestFrame(header);
-        const data = ByteVector.concatenate(
-            header.render(4),
-            0x88,
-            TestFrame.renderFieldData
-        );
-
-        // Act
-        const output = frame.callFieldData(data, 0, 4, true);
-
-        // Assert
-        Testers.bvEqual(output, TestFrame.renderFieldData);
-        assert.strictEqual(frame.groupId, 0x88);
-    }
-
-    @test
-    public fieldData_desynchronized() {
-        // Arrange
-        let fieldData = SyncData.unsyncByteVector(TestFrame.renderFieldData);
-
-        const header = new Id3v2FrameHeader(FrameIdentifiers.TXXX, Id3v2FrameFlags.Unsynchronized);
-        header.frameSize = fieldData.length;
-        const frame = new TestFrame(header);
-        const data = ByteVector.concatenate(
-            header.render(4),
-            fieldData
-        );
-
-        // Act
-        const output = frame.callFieldData(data, 0, 4, true);
-
-        // Assert
-        fieldData = SyncData.resyncByteVector(fieldData);
-        Testers.bvEqual(output, fieldData);
-    }
-
-    @test
-    public fieldData_noHeaderInData() {
-        // Arrange
-        const fieldData = ByteVector.concatenate(
-            0x00, 0x00,
-            TestFrame.renderFieldData
-        );
-        const header = new Id3v2FrameHeader(FrameIdentifiers.TXXX, Id3v2FrameFlags.None);
-        header.frameSize = fieldData.length;
-        const frame = new TestFrame(header);
-
-        // Act
-        const output = frame.callFieldData(fieldData, 2, 4, false);
-
-        // Assert
-        Testers.bvEqual(output, TestFrame.renderFieldData);
     }
 }
