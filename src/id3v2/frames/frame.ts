@@ -213,12 +213,14 @@ export abstract class Frame {
     public render(version: number): ByteVector {
         Guards.byte(version, "version");
 
-        // 1) Render the body
-        let bodyBytes = this.renderFields(version);
-        if (bodyBytes.length === 0) {
+        // 1) Render the fields
+        const fieldBytes = this.renderFields(version);
+        if (fieldBytes.length === 0) {
             // If we don't have any content, don't render anything.
             return ByteVector.empty();
         }
+        this._header.dataLength = fieldBytes.length;
+
 
         // 2) Render the extended header and process with the body
         // Remove flags that are not supported by older versions of ID3v2
@@ -240,20 +242,19 @@ export abstract class Frame {
         const extendedHeaderBytes = this._header.renderExtendedHeader(version);
 
         // Combine extended header with body bytes to form complete body. Unsynchronize if necessary.
-        bodyBytes = ByteVector.concatenate(extendedHeaderBytes, bodyBytes);
+        let payloadBytes = ByteVector.concatenate(extendedHeaderBytes, fieldBytes);
         if (NumberUtils.hasFlag(this.flags, Id3v2FrameFlags.Unsynchronized)) {
-            bodyBytes = SyncData.unsyncByteVector(bodyBytes);
+            payloadBytes = SyncData.unsyncByteVector(payloadBytes);
         }
 
         // Update size of the body in the header
-        this._header.frameSize = bodyBytes.length;
+        this._header.frameSize = payloadBytes.length;
 
         // 3) Render the header
         const headerBytes = this._header.render(version);
 
-
         // 4) Combine all and return
-        return ByteVector.concatenate(headerBytes, bodyBytes);
+        return ByteVector.concatenate(headerBytes, payloadBytes);
     }
 
     // #region Protected Methods

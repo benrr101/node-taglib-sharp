@@ -30,7 +30,7 @@ import {Testers} from "../utilities/testers";
         const output = Id3v2ExtendedHeader.fromData(testData, 3);
 
         // Assert
-        assert.equal(output.size, 4 + 0x2040810);
+        assert.equal(output.size, 4 + 0x10101010);
     }
 
     @test

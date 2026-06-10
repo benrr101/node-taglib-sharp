@@ -192,6 +192,18 @@ export class Id3v2FrameHeader {
     // #region Properties
 
     /**
+     * Gets the length of the fields in the frame. This is only updated during rendering.
+     * @internal
+     */
+    public get dataLength(): number | undefined { return this._dataLength; }
+    /**
+     * Sets the length of the fields in the frame (the payload, without the extended header bytes).
+     * This is only intended to be updated during rendering.
+     * @internal
+     */
+    public set dataLength(value: number) { this._dataLength = value; }
+
+    /**
      * Gets the encryption ID applied to the current instance.
      * @returns
      *     Value containing the encryption identifier for the current instance or
