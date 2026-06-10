@@ -211,7 +211,7 @@ export class Id3v2FrameHeader {
         Guards.optionalByte(value, "value");
         this._encryptionId = value;
         if (value !== undefined) {
-            this._flags |= Id3v2FrameFlags.Encryption;
+            throw new NotImplementedError("Encryption and compression are not supported");
         } else {
             this._flags &= ~Id3v2FrameFlags.Encryption;
         }
