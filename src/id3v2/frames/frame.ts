@@ -126,6 +126,20 @@ export abstract class Frame {
     // #region Properties
 
     /**
+     * Gets the encryption ID applied to the current instance.
+     * @returns
+     *     Value containing the encryption identifier for the current instance or
+     *     `undefined` if not set.
+     */
+    public get encryptionId(): number { return this._header.encryptionId; }
+    /**
+     * Sets the encryption ID applied to the current instance.
+     * @param value Value containing the encryption identifier for the current instance. Must be an
+     *     8-bit unsigned integer. Setting to `undefined` will remove the encryption header and ID
+     */
+    public set encryptionId(value: number) { this._header.encryptionId = value; }
+
+    /**
      * Gets the frame flags applied to the current instance.
      */
     public get flags(): Id3v2FrameFlags { return this._header.flags; }
@@ -136,18 +150,6 @@ export abstract class Frame {
      */
     // @TODO: This shouldn't be necessary, but removing it braks mroe things than I want to fix right now.
     public set flags(value: Id3v2FrameFlags) { this._header.flags = value; }
-
-    /**
-     * Gets the header for the frame. For new frames this should not exist.
-     * @protected
-     */
-    protected get header(): Id3v2FrameHeader { return this._header; }
-    /**
-     * Sets the header for the frame.
-     * @param value Header for the frame
-     * @protected
-     */
-    protected set header(value: Id3v2FrameHeader) { this._header = value; }
 
     /**
      * Gets a flag indicating which type of frame the current instance is.
@@ -162,11 +164,37 @@ export abstract class Frame {
     public get frameId(): FrameIdentifier { return this._header.frameId; }
 
     /**
+     * Gets the grouping ID applied to the current instance.
+     * @returns
+     *     Value containing the grouping identifier for the current instance, or
+     *     `undefined` if not set.
+     */
+    public get groupId(): number { return this._header.groupId; }
+    /**
+     * Sets the grouping ID applied to the current instance.
+     * @param value Grouping identifier for the current instance. Must be an 8-bit unsigned integer.
+     *     Setting to `undefined` will remove the grouping identity header and ID
+     */
+    public set groupId(value: number) { this._header.groupId = value; }
+
+    /**
      * Gets the size of the current instance as it was last stored on disk.
      * NOTE: This value is not used outside of reading a frame from disk, so newly created frames
      *     should not have this value set.
      */
     public get size(): number { return this._header.frameSize; }
+
+    /**
+     * Gets the header for the frame. For new frames this should not exist.
+     * @protected
+     */
+    protected get header(): Id3v2FrameHeader { return this._header; }
+    /**
+     * Sets the header for the frame.
+     * @param value Header for the frame
+     * @protected
+     */
+    protected set header(value: Id3v2FrameHeader) { this._header = value; }
 
     // #endregion
 
