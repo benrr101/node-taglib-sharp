@@ -42,8 +42,8 @@ import {SynchronizedTextType, TimestampFormat} from "../../src/id3v2/utilTypes";
 }
 
 @suite class Id3v2_SynchronizedLyricsFrame_ConstructorTests extends FrameConstructorTests {
-    public get fromOffsetRawData(): (d: ByteVector, o: number, h: Id3v2FrameHeader, v: number) => Frame {
-        return (a, b, c, d) => SynchronizedLyricsFrame.fromFieldBytes(c, a, d);
+    public get fromFieldBytes(): (h: Id3v2FrameHeader, d:ByteVector, v: number) => Frame {
+        return SynchronizedLyricsFrame.fromFieldBytes;
     }
 
     @test
@@ -94,7 +94,7 @@ import {SynchronizedTextType, TimestampFormat} from "../../src/id3v2/utilTypes";
     @params(2, "v2")
     @params(3, "v3")
     @params(4, "v4")
-    public fromOffsetRawData_notEnoughBytes(version: number) {
+    public fromFieldBytes_notEnoughBytes(version: number) {
         // Arrange
         const fieldBytes = ByteVector.fromByteArray([0x00, 0x00, 0x00, 0x00, 0x00]);
         const header = new Id3v2FrameHeader(FrameIdentifiers.SYLT, Id3v2FrameFlags.None, fieldBytes.length);
@@ -106,7 +106,7 @@ import {SynchronizedTextType, TimestampFormat} from "../../src/id3v2/utilTypes";
     @params(2, "v2")
     @params(3, "v3")
     @params(4, "v4")
-    public fromOffsetRawData_missingDelimiter(version: number) {
+    public fromFieldBytes_missingDelimiter(version: number) {
         // Arrange
         const fieldBytes = ByteVector.concatenate(
             StringType.Latin1,                                     // Text encoding
@@ -124,7 +124,7 @@ import {SynchronizedTextType, TimestampFormat} from "../../src/id3v2/utilTypes";
     @params(2, "v2")
     @params(3, "v3")
     @params(4, "v4")
-    public fromOffsetRawData_noDelimiterForSynchronizedText(version: number) {
+    public fromFieldBytes_noDelimiterForSynchronizedText(version: number) {
         // Arrange
         const fieldBytes = ByteVector.concatenate(
             StringType.Latin1,                                     // Text encoding
@@ -144,7 +144,7 @@ import {SynchronizedTextType, TimestampFormat} from "../../src/id3v2/utilTypes";
     @params(2, "v2")
     @params(3, "v3")
     @params(4, "v4")
-    public fromOffsetRawData_incompleteSynchronizedText(version: number) {
+    public fromFieldBytes_incompleteSynchronizedText(version: number) {
         // Arrange
         const content1 = new SynchronizedText(123, "foo");
         const content2 = new SynchronizedText(456, "bar");
@@ -168,7 +168,7 @@ import {SynchronizedTextType, TimestampFormat} from "../../src/id3v2/utilTypes";
     @params(2, "v2")
     @params(3, "v3")
     @params(4, "v4")
-    public fromOffsetRawData_noData(version: number) {
+    public fromFieldBytes_noData(version: number) {
         // Arrange
         const fieldBytes = ByteVector.concatenate(
             StringType.UTF16BE,                               // Encoding
@@ -198,7 +198,7 @@ import {SynchronizedTextType, TimestampFormat} from "../../src/id3v2/utilTypes";
     @params(2, "v2")
     @params(3, "v3")
     @params(4, "v4")
-    public fromOffsetRawData_oneLyric(version: number) {
+    public fromFieldBytes_oneLyric(version: number) {
         // Arrange
         const lyric1 = new SynchronizedText(123, "foo");
 
@@ -231,7 +231,7 @@ import {SynchronizedTextType, TimestampFormat} from "../../src/id3v2/utilTypes";
     @params(2, "v2")
     @params(3, "v3")
     @params(4, "v4")
-    public fromOffsetRawData_twoLyrics(version: number) {
+    public fromFieldBytes_twoLyrics(version: number) {
         // Arrange
         const lyric1 = new SynchronizedText(123, "foo");
         const lyric2 = new SynchronizedText(456, "bar");

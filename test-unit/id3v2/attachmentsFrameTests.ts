@@ -39,8 +39,8 @@ const getCustomTestFrame = (
 }
 
 @suite class Id3v2_AttachmentFrame_ConstructorTests extends FrameConstructorTests {
-    get fromOffsetRawData(): (d: ByteVector, o: number, h: Id3v2FrameHeader, v: number) => Frame {
-        return (a, b, c, d) => AttachmentFrame.fromFieldBytes(c, a, d);
+    get fromFieldBytes(): (h: Id3v2FrameHeader, d: ByteVector, v: number) => Frame {
+        return AttachmentFrame.fromFieldBytes;
     }
 
     @test
@@ -110,7 +110,7 @@ const getCustomTestFrame = (
 
     @params(3, "v3")
     @params(4, "v4")
-    public fromOffsetRawData_apicV34_latin1Encoding(version: number) {
+    public fromFieldBytes_apicV34_latin1Encoding(version: number) {
         // Arrange
         const testData = ByteVector.fromString("fuxbuxqux", StringType.Latin1);
         const fieldBytes = ByteVector.concatenate(
@@ -142,7 +142,7 @@ const getCustomTestFrame = (
 
     @params(3, "v3")
     @params(4, "v4")
-    public fromOffsetRawData_apicV34_nonLatinEncoding(version: number) {
+    public fromFieldBytes_apicV34_nonLatinEncoding(version: number) {
         // Arrange
         const testData = ByteVector.fromString("fuxbuxqux", StringType.Latin1);
         const fieldBytes = ByteVector.concatenate(
@@ -174,7 +174,7 @@ const getCustomTestFrame = (
 
     @params(StringType.Latin1, "single_byte")
     @params(StringType.UTF16BE, "multi_byte")
-    public fromOffsetRawData_apicV2(encoding: StringType) {
+    public fromFieldBytes_apicV2(encoding: StringType) {
         // Arrange
         const testData = ByteVector.fromString("fuxbuxqux", StringType.Latin1);
         const fieldBytes = ByteVector.concatenate(
@@ -206,7 +206,7 @@ const getCustomTestFrame = (
     @params(2, "v2")
     @params(3, "v3")
     @params(4, "v4")
-    public fromOffsetRawData_geob_latinEncoding(version: number) {
+    public fromFieldBytes_geob_latinEncoding(version: number) {
         // Arrange
         const testData = ByteVector.fromString("fuxbuxqux", StringType.Latin1);
         const fieldBytes = ByteVector.concatenate(
@@ -240,7 +240,7 @@ const getCustomTestFrame = (
     @params(2, "v2")
     @params(3, "v3")
     @params(4, "v4")
-    public fromOffsetRawData_geob_nonLatinEncoding(version: number) {
+    public fromFieldBytes_geob_nonLatinEncoding(version: number) {
         // Arrange
         const testData = ByteVector.fromString("fuxbuxqux", StringType.Latin1);
         const fieldBytes = ByteVector.concatenate(
@@ -435,7 +435,7 @@ const getCustomTestFrame = (
     }
 
     @test
-    public clone_fromOffsetRawDataUnread() {
+    public clone_fromFieldBytesUnread() {
         // Arrange
         const testData = ByteVector.fromString("fuxbuxqux", StringType.Latin1);
         const fieldBytes = ByteVector.concatenate(

@@ -11,8 +11,8 @@ import {FrameIdentifiers} from "../../src/id3v2/frameIdentifiers";
 import {Testers} from "../utilities/testers";
 
 @suite class Id3v2_MusicCdIdentifierFrameTests extends FrameConstructorTests {
-    public get fromOffsetRawData(): (d: ByteVector, o: number, h: Id3v2FrameHeader, v: number) => Frame {
-        return (a, b, c, d) => MusicCdIdentifierFrame.fromFieldBytes(c, a, d);
+    public get fromFieldBytes(): (h: Id3v2FrameHeader, d: ByteVector, v: number) => Frame {
+        return MusicCdIdentifierFrame.fromFieldBytes;
     }
 
     @params(undefined, "undefined")

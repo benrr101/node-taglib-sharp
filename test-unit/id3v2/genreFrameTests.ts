@@ -8,9 +8,12 @@ import {FrameClassType} from "../../src/id3v2/frames/frame";
 import {Id3v2FrameFlags, Id3v2FrameHeader} from "../../src/id3v2/frames/frameHeader";
 import {FrameIdentifiers} from "../../src/id3v2/frameIdentifiers";
 import {Testers} from "../utilities/testers";
+import FrameConstructorTests from "./frameConstructorTests";
 
 @suite
-class Id3v2_GenreFrameTests {
+class Id3v2_GenreFrameTests extends FrameConstructorTests {
+
+    get fromFieldBytes() { return GenreFrame.fromFieldBytes }
 
     // region Property tests
 

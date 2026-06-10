@@ -11,8 +11,8 @@ import {FrameIdentifiers} from "../../src/id3v2/frameIdentifiers";
 import {Testers} from "../utilities/testers";
 
 @suite class Id3v2_UserUrlLinkFrame_ConstructorTests extends FrameConstructorTests {
-    public get fromOffsetRawData(): (d: ByteVector, o: number, h: Id3v2FrameHeader, v: number) => Frame {
-        return (a, b, c, d) => UserUrlLinkFrame.fromFieldBytes(c, a, d);
+    public get fromFieldBytes(): (h: Id3v2FrameHeader, d: ByteVector, v: number) => Frame {
+        return UserUrlLinkFrame.fromFieldBytes;
     }
 
     @test
@@ -31,7 +31,7 @@ import {Testers} from "../utilities/testers";
     @params(2, "v2")
     @params(3, "v3")
     @params(4, "v4")
-    public fromOffsetRawData_tooSmall(version: number) {
+    public fromFieldBytes_tooSmall(version: number) {
         // Arrange
         const fieldBytes = ByteVector.fromSize(1);
         const header = new Id3v2FrameHeader(FrameIdentifiers.WXXX, Id3v2FrameFlags.None, fieldBytes.length);
@@ -43,7 +43,7 @@ import {Testers} from "../utilities/testers";
     @params(2, "v2")
     @params(3, "v3")
     @params(4, "v4")
-    public fromOffsetRawData_illFormedTagLib(version: number) {
+    public fromFieldBytes_illFormedTagLib(version: number) {
         // Arrange
         const fieldBytes = ByteVector.concatenate(
             StringType.Latin1,
@@ -61,7 +61,7 @@ import {Testers} from "../utilities/testers";
     @params(2, "v2")
     @params(3, "v3")
     @params(4, "v4")
-    public fromOffsetRawData_illFormedOneField(version: number) {
+    public fromFieldBytes_illFormedOneField(version: number) {
         // Arrange
         const fieldBytes = ByteVector.concatenate(
             StringType.UTF16BE,
@@ -79,7 +79,7 @@ import {Testers} from "../utilities/testers";
     @params(2, "v2")
     @params(3, "v3")
     @params(4, "v4")
-    public fromOffsetRawData_illFormedThreeFields(version: number) {
+    public fromFieldBytes_illFormedThreeFields(version: number) {
         // Arrange
         const fieldBytes = ByteVector.concatenate(
             StringType.UTF16BE,                               // Encoding
@@ -102,7 +102,7 @@ import {Testers} from "../utilities/testers";
     @params(2, "v2")
     @params(3, "v3")
     @params(4, "v4")
-    public fromOffsetRawData_wellFormed(version: number) {
+    public fromFieldBytes_wellFormed(version: number) {
         // Arrange
         const fieldBytes = ByteVector.concatenate(
             StringType.Latin1,
@@ -121,7 +121,7 @@ import {Testers} from "../utilities/testers";
     
     @params(StringType.Latin1, "single_byte")
     @params(StringType.UTF16BE, "multi_byte")
-    public fromOffsetRawData_encodingTest(encoding: StringType) {
+    public fromFieldBytes_encodingTest(encoding: StringType) {
         // Arrange
         const fieldBytes = ByteVector.concatenate(
             encoding,

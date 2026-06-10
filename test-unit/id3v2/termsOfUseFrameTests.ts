@@ -12,8 +12,8 @@ import {FrameIdentifiers} from "../../src/id3v2/frameIdentifiers";
 import {Testers} from "../utilities/testers";
 
 @suite class Id3v2_TermsOfUseFrame_ConstructorTests extends FrameConstructorTests {
-    public get fromOffsetRawData(): (d: ByteVector, o: number, h: Id3v2FrameHeader, v: number) => Frame {
-        return (a, b, c, d) => TermsOfUseFrame.fromFieldBytes(c, a, d);
+    public get fromFieldBytes(): (h: Id3v2FrameHeader, d: ByteVector, v: number) => Frame {
+        return TermsOfUseFrame.fromFieldBytes;
     }
 
     @test
@@ -37,7 +37,7 @@ import {Testers} from "../utilities/testers";
     @params(2, "v2")
     @params(3, "v3")
     @params(4, "v4")
-    public fromOffsetRawData_notEnoughBytes(version: number) {
+    public fromFieldBytes_notEnoughBytes(version: number) {
         // Arrange
         const fieldBytes = ByteVector.concatenate(0x00, 0x00);
         const header = new Id3v2FrameHeader(FrameIdentifiers.USER, Id3v2FrameFlags.None, fieldBytes.length);
@@ -49,7 +49,7 @@ import {Testers} from "../utilities/testers";
     @params(2, "v2")
     @params(3, "v3")
     @params(4, "v4")
-    public fromOffsetRawData_withoutText(version: number) {
+    public fromFieldBytes_withoutText(version: number) {
         // Arrange
         const fieldBytes = ByteVector.concatenate(
             StringType.Latin1,                              // Encoding
@@ -67,7 +67,7 @@ import {Testers} from "../utilities/testers";
     @params(2, "v2")
     @params(3, "v3")
     @params(4, "v4")
-    public fromOffsetRawData_withText(version: number) {
+    public fromFieldBytes_withText(version: number) {
         // Arrange
         const fieldBytes = ByteVector.concatenate(
             StringType.Latin1,                                    // Encoding
@@ -85,7 +85,7 @@ import {Testers} from "../utilities/testers";
 
     @params(StringType.Latin1, "single_byte")
     @params(StringType.UTF16BE, "multi_byte")
-    public fromOffsetRawData_encodingTest(encoding: StringType) {
+    public fromFieldBytes_encodingTest(encoding: StringType) {
         // Arrange
         const fieldBytes = ByteVector.concatenate(
             encoding,                                        // Encoding

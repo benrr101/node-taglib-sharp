@@ -10,8 +10,8 @@ import {FrameIdentifier, FrameIdentifiers} from "../../src/id3v2/frameIdentifier
 import {Testers} from "../utilities/testers";
 
 @suite class Id3v2_UrlLinkFrame_ConstructorTests extends FrameConstructorTests {
-    public get fromOffsetRawData(): (d: ByteVector, o: number, h: Id3v2FrameHeader, v: number) => Frame {
-        return (a, b, c, d) => UrlLinkFrame.fromFieldBytes(c, a, d);
+    public get fromFieldBytes(): (h: Id3v2FrameHeader, d: ByteVector, v: number) => Frame {
+        return UrlLinkFrame.fromFieldBytes;
     }
 
     @test
@@ -35,7 +35,7 @@ import {Testers} from "../utilities/testers";
     @params(2, "v2")
     @params(3, "v3")
     @params(4, "v4")
-    public fromOffsetRawData_itsGood(version: number) {
+    public fromFieldBytes_itsGood(version: number) {
         // Arrange
         const fieldBytes = ByteVector.fromString("foo", StringType.Latin1);
         const header = new Id3v2FrameHeader(FrameIdentifiers.WCOM, Id3v2FrameFlags.None, fieldBytes.length);
@@ -53,7 +53,7 @@ import {Testers} from "../utilities/testers";
     @params(2, "v2")
     @params(3, "v3")
     @params(4, "v4")
-    public fromOffsetRawData_trailingNullBytes(version: number) {
+    public fromFieldBytes_trailingNullBytes(version: number) {
         // Arrange
         const fieldBytes = ByteVector.concatenate(
             ByteVector.fromString("foo", StringType.Latin1),
@@ -71,7 +71,7 @@ import {Testers} from "../utilities/testers";
     @params(2, "v2")
     @params(3, "v3")
     @params(4, "v4")
-    public fromOffsetRawData_multipleFields(version: number) {
+    public fromFieldBytes_multipleFields(version: number) {
         // Arrange
         const fieldBytes = ByteVector.concatenate(
             ByteVector.fromString("foo", StringType.Latin1),

@@ -88,8 +88,8 @@ import {EventType, TimestampFormat} from "../../src/id3v2/utilTypes";
 }
 
 @suite class Id3v2_EventTimeCodeFrame_ConstructorTests extends FrameConstructorTests {
-    public get fromOffsetRawData(): (d: ByteVector, o: number, h: Id3v2FrameHeader, v: number) => Frame {
-        return (a, b, c, d) => EventTimeCodeFrame.fromFieldBytes(c, a, d);
+    public get fromFieldBytes(): (h: Id3v2FrameHeader, d: ByteVector, v: number) => Frame {
+        return EventTimeCodeFrame.fromFieldBytes;
     }
 
     @test
@@ -113,7 +113,7 @@ import {EventType, TimestampFormat} from "../../src/id3v2/utilTypes";
     @params(2, "v2")
     @params(3, "v3")
     @params(3, "v3")
-    public fromOffsetRawData_notEnoughBytes(version: number) {
+    public fromFieldBytes_notEnoughBytes(version: number) {
         // Arrange
         const fieldBytes = ByteVector.empty();
         const header = new Id3v2FrameHeader(FrameIdentifiers.ETCO, Id3v2FrameFlags.None, fieldBytes.length);
@@ -125,7 +125,7 @@ import {EventType, TimestampFormat} from "../../src/id3v2/utilTypes";
     @params(2, "v2")
     @params(3, "v3")
     @params(3, "v3")
-    public fromOffsetRawData_noEvents(version: number) {
+    public fromFieldBytes_noEvents(version: number) {
         // Arrange
         const fieldBytes = ByteVector.fromByte(TimestampFormat.AbsoluteMilliseconds);
         const header = new Id3v2FrameHeader(FrameIdentifiers.ETCO, Id3v2FrameFlags.None, fieldBytes.length);
@@ -140,7 +140,7 @@ import {EventType, TimestampFormat} from "../../src/id3v2/utilTypes";
     @params(2, "v2")
     @params(3, "v3")
     @params(3, "v3")
-    public fromOffsetRawData_withEvents(version: number) {
+    public fromFieldBytes_withEvents(version: number) {
         // Arrange
         const event1 = new EventTimeCode(EventType.Profanity, 123);
         const event2 = new EventTimeCode(EventType.KeyChange, 456);
@@ -165,7 +165,7 @@ import {EventType, TimestampFormat} from "../../src/id3v2/utilTypes";
     @params(2, "v2")
     @params(3, "v3")
     @params(3, "v3")
-    public fromOffsetRawData_incompleteEvent(version: number) {
+    public fromFieldBytes_incompleteEvent(version: number) {
         // Arrange
         const event1 = new EventTimeCode(EventType.Profanity, 123);
         const event2 = new EventTimeCode(EventType.KeyChange, 456);

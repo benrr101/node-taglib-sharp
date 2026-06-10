@@ -23,8 +23,8 @@ const getTestUnsynchronizedLyricsFrame = (): UnsynchronizedLyricsFrame => {
 };
 
 @suite class Id3v2_UnsynchronizedLyricsFrame_ConstructorTests extends FrameConstructorTests {
-    public get fromOffsetRawData(): (d: ByteVector, o: number, h: Id3v2FrameHeader, v: number) => Frame {
-        return (a, b, c, d) => UnsynchronizedLyricsFrame.fromFieldBytes(c, a, d);
+    public get fromFieldBytes(): (h: Id3v2FrameHeader, d: ByteVector, v: number) => Frame {
+        return UnsynchronizedLyricsFrame.fromFieldBytes;
     }
 
     @test

@@ -15,8 +15,8 @@ const testIdentifier = ByteVector.fromString("foobarbaz", StringType.UTF8);
 const testOwner = "https://github.com/benrr101/node-taglib-sharp";
 
 @suite class Id3v2_UniqueFileIdentifierFrame_ConstructorTests extends FrameConstructorTests {
-    public get fromOffsetRawData(): (d: ByteVector, o: number, h: Id3v2FrameHeader, v: number) => Frame {
-        return (a, b, c, d) => UniqueFileIdentifierFrame.fromFieldBytes(c, a, d);
+    public get fromFieldBytes(): (h: Id3v2FrameHeader, d: ByteVector, v: number) => Frame {
+        return UniqueFileIdentifierFrame.fromFieldBytes;
     }
 
     @test
@@ -65,7 +65,7 @@ const testOwner = "https://github.com/benrr101/node-taglib-sharp";
     @params(2, "v2")
     @params(3, "v3")
     @params(4, "v4")
-    public fromOffsetRawData_oneField_throws(version: number) {
+    public fromFieldBytes_oneField_throws(version: number) {
         // Arrange
         const fieldBytes = testIdentifier;
         const header = new Id3v2FrameHeader(FrameIdentifiers.UFID, Id3v2FrameFlags.None, fieldBytes.length);
@@ -77,7 +77,7 @@ const testOwner = "https://github.com/benrr101/node-taglib-sharp";
     @params(2, "v2")
     @params(3, "v3")
     @params(4, "v4")
-    public fromOffsetRawData_threeFields_throws(version: number) {
+    public fromFieldBytes_threeFields_throws(version: number) {
         // Arrange
         const fieldBytes = ByteVector.concatenate(
             testIdentifier, 0x00,
@@ -93,7 +93,7 @@ const testOwner = "https://github.com/benrr101/node-taglib-sharp";
     @params(2, "v2")
     @params(3, "v3")
     @params(4, "v4")
-    public fromOffsetRawData_validData_returnsFrame(version: number) {
+    public fromFieldBytes_validData_returnsFrame(version: number) {
         // Arrange
         const fieldBytes = ByteVector.concatenate(
             ByteVector.fromString(testOwner, StringType.Latin1), // Owner

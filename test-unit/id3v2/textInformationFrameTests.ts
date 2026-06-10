@@ -4,7 +4,7 @@ import {assert} from "chai";
 import FrameConstructorTests from "./frameConstructorTests";
 import Id3v2Settings from "../../src/id3v2/id3v2Settings";
 import PropertyTests from "../utilities/propertyTests";
-import {TextInformationFrame} from "../../src/id3v2/frames/textInformationFrame";
+import TextInformationFrame from "../../src/id3v2/frames/textInformationFrame";
 import {ByteVector, StringType} from "../../src/byteVector";
 import {Frame, FrameClassType} from "../../src/id3v2/frames/frame";
 import {Id3v2FrameFlags, Id3v2FrameHeader} from "../../src/id3v2/frames/frameHeader";
@@ -19,8 +19,8 @@ const getTestFrame = (): TextInformationFrame => {
 }
 
 @suite class Id3v2_TextInformationFrame_ConstructorTests extends FrameConstructorTests {
-    public get fromOffsetRawData(): (d: ByteVector, o: number, h: Id3v2FrameHeader, v: number) => Frame {
-        return (a, b, c, d) => TextInformationFrame.fromFieldBytes(c, a, d);
+    public get fromFieldBytes(): (h: Id3v2FrameHeader, d: ByteVector, v: number) => Frame {
+        return TextInformationFrame.fromFieldBytes;
     }
 
     @test
@@ -69,7 +69,7 @@ const getTestFrame = (): TextInformationFrame => {
     @params(2, "v2")
     @params(3, "v3")
     @params(4, "v4")
-    public fromOffsetRawData_noText_returnsEmptyFrame(version: number) {
+    public fromFieldBytes_noText_returnsEmptyFrame(version: number) {
         // Arrange
         const fieldBytes = ByteVector.fromByte(StringType.UTF16BE);
         const header = new Id3v2FrameHeader(FrameIdentifiers.TCOP, Id3v2FrameFlags.None, fieldBytes.length);
@@ -87,7 +87,7 @@ const getTestFrame = (): TextInformationFrame => {
     @params(2, "v2")
     @params(3, "v3")
     @params(4, "v4")
-    public fromOffsetRawData_nullText_returnsEmptyFrame(version: number) {
+    public fromFieldBytes_nullText_returnsEmptyFrame(version: number) {
         // Arrange
         const fieldBytes = ByteVector.concatenate(
             StringType.UTF16BE, // Encoding
@@ -107,7 +107,7 @@ const getTestFrame = (): TextInformationFrame => {
 
     @params(2, "v2")
     @params(3, "v2")
-    public fromOffsetRawData_v3NotSplitType_returnsSingleTextField(version: number) {
+    public fromFieldBytes_v3NotSplitType_returnsSingleTextField(version: number) {
         // Arrange
         const fieldBytes = ByteVector.concatenate(
             StringType.Latin1,                                  // Encoding
@@ -124,7 +124,7 @@ const getTestFrame = (): TextInformationFrame => {
 
     @params(2, "v2")
     @params(3, "v2")
-    public fromOffsetRawData_v3SplitType_returnsFrameSplitBySlash(version: number) {
+    public fromFieldBytes_v3SplitType_returnsFrameSplitBySlash(version: number) {
         // Arrange
         const fieldBytes = ByteVector.concatenate(
             StringType.Latin1,                                  // Encoding
@@ -141,7 +141,7 @@ const getTestFrame = (): TextInformationFrame => {
 
     @params(2, "v2")
     @params(3, "v2")
-    public fromOffsetRawData_v3WithNullBytes_discardsDataAfterNull(version: number) {
+    public fromFieldBytes_v3WithNullBytes_discardsDataAfterNull(version: number) {
         // Arrange
         const fieldBytes = ByteVector.concatenate(
             StringType.Latin1,                               // Encoding
@@ -160,7 +160,7 @@ const getTestFrame = (): TextInformationFrame => {
 
     @params(StringType.Latin1, "single_byte")
     @params(StringType.UTF16BE, "multi_byte")
-    public fromOffsetRawData_v4_returnsFrameSplitByDelimiter(encoding: StringType) {
+    public fromFieldBytes_v4_returnsFrameSplitByDelimiter(encoding: StringType) {
         // Arrange
         const fieldBytes = ByteVector.concatenate(
             encoding,                               // Encoding

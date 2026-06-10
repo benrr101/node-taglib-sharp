@@ -17,8 +17,8 @@ const getTestFrame = (): UserTextInformationFrame => {
 }
 
 @suite class Id3v2_UserInformationFrame_ConstructorTests extends FrameConstructorTests {
-    public get fromOffsetRawData(): (d: ByteVector, o: number, h: Id3v2FrameHeader, v: number) => Frame {
-        return (a, b, c, d) => UserTextInformationFrame.fromFieldBytes(c, a, d);
+    public get fromFieldBytes(): (h: Id3v2FrameHeader, d: ByteVector, v: number) => Frame {
+        return UserTextInformationFrame.fromFieldBytes;
     }
 
     @params(undefined, "undefined")
@@ -48,7 +48,7 @@ const getTestFrame = (): UserTextInformationFrame => {
     @params(2, "v2")
     @params(3, "v3")
     @params(4, "v4")
-    public fromOffsetRawData_emptyFrame_throw(version: number) {
+    public fromFieldBytes_emptyFrame_throw(version: number) {
         // Arrange
         const fieldBytes = ByteVector.empty();
         const header = new Id3v2FrameHeader(FrameIdentifiers.TXXX, Id3v2FrameFlags.None, fieldBytes.length);
@@ -60,7 +60,7 @@ const getTestFrame = (): UserTextInformationFrame => {
     @params(2, "v2")
     @params(3, "v3")
     @params(4, "v4")
-    public fromOffsetRawData_encodingOnly(version: number) {
+    public fromFieldBytes_encodingOnly(version: number) {
         // Arrange
         const fieldBytes = ByteVector.fromByte(StringType.UTF16LE);
         const header = new Id3v2FrameHeader(FrameIdentifiers.TXXX, Id3v2FrameFlags.None, fieldBytes.length);
@@ -79,7 +79,7 @@ const getTestFrame = (): UserTextInformationFrame => {
     @params(2, "v2")
     @params(3, "v3")
     @params(4, "v4")
-    public fromOffsetRawData_illFormedOneField(version: number) {
+    public fromFieldBytes_illFormedOneField(version: number) {
         // Arrange
         const fieldBytes = ByteVector.concatenate(
             StringType.UTF16BE,
@@ -103,7 +103,7 @@ const getTestFrame = (): UserTextInformationFrame => {
     @params(2, "v2")
     @params(3, "v3")
     @params(4, "v4")
-    public fromOffsetRawData_illFormedThreeFields(version: number) {
+    public fromFieldBytes_illFormedThreeFields(version: number) {
         // Arrange
         const fieldBytes = ByteVector.concatenate(
             StringType.UTF16BE,
@@ -131,7 +131,7 @@ const getTestFrame = (): UserTextInformationFrame => {
     @params(2, "v2")
     @params(3, "v3")
     @params(4, "v4")
-    public fromOffsetRawData_wellFormed(version: number) {
+    public fromFieldBytes_wellFormed(version: number) {
         // Assert
         const fieldData = ByteVector.concatenate(
             StringType.Latin1,
@@ -150,7 +150,7 @@ const getTestFrame = (): UserTextInformationFrame => {
 
     @params(StringType.Latin1, "latin1")
     @params(StringType.UTF16BE, "utf16be")
-    public fromOffsetRawData_encodingTest(encoding: StringType) {
+    public fromFieldBytes_encodingTest(encoding: StringType) {
         // Arrange
         const fieldBytes = ByteVector.concatenate(
             encoding,

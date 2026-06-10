@@ -272,8 +272,8 @@ import {Testers} from "../utilities/testers";
 }
 
 @suite class Id3v2_RelativeVolumeFrame_ConstructorTests extends ConstructorTests {
-    public get fromOffsetRawData(): (d: ByteVector, o: number, h: Id3v2FrameHeader, v: number) => Frame {
-        return (a, b, c, d) => RelativeVolumeFrame.fromFieldBytes(c, a, d);
+    public get fromFieldBytes(): (h: Id3v2FrameHeader, b: ByteVector, v: number) => Frame {
+        return RelativeVolumeFrame.fromFieldBytes;
     }
 
     @test
