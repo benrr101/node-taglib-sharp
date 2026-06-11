@@ -130,8 +130,8 @@ export class Id3v2FrameFactory {
 
         // @TODO: Support lazy loading frames again
         // 3) Read the body bytes and finish constructing the frame
-        const bodyBytes = file.readBlock(header.frameSize);
-        const frame = this.createFrameFromBodyBytes(header, bodyBytes, version, unsyncedAtTagLevel);
+        const fieldBytes = file.readBlock(header.frameSize);
+        const frame = this.createFrameFromFieldBytes(header, fieldBytes, version, unsyncedAtTagLevel);
 
         return { frame: frame, totalSize: header.frameSize + headerSize };
     }
@@ -172,8 +172,8 @@ export class Id3v2FrameFactory {
         this.assertSupportedFlags(header.flags);
 
         // 2) Read the body bytes and finish constructing frame
-        const bodyBytes = data.subarray(offset + headerSize, header.frameSize);
-        const frame = this.createFrameFromBodyBytes(header, bodyBytes, version, unsyncedAtTagLevel);
+        const fieldBytes = data.subarray(offset + headerSize, header.frameSize);
+        const frame = this.createFrameFromFieldBytes(header, fieldBytes, version, unsyncedAtTagLevel);
 
         return { frame: frame, totalSize: header.frameSize + headerSize };
     }
@@ -192,17 +192,17 @@ export class Id3v2FrameFactory {
         // @TODO: Consider reading these frames as unknown.
     }
 
-    private static createFrameFromBodyBytes(
+    private static createFrameFromFieldBytes(
         header: Id3v2FrameHeader,
-        bodyBytes: ByteVector,
+        fieldBytes: ByteVector,
         version: number,
         unsynchedAtTagLevel: boolean
     ): Frame {
         // Make sure we got the same number of bytes as the frame says
-        if (bodyBytes.length < header.frameSize) {
+        if (fieldBytes.length < header.frameSize) {
             throw new CorruptFileError(
                 `ID3v2 frame header specified body is ${header.frameSize} bytes, ` +
-                `but only ${bodyBytes.length} remain in data.`
+                `but only ${fieldBytes.length} remain in data.`
             );
         }
 
@@ -214,14 +214,14 @@ export class Id3v2FrameFactory {
 
         // 1) Unsynchronize if necessary
         if (header.isUnsynchronizationApplied) {
-            bodyBytes = SyncData.resyncByteVector(bodyBytes);
+            fieldBytes = SyncData.resyncByteVector(fieldBytes);
         }
 
         // 2) Read extended header fields if they exist
         const extendedHeaderSize = header.getExtendedSize(version);
         if (extendedHeaderSize > 0) {
-            header.readExtendedHeader(bodyBytes.subarray(0, extendedHeaderSize), version);
-            bodyBytes = bodyBytes.subarray(extendedHeaderSize);
+            header.readExtendedHeader(fieldBytes.subarray(0, extendedHeaderSize), version);
+            fieldBytes = fieldBytes.subarray(extendedHeaderSize);
         }
 
         // 3) Construct the frame
@@ -231,13 +231,13 @@ export class Id3v2FrameFactory {
         let func = this.DEFAULT_FRAME_CREATORS.get(header.frameId);
         func ??= header.frameId.isTextFrame ? TextInformationFrame.fromFieldBytes : undefined;
         func ??= header.frameId.isUrlFrame ? UrlLinkFrame.fromFieldBytes : undefined;
-        func ??= UnknownFrame.fromBodyBytes;
+        func ??= UnknownFrame.fromFieldBytes;
 
         let frame;
         try {
-            frame = func(header, bodyBytes, version);
+            frame = func(header, fieldBytes, version);
         } catch {
-            frame = UnknownFrame.fromBodyBytes(header, bodyBytes, version);
+            frame = UnknownFrame.fromFieldBytes(header, fieldBytes, version);
         }
 
         return frame;

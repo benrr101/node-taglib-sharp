@@ -615,7 +615,7 @@ import {Testers} from "../utilities/testers";
         FrameFactoryTests.validateOutput(output, FrameClassType.UserUrlLinkFrame, 4);
     }
 
-    //#endregion
+    // #endregion
 
     // @test
     // public createFrame_allZero() {
@@ -724,13 +724,13 @@ import {Testers} from "../utilities/testers";
     //     }
     // }
 
-    private static getTestData(frameIdentifier: FrameIdentifier, bodyBytes: ByteVector): ByteVector {
-        const header = new Id3v2FrameHeader(frameIdentifier, Id3v2FrameFlags.None, bodyBytes.length);
-        return ByteVector.concatenate(header.render(4), bodyBytes);
+    private static getTestData(frameIdentifier: FrameIdentifier, fieldBytes: ByteVector): ByteVector {
+        const header = new Id3v2FrameHeader(frameIdentifier, Id3v2FrameFlags.None, fieldBytes.length);
+        return ByteVector.concatenate(header.render(4), fieldBytes);
     }
 
-    private static getTestFile(frameIdentifier: FrameIdentifier, bodyBytes: ByteVector): File {
-        const frameBytes = this.getTestData(frameIdentifier, bodyBytes);
+    private static getTestFile(frameIdentifier: FrameIdentifier, fieldBytes: ByteVector): File {
+        const frameBytes = this.getTestData(frameIdentifier, fieldBytes);
         return TestFile.getFile(frameBytes);
     }
 

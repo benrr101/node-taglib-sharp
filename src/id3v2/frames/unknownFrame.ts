@@ -15,16 +15,16 @@ export default class UnknownFrame extends Frame {
     /**
      * Constructs and initialized a new instance by storing the body bytes.
      * @param header Header of the frame
-     * @param bodyBytes Bytes that contain the body of the frame
+     * @param fieldBytes Bytes that contain the body of the frame
      * @param version ID3v2 version the frame was originally encoded with
      */
-    public static fromBodyBytes(header: Id3v2FrameHeader, bodyBytes: ByteVector, version: number): UnknownFrame {
+    public static fromFieldBytes(header: Id3v2FrameHeader, fieldBytes: ByteVector, version: number): UnknownFrame {
         Guards.truthy(header, "header");
-        Guards.truthy(bodyBytes, "bodyBytes");
+        Guards.truthy(fieldBytes, "fieldBytes");
         Guards.byte(version, "version");
 
         const frame = new UnknownFrame(header);
-        frame.data = bodyBytes;
+        frame.data = fieldBytes;
         return frame;
     }
 

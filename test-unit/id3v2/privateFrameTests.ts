@@ -55,7 +55,7 @@ import {Testers} from "../utilities/testers";
     @params(2, "v2")
     @params(3, "v3")
     @params(4, "v4")
-    public fromBodyBytes_dataOnly(version: number) {
+    public fromFieldBytes_dataOnly(version: number) {
         // Arrange
         const dataBytes = ByteVector.concatenate(0x01, 0x02, 0x03, 0x04);
         const fieldBytes = ByteVector.concatenate(
