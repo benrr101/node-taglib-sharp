@@ -106,7 +106,7 @@ export default class GenreFrame extends Frame {
                 : [value];
             for (const term of terms) {
                 // Attempt to process it according to our best understanding of the spec
-                const numericGenres = this.parseTconAsStandardNumeric(term);
+                const numericGenres = GenreFrame.parseTconAsStandardNumeric(term);
                 if (numericGenres !== undefined) {
                     fieldList.push(... numericGenres);
                     continue;

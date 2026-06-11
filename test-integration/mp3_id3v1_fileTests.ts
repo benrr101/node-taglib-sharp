@@ -34,12 +34,14 @@ const assert = Chai.assert;
 
     @test
     public writeStandardPictures() {
+        // @TODO: These tests mostly test default behavior of writing to ID3v2 tags.
         const tmpFilePath = TestConstants.getTempFilePath(Mp3_id3v1_fileTests.tmpFileName);
         StandardFileTests.writeStandardPictures(Mp3_id3v1_fileTests.sampleFilePath, tmpFilePath, ReadStyle.None);
     }
 
     @test
     public writeStandardTags() {
+        // @TODO: These tests mostly test default behavior of writing to ID3v2 tags.
         const tmpFilePath = TestConstants.getTempFilePath(Mp3_id3v1_fileTests.tmpFileName);
         StandardFileTests.writeStandardTags(Mp3_id3v1_fileTests.sampleFilePath, tmpFilePath);
     }
