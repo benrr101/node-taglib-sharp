@@ -112,7 +112,7 @@ import {EventType, TimestampFormat} from "../../src/id3v2/utilTypes";
 
     @params(2, "v2")
     @params(3, "v3")
-    @params(3, "v3")
+    @params(4, "v4")
     public fromFieldBytes_notEnoughBytes(version: number) {
         // Arrange
         const fieldBytes = ByteVector.empty();
@@ -124,7 +124,7 @@ import {EventType, TimestampFormat} from "../../src/id3v2/utilTypes";
 
     @params(2, "v2")
     @params(3, "v3")
-    @params(3, "v3")
+    @params(4, "v4")
     public fromFieldBytes_noEvents(version: number) {
         // Arrange
         const fieldBytes = ByteVector.fromByte(TimestampFormat.AbsoluteMilliseconds);
@@ -139,7 +139,7 @@ import {EventType, TimestampFormat} from "../../src/id3v2/utilTypes";
 
     @params(2, "v2")
     @params(3, "v3")
-    @params(3, "v3")
+    @params(4, "v4")
     public fromFieldBytes_withEvents(version: number) {
         // Arrange
         const event1 = new EventTimeCode(EventType.Profanity, 123);
@@ -164,7 +164,7 @@ import {EventType, TimestampFormat} from "../../src/id3v2/utilTypes";
 
     @params(2, "v2")
     @params(3, "v3")
-    @params(3, "v3")
+    @params(4, "v4")
     public fromFieldBytes_incompleteEvent(version: number) {
         // Arrange
         const event1 = new EventTimeCode(EventType.Profanity, 123);

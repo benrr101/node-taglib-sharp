@@ -1450,6 +1450,8 @@ export default class Id3v2Tag extends Tag {
                     break;
                 }
 
+                position += result.totalSize;
+
                 // Only add the frame if its size is > 0
                 // @TODO: How is this ever possible?
                 if (result.frame.size === 0) {
@@ -1457,7 +1459,6 @@ export default class Id3v2Tag extends Tag {
                 }
 
                 this.addFrame(result.frame);
-                position += result.totalSize;
 
             } catch (e: unknown) {
                 // If we fail at any point while trying to read the frames of the tag, we will have
@@ -1495,6 +1496,8 @@ export default class Id3v2Tag extends Tag {
                     break;
                 }
 
+                position += result.totalSize;
+
                 // Only add the frame if its size is > 0
                 // @TODO: How is this ever possible?
                 if (result.frame.size === 0) {
@@ -1502,7 +1505,6 @@ export default class Id3v2Tag extends Tag {
                 }
 
                 this.addFrame(result.frame);
-                position += result.totalSize;
 
             } catch (e: unknown) {
                 // If we fail at any point while trying to read the frames of the tag, we will have

@@ -92,7 +92,7 @@ import {Testers} from "../utilities/testers";
         assert.ok(frame);
         assert.strictEqual(frame.frameClassType, FrameClassType.UrlLinkFrame);
         assert.strictEqual(frame.frameId, FrameIdentifiers.WCOM);
-        assert.strictEqual(frame.text, "foo");
+        assert.strictEqual(frame.text, text);
     }
 }
 

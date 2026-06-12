@@ -131,13 +131,13 @@ export abstract class Frame {
      *     Value containing the encryption identifier for the current instance or
      *     `undefined` if not set.
      */
-    public get encryptionId(): number { return this._header.encryptionId; }
+    public get encryptionId(): number|undefined { return this._header.encryptionId; }
     /**
      * Sets the encryption ID applied to the current instance.
      * @param value Value containing the encryption identifier for the current instance. Must be an
      *     8-bit unsigned integer. Setting to `undefined` will remove the encryption header and ID
      */
-    public set encryptionId(value: number) { this._header.encryptionId = value; }
+    public set encryptionId(value: number|undefined) { this._header.encryptionId = value; }
 
     /**
      * Gets the frame flags applied to the current instance.
@@ -169,13 +169,13 @@ export abstract class Frame {
      *     Value containing the grouping identifier for the current instance, or
      *     `undefined` if not set.
      */
-    public get groupId(): number { return this._header.groupId; }
+    public get groupId(): number|undefined { return this._header.groupId; }
     /**
      * Sets the grouping ID applied to the current instance.
      * @param value Grouping identifier for the current instance. Must be an 8-bit unsigned integer.
      *     Setting to `undefined` will remove the grouping identity header and ID
      */
-    public set groupId(value: number) { this._header.groupId = value; }
+    public set groupId(value: number|undefined) { this._header.groupId = value; }
 
     /**
      * Gets the size of the current instance as it was last stored on disk.

@@ -3,7 +3,6 @@ import {ByteVector, StringType} from "../../byteVector";
 import {CorruptFileError, NotImplementedError} from "../../errors";
 import {FrameIdentifier, FrameIdentifiers} from "../frameIdentifiers";
 import {Guards, NumberUtils} from "../../utils";
-import {Id3v2TagHeaderFlags} from "../id3v2TagHeader";
 
 /**
  * Indicates the flags applied to a {@link Id3v2FrameHeader} object.

@@ -37,7 +37,7 @@ export default class PlayCountFrame extends Frame {
         Guards.byte(version, "version");
 
         if (fieldBytes.length < 4) {
-            throw new CorruptFileError("Genre frame must contain at least 4 bytes.");
+            throw new CorruptFileError("Play count frame must contain at least 4 bytes.");
         }
         if (fieldBytes.length > 8) {
             throw new NotSupportedError("node-taglib-sharp only supports up to 64-bits of play count values.");
