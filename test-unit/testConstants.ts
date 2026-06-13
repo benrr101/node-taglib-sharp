@@ -1,5 +1,7 @@
 import * as Path from "path";
-import {v4 as Uuidv4} from "uuid";
+import * as crypto from "crypto";
+
+const randomUUID: () => string = (crypto as any).randomUUID;
 
 import {ByteVector, StringType} from "../src/byteVector";
 
@@ -13,7 +15,7 @@ export default class TestConstants {
     public static testFileContentsStr: string = "12345abcde";
 
     public static getTestFilePath: () => string = () => {
-        const fileUid: string = Uuidv4();
+        const fileUid: string = randomUUID();
         return Path.join(TestConstants.testFileFolderPath, `testFile_${fileUid}.txt`);
     }
 

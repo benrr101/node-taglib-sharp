@@ -1,5 +1,7 @@
 import * as Path from "path";
-import {v4 as Uuidv4} from "uuid";
+import * as crypto from "crypto";
+
+const randomUUID: () => string = (crypto as any).randomUUID;
 
 export default class TestConstants {
     public static testFileFolderPath: string = "./test-integration/resources";
@@ -13,7 +15,7 @@ export default class TestConstants {
     }
 
     public static getTempFilePath: (fileName: string) => string = (fileName: string) => {
-        const fileUid: string = Uuidv4();
+        const fileUid: string = randomUUID();
         return Path.join(TestConstants.testFileFolderPath, `${fileUid}_${fileName}`);
     }
 }

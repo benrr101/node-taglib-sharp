@@ -23,8 +23,7 @@
   },
   "dependencies": {
     "iconv-lite": "^0.6.3",
-    "os-locale": "^6.0.2",
-    "uuid": "^8.3.2"
+    "os-locale": "^6.0.2"
   },
   "devDependencies": {
     "@istanbuljs/nyc-config-typescript": "^1.0.2",
@@ -33,7 +32,6 @@
     "@types/chai-as-promised": "^7.1.0",
     "@types/node": "^12.20.55",
     "@types/stream-buffers": "^3.0.2",
-    "@types/uuid": "^8.3.4",
     "@typescript-eslint/eslint-plugin": "^5.15.0",
     "@typescript-eslint/parser": "^5.15.0",
     "chai": "^4.3.6",

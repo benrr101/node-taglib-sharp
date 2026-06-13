@@ -1,5 +1,9 @@
-import * as Uuid from "uuid";
+import * as crypto from "crypto";
 import {ByteVector} from "./byteVector";
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const randomUUID: () => string = (crypto as any).randomUUID;
+
 
 /**
  * Wrapper around the UUID package to make it easier to handle UUIDs.
@@ -19,7 +23,7 @@ export default class UuidWrapper {
         // Temporary implementation - it's probably not perfect
         if (!source) {
             // Source wasn't provided, generate a new guid string
-            source = Uuid.v4();
+            source = randomUUID();
         }
 
         if (typeof(source) === "string") {
