@@ -52,7 +52,7 @@ export default class UnsynchronizedLyricsFrame extends Frame {
     ): UnsynchronizedLyricsFrame {
         Guards.truthy(header, "header");
         Guards.truthy(fieldBytes, "fieldBytes");
-        Guards.byte(version, "number");
+        Guards.byte(version, "version");
 
         if (fieldBytes.length < 4) {
             throw new CorruptFileError("Unsynchronized lyrics frame must contain at least 4 bytes.");

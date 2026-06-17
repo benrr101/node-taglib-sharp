@@ -153,7 +153,7 @@ export class SynchronizedLyricsFrame extends Frame {
             const lyric = workingBytes.subarray(0, lyricLength).toString(frame._textEncoding);
 
             // Read time code
-            const timeStampBytes = workingBytes.subarray(lyricLength + delimiter.length, 4)
+            const timeStampBytes = workingBytes.subarray(lyricLength + delimiter.length, 4);
             if (timeStampBytes.length < 4) {
                 throw new CorruptFileError(`Synchronized lyrics frame does not contain time code for lyric '${lyric}`);
             }

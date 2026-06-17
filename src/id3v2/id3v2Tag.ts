@@ -1403,7 +1403,7 @@ export default class Id3v2Tag extends Tag {
 
     private parseFromData(data: ByteVector, style: ReadStyle): void {
         // Determine if the entire tag needs to be resynchronized.
-        // @TODO: How imporant is it to check if the version is < 4?
+        // @TODO: How important is it to check if the version is < 4?
         const fullTagUnsync = this.version < 4 &&
                               NumberUtils.hasFlag(this._header.flags, Id3v2TagHeaderFlags.Unsynchronization);
 
@@ -1416,8 +1416,8 @@ export default class Id3v2Tag extends Tag {
     }
 
     private parseFromFile(file: File, offset: number, style: ReadStyle): void {
-        // Determine if the entire tag needs to be rewynchronized.
-        // @TODO: How imporant is it to check if the version is < 4?
+        // Determine if the entire tag needs to be resynchronized.
+        // @TODO: How important is it to check if the version is < 4?
         const fullTagUnsync = this.version < 4 &&
                               NumberUtils.hasFlag(this._header.flags, Id3v2TagHeaderFlags.Unsynchronization);
 
