@@ -225,7 +225,13 @@ export class Id3v2FrameFactory {
         }
 
         // 3) Construct the frame
-        // 3.1) Try with a custom constructor @TODO:
+        // 3.1) Try with a custom constructor
+        for (const customFunc of this.CUSTOM_FRAME_CREATORS) {
+            const frame = customFunc(fieldBytes, 0, header, version);
+            if (frame) {
+                return frame;
+            }
+        }
 
         // 3.2) No matching custom constructors found, use built-in/default constructor
         let func = this.DEFAULT_FRAME_CREATORS.get(header.frameId);

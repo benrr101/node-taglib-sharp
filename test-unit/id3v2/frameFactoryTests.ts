@@ -1,4 +1,4 @@
-import {suite, test} from "@testdeck/mocha";
+import {params, suite, test} from "@testdeck/mocha";
 import {assert} from "chai";
 
 import CommentsFrame from "../../src/id3v2/frames/commentsFrame";
@@ -17,7 +17,7 @@ import {ByteVector, StringType} from "../../src/byteVector";
 import {EventTimeCodeFrame} from "../../src/id3v2/frames/eventTimeCodeFrame";
 import {File} from "../../src/file";
 import {Frame, FrameClassType} from "../../src/id3v2/frames/frame";
-import {Id3v2FrameFactory} from "../../src/id3v2/frames/frameFactory";
+import {FrameCreator, Id3v2FrameFactory} from "../../src/id3v2/frames/frameFactory";
 import {Id3v2FrameFlags, Id3v2FrameHeader} from "../../src/id3v2/frames/frameHeader";
 import {FrameIdentifier, FrameIdentifiers} from "../../src/id3v2/frameIdentifiers";
 import {PictureType} from "../../src/picture";
@@ -25,10 +25,10 @@ import {RelativeVolumeFrame} from "../../src/id3v2/frames/relativeVolumeFrame";
 import {SynchronizedLyricsFrame} from "../../src/id3v2/frames/synchronizedLyricsFrame";
 import {SynchronizedTextType, TimestampFormat} from "../../src/id3v2/utilTypes";
 import {Testers} from "../utilities/testers";
+import {It, Mock, Times} from "typemoq";
+import UnknownFrame from "../../src/id3v2/frames/unknownFrame";
 
 @suite class FrameFactoryTests {
-    private static readonly TWO_BYTE_OFFSET = ByteVector.fromSize(2);
-
     private static readonly FRAME_BODY_APIC = ByteVector.concatenate(
         StringType.UTF16BE,
         ByteVector.fromString("image/gif", StringType.Latin1),
@@ -49,46 +49,6 @@ import {Testers} from "../utilities/testers";
         ByteVector.fromString("fuxbuxqux", StringType.Latin1)
     );
 
-
-    // @TODO: Tests that apply to both
-
-    @test
-    public createFrame_invalidVersion() {
-        // Arrange
-        const data = ByteVector.empty();
-
-        // Act / Assert
-        Testers.testByte((v) => Id3v2FrameFactory.createFrameFromTagBytes(data, 0, v, false));
-    }
-
-    @test
-    public createFrame_compressed() {
-        // Arrange
-        // NOTE: Compressed headers can't be created directly, so we manually build the header
-        const headerBytes = ByteVector.concatenate(
-            FrameIdentifiers.TXXX.render(4),
-            0x00, 0x00, 0x00, 0x01,
-            ByteVector.fromUshort(Id3v2FrameFlags.Compression)
-        );
-
-        // Act / Assert
-        assert.throws(() => Id3v2FrameFactory.createFrameFromTagBytes(headerBytes, 0, 4, false));
-    }
-
-    @test
-    public createFrame_encrypted() {
-        // Arrange
-        // NOTE: Encrypted headers can't be created directly, so we manually build the header
-        const headerBytes = ByteVector.concatenate(
-            FrameIdentifiers.TXXX.render(4),
-            0x00, 0x00, 0x00, 0x01,
-            ByteVector.fromUshort(Id3v2FrameFlags.Encryption)
-        );
-
-        // Act / Assert
-        assert.throws(() => Id3v2FrameFactory.createFrameFromTagBytes(headerBytes, 0, 4, false));
-    }
-
     // #region createFrameFromFile Tests
 
     @test
@@ -107,36 +67,55 @@ import {Testers} from "../utilities/testers";
     }
 
     @test
-    public createFrame_fromFileNoOffset_ufid() {
+    public createFrameFromFile_invalidVersion() {
         // Arrange
-        const data = UniqueFileIdentifierFrame.fromData("foo", ByteVector.fromByte(0x05)).render(4);
+        const file = TestFile.getFile([]);
+
+        // Act / Assert
+        Testers.testByte((v) => Id3v2FrameFactory.createFrameFromFile(file, 0, v, false));
+    }
+
+    @params(2, "v2")
+    @params(3, "v3")
+    @params(4, "v4")
+    public createFrameFromFile_noHeader(version: number) {
+        // Arrange
+        const size = Id3v2FrameHeader.getBaseSize(version);
+        const data = ByteVector.fromSize(size - 1);
+        const file = TestFile.getFile(data);
+
+        // Act / Assert
+        assert.throws(() => Id3v2FrameFactory.createFrameFromFile(file, 0, version, false));
+    }
+
+    @params(2, "v2")
+    @params(3, "v3")
+    @params(4, "v4")
+    public createFrameFromFile_noHeaderAfterOffset(version: number) {
+        // Arrange
+        const size = Id3v2FrameHeader.getBaseSize(version);
+        const data = ByteVector.fromSize(size + 9, 0x00);
+        const file = TestFile.getFile(data);
+
+        // Act / Assert
+        assert.throws(() => Id3v2FrameFactory.createFrameFromFile(file, 10, version, false));
+    }
+
+    @params(2, "v2")
+    @params(3, "v3")
+    @params(4, "v4")
+    public createFrameFromFile_padding(version: number) {
+        // Arrange
+        const size = Id3v2FrameHeader.getBaseSize(version);
+        const data = ByteVector.fromSize(size + 1, 0x00);
         const file = TestFile.getFile(data);
 
         // Act
-        const output = Id3v2FrameFactory.createFrameFromFile(file, 0, 4, false);
-
-        // Assert
-        FrameFactoryTests.validateOutput(output, FrameClassType.UniqueFileIdentifierFrame, 4);
+        const result = Id3v2FrameFactory.createFrameFromFile(file, 0, version, false);
     }
 
     @test
-    public createFrame_fromFileWithOffset_ufid() {
-        // Arrange
-        const data = ByteVector.concatenate(
-            FrameFactoryTests.TWO_BYTE_OFFSET,
-            UniqueFileIdentifierFrame.fromData("foo", ByteVector.fromByte(0x05)).render(4)
-        );
-        const file = TestFile.getFile(data);
-
-        // Act
-        const output = Id3v2FrameFactory.createFrameFromFile(file, 2, 4, false);
-
-        // Assert
-        FrameFactoryTests.validateOutput(output, FrameClassType.UniqueFileIdentifierFrame, 4);
-    }
-
-    @test
-    public createFrame_fromFile_apic() {
+    public createFrameFromFile_apic() {
         // Arrange
         const file = FrameFactoryTests.getTestFile(
             FrameIdentifiers.APIC,
@@ -312,6 +291,22 @@ import {Testers} from "../utilities/testers";
     }
 
     @test
+    public createFrameFromFile_ufidWithOffset() {
+        // Arrange
+        const data = ByteVector.concatenate(
+            0x00, 0x00,
+            UniqueFileIdentifierFrame.fromData("foo", ByteVector.fromByte(0x05)).render(4)
+        );
+        const file = TestFile.getFile(data);
+
+        // Act
+        const output = Id3v2FrameFactory.createFrameFromFile(file, 2, 4, false);
+
+        // Assert
+        FrameFactoryTests.validateOutput(output, FrameClassType.UniqueFileIdentifierFrame, 4);
+    }
+
+    @test
     public createFrameFromFile_unknown() {
         // Arrange
         const file = FrameFactoryTests.getTestFile(
@@ -379,12 +374,147 @@ import {Testers} from "../utilities/testers";
         FrameFactoryTests.validateOutput(output, FrameClassType.UserUrlLinkFrame, 4);
     }
 
-    // #endregion
+    @test
+    public createFrameFromFile_customWithMatch() {
+        // Arrange
+        const frame = PlayCountFrame.fromEmpty();
+        const data = frame.render(4);
+        const file = TestFile.getFile(data);
 
-    // #region createFrameFromRawData Tests
+        const fieldBytes = data.subarray(Id3v2FrameHeader.getBaseSize(4));
+
+        const mockCreator = Mock.ofType<FrameCreator>();
+        mockCreator.setup((c) => c(It.isValue<ByteVector>(fieldBytes), It.isValue(0), It.isAny(), It.isValue(4)))
+            .returns(() => frame);
+
+        Id3v2FrameFactory.addFrameCreator(mockCreator.object);
+
+        try {
+            // Act
+            const output = Id3v2FrameFactory.createFrameFromFile(file, 0, 4, false);
+
+            // Assert
+            assert.isOk(output)
+            assert.strictEqual(output.frame, frame);
+            assert.strictEqual(output.totalSize, data.length);
+
+            mockCreator.verify(
+                (c) => c(It.isValue<ByteVector>(fieldBytes), It.isValue(0), It.isAny(), It.isValue(4)),
+                Times.atLeastOnce()
+            );
+
+        } finally {
+            // Cleanup
+            // @TODO: Is there a risk of race condition with this test and the next?
+            Id3v2FrameFactory.clearFrameCreators();
+        }
+    }
 
     @test
-    public createFrameFromRawData_apic() {
+    public createFrameFromFrom_customWithoutMatch() {
+        // Arrange
+        const frame = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.fromByteArray([0x01, 0x02, 0x03]));
+        const data = frame.render(4);
+        const file = TestFile.getFile(data);
+
+        const fieldBytes = data.subarray(Id3v2FrameHeader.getBaseSize(4));
+
+        const mockCreator = Mock.ofType<FrameCreator>();
+        mockCreator.setup((c) => c(It.isValue<ByteVector>(fieldBytes), It.isValue(0), It.isAny(), It.isValue(4)))
+            .returns(() => undefined);
+
+        Id3v2FrameFactory.addFrameCreator(mockCreator.object);
+
+        try {
+            // Act
+            const output = Id3v2FrameFactory.createFrameFromFile(file, 0, 4, false);
+
+            // Assert
+            FrameFactoryTests.validateOutput(output, FrameClassType.UnknownFrame, data.length);
+            assert.notStrictEqual(output.frame, frame);
+            assert.strictEqual(output.totalSize, data.length);
+
+            mockCreator.verify(
+                (c) => c(It.isValue<ByteVector>(fieldBytes), It.isValue(0), It.isAny(), It.isValue(4)),
+                Times.atLeastOnce()
+            );
+
+        } finally {
+            // Cleanup
+            // @TODO: Is there a risk of race condition with this test and the previous?
+            Id3v2FrameFactory.clearFrameCreators();
+        }
+    }
+
+    // #endregion
+
+    // #region createFrameFromTagBytes Tests
+
+    @test
+    public createFrameFromTagBytes_falsyData() {
+        // Act / Assert
+        Testers.testTruthy<ByteVector>((v) => Id3v2FrameFactory.createFrameFromTagBytes(v, 0, 2, false));
+    }
+
+    @test
+    public createFrameFromTagBytes_invalidOffset() {
+        // Arrange
+        const data = ByteVector.empty();
+
+        // Act / Assert
+        Testers.testSafeUint((v) => Id3v2FrameFactory.createFrameFromTagBytes(data, v, 2, false));
+    }
+
+    @test
+    public createFrameFromTagBytes_invalidVersion() {
+        // Arrange
+        const data = ByteVector.empty();
+
+        // Act / Assert
+        Testers.testByte((v) => Id3v2FrameFactory.createFrameFromTagBytes(data, 0, v, false));
+    }
+
+    @params(2, "v2")
+    @params(3, "v3")
+    @params(4, "v4")
+    public createFrameFromTagBytes_noHeader(version: number) {
+        // Arrange
+        const size = Id3v2FrameHeader.getBaseSize(version);
+        const data = ByteVector.fromSize(size - 1);
+
+        // Act / Assert
+        assert.throws(() => Id3v2FrameFactory.createFrameFromTagBytes(data, 0, version, false));
+    }
+
+    @params(2, "v2")
+    @params(3, "v3")
+    @params(4, "v4")
+    public createFrameFroMTagBytes_noHeaderAfterOffset(version: number) {
+        // Arrange
+        const size = Id3v2FrameHeader.getBaseSize(version);
+        const data = ByteVector.fromSize(size + 9, 0x00);
+
+        // Act / Assert
+        assert.throws(() => Id3v2FrameFactory.createFrameFromTagBytes(data, 10, version, false));
+    }
+
+    @params(2, "v2")
+    @params(3, "v3")
+    @params(4, "v4")
+    public createFrameFromTagBytes_padding(version: number) {
+        // Arrange
+        const size = Id3v2FrameHeader.getBaseSize(version);
+        const data = ByteVector.fromSize(size + 1, 0x00);
+
+        // Act
+        const result = Id3v2FrameFactory.createFrameFromTagBytes(data, 0, version, false);
+
+        // Assert
+        assert.isUndefined(result);
+    }
+
+    @test
+    public createFrameFromTagBytes_apic() {
         // Arrange
         const data = FrameFactoryTests.getTestData(
             FrameIdentifiers.APIC,
@@ -399,7 +529,7 @@ import {Testers} from "../utilities/testers";
     }
 
     @test
-    public createFrameFromRawData_comm() {
+    public createFrameFromTagBytes_comm() {
         // Arrange
         const data = CommentsFrame.fromDescription("foo").render(4);
 
@@ -411,7 +541,7 @@ import {Testers} from "../utilities/testers";
     }
 
     @test
-    public createFrameFromRawData_etco() {
+    public createFrameFromTagBytes_etco() {
         // Arrange
         const data = EventTimeCodeFrame.fromTimestampFormat(TimestampFormat.AbsoluteMilliseconds).render(4);
 
@@ -423,7 +553,7 @@ import {Testers} from "../utilities/testers";
     }
 
     @test
-    public createFrameFromRawData_geob() {
+    public createFrameFromTagBytes_geob() {
         // Arrange
         const data = FrameFactoryTests.getTestData(
             FrameIdentifiers.GEOB,
@@ -438,7 +568,7 @@ import {Testers} from "../utilities/testers";
     }
 
     @test
-    public createFrameFromRawData_mcdi() {
+    public createFrameFromTagBytes_mcdi() {
         // Arrange
         const data = FrameFactoryTests.getTestData(
             FrameIdentifiers.MCDI,
@@ -453,7 +583,7 @@ import {Testers} from "../utilities/testers";
     }
 
     @test
-    public createFrameFromRawData_pcnt() {
+    public createFrameFromTagBytes_pcnt() {
         // Arrange
         const data = PlayCountFrame.fromEmpty().render(4);
 
@@ -465,7 +595,7 @@ import {Testers} from "../utilities/testers";
     }
 
     @test
-    public createFrameFromRawData_popm() {
+    public createFrameFromTagBytes_popm() {
         // Arrange
         const data = PopularimeterFrame.fromUser("foo").render(4);
 
@@ -477,7 +607,7 @@ import {Testers} from "../utilities/testers";
     }
 
     @test
-    public createFrameFromRawData_priv() {
+    public createFrameFromTagBytes_priv() {
         // Arrange
         const data = PrivateFrame.fromOwner("foo").render(4);
 
@@ -489,7 +619,7 @@ import {Testers} from "../utilities/testers";
     }
 
     @test
-    public createFrameFromRawData_rva2() {
+    public createFrameFromTagBytes_rva2() {
         // Arrange
         const data = RelativeVolumeFrame.fromIdentification("foo").render(4);
 
@@ -501,7 +631,7 @@ import {Testers} from "../utilities/testers";
     }
 
     @test
-    public createFrameFromRawData_sylt() {
+    public createFrameFromTagBytes_sylt() {
         // Arrange
         const data = SynchronizedLyricsFrame.fromInfo("foo", "bar", SynchronizedTextType.Lyrics).render(4);
 
@@ -513,7 +643,7 @@ import {Testers} from "../utilities/testers";
     }
 
     @test
-    public createFrameFromRawData_textFrame() {
+    public createFrameFromTagBytes_textFrame() {
         // Arrange
         const frame = TextInformationFrame.fromIdentifier(FrameIdentifiers.TCOM);
         frame.text = ["foo"];
@@ -527,7 +657,7 @@ import {Testers} from "../utilities/testers";
     }
 
     @test
-    public createFrameFromRawData_txxx() {
+    public createFrameFromTagBytes_txxx() {
         // Arrange
         const data = UserTextInformationFrame.fromDescription("foo").render(4);
 
@@ -539,7 +669,7 @@ import {Testers} from "../utilities/testers";
     }
 
     @test
-    public createFrameFromRawData_ufid() {
+    public createFrameFromTagBytes_ufid() {
         // Arrange
         const data = UniqueFileIdentifierFrame.fromData("foo", ByteVector.fromByte(0x08)).render(4);
 
@@ -551,7 +681,7 @@ import {Testers} from "../utilities/testers";
     }
 
     @test
-    public createFrameFromRawData_unknown() {
+    public createFrameFromTagBytes_unknown() {
         // Arrange
         const data = FrameFactoryTests.getTestData(
             FrameIdentifiers.RVRB,
@@ -566,7 +696,25 @@ import {Testers} from "../utilities/testers";
     }
 
     @test
-    public createFrameFromRawData_urlFrame() {
+    public createFrameFromTagBytes_unknownWithOffset() {
+        // Arrange
+        const data = ByteVector.concatenate(
+            ByteVector.fromSize(10),
+            FrameFactoryTests.getTestData(
+                FrameIdentifiers.RVRB,
+                ByteVector.fromString("foo", StringType.Latin1)
+            )
+        );
+
+        // Act
+        const output = Id3v2FrameFactory.createFrameFromTagBytes(data, 10, 4, false);
+
+        // Assert
+        FrameFactoryTests.validateOutput(output, FrameClassType.UnknownFrame, 4);
+    }
+
+    @test
+    public createFrameFromTagBytes_urlFrame() {
         // Arrange
         const frame = UrlLinkFrame.fromIdentity(FrameIdentifiers.WCOM);
         frame.text = "foo";
@@ -580,7 +728,7 @@ import {Testers} from "../utilities/testers";
     }
 
     @test
-    public createFrameFromRawData_user() {
+    public createFrameFromTagBytes_user() {
         // Arrange
         const data = TermsOfUseFrame.fromFields("foo").render(4);
 
@@ -592,7 +740,7 @@ import {Testers} from "../utilities/testers";
     }
 
     @test
-    public createFrameFromRawData_uslt() {
+    public createFrameFromTagBytes_uslt() {
         // Arrange
         const data = UnsynchronizedLyricsFrame.fromData("foo").render(4);
 
@@ -604,7 +752,7 @@ import {Testers} from "../utilities/testers";
     }
 
     @test
-    public createFrameFromRawData_wxxx() {
+    public createFrameFromTagBytes_wxxx() {
         // Arrange
         const data = UserUrlLinkFrame.fromFields("foo", "bar").render(4);
 
@@ -615,114 +763,77 @@ import {Testers} from "../utilities/testers";
         FrameFactoryTests.validateOutput(output, FrameClassType.UserUrlLinkFrame, 4);
     }
 
-    // #endregion
+    @test
+    public createFrameFromTagBytes_customWithMatch() {
+        // Arrange
+        const frame = PlayCountFrame.fromEmpty();
+        const data = frame.render(4);
 
-    // @test
-    // public createFrame_allZero() {
-    //     // Arrange
-    //     const data = ByteVector.fromSize(10, 0x00);
-    //
-    //     // Act
-    //     const output = Id3v2FrameFactory.createFrame(data, undefined, 0, 4, false);
-    //
-    //     // Assert
-    //     assert.isUndefined(output);
-    // }
-    //
-    // @test
-    // public createFrame_fromOffsetData() {
-    //     // Arrange
-    //     const data = ByteVector.concatenate(
-    //         FrameFactoryTests.TWO_BYTE_OFFSET,
-    //         UniqueFileIdentifierFrame.fromData("foo", ByteVector.empty()).render(4)
-    //     );
-    //
-    //     // Act
-    //     const output = Id3v2FrameFactory.createFrame(data, undefined, 2, 4, false);
-    //
-    //     // Assert
-    //     FrameFactoryTests.validateOutput(output, FrameClassType.UniqueFileIdentifierFrame, data.length);
-    // }
-    //
-    // @test
-    // public createFrame_fromFile_nonLazy() {
-    //     // Arrange
-    //     const data = PlayCountFrame.fromEmpty().render(4);
-    //     const file = TestFile.getFile(data);
-    //
-    //     // Act
-    //     const output = Id3v2FrameFactory.createFrame(undefined, file, 0, 4, false);
-    //
-    //     // Assert
-    //     FrameFactoryTests.validateOutput(output, FrameClassType.PlayCountFrame, data.length);
-    // }
-    //
-    // @test
-    // public createFrameFromRawData_customFrameCreatorMatch() {
-    //     try {
-    //         // Arrange
-    //         const frame = PlayCountFrame.fromEmpty();
-    //         const data = frame.render(4);
-    //         const mockCreator = TypeMoq.Mock.ofType<FrameCreator>();
-    //         mockCreator.setup(
-    //             (c) => c(TypeMoq.It.isAny(), TypeMoq.It.isValue(0), TypeMoq.It.isAny(), TypeMoq.It.isValue(4))
-    //         ).returns(() => frame);
-    //
-    //         // Act
-    //         Id3v2FrameFactory.addFrameCreator(mockCreator.object);
-    //         const output = Id3v2FrameFactory.createFrame(data, undefined, 0, 4, false);
-    //
-    //         // Assert
-    //         assert.isOk(output);
-    //         assert.strictEqual(output.frame, frame);
-    //         assert.strictEqual(output.offset, data.length);
-    //
-    //         mockCreator.verify(
-    //             (c) => c(
-    //                 TypeMoq.It.is<ByteVector>((d) => d.equals(data)),
-    //                 TypeMoq.It.isValue(0),
-    //                 TypeMoq.It.isAny(),
-    //                 TypeMoq.It.isValue(4)
-    //             ),
-    //             TypeMoq.Times.once()
-    //         );
-    //     } finally {
-    //         Id3v2FrameFactory.clearFrameCreators();
-    //     }
-    // }
-    //
-    // @test
-    // public createFrame_fromData_customFrameCreatorNoMatch() {
-    //     try {
-    //         // Arrange
-    //         const frame = PlayCountFrame.fromEmpty();
-    //         const data = frame.render(4);
-    //         const mockCreator = TypeMoq.Mock.ofType<FrameCreator>();
-    //         mockCreator.setup(
-    //             (c) => c(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())
-    //         ).returns(() => undefined);
-    //
-    //         // Act
-    //         Id3v2FrameFactory.addFrameCreator(mockCreator.object);
-    //         const output = Id3v2FrameFactory.createFrame(data, undefined, 0, 4, false);
-    //
-    //         // Assert
-    //         FrameFactoryTests.validateOutput(output, FrameClassType.PlayCountFrame, data.length);
-    //         assert.notStrictEqual(output.frame, frame);
-    //
-    //         mockCreator.verify(
-    //             (c) => c(
-    //                 TypeMoq.It.is<ByteVector>((d) => d.equals(data)),
-    //                 TypeMoq.It.isValue(0),
-    //                 TypeMoq.It.isAny(),
-    //                 TypeMoq.It.isValue(4)
-    //             ),
-    //             TypeMoq.Times.once()
-    //         );
-    //     } finally {
-    //         Id3v2FrameFactory.clearFrameCreators();
-    //     }
-    // }
+        const fieldBytes = data.subarray(Id3v2FrameHeader.getBaseSize(4));
+
+        const mockCreator = Mock.ofType<FrameCreator>();
+        mockCreator.setup((c) => c(It.isValue<ByteVector>(fieldBytes), It.isValue(0), It.isAny(), It.isValue(4)))
+            .returns(() => frame);
+
+        Id3v2FrameFactory.addFrameCreator(mockCreator.object);
+
+        try {
+            // Act
+            const output = Id3v2FrameFactory.createFrameFromTagBytes(data, 0, 4, false);
+
+            // Assert
+            assert.isOk(output)
+            assert.strictEqual(output.frame, frame);
+            assert.strictEqual(output.totalSize, data.length);
+
+            mockCreator.verify(
+                (c) => c(It.isValue<ByteVector>(fieldBytes), It.isValue(0), It.isAny(), It.isValue(4)),
+                Times.atLeastOnce()
+            );
+
+        } finally {
+            // Cleanup
+            // @TODO: Is there a risk of race condition with this test and the next?
+            Id3v2FrameFactory.clearFrameCreators();
+        }
+    }
+
+    @test
+    public createFrameFromTagBytes_customWithoutMatch() {
+        // Arrange
+        const frame = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.fromByteArray([0x01, 0x02, 0x03]));
+        const data = frame.render(4);
+
+        const fieldBytes = data.subarray(Id3v2FrameHeader.getBaseSize(4));
+
+        const mockCreator = Mock.ofType<FrameCreator>();
+        mockCreator.setup((c) => c(It.isValue<ByteVector>(fieldBytes), It.isValue(0), It.isAny(), It.isValue(4)))
+            .returns(() => undefined);
+
+        Id3v2FrameFactory.addFrameCreator(mockCreator.object);
+
+        try {
+            // Act
+            const output = Id3v2FrameFactory.createFrameFromTagBytes(data, 0, 4, false);
+
+            // Assert
+            FrameFactoryTests.validateOutput(output, FrameClassType.UnknownFrame, data.length);
+            assert.notStrictEqual(output.frame, frame);
+            assert.strictEqual(output.totalSize, data.length);
+
+            mockCreator.verify(
+                (c) => c(It.isValue<ByteVector>(fieldBytes), It.isValue(0), It.isAny(), It.isValue(4)),
+                Times.atLeastOnce()
+            );
+
+        } finally {
+            // Cleanup
+            // @TODO: Is there a risk of race condition with this test and the previous?
+            Id3v2FrameFactory.clearFrameCreators();
+        }
+    }
+
+    // #endregion
 
     private static getTestData(frameIdentifier: FrameIdentifier, fieldBytes: ByteVector): ByteVector {
         const header = new Id3v2FrameHeader(frameIdentifier, Id3v2FrameFlags.None, fieldBytes.length);
