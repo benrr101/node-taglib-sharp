@@ -21,9 +21,9 @@ export default class MusicCdIdentifierFrame extends Frame {
      * Constructs and initializes a new instance with a specified bytes.
      * @param data Contents of the frame
      */
-    public static fromData(data?: ByteVector): MusicCdIdentifierFrame {
+    public static fromData(data: ByteVector): MusicCdIdentifierFrame {
         const frame = new MusicCdIdentifierFrame(new Id3v2FrameHeader(FrameIdentifiers.MCDI));
-        frame._data = data?.toByteVector();
+        frame._data = data.toByteVector();
         return frame;
     }
 
@@ -53,7 +53,6 @@ export default class MusicCdIdentifierFrame extends Frame {
     /**
      * Gets the identifier data stored in the current instance
      */
-    // @TODO: Should we allow nullsy values?
     public get data(): ByteVector { return this._data; }
     /**
      * Sets the identifier data stored in the current instance
@@ -64,12 +63,12 @@ export default class MusicCdIdentifierFrame extends Frame {
     /** @inheritDoc */
     public clone(): MusicCdIdentifierFrame {
         const frame = new MusicCdIdentifierFrame(new Id3v2FrameHeader(FrameIdentifiers.MCDI));
-        frame.data = this._data?.toByteVector();
+        frame.data = this._data.toByteVector();
         return frame;
     }
 
     /** @inheritDoc */
     protected renderFields(): ByteVector {
-        return this._data || ByteVector.empty();
+        return this._data;
     }
 }

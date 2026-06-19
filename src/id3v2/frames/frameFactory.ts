@@ -227,9 +227,14 @@ export class Id3v2FrameFactory {
         // 3) Construct the frame
         // 3.1) Try with a custom constructor
         for (const customFunc of this.CUSTOM_FRAME_CREATORS) {
-            const frame = customFunc(fieldBytes, 0, header, version);
-            if (frame) {
-                return frame;
+            try {
+                const frame = customFunc(fieldBytes, 0, header, version);
+                if (frame) {
+                    return frame;
+                }
+            }
+            catch {
+                // Swallow and continue
             }
         }
 

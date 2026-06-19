@@ -62,7 +62,7 @@ export default class UserTextInformationFrame extends TextInformationFrame {
         const fields = fieldBytes.subarray(1).toStrings(frame._encoding);
         if (fields.length < 2) {
             // Ill-formed frame, assume an undefined description
-            frame._description = undefined;
+            frame._description = "";
             frame._textFields = fields;
         } else {
             // Well-formed frame, field 1 is description, field 2+ is data

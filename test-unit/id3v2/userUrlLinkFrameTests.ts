@@ -73,7 +73,7 @@ import {Testers} from "../utilities/testers";
         const output = UserUrlLinkFrame.fromFieldBytes(header, fieldBytes, version);
 
         // Assert
-        this.assertFrame(output, undefined, "foo", StringType.UTF16BE);
+        this.assertFrame(output, "", "foo", StringType.UTF16BE);
     }
 
     @params(2, "v2")
@@ -118,7 +118,7 @@ import {Testers} from "../utilities/testers";
         // Assert
         this.assertFrame(output, "foo", "bar", StringType.Latin1);
     }
-    
+
     @params(StringType.Latin1, "single_byte")
     @params(StringType.UTF16BE, "multi_byte")
     public fromFieldBytes_encodingTest(encoding: StringType) {

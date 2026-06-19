@@ -57,7 +57,7 @@ export default class UserUrlLinkFrame extends UrlLinkFrame {
                 frame._text = splitText[1];
             } else {
                 // Data has only one field, let's assume it only has a url.
-                frame._description = undefined;
+                frame._description = "";
                 frame._text = splitText[0];
             }
         } else {

@@ -15,16 +15,6 @@ import {Testers} from "../utilities/testers";
         return MusicCdIdentifierFrame.fromFieldBytes;
     }
 
-    @params(undefined, "undefined")
-    @params(null, "null")
-    public fromData_falsyData_frameHasNoData(value: ByteVector) {
-        // Act
-        const frame = MusicCdIdentifierFrame.fromData(value);
-
-        // Assert
-        Id3v2_MusicCdIdentifierFrameTests.assertFrame(frame, value);
-    }
-
     @test
     public fromData_withData_frameHasData() {
         // Arrange
@@ -52,11 +42,10 @@ import {Testers} from "../utilities/testers";
         Id3v2_MusicCdIdentifierFrameTests.assertFrame(frame, ByteVector.fromString("foo bar baz", StringType.Latin1));
     }
 
-    @params(undefined, "undefined")
-    @params(null, "null")
-    @params(ByteVector.fromByteArray([0x01, 0x02, 0x03, 0x04]), "truthy")
-    public data(value: ByteVector|null|undefined) {
+    @test
+    public data() {
         // Arrange
+        const value = ByteVector.fromByteArray([0x01, 0x02, 0x03, 0x04]);
         const frame = MusicCdIdentifierFrame.fromData(value);
 
         // Act / Assert

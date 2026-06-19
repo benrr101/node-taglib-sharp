@@ -9,6 +9,7 @@ import TermsOfUseFrame from "../../src/id3v2/frames/termsOfUseFrame";
 import TestFile from "../utilities/testFile";
 import TextInformationFrame from "../../src/id3v2/frames/textInformationFrame";
 import UniqueFileIdentifierFrame from "../../src/id3v2/frames/uniqueFileIdentifierFrame";
+import UnknownFrame from "../../src/id3v2/frames/unknownFrame";
 import UnsynchronizedLyricsFrame from "../../src/id3v2/frames/unsynchronizedLyricsFrame";
 import UrlLinkFrame from "../../src/id3v2/frames/urlLinkFrame";
 import UserTextInformationFrame from "../../src/id3v2/frames/userTextInformationFrame";
@@ -26,7 +27,7 @@ import {SynchronizedLyricsFrame} from "../../src/id3v2/frames/synchronizedLyrics
 import {SynchronizedTextType, TimestampFormat} from "../../src/id3v2/utilTypes";
 import {Testers} from "../utilities/testers";
 import {It, Mock, Times} from "typemoq";
-import UnknownFrame from "../../src/id3v2/frames/unknownFrame";
+import {NumberUtils} from "../../src/utils";
 
 @suite class FrameFactoryTests {
     private static readonly FRAME_BODY_APIC = ByteVector.concatenate(
@@ -375,6 +376,36 @@ import UnknownFrame from "../../src/id3v2/frames/unknownFrame";
     }
 
     @test
+    public createFrameFromFile_customThrows() {
+        // Arrange
+        const fieldBytes = ByteVector.fromByteArray([0x01, 0x02, 0x03]);
+        const header = new Id3v2FrameHeader(FrameIdentifiers.RVRB, Id3v2FrameFlags.None, fieldBytes.length);
+        const data = ByteVector.concatenate(header.render(3), fieldBytes);
+        const file = TestFile.getFile(data);
+
+        const mockCreator = Mock.ofType<FrameCreator>();
+        mockCreator.setup(c => c(It.isValue<ByteVector>(fieldBytes), It.isValue(0), It.isAny(), It.isValue(3)))
+            .throws(new Error());
+        Id3v2FrameFactory.addFrameCreator(mockCreator.object);
+
+        try {
+            // Act
+            const output = Id3v2FrameFactory.createFrameFromFile(file, 0, 3, false);
+
+            // Assert
+            FrameFactoryTests.validateOutput(output, FrameClassType.UnknownFrame, data.length);
+            mockCreator.verify(
+                (c) => c(It.isValue<ByteVector>(fieldBytes), It.isValue(0), It.isAny(), It.isValue(3)),
+                Times.atLeastOnce()
+            );
+        } finally {
+            // Cleanup
+            // @TODO: Is there a risk of race condition with this test and the previous?
+            Id3v2FrameFactory.clearFrameCreators();
+        }
+    }
+
+    @test
     public createFrameFromFile_customWithMatch() {
         // Arrange
         const frame = PlayCountFrame.fromEmpty();
@@ -411,7 +442,7 @@ import UnknownFrame from "../../src/id3v2/frames/unknownFrame";
     }
 
     @test
-    public createFrameFromFrom_customWithoutMatch() {
+    public createFrameFromFile_customWithoutMatch() {
         // Arrange
         const frame = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.fromByteArray([0x01, 0x02, 0x03]));
         const data = frame.render(4);
@@ -444,6 +475,92 @@ import UnknownFrame from "../../src/id3v2/frames/unknownFrame";
             // @TODO: Is there a risk of race condition with this test and the previous?
             Id3v2FrameFactory.clearFrameCreators();
         }
+    }
+
+    @params(2, "v2")
+    @params(3, "v3")
+    @params(4, "v4")
+    public createFrameFromFile_fieldBytesHeaderMismatch(version: number) {
+        // Arrange
+        const fieldBytes = ByteVector.fromSize(10);
+        const header = new Id3v2FrameHeader(FrameIdentifiers.RVRB, Id3v2FrameFlags.None, fieldBytes.length + 5);
+        const data = ByteVector.concatenate(header.render(version), fieldBytes);
+        const file = TestFile.getFile(data);
+
+        // Act / Assert
+        assert.throws(() => Id3v2FrameFactory.createFrameFromFile(file, 0, version, false));
+    }
+
+    @test
+    public createFrameFromFile_unsyncAtTagLevel() {
+        // Arrange
+        // Note: Tag-level unsynchronization is only available in ID3v2.3
+        const fieldBytes = ByteVector.fromSize(10);
+        const header = new Id3v2FrameHeader(FrameIdentifiers.RVRB, Id3v2FrameFlags.Unsynchronized, fieldBytes.length);
+        const data = ByteVector.concatenate(header.render(3), fieldBytes);
+        const file = TestFile.getFile(data);
+
+        // Act
+        const result = Id3v2FrameFactory.createFrameFromFile(file, 0, 3, true);
+
+        // Assert
+        assert.isOk(result);
+
+        assert.strictEqual(result.totalSize, data.length);
+
+        assert.isOk(result.frame);
+        assert.isFalse(NumberUtils.hasFlag(result.frame.flags, Id3v2FrameFlags.Unsynchronized));
+    }
+
+    @test
+    public createFrameFromFile_resyncRequired() {
+        // Arrange
+        // Note: Frame-level unsynchronization is only available in ID3v2.4
+        const fieldBytes = ByteVector.fromByteArray([0xFF, 0x00, 0xE0]);
+        const header = new Id3v2FrameHeader(FrameIdentifiers.RVRB, Id3v2FrameFlags.Unsynchronized, fieldBytes.length);
+        const data = ByteVector.concatenate(header.render(4), fieldBytes);
+        const file = TestFile.getFile(data);
+
+        // Act
+        const result = Id3v2FrameFactory.createFrameFromFile(file, 0, 4, false);
+
+        // Assert
+        assert.isOk(result);
+
+        assert.strictEqual(result.totalSize, data.length);
+
+        assert.isOk(result.frame);
+        assert.instanceOf<UnknownFrame>((<UnknownFrame>result.frame), UnknownFrame);
+        assert.isTrue(NumberUtils.hasFlag(result.frame.flags, Id3v2FrameFlags.Unsynchronized))
+        Testers.bvEqual((<UnknownFrame>result.frame).data, ByteVector.fromByteArray([0xFF, 0xE0]));
+    }
+
+    @params(3, "v3")
+    @params(4, "v4")
+    public createFrameFromFile_v4ExtendedHeader(version: number) {
+        // Arrange
+        // Note: v2 does not support extended frame header
+        const fieldBytes = ByteVector.fromSize(10);
+        const extendedHeaderBytes = ByteVector.fromByte(0x12);
+        const header = new Id3v2FrameHeader(
+            FrameIdentifiers.RVRB,
+            Id3v2FrameFlags.GroupingIdentity,
+            fieldBytes.length + extendedHeaderBytes.length
+        );
+        const data = ByteVector.concatenate(header.render(version), extendedHeaderBytes, fieldBytes);
+        const file = TestFile.getFile(data);
+
+        // Act
+        const result = Id3v2FrameFactory.createFrameFromFile(file, 0, version, false);
+
+        // Assert
+        assert.isOk(result);
+
+        assert.strictEqual(result.totalSize, data.length);
+
+        assert.isOk(result.frame);
+        assert.instanceOf<UnknownFrame>((<UnknownFrame>result.frame), UnknownFrame);
+        Testers.bvEqual((<UnknownFrame>result.frame).data, fieldBytes);
     }
 
     // #endregion
@@ -764,6 +881,35 @@ import UnknownFrame from "../../src/id3v2/frames/unknownFrame";
     }
 
     @test
+    public createFrameFromTagBytes_customThrows() {
+        // Arrange
+        const fieldBytes = ByteVector.fromByteArray([0x01, 0x02, 0x03]);
+        const header = new Id3v2FrameHeader(FrameIdentifiers.RVRB, Id3v2FrameFlags.None, fieldBytes.length);
+        const data = ByteVector.concatenate(header.render(3), fieldBytes);
+
+        const mockCreator = Mock.ofType<FrameCreator>();
+        mockCreator.setup(c => c(It.isValue<ByteVector>(fieldBytes), It.isValue(0), It.isAny(), It.isValue(3)))
+            .throws(new Error());
+        Id3v2FrameFactory.addFrameCreator(mockCreator.object);
+
+        try {
+            // Act
+            const output = Id3v2FrameFactory.createFrameFromTagBytes(data, 0, 3, false);
+
+            // Assert
+            FrameFactoryTests.validateOutput(output, FrameClassType.UnknownFrame, data.length);
+            mockCreator.verify(
+                (c) => c(It.isValue<ByteVector>(fieldBytes), It.isValue(0), It.isAny(), It.isValue(3)),
+                Times.atLeastOnce()
+            );
+        } finally {
+            // Cleanup
+            // @TODO: Is there a risk of race condition with this test and the previous?
+            Id3v2FrameFactory.clearFrameCreators();
+        }
+    }
+
+    @test
     public createFrameFromTagBytes_customWithMatch() {
         // Arrange
         const frame = PlayCountFrame.fromEmpty();
@@ -831,6 +977,88 @@ import UnknownFrame from "../../src/id3v2/frames/unknownFrame";
             // @TODO: Is there a risk of race condition with this test and the previous?
             Id3v2FrameFactory.clearFrameCreators();
         }
+    }
+
+    @params(2, "v2")
+    @params(3, "v3")
+    @params(4, "v4")
+    public createFrameFromTagBytes_fieldBytesHeaderMismatch(version: number) {
+        // Arrange
+        const fieldBytes = ByteVector.fromSize(10);
+        const header = new Id3v2FrameHeader(FrameIdentifiers.RVRB, Id3v2FrameFlags.None, fieldBytes.length + 5);
+        const data = ByteVector.concatenate(header.render(version), fieldBytes);
+
+        // Act / Assert
+        assert.throws(() => Id3v2FrameFactory.createFrameFromTagBytes(data, 0, version, false));
+    }
+
+    @test
+    public createFrameFromTagBytes_unsyncAtTagLevel() {
+        // Arrange
+        // Note: Tag-level unsynchronization is only available in ID3v2.3
+        const fieldBytes = ByteVector.fromSize(10);
+        const header = new Id3v2FrameHeader(FrameIdentifiers.RVRB, Id3v2FrameFlags.Unsynchronized, fieldBytes.length);
+        const data = ByteVector.concatenate(header.render(3), fieldBytes);
+
+        // Act
+        const result = Id3v2FrameFactory.createFrameFromTagBytes(data, 0, 3, true);
+
+        // Assert
+        assert.isOk(result);
+
+        assert.strictEqual(result.totalSize, data.length);
+
+        assert.isOk(result.frame);
+        assert.isFalse(NumberUtils.hasFlag(result.frame.flags, Id3v2FrameFlags.Unsynchronized));
+    }
+
+    @test
+    public createFrameFromTagBytes_resyncRequired() {
+        // Arrange
+        // Note: Frame-level unsynchronization is only available in ID3v2.4
+        const fieldBytes = ByteVector.fromByteArray([0xFF, 0x00, 0xE0]);
+        const header = new Id3v2FrameHeader(FrameIdentifiers.RVRB, Id3v2FrameFlags.Unsynchronized, fieldBytes.length);
+        const data = ByteVector.concatenate(header.render(4), fieldBytes);
+
+        // Act
+        const result = Id3v2FrameFactory.createFrameFromTagBytes(data, 0, 4, false);
+
+        // Assert
+        assert.isOk(result);
+
+        assert.strictEqual(result.totalSize, data.length);
+
+        assert.isOk(result.frame);
+        assert.instanceOf<UnknownFrame>((<UnknownFrame>result.frame), UnknownFrame);
+        assert.isTrue(NumberUtils.hasFlag(result.frame.flags, Id3v2FrameFlags.Unsynchronized))
+        Testers.bvEqual((<UnknownFrame>result.frame).data, ByteVector.fromByteArray([0xFF, 0xE0]));
+    }
+
+    @params(3, "v3")
+    @params(4, "v4")
+    public createFrameFromTagBytes_v4ExtendedHeader(version: number) {
+        // Arrange
+        // Note: v2 does not support extended frame header
+        const fieldBytes = ByteVector.fromSize(10);
+        const extendedHeaderBytes = ByteVector.fromByte(0x12);
+        const header = new Id3v2FrameHeader(
+            FrameIdentifiers.RVRB,
+            Id3v2FrameFlags.GroupingIdentity,
+            fieldBytes.length + extendedHeaderBytes.length
+        );
+        const data = ByteVector.concatenate(header.render(version), extendedHeaderBytes, fieldBytes);
+
+        // Act
+        const result = Id3v2FrameFactory.createFrameFromTagBytes(data, 0, version, false);
+
+        // Assert
+        assert.isOk(result);
+
+        assert.strictEqual(result.totalSize, data.length);
+
+        assert.isOk(result.frame);
+        assert.instanceOf<UnknownFrame>((<UnknownFrame>result.frame), UnknownFrame);
+        Testers.bvEqual((<UnknownFrame>result.frame).data, fieldBytes);
     }
 
     // #endregion

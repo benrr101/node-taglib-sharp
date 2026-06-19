@@ -70,7 +70,7 @@ const getTestFrame = (): UserTextInformationFrame => {
 
         // Assert
         assert.isOk(frame);
-        assert.strictEqual(frame.description, undefined);
+        assert.strictEqual(frame.description, "");
         assert.strictEqual(frame.frameId, FrameIdentifiers.TXXX);
         assert.deepEqual(frame.text, []);
         assert.strictEqual(frame.textEncoding, StringType.UTF16LE);
@@ -95,7 +95,7 @@ const getTestFrame = (): UserTextInformationFrame => {
         assert.equal(output.frameClassType, FrameClassType.UserTextInformationFrame);
         assert.strictEqual(output.frameId, FrameIdentifiers.TXXX);
 
-        assert.strictEqual(output.description, undefined);
+        assert.strictEqual(output.description, "");
         assert.deepEqual(output.text, ["foo"])
         assert.strictEqual(output.textEncoding, StringType.UTF16BE);
     }
