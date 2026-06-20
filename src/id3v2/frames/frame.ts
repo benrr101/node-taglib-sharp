@@ -1,7 +1,6 @@
 import Id3v2Settings from "../id3v2Settings";
 import SyncData from "../syncData";
 import {ByteVector, StringType} from "../../byteVector";
-import {CorruptFileError, NotImplementedError} from "../../errors";
 import {Id3v2FrameFlags, Id3v2FrameHeader} from "./frameHeader";
 import {FrameIdentifier} from "../frameIdentifiers";
 import {Guards, NumberUtils} from "../../utils";
@@ -148,7 +147,7 @@ export abstract class Frame {
      * If the value includes either {@link Id3v2FrameFlags.Encryption} or
      * {@link Id3v2FrameFlags.Compression}, {@link render} will throw.
      */
-    // @TODO: This shouldn't be necessary, but removing it braks mroe things than I want to fix right now.
+    // @TODO: This shouldn't be necessary, but removing it breaks more things than I want to fix right now.
     public set flags(value: Id3v2FrameFlags) { this._header.flags = value; }
 
     /**
@@ -220,7 +219,6 @@ export abstract class Frame {
             return ByteVector.empty();
         }
         this._header.dataLength = fieldBytes.length;
-
 
         // 2) Render the extended header and process with the body
         // Remove flags that are not supported by older versions of ID3v2

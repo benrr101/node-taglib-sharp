@@ -152,7 +152,8 @@ export class ChannelData {
      * @param value Volume adjustment. Must be between -64 and 64, inclusive.
      */
     public set volumeAdjustment(value: number) {
-        Guards.betweenExclusive(value, -64, 64, "value");
+        Guards.notNan(value, "value");
+        Guards.betweenInclusive(value, -64, 64, "value");
         this._volumeAdjustment = Math.floor(value * 512);
     }
 

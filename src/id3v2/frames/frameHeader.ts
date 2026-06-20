@@ -194,13 +194,16 @@ export class Id3v2FrameHeader {
      * Gets the length of the fields in the frame. This is only updated during rendering.
      * @internal
      */
-    public get dataLength(): number | undefined { return this._dataLength; }
+    public get dataLength(): number|undefined { return this._dataLength; }
     /**
      * Sets the length of the fields in the frame (the payload, without the extended header bytes).
      * This is only intended to be updated during rendering.
      * @internal
      */
-    public set dataLength(value: number) { this._dataLength = value; }
+    public set dataLength(value: number|undefined) {
+        Guards.safeUintOptional(value, "value");
+        this._dataLength = value;
+    }
 
     /**
      * Gets the encryption ID applied to the current instance.
@@ -208,7 +211,7 @@ export class Id3v2FrameHeader {
      *     Value containing the encryption identifier for the current instance or
      *     `undefined` if not set.
      */
-    public get encryptionId(): number | undefined {
+    public get encryptionId(): number|undefined {
         return NumberUtils.hasFlag(this.flags, Id3v2FrameFlags.Encryption)
             ? this._encryptionId
             : undefined;
@@ -218,8 +221,8 @@ export class Id3v2FrameHeader {
      * @param value Value containing the encryption identifier for the current instance. Must be an
      *     8-bit unsigned integer. Setting to `undefined` will remove the encryption header and ID
      */
-    public set encryptionId(value: number | undefined) {
-        Guards.optionalByte(value, "value");
+    public set encryptionId(value: number|undefined) {
+        Guards.byteOptional(value, "value");
         this._encryptionId = value;
         if (value !== undefined) {
             throw new NotImplementedError("Encryption and compression are not supported");
@@ -252,7 +255,7 @@ export class Id3v2FrameHeader {
      * Must be a positive, safe integer.
      */
     public set frameSize(value: number) {
-        Guards.uint(value, "value");
+        Guards.safeUint(value, "value");
         this._frameSize = value;
     }
 
@@ -273,7 +276,7 @@ export class Id3v2FrameHeader {
      *     Setting to `undefined` will remove the grouping identity header and ID
      */
     public set groupId(value: number | undefined) {
-        Guards.optionalByte(value, "value");
+        Guards.byteOptional(value, "value");
         this._groupId = value;
         if (value !== undefined) {
             this._flags |= Id3v2FrameFlags.GroupingIdentity;
@@ -349,6 +352,17 @@ export class Id3v2FrameHeader {
                 }
                 break;
         }
+    }
+
+    public clone(identifier?: FrameIdentifier): Id3v2FrameHeader {
+        const clone = new Id3v2FrameHeader(identifier ?? this.frameId);
+        clone._dataLength = this._dataLength;
+        clone._encryptionId = this._encryptionId;
+        clone._frameSize = this._frameSize;
+        clone._flags = this._flags;
+        clone._groupId = this._groupId;
+
+        return clone;
     }
 
     /**

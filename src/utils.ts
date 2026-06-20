@@ -30,6 +30,11 @@ export class Guards {
         }
     }
 
+    public static byteOptional(value: number|undefined, name: string): void {
+        if (value === undefined) { return; }
+        Guards.byte(value, name);
+    }
+
     public static greaterThanInclusive(value: number, lowerBound: number, name: string): void {
         if (value < lowerBound) {
             throw new Error(`Argument out of range: ${name} must greater than ${lowerBound}`);
@@ -60,17 +65,16 @@ export class Guards {
         }
     }
 
+    public static notNan(value: number, name: string): void {
+        if (Number.isNaN(value)) {
+            throw new Error(`Argument out of range: ${name} must not be NaN`);
+        }
+    }
+
     public static notNullOrUndefined(value: unknown, name: string): void {
         if (value === undefined || value === null) {
             throw new Error(`Argument null: ${name} was not provided`);
         }
-    }
-
-    public static optionalByte(value: number | undefined, name: string): void {
-        if (value === undefined) {
-            return;
-        }
-        Guards.byte(value, name);
     }
 
     /**
@@ -95,6 +99,17 @@ export class Guards {
         if (!Number.isSafeInteger(value) || value < 0) {
             throw new Error(`Argument out of range ${name} must be a safe, positive JS integer`);
         }
+    }
+
+    /**
+     * Throws if the provided value is not a safe, positive integer or undefined. Use this method
+     * instead of {@link Guards.uint()} if validating an argument for use in file manipulation.
+     * @param value Value to validate
+     * @param name Name of the parameter in calling function
+     */
+    public static safeUintOptional(value: number|undefined, name: string): void {
+        if (value === undefined) { return; }
+        Guards.safeUint(value, name);
     }
 
     public static short(value: number, name: string): void {
