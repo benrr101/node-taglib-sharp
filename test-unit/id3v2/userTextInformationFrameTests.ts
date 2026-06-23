@@ -88,7 +88,7 @@ const getTestFrame = (): UserTextInformationFrame => {
         const header = new Id3v2FrameHeader(FrameIdentifiers.TXXX, Id3v2FrameFlags.None, fieldBytes.length);
 
         // Act
-        const output = UserTextInformationFrame.fromFieldBytes(header, fieldBytes, 4);
+        const output = UserTextInformationFrame.fromFieldBytes(header, fieldBytes, version);
 
         // Assert
         assert.isOk(output);
@@ -116,7 +116,7 @@ const getTestFrame = (): UserTextInformationFrame => {
         const header = new Id3v2FrameHeader(FrameIdentifiers.TXXX, Id3v2FrameFlags.None, fieldBytes.length);
 
         // Act
-        const output = UserTextInformationFrame.fromFieldBytes(header, fieldBytes, 4);
+        const output = UserTextInformationFrame.fromFieldBytes(header, fieldBytes, version);
 
         // Assert
         assert.isOk(output);

@@ -55,7 +55,7 @@ export default class Id3v2ExtendedHeader {
         const sizeData = file.readBlock(4);
         if (sizeData.length < 4) {
             throw new CorruptFileError(
-                `File does not contain enough bytes for ID3v2 extended header as position ${position}.`
+                `File does not contain enough bytes for ID3v2 extended header at position ${position}.`
             );
         }
 

@@ -43,7 +43,7 @@ export default class MusicCdIdentifierFrame extends Frame {
         Guards.byte(version, "version");
 
         const frame = new MusicCdIdentifierFrame(header);
-        frame._data = fieldBytes;
+        frame._data = fieldBytes.toByteVector();
         return frame;
     }
 

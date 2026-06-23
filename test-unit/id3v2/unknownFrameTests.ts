@@ -95,8 +95,7 @@ import {Testers} from "../utilities/testers";
         assert.ok(result);
         assert.strictEqual(result.frameClassType, FrameClassType.UnknownFrame);
         assert.strictEqual(result.frameId, FrameIdentifiers.WXXX);
-
-        Testers.bvEqual(result.data, result.data);
+        Testers.bvEqual(result.data, fieldBytes);
     }
 
     @params(2, "v2")

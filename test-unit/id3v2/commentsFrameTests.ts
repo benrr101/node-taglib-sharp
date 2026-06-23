@@ -535,7 +535,7 @@ const getTestFrame = (): CommentsFrame => {
     @test
     public render_commentsOnly() {
         // Arrange
-        const frame = CommentsFrame.fromDescription(undefined, "eng", StringType.Latin1);
+        const frame = CommentsFrame.fromDescription("", "eng", StringType.Latin1);
         frame.text = "foo";
 
         // Act

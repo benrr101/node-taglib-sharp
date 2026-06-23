@@ -573,7 +573,7 @@ const getTestUnsynchronizedLyricsFrame = (): UnsynchronizedLyricsFrame => {
     @test
     public render_lyricsOnly() {
         // Arrange
-        const frame = UnsynchronizedLyricsFrame.fromData(undefined, "eng", StringType.Latin1);
+        const frame = UnsynchronizedLyricsFrame.fromData("", "eng", StringType.Latin1);
         frame.text = "foo";
 
         // Act

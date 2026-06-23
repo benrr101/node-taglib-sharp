@@ -24,7 +24,7 @@ export default class UnknownFrame extends Frame {
         Guards.byte(version, "version");
 
         const frame = new UnknownFrame(header);
-        frame.data = fieldBytes;
+        frame.data = fieldBytes.toByteVector();
         return frame;
     }
 
