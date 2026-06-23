@@ -213,16 +213,16 @@ import {NumberUtils} from "../../src/utils";
 
         // Act / Assert
         assert.isUndefined(header.groupId);
-        assert.isFalse(NumberUtils.hasFlag(header.groupId, Id3v2FrameFlags.GroupingIdentity));
+        assert.isFalse(NumberUtils.hasFlag(header.flags, Id3v2FrameFlags.GroupingIdentity));
 
         PropertyTests.propertyRoundTrip(set, get, 123);
-        assert.isTrue(NumberUtils.hasFlag(header.groupId, Id3v2FrameFlags.GroupingIdentity));
+        assert.isTrue(NumberUtils.hasFlag(header.flags, Id3v2FrameFlags.GroupingIdentity));
 
         PropertyTests.propertyRoundTrip(set, get, undefined);
-        assert.isFalse(NumberUtils.hasFlag(header.groupId, Id3v2FrameFlags.GroupingIdentity));
+        assert.isFalse(NumberUtils.hasFlag(header.flags, Id3v2FrameFlags.GroupingIdentity));
 
         PropertyTests.propertyRoundTrip(set, get, 234);
-        assert.isTrue(NumberUtils.hasFlag(header.groupId, Id3v2FrameFlags.GroupingIdentity));
+        assert.isTrue(NumberUtils.hasFlag(header.flags, Id3v2FrameFlags.GroupingIdentity));
     }
 
     @params(true, "true")

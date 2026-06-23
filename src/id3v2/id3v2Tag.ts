@@ -1424,6 +1424,7 @@ export default class Id3v2Tag extends Tag {
         // 1) Resynchronize the entire tag if required
         if (fullTagUnsync) {
             // Full tag needs to be resynchronized. No point in trying to lazy load anything...
+            file.seek(offset);
             let data = file.readBlock(this._header.tagSize);
             data = SyncData.resyncByteVector(data);
 

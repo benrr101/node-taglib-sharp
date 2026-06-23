@@ -47,12 +47,18 @@ export default class Id3v2ExtendedHeader {
         Guards.safeUint(position, "position");
         Guards.byte(version, "version");
 
-        file.seek(position);
-
         const header = new Id3v2ExtendedHeader();
 
         // Read extended header size
+        file.seek(position);
+
         const sizeData = file.readBlock(4);
+        if (sizeData.length < 4) {
+            throw new CorruptFileError(
+                `File does not contain enough bytes for ID3v2 extended header as position ${position}.`
+            );
+        }
+
         const declaredSize = version === 3
             ? sizeData.toUint()
             : SyncData.toUint(sizeData);
