@@ -149,11 +149,11 @@ export class ChannelData {
     /**
      * Volume adjustment of the track in dB. This value is expressed as a fixed-precision value
      * betweenInclusive -64 and 64. Don't worry about the math, we'll do it for you.
-     * @param value Volume adjustment. Must be between -64 and 64, inclusive.
+     * @param value Volume adjustment. Must be between -64 and 64, exclusive.
      */
     public set volumeAdjustment(value: number) {
         Guards.notNan(value, "value");
-        Guards.betweenInclusive(value, -64, 64, "value");
+        Guards.betweenExclusive(value, -64, 64, "value");
         this._volumeAdjustment = Math.floor(value * 512);
     }
 

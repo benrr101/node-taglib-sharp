@@ -85,8 +85,8 @@ import {Testers} from "../utilities/testers";
 
         // Act / Assert
         assert.throws(() => { channel.volumeAdjustment = NaN; });
-        assert.throws(() => { channel.volumeAdjustment = -64.1; });
-        assert.throws(() => { channel.volumeAdjustment = 64.1; });
+        assert.throws(() => { channel.volumeAdjustment = -64; });
+        assert.throws(() => { channel.volumeAdjustment = 64; });
     }
 
     @test
