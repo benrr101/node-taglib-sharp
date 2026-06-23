@@ -57,6 +57,24 @@ const getTestUnsynchronizedLyricsFrame = (): UnsynchronizedLyricsFrame => {
     @params(2, "v2")
     @params(3, "v3")
     @params(4, "v4")
+    public fromFieldBytes_requitedBytesOnly(version: number) {
+        // Arrange
+        const fieldBytes = ByteVector.concatenate(
+            StringType.Latin1,                                    // Encoding
+            ByteVector.fromString("eng", StringType.Latin1),      // Language
+        );
+        const header = new Id3v2FrameHeader(FrameIdentifiers.USLT, Id3v2FrameFlags.None, fieldBytes.length);
+
+        // Act
+        const frame = UnsynchronizedLyricsFrame.fromFieldBytes(header, fieldBytes, version);
+
+        // Assert
+        Id3v2_UnsynchronizedLyricsFrame_ConstructorTests.assertFrame(frame, "", "eng", "", StringType.Latin1);
+    }
+
+    @params(2, "v2")
+    @params(3, "v3")
+    @params(4, "v4")
     public fromFieldBytes_descriptionOnly(version: number) {
         // Arrange
         const fieldBytes = ByteVector.concatenate(

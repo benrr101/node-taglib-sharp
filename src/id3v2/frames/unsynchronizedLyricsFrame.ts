@@ -69,9 +69,13 @@ export default class UnsynchronizedLyricsFrame extends Frame {
         frame._language = fieldBytes.subarray(1, 3).toString(StringType.Latin1);
 
         const split = fieldBytes.subarray(4).toStrings(frame._textEncoding, 2);
-        if (split.length === 1) {
+        if (split.length === 0) {
+            // Ill-formed frame. Assume description and lyrics are empty
+            frame._description = "";
+            frame._text = "";
+        } else if (split.length === 1) {
             // Ill-formed frame. Assume it lacks a description
-            frame._description = undefined;
+            frame._description = "";
             frame._text = split[0];
         } else {
             // Well-formed frame.

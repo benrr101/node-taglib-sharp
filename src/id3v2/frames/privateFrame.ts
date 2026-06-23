@@ -42,7 +42,7 @@ export default class PrivateFrame extends Frame {
         const frame = new PrivateFrame(header);
 
         const fields = fieldBytes.split(ByteVector.getTextDelimiter(StringType.Latin1), 1, 2);
-        frame._owner = fields[0].toString(StringType.Latin1)
+        frame._owner = fields[0].toString(StringType.Latin1);
         frame._privateData = fields[1]?.toByteVector() ?? ByteVector.empty();
 
         return frame;

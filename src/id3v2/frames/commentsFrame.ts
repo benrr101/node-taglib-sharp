@@ -70,9 +70,13 @@ export default class CommentsFrame extends Frame {
 
         // @TODO: Should we worry about trimming null stuff (applies to all frames with this format)
         const split = fieldBytes.subarray(4).toStrings(frame._textEncoding);
-        if (split.length === 1) {
+        if (split.length === 0) {
+            // Ill-formed frame, assume empty string for both
+            frame._description = "";
+            frame._text = "";
+        } else if (split.length === 1) {
             // Ill-formed frame, assume no description.
-            frame._description = undefined;
+            frame._description = "";
             frame._text = split[0];
         } else {
             // Well-formed frame.
