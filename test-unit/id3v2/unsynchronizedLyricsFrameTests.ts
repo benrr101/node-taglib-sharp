@@ -57,7 +57,7 @@ const getTestUnsynchronizedLyricsFrame = (): UnsynchronizedLyricsFrame => {
     @params(2, "v2")
     @params(3, "v3")
     @params(4, "v4")
-    public fromFieldBytes_requitedBytesOnly(version: number) {
+    public fromFieldBytes_requiredBytesOnly(version: number) {
         // Arrange
         const fieldBytes = ByteVector.concatenate(
             StringType.Latin1,                                    // Encoding

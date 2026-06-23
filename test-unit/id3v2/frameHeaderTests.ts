@@ -254,71 +254,6 @@ import {NumberUtils} from "../../src/utils";
         assert.strictEqual(result, size);
     }
 
-    @params(1, "1")
-    @params(5, "5")
-    public getExtendedSize_invalid(version: number) {
-        // Arrange
-        const header = new Id3v2FrameHeader(FrameIdentifiers.APIC);
-
-        // Act / Assert
-        assert.throws(() => header.getExtendedSize(version));
-    }
-
-    @test
-    public getExtendedSize_v2() {
-        // Arrange
-        const header = new Id3v2FrameHeader(FrameIdentifiers.APIC);
-        header.flags = 0xFFFF;
-
-        // Act
-        const result = header.getExtendedSize(2);
-
-        // Assert
-        assert.strictEqual(result, 0);
-    }
-
-    @params([Id3v2FrameFlags.None,                                                                    0], "None")
-    @params([Id3v2FrameFlags.Compression,                                                             4], "__C")
-    @params([Id3v2FrameFlags.Encryption,                                                              1], "_E_")
-    @params([Id3v2FrameFlags.Encryption|Id3v2FrameFlags.Compression,                                  5], "_EC")
-    @params([Id3v2FrameFlags.GroupingIdentity,                                                        1], "G__")
-    @params([Id3v2FrameFlags.GroupingIdentity|Id3v2FrameFlags.Compression,                            5], "G_C")
-    @params([Id3v2FrameFlags.GroupingIdentity|Id3v2FrameFlags.Encryption,                             2], "GE_")
-    @params([Id3v2FrameFlags.GroupingIdentity|Id3v2FrameFlags.Encryption|Id3v2FrameFlags.Compression, 6], "GEC")
-    @params([0xFFFF, 6], "All")
-    public getExtendedSize_v3([flags, size]: [Id3v2FrameFlags, number]) {
-        // Arrange
-        const header = new Id3v2FrameHeader(FrameIdentifiers.APIC);
-        header.flags = flags;
-
-        // Act
-        const result = header.getExtendedSize(3);
-
-        // Assert
-        assert.strictEqual(result, size);
-    }
-
-    @params([Id3v2FrameFlags.None,                                                                           0], "None")
-    @params([Id3v2FrameFlags.GroupingIdentity,                                                                1], "__G")
-    @params([Id3v2FrameFlags.Encryption,                                                                      1], "_E_")
-    @params([Id3v2FrameFlags.Encryption|Id3v2FrameFlags.GroupingIdentity,                                     2], "_EG")
-    @params([Id3v2FrameFlags.DataLengthIndicator,                                                             4], "D__")
-    @params([Id3v2FrameFlags.DataLengthIndicator|Id3v2FrameFlags.GroupingIdentity,                            5], "D_G")
-    @params([Id3v2FrameFlags.DataLengthIndicator|Id3v2FrameFlags.Encryption,                                  5], "DE_")
-    @params([Id3v2FrameFlags.DataLengthIndicator|Id3v2FrameFlags.Encryption|Id3v2FrameFlags.GroupingIdentity, 6], "GEC")
-    @params([0xFFFF, 6], "All")
-    public getExtendedSize_v4([flags, size]: [Id3v2FrameFlags, number]) {
-        // Arrange
-        const header = new Id3v2FrameHeader(FrameIdentifiers.APIC);
-        header.flags = flags;
-
-        // Act
-        const result = header.getExtendedSize(4);
-
-        // Assert
-        assert.strictEqual(result, size);
-    }
-
     @test
     public clone_withoutIdentifier() {
         // Arrange
@@ -342,15 +277,16 @@ import {NumberUtils} from "../../src/utils";
 
     @params(0x0000, "none")
     @params(0xFFFF, "all")
-    public readExtendedHeader_v2(flags: Id3v2FrameFlags) {
+    public readExtendedHeaderFromPayloadBytes_v2(flags: Id3v2FrameFlags) {
         // Arrange
         const header = new Id3v2FrameHeader(FrameIdentifiers.APIC);
         header.flags = flags;
 
         // Act
-        header.readExtendedHeader(ByteVector.fromSize(10), 2);
+        const result = header.readExtendedHeaderFromPayloadBytes(ByteVector.fromSize(10), 2);
 
         // Assert
+        assert.strictEqual(result, 0);
         assert.isUndefined(header.dataLength);
         assert.isUndefined(header.encryptionId);
         assert.isUndefined(header.groupId);
@@ -358,43 +294,43 @@ import {NumberUtils} from "../../src/utils";
 
     @params([
         Id3v2FrameFlags.None,
-        undefined, undefined, undefined
+        0, undefined, undefined, undefined
     ], "None")
     @params([
         Id3v2FrameFlags.Compression,
-        0x01020304, undefined, undefined
+        4, 0x01020304, undefined, undefined
     ], "__C")
     @params([
         Id3v2FrameFlags.Encryption,
-        undefined, 0x01, undefined
+        1, undefined, 0x01, undefined
     ], "_E_")
     @params([
         Id3v2FrameFlags.Encryption|Id3v2FrameFlags.Compression,
-        0x01020304, 0x05, undefined
+        5, 0x01020304, 0x05, undefined
     ], "_EC")
     @params([
         Id3v2FrameFlags.GroupingIdentity,
-        undefined, undefined, 0x01
+        1, undefined, undefined, 0x01
     ], "G__")
     @params([
         Id3v2FrameFlags.GroupingIdentity|Id3v2FrameFlags.Compression,
-        0x01020304, undefined, 0x05
+        5, 0x01020304, undefined, 0x05
     ], "G_C")
     @params([
         Id3v2FrameFlags.GroupingIdentity|Id3v2FrameFlags.Encryption,
-        undefined, 0x01, 0x02
+        2, undefined, 0x01, 0x02
     ], "GE_")
     @params([
         Id3v2FrameFlags.GroupingIdentity|Id3v2FrameFlags.Encryption|Id3v2FrameFlags.Compression,
-        0x01020304, 0x05, 0x06
+        6, 0x01020304, 0x05, 0x06
     ], "GEC")
     @params([
         0xFFFF,
-        0x01020304, 0x05, 0x06
+        6, 0x01020304, 0x05, 0x06
     ], "All")
-    public readExtendedHeader_v3(
-        [flags, dataLength, encryptionId, groupId]:
-            [Id3v2FrameFlags, number|undefined, number|undefined, number|undefined]
+    public readExtendedHeaderFromPayloadBytes_v3(
+        [flags, length, dataLength, encryptionId, groupId]:
+            [Id3v2FrameFlags, number, number|undefined, number|undefined, number|undefined]
     ) {
         // Arrange
         const header = new Id3v2FrameHeader(FrameIdentifiers.APIC);
@@ -403,9 +339,10 @@ import {NumberUtils} from "../../src/utils";
         const extendedBytes = ByteVector.fromByteArray([0x01, 0x02, 0x03, 0x04, 0x05, 0x06]);
 
         // Act
-        header.readExtendedHeader(extendedBytes, 3);
+        const result = header.readExtendedHeaderFromPayloadBytes(extendedBytes, 3);
 
         // Assert
+        assert.strictEqual(result, length);
         assert.strictEqual(header.dataLength, dataLength);
         assert.strictEqual(header.encryptionId, encryptionId);
         assert.strictEqual(header.groupId, groupId);
@@ -413,43 +350,43 @@ import {NumberUtils} from "../../src/utils";
 
     @params([
         Id3v2FrameFlags.None,
-        undefined, undefined, undefined
+        0, undefined, undefined, undefined
     ], "None")
     @params([
         Id3v2FrameFlags.GroupingIdentity,
-        0x01, undefined, undefined
+        1, 0x01, undefined, undefined
     ], "__G")
     @params([
         Id3v2FrameFlags.Encryption,
-        undefined, 0x01, undefined
+        1, undefined, 0x01, undefined
     ], "_E_")
     @params([
         Id3v2FrameFlags.Encryption|Id3v2FrameFlags.GroupingIdentity,
-        0x01, 0x02, undefined
+        2, 0x01, 0x02, undefined
     ], "_EG")
     @params([
         Id3v2FrameFlags.DataLengthIndicator,
-        undefined, undefined, 0x01020304
+        4, undefined, undefined, 0x01020304
     ], "D__")
     @params([
         Id3v2FrameFlags.DataLengthIndicator|Id3v2FrameFlags.GroupingIdentity,
-        0x01, undefined, 0x02030405
+        5, 0x01, undefined, 0x02030405
     ], "D_G")
     @params([
         Id3v2FrameFlags.DataLengthIndicator|Id3v2FrameFlags.Encryption,
-        undefined, 0x01, 0x02030405
+        5, undefined, 0x01, 0x02030405
     ], "DE_")
     @params([
         Id3v2FrameFlags.DataLengthIndicator|Id3v2FrameFlags.Encryption|Id3v2FrameFlags.GroupingIdentity,
-        0x01, 0x02, 0x03040506
+        6, 0x01, 0x02, 0x03040506
     ], "GEC")
     @params([
         0xFFFF,
-        0x01, 0x02, 0x03040506
+        6, 0x01, 0x02, 0x03040506
     ], "All")
-    public readExtendedHeader_v4(
-        [flags, groupId, encryptionId, dataLength]:
-            [Id3v2FrameFlags, number|undefined, number|undefined, number|undefined]) {
+    public readExtendedHeaderFromPayloadBytes_v4(
+        [flags, length, groupId, encryptionId, dataLength]:
+            [Id3v2FrameFlags, number, number|undefined, number|undefined, number|undefined]) {
         // Arrange
         const header = new Id3v2FrameHeader(FrameIdentifiers.APIC);
         header.flags = flags;
@@ -457,9 +394,10 @@ import {NumberUtils} from "../../src/utils";
         const extendedBytes = ByteVector.fromByteArray([0x01, 0x02, 0x03, 0x04, 0x05, 0x06]);
 
         // Act
-        header.readExtendedHeader(extendedBytes, 4);
+        const result = header.readExtendedHeaderFromPayloadBytes(extendedBytes, 4);
 
         // Assert
+        assert.strictEqual(result, length);
         assert.strictEqual(header.dataLength, dataLength);
         assert.strictEqual(header.encryptionId, encryptionId);
         assert.strictEqual(header.groupId, groupId);

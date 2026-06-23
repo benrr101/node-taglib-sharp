@@ -223,10 +223,10 @@ export class Id3v2FrameHeader {
      */
     public set encryptionId(value: number|undefined) {
         Guards.byteOptional(value, "value");
-        this._encryptionId = value;
         if (value !== undefined) {
             throw new NotImplementedError("Encryption and compression are not supported");
         } else {
+            this._encryptionId = value;
             this._flags &= ~Id3v2FrameFlags.Encryption;
         }
     }
@@ -302,56 +302,55 @@ export class Id3v2FrameHeader {
         return version < 3 ? 6 : 10;
     }
 
-    public getExtendedSize(version: number): number {
-        switch (version) {
-            case 2:
-                return 0;
-            case 3:
-                return (NumberUtils.hasFlag(this._flags, Id3v2FrameFlags.Compression) ? 4 : 0) +
-                       (NumberUtils.hasFlag(this._flags, Id3v2FrameFlags.Encryption) ? 1 : 0) +
-                       (NumberUtils.hasFlag(this._flags, Id3v2FrameFlags.GroupingIdentity) ? 1 : 0);
-            case 4:
-                return (NumberUtils.hasFlag(this._flags, Id3v2FrameFlags.GroupingIdentity) ? 1 : 0) +
-                       (NumberUtils.hasFlag(this._flags, Id3v2FrameFlags.Encryption) ? 1 : 0) +
-                       (NumberUtils.hasFlag(this._flags, Id3v2FrameFlags.DataLengthIndicator) ? 4: 0);
-            default:
-                throw new Error(`Argument out of range: version must be a valid ID3v2 version.`);
+    /**
+     * Reads any extended header fields from the frame's payload bytes. Fields to read are
+     * determined by the flags initially read for the freame header.
+     * @param payloadBytes Frame's payload from which the extended header bytes will be read. These
+     *     bytes must be resynchronized if the frame was marked as unsynchronized.
+     * @param version ID3v2 version. Must be a byte.
+     * @returns number Number of bytes for the extended frame header fields.
+     */
+    public readExtendedHeaderFromPayloadBytes(payloadBytes: ByteVector, version: number): number {
+        Guards.truthy(payloadBytes, "payloadBytes");
+        Guards.byte(version, "version");
 
-        }
-    }
-
-    public readExtendedHeader(extendedHeaderBytes: ByteVector, version: number): void {
         let position = 0;
         switch (version) {
             case 2:
                 break;
             case 3:
                 if (NumberUtils.hasFlag(this._flags, Id3v2FrameFlags.Compression)) {
-                    this._dataLength = extendedHeaderBytes.subarray(position, 4).toUint();
+                    this._dataLength = this.getFieldBytes(payloadBytes, position, 4).toUint();
                     position += 4;
                 }
                 if (NumberUtils.hasFlag(this._flags, Id3v2FrameFlags.Encryption)) {
-                    this._encryptionId = extendedHeaderBytes.get(position);
+                    this._encryptionId = this.getFieldBytes(payloadBytes, position, 1).get(0);
                     position++;
                 }
                 if (NumberUtils.hasFlag(this._flags, Id3v2FrameFlags.GroupingIdentity)) {
-                    this._groupId = extendedHeaderBytes.get(position);
+                    this._groupId = this.getFieldBytes(payloadBytes, position, 1).get(0);
+                    position++
                 }
                 break;
             case 4:
                 if (NumberUtils.hasFlag(this._flags, Id3v2FrameFlags.GroupingIdentity)) {
-                    this._groupId = extendedHeaderBytes.get(position);
+                    this._groupId = this.getFieldBytes(payloadBytes, position, 1).get(0);
                     position++;
                 }
                 if (NumberUtils.hasFlag(this._flags, Id3v2FrameFlags.Encryption)) {
-                    this._encryptionId = extendedHeaderBytes.get(position);
+                    this._encryptionId = this.getFieldBytes(payloadBytes, position, 1).get(0);
                     position++;
                 }
                 if (NumberUtils.hasFlag(this._flags, Id3v2FrameFlags.DataLengthIndicator)) {
-                    this._dataLength = extendedHeaderBytes.subarray(position, 4).toUint();
+                    this._dataLength = this.getFieldBytes(payloadBytes, position, 4).toUint();
+                    position += 4;
                 }
                 break;
+            default:
+                throw new Error("Argument error: version must be a valid ID3v2 version.");
         }
+
+        return position;
     }
 
     public clone(identifier?: FrameIdentifier): Id3v2FrameHeader {
@@ -435,4 +434,15 @@ export class Id3v2FrameHeader {
     }
 
     // #endregion
+
+    private getFieldBytes(payloadBytes: ByteVector, position: number, length: number): ByteVector {
+        const fieldBytes = payloadBytes.subarray(position, length);
+        if (fieldBytes.length < length) {
+            throw new CorruptFileError(
+                "ID3v2 frame extended header does not contain enough bytes for fields set by flags"
+            );
+        }
+
+        return fieldBytes;
+    }
 }

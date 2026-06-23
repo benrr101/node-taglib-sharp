@@ -77,17 +77,21 @@ const testOwner = "https://github.com/benrr101/node-taglib-sharp";
     @params(2, "v2")
     @params(3, "v3")
     @params(4, "v4")
-    public fromFieldBytes_threeFields_throws(version: number) {
+    public fromFieldBytes_threeFields(version: number) {
         // Arrange
         const fieldBytes = ByteVector.concatenate(
-            testIdentifier, 0x00,
-            testIdentifier, 0x00,
-            testIdentifier
+            ByteVector.fromString(testOwner, StringType.Latin1), // Owner
+            ByteVector.getTextDelimiter(StringType.Latin1),      // Delimiter
+            testIdentifier, 0x00, testIdentifier                 // Identifier
         );
         const header = new Id3v2FrameHeader(FrameIdentifiers.UFID, Id3v2FrameFlags.None, fieldBytes.length);
 
-        // Act / Assert
-        assert.throws(() => UniqueFileIdentifierFrame.fromFieldBytes(header, fieldBytes, version));
+        // Act
+        const frame = UniqueFileIdentifierFrame.fromFieldBytes(header, fieldBytes, version);
+
+        // Assert
+        const expectedData = ByteVector.concatenate(testIdentifier, 0x00, testIdentifier);
+        Id3v2_UniqueFileIdentifierFrame_ConstructorTests.assertFrame(frame, testOwner, expectedData);
     }
 
     @params(2, "v2")

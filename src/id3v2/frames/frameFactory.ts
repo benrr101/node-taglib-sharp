@@ -194,15 +194,15 @@ export class Id3v2FrameFactory {
 
     private static createFrameFromFieldBytes(
         header: Id3v2FrameHeader,
-        fieldBytes: ByteVector,
+        payloadBytes: ByteVector,
         version: number,
         unsynchedAtTagLevel: boolean
     ): Frame {
         // Make sure we got the same number of bytes as the frame says
-        if (fieldBytes.length < header.frameSize) {
+        if (payloadBytes.length < header.frameSize) {
             throw new CorruptFileError(
                 `ID3v2 frame header specified body is ${header.frameSize} bytes, ` +
-                `but only ${fieldBytes.length} remain in data.`
+                `but only ${payloadBytes.length} remain.`
             );
         }
 
@@ -214,15 +214,12 @@ export class Id3v2FrameFactory {
 
         // 1) Unsynchronize if necessary
         if (header.isUnsynchronizationApplied) {
-            fieldBytes = SyncData.resyncByteVector(fieldBytes);
+            payloadBytes = SyncData.resyncByteVector(payloadBytes);
         }
 
         // 2) Read extended header fields if they exist
-        const extendedHeaderSize = header.getExtendedSize(version);
-        if (extendedHeaderSize > 0) {
-            header.readExtendedHeader(fieldBytes.subarray(0, extendedHeaderSize), version);
-            fieldBytes = fieldBytes.subarray(extendedHeaderSize);
-        }
+        const extendedHeaderSize = header.readExtendedHeaderFromPayloadBytes(payloadBytes, version);
+        const fieldBytes = payloadBytes.subarray(extendedHeaderSize);
 
         // 3) Construct the frame
         // 3.1) Try with a custom constructor

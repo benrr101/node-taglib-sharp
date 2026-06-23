@@ -54,14 +54,15 @@ export default class UniqueFileIdentifierFrame extends Frame {
         // Owner identifier        <text string> $00
         // Identifier              <up to 64 bytes binary data>
 
-        const fields = fieldBytes.split(ByteVector.getTextDelimiter(StringType.Latin1));
-        if (fields.length !== 2) {
+        const delim = ByteVector.getTextDelimiter(StringType.Latin1);
+        const identifierDelimiterOffset = fieldBytes.find(delim);
+        if (identifierDelimiterOffset < 0) {
             throw new CorruptFileError("Unique file identifier frame must contain two fields, separated by 0x00");
         }
 
         const frame = new UniqueFileIdentifierFrame(header);
-        frame._owner = fields[0].toString(StringType.Latin1);
-        frame._identifier = fields[1].toByteVector();
+        frame._owner = fieldBytes.subarray(0, identifierDelimiterOffset).toString(StringType.Latin1);
+        frame._identifier = fieldBytes.subarray(identifierDelimiterOffset + delim.length).toByteVector();
 
         return frame;
     }
