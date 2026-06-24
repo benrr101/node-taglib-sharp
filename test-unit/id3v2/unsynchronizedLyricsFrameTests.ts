@@ -45,13 +45,13 @@ const getTestUnsynchronizedLyricsFrame = (): UnsynchronizedLyricsFrame => {
     @params(2, "v2")
     @params(3, "v3")
     @params(4, "v4")
-    public fromFieldBytes_tooFewBytes_throws() {
+    public fromFieldBytes_tooFewBytes_throws(version: number) {
         // Arrange
         const fieldBytes = ByteVector.fromByte(StringType.Latin1);
         const header = new Id3v2FrameHeader(FrameIdentifiers.USLT, Id3v2FrameFlags.None, fieldBytes.length);
 
         // Act/Assert
-        assert.throws(() => { UnsynchronizedLyricsFrame.fromFieldBytes(header, fieldBytes, 4); });
+        assert.throws(() => { UnsynchronizedLyricsFrame.fromFieldBytes(header, fieldBytes, version); });
     }
 
     @params(2, "v2")
@@ -134,7 +134,7 @@ const getTestUnsynchronizedLyricsFrame = (): UnsynchronizedLyricsFrame => {
 
     @params(StringType.Latin1, "single_byte_encoding")
     @params(StringType.UTF16BE, "multi_byte_encoding")
-    public fromFieldData_encodingTest(encoding: StringType) {
+    public fromFieldBytes_encodingTest(encoding: StringType) {
         // Arrange
         const fieldBytes = ByteVector.concatenate(
             encoding,                                        // Encoding

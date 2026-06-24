@@ -329,7 +329,7 @@ export class Id3v2FrameHeader {
                 }
                 if (NumberUtils.hasFlag(this._flags, Id3v2FrameFlags.GroupingIdentity)) {
                     this._groupId = this.getFieldBytes(payloadBytes, position, 1).get(0);
-                    position++
+                    position++;
                 }
                 break;
             case 4:

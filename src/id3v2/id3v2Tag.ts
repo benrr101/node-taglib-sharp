@@ -1483,7 +1483,7 @@ export default class Id3v2Tag extends Tag {
         // 1) Check for extended header
         if (NumberUtils.hasFlag(this._header.flags, Id3v2TagHeaderFlags.ExtendedHeader)) {
             // Extended header exists, read it and skip over it
-            this._extendedHeader = Id3v2ExtendedHeader.fromData(data, this.version)
+            this._extendedHeader = Id3v2ExtendedHeader.fromData(data, this.version);
             position += this._extendedHeader.size;
         }
 

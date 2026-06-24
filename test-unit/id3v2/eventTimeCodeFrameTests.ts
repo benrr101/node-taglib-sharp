@@ -267,11 +267,10 @@ import {EventType, TimestampFormat} from "../../src/id3v2/utilTypes";
         Testers.bvEqual(output, expected);
     }
 
-    // @params(2, "v2")
-    // @params(3, "v3")
-    // @params(4, "v4")
-    @test
-    public render_withEvents(version: number = 3) {
+    @params(2, "v2")
+    @params(3, "v3")
+    @params(4, "v4")
+    public render_withEvents(version: number) {
         // Arrange
         const event1 = new EventTimeCode(EventType.Profanity, 123);
         const event2 = new EventTimeCode(EventType.KeyChange, 456);
