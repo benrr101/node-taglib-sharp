@@ -366,23 +366,23 @@ import {NumberUtils} from "../../src/utils";
     ], "_EG")
     @params([
         Id3v2FrameFlags.DataLengthIndicator,
-        4, undefined, undefined, 0x01020304
+        4, undefined, undefined, 0x00208184
     ], "D__")
     @params([
         Id3v2FrameFlags.DataLengthIndicator|Id3v2FrameFlags.GroupingIdentity,
-        5, 0x01, undefined, 0x02030405
+        5, 0x01, undefined, 0x0040C205
     ], "D_G")
     @params([
         Id3v2FrameFlags.DataLengthIndicator|Id3v2FrameFlags.Encryption,
-        5, undefined, 0x01, 0x02030405
+        5, undefined, 0x01, 0x0040C205
     ], "DE_")
     @params([
         Id3v2FrameFlags.DataLengthIndicator|Id3v2FrameFlags.Encryption|Id3v2FrameFlags.GroupingIdentity,
-        6, 0x01, 0x02, 0x03040506
+        6, 0x01, 0x02, 0x00610286
     ], "GEC")
     @params([
         0xFFFF,
-        6, 0x01, 0x02, 0x03040506
+        6, 0x01, 0x02, 0x00610286
     ], "All")
     public readExtendedHeaderFromPayloadBytes_v4(
         [flags, length, groupId, encryptionId, dataLength]:
@@ -401,6 +401,38 @@ import {NumberUtils} from "../../src/utils";
         assert.strictEqual(header.dataLength, dataLength);
         assert.strictEqual(header.encryptionId, encryptionId);
         assert.strictEqual(header.groupId, groupId);
+    }
+
+    @test
+    public readExtendedHeaderFromPayloadBytes_notEnoughBytes() {
+        // Arrange
+        const header = new Id3v2FrameHeader(
+            FrameIdentifiers.APIC,
+            Id3v2FrameFlags.DataLengthIndicator
+        );
+        const extendedBytes = ByteVector.fromByteArray([0x00, 0x00, 0x02]);
+
+        // Act / Assert
+        assert.throws(
+            () => header.readExtendedHeaderFromPayloadBytes(extendedBytes, 4),
+            "ID3v2 frame extended header does not contain enough bytes for fields set by flags"
+        );
+    }
+
+    @test
+    public renderExtendedHeader_v4_dataLengthIndicatorIsSyncSafe() {
+        // Arrange
+        const header = new Id3v2FrameHeader(
+            FrameIdentifiers.APIC,
+            Id3v2FrameFlags.DataLengthIndicator
+        );
+        header.dataLength = 0x100;
+
+        // Act
+        const result = header.renderExtendedHeader(4);
+
+        // Assert
+        Testers.bvEqual(result, [0x00, 0x00, 0x02, 0x00]);
     }
 
     // #endregion

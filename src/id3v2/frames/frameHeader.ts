@@ -342,7 +342,7 @@ export class Id3v2FrameHeader {
                     position++;
                 }
                 if (NumberUtils.hasFlag(this._flags, Id3v2FrameFlags.DataLengthIndicator)) {
-                    this._dataLength = this.getFieldBytes(payloadBytes, position, 4).toUint();
+                    this._dataLength = SyncData.toUint(this.getFieldBytes(payloadBytes, position, 4));
                     position += 4;
                 }
                 break;
@@ -424,8 +424,7 @@ export class Id3v2FrameHeader {
                     throw new NotImplementedError("Encryption is not supported");
                 }
                 if (NumberUtils.hasFlag(this._flags, Id3v2FrameFlags.DataLengthIndicator)) {
-                    // @TODO: Properly update this field.
-                    fieldVectors.push(ByteVector.fromUint(this._dataLength));
+                    fieldVectors.push(SyncData.fromUint(this._dataLength));
                 }
                 break;
         }
