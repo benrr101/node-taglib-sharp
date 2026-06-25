@@ -1,4 +1,4 @@
-import {suite, test} from "@testdeck/mocha";
+import {params, suite, test} from "@testdeck/mocha";
 import {assert} from "chai";
 
 import FrameConstructorTests from "./frameConstructorTests";
@@ -6,100 +6,89 @@ import MusicCdIdentifierFrame from "../../src/id3v2/frames/musicCdIdentifierFram
 import PropertyTests from "../utilities/propertyTests";
 import {ByteVector, StringType} from "../../src/byteVector";
 import {Frame, FrameClassType} from "../../src/id3v2/frames/frame";
-import {Id3v2FrameHeader} from "../../src/id3v2/frames/frameHeader";
+import {Id3v2FrameFlags, Id3v2FrameHeader} from "../../src/id3v2/frames/frameHeader";
 import {FrameIdentifiers} from "../../src/id3v2/frameIdentifiers";
 import {Testers} from "../utilities/testers";
 
 @suite class Id3v2_MusicCdIdentifierFrameTests extends FrameConstructorTests {
-    public get fromOffsetRawData(): (d: ByteVector, o: number, h: Id3v2FrameHeader, v: number) => Frame {
-        return MusicCdIdentifierFrame.fromOffsetRawData;
+    public get fromFieldBytes(): (h: Id3v2FrameHeader, d: ByteVector, v: number) => Frame {
+        return MusicCdIdentifierFrame.fromFieldBytes;
     }
 
     @test
-    public fromOffsetRawData_validParameters() {
+    public fromData_withData_frameHasData() {
         // Arrange
-        const header = new Id3v2FrameHeader(FrameIdentifiers.MCDI);
-        header.frameSize = 9;
-        const data = ByteVector.concatenate(
-            0x00, 0x00,
-            header.render(4),
-            ByteVector.fromString("12345abcd", StringType.Latin1)
-        );
+        const data = ByteVector.fromString("fux qux quxx", StringType.UTF8);
 
         // Act
-        const frame = MusicCdIdentifierFrame.fromOffsetRawData(data, 2, header, 4);
+        const frame = MusicCdIdentifierFrame.fromData(data);
 
         // Assert
-        Id3v2_MusicCdIdentifierFrameTests.assertFrame(frame, ByteVector.fromString("12345abcd", StringType.Latin1));
+        Id3v2_MusicCdIdentifierFrameTests.assertFrame(frame, data);
+    }
+
+    @params(2, "v2")
+    @params(3, "v3")
+    @params(4, "v4")
+    public fromFieldBytes_validParams(version: number) {
+        // Arrange
+        const fieldBytes = ByteVector.fromString("foo bar baz", StringType.UTF8);
+        const header = new Id3v2FrameHeader(FrameIdentifiers.MCDI, Id3v2FrameFlags.None, fieldBytes.length);
+
+        // Act
+        const frame = MusicCdIdentifierFrame.fromFieldBytes(header, fieldBytes, version);
+
+        // Assert
+        Id3v2_MusicCdIdentifierFrameTests.assertFrame(frame, ByteVector.fromString("foo bar baz", StringType.Latin1));
     }
 
     @test
     public data() {
         // Arrange
-        const frame = Id3v2_MusicCdIdentifierFrameTests.getTestFrame();
-        const data = ByteVector.fromString("fuxbuxqux", StringType.Latin1);
+        const value = ByteVector.fromByteArray([0x01, 0x02, 0x03, 0x04]);
+        const frame = MusicCdIdentifierFrame.fromData(value);
 
         // Act / Assert
-        PropertyTests.propertyRoundTrip((v) => { frame.data = v; }, () => frame.data, data);
+        PropertyTests.propertyRoundTrip((v) => { frame.data = v; }, () => frame.data, value);
     }
 
-    @test
-    public clone_withData() {
+    @params(2, "v2")
+    @params(3, "v3")
+    @params(4, "v4")
+    public clone_returnsCopy(version: number) {
         // Arrange
-        const frame = Id3v2_MusicCdIdentifierFrameTests.getTestFrame();
+        const fieldBytes = ByteVector.fromString("foo bar baz", StringType.UTF8);
+        const header = new Id3v2FrameHeader(FrameIdentifiers.MCDI, Id3v2FrameFlags.None, fieldBytes.length);
+        const frame = MusicCdIdentifierFrame.fromFieldBytes(header, fieldBytes, version);
 
         // Act
-        const output = <MusicCdIdentifierFrame> frame.clone();
+        const result = frame.clone();
 
         // Assert
-        Id3v2_MusicCdIdentifierFrameTests.assertFrame(output, frame.data);
-        assert.notEqual(output.data, frame.data);
+        assert.ok(result);
+        assert.strictEqual(result.frameClassType, FrameClassType.MusicCdIdentifierFrame);
+        assert.strictEqual(result.frameId, FrameIdentifiers.MCDI);
+
+        Testers.bvEqual(result.data, fieldBytes);
     }
 
-    @test
-    public clone_withoutData() {
+    @params(2, "v2")
+    @params(3, "v3")
+    @params(4, "v4")
+    public render_returnsByteVector(version: number) {
         // Arrange
-        const header = new Id3v2FrameHeader(FrameIdentifiers.MCDI);
-        header.frameSize = 0;
-        const frame = MusicCdIdentifierFrame.fromOffsetRawData(header.render(4), 0, header, 4);
+        const fieldBytes = ByteVector.fromString("foo bar baz", StringType.UTF8);
+        const header = new Id3v2FrameHeader(FrameIdentifiers.MCDI, Id3v2FrameFlags.None, fieldBytes.length);
+        const frame = MusicCdIdentifierFrame.fromFieldBytes(header, fieldBytes, version);
 
         // Act
-        const output = <MusicCdIdentifierFrame> frame.clone();
+        const result = frame.render(version);
 
         // Assert
-        Id3v2_MusicCdIdentifierFrameTests.assertFrame(output, frame.data);
-    }
+        assert.ok(result);
 
-    @test
-    public render_withData() {
-        // Arrange
-        const header = new Id3v2FrameHeader(FrameIdentifiers.MCDI);
-        header.frameSize = 9;
-        const data = ByteVector.concatenate(
-            header.render(4),
-            ByteVector.fromString("12345abcd", StringType.Latin1)
-        );
-        const frame = MusicCdIdentifierFrame.fromOffsetRawData(data, 0, header, 4);
-
-        // Act
-        const output = frame.render(4);
-
-        // Assert
-        Testers.bvEqual(output, data);
-    }
-
-    @test
-    public render_withoutData() {
-        // Arrange
-        const header = new Id3v2FrameHeader(FrameIdentifiers.MCDI);
-        header.frameSize = 0;
-        const frame = MusicCdIdentifierFrame.fromOffsetRawData(header.render(4), 0, header, 4);
-
-        // Act
-        const output = frame.render(4);
-
-        // Assert
-        assert.strictEqual(output.length, 0);
+        const expected = ByteVector.concatenate(header.render(version), fieldBytes);
+        Testers.bvEqual(result, expected);
     }
 
     private static assertFrame(frame: MusicCdIdentifierFrame, d: ByteVector) {
@@ -108,15 +97,5 @@ import {Testers} from "../utilities/testers";
         assert.strictEqual(frame.frameId, FrameIdentifiers.MCDI);
 
         Testers.bvEqual(frame.data, d);
-    }
-
-    private static getTestFrame() {
-        const header = new Id3v2FrameHeader(FrameIdentifiers.MCDI);
-        header.frameSize = 9;
-        const data = ByteVector.concatenate(
-            header.render(4),
-            ByteVector.fromString("12345abcd", StringType.Latin1)
-        );
-        return MusicCdIdentifierFrame.fromOffsetRawData(data, 0, header, 4);
     }
 }

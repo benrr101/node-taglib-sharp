@@ -102,14 +102,14 @@ const assert = Chai.assert;
             const urlLinkFile1 = File.createFromPath(tempFilePath);
             try {
                 const id3v2Tag1 = <Id3v2Tag> urlLinkFile1.getTag(TagTypes.Id3v2, false);
-                id3v2Tag1.setTextFrame (Id3v2FrameIdentifiers.WCOM, "www.commercial.com");
-                id3v2Tag1.setTextFrame (Id3v2FrameIdentifiers.WCOP, "www.copyright.com");
-                id3v2Tag1.setTextFrame (Id3v2FrameIdentifiers.WOAF, "www.official-audio.com");
-                id3v2Tag1.setTextFrame (Id3v2FrameIdentifiers.WOAR, "www.official-artist.com");
-                id3v2Tag1.setTextFrame (Id3v2FrameIdentifiers.WOAS, "www.official-audio-source.com");
-                id3v2Tag1.setTextFrame (Id3v2FrameIdentifiers.WORS, "www.official-internet-radio.com");
-                id3v2Tag1.setTextFrame (Id3v2FrameIdentifiers.WPAY, "www.payment.com");
-                id3v2Tag1.setTextFrame (Id3v2FrameIdentifiers.WPUB, "www.official-publisher.com");
+                id3v2Tag1.setUrlFrame(Id3v2FrameIdentifiers.WCOM, "www.commercial.com");
+                id3v2Tag1.setUrlFrame(Id3v2FrameIdentifiers.WCOP, "www.copyright.com");
+                id3v2Tag1.setUrlFrame(Id3v2FrameIdentifiers.WOAF, "www.official-audio.com");
+                id3v2Tag1.setUrlFrame(Id3v2FrameIdentifiers.WOAR, "www.official-artist.com");
+                id3v2Tag1.setUrlFrame(Id3v2FrameIdentifiers.WOAS, "www.official-audio-source.com");
+                id3v2Tag1.setUrlFrame(Id3v2FrameIdentifiers.WORS, "www.official-internet-radio.com");
+                id3v2Tag1.setUrlFrame(Id3v2FrameIdentifiers.WPAY, "www.payment.com");
+                id3v2Tag1.setUrlFrame(Id3v2FrameIdentifiers.WPUB, "www.official-publisher.com");
                 urlLinkFile1.save();
             } finally {
                 urlLinkFile1.dispose();

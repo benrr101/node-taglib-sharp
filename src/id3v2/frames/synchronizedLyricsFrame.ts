@@ -88,6 +88,88 @@ export class SynchronizedLyricsFrame extends Frame {
     }
 
     /**
+     * Constructs and initialized a new instance by parsing values from the field data.
+     * @param header Header of the frame
+     * @param fieldBytes Bytes that contain the body of the frame
+     * @param version ID3v2 version the frame was originally encoded with
+     */
+    public static fromFieldBytes(
+        header: Id3v2FrameHeader,
+        fieldBytes: ByteVector,
+        version: number
+    ): SynchronizedLyricsFrame {
+        Guards.truthy(header, "header");
+        Guards.truthy(fieldBytes, "fieldBytes");
+        Guards.byte(version, "version");
+
+        if (fieldBytes.length < 6) {
+            throw new CorruptFileError("Synchronized lyrics frame must contain at least 6 bytes.");
+        }
+
+        // Text encoding                                  $xx
+        // Language                                       $xx xx xx
+        // Time stamp format                              $xx
+        // Content type                                   $xx
+        // Content descriptor                             <text string according to encoding> $00 (00)
+        // ---- Repeated for each synchronized lyric -----------------------
+        // Terminated text to be synced (typically a syllable)
+        // Sync identifier (terminator to above string)   $00 (00)
+        // Time stamp                                     $xx (xx ...)
+        // ---- Repeated for each synchronized lyric -----------------------
+
+        const frame = new SynchronizedLyricsFrame(header);
+
+        // Read fixed length data
+        frame._textEncoding = fieldBytes.get(0);
+        frame._language = fieldBytes.subarray(1, 3).toString(StringType.Latin1);
+        frame._format = fieldBytes.get(4);
+        frame._textType = fieldBytes.get(5);
+
+        const delimiter = ByteVector.getTextDelimiter(frame._textEncoding);
+        const variableLengthBytes = fieldBytes.subarray(6);
+
+        // Read content descriptor
+        const descriptorEndLength = variableLengthBytes.find(delimiter);
+        if (descriptorEndLength < 0) {
+            throw new CorruptFileError("Synchronized lyrics frame must contain content descriptor terminator");
+        }
+        frame._description = variableLengthBytes.subarray(0, descriptorEndLength).toString(frame._textEncoding);
+
+        // Read the synchronized lyrics
+        let offset = descriptorEndLength + delimiter.length;
+        const lyrics: SynchronizedText[] = [];
+        while (offset < variableLengthBytes.length) {
+            // @TODO: Allow ignoring invalid lyrics
+
+            // Reset bytes so we are working with the next lyric at position 0
+            const workingBytes = variableLengthBytes.subarray(offset);
+
+            // Read lyrics
+            const lyricLength = workingBytes.find(delimiter);
+            if (lyricLength < 0) {
+                throw new CorruptFileError("Synchronized lyrics frame is missing delimiter for lyric.");
+            }
+
+            const lyric = workingBytes.subarray(0, lyricLength).toString(frame._textEncoding);
+
+            // Read time code
+            const timeStampBytes = workingBytes.subarray(lyricLength + delimiter.length, 4);
+            if (timeStampBytes.length < 4) {
+                throw new CorruptFileError(`Synchronized lyrics frame does not contain time code for lyric '${lyric}'`);
+            }
+
+            const timeStamp = timeStampBytes.toUint();
+
+            lyrics.push(new SynchronizedText(timeStamp, lyric));
+            offset += lyricLength + delimiter.length + 4;
+        }
+
+        frame._text = lyrics;
+
+        return frame;
+    }
+
+    /**
      * Constructs and initializes a new instance with a specified description, ISO-639-2 language
      * code, text type, and text encoding.
      * @param description Description of the synchronized lyrics frame
@@ -106,29 +188,6 @@ export class SynchronizedLyricsFrame extends Frame {
         frame._language = language;
         frame.description = description;
         frame.textType = textType;
-        return frame;
-    }
-
-    /**
-     * Constructs and initializes a new instance by reading its raw data in a specified ID3v2
-     * format.
-     * @param data Raw representation of the new instance
-     * @param offset Offset into `data` where the frame begins. Must be unsigned, safe
-     *     integer
-     * @param header Header of the frame found at `offset` in `data`
-     * @param version ID3v2 version the frame was originally encoded with
-     */
-    public static fromOffsetRawData(
-        data: ByteVector,
-        offset: number,
-        header: Id3v2FrameHeader, version: number
-    ): SynchronizedLyricsFrame {
-        Guards.truthy(data, "data");
-        Guards.uint(offset, "offset");
-        Guards.truthy(header, "header");
-
-        const frame = new SynchronizedLyricsFrame(header);
-        frame.setData(data, offset, false, version);
         return frame;
     }
 
@@ -303,59 +362,12 @@ export class SynchronizedLyricsFrame extends Frame {
     // #endregion
 
     /** @inheritDoc */
-    protected parseFields(data: ByteVector): void {
-        if (data.length < 6) {
-            throw new CorruptFileError("Not enough bytes in field");
-        }
-
-        // Read the basic information of the frame
-        this.textEncoding = data.get(0);
-        this._language = data.subarray(1, 3).toString(StringType.Latin1);
-        this.format = data.get(4);
-        this.textType = data.get(5);
-
-        const delim = ByteVector.getTextDelimiter(this.textEncoding);
-
-        // Read the description of the frame
-        const descriptionEndIndex = data.offsetFind(delim, 6, delim.length);
-        if (descriptionEndIndex < 0) {
-            throw new CorruptFileError("Text delimiter expected");
-        }
-        const descriptionLength = descriptionEndIndex - 6;
-        this.description = data.subarray(6, descriptionLength).toString(this.textEncoding);
-
-        let offset = 6 + descriptionLength + delim.length;
-        const l: SynchronizedText[] = [];
-        while (offset + delim.length + 4 < data.length) {
-            // Determine length of lyrics
-            const lyricsLength = data.subarray(offset).find(delim, delim.length);
-            if (lyricsLength < 0) {
-                throw new CorruptFileError("Text delimiter for synchronized lyric not found");
-            }
-
-            // Read lyrics
-            const text = data.subarray(offset, lyricsLength).toString(this.textEncoding);
-
-            // Read time code
-            offset += lyricsLength + delim.length;
-            if (offset + 4 > data.length) {
-                // This handles malformed frames that don't have the timecode
-                break;
-            }
-
-            const time = data.subarray(offset, 4).toUint();
-            l.push(new SynchronizedText(time, text));
-
-            offset += 4;
-        }
-
-        this._text = l;
-    }
-
-    /** @inheritDoc */
     protected renderFields(version: number): ByteVector {
         const encoding = SynchronizedLyricsFrame.correctEncoding(this.textEncoding, version);
-        const renderedText = this.text.map((t) => t.render(encoding));
+        const renderedText = this.text
+            .filter(t => !!t)
+            .sort((t1, t2) => t1.time - t2.time)
+            .map(t => t.render(encoding));
 
         return ByteVector.concatenate(
             encoding,

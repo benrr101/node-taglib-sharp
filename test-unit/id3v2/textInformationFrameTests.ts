@@ -4,7 +4,7 @@ import {assert} from "chai";
 import FrameConstructorTests from "./frameConstructorTests";
 import Id3v2Settings from "../../src/id3v2/id3v2Settings";
 import PropertyTests from "../utilities/propertyTests";
-import {TextInformationFrame} from "../../src/id3v2/frames/textInformationFrame";
+import TextInformationFrame from "../../src/id3v2/frames/textInformationFrame";
 import {ByteVector, StringType} from "../../src/byteVector";
 import {Frame, FrameClassType} from "../../src/id3v2/frames/frame";
 import {Id3v2FrameFlags, Id3v2FrameHeader} from "../../src/id3v2/frames/frameHeader";
@@ -12,22 +12,15 @@ import {FrameIdentifier, FrameIdentifiers} from "../../src/id3v2/frameIdentifier
 import {Testers} from "../utilities/testers";
 
 const getTestFrame = (): TextInformationFrame => {
-    const header = new Id3v2FrameHeader(FrameIdentifiers.TCOP);
-    header.frameSize = 8;
-    const data = ByteVector.concatenate(
-        header.render(4),
-        StringType.Latin1,
-        ByteVector.fromString("foo", StringType.Latin1),
-        ByteVector.getTextDelimiter(StringType.Latin1),
-        ByteVector.fromString("bar", StringType.Latin1),
-    );
+    const frame = TextInformationFrame.fromIdentifier(FrameIdentifiers.TCOP, StringType.Latin1);
+    frame.text = ["foo", "bar"];
 
-    return TextInformationFrame.fromOffsetRawData(data, 0, header, 4);
+    return frame;
 }
 
 @suite class Id3v2_TextInformationFrame_ConstructorTests extends FrameConstructorTests {
-    public get fromOffsetRawData(): (d: ByteVector, o: number, h: Id3v2FrameHeader, v: number) => Frame {
-        return TextInformationFrame.fromOffsetRawData;
+    public get fromFieldBytes(): (h: Id3v2FrameHeader, d: ByteVector, v: number) => Frame {
+        return TextInformationFrame.fromFieldBytes;
     }
 
     @test
@@ -61,113 +54,127 @@ const getTestFrame = (): TextInformationFrame => {
         Id3v2_TextInformationFrame_ConstructorTests.assertFrame(frame, FrameIdentifiers.TCOP, []);
     }
 
-    @test
-    public fromOffsetRawData_emptyFrame_returnsEmptyFrame() {
+    @params(2, "v2")
+    @params(3, "v3")
+    @params(4, "v4")
+    public fromFieldBytes_empty_throws(version: number) {
         // Arrange
-        const bodyBytes = ByteVector.empty();
-        const header = new Id3v2FrameHeader(FrameIdentifiers.TCOP, Id3v2FrameFlags.None, bodyBytes.length);
-        const data = ByteVector.concatenate(
-            0x00, 0x00,
-            header.render(3),
-            bodyBytes
-        );
+        const fieldBytes = ByteVector.empty();
+        const header = new Id3v2FrameHeader(FrameIdentifiers.TCOP, Id3v2FrameFlags.None, fieldBytes.length);
+
+        // Act / Assert
+        assert.throws(() => TextInformationFrame.fromFieldBytes(header, fieldBytes, version));
+    }
+
+    @params(2, "v2")
+    @params(3, "v3")
+    @params(4, "v4")
+    public fromFieldBytes_noText_returnsEmptyFrame(version: number) {
+        // Arrange
+        const fieldBytes = ByteVector.fromByte(StringType.UTF16BE);
+        const header = new Id3v2FrameHeader(FrameIdentifiers.TCOP, Id3v2FrameFlags.None, fieldBytes.length);
 
         // Act
-        const frame = TextInformationFrame.fromOffsetRawData(data, 2, header, 3);
+        const frame = TextInformationFrame.fromFieldBytes(header, fieldBytes, version);
 
         // Assert
         assert.isOk(frame);
         assert.strictEqual(frame.frameId, FrameIdentifiers.TCOP);
         assert.deepEqual(frame.text, []);
-        assert.strictEqual(frame.textEncoding, Id3v2Settings.defaultEncoding);
+        assert.strictEqual(frame.textEncoding, StringType.UTF16BE);
     }
 
-    @test
-    public fromOffsetRawData_v3NotSplitType_returnsSingleTextField() {
+    @params(2, "v2")
+    @params(3, "v3")
+    @params(4, "v4")
+    public fromFieldBytes_nullText_returnsEmptyFrame(version: number) {
         // Arrange
-        const bodyBytes = ByteVector.concatenate(
-            StringType.Latin1,
-            ByteVector.fromString("fux/bux", StringType.Latin1)
+        const fieldBytes = ByteVector.concatenate(
+            StringType.UTF16BE, // Encoding
+            0x00, 0x00, 0x00    // Text
         );
-        const header = new Id3v2FrameHeader(FrameIdentifiers.TALB, Id3v2FrameFlags.None, bodyBytes.length);
-        const data = ByteVector.concatenate(
-            0x00, 0x00,
-            header.render(3),
-            bodyBytes
-        );
+        const header = new Id3v2FrameHeader(FrameIdentifiers.TCOP, Id3v2FrameFlags.None, fieldBytes.length);
 
         // Act
-        const frame = TextInformationFrame.fromOffsetRawData(data, 2, header, 3);
+        const frame = TextInformationFrame.fromFieldBytes(header, fieldBytes, version);
+
+        // Assert
+        assert.isOk(frame);
+        assert.strictEqual(frame.frameId, FrameIdentifiers.TCOP);
+        assert.deepEqual(frame.text, []);
+        assert.strictEqual(frame.textEncoding, StringType.UTF16BE);
+    }
+
+    @params(2, "v2")
+    @params(3, "v2")
+    public fromFieldBytes_v3NotSplitType_returnsSingleTextField(version: number) {
+        // Arrange
+        const fieldBytes = ByteVector.concatenate(
+            StringType.Latin1,                                  // Encoding
+            ByteVector.fromString("fux/bux", StringType.Latin1) // Text
+        );
+        const header = new Id3v2FrameHeader(FrameIdentifiers.TALB, Id3v2FrameFlags.None, fieldBytes.length);
+
+        // Act
+        const frame = TextInformationFrame.fromFieldBytes(header, fieldBytes, version);
 
         // Assert
         Id3v2_TextInformationFrame_ConstructorTests.assertFrame(frame, FrameIdentifiers.TALB, ["fux/bux"]);
     }
 
-    @test
-    public fromOffsetRawData_v3SplitType_returnsFrameSplitBySlash() {
+    @params(2, "v2")
+    @params(3, "v2")
+    public fromFieldBytes_v3SplitType_returnsFrameSplitBySlash(version: number) {
         // Arrange
-        const bodyBytes = ByteVector.concatenate(
-            StringType.Latin1,
-            ByteVector.fromString("fux/bux", StringType.Latin1)
+        const fieldBytes = ByteVector.concatenate(
+            StringType.Latin1,                                  // Encoding
+            ByteVector.fromString("fux/bux", StringType.Latin1) // Text
         );
-        const header = new Id3v2FrameHeader(FrameIdentifiers.TCOM, Id3v2FrameFlags.None, bodyBytes.length);
-        const data = ByteVector.concatenate(
-            0x00, 0x00,
-            header.render(3),
-            bodyBytes
-        );
+        const header = new Id3v2FrameHeader(FrameIdentifiers.TCOM, Id3v2FrameFlags.None, fieldBytes.length);
 
         // Act
-        const frame = TextInformationFrame.fromOffsetRawData(data, 2, header, 3);
+        const frame = TextInformationFrame.fromFieldBytes(header, fieldBytes, version);
 
         // Assert
         Id3v2_TextInformationFrame_ConstructorTests.assertFrame(frame, FrameIdentifiers.TCOM, ["fux", "bux"]);
     }
 
-    @test
-    public fromOffsetRawData_v3WithNullBytes_discardsDataAfterNull() {
+    @params(2, "v2")
+    @params(3, "v2")
+    public fromFieldBytes_v3WithNullBytes_discardsDataAfterNull(version: number) {
         // Arrange
-        const bodyBytes = ByteVector.concatenate(
-            StringType.Latin1,
-            ByteVector.fromString("foo", StringType.Latin1),
-            0x00,
-            ByteVector.fromString("bar", StringType.Latin1)
+        const fieldBytes = ByteVector.concatenate(
+            StringType.Latin1,                               // Encoding
+            ByteVector.fromString("foo", StringType.Latin1), // Text
+            0x00,                                            // ...
+            ByteVector.fromString("bar", StringType.Latin1)  // ...
         );
-        const header = new Id3v2FrameHeader(FrameIdentifiers.TCOM, Id3v2FrameFlags.None, bodyBytes.length);
-        const data = ByteVector.concatenate(header.render(3), bodyBytes);
+        const header = new Id3v2FrameHeader(FrameIdentifiers.TCOM, Id3v2FrameFlags.None, fieldBytes.length);
 
         // Act
-        const frame = TextInformationFrame.fromOffsetRawData(data, 0, header, 3);
+        const frame = TextInformationFrame.fromFieldBytes(header, fieldBytes, version);
 
         // Assert
         Id3v2_TextInformationFrame_ConstructorTests.assertFrame(frame, FrameIdentifiers.TCOM, ["foo"]);
     }
 
-    @test
-    public fromOffsetRawData_v4_returnsFrameSplitByDelimiter() {
+    @params(StringType.Latin1, "single_byte")
+    @params(StringType.UTF16BE, "multi_byte")
+    public fromFieldBytes_v4_returnsFrameSplitByDelimiter(encoding: StringType) {
         // Arrange
-        const header = new Id3v2FrameHeader(FrameIdentifiers.TCOP);
-        header.frameSize = 19;
-        const data = ByteVector.concatenate(
-            0x00, 0x00,
-            header.render(4),
-            StringType.UTF16BE,
-            ByteVector.fromString("fux", StringType.UTF16BE),
-            ByteVector.getTextDelimiter(StringType.UTF16BE),
-            ByteVector.fromString("bux", StringType.UTF16BE),
-            0x0, 0x0,   // Extra nulls to trigger null stripping logic
+        const fieldBytes = ByteVector.concatenate(
+            encoding,                               // Encoding
+            ByteVector.fromString("fux", encoding), // Text
+            ByteVector.getTextDelimiter(encoding),  // ...
+            ByteVector.fromString("bux", encoding), // ...
         );
+        const header = new Id3v2FrameHeader(FrameIdentifiers.TCOP, Id3v2FrameFlags.None, fieldBytes.length);
 
         // Act
-        const frame = TextInformationFrame.fromOffsetRawData(data, 2, header, 4);
+        const frame = TextInformationFrame.fromFieldBytes(header, fieldBytes, 4);
 
         // Assert
-        Id3v2_TextInformationFrame_ConstructorTests.assertFrame(
-            frame,
-            FrameIdentifiers.TCOP,
-            ["fux", "bux"],
-            StringType.UTF16BE
-        );
+        Id3v2_TextInformationFrame_ConstructorTests.assertFrame(frame,FrameIdentifiers.TCOP, ["fux", "bux"],encoding);
     }
 
     private static assertFrame(
@@ -342,17 +349,6 @@ const getTestFrame = (): TextInformationFrame => {
         assert.isUndefined(output);
     }
 
-    @params(-1, "negative")
-    @params(1.23, "float")
-    @params(0x100, "too_big")
-    public render_invalidVersion_throws(version: number) {
-        // Arrange
-        const frame = getTestFrame();
-
-        // Act/Assert
-        assert.throws(() => frame.render(version));
-    }
-
     @params(2, "v2")
     @params(3, "v3")
     @params(4, "v4")
@@ -385,12 +381,12 @@ const getTestFrame = (): TextInformationFrame => {
         assert.strictEqual(result.length, 0);
     }
 
-    @test
-    public render_v4MultiByteEncoding() {
+    @params(StringType.Latin1, "single_byte")
+    @params(StringType.UTF16BE, "multi_byte")
+    public render_v4EncodingTest(encoding: StringType) {
         // Arrange
-        const frame = TextInformationFrame.fromIdentifier(FrameIdentifiers.TALB);
+        const frame = TextInformationFrame.fromIdentifier(FrameIdentifiers.TALB, encoding);
         frame.text = ["foo", "bar", "baz"]
-        frame.textEncoding = StringType.UTF16BE;
 
         // Act
         const result = frame.render(4);
@@ -398,83 +394,65 @@ const getTestFrame = (): TextInformationFrame => {
         // Assert
         assert.isOk(result);
 
-        const expected = ByteVector.concatenate(
-            FrameIdentifiers.TALB.render(4),
-            ByteVector.fromUint(23),
-            ByteVector.fromUshort(Id3v2FrameFlags.None),
-            StringType.UTF16BE,
-            ByteVector.fromString("foo", StringType.UTF16BE),
-            ByteVector.getTextDelimiter(StringType.UTF16BE),
-            ByteVector.fromString("bar", StringType.UTF16BE),
-            ByteVector.getTextDelimiter(StringType.UTF16BE),
-            ByteVector.fromString("baz", StringType.UTF16BE)
+        const fieldBytes = ByteVector.concatenate(
+            encoding,                               // Encoding
+            ByteVector.fromString("foo", encoding), // Text
+            ByteVector.getTextDelimiter(encoding),  // ...
+            ByteVector.fromString("bar", encoding), // ...
+            ByteVector.getTextDelimiter(encoding),  // ...
+            ByteVector.fromString("baz", encoding)  // ...
         );
+        const header = new Id3v2FrameHeader(FrameIdentifiers.TALB, Id3v2FrameFlags.None, fieldBytes.length);
+        const expected = ByteVector.concatenate(header.render(4), fieldBytes);
         Testers.bvEqual(result, expected);
     }
 
-    @test
-    public render_v4SingleByteEncoding() {
+    @params([2, StringType.Latin1], "v2_single_byte")
+    @params([2, StringType.UTF16BE], "v2_multi_byte")
+    @params([3, StringType.Latin1], "v3_single_byte")
+    @params([3, StringType.UTF16BE], "v3_multi_byte")
+    public render_v3WithSplit([version, encoding]: [number, StringType]) {
         // Arrange
-        const frame = TextInformationFrame.fromIdentifier(FrameIdentifiers.TALB);
-        frame.text = ["foo", "bar", "baz"]
-        frame.textEncoding = StringType.Latin1;
+        const frame = TextInformationFrame.fromIdentifier(FrameIdentifiers.TCOP, encoding);
+        frame.text = ["fux", "bux"]
 
         // Act
-        const result = frame.render(4);
-
-        // Assert
-        assert.isOk(result);
-
-        const expected = ByteVector.concatenate(
-            FrameIdentifiers.TALB.render(4),
-            ByteVector.fromUint(12),
-            ByteVector.fromUshort(Id3v2FrameFlags.None),
-            StringType.Latin1,
-            ByteVector.fromString("foo", StringType.Latin1),
-            ByteVector.getTextDelimiter(StringType.Latin1),
-            ByteVector.fromString("bar", StringType.Latin1),
-            ByteVector.getTextDelimiter(StringType.Latin1),
-            ByteVector.fromString("baz", StringType.Latin1)
-        );
-        Testers.bvEqual(result, expected);
-    }
-
-    @test
-    public render_v3WithSplit() {
-        // Arrange
-        const bodyBytes = ByteVector.concatenate(
-            StringType.UTF16BE,
-            ByteVector.fromString("fux/bux", StringType.UTF16BE)
-        );
-        const header = new Id3v2FrameHeader(FrameIdentifiers.TCOP, Id3v2FrameFlags.None, bodyBytes.length);
-        const data = ByteVector.concatenate(header.render(3), bodyBytes);
-        const frame = TextInformationFrame.fromOffsetRawData(data, 0, header, 3);
-
-        // Act
-        const output = frame.render(3);
+        const output = frame.render(version);
 
         // Assert
         assert.ok(output);
-        Testers.bvEqual(output, data);
+
+        const fieldBytes = ByteVector.concatenate(
+            encoding,                                  // Encoding
+            ByteVector.fromString("fux/bux", encoding) // Text
+        );
+        const header = new Id3v2FrameHeader(FrameIdentifiers.TCOP, Id3v2FrameFlags.None, fieldBytes.length);
+        const expected = ByteVector.concatenate(header.render(version), fieldBytes);
+        Testers.bvEqual(output, expected);
     }
 
-    @test
-    public render_v3WithoutSplit() {
+    @params([2, StringType.Latin1], "v2_single_byte")
+    @params([2, StringType.UTF16BE], "v2_multi_byte")
+    @params([3, StringType.Latin1], "v3_single_byte")
+    @params([3, StringType.UTF16BE], "v3_multi_byte")
+    public render_v3WithoutSplit([version, encoding]: [number, StringType]) {
         // Arrange
-        const bodyBytes = ByteVector.concatenate(
-            StringType.UTF16BE,
-            ByteVector.fromString("fux", StringType.UTF16BE)
-        );
-        const header = new Id3v2FrameHeader(FrameIdentifiers.TCOP, Id3v2FrameFlags.None, bodyBytes.length);
-        const data = ByteVector.concatenate(header.render(3), bodyBytes);
-        const frame = TextInformationFrame.fromOffsetRawData(data, 0, header, 3);
+        const frame = TextInformationFrame.fromIdentifier(FrameIdentifiers.TCOP, encoding);
+        frame.text = ["fux"];
 
         // Act
-        const output = frame.render(3);
+        const output = frame.render(version);
 
         // Assert
         assert.ok(output);
-        Testers.bvEqual(output, data);
+
+        const fieldBytes = ByteVector.concatenate(
+            encoding,                              // Encoding
+            ByteVector.fromString("fux", encoding) // Text
+        );
+        const header = new Id3v2FrameHeader(FrameIdentifiers.TCOP, Id3v2FrameFlags.None, fieldBytes.length);
+        const expected = ByteVector.concatenate(header.render(version), fieldBytes);
+        Testers.bvEqual(output, expected);
     }
 
     @params([[], ""], "empty")

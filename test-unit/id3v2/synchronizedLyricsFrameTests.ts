@@ -1,4 +1,4 @@
-import {suite, test} from "@testdeck/mocha";
+import {params, suite, test} from "@testdeck/mocha";
 import {assert} from "chai";
 
 import FrameConstructorTests from "./frameConstructorTests";
@@ -6,7 +6,7 @@ import Id3v2Settings from "../../src/id3v2/id3v2Settings";
 import PropertyTests from "../utilities/propertyTests";
 import {ByteVector, StringType} from "../../src/byteVector";
 import {Frame, FrameClassType} from "../../src/id3v2/frames/frame";
-import {Id3v2FrameHeader} from "../../src/id3v2/frames/frameHeader";
+import {Id3v2FrameFlags, Id3v2FrameHeader} from "../../src/id3v2/frames/frameHeader";
 import {FrameIdentifiers} from "../../src/id3v2/frameIdentifiers";
 import {SynchronizedLyricsFrame, SynchronizedText} from "../../src/id3v2/frames/synchronizedLyricsFrame";
 import {Testers} from "../utilities/testers";
@@ -42,8 +42,8 @@ import {SynchronizedTextType, TimestampFormat} from "../../src/id3v2/utilTypes";
 }
 
 @suite class Id3v2_SynchronizedLyricsFrame_ConstructorTests extends FrameConstructorTests {
-    public get fromOffsetRawData(): (d: ByteVector, o: number, h: Id3v2FrameHeader, v: number) => Frame {
-        return SynchronizedLyricsFrame.fromOffsetRawData;
+    public get fromFieldBytes(): (h: Id3v2FrameHeader, d:ByteVector, v: number) => Frame {
+        return SynchronizedLyricsFrame.fromFieldBytes;
     }
 
     @test
@@ -91,110 +91,97 @@ import {SynchronizedTextType, TimestampFormat} from "../../src/id3v2/utilTypes";
         );
     }
 
-    @test
-    public fromOffsetRawData_notEnoughBytes() {
+    @params(2, "v2")
+    @params(3, "v3")
+    @params(4, "v4")
+    public fromFieldBytes_notEnoughBytes(version: number) {
         // Arrange
-        const header = new Id3v2FrameHeader(FrameIdentifiers.SYLT);
-        header.frameSize = 5;
-        const data = ByteVector.concatenate(
-            0x00, 0x00,
-            header.render(4),
-            0x00, 0x00, 0x00, 0x00, 0x00
-        );
+        const fieldBytes = ByteVector.fromByteArray([0x00, 0x00, 0x00, 0x00, 0x00]);
+        const header = new Id3v2FrameHeader(FrameIdentifiers.SYLT, Id3v2FrameFlags.None, fieldBytes.length);
 
         // Act / Assert
-        assert.throws(() => { SynchronizedLyricsFrame.fromOffsetRawData(data, 2, header, 4); });
+        assert.throws(() => { SynchronizedLyricsFrame.fromFieldBytes(header, fieldBytes, version); });
     }
 
-    @test
-    public fromOffsetRawData_missingDelimiter() {
+    @params(2, "v2")
+    @params(3, "v3")
+    @params(4, "v4")
+    public fromFieldBytes_missingDelimiter(version: number) {
         // Arrange
-        const header = new Id3v2FrameHeader(FrameIdentifiers.SYLT);
-        header.frameSize = 10;
-        const data = ByteVector.concatenate(
-            0x00, 0x00,
-            header.render(4),
-            0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-            0x01, 0x02, 0x03, 0x04, 0x05
+        const fieldBytes = ByteVector.concatenate(
+            StringType.Latin1,                                     // Text encoding
+            ByteVector.fromString("eng", StringType.Latin1),       // Language
+            TimestampFormat.Unknown,                               // Timestamp format
+            SynchronizedTextType.Other,                            // Content type
+            ByteVector.fromString("foobarbaz", StringType.Latin1), // Content descriptor (unterminated)
         );
+        const header = new Id3v2FrameHeader(FrameIdentifiers.SYLT, Id3v2FrameFlags.None, fieldBytes.length);
 
         // Act / Assert
-        assert.throws(() => { SynchronizedLyricsFrame.fromOffsetRawData(data, 2, header, 4); });
+        assert.throws(() => { SynchronizedLyricsFrame.fromFieldBytes(header, fieldBytes, version); });
     }
 
-    @test
-    public fromOffsetRawData_noDelimiterForSynchronizedText() {
+    @params(2, "v2")
+    @params(3, "v3")
+    @params(4, "v4")
+    public fromFieldBytes_noDelimiterForSynchronizedText(version: number) {
         // Arrange
-        const header = new Id3v2FrameHeader(FrameIdentifiers.SYLT);
-        header.frameSize = 16;
-        const data = ByteVector.concatenate(
-            0x00, 0x00,
-            header.render(4),
-            StringType.UTF16BE,
-            ByteVector.fromString("fux", StringType.Latin1),
-            TimestampFormat.AbsoluteMilliseconds,
-            SynchronizedTextType.Trivia,
-            ByteVector.fromString("bux", StringType.UTF16BE),
-            0x01, 0x02, 0x03, 0x04
+        const fieldBytes = ByteVector.concatenate(
+            StringType.Latin1,                                     // Text encoding
+            ByteVector.fromString("eng", StringType.Latin1),       // Language
+            TimestampFormat.Unknown,                               // Timestamp format
+            SynchronizedTextType.Other,                            // Content type
+            ByteVector.fromString("foobarbaz", StringType.Latin1), // Content descriptor
+            ByteVector.getTextDelimiter(StringType.Latin1),        // Delimiter
+            ByteVector.fromString("fux", StringType.Latin1)        // Lyric (unterminated)
         );
+        const header = new Id3v2FrameHeader(FrameIdentifiers.SYLT, Id3v2FrameFlags.None, fieldBytes.length);
 
         // Act / Assert
-        assert.throws(() => { SynchronizedLyricsFrame.fromOffsetRawData(data, 2, header, 4); });
+        assert.throws(() => { SynchronizedLyricsFrame.fromFieldBytes(header, fieldBytes, version); });
     }
 
-    @test
-    public fromOffsetRawData_incompleteSynchronizedText() {
+    @params(2, "v2")
+    @params(3, "v3")
+    @params(4, "v4")
+    public fromFieldBytes_incompleteSynchronizedText(version: number) {
         // Arrange
-        const header = new Id3v2FrameHeader(FrameIdentifiers.SYLT);
-        header.frameSize = 34;
-        const content1 = new SynchronizedText(123, "qux");
-        const content2 = new SynchronizedText(456, "zux");
-        const data = ByteVector.concatenate(
-            0x00, 0x00,
-            header.render(4),
-            StringType.UTF16BE,
-            ByteVector.fromString("fux", StringType.Latin1),
-            TimestampFormat.AbsoluteMilliseconds,
-            SynchronizedTextType.Trivia,
-            ByteVector.fromString("bux", StringType.UTF16BE),
-            ByteVector.getTextDelimiter(StringType.UTF16BE),
-            content1.render(StringType.UTF16BE),
-            content2.render(StringType.UTF16BE)
+        const content1 = new SynchronizedText(123, "foo");
+        const content2 = new SynchronizedText(456, "bar");
+
+        const fieldBytes = ByteVector.concatenate(
+            StringType.Latin1,                                  // Text encoding
+            ByteVector.fromString("fux", StringType.Latin1),    // Language
+            TimestampFormat.AbsoluteMilliseconds,               // Timestamp format
+            SynchronizedTextType.Trivia,                        // Content type
+            ByteVector.fromString("baz", StringType.Latin1),    // Content descriptor
+            ByteVector.getTextDelimiter(StringType.Latin1),     // Delimiter
+            content1.render(StringType.Latin1),                 // Lyric 1
+            content2.render(StringType.Latin1).subarray(0, 5),  // Lyric 2 (incomplete)
         );
+        const header = new Id3v2FrameHeader(FrameIdentifiers.SYLT, Id3v2FrameFlags.None, fieldBytes.length);
+
+        // Act / Assert
+        assert.throws(() => { SynchronizedLyricsFrame.fromFieldBytes(header, fieldBytes, version); });
+    }
+
+    @params(2, "v2")
+    @params(3, "v3")
+    @params(4, "v4")
+    public fromFieldBytes_noData(version: number) {
+        // Arrange
+        const fieldBytes = ByteVector.concatenate(
+            StringType.UTF16BE,                               // Encoding
+            ByteVector.fromString("fux", StringType.Latin1),  // Language
+            TimestampFormat.AbsoluteMilliseconds,             // Timestamp format
+            SynchronizedTextType.Trivia,                      // Content type
+            ByteVector.fromString("bux", StringType.UTF16BE), // Content descriptor
+            ByteVector.getTextDelimiter(StringType.UTF16BE),  // Delimiter
+        );
+        const header = new Id3v2FrameHeader(FrameIdentifiers.SYLT, Id3v2FrameFlags.None, fieldBytes.length);
 
         // Act
-        const frame = SynchronizedLyricsFrame.fromOffsetRawData(data, 2, header, 4);
-
-        // Assert
-        Id3v2_SynchronizedLyricsFrame_ConstructorTests.assertFrame(
-            frame,
-            "bux",
-            TimestampFormat.AbsoluteMilliseconds,
-            "fux",
-            [content1],
-            StringType.UTF16BE,
-            SynchronizedTextType.Trivia
-        );
-    }
-
-    @test
-    public fromOffsetRawData_noData() {
-        // Arrange
-        const header = new Id3v2FrameHeader(FrameIdentifiers.SYLT);
-        header.frameSize = 14;
-        const data = ByteVector.concatenate(
-            0x00, 0x00,
-            header.render(4),
-            StringType.UTF16BE,
-            ByteVector.fromString("fux", StringType.Latin1),
-            TimestampFormat.AbsoluteMilliseconds,
-            SynchronizedTextType.Trivia,
-            ByteVector.fromString("bux", StringType.UTF16BE),
-            ByteVector.getTextDelimiter(StringType.UTF16BE),
-        );
-
-        // Act
-        const frame = SynchronizedLyricsFrame.fromOffsetRawData(data, 2, header, 4);
+        const frame = SynchronizedLyricsFrame.fromFieldBytes(header, fieldBytes, version);
 
         // Assert
         Id3v2_SynchronizedLyricsFrame_ConstructorTests.assertFrame(
@@ -208,71 +195,105 @@ import {SynchronizedTextType, TimestampFormat} from "../../src/id3v2/utilTypes";
         );
     }
 
-    @test
-    public fromOffsetRawData_singleData() {
+    @params(2, "v2")
+    @params(3, "v3")
+    @params(4, "v4")
+    public fromFieldBytes_oneLyric(version: number) {
         // Arrange
-        const header = new Id3v2FrameHeader(FrameIdentifiers.SYLT);
-        header.frameSize = 26;
-        const content1 = new SynchronizedText(123, "qux");
-        const data = ByteVector.concatenate(
-            0x00, 0x00,
-            header.render(4),
-            StringType.UTF16BE,
-            ByteVector.fromString("fux", StringType.Latin1),
-            TimestampFormat.AbsoluteMilliseconds,
-            SynchronizedTextType.Trivia,
-            ByteVector.fromString("bux", StringType.UTF16BE),
-            ByteVector.getTextDelimiter(StringType.UTF16BE),
-            content1.render(StringType.UTF16BE)
+        const lyric1 = new SynchronizedText(123, "foo");
+
+        const fieldBytes = ByteVector.concatenate(
+            StringType.UTF16BE,                               // Text encoding
+            ByteVector.fromString("eng", StringType.Latin1),  // Language
+            TimestampFormat.AbsoluteMilliseconds,             // Timestamp format
+            SynchronizedTextType.Trivia,                      // Content type
+            ByteVector.fromString("bux", StringType.UTF16BE), // Content descriptor
+            ByteVector.getTextDelimiter(StringType.UTF16BE),  // Delimiter
+            lyric1.render(StringType.UTF16BE)                 // Lyric 1
         );
+        const header = new Id3v2FrameHeader(FrameIdentifiers.SYLT, Id3v2FrameFlags.None, fieldBytes.length);
 
         // Act
-        const frame = SynchronizedLyricsFrame.fromOffsetRawData(data, 2, header, 4);
+        const frame = SynchronizedLyricsFrame.fromFieldBytes(header, fieldBytes, version);
 
         // Assert
         Id3v2_SynchronizedLyricsFrame_ConstructorTests.assertFrame(
             frame,
             "bux",
             TimestampFormat.AbsoluteMilliseconds,
-            "fux",
-            [content1],
+            "eng",
+            [lyric1],
             StringType.UTF16BE,
             SynchronizedTextType.Trivia
         );
     }
 
-    @test
-    public fromOffsetRawData_multipleData() {
+    @params(2, "v2")
+    @params(3, "v3")
+    @params(4, "v4")
+    public fromFieldBytes_twoLyrics(version: number) {
         // Arrange
-        const header = new Id3v2FrameHeader(FrameIdentifiers.SYLT);
-        header.frameSize = 38;
-        const content1 = new SynchronizedText(123, "qux");
-        const content2 = new SynchronizedText(456, "zux");
-        const data = ByteVector.concatenate(
-            0x00, 0x00,
-            header.render(4),
-            StringType.UTF16BE,
-            ByteVector.fromString("fux", StringType.Latin1),
-            TimestampFormat.AbsoluteMilliseconds,
-            SynchronizedTextType.Trivia,
-            ByteVector.fromString("bux", StringType.UTF16BE),
-            ByteVector.getTextDelimiter(StringType.UTF16BE),
-            content1.render(StringType.UTF16BE),
-            content2.render(StringType.UTF16BE)
+        const lyric1 = new SynchronizedText(123, "foo");
+        const lyric2 = new SynchronizedText(456, "bar");
+
+        const fieldBytes = ByteVector.concatenate(
+            StringType.Latin1,                               // Text encoding
+            ByteVector.fromString("eng", StringType.Latin1), // Language
+            TimestampFormat.AbsoluteMilliseconds,            // Timestamp format
+            SynchronizedTextType.Trivia,                     // Content type
+            ByteVector.fromString("bux", StringType.Latin1), // Content descriptor
+            ByteVector.getTextDelimiter(StringType.Latin1),  // Delimiter
+            lyric1.render(StringType.Latin1),                // Lyric 1
+            lyric2.render(StringType.Latin1)                 // Lyric 2
         );
+        const header = new Id3v2FrameHeader(FrameIdentifiers.SYLT, Id3v2FrameFlags.None, fieldBytes.length);
 
         // Act
-        const frame = SynchronizedLyricsFrame.fromOffsetRawData(data, 2, header, 4);
+        const frame = SynchronizedLyricsFrame.fromFieldBytes(header, fieldBytes, version);
 
         // Assert
         Id3v2_SynchronizedLyricsFrame_ConstructorTests.assertFrame(
             frame,
             "bux",
             TimestampFormat.AbsoluteMilliseconds,
-            "fux",
-            [content1, content2],
-            StringType.UTF16BE,
+            "eng",
+            [lyric1, lyric2],
+            StringType.Latin1,
             SynchronizedTextType.Trivia
+        );
+    }
+
+    @params(StringType.Latin1, "single_byte")
+    @params(StringType.UTF16BE, "multi_byte")
+    public fromFieldBytes_encodingTest(encoding: StringType) {
+        // Arrange
+        const lyric1 = new SynchronizedText(123, "foo");
+        const lyric2 = new SynchronizedText(234, "bar");
+
+        const fieldBytes = ByteVector.concatenate(
+            encoding,                                         // Text encoding
+            ByteVector.fromString("eng", StringType.Latin1),  // Language
+            TimestampFormat.AbsoluteMpegFrames,               // Timestamp format
+            SynchronizedTextType.Events,                      // Content type
+            ByteVector.fromString("baz", encoding),           // Content descriptor
+            ByteVector.getTextDelimiter(encoding),            // Delimiter
+            lyric1.render(encoding),                          // Lyric 1
+            lyric2.render(encoding)                           // Lyric 2
+        );
+        const header = new Id3v2FrameHeader(FrameIdentifiers.SYLT, Id3v2FrameFlags.None, fieldBytes.length);
+
+        // Act
+        const frame = SynchronizedLyricsFrame.fromFieldBytes(header, fieldBytes, 4);
+
+        // Assert
+        Id3v2_SynchronizedLyricsFrame_ConstructorTests.assertFrame(
+            frame,
+            "baz",
+            TimestampFormat.AbsoluteMpegFrames,
+            "eng",
+            [lyric1, lyric2],
+            encoding,
+            SynchronizedTextType.Events
         );
     }
 
@@ -590,30 +611,154 @@ import {SynchronizedTextType, TimestampFormat} from "../../src/id3v2/utilTypes";
         assert.deepStrictEqual(output.text, frame.text);
     }
 
-    @test
-    public render() {
+    @params(2, "v2")
+    @params(3, "v3")
+    @params(4, "v4")
+    public render_noLyrics(version: number) {
         // Arrange
-        const header = new Id3v2FrameHeader(FrameIdentifiers.SYLT);
-        header.frameSize = 38;
-        const content1 = new SynchronizedText(123, "qux");
-        const content2 = new SynchronizedText(456, "zux");
-        const data = ByteVector.concatenate(
-            header.render(4),
-            StringType.UTF16BE,
-            ByteVector.fromString("fux", StringType.Latin1),
-            TimestampFormat.AbsoluteMilliseconds,
-            SynchronizedTextType.Trivia,
-            ByteVector.fromString("bux", StringType.UTF16BE),
-            ByteVector.getTextDelimiter(StringType.UTF16BE),
-            content1.render(StringType.UTF16BE),
-            content2.render(StringType.UTF16BE)
+        const frame = SynchronizedLyricsFrame.fromInfo("foo", "bar", SynchronizedTextType.Chord, StringType.Latin1);
+        frame.format = TimestampFormat.AbsoluteMpegFrames;
+
+        // Act
+        const output = frame.render(version);
+
+        // Assert
+        assert.isOk(output);
+
+        const fieldBytes = ByteVector.concatenate(
+            StringType.Latin1,                                // Encoding
+            ByteVector.fromString("bar", StringType.Latin1),  // Language
+            TimestampFormat.AbsoluteMpegFrames,               // Timestamp format
+            SynchronizedTextType.Chord,                       // Content type
+            ByteVector.fromString("foo", StringType.Latin1),  // Content descriptor
+            ByteVector.getTextDelimiter(StringType.Latin1),   // Delimiter
         );
-        const frame = SynchronizedLyricsFrame.fromOffsetRawData(data, 0, header, 4);
+        const header = new Id3v2FrameHeader(FrameIdentifiers.SYLT, Id3v2FrameFlags.None, fieldBytes.length);
+        const expected = ByteVector.concatenate(header.render(version), fieldBytes);
+        Testers.bvEqual(output, expected);
+    }
+
+    @params(2, "v2")
+    @params(3, "v3")
+    @params(4, "v4")
+    public render_falsyLyrics(version: number) {
+        // Arrange
+        const frame = SynchronizedLyricsFrame.fromInfo("foo", "bar", SynchronizedTextType.Chord, StringType.Latin1);
+        frame.format = TimestampFormat.AbsoluteMpegFrames;
+        frame.text = [undefined, null];
+
+        // Act
+        const output = frame.render(version);
+
+        // Assert
+        assert.isOk(output);
+
+        const fieldBytes = ByteVector.concatenate(
+            StringType.Latin1,                                // Encoding
+            ByteVector.fromString("bar", StringType.Latin1),  // Language
+            TimestampFormat.AbsoluteMpegFrames,               // Timestamp format
+            SynchronizedTextType.Chord,                       // Content type
+            ByteVector.fromString("foo", StringType.Latin1),  // Content descriptor
+            ByteVector.getTextDelimiter(StringType.Latin1),   // Delimiter
+        );
+        const header = new Id3v2FrameHeader(FrameIdentifiers.SYLT, Id3v2FrameFlags.None, fieldBytes.length);
+        const expected = ByteVector.concatenate(header.render(version), fieldBytes);
+        Testers.bvEqual(output, expected);
+    }
+
+    @params(2, "v2")
+    @params(3, "v3")
+    @params(4, "v4")
+    public render_oneLyric(version: number) {
+        // Arrange
+        const lyric1 = new SynchronizedText(123, "fux");
+
+        const frame = SynchronizedLyricsFrame.fromInfo("foo", "bar", SynchronizedTextType.Chord, StringType.Latin1);
+        frame.format = TimestampFormat.AbsoluteMpegFrames;
+        frame.text = [lyric1];
+
+        // Act
+        const output = frame.render(version);
+
+        // Assert
+        assert.isOk(output);
+
+        const fieldBytes = ByteVector.concatenate(
+            StringType.Latin1,                                // Encoding
+            ByteVector.fromString("bar", StringType.Latin1),  // Language
+            TimestampFormat.AbsoluteMpegFrames,               // Timestamp format
+            SynchronizedTextType.Chord,                       // Content type
+            ByteVector.fromString("foo", StringType.Latin1),  // Content descriptor
+            ByteVector.getTextDelimiter(StringType.Latin1),   // Delimiter
+            lyric1.render(StringType.Latin1)                  // Lyric 1
+        );
+        const header = new Id3v2FrameHeader(FrameIdentifiers.SYLT, Id3v2FrameFlags.None, fieldBytes.length);
+        const expected = ByteVector.concatenate(header.render(version), fieldBytes);
+        Testers.bvEqual(output, expected);
+    }
+
+    @params(2, "v2")
+    @params(3, "v3")
+    @params(4, "v4")
+    public render_twoLyric(version: number) {
+        // Arrange
+        const lyric2 = new SynchronizedText(234, "bux");
+        const lyric1 = new SynchronizedText(123, "fux");
+
+        const frame = SynchronizedLyricsFrame.fromInfo("foo", "bar", SynchronizedTextType.Chord, StringType.Latin1);
+        frame.format = TimestampFormat.AbsoluteMpegFrames;
+        frame.text = [lyric2, lyric1]; // Note - not in chronological order
+
+        // Act
+        const output = frame.render(version);
+
+        // Assert
+        assert.isOk(output);
+
+        const fieldBytes = ByteVector.concatenate(
+            StringType.Latin1,                                // Encoding
+            ByteVector.fromString("bar", StringType.Latin1),  // Language
+            TimestampFormat.AbsoluteMpegFrames,               // Timestamp format
+            SynchronizedTextType.Chord,                       // Content type
+            ByteVector.fromString("foo", StringType.Latin1),  // Content descriptor
+            ByteVector.getTextDelimiter(StringType.Latin1),   // Delimiter
+            lyric1.render(StringType.Latin1),                 // Lyric 1
+            lyric2.render(StringType.Latin1)                  // Lyric 2
+        );
+        const header = new Id3v2FrameHeader(FrameIdentifiers.SYLT, Id3v2FrameFlags.None, fieldBytes.length);
+        const expected = ByteVector.concatenate(header.render(version), fieldBytes);
+        Testers.bvEqual(output, expected);
+    }
+
+    @params(StringType.Latin1, "single_byte")
+    @params(StringType.UTF16BE, "multi_byte")
+    public render_encodingTest(encoding: StringType) {
+        // Arrange
+        const lyric2 = new SynchronizedText(234, "bux");
+        const lyric1 = new SynchronizedText(123, "fux");
+
+        const frame = SynchronizedLyricsFrame.fromInfo("foo", "bar", SynchronizedTextType.Chord, encoding);
+        frame.format = TimestampFormat.AbsoluteMpegFrames;
+        frame.text = [lyric2, lyric1]; // Note - not in chronological order
 
         // Act
         const output = frame.render(4);
 
         // Assert
-        Testers.bvEqual(output, data);
+        assert.isOk(output);
+
+        const fieldBytes = ByteVector.concatenate(
+            encoding,                                         // Encoding
+            ByteVector.fromString("bar", StringType.Latin1),  // Language
+            TimestampFormat.AbsoluteMpegFrames,               // Timestamp format
+            SynchronizedTextType.Chord,                       // Content type
+            ByteVector.fromString("foo", encoding),           // Content descriptor
+            ByteVector.getTextDelimiter(encoding),            // Delimiter
+            lyric1.render(encoding),                          // Lyric 1
+            lyric2.render(encoding)                           // Lyric 2
+        );
+        const header = new Id3v2FrameHeader(FrameIdentifiers.SYLT, Id3v2FrameFlags.None, fieldBytes.length);
+        const expected = ByteVector.concatenate(header.render(4), fieldBytes);
+        Testers.bvEqual(output, expected);
     }
 }

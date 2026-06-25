@@ -4,6 +4,7 @@ import {Id3v2FrameFlags, Id3v2FrameHeader} from "./frameHeader";
 import {FrameIdentifiers} from "../frameIdentifiers";
 import {Guards} from "../../utils";
 import {EventType, TimestampFormat} from "../utilTypes";
+import {CorruptFileError} from "../../errors";
 
 /**
  * Class that represents an event for usage in a {@link EventTimeCodeFrame}.
@@ -75,7 +76,7 @@ export class EventTimeCode {
 }
 
 /**
- * Represents an ID3v2 event time code frame, which is used to store a timestamps for events within
+ * Represents an ID3v2 event time code frame, which is used to store timestamps for events within
  * a track.
  */
 export class EventTimeCodeFrame extends Frame {
@@ -92,8 +93,61 @@ export class EventTimeCodeFrame extends Frame {
      * Constructs and initializes a new instance without contents
      */
     public static fromEmpty(): EventTimeCodeFrame {
+        // @TODO: Should we be mucking around with the flags like this?
         const frame = new EventTimeCodeFrame(new Id3v2FrameHeader(FrameIdentifiers.ETCO));
         frame.flags = Id3v2FrameFlags.FileAlterPreservation;
+        return frame;
+    }
+
+    /**
+     * Constructs and initializes a new instance by parsing the fields from the field bytes.
+     * @param header Header of the frame
+     * @param fieldBytes Bytes that contain the fields of the frame
+     * @param version ID3v2 version the frame was originally encoded with
+     */
+    public static fromFieldBytes(
+        header: Id3v2FrameHeader,
+        fieldBytes: ByteVector,
+        version: number
+    ): EventTimeCodeFrame {
+        Guards.truthy(header, "header");
+        Guards.truthy(fieldBytes, "fieldBytes");
+        Guards.byte(version, "version");
+
+        if (fieldBytes.length < 1) {
+            throw new CorruptFileError("Event time code frame must contain at least 1 byte.");
+        }
+
+        // Time stamp format    $xx
+        // ---- Repeated for each key event --------------------------------
+        // Type of event   $xx
+        // Time stamp      $xx (xx ...)
+        // ---- Repeated for each key event --------------------------------
+
+        const frame = new EventTimeCodeFrame(header);
+
+        // Read time code format
+        frame._timestampFormat = fieldBytes.get(0);
+
+        // Read the events
+        let offset = 1;
+        const events: EventTimeCode[] = [];
+        while (offset < fieldBytes.length) {
+            // @TODO: Allow ignoring partial event codes
+
+            if (offset + 5 > fieldBytes.length) {
+                throw new CorruptFileError("Event time code frame does not contain enough bytes for event");
+            }
+
+            const eventType = fieldBytes.get(offset);
+            const timeStamp = fieldBytes.subarray(offset + 1, 4).toUint();
+
+            events.push(new EventTimeCode(eventType, timeStamp));
+            offset += 5;
+        }
+
+        frame._events = events;
+
         return frame;
     }
 
@@ -105,31 +159,6 @@ export class EventTimeCodeFrame extends Frame {
         const frame = new EventTimeCodeFrame(new Id3v2FrameHeader(FrameIdentifiers.ETCO));
         frame.flags = Id3v2FrameFlags.FileAlterPreservation;
         frame.timestampFormat = timestampFormat;
-        return frame;
-    }
-
-    /**
-     * Constructs and initializes a new instance by reading its raw data in a specified ID3v2
-     * version. This method allows for offset reading from the data byte vector.
-     * @param data Raw representation of the new frame
-     * @param offset What offset in `data` the frame actually begins. Must be positive,
-     *     safe integer
-     * @param header Header of the frame found at `data` in the data
-     * @param version ID3v2 version the frame was originally encoded with
-     */
-    public static fromOffsetRawData(
-        data: ByteVector,
-        offset: number,
-        header: Id3v2FrameHeader,
-        version: number
-    ): EventTimeCodeFrame {
-        Guards.truthy(data, "data");
-        Guards.uint(offset, "offset");
-        Guards.truthy(header, "header");
-        Guards.byte(version, "version");
-
-        const frame = new EventTimeCodeFrame(header);
-        frame.setData(data, offset, false, version);
         return frame;
     }
 
@@ -172,30 +201,11 @@ export class EventTimeCodeFrame extends Frame {
     }
 
     /** @inheritDoc */
-    protected parseFields(data: ByteVector): void {
-        this._events = [];
-        this._timestampFormat = data.get(0);
-
-        for (let i = 1; i < data.length; i += 5) {
-            const eventType = data.get(i);
-
-            const timestampData = ByteVector.concatenate(
-                data.get(i + 1),
-                data.get(i + 2),
-                data.get(i + 3),
-                data.get(i + 4)
-            );
-            const timestamp = timestampData.toInt();
-
-            this._events.push(new EventTimeCode(eventType, timestamp));
-        }
-    }
-
-    /** @inheritDoc */
     protected renderFields(): ByteVector {
         // Docs state event codes must be sorted chronologically
-        const events = this.events.sort((a, b) => a.time - b.time)
-            .map((e) => e.render());
+        const events = this.events
+            .sort((a, b) => a.time - b.time)
+            .map(e => e.render());
 
         return ByteVector.concatenate(
             this.timestampFormat,

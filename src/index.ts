@@ -102,6 +102,7 @@ export {
     Id3v2FrameFactory
 } from "./id3v2/frames/frameFactory";
 export {Id3v2FrameFlags, Id3v2FrameHeader} from "./id3v2/frames/frameHeader";
+export {default as Id3v2GenreFrame} from "./id3v2/frames/genreFrame";
 export {default as Id3v2MusicCdIdentifierFrame} from "./id3v2/frames/musicCdIdentifierFrame";
 export {default as Id3v2PlayCountFrame} from "./id3v2/frames/playCountFrame";
 export {default as Id3v2PopularimeterFrame} from "./id3v2/frames/popularimeterFrame";
@@ -116,18 +117,13 @@ export {
     SynchronizedText as Id3v2SynchronizedLyricsFrame
 } from "./id3v2/frames/synchronizedLyricsFrame";
 export {default as Id3v2TermsOfUseFrame} from "./id3v2/frames/termsOfUseFrame";
-export {default as Id3v2GenreFrame} from "./id3v2/frames/genreFrame";
-export {
-    TextInformationFrame as Id3v2TextInformationFrame,
-    UserTextInformationFrame as Id3v2UserTextInformationFrame
-} from "./id3v2/frames/textInformationFrame";
+export {default as Id3v2TextInformationFrame} from "./id3v2/frames/textInformationFrame";
 export {default as Id3v2UniqueFileIdentifierFrame} from "./id3v2/frames/uniqueFileIdentifierFrame";
 export {default as Id3v2UnknownFrame} from "./id3v2/frames/unknownFrame";
 export {default as Id3v2UnsynchronizedLyricsFrame} from "./id3v2/frames/unsynchronizedLyricsFrame";
-export {
-    UrlLinkFrame as Id3v2UrlLinkFrame,
-    UserUrlLinkFrame as Id3v2UserUrlLinkFrame
-} from "./id3v2/frames/urlLinkFrame";
+export {default as Id3v2UrlLinkFrame} from "./id3v2/frames/urlLinkFrame";
+export {default as Id3v2UserTextInformationFrame} from "./id3v2/frames/userTextInformationFrame";
+export {default as Id3v2UserUrlLinkFrame} from "./id3v2/frames/userUrlLinkFrame";
 
 // Matroska/webm ///////////////////////////////////////////////////////////
 export {default as MatroskaFile} from "./matroska/matroskaFile";

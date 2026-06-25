@@ -9,6 +9,7 @@ import {Guards} from "../../utils";
  * Music CD identifier frames should contain the table of contents data as stored on the physical
  * CD. It is primarily used for track information lookup through web sources like CDDB.
  */
+// @TODO: This is basically identical to unknown frame. Surely we could abstract some of this.
 export default class MusicCdIdentifierFrame extends Frame {
     private _data: ByteVector;
 
@@ -17,26 +18,32 @@ export default class MusicCdIdentifierFrame extends Frame {
     }
 
     /**
-     * Constructs and initializes a new instance of MusicCdIdentifier frame by reading its raw data
-     * in a specified ID3v2 version starting at a specified offset.
-     * @param data Raw representation of the new frame.
-     * @param offset Offset into `data` where the frame actually begins. Must be a
-     *     positive, safe integer
-     * @param header Header of the frame found at `offset` in the data
+     * Constructs and initializes a new instance with a specified bytes.
+     * @param data Contents of the frame
+     */
+    public static fromData(data: ByteVector): MusicCdIdentifierFrame {
+        const frame = new MusicCdIdentifierFrame(new Id3v2FrameHeader(FrameIdentifiers.MCDI));
+        frame._data = data.toByteVector();
+        return frame;
+    }
+
+    /**
+     * Constructs and initialized a new instance by storing the bytes of the frame.
+     * @param header Header of the frame
+     * @param fieldBytes Bytes that contain the body of the frame
      * @param version ID3v2 version the frame was originally encoded with
      */
-    public static fromOffsetRawData(
-        data: ByteVector,
-        offset: number,
-        header: Id3v2FrameHeader, version: number
+    public static fromFieldBytes(
+        header: Id3v2FrameHeader,
+        fieldBytes: ByteVector,
+        version: number
     ): MusicCdIdentifierFrame {
-        Guards.truthy(data, "data");
-        Guards.uint(offset, "offset");
         Guards.truthy(header, "header");
+        Guards.truthy(fieldBytes, "fieldBytes");
         Guards.byte(version, "version");
 
         const frame = new MusicCdIdentifierFrame(header);
-        frame.setData(data, offset, false, version);
+        frame._data = fieldBytes.toByteVector();
         return frame;
     }
 
@@ -54,19 +61,14 @@ export default class MusicCdIdentifierFrame extends Frame {
     public set data(value: ByteVector) { this._data = value; }
 
     /** @inheritDoc */
-    public clone(): Frame {
+    public clone(): MusicCdIdentifierFrame {
         const frame = new MusicCdIdentifierFrame(new Id3v2FrameHeader(FrameIdentifiers.MCDI));
-        frame.data = this._data?.toByteVector();
+        frame.data = this._data.toByteVector();
         return frame;
     }
 
     /** @inheritDoc */
-    protected parseFields(data: ByteVector): void {
-        this._data = data;
-    }
-
-    /** @inheritDoc */
     protected renderFields(): ByteVector {
-        return this._data || ByteVector.empty();
+        return this._data;
     }
 }

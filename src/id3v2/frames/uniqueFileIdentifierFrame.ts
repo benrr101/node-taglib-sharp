@@ -1,4 +1,5 @@
 import {ByteVector, StringType} from "../../byteVector";
+import {CorruptFileError} from "../../errors";
 import {Frame, FrameClassType} from "./frame";
 import {Id3v2FrameHeader} from "./frameHeader";
 import {FrameIdentifiers} from "../frameIdentifiers";
@@ -36,26 +37,33 @@ export default class UniqueFileIdentifierFrame extends Frame {
     }
 
     /**
-     * Constructs and initializes a new instance by reading its raw data in a specified ID3v2
-     * version. This method allows for offset reading from the data byte vector.
-     * @param data Raw representation of the new frame
-     * @param offset What offset in `data` the frame actually begins. Must be positive,
-     *     safe integer
-     * @param header Header of the frame found at `data` in the data
+     * Constructs and initializes a new instance by parsing the fields from the field bytes.
+     * @param header Header of the frame
+     * @param fieldBytes Bytes that contain the fields of the frame
      * @param version ID3v2 version the frame was originally encoded with
      */
-    public static fromOffsetRawData(
-        data: ByteVector,
-        offset: number,
+    public static fromFieldBytes(
         header: Id3v2FrameHeader,
+        fieldBytes: ByteVector,
         version: number
     ): UniqueFileIdentifierFrame {
-        Guards.truthy(data, "data");
-        Guards.uint(offset, "offset");
         Guards.truthy(header, "header");
+        Guards.truthy(fieldBytes, "fieldBytes");
+        Guards.byte(version, "version");
+
+        // Owner identifier        <text string> $00
+        // Identifier              <up to 64 bytes binary data>
+
+        const delim = ByteVector.getTextDelimiter(StringType.Latin1);
+        const identifierDelimiterOffset = fieldBytes.find(delim);
+        if (identifierDelimiterOffset < 0) {
+            throw new CorruptFileError("Unique file identifier frame must contain two fields, separated by 0x00");
+        }
 
         const frame = new UniqueFileIdentifierFrame(header);
-        frame.setData(data, offset, false, version);
+        frame._owner = fieldBytes.subarray(0, identifierDelimiterOffset).toString(StringType.Latin1);
+        frame._identifier = fieldBytes.subarray(identifierDelimiterOffset + delim.length).toByteVector();
+
         return frame;
     }
 
@@ -107,17 +115,6 @@ export default class UniqueFileIdentifierFrame extends Frame {
         frame._owner = this._owner;
         frame._identifier = this._identifier?.toByteVector();
         return frame;
-    }
-
-    /** @inheritDoc */
-    protected parseFields(data: ByteVector): void {
-        const fields = data.split(ByteVector.getTextDelimiter(StringType.Latin1));
-        if (fields.length !== 2) {
-            return;
-        }
-
-        this._owner = fields[0].toString(StringType.Latin1);
-        this._identifier = fields[1].toByteVector();
     }
 
     /** @inheritDoc */

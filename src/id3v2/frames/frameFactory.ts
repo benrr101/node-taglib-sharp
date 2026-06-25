@@ -5,31 +5,36 @@ import MusicCdIdentifierFrame from "./musicCdIdentifierFrame";
 import PlayCountFrame from "./playCountFrame";
 import PopularimeterFrame from "./popularimeterFrame";
 import PrivateFrame from "./privateFrame";
+import SyncData from "../syncData";
 import TermsOfUseFrame from "./termsOfUseFrame";
+import TextInformationFrame from "./textInformationFrame";
 import UniqueFileIdentifierFrame from "./uniqueFileIdentifierFrame";
 import UnknownFrame from "./unknownFrame";
 import UnsynchronizedLyricsFrame from "./unsynchronizedLyricsFrame";
+import UrlLinkFrame from "./urlLinkFrame";
+import UserTextInformationFrame from "./userTextInformationFrame";
+import UserUrlLinkFrame from "./userUrlLinkFrame";
 import {ByteVector} from "../../byteVector";
 import {CorruptFileError, NotImplementedError} from "../../errors";
 import {EventTimeCodeFrame} from "./eventTimeCodeFrame";
 import {File} from "../../file";
 import {Frame} from "./frame";
 import {Id3v2FrameFlags, Id3v2FrameHeader} from "./frameHeader";
-import {FrameIdentifiers} from "../frameIdentifiers";
+import {FrameIdentifier, FrameIdentifiers} from "../frameIdentifiers";
 import {RelativeVolumeFrame} from "./relativeVolumeFrame";
 import {SynchronizedLyricsFrame} from "./synchronizedLyricsFrame";
-import {TextInformationFrame, UserTextInformationFrame} from "./textInformationFrame";
-import {UrlLinkFrame, UserUrlLinkFrame} from "./urlLinkFrame";
 import {Guards, NumberUtils} from "../../utils";
 
 /**
  * Type shortcut for a method that returns a {@link Frame}.
- * @param data Byte vector that contains the frame
- * @param offset Position into the byte vector where the frame begins
- * @param header The header that describes the frame
+ * @param data Byte vector that contains field bytes of the frame.
+ * @param offset Position into the byte vector where the frame begins. @TODO: This will always be zero.
+ * @param header The header that describes the frame.
  * @param version ID3v2 version the frame is encoded with. Must be unsigned 8-bit int
  */
 export type FrameCreator = (data: ByteVector, offset: number, header: Id3v2FrameHeader, version: number) => Frame;
+
+type InternalFrameCreator = (header: Id3v2FrameHeader, fieldBytes: ByteVector, version: number) => Frame;
 
 /**
  * Performs the necessary operations to determine and create the correct child classes of
@@ -39,8 +44,28 @@ export type FrameCreator = (data: ByteVector, offset: number, header: Id3v2Frame
  */
 export class Id3v2FrameFactory {
 
-
     private static readonly CUSTOM_FRAME_CREATORS: FrameCreator[] = [];
+
+    private static readonly DEFAULT_FRAME_CREATORS: Readonly<Map<FrameIdentifier, InternalFrameCreator>> =
+        new Map<FrameIdentifier, InternalFrameCreator>([
+            [FrameIdentifiers.APIC, AttachmentFrame.fromFieldBytes],
+            [FrameIdentifiers.COMM, CommentsFrame.fromFieldBytes],
+            [FrameIdentifiers.ETCO, EventTimeCodeFrame.fromFieldBytes],
+            [FrameIdentifiers.GEOB, AttachmentFrame.fromFieldBytes],
+            [FrameIdentifiers.MCDI, MusicCdIdentifierFrame.fromFieldBytes],
+            [FrameIdentifiers.PCNT, PlayCountFrame.fromFieldBytes],
+            [FrameIdentifiers.POPM, PopularimeterFrame.fromFieldBytes],
+            [FrameIdentifiers.PRIV, PrivateFrame.fromFieldBytes],
+            [FrameIdentifiers.RVA2, RelativeVolumeFrame.fromFieldBytes],
+            [FrameIdentifiers.SYLT, SynchronizedLyricsFrame.fromFieldBytes],
+            [FrameIdentifiers.TCON, GenreFrame.fromFieldBytes],
+            [FrameIdentifiers.TXXX, UserTextInformationFrame.fromFieldBytes],
+            [FrameIdentifiers.UFID, UniqueFileIdentifierFrame.fromFieldBytes],
+            [FrameIdentifiers.USER, TermsOfUseFrame.fromFieldBytes],
+            [FrameIdentifiers.USLT, UnsynchronizedLyricsFrame.fromFieldBytes],
+            [FrameIdentifiers.WXXX, UserUrlLinkFrame.fromFieldBytes],
+        ]);
+
 
     /**
      * Adds a custom frame creator to try before using standard frame creation methods.
@@ -66,187 +91,163 @@ export class Id3v2FrameFactory {
     }
 
     /**
-     * Creates a {@link Frame} object by reading it from raw ID3v2 frame data.
-     * @param data Raw ID3v2 frame
-     * @param file File to read the frame from if `data` is falsy
-     * @param offset Index into `file` or in `data` if truthy, at which the
-     *     frame begins. After reading, the offset where the next frame can be read is returned in
-     *     the `offset` property of the returned object
+     * Creates a {@link Frame} object by reading it from a file.
+     * @param file File that contains at least one frame
+     * @param offset Index into the data block where the frame header begins
      * @param version ID3v2 version the frame is encoded with. Must be unsigned 8-bit int
-     * @param alreadyUnsynced Whether or not the entire tag has already been unsynchronized
-     * @returns
-     *     Undefined is returned if there are no more frames to read.
-     *     Object is returned if a frame was found. Object has the following properties:
-     *     * frame: {@link Frame} that was read
-     *     * offset: updated offset where the next frame starts
+     * @param unsyncedAtTagLevel Whether the entire tag has already been unsynchronized
+     * @returns Frame|undefined
+     *     Frame read from the file is returned if it was read, `undefined` is returned if no frame
+     *     could be found at the given position.
      */
-    // @TODO: Split into fromFile and fromData
-    public static createFrame(
-        data: ByteVector,
+    public static createFrameFromFile(
         file: File,
         offset: number,
         version: number,
-        alreadyUnsynced: boolean
-    ): {frame: Frame, offset: number} {
-        Guards.uint(offset, "offset");
+        unsyncedAtTagLevel: boolean
+    ): {frame: Frame, totalSize: number}|undefined {
+        Guards.truthy(file, "file");
+        Guards.safeUint(offset, "offset");
         Guards.byte(version, "version");
 
-        let position = 0;
-        const frameHeaderSize = Id3v2FrameHeader.getSize(version);
+        // 1) Make sure we're in the right position for the start of the frame
+        file.seek(offset);
 
-        if (!data && !file) {
-            throw new Error("Argument exception: data or file must be provided");
+        // 2) Read basic frame header
+        const headerSize = Id3v2FrameHeader.getBaseSize(version);
+        const headerBytes = file.readBlock(headerSize);
+        if (headerBytes.length < headerSize) {
+            throw new Error("Argument error: data does not contain enough bytes for an ID3v2 frame header");
         }
 
-        if (!data) {
-            file.seek(offset);
-            data = file.readBlock(frameHeaderSize);
-        } else {
-            file = undefined;
-            position = offset;
-        }
-
-        // If the next data's position is 0, assume that we've hit the padding portion of the frame
-        if (data.get(position) === 0) {
+        // If the header bytes start with 0, we assume we've reached the padding portion of the tag.
+        if (headerBytes.get(0) === 0) {
             return undefined;
         }
 
-        const header = Id3v2FrameHeader.fromData(data.subarray(position, frameHeaderSize), version);
-        const frameStartIndex = offset + frameHeaderSize;
-        const frameEndIndex = offset + header.frameSize + frameHeaderSize;
-        const frameSize = frameEndIndex - frameStartIndex;
+        const header = Id3v2FrameHeader.fromData(headerBytes, version);
+        this.assertSupportedFlags(header.flags);
 
-        // Illegal frames are filtered out when creating the frame header
+        // @TODO: Support lazy loading frames again
+        // 3) Read the body bytes and finish constructing the frame
+        const fieldBytes = file.readBlock(header.frameSize);
+        const frame = this.createFrameFromFieldBytes(header, fieldBytes, version, unsyncedAtTagLevel);
 
-        // Mark the frame as unsynchronized if the entire tag is already unsynchronized
-        if (alreadyUnsynced) {
-            header.flags &= ~Id3v2FrameFlags.Unsynchronized;
+        return { frame: frame, totalSize: header.frameSize + headerSize };
+    }
+
+    /**
+     * Creates a {@link Frame} object by reading it from raw frame data.
+     * @param data Block of data containing at least one frame.
+     * @param offset Index into the data block where the frame header begins.
+     * @param version ID3v2 version the frame is encoded with. Must be unsigned 8-bit int
+     * @param unsyncedAtTagLevel Whether the entire tag has already been unsynchronized
+     * @returns Frame|undefined
+     *     Frame read from the file is returned if it was read, `undefined` is returned if no frame
+     *     could be found at the given position.
+     */
+    public static createFrameFromTagBytes(
+        data: ByteVector,
+        offset: number,
+        version: number,
+        unsyncedAtTagLevel: boolean
+    ): {frame: Frame, totalSize: number}|undefined {
+        Guards.truthy(data, "data");
+        Guards.safeUint(offset, "offset");
+        Guards.byte(version, "version");
+
+        // 1) Read the basic frame header
+        const headerSize = Id3v2FrameHeader.getBaseSize(version);
+        const headerBytes = data.subarray(offset, headerSize);
+        if (headerBytes.length < headerSize) {
+            throw new Error("Argument error: data does not contain enough bytes for an ID3v2 frame header");
         }
 
+        // If the header bytes start with 0, we assume we've reached the padding portion of the tag.
+        if (headerBytes.get(0) === 0) {
+            return undefined;
+        }
+
+        const header = Id3v2FrameHeader.fromData(headerBytes, version);
+        this.assertSupportedFlags(header.flags);
+
+        // 2) Read the body bytes and finish constructing frame
+        const fieldBytes = data.subarray(offset + headerSize, header.frameSize);
+        const frame = this.createFrameFromFieldBytes(header, fieldBytes, version, unsyncedAtTagLevel);
+
+        return { frame: frame, totalSize: header.frameSize + headerSize };
+    }
+
+    private static assertSupportedFlags(headerFlags: Id3v2FrameFlags): void {
         // TODO: Support compression
-        if (NumberUtils.hasFlag(header.flags, Id3v2FrameFlags.Compression)) {
+        if (NumberUtils.hasFlag(headerFlags, Id3v2FrameFlags.Compression)) {
             throw new NotImplementedError("Compression is not supported");
         }
 
         // TODO: Support encryption
-        if (NumberUtils.hasFlag(header.flags, Id3v2FrameFlags.Encryption)) {
+        if (NumberUtils.hasFlag(headerFlags, Id3v2FrameFlags.Encryption)) {
             throw new NotImplementedError("Encryption is not supported");
         }
 
-        try {
-            // Try to find a custom creator
-            for (const creator of this.CUSTOM_FRAME_CREATORS) {
-                // @TODO: If we're reading from a file, data will only ever contain the header
-                const frame = creator(data, position, header, version);
-                if (frame) {
-                    return {
-                        frame: frame,
-                        offset: frameEndIndex
-                    };
-                }
-            }
+        // @TODO: Consider reading these frames as unknown.
+    }
 
-            // This is where things get necessarily nasty. Here we determine which frame subclass (or
-            // if none is found, simply a frame) based on the frame ID. Since there are a lot of
-            // possibilities, that means a lot of if statements.
-
-            // Lazy object loading handling
-            if (file) {
-                // Attached picture (frames 4.14)
-                // General encapsulated object (frames 4.15)
-                // TODO: Make lazy loading optional
-                if (header.frameId === FrameIdentifiers.APIC || header.frameId === FrameIdentifiers.GEOB) {
-                    return {
-                        frame: AttachmentFrame.fromFile(
-                            file.fileAbstraction,
-                            header,
-                            frameStartIndex,
-                            frameSize,
-                            version
-                        ),
-                        offset: frameEndIndex
-                    };
-                }
-
-                // Read remaining part of the frame for the non-lazy Frame
-                file.seek(frameStartIndex);
-                data = ByteVector.concatenate(
-                    data,
-                    file.readBlock(frameSize)
-                );
-            }
-
-            let func: FrameCreator;
-            if (header.frameId === FrameIdentifiers.TCON) {
-                // Content type frame
-                func = GenreFrame.fromOffsetRawData;
-            } else if (header.frameId === FrameIdentifiers.TXXX) {
-                // User text identification frame
-                func = UserTextInformationFrame.fromOffsetRawData;
-            } else if (header.frameId.isTextFrame) {
-                // Text identification frame (frames 4.2)
-                func = TextInformationFrame.fromOffsetRawData;
-            } else if (header.frameId === FrameIdentifiers.UFID) {
-                // Unique file identifier (frames 4.1)
-                func = UniqueFileIdentifierFrame.fromOffsetRawData;
-            } else if (header.frameId === FrameIdentifiers.MCDI) {
-                // Music CD identifier (frames 4.5)
-                func = MusicCdIdentifierFrame.fromOffsetRawData;
-            } else if (header.frameId === FrameIdentifiers.USLT) {
-                // Unsynchronized lyrics (frames 4.8)
-                func = UnsynchronizedLyricsFrame.fromOffsetRawData;
-            } else if (header.frameId === FrameIdentifiers.SYLT) {
-                // Synchronized lyrics (frames 4.8)
-                func = SynchronizedLyricsFrame.fromOffsetRawData;
-            } else if (header.frameId === FrameIdentifiers.COMM) {
-                // Comments (frames 4.10)
-                func = CommentsFrame.fromOffsetRawData;
-            } else if (header.frameId === FrameIdentifiers.RVA2) {
-                // Relative volume adjustment (frames 4.11)
-                func = RelativeVolumeFrame.fromOffsetRawData;
-            } else if (header.frameId === FrameIdentifiers.APIC || header.frameId === FrameIdentifiers.GEOB) {
-                // Attached picture (frames 4.14)
-                func = AttachmentFrame.fromOffsetRawData;
-            } else if (header.frameId === FrameIdentifiers.PCNT) {
-                // Play count (frames 4.16)
-                func = PlayCountFrame.fromOffsetRawData;
-            } else if (header.frameId === FrameIdentifiers.POPM) {
-                // Popularimeter (frames 4.17)
-                func = PopularimeterFrame.fromOffsetRawData;
-            } else if (header.frameId === FrameIdentifiers.USER) {
-                // Terms of Use (frames 4.22)
-                func = TermsOfUseFrame.fromOffsetRawData;
-            } else if (header.frameId === FrameIdentifiers.PRIV) {
-                // Private (frames 4.27)
-                func = PrivateFrame.fromOffsetRawData;
-            } else if (header.frameId === FrameIdentifiers.WXXX) {
-                // User URL link
-                func = UserUrlLinkFrame.fromOffsetRawData;
-            } else if (header.frameId.isUrlFrame) {
-                // URL link (frame 4.3.1)
-                func = UrlLinkFrame.fromOffsetRawData;
-            } else if (header.frameId === FrameIdentifiers.ETCO) {
-                // Event timing codes (frames 4.6)
-                func = EventTimeCodeFrame.fromOffsetRawData;
-            } else {
-                // Return unknown
-                func = UnknownFrame.fromOffsetRawData;
-            }
-
-            return {
-                frame: func(data, position, header, version),
-                offset: frameEndIndex
-            };
-        } catch (e: unknown) {
-            if (e instanceof CorruptFileError || e instanceof NotImplementedError) {
-                throw e;
-            }
-
-            // Other exceptions will just mean we ignore the frame
-            return {
-                frame: undefined,
-                offset: frameEndIndex
-            };
+    private static createFrameFromFieldBytes(
+        header: Id3v2FrameHeader,
+        payloadBytes: ByteVector,
+        version: number,
+        unsynchedAtTagLevel: boolean
+    ): Frame {
+        // Make sure we got the same number of bytes as the frame says
+        if (payloadBytes.length < header.frameSize) {
+            throw new CorruptFileError(
+                `ID3v2 frame header specified body is ${header.frameSize} bytes, ` +
+                `but only ${payloadBytes.length} remain.`
+            );
         }
+
+        // Mark the frame as unsynchronized if the entire tag is already unsynchronized
+        // @TODO: Is this how the spec is written? Or was this to correct for invalid flags?
+        if (unsynchedAtTagLevel) {
+            header.flags &= ~Id3v2FrameFlags.Unsynchronized;
+        }
+
+        // 1) Unsynchronize if necessary
+        if (header.isUnsynchronizationApplied) {
+            payloadBytes = SyncData.resyncByteVector(payloadBytes);
+        }
+
+        // 2) Read extended header fields if they exist
+        const extendedHeaderSize = header.readExtendedHeaderFromPayloadBytes(payloadBytes, version);
+        const fieldBytes = payloadBytes.subarray(extendedHeaderSize);
+
+        // 3) Construct the frame
+        // 3.1) Try with a custom constructor
+        for (const customFunc of this.CUSTOM_FRAME_CREATORS) {
+            try {
+                const frame = customFunc(fieldBytes, 0, header, version);
+                if (frame) {
+                    return frame;
+                }
+            }
+            catch {
+                // Swallow and continue
+            }
+        }
+
+        // 3.2) No matching custom constructors found, use built-in/default constructor
+        let func = this.DEFAULT_FRAME_CREATORS.get(header.frameId);
+        func ??= header.frameId.isTextFrame ? TextInformationFrame.fromFieldBytes : undefined;
+        func ??= header.frameId.isUrlFrame ? UrlLinkFrame.fromFieldBytes : undefined;
+        func ??= UnknownFrame.fromFieldBytes;
+
+        let frame;
+        try {
+            frame = func(header, fieldBytes, version);
+        } catch {
+            frame = UnknownFrame.fromFieldBytes(header, fieldBytes, version);
+        }
+
+        return frame;
     }
 }

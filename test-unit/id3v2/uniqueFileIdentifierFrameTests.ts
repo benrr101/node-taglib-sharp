@@ -1,4 +1,4 @@
-import {suite, test} from "@testdeck/mocha";
+import {params, suite, test} from "@testdeck/mocha";
 import {assert} from "chai";
 
 import FrameConstructorTests from "./frameConstructorTests";
@@ -6,7 +6,7 @@ import PropertyTests from "../utilities/propertyTests";
 import UniqueFileIdentifierFrame from "../../src/id3v2/frames/uniqueFileIdentifierFrame";
 import {ByteVector, StringType} from "../../src/byteVector";
 import {Frame, FrameClassType} from "../../src/id3v2/frames/frame";
-import {Id3v2FrameHeader} from "../../src/id3v2/frames/frameHeader";
+import {Id3v2FrameFlags, Id3v2FrameHeader} from "../../src/id3v2/frames/frameHeader";
 import {FrameIdentifiers} from "../../src/id3v2/frameIdentifiers";
 import {Testers} from "../utilities/testers";
 
@@ -15,8 +15,8 @@ const testIdentifier = ByteVector.fromString("foobarbaz", StringType.UTF8);
 const testOwner = "https://github.com/benrr101/node-taglib-sharp";
 
 @suite class Id3v2_UniqueFileIdentifierFrame_ConstructorTests extends FrameConstructorTests {
-    public get fromOffsetRawData(): (d: ByteVector, o: number, h: Id3v2FrameHeader, v: number) => Frame {
-        return UniqueFileIdentifierFrame.fromOffsetRawData;
+    public get fromFieldBytes(): (h: Id3v2FrameHeader, d: ByteVector, v: number) => Frame {
+        return UniqueFileIdentifierFrame.fromFieldBytes;
     }
 
     @test
@@ -50,62 +50,65 @@ const testOwner = "https://github.com/benrr101/node-taglib-sharp";
         Id3v2_UniqueFileIdentifierFrame_ConstructorTests.assertFrame(frame, owner, identifier);
     }
 
-    @test
-    public fromOffsetRawData_tooFewFields_returnsEmptyFrame() {
+    @params(2, "v2")
+    @params(3, "v3")
+    @params(4, "v4")
+    public fromFieldBytes_empty_throws(version: number) {
         // Arrange
-        const header = new Id3v2FrameHeader(FrameIdentifiers.UFID);
-        header.frameSize = 9;
-        const data = ByteVector.concatenate(
-            0x0, 0x0,
-            header.render(4),
-            testIdentifier
-        );
+        const fieldBytes = ByteVector.empty();
+        const header = new Id3v2FrameHeader(FrameIdentifiers.UFID, Id3v2FrameFlags.None, fieldBytes.length);
 
-        // Act
-        const frame = UniqueFileIdentifierFrame.fromOffsetRawData(data, 2, header, 4);
-
-        // Assert
-        Id3v2_UniqueFileIdentifierFrame_ConstructorTests.assertFrame(frame, undefined, undefined);
+        // Act / Assert
+        assert.throws(() => UniqueFileIdentifierFrame.fromFieldBytes(header, fieldBytes, version));
     }
 
-    @test
-    public fromOffsetRawData_tooManyFields_returnsEmptyFrame() {
+    @params(2, "v2")
+    @params(3, "v3")
+    @params(4, "v4")
+    public fromFieldBytes_oneField_throws(version: number) {
         // Arrange
-        const header = new Id3v2FrameHeader(FrameIdentifiers.UFID);
-        header.frameSize = 29;
-        const data = ByteVector.concatenate(
-            0x0, 0x0,
-            header.render(4),
-            testIdentifier,
-            ByteVector.getTextDelimiter(StringType.Latin1),
-            testIdentifier,
-            ByteVector.getTextDelimiter(StringType.Latin1),
-            testIdentifier,
-            ByteVector.getTextDelimiter(StringType.Latin1)
-        );
+        const fieldBytes = testIdentifier;
+        const header = new Id3v2FrameHeader(FrameIdentifiers.UFID, Id3v2FrameFlags.None, fieldBytes.length);
 
-        // Act
-        const frame = UniqueFileIdentifierFrame.fromOffsetRawData(data, 2, header, 4);
-
-        // Assert
-        Id3v2_UniqueFileIdentifierFrame_ConstructorTests.assertFrame(frame, undefined, undefined);
+        // Act / Assert
+        assert.throws(() => UniqueFileIdentifierFrame.fromFieldBytes(header, fieldBytes, version));
     }
 
-    @test
-    public fromOffsetRawData_validData_returnsFrame() {
+    @params(2, "v2")
+    @params(3, "v3")
+    @params(4, "v4")
+    public fromFieldBytes_threeFields(version: number) {
         // Arrange
-        const header = new Id3v2FrameHeader(FrameIdentifiers.UFID);
-        header.frameSize = 55;
-        const data = ByteVector.concatenate(
-            0x0, 0x0,
-            header.render(4),
-            ByteVector.fromString(testOwner, StringType.UTF8),
-            ByteVector.getTextDelimiter(StringType.Latin1),
-            testIdentifier
+        const fieldBytes = ByteVector.concatenate(
+            ByteVector.fromString(testOwner, StringType.Latin1), // Owner
+            ByteVector.getTextDelimiter(StringType.Latin1),      // Delimiter
+            testIdentifier, 0x00, testIdentifier                 // Identifier
         );
+        const header = new Id3v2FrameHeader(FrameIdentifiers.UFID, Id3v2FrameFlags.None, fieldBytes.length);
 
         // Act
-        const frame = UniqueFileIdentifierFrame.fromOffsetRawData(data, 2, header, 4);
+        const frame = UniqueFileIdentifierFrame.fromFieldBytes(header, fieldBytes, version);
+
+        // Assert
+        const expectedData = ByteVector.concatenate(testIdentifier, 0x00, testIdentifier);
+        Id3v2_UniqueFileIdentifierFrame_ConstructorTests.assertFrame(frame, testOwner, expectedData);
+    }
+
+    @params(2, "v2")
+    @params(3, "v3")
+    @params(4, "v4")
+    public fromFieldBytes_validData_returnsFrame(version: number) {
+        // Arrange
+        const fieldBytes = ByteVector.concatenate(
+            ByteVector.fromString(testOwner, StringType.Latin1), // Owner
+            ByteVector.getTextDelimiter(StringType.Latin1),      // Delimiter
+            testIdentifier                                       // Identifier
+        );
+        const header = new Id3v2FrameHeader(FrameIdentifiers.UFID, Id3v2FrameFlags.None, fieldBytes.length);
+
+
+        // Act
+        const frame = UniqueFileIdentifierFrame.fromFieldBytes(header, fieldBytes, version);
 
         // Assert
         Id3v2_UniqueFileIdentifierFrame_ConstructorTests.assertFrame(frame, testOwner, testIdentifier);
@@ -213,24 +216,26 @@ const testOwner = "https://github.com/benrr101/node-taglib-sharp";
         assert.strictEqual(clone.owner, frame.owner);
     }
 
-    @test
-    public render_returnsByteVector() {
+    @params(2, "v2")
+    @params(3, "v3")
+    @params(4, "v4")
+    public render_returnsByteVector(version: number) {
         // Arrange
-        const header = new Id3v2FrameHeader(FrameIdentifiers.UFID);
-        header.frameSize = 55;
-        const data = ByteVector.concatenate(
-            header.render(4),
-            ByteVector.fromString(testOwner, StringType.UTF8),
-            ByteVector.getTextDelimiter(StringType.Latin1),
-            testIdentifier
-        );
-        const frame = UniqueFileIdentifierFrame.fromOffsetRawData(data, 0, header, 4);
+        const frame = UniqueFileIdentifierFrame.fromData(testOwner, testIdentifier);
 
         // Act
-        const result = frame.render(4);
+        const result = frame.render(version);
 
         // Assert
         assert.ok(result);
-        Testers.bvEqual(data, result);
+
+        const fieldData = ByteVector.concatenate(
+            ByteVector.fromString(testOwner, StringType.Latin1), // Owner
+            0x00,                                                // Delimiter
+            testIdentifier                                       // Identifier
+        );
+        const header = new Id3v2FrameHeader(FrameIdentifiers.UFID, Id3v2FrameFlags.None, fieldData.length);
+        const expected = ByteVector.concatenate(header.render(version), fieldData);
+        Testers.bvEqual(result, expected);
     }
 }

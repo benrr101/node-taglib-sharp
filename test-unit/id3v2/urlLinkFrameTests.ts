@@ -2,16 +2,16 @@ import {params, suite, test} from "@testdeck/mocha";
 import {assert} from "chai";
 
 import FrameConstructorTests from "./frameConstructorTests";
+import UrlLinkFrame from "../../src/id3v2/frames/urlLinkFrame";
 import {ByteVector, StringType} from "../../src/byteVector";
 import {Frame, FrameClassType} from "../../src/id3v2/frames/frame";
 import {Id3v2FrameFlags, Id3v2FrameHeader} from "../../src/id3v2/frames/frameHeader";
 import {FrameIdentifier, FrameIdentifiers} from "../../src/id3v2/frameIdentifiers";
 import {Testers} from "../utilities/testers";
-import {UrlLinkFrame} from "../../src/id3v2/frames/urlLinkFrame";
 
 @suite class Id3v2_UrlLinkFrame_ConstructorTests extends FrameConstructorTests {
-    public get fromOffsetRawData(): (d: ByteVector, o: number, h: Id3v2FrameHeader, v: number) => Frame {
-        return UrlLinkFrame.fromOffsetRawData;
+    public get fromFieldBytes(): (h: Id3v2FrameHeader, d: ByteVector, v: number) => Frame {
+        return UrlLinkFrame.fromFieldBytes;
     }
 
     @test
@@ -32,15 +32,16 @@ import {UrlLinkFrame} from "../../src/id3v2/frames/urlLinkFrame";
         assert.strictEqual(output.text, undefined);
     }
 
-    @test
-    public fromOffsetRawData_itsGood() {
+    @params(2, "v2")
+    @params(3, "v3")
+    @params(4, "v4")
+    public fromFieldBytes_itsGood(version: number) {
         // Arrange
-        const bodyBytes = ByteVector.fromString("foo", StringType.Latin1);
-        const header = new Id3v2FrameHeader(FrameIdentifiers.WCOM, Id3v2FrameFlags.None, bodyBytes.length);
-        const data = ByteVector.concatenate(header.render(4), bodyBytes);
+        const fieldBytes = ByteVector.fromString("foo", StringType.Latin1);
+        const header = new Id3v2FrameHeader(FrameIdentifiers.WCOM, Id3v2FrameFlags.None, fieldBytes.length);
 
         // Act
-        const output = UrlLinkFrame.fromOffsetRawData(data, 0, header, 4);
+        const output = UrlLinkFrame.fromFieldBytes(header, fieldBytes, version);
 
         // Assert
         assert.ok(output);
@@ -49,46 +50,49 @@ import {UrlLinkFrame} from "../../src/id3v2/frames/urlLinkFrame";
         assert.strictEqual(output.text, "foo");
     }
 
-    @test
-    public fromOffsetRawData_trailingNullBytes() {
+    @params(2, "v2")
+    @params(3, "v3")
+    @params(4, "v4")
+    public fromFieldBytes_trailingNullBytes(version: number) {
         // Arrange
-        const bodyBytes = ByteVector.concatenate(
+        const fieldBytes = ByteVector.concatenate(
             ByteVector.fromString("foo", StringType.Latin1),
             0x00, 0x00
         );
-        const header = new Id3v2FrameHeader(FrameIdentifiers.WCOM, Id3v2FrameFlags.None, bodyBytes.length);
-        const data = ByteVector.concatenate(header.render(4), bodyBytes);
+        const header = new Id3v2FrameHeader(FrameIdentifiers.WCOM, Id3v2FrameFlags.None, fieldBytes.length);
 
         // Act
-        const output = UrlLinkFrame.fromOffsetRawData(data, 0, header, 4);
+        const output = UrlLinkFrame.fromFieldBytes(header, fieldBytes, version);
 
         // Assert
-        assert.ok(output);
-        assert.strictEqual(output.frameClassType, FrameClassType.UrlLinkFrame);
-        assert.strictEqual(output.frameId, FrameIdentifiers.WCOM);
-        assert.strictEqual(output.text, "foo");
+        this.assertFrame(output, "foo");
     }
 
-    @test
-    public fromOffsetRawData_multipleFields() {
+    @params(2, "v2")
+    @params(3, "v3")
+    @params(4, "v4")
+    public fromFieldBytes_multipleFields(version: number) {
         // Arrange
-        const bodyBytes = ByteVector.concatenate(
+        const fieldBytes = ByteVector.concatenate(
             ByteVector.fromString("foo", StringType.Latin1),
             0x00,
             ByteVector.fromString("bar", StringType.Latin1),
             0x00, 0x00
         );
-        const header = new Id3v2FrameHeader(FrameIdentifiers.WCOM, Id3v2FrameFlags.None, bodyBytes.length);
-        const data = ByteVector.concatenate(header.render(4), bodyBytes);
+        const header = new Id3v2FrameHeader(FrameIdentifiers.WCOM, Id3v2FrameFlags.None, fieldBytes.length);
 
         // Act
-        const output = UrlLinkFrame.fromOffsetRawData(data, 0, header, 4);
+        const output = UrlLinkFrame.fromFieldBytes(header, fieldBytes, version);
 
         // Assert
-        assert.ok(output);
-        assert.strictEqual(output.frameClassType, FrameClassType.UrlLinkFrame);
-        assert.strictEqual(output.frameId, FrameIdentifiers.WCOM);
-        assert.strictEqual(output.text, "foo");
+        this.assertFrame(output, "foo");
+    }
+
+    private assertFrame(frame: UrlLinkFrame, text: string) {
+        assert.ok(frame);
+        assert.strictEqual(frame.frameClassType, FrameClassType.UrlLinkFrame);
+        assert.strictEqual(frame.frameId, FrameIdentifiers.WCOM);
+        assert.strictEqual(frame.text, text);
     }
 }
 

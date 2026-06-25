@@ -5,6 +5,7 @@ import {Frame, FrameClassType} from "./frame";
 import {Id3v2FrameHeader} from "./frameHeader";
 import {FrameIdentifiers} from "../frameIdentifiers";
 import {Guards, StringUtils} from "../../utils";
+import {CorruptFileError} from "../../errors";
 
 /**
  * This class provides support for ID3v2 TCON content type frames.
@@ -38,27 +39,95 @@ export default class GenreFrame extends Frame {
     }
 
     /**
-     * Constructs and initializes a new instance by reading its raw data in a specified ID3v2
-     * version. This method allows for offset reading from the data byte vector.
-     * @param data Raw representation of the new frame
-     * @param offset What offset in `data` the frame actually begins. Must be positive,
-     *     safe integer
-     * @param header Header of the frame found at `data` in the data
+     * Constructs and initializes a new instance by parsing the fields from the field bytes.
+     * @param header Header of the frame
+     * @param fieldBytes Bytes that contain the fields of the frame
      * @param version ID3v2 version the frame was originally encoded with
      */
-    public static fromOffsetRawData(
-        data: ByteVector,
-        offset: number,
-        header: Id3v2FrameHeader,
-        version: number
-    ): GenreFrame {
-        Guards.truthy(data, "data");
-        Guards.uint(offset, "offset");
+    public static fromFieldBytes(header: Id3v2FrameHeader, fieldBytes: ByteVector, version: number): GenreFrame {
         Guards.truthy(header, "header");
+        Guards.truthy(fieldBytes, "fieldBytes");
         Guards.byte(version, "version");
 
+        if (fieldBytes.length < 1) {
+            throw new CorruptFileError("Genre frame must contain at least 1 byte.");
+        }
+
+        // Text encoding          $xx
+        // Text                   <full text string according to encoding>
+
         const frame = new GenreFrame(header);
-        frame.setData(data, offset, false, version);
+
+        frame._encoding = fieldBytes.get(0);
+
+        const fieldList = [];
+        if (version > 3) {
+            // TCON on ID3v2.4 is encoded as a separate field for each genre. Fields can either be
+            // the old numeric ID3v1 genres (no parenthesis) or free text. RX/CR can also be used.
+            const genres = fieldBytes.subarray(1).toStrings(frame._encoding);
+            const textGenres = genres
+                .map(g => {
+                    // Trim trailing whitespace and null bytes
+                    g = StringUtils.trimEnd(g, " \t\r\n\0");
+
+                    // Parse special cases or fallback to just returning the value
+                    switch (g) {
+                        case GenreFrame.COVER_ABBREV:
+                            return GenreFrame.COVER_STRING;
+                        case GenreFrame.REMIX_ABBREV:
+                            return GenreFrame.REMIX_STRING;
+                        default:
+                            const textGenre = Genres.indexToAudio(g, false);
+                            return textGenre || g;
+                    }
+                })
+                .filter(g => !!g);
+            fieldList.push(...textGenres);
+        } else {
+            let value = fieldBytes.subarray(1).toString(frame._encoding);
+
+            // Truncate values containing NULL bytes (ie, ignore everything after a null byte)
+            const nullIndex = value.indexOf("\x00");
+            if (nullIndex >= 0) {
+                value = value.substring(0, nullIndex);
+            }
+
+            // TCON in ID3v2.2 and ID3v2.3 is specified as
+            // * (xx) - where xx is a number from the ID3v1 genre list
+            // * (xx)yy - where xx is a number from the ID3v1 genre list and yyy is a
+            //   "refinement" of the genre
+            // * (RX) - "Remix"
+            // * (CR) - "Cover"
+            // * (( - used to escape a "(" in a refinement/genre name
+
+            // Treat each term separately
+            const terms = Id3v2Settings.useNonStandardV2V3GenreSeparators
+                ? value.split(/[;\/]/).filter(t => !!t)
+                : [value];
+            for (const term of terms) {
+                // Attempt to process it according to our best understanding of the spec
+                const numericGenres = GenreFrame.parseTconAsStandardNumeric(term);
+                if (numericGenres !== undefined) {
+                    fieldList.push(... numericGenres);
+                    continue;
+                }
+
+                if (Id3v2Settings.useNonStandardV2V3NumericGenres) {
+                    // Attempt to process it as a non-standard numeric genre
+                    const numericGenre = Genres.indexToAudioDirect(term);
+                    if (numericGenre !== undefined) {
+                        fieldList.push(numericGenre);
+                        continue;
+                    }
+                }
+
+                // Yeah, we can't do anything smart, just treat it as a string
+                fieldList.push(term);
+            }
+        }
+
+        frame._textFields = fieldList;
+
         return frame;
     }
 
@@ -122,80 +191,6 @@ export default class GenreFrame extends Frame {
     // #endregion
 
     // #region Protected Methods
-
-    /** @inheritDoc */
-    protected parseFields(data: ByteVector, version: number): void {
-        // Read the string data type (first byte of the field data)
-        this._encoding = data.get(0);
-
-        const fieldList = [];
-        if (version > 3) {
-            // TCON on ID3v2.4 is encoded as a separate field for each genre. Fields can either be
-            // the old numeric ID3v1 genres (no parenthesis) or free text. RX/CR can also be used.
-            const genres = data.subarray(1).toStrings(this._encoding);
-            const textGenres = genres
-                .map(g => {
-                    // Trim trailing whitespace and null bytes
-                    g = StringUtils.trimEnd(g, " \t\r\n\0");
-
-                    // Parse special cases or fallback to just returning the value
-                    switch (g) {
-                        case GenreFrame.COVER_ABBREV:
-                            return GenreFrame.COVER_STRING;
-                        case GenreFrame.REMIX_ABBREV:
-                            return GenreFrame.REMIX_STRING;
-                        default:
-                            const textGenre = Genres.indexToAudio(g, false);
-                            return textGenre || g;
-                    }
-                })
-                .filter(g => !!g);
-            fieldList.push(...textGenres);
-        } else {
-            let value = data.subarray(1).toString(this._encoding);
-
-            // Truncate values containing NULL bytes (ie, ignore everything after a null byte)
-            const nullIndex = value.indexOf("\x00");
-            if (nullIndex >= 0) {
-                value = value.substring(0, nullIndex);
-            }
-
-            // TCON in ID3v2.2 and ID3v2.3 is specified as
-            // * (xx) - where xx is a number from the ID3v1 genre list
-            // * (xx)yy - where xx is a number from the ID3v1 genre list and yyy is a
-            //   "refinement" of the genre
-            // * (RX) - "Remix"
-            // * (CR) - "Cover"
-            // * (( - used to escape a "(" in a refinement/genre name
-
-            // Treat each term separately
-            const terms = Id3v2Settings.useNonStandardV2V3GenreSeparators
-                ? value.split(/[;\/]/).filter(t => !!t)
-                : [value];
-            for (const term of terms) {
-                // Attempt to process it according to our best understanding of the spec
-                const numericGenres = this.parseTconAsStandardNumeric(term);
-                if (numericGenres !== undefined) {
-                    fieldList.push(... numericGenres);
-                    continue;
-                }
-
-                if (Id3v2Settings.useNonStandardV2V3NumericGenres) {
-                    // Attempt to process it as a non-standard numeric genre
-                    const numericGenre = Genres.indexToAudioDirect(term);
-                    if (numericGenre !== undefined) {
-                        fieldList.push(numericGenre);
-                        continue;
-                    }
-                }
-
-                // Yeah, we can't do anything smart, just treat it as a string
-                fieldList.push(term);
-            }
-        }
-
-        this._textFields = fieldList;
-    }
 
     /** @inheritDoc */
     protected renderFields(version: number): ByteVector {
@@ -278,7 +273,7 @@ export default class GenreFrame extends Frame {
 
     // #endregion
 
-    private parseTconAsStandardNumeric(field: string): string[]|undefined {
+    private static parseTconAsStandardNumeric(field: string): string[]|undefined {
         // Don't even bother setting up the state machine if we aren't starting with an opening
         // parenthesis.
         if (field[0] !== "(") {
