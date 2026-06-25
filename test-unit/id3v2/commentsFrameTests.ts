@@ -496,7 +496,7 @@ const getTestFrame = (): CommentsFrame => {
             ByteVector.fromString("eng", StringType.Latin1), // Language
             ByteVector.fromString("foo", encoding),          // Description
             ByteVector.getTextDelimiter(encoding),           // Delimiter
-            ByteVector.fromString("bar", encoding)           // Lyrics
+            ByteVector.fromString("bar", encoding)           // Comment text
         );
         const header = new Id3v2FrameHeader(FrameIdentifiers.COMM, Id3v2FrameFlags.None, expectedFieldBytes.length);
         const expectedBytes = ByteVector.concatenate(header.render(version), expectedFieldBytes);
@@ -522,7 +522,7 @@ const getTestFrame = (): CommentsFrame => {
             ByteVector.fromString("eng", StringType.Latin1), // Language
             ByteVector.fromString("foo", outputEncoding),    // Description
             ByteVector.getTextDelimiter(outputEncoding),     // Delimiter
-            ByteVector.fromString("bar", outputEncoding)     // Lyrics
+            ByteVector.fromString("bar", outputEncoding)     // Comment text
         );
         const header = new Id3v2FrameHeader(FrameIdentifiers.COMM, Id3v2FrameFlags.None, expectedFieldBytes.length);
         const expectedBytes = ByteVector.concatenate(header.render(version), expectedFieldBytes);
@@ -567,7 +567,7 @@ const getTestFrame = (): CommentsFrame => {
             StringType.Latin1,
             ByteVector.fromString("eng", StringType.Latin1), // Language
             ByteVector.getTextDelimiter(StringType.Latin1),  // Delimiter
-            ByteVector.fromString("foo", StringType.Latin1), // Lyrics
+            ByteVector.fromString("foo", StringType.Latin1), // Comment text
         );
         const header = new Id3v2FrameHeader(FrameIdentifiers.COMM, Id3v2FrameFlags.None, expectedFieldBytes.length);
         const expectedBytes = ByteVector.concatenate(header.render(4), expectedFieldBytes);
