@@ -4,7 +4,7 @@ import {ByteVector, StringType} from "../../byteVector";
 import {CorruptFileError} from "../../errors";
 import {Id3v2FrameHeader} from "./frameHeader";
 import {FrameIdentifiers} from "../frameIdentifiers";
-import {Guards} from "../../utils";
+import {ArrayUtils, Guards} from "../../utils";
 
 /**
  * Class that extends {@link Frame}, implementing support for ID3v2 Comments (COMM) frames.
@@ -140,42 +140,9 @@ export default class CommentsFrame extends Frame {
 
     // #endregion
 
-    /**
-     * Gets a comment frame that matched the provided parameters from the list of frames
-     * @param frames Frames to search for best matching frame
-     * @param description Description of the comments frame to match
-     * @param language Optional, ISO-639-2 language code to match
-     * @returns Object containing the matching frame or `undefined` if a match was not found
-     */
-    public static find(frames: CommentsFrame[], description: string, language?: string): CommentsFrame {
+    public static filterFrames(frames: Frame[]): CommentsFrame[] {
         Guards.truthy(frames, "frames");
-
-        return frames.find((f) => {
-            if (f.description !== description) { return false; }
-            // noinspection RedundantIfStatementJS
-            if (language && f.language !== language) { return false; }
-            return true;
-        });
-    }
-
-    /**
-     * Gets all comment frames that match the provided parameters from the list of frames
-     * @param frames Frames to search
-     * @param description Description of the comments frame to match
-     * @param language Optional, ISO-639-2 language code to match
-     * @returns
-     *     Array of comments frames that match the provided parameters or an
-     *     empty array if none were found
-     */
-    public static findAll(frames: CommentsFrame[], description: string, language?: string): CommentsFrame[] {
-        Guards.truthy(frames, "frames");
-
-        return frames.filter((f) => {
-            if (f.description !== description) { return false; }
-            // noinspection RedundantIfStatementJS
-            if (language && f.language !== language) { return false; }
-            return true;
-        });
+        return ArrayUtils.ofType(frames, CommentsFrame);
     }
 
     /**

@@ -2,7 +2,7 @@ import Frame from "./frame";
 import {ByteVector, StringType} from "../../byteVector";
 import {Id3v2FrameHeader} from "./frameHeader";
 import {FrameIdentifier} from "../frameIdentifiers";
-import {Guards} from "../../utils";
+import {ArrayUtils, Guards} from "../../utils";
 
 /**
  * Provides ID3v2 URL Link frame implementation (section 4.3.1) covering `W000` to `WZZZ`,
@@ -91,17 +91,12 @@ export default class UrlLinkFrame extends Frame {
 
     // #region Methods
 
-    /**
-     * Gets the first frame that matches the provided type
-     * @param frames Object to search in
-     * @param ident Frame identifier to search for
-     * @returns Frame containing the matching frameId, `undefined` if a match was not found
-     */
-    public static findUrlLinkFrame(frames: UrlLinkFrame[], ident: FrameIdentifier): UrlLinkFrame {
+    public static filterFrames(frames: Frame[], identifier: FrameIdentifier): UrlLinkFrame[] {
         Guards.truthy(frames, "frames");
-        Guards.truthy(ident, "ident");
-
-        return frames.find((f) => f.frameId === ident);
+        const urlFrames = ArrayUtils.ofType(frames, UrlLinkFrame);
+        return !!identifier
+            ? urlFrames.filter(f => f.frameId === identifier)
+            : urlFrames;
     }
 
     /** @inheritDoc */

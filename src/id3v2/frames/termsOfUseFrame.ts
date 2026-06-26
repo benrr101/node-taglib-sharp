@@ -4,7 +4,7 @@ import {ByteVector, StringType} from "../../byteVector";
 import {CorruptFileError} from "../../errors";
 import {Id3v2FrameHeader} from "./frameHeader";
 import {FrameIdentifiers} from "../frameIdentifiers";
-import {Guards} from "../../utils";
+import {ArrayUtils, Guards} from "../../utils";
 
 export default class TermsOfUseFrame extends Frame {
     private _language: string;
@@ -104,15 +104,9 @@ export default class TermsOfUseFrame extends Frame {
 
     // #region Public Methods
 
-    /**
-     * Gets a specified terms of use frame from the list of frames
-     * @param frames List of frames to search
-     * @param language Optionally, the ISO-639-2 language code to match
-     * @returns A matching frame if found or `undefined` if a matching frame was not found
-     */
-    public static find(frames: TermsOfUseFrame[], language?: string): TermsOfUseFrame {
+    public static filterFrames(frames: Frame[]): TermsOfUseFrame[] {
         Guards.truthy(frames, "frames");
-        return frames.find((f) => !language || f.language === language);
+        return ArrayUtils.ofType(frames, TermsOfUseFrame);
     }
 
     /**

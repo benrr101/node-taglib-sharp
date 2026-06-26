@@ -4,7 +4,8 @@ import {ByteVector, StringType} from "../../byteVector";
 import {CorruptFileError} from "../../errors";
 import {Id3v2FrameHeader} from "./frameHeader";
 import {FrameIdentifiers} from "../frameIdentifiers";
-import {Guards} from "../../utils";
+import {ArrayUtils, Guards} from "../../utils";
+import UnknownFrame from "./unknownFrame";
 
 /**
  * Extends {@link Frame} implementing support for ID3v2 unsynchronized lyrics (USLT) frames.
@@ -132,48 +133,9 @@ export default class UnsynchronizedLyricsFrame extends Frame {
 
     // #region Public Methods
 
-    /**
-     * Gets the first unsynchronized lyrics frame from a list of frames that matches the provided
-     * parameters.
-     * @param frames List of frames to search
-     * @param description Description to match
-     * @param language Optionally, ISO-639-2 language code to match
-     * @returns Frame that matches provided parameters, `undefined` if a match was not found
-     */
-    public static find(
-        frames: UnsynchronizedLyricsFrame[],
-        description: string,
-        language: string
-    ): UnsynchronizedLyricsFrame {
+    public static filterFrames(frames: Frame[]): UnsynchronizedLyricsFrame[] {
         Guards.truthy(frames, "frames");
-        return frames.find((f) => {
-            if (f.description !== description) { return false; }
-            // noinspection RedundantIfStatementJS
-            if (language && f.language !== language) { return false; }
-            return true;
-        });
-    }
-
-    /**
-     * Gets all unsynchronized lyrics frames that match the provided parameters from a list of
-     * frames
-     * @param frames List of frames to search
-     * @param description Description to match
-     * @param language Optionally, ISO-639-2 language code to match
-     * @returns List of frames matching provided parameters, empty array if no matches were found
-     */
-    public static findAll(
-        frames: UnsynchronizedLyricsFrame[],
-        description: string,
-        language: string
-    ): UnsynchronizedLyricsFrame[] {
-        Guards.truthy(frames, "frames");
-        return frames.filter((f) => {
-            if (f.description !== description) { return false; }
-            // noinspection RedundantIfStatementJS
-            if (language && f.language !== language) { return false; }
-            return true;
-        });
+        return ArrayUtils.ofType(frames, UnsynchronizedLyricsFrame);
     }
 
     /**

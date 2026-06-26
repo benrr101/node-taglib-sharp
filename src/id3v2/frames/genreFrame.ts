@@ -4,7 +4,7 @@ import Id3v2Settings from "../id3v2Settings";
 import {ByteVector, StringType} from "../../byteVector";
 import {Id3v2FrameHeader} from "./frameHeader";
 import {FrameIdentifiers} from "../frameIdentifiers";
-import {Guards, StringUtils} from "../../utils";
+import {ArrayUtils, Guards, StringUtils} from "../../utils";
 import {CorruptFileError} from "../../errors";
 
 /**
@@ -160,15 +160,9 @@ export default class GenreFrame extends Frame {
 
     // #region Public Methods
 
-    /**
-     * Gets a {@link GenreFrame} object from a specified list of genre frames.
-     * @param frames List of frames to search
-     * @returns Matching frame if it exists in `tag`, `undefined` if a matching frame was not found
-     */
-    public static findGenreFrame(frames: GenreFrame[]): GenreFrame {
+    public static filterFrames(frames: Frame[]): GenreFrame[] {
         Guards.truthy(frames, "frames");
-
-        return frames.find((f) => f.frameId === FrameIdentifiers.TCON);
+        return ArrayUtils.ofType(frames, GenreFrame);
     }
 
     /** @inheritDoc */

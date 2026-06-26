@@ -3,7 +3,8 @@ import UrlLinkFrame from "./urlLinkFrame";
 import {ByteVector, StringType} from "../../byteVector";
 import {Id3v2FrameHeader} from "./frameHeader";
 import {FrameIdentifiers} from "../frameIdentifiers";
-import {Guards} from "../../utils";
+import {ArrayUtils, Guards} from "../../utils";
+import Frame from "./frame";
 
 /**
  * Provides support for ID3v2 User URL Link frames (WXXX).
@@ -113,6 +114,11 @@ export default class UserUrlLinkFrame extends UrlLinkFrame {
     // #endregion
 
     // #region Methods
+
+    public static filterFrames(frames: Frame[]): UserUrlLinkFrame[] {
+        Guards.truthy(frames, "frames");
+        return ArrayUtils.ofType(frames, UserUrlLinkFrame);
+    }
 
     /**
      * Gets a frame from a list of frames.

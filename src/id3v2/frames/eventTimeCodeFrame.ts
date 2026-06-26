@@ -2,7 +2,7 @@ import Frame from "./frame";
 import {ByteVector} from "../../byteVector";
 import {Id3v2FrameFlags, Id3v2FrameHeader} from "./frameHeader";
 import {FrameIdentifiers} from "../frameIdentifiers";
-import {Guards} from "../../utils";
+import {ArrayUtils, Guards} from "../../utils";
 import {EventType, TimestampFormat} from "../utilTypes";
 import {CorruptFileError} from "../../errors";
 
@@ -188,6 +188,11 @@ export class EventTimeCodeFrame extends Frame {
     // #endregion
 
     // #region Methods
+
+    public filterFrames(frames: Frame[]): EventTimeCodeFrame[] {
+        Guards.truthy(frames, "frames");
+        return ArrayUtils.ofType(frames, EventTimeCodeFrame);
+    }
 
     /** @inheritDoc */
     public clone(): Frame {

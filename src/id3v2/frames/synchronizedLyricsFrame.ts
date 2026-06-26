@@ -4,7 +4,7 @@ import {ByteVector, StringType} from "../../byteVector";
 import {CorruptFileError} from "../../errors";
 import {Id3v2FrameHeader} from "./frameHeader";
 import {FrameIdentifiers} from "../frameIdentifiers";
-import {Guards} from "../../utils";
+import {ArrayUtils, Guards} from "../../utils";
 import {SynchronizedTextType, TimestampFormat} from "../utilTypes";
 
 /**
@@ -267,28 +267,9 @@ export class SynchronizedLyricsFrame extends Frame {
 
     // #region Public Methods
 
-    /**
-     * Gets a specified lyrics frame from a list of synchronized lyrics frames
-     * @param frames List of frames to search
-     * @param description Description to match
-     * @param textType Text type to match
-     * @param language Optionally, ISO-639-2 language code to match
-     * @returns Frame containing the matching user, `undefined` if a match was not found
-     */
-    public static find(
-        frames: SynchronizedLyricsFrame[],
-        description: string,
-        textType: SynchronizedTextType,
-        language?: string
-    ): SynchronizedLyricsFrame {
+    public static filterFrames(frames: Frame[]): SynchronizedLyricsFrame[] {
         Guards.truthy(frames, "frames");
-        return frames.find((f) => {
-            if (f.description !== description) { return false; }
-            if (language && f.language !== language) { return false; }
-            // noinspection RedundantIfStatementJS
-            if (f.textType !== textType) { return false; }
-            return true;
-        });
+        return ArrayUtils.ofType(frames, SynchronizedLyricsFrame);
     }
 
     /**

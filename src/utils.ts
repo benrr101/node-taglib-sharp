@@ -171,7 +171,18 @@ export class FileUtils {
     }
 }
 
+// eslint-disable-next-line @typescript-eslint/ban-types
+export type TypeReference<T> = Function & { prototype: T };
+
 export class ArrayUtils {
+    public static isFalsyOrEmpty(array: unknown[]): boolean {
+        return !array || array.length === 0;
+    }
+
+    public static ofType<T>(array: unknown[], type: TypeReference<T>): T[] {
+        return array.filter((e): e is T => e instanceof type);
+    }
+
     public static remove<T>(array: T[], callbackFn: (e: T, i: number) => boolean): void {
         let i = array.length;
         while (i--) {
@@ -179,10 +190,6 @@ export class ArrayUtils {
                 array.splice(i, 1);
             }
         }
-    }
-
-    public static isFalsyOrEmpty(array: unknown[]): boolean {
-        return !array || array.length === 0;
     }
 
     public static safePush<T extends object>(array: T[], element: T): void {

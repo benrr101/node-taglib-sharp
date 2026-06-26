@@ -4,7 +4,7 @@ import {ByteVector, StringType} from "../../byteVector";
 import Frame from "./frame";
 import {Id3v2FrameHeader} from "./frameHeader";
 import {FrameIdentifiers} from "../frameIdentifiers";
-import {Guards, StringComparison} from "../../utils";
+import {ArrayUtils, Guards, StringComparison} from "../../utils";
 import {CorruptFileError} from "../../errors";
 
 export default class UserTextInformationFrame extends TextInformationFrame {
@@ -104,23 +104,9 @@ export default class UserTextInformationFrame extends TextInformationFrame {
 
     // #region Public Methods
 
-    /**
-     * Gets a user text information frame from a specified tag
-     * @param frames Object to search in
-     * @param description Description to use to match the frame in the `tag`
-     * @param caseSensitive Whether or not to search for the frame case-sensitively.
-     * @returns Frame containing the matching user, `undefined` if a match was not found
-     */
-    public static findUserTextInformationFrame(
-        frames: UserTextInformationFrame[],
-        description: string,
-        caseSensitive: boolean = true
-    ): UserTextInformationFrame {
+    public static filterFrames(frames: Frame[]): UserTextInformationFrame[] {
         Guards.truthy(frames, "frames");
-        Guards.truthy(description, "description");
-
-        const comparison = caseSensitive ? StringComparison.caseSensitive : StringComparison.caseInsensitive;
-        return frames.find((f) => comparison(f.description, description));
+        return ArrayUtils.ofType(frames, UserTextInformationFrame);
     }
 
     /** @inheritDoc */

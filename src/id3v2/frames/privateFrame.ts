@@ -3,7 +3,7 @@ import {ByteVector, StringType} from "../../byteVector";
 import {CorruptFileError, NotImplementedError} from "../../errors";
 import {Id3v2FrameHeader} from "./frameHeader";
 import {FrameIdentifiers} from "../frameIdentifiers";
-import {Guards} from "../../utils";
+import {ArrayUtils, Guards} from "../../utils";
 
 /**
  * This class extends {@link Frame} implementing support for ID3v2 private (PRIV) frames.
@@ -81,17 +81,9 @@ export default class PrivateFrame extends Frame {
 
     // #endregion
 
-    /**
-     * Get a specified private frame from the list of private frames that matches the provided
-     * parameters.
-     * @param frames List of frames to search
-     * @param owner Owner to match when searching
-     * @returns Matching frame or `undefined` if a match was not found
-     */
-    public static find(frames: PrivateFrame[], owner: string): PrivateFrame {
+    public static filterFrames(frames: Frame[]): PrivateFrame[] {
         Guards.truthy(frames, "frames");
-
-        return frames.find((f) => f._owner === owner);
+        return ArrayUtils.ofType(frames, PrivateFrame);
     }
 
     /** @inheritDoc */
