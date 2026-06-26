@@ -1,5 +1,5 @@
+import Frame from "./frame";
 import {ByteVector} from "../../byteVector";
-import {Frame, FrameClassType} from "./frame";
 import {Id3v2FrameHeader} from "./frameHeader";
 import {FrameIdentifiers} from "../frameIdentifiers";
 import {Guards} from "../../utils";
@@ -46,9 +46,6 @@ export default class MusicCdIdentifierFrame extends Frame {
         frame._data = fieldBytes.toByteVector();
         return frame;
     }
-
-    /** @inheritDoc */
-    public get frameClassType(): FrameClassType { return FrameClassType.MusicCdIdentifierFrame; }
 
     /**
      * Gets the identifier data stored in the current instance

@@ -1,7 +1,7 @@
 import TextInformationFrame from "./textInformationFrame";
 import Id3v2Settings from "../id3v2Settings";
 import {ByteVector, StringType} from "../../byteVector";
-import {Frame, FrameClassType} from "./frame";
+import Frame from "./frame";
 import {Id3v2FrameHeader} from "./frameHeader";
 import {FrameIdentifiers} from "../frameIdentifiers";
 import {Guards, StringComparison} from "../../utils";
@@ -76,8 +76,6 @@ export default class UserTextInformationFrame extends TextInformationFrame {
     // #endregion
 
     // #region Properties
-
-    public get frameClassType(): FrameClassType { return FrameClassType.UserTextInformationFrame; }
 
     /**
      * Gets the description stored in the current instance.

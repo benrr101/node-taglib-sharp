@@ -1,8 +1,8 @@
+import Frame from "./frame";
 import Id3v2Settings from "../id3v2Settings";
 import {ByteVector, StringType} from "../../byteVector";
 import {CorruptFileError} from "../../errors";
 import {IFileAbstraction} from "../../fileAbstraction";
-import {Frame, FrameClassType} from "./frame";
 import {Id3v2FrameHeader} from "./frameHeader";
 import {FrameIdentifiers} from "../frameIdentifiers";
 import {IPicture, Picture, PictureLazy, PictureType} from "../../picture";
@@ -117,9 +117,6 @@ export default class AttachmentFrame extends Frame implements IPicture {
     // #endregion
 
     // #region Properties
-
-    /** @inheritDoc */
-    public get frameClassType(): FrameClassType { return FrameClassType.AttachmentFrame; }
 
     /**
      * Gets the image data stored in the current instance.

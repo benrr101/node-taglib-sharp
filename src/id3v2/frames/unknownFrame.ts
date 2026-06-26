@@ -1,5 +1,5 @@
+import Frame from "./frame";
 import {ByteVector} from "../../byteVector";
-import {Frame, FrameClassType} from "./frame";
 import {Id3v2FrameHeader} from "./frameHeader";
 import {FrameIdentifier} from "../frameIdentifiers";
 import {Guards} from "../../utils";
@@ -40,9 +40,6 @@ export default class UnknownFrame extends Frame {
         frame.data = data?.toByteVector();
         return frame;
     }
-
-    /** @inheritDoc */
-    public get frameClassType(): FrameClassType { return FrameClassType.UnknownFrame; }
 
     /**
      * Gets and sets the field data in the current instance

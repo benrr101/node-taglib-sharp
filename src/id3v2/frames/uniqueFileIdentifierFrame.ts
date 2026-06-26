@@ -1,6 +1,6 @@
+import Frame from "./frame";
 import {ByteVector, StringType} from "../../byteVector";
 import {CorruptFileError} from "../../errors";
-import {Frame, FrameClassType} from "./frame";
 import {Id3v2FrameHeader} from "./frameHeader";
 import {FrameIdentifiers} from "../frameIdentifiers";
 import {Guards} from "../../utils";
@@ -70,9 +70,6 @@ export default class UniqueFileIdentifierFrame extends Frame {
     // #endregion
 
     // #region Properties
-
-    /** @inheritDoc */
-    public get frameClassType(): FrameClassType { return FrameClassType.UniqueFileIdentifierFrame; }
 
     /**
      * Gets the owner of this unique ID.

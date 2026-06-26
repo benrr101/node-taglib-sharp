@@ -1,7 +1,6 @@
 import Id3v2Settings from "../id3v2Settings";
 import UrlLinkFrame from "./urlLinkFrame";
 import {ByteVector, StringType} from "../../byteVector";
-import {FrameClassType} from "./frame";
 import {Id3v2FrameHeader} from "./frameHeader";
 import {FrameIdentifiers} from "../frameIdentifiers";
 import {Guards} from "../../utils";
@@ -89,9 +88,6 @@ export default class UserUrlLinkFrame extends UrlLinkFrame {
     // #endregion
 
     // #region Properties
-
-    /** @inheritDoc */
-    public get frameClassType(): FrameClassType { return FrameClassType.UserUrlLinkFrame; }
 
     /**
      * Gets the description stored in the current instance.

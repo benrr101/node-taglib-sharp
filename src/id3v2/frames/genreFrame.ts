@@ -1,7 +1,7 @@
+import Frame from "./frame";
 import Genres from "../../genres";
 import Id3v2Settings from "../id3v2Settings";
 import {ByteVector, StringType} from "../../byteVector";
-import {Frame, FrameClassType} from "./frame";
 import {Id3v2FrameHeader} from "./frameHeader";
 import {FrameIdentifiers} from "../frameIdentifiers";
 import {Guards, StringUtils} from "../../utils";
@@ -134,9 +134,6 @@ export default class GenreFrame extends Frame {
     // #endregion
 
     // #region Properties
-
-    /** @inheritDoc */
-    public get frameClassType(): FrameClassType { return FrameClassType.GenreFrame; }
 
     /**
      * Gets the genres contained in the current instance.

@@ -1,7 +1,7 @@
+import Frame from "./frame";
 import Id3v2Settings from "../id3v2Settings";
 import {ByteVector, StringType} from "../../byteVector";
 import {CorruptFileError} from "../../errors";
-import {Frame, FrameClassType} from "./frame";
 import {Id3v2FrameHeader} from "./frameHeader";
 import {FrameIdentifiers} from "../frameIdentifiers";
 import {Guards} from "../../utils";
@@ -89,9 +89,6 @@ export default class UnsynchronizedLyricsFrame extends Frame {
     // #endregion
 
     // #region Properties
-
-    /** @inheritDoc */
-    public get frameClassType(): FrameClassType { return FrameClassType.UnsynchronizedLyricsFrame; }
 
     /**
      * Gets the description of the contents of the current instance.

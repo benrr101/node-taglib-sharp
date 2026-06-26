@@ -1,6 +1,6 @@
+import Frame from "./frame";
 import Id3v2Settings from "../id3v2Settings";
 import {ByteVector, StringType} from "../../byteVector";
-import {Frame, FrameClassType} from "./frame";
 import {Id3v2FrameHeader} from "./frameHeader";
 import {FrameIdentifier, FrameIdentifiers} from "../frameIdentifiers";
 import {Guards} from "../../utils";
@@ -230,9 +230,6 @@ export default class TextInformationFrame extends Frame {
     // #endregion
 
     // #region Properties
-
-    /** @inheritDoc */
-    public get frameClassType(): FrameClassType { return FrameClassType.TextInformationFrame; }
 
     /**
      * Gets the text contained in the current instance.

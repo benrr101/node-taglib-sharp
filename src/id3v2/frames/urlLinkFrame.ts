@@ -1,5 +1,5 @@
+import Frame from "./frame";
 import {ByteVector, StringType} from "../../byteVector";
-import {Frame, FrameClassType} from "./frame";
 import {Id3v2FrameHeader} from "./frameHeader";
 import {FrameIdentifier} from "../frameIdentifiers";
 import {Guards} from "../../utils";
@@ -77,8 +77,6 @@ export default class UrlLinkFrame extends Frame {
     // #endregion
 
     // #region Properties
-
-    public get frameClassType(): FrameClassType { return FrameClassType.UrlLinkFrame; }
 
     /**
      * Gets the text contained in the current instance.

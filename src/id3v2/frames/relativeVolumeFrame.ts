@@ -1,5 +1,5 @@
+import Frame from "./frame";
 import {ByteVector, StringType} from "../../byteVector";
-import {Frame, FrameClassType} from "./frame";
 import {Id3v2FrameHeader} from "./frameHeader";
 import {FrameIdentifiers} from "../frameIdentifiers";
 import {Guards, NumberUtils} from "../../utils";
@@ -266,9 +266,6 @@ export class RelativeVolumeFrame extends Frame {
     // #endregion
 
     // #region Properties
-
-    /** @inheritDoc */
-    public get frameClassType(): FrameClassType { return FrameClassType.RelativeVolumeFrame; }
 
     /**
      * Gets the channels in the current instance that have a value

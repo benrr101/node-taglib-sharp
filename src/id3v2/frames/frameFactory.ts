@@ -1,5 +1,6 @@
 import AttachmentFrame from "./attachmentFrame";
 import CommentsFrame from "./commentsFrame";
+import Frame from "./frame";
 import GenreFrame from "./genreFrame";
 import MusicCdIdentifierFrame from "./musicCdIdentifierFrame";
 import PlayCountFrame from "./playCountFrame";
@@ -18,7 +19,6 @@ import {ByteVector} from "../../byteVector";
 import {CorruptFileError, NotImplementedError} from "../../errors";
 import {EventTimeCodeFrame} from "./eventTimeCodeFrame";
 import {File} from "../../file";
-import {Frame} from "./frame";
 import {Id3v2FrameFlags, Id3v2FrameHeader} from "./frameHeader";
 import {FrameIdentifier, FrameIdentifiers} from "../frameIdentifiers";
 import {RelativeVolumeFrame} from "./relativeVolumeFrame";

@@ -1,5 +1,5 @@
+import Frame from "./frame";
 import {ByteVector} from "../../byteVector";
-import {Frame, FrameClassType} from "./frame";
 import {Id3v2FrameFlags, Id3v2FrameHeader} from "./frameHeader";
 import {FrameIdentifiers} from "../frameIdentifiers";
 import {Guards} from "../../utils";
@@ -165,9 +165,6 @@ export class EventTimeCodeFrame extends Frame {
     // #endregion
 
     // #region Properties
-
-    /** @inheritDoc */
-    public get frameClassType(): FrameClassType { return FrameClassType.EventTimeCodeFrame; }
 
     /**
      * Gets the event this frame contains. Each {@link EventTimeCode} represents a single event at a

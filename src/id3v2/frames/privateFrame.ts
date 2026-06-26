@@ -1,6 +1,6 @@
+import Frame from "./frame";
 import {ByteVector, StringType} from "../../byteVector";
 import {CorruptFileError, NotImplementedError} from "../../errors";
-import {Frame, FrameClassType} from "./frame";
 import {Id3v2FrameHeader} from "./frameHeader";
 import {FrameIdentifiers} from "../frameIdentifiers";
 import {Guards} from "../../utils";
@@ -62,9 +62,6 @@ export default class PrivateFrame extends Frame {
     // #endregion
 
     // #region Public Properties
-
-    /** @inheritDoc */
-    public get frameClassType(): FrameClassType { return FrameClassType.PrivateFrame; }
 
     /**
      * Gets the owner of the current instance.
