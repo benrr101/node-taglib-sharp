@@ -93,10 +93,7 @@ export {
     EventTimeCode as Id3v2EventTimeCode,
     EventTimeCodeFrame as Id3v2EventTimeCodeFrame
 } from "./id3v2/frames/eventTimeCodeFrame";
-export {
-    Frame as Id3v2Frame,
-    FrameClassType as Id3v2FrameClassType
-} from "./id3v2/frames/frame";
+export {default as Id3v2Frame} from "./id3v2/frames/frame";
 export {
     FrameCreator as Id3v2FrameCreator,
     Id3v2FrameFactory
