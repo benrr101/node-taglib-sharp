@@ -623,8 +623,6 @@ export default class Id3v2Tag extends Tag {
      * @remarks Stored in the `USLT` frame
      */
     set lyrics(value: string) {
-        const frames = UnsynchronizedLyricsFrame.filterFrames(this._frameList);
-
         // Delete all unsynchronized lyrics frames in this language
         // @TODO: Verify that deleting only this language is the correct behavior
         if (!value) {
@@ -633,7 +631,8 @@ export default class Id3v2Tag extends Tag {
         }
 
         // Find or create the appropriate unsynchronized lyrics frame
-        let frame = UnsynchronizedLyricsFrame.find(frames, "", Id3v2Tag.language);
+        const frames = UnsynchronizedLyricsFrame.filterFrames(this._frameList);
+        let frame = frames.find(f => f.language === Id3v2Tag.language);
         if (!frame) {
             frame = UnsynchronizedLyricsFrame.fromData("", Id3v2Tag.language);
             this.addFrame(frame);
@@ -1523,7 +1522,7 @@ export default class Id3v2Tag extends Tag {
     private getUfidText(owner: string): string {
         // Get the UFID frame, frame will be undefined if nonexistent
         const frames = UniqueFileIdentifierFrame.filterFrames(this._frameList);
-        const frame = UniqueFileIdentifierFrame.find(frames, owner);
+        const frame = frames.find(f => f.owner === owner);
 
         // If the frame existed, frame.identifier is a byte vector, get a string
         const result = frame ? frame.identifier.toString(StringType.Latin1) : undefined;
@@ -1531,12 +1530,9 @@ export default class Id3v2Tag extends Tag {
     }
 
     private getUserTextAsString(description: string, caseSensitive: boolean = true): string {
-        // Gets the TXXX frame, frame will be undefined if nonexistent
-        const frames = UserTextInformationFrame.filterFrames(this._frameList);
-        const frame = UserTextInformationFrame.findUserTextInformationFrame(frames, description, caseSensitive);
-
         // TXXX frames support multi-value strings, join them up and return only the text from the
         // frame
+        const frame = this.getUserTextFrame(description, caseSensitive);
         const result = frame ? frame.text.join(";") : undefined;        // TODO: Consider escaping ';' before joining?
         return result || undefined;
     }
@@ -1544,7 +1540,7 @@ export default class Id3v2Tag extends Tag {
     private setUfidText(owner: string, text: string): void {
         // Get the UFID frame, create if necessary
         const frames = UniqueFileIdentifierFrame.filterFrames(this._frameList);
-        let frame = UniqueFileIdentifierFrame.find(frames, owner);
+        let frame = frames.find(f => f.owner === owner);
 
         // If we have a real string, convert to byte vector and apply to frame
         if (!text && frame) {
@@ -1558,10 +1554,7 @@ export default class Id3v2Tag extends Tag {
     }
 
     private setUserTextAsString(description: string, text: string, caseSensitive: boolean = true): void {
-        // Get the TXXX frame, create a new one if needed
-        const frames = UserTextInformationFrame.filterFrames(this._frameList);
-        let frame = UserTextInformationFrame.findUserTextInformationFrame(frames, description, caseSensitive);
-
+        let frame = this.getUserTextFrame(description, caseSensitive);
         if (!text) {
             // Remove the frame if it exists, otherwise do nothing
             if (frame) {
@@ -1574,6 +1567,16 @@ export default class Id3v2Tag extends Tag {
             }
             frame.text = text.split(";");
         }
+    }
+
+    private getUserTextFrame(description: string, caseSensitive: boolean): UserTextInformationFrame {
+        // Gets the TXXX frame, frame will be undefined if nonexistent
+        const frames = UserTextInformationFrame.filterFrames(this._frameList);
+        return frames.find(f => {
+            return caseSensitive
+                ? f.description === description
+                : f.description.toUpperCase() === description.toUpperCase();
+        });
     }
 
     // #endregion
