@@ -1,11 +1,12 @@
 import {params, suite, test} from "@testdeck/mocha";
 import {assert} from "chai";
 
+import Frame from "../../src/id3v2/frames/frame";
 import FrameConstructorTests from "./frameConstructorTests";
 import PropertyTests from "../utilities/propertyTests";
+import UnknownFrame from "../../src/id3v2/frames/unknownFrame";
 import UnsynchronizedLyricsFrame from "../../src/id3v2/frames/unsynchronizedLyricsFrame";
 import {ByteVector, StringType} from "../../src/byteVector";
-import {Frame, FrameClassType} from "../../src/id3v2/frames/frame";
 import {Id3v2FrameFlags, Id3v2FrameHeader} from "../../src/id3v2/frames/frameHeader";
 import {FrameIdentifiers} from "../../src/id3v2/frameIdentifiers";
 import {Testers} from "../utilities/testers";
@@ -21,6 +22,17 @@ const getTestUnsynchronizedLyricsFrame = (): UnsynchronizedLyricsFrame => {
     const header = new Id3v2FrameHeader(FrameIdentifiers.USLT);
     return UnsynchronizedLyricsFrame.fromFieldBytes(header, fieldBytes, 4);
 };
+
+const assertFrame = (frame: UnsynchronizedLyricsFrame, d: string, l: string, t: string, te: StringType) => {
+    assert.isOk(frame);
+    assert.instanceOf<UnsynchronizedLyricsFrame>(frame, UnsynchronizedLyricsFrame);
+    assert.strictEqual(frame.frameId, FrameIdentifiers.USLT);
+
+    assert.strictEqual(frame.description, d);
+    assert.strictEqual(frame.language, l);
+    assert.strictEqual(frame.text, t);
+    assert.strictEqual(frame.textEncoding, te);
+}
 
 @suite class Id3v2_UnsynchronizedLyricsFrame_ConstructorTests extends FrameConstructorTests {
     public get fromFieldBytes(): (h: Id3v2FrameHeader, d: ByteVector, v: number) => Frame {
@@ -39,7 +51,7 @@ const getTestUnsynchronizedLyricsFrame = (): UnsynchronizedLyricsFrame => {
         const frame = UnsynchronizedLyricsFrame.fromData(description, language, encoding);
 
         // Assert
-        Id3v2_UnsynchronizedLyricsFrame_ConstructorTests.assertFrame(frame, description, language, "", encoding);
+        assertFrame(frame, description, language, "", encoding);
     }
 
     @params(2, "v2")
@@ -69,7 +81,7 @@ const getTestUnsynchronizedLyricsFrame = (): UnsynchronizedLyricsFrame => {
         const frame = UnsynchronizedLyricsFrame.fromFieldBytes(header, fieldBytes, version);
 
         // Assert
-        Id3v2_UnsynchronizedLyricsFrame_ConstructorTests.assertFrame(frame, "", "eng", "", StringType.Latin1);
+        assertFrame(frame, "", "eng", "", StringType.Latin1);
     }
 
     @params(2, "v2")
@@ -88,7 +100,7 @@ const getTestUnsynchronizedLyricsFrame = (): UnsynchronizedLyricsFrame => {
         const frame = UnsynchronizedLyricsFrame.fromFieldBytes(header, fieldBytes, version);
 
         // Assert
-        Id3v2_UnsynchronizedLyricsFrame_ConstructorTests.assertFrame(frame, "", "eng", "foobarbaz", StringType.Latin1);
+        assertFrame(frame, "", "eng", "foobarbaz", StringType.Latin1);
     }
 
     @params(2, "v2")
@@ -108,7 +120,7 @@ const getTestUnsynchronizedLyricsFrame = (): UnsynchronizedLyricsFrame => {
         const frame = UnsynchronizedLyricsFrame.fromFieldBytes(header, fieldBytes, version);
 
         // Assert
-        Id3v2_UnsynchronizedLyricsFrame_ConstructorTests.assertFrame(frame, "", "eng", "foobarbaz", StringType.Latin1);
+        assertFrame(frame, "", "eng", "foobarbaz", StringType.Latin1);
     }
 
     @params(2, "v2")
@@ -129,7 +141,7 @@ const getTestUnsynchronizedLyricsFrame = (): UnsynchronizedLyricsFrame => {
         const frame = UnsynchronizedLyricsFrame.fromFieldBytes(header, fieldBytes, version);
 
         // Assert
-        Id3v2_UnsynchronizedLyricsFrame_ConstructorTests.assertFrame(frame, "foo", "eng", "bar", StringType.Latin1);
+        assertFrame(frame, "foo", "eng", "bar", StringType.Latin1);
     }
 
     @params(StringType.Latin1, "single_byte_encoding")
@@ -149,18 +161,7 @@ const getTestUnsynchronizedLyricsFrame = (): UnsynchronizedLyricsFrame => {
         const frame = UnsynchronizedLyricsFrame.fromFieldBytes(header, fieldBytes, 4);
 
         // Assert
-        Id3v2_UnsynchronizedLyricsFrame_ConstructorTests.assertFrame(frame, "foo", "eng", "bar", encoding);
-    }
-
-    private static assertFrame(frame: UnsynchronizedLyricsFrame, d: string, l: string, t: string, te: StringType) {
-        assert.isOk(frame);
-        assert.strictEqual(frame.frameClassType, FrameClassType.UnsynchronizedLyricsFrame);
-        assert.strictEqual(frame.frameId, FrameIdentifiers.USLT);
-
-        assert.strictEqual(frame.description, d);
-        assert.strictEqual(frame.language, l);
-        assert.strictEqual(frame.text, t);
-        assert.strictEqual(frame.textEncoding, te);
+        assertFrame(frame, "foo", "eng", "bar", encoding);
     }
 }
 
@@ -222,277 +223,6 @@ const getTestUnsynchronizedLyricsFrame = (): UnsynchronizedLyricsFrame => {
 
 @suite class Id3v2_UnsynchronizedLyricsFrame_MethodTests {
     @test
-    public find_falsyFrames_throws() {
-        // Act/Assert
-        Testers.testTruthy((v: UnsynchronizedLyricsFrame[]) => { UnsynchronizedLyricsFrame.find(v, "foo", "bar"); });
-    }
-
-    @test
-    public find_emptyFrames_returnsUndefined() {
-        // Arrange
-        const frames: UnsynchronizedLyricsFrame[] = [];
-
-        // Act
-        const result = UnsynchronizedLyricsFrame.find(frames, "foo", "bar");
-
-        // Assert
-        assert.isUndefined(result);
-    }
-
-    @test
-    public find_noMatchByDescription_returnsUndefined() {
-        // Arrange - Description is foo
-        const frames = [getTestUnsynchronizedLyricsFrame(), getTestUnsynchronizedLyricsFrame()];
-
-        // Act
-        const result = UnsynchronizedLyricsFrame.find(frames, "fux", "eng");
-
-        // Assert
-        assert.isUndefined(result);
-    }
-
-    @test
-    public find_noMatchByLanguage_returnsUndefined() {
-        // Arrange - Language is eng
-        const frames = [getTestUnsynchronizedLyricsFrame(), getTestUnsynchronizedLyricsFrame()];
-
-        // Act
-        const result = UnsynchronizedLyricsFrame.find(frames, "foo", "fux");
-
-        // Assert
-        assert.isUndefined(result);
-    }
-
-    @test
-    public find_matchWithLanguage_returnsFirstMatch() {
-        // Arrange
-        const frames = [
-            getTestUnsynchronizedLyricsFrame(),
-            getTestUnsynchronizedLyricsFrame(),
-            getTestUnsynchronizedLyricsFrame(),
-            getTestUnsynchronizedLyricsFrame()
-        ];
-        frames[2].language = "jpn";
-        frames[3].description = "fux";
-
-        // Act
-        const result = UnsynchronizedLyricsFrame.find(frames, "foo", "eng");
-
-        // Assert
-        assert.ok(result);
-        assert.strictEqual(result, frames[0]);
-    }
-
-    @test
-    public find_matchWithoutLanguage_returnsFirstMatch() {
-        // Arrange
-        const frames = [
-            getTestUnsynchronizedLyricsFrame(),
-            getTestUnsynchronizedLyricsFrame(),
-            getTestUnsynchronizedLyricsFrame(),
-            getTestUnsynchronizedLyricsFrame()
-        ];
-        frames[2].language = "jpn";
-        frames[3].description = "fux";
-
-        // Act
-        const result = UnsynchronizedLyricsFrame.find(frames, "foo", undefined);
-
-        // Assert
-        assert.ok(result);
-        assert.strictEqual(result, frames[0]);
-    }
-
-    @test
-    public findAll_falsyFrames_throws() {
-        // Act/Assert
-        assert.throws(() => { UnsynchronizedLyricsFrame.findAll(null, "foo", "bar"); });
-        assert.throws(() => { UnsynchronizedLyricsFrame.findAll(undefined, "foo", "bar"); });
-    }
-
-    @test
-    public findAll_emptyFrames_returnsUndefined() {
-        // Arrange
-        const frames: UnsynchronizedLyricsFrame[] = [];
-
-        // Act
-        const result = UnsynchronizedLyricsFrame.findAll(frames, "foo", "bar");
-
-        // Assert
-        assert.isOk(result);
-        assert.isArray(result);
-        assert.isEmpty(result);
-    }
-
-    @test
-    public findAll_noMatchByDescription_returnsUndefined() {
-        // Arrange - Description is foo
-        const frames = [getTestUnsynchronizedLyricsFrame(), getTestUnsynchronizedLyricsFrame()];
-
-        // Act
-        const result = UnsynchronizedLyricsFrame.findAll(frames, "fux", "eng");
-
-        // Assert
-        assert.isOk(result);
-        assert.isArray(result);
-        assert.isEmpty(result);
-    }
-
-    @test
-    public findAll_noMatchByLanguage_returnsUndefined() {
-        // Arrange - Language is eng
-        const frames = [getTestUnsynchronizedLyricsFrame(), getTestUnsynchronizedLyricsFrame()];
-
-        // Act
-        const result = UnsynchronizedLyricsFrame.findAll(frames, "foo", "fux");
-
-        // Assert
-        assert.isOk(result);
-        assert.isArray(result);
-        assert.isEmpty(result);
-    }
-
-    @test
-    public findAll_matchWithLanguage_returnsFirstMatch() {
-        // Arrange
-        const frames = [
-            getTestUnsynchronizedLyricsFrame(),
-            getTestUnsynchronizedLyricsFrame(),
-            getTestUnsynchronizedLyricsFrame(),
-            getTestUnsynchronizedLyricsFrame()
-        ];
-        frames[2].language = "jpn";
-        frames[3].description = "fux";
-
-        // Act
-        const result = UnsynchronizedLyricsFrame.findAll(frames, "foo", "eng");
-
-        // Assert
-        assert.ok(result);
-        assert.isArray(result);
-        assert.sameMembers(result, frames.slice(0, 2));
-    }
-
-    @test
-    public findAll_matchWithoutLanguage_returnsFirstMatch() {
-        // Arrange
-        const frames = [
-            getTestUnsynchronizedLyricsFrame(),
-            getTestUnsynchronizedLyricsFrame(),
-            getTestUnsynchronizedLyricsFrame(),
-            getTestUnsynchronizedLyricsFrame()
-        ];
-        frames[2].language = "jpn";
-        frames[3].description = "fux";
-
-        // Act
-        const result = UnsynchronizedLyricsFrame.findAll(frames, "foo", undefined);
-
-        // Assert
-        assert.ok(result);
-        assert.isArray(result);
-        assert.sameMembers(result, frames.slice(0, 3));
-    }
-
-    @test
-    public findPreferred_falsyFrames_throws() {
-        // Act/Assert
-        Testers.testTruthy((v: UnsynchronizedLyricsFrame[]) => {
-            UnsynchronizedLyricsFrame.findPreferred(v, "foo", "bar");
-        });
-    }
-
-    @test
-    public findPreferred_noFrames_returnsUndefined() {
-        // Arrange
-        const frames: UnsynchronizedLyricsFrame[] = [];
-
-        // Act
-        const result = UnsynchronizedLyricsFrame.findPreferred(frames, "fux", "qux");
-
-        // Assert
-        assert.isUndefined(result);
-    }
-
-    @test
-    public findPreferred_perfectMatch_() {
-        // Arrange
-        const frames: UnsynchronizedLyricsFrame[] = [
-            getTestUnsynchronizedLyricsFrame(), // Wrong description, wrong language
-            getTestUnsynchronizedLyricsFrame(), // Correct description, wrong language
-            getTestUnsynchronizedLyricsFrame(), // Wrong description, correct language
-            getTestUnsynchronizedLyricsFrame()  // Correct description, correct language
-        ];
-        frames[0].language = "jpn";
-        frames[0].description = "fux";
-        frames[1].language = "jpn";
-        frames[2].description = "fux";
-
-        // Act
-        const result = UnsynchronizedLyricsFrame.findPreferred(frames, "foo", "eng");
-
-        // Assert
-        assert.ok(result);
-        assert.strictEqual(result, frames[3]);
-    }
-
-    @test
-    public findPreferred_matchByLanguage() {
-        // Arrange
-        const frames: UnsynchronizedLyricsFrame[] = [
-            getTestUnsynchronizedLyricsFrame(), // Wrong description, wrong language
-            getTestUnsynchronizedLyricsFrame(), // Correct description, wrong language
-            getTestUnsynchronizedLyricsFrame(), // Wrong description, correct language
-        ];
-        frames[0].language = "jpn";
-        frames[0].description = "fux";
-        frames[1].language = "jpn";
-        frames[2].description = "fux";
-
-        // Act
-        const result = UnsynchronizedLyricsFrame.findPreferred(frames, "foo", "eng");
-
-        // Assert
-        assert.ok(result);
-        assert.strictEqual(result, frames[2]);
-    }
-
-    @test
-    public findPreferred_matchByDescription() {
-        // Arrange
-        const frames: UnsynchronizedLyricsFrame[] = [
-            getTestUnsynchronizedLyricsFrame(), // Wrong description, wrong language
-            getTestUnsynchronizedLyricsFrame(), // Correct description, wrong language
-        ];
-        frames[0].language = "jpn";
-        frames[0].description = "fux";
-        frames[1].language = "jpn";
-
-        // Act
-        const result = UnsynchronizedLyricsFrame.findPreferred(frames, "foo", "eng");
-
-        // Assert
-        assert.ok(result);
-        assert.strictEqual(result, frames[1]);
-    }
-
-    @test
-    public findPreferred_matchFirst() {
-        // Arrange
-        const frames: UnsynchronizedLyricsFrame[] = [
-            getTestUnsynchronizedLyricsFrame(), // Wrong description, wrong language
-            getTestUnsynchronizedLyricsFrame(), // Wrong description, wrong language
-        ];
-
-        // Act
-        const result = UnsynchronizedLyricsFrame.findPreferred(frames, "fux", "jpn");
-
-        // Assert
-        assert.ok(result);
-        assert.strictEqual(result, frames[0]);
-    }
-
-    @test
     public clone() {
         // Arrange
         const frame = getTestUnsynchronizedLyricsFrame();
@@ -501,16 +231,90 @@ const getTestUnsynchronizedLyricsFrame = (): UnsynchronizedLyricsFrame => {
         const result = <UnsynchronizedLyricsFrame> frame.clone();
 
         // Assert
-        assert.ok(result);
-        assert.strictEqual(result.frameClassType, FrameClassType.UnsynchronizedLyricsFrame);
-        assert.strictEqual(result.frameId, FrameIdentifiers.USLT);
-
-        assert.strictEqual(result.description, frame.description);
-        assert.strictEqual(result.language, frame.language);
-        assert.strictEqual(result.text, frame.text);
-        assert.strictEqual(result.textEncoding, frame.textEncoding);
+        assertFrame(result, frame.description, frame.language, frame.text, frame.textEncoding);
     }
 
+    @test
+    public filterFrames_falsyFrames() {
+        // Act/Assert
+        Testers.testTruthy((v: UnsynchronizedLyricsFrame[]) => { UnsynchronizedLyricsFrame.filterFrames(v); });
+    }
+
+    @test
+    public filterFrames_noFrames() {
+        // Arrange
+        const frames: Frame[] = [];
+
+        // Act
+        const output = UnsynchronizedLyricsFrame.filterFrames(frames);
+
+        // Assert
+        assert.isArray(output);
+        assert.isEmpty(output);
+    }
+
+    @test
+    public filterFrames_noMatch() {
+        // Arrange
+        const frame1 = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.fromUint(123));
+        const frame2 = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.fromUint(234));
+        const frames = [frame1, frame2];
+
+        // Act
+        const result = UnsynchronizedLyricsFrame.filterFrames(frames);
+
+        // Assert
+        assert.isArray(result);
+        assert.isEmpty(result);
+    }
+
+    @test
+    public filterFrames_singleMatch() {
+        // Arrange
+        const frame1 = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.fromUint(123));
+        const frame2 = UnsynchronizedLyricsFrame.fromData("foo");
+        const frames = [frame1, frame2];
+
+        // Act
+        const result = UnsynchronizedLyricsFrame.filterFrames(frames);
+
+        // Assert
+        assert.isArray(result);
+        assert.deepEqual(result, [frame2]);
+    }
+
+    @test
+    public filterFrames_multipleMatches() {
+        // Arrange
+        const frame1 = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.fromUint(123));
+        const frame2 = UnsynchronizedLyricsFrame.fromData("foo");
+        const frame3 = UnsynchronizedLyricsFrame.fromData("bar");
+
+        const frames = [frame1, frame2, frame3];
+
+        // Act
+        const result = UnsynchronizedLyricsFrame.filterFrames(frames);
+
+        // Assert
+        assert.isArray(result);
+        assert.deepEqual(result, [frame2, frame3]);
+    }
+
+    @test
+    public filterFrames_allMatches() {
+        // Arrange
+        const frame1 = UnsynchronizedLyricsFrame.fromData("foo");
+        const frame2 = UnsynchronizedLyricsFrame.fromData("bar");
+        const frames = [frame1, frame2];
+
+        // Act
+        const result = UnsynchronizedLyricsFrame.filterFrames(frames);
+
+        // Assert
+        assert.isArray(result);
+        assert.deepEqual(result, [frame1, frame2]);
+    }
+    
     @params([2, StringType.Latin1], "v2_single_byte")
     @params([2, StringType.UTF16BE], "v2_multibyte")
     @params([3, StringType.Latin1], "v3_single_byte")

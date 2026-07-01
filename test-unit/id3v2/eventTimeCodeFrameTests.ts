@@ -1,15 +1,26 @@
 import {params, suite, test} from "@testdeck/mocha";
 import {assert} from "chai";
 
+import Frame from "../../src/id3v2/frames/frame";
 import FrameConstructorTests from "./frameConstructorTests";
 import PropertyTests from "../utilities/propertyTests";
+import UnknownFrame from "../../src/id3v2/frames/unknownFrame";
 import {ByteVector} from "../../src/byteVector";
 import {EventTimeCode, EventTimeCodeFrame} from "../../src/id3v2/frames/eventTimeCodeFrame";
-import {Frame, FrameClassType} from "../../src/id3v2/frames/frame";
 import {Id3v2FrameFlags, Id3v2FrameHeader} from "../../src/id3v2/frames/frameHeader";
 import {FrameIdentifiers} from "../../src/id3v2/frameIdentifiers";
 import {Testers} from "../utilities/testers";
 import {EventType, TimestampFormat} from "../../src/id3v2/utilTypes";
+
+const assertFrame = (frame: EventTimeCodeFrame, e: EventTimeCode[], t: TimestampFormat) => {
+    assert.isOk(frame);
+    assert.instanceOf<EventTimeCodeFrame>(frame, EventTimeCodeFrame);
+    assert.strictEqual(frame.frameId, FrameIdentifiers.ETCO);
+    assert.isTrue((frame.flags | Id3v2FrameFlags.FileAlterPreservation) > 0);
+
+    assert.deepStrictEqual(frame.events, e);
+    assert.strictEqual(frame.timestampFormat, t);
+}
 
 @suite class Id3v2_EventTimeCodeTests {
     @test
@@ -98,7 +109,7 @@ import {EventType, TimestampFormat} from "../../src/id3v2/utilTypes";
         const output = EventTimeCodeFrame.fromEmpty();
 
         // Assert
-        Id3v2_EventTimeCodeFrame_ConstructorTests.assertFrame(output, [], TimestampFormat.Unknown);
+        assertFrame(output, [], TimestampFormat.Unknown);
     }
 
     @test
@@ -107,7 +118,7 @@ import {EventType, TimestampFormat} from "../../src/id3v2/utilTypes";
         const output = EventTimeCodeFrame.fromTimestampFormat(TimestampFormat.AbsoluteMilliseconds);
 
         // Assert
-        Id3v2_EventTimeCodeFrame_ConstructorTests.assertFrame(output, [], TimestampFormat.AbsoluteMilliseconds);
+        assertFrame(output, [], TimestampFormat.AbsoluteMilliseconds);
     }
 
     @params(2, "v2")
@@ -134,7 +145,7 @@ import {EventType, TimestampFormat} from "../../src/id3v2/utilTypes";
         const frame = EventTimeCodeFrame.fromFieldBytes(header, fieldBytes, version);
 
         // Assert
-        Id3v2_EventTimeCodeFrame_ConstructorTests.assertFrame(frame, [], TimestampFormat.AbsoluteMilliseconds);
+        assertFrame(frame, [], TimestampFormat.AbsoluteMilliseconds);
     }
 
     @params(2, "v2")
@@ -155,11 +166,7 @@ import {EventType, TimestampFormat} from "../../src/id3v2/utilTypes";
         const frame = EventTimeCodeFrame.fromFieldBytes(header, fieldBytes, version);
 
         // Assert
-        Id3v2_EventTimeCodeFrame_ConstructorTests.assertFrame(
-            frame,
-            [event1, event2],
-            TimestampFormat.AbsoluteMilliseconds
-        );
+        assertFrame(frame, [event1, event2], TimestampFormat.AbsoluteMilliseconds);
     }
 
     @params(2, "v2")
@@ -178,16 +185,6 @@ import {EventType, TimestampFormat} from "../../src/id3v2/utilTypes";
 
         // Act / Assert
         assert.throws(() => EventTimeCodeFrame.fromFieldBytes(header, fieldBytes, version));
-    }
-
-    private static assertFrame(frame: EventTimeCodeFrame, e: EventTimeCode[], t: TimestampFormat) {
-        assert.isOk(frame);
-        assert.strictEqual(frame.frameClassType, FrameClassType.EventTimeCodeFrame);
-        assert.strictEqual(frame.frameId, FrameIdentifiers.ETCO);
-        assert.isTrue((frame.flags | Id3v2FrameFlags.FileAlterPreservation) > 0);
-
-        assert.deepStrictEqual(frame.events, e);
-        assert.strictEqual(frame.timestampFormat, t);
     }
 }
 
@@ -233,13 +230,88 @@ import {EventType, TimestampFormat} from "../../src/id3v2/utilTypes";
         const output = <EventTimeCodeFrame> frame.clone();
 
         // Assert
-        assert.isOk(output);
-        assert.strictEqual(output.frameClassType, FrameClassType.EventTimeCodeFrame);
-        assert.strictEqual(output.frameId, FrameIdentifiers.ETCO);
-        assert.isTrue((output.flags | Id3v2FrameFlags.FileAlterPreservation) > 0);
+        assertFrame(output, frame.events, frame.timestampFormat);
+    }
 
-        assert.deepStrictEqual(output.events, frame.events);
-        assert.strictEqual(output.timestampFormat, frame.timestampFormat);
+    @test
+    public filterFrames_falsyFrames() {
+        // Act/Assert
+        Testers.testTruthy((v: Frame[]) => { EventTimeCodeFrame.filterFrames(v); });
+    }
+
+    @test
+    public filterFrames_noFrames() {
+        // Arrange
+        const frames: Frame[] = [];
+
+        // Act
+        const output = EventTimeCodeFrame.filterFrames(frames);
+
+        // Assert
+        assert.isArray(output);
+        assert.isEmpty(output);
+    }
+
+    @test
+    public filterFrames_noMatch() {
+        // Arrange
+        const frame1 = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.fromUint(123));
+        const frame2 = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.fromUint(234));
+        const frames = [frame1, frame2];
+
+        // Act
+        const result = EventTimeCodeFrame.filterFrames(frames);
+
+        // Assert
+        assert.isArray(result);
+        assert.isEmpty(result);
+    }
+
+    @test
+    public filterFrames_singleMatch() {
+        // Arrange
+        const frame1 = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.fromUint(123));
+        const frame2 = EventTimeCodeFrame.fromEmpty();
+        const frames = [frame1, frame2];
+
+        // Act
+        const result = EventTimeCodeFrame.filterFrames(frames);
+
+        // Assert
+        assert.isArray(result);
+        assert.deepEqual(result, [frame2]);
+    }
+
+    @test
+    public filterFrames_multipleMatches() {
+        // Arrange
+        const frame1 = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.fromUint(123));
+        const frame2 = EventTimeCodeFrame.fromEmpty();
+        const frame3 = EventTimeCodeFrame.fromEmpty();
+
+        const frames = [frame1, frame2, frame3];
+
+        // Act
+        const result = EventTimeCodeFrame.filterFrames(frames);
+
+        // Assert
+        assert.isArray(result);
+        assert.deepEqual(result, [frame2, frame3]);
+    }
+
+    @test
+    public filterFrames_allMatches() {
+        // Arrange
+        const frame1 = EventTimeCodeFrame.fromEmpty();
+        const frame2 = EventTimeCodeFrame.fromEmpty();
+        const frames = [frame1, frame2];
+
+        // Act
+        const result = EventTimeCodeFrame.filterFrames(frames);
+
+        // Assert
+        assert.isArray(result);
+        assert.deepEqual(result, [frame1, frame2]);
     }
 
     @params(2, "v2")

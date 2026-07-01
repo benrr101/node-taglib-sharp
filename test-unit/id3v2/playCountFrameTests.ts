@@ -1,14 +1,23 @@
 import {params, suite, test} from "@testdeck/mocha";
 import {assert} from "chai";
 
+import Frame from "../../src/id3v2/frames/frame";
 import FrameConstructorTests from "./frameConstructorTests";
 import PlayCountFrame from "../../src/id3v2/frames/playCountFrame";
 import PropertyTests from "../utilities/propertyTests";
+import UnknownFrame from "../../src/id3v2/frames/unknownFrame";
 import {ByteVector} from "../../src/byteVector";
-import {Frame, FrameClassType} from "../../src/id3v2/frames/frame";
 import {Id3v2FrameFlags, Id3v2FrameHeader} from "../../src/id3v2/frames/frameHeader";
 import {FrameIdentifiers} from "../../src/id3v2/frameIdentifiers";
 import {Testers} from "../utilities/testers";
+
+const assertFrame = (frame: PlayCountFrame, p: bigint) => {
+    assert.isOk(frame);
+    assert.instanceOf<PlayCountFrame>(frame, PlayCountFrame);
+    assert.strictEqual(frame.frameId, FrameIdentifiers.PCNT);
+
+    assert.strictEqual(frame.playCount, p);
+}
 
 @suite class Id3v2_PlayCountFrame_ConstructorTests extends FrameConstructorTests {
     public get fromFieldBytes(): (h: Id3v2FrameHeader, d: ByteVector, v: number) => Frame {
@@ -21,7 +30,7 @@ import {Testers} from "../utilities/testers";
         const frame = PlayCountFrame.fromEmpty();
 
         // Assert
-        this.assertFrame(frame, BigInt(0));
+        assertFrame(frame, BigInt(0));
     }
 
     @params(2, "v2")
@@ -60,7 +69,7 @@ import {Testers} from "../utilities/testers";
         const frame = PlayCountFrame.fromFieldBytes(header, fieldBytes, version);
 
         // Assert
-        this.assertFrame(frame, BigInt(1234));
+        assertFrame(frame, BigInt(1234));
     }
 
     @params(2, "v2")
@@ -75,7 +84,7 @@ import {Testers} from "../utilities/testers";
         const frame = PlayCountFrame.fromFieldBytes(header, fieldBytes, version);
 
         // Assert
-        this.assertFrame(frame, BigInt("1108152157446"));
+        assertFrame(frame, BigInt("1108152157446"));
     }
 
     @params(2, "v2")
@@ -90,15 +99,7 @@ import {Testers} from "../utilities/testers";
         const frame = PlayCountFrame.fromFieldBytes(header, fieldBytes, version);
 
         // Assert
-        this.assertFrame(frame, BigInt("72623859790382856"));
-    }
-
-    private assertFrame(frame: PlayCountFrame, p: bigint) {
-        assert.isOk(frame);
-        assert.strictEqual(frame.frameClassType, FrameClassType.PlayCountFrame);
-        assert.strictEqual(frame.frameId, FrameIdentifiers.PCNT);
-
-        assert.strictEqual(frame.playCount, p);
+        assertFrame(frame, BigInt("72623859790382856"));
     }
 }
 
@@ -129,11 +130,88 @@ import {Testers} from "../utilities/testers";
         const output = <PlayCountFrame> frame.clone();
 
         // Assert
-        assert.isOk(output);
-        assert.strictEqual(output.frameClassType, FrameClassType.PlayCountFrame);
-        assert.strictEqual(output.frameId, FrameIdentifiers.PCNT);
+        assertFrame(output, frame.playCount);
+    }
 
-        assert.strictEqual(output.playCount, frame.playCount);
+    @test
+    public filterFrames_falsyFrames() {
+        // Act/Assert
+        Testers.testTruthy((v: PlayCountFrame[]) => { PlayCountFrame.filterFrames(v); });
+    }
+
+    @test
+    public filterFrames_noFrames() {
+        // Arrange
+        const frames: Frame[] = [];
+
+        // Act
+        const output = PlayCountFrame.filterFrames(frames);
+
+        // Assert
+        assert.isArray(output);
+        assert.isEmpty(output);
+    }
+
+    @test
+    public filterFrames_noMatch() {
+        // Arrange
+        const frame1 = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.fromUint(123));
+        const frame2 = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.fromUint(234));
+        const frames = [frame1, frame2];
+
+        // Act
+        const result = PlayCountFrame.filterFrames(frames);
+
+        // Assert
+        assert.isArray(result);
+        assert.isEmpty(result);
+    }
+
+    @test
+    public filterFrames_singleMatch() {
+        // Arrange
+        const frame1 = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.fromUint(123));
+        const frame2 = PlayCountFrame.fromEmpty();
+        const frames = [frame1, frame2];
+
+        // Act
+        const result = PlayCountFrame.filterFrames(frames);
+
+        // Assert
+        assert.isArray(result);
+        assert.deepEqual(result, [frame2]);
+    }
+
+    @test
+    public filterFrames_multipleMatches() {
+        // Arrange
+        const frame1 = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.fromUint(123));
+        const frame2 = PlayCountFrame.fromEmpty();
+        const frame3 = PlayCountFrame.fromEmpty();
+
+        const frames = [frame1, frame2, frame3];
+
+        // Act
+        const result = PlayCountFrame.filterFrames(frames);
+
+        // Assert
+        assert.isArray(result);
+        assert.deepEqual(result, [frame2, frame3]);
+    }
+
+    @test
+    public filterFrames_allMatches() {
+        // Arrange
+        const frame1 = PlayCountFrame.fromEmpty();
+        const frame2 = PlayCountFrame.fromEmpty();
+        const frames = [frame1, frame2];
+
+        // Act
+        const result = PlayCountFrame.filterFrames(frames);
+
+        // Assert
+        assert.isArray(result);
+        assert.deepEqual(result, [frame1, frame2]);
     }
 
     @params(2, "v2")

@@ -46,7 +46,7 @@ export default class UnknownFrame extends Frame {
      */
     public data: ByteVector;
 
-    public static FilterFrames(frames: Frame[]): UnknownFrame[] {
+    public static filterFrames(frames: Frame[]): UnknownFrame[] {
         Guards.truthy(frames, "frames");
         return ArrayUtils.ofType(frames, UnknownFrame);
     }

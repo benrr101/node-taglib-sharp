@@ -1,14 +1,25 @@
 import {params, suite, test} from "@testdeck/mocha";
 import {assert} from "chai";
 
+import Frame from "../../src/id3v2/frames/frame";
 import FrameConstructorTests from "./frameConstructorTests";
 import PopularimeterFrame from "../../src/id3v2/frames/popularimeterFrame";
 import PropertyTests from "../utilities/propertyTests";
+import UnknownFrame from "../../src/id3v2/frames/unknownFrame";
 import {ByteVector, StringType} from "../../src/byteVector";
-import {Frame, FrameClassType} from "../../src/id3v2/frames/frame";
 import {Id3v2FrameFlags, Id3v2FrameHeader} from "../../src/id3v2/frames/frameHeader";
 import {FrameIdentifiers} from "../../src/id3v2/frameIdentifiers";
 import {Testers} from "../utilities/testers";
+
+const assertFrame = (frame: PopularimeterFrame, u: string, p: bigint, r: number) => {
+    assert.isOk(frame);
+    assert.instanceOf<PopularimeterFrame>(frame, PopularimeterFrame);
+    assert.strictEqual(frame.frameId, FrameIdentifiers.POPM);
+
+    assert.strictEqual(frame.playCount, p);
+    assert.strictEqual(frame.rating, r);
+    assert.strictEqual(frame.user, u);
+}
 
 @suite class Id3v2_PopularimeterFrame_ConstructorTests extends FrameConstructorTests {
     public get fromFieldBytes(): (h: Id3v2FrameHeader, d: ByteVector, v: number) => Frame {
@@ -21,7 +32,7 @@ import {Testers} from "../utilities/testers";
         const frame = PopularimeterFrame.fromUser("fux");
 
         // Assert
-        this.assertFrame(frame, "fux", undefined, 0);
+        assertFrame(frame, "fux", undefined, 0);
     }
 
     @params(2, "v2")
@@ -84,7 +95,7 @@ import {Testers} from "../utilities/testers";
         const frame = PopularimeterFrame.fromFieldBytes(header, fieldBytes, 4);
 
         // Assert
-        this.assertFrame(frame, "foo@example.com", undefined, 0xAB);
+        assertFrame(frame, "foo@example.com", undefined, 0xAB);
     }
 
     @params(2, "v2")
@@ -103,7 +114,7 @@ import {Testers} from "../utilities/testers";
         const frame = PopularimeterFrame.fromFieldBytes(header, fieldBytes, version);
 
         // Assert
-        this.assertFrame(frame, "foo@example.com", BigInt(1234), 0xAB);
+        assertFrame(frame, "foo@example.com", BigInt(1234), 0xAB);
     }
 
     @params(2, "v2")
@@ -122,7 +133,7 @@ import {Testers} from "../utilities/testers";
         const frame = PopularimeterFrame.fromFieldBytes(header, fieldBytes, version);
 
         // Assert
-        this.assertFrame(frame, "foo@example.com", BigInt("1108152157446"), 0xAB);
+        assertFrame(frame, "foo@example.com", BigInt("1108152157446"), 0xAB);
     }
 
     @params(2, "v2")
@@ -141,23 +152,7 @@ import {Testers} from "../utilities/testers";
         const frame = PopularimeterFrame.fromFieldBytes(header, fieldBytes, version);
 
         // Assert
-        this.assertFrame(frame, "foo@example.com", BigInt("72623859790382856"), 0xAB);
-    }
-
-    private assertFrame(frame: PopularimeterFrame, u: string, p: bigint, r: number) {
-        assert.isOk(frame);
-        assert.strictEqual(frame.frameClassType, FrameClassType.PopularimeterFrame);
-        assert.strictEqual(frame.frameId, FrameIdentifiers.POPM);
-
-        if (p === undefined) {
-            assert.isUndefined(frame.playCount);
-        } else {
-            assert.isOk(frame.playCount);
-            assert.strictEqual(p, frame.playCount);
-        }
-
-        assert.strictEqual(frame.rating, r);
-        assert.strictEqual(frame.user, u);
+        assertFrame(frame, "foo@example.com", BigInt("72623859790382856"), 0xAB);
     }
 }
 
@@ -206,51 +201,6 @@ import {Testers} from "../utilities/testers";
 
 @suite class Id3v2_PopularimeterFrame_MethodTests {
     @test
-    public find_falsyFrames() {
-        // Act / Assert
-        Testers.testTruthy((v: PopularimeterFrame[]) => { PopularimeterFrame.find(v, "fux"); });
-    }
-
-    @test
-    public find_noFrames() {
-        // Act
-        const output = PopularimeterFrame.find([], "fux");
-
-        // Assert
-        assert.isUndefined(output);
-    }
-
-    @test
-    public find_noMatches() {
-        // Arrange
-        const frames = [
-            PopularimeterFrame.fromUser("fux")
-        ];
-
-        // Act
-        const output = PopularimeterFrame.find(frames, "bux");
-
-        // Assert
-        assert.isUndefined(output);
-    }
-
-    @test
-    public find_matches() {
-        // Arrange
-        const frames = [
-            PopularimeterFrame.fromUser("fux"),
-            PopularimeterFrame.fromUser("bux")
-        ];
-
-        // Act
-        const output = PopularimeterFrame.find(frames, "bux");
-
-        // Assert
-        assert.isOk(output);
-        assert.strictEqual(output, frames[1]);
-    }
-
-    @test
     public clone() {
         // Arrange
         const frame = PopularimeterFrame.fromUser("fux");
@@ -261,15 +211,88 @@ import {Testers} from "../utilities/testers";
         const output = <PopularimeterFrame> frame.clone();
 
         // Assert
-        assert.isOk(output);
-        assert.strictEqual(output.frameClassType, FrameClassType.PopularimeterFrame);
-        assert.strictEqual(output.frameId, FrameIdentifiers.POPM);
+        assertFrame(output, frame.user, frame.playCount, frame.rating);
+    }
 
-        assert.isOk(output.playCount);
-        assert.strictEqual(frame.playCount, output.playCount);
+    @test
+    public filterFrames_falsyFrames() {
+        // Act/Assert
+        Testers.testTruthy((v: PopularimeterFrame[]) => { PopularimeterFrame.filterFrames(v); });
+    }
 
-        assert.strictEqual(output.rating, frame.rating);
-        assert.strictEqual(output.user, frame.user);
+    @test
+    public filterFrames_noFrames() {
+        // Arrange
+        const frames: Frame[] = [];
+
+        // Act
+        const output = PopularimeterFrame.filterFrames(frames);
+
+        // Assert
+        assert.isArray(output);
+        assert.isEmpty(output);
+    }
+
+    @test
+    public filterFrames_noMatch() {
+        // Arrange
+        const frame1 = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.fromUint(123));
+        const frame2 = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.fromUint(234));
+        const frames = [frame1, frame2];
+
+        // Act
+        const result = PopularimeterFrame.filterFrames(frames);
+
+        // Assert
+        assert.isArray(result);
+        assert.isEmpty(result);
+    }
+
+    @test
+    public filterFrames_singleMatch() {
+        // Arrange
+        const frame1 = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.fromUint(123));
+        const frame2 = PopularimeterFrame.fromUser("foo");
+        const frames = [frame1, frame2];
+
+        // Act
+        const result = PopularimeterFrame.filterFrames(frames);
+
+        // Assert
+        assert.isArray(result);
+        assert.deepEqual(result, [frame2]);
+    }
+
+    @test
+    public filterFrames_multipleMatches() {
+        // Arrange
+        const frame1 = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.fromUint(123));
+        const frame2 = PopularimeterFrame.fromUser("foo");
+        const frame3 = PopularimeterFrame.fromUser("bar");
+
+        const frames = [frame1, frame2, frame3];
+
+        // Act
+        const result = PopularimeterFrame.filterFrames(frames);
+
+        // Assert
+        assert.isArray(result);
+        assert.deepEqual(result, [frame2, frame3]);
+    }
+
+    @test
+    public filterFrames_allMatches() {
+        // Arrange
+        const frame1 = PopularimeterFrame.fromUser("foo");
+        const frame2 = PopularimeterFrame.fromUser("bar");
+        const frames = [frame1, frame2];
+
+        // Act
+        const result = PopularimeterFrame.filterFrames(frames);
+
+        // Assert
+        assert.isArray(result);
+        assert.deepEqual(result, [frame1, frame2]);
     }
 
     @params(2, "v2")

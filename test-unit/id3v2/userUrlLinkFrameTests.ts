@@ -1,14 +1,25 @@
 import {params, suite, test} from "@testdeck/mocha";
 import {assert} from "chai";
 
+import Frame from "../../src/id3v2/frames/frame";
 import FrameConstructorTests from "./frameConstructorTests";
 import Id3v2Settings from "../../src/id3v2/id3v2Settings";
+import UnknownFrame from "../../src/id3v2/frames/unknownFrame";
 import UserUrlLinkFrame from "../../src/id3v2/frames/userUrlLinkFrame";
 import {ByteVector, StringType} from "../../src/byteVector";
-import {Frame, FrameClassType} from "../../src/id3v2/frames/frame";
 import {Id3v2FrameFlags, Id3v2FrameHeader} from "../../src/id3v2/frames/frameHeader";
 import {FrameIdentifiers} from "../../src/id3v2/frameIdentifiers";
 import {Testers} from "../utilities/testers";
+
+const assertFrame = (frame: UserUrlLinkFrame, description: string, text: string, encoding: StringType) => {
+    assert.ok(frame);
+    assert.instanceOf<UserUrlLinkFrame>(frame, UserUrlLinkFrame);
+    assert.strictEqual(frame.frameId, FrameIdentifiers.WXXX);
+
+    assert.strictEqual(frame.description, description);
+    assert.strictEqual(frame.text, text);
+    assert.equal(frame.textEncoding, encoding);
+}
 
 @suite class Id3v2_UserUrlLinkFrame_ConstructorTests extends FrameConstructorTests {
     public get fromFieldBytes(): (h: Id3v2FrameHeader, d: ByteVector, v: number) => Frame {
@@ -55,7 +66,7 @@ import {Testers} from "../utilities/testers";
         const output = UserUrlLinkFrame.fromFieldBytes(header, fieldBytes, version);
 
         // Assert
-        this.assertFrame(output, "foo", "bar", StringType.Latin1);
+        assertFrame(output, "foo", "bar", StringType.Latin1);
     }
 
     @params(2, "v2")
@@ -73,7 +84,7 @@ import {Testers} from "../utilities/testers";
         const output = UserUrlLinkFrame.fromFieldBytes(header, fieldBytes, version);
 
         // Assert
-        this.assertFrame(output, "", "foo", StringType.UTF16BE);
+        assertFrame(output, "", "foo", StringType.UTF16BE);
     }
 
     @params(2, "v2")
@@ -96,7 +107,7 @@ import {Testers} from "../utilities/testers";
         const output = UserUrlLinkFrame.fromFieldBytes(header, fieldBytes, version);
 
         // Assert
-        this.assertFrame(output, "foo", "bar", StringType.UTF16BE);
+        assertFrame(output, "foo", "bar", StringType.UTF16BE);
     }
 
     @params(2, "v2")
@@ -116,7 +127,7 @@ import {Testers} from "../utilities/testers";
         const output = UserUrlLinkFrame.fromFieldBytes(header, fieldBytes, version);
 
         // Assert
-        this.assertFrame(output, "foo", "bar", StringType.Latin1);
+        assertFrame(output, "foo", "bar", StringType.Latin1);
     }
 
     @params(StringType.Latin1, "single_byte")
@@ -135,17 +146,7 @@ import {Testers} from "../utilities/testers";
         const output = UserUrlLinkFrame.fromFieldBytes(header, fieldBytes, 4);
 
         // Assert
-        this.assertFrame(output, "foo", "bar", encoding);
-    }
-
-    private assertFrame(frame: UserUrlLinkFrame, description: string, text: string, encoding: StringType) {
-        assert.ok(frame);
-        assert.equal(frame.frameClassType, FrameClassType.UserUrlLinkFrame);
-        assert.strictEqual(frame.frameId, FrameIdentifiers.WXXX);
-
-        assert.strictEqual(frame.description, description);
-        assert.strictEqual(frame.text, text);
-        assert.equal(frame.textEncoding, encoding);
+        assertFrame(output, "foo", "bar", encoding);
     }
 }
 
@@ -197,62 +198,6 @@ import {Testers} from "../utilities/testers";
 
 @suite class Id3v2_UserUrlLink_MethodTests {
     @test
-    public findUserUrlLinkFrame_falsyFrames_throws(): void {
-        // Act/Assert
-        Testers.testTruthy((v: UserUrlLinkFrame[]) => { UserUrlLinkFrame.findUserUrlLinkFrame(v, "foo"); });
-    }
-
-    @test
-    public findUserUrlLinkFrame_falsyIdentity_throws(): void {
-        // Arrange
-        const frames = [UserUrlLinkFrame.fromFields("foo", "bar")];
-
-        // Act/Assert
-        Testers.testTruthy((v: string) => { UserUrlLinkFrame.findUserUrlLinkFrame(frames, v); });
-    }
-
-    @test
-    public findUserUrlLinkFrame_emptyFrames_returnsUndefined() {
-        // Arrange
-        const frames: UserUrlLinkFrame[] = [];
-
-        // Act
-        const result = UserUrlLinkFrame.findUserUrlLinkFrame(frames, "foo");
-
-        // Assert
-        assert.isUndefined(result);
-    }
-
-    @test
-    public findUserUrlLinkFrame_noMatch_returnsUndefined() {
-        // Arrange
-        const frames = [
-            UserUrlLinkFrame.fromFields("foo", "fux"),
-            UserUrlLinkFrame.fromFields("bar", "bux")
-        ];
-
-        // Act
-        const result = UserUrlLinkFrame.findUserUrlLinkFrame(frames, "baz");
-
-        // Assert
-        assert.isUndefined(result);
-    }
-
-    @test
-    public findUserUrlLinkFrame_match_returnsFirstMatch() {
-        // Arrange
-        const frame1 = UserUrlLinkFrame.fromFields("foo", "bar");
-        const frame2 = UserUrlLinkFrame.fromFields("foo", "bux");
-        const frames = [frame1, frame2];
-
-        // Act
-        const result = UserUrlLinkFrame.findUserUrlLinkFrame(frames, "foo");
-
-        // Assert
-        assert.equal(result, frame1);
-    }
-
-    @test
     public clone_returnsClone() {
         // Arrange
         const frame = UserUrlLinkFrame.fromFields("foo", "fux");
@@ -262,11 +207,88 @@ import {Testers} from "../utilities/testers";
         const result = frame.clone();
 
         // Assert
-        assert.isOk(result);
-        assert.strictEqual(result.frameId, frame.frameId);
-        assert.strictEqual(result.description, frame.description);
-        assert.strictEqual(result.text, frame.text);
-        assert.strictEqual(result.textEncoding, frame.textEncoding);
+        assertFrame(result, frame.description, frame.text, frame.textEncoding);
+    }
+
+    @test
+    public filterFrames_falsyFrames() {
+        // Act/Assert
+        Testers.testTruthy((v: UserUrlLinkFrame[]) => { UserUrlLinkFrame.filterFrames(v); });
+    }
+
+    @test
+    public filterFrames_noFrames() {
+        // Arrange
+        const frames: Frame[] = [];
+
+        // Act
+        const output = UserUrlLinkFrame.filterFrames(frames);
+
+        // Assert
+        assert.isArray(output);
+        assert.isEmpty(output);
+    }
+
+    @test
+    public filterFrames_noMatch() {
+        // Arrange
+        const frame1 = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.fromUint(123));
+        const frame2 = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.fromUint(234));
+        const frames = [frame1, frame2];
+
+        // Act
+        const result = UserUrlLinkFrame.filterFrames(frames);
+
+        // Assert
+        assert.isArray(result);
+        assert.isEmpty(result);
+    }
+
+    @test
+    public filterFrames_singleMatch() {
+        // Arrange
+        const frame1 = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.fromUint(123));
+        const frame2 = UserUrlLinkFrame.fromFields("foo", "bar");
+        const frames = [frame1, frame2];
+
+        // Act
+        const result = UserUrlLinkFrame.filterFrames(frames);
+
+        // Assert
+        assert.isArray(result);
+        assert.deepEqual(result, [frame2]);
+    }
+
+    @test
+    public filterFrames_multipleMatches() {
+        // Arrange
+        const frame1 = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.fromUint(123));
+        const frame2 = UserUrlLinkFrame.fromFields("foo", "bar");
+        const frame3 = UserUrlLinkFrame.fromFields("foo", "bar");
+
+        const frames = [frame1, frame2, frame3];
+
+        // Act
+        const result = UserUrlLinkFrame.filterFrames(frames);
+
+        // Assert
+        assert.isArray(result);
+        assert.deepEqual(result, [frame2, frame3]);
+    }
+
+    @test
+    public filterFrames_allMatches() {
+        // Arrange
+        const frame1 = UserUrlLinkFrame.fromFields("foo", "bar");
+        const frame2 = UserUrlLinkFrame.fromFields("foo", "bar");
+        const frames = [frame1, frame2];
+
+        // Act
+        const result = UserUrlLinkFrame.filterFrames(frames);
+
+        // Assert
+        assert.isArray(result);
+        assert.deepEqual(result, [frame1, frame2]);
     }
 
     @test

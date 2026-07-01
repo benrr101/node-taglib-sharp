@@ -1,11 +1,12 @@
 import {params, suite, test} from "@testdeck/mocha";
 import {assert} from "chai";
 
+import Frame from "../../src/id3v2/frames/frame";
 import FrameConstructorTests from "./frameConstructorTests";
 import MusicCdIdentifierFrame from "../../src/id3v2/frames/musicCdIdentifierFrame";
 import PropertyTests from "../utilities/propertyTests";
+import UnknownFrame from "../../src/id3v2/frames/unknownFrame";
 import {ByteVector, StringType} from "../../src/byteVector";
-import {Frame, FrameClassType} from "../../src/id3v2/frames/frame";
 import {Id3v2FrameFlags, Id3v2FrameHeader} from "../../src/id3v2/frames/frameHeader";
 import {FrameIdentifiers} from "../../src/id3v2/frameIdentifiers";
 import {Testers} from "../utilities/testers";
@@ -65,11 +66,88 @@ import {Testers} from "../utilities/testers";
         const result = frame.clone();
 
         // Assert
-        assert.ok(result);
-        assert.strictEqual(result.frameClassType, FrameClassType.MusicCdIdentifierFrame);
-        assert.strictEqual(result.frameId, FrameIdentifiers.MCDI);
+        Id3v2_MusicCdIdentifierFrameTests.assertFrame(result, frame.data);
+    }
 
-        Testers.bvEqual(result.data, fieldBytes);
+    @test
+    public filterFrames_falsyFrames() {
+        // Act/Assert
+        Testers.testTruthy((v: MusicCdIdentifierFrame[]) => { MusicCdIdentifierFrame.filterFrames(v); });
+    }
+
+    @test
+    public filterFrames_noFrames() {
+        // Arrange
+        const frames: Frame[] = [];
+
+        // Act
+        const output = MusicCdIdentifierFrame.filterFrames(frames);
+
+        // Assert
+        assert.isArray(output);
+        assert.isEmpty(output);
+    }
+
+    @test
+    public filterFrames_noMatch() {
+        // Arrange
+        const frame1 = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.fromUint(123));
+        const frame2 = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.fromUint(234));
+        const frames = [frame1, frame2];
+
+        // Act
+        const result = MusicCdIdentifierFrame.filterFrames(frames);
+
+        // Assert
+        assert.isArray(result);
+        assert.isEmpty(result);
+    }
+
+    @test
+    public filterFrames_singleMatch() {
+        // Arrange
+        const frame1 = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.fromUint(123));
+        const frame2 = MusicCdIdentifierFrame.fromData(ByteVector.empty());
+        const frames = [frame1, frame2];
+
+        // Act
+        const result = MusicCdIdentifierFrame.filterFrames(frames);
+
+        // Assert
+        assert.isArray(result);
+        assert.deepEqual(result, [frame2]);
+    }
+
+    @test
+    public filterFrames_multipleMatches() {
+        // Arrange
+        const frame1 = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.fromUint(123));
+        const frame2 = MusicCdIdentifierFrame.fromData(ByteVector.empty());
+        const frame3 = MusicCdIdentifierFrame.fromData(ByteVector.empty());
+
+        const frames = [frame1, frame2, frame3];
+
+        // Act
+        const result = MusicCdIdentifierFrame.filterFrames(frames);
+
+        // Assert
+        assert.isArray(result);
+        assert.deepEqual(result, [frame2, frame3]);
+    }
+
+    @test
+    public filterFrames_allMatches() {
+        // Arrange
+        const frame1 = MusicCdIdentifierFrame.fromData(ByteVector.empty());
+        const frame2 = MusicCdIdentifierFrame.fromData(ByteVector.empty());
+        const frames = [frame1, frame2];
+
+        // Act
+        const result = MusicCdIdentifierFrame.filterFrames(frames);
+
+        // Assert
+        assert.isArray(result);
+        assert.deepEqual(result, [frame1, frame2]);
     }
 
     @params(2, "v2")
@@ -93,7 +171,7 @@ import {Testers} from "../utilities/testers";
 
     private static assertFrame(frame: MusicCdIdentifierFrame, d: ByteVector) {
         assert.isOk(frame);
-        assert.strictEqual(frame.frameClassType, FrameClassType.MusicCdIdentifierFrame);
+        assert.instanceOf<MusicCdIdentifierFrame>(frame, MusicCdIdentifierFrame);
         assert.strictEqual(frame.frameId, FrameIdentifiers.MCDI);
 
         Testers.bvEqual(frame.data, d);

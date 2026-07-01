@@ -5,7 +5,6 @@ import {CorruptFileError} from "../../errors";
 import {Id3v2FrameHeader} from "./frameHeader";
 import {FrameIdentifiers} from "../frameIdentifiers";
 import {ArrayUtils, Guards} from "../../utils";
-import UnknownFrame from "./unknownFrame";
 
 /**
  * Extends {@link Frame} implementing support for ID3v2 unsynchronized lyrics (USLT) frames.

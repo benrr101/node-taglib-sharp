@@ -1,16 +1,40 @@
 import {params, suite, test} from "@testdeck/mocha";
 import {assert} from "chai";
 
+import Frame from "../../src/id3v2/frames/frame";
 import FrameConstructorTests from "./frameConstructorTests";
 import Id3v2Settings from "../../src/id3v2/id3v2Settings";
 import PropertyTests from "../utilities/propertyTests";
+import UnknownFrame from "../../src/id3v2/frames/unknownFrame";
 import {ByteVector, StringType} from "../../src/byteVector";
-import {Frame, FrameClassType} from "../../src/id3v2/frames/frame";
 import {Id3v2FrameFlags, Id3v2FrameHeader} from "../../src/id3v2/frames/frameHeader";
 import {FrameIdentifiers} from "../../src/id3v2/frameIdentifiers";
 import {SynchronizedLyricsFrame, SynchronizedText} from "../../src/id3v2/frames/synchronizedLyricsFrame";
 import {Testers} from "../utilities/testers";
 import {SynchronizedTextType, TimestampFormat} from "../../src/id3v2/utilTypes";
+
+const assertFrame = (
+    frame: SynchronizedLyricsFrame,
+    description: string,
+    format: TimestampFormat,
+    language: string,
+    text: SynchronizedText[],
+    textEncoding: StringType,
+    textType: SynchronizedTextType
+) => {
+    assert.isOk(frame);
+    assert.instanceOf<SynchronizedLyricsFrame>(frame, SynchronizedLyricsFrame);
+    assert.strictEqual(frame.frameId, FrameIdentifiers.SYLT);
+
+    assert.strictEqual(frame.description, description);
+    assert.strictEqual(frame.format, format);
+    assert.strictEqual(frame.language, language);
+    assert.strictEqual(frame.textEncoding, textEncoding);
+    assert.strictEqual(frame.textType, textType);
+
+    assert.isArray(frame.text);
+    assert.deepStrictEqual(frame.text, text);
+}
 
 @suite class Id3v2_SynchronizedTextTests {
     @test
@@ -57,15 +81,7 @@ import {SynchronizedTextType, TimestampFormat} from "../../src/id3v2/utilTypes";
         const frame = SynchronizedLyricsFrame.fromInfo(description, language, textType);
 
         // Assert
-        Id3v2_SynchronizedLyricsFrame_ConstructorTests.assertFrame(
-            frame,
-            description,
-            TimestampFormat.Unknown,
-            language,
-            [],
-            Id3v2Settings.defaultEncoding,
-            textType
-        );
+        assertFrame(frame, description, TimestampFormat.Unknown, language, [], Id3v2Settings.defaultEncoding, textType);
     }
 
     @test
@@ -80,15 +96,7 @@ import {SynchronizedTextType, TimestampFormat} from "../../src/id3v2/utilTypes";
         const frame = SynchronizedLyricsFrame.fromInfo(description, language, textType, encoding);
 
         // Assert
-        Id3v2_SynchronizedLyricsFrame_ConstructorTests.assertFrame(
-            frame,
-            description,
-            TimestampFormat.Unknown,
-            language,
-            [],
-            encoding,
-            textType
-        );
+        assertFrame(frame, description, TimestampFormat.Unknown, language, [], encoding, textType);
     }
 
     @params(2, "v2")
@@ -184,7 +192,7 @@ import {SynchronizedTextType, TimestampFormat} from "../../src/id3v2/utilTypes";
         const frame = SynchronizedLyricsFrame.fromFieldBytes(header, fieldBytes, version);
 
         // Assert
-        Id3v2_SynchronizedLyricsFrame_ConstructorTests.assertFrame(
+        assertFrame(
             frame,
             "bux",
             TimestampFormat.AbsoluteMilliseconds,
@@ -217,7 +225,7 @@ import {SynchronizedTextType, TimestampFormat} from "../../src/id3v2/utilTypes";
         const frame = SynchronizedLyricsFrame.fromFieldBytes(header, fieldBytes, version);
 
         // Assert
-        Id3v2_SynchronizedLyricsFrame_ConstructorTests.assertFrame(
+        assertFrame(
             frame,
             "bux",
             TimestampFormat.AbsoluteMilliseconds,
@@ -252,7 +260,7 @@ import {SynchronizedTextType, TimestampFormat} from "../../src/id3v2/utilTypes";
         const frame = SynchronizedLyricsFrame.fromFieldBytes(header, fieldBytes, version);
 
         // Assert
-        Id3v2_SynchronizedLyricsFrame_ConstructorTests.assertFrame(
+        assertFrame(
             frame,
             "bux",
             TimestampFormat.AbsoluteMilliseconds,
@@ -286,7 +294,7 @@ import {SynchronizedTextType, TimestampFormat} from "../../src/id3v2/utilTypes";
         const frame = SynchronizedLyricsFrame.fromFieldBytes(header, fieldBytes, 4);
 
         // Assert
-        Id3v2_SynchronizedLyricsFrame_ConstructorTests.assertFrame(
+        assertFrame(
             frame,
             "baz",
             TimestampFormat.AbsoluteMpegFrames,
@@ -295,29 +303,6 @@ import {SynchronizedTextType, TimestampFormat} from "../../src/id3v2/utilTypes";
             encoding,
             SynchronizedTextType.Events
         );
-    }
-
-    private static assertFrame(
-        frame: SynchronizedLyricsFrame,
-        d: string,
-        f: TimestampFormat,
-        l: string,
-        t: SynchronizedText[],
-        te: StringType,
-        tt: SynchronizedTextType
-    ) {
-        assert.isOk(frame);
-        assert.strictEqual(frame.frameClassType, FrameClassType.SynchronizedLyricsFrame);
-        assert.strictEqual(frame.frameId, FrameIdentifiers.SYLT);
-
-        assert.strictEqual(frame.description, d);
-        assert.strictEqual(frame.format, f);
-        assert.strictEqual(frame.language, l);
-        assert.strictEqual(frame.textEncoding, te);
-        assert.strictEqual(frame.textType, tt);
-
-        assert.isArray(frame.text);
-        assert.deepStrictEqual(frame.text, t);
     }
 }
 
@@ -403,191 +388,6 @@ import {SynchronizedTextType, TimestampFormat} from "../../src/id3v2/utilTypes";
 
 @suite class Id3v2_SynchronizedLyricsFrame_MethodTests {
     @test
-    public find_falsyFrames() {
-        // Act / Assert
-        Testers.testTruthy((v: SynchronizedLyricsFrame[]) => {
-            SynchronizedLyricsFrame.find(v, "fux", SynchronizedTextType.Chord);
-        });
-    }
-
-    @test
-    public find_emptyFrames() {
-        // Act
-        const output = SynchronizedLyricsFrame.find([], "fux", SynchronizedTextType.Chord);
-
-        // Assert
-        assert.isUndefined(output);
-    }
-
-    @test
-    public find_noMatchWithoutLanguage() {
-        // Arrange
-        const frames = [
-            SynchronizedLyricsFrame.fromInfo("foo", "bar", SynchronizedTextType.Trivia), // desc does not match
-            SynchronizedLyricsFrame.fromInfo("fux", "bux", SynchronizedTextType.Trivia)  // type does not match
-        ];
-
-        // Act
-        const output = SynchronizedLyricsFrame.find(frames, "fux", SynchronizedTextType.Chord);
-
-        // Assert
-        assert.isUndefined(output);
-    }
-
-    @test
-    public find_noMatchWithLanguage() {
-        // Arrange
-        const frames = [
-            SynchronizedLyricsFrame.fromInfo("foo", "bar", SynchronizedTextType.Trivia), // desc does not match
-            SynchronizedLyricsFrame.fromInfo("fux", "bar", SynchronizedTextType.Trivia), // lang goes not match
-            SynchronizedLyricsFrame.fromInfo("fux", "bux", SynchronizedTextType.Trivia)  // type does not match
-        ];
-
-        // Act
-        const output = SynchronizedLyricsFrame.find(frames, "fux", SynchronizedTextType.Chord, "bux");
-
-        // Assert
-        assert.isUndefined(output);
-    }
-
-    @test
-    public find_matchExists() {
-        // Arrange
-        const frames = [
-            SynchronizedLyricsFrame.fromInfo("foo", "bar", SynchronizedTextType.Trivia), // desc does not match
-            SynchronizedLyricsFrame.fromInfo("fux", "bar", SynchronizedTextType.Trivia), // lang goes not match
-            SynchronizedLyricsFrame.fromInfo("fux", "bux", SynchronizedTextType.Trivia), // type does not match
-            SynchronizedLyricsFrame.fromInfo("fux", "bux", SynchronizedTextType.Chord)   // Is match
-        ];
-
-        // Act
-        const output = SynchronizedLyricsFrame.find(frames, "fux", SynchronizedTextType.Chord, "bux");
-
-        // Assert
-        assert.isOk(output);
-        assert.strictEqual(output, frames[3]);
-    }
-
-    @test
-    public findPreferred_falsyFrames() {
-        // Act / Assert
-        assert.throws(() => {
-            SynchronizedLyricsFrame.findPreferred(undefined, "fux", "bux", SynchronizedTextType.Chord);
-        });
-        assert.throws(() => {
-            SynchronizedLyricsFrame.findPreferred(null, "fux", "bux", SynchronizedTextType.Chord);
-        });
-    }
-
-    @test
-    public findPreferred_noFrames() {
-        // Act
-        const output = SynchronizedLyricsFrame.findPreferred([], "fux", "bux", SynchronizedTextType.Chord);
-
-        // Assert
-        assert.isUndefined(output);
-    }
-
-    @test
-    public findPreferred_perfectMatch() {
-        // Arrange
-        const frames = [
-            SynchronizedLyricsFrame.fromInfo("foo", "bar", SynchronizedTextType.Trivia), // desc does not match
-            SynchronizedLyricsFrame.fromInfo("fux", "bar", SynchronizedTextType.Trivia), // lang goes not match
-            SynchronizedLyricsFrame.fromInfo("fux", "bux", SynchronizedTextType.Trivia), // type does not match
-            SynchronizedLyricsFrame.fromInfo("fux", "bux", SynchronizedTextType.Chord)   // perfect match
-        ];
-
-        // Act
-        const output = SynchronizedLyricsFrame.findPreferred(frames, "fux", "bux", SynchronizedTextType.Chord);
-
-        // Assert
-        assert.isOk(output);
-        assert.strictEqual(output, frames[3]);
-    }
-
-    @test
-    public findPreferred_descLangMatch() {
-        // Arrange
-        const frames = [
-            SynchronizedLyricsFrame.fromInfo("foo", "bar", SynchronizedTextType.Trivia), // desc does not match
-            SynchronizedLyricsFrame.fromInfo("fux", "bar", SynchronizedTextType.Trivia), // lang goes not match
-            SynchronizedLyricsFrame.fromInfo("fux", "bux", SynchronizedTextType.Trivia), // type does not match
-        ];
-
-        // Act
-        const output = SynchronizedLyricsFrame.findPreferred(frames, "fux", "bux", SynchronizedTextType.Chord);
-
-        // Assert
-        assert.isOk(output);
-        assert.strictEqual(output, frames[2]);
-    }
-
-    @test
-    public findPreferred_langMatch() {
-        // Arrange
-        const frames = [
-            SynchronizedLyricsFrame.fromInfo("foo", "bar", SynchronizedTextType.Trivia), // nothing matches
-            SynchronizedLyricsFrame.fromInfo("foo", "bux", SynchronizedTextType.Trivia), // lang matches
-        ];
-
-        // Act
-        const output = SynchronizedLyricsFrame.findPreferred(frames, "fux", "bux", SynchronizedTextType.Chord);
-
-        // Assert
-        assert.isOk(output);
-        assert.strictEqual(output, frames[1]);
-    }
-
-    @test
-    public findPreferred_descMatch() {
-        // Arrange
-        const frames = [
-            SynchronizedLyricsFrame.fromInfo("foo", "bar", SynchronizedTextType.Trivia), // nothing matches
-            SynchronizedLyricsFrame.fromInfo("fux", "bar", SynchronizedTextType.Trivia), // desc matches
-        ];
-
-        // Act
-        const output = SynchronizedLyricsFrame.findPreferred(frames, "fux", "bux", SynchronizedTextType.Chord);
-
-        // Assert
-        assert.isOk(output);
-        assert.strictEqual(output, frames[1]);
-    }
-
-    @test
-    public findPreferred_typeMatch() {
-        // Arrange
-        const frames = [
-            SynchronizedLyricsFrame.fromInfo("foo", "bar", SynchronizedTextType.Trivia), // nothing matches
-            SynchronizedLyricsFrame.fromInfo("foo", "bar", SynchronizedTextType.Chord),  // type matches
-        ];
-
-        // Act
-        const output = SynchronizedLyricsFrame.findPreferred(frames, "fux", "bux", SynchronizedTextType.Chord);
-
-        // Assert
-        assert.isOk(output);
-        assert.strictEqual(output, frames[1]);
-    }
-
-    @test
-    public findPreferred_nothingMatches() {
-        // Arrange
-        const frames = [
-            SynchronizedLyricsFrame.fromInfo("foo", "bar", SynchronizedTextType.Trivia), // nothing matches
-            SynchronizedLyricsFrame.fromInfo("foo", "bar", SynchronizedTextType.Trivia), // nothing matches
-        ];
-
-        // Act
-        const output = SynchronizedLyricsFrame.findPreferred(frames, "fux", "bux", SynchronizedTextType.Chord);
-
-        // Assert
-        assert.isOk(output);
-        assert.strictEqual(output, frames[0]);
-    }
-
-    @test
     public clone() {
         // Arrange
         const frame = SynchronizedLyricsFrame.fromInfo("fux", "bux", SynchronizedTextType.Chord);
@@ -596,19 +396,95 @@ import {SynchronizedTextType, TimestampFormat} from "../../src/id3v2/utilTypes";
         const output = <SynchronizedLyricsFrame> frame.clone();
 
         // Assert
-        assert.isOk(output);
-        assert.notStrictEqual(output, frame);
-        assert.strictEqual(output.frameClassType, FrameClassType.SynchronizedLyricsFrame);
-        assert.strictEqual(frame.frameId, FrameIdentifiers.SYLT);
+        assertFrame(output,
+            frame.description,
+            frame.format,
+            frame.language,
+            frame.text,
+            frame.textEncoding,
+            frame.textType
+        );
+    }
 
-        assert.strictEqual(output.description, frame.description);
-        assert.strictEqual(output.format, frame.format);
-        assert.strictEqual(output.language, frame.language);
-        assert.strictEqual(output.textEncoding, frame.textEncoding);
-        assert.strictEqual(output.textType, frame.textType);
+    @test
+    public filterFrames_falsyFrames() {
+        // Act/Assert
+        Testers.testTruthy((v: SynchronizedLyricsFrame[]) => { SynchronizedLyricsFrame.filterFrames(v); });
+    }
 
-        assert.isArray(output.text);
-        assert.deepStrictEqual(output.text, frame.text);
+    @test
+    public filterFrames_noFrames() {
+        // Arrange
+        const frames: Frame[] = [];
+
+        // Act
+        const output = SynchronizedLyricsFrame.filterFrames(frames);
+
+        // Assert
+        assert.isArray(output);
+        assert.isEmpty(output);
+    }
+
+    @test
+    public filterFrames_noMatch() {
+        // Arrange
+        const frame1 = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.fromUint(123));
+        const frame2 = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.fromUint(234));
+        const frames = [frame1, frame2];
+
+        // Act
+        const result = SynchronizedLyricsFrame.filterFrames(frames);
+
+        // Assert
+        assert.isArray(result);
+        assert.isEmpty(result);
+    }
+
+    @test
+    public filterFrames_singleMatch() {
+        // Arrange
+        const frame1 = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.fromUint(123));
+        const frame2 = SynchronizedLyricsFrame.fromInfo("foo", "bar", SynchronizedTextType.Other);
+        const frames = [frame1, frame2];
+
+        // Act
+        const result = SynchronizedLyricsFrame.filterFrames(frames);
+
+        // Assert
+        assert.isArray(result);
+        assert.deepEqual(result, [frame2]);
+    }
+
+    @test
+    public filterFrames_multipleMatches() {
+        // Arrange
+        const frame1 = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.fromUint(123));
+        const frame2 = SynchronizedLyricsFrame.fromInfo("foo", "bar", SynchronizedTextType.Other);
+        const frame3 = SynchronizedLyricsFrame.fromInfo("foo", "bar", SynchronizedTextType.Other);
+
+        const frames = [frame1, frame2, frame3];
+
+        // Act
+        const result = SynchronizedLyricsFrame.filterFrames(frames);
+
+        // Assert
+        assert.isArray(result);
+        assert.deepEqual(result, [frame2, frame3]);
+    }
+
+    @test
+    public filterFrames_allMatches() {
+        // Arrange
+        const frame1 = SynchronizedLyricsFrame.fromInfo("foo", "bar", SynchronizedTextType.Other);
+        const frame2 = SynchronizedLyricsFrame.fromInfo("foo", "bar", SynchronizedTextType.Other);
+        const frames = [frame1, frame2];
+
+        // Act
+        const result = SynchronizedLyricsFrame.filterFrames(frames);
+
+        // Assert
+        assert.isArray(result);
+        assert.deepEqual(result, [frame1, frame2]);
     }
 
     @params(2, "v2")

@@ -264,7 +264,7 @@ export default class TextInformationFrame extends Frame {
 
     // #region Public Methods
 
-    public static filterFrames(frames: Frame[], identifier: FrameIdentifier): TextInformationFrame[] {
+    public static filterFrames(frames: Frame[], identifier?: FrameIdentifier): TextInformationFrame[] {
         Guards.truthy(frames, "frames");
         const textFrames = ArrayUtils.ofType(frames, TextInformationFrame);
         return !!identifier

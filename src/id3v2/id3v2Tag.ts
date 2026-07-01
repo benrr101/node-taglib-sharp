@@ -1333,7 +1333,7 @@ export default class Id3v2Tag extends Tag {
 
         let urlFrame = UrlLinkFrame.filterFrames(this._frameList, ident)[0];
         if (!urlFrame) {
-            urlFrame = UrlLinkFrame.fromIdentity(ident);
+            urlFrame = UrlLinkFrame.fromIdentifier(ident);
             this.addFrame(urlFrame);
         }
 

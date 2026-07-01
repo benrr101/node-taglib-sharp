@@ -2,11 +2,12 @@ import {params, suite, test} from "@testdeck/mocha";
 import {assert} from "chai";
 
 import CommentsFrame from "../../src/id3v2/frames/commentsFrame";
+import Frame from "../../src/id3v2/frames/frame";
 import FrameConstructorTests from "./frameConstructorTests";
 import Id3v2Settings from "../../src/id3v2/id3v2Settings";
 import PropertyTests from "../utilities/propertyTests";
+import UnknownFrame from "../../src/id3v2/frames/unknownFrame";
 import {ByteVector, StringType} from "../../src/byteVector";
-import {Frame, FrameClassType} from "../../src/id3v2/frames/frame";
 import {FrameIdentifiers} from "../../src/id3v2/frameIdentifiers";
 import {Id3v2FrameFlags, Id3v2FrameHeader} from "../../src/id3v2/frames/frameHeader";
 import {Testers} from "../utilities/testers";
@@ -24,6 +25,23 @@ const getTestFrame = (): CommentsFrame => {
     return CommentsFrame.fromFieldBytes(header, fieldBytes, 4);
 }
 
+const verifyFrame = (
+    frame: CommentsFrame,
+    expectedDesc: string,
+    expectedLang: string,
+    expectedEncoding: StringType,
+    expectedText: string
+) => {
+    assert.isOk(frame);
+    assert.instanceOf<CommentsFrame>(frame, CommentsFrame);
+    assert.strictEqual(frame.frameId, FrameIdentifiers.COMM);
+
+    assert.strictEqual(frame.description, expectedDesc);
+    assert.strictEqual(frame.language, expectedLang);
+    assert.strictEqual(frame.textEncoding, expectedEncoding);
+    assert.strictEqual(frame.text, expectedText);
+}
+
 @suite class Id3v2_CommentsFrame_ConstructorTests extends FrameConstructorTests {
     public get fromFieldBytes(): (h: Id3v2FrameHeader, fb: ByteVector, v: number) => Frame {
         return CommentsFrame.fromFieldBytes;
@@ -38,13 +56,7 @@ const getTestFrame = (): CommentsFrame => {
         const frame = CommentsFrame.fromDescription(description);
 
         // Assert
-        Id3v2_CommentsFrame_ConstructorTests.validateFrame(
-            frame,
-            description,
-            "XXX",
-            Id3v2Settings.defaultEncoding,
-            ""
-        );
+        verifyFrame(frame, description, "XXX", Id3v2Settings.defaultEncoding, "");
     }
 
     @test
@@ -57,13 +69,7 @@ const getTestFrame = (): CommentsFrame => {
         const frame = CommentsFrame.fromDescription(description, language);
 
         // Assert
-        Id3v2_CommentsFrame_ConstructorTests.validateFrame(
-            frame,
-            description,
-            language,
-            Id3v2Settings.defaultEncoding,
-            ""
-        );
+        verifyFrame(frame, description, language, Id3v2Settings.defaultEncoding, "");
     }
 
     @test
@@ -77,7 +83,7 @@ const getTestFrame = (): CommentsFrame => {
         const frame = CommentsFrame.fromDescription(description, language, encoding);
 
         // Assert
-        Id3v2_CommentsFrame_ConstructorTests.validateFrame(frame, description, language, encoding, "");
+        verifyFrame(frame, description, language, encoding, "");
     }
 
     @params(2, "v2")
@@ -108,7 +114,7 @@ const getTestFrame = (): CommentsFrame => {
         const frame = CommentsFrame.fromFieldBytes(header, fieldBytes, version);
 
         // Assert
-        Id3v2_CommentsFrame_ConstructorTests.validateFrame(frame, "", "eng", StringType.Latin1, "");
+        verifyFrame(frame, "", "eng", StringType.Latin1, "");
     }
 
     @params(2, "v2")
@@ -128,7 +134,7 @@ const getTestFrame = (): CommentsFrame => {
         const frame = CommentsFrame.fromFieldBytes(header, fieldBytes, version);
 
         // Assert
-        Id3v2_CommentsFrame_ConstructorTests.validateFrame(frame, "", "eng", StringType.Latin1, "fux");
+        verifyFrame(frame, "", "eng", StringType.Latin1, "fux");
     }
 
     @params(2, "v2")
@@ -149,7 +155,7 @@ const getTestFrame = (): CommentsFrame => {
         const frame = CommentsFrame.fromFieldBytes(header, fieldBytes, version);
 
         // Assert
-        Id3v2_CommentsFrame_ConstructorTests.validateFrame(frame, "", "eng", StringType.Latin1, "fux");
+        verifyFrame(frame, "", "eng", StringType.Latin1, "fux");
     }
 
     @params(2, "v2")
@@ -170,7 +176,7 @@ const getTestFrame = (): CommentsFrame => {
         const frame = CommentsFrame.fromFieldBytes(header, fieldBytes, version);
 
         // Assert
-        Id3v2_CommentsFrame_ConstructorTests.validateFrame(frame, "fux", "eng", StringType.Latin1, "bux");
+        verifyFrame(frame, "fux", "eng", StringType.Latin1, "bux");
     }
 
     @params(StringType.Latin1, "single_byte_encoding")
@@ -190,24 +196,7 @@ const getTestFrame = (): CommentsFrame => {
         const frame = CommentsFrame.fromFieldBytes(header, fieldBytes, 4);
 
         // Assert
-        Id3v2_CommentsFrame_ConstructorTests.validateFrame(frame, "fux", "eng", encoding, "bux");
-    }
-
-    private static validateFrame(
-        frame: CommentsFrame,
-        expectedDesc: string,
-        expectedLang: string,
-        expectedEncoding: StringType,
-        expectedText: string
-    ) {
-        assert.isOk(frame);
-        assert.equal(frame.frameClassType, FrameClassType.CommentsFrame);
-        assert.strictEqual(frame.frameId, FrameIdentifiers.COMM);
-
-        assert.strictEqual(frame.description, expectedDesc);
-        assert.strictEqual(frame.language, expectedLang);
-        assert.strictEqual(frame.textEncoding, expectedEncoding);
-        assert.strictEqual(frame.text, expectedText);
+        verifyFrame(frame, "fux", "eng", encoding, "bux");
     }
 }
 
@@ -261,79 +250,18 @@ const getTestFrame = (): CommentsFrame => {
 
 @suite class Id3v2_CommentsFrame_MethodTests {
     @test
-    public find_falsyFrames() {
+    public filterFrames_falsyFrames() {
         // Act/Assert
-        Testers.testTruthy((v: CommentsFrame[]) => { CommentsFrame.find(v, "fux"); });
+        Testers.testTruthy((v: CommentsFrame[]) => { CommentsFrame.filterFrames(v); });
     }
 
     @test
-    public find_frameDoesNotExist() {
+    public filterFrames_noFrames() {
         // Arrange
-        const frames = [
-            CommentsFrame.fromDescription("fux", "jpn"),    // nothing matches
-            CommentsFrame.fromDescription("bux", "jpn"),    // desc matches, not language
-            CommentsFrame.fromDescription("qux", "eng")     // language matches, not desc
-        ];
+        const frames: Frame[] = [];
 
         // Act
-        const output = CommentsFrame.find(frames, "bux", "eng");
-
-        // Assert
-        assert.isUndefined(output);
-    }
-
-    @test
-    public find_frameExistsWithoutLanguage() {
-        // Arrange
-        const frames = [
-            CommentsFrame.fromDescription("fux", "jpn"),    // nothing matches
-            CommentsFrame.fromDescription("bux", "jpn"),    // desc matches, not language
-            CommentsFrame.fromDescription("qux", "jpn")     // desc does not match
-        ];
-
-        // Act
-        const output = CommentsFrame.find(frames, "bux");
-
-        // Assert
-        assert.isOk(output);
-        assert.strictEqual(output, frames[1]);
-    }
-
-    @test
-    public find_frameExistsWithLanguage() {
-        // Arrange
-        const frames = [
-            CommentsFrame.fromDescription("fux", "jpn"),    // nothing matches
-            CommentsFrame.fromDescription("bux", "jpn"),    // desc matches, not language
-            CommentsFrame.fromDescription("qux", "eng"),    // language matches, not desc
-            CommentsFrame.fromDescription("bux", "eng")     // everything matches
-        ];
-
-        // Act
-        const output = CommentsFrame.find(frames, "bux", "eng");
-
-        // Assert
-        assert.isOk(output);
-        assert.strictEqual(output, frames[3]);
-    }
-
-    @test
-    public findAll_falsyFrames() {
-        // Act/Assert
-        Testers.testTruthy((v: CommentsFrame[]) => { CommentsFrame.findAll(v, "fux"); });
-    }
-
-    @test
-    public findAll_frameDoesNotExist() {
-        // Arrange
-        const frames = [
-            CommentsFrame.fromDescription("fux", "jpn"),
-            CommentsFrame.fromDescription("bux", "jpn"),
-            CommentsFrame.fromDescription("qux", "eng")
-        ];
-
-        // Act
-        const output = CommentsFrame.findAll(frames, "fux", "eng");
+        const output = CommentsFrame.filterFrames(frames);
 
         // Assert
         assert.isArray(output);
@@ -341,39 +269,65 @@ const getTestFrame = (): CommentsFrame => {
     }
 
     @test
-    public findAll_frameExistsWithoutLanguage() {
+    public filterFrames_noMatch() {
         // Arrange
-        const frames = [
-            CommentsFrame.fromDescription("fux", "jpn"),
-            CommentsFrame.fromDescription("bux", "jpn"),
-            CommentsFrame.fromDescription("bux", "eng"),
-            CommentsFrame.fromDescription("qux", "eng")
-        ];
+        const frame1 = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.fromUint(123));
+        const frame2 = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.fromUint(234));
+        const frames = [frame1, frame2];
 
         // Act
-        const output = CommentsFrame.findAll(frames, "bux");
+        const result = CommentsFrame.filterFrames(frames);
 
         // Assert
-        assert.isArray(output);
-        assert.sameMembers(output, [frames[1], frames[2]]);
+        assert.isArray(result);
+        assert.isEmpty(result);
     }
 
     @test
-    public findAll_frameExistsWithLanguage() {
+    public filterFrames_singleMatch() {
         // Arrange
-        const frames = [
-            CommentsFrame.fromDescription("fux", "jpn"),
-            CommentsFrame.fromDescription("bux", "jpn"),
-            CommentsFrame.fromDescription("bux", "eng"),
-            CommentsFrame.fromDescription("qux", "eng")
-        ];
+        const frame1 = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.fromUint(123));
+        const frame2 = CommentsFrame.fromDescription("foo");
+        const frames = [frame1, frame2];
 
         // Act
-        const output = CommentsFrame.findAll(frames, "bux", "eng");
+        const result = CommentsFrame.filterFrames(frames);
 
         // Assert
-        assert.isArray(output);
-        assert.sameMembers(output, [frames[2]]);
+        assert.isArray(result);
+        assert.deepEqual(result, [frame2]);
+    }
+
+    @test
+    public filterFrames_multipleMatches() {
+        // Arrange
+        const frame1 = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.fromUint(123));
+        const frame2 = CommentsFrame.fromDescription("foo");
+        const frame3 = CommentsFrame.fromDescription("bar");
+
+        const frames = [frame1, frame2, frame3];
+
+        // Act
+        const result = CommentsFrame.filterFrames(frames);
+
+        // Assert
+        assert.isArray(result);
+        assert.deepEqual(result, [frame2, frame3]);
+    }
+
+    @test
+    public filterFrames_allMatches() {
+        // Arrange
+        const frame1 = CommentsFrame.fromDescription("foo");
+        const frame2 = CommentsFrame.fromDescription("bar");
+        const frames = [frame1, frame2];
+
+        // Act
+        const result = CommentsFrame.filterFrames(frames);
+
+        // Assert
+        assert.isArray(result);
+        assert.deepEqual(result, [frame1, frame2]);
     }
 
     @test
@@ -464,14 +418,7 @@ const getTestFrame = (): CommentsFrame => {
         const output = <CommentsFrame> frame.clone();
 
         // Assert
-        assert.isOk(output);
-        assert.equal(output.frameClassType, FrameClassType.CommentsFrame);
-        assert.strictEqual(output.frameId, FrameIdentifiers.COMM);
-
-        assert.strictEqual(output.description, frame.description);
-        assert.strictEqual(output.language, frame.language);
-        assert.strictEqual(output.textEncoding, frame.textEncoding);
-        assert.strictEqual(output.text, frame.text);
+        verifyFrame(output, frame.description, frame.language, frame.textEncoding, frame.text);
     }
 
     @params([2, StringType.Latin1], "v2_single_byte")

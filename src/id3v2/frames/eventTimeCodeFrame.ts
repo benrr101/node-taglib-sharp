@@ -189,7 +189,7 @@ export class EventTimeCodeFrame extends Frame {
 
     // #region Methods
 
-    public filterFrames(frames: Frame[]): EventTimeCodeFrame[] {
+    public static filterFrames(frames: Frame[]): EventTimeCodeFrame[] {
         Guards.truthy(frames, "frames");
         return ArrayUtils.ofType(frames, EventTimeCodeFrame);
     }

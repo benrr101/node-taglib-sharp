@@ -1,14 +1,24 @@
 import {params, suite, test} from "@testdeck/mocha";
 import {assert} from "chai";
 
+import Frame from "../../src/id3v2/frames/frame";
 import FrameConstructorTests from "./frameConstructorTests";
 import PropertyTests from "../utilities/propertyTests";
 import PrivateFrame from "../../src/id3v2/frames/privateFrame";
+import UnknownFrame from "../../src/id3v2/frames/unknownFrame";
 import {ByteVector, StringType} from "../../src/byteVector";
-import {Frame, FrameClassType} from "../../src/id3v2/frames/frame";
 import {Id3v2FrameFlags, Id3v2FrameHeader} from "../../src/id3v2/frames/frameHeader";
 import {FrameIdentifiers} from "../../src/id3v2/frameIdentifiers";
 import {Testers} from "../utilities/testers";
+
+const assertFrame = (frame: PrivateFrame, o: string, d: ByteVector) => {
+    assert.isOk(frame);
+    assert.instanceOf<PrivateFrame>(frame, PrivateFrame);
+    assert.strictEqual(frame.frameId, FrameIdentifiers.PRIV);
+
+    assert.strictEqual(frame.owner, o);
+    Testers.bvEqual(frame.privateData, d);
+}
 
 @suite class Id3v2_PrivateFrame_ConstructorTests extends FrameConstructorTests {
     public get fromFieldBytes(): (h: Id3v2FrameHeader, d: ByteVector, v: number) => Frame {
@@ -21,7 +31,7 @@ import {Testers} from "../utilities/testers";
         const frame = PrivateFrame.fromOwner("foo");
 
         // Assert
-        Id3v2_PrivateFrame_ConstructorTests.assertFrame(frame, "foo", ByteVector.empty());
+        assertFrame(frame, "foo", ByteVector.empty());
     }
 
     @test
@@ -49,7 +59,7 @@ import {Testers} from "../utilities/testers";
         const frame = PrivateFrame.fromFieldBytes(header, fieldBytes, version);
 
         // Assert
-        Id3v2_PrivateFrame_ConstructorTests.assertFrame(frame, "fux", ByteVector.empty());
+        assertFrame(frame, "fux", ByteVector.empty());
     }
 
     @params(2, "v2")
@@ -68,7 +78,7 @@ import {Testers} from "../utilities/testers";
         const frame = PrivateFrame.fromFieldBytes(header, fieldBytes, version);
 
         // Assert
-        Id3v2_PrivateFrame_ConstructorTests.assertFrame(frame, "", dataBytes);
+        assertFrame(frame, "", dataBytes);
     }
 
     @params(2, "v2")
@@ -88,16 +98,7 @@ import {Testers} from "../utilities/testers";
         const frame = PrivateFrame.fromFieldBytes(header, fieldBytes, version);
 
         // Assert
-        Id3v2_PrivateFrame_ConstructorTests.assertFrame(frame, "foo", dataBytes);
-    }
-
-    private static assertFrame(frame: PrivateFrame, o: string, d: ByteVector) {
-        assert.isOk(frame);
-        assert.strictEqual(frame.frameClassType, FrameClassType.PrivateFrame);
-        assert.strictEqual(frame.frameId, FrameIdentifiers.PRIV);
-
-        assert.strictEqual(frame.owner, o);
-        Testers.bvEqual(frame.privateData, d);
+        assertFrame(frame, "foo", dataBytes);
     }
 }
 
@@ -118,47 +119,6 @@ import {Testers} from "../utilities/testers";
 
 @suite class Id3v2_PrivateFrame_MethodTests {
     @test
-    public find_noFrames() {
-        // Arrange
-        const frames: PrivateFrame[] = [];
-
-        // Act
-        const output = PrivateFrame.find(frames, "fux");
-
-        // Assert
-        assert.isUndefined(output);
-    }
-
-    @test
-    public find_noMatch() {
-        // Arrange
-        const frames = [
-            PrivateFrame.fromOwner("fux")
-        ];
-
-        // Act
-        const output = PrivateFrame.find(frames, "bux");
-
-        // Assert
-        assert.isUndefined(output);
-    }
-
-    @test
-    public find_match() {
-        // Arrange
-        const frames = [
-            PrivateFrame.fromOwner("fux"),
-            PrivateFrame.fromOwner("bux")
-        ];
-
-        // Act
-        const output = PrivateFrame.find(frames, "bux");
-
-        // Assert
-        assert.strictEqual(output, frames[1]);
-    }
-
-    @test
     public clone() {
         // Arrange
         const frame = PrivateFrame.fromOwner("fux");
@@ -167,17 +127,90 @@ import {Testers} from "../utilities/testers";
         const output = <PrivateFrame> frame.clone();
 
         // Assert
-        assert.isOk(output);
-        assert.notEqual(frame, output);
-
-        assert.strictEqual(output.frameClassType, FrameClassType.PrivateFrame);
-        assert.strictEqual(output.frameId, FrameIdentifiers.PRIV);
-
-        assert.strictEqual(output.owner, frame.owner);
-        assert.notEqual(output.privateData, frame.privateData);
-        Testers.bvEqual(output.privateData, frame.privateData);
+        assertFrame(output, frame.owner, frame.privateData);
     }
 
+    @test
+    public filterFrames_falsyFrames() {
+        // Act/Assert
+        Testers.testTruthy((v: PrivateFrame[]) => { PrivateFrame.filterFrames(v); });
+    }
+
+    @test
+    public filterFrames_noFrames() {
+        // Arrange
+        const frames: Frame[] = [];
+
+        // Act
+        const output = PrivateFrame.filterFrames(frames);
+
+        // Assert
+        assert.isArray(output);
+        assert.isEmpty(output);
+    }
+
+    @test
+    public filterFrames_noMatch() {
+        // Arrange
+        const frame1 = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.fromUint(123));
+        const frame2 = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.fromUint(234));
+        const frames = [frame1, frame2];
+
+        // Act
+        const result = PrivateFrame.filterFrames(frames);
+
+        // Assert
+        assert.isArray(result);
+        assert.isEmpty(result);
+    }
+
+    @test
+    public filterFrames_singleMatch() {
+        // Arrange
+        const frame1 = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.fromUint(123));
+        const frame2 = PrivateFrame.fromOwner("foo");
+        const frames = [frame1, frame2];
+
+        // Act
+        const result = PrivateFrame.filterFrames(frames);
+
+        // Assert
+        assert.isArray(result);
+        assert.deepEqual(result, [frame2]);
+    }
+
+    @test
+    public filterFrames_multipleMatches() {
+        // Arrange
+        const frame1 = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.fromUint(123));
+        const frame2 = PrivateFrame.fromOwner("foo");
+        const frame3 = PrivateFrame.fromOwner("bar");
+
+        const frames = [frame1, frame2, frame3];
+
+        // Act
+        const result = PrivateFrame.filterFrames(frames);
+
+        // Assert
+        assert.isArray(result);
+        assert.deepEqual(result, [frame2, frame3]);
+    }
+
+    @test
+    public filterFrames_allMatches() {
+        // Arrange
+        const frame1 = PrivateFrame.fromOwner("foo");
+        const frame2 = PrivateFrame.fromOwner("bar");
+        const frames = [frame1, frame2];
+
+        // Act
+        const result = PrivateFrame.filterFrames(frames);
+
+        // Assert
+        assert.isArray(result);
+        assert.deepEqual(result, [frame1, frame2]);
+    }
+    
     @test
     public render_v2_throws() {
         // Arrange

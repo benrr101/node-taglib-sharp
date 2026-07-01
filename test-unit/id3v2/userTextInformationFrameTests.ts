@@ -1,14 +1,31 @@
 import {params, suite, test} from "@testdeck/mocha";
 import {assert} from "chai";
 
+import Frame from "../../src/id3v2/frames/frame";
 import FrameConstructorTests from "./frameConstructorTests";
 import Id3v2Settings from "../../src/id3v2/id3v2Settings";
+import UnknownFrame from "../../src/id3v2/frames/unknownFrame";
 import UserTextInformationFrame from "../../src/id3v2/frames/userTextInformationFrame";
 import {ByteVector, StringType} from "../../src/byteVector";
-import {Frame, FrameClassType} from "../../src/id3v2/frames/frame";
 import {Id3v2FrameFlags, Id3v2FrameHeader} from "../../src/id3v2/frames/frameHeader";
 import {FrameIdentifiers} from "../../src/id3v2/frameIdentifiers";
 import {Testers} from "../utilities/testers";
+
+const assertFrame = (
+    frame: UserTextInformationFrame,
+    description: string,
+    text: string[],
+    encoding: StringType
+) => {
+    assert.isOk(frame);
+    assert.instanceOf<UserTextInformationFrame>(frame, UserTextInformationFrame);
+    assert.strictEqual(frame.frameId, FrameIdentifiers.TXXX);
+
+    assert.isOk(frame.text);
+    assert.strictEqual(frame.description, description);
+    assert.deepStrictEqual(frame.text, text);
+    assert.strictEqual(frame.textEncoding, encoding);
+}
 
 const getTestFrame = (): UserTextInformationFrame => {
     const frame = UserTextInformationFrame.fromDescription("foo", StringType.Latin1);
@@ -30,7 +47,7 @@ const getTestFrame = (): UserTextInformationFrame => {
         const frame = UserTextInformationFrame.fromDescription(description);
 
         // Assert
-        Id3v2_UserInformationFrame_ConstructorTests.assertFrame(frame, description, [], Id3v2Settings.defaultEncoding);
+        assertFrame(frame, description, [], Id3v2Settings.defaultEncoding);
     }
 
     @params(undefined, "undefined")
@@ -42,7 +59,7 @@ const getTestFrame = (): UserTextInformationFrame => {
         const frame = UserTextInformationFrame.fromDescription(description, StringType.UTF16BE);
 
         // Assert
-        Id3v2_UserInformationFrame_ConstructorTests.assertFrame(frame, description, [], StringType.UTF16BE);
+        assertFrame(frame, description, [], StringType.UTF16BE);
     }
 
     @params(2, "v2")
@@ -69,11 +86,7 @@ const getTestFrame = (): UserTextInformationFrame => {
         const frame = UserTextInformationFrame.fromFieldBytes(header, fieldBytes, version);
 
         // Assert
-        assert.isOk(frame);
-        assert.strictEqual(frame.description, "");
-        assert.strictEqual(frame.frameId, FrameIdentifiers.TXXX);
-        assert.deepEqual(frame.text, []);
-        assert.strictEqual(frame.textEncoding, StringType.UTF16LE);
+        assertFrame(frame, "", [], StringType.UTF16LE);
     }
 
     @params(2, "v2")
@@ -91,13 +104,7 @@ const getTestFrame = (): UserTextInformationFrame => {
         const output = UserTextInformationFrame.fromFieldBytes(header, fieldBytes, version);
 
         // Assert
-        assert.isOk(output);
-        assert.equal(output.frameClassType, FrameClassType.UserTextInformationFrame);
-        assert.strictEqual(output.frameId, FrameIdentifiers.TXXX);
-
-        assert.strictEqual(output.description, "");
-        assert.deepEqual(output.text, ["foo"])
-        assert.strictEqual(output.textEncoding, StringType.UTF16BE);
+        assertFrame(output, "", ["foo"], StringType.UTF16BE);
     }
 
     @params(2, "v2")
@@ -119,13 +126,7 @@ const getTestFrame = (): UserTextInformationFrame => {
         const output = UserTextInformationFrame.fromFieldBytes(header, fieldBytes, version);
 
         // Assert
-        assert.isOk(output);
-        assert.equal(output.frameClassType, FrameClassType.UserTextInformationFrame);
-        assert.strictEqual(output.frameId, FrameIdentifiers.TXXX);
-
-        assert.strictEqual(output.description, "foo");
-        assert.deepEqual(output.text, ["bar", "baz"])
-        assert.strictEqual(output.textEncoding, StringType.UTF16BE);
+        assertFrame(output, "foo", ["bar", "baz"], StringType.UTF16BE);
     }
 
     @params(2, "v2")
@@ -145,7 +146,7 @@ const getTestFrame = (): UserTextInformationFrame => {
         const frame = UserTextInformationFrame.fromFieldBytes(header, fieldData, version);
 
         // Assert
-        Id3v2_UserInformationFrame_ConstructorTests.assertFrame(frame, "foo", ["bar"], StringType.Latin1);
+        assertFrame(frame, "foo", ["bar"], StringType.Latin1);
     }
 
     @params(StringType.Latin1, "latin1")
@@ -164,29 +165,7 @@ const getTestFrame = (): UserTextInformationFrame => {
         const output = UserTextInformationFrame.fromFieldBytes(header, fieldBytes, 4);
 
         // Assert
-        assert.isOk(output);
-        assert.equal(output.frameClassType, FrameClassType.UserTextInformationFrame);
-        assert.strictEqual(output.frameId, FrameIdentifiers.TXXX);
-
-        assert.strictEqual(output.description, "foo");
-        assert.deepEqual(output.text, ["bar"])
-        assert.strictEqual(output.textEncoding, encoding);
-    }
-
-    private static assertFrame(
-        frame: UserTextInformationFrame,
-        description: string,
-        text: string[],
-        encoding: StringType
-    ) {
-        assert.isOk(frame);
-        assert.strictEqual(frame.frameClassType, FrameClassType.UserTextInformationFrame);
-        assert.strictEqual(frame.frameId, FrameIdentifiers.TXXX);
-
-        assert.isOk(frame.text);
-        assert.strictEqual(frame.description, description);
-        assert.deepStrictEqual(frame.text, text);
-        assert.strictEqual(frame.textEncoding, encoding);
+        assertFrame(output, "foo", ["bar"], encoding);
     }
 }
 
@@ -279,108 +258,84 @@ const getTestFrame = (): UserTextInformationFrame => {
 
 @suite class Id3v2_UserTextInformationFrame_MethodTests {
     @test
-    public findUserTextInformationFrame_falsyFrames() {
+    public filterFrames_falsyFrames() {
         // Act/Assert
-        Testers.testTruthy((v: UserTextInformationFrame[]) => {
-            UserTextInformationFrame.findUserTextInformationFrame(v, "foo");
-        });
+        Testers.testTruthy((v: UserTextInformationFrame[]) => { UserTextInformationFrame.filterFrames(v); });
     }
 
     @test
-    public findUserTextInformationFrame_falsyDescription() {
+    public filterFrames_noFrames() {
         // Arrange
-        const frames = [UserTextInformationFrame.fromDescription("foo")];
-
-        // Act/Assert
-        Testers.testTruthy((v: string) => { UserTextInformationFrame.findUserTextInformationFrame(frames, v); });
-    }
-
-    @test
-    public findUserTextInformationFrame_emptyFrames_returnsUndefined() {
-        // Arrange
-        const frames: UserTextInformationFrame[] = [];
+        const frames: Frame[] = [];
 
         // Act
-        const output = UserTextInformationFrame.findUserTextInformationFrame(frames, "foo");
+        const output = UserTextInformationFrame.filterFrames(frames);
 
         // Assert
-        assert.isUndefined(output);
+        assert.isArray(output);
+        assert.isEmpty(output);
     }
 
     @test
-    public findUserTextInformationFrame_frameWithCaseSensitiveDescriptionDoesNotExist() {
+    public filterFrames_noMatch() {
         // Arrange
-        const frames = [
-            UserTextInformationFrame.fromDescription("fUX"),
-            UserTextInformationFrame.fromDescription("bUX")
-        ];
+        const frame1 = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.fromUint(123));
+        const frame2 = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.fromUint(234));
+        const frames = [frame1, frame2];
 
         // Act
-        const output = UserTextInformationFrame.findUserTextInformationFrame(frames, "fux");
+        const result = UserTextInformationFrame.filterFrames(frames);
 
         // Assert
-        assert.isUndefined(output);
+        assert.isArray(result);
+        assert.isEmpty(result);
     }
 
     @test
-    public findUserTextInformationFrame_frameWithCaseInsensitiveDescriptionDoesNotExist() {
+    public filterFrames_singleMatch() {
         // Arrange
-        const frames = [
-            UserTextInformationFrame.fromDescription("fUX"),
-            UserTextInformationFrame.fromDescription("bUX")
-        ];
-
-        // Act
-        const output = UserTextInformationFrame.findUserTextInformationFrame(frames, "qux", false);
-
-        // Assert
-        assert.isUndefined(output);
-    }
-
-    @test
-    public findUserTextInformationFrame_frameWithCaseSensitiveDescriptionExists() {
-        // Arrange
-        const frames = [
-            UserTextInformationFrame.fromDescription("Fux"),
-            UserTextInformationFrame.fromDescription("bUX")
-        ];
-
-        // Act
-        const output = UserTextInformationFrame.findUserTextInformationFrame(frames, "Fux");
-
-        // Assert
-        assert.isOk(output);
-        assert.strictEqual(output, frames[0]);
-    }
-
-    @test
-    public findUserTextInformationFrame_frameWithCaseInsensitiveDescriptionExists() {
-        // Arrange
-        const frames = [
-            UserTextInformationFrame.fromDescription("fUX"),
-            UserTextInformationFrame.fromDescription("bUX")
-        ];
-
-        // Act
-        const output = UserTextInformationFrame.findUserTextInformationFrame(frames, "fux", false);
-
-        // Assert
-        assert.isOk(output);
-        assert.strictEqual(output, frames[0]);
-    }
-
-    @test
-    public findUserTextInformationFrame_match_returnsFirstMatch() {
-        // Arrange
-        const frame1 = UserTextInformationFrame.fromDescription("foo");
+        const frame1 = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.fromUint(123));
         const frame2 = UserTextInformationFrame.fromDescription("foo");
         const frames = [frame1, frame2];
 
         // Act
-        const output = UserTextInformationFrame.findUserTextInformationFrame(frames, "foo");
+        const result = UserTextInformationFrame.filterFrames(frames);
 
         // Assert
-        assert.strictEqual(output, frame1);
+        assert.isArray(result);
+        assert.deepEqual(result, [frame2]);
+    }
+
+    @test
+    public filterFrames_multipleMatches() {
+        // Arrange
+        const frame1 = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.fromUint(123));
+        const frame2 = UserTextInformationFrame.fromDescription("foo");
+        const frame3 = UserTextInformationFrame.fromDescription("bar");
+
+        const frames = [frame1, frame2, frame3];
+
+        // Act
+        const result = UserTextInformationFrame.filterFrames(frames);
+
+        // Assert
+        assert.isArray(result);
+        assert.deepEqual(result, [frame2, frame3]);
+    }
+
+    @test
+    public filterFrames_allMatches() {
+        // Arrange
+        const frame1 = UserTextInformationFrame.fromDescription("foo");
+        const frame2 = UserTextInformationFrame.fromDescription("bar");
+        const frames = [frame1, frame2];
+
+        // Act
+        const result = UserTextInformationFrame.filterFrames(frames);
+
+        // Assert
+        assert.isArray(result);
+        assert.deepEqual(result, [frame1, frame2]);
     }
 
     @test
@@ -392,13 +347,7 @@ const getTestFrame = (): UserTextInformationFrame => {
         const output = <UserTextInformationFrame> frame.clone();
 
         // Assert
-        assert.ok(output);
-        assert.strictEqual(output.frameClassType, FrameClassType.UserTextInformationFrame);
-        assert.strictEqual(frame.frameId, FrameIdentifiers.TXXX);
-
-        assert.strictEqual(frame.description, output.description);
-        assert.deepStrictEqual(frame.text, output.text);
-        assert.strictEqual(frame.textEncoding, output.textEncoding);
+        assertFrame(output, frame.description, frame.text, frame.textEncoding);
     }
 
     @test

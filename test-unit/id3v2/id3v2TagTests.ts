@@ -8,6 +8,7 @@ import Id3v2Settings from "../../src/id3v2/id3v2Settings";
 import Id3v2Tag from "../../src/id3v2/id3v2Tag";
 import Id3v2TagFooter from "../../src/id3v2/id3v2TagFooter";
 import PlayCountFrame from "../../src/id3v2/frames/playCountFrame";
+import PrivateFrame from "../../src/id3v2/frames/privateFrame";
 import PropertyTests from "../utilities/propertyTests";
 import SyncData from "../../src/id3v2/syncData";
 import TestFile from "../utilities/testFile";
@@ -19,14 +20,13 @@ import UrlLinkFrame from "../../src/id3v2/frames/urlLinkFrame";
 import UserTextInformationFrame from "../../src/id3v2/frames/userTextInformationFrame";
 import {ByteVector, StringType} from "../../src/byteVector";
 import {File, ReadStyle} from "../../src/file";
-import {FrameClassType} from "../../src/id3v2/frames/frame";
 import {Id3v2FrameFlags} from "../../src/id3v2/frames/frameHeader";
 import {FrameIdentifier, FrameIdentifiers} from "../../src/id3v2/frameIdentifiers";
 import {Id3v2TagHeader, Id3v2TagHeaderFlags} from "../../src/id3v2/id3v2TagHeader";
 import {IPicture} from "../../src/picture";
 import {TagTypes} from "../../src/tag";
 import {Testers} from "../utilities/testers";
-import PrivateFrame from "../../src/id3v2/frames/privateFrame";
+import AttachmentFrame from "../../src/id3v2/frames/attachmentFrame";
 
 const getTestTagHeader = (version: number, flags: Id3v2TagHeaderFlags, tagSize: number): ByteVector => {
     return ByteVector.concatenate(
@@ -106,22 +106,20 @@ const getTestTagHeader = (version: number, flags: Id3v2TagHeaderFlags, tagSize: 
         let frame2Found = false;
         let emptyFrameFound = false;
         for (const f of tag.frames) {
-            switch (f.frameClassType) {
-                case FrameClassType.PlayCountFrame:
-                    assert.isFalse(frame1Found);
-                    frame1Found = true;
-                    break;
-                case FrameClassType.UniqueFileIdentifierFrame:
-                    assert.isFalse(frame2Found);
-                    frame2Found = true;
-                    break;
-                case FrameClassType.UnknownFrame:
-                    emptyFrameFound = true;
-                    break;
-                default:
-                    assert.fail(f.frameClassType, undefined, "Unexpected frame found");
+            if (f instanceof PlayCountFrame) {
+                assert.isFalse(frame1Found);
+                frame1Found = true;
+            } else if (f instanceof UniqueFileIdentifierFrame) {
+                assert.isFalse(frame2Found);
+                frame2Found = true;
+            } else if (f instanceof UnknownFrame) {
+                assert.isFalse(emptyFrameFound);
+                emptyFrameFound = true;
+            } else {
+                assert.fail(f, undefined, "Unexpected frame found");
             }
         }
+
         assert.isTrue(frame1Found);
         assert.isTrue(frame2Found);
         assert.isFalse(emptyFrameFound);
@@ -149,7 +147,7 @@ const getTestTagHeader = (version: number, flags: Id3v2TagHeaderFlags, tagSize: 
 
         // - Right frames
         assert.strictEqual(tag.frames.length, 1);
-        assert.strictEqual(tag.frames[0].frameClassType, FrameClassType.PlayCountFrame);
+        assert.instanceOf(tag.frames[0], PlayCountFrame);
     }
 
     @test
@@ -171,7 +169,7 @@ const getTestTagHeader = (version: number, flags: Id3v2TagHeaderFlags, tagSize: 
 
         // - Right frames
         assert.strictEqual(tag.frames.length, 1);
-        assert.strictEqual(tag.frames[0].frameClassType, FrameClassType.PlayCountFrame);
+        assert.instanceOf(tag.frames[0], PlayCountFrame);
     }
 
     @test
@@ -242,22 +240,20 @@ const getTestTagHeader = (version: number, flags: Id3v2TagHeaderFlags, tagSize: 
         let frame2Found = false;
         let emptyFrameFound = false;
         for (const f of tag.frames) {
-            switch (f.frameClassType) {
-                case FrameClassType.PlayCountFrame:
-                    assert.isFalse(frame1Found);
-                    frame1Found = true;
-                    break;
-                case FrameClassType.UniqueFileIdentifierFrame:
-                    assert.isFalse(frame2Found);
-                    frame2Found = true;
-                    break;
-                case FrameClassType.UnknownFrame:
-                    emptyFrameFound = true;
-                    break;
-                default:
-                    assert.fail(f.frameClassType, undefined, "Unexpected frame found");
+            if (f instanceof PlayCountFrame) {
+                assert.isFalse(frame1Found);
+                frame1Found = true;
+            } else if (f instanceof UniqueFileIdentifierFrame) {
+                assert.isFalse(frame2Found);
+                frame2Found = true;
+            } else if (f instanceof UnknownFrame) {
+                assert.isFalse(emptyFrameFound);
+                emptyFrameFound = true;
+            } else {
+                assert.fail(f, undefined, "Unexpected frame found");
             }
         }
+
         assert.isTrue(frame1Found);
         assert.isTrue(frame2Found);
         assert.isFalse(emptyFrameFound);
@@ -290,7 +286,7 @@ const getTestTagHeader = (version: number, flags: Id3v2TagHeaderFlags, tagSize: 
 
         PropertyTests.propertyRoundTrip(set, get, true);
         assert.strictEqual(tag.frames.length, 1);
-        assert.strictEqual(tag.frames[0].frameClassType, FrameClassType.TextInformationFrame);
+        assert.instanceOf(tag.frames[0], TextInformationFrame);
         assert.strictEqual(tag.frames[0].frameId, FrameIdentifiers.TCMP);
         assert.deepStrictEqual((<TextInformationFrame> tag.frames[0]).text, ["1"]);
 
@@ -368,7 +364,7 @@ const getTestTagHeader = (version: number, flags: Id3v2TagHeaderFlags, tagSize: 
 
         PropertyTests.propertyRoundTrip(set, get, "foo");
         assert.strictEqual(tag.frames.length, 1);
-        assert.strictEqual(tag.frames[0].frameClassType, FrameClassType.UserTextInformationFrame);
+        assert.instanceOf(tag.frames[0], UserTextInformationFrame);
         assert.strictEqual((<UserTextInformationFrame> tag.frames[0]).description, "Description");
         assert.deepStrictEqual((<UserTextInformationFrame> tag.frames[0]).text, ["foo"]);
 
@@ -580,7 +576,7 @@ const getTestTagHeader = (version: number, flags: Id3v2TagHeaderFlags, tagSize: 
             // Assert
             assert.strictEqual(tag.comment, "foo");
             assert.strictEqual(tag.frames.length, 1);
-            assert.strictEqual(tag.frames[0].frameClassType, FrameClassType.CommentsFrame);
+            assert.instanceOf(tag.frames[0], CommentsFrame);
             assert.strictEqual((<CommentsFrame> tag.frames[0]).text, "foo");
             assert.strictEqual((<CommentsFrame> tag.frames[0]).language, "eng");
             assert.strictEqual((<CommentsFrame> tag.frames[0]).description, "");
@@ -626,7 +622,7 @@ const getTestTagHeader = (version: number, flags: Id3v2TagHeaderFlags, tagSize: 
 
         // Assert
         assert.strictEqual(tag.frames.length, 1);
-        assert.strictEqual(tag.frames[0].frameClassType, FrameClassType.GenreFrame);
+        assert.instanceOf(tag.frames[0], GenreFrame);
         assert.strictEqual(tag.frames[0].frameId, FrameIdentifiers.TCON);
         assert.deepStrictEqual((<GenreFrame> tag.frames[0]).text, ["Classical", "foo"]);
     }
@@ -644,7 +640,7 @@ const getTestTagHeader = (version: number, flags: Id3v2TagHeaderFlags, tagSize: 
 
         // Assert
         assert.strictEqual(tag.frames.length, 1);
-        assert.strictEqual(tag.frames[0].frameClassType, FrameClassType.GenreFrame);
+        assert.instanceOf(tag.frames[0], GenreFrame);
         assert.strictEqual(tag.frames[0].frameId, FrameIdentifiers.TCON);
         assert.deepStrictEqual((<GenreFrame> tag.frames[0]).text, ["Classical", "foo"]);
     }
@@ -662,7 +658,7 @@ const getTestTagHeader = (version: number, flags: Id3v2TagHeaderFlags, tagSize: 
 
             // Assert
             assert.strictEqual(tag.frames.length, 1);
-            assert.strictEqual(tag.frames[0].frameClassType, FrameClassType.GenreFrame);
+            assert.instanceOf(tag.frames[0], GenreFrame);
             assert.strictEqual(tag.frames[0].frameId, FrameIdentifiers.TCON);
             assert.deepStrictEqual((<GenreFrame> tag.frames[0]).text, ["Classical", "foo"]);
         } finally {
@@ -802,13 +798,13 @@ const getTestTagHeader = (version: number, flags: Id3v2TagHeaderFlags, tagSize: 
 
         PropertyTests.propertyRoundTrip(set, get, 2);
         assert.strictEqual(tag.frames.length, 1);
-        assert.strictEqual(tag.frames[0].frameClassType, FrameClassType.TextInformationFrame);
+        assert.instanceOf(tag.frames[0], TextInformationFrame);
         assert.strictEqual(tag.frames[0].frameId, FrameIdentifiers.TRCK);
         assert.deepStrictEqual((<TextInformationFrame> tag.frames[0]).text, ["02"]);
 
         PropertyTests.propertyRoundTrip(set, get, 123);
         assert.strictEqual(tag.frames.length, 1);
-        assert.strictEqual(tag.frames[0].frameClassType, FrameClassType.TextInformationFrame);
+        assert.instanceOf(tag.frames[0], TextInformationFrame);
         assert.strictEqual(tag.frames[0].frameId, FrameIdentifiers.TRCK);
         assert.deepStrictEqual((<TextInformationFrame> tag.frames[0]).text, ["123"]);
 
@@ -829,19 +825,19 @@ const getTestTagHeader = (version: number, flags: Id3v2TagHeaderFlags, tagSize: 
 
         PropertyTests.propertyRoundTrip(set, get, 2);
         assert.strictEqual(tag.frames.length, 1);
-        assert.strictEqual(tag.frames[0].frameClassType, FrameClassType.TextInformationFrame);
+        assert.instanceOf(tag.frames[0], TextInformationFrame);
         assert.strictEqual(tag.frames[0].frameId, FrameIdentifiers.TRCK);
         assert.deepStrictEqual((<TextInformationFrame> tag.frames[0]).text, ["02/123"]);
 
         PropertyTests.propertyRoundTrip(set, get, 123);
         assert.strictEqual(tag.frames.length, 1);
-        assert.strictEqual(tag.frames[0].frameClassType, FrameClassType.TextInformationFrame);
+        assert.instanceOf(tag.frames[0], TextInformationFrame);
         assert.strictEqual(tag.frames[0].frameId, FrameIdentifiers.TRCK);
         assert.deepStrictEqual((<TextInformationFrame> tag.frames[0]).text, ["123/123"]);
 
         PropertyTests.propertyRoundTrip(set, get, 0);
         assert.strictEqual(tag.frames.length, 1);
-        assert.strictEqual(tag.frames[0].frameClassType, FrameClassType.TextInformationFrame);
+        assert.instanceOf(tag.frames[0], TextInformationFrame);
         assert.strictEqual(tag.frames[0].frameId, FrameIdentifiers.TRCK);
         assert.deepStrictEqual((<TextInformationFrame> tag.frames[0]).text, ["00/123"]);
     }
@@ -872,13 +868,13 @@ const getTestTagHeader = (version: number, flags: Id3v2TagHeaderFlags, tagSize: 
 
         PropertyTests.propertyRoundTrip(set, get, 2);
         assert.strictEqual(tag.frames.length, 1);
-        assert.strictEqual(tag.frames[0].frameClassType, FrameClassType.TextInformationFrame);
+        assert.instanceOf(tag.frames[0], TextInformationFrame);
         assert.strictEqual(tag.frames[0].frameId, FrameIdentifiers.TRCK);
         assert.deepStrictEqual((<TextInformationFrame> tag.frames[0]).text, ["0/2"]);
 
         PropertyTests.propertyRoundTrip(set, get, 123);
         assert.strictEqual(tag.frames.length, 1);
-        assert.strictEqual(tag.frames[0].frameClassType, FrameClassType.TextInformationFrame);
+        assert.instanceOf(tag.frames[0], TextInformationFrame);
         assert.strictEqual(tag.frames[0].frameId, FrameIdentifiers.TRCK);
         assert.deepStrictEqual((<TextInformationFrame> tag.frames[0]).text, ["0/123"]);
 
@@ -899,19 +895,19 @@ const getTestTagHeader = (version: number, flags: Id3v2TagHeaderFlags, tagSize: 
 
         PropertyTests.propertyRoundTrip(set, get, 2);
         assert.strictEqual(tag.frames.length, 1);
-        assert.strictEqual(tag.frames[0].frameClassType, FrameClassType.TextInformationFrame);
+        assert.instanceOf(tag.frames[0], TextInformationFrame);
         assert.strictEqual(tag.frames[0].frameId, FrameIdentifiers.TRCK);
         assert.deepStrictEqual((<TextInformationFrame> tag.frames[0]).text, ["12/2"]);
 
         PropertyTests.propertyRoundTrip(set, get, 123);
         assert.strictEqual(tag.frames.length, 1);
-        assert.strictEqual(tag.frames[0].frameClassType, FrameClassType.TextInformationFrame);
+        assert.instanceOf(tag.frames[0], TextInformationFrame);
         assert.strictEqual(tag.frames[0].frameId, FrameIdentifiers.TRCK);
         assert.deepStrictEqual((<TextInformationFrame> tag.frames[0]).text, ["12/123"]);
 
         PropertyTests.propertyRoundTrip(set, get, 0);
         assert.strictEqual(tag.frames.length, 1);
-        assert.strictEqual(tag.frames[0].frameClassType, FrameClassType.TextInformationFrame);
+        assert.instanceOf(tag.frames[0], TextInformationFrame);
         assert.strictEqual(tag.frames[0].frameId, FrameIdentifiers.TRCK);
         assert.deepStrictEqual((<TextInformationFrame> tag.frames[0]).text, ["12"]);
     }
@@ -942,13 +938,13 @@ const getTestTagHeader = (version: number, flags: Id3v2TagHeaderFlags, tagSize: 
 
         PropertyTests.propertyRoundTrip(set, get, 2);
         assert.strictEqual(tag.frames.length, 1);
-        assert.strictEqual(tag.frames[0].frameClassType, FrameClassType.TextInformationFrame);
+        assert.instanceOf(tag.frames[0], TextInformationFrame);
         assert.strictEqual(tag.frames[0].frameId, FrameIdentifiers.TPOS);
         assert.deepStrictEqual((<TextInformationFrame> tag.frames[0]).text, ["2"]);
 
         PropertyTests.propertyRoundTrip(set, get, 123);
         assert.strictEqual(tag.frames.length, 1);
-        assert.strictEqual(tag.frames[0].frameClassType, FrameClassType.TextInformationFrame);
+        assert.instanceOf(tag.frames[0], TextInformationFrame);
         assert.strictEqual(tag.frames[0].frameId, FrameIdentifiers.TPOS);
         assert.deepStrictEqual((<TextInformationFrame> tag.frames[0]).text, ["123"]);
 
@@ -969,19 +965,19 @@ const getTestTagHeader = (version: number, flags: Id3v2TagHeaderFlags, tagSize: 
 
         PropertyTests.propertyRoundTrip(set, get, 2);
         assert.strictEqual(tag.frames.length, 1);
-        assert.strictEqual(tag.frames[0].frameClassType, FrameClassType.TextInformationFrame);
+        assert.instanceOf(tag.frames[0], TextInformationFrame);
         assert.strictEqual(tag.frames[0].frameId, FrameIdentifiers.TPOS);
         assert.deepStrictEqual((<TextInformationFrame> tag.frames[0]).text, ["2/123"]);
 
         PropertyTests.propertyRoundTrip(set, get, 123);
         assert.strictEqual(tag.frames.length, 1);
-        assert.strictEqual(tag.frames[0].frameClassType, FrameClassType.TextInformationFrame);
+        assert.instanceOf(tag.frames[0], TextInformationFrame);
         assert.strictEqual(tag.frames[0].frameId, FrameIdentifiers.TPOS);
         assert.deepStrictEqual((<TextInformationFrame> tag.frames[0]).text, ["123/123"]);
 
         PropertyTests.propertyRoundTrip(set, get, 0);
         assert.strictEqual(tag.frames.length, 1);
-        assert.strictEqual(tag.frames[0].frameClassType, FrameClassType.TextInformationFrame);
+        assert.instanceOf(tag.frames[0], TextInformationFrame);
         assert.strictEqual(tag.frames[0].frameId, FrameIdentifiers.TPOS);
         assert.deepStrictEqual((<TextInformationFrame> tag.frames[0]).text, ["0/123"]);
     }
@@ -1012,7 +1008,7 @@ const getTestTagHeader = (version: number, flags: Id3v2TagHeaderFlags, tagSize: 
 
         PropertyTests.propertyRoundTrip(set, get, 2);
         assert.strictEqual(tag.frames.length, 1);
-        assert.strictEqual(tag.frames[0].frameClassType, FrameClassType.TextInformationFrame);
+        assert.instanceOf(tag.frames[0], TextInformationFrame);
         assert.strictEqual(tag.frames[0].frameId, FrameIdentifiers.TPOS);
         assert.deepStrictEqual((<TextInformationFrame> tag.frames[0]).text, ["0/2"]);
 
@@ -1033,13 +1029,13 @@ const getTestTagHeader = (version: number, flags: Id3v2TagHeaderFlags, tagSize: 
 
         PropertyTests.propertyRoundTrip(set, get, 2);
         assert.strictEqual(tag.frames.length, 1);
-        assert.strictEqual(tag.frames[0].frameClassType, FrameClassType.TextInformationFrame);
+        assert.instanceOf(tag.frames[0], TextInformationFrame);
         assert.strictEqual(tag.frames[0].frameId, FrameIdentifiers.TPOS);
         assert.deepStrictEqual((<TextInformationFrame> tag.frames[0]).text, ["12/2"]);
 
         PropertyTests.propertyRoundTrip(set, get, 0);
         assert.strictEqual(tag.frames.length, 1);
-        assert.strictEqual(tag.frames[0].frameClassType, FrameClassType.TextInformationFrame);
+        assert.instanceOf(tag.frames[0], TextInformationFrame);
         assert.strictEqual(tag.frames[0].frameId, FrameIdentifiers.TPOS);
         assert.deepStrictEqual((<TextInformationFrame> tag.frames[0]).text, ["12"]);
     }
@@ -1060,7 +1056,7 @@ const getTestTagHeader = (version: number, flags: Id3v2TagHeaderFlags, tagSize: 
 
             PropertyTests.propertyRoundTrip(set, get, "lyrics");
             assert.strictEqual(tag.frames.length, 1);
-            assert.strictEqual(tag.frames[0].frameClassType, FrameClassType.UnsynchronizedLyricsFrame);
+            assert.instanceOf(tag.frames[0], UnsynchronizedLyricsFrame);
             assert.strictEqual((<UnsynchronizedLyricsFrame> tag.frames[0]).description, "");
             assert.deepStrictEqual((<UnsynchronizedLyricsFrame> tag.frames[0]).text, "lyrics");
             assert.strictEqual((<UnsynchronizedLyricsFrame> tag.frames[0]).textEncoding, Id3v2Settings.defaultEncoding);
@@ -1093,7 +1089,7 @@ const getTestTagHeader = (version: number, flags: Id3v2TagHeaderFlags, tagSize: 
 
         PropertyTests.propertyRoundTrip(set, get, 128);
         assert.strictEqual(tag.frames.length, 1);
-        assert.strictEqual(tag.frames[0].frameClassType, FrameClassType.TextInformationFrame);
+        assert.instanceOf(tag.frames[0], TextInformationFrame);
         assert.strictEqual(tag.frames[0].frameId, FrameIdentifiers.TBPM);
         assert.deepStrictEqual((<TextInformationFrame> tag.frames[0]).text, ["128"]);
 
@@ -1134,7 +1130,7 @@ const getTestTagHeader = (version: number, flags: Id3v2TagHeaderFlags, tagSize: 
 
         PropertyTests.propertyRoundTrip(set, get, new Date("2020-04-25 12:34:56"));
         assert.strictEqual(tag.frames.length, 1);
-        assert.strictEqual(tag.frames[0].frameClassType, FrameClassType.TextInformationFrame);
+        assert.instanceOf(tag.frames[0], TextInformationFrame);
         assert.strictEqual(tag.frames[0].frameId, FrameIdentifiers.TDTG);
         assert.deepStrictEqual((<TextInformationFrame> tag.frames[0]).text, ["2020-04-25T12:34:56"]);
 
@@ -1193,7 +1189,7 @@ const getTestTagHeader = (version: number, flags: Id3v2TagHeaderFlags, tagSize: 
 
         PropertyTests.propertyRoundTrip(set, get, "abcd-ef12-3456-7890");
         assert.strictEqual(tag.frames.length, 1);
-        assert.strictEqual(tag.frames[0].frameClassType, FrameClassType.UniqueFileIdentifierFrame);
+        assert.instanceOf(tag.frames[0], UniqueFileIdentifierFrame);
         assert.strictEqual(tag.frames[0].frameId, FrameIdentifiers.UFID);
         assert.deepStrictEqual((<UniqueFileIdentifierFrame> tag.frames[0]).owner, "http://musicbrainz.org");
         const expectedBytes = ByteVector.fromString("abcd-ef12-3456-7890", StringType.UTF8);
@@ -1270,7 +1266,7 @@ const getTestTagHeader = (version: number, flags: Id3v2TagHeaderFlags, tagSize: 
 
         PropertyTests.propertyNormalized(setProp, getProp, 1.23456, 1.23);
         assert.strictEqual(tag.frames.length, 1);
-        assert.strictEqual(tag.frames[0].frameClassType, FrameClassType.UserTextInformationFrame);
+        assert.instanceOf(tag.frames[0], UserTextInformationFrame);
         assert.strictEqual((<UserTextInformationFrame> tag.frames[0]).description, "REPLAYGAIN_TRACK_GAIN");
         assert.deepStrictEqual((<UserTextInformationFrame> tag.frames[0]).text, ["1.23 dB"]);
 
@@ -1296,7 +1292,7 @@ const getTestTagHeader = (version: number, flags: Id3v2TagHeaderFlags, tagSize: 
 
         PropertyTests.propertyNormalized(setProp, getProp, 1.23456789, 1.234568);
         assert.strictEqual(tag.frames.length, 1);
-        assert.strictEqual(tag.frames[0].frameClassType, FrameClassType.UserTextInformationFrame);
+        assert.instanceOf(tag.frames[0], UserTextInformationFrame);
         assert.strictEqual((<UserTextInformationFrame> tag.frames[0]).description, "REPLAYGAIN_TRACK_PEAK");
         assert.deepStrictEqual((<UserTextInformationFrame> tag.frames[0]).text, ["1.234568"]);
 
@@ -1319,7 +1315,7 @@ const getTestTagHeader = (version: number, flags: Id3v2TagHeaderFlags, tagSize: 
 
         PropertyTests.propertyNormalized(setProp, getProp, 1.23456, 1.23);
         assert.strictEqual(tag.frames.length, 1);
-        assert.strictEqual(tag.frames[0].frameClassType, FrameClassType.UserTextInformationFrame);
+        assert.instanceOf(tag.frames[0], UserTextInformationFrame);
         assert.strictEqual((<UserTextInformationFrame> tag.frames[0]).description, "REPLAYGAIN_ALBUM_GAIN");
         assert.deepStrictEqual((<UserTextInformationFrame> tag.frames[0]).text, ["1.23 dB"]);
 
@@ -1345,7 +1341,7 @@ const getTestTagHeader = (version: number, flags: Id3v2TagHeaderFlags, tagSize: 
 
         PropertyTests.propertyNormalized(setProp, getProp, 1.23456789, 1.234568);
         assert.strictEqual(tag.frames.length, 1);
-        assert.strictEqual(tag.frames[0].frameClassType, FrameClassType.UserTextInformationFrame);
+        assert.instanceOf(tag.frames[0], UserTextInformationFrame);
         assert.strictEqual((<UserTextInformationFrame> tag.frames[0]).description, "REPLAYGAIN_ALBUM_PEAK");
         assert.deepStrictEqual((<UserTextInformationFrame> tag.frames[0]).text, ["1.234568"]);
 
@@ -1409,8 +1405,8 @@ const getTestTagHeader = (version: number, flags: Id3v2TagHeaderFlags, tagSize: 
 
         tag.pictures = pictures;
         assert.strictEqual(tag.frames.length, 2);
-        assert.strictEqual(tag.frames[0].frameClassType, FrameClassType.AttachmentFrame);
-        assert.strictEqual(tag.frames[1].frameClassType, FrameClassType.AttachmentFrame);
+        assert.instanceOf(tag.frames[0], AttachmentFrame);
+        assert.instanceOf(tag.frames[1], AttachmentFrame);
 
         tag.pictures = undefined;
         assert.deepStrictEqual(tag.pictures, []);
@@ -1443,7 +1439,7 @@ const getTestTagHeader = (version: number, flags: Id3v2TagHeaderFlags, tagSize: 
 
         PropertyTests.propertyRoundTrip(setProp, getProp, ["foo", "bar", "baz"]);
         assert.strictEqual(tag.frames.length, 1);
-        assert.strictEqual(tag.frames[0].frameClassType, FrameClassType.TextInformationFrame);
+        assert.instanceOf(tag.frames[0], TextInformationFrame);
         assert.strictEqual(tag.frames[0].frameId, fId);
         assert.deepStrictEqual((<TextInformationFrame> tag.frames[0]).text, ["foo", "bar", "baz"]);
 
@@ -1466,7 +1462,7 @@ const getTestTagHeader = (version: number, flags: Id3v2TagHeaderFlags, tagSize: 
 
         PropertyTests.propertyRoundTrip(setProp, getProp, "foo");
         assert.strictEqual(tag.frames.length, 1);
-        assert.strictEqual(tag.frames[0].frameClassType, FrameClassType.TextInformationFrame);
+        assert.instanceOf(tag.frames[0], TextInformationFrame);
         assert.strictEqual(tag.frames[0].frameId, fId);
         assert.deepStrictEqual((<TextInformationFrame> tag.frames[0]).text, ["foo"]);
 
@@ -1489,7 +1485,7 @@ const getTestTagHeader = (version: number, flags: Id3v2TagHeaderFlags, tagSize: 
 
         PropertyTests.propertyRoundTrip(setProp, getProp, "foo");
         assert.strictEqual(tag.frames.length, 1);
-        assert.strictEqual(tag.frames[0].frameClassType, FrameClassType.UserTextInformationFrame);
+        assert.instanceOf(tag.frames[0], TextInformationFrame);
         assert.strictEqual((<UserTextInformationFrame> tag.frames[0]).description, desc);
         assert.deepStrictEqual((<UserTextInformationFrame> tag.frames[0]).text, ["foo"]);
 
@@ -1551,10 +1547,7 @@ const getTestTagHeader = (version: number, flags: Id3v2TagHeaderFlags, tagSize: 
         assert.notOwnInclude(dest.frames, sFrame2);
         assert.ownInclude(dest.frames, dFrame1);
 
-        const dPcnt = dest.getFramesByIdentifier<PlayCountFrame>(
-            FrameClassType.PlayCountFrame,
-            FrameIdentifiers.PCNT
-        )[0];
+        const dPcnt = PlayCountFrame.filterFrames(dest.frames)[0];
         assert.strictEqual(dPcnt.playCount, sFrame1.playCount);
     }
 
@@ -1583,120 +1576,12 @@ const getTestTagHeader = (version: number, flags: Id3v2TagHeaderFlags, tagSize: 
         assert.notOwnInclude(dest.frames, sFrame1);
         assert.notOwnInclude(dest.frames, sFrame2);
 
-        const dTcom = dest.getFramesByIdentifier<TextInformationFrame>(
-            FrameClassType.TextInformationFrame,
-            FrameIdentifiers.TCOM
-        )[0];
+        const dTcom = TextInformationFrame.filterFrames(dest.frames, FrameIdentifiers.TCOM)[0];
         assert.deepStrictEqual(dTcom.text, ["foo", "bar"]);
 
-        const dPcnt = dest.getFramesByIdentifier<PlayCountFrame>(
-            FrameClassType.PlayCountFrame,
-            FrameIdentifiers.PCNT
-        )[0];
+        const dPcnt = PlayCountFrame.filterFrames(dest.frames)[0];
         assert.strictEqual(dPcnt.playCount, sFrame1.playCount);
     }
-
-    @test
-    public getFramesByClassType_invalidClassType() {
-        // Arrange
-        const tag = Id3v2Tag.fromEmpty();
-
-        // Act / Assert
-        assert.throws(() => { tag.getFramesByClassType<TextInformationFrame>(undefined); });
-        assert.throws(() => { tag.getFramesByClassType<TextInformationFrame>(null); });
-    }
-
-    @test
-    public getFramesByClassType_hasMatches() {
-        // Arrange
-        const tag = Id3v2Tag.fromEmpty();
-        const frame1 = TextInformationFrame.fromIdentifier(FrameIdentifiers.TCOM);
-        const frame2 = TextInformationFrame.fromIdentifier(FrameIdentifiers.TCON);
-        const frame3 = PlayCountFrame.fromEmpty();
-        tag.frames.push(frame1, frame2, frame3);
-
-        // Act
-        const result = tag.getFramesByClassType<TextInformationFrame>(FrameClassType.TextInformationFrame);
-
-        // Assert
-        assert.isArray(result);
-        assert.strictEqual(result.length, 2);
-        assert.sameMembers(result, [frame1, frame2]);
-    }
-
-    @test
-    public getFramesByClassType_noMatches() {
-        // Arrange
-        const tag = Id3v2Tag.fromEmpty();
-        tag.frames.push(PlayCountFrame.fromEmpty());
-
-        // Act
-        const result = tag.getFramesByClassType<TextInformationFrame>(FrameClassType.TextInformationFrame);
-
-        // Assert
-        assert.isArray(result);
-        assert.isEmpty(result);
-    }
-
-    @test
-    public getFramesByIdentifier_invalidClassType() {
-        // Arrange
-        const tag = Id3v2Tag.fromEmpty();
-
-        // Act / Assert
-        assert.throws(() => { tag.getFramesByIdentifier<TextInformationFrame>(undefined, FrameIdentifiers.TCOM); });
-        assert.throws(() => { tag.getFramesByIdentifier<TextInformationFrame>(null, FrameIdentifiers.TCOM); });
-    }
-
-    @test
-    public getFramesByIdentifier_invalidIdentifier() {
-        // Arrange
-        const tag = Id3v2Tag.fromEmpty();
-        const classType = FrameClassType.TextInformationFrame;
-
-        // Act / Assert
-        assert.throws(() => { tag.getFramesByIdentifier<TextInformationFrame>(classType, undefined); });
-        assert.throws(() => { tag.getFramesByIdentifier<TextInformationFrame>(classType, null); });
-    }
-
-    @test
-    public getFramesByIdentifier_hasMatches() {
-        // Arrange
-        const tag = Id3v2Tag.fromEmpty();
-        const frame1 = TextInformationFrame.fromIdentifier(FrameIdentifiers.TCOM);
-        const frame2 = TextInformationFrame.fromIdentifier(FrameIdentifiers.TCOM);
-        const frame3 = TextInformationFrame.fromIdentifier(FrameIdentifiers.TCON);
-        tag.frames.push(frame1, frame2, frame3);
-
-        // Act
-        const result = tag.getFramesByIdentifier<TextInformationFrame>(
-            FrameClassType.TextInformationFrame,
-            FrameIdentifiers.TCOM
-        );
-
-        // Assert
-        assert.isArray(result);
-        assert.strictEqual(result.length, 2);
-        assert.sameMembers(result, [frame1, frame2]);
-    }
-
-    @test
-    public getFramesByIdentifier_noMatches() {
-        // Arrange
-        const tag = Id3v2Tag.fromEmpty();
-        tag.frames.push(TextInformationFrame.fromIdentifier(FrameIdentifiers.TCON));
-
-        // Act
-        const result = tag.getFramesByIdentifier<TextInformationFrame>(
-            FrameClassType.TextInformationFrame,
-            FrameIdentifiers.TCOM
-        );
-
-        // Assert
-        assert.isArray(result);
-        assert.isEmpty(result);
-    }
-
     @test
     public getTextAsString_invalidIdentity() {
         // Arrange
@@ -1712,9 +1597,9 @@ const getTestTagHeader = (version: number, flags: Id3v2TagHeaderFlags, tagSize: 
         // Arrange
         const tag = Id3v2Tag.fromEmpty();
         const frame1 = TextInformationFrame.fromIdentifier(FrameIdentifiers.TCOM);
-        const frame2 = UrlLinkFrame.fromIdentity(FrameIdentifiers.WCOM);
+        const frame2 = UrlLinkFrame.fromIdentifier(FrameIdentifiers.WCOM);
         frame2.text = "foo";
-        const frame3 = UrlLinkFrame.fromIdentity(FrameIdentifiers.WCOM);
+        const frame3 = UrlLinkFrame.fromIdentifier(FrameIdentifiers.WCOM);
         frame3.text = "bar";
         tag.frames.push(frame1, frame2, frame3);
 
@@ -1729,7 +1614,7 @@ const getTestTagHeader = (version: number, flags: Id3v2TagHeaderFlags, tagSize: 
     public getTextAsString_textFrame() {
         // Arrange
         const tag = Id3v2Tag.fromEmpty();
-        const frame1 = UrlLinkFrame.fromIdentity(FrameIdentifiers.WCOM);
+        const frame1 = UrlLinkFrame.fromIdentifier(FrameIdentifiers.WCOM);
         const frame2 = TextInformationFrame.fromIdentifier(FrameIdentifiers.TCOM);
         frame2.text = ["foo"];
         const frame3 = TextInformationFrame.fromIdentifier(FrameIdentifiers.TCOM);
@@ -1747,7 +1632,7 @@ const getTestTagHeader = (version: number, flags: Id3v2TagHeaderFlags, tagSize: 
     public getTextAsString_noMatches() {
         // Arrange
         const tag = Id3v2Tag.fromEmpty();
-        const frame1 = UrlLinkFrame.fromIdentity(FrameIdentifiers.WCOM);
+        const frame1 = UrlLinkFrame.fromIdentifier(FrameIdentifiers.WCOM);
         tag.frames.push(frame1);
 
         // Act
@@ -2210,9 +2095,9 @@ const getTestTagHeader = (version: number, flags: Id3v2TagHeaderFlags, tagSize: 
     @params(undefined, "undefined")
     public setUrlFrame_falsyValue_removesFrame(text: string) {
         // Arrange
-        const frame1 = UrlLinkFrame.fromIdentity(FrameIdentifiers.WCOM);
+        const frame1 = UrlLinkFrame.fromIdentifier(FrameIdentifiers.WCOM);
         frame1.text = "foo";
-        const frame2 = UrlLinkFrame.fromIdentity(FrameIdentifiers.WCOM);
+        const frame2 = UrlLinkFrame.fromIdentifier(FrameIdentifiers.WCOM);
         frame2.text = "bar";
 
         const tag = Id3v2Tag.fromEmpty();
@@ -2243,7 +2128,7 @@ const getTestTagHeader = (version: number, flags: Id3v2TagHeaderFlags, tagSize: 
     public setUrlFrame_withMatchingFrames_updatesFrame() {
         // Arrange
         const tag = Id3v2Tag.fromEmpty();
-        const frame = UrlLinkFrame.fromIdentity(FrameIdentifiers.WCOM);
+        const frame = UrlLinkFrame.fromIdentifier(FrameIdentifiers.WCOM);
         frame.text = "fux";
 
         // Act
