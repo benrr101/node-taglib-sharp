@@ -255,7 +255,7 @@ const assertFrame = (frame: UniqueFileIdentifierFrame, o: string, i: ByteVector)
         assert.isArray(result);
         assert.deepEqual(result, [frame1, frame2]);
     }
-    
+
     @params(2, "v2")
     @params(3, "v3")
     @params(4, "v4")

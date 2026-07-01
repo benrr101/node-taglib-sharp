@@ -546,7 +546,7 @@ export default class Id3v2Tag extends Tag {
         }
 
         // Case 2: We have a TYER/TYE frame (v2.3/v2.2)
-        const tyerFrames = TextInformationFrame.filterFrames(this._frameList, FrameIdentifiers.TYER)
+        const tyerFrames = TextInformationFrame.filterFrames(this._frameList, FrameIdentifiers.TYER);
         if (tyerFrames.length > 0) {
             this.setNumberFrame(FrameIdentifiers.TYER, value, 0);
             return;
@@ -610,17 +610,7 @@ export default class Id3v2Tag extends Tag {
      * @remarks Stored in the `USLT` frame
      */
     get lyrics(): string {
-        const frames = UnsynchronizedLyricsFrame.filterFrames(this._frameList);
-
-        // Find the best match for the language
-        return frames.length < 2
-            ? frames[0]?.toString()
-            : frames.map(f => {
-                const langMatchScore = f.language === Id3v2Tag.language ? 2 : 0;
-                const nameMatchScore = f.description === "" ? 1 : 0;
-                const score = langMatchScore + nameMatchScore;
-                return {score: score, frame: f};
-            }).sort((a, b) => b.score - a.score)[0].frame.toString();
+        return this.getLyricsFramePreferred("", Id3v2Tag.language)?.toString();
     }
     /**
      * @inheritDoc
@@ -634,8 +624,7 @@ export default class Id3v2Tag extends Tag {
         }
 
         // Find or create the appropriate unsynchronized lyrics frame
-        const frames = UnsynchronizedLyricsFrame.filterFrames(this._frameList);
-        let frame = frames.find(f => f.language === Id3v2Tag.language);
+        let frame = this.getLyricsFramePreferred("", Id3v2Tag.language);
         if (!frame) {
             frame = UnsynchronizedLyricsFrame.fromData("", Id3v2Tag.language);
             this.addFrame(frame);
@@ -1494,13 +1483,34 @@ export default class Id3v2Tag extends Tag {
     }
 
     private getCommentFramePreferred(description: string, language: string): CommentsFrame|undefined {
-        const frames = CommentsFrame.filterFrames(this._frameList);
+        let frames = CommentsFrame.filterFrames(this._frameList);
+
+        // Skip iTunes comments frames if we're not looking for them
+        if (!description || !description.startsWith("iTun")) {
+            frames = frames.filter(f => !f.description.startsWith("iTun"));
+        }
+
         if (frames.length < 2) {
             return frames[0];
         }
 
         // The logic here is to map each frame to a score based on how many fields match. Then
         // sort with the best match at the top, and return that frame.
+        return frames.map(f => {
+            const langMatchScore = f.language === language ? 2 : 0;
+            const nameMatchScore = f.description === description ? 1 : 0;
+            const score = langMatchScore + nameMatchScore;
+            return {score: score, frame: f};
+        }).sort((a, b) => b.score - a.score)[0].frame;
+    }
+
+    private getLyricsFramePreferred(description: string, language: string): UnsynchronizedLyricsFrame {
+        const frames = UnsynchronizedLyricsFrame.filterFrames(this._frameList);
+        if (frames.length < 2) {
+            return frames[0];
+        }
+
+        // Find the best match for the language
         return frames.map(f => {
             const langMatchScore = f.language === language ? 2 : 0;
             const nameMatchScore = f.description === description ? 1 : 0;

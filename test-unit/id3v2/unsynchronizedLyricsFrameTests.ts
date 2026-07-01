@@ -314,7 +314,7 @@ const assertFrame = (frame: UnsynchronizedLyricsFrame, d: string, l: string, t: 
         assert.isArray(result);
         assert.deepEqual(result, [frame1, frame2]);
     }
-    
+
     @params([2, StringType.Latin1], "v2_single_byte")
     @params([2, StringType.UTF16BE], "v2_multibyte")
     @params([3, StringType.Latin1], "v3_single_byte")

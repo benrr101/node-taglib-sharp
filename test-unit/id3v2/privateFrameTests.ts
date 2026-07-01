@@ -210,7 +210,7 @@ const assertFrame = (frame: PrivateFrame, o: string, d: ByteVector) => {
         assert.isArray(result);
         assert.deepEqual(result, [frame1, frame2]);
     }
-    
+
     @test
     public render_v2_throws() {
         // Arrange

@@ -464,7 +464,7 @@ class Id3v2_GenreFrameTests extends FrameConstructorTests {
 
         // Assert
         assert.isOk(output);
-        assert.instanceOf<GenreFrame>(frame, GenreFrame);
+        assert.instanceOf<GenreFrame>(output, GenreFrame);
         assert.notStrictEqual(output, frame);
 
         assert.strictEqual(output.frameId, FrameIdentifiers.TCON);
