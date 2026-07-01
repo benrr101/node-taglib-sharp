@@ -272,58 +272,6 @@ export class SynchronizedLyricsFrame extends Frame {
         return ArrayUtils.ofType(frames, SynchronizedLyricsFrame);
     }
 
-    /**
-     * Gets a synchronized lyrics frame from the specified list, trying to match the description and
-     * language but accepting an incomplete match.
-     * This method tries matching with the following order of precedence:
-     * * The first frame with a matching description, language, and type.
-     * * The first frame with a matching description and language.
-     * * The first frame with a matching language.
-     * * The first frame with a matching description.
-     * * The first frame with a matching type.
-     * * The first frame.
-     * @param frames List of frames to search for the best match
-     * @param description Description to match
-     * @param language ISO-639-2 language code to match
-     * @param textType Text type to match
-     * @returns The matching frame or `undefined` if a match was not found
-     */
-    public static findPreferred(
-        frames: SynchronizedLyricsFrame[],
-        description: string,
-        language: string,
-        textType: SynchronizedTextType
-    ): SynchronizedLyricsFrame {
-        Guards.truthy(frames, "frames");
-
-        let bestValue = -1;
-        let bestFrame: SynchronizedLyricsFrame;
-
-        for (const slFrame of frames) {
-            let value = 0;
-            if (slFrame.language === language) {
-                value += 4;
-            }
-            if (slFrame.description === description) {
-                value += 2;
-            }
-            if (slFrame.textType === textType) {
-                value += 1;
-            }
-            if (value === 7) {
-                return slFrame;
-            }
-
-            if (value <= bestValue) {
-                continue;
-            }
-            bestValue = value;
-            bestFrame = slFrame;
-        }
-
-        return bestFrame;
-    }
-
     /** @inheritDoc */
     public clone(): Frame {
         const frame = SynchronizedLyricsFrame.fromInfo(

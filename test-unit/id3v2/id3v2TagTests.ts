@@ -1069,6 +1069,43 @@ const getTestTagHeader = (version: number, flags: Id3v2TagHeaderFlags, tagSize: 
     }
 
     @test
+    public lyrics_multipleFrames() {
+        // Arrange
+        const frame1 = UnsynchronizedLyricsFrame.fromData("foo", "jpn"); // 0 Score
+        const frame2 = UnsynchronizedLyricsFrame.fromData("", "jpn");    // 1 Score
+        const frame3 = UnsynchronizedLyricsFrame.fromData("foo", "eng"); // 2 Score
+        const frame4 = UnsynchronizedLyricsFrame.fromData("", "eng");    // 3 Score
+        frame4.text = "foobarbaz";
+
+        const tag = Id3v2Tag.fromEmpty();
+        tag.frames.push(frame1, frame2, frame3, frame4);
+
+        const initialLanguage = Id3v2Tag.language;
+        try {
+            Id3v2Tag.language = "eng";
+
+            // -------------------
+            // Act 1
+            const result1 = tag.lyrics;
+
+            // Assert 1
+            assert.strictEqual(result1, frame4.text);
+
+            // -------------------
+            // Act 2
+            tag.lyrics = undefined;
+            const result2 = tag.lyrics;
+
+            // Assert 2
+            assert.isUndefined(result2);
+            assert.isArray(tag.frames);
+            assert.isEmpty(tag.frames);
+        } finally {
+            Id3v2Tag.language = initialLanguage;
+        }
+    }
+
+    @test
     public grouping() {
         this.testTextFrameProperty(
             (t, v) => { t.grouping = v; },
@@ -1623,6 +1660,25 @@ const getTestTagHeader = (version: number, flags: Id3v2TagHeaderFlags, tagSize: 
 
         // Act
         const result = tag.getTextAsString(FrameIdentifiers.TCOM);
+
+        // Assert
+        assert.strictEqual(result, "foo");
+    }
+
+    @test
+    public getTextAsString_genreFrame() {
+        // Arrange
+        const frame1 = UrlLinkFrame.fromIdentifier(FrameIdentifiers.WCOM);
+        const frame2 = TextInformationFrame.fromIdentifier(FrameIdentifiers.TCOM);
+        const frame3 = TextInformationFrame.fromIdentifier(FrameIdentifiers.TCOM);
+        const frame4 = GenreFrame.fromEncoding(StringType.Latin1);
+        frame4.text = ["foo"]
+
+        const tag = Id3v2Tag.fromEmpty();
+        tag.frames.push(frame1, frame2, frame3, frame4);
+
+        // Act
+        const result = tag.getTextAsString(FrameIdentifiers.TCON);
 
         // Assert
         assert.strictEqual(result, "foo");

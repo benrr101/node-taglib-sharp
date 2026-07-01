@@ -9,8 +9,6 @@ import {ArrayUtils, Guards} from "../../utils";
 /**
  * Class that extends {@link Frame}, implementing support for ID3v2 Comments (COMM) frames.
  * A {@link CommentsFrame} should be used for storing user-readable comments on the media file.
- * When reading comments from a file, {@link CommentsFrame.findPreferred} should be used as it
- * gracefully falls back to comments that you, as a developer, may not be expecting.
  */
 export default class CommentsFrame extends Frame {
     private _description: string;
@@ -143,59 +141,6 @@ export default class CommentsFrame extends Frame {
     public static filterFrames(frames: Frame[]): CommentsFrame[] {
         Guards.truthy(frames, "frames");
         return ArrayUtils.ofType(frames, CommentsFrame);
-    }
-
-    /**
-     * Gets a specified comments frame from the specified tag, trying to match the description and
-     * language but accepting an incomplete match.
-     * The method tries matching with the following order of precedence:
-     * * The first frame with a matching description and language
-     * * The first frame with a matching language
-     * * The first frame with a matching description
-     * * The first frame
-     * @param frames Frames to search for best matching frame
-     * @param description Description to match
-     * @param language ISO-639-2 language code to match
-     */
-    public static findPreferred(frames: CommentsFrame[], description: string, language?: string): CommentsFrame {
-        Guards.truthy(frames, "frames");
-
-        // Original .NET comments:
-        // This is weird, so bear with me. The best thing we can have is something straightforward
-        // and in our own language. If it has a description, then it is probably used for something
-        // other than an actual comment. If that doesn't work, we'd still rather have something in
-        // our own language than something in another. After that, all we have left are things in
-        // other languages, so we'd rather have one with actual content, so we try to get one with
-        // no description first.
-
-        const skipITunes = !description || !description.startsWith("iTun");
-
-        let bestValue = -1;
-        let bestFrame: CommentsFrame;
-
-        for (const frame of frames) {
-            if (skipITunes && frame.description.startsWith("iTun")) {
-                continue;
-            }
-
-            const sameName = frame.description === description;
-            const sameLang = frame.language === language;
-
-            if (sameName && sameLang) {
-                return frame;
-            }
-
-            const value = sameLang ? 2 : sameName ? 1 : 0;
-
-            if (value <= bestValue) {
-                continue;
-            }
-
-            bestValue = value;
-            bestFrame = frame;
-        }
-
-        return bestFrame;
     }
 
     /** @inheritDoc */

@@ -120,19 +120,6 @@ export default class UserUrlLinkFrame extends UrlLinkFrame {
         return ArrayUtils.ofType(frames, UserUrlLinkFrame);
     }
 
-    /**
-     * Gets a frame from a list of frames.
-     * @param frames List of frames to search
-     * @param description Description of the frame to match
-     * @returns Frame containing the matching user, `undefined` if a match was not found
-     */
-    public static findUserUrlLinkFrame(frames: UserUrlLinkFrame[], description: string): UserUrlLinkFrame {
-        Guards.truthy(frames, "frames");
-        Guards.truthy(description, "description");
-
-        return frames.find((f) => f.description === description);
-    }
-
     /** @inheritDoc */
     public clone(): UserUrlLinkFrame {
         const frame = UserUrlLinkFrame.fromFields(this._description, this._text);

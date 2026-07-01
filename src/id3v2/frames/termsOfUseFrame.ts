@@ -109,29 +109,6 @@ export default class TermsOfUseFrame extends Frame {
         return ArrayUtils.ofType(frames, TermsOfUseFrame);
     }
 
-    /**
-     * Gets a specified terms of use frame from the list of frames, trying to match the language but
-     * accepting one with a different language if a match was not found.
-     * @param frames List of frames to search
-     * @param language ISO-639-2 language code to match
-     * @returns Frame containing the matching frame or `undefined` if a match was not found
-     */
-    public static findPreferred(frames: TermsOfUseFrame[], language: string): TermsOfUseFrame {
-        Guards.truthy(frames, "frames");
-
-        let bestFrame: TermsOfUseFrame;
-        for (const f of frames) {
-            if (f.language === language) {
-                return f;
-            }
-            if (!bestFrame) {
-                bestFrame = f;
-            }
-        }
-
-        return bestFrame;
-    }
-
     /** @inheritDoc */
     public clone(): Frame {
         const frame = TermsOfUseFrame.fromFields(this._language, this.textEncoding);

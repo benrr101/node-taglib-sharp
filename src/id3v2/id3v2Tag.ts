@@ -454,18 +454,14 @@ export default class Id3v2Tag extends Tag {
      * @inheritDoc
      * @remarks Stored in the `COMM` frame
      */
-    get comment(): string {
-        const frames = CommentsFrame.filterFrames(this._frameList);
-        const f = CommentsFrame.findPreferred(frames, "", Id3v2Tag.language);
-        return f ? f.toString() : undefined;
+    get comment(): string|undefined {
+        return this.getCommentFramePreferred("", Id3v2Tag.language)?.toString();
     }
     /**
      * @inheritDoc
      * @remarks Stored in the `COMM` frame
      */
     set comment(value: string) {
-        const commentFrames = CommentsFrame.filterFrames(this._frameList);
-
         // Delete the "" comment frames that are in this language @TODO: That's not what this does
         if (!value) {
             this.removeFrames(FrameIdentifiers.COMM);
@@ -473,7 +469,7 @@ export default class Id3v2Tag extends Tag {
         }
 
         // Create or update the preferred comments frame
-        let frame = CommentsFrame.findPreferred(commentFrames, "", Id3v2Tag.language);
+        let frame = this.getCommentFramePreferred("", Id3v2Tag.language);
         if (!frame) {
             frame = CommentsFrame.fromDescription("", Id3v2Tag.language);
             this.addFrame(frame);
@@ -615,16 +611,23 @@ export default class Id3v2Tag extends Tag {
      */
     get lyrics(): string {
         const frames = UnsynchronizedLyricsFrame.filterFrames(this._frameList);
-        const frame = UnsynchronizedLyricsFrame.findPreferred(frames, "", Id3v2Tag.language);
-        return frame ? frame.toString() : undefined;
+
+        // Find the best match for the language
+        return frames.length < 2
+            ? frames[0]?.toString()
+            : frames.map(f => {
+                const langMatchScore = f.language === Id3v2Tag.language ? 2 : 0;
+                const nameMatchScore = f.description === "" ? 1 : 0;
+                const score = langMatchScore + nameMatchScore;
+                return {score: score, frame: f};
+            }).sort((a, b) => b.score - a.score)[0].frame.toString();
     }
     /**
      * @inheritDoc
      * @remarks Stored in the `USLT` frame
      */
     set lyrics(value: string) {
-        // Delete all unsynchronized lyrics frames in this language
-        // @TODO: Verify that deleting only this language is the correct behavior
+        // Delete all unsynchronized lyrics frames in this language @TODO: That's not what this does.
         if (!value) {
             this.removeFrames(FrameIdentifiers.USLT);
             return;
@@ -1488,6 +1491,22 @@ export default class Id3v2Tag extends Tag {
         position -= footer.completeTagSize;
 
         this.readFromStart(file, position, style);
+    }
+
+    private getCommentFramePreferred(description: string, language: string): CommentsFrame|undefined {
+        const frames = CommentsFrame.filterFrames(this._frameList);
+        if (frames.length < 2) {
+            return frames[0];
+        }
+
+        // The logic here is to map each frame to a score based on how many fields match. Then
+        // sort with the best match at the top, and return that frame.
+        return frames.map(f => {
+            const langMatchScore = f.language === language ? 2 : 0;
+            const nameMatchScore = f.description === description ? 1 : 0;
+            const score = langMatchScore + nameMatchScore;
+            return {score: score, frame: f};
+        }).sort((a, b) => b.score - a.score)[0].frame;
     }
 
     private getTextAsArray(ident: FrameIdentifier): string[] {

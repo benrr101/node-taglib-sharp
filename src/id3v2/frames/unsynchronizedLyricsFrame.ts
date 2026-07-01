@@ -137,47 +137,6 @@ export default class UnsynchronizedLyricsFrame extends Frame {
         return ArrayUtils.ofType(frames, UnsynchronizedLyricsFrame);
     }
 
-    /**
-     * Gets a specified unsynchronized frame from the list of frames, trying to match the
-     * description and language but, failing a perfect match, accepting an incomplete match.
-     * The method tries matching with the following order of precedence:
-     * * First frame with a matching description and language
-     * * First frame with a matching language
-     * * First frame with a matching description
-     * * First frame
-     * @param frames List of frames to search
-     * @param description Description to match
-     * @param language ISO-639-2 language code to match
-     */
-    public static findPreferred(
-        frames: UnsynchronizedLyricsFrame[],
-        description: string,
-        language: string
-    ): UnsynchronizedLyricsFrame {
-        Guards.truthy(frames, "frames");
-
-        let bestValue = -1;
-        let bestFrame;
-        for (const f of frames) {
-            const sameName = f.description === description;
-            const sameLang = f.language === language;
-
-            if (sameName && sameLang) {
-                return f;
-            }
-
-            const value = sameLang
-                ? 2
-                : sameName ? 1 : 0;
-            if (value > bestValue) {
-                bestValue = value;
-                bestFrame = f;
-            }
-        }
-
-        return bestFrame;
-    }
-
     /** @inheritDoc */
     public clone(): Frame {
         const frame = UnsynchronizedLyricsFrame.fromData(this._description, this._language, this.textEncoding);
