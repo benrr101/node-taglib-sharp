@@ -23,25 +23,6 @@ export default class CommentsFrame extends Frame {
     }
 
     /**
-     * Constructs and initializes a new CommentsFrame from a description
-     * @param description Description of the new frame
-     * @param language Optional, ISO-639-2 language code for the new frame
-     * @param encoding Optional, text encoding to use when rendering the new frame
-     */
-    public static fromDescription(
-        description: string,
-        language?: string,
-        encoding: StringType = Id3v2Settings.defaultEncoding
-    ): CommentsFrame {
-        const frame = new CommentsFrame(new Id3v2FrameHeader(FrameIdentifiers.COMM));
-        frame.textEncoding = encoding;
-        frame._language = language;
-        frame._description = description;
-
-        return frame;
-    }
-
-    /**
      * Constructs and initializes a new instance by parsing the fields from the field bytes.
      * @param header Header of the frame
      * @param fieldBytes Bytes that contain the fields of the frame
@@ -81,6 +62,33 @@ export default class CommentsFrame extends Frame {
             frame._description = split[0];
             frame._text = split[1];
         }
+
+        return frame;
+    }
+
+    /**
+     * Constructs and initializes a new CommentsFrame from a description
+     * @param text Required, text to store in the contents of the frame.
+     * @param description Optional, description of the comment being created. If omitted, defaults
+     *     to `""`.
+     * @param language Optional, ISO-639-2 language code for the new frame. If omitted, defaults to
+     *     `XXX`. @TODO: Should this default to unk?
+     * @param encoding Optional, text encoding to use when rendering the new frame. If omitted,
+     *     defaults to {@link Id3v2Settings.defaultEncoding}.
+     */
+    public static fromFields(
+        text: string,
+        description?: string,
+        language?: string,
+        encoding?: StringType
+    ): CommentsFrame {
+        Guards.notNullOrUndefined(text, "text");
+
+        const frame = new CommentsFrame(new Id3v2FrameHeader(FrameIdentifiers.COMM));
+        frame._text = text;
+        frame._description = description ?? "";
+        frame._language = language ?? "XXX";
+        frame._textEncoding = encoding ?? Id3v2Settings.defaultEncoding;
 
         return frame;
     }
@@ -145,9 +153,13 @@ export default class CommentsFrame extends Frame {
 
     /** @inheritDoc */
     public clone(): Frame {
-        const frame = CommentsFrame.fromDescription(this._description, this._language, this._textEncoding);
-        frame._text = this._text;
-        return frame;
+        const clone = new CommentsFrame(new Id3v2FrameHeader(FrameIdentifiers.COMM));
+        clone._description = this._description;
+        clone._language = this._language;
+        clone._text = this._text;
+        clone._textEncoding = this._textEncoding;
+
+        return clone;
     }
 
     /**
