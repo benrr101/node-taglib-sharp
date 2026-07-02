@@ -1,8 +1,8 @@
+import Frame from "./frame";
 import {ByteVector} from "../../byteVector";
-import {Frame, FrameClassType} from "./frame";
 import {Id3v2FrameHeader} from "./frameHeader";
 import {FrameIdentifiers} from "../frameIdentifiers";
-import {Guards} from "../../utils";
+import {ArrayUtils, Guards} from "../../utils";
 import {CorruptFileError, NotSupportedError} from "../../errors";
 
 /**
@@ -54,9 +54,6 @@ export default class PlayCountFrame extends Frame {
 
     // #region Public Properties
 
-    /** @inheritDoc */
-    public get frameClassType(): FrameClassType { return FrameClassType.PlayCountFrame; }
-
     /**
      * Gets the play count of the current instance.
      */
@@ -71,6 +68,11 @@ export default class PlayCountFrame extends Frame {
     }
 
     // #endregion
+
+    public static filterFrames(frames: Frame[]): PlayCountFrame[] {
+        Guards.truthy(frames, "frames");
+        return ArrayUtils.ofType(frames, PlayCountFrame);
+    }
 
     /** @inheritDoc */
     public clone(): Frame {

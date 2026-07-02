@@ -1,10 +1,10 @@
+import Frame from "./frame";
 import Id3v2Settings from "../id3v2Settings";
 import {ByteVector, StringType} from "../../byteVector";
 import {CorruptFileError} from "../../errors";
-import {Frame, FrameClassType} from "./frame";
 import {Id3v2FrameHeader} from "./frameHeader";
 import {FrameIdentifiers} from "../frameIdentifiers";
-import {Guards} from "../../utils";
+import {ArrayUtils, Guards} from "../../utils";
 import {SynchronizedTextType, TimestampFormat} from "../utilTypes";
 
 /**
@@ -195,9 +195,6 @@ export class SynchronizedLyricsFrame extends Frame {
 
     // #region Properties
 
-    /** @inheritDoc */
-    public get frameClassType(): FrameClassType { return FrameClassType.SynchronizedLyricsFrame; }
-
     /**
      * Gets the description of the current instance.
      */
@@ -270,80 +267,9 @@ export class SynchronizedLyricsFrame extends Frame {
 
     // #region Public Methods
 
-    /**
-     * Gets a specified lyrics frame from a list of synchronized lyrics frames
-     * @param frames List of frames to search
-     * @param description Description to match
-     * @param textType Text type to match
-     * @param language Optionally, ISO-639-2 language code to match
-     * @returns Frame containing the matching user, `undefined` if a match was not found
-     */
-    public static find(
-        frames: SynchronizedLyricsFrame[],
-        description: string,
-        textType: SynchronizedTextType,
-        language?: string
-    ): SynchronizedLyricsFrame {
+    public static filterFrames(frames: Frame[]): SynchronizedLyricsFrame[] {
         Guards.truthy(frames, "frames");
-        return frames.find((f) => {
-            if (f.description !== description) { return false; }
-            if (language && f.language !== language) { return false; }
-            // noinspection RedundantIfStatementJS
-            if (f.textType !== textType) { return false; }
-            return true;
-        });
-    }
-
-    /**
-     * Gets a synchronized lyrics frame from the specified list, trying to match the description and
-     * language but accepting an incomplete match.
-     * This method tries matching with the following order of precedence:
-     * * The first frame with a matching description, language, and type.
-     * * The first frame with a matching description and language.
-     * * The first frame with a matching language.
-     * * The first frame with a matching description.
-     * * The first frame with a matching type.
-     * * The first frame.
-     * @param frames List of frames to search for the best match
-     * @param description Description to match
-     * @param language ISO-639-2 language code to match
-     * @param textType Text type to match
-     * @returns The matching frame or `undefined` if a match was not found
-     */
-    public static findPreferred(
-        frames: SynchronizedLyricsFrame[],
-        description: string,
-        language: string,
-        textType: SynchronizedTextType
-    ): SynchronizedLyricsFrame {
-        Guards.truthy(frames, "frames");
-
-        let bestValue = -1;
-        let bestFrame: SynchronizedLyricsFrame;
-
-        for (const slFrame of frames) {
-            let value = 0;
-            if (slFrame.language === language) {
-                value += 4;
-            }
-            if (slFrame.description === description) {
-                value += 2;
-            }
-            if (slFrame.textType === textType) {
-                value += 1;
-            }
-            if (value === 7) {
-                return slFrame;
-            }
-
-            if (value <= bestValue) {
-                continue;
-            }
-            bestValue = value;
-            bestFrame = slFrame;
-        }
-
-        return bestFrame;
+        return ArrayUtils.ofType(frames, SynchronizedLyricsFrame);
     }
 
     /** @inheritDoc */

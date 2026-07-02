@@ -1,14 +1,15 @@
 import {suite, test} from "@testdeck/mocha";
 import {assert} from "chai";
 
-import Id3v2Settings from "../../src/id3v2/id3v2Settings";
+import Frame from "../../src/id3v2/frames/frame";
+import FrameConstructorTests from "./frameConstructorTests";
 import GenreFrame from "../../src/id3v2/frames/genreFrame";
+import Id3v2Settings from "../../src/id3v2/id3v2Settings";
+import UnknownFrame from "../../src/id3v2/frames/unknownFrame";
 import {ByteVector, StringType} from "../../src/byteVector";
-import {FrameClassType} from "../../src/id3v2/frames/frame";
 import {Id3v2FrameFlags, Id3v2FrameHeader} from "../../src/id3v2/frames/frameHeader";
 import {FrameIdentifiers} from "../../src/id3v2/frameIdentifiers";
 import {Testers} from "../utilities/testers";
-import FrameConstructorTests from "./frameConstructorTests";
 
 @suite
 class Id3v2_GenreFrameTests extends FrameConstructorTests {
@@ -24,8 +25,9 @@ class Id3v2_GenreFrameTests extends FrameConstructorTests {
 
         // Assert
         assert.isOk(frame);
-        assert.strictEqual(frame.frameClassType, FrameClassType.GenreFrame);
+        assert.instanceOf<GenreFrame>(frame, GenreFrame);
         assert.strictEqual(frame.frameId, FrameIdentifiers.TCON);
+
         assert.deepStrictEqual(frame.text, []);
         assert.strictEqual(frame.textEncoding, StringType.UTF16BE);
     }
@@ -462,38 +464,93 @@ class Id3v2_GenreFrameTests extends FrameConstructorTests {
 
         // Assert
         assert.isOk(output);
+        assert.instanceOf<GenreFrame>(output, GenreFrame);
         assert.notStrictEqual(output, frame);
-        assert.strictEqual(output.frameClassType, FrameClassType.GenreFrame);
+
         assert.strictEqual(output.frameId, FrameIdentifiers.TCON);
         assert.deepStrictEqual(output.text, ["foo", "bar"]);
         assert.strictEqual(output.textEncoding, StringType.UTF16BE);
     }
 
     @test
-    public find_falsyFrames() {
+    public filterFrames_falsyFrames() {
         // Act/Assert
-        Testers.testTruthy((v: GenreFrame[]) => { GenreFrame.findGenreFrame(v); });
+        Testers.testTruthy((v: Frame[]) => { GenreFrame.filterFrames(v); });
     }
 
     @test
-    public find_frameExists() {
+    public filterFrames_noFrames() {
         // Arrange
-        const frame = GenreFrame.fromEncoding();
+        const frames: Frame[] = [];
 
         // Act
-        const output = GenreFrame.findGenreFrame([frame]);
+        const output = GenreFrame.filterFrames(frames);
 
         // Assert
-        assert.strictEqual(output, frame);
+        assert.isArray(output);
+        assert.isEmpty(output);
     }
 
     @test
-    public find_frameDoesNotExist() {
+    public filterFrames_noMatch() {
+        // Arrange
+        const frame1 = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.fromUint(123));
+        const frame2 = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.fromUint(234));
+        const frames = [frame1, frame2];
+
         // Act
-        const output = GenreFrame.findGenreFrame([]);
+        const result = GenreFrame.filterFrames(frames);
 
         // Assert
-        assert.isUndefined(output);
+        assert.isArray(result);
+        assert.isEmpty(result);
+    }
+
+    @test
+    public filterFrames_singleMatch() {
+        // Arrange
+        const frame1 = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.fromUint(123));
+        const frame2 = GenreFrame.fromEncoding(StringType.UTF16);
+        const frames = [frame1, frame2];
+
+        // Act
+        const result = GenreFrame.filterFrames(frames);
+
+        // Assert
+        assert.isArray(result);
+        assert.deepEqual(result, [frame2]);
+    }
+
+    @test
+    public filterFrames_multipleMatches() {
+        // Arrange
+        const frame1 = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.fromUint(123));
+        const frame2 = GenreFrame.fromEncoding(StringType.UTF16);
+        const frame3 = GenreFrame.fromEncoding(StringType.UTF16BE);
+
+        const frames = [frame1, frame2, frame3];
+
+        // Act
+        const result = GenreFrame.filterFrames(frames);
+
+        // Assert
+        assert.isArray(result);
+        assert.deepEqual(result, [frame2, frame3]);
+    }
+
+    @test
+    public filterFrames_allMatches() {
+        // Arrange
+        const frame1 = GenreFrame.fromEncoding(StringType.Hex);
+        const frame2 = GenreFrame.fromEncoding(StringType.Latin1);
+        const frames = [frame1, frame2];
+
+        // Act
+        const result = GenreFrame.filterFrames(frames);
+
+        // Assert
+        assert.isArray(result);
+        assert.deepEqual(result, [frame1, frame2]);
     }
 
     @test

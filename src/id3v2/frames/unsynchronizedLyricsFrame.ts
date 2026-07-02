@@ -1,10 +1,10 @@
+import Frame from "./frame";
 import Id3v2Settings from "../id3v2Settings";
 import {ByteVector, StringType} from "../../byteVector";
 import {CorruptFileError} from "../../errors";
-import {Frame, FrameClassType} from "./frame";
 import {Id3v2FrameHeader} from "./frameHeader";
 import {FrameIdentifiers} from "../frameIdentifiers";
-import {Guards} from "../../utils";
+import {ArrayUtils, Guards} from "../../utils";
 
 /**
  * Extends {@link Frame} implementing support for ID3v2 unsynchronized lyrics (USLT) frames.
@@ -90,9 +90,6 @@ export default class UnsynchronizedLyricsFrame extends Frame {
 
     // #region Properties
 
-    /** @inheritDoc */
-    public get frameClassType(): FrameClassType { return FrameClassType.UnsynchronizedLyricsFrame; }
-
     /**
      * Gets the description of the contents of the current instance.
      */
@@ -135,89 +132,9 @@ export default class UnsynchronizedLyricsFrame extends Frame {
 
     // #region Public Methods
 
-    /**
-     * Gets the first unsynchronized lyrics frame from a list of frames that matches the provided
-     * parameters.
-     * @param frames List of frames to search
-     * @param description Description to match
-     * @param language Optionally, ISO-639-2 language code to match
-     * @returns Frame that matches provided parameters, `undefined` if a match was not found
-     */
-    public static find(
-        frames: UnsynchronizedLyricsFrame[],
-        description: string,
-        language: string
-    ): UnsynchronizedLyricsFrame {
+    public static filterFrames(frames: Frame[]): UnsynchronizedLyricsFrame[] {
         Guards.truthy(frames, "frames");
-        return frames.find((f) => {
-            if (f.description !== description) { return false; }
-            // noinspection RedundantIfStatementJS
-            if (language && f.language !== language) { return false; }
-            return true;
-        });
-    }
-
-    /**
-     * Gets all unsynchronized lyrics frames that match the provided parameters from a list of
-     * frames
-     * @param frames List of frames to search
-     * @param description Description to match
-     * @param language Optionally, ISO-639-2 language code to match
-     * @returns List of frames matching provided parameters, empty array if no matches were found
-     */
-    public static findAll(
-        frames: UnsynchronizedLyricsFrame[],
-        description: string,
-        language: string
-    ): UnsynchronizedLyricsFrame[] {
-        Guards.truthy(frames, "frames");
-        return frames.filter((f) => {
-            if (f.description !== description) { return false; }
-            // noinspection RedundantIfStatementJS
-            if (language && f.language !== language) { return false; }
-            return true;
-        });
-    }
-
-    /**
-     * Gets a specified unsynchronized frame from the list of frames, trying to match the
-     * description and language but, failing a perfect match, accepting an incomplete match.
-     * The method tries matching with the following order of precedence:
-     * * First frame with a matching description and language
-     * * First frame with a matching language
-     * * First frame with a matching description
-     * * First frame
-     * @param frames List of frames to search
-     * @param description Description to match
-     * @param language ISO-639-2 language code to match
-     */
-    public static findPreferred(
-        frames: UnsynchronizedLyricsFrame[],
-        description: string,
-        language: string
-    ): UnsynchronizedLyricsFrame {
-        Guards.truthy(frames, "frames");
-
-        let bestValue = -1;
-        let bestFrame;
-        for (const f of frames) {
-            const sameName = f.description === description;
-            const sameLang = f.language === language;
-
-            if (sameName && sameLang) {
-                return f;
-            }
-
-            const value = sameLang
-                ? 2
-                : sameName ? 1 : 0;
-            if (value > bestValue) {
-                bestValue = value;
-                bestFrame = f;
-            }
-        }
-
-        return bestFrame;
+        return ArrayUtils.ofType(frames, UnsynchronizedLyricsFrame);
     }
 
     /** @inheritDoc */

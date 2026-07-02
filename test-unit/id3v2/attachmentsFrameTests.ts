@@ -3,14 +3,15 @@ import {params, suite, test} from "@testdeck/mocha";
 import {assert} from "chai";
 
 import AttachmentFrame from "../../src/id3v2/frames/attachmentFrame";
+import Frame from "../../src/id3v2/frames/frame";
 import FrameConstructorTests from "./frameConstructorTests";
 import Id3v2Settings from "../../src/id3v2/id3v2Settings";
 import PropertyTests from "../utilities/propertyTests";
+import UnknownFrame from "../../src/id3v2/frames/unknownFrame";
 import {ByteVector, StringType} from "../../src/byteVector";
-import {Frame, FrameClassType} from "../../src/id3v2/frames/frame";
 import {Id3v2FrameFlags, Id3v2FrameHeader} from "../../src/id3v2/frames/frameHeader";
 import {FrameIdentifier, FrameIdentifiers} from "../../src/id3v2/frameIdentifiers";
-import {IPicture, PictureType} from "../../src/picture";
+import {IPicture, Picture, PictureType} from "../../src/picture";
 import {Testers} from "../utilities/testers";
 
 const getTestFrame = () => getCustomTestFrame(
@@ -36,6 +37,30 @@ const getCustomTestFrame = (
     mockPicture.setup((p) => p.type).returns(() => type);
 
     return AttachmentFrame.fromPicture(mockPicture.object);
+}
+
+const verifyFrame = (
+    frame: AttachmentFrame,
+    frameIdentifier: FrameIdentifier,
+    data: ByteVector,
+    description: string,
+    filename: string,
+    mimeType: string,
+    encoding: StringType,
+    pictureType: PictureType
+): void => {
+    assert.isOk(frame);
+    assert.instanceOf<AttachmentFrame>(frame, AttachmentFrame);
+
+    Testers.bvEqual(frame.data, data);
+    assert.strictEqual(frame.description, description);
+    assert.strictEqual(frame.filename, filename);
+    assert.strictEqual(frame.mimeType, mimeType);
+    assert.strictEqual(frame.textEncoding, encoding);
+    assert.strictEqual(frame.type, pictureType);
+
+    // NOTE: This happens last because the frame identifier can be changed after parsing.
+    assert.strictEqual(frame.frameId, frameIdentifier);
 }
 
 @suite class Id3v2_AttachmentFrame_ConstructorTests extends FrameConstructorTests {
@@ -64,7 +89,7 @@ const getCustomTestFrame = (
         const frame = AttachmentFrame.fromPicture(mockPicture.object);
 
         // Assert
-        Id3v2_AttachmentFrame_ConstructorTests.verifyFrame(
+        verifyFrame(
             frame,
             FrameIdentifiers.APIC,
             data,
@@ -91,7 +116,7 @@ const getCustomTestFrame = (
         const frame = AttachmentFrame.fromPicture(mockPicture.object);
 
         // Assert
-        Id3v2_AttachmentFrame_ConstructorTests.verifyFrame(
+        verifyFrame(
             frame,
             FrameIdentifiers.GEOB,
             data,
@@ -128,7 +153,7 @@ const getCustomTestFrame = (
         const frame = AttachmentFrame.fromFieldBytes(header, fieldBytes, version);
 
         // Assert
-        Id3v2_AttachmentFrame_ConstructorTests.verifyFrame(
+        verifyFrame(
             frame,
             FrameIdentifiers.APIC,
             testData,
@@ -160,7 +185,7 @@ const getCustomTestFrame = (
         const frame = AttachmentFrame.fromFieldBytes(header, fieldBytes, version);
 
         // Assert
-        Id3v2_AttachmentFrame_ConstructorTests.verifyFrame(
+        verifyFrame(
             frame,
             FrameIdentifiers.APIC,
             testData,
@@ -191,7 +216,7 @@ const getCustomTestFrame = (
         const frame = AttachmentFrame.fromFieldBytes(header, fieldBytes, 2);
 
         // Assert
-        Id3v2_AttachmentFrame_ConstructorTests.verifyFrame(
+        verifyFrame(
             frame,
             FrameIdentifiers.APIC,
             testData,
@@ -225,7 +250,7 @@ const getCustomTestFrame = (
         const frame = AttachmentFrame.fromFieldBytes(header, fieldBytes, version);
 
         // Assert
-        Id3v2_AttachmentFrame_ConstructorTests.verifyFrame(
+        verifyFrame(
             frame,
             FrameIdentifiers.GEOB,
             testData,
@@ -259,7 +284,7 @@ const getCustomTestFrame = (
         const frame = AttachmentFrame.fromFieldBytes(header, fieldBytes, version);
 
         // Assert
-        Id3v2_AttachmentFrame_ConstructorTests.verifyFrame(
+        verifyFrame(
             frame,
             FrameIdentifiers.GEOB,
             testData,
@@ -269,29 +294,6 @@ const getCustomTestFrame = (
             StringType.UTF16BE,
             PictureType.NotAPicture
         );
-    }
-
-    private static verifyFrame(
-        frame: AttachmentFrame,
-        ft: FrameIdentifier,
-        d: ByteVector,
-        desc: string,
-        fn: string,
-        mt: string,
-        te: StringType,
-        t: PictureType
-    ) {
-        assert.isOk(frame);
-        assert.equal(frame.frameClassType, FrameClassType.AttachmentFrame);
-
-        Testers.bvEqual(frame.data, d);
-        assert.strictEqual(frame.description, desc);
-        assert.strictEqual(frame.filename, fn);
-        assert.strictEqual(frame.mimeType, mt);
-        assert.strictEqual(frame.textEncoding, te);
-        assert.strictEqual(frame.type, t);
-
-        assert.strictEqual(frame.frameId, ft);
     }
 }
 
@@ -422,16 +424,16 @@ const getCustomTestFrame = (
         const output = <AttachmentFrame> frame.clone();
 
         // Assert
-        assert.isOk(output);
-        assert.equal(output.frameClassType, FrameClassType.AttachmentFrame);
-
-        Testers.bvEqual(output.data, frame.data);
-        assert.strictEqual(output.description, frame.description);
-        assert.strictEqual(output.filename, frame.filename);
-        assert.strictEqual(output.mimeType, frame.mimeType);
-        assert.strictEqual(output.textEncoding, frame.textEncoding);
-        assert.strictEqual(output.type, frame.type);
-        assert.strictEqual(frame.frameId, frame.frameId);
+        verifyFrame(
+            output,
+            frame.frameId,
+            frame.data,
+            frame.description,
+            frame.filename,
+            frame.mimeType,
+            frame.textEncoding,
+            frame.type
+        );
     }
 
     @test
@@ -454,16 +456,16 @@ const getCustomTestFrame = (
         const output = <AttachmentFrame> frame.clone();
 
         // Assert
-        assert.isOk(output);
-        assert.equal(output.frameClassType, FrameClassType.AttachmentFrame);
-
-        Testers.bvEqual(output.data, frame.data);
-        assert.strictEqual(output.description, frame.description);
-        assert.strictEqual(output.filename, frame.filename);
-        assert.strictEqual(output.mimeType, frame.mimeType);
-        assert.strictEqual(output.textEncoding, frame.textEncoding);
-        assert.strictEqual(output.type, frame.type);
-        assert.strictEqual(frame.frameId, frame.frameId);
+        verifyFrame(
+            output,
+            frame.frameId,
+            frame.data,
+            frame.description,
+            frame.filename,
+            frame.mimeType,
+            frame.textEncoding,
+            frame.type
+        );
     }
 
     @test
@@ -477,124 +479,107 @@ const getCustomTestFrame = (
         const output = <AttachmentFrame> frame.clone();
 
         // Assert
-        assert.isOk(output);
-        assert.equal(output.frameClassType, FrameClassType.AttachmentFrame);
-
-        Testers.bvEqual(output.data, frame.data);
-        assert.strictEqual(output.description, frame.description);
-        assert.strictEqual(output.filename, frame.filename);
-        assert.strictEqual(output.mimeType, frame.mimeType);
-        assert.strictEqual(output.textEncoding, frame.textEncoding);
-        assert.strictEqual(output.type, frame.type);
-        assert.strictEqual(frame.frameId, frame.frameId);
+        verifyFrame(
+            output,
+            frame.frameId,
+            frame.data,
+            frame.description,
+            frame.filename,
+            frame.mimeType,
+            frame.textEncoding,
+            frame.type
+        );
     }
 
     @test
-    public find_falsyFrames() {
-        // Act / Assert
-        assert.throws(() => { AttachmentFrame.find(undefined); });
-        assert.throws(() => { AttachmentFrame.find(null); });
+    public filterFrames_falsyFrames() {
+        Testers.testTruthy((v: Frame[]) => AttachmentFrame.filterFrames(v));
     }
 
     @test
-    public find_noFrames() {
+    public filterFrames_noFrames() {
         // Arrange
-        const frames: AttachmentFrame[] = [];
+        const frames: Frame[] = [];
 
         // Act
-        const output = AttachmentFrame.find(frames);
+        const output = AttachmentFrame.filterFrames(frames);
 
         // Assert
-        assert.isUndefined(output);
+        assert.isArray(output);
+        assert.isEmpty(output);
     }
 
     @test
-    public find_noMatchByDescription() {
+    public filterFrames_noMatch() {
         // Arrange
-        const frame1 = getTestFrame();
-        frame1.description = "fux";
-        frame1.type = PictureType.Artist;
-        const frame2 = getTestFrame();
-        frame2.description = "bux";
-        frame2.type = PictureType.Artist;
-
+        const frame1 = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.fromUint(123));
+        const frame2 = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.fromUint(234));
         const frames = [frame1, frame2];
 
         // Act
-        const output = AttachmentFrame.find(frames, "qux", PictureType.Artist);
+        const result = AttachmentFrame.filterFrames(frames);
 
         // Assert
-        assert.isUndefined(output);
+        assert.isArray(result);
+        assert.isEmpty(result);
     }
 
     @test
-    public find_noMatchByType() {
-        const frame1 = getTestFrame();
-        frame1.description = "qux";
-        frame1.type = PictureType.FrontCover;
-        const frame2 = getTestFrame();
-        frame2.description = "qux";
-        frame2.type = PictureType.BackCover;
+    public filterFrames_singleMatch() {
+        // Arrange
+        const frame1 = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.fromUint(123));
+
+        const pic2 = Picture.fromData(ByteVector.fromUint(8888));
+        const frame2 = AttachmentFrame.fromPicture(pic2);
 
         const frames = [frame1, frame2];
 
         // Act
-        const output = AttachmentFrame.find(frames, "qux", PictureType.Artist);
+        const result = AttachmentFrame.filterFrames(frames);
 
         // Assert
-        assert.isUndefined(output);
+        assert.isArray(result);
+        assert.deepEqual(result, [frame2]);
     }
 
     @test
-    public find_matchWithoutDescription() {
-        const frame1 = getTestFrame();
-        frame1.type = PictureType.FrontCover;
-        const frame2 = getTestFrame();
-        frame2.type = PictureType.BackCover;
+    public filterFrames_multipleMatches() {
+        // Arrange
+        const frame1 = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.fromUint(123));
 
-        const frames = [frame1, frame2];
+        const pic2 = Picture.fromData(ByteVector.fromUint(8888));
+        const frame2 = AttachmentFrame.fromPicture(pic2);
+
+        const pic3 = Picture.fromData(ByteVector.fromUint(9999));
+        const frame3 = AttachmentFrame.fromPicture(pic3);
+
+        const frames = [frame1, frame2, frame3];
 
         // Act
-        const output = AttachmentFrame.find(frames, undefined, PictureType.BackCover);
+        const result = AttachmentFrame.filterFrames(frames);
 
         // Assert
-        assert.strictEqual(output, frame2);
+        assert.isArray(result);
+        assert.deepEqual(result, [frame2, frame3]);
     }
 
     @test
-    public find_matchWithoutType() {
-        const frame1 = getTestFrame();
-        frame1.description = "bux";
-        frame1.type = PictureType.FrontCover;
-        const frame2 = getTestFrame();
-        frame2.description = "qux";
-        frame2.type = PictureType.BackCover;
+    public filterFrames_allMatches() {
+        // Arrange
+        const pic1 = Picture.fromData(ByteVector.fromUint(8888));
+        const frame1 = AttachmentFrame.fromPicture(pic1);
+
+        const pic2 = Picture.fromData(ByteVector.fromUint(9999));
+        const frame2 = AttachmentFrame.fromPicture(pic2);
 
         const frames = [frame1, frame2];
 
         // Act
-        const output = AttachmentFrame.find(frames, "qux");
+        const result = AttachmentFrame.filterFrames(frames);
 
         // Assert
-        assert.strictEqual(output, frame2);
-    }
-
-    @test
-    public find_matchWithoutEither() {
-        const frame1 = getTestFrame();
-        frame1.description = "bux";
-        frame1.type = PictureType.FrontCover;
-        const frame2 = getTestFrame();
-        frame2.description = "qux";
-        frame2.type = PictureType.BackCover;
-
-        const frames = [frame1, frame2];
-
-        // Act
-        const output = AttachmentFrame.find(frames);
-
-        // Assert
-        assert.strictEqual(output, frame1);
+        assert.isArray(result);
+        assert.deepEqual(result, [frame1, frame2]);
     }
 
     @test

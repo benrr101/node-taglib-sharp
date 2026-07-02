@@ -1,12 +1,12 @@
+import Frame from "./frame";
 import Id3v2Settings from "../id3v2Settings";
 import {ByteVector, StringType} from "../../byteVector";
 import {CorruptFileError} from "../../errors";
 import {IFileAbstraction} from "../../fileAbstraction";
-import {Frame, FrameClassType} from "./frame";
 import {Id3v2FrameHeader} from "./frameHeader";
 import {FrameIdentifiers} from "../frameIdentifiers";
 import {IPicture, Picture, PictureLazy, PictureType} from "../../picture";
-import {Guards} from "../../utils";
+import {ArrayUtils, Guards} from "../../utils";
 
 export default class AttachmentFrame extends Frame implements IPicture {
     // NOTE: It probably doesn't look necessary to implement IPicture, but it makes converting a
@@ -117,9 +117,6 @@ export default class AttachmentFrame extends Frame implements IPicture {
     // #endregion
 
     // #region Properties
-
-    /** @inheritDoc */
-    public get frameClassType(): FrameClassType { return FrameClassType.AttachmentFrame; }
 
     /**
      * Gets the image data stored in the current instance.
@@ -250,26 +247,9 @@ export default class AttachmentFrame extends Frame implements IPicture {
         return frame;
     }
 
-    /**
-     * Get a specified attachment frame from the specified tag, optionally creating it if it does
-     * not exist.
-     * @param frames List of attachment frames to search
-     * @param description Description to match
-     * @param type Picture type to match
-     * @returns Matching frame or `undefined` if a match wasn't found and `create` is `false`
-     */
-    public static find(
-        frames: AttachmentFrame[],
-        description?: string,
-        type: PictureType = PictureType.Other
-    ): AttachmentFrame {
+    public static filterFrames(frames: Frame[]): AttachmentFrame[] {
         Guards.truthy(frames, "frames");
-        return frames.find((f) => {
-                if (description && f.description !== description) { return false; }
-                // noinspection RedundantIfStatementJS
-                if (type !== PictureType.Other && f.type !== type) { return false; }
-                return true;
-            });
+        return ArrayUtils.ofType(frames, AttachmentFrame);
     }
 
     /**

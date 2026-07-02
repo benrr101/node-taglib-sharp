@@ -1,8 +1,8 @@
+import Frame from "./frame";
 import {ByteVector, StringType} from "../../byteVector";
-import {Frame, FrameClassType} from "./frame";
 import {Id3v2FrameHeader} from "./frameHeader";
 import {FrameIdentifiers} from "../frameIdentifiers";
-import {Guards, NumberUtils} from "../../utils";
+import {ArrayUtils, Guards, NumberUtils} from "../../utils";
 import {CorruptFileError} from "../../errors";
 
 /**
@@ -267,9 +267,6 @@ export class RelativeVolumeFrame extends Frame {
 
     // #region Properties
 
-    /** @inheritDoc */
-    public get frameClassType(): FrameClassType { return FrameClassType.RelativeVolumeFrame; }
-
     /**
      * Gets the channels in the current instance that have a value
      */
@@ -294,15 +291,9 @@ export class RelativeVolumeFrame extends Frame {
         return frame;
     }
 
-    /**
-     * Gets a specified volume adjustment frame from the list of relative volume frames
-     * @param frames List of frames to search
-     * @param identification Identification to match
-     * @returns Frame containing the matching user or `undefined` if a match was not found
-     */
-    public static find(frames: RelativeVolumeFrame[], identification: string): RelativeVolumeFrame {
+    public static filterFrames(frames: Frame[]): RelativeVolumeFrame[] {
         Guards.truthy(frames, "frame");
-        return frames.find((f) => f.identification === identification);
+        return ArrayUtils.ofType(frames, RelativeVolumeFrame);
     }
 
     /**

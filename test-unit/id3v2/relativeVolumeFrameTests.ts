@@ -1,14 +1,24 @@
 import {params, suite, test} from "@testdeck/mocha";
 import {assert} from "chai";
 
-import ConstructorTests from "./frameConstructorTests";
+import Frame from "../../src/id3v2/frames/frame";
+import FrameConstructorTests from "./frameConstructorTests";
 import PropertyTests from "../utilities/propertyTests";
+import UnknownFrame from "../../src/id3v2/frames/unknownFrame";
 import {ChannelData, ChannelType, RelativeVolumeFrame} from "../../src/id3v2/frames/relativeVolumeFrame";
 import {ByteVector, StringType} from "../../src/byteVector";
-import {Frame, FrameClassType} from "../../src/id3v2/frames/frame";
 import {Id3v2FrameFlags, Id3v2FrameHeader} from "../../src/id3v2/frames/frameHeader";
 import {FrameIdentifiers} from "../../src/id3v2/frameIdentifiers";
 import {Testers} from "../utilities/testers";
+
+const assertFrame = (frame: RelativeVolumeFrame, c: ChannelData[], i: string) => {
+    assert.isOk(frame);
+    assert.instanceOf<RelativeVolumeFrame>(frame, RelativeVolumeFrame);
+    assert.strictEqual(frame.frameId, FrameIdentifiers.RVA2);
+
+    assert.deepStrictEqual(frame.channels, c);
+    assert.strictEqual(frame.identification, i);
+}
 
 @suite class Id3v2_RelativeVolumeChannelData {
     @test
@@ -272,7 +282,7 @@ import {Testers} from "../utilities/testers";
     }
 }
 
-@suite class Id3v2_RelativeVolumeFrame_ConstructorTests extends ConstructorTests {
+@suite class Id3v2_RelativeVolumeFrame_ConstructorTests extends FrameConstructorTests {
     public get fromFieldBytes(): (h: Id3v2FrameHeader, b: ByteVector, v: number) => Frame {
         return RelativeVolumeFrame.fromFieldBytes;
     }
@@ -283,7 +293,7 @@ import {Testers} from "../utilities/testers";
         const frame = RelativeVolumeFrame.fromIdentification("foo");
 
         // Assert
-        Id3v2_RelativeVolumeFrame_ConstructorTests.assertFrame(frame, [], "foo");
+        assertFrame(frame, [], "foo");
     }
 
     @params(2, "v2")
@@ -310,7 +320,7 @@ import {Testers} from "../utilities/testers";
         const frame = RelativeVolumeFrame.fromFieldBytes(header, fieldBytes, version);
 
         // Assert
-        Id3v2_RelativeVolumeFrame_ConstructorTests.assertFrame(frame, [], "foobarbaz");
+        assertFrame(frame, [], "foobarbaz");
     }
 
     @params(2, "v2")
@@ -335,7 +345,7 @@ import {Testers} from "../utilities/testers";
         channelData.peakBits = 32;
         channelData.peakVolume = BigInt(16909060);
         channelData.volumeAdjustment = 123/512;
-        Id3v2_RelativeVolumeFrame_ConstructorTests.assertFrame(frame, [channelData], "foobarbaz");
+        assertFrame(frame, [channelData], "foobarbaz");
     }
 
     @params(2, "v2")
@@ -371,7 +381,7 @@ import {Testers} from "../utilities/testers";
         cd2.peakBits = 32;
         cd2.peakVolume = BigInt(33752069);
         cd2.volumeAdjustment = 234 / 512;
-        Id3v2_RelativeVolumeFrame_ConstructorTests.assertFrame(frame, [cd2, cd1], "foobarbaz");
+        assertFrame(frame, [cd2, cd1], "foobarbaz");
     }
 
     @params(2, "v2")
@@ -400,7 +410,7 @@ import {Testers} from "../utilities/testers";
         cd1.peakBits = 32;
         cd1.peakVolume = BigInt(16909060);
         cd1.volumeAdjustment = 123 / 512;
-        Id3v2_RelativeVolumeFrame_ConstructorTests.assertFrame(frame, [cd1], "foobarbaz");
+        assertFrame(frame, [cd1], "foobarbaz");
     }
 
     @params(2, "v2")
@@ -431,56 +441,124 @@ import {Testers} from "../utilities/testers";
         cd1.peakBits = 32;
         cd1.peakVolume = BigInt(16909060);
         cd1.volumeAdjustment = 123 / 512;
-        Id3v2_RelativeVolumeFrame_ConstructorTests.assertFrame(frame, [cd1], "foobarbaz");
-    }
-
-    private static assertFrame(frame: RelativeVolumeFrame, c: ChannelData[], i: string) {
-        assert.isOk(frame);
-        assert.strictEqual(frame.frameClassType, FrameClassType.RelativeVolumeFrame);
-        assert.strictEqual(frame.frameId, FrameIdentifiers.RVA2);
-
-        assert.deepStrictEqual(frame.channels, c);
-        assert.strictEqual(frame.identification, i);
+        assertFrame(frame, [cd1], "foobarbaz");
     }
 }
 
-@suite class Id3v2_RelativeVolumeFrameMethodTests {
+@suite class Id3v2_RelativeVolumeFrame_MethodTests {
     @test
-    public find_falsyFrames() {
-        // Act / Assert
-        Testers.testTruthy((v: RelativeVolumeFrame[]) => { RelativeVolumeFrame.find(v, "foo"); });
+    public clone() {
+        // Arrange
+        const frame = RelativeVolumeFrame.fromIdentification("foobarbaz");
+        frame.setPeakBits(ChannelType.Subwoofer, 32);
+        frame.setPeakVolume(ChannelType.Subwoofer, BigInt(12345));
+        frame.setVolumeAdjustment(ChannelType.Subwoofer, -1.23);
+        frame.setPeakBits(ChannelType.BackCenter, 48);
+        frame.setPeakVolume(ChannelType.BackCenter, BigInt(23456));
+        frame.setVolumeAdjustment(ChannelType.BackCenter, 1.23);
+
+        // Act
+        const clone = <RelativeVolumeFrame>frame.clone();
+
+        // Assert
+        assert.isOk(clone);
+        assert.instanceOf(clone, RelativeVolumeFrame);
+        assert.notStrictEqual(clone, frame);
+        assert.strictEqual(clone.identification, frame.identification);
+        assert.deepStrictEqual(clone.channels, frame.channels);
+        assert.strictEqual(clone.getPeakBits(ChannelType.Subwoofer), frame.getPeakBits(ChannelType.Subwoofer));
+        assert.strictEqual(clone.getPeakVolume(ChannelType.Subwoofer), frame.getPeakVolume(ChannelType.Subwoofer));
+        assert.strictEqual(
+            clone.getVolumeAdjustment(ChannelType.Subwoofer),
+            frame.getVolumeAdjustment(ChannelType.Subwoofer)
+        );
+        assert.strictEqual(clone.getPeakBits(ChannelType.BackCenter), frame.getPeakBits(ChannelType.BackCenter));
+        assert.strictEqual(clone.getPeakVolume(ChannelType.BackCenter), frame.getPeakVolume(ChannelType.BackCenter));
+        assert.strictEqual(
+            clone.getVolumeAdjustment(ChannelType.BackCenter),
+            frame.getVolumeAdjustment(ChannelType.BackCenter)
+        );
     }
 
     @test
-    public find_noMatches() {
-        // Arrange
-        const frames = [
-            RelativeVolumeFrame.fromIdentification("fux"),
-            RelativeVolumeFrame.fromIdentification("bux")
-        ];
-
-        // Act
-        const result = RelativeVolumeFrame.find(frames, "qux");
-
-        // Assert
-        assert.isUndefined(result);
+    public filterFrames_falsyFrames() {
+        // Act/Assert
+        Testers.testTruthy((v: RelativeVolumeFrame[]) => { RelativeVolumeFrame.filterFrames(v); });
     }
 
     @test
-    public find_multipleMatches() {
+    public filterFrames_noFrames() {
         // Arrange
-        const frames = [
-            RelativeVolumeFrame.fromIdentification("fux"),
-            RelativeVolumeFrame.fromIdentification("bux"),
-            RelativeVolumeFrame.fromIdentification("qux"),
-            RelativeVolumeFrame.fromIdentification("qux")
-        ];
+        const frames: Frame[] = [];
 
         // Act
-        const result = RelativeVolumeFrame.find(frames, "qux");
+        const output = RelativeVolumeFrame.filterFrames(frames);
 
         // Assert
-        assert.strictEqual(result, frames[2]);
+        assert.isArray(output);
+        assert.isEmpty(output);
+    }
+
+    @test
+    public filterFrames_noMatch() {
+        // Arrange
+        const frame1 = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.fromUint(123));
+        const frame2 = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.fromUint(234));
+        const frames = [frame1, frame2];
+
+        // Act
+        const result = RelativeVolumeFrame.filterFrames(frames);
+
+        // Assert
+        assert.isArray(result);
+        assert.isEmpty(result);
+    }
+
+    @test
+    public filterFrames_singleMatch() {
+        // Arrange
+        const frame1 = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.fromUint(123));
+        const frame2 = RelativeVolumeFrame.fromIdentification("foo");
+        const frames = [frame1, frame2];
+
+        // Act
+        const result = RelativeVolumeFrame.filterFrames(frames);
+
+        // Assert
+        assert.isArray(result);
+        assert.deepEqual(result, [frame2]);
+    }
+
+    @test
+    public filterFrames_multipleMatches() {
+        // Arrange
+        const frame1 = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.fromUint(123));
+        const frame2 = RelativeVolumeFrame.fromIdentification("foo");
+        const frame3 = RelativeVolumeFrame.fromIdentification("bar");
+
+        const frames = [frame1, frame2, frame3];
+
+        // Act
+        const result = RelativeVolumeFrame.filterFrames(frames);
+
+        // Assert
+        assert.isArray(result);
+        assert.deepEqual(result, [frame2, frame3]);
+    }
+
+    @test
+    public filterFrames_allMatches() {
+        // Arrange
+        const frame1 = RelativeVolumeFrame.fromIdentification("foo");
+        const frame2 = RelativeVolumeFrame.fromIdentification("bar");
+        const frames = [frame1, frame2];
+
+        // Act
+        const result = RelativeVolumeFrame.filterFrames(frames);
+
+        // Assert
+        assert.isArray(result);
+        assert.deepEqual(result, [frame1, frame2]);
     }
 
     @test

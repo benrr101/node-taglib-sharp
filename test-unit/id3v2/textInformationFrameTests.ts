@@ -1,15 +1,26 @@
 import {params, suite, test} from "@testdeck/mocha";
 import {assert} from "chai";
 
+import Frame from "../../src/id3v2/frames/frame";
 import FrameConstructorTests from "./frameConstructorTests";
 import Id3v2Settings from "../../src/id3v2/id3v2Settings";
 import PropertyTests from "../utilities/propertyTests";
 import TextInformationFrame from "../../src/id3v2/frames/textInformationFrame";
+import UnknownFrame from "../../src/id3v2/frames/unknownFrame";
 import {ByteVector, StringType} from "../../src/byteVector";
-import {Frame, FrameClassType} from "../../src/id3v2/frames/frame";
 import {Id3v2FrameFlags, Id3v2FrameHeader} from "../../src/id3v2/frames/frameHeader";
 import {FrameIdentifier, FrameIdentifiers} from "../../src/id3v2/frameIdentifiers";
 import {Testers} from "../utilities/testers";
+
+const assertFrame = (frame: TextInformationFrame, frameId: FrameIdentifier, text: string[], encoding: StringType) => {
+    assert.isOk(frame);
+    assert.instanceOf<TextInformationFrame>(frame, TextInformationFrame);
+    assert.strictEqual(frame.frameId, frameId);
+
+    assert.isOk(frame.text);
+    assert.deepStrictEqual(frame.text, text);
+    assert.strictEqual(frame.textEncoding, encoding);
+}
 
 const getTestFrame = (): TextInformationFrame => {
     const frame = TextInformationFrame.fromIdentifier(FrameIdentifiers.TCOP, StringType.Latin1);
@@ -35,14 +46,7 @@ const getTestFrame = (): TextInformationFrame => {
         const frame = TextInformationFrame.fromIdentifier(FrameIdentifiers.TCOP);
 
         // Assert
-        assert.isOk(frame);
-        assert.strictEqual(frame.frameClassType, FrameClassType.TextInformationFrame);
-        assert.strictEqual(frame.frameId, FrameIdentifiers.TCOP);
-
-        assert.isOk(frame.text);
-        assert.isArray(frame.text);
-        assert.isEmpty(frame.text);
-        assert.strictEqual(frame.textEncoding, Id3v2Settings.defaultEncoding);
+        assertFrame(frame, FrameIdentifiers.TCOP, [], Id3v2Settings.defaultEncoding);
     }
 
     @test
@@ -51,7 +55,7 @@ const getTestFrame = (): TextInformationFrame => {
         const frame = TextInformationFrame.fromIdentifier(FrameIdentifiers.TCOP, StringType.Latin1);
 
         // Assert
-        Id3v2_TextInformationFrame_ConstructorTests.assertFrame(frame, FrameIdentifiers.TCOP, []);
+        assertFrame(frame, FrameIdentifiers.TCOP, [], StringType.Latin1);
     }
 
     @params(2, "v2")
@@ -78,10 +82,7 @@ const getTestFrame = (): TextInformationFrame => {
         const frame = TextInformationFrame.fromFieldBytes(header, fieldBytes, version);
 
         // Assert
-        assert.isOk(frame);
-        assert.strictEqual(frame.frameId, FrameIdentifiers.TCOP);
-        assert.deepEqual(frame.text, []);
-        assert.strictEqual(frame.textEncoding, StringType.UTF16BE);
+        assertFrame(frame, FrameIdentifiers.TCOP, [], StringType.UTF16BE);
     }
 
     @params(2, "v2")
@@ -99,10 +100,7 @@ const getTestFrame = (): TextInformationFrame => {
         const frame = TextInformationFrame.fromFieldBytes(header, fieldBytes, version);
 
         // Assert
-        assert.isOk(frame);
-        assert.strictEqual(frame.frameId, FrameIdentifiers.TCOP);
-        assert.deepEqual(frame.text, []);
-        assert.strictEqual(frame.textEncoding, StringType.UTF16BE);
+        assertFrame(frame, FrameIdentifiers.TCOP, [], StringType.UTF16BE);
     }
 
     @params(2, "v2")
@@ -119,7 +117,7 @@ const getTestFrame = (): TextInformationFrame => {
         const frame = TextInformationFrame.fromFieldBytes(header, fieldBytes, version);
 
         // Assert
-        Id3v2_TextInformationFrame_ConstructorTests.assertFrame(frame, FrameIdentifiers.TALB, ["fux/bux"]);
+        assertFrame(frame, FrameIdentifiers.TALB, ["fux/bux"], StringType.Latin1);
     }
 
     @params(2, "v2")
@@ -136,7 +134,7 @@ const getTestFrame = (): TextInformationFrame => {
         const frame = TextInformationFrame.fromFieldBytes(header, fieldBytes, version);
 
         // Assert
-        Id3v2_TextInformationFrame_ConstructorTests.assertFrame(frame, FrameIdentifiers.TCOM, ["fux", "bux"]);
+        assertFrame(frame, FrameIdentifiers.TCOM, ["fux", "bux"], StringType.Latin1);
     }
 
     @params(2, "v2")
@@ -155,7 +153,7 @@ const getTestFrame = (): TextInformationFrame => {
         const frame = TextInformationFrame.fromFieldBytes(header, fieldBytes, version);
 
         // Assert
-        Id3v2_TextInformationFrame_ConstructorTests.assertFrame(frame, FrameIdentifiers.TCOM, ["foo"]);
+        assertFrame(frame, FrameIdentifiers.TCOM, ["foo"], StringType.Latin1);
     }
 
     @params(StringType.Latin1, "single_byte")
@@ -174,54 +172,16 @@ const getTestFrame = (): TextInformationFrame => {
         const frame = TextInformationFrame.fromFieldBytes(header, fieldBytes, 4);
 
         // Assert
-        Id3v2_TextInformationFrame_ConstructorTests.assertFrame(frame,FrameIdentifiers.TCOP, ["fux", "bux"],encoding);
-    }
-
-    private static assertFrame(
-        frame: TextInformationFrame,
-        frameId: FrameIdentifier,
-        text: string[],
-        encoding: StringType = StringType.Latin1
-    ): void {
-        assert.isOk(frame);
-        assert.strictEqual(frame.frameClassType, FrameClassType.TextInformationFrame);
-        assert.strictEqual(frame.frameId, frameId);
-
-        assert.isOk(frame.text);
-        assert.deepStrictEqual(frame.text, text);
-        assert.strictEqual(frame.textEncoding, encoding);
+        assertFrame(frame,FrameIdentifiers.TCOP, ["fux", "bux"], encoding);
     }
 }
 
 @suite class Id3v2_TextInformationFrame_PropertyTests {
-    @test
-    public getText() {
-        // Arrange
-        const frame = getTestFrame();
-
-        // Act
-        const text = frame.text;
-        text.push("new item");
-
-        // Assert - new item not added to frame
-        assert.notEqual(frame.text, text);
-        assert.strictEqual(2, frame.text.length);
-    }
-
-    @test
-    public setText() {
-        // Arrange
-        const frame = getTestFrame();
-
-        // Act / Assert
-        PropertyTests.propertyRoundTrip((v) => { frame.text = v; }, () => frame.text, ["bux", "fux"]);
-    }
-
     @params(undefined, "undefined")
     @params(null, "null")
     @params([], "empty_array")
     @params(["bar"], "truthy")
-    public setText_values(value: string[]) {
+    public text_values(value: string[]) {
         // Arrange
         const frame = TextInformationFrame.fromIdentifier(FrameIdentifiers.TCOP);
 
@@ -233,30 +193,14 @@ const getTestFrame = (): TextInformationFrame => {
     }
 
     @test
-    public setEncoding_notRead() {
+    public encoding() {
         // Arrange
         const frame = getTestFrame();
+        const get = () => frame.textEncoding;
+        const set = (v: StringType) => { frame.textEncoding = v; };
 
         // Act / Assert
-        PropertyTests.propertyRoundTrip(
-            (v) => { frame.textEncoding = v; },
-            () => frame.textEncoding,
-            StringType.UTF16BE
-        );
-    }
-
-    @test
-    public setEncoding_read() {
-        // Arrange
-        const frame = getTestFrame();
-        const _ = frame.text;   // Force a read
-
-        // Act / Assert
-        PropertyTests.propertyRoundTrip(
-            (v) => { frame.textEncoding = v; },
-            () => frame.textEncoding,
-            StringType.UTF16BE
-        );
+        PropertyTests.propertyRoundTrip(set, get, StringType.UTF16BE);
     }
 }
 
@@ -270,83 +214,163 @@ const getTestFrame = (): TextInformationFrame => {
         const output = <TextInformationFrame> frame.clone();
 
         // Assert
-        assert.ok(output);
-        assert.strictEqual(output.frameClassType, FrameClassType.TextInformationFrame);
-        assert.strictEqual(frame.frameId, FrameIdentifiers.TCOP);
-
-        assert.deepStrictEqual(frame.text, output.text);
-        assert.strictEqual(frame.textEncoding, output.textEncoding);
+        assertFrame(output, frame.frameId, frame.text, frame.textEncoding);
     }
 
     @test
-    public find_falsyFrames() {
-        // Act
-        Testers.testTruthy((v: TextInformationFrame[]) => {
-            TextInformationFrame.findTextInformationFrame(v, FrameIdentifiers.TCOP);
-        });
+    public filterFrames_falsyFrames() {
+        // Act/Assert
+        Testers.testTruthy((v: TextInformationFrame[]) => { TextInformationFrame.filterFrames(v); });
     }
 
     @test
-    public find_invalidIdentity() {
-        // Act
-        Testers.testTruthy((v: FrameIdentifier) => { TextInformationFrame.findTextInformationFrame([], v); });
-    }
-
-    @test
-    public find_emptyFrames_returnsUndefined() {
+    public filterFrames_noIdentifier_noFrames() {
         // Arrange
-        const frames: TextInformationFrame[] = [];
+        const frames: Frame[] = [];
 
         // Act
-        const output = TextInformationFrame.findTextInformationFrame(frames, FrameIdentifiers.TCOM);
+        const output = TextInformationFrame.filterFrames(frames);
 
         // Assert
-        assert.isUndefined(output);
+        assert.isArray(output);
+        assert.isEmpty(output);
     }
 
     @test
-    public find_frameExists() {
+    public filterFrames_noIdentifier_noMatch() {
         // Arrange
-        const frames = [
-            TextInformationFrame.fromIdentifier(FrameIdentifiers.TCOP),
-            TextInformationFrame.fromIdentifier(FrameIdentifiers.TCOM)
-        ];
+        const frame1 = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.fromUint(123));
+        const frame2 = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.fromUint(234));
+        const frames = [frame1, frame2];
 
         // Act
-        const output = TextInformationFrame.findTextInformationFrame(frames, FrameIdentifiers.TCOM);
+        const result = TextInformationFrame.filterFrames(frames);
 
         // Assert
-        assert.isOk(output);
-        assert.equal(output, frames[1]);
+        assert.isArray(result);
+        assert.isEmpty(result);
     }
 
     @test
-    public find_frameExists_returnsFirstMatch() {
+    public filterFrames_noIdentifier_singleMatch() {
+        // Arrange
+        const frame1 = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.fromUint(123));
+        const frame2 = TextInformationFrame.fromIdentifier(FrameIdentifiers.TCOP);
+        const frames = [frame1, frame2];
+
+        // Act
+        const result = TextInformationFrame.filterFrames(frames);
+
+        // Assert
+        assert.isArray(result);
+        assert.deepEqual(result, [frame2]);
+    }
+
+    @test
+    public filterFrames_noIdentifier_multipleMatches() {
+        // Arrange
+        const frame1 = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.fromUint(123));
+        const frame2 = TextInformationFrame.fromIdentifier(FrameIdentifiers.TCOP);
+        const frame3 = TextInformationFrame.fromIdentifier(FrameIdentifiers.TCOP);
+
+        const frames = [frame1, frame2, frame3];
+
+        // Act
+        const result = TextInformationFrame.filterFrames(frames);
+
+        // Assert
+        assert.isArray(result);
+        assert.deepEqual(result, [frame2, frame3]);
+    }
+
+    @test
+    public filterFrames_noIdentifier_allMatches() {
+        // Arrange
+        const frame1 = TextInformationFrame.fromIdentifier(FrameIdentifiers.TCOP);
+        const frame2 = TextInformationFrame.fromIdentifier(FrameIdentifiers.TCOP);
+        const frames = [frame1, frame2];
+
+        // Act
+        const result = TextInformationFrame.filterFrames(frames);
+
+        // Assert
+        assert.isArray(result);
+        assert.deepEqual(result, [frame1, frame2]);
+    }
+
+    @test
+    public filterFrames_withIdentifier_noFrames() {
+        // Arrange
+        const frames: Frame[] = [];
+
+        // Act
+        const output = TextInformationFrame.filterFrames(frames);
+
+        // Assert
+        assert.isArray(output);
+        assert.isEmpty(output);
+    }
+
+    @test
+    public filterFrames_withIdentifier_noMatch() {
         // Arrange
         const frame1 = TextInformationFrame.fromIdentifier(FrameIdentifiers.TCOM);
         const frame2 = TextInformationFrame.fromIdentifier(FrameIdentifiers.TCOM);
         const frames = [frame1, frame2];
 
         // Act
-        const output = TextInformationFrame.findTextInformationFrame(frames, FrameIdentifiers.TCOM);
+        const result = TextInformationFrame.filterFrames(frames, FrameIdentifiers.TCOP);
 
         // Assert
-        assert.strictEqual(output, frame1);
+        assert.isArray(result);
+        assert.isEmpty(result);
     }
 
     @test
-    public find_frameDoesNotExist() {
+    public filterFrames_withIdentifier_singleMatch() {
         // Arrange
-        const frames = [
-            TextInformationFrame.fromIdentifier(FrameIdentifiers.TCOP),
-            TextInformationFrame.fromIdentifier(FrameIdentifiers.TCOM)
-        ];
+        const frame1 = TextInformationFrame.fromIdentifier(FrameIdentifiers.TCOM);
+        const frame2 = TextInformationFrame.fromIdentifier(FrameIdentifiers.TCOP);
+        const frames = [frame1, frame2];
 
         // Act
-        const output = TextInformationFrame.findTextInformationFrame(frames, FrameIdentifiers.TALB);
+        const result = TextInformationFrame.filterFrames(frames, FrameIdentifiers.TCOP);
 
         // Assert
-        assert.isUndefined(output);
+        assert.isArray(result);
+        assert.deepEqual(result, [frame2]);
+    }
+
+    @test
+    public filterFrames_withIdentifier_multipleMatches() {
+        // Arrange
+        const frame1 = TextInformationFrame.fromIdentifier(FrameIdentifiers.TCOM);
+        const frame2 = TextInformationFrame.fromIdentifier(FrameIdentifiers.TCOP);
+        const frame3 = TextInformationFrame.fromIdentifier(FrameIdentifiers.TCOP);
+
+        const frames = [frame1, frame2, frame3];
+
+        // Act
+        const result = TextInformationFrame.filterFrames(frames, FrameIdentifiers.TCOP);
+
+        // Assert
+        assert.isArray(result);
+        assert.deepEqual(result, [frame2, frame3]);
+    }
+
+    @test
+    public filterFrames_withIdentifier_allMatches() {
+        // Arrange
+        const frame1 = TextInformationFrame.fromIdentifier(FrameIdentifiers.TCOP);
+        const frame2 = TextInformationFrame.fromIdentifier(FrameIdentifiers.TCOP);
+        const frames = [frame1, frame2];
+
+        // Act
+        const result = TextInformationFrame.filterFrames(frames, FrameIdentifiers.TCOP);
+
+        // Assert
+        assert.isArray(result);
+        assert.deepEqual(result, [frame1, frame2]);
     }
 
     @params(2, "v2")

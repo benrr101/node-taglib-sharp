@@ -1,9 +1,9 @@
+import Frame from "./frame";
 import {ByteVector, StringType} from "../../byteVector";
 import {CorruptFileError} from "../../errors";
-import {Frame, FrameClassType} from "./frame";
 import {Id3v2FrameHeader} from "./frameHeader";
 import {FrameIdentifiers} from "../frameIdentifiers";
-import {Guards} from "../../utils";
+import {ArrayUtils, Guards} from "../../utils";
 
 /**
  * Implements support for ID3v2 Unique File Identifier (UFID) frames.
@@ -71,9 +71,6 @@ export default class UniqueFileIdentifierFrame extends Frame {
 
     // #region Properties
 
-    /** @inheritDoc */
-    public get frameClassType(): FrameClassType { return FrameClassType.UniqueFileIdentifierFrame; }
-
     /**
      * Gets the owner of this unique ID.
      */
@@ -98,15 +95,9 @@ export default class UniqueFileIdentifierFrame extends Frame {
 
     // #region Methods
 
-    /**
-     * Gets a unique file identifier frame from a list of frames
-     * @param frames List of frames to search
-     * @param owner Owner to match
-     * @returns Frame containing the matching user, `undefined` if a match was not found
-     */
-    public static find(frames: UniqueFileIdentifierFrame[], owner: string): UniqueFileIdentifierFrame {
+    public static filterFrames(frames: Frame[]): UniqueFileIdentifierFrame[] {
         Guards.truthy(frames, "frames");
-        return frames.find((f) => f.owner === owner);
+        return ArrayUtils.ofType(frames, UniqueFileIdentifierFrame);
     }
 
     /** @inheritDoc */

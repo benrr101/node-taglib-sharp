@@ -1,8 +1,8 @@
+import Frame from "./frame";
 import {ByteVector} from "../../byteVector";
-import {Frame, FrameClassType} from "./frame";
 import {Id3v2FrameHeader} from "./frameHeader";
 import {FrameIdentifiers} from "../frameIdentifiers";
-import {Guards} from "../../utils";
+import {ArrayUtils, Guards} from "../../utils";
 
 /**
  * Class extends {@link Frame}, implementing support for ID3v2 Music CD Identifier (MCDI) frames.
@@ -47,9 +47,6 @@ export default class MusicCdIdentifierFrame extends Frame {
         return frame;
     }
 
-    /** @inheritDoc */
-    public get frameClassType(): FrameClassType { return FrameClassType.MusicCdIdentifierFrame; }
-
     /**
      * Gets the identifier data stored in the current instance
      */
@@ -59,6 +56,11 @@ export default class MusicCdIdentifierFrame extends Frame {
      * @param value ByteVector containing the identifier stored in the current instance
      */
     public set data(value: ByteVector) { this._data = value; }
+
+    public static filterFrames(frames: Frame[]): MusicCdIdentifierFrame[] {
+        Guards.truthy(frames, "frames");
+        return ArrayUtils.ofType(frames, MusicCdIdentifierFrame);
+    }
 
     /** @inheritDoc */
     public clone(): MusicCdIdentifierFrame {

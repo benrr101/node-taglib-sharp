@@ -1,7 +1,10 @@
 import {params, suite, test} from "@testdeck/mocha";
 import {assert} from "chai";
 
+import AttachmentFrame from "../../src/id3v2/frames/attachmentFrame";
 import CommentsFrame from "../../src/id3v2/frames/commentsFrame";
+import Frame from "../../src/id3v2/frames/frame";
+import MusicCdIdentifierFrame from "../../src/id3v2/frames/musicCdIdentifierFrame";
 import PlayCountFrame from "../../src/id3v2/frames/playCountFrame";
 import PopularimeterFrame from "../../src/id3v2/frames/popularimeterFrame";
 import PrivateFrame from "../../src/id3v2/frames/privateFrame";
@@ -17,7 +20,6 @@ import UserUrlLinkFrame from "../../src/id3v2/frames/userUrlLinkFrame";
 import {ByteVector, StringType} from "../../src/byteVector";
 import {EventTimeCodeFrame} from "../../src/id3v2/frames/eventTimeCodeFrame";
 import {File} from "../../src/file";
-import {Frame, FrameClassType} from "../../src/id3v2/frames/frame";
 import {FrameCreator, Id3v2FrameFactory} from "../../src/id3v2/frames/frameFactory";
 import {Id3v2FrameFlags, Id3v2FrameHeader} from "../../src/id3v2/frames/frameHeader";
 import {FrameIdentifier, FrameIdentifiers} from "../../src/id3v2/frameIdentifiers";
@@ -113,6 +115,9 @@ import {NumberUtils} from "../../src/utils";
 
         // Act
         const result = Id3v2FrameFactory.createFrameFromFile(file, 0, version, false);
+
+        // Assert
+        assert.isUndefined(result);
     }
 
     @test
@@ -127,7 +132,7 @@ import {NumberUtils} from "../../src/utils";
         const output = Id3v2FrameFactory.createFrameFromFile(file, 0, 4, false);
 
         // Assert
-        FrameFactoryTests.validateOutput(output, FrameClassType.AttachmentFrame, 4);
+        FrameFactoryTests.validateOutput(output, AttachmentFrame, 4);
     }
 
     @test
@@ -140,7 +145,7 @@ import {NumberUtils} from "../../src/utils";
         const output = Id3v2FrameFactory.createFrameFromFile(file, 0, 4, false);
 
         // Assert
-        FrameFactoryTests.validateOutput(output, FrameClassType.CommentsFrame, 4);
+        FrameFactoryTests.validateOutput(output, CommentsFrame, 4);
     }
 
     @test
@@ -153,7 +158,7 @@ import {NumberUtils} from "../../src/utils";
         const output = Id3v2FrameFactory.createFrameFromFile(file, 0, 4, false);
 
         // Assert
-        FrameFactoryTests.validateOutput(output, FrameClassType.EventTimeCodeFrame, 4);
+        FrameFactoryTests.validateOutput(output, EventTimeCodeFrame, 4);
     }
 
     @test
@@ -168,7 +173,7 @@ import {NumberUtils} from "../../src/utils";
         const output = Id3v2FrameFactory.createFrameFromFile(file, 0, 4, false);
 
         // Assert
-        FrameFactoryTests.validateOutput(output, FrameClassType.AttachmentFrame, 4);
+        FrameFactoryTests.validateOutput(output, AttachmentFrame, 4);
     }
 
     @test
@@ -183,7 +188,7 @@ import {NumberUtils} from "../../src/utils";
         const output = Id3v2FrameFactory.createFrameFromFile(file, 0, 4, false);
 
         // Assert
-        FrameFactoryTests.validateOutput(output, FrameClassType.MusicCdIdentifierFrame, 4);
+        FrameFactoryTests.validateOutput(output, MusicCdIdentifierFrame, 4);
     }
 
     @test
@@ -196,7 +201,7 @@ import {NumberUtils} from "../../src/utils";
         const output = Id3v2FrameFactory.createFrameFromFile(file, 0, 4, false);
 
         // Assert
-        FrameFactoryTests.validateOutput(output, FrameClassType.PlayCountFrame, 4);
+        FrameFactoryTests.validateOutput(output, PlayCountFrame, 4);
     }
 
     @test
@@ -209,7 +214,7 @@ import {NumberUtils} from "../../src/utils";
         const output = Id3v2FrameFactory.createFrameFromFile(file, 0, 4, false);
 
         // Assert
-        FrameFactoryTests.validateOutput(output, FrameClassType.PopularimeterFrame, 4);
+        FrameFactoryTests.validateOutput(output, PopularimeterFrame, 4);
     }
 
     @test
@@ -222,7 +227,7 @@ import {NumberUtils} from "../../src/utils";
         const output = Id3v2FrameFactory.createFrameFromFile(file, 0, 4, false);
 
         // Assert
-        FrameFactoryTests.validateOutput(output, FrameClassType.PrivateFrame, 4);
+        FrameFactoryTests.validateOutput(output, PrivateFrame, 4);
     }
 
     @test
@@ -235,7 +240,7 @@ import {NumberUtils} from "../../src/utils";
         const output = Id3v2FrameFactory.createFrameFromFile(file, 0, 4, false);
 
         // Assert
-        FrameFactoryTests.validateOutput(output, FrameClassType.RelativeVolumeFrame, 4);
+        FrameFactoryTests.validateOutput(output, RelativeVolumeFrame, 4);
     }
 
     @test
@@ -248,7 +253,7 @@ import {NumberUtils} from "../../src/utils";
         const output = Id3v2FrameFactory.createFrameFromFile(file, 0, 4, false);
 
         // Assert
-        FrameFactoryTests.validateOutput(output, FrameClassType.SynchronizedLyricsFrame, 4);
+        FrameFactoryTests.validateOutput(output, SynchronizedLyricsFrame, 4);
     }
 
     @test
@@ -262,7 +267,7 @@ import {NumberUtils} from "../../src/utils";
         const output = Id3v2FrameFactory.createFrameFromFile(file, 0, 4, false);
 
         // Assert
-        FrameFactoryTests.validateOutput(output, FrameClassType.TextInformationFrame, 4);
+        FrameFactoryTests.validateOutput(output, TextInformationFrame, 4);
     }
 
     @test
@@ -275,7 +280,7 @@ import {NumberUtils} from "../../src/utils";
         const output = Id3v2FrameFactory.createFrameFromFile(file, 0, 4, false);
 
         // Assert
-        FrameFactoryTests.validateOutput(output, FrameClassType.UserTextInformationFrame, 4);
+        FrameFactoryTests.validateOutput(output, UserTextInformationFrame, 4);
     }
 
     @test
@@ -288,7 +293,7 @@ import {NumberUtils} from "../../src/utils";
         const output = Id3v2FrameFactory.createFrameFromFile(file, 0, 4, false);
 
         // Assert
-        FrameFactoryTests.validateOutput(output, FrameClassType.UniqueFileIdentifierFrame, 4);
+        FrameFactoryTests.validateOutput(output, UniqueFileIdentifierFrame, 4);
     }
 
     @test
@@ -304,7 +309,7 @@ import {NumberUtils} from "../../src/utils";
         const output = Id3v2FrameFactory.createFrameFromFile(file, 2, 4, false);
 
         // Assert
-        FrameFactoryTests.validateOutput(output, FrameClassType.UniqueFileIdentifierFrame, 4);
+        FrameFactoryTests.validateOutput(output, UniqueFileIdentifierFrame, 4);
     }
 
     @test
@@ -319,13 +324,13 @@ import {NumberUtils} from "../../src/utils";
         const output = Id3v2FrameFactory.createFrameFromFile(file, 0, 4, false);
 
         // Assert
-        FrameFactoryTests.validateOutput(output, FrameClassType.UnknownFrame, 4);
+        FrameFactoryTests.validateOutput(output, UnknownFrame, 4);
     }
 
     @test
     public createFrameFromFile_urlFrame() {
         // Arrange
-        const frame = UrlLinkFrame.fromIdentity(FrameIdentifiers.WCOM);
+        const frame = UrlLinkFrame.fromIdentifier(FrameIdentifiers.WCOM);
         frame.text = "foo";
         const data = frame.render(4);
         const file = TestFile.getFile(data);
@@ -334,7 +339,7 @@ import {NumberUtils} from "../../src/utils";
         const output = Id3v2FrameFactory.createFrameFromFile(file, 0, 4, false);
 
         // Assert
-        FrameFactoryTests.validateOutput(output, FrameClassType.UrlLinkFrame, 4);
+        FrameFactoryTests.validateOutput(output, UrlLinkFrame, 4);
     }
 
     public createFrameFromFile_user() {
@@ -346,7 +351,7 @@ import {NumberUtils} from "../../src/utils";
         const output = Id3v2FrameFactory.createFrameFromFile(file, 0, 4, false);
 
         // Assert
-        FrameFactoryTests.validateOutput(output, FrameClassType.TermsOfUseFrame, 4);
+        FrameFactoryTests.validateOutput(output, TermsOfUseFrame, 4);
     }
 
     @test
@@ -359,7 +364,7 @@ import {NumberUtils} from "../../src/utils";
         const output = Id3v2FrameFactory.createFrameFromFile(file, 0, 4, false);
 
         // Assert
-        FrameFactoryTests.validateOutput(output, FrameClassType.UnsynchronizedLyricsFrame, 4);
+        FrameFactoryTests.validateOutput(output, UnsynchronizedLyricsFrame, 4);
     }
 
     @test
@@ -372,7 +377,7 @@ import {NumberUtils} from "../../src/utils";
         const output = Id3v2FrameFactory.createFrameFromFile(file, 0, 4, false);
 
         // Assert
-        FrameFactoryTests.validateOutput(output, FrameClassType.UserUrlLinkFrame, 4);
+        FrameFactoryTests.validateOutput(output, UserUrlLinkFrame, 4);
     }
 
     @test
@@ -393,7 +398,7 @@ import {NumberUtils} from "../../src/utils";
             const output = Id3v2FrameFactory.createFrameFromFile(file, 0, 3, false);
 
             // Assert
-            FrameFactoryTests.validateOutput(output, FrameClassType.UnknownFrame, data.length);
+            FrameFactoryTests.validateOutput(output, UnknownFrame, data.length);
             mockCreator.verify(
                 (c) => c(It.isValue<ByteVector>(fieldBytes), It.isValue(0), It.isAny(), It.isValue(3)),
                 Times.atLeastOnce()
@@ -461,7 +466,7 @@ import {NumberUtils} from "../../src/utils";
             const output = Id3v2FrameFactory.createFrameFromFile(file, 0, 4, false);
 
             // Assert
-            FrameFactoryTests.validateOutput(output, FrameClassType.UnknownFrame, data.length);
+            FrameFactoryTests.validateOutput(output, UnknownFrame, data.length);
             assert.notStrictEqual(output.frame, frame);
             assert.strictEqual(output.totalSize, data.length);
 
@@ -642,7 +647,7 @@ import {NumberUtils} from "../../src/utils";
         const output = Id3v2FrameFactory.createFrameFromTagBytes(data, 0, 4, false);
 
         // Assert
-        FrameFactoryTests.validateOutput(output, FrameClassType.AttachmentFrame, 4);
+        FrameFactoryTests.validateOutput(output, AttachmentFrame, 4);
     }
 
     @test
@@ -654,7 +659,7 @@ import {NumberUtils} from "../../src/utils";
         const output = Id3v2FrameFactory.createFrameFromTagBytes(data, 0, 4, false);
 
         // Assert
-        FrameFactoryTests.validateOutput(output, FrameClassType.CommentsFrame, 4);
+        FrameFactoryTests.validateOutput(output, CommentsFrame, 4);
     }
 
     @test
@@ -666,7 +671,7 @@ import {NumberUtils} from "../../src/utils";
         const output = Id3v2FrameFactory.createFrameFromTagBytes(data, 0, 4, false);
 
         // Assert
-        FrameFactoryTests.validateOutput(output, FrameClassType.EventTimeCodeFrame, 4);
+        FrameFactoryTests.validateOutput(output, EventTimeCodeFrame, 4);
     }
 
     @test
@@ -681,7 +686,7 @@ import {NumberUtils} from "../../src/utils";
         const output = Id3v2FrameFactory.createFrameFromTagBytes(data, 0, 4, false);
 
         // Assert
-        FrameFactoryTests.validateOutput(output, FrameClassType.AttachmentFrame, 4);
+        FrameFactoryTests.validateOutput(output, AttachmentFrame, 4);
     }
 
     @test
@@ -696,7 +701,7 @@ import {NumberUtils} from "../../src/utils";
         const output = Id3v2FrameFactory.createFrameFromTagBytes(data, 0, 4, false);
 
         // Assert
-        FrameFactoryTests.validateOutput(output, FrameClassType.MusicCdIdentifierFrame, 4);
+        FrameFactoryTests.validateOutput(output, MusicCdIdentifierFrame, 4);
     }
 
     @test
@@ -708,7 +713,7 @@ import {NumberUtils} from "../../src/utils";
         const output = Id3v2FrameFactory.createFrameFromTagBytes(data, 0, 4, false);
 
         // Assert
-        FrameFactoryTests.validateOutput(output, FrameClassType.PlayCountFrame, 4);
+        FrameFactoryTests.validateOutput(output, PlayCountFrame, 4);
     }
 
     @test
@@ -720,7 +725,7 @@ import {NumberUtils} from "../../src/utils";
         const output = Id3v2FrameFactory.createFrameFromTagBytes(data, 0, 4, false);
 
         // Assert
-        FrameFactoryTests.validateOutput(output, FrameClassType.PopularimeterFrame, 4);
+        FrameFactoryTests.validateOutput(output, PopularimeterFrame, 4);
     }
 
     @test
@@ -732,7 +737,7 @@ import {NumberUtils} from "../../src/utils";
         const output = Id3v2FrameFactory.createFrameFromTagBytes(data, 0, 4, false);
 
         // Assert
-        FrameFactoryTests.validateOutput(output, FrameClassType.PrivateFrame, 4);
+        FrameFactoryTests.validateOutput(output, PrivateFrame, 4);
     }
 
     @test
@@ -744,7 +749,7 @@ import {NumberUtils} from "../../src/utils";
         const output = Id3v2FrameFactory.createFrameFromTagBytes(data, 0, 4, false);
 
         // Assert
-        FrameFactoryTests.validateOutput(output, FrameClassType.RelativeVolumeFrame, 4);
+        FrameFactoryTests.validateOutput(output, RelativeVolumeFrame, 4);
     }
 
     @test
@@ -756,7 +761,7 @@ import {NumberUtils} from "../../src/utils";
         const output = Id3v2FrameFactory.createFrameFromTagBytes(data, 0, 4, false);
 
         // Assert
-        FrameFactoryTests.validateOutput(output, FrameClassType.SynchronizedLyricsFrame, 4);
+        FrameFactoryTests.validateOutput(output, SynchronizedLyricsFrame, 4);
     }
 
     @test
@@ -770,7 +775,7 @@ import {NumberUtils} from "../../src/utils";
         const output = Id3v2FrameFactory.createFrameFromTagBytes(data, 0, 4, false);
 
         // Assert
-        FrameFactoryTests.validateOutput(output, FrameClassType.TextInformationFrame, 4);
+        FrameFactoryTests.validateOutput(output, TextInformationFrame, 4);
     }
 
     @test
@@ -782,7 +787,7 @@ import {NumberUtils} from "../../src/utils";
         const output = Id3v2FrameFactory.createFrameFromTagBytes(data, 0, 4, false);
 
         // Assert
-        FrameFactoryTests.validateOutput(output, FrameClassType.UserTextInformationFrame, 4);
+        FrameFactoryTests.validateOutput(output, UserTextInformationFrame, 4);
     }
 
     @test
@@ -794,7 +799,7 @@ import {NumberUtils} from "../../src/utils";
         const output = Id3v2FrameFactory.createFrameFromTagBytes(data, 0, 4, false);
 
         // Assert
-        FrameFactoryTests.validateOutput(output, FrameClassType.UniqueFileIdentifierFrame, 4);
+        FrameFactoryTests.validateOutput(output, UniqueFileIdentifierFrame, 4);
     }
 
     @test
@@ -809,7 +814,7 @@ import {NumberUtils} from "../../src/utils";
         const output = Id3v2FrameFactory.createFrameFromTagBytes(data, 0, 4, false);
 
         // Assert
-        FrameFactoryTests.validateOutput(output, FrameClassType.UnknownFrame, 4);
+        FrameFactoryTests.validateOutput(output, UnknownFrame, 4);
     }
 
     @test
@@ -827,13 +832,13 @@ import {NumberUtils} from "../../src/utils";
         const output = Id3v2FrameFactory.createFrameFromTagBytes(data, 10, 4, false);
 
         // Assert
-        FrameFactoryTests.validateOutput(output, FrameClassType.UnknownFrame, 4);
+        FrameFactoryTests.validateOutput(output, UnknownFrame, 4);
     }
 
     @test
     public createFrameFromTagBytes_urlFrame() {
         // Arrange
-        const frame = UrlLinkFrame.fromIdentity(FrameIdentifiers.WCOM);
+        const frame = UrlLinkFrame.fromIdentifier(FrameIdentifiers.WCOM);
         frame.text = "foo";
         const data = frame.render(4);
 
@@ -841,7 +846,7 @@ import {NumberUtils} from "../../src/utils";
         const output = Id3v2FrameFactory.createFrameFromTagBytes(data, 0, 4, false);
 
         // Assert
-        FrameFactoryTests.validateOutput(output, FrameClassType.UrlLinkFrame, 4);
+        FrameFactoryTests.validateOutput(output, UrlLinkFrame, 4);
     }
 
     @test
@@ -853,7 +858,7 @@ import {NumberUtils} from "../../src/utils";
         const output = Id3v2FrameFactory.createFrameFromTagBytes(data, 0, 4, false);
 
         // Assert
-        FrameFactoryTests.validateOutput(output, FrameClassType.TermsOfUseFrame, 4);
+        FrameFactoryTests.validateOutput(output, TermsOfUseFrame, 4);
     }
 
     @test
@@ -865,7 +870,7 @@ import {NumberUtils} from "../../src/utils";
         const output = Id3v2FrameFactory.createFrameFromTagBytes(data, 0, 4, false);
 
         // Assert
-        FrameFactoryTests.validateOutput(output, FrameClassType.UnsynchronizedLyricsFrame, 4);
+        FrameFactoryTests.validateOutput(output, UnsynchronizedLyricsFrame, 4);
     }
 
     @test
@@ -877,7 +882,7 @@ import {NumberUtils} from "../../src/utils";
         const output = Id3v2FrameFactory.createFrameFromTagBytes(data, 0, 4, false);
 
         // Assert
-        FrameFactoryTests.validateOutput(output, FrameClassType.UserUrlLinkFrame, 4);
+        FrameFactoryTests.validateOutput(output, UserUrlLinkFrame, 4);
     }
 
     @test
@@ -897,7 +902,7 @@ import {NumberUtils} from "../../src/utils";
             const output = Id3v2FrameFactory.createFrameFromTagBytes(data, 0, 3, false);
 
             // Assert
-            FrameFactoryTests.validateOutput(output, FrameClassType.UnknownFrame, data.length);
+            FrameFactoryTests.validateOutput(output, UnknownFrame, data.length);
             mockCreator.verify(
                 (c) => c(It.isValue<ByteVector>(fieldBytes), It.isValue(0), It.isAny(), It.isValue(3)),
                 Times.atLeastOnce()
@@ -963,7 +968,7 @@ import {NumberUtils} from "../../src/utils";
             const output = Id3v2FrameFactory.createFrameFromTagBytes(data, 0, 4, false);
 
             // Assert
-            FrameFactoryTests.validateOutput(output, FrameClassType.UnknownFrame, data.length);
+            FrameFactoryTests.validateOutput(output, UnknownFrame, data.length);
             assert.notStrictEqual(output.frame, frame);
             assert.strictEqual(output.totalSize, data.length);
 
@@ -1075,14 +1080,15 @@ import {NumberUtils} from "../../src/utils";
 
     private static validateOutput(
         output: {frame: Frame; totalSize: number},
-        classType: FrameClassType,
+        // eslint-disable-next-line @typescript-eslint/ban-types
+        classType: Function,
         id3v2Version: number
     ) {
         assert.ok(output);
 
         const frame = output.frame;
         assert.ok(frame);
-        assert.strictEqual(frame.frameClassType, classType);
+        assert.instanceOf(frame, classType);
 
         const expectedSize = frame.size + Id3v2FrameHeader.getBaseSize(id3v2Version)
         assert.strictEqual(output.totalSize, expectedSize);

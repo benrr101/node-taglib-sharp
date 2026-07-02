@@ -1,10 +1,10 @@
+import Frame from "./frame";
 import Id3v2Settings from "../id3v2Settings";
 import UrlLinkFrame from "./urlLinkFrame";
 import {ByteVector, StringType} from "../../byteVector";
-import {FrameClassType} from "./frame";
 import {Id3v2FrameHeader} from "./frameHeader";
 import {FrameIdentifiers} from "../frameIdentifiers";
-import {Guards} from "../../utils";
+import {ArrayUtils, Guards} from "../../utils";
 
 /**
  * Provides support for ID3v2 User URL Link frames (WXXX).
@@ -90,9 +90,6 @@ export default class UserUrlLinkFrame extends UrlLinkFrame {
 
     // #region Properties
 
-    /** @inheritDoc */
-    public get frameClassType(): FrameClassType { return FrameClassType.UserUrlLinkFrame; }
-
     /**
      * Gets the description stored in the current instance.
      */
@@ -118,17 +115,9 @@ export default class UserUrlLinkFrame extends UrlLinkFrame {
 
     // #region Methods
 
-    /**
-     * Gets a frame from a list of frames.
-     * @param frames List of frames to search
-     * @param description Description of the frame to match
-     * @returns Frame containing the matching user, `undefined` if a match was not found
-     */
-    public static findUserUrlLinkFrame(frames: UserUrlLinkFrame[], description: string): UserUrlLinkFrame {
+    public static filterFrames(frames: Frame[]): UserUrlLinkFrame[] {
         Guards.truthy(frames, "frames");
-        Guards.truthy(description, "description");
-
-        return frames.find((f) => f.description === description);
+        return ArrayUtils.ofType(frames, UserUrlLinkFrame);
     }
 
     /** @inheritDoc */

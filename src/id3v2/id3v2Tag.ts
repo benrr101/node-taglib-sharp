@@ -1,5 +1,6 @@
 import AttachmentFrame from "./frames/attachmentFrame";
 import CommentsFrame from "./frames/commentsFrame";
+import Frame from "./frames/frame";
 import GenreFrame from "./frames/genreFrame";
 import Id3v2ExtendedHeader from "./id3v2ExtendedHeader";
 import Id3v2TagFooter from "./id3v2TagFooter";
@@ -13,7 +14,6 @@ import UserTextInformationFrame from "./frames/userTextInformationFrame";
 import {ByteVector, StringType} from "../byteVector";
 import {CorruptFileError, NotImplementedError, NotSupportedError} from "../errors";
 import {File, ReadStyle} from "../file";
-import {Frame, FrameClassType} from "./frames/frame";
 import {Id3v2FrameFactory} from "./frames/frameFactory";
 import {FrameIdentifier, FrameIdentifiers} from "./frameIdentifiers";
 import {Id3v2FrameFlags} from "./frames/frameHeader";
@@ -196,18 +196,9 @@ export default class Id3v2Tag extends Tag {
         // Migrate any incompatible frames that have direct migrations
         if (value === 4 && (originalVersion === 2 || originalVersion === 3)) {
             // * TYER, etc -> TDRC
-            const tyerFrames = this.getFramesByIdentifier<TextInformationFrame>(
-                FrameClassType.TextInformationFrame,
-                FrameIdentifiers.TYER
-            );
-            const tdatFrames = this.getFramesByIdentifier<TextInformationFrame>(
-                FrameClassType.TextInformationFrame,
-                FrameIdentifiers.TDAT
-            );
-            const timeFrames = this.getFramesByIdentifier<TextInformationFrame>(
-                FrameClassType.TextInformationFrame,
-                FrameIdentifiers.TIME
-            );
+            const tyerFrames = TextInformationFrame.filterFrames(this._frameList, FrameIdentifiers.TYER);
+            const tdatFrames = TextInformationFrame.filterFrames(this._frameList, FrameIdentifiers.TDAT);
+            const timeFrames = TextInformationFrame.filterFrames(this._frameList, FrameIdentifiers.TIME);
             if (tyerFrames.length > 0) {
                 this.removeFrames(FrameIdentifiers.TYER);
                 this.removeFrames(FrameIdentifiers.TDAT);
@@ -227,10 +218,7 @@ export default class Id3v2Tag extends Tag {
             }
         } else if (originalVersion === 4 && (value === 2 || value === 3)) {
             // * TDRC -> TYER, etc
-            const tdrcFrames = this.getFramesByIdentifier<TextInformationFrame>(
-                FrameClassType.TextInformationFrame,
-                FrameIdentifiers.TDRC
-            );
+            const tdrcFrames = TextInformationFrame.filterFrames(this._frameList, FrameIdentifiers.TDRC);
             if (tdrcFrames.length > 0) {
                 const tdrcText = tdrcFrames[0].text[0];
                 this.removeFrames(FrameIdentifiers.TDRC);
@@ -466,26 +454,22 @@ export default class Id3v2Tag extends Tag {
      * @inheritDoc
      * @remarks Stored in the `COMM` frame
      */
-    get comment(): string {
-        const frames = this.getFramesByClassType<CommentsFrame>(FrameClassType.CommentsFrame);
-        const f = CommentsFrame.findPreferred(frames, "", Id3v2Tag.language);
-        return f ? f.toString() : undefined;
+    get comment(): string|undefined {
+        return this.getCommentFramePreferred("", Id3v2Tag.language)?.toString();
     }
     /**
      * @inheritDoc
      * @remarks Stored in the `COMM` frame
      */
     set comment(value: string) {
-        const commentFrames = this.getFramesByClassType<CommentsFrame>(FrameClassType.CommentsFrame);
-
-        // Delete the "" comment frames that are in this language
+        // Delete the "" comment frames that are in this language @TODO: That's not what this does
         if (!value) {
             this.removeFrames(FrameIdentifiers.COMM);
             return;
         }
 
         // Create or update the preferred comments frame
-        let frame = CommentsFrame.findPreferred(commentFrames, "", Id3v2Tag.language);
+        let frame = this.getCommentFramePreferred("", Id3v2Tag.language);
         if (!frame) {
             frame = CommentsFrame.fromDescription("", Id3v2Tag.language);
             this.addFrame(frame);
@@ -555,20 +539,14 @@ export default class Id3v2Tag extends Tag {
         }
 
         // Case 1: We have a TDRC frame (v2.4), preferentially replace contents with year
-        const tdrcFrames = this.getFramesByIdentifier<TextInformationFrame>(
-            FrameClassType.TextInformationFrame,
-            FrameIdentifiers.TDRC
-        );
+        const tdrcFrames = TextInformationFrame.filterFrames(this._frameList, FrameIdentifiers.TDRC);
         if (tdrcFrames.length > 0) {
             this.setNumberFrame(FrameIdentifiers.TDRC, value, 0);
             return;
         }
 
         // Case 2: We have a TYER/TYE frame (v2.3/v2.2)
-        const tyerFrames = this.getFramesByIdentifier<TextInformationFrame>(
-            FrameClassType.TextInformationFrame,
-            FrameIdentifiers.TYER
-        );
+        const tyerFrames = TextInformationFrame.filterFrames(this._frameList, FrameIdentifiers.TYER);
         if (tyerFrames.length > 0) {
             this.setNumberFrame(FrameIdentifiers.TYER, value, 0);
             return;
@@ -632,26 +610,21 @@ export default class Id3v2Tag extends Tag {
      * @remarks Stored in the `USLT` frame
      */
     get lyrics(): string {
-        const frames = this.getFramesByClassType<UnsynchronizedLyricsFrame>(FrameClassType.UnsynchronizedLyricsFrame);
-        const frame = UnsynchronizedLyricsFrame.findPreferred(frames, "", Id3v2Tag.language);
-        return frame ? frame.toString() : undefined;
+        return this.getLyricsFramePreferred("", Id3v2Tag.language)?.toString();
     }
     /**
      * @inheritDoc
      * @remarks Stored in the `USLT` frame
      */
     set lyrics(value: string) {
-        const frames = this.getFramesByClassType<UnsynchronizedLyricsFrame>(FrameClassType.UnsynchronizedLyricsFrame);
-
-        // Delete all unsynchronized lyrics frames in this language
-        // @TODO: Verify that deleting only this language is the correct behavior
+        // Delete all unsynchronized lyrics frames in this language @TODO: That's not what this does.
         if (!value) {
             this.removeFrames(FrameIdentifiers.USLT);
             return;
         }
 
         // Find or create the appropriate unsynchronized lyrics frame
-        let frame = UnsynchronizedLyricsFrame.find(frames, "", Id3v2Tag.language);
+        let frame = this.getLyricsFramePreferred("", Id3v2Tag.language);
         if (!frame) {
             frame = UnsynchronizedLyricsFrame.fromData("", Id3v2Tag.language);
             this.addFrame(frame);
@@ -993,7 +966,7 @@ export default class Id3v2Tag extends Tag {
      * @remarks Stored in the `APIC` frame
      */
     get pictures(): IPicture[] {
-        return this.getFramesByClassType<AttachmentFrame>(FrameClassType.AttachmentFrame).slice(0);
+        return AttachmentFrame.filterFrames(this._frameList).slice(0);
     }
     /**
      * @inheritDoc
@@ -1070,38 +1043,6 @@ export default class Id3v2Tag extends Tag {
     }
 
     /**
-     * Gets all frames with a specific frame class type.
-     * NOTE: This diverges from the .NET implementation due to the inability to do type checking
-     * like in .NET (ie `x is y`). Instead, type guards are added to each frame class which provides
-     * the same functionality.
-     * @param type Class type of the frame to find
-     * @returns TFrame[] Array of frames with the specified class type
-     */
-    public getFramesByClassType<TFrame extends Frame>(type: FrameClassType): TFrame[] {
-        // TODO: Can we access static properties from TFrame? if so, can we use that to get the frame class type?
-        Guards.notNullOrUndefined(type, "type");
-
-        return <TFrame[]> this._frameList.filter((f) => f && f.frameClassType === type);
-    }
-
-    /**
-     * Gets a list of frames with the specified identifier contained in the current instance.
-     * NOTE: This implementation deviates a bit from the original .NET implementation due to the
-     * inability to do `x is y` comparison by types in typescript without type guards.
-     * `type` is the type guard for differentiating frame types. If all frames are needed
-     * use {@link frames}.
-     * @param type Type of frame to return
-     * @param ident Identifier of the frame
-     * @returns TFrame[] Array of frames with the desired frame identifier
-     */
-    public getFramesByIdentifier<TFrame extends Frame>(type: FrameClassType, ident: FrameIdentifier): TFrame[] {
-        Guards.notNullOrUndefined(type, "type");
-        Guards.truthy(ident, "ident");
-
-        return <TFrame[]> this._frameList.filter((f) => f && f.frameClassType === type && f.frameId === ident);
-    }
-
-    /**
      * Gets the text value from a specified text information frame (or URL frame if that was
      * specified).
      * @param ident Frame identifier of the text information frame to get the value from
@@ -1112,14 +1053,11 @@ export default class Id3v2Tag extends Tag {
 
         let frame: Frame;
         if (ident.isUrlFrame) {
-            const frames = this.getFramesByClassType<UrlLinkFrame>(FrameClassType.UrlLinkFrame);
-            frame = UrlLinkFrame.findUrlLinkFrame(frames, ident);
+            frame = UrlLinkFrame.filterFrames(this._frameList, ident)[0];
         } else if (ident === FrameIdentifiers.TCON) {
-            const frames = this.getFramesByClassType<GenreFrame>(FrameClassType.GenreFrame);
-            frame = GenreFrame.findGenreFrame(frames);
+            frame = GenreFrame.filterFrames(this._frameList)[0];
         } else {
-            const frames = this.getFramesByClassType<TextInformationFrame>(FrameClassType.TextInformationFrame);
-            frame = TextInformationFrame.findTextInformationFrame(frames, ident);
+            frame = TextInformationFrame.filterFrames(this._frameList, ident)[0];
         }
 
         const result = frame ? frame.toString() : undefined;
@@ -1346,15 +1284,13 @@ export default class Id3v2Tag extends Tag {
 
         let frame: TextInformationFrame|GenreFrame;
         if (ident === FrameIdentifiers.TCON) {
-            const frames = this.getFramesByClassType<GenreFrame>(FrameClassType.GenreFrame);
-            frame = GenreFrame.findGenreFrame(frames);
+            frame = GenreFrame.filterFrames(this._frameList)[0];
             if (!frame) {
                 frame = GenreFrame.fromEncoding();
                 this.addFrame(frame);
             }
         } else {
-            const frames = this.getFramesByClassType<TextInformationFrame>(FrameClassType.TextInformationFrame);
-            frame = TextInformationFrame.findTextInformationFrame(frames, ident);
+            frame = TextInformationFrame.filterFrames(this._frameList, ident)[0];
             if (!frame) {
                 frame = TextInformationFrame.fromIdentifier(ident);
                 this.addFrame(frame);
@@ -1387,10 +1323,9 @@ export default class Id3v2Tag extends Tag {
             return;
         }
 
-        const frames = this.getFramesByClassType<UrlLinkFrame>(FrameClassType.UrlLinkFrame);
-        let urlFrame = UrlLinkFrame.findUrlLinkFrame(frames, ident);
+        let urlFrame = UrlLinkFrame.filterFrames(this._frameList, ident)[0];
         if (!urlFrame) {
-            urlFrame = UrlLinkFrame.fromIdentity(ident);
+            urlFrame = UrlLinkFrame.fromIdentifier(ident);
             this.addFrame(urlFrame);
         }
 
@@ -1547,15 +1482,50 @@ export default class Id3v2Tag extends Tag {
         this.readFromStart(file, position, style);
     }
 
+    private getCommentFramePreferred(description: string, language: string): CommentsFrame|undefined {
+        let frames = CommentsFrame.filterFrames(this._frameList);
+
+        // Skip iTunes comments frames if we're not looking for them
+        if (!description || !description.startsWith("iTun")) {
+            frames = frames.filter(f => !f.description.startsWith("iTun"));
+        }
+
+        if (frames.length < 2) {
+            return frames[0];
+        }
+
+        // The logic here is to map each frame to a score based on how many fields match. Then
+        // sort with the best match at the top, and return that frame.
+        return frames.map(f => {
+            const langMatchScore = f.language === language ? 2 : 0;
+            const nameMatchScore = f.description === description ? 1 : 0;
+            const score = langMatchScore + nameMatchScore;
+            return {score: score, frame: f};
+        }).sort((a, b) => b.score - a.score)[0].frame;
+    }
+
+    private getLyricsFramePreferred(description: string, language: string): UnsynchronizedLyricsFrame|undefined {
+        const frames = UnsynchronizedLyricsFrame.filterFrames(this._frameList);
+        if (frames.length < 2) {
+            return frames[0];
+        }
+
+        // Find the best match for the language
+        return frames.map(f => {
+            const langMatchScore = f.language === language ? 2 : 0;
+            const nameMatchScore = f.description === description ? 1 : 0;
+            const score = langMatchScore + nameMatchScore;
+            return {score: score, frame: f};
+        }).sort((a, b) => b.score - a.score)[0].frame;
+    }
+
     private getTextAsArray(ident: FrameIdentifier): string[] {
         if (ident === FrameIdentifiers.TCON) {
-            const frames = this.getFramesByClassType<GenreFrame>(FrameClassType.GenreFrame);
-            const frame = GenreFrame.findGenreFrame(frames);
+            const frame = GenreFrame.filterFrames(this._frameList)[0];
             return frame ? frame.text : [];
         }
 
-        const frames = this.getFramesByClassType<TextInformationFrame>(FrameClassType.TextInformationFrame);
-        const frame = TextInformationFrame.findTextInformationFrame(frames, ident);
+        const frame = TextInformationFrame.filterFrames(this._frameList, ident)[0];
         return frame ? frame.text : [];
     }
 
@@ -1580,8 +1550,8 @@ export default class Id3v2Tag extends Tag {
 
     private getUfidText(owner: string): string {
         // Get the UFID frame, frame will be undefined if nonexistent
-        const frames = this.getFramesByClassType<UniqueFileIdentifierFrame>(FrameClassType.UniqueFileIdentifierFrame);
-        const frame = UniqueFileIdentifierFrame.find(frames, owner);
+        const frames = UniqueFileIdentifierFrame.filterFrames(this._frameList);
+        const frame = frames.find(f => f.owner === owner);
 
         // If the frame existed, frame.identifier is a byte vector, get a string
         const result = frame ? frame.identifier.toString(StringType.Latin1) : undefined;
@@ -1589,20 +1559,17 @@ export default class Id3v2Tag extends Tag {
     }
 
     private getUserTextAsString(description: string, caseSensitive: boolean = true): string {
-        // Gets the TXXX frame, frame will be undefined if nonexistent
-        const frames = this.getFramesByClassType<UserTextInformationFrame>(FrameClassType.UserTextInformationFrame);
-        const frame = UserTextInformationFrame.findUserTextInformationFrame(frames, description, caseSensitive);
-
         // TXXX frames support multi-value strings, join them up and return only the text from the
         // frame
+        const frame = this.getUserTextFrame(description, caseSensitive);
         const result = frame ? frame.text.join(";") : undefined;        // TODO: Consider escaping ';' before joining?
         return result || undefined;
     }
 
     private setUfidText(owner: string, text: string): void {
         // Get the UFID frame, create if necessary
-        const frames = this.getFramesByClassType<UniqueFileIdentifierFrame>(FrameClassType.UniqueFileIdentifierFrame);
-        let frame = UniqueFileIdentifierFrame.find(frames, owner);
+        const frames = UniqueFileIdentifierFrame.filterFrames(this._frameList);
+        let frame = frames.find(f => f.owner === owner);
 
         // If we have a real string, convert to byte vector and apply to frame
         if (!text && frame) {
@@ -1616,10 +1583,7 @@ export default class Id3v2Tag extends Tag {
     }
 
     private setUserTextAsString(description: string, text: string, caseSensitive: boolean = true): void {
-        // Get the TXXX frame, create a new one if needed
-        const frames = this.getFramesByClassType<UserTextInformationFrame>(FrameClassType.UserTextInformationFrame);
-        let frame = UserTextInformationFrame.findUserTextInformationFrame(frames, description, caseSensitive);
-
+        let frame = this.getUserTextFrame(description, caseSensitive);
         if (!text) {
             // Remove the frame if it exists, otherwise do nothing
             if (frame) {
@@ -1632,6 +1596,16 @@ export default class Id3v2Tag extends Tag {
             }
             frame.text = text.split(";");
         }
+    }
+
+    private getUserTextFrame(description: string, caseSensitive: boolean): UserTextInformationFrame {
+        // Gets the TXXX frame, frame will be undefined if nonexistent
+        const frames = UserTextInformationFrame.filterFrames(this._frameList);
+        return frames.find(f => {
+            return caseSensitive
+                ? f.description === description
+                : f.description.toUpperCase() === description.toUpperCase();
+        });
     }
 
     // #endregion

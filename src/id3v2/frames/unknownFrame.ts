@@ -1,8 +1,8 @@
+import Frame from "./frame";
 import {ByteVector} from "../../byteVector";
-import {Frame, FrameClassType} from "./frame";
 import {Id3v2FrameHeader} from "./frameHeader";
 import {FrameIdentifier} from "../frameIdentifiers";
-import {Guards} from "../../utils";
+import {ArrayUtils, Guards} from "../../utils";
 
 /**
  * Fallback type when no other frame class works for a given frame.
@@ -41,13 +41,15 @@ export default class UnknownFrame extends Frame {
         return frame;
     }
 
-    /** @inheritDoc */
-    public get frameClassType(): FrameClassType { return FrameClassType.UnknownFrame; }
-
     /**
      * Gets and sets the field data in the current instance
      */
     public data: ByteVector;
+
+    public static filterFrames(frames: Frame[]): UnknownFrame[] {
+        Guards.truthy(frames, "frames");
+        return ArrayUtils.ofType(frames, UnknownFrame);
+    }
 
     /** @inheritDoc */
     public clone(): Frame {

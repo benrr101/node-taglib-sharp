@@ -1,15 +1,26 @@
 import {params, suite, test} from "@testdeck/mocha";
 import {assert} from "chai";
 
+import Frame from "../../src/id3v2/frames/frame";
 import FrameConstructorTests from "./frameConstructorTests";
 import Id3v2Settings from "../../src/id3v2/id3v2Settings";
 import PropertyTests from "../utilities/propertyTests";
 import TermsOfUseFrame from "../../src/id3v2/frames/termsOfUseFrame";
+import UnknownFrame from "../../src/id3v2/frames/unknownFrame";
 import {ByteVector, StringType} from "../../src/byteVector";
-import {Frame, FrameClassType} from "../../src/id3v2/frames/frame";
 import {Id3v2FrameFlags, Id3v2FrameHeader} from "../../src/id3v2/frames/frameHeader";
 import {FrameIdentifiers} from "../../src/id3v2/frameIdentifiers";
 import {Testers} from "../utilities/testers";
+
+const assertFrame = (frame: TermsOfUseFrame, language: string, text: string, textEncoding: StringType) => {
+    assert.isOk(frame);
+    assert.instanceOf<TermsOfUseFrame>(frame, TermsOfUseFrame);
+    assert.strictEqual(frame.frameId, FrameIdentifiers.USER);
+
+    assert.strictEqual(frame.language, language);
+    assert.strictEqual(frame.text, text);
+    assert.strictEqual(frame.textEncoding, textEncoding);
+}
 
 @suite class Id3v2_TermsOfUseFrame_ConstructorTests extends FrameConstructorTests {
     public get fromFieldBytes(): (h: Id3v2FrameHeader, d: ByteVector, v: number) => Frame {
@@ -22,7 +33,7 @@ import {Testers} from "../utilities/testers";
         const output = TermsOfUseFrame.fromFields("fux");
 
         // Assert
-        Id3v2_TermsOfUseFrame_ConstructorTests.assertFrame(output, "fux", "", Id3v2Settings.defaultEncoding);
+        assertFrame(output, "fux", "", Id3v2Settings.defaultEncoding);
     }
 
     @test
@@ -31,7 +42,7 @@ import {Testers} from "../utilities/testers";
         const output = TermsOfUseFrame.fromFields("fux", StringType.UTF16BE);
 
         // Assert
-        Id3v2_TermsOfUseFrame_ConstructorTests.assertFrame(output, "fux", "", StringType.UTF16BE);
+        assertFrame(output, "fux", "", StringType.UTF16BE);
     }
 
     @params(2, "v2")
@@ -61,7 +72,7 @@ import {Testers} from "../utilities/testers";
         const frame = TermsOfUseFrame.fromFieldBytes(header, fieldBytes, version);
 
         // Assert
-        Id3v2_TermsOfUseFrame_ConstructorTests.assertFrame(frame, "eng", "", StringType.Latin1);
+        assertFrame(frame, "eng", "", StringType.Latin1);
     }
 
     @params(2, "v2")
@@ -80,7 +91,7 @@ import {Testers} from "../utilities/testers";
         const frame = TermsOfUseFrame.fromFieldBytes(header, fieldBytes, version);
 
         // Assert
-        Id3v2_TermsOfUseFrame_ConstructorTests.assertFrame(frame, "eng", "foobarbaz", StringType.Latin1);
+        assertFrame(frame, "eng", "foobarbaz", StringType.Latin1);
     }
 
     @params(StringType.Latin1, "single_byte")
@@ -98,17 +109,7 @@ import {Testers} from "../utilities/testers";
         const frame = TermsOfUseFrame.fromFieldBytes(header, fieldBytes, 4);
 
         // Assert
-        Id3v2_TermsOfUseFrame_ConstructorTests.assertFrame(frame, "eng", "foobarbaz", encoding);
-    }
-
-    private static assertFrame(frame: TermsOfUseFrame, language: string, text: string, textEncoding: StringType) {
-        assert.isOk(frame);
-        assert.strictEqual(frame.frameClassType, FrameClassType.TermsOfUseFrame);
-        assert.strictEqual(frame.frameId, FrameIdentifiers.USER);
-
-        assert.strictEqual(frame.language, language);
-        assert.strictEqual(frame.text, text);
-        assert.strictEqual(frame.textEncoding, textEncoding);
+        assertFrame(frame, "eng", "foobarbaz", encoding);
     }
 }
 
@@ -153,97 +154,84 @@ import {Testers} from "../utilities/testers";
 
 @suite class Id3v2_TermsOfUseFrame_MethodTests {
     @test
-    public find_falsyFrames() {
+    public filterFrames_falsyFrames() {
         // Act/Assert
-        assert.throws(() => { TermsOfUseFrame.find(undefined); });
+        Testers.testTruthy((v: TermsOfUseFrame[]) => { TermsOfUseFrame.filterFrames(v); });
     }
 
     @test
-    public find_noFrames() {
-        // Act
-        const output = TermsOfUseFrame.find([]);
-
-        // Assert
-        assert.isUndefined(output);
-    }
-
-    @test
-    public find_matchWithFrames_returnsFirst() {
+    public filterFrames_noFrames() {
         // Arrange
-        const frames = [
-            TermsOfUseFrame.fromFields("eng"),
-            TermsOfUseFrame.fromFields("jpn")
-        ];
+        const frames: Frame[] = [];
 
         // Act
-        const output = TermsOfUseFrame.find(frames);
+        const output = TermsOfUseFrame.filterFrames(frames);
 
         // Assert
-        assert.isOk(output);
-        assert.strictEqual(output, frames[0]);
+        assert.isArray(output);
+        assert.isEmpty(output);
     }
 
     @test
-    public find_matchWithFramesWithLanguage() {
+    public filterFrames_noMatch() {
         // Arrange
-        const frames = [
-            TermsOfUseFrame.fromFields("eng"),
-            TermsOfUseFrame.fromFields("jpn")
-        ];
+        const frame1 = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.fromUint(123));
+        const frame2 = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.fromUint(234));
+        const frames = [frame1, frame2];
 
         // Act
-        const output = TermsOfUseFrame.find(frames, "jpn");
+        const result = TermsOfUseFrame.filterFrames(frames);
 
         // Assert
-        assert.isOk(output);
-        assert.strictEqual(output, frames[1]);
+        assert.isArray(result);
+        assert.isEmpty(result);
     }
 
     @test
-    public findPreferred_falsyFrames() {
-        // Act/Assert
-        assert.throws(() => TermsOfUseFrame.findPreferred(undefined, "eng"));
-    }
-
-    @test
-    public findPreferred_noFrames() {
-        // Act
-        const output = TermsOfUseFrame.findPreferred([], "eng");
-
-        // Assert
-        assert.isUndefined(output);
-    }
-
-    @test
-    public findPreferred_nonExactMatch() {
+    public filterFrames_singleMatch() {
         // Arrange
-        const frames = [
-            TermsOfUseFrame.fromFields("eng"),
-            TermsOfUseFrame.fromFields("jpn")
-        ];
+        const frame1 = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.fromUint(123));
+        const frame2 = TermsOfUseFrame.fromFields("foo");
+        const frames = [frame1, frame2];
 
         // Act
-        const output = TermsOfUseFrame.findPreferred(frames, "foo");
+        const result = TermsOfUseFrame.filterFrames(frames);
 
         // Assert
-        assert.isOk(output);
-        assert.strictEqual(output, frames[0]);
+        assert.isArray(result);
+        assert.deepEqual(result, [frame2]);
     }
 
     @test
-    public findPreferred_exactMatch() {
+    public filterFrames_multipleMatches() {
         // Arrange
-        const frames = [
-            TermsOfUseFrame.fromFields("eng"),
-            TermsOfUseFrame.fromFields("jpn")
-        ];
+        const frame1 = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.fromUint(123));
+        const frame2 = TermsOfUseFrame.fromFields("foo");
+        const frame3 = TermsOfUseFrame.fromFields("bar");
+
+        const frames = [frame1, frame2, frame3];
 
         // Act
-        const output = TermsOfUseFrame.findPreferred(frames, "jpn");
+        const result = TermsOfUseFrame.filterFrames(frames);
 
         // Assert
-        assert.isOk(output);
-        assert.strictEqual(output, frames[1]);
+        assert.isArray(result);
+        assert.deepEqual(result, [frame2, frame3]);
+    }
+
+    @test
+    public filterFrames_allMatches() {
+        // Arrange
+        const frame1 = TermsOfUseFrame.fromFields("foo");
+        const frame2 = TermsOfUseFrame.fromFields("bar");
+        const frames = [frame1, frame2];
+
+        // Act
+        const result = TermsOfUseFrame.filterFrames(frames);
+
+        // Assert
+        assert.isArray(result);
+        assert.deepEqual(result, [frame1, frame2]);
     }
 
     @test
@@ -256,13 +244,7 @@ import {Testers} from "../utilities/testers";
         const output = <TermsOfUseFrame> frame.clone();
 
         // Assert
-        assert.isOk(output);
-        assert.strictEqual(output.frameClassType, frame.frameClassType);
-        assert.strictEqual(output.frameId, frame.frameId);
-
-        assert.strictEqual(output.language, frame.language);
-        assert.strictEqual(output.text, frame.text);
-        assert.strictEqual(output.textEncoding, frame.textEncoding);
+        assertFrame(output, frame.language, frame.text, frame.textEncoding);
     }
 
     @test

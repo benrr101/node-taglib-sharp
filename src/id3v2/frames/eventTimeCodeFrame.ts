@@ -1,8 +1,8 @@
+import Frame from "./frame";
 import {ByteVector} from "../../byteVector";
-import {Frame, FrameClassType} from "./frame";
 import {Id3v2FrameFlags, Id3v2FrameHeader} from "./frameHeader";
 import {FrameIdentifiers} from "../frameIdentifiers";
-import {Guards} from "../../utils";
+import {ArrayUtils, Guards} from "../../utils";
 import {EventType, TimestampFormat} from "../utilTypes";
 import {CorruptFileError} from "../../errors";
 
@@ -166,9 +166,6 @@ export class EventTimeCodeFrame extends Frame {
 
     // #region Properties
 
-    /** @inheritDoc */
-    public get frameClassType(): FrameClassType { return FrameClassType.EventTimeCodeFrame; }
-
     /**
      * Gets the event this frame contains. Each {@link EventTimeCode} represents a single event at a
      * certain point in time.
@@ -191,6 +188,11 @@ export class EventTimeCodeFrame extends Frame {
     // #endregion
 
     // #region Methods
+
+    public static filterFrames(frames: Frame[]): EventTimeCodeFrame[] {
+        Guards.truthy(frames, "frames");
+        return ArrayUtils.ofType(frames, EventTimeCodeFrame);
+    }
 
     /** @inheritDoc */
     public clone(): Frame {

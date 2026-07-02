@@ -1,9 +1,9 @@
+import Frame from "./frame";
 import Id3v2Settings from "../id3v2Settings";
 import {ByteVector, StringType} from "../../byteVector";
-import {Frame, FrameClassType} from "./frame";
 import {Id3v2FrameHeader} from "./frameHeader";
 import {FrameIdentifier, FrameIdentifiers} from "../frameIdentifiers";
-import {Guards} from "../../utils";
+import {ArrayUtils, Guards} from "../../utils";
 import {CorruptFileError} from "../../errors";
 
 /**
@@ -231,9 +231,6 @@ export default class TextInformationFrame extends Frame {
 
     // #region Properties
 
-    /** @inheritDoc */
-    public get frameClassType(): FrameClassType { return FrameClassType.TextInformationFrame; }
-
     /**
      * Gets the text contained in the current instance.
      * Note: Modifying the contents of the returned value will not modify the contents of the
@@ -267,21 +264,12 @@ export default class TextInformationFrame extends Frame {
 
     // #region Public Methods
 
-    /**
-     * Gets a {@link TextInformationFrame} object of a specified type from a specified type from a
-     * list of text information frames.
-     * @param frames List of frames to search
-     * @param ident Frame identifier to search for
-     * @returns Matching frame if it exists in `tag`, `undefined` if a matching frame was not found
-     */
-    public static findTextInformationFrame(
-        frames: TextInformationFrame[],
-        ident: FrameIdentifier
-    ): TextInformationFrame {
+    public static filterFrames(frames: Frame[], identifier?: FrameIdentifier): TextInformationFrame[] {
         Guards.truthy(frames, "frames");
-        Guards.truthy(ident, "ident");
-
-        return frames.find((f) => f.frameId === ident);
+        const textFrames = ArrayUtils.ofType(frames, TextInformationFrame);
+        return !!identifier
+            ? textFrames.filter(f => f.frameId === identifier)
+            : textFrames;
     }
 
     /** @inheritDoc */

@@ -1,13 +1,26 @@
 import {params, suite, test} from "@testdeck/mocha";
 import {assert} from "chai";
 
+import CommentsFrame from "../../src/id3v2/frames/commentsFrame";
+import Frame from "../../src/id3v2/frames/frame";
 import FrameConstructorTests from "./frameConstructorTests";
 import UnknownFrame from "../../src/id3v2/frames/unknownFrame";
 import {ByteVector, StringType} from "../../src/byteVector";
-import {Frame, FrameClassType} from "../../src/id3v2/frames/frame";
 import {Id3v2FrameFlags, Id3v2FrameHeader} from "../../src/id3v2/frames/frameHeader";
 import {FrameIdentifier, FrameIdentifiers} from "../../src/id3v2/frameIdentifiers";
 import {Testers} from "../utilities/testers";
+
+const assertFrame = (frame: UnknownFrame, fi: FrameIdentifier, d: ByteVector) => {
+    assert.ok(frame);
+    assert.instanceOf<UnknownFrame>(frame, UnknownFrame);
+    assert.strictEqual(frame.frameId, fi);
+
+    if (d !== undefined) {
+        Testers.bvEqual(frame.data, d);
+    } else {
+        assert.isUndefined(frame.data);
+    }
+}
 
 @suite class Id3v2_UnknownFrame_ConstructorTests extends FrameConstructorTests {
     public get fromFieldBytes(): (h: Id3v2FrameHeader, d: ByteVector, v: number) => Frame {
@@ -30,7 +43,7 @@ import {Testers} from "../utilities/testers";
         const frame = UnknownFrame.fromData(frameType, value);
 
         // Assert
-        Id3v2_UnknownFrame_ConstructorTests.assertFrame(frame, FrameIdentifiers.WXXX, undefined);
+        assertFrame(frame, FrameIdentifiers.WXXX, undefined);
     }
 
     @test
@@ -43,7 +56,7 @@ import {Testers} from "../utilities/testers";
         const frame = UnknownFrame.fromData(frameType, data);
 
         // Assert
-        Id3v2_UnknownFrame_ConstructorTests.assertFrame(frame, FrameIdentifiers.WXXX, data);
+        assertFrame(frame, FrameIdentifiers.WXXX, data);
     }
 
     @params(2, "v2")
@@ -58,23 +71,7 @@ import {Testers} from "../utilities/testers";
         const frame = UnknownFrame.fromFieldBytes(header, fieldBytes, version);
 
         // Assert
-        Id3v2_UnknownFrame_ConstructorTests.assertFrame(
-            frame,
-            FrameIdentifiers.WXXX,
-            ByteVector.fromString("foo bar baz", StringType.UTF8)
-        );
-    }
-
-    private static assertFrame(frame: UnknownFrame, fi: FrameIdentifier, d: ByteVector) {
-        assert.ok(frame);
-        assert.strictEqual(frame.frameClassType, FrameClassType.UnknownFrame);
-        assert.strictEqual(frame.frameId, fi);
-
-        if (d !== undefined) {
-            Testers.bvEqual(frame.data, d);
-        } else {
-            assert.isUndefined(frame.data);
-        }
+        assertFrame(frame, FrameIdentifiers.WXXX, ByteVector.fromString("foo bar baz", StringType.UTF8));
     }
 }
 
@@ -92,10 +89,88 @@ import {Testers} from "../utilities/testers";
         const result = <UnknownFrame> frame.clone();
 
         // Assert
-        assert.ok(result);
-        assert.strictEqual(result.frameClassType, FrameClassType.UnknownFrame);
-        assert.strictEqual(result.frameId, FrameIdentifiers.WXXX);
-        Testers.bvEqual(result.data, fieldBytes);
+        assertFrame(result, frame.frameId, frame.data);
+    }
+
+    @test
+    public filterFrames_falsyFrames() {
+        // Act/Assert
+        Testers.testTruthy((v: UnknownFrame[]) => { UnknownFrame.filterFrames(v); });
+    }
+
+    @test
+    public filterFrames_noFrames() {
+        // Arrange
+        const frames: Frame[] = [];
+
+        // Act
+        const output = UnknownFrame.filterFrames(frames);
+
+        // Assert
+        assert.isArray(output);
+        assert.isEmpty(output);
+    }
+
+    @test
+    public filterFrames_noMatch() {
+        // Arrange
+        const frame1 = CommentsFrame.fromDescription("foo");
+        const frame2 = CommentsFrame.fromDescription("foo");
+        const frames = [frame1, frame2];
+
+        // Act
+        const result = UnknownFrame.filterFrames(frames);
+
+        // Assert
+        assert.isArray(result);
+        assert.isEmpty(result);
+    }
+
+    @test
+    public filterFrames_singleMatch() {
+        // Arrange
+        const frame1 = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.fromUint(123));
+        const frame2 = CommentsFrame.fromDescription("foo");
+        const frames = [frame1, frame2];
+
+        // Act
+        const result = UnknownFrame.filterFrames(frames);
+
+        // Assert
+        assert.isArray(result);
+        assert.deepEqual(result, [frame1]);
+    }
+
+    @test
+    public filterFrames_multipleMatches() {
+        // Arrange
+        const frame1 = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.fromUint(123));
+        const frame2 = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.fromUint(123));
+        const frame3 = CommentsFrame.fromDescription("foo");
+
+        const frames = [frame1, frame2, frame3];
+
+        // Act
+        const result = UnknownFrame.filterFrames(frames);
+
+        // Assert
+        assert.isArray(result);
+        assert.deepEqual(result, [frame1, frame2]);
+    }
+
+    @test
+    public filterFrames_allMatches() {
+        // Arrange
+        const frame1 = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.fromUint(123));
+        const frame2 = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.fromUint(123));
+        const frames = [frame1, frame2];
+
+        // Act
+        const result = UnknownFrame.filterFrames(frames);
+
+        // Assert
+        assert.isArray(result);
+        assert.deepEqual(result, [frame1, frame2]);
     }
 
     @params(2, "v2")

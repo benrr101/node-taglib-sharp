@@ -1,8 +1,8 @@
+import Frame from "./frame";
 import {ByteVector, StringType} from "../../byteVector";
-import {Frame, FrameClassType} from "./frame";
 import {Id3v2FrameHeader} from "./frameHeader";
 import {FrameIdentifier} from "../frameIdentifiers";
-import {Guards} from "../../utils";
+import {ArrayUtils, Guards} from "../../utils";
 
 /**
  * Provides ID3v2 URL Link frame implementation (section 4.3.1) covering `W000` to `WZZZ`,
@@ -69,7 +69,7 @@ export default class UrlLinkFrame extends Frame {
      * Constructs and initializes an empty frame with the provided frame identity
      * @param ident Identity of the frame to construct
      */
-    public static fromIdentity(ident: FrameIdentifier): UrlLinkFrame {
+    public static fromIdentifier(ident: FrameIdentifier): UrlLinkFrame {
         Guards.truthy(ident, "ident");
         return new UrlLinkFrame(new Id3v2FrameHeader(ident));
     }
@@ -77,8 +77,6 @@ export default class UrlLinkFrame extends Frame {
     // #endregion
 
     // #region Properties
-
-    public get frameClassType(): FrameClassType { return FrameClassType.UrlLinkFrame; }
 
     /**
      * Gets the text contained in the current instance.
@@ -93,22 +91,17 @@ export default class UrlLinkFrame extends Frame {
 
     // #region Methods
 
-    /**
-     * Gets the first frame that matches the provided type
-     * @param frames Object to search in
-     * @param ident Frame identifier to search for
-     * @returns Frame containing the matching frameId, `undefined` if a match was not found
-     */
-    public static findUrlLinkFrame(frames: UrlLinkFrame[], ident: FrameIdentifier): UrlLinkFrame {
+    public static filterFrames(frames: Frame[], identifier?: FrameIdentifier): UrlLinkFrame[] {
         Guards.truthy(frames, "frames");
-        Guards.truthy(ident, "ident");
-
-        return frames.find((f) => f.frameId === ident);
+        const urlFrames = ArrayUtils.ofType(frames, UrlLinkFrame);
+        return !!identifier
+            ? urlFrames.filter(f => f.frameId === identifier)
+            : urlFrames;
     }
 
     /** @inheritDoc */
     public clone(): UrlLinkFrame {
-        const frame = UrlLinkFrame.fromIdentity(this.frameId);
+        const frame = UrlLinkFrame.fromIdentifier(this.frameId);
         frame._text = this._text;
         return frame;
     }

@@ -1,9 +1,9 @@
+import Frame from "./frame";
 import {ByteVector, StringType} from "../../byteVector";
 import {CorruptFileError, NotSupportedError} from "../../errors";
-import {Frame, FrameClassType} from "./frame";
 import {Id3v2FrameHeader} from "./frameHeader";
 import {FrameIdentifiers} from "../frameIdentifiers";
-import {Guards} from "../../utils";
+import {ArrayUtils, Guards} from "../../utils";
 
 /**
  * This class extends {@link Frame} implementing support for ID3v2 popularimeter (POPM) frames.
@@ -82,9 +82,6 @@ export default class PopularimeterFrame extends Frame {
 
     // #region Properties
 
-    /** @inheritDoc */
-    public get frameClassType(): FrameClassType { return FrameClassType.PopularimeterFrame; }
-
     /**
      * Gets the play count of the current instance
      */
@@ -123,15 +120,9 @@ export default class PopularimeterFrame extends Frame {
 
     // #endregion
 
-    /**
-     * Gets a popularimeter frame from a specified tag that matches the given parameters
-     * @param frames List of frames to search
-     * @param user User email to use to match the frame in the `tag`
-     * @returns Frame containing the matching user or `undefined` if a match was not found
-     */
-    public static find(frames: PopularimeterFrame[], user: string): PopularimeterFrame {
+    public static filterFrames(frames: Frame[]): PopularimeterFrame[] {
         Guards.truthy(frames, "frames");
-        return frames.find((f) => f.user === user);
+        return ArrayUtils.ofType(frames, PopularimeterFrame);
     }
 
     /** @inheritDoc */

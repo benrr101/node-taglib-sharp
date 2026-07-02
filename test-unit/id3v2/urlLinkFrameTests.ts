@@ -1,13 +1,21 @@
 import {params, suite, test} from "@testdeck/mocha";
 import {assert} from "chai";
 
+import Frame from "../../src/id3v2/frames/frame";
 import FrameConstructorTests from "./frameConstructorTests";
+import UnknownFrame from "../../src/id3v2/frames/unknownFrame";
 import UrlLinkFrame from "../../src/id3v2/frames/urlLinkFrame";
 import {ByteVector, StringType} from "../../src/byteVector";
-import {Frame, FrameClassType} from "../../src/id3v2/frames/frame";
 import {Id3v2FrameFlags, Id3v2FrameHeader} from "../../src/id3v2/frames/frameHeader";
 import {FrameIdentifier, FrameIdentifiers} from "../../src/id3v2/frameIdentifiers";
 import {Testers} from "../utilities/testers";
+
+const assertFrame = (frame: UrlLinkFrame, identifier: FrameIdentifier, text: string|undefined) => {
+    assert.ok(frame);
+    assert.instanceOf<UrlLinkFrame>(frame, UrlLinkFrame);
+    assert.strictEqual(frame.frameId, identifier);
+    assert.strictEqual(frame.text, text);
+}
 
 @suite class Id3v2_UrlLinkFrame_ConstructorTests extends FrameConstructorTests {
     public get fromFieldBytes(): (h: Id3v2FrameHeader, d: ByteVector, v: number) => Frame {
@@ -15,21 +23,18 @@ import {Testers} from "../utilities/testers";
     }
 
     @test
-    public fromIdentity_falsyIdentity() {
+    public fromIdentifier_falsyIdentity() {
         // Act/Assert
-        Testers.testTruthy((v: FrameIdentifier) => { UrlLinkFrame.fromIdentity(v); });
+        Testers.testTruthy((v: FrameIdentifier) => { UrlLinkFrame.fromIdentifier(v); });
     }
 
     @test
-    public fromIdentity_validIdentity() {
+    public fromIdentifier_validIdentity() {
         // Act
-        const output = UrlLinkFrame.fromIdentity(FrameIdentifiers.WCOM);
+        const output = UrlLinkFrame.fromIdentifier(FrameIdentifiers.WCOM);
 
         // Assert
-        assert.ok(output);
-        assert.strictEqual(output.frameClassType, FrameClassType.UrlLinkFrame);
-        assert.strictEqual(output.frameId, FrameIdentifiers.WCOM);
-        assert.strictEqual(output.text, undefined);
+        assertFrame(output, FrameIdentifiers.WCOM, undefined);
     }
 
     @params(2, "v2")
@@ -44,10 +49,7 @@ import {Testers} from "../utilities/testers";
         const output = UrlLinkFrame.fromFieldBytes(header, fieldBytes, version);
 
         // Assert
-        assert.ok(output);
-        assert.strictEqual(output.frameClassType, FrameClassType.UrlLinkFrame);
-        assert.strictEqual(output.frameId, FrameIdentifiers.WCOM);
-        assert.strictEqual(output.text, "foo");
+        assertFrame(output, FrameIdentifiers.WCOM, "foo");
     }
 
     @params(2, "v2")
@@ -65,7 +67,7 @@ import {Testers} from "../utilities/testers";
         const output = UrlLinkFrame.fromFieldBytes(header, fieldBytes, version);
 
         // Assert
-        this.assertFrame(output, "foo");
+        assertFrame(output, FrameIdentifiers.WCOM, "foo");
     }
 
     @params(2, "v2")
@@ -85,14 +87,7 @@ import {Testers} from "../utilities/testers";
         const output = UrlLinkFrame.fromFieldBytes(header, fieldBytes, version);
 
         // Assert
-        this.assertFrame(output, "foo");
-    }
-
-    private assertFrame(frame: UrlLinkFrame, text: string) {
-        assert.ok(frame);
-        assert.strictEqual(frame.frameClassType, FrameClassType.UrlLinkFrame);
-        assert.strictEqual(frame.frameId, FrameIdentifiers.WCOM);
-        assert.strictEqual(frame.text, text);
+        assertFrame(output, FrameIdentifiers.WCOM, "foo");
     }
 }
 
@@ -103,7 +98,7 @@ import {Testers} from "../utilities/testers";
     @params("bar", "truthy")
     public setText_falsyValues(value: string) {
         // Arrange
-        const frame = UrlLinkFrame.fromIdentity(FrameIdentifiers.WCOM);
+        const frame = UrlLinkFrame.fromIdentifier(FrameIdentifiers.WCOM);
 
         // Act
         frame.text = value;
@@ -115,80 +110,178 @@ import {Testers} from "../utilities/testers";
 
 @suite class Id3v2_UrlLinkFrame_MethodTests {
     @test
-    public findUrlLinkFrame_falsyFrames_throws(): void {
-        // Act/Assert
-        Testers.testTruthy((v: UrlLinkFrame[]) => { UrlLinkFrame.findUrlLinkFrame(v, FrameIdentifiers.WCOM); });
-    }
-
-    @test
-    public findUrlLinkFrame_falsyIdentity_throws(): void {
-        // Arrange
-        const frames = [UrlLinkFrame.fromIdentity(FrameIdentifiers.WCOM)];
-
-        // Act/Assert
-        Testers.testTruthy((v: FrameIdentifier) => { UrlLinkFrame.findUrlLinkFrame(frames, v); });
-    }
-
-    @test
-    public findUrlLinkFrame_emptyFrames_returnsUndefined() {
-        // Arrange
-        const frames: UrlLinkFrame[] = [];
-
-        // Act
-        const result = UrlLinkFrame.findUrlLinkFrame(frames, FrameIdentifiers.WCOM);
-
-        // Assert
-        assert.isUndefined(result);
-    }
-
-    @test
-    public findUrlLinkFrame_noMatch_returnsUndefined() {
-        // Arrange
-        const frames = [
-            UrlLinkFrame.fromIdentity(FrameIdentifiers.WCOM),
-            UrlLinkFrame.fromIdentity(FrameIdentifiers.WCOP)
-        ];
-
-        // Act
-        const result = UrlLinkFrame.findUrlLinkFrame(frames, FrameIdentifiers.WPAY);
-
-        // Assert
-        assert.isUndefined(result);
-    }
-
-    @test
-    public findUrlLinkFrame_match_returnsFirstMatch() {
-        // Arrange
-        const frame1 = UrlLinkFrame.fromIdentity(FrameIdentifiers.WCOM);
-        const frame2 = UrlLinkFrame.fromIdentity(FrameIdentifiers.WCOM);
-        const frames = [frame1, frame2];
-
-        // Act
-        const result = UrlLinkFrame.findUrlLinkFrame(frames, FrameIdentifiers.WCOM);
-
-        // Assert
-        assert.equal(result, frame1);
-    }
-
-    @test
     public clone_returnsCloneUsingRawData() {
         // Arrange
-        const frame = UrlLinkFrame.fromIdentity(FrameIdentifiers.WCOM);
+        const frame = UrlLinkFrame.fromIdentifier(FrameIdentifiers.WCOM);
         frame.text = "foo";
 
         // Act
         const result = frame.clone();
 
         // Assert
-        assert.isOk(result);
-        assert.strictEqual(result.frameId, frame.frameId);
-        assert.strictEqual(result.text, frame.text);
+        assertFrame(result, frame.frameId, frame.text);
+    }
+
+    @test
+    public filterFrames_falsyFrames() {
+        // Act/Assert
+        Testers.testTruthy((v: UrlLinkFrame[]) => { UrlLinkFrame.filterFrames(v); });
+    }
+
+    @test
+    public filterFrames_noIdentifier_noFrames() {
+        // Arrange
+        const frames: Frame[] = [];
+
+        // Act
+        const output = UrlLinkFrame.filterFrames(frames);
+
+        // Assert
+        assert.isArray(output);
+        assert.isEmpty(output);
+    }
+
+    @test
+    public filterFrames_noIdentifier_noMatch() {
+        // Arrange
+        const frame1 = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.fromUint(123));
+        const frame2 = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.fromUint(234));
+        const frames = [frame1, frame2];
+
+        // Act
+        const result = UrlLinkFrame.filterFrames(frames);
+
+        // Assert
+        assert.isArray(result);
+        assert.isEmpty(result);
+    }
+
+    @test
+    public filterFrames_noIdentifier_singleMatch() {
+        // Arrange
+        const frame1 = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.fromUint(123));
+        const frame2 = UrlLinkFrame.fromIdentifier(FrameIdentifiers.TCOP);
+        const frames = [frame1, frame2];
+
+        // Act
+        const result = UrlLinkFrame.filterFrames(frames);
+
+        // Assert
+        assert.isArray(result);
+        assert.deepEqual(result, [frame2]);
+    }
+
+    @test
+    public filterFrames_noIdentifier_multipleMatches() {
+        // Arrange
+        const frame1 = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.fromUint(123));
+        const frame2 = UrlLinkFrame.fromIdentifier(FrameIdentifiers.TCOP);
+        const frame3 = UrlLinkFrame.fromIdentifier(FrameIdentifiers.TCOP);
+
+        const frames = [frame1, frame2, frame3];
+
+        // Act
+        const result = UrlLinkFrame.filterFrames(frames);
+
+        // Assert
+        assert.isArray(result);
+        assert.deepEqual(result, [frame2, frame3]);
+    }
+
+    @test
+    public filterFrames_noIdentifier_allMatches() {
+        // Arrange
+        const frame1 = UrlLinkFrame.fromIdentifier(FrameIdentifiers.TCOP);
+        const frame2 = UrlLinkFrame.fromIdentifier(FrameIdentifiers.TCOP);
+        const frames = [frame1, frame2];
+
+        // Act
+        const result = UrlLinkFrame.filterFrames(frames);
+
+        // Assert
+        assert.isArray(result);
+        assert.deepEqual(result, [frame1, frame2]);
+    }
+
+    @test
+    public filterFrames_withIdentifier_noFrames() {
+        // Arrange
+        const frames: Frame[] = [];
+
+        // Act
+        const output = UrlLinkFrame.filterFrames(frames);
+
+        // Assert
+        assert.isArray(output);
+        assert.isEmpty(output);
+    }
+
+    @test
+    public filterFrames_withIdentifier_noMatch() {
+        // Arrange
+        const frame1 = UrlLinkFrame.fromIdentifier(FrameIdentifiers.TCOM);
+        const frame2 = UrlLinkFrame.fromIdentifier(FrameIdentifiers.TCOM);
+        const frames = [frame1, frame2];
+
+        // Act
+        const result = UrlLinkFrame.filterFrames(frames, FrameIdentifiers.TCOP);
+
+        // Assert
+        assert.isArray(result);
+        assert.isEmpty(result);
+    }
+
+    @test
+    public filterFrames_withIdentifier_singleMatch() {
+        // Arrange
+        const frame1 = UrlLinkFrame.fromIdentifier(FrameIdentifiers.TCOM);
+        const frame2 = UrlLinkFrame.fromIdentifier(FrameIdentifiers.TCOP);
+        const frames = [frame1, frame2];
+
+        // Act
+        const result = UrlLinkFrame.filterFrames(frames, FrameIdentifiers.TCOP);
+
+        // Assert
+        assert.isArray(result);
+        assert.deepEqual(result, [frame2]);
+    }
+
+    @test
+    public filterFrames_withIdentifier_multipleMatches() {
+        // Arrange
+        const frame1 = UrlLinkFrame.fromIdentifier(FrameIdentifiers.TCOM);
+        const frame2 = UrlLinkFrame.fromIdentifier(FrameIdentifiers.TCOP);
+        const frame3 = UrlLinkFrame.fromIdentifier(FrameIdentifiers.TCOP);
+
+        const frames = [frame1, frame2, frame3];
+
+        // Act
+        const result = UrlLinkFrame.filterFrames(frames, FrameIdentifiers.TCOP);
+
+        // Assert
+        assert.isArray(result);
+        assert.deepEqual(result, [frame2, frame3]);
+    }
+
+    @test
+    public filterFrames_withIdentifier_allMatches() {
+        // Arrange
+        const frame1 = UrlLinkFrame.fromIdentifier(FrameIdentifiers.TCOP);
+        const frame2 = UrlLinkFrame.fromIdentifier(FrameIdentifiers.TCOP);
+        const frames = [frame1, frame2];
+
+        // Act
+        const result = UrlLinkFrame.filterFrames(frames, FrameIdentifiers.TCOP);
+
+        // Assert
+        assert.isArray(result);
+        assert.deepEqual(result, [frame1, frame2]);
     }
 
     @test
     public render_withoutText() {
         // Arrange
-        const frame = UrlLinkFrame.fromIdentity(FrameIdentifiers.WCOM);
+        const frame = UrlLinkFrame.fromIdentifier(FrameIdentifiers.WCOM);
 
         // Act
         const result = frame.render(4);
@@ -201,7 +294,7 @@ import {Testers} from "../utilities/testers";
     @test
     public render_withText() {
         // Arrange
-        const frame = UrlLinkFrame.fromIdentity(FrameIdentifiers.WCOM);
+        const frame = UrlLinkFrame.fromIdentifier(FrameIdentifiers.WCOM);
         frame.text = "foo";
 
         // Act
@@ -223,7 +316,7 @@ import {Testers} from "../utilities/testers";
     @params("foo", "foo")
     public toString_returnsText(text: string) {
         // Arrange
-        const frame = UrlLinkFrame.fromIdentity(FrameIdentifiers.WCOM);
+        const frame = UrlLinkFrame.fromIdentifier(FrameIdentifiers.WCOM);
         frame.text = text;
 
         // Act

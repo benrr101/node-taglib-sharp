@@ -1,10 +1,10 @@
+import Frame from "./frame";
 import Id3v2Settings from "../id3v2Settings";
 import {ByteVector, StringType} from "../../byteVector";
 import {CorruptFileError} from "../../errors";
-import {Frame, FrameClassType} from "./frame";
 import {Id3v2FrameHeader} from "./frameHeader";
 import {FrameIdentifiers} from "../frameIdentifiers";
-import {Guards} from "../../utils";
+import {ArrayUtils, Guards} from "../../utils";
 
 export default class TermsOfUseFrame extends Frame {
     private _language: string;
@@ -65,9 +65,6 @@ export default class TermsOfUseFrame extends Frame {
 
     // #region Properties
 
-    /** @inheritDoc */
-    public get frameClassType(): FrameClassType { return FrameClassType.TermsOfUseFrame; }
-
     /**
      * Gets the ISO-639-2 language code stored in the current instance.
      */
@@ -107,38 +104,9 @@ export default class TermsOfUseFrame extends Frame {
 
     // #region Public Methods
 
-    /**
-     * Gets a specified terms of use frame from the list of frames
-     * @param frames List of frames to search
-     * @param language Optionally, the ISO-639-2 language code to match
-     * @returns A matching frame if found or `undefined` if a matching frame was not found
-     */
-    public static find(frames: TermsOfUseFrame[], language?: string): TermsOfUseFrame {
+    public static filterFrames(frames: Frame[]): TermsOfUseFrame[] {
         Guards.truthy(frames, "frames");
-        return frames.find((f) => !language || f.language === language);
-    }
-
-    /**
-     * Gets a specified terms of use frame from the list of frames, trying to match the language but
-     * accepting one with a different language if a match was not found.
-     * @param frames List of frames to search
-     * @param language ISO-639-2 language code to match
-     * @returns Frame containing the matching frame or `undefined` if a match was not found
-     */
-    public static findPreferred(frames: TermsOfUseFrame[], language: string): TermsOfUseFrame {
-        Guards.truthy(frames, "frames");
-
-        let bestFrame: TermsOfUseFrame;
-        for (const f of frames) {
-            if (f.language === language) {
-                return f;
-            }
-            if (!bestFrame) {
-                bestFrame = f;
-            }
-        }
-
-        return bestFrame;
+        return ArrayUtils.ofType(frames, TermsOfUseFrame);
     }
 
     /** @inheritDoc */

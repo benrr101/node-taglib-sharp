@@ -1,9 +1,9 @@
 import {suite, test} from "@testdeck/mocha";
 import {assert} from "chai";
 
+import Frame from "../../src/id3v2/frames/frame";
 import PropertyTests from "../utilities/propertyTests";
 import {ByteVector} from "../../src/byteVector";
-import {Frame, FrameClassType} from "../../src/id3v2/frames/frame";
 import {Id3v2FrameFlags, Id3v2FrameHeader} from "../../src/id3v2/frames/frameHeader";
 import {FrameIdentifiers} from "../../src/id3v2/frameIdentifiers";
 import {Testers} from "../utilities/testers";
@@ -17,10 +17,6 @@ class TestFrame extends Frame {
 
     public constructor(header: Id3v2FrameHeader) {
         super(header);
-    }
-
-    get frameClassType(): FrameClassType {
-        return undefined;
     }
 
     public clone(): Frame {
