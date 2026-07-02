@@ -90,16 +90,6 @@ export class EventTimeCodeFrame extends Frame {
     }
 
     /**
-     * Constructs and initializes a new instance without contents
-     */
-    public static fromEmpty(): EventTimeCodeFrame {
-        // @TODO: Should we be mucking around with the flags like this?
-        const frame = new EventTimeCodeFrame(new Id3v2FrameHeader(FrameIdentifiers.ETCO));
-        frame.flags = Id3v2FrameFlags.FileAlterPreservation;
-        return frame;
-    }
-
-    /**
      * Constructs and initializes a new instance by parsing the fields from the field bytes.
      * @param header Header of the frame
      * @param fieldBytes Bytes that contain the fields of the frame
@@ -153,12 +143,18 @@ export class EventTimeCodeFrame extends Frame {
 
     /**
      * Constructs and initializes a timestamp format set
-     * @param timestampFormat Timestamp format for the event codes stored in this frame
+     * @param timestampFormat Optional, timestamp format for the event codes stored in this frame.
+     *     If omitted, defaults to {@link TimestampFormat.Unknown}.
+     * @param events Optional, list of events to store in the current frame. If omitted, defaults
+     *     to `[]`.
      */
-    public static fromTimestampFormat(timestampFormat: TimestampFormat): EventTimeCodeFrame {
+    public static fromFields(timestampFormat?: TimestampFormat, events?: EventTimeCode[]): EventTimeCodeFrame {
         const frame = new EventTimeCodeFrame(new Id3v2FrameHeader(FrameIdentifiers.ETCO));
-        frame.flags = Id3v2FrameFlags.FileAlterPreservation;
-        frame.timestampFormat = timestampFormat;
+        frame.flags = Id3v2FrameFlags.FileAlterPreservation; // @TODO: Should we be mucking around with flags like this?
+
+        frame._timestampFormat = timestampFormat ?? TimestampFormat.Unknown;
+        frame._events = events ?? [];
+
         return frame;
     }
 
