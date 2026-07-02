@@ -1504,7 +1504,7 @@ export default class Id3v2Tag extends Tag {
         }).sort((a, b) => b.score - a.score)[0].frame;
     }
 
-    private getLyricsFramePreferred(description: string, language: string): UnsynchronizedLyricsFrame {
+    private getLyricsFramePreferred(description: string, language: string): UnsynchronizedLyricsFrame|undefined {
         const frames = UnsynchronizedLyricsFrame.filterFrames(this._frameList);
         if (frames.length < 2) {
             return frames[0];

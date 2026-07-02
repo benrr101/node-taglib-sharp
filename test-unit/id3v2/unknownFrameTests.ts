@@ -89,7 +89,7 @@ const assertFrame = (frame: UnknownFrame, fi: FrameIdentifier, d: ByteVector) =>
         const result = <UnknownFrame> frame.clone();
 
         // Assert
-        assertFrame(result, result.frameId, result.data);
+        assertFrame(result, frame.frameId, frame.data);
     }
 
     @test
