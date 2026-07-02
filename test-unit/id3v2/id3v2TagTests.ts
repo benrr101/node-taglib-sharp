@@ -1522,7 +1522,7 @@ const getTestTagHeader = (version: number, flags: Id3v2TagHeaderFlags, tagSize: 
 
         PropertyTests.propertyRoundTrip(setProp, getProp, "foo");
         assert.strictEqual(tag.frames.length, 1);
-        assert.instanceOf(tag.frames[0], TextInformationFrame);
+        assert.instanceOf(tag.frames[0], UserTextInformationFrame);
         assert.strictEqual((<UserTextInformationFrame> tag.frames[0]).description, desc);
         assert.deepStrictEqual((<UserTextInformationFrame> tag.frames[0]).text, ["foo"]);
 

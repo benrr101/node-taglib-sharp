@@ -23,13 +23,13 @@ const assertFrame = (frame: UrlLinkFrame, identifier: FrameIdentifier, text: str
     }
 
     @test
-    public fromIdentity_falsyIdentity() {
+    public fromIdentifier_falsyIdentity() {
         // Act/Assert
         Testers.testTruthy((v: FrameIdentifier) => { UrlLinkFrame.fromIdentifier(v); });
     }
 
     @test
-    public fromIdentity_validIdentity() {
+    public fromIdentifier_validIdentity() {
         // Act
         const output = UrlLinkFrame.fromIdentifier(FrameIdentifiers.WCOM);
 

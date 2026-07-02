@@ -1,10 +1,10 @@
+import Frame from "./frame";
 import TextInformationFrame from "./textInformationFrame";
 import Id3v2Settings from "../id3v2Settings";
 import {ByteVector, StringType} from "../../byteVector";
-import Frame from "./frame";
 import {Id3v2FrameHeader} from "./frameHeader";
 import {FrameIdentifiers} from "../frameIdentifiers";
-import {ArrayUtils, Guards, StringComparison} from "../../utils";
+import {ArrayUtils, Guards} from "../../utils";
 import {CorruptFileError} from "../../errors";
 
 export default class UserTextInformationFrame extends TextInformationFrame {
