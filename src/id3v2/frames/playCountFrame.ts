@@ -1,9 +1,9 @@
 import Frame from "./frame";
 import {ByteVector} from "../../byteVector";
+import {CorruptFileError, NotSupportedError} from "../../errors";
 import {Id3v2FrameHeader} from "./frameHeader";
 import {FrameIdentifiers} from "../frameIdentifiers";
 import {ArrayUtils, Guards} from "../../utils";
-import {CorruptFileError, NotSupportedError} from "../../errors";
 
 /**
  * This class extends {@link Frame} implementing support for ID3v2 play count (PCNT) frames.
@@ -17,13 +17,6 @@ export default class PlayCountFrame extends Frame {
     }
 
     // #region Constructors
-
-    /**
-     * Constructs and initializes a new instance with a count of zero
-     */
-    public static fromEmpty(): PlayCountFrame {
-        return new PlayCountFrame(new Id3v2FrameHeader(FrameIdentifiers.PCNT));
-    }
 
     /**
      * Constructs and initialized a new instance by parsing values from the field data.
@@ -47,6 +40,20 @@ export default class PlayCountFrame extends Frame {
 
         const frame = new PlayCountFrame(header);
         frame._playCount = fieldBytes.toUlong();
+        return frame;
+    }
+
+    /**
+     * Constructs and initializes a new instance with a play count.
+     * @param playCount Optional, number of times the track has been played. If omitted, defaults
+     *     to `0`.
+     */
+    public static fromFields(playCount: bigint = BigInt(0)): PlayCountFrame {
+        Guards.ulong(playCount, "playCount");
+
+        const frame = new PlayCountFrame(new Id3v2FrameHeader(FrameIdentifiers.PCNT));
+        frame._playCount = playCount;
+
         return frame;
     }
 

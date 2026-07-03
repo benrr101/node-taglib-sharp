@@ -18,16 +18,6 @@ export default class MusicCdIdentifierFrame extends Frame {
     }
 
     /**
-     * Constructs and initializes a new instance with a specified bytes.
-     * @param data Contents of the frame
-     */
-    public static fromData(data: ByteVector): MusicCdIdentifierFrame {
-        const frame = new MusicCdIdentifierFrame(new Id3v2FrameHeader(FrameIdentifiers.MCDI));
-        frame._data = data.toByteVector();
-        return frame;
-    }
-
-    /**
      * Constructs and initialized a new instance by storing the bytes of the frame.
      * @param header Header of the frame
      * @param fieldBytes Bytes that contain the body of the frame
@@ -48,6 +38,18 @@ export default class MusicCdIdentifierFrame extends Frame {
     }
 
     /**
+     * Constructs and initializes a new instance with the specified bytes.
+     * @param data Optional, contents of the frame. If omitted, defaults to an empty
+     *     {@link ByteVector}.
+     */
+    public static fromFields(data?: ByteVector): MusicCdIdentifierFrame {
+        const frame = new MusicCdIdentifierFrame(new Id3v2FrameHeader(FrameIdentifiers.MCDI));
+        frame._data = data ?? ByteVector.empty();
+
+        return frame;
+    }
+
+    /**
      * Gets the identifier data stored in the current instance
      */
     public get data(): ByteVector { return this._data; }
@@ -64,9 +66,7 @@ export default class MusicCdIdentifierFrame extends Frame {
 
     /** @inheritDoc */
     public clone(): MusicCdIdentifierFrame {
-        const frame = new MusicCdIdentifierFrame(new Id3v2FrameHeader(FrameIdentifiers.MCDI));
-        frame.data = this._data.toByteVector();
-        return frame;
+        return MusicCdIdentifierFrame.fromFields(this._data.toByteVector());
     }
 
     /** @inheritDoc */

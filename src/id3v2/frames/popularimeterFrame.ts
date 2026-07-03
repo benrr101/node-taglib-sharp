@@ -11,7 +11,7 @@ import {ArrayUtils, Guards} from "../../utils";
 export default class PopularimeterFrame extends Frame {
     private _playCount: bigint;
     private _rating: number;
-    private _user: string = "";
+    private _user: string;
 
     // #region Constructors
 
@@ -70,11 +70,19 @@ export default class PopularimeterFrame extends Frame {
     /**
      * Constructs and initializes a new instance for a specified user with a rating and play count
      * of zero.
-     * @param user Email of the user that gave the rating
+     * @param user Optional, email of the user that gave the rating. If omitted, defaults to `""`.
+     * @param rating Optional, rating of the track. If omitted, defaults to 0.
+     * @param playCount Optional, number of times the track has been played.
      */
-    public static fromUser(user: string): PopularimeterFrame {
+    public static fromFields(user?: string, rating?: number, playCount?: bigint): PopularimeterFrame {
+        Guards.byteOptional(rating, "rating");
+        Guards.ulongOptional(playCount, "playCount");
+
         const frame = new PopularimeterFrame(new Id3v2FrameHeader(FrameIdentifiers.POPM));
-        frame._user = user;
+        frame._playCount = playCount;
+        frame._rating = rating ?? 0;
+        frame._user = user ?? "";
+
         return frame;
     }
 
@@ -127,10 +135,7 @@ export default class PopularimeterFrame extends Frame {
 
     /** @inheritDoc */
     public clone(): Frame {
-        const frame = PopularimeterFrame.fromUser(this.user);
-        frame.playCount = this.playCount;
-        frame.rating = this.rating;
-        return frame;
+        return PopularimeterFrame.fromFields(this._user, this._rating, this._playCount);
     }
 
     /** @inheritDoc */
