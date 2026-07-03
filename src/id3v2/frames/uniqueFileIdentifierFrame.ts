@@ -19,24 +19,6 @@ export default class UniqueFileIdentifierFrame extends Frame {
     }
 
     /**
-     * Constructs and initializes a new instance using the provided information
-     * @param owner Owner of the new frame. Should be an email or url to the database where this
-     *     unique identifier is applicable
-     * @param identifier Unique identifier to store in the frame. Must be no more than 64 bytes
-     */
-    public static fromData(owner: string, identifier: ByteVector): UniqueFileIdentifierFrame {
-        Guards.notNullOrUndefined(owner, "owner");
-        if (identifier && identifier.length > 64) {
-            throw new Error("Argument out of range: Identifier cannot be longer than 64 bytes");
-        }
-
-        const frame = new UniqueFileIdentifierFrame(new Id3v2FrameHeader(FrameIdentifiers.UFID));
-        frame._owner = owner;
-        frame._identifier = identifier?.toByteVector();
-        return frame;
-    }
-
-    /**
      * Constructs and initializes a new instance by parsing the fields from the field bytes.
      * @param header Header of the frame
      * @param fieldBytes Bytes that contain the fields of the frame
@@ -63,6 +45,25 @@ export default class UniqueFileIdentifierFrame extends Frame {
         const frame = new UniqueFileIdentifierFrame(header);
         frame._owner = fieldBytes.subarray(0, identifierDelimiterOffset).toString(StringType.Latin1);
         frame._identifier = fieldBytes.subarray(identifierDelimiterOffset + delim.length).toByteVector();
+
+        return frame;
+    }
+
+    /**
+     * Constructs and initializes a new instance using the provided information
+     * @param owner Optional, owner of the identifier. Should be an email or url to the database
+     *     where this unique identifier is applicable. If omitted, defaults to `""`.
+     * @param identifier Optional, unique identifier to store in the frame. Must be no more than 64
+     *     bytes. If omitted, defaults to an empty {@link ByteVector}.
+     */
+    public static fromFields(owner?: string, identifier?: ByteVector): UniqueFileIdentifierFrame {
+        if (identifier && identifier.length > 64) {
+            throw new Error("Argument out of range: Identifier cannot be longer than 64 bytes");
+        }
+
+        const frame = new UniqueFileIdentifierFrame(new Id3v2FrameHeader(FrameIdentifiers.UFID));
+        frame._owner = owner ?? "";
+        frame._identifier = identifier?.toByteVector() ?? ByteVector.empty();
 
         return frame;
     }

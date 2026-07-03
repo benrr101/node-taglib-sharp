@@ -68,26 +68,24 @@ export default class CommentsFrame extends Frame {
 
     /**
      * Constructs and initializes a new CommentsFrame from a description
-     * @param text Required, text to store in the contents of the frame.
      * @param description Optional, description of the comment being created. If omitted, defaults
      *     to `""`.
+     * @param text Optional, text of the comment being created. If omitted, defaults to `""`.
      * @param language Optional, ISO-639-2 language code for the new frame. If omitted, defaults to
      *     `XXX`. @TODO: Should this default to unk?
      * @param encoding Optional, text encoding to use when rendering the new frame. If omitted,
      *     defaults to {@link Id3v2Settings.defaultEncoding}.
      */
     public static fromFields(
-        text: string,
         description?: string,
+        text?: string,
         language?: string,
         encoding?: StringType
     ): CommentsFrame {
-        Guards.notNullOrUndefined(text, "text");
-
         const frame = new CommentsFrame(new Id3v2FrameHeader(FrameIdentifiers.COMM));
-        frame._text = text;
         frame._description = description ?? "";
         frame._language = language ?? "XXX";
+        frame._text = text ?? "";
         frame._textEncoding = encoding ?? Id3v2Settings.defaultEncoding;
 
         return frame;

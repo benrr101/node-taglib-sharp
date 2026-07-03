@@ -31,12 +31,14 @@ export default class UnknownFrame extends Frame {
     /**
      * Constructs and initializes a new instance with a specified type
      * @param identifier ID3v2 frame identifier
-     * @param data Contents of the frame
+     * @param data Optional, contents of the frame. If omitted, defaults to an empty
+     *     {@link ByteVector}.
      */
-    public static fromData(identifier: FrameIdentifier, data?: ByteVector): UnknownFrame {
+    public static fromFields(identifier: FrameIdentifier, data?: ByteVector): UnknownFrame {
         Guards.truthy(identifier, "identifier");
 
         const frame = new UnknownFrame(new Id3v2FrameHeader(identifier));
+
         frame.data = data?.toByteVector();
         return frame;
     }
@@ -53,7 +55,7 @@ export default class UnknownFrame extends Frame {
 
     /** @inheritDoc */
     public clone(): Frame {
-        return UnknownFrame.fromData(this.header.frameId, this.data);
+        return UnknownFrame.fromFields(this.frameId, this.data);
     }
 
     /** @inheritDoc */

@@ -107,7 +107,7 @@ const assertFrame = (frame: PrivateFrame, o: string, d: ByteVector) => {
         const frame = PrivateFrame.fromFields("foo");
 
         // Assert
-        assertFrame(frame, "", ByteVector.empty());
+        assertFrame(frame, "foo", ByteVector.empty());
     }
 
     @test
@@ -119,7 +119,7 @@ const assertFrame = (frame: PrivateFrame, o: string, d: ByteVector) => {
         const frame = PrivateFrame.fromFields("foo", bytes);
 
         // Assert
-        assertFrame(frame, "", bytes);
+        assertFrame(frame, "foo", bytes);
     }
 }
 
@@ -173,8 +173,8 @@ const assertFrame = (frame: PrivateFrame, o: string, d: ByteVector) => {
     @test
     public filterFrames_noMatch() {
         // Arrange
-        const frame1 = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.fromUint(123));
-        const frame2 = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.fromUint(234));
+        const frame1 = UnknownFrame.fromFields(FrameIdentifiers.RVRB);
+        const frame2 = UnknownFrame.fromFields(FrameIdentifiers.RVRB);
         const frames = [frame1, frame2];
 
         // Act
@@ -188,7 +188,7 @@ const assertFrame = (frame: PrivateFrame, o: string, d: ByteVector) => {
     @test
     public filterFrames_singleMatch() {
         // Arrange
-        const frame1 = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.fromUint(123));
+        const frame1 = UnknownFrame.fromFields(FrameIdentifiers.RVRB);
         const frame2 = PrivateFrame.fromFields();
         const frames = [frame1, frame2];
 
@@ -203,7 +203,7 @@ const assertFrame = (frame: PrivateFrame, o: string, d: ByteVector) => {
     @test
     public filterFrames_multipleMatches() {
         // Arrange
-        const frame1 = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.fromUint(123));
+        const frame1 = UnknownFrame.fromFields(FrameIdentifiers.RVRB);
         const frame2 = PrivateFrame.fromFields();
         const frame3 = PrivateFrame.fromFields();
 

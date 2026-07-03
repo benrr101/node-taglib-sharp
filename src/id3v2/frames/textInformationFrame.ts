@@ -215,15 +215,22 @@ export default class TextInformationFrame extends Frame {
     /**
      * Constructs and initializes a new instance with a specified identifier
      * @param identifier Byte vector containing the identifier for the frame
-     * @param encoding Optionally, the encoding to use for the new instance. If omitted, defaults
-     *     to {@link Id3v2Settings.defaultEncoding}
+     * @param text Optional, the text to contain in the frame. If omitted, defaults to an empty
+     *     array.
+     * @param textEncoding Optionally, the encoding to use for the new instance. If omitted,
+     *     defaults to {@link Id3v2Settings.defaultEncoding}
      */
-    public static fromIdentifier(
+    public static fromFields(
         identifier: FrameIdentifier,
-        encoding: StringType = Id3v2Settings.defaultEncoding
+        text?: string[],
+        textEncoding?: StringType
     ): TextInformationFrame {
+        Guards.truthy(identifier, "identifier");
+
         const frame = new TextInformationFrame(new Id3v2FrameHeader(identifier));
-        frame._encoding = encoding;
+        frame._encoding = textEncoding ?? Id3v2Settings.defaultEncoding;
+        frame._textFields = text ?? [];
+
         return frame;
     }
 
@@ -274,9 +281,7 @@ export default class TextInformationFrame extends Frame {
 
     /** @inheritDoc */
     public clone(): Frame {
-        const frame = TextInformationFrame.fromIdentifier(this.frameId, this._encoding);
-        frame._textFields = this._textFields.slice();
-        return frame;
+        return TextInformationFrame.fromFields(this.frameId, this._textFields, this._encoding);
     }
 
     /**

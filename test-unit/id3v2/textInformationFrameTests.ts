@@ -22,40 +22,9 @@ const assertFrame = (frame: TextInformationFrame, frameId: FrameIdentifier, text
     assert.strictEqual(frame.textEncoding, encoding);
 }
 
-const getTestFrame = (): TextInformationFrame => {
-    const frame = TextInformationFrame.fromIdentifier(FrameIdentifiers.TCOP, StringType.Latin1);
-    frame.text = ["foo", "bar"];
-
-    return frame;
-}
-
 @suite class Id3v2_TextInformationFrame_ConstructorTests extends FrameConstructorTests {
     public get fromFieldBytes(): (h: Id3v2FrameHeader, d: ByteVector, v: number) => Frame {
         return TextInformationFrame.fromFieldBytes;
-    }
-
-    @test
-    public fromIdentifier_falsyIdentifier() {
-        // Act/Assert
-        Testers.testTruthy((v: FrameIdentifier) => { TextInformationFrame.fromIdentifier(v); });
-    }
-
-    @test
-    public fromIdentifier_noEncoding_returnsFrameWithDefaultEncoding() {
-        // Act
-        const frame = TextInformationFrame.fromIdentifier(FrameIdentifiers.TCOP);
-
-        // Assert
-        assertFrame(frame, FrameIdentifiers.TCOP, [], Id3v2Settings.defaultEncoding);
-    }
-
-    @test
-    public fromIdentifier_withEncoding_returnsFrameWithProvidedEncoding() {
-        // Act
-        const frame = TextInformationFrame.fromIdentifier(FrameIdentifiers.TCOP, StringType.Latin1);
-
-        // Assert
-        assertFrame(frame, FrameIdentifiers.TCOP, [], StringType.Latin1);
     }
 
     @params(2, "v2")
@@ -174,6 +143,39 @@ const getTestFrame = (): TextInformationFrame => {
         // Assert
         assertFrame(frame,FrameIdentifiers.TCOP, ["fux", "bux"], encoding);
     }
+
+    @test
+    public fromFields_falsyIdentifier() {
+        // Act/Assert
+        Testers.testTruthy((v: FrameIdentifier) => { TextInformationFrame.fromFields(v); });
+    }
+
+    @test
+    public fromFields_withIdentifier() {
+        // Act
+        const frame = TextInformationFrame.fromFields(FrameIdentifiers.TCOP);
+
+        // Assert
+        assertFrame(frame, FrameIdentifiers.TCOP, [], Id3v2Settings.defaultEncoding);
+    }
+
+    @test
+    public fromFields_withIdentifierText() {
+        // Act
+        const frame = TextInformationFrame.fromFields(FrameIdentifiers.TCOP, ["foo", "bar"]);
+
+        // Assert
+        assertFrame(frame, FrameIdentifiers.TCOP, ["foo", "bar"], Id3v2Settings.defaultEncoding);
+    }
+
+    @test
+    public fromFields_withIdentifierTextEncoding() {
+        // Act
+        const frame = TextInformationFrame.fromFields(FrameIdentifiers.TCOP, ["foo", "bar"], StringType.UTF16BE);
+
+        // Assert
+        assertFrame(frame, FrameIdentifiers.TCOP, ["foo", "bar"], StringType.UTF16BE);
+    }
 }
 
 @suite class Id3v2_TextInformationFrame_PropertyTests {
@@ -183,7 +185,7 @@ const getTestFrame = (): TextInformationFrame => {
     @params(["bar"], "truthy")
     public text_values(value: string[]) {
         // Arrange
-        const frame = TextInformationFrame.fromIdentifier(FrameIdentifiers.TCOP);
+        const frame = TextInformationFrame.fromFields(FrameIdentifiers.TCOP);
 
         // Act
         frame.text = value;
@@ -195,7 +197,7 @@ const getTestFrame = (): TextInformationFrame => {
     @test
     public encoding() {
         // Arrange
-        const frame = getTestFrame();
+        const frame = TextInformationFrame.fromFields(FrameIdentifiers.TCOP, ["foo"]);
         const get = () => frame.textEncoding;
         const set = (v: StringType) => { frame.textEncoding = v; };
 
@@ -208,7 +210,7 @@ const getTestFrame = (): TextInformationFrame => {
     @test
     public clone_returnsCopy() {
         // Arrange
-        const frame = getTestFrame();
+        const frame = TextInformationFrame.fromFields(FrameIdentifiers.TCOP, ["foo"], StringType.UTF16LE);
 
         // Act
         const output = <TextInformationFrame> frame.clone();
@@ -239,8 +241,8 @@ const getTestFrame = (): TextInformationFrame => {
     @test
     public filterFrames_noIdentifier_noMatch() {
         // Arrange
-        const frame1 = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.fromUint(123));
-        const frame2 = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.fromUint(234));
+        const frame1 = UnknownFrame.fromFields(FrameIdentifiers.RVRB);
+        const frame2 = UnknownFrame.fromFields(FrameIdentifiers.RVRB);
         const frames = [frame1, frame2];
 
         // Act
@@ -254,8 +256,8 @@ const getTestFrame = (): TextInformationFrame => {
     @test
     public filterFrames_noIdentifier_singleMatch() {
         // Arrange
-        const frame1 = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.fromUint(123));
-        const frame2 = TextInformationFrame.fromIdentifier(FrameIdentifiers.TCOP);
+        const frame1 = UnknownFrame.fromFields(FrameIdentifiers.RVRB);
+        const frame2 = TextInformationFrame.fromFields(FrameIdentifiers.TCOP);
         const frames = [frame1, frame2];
 
         // Act
@@ -269,9 +271,9 @@ const getTestFrame = (): TextInformationFrame => {
     @test
     public filterFrames_noIdentifier_multipleMatches() {
         // Arrange
-        const frame1 = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.fromUint(123));
-        const frame2 = TextInformationFrame.fromIdentifier(FrameIdentifiers.TCOP);
-        const frame3 = TextInformationFrame.fromIdentifier(FrameIdentifiers.TCOP);
+        const frame1 = UnknownFrame.fromFields(FrameIdentifiers.RVRB);
+        const frame2 = TextInformationFrame.fromFields(FrameIdentifiers.TCOP);
+        const frame3 = TextInformationFrame.fromFields(FrameIdentifiers.TCOP);
 
         const frames = [frame1, frame2, frame3];
 
@@ -286,8 +288,8 @@ const getTestFrame = (): TextInformationFrame => {
     @test
     public filterFrames_noIdentifier_allMatches() {
         // Arrange
-        const frame1 = TextInformationFrame.fromIdentifier(FrameIdentifiers.TCOP);
-        const frame2 = TextInformationFrame.fromIdentifier(FrameIdentifiers.TCOP);
+        const frame1 = TextInformationFrame.fromFields(FrameIdentifiers.TCOP);
+        const frame2 = TextInformationFrame.fromFields(FrameIdentifiers.TCOP);
         const frames = [frame1, frame2];
 
         // Act
@@ -314,8 +316,8 @@ const getTestFrame = (): TextInformationFrame => {
     @test
     public filterFrames_withIdentifier_noMatch() {
         // Arrange
-        const frame1 = TextInformationFrame.fromIdentifier(FrameIdentifiers.TCOM);
-        const frame2 = TextInformationFrame.fromIdentifier(FrameIdentifiers.TCOM);
+        const frame1 = TextInformationFrame.fromFields(FrameIdentifiers.TCOM);
+        const frame2 = TextInformationFrame.fromFields(FrameIdentifiers.TCOM);
         const frames = [frame1, frame2];
 
         // Act
@@ -329,8 +331,8 @@ const getTestFrame = (): TextInformationFrame => {
     @test
     public filterFrames_withIdentifier_singleMatch() {
         // Arrange
-        const frame1 = TextInformationFrame.fromIdentifier(FrameIdentifiers.TCOM);
-        const frame2 = TextInformationFrame.fromIdentifier(FrameIdentifiers.TCOP);
+        const frame1 = TextInformationFrame.fromFields(FrameIdentifiers.TCOM);
+        const frame2 = TextInformationFrame.fromFields(FrameIdentifiers.TCOP);
         const frames = [frame1, frame2];
 
         // Act
@@ -344,9 +346,9 @@ const getTestFrame = (): TextInformationFrame => {
     @test
     public filterFrames_withIdentifier_multipleMatches() {
         // Arrange
-        const frame1 = TextInformationFrame.fromIdentifier(FrameIdentifiers.TCOM);
-        const frame2 = TextInformationFrame.fromIdentifier(FrameIdentifiers.TCOP);
-        const frame3 = TextInformationFrame.fromIdentifier(FrameIdentifiers.TCOP);
+        const frame1 = TextInformationFrame.fromFields(FrameIdentifiers.TCOM);
+        const frame2 = TextInformationFrame.fromFields(FrameIdentifiers.TCOP);
+        const frame3 = TextInformationFrame.fromFields(FrameIdentifiers.TCOP);
 
         const frames = [frame1, frame2, frame3];
 
@@ -361,8 +363,8 @@ const getTestFrame = (): TextInformationFrame => {
     @test
     public filterFrames_withIdentifier_allMatches() {
         // Arrange
-        const frame1 = TextInformationFrame.fromIdentifier(FrameIdentifiers.TCOP);
-        const frame2 = TextInformationFrame.fromIdentifier(FrameIdentifiers.TCOP);
+        const frame1 = TextInformationFrame.fromFields(FrameIdentifiers.TCOP);
+        const frame2 = TextInformationFrame.fromFields(FrameIdentifiers.TCOP);
         const frames = [frame1, frame2];
 
         // Act
@@ -378,8 +380,7 @@ const getTestFrame = (): TextInformationFrame => {
     @params(4, "v4")
     public render_empty_returnEmptyVector(version: number) {
         // Arrange
-        const frame = TextInformationFrame.fromIdentifier(FrameIdentifiers.TALB);
-        frame.text = [];
+        const frame = TextInformationFrame.fromFields(FrameIdentifiers.TALB, []);
 
         // Act
         const result = frame.render(version);
@@ -394,8 +395,7 @@ const getTestFrame = (): TextInformationFrame => {
     @params(4, "v4")
     public render_falsyValues_returnEmptyVector(version: number) {
         // Arrange
-        const frame = TextInformationFrame.fromIdentifier(FrameIdentifiers.TALB);
-        frame.text = [undefined, null, ""];
+        const frame = TextInformationFrame.fromFields(FrameIdentifiers.TALB, [undefined, null, ""]);
 
         // Act
         const result = frame.render(version);
@@ -409,8 +409,7 @@ const getTestFrame = (): TextInformationFrame => {
     @params(StringType.UTF16BE, "multi_byte")
     public render_v4EncodingTest(encoding: StringType) {
         // Arrange
-        const frame = TextInformationFrame.fromIdentifier(FrameIdentifiers.TALB, encoding);
-        frame.text = ["foo", "bar", "baz"]
+        const frame = TextInformationFrame.fromFields(FrameIdentifiers.TALB, ["foo", "bar", "baz"], encoding);
 
         // Act
         const result = frame.render(4);
@@ -437,8 +436,7 @@ const getTestFrame = (): TextInformationFrame => {
     @params([3, StringType.UTF16BE], "v3_multi_byte")
     public render_v3WithSplit([version, encoding]: [number, StringType]) {
         // Arrange
-        const frame = TextInformationFrame.fromIdentifier(FrameIdentifiers.TCOP, encoding);
-        frame.text = ["fux", "bux"]
+        const frame = TextInformationFrame.fromFields(FrameIdentifiers.TCOP, ["fux", "bux"], encoding);
 
         // Act
         const output = frame.render(version);
@@ -461,8 +459,7 @@ const getTestFrame = (): TextInformationFrame => {
     @params([3, StringType.UTF16BE], "v3_multi_byte")
     public render_v3WithoutSplit([version, encoding]: [number, StringType]) {
         // Arrange
-        const frame = TextInformationFrame.fromIdentifier(FrameIdentifiers.TCOP, encoding);
-        frame.text = ["fux"];
+        const frame = TextInformationFrame.fromFields(FrameIdentifiers.TCOP, ["fux"], encoding);
 
         // Act
         const output = frame.render(version);
@@ -484,8 +481,7 @@ const getTestFrame = (): TextInformationFrame => {
     @params([["foo", "bar"], "foo; bar"], "multiple")
     public toString_returnsText([text, expected]: [string[], string]) {
         // Arrange
-        const frame = TextInformationFrame.fromIdentifier(FrameIdentifiers.TCOP);
-        frame.text = text;
+        const frame = TextInformationFrame.fromFields(FrameIdentifiers.TCOP, text);
 
         // Act
         const result = frame.toString();

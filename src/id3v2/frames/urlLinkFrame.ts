@@ -67,11 +67,16 @@ export default class UrlLinkFrame extends Frame {
 
     /**
      * Constructs and initializes an empty frame with the provided frame identity
-     * @param ident Identity of the frame to construct
+     * @param ident Identity of the frame to construct. Required.
+     * @param text Optional, text to store as the url for the frame. If omitted, defaults to `""`.
      */
-    public static fromIdentifier(ident: FrameIdentifier): UrlLinkFrame {
+    public static fromFields(ident: FrameIdentifier, text?: string): UrlLinkFrame {
         Guards.truthy(ident, "ident");
-        return new UrlLinkFrame(new Id3v2FrameHeader(ident));
+
+        const frame = new UrlLinkFrame(new Id3v2FrameHeader(ident));
+        frame._text = text;
+
+        return frame;
     }
 
     // #endregion
@@ -101,9 +106,7 @@ export default class UrlLinkFrame extends Frame {
 
     /** @inheritDoc */
     public clone(): UrlLinkFrame {
-        const frame = UrlLinkFrame.fromIdentifier(this.frameId);
-        frame._text = this._text;
-        return frame;
+        return UrlLinkFrame.fromFields(this.frameId, this._text);
     }
 
     /** @inheritDoc */

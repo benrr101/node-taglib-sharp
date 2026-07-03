@@ -428,8 +428,8 @@ const assertFrame = (
     @test
     public filterFrames_noMatch() {
         // Arrange
-        const frame1 = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.fromUint(123));
-        const frame2 = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.fromUint(234));
+        const frame1 = UnknownFrame.fromFields(FrameIdentifiers.RVRB);
+        const frame2 = UnknownFrame.fromFields(FrameIdentifiers.RVRB);
         const frames = [frame1, frame2];
 
         // Act
@@ -443,7 +443,7 @@ const assertFrame = (
     @test
     public filterFrames_singleMatch() {
         // Arrange
-        const frame1 = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.fromUint(123));
+        const frame1 = UnknownFrame.fromFields(FrameIdentifiers.RVRB);
         const frame2 = SynchronizedLyricsFrame.fromInfo("foo", "bar", SynchronizedTextType.Other);
         const frames = [frame1, frame2];
 
@@ -458,7 +458,7 @@ const assertFrame = (
     @test
     public filterFrames_multipleMatches() {
         // Arrange
-        const frame1 = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.fromUint(123));
+        const frame1 = UnknownFrame.fromFields(FrameIdentifiers.RVRB);
         const frame2 = SynchronizedLyricsFrame.fromInfo("foo", "bar", SynchronizedTextType.Other);
         const frame3 = SynchronizedLyricsFrame.fromInfo("foo", "bar", SynchronizedTextType.Other);
 

@@ -55,10 +55,8 @@ export default class PrivateFrame extends Frame {
      *     an empty {@link ByteVector}.
      */
     public static fromFields(owner?: string, privateData?: ByteVector): PrivateFrame {
-        Guards.truthy(owner, "owner");
-
         const frame = new PrivateFrame(new Id3v2FrameHeader(FrameIdentifiers.PRIV));
-        frame._owner = owner;
+        frame._owner = owner ?? "";
         frame._privateData = privateData ?? ByteVector.empty();
 
         return frame;

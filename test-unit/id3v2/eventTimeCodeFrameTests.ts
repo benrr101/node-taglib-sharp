@@ -264,8 +264,8 @@ const assertFrame = (frame: EventTimeCodeFrame, e: EventTimeCode[], t: Timestamp
     @test
     public filterFrames_noMatch() {
         // Arrange
-        const frame1 = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.fromUint(123));
-        const frame2 = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.fromUint(234));
+        const frame1 = UnknownFrame.fromFields(FrameIdentifiers.RVRB);
+        const frame2 = UnknownFrame.fromFields(FrameIdentifiers.RVRB);
         const frames = [frame1, frame2];
 
         // Act
@@ -279,7 +279,7 @@ const assertFrame = (frame: EventTimeCodeFrame, e: EventTimeCode[], t: Timestamp
     @test
     public filterFrames_singleMatch() {
         // Arrange
-        const frame1 = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.fromUint(123));
+        const frame1 = UnknownFrame.fromFields(FrameIdentifiers.RVRB);
         const frame2 = EventTimeCodeFrame.fromFields();
         const frames = [frame1, frame2];
 
@@ -294,7 +294,7 @@ const assertFrame = (frame: EventTimeCodeFrame, e: EventTimeCode[], t: Timestamp
     @test
     public filterFrames_multipleMatches() {
         // Arrange
-        const frame1 = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.fromUint(123));
+        const frame1 = UnknownFrame.fromFields(FrameIdentifiers.RVRB);
         const frame2 = EventTimeCodeFrame.fromFields();
         const frame3 = EventTimeCodeFrame.fromFields();
 
