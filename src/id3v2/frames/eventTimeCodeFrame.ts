@@ -192,10 +192,7 @@ export class EventTimeCodeFrame extends Frame {
 
     /** @inheritDoc */
     public clone(): Frame {
-        const frame = new EventTimeCodeFrame(this.header);
-        frame.timestampFormat = this.timestampFormat;
-        frame.events = this.events.map((i) => i.clone());
-        return frame;
+        return EventTimeCodeFrame.fromFields(this._timestampFormat, this._events.map(i => i.clone()));
     }
 
     /** @inheritDoc */

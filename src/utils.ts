@@ -144,6 +144,11 @@ export class Guards {
             throw new Error(`Argument out of range: ${name} must be a positive, 64-bit integer`);
         }
     }
+
+    public static ulongOptional(value: bigint|undefined, name: string): void {
+        if (value === undefined) { return; }
+        Guards.ulong(value, name);
+    }
 }
 
 export class StringComparison {

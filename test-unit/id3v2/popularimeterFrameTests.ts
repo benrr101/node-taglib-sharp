@@ -26,15 +26,6 @@ const assertFrame = (frame: PopularimeterFrame, u: string, p: bigint, r: number)
         return PopularimeterFrame.fromFieldBytes;
     }
 
-    @test
-    public fromUser() {
-        // Act
-        const frame = PopularimeterFrame.fromUser("fux");
-
-        // Assert
-        assertFrame(frame, "fux", undefined, 0);
-    }
-
     @params(2, "v2")
     @params(3, "v3")
     @params(4, "v4")
@@ -154,13 +145,49 @@ const assertFrame = (frame: PopularimeterFrame, u: string, p: bigint, r: number)
         // Assert
         assertFrame(frame, "foo@example.com", BigInt("72623859790382856"), 0xAB);
     }
+
+    @test
+    public fromFields_noParams() {
+        // Act
+        const frame = PopularimeterFrame.fromFields();
+
+        // Assert
+        assertFrame(frame, "", undefined, 0);
+    }
+
+    @test
+    public fromFields_withOwner() {
+        // Act
+        const frame = PopularimeterFrame.fromFields("foo");
+
+        // Assert
+        assertFrame(frame, "foo", undefined, 0);
+    }
+
+    @test
+    public fromFields_withOwnerRating() {
+        // Act
+        const frame = PopularimeterFrame.fromFields("foo", 123);
+
+        // Assert
+        assertFrame(frame, "foo", undefined, 123);
+    }
+
+    @test
+    public fromFields_withOwnerRatingPlayCount() {
+        // Act
+        const frame = PopularimeterFrame.fromFields("foo", 123, BigInt(45678));
+
+        // Assert
+        assertFrame(frame, "foo", BigInt(45678), 123);
+    }
 }
 
 @suite class Id3v2_PopularimeterFrame_PropertyTests {
     @test
     public playCount() {
         // Arrange
-        const frame = PopularimeterFrame.fromUser("fux");
+        const frame = PopularimeterFrame.fromFields();
         const set = (v: bigint) => { frame.playCount = v; };
         const get = () => frame.playCount;
 
@@ -174,7 +201,7 @@ const assertFrame = (frame: PopularimeterFrame, u: string, p: bigint, r: number)
     @test
     public rating() {
         // Arrange
-        const frame = PopularimeterFrame.fromUser("fux");
+        const frame = PopularimeterFrame.fromFields();
         const set = (v: number) => { frame.rating = v; };
         const get = () => frame.rating;
 
@@ -188,7 +215,7 @@ const assertFrame = (frame: PopularimeterFrame, u: string, p: bigint, r: number)
     @test
     public user() {
         // Arrange
-        const frame = PopularimeterFrame.fromUser("fux");
+        const frame = PopularimeterFrame.fromFields();
         const set = (v: string) => { frame.user = v; };
         const get = () => frame.user;
 
@@ -203,9 +230,7 @@ const assertFrame = (frame: PopularimeterFrame, u: string, p: bigint, r: number)
     @test
     public clone() {
         // Arrange
-        const frame = PopularimeterFrame.fromUser("fux");
-        frame.playCount = BigInt(1234);
-        frame.rating = 5;
+        const frame = PopularimeterFrame.fromFields("fux", 5, BigInt(1234));
 
         // Act
         const output = <PopularimeterFrame> frame.clone();
@@ -252,7 +277,7 @@ const assertFrame = (frame: PopularimeterFrame, u: string, p: bigint, r: number)
     public filterFrames_singleMatch() {
         // Arrange
         const frame1 = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.fromUint(123));
-        const frame2 = PopularimeterFrame.fromUser("foo");
+        const frame2 = PopularimeterFrame.fromFields();
         const frames = [frame1, frame2];
 
         // Act
@@ -267,8 +292,8 @@ const assertFrame = (frame: PopularimeterFrame, u: string, p: bigint, r: number)
     public filterFrames_multipleMatches() {
         // Arrange
         const frame1 = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.fromUint(123));
-        const frame2 = PopularimeterFrame.fromUser("foo");
-        const frame3 = PopularimeterFrame.fromUser("bar");
+        const frame2 = PopularimeterFrame.fromFields();
+        const frame3 = PopularimeterFrame.fromFields();
 
         const frames = [frame1, frame2, frame3];
 
@@ -283,8 +308,8 @@ const assertFrame = (frame: PopularimeterFrame, u: string, p: bigint, r: number)
     @test
     public filterFrames_allMatches() {
         // Arrange
-        const frame1 = PopularimeterFrame.fromUser("foo");
-        const frame2 = PopularimeterFrame.fromUser("bar");
+        const frame1 = PopularimeterFrame.fromFields();
+        const frame2 = PopularimeterFrame.fromFields();
         const frames = [frame1, frame2];
 
         // Act
@@ -300,8 +325,7 @@ const assertFrame = (frame: PopularimeterFrame, u: string, p: bigint, r: number)
     @params(4, "v4")
     public render_noPlayCount(version: number) {
         // Arrange
-        const frame = PopularimeterFrame.fromUser("foo@example.com");
-        frame.rating = 0xAB;
+        const frame = PopularimeterFrame.fromFields("foo@example.com", 0xAB);
 
         // Act
         const output = frame.render(version);
@@ -323,9 +347,7 @@ const assertFrame = (frame: PopularimeterFrame, u: string, p: bigint, r: number)
     @params(4, "v4")
     public render_fourBytePlayCount(version: number) {
         // Arrange
-        const frame = PopularimeterFrame.fromUser("foo@example.com");
-        frame.playCount = BigInt(1234);
-        frame.rating = 0xAB;
+        const frame = PopularimeterFrame.fromFields("foo@example.com", 0xAB, BigInt(1234));
 
         // Act
         const output = frame.render(version);
@@ -348,9 +370,7 @@ const assertFrame = (frame: PopularimeterFrame, u: string, p: bigint, r: number)
     @params(4, "v4")
     public render_sixBytePlayCount(version: number) {
         // Arrange
-        const frame = PopularimeterFrame.fromUser("foo@example.com");
-        frame.playCount = BigInt("1108152157446");
-        frame.rating = 0xAB;
+        const frame = PopularimeterFrame.fromFields("foo@example.com", 0xAB, BigInt("1108152157446"));
 
         // Act
         const output = frame.render(version);
@@ -373,9 +393,7 @@ const assertFrame = (frame: PopularimeterFrame, u: string, p: bigint, r: number)
     @params(4, "v4")
     public render_eightBytePlayCount(version: number) {
         // Arrange
-        const frame = PopularimeterFrame.fromUser("foo@example.com");
-        frame.playCount = BigInt("72623859790382856");
-        frame.rating = 0xAB;
+        const frame = PopularimeterFrame.fromFields("foo@example.com", 0xAB, BigInt("72623859790382856"));
 
         // Act
         const output = frame.render(version);

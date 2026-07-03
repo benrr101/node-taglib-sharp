@@ -50,12 +50,17 @@ export default class PrivateFrame extends Frame {
 
     /**
      * Constructs and initializes a new instance with the provided owner
-     * @param owner Owner of the private frame
+     * @param owner Optional, owner of the private frame. If omitted, defaults to `""`.
+     * @param privateData Optional, private data contained in the frame. If omitted, defaults to
+     *     an empty {@link ByteVector}.
      */
-    public static fromOwner(owner: string): PrivateFrame {
+    public static fromFields(owner?: string, privateData?: ByteVector): PrivateFrame {
+        Guards.truthy(owner, "owner");
+
         const frame = new PrivateFrame(new Id3v2FrameHeader(FrameIdentifiers.PRIV));
         frame._owner = owner;
-        frame._privateData = ByteVector.empty();
+        frame._privateData = privateData ?? ByteVector.empty();
+
         return frame;
     }
 
@@ -88,9 +93,7 @@ export default class PrivateFrame extends Frame {
 
     /** @inheritDoc */
     public clone(): Frame {
-        const frame = PrivateFrame.fromOwner(this._owner);
-        frame._privateData = this._privateData.toByteVector();
-        return frame;
+        return PrivateFrame.fromFields(this._owner, this._privateData.toByteVector());
     }
 
     /** @inheritDoc */

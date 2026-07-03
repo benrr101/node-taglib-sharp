@@ -26,15 +26,6 @@ const assertFrame = (frame: PrivateFrame, o: string, d: ByteVector) => {
     }
 
     @test
-    public fromOwner_validParams_returnsFrame() {
-        // Act
-        const frame = PrivateFrame.fromOwner("foo");
-
-        // Assert
-        assertFrame(frame, "foo", ByteVector.empty());
-    }
-
-    @test
     public fromFieldBytes_tooFewBytes_throws() {
         // Arrange
         const fieldBytes = ByteVector.empty();
@@ -100,13 +91,43 @@ const assertFrame = (frame: PrivateFrame, o: string, d: ByteVector) => {
         // Assert
         assertFrame(frame, "foo", dataBytes);
     }
+
+    @test
+    public fromFields_noParams() {
+        // Act
+        const frame = PrivateFrame.fromFields();
+
+        // Assert
+        assertFrame(frame, "", ByteVector.empty());
+    }
+
+    @test
+    public fromFields_withOwner() {
+        // Act
+        const frame = PrivateFrame.fromFields("foo");
+
+        // Assert
+        assertFrame(frame, "", ByteVector.empty());
+    }
+
+    @test
+    public fromFields_withOwnerData() {
+        // Arrange
+        const bytes = ByteVector.fromUint(123);
+
+        // Act
+        const frame = PrivateFrame.fromFields("foo", bytes);
+
+        // Assert
+        assertFrame(frame, "", bytes);
+    }
 }
 
 @suite class Id3v2_PrivateFrame_PropertyTests {
     @test
     public privateData() {
         // Arrange
-        const frame = PrivateFrame.fromOwner("fux");
+        const frame = PrivateFrame.fromFields();
 
         // Act / Assert
         PropertyTests.propertyRoundTrip(
@@ -121,10 +142,10 @@ const assertFrame = (frame: PrivateFrame, o: string, d: ByteVector) => {
     @test
     public clone() {
         // Arrange
-        const frame = PrivateFrame.fromOwner("fux");
+        const frame = PrivateFrame.fromFields("fux", ByteVector.fromUint(1234));
 
         // Act
-        const output = <PrivateFrame> frame.clone();
+        const output = <PrivateFrame>frame.clone();
 
         // Assert
         assertFrame(output, frame.owner, frame.privateData);
@@ -168,7 +189,7 @@ const assertFrame = (frame: PrivateFrame, o: string, d: ByteVector) => {
     public filterFrames_singleMatch() {
         // Arrange
         const frame1 = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.fromUint(123));
-        const frame2 = PrivateFrame.fromOwner("foo");
+        const frame2 = PrivateFrame.fromFields();
         const frames = [frame1, frame2];
 
         // Act
@@ -183,8 +204,8 @@ const assertFrame = (frame: PrivateFrame, o: string, d: ByteVector) => {
     public filterFrames_multipleMatches() {
         // Arrange
         const frame1 = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.fromUint(123));
-        const frame2 = PrivateFrame.fromOwner("foo");
-        const frame3 = PrivateFrame.fromOwner("bar");
+        const frame2 = PrivateFrame.fromFields();
+        const frame3 = PrivateFrame.fromFields();
 
         const frames = [frame1, frame2, frame3];
 
@@ -199,8 +220,8 @@ const assertFrame = (frame: PrivateFrame, o: string, d: ByteVector) => {
     @test
     public filterFrames_allMatches() {
         // Arrange
-        const frame1 = PrivateFrame.fromOwner("foo");
-        const frame2 = PrivateFrame.fromOwner("bar");
+        const frame1 = PrivateFrame.fromFields();
+        const frame2 = PrivateFrame.fromFields();
         const frames = [frame1, frame2];
 
         // Act
@@ -214,7 +235,7 @@ const assertFrame = (frame: PrivateFrame, o: string, d: ByteVector) => {
     @test
     public render_v2_throws() {
         // Arrange
-        const frame = PrivateFrame.fromOwner("foo");
+        const frame = PrivateFrame.fromFields();
 
         // Act / Assert
         assert.throws(() => frame.render(2));
