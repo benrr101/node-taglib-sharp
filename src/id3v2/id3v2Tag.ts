@@ -1174,6 +1174,8 @@ export default class Id3v2Tag extends Tag {
             }
         });
 
+        // @TODO: Determine what to do with empty frames, maybe even have a setting to enable writing them
+
         // Put the tag data together and unsynchronize it.
         let frameBytes = ByteVector.concatenate(... renderedFrames);
         if (unsyncAtTagLevel) {

@@ -2,10 +2,10 @@ import Frame from "./frame";
 import Genres from "../../genres";
 import Id3v2Settings from "../id3v2Settings";
 import {ByteVector, StringType} from "../../byteVector";
+import {CorruptFileError} from "../../errors";
 import {Id3v2FrameHeader} from "./frameHeader";
 import {FrameIdentifiers} from "../frameIdentifiers";
 import {ArrayUtils, Guards, StringUtils} from "../../utils";
-import {CorruptFileError} from "../../errors";
 
 /**
  * This class provides support for ID3v2 TCON content type frames.
@@ -23,19 +23,6 @@ export default class GenreFrame extends Frame {
 
     private constructor(header: Id3v2FrameHeader) {
         super(header);
-    }
-
-    /**
-     * Constructs and initializes a new instance.
-     * @param encoding Optionally, the encoding to use for the new instance. If omitted, defaults
-     *     to {@link Id3v2Settings.defaultEncoding}
-     */
-    public static fromEncoding(
-        encoding: StringType = Id3v2Settings.defaultEncoding
-    ): GenreFrame {
-        const frame = new GenreFrame(new Id3v2FrameHeader(FrameIdentifiers.TCON));
-        frame._encoding = encoding;
-        return frame;
     }
 
     /**
@@ -127,6 +114,21 @@ export default class GenreFrame extends Frame {
         }
 
         frame._textFields = fieldList;
+
+        return frame;
+    }
+
+    /**
+     * Constructs and initializes a new instance.
+     * @param text Optional, the genres to store in the new instance. If omitted, defaults to an
+     *     empty array.
+     * @param encoding Optional, the encoding to use for the new instance. If omitted, defaults to
+     *     {@link Id3v2Settings.defaultEncoding}.
+     */
+    public static fromFields(text?: string[], encoding?: StringType): GenreFrame {
+        const frame = new GenreFrame(new Id3v2FrameHeader(FrameIdentifiers.TCON));
+        frame._textFields = text?.slice() ?? []; // @TODO: Do we really need to make a copy?
+        frame._encoding = encoding ?? Id3v2Settings.defaultEncoding;
 
         return frame;
     }
