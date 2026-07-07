@@ -2,33 +2,20 @@ import Frame from "./frame";
 import TextInformationFrame from "./textInformationFrame";
 import Id3v2Settings from "../id3v2Settings";
 import {ByteVector, StringType} from "../../byteVector";
+import {CorruptFileError} from "../../errors";
 import {Id3v2FrameHeader} from "./frameHeader";
 import {FrameIdentifiers} from "../frameIdentifiers";
 import {ArrayUtils, Guards} from "../../utils";
-import {CorruptFileError} from "../../errors";
 
-export default class UserTextInformationFrame extends TextInformationFrame {
+export default class UserTextInformationFrame extends Frame {
     private _description: string;
+    private _encoding: StringType;
+    private _textFields: string[];
 
     // #region Constructors
 
     private constructor(header: Id3v2FrameHeader) {
         super(header);
-    }
-
-    /**
-     * Constructs and initializes a new instance with a specified description and text encoding.
-     * @param description Description of the new frame
-     * @param encoding Text encoding to use when rendering the new frame
-     */
-    public static fromDescription(
-        description: string,
-        encoding: StringType = Id3v2Settings.defaultEncoding
-    ): UserTextInformationFrame {
-        const frame = new UserTextInformationFrame(new Id3v2FrameHeader(FrameIdentifiers.TXXX));
-        frame._encoding = encoding;
-        frame._description = description;
-        return frame;
     }
 
     /**
@@ -73,6 +60,24 @@ export default class UserTextInformationFrame extends TextInformationFrame {
         return frame;
     }
 
+    /**
+     * Constructs and initializes a new instance with a specified description, url, and text
+     * encoding.
+     * @param description Optional, description of the new frame. If omitted, defaults to `""`.
+     * @param text Optional, text fields to store in the new frame. If omitted, defaults to an
+     *     empty array.
+     * @param encoding Optional, text encoding to use when rendering the new frame. If omitted,
+     *     defaults to {@link Id3v2Settings.defaultEncoding}.
+     */
+    public static fromFields(description?: string, text?: string[], encoding?: StringType
+    ): UserTextInformationFrame {
+        const frame = new UserTextInformationFrame(new Id3v2FrameHeader(FrameIdentifiers.TXXX));
+        frame._encoding = encoding ?? Id3v2Settings.defaultEncoding;
+        frame._description = description ?? "";
+        frame._textFields = text ?? [];
+        return frame;
+    }
+
     // #endregion
 
     // #region Properties
@@ -92,6 +97,7 @@ export default class UserTextInformationFrame extends TextInformationFrame {
      * Gets the text contained in the current instance.
      * NOTE: Modifying the contents of the returned value will not modify the contents of the
      * current instance. The value must be reassigned for the value to change.
+     * @TODO: What's the benefit of doing this?
      */
     public get text(): string[] { return this._textFields.slice(); }
     /**
@@ -99,6 +105,16 @@ export default class UserTextInformationFrame extends TextInformationFrame {
      * @param value Array of text values to store in the current instance
      */
     public set text(value: string[]) { this._textFields = value ? value.slice() : []; }
+
+    /**
+     * Gets the text encoding to use when rendering the current instance.
+     */
+    public get textEncoding(): StringType { return this._encoding; }
+    /**
+     * Sets the text encoding to use when rendering the current instance.
+     * This value will be overridden if {@link Id3v2Settings.forceDefaultEncoding} is `true`.
+     */
+    public set textEncoding(value: StringType) { this._encoding = value; }
 
     // #endregion
 
@@ -111,14 +127,12 @@ export default class UserTextInformationFrame extends TextInformationFrame {
 
     /** @inheritDoc */
     public clone(): Frame {
-        const frame = UserTextInformationFrame.fromDescription(this._description, this._encoding);
-        frame._textFields = this._textFields.slice();
-        return frame;
+        return UserTextInformationFrame.fromFields(this._description, this._textFields.slice(), this._encoding);
     }
 
     /** @inheritDoc */
     public toString(): string {
-        return `[${this.description}] ${super.toString()}`;
+        return `[${this._description}] ${this._textFields.join("; ")}`;
     }
 
     /** @inheritDoc */

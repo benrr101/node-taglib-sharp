@@ -17,7 +17,7 @@ const assertFrame = (frame: UserUrlLinkFrame, description: string, text: string,
     assert.strictEqual(frame.frameId, FrameIdentifiers.WXXX);
 
     assert.strictEqual(frame.description, description);
-    assert.strictEqual(frame.text, text);
+    assert.strictEqual(frame.url, text);
     assert.equal(frame.textEncoding, encoding);
 }
 
@@ -35,7 +35,7 @@ const assertFrame = (frame: UserUrlLinkFrame, description: string, text: string,
         assert.isOk(frame);
         assert.strictEqual(frame.frameId, FrameIdentifiers.WXXX);
         assert.strictEqual(frame.description, "foo");
-        assert.strictEqual(frame.text, "bar");
+        assert.strictEqual(frame.url, "bar");
         assert.strictEqual(frame.textEncoding, Id3v2Settings.defaultEncoding);
     }
 
@@ -164,7 +164,7 @@ const assertFrame = (frame: UserUrlLinkFrame, description: string, text: string,
 
         // Assert
         assert.strictEqual(frame.description, value);
-        assert.strictEqual(frame.text, "bar");
+        assert.strictEqual(frame.url, "bar");
     }
 
     @params(undefined, "undefined")
@@ -176,11 +176,11 @@ const assertFrame = (frame: UserUrlLinkFrame, description: string, text: string,
         const frame = UserUrlLinkFrame.fromFields("foo", "bar");
 
         // Act
-        frame.text = value;
+        frame.url= value;
 
         // Assert
         assert.strictEqual(frame.description, "foo");
-        assert.strictEqual(frame.text, value);
+        assert.strictEqual(frame.url, value);
     }
 
     @test
@@ -207,7 +207,7 @@ const assertFrame = (frame: UserUrlLinkFrame, description: string, text: string,
         const result = frame.clone();
 
         // Assert
-        assertFrame(result, frame.description, frame.text, frame.textEncoding);
+        assertFrame(result, frame.description, frame.url, frame.textEncoding);
     }
 
     @test
@@ -232,8 +232,8 @@ const assertFrame = (frame: UserUrlLinkFrame, description: string, text: string,
     @test
     public filterFrames_noMatch() {
         // Arrange
-        const frame1 = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.fromUint(123));
-        const frame2 = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.fromUint(234));
+        const frame1 = UnknownFrame.fromFields(FrameIdentifiers.RVRB);
+        const frame2 = UnknownFrame.fromFields(FrameIdentifiers.RVRB);
         const frames = [frame1, frame2];
 
         // Act
@@ -247,7 +247,7 @@ const assertFrame = (frame: UserUrlLinkFrame, description: string, text: string,
     @test
     public filterFrames_singleMatch() {
         // Arrange
-        const frame1 = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.fromUint(123));
+        const frame1 = UnknownFrame.fromFields(FrameIdentifiers.RVRB);
         const frame2 = UserUrlLinkFrame.fromFields("foo", "bar");
         const frames = [frame1, frame2];
 
@@ -262,7 +262,7 @@ const assertFrame = (frame: UserUrlLinkFrame, description: string, text: string,
     @test
     public filterFrames_multipleMatches() {
         // Arrange
-        const frame1 = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.fromUint(123));
+        const frame1 = UnknownFrame.fromFields(FrameIdentifiers.RVRB);
         const frame2 = UserUrlLinkFrame.fromFields("foo", "bar");
         const frame3 = UserUrlLinkFrame.fromFields("foo", "bar");
 

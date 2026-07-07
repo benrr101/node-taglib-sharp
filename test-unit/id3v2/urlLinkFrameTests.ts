@@ -14,7 +14,7 @@ const assertFrame = (frame: UrlLinkFrame, identifier: FrameIdentifier, text: str
     assert.ok(frame);
     assert.instanceOf<UrlLinkFrame>(frame, UrlLinkFrame);
     assert.strictEqual(frame.frameId, identifier);
-    assert.strictEqual(frame.text, text);
+    assert.strictEqual(frame.url, text);
 }
 
 @suite class Id3v2_UrlLinkFrame_ConstructorTests extends FrameConstructorTests {
@@ -110,10 +110,10 @@ const assertFrame = (frame: UrlLinkFrame, identifier: FrameIdentifier, text: str
         const frame = UrlLinkFrame.fromFields(FrameIdentifiers.WCOM);
 
         // Act
-        frame.text = value;
+        frame.url = value;
 
         // Assert
-        assert.strictEqual(frame.text, value);
+        assert.strictEqual(frame.url, value);
     }
 }
 
@@ -127,7 +127,7 @@ const assertFrame = (frame: UrlLinkFrame, identifier: FrameIdentifier, text: str
         const result = frame.clone();
 
         // Assert
-        assertFrame(result, frame.frameId, frame.text);
+        assertFrame(result, frame.frameId, frame.url);
     }
 
     @test

@@ -143,21 +143,12 @@ export default class TextInformationFrame extends Frame {
         FrameIdentifiers.TPE4
     ];
 
-    // @TODO: no protected access to members
-    /**
-     * Text encoding to use to store the text contents of the current instance.
-     * @protected
-     */
-    protected _encoding: StringType = Id3v2Settings.defaultEncoding;
-    /**
-     * Decoded text contained in the current instance.
-     * @protected
-     */
-    protected _textFields: string[] = [];
+    private _encoding: StringType = Id3v2Settings.defaultEncoding;
+    private _textFields: string[] = [];
 
     // #region Constructors
 
-    protected constructor(header: Id3v2FrameHeader) {
+    private constructor(header: Id3v2FrameHeader) {
         super(header);
     }
 
