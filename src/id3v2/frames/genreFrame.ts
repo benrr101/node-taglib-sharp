@@ -169,9 +169,7 @@ export default class GenreFrame extends Frame {
 
     /** @inheritDoc */
     public clone(): Frame {
-        const frame = GenreFrame.fromEncoding(this._encoding);
-        frame._textFields = this._textFields.slice();
-        return frame;
+        return GenreFrame.fromFields(this._textFields.slice(), this._encoding);
     }
 
     /**
