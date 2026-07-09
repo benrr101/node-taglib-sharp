@@ -70,35 +70,6 @@ const assertFrame = (
         return SynchronizedLyricsFrame.fromFieldBytes;
     }
 
-    @test
-    public fromInfo_withoutEncoding() {
-        // Arrange
-        const description = "fux";
-        const language = "bux";
-        const textType = SynchronizedTextType.Lyrics;
-
-        // Act
-        const frame = SynchronizedLyricsFrame.fromInfo(description, language, textType);
-
-        // Assert
-        assertFrame(frame, description, TimestampFormat.Unknown, language, [], Id3v2Settings.defaultEncoding, textType);
-    }
-
-    @test
-    public fromInfo_withEncoding() {
-        // Arrange
-        const description = "fux";
-        const encoding = StringType.UTF16BE;
-        const language = "bux";
-        const textType = SynchronizedTextType.Lyrics;
-
-        // Act
-        const frame = SynchronizedLyricsFrame.fromInfo(description, language, textType, encoding);
-
-        // Assert
-        assertFrame(frame, description, TimestampFormat.Unknown, language, [], encoding, textType);
-    }
-
     @params(2, "v2")
     @params(3, "v3")
     @params(4, "v4")
@@ -304,13 +275,152 @@ const assertFrame = (
             SynchronizedTextType.Events
         );
     }
+
+    @test
+    public fromFields_noParams() {
+        // Act
+        const frame = SynchronizedLyricsFrame.fromFields();
+
+        // Assert
+        assertFrame(
+            frame,
+            "",
+            TimestampFormat.Unknown,
+            "XXX",
+            [],
+            Id3v2Settings.defaultEncoding,
+            SynchronizedTextType.Other
+        );
+    }
+
+    @test
+    public fromFields_withDescription() {
+        // Act
+        const frame = SynchronizedLyricsFrame.fromFields("foo");
+
+        // Assert
+        assertFrame(
+            frame,
+            "foo",
+            TimestampFormat.Unknown,
+            "XXX",
+            [],
+            Id3v2Settings.defaultEncoding,
+            SynchronizedTextType.Other
+        );
+    }
+
+    @test
+    public fromFields_withDescriptionLyrics() {
+        // Arrange
+        const lyric = new SynchronizedText(1234, "bar");
+
+        // Act
+        const frame = SynchronizedLyricsFrame.fromFields("foo", [lyric]);
+
+        // Assert
+        assertFrame(
+            frame,
+            "foo",
+            TimestampFormat.Unknown,
+            "XXX",
+            [lyric],
+            Id3v2Settings.defaultEncoding,
+            SynchronizedTextType.Other
+        );
+    }
+
+    @test
+    public fromFields_withDescriptionLyricsLanguage() {
+        // Arrange
+        const lyric = new SynchronizedText(1234, "bar");
+
+        // Act
+        const frame = SynchronizedLyricsFrame.fromFields("foo", [lyric], "eng");
+
+        // Assert
+        assertFrame(
+            frame,
+            "foo",
+            TimestampFormat.Unknown,
+            "eng",
+            [lyric],
+            Id3v2Settings.defaultEncoding,
+            SynchronizedTextType.Other
+        );
+    }
+
+    @test
+    public fromFields_withDescriptionLyricsLanguageType() {
+        // Arrange
+        const lyric = new SynchronizedText(1234, "bar");
+
+        // Act
+        const frame = SynchronizedLyricsFrame.fromFields("foo", [lyric], "eng", SynchronizedTextType.Chord);
+
+        // Assert
+        assertFrame(
+            frame,
+            "foo",
+            TimestampFormat.Unknown,
+            "eng",
+            [lyric],
+            Id3v2Settings.defaultEncoding,
+            SynchronizedTextType.Chord
+        );
+    }
+
+    @test
+    public fromFields_withDescriptionLyricsLanguageTypeEncoding() {
+        // Arrange
+        const lyric = new SynchronizedText(1234, "bar");
+
+        // Act
+        const frame = SynchronizedLyricsFrame.fromFields(
+            "foo",
+            [lyric],
+            "eng",
+            SynchronizedTextType.Chord,
+            StringType.Hex
+        );
+
+        // Assert
+        assertFrame(frame,  "foo", TimestampFormat.Unknown, "eng", [lyric], StringType.Hex, SynchronizedTextType.Chord);
+    }
+
+    @test
+    public fromFields_withDescriptionLyricsLanguageTypeEncodingType() {
+        // Arrange
+        const lyric = new SynchronizedText(1234, "bar");
+
+        // Act
+        const frame = SynchronizedLyricsFrame.fromFields(
+            "foo",
+            [lyric],
+            "eng",
+            SynchronizedTextType.Chord,
+            StringType.Hex,
+            TimestampFormat.AbsoluteMpegFrames
+        );
+
+        // Assert
+        assertFrame(
+            frame,
+            "foo",
+            TimestampFormat.AbsoluteMpegFrames,
+            "eng",
+            [lyric],
+            StringType.Hex,
+            SynchronizedTextType.Chord
+        );
+    }
 }
 
 @suite class Id3v2_SynchronizedLyricsFrame_PropertyTests {
     @test
     public description() {
         // Arrange
-        const frame = SynchronizedLyricsFrame.fromInfo("foo", "bar", SynchronizedTextType.Chord);
+        const frame = SynchronizedLyricsFrame.fromFields("foo");
         const set = (v: string) => { frame.description = v; };
         const get = () => frame.description;
 
@@ -322,7 +432,7 @@ const assertFrame = (
     @test
     public format() {
         // Arrange
-        const frame = SynchronizedLyricsFrame.fromInfo("foo", "bar", SynchronizedTextType.Chord);
+        const frame = SynchronizedLyricsFrame.fromFields("foo");
 
         // Act / Assert
         PropertyTests.propertyRoundTrip(
@@ -335,7 +445,7 @@ const assertFrame = (
     @test
     public language() {
         // Arrange
-        const frame = SynchronizedLyricsFrame.fromInfo("foo", "bar", SynchronizedTextType.Chord);
+        const frame = SynchronizedLyricsFrame.fromFields("foo");
         const set = (v: string) => { frame.language = v; };
         const get = () => frame.language;
 
@@ -348,7 +458,7 @@ const assertFrame = (
     @test
     public text() {
         // Arrange
-        const frame = SynchronizedLyricsFrame.fromInfo("foo", "bar", SynchronizedTextType.Chord);
+        const frame = SynchronizedLyricsFrame.fromFields("foo",);
         const set = (v: SynchronizedText[]) => { frame.text = v; };
         const get = () => frame.text;
         const value = [new SynchronizedText(123, "foo")];
@@ -362,7 +472,7 @@ const assertFrame = (
     @test
     public textEncoding() {
         // Arrange
-        const frame = SynchronizedLyricsFrame.fromInfo("foo", "bar", SynchronizedTextType.Chord);
+        const frame = SynchronizedLyricsFrame.fromFields("foo");
 
         // Act / Assert
         PropertyTests.propertyRoundTrip(
@@ -375,7 +485,7 @@ const assertFrame = (
     @test
     public textType() {
         // Arrange
-        const frame = SynchronizedLyricsFrame.fromInfo("foo", "bar", SynchronizedTextType.Chord);
+        const frame = SynchronizedLyricsFrame.fromFields("foo");
 
         // Act / Assert
         PropertyTests.propertyRoundTrip(
@@ -390,13 +500,24 @@ const assertFrame = (
     @test
     public clone() {
         // Arrange
-        const frame = SynchronizedLyricsFrame.fromInfo("fux", "bux", SynchronizedTextType.Chord);
+        const lyric1 = new SynchronizedText(123, "bar");
+        const lyric2 = new SynchronizedText(234, "baz");
+        const frame = SynchronizedLyricsFrame.fromFields(
+            "foo",
+            [lyric1, lyric2],
+            "eng",
+            SynchronizedTextType.Chord,
+            StringType.UTF16BE,
+            TimestampFormat.AbsoluteMpegFrames
+        );
 
         // Act
         const output = <SynchronizedLyricsFrame> frame.clone();
 
         // Assert
-        assertFrame(output,
+        // @TODO: Verify that objects that are cloned do a deep clone
+        assertFrame(
+            output,
             frame.description,
             frame.format,
             frame.language,
@@ -444,7 +565,7 @@ const assertFrame = (
     public filterFrames_singleMatch() {
         // Arrange
         const frame1 = UnknownFrame.fromFields(FrameIdentifiers.RVRB);
-        const frame2 = SynchronizedLyricsFrame.fromInfo("foo", "bar", SynchronizedTextType.Other);
+        const frame2 = SynchronizedLyricsFrame.fromFields();
         const frames = [frame1, frame2];
 
         // Act
@@ -459,8 +580,8 @@ const assertFrame = (
     public filterFrames_multipleMatches() {
         // Arrange
         const frame1 = UnknownFrame.fromFields(FrameIdentifiers.RVRB);
-        const frame2 = SynchronizedLyricsFrame.fromInfo("foo", "bar", SynchronizedTextType.Other);
-        const frame3 = SynchronizedLyricsFrame.fromInfo("foo", "bar", SynchronizedTextType.Other);
+        const frame2 = SynchronizedLyricsFrame.fromFields();
+        const frame3 = SynchronizedLyricsFrame.fromFields();
 
         const frames = [frame1, frame2, frame3];
 
@@ -475,8 +596,8 @@ const assertFrame = (
     @test
     public filterFrames_allMatches() {
         // Arrange
-        const frame1 = SynchronizedLyricsFrame.fromInfo("foo", "bar", SynchronizedTextType.Other);
-        const frame2 = SynchronizedLyricsFrame.fromInfo("foo", "bar", SynchronizedTextType.Other);
+        const frame1 = SynchronizedLyricsFrame.fromFields();
+        const frame2 = SynchronizedLyricsFrame.fromFields();
         const frames = [frame1, frame2];
 
         // Act
@@ -492,8 +613,14 @@ const assertFrame = (
     @params(4, "v4")
     public render_noLyrics(version: number) {
         // Arrange
-        const frame = SynchronizedLyricsFrame.fromInfo("foo", "bar", SynchronizedTextType.Chord, StringType.Latin1);
-        frame.format = TimestampFormat.AbsoluteMpegFrames;
+        const frame = SynchronizedLyricsFrame.fromFields(
+            "foo",
+            [],
+            "bar",
+            SynchronizedTextType.Chord,
+            StringType.Latin1,
+            TimestampFormat.AbsoluteMpegFrames
+        );
 
         // Act
         const output = frame.render(version);
@@ -519,9 +646,14 @@ const assertFrame = (
     @params(4, "v4")
     public render_falsyLyrics(version: number) {
         // Arrange
-        const frame = SynchronizedLyricsFrame.fromInfo("foo", "bar", SynchronizedTextType.Chord, StringType.Latin1);
-        frame.format = TimestampFormat.AbsoluteMpegFrames;
-        frame.text = [undefined, null];
+        const frame = SynchronizedLyricsFrame.fromFields(
+            "foo",
+            [undefined, null],
+            "bar",
+            SynchronizedTextType.Chord,
+            StringType.Latin1,
+            TimestampFormat.AbsoluteMpegFrames
+        );
 
         // Act
         const output = frame.render(version);
@@ -548,10 +680,14 @@ const assertFrame = (
     public render_oneLyric(version: number) {
         // Arrange
         const lyric1 = new SynchronizedText(123, "fux");
-
-        const frame = SynchronizedLyricsFrame.fromInfo("foo", "bar", SynchronizedTextType.Chord, StringType.Latin1);
-        frame.format = TimestampFormat.AbsoluteMpegFrames;
-        frame.text = [lyric1];
+        const frame = SynchronizedLyricsFrame.fromFields(
+            "foo",
+            [lyric1],
+            "bar",
+            SynchronizedTextType.Chord,
+            StringType.Latin1,
+            TimestampFormat.AbsoluteMpegFrames
+        );
 
         // Act
         const output = frame.render(version);
@@ -580,10 +716,14 @@ const assertFrame = (
         // Arrange
         const lyric2 = new SynchronizedText(234, "bux");
         const lyric1 = new SynchronizedText(123, "fux");
-
-        const frame = SynchronizedLyricsFrame.fromInfo("foo", "bar", SynchronizedTextType.Chord, StringType.Latin1);
-        frame.format = TimestampFormat.AbsoluteMpegFrames;
-        frame.text = [lyric2, lyric1]; // Note - not in chronological order
+        const frame = SynchronizedLyricsFrame.fromFields(
+            "foo",
+            [lyric2, lyric1], // Note - not in chronological order
+            "bar",
+            SynchronizedTextType.Chord,
+            StringType.Latin1,
+            TimestampFormat.AbsoluteMpegFrames
+        );
 
         // Act
         const output = frame.render(version);
@@ -612,10 +752,14 @@ const assertFrame = (
         // Arrange
         const lyric2 = new SynchronizedText(234, "bux");
         const lyric1 = new SynchronizedText(123, "fux");
-
-        const frame = SynchronizedLyricsFrame.fromInfo("foo", "bar", SynchronizedTextType.Chord, encoding);
-        frame.format = TimestampFormat.AbsoluteMpegFrames;
-        frame.text = [lyric2, lyric1]; // Note - not in chronological order
+        const frame = SynchronizedLyricsFrame.fromFields(
+            "foo",
+            [lyric2, lyric1], // Note - not in chronological order
+            "bar",
+            SynchronizedTextType.Chord,
+            encoding,
+            TimestampFormat.AbsoluteMpegFrames
+        );
 
         // Act
         const output = frame.render(4);

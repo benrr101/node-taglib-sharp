@@ -158,6 +158,19 @@ export class ChannelData {
     }
 
     /**
+     * Creates and returns a duplicate instance of the current object.
+     * @return {ChannelData} New instance of ChannelData with the same properties as the original
+     */
+    public clone(): ChannelData {
+        const clone = new ChannelData(this._channel);
+        clone._peakBits = this._peakBits;
+        clone._peakVolume = this._peakVolume;
+        clone._volumeAdjustment = this._volumeAdjustment;
+
+        return clone;
+    }
+
+    /**
      * Generates a raw byte representation of the current instance.
      */
     public render(): ByteVector {
@@ -186,16 +199,13 @@ export class ChannelData {
 // @TODO: RVA2 only exists in v2.4, RVAD exists in v2.3, but it is a different format.
 export class RelativeVolumeFrame extends Frame {
     // @TODO: Get rid of this whole "is set" malarky and just store a map of channels that are set.
-    private readonly _channels: ChannelData[] = new Array<ChannelData>(9);
+    private _channels: ChannelData[];
     private _identification: string;
 
     // #region Constructors
 
     private constructor(header: Id3v2FrameHeader) {
         super(header);
-        for (let i = 0; i < 9; i++) {
-            this._channels[i] = new ChannelData(i);
-        }
     }
 
     /**
@@ -231,6 +241,7 @@ export class RelativeVolumeFrame extends Frame {
         frame._identification = fieldBytes.subarray(0, identifierEndIndex).toString(StringType.Latin1);
 
         let pos = identifierEndIndex + 1;
+        frame._channels = new Array<ChannelData>(9).fill(undefined);
         while (pos < fieldBytes.length) {
             // We need at least 4 bytes to determine how long the channel data is
             if (fieldBytes.length - pos < 4) {
@@ -254,12 +265,28 @@ export class RelativeVolumeFrame extends Frame {
     }
 
     /**
-     * Constructs and initializes a new instance with a specified identifier
-     * @param identification Identification ot use for the new frame
+     * Constructs and initializes a new instance with the specified fields.
+     * @param identification Optional, identification to use for the new frame. If omitted,
+     *     defaults to `""`.
+     * @param channels Optional, channel data for the new frame. If omitted, defaults to an empty
+     *     array.
      */
-    public static fromIdentification(identification: string): RelativeVolumeFrame {
+    public static fromFields(identification?: string, channels?: ChannelData[]): RelativeVolumeFrame {
+        if (channels && channels.length !== 9) {
+            throw new Error("Argument error: Channels must be an array of size 9");
+        }
+
         const frame = new RelativeVolumeFrame(new Id3v2FrameHeader(FrameIdentifiers.RVA2));
-        frame._identification = identification;
+        frame._identification = identification ?? "";
+        if (!!channels) {
+            frame._channels = channels
+        } else {
+            frame._channels = [];
+            for (let i = 0; i < 9; i++) {
+                frame._channels.push(new ChannelData(i));
+            }
+        }
+
         return frame;
     }
 
@@ -271,10 +298,11 @@ export class RelativeVolumeFrame extends Frame {
      * Gets the channels in the current instance that have a value
      */
     // @TODO: Why the heck can't we just write to this.
-    public get channels(): ChannelData[] { return this._channels.filter((c) => c.isSet); }
+    public get channels(): ChannelData[] { return this._channels.filter((c) => c?.isSet); }
 
     /**
-     * Gets the identification used for the current instance
+     * Gets the identification used to identify the situation and/or device where this adjustment
+     * should apply.
      */
     public get identification(): string { return this._identification; }
 
@@ -284,11 +312,7 @@ export class RelativeVolumeFrame extends Frame {
 
     /** @inheritDoc */
     public clone(): Frame {
-        const frame = RelativeVolumeFrame.fromIdentification(this.identification);
-        for (let i = 0; i < 9; i++) {
-            frame._channels[i] = this._channels[i];
-        }
-        return frame;
+        return RelativeVolumeFrame.fromFields(this._identification, this._channels.map(c => c.clone()));
     }
 
     public static filterFrames(frames: Frame[]): RelativeVolumeFrame[] {

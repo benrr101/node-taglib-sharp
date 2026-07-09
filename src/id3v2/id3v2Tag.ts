@@ -45,7 +45,7 @@ export default class Id3v2Tag extends Tag {
      */
     public static fromEmpty(): Id3v2Tag {
         const tag = new Id3v2Tag();
-        tag._header = new Id3v2TagHeader();
+        tag._header = new Id3v2TagHeader(0, 0, Id3v2TagHeaderFlags.None, 0);
         return tag;
     }
 
@@ -471,7 +471,7 @@ export default class Id3v2Tag extends Tag {
         // Create or update the preferred comments frame
         let frame = this.getCommentFramePreferred("", Id3v2Tag.language);
         if (!frame) {
-            frame = CommentsFrame.fromDescription("", Id3v2Tag.language);
+            frame = CommentsFrame.fromFields("", undefined, Id3v2Tag.language);
             this.addFrame(frame);
         }
 
@@ -626,7 +626,7 @@ export default class Id3v2Tag extends Tag {
         // Find or create the appropriate unsynchronized lyrics frame
         let frame = this.getLyricsFramePreferred("", Id3v2Tag.language);
         if (!frame) {
-            frame = UnsynchronizedLyricsFrame.fromData("", Id3v2Tag.language);
+            frame = UnsynchronizedLyricsFrame.fromFields("", undefined, Id3v2Tag.language);
             this.addFrame(frame);
         }
         frame.text = value;
@@ -1288,13 +1288,13 @@ export default class Id3v2Tag extends Tag {
         if (ident === FrameIdentifiers.TCON) {
             frame = GenreFrame.filterFrames(this._frameList)[0];
             if (!frame) {
-                frame = GenreFrame.fromEncoding();
+                frame = GenreFrame.fromFields();
                 this.addFrame(frame);
             }
         } else {
             frame = TextInformationFrame.filterFrames(this._frameList, ident)[0];
             if (!frame) {
-                frame = TextInformationFrame.fromIdentifier(ident);
+                frame = TextInformationFrame.fromFields(ident);
                 this.addFrame(frame);
             }
         }
@@ -1327,11 +1327,11 @@ export default class Id3v2Tag extends Tag {
 
         let urlFrame = UrlLinkFrame.filterFrames(this._frameList, ident)[0];
         if (!urlFrame) {
-            urlFrame = UrlLinkFrame.fromIdentifier(ident);
+            urlFrame = UrlLinkFrame.fromFields(ident);
             this.addFrame(urlFrame);
         }
 
-        urlFrame.text = text;
+        urlFrame.url = text;
     }
 
     // #endregion
@@ -1579,7 +1579,7 @@ export default class Id3v2Tag extends Tag {
             this.removeFrame(frame);
         } else {
             const identifier = ByteVector.fromString(text, StringType.UTF8);
-            frame = UniqueFileIdentifierFrame.fromData(owner, identifier);
+            frame = UniqueFileIdentifierFrame.fromFields(owner, identifier);
             this.addFrame(frame);
         }
     }
@@ -1593,7 +1593,7 @@ export default class Id3v2Tag extends Tag {
             }
         } else {
             if (!frame) {
-                frame = UserTextInformationFrame.fromDescription(description, Id3v2Settings.defaultEncoding);
+                frame = UserTextInformationFrame.fromFields(description);
                 this.addFrame(frame);
             }
             frame.text = text.split(";");
