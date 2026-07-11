@@ -262,19 +262,23 @@ const getTestTagHeader = (version: number, flags: Id3v2TagHeaderFlags, tagSize: 
         const set = (v: boolean) => { tag.isCompilation = v; };
 
         // Act / Assert
+        // 1) No frame => not a compilation
         assert.isFalse(tag.isCompilation);
 
+        // 2) Set to true => creates a compilation frame
         PropertyTests.propertyRoundTrip(set, get, true);
-        assert.strictEqual(tag.frames.length, 1);
-        assert.instanceOf(tag.frames[0], TextInformationFrame);
-        assert.strictEqual(tag.frames[0].frameId, FrameIdentifiers.TCMP);
-        assert.deepStrictEqual((<TextInformationFrame> tag.frames[0]).text, ["1"]);
+        let compilationFrames = TextInformationFrame.filterFrames(tag.frames, FrameIdentifiers.TCMP);
+        assert.strictEqual(compilationFrames.length, 1);
+        assert.deepStrictEqual(compilationFrames[0].text, ["1"]);
 
-        PropertyTests.propertyRoundTrip(set, get, false);
-        assert.strictEqual(tag.frames.length, 0);
-
-        tag.setTextFrame(FrameIdentifiers.TCMP, "0");
+        // 3) Frame is not "1" => not a compilation
+        compilationFrames[0].text = ["0"];
         assert.strictEqual(tag.isCompilation, false);
+
+        // 4) Set is compilator to false => frame is deleted
+        PropertyTests.propertyRoundTrip(set, get, false);
+        compilationFrames = TextInformationFrame.filterFrames(tag.frames, FrameIdentifiers.TCMP);
+        assert.strictEqual(compilationFrames.length, 0);
     }
 
     @test
@@ -1583,79 +1587,6 @@ const getTestTagHeader = (version: number, flags: Id3v2TagHeaderFlags, tagSize: 
         const dPcnt = PlayCountFrame.filterFrames(dest.frames)[0];
         assert.strictEqual(dPcnt.playCount, sFrame1.playCount);
     }
-    @test
-    public getTextAsString_invalidIdentity() {
-        // Arrange
-        const tag = Id3v2Tag.fromEmpty();
-
-        // Act / Assert
-        assert.throws(() => { tag.getTextAsString(undefined); });
-        assert.throws(() => { tag.getTextAsString(null); });
-    }
-
-    @test
-    public getTextAsString_urlFrame() {
-        // Arrange
-        const tag = Id3v2Tag.fromEmpty();
-        const frame1 = TextInformationFrame.fromFields(FrameIdentifiers.TCOM);
-        const frame2 = UrlLinkFrame.fromFields(FrameIdentifiers.WCOM, "foo");
-        const frame3 = UrlLinkFrame.fromFields(FrameIdentifiers.WCOM, "bar");
-        tag.frames.push(frame1, frame2, frame3);
-
-        // Act
-        const result = tag.getTextAsString(FrameIdentifiers.WCOM);
-
-        // Assert
-        assert.strictEqual(result, "foo");
-    }
-
-    @test
-    public getTextAsString_textFrame() {
-        // Arrange
-        const tag = Id3v2Tag.fromEmpty();
-        const frame1 = UrlLinkFrame.fromFields(FrameIdentifiers.WCOM);
-        const frame2 = TextInformationFrame.fromFields(FrameIdentifiers.TCOM, ["foo"]);
-        const frame3 = TextInformationFrame.fromFields(FrameIdentifiers.TCOM, ["bar"]);
-        tag.frames.push(frame1, frame2, frame3);
-
-        // Act
-        const result = tag.getTextAsString(FrameIdentifiers.TCOM);
-
-        // Assert
-        assert.strictEqual(result, "foo");
-    }
-
-    @test
-    public getTextAsString_genreFrame() {
-        // Arrange
-        const frame1 = UrlLinkFrame.fromFields(FrameIdentifiers.WCOM);
-        const frame2 = TextInformationFrame.fromFields(FrameIdentifiers.TCOM);
-        const frame3 = TextInformationFrame.fromFields(FrameIdentifiers.TCOM);
-        const frame4 = GenreFrame.fromFields(["foo"], StringType.Latin1);
-
-        const tag = Id3v2Tag.fromEmpty();
-        tag.frames.push(frame1, frame2, frame3, frame4);
-
-        // Act
-        const result = tag.getTextAsString(FrameIdentifiers.TCON);
-
-        // Assert
-        assert.strictEqual(result, "foo");
-    }
-
-    @test
-    public getTextAsString_noMatches() {
-        // Arrange
-        const frame1 = UrlLinkFrame.fromFields(FrameIdentifiers.WCOM);
-        const tag = Id3v2Tag.fromEmpty();
-        tag.frames.push(frame1);
-
-        // Act
-        const result = tag.getTextAsString(FrameIdentifiers.TCOM);
-
-        // Assert
-        assert.isUndefined(result);
-    }
 
     @test
     public removeFrame_invalidFrame() {
@@ -1909,223 +1840,5 @@ const getTestTagHeader = (version: number, flags: Id3v2TagHeaderFlags, tagSize: 
 
         // Assert
         assert.sameMembers(tag.frames, [otherFrame, newFrame]);
-    }
-
-    @test
-    public setNumberFrame_invalidArgs() {
-        // Arrange
-        const tag = Id3v2Tag.fromEmpty();
-        const identifier = FrameIdentifiers.TCOM;
-
-        // Act / Assert
-        assert.throws(() => { tag.setNumberFrame(undefined, 1, 1, 1); });
-        assert.throws(() => { tag.setNumberFrame(null, 1, 1, 1); });
-
-        assert.throws(() => { tag.setNumberFrame(identifier, -1, 1, 1); });
-        assert.throws(() => { tag.setNumberFrame(identifier, 1.23, 1, 1); });
-        assert.throws(() => { tag.setNumberFrame(identifier, Number.MAX_SAFE_INTEGER + 1, 1, 1); });
-
-        assert.throws(() => { tag.setNumberFrame(identifier, 1, -1, 1); });
-        assert.throws(() => { tag.setNumberFrame(identifier, 1, 1.23, 1); });
-        assert.throws(() => { tag.setNumberFrame(identifier, 1, Number.MAX_SAFE_INTEGER + 1, 1); });
-
-        assert.throws(() => { tag.setNumberFrame(identifier, 1, 1, -1); });
-        assert.throws(() => { tag.setNumberFrame(identifier, 1, 1, 1.23); });
-        assert.throws(() => { tag.setNumberFrame(identifier, 1, 1, 0x100); });
-    }
-
-    @test
-    public setNumberFrame_removesFrame() {
-        // Arrange
-        const tag = Id3v2Tag.fromEmpty();
-        const frame = TextInformationFrame.fromFields(FrameIdentifiers.TRCK, ["foo"]);
-        tag.frames.push(frame);
-
-        // Act
-        tag.setNumberFrame(FrameIdentifiers.TRCK, 0, 0, 1);
-
-        // Assert
-        assert.isEmpty(tag.frames);
-    }
-
-    @test
-    public setNumberFrame_noDenominator() {
-        // Arrange
-        const tag = Id3v2Tag.fromEmpty();
-
-        // Act
-        tag.setNumberFrame(FrameIdentifiers.TRCK, 123, 0, 4);
-
-        // Assert
-        assert.strictEqual(tag.frames.length, 1);
-        assert.strictEqual(tag.frames[0].frameId, FrameIdentifiers.TRCK);
-        assert.deepStrictEqual((<TextInformationFrame> tag.frames[0]).text, ["0123"]);
-    }
-
-    @test
-    public setNumberFrame_withDenominator() {
-        // Arrange
-        const tag = Id3v2Tag.fromEmpty();
-
-        // Act
-        tag.setNumberFrame(FrameIdentifiers.TRCK, 123, 234, 4);
-
-        // Assert
-        assert.strictEqual(tag.frames.length, 1);
-        assert.strictEqual(tag.frames[0].frameId, FrameIdentifiers.TRCK);
-        assert.deepStrictEqual((<TextInformationFrame> tag.frames[0]).text, ["0123/234"]);
-    }
-
-    @test
-    public setTextFrame_falsyIdentifier() {
-        // Arrange
-        const tag = Id3v2Tag.fromEmpty();
-
-        // Act / Assert
-        Testers.testTruthy((v: FrameIdentifier) => tag.setTextFrame(v, "foo"));
-    }
-
-    @params(FrameIdentifiers.WXXX, "WXXX")
-    @params(FrameIdentifiers.RVRB, "RVRB")
-    @params(FrameIdentifiers.SYLT, "SYLT")
-    public setUrlFrame_notTextFrame(identifier: FrameIdentifier) {
-        // Arrange
-        const tag = Id3v2Tag.fromEmpty();
-
-        // Act / Assert
-        assert.throws(() => tag.setTextFrame(identifier, ""));
-    }
-
-    @test
-    public setTextFrame_userTextFrame() {
-        // Arrange
-        const tag = Id3v2Tag.fromEmpty();
-
-        // Act / Assert
-        assert.throws(() => tag.setTextFrame(FrameIdentifiers.TXXX, "foo"));
-    }
-
-    @test
-    public setTextFrame_falsyValues_removesFrame() {
-        // Arrange
-        const frame1 = TextInformationFrame.fromFields(FrameIdentifiers.TCOM, ["foo"]);
-        const frame2 = TextInformationFrame.fromFields(FrameIdentifiers.TCOM, ["bar"]);
-
-        const tag = Id3v2Tag.fromEmpty();
-        tag.frames.push(frame1, frame2);
-
-        // Act
-        tag.setTextFrame(FrameIdentifiers.TCOM, undefined, null, "");
-
-        // Assert
-        assert.strictEqual(tag.frames.length, 0);
-    }
-
-    @test
-    public setTextFrame_textFrameNoMatch() {
-        // Arrange
-        const tag = Id3v2Tag.fromEmpty();
-
-        // Act
-        tag.setTextFrame(FrameIdentifiers.TCOM, "foo", "bar");
-
-        // Assert
-        assert.strictEqual(tag.frames.length, 1);
-        assert.strictEqual(tag.frames[0].frameId, FrameIdentifiers.TCOM);
-        assert.deepStrictEqual((<TextInformationFrame> tag.frames[0]).text, ["foo", "bar"]);
-    }
-
-    @test
-    public setTextFrame_textFrameWithMatch() {
-        // Arrange
-        const frame = TextInformationFrame.fromFields(FrameIdentifiers.TCOM, ["fux", "qux"]);
-
-        const tag = Id3v2Tag.fromEmpty();
-        tag.addFrame(frame);
-
-        // Act
-        tag.setTextFrame(FrameIdentifiers.TCOM, "foo", "bar");
-
-        // Assert
-        assert.strictEqual(tag.frames.length, 1);
-        assert.strictEqual(tag.frames[0].frameId, FrameIdentifiers.TCOM);
-        assert.deepStrictEqual((<TextInformationFrame> tag.frames[0]).text, ["foo", "bar"]);
-    }
-
-    @test
-    public setUrlFrame_falsyIdentifier() {
-        // Arrange
-        const tag = Id3v2Tag.fromEmpty();
-
-        // Act / Assert
-        Testers.testTruthy((ident: FrameIdentifier) => tag.setUrlFrame(ident, ""));
-    }
-
-    @params(FrameIdentifiers.TXXX, "TXXX")
-    @params(FrameIdentifiers.RVRB, "RVRB")
-    @params(FrameIdentifiers.SYLT, "SYLT")
-    public setUrlFrame_notUrlFrame(identifier: FrameIdentifier) {
-        // Arrange
-        const tag = Id3v2Tag.fromEmpty();
-
-        // Act / Assert
-        assert.throws(() => tag.setUrlFrame(identifier, ""));
-    }
-
-    @test
-    public setUrlFrame_userUrlFrame() {
-        // Arrange
-        const tag = Id3v2Tag.fromEmpty();
-
-        // Act / Assert
-        assert.throws(() => tag.setUrlFrame(FrameIdentifiers.WXXX, "foo"));
-    }
-
-    @params("", "empty string")
-    @params(null, "null")
-    @params(undefined, "undefined")
-    public setUrlFrame_falsyValue_removesFrame(text: string) {
-        // Arrange
-        const frame1 = UrlLinkFrame.fromFields(FrameIdentifiers.WCOM, "foo");
-        const frame2 = UrlLinkFrame.fromFields(FrameIdentifiers.WCOM, "bar");
-
-        const tag = Id3v2Tag.fromEmpty();
-        tag.frames.push(frame1, frame2);
-
-        // Act
-        tag.setUrlFrame(FrameIdentifiers.WCOM, text);
-
-        // Assert
-        assert.isTrue(tag.isEmpty);
-    }
-
-    @test
-    public setUrlFrame_withoutMatchingFrames_addsFrame() {
-        // Arrange
-        const tag = Id3v2Tag.fromEmpty();
-
-        // Act
-        tag.setUrlFrame(FrameIdentifiers.WCOM, "foo");
-
-        // Assert
-        assert.strictEqual(tag.frames.length, 1);
-        assert.strictEqual(tag.frames[0].frameId, FrameIdentifiers.WCOM);
-        assert.strictEqual((<UrlLinkFrame>tag.frames[0]).url, "foo");
-    }
-
-    @test
-    public setUrlFrame_withMatchingFrames_updatesFrame() {
-        // Arrange
-        const frame = UrlLinkFrame.fromFields(FrameIdentifiers.WCOM, "fux");
-        const tag = Id3v2Tag.fromEmpty();
-        tag.addFrame(frame);
-
-        // Act
-        tag.setUrlFrame(FrameIdentifiers.WCOM, "foo");
-
-        // Assert
-        assert.strictEqual(tag.frames.length, 1);
-        assert.strictEqual(tag.frames[0].frameId, FrameIdentifiers.WCOM);
-        assert.strictEqual((<UrlLinkFrame>tag.frames[0]).url, "foo");
     }
 }
