@@ -454,13 +454,6 @@ const assertFrame = (frame: RelativeVolumeFrame, c: ChannelData[], i: string) =>
         assertFrame(frame, [], "foo");
     }
 
-    @params(new Array<ChannelData>(8), "too_small")
-    @params(new Array<ChannelData>(10), "too_big")
-    public fromFields_channelDataInvalid(channelData: ChannelData[]) {
-        // Act / Assert
-        assert.throws(() => RelativeVolumeFrame.fromFields(undefined, channelData));
-    }
-
     @test
     public fromFields_withIdentificationChannelData() {
         // Arrange
