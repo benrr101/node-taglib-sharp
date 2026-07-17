@@ -273,14 +273,11 @@ export class RelativeVolumeFrame extends Frame {
      * Constructs and initializes a new instance with the specified fields.
      * @param identification Optional, identification to use for the new frame. If omitted,
      *     defaults to `""`.
-     * @param channels Optional, channel data for the new frame. If omitted, defaults to an empty
-     *     array.
+     * @param channels Optional, channel data for the new frame. If provided, the provided channel
+     *     data will replace the empty channel data (and duplicates will overwrite each other). If
+     *     not provided, the internal channel data will be unset for all channels.
      */
     public static fromFields(identification?: string, channels?: ChannelData[]): RelativeVolumeFrame {
-        if (channels && channels.length !== 9) {
-            throw new Error("Argument error: Channels must be an array of size 9");
-        }
-
         const frame = new RelativeVolumeFrame(new Id3v2FrameHeader(FrameIdentifiers.RVA2));
         frame._identification = identification ?? "";
         if (!!channels) {

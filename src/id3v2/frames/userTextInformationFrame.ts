@@ -139,7 +139,7 @@ export default class UserTextInformationFrame extends Frame {
 
         // Convert ["x", "y", "z"] into [bv("x"), bv(0), bv("y"), bv(0), bv("z"), bv(0)]
         const encoding = Frame.correctEncoding(this._encoding, version);
-        const renderedFields = this._textFields.filter(f => !!f)
+        const renderedFields = this._textFields.filter(f => f !== undefined && f !== null)
             .map(f => [ByteVector.fromString(f, encoding), ByteVector.getTextDelimiter(encoding)])
             .reduce(
                 (flattened, nested) => {
