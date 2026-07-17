@@ -63,7 +63,7 @@ export default class UniqueFileIdentifierFrame extends Frame {
 
         const frame = new UniqueFileIdentifierFrame(new Id3v2FrameHeader(FrameIdentifiers.UFID));
         frame._owner = owner ?? "";
-        frame._identifier = identifier?.toByteVector() ?? ByteVector.empty();
+        frame._identifier = identifier ?? ByteVector.empty();
 
         return frame;
     }

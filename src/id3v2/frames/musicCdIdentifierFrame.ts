@@ -44,7 +44,7 @@ export default class MusicCdIdentifierFrame extends Frame {
      */
     public static fromFields(data?: ByteVector): MusicCdIdentifierFrame {
         const frame = new MusicCdIdentifierFrame(new Id3v2FrameHeader(FrameIdentifiers.MCDI));
-        frame._data = data?.toByteVector() ?? ByteVector.empty();
+        frame._data = data ?? ByteVector.empty();
 
         return frame;
     }

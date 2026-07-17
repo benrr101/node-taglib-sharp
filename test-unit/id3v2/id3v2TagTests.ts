@@ -1687,9 +1687,7 @@ const getTestTagHeader = (version: number, flags: Id3v2TagHeaderFlags, tagSize: 
     public render_v4_unsyncAtFrameLevel() {
         // Arrange
         const frame1 = TextInformationFrame.fromFields(FrameIdentifiers.TCOM);
-        frame1.flags |= Id3v2FrameFlags.Unsynchronized;
         const frame2 = TextInformationFrame.fromFields(FrameIdentifiers.TCON);
-        frame2.flags |= Id3v2FrameFlags.Unsynchronized;
 
         const tag = Id3v2Tag.fromEmpty();
         tag.version = 4;
