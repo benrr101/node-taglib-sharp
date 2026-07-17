@@ -55,19 +55,6 @@ class Id3v2_GenreFrameTests extends FrameConstructorTests {
     }
 
     @test
-    public text_returnsCopy() {
-        // Arrange
-        const frame = GenreFrame.fromFields(["foo", "bar"]);
-
-        // Act
-        const text = frame.text;
-        text.push("baz");
-
-        // Assert
-        assert.deepStrictEqual(frame.text, ["foo", "bar"]);
-    }
-
-    @test
     public text_setFalsyReturnsEmptyArray() {
         // Arrange
         const frame = GenreFrame.fromFields(["foo", "bar"]);

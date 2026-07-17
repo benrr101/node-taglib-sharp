@@ -251,7 +251,7 @@ export class SynchronizedLyricsFrame extends Frame {
      * Sets the text contained in the current instance
      * @param value Text contained in the current instance
      */
-    public set text(value: SynchronizedText[]) { this._text = value || []; }
+    public set text(value: SynchronizedText[]) { this._text = value ?? []; }
 
     /**
      * Gets the text encoding to use when storing the current instance

@@ -166,7 +166,7 @@ export class EventTimeCodeFrame extends Frame {
      * Gets the event this frame contains. Each {@link EventTimeCode} represents a single event at a
      * certain point in time.
      */
-    public get events(): EventTimeCode[] { return this._events || []; }
+    public get events(): EventTimeCode[] { return this._events ?? []; }
     /**
      * Sets the event this frame contains
      */

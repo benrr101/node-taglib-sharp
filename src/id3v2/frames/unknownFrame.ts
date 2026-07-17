@@ -39,7 +39,7 @@ export default class UnknownFrame extends Frame {
 
         const frame = new UnknownFrame(new Id3v2FrameHeader(identifier));
 
-        frame.data = data?.toByteVector();
+        frame.data = data?.toByteVector() ?? ByteVector.empty();
         return frame;
     }
 

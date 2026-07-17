@@ -231,17 +231,15 @@ export default class TextInformationFrame extends Frame {
 
     /**
      * Gets the text contained in the current instance.
-     * Note: Modifying the contents of the returned value will not modify the contents of the
-     * current instance. The value must be reassigned for the value to change.
      */
     public get text(): string[] {
-        return this._textFields.slice();
+        return this._textFields;
     }
     /**
      * Sets the text contained in the current instance.
      */
     public set text(value: string[]) {
-        this._textFields = value ? value.slice() : [];
+        this._textFields = value ?? [];
     }
 
     /**
@@ -272,7 +270,7 @@ export default class TextInformationFrame extends Frame {
 
     /** @inheritDoc */
     public clone(): Frame {
-        return TextInformationFrame.fromFields(this.frameId, this._textFields, this._encoding);
+        return TextInformationFrame.fromFields(this.frameId, this._textFields.slice(), this._encoding);
     }
 
     /**

@@ -57,7 +57,7 @@ const assertFrame = (frame: UnknownFrame, fi: FrameIdentifier, d: ByteVector) =>
         const frame = UnknownFrame.fromFields(frameType);
 
         // Assert
-        assertFrame(frame, FrameIdentifiers.RVRB, undefined);
+        assertFrame(frame, FrameIdentifiers.RVRB, ByteVector.empty());
     }
 
     @test

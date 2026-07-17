@@ -206,6 +206,12 @@ export class RelativeVolumeFrame extends Frame {
 
     private constructor(header: Id3v2FrameHeader) {
         super(header);
+
+        // Initialize the channel data array
+        this._channels = [];
+        for (let i = 0; i < 9; i++) {
+            this._channels.push(new ChannelData(i));
+        }
     }
 
     /**
@@ -241,7 +247,6 @@ export class RelativeVolumeFrame extends Frame {
         frame._identification = fieldBytes.subarray(0, identifierEndIndex).toString(StringType.Latin1);
 
         let pos = identifierEndIndex + 1;
-        frame._channels = new Array<ChannelData>(9).fill(undefined);
         while (pos < fieldBytes.length) {
             // We need at least 4 bytes to determine how long the channel data is
             if (fieldBytes.length - pos < 4) {
@@ -279,11 +284,13 @@ export class RelativeVolumeFrame extends Frame {
         const frame = new RelativeVolumeFrame(new Id3v2FrameHeader(FrameIdentifiers.RVA2));
         frame._identification = identification ?? "";
         if (!!channels) {
-            frame._channels = channels
-        } else {
-            frame._channels = [];
-            for (let i = 0; i < 9; i++) {
-                frame._channels.push(new ChannelData(i));
+            // Replace blank channel data with the provided channel data.
+            for (const channel of channels) {
+                if (!channel) {
+                    continue;
+                }
+
+                frame._channels[channel.channelType] = channel;
             }
         }
 

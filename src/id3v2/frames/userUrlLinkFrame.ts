@@ -1,6 +1,5 @@
 import Frame from "./frame";
 import Id3v2Settings from "../id3v2Settings";
-import UrlLinkFrame from "./urlLinkFrame";
 import {ByteVector, StringType} from "../../byteVector";
 import {Id3v2FrameHeader} from "./frameHeader";
 import {FrameIdentifiers} from "../frameIdentifiers";
@@ -82,8 +81,8 @@ export default class UserUrlLinkFrame extends Frame {
      */
     public static fromFields(description?: string, url?: string): UserUrlLinkFrame {
         const frame = new UserUrlLinkFrame(new Id3v2FrameHeader(FrameIdentifiers.WXXX));
-        frame._description = description;
-        frame._url = url;
+        frame._description = description ?? "";
+        frame._url = url ?? "";
         return frame;
     }
 
@@ -147,9 +146,9 @@ export default class UserUrlLinkFrame extends Frame {
             return ByteVector.empty();
         }
 
-        const encoding = UrlLinkFrame.correctEncoding(this.textEncoding, version);
+        const encoding = Frame.correctEncoding(this._encoding, version);
         return ByteVector.concatenate(
-            UrlLinkFrame.correctEncoding(this._encoding, version),
+            encoding,
             ByteVector.fromString(this._description ?? "", encoding),
             ByteVector.getTextDelimiter(encoding),
             ByteVector.fromString(this._url ?? "", StringType.Latin1)

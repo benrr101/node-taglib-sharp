@@ -17,7 +17,7 @@ export default class GenreFrame extends Frame {
     private static readonly REMIX_STRING = "Remix";
 
     private _encoding: StringType = Id3v2Settings.defaultEncoding;
-    private _textFields: string[] = [];
+    private _textFields: string[];
 
     // #region Constructors
 
@@ -127,7 +127,7 @@ export default class GenreFrame extends Frame {
      */
     public static fromFields(text?: string[], encoding?: StringType): GenreFrame {
         const frame = new GenreFrame(new Id3v2FrameHeader(FrameIdentifiers.TCON));
-        frame._textFields = text?.slice() ?? []; // @TODO: Do we really need to make a copy?
+        frame._textFields = text ?? [];
         frame._encoding = encoding ?? Id3v2Settings.defaultEncoding;
 
         return frame;
@@ -139,14 +139,12 @@ export default class GenreFrame extends Frame {
 
     /**
      * Gets the genres contained in the current instance.
-     * Note: Modifying the contents of the returned value will not modify the contents of the
-     * current instance. The value must be reassigned for the value to change.
      */
-    public get text(): string[] { return this._textFields.slice(); }
+    public get text(): string[] { return this._textFields; }
     /**
      * Sets the genres contained in the current instance.
      */
-    public set text(value: string[]) { this._textFields = value ? value.slice() : []; }
+    public set text(value: string[]) { this._textFields = value ?? []; }
 
     /**
      * Gets the text encoding to use when rendering the current instance.

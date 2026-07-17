@@ -87,7 +87,7 @@ const assertFrame = (frame: UrlLinkFrame, identifier: FrameIdentifier, text: str
         const output = UrlLinkFrame.fromFields(FrameIdentifiers.WCOM);
 
         // Assert
-        assertFrame(output, FrameIdentifiers.WCOM, undefined);
+        assertFrame(output, FrameIdentifiers.WCOM, "");
     }
 
     @test

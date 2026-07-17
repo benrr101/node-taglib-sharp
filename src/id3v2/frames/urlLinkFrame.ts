@@ -69,7 +69,7 @@ export default class UrlLinkFrame extends Frame {
         Guards.truthy(ident, "ident");
 
         const frame = new UrlLinkFrame(new Id3v2FrameHeader(ident));
-        frame._url = text;
+        frame._url = text ?? "";
 
         return frame;
     }

@@ -2,8 +2,9 @@ import * as Chai from "chai";
 import {suite, test} from "@testdeck/mocha";
 
 import TestConstants from "./utilities/testConstants";
-import {File, Id3v2FrameIdentifiers, Id3v2Tag, ReadStyle, TagTypes} from "../src";
+import {File, Id3v2FrameIdentifiers, Id3v2Tag, Id3v2UrlLinkFrame, ReadStyle, TagTypes} from "../src";
 import {StandardFileTests, TestTagLevel} from "./utilities/standardFileTests";
+import UrlLinkFrame from "../src/id3v2/frames/urlLinkFrame";
 
 // Setup chai
 const assert = Chai.assert;
@@ -128,14 +129,22 @@ const assert = Chai.assert;
             let urlLinkFile = File.createFromPath(tempFilePath);
             try {
                 const id3v2Tag1 = <Id3v2Tag> urlLinkFile.getTag(TagTypes.Id3v2, false);
-                id3v2Tag1.setUrlFrame(Id3v2FrameIdentifiers.WCOM, "www.commercial.com");
-                id3v2Tag1.setUrlFrame(Id3v2FrameIdentifiers.WCOP, "www.copyright.com");
-                id3v2Tag1.setUrlFrame(Id3v2FrameIdentifiers.WOAF, "www.official-audio.com");
-                id3v2Tag1.setUrlFrame(Id3v2FrameIdentifiers.WOAR, "www.official-artist.com");
-                id3v2Tag1.setUrlFrame(Id3v2FrameIdentifiers.WOAS, "www.official-audio-source.com");
-                id3v2Tag1.setUrlFrame(Id3v2FrameIdentifiers.WORS, "www.official-internet-radio.com");
-                id3v2Tag1.setUrlFrame(Id3v2FrameIdentifiers.WPAY, "www.payment.com");
-                id3v2Tag1.setUrlFrame(Id3v2FrameIdentifiers.WPUB, "www.official-publisher.com");
+                id3v2Tag1.addFrame(
+                    Id3v2UrlLinkFrame.fromFields(Id3v2FrameIdentifiers.WCOM, "www.commercial.com"));
+                id3v2Tag1.addFrame(
+                    Id3v2UrlLinkFrame.fromFields(Id3v2FrameIdentifiers.WCOP, "www.copyright.com"));
+                id3v2Tag1.addFrame(
+                    Id3v2UrlLinkFrame.fromFields(Id3v2FrameIdentifiers.WOAF, "www.official-audio.com"));
+                id3v2Tag1.addFrame(
+                    Id3v2UrlLinkFrame.fromFields(Id3v2FrameIdentifiers.WOAR, "www.official-artist.com"));
+                id3v2Tag1.addFrame(
+                    Id3v2UrlLinkFrame.fromFields(Id3v2FrameIdentifiers.WOAS, "www.official-audio-source.com"));
+                id3v2Tag1.addFrame(
+                    Id3v2UrlLinkFrame.fromFields(Id3v2FrameIdentifiers.WORS, "www.official-internet-radio.com"));
+                id3v2Tag1.addFrame(
+                    Id3v2UrlLinkFrame.fromFields(Id3v2FrameIdentifiers.WPAY, "www.payment.com"));
+                id3v2Tag1.addFrame(
+                    Id3v2UrlLinkFrame.fromFields(Id3v2FrameIdentifiers.WPUB, "www.official-publisher.com"));
                 urlLinkFile.save();
             } finally {
                 urlLinkFile.dispose();
@@ -145,35 +154,35 @@ const assert = Chai.assert;
             try {
                 const id3v2Tag2 = <Id3v2Tag> urlLinkFile.getTag(TagTypes.Id3v2, false);
                 assert.strictEqual(
-                    id3v2Tag2.getTextAsString(Id3v2FrameIdentifiers.WCOM),
+                    UrlLinkFrame.filterFrames(id3v2Tag2.frames, Id3v2FrameIdentifiers.WCOM)[0]?.url,
                     "www.commercial.com"
                 );
                 assert.strictEqual(
-                    id3v2Tag2.getTextAsString(Id3v2FrameIdentifiers.WCOP),
+                    UrlLinkFrame.filterFrames(id3v2Tag2.frames, Id3v2FrameIdentifiers.WCOP)[0]?.url,
                     "www.copyright.com"
                 );
                 assert.strictEqual(
-                    id3v2Tag2.getTextAsString(Id3v2FrameIdentifiers.WOAF),
+                    UrlLinkFrame.filterFrames(id3v2Tag2.frames, Id3v2FrameIdentifiers.WOAF)[0]?.url,
                     "www.official-audio.com"
                 );
                 assert.strictEqual(
-                    id3v2Tag2.getTextAsString(Id3v2FrameIdentifiers.WOAR),
+                    UrlLinkFrame.filterFrames(id3v2Tag2.frames, Id3v2FrameIdentifiers.WOAR)[0]?.url,
                     "www.official-artist.com"
                 );
                 assert.strictEqual(
-                    id3v2Tag2.getTextAsString(Id3v2FrameIdentifiers.WOAS),
+                    UrlLinkFrame.filterFrames(id3v2Tag2.frames, Id3v2FrameIdentifiers.WOAS)[0]?.url,
                     "www.official-audio-source.com"
                 );
                 assert.strictEqual(
-                    id3v2Tag2.getTextAsString(Id3v2FrameIdentifiers.WORS),
+                    UrlLinkFrame.filterFrames(id3v2Tag2.frames, Id3v2FrameIdentifiers.WORS)[0]?.url,
                     "www.official-internet-radio.com"
                 );
                 assert.strictEqual(
-                    id3v2Tag2.getTextAsString(Id3v2FrameIdentifiers.WPAY),
+                    UrlLinkFrame.filterFrames(id3v2Tag2.frames, Id3v2FrameIdentifiers.WPAY)[0]?.url,
                     "www.payment.com"
                 );
                 assert.strictEqual(
-                    id3v2Tag2.getTextAsString(Id3v2FrameIdentifiers.WPUB),
+                    UrlLinkFrame.filterFrames(id3v2Tag2.frames, Id3v2FrameIdentifiers.WPUB)[0]?.url,
                     "www.official-publisher.com"
                 );
             } finally {

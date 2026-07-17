@@ -95,16 +95,13 @@ export default class UserTextInformationFrame extends Frame {
 
     /**
      * Gets the text contained in the current instance.
-     * NOTE: Modifying the contents of the returned value will not modify the contents of the
-     * current instance. The value must be reassigned for the value to change.
-     * @TODO: What's the benefit of doing this?
      */
-    public get text(): string[] { return this._textFields.slice(); }
+    public get text(): string[] { return this._textFields; }
     /**
      * Sets the text contained in the current instance.
      * @param value Array of text values to store in the current instance
      */
-    public set text(value: string[]) { this._textFields = value ? value.slice() : []; }
+    public set text(value: string[]) { this._textFields = value ?? []; }
 
     /**
      * Gets the text encoding to use when rendering the current instance.
@@ -141,23 +138,25 @@ export default class UserTextInformationFrame extends Frame {
             return ByteVector.empty();
         }
 
+        // Convert ["x", "y", "z"] into [bv("x"), bv(0), bv("y"), bv(0), bv("z"), bv(0)]
         const encoding = TextInformationFrame.correctEncoding(this._encoding, version);
-        const v = ByteVector.empty();
-        v.addByte(encoding);
-        v.addByteVector(ByteVector.fromString(this._description ?? "", encoding));
+        const renderedFields = this._textFields.filter(f => !!f)
+            .map(f => [ByteVector.fromString(f, encoding), ByteVector.getTextDelimiter(encoding)])
+            .reduce(
+                (flattened, nested) => {
+                    flattened.push(... nested);
+                    return flattened;
+                },
+                []
+            );
+        // @TODO: Update to use .flat
 
-        for (const text of this._textFields) {
-            v.addByteVector(ByteVector.getTextDelimiter(encoding));
-            if (text) {
-                v.addByteVector(ByteVector.fromString(text, encoding));
-            }
-        }
-
-        if (this._textFields.length === 0) {
-            v.addByteVector(ByteVector.getTextDelimiter(encoding));
-        }
-
-        return v;
+        return ByteVector.concatenate(
+            encoding,
+            ByteVector.fromString(this._description ?? "", encoding),
+            ByteVector.getTextDelimiter(encoding),
+            ... renderedFields.slice(0, renderedFields.length - 1)    // Drop last delimiter
+        )
     }
 
     // #endregion
