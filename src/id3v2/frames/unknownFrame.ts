@@ -55,7 +55,7 @@ export default class UnknownFrame extends Frame {
 
     /** @inheritDoc */
     public clone(): Frame {
-        return UnknownFrame.fromFields(this.frameId, this.data);
+        return UnknownFrame.fromFields(this.frameId, this.data.toByteVector());
     }
 
     /** @inheritDoc */
