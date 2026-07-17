@@ -1,5 +1,4 @@
 import Frame from "./frame";
-import TextInformationFrame from "./textInformationFrame";
 import Id3v2Settings from "../id3v2Settings";
 import {ByteVector, StringType} from "../../byteVector";
 import {CorruptFileError} from "../../errors";
@@ -61,8 +60,8 @@ export default class UserTextInformationFrame extends Frame {
     }
 
     /**
-     * Constructs and initializes a new instance with a specified description, url, and text
-     * encoding.
+     * Constructs and initializes a new instance with a specified description, text fields, and
+     * text encoding.
      * @param description Optional, description of the new frame. If omitted, defaults to `""`.
      * @param text Optional, text fields to store in the new frame. If omitted, defaults to an
      *     empty array.
@@ -139,7 +138,7 @@ export default class UserTextInformationFrame extends Frame {
         }
 
         // Convert ["x", "y", "z"] into [bv("x"), bv(0), bv("y"), bv(0), bv("z"), bv(0)]
-        const encoding = TextInformationFrame.correctEncoding(this._encoding, version);
+        const encoding = Frame.correctEncoding(this._encoding, version);
         const renderedFields = this._textFields.filter(f => !!f)
             .map(f => [ByteVector.fromString(f, encoding), ByteVector.getTextDelimiter(encoding)])
             .reduce(
