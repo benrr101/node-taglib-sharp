@@ -45,7 +45,7 @@ export default class Id3v2Tag extends Tag {
      */
     public static fromEmpty(): Id3v2Tag {
         const tag = new Id3v2Tag();
-        tag._header = new Id3v2TagHeader();
+        tag._header = new Id3v2TagHeader(0, 0, Id3v2TagHeaderFlags.None, 0);
         return tag;
     }
 
@@ -471,7 +471,7 @@ export default class Id3v2Tag extends Tag {
         // Create or update the preferred comments frame
         let frame = this.getCommentFramePreferred("", Id3v2Tag.language);
         if (!frame) {
-            frame = CommentsFrame.fromDescription("", Id3v2Tag.language);
+            frame = CommentsFrame.fromFields("", undefined, Id3v2Tag.language);
             this.addFrame(frame);
         }
 
@@ -609,9 +609,7 @@ export default class Id3v2Tag extends Tag {
      * @inheritDoc
      * @remarks Stored in the `USLT` frame
      */
-    get lyrics(): string {
-        return this.getLyricsFramePreferred("", Id3v2Tag.language)?.toString();
-    }
+    get lyrics(): string { return this.getLyricsFramePreferred("", Id3v2Tag.language)?.toString(); }
     /**
      * @inheritDoc
      * @remarks Stored in the `USLT` frame
@@ -626,7 +624,7 @@ export default class Id3v2Tag extends Tag {
         // Find or create the appropriate unsynchronized lyrics frame
         let frame = this.getLyricsFramePreferred("", Id3v2Tag.language);
         if (!frame) {
-            frame = UnsynchronizedLyricsFrame.fromData("", Id3v2Tag.language);
+            frame = UnsynchronizedLyricsFrame.fromFields("", undefined, Id3v2Tag.language);
             this.addFrame(frame);
         }
         frame.text = value;
@@ -1043,28 +1041,6 @@ export default class Id3v2Tag extends Tag {
     }
 
     /**
-     * Gets the text value from a specified text information frame (or URL frame if that was
-     * specified).
-     * @param ident Frame identifier of the text information frame to get the value from
-     * @returns Text of the specified frame, or `undefined` if no value was found
-     */
-    public getTextAsString(ident: FrameIdentifier): string {
-        Guards.truthy(ident, "ident");
-
-        let frame: Frame;
-        if (ident.isUrlFrame) {
-            frame = UrlLinkFrame.filterFrames(this._frameList, ident)[0];
-        } else if (ident === FrameIdentifiers.TCON) {
-            frame = GenreFrame.filterFrames(this._frameList)[0];
-        } else {
-            frame = TextInformationFrame.filterFrames(this._frameList, ident)[0];
-        }
-
-        const result = frame ? frame.toString() : undefined;
-        return result || undefined;
-    }
-
-    /**
      * Removes a specified frame from the current instance.
      * @param frame Object to remove from the current instance
      */
@@ -1174,6 +1150,8 @@ export default class Id3v2Tag extends Tag {
             }
         });
 
+        // @TODO: Determine what to do with empty frames, maybe even have a setting to enable writing them
+
         // Put the tag data together and unsynchronize it.
         let frameBytes = ByteVector.concatenate(... renderedFrames);
         if (unsyncAtTagLevel) {
@@ -1229,107 +1207,6 @@ export default class Id3v2Tag extends Tag {
         } else {
             this._frameList.push(newFrame);
         }
-    }
-
-    /**
-     * Sets the numerical values for a specified text information frame.
-     * If both `numerator` and `denominator` are `0`, the frame will be removed
-     * from the tag. If `denominator` is zero, `numerator` will be stored by
-     * itself. Otherwise, the values will be stored as `{numerator}/{denominator}`.
-     * @param ident Identity of the frame to set
-     * @param numerator Value containing the top half of the fraction, or the number if
-     *     `denominator` is zero
-     * @param denominator Value containing the bottom half of the fraction
-     * @param minPlaces Minimum number of digits to use to display the `numerator`, if
-     *     the numerator has less than this number of digits, it will be filled with leading zeroes.
-     */
-    public setNumberFrame(ident: FrameIdentifier, numerator: number, denominator: number, minPlaces: number = 1): void {
-        Guards.truthy(ident, "ident");
-        Guards.uint(numerator, "value");
-        Guards.uint(denominator, "count");
-        Guards.byte(minPlaces, "minPlaces");
-
-        if (numerator === 0 && denominator === 0) {
-            this.removeFrames(ident);
-        } else if (denominator !== 0) {
-            const formattedNumerator = numerator.toString().padStart(minPlaces, "0");
-            this.setTextFrame(ident, `${formattedNumerator}/${denominator}`);
-        } else {
-            this.setTextFrame(ident, numerator.toString().padStart(minPlaces, "0"));
-        }
-    }
-
-    /**
-     * Sets the text for a specified text information frame.
-     * @param ident Identifier of the frame to set the data for
-     * @param text Text to set for the specified frame or `undefined`/`null`/`""` to remove all
-     *     frames with that identifier.
-     */
-    // @TODO: These methods don't cover all situations - what happens if there is >1 frame with the identity?
-    //    what happens if the user specifies a TXXX frame?
-    public setTextFrame(ident: FrameIdentifier, ...text: string[]): void {
-        Guards.truthy(ident, "ident");
-        if (!ident.isTextFrame) {
-            throw new Error("Argument error: Identifier is not a text frame.");
-        }
-        if (ident === FrameIdentifiers.TXXX) {
-            throw new Error("Argument error: TXXX frames cannot be set using this method.");
-        }
-
-        // Check if all the elements provided are empty. If they are, remove the frame.
-        if (!text.some(t => !!t)) {
-            this.removeFrames(ident);
-            return;
-        }
-
-        let frame: TextInformationFrame|GenreFrame;
-        if (ident === FrameIdentifiers.TCON) {
-            frame = GenreFrame.filterFrames(this._frameList)[0];
-            if (!frame) {
-                frame = GenreFrame.fromEncoding();
-                this.addFrame(frame);
-            }
-        } else {
-            frame = TextInformationFrame.filterFrames(this._frameList, ident)[0];
-            if (!frame) {
-                frame = TextInformationFrame.fromIdentifier(ident);
-                this.addFrame(frame);
-            }
-        }
-
-        frame.text = text;
-        frame.textEncoding = Id3v2Settings.defaultEncoding;
-    }
-
-    /**
-     * Sets the text for a specified URL frame.
-     * @param ident Identifier of the frame to set the data for
-     * @param text URL to set for the specified frame or `undefined`/`null`/`""` to remove all
-     *     frames with that identifier.
-     */
-    // @TODO: These methods don't cover all situations - what happens if there is >1 frame with the identity?
-    //     what happens if the user specifies a WXXX frame?
-    public setUrlFrame(ident: FrameIdentifier, text: string): void {
-        Guards.truthy(ident, "ident");
-        if (!ident.isUrlFrame) {
-            throw new Error("Argument error: Identifier is not a URL frame.");
-        }
-        if (ident === FrameIdentifiers.WXXX) {
-            throw new Error("Argument error: WXXX frames cannot be set using this method.");
-        }
-
-        if (!text) {
-            this.removeFrames(ident);
-            return;
-        }
-
-        let urlFrame = UrlLinkFrame.filterFrames(this._frameList, ident)[0];
-        if (!urlFrame) {
-            urlFrame = UrlLinkFrame.fromIdentifier(ident);
-            this.addFrame(urlFrame);
-        }
-
-        urlFrame.text = text;
     }
 
     // #endregion
@@ -1566,6 +1443,66 @@ export default class Id3v2Tag extends Tag {
         return result || undefined;
     }
 
+    private getUserTextFrame(description: string, caseSensitive: boolean): UserTextInformationFrame {
+        // Gets the TXXX frame, frame will be undefined if nonexistent
+        const frames = UserTextInformationFrame.filterFrames(this._frameList);
+        return frames.find(f => {
+            return caseSensitive
+                ? f.description === description
+                : f.description.toUpperCase() === description.toUpperCase();
+        });
+    }
+
+    /**
+     * Gets the text value from a specified text information frame (or URL frame if that was
+     * specified).
+     * @param ident Frame identifier of the text information frame to get the value from
+     * @returns Text of the specified frame, or `undefined` if no value was found
+     */
+    private getTextAsString(ident: FrameIdentifier): string {
+        Guards.truthy(ident, "ident");
+
+        let frame: Frame;
+        if (ident.isUrlFrame) {
+            frame = UrlLinkFrame.filterFrames(this._frameList, ident)[0];
+        } else if (ident === FrameIdentifiers.TCON) {
+            frame = GenreFrame.filterFrames(this._frameList)[0];
+        } else {
+            frame = TextInformationFrame.filterFrames(this._frameList, ident)[0];
+        }
+
+        const result = frame ? frame.toString() : undefined;
+        return result || undefined;
+    }
+
+    /**
+     * Sets the numerical values for a specified text information frame.
+     * If both `numerator` and `denominator` are `0`, the frame will be removed
+     * from the tag. If `denominator` is zero, `numerator` will be stored by
+     * itself. Otherwise, the values will be stored as `{numerator}/{denominator}`.
+     * @param ident Identity of the frame to set
+     * @param numerator Value containing the top half of the fraction, or the number if
+     *     `denominator` is zero
+     * @param denominator Value containing the bottom half of the fraction
+     * @param minPlaces Minimum number of digits to use to display the `numerator`, if
+     *     the numerator has less than this number of digits, it will be filled with leading zeroes.
+     */
+    private setNumberFrame(ident: FrameIdentifier, numerator: number, denominator: number, minPlaces: number = 1): void {
+        Guards.truthy(ident, "ident");
+        Guards.uint(numerator, "value");
+        Guards.uint(denominator, "count");
+        Guards.byte(minPlaces, "minPlaces");
+
+        if (numerator === 0 && denominator === 0) {
+            this.removeFrames(ident);
+        } else if (denominator !== 0) {
+            const formattedNumerator = numerator.toString().padStart(minPlaces, "0");
+            this.setTextFrame(ident, `${formattedNumerator}/${denominator}`);
+        } else {
+            this.setTextFrame(ident, numerator.toString().padStart(minPlaces, "0"));
+        }
+    }
+
     private setUfidText(owner: string, text: string): void {
         // Get the UFID frame, create if necessary
         const frames = UniqueFileIdentifierFrame.filterFrames(this._frameList);
@@ -1577,7 +1514,7 @@ export default class Id3v2Tag extends Tag {
             this.removeFrame(frame);
         } else {
             const identifier = ByteVector.fromString(text, StringType.UTF8);
-            frame = UniqueFileIdentifierFrame.fromData(owner, identifier);
+            frame = UniqueFileIdentifierFrame.fromFields(owner, identifier);
             this.addFrame(frame);
         }
     }
@@ -1591,21 +1528,45 @@ export default class Id3v2Tag extends Tag {
             }
         } else {
             if (!frame) {
-                frame = UserTextInformationFrame.fromDescription(description, Id3v2Settings.defaultEncoding);
+                frame = UserTextInformationFrame.fromFields(description);
                 this.addFrame(frame);
             }
             frame.text = text.split(";");
         }
     }
 
-    private getUserTextFrame(description: string, caseSensitive: boolean): UserTextInformationFrame {
-        // Gets the TXXX frame, frame will be undefined if nonexistent
-        const frames = UserTextInformationFrame.filterFrames(this._frameList);
-        return frames.find(f => {
-            return caseSensitive
-                ? f.description === description
-                : f.description.toUpperCase() === description.toUpperCase();
-        });
+    /**
+     * Sets the text for a specified text information frame.
+     * @param ident Identifier of the frame to set the data for
+     * @param text Text to set for the specified frame or `undefined`/`null`/`""` to remove all
+     *     frames with that identifier.
+     */
+    // @TODO: These methods don't cover all situations - what happens if there is >1 frame with the identity?
+    //    what happens if the user specifies a TXXX frame?
+    private setTextFrame(ident: FrameIdentifier, ...text: string[]): void {
+        // Check if all the elements provided are empty. If they are, remove the frame.
+        if (!text.some(t => !!t)) {
+            this.removeFrames(ident);
+            return;
+        }
+
+        let frame: TextInformationFrame|GenreFrame;
+        if (ident === FrameIdentifiers.TCON) {
+            frame = GenreFrame.filterFrames(this._frameList)[0];
+            if (!frame) {
+                frame = GenreFrame.fromFields();
+                this.addFrame(frame);
+            }
+        } else {
+            frame = TextInformationFrame.filterFrames(this._frameList, ident)[0];
+            if (!frame) {
+                frame = TextInformationFrame.fromFields(ident);
+                this.addFrame(frame);
+            }
+        }
+
+        frame.text = text;
+        frame.textEncoding = Id3v2Settings.defaultEncoding;
     }
 
     // #endregion

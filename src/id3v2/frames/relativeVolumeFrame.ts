@@ -158,6 +158,19 @@ export class ChannelData {
     }
 
     /**
+     * Creates and returns a duplicate instance of the current object.
+     * @return {ChannelData} New instance of ChannelData with the same properties as the original
+     */
+    public clone(): ChannelData {
+        const clone = new ChannelData(this._channel);
+        clone._peakBits = this._peakBits;
+        clone._peakVolume = this._peakVolume;
+        clone._volumeAdjustment = this._volumeAdjustment;
+
+        return clone;
+    }
+
+    /**
      * Generates a raw byte representation of the current instance.
      */
     public render(): ByteVector {
@@ -186,15 +199,18 @@ export class ChannelData {
 // @TODO: RVA2 only exists in v2.4, RVAD exists in v2.3, but it is a different format.
 export class RelativeVolumeFrame extends Frame {
     // @TODO: Get rid of this whole "is set" malarky and just store a map of channels that are set.
-    private readonly _channels: ChannelData[] = new Array<ChannelData>(9);
+    private _channels: ChannelData[];
     private _identification: string;
 
     // #region Constructors
 
     private constructor(header: Id3v2FrameHeader) {
         super(header);
+
+        // Initialize the channel data array
+        this._channels = [];
         for (let i = 0; i < 9; i++) {
-            this._channels[i] = new ChannelData(i);
+            this._channels.push(new ChannelData(i));
         }
     }
 
@@ -254,12 +270,27 @@ export class RelativeVolumeFrame extends Frame {
     }
 
     /**
-     * Constructs and initializes a new instance with a specified identifier
-     * @param identification Identification ot use for the new frame
+     * Constructs and initializes a new instance with the specified fields.
+     * @param identification Optional, identification to use for the new frame. If omitted,
+     *     defaults to `""`.
+     * @param channels Optional, channel data for the new frame. If provided, the provided channel
+     *     data will replace the empty channel data (and duplicates will overwrite each other). If
+     *     not provided, the internal channel data will be unset for all channels.
      */
-    public static fromIdentification(identification: string): RelativeVolumeFrame {
+    public static fromFields(identification?: string, channels?: ChannelData[]): RelativeVolumeFrame {
         const frame = new RelativeVolumeFrame(new Id3v2FrameHeader(FrameIdentifiers.RVA2));
-        frame._identification = identification;
+        frame._identification = identification ?? "";
+        if (!!channels) {
+            // Replace blank channel data with the provided channel data.
+            for (const channel of channels) {
+                if (!channel) {
+                    continue;
+                }
+
+                frame._channels[channel.channelType] = channel;
+            }
+        }
+
         return frame;
     }
 
@@ -271,10 +302,11 @@ export class RelativeVolumeFrame extends Frame {
      * Gets the channels in the current instance that have a value
      */
     // @TODO: Why the heck can't we just write to this.
-    public get channels(): ChannelData[] { return this._channels.filter((c) => c.isSet); }
+    public get channels(): ChannelData[] { return this._channels.filter((c) => c?.isSet); }
 
     /**
-     * Gets the identification used for the current instance
+     * Gets the identification used to identify the situation and/or device where this adjustment
+     * should apply.
      */
     public get identification(): string { return this._identification; }
 
@@ -284,11 +316,7 @@ export class RelativeVolumeFrame extends Frame {
 
     /** @inheritDoc */
     public clone(): Frame {
-        const frame = RelativeVolumeFrame.fromIdentification(this.identification);
-        for (let i = 0; i < 9; i++) {
-            frame._channels[i] = this._channels[i];
-        }
-        return frame;
+        return RelativeVolumeFrame.fromFields(this._identification, this._channels.map(c => c.clone()));
     }
 
     public static filterFrames(frames: Frame[]): RelativeVolumeFrame[] {

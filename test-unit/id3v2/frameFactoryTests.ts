@@ -1,5 +1,6 @@
 import {params, suite, test} from "@testdeck/mocha";
 import {assert} from "chai";
+import {It, Mock, Times} from "typemoq";
 
 import AttachmentFrame from "../../src/id3v2/frames/attachmentFrame";
 import CommentsFrame from "../../src/id3v2/frames/commentsFrame";
@@ -26,9 +27,8 @@ import {FrameIdentifier, FrameIdentifiers} from "../../src/id3v2/frameIdentifier
 import {PictureType} from "../../src/picture";
 import {RelativeVolumeFrame} from "../../src/id3v2/frames/relativeVolumeFrame";
 import {SynchronizedLyricsFrame} from "../../src/id3v2/frames/synchronizedLyricsFrame";
-import {SynchronizedTextType, TimestampFormat} from "../../src/id3v2/utilTypes";
 import {Testers} from "../utilities/testers";
-import {It, Mock, Times} from "typemoq";
+import {TimestampFormat} from "../../src/id3v2/utilTypes";
 import {NumberUtils} from "../../src/utils";
 
 @suite class FrameFactoryTests {
@@ -138,7 +138,7 @@ import {NumberUtils} from "../../src/utils";
     @test
     public createFrameFromFile_comm() {
         // Arrange
-        const data = CommentsFrame.fromDescription("foo").render(4);
+        const data = CommentsFrame.fromFields("foo", "bar").render(4);
         const file = TestFile.getFile(data);
 
         // Act
@@ -151,7 +151,7 @@ import {NumberUtils} from "../../src/utils";
     @test
     public createFrameFromFile_etco() {
         // Arrange
-        const data = EventTimeCodeFrame.fromTimestampFormat(TimestampFormat.AbsoluteMilliseconds).render(4);
+        const data = EventTimeCodeFrame.fromFields(TimestampFormat.AbsoluteMilliseconds).render(4);
         const file = TestFile.getFile(data);
 
         // Act
@@ -194,7 +194,7 @@ import {NumberUtils} from "../../src/utils";
     @test
     public createFrameFromFile_pcnt() {
         // Arrange
-        const data = PlayCountFrame.fromEmpty().render(4);
+        const data = PlayCountFrame.fromFields(BigInt(123)).render(4);
         const file = TestFile.getFile(data);
 
         // Act
@@ -207,7 +207,7 @@ import {NumberUtils} from "../../src/utils";
     @test
     public createFrameFromFile_popm() {
         // Arrange
-        const data = PopularimeterFrame.fromUser("foo").render(4);
+        const data = PopularimeterFrame.fromFields("foo", 123).render(4);
         const file = TestFile.getFile(data);
 
         // Act
@@ -220,7 +220,7 @@ import {NumberUtils} from "../../src/utils";
     @test
     public createFrameFromFile_priv() {
         // Arrange
-        const data = PrivateFrame.fromOwner("foo").render(4);
+        const data = PrivateFrame.fromFields("foo", ByteVector.fromUint(123)).render(4);
         const file = TestFile.getFile(data);
 
         // Act
@@ -233,7 +233,7 @@ import {NumberUtils} from "../../src/utils";
     @test
     public createFrameFromFile_rva2() {
         // Arrange
-        const data = RelativeVolumeFrame.fromIdentification("foo").render(4);
+        const data = RelativeVolumeFrame.fromFields("foo").render(4);
         const file = TestFile.getFile(data);
 
         // Act
@@ -246,7 +246,7 @@ import {NumberUtils} from "../../src/utils";
     @test
     public createFrameFromFrame_sylt() {
         // Arrange
-        const data = SynchronizedLyricsFrame.fromInfo("foo", "bar", SynchronizedTextType.Lyrics).render(4);
+        const data = SynchronizedLyricsFrame.fromFields("foo").render(4);
         const file = TestFile.getFile(data);
 
         // Act
@@ -259,9 +259,8 @@ import {NumberUtils} from "../../src/utils";
     @test
     public createFrameFromFile_textFrame() {
         // Arrange
-        const data = TextInformationFrame.fromIdentifier(FrameIdentifiers.TCOM);
-        data.text = ["foo"];
-        const file = TestFile.getFile(data.render(4));
+        const data = TextInformationFrame.fromFields(FrameIdentifiers.TCOM, ["foo"]).render(4);
+        const file = TestFile.getFile(data);
 
         // Act
         const output = Id3v2FrameFactory.createFrameFromFile(file, 0, 4, false);
@@ -273,7 +272,7 @@ import {NumberUtils} from "../../src/utils";
     @test
     public createFrameFromFile_txxx() {
         // Arrange
-        const data = UserTextInformationFrame.fromDescription("foo").render(4);
+        const data = UserTextInformationFrame.fromFields("foo", ["foo"]).render(4);
         const file = TestFile.getFile(data);
 
         // Act
@@ -286,7 +285,7 @@ import {NumberUtils} from "../../src/utils";
     @test
     public createFrameFromFile_ufid() {
         // Arrange
-        const data = UniqueFileIdentifierFrame.fromData("foo", ByteVector.fromByte(0x05)).render(4);
+        const data = UniqueFileIdentifierFrame.fromFields("foo", ByteVector.fromByte(0x05)).render(4);
         const file = TestFile.getFile(data);
 
         // Act
@@ -301,7 +300,7 @@ import {NumberUtils} from "../../src/utils";
         // Arrange
         const data = ByteVector.concatenate(
             0x00, 0x00,
-            UniqueFileIdentifierFrame.fromData("foo", ByteVector.fromByte(0x05)).render(4)
+            UniqueFileIdentifierFrame.fromFields("foo", ByteVector.fromByte(0x05)).render(4)
         );
         const file = TestFile.getFile(data);
 
@@ -330,9 +329,7 @@ import {NumberUtils} from "../../src/utils";
     @test
     public createFrameFromFile_urlFrame() {
         // Arrange
-        const frame = UrlLinkFrame.fromIdentifier(FrameIdentifiers.WCOM);
-        frame.text = "foo";
-        const data = frame.render(4);
+        const data = UrlLinkFrame.fromFields(FrameIdentifiers.WCOM, "foo").render(4);
         const file = TestFile.getFile(data);
 
         // Act
@@ -342,6 +339,7 @@ import {NumberUtils} from "../../src/utils";
         FrameFactoryTests.validateOutput(output, UrlLinkFrame, 4);
     }
 
+    @test
     public createFrameFromFile_user() {
         // Arrange
         const data = TermsOfUseFrame.fromFields("foo").render(4);
@@ -357,7 +355,7 @@ import {NumberUtils} from "../../src/utils";
     @test
     public createFrameFromFile_uslt() {
         // Arrange
-        const data = UnsynchronizedLyricsFrame.fromData("foo").render(4);
+        const data = UnsynchronizedLyricsFrame.fromFields("foo", "bar").render(4);
         const file = TestFile.getFile(data);
 
         // Act
@@ -413,7 +411,7 @@ import {NumberUtils} from "../../src/utils";
     @test
     public createFrameFromFile_customWithMatch() {
         // Arrange
-        const frame = PlayCountFrame.fromEmpty();
+        const frame = PlayCountFrame.fromFields();
         const data = frame.render(4);
         const file = TestFile.getFile(data);
 
@@ -449,7 +447,7 @@ import {NumberUtils} from "../../src/utils";
     @test
     public createFrameFromFile_customWithoutMatch() {
         // Arrange
-        const frame = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.fromByteArray([0x01, 0x02, 0x03]));
+        const frame = UnknownFrame.fromFields(FrameIdentifiers.RVRB, ByteVector.fromByteArray([0x01, 0x02, 0x03]));
         const data = frame.render(4);
         const file = TestFile.getFile(data);
 
@@ -653,7 +651,7 @@ import {NumberUtils} from "../../src/utils";
     @test
     public createFrameFromTagBytes_comm() {
         // Arrange
-        const data = CommentsFrame.fromDescription("foo").render(4);
+        const data = CommentsFrame.fromFields("foo", "bar").render(4);
 
         // Act
         const output = Id3v2FrameFactory.createFrameFromTagBytes(data, 0, 4, false);
@@ -665,7 +663,7 @@ import {NumberUtils} from "../../src/utils";
     @test
     public createFrameFromTagBytes_etco() {
         // Arrange
-        const data = EventTimeCodeFrame.fromTimestampFormat(TimestampFormat.AbsoluteMilliseconds).render(4);
+        const data = EventTimeCodeFrame.fromFields().render(4);
 
         // Act
         const output = Id3v2FrameFactory.createFrameFromTagBytes(data, 0, 4, false);
@@ -707,7 +705,7 @@ import {NumberUtils} from "../../src/utils";
     @test
     public createFrameFromTagBytes_pcnt() {
         // Arrange
-        const data = PlayCountFrame.fromEmpty().render(4);
+        const data = PlayCountFrame.fromFields(BigInt(123)).render(4);
 
         // Act
         const output = Id3v2FrameFactory.createFrameFromTagBytes(data, 0, 4, false);
@@ -719,7 +717,7 @@ import {NumberUtils} from "../../src/utils";
     @test
     public createFrameFromTagBytes_popm() {
         // Arrange
-        const data = PopularimeterFrame.fromUser("foo").render(4);
+        const data = PopularimeterFrame.fromFields("foo", 123).render(4);
 
         // Act
         const output = Id3v2FrameFactory.createFrameFromTagBytes(data, 0, 4, false);
@@ -731,7 +729,7 @@ import {NumberUtils} from "../../src/utils";
     @test
     public createFrameFromTagBytes_priv() {
         // Arrange
-        const data = PrivateFrame.fromOwner("foo").render(4);
+        const data = PrivateFrame.fromFields("foo", ByteVector.fromUint(123)).render(4);
 
         // Act
         const output = Id3v2FrameFactory.createFrameFromTagBytes(data, 0, 4, false);
@@ -743,7 +741,7 @@ import {NumberUtils} from "../../src/utils";
     @test
     public createFrameFromTagBytes_rva2() {
         // Arrange
-        const data = RelativeVolumeFrame.fromIdentification("foo").render(4);
+        const data = RelativeVolumeFrame.fromFields("foo").render(4);
 
         // Act
         const output = Id3v2FrameFactory.createFrameFromTagBytes(data, 0, 4, false);
@@ -755,7 +753,7 @@ import {NumberUtils} from "../../src/utils";
     @test
     public createFrameFromTagBytes_sylt() {
         // Arrange
-        const data = SynchronizedLyricsFrame.fromInfo("foo", "bar", SynchronizedTextType.Lyrics).render(4);
+        const data = SynchronizedLyricsFrame.fromFields("foo").render(4);
 
         // Act
         const output = Id3v2FrameFactory.createFrameFromTagBytes(data, 0, 4, false);
@@ -767,8 +765,7 @@ import {NumberUtils} from "../../src/utils";
     @test
     public createFrameFromTagBytes_textFrame() {
         // Arrange
-        const frame = TextInformationFrame.fromIdentifier(FrameIdentifiers.TCOM);
-        frame.text = ["foo"];
+        const frame = TextInformationFrame.fromFields(FrameIdentifiers.TCOM, ["foo"]);
         const data = frame.render(4);
 
         // Act
@@ -781,7 +778,7 @@ import {NumberUtils} from "../../src/utils";
     @test
     public createFrameFromTagBytes_txxx() {
         // Arrange
-        const data = UserTextInformationFrame.fromDescription("foo").render(4);
+        const data = UserTextInformationFrame.fromFields("foo", ["bar"]).render(4);
 
         // Act
         const output = Id3v2FrameFactory.createFrameFromTagBytes(data, 0, 4, false);
@@ -793,7 +790,7 @@ import {NumberUtils} from "../../src/utils";
     @test
     public createFrameFromTagBytes_ufid() {
         // Arrange
-        const data = UniqueFileIdentifierFrame.fromData("foo", ByteVector.fromByte(0x08)).render(4);
+        const data = UniqueFileIdentifierFrame.fromFields("foo", ByteVector.fromByte(0x08)).render(4);
 
         // Act
         const output = Id3v2FrameFactory.createFrameFromTagBytes(data, 0, 4, false);
@@ -838,8 +835,7 @@ import {NumberUtils} from "../../src/utils";
     @test
     public createFrameFromTagBytes_urlFrame() {
         // Arrange
-        const frame = UrlLinkFrame.fromIdentifier(FrameIdentifiers.WCOM);
-        frame.text = "foo";
+        const frame = UrlLinkFrame.fromFields(FrameIdentifiers.WCOM, "foo");
         const data = frame.render(4);
 
         // Act
@@ -864,7 +860,7 @@ import {NumberUtils} from "../../src/utils";
     @test
     public createFrameFromTagBytes_uslt() {
         // Arrange
-        const data = UnsynchronizedLyricsFrame.fromData("foo").render(4);
+        const data = UnsynchronizedLyricsFrame.fromFields("foo", "bar").render(4);
 
         // Act
         const output = Id3v2FrameFactory.createFrameFromTagBytes(data, 0, 4, false);
@@ -917,7 +913,7 @@ import {NumberUtils} from "../../src/utils";
     @test
     public createFrameFromTagBytes_customWithMatch() {
         // Arrange
-        const frame = PlayCountFrame.fromEmpty();
+        const frame = PlayCountFrame.fromFields(BigInt(123));
         const data = frame.render(4);
 
         const fieldBytes = data.subarray(Id3v2FrameHeader.getBaseSize(4));
@@ -952,7 +948,7 @@ import {NumberUtils} from "../../src/utils";
     @test
     public createFrameFromTagBytes_customWithoutMatch() {
         // Arrange
-        const frame = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.fromByteArray([0x01, 0x02, 0x03]));
+        const frame = UnknownFrame.fromFields(FrameIdentifiers.RVRB, ByteVector.fromByteArray([0x01, 0x02, 0x03]));
         const data = frame.render(4);
 
         const fieldBytes = data.subarray(Id3v2FrameHeader.getBaseSize(4));

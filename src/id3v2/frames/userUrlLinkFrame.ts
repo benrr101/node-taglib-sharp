@@ -1,6 +1,5 @@
 import Frame from "./frame";
 import Id3v2Settings from "../id3v2Settings";
-import UrlLinkFrame from "./urlLinkFrame";
 import {ByteVector, StringType} from "../../byteVector";
 import {Id3v2FrameHeader} from "./frameHeader";
 import {FrameIdentifiers} from "../frameIdentifiers";
@@ -9,9 +8,10 @@ import {ArrayUtils, Guards} from "../../utils";
 /**
  * Provides support for ID3v2 User URL Link frames (WXXX).
  */
-export default class UserUrlLinkFrame extends UrlLinkFrame {
+export default class UserUrlLinkFrame extends Frame {
     private _description: string;
     private _encoding: StringType = Id3v2Settings.defaultEncoding;
+    private _url: string;
 
     // #region Constructors
 
@@ -54,11 +54,11 @@ export default class UserUrlLinkFrame extends UrlLinkFrame {
             if (splitText.length > 1) {
                 // Data was probably encoded using old TagLib# behavior.
                 frame._description = splitText[0];
-                frame._text = splitText[1];
+                frame._url = splitText[1];
             } else {
                 // Data has only one field, let's assume it only has a url.
                 frame._description = "";
-                frame._text = splitText[0];
+                frame._url = splitText[0];
             }
         } else {
             // Well-formed frame (or >2 fields, the latter of which will be ignored)
@@ -67,7 +67,7 @@ export default class UserUrlLinkFrame extends UrlLinkFrame {
 
             const textBytes = descriptionAndTextBytes.subarray(descriptionLength + delimiter.length);
             const splitTextBytes = textBytes.split(ByteVector.getTextDelimiter(StringType.Latin1));
-            frame._text = splitTextBytes[0].toString(StringType.Latin1);
+            frame._url = splitTextBytes[0].toString(StringType.Latin1);
         }
 
         return frame;
@@ -76,13 +76,13 @@ export default class UserUrlLinkFrame extends UrlLinkFrame {
     /**
      * Constructs and initializes a new instance using the provided description and url to populate
      * the fields of the frame.
-     * @param description Description to store in the frame
-     * @param url URL to store in the frame
+     * @param description Optional, description to store in the frame. If omitted, defaults to `""`.
+     * @param url Optional, URL to store in the frame. If omitted, defaults to `""`.
      */
-    public static fromFields(description: string, url: string): UserUrlLinkFrame {
+    public static fromFields(description?: string, url?: string): UserUrlLinkFrame {
         const frame = new UserUrlLinkFrame(new Id3v2FrameHeader(FrameIdentifiers.WXXX));
-        frame._description = description;
-        frame._text = url;
+        frame._description = description ?? "";
+        frame._url = url ?? "";
         return frame;
     }
 
@@ -111,6 +111,15 @@ export default class UserUrlLinkFrame extends UrlLinkFrame {
      */
     public set textEncoding(value: StringType) { this._encoding = value; }
 
+    /**
+     * Gets the text contained in the current instance.
+     */
+    public get url(): string { return this._url; }
+    /**
+     * Sets the text contained in the current instance.
+     */
+    public set url(value: string) { this._url = value; }
+
     // #endregion
 
     // #region Methods
@@ -122,27 +131,27 @@ export default class UserUrlLinkFrame extends UrlLinkFrame {
 
     /** @inheritDoc */
     public clone(): UserUrlLinkFrame {
-        const frame = UserUrlLinkFrame.fromFields(this._description, this._text);
+        const frame = UserUrlLinkFrame.fromFields(this._description, this._url);
         frame._encoding = this._encoding;
         return frame;
     }
 
     /** @inheritDoc */
     public toString(): string {
-        return `[${this.description}] ${super.toString()}`;
+        return `[${this._description}] ${this._url}`;
     }
 
     protected renderFields(version: number): ByteVector {
-        if (!this._description && !this._text) {
+        if (!this._description && !this._url) {
             return ByteVector.empty();
         }
 
-        const encoding = UrlLinkFrame.correctEncoding(this.textEncoding, version);
+        const encoding = Frame.correctEncoding(this._encoding, version);
         return ByteVector.concatenate(
-            UrlLinkFrame.correctEncoding(this._encoding, version),
+            encoding,
             ByteVector.fromString(this._description ?? "", encoding),
             ByteVector.getTextDelimiter(encoding),
-            ByteVector.fromString(this._text ?? "", StringType.Latin1)
+            ByteVector.fromString(this._url ?? "", StringType.Latin1)
         );
     }
 

@@ -14,27 +14,12 @@ const assertFrame = (frame: UrlLinkFrame, identifier: FrameIdentifier, text: str
     assert.ok(frame);
     assert.instanceOf<UrlLinkFrame>(frame, UrlLinkFrame);
     assert.strictEqual(frame.frameId, identifier);
-    assert.strictEqual(frame.text, text);
+    assert.strictEqual(frame.url, text);
 }
 
 @suite class Id3v2_UrlLinkFrame_ConstructorTests extends FrameConstructorTests {
     public get fromFieldBytes(): (h: Id3v2FrameHeader, d: ByteVector, v: number) => Frame {
         return UrlLinkFrame.fromFieldBytes;
-    }
-
-    @test
-    public fromIdentifier_falsyIdentity() {
-        // Act/Assert
-        Testers.testTruthy((v: FrameIdentifier) => { UrlLinkFrame.fromIdentifier(v); });
-    }
-
-    @test
-    public fromIdentifier_validIdentity() {
-        // Act
-        const output = UrlLinkFrame.fromIdentifier(FrameIdentifiers.WCOM);
-
-        // Assert
-        assertFrame(output, FrameIdentifiers.WCOM, undefined);
     }
 
     @params(2, "v2")
@@ -89,6 +74,30 @@ const assertFrame = (frame: UrlLinkFrame, identifier: FrameIdentifier, text: str
         // Assert
         assertFrame(output, FrameIdentifiers.WCOM, "foo");
     }
+
+    @test
+    public fromFields_falsyIdentifier() {
+        // Act/Assert
+        Testers.testTruthy((v: FrameIdentifier) => { UrlLinkFrame.fromFields(v); });
+    }
+
+    @test
+    public fromFields_withIdentifier() {
+        // Act
+        const output = UrlLinkFrame.fromFields(FrameIdentifiers.WCOM);
+
+        // Assert
+        assertFrame(output, FrameIdentifiers.WCOM, "");
+    }
+
+    @test
+    public fromFields_withIdentifierUrl() {
+        // Act
+        const output = UrlLinkFrame.fromFields(FrameIdentifiers.WCOM, "foo");
+
+        // Assert
+        assertFrame(output, FrameIdentifiers.WCOM, "foo");
+    }
 }
 
 @suite class Id3v2_UrlLinkFrame_PropertyTests {
@@ -98,13 +107,13 @@ const assertFrame = (frame: UrlLinkFrame, identifier: FrameIdentifier, text: str
     @params("bar", "truthy")
     public setText_falsyValues(value: string) {
         // Arrange
-        const frame = UrlLinkFrame.fromIdentifier(FrameIdentifiers.WCOM);
+        const frame = UrlLinkFrame.fromFields(FrameIdentifiers.WCOM);
 
         // Act
-        frame.text = value;
+        frame.url = value;
 
         // Assert
-        assert.strictEqual(frame.text, value);
+        assert.strictEqual(frame.url, value);
     }
 }
 
@@ -112,14 +121,13 @@ const assertFrame = (frame: UrlLinkFrame, identifier: FrameIdentifier, text: str
     @test
     public clone_returnsCloneUsingRawData() {
         // Arrange
-        const frame = UrlLinkFrame.fromIdentifier(FrameIdentifiers.WCOM);
-        frame.text = "foo";
+        const frame = UrlLinkFrame.fromFields(FrameIdentifiers.WCOM, "foo");
 
         // Act
         const result = frame.clone();
 
         // Assert
-        assertFrame(result, frame.frameId, frame.text);
+        assertFrame(result, frame.frameId, frame.url);
     }
 
     @test
@@ -144,8 +152,8 @@ const assertFrame = (frame: UrlLinkFrame, identifier: FrameIdentifier, text: str
     @test
     public filterFrames_noIdentifier_noMatch() {
         // Arrange
-        const frame1 = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.fromUint(123));
-        const frame2 = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.fromUint(234));
+        const frame1 = UnknownFrame.fromFields(FrameIdentifiers.RVRB);
+        const frame2 = UnknownFrame.fromFields(FrameIdentifiers.RVRB);
         const frames = [frame1, frame2];
 
         // Act
@@ -159,8 +167,8 @@ const assertFrame = (frame: UrlLinkFrame, identifier: FrameIdentifier, text: str
     @test
     public filterFrames_noIdentifier_singleMatch() {
         // Arrange
-        const frame1 = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.fromUint(123));
-        const frame2 = UrlLinkFrame.fromIdentifier(FrameIdentifiers.TCOP);
+        const frame1 = UnknownFrame.fromFields(FrameIdentifiers.RVRB);
+        const frame2 = UrlLinkFrame.fromFields(FrameIdentifiers.TCOP);
         const frames = [frame1, frame2];
 
         // Act
@@ -174,9 +182,9 @@ const assertFrame = (frame: UrlLinkFrame, identifier: FrameIdentifier, text: str
     @test
     public filterFrames_noIdentifier_multipleMatches() {
         // Arrange
-        const frame1 = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.fromUint(123));
-        const frame2 = UrlLinkFrame.fromIdentifier(FrameIdentifiers.TCOP);
-        const frame3 = UrlLinkFrame.fromIdentifier(FrameIdentifiers.TCOP);
+        const frame1 = UnknownFrame.fromFields(FrameIdentifiers.RVRB);
+        const frame2 = UrlLinkFrame.fromFields(FrameIdentifiers.TCOP);
+        const frame3 = UrlLinkFrame.fromFields(FrameIdentifiers.TCOP);
 
         const frames = [frame1, frame2, frame3];
 
@@ -191,8 +199,8 @@ const assertFrame = (frame: UrlLinkFrame, identifier: FrameIdentifier, text: str
     @test
     public filterFrames_noIdentifier_allMatches() {
         // Arrange
-        const frame1 = UrlLinkFrame.fromIdentifier(FrameIdentifiers.TCOP);
-        const frame2 = UrlLinkFrame.fromIdentifier(FrameIdentifiers.TCOP);
+        const frame1 = UrlLinkFrame.fromFields(FrameIdentifiers.TCOP);
+        const frame2 = UrlLinkFrame.fromFields(FrameIdentifiers.TCOP);
         const frames = [frame1, frame2];
 
         // Act
@@ -219,8 +227,8 @@ const assertFrame = (frame: UrlLinkFrame, identifier: FrameIdentifier, text: str
     @test
     public filterFrames_withIdentifier_noMatch() {
         // Arrange
-        const frame1 = UrlLinkFrame.fromIdentifier(FrameIdentifiers.TCOM);
-        const frame2 = UrlLinkFrame.fromIdentifier(FrameIdentifiers.TCOM);
+        const frame1 = UrlLinkFrame.fromFields(FrameIdentifiers.TCOM);
+        const frame2 = UrlLinkFrame.fromFields(FrameIdentifiers.TCOM);
         const frames = [frame1, frame2];
 
         // Act
@@ -234,8 +242,8 @@ const assertFrame = (frame: UrlLinkFrame, identifier: FrameIdentifier, text: str
     @test
     public filterFrames_withIdentifier_singleMatch() {
         // Arrange
-        const frame1 = UrlLinkFrame.fromIdentifier(FrameIdentifiers.TCOM);
-        const frame2 = UrlLinkFrame.fromIdentifier(FrameIdentifiers.TCOP);
+        const frame1 = UrlLinkFrame.fromFields(FrameIdentifiers.TCOM);
+        const frame2 = UrlLinkFrame.fromFields(FrameIdentifiers.TCOP);
         const frames = [frame1, frame2];
 
         // Act
@@ -249,9 +257,9 @@ const assertFrame = (frame: UrlLinkFrame, identifier: FrameIdentifier, text: str
     @test
     public filterFrames_withIdentifier_multipleMatches() {
         // Arrange
-        const frame1 = UrlLinkFrame.fromIdentifier(FrameIdentifiers.TCOM);
-        const frame2 = UrlLinkFrame.fromIdentifier(FrameIdentifiers.TCOP);
-        const frame3 = UrlLinkFrame.fromIdentifier(FrameIdentifiers.TCOP);
+        const frame1 = UrlLinkFrame.fromFields(FrameIdentifiers.TCOM);
+        const frame2 = UrlLinkFrame.fromFields(FrameIdentifiers.TCOP);
+        const frame3 = UrlLinkFrame.fromFields(FrameIdentifiers.TCOP);
 
         const frames = [frame1, frame2, frame3];
 
@@ -266,8 +274,8 @@ const assertFrame = (frame: UrlLinkFrame, identifier: FrameIdentifier, text: str
     @test
     public filterFrames_withIdentifier_allMatches() {
         // Arrange
-        const frame1 = UrlLinkFrame.fromIdentifier(FrameIdentifiers.TCOP);
-        const frame2 = UrlLinkFrame.fromIdentifier(FrameIdentifiers.TCOP);
+        const frame1 = UrlLinkFrame.fromFields(FrameIdentifiers.TCOP);
+        const frame2 = UrlLinkFrame.fromFields(FrameIdentifiers.TCOP);
         const frames = [frame1, frame2];
 
         // Act
@@ -281,7 +289,7 @@ const assertFrame = (frame: UrlLinkFrame, identifier: FrameIdentifier, text: str
     @test
     public render_withoutText() {
         // Arrange
-        const frame = UrlLinkFrame.fromIdentifier(FrameIdentifiers.WCOM);
+        const frame = UrlLinkFrame.fromFields(FrameIdentifiers.WCOM);
 
         // Act
         const result = frame.render(4);
@@ -294,8 +302,7 @@ const assertFrame = (frame: UrlLinkFrame, identifier: FrameIdentifier, text: str
     @test
     public render_withText() {
         // Arrange
-        const frame = UrlLinkFrame.fromIdentifier(FrameIdentifiers.WCOM);
-        frame.text = "foo";
+        const frame = UrlLinkFrame.fromFields(FrameIdentifiers.WCOM, "foo");
 
         // Act
         const result = frame.render(4);
@@ -316,8 +323,7 @@ const assertFrame = (frame: UrlLinkFrame, identifier: FrameIdentifier, text: str
     @params("foo", "foo")
     public toString_returnsText(text: string) {
         // Arrange
-        const frame = UrlLinkFrame.fromIdentifier(FrameIdentifiers.WCOM);
-        frame.text = text;
+        const frame = UrlLinkFrame.fromFields(FrameIdentifiers.WCOM, text);
 
         // Act
         const result = frame.toString();

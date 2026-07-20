@@ -75,11 +75,11 @@ export class SynchronizedText {
  */
 export class SynchronizedLyricsFrame extends Frame {
     private _description: string;
-    private _format: TimestampFormat = TimestampFormat.Unknown;
+    private _format: TimestampFormat;
     private _language: string;
-    private _text: SynchronizedText[] = [];
-    private _textEncoding: StringType = Id3v2Settings.defaultEncoding;
-    private _textType: SynchronizedTextType = SynchronizedTextType.Other;
+    private _text: SynchronizedText[];
+    private _textEncoding: StringType;
+    private _textType: SynchronizedTextType;
 
     // #region Constructors
 
@@ -172,22 +172,35 @@ export class SynchronizedLyricsFrame extends Frame {
     /**
      * Constructs and initializes a new instance with a specified description, ISO-639-2 language
      * code, text type, and text encoding.
-     * @param description Description of the synchronized lyrics frame
-     * @param language ISO-639-2 language code of the new instance
-     * @param textType Type of the text to store in the new instance
-     * @param encoding Encoding to use when rendering text in this new instance
+     * @param description Optional, description of the synchronized lyrics frame. If omitted,
+     *     defaults to `""`
+     * @param synchronizedLyrics Optional, synchronized lyrics to store in the lyrics frame. If
+     *     omitted, defaults to an empty array.
+     * @param language Optional, ISO-639-2 language code of the new instance. If omitted, defaults
+     *     to "XXX".
+     * @param textType Optional, type of the text to store in the new instance. If omitted,
+     *     defaults to {@link SynchronizedTextType.Other}.
+     * @param encoding Optional, encoding to use when rendering text in this new instance. If
+     *     omitted, defaults to {@link Id3v2Settings.defaultEncoding}.
+     * @param timestampFormat Optional, format that the synchronized lyric timestamps are formatted
+     *     in. If omitted, defaults to {@link TimestampFormat.Unknown}.
      */
-    public static fromInfo(
-        description: string,
-        language: string,
-        textType: SynchronizedTextType,
-        encoding: StringType = Id3v2Settings.defaultEncoding
+    public static fromFields(
+        description?: string,
+        synchronizedLyrics?: SynchronizedText[],
+        language?: string,
+        textType?: SynchronizedTextType,
+        encoding?: StringType,
+        timestampFormat?: TimestampFormat
     ): SynchronizedLyricsFrame {
         const frame = new SynchronizedLyricsFrame(new Id3v2FrameHeader(FrameIdentifiers.SYLT));
-        frame.textEncoding = encoding;
-        frame._language = language;
-        frame.description = description;
-        frame.textType = textType;
+        frame._description = description ?? "";
+        frame._format = timestampFormat ?? TimestampFormat.Unknown;
+        frame._language = language ?? "XXX"; // @TODO: Should this be `unk`?
+        frame._text = synchronizedLyrics ?? [];
+        frame._textEncoding = encoding ?? Id3v2Settings.defaultEncoding;
+        frame._textType = textType ?? SynchronizedTextType.Other;
+
         return frame;
     }
 
@@ -238,7 +251,7 @@ export class SynchronizedLyricsFrame extends Frame {
      * Sets the text contained in the current instance
      * @param value Text contained in the current instance
      */
-    public set text(value: SynchronizedText[]) { this._text = value || []; }
+    public set text(value: SynchronizedText[]) { this._text = value ?? []; }
 
     /**
      * Gets the text encoding to use when storing the current instance
@@ -274,15 +287,13 @@ export class SynchronizedLyricsFrame extends Frame {
 
     /** @inheritDoc */
     public clone(): Frame {
-        const frame = SynchronizedLyricsFrame.fromInfo(
-            this.description,
+        return SynchronizedLyricsFrame.fromFields(
+            this._description,
+            this._text.map(i => i.clone()),
             this._language,
-            this.textType,
-            this.textEncoding
-        );
-        frame.format = this.format;
-        frame._text = this._text.map((i) => i.clone());
-        return frame;
+            this._textType,
+            this._textEncoding,
+            this._format);
     }
 
     // #endregion

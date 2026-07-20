@@ -47,17 +47,18 @@ export default class TermsOfUseFrame extends Frame {
 
     /**
      * Constructs and initializes a new instance with a specified language.
-     * @param language ISO-639-2 language code for the new frame
-     * @param textEncoding Optional, text encoding to use when rendering the new frame. If not
-     *     provided defaults to {@link Id3v2Settings.defaultEncoding}
+     * @param text Optional, text to store in the new frame. If omitted, defaults to `""`.
+     * @param language Optional, ISO-639-2 language code for the new frame. If omitted, defaults
+     *     to "XXX".
+     * @param textEncoding Optional, text encoding to use when rendering the new frame. If omitted,
+     *     defaults to {@link Id3v2Settings.defaultEncoding}
      */
-    public static fromFields(
-        language: string,
-        textEncoding: StringType = Id3v2Settings.defaultEncoding
-    ): TermsOfUseFrame {
+    public static fromFields(text?: string, language?: string, textEncoding?: StringType): TermsOfUseFrame {
         const f = new TermsOfUseFrame(new Id3v2FrameHeader(FrameIdentifiers.USER));
-        f.textEncoding = textEncoding;
-        f._language = language;
+        f._language = language ?? "XXX"; // @TODO: Should this be "unk"?
+        f._text = text ?? "";
+        f._textEncoding = textEncoding ?? Id3v2Settings.defaultEncoding;
+
         return f;
     }
 
@@ -111,9 +112,7 @@ export default class TermsOfUseFrame extends Frame {
 
     /** @inheritDoc */
     public clone(): Frame {
-        const frame = TermsOfUseFrame.fromFields(this._language, this.textEncoding);
-        frame.text = this.text;
-        return frame;
+        return TermsOfUseFrame.fromFields(this._text, this._language, this._textEncoding);
     }
 
     /**

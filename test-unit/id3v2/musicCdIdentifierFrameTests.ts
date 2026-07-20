@@ -16,18 +16,6 @@ import {Testers} from "../utilities/testers";
         return MusicCdIdentifierFrame.fromFieldBytes;
     }
 
-    @test
-    public fromData_withData_frameHasData() {
-        // Arrange
-        const data = ByteVector.fromString("fux qux quxx", StringType.UTF8);
-
-        // Act
-        const frame = MusicCdIdentifierFrame.fromData(data);
-
-        // Assert
-        Id3v2_MusicCdIdentifierFrameTests.assertFrame(frame, data);
-    }
-
     @params(2, "v2")
     @params(3, "v3")
     @params(4, "v4")
@@ -44,10 +32,31 @@ import {Testers} from "../utilities/testers";
     }
 
     @test
+    public fromFields_noData() {
+        // Act
+        const frame = MusicCdIdentifierFrame.fromFields();
+
+        // Assert
+        Id3v2_MusicCdIdentifierFrameTests.assertFrame(frame, ByteVector.empty());
+    }
+
+    @test
+    public fromFields_withData() {
+        // Arrange
+        const data = ByteVector.fromString("fux qux quxx", StringType.UTF8);
+
+        // Act
+        const frame = MusicCdIdentifierFrame.fromFields(data);
+
+        // Assert
+        Id3v2_MusicCdIdentifierFrameTests.assertFrame(frame, data);
+    }
+
+    @test
     public data() {
         // Arrange
         const value = ByteVector.fromByteArray([0x01, 0x02, 0x03, 0x04]);
-        const frame = MusicCdIdentifierFrame.fromData(value);
+        const frame = MusicCdIdentifierFrame.fromFields(value);
 
         // Act / Assert
         PropertyTests.propertyRoundTrip((v) => { frame.data = v; }, () => frame.data, value);
@@ -91,8 +100,8 @@ import {Testers} from "../utilities/testers";
     @test
     public filterFrames_noMatch() {
         // Arrange
-        const frame1 = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.fromUint(123));
-        const frame2 = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.fromUint(234));
+        const frame1 = UnknownFrame.fromFields(FrameIdentifiers.RVRB);
+        const frame2 = UnknownFrame.fromFields(FrameIdentifiers.RVRB);
         const frames = [frame1, frame2];
 
         // Act
@@ -106,8 +115,8 @@ import {Testers} from "../utilities/testers";
     @test
     public filterFrames_singleMatch() {
         // Arrange
-        const frame1 = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.fromUint(123));
-        const frame2 = MusicCdIdentifierFrame.fromData(ByteVector.empty());
+        const frame1 = UnknownFrame.fromFields(FrameIdentifiers.RVRB);
+        const frame2 = MusicCdIdentifierFrame.fromFields(ByteVector.empty());
         const frames = [frame1, frame2];
 
         // Act
@@ -121,9 +130,9 @@ import {Testers} from "../utilities/testers";
     @test
     public filterFrames_multipleMatches() {
         // Arrange
-        const frame1 = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.fromUint(123));
-        const frame2 = MusicCdIdentifierFrame.fromData(ByteVector.empty());
-        const frame3 = MusicCdIdentifierFrame.fromData(ByteVector.empty());
+        const frame1 = UnknownFrame.fromFields(FrameIdentifiers.RVRB);
+        const frame2 = MusicCdIdentifierFrame.fromFields(ByteVector.empty());
+        const frame3 = MusicCdIdentifierFrame.fromFields(ByteVector.empty());
 
         const frames = [frame1, frame2, frame3];
 
@@ -138,8 +147,8 @@ import {Testers} from "../utilities/testers";
     @test
     public filterFrames_allMatches() {
         // Arrange
-        const frame1 = MusicCdIdentifierFrame.fromData(ByteVector.empty());
-        const frame2 = MusicCdIdentifierFrame.fromData(ByteVector.empty());
+        const frame1 = MusicCdIdentifierFrame.fromFields(ByteVector.empty());
+        const frame2 = MusicCdIdentifierFrame.fromFields(ByteVector.empty());
         const frames = [frame1, frame2];
 
         // Act

@@ -143,21 +143,12 @@ export default class TextInformationFrame extends Frame {
         FrameIdentifiers.TPE4
     ];
 
-    // @TODO: no protected access to members
-    /**
-     * Text encoding to use to store the text contents of the current instance.
-     * @protected
-     */
-    protected _encoding: StringType = Id3v2Settings.defaultEncoding;
-    /**
-     * Decoded text contained in the current instance.
-     * @protected
-     */
-    protected _textFields: string[] = [];
+    private _encoding: StringType = Id3v2Settings.defaultEncoding;
+    private _textFields: string[] = [];
 
     // #region Constructors
 
-    protected constructor(header: Id3v2FrameHeader) {
+    private constructor(header: Id3v2FrameHeader) {
         super(header);
     }
 
@@ -215,15 +206,22 @@ export default class TextInformationFrame extends Frame {
     /**
      * Constructs and initializes a new instance with a specified identifier
      * @param identifier Byte vector containing the identifier for the frame
-     * @param encoding Optionally, the encoding to use for the new instance. If omitted, defaults
-     *     to {@link Id3v2Settings.defaultEncoding}
+     * @param text Optional, the text to contain in the frame. If omitted, defaults to an empty
+     *     array.
+     * @param textEncoding Optionally, the encoding to use for the new instance. If omitted,
+     *     defaults to {@link Id3v2Settings.defaultEncoding}
      */
-    public static fromIdentifier(
+    public static fromFields(
         identifier: FrameIdentifier,
-        encoding: StringType = Id3v2Settings.defaultEncoding
+        text?: string[],
+        textEncoding?: StringType
     ): TextInformationFrame {
+        Guards.truthy(identifier, "identifier");
+
         const frame = new TextInformationFrame(new Id3v2FrameHeader(identifier));
-        frame._encoding = encoding;
+        frame._encoding = textEncoding ?? Id3v2Settings.defaultEncoding;
+        frame._textFields = text ?? [];
+
         return frame;
     }
 
@@ -233,17 +231,15 @@ export default class TextInformationFrame extends Frame {
 
     /**
      * Gets the text contained in the current instance.
-     * Note: Modifying the contents of the returned value will not modify the contents of the
-     * current instance. The value must be reassigned for the value to change.
      */
     public get text(): string[] {
-        return this._textFields.slice();
+        return this._textFields;
     }
     /**
      * Sets the text contained in the current instance.
      */
     public set text(value: string[]) {
-        this._textFields = value ? value.slice() : [];
+        this._textFields = value ?? [];
     }
 
     /**
@@ -274,9 +270,7 @@ export default class TextInformationFrame extends Frame {
 
     /** @inheritDoc */
     public clone(): Frame {
-        const frame = TextInformationFrame.fromIdentifier(this.frameId, this._encoding);
-        frame._textFields = this._textFields.slice();
-        return frame;
+        return TextInformationFrame.fromFields(this.frameId, this._textFields.slice(), this._encoding);
     }
 
     /**

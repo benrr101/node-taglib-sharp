@@ -32,16 +32,11 @@ import {ArrayUtils, Guards} from "../../utils";
  *   for the publisher.
  */
 export default class UrlLinkFrame extends Frame {
-    // @TODO: Don't allow protected member variables
-    /**
-     * Decoded text contained in the current instance.
-     * @protected
-     */
-    protected _text: string;
+    private _url: string;
 
     // #region Constructors
 
-    protected constructor(header: Id3v2FrameHeader) {
+    private constructor(header: Id3v2FrameHeader) {
         super(header);
     }
 
@@ -60,18 +55,23 @@ export default class UrlLinkFrame extends Frame {
 
         // If data contains a string terminator, ignore everything after it.
         const splitData = fieldBytes.split(ByteVector.getTextDelimiter(StringType.Latin1));
-        frame._text = splitData[0].toString(StringType.Latin1);
+        frame._url = splitData[0].toString(StringType.Latin1);
 
         return frame;
     }
 
     /**
      * Constructs and initializes an empty frame with the provided frame identity
-     * @param ident Identity of the frame to construct
+     * @param ident Identity of the frame to construct. Required.
+     * @param text Optional, text to store as the url for the frame. If omitted, defaults to `""`.
      */
-    public static fromIdentifier(ident: FrameIdentifier): UrlLinkFrame {
+    public static fromFields(ident: FrameIdentifier, text?: string): UrlLinkFrame {
         Guards.truthy(ident, "ident");
-        return new UrlLinkFrame(new Id3v2FrameHeader(ident));
+
+        const frame = new UrlLinkFrame(new Id3v2FrameHeader(ident));
+        frame._url = text ?? "";
+
+        return frame;
     }
 
     // #endregion
@@ -79,13 +79,13 @@ export default class UrlLinkFrame extends Frame {
     // #region Properties
 
     /**
-     * Gets the text contained in the current instance.
+     * Gets the url contained in the current instance.
      */
-    public get text(): string { return this._text; }
+    public get url(): string { return this._url; }
     /**
-     * Sets the text contained in the current instance.
+     * Sets the url contained in the current instance.
      */
-    public set text(value: string) { this._text = value; }
+    public set url(value: string) { this._url = value; }
 
     // #endregion
 
@@ -101,23 +101,21 @@ export default class UrlLinkFrame extends Frame {
 
     /** @inheritDoc */
     public clone(): UrlLinkFrame {
-        const frame = UrlLinkFrame.fromIdentifier(this.frameId);
-        frame._text = this._text;
-        return frame;
+        return UrlLinkFrame.fromFields(this.frameId, this._url);
     }
 
     /** @inheritDoc */
     public toString(): string {
-        return this.text;
+        return this.url;
     }
 
     /** @inheritDoc */
     protected renderFields(_version: number): ByteVector {
-        if (!this._text) {
+        if (!this._url) {
             return ByteVector.empty();
         }
 
-        return ByteVector.fromString(this.text, StringType.Latin1);
+        return ByteVector.fromString(this.url, StringType.Latin1);
     }
 
     // #endregion

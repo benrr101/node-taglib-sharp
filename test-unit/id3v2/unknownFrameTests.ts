@@ -27,38 +27,6 @@ const assertFrame = (frame: UnknownFrame, fi: FrameIdentifier, d: ByteVector) =>
         return UnknownFrame.fromFieldBytes;
     }
 
-    @test
-    public fromData_falsyType_throws() {
-        // Act/Assert
-        Testers.testTruthy((v: FrameIdentifier) => { UnknownFrame.fromData(v, undefined); });
-    }
-
-    @params(undefined, "undefined")
-    @params(null, "null")
-    public fromData_falsyData_frameHasNoData(value: ByteVector) {
-        // Arrange
-        const frameType = FrameIdentifiers.WXXX;
-
-        // Act
-        const frame = UnknownFrame.fromData(frameType, value);
-
-        // Assert
-        assertFrame(frame, FrameIdentifiers.WXXX, undefined);
-    }
-
-    @test
-    public fromData_withData_frameHasData() {
-        // Arrange
-        const frameType = FrameIdentifiers.WXXX;
-        const data = ByteVector.fromString("fux qux quxx", StringType.UTF8);
-
-        // Act
-        const frame = UnknownFrame.fromData(frameType, data);
-
-        // Assert
-        assertFrame(frame, FrameIdentifiers.WXXX, data);
-    }
-
     @params(2, "v2")
     @params(3, "v3")
     @params(4, "v4")
@@ -72,6 +40,37 @@ const assertFrame = (frame: UnknownFrame, fi: FrameIdentifier, d: ByteVector) =>
 
         // Assert
         assertFrame(frame, FrameIdentifiers.WXXX, ByteVector.fromString("foo bar baz", StringType.UTF8));
+    }
+
+    @test
+    public fromFields_falsyType_throws() {
+        // Act/Assert
+        Testers.testTruthy((v: FrameIdentifier) => { UnknownFrame.fromFields(v, undefined); });
+    }
+
+    @test
+    public fromFields_withIdentifier() {
+        // Arrange
+        const frameType = FrameIdentifiers.RVRB;
+
+        // Act
+        const frame = UnknownFrame.fromFields(frameType);
+
+        // Assert
+        assertFrame(frame, FrameIdentifiers.RVRB, ByteVector.empty());
+    }
+
+    @test
+    public fromFields_withIdentifierData() {
+        // Arrange
+        const frameType = FrameIdentifiers.RVRB;
+        const data = ByteVector.fromString("fux qux quxx", StringType.UTF8);
+
+        // Act
+        const frame = UnknownFrame.fromFields(frameType, data);
+
+        // Assert
+        assertFrame(frame, FrameIdentifiers.RVRB, data);
     }
 }
 
@@ -114,8 +113,8 @@ const assertFrame = (frame: UnknownFrame, fi: FrameIdentifier, d: ByteVector) =>
     @test
     public filterFrames_noMatch() {
         // Arrange
-        const frame1 = CommentsFrame.fromDescription("foo");
-        const frame2 = CommentsFrame.fromDescription("foo");
+        const frame1 = CommentsFrame.fromFields();
+        const frame2 = CommentsFrame.fromFields();
         const frames = [frame1, frame2];
 
         // Act
@@ -129,8 +128,8 @@ const assertFrame = (frame: UnknownFrame, fi: FrameIdentifier, d: ByteVector) =>
     @test
     public filterFrames_singleMatch() {
         // Arrange
-        const frame1 = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.fromUint(123));
-        const frame2 = CommentsFrame.fromDescription("foo");
+        const frame1 = UnknownFrame.fromFields(FrameIdentifiers.RVRB);
+        const frame2 = CommentsFrame.fromFields();
         const frames = [frame1, frame2];
 
         // Act
@@ -144,9 +143,9 @@ const assertFrame = (frame: UnknownFrame, fi: FrameIdentifier, d: ByteVector) =>
     @test
     public filterFrames_multipleMatches() {
         // Arrange
-        const frame1 = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.fromUint(123));
-        const frame2 = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.fromUint(123));
-        const frame3 = CommentsFrame.fromDescription("foo");
+        const frame1 = UnknownFrame.fromFields(FrameIdentifiers.RVRB);
+        const frame2 = UnknownFrame.fromFields(FrameIdentifiers.RVRB);
+        const frame3 = CommentsFrame.fromFields();
 
         const frames = [frame1, frame2, frame3];
 
@@ -161,8 +160,8 @@ const assertFrame = (frame: UnknownFrame, fi: FrameIdentifier, d: ByteVector) =>
     @test
     public filterFrames_allMatches() {
         // Arrange
-        const frame1 = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.fromUint(123));
-        const frame2 = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.fromUint(123));
+        const frame1 = UnknownFrame.fromFields(FrameIdentifiers.RVRB);
+        const frame2 = UnknownFrame.fromFields(FrameIdentifiers.RVRB);
         const frames = [frame1, frame2];
 
         // Act

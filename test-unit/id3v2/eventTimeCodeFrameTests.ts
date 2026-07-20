@@ -103,24 +103,6 @@ const assertFrame = (frame: EventTimeCodeFrame, e: EventTimeCode[], t: Timestamp
         return EventTimeCodeFrame.fromFieldBytes;
     }
 
-    @test
-    public fromEmpty() {
-        // Act
-        const output = EventTimeCodeFrame.fromEmpty();
-
-        // Assert
-        assertFrame(output, [], TimestampFormat.Unknown);
-    }
-
-    @test
-    public fromTimestampFormat() {
-        // Act
-        const output = EventTimeCodeFrame.fromTimestampFormat(TimestampFormat.AbsoluteMilliseconds);
-
-        // Assert
-        assertFrame(output, [], TimestampFormat.AbsoluteMilliseconds);
-    }
-
     @params(2, "v2")
     @params(3, "v3")
     @params(4, "v4")
@@ -186,13 +168,43 @@ const assertFrame = (frame: EventTimeCodeFrame, e: EventTimeCode[], t: Timestamp
         // Act / Assert
         assert.throws(() => EventTimeCodeFrame.fromFieldBytes(header, fieldBytes, version));
     }
+
+    @test
+    public fromFields_withNothing() {
+        // Act
+        const output = EventTimeCodeFrame.fromFields();
+
+        // Assert
+        assertFrame(output, [], TimestampFormat.Unknown);
+    }
+
+    @test
+    public fromFields_withTimestampFormat() {
+        // Act
+        const output = EventTimeCodeFrame.fromFields(TimestampFormat.AbsoluteMilliseconds);
+
+        // Assert
+        assertFrame(output, [], TimestampFormat.AbsoluteMilliseconds);
+    }
+
+    @test
+    public fromFields_withTimestampFormatEvents() {
+        // Arrange
+        const events = [new EventTimeCode(EventType.Profanity, 12345)];
+
+        // Act
+        const output = EventTimeCodeFrame.fromFields(TimestampFormat.AbsoluteMilliseconds, events);
+
+        // Assert
+        assertFrame(output, events, TimestampFormat.AbsoluteMilliseconds);
+    }
 }
 
 @suite class Id3v2_EventTimeCodeFrame_PropertyTests {
     @test
     public events() {
         // Arrange
-        const frame = EventTimeCodeFrame.fromTimestampFormat(TimestampFormat.AbsoluteMilliseconds);
+        const frame = EventTimeCodeFrame.fromFields(TimestampFormat.AbsoluteMilliseconds);
         const set = (v: EventTimeCode[]) => { frame.events = v; };
         const get = () => frame.events;
 
@@ -206,14 +218,12 @@ const assertFrame = (frame: EventTimeCodeFrame, e: EventTimeCode[], t: Timestamp
     @test
     public timeStampFormat() {
         // Arrange
-        const frame = EventTimeCodeFrame.fromTimestampFormat(TimestampFormat.AbsoluteMilliseconds);
+        const frame = EventTimeCodeFrame.fromFields(TimestampFormat.AbsoluteMilliseconds);
 
         // Act / Assert
-        PropertyTests.propertyRoundTrip(
-            (v) => { frame.timestampFormat = v; },
-            () => frame.timestampFormat,
-            TimestampFormat.AbsoluteMpegFrames
-        );
+        const get = () => frame.timestampFormat;
+        const set = (v: TimestampFormat) => { frame.timestampFormat = v; };
+        PropertyTests.propertyRoundTrip(set, get, TimestampFormat.AbsoluteMpegFrames);
     }
 }
 
@@ -221,10 +231,9 @@ const assertFrame = (frame: EventTimeCodeFrame, e: EventTimeCode[], t: Timestamp
     @test
     public clone() {
         // Arrange
-        const frame = EventTimeCodeFrame.fromTimestampFormat(TimestampFormat.AbsoluteMilliseconds);
-        const event1 = new EventTimeCode(EventType.Profanity, 123);
-        const event2 = new EventTimeCode(EventType.ProfanityEnd, 456);
-        frame.events = [event1, event2];
+        const frame = EventTimeCodeFrame.fromFields(
+            TimestampFormat.AbsoluteMilliseconds,
+            [new EventTimeCode(EventType.Profanity, 123), new EventTimeCode(EventType.ProfanityEnd, 456)]);
 
         // Act
         const output = <EventTimeCodeFrame> frame.clone();
@@ -255,8 +264,8 @@ const assertFrame = (frame: EventTimeCodeFrame, e: EventTimeCode[], t: Timestamp
     @test
     public filterFrames_noMatch() {
         // Arrange
-        const frame1 = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.fromUint(123));
-        const frame2 = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.fromUint(234));
+        const frame1 = UnknownFrame.fromFields(FrameIdentifiers.RVRB);
+        const frame2 = UnknownFrame.fromFields(FrameIdentifiers.RVRB);
         const frames = [frame1, frame2];
 
         // Act
@@ -270,8 +279,8 @@ const assertFrame = (frame: EventTimeCodeFrame, e: EventTimeCode[], t: Timestamp
     @test
     public filterFrames_singleMatch() {
         // Arrange
-        const frame1 = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.fromUint(123));
-        const frame2 = EventTimeCodeFrame.fromEmpty();
+        const frame1 = UnknownFrame.fromFields(FrameIdentifiers.RVRB);
+        const frame2 = EventTimeCodeFrame.fromFields();
         const frames = [frame1, frame2];
 
         // Act
@@ -285,9 +294,9 @@ const assertFrame = (frame: EventTimeCodeFrame, e: EventTimeCode[], t: Timestamp
     @test
     public filterFrames_multipleMatches() {
         // Arrange
-        const frame1 = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.fromUint(123));
-        const frame2 = EventTimeCodeFrame.fromEmpty();
-        const frame3 = EventTimeCodeFrame.fromEmpty();
+        const frame1 = UnknownFrame.fromFields(FrameIdentifiers.RVRB);
+        const frame2 = EventTimeCodeFrame.fromFields();
+        const frame3 = EventTimeCodeFrame.fromFields();
 
         const frames = [frame1, frame2, frame3];
 
@@ -302,8 +311,8 @@ const assertFrame = (frame: EventTimeCodeFrame, e: EventTimeCode[], t: Timestamp
     @test
     public filterFrames_allMatches() {
         // Arrange
-        const frame1 = EventTimeCodeFrame.fromEmpty();
-        const frame2 = EventTimeCodeFrame.fromEmpty();
+        const frame1 = EventTimeCodeFrame.fromFields();
+        const frame2 = EventTimeCodeFrame.fromFields();
         const frames = [frame1, frame2];
 
         // Act
@@ -319,7 +328,7 @@ const assertFrame = (frame: EventTimeCodeFrame, e: EventTimeCode[], t: Timestamp
     @params(4, "v4")
     public render_withoutEvents(version: number) {
         // Arrange
-        const frame = EventTimeCodeFrame.fromEmpty();
+        const frame = EventTimeCodeFrame.fromFields();
         frame.timestampFormat = TimestampFormat.AbsoluteMpegFrames;
         frame.events = [];
 
@@ -347,7 +356,7 @@ const assertFrame = (frame: EventTimeCodeFrame, e: EventTimeCode[], t: Timestamp
         const event1 = new EventTimeCode(EventType.Profanity, 123);
         const event2 = new EventTimeCode(EventType.KeyChange, 456);
 
-        const frame = EventTimeCodeFrame.fromEmpty();
+        const frame = EventTimeCodeFrame.fromFields();
         frame.timestampFormat = TimestampFormat.AbsoluteMpegFrames;
         frame.events = [event2, event1]; // Force events to be sorted
 

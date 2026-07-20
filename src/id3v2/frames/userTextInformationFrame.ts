@@ -1,34 +1,20 @@
 import Frame from "./frame";
-import TextInformationFrame from "./textInformationFrame";
 import Id3v2Settings from "../id3v2Settings";
 import {ByteVector, StringType} from "../../byteVector";
+import {CorruptFileError} from "../../errors";
 import {Id3v2FrameHeader} from "./frameHeader";
 import {FrameIdentifiers} from "../frameIdentifiers";
 import {ArrayUtils, Guards} from "../../utils";
-import {CorruptFileError} from "../../errors";
 
-export default class UserTextInformationFrame extends TextInformationFrame {
+export default class UserTextInformationFrame extends Frame {
     private _description: string;
+    private _encoding: StringType;
+    private _textFields: string[];
 
     // #region Constructors
 
     private constructor(header: Id3v2FrameHeader) {
         super(header);
-    }
-
-    /**
-     * Constructs and initializes a new instance with a specified description and text encoding.
-     * @param description Description of the new frame
-     * @param encoding Text encoding to use when rendering the new frame
-     */
-    public static fromDescription(
-        description: string,
-        encoding: StringType = Id3v2Settings.defaultEncoding
-    ): UserTextInformationFrame {
-        const frame = new UserTextInformationFrame(new Id3v2FrameHeader(FrameIdentifiers.TXXX));
-        frame._encoding = encoding;
-        frame._description = description;
-        return frame;
     }
 
     /**
@@ -73,6 +59,24 @@ export default class UserTextInformationFrame extends TextInformationFrame {
         return frame;
     }
 
+    /**
+     * Constructs and initializes a new instance with a specified description, text fields, and
+     * text encoding.
+     * @param description Optional, description of the new frame. If omitted, defaults to `""`.
+     * @param text Optional, text fields to store in the new frame. If omitted, defaults to an
+     *     empty array.
+     * @param encoding Optional, text encoding to use when rendering the new frame. If omitted,
+     *     defaults to {@link Id3v2Settings.defaultEncoding}.
+     */
+    public static fromFields(description?: string, text?: string[], encoding?: StringType
+    ): UserTextInformationFrame {
+        const frame = new UserTextInformationFrame(new Id3v2FrameHeader(FrameIdentifiers.TXXX));
+        frame._encoding = encoding ?? Id3v2Settings.defaultEncoding;
+        frame._description = description ?? "";
+        frame._textFields = text ?? [];
+        return frame;
+    }
+
     // #endregion
 
     // #region Properties
@@ -90,15 +94,23 @@ export default class UserTextInformationFrame extends TextInformationFrame {
 
     /**
      * Gets the text contained in the current instance.
-     * NOTE: Modifying the contents of the returned value will not modify the contents of the
-     * current instance. The value must be reassigned for the value to change.
      */
-    public get text(): string[] { return this._textFields.slice(); }
+    public get text(): string[] { return this._textFields; }
     /**
      * Sets the text contained in the current instance.
      * @param value Array of text values to store in the current instance
      */
-    public set text(value: string[]) { this._textFields = value ? value.slice() : []; }
+    public set text(value: string[]) { this._textFields = value ?? []; }
+
+    /**
+     * Gets the text encoding to use when rendering the current instance.
+     */
+    public get textEncoding(): StringType { return this._encoding; }
+    /**
+     * Sets the text encoding to use when rendering the current instance.
+     * This value will be overridden if {@link Id3v2Settings.forceDefaultEncoding} is `true`.
+     */
+    public set textEncoding(value: StringType) { this._encoding = value; }
 
     // #endregion
 
@@ -111,14 +123,12 @@ export default class UserTextInformationFrame extends TextInformationFrame {
 
     /** @inheritDoc */
     public clone(): Frame {
-        const frame = UserTextInformationFrame.fromDescription(this._description, this._encoding);
-        frame._textFields = this._textFields.slice();
-        return frame;
+        return UserTextInformationFrame.fromFields(this._description, this._textFields.slice(), this._encoding);
     }
 
     /** @inheritDoc */
     public toString(): string {
-        return `[${this.description}] ${super.toString()}`;
+        return `[${this._description}] ${this._textFields.join("; ")}`;
     }
 
     /** @inheritDoc */
@@ -127,23 +137,25 @@ export default class UserTextInformationFrame extends TextInformationFrame {
             return ByteVector.empty();
         }
 
-        const encoding = TextInformationFrame.correctEncoding(this._encoding, version);
-        const v = ByteVector.empty();
-        v.addByte(encoding);
-        v.addByteVector(ByteVector.fromString(this._description ?? "", encoding));
+        // Convert ["x", "y", "z"] into [bv("x"), bv(0), bv("y"), bv(0), bv("z"), bv(0)]
+        const encoding = Frame.correctEncoding(this._encoding, version);
+        const renderedFields = this._textFields.filter(f => f !== undefined && f !== null)
+            .map(f => [ByteVector.fromString(f, encoding), ByteVector.getTextDelimiter(encoding)])
+            .reduce(
+                (flattened, nested) => {
+                    flattened.push(... nested);
+                    return flattened;
+                },
+                []
+            );
+        // @TODO: Update to use .flat
 
-        for (const text of this._textFields) {
-            v.addByteVector(ByteVector.getTextDelimiter(encoding));
-            if (text) {
-                v.addByteVector(ByteVector.fromString(text, encoding));
-            }
-        }
-
-        if (this._textFields.length === 0) {
-            v.addByteVector(ByteVector.getTextDelimiter(encoding));
-        }
-
-        return v;
+        return ByteVector.concatenate(
+            encoding,
+            ByteVector.fromString(this._description ?? "", encoding),
+            ByteVector.getTextDelimiter(encoding),
+            ... renderedFields.slice(0, renderedFields.length - 1)    // Drop last delimiter
+        )
     }
 
     // #endregion

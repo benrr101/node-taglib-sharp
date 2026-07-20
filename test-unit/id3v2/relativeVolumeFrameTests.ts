@@ -287,15 +287,6 @@ const assertFrame = (frame: RelativeVolumeFrame, c: ChannelData[], i: string) =>
         return RelativeVolumeFrame.fromFieldBytes;
     }
 
-    @test
-    public fromIdentification() {
-        // Act
-        const frame = RelativeVolumeFrame.fromIdentification("foo");
-
-        // Assert
-        assertFrame(frame, [], "foo");
-    }
-
     @params(2, "v2")
     @params(3, "v3")
     @params(4, "v4")
@@ -443,13 +434,49 @@ const assertFrame = (frame: RelativeVolumeFrame, c: ChannelData[], i: string) =>
         cd1.volumeAdjustment = 123 / 512;
         assertFrame(frame, [cd1], "foobarbaz");
     }
+
+    @test
+    public fromFields_noParams() {
+        // Act
+        const frame = RelativeVolumeFrame.fromFields();
+
+        // Assert
+
+        assertFrame(frame, [], "");
+    }
+
+    @test
+    public fromFields_withIdentification() {
+        // Act
+        const frame = RelativeVolumeFrame.fromFields("foo");
+
+        // Assert
+        assertFrame(frame, [], "foo");
+    }
+
+    @test
+    public fromFields_withIdentificationChannelData() {
+        // Arrange
+        const channelData = [];
+        for(let i = 0; i < 9; i++) {
+            const value = new ChannelData(i);
+            value.volumeAdjustment = i * 2 + 1;
+            channelData.push(value);
+        }
+
+        // Act
+        const frame = RelativeVolumeFrame.fromFields("foo", channelData);
+
+        // Assert
+        assertFrame(frame, channelData, "foo");
+    }
 }
 
 @suite class Id3v2_RelativeVolumeFrame_MethodTests {
     @test
     public clone() {
         // Arrange
-        const frame = RelativeVolumeFrame.fromIdentification("foobarbaz");
+        const frame = RelativeVolumeFrame.fromFields("foobarbaz");
         frame.setPeakBits(ChannelType.Subwoofer, 32);
         frame.setPeakVolume(ChannelType.Subwoofer, BigInt(12345));
         frame.setVolumeAdjustment(ChannelType.Subwoofer, -1.23);
@@ -502,8 +529,8 @@ const assertFrame = (frame: RelativeVolumeFrame, c: ChannelData[], i: string) =>
     @test
     public filterFrames_noMatch() {
         // Arrange
-        const frame1 = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.fromUint(123));
-        const frame2 = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.fromUint(234));
+        const frame1 = UnknownFrame.fromFields(FrameIdentifiers.RVRB);
+        const frame2 = UnknownFrame.fromFields(FrameIdentifiers.RVRB);
         const frames = [frame1, frame2];
 
         // Act
@@ -517,8 +544,8 @@ const assertFrame = (frame: RelativeVolumeFrame, c: ChannelData[], i: string) =>
     @test
     public filterFrames_singleMatch() {
         // Arrange
-        const frame1 = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.fromUint(123));
-        const frame2 = RelativeVolumeFrame.fromIdentification("foo");
+        const frame1 = UnknownFrame.fromFields(FrameIdentifiers.RVRB);
+        const frame2 = RelativeVolumeFrame.fromFields();
         const frames = [frame1, frame2];
 
         // Act
@@ -532,9 +559,9 @@ const assertFrame = (frame: RelativeVolumeFrame, c: ChannelData[], i: string) =>
     @test
     public filterFrames_multipleMatches() {
         // Arrange
-        const frame1 = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.fromUint(123));
-        const frame2 = RelativeVolumeFrame.fromIdentification("foo");
-        const frame3 = RelativeVolumeFrame.fromIdentification("bar");
+        const frame1 = UnknownFrame.fromFields(FrameIdentifiers.RVRB);
+        const frame2 = RelativeVolumeFrame.fromFields();
+        const frame3 = RelativeVolumeFrame.fromFields();
 
         const frames = [frame1, frame2, frame3];
 
@@ -549,8 +576,8 @@ const assertFrame = (frame: RelativeVolumeFrame, c: ChannelData[], i: string) =>
     @test
     public filterFrames_allMatches() {
         // Arrange
-        const frame1 = RelativeVolumeFrame.fromIdentification("foo");
-        const frame2 = RelativeVolumeFrame.fromIdentification("bar");
+        const frame1 = RelativeVolumeFrame.fromFields();
+        const frame2 = RelativeVolumeFrame.fromFields();
         const frames = [frame1, frame2];
 
         // Act
@@ -564,7 +591,7 @@ const assertFrame = (frame: RelativeVolumeFrame, c: ChannelData[], i: string) =>
     @test
     public peakBits() {
         // Arrange
-        const frame = RelativeVolumeFrame.fromIdentification("foo");
+        const frame = RelativeVolumeFrame.fromFields();
 
         // Act / Assert
         PropertyTests.propertyRoundTrip(
@@ -577,7 +604,7 @@ const assertFrame = (frame: RelativeVolumeFrame, c: ChannelData[], i: string) =>
     @test
     public peakVolume() {
         // Arrange
-        const frame = RelativeVolumeFrame.fromIdentification("foo");
+        const frame = RelativeVolumeFrame.fromFields();
         frame.setPeakBits(ChannelType.Subwoofer, 16);
 
         // Act / Assert
@@ -591,7 +618,7 @@ const assertFrame = (frame: RelativeVolumeFrame, c: ChannelData[], i: string) =>
     @test
     public volumeAdjustment() {
         // Arrange
-        const frame = RelativeVolumeFrame.fromIdentification("foo");
+        const frame = RelativeVolumeFrame.fromFields();
 
         // Act / Assert
         PropertyTests.propertyRoundTrip(
@@ -606,7 +633,7 @@ const assertFrame = (frame: RelativeVolumeFrame, c: ChannelData[], i: string) =>
     @params(4, "v4")
     public render_noChannelData(version: number) {
         // Arrange
-        const frame = RelativeVolumeFrame.fromIdentification("foobarbaz");
+        const frame = RelativeVolumeFrame.fromFields("foobarbaz");
 
         // Act
         const output = frame.render(version);
@@ -623,7 +650,7 @@ const assertFrame = (frame: RelativeVolumeFrame, c: ChannelData[], i: string) =>
     @params(4, "v4")
     public render_oneChannelData(version: number) {
         // Arrange
-        const frame = RelativeVolumeFrame.fromIdentification("foobarbaz");
+        const frame = RelativeVolumeFrame.fromFields("foobarbaz");
         frame.setPeakBits(ChannelType.Subwoofer, 32);
         frame.setPeakVolume(ChannelType.Subwoofer, BigInt(12345));
         frame.setVolumeAdjustment(ChannelType.Subwoofer, -1.23);
@@ -650,7 +677,7 @@ const assertFrame = (frame: RelativeVolumeFrame, c: ChannelData[], i: string) =>
     @params(4, "v4")
     public render_twoChannelData(version: number) {
         // Arrange
-        const frame = RelativeVolumeFrame.fromIdentification("foobarbaz");
+        const frame = RelativeVolumeFrame.fromFields("foobarbaz");
         frame.setPeakBits(ChannelType.Subwoofer, 32);
         frame.setPeakVolume(ChannelType.Subwoofer, BigInt(12345));
         frame.setVolumeAdjustment(ChannelType.Subwoofer, -1.23);

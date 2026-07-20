@@ -27,24 +27,6 @@ const assertFrame = (frame: TermsOfUseFrame, language: string, text: string, tex
         return TermsOfUseFrame.fromFieldBytes;
     }
 
-    @test
-    public fromFields_withoutTextEncoding() {
-        // Act
-        const output = TermsOfUseFrame.fromFields("fux");
-
-        // Assert
-        assertFrame(output, "fux", "", Id3v2Settings.defaultEncoding);
-    }
-
-    @test
-    public fromFields_withTextEncoding() {
-        // Act
-        const output = TermsOfUseFrame.fromFields("fux", StringType.UTF16BE);
-
-        // Assert
-        assertFrame(output, "fux", "", StringType.UTF16BE);
-    }
-
     @params(2, "v2")
     @params(3, "v3")
     @params(4, "v4")
@@ -111,6 +93,42 @@ const assertFrame = (frame: TermsOfUseFrame, language: string, text: string, tex
         // Assert
         assertFrame(frame, "eng", "foobarbaz", encoding);
     }
+
+    @test
+    public fromFields_noParams() {
+        // Act
+        const output = TermsOfUseFrame.fromFields();
+
+        // Assert
+        assertFrame(output, "XXX", "", Id3v2Settings.defaultEncoding);
+    }
+
+    @test
+    public fromFields_withText() {
+        // Act
+        const output = TermsOfUseFrame.fromFields("foo");
+
+        // Assert
+        assertFrame(output, "XXX", "foo", Id3v2Settings.defaultEncoding);
+    }
+
+    @test
+    public fromFields_withTextLanguage() {
+        // Act
+        const output = TermsOfUseFrame.fromFields("foo", "bar");
+
+        // Assert
+        assertFrame(output, "bar", "foo", Id3v2Settings.defaultEncoding);
+    }
+
+    @test
+    public fromFields_withTextLanguageEncoding() {
+        // Act
+        const output = TermsOfUseFrame.fromFields("foo", "bar", StringType.UTF16BE);
+
+        // Assert
+        assertFrame(output, "bar", "foo", StringType.UTF16BE);
+    }
 }
 
 @suite class Id3v2_TermsOfUseFrame_PropertyTests {
@@ -121,7 +139,7 @@ const assertFrame = (frame: TermsOfUseFrame, language: string, text: string, tex
         const get = () => frame.language;
 
         // Act/Assert
-        const frame = TermsOfUseFrame.fromFields("eng");
+        const frame = TermsOfUseFrame.fromFields();
         PropertyTests.propertyNormalized(set, get, "fu", "XXX");
         PropertyTests.propertyNormalized(set, get, "fuxx", "fux");
         PropertyTests.propertyNormalized(set, get, undefined, "XXX");
@@ -135,7 +153,7 @@ const assertFrame = (frame: TermsOfUseFrame, language: string, text: string, tex
         const set = (v: string) => { frame.text = v; };
         const get = () => frame.text;
 
-        const frame = TermsOfUseFrame.fromFields("eng");
+        const frame = TermsOfUseFrame.fromFields();
         PropertyTests.propertyRoundTrip(set, get, "fux");
         PropertyTests.propertyNormalized(set, get, undefined, "");
         PropertyTests.propertyNormalized(set, get, null, "");
@@ -143,7 +161,7 @@ const assertFrame = (frame: TermsOfUseFrame, language: string, text: string, tex
 
     @test
     public textEncoding() {
-        const frame = TermsOfUseFrame.fromFields("eng", StringType.Latin1);
+        const frame = TermsOfUseFrame.fromFields();
         PropertyTests.propertyRoundTrip(
             (v) => { frame.textEncoding = v; },
             () => frame.textEncoding,
@@ -175,8 +193,8 @@ const assertFrame = (frame: TermsOfUseFrame, language: string, text: string, tex
     @test
     public filterFrames_noMatch() {
         // Arrange
-        const frame1 = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.fromUint(123));
-        const frame2 = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.fromUint(234));
+        const frame1 = UnknownFrame.fromFields(FrameIdentifiers.RVRB);
+        const frame2 = UnknownFrame.fromFields(FrameIdentifiers.RVRB);
         const frames = [frame1, frame2];
 
         // Act
@@ -190,8 +208,8 @@ const assertFrame = (frame: TermsOfUseFrame, language: string, text: string, tex
     @test
     public filterFrames_singleMatch() {
         // Arrange
-        const frame1 = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.fromUint(123));
-        const frame2 = TermsOfUseFrame.fromFields("foo");
+        const frame1 = UnknownFrame.fromFields(FrameIdentifiers.RVRB);
+        const frame2 = TermsOfUseFrame.fromFields();
         const frames = [frame1, frame2];
 
         // Act
@@ -205,9 +223,9 @@ const assertFrame = (frame: TermsOfUseFrame, language: string, text: string, tex
     @test
     public filterFrames_multipleMatches() {
         // Arrange
-        const frame1 = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.fromUint(123));
-        const frame2 = TermsOfUseFrame.fromFields("foo");
-        const frame3 = TermsOfUseFrame.fromFields("bar");
+        const frame1 = UnknownFrame.fromFields(FrameIdentifiers.RVRB);
+        const frame2 = TermsOfUseFrame.fromFields();
+        const frame3 = TermsOfUseFrame.fromFields();
 
         const frames = [frame1, frame2, frame3];
 
@@ -222,8 +240,8 @@ const assertFrame = (frame: TermsOfUseFrame, language: string, text: string, tex
     @test
     public filterFrames_allMatches() {
         // Arrange
-        const frame1 = TermsOfUseFrame.fromFields("foo");
-        const frame2 = TermsOfUseFrame.fromFields("bar");
+        const frame1 = TermsOfUseFrame.fromFields();
+        const frame2 = TermsOfUseFrame.fromFields();
         const frames = [frame1, frame2];
 
         // Act
@@ -237,8 +255,7 @@ const assertFrame = (frame: TermsOfUseFrame, language: string, text: string, tex
     @test
     public clone() {
         // Arrange
-        const frame = TermsOfUseFrame.fromFields("eng", StringType.Latin1);
-        frame.text = "foobarbux";
+        const frame = TermsOfUseFrame.fromFields("foobarbaz", "eng", StringType.Latin1);
 
         // Act
         const output = <TermsOfUseFrame> frame.clone();
@@ -250,7 +267,7 @@ const assertFrame = (frame: TermsOfUseFrame, language: string, text: string, tex
     @test
     public render_v2() {
         // Arrange
-        const frame = TermsOfUseFrame.fromFields("foo", StringType.Latin1);
+        const frame = TermsOfUseFrame.fromFields("foo", "bar", StringType.Latin1);
 
         // Act / Assert
         assert.throws(() => frame.render(2));
@@ -261,8 +278,7 @@ const assertFrame = (frame: TermsOfUseFrame, language: string, text: string, tex
     @params("", "empty")
     public render_noText(text: string) {
         // Arrange
-        const frame = TermsOfUseFrame.fromFields("foo", StringType.Latin1);
-        frame.text = text;
+        const frame = TermsOfUseFrame.fromFields(text, "foo", StringType.Latin1);
 
         // Act
         const result = frame.render(4);
@@ -281,8 +297,7 @@ const assertFrame = (frame: TermsOfUseFrame, language: string, text: string, tex
     @params(4, "v4")
     public render_withText(version: number) {
         // Arrange
-        const frame = TermsOfUseFrame.fromFields("foo", StringType.Latin1);
-        frame.text = "bar";
+        const frame = TermsOfUseFrame.fromFields("bar", "foo", StringType.Latin1);
 
         // Act
         const result = frame.render(version);
@@ -302,8 +317,7 @@ const assertFrame = (frame: TermsOfUseFrame, language: string, text: string, tex
     @params(StringType.UTF16BE, "multi_byte")
     public render_encodingTest(encoding: StringType) {
         // Arrange
-        const frame = TermsOfUseFrame.fromFields("foo", encoding);
-        frame.text = "bar";
+        const frame = TermsOfUseFrame.fromFields("bar", "foo", encoding);
 
         // Act
         const result = frame.render(4);

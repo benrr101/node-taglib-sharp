@@ -21,47 +21,12 @@ const assertFrame = (frame: UniqueFileIdentifierFrame, o: string, i: ByteVector)
     assert.strictEqual(frame.frameId, FrameIdentifiers.UFID);
 
     assert.strictEqual(frame.owner, o);
-    if (i !== undefined) {
-        Testers.bvEqual(frame.identifier, i);
-    } else {
-        assert.isUndefined(frame.identifier);
-    }
+    Testers.bvEqual(frame.identifier, i);
 }
 
 @suite class Id3v2_UniqueFileIdentifierFrame_ConstructorTests extends FrameConstructorTests {
     public get fromFieldBytes(): (h: Id3v2FrameHeader, d: ByteVector, v: number) => Frame {
         return UniqueFileIdentifierFrame.fromFieldBytes;
-    }
-
-    @test
-    public fromData_invalidOwner_throws() {
-        // Arrange
-        const identifier = ByteVector.empty();
-
-        // Act/Assert
-        Testers.testTruthy((v: string) => { UniqueFileIdentifierFrame.fromData(v, identifier); });
-    }
-
-    @test
-    public fromData_invalidIdentifier_throws() {
-        // Arrange
-        const owner = "fuxqux";
-
-        // Act/Assert
-        assert.throws(() => { UniqueFileIdentifierFrame.fromData(owner, ByteVector.fromSize(65)); });
-    }
-
-    @test
-    public fromData_validPrams() {
-        // Arrange
-        const owner = "fuxqux";
-        const identifier = ByteVector.fromSize(32, 0x8);
-
-        // Act
-        const frame = UniqueFileIdentifierFrame.fromData(owner, identifier);
-
-        // Assert
-        assertFrame(frame, owner, identifier);
     }
 
     @params(2, "v2")
@@ -127,13 +92,49 @@ const assertFrame = (frame: UniqueFileIdentifierFrame, o: string, i: ByteVector)
         // Assert
         assertFrame(frame, testOwner, testIdentifier);
     }
+
+    @test
+    public fromFields_noParams() {
+        // Act
+        const frame = UniqueFileIdentifierFrame.fromFields();
+
+        // Assert
+        assertFrame(frame, "", ByteVector.empty());
+    }
+
+    @test
+    public fromFields_withOwner() {
+        // Act
+        const frame = UniqueFileIdentifierFrame.fromFields("foo");
+
+        // Assert
+        assertFrame(frame, "foo", ByteVector.empty());
+    }
+
+    @test
+    public fromFields_invalidIdentifier_throws() {
+        // Act / Assert
+        assert.throws(() => { UniqueFileIdentifierFrame.fromFields("foo", ByteVector.fromSize(65)); });
+    }
+
+    @test
+    public fromFields_withOwnerIdentifier() {
+        // Arrange
+        const identifier = ByteVector.fromSize(32, 0x8);
+
+        // Act
+        const frame = UniqueFileIdentifierFrame.fromFields("foo", identifier);
+
+        // Assert
+        assertFrame(frame, "foo", identifier);
+    }
 }
 
 @suite class Id3v2_UniqueFileIdentifierFrame_PropertyTests {
     @test
     public setIdentifier_tooLong_throws() {
         // Arrange
-        const frame = UniqueFileIdentifierFrame.fromData("fuxqux", ByteVector.fromSize(1));
+        const frame = UniqueFileIdentifierFrame.fromFields("fuxqux", ByteVector.fromSize(1));
 
         // Act/Assert
         PropertyTests.propertyThrows((v) => { frame.identifier = v; }, ByteVector.fromSize(65));
@@ -142,7 +143,7 @@ const assertFrame = (frame: UniqueFileIdentifierFrame, o: string, i: ByteVector)
     @test
     public setIdentifier_valid() {
         // Arrange
-        const frame = UniqueFileIdentifierFrame.fromData("fuxqux", ByteVector.fromSize(1));
+        const frame = UniqueFileIdentifierFrame.fromFields("fuxqux", ByteVector.fromSize(1));
         const identifier = ByteVector.fromString("quxx", StringType.UTF8);
 
         // Act / Assert
@@ -154,7 +155,7 @@ const assertFrame = (frame: UniqueFileIdentifierFrame, o: string, i: ByteVector)
     @test
     public clone_noIdentifier() {
         // Arrange
-        const frame = UniqueFileIdentifierFrame.fromData("fux", undefined);
+        const frame = UniqueFileIdentifierFrame.fromFields("fux", undefined);
 
         // Act
         const clone = <UniqueFileIdentifierFrame> frame.clone();
@@ -166,7 +167,7 @@ const assertFrame = (frame: UniqueFileIdentifierFrame, o: string, i: ByteVector)
     @test
     public clone_withIdentifier() {
         // Arrange
-        const frame = UniqueFileIdentifierFrame.fromData("fux", ByteVector.fromString("qux", StringType.UTF8));
+        const frame = UniqueFileIdentifierFrame.fromFields("fux", ByteVector.fromString("qux", StringType.UTF8));
 
         // Act
         const clone = <UniqueFileIdentifierFrame> frame.clone();
@@ -197,8 +198,8 @@ const assertFrame = (frame: UniqueFileIdentifierFrame, o: string, i: ByteVector)
     @test
     public filterFrames_noMatch() {
         // Arrange
-        const frame1 = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.fromUint(123));
-        const frame2 = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.fromUint(234));
+        const frame1 = UnknownFrame.fromFields(FrameIdentifiers.RVRB);
+        const frame2 = UnknownFrame.fromFields(FrameIdentifiers.RVRB);
         const frames = [frame1, frame2];
 
         // Act
@@ -212,8 +213,8 @@ const assertFrame = (frame: UniqueFileIdentifierFrame, o: string, i: ByteVector)
     @test
     public filterFrames_singleMatch() {
         // Arrange
-        const frame1 = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.fromUint(123));
-        const frame2 = UniqueFileIdentifierFrame.fromData("foo", ByteVector.empty());
+        const frame1 = UnknownFrame.fromFields(FrameIdentifiers.RVRB);
+        const frame2 = UniqueFileIdentifierFrame.fromFields();
         const frames = [frame1, frame2];
 
         // Act
@@ -227,9 +228,9 @@ const assertFrame = (frame: UniqueFileIdentifierFrame, o: string, i: ByteVector)
     @test
     public filterFrames_multipleMatches() {
         // Arrange
-        const frame1 = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.fromUint(123));
-        const frame2 = UniqueFileIdentifierFrame.fromData("foo", ByteVector.empty());
-        const frame3 = UniqueFileIdentifierFrame.fromData("foo", ByteVector.empty());
+        const frame1 = UnknownFrame.fromFields(FrameIdentifiers.RVRB);
+        const frame2 = UniqueFileIdentifierFrame.fromFields();
+        const frame3 = UniqueFileIdentifierFrame.fromFields();
 
         const frames = [frame1, frame2, frame3];
 
@@ -244,8 +245,8 @@ const assertFrame = (frame: UniqueFileIdentifierFrame, o: string, i: ByteVector)
     @test
     public filterFrames_allMatches() {
         // Arrange
-        const frame1 = UniqueFileIdentifierFrame.fromData("foo", ByteVector.empty());
-        const frame2 = UniqueFileIdentifierFrame.fromData("foo", ByteVector.empty());
+        const frame1 = UniqueFileIdentifierFrame.fromFields();
+        const frame2 = UniqueFileIdentifierFrame.fromFields();
         const frames = [frame1, frame2];
 
         // Act
@@ -261,7 +262,7 @@ const assertFrame = (frame: UniqueFileIdentifierFrame, o: string, i: ByteVector)
     @params(4, "v4")
     public render_returnsByteVector(version: number) {
         // Arrange
-        const frame = UniqueFileIdentifierFrame.fromData(testOwner, testIdentifier);
+        const frame = UniqueFileIdentifierFrame.fromFields(testOwner, testIdentifier);
 
         // Act
         const result = frame.render(version);

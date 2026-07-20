@@ -24,15 +24,6 @@ const assertFrame = (frame: PlayCountFrame, p: bigint) => {
         return PlayCountFrame.fromFieldBytes;
     }
 
-    @test
-    public fromEmpty() {
-        // Act
-        const frame = PlayCountFrame.fromEmpty();
-
-        // Assert
-        assertFrame(frame, BigInt(0));
-    }
-
     @params(2, "v2")
     @params(3, "v3")
     @params(4, "v4")
@@ -101,13 +92,30 @@ const assertFrame = (frame: PlayCountFrame, p: bigint) => {
         // Assert
         assertFrame(frame, BigInt("72623859790382856"));
     }
+
+    @test
+    public fromFields_noParams() {
+        // Act
+        const frame = PlayCountFrame.fromFields();
+
+        // Assert
+        assertFrame(frame, BigInt(0));
+    }
+    @test
+    public fromFields_withPlayCount() {
+        // Act
+        const frame = PlayCountFrame.fromFields(BigInt(12345));
+
+        // Assert
+        assertFrame(frame, BigInt(12345));
+    }
 }
 
 @suite class Id3v2_PlayCountFrame_PropertyTests {
     @test
     public playCount() {
         // Arrange
-        const frame = PlayCountFrame.fromEmpty();
+        const frame = PlayCountFrame.fromFields();
         const set = (v: bigint) => { frame.playCount = v; };
         const get = () => frame.playCount;
 
@@ -123,8 +131,7 @@ const assertFrame = (frame: PlayCountFrame, p: bigint) => {
     @test
     public clone() {
         // Arrange
-        const frame = PlayCountFrame.fromEmpty();
-        frame.playCount = BigInt(123);
+        const frame = PlayCountFrame.fromFields(BigInt(123));
 
         // Act
         const output = <PlayCountFrame> frame.clone();
@@ -155,8 +162,8 @@ const assertFrame = (frame: PlayCountFrame, p: bigint) => {
     @test
     public filterFrames_noMatch() {
         // Arrange
-        const frame1 = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.fromUint(123));
-        const frame2 = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.fromUint(234));
+        const frame1 = UnknownFrame.fromFields(FrameIdentifiers.RVRB);
+        const frame2 = UnknownFrame.fromFields(FrameIdentifiers.RVRB);
         const frames = [frame1, frame2];
 
         // Act
@@ -170,8 +177,8 @@ const assertFrame = (frame: PlayCountFrame, p: bigint) => {
     @test
     public filterFrames_singleMatch() {
         // Arrange
-        const frame1 = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.fromUint(123));
-        const frame2 = PlayCountFrame.fromEmpty();
+        const frame1 = UnknownFrame.fromFields(FrameIdentifiers.RVRB);
+        const frame2 = PlayCountFrame.fromFields();
         const frames = [frame1, frame2];
 
         // Act
@@ -185,9 +192,9 @@ const assertFrame = (frame: PlayCountFrame, p: bigint) => {
     @test
     public filterFrames_multipleMatches() {
         // Arrange
-        const frame1 = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.fromUint(123));
-        const frame2 = PlayCountFrame.fromEmpty();
-        const frame3 = PlayCountFrame.fromEmpty();
+        const frame1 = UnknownFrame.fromFields(FrameIdentifiers.RVRB);
+        const frame2 = PlayCountFrame.fromFields();
+        const frame3 = PlayCountFrame.fromFields();
 
         const frames = [frame1, frame2, frame3];
 
@@ -202,8 +209,8 @@ const assertFrame = (frame: PlayCountFrame, p: bigint) => {
     @test
     public filterFrames_allMatches() {
         // Arrange
-        const frame1 = PlayCountFrame.fromEmpty();
-        const frame2 = PlayCountFrame.fromEmpty();
+        const frame1 = PlayCountFrame.fromFields();
+        const frame2 = PlayCountFrame.fromFields();
         const frames = [frame1, frame2];
 
         // Act
@@ -219,8 +226,7 @@ const assertFrame = (frame: PlayCountFrame, p: bigint) => {
     @params(4, "v4")
     public render_fourBytePlayCount(version: number) {
         // Arrange
-        const frame = PlayCountFrame.fromEmpty();
-        frame.playCount = BigInt(1234);
+        const frame = PlayCountFrame.fromFields(BigInt(1234));
 
         // Act
         const output = frame.render(version);
@@ -239,8 +245,7 @@ const assertFrame = (frame: PlayCountFrame, p: bigint) => {
     @params(4, "v4")
     public render_sixBytePlayCount(version: number) {
         // Arrange
-        const frame = PlayCountFrame.fromEmpty();
-        frame.playCount = BigInt("1108152157446");
+        const frame = PlayCountFrame.fromFields(BigInt("1108152157446"));
 
         // Act
         const output = frame.render(version);
@@ -259,8 +264,7 @@ const assertFrame = (frame: PlayCountFrame, p: bigint) => {
     @params(4, "v4")
     public render_eightBytePlayCount(version: number) {
         // Arrange
-        const frame = PlayCountFrame.fromEmpty();
-        frame.playCount = BigInt("72623859790382856");
+        const frame = PlayCountFrame.fromFields(BigInt("72623859790382856"));
 
         // Act
         const output = frame.render(version);

@@ -3,6 +3,7 @@ import {assert} from "chai";
 
 import Frame from "../../src/id3v2/frames/frame";
 import FrameConstructorTests from "./frameConstructorTests";
+import Id3v2Settings from "../../src/id3v2/id3v2Settings";
 import PropertyTests from "../utilities/propertyTests";
 import UnknownFrame from "../../src/id3v2/frames/unknownFrame";
 import UnsynchronizedLyricsFrame from "../../src/id3v2/frames/unsynchronizedLyricsFrame";
@@ -10,18 +11,6 @@ import {ByteVector, StringType} from "../../src/byteVector";
 import {Id3v2FrameFlags, Id3v2FrameHeader} from "../../src/id3v2/frames/frameHeader";
 import {FrameIdentifiers} from "../../src/id3v2/frameIdentifiers";
 import {Testers} from "../utilities/testers";
-
-const getTestUnsynchronizedLyricsFrame = (): UnsynchronizedLyricsFrame => {
-    const fieldBytes = ByteVector.concatenate(
-        StringType.Latin1,                               // Encoding
-        ByteVector.fromString("eng", StringType.Latin1), // Language
-        ByteVector.fromString("foo", StringType.Latin1), // Description
-        ByteVector.getTextDelimiter(StringType.Latin1),  // Delimiter
-        ByteVector.fromString("bar", StringType.Latin1)  // Content
-    );
-    const header = new Id3v2FrameHeader(FrameIdentifiers.USLT);
-    return UnsynchronizedLyricsFrame.fromFieldBytes(header, fieldBytes, 4);
-};
 
 const assertFrame = (frame: UnsynchronizedLyricsFrame, d: string, l: string, t: string, te: StringType) => {
     assert.isOk(frame);
@@ -37,21 +26,6 @@ const assertFrame = (frame: UnsynchronizedLyricsFrame, d: string, l: string, t: 
 @suite class Id3v2_UnsynchronizedLyricsFrame_ConstructorTests extends FrameConstructorTests {
     public get fromFieldBytes(): (h: Id3v2FrameHeader, d: ByteVector, v: number) => Frame {
         return UnsynchronizedLyricsFrame.fromFieldBytes;
-    }
-
-    @test
-    public fromData() {
-        // @TODO: Add test cases for different values - especially undefined language.
-        // Arrange
-        const encoding = StringType.Latin1;
-        const language = "eng";
-        const description = "foo";
-
-        // Act
-        const frame = UnsynchronizedLyricsFrame.fromData(description, language, encoding);
-
-        // Assert
-        assertFrame(frame, description, language, "", encoding);
     }
 
     @params(2, "v2")
@@ -163,13 +137,58 @@ const assertFrame = (frame: UnsynchronizedLyricsFrame, d: string, l: string, t: 
         // Assert
         assertFrame(frame, "foo", "eng", "bar", encoding);
     }
+
+    @test
+    public fromFields_noParams() {
+        // Act
+        const frame = UnsynchronizedLyricsFrame.fromFields();
+
+        // Assert
+        assertFrame(frame, "", "XXX", "", Id3v2Settings.defaultEncoding);
+    }
+
+    @test
+    public fromFields_withDescription() {
+        // Act
+        const frame = UnsynchronizedLyricsFrame.fromFields("foo");
+
+        // Assert
+        assertFrame(frame, "foo", "XXX", "", Id3v2Settings.defaultEncoding);
+    }
+
+    @test
+    public fromFields_withDescriptionText() {
+        // Act
+        const frame = UnsynchronizedLyricsFrame.fromFields("foo", "bar");
+
+        // Assert
+        assertFrame(frame, "foo", "XXX", "bar", Id3v2Settings.defaultEncoding);
+    }
+
+    @test
+    public fromFields_withDescriptionTextLanguage() {
+        // Act
+        const frame = UnsynchronizedLyricsFrame.fromFields("foo", "bar", "eng");
+
+        // Assert
+        assertFrame(frame, "foo", "eng", "bar", Id3v2Settings.defaultEncoding);
+    }
+
+    @test
+    public fromFields_withDescriptionTextLanguageEncoding() {
+        // Act
+        const frame = UnsynchronizedLyricsFrame.fromFields("foo", "bar", "eng", StringType.Hex);
+
+        // Assert
+        assertFrame(frame, "foo", "eng", "bar", StringType.Hex);
+    }
 }
 
 @suite class Id3v2_UnsynchronizedLyricsFrame_PropertyTests {
     @test
     public description() {
         // Arrange
-        const frame = getTestUnsynchronizedLyricsFrame();
+        const frame = UnsynchronizedLyricsFrame.fromFields();
         const set = (v: string) => { frame.description = v; };
         const get = () => frame.description;
 
@@ -182,7 +201,7 @@ const assertFrame = (frame: UnsynchronizedLyricsFrame, d: string, l: string, t: 
     @test
     public language() {
         // Arrange
-        const frame = getTestUnsynchronizedLyricsFrame();
+        const frame = UnsynchronizedLyricsFrame.fromFields();
         const set = (v: string) => { frame.language = v; };
         const get = () => frame.language;
 
@@ -197,7 +216,7 @@ const assertFrame = (frame: UnsynchronizedLyricsFrame, d: string, l: string, t: 
     @test
     public text() {
         // Arrange
-        const frame = getTestUnsynchronizedLyricsFrame();
+        const frame = UnsynchronizedLyricsFrame.fromFields();
         const set = (v: string) => { frame.text = v; };
         const get = () => frame.text;
 
@@ -210,7 +229,7 @@ const assertFrame = (frame: UnsynchronizedLyricsFrame, d: string, l: string, t: 
     @test
     public textEncoding() {
         // Arrange
-        const frame = getTestUnsynchronizedLyricsFrame();
+        const frame = UnsynchronizedLyricsFrame.fromFields();
 
         // Act / Assert
         PropertyTests.propertyRoundTrip(
@@ -225,7 +244,7 @@ const assertFrame = (frame: UnsynchronizedLyricsFrame, d: string, l: string, t: 
     @test
     public clone() {
         // Arrange
-        const frame = getTestUnsynchronizedLyricsFrame();
+        const frame = UnsynchronizedLyricsFrame.fromFields("foo", "bar", "baz", StringType.Hex);
 
         // Act
         const result = <UnsynchronizedLyricsFrame> frame.clone();
@@ -256,8 +275,8 @@ const assertFrame = (frame: UnsynchronizedLyricsFrame, d: string, l: string, t: 
     @test
     public filterFrames_noMatch() {
         // Arrange
-        const frame1 = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.fromUint(123));
-        const frame2 = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.fromUint(234));
+        const frame1 = UnknownFrame.fromFields(FrameIdentifiers.RVRB);
+        const frame2 = UnknownFrame.fromFields(FrameIdentifiers.RVRB);
         const frames = [frame1, frame2];
 
         // Act
@@ -271,8 +290,8 @@ const assertFrame = (frame: UnsynchronizedLyricsFrame, d: string, l: string, t: 
     @test
     public filterFrames_singleMatch() {
         // Arrange
-        const frame1 = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.fromUint(123));
-        const frame2 = UnsynchronizedLyricsFrame.fromData("foo");
+        const frame1 = UnknownFrame.fromFields(FrameIdentifiers.RVRB);
+        const frame2 = UnsynchronizedLyricsFrame.fromFields();
         const frames = [frame1, frame2];
 
         // Act
@@ -286,9 +305,9 @@ const assertFrame = (frame: UnsynchronizedLyricsFrame, d: string, l: string, t: 
     @test
     public filterFrames_multipleMatches() {
         // Arrange
-        const frame1 = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.fromUint(123));
-        const frame2 = UnsynchronizedLyricsFrame.fromData("foo");
-        const frame3 = UnsynchronizedLyricsFrame.fromData("bar");
+        const frame1 = UnknownFrame.fromFields(FrameIdentifiers.RVRB);
+        const frame2 = UnsynchronizedLyricsFrame.fromFields();
+        const frame3 = UnsynchronizedLyricsFrame.fromFields();
 
         const frames = [frame1, frame2, frame3];
 
@@ -303,8 +322,8 @@ const assertFrame = (frame: UnsynchronizedLyricsFrame, d: string, l: string, t: 
     @test
     public filterFrames_allMatches() {
         // Arrange
-        const frame1 = UnsynchronizedLyricsFrame.fromData("foo");
-        const frame2 = UnsynchronizedLyricsFrame.fromData("bar");
+        const frame1 = UnsynchronizedLyricsFrame.fromFields();
+        const frame2 = UnsynchronizedLyricsFrame.fromFields();
         const frames = [frame1, frame2];
 
         // Act
@@ -323,8 +342,7 @@ const assertFrame = (frame: UnsynchronizedLyricsFrame, d: string, l: string, t: 
     @params([4, StringType.UTF16BE], "v4_multibyte")
     public render([version, encoding]: [number, StringType]) {
         // Arrange
-        const frame = UnsynchronizedLyricsFrame.fromData("foo", "eng", encoding);
-        frame.text = "bar";
+        const frame = UnsynchronizedLyricsFrame.fromFields("foo", "bar", "eng", encoding);
 
         // Act
         const output = frame.render(version);
@@ -349,8 +367,7 @@ const assertFrame = (frame: UnsynchronizedLyricsFrame, d: string, l: string, t: 
     @params([4, StringType.UTF8], "v4")
     public render_utf8([version, outputEncoding]: [number, StringType]) {
         // Arrange
-        const frame = UnsynchronizedLyricsFrame.fromData("foo", "eng", StringType.UTF8);
-        frame.text = "bar";
+        const frame = UnsynchronizedLyricsFrame.fromFields("foo", "bar", "eng", StringType.UTF8);
 
         // Act
         const output = frame.render(version);
@@ -373,7 +390,7 @@ const assertFrame = (frame: UnsynchronizedLyricsFrame, d: string, l: string, t: 
     @test
     public render_descriptionOnly() {
         // Arrange
-        const frame = UnsynchronizedLyricsFrame.fromData("foo", "eng", StringType.Latin1);
+        const frame = UnsynchronizedLyricsFrame.fromFields("foo", undefined, "eng", StringType.Latin1);
 
         // Act
         const result = frame.render(4);
@@ -395,8 +412,7 @@ const assertFrame = (frame: UnsynchronizedLyricsFrame, d: string, l: string, t: 
     @test
     public render_lyricsOnly() {
         // Arrange
-        const frame = UnsynchronizedLyricsFrame.fromData("", "eng", StringType.Latin1);
-        frame.text = "foo";
+        const frame = UnsynchronizedLyricsFrame.fromFields("", "foo", "eng", StringType.Latin1);
 
         // Act
         const result = frame.render(4);

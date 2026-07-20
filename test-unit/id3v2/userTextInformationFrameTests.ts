@@ -27,39 +27,9 @@ const assertFrame = (
     assert.strictEqual(frame.textEncoding, encoding);
 }
 
-const getTestFrame = (): UserTextInformationFrame => {
-    const frame = UserTextInformationFrame.fromDescription("foo", StringType.Latin1);
-    frame.text = ["bar"];
-    return frame;
-}
-
 @suite class Id3v2_UserInformationFrame_ConstructorTests extends FrameConstructorTests {
     public get fromFieldBytes(): (h: Id3v2FrameHeader, d: ByteVector, v: number) => Frame {
         return UserTextInformationFrame.fromFieldBytes;
-    }
-
-    @params(undefined, "undefined")
-    @params(null, "null")
-    @params("", "empty_string")
-    @params("foo", "truthy")
-    public fromDescription_withoutEncoding(description: string) {
-        // Act
-        const frame = UserTextInformationFrame.fromDescription(description);
-
-        // Assert
-        assertFrame(frame, description, [], Id3v2Settings.defaultEncoding);
-    }
-
-    @params(undefined, "undefined")
-    @params(null, "null")
-    @params("", "empty_string")
-    @params("foo", "truthy")
-    public fromDescription_withEncoding(description: string) {
-        // Act
-        const frame = UserTextInformationFrame.fromDescription(description, StringType.UTF16BE);
-
-        // Assert
-        assertFrame(frame, description, [], StringType.UTF16BE);
     }
 
     @params(2, "v2")
@@ -167,30 +137,52 @@ const getTestFrame = (): UserTextInformationFrame => {
         // Assert
         assertFrame(output, "foo", ["bar"], encoding);
     }
+
+    @test
+    public fromFields_noParams() {
+        // Act
+        const frame = UserTextInformationFrame.fromFields();
+
+        // Assert
+        assertFrame(frame, "", [], Id3v2Settings.defaultEncoding);
+    }
+
+    @test
+    public fromFields_withDescription() {
+        // Act
+        const frame = UserTextInformationFrame.fromFields("foo");
+
+        // Assert
+        assertFrame(frame, "foo", [], Id3v2Settings.defaultEncoding);
+    }
+
+    @test
+    public fromFields_withDescriptionText() {
+        // Act
+        const frame = UserTextInformationFrame.fromFields("foo", ["bar", "baz"]);
+
+        // Assert
+        assertFrame(frame, "foo", ["bar", "baz"], Id3v2Settings.defaultEncoding);
+    }
+
+    @test
+    public fromFields_withDescriptionTextEncoding() {
+        // Act
+        const frame = UserTextInformationFrame.fromFields("foo", ["bar", "baz"], StringType.Hex);
+
+        // Assert
+        assertFrame(frame, "foo", ["bar", "baz"], StringType.Hex);
+    }
 }
 
 @suite class Id3v2_UserInformationFrame_PropertyTests {
-    @test
-    public setDescription() {
-        // Arrange
-        const frame = getTestFrame();
-
-        // Act
-        frame.description = "fux";
-
-        // Assert
-        assert.strictEqual(frame.description, "fux");
-        assert.deepStrictEqual(frame.text, ["bar"]);
-    }
-
     @params(undefined, "undefined")
     @params(null, "null")
     @params("", "empty_string")
     @params("fux", "truthy")
     public setDescription_values(value: string) {
         // Arrange
-        const frame = UserTextInformationFrame.fromDescription("foo");
-        frame.text = ["bar"];
+        const frame = UserTextInformationFrame.fromFields("foo", ["bar"]);
 
         // Act
         frame.description = value;
@@ -200,40 +192,13 @@ const getTestFrame = (): UserTextInformationFrame => {
         assert.deepStrictEqual(frame.text, ["bar"]);
     }
 
-    @test
-    public getText() {
-        // Arrange
-        const frame = getTestFrame();
-
-        // Act
-        const text = frame.text;
-        text.push("fux");
-
-        // Assert - new item was not added to frame
-        assert.notEqual(frame.text, text);
-        assert.strictEqual(1, frame.text.length);
-    }
-
-    @test
-    public setText() {
-        // Arrange
-        const frame = getTestFrame();
-
-        // Act
-        frame.text = ["bux", "qux"];
-
-        // Assert
-        assert.strictEqual(frame.description, "foo");
-        assert.deepStrictEqual(frame.text, ["bux", "qux"]);
-    }
-
     @params(undefined, "undefined")
     @params(null, "null")
     @params([], "empty_array")
     @params(["bux"], "truthy")
     public setText_values(value: string[]) {
         // Arrange
-        const frame = UserTextInformationFrame.fromDescription("foo");
+        const frame = UserTextInformationFrame.fromFields("foo");
 
         // Act
         frame.text = value;
@@ -246,7 +211,7 @@ const getTestFrame = (): UserTextInformationFrame => {
     @test
     public setEncoding() {
         // Arrange
-        const frame = UserTextInformationFrame.fromDescription("foo");
+        const frame = UserTextInformationFrame.fromFields("foo");
 
         // Act
         frame.textEncoding = StringType.UTF8;
@@ -279,8 +244,8 @@ const getTestFrame = (): UserTextInformationFrame => {
     @test
     public filterFrames_noMatch() {
         // Arrange
-        const frame1 = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.fromUint(123));
-        const frame2 = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.fromUint(234));
+        const frame1 = UnknownFrame.fromFields(FrameIdentifiers.RVRB);
+        const frame2 = UnknownFrame.fromFields(FrameIdentifiers.RVRB);
         const frames = [frame1, frame2];
 
         // Act
@@ -294,8 +259,8 @@ const getTestFrame = (): UserTextInformationFrame => {
     @test
     public filterFrames_singleMatch() {
         // Arrange
-        const frame1 = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.fromUint(123));
-        const frame2 = UserTextInformationFrame.fromDescription("foo");
+        const frame1 = UnknownFrame.fromFields(FrameIdentifiers.RVRB);
+        const frame2 = UserTextInformationFrame.fromFields("foo");
         const frames = [frame1, frame2];
 
         // Act
@@ -309,9 +274,9 @@ const getTestFrame = (): UserTextInformationFrame => {
     @test
     public filterFrames_multipleMatches() {
         // Arrange
-        const frame1 = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.fromUint(123));
-        const frame2 = UserTextInformationFrame.fromDescription("foo");
-        const frame3 = UserTextInformationFrame.fromDescription("bar");
+        const frame1 = UnknownFrame.fromFields(FrameIdentifiers.RVRB);
+        const frame2 = UserTextInformationFrame.fromFields("foo");
+        const frame3 = UserTextInformationFrame.fromFields("bar");
 
         const frames = [frame1, frame2, frame3];
 
@@ -326,8 +291,8 @@ const getTestFrame = (): UserTextInformationFrame => {
     @test
     public filterFrames_allMatches() {
         // Arrange
-        const frame1 = UserTextInformationFrame.fromDescription("foo");
-        const frame2 = UserTextInformationFrame.fromDescription("bar");
+        const frame1 = UserTextInformationFrame.fromFields("foo");
+        const frame2 = UserTextInformationFrame.fromFields("bar");
         const frames = [frame1, frame2];
 
         // Act
@@ -341,7 +306,7 @@ const getTestFrame = (): UserTextInformationFrame => {
     @test
     public clone_returnsCopy() {
         // Arrange
-        const frame = getTestFrame();
+        const frame = UserTextInformationFrame.fromFields("foo", ["bar", "baz"], StringType.Hex);
 
         // Act
         const output = <UserTextInformationFrame> frame.clone();
@@ -353,8 +318,7 @@ const getTestFrame = (): UserTextInformationFrame => {
     @test
     public render_usesDescriptionAndTextFields() {
         // Arrange
-        const frame = UserTextInformationFrame.fromDescription("foo", StringType.Latin1);
-        frame.text = ["bar", "baz"];
+        const frame = UserTextInformationFrame.fromFields("foo", ["bar", "baz"], StringType.Latin1);
 
         // Act
         const result = frame.render(4);
@@ -379,7 +343,7 @@ const getTestFrame = (): UserTextInformationFrame => {
     @test
     public render_withoutDescriptionWithoutText() {
         // Arrange
-        const frame = UserTextInformationFrame.fromDescription(undefined, StringType.Latin1);
+        const frame = UserTextInformationFrame.fromFields(undefined, undefined, StringType.Latin1);
 
         // Act
         const result = frame.render(4);
@@ -392,8 +356,7 @@ const getTestFrame = (): UserTextInformationFrame => {
     @test
     public render_withoutDescriptionWithText() {
         // Arrange
-        const frame = UserTextInformationFrame.fromDescription(undefined, StringType.Latin1);
-        frame.text = ["foo"];
+        const frame = UserTextInformationFrame.fromFields(undefined, ["foo"], StringType.Latin1);
 
         // Act
         const result = frame.render(4);
@@ -415,7 +378,7 @@ const getTestFrame = (): UserTextInformationFrame => {
     @test
     public render_withDescriptionWithoutText() {
         // Arrange
-        const frame = UserTextInformationFrame.fromDescription("foo", StringType.Latin1);
+        const frame = UserTextInformationFrame.fromFields("foo", undefined, StringType.Latin1);
 
         // Act
         const result = frame.render(4);
@@ -437,7 +400,7 @@ const getTestFrame = (): UserTextInformationFrame => {
     @test
     public render_withDescriptionWithText_twoByteEncoding() {
         // Arrange
-        const frame = UserTextInformationFrame.fromDescription("foo", StringType.UTF16LE);
+        const frame = UserTextInformationFrame.fromFields("foo", ["bar"], StringType.UTF16LE);
         frame.text = ["bar"];
 
         // Act
@@ -464,8 +427,7 @@ const getTestFrame = (): UserTextInformationFrame => {
     @params(["foo", ["bar"]], "foo_bar")
     public toString_returnsText([description, text]: [string, string[]]) {
         // Arrange
-        const frame = UserTextInformationFrame.fromDescription(description);
-        frame.text = text;
+        const frame = UserTextInformationFrame.fromFields(description, text);
 
         // Act
         const result = frame.toString();

@@ -12,19 +12,6 @@ import {FrameIdentifiers} from "../../src/id3v2/frameIdentifiers";
 import {Id3v2FrameFlags, Id3v2FrameHeader} from "../../src/id3v2/frames/frameHeader";
 import {Testers} from "../utilities/testers";
 
-const getTestFrame = (): CommentsFrame => {
-    const fieldBytes = ByteVector.concatenate(
-        StringType.Latin1,
-        ByteVector.fromString("eng", StringType.Latin1),
-        ByteVector.fromString("foo", StringType.Latin1),
-        ByteVector.getTextDelimiter(StringType.Latin1),
-        ByteVector.fromString("bar", StringType.Latin1)
-    );
-    const header = new Id3v2FrameHeader(FrameIdentifiers.COMM);
-
-    return CommentsFrame.fromFieldBytes(header, fieldBytes, 4);
-}
-
 const verifyFrame = (
     frame: CommentsFrame,
     expectedDesc: string,
@@ -45,45 +32,6 @@ const verifyFrame = (
 @suite class Id3v2_CommentsFrame_ConstructorTests extends FrameConstructorTests {
     public get fromFieldBytes(): (h: Id3v2FrameHeader, fb: ByteVector, v: number) => Frame {
         return CommentsFrame.fromFieldBytes;
-    }
-
-    @test
-    public fromDescription_withoutLanguage() {
-        // Arrange
-        const description = "fux";
-
-        // Act
-        const frame = CommentsFrame.fromDescription(description);
-
-        // Assert
-        verifyFrame(frame, description, "XXX", Id3v2Settings.defaultEncoding, "");
-    }
-
-    @test
-    public fromDescription_withLanguageWithoutEncoding() {
-        // Arrange
-        const description = "fux";
-        const language = "bux";
-
-        // Act
-        const frame = CommentsFrame.fromDescription(description, language);
-
-        // Assert
-        verifyFrame(frame, description, language, Id3v2Settings.defaultEncoding, "");
-    }
-
-    @test
-    public fromDescription_withLanguageWithEncoding() {
-        // Arrange
-        const description = "fux";
-        const language = "bux";
-        const encoding = StringType.Latin1;
-
-        // Act
-        const frame = CommentsFrame.fromDescription(description, language, encoding);
-
-        // Assert
-        verifyFrame(frame, description, language, encoding, "");
     }
 
     @params(2, "v2")
@@ -198,12 +146,57 @@ const verifyFrame = (
         // Assert
         verifyFrame(frame, "fux", "eng", encoding, "bux");
     }
+
+    @test
+    public fromFields_noParams() {
+        // Act
+        const frame = CommentsFrame.fromFields();
+
+        // Assert
+        verifyFrame(frame, "", "XXX", Id3v2Settings.defaultEncoding, "");
+    }
+
+    @test
+    public fromFields_withDescription() {
+        // Act
+        const frame = CommentsFrame.fromFields("foo");
+
+        // Assert
+        verifyFrame(frame, "foo", "XXX", Id3v2Settings.defaultEncoding, "");
+    }
+
+    @test
+    public fromFields_withDescriptionText() {
+        // Act
+        const frame = CommentsFrame.fromFields("foo", "bar");
+
+        // Assert
+        verifyFrame(frame, "foo", "XXX", Id3v2Settings.defaultEncoding, "bar");
+    }
+
+    @test
+    public fromFields_withDescriptionTextLanguage() {
+        // Act
+        const frame = CommentsFrame.fromFields("foo", "bar", "baz");
+
+        // Assert
+        verifyFrame(frame, "foo", "baz", Id3v2Settings.defaultEncoding, "bar");
+    }
+
+    @test
+    public fromFields_withDescriptionTextLanguageEncoding() {
+        // Act
+        const frame = CommentsFrame.fromFields("foo", "bar", "baz", StringType.Hex);
+
+        // Assert
+        verifyFrame(frame, "foo", "baz", StringType.Hex, "bar");
+    }
 }
 
 @suite class Id3v2_CommentsFrame_PropertyTests {
     @test
     public description() {
-        const frame = getTestFrame();
+        const frame = CommentsFrame.fromFields("bar", "foo", "eng", StringType.Latin1);
 
         const set = (v: string) => { frame.description = v; };
         const get = () => frame.description;
@@ -214,7 +207,7 @@ const verifyFrame = (
 
     @test
     public language() {
-        const frame = getTestFrame();
+        const frame = CommentsFrame.fromFields("bar", "foo", "eng", StringType.Latin1);
 
         const set = (v: string) => { frame.language = v; };
         const get = () => frame.language;
@@ -227,7 +220,7 @@ const verifyFrame = (
 
     @test
     public text() {
-        const frame = getTestFrame();
+        const frame = CommentsFrame.fromFields("bar", "foo", "eng", StringType.Latin1);
 
         const set = (v: string) => { frame.text = v; };
         const get = () => frame.text;
@@ -238,13 +231,11 @@ const verifyFrame = (
 
     @test
     public textEncoding() {
-        const frame = getTestFrame();
+        const frame = CommentsFrame.fromFields("bar", "foo", "eng", StringType.Latin1);
 
-        PropertyTests.propertyRoundTrip(
-            (v) => { frame.textEncoding = v; },
-            () => frame.textEncoding,
-            StringType.UTF16
-        );
+        const set = (v: StringType) => { frame.textEncoding = v; };
+        const get = () => frame.textEncoding;
+        PropertyTests.propertyRoundTrip(set, get, StringType.UTF16);
     }
 }
 
@@ -271,8 +262,8 @@ const verifyFrame = (
     @test
     public filterFrames_noMatch() {
         // Arrange
-        const frame1 = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.fromUint(123));
-        const frame2 = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.fromUint(234));
+        const frame1 = UnknownFrame.fromFields(FrameIdentifiers.RVRB);
+        const frame2 = UnknownFrame.fromFields(FrameIdentifiers.RVRB);
         const frames = [frame1, frame2];
 
         // Act
@@ -286,8 +277,8 @@ const verifyFrame = (
     @test
     public filterFrames_singleMatch() {
         // Arrange
-        const frame1 = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.fromUint(123));
-        const frame2 = CommentsFrame.fromDescription("foo");
+        const frame1 = UnknownFrame.fromFields(FrameIdentifiers.RVRB);
+        const frame2 = CommentsFrame.fromFields("foo");
         const frames = [frame1, frame2];
 
         // Act
@@ -301,9 +292,9 @@ const verifyFrame = (
     @test
     public filterFrames_multipleMatches() {
         // Arrange
-        const frame1 = UnknownFrame.fromData(FrameIdentifiers.RVRB, ByteVector.fromUint(123));
-        const frame2 = CommentsFrame.fromDescription("foo");
-        const frame3 = CommentsFrame.fromDescription("bar");
+        const frame1 = UnknownFrame.fromFields(FrameIdentifiers.RVRB);
+        const frame2 = CommentsFrame.fromFields("foo");
+        const frame3 = CommentsFrame.fromFields("bar");
 
         const frames = [frame1, frame2, frame3];
 
@@ -318,8 +309,8 @@ const verifyFrame = (
     @test
     public filterFrames_allMatches() {
         // Arrange
-        const frame1 = CommentsFrame.fromDescription("foo");
-        const frame2 = CommentsFrame.fromDescription("bar");
+        const frame1 = CommentsFrame.fromFields("foo");
+        const frame2 = CommentsFrame.fromFields("bar");
         const frames = [frame1, frame2];
 
         // Act
@@ -333,8 +324,7 @@ const verifyFrame = (
     @test
     public clone() {
         // Arrange
-        const frame = CommentsFrame.fromDescription("fux", "bux", StringType.UTF16BE);
-        frame.text = "qux";
+        const frame = CommentsFrame.fromFields("foo", "bar", "baz", StringType.UTF16BE);
 
         // Act
         const output = <CommentsFrame> frame.clone();
@@ -351,8 +341,7 @@ const verifyFrame = (
     @params([4, StringType.UTF16BE], "v4_multibyte")
     public render([version, encoding]: [number, StringType]) {
         // Arrange
-        const frame = CommentsFrame.fromDescription("foo", "eng", encoding);
-        frame.text = "bar";
+        const frame = CommentsFrame.fromFields("bar", "foo", "eng", encoding);
 
         // Act
         const output = frame.render(version);
@@ -363,9 +352,9 @@ const verifyFrame = (
         const expectedFieldBytes = ByteVector.concatenate(
             encoding,                                        // Encoding
             ByteVector.fromString("eng", StringType.Latin1), // Language
-            ByteVector.fromString("foo", encoding),          // Description
+            ByteVector.fromString("bar", encoding),          // Description
             ByteVector.getTextDelimiter(encoding),           // Delimiter
-            ByteVector.fromString("bar", encoding)           // Comment text
+            ByteVector.fromString("foo", encoding)           // Comment text
         );
         const header = new Id3v2FrameHeader(FrameIdentifiers.COMM, Id3v2FrameFlags.None, expectedFieldBytes.length);
         const expectedBytes = ByteVector.concatenate(header.render(version), expectedFieldBytes);
@@ -377,8 +366,7 @@ const verifyFrame = (
     @params([4, StringType.UTF8], "v4")
     public render_utf8([version, outputEncoding]: [number, StringType]) {
         // Arrange
-        const frame = CommentsFrame.fromDescription("foo", "eng", StringType.UTF8);
-        frame.text = "bar";
+        const frame = CommentsFrame.fromFields("bar", "foo", "eng", StringType.UTF8);
 
         // Act
         const output = frame.render(version);
@@ -389,9 +377,9 @@ const verifyFrame = (
         const expectedFieldBytes = ByteVector.concatenate(
             outputEncoding,                                  // Encoding
             ByteVector.fromString("eng", StringType.Latin1), // Language
-            ByteVector.fromString("foo", outputEncoding),    // Description
+            ByteVector.fromString("bar", outputEncoding),    // Description
             ByteVector.getTextDelimiter(outputEncoding),     // Delimiter
-            ByteVector.fromString("bar", outputEncoding)     // Comment text
+            ByteVector.fromString("foo", outputEncoding)     // Comment text
         );
         const header = new Id3v2FrameHeader(FrameIdentifiers.COMM, Id3v2FrameFlags.None, expectedFieldBytes.length);
         const expectedBytes = ByteVector.concatenate(header.render(version), expectedFieldBytes);
@@ -401,7 +389,7 @@ const verifyFrame = (
     @test
     public render_descriptionOnly() {
         // Arrange
-        const frame = CommentsFrame.fromDescription("foo", "eng", StringType.Latin1);
+        const frame = CommentsFrame.fromFields("foo", "", "eng", StringType.Latin1);
 
         // Act
         const result = frame.render(4);
@@ -423,8 +411,7 @@ const verifyFrame = (
     @test
     public render_commentsOnly() {
         // Arrange
-        const frame = CommentsFrame.fromDescription("", "eng", StringType.Latin1);
-        frame.text = "foo";
+        const frame = CommentsFrame.fromFields("", "foo", "eng", StringType.Latin1);
 
         // Act
         const result = frame.render(4);

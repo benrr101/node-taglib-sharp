@@ -22,24 +22,6 @@ export default class UnsynchronizedLyricsFrame extends Frame {
     }
 
     /**
-     * Constructs and initializes a new instance from the provided data
-     * @param description Description of the frame
-     * @param language ISO-639-2 language code for the content of the frame
-     * @param encoding Encoding to use when storing the content of the frame
-     */
-    public static fromData(
-        description: string,
-        language?: string,
-        encoding: StringType = Id3v2Settings.defaultEncoding
-    ): UnsynchronizedLyricsFrame {
-        const frame = new UnsynchronizedLyricsFrame(new Id3v2FrameHeader(FrameIdentifiers.USLT));
-        frame._textEncoding = encoding;
-        frame._language = language;
-        frame._description = description;
-        return frame;
-    }
-
-    /**
      * Constructs and initializes a new instance by parsing the fields from the field bytes.
      * @param header Header of the frame
      * @param fieldBytes Bytes that contain the fields of the frame
@@ -82,6 +64,30 @@ export default class UnsynchronizedLyricsFrame extends Frame {
             frame._description = split[0];
             frame._text = split[1];
         }
+
+        return frame;
+    }
+
+    /**
+     * Constructs and initializes a new instance from the provided data
+     * @param description Optional, description of the frame. If omitted, defaults to `""`.
+     * @param text Optional, text to store as the lyrics. If omitted, defaults to `""`.
+     * @param language Optional, ISO-639-2 language code for the content of the frame. If omitted,
+     *     defaults to "XXX".
+     * @param encoding Optional, encoding to use when storing the content of the frame. If omitted,
+     *     defaults to {@link Id3v2Settings.defaultEncoding}.
+     */
+    public static fromFields(
+        description?: string,
+        text?: string,
+        language?: string,
+        encoding?: StringType
+    ): UnsynchronizedLyricsFrame {
+        const frame = new UnsynchronizedLyricsFrame(new Id3v2FrameHeader(FrameIdentifiers.USLT));
+        frame._description = description ?? "";
+        frame._language = language ?? "XXX";
+        frame._text = text ?? "";
+        frame._textEncoding = encoding ?? Id3v2Settings.defaultEncoding;
 
         return frame;
     }
@@ -139,9 +145,12 @@ export default class UnsynchronizedLyricsFrame extends Frame {
 
     /** @inheritDoc */
     public clone(): Frame {
-        const frame = UnsynchronizedLyricsFrame.fromData(this._description, this._language, this.textEncoding);
-        frame._text = this._text;
-        return frame;
+        return UnsynchronizedLyricsFrame.fromFields(
+            this._description,
+            this._text,
+            this._language,
+            this._textEncoding
+        );
     }
 
     /**
