@@ -1,10 +1,10 @@
 import Frame from "./frame";
+import FrameHeader from "./frameHeader";
 import Id3v2Settings from "../id3v2Settings";
 import {ByteVector, StringType} from "../../byteVector";
-import {Id3v2FrameHeader} from "./frameHeader";
+import {CorruptFileError} from "../../errors";
 import {FrameIdentifier, FrameIdentifiers} from "../frameIdentifiers";
 import {ArrayUtils, Guards} from "../../utils";
-import {CorruptFileError} from "../../errors";
 
 /**
  * This class provides support for ID3v2 text information frames (section 4.2) covering `T000` to
@@ -148,7 +148,7 @@ export default class TextInformationFrame extends Frame {
 
     // #region Constructors
 
-    private constructor(header: Id3v2FrameHeader) {
+    private constructor(header: FrameHeader) {
         super(header);
     }
 
@@ -158,11 +158,7 @@ export default class TextInformationFrame extends Frame {
      * @param fieldBytes Bytes that contain the fields of the frame
      * @param version ID3v2 version the frame was originally encoded with
      */
-    public static fromFieldBytes(
-        header: Id3v2FrameHeader,
-        fieldBytes: ByteVector,
-        version: number
-    ): TextInformationFrame {
+    public static fromFieldBytes(header: FrameHeader, fieldBytes: ByteVector, version: number): TextInformationFrame {
         Guards.truthy(header, "header");
         Guards.truthy(fieldBytes, "fieldBytes");
         Guards.byte(version, "version");
@@ -218,7 +214,7 @@ export default class TextInformationFrame extends Frame {
     ): TextInformationFrame {
         Guards.truthy(identifier, "identifier");
 
-        const frame = new TextInformationFrame(new Id3v2FrameHeader(identifier));
+        const frame = new TextInformationFrame(new FrameHeader(identifier));
         frame._encoding = textEncoding ?? Id3v2Settings.defaultEncoding;
         frame._textFields = text ?? [];
 
@@ -293,11 +289,11 @@ export default class TextInformationFrame extends Frame {
         }
 
         const output = ByteVector.empty();
-        let frame = new TextInformationFrame(new Id3v2FrameHeader(FrameIdentifiers.TYER));
+        let frame = new TextInformationFrame(new FrameHeader(FrameIdentifiers.TYER));
         frame.text = [text.substring(0, 4)];
         output.addByteVector(frame.render(version));
 
-        frame = new TextInformationFrame(new Id3v2FrameHeader(FrameIdentifiers.TDAT));
+        frame = new TextInformationFrame(new FrameHeader(FrameIdentifiers.TDAT));
         frame.text = [text.substring(5, 7) + text.substring(8, 10)];
         output.addByteVector(frame.render(version));
 
@@ -305,7 +301,7 @@ export default class TextInformationFrame extends Frame {
             return output;
         }
 
-        frame = new TextInformationFrame(new Id3v2FrameHeader(FrameIdentifiers.TIME));
+        frame = new TextInformationFrame(new FrameHeader(FrameIdentifiers.TIME));
         frame.text = [text.substring(11, 13) + text.substring(14, 16)];
         output.addByteVector(frame.render(version));
 

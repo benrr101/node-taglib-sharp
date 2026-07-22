@@ -1,8 +1,8 @@
 import Frame from "./frame";
+import FrameHeader from "./frameHeader";
 import Id3v2Settings from "../id3v2Settings";
 import {ByteVector, StringType} from "../../byteVector";
 import {CorruptFileError} from "../../errors";
-import {Id3v2FrameHeader} from "./frameHeader";
 import {FrameIdentifiers} from "../frameIdentifiers";
 import {ArrayUtils, Guards} from "../../utils";
 
@@ -13,7 +13,7 @@ export default class UserTextInformationFrame extends Frame {
 
     // #region Constructors
 
-    private constructor(header: Id3v2FrameHeader) {
+    private constructor(header: FrameHeader) {
         super(header);
     }
 
@@ -24,7 +24,7 @@ export default class UserTextInformationFrame extends Frame {
      * @param version ID3v2 version the frame was originally encoded with
      */
     public static fromFieldBytes(
-        header: Id3v2FrameHeader,
+        header: FrameHeader,
         fieldBytes: ByteVector,
         version: number
     ): UserTextInformationFrame {
@@ -70,7 +70,7 @@ export default class UserTextInformationFrame extends Frame {
      */
     public static fromFields(description?: string, text?: string[], encoding?: StringType
     ): UserTextInformationFrame {
-        const frame = new UserTextInformationFrame(new Id3v2FrameHeader(FrameIdentifiers.TXXX));
+        const frame = new UserTextInformationFrame(new FrameHeader(FrameIdentifiers.TXXX));
         frame._encoding = encoding ?? Id3v2Settings.defaultEncoding;
         frame._description = description ?? "";
         frame._textFields = text ?? [];

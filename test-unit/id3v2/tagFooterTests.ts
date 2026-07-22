@@ -2,28 +2,28 @@ import {suite, test} from "@testdeck/mocha";
 import {assert} from "chai";
 
 import TestConstants from "../testConstants";
-import Id3v2TagFooter from "../../src/id3v2/id3v2TagFooter";
+import TagFooter from "../../src/id3v2/tagFooter";
 import Id3v2Settings from "../../src/id3v2/id3v2Settings";
 import {ByteVector} from "../../src/byteVector";
-import {Id3v2TagHeaderFlags} from "../../src/id3v2/id3v2TagHeader";
+import {TagFlags} from "../../src/id3v2/enums";
 import {Testers} from "../utilities/testers";
 
-const getTestFooter = (majorVersion: number, minorVersion: number, flags: Id3v2TagHeaderFlags): Id3v2TagFooter => {
+const getTestFooter = (majorVersion: number, minorVersion: number, flags: TagFlags): TagFooter => {
     const data = ByteVector.concatenate(
-        Id3v2TagFooter.FILE_IDENTIFIER,
+        TagFooter.FILE_IDENTIFIER,
         majorVersion,
         minorVersion,
         flags,
         TestConstants.syncedUintBytes
     );
-    return Id3v2TagFooter.fromData(data);
+    return TagFooter.fromData(data);
 };
 
 @suite class Id3v2_TagFooter_ConstructorTests {
     @test
     public fromData_falsyData() {
         // Act/Assert
-        Testers.testTruthy((v: ByteVector) => Id3v2TagFooter.fromData(v));
+        Testers.testTruthy((v: ByteVector) => TagFooter.fromData(v));
     }
 
     @test
@@ -32,7 +32,7 @@ const getTestFooter = (majorVersion: number, minorVersion: number, flags: Id3v2T
         const data = ByteVector.fromSize(1);
 
         // Act/Assert
-        assert.throws(() => Id3v2TagFooter.fromData(data));
+        assert.throws(() => TagFooter.fromData(data));
     }
 
     @test
@@ -41,26 +41,26 @@ const getTestFooter = (majorVersion: number, minorVersion: number, flags: Id3v2T
         const data = ByteVector.fromSize(10);
 
         // Act/Assert
-        assert.throws(() => Id3v2TagFooter.fromData(data));
+        assert.throws(() => TagFooter.fromData(data));
     }
 
     @test
     public fromData_invalidFlags_version4() {
         // Arrange
         const data = ByteVector.concatenate(
-            Id3v2TagFooter.FILE_IDENTIFIER,
+            TagFooter.FILE_IDENTIFIER,
             0x04, 0x00, 0x07
         );
 
         // Act/Assert
-        assert.throws(() => Id3v2TagFooter.fromData(data));
+        assert.throws(() => TagFooter.fromData(data));
     }
 
     @test
     public fromData_invalidTagSizeBytes() {
         // Arrange
         const testData = ByteVector.concatenate(
-            Id3v2TagFooter.FILE_IDENTIFIER,
+            TagFooter.FILE_IDENTIFIER,
             0x04, 0x00, 0x00
         );
         const testData1 = ByteVector.concatenate(testData, 0x80, 0x00, 0x00, 0x00);
@@ -69,10 +69,10 @@ const getTestFooter = (majorVersion: number, minorVersion: number, flags: Id3v2T
         const testData4 = ByteVector.concatenate(testData, 0x00, 0x00, 0x00, 0x80);
 
         // Act/Assert
-        assert.throws(() => Id3v2TagFooter.fromData(testData1));
-        assert.throws(() => Id3v2TagFooter.fromData(testData2));
-        assert.throws(() => Id3v2TagFooter.fromData(testData3));
-        assert.throws(() => Id3v2TagFooter.fromData(testData4));
+        assert.throws(() => TagFooter.fromData(testData1));
+        assert.throws(() => TagFooter.fromData(testData2));
+        assert.throws(() => TagFooter.fromData(testData3));
+        assert.throws(() => TagFooter.fromData(testData4));
     }
 
     @test
@@ -82,7 +82,7 @@ const getTestFooter = (majorVersion: number, minorVersion: number, flags: Id3v2T
         const minorVersion = 0x00;
         const flags = 0xE0;
         const testData = ByteVector.concatenate(
-            Id3v2TagFooter.FILE_IDENTIFIER,
+            TagFooter.FILE_IDENTIFIER,
             majorVersion,
             minorVersion,
             flags,
@@ -90,7 +90,7 @@ const getTestFooter = (majorVersion: number, minorVersion: number, flags: Id3v2T
         );
 
         // Act
-        const output = Id3v2TagFooter.fromData(testData);
+        const output = TagFooter.fromData(testData);
 
         // Assert
         assert.equal(output.flags, flags);
@@ -104,7 +104,7 @@ const getTestFooter = (majorVersion: number, minorVersion: number, flags: Id3v2T
     @test
     public getCompleteTagSize() {
         // Arrange
-        const footer = getTestFooter(4, 0, Id3v2TagHeaderFlags.None);
+        const footer = getTestFooter(4, 0, TagFlags.None);
 
         // Act
         const output = footer.completeTagSize;
@@ -116,19 +116,19 @@ const getTestFooter = (majorVersion: number, minorVersion: number, flags: Id3v2T
     @test
     public setFlags_validFlags() {
         // Arrange
-        const footer = getTestFooter(4, 0, Id3v2TagHeaderFlags.None);
+        const footer = getTestFooter(4, 0, TagFlags.None);
 
         // Act
-        footer.flags = Id3v2TagHeaderFlags.FooterPresent;
+        footer.flags = TagFlags.FooterPresent;
 
         // Assert
-        assert.equal(footer.flags, Id3v2TagHeaderFlags.FooterPresent);
+        assert.equal(footer.flags, TagFlags.FooterPresent);
     }
 
     @test
     public getMajorVersion_zero() {
         // Arrange
-        const footer = getTestFooter(0, 0, Id3v2TagHeaderFlags.None);
+        const footer = getTestFooter(0, 0, TagFlags.None);
 
         // Act
         const output = footer.majorVersion;
@@ -140,7 +140,7 @@ const getTestFooter = (majorVersion: number, minorVersion: number, flags: Id3v2T
     @test
     public getMajorVersion_nonZero() {
         // Arrange
-        const footer = getTestFooter(4, 0, Id3v2TagHeaderFlags.None);
+        const footer = getTestFooter(4, 0, TagFlags.None);
 
         // Act
         const output = footer.majorVersion;
@@ -152,7 +152,7 @@ const getTestFooter = (majorVersion: number, minorVersion: number, flags: Id3v2T
     @test
     public setMajorVersion_invalidValues() {
         // Arrange
-        const footer = getTestFooter(4, 0, Id3v2TagHeaderFlags.None);
+        const footer = getTestFooter(4, 0, TagFlags.None);
 
         // Act/Assert
         Testers.testByte((v: number) => { footer.majorVersion = v; });
@@ -163,7 +163,7 @@ const getTestFooter = (majorVersion: number, minorVersion: number, flags: Id3v2T
     @test
     public setRevisionNumber_invalidValue() {
         // Arrange
-        const footer = getTestFooter(4, 0, Id3v2TagHeaderFlags.None);
+        const footer = getTestFooter(4, 0, TagFlags.None);
 
         // Act/Assert
         Testers.testByte((v: number) => { footer.revisionNumber = v; });
@@ -172,7 +172,7 @@ const getTestFooter = (majorVersion: number, minorVersion: number, flags: Id3v2T
     @test
     public setRevisionNumber_validValue() {
         // Arrange
-        const footer = getTestFooter(4, 0, Id3v2TagHeaderFlags.None);
+        const footer = getTestFooter(4, 0, TagFlags.None);
 
         // Act
         footer.revisionNumber = 2;
@@ -184,7 +184,7 @@ const getTestFooter = (majorVersion: number, minorVersion: number, flags: Id3v2T
     @test
     public setTagSize_invalidValues() {
         // Arrange
-        const footer = getTestFooter(4, 0, Id3v2TagHeaderFlags.None);
+        const footer = getTestFooter(4, 0, TagFlags.None);
 
         // Act/Assert
         assert.throws(() => { footer.tagSize = -1; });
@@ -195,7 +195,7 @@ const getTestFooter = (majorVersion: number, minorVersion: number, flags: Id3v2T
     @test
     public publicsetTagSize_validValue() {
         // Arrange
-        const footer = getTestFooter(4, 0, Id3v2TagHeaderFlags.None);
+        const footer = getTestFooter(4, 0, TagFlags.None);
 
         // Act
         footer.tagSize = 0x1234;
@@ -213,13 +213,13 @@ const getTestFooter = (majorVersion: number, minorVersion: number, flags: Id3v2T
         const minorVersion = 0x00;
         const flags = 0xE0;
         const testData = ByteVector.concatenate(
-            Id3v2TagFooter.FILE_IDENTIFIER,
+            TagFooter.FILE_IDENTIFIER,
             majorVersion,
             minorVersion,
             flags,
             TestConstants.syncedUintBytes
         );
-        const footer = Id3v2TagFooter.fromData(testData);
+        const footer = TagFooter.fromData(testData);
 
         // Act
         const output = footer.render();

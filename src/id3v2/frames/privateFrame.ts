@@ -1,7 +1,7 @@
 import Frame from "./frame";
+import FrameHeader from "./frameHeader";
 import {ByteVector, StringType} from "../../byteVector";
 import {CorruptFileError, NotImplementedError} from "../../errors";
-import {Id3v2FrameHeader} from "./frameHeader";
 import {FrameIdentifiers} from "../frameIdentifiers";
 import {ArrayUtils, Guards} from "../../utils";
 
@@ -16,7 +16,7 @@ export default class PrivateFrame extends Frame {
 
     // #region Constructors
 
-    private constructor(header: Id3v2FrameHeader) {
+    private constructor(header: FrameHeader) {
         super(header);
     }
 
@@ -27,7 +27,7 @@ export default class PrivateFrame extends Frame {
      * @param fieldBytes Bytes that contain the fields of the frame
      * @param version ID3v2 version the frame was originally encoded with
      */
-    public static fromFieldBytes(header: Id3v2FrameHeader, fieldBytes: ByteVector, version: number): PrivateFrame {
+    public static fromFieldBytes(header: FrameHeader, fieldBytes: ByteVector, version: number): PrivateFrame {
         Guards.truthy(header, "header");
         Guards.truthy(fieldBytes, "fieldBytes");
         Guards.byte(version, "version");
@@ -55,7 +55,7 @@ export default class PrivateFrame extends Frame {
      *     an empty {@link ByteVector}.
      */
     public static fromFields(owner?: string, privateData?: ByteVector): PrivateFrame {
-        const frame = new PrivateFrame(new Id3v2FrameHeader(FrameIdentifiers.PRIV));
+        const frame = new PrivateFrame(new FrameHeader(FrameIdentifiers.PRIV));
         frame._owner = owner ?? "";
         frame._privateData = privateData ?? ByteVector.empty();
 

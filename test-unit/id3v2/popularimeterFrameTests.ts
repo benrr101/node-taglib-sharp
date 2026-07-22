@@ -3,11 +3,12 @@ import {assert} from "chai";
 
 import Frame from "../../src/id3v2/frames/frame";
 import FrameConstructorTests from "./frameConstructorTests";
+import FrameHeader from "../../src/id3v2/frames/frameHeader";
 import PopularimeterFrame from "../../src/id3v2/frames/popularimeterFrame";
 import PropertyTests from "../utilities/propertyTests";
 import UnknownFrame from "../../src/id3v2/frames/unknownFrame";
 import {ByteVector, StringType} from "../../src/byteVector";
-import {Id3v2FrameFlags, Id3v2FrameHeader} from "../../src/id3v2/frames/frameHeader";
+import {FrameFlags} from "../../src/id3v2/enums";
 import {FrameIdentifiers} from "../../src/id3v2/frameIdentifiers";
 import {Testers} from "../utilities/testers";
 
@@ -22,7 +23,7 @@ const assertFrame = (frame: PopularimeterFrame, u: string, p: bigint, r: number)
 }
 
 @suite class Id3v2_PopularimeterFrame_ConstructorTests extends FrameConstructorTests {
-    public get fromFieldBytes(): (h: Id3v2FrameHeader, d: ByteVector, v: number) => Frame {
+    public get fromFieldBytes(): (h: FrameHeader, d: ByteVector, v: number) => Frame {
         return PopularimeterFrame.fromFieldBytes;
     }
 
@@ -32,7 +33,7 @@ const assertFrame = (frame: PopularimeterFrame, u: string, p: bigint, r: number)
     public fromFieldBytes_noDelimiter(version: number) {
         // Arrange
         const fieldBytes = ByteVector.fromByteArray([0x01, 0x02, 0x03]);
-        const header = new Id3v2FrameHeader(FrameIdentifiers.POPM, Id3v2FrameFlags.None, fieldBytes.length);
+        const header = new FrameHeader(FrameIdentifiers.POPM, FrameFlags.None, fieldBytes.length);
 
         // Act / Assert
         assert.throws(() => { PopularimeterFrame.fromFieldBytes(header, fieldBytes, version); });
@@ -46,7 +47,7 @@ const assertFrame = (frame: PopularimeterFrame, u: string, p: bigint, r: number)
         const fieldBytes = ByteVector.concatenate(
             ByteVector.fromString("foo@example.com", StringType.Latin1), 0x00 // Owner + delimiter
         );
-        const header = new Id3v2FrameHeader(FrameIdentifiers.POPM, Id3v2FrameFlags.None, fieldBytes.length);
+        const header = new FrameHeader(FrameIdentifiers.POPM, FrameFlags.None, fieldBytes.length);
 
         // Act / Assert
         assert.throws(() => { PopularimeterFrame.fromFieldBytes(header, fieldBytes, version); });
@@ -62,7 +63,7 @@ const assertFrame = (frame: PopularimeterFrame, u: string, p: bigint, r: number)
             0xAB,                                                              // Rating
             0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09               // Play counter (too big)
         );
-        const header = new Id3v2FrameHeader(FrameIdentifiers.POPM, Id3v2FrameFlags.None, fieldBytes.length);
+        const header = new FrameHeader(FrameIdentifiers.POPM, FrameFlags.None, fieldBytes.length);
 
         // Act / Assert
         assert.throws(() => { PopularimeterFrame.fromFieldBytes(header, fieldBytes, version); });
@@ -80,7 +81,7 @@ const assertFrame = (frame: PopularimeterFrame, u: string, p: bigint, r: number)
             ByteVector.fromByteArray(playCountBytes)                           // Play counter (too small)
         );
 
-        const header = new Id3v2FrameHeader(FrameIdentifiers.POPM, Id3v2FrameFlags.None, fieldBytes.length);
+        const header = new FrameHeader(FrameIdentifiers.POPM, FrameFlags.None, fieldBytes.length);
 
         // Act
         const frame = PopularimeterFrame.fromFieldBytes(header, fieldBytes, 4);
@@ -99,7 +100,7 @@ const assertFrame = (frame: PopularimeterFrame, u: string, p: bigint, r: number)
             0xAB,                                                              // Rating
             ByteVector.fromUint(1234)                                          // Play counter
         );
-        const header = new Id3v2FrameHeader(FrameIdentifiers.POPM, Id3v2FrameFlags.None, fieldBytes.length);
+        const header = new FrameHeader(FrameIdentifiers.POPM, FrameFlags.None, fieldBytes.length);
 
         // Act
         const frame = PopularimeterFrame.fromFieldBytes(header, fieldBytes, version);
@@ -118,7 +119,7 @@ const assertFrame = (frame: PopularimeterFrame, u: string, p: bigint, r: number)
             0xAB,                                                              // Rating
             ByteVector.fromByteArray([0x01, 0x02, 0x03, 0x04, 0x05, 0x06])     // Play counter
         );
-        const header = new Id3v2FrameHeader(FrameIdentifiers.POPM, Id3v2FrameFlags.None, fieldBytes.length);
+        const header = new FrameHeader(FrameIdentifiers.POPM, FrameFlags.None, fieldBytes.length);
 
         // Act
         const frame = PopularimeterFrame.fromFieldBytes(header, fieldBytes, version);
@@ -137,7 +138,7 @@ const assertFrame = (frame: PopularimeterFrame, u: string, p: bigint, r: number)
             0xAB,                                                                      // Rating
             ByteVector.fromByteArray([0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08]) // Play counter
         );
-        const header = new Id3v2FrameHeader(FrameIdentifiers.POPM, Id3v2FrameFlags.None, fieldBytes.length);
+        const header = new FrameHeader(FrameIdentifiers.POPM, FrameFlags.None, fieldBytes.length);
 
         // Act
         const frame = PopularimeterFrame.fromFieldBytes(header, fieldBytes, version);
@@ -337,7 +338,7 @@ const assertFrame = (frame: PopularimeterFrame, u: string, p: bigint, r: number)
             ByteVector.fromString("foo@example.com", StringType.Latin1), 0x00, // Owner + delimiter
             0xAB                                                               // Rating
         );
-        const header = new Id3v2FrameHeader(FrameIdentifiers.POPM, Id3v2FrameFlags.None, fieldBytes.length);
+        const header = new FrameHeader(FrameIdentifiers.POPM, FrameFlags.None, fieldBytes.length);
         const expected = ByteVector.concatenate(header.render(version), fieldBytes);
         Testers.bvEqual(output, expected);
     }
@@ -360,7 +361,7 @@ const assertFrame = (frame: PopularimeterFrame, u: string, p: bigint, r: number)
             0xAB,                                                              // Rating
             ByteVector.fromUint(1234)                                          // Play counter
         );
-        const header = new Id3v2FrameHeader(FrameIdentifiers.POPM, Id3v2FrameFlags.None, fieldBytes.length);
+        const header = new FrameHeader(FrameIdentifiers.POPM, FrameFlags.None, fieldBytes.length);
         const expected = ByteVector.concatenate(header.render(version), fieldBytes);
         Testers.bvEqual(output, expected);
     }
@@ -383,7 +384,7 @@ const assertFrame = (frame: PopularimeterFrame, u: string, p: bigint, r: number)
             0xAB,                                                              // Rating
             ByteVector.fromByteArray([0x01, 0x02, 0x03, 0x04, 0x05, 0x06])     // Play counter
         );
-        const header = new Id3v2FrameHeader(FrameIdentifiers.POPM, Id3v2FrameFlags.None, fieldBytes.length);
+        const header = new FrameHeader(FrameIdentifiers.POPM, FrameFlags.None, fieldBytes.length);
         const expected = ByteVector.concatenate(header.render(version), fieldBytes);
         Testers.bvEqual(output, expected);
     }
@@ -406,7 +407,7 @@ const assertFrame = (frame: PopularimeterFrame, u: string, p: bigint, r: number)
             0xAB,                                                                      // Rating
             ByteVector.fromByteArray([0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08]) // Play counter
         );
-        const header = new Id3v2FrameHeader(FrameIdentifiers.POPM, Id3v2FrameFlags.None, fieldBytes.length);
+        const header = new FrameHeader(FrameIdentifiers.POPM, FrameFlags.None, fieldBytes.length);
         const expected = ByteVector.concatenate(header.render(version), fieldBytes);
         Testers.bvEqual(output, expected);
     }

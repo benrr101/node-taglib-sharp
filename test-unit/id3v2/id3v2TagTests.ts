@@ -7,28 +7,27 @@ import CommentsFrame from "../../src/id3v2/frames/commentsFrame";
 import GenreFrame from "../../src/id3v2/frames/genreFrame";
 import Id3v2Settings from "../../src/id3v2/id3v2Settings";
 import Id3v2Tag from "../../src/id3v2/id3v2Tag";
-import Id3v2TagFooter from "../../src/id3v2/id3v2TagFooter";
+import Id3v2TagFooter from "../../src/id3v2/tagFooter";
 import PlayCountFrame from "../../src/id3v2/frames/playCountFrame";
 import PrivateFrame from "../../src/id3v2/frames/privateFrame";
 import PropertyTests from "../utilities/propertyTests";
 import SyncData from "../../src/id3v2/syncData";
+import TagHeader from "../../src/id3v2/tagHeader";
 import TestFile from "../utilities/testFile";
 import TextInformationFrame from "../../src/id3v2/frames/textInformationFrame";
 import UniqueFileIdentifierFrame from "../../src/id3v2/frames/uniqueFileIdentifierFrame";
 import UnknownFrame from "../../src/id3v2/frames/unknownFrame";
 import UnsynchronizedLyricsFrame from "../../src/id3v2/frames/unsynchronizedLyricsFrame";
-import UrlLinkFrame from "../../src/id3v2/frames/urlLinkFrame";
 import UserTextInformationFrame from "../../src/id3v2/frames/userTextInformationFrame";
 import {ByteVector, StringType} from "../../src/byteVector";
+import {TagFlags} from "../../src/id3v2/enums";
 import {File, ReadStyle} from "../../src/file";
-import {Id3v2FrameFlags} from "../../src/id3v2/frames/frameHeader";
 import {FrameIdentifier, FrameIdentifiers} from "../../src/id3v2/frameIdentifiers";
-import {Id3v2TagHeader, Id3v2TagHeaderFlags} from "../../src/id3v2/id3v2TagHeader";
 import {IPicture} from "../../src/picture";
 import {TagTypes} from "../../src/tag";
 import {Testers} from "../utilities/testers";
 
-const getTestTagHeader = (version: number, flags: Id3v2TagHeaderFlags, tagSize: number): ByteVector => {
+const getTestTagHeader = (version: number, flags: TagFlags, tagSize: number): ByteVector => {
     return ByteVector.concatenate(
         ByteVector.fromString("ID3", StringType.Latin1),
         version, 0x00,
@@ -56,7 +55,7 @@ const getTestTagHeader = (version: number, flags: Id3v2TagHeaderFlags, tagSize: 
     @test
     public fromData_emptyTag() {
         // Arrange
-        const data = getTestTagHeader(4, Id3v2TagHeaderFlags.None, 0);
+        const data = getTestTagHeader(4, TagFlags.None, 0);
 
         // Act
         const output = Id3v2Tag.fromData(data);
@@ -70,7 +69,7 @@ const getTestTagHeader = (version: number, flags: Id3v2TagHeaderFlags, tagSize: 
     public fromData_dataTooShortForTagLength() {
         // Arrange
         const data = ByteVector.concatenate(
-            getTestTagHeader(4, Id3v2TagHeaderFlags.None, 5),
+            getTestTagHeader(4, TagFlags.None, 5),
             0x00, 0x00
         );
 
@@ -87,7 +86,7 @@ const getTestTagHeader = (version: number, flags: Id3v2TagHeaderFlags, tagSize: 
             UnknownFrame.fromFields(FrameIdentifiers.RVRB, ByteVector.empty()).render(4),    // Empty frame
             ByteVector.fromSize(5)                                                           // Padding
         );
-        const tagHeader = getTestTagHeader(4, Id3v2TagHeaderFlags.None, frameBytes.length);
+        const tagHeader = getTestTagHeader(4, TagFlags.None, frameBytes.length);
         const data = ByteVector.concatenate(tagHeader, frameBytes);
 
         // Act
@@ -120,7 +119,7 @@ const getTestTagHeader = (version: number, flags: Id3v2TagHeaderFlags, tagSize: 
         // Arrange
         const frame1 = PlayCountFrame.fromFields().render(4);
         const data = ByteVector.concatenate(
-            getTestTagHeader(4, Id3v2TagHeaderFlags.ExtendedHeader, frame1.length + 10),
+            getTestTagHeader(4, TagFlags.ExtendedHeader, frame1.length + 10),
             SyncData.fromUint(10),
             0x01,
             0x00,
@@ -145,7 +144,7 @@ const getTestTagHeader = (version: number, flags: Id3v2TagHeaderFlags, tagSize: 
         // Arrange
         const frame1 = PlayCountFrame.fromFields(BigInt(123)).render(4);
         const data = ByteVector.concatenate(
-            getTestTagHeader(3, Id3v2TagHeaderFlags.Unsynchronization, frame1.length),
+            getTestTagHeader(3, TagFlags.Unsynchronization, frame1.length),
             frame1
         );
         SyncData.unsyncByteVector(data);
@@ -190,7 +189,7 @@ const getTestTagHeader = (version: number, flags: Id3v2TagHeaderFlags, tagSize: 
     @test
     public fromFileStart_emptyTag() {
         // Arrange
-        const data = getTestTagHeader(4, Id3v2TagHeaderFlags.None, 0);
+        const data = getTestTagHeader(4, TagFlags.None, 0);
         const file = TestFile.getFile(data);
 
         // Act
@@ -210,7 +209,7 @@ const getTestTagHeader = (version: number, flags: Id3v2TagHeaderFlags, tagSize: 
             UnknownFrame.fromFields(FrameIdentifiers.RVRB).render(4),                        // Empty frame
             ByteVector.fromSize(5)                                                           // Padding
         );
-        const headerBytes = getTestTagHeader(4, Id3v2TagHeaderFlags.None, frameBytes.length);
+        const headerBytes = getTestTagHeader(4, TagFlags.None, frameBytes.length);
         const data = ByteVector.concatenate(ByteVector.fromSize(offset), headerBytes, frameBytes);
         const file = TestFile.getFile(data);
 
@@ -250,7 +249,7 @@ const getTestTagHeader = (version: number, flags: Id3v2TagHeaderFlags, tagSize: 
         PropertyTests.propertyRoundTrip(
             (v) => { tag.flags = v; },
             () => tag.flags,
-            Id3v2TagHeaderFlags.ExperimentalIndicator
+            TagFlags.ExperimentalIndicator
         );
     }
 
@@ -1648,7 +1647,7 @@ const getTestTagHeader = (version: number, flags: Id3v2TagHeaderFlags, tagSize: 
             frame2.render(4),
             ByteVector.fromSize(1024, 0x00)
         );
-        const header = new Id3v2TagHeader(4, 0, Id3v2TagHeaderFlags.None, frameBytes.length);
+        const header = new TagHeader(4, 0, TagFlags.None, frameBytes.length);
         const expected = ByteVector.concatenate(header.render(), frameBytes);
 
         Testers.bvEqual(output, expected);
@@ -1659,7 +1658,7 @@ const getTestTagHeader = (version: number, flags: Id3v2TagHeaderFlags, tagSize: 
         // Arrange
         const tag = Id3v2Tag.fromEmpty();
         tag.version = 4;
-        tag.flags = Id3v2TagHeaderFlags.FooterPresent;
+        tag.flags = TagFlags.FooterPresent;
 
         const frame1 = TextInformationFrame.fromFields(FrameIdentifiers.TCOM);
         const frame2 = TextInformationFrame.fromFields(FrameIdentifiers.TCON);
@@ -1673,7 +1672,7 @@ const getTestTagHeader = (version: number, flags: Id3v2TagHeaderFlags, tagSize: 
             frame1.render(4),
             frame2.render(4)
         );
-        const header = new Id3v2TagHeader(4, 0, Id3v2TagHeaderFlags.FooterPresent, frameBytes.length);
+        const header = new TagHeader(4, 0, TagFlags.FooterPresent, frameBytes.length);
         const expected = ByteVector.concatenate(
             header.render(),
             frameBytes,
@@ -1691,7 +1690,7 @@ const getTestTagHeader = (version: number, flags: Id3v2TagHeaderFlags, tagSize: 
 
         const tag = Id3v2Tag.fromEmpty();
         tag.version = 4;
-        tag.flags = Id3v2TagHeaderFlags.Unsynchronization;
+        tag.flags = TagFlags.Unsynchronization;
         tag.frames.push(frame1, frame2);
 
         // Act
@@ -1703,7 +1702,7 @@ const getTestTagHeader = (version: number, flags: Id3v2TagHeaderFlags, tagSize: 
             frame2.render(4),
             ByteVector.fromSize(1024)
         );
-        const header = new Id3v2TagHeader(4, 0, Id3v2TagHeaderFlags.Unsynchronization, frameBytes.length);
+        const header = new TagHeader(4, 0, TagFlags.Unsynchronization, frameBytes.length);
         const expected = ByteVector.concatenate(header.render(), frameBytes);
 
         Testers.bvEqual(output, expected);
@@ -1717,7 +1716,7 @@ const getTestTagHeader = (version: number, flags: Id3v2TagHeaderFlags, tagSize: 
 
         const tag = Id3v2Tag.fromEmpty();
         tag.version = 3;
-        tag.flags = Id3v2TagHeaderFlags.Unsynchronization;
+        tag.flags = TagFlags.Unsynchronization;
         tag.frames.push(frame1, frame2);
 
         // Act
@@ -1729,7 +1728,7 @@ const getTestTagHeader = (version: number, flags: Id3v2TagHeaderFlags, tagSize: 
             frame2.render(3),
             ByteVector.fromSize(1024)
         ));
-        const header = new Id3v2TagHeader(3, 0, Id3v2TagHeaderFlags.Unsynchronization, frameData.length);
+        const header = new TagHeader(3, 0, TagFlags.Unsynchronization, frameData.length);
         const expected = ByteVector.concatenate(header.render(), frameData);
 
         Testers.bvEqual(output, expected);

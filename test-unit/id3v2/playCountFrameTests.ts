@@ -3,11 +3,12 @@ import {assert} from "chai";
 
 import Frame from "../../src/id3v2/frames/frame";
 import FrameConstructorTests from "./frameConstructorTests";
+import FrameHeader from "../../src/id3v2/frames/frameHeader";
 import PlayCountFrame from "../../src/id3v2/frames/playCountFrame";
 import PropertyTests from "../utilities/propertyTests";
 import UnknownFrame from "../../src/id3v2/frames/unknownFrame";
 import {ByteVector} from "../../src/byteVector";
-import {Id3v2FrameFlags, Id3v2FrameHeader} from "../../src/id3v2/frames/frameHeader";
+import {FrameFlags} from "../../src/id3v2/enums";
 import {FrameIdentifiers} from "../../src/id3v2/frameIdentifiers";
 import {Testers} from "../utilities/testers";
 
@@ -20,7 +21,7 @@ const assertFrame = (frame: PlayCountFrame, p: bigint) => {
 }
 
 @suite class Id3v2_PlayCountFrame_ConstructorTests extends FrameConstructorTests {
-    public get fromFieldBytes(): (h: Id3v2FrameHeader, d: ByteVector, v: number) => Frame {
+    public get fromFieldBytes(): (h: FrameHeader, d: ByteVector, v: number) => Frame {
         return PlayCountFrame.fromFieldBytes;
     }
 
@@ -30,7 +31,7 @@ const assertFrame = (frame: PlayCountFrame, p: bigint) => {
     public fromFieldBytes_tooBig(version: number) {
         // Arrange
         const fieldBytes = ByteVector.fromByteArray([0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09]);
-        const header = new Id3v2FrameHeader(FrameIdentifiers.PCNT, Id3v2FrameFlags.None, fieldBytes.length);
+        const header = new FrameHeader(FrameIdentifiers.PCNT, FrameFlags.None, fieldBytes.length);
 
         // Act / Assert
         assert.throws(() => PlayCountFrame.fromFieldBytes(header, fieldBytes, version));
@@ -42,7 +43,7 @@ const assertFrame = (frame: PlayCountFrame, p: bigint) => {
     public fromFieldBytes_tooSmall(version: number) {
         // Arrange
         const fieldBytes = ByteVector.fromByteArray([0x01, 0x02, 0x03]);
-        const header = new Id3v2FrameHeader(FrameIdentifiers.PCNT, Id3v2FrameFlags.None, fieldBytes.length);
+        const header = new FrameHeader(FrameIdentifiers.PCNT, FrameFlags.None, fieldBytes.length);
 
         // Act / Assert
         assert.throws(() => PlayCountFrame.fromFieldBytes(header, fieldBytes, version));
@@ -54,7 +55,7 @@ const assertFrame = (frame: PlayCountFrame, p: bigint) => {
     public fromFieldBytes_fourBytePlayCount(version: number) {
         // Arrange
         const fieldBytes = ByteVector.fromUint(1234);
-        const header = new Id3v2FrameHeader(FrameIdentifiers.PCNT, Id3v2FrameFlags.None, fieldBytes.length);
+        const header = new FrameHeader(FrameIdentifiers.PCNT, FrameFlags.None, fieldBytes.length);
 
         // Act
         const frame = PlayCountFrame.fromFieldBytes(header, fieldBytes, version);
@@ -69,7 +70,7 @@ const assertFrame = (frame: PlayCountFrame, p: bigint) => {
     public fromFieldBytes_sixBytePlayCount(version: number) {
         // Arrange
         const fieldBytes = ByteVector.fromByteArray([0x01, 0x02, 0x03, 0x04, 0x05, 0x06]);
-        const header = new Id3v2FrameHeader(FrameIdentifiers.PCNT, Id3v2FrameFlags.None, fieldBytes.length);
+        const header = new FrameHeader(FrameIdentifiers.PCNT, FrameFlags.None, fieldBytes.length);
 
         // Act
         const frame = PlayCountFrame.fromFieldBytes(header, fieldBytes, version);
@@ -84,7 +85,7 @@ const assertFrame = (frame: PlayCountFrame, p: bigint) => {
     public fromFieldBytes_eightBytePlayCount(version: number) {
         // Arrange
         const fieldBytes = ByteVector.fromByteArray([0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08]);
-        const header = new Id3v2FrameHeader(FrameIdentifiers.PCNT, Id3v2FrameFlags.None, fieldBytes.length);
+        const header = new FrameHeader(FrameIdentifiers.PCNT, FrameFlags.None, fieldBytes.length);
 
         // Act
         const frame = PlayCountFrame.fromFieldBytes(header, fieldBytes, version);
@@ -235,7 +236,7 @@ const assertFrame = (frame: PlayCountFrame, p: bigint) => {
         assert.isOk(output);
 
         const fieldBytes = ByteVector.fromUint(1234);
-        const header = new Id3v2FrameHeader(FrameIdentifiers.PCNT, Id3v2FrameFlags.None, fieldBytes.length);
+        const header = new FrameHeader(FrameIdentifiers.PCNT, FrameFlags.None, fieldBytes.length);
         const expected = ByteVector.concatenate(header.render(version), fieldBytes);
         Testers.bvEqual(output, expected);
     }
@@ -254,7 +255,7 @@ const assertFrame = (frame: PlayCountFrame, p: bigint) => {
         assert.isOk(output);
 
         const fieldBytes = ByteVector.fromByteArray([0x01, 0x02, 0x03, 0x04, 0x05, 0x06]);
-        const header = new Id3v2FrameHeader(FrameIdentifiers.PCNT, Id3v2FrameFlags.None, fieldBytes.length);
+        const header = new FrameHeader(FrameIdentifiers.PCNT, FrameFlags.None, fieldBytes.length);
         const expected = ByteVector.concatenate(header.render(version), fieldBytes);
         Testers.bvEqual(output, expected);
     }
@@ -273,7 +274,7 @@ const assertFrame = (frame: PlayCountFrame, p: bigint) => {
         assert.isOk(output);
 
         const fieldBytes = ByteVector.fromByteArray([0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08]);
-        const header = new Id3v2FrameHeader(FrameIdentifiers.PCNT, Id3v2FrameFlags.None, fieldBytes.length);
+        const header = new FrameHeader(FrameIdentifiers.PCNT, FrameFlags.None, fieldBytes.length);
         const expected = ByteVector.concatenate(header.render(version), fieldBytes);
         Testers.bvEqual(output, expected);
     }

@@ -3,13 +3,13 @@ import CombinedTag from "../combinedTag";
 import Id3v2Settings from "../id3v2/id3v2Settings";
 import Id3v1Tag from "../id3v1/id3v1Tag";
 import Id3v2Tag from "../id3v2/id3v2Tag";
-import Id3v2TagFooter from "../id3v2/id3v2TagFooter";
+import Id3v2TagFooter from "../id3v2/tagFooter";
 import TagParser from "./tagParsers";
 import {ApeTagFooter} from "../ape/apeTagFooter";
 import {ByteVector} from "../byteVector";
 import {CorruptFileError, UnsupportedFormatError} from "../errors";
 import {File, ReadStyle} from "../file";
-import {Id3v2TagHeaderFlags} from "../id3v2/id3v2TagHeader";
+import {TagFlags as Id3v2TagFlags} from "../id3v2/enums";
 import {Tag, TagTypes} from "../tag";
 import {Guards} from "../utils";
 
@@ -57,7 +57,7 @@ export default class EndTag extends CombinedTag {
                 const id3v2Tag = Id3v2Tag.fromEmpty();
                 // @TODO: have default version be configurable
                 id3v2Tag.version = 4;
-                id3v2Tag.flags |= Id3v2TagHeaderFlags.FooterPresent;
+                id3v2Tag.flags |= Id3v2TagFlags.FooterPresent;
                 tag = id3v2Tag;
                 break;
             default:

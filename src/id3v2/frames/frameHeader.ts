@@ -1,58 +1,9 @@
 import SyncData from "../syncData";
 import {ByteVector, StringType} from "../../byteVector";
+import {FrameFlags} from "../enums";
 import {CorruptFileError, NotImplementedError} from "../../errors";
 import {FrameIdentifier, FrameIdentifiers} from "../frameIdentifiers";
 import {Guards, NumberUtils} from "../../utils";
-
-/**
- * Indicates the flags applied to a {@link Id3v2FrameHeader} object.
- */
-export enum Id3v2FrameFlags {
-    /**
-     * Header contains no flags.
-     */
-    None = 0,
-
-    /**
-     * Frame is to be deleted if the tag is altered.
-     */
-    TagAlterPreservation = 0x4000,
-
-    /**
-     * Frame is to be deleted if the file is altered.
-     */
-    FileAlterPreservation = 0x2000,
-
-    /**
-     * Frame is read-only and should not be altered.
-     */
-    ReadOnly = 0x1000,
-
-    /**
-     * Frame has a grouping identity.
-     */
-    GroupingIdentity = 0x0040,
-
-    /**
-     * Frame data is compressed.
-     */
-    Compression = 0x0008,
-
-    /**
-     * Frame data is encrypted.
-     */
-    Encryption = 0x0004,
-
-    /**
-     * Frame data has been unsynchronized using the ID3v2 unsynchronization scheme.
-     */
-    Unsynchronized = 0x0002,
-
-    /**
-     * Frame has a data length indicator.
-     */
-    DataLengthIndicator = 0x0001
-}
 
 /**
  * This class provides a representation of an ID3v2 frame header which can be read from and
@@ -64,32 +15,31 @@ export enum Id3v2FrameFlags {
  *     when reading the frame, these optional fields are processed as well. Use {@link flags} to
  *     determine if the frame contains these optional fields.
  */
-export class Id3v2FrameHeader {
+export default class FrameHeader {
     private readonly _frameId: FrameIdentifier;
 
     private _dataLength: number;
     private _encryptionId: number;
-    private _flags: Id3v2FrameFlags;
+    private _flags: FrameFlags;
     private _frameSize: number;
     private _groupId: number;
 
     /**
      * Constructs and initializes a new instance by processing the data for the frame header.
      * @param id Identifier of the frame
-     * @param flags Flags to assign to the frame (if omitted, defaults to
-     *     {@link Id3v2FrameFlags.None})
+     * @param flags Flags to assign to the frame (if omitted, defaults to {@link FrameFlags.None})
      * @param frameSize Size of the frame in bytes, excluding the size of the header (if omitted,
      *     defaults to 0)
      */
     // @TODO: This shouldn't be public?
-    public constructor(id: FrameIdentifier, flags: Id3v2FrameFlags = Id3v2FrameFlags.None, frameSize: number = 0) {
+    public constructor(id: FrameIdentifier, flags: FrameFlags = FrameFlags.None, frameSize: number = 0) {
         Guards.truthy(id, "id");
         Guards.uint(frameSize, "frameSize");
 
         this._frameId = id;
         this._frameSize = frameSize;
 
-        if (NumberUtils.hasFlag(flags, (Id3v2FrameFlags.Compression | Id3v2FrameFlags.Encryption))) {
+        if (NumberUtils.hasFlag(flags, (FrameFlags.Compression | FrameFlags.Encryption))) {
             throw new NotImplementedError("Argument invalid: Encryption and compression are not supported");
         }
 
@@ -97,14 +47,14 @@ export class Id3v2FrameHeader {
     }
 
     /**
-     * Constructs and initializes a new instance of {@link Id3v2FrameHeader} by reading it from raw
+     * Constructs and initializes a new instance of {@link FrameHeader} by reading it from raw
      * header data of a specified version.
      * @param data Raw data to build the new instance from.
      *     If the data size is smaller than the size of a full header, the data is just treated as
      *     a frame identifier and the remaining values are zeroed. @TODO: Why?? Why needs that functionality?
      * @param version ID3v2 version with which the data in `data` was encoded.
      */
-    public static fromData(data: ByteVector, version: number): Id3v2FrameHeader {
+    public static fromData(data: ByteVector, version: number): FrameHeader {
         Guards.truthy(data, "data");
         Guards.byte(version, "version");
         Guards.betweenInclusive(version, 2, 4, "version");
@@ -176,7 +126,7 @@ export class Id3v2FrameHeader {
                 break;
         }
 
-        return new Id3v2FrameHeader(frameId, flags, frameSize);
+        return new FrameHeader(frameId, flags, frameSize);
     }
 
     /**
@@ -184,8 +134,8 @@ export class Id3v2FrameHeader {
      * provided frame identifier.
      * @param id Identifier for the frame
      */
-    public static fromFrameIdentifier(id: FrameIdentifier): Id3v2FrameHeader {
-        return new Id3v2FrameHeader(id, Id3v2FrameFlags.None, 0);
+    public static fromFrameIdentifier(id: FrameIdentifier): FrameHeader {
+        return new FrameHeader(id, FrameFlags.None, 0);
     }
 
     // #region Properties
@@ -212,7 +162,7 @@ export class Id3v2FrameHeader {
      *     `undefined` if not set.
      */
     public get encryptionId(): number|undefined {
-        return NumberUtils.hasFlag(this.flags, Id3v2FrameFlags.Encryption)
+        return NumberUtils.hasFlag(this.flags, FrameFlags.Encryption)
             ? this._encryptionId
             : undefined;
     }
@@ -227,19 +177,19 @@ export class Id3v2FrameHeader {
             throw new NotImplementedError("Encryption and compression are not supported");
         } else {
             this._encryptionId = value;
-            this._flags &= ~Id3v2FrameFlags.Encryption;
+            this._flags &= ~FrameFlags.Encryption;
         }
     }
 
     /**
      * Gets the flags applied to the current instance.
      */
-    public get flags(): Id3v2FrameFlags { return this._flags; }
+    public get flags(): FrameFlags { return this._flags; }
     /**
      * @TODO: It should not be necessary to update the flags manually like this.
      * @internal
      */
-    public set flags(value: Id3v2FrameFlags) { this._flags = value; }
+    public set flags(value: FrameFlags) { this._flags = value; }
 
     /**
      * Gets the identifier of the frame described by the current instance.
@@ -266,7 +216,7 @@ export class Id3v2FrameHeader {
      *     `undefined` if not set.
      */
     public get groupId(): number | undefined {
-        return NumberUtils.hasFlag(this.flags, Id3v2FrameFlags.GroupingIdentity)
+        return NumberUtils.hasFlag(this.flags, FrameFlags.GroupingIdentity)
             ? this._groupId
             : undefined;
     }
@@ -279,14 +229,14 @@ export class Id3v2FrameHeader {
         Guards.byteOptional(value, "value");
         this._groupId = value;
         if (value !== undefined) {
-            this._flags |= Id3v2FrameFlags.GroupingIdentity;
+            this._flags |= FrameFlags.GroupingIdentity;
         } else {
-            this._flags &= ~Id3v2FrameFlags.GroupingIdentity;
+            this._flags &= ~FrameFlags.GroupingIdentity;
         }
     }
 
     public get isUnsynchronizationApplied(): boolean {
-        return NumberUtils.hasFlag(this._flags, Id3v2FrameFlags.Unsynchronized);
+        return NumberUtils.hasFlag(this._flags, FrameFlags.Unsynchronized);
     }
 
     // #endregion
@@ -319,29 +269,29 @@ export class Id3v2FrameHeader {
             case 2:
                 break;
             case 3:
-                if (NumberUtils.hasFlag(this._flags, Id3v2FrameFlags.Compression)) {
+                if (NumberUtils.hasFlag(this._flags, FrameFlags.Compression)) {
                     this._dataLength = this.getFieldBytes(payloadBytes, position, 4).toUint();
                     position += 4;
                 }
-                if (NumberUtils.hasFlag(this._flags, Id3v2FrameFlags.Encryption)) {
+                if (NumberUtils.hasFlag(this._flags, FrameFlags.Encryption)) {
                     this._encryptionId = this.getFieldBytes(payloadBytes, position, 1).get(0);
                     position++;
                 }
-                if (NumberUtils.hasFlag(this._flags, Id3v2FrameFlags.GroupingIdentity)) {
+                if (NumberUtils.hasFlag(this._flags, FrameFlags.GroupingIdentity)) {
                     this._groupId = this.getFieldBytes(payloadBytes, position, 1).get(0);
                     position++;
                 }
                 break;
             case 4:
-                if (NumberUtils.hasFlag(this._flags, Id3v2FrameFlags.GroupingIdentity)) {
+                if (NumberUtils.hasFlag(this._flags, FrameFlags.GroupingIdentity)) {
                     this._groupId = this.getFieldBytes(payloadBytes, position, 1).get(0);
                     position++;
                 }
-                if (NumberUtils.hasFlag(this._flags, Id3v2FrameFlags.Encryption)) {
+                if (NumberUtils.hasFlag(this._flags, FrameFlags.Encryption)) {
                     this._encryptionId = this.getFieldBytes(payloadBytes, position, 1).get(0);
                     position++;
                 }
-                if (NumberUtils.hasFlag(this._flags, Id3v2FrameFlags.DataLengthIndicator)) {
+                if (NumberUtils.hasFlag(this._flags, FrameFlags.DataLengthIndicator)) {
                     this._dataLength = SyncData.toUint(this.getFieldBytes(payloadBytes, position, 4));
                     position += 4;
                 }
@@ -353,8 +303,8 @@ export class Id3v2FrameHeader {
         return position;
     }
 
-    public clone(identifier?: FrameIdentifier): Id3v2FrameHeader {
-        const clone = new Id3v2FrameHeader(identifier ?? this.frameId);
+    public clone(identifier?: FrameIdentifier): FrameHeader {
+        const clone = new FrameHeader(identifier ?? this.frameId);
         clone._dataLength = this._dataLength;
         clone._encryptionId = this._encryptionId;
         clone._frameSize = this._frameSize;
@@ -406,24 +356,24 @@ export class Id3v2FrameHeader {
             case 2:
                 break;
             case 3:
-                if (NumberUtils.hasFlag(this._flags, Id3v2FrameFlags.Compression)) {
+                if (NumberUtils.hasFlag(this._flags, FrameFlags.Compression)) {
                     throw new NotImplementedError("Compression is not supported.");
                 }
-                if (NumberUtils.hasFlag(this._flags, Id3v2FrameFlags.Encryption)) {
+                if (NumberUtils.hasFlag(this._flags, FrameFlags.Encryption)) {
                     throw new NotImplementedError("Encryption is not supported");
                 }
-                if (NumberUtils.hasFlag(this._flags, Id3v2FrameFlags.GroupingIdentity)) {
+                if (NumberUtils.hasFlag(this._flags, FrameFlags.GroupingIdentity)) {
                     fieldVectors.push(ByteVector.fromByte(this._groupId));
                 }
                 break;
             case 4:
-                if (NumberUtils.hasFlag(this._flags, Id3v2FrameFlags.GroupingIdentity)) {
+                if (NumberUtils.hasFlag(this._flags, FrameFlags.GroupingIdentity)) {
                     fieldVectors.push(ByteVector.fromByte(this._groupId));
                 }
-                if (NumberUtils.hasFlag(this._flags, Id3v2FrameFlags.Encryption)) {
+                if (NumberUtils.hasFlag(this._flags, FrameFlags.Encryption)) {
                     throw new NotImplementedError("Encryption is not supported");
                 }
-                if (NumberUtils.hasFlag(this._flags, Id3v2FrameFlags.DataLengthIndicator)) {
+                if (NumberUtils.hasFlag(this._flags, FrameFlags.DataLengthIndicator)) {
                     fieldVectors.push(SyncData.fromUint(this._dataLength));
                 }
                 break;

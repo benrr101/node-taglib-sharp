@@ -1,7 +1,7 @@
 import Frame from "./frame";
+import FrameHeader from "./frameHeader";
 import Id3v2Settings from "../id3v2Settings";
 import {ByteVector, StringType} from "../../byteVector";
-import {Id3v2FrameHeader} from "./frameHeader";
 import {FrameIdentifiers} from "../frameIdentifiers";
 import {ArrayUtils, Guards} from "../../utils";
 
@@ -15,7 +15,7 @@ export default class UserUrlLinkFrame extends Frame {
 
     // #region Constructors
 
-    private constructor(header: Id3v2FrameHeader) {
+    private constructor(header: FrameHeader) {
         super(header);
     }
 
@@ -25,7 +25,7 @@ export default class UserUrlLinkFrame extends Frame {
      * @param fieldBytes Bytes that contain the fields of the frame
      * @param version ID3v2 version the frame was originally encoded with
      */
-    public static fromFieldBytes(header: Id3v2FrameHeader, fieldBytes: ByteVector, version: number): UserUrlLinkFrame {
+    public static fromFieldBytes(header: FrameHeader, fieldBytes: ByteVector, version: number): UserUrlLinkFrame {
         Guards.truthy(header, "header");
         Guards.truthy(fieldBytes, "fieldBytes");
         Guards.byte(version, "version");
@@ -80,7 +80,7 @@ export default class UserUrlLinkFrame extends Frame {
      * @param url Optional, URL to store in the frame. If omitted, defaults to `""`.
      */
     public static fromFields(description?: string, url?: string): UserUrlLinkFrame {
-        const frame = new UserUrlLinkFrame(new Id3v2FrameHeader(FrameIdentifiers.WXXX));
+        const frame = new UserUrlLinkFrame(new FrameHeader(FrameIdentifiers.WXXX));
         frame._description = description ?? "";
         frame._url = url ?? "";
         return frame;

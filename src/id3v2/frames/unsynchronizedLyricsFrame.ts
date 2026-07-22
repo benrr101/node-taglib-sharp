@@ -1,8 +1,8 @@
 import Frame from "./frame";
+import FrameHeader from "./frameHeader";
 import Id3v2Settings from "../id3v2Settings";
 import {ByteVector, StringType} from "../../byteVector";
 import {CorruptFileError} from "../../errors";
-import {Id3v2FrameHeader} from "./frameHeader";
 import {FrameIdentifiers} from "../frameIdentifiers";
 import {ArrayUtils, Guards} from "../../utils";
 
@@ -17,7 +17,7 @@ export default class UnsynchronizedLyricsFrame extends Frame {
 
     // #region Constructors
 
-    private constructor(header: Id3v2FrameHeader) {
+    private constructor(header: FrameHeader) {
         super(header);
     }
 
@@ -28,7 +28,7 @@ export default class UnsynchronizedLyricsFrame extends Frame {
      * @param version ID3v2 version the frame was originally encoded with
      */
     public static fromFieldBytes(
-        header: Id3v2FrameHeader,
+        header: FrameHeader,
         fieldBytes: ByteVector,
         version: number
     ): UnsynchronizedLyricsFrame {
@@ -83,7 +83,7 @@ export default class UnsynchronizedLyricsFrame extends Frame {
         language?: string,
         encoding?: StringType
     ): UnsynchronizedLyricsFrame {
-        const frame = new UnsynchronizedLyricsFrame(new Id3v2FrameHeader(FrameIdentifiers.USLT));
+        const frame = new UnsynchronizedLyricsFrame(new FrameHeader(FrameIdentifiers.USLT));
         frame._description = description ?? "";
         frame._language = language ?? "XXX";
         frame._text = text ?? "";

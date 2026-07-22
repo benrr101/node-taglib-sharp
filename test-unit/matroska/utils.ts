@@ -1,6 +1,6 @@
-import {ByteVector, StringType} from "../../src";
 import EbmlElement from "../../src/ebml/ebmlElement";
 import TestFile from "../utilities/testFile";
+import {ByteVector, StringType} from "../../src/byteVector";
 
 export default class MatroskaTestUtils {
     public static getTestElement(value: string|boolean|number|bigint|ByteVector, id: number): EbmlElement {

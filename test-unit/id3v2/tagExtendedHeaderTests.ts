@@ -1,7 +1,7 @@
 import {params, suite, test} from "@testdeck/mocha";
 import {assert} from "chai";
 
-import Id3v2ExtendedHeader from "../../src/id3v2/id3v2ExtendedHeader";
+import TagHeaderExtended from "../../src/id3v2/tagHeaderExtended";
 import {ByteVector} from "../../src/byteVector";
 import {Testers} from "../utilities/testers";
 import TestFile from "../utilities/testFile";
@@ -11,7 +11,7 @@ import {File} from "../../src/file";
     @test
     public fromData_falsyData() {
         // Act/Assert
-        Testers.testTruthy((v: ByteVector) => { Id3v2ExtendedHeader.fromData(v, 2); });
+        Testers.testTruthy((v: ByteVector) => { TagHeaderExtended.fromData(v, 2); });
     }
 
     @test
@@ -20,7 +20,7 @@ import {File} from "../../src/file";
         const testData = ByteVector.fromSize(4);
 
         // Act/Assert
-        Testers.testByte((v: number) => { Id3v2ExtendedHeader.fromData(testData, v); });
+        Testers.testByte((v: number) => { TagHeaderExtended.fromData(testData, v); });
     }
 
     @params(ByteVector.empty(), "empty")
@@ -28,7 +28,7 @@ import {File} from "../../src/file";
     @params(ByteVector.fromSize(3), "length3")
     public fromData_tooShortData(data: ByteVector) {
         // Act/Assert
-        assert.throws(() => Id3v2ExtendedHeader.fromData(data, 4));
+        assert.throws(() => TagHeaderExtended.fromData(data, 4));
     }
 
     @test
@@ -37,7 +37,7 @@ import {File} from "../../src/file";
         const testData = ByteVector.concatenate(0x10, 0x10, 0x10, 0x10);
 
         // Act
-        const output = Id3v2ExtendedHeader.fromData(testData, 3);
+        const output = TagHeaderExtended.fromData(testData, 3);
 
         // Assert
         assert.equal(output.size, 4 + 0x10101010);
@@ -49,7 +49,7 @@ import {File} from "../../src/file";
         const testData = ByteVector.concatenate(0x10, 0x10, 0x10, 0x10);
 
         // Act
-        const output = Id3v2ExtendedHeader.fromData(testData, 2);
+        const output = TagHeaderExtended.fromData(testData, 2);
 
         // Assert
         assert.equal(output.size, 0x2040810);
@@ -61,7 +61,7 @@ import {File} from "../../src/file";
         const testData = ByteVector.concatenate(0x10, 0x10, 0x10, 0x10);
 
         // Act
-        const output = Id3v2ExtendedHeader.fromData(testData, 4);
+        const output = TagHeaderExtended.fromData(testData, 4);
 
         // Assert
         assert.equal(output.size, 0x2040810);
@@ -70,7 +70,7 @@ import {File} from "../../src/file";
     @test
     public fromFile_falsyFile() {
         // Act/Assert
-        Testers.testTruthy((v: File) => { Id3v2ExtendedHeader.fromFile(v, 0, 4); });
+        Testers.testTruthy((v: File) => { TagHeaderExtended.fromFile(v, 0, 4); });
     }
 
     @test
@@ -79,7 +79,7 @@ import {File} from "../../src/file";
         const file = TestFile.mockFile();
 
         // Act/Assert
-        Testers.testSafeUint((v: number) => { Id3v2ExtendedHeader.fromFile(file, v, 4); });
+        Testers.testSafeUint((v: number) => { TagHeaderExtended.fromFile(file, v, 4); });
     }
 
     @test
@@ -88,7 +88,7 @@ import {File} from "../../src/file";
         const file = TestFile.mockFile();
 
         // Act/Assert
-        Testers.testByte((v: number) => { Id3v2ExtendedHeader.fromFile(file, 0, v); });
+        Testers.testByte((v: number) => { TagHeaderExtended.fromFile(file, 0, v); });
     }
 
     @test
@@ -97,7 +97,7 @@ import {File} from "../../src/file";
         const file = TestFile.getFile(ByteVector.fromSize(3));
 
         // Act/Assert
-        assert.throws(() => Id3v2ExtendedHeader.fromFile(file, 0, 4));
+        assert.throws(() => TagHeaderExtended.fromFile(file, 0, 4));
     }
 
     @test
@@ -109,7 +109,7 @@ import {File} from "../../src/file";
         ));
 
         // Act
-        const output = Id3v2ExtendedHeader.fromFile(file, 2, 3);
+        const output = TagHeaderExtended.fromFile(file, 2, 3);
 
         // Assert
         assert.equal(output.size, 4 + 0x10101010);
@@ -124,7 +124,7 @@ import {File} from "../../src/file";
         ));
 
         // Act
-        const output = Id3v2ExtendedHeader.fromFile(file, 2, 2);
+        const output = TagHeaderExtended.fromFile(file, 2, 2);
 
         // Assert
         assert.equal(output.size, 0x2040810);
@@ -139,7 +139,7 @@ import {File} from "../../src/file";
         ));
 
         // Act
-        const output = Id3v2ExtendedHeader.fromFile(file, 2, 4);
+        const output = TagHeaderExtended.fromFile(file, 2, 4);
 
         // Assert
         assert.equal(output.size, 0x2040810);
@@ -148,7 +148,7 @@ import {File} from "../../src/file";
     @test
     public fromEmpty() {
         // Act
-        const output = Id3v2ExtendedHeader.fromEmpty();
+        const output = TagHeaderExtended.fromEmpty();
 
         // Assert
         assert.equal(output.size, 0);

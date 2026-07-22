@@ -1,8 +1,8 @@
 import Frame from "./frame";
+import FrameHeader from "./frameHeader";
 import Id3v2Settings from "../id3v2Settings";
 import {ByteVector, StringType} from "../../byteVector";
 import {CorruptFileError} from "../../errors";
-import {Id3v2FrameHeader} from "./frameHeader";
 import {FrameIdentifiers} from "../frameIdentifiers";
 import {ArrayUtils, Guards} from "../../utils";
 
@@ -18,7 +18,7 @@ export default class CommentsFrame extends Frame {
 
     // #region
 
-    private constructor(frameHeader: Id3v2FrameHeader) {
+    private constructor(frameHeader: FrameHeader) {
         super(frameHeader);
     }
 
@@ -28,7 +28,7 @@ export default class CommentsFrame extends Frame {
      * @param fieldBytes Bytes that contain the fields of the frame
      * @param version ID3v2 version the frame was originally encoded with
      */
-    public static fromFieldBytes(header: Id3v2FrameHeader, fieldBytes: ByteVector, version: number): CommentsFrame {
+    public static fromFieldBytes(header: FrameHeader, fieldBytes: ByteVector, version: number): CommentsFrame {
         Guards.truthy(header, "header");
         Guards.truthy(fieldBytes, "fieldBytes");
         Guards.byte(version, "version");
@@ -82,7 +82,7 @@ export default class CommentsFrame extends Frame {
         language?: string,
         encoding?: StringType
     ): CommentsFrame {
-        const frame = new CommentsFrame(new Id3v2FrameHeader(FrameIdentifiers.COMM));
+        const frame = new CommentsFrame(new FrameHeader(FrameIdentifiers.COMM));
         frame._description = description ?? "";
         frame._language = language ?? "XXX";
         frame._text = text ?? "";
@@ -151,7 +151,7 @@ export default class CommentsFrame extends Frame {
 
     /** @inheritDoc */
     public clone(): Frame {
-        const clone = new CommentsFrame(new Id3v2FrameHeader(FrameIdentifiers.COMM));
+        const clone = new CommentsFrame(new FrameHeader(FrameIdentifiers.COMM));
         clone._description = this._description;
         clone._language = this._language;
         clone._text = this._text;

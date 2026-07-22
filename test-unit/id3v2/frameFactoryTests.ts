@@ -5,6 +5,7 @@ import {It, Mock, Times} from "typemoq";
 import AttachmentFrame from "../../src/id3v2/frames/attachmentFrame";
 import CommentsFrame from "../../src/id3v2/frames/commentsFrame";
 import Frame from "../../src/id3v2/frames/frame";
+import FrameHeader from "../../src/id3v2/frames/frameHeader";
 import MusicCdIdentifierFrame from "../../src/id3v2/frames/musicCdIdentifierFrame";
 import PlayCountFrame from "../../src/id3v2/frames/playCountFrame";
 import PopularimeterFrame from "../../src/id3v2/frames/popularimeterFrame";
@@ -19,16 +20,15 @@ import UrlLinkFrame from "../../src/id3v2/frames/urlLinkFrame";
 import UserTextInformationFrame from "../../src/id3v2/frames/userTextInformationFrame";
 import UserUrlLinkFrame from "../../src/id3v2/frames/userUrlLinkFrame";
 import {ByteVector, StringType} from "../../src/byteVector";
+import {FrameFlags, TimestampFormat} from "../../src/id3v2/enums";
 import {EventTimeCodeFrame} from "../../src/id3v2/frames/eventTimeCodeFrame";
 import {File} from "../../src/file";
 import {FrameCreator, Id3v2FrameFactory} from "../../src/id3v2/frames/frameFactory";
-import {Id3v2FrameFlags, Id3v2FrameHeader} from "../../src/id3v2/frames/frameHeader";
 import {FrameIdentifier, FrameIdentifiers} from "../../src/id3v2/frameIdentifiers";
 import {PictureType} from "../../src/picture";
 import {RelativeVolumeFrame} from "../../src/id3v2/frames/relativeVolumeFrame";
 import {SynchronizedLyricsFrame} from "../../src/id3v2/frames/synchronizedLyricsFrame";
 import {Testers} from "../utilities/testers";
-import {TimestampFormat} from "../../src/id3v2/utilTypes";
 import {NumberUtils} from "../../src/utils";
 
 @suite class FrameFactoryTests {
@@ -83,7 +83,7 @@ import {NumberUtils} from "../../src/utils";
     @params(4, "v4")
     public createFrameFromFile_noHeader(version: number) {
         // Arrange
-        const size = Id3v2FrameHeader.getBaseSize(version);
+        const size = FrameHeader.getBaseSize(version);
         const data = ByteVector.fromSize(size - 1);
         const file = TestFile.getFile(data);
 
@@ -96,7 +96,7 @@ import {NumberUtils} from "../../src/utils";
     @params(4, "v4")
     public createFrameFromFile_noHeaderAfterOffset(version: number) {
         // Arrange
-        const size = Id3v2FrameHeader.getBaseSize(version);
+        const size = FrameHeader.getBaseSize(version);
         const data = ByteVector.fromSize(size + 9, 0x00);
         const file = TestFile.getFile(data);
 
@@ -109,7 +109,7 @@ import {NumberUtils} from "../../src/utils";
     @params(4, "v4")
     public createFrameFromFile_padding(version: number) {
         // Arrange
-        const size = Id3v2FrameHeader.getBaseSize(version);
+        const size = FrameHeader.getBaseSize(version);
         const data = ByteVector.fromSize(size + 1, 0x00);
         const file = TestFile.getFile(data);
 
@@ -382,7 +382,7 @@ import {NumberUtils} from "../../src/utils";
     public createFrameFromFile_customThrows() {
         // Arrange
         const fieldBytes = ByteVector.fromByteArray([0x01, 0x02, 0x03]);
-        const header = new Id3v2FrameHeader(FrameIdentifiers.RVRB, Id3v2FrameFlags.None, fieldBytes.length);
+        const header = new FrameHeader(FrameIdentifiers.RVRB, FrameFlags.None, fieldBytes.length);
         const data = ByteVector.concatenate(header.render(3), fieldBytes);
         const file = TestFile.getFile(data);
 
@@ -415,7 +415,7 @@ import {NumberUtils} from "../../src/utils";
         const data = frame.render(4);
         const file = TestFile.getFile(data);
 
-        const fieldBytes = data.subarray(Id3v2FrameHeader.getBaseSize(4));
+        const fieldBytes = data.subarray(FrameHeader.getBaseSize(4));
 
         const mockCreator = Mock.ofType<FrameCreator>();
         mockCreator.setup((c) => c(It.isValue<ByteVector>(fieldBytes), It.isValue(0), It.isAny(), It.isValue(4)))
@@ -451,7 +451,7 @@ import {NumberUtils} from "../../src/utils";
         const data = frame.render(4);
         const file = TestFile.getFile(data);
 
-        const fieldBytes = data.subarray(Id3v2FrameHeader.getBaseSize(4));
+        const fieldBytes = data.subarray(FrameHeader.getBaseSize(4));
 
         const mockCreator = Mock.ofType<FrameCreator>();
         mockCreator.setup((c) => c(It.isValue<ByteVector>(fieldBytes), It.isValue(0), It.isAny(), It.isValue(4)))
@@ -486,7 +486,7 @@ import {NumberUtils} from "../../src/utils";
     public createFrameFromFile_fieldBytesHeaderMismatch(version: number) {
         // Arrange
         const fieldBytes = ByteVector.fromSize(10);
-        const header = new Id3v2FrameHeader(FrameIdentifiers.RVRB, Id3v2FrameFlags.None, fieldBytes.length + 5);
+        const header = new FrameHeader(FrameIdentifiers.RVRB, FrameFlags.None, fieldBytes.length + 5);
         const data = ByteVector.concatenate(header.render(version), fieldBytes);
         const file = TestFile.getFile(data);
 
@@ -499,7 +499,7 @@ import {NumberUtils} from "../../src/utils";
         // Arrange
         // Note: Tag-level unsynchronization is only available in ID3v2.3
         const fieldBytes = ByteVector.fromSize(10);
-        const header = new Id3v2FrameHeader(FrameIdentifiers.RVRB, Id3v2FrameFlags.Unsynchronized, fieldBytes.length);
+        const header = new FrameHeader(FrameIdentifiers.RVRB, FrameFlags.Unsynchronized, fieldBytes.length);
         const data = ByteVector.concatenate(header.render(3), fieldBytes);
         const file = TestFile.getFile(data);
 
@@ -512,7 +512,7 @@ import {NumberUtils} from "../../src/utils";
         assert.strictEqual(result.totalSize, data.length);
 
         assert.isOk(result.frame);
-        assert.isFalse(NumberUtils.hasFlag(result.frame.flags, Id3v2FrameFlags.Unsynchronized));
+        assert.isFalse(NumberUtils.hasFlag(result.frame.flags, FrameFlags.Unsynchronized));
     }
 
     @test
@@ -520,7 +520,7 @@ import {NumberUtils} from "../../src/utils";
         // Arrange
         // Note: Frame-level unsynchronization is only available in ID3v2.4
         const fieldBytes = ByteVector.fromByteArray([0xFF, 0x00, 0xE0]);
-        const header = new Id3v2FrameHeader(FrameIdentifiers.RVRB, Id3v2FrameFlags.Unsynchronized, fieldBytes.length);
+        const header = new FrameHeader(FrameIdentifiers.RVRB, FrameFlags.Unsynchronized, fieldBytes.length);
         const data = ByteVector.concatenate(header.render(4), fieldBytes);
         const file = TestFile.getFile(data);
 
@@ -534,7 +534,7 @@ import {NumberUtils} from "../../src/utils";
 
         assert.isOk(result.frame);
         assert.instanceOf<UnknownFrame>((<UnknownFrame>result.frame), UnknownFrame);
-        assert.isTrue(NumberUtils.hasFlag(result.frame.flags, Id3v2FrameFlags.Unsynchronized))
+        assert.isTrue(NumberUtils.hasFlag(result.frame.flags, FrameFlags.Unsynchronized))
         Testers.bvEqual((<UnknownFrame>result.frame).data, ByteVector.fromByteArray([0xFF, 0xE0]));
     }
 
@@ -545,9 +545,9 @@ import {NumberUtils} from "../../src/utils";
         // Note: v2 does not support extended frame header
         const fieldBytes = ByteVector.fromSize(10);
         const extendedHeaderBytes = ByteVector.fromByte(0x12);
-        const header = new Id3v2FrameHeader(
+        const header = new FrameHeader(
             FrameIdentifiers.RVRB,
-            Id3v2FrameFlags.GroupingIdentity,
+            FrameFlags.GroupingIdentity,
             fieldBytes.length + extendedHeaderBytes.length
         );
         const data = ByteVector.concatenate(header.render(version), extendedHeaderBytes, fieldBytes);
@@ -599,7 +599,7 @@ import {NumberUtils} from "../../src/utils";
     @params(4, "v4")
     public createFrameFromTagBytes_noHeader(version: number) {
         // Arrange
-        const size = Id3v2FrameHeader.getBaseSize(version);
+        const size = FrameHeader.getBaseSize(version);
         const data = ByteVector.fromSize(size - 1);
 
         // Act / Assert
@@ -611,7 +611,7 @@ import {NumberUtils} from "../../src/utils";
     @params(4, "v4")
     public createFrameFroMTagBytes_noHeaderAfterOffset(version: number) {
         // Arrange
-        const size = Id3v2FrameHeader.getBaseSize(version);
+        const size = FrameHeader.getBaseSize(version);
         const data = ByteVector.fromSize(size + 9, 0x00);
 
         // Act / Assert
@@ -623,7 +623,7 @@ import {NumberUtils} from "../../src/utils";
     @params(4, "v4")
     public createFrameFromTagBytes_padding(version: number) {
         // Arrange
-        const size = Id3v2FrameHeader.getBaseSize(version);
+        const size = FrameHeader.getBaseSize(version);
         const data = ByteVector.fromSize(size + 1, 0x00);
 
         // Act
@@ -885,7 +885,7 @@ import {NumberUtils} from "../../src/utils";
     public createFrameFromTagBytes_customThrows() {
         // Arrange
         const fieldBytes = ByteVector.fromByteArray([0x01, 0x02, 0x03]);
-        const header = new Id3v2FrameHeader(FrameIdentifiers.RVRB, Id3v2FrameFlags.None, fieldBytes.length);
+        const header = new FrameHeader(FrameIdentifiers.RVRB, FrameFlags.None, fieldBytes.length);
         const data = ByteVector.concatenate(header.render(3), fieldBytes);
 
         const mockCreator = Mock.ofType<FrameCreator>();
@@ -916,7 +916,7 @@ import {NumberUtils} from "../../src/utils";
         const frame = PlayCountFrame.fromFields(BigInt(123));
         const data = frame.render(4);
 
-        const fieldBytes = data.subarray(Id3v2FrameHeader.getBaseSize(4));
+        const fieldBytes = data.subarray(FrameHeader.getBaseSize(4));
 
         const mockCreator = Mock.ofType<FrameCreator>();
         mockCreator.setup((c) => c(It.isValue<ByteVector>(fieldBytes), It.isValue(0), It.isAny(), It.isValue(4)))
@@ -951,7 +951,7 @@ import {NumberUtils} from "../../src/utils";
         const frame = UnknownFrame.fromFields(FrameIdentifiers.RVRB, ByteVector.fromByteArray([0x01, 0x02, 0x03]));
         const data = frame.render(4);
 
-        const fieldBytes = data.subarray(Id3v2FrameHeader.getBaseSize(4));
+        const fieldBytes = data.subarray(FrameHeader.getBaseSize(4));
 
         const mockCreator = Mock.ofType<FrameCreator>();
         mockCreator.setup((c) => c(It.isValue<ByteVector>(fieldBytes), It.isValue(0), It.isAny(), It.isValue(4)))
@@ -986,7 +986,7 @@ import {NumberUtils} from "../../src/utils";
     public createFrameFromTagBytes_fieldBytesHeaderMismatch(version: number) {
         // Arrange
         const fieldBytes = ByteVector.fromSize(10);
-        const header = new Id3v2FrameHeader(FrameIdentifiers.RVRB, Id3v2FrameFlags.None, fieldBytes.length + 5);
+        const header = new FrameHeader(FrameIdentifiers.RVRB, FrameFlags.None, fieldBytes.length + 5);
         const data = ByteVector.concatenate(header.render(version), fieldBytes);
 
         // Act / Assert
@@ -998,7 +998,7 @@ import {NumberUtils} from "../../src/utils";
         // Arrange
         // Note: Tag-level unsynchronization is only available in ID3v2.3
         const fieldBytes = ByteVector.fromSize(10);
-        const header = new Id3v2FrameHeader(FrameIdentifiers.RVRB, Id3v2FrameFlags.Unsynchronized, fieldBytes.length);
+        const header = new FrameHeader(FrameIdentifiers.RVRB, FrameFlags.Unsynchronized, fieldBytes.length);
         const data = ByteVector.concatenate(header.render(3), fieldBytes);
 
         // Act
@@ -1010,7 +1010,7 @@ import {NumberUtils} from "../../src/utils";
         assert.strictEqual(result.totalSize, data.length);
 
         assert.isOk(result.frame);
-        assert.isFalse(NumberUtils.hasFlag(result.frame.flags, Id3v2FrameFlags.Unsynchronized));
+        assert.isFalse(NumberUtils.hasFlag(result.frame.flags, FrameFlags.Unsynchronized));
     }
 
     @test
@@ -1018,7 +1018,7 @@ import {NumberUtils} from "../../src/utils";
         // Arrange
         // Note: Frame-level unsynchronization is only available in ID3v2.4
         const fieldBytes = ByteVector.fromByteArray([0xFF, 0x00, 0xE0]);
-        const header = new Id3v2FrameHeader(FrameIdentifiers.RVRB, Id3v2FrameFlags.Unsynchronized, fieldBytes.length);
+        const header = new FrameHeader(FrameIdentifiers.RVRB, FrameFlags.Unsynchronized, fieldBytes.length);
         const data = ByteVector.concatenate(header.render(4), fieldBytes);
 
         // Act
@@ -1031,7 +1031,7 @@ import {NumberUtils} from "../../src/utils";
 
         assert.isOk(result.frame);
         assert.instanceOf<UnknownFrame>((<UnknownFrame>result.frame), UnknownFrame);
-        assert.isTrue(NumberUtils.hasFlag(result.frame.flags, Id3v2FrameFlags.Unsynchronized))
+        assert.isTrue(NumberUtils.hasFlag(result.frame.flags, FrameFlags.Unsynchronized))
         Testers.bvEqual((<UnknownFrame>result.frame).data, ByteVector.fromByteArray([0xFF, 0xE0]));
     }
 
@@ -1042,9 +1042,9 @@ import {NumberUtils} from "../../src/utils";
         // Note: v2 does not support extended frame header
         const fieldBytes = ByteVector.fromSize(10);
         const extendedHeaderBytes = ByteVector.fromByte(0x12);
-        const header = new Id3v2FrameHeader(
+        const header = new FrameHeader(
             FrameIdentifiers.RVRB,
-            Id3v2FrameFlags.GroupingIdentity,
+            FrameFlags.GroupingIdentity,
             fieldBytes.length + extendedHeaderBytes.length
         );
         const data = ByteVector.concatenate(header.render(version), extendedHeaderBytes, fieldBytes);
@@ -1065,7 +1065,7 @@ import {NumberUtils} from "../../src/utils";
     // #endregion
 
     private static getTestData(frameIdentifier: FrameIdentifier, fieldBytes: ByteVector): ByteVector {
-        const header = new Id3v2FrameHeader(frameIdentifier, Id3v2FrameFlags.None, fieldBytes.length);
+        const header = new FrameHeader(frameIdentifier, FrameFlags.None, fieldBytes.length);
         return ByteVector.concatenate(header.render(4), fieldBytes);
     }
 
@@ -1086,7 +1086,7 @@ import {NumberUtils} from "../../src/utils";
         assert.ok(frame);
         assert.instanceOf(frame, classType);
 
-        const expectedSize = frame.size + Id3v2FrameHeader.getBaseSize(id3v2Version)
+        const expectedSize = frame.size + FrameHeader.getBaseSize(id3v2Version)
         assert.strictEqual(output.totalSize, expectedSize);
     }
 }

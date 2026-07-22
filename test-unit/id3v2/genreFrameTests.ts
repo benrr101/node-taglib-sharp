@@ -3,11 +3,12 @@ import {assert} from "chai";
 
 import Frame from "../../src/id3v2/frames/frame";
 import FrameConstructorTests from "./frameConstructorTests";
+import FrameHeader from "../../src/id3v2/frames/frameHeader";
 import GenreFrame from "../../src/id3v2/frames/genreFrame";
 import Id3v2Settings from "../../src/id3v2/id3v2Settings";
 import UnknownFrame from "../../src/id3v2/frames/unknownFrame";
 import {ByteVector, StringType} from "../../src/byteVector";
-import {Id3v2FrameFlags, Id3v2FrameHeader} from "../../src/id3v2/frames/frameHeader";
+import {FrameFlags} from "../../src/id3v2/enums";
 import {FrameIdentifiers} from "../../src/id3v2/frameIdentifiers";
 import {Testers} from "../utilities/testers";
 
@@ -453,7 +454,7 @@ class Id3v2_GenreFrameTests extends FrameConstructorTests {
         const fieldBytes = payload instanceof ByteVector
             ? payload
             : ByteVector.concatenate(StringType.UTF16BE, ByteVector.fromString(payload, StringType.UTF16BE));
-        const header = new Id3v2FrameHeader(FrameIdentifiers.TCON, Id3v2FrameFlags.None, fieldBytes.length);
+        const header = new FrameHeader(FrameIdentifiers.TCON, FrameFlags.None, fieldBytes.length);
 
         // Act
         const frame = GenreFrame.fromFieldBytes(header, fieldBytes, tagVersion);
@@ -493,7 +494,7 @@ class Id3v2_GenreFrameTests extends FrameConstructorTests {
             StringType.UTF16BE,
             ByteVector.fromString(expected, StringType.UTF16BE)
         );
-        const expectedHeader = new Id3v2FrameHeader(FrameIdentifiers.TCON, Id3v2FrameFlags.None, expectedBody.length);
+        const expectedHeader = new FrameHeader(FrameIdentifiers.TCON, FrameFlags.None, expectedBody.length);
         const expectedBytes = ByteVector.concatenate(expectedHeader.render(tagVersion), expectedBody);
 
         Testers.bvEqual(result, expectedBytes);
@@ -520,7 +521,7 @@ class Id3v2_GenreFrameTests extends FrameConstructorTests {
             StringType.UTF16BE,
             ... this.getDelimitedStrings(expected)
         );
-        const expectedHeader = new Id3v2FrameHeader(FrameIdentifiers.TCON, Id3v2FrameFlags.None, expectedBody.length);
+        const expectedHeader = new FrameHeader(FrameIdentifiers.TCON, FrameFlags.None, expectedBody.length);
         const expectedBytes = ByteVector.concatenate(expectedHeader.render(4), expectedBody);
 
         Testers.bvEqual(result, expectedBytes);

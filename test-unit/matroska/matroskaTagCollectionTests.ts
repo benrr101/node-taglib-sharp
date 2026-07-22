@@ -2,13 +2,15 @@ import {suite, test} from "@testdeck/mocha";
 import {assert} from "chai";
 import {Mock} from "typemoq";
 
+import MatroskaAttachment from "../../src/matroska/matroskaAttachment";
 import MatroskaTag from "../../src/matroska/matroskaTag";
 import MatroskaTagCollection from "../../src/matroska/matroskaTagCollection";
-import {TagTesters, Testers} from "../utilities/testers";
-import MatroskaAttachment from "../../src/matroska/matroskaAttachment";
-import {ByteVector, IPicture, PictureType, StringType, TagTypes} from "../../src";
-import {MatroskaTagTarget, MatroskaTagTargetType} from "../../src/matroska/matroskaTagTarget";
 import MatroskaTagValue from "../../src/matroska/matroskaTagValue";
+import {ByteVector, StringType} from "../../src/byteVector";
+import {MatroskaTagTarget, MatroskaTagTargetType} from "../../src/matroska/matroskaTagTarget";
+import {IPicture, PictureType} from "../../src/picture";
+import {TagTypes} from "../../src/tag";
+import {TagTesters, Testers} from "../utilities/testers";
 
 @suite
 class Matroska_TagCollectionTests {

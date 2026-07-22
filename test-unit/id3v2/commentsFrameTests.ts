@@ -4,12 +4,13 @@ import {assert} from "chai";
 import CommentsFrame from "../../src/id3v2/frames/commentsFrame";
 import Frame from "../../src/id3v2/frames/frame";
 import FrameConstructorTests from "./frameConstructorTests";
+import FrameHeader from "../../src/id3v2/frames/frameHeader";
 import Id3v2Settings from "../../src/id3v2/id3v2Settings";
 import PropertyTests from "../utilities/propertyTests";
 import UnknownFrame from "../../src/id3v2/frames/unknownFrame";
 import {ByteVector, StringType} from "../../src/byteVector";
+import {FrameFlags} from "../../src/id3v2/enums";
 import {FrameIdentifiers} from "../../src/id3v2/frameIdentifiers";
-import {Id3v2FrameFlags, Id3v2FrameHeader} from "../../src/id3v2/frames/frameHeader";
 import {Testers} from "../utilities/testers";
 
 const verifyFrame = (
@@ -30,7 +31,7 @@ const verifyFrame = (
 }
 
 @suite class Id3v2_CommentsFrame_ConstructorTests extends FrameConstructorTests {
-    public get fromFieldBytes(): (h: Id3v2FrameHeader, fb: ByteVector, v: number) => Frame {
+    public get fromFieldBytes(): (h: FrameHeader, fb: ByteVector, v: number) => Frame {
         return CommentsFrame.fromFieldBytes;
     }
 
@@ -40,7 +41,7 @@ const verifyFrame = (
     public fromFieldBytes_tooFewBytes_throws(version: number) {
         // Arrange
         const fieldBytes = ByteVector.fromByte(StringType.Latin1);
-        const header = new Id3v2FrameHeader(FrameIdentifiers.COMM, Id3v2FrameFlags.None, fieldBytes.length);
+        const header = new FrameHeader(FrameIdentifiers.COMM, FrameFlags.None, fieldBytes.length);
 
         // Act/Assert
         assert.throws(() => { CommentsFrame.fromFieldBytes(header, fieldBytes, version); });
@@ -55,7 +56,7 @@ const verifyFrame = (
             StringType.Latin1,                               // Encoding
             ByteVector.fromString("eng", StringType.Latin1), // Language
         );
-        const header = new Id3v2FrameHeader(FrameIdentifiers.COMM, Id3v2FrameFlags.None, fieldBytes.length);
+        const header = new FrameHeader(FrameIdentifiers.COMM, FrameFlags.None, fieldBytes.length);
 
 
         // Act
@@ -75,7 +76,7 @@ const verifyFrame = (
             ByteVector.fromString("eng", StringType.Latin1), // Language
             ByteVector.fromString("fux", StringType.Latin1)  // Description -> will be used as comments
         );
-        const header = new Id3v2FrameHeader(FrameIdentifiers.COMM, Id3v2FrameFlags.None, fieldBytes.length);
+        const header = new FrameHeader(FrameIdentifiers.COMM, FrameFlags.None, fieldBytes.length);
 
 
         // Act
@@ -96,7 +97,7 @@ const verifyFrame = (
             ByteVector.getTextDelimiter(StringType.Latin1),  // Delimiter
             ByteVector.fromString("fux", StringType.Latin1)  // Comment
         );
-        const header = new Id3v2FrameHeader(FrameIdentifiers.COMM, Id3v2FrameFlags.None, fieldBytes.length);
+        const header = new FrameHeader(FrameIdentifiers.COMM, FrameFlags.None, fieldBytes.length);
 
 
         // Act
@@ -118,7 +119,7 @@ const verifyFrame = (
             ByteVector.getTextDelimiter(StringType.Latin1),  // Delimiter
             ByteVector.fromString("bux", StringType.Latin1)  // Comment
         );
-        const header = new Id3v2FrameHeader(FrameIdentifiers.COMM, Id3v2FrameFlags.None, fieldBytes.length);
+        const header = new FrameHeader(FrameIdentifiers.COMM, FrameFlags.None, fieldBytes.length);
 
         // Act
         const frame = CommentsFrame.fromFieldBytes(header, fieldBytes, version);
@@ -138,7 +139,7 @@ const verifyFrame = (
             ByteVector.getTextDelimiter(encoding),           // Delimiter
             ByteVector.fromString("bux", encoding)           // Comment
         );
-        const header = new Id3v2FrameHeader(FrameIdentifiers.COMM, Id3v2FrameFlags.None, fieldBytes.length);
+        const header = new FrameHeader(FrameIdentifiers.COMM, FrameFlags.None, fieldBytes.length);
 
         // Act
         const frame = CommentsFrame.fromFieldBytes(header, fieldBytes, 4);
@@ -356,7 +357,7 @@ const verifyFrame = (
             ByteVector.getTextDelimiter(encoding),           // Delimiter
             ByteVector.fromString("foo", encoding)           // Comment text
         );
-        const header = new Id3v2FrameHeader(FrameIdentifiers.COMM, Id3v2FrameFlags.None, expectedFieldBytes.length);
+        const header = new FrameHeader(FrameIdentifiers.COMM, FrameFlags.None, expectedFieldBytes.length);
         const expectedBytes = ByteVector.concatenate(header.render(version), expectedFieldBytes);
         Testers.bvEqual(output, expectedBytes);
     }
@@ -381,7 +382,7 @@ const verifyFrame = (
             ByteVector.getTextDelimiter(outputEncoding),     // Delimiter
             ByteVector.fromString("foo", outputEncoding)     // Comment text
         );
-        const header = new Id3v2FrameHeader(FrameIdentifiers.COMM, Id3v2FrameFlags.None, expectedFieldBytes.length);
+        const header = new FrameHeader(FrameIdentifiers.COMM, FrameFlags.None, expectedFieldBytes.length);
         const expectedBytes = ByteVector.concatenate(header.render(version), expectedFieldBytes);
         Testers.bvEqual(output, expectedBytes);
     }
@@ -403,7 +404,7 @@ const verifyFrame = (
             ByteVector.fromString("foo", StringType.Latin1), // Description
             ByteVector.getTextDelimiter(StringType.Latin1),  // Delimiter
         );
-        const header = new Id3v2FrameHeader(FrameIdentifiers.COMM, Id3v2FrameFlags.None, expectedFieldBytes.length);
+        const header = new FrameHeader(FrameIdentifiers.COMM, FrameFlags.None, expectedFieldBytes.length);
         const expectedBytes = ByteVector.concatenate(header.render(4), expectedFieldBytes);
         Testers.bvEqual(result, expectedBytes);
     }
@@ -425,7 +426,7 @@ const verifyFrame = (
             ByteVector.getTextDelimiter(StringType.Latin1),  // Delimiter
             ByteVector.fromString("foo", StringType.Latin1), // Comment text
         );
-        const header = new Id3v2FrameHeader(FrameIdentifiers.COMM, Id3v2FrameFlags.None, expectedFieldBytes.length);
+        const header = new FrameHeader(FrameIdentifiers.COMM, FrameFlags.None, expectedFieldBytes.length);
         const expectedBytes = ByteVector.concatenate(header.render(4), expectedFieldBytes);
         Testers.bvEqual(result, expectedBytes);
     }

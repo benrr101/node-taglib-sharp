@@ -1,7 +1,7 @@
 import Frame from "./frame";
+import FrameHeader from "./frameHeader";
 import {ByteVector, StringType} from "../../byteVector";
 import {CorruptFileError, NotSupportedError} from "../../errors";
-import {Id3v2FrameHeader} from "./frameHeader";
 import {FrameIdentifiers} from "../frameIdentifiers";
 import {ArrayUtils, Guards} from "../../utils";
 
@@ -15,7 +15,7 @@ export default class PopularimeterFrame extends Frame {
 
     // #region Constructors
 
-    private constructor(header: Id3v2FrameHeader) {
+    private constructor(header: FrameHeader) {
         super(header);
     }
 
@@ -26,7 +26,7 @@ export default class PopularimeterFrame extends Frame {
      * @param version ID3v2 version the frame was originally encoded with
      */
     public static fromFieldBytes(
-        header: Id3v2FrameHeader,
+        header: FrameHeader,
         fieldBytes: ByteVector,
         version: number
     ): PopularimeterFrame {
@@ -78,7 +78,7 @@ export default class PopularimeterFrame extends Frame {
         Guards.byteOptional(rating, "rating");
         Guards.ulongOptional(playCount, "playCount");
 
-        const frame = new PopularimeterFrame(new Id3v2FrameHeader(FrameIdentifiers.POPM));
+        const frame = new PopularimeterFrame(new FrameHeader(FrameIdentifiers.POPM));
         frame._playCount = playCount;
         frame._rating = rating ?? 0;
         frame._user = user ?? "";

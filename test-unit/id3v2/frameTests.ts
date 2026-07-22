@@ -2,9 +2,10 @@ import {suite, test} from "@testdeck/mocha";
 import {assert} from "chai";
 
 import Frame from "../../src/id3v2/frames/frame";
+import FrameHeader from "../../src/id3v2/frames/frameHeader";
 import PropertyTests from "../utilities/propertyTests";
 import {ByteVector} from "../../src/byteVector";
-import {Id3v2FrameFlags, Id3v2FrameHeader} from "../../src/id3v2/frames/frameHeader";
+import {FrameFlags} from "../../src/id3v2/enums";
 import {FrameIdentifiers} from "../../src/id3v2/frameIdentifiers";
 import {Testers} from "../utilities/testers";
 
@@ -15,7 +16,7 @@ class TestFrame extends Frame {
         ByteVector.fromSize(10, 0x00)
     );
 
-    public constructor(header: Id3v2FrameHeader) {
+    public constructor(header: FrameHeader) {
         super(header);
     }
 
@@ -36,7 +37,7 @@ class TestFrame extends Frame {
     @test
     public encryptionId_invalidValues() {
         // Arrange
-        const header = new Id3v2FrameHeader(FrameIdentifiers.TXXX);
+        const header = new FrameHeader(FrameIdentifiers.TXXX);
         const frame = new TestFrame(header);
         const set = (v: number) => { frame.encryptionId = v; };
 
@@ -49,7 +50,7 @@ class TestFrame extends Frame {
     @test
     public encryptionId() {
         // Arrange
-        const header = new Id3v2FrameHeader(FrameIdentifiers.TXXX, Id3v2FrameFlags.FileAlterPreservation);
+        const header = new FrameHeader(FrameIdentifiers.TXXX, FrameFlags.FileAlterPreservation);
         const frame = new TestFrame(header);
         const get = () => frame.encryptionId;
         const set = (v: number) => { frame.encryptionId = v; };
@@ -58,16 +59,16 @@ class TestFrame extends Frame {
         assert.isUndefined(frame.encryptionId);
 
         PropertyTests.propertyThrows(set, 0x88);
-        assert.strictEqual(frame.flags, Id3v2FrameFlags.FileAlterPreservation);
+        assert.strictEqual(frame.flags, FrameFlags.FileAlterPreservation);
 
         PropertyTests.propertyRoundTrip(set, get, undefined);
-        assert.strictEqual(frame.flags, Id3v2FrameFlags.FileAlterPreservation);
+        assert.strictEqual(frame.flags, FrameFlags.FileAlterPreservation);
     }
 
     @test
     public groupId_invalidValues() {
         // Arrange
-        const header = new Id3v2FrameHeader(FrameIdentifiers.TXXX);
+        const header = new FrameHeader(FrameIdentifiers.TXXX);
         const frame = new TestFrame(header);
         const set = (v: number) => { frame.groupId = v; };
 
@@ -80,7 +81,7 @@ class TestFrame extends Frame {
     @test
     public groupId() {
         // Arrange
-        const header = new Id3v2FrameHeader(FrameIdentifiers.TXXX, Id3v2FrameFlags.FileAlterPreservation);
+        const header = new FrameHeader(FrameIdentifiers.TXXX, FrameFlags.FileAlterPreservation);
         const frame = new TestFrame(header);
         const get = () => frame.groupId;
         const set = (v: number) => { frame.groupId = v; };
@@ -89,16 +90,16 @@ class TestFrame extends Frame {
         assert.isUndefined(frame.groupId);
 
         PropertyTests.propertyRoundTrip(set, get, 0x88);
-        assert.strictEqual(frame.flags, Id3v2FrameFlags.FileAlterPreservation | Id3v2FrameFlags.GroupingIdentity);
+        assert.strictEqual(frame.flags, FrameFlags.FileAlterPreservation | FrameFlags.GroupingIdentity);
 
         PropertyTests.propertyRoundTrip(set, get, undefined);
-        assert.strictEqual(frame.flags, Id3v2FrameFlags.FileAlterPreservation);
+        assert.strictEqual(frame.flags, FrameFlags.FileAlterPreservation);
     }
 
     @test
     public render_dataLengthIndicator() {
         // Arrange
-        const header = new Id3v2FrameHeader(FrameIdentifiers.TXXX, Id3v2FrameFlags.DataLengthIndicator);
+        const header = new FrameHeader(FrameIdentifiers.TXXX, FrameFlags.DataLengthIndicator);
         const frame = new TestFrame(header);
 
         // Act
@@ -116,7 +117,7 @@ class TestFrame extends Frame {
     @test
     public render_groupingIdentity() {
         // Arrange
-        const header = new Id3v2FrameHeader(FrameIdentifiers.TXXX, Id3v2FrameFlags.GroupingIdentity);
+        const header = new FrameHeader(FrameIdentifiers.TXXX, FrameFlags.GroupingIdentity);
         const frame = new TestFrame(header);
         frame.groupId = 0x88;
 

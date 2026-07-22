@@ -1,9 +1,9 @@
 import Frame from "./frame";
+import FrameHeader from "./frameHeader";
 import Genres from "../../genres";
 import Id3v2Settings from "../id3v2Settings";
 import {ByteVector, StringType} from "../../byteVector";
 import {CorruptFileError} from "../../errors";
-import {Id3v2FrameHeader} from "./frameHeader";
 import {FrameIdentifiers} from "../frameIdentifiers";
 import {ArrayUtils, Guards, StringUtils} from "../../utils";
 
@@ -21,7 +21,7 @@ export default class GenreFrame extends Frame {
 
     // #region Constructors
 
-    private constructor(header: Id3v2FrameHeader) {
+    private constructor(header: FrameHeader) {
         super(header);
     }
 
@@ -31,7 +31,7 @@ export default class GenreFrame extends Frame {
      * @param fieldBytes Bytes that contain the fields of the frame
      * @param version ID3v2 version the frame was originally encoded with
      */
-    public static fromFieldBytes(header: Id3v2FrameHeader, fieldBytes: ByteVector, version: number): GenreFrame {
+    public static fromFieldBytes(header: FrameHeader, fieldBytes: ByteVector, version: number): GenreFrame {
         Guards.truthy(header, "header");
         Guards.truthy(fieldBytes, "fieldBytes");
         Guards.byte(version, "version");
@@ -126,7 +126,7 @@ export default class GenreFrame extends Frame {
      *     {@link Id3v2Settings.defaultEncoding}.
      */
     public static fromFields(text?: string[], encoding?: StringType): GenreFrame {
-        const frame = new GenreFrame(new Id3v2FrameHeader(FrameIdentifiers.TCON));
+        const frame = new GenreFrame(new FrameHeader(FrameIdentifiers.TCON));
         frame._textFields = text ?? [];
         frame._encoding = encoding ?? Id3v2Settings.defaultEncoding;
 

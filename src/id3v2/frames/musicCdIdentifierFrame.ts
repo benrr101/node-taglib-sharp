@@ -1,6 +1,6 @@
 import Frame from "./frame";
+import FrameHeader from "./frameHeader";
 import {ByteVector} from "../../byteVector";
-import {Id3v2FrameHeader} from "./frameHeader";
 import {FrameIdentifiers} from "../frameIdentifiers";
 import {ArrayUtils, Guards} from "../../utils";
 
@@ -13,7 +13,7 @@ import {ArrayUtils, Guards} from "../../utils";
 export default class MusicCdIdentifierFrame extends Frame {
     private _data: ByteVector;
 
-    private constructor(header: Id3v2FrameHeader) {
+    private constructor(header: FrameHeader) {
         super(header);
     }
 
@@ -24,7 +24,7 @@ export default class MusicCdIdentifierFrame extends Frame {
      * @param version ID3v2 version the frame was originally encoded with
      */
     public static fromFieldBytes(
-        header: Id3v2FrameHeader,
+        header: FrameHeader,
         fieldBytes: ByteVector,
         version: number
     ): MusicCdIdentifierFrame {
@@ -43,7 +43,7 @@ export default class MusicCdIdentifierFrame extends Frame {
      *     {@link ByteVector}.
      */
     public static fromFields(data?: ByteVector): MusicCdIdentifierFrame {
-        const frame = new MusicCdIdentifierFrame(new Id3v2FrameHeader(FrameIdentifiers.MCDI));
+        const frame = new MusicCdIdentifierFrame(new FrameHeader(FrameIdentifiers.MCDI));
         frame._data = data ?? ByteVector.empty();
 
         return frame;

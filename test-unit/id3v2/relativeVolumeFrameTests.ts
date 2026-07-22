@@ -3,11 +3,12 @@ import {assert} from "chai";
 
 import Frame from "../../src/id3v2/frames/frame";
 import FrameConstructorTests from "./frameConstructorTests";
+import FrameHeader from "../../src/id3v2/frames/frameHeader";
 import PropertyTests from "../utilities/propertyTests";
 import UnknownFrame from "../../src/id3v2/frames/unknownFrame";
-import {ChannelData, ChannelType, RelativeVolumeFrame} from "../../src/id3v2/frames/relativeVolumeFrame";
+import {ChannelData, RelativeVolumeFrame} from "../../src/id3v2/frames/relativeVolumeFrame";
 import {ByteVector, StringType} from "../../src/byteVector";
-import {Id3v2FrameFlags, Id3v2FrameHeader} from "../../src/id3v2/frames/frameHeader";
+import {ChannelType, FrameFlags} from "../../src/id3v2/enums";
 import {FrameIdentifiers} from "../../src/id3v2/frameIdentifiers";
 import {Testers} from "../utilities/testers";
 
@@ -283,7 +284,7 @@ const assertFrame = (frame: RelativeVolumeFrame, c: ChannelData[], i: string) =>
 }
 
 @suite class Id3v2_RelativeVolumeFrame_ConstructorTests extends FrameConstructorTests {
-    public get fromFieldBytes(): (h: Id3v2FrameHeader, b: ByteVector, v: number) => Frame {
+    public get fromFieldBytes(): (h: FrameHeader, b: ByteVector, v: number) => Frame {
         return RelativeVolumeFrame.fromFieldBytes;
     }
 
@@ -293,7 +294,7 @@ const assertFrame = (frame: RelativeVolumeFrame, c: ChannelData[], i: string) =>
     public fromFieldBytes_emptyFrame_throws(version: number) {
         // Arrange
         const fieldBytes = ByteVector.empty();
-        const header = new Id3v2FrameHeader(FrameIdentifiers.RVA2, Id3v2FrameFlags.None, fieldBytes.length);
+        const header = new FrameHeader(FrameIdentifiers.RVA2, FrameFlags.None, fieldBytes.length);
 
         // Act / Assert
         assert.throws(() => RelativeVolumeFrame.fromFieldBytes(header, fieldBytes, version));
@@ -305,7 +306,7 @@ const assertFrame = (frame: RelativeVolumeFrame, c: ChannelData[], i: string) =>
     public fromFieldBytes_identifierOnly(version: number) {
         // Arrange
         const fieldBytes = ByteVector.concatenate(ByteVector.fromString("foobarbaz", StringType.Latin1), 0x00);
-        const header = new Id3v2FrameHeader(FrameIdentifiers.RVA2, Id3v2FrameFlags.None, fieldBytes.length);
+        const header = new FrameHeader(FrameIdentifiers.RVA2, FrameFlags.None, fieldBytes.length);
 
         // Act
         const frame = RelativeVolumeFrame.fromFieldBytes(header, fieldBytes, version);
@@ -326,7 +327,7 @@ const assertFrame = (frame: RelativeVolumeFrame, c: ChannelData[], i: string) =>
             0x20,                                                             // Bits representing peak (32)
             0x01, 0x02, 0x03, 0x04                                            // Peak volume
         );
-        const header = new Id3v2FrameHeader(FrameIdentifiers.RVA2, Id3v2FrameFlags.None, fieldBytes.length);
+        const header = new FrameHeader(FrameIdentifiers.RVA2, FrameFlags.None, fieldBytes.length);
 
         // Act
         const frame = RelativeVolumeFrame.fromFieldBytes(header, fieldBytes, version);
@@ -357,7 +358,7 @@ const assertFrame = (frame: RelativeVolumeFrame, c: ChannelData[], i: string) =>
             0x20,                                                             // Bits representing peak (32)
             0x02, 0x03, 0x04, 0x05                                            // Peak volume
         );
-        const header = new Id3v2FrameHeader(FrameIdentifiers.RVA2, Id3v2FrameFlags.None, fieldBytes.length);
+        const header = new FrameHeader(FrameIdentifiers.RVA2, FrameFlags.None, fieldBytes.length);
 
         // Act
         const frame = RelativeVolumeFrame.fromFieldBytes(header, fieldBytes, version);
@@ -391,7 +392,7 @@ const assertFrame = (frame: RelativeVolumeFrame, c: ChannelData[], i: string) =>
             ChannelType.BackRight,                                            // Channel type
             ByteVector.fromShort(234),                                        // Volume adjustment
         );
-        const header = new Id3v2FrameHeader(FrameIdentifiers.RVA2, Id3v2FrameFlags.None, fieldBytes.length);
+        const header = new FrameHeader(FrameIdentifiers.RVA2, FrameFlags.None, fieldBytes.length);
 
         // Act
         const frame = RelativeVolumeFrame.fromFieldBytes(header, fieldBytes, version);
@@ -422,7 +423,7 @@ const assertFrame = (frame: RelativeVolumeFrame, c: ChannelData[], i: string) =>
             0x30,                                                             // Bits representing peak (48)
             0x02, 0x03, 0x04, 0x05                                            // Peak volume (not enough)
         );
-        const header = new Id3v2FrameHeader(FrameIdentifiers.RVA2, Id3v2FrameFlags.None, fieldBytes.length);
+        const header = new FrameHeader(FrameIdentifiers.RVA2, FrameFlags.None, fieldBytes.length);
 
         // Act
         const frame = RelativeVolumeFrame.fromFieldBytes(header, fieldBytes, version);
@@ -640,7 +641,7 @@ const assertFrame = (frame: RelativeVolumeFrame, c: ChannelData[], i: string) =>
 
         // Assert
         const fieldBytes = ByteVector.concatenate(ByteVector.fromString("foobarbaz", StringType.Latin1), 0x00);
-        const header = new Id3v2FrameHeader(FrameIdentifiers.RVA2, Id3v2FrameFlags.None, fieldBytes.length);
+        const header = new FrameHeader(FrameIdentifiers.RVA2, FrameFlags.None, fieldBytes.length);
         const expected = ByteVector.concatenate(header.render(version), fieldBytes);
         Testers.bvEqual(output, expected);
     }
@@ -667,7 +668,7 @@ const assertFrame = (frame: RelativeVolumeFrame, c: ChannelData[], i: string) =>
             ByteVector.fromString("foobarbaz", StringType.Latin1), 0x00, // Identifier + delimiter
             cd1.render()                                                 // Channel data
         );
-        const header = new Id3v2FrameHeader(FrameIdentifiers.RVA2, Id3v2FrameFlags.None, fieldBytes.length);
+        const header = new FrameHeader(FrameIdentifiers.RVA2, FrameFlags.None, fieldBytes.length);
         const expected = ByteVector.concatenate(header.render(version), fieldBytes);
         Testers.bvEqual(result, expected);
     }
@@ -702,7 +703,7 @@ const assertFrame = (frame: RelativeVolumeFrame, c: ChannelData[], i: string) =>
             cd2.render(),                                                // Channel data
             cd1.render()                                                 // Channel data
         );
-        const header = new Id3v2FrameHeader(FrameIdentifiers.RVA2, Id3v2FrameFlags.None, fieldBytes.length);
+        const header = new FrameHeader(FrameIdentifiers.RVA2, FrameFlags.None, fieldBytes.length);
         const expected = ByteVector.concatenate(header.render(version), fieldBytes);
         Testers.bvEqual(result, expected);
     }

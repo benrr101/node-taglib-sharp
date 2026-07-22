@@ -1,6 +1,6 @@
-[node-taglib-sharp](../README.md) / [Exports](../modules.md) / Id3v2TagHeader
+[node-taglib-sharp](../README.md) / [Exports](../modules.md) / TagHeader
 
-# Class: Id3v2TagHeader
+# Class: TagHeader
 
 This class provides a representation of an ID3v2 tag header which can be read from and written
 to disk.
@@ -32,7 +32,7 @@ to disk.
 
 ### constructor
 
-• **new Id3v2TagHeader**()
+• **new TagHeader**()
 
 ## Properties
 
@@ -182,7 +182,7 @@ ___
 
 ### fromData
 
-▸ `Static` **fromData**(`data`): [`Id3v2TagHeader`](Id3v2TagHeader.md)
+▸ `Static` **fromData**(`data`): [`TagHeader`](Id3v2TagHeader.md)
 
 Constructs and initializes a new instance by reading it from the raw header data.
 
@@ -194,4 +194,4 @@ Constructs and initializes a new instance by reading it from the raw header data
 
 #### Returns
 
-[`Id3v2TagHeader`](Id3v2TagHeader.md)
+[`TagHeader`](Id3v2TagHeader.md)

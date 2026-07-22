@@ -6,10 +6,10 @@ import ApeTag from "../../src/ape/apeTag";
 import EndTag from "../../src/sandwich/endTag";
 import Id3v1Tag from "../../src/id3v1/id3v1Tag";
 import Id3v2Tag from "../../src/id3v2/id3v2Tag";
-import {default as TestFile} from "../utilities/testFile";
+import TestFile from "../utilities/testFile";
 import {ByteVector} from "../../src/byteVector";
+import {TagFlags as Id3v2TagFlags} from "../../src/id3v2/enums";
 import {File, ReadStyle} from "../../src/file";
-import {Id3v2TagHeaderFlags} from "../../src/id3v2/id3v2TagHeader";
 import {TagTypes} from "../../src/tag";
 import {TagTesters, Testers} from "../utilities/testers";
 import {NumberUtils} from "../../src/utils";
@@ -65,7 +65,7 @@ import {NumberUtils} from "../../src/utils";
         id3v1Tag.track = 123;
         const id3v2Tag = Id3v2Tag.fromEmpty();
         id3v2Tag.version = 4;
-        id3v2Tag.flags |= Id3v2TagHeaderFlags.FooterPresent;
+        id3v2Tag.flags |= Id3v2TagFlags.FooterPresent;
         id3v2Tag.album = "foo";
         const apeTag = ApeTag.fromEmpty();
         apeTag.title = "bar";
@@ -100,7 +100,7 @@ import {NumberUtils} from "../../src/utils";
         id3v1Tag.track = 123;
         const id3v2Tag = Id3v2Tag.fromEmpty();
         id3v2Tag.version = 4;
-        id3v2Tag.flags |= Id3v2TagHeaderFlags.FooterPresent;
+        id3v2Tag.flags |= Id3v2TagFlags.FooterPresent;
         id3v2Tag.album = "foobarbaz12345678901234567890";
         id3v2Tag.albumArtists = ["foo", "bar", "baz"];
         id3v2Tag.amazonId = "1234567890123456789012345678901234567890";
@@ -160,7 +160,7 @@ import {NumberUtils} from "../../src/utils";
         const id3v1Tag = Id3v1Tag.fromEmpty();
         const id3v2Tag = Id3v2Tag.fromEmpty();
         id3v2Tag.version = 4;
-        id3v2Tag.flags |= Id3v2TagHeaderFlags.FooterPresent;
+        id3v2Tag.flags |= Id3v2TagFlags.FooterPresent;
         const apeTag = ApeTag.fromEmpty();
 
         const fileBytes = ByteVector.concatenate(
@@ -210,7 +210,7 @@ import {NumberUtils} from "../../src/utils";
         assert.isOk(newTag);
         assert.strictEqual(newTag.tagTypes, TagTypes.Id3v2);
         assert.strictEqual((<Id3v2Tag> newTag).version, 4);
-        assert.isTrue(NumberUtils.hasFlag((<Id3v2Tag> newTag).flags, Id3v2TagHeaderFlags.FooterPresent));
+        assert.isTrue(NumberUtils.hasFlag((<Id3v2Tag> newTag).flags, Id3v2TagFlags.FooterPresent));
 
         assert.strictEqual(tag.tags.length, 1);
         assert.strictEqual(tag.tagTypes, TagTypes.Id3v2);
@@ -239,7 +239,7 @@ import {NumberUtils} from "../../src/utils";
         // Arrange
         const id3v2Tag = Id3v2Tag.fromEmpty();
         id3v2Tag.version = 4;
-        id3v2Tag.flags |= Id3v2TagHeaderFlags.FooterPresent;
+        id3v2Tag.flags |= Id3v2TagFlags.FooterPresent;
         id3v2Tag.album = "foobarbaz";
         id3v2Tag.title = "fuxbuxquxx";
 
@@ -270,7 +270,7 @@ import {NumberUtils} from "../../src/utils";
         // Arrange
         const id3v2Tag = Id3v2Tag.fromEmpty();
         id3v2Tag.version = 4;
-        id3v2Tag.flags |= Id3v2TagHeaderFlags.FooterPresent;
+        id3v2Tag.flags |= Id3v2TagFlags.FooterPresent;
         id3v2Tag.album = "foobarbaz";
         const apeTag = ApeTag.fromEmpty();
         apeTag.title = "fuxbuxquxx";
@@ -315,4 +315,3 @@ import {NumberUtils} from "../../src/utils";
         assert.isTrue(output.isEmpty);
     }
 }
-

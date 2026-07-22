@@ -1,51 +1,21 @@
 import Id3v2Settings from "./id3v2Settings";
 import SyncData from "./syncData";
 import {ByteVector, StringType} from "../byteVector";
+import {TagFlags} from "./enums";
 import {CorruptFileError} from "../errors";
 import {Guards, NumberUtils} from "../utils";
-
-/**
- * Indicates the flags applied to a {@link Id3v2TagHeader} object.
- */
-export enum Id3v2TagHeaderFlags {
-    /**
-     * The header contains no flags.
-     */
-    None = 0x0,
-
-    /**
-     * The tag described by the header contains a footer.
-     */
-    FooterPresent = 0x10,
-
-    /**
-     * The tag described by the header is experimental.
-     */
-    ExperimentalIndicator = 0x20,
-
-    /**
-     * The tag described by the header contains an extended header.
-     */
-    ExtendedHeader = 0x40,
-
-    /**
-     * The tag described by the header has been unsynchronized using the ID3v2 unsynchronization
-     * scheme.
-     */
-    Unsynchronization = 0x80,
-}
 
 /**
  * This class provides a representation of an ID3v2 tag header which can be read from and written
  * to disk.
  */
-export class Id3v2TagHeader {
+export default class TagHeader {
     /**
      * The identifier used to recognize an ID3v2 header.
      */
     public static readonly FILE_IDENTIFIER = ByteVector.fromString("ID3", StringType.Latin1).makeReadOnly();
 
-    private _flags: Id3v2TagHeaderFlags = Id3v2TagHeaderFlags.None;
+    private _flags: TagFlags = TagFlags.None;
     private _majorVersion: number = 0;
     private _revisionNumber: number = 0;
     private _tagSize: number = 0;
@@ -60,7 +30,7 @@ export class Id3v2TagHeader {
      * @param tagSize Size of the tag in bytes as it currently exists on the disk. See {@link tagSize}.
      * @internal
      */
-    public constructor(majorVersion: number, revisionVersion: number, flags: Id3v2TagHeaderFlags, tagSize: number) {
+    public constructor(majorVersion: number, revisionVersion: number, flags: TagFlags, tagSize: number) {
         this._majorVersion = majorVersion;
 
         this.flags = flags;
@@ -72,12 +42,12 @@ export class Id3v2TagHeader {
      * Constructs and initializes a new instance by reading it from the raw header data.
      * @param data Object containing the raw data to build the new instance from.
      */
-    public static fromData(data: ByteVector): Id3v2TagHeader {
+    public static fromData(data: ByteVector): TagHeader {
         Guards.truthy(data, "data");
         if (data.length < Id3v2Settings.headerSize) {
             throw new CorruptFileError("Provided data is smaller than object size");
         }
-        if (!data.startsWith(Id3v2TagHeader.FILE_IDENTIFIER)) {
+        if (!data.startsWith(TagHeader.FILE_IDENTIFIER)) {
             throw new CorruptFileError("Provided data does not start with the file identifier");
         }
 
@@ -104,7 +74,7 @@ export class Id3v2TagHeader {
         }
         const tagSize = SyncData.toUint(data.subarray(6, 4));
 
-        return new Id3v2TagHeader(majorVersion, revisionNumber, flags, tagSize);
+        return new TagHeader(majorVersion, revisionNumber, flags, tagSize);
     }
 
     // #endregion
@@ -116,7 +86,7 @@ export class Id3v2TagHeader {
      * and footer.
      */
     public get completeTagSize(): number {
-        return NumberUtils.hasFlag(this._flags, Id3v2TagHeaderFlags.FooterPresent)
+        return NumberUtils.hasFlag(this._flags, TagFlags.FooterPresent)
             ? this.tagSize + Id3v2Settings.headerSize + Id3v2Settings.footerSize
             : this.tagSize + Id3v2Settings.headerSize;
     }
@@ -124,19 +94,19 @@ export class Id3v2TagHeader {
     /**
      * Gets the flags applied to the current instance.
      */
-    public get flags(): Id3v2TagHeaderFlags { return this._flags; }
+    public get flags(): TagFlags { return this._flags; }
     /**
      * Sets the flags applied to the current instance.
      * @param value Bitwise combined {@link Id3v2TagHeaderFlags} value containing the flags to apply to the
      *     current instance.
      */
-    public set flags(value: Id3v2TagHeaderFlags) {
+    public set flags(value: TagFlags) {
         // @TODO: Does it make sense to check for flags for major version <4?
-        const version3Flags = Id3v2TagHeaderFlags.ExtendedHeader | Id3v2TagHeaderFlags.ExperimentalIndicator;
+        const version3Flags = TagFlags.ExtendedHeader | TagFlags.ExperimentalIndicator;
         if (NumberUtils.hasFlag(value, version3Flags) && this.majorVersion < 3) {
             throw new Error("Feature only supported in version 2.3+");
         }
-        const version4Flags = Id3v2TagHeaderFlags.FooterPresent;
+        const version4Flags = TagFlags.FooterPresent;
         if (NumberUtils.hasFlag(value, version4Flags) && this.majorVersion < 4) {
             throw new Error("Feature only supported in version 2.4+");
         }
@@ -164,10 +134,10 @@ export class Id3v2TagHeader {
 
         // @TODO: do we need to support setting to versions <4?
         if (value < 3) {
-            this._flags &= ~(Id3v2TagHeaderFlags.ExtendedHeader | Id3v2TagHeaderFlags.ExperimentalIndicator);
+            this._flags &= ~(TagFlags.ExtendedHeader | TagFlags.ExperimentalIndicator);
         }
         if (value < 4) {
-            this._flags &= ~Id3v2TagHeaderFlags.FooterPresent;
+            this._flags &= ~TagFlags.FooterPresent;
         }
 
         this._majorVersion = value;
@@ -216,7 +186,7 @@ export class Id3v2TagHeader {
      */
     public render(): ByteVector {
         return ByteVector.concatenate(
-            Id3v2TagHeader.FILE_IDENTIFIER,
+            TagHeader.FILE_IDENTIFIER,
             this.majorVersion,
             this.revisionNumber,
             this.flags,

@@ -3,12 +3,13 @@ import {assert} from "chai";
 
 import Frame from "../../src/id3v2/frames/frame";
 import FrameConstructorTests from "./frameConstructorTests";
+import FrameHeader from "../../src/id3v2/frames/frameHeader";
 import Id3v2Settings from "../../src/id3v2/id3v2Settings";
 import PropertyTests from "../utilities/propertyTests";
 import TermsOfUseFrame from "../../src/id3v2/frames/termsOfUseFrame";
 import UnknownFrame from "../../src/id3v2/frames/unknownFrame";
 import {ByteVector, StringType} from "../../src/byteVector";
-import {Id3v2FrameFlags, Id3v2FrameHeader} from "../../src/id3v2/frames/frameHeader";
+import {FrameFlags} from "../../src/id3v2/enums";
 import {FrameIdentifiers} from "../../src/id3v2/frameIdentifiers";
 import {Testers} from "../utilities/testers";
 
@@ -23,7 +24,7 @@ const assertFrame = (frame: TermsOfUseFrame, language: string, text: string, tex
 }
 
 @suite class Id3v2_TermsOfUseFrame_ConstructorTests extends FrameConstructorTests {
-    public get fromFieldBytes(): (h: Id3v2FrameHeader, d: ByteVector, v: number) => Frame {
+    public get fromFieldBytes(): (h: FrameHeader, d: ByteVector, v: number) => Frame {
         return TermsOfUseFrame.fromFieldBytes;
     }
 
@@ -33,7 +34,7 @@ const assertFrame = (frame: TermsOfUseFrame, language: string, text: string, tex
     public fromFieldBytes_notEnoughBytes(version: number) {
         // Arrange
         const fieldBytes = ByteVector.concatenate(0x00, 0x00);
-        const header = new Id3v2FrameHeader(FrameIdentifiers.USER, Id3v2FrameFlags.None, fieldBytes.length);
+        const header = new FrameHeader(FrameIdentifiers.USER, FrameFlags.None, fieldBytes.length);
 
         // Act / Assert
         assert.throws(() => { TermsOfUseFrame.fromFieldBytes(header, fieldBytes, version); });
@@ -48,7 +49,7 @@ const assertFrame = (frame: TermsOfUseFrame, language: string, text: string, tex
             StringType.Latin1,                              // Encoding
             ByteVector.fromString("eng", StringType.Latin1) // Language
         );
-        const header = new Id3v2FrameHeader(FrameIdentifiers.USER, Id3v2FrameFlags.None, fieldBytes.length);
+        const header = new FrameHeader(FrameIdentifiers.USER, FrameFlags.None, fieldBytes.length);
 
         // Act
         const frame = TermsOfUseFrame.fromFieldBytes(header, fieldBytes, version);
@@ -67,7 +68,7 @@ const assertFrame = (frame: TermsOfUseFrame, language: string, text: string, tex
             ByteVector.fromString("eng", StringType.Latin1),      // Language
             ByteVector.fromString("foobarbaz", StringType.Latin1) // Text
         );
-        const header = new Id3v2FrameHeader(FrameIdentifiers.USER, Id3v2FrameFlags.None, fieldBytes.length);
+        const header = new FrameHeader(FrameIdentifiers.USER, FrameFlags.None, fieldBytes.length);
 
         // Act
         const frame = TermsOfUseFrame.fromFieldBytes(header, fieldBytes, version);
@@ -85,7 +86,7 @@ const assertFrame = (frame: TermsOfUseFrame, language: string, text: string, tex
             ByteVector.fromString("eng", StringType.Latin1), // Language
             ByteVector.fromString("foobarbaz", encoding)     // Text
         );
-        const header = new Id3v2FrameHeader(FrameIdentifiers.USER, Id3v2FrameFlags.None, fieldBytes.length);
+        const header = new FrameHeader(FrameIdentifiers.USER, FrameFlags.None, fieldBytes.length);
 
         // Act
         const frame = TermsOfUseFrame.fromFieldBytes(header, fieldBytes, 4);
@@ -288,7 +289,7 @@ const assertFrame = (frame: TermsOfUseFrame, language: string, text: string, tex
             StringType.Latin1,                               // Encoding
             ByteVector.fromString("foo", StringType.Latin1), // Language
         );
-        const header = new Id3v2FrameHeader(FrameIdentifiers.USER, Id3v2FrameFlags.None, fieldBytes.length);
+        const header = new FrameHeader(FrameIdentifiers.USER, FrameFlags.None, fieldBytes.length);
         const expected = ByteVector.concatenate(header.render(4), fieldBytes);
         Testers.bvEqual(result, expected);
     }
@@ -308,7 +309,7 @@ const assertFrame = (frame: TermsOfUseFrame, language: string, text: string, tex
             ByteVector.fromString("foo", StringType.Latin1), // Language
             ByteVector.fromString("bar", StringType.Latin1)  // Text
         );
-        const header = new Id3v2FrameHeader(FrameIdentifiers.USER, Id3v2FrameFlags.None, fieldBytes.length);
+        const header = new FrameHeader(FrameIdentifiers.USER, FrameFlags.None, fieldBytes.length);
         const expected = ByteVector.concatenate(header.render(version), fieldBytes);
         Testers.bvEqual(result, expected);
     }
@@ -328,7 +329,7 @@ const assertFrame = (frame: TermsOfUseFrame, language: string, text: string, tex
             ByteVector.fromString("foo", StringType.Latin1), // Language
             ByteVector.fromString("bar", encoding)           // Text
         );
-        const header = new Id3v2FrameHeader(FrameIdentifiers.USER, Id3v2FrameFlags.None, fieldBytes.length);
+        const header = new FrameHeader(FrameIdentifiers.USER, FrameFlags.None, fieldBytes.length);
         const expected = ByteVector.concatenate(header.render(4), fieldBytes);
         Testers.bvEqual(result, expected);
     }

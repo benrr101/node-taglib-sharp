@@ -2,22 +2,22 @@ import AttachmentFrame from "./frames/attachmentFrame";
 import CommentsFrame from "./frames/commentsFrame";
 import Frame from "./frames/frame";
 import GenreFrame from "./frames/genreFrame";
-import Id3v2ExtendedHeader from "./id3v2ExtendedHeader";
-import Id3v2TagFooter from "./id3v2TagFooter";
+import Id3v2ExtendedHeader from "./tagHeaderExtended";
 import Id3v2Settings from "./id3v2Settings";
 import SyncData from "./syncData";
+import TagFooter from "./tagFooter";
+import TagHeader from "./tagHeader";
 import TextInformationFrame from "./frames/textInformationFrame";
 import UniqueFileIdentifierFrame from "./frames/uniqueFileIdentifierFrame";
 import UnsynchronizedLyricsFrame from "./frames/unsynchronizedLyricsFrame";
 import UrlLinkFrame from "./frames/urlLinkFrame";
 import UserTextInformationFrame from "./frames/userTextInformationFrame";
 import {ByteVector, StringType} from "../byteVector";
+import {FrameFlags, TagFlags} from "./enums";
 import {CorruptFileError, NotImplementedError, NotSupportedError} from "../errors";
 import {File, ReadStyle} from "../file";
 import {Id3v2FrameFactory} from "./frames/frameFactory";
 import {FrameIdentifier, FrameIdentifiers} from "./frameIdentifiers";
-import {Id3v2FrameFlags} from "./frames/frameHeader";
-import {Id3v2TagHeader, Id3v2TagHeaderFlags} from "./id3v2TagHeader";
 import {IPicture} from "../picture";
 import {Tag, TagTypes} from "../tag";
 import {DateUtils, Guards, NumberUtils} from "../utils";
@@ -31,7 +31,7 @@ export default class Id3v2Tag extends Tag {
 
     private _extendedHeader: Id3v2ExtendedHeader;
     private _frameList: Frame[] = [];
-    private _header: Id3v2TagHeader;
+    private _header: TagHeader;
     private _performersRole: string[];
 
     // #region Constructors
@@ -45,7 +45,7 @@ export default class Id3v2Tag extends Tag {
      */
     public static fromEmpty(): Id3v2Tag {
         const tag = new Id3v2Tag();
-        tag._header = new Id3v2TagHeader(0, 0, Id3v2TagHeaderFlags.None, 0);
+        tag._header = new TagHeader(0, 0, TagFlags.None, 0);
         return tag;
     }
 
@@ -62,7 +62,7 @@ export default class Id3v2Tag extends Tag {
         }
 
         const tag = new Id3v2Tag();
-        tag._header = Id3v2TagHeader.fromData(data);
+        tag._header = TagHeader.fromData(data);
 
         // If the tag size is 0, then this is an invalid tag. Tags must contain at least one frame
         if (tag._header.tagSize === 0) {
@@ -143,13 +143,13 @@ export default class Id3v2Tag extends Tag {
     /**
      * Gets the header flags applied to the current instance.
      */
-    public get flags(): Id3v2TagHeaderFlags { return this._header.flags; }
+    public get flags(): TagFlags { return this._header.flags; }
     /**
      * Sets the header flags applied to the current instance
-     * @param value Bitwise combined {@link Id3v2TagHeaderFlags} value containing flags applied to the
+     * @param value Bitwise combined {@link TagFlags} value containing flags applied to the
      *     current instance.
      */
-    public set flags(value: Id3v2TagHeaderFlags) { this._header.flags = value; }
+    public set flags(value: TagFlags) { this._header.flags = value; }
 
     /**
      * Gets all frames contained in the current instance.
@@ -1117,23 +1117,23 @@ export default class Id3v2Tag extends Tag {
         // We need to render the "tag data" first so that we have to correct size to render in the
         // tag's header. The "tag data" (everything that is included in Header.tagSize) includes
         // the extended header, frames and padding, but does not include the tag's header or footer
-        const hasFooter = (this._header.flags & Id3v2TagHeaderFlags.FooterPresent) !== 0;
-        const unsyncAtFrameLevel = (this._header.flags & Id3v2TagHeaderFlags.Unsynchronization) !== 0
+        const hasFooter = (this._header.flags & TagFlags.FooterPresent) !== 0;
+        const unsyncAtFrameLevel = (this._header.flags & TagFlags.Unsynchronization) !== 0
             && this.version >= 4;
-        const unsyncAtTagLevel = (this._header.flags & Id3v2TagHeaderFlags.Unsynchronization) !== 0
+        const unsyncAtTagLevel = (this._header.flags & TagFlags.Unsynchronization) !== 0
             && this.version < 4;
 
         this._header.majorVersion = hasFooter ? 4 : this.version;
 
         // TODO: Render the extended header
-        this._header.flags &= ~Id3v2TagHeaderFlags.ExtendedHeader;
+        this._header.flags &= ~TagFlags.ExtendedHeader;
 
         // Loop through the frames rendering them and adding them to tag data
         const renderedFrames = this._frameList.map((frame) => {
             if (unsyncAtFrameLevel) {
-                frame.flags |= Id3v2FrameFlags.Unsynchronized;
+                frame.flags |= FrameFlags.Unsynchronized;
             }
-            if ((frame.flags & Id3v2FrameFlags.TagAlterPreservation) !== 0 ) {
+            if ((frame.flags & FrameFlags.TagAlterPreservation) !== 0 ) {
                 return undefined;
             }
 
@@ -1176,7 +1176,7 @@ export default class Id3v2Tag extends Tag {
 
         let footerBytes;
         if (hasFooter) {
-            footerBytes = Id3v2TagFooter.fromHeader(this._header).render();
+            footerBytes = TagFooter.fromHeader(this._header).render();
         }
 
         return ByteVector.concatenate(
@@ -1217,7 +1217,7 @@ export default class Id3v2Tag extends Tag {
         // Determine if the entire tag needs to be resynchronized.
         // @TODO: How important is it to check if the version is < 4?
         const fullTagUnsync = this.version < 4 &&
-                              NumberUtils.hasFlag(this._header.flags, Id3v2TagHeaderFlags.Unsynchronization);
+                              NumberUtils.hasFlag(this._header.flags, TagFlags.Unsynchronization);
 
         // Resynchronize the entire tag if required
         if (fullTagUnsync) {
@@ -1231,7 +1231,7 @@ export default class Id3v2Tag extends Tag {
         // Determine if the entire tag needs to be resynchronized.
         // @TODO: How important is it to check if the version is < 4?
         const fullTagUnsync = this.version < 4 &&
-                              NumberUtils.hasFlag(this._header.flags, Id3v2TagHeaderFlags.Unsynchronization);
+                              NumberUtils.hasFlag(this._header.flags, TagFlags.Unsynchronization);
 
         // 1) Resynchronize the entire tag if required
         if (fullTagUnsync) {
@@ -1246,7 +1246,7 @@ export default class Id3v2Tag extends Tag {
         let position = offset;
 
         // 2) Read extended header if required
-        if (NumberUtils.hasFlag(this._header.flags, Id3v2TagHeaderFlags.ExtendedHeader)) {
+        if (NumberUtils.hasFlag(this._header.flags, TagFlags.ExtendedHeader)) {
             // Extended header exists, read it and skip over it
             this._extendedHeader = Id3v2ExtendedHeader.fromFile(file, position, this.version);
             position += this._extendedHeader.size;
@@ -1293,7 +1293,7 @@ export default class Id3v2Tag extends Tag {
         let position = 0;
 
         // 1) Check for extended header
-        if (NumberUtils.hasFlag(this._header.flags, Id3v2TagHeaderFlags.ExtendedHeader)) {
+        if (NumberUtils.hasFlag(this._header.flags, TagFlags.ExtendedHeader)) {
             // Extended header exists, read it and skip over it
             this._extendedHeader = Id3v2ExtendedHeader.fromData(data, this.version);
             position += this._extendedHeader.size;
@@ -1338,7 +1338,7 @@ export default class Id3v2Tag extends Tag {
         file.seek(position);
 
         const headerBlock = file.readBlock(Id3v2Settings.headerSize);
-        this._header = Id3v2TagHeader.fromData(headerBlock);
+        this._header = TagHeader.fromData(headerBlock);
 
         // If the tag size is 0, then this is an invalid tag. Tags must contain at least one frame.
         if (this._header.tagSize === 0) {
@@ -1353,7 +1353,7 @@ export default class Id3v2Tag extends Tag {
         file.seek(position - Id3v2Settings.footerSize);
 
         const footerBlock = file.readBlock(Id3v2Settings.footerSize);
-        const footer = Id3v2TagFooter.fromData(footerBlock);
+        const footer = TagFooter.fromData(footerBlock);
         position -= footer.completeTagSize;
 
         this.readFromStart(file, position, style);

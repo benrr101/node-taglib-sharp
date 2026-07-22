@@ -1,9 +1,9 @@
 import Frame from "./frame";
+import FrameHeader from "./frameHeader";
 import Id3v2Settings from "../id3v2Settings";
 import {ByteVector, StringType} from "../../byteVector";
 import {CorruptFileError} from "../../errors";
 import {IFileAbstraction} from "../../fileAbstraction";
-import {Id3v2FrameHeader} from "./frameHeader";
 import {FrameIdentifiers} from "../frameIdentifiers";
 import {IPicture, Picture, PictureLazy, PictureType} from "../../picture";
 import {ArrayUtils, Guards} from "../../utils";
@@ -24,7 +24,7 @@ export default class AttachmentFrame extends Frame implements IPicture {
 
     // #region Constructors
 
-    private constructor(frameHeader: Id3v2FrameHeader) {
+    private constructor(frameHeader: FrameHeader) {
         super(frameHeader);
     }
 
@@ -34,7 +34,7 @@ export default class AttachmentFrame extends Frame implements IPicture {
      * @param fieldBytes Bytes that contain the fields of the frame
      * @param version ID3v2 version the frame was originally encoded with
      */
-    public static fromFieldBytes(header: Id3v2FrameHeader, fieldBytes: ByteVector, version: number): AttachmentFrame {
+    public static fromFieldBytes(header: FrameHeader, fieldBytes: ByteVector, version: number): AttachmentFrame {
         Guards.truthy(header, "header");
         Guards.truthy(fieldBytes, "fieldBytes");
         Guards.byte(version, "version");
@@ -79,7 +79,7 @@ export default class AttachmentFrame extends Frame implements IPicture {
     // @TODO: Make lazy loading optional
     public static fromFile(
         file: IFileAbstraction,
-        header: Id3v2FrameHeader,
+        header: FrameHeader,
         frameStart: number,
         size: number,
         version: number
@@ -109,7 +109,7 @@ export default class AttachmentFrame extends Frame implements IPicture {
 
         // NOTE: We assume the frame is an APIC frame of size 1 until we parse it and find out
         //     otherwise.
-        const frame = new AttachmentFrame(new Id3v2FrameHeader(FrameIdentifiers.APIC, undefined, 1));
+        const frame = new AttachmentFrame(new FrameHeader(FrameIdentifiers.APIC, undefined, 1));
         frame._rawPicture = picture;
         return frame;
     }
@@ -221,7 +221,7 @@ export default class AttachmentFrame extends Frame implements IPicture {
             ? FrameIdentifiers.GEOB
             : FrameIdentifiers.APIC;
         if (this.header.frameId !== frameId) {
-            this.header = new Id3v2FrameHeader(frameId);
+            this.header = new FrameHeader(frameId);
         }
 
         this._type = value;
@@ -233,7 +233,7 @@ export default class AttachmentFrame extends Frame implements IPicture {
 
     /** @inheritDoc */
     public clone(): Frame {
-        const frame = new AttachmentFrame(new Id3v2FrameHeader(this.frameId));
+        const frame = new AttachmentFrame(new FrameHeader(this.frameId));
         frame._data = this._data?.toByteVector();
         frame._description = this._description;
         frame._encoding = this._encoding;

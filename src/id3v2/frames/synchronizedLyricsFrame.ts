@@ -1,11 +1,11 @@
 import Frame from "./frame";
+import FrameHeader from "./frameHeader";
 import Id3v2Settings from "../id3v2Settings";
 import {ByteVector, StringType} from "../../byteVector";
+import {SynchronizedTextType, TimestampFormat} from "../enums";
 import {CorruptFileError} from "../../errors";
-import {Id3v2FrameHeader} from "./frameHeader";
 import {FrameIdentifiers} from "../frameIdentifiers";
 import {ArrayUtils, Guards} from "../../utils";
-import {SynchronizedTextType, TimestampFormat} from "../utilTypes";
 
 /**
  * This structure contains a single entry in a {@link SynchronizedLyricsFrame} object.
@@ -83,7 +83,7 @@ export class SynchronizedLyricsFrame extends Frame {
 
     // #region Constructors
 
-    private constructor(header: Id3v2FrameHeader) {
+    private constructor(header: FrameHeader) {
         super(header);
     }
 
@@ -94,7 +94,7 @@ export class SynchronizedLyricsFrame extends Frame {
      * @param version ID3v2 version the frame was originally encoded with
      */
     public static fromFieldBytes(
-        header: Id3v2FrameHeader,
+        header: FrameHeader,
         fieldBytes: ByteVector,
         version: number
     ): SynchronizedLyricsFrame {
@@ -193,7 +193,7 @@ export class SynchronizedLyricsFrame extends Frame {
         encoding?: StringType,
         timestampFormat?: TimestampFormat
     ): SynchronizedLyricsFrame {
-        const frame = new SynchronizedLyricsFrame(new Id3v2FrameHeader(FrameIdentifiers.SYLT));
+        const frame = new SynchronizedLyricsFrame(new FrameHeader(FrameIdentifiers.SYLT));
         frame._description = description ?? "";
         frame._format = timestampFormat ?? TimestampFormat.Unknown;
         frame._language = language ?? "XXX"; // @TODO: Should this be `unk`?

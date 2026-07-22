@@ -2,7 +2,7 @@
 
 # Enumeration: Id3v2TagHeaderFlags
 
-Indicates the flags applied to a [Id3v2TagHeader](../classes/Id3v2TagHeader.md) object.
+Indicates the flags applied to a [TagHeader](../classes/Id3v2TagHeader.md) object.
 
 ## Table of contents
 

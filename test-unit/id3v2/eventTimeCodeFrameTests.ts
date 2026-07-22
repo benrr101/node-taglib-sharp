@@ -3,20 +3,20 @@ import {assert} from "chai";
 
 import Frame from "../../src/id3v2/frames/frame";
 import FrameConstructorTests from "./frameConstructorTests";
+import FrameHeader from "../../src/id3v2/frames/frameHeader";
 import PropertyTests from "../utilities/propertyTests";
 import UnknownFrame from "../../src/id3v2/frames/unknownFrame";
 import {ByteVector} from "../../src/byteVector";
+import {EventType, FrameFlags, TimestampFormat} from "../../src/id3v2/enums";
 import {EventTimeCode, EventTimeCodeFrame} from "../../src/id3v2/frames/eventTimeCodeFrame";
-import {Id3v2FrameFlags, Id3v2FrameHeader} from "../../src/id3v2/frames/frameHeader";
 import {FrameIdentifiers} from "../../src/id3v2/frameIdentifiers";
 import {Testers} from "../utilities/testers";
-import {EventType, TimestampFormat} from "../../src/id3v2/utilTypes";
 
 const assertFrame = (frame: EventTimeCodeFrame, e: EventTimeCode[], t: TimestampFormat) => {
     assert.isOk(frame);
     assert.instanceOf<EventTimeCodeFrame>(frame, EventTimeCodeFrame);
     assert.strictEqual(frame.frameId, FrameIdentifiers.ETCO);
-    assert.isTrue((frame.flags | Id3v2FrameFlags.FileAlterPreservation) > 0);
+    assert.isTrue((frame.flags | FrameFlags.FileAlterPreservation) > 0);
 
     assert.deepStrictEqual(frame.events, e);
     assert.strictEqual(frame.timestampFormat, t);
@@ -99,7 +99,7 @@ const assertFrame = (frame: EventTimeCodeFrame, e: EventTimeCode[], t: Timestamp
 }
 
 @suite class Id3v2_EventTimeCodeFrame_ConstructorTests extends FrameConstructorTests {
-    public get fromFieldBytes(): (h: Id3v2FrameHeader, d: ByteVector, v: number) => Frame {
+    public get fromFieldBytes(): (h: FrameHeader, d: ByteVector, v: number) => Frame {
         return EventTimeCodeFrame.fromFieldBytes;
     }
 
@@ -109,7 +109,7 @@ const assertFrame = (frame: EventTimeCodeFrame, e: EventTimeCode[], t: Timestamp
     public fromFieldBytes_notEnoughBytes(version: number) {
         // Arrange
         const fieldBytes = ByteVector.empty();
-        const header = new Id3v2FrameHeader(FrameIdentifiers.ETCO, Id3v2FrameFlags.None, fieldBytes.length);
+        const header = new FrameHeader(FrameIdentifiers.ETCO, FrameFlags.None, fieldBytes.length);
 
         // Act / Assert
         assert.throws(() => { EventTimeCodeFrame.fromFieldBytes(header, fieldBytes, version); });
@@ -121,7 +121,7 @@ const assertFrame = (frame: EventTimeCodeFrame, e: EventTimeCode[], t: Timestamp
     public fromFieldBytes_noEvents(version: number) {
         // Arrange
         const fieldBytes = ByteVector.fromByte(TimestampFormat.AbsoluteMilliseconds);
-        const header = new Id3v2FrameHeader(FrameIdentifiers.ETCO, Id3v2FrameFlags.None, fieldBytes.length);
+        const header = new FrameHeader(FrameIdentifiers.ETCO, FrameFlags.None, fieldBytes.length);
 
         // Act
         const frame = EventTimeCodeFrame.fromFieldBytes(header, fieldBytes, version);
@@ -142,7 +142,7 @@ const assertFrame = (frame: EventTimeCodeFrame, e: EventTimeCode[], t: Timestamp
             event1.render(),                      // Event 1
             event2.render()                       // Event 2
         );
-        const header = new Id3v2FrameHeader(FrameIdentifiers.ETCO, Id3v2FrameFlags.None, fieldBytes.length);
+        const header = new FrameHeader(FrameIdentifiers.ETCO, FrameFlags.None, fieldBytes.length);
 
         // Act
         const frame = EventTimeCodeFrame.fromFieldBytes(header, fieldBytes, version);
@@ -163,7 +163,7 @@ const assertFrame = (frame: EventTimeCodeFrame, e: EventTimeCode[], t: Timestamp
             event1.render(),                      // Event 1
             event2.render().subarray(0, 3)        // Event 2 (incomplete)
         );
-        const header = new Id3v2FrameHeader(FrameIdentifiers.ETCO, Id3v2FrameFlags.None, fieldBytes.length);
+        const header = new FrameHeader(FrameIdentifiers.ETCO, FrameFlags.None, fieldBytes.length);
 
         // Act / Assert
         assert.throws(() => EventTimeCodeFrame.fromFieldBytes(header, fieldBytes, version));
@@ -339,9 +339,9 @@ const assertFrame = (frame: EventTimeCodeFrame, e: EventTimeCode[], t: Timestamp
         assert.isOk(output);
 
         const fieldBytes = ByteVector.fromByte(TimestampFormat.AbsoluteMpegFrames);
-        const header = new Id3v2FrameHeader(
+        const header = new FrameHeader(
             FrameIdentifiers.ETCO,
-            Id3v2FrameFlags.FileAlterPreservation,
+            FrameFlags.FileAlterPreservation,
             fieldBytes.length
         );
         const expected = ByteVector.concatenate(header.render(version), fieldBytes);
@@ -371,9 +371,9 @@ const assertFrame = (frame: EventTimeCodeFrame, e: EventTimeCode[], t: Timestamp
             event1.render(),                    // Event 1
             event2.render()                     // Event 2
         );
-        const header = new Id3v2FrameHeader(
+        const header = new FrameHeader(
             FrameIdentifiers.ETCO,
-            Id3v2FrameFlags.FileAlterPreservation,
+            FrameFlags.FileAlterPreservation,
             fieldBytes.length
         );
         const expected = ByteVector.concatenate(header.render(version), fieldBytes);

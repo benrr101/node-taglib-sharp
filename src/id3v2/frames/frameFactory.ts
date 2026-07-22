@@ -1,6 +1,7 @@
 import AttachmentFrame from "./attachmentFrame";
 import CommentsFrame from "./commentsFrame";
 import Frame from "./frame";
+import FrameHeader from "./frameHeader";
 import GenreFrame from "./genreFrame";
 import MusicCdIdentifierFrame from "./musicCdIdentifierFrame";
 import PlayCountFrame from "./playCountFrame";
@@ -19,7 +20,7 @@ import {ByteVector} from "../../byteVector";
 import {CorruptFileError, NotImplementedError} from "../../errors";
 import {EventTimeCodeFrame} from "./eventTimeCodeFrame";
 import {File} from "../../file";
-import {Id3v2FrameFlags, Id3v2FrameHeader} from "./frameHeader";
+import {FrameFlags} from "../enums";
 import {FrameIdentifier, FrameIdentifiers} from "../frameIdentifiers";
 import {RelativeVolumeFrame} from "./relativeVolumeFrame";
 import {SynchronizedLyricsFrame} from "./synchronizedLyricsFrame";
@@ -32,9 +33,9 @@ import {Guards, NumberUtils} from "../../utils";
  * @param header The header that describes the frame.
  * @param version ID3v2 version the frame is encoded with. Must be unsigned 8-bit int
  */
-export type FrameCreator = (data: ByteVector, offset: number, header: Id3v2FrameHeader, version: number) => Frame;
+export type FrameCreator = (data: ByteVector, offset: number, header: FrameHeader, version: number) => Frame;
 
-type InternalFrameCreator = (header: Id3v2FrameHeader, fieldBytes: ByteVector, version: number) => Frame;
+type InternalFrameCreator = (header: FrameHeader, fieldBytes: ByteVector, version: number) => Frame;
 
 /**
  * Performs the necessary operations to determine and create the correct child classes of
@@ -74,7 +75,7 @@ export class Id3v2FrameFactory {
      * @param creator Frame creator function
      *     * data: ByteVector Raw ID3v2 frame
      *     * offset: number Offset in data at which the frame data begins (should be int)
-     *     * header: Id3v2FrameHeader Header for the frame contained in data
+     *     * header: FrameHeader Header for the frame contained in data
      *     * version: number ID3v2 version the raw frame data is stored in (should be byte)
      *     * returns Frame if method was able to match the frame, falsy otherwise
      */
@@ -114,7 +115,7 @@ export class Id3v2FrameFactory {
         file.seek(offset);
 
         // 2) Read basic frame header
-        const headerSize = Id3v2FrameHeader.getBaseSize(version);
+        const headerSize = FrameHeader.getBaseSize(version);
         const headerBytes = file.readBlock(headerSize);
         if (headerBytes.length < headerSize) {
             throw new Error("Argument error: data does not contain enough bytes for an ID3v2 frame header");
@@ -125,7 +126,7 @@ export class Id3v2FrameFactory {
             return undefined;
         }
 
-        const header = Id3v2FrameHeader.fromData(headerBytes, version);
+        const header = FrameHeader.fromData(headerBytes, version);
         this.assertSupportedFlags(header.flags);
 
         // @TODO: Support lazy loading frames again
@@ -157,7 +158,7 @@ export class Id3v2FrameFactory {
         Guards.byte(version, "version");
 
         // 1) Read the basic frame header
-        const headerSize = Id3v2FrameHeader.getBaseSize(version);
+        const headerSize = FrameHeader.getBaseSize(version);
         const headerBytes = data.subarray(offset, headerSize);
         if (headerBytes.length < headerSize) {
             throw new Error("Argument error: data does not contain enough bytes for an ID3v2 frame header");
@@ -168,7 +169,7 @@ export class Id3v2FrameFactory {
             return undefined;
         }
 
-        const header = Id3v2FrameHeader.fromData(headerBytes, version);
+        const header = FrameHeader.fromData(headerBytes, version);
         this.assertSupportedFlags(header.flags);
 
         // 2) Read the body bytes and finish constructing frame
@@ -178,14 +179,14 @@ export class Id3v2FrameFactory {
         return { frame: frame, totalSize: header.frameSize + headerSize };
     }
 
-    private static assertSupportedFlags(headerFlags: Id3v2FrameFlags): void {
+    private static assertSupportedFlags(headerFlags: FrameFlags): void {
         // TODO: Support compression
-        if (NumberUtils.hasFlag(headerFlags, Id3v2FrameFlags.Compression)) {
+        if (NumberUtils.hasFlag(headerFlags, FrameFlags.Compression)) {
             throw new NotImplementedError("Compression is not supported");
         }
 
         // TODO: Support encryption
-        if (NumberUtils.hasFlag(headerFlags, Id3v2FrameFlags.Encryption)) {
+        if (NumberUtils.hasFlag(headerFlags, FrameFlags.Encryption)) {
             throw new NotImplementedError("Encryption is not supported");
         }
 
@@ -193,7 +194,7 @@ export class Id3v2FrameFactory {
     }
 
     private static createFrameFromFieldBytes(
-        header: Id3v2FrameHeader,
+        header: FrameHeader,
         payloadBytes: ByteVector,
         version: number,
         unsynchedAtTagLevel: boolean
@@ -209,7 +210,7 @@ export class Id3v2FrameFactory {
         // Mark the frame as unsynchronized if the entire tag is already unsynchronized
         // @TODO: Is this how the spec is written? Or was this to correct for invalid flags?
         if (unsynchedAtTagLevel) {
-            header.flags &= ~Id3v2FrameFlags.Unsynchronized;
+            header.flags &= ~FrameFlags.Unsynchronized;
         }
 
         // 1) Unsynchronize if necessary

@@ -17,7 +17,7 @@ import {default as Resources} from "./resources";
 import {ByteVector, StringType} from "../../src/byteVector";
 import {FileAccessMode, ReadStyle} from "../../src/file";
 import {IFileAbstraction} from "../../src/fileAbstraction";
-import {Id3v2TagHeaderFlags} from "../../src/id3v2/id3v2TagHeader";
+import {TagFlags as Id3v2TagFlags} from "../../src/id3v2/enums";
 import {TagTypes} from "../../src/tag";
 import {Testers} from "../utilities/testers";
 
@@ -1319,7 +1319,7 @@ import {Testers} from "../utilities/testers";
     private static getId3v2Bytes(fourcc: string): ByteVector {
         const id3v2Tag = Id3v2Tag.fromEmpty();
         id3v2Tag.version = 4;
-        id3v2Tag.flags |= Id3v2TagHeaderFlags.FooterPresent;
+        id3v2Tag.flags |= Id3v2TagFlags.FooterPresent;
         id3v2Tag.amazonId = "foo";
         return RiffChunk.fromData(fourcc, id3v2Tag.render()).render();
     }
@@ -1347,7 +1347,7 @@ import {Testers} from "../utilities/testers";
     private static getSavedId3v2Bytes(fourcc: string): ByteVector {
         const expectedId3v2Tag = Id3v2Tag.fromEmpty();
         expectedId3v2Tag.version = 4;
-        expectedId3v2Tag.flags |= Id3v2TagHeaderFlags.FooterPresent;
+        expectedId3v2Tag.flags |= Id3v2TagFlags.FooterPresent;
         expectedId3v2Tag.title = "foo";
         expectedId3v2Tag.amazonId = "foo";
         expectedId3v2Tag.composers = ["Giuseppe Ottiviani"];

@@ -5,10 +5,10 @@ import ApeTag from "../../src/ape/apeTag";
 import Id3v1Tag from "../../src/id3v1/id3v1Tag";
 import Id3v2Tag from "../../src/id3v2/id3v2Tag";
 import SandwichTag from "../../src/sandwich/sandwichTag";
-import {default as TestFile} from "../utilities/testFile";
+import TestFile from "../utilities/testFile";
 import {ByteVector} from "../../src/byteVector";
+import {TagFlags as Id3v2TagFlags} from "../../src/id3v2/enums";
 import {File, ReadStyle} from "../../src/file";
-import {Id3v2TagHeaderFlags} from "../../src/id3v2/id3v2TagHeader";
 import {TagTypes} from "../../src/tag";
 import {TagTesters, Testers} from "../utilities/testers";
 
@@ -64,7 +64,7 @@ import {TagTesters, Testers} from "../utilities/testers";
         // Arrange
         const id3v2Tag = Id3v2Tag.fromEmpty();
         id3v2Tag.version = 4;
-        id3v2Tag.flags |= Id3v2TagHeaderFlags.FooterPresent;
+        id3v2Tag.flags |= Id3v2TagFlags.FooterPresent;
         id3v2Tag.album = "foo";
         const apeTag = ApeTag.fromEmpty();
         apeTag.amazonId = "bar";

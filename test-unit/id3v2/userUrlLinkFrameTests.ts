@@ -3,11 +3,12 @@ import {assert} from "chai";
 
 import Frame from "../../src/id3v2/frames/frame";
 import FrameConstructorTests from "./frameConstructorTests";
+import FrameHeader from "../../src/id3v2/frames/frameHeader";
 import Id3v2Settings from "../../src/id3v2/id3v2Settings";
 import UnknownFrame from "../../src/id3v2/frames/unknownFrame";
 import UserUrlLinkFrame from "../../src/id3v2/frames/userUrlLinkFrame";
 import {ByteVector, StringType} from "../../src/byteVector";
-import {Id3v2FrameFlags, Id3v2FrameHeader} from "../../src/id3v2/frames/frameHeader";
+import {FrameFlags} from "../../src/id3v2/enums";
 import {FrameIdentifiers} from "../../src/id3v2/frameIdentifiers";
 import {Testers} from "../utilities/testers";
 
@@ -22,7 +23,7 @@ const assertFrame = (frame: UserUrlLinkFrame, description: string, text: string,
 }
 
 @suite class Id3v2_UserUrlLinkFrame_ConstructorTests extends FrameConstructorTests {
-    public get fromFieldBytes(): (h: Id3v2FrameHeader, d: ByteVector, v: number) => Frame {
+    public get fromFieldBytes(): (h: FrameHeader, d: ByteVector, v: number) => Frame {
         return UserUrlLinkFrame.fromFieldBytes;
     }
 
@@ -45,7 +46,7 @@ const assertFrame = (frame: UserUrlLinkFrame, description: string, text: string,
     public fromFieldBytes_tooSmall(version: number) {
         // Arrange
         const fieldBytes = ByteVector.fromSize(1);
-        const header = new Id3v2FrameHeader(FrameIdentifiers.WXXX, Id3v2FrameFlags.None, fieldBytes.length);
+        const header = new FrameHeader(FrameIdentifiers.WXXX, FrameFlags.None, fieldBytes.length);
 
         // Act / Assert
         assert.throws(() => UserUrlLinkFrame.fromFieldBytes(header, fieldBytes, version));
@@ -60,7 +61,7 @@ const assertFrame = (frame: UserUrlLinkFrame, description: string, text: string,
             StringType.Latin1,
             ByteVector.fromString("foo/bar", StringType.Latin1)
         );
-        const header = new Id3v2FrameHeader(FrameIdentifiers.WXXX, Id3v2FrameFlags.None, fieldBytes.length);
+        const header = new FrameHeader(FrameIdentifiers.WXXX, FrameFlags.None, fieldBytes.length);
 
         // Act
         const output = UserUrlLinkFrame.fromFieldBytes(header, fieldBytes, version);
@@ -78,7 +79,7 @@ const assertFrame = (frame: UserUrlLinkFrame, description: string, text: string,
             StringType.UTF16BE,
             ByteVector.fromString("foo", StringType.UTF16BE)
         );
-        const header = new Id3v2FrameHeader(FrameIdentifiers.WXXX, Id3v2FrameFlags.None, fieldBytes.length);
+        const header = new FrameHeader(FrameIdentifiers.WXXX, FrameFlags.None, fieldBytes.length);
 
         // Act
         const output = UserUrlLinkFrame.fromFieldBytes(header, fieldBytes, version);
@@ -101,7 +102,7 @@ const assertFrame = (frame: UserUrlLinkFrame, description: string, text: string,
             ByteVector.fromString("baz", StringType.Latin1),  // Bogus
             ByteVector.getTextDelimiter(StringType.Latin1),   // Bogus
         );
-        const header = new Id3v2FrameHeader(FrameIdentifiers.WXXX, Id3v2FrameFlags.None, fieldBytes.length);
+        const header = new FrameHeader(FrameIdentifiers.WXXX, FrameFlags.None, fieldBytes.length);
 
         // Act
         const output = UserUrlLinkFrame.fromFieldBytes(header, fieldBytes, version);
@@ -121,7 +122,7 @@ const assertFrame = (frame: UserUrlLinkFrame, description: string, text: string,
             ByteVector.getTextDelimiter(StringType.Latin1),
             ByteVector.fromString("bar", StringType.Latin1)
         );
-        const header = new Id3v2FrameHeader(FrameIdentifiers.WXXX, Id3v2FrameFlags.None, fieldBytes.length);
+        const header = new FrameHeader(FrameIdentifiers.WXXX, FrameFlags.None, fieldBytes.length);
 
         // Act
         const output = UserUrlLinkFrame.fromFieldBytes(header, fieldBytes, version);
@@ -140,7 +141,7 @@ const assertFrame = (frame: UserUrlLinkFrame, description: string, text: string,
             ByteVector.getTextDelimiter(encoding),
             ByteVector.fromString("bar", StringType.Latin1)
         );
-        const header = new Id3v2FrameHeader(FrameIdentifiers.WXXX, Id3v2FrameFlags.None, fieldBytes.length);
+        const header = new FrameHeader(FrameIdentifiers.WXXX, FrameFlags.None, fieldBytes.length);
 
         // Act
         const output = UserUrlLinkFrame.fromFieldBytes(header, fieldBytes, 4);
@@ -320,7 +321,7 @@ const assertFrame = (frame: UserUrlLinkFrame, description: string, text: string,
         const expectedBytes = ByteVector.concatenate(
             FrameIdentifiers.WXXX.render(4),
             ByteVector.fromUint(5),
-            ByteVector.fromUshort(Id3v2FrameFlags.None),
+            ByteVector.fromUshort(FrameFlags.None),
             ByteVector.fromByte(StringType.Latin1),
             ByteVector.getTextDelimiter(StringType.Latin1),
             ByteVector.fromString("foo", StringType.Latin1)
@@ -343,7 +344,7 @@ const assertFrame = (frame: UserUrlLinkFrame, description: string, text: string,
         const expectedBytes = ByteVector.concatenate(
             FrameIdentifiers.WXXX.render(4),
             ByteVector.fromUint(5),
-            ByteVector.fromUshort(Id3v2FrameFlags.None),
+            ByteVector.fromUshort(FrameFlags.None),
             ByteVector.fromByte(StringType.Latin1),
             ByteVector.fromString("foo", StringType.Latin1),
             ByteVector.getTextDelimiter(StringType.Latin1)
@@ -366,7 +367,7 @@ const assertFrame = (frame: UserUrlLinkFrame, description: string, text: string,
         const expectedBytes = ByteVector.concatenate(
             FrameIdentifiers.WXXX.render(4),
             ByteVector.fromUint(8),
-            ByteVector.fromUshort(Id3v2FrameFlags.None),
+            ByteVector.fromUshort(FrameFlags.None),
             ByteVector.fromByte(StringType.Latin1),
             ByteVector.fromString("foo", StringType.Latin1),
             ByteVector.getTextDelimiter(StringType.Latin1),
@@ -390,7 +391,7 @@ const assertFrame = (frame: UserUrlLinkFrame, description: string, text: string,
         const expectedBytes = ByteVector.concatenate(
             FrameIdentifiers.WXXX.render(4),
             ByteVector.fromUint(12),
-            ByteVector.fromUshort(Id3v2FrameFlags.None),
+            ByteVector.fromUshort(FrameFlags.None),
             ByteVector.fromByte(StringType.UTF16LE),
             ByteVector.fromString("foo", StringType.UTF16LE),
             ByteVector.getTextDelimiter(StringType.UTF16LE),

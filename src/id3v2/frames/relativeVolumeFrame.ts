@@ -1,59 +1,10 @@
 import Frame from "./frame";
+import FrameHeader from "./frameHeader";
 import {ByteVector, StringType} from "../../byteVector";
-import {Id3v2FrameHeader} from "./frameHeader";
+import {ChannelType} from "../enums";
+import {CorruptFileError} from "../../errors";
 import {FrameIdentifiers} from "../frameIdentifiers";
 import {ArrayUtils, Guards, NumberUtils} from "../../utils";
-import {CorruptFileError} from "../../errors";
-
-/**
- * Type of channel data to get from or set to a {@link RelativeVolumeFrame} object
- */
-export enum ChannelType {
-    /**
-     * Channel data for some other speaker
-     */
-    Other = 0x00,
-
-    /**
-     * Channel data for the master volume
-     */
-    MasterVolume = 0x01,
-
-    /**
-     * Channel data for the front right speaker
-     */
-    FrontRight = 0x02,
-
-    /**
-     * Channel data for front left speaker
-     */
-    FrontLeft = 0x03,
-
-    /**
-     * Channel data for center right speaker
-     */
-    BackRight = 0x04,
-
-    /**
-     * Channel data for back left speaker
-     */
-    BackLeft = 0x05,
-
-    /**
-     * Channel data for front center speaker
-     */
-    FrontCentre = 0x06,
-
-    /**
-     * Channel data for back center speaker
-     */
-    BackCenter = 0x07,
-
-    /**
-     * Channel data for subwoofer
-     */
-    Subwoofer = 0x08
-}
 
 /**
  * Represents the relative volume data that applies to a specific channel of the audio.
@@ -204,7 +155,7 @@ export class RelativeVolumeFrame extends Frame {
 
     // #region Constructors
 
-    private constructor(header: Id3v2FrameHeader) {
+    private constructor(header: FrameHeader) {
         super(header);
 
         // Initialize the channel data array
@@ -220,11 +171,7 @@ export class RelativeVolumeFrame extends Frame {
      * @param fieldBytes Bytes that contain the body of the frame
      * @param version ID3v2 version the frame was originally encoded with
      */
-    public static fromFieldBytes(
-        header: Id3v2FrameHeader,
-        fieldBytes: ByteVector,
-        version: number
-    ): RelativeVolumeFrame {
+    public static fromFieldBytes(header: FrameHeader, fieldBytes: ByteVector, version: number): RelativeVolumeFrame {
         Guards.truthy(header, "header");
         Guards.truthy(fieldBytes, "fieldBytes");
         Guards.byte(version, "version");
@@ -278,7 +225,7 @@ export class RelativeVolumeFrame extends Frame {
      *     not provided, the internal channel data will be unset for all channels.
      */
     public static fromFields(identification?: string, channels?: ChannelData[]): RelativeVolumeFrame {
-        const frame = new RelativeVolumeFrame(new Id3v2FrameHeader(FrameIdentifiers.RVA2));
+        const frame = new RelativeVolumeFrame(new FrameHeader(FrameIdentifiers.RVA2));
         frame._identification = identification ?? "";
         if (!!channels) {
             // Replace blank channel data with the provided channel data.

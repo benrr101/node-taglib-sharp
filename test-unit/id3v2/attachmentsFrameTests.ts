@@ -5,11 +5,12 @@ import {assert} from "chai";
 import AttachmentFrame from "../../src/id3v2/frames/attachmentFrame";
 import Frame from "../../src/id3v2/frames/frame";
 import FrameConstructorTests from "./frameConstructorTests";
+import FrameHeader from "../../src/id3v2/frames/frameHeader";
 import Id3v2Settings from "../../src/id3v2/id3v2Settings";
 import PropertyTests from "../utilities/propertyTests";
 import UnknownFrame from "../../src/id3v2/frames/unknownFrame";
 import {ByteVector, StringType} from "../../src/byteVector";
-import {Id3v2FrameFlags, Id3v2FrameHeader} from "../../src/id3v2/frames/frameHeader";
+import {FrameFlags} from "../../src/id3v2/enums";
 import {FrameIdentifier, FrameIdentifiers} from "../../src/id3v2/frameIdentifiers";
 import {IPicture, Picture, PictureType} from "../../src/picture";
 import {Testers} from "../utilities/testers";
@@ -64,7 +65,7 @@ const verifyFrame = (
 }
 
 @suite class Id3v2_AttachmentFrame_ConstructorTests extends FrameConstructorTests {
-    get fromFieldBytes(): (h: Id3v2FrameHeader, d: ByteVector, v: number) => Frame {
+    get fromFieldBytes(): (h: FrameHeader, d: ByteVector, v: number) => Frame {
         return AttachmentFrame.fromFieldBytes;
     }
 
@@ -147,7 +148,7 @@ const verifyFrame = (
             ByteVector.getTextDelimiter(StringType.Latin1),         // Description delimiter
             testData                                                // Picture bytes
         );
-        const header = new Id3v2FrameHeader(FrameIdentifiers.APIC, Id3v2FrameFlags.None, fieldBytes.length);
+        const header = new FrameHeader(FrameIdentifiers.APIC, FrameFlags.None, fieldBytes.length);
 
         // Act
         const frame = AttachmentFrame.fromFieldBytes(header, fieldBytes, version);
@@ -179,7 +180,7 @@ const verifyFrame = (
             ByteVector.getTextDelimiter(StringType.UTF16BE),        // Description delimiter
             testData                                                // Picture bytes
         );
-        const header = new Id3v2FrameHeader(FrameIdentifiers.APIC, Id3v2FrameFlags.None, fieldBytes.length);
+        const header = new FrameHeader(FrameIdentifiers.APIC, FrameFlags.None, fieldBytes.length);
 
         // Act
         const frame = AttachmentFrame.fromFieldBytes(header, fieldBytes, version);
@@ -210,7 +211,7 @@ const verifyFrame = (
             ByteVector.getTextDelimiter(encoding),           // Description delimiter
             testData                                         // Picture bytes
         );
-        const header = new Id3v2FrameHeader(FrameIdentifiers.APIC, Id3v2FrameFlags.None, fieldBytes.length);
+        const header = new FrameHeader(FrameIdentifiers.APIC, FrameFlags.None, fieldBytes.length);
 
         // Act
         const frame = AttachmentFrame.fromFieldBytes(header, fieldBytes, 2);
@@ -244,7 +245,7 @@ const verifyFrame = (
             ByteVector.getTextDelimiter(StringType.Latin1),        // Description delimiter
             testData                                               // Attachment bytes
         );
-        const header = new Id3v2FrameHeader(FrameIdentifiers.GEOB, Id3v2FrameFlags.None, fieldBytes.length);
+        const header = new FrameHeader(FrameIdentifiers.GEOB, FrameFlags.None, fieldBytes.length);
 
         // Act
         const frame = AttachmentFrame.fromFieldBytes(header, fieldBytes, version);
@@ -278,7 +279,7 @@ const verifyFrame = (
             ByteVector.getTextDelimiter(StringType.UTF16BE),        // Description delimiter
             testData                                                // Attachment bytes
         );
-        const header = new Id3v2FrameHeader(FrameIdentifiers.GEOB, Id3v2FrameFlags.None, fieldBytes.length);
+        const header = new FrameHeader(FrameIdentifiers.GEOB, FrameFlags.None, fieldBytes.length);
 
         // Act
         const frame = AttachmentFrame.fromFieldBytes(header, fieldBytes, version);
@@ -449,7 +450,7 @@ const verifyFrame = (
             ByteVector.getTextDelimiter(StringType.UTF16BE),        // Description delimiter
             testData                                                // Picture bytes
         );
-        const header = new Id3v2FrameHeader(FrameIdentifiers.APIC, Id3v2FrameFlags.None, fieldBytes.length);
+        const header = new FrameHeader(FrameIdentifiers.APIC, FrameFlags.None, fieldBytes.length);
         const frame = AttachmentFrame.fromFieldBytes(header, fieldBytes, 4);
 
         // Act
@@ -600,7 +601,7 @@ const verifyFrame = (
             ByteVector.getTextDelimiter(StringType.UTF16),   // Description delimiter
             data                                             // Picture bytes
         );
-        const header = new Id3v2FrameHeader(FrameIdentifiers.APIC, Id3v2FrameFlags.None, fieldBytes.length);
+        const header = new FrameHeader(FrameIdentifiers.APIC, FrameFlags.None, fieldBytes.length);
         const expected = ByteVector.concatenate(header.render(2), fieldBytes);
         Testers.bvEqual(output, expected);
     }
@@ -623,7 +624,7 @@ const verifyFrame = (
             ByteVector.getTextDelimiter(StringType.UTF16),   // Description delimiter
             data                                             // Picture bytes
         );
-        const header = new Id3v2FrameHeader(FrameIdentifiers.APIC, Id3v2FrameFlags.None, fieldBytes.length);
+        const header = new FrameHeader(FrameIdentifiers.APIC, FrameFlags.None, fieldBytes.length);
         const expected = ByteVector.concatenate(header.render(2), fieldBytes);
         Testers.bvEqual(output, expected);
     }
@@ -647,7 +648,7 @@ const verifyFrame = (
             ByteVector.getTextDelimiter(StringType.UTF16),         // Description delimiter
             data                                                   // Picture bytes
         );
-        const header = new Id3v2FrameHeader(FrameIdentifiers.APIC, Id3v2FrameFlags.None, fieldBytes.length);
+        const header = new FrameHeader(FrameIdentifiers.APIC, FrameFlags.None, fieldBytes.length);
         const expected = ByteVector.concatenate(header.render(3), fieldBytes);
         Testers.bvEqual(output, expected);
     }
@@ -671,7 +672,7 @@ const verifyFrame = (
             ByteVector.getTextDelimiter(StringType.Latin1),        // Description delimiter
             data                                                   // Picture bytes
         );
-        const header = new Id3v2FrameHeader(FrameIdentifiers.APIC, Id3v2FrameFlags.None, fieldBytes.length);
+        const header = new FrameHeader(FrameIdentifiers.APIC, FrameFlags.None, fieldBytes.length);
         const expected = ByteVector.concatenate(header.render(4), fieldBytes);
         Testers.bvEqual(output, expected);
     }
@@ -694,7 +695,7 @@ const verifyFrame = (
             ByteVector.getTextDelimiter(StringType.UTF16),  // Description delimiter
             data                                            // Attachment bytes
         );
-        const header = new Id3v2FrameHeader(FrameIdentifiers.GEOB, Id3v2FrameFlags.None, fieldBytes.length);
+        const header = new FrameHeader(FrameIdentifiers.GEOB, FrameFlags.None, fieldBytes.length);
         const expected = ByteVector.concatenate(header.render(version), fieldBytes);
         Testers.bvEqual(output, expected);
     }
@@ -715,7 +716,7 @@ const verifyFrame = (
             ByteVector.getTextDelimiter(Id3v2Settings.defaultEncoding), // Description delimiter
             data                                                        // Attachment bytes
         );
-        const header = new Id3v2FrameHeader(FrameIdentifiers.GEOB, Id3v2FrameFlags.None, fieldBytes.length);
+        const header = new FrameHeader(FrameIdentifiers.GEOB, FrameFlags.None, fieldBytes.length);
         const expected = ByteVector.concatenate(header.render(4), fieldBytes);
         Testers.bvEqual(output, expected);
     }
@@ -739,7 +740,7 @@ const verifyFrame = (
             ByteVector.getTextDelimiter(StringType.UTF16),         // Description delimiter
             data                                                   // Attachment bytes
         );
-        const header = new Id3v2FrameHeader(FrameIdentifiers.GEOB, Id3v2FrameFlags.None, fieldBytes.length);
+        const header = new FrameHeader(FrameIdentifiers.GEOB, FrameFlags.None, fieldBytes.length);
         const expected = ByteVector.concatenate(header.render(version), fieldBytes);
         Testers.bvEqual(output, expected);
     }
@@ -762,7 +763,7 @@ const verifyFrame = (
             ByteVector.getTextDelimiter(Id3v2Settings.defaultEncoding), // Description delimiter
             data                                                        // Attachment bytes
         );
-        const header = new Id3v2FrameHeader(FrameIdentifiers.GEOB, Id3v2FrameFlags.None, fieldBytes.length);
+        const header = new FrameHeader(FrameIdentifiers.GEOB, FrameFlags.None, fieldBytes.length);
         const expected = ByteVector.concatenate(header.render(4), fieldBytes);
         Testers.bvEqual(output, expected);
     }
@@ -787,7 +788,7 @@ const verifyFrame = (
             ByteVector.getTextDelimiter(StringType.UTF16),         // Description delimiter
             data                                                   // Attachment bytes
         )
-        const header = new Id3v2FrameHeader(FrameIdentifiers.GEOB, Id3v2FrameFlags.None, fieldBytes.length);
+        const header = new FrameHeader(FrameIdentifiers.GEOB, FrameFlags.None, fieldBytes.length);
         const expected = ByteVector.concatenate(header.render(version), fieldBytes);
         Testers.bvEqual(output, expected);
     }
@@ -811,7 +812,7 @@ const verifyFrame = (
             ByteVector.getTextDelimiter(Id3v2Settings.defaultEncoding),       // Description delimiter
             data                                                              // Attachment bytes
         )
-        const header = new Id3v2FrameHeader(FrameIdentifiers.GEOB, Id3v2FrameFlags.None, fieldBytes.length);
+        const header = new FrameHeader(FrameIdentifiers.GEOB, FrameFlags.None, fieldBytes.length);
         const expected = ByteVector.concatenate(header.render(4), fieldBytes);
         Testers.bvEqual(output, expected);
     }
@@ -837,7 +838,7 @@ const verifyFrame = (
             ByteVector.getTextDelimiter(StringType.UTF16),         // Description delimiter
             data                                                   // Attachment bytes
         );
-        const header = new Id3v2FrameHeader(FrameIdentifiers.GEOB, Id3v2FrameFlags.None, fieldBytes.length);
+        const header = new FrameHeader(FrameIdentifiers.GEOB, FrameFlags.None, fieldBytes.length);
         const expected = ByteVector.concatenate(header.render(version), fieldBytes);
         Testers.bvEqual(output, expected);
     }
@@ -862,7 +863,7 @@ const verifyFrame = (
             ByteVector.getTextDelimiter(Id3v2Settings.defaultEncoding),        // Description delimiter
             data                                                               // Attachment bytes
         );
-        const header = new Id3v2FrameHeader(FrameIdentifiers.GEOB, Id3v2FrameFlags.None, fieldBytes.length);
+        const header = new FrameHeader(FrameIdentifiers.GEOB, FrameFlags.None, fieldBytes.length);
         const expected = ByteVector.concatenate(header.render(4), fieldBytes);
         Testers.bvEqual(output, expected);
     }

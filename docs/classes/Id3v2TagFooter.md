@@ -210,7 +210,7 @@ same tag.
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `header` | [`Id3v2TagHeader`](Id3v2TagHeader.md) | Header from which to base the new footer |
+| `header` | [`TagHeader`](Id3v2TagHeader.md) | Header from which to base the new footer |
 
 #### Returns
 

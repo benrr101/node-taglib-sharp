@@ -1,7 +1,7 @@
 import Frame from "./frame";
+import FrameHeader from "./frameHeader";
 import {ByteVector} from "../../byteVector";
 import {CorruptFileError, NotSupportedError} from "../../errors";
-import {Id3v2FrameHeader} from "./frameHeader";
 import {FrameIdentifiers} from "../frameIdentifiers";
 import {ArrayUtils, Guards} from "../../utils";
 
@@ -11,7 +11,7 @@ import {ArrayUtils, Guards} from "../../utils";
 export default class PlayCountFrame extends Frame {
     private _playCount: bigint;
 
-    private constructor(header: Id3v2FrameHeader) {
+    private constructor(header: FrameHeader) {
         super(header);
         this._playCount = BigInt(0);
     }
@@ -24,7 +24,7 @@ export default class PlayCountFrame extends Frame {
      * @param fieldBytes Bytes that contain the body of the frame
      * @param version ID3v2 version the frame was originally encoded with
      */
-    public static fromFieldBytes(header: Id3v2FrameHeader, fieldBytes: ByteVector, version: number): PlayCountFrame {
+    public static fromFieldBytes(header: FrameHeader, fieldBytes: ByteVector, version: number): PlayCountFrame {
         Guards.truthy(header, "header");
         Guards.truthy(fieldBytes, "fieldBytes");
         Guards.byte(version, "version");
@@ -51,7 +51,7 @@ export default class PlayCountFrame extends Frame {
     public static fromFields(playCount: bigint = BigInt(0)): PlayCountFrame {
         Guards.ulong(playCount, "playCount");
 
-        const frame = new PlayCountFrame(new Id3v2FrameHeader(FrameIdentifiers.PCNT));
+        const frame = new PlayCountFrame(new FrameHeader(FrameIdentifiers.PCNT));
         frame._playCount = playCount;
 
         return frame;
@@ -83,7 +83,7 @@ export default class PlayCountFrame extends Frame {
 
     /** @inheritDoc */
     public clone(): Frame {
-        const frame = new PlayCountFrame(new Id3v2FrameHeader(FrameIdentifiers.PCNT));
+        const frame = new PlayCountFrame(new FrameHeader(FrameIdentifiers.PCNT));
         frame.playCount = this.playCount;
         return frame;
     }

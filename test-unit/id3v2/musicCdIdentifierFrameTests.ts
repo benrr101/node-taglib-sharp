@@ -3,16 +3,17 @@ import {assert} from "chai";
 
 import Frame from "../../src/id3v2/frames/frame";
 import FrameConstructorTests from "./frameConstructorTests";
+import FrameHeader from "../../src/id3v2/frames/frameHeader";
 import MusicCdIdentifierFrame from "../../src/id3v2/frames/musicCdIdentifierFrame";
 import PropertyTests from "../utilities/propertyTests";
 import UnknownFrame from "../../src/id3v2/frames/unknownFrame";
 import {ByteVector, StringType} from "../../src/byteVector";
-import {Id3v2FrameFlags, Id3v2FrameHeader} from "../../src/id3v2/frames/frameHeader";
+import {FrameFlags} from "../../src/id3v2/enums";
 import {FrameIdentifiers} from "../../src/id3v2/frameIdentifiers";
 import {Testers} from "../utilities/testers";
 
 @suite class Id3v2_MusicCdIdentifierFrameTests extends FrameConstructorTests {
-    public get fromFieldBytes(): (h: Id3v2FrameHeader, d: ByteVector, v: number) => Frame {
+    public get fromFieldBytes(): (h: FrameHeader, d: ByteVector, v: number) => Frame {
         return MusicCdIdentifierFrame.fromFieldBytes;
     }
 
@@ -22,7 +23,7 @@ import {Testers} from "../utilities/testers";
     public fromFieldBytes_validParams(version: number) {
         // Arrange
         const fieldBytes = ByteVector.fromString("foo bar baz", StringType.UTF8);
-        const header = new Id3v2FrameHeader(FrameIdentifiers.MCDI, Id3v2FrameFlags.None, fieldBytes.length);
+        const header = new FrameHeader(FrameIdentifiers.MCDI, FrameFlags.None, fieldBytes.length);
 
         // Act
         const frame = MusicCdIdentifierFrame.fromFieldBytes(header, fieldBytes, version);
@@ -68,7 +69,7 @@ import {Testers} from "../utilities/testers";
     public clone_returnsCopy(version: number) {
         // Arrange
         const fieldBytes = ByteVector.fromString("foo bar baz", StringType.UTF8);
-        const header = new Id3v2FrameHeader(FrameIdentifiers.MCDI, Id3v2FrameFlags.None, fieldBytes.length);
+        const header = new FrameHeader(FrameIdentifiers.MCDI, FrameFlags.None, fieldBytes.length);
         const frame = MusicCdIdentifierFrame.fromFieldBytes(header, fieldBytes, version);
 
         // Act
@@ -165,7 +166,7 @@ import {Testers} from "../utilities/testers";
     public render_returnsByteVector(version: number) {
         // Arrange
         const fieldBytes = ByteVector.fromString("foo bar baz", StringType.UTF8);
-        const header = new Id3v2FrameHeader(FrameIdentifiers.MCDI, Id3v2FrameFlags.None, fieldBytes.length);
+        const header = new FrameHeader(FrameIdentifiers.MCDI, FrameFlags.None, fieldBytes.length);
         const frame = MusicCdIdentifierFrame.fromFieldBytes(header, fieldBytes, version);
 
         // Act

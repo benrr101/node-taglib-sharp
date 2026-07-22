@@ -1,4 +1,5 @@
-import {ByteVector, PictureType, StringType} from "../../src";
+import {ByteVector, StringType} from "../../src/byteVector";
+import {PictureType} from "../../src/picture";
 
 export default class XiphTestResources {
     public static readonly pictureData = ByteVector.fromString("foobarbaz", StringType.UTF8);
