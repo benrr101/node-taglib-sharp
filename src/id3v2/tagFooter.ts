@@ -2,7 +2,7 @@ import Id3v2Settings from "./id3v2Settings";
 import SyncData from "./syncData";
 import TagHeader from "./tagHeader";
 import {ByteVector, StringType} from "../byteVector";
-import {TagFlags} from "./enums";
+import {Id3v2Version, TagFlags} from "./enums";
 import {CorruptFileError} from "../errors";
 import {Guards, NumberUtils} from "../utils";
 
@@ -17,9 +17,9 @@ export default class TagFooter {
     public static readonly FILE_IDENTIFIER = ByteVector.fromString("3DI", StringType.Latin1).makeReadOnly();
 
     private _flags: TagFlags = TagFlags.FooterPresent;
-    private _majorVersion: number = 0;
-    private _revisionNumber: number = 0;
-    private _tagSize: number = 0;
+    private _majorVersion: Id3v2Version;
+    private _revisionNumber: number;
+    private _tagSize: number;
 
     /**
      * Constructs and initializes a new instance by reading it from raw footer data.
@@ -35,18 +35,24 @@ export default class TagFooter {
         }
 
         const footer = new TagFooter();
-        footer._majorVersion = data.get(3);
+
+        const majorVersion = data.get(3);
+        if (majorVersion < 2 || majorVersion > 4) {
+            throw new CorruptFileError(`Id3v2 footer has invalid version: ${majorVersion}`);
+        }
+        footer._majorVersion = <Id3v2Version>majorVersion;
+
         footer._revisionNumber = data.get(4);
         footer._flags = data.get(5);
 
         // TODO: Is there any point to supporting footers on versions less than 4?
-        if (footer._majorVersion === 2 && NumberUtils.hasFlag(footer._flags, 127)) {
+        if (footer._majorVersion === Id3v2Version.V22 && NumberUtils.hasFlag(footer._flags, 127)) {
             throw new CorruptFileError("Invalid flags set on version 2 tag");
         }
-        if (footer._majorVersion === 3 && NumberUtils.hasFlag(footer._flags, 15)) {
+        if (footer._majorVersion === Id3v2Version.V23 && NumberUtils.hasFlag(footer._flags, 15)) {
             throw new CorruptFileError("Invalid flags set on version 3 tag");
         }
-        if (footer._majorVersion === 4 && NumberUtils.hasFlag(footer._flags, 7)) {
+        if (footer._majorVersion === Id3v2Version.V24 && NumberUtils.hasFlag(footer._flags, 7)) {
             throw new CorruptFileError("Invalid flags set on version 4 tag");
         }
 
@@ -99,11 +105,11 @@ export default class TagFooter {
      */
     public set flags(value: TagFlags) {
         const version3Flags = TagFlags.ExtendedHeader | TagFlags.ExperimentalIndicator;
-        if (NumberUtils.hasFlag(value, version3Flags) && this.majorVersion < 3) {
+        if (NumberUtils.hasFlag(value, version3Flags) && this.majorVersion === Id3v2Version.V22) {
             throw new Error("Feature only supported in version 2.3+");
         }
         const version4Flags = TagFlags.FooterPresent;
-        if (NumberUtils.hasFlag(value, version4Flags) && this.majorVersion < 4) {
+        if (NumberUtils.hasFlag(value, version4Flags) && this.majorVersion !== Id3v2Version.V24) {
             throw new Error("Feature only supported in version 2.4+");
         }
 
@@ -113,11 +119,7 @@ export default class TagFooter {
     /**
      * Sets the major version of the tag described by the current instance.
      */
-    public get majorVersion(): number {
-        return this._majorVersion === 0
-            ? Id3v2Settings.defaultVersion
-            : this._majorVersion;
-    }
+    public get majorVersion(): Id3v2Version { return this._majorVersion; }
     /**
      * Sets the major version of the tag described by the current instance.
      * When the version is set, unsupported header flags will automatically be removed from the
@@ -125,8 +127,8 @@ export default class TagFooter {
      * @param value ID3v2 version if tag described by the current instance. Footers are only
      *     supported with version 4, so this value can only be 4.
      */
-    public set majorVersion(value: number) {
-        if (value !== 4) {
+    public set majorVersion(value: Id3v2Version) {
+        if (value !== Id3v2Version.V24) {
             throw new Error("Argument out of range: Version unsupported");
         }
         this._majorVersion = value;
