@@ -1,6 +1,6 @@
 import SyncData from "../syncData";
 import {ByteVector, StringType} from "../../byteVector";
-import {FrameFlags} from "../enums";
+import {FrameFlags, Id3v2Version} from "../enums";
 import {CorruptFileError, NotImplementedError} from "../../errors";
 import {FrameIdentifier, FrameIdentifiers} from "../frameIdentifiers";
 import {Guards, NumberUtils} from "../../utils";
@@ -54,17 +54,15 @@ export default class FrameHeader {
      *     a frame identifier and the remaining values are zeroed. @TODO: Why?? Why needs that functionality?
      * @param version ID3v2 version with which the data in `data` was encoded.
      */
-    public static fromData(data: ByteVector, version: number): FrameHeader {
+    public static fromData(data: ByteVector, version: Id3v2Version): FrameHeader {
         Guards.truthy(data, "data");
-        Guards.byte(version, "version");
-        Guards.betweenInclusive(version, 2, 4, "version");
 
         let rawFrameId: string;
         let frameId: FrameIdentifier;
         let flags = 0;
         let frameSize = 0;
         switch (version) {
-            case 2:
+            case Id3v2Version.V22:
                 if (data.length < 3) {
                     throw new CorruptFileError("Data must contain at least a 3 byte frame identifier");
                 }
@@ -82,7 +80,7 @@ export default class FrameHeader {
                 frameSize = data.subarray(3, 3).toUint();
                 break;
 
-            case 3:
+            case Id3v2Version.V23:
                 if (data.length < 4) {
                     throw new CorruptFileError("Data must contain at least a 4 byte frame identifier");
                 }
@@ -106,7 +104,7 @@ export default class FrameHeader {
                 );
                 break;
 
-            case 4:
+            case Id3v2Version.V24:
                 if (data.length < 4) {
                     throw new CorruptFileError("Data must contain at least 4 byte frame identifier");
                 }
@@ -245,11 +243,10 @@ export default class FrameHeader {
 
     /**
      * Gets the size of a header for a specified ID3v2 version.
-     * @param version Version of ID3v2 to get the size for. Must be a positive integer < 256
+     * @param version Version of ID3v2 to get the size for
      */
-    public static getBaseSize(version: number): number {
-        Guards.byte(version, "version");
-        return version < 3 ? 6 : 10;
+    public static getBaseSize(version: Id3v2Version): number {
+        return version === Id3v2Version.V22 ? 6 : 10;
     }
 
     /**
@@ -257,18 +254,17 @@ export default class FrameHeader {
      * determined by the flags initially read for the freame header.
      * @param payloadBytes Frame's payload from which the extended header bytes will be read. These
      *     bytes must be resynchronized if the frame was marked as unsynchronized.
-     * @param version ID3v2 version. Must be a byte.
+     * @param version ID3v2 version
      * @returns number Number of bytes for the extended frame header fields.
      */
-    public readExtendedHeaderFromPayloadBytes(payloadBytes: ByteVector, version: number): number {
+    public readExtendedHeaderFromPayloadBytes(payloadBytes: ByteVector, version: Id3v2Version): number {
         Guards.truthy(payloadBytes, "payloadBytes");
-        Guards.byte(version, "version");
 
         let position = 0;
         switch (version) {
-            case 2:
+            case Id3v2Version.V22:
                 break;
-            case 3:
+            case Id3v2Version.V23:
                 if (NumberUtils.hasFlag(this._flags, FrameFlags.Compression)) {
                     this._dataLength = this.getFieldBytes(payloadBytes, position, 4).toUint();
                     position += 4;
@@ -282,7 +278,7 @@ export default class FrameHeader {
                     position++;
                 }
                 break;
-            case 4:
+            case Id3v2Version.V24:
                 if (NumberUtils.hasFlag(this._flags, FrameFlags.GroupingIdentity)) {
                     this._groupId = this.getFieldBytes(payloadBytes, position, 1).get(0);
                     position++;
@@ -296,8 +292,6 @@ export default class FrameHeader {
                     position += 4;
                 }
                 break;
-            default:
-                throw new Error("Argument error: version must be a valid ID3v2 version.");
         }
 
         return position;
@@ -318,19 +312,16 @@ export default class FrameHeader {
      * Renders the current instance, encoded in a specified ID3v2 version.
      * @param version Version of ID3v2 to use when encoding the current instance.
      */
-    public render(version: number): ByteVector {
-        Guards.byte(version, "version");
-        Guards.betweenInclusive(version, 2, 4, "version");
-
+    public render(version: Id3v2Version): ByteVector {
         // Start by rendering the frame identifier
         const byteVectors = [this._frameId.render(version)];
 
         switch (version) {
-            case 2:
+            case Id3v2Version.V22:
                 byteVectors.push(ByteVector.fromUint(this._frameSize).subarray(1, 3));
                 break;
 
-            case 3:
+            case Id3v2Version.V23:
                 const newFlags = NumberUtils.uintOr(
                     NumberUtils.uintAnd(NumberUtils.uintLShift(this._flags, 1), 0xE000),
                     NumberUtils.uintAnd(NumberUtils.uintLShift(this._flags, 4), 0x00C0),
@@ -341,7 +332,7 @@ export default class FrameHeader {
                 byteVectors.push(ByteVector.fromUshort(newFlags));
                 break;
 
-            case 4:
+            case Id3v2Version.V24:
                 byteVectors.push(SyncData.fromUint(this._frameSize));
                 byteVectors.push(ByteVector.fromUshort(this._flags));
                 break;
@@ -350,12 +341,12 @@ export default class FrameHeader {
         return ByteVector.concatenate(... byteVectors);
     }
 
-    public renderExtendedHeader(version: number): ByteVector {
+    public renderExtendedHeader(version: Id3v2Version): ByteVector {
         const fieldVectors = [];
         switch (version) {
-            case 2:
+            case Id3v2Version.V22:
                 break;
-            case 3:
+            case Id3v2Version.V23:
                 if (NumberUtils.hasFlag(this._flags, FrameFlags.Compression)) {
                     throw new NotImplementedError("Compression is not supported.");
                 }
@@ -366,7 +357,7 @@ export default class FrameHeader {
                     fieldVectors.push(ByteVector.fromByte(this._groupId));
                 }
                 break;
-            case 4:
+            case Id3v2Version.V24:
                 if (NumberUtils.hasFlag(this._flags, FrameFlags.GroupingIdentity)) {
                     fieldVectors.push(ByteVector.fromByte(this._groupId));
                 }

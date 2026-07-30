@@ -5,7 +5,7 @@ import FrameHeader from "../../src/id3v2/frames/frameHeader";
 import PropertyTests from "../utilities/propertyTests";
 import {ByteVector, StringType} from "../../src/byteVector";
 import {Allow, Testers} from "../utilities/testers";
-import {FrameFlags} from "../../src/id3v2/enums";
+import {FrameFlags, Id3v2Version} from "../../src/id3v2/enums";
 import {FrameIdentifiers} from "../../src/id3v2/frameIdentifiers";
 import {NumberUtils} from "../../src/utils";
 
@@ -24,119 +24,47 @@ import {NumberUtils} from "../../src/utils";
         assert.throws(() => FrameHeader.fromData(testBytes, 5));
     }
 
-    @test
-    public fromData_v2_tooShort() {
+    @params([Id3v2Version.V22, 2], "v2")
+    @params([Id3v2Version.V23, 3], "v3")
+    @params([Id3v2Version.V24, 3], "v4")
+    public fromData_tooShort([version, testLength]: [Id3v2Version, number]) {
         // Arrange
-        const testBytes = ByteVector.fromSize(2);
+        const testBytes = ByteVector.fromSize(testLength);
 
         // Act / Assert
-        assert.throws(() => FrameHeader.fromData(testBytes, 2));
+        assert.throws(() => FrameHeader.fromData(testBytes, version));
     }
 
-    @test
-    public fromData_v2_standardIdentifier() {
+    @params([Id3v2Version.V22, "TT1"], "v2")
+    @params([Id3v2Version.V23, "TIT1"], "v3")
+    @params([Id3v2Version.V24, "TIT1"], "v4")
+    public fromData_standardIdentifier([version, testIdentifier]: [Id3v2Version, string]) {
         // Arrange
-        const testBytes = ByteVector.fromString("TT1", StringType.Latin1);
+        const testBytes = ByteVector.fromString(testIdentifier, StringType.Latin1);
 
         // Act
-        const header = FrameHeader.fromData(testBytes, 2);
+        const header = FrameHeader.fromData(testBytes, version);
 
         // Assert
         assert.isOk(header);
-        assert.strictEqual(header.frameId, FrameIdentifiers['TIT1']);
+        assert.strictEqual(header.frameId, FrameIdentifiers[testIdentifier]);
         assert.strictEqual(header.flags, 0);
         assert.strictEqual(header.frameSize, 0);
     }
 
-    @test
-    public fromData_v2_nonstandardIdentifier() {
+    @params([Id3v2Version.V22, "NON"], "v2")
+    @params([Id3v2Version.V23, "NON1"], "v3")
+    @params([Id3v2Version.V24, "NON1"], "v4")
+    public fromData_nonstandardIdentifier([version, testIdentifier]: [Id3v2Version, string]) {
         // Arrange
-        const testBytes = ByteVector.fromString("NON", StringType.Latin1);
+        const testBytes = ByteVector.fromString(testIdentifier, StringType.Latin1);
 
         // Act
-        const header = FrameHeader.fromData(testBytes, 2);
+        const header = FrameHeader.fromData(testBytes, version);
 
         // Assert
         assert.isOk(header);
-        Testers.bvEqual(header.frameId.render(2), testBytes);
-        assert.strictEqual(header.flags, 0);
-        assert.strictEqual(header.frameSize, 0);
-    }
-
-    @test
-    public fromData_v3_tooShort() {
-        // Arrange
-        const testBytes = ByteVector.fromSize(3);
-
-        // Act / Assert
-        assert.throws(() => FrameHeader.fromData(testBytes, 3));
-    }
-
-    @test
-    public fromData_v3_standardIdentifier() {
-        // Arrange
-        const testBytes = ByteVector.fromString("TIT1", StringType.Latin1);
-
-        // Act
-        const header = FrameHeader.fromData(testBytes, 3);
-
-        // Assert
-        assert.isOk(header);
-        assert.strictEqual(header.frameId, FrameIdentifiers['TIT1']);
-        assert.strictEqual(header.flags, 0);
-        assert.strictEqual(header.frameSize, 0);
-    }
-
-    @test
-    public fromData_v3_nonstandardIdentifier() {
-        // Arrange
-        const testBytes = ByteVector.fromString("NON1", StringType.Latin1);
-
-        // Act
-        const header = FrameHeader.fromData(testBytes, 3);
-
-        // Assert
-        assert.isOk(header);
-        Testers.bvEqual(header.frameId.render(3), testBytes);
-        assert.strictEqual(header.flags, 0);
-        assert.strictEqual(header.frameSize, 0);
-    }
-
-    @test
-    public fromData_v4_tooShort() {
-        // Arrange
-        const testBytes = ByteVector.fromSize(3);
-
-        // Act / Assert
-        assert.throws(() => FrameHeader.fromData(testBytes, 4));
-    }
-
-    @test
-    public fromData_v4_standardIdentifier() {
-        // Arrange
-        const testBytes = ByteVector.fromString("TIT1", StringType.Latin1);
-
-        // Act
-        const header = FrameHeader.fromData(testBytes, 4);
-
-        // Assert
-        assert.isOk(header);
-        assert.strictEqual(header.frameId, FrameIdentifiers['TIT1']);
-        assert.strictEqual(header.flags, 0);
-        assert.strictEqual(header.frameSize, 0);
-    }
-
-    @test
-    public fromData_v4_nonstandardIdentifier() {
-        // Arrange
-        const testBytes = ByteVector.fromString("NON1", StringType.Latin1);
-
-        // Act
-        const header = FrameHeader.fromData(testBytes, 4);
-
-        // Assert
-        assert.isOk(header);
-        Testers.bvEqual(header.frameId.render(4), testBytes);
+        Testers.bvEqual(header.frameId.render(version), testBytes);
         assert.strictEqual(header.flags, 0);
         assert.strictEqual(header.frameSize, 0);
     }
@@ -244,10 +172,10 @@ import {NumberUtils} from "../../src/utils";
 
     // #region Method Tests
 
-    @params([2, 6], "v2")
-    @params([3, 10], "v3")
-    @params([4, 10], "v4")
-    public getBaseSize([version, size]: [number, number]) {
+    @params([Id3v2Version.V22, 6], "v2")
+    @params([Id3v2Version.V23, 10], "v3")
+    @params([Id3v2Version.V24, 10], "v4")
+    public getBaseSize([version, size]: [Id3v2Version, number]) {
         // Act
         const result = FrameHeader.getBaseSize(version);
 
@@ -284,7 +212,7 @@ import {NumberUtils} from "../../src/utils";
         header.flags = flags;
 
         // Act
-        const result = header.readExtendedHeaderFromPayloadBytes(ByteVector.fromSize(10), 2);
+        const result = header.readExtendedHeaderFromPayloadBytes(ByteVector.fromSize(10), Id3v2Version.V22);
 
         // Assert
         assert.strictEqual(result, 0);
@@ -340,7 +268,7 @@ import {NumberUtils} from "../../src/utils";
         const extendedBytes = ByteVector.fromByteArray([0x01, 0x02, 0x03, 0x04, 0x05, 0x06]);
 
         // Act
-        const result = header.readExtendedHeaderFromPayloadBytes(extendedBytes, 3);
+        const result = header.readExtendedHeaderFromPayloadBytes(extendedBytes, Id3v2Version.V23);
 
         // Assert
         assert.strictEqual(result, length);
@@ -395,7 +323,7 @@ import {NumberUtils} from "../../src/utils";
         const extendedBytes = ByteVector.fromByteArray([0x01, 0x02, 0x03, 0x04, 0x05, 0x06]);
 
         // Act
-        const result = header.readExtendedHeaderFromPayloadBytes(extendedBytes, 4);
+        const result = header.readExtendedHeaderFromPayloadBytes(extendedBytes, Id3v2Version.V24);
 
         // Assert
         assert.strictEqual(result, length);
@@ -405,17 +333,14 @@ import {NumberUtils} from "../../src/utils";
     }
 
     @test
-    public readExtendedHeaderFromPayloadBytes_notEnoughBytes() {
+    public readExtendedHeaderFromPayloadBytes_v4_notEnoughBytes() {
         // Arrange
-        const header = new FrameHeader(
-            FrameIdentifiers.APIC,
-            FrameFlags.DataLengthIndicator
-        );
+        const header = new FrameHeader(FrameIdentifiers.APIC, FrameFlags.DataLengthIndicator);
         const extendedBytes = ByteVector.fromByteArray([0x00, 0x00, 0x02]);
 
         // Act / Assert
         assert.throws(
-            () => header.readExtendedHeaderFromPayloadBytes(extendedBytes, 4),
+            () => header.readExtendedHeaderFromPayloadBytes(extendedBytes, Id3v2Version.V24),
             "ID3v2 frame extended header does not contain enough bytes for fields set by flags"
         );
     }
@@ -423,14 +348,11 @@ import {NumberUtils} from "../../src/utils";
     @test
     public renderExtendedHeader_v4_dataLengthIndicatorIsSyncSafe() {
         // Arrange
-        const header = new FrameHeader(
-            FrameIdentifiers.APIC,
-            FrameFlags.DataLengthIndicator
-        );
+        const header = new FrameHeader(FrameIdentifiers.APIC, FrameFlags.DataLengthIndicator);
         header.dataLength = 0x100;
 
         // Act
-        const result = header.renderExtendedHeader(4);
+        const result = header.renderExtendedHeader(Id3v2Version.V24);
 
         // Assert
         Testers.bvEqual(result, [0x00, 0x00, 0x02, 0x00]);
