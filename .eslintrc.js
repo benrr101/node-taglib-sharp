@@ -72,6 +72,7 @@ module.exports = {
         "@typescript-eslint/no-namespace": "error",
         "@typescript-eslint/no-parameter-properties": "warn",
         "@typescript-eslint/no-shadow": "error",
+        "@typescript-eslint/no-unsafe-enum-comparison": "error",
         "@typescript-eslint/prefer-namespace-keyword": "error",
         "@typescript-eslint/restrict-template-expressions": 0,
         "@typescript-eslint/triple-slash-reference": [

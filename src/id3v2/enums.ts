@@ -266,12 +266,12 @@ export enum Id3v2Version {
     /**
      * Indicates the ID3v2.2 version.
      */
-    V22 = 1,
+    V22 = 2,
 
     /**
      * Indicates the ID3v2.3 version.
      */
-    V23 = 2,
+    V23 = 3,
 
     /**
      * Indicates the ID3v2.4 version.
