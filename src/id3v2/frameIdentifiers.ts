@@ -1,5 +1,6 @@
 import {ByteVector, StringType} from "../byteVector";
 import {NotSupportedError} from "../errors";
+import {Id3v2Version} from "./enums";
 
 /**
  * Represents the identifier of a frame, depending on the version this may be 3 or 4
@@ -75,20 +76,18 @@ export class FrameIdentifier {
      * @throws NotSupportedError Thrown if the frame identifier does not contain a string for the
      *     provided ID3v2 version.
      */
-    public render(version: number): ByteVector {
+    public render(version: Id3v2Version): ByteVector {
         let bytesForVersion;
         switch (version) {
-            case 2:
+            case Id3v2Version.V22:
                 bytesForVersion = this._version2;
                 break;
-            case 3:
+            case Id3v2Version.V23:
                 bytesForVersion = this._version3;
                 break;
-            case 4:
+            case Id3v2Version.V24:
                 bytesForVersion = this._version4;
                 break;
-            default:
-                throw new Error("Argument error: version must be a value between 2 and 4");
         }
 
         if (!bytesForVersion) {
