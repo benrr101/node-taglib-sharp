@@ -5,7 +5,7 @@ import Frame from "../../src/id3v2/frames/frame";
 import FrameHeader from "../../src/id3v2/frames/frameHeader";
 import PropertyTests from "../utilities/propertyTests";
 import {ByteVector} from "../../src/byteVector";
-import {FrameFlags} from "../../src/id3v2/enums";
+import {FrameFlags, Id3v2Version} from "../../src/id3v2/enums";
 import {FrameIdentifiers} from "../../src/id3v2/frameIdentifiers";
 import {Testers} from "../utilities/testers";
 
@@ -24,9 +24,9 @@ class TestFrame extends Frame {
         return undefined;
     }
 
-    protected parseFields(_data: ByteVector, _version: number): void { /* no-op */ }
+    protected parseFields(_data: ByteVector, _version: Id3v2Version): void { /* no-op */ }
 
-    protected renderFields(_version: number): ByteVector {
+    protected renderFields(_version: Id3v2Version): ByteVector {
         return TestFrame.renderFieldData;
     }
 }
@@ -103,11 +103,11 @@ class TestFrame extends Frame {
         const frame = new TestFrame(header);
 
         // Act
-        const output = frame.render(4);
+        const output = frame.render(Id3v2Version.V24);
 
         // Assert
         const expected = ByteVector.concatenate(
-            header.render(4),
+            header.render(Id3v2Version.V24),
             ByteVector.fromUint(TestFrame.renderFieldData.length),
             TestFrame.renderFieldData
         );
@@ -122,11 +122,11 @@ class TestFrame extends Frame {
         frame.groupId = 0x88;
 
         // Act
-        const output = frame.render(4);
+        const output = frame.render(Id3v2Version.V24);
 
         // Assert
         const expected = ByteVector.concatenate(
-            header.render(4),
+            header.render(Id3v2Version.V24),
             0x88,
             TestFrame.renderFieldData
         );

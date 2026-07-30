@@ -2,9 +2,9 @@ import FrameHeader from "./frameHeader";
 import Id3v2Settings from "../id3v2Settings";
 import SyncData from "../syncData";
 import {ByteVector, StringType} from "../../byteVector";
-import {FrameFlags} from "../enums";
+import {FrameFlags, Id3v2Version} from "../enums";
 import {FrameIdentifier} from "../frameIdentifiers";
-import {Guards, NumberUtils} from "../../utils";
+import {NumberUtils} from "../../utils";
 
 /**
  * Abstract class that represents an ID3v2 frame. Frames are the unit for storing information in
@@ -108,9 +108,7 @@ export default abstract class Frame {
      * Renders the current instance, encoded in a specified ID3v2 version.
      * @param version Version of ID3v2 to use when encoding the current instance
      */
-    public render(version: number): ByteVector {
-        Guards.byte(version, "version");
-
+    public render(version: Id3v2Version): ByteVector {
         // 1) Render the fields
         const fieldBytes = this.renderFields(version);
         if (fieldBytes.length === 0) {
@@ -121,11 +119,11 @@ export default abstract class Frame {
 
         // 2) Render the extended header and process with the body
         // Remove flags that are not supported by older versions of ID3v2
-        if (version < 4) {
+        if (version !== Id3v2Version.V24) {
             const v4Flags = FrameFlags.DataLengthIndicator | FrameFlags.Unsynchronized;
             this.flags &= ~(v4Flags);
         }
-        if (version < 3) {
+        if (version === Id3v2Version.V22) {
             const v3Flags = FrameFlags.Compression
                 | FrameFlags.Encryption
                 | FrameFlags.FileAlterPreservation
@@ -165,14 +163,12 @@ export default abstract class Frame {
      *     {@link Id3v2Settings.forceDefaultEncoding} and what is supported by
      *     `version`
      */
-    protected static correctEncoding(type: StringType, version: number): StringType {
-        Guards.byte(version, "version");
-
+    protected static correctEncoding(type: StringType, version: Id3v2Version): StringType {
         if (Id3v2Settings.forceDefaultEncoding) {
             type = Id3v2Settings.defaultEncoding;
         }
 
-        return version < 4 && type === StringType.UTF8
+        return version !== Id3v2Version.V24 && type === StringType.UTF8
             ? StringType.UTF16
             : type;
     }
@@ -181,7 +177,7 @@ export default abstract class Frame {
      * Renders the values in the current instance into field data for a specified version.
      * @param version ID3v2 version the field data is to be encoded in.
      */
-    protected abstract renderFields(version: number): ByteVector;
+    protected abstract renderFields(version: Id3v2Version): ByteVector;
 
     // #endregion
 }
