@@ -1,7 +1,7 @@
 import Id3v2Settings from "./id3v2Settings";
 import SyncData from "./syncData";
 import {ByteVector, StringType} from "../byteVector";
-import {TagFlags} from "./enums";
+import {Id3v2Version, TagFlags} from "./enums";
 import {CorruptFileError} from "../errors";
 import {Guards, NumberUtils} from "../utils";
 
@@ -15,10 +15,10 @@ export default class TagHeader {
      */
     public static readonly FILE_IDENTIFIER = ByteVector.fromString("ID3", StringType.Latin1).makeReadOnly();
 
-    private _flags: TagFlags = TagFlags.None;
-    private _majorVersion: number = 0;
-    private _revisionNumber: number = 0;
-    private _tagSize: number = 0;
+    private _flags: TagFlags;
+    private _majorVersion: Id3v2Version;
+    private _revisionNumber: number;
+    private _tagSize: number;
 
     // #region Constructors
 
@@ -30,7 +30,7 @@ export default class TagHeader {
      * @param tagSize Size of the tag in bytes as it currently exists on the disk. See {@link tagSize}.
      * @internal
      */
-    public constructor(majorVersion: number, revisionVersion: number, flags: TagFlags, tagSize: number) {
+    public constructor(majorVersion: Id3v2Version, revisionVersion: number, flags: TagFlags, tagSize: number) {
         this._majorVersion = majorVersion;
 
         this.flags = flags;
@@ -51,22 +51,28 @@ export default class TagHeader {
             throw new CorruptFileError("Provided data does not start with the file identifier");
         }
 
-        const majorVersion = data.get(3);
+        const majorVersionNumber = data.get(3);
+        if (majorVersionNumber > 4 || majorVersionNumber < 2) {
+            throw new CorruptFileError(`ID3v2 tag header has an invalid version: ${majorVersionNumber}`);
+        }
+        const majorVersion = <Id3v2Version>majorVersionNumber;
+
         const revisionNumber = data.get(4);
         const flags = data.get(5);
 
         // Make sure flags provided are legal
-        if (majorVersion === 2 && NumberUtils.hasFlag(flags, 63)) {
+        if (majorVersion === Id3v2Version.V22 && NumberUtils.hasFlag(flags, 63)) {
             throw new CorruptFileError("Invalid flags set on version 2 tag");
         }
-        if (majorVersion === 3 && NumberUtils.hasFlag(flags, 15)) {
+        if (majorVersion === Id3v2Version.V23 && NumberUtils.hasFlag(flags, 15)) {
             throw new CorruptFileError("Invalid flags set on version 3 tag");
         }
-        if (majorVersion === 4 && NumberUtils.hasFlag(flags, 7)) {
+        if (majorVersion === Id3v2Version.V24 && NumberUtils.hasFlag(flags, 7)) {
             throw new CorruptFileError("Invalid flags set on version 4 tag");
         }
 
         // Make sure the bytes for the size of the tag are legal
+        // @TODO: Create a helper that checks and returns valid value or throws
         for (let i = 6; i < 10; i++) {
             if (data.get(i) >= 128) {
                 throw new CorruptFileError("One of the bytes in the tag size was greater than the allowed 128");
@@ -103,11 +109,11 @@ export default class TagHeader {
     public set flags(value: TagFlags) {
         // @TODO: Does it make sense to check for flags for major version <4?
         const version3Flags = TagFlags.ExtendedHeader | TagFlags.ExperimentalIndicator;
-        if (NumberUtils.hasFlag(value, version3Flags) && this.majorVersion < 3) {
+        if (NumberUtils.hasFlag(value, version3Flags) && this._majorVersion === Id3v2Version.V22) {
             throw new Error("Feature only supported in version 2.3+");
         }
         const version4Flags = TagFlags.FooterPresent;
-        if (NumberUtils.hasFlag(value, version4Flags) && this.majorVersion < 4) {
+        if (NumberUtils.hasFlag(value, version4Flags) && this._majorVersion !== Id3v2Version.V24) {
             throw new Error("Feature only supported in version 2.4+");
         }
 
@@ -117,8 +123,8 @@ export default class TagHeader {
     /**
      * Gets the major version of the tag described by the current instance.
      */
-    public get majorVersion(): number {
-        return this._majorVersion === 0 || Id3v2Settings.forceDefaultVersion
+    public get majorVersion(): Id3v2Version {
+        return this._majorVersion === undefined || Id3v2Settings.forceDefaultVersion
             ? Id3v2Settings.defaultVersion
             : this._majorVersion;
     }
@@ -126,17 +132,13 @@ export default class TagHeader {
      * Sets the major version of the tag described by the current instance.
      * When the version is set, unsupported header flags will automatically be removed from the
      * tag.
-     * @param value ID3v2 version of tag. Must be a positive 8-bit integer betweenInclusive 2 and 4.
+     * @param value ID3v2 version of tag
      */
-    public set majorVersion(value: number) {
-        Guards.byte(value, "value");
-        Guards.betweenInclusive(value, 2, 4, "value");
-
-        // @TODO: do we need to support setting to versions <4?
-        if (value < 3) {
+    public set majorVersion(value: Id3v2Version) {
+        if (value === Id3v2Version.V22) {
             this._flags &= ~(TagFlags.ExtendedHeader | TagFlags.ExperimentalIndicator);
         }
-        if (value < 4) {
+        if (value !== Id3v2Version.V24) {
             this._flags &= ~TagFlags.FooterPresent;
         }
 
