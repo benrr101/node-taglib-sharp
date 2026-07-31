@@ -10,7 +10,7 @@ import Id3v2Settings from "../../src/id3v2/id3v2Settings";
 import PropertyTests from "../utilities/propertyTests";
 import UnknownFrame from "../../src/id3v2/frames/unknownFrame";
 import {ByteVector, StringType} from "../../src/byteVector";
-import {FrameFlags} from "../../src/id3v2/enums";
+import {FrameFlags, Id3v2Version} from "../../src/id3v2/enums";
 import {FrameIdentifier, FrameIdentifiers} from "../../src/id3v2/frameIdentifiers";
 import {IPicture, Picture, PictureType} from "../../src/picture";
 import {Testers} from "../utilities/testers";
@@ -65,7 +65,7 @@ const verifyFrame = (
 }
 
 @suite class Id3v2_AttachmentFrame_ConstructorTests extends FrameConstructorTests {
-    get fromFieldBytes(): (h: FrameHeader, d: ByteVector, v: number) => Frame {
+    get fromFieldBytes(): (h: FrameHeader, d: ByteVector, v: Id3v2Version) => Frame {
         return AttachmentFrame.fromFieldBytes;
     }
 
@@ -134,9 +134,9 @@ const verifyFrame = (
     //    the first byte of the picture is 0, which we want to make sure isn't mistaken for the end
     //    of the mimetype.
 
-    @params(3, "v3")
-    @params(4, "v4")
-    public fromFieldBytes_apicV34_latin1Encoding(version: number) {
+    @params(Id3v2Version.V23, "v3")
+    @params(Id3v2Version.V24, "v4")
+    public fromFieldBytes_apicV34_latin1Encoding(version: Id3v2Version) {
         // Arrange
         const testData = ByteVector.fromString("fuxbuxqux", StringType.Latin1);
         const fieldBytes = ByteVector.concatenate(
@@ -166,9 +166,9 @@ const verifyFrame = (
         );
     }
 
-    @params(3, "v3")
-    @params(4, "v4")
-    public fromFieldBytes_apicV34_nonLatinEncoding(version: number) {
+    @params(Id3v2Version.V23, "v3")
+    @params(Id3v2Version.V24, "v4")
+    public fromFieldBytes_apicV34_nonLatinEncoding(version: Id3v2Version) {
         // Arrange
         const testData = ByteVector.fromString("fuxbuxqux", StringType.Latin1);
         const fieldBytes = ByteVector.concatenate(
@@ -229,10 +229,10 @@ const verifyFrame = (
         );
     }
 
-    @params(2, "v2")
-    @params(3, "v3")
-    @params(4, "v4")
-    public fromFieldBytes_geob_latinEncoding(version: number) {
+    @params(Id3v2Version.V22, "v2")
+    @params(Id3v2Version.V23, "v3")
+    @params(Id3v2Version.V24, "v4")
+    public fromFieldBytes_geob_latinEncoding(version: Id3v2Version) {
         // Arrange
         const testData = ByteVector.fromString("fuxbuxqux", StringType.Latin1);
         const fieldBytes = ByteVector.concatenate(
@@ -263,10 +263,10 @@ const verifyFrame = (
         );
     }
 
-    @params(2, "v2")
-    @params(3, "v3")
-    @params(4, "v4")
-    public fromFieldBytes_geob_nonLatinEncoding(version: number) {
+    @params(Id3v2Version.V22, "v2")
+    @params(Id3v2Version.V23, "v3")
+    @params(Id3v2Version.V24, "v4")
+    public fromFieldBytes_geob_nonLatinEncoding(version: Id3v2Version) {
         // Arrange
         const testData = ByteVector.fromString("fuxbuxqux", StringType.Latin1);
         const fieldBytes = ByteVector.concatenate(
@@ -451,7 +451,7 @@ const verifyFrame = (
             testData                                                // Picture bytes
         );
         const header = new FrameHeader(FrameIdentifiers.APIC, FrameFlags.None, fieldBytes.length);
-        const frame = AttachmentFrame.fromFieldBytes(header, fieldBytes, 4);
+        const frame = AttachmentFrame.fromFieldBytes(header, fieldBytes, Id3v2Version.V24);
 
         // Act
         const output = <AttachmentFrame> frame.clone();
@@ -590,7 +590,7 @@ const verifyFrame = (
         const frame = getCustomTestFrame(data, "foo", "bar", "this/is_not/a_mimetype", PictureType.FrontCover);
 
         // Act
-        const output = frame.render(2);
+        const output = frame.render(Id3v2Version.V22);
 
         // Assert
         const fieldBytes = ByteVector.concatenate(
@@ -602,7 +602,7 @@ const verifyFrame = (
             data                                             // Picture bytes
         );
         const header = new FrameHeader(FrameIdentifiers.APIC, FrameFlags.None, fieldBytes.length);
-        const expected = ByteVector.concatenate(header.render(2), fieldBytes);
+        const expected = ByteVector.concatenate(header.render(Id3v2Version.V22), fieldBytes);
         Testers.bvEqual(output, expected);
     }
 
@@ -613,7 +613,7 @@ const verifyFrame = (
         const frame = getCustomTestFrame(data, "foo", "bar", "image/gif", PictureType.FrontCover);
 
         // Act
-        const output = frame.render(2);
+        const output = frame.render(Id3v2Version.V22);
 
         // Assert
         const fieldBytes = ByteVector.concatenate(
@@ -625,7 +625,7 @@ const verifyFrame = (
             data                                             // Picture bytes
         );
         const header = new FrameHeader(FrameIdentifiers.APIC, FrameFlags.None, fieldBytes.length);
-        const expected = ByteVector.concatenate(header.render(2), fieldBytes);
+        const expected = ByteVector.concatenate(header.render(Id3v2Version.V22), fieldBytes);
         Testers.bvEqual(output, expected);
     }
 
@@ -636,7 +636,7 @@ const verifyFrame = (
         const frame = getCustomTestFrame(data, "foo", "bar", "image/gif", PictureType.FrontCover);
 
         // Act
-        const output = frame.render(3);
+        const output = frame.render(Id3v2Version.V23);
 
         // Assert
         const fieldBytes = ByteVector.concatenate(
@@ -649,7 +649,7 @@ const verifyFrame = (
             data                                                   // Picture bytes
         );
         const header = new FrameHeader(FrameIdentifiers.APIC, FrameFlags.None, fieldBytes.length);
-        const expected = ByteVector.concatenate(header.render(3), fieldBytes);
+        const expected = ByteVector.concatenate(header.render(Id3v2Version.V23), fieldBytes);
         Testers.bvEqual(output, expected);
     }
 
@@ -660,7 +660,7 @@ const verifyFrame = (
         const frame = getCustomTestFrame(data, "foo", "bar", "image/gif", PictureType.FrontCover);
 
         // Act
-        const output = frame.render(4);
+        const output = frame.render(Id3v2Version.V24);
 
         // Assert
         const fieldBytes = ByteVector.concatenate(
@@ -673,13 +673,13 @@ const verifyFrame = (
             data                                                   // Picture bytes
         );
         const header = new FrameHeader(FrameIdentifiers.APIC, FrameFlags.None, fieldBytes.length);
-        const expected = ByteVector.concatenate(header.render(4), fieldBytes);
+        const expected = ByteVector.concatenate(header.render(Id3v2Version.V24), fieldBytes);
         Testers.bvEqual(output, expected);
     }
 
-    @params(2, "v2")
-    @params(3, "v3")
-    public render_geobWithoutMimeType_v23(version: number) {
+    @params(Id3v2Version.V22, "v2")
+    @params(Id3v2Version.V23, "v3")
+    public render_geobWithoutMimeType_v23(version: Id3v2Version) {
         // Arrange
         const data = ByteVector.fromString("fuxbuxqux", StringType.UTF8);
         const frame = getCustomTestFrame(data, undefined, undefined, undefined, PictureType.NotAPicture);
@@ -707,7 +707,7 @@ const verifyFrame = (
         const frame = getCustomTestFrame(data, undefined, undefined, undefined, PictureType.NotAPicture);
 
         // Act
-        const output = frame.render(4);
+        const output = frame.render(Id3v2Version.V24);
 
         // Assert
         const fieldBytes = ByteVector.concatenate(Id3v2Settings.defaultEncoding,
@@ -717,13 +717,13 @@ const verifyFrame = (
             data                                                        // Attachment bytes
         );
         const header = new FrameHeader(FrameIdentifiers.GEOB, FrameFlags.None, fieldBytes.length);
-        const expected = ByteVector.concatenate(header.render(4), fieldBytes);
+        const expected = ByteVector.concatenate(header.render(Id3v2Version.V24), fieldBytes);
         Testers.bvEqual(output, expected);
     }
 
-    @params(2, "v2")
-    @params(3, "v3")
-    public render_geobWithMimeType_v23(version: number) {
+    @params(Id3v2Version.V22, "v2")
+    @params(Id3v2Version.V23, "v3")
+    public render_geobWithMimeType_v23(version: Id3v2Version) {
         // Arrange
         const data = ByteVector.fromString("fuxbuxqux", StringType.UTF8);
         const frame = getCustomTestFrame(data, undefined, undefined, "image/gif", PictureType.NotAPicture);
@@ -752,7 +752,7 @@ const verifyFrame = (
         const frame = getCustomTestFrame(data, undefined, undefined, "image/gif", PictureType.NotAPicture);
 
         // Act
-        const output = frame.render(4);
+        const output = frame.render(Id3v2Version.V24);
 
         // Assert
         const fieldBytes = ByteVector.concatenate(
@@ -764,13 +764,13 @@ const verifyFrame = (
             data                                                        // Attachment bytes
         );
         const header = new FrameHeader(FrameIdentifiers.GEOB, FrameFlags.None, fieldBytes.length);
-        const expected = ByteVector.concatenate(header.render(4), fieldBytes);
+        const expected = ByteVector.concatenate(header.render(Id3v2Version.V24), fieldBytes);
         Testers.bvEqual(output, expected);
     }
 
-    @params(2, "v2")
-    @params(3, "v3")
-    public render_geobWithMimeTypeAndFileName_v23(version: number) {
+    @params(Id3v2Version.V22, "v2")
+    @params(Id3v2Version.V23, "v3")
+    public render_geobWithMimeTypeAndFileName_v23(version: Id3v2Version) {
         // Arrange
         const data = ByteVector.fromString("fuxbuxqux", StringType.UTF8);
         const frame = getCustomTestFrame(data, undefined, "file.gif", "image/gif", PictureType.NotAPicture);
@@ -800,7 +800,7 @@ const verifyFrame = (
         const frame = getCustomTestFrame(data, undefined, "file.gif", "image/gif", PictureType.NotAPicture);
 
         // Act
-        const output = frame.render(4);
+        const output = frame.render(Id3v2Version.V24);
 
         // Assert
         const fieldBytes = ByteVector.concatenate(
@@ -813,13 +813,13 @@ const verifyFrame = (
             data                                                              // Attachment bytes
         )
         const header = new FrameHeader(FrameIdentifiers.GEOB, FrameFlags.None, fieldBytes.length);
-        const expected = ByteVector.concatenate(header.render(4), fieldBytes);
+        const expected = ByteVector.concatenate(header.render(Id3v2Version.V24), fieldBytes);
         Testers.bvEqual(output, expected);
     }
 
-    @params(2, "v2")
-    @params(3, "v3")
-    public render_geobWithMimeTypeAndFileNameAndDescription_v23(version: number) {
+    @params(Id3v2Version.V22, "v2")
+    @params(Id3v2Version.V23, "v3")
+    public render_geobWithMimeTypeAndFileNameAndDescription_v23(version: Id3v2Version) {
         // Arrange
         const data = ByteVector.fromString("fuxbuxqux", StringType.UTF8);
         const frame = getCustomTestFrame(data, "foobarbaz", "file.gif", "image/gif", PictureType.NotAPicture);
@@ -843,14 +843,14 @@ const verifyFrame = (
         Testers.bvEqual(output, expected);
     }
 
-    @params(4, "v4")
+    @test
     public render_geobWithMimeTypeAndFileNameAndDescription_v4() {
         // Arrange
         const data = ByteVector.fromString("fuxbuxqux", StringType.UTF8);
         const frame = getCustomTestFrame(data, "foobarbaz", "file.gif", "image/gif", PictureType.NotAPicture);
 
         // Act
-        const output = frame.render(4);
+        const output = frame.render(Id3v2Version.V24);
 
         // Assert
         const fieldBytes = ByteVector.concatenate(
@@ -864,7 +864,7 @@ const verifyFrame = (
             data                                                               // Attachment bytes
         );
         const header = new FrameHeader(FrameIdentifiers.GEOB, FrameFlags.None, fieldBytes.length);
-        const expected = ByteVector.concatenate(header.render(4), fieldBytes);
+        const expected = ByteVector.concatenate(header.render(Id3v2Version.V24), fieldBytes);
         Testers.bvEqual(output, expected);
     }
 }
