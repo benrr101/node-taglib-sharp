@@ -13,7 +13,7 @@ import UnsynchronizedLyricsFrame from "./frames/unsynchronizedLyricsFrame";
 import UrlLinkFrame from "./frames/urlLinkFrame";
 import UserTextInformationFrame from "./frames/userTextInformationFrame";
 import {ByteVector, StringType} from "../byteVector";
-import {FrameFlags, TagFlags} from "./enums";
+import {FrameFlags, Id3v2Version, TagFlags} from "./enums";
 import {CorruptFileError, NotImplementedError, NotSupportedError} from "../errors";
 import {File, ReadStyle} from "../file";
 import {Id3v2FrameFactory} from "./frames/frameFactory";
@@ -182,19 +182,21 @@ export default class Id3v2Tag extends Tag {
     /**
      * Gets the ID3v2 version for the current instance.
      */
-    public get version(): number {
-        return this._header.majorVersion;
-    }
+    public get version(): Id3v2Version { return this._header.majorVersion; }
     /**
      * Sets the ID3v2 version for the current instance.
-     * @param value ID3v2 version for the current instance. Must be 2, 3, or 4.
+     * @param value ID3v2 version for the current instance
      */
-    public set version(value: number) {
+    public set version(value: Id3v2Version) {
         const originalVersion = this._header.majorVersion;
         this._header.majorVersion = value;
 
         // Migrate any incompatible frames that have direct migrations
-        if (value === 4 && (originalVersion === 2 || originalVersion === 3)) {
+        const v23ToV4 = (originalVersion === Id3v2Version.V22 || originalVersion== Id3v2Version.V23) &&
+            value === Id3v2Version.V24;
+        const v4ToV23 = originalVersion === Id3v2Version.V24 &&
+            (value === Id3v2Version.V22 || value === Id3v2Version.V23);
+        if (v23ToV4) {
             // * TYER, etc -> TDRC
             const tyerFrames = TextInformationFrame.filterFrames(this._frameList, FrameIdentifiers.TYER);
             const tdatFrames = TextInformationFrame.filterFrames(this._frameList, FrameIdentifiers.TDAT);
@@ -216,7 +218,7 @@ export default class Id3v2Tag extends Tag {
 
                 this.setTextFrame(FrameIdentifiers.TDRC, tdrcText);
             }
-        } else if (originalVersion === 4 && (value === 2 || value === 3)) {
+        } else if (v4ToV23) {
             // * TDRC -> TYER, etc
             const tdrcFrames = TextInformationFrame.filterFrames(this._frameList, FrameIdentifiers.TDRC);
             if (tdrcFrames.length > 0) {
@@ -553,7 +555,7 @@ export default class Id3v2Tag extends Tag {
         }
 
         // Case 3: We have neither type of frame, create the frame for the version of tag on disk
-        if (this.version > 3) {
+        if (this.version === Id3v2Version.V24) {
             this.setNumberFrame(FrameIdentifiers.TDRC, value, 0);
         } else {
             this.setNumberFrame(FrameIdentifiers.TYER, value, 0);
@@ -1119,9 +1121,9 @@ export default class Id3v2Tag extends Tag {
         // the extended header, frames and padding, but does not include the tag's header or footer
         const hasFooter = (this._header.flags & TagFlags.FooterPresent) !== 0;
         const unsyncAtFrameLevel = (this._header.flags & TagFlags.Unsynchronization) !== 0
-            && this.version >= 4;
+            && this.version === Id3v2Version.V24;
         const unsyncAtTagLevel = (this._header.flags & TagFlags.Unsynchronization) !== 0
-            && this.version < 4;
+            && this.version !== Id3v2Version.V24;
 
         this._header.majorVersion = hasFooter ? 4 : this.version;
 
@@ -1216,7 +1218,7 @@ export default class Id3v2Tag extends Tag {
     private parseFromData(data: ByteVector, style: ReadStyle): void {
         // Determine if the entire tag needs to be resynchronized.
         // @TODO: How important is it to check if the version is < 4?
-        const fullTagUnsync = this.version < 4 &&
+        const fullTagUnsync = this.version !== Id3v2Version.V24 &&
                               NumberUtils.hasFlag(this._header.flags, TagFlags.Unsynchronization);
 
         // Resynchronize the entire tag if required
@@ -1230,7 +1232,7 @@ export default class Id3v2Tag extends Tag {
     private parseFromFile(file: File, offset: number, style: ReadStyle): void {
         // Determine if the entire tag needs to be resynchronized.
         // @TODO: How important is it to check if the version is < 4?
-        const fullTagUnsync = this.version < 4 &&
+        const fullTagUnsync = this.version !== Id3v2Version.V24 &&
                               NumberUtils.hasFlag(this._header.flags, TagFlags.Unsynchronization);
 
         // 1) Resynchronize the entire tag if required
@@ -1487,7 +1489,12 @@ export default class Id3v2Tag extends Tag {
      * @param minPlaces Minimum number of digits to use to display the `numerator`, if
      *     the numerator has less than this number of digits, it will be filled with leading zeroes.
      */
-    private setNumberFrame(ident: FrameIdentifier, numerator: number, denominator: number, minPlaces: number = 1): void {
+    private setNumberFrame(
+        ident: FrameIdentifier,
+        numerator: number,
+        denominator: number,
+        minPlaces: number = 1
+    ): void {
         Guards.truthy(ident, "ident");
         Guards.uint(numerator, "value");
         Guards.uint(denominator, "count");
