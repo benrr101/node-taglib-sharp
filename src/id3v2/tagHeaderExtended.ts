@@ -3,6 +3,7 @@ import {ByteVector} from "../byteVector";
 import {CorruptFileError} from "../errors";
 import {Guards} from "../utils";
 import {File} from "../file";
+import {Id3v2Version} from "./enums";
 
 /**
  * This class is a filler until support for reading and writing the ID3v2 extended header is
@@ -16,11 +17,10 @@ export default class TagHeaderExtended {
     /**
      * Constructs and initializes a new instance by reading the raw contents.
      * @param data Raw extended header structure
-     * @param version ID3v2 version. Must be an unsigned 8-bit integer.
+     * @param version ID3v2 version
      */
-    public static fromData(data: ByteVector, version: number): TagHeaderExtended {
+    public static fromData(data: ByteVector, version: Id3v2Version): TagHeaderExtended {
         Guards.truthy(data, "data");
-        Guards.byte(version, "version");
         if (data.length < 4) {
             throw new CorruptFileError("Provided data is smaller than extended header size field");
         }
@@ -28,10 +28,10 @@ export default class TagHeaderExtended {
         const header = new TagHeaderExtended();
 
         // Read extended header size
-        const declaredSize = version === 3
+        const declaredSize = version === Id3v2Version.V23
             ? data.subarray(0, 4).toUint()
             : SyncData.toUint(data.subarray(0, 4));
-        header._size = (version === 3 ? 4 : 0) + declaredSize;
+        header._size = (version === Id3v2Version.V23 ? 4 : 0) + declaredSize;
 
         return header;
     }
@@ -40,12 +40,11 @@ export default class TagHeaderExtended {
      * Constructs and initializes a new instance by reading from file.
      * @param file File containing the extended header
      * @param position Offset into the file where the extended header begins.
-     * @param version ID3v2 version. Must be an unsigned 8-bit integer.
+     * @param version ID3v2 version
      */
-    public static fromFile(file: File, position: number, version: number): TagHeaderExtended {
+    public static fromFile(file: File, position: number, version: Id3v2Version): TagHeaderExtended {
         Guards.truthy(file, "file");
         Guards.safeUint(position, "position");
-        Guards.byte(version, "version");
 
         const header = new TagHeaderExtended();
 
@@ -59,10 +58,10 @@ export default class TagHeaderExtended {
             );
         }
 
-        const declaredSize = version === 3
+        const declaredSize = version === Id3v2Version.V23
             ? sizeData.toUint()
             : SyncData.toUint(sizeData);
-        header._size = (version === 3 ? 4 : 0) + declaredSize;
+        header._size = (version === Id3v2Version.V23 ? 4 : 0) + declaredSize;
 
         return header;
     }
