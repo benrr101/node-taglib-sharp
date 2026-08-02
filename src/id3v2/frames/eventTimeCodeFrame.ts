@@ -1,7 +1,7 @@
 import Frame from "./frame";
 import FrameHeader from "./frameHeader";
 import {ByteVector} from "../../byteVector";
-import {EventType, FrameFlags, TimestampFormat} from "../enums";
+import {EventType, FrameFlags, Id3v2Version, TimestampFormat} from "../enums";
 import {FrameIdentifiers} from "../frameIdentifiers";
 import {ArrayUtils, Guards} from "../../utils";
 import {CorruptFileError} from "../../errors";
@@ -93,16 +93,15 @@ export class EventTimeCodeFrame extends Frame {
      * Constructs and initializes a new instance by parsing the fields from the field bytes.
      * @param header Header of the frame
      * @param fieldBytes Bytes that contain the fields of the frame
-     * @param version ID3v2 version the frame was originally encoded with
+     * @param _version
      */
     public static fromFieldBytes(
         header: FrameHeader,
         fieldBytes: ByteVector,
-        version: number
+        _version: Id3v2Version
     ): EventTimeCodeFrame {
         Guards.truthy(header, "header");
         Guards.truthy(fieldBytes, "fieldBytes");
-        Guards.byte(version, "version");
 
         if (fieldBytes.length < 1) {
             throw new CorruptFileError("Event time code frame must contain at least 1 byte.");

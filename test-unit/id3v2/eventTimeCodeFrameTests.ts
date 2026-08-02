@@ -7,7 +7,7 @@ import FrameHeader from "../../src/id3v2/frames/frameHeader";
 import PropertyTests from "../utilities/propertyTests";
 import UnknownFrame from "../../src/id3v2/frames/unknownFrame";
 import {ByteVector} from "../../src/byteVector";
-import {EventType, FrameFlags, TimestampFormat} from "../../src/id3v2/enums";
+import {EventType, FrameFlags, Id3v2Version, TimestampFormat} from "../../src/id3v2/enums";
 import {EventTimeCode, EventTimeCodeFrame} from "../../src/id3v2/frames/eventTimeCodeFrame";
 import {FrameIdentifiers} from "../../src/id3v2/frameIdentifiers";
 import {Testers} from "../utilities/testers";
@@ -99,14 +99,14 @@ const assertFrame = (frame: EventTimeCodeFrame, e: EventTimeCode[], t: Timestamp
 }
 
 @suite class Id3v2_EventTimeCodeFrame_ConstructorTests extends FrameConstructorTests {
-    public get fromFieldBytes(): (h: FrameHeader, d: ByteVector, v: number) => Frame {
+    public get fromFieldBytes(): (h: FrameHeader, d: ByteVector, v: Id3v2Version) => Frame {
         return EventTimeCodeFrame.fromFieldBytes;
     }
 
-    @params(2, "v2")
-    @params(3, "v3")
-    @params(4, "v4")
-    public fromFieldBytes_notEnoughBytes(version: number) {
+    @params(Id3v2Version.V22, "v2")
+    @params(Id3v2Version.V23, "v3")
+    @params(Id3v2Version.V24, "v4")
+    public fromFieldBytes_notEnoughBytes(version: Id3v2Version) {
         // Arrange
         const fieldBytes = ByteVector.empty();
         const header = new FrameHeader(FrameIdentifiers.ETCO, FrameFlags.None, fieldBytes.length);
@@ -115,10 +115,10 @@ const assertFrame = (frame: EventTimeCodeFrame, e: EventTimeCode[], t: Timestamp
         assert.throws(() => { EventTimeCodeFrame.fromFieldBytes(header, fieldBytes, version); });
     }
 
-    @params(2, "v2")
-    @params(3, "v3")
-    @params(4, "v4")
-    public fromFieldBytes_noEvents(version: number) {
+    @params(Id3v2Version.V22, "v2")
+    @params(Id3v2Version.V23, "v3")
+    @params(Id3v2Version.V24, "v4")
+    public fromFieldBytes_noEvents(version: Id3v2Version) {
         // Arrange
         const fieldBytes = ByteVector.fromByte(TimestampFormat.AbsoluteMilliseconds);
         const header = new FrameHeader(FrameIdentifiers.ETCO, FrameFlags.None, fieldBytes.length);
@@ -130,9 +130,9 @@ const assertFrame = (frame: EventTimeCodeFrame, e: EventTimeCode[], t: Timestamp
         assertFrame(frame, [], TimestampFormat.AbsoluteMilliseconds);
     }
 
-    @params(2, "v2")
-    @params(3, "v3")
-    @params(4, "v4")
+    @params(Id3v2Version.V22, "v2")
+    @params(Id3v2Version.V23, "v3")
+    @params(Id3v2Version.V24, "v4")
     public fromFieldBytes_withEvents(version: number) {
         // Arrange
         const event1 = new EventTimeCode(EventType.Profanity, 123);
@@ -151,9 +151,9 @@ const assertFrame = (frame: EventTimeCodeFrame, e: EventTimeCode[], t: Timestamp
         assertFrame(frame, [event1, event2], TimestampFormat.AbsoluteMilliseconds);
     }
 
-    @params(2, "v2")
-    @params(3, "v3")
-    @params(4, "v4")
+    @params(Id3v2Version.V22, "v2")
+    @params(Id3v2Version.V23, "v3")
+    @params(Id3v2Version.V24, "v4")
     public fromFieldBytes_incompleteEvent(version: number) {
         // Arrange
         const event1 = new EventTimeCode(EventType.Profanity, 123);
@@ -323,10 +323,10 @@ const assertFrame = (frame: EventTimeCodeFrame, e: EventTimeCode[], t: Timestamp
         assert.deepEqual(result, [frame1, frame2]);
     }
 
-    @params(2, "v2")
-    @params(3, "v3")
-    @params(4, "v4")
-    public render_withoutEvents(version: number) {
+    @params(Id3v2Version.V22, "v2")
+    @params(Id3v2Version.V23, "v3")
+    @params(Id3v2Version.V24, "v4")
+    public render_withoutEvents(version: Id3v2Version) {
         // Arrange
         const frame = EventTimeCodeFrame.fromFields();
         frame.timestampFormat = TimestampFormat.AbsoluteMpegFrames;
@@ -348,10 +348,10 @@ const assertFrame = (frame: EventTimeCodeFrame, e: EventTimeCode[], t: Timestamp
         Testers.bvEqual(output, expected);
     }
 
-    @params(2, "v2")
-    @params(3, "v3")
-    @params(4, "v4")
-    public render_withEvents(version: number) {
+    @params(Id3v2Version.V22, "v2")
+    @params(Id3v2Version.V23, "v3")
+    @params(Id3v2Version.V24, "v4")
+    public render_withEvents(version: Id3v2Version) {
         // Arrange
         const event1 = new EventTimeCode(EventType.Profanity, 123);
         const event2 = new EventTimeCode(EventType.KeyChange, 456);
