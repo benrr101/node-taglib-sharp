@@ -649,7 +649,7 @@ const assertFrame = (frame: RelativeVolumeFrame, c: ChannelData[], i: string) =>
     @params(Id3v2Version.V22, "v2")
     @params(Id3v2Version.V23, "v3")
     @params(Id3v2Version.V24, "v4")
-    public render_oneChannelData(version: number) {
+    public render_oneChannelData(version: Id3v2Version) {
         // Arrange
         const frame = RelativeVolumeFrame.fromFields("foobarbaz");
         frame.setPeakBits(ChannelType.Subwoofer, 32);

@@ -214,7 +214,7 @@ const verifyFrame = (
         const header = new FrameHeader(FrameIdentifiers.APIC, FrameFlags.None, fieldBytes.length);
 
         // Act
-        const frame = AttachmentFrame.fromFieldBytes(header, fieldBytes, 2);
+        const frame = AttachmentFrame.fromFieldBytes(header, fieldBytes, Id3v2Version.V22);
 
         // Assert
         verifyFrame(

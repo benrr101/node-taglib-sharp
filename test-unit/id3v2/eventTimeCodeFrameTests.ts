@@ -133,7 +133,7 @@ const assertFrame = (frame: EventTimeCodeFrame, e: EventTimeCode[], t: Timestamp
     @params(Id3v2Version.V22, "v2")
     @params(Id3v2Version.V23, "v3")
     @params(Id3v2Version.V24, "v4")
-    public fromFieldBytes_withEvents(version: number) {
+    public fromFieldBytes_withEvents(version: Id3v2Version) {
         // Arrange
         const event1 = new EventTimeCode(EventType.Profanity, 123);
         const event2 = new EventTimeCode(EventType.KeyChange, 456);
@@ -154,7 +154,7 @@ const assertFrame = (frame: EventTimeCodeFrame, e: EventTimeCode[], t: Timestamp
     @params(Id3v2Version.V22, "v2")
     @params(Id3v2Version.V23, "v3")
     @params(Id3v2Version.V24, "v4")
-    public fromFieldBytes_incompleteEvent(version: number) {
+    public fromFieldBytes_incompleteEvent(version: Id3v2Version) {
         // Arrange
         const event1 = new EventTimeCode(EventType.Profanity, 123);
         const event2 = new EventTimeCode(EventType.KeyChange, 456);

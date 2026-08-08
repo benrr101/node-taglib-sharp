@@ -340,7 +340,7 @@ const verifyFrame = (
     @params([Id3v2Version.V23, StringType.UTF16BE], "v3_multibyte")
     @params([Id3v2Version.V24, StringType.Latin1], "v4_single_byte")
     @params([Id3v2Version.V24, StringType.UTF16BE], "v4_multibyte")
-    public render([version, encoding]: [number, StringType]) {
+    public render([version, encoding]: [Id3v2Version, StringType]) {
         // Arrange
         const frame = CommentsFrame.fromFields("bar", "foo", "eng", encoding);
 
@@ -365,7 +365,7 @@ const verifyFrame = (
     @params([Id3v2Version.V22, StringType.UTF16], "v2")
     @params([Id3v2Version.V23, StringType.UTF16], "v3")
     @params([Id3v2Version.V24, StringType.UTF8], "v4")
-    public render_utf8([version, outputEncoding]: [number, StringType]) {
+    public render_utf8([version, outputEncoding]: [Id3v2Version, StringType]) {
         // Arrange
         const frame = CommentsFrame.fromFields("bar", "foo", "eng", StringType.UTF8);
 

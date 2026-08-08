@@ -20,7 +20,7 @@ import {ByteVector} from "../../byteVector";
 import {CorruptFileError, NotImplementedError} from "../../errors";
 import {EventTimeCodeFrame} from "./eventTimeCodeFrame";
 import {File} from "../../file";
-import {FrameFlags} from "../enums";
+import {FrameFlags, Id3v2Version} from "../enums";
 import {FrameIdentifier, FrameIdentifiers} from "../frameIdentifiers";
 import {RelativeVolumeFrame} from "./relativeVolumeFrame";
 import {SynchronizedLyricsFrame} from "./synchronizedLyricsFrame";
@@ -33,9 +33,9 @@ import {Guards, NumberUtils} from "../../utils";
  * @param header The header that describes the frame.
  * @param version ID3v2 version the frame is encoded with. Must be unsigned 8-bit int
  */
-export type FrameCreator = (data: ByteVector, offset: number, header: FrameHeader, version: number) => Frame;
+export type FrameCreator = (data: ByteVector, offset: number, header: FrameHeader, version: Id3v2Version) => Frame;
 
-type InternalFrameCreator = (header: FrameHeader, fieldBytes: ByteVector, version: number) => Frame;
+type InternalFrameCreator = (header: FrameHeader, fieldBytes: ByteVector, version: Id3v2Version) => Frame;
 
 /**
  * Performs the necessary operations to determine and create the correct child classes of
@@ -95,7 +95,7 @@ export class Id3v2FrameFactory {
      * Creates a {@link Frame} object by reading it from a file.
      * @param file File that contains at least one frame
      * @param offset Index into the data block where the frame header begins
-     * @param version ID3v2 version the frame is encoded with. Must be unsigned 8-bit int
+     * @param version ID3v2 version the frame is encoded with
      * @param unsyncedAtTagLevel Whether the entire tag has already been unsynchronized
      * @returns Frame|undefined
      *     Frame read from the file is returned if it was read, `undefined` is returned if no frame
@@ -104,7 +104,7 @@ export class Id3v2FrameFactory {
     public static createFrameFromFile(
         file: File,
         offset: number,
-        version: number,
+        version: Id3v2Version,
         unsyncedAtTagLevel: boolean
     ): {frame: Frame, totalSize: number}|undefined {
         Guards.truthy(file, "file");
@@ -141,7 +141,7 @@ export class Id3v2FrameFactory {
      * Creates a {@link Frame} object by reading it from raw frame data.
      * @param data Block of data containing at least one frame.
      * @param offset Index into the data block where the frame header begins.
-     * @param version ID3v2 version the frame is encoded with. Must be unsigned 8-bit int
+     * @param version ID3v2 version the frame is encoded with
      * @param unsyncedAtTagLevel Whether the entire tag has already been unsynchronized
      * @returns Frame|undefined
      *     Frame read from the file is returned if it was read, `undefined` is returned if no frame
@@ -150,7 +150,7 @@ export class Id3v2FrameFactory {
     public static createFrameFromTagBytes(
         data: ByteVector,
         offset: number,
-        version: number,
+        version: Id3v2Version,
         unsyncedAtTagLevel: boolean
     ): {frame: Frame, totalSize: number}|undefined {
         Guards.truthy(data, "data");
@@ -196,7 +196,7 @@ export class Id3v2FrameFactory {
     private static createFrameFromFieldBytes(
         header: FrameHeader,
         payloadBytes: ByteVector,
-        version: number,
+        version: Id3v2Version,
         unsynchedAtTagLevel: boolean
     ): Frame {
         // Make sure we got the same number of bytes as the frame says

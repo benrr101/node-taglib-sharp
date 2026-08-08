@@ -18,7 +18,7 @@ import {NumberUtils} from "../../src/utils";
         const testBytes = ByteVector.empty();
 
         // Act / Assert
-        Testers.testTruthy((v: ByteVector) => FrameHeader.fromData(v, 3));
+        Testers.testTruthy((v: ByteVector) => FrameHeader.fromData(v, Id3v2Version.V23));
         Testers.testUint((v) => FrameHeader.fromData(testBytes, v));
         assert.throws(() => FrameHeader.fromData(testBytes, 1));
         assert.throws(() => FrameHeader.fromData(testBytes, 5));

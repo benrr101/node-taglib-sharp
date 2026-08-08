@@ -247,7 +247,7 @@ class Id3v2_GenreFrameTests extends FrameConstructorTests {
             ByteVector.getTextDelimiter(StringType.UTF16BE)
         );
 
-        this.testFrameParse(4, payload, ["Classical", "Cover"]);
+        this.testFrameParse(Id3v2Version.V24, payload, ["Classical", "Cover"]);
     }
 
     // endregion
@@ -530,7 +530,7 @@ class Id3v2_GenreFrameTests extends FrameConstructorTests {
             ... this.getDelimitedStrings(expected)
         );
         const expectedHeader = new FrameHeader(FrameIdentifiers.TCON, FrameFlags.None, expectedBody.length);
-        const expectedBytes = ByteVector.concatenate(expectedHeader.render(4), expectedBody);
+        const expectedBytes = ByteVector.concatenate(expectedHeader.render(Id3v2Version.V24), expectedBody);
 
         Testers.bvEqual(result, expectedBytes);
     }

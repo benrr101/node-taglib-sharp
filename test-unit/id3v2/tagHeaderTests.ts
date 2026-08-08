@@ -174,7 +174,7 @@ const getTestHeader = (majorVersion: Id3v2Version, minorVersion: number, flags: 
     @test
     public setFlags_v3_invalidFlags() {
         // Arrange
-        const header = getTestHeader(3, 0, TagFlags.None);
+        const header = getTestHeader(Id3v2Version.V23, 0, TagFlags.None);
 
         // Act / Assert
         assert.throws(() => { header.flags = TagFlags.FooterPresent });
@@ -237,10 +237,10 @@ const getTestHeader = (majorVersion: Id3v2Version, minorVersion: number, flags: 
         const header = getTestHeader(Id3v2Version.V24, 0, flags);
 
         // Act
-        header.majorVersion = 2;
+        header.majorVersion = Id3v2Version.V22;
 
         // Assert
-        assert.equal(header.majorVersion, 2);
+        assert.equal(header.majorVersion, Id3v2Version.V22);
         assert.isFalse(NumberUtils.hasFlag(header.flags, flags));
     }
 
@@ -251,10 +251,10 @@ const getTestHeader = (majorVersion: Id3v2Version, minorVersion: number, flags: 
         const header = getTestHeader(Id3v2Version.V24, 0, flags);
 
         // Act
-        header.majorVersion = 3;
+        header.majorVersion = Id3v2Version.V23;
 
         // Assert
-        assert.equal(header.majorVersion, 3);
+        assert.equal(header.majorVersion, Id3v2Version.V23);
         assert.isFalse(NumberUtils.hasFlag(header.flags, flags));
     }
 
@@ -277,10 +277,10 @@ const getTestHeader = (majorVersion: Id3v2Version, minorVersion: number, flags: 
         const header = getTestHeader(version, 0, TagFlags.None);
 
         // Act
-        header.revisionNumber = 2;
+        header.revisionNumber = Id3v2Version.V22;
 
         // Assert
-        assert.equal(header.revisionNumber, 2);
+        assert.equal(header.revisionNumber, Id3v2Version.V22);
     }
 
     @params(Id3v2Version.V22, "v2")
