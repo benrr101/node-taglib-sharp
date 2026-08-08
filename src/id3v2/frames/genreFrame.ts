@@ -3,6 +3,7 @@ import FrameHeader from "./frameHeader";
 import Genres from "../../genres";
 import Id3v2Settings from "../id3v2Settings";
 import {ByteVector, StringType} from "../../byteVector";
+import {Id3v2Version} from "../enums";
 import {CorruptFileError} from "../../errors";
 import {FrameIdentifiers} from "../frameIdentifiers";
 import {ArrayUtils, Guards, StringUtils} from "../../utils";
@@ -31,10 +32,9 @@ export default class GenreFrame extends Frame {
      * @param fieldBytes Bytes that contain the fields of the frame
      * @param version ID3v2 version the frame was originally encoded with
      */
-    public static fromFieldBytes(header: FrameHeader, fieldBytes: ByteVector, version: number): GenreFrame {
+    public static fromFieldBytes(header: FrameHeader, fieldBytes: ByteVector, version: Id3v2Version): GenreFrame {
         Guards.truthy(header, "header");
         Guards.truthy(fieldBytes, "fieldBytes");
-        Guards.byte(version, "version");
 
         if (fieldBytes.length < 1) {
             throw new CorruptFileError("Genre frame must contain at least 1 byte.");
@@ -48,7 +48,7 @@ export default class GenreFrame extends Frame {
         frame._encoding = fieldBytes.get(0);
 
         const fieldList = [];
-        if (version > 3) {
+        if (version === Id3v2Version.V24) {
             // TCON on ID3v2.4 is encoded as a separate field for each genre. Fields can either be
             // the old numeric ID3v1 genres (no parenthesis) or free text. RX/CR can also be used.
             const genres = fieldBytes.subarray(1).toStrings(frame._encoding);
@@ -182,14 +182,14 @@ export default class GenreFrame extends Frame {
     // #region Protected Methods
 
     /** @inheritDoc */
-    protected renderFields(version: number): ByteVector {
+    protected renderFields(version: Id3v2Version): ByteVector {
         const encoding = GenreFrame.correctEncoding(this.textEncoding, version);
         const v = ByteVector.empty();
         let text = this._textFields;
 
         v.addByte(encoding);
 
-        if (version > 3) {
+        if (version === Id3v2Version.V24) {
             // For ID3v2.4, we should encode any genres that can be numeric as numeric by
             // themselves. This then gets encoded the same as any other ID3v2.4 text frame (ie,
             // with delimiters in between values)
@@ -221,7 +221,7 @@ export default class GenreFrame extends Frame {
             }
         } else {
             // ID3v2.2 and ID3v2.3 TCON frames are going to be written with numeric genres first
-            // (if enabled) and multiple text-based genres separated by ;.
+            // (if enabled) and multiple text-based genres separated by `;`.
             // NOTE: This doesn't follow the actual conventions for ID3v2.2/3 but nobody does this
             //    correctly. This implementation will at least work with MinimServer
             //    https://forum.minimserver.com/showthread.php?tid=2575
