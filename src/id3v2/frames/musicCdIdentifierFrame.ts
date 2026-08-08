@@ -3,6 +3,7 @@ import FrameHeader from "./frameHeader";
 import {ByteVector} from "../../byteVector";
 import {FrameIdentifiers} from "../frameIdentifiers";
 import {ArrayUtils, Guards} from "../../utils";
+import {Id3v2Version} from "../enums";
 
 /**
  * Class extends {@link Frame}, implementing support for ID3v2 Music CD Identifier (MCDI) frames.
@@ -21,16 +22,15 @@ export default class MusicCdIdentifierFrame extends Frame {
      * Constructs and initialized a new instance by storing the bytes of the frame.
      * @param header Header of the frame
      * @param fieldBytes Bytes that contain the body of the frame
-     * @param version ID3v2 version the frame was originally encoded with
+     * @param _version ID3v2 version the frame was originally encoded with
      */
     public static fromFieldBytes(
         header: FrameHeader,
         fieldBytes: ByteVector,
-        version: number
+        _version: Id3v2Version
     ): MusicCdIdentifierFrame {
         Guards.truthy(header, "header");
         Guards.truthy(fieldBytes, "fieldBytes");
-        Guards.byte(version, "version");
 
         const frame = new MusicCdIdentifierFrame(header);
         frame._data = fieldBytes.toByteVector();

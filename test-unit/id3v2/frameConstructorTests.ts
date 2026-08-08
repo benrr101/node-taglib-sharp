@@ -27,14 +27,4 @@ export default abstract class FrameConstructorTests {
         // Act/Assert
         Testers.testTruthy((v: ByteVector) => { this.fromFieldBytes(header, v, 4); });
     }
-
-    @test
-    public fromFieldBytes_invalidVersion_throws() {
-        // Arrange
-        const data = ByteVector.empty();
-        const header = new FrameHeader(FrameIdentifiers.WCOM);
-
-        // Act/Assert
-        Testers.testByte((v: number) => { this.fromFieldBytes(header, data, v); });
-    }
 }

@@ -8,19 +8,19 @@ import MusicCdIdentifierFrame from "../../src/id3v2/frames/musicCdIdentifierFram
 import PropertyTests from "../utilities/propertyTests";
 import UnknownFrame from "../../src/id3v2/frames/unknownFrame";
 import {ByteVector, StringType} from "../../src/byteVector";
-import {FrameFlags} from "../../src/id3v2/enums";
+import {FrameFlags, Id3v2Version} from "../../src/id3v2/enums";
 import {FrameIdentifiers} from "../../src/id3v2/frameIdentifiers";
 import {Testers} from "../utilities/testers";
 
 @suite class Id3v2_MusicCdIdentifierFrameTests extends FrameConstructorTests {
-    public get fromFieldBytes(): (h: FrameHeader, d: ByteVector, v: number) => Frame {
+    public get fromFieldBytes(): (h: FrameHeader, d: ByteVector, v: Id3v2Version) => Frame {
         return MusicCdIdentifierFrame.fromFieldBytes;
     }
 
-    @params(2, "v2")
-    @params(3, "v3")
-    @params(4, "v4")
-    public fromFieldBytes_validParams(version: number) {
+    @params(Id3v2Version.V22, "v2")
+    @params(Id3v2Version.V23, "v3")
+    @params(Id3v2Version.V24, "v4")
+    public fromFieldBytes_validParams(version: Id3v2Version) {
         // Arrange
         const fieldBytes = ByteVector.fromString("foo bar baz", StringType.UTF8);
         const header = new FrameHeader(FrameIdentifiers.MCDI, FrameFlags.None, fieldBytes.length);
@@ -63,10 +63,10 @@ import {Testers} from "../utilities/testers";
         PropertyTests.propertyRoundTrip((v) => { frame.data = v; }, () => frame.data, value);
     }
 
-    @params(2, "v2")
-    @params(3, "v3")
-    @params(4, "v4")
-    public clone_returnsCopy(version: number) {
+    @params(Id3v2Version.V22, "v2")
+    @params(Id3v2Version.V23, "v3")
+    @params(Id3v2Version.V24, "v4")
+    public clone_returnsCopy(version: Id3v2Version) {
         // Arrange
         const fieldBytes = ByteVector.fromString("foo bar baz", StringType.UTF8);
         const header = new FrameHeader(FrameIdentifiers.MCDI, FrameFlags.None, fieldBytes.length);
@@ -160,9 +160,9 @@ import {Testers} from "../utilities/testers";
         assert.deepEqual(result, [frame1, frame2]);
     }
 
-    @params(2, "v2")
-    @params(3, "v3")
-    @params(4, "v4")
+    @params(Id3v2Version.V22, "v2")
+    @params(Id3v2Version.V23, "v3")
+    @params(Id3v2Version.V24, "v4")
     public render_returnsByteVector(version: number) {
         // Arrange
         const fieldBytes = ByteVector.fromString("foo bar baz", StringType.UTF8);

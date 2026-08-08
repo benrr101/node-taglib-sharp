@@ -4,6 +4,7 @@ import {ByteVector, StringType} from "../../byteVector";
 import {CorruptFileError, NotSupportedError} from "../../errors";
 import {FrameIdentifiers} from "../frameIdentifiers";
 import {ArrayUtils, Guards} from "../../utils";
+import {Id3v2Version} from "../enums";
 
 /**
  * This class extends {@link Frame} implementing support for ID3v2 popularimeter (POPM) frames.
@@ -23,16 +24,15 @@ export default class PopularimeterFrame extends Frame {
      * Constructs and initialized a new instance by parsing values from the field data.
      * @param header Header of the frame
      * @param fieldBytes Bytes that contain the body of the frame
-     * @param version ID3v2 version the frame was originally encoded with
+     * @param _version ID3v2 version the frame was originally encoded with
      */
     public static fromFieldBytes(
         header: FrameHeader,
         fieldBytes: ByteVector,
-        version: number
+        _version: Id3v2Version
     ): PopularimeterFrame {
         Guards.truthy(header, "header");
         Guards.truthy(fieldBytes, "fieldBytes");
-        Guards.byte(version, "version");
 
         // Email to user   <text string> $00
         // Rating          $xx

@@ -4,6 +4,7 @@ import {ByteVector} from "../../byteVector";
 import {CorruptFileError, NotSupportedError} from "../../errors";
 import {FrameIdentifiers} from "../frameIdentifiers";
 import {ArrayUtils, Guards} from "../../utils";
+import {Id3v2Version} from "../enums";
 
 /**
  * This class extends {@link Frame} implementing support for ID3v2 play count (PCNT) frames.
@@ -22,12 +23,11 @@ export default class PlayCountFrame extends Frame {
      * Constructs and initialized a new instance by parsing values from the field data.
      * @param header Header of the frame
      * @param fieldBytes Bytes that contain the body of the frame
-     * @param version ID3v2 version the frame was originally encoded with
+     * @param _version ID3v2 version the frame was originally encoded with
      */
-    public static fromFieldBytes(header: FrameHeader, fieldBytes: ByteVector, version: number): PlayCountFrame {
+    public static fromFieldBytes(header: FrameHeader, fieldBytes: ByteVector, _version: Id3v2Version): PlayCountFrame {
         Guards.truthy(header, "header");
         Guards.truthy(fieldBytes, "fieldBytes");
-        Guards.byte(version, "version");
 
         if (fieldBytes.length < 4) {
             throw new CorruptFileError("Play count frame must contain at least 4 bytes.");

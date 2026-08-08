@@ -8,7 +8,7 @@ import PopularimeterFrame from "../../src/id3v2/frames/popularimeterFrame";
 import PropertyTests from "../utilities/propertyTests";
 import UnknownFrame from "../../src/id3v2/frames/unknownFrame";
 import {ByteVector, StringType} from "../../src/byteVector";
-import {FrameFlags} from "../../src/id3v2/enums";
+import {FrameFlags, Id3v2Version} from "../../src/id3v2/enums";
 import {FrameIdentifiers} from "../../src/id3v2/frameIdentifiers";
 import {Testers} from "../utilities/testers";
 
@@ -23,14 +23,14 @@ const assertFrame = (frame: PopularimeterFrame, u: string, p: bigint, r: number)
 }
 
 @suite class Id3v2_PopularimeterFrame_ConstructorTests extends FrameConstructorTests {
-    public get fromFieldBytes(): (h: FrameHeader, d: ByteVector, v: number) => Frame {
+    public get fromFieldBytes(): (h: FrameHeader, d: ByteVector, v: Id3v2Version) => Frame {
         return PopularimeterFrame.fromFieldBytes;
     }
 
-    @params(2, "v2")
-    @params(3, "v3")
-    @params(4, "v4")
-    public fromFieldBytes_noDelimiter(version: number) {
+    @params(Id3v2Version.V22, "v2")
+    @params(Id3v2Version.V23, "v3")
+    @params(Id3v2Version.V24, "v4")
+    public fromFieldBytes_noDelimiter(version: Id3v2Version) {
         // Arrange
         const fieldBytes = ByteVector.fromByteArray([0x01, 0x02, 0x03]);
         const header = new FrameHeader(FrameIdentifiers.POPM, FrameFlags.None, fieldBytes.length);
@@ -39,10 +39,10 @@ const assertFrame = (frame: PopularimeterFrame, u: string, p: bigint, r: number)
         assert.throws(() => { PopularimeterFrame.fromFieldBytes(header, fieldBytes, version); });
     }
 
-    @params(2, "v2")
-    @params(3, "v3")
-    @params(4, "v4")
-    public fromFieldBytes_noRating(version: number) {
+    @params(Id3v2Version.V22, "v2")
+    @params(Id3v2Version.V23, "v3")
+    @params(Id3v2Version.V24, "v4")
+    public fromFieldBytes_noRating(version: Id3v2Version) {
         // Arrange
         const fieldBytes = ByteVector.concatenate(
             ByteVector.fromString("foo@example.com", StringType.Latin1), 0x00 // Owner + delimiter
@@ -53,10 +53,10 @@ const assertFrame = (frame: PopularimeterFrame, u: string, p: bigint, r: number)
         assert.throws(() => { PopularimeterFrame.fromFieldBytes(header, fieldBytes, version); });
     }
 
-    @params(2, "v2")
-    @params(3, "v3")
-    @params(4, "v4")
-    public fromFieldBytes_playCountTooLong(version: number) {
+    @params(Id3v2Version.V22, "v2")
+    @params(Id3v2Version.V23, "v3")
+    @params(Id3v2Version.V24, "v4")
+    public fromFieldBytes_playCountTooLong(version: Id3v2Version) {
         // Arrange
         const fieldBytes = ByteVector.concatenate(
             ByteVector.fromString("foo@example.com", StringType.Latin1), 0x00, // Owner + Delimiter
@@ -84,16 +84,16 @@ const assertFrame = (frame: PopularimeterFrame, u: string, p: bigint, r: number)
         const header = new FrameHeader(FrameIdentifiers.POPM, FrameFlags.None, fieldBytes.length);
 
         // Act
-        const frame = PopularimeterFrame.fromFieldBytes(header, fieldBytes, 4);
+        const frame = PopularimeterFrame.fromFieldBytes(header, fieldBytes, Id3v2Version.V24);
 
         // Assert
         assertFrame(frame, "foo@example.com", undefined, 0xAB);
     }
 
-    @params(2, "v2")
-    @params(3, "v3")
-    @params(4, "v4")
-    public fromFieldBytes_fourBytePlayCount(version: number) {
+    @params(Id3v2Version.V22, "v2")
+    @params(Id3v2Version.V23, "v3")
+    @params(Id3v2Version.V24, "v4")
+    public fromFieldBytes_fourBytePlayCount(version: Id3v2Version) {
         // Arrange
         const fieldBytes = ByteVector.concatenate(
             ByteVector.fromString("foo@example.com", StringType.Latin1), 0x00, // Owner + Delimiter
@@ -109,10 +109,10 @@ const assertFrame = (frame: PopularimeterFrame, u: string, p: bigint, r: number)
         assertFrame(frame, "foo@example.com", BigInt(1234), 0xAB);
     }
 
-    @params(2, "v2")
-    @params(3, "v3")
-    @params(4, "v4")
-    public fromFieldBytes_sixBytePlayCount(version: number) {
+    @params(Id3v2Version.V22, "v2")
+    @params(Id3v2Version.V23, "v3")
+    @params(Id3v2Version.V24, "v4")
+    public fromFieldBytes_sixBytePlayCount(version: Id3v2Version) {
         // Arrange
         const fieldBytes = ByteVector.concatenate(
             ByteVector.fromString("foo@example.com", StringType.Latin1), 0x00, // Owner + Delimiter
@@ -128,10 +128,10 @@ const assertFrame = (frame: PopularimeterFrame, u: string, p: bigint, r: number)
         assertFrame(frame, "foo@example.com", BigInt("1108152157446"), 0xAB);
     }
 
-    @params(2, "v2")
-    @params(3, "v3")
-    @params(4, "v4")
-    public fromFieldBytes_eightBytePlayCount(version: number) {
+    @params(Id3v2Version.V22, "v2")
+    @params(Id3v2Version.V23, "v3")
+    @params(Id3v2Version.V24, "v4")
+    public fromFieldBytes_eightBytePlayCount(version: Id3v2Version) {
         // Arrange
         const fieldBytes = ByteVector.concatenate(
             ByteVector.fromString("foo@example.com", StringType.Latin1), 0x00,         // Owner + Delimiter
@@ -321,10 +321,10 @@ const assertFrame = (frame: PopularimeterFrame, u: string, p: bigint, r: number)
         assert.deepEqual(result, [frame1, frame2]);
     }
 
-    @params(2, "v2")
-    @params(3, "v3")
-    @params(4, "v4")
-    public render_noPlayCount(version: number) {
+    @params(Id3v2Version.V22, "v2")
+    @params(Id3v2Version.V23, "v3")
+    @params(Id3v2Version.V24, "v4")
+    public render_noPlayCount(version: Id3v2Version) {
         // Arrange
         const frame = PopularimeterFrame.fromFields("foo@example.com", 0xAB);
 
@@ -343,10 +343,10 @@ const assertFrame = (frame: PopularimeterFrame, u: string, p: bigint, r: number)
         Testers.bvEqual(output, expected);
     }
 
-    @params(2, "v2")
-    @params(3, "v3")
-    @params(4, "v4")
-    public render_fourBytePlayCount(version: number) {
+    @params(Id3v2Version.V22, "v2")
+    @params(Id3v2Version.V23, "v3")
+    @params(Id3v2Version.V24, "v4")
+    public render_fourBytePlayCount(version: Id3v2Version) {
         // Arrange
         const frame = PopularimeterFrame.fromFields("foo@example.com", 0xAB, BigInt(1234));
 
@@ -366,10 +366,10 @@ const assertFrame = (frame: PopularimeterFrame, u: string, p: bigint, r: number)
         Testers.bvEqual(output, expected);
     }
 
-    @params(2, "v2")
-    @params(3, "v3")
-    @params(4, "v4")
-    public render_sixBytePlayCount(version: number) {
+    @params(Id3v2Version.V22, "v2")
+    @params(Id3v2Version.V23, "v3")
+    @params(Id3v2Version.V24, "v4")
+    public render_sixBytePlayCount(version: Id3v2Version) {
         // Arrange
         const frame = PopularimeterFrame.fromFields("foo@example.com", 0xAB, BigInt("1108152157446"));
 
@@ -389,10 +389,10 @@ const assertFrame = (frame: PopularimeterFrame, u: string, p: bigint, r: number)
         Testers.bvEqual(output, expected);
     }
 
-    @params(2, "v2")
-    @params(3, "v3")
-    @params(4, "v4")
-    public render_eightBytePlayCount(version: number) {
+    @params(Id3v2Version.V22, "v2")
+    @params(Id3v2Version.V23, "v3")
+    @params(Id3v2Version.V24, "v4")
+    public render_eightBytePlayCount(version: Id3v2Version) {
         // Arrange
         const frame = PopularimeterFrame.fromFields("foo@example.com", 0xAB, BigInt("72623859790382856"));
 

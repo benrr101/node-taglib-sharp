@@ -8,7 +8,7 @@ import PlayCountFrame from "../../src/id3v2/frames/playCountFrame";
 import PropertyTests from "../utilities/propertyTests";
 import UnknownFrame from "../../src/id3v2/frames/unknownFrame";
 import {ByteVector} from "../../src/byteVector";
-import {FrameFlags} from "../../src/id3v2/enums";
+import {FrameFlags, Id3v2Version} from "../../src/id3v2/enums";
 import {FrameIdentifiers} from "../../src/id3v2/frameIdentifiers";
 import {Testers} from "../utilities/testers";
 
@@ -21,14 +21,14 @@ const assertFrame = (frame: PlayCountFrame, p: bigint) => {
 }
 
 @suite class Id3v2_PlayCountFrame_ConstructorTests extends FrameConstructorTests {
-    public get fromFieldBytes(): (h: FrameHeader, d: ByteVector, v: number) => Frame {
+    public get fromFieldBytes(): (h: FrameHeader, d: ByteVector, v: Id3v2Version) => Frame {
         return PlayCountFrame.fromFieldBytes;
     }
 
-    @params(2, "v2")
-    @params(3, "v3")
-    @params(4, "v4")
-    public fromFieldBytes_tooBig(version: number) {
+    @params(Id3v2Version.V22, "v2")
+    @params(Id3v2Version.V23, "v3")
+    @params(Id3v2Version.V24, "v4")
+    public fromFieldBytes_tooBig(version: Id3v2Version) {
         // Arrange
         const fieldBytes = ByteVector.fromByteArray([0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09]);
         const header = new FrameHeader(FrameIdentifiers.PCNT, FrameFlags.None, fieldBytes.length);
@@ -37,10 +37,10 @@ const assertFrame = (frame: PlayCountFrame, p: bigint) => {
         assert.throws(() => PlayCountFrame.fromFieldBytes(header, fieldBytes, version));
     }
 
-    @params(2, "v2")
-    @params(3, "v3")
-    @params(4, "v4")
-    public fromFieldBytes_tooSmall(version: number) {
+    @params(Id3v2Version.V22, "v2")
+    @params(Id3v2Version.V23, "v3")
+    @params(Id3v2Version.V24, "v4")
+    public fromFieldBytes_tooSmall(version: Id3v2Version) {
         // Arrange
         const fieldBytes = ByteVector.fromByteArray([0x01, 0x02, 0x03]);
         const header = new FrameHeader(FrameIdentifiers.PCNT, FrameFlags.None, fieldBytes.length);
@@ -49,10 +49,10 @@ const assertFrame = (frame: PlayCountFrame, p: bigint) => {
         assert.throws(() => PlayCountFrame.fromFieldBytes(header, fieldBytes, version));
     }
 
-    @params(2, "v2")
-    @params(3, "v3")
-    @params(4, "v4")
-    public fromFieldBytes_fourBytePlayCount(version: number) {
+    @params(Id3v2Version.V22, "v2")
+    @params(Id3v2Version.V23, "v3")
+    @params(Id3v2Version.V24, "v4")
+    public fromFieldBytes_fourBytePlayCount(version: Id3v2Version) {
         // Arrange
         const fieldBytes = ByteVector.fromUint(1234);
         const header = new FrameHeader(FrameIdentifiers.PCNT, FrameFlags.None, fieldBytes.length);
@@ -64,10 +64,10 @@ const assertFrame = (frame: PlayCountFrame, p: bigint) => {
         assertFrame(frame, BigInt(1234));
     }
 
-    @params(2, "v2")
-    @params(3, "v3")
-    @params(4, "v4")
-    public fromFieldBytes_sixBytePlayCount(version: number) {
+    @params(Id3v2Version.V22, "v2")
+    @params(Id3v2Version.V23, "v3")
+    @params(Id3v2Version.V24, "v4")
+    public fromFieldBytes_sixBytePlayCount(version: Id3v2Version) {
         // Arrange
         const fieldBytes = ByteVector.fromByteArray([0x01, 0x02, 0x03, 0x04, 0x05, 0x06]);
         const header = new FrameHeader(FrameIdentifiers.PCNT, FrameFlags.None, fieldBytes.length);
@@ -79,10 +79,10 @@ const assertFrame = (frame: PlayCountFrame, p: bigint) => {
         assertFrame(frame, BigInt("1108152157446"));
     }
 
-    @params(2, "v2")
-    @params(3, "v3")
-    @params(4, "v4")
-    public fromFieldBytes_eightBytePlayCount(version: number) {
+    @params(Id3v2Version.V22, "v2")
+    @params(Id3v2Version.V23, "v3")
+    @params(Id3v2Version.V24, "v4")
+    public fromFieldBytes_eightBytePlayCount(version: Id3v2Version) {
         // Arrange
         const fieldBytes = ByteVector.fromByteArray([0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08]);
         const header = new FrameHeader(FrameIdentifiers.PCNT, FrameFlags.None, fieldBytes.length);
@@ -222,10 +222,10 @@ const assertFrame = (frame: PlayCountFrame, p: bigint) => {
         assert.deepEqual(result, [frame1, frame2]);
     }
 
-    @params(2, "v2")
-    @params(3, "v3")
-    @params(4, "v4")
-    public render_fourBytePlayCount(version: number) {
+    @params(Id3v2Version.V22, "v2")
+    @params(Id3v2Version.V23, "v3")
+    @params(Id3v2Version.V24, "v4")
+    public render_fourBytePlayCount(version: Id3v2Version) {
         // Arrange
         const frame = PlayCountFrame.fromFields(BigInt(1234));
 
@@ -241,10 +241,10 @@ const assertFrame = (frame: PlayCountFrame, p: bigint) => {
         Testers.bvEqual(output, expected);
     }
 
-    @params(2, "v2")
-    @params(3, "v3")
-    @params(4, "v4")
-    public render_sixBytePlayCount(version: number) {
+    @params(Id3v2Version.V22, "v2")
+    @params(Id3v2Version.V23, "v3")
+    @params(Id3v2Version.V24, "v4")
+    public render_sixBytePlayCount(version: Id3v2Version) {
         // Arrange
         const frame = PlayCountFrame.fromFields(BigInt("1108152157446"));
 
@@ -260,10 +260,10 @@ const assertFrame = (frame: PlayCountFrame, p: bigint) => {
         Testers.bvEqual(output, expected);
     }
 
-    @params(2, "v2")
-    @params(3, "v3")
-    @params(4, "v4")
-    public render_eightBytePlayCount(version: number) {
+    @params(Id3v2Version.V22, "v2")
+    @params(Id3v2Version.V23, "v3")
+    @params(Id3v2Version.V24, "v4")
+    public render_eightBytePlayCount(version: Id3v2Version) {
         // Arrange
         const frame = PlayCountFrame.fromFields(BigInt("72623859790382856"));
 
