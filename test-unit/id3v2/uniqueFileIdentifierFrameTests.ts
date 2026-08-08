@@ -8,7 +8,7 @@ import PropertyTests from "../utilities/propertyTests";
 import UniqueFileIdentifierFrame from "../../src/id3v2/frames/uniqueFileIdentifierFrame";
 import UnknownFrame from "../../src/id3v2/frames/unknownFrame";
 import {ByteVector, StringType} from "../../src/byteVector";
-import {FrameFlags} from "../../src/id3v2/enums";
+import {FrameFlags, Id3v2Version} from "../../src/id3v2/enums";
 import {FrameIdentifiers} from "../../src/id3v2/frameIdentifiers";
 import {Testers} from "../utilities/testers";
 
@@ -26,14 +26,14 @@ const assertFrame = (frame: UniqueFileIdentifierFrame, o: string, i: ByteVector)
 }
 
 @suite class Id3v2_UniqueFileIdentifierFrame_ConstructorTests extends FrameConstructorTests {
-    public get fromFieldBytes(): (h: FrameHeader, d: ByteVector, v: number) => Frame {
+    public get fromFieldBytes(): (h: FrameHeader, d: ByteVector, v: Id3v2Version) => Frame {
         return UniqueFileIdentifierFrame.fromFieldBytes;
     }
 
-    @params(2, "v2")
-    @params(3, "v3")
-    @params(4, "v4")
-    public fromFieldBytes_empty_throws(version: number) {
+    @params(Id3v2Version.V22, "v2")
+    @params(Id3v2Version.V23, "v3")
+    @params(Id3v2Version.V24, "v4")
+    public fromFieldBytes_empty_throws(version: Id3v2Version) {
         // Arrange
         const fieldBytes = ByteVector.empty();
         const header = new FrameHeader(FrameIdentifiers.UFID, FrameFlags.None, fieldBytes.length);
@@ -42,10 +42,10 @@ const assertFrame = (frame: UniqueFileIdentifierFrame, o: string, i: ByteVector)
         assert.throws(() => UniqueFileIdentifierFrame.fromFieldBytes(header, fieldBytes, version));
     }
 
-    @params(2, "v2")
-    @params(3, "v3")
-    @params(4, "v4")
-    public fromFieldBytes_oneField_throws(version: number) {
+    @params(Id3v2Version.V22, "v2")
+    @params(Id3v2Version.V23, "v3")
+    @params(Id3v2Version.V24, "v4")
+    public fromFieldBytes_oneField_throws(version: Id3v2Version) {
         // Arrange
         const fieldBytes = testIdentifier;
         const header = new FrameHeader(FrameIdentifiers.UFID, FrameFlags.None, fieldBytes.length);
@@ -54,10 +54,10 @@ const assertFrame = (frame: UniqueFileIdentifierFrame, o: string, i: ByteVector)
         assert.throws(() => UniqueFileIdentifierFrame.fromFieldBytes(header, fieldBytes, version));
     }
 
-    @params(2, "v2")
-    @params(3, "v3")
-    @params(4, "v4")
-    public fromFieldBytes_threeFields(version: number) {
+    @params(Id3v2Version.V22, "v2")
+    @params(Id3v2Version.V23, "v3")
+    @params(Id3v2Version.V24, "v4")
+    public fromFieldBytes_threeFields(version: Id3v2Version) {
         // Arrange
         const fieldBytes = ByteVector.concatenate(
             ByteVector.fromString(testOwner, StringType.Latin1), // Owner
@@ -74,10 +74,10 @@ const assertFrame = (frame: UniqueFileIdentifierFrame, o: string, i: ByteVector)
         assertFrame(frame, testOwner, expectedData);
     }
 
-    @params(2, "v2")
-    @params(3, "v3")
-    @params(4, "v4")
-    public fromFieldBytes_validData_returnsFrame(version: number) {
+    @params(Id3v2Version.V22, "v2")
+    @params(Id3v2Version.V23, "v3")
+    @params(Id3v2Version.V24, "v4")
+    public fromFieldBytes_validData_returnsFrame(version: Id3v2Version) {
         // Arrange
         const fieldBytes = ByteVector.concatenate(
             ByteVector.fromString(testOwner, StringType.Latin1), // Owner
@@ -258,10 +258,10 @@ const assertFrame = (frame: UniqueFileIdentifierFrame, o: string, i: ByteVector)
         assert.deepEqual(result, [frame1, frame2]);
     }
 
-    @params(2, "v2")
-    @params(3, "v3")
-    @params(4, "v4")
-    public render_returnsByteVector(version: number) {
+    @params(Id3v2Version.V22, "v2")
+    @params(Id3v2Version.V23, "v3")
+    @params(Id3v2Version.V24, "v4")
+    public render_returnsByteVector(version: Id3v2Version) {
         // Arrange
         const frame = UniqueFileIdentifierFrame.fromFields(testOwner, testIdentifier);
 

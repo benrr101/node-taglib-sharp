@@ -4,6 +4,7 @@ import {ByteVector, StringType} from "../../byteVector";
 import {CorruptFileError} from "../../errors";
 import {FrameIdentifiers} from "../frameIdentifiers";
 import {ArrayUtils, Guards} from "../../utils";
+import {Id3v2Version} from "../enums";
 
 /**
  * Implements support for ID3v2 Unique File Identifier (UFID) frames.
@@ -22,16 +23,15 @@ export default class UniqueFileIdentifierFrame extends Frame {
      * Constructs and initializes a new instance by parsing the fields from the field bytes.
      * @param header Header of the frame
      * @param fieldBytes Bytes that contain the fields of the frame
-     * @param version ID3v2 version the frame was originally encoded with
+     * @param _version ID3v2 version the frame was originally encoded with
      */
     public static fromFieldBytes(
         header: FrameHeader,
         fieldBytes: ByteVector,
-        version: number
+        _version: Id3v2Version
     ): UniqueFileIdentifierFrame {
         Guards.truthy(header, "header");
         Guards.truthy(fieldBytes, "fieldBytes");
-        Guards.byte(version, "version");
 
         // Owner identifier        <text string> $00
         // Identifier              <up to 64 bytes binary data>

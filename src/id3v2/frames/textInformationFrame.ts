@@ -5,6 +5,7 @@ import {ByteVector, StringType} from "../../byteVector";
 import {CorruptFileError} from "../../errors";
 import {FrameIdentifier, FrameIdentifiers} from "../frameIdentifiers";
 import {ArrayUtils, Guards} from "../../utils";
+import {Id3v2Version} from "../enums";
 
 /**
  * This class provides support for ID3v2 text information frames (section 4.2) covering `T000` to
@@ -158,10 +159,13 @@ export default class TextInformationFrame extends Frame {
      * @param fieldBytes Bytes that contain the fields of the frame
      * @param version ID3v2 version the frame was originally encoded with
      */
-    public static fromFieldBytes(header: FrameHeader, fieldBytes: ByteVector, version: number): TextInformationFrame {
+    public static fromFieldBytes(
+        header: FrameHeader,
+        fieldBytes: ByteVector,
+        version: Id3v2Version
+    ): TextInformationFrame {
         Guards.truthy(header, "header");
         Guards.truthy(fieldBytes, "fieldBytes");
-        Guards.byte(version, "version");
 
         if (fieldBytes.length < 1) {
             throw new CorruptFileError("Text identifier frame must contain at least 1 byte.");
@@ -177,7 +181,7 @@ export default class TextInformationFrame extends Frame {
 
         // Split the text if required
         const textBytes = fieldBytes.subarray(1);
-        if (version >= 4) {
+        if (version === Id3v2Version.V24) {
             // @TODO: Should we filter out empty? We currently do it when rendering...
             frame._textFields = textBytes.toStrings(frame._encoding)
                 .filter(t => !!t);
@@ -275,10 +279,10 @@ export default class TextInformationFrame extends Frame {
      *     8-bit integer.
      * @returns Rendered version of the current instance.
      */
-    public render(version: number): ByteVector {
+    public render(version: Id3v2Version): ByteVector {
         Guards.byte(version, "version");
 
-        if (version !== 3 || this.frameId !== FrameIdentifiers.TDRC) {
+        if (version !== Id3v2Version.V23 || this.frameId !== FrameIdentifiers.TDRC) {
             return super.render(version);
         }
 
@@ -320,7 +324,7 @@ export default class TextInformationFrame extends Frame {
     // #region Protected Methods
 
     /** @inheritDoc */
-    protected renderFields(version: number): ByteVector {
+    protected renderFields(version: Id3v2Version): ByteVector {
         const truthyFields = this._textFields.filter(tf => !!tf);
         if (truthyFields.length === 0) {
             return ByteVector.empty();
@@ -329,7 +333,7 @@ export default class TextInformationFrame extends Frame {
         const encoding = TextInformationFrame.correctEncoding(this._encoding, version);
 
         let fieldBytes;
-        if (version > 3) {
+        if (version === Id3v2Version.V24) {
             // v4 frames have each field separated by a delimiter
             const truthyVectors = truthyFields.map(tf => ByteVector.fromString(tf, encoding));
             fieldBytes = ByteVector.join(ByteVector.getTextDelimiter(encoding), truthyVectors);

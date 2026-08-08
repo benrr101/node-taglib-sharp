@@ -7,7 +7,7 @@ import FrameHeader from "../../src/id3v2/frames/frameHeader";
 import UnknownFrame from "../../src/id3v2/frames/unknownFrame";
 import UrlLinkFrame from "../../src/id3v2/frames/urlLinkFrame";
 import {ByteVector, StringType} from "../../src/byteVector";
-import {FrameFlags} from "../../src/id3v2/enums";
+import {FrameFlags, Id3v2Version} from "../../src/id3v2/enums";
 import {FrameIdentifier, FrameIdentifiers} from "../../src/id3v2/frameIdentifiers";
 import {Testers} from "../utilities/testers";
 
@@ -19,14 +19,14 @@ const assertFrame = (frame: UrlLinkFrame, identifier: FrameIdentifier, text: str
 }
 
 @suite class Id3v2_UrlLinkFrame_ConstructorTests extends FrameConstructorTests {
-    public get fromFieldBytes(): (h: FrameHeader, d: ByteVector, v: number) => Frame {
+    public get fromFieldBytes(): (h: FrameHeader, d: ByteVector, v: Id3v2Version) => Frame {
         return UrlLinkFrame.fromFieldBytes;
     }
 
-    @params(2, "v2")
-    @params(3, "v3")
-    @params(4, "v4")
-    public fromFieldBytes_itsGood(version: number) {
+    @params(Id3v2Version.V22, "v2")
+    @params(Id3v2Version.V23, "v3")
+    @params(Id3v2Version.V24, "v4")
+    public fromFieldBytes_itsGood(version: Id3v2Version) {
         // Arrange
         const fieldBytes = ByteVector.fromString("foo", StringType.Latin1);
         const header = new FrameHeader(FrameIdentifiers.WCOM, FrameFlags.None, fieldBytes.length);
@@ -38,10 +38,10 @@ const assertFrame = (frame: UrlLinkFrame, identifier: FrameIdentifier, text: str
         assertFrame(output, FrameIdentifiers.WCOM, "foo");
     }
 
-    @params(2, "v2")
-    @params(3, "v3")
-    @params(4, "v4")
-    public fromFieldBytes_trailingNullBytes(version: number) {
+    @params(Id3v2Version.V22, "v2")
+    @params(Id3v2Version.V23, "v3")
+    @params(Id3v2Version.V24, "v4")
+    public fromFieldBytes_trailingNullBytes(version: Id3v2Version) {
         // Arrange
         const fieldBytes = ByteVector.concatenate(
             ByteVector.fromString("foo", StringType.Latin1),
@@ -56,10 +56,10 @@ const assertFrame = (frame: UrlLinkFrame, identifier: FrameIdentifier, text: str
         assertFrame(output, FrameIdentifiers.WCOM, "foo");
     }
 
-    @params(2, "v2")
-    @params(3, "v3")
-    @params(4, "v4")
-    public fromFieldBytes_multipleFields(version: number) {
+    @params(Id3v2Version.V22, "v2")
+    @params(Id3v2Version.V23, "v3")
+    @params(Id3v2Version.V24, "v4")
+    public fromFieldBytes_multipleFields(version: Id3v2Version) {
         // Arrange
         const fieldBytes = ByteVector.concatenate(
             ByteVector.fromString("foo", StringType.Latin1),
@@ -293,7 +293,7 @@ const assertFrame = (frame: UrlLinkFrame, identifier: FrameIdentifier, text: str
         const frame = UrlLinkFrame.fromFields(FrameIdentifiers.WCOM);
 
         // Act
-        const result = frame.render(4);
+        const result = frame.render(Id3v2Version.V24);
 
         // Assert
         assert.isOk(result);
@@ -306,14 +306,14 @@ const assertFrame = (frame: UrlLinkFrame, identifier: FrameIdentifier, text: str
         const frame = UrlLinkFrame.fromFields(FrameIdentifiers.WCOM, "foo");
 
         // Act
-        const result = frame.render(4);
+        const result = frame.render(Id3v2Version.V24);
 
         // Assert
         assert.isOk(result);
 
         const expectedBytes = ByteVector.concatenate(
-            FrameIdentifiers.WCOM.render(4),
-            ByteVector.fromUint(3),
+            FrameIdentifiers.WCOM.render(Id3v2Version.V24),
+            ByteVector.fromUint(Id3v2Version.V23),
             ByteVector.fromUshort(FrameFlags.None),
             ByteVector.fromString("foo", StringType.Latin1)
         );

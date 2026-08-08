@@ -1,7 +1,7 @@
 import Frame from "./frame";
 import FrameHeader from "./frameHeader";
 import {ByteVector, StringType} from "../../byteVector";
-import {ChannelType} from "../enums";
+import {ChannelType, Id3v2Version} from "../enums";
 import {CorruptFileError} from "../../errors";
 import {FrameIdentifiers} from "../frameIdentifiers";
 import {ArrayUtils, Guards, NumberUtils} from "../../utils";
@@ -169,12 +169,15 @@ export class RelativeVolumeFrame extends Frame {
      * Constructs and initialized a new instance by parsing values from the field data.
      * @param header Header of the frame
      * @param fieldBytes Bytes that contain the body of the frame
-     * @param version ID3v2 version the frame was originally encoded with
+     * @param _version ID3v2 version the frame was originally encoded with
      */
-    public static fromFieldBytes(header: FrameHeader, fieldBytes: ByteVector, version: number): RelativeVolumeFrame {
+    public static fromFieldBytes(
+        header: FrameHeader,
+        fieldBytes: ByteVector,
+        _version: Id3v2Version
+    ): RelativeVolumeFrame {
         Guards.truthy(header, "header");
         Guards.truthy(fieldBytes, "fieldBytes");
-        Guards.byte(version, "version");
 
         // Identification          <text string> $00
         // ---- Repeated for each channel --------------

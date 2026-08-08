@@ -5,6 +5,7 @@ import {ByteVector, StringType} from "../../byteVector";
 import {CorruptFileError} from "../../errors";
 import {FrameIdentifiers} from "../frameIdentifiers";
 import {ArrayUtils, Guards} from "../../utils";
+import {Id3v2Version} from "../enums";
 
 /**
  * Extends {@link Frame} implementing support for ID3v2 unsynchronized lyrics (USLT) frames.
@@ -25,16 +26,15 @@ export default class UnsynchronizedLyricsFrame extends Frame {
      * Constructs and initializes a new instance by parsing the fields from the field bytes.
      * @param header Header of the frame
      * @param fieldBytes Bytes that contain the fields of the frame
-     * @param version ID3v2 version the frame was originally encoded with
+     * @param _version ID3v2 version the frame was originally encoded with
      */
     public static fromFieldBytes(
         header: FrameHeader,
         fieldBytes: ByteVector,
-        version: number
+        _version: Id3v2Version
     ): UnsynchronizedLyricsFrame {
         Guards.truthy(header, "header");
         Guards.truthy(fieldBytes, "fieldBytes");
-        Guards.byte(version, "version");
 
         if (fieldBytes.length < 4) {
             throw new CorruptFileError("Unsynchronized lyrics frame must contain at least 4 bytes.");
@@ -161,7 +161,7 @@ export default class UnsynchronizedLyricsFrame extends Frame {
     }
 
     /** @inheritDoc */
-    protected renderFields(version: number): ByteVector {
+    protected renderFields(version: Id3v2Version): ByteVector {
         const encoding = UnsynchronizedLyricsFrame.correctEncoding(this.textEncoding, version);
         return ByteVector.concatenate(
             encoding,

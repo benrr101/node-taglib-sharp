@@ -9,7 +9,7 @@ import PropertyTests from "../utilities/propertyTests";
 import TextInformationFrame from "../../src/id3v2/frames/textInformationFrame";
 import UnknownFrame from "../../src/id3v2/frames/unknownFrame";
 import {ByteVector, StringType} from "../../src/byteVector";
-import {FrameFlags} from "../../src/id3v2/enums";
+import {FrameFlags, Id3v2Version} from "../../src/id3v2/enums";
 import {FrameIdentifier, FrameIdentifiers} from "../../src/id3v2/frameIdentifiers";
 import {Testers} from "../utilities/testers";
 
@@ -24,14 +24,14 @@ const assertFrame = (frame: TextInformationFrame, frameId: FrameIdentifier, text
 }
 
 @suite class Id3v2_TextInformationFrame_ConstructorTests extends FrameConstructorTests {
-    public get fromFieldBytes(): (h: FrameHeader, d: ByteVector, v: number) => Frame {
+    public get fromFieldBytes(): (h: FrameHeader, d: ByteVector, v: Id3v2Version) => Frame {
         return TextInformationFrame.fromFieldBytes;
     }
 
-    @params(2, "v2")
-    @params(3, "v3")
-    @params(4, "v4")
-    public fromFieldBytes_empty_throws(version: number) {
+    @params(Id3v2Version.V22, "v2")
+    @params(Id3v2Version.V23, "v3")
+    @params(Id3v2Version.V24, "v4")
+    public fromFieldBytes_empty_throws(version: Id3v2Version) {
         // Arrange
         const fieldBytes = ByteVector.empty();
         const header = new FrameHeader(FrameIdentifiers.TCOP, FrameFlags.None, fieldBytes.length);
@@ -40,10 +40,10 @@ const assertFrame = (frame: TextInformationFrame, frameId: FrameIdentifier, text
         assert.throws(() => TextInformationFrame.fromFieldBytes(header, fieldBytes, version));
     }
 
-    @params(2, "v2")
-    @params(3, "v3")
-    @params(4, "v4")
-    public fromFieldBytes_noText_returnsEmptyFrame(version: number) {
+    @params(Id3v2Version.V22, "v2")
+    @params(Id3v2Version.V23, "v3")
+    @params(Id3v2Version.V24, "v4")
+    public fromFieldBytes_noText_returnsEmptyFrame(version: Id3v2Version) {
         // Arrange
         const fieldBytes = ByteVector.fromByte(StringType.UTF16BE);
         const header = new FrameHeader(FrameIdentifiers.TCOP, FrameFlags.None, fieldBytes.length);
@@ -55,10 +55,10 @@ const assertFrame = (frame: TextInformationFrame, frameId: FrameIdentifier, text
         assertFrame(frame, FrameIdentifiers.TCOP, [], StringType.UTF16BE);
     }
 
-    @params(2, "v2")
-    @params(3, "v3")
-    @params(4, "v4")
-    public fromFieldBytes_nullText_returnsEmptyFrame(version: number) {
+    @params(Id3v2Version.V22, "v2")
+    @params(Id3v2Version.V23, "v3")
+    @params(Id3v2Version.V24, "v4")
+    public fromFieldBytes_nullText_returnsEmptyFrame(version: Id3v2Version) {
         // Arrange
         const fieldBytes = ByteVector.concatenate(
             StringType.UTF16BE, // Encoding
@@ -73,9 +73,9 @@ const assertFrame = (frame: TextInformationFrame, frameId: FrameIdentifier, text
         assertFrame(frame, FrameIdentifiers.TCOP, [], StringType.UTF16BE);
     }
 
-    @params(2, "v2")
-    @params(3, "v2")
-    public fromFieldBytes_v3NotSplitType_returnsSingleTextField(version: number) {
+    @params(Id3v2Version.V22, "v2")
+    @params(Id3v2Version.V23, "v2")
+    public fromFieldBytes_v3NotSplitType_returnsSingleTextField(version: Id3v2Version) {
         // Arrange
         const fieldBytes = ByteVector.concatenate(
             StringType.Latin1,                                  // Encoding
@@ -90,9 +90,9 @@ const assertFrame = (frame: TextInformationFrame, frameId: FrameIdentifier, text
         assertFrame(frame, FrameIdentifiers.TALB, ["fux/bux"], StringType.Latin1);
     }
 
-    @params(2, "v2")
-    @params(3, "v2")
-    public fromFieldBytes_v3SplitType_returnsFrameSplitBySlash(version: number) {
+    @params(Id3v2Version.V22, "v2")
+    @params(Id3v2Version.V23, "v2")
+    public fromFieldBytes_v3SplitType_returnsFrameSplitBySlash(version: Id3v2Version) {
         // Arrange
         const fieldBytes = ByteVector.concatenate(
             StringType.Latin1,                                  // Encoding
@@ -107,9 +107,9 @@ const assertFrame = (frame: TextInformationFrame, frameId: FrameIdentifier, text
         assertFrame(frame, FrameIdentifiers.TCOM, ["fux", "bux"], StringType.Latin1);
     }
 
-    @params(2, "v2")
-    @params(3, "v2")
-    public fromFieldBytes_v3WithNullBytes_discardsDataAfterNull(version: number) {
+    @params(Id3v2Version.V22, "v2")
+    @params(Id3v2Version.V23, "v2")
+    public fromFieldBytes_v3WithNullBytes_discardsDataAfterNull(version: Id3v2Version) {
         // Arrange
         const fieldBytes = ByteVector.concatenate(
             StringType.Latin1,                               // Encoding
@@ -139,7 +139,7 @@ const assertFrame = (frame: TextInformationFrame, frameId: FrameIdentifier, text
         const header = new FrameHeader(FrameIdentifiers.TCOP, FrameFlags.None, fieldBytes.length);
 
         // Act
-        const frame = TextInformationFrame.fromFieldBytes(header, fieldBytes, 4);
+        const frame = TextInformationFrame.fromFieldBytes(header, fieldBytes, Id3v2Version.V24);
 
         // Assert
         assertFrame(frame,FrameIdentifiers.TCOP, ["fux", "bux"], encoding);
@@ -376,10 +376,10 @@ const assertFrame = (frame: TextInformationFrame, frameId: FrameIdentifier, text
         assert.deepEqual(result, [frame1, frame2]);
     }
 
-    @params(2, "v2")
-    @params(3, "v3")
-    @params(4, "v4")
-    public render_empty_returnEmptyVector(version: number) {
+    @params(Id3v2Version.V22, "v2")
+    @params(Id3v2Version.V23, "v3")
+    @params(Id3v2Version.V24, "v4")
+    public render_empty_returnEmptyVector(version: Id3v2Version) {
         // Arrange
         const frame = TextInformationFrame.fromFields(FrameIdentifiers.TALB, []);
 
@@ -391,10 +391,10 @@ const assertFrame = (frame: TextInformationFrame, frameId: FrameIdentifier, text
         assert.strictEqual(result.length, 0);
     }
 
-    @params(2, "v2")
-    @params(3, "v3")
-    @params(4, "v4")
-    public render_falsyValues_returnEmptyVector(version: number) {
+    @params(Id3v2Version.V22, "v2")
+    @params(Id3v2Version.V23, "v3")
+    @params(Id3v2Version.V24, "v4")
+    public render_falsyValues_returnEmptyVector(version: Id3v2Version) {
         // Arrange
         const frame = TextInformationFrame.fromFields(FrameIdentifiers.TALB, [undefined, null, ""]);
 
@@ -413,7 +413,7 @@ const assertFrame = (frame: TextInformationFrame, frameId: FrameIdentifier, text
         const frame = TextInformationFrame.fromFields(FrameIdentifiers.TALB, ["foo", "bar", "baz"], encoding);
 
         // Act
-        const result = frame.render(4);
+        const result = frame.render(Id3v2Version.V24);
 
         // Assert
         assert.isOk(result);
@@ -427,15 +427,15 @@ const assertFrame = (frame: TextInformationFrame, frameId: FrameIdentifier, text
             ByteVector.fromString("baz", encoding)  // ...
         );
         const header = new FrameHeader(FrameIdentifiers.TALB, FrameFlags.None, fieldBytes.length);
-        const expected = ByteVector.concatenate(header.render(4), fieldBytes);
+        const expected = ByteVector.concatenate(header.render(Id3v2Version.V24), fieldBytes);
         Testers.bvEqual(result, expected);
     }
 
-    @params([2, StringType.Latin1], "v2_single_byte")
-    @params([2, StringType.UTF16BE], "v2_multi_byte")
-    @params([3, StringType.Latin1], "v3_single_byte")
-    @params([3, StringType.UTF16BE], "v3_multi_byte")
-    public render_v3WithSplit([version, encoding]: [number, StringType]) {
+    @params([Id3v2Version.V22, StringType.Latin1], "v2_single_byte")
+    @params([Id3v2Version.V22, StringType.UTF16BE], "v2_multi_byte")
+    @params([Id3v2Version.V23, StringType.Latin1], "v3_single_byte")
+    @params([Id3v2Version.V23, StringType.UTF16BE], "v3_multi_byte")
+    public render_v3WithSplit([version, encoding]: [Id3v2Version, StringType]) {
         // Arrange
         const frame = TextInformationFrame.fromFields(FrameIdentifiers.TCOP, ["fux", "bux"], encoding);
 
@@ -454,11 +454,11 @@ const assertFrame = (frame: TextInformationFrame, frameId: FrameIdentifier, text
         Testers.bvEqual(output, expected);
     }
 
-    @params([2, StringType.Latin1], "v2_single_byte")
-    @params([2, StringType.UTF16BE], "v2_multi_byte")
-    @params([3, StringType.Latin1], "v3_single_byte")
-    @params([3, StringType.UTF16BE], "v3_multi_byte")
-    public render_v3WithoutSplit([version, encoding]: [number, StringType]) {
+    @params([Id3v2Version.V22, StringType.Latin1], "v2_single_byte")
+    @params([Id3v2Version.V22, StringType.UTF16BE], "v2_multi_byte")
+    @params([Id3v2Version.V23, StringType.Latin1], "v3_single_byte")
+    @params([Id3v2Version.V23, StringType.UTF16BE], "v3_multi_byte")
+    public render_v3WithoutSplit([version, encoding]: [Id3v2Version, StringType]) {
         // Arrange
         const frame = TextInformationFrame.fromFields(FrameIdentifiers.TCOP, ["fux"], encoding);
 

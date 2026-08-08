@@ -7,7 +7,7 @@ import FrameConstructorTests from "./frameConstructorTests";
 import FrameHeader from "../../src/id3v2/frames/frameHeader";
 import UnknownFrame from "../../src/id3v2/frames/unknownFrame";
 import {ByteVector, StringType} from "../../src/byteVector";
-import {FrameFlags} from "../../src/id3v2/enums";
+import {FrameFlags, Id3v2Version} from "../../src/id3v2/enums";
 import {FrameIdentifier, FrameIdentifiers} from "../../src/id3v2/frameIdentifiers";
 import {Testers} from "../utilities/testers";
 
@@ -24,14 +24,14 @@ const assertFrame = (frame: UnknownFrame, fi: FrameIdentifier, d: ByteVector) =>
 }
 
 @suite class Id3v2_UnknownFrame_ConstructorTests extends FrameConstructorTests {
-    public get fromFieldBytes(): (h: FrameHeader, d: ByteVector, v: number) => Frame {
+    public get fromFieldBytes(): (h: FrameHeader, d: ByteVector, v: Id3v2Version) => Frame {
         return UnknownFrame.fromFieldBytes;
     }
 
-    @params(2, "v2")
-    @params(3, "v3")
-    @params(4, "v4")
-    public fromFieldBytes_validParams_returnsFrame(version: number) {
+    @params(Id3v2Version.V22, "v2")
+    @params(Id3v2Version.V23, "v3")
+    @params(Id3v2Version.V24, "v4")
+    public fromFieldBytes_validParams_returnsFrame(version: Id3v2Version) {
         // Arrange
         const fieldBytes = ByteVector.fromString("foo bar baz", StringType.UTF8);
         const header = new FrameHeader(FrameIdentifiers.WXXX, FrameFlags.None, fieldBytes.length);
@@ -76,10 +76,10 @@ const assertFrame = (frame: UnknownFrame, fi: FrameIdentifier, d: ByteVector) =>
 }
 
 @suite class Id3v2_UnknownFrame_MethodTests {
-    @params(2, "v2")
-    @params(3, "v3")
-    @params(4, "v4")
-    public clone_returnsCopy(version: number) {
+    @params(Id3v2Version.V22, "v2")
+    @params(Id3v2Version.V23, "v3")
+    @params(Id3v2Version.V24, "v4")
+    public clone_returnsCopy(version: Id3v2Version) {
         // Arrange
         const fieldBytes = ByteVector.fromString("foo bar baz", StringType.UTF8);
         const header = new FrameHeader(FrameIdentifiers.WXXX, FrameFlags.None, fieldBytes.length);
@@ -173,10 +173,10 @@ const assertFrame = (frame: UnknownFrame, fi: FrameIdentifier, d: ByteVector) =>
         assert.deepEqual(result, [frame1, frame2]);
     }
 
-    @params(2, "v2")
-    @params(3, "v3")
-    @params(4, "v4")
-    public render_returnsByteVector(version: number) {
+    @params(Id3v2Version.V22, "v2")
+    @params(Id3v2Version.V23, "v3")
+    @params(Id3v2Version.V24, "v4")
+    public render_returnsByteVector(version: Id3v2Version) {
         // Arrange
         const fieldBytes = ByteVector.fromString("foo bar baz", StringType.UTF8);
         const header = new FrameHeader(FrameIdentifiers.WXXX, FrameFlags.None, fieldBytes.length);

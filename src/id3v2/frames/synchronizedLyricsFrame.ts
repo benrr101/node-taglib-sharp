@@ -2,7 +2,7 @@ import Frame from "./frame";
 import FrameHeader from "./frameHeader";
 import Id3v2Settings from "../id3v2Settings";
 import {ByteVector, StringType} from "../../byteVector";
-import {SynchronizedTextType, TimestampFormat} from "../enums";
+import {Id3v2Version, SynchronizedTextType, TimestampFormat} from "../enums";
 import {CorruptFileError} from "../../errors";
 import {FrameIdentifiers} from "../frameIdentifiers";
 import {ArrayUtils, Guards} from "../../utils";
@@ -91,16 +91,15 @@ export class SynchronizedLyricsFrame extends Frame {
      * Constructs and initialized a new instance by parsing values from the field data.
      * @param header Header of the frame
      * @param fieldBytes Bytes that contain the body of the frame
-     * @param version ID3v2 version the frame was originally encoded with
+     * @param _version ID3v2 version the frame was originally encoded with
      */
     public static fromFieldBytes(
         header: FrameHeader,
         fieldBytes: ByteVector,
-        version: number
+        _version: Id3v2Version
     ): SynchronizedLyricsFrame {
         Guards.truthy(header, "header");
         Guards.truthy(fieldBytes, "fieldBytes");
-        Guards.byte(version, "version");
 
         if (fieldBytes.length < 6) {
             throw new CorruptFileError("Synchronized lyrics frame must contain at least 6 bytes.");
@@ -299,7 +298,7 @@ export class SynchronizedLyricsFrame extends Frame {
     // #endregion
 
     /** @inheritDoc */
-    protected renderFields(version: number): ByteVector {
+    protected renderFields(version: Id3v2Version): ByteVector {
         const encoding = SynchronizedLyricsFrame.correctEncoding(this.textEncoding, version);
         const renderedText = this.text
             .filter(t => !!t)
