@@ -3,11 +3,12 @@ import {assert} from "chai";
 
 import Frame from "../../src/id3v2/frames/frame";
 import FrameConstructorTests from "./frameConstructorTests";
+import FrameHeader from "../../src/id3v2/frames/frameHeader";
 import PopularimeterFrame from "../../src/id3v2/frames/popularimeterFrame";
 import PropertyTests from "../utilities/propertyTests";
 import UnknownFrame from "../../src/id3v2/frames/unknownFrame";
 import {ByteVector, StringType} from "../../src/byteVector";
-import {Id3v2FrameFlags, Id3v2FrameHeader} from "../../src/id3v2/frames/frameHeader";
+import {FrameFlags, Id3v2Version} from "../../src/id3v2/enums";
 import {FrameIdentifiers} from "../../src/id3v2/frameIdentifiers";
 import {Testers} from "../utilities/testers";
 
@@ -22,47 +23,47 @@ const assertFrame = (frame: PopularimeterFrame, u: string, p: bigint, r: number)
 }
 
 @suite class Id3v2_PopularimeterFrame_ConstructorTests extends FrameConstructorTests {
-    public get fromFieldBytes(): (h: Id3v2FrameHeader, d: ByteVector, v: number) => Frame {
+    public get fromFieldBytes(): (h: FrameHeader, d: ByteVector, v: Id3v2Version) => Frame {
         return PopularimeterFrame.fromFieldBytes;
     }
 
-    @params(2, "v2")
-    @params(3, "v3")
-    @params(4, "v4")
-    public fromFieldBytes_noDelimiter(version: number) {
+    @params(Id3v2Version.V22, "v2")
+    @params(Id3v2Version.V23, "v3")
+    @params(Id3v2Version.V24, "v4")
+    public fromFieldBytes_noDelimiter(version: Id3v2Version) {
         // Arrange
         const fieldBytes = ByteVector.fromByteArray([0x01, 0x02, 0x03]);
-        const header = new Id3v2FrameHeader(FrameIdentifiers.POPM, Id3v2FrameFlags.None, fieldBytes.length);
+        const header = new FrameHeader(FrameIdentifiers.POPM, FrameFlags.None, fieldBytes.length);
 
         // Act / Assert
         assert.throws(() => { PopularimeterFrame.fromFieldBytes(header, fieldBytes, version); });
     }
 
-    @params(2, "v2")
-    @params(3, "v3")
-    @params(4, "v4")
-    public fromFieldBytes_noRating(version: number) {
+    @params(Id3v2Version.V22, "v2")
+    @params(Id3v2Version.V23, "v3")
+    @params(Id3v2Version.V24, "v4")
+    public fromFieldBytes_noRating(version: Id3v2Version) {
         // Arrange
         const fieldBytes = ByteVector.concatenate(
             ByteVector.fromString("foo@example.com", StringType.Latin1), 0x00 // Owner + delimiter
         );
-        const header = new Id3v2FrameHeader(FrameIdentifiers.POPM, Id3v2FrameFlags.None, fieldBytes.length);
+        const header = new FrameHeader(FrameIdentifiers.POPM, FrameFlags.None, fieldBytes.length);
 
         // Act / Assert
         assert.throws(() => { PopularimeterFrame.fromFieldBytes(header, fieldBytes, version); });
     }
 
-    @params(2, "v2")
-    @params(3, "v3")
-    @params(4, "v4")
-    public fromFieldBytes_playCountTooLong(version: number) {
+    @params(Id3v2Version.V22, "v2")
+    @params(Id3v2Version.V23, "v3")
+    @params(Id3v2Version.V24, "v4")
+    public fromFieldBytes_playCountTooLong(version: Id3v2Version) {
         // Arrange
         const fieldBytes = ByteVector.concatenate(
             ByteVector.fromString("foo@example.com", StringType.Latin1), 0x00, // Owner + Delimiter
             0xAB,                                                              // Rating
             0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09               // Play counter (too big)
         );
-        const header = new Id3v2FrameHeader(FrameIdentifiers.POPM, Id3v2FrameFlags.None, fieldBytes.length);
+        const header = new FrameHeader(FrameIdentifiers.POPM, FrameFlags.None, fieldBytes.length);
 
         // Act / Assert
         assert.throws(() => { PopularimeterFrame.fromFieldBytes(header, fieldBytes, version); });
@@ -80,26 +81,26 @@ const assertFrame = (frame: PopularimeterFrame, u: string, p: bigint, r: number)
             ByteVector.fromByteArray(playCountBytes)                           // Play counter (too small)
         );
 
-        const header = new Id3v2FrameHeader(FrameIdentifiers.POPM, Id3v2FrameFlags.None, fieldBytes.length);
+        const header = new FrameHeader(FrameIdentifiers.POPM, FrameFlags.None, fieldBytes.length);
 
         // Act
-        const frame = PopularimeterFrame.fromFieldBytes(header, fieldBytes, 4);
+        const frame = PopularimeterFrame.fromFieldBytes(header, fieldBytes, Id3v2Version.V24);
 
         // Assert
         assertFrame(frame, "foo@example.com", undefined, 0xAB);
     }
 
-    @params(2, "v2")
-    @params(3, "v3")
-    @params(4, "v4")
-    public fromFieldBytes_fourBytePlayCount(version: number) {
+    @params(Id3v2Version.V22, "v2")
+    @params(Id3v2Version.V23, "v3")
+    @params(Id3v2Version.V24, "v4")
+    public fromFieldBytes_fourBytePlayCount(version: Id3v2Version) {
         // Arrange
         const fieldBytes = ByteVector.concatenate(
             ByteVector.fromString("foo@example.com", StringType.Latin1), 0x00, // Owner + Delimiter
             0xAB,                                                              // Rating
             ByteVector.fromUint(1234)                                          // Play counter
         );
-        const header = new Id3v2FrameHeader(FrameIdentifiers.POPM, Id3v2FrameFlags.None, fieldBytes.length);
+        const header = new FrameHeader(FrameIdentifiers.POPM, FrameFlags.None, fieldBytes.length);
 
         // Act
         const frame = PopularimeterFrame.fromFieldBytes(header, fieldBytes, version);
@@ -108,17 +109,17 @@ const assertFrame = (frame: PopularimeterFrame, u: string, p: bigint, r: number)
         assertFrame(frame, "foo@example.com", BigInt(1234), 0xAB);
     }
 
-    @params(2, "v2")
-    @params(3, "v3")
-    @params(4, "v4")
-    public fromFieldBytes_sixBytePlayCount(version: number) {
+    @params(Id3v2Version.V22, "v2")
+    @params(Id3v2Version.V23, "v3")
+    @params(Id3v2Version.V24, "v4")
+    public fromFieldBytes_sixBytePlayCount(version: Id3v2Version) {
         // Arrange
         const fieldBytes = ByteVector.concatenate(
             ByteVector.fromString("foo@example.com", StringType.Latin1), 0x00, // Owner + Delimiter
             0xAB,                                                              // Rating
             ByteVector.fromByteArray([0x01, 0x02, 0x03, 0x04, 0x05, 0x06])     // Play counter
         );
-        const header = new Id3v2FrameHeader(FrameIdentifiers.POPM, Id3v2FrameFlags.None, fieldBytes.length);
+        const header = new FrameHeader(FrameIdentifiers.POPM, FrameFlags.None, fieldBytes.length);
 
         // Act
         const frame = PopularimeterFrame.fromFieldBytes(header, fieldBytes, version);
@@ -127,17 +128,17 @@ const assertFrame = (frame: PopularimeterFrame, u: string, p: bigint, r: number)
         assertFrame(frame, "foo@example.com", BigInt("1108152157446"), 0xAB);
     }
 
-    @params(2, "v2")
-    @params(3, "v3")
-    @params(4, "v4")
-    public fromFieldBytes_eightBytePlayCount(version: number) {
+    @params(Id3v2Version.V22, "v2")
+    @params(Id3v2Version.V23, "v3")
+    @params(Id3v2Version.V24, "v4")
+    public fromFieldBytes_eightBytePlayCount(version: Id3v2Version) {
         // Arrange
         const fieldBytes = ByteVector.concatenate(
             ByteVector.fromString("foo@example.com", StringType.Latin1), 0x00,         // Owner + Delimiter
             0xAB,                                                                      // Rating
             ByteVector.fromByteArray([0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08]) // Play counter
         );
-        const header = new Id3v2FrameHeader(FrameIdentifiers.POPM, Id3v2FrameFlags.None, fieldBytes.length);
+        const header = new FrameHeader(FrameIdentifiers.POPM, FrameFlags.None, fieldBytes.length);
 
         // Act
         const frame = PopularimeterFrame.fromFieldBytes(header, fieldBytes, version);
@@ -320,10 +321,10 @@ const assertFrame = (frame: PopularimeterFrame, u: string, p: bigint, r: number)
         assert.deepEqual(result, [frame1, frame2]);
     }
 
-    @params(2, "v2")
-    @params(3, "v3")
-    @params(4, "v4")
-    public render_noPlayCount(version: number) {
+    @params(Id3v2Version.V22, "v2")
+    @params(Id3v2Version.V23, "v3")
+    @params(Id3v2Version.V24, "v4")
+    public render_noPlayCount(version: Id3v2Version) {
         // Arrange
         const frame = PopularimeterFrame.fromFields("foo@example.com", 0xAB);
 
@@ -337,15 +338,15 @@ const assertFrame = (frame: PopularimeterFrame, u: string, p: bigint, r: number)
             ByteVector.fromString("foo@example.com", StringType.Latin1), 0x00, // Owner + delimiter
             0xAB                                                               // Rating
         );
-        const header = new Id3v2FrameHeader(FrameIdentifiers.POPM, Id3v2FrameFlags.None, fieldBytes.length);
+        const header = new FrameHeader(FrameIdentifiers.POPM, FrameFlags.None, fieldBytes.length);
         const expected = ByteVector.concatenate(header.render(version), fieldBytes);
         Testers.bvEqual(output, expected);
     }
 
-    @params(2, "v2")
-    @params(3, "v3")
-    @params(4, "v4")
-    public render_fourBytePlayCount(version: number) {
+    @params(Id3v2Version.V22, "v2")
+    @params(Id3v2Version.V23, "v3")
+    @params(Id3v2Version.V24, "v4")
+    public render_fourBytePlayCount(version: Id3v2Version) {
         // Arrange
         const frame = PopularimeterFrame.fromFields("foo@example.com", 0xAB, BigInt(1234));
 
@@ -360,15 +361,15 @@ const assertFrame = (frame: PopularimeterFrame, u: string, p: bigint, r: number)
             0xAB,                                                              // Rating
             ByteVector.fromUint(1234)                                          // Play counter
         );
-        const header = new Id3v2FrameHeader(FrameIdentifiers.POPM, Id3v2FrameFlags.None, fieldBytes.length);
+        const header = new FrameHeader(FrameIdentifiers.POPM, FrameFlags.None, fieldBytes.length);
         const expected = ByteVector.concatenate(header.render(version), fieldBytes);
         Testers.bvEqual(output, expected);
     }
 
-    @params(2, "v2")
-    @params(3, "v3")
-    @params(4, "v4")
-    public render_sixBytePlayCount(version: number) {
+    @params(Id3v2Version.V22, "v2")
+    @params(Id3v2Version.V23, "v3")
+    @params(Id3v2Version.V24, "v4")
+    public render_sixBytePlayCount(version: Id3v2Version) {
         // Arrange
         const frame = PopularimeterFrame.fromFields("foo@example.com", 0xAB, BigInt("1108152157446"));
 
@@ -383,15 +384,15 @@ const assertFrame = (frame: PopularimeterFrame, u: string, p: bigint, r: number)
             0xAB,                                                              // Rating
             ByteVector.fromByteArray([0x01, 0x02, 0x03, 0x04, 0x05, 0x06])     // Play counter
         );
-        const header = new Id3v2FrameHeader(FrameIdentifiers.POPM, Id3v2FrameFlags.None, fieldBytes.length);
+        const header = new FrameHeader(FrameIdentifiers.POPM, FrameFlags.None, fieldBytes.length);
         const expected = ByteVector.concatenate(header.render(version), fieldBytes);
         Testers.bvEqual(output, expected);
     }
 
-    @params(2, "v2")
-    @params(3, "v3")
-    @params(4, "v4")
-    public render_eightBytePlayCount(version: number) {
+    @params(Id3v2Version.V22, "v2")
+    @params(Id3v2Version.V23, "v3")
+    @params(Id3v2Version.V24, "v4")
+    public render_eightBytePlayCount(version: Id3v2Version) {
         // Arrange
         const frame = PopularimeterFrame.fromFields("foo@example.com", 0xAB, BigInt("72623859790382856"));
 
@@ -406,7 +407,7 @@ const assertFrame = (frame: PopularimeterFrame, u: string, p: bigint, r: number)
             0xAB,                                                                      // Rating
             ByteVector.fromByteArray([0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08]) // Play counter
         );
-        const header = new Id3v2FrameHeader(FrameIdentifiers.POPM, Id3v2FrameFlags.None, fieldBytes.length);
+        const header = new FrameHeader(FrameIdentifiers.POPM, FrameFlags.None, fieldBytes.length);
         const expected = ByteVector.concatenate(header.render(version), fieldBytes);
         Testers.bvEqual(output, expected);
     }

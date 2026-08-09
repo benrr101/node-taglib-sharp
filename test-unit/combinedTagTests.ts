@@ -1,15 +1,15 @@
 import {suite, test} from "@testdeck/mocha";
 import {assert} from "chai";
+import {Mock} from "typemoq";
 
 import ApeTag from "../src/ape/apeTag";
 import CombinedTag from "../src/combinedTag";
 import Id3v2Tag from "../src/id3v2/id3v2Tag";
 import PropertyTests from "./utilities/propertyTests";
 import XiphComment from "../src/xiph/xiphComment";
+import {IPicture} from "../src/picture";
 import {Tag, TagTypes} from "../src/tag";
 import {TagTesters, Testers} from "./utilities/testers";
-import {Mock} from "typemoq";
-import {IPicture} from "../src";
 
 @suite class CombinedTag_MethodTests {
     @test

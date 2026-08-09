@@ -1,9 +1,9 @@
 import Frame from "./frame";
+import FrameHeader from "./frameHeader";
 import {ByteVector} from "../../byteVector";
-import {Id3v2FrameFlags, Id3v2FrameHeader} from "./frameHeader";
+import {EventType, FrameFlags, Id3v2Version, TimestampFormat} from "../enums";
 import {FrameIdentifiers} from "../frameIdentifiers";
 import {ArrayUtils, Guards} from "../../utils";
-import {EventType, TimestampFormat} from "../utilTypes";
 import {CorruptFileError} from "../../errors";
 
 /**
@@ -85,7 +85,7 @@ export class EventTimeCodeFrame extends Frame {
 
     // #region Constructors
 
-    private constructor(header: Id3v2FrameHeader) {
+    private constructor(header: FrameHeader) {
         super(header);
     }
 
@@ -93,16 +93,15 @@ export class EventTimeCodeFrame extends Frame {
      * Constructs and initializes a new instance by parsing the fields from the field bytes.
      * @param header Header of the frame
      * @param fieldBytes Bytes that contain the fields of the frame
-     * @param version ID3v2 version the frame was originally encoded with
+     * @param _version Version that the frame was originally encoded
      */
     public static fromFieldBytes(
-        header: Id3v2FrameHeader,
+        header: FrameHeader,
         fieldBytes: ByteVector,
-        version: number
+        _version: Id3v2Version
     ): EventTimeCodeFrame {
         Guards.truthy(header, "header");
         Guards.truthy(fieldBytes, "fieldBytes");
-        Guards.byte(version, "version");
 
         if (fieldBytes.length < 1) {
             throw new CorruptFileError("Event time code frame must contain at least 1 byte.");
@@ -149,8 +148,8 @@ export class EventTimeCodeFrame extends Frame {
      *     to `[]`.
      */
     public static fromFields(timestampFormat?: TimestampFormat, events?: EventTimeCode[]): EventTimeCodeFrame {
-        const frame = new EventTimeCodeFrame(new Id3v2FrameHeader(FrameIdentifiers.ETCO));
-        frame.flags = Id3v2FrameFlags.FileAlterPreservation; // @TODO: Should we be mucking around with flags like this?
+        const frame = new EventTimeCodeFrame(new FrameHeader(FrameIdentifiers.ETCO));
+        frame.flags = FrameFlags.FileAlterPreservation; // @TODO: Should we be mucking around with flags like this?
 
         frame._timestampFormat = timestampFormat ?? TimestampFormat.Unknown;
         frame._events = events ?? [];
@@ -192,7 +191,7 @@ export class EventTimeCodeFrame extends Frame {
 
     /** @inheritDoc */
     public clone(): Frame {
-        const frame = new EventTimeCodeFrame(new Id3v2FrameHeader(this.frameId, this.flags));
+        const frame = new EventTimeCodeFrame(new FrameHeader(this.frameId, this.flags));
         frame._events = this._events.map(i => i.clone());
         frame._timestampFormat = this._timestampFormat;
 

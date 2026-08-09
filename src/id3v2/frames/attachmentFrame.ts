@@ -1,9 +1,10 @@
 import Frame from "./frame";
+import FrameHeader from "./frameHeader";
 import Id3v2Settings from "../id3v2Settings";
 import {ByteVector, StringType} from "../../byteVector";
+import {Id3v2Version} from "../enums";
 import {CorruptFileError} from "../../errors";
 import {IFileAbstraction} from "../../fileAbstraction";
-import {Id3v2FrameHeader} from "./frameHeader";
 import {FrameIdentifiers} from "../frameIdentifiers";
 import {IPicture, Picture, PictureLazy, PictureType} from "../../picture";
 import {ArrayUtils, Guards} from "../../utils";
@@ -17,14 +18,14 @@ export default class AttachmentFrame extends Frame implements IPicture {
     private _encoding: StringType = Id3v2Settings.defaultEncoding;
     private _filename: string;
     private _mimeType: string;
-    private _rawData: ByteVector;
-    private _rawPicture: IPicture;
-    private _rawVersion: number;
+    private _rawData: ByteVector|undefined;
+    private _rawPicture: IPicture|undefined;
+    private _rawVersion: Id3v2Version|undefined;
     private _type: PictureType;
 
     // #region Constructors
 
-    private constructor(frameHeader: Id3v2FrameHeader) {
+    private constructor(frameHeader: FrameHeader) {
         super(frameHeader);
     }
 
@@ -34,10 +35,9 @@ export default class AttachmentFrame extends Frame implements IPicture {
      * @param fieldBytes Bytes that contain the fields of the frame
      * @param version ID3v2 version the frame was originally encoded with
      */
-    public static fromFieldBytes(header: Id3v2FrameHeader, fieldBytes: ByteVector, version: number): AttachmentFrame {
+    public static fromFieldBytes(header: FrameHeader, fieldBytes: ByteVector, version: Id3v2Version): AttachmentFrame {
         Guards.truthy(header, "header");
         Guards.truthy(fieldBytes, "fieldBytes");
-        Guards.byte(version, "version");
 
         if (fieldBytes.length < 5) {
             throw new CorruptFileError("A picture frame must contain at least 5 bytes");
@@ -79,10 +79,10 @@ export default class AttachmentFrame extends Frame implements IPicture {
     // @TODO: Make lazy loading optional
     public static fromFile(
         file: IFileAbstraction,
-        header: Id3v2FrameHeader,
+        header: FrameHeader,
         frameStart: number,
         size: number,
-        version: number
+        version: Id3v2Version
     ): AttachmentFrame {
         Guards.truthy(file, "file");
         Guards.truthy(header, "header");
@@ -109,7 +109,7 @@ export default class AttachmentFrame extends Frame implements IPicture {
 
         // NOTE: We assume the frame is an APIC frame of size 1 until we parse it and find out
         //     otherwise.
-        const frame = new AttachmentFrame(new Id3v2FrameHeader(FrameIdentifiers.APIC, undefined, 1));
+        const frame = new AttachmentFrame(new FrameHeader(FrameIdentifiers.APIC, undefined, 1));
         frame._rawPicture = picture;
         return frame;
     }
@@ -221,7 +221,7 @@ export default class AttachmentFrame extends Frame implements IPicture {
             ? FrameIdentifiers.GEOB
             : FrameIdentifiers.APIC;
         if (this.header.frameId !== frameId) {
-            this.header = new Id3v2FrameHeader(frameId);
+            this.header = new FrameHeader(frameId);
         }
 
         this._type = value;
@@ -233,7 +233,7 @@ export default class AttachmentFrame extends Frame implements IPicture {
 
     /** @inheritDoc */
     public clone(): Frame {
-        const frame = new AttachmentFrame(new Id3v2FrameHeader(this.frameId));
+        const frame = new AttachmentFrame(new FrameHeader(this.frameId));
         frame._data = this._data?.toByteVector();
         frame._description = this._description;
         frame._encoding = this._encoding;
@@ -272,7 +272,7 @@ export default class AttachmentFrame extends Frame implements IPicture {
     // #endregion
 
     /** @inheritDoc */
-    protected renderFields(version: number): ByteVector {
+    protected renderFields(version: Id3v2Version): ByteVector {
         this.parseFromRaw();
 
         const encoding = AttachmentFrame.correctEncoding(this.textEncoding, version);
@@ -281,7 +281,7 @@ export default class AttachmentFrame extends Frame implements IPicture {
         if (this.frameId === FrameIdentifiers.APIC) {
             // Render an ID3v2 attached picture
             let extensionData;
-            if (version === 2) {
+            if (version === Id3v2Version.V22) {
                 let ext = Picture.getExtensionFromMimeType(this.mimeType);
                 ext = ext && ext.length >= 3 ? ext.substring(ext.length - 3).toUpperCase() : "XXX";
                 extensionData = ByteVector.fromString(ext, StringType.Latin1);
@@ -340,7 +340,7 @@ export default class AttachmentFrame extends Frame implements IPicture {
         // @TODO: Maybe make two different classes?
         if (this.frameId === FrameIdentifiers.APIC) {
             // Retrieve an ID3v2 attached picture
-            if (this._rawVersion > 2) {
+            if (this._rawVersion !== Id3v2Version.V22) {
                 // Text encoding      $xx
                 // MIME type          <text string> $00
                 // Picture type       $xx

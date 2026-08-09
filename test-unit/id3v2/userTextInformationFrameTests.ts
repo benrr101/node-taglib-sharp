@@ -3,11 +3,12 @@ import {assert} from "chai";
 
 import Frame from "../../src/id3v2/frames/frame";
 import FrameConstructorTests from "./frameConstructorTests";
+import FrameHeader from "../../src/id3v2/frames/frameHeader";
 import Id3v2Settings from "../../src/id3v2/id3v2Settings";
 import UnknownFrame from "../../src/id3v2/frames/unknownFrame";
 import UserTextInformationFrame from "../../src/id3v2/frames/userTextInformationFrame";
 import {ByteVector, StringType} from "../../src/byteVector";
-import {Id3v2FrameFlags, Id3v2FrameHeader} from "../../src/id3v2/frames/frameHeader";
+import {FrameFlags, Id3v2Version} from "../../src/id3v2/enums";
 import {FrameIdentifiers} from "../../src/id3v2/frameIdentifiers";
 import {Testers} from "../utilities/testers";
 
@@ -28,29 +29,29 @@ const assertFrame = (
 }
 
 @suite class Id3v2_UserInformationFrame_ConstructorTests extends FrameConstructorTests {
-    public get fromFieldBytes(): (h: Id3v2FrameHeader, d: ByteVector, v: number) => Frame {
+    public get fromFieldBytes(): (h: FrameHeader, d: ByteVector, v: Id3v2Version) => Frame {
         return UserTextInformationFrame.fromFieldBytes;
     }
 
-    @params(2, "v2")
-    @params(3, "v3")
-    @params(4, "v4")
-    public fromFieldBytes_emptyFrame_throw(version: number) {
+    @params(Id3v2Version.V22, "v2")
+    @params(Id3v2Version.V23, "v3")
+    @params(Id3v2Version.V24, "v4")
+    public fromFieldBytes_emptyFrame_throw(version: Id3v2Version) {
         // Arrange
         const fieldBytes = ByteVector.empty();
-        const header = new Id3v2FrameHeader(FrameIdentifiers.TXXX, Id3v2FrameFlags.None, fieldBytes.length);
+        const header = new FrameHeader(FrameIdentifiers.TXXX, FrameFlags.None, fieldBytes.length);
 
         // Act / Assert
         assert.throws(() => UserTextInformationFrame.fromFieldBytes(header, fieldBytes, version));
     }
 
-    @params(2, "v2")
-    @params(3, "v3")
-    @params(4, "v4")
-    public fromFieldBytes_encodingOnly(version: number) {
+    @params(Id3v2Version.V22, "v2")
+    @params(Id3v2Version.V23, "v3")
+    @params(Id3v2Version.V24, "v4")
+    public fromFieldBytes_encodingOnly(version: Id3v2Version) {
         // Arrange
         const fieldBytes = ByteVector.fromByte(StringType.UTF16LE);
-        const header = new Id3v2FrameHeader(FrameIdentifiers.TXXX, Id3v2FrameFlags.None, fieldBytes.length);
+        const header = new FrameHeader(FrameIdentifiers.TXXX, FrameFlags.None, fieldBytes.length);
 
         // Act
         const frame = UserTextInformationFrame.fromFieldBytes(header, fieldBytes, version);
@@ -59,16 +60,16 @@ const assertFrame = (
         assertFrame(frame, "", [], StringType.UTF16LE);
     }
 
-    @params(2, "v2")
-    @params(3, "v3")
-    @params(4, "v4")
-    public fromFieldBytes_illFormedOneField(version: number) {
+    @params(Id3v2Version.V22, "v2")
+    @params(Id3v2Version.V23, "v3")
+    @params(Id3v2Version.V24, "v4")
+    public fromFieldBytes_illFormedOneField(version: Id3v2Version) {
         // Arrange
         const fieldBytes = ByteVector.concatenate(
             StringType.UTF16BE,
             ByteVector.fromString("foo", StringType.UTF16BE)
         );
-        const header = new Id3v2FrameHeader(FrameIdentifiers.TXXX, Id3v2FrameFlags.None, fieldBytes.length);
+        const header = new FrameHeader(FrameIdentifiers.TXXX, FrameFlags.None, fieldBytes.length);
 
         // Act
         const output = UserTextInformationFrame.fromFieldBytes(header, fieldBytes, version);
@@ -77,10 +78,10 @@ const assertFrame = (
         assertFrame(output, "", ["foo"], StringType.UTF16BE);
     }
 
-    @params(2, "v2")
-    @params(3, "v3")
-    @params(4, "v4")
-    public fromFieldBytes_illFormedThreeFields(version: number) {
+    @params(Id3v2Version.V22, "v2")
+    @params(Id3v2Version.V23, "v3")
+    @params(Id3v2Version.V24, "v4")
+    public fromFieldBytes_illFormedThreeFields(version: Id3v2Version) {
         // Arrange
         const fieldBytes = ByteVector.concatenate(
             StringType.UTF16BE,
@@ -90,7 +91,7 @@ const assertFrame = (
             ByteVector.getTextDelimiter(StringType.UTF16BE),
             ByteVector.fromString("baz", StringType.UTF16BE),
         );
-        const header = new Id3v2FrameHeader(FrameIdentifiers.TXXX, Id3v2FrameFlags.None, fieldBytes.length);
+        const header = new FrameHeader(FrameIdentifiers.TXXX, FrameFlags.None, fieldBytes.length);
 
         // Act
         const output = UserTextInformationFrame.fromFieldBytes(header, fieldBytes, version);
@@ -99,10 +100,10 @@ const assertFrame = (
         assertFrame(output, "foo", ["bar", "baz"], StringType.UTF16BE);
     }
 
-    @params(2, "v2")
-    @params(3, "v3")
-    @params(4, "v4")
-    public fromFieldBytes_wellFormed(version: number) {
+    @params(Id3v2Version.V22, "v2")
+    @params(Id3v2Version.V23, "v3")
+    @params(Id3v2Version.V24, "v4")
+    public fromFieldBytes_wellFormed(version: Id3v2Version) {
         // Assert
         const fieldData = ByteVector.concatenate(
             StringType.Latin1,
@@ -110,7 +111,7 @@ const assertFrame = (
             ByteVector.getTextDelimiter(StringType.Latin1),
             ByteVector.fromString("bar", StringType.UTF8)
         );
-        const header = new Id3v2FrameHeader(FrameIdentifiers.TXXX, Id3v2FrameFlags.None, fieldData.length);
+        const header = new FrameHeader(FrameIdentifiers.TXXX, FrameFlags.None, fieldData.length);
 
         // Act
         const frame = UserTextInformationFrame.fromFieldBytes(header, fieldData, version);
@@ -129,10 +130,10 @@ const assertFrame = (
             ByteVector.getTextDelimiter(encoding),
             ByteVector.fromString("bar", encoding)
         );
-        const header = new Id3v2FrameHeader(FrameIdentifiers.TXXX, Id3v2FrameFlags.None, fieldBytes.length);
+        const header = new FrameHeader(FrameIdentifiers.TXXX, FrameFlags.None, fieldBytes.length);
 
         // Act
-        const output = UserTextInformationFrame.fromFieldBytes(header, fieldBytes, 4);
+        const output = UserTextInformationFrame.fromFieldBytes(header, fieldBytes, Id3v2Version.V24);
 
         // Assert
         assertFrame(output, "foo", ["bar"], encoding);
@@ -321,15 +322,15 @@ const assertFrame = (
         const frame = UserTextInformationFrame.fromFields("foo", ["bar", "baz"], StringType.Latin1);
 
         // Act
-        const result = frame.render(4);
+        const result = frame.render(Id3v2Version.V24);
 
         // Assert
         assert.isOk(result);
 
         const expected = ByteVector.concatenate(
-            FrameIdentifiers.TXXX.render(4),
+            FrameIdentifiers.TXXX.render(Id3v2Version.V24),
             ByteVector.fromUint(12),
-            ByteVector.fromUshort(Id3v2FrameFlags.None),
+            ByteVector.fromUshort(FrameFlags.None),
             StringType.Latin1,
             ByteVector.fromString("foo", StringType.Latin1),
             ByteVector.getTextDelimiter(StringType.Latin1),
@@ -346,7 +347,7 @@ const assertFrame = (
         const frame = UserTextInformationFrame.fromFields(undefined, undefined, StringType.Latin1);
 
         // Act
-        const result = frame.render(4);
+        const result = frame.render(Id3v2Version.V24);
 
         // Assert
         assert.isOk(result);
@@ -359,15 +360,15 @@ const assertFrame = (
         const frame = UserTextInformationFrame.fromFields(undefined, ["foo"], StringType.Latin1);
 
         // Act
-        const result = frame.render(4);
+        const result = frame.render(Id3v2Version.V24);
 
         // Assert
         assert.isOk(result);
 
         const expected = ByteVector.concatenate(
-            FrameIdentifiers.TXXX.render(4),
+            FrameIdentifiers.TXXX.render(Id3v2Version.V24),
             ByteVector.fromUint(5),
-            ByteVector.fromUshort(Id3v2FrameFlags.None),
+            ByteVector.fromUshort(FrameFlags.None),
             StringType.Latin1,
             ByteVector.getTextDelimiter(StringType.Latin1),
             ByteVector.fromString("foo", StringType.Latin1)
@@ -381,15 +382,15 @@ const assertFrame = (
         const frame = UserTextInformationFrame.fromFields("foo", undefined, StringType.Latin1);
 
         // Act
-        const result = frame.render(4);
+        const result = frame.render(Id3v2Version.V24);
 
         // Assert
         assert.isOk(result);
 
         const expected = ByteVector.concatenate(
-            FrameIdentifiers.TXXX.render(4),
+            FrameIdentifiers.TXXX.render(Id3v2Version.V24),
             ByteVector.fromUint(5),
-            ByteVector.fromUshort(Id3v2FrameFlags.None),
+            ByteVector.fromUshort(FrameFlags.None),
             StringType.Latin1,
             ByteVector.fromString("foo", StringType.Latin1),
             ByteVector.getTextDelimiter(StringType.Latin1)
@@ -404,15 +405,15 @@ const assertFrame = (
         frame.text = ["bar"];
 
         // Act
-        const result = frame.render(4);
+        const result = frame.render(Id3v2Version.V24);
 
         // Assert
         assert.isOk(result);
 
         const expected = ByteVector.concatenate(
-            FrameIdentifiers.TXXX.render(4),
+            FrameIdentifiers.TXXX.render(Id3v2Version.V24),
             ByteVector.fromUint(15),
-            ByteVector.fromUshort(Id3v2FrameFlags.None),
+            ByteVector.fromUshort(FrameFlags.None),
             StringType.UTF16LE,
             ByteVector.fromString("foo", StringType.UTF16LE),
             ByteVector.getTextDelimiter(StringType.UTF16LE),

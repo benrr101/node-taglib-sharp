@@ -3,11 +3,12 @@ import {assert} from "chai";
 
 import Frame from "../../src/id3v2/frames/frame";
 import FrameConstructorTests from "./frameConstructorTests";
+import FrameHeader from "../../src/id3v2/frames/frameHeader";
 import PropertyTests from "../utilities/propertyTests";
 import PrivateFrame from "../../src/id3v2/frames/privateFrame";
 import UnknownFrame from "../../src/id3v2/frames/unknownFrame";
 import {ByteVector, StringType} from "../../src/byteVector";
-import {Id3v2FrameFlags, Id3v2FrameHeader} from "../../src/id3v2/frames/frameHeader";
+import {FrameFlags, Id3v2Version} from "../../src/id3v2/enums";
 import {FrameIdentifiers} from "../../src/id3v2/frameIdentifiers";
 import {Testers} from "../utilities/testers";
 
@@ -21,7 +22,7 @@ const assertFrame = (frame: PrivateFrame, o: string, d: ByteVector) => {
 }
 
 @suite class Id3v2_PrivateFrame_ConstructorTests extends FrameConstructorTests {
-    public get fromFieldBytes(): (h: Id3v2FrameHeader, d: ByteVector, v: number) => Frame {
+    public get fromFieldBytes(): (h: FrameHeader, d: ByteVector, v: Id3v2Version) => Frame {
         return PrivateFrame.fromFieldBytes;
     }
 
@@ -29,22 +30,22 @@ const assertFrame = (frame: PrivateFrame, o: string, d: ByteVector) => {
     public fromFieldBytes_tooFewBytes_throws() {
         // Arrange
         const fieldBytes = ByteVector.empty();
-        const header = new Id3v2FrameHeader(FrameIdentifiers.PRIV, Id3v2FrameFlags.None, fieldBytes.length);
+        const header = new FrameHeader(FrameIdentifiers.PRIV, FrameFlags.None, fieldBytes.length);
 
         // Act / Assert
-        assert.throws(() => { PrivateFrame.fromFieldBytes(header, fieldBytes, 4); });
+        assert.throws(() => { PrivateFrame.fromFieldBytes(header, fieldBytes, Id3v2Version.V24); });
     }
 
-    @params(2, "v2")
-    @params(3, "v3")
-    @params(4, "v4")
-    public fromFieldBytes_ownerOnly(version: number) {
+    @params(Id3v2Version.V22, "v2")
+    @params(Id3v2Version.V23, "v3")
+    @params(Id3v2Version.V24, "v4")
+    public fromFieldBytes_ownerOnly(version: Id3v2Version) {
         // Arrange
         const fieldBytes = ByteVector.concatenate(
             ByteVector.fromString("fux", StringType.Latin1), // Owner
             0x00                                             // Separator
         );
-        const header = new Id3v2FrameHeader(FrameIdentifiers.PRIV, Id3v2FrameFlags.None, fieldBytes.length);
+        const header = new FrameHeader(FrameIdentifiers.PRIV, FrameFlags.None, fieldBytes.length);
 
         // Act
         const frame = PrivateFrame.fromFieldBytes(header, fieldBytes, version);
@@ -53,17 +54,17 @@ const assertFrame = (frame: PrivateFrame, o: string, d: ByteVector) => {
         assertFrame(frame, "fux", ByteVector.empty());
     }
 
-    @params(2, "v2")
-    @params(3, "v3")
-    @params(4, "v4")
-    public fromFieldBytes_dataOnly(version: number) {
+    @params(Id3v2Version.V22, "v2")
+    @params(Id3v2Version.V23, "v3")
+    @params(Id3v2Version.V24, "v4")
+    public fromFieldBytes_dataOnly(version: Id3v2Version) {
         // Arrange
         const dataBytes = ByteVector.concatenate(0x01, 0x02, 0x03, 0x04);
         const fieldBytes = ByteVector.concatenate(
             0x00,      // Separator
             dataBytes  // Data
         );
-        const header = new Id3v2FrameHeader(FrameIdentifiers.PRIV, Id3v2FrameFlags.None, fieldBytes.length);
+        const header = new FrameHeader(FrameIdentifiers.PRIV, FrameFlags.None, fieldBytes.length);
 
         // Act
         const frame = PrivateFrame.fromFieldBytes(header, fieldBytes, version);
@@ -72,10 +73,10 @@ const assertFrame = (frame: PrivateFrame, o: string, d: ByteVector) => {
         assertFrame(frame, "", dataBytes);
     }
 
-    @params(2, "v2")
-    @params(3, "v3")
-    @params(4, "v4")
-    public fromFieldBytes_ownerAndData(version: number) {
+    @params(Id3v2Version.V22, "v2")
+    @params(Id3v2Version.V23, "v3")
+    @params(Id3v2Version.V24, "v4")
+    public fromFieldBytes_ownerAndData(version: Id3v2Version) {
         // Arrange
         const dataBytes = ByteVector.concatenate(0x01, 0x02, 0x03, 0x04);
         const fieldBytes = ByteVector.concatenate(
@@ -83,7 +84,7 @@ const assertFrame = (frame: PrivateFrame, o: string, d: ByteVector) => {
             0x00,                                            // Separator
             dataBytes                                        // Data
         );
-        const header = new Id3v2FrameHeader(FrameIdentifiers.PRIV, Id3v2FrameFlags.None, fieldBytes.length);
+        const header = new FrameHeader(FrameIdentifiers.PRIV, FrameFlags.None, fieldBytes.length);
 
         // Act
         const frame = PrivateFrame.fromFieldBytes(header, fieldBytes, version);
@@ -238,12 +239,12 @@ const assertFrame = (frame: PrivateFrame, o: string, d: ByteVector) => {
         const frame = PrivateFrame.fromFields();
 
         // Act / Assert
-        assert.throws(() => frame.render(2));
+        assert.throws(() => frame.render(Id3v2Version.V22));
     }
 
-    @params(3, "v3")
-    @params(4, "v4")
-    public render_v34(version: number) {
+    @params(Id3v2Version.V23, "v3")
+    @params(Id3v2Version.V24, "v4")
+    public render_v34(version: Id3v2Version) {
         // Arrange
         const dataBytes = ByteVector.fromByteArray([0x01, 0x02, 0x03, 0x04]);
         const fieldBytes = ByteVector.concatenate(
@@ -251,7 +252,7 @@ const assertFrame = (frame: PrivateFrame, o: string, d: ByteVector) => {
             0x00,                                            // Separator
             dataBytes                                        // Data
         );
-        const header = new Id3v2FrameHeader(FrameIdentifiers.PRIV, Id3v2FrameFlags.None, fieldBytes.length);
+        const header = new FrameHeader(FrameIdentifiers.PRIV, FrameFlags.None, fieldBytes.length);
         const frame = PrivateFrame.fromFieldBytes(header, fieldBytes, version);
 
         // Act
@@ -271,16 +272,16 @@ const assertFrame = (frame: PrivateFrame, o: string, d: ByteVector) => {
             ByteVector.fromString("fux", StringType.Latin1), // Owner
             0x00                                             // Separator
         );
-        const header = new Id3v2FrameHeader(FrameIdentifiers.PRIV, Id3v2FrameFlags.None, fieldBytes.length);
-        const frame = PrivateFrame.fromFieldBytes(header, fieldBytes, 4);
+        const header = new FrameHeader(FrameIdentifiers.PRIV, FrameFlags.None, fieldBytes.length);
+        const frame = PrivateFrame.fromFieldBytes(header, fieldBytes, Id3v2Version.V24);
 
         // Act
-        const output = frame.render(4);
+        const output = frame.render(Id3v2Version.V24);
 
         // Assert
         assert.isOk(output);
 
-        const expected = ByteVector.concatenate(header.render(4), fieldBytes);
+        const expected = ByteVector.concatenate(header.render(Id3v2Version.V24), fieldBytes);
         Testers.bvEqual(output, expected);
     }
 
@@ -292,16 +293,16 @@ const assertFrame = (frame: PrivateFrame, o: string, d: ByteVector) => {
             0x00,      // Separator
             dataBytes  // Data
         );
-        const header = new Id3v2FrameHeader(FrameIdentifiers.PRIV, Id3v2FrameFlags.None, fieldBytes.length);
-        const frame = PrivateFrame.fromFieldBytes(header, fieldBytes, 4);
+        const header = new FrameHeader(FrameIdentifiers.PRIV, FrameFlags.None, fieldBytes.length);
+        const frame = PrivateFrame.fromFieldBytes(header, fieldBytes, Id3v2Version.V24);
 
         // Act
-        const output = frame.render(4);
+        const output = frame.render(Id3v2Version.V24);
 
         // Assert
         assert.isOk(output);
 
-        const expected = ByteVector.concatenate(header.render(4), fieldBytes);
+        const expected = ByteVector.concatenate(header.render(Id3v2Version.V24), fieldBytes);
         Testers.bvEqual(output, expected);
     }
 }

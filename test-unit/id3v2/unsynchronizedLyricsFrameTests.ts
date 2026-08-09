@@ -3,12 +3,13 @@ import {assert} from "chai";
 
 import Frame from "../../src/id3v2/frames/frame";
 import FrameConstructorTests from "./frameConstructorTests";
+import FrameHeader from "../../src/id3v2/frames/frameHeader";
 import Id3v2Settings from "../../src/id3v2/id3v2Settings";
 import PropertyTests from "../utilities/propertyTests";
 import UnknownFrame from "../../src/id3v2/frames/unknownFrame";
 import UnsynchronizedLyricsFrame from "../../src/id3v2/frames/unsynchronizedLyricsFrame";
 import {ByteVector, StringType} from "../../src/byteVector";
-import {Id3v2FrameFlags, Id3v2FrameHeader} from "../../src/id3v2/frames/frameHeader";
+import {FrameFlags, Id3v2Version} from "../../src/id3v2/enums";
 import {FrameIdentifiers} from "../../src/id3v2/frameIdentifiers";
 import {Testers} from "../utilities/testers";
 
@@ -24,32 +25,32 @@ const assertFrame = (frame: UnsynchronizedLyricsFrame, d: string, l: string, t: 
 }
 
 @suite class Id3v2_UnsynchronizedLyricsFrame_ConstructorTests extends FrameConstructorTests {
-    public get fromFieldBytes(): (h: Id3v2FrameHeader, d: ByteVector, v: number) => Frame {
+    public get fromFieldBytes(): (h: FrameHeader, d: ByteVector, v: Id3v2Version) => Frame {
         return UnsynchronizedLyricsFrame.fromFieldBytes;
     }
 
-    @params(2, "v2")
-    @params(3, "v3")
-    @params(4, "v4")
-    public fromFieldBytes_tooFewBytes_throws(version: number) {
+    @params(Id3v2Version.V22, "v2")
+    @params(Id3v2Version.V23, "v3")
+    @params(Id3v2Version.V24, "v4")
+    public fromFieldBytes_tooFewBytes_throws(version: Id3v2Version) {
         // Arrange
         const fieldBytes = ByteVector.fromByte(StringType.Latin1);
-        const header = new Id3v2FrameHeader(FrameIdentifiers.USLT, Id3v2FrameFlags.None, fieldBytes.length);
+        const header = new FrameHeader(FrameIdentifiers.USLT, FrameFlags.None, fieldBytes.length);
 
         // Act/Assert
         assert.throws(() => { UnsynchronizedLyricsFrame.fromFieldBytes(header, fieldBytes, version); });
     }
 
-    @params(2, "v2")
-    @params(3, "v3")
-    @params(4, "v4")
-    public fromFieldBytes_requiredBytesOnly(version: number) {
+    @params(Id3v2Version.V22, "v2")
+    @params(Id3v2Version.V23, "v3")
+    @params(Id3v2Version.V24, "v4")
+    public fromFieldBytes_requiredBytesOnly(version: Id3v2Version) {
         // Arrange
         const fieldBytes = ByteVector.concatenate(
             StringType.Latin1,                                    // Encoding
             ByteVector.fromString("eng", StringType.Latin1),      // Language
         );
-        const header = new Id3v2FrameHeader(FrameIdentifiers.USLT, Id3v2FrameFlags.None, fieldBytes.length);
+        const header = new FrameHeader(FrameIdentifiers.USLT, FrameFlags.None, fieldBytes.length);
 
         // Act
         const frame = UnsynchronizedLyricsFrame.fromFieldBytes(header, fieldBytes, version);
@@ -58,17 +59,17 @@ const assertFrame = (frame: UnsynchronizedLyricsFrame, d: string, l: string, t: 
         assertFrame(frame, "", "eng", "", StringType.Latin1);
     }
 
-    @params(2, "v2")
-    @params(3, "v3")
-    @params(4, "v4")
-    public fromFieldBytes_descriptionOnly(version: number) {
+    @params(Id3v2Version.V22, "v2")
+    @params(Id3v2Version.V23, "v3")
+    @params(Id3v2Version.V24, "v4")
+    public fromFieldBytes_descriptionOnly(version: Id3v2Version) {
         // Arrange
         const fieldBytes = ByteVector.concatenate(
             StringType.Latin1,                                    // Encoding
             ByteVector.fromString("eng", StringType.Latin1),      // Language
             ByteVector.fromString("foobarbaz", StringType.Latin1) // Description -> will become lyrics
         );
-        const header = new Id3v2FrameHeader(FrameIdentifiers.USLT, Id3v2FrameFlags.None, fieldBytes.length);
+        const header = new FrameHeader(FrameIdentifiers.USLT, FrameFlags.None, fieldBytes.length);
 
         // Act
         const frame = UnsynchronizedLyricsFrame.fromFieldBytes(header, fieldBytes, version);
@@ -77,10 +78,10 @@ const assertFrame = (frame: UnsynchronizedLyricsFrame, d: string, l: string, t: 
         assertFrame(frame, "", "eng", "foobarbaz", StringType.Latin1);
     }
 
-    @params(2, "v2")
-    @params(3, "v3")
-    @params(4, "v4")
-    public fromFieldBytes_lyricsOnly(version: number) {
+    @params(Id3v2Version.V22, "v2")
+    @params(Id3v2Version.V23, "v3")
+    @params(Id3v2Version.V24, "v4")
+    public fromFieldBytes_lyricsOnly(version: Id3v2Version) {
         // Arrange
         const fieldBytes = ByteVector.concatenate(
             StringType.Latin1,                                    // Encoding
@@ -88,7 +89,7 @@ const assertFrame = (frame: UnsynchronizedLyricsFrame, d: string, l: string, t: 
             ByteVector.getTextDelimiter(StringType.Latin1),       // Separator
             ByteVector.fromString("foobarbaz", StringType.Latin1) // Lyrics
         );
-        const header = new Id3v2FrameHeader(FrameIdentifiers.USLT, Id3v2FrameFlags.None, fieldBytes.length);
+        const header = new FrameHeader(FrameIdentifiers.USLT, FrameFlags.None, fieldBytes.length);
 
         // Act
         const frame = UnsynchronizedLyricsFrame.fromFieldBytes(header, fieldBytes, version);
@@ -97,10 +98,10 @@ const assertFrame = (frame: UnsynchronizedLyricsFrame, d: string, l: string, t: 
         assertFrame(frame, "", "eng", "foobarbaz", StringType.Latin1);
     }
 
-    @params(2, "v2")
-    @params(3, "v3")
-    @params(4, "v4")
-    public fromFieldBytes_descriptionAndLyrics(version: number) {
+    @params(Id3v2Version.V22, "v2")
+    @params(Id3v2Version.V23, "v3")
+    @params(Id3v2Version.V24, "v4")
+    public fromFieldBytes_descriptionAndLyrics(version: Id3v2Version) {
         // Arrange
         const fieldBytes = ByteVector.concatenate(
             StringType.Latin1,                               // Encoding
@@ -109,7 +110,7 @@ const assertFrame = (frame: UnsynchronizedLyricsFrame, d: string, l: string, t: 
             ByteVector.getTextDelimiter(StringType.Latin1),  // Delimiter
             ByteVector.fromString("bar", StringType.Latin1)  // Lyrics
         );
-        const header = new Id3v2FrameHeader(FrameIdentifiers.USLT, Id3v2FrameFlags.None, fieldBytes.length);
+        const header = new FrameHeader(FrameIdentifiers.USLT, FrameFlags.None, fieldBytes.length);
 
         // Act
         const frame = UnsynchronizedLyricsFrame.fromFieldBytes(header, fieldBytes, version);
@@ -129,10 +130,10 @@ const assertFrame = (frame: UnsynchronizedLyricsFrame, d: string, l: string, t: 
             ByteVector.getTextDelimiter(encoding),           // Delimiter
             ByteVector.fromString("bar", encoding)           // Lyrics
         );
-        const header = new Id3v2FrameHeader(FrameIdentifiers.USLT, Id3v2FrameFlags.None, fieldBytes.length);
+        const header = new FrameHeader(FrameIdentifiers.USLT, FrameFlags.None, fieldBytes.length);
 
         // Act
-        const frame = UnsynchronizedLyricsFrame.fromFieldBytes(header, fieldBytes, 4);
+        const frame = UnsynchronizedLyricsFrame.fromFieldBytes(header, fieldBytes, Id3v2Version.V24);
 
         // Assert
         assertFrame(frame, "foo", "eng", "bar", encoding);
@@ -334,13 +335,13 @@ const assertFrame = (frame: UnsynchronizedLyricsFrame, d: string, l: string, t: 
         assert.deepEqual(result, [frame1, frame2]);
     }
 
-    @params([2, StringType.Latin1], "v2_single_byte")
-    @params([2, StringType.UTF16BE], "v2_multibyte")
-    @params([3, StringType.Latin1], "v3_single_byte")
-    @params([3, StringType.UTF16BE], "v3_multibyte")
-    @params([4, StringType.Latin1], "v4_single_byte")
-    @params([4, StringType.UTF16BE], "v4_multibyte")
-    public render([version, encoding]: [number, StringType]) {
+    @params([Id3v2Version.V22, StringType.Latin1], "v2_single_byte")
+    @params([Id3v2Version.V22, StringType.UTF16BE], "v2_multibyte")
+    @params([Id3v2Version.V23, StringType.Latin1], "v3_single_byte")
+    @params([Id3v2Version.V23, StringType.UTF16BE], "v3_multibyte")
+    @params([Id3v2Version.V24, StringType.Latin1], "v4_single_byte")
+    @params([Id3v2Version.V24, StringType.UTF16BE], "v4_multibyte")
+    public render([version, encoding]: [Id3v2Version, StringType]) {
         // Arrange
         const frame = UnsynchronizedLyricsFrame.fromFields("foo", "bar", "eng", encoding);
 
@@ -357,15 +358,15 @@ const assertFrame = (frame: UnsynchronizedLyricsFrame, d: string, l: string, t: 
             ByteVector.getTextDelimiter(encoding),           // Delimiter
             ByteVector.fromString("bar", encoding)           // Lyrics
         );
-        const header = new Id3v2FrameHeader(FrameIdentifiers.USLT, Id3v2FrameFlags.None, expectedFieldBytes.length);
+        const header = new FrameHeader(FrameIdentifiers.USLT, FrameFlags.None, expectedFieldBytes.length);
         const expectedBytes = ByteVector.concatenate(header.render(version), expectedFieldBytes);
         Testers.bvEqual(output, expectedBytes);
     }
 
-    @params([2, StringType.UTF16], "v2")
-    @params([3, StringType.UTF16], "v3")
-    @params([4, StringType.UTF8], "v4")
-    public render_utf8([version, outputEncoding]: [number, StringType]) {
+    @params([Id3v2Version.V22, StringType.UTF16], "v2")
+    @params([Id3v2Version.V23, StringType.UTF16], "v3")
+    @params([Id3v2Version.V24, StringType.UTF8], "v4")
+    public render_utf8([version, outputEncoding]: [Id3v2Version, StringType]) {
         // Arrange
         const frame = UnsynchronizedLyricsFrame.fromFields("foo", "bar", "eng", StringType.UTF8);
 
@@ -382,7 +383,7 @@ const assertFrame = (frame: UnsynchronizedLyricsFrame, d: string, l: string, t: 
             ByteVector.getTextDelimiter(outputEncoding),     // Delimiter
             ByteVector.fromString("bar", outputEncoding)     // Lyrics
         );
-        const header = new Id3v2FrameHeader(FrameIdentifiers.USLT, Id3v2FrameFlags.None, expectedFieldBytes.length);
+        const header = new FrameHeader(FrameIdentifiers.USLT, FrameFlags.None, expectedFieldBytes.length);
         const expectedBytes = ByteVector.concatenate(header.render(version), expectedFieldBytes);
         Testers.bvEqual(output, expectedBytes);
     }
@@ -393,7 +394,7 @@ const assertFrame = (frame: UnsynchronizedLyricsFrame, d: string, l: string, t: 
         const frame = UnsynchronizedLyricsFrame.fromFields("foo", undefined, "eng", StringType.Latin1);
 
         // Act
-        const result = frame.render(4);
+        const result = frame.render(Id3v2Version.V24);
 
         // Assert
         assert.isOk(result);
@@ -404,8 +405,8 @@ const assertFrame = (frame: UnsynchronizedLyricsFrame, d: string, l: string, t: 
             ByteVector.fromString("foo", StringType.Latin1), // Description
             ByteVector.getTextDelimiter(StringType.Latin1),  // Delimiter
         );
-        const header = new Id3v2FrameHeader(FrameIdentifiers.USLT, Id3v2FrameFlags.None, expectedFieldBytes.length);
-        const expectedBytes = ByteVector.concatenate(header.render(4), expectedFieldBytes);
+        const header = new FrameHeader(FrameIdentifiers.USLT, FrameFlags.None, expectedFieldBytes.length);
+        const expectedBytes = ByteVector.concatenate(header.render(Id3v2Version.V24), expectedFieldBytes);
         Testers.bvEqual(result, expectedBytes);
     }
 
@@ -415,7 +416,7 @@ const assertFrame = (frame: UnsynchronizedLyricsFrame, d: string, l: string, t: 
         const frame = UnsynchronizedLyricsFrame.fromFields("", "foo", "eng", StringType.Latin1);
 
         // Act
-        const result = frame.render(4);
+        const result = frame.render(Id3v2Version.V24);
 
         // Assert
         assert.isOk(result);
@@ -426,8 +427,8 @@ const assertFrame = (frame: UnsynchronizedLyricsFrame, d: string, l: string, t: 
             ByteVector.getTextDelimiter(StringType.Latin1),  // Delimiter
             ByteVector.fromString("foo", StringType.Latin1), // Lyrics
         );
-        const header = new Id3v2FrameHeader(FrameIdentifiers.USLT, Id3v2FrameFlags.None, expectedFieldBytes.length);
-        const expectedBytes = ByteVector.concatenate(header.render(4), expectedFieldBytes);
+        const header = new FrameHeader(FrameIdentifiers.USLT, FrameFlags.None, expectedFieldBytes.length);
+        const expectedBytes = ByteVector.concatenate(header.render(Id3v2Version.V24), expectedFieldBytes);
         Testers.bvEqual(result, expectedBytes);
     }
 }

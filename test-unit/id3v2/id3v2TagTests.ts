@@ -7,28 +7,27 @@ import CommentsFrame from "../../src/id3v2/frames/commentsFrame";
 import GenreFrame from "../../src/id3v2/frames/genreFrame";
 import Id3v2Settings from "../../src/id3v2/id3v2Settings";
 import Id3v2Tag from "../../src/id3v2/id3v2Tag";
-import Id3v2TagFooter from "../../src/id3v2/id3v2TagFooter";
+import Id3v2TagFooter from "../../src/id3v2/tagFooter";
 import PlayCountFrame from "../../src/id3v2/frames/playCountFrame";
 import PrivateFrame from "../../src/id3v2/frames/privateFrame";
 import PropertyTests from "../utilities/propertyTests";
 import SyncData from "../../src/id3v2/syncData";
+import TagHeader from "../../src/id3v2/tagHeader";
 import TestFile from "../utilities/testFile";
 import TextInformationFrame from "../../src/id3v2/frames/textInformationFrame";
 import UniqueFileIdentifierFrame from "../../src/id3v2/frames/uniqueFileIdentifierFrame";
 import UnknownFrame from "../../src/id3v2/frames/unknownFrame";
 import UnsynchronizedLyricsFrame from "../../src/id3v2/frames/unsynchronizedLyricsFrame";
-import UrlLinkFrame from "../../src/id3v2/frames/urlLinkFrame";
 import UserTextInformationFrame from "../../src/id3v2/frames/userTextInformationFrame";
 import {ByteVector, StringType} from "../../src/byteVector";
+import {Id3v2Version, TagFlags} from "../../src/id3v2/enums";
 import {File, ReadStyle} from "../../src/file";
-import {Id3v2FrameFlags} from "../../src/id3v2/frames/frameHeader";
 import {FrameIdentifier, FrameIdentifiers} from "../../src/id3v2/frameIdentifiers";
-import {Id3v2TagHeader, Id3v2TagHeaderFlags} from "../../src/id3v2/id3v2TagHeader";
 import {IPicture} from "../../src/picture";
 import {TagTypes} from "../../src/tag";
 import {Testers} from "../utilities/testers";
 
-const getTestTagHeader = (version: number, flags: Id3v2TagHeaderFlags, tagSize: number): ByteVector => {
+const getTestTagHeader = (version: Id3v2Version, flags: TagFlags, tagSize: number): ByteVector => {
     return ByteVector.concatenate(
         ByteVector.fromString("ID3", StringType.Latin1),
         version, 0x00,
@@ -56,7 +55,7 @@ const getTestTagHeader = (version: number, flags: Id3v2TagHeaderFlags, tagSize: 
     @test
     public fromData_emptyTag() {
         // Arrange
-        const data = getTestTagHeader(4, Id3v2TagHeaderFlags.None, 0);
+        const data = getTestTagHeader(Id3v2Version.V24, TagFlags.None, 0);
 
         // Act
         const output = Id3v2Tag.fromData(data);
@@ -70,7 +69,7 @@ const getTestTagHeader = (version: number, flags: Id3v2TagHeaderFlags, tagSize: 
     public fromData_dataTooShortForTagLength() {
         // Arrange
         const data = ByteVector.concatenate(
-            getTestTagHeader(4, Id3v2TagHeaderFlags.None, 5),
+            getTestTagHeader(Id3v2Version.V24, TagFlags.None, 5),
             0x00, 0x00
         );
 
@@ -82,12 +81,12 @@ const getTestTagHeader = (version: number, flags: Id3v2TagHeaderFlags, tagSize: 
     public fromData_v4Tag() {
         // Arrange
         const frameBytes = ByteVector.concatenate(
-            PlayCountFrame.fromFields().render(4),
-            UniqueFileIdentifierFrame.fromFields("foo", ByteVector.fromUint(123)).render(4),
-            UnknownFrame.fromFields(FrameIdentifiers.RVRB, ByteVector.empty()).render(4),    // Empty frame
-            ByteVector.fromSize(5)                                                           // Padding
+            PlayCountFrame.fromFields().render(Id3v2Version.V24),
+            UniqueFileIdentifierFrame.fromFields("foo", ByteVector.fromUint(123)).render(Id3v2Version.V24),
+            UnknownFrame.fromFields(FrameIdentifiers.RVRB, ByteVector.empty()).render(Id3v2Version.V24), // Empty frame
+            ByteVector.fromSize(5)                                                                       // Padding
         );
-        const tagHeader = getTestTagHeader(4, Id3v2TagHeaderFlags.None, frameBytes.length);
+        const tagHeader = getTestTagHeader(Id3v2Version.V24, TagFlags.None, frameBytes.length);
         const data = ByteVector.concatenate(tagHeader, frameBytes);
 
         // Act
@@ -118,9 +117,9 @@ const getTestTagHeader = (version: number, flags: Id3v2TagHeaderFlags, tagSize: 
     @test
     public fromData_extendedHeader() {
         // Arrange
-        const frame1 = PlayCountFrame.fromFields().render(4);
+        const frame1 = PlayCountFrame.fromFields().render(Id3v2Version.V24);
         const data = ByteVector.concatenate(
-            getTestTagHeader(4, Id3v2TagHeaderFlags.ExtendedHeader, frame1.length + 10),
+            getTestTagHeader(Id3v2Version.V24, TagFlags.ExtendedHeader, frame1.length + 10),
             SyncData.fromUint(10),
             0x01,
             0x00,
@@ -143,9 +142,9 @@ const getTestTagHeader = (version: number, flags: Id3v2TagHeaderFlags, tagSize: 
     @test
     public fromData_needsResync() {
         // Arrange
-        const frame1 = PlayCountFrame.fromFields(BigInt(123)).render(4);
+        const frame1 = PlayCountFrame.fromFields(BigInt(123)).render(Id3v2Version.V23);
         const data = ByteVector.concatenate(
-            getTestTagHeader(3, Id3v2TagHeaderFlags.Unsynchronization, frame1.length),
+            getTestTagHeader(Id3v2Version.V23, TagFlags.Unsynchronization, frame1.length),
             frame1
         );
         SyncData.unsyncByteVector(data);
@@ -190,7 +189,7 @@ const getTestTagHeader = (version: number, flags: Id3v2TagHeaderFlags, tagSize: 
     @test
     public fromFileStart_emptyTag() {
         // Arrange
-        const data = getTestTagHeader(4, Id3v2TagHeaderFlags.None, 0);
+        const data = getTestTagHeader(Id3v2Version.V24, TagFlags.None, 0);
         const file = TestFile.getFile(data);
 
         // Act
@@ -205,12 +204,12 @@ const getTestTagHeader = (version: number, flags: Id3v2TagHeaderFlags, tagSize: 
     @params(2, "with_offset")
     public fromFileStart_v4Tag(offset: number) {
         const frameBytes = ByteVector.concatenate(
-            PlayCountFrame.fromFields(BigInt(123)).render(4),
-            UniqueFileIdentifierFrame.fromFields("foo", ByteVector.fromUint(123)).render(4),
-            UnknownFrame.fromFields(FrameIdentifiers.RVRB).render(4),                        // Empty frame
+            PlayCountFrame.fromFields(BigInt(123)).render(Id3v2Version.V24),
+            UniqueFileIdentifierFrame.fromFields("foo", ByteVector.fromUint(123)).render(Id3v2Version.V24),
+            UnknownFrame.fromFields(FrameIdentifiers.RVRB).render(Id3v2Version.V24),         // Empty frame
             ByteVector.fromSize(5)                                                           // Padding
         );
-        const headerBytes = getTestTagHeader(4, Id3v2TagHeaderFlags.None, frameBytes.length);
+        const headerBytes = getTestTagHeader(Id3v2Version.V24, TagFlags.None, frameBytes.length);
         const data = ByteVector.concatenate(ByteVector.fromSize(offset), headerBytes, frameBytes);
         const file = TestFile.getFile(data);
 
@@ -250,7 +249,7 @@ const getTestTagHeader = (version: number, flags: Id3v2TagHeaderFlags, tagSize: 
         PropertyTests.propertyRoundTrip(
             (v) => { tag.flags = v; },
             () => tag.flags,
-            Id3v2TagHeaderFlags.ExperimentalIndicator
+            TagFlags.ExperimentalIndicator
         );
     }
 
@@ -279,34 +278,6 @@ const getTestTagHeader = (version: number, flags: Id3v2TagHeaderFlags, tagSize: 
         PropertyTests.propertyRoundTrip(set, get, false);
         compilationFrames = TextInformationFrame.filterFrames(tag.frames, FrameIdentifiers.TCMP);
         assert.strictEqual(compilationFrames.length, 0);
-    }
-
-    @test
-    public version_invalidValue() {
-        // Arrange
-        const tag = Id3v2Tag.fromEmpty();
-        const set = (v: number) => { tag.version = v; };
-
-        // Act / Assert
-        PropertyTests.propertyThrows(set, -1);
-        PropertyTests.propertyThrows(set, 1.23);
-        PropertyTests.propertyThrows(set, 0);
-        PropertyTests.propertyThrows(set, 5);
-        PropertyTests.propertyThrows(set, 1);
-    }
-
-    @test
-    public version_validValue() {
-        // Arrange
-        const tag = Id3v2Tag.fromEmpty();
-        const set = (v: number) => { tag.version = v; };
-        const get = () => tag.version;
-
-        // Act / Assert
-        Id3v2Settings.forceDefaultVersion = false;
-        PropertyTests.propertyRoundTrip(set, get, 2);
-        PropertyTests.propertyRoundTrip(set, get, 3);
-        PropertyTests.propertyRoundTrip(set, get, 4);
     }
 
     @test
@@ -709,7 +680,7 @@ const getTestTagHeader = (version: number, flags: Id3v2TagHeaderFlags, tagSize: 
     public year_v4noExistingFrame() {
         // Arrange
         const tag = Id3v2Tag.fromEmpty();
-        tag.version = 4;
+        tag.version = Id3v2Version.V24;
 
         // Act / Assert
         assert.strictEqual(tag.year, 0);
@@ -729,7 +700,7 @@ const getTestTagHeader = (version: number, flags: Id3v2TagHeaderFlags, tagSize: 
     public year_v3noExistingFrame() {
         // Arrange
         const tag = Id3v2Tag.fromEmpty();
-        tag.version = 3;
+        tag.version = Id3v2Version.V23;
 
         // Act / Assert
         assert.strictEqual(tag.year, 0);
@@ -1633,7 +1604,7 @@ const getTestTagHeader = (version: number, flags: Id3v2TagHeaderFlags, tagSize: 
     public render_v4_noFooter() {
         // Arrange
         const tag = Id3v2Tag.fromEmpty();
-        tag.version = 4;
+        tag.version = Id3v2Version.V24;
 
         const frame1 = TextInformationFrame.fromFields(FrameIdentifiers.TCOM);
         const frame2 = TextInformationFrame.fromFields(FrameIdentifiers.TCON);
@@ -1644,11 +1615,11 @@ const getTestTagHeader = (version: number, flags: Id3v2TagHeaderFlags, tagSize: 
 
         // Assert
         const frameBytes = ByteVector.concatenate(
-            frame1.render(4),
-            frame2.render(4),
+            frame1.render(Id3v2Version.V24),
+            frame2.render(Id3v2Version.V24),
             ByteVector.fromSize(1024, 0x00)
         );
-        const header = new Id3v2TagHeader(4, 0, Id3v2TagHeaderFlags.None, frameBytes.length);
+        const header = new TagHeader(Id3v2Version.V24, 0, TagFlags.None, frameBytes.length);
         const expected = ByteVector.concatenate(header.render(), frameBytes);
 
         Testers.bvEqual(output, expected);
@@ -1658,8 +1629,8 @@ const getTestTagHeader = (version: number, flags: Id3v2TagHeaderFlags, tagSize: 
     public render_v4_hasFooter() {
         // Arrange
         const tag = Id3v2Tag.fromEmpty();
-        tag.version = 4;
-        tag.flags = Id3v2TagHeaderFlags.FooterPresent;
+        tag.version = Id3v2Version.V24;
+        tag.flags = TagFlags.FooterPresent;
 
         const frame1 = TextInformationFrame.fromFields(FrameIdentifiers.TCOM);
         const frame2 = TextInformationFrame.fromFields(FrameIdentifiers.TCON);
@@ -1670,10 +1641,10 @@ const getTestTagHeader = (version: number, flags: Id3v2TagHeaderFlags, tagSize: 
 
         // Assert
         const frameBytes = ByteVector.concatenate(
-            frame1.render(4),
-            frame2.render(4)
+            frame1.render(Id3v2Version.V24),
+            frame2.render(Id3v2Version.V24)
         );
-        const header = new Id3v2TagHeader(4, 0, Id3v2TagHeaderFlags.FooterPresent, frameBytes.length);
+        const header = new TagHeader(Id3v2Version.V24, 0, TagFlags.FooterPresent, frameBytes.length);
         const expected = ByteVector.concatenate(
             header.render(),
             frameBytes,
@@ -1690,8 +1661,8 @@ const getTestTagHeader = (version: number, flags: Id3v2TagHeaderFlags, tagSize: 
         const frame2 = TextInformationFrame.fromFields(FrameIdentifiers.TCON);
 
         const tag = Id3v2Tag.fromEmpty();
-        tag.version = 4;
-        tag.flags = Id3v2TagHeaderFlags.Unsynchronization;
+        tag.version = Id3v2Version.V24;
+        tag.flags = TagFlags.Unsynchronization;
         tag.frames.push(frame1, frame2);
 
         // Act
@@ -1699,11 +1670,11 @@ const getTestTagHeader = (version: number, flags: Id3v2TagHeaderFlags, tagSize: 
 
         // Assert
         const frameBytes = ByteVector.concatenate(
-            frame1.render(4),
-            frame2.render(4),
+            frame1.render(Id3v2Version.V24),
+            frame2.render(Id3v2Version.V24),
             ByteVector.fromSize(1024)
         );
-        const header = new Id3v2TagHeader(4, 0, Id3v2TagHeaderFlags.Unsynchronization, frameBytes.length);
+        const header = new TagHeader(Id3v2Version.V24, 0, TagFlags.Unsynchronization, frameBytes.length);
         const expected = ByteVector.concatenate(header.render(), frameBytes);
 
         Testers.bvEqual(output, expected);
@@ -1716,8 +1687,8 @@ const getTestTagHeader = (version: number, flags: Id3v2TagHeaderFlags, tagSize: 
         const frame2 = PrivateFrame.fromFields("fuxbuxqux", ByteVector.fromByteArray([0xAA, 0x12, 0x34, 0xAA]));
 
         const tag = Id3v2Tag.fromEmpty();
-        tag.version = 3;
-        tag.flags = Id3v2TagHeaderFlags.Unsynchronization;
+        tag.version = Id3v2Version.V23;
+        tag.flags = TagFlags.Unsynchronization;
         tag.frames.push(frame1, frame2);
 
         // Act
@@ -1725,11 +1696,11 @@ const getTestTagHeader = (version: number, flags: Id3v2TagHeaderFlags, tagSize: 
 
         // Assert
         const frameData = SyncData.unsyncByteVector(ByteVector.concatenate(
-            frame1.render(3),
-            frame2.render(3),
+            frame1.render(Id3v2Version.V23),
+            frame2.render(Id3v2Version.V23),
             ByteVector.fromSize(1024)
         ));
-        const header = new Id3v2TagHeader(3, 0, Id3v2TagHeaderFlags.Unsynchronization, frameData.length);
+        const header = new TagHeader(Id3v2Version.V23, 0, TagFlags.Unsynchronization, frameData.length);
         const expected = ByteVector.concatenate(header.render(), frameData);
 
         Testers.bvEqual(output, expected);
@@ -1739,7 +1710,7 @@ const getTestTagHeader = (version: number, flags: Id3v2TagHeaderFlags, tagSize: 
     public render_v4_unsupportedFrameForVersion_disallowedViaSettings() {
         // Arrange
         const tag = Id3v2Tag.fromEmpty();
-        tag.version = 4;
+        tag.version = Id3v2Version.V24;
 
         const originalSetting = Id3v2Settings.strictFrameForVersion;
         Id3v2Settings.strictFrameForVersion = true;
@@ -1760,7 +1731,7 @@ const getTestTagHeader = (version: number, flags: Id3v2TagHeaderFlags, tagSize: 
     public render_v4_unsupportedFrameForVersion_allowedViaSettings() {
         // Arrange
         const tag = Id3v2Tag.fromEmpty();
-        tag.version = 4;
+        tag.version = Id3v2Version.V24;
 
         const originalSetting = Id3v2Settings.strictFrameForVersion;
         Id3v2Settings.strictFrameForVersion = false;
@@ -1774,7 +1745,7 @@ const getTestTagHeader = (version: number, flags: Id3v2TagHeaderFlags, tagSize: 
             const rehydratedTag = Id3v2Tag.fromData(bytes);
 
             // Assert
-            assert.strictEqual(rehydratedTag.version, 4);
+            assert.strictEqual(rehydratedTag.version, Id3v2Version.V24);
             assert.strictEqual(rehydratedTag.frames.length, 0);
         } finally {
             Id3v2Settings.strictFrameForVersion = originalSetting;

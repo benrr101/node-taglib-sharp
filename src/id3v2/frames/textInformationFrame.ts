@@ -1,10 +1,11 @@
 import Frame from "./frame";
+import FrameHeader from "./frameHeader";
 import Id3v2Settings from "../id3v2Settings";
 import {ByteVector, StringType} from "../../byteVector";
-import {Id3v2FrameHeader} from "./frameHeader";
+import {CorruptFileError} from "../../errors";
 import {FrameIdentifier, FrameIdentifiers} from "../frameIdentifiers";
 import {ArrayUtils, Guards} from "../../utils";
-import {CorruptFileError} from "../../errors";
+import {Id3v2Version} from "../enums";
 
 /**
  * This class provides support for ID3v2 text information frames (section 4.2) covering `T000` to
@@ -148,7 +149,7 @@ export default class TextInformationFrame extends Frame {
 
     // #region Constructors
 
-    private constructor(header: Id3v2FrameHeader) {
+    private constructor(header: FrameHeader) {
         super(header);
     }
 
@@ -159,13 +160,12 @@ export default class TextInformationFrame extends Frame {
      * @param version ID3v2 version the frame was originally encoded with
      */
     public static fromFieldBytes(
-        header: Id3v2FrameHeader,
+        header: FrameHeader,
         fieldBytes: ByteVector,
-        version: number
+        version: Id3v2Version
     ): TextInformationFrame {
         Guards.truthy(header, "header");
         Guards.truthy(fieldBytes, "fieldBytes");
-        Guards.byte(version, "version");
 
         if (fieldBytes.length < 1) {
             throw new CorruptFileError("Text identifier frame must contain at least 1 byte.");
@@ -181,7 +181,7 @@ export default class TextInformationFrame extends Frame {
 
         // Split the text if required
         const textBytes = fieldBytes.subarray(1);
-        if (version >= 4) {
+        if (version === Id3v2Version.V24) {
             // @TODO: Should we filter out empty? We currently do it when rendering...
             frame._textFields = textBytes.toStrings(frame._encoding)
                 .filter(t => !!t);
@@ -218,7 +218,7 @@ export default class TextInformationFrame extends Frame {
     ): TextInformationFrame {
         Guards.truthy(identifier, "identifier");
 
-        const frame = new TextInformationFrame(new Id3v2FrameHeader(identifier));
+        const frame = new TextInformationFrame(new FrameHeader(identifier));
         frame._encoding = textEncoding ?? Id3v2Settings.defaultEncoding;
         frame._textFields = text ?? [];
 
@@ -279,10 +279,10 @@ export default class TextInformationFrame extends Frame {
      *     8-bit integer.
      * @returns Rendered version of the current instance.
      */
-    public render(version: number): ByteVector {
+    public render(version: Id3v2Version): ByteVector {
         Guards.byte(version, "version");
 
-        if (version !== 3 || this.frameId !== FrameIdentifiers.TDRC) {
+        if (version !== Id3v2Version.V23 || this.frameId !== FrameIdentifiers.TDRC) {
             return super.render(version);
         }
 
@@ -293,11 +293,11 @@ export default class TextInformationFrame extends Frame {
         }
 
         const output = ByteVector.empty();
-        let frame = new TextInformationFrame(new Id3v2FrameHeader(FrameIdentifiers.TYER));
+        let frame = new TextInformationFrame(new FrameHeader(FrameIdentifiers.TYER));
         frame.text = [text.substring(0, 4)];
         output.addByteVector(frame.render(version));
 
-        frame = new TextInformationFrame(new Id3v2FrameHeader(FrameIdentifiers.TDAT));
+        frame = new TextInformationFrame(new FrameHeader(FrameIdentifiers.TDAT));
         frame.text = [text.substring(5, 7) + text.substring(8, 10)];
         output.addByteVector(frame.render(version));
 
@@ -305,7 +305,7 @@ export default class TextInformationFrame extends Frame {
             return output;
         }
 
-        frame = new TextInformationFrame(new Id3v2FrameHeader(FrameIdentifiers.TIME));
+        frame = new TextInformationFrame(new FrameHeader(FrameIdentifiers.TIME));
         frame.text = [text.substring(11, 13) + text.substring(14, 16)];
         output.addByteVector(frame.render(version));
 
@@ -324,7 +324,7 @@ export default class TextInformationFrame extends Frame {
     // #region Protected Methods
 
     /** @inheritDoc */
-    protected renderFields(version: number): ByteVector {
+    protected renderFields(version: Id3v2Version): ByteVector {
         const truthyFields = this._textFields.filter(tf => !!tf);
         if (truthyFields.length === 0) {
             return ByteVector.empty();
@@ -333,7 +333,7 @@ export default class TextInformationFrame extends Frame {
         const encoding = TextInformationFrame.correctEncoding(this._encoding, version);
 
         let fieldBytes;
-        if (version > 3) {
+        if (version === Id3v2Version.V24) {
             // v4 frames have each field separated by a delimiter
             const truthyVectors = truthyFields.map(tf => ByteVector.fromString(tf, encoding));
             fieldBytes = ByteVector.join(ByteVector.getTextDelimiter(encoding), truthyVectors);

@@ -1,8 +1,9 @@
 import Frame from "./frame";
+import FrameHeader from "./frameHeader";
 import {ByteVector, StringType} from "../../byteVector";
-import {Id3v2FrameHeader} from "./frameHeader";
 import {FrameIdentifier} from "../frameIdentifiers";
 import {ArrayUtils, Guards} from "../../utils";
+import {Id3v2Version} from "../enums";
 
 /**
  * Provides ID3v2 URL Link frame implementation (section 4.3.1) covering `W000` to `WZZZ`,
@@ -36,7 +37,7 @@ export default class UrlLinkFrame extends Frame {
 
     // #region Constructors
 
-    private constructor(header: Id3v2FrameHeader) {
+    private constructor(header: FrameHeader) {
         super(header);
     }
 
@@ -44,12 +45,11 @@ export default class UrlLinkFrame extends Frame {
      * Constructs and initializes a new instance by parsing the fields from the field bytes.
      * @param header Header of the frame
      * @param fieldBytes Bytes that contain the fields of the frame
-     * @param version ID3v2 version the frame was originally encoded with
+     * @param _version ID3v2 version the frame was originally encoded with
      */
-    public static fromFieldBytes(header: Id3v2FrameHeader, fieldBytes: ByteVector, version: number): UrlLinkFrame {
+    public static fromFieldBytes(header: FrameHeader, fieldBytes: ByteVector, _version: Id3v2Version): UrlLinkFrame {
         Guards.truthy(header, "header");
         Guards.truthy(fieldBytes, "fieldBytes");
-        Guards.byte(version, "version");
 
         const frame = new UrlLinkFrame(header);
 
@@ -68,7 +68,7 @@ export default class UrlLinkFrame extends Frame {
     public static fromFields(ident: FrameIdentifier, text?: string): UrlLinkFrame {
         Guards.truthy(ident, "ident");
 
-        const frame = new UrlLinkFrame(new Id3v2FrameHeader(ident));
+        const frame = new UrlLinkFrame(new FrameHeader(ident));
         frame._url = text ?? "";
 
         return frame;
@@ -110,7 +110,7 @@ export default class UrlLinkFrame extends Frame {
     }
 
     /** @inheritDoc */
-    protected renderFields(_version: number): ByteVector {
+    protected renderFields(_version: Id3v2Version): ByteVector {
         if (!this._url) {
             return ByteVector.empty();
         }

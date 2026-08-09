@@ -71,20 +71,24 @@ export {default as FlacTag} from "./flac/flacTag";
 export {default as Id3v1Tag} from "./id3v1/id3v1Tag";
 
 // ID3v2 ///////////////////////////////////////////////////////////////////
-export {default as Id3v2ExtendedHeader} from "./id3v2/id3v2ExtendedHeader";
+export {
+    ChannelType as Id3v2RelativeVolumeFrameChannelType,
+    EventType as Id3v2EventType,
+    FrameFlags as Id3v2FrameFlags,
+    Id3v2Version,
+    SynchronizedTextType as Id3v2SynchronizedTextType,
+    TagFlags as Id3v2TagHeaderFlags,
+    TimestampFormat as Id3v2TimestampFormat
+} from "./id3v2/enums";
 export {
     FrameIdentifier as Id3v2FrameIdentifier,
     FrameIdentifiers as Id3v2FrameIdentifiers,
 } from "./id3v2/frameIdentifiers";
 export {default as Id3v2Settings} from "./id3v2/id3v2Settings";
 export {default as Id3v2Tag} from "./id3v2/id3v2Tag";
-export {default as Id3v2TagFooter} from "./id3v2/id3v2TagFooter";
-export {Id3v2TagHeader, Id3v2TagHeaderFlags} from "./id3v2/id3v2TagHeader";
-export {
-    SynchronizedTextType as Id3v2SynchronizedTextType,
-    TimestampFormat as Id3v2TimestampFormat,
-    EventType as Id3v2EventType
-} from "./id3v2/utilTypes";
+export {default as Id3v2TagFooter} from "./id3v2/tagFooter";
+export {default as Id3v2TagHeader} from "./id3v2/tagHeader";
+export {default as Id3v2ExtendedHeader} from "./id3v2/tagHeaderExtended";
 
 // Frames
 export {default as Id3v2AttachmentFrame} from "./id3v2/frames/attachmentFrame";
@@ -98,7 +102,7 @@ export {
     FrameCreator as Id3v2FrameCreator,
     Id3v2FrameFactory
 } from "./id3v2/frames/frameFactory";
-export {Id3v2FrameFlags, Id3v2FrameHeader} from "./id3v2/frames/frameHeader";
+export {default as Id3v2FrameHeader} from "./id3v2/frames/frameHeader";
 export {default as Id3v2GenreFrame} from "./id3v2/frames/genreFrame";
 export {default as Id3v2MusicCdIdentifierFrame} from "./id3v2/frames/musicCdIdentifierFrame";
 export {default as Id3v2PlayCountFrame} from "./id3v2/frames/playCountFrame";
@@ -106,7 +110,6 @@ export {default as Id3v2PopularimeterFrame} from "./id3v2/frames/popularimeterFr
 export {default as Id3v2PrivateFrame} from "./id3v2/frames/privateFrame";
 export {
     ChannelData as Id3v2RelativeVolumeFrameChannelData,
-    ChannelType as Id3v2RelativeVolumeFrameChannelType,
     RelativeVolumeFrame as Id3v2RelativeVolumeFrame
 } from "./id3v2/frames/relativeVolumeFrame";
 export {

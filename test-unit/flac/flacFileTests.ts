@@ -8,17 +8,17 @@ import FlacStreamHeader from "../../src/flac/flacStreamHeader";
 import FlacTag from "../../src/flac/flacTag";
 import Id3v1Tag from "../../src/id3v1/id3v1Tag";
 import Id3v2Tag from "../../src/id3v2/id3v2Tag";
+import {TagFlags as Id3v2TagFlags} from "../../src/id3v2/enums";
 import XiphComment from "../../src/xiph/xiphComment";
 import XiphPicture from "../../src/xiph/xiphPicture";
 import {default as TestFile} from "../utilities/testFile";
 import {ByteVector, StringType} from "../../src/byteVector";
 import {FileAccessMode, ReadStyle} from "../../src/file";
 import {IFileAbstraction} from "../../src/fileAbstraction";
-import {Id3v2TagHeaderFlags} from "../../src/id3v2/id3v2TagHeader";
 import {FlacBlock, FlacBlockType} from "../../src/flac/flacBlock";
+import {Picture} from "../../src/picture";
 import {TagTypes} from "../../src/tag";
 import {Testers} from "../utilities/testers";
-import {Picture} from "../../src";
 
 @suite class Flac_File_ConstructorTests {
     @test
@@ -871,7 +871,7 @@ import {Picture} from "../../src";
         const id3v2Tag = Id3v2Tag.fromEmpty();
         id3v2Tag.version = 4;
         if (isAtEndOfFile) {
-            id3v2Tag.flags |= Id3v2TagHeaderFlags.FooterPresent;
+            id3v2Tag.flags |= Id3v2TagFlags.FooterPresent;
         }
         id3v2Tag.title = "foo";
         return id3v2Tag;

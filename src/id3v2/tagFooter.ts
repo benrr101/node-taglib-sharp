@@ -1,51 +1,58 @@
 import Id3v2Settings from "./id3v2Settings";
 import SyncData from "./syncData";
+import TagHeader from "./tagHeader";
 import {ByteVector, StringType} from "../byteVector";
+import {Id3v2Version, TagFlags} from "./enums";
 import {CorruptFileError} from "../errors";
-import {Id3v2TagHeader, Id3v2TagHeaderFlags} from "./id3v2TagHeader";
 import {Guards, NumberUtils} from "../utils";
 
 /**
  * This class provides a representation of an ID3v2 tag footer which can be read from and written
  * to disk.
  */
-export default class Id3v2TagFooter {
+export default class TagFooter {
     /**
      * Identifier used to recognize an ID3v2 footer.
      */
     public static readonly FILE_IDENTIFIER = ByteVector.fromString("3DI", StringType.Latin1).makeReadOnly();
 
-    private _flags: Id3v2TagHeaderFlags = Id3v2TagHeaderFlags.FooterPresent;
-    private _majorVersion: number = 0;
-    private _revisionNumber: number = 0;
-    private _tagSize: number = 0;
+    private _flags: TagFlags = TagFlags.FooterPresent;
+    private _majorVersion: Id3v2Version;
+    private _revisionNumber: number;
+    private _tagSize: number;
 
     /**
      * Constructs and initializes a new instance by reading it from raw footer data.
      * @param data Raw data to build the instance from
      */
-    public static fromData(data: ByteVector): Id3v2TagFooter {
+    public static fromData(data: ByteVector): TagFooter {
         Guards.truthy(data, "data");
         if (data.length < Id3v2Settings.footerSize) {
             throw new CorruptFileError("Provided data is smaller than object size.");
         }
-        if (!data.startsWith(Id3v2TagFooter.FILE_IDENTIFIER)) {
+        if (!data.startsWith(TagFooter.FILE_IDENTIFIER)) {
             throw new CorruptFileError("Provided data does not start with the file identifier");
         }
 
-        const footer = new Id3v2TagFooter();
-        footer._majorVersion = data.get(3);
+        const footer = new TagFooter();
+
+        const majorVersion = data.get(3);
+        if (majorVersion < 2 || majorVersion > 4) {
+            throw new CorruptFileError(`Id3v2 footer has invalid version: ${majorVersion}`);
+        }
+        footer._majorVersion = <Id3v2Version>majorVersion;
+
         footer._revisionNumber = data.get(4);
         footer._flags = data.get(5);
 
         // TODO: Is there any point to supporting footers on versions less than 4?
-        if (footer._majorVersion === 2 && NumberUtils.hasFlag(footer._flags, 127)) {
+        if (footer._majorVersion === Id3v2Version.V22 && NumberUtils.hasFlag(footer._flags, 127)) {
             throw new CorruptFileError("Invalid flags set on version 2 tag");
         }
-        if (footer._majorVersion === 3 && NumberUtils.hasFlag(footer._flags, 15)) {
+        if (footer._majorVersion === Id3v2Version.V23 && NumberUtils.hasFlag(footer._flags, 15)) {
             throw new CorruptFileError("Invalid flags set on version 3 tag");
         }
-        if (footer._majorVersion === 4 && NumberUtils.hasFlag(footer._flags, 7)) {
+        if (footer._majorVersion === Id3v2Version.V24 && NumberUtils.hasFlag(footer._flags, 7)) {
             throw new CorruptFileError("Invalid flags set on version 4 tag");
         }
 
@@ -65,13 +72,13 @@ export default class Id3v2TagFooter {
      * same tag.
      * @param header Header from which to base the new footer
      */
-    public static fromHeader(header: Id3v2TagHeader): Id3v2TagFooter {
+    public static fromHeader(header: TagHeader): TagFooter {
         Guards.truthy(header, "header");
 
-        const footer = new Id3v2TagFooter();
+        const footer = new TagFooter();
         footer._majorVersion = header.majorVersion;
         footer._revisionNumber = header.revisionNumber;
-        footer._flags = header.flags | Id3v2TagHeaderFlags.FooterPresent;
+        footer._flags = header.flags | TagFlags.FooterPresent;
         footer._tagSize = header.tagSize;
 
         return footer;
@@ -90,19 +97,19 @@ export default class Id3v2TagFooter {
     /**
      * Gets the flags applied to the current instance.
      */
-    public get flags(): Id3v2TagHeaderFlags { return this._flags; }
+    public get flags(): TagFlags { return this._flags; }
     /**
      * Sets the flags applied to the current instance.
      * @param value Bitwise combined {@link Id3v2TagHeaderFlags} value containing the flags to apply
      *     to the current instance.
      */
-    public set flags(value: Id3v2TagHeaderFlags) {
-        const version3Flags = Id3v2TagHeaderFlags.ExtendedHeader | Id3v2TagHeaderFlags.ExperimentalIndicator;
-        if (NumberUtils.hasFlag(value, version3Flags) && this.majorVersion < 3) {
+    public set flags(value: TagFlags) {
+        const version3Flags = TagFlags.ExtendedHeader | TagFlags.ExperimentalIndicator;
+        if (NumberUtils.hasFlag(value, version3Flags) && this.majorVersion === Id3v2Version.V22) {
             throw new Error("Feature only supported in version 2.3+");
         }
-        const version4Flags = Id3v2TagHeaderFlags.FooterPresent;
-        if (NumberUtils.hasFlag(value, version4Flags) && this.majorVersion < 4) {
+        const version4Flags = TagFlags.FooterPresent;
+        if (NumberUtils.hasFlag(value, version4Flags) && this.majorVersion !== Id3v2Version.V24) {
             throw new Error("Feature only supported in version 2.4+");
         }
 
@@ -112,11 +119,7 @@ export default class Id3v2TagFooter {
     /**
      * Sets the major version of the tag described by the current instance.
      */
-    public get majorVersion(): number {
-        return this._majorVersion === 0
-            ? Id3v2Settings.defaultVersion
-            : this._majorVersion;
-    }
+    public get majorVersion(): Id3v2Version { return this._majorVersion; }
     /**
      * Sets the major version of the tag described by the current instance.
      * When the version is set, unsupported header flags will automatically be removed from the
@@ -124,8 +127,8 @@ export default class Id3v2TagFooter {
      * @param value ID3v2 version if tag described by the current instance. Footers are only
      *     supported with version 4, so this value can only be 4.
      */
-    public set majorVersion(value: number) {
-        if (value !== 4) {
+    public set majorVersion(value: Id3v2Version) {
+        if (value !== Id3v2Version.V24) {
             throw new Error("Argument out of range: Version unsupported");
         }
         this._majorVersion = value;
@@ -174,7 +177,7 @@ export default class Id3v2TagFooter {
      */
     public render(): ByteVector {
         return ByteVector.concatenate(
-            Id3v2TagFooter.FILE_IDENTIFIER,
+            TagFooter.FILE_IDENTIFIER,
             this.majorVersion,
             this.revisionNumber,
             this.flags,

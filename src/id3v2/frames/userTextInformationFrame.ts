@@ -1,10 +1,11 @@
 import Frame from "./frame";
+import FrameHeader from "./frameHeader";
 import Id3v2Settings from "../id3v2Settings";
 import {ByteVector, StringType} from "../../byteVector";
 import {CorruptFileError} from "../../errors";
-import {Id3v2FrameHeader} from "./frameHeader";
 import {FrameIdentifiers} from "../frameIdentifiers";
 import {ArrayUtils, Guards} from "../../utils";
+import {Id3v2Version} from "../enums";
 
 export default class UserTextInformationFrame extends Frame {
     private _description: string;
@@ -13,7 +14,7 @@ export default class UserTextInformationFrame extends Frame {
 
     // #region Constructors
 
-    private constructor(header: Id3v2FrameHeader) {
+    private constructor(header: FrameHeader) {
         super(header);
     }
 
@@ -21,16 +22,15 @@ export default class UserTextInformationFrame extends Frame {
      * Constructs and initializes a new instance by parsing the fields from the field bytes.
      * @param header Header of the frame
      * @param fieldBytes Bytes that contain the fields of the frame
-     * @param version ID3v2 version the frame was originally encoded with
+     * @param _version ID3v2 version the frame was originally encoded with
      */
     public static fromFieldBytes(
-        header: Id3v2FrameHeader,
+        header: FrameHeader,
         fieldBytes: ByteVector,
-        version: number
+        _version: Id3v2Version
     ): UserTextInformationFrame {
         Guards.truthy(header, "header");
         Guards.truthy(fieldBytes, "fieldBytes");
-        Guards.byte(version, "version");
 
         if (fieldBytes.length < 1) {
             throw new CorruptFileError("User text identifier frame must contain at least 1 byte.");
@@ -70,7 +70,7 @@ export default class UserTextInformationFrame extends Frame {
      */
     public static fromFields(description?: string, text?: string[], encoding?: StringType
     ): UserTextInformationFrame {
-        const frame = new UserTextInformationFrame(new Id3v2FrameHeader(FrameIdentifiers.TXXX));
+        const frame = new UserTextInformationFrame(new FrameHeader(FrameIdentifiers.TXXX));
         frame._encoding = encoding ?? Id3v2Settings.defaultEncoding;
         frame._description = description ?? "";
         frame._textFields = text ?? [];
@@ -132,7 +132,7 @@ export default class UserTextInformationFrame extends Frame {
     }
 
     /** @inheritDoc */
-    protected renderFields(version: number): ByteVector {
+    protected renderFields(version: Id3v2Version): ByteVector {
         if (!this._description && this._textFields.length === 0) {
             return ByteVector.empty();
         }

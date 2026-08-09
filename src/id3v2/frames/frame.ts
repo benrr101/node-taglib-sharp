@@ -1,9 +1,10 @@
+import FrameHeader from "./frameHeader";
 import Id3v2Settings from "../id3v2Settings";
 import SyncData from "../syncData";
 import {ByteVector, StringType} from "../../byteVector";
-import {Id3v2FrameFlags, Id3v2FrameHeader} from "./frameHeader";
+import {FrameFlags, Id3v2Version} from "../enums";
 import {FrameIdentifier} from "../frameIdentifiers";
-import {Guards, NumberUtils} from "../../utils";
+import {NumberUtils} from "../../utils";
 
 /**
  * Abstract class that represents an ID3v2 frame. Frames are the unit for storing information in
@@ -11,7 +12,7 @@ import {Guards, NumberUtils} from "../../utils";
  */
 export default abstract class Frame {
 
-    private _header: Id3v2FrameHeader;
+    private _header: FrameHeader;
 
     // #region Constructors
 
@@ -20,7 +21,7 @@ export default abstract class Frame {
      * @param header Header for the frame.
      * @protected
      */
-    protected constructor(header: Id3v2FrameHeader) {
+    protected constructor(header: FrameHeader) {
         this._header = header;
     }
 
@@ -45,14 +46,14 @@ export default abstract class Frame {
     /**
      * Gets the frame flags applied to the current instance.
      */
-    public get flags(): Id3v2FrameFlags { return this._header.flags; }
+    public get flags(): FrameFlags { return this._header.flags; }
     /**
      * Sets the frame flags applied to the current instance.
-     * If the value includes either {@link Id3v2FrameFlags.Encryption} or
-     * {@link Id3v2FrameFlags.Compression}, {@link render} will throw.
+     * If the value includes either {@link FrameFlags.Encryption} or
+     * {@link FrameFlags.Compression}, {@link render} will throw.
      */
     // @TODO: This shouldn't be necessary, but removing it breaks more things than I want to fix right now.
-    public set flags(value: Id3v2FrameFlags) { this._header.flags = value; }
+    public set flags(value: FrameFlags) { this._header.flags = value; }
 
     /**
      * Gets the frame ID for the current instance.
@@ -85,13 +86,13 @@ export default abstract class Frame {
      * Gets the header for the frame. For new frames this should not exist.
      * @protected
      */
-    protected get header(): Id3v2FrameHeader { return this._header; }
+    protected get header(): FrameHeader { return this._header; }
     /**
      * Sets the header for the frame.
      * @param value Header for the frame
      * @protected
      */
-    protected set header(value: Id3v2FrameHeader) { this._header = value; }
+    protected set header(value: FrameHeader) { this._header = value; }
 
     // #endregion
 
@@ -107,9 +108,7 @@ export default abstract class Frame {
      * Renders the current instance, encoded in a specified ID3v2 version.
      * @param version Version of ID3v2 to use when encoding the current instance
      */
-    public render(version: number): ByteVector {
-        Guards.byte(version, "version");
-
+    public render(version: Id3v2Version): ByteVector {
         // 1) Render the fields
         const fieldBytes = this.renderFields(version);
         if (fieldBytes.length === 0) {
@@ -120,17 +119,17 @@ export default abstract class Frame {
 
         // 2) Render the extended header and process with the body
         // Remove flags that are not supported by older versions of ID3v2
-        if (version < 4) {
-            const v4Flags = Id3v2FrameFlags.DataLengthIndicator | Id3v2FrameFlags.Unsynchronized;
+        if (version !== Id3v2Version.V24) {
+            const v4Flags = FrameFlags.DataLengthIndicator | FrameFlags.Unsynchronized;
             this.flags &= ~(v4Flags);
         }
-        if (version < 3) {
-            const v3Flags = Id3v2FrameFlags.Compression
-                | Id3v2FrameFlags.Encryption
-                | Id3v2FrameFlags.FileAlterPreservation
-                | Id3v2FrameFlags.GroupingIdentity
-                | Id3v2FrameFlags.ReadOnly
-                | Id3v2FrameFlags.TagAlterPreservation;
+        if (version === Id3v2Version.V22) {
+            const v3Flags = FrameFlags.Compression
+                | FrameFlags.Encryption
+                | FrameFlags.FileAlterPreservation
+                | FrameFlags.GroupingIdentity
+                | FrameFlags.ReadOnly
+                | FrameFlags.TagAlterPreservation;
             this.flags &= ~(v3Flags);
         }
 
@@ -139,7 +138,7 @@ export default abstract class Frame {
 
         // Combine extended header with body bytes to form complete body. Unsynchronize if necessary.
         let payloadBytes = ByteVector.concatenate(extendedHeaderBytes, fieldBytes);
-        if (NumberUtils.hasFlag(this.flags, Id3v2FrameFlags.Unsynchronized)) {
+        if (NumberUtils.hasFlag(this.flags, FrameFlags.Unsynchronized)) {
             payloadBytes = SyncData.unsyncByteVector(payloadBytes);
         }
 
@@ -164,14 +163,12 @@ export default abstract class Frame {
      *     {@link Id3v2Settings.forceDefaultEncoding} and what is supported by
      *     `version`
      */
-    protected static correctEncoding(type: StringType, version: number): StringType {
-        Guards.byte(version, "version");
-
+    protected static correctEncoding(type: StringType, version: Id3v2Version): StringType {
         if (Id3v2Settings.forceDefaultEncoding) {
             type = Id3v2Settings.defaultEncoding;
         }
 
-        return version < 4 && type === StringType.UTF8
+        return version !== Id3v2Version.V24 && type === StringType.UTF8
             ? StringType.UTF16
             : type;
     }
@@ -180,7 +177,7 @@ export default abstract class Frame {
      * Renders the values in the current instance into field data for a specified version.
      * @param version ID3v2 version the field data is to be encoded in.
      */
-    protected abstract renderFields(version: number): ByteVector;
+    protected abstract renderFields(version: Id3v2Version): ByteVector;
 
     // #endregion
 }

@@ -3,20 +3,20 @@ import {assert} from "chai";
 
 import Frame from "../../src/id3v2/frames/frame";
 import FrameConstructorTests from "./frameConstructorTests";
+import FrameHeader from "../../src/id3v2/frames/frameHeader";
 import PropertyTests from "../utilities/propertyTests";
 import UnknownFrame from "../../src/id3v2/frames/unknownFrame";
 import {ByteVector} from "../../src/byteVector";
+import {EventType, FrameFlags, Id3v2Version, TimestampFormat} from "../../src/id3v2/enums";
 import {EventTimeCode, EventTimeCodeFrame} from "../../src/id3v2/frames/eventTimeCodeFrame";
-import {Id3v2FrameFlags, Id3v2FrameHeader} from "../../src/id3v2/frames/frameHeader";
 import {FrameIdentifiers} from "../../src/id3v2/frameIdentifiers";
 import {Testers} from "../utilities/testers";
-import {EventType, TimestampFormat} from "../../src/id3v2/utilTypes";
 
 const assertFrame = (frame: EventTimeCodeFrame, e: EventTimeCode[], t: TimestampFormat) => {
     assert.isOk(frame);
     assert.instanceOf<EventTimeCodeFrame>(frame, EventTimeCodeFrame);
     assert.strictEqual(frame.frameId, FrameIdentifiers.ETCO);
-    assert.isTrue((frame.flags | Id3v2FrameFlags.FileAlterPreservation) > 0);
+    assert.isTrue((frame.flags | FrameFlags.FileAlterPreservation) > 0);
 
     assert.deepStrictEqual(frame.events, e);
     assert.strictEqual(frame.timestampFormat, t);
@@ -99,29 +99,29 @@ const assertFrame = (frame: EventTimeCodeFrame, e: EventTimeCode[], t: Timestamp
 }
 
 @suite class Id3v2_EventTimeCodeFrame_ConstructorTests extends FrameConstructorTests {
-    public get fromFieldBytes(): (h: Id3v2FrameHeader, d: ByteVector, v: number) => Frame {
+    public get fromFieldBytes(): (h: FrameHeader, d: ByteVector, v: Id3v2Version) => Frame {
         return EventTimeCodeFrame.fromFieldBytes;
     }
 
-    @params(2, "v2")
-    @params(3, "v3")
-    @params(4, "v4")
-    public fromFieldBytes_notEnoughBytes(version: number) {
+    @params(Id3v2Version.V22, "v2")
+    @params(Id3v2Version.V23, "v3")
+    @params(Id3v2Version.V24, "v4")
+    public fromFieldBytes_notEnoughBytes(version: Id3v2Version) {
         // Arrange
         const fieldBytes = ByteVector.empty();
-        const header = new Id3v2FrameHeader(FrameIdentifiers.ETCO, Id3v2FrameFlags.None, fieldBytes.length);
+        const header = new FrameHeader(FrameIdentifiers.ETCO, FrameFlags.None, fieldBytes.length);
 
         // Act / Assert
         assert.throws(() => { EventTimeCodeFrame.fromFieldBytes(header, fieldBytes, version); });
     }
 
-    @params(2, "v2")
-    @params(3, "v3")
-    @params(4, "v4")
-    public fromFieldBytes_noEvents(version: number) {
+    @params(Id3v2Version.V22, "v2")
+    @params(Id3v2Version.V23, "v3")
+    @params(Id3v2Version.V24, "v4")
+    public fromFieldBytes_noEvents(version: Id3v2Version) {
         // Arrange
         const fieldBytes = ByteVector.fromByte(TimestampFormat.AbsoluteMilliseconds);
-        const header = new Id3v2FrameHeader(FrameIdentifiers.ETCO, Id3v2FrameFlags.None, fieldBytes.length);
+        const header = new FrameHeader(FrameIdentifiers.ETCO, FrameFlags.None, fieldBytes.length);
 
         // Act
         const frame = EventTimeCodeFrame.fromFieldBytes(header, fieldBytes, version);
@@ -130,10 +130,10 @@ const assertFrame = (frame: EventTimeCodeFrame, e: EventTimeCode[], t: Timestamp
         assertFrame(frame, [], TimestampFormat.AbsoluteMilliseconds);
     }
 
-    @params(2, "v2")
-    @params(3, "v3")
-    @params(4, "v4")
-    public fromFieldBytes_withEvents(version: number) {
+    @params(Id3v2Version.V22, "v2")
+    @params(Id3v2Version.V23, "v3")
+    @params(Id3v2Version.V24, "v4")
+    public fromFieldBytes_withEvents(version: Id3v2Version) {
         // Arrange
         const event1 = new EventTimeCode(EventType.Profanity, 123);
         const event2 = new EventTimeCode(EventType.KeyChange, 456);
@@ -142,7 +142,7 @@ const assertFrame = (frame: EventTimeCodeFrame, e: EventTimeCode[], t: Timestamp
             event1.render(),                      // Event 1
             event2.render()                       // Event 2
         );
-        const header = new Id3v2FrameHeader(FrameIdentifiers.ETCO, Id3v2FrameFlags.None, fieldBytes.length);
+        const header = new FrameHeader(FrameIdentifiers.ETCO, FrameFlags.None, fieldBytes.length);
 
         // Act
         const frame = EventTimeCodeFrame.fromFieldBytes(header, fieldBytes, version);
@@ -151,10 +151,10 @@ const assertFrame = (frame: EventTimeCodeFrame, e: EventTimeCode[], t: Timestamp
         assertFrame(frame, [event1, event2], TimestampFormat.AbsoluteMilliseconds);
     }
 
-    @params(2, "v2")
-    @params(3, "v3")
-    @params(4, "v4")
-    public fromFieldBytes_incompleteEvent(version: number) {
+    @params(Id3v2Version.V22, "v2")
+    @params(Id3v2Version.V23, "v3")
+    @params(Id3v2Version.V24, "v4")
+    public fromFieldBytes_incompleteEvent(version: Id3v2Version) {
         // Arrange
         const event1 = new EventTimeCode(EventType.Profanity, 123);
         const event2 = new EventTimeCode(EventType.KeyChange, 456);
@@ -163,7 +163,7 @@ const assertFrame = (frame: EventTimeCodeFrame, e: EventTimeCode[], t: Timestamp
             event1.render(),                      // Event 1
             event2.render().subarray(0, 3)        // Event 2 (incomplete)
         );
-        const header = new Id3v2FrameHeader(FrameIdentifiers.ETCO, Id3v2FrameFlags.None, fieldBytes.length);
+        const header = new FrameHeader(FrameIdentifiers.ETCO, FrameFlags.None, fieldBytes.length);
 
         // Act / Assert
         assert.throws(() => EventTimeCodeFrame.fromFieldBytes(header, fieldBytes, version));
@@ -323,10 +323,10 @@ const assertFrame = (frame: EventTimeCodeFrame, e: EventTimeCode[], t: Timestamp
         assert.deepEqual(result, [frame1, frame2]);
     }
 
-    @params(2, "v2")
-    @params(3, "v3")
-    @params(4, "v4")
-    public render_withoutEvents(version: number) {
+    @params(Id3v2Version.V22, "v2")
+    @params(Id3v2Version.V23, "v3")
+    @params(Id3v2Version.V24, "v4")
+    public render_withoutEvents(version: Id3v2Version) {
         // Arrange
         const frame = EventTimeCodeFrame.fromFields();
         frame.timestampFormat = TimestampFormat.AbsoluteMpegFrames;
@@ -339,19 +339,19 @@ const assertFrame = (frame: EventTimeCodeFrame, e: EventTimeCode[], t: Timestamp
         assert.isOk(output);
 
         const fieldBytes = ByteVector.fromByte(TimestampFormat.AbsoluteMpegFrames);
-        const header = new Id3v2FrameHeader(
+        const header = new FrameHeader(
             FrameIdentifiers.ETCO,
-            Id3v2FrameFlags.FileAlterPreservation,
+            FrameFlags.FileAlterPreservation,
             fieldBytes.length
         );
         const expected = ByteVector.concatenate(header.render(version), fieldBytes);
         Testers.bvEqual(output, expected);
     }
 
-    @params(2, "v2")
-    @params(3, "v3")
-    @params(4, "v4")
-    public render_withEvents(version: number) {
+    @params(Id3v2Version.V22, "v2")
+    @params(Id3v2Version.V23, "v3")
+    @params(Id3v2Version.V24, "v4")
+    public render_withEvents(version: Id3v2Version) {
         // Arrange
         const event1 = new EventTimeCode(EventType.Profanity, 123);
         const event2 = new EventTimeCode(EventType.KeyChange, 456);
@@ -371,9 +371,9 @@ const assertFrame = (frame: EventTimeCodeFrame, e: EventTimeCode[], t: Timestamp
             event1.render(),                    // Event 1
             event2.render()                     // Event 2
         );
-        const header = new Id3v2FrameHeader(
+        const header = new FrameHeader(
             FrameIdentifiers.ETCO,
-            Id3v2FrameFlags.FileAlterPreservation,
+            FrameFlags.FileAlterPreservation,
             fieldBytes.length
         );
         const expected = ByteVector.concatenate(header.render(version), fieldBytes);

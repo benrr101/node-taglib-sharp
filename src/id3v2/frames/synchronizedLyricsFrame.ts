@@ -1,11 +1,11 @@
 import Frame from "./frame";
+import FrameHeader from "./frameHeader";
 import Id3v2Settings from "../id3v2Settings";
 import {ByteVector, StringType} from "../../byteVector";
+import {Id3v2Version, SynchronizedTextType, TimestampFormat} from "../enums";
 import {CorruptFileError} from "../../errors";
-import {Id3v2FrameHeader} from "./frameHeader";
 import {FrameIdentifiers} from "../frameIdentifiers";
 import {ArrayUtils, Guards} from "../../utils";
-import {SynchronizedTextType, TimestampFormat} from "../utilTypes";
 
 /**
  * This structure contains a single entry in a {@link SynchronizedLyricsFrame} object.
@@ -83,7 +83,7 @@ export class SynchronizedLyricsFrame extends Frame {
 
     // #region Constructors
 
-    private constructor(header: Id3v2FrameHeader) {
+    private constructor(header: FrameHeader) {
         super(header);
     }
 
@@ -91,16 +91,15 @@ export class SynchronizedLyricsFrame extends Frame {
      * Constructs and initialized a new instance by parsing values from the field data.
      * @param header Header of the frame
      * @param fieldBytes Bytes that contain the body of the frame
-     * @param version ID3v2 version the frame was originally encoded with
+     * @param _version ID3v2 version the frame was originally encoded with
      */
     public static fromFieldBytes(
-        header: Id3v2FrameHeader,
+        header: FrameHeader,
         fieldBytes: ByteVector,
-        version: number
+        _version: Id3v2Version
     ): SynchronizedLyricsFrame {
         Guards.truthy(header, "header");
         Guards.truthy(fieldBytes, "fieldBytes");
-        Guards.byte(version, "version");
 
         if (fieldBytes.length < 6) {
             throw new CorruptFileError("Synchronized lyrics frame must contain at least 6 bytes.");
@@ -193,7 +192,7 @@ export class SynchronizedLyricsFrame extends Frame {
         encoding?: StringType,
         timestampFormat?: TimestampFormat
     ): SynchronizedLyricsFrame {
-        const frame = new SynchronizedLyricsFrame(new Id3v2FrameHeader(FrameIdentifiers.SYLT));
+        const frame = new SynchronizedLyricsFrame(new FrameHeader(FrameIdentifiers.SYLT));
         frame._description = description ?? "";
         frame._format = timestampFormat ?? TimestampFormat.Unknown;
         frame._language = language ?? "XXX"; // @TODO: Should this be `unk`?
@@ -299,7 +298,7 @@ export class SynchronizedLyricsFrame extends Frame {
     // #endregion
 
     /** @inheritDoc */
-    protected renderFields(version: number): ByteVector {
+    protected renderFields(version: Id3v2Version): ByteVector {
         const encoding = SynchronizedLyricsFrame.correctEncoding(this.textEncoding, version);
         const renderedText = this.text
             .filter(t => !!t)

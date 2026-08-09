@@ -1,15 +1,16 @@
-import {suite, test} from "@testdeck/mocha";
+import {params, suite, test} from "@testdeck/mocha";
 import {assert} from "chai";
 
 import {ByteVector, StringType} from "../../src/byteVector";
 import {FrameIdentifier, FrameIdentifiers} from "../../src/id3v2/frameIdentifiers";
 import {Testers} from "../utilities/testers";
+import {Id3v2Version} from "../../src/id3v2/enums";
 
 @suite class FrameIdentifierTests {
     @test
     public isTextFrame_v2StartsWithT() {
         // Arrange
-        const identifier = new FrameIdentifier(undefined, "XYZZ", "TCH");
+        const identifier = new FrameIdentifier("ABC", "DEF", "TCH");
 
         // Act
         const output = identifier.isTextFrame;
@@ -21,7 +22,7 @@ import {Testers} from "../utilities/testers";
     @test
     public isTextFrame_v3StartsWithT() {
         // Arrange
-        const identifier = new FrameIdentifier(undefined, "TCCH", "XYZ");
+        const identifier = new FrameIdentifier("ABC", "TCCH", "DEF");
 
         // Act
         const output = identifier.isTextFrame;
@@ -33,7 +34,7 @@ import {Testers} from "../utilities/testers";
     @test
     public isTextFrame_v4StartsWithT() {
         // Arrange
-        const identifier = new FrameIdentifier("TCCH", "XYZZ", undefined);
+        const identifier = new FrameIdentifier("TCCH", "ABC", "DEF");
 
         // Act
         const output = identifier.isTextFrame;
@@ -45,7 +46,7 @@ import {Testers} from "../utilities/testers";
     @test
     public isTextFrame_noVersionStartsWithT() {
         // Arrange
-        const identifier = new FrameIdentifier("XYZZ", undefined, "XYZ");
+        const identifier = new FrameIdentifier("ABC", "DEF", "GHI");
 
         // Act
         const output = identifier.isTextFrame;
@@ -57,7 +58,7 @@ import {Testers} from "../utilities/testers";
     @test
     public isUrlFrame_v2StartsWithW() {
         // Arrange
-        const identifier = new FrameIdentifier(undefined, undefined, "WCH");
+        const identifier = new FrameIdentifier("ABC", "DEF", "WCH");
 
         // Act
         const output = identifier.isUrlFrame;
@@ -69,7 +70,7 @@ import {Testers} from "../utilities/testers";
     @test
     public isUrlFrame_v3StartsWithW() {
         // Arrange
-        const identifier = new FrameIdentifier(undefined, "WCCH", undefined);
+        const identifier = new FrameIdentifier("ABC", "WCCH", "DEF");
 
         // Act
         const output = identifier.isUrlFrame;
@@ -81,7 +82,7 @@ import {Testers} from "../utilities/testers";
     @test
     public isUrlFrame_v4StartsWithW() {
         // Arrange
-        const identifier = new FrameIdentifier("WCCH", undefined, undefined);
+        const identifier = new FrameIdentifier("WCCH", "ABC", "DEF");
 
         // Act
         const output = identifier.isUrlFrame;
@@ -90,58 +91,17 @@ import {Testers} from "../utilities/testers";
         assert.isTrue(output);
     }
 
-    @test
-    public render_invalidVersion() {
-        // Act / Assert
-        assert.throws(() => { FrameIdentifiers.RVA2.render(-1); });
-        assert.throws(() => { FrameIdentifiers.RVA2.render(1.23); });
-        assert.throws(() => { FrameIdentifiers.RVA2.render(256); });
-        assert.throws(() => { FrameIdentifiers.RVA2.render(1); });
-        assert.throws(() => { FrameIdentifiers.RVA2.render(5); });
-    }
-
-    @test
-    public render_v2() {
+    @params([Id3v2Version.V22, "HIJ"], "v2")
+    @params([Id3v2Version.V23, "DEFG"], "v3")
+    @params([Id3v2Version.V24, "ABCD"], "v4")
+    public render([version, expected]: [Id3v2Version, string]) {
         // Arrange
         const identifier = new FrameIdentifier("ABCD", "DEFG", "HIJ");
 
         // Act
-        const output = identifier.render(2);
+        const output = identifier.render(version);
 
         // Assert
-        Testers.bvEqual(output, ByteVector.fromString("HIJ", StringType.UTF8));
-    }
-
-    @test
-    public render_v3() {
-        // Arrange
-        const identifier = new FrameIdentifier("ABCD", "DEFG", "HIJ");
-
-        // Act
-        const output = identifier.render(3);
-
-        // Assert
-        Testers.bvEqual(output, ByteVector.fromString("DEFG", StringType.UTF8));
-    }
-
-    @test
-    public render_v4() {
-        // Arrange
-        const identifier = new FrameIdentifier("ABCD", "DEFG", "HIJ");
-
-        // Act
-        const output = identifier.render(4);
-
-        // Assert
-        Testers.bvEqual(output, ByteVector.fromString("ABCD", StringType.UTF8));
-    }
-
-    @test
-    public render_unsupported() {
-        // Arrange
-        const identifier = new FrameIdentifier("ABCD", undefined, undefined);
-
-        // Act / Assert
-        assert.throws(() => identifier.render(2));
+        Testers.bvEqual(output, ByteVector.fromString(expected, StringType.UTF8));
     }
 }

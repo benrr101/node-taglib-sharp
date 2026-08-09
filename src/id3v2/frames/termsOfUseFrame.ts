@@ -1,10 +1,11 @@
 import Frame from "./frame";
+import FrameHeader from "./frameHeader";
 import Id3v2Settings from "../id3v2Settings";
 import {ByteVector, StringType} from "../../byteVector";
 import {CorruptFileError} from "../../errors";
-import {Id3v2FrameHeader} from "./frameHeader";
 import {FrameIdentifiers} from "../frameIdentifiers";
 import {ArrayUtils, Guards} from "../../utils";
+import {Id3v2Version} from "../enums";
 
 export default class TermsOfUseFrame extends Frame {
     private _language: string;
@@ -13,7 +14,7 @@ export default class TermsOfUseFrame extends Frame {
 
     // #region Constructors
 
-    private constructor(header: Id3v2FrameHeader) {
+    private constructor(header: FrameHeader) {
         super(header);
     }
 
@@ -21,12 +22,11 @@ export default class TermsOfUseFrame extends Frame {
      * Constructs and initializes a new instance by parsing the fields from the field bytes.
      * @param header Header of the frame
      * @param fieldBytes Bytes that contain the fields of the frame
-     * @param version ID3v2 version the frame was originally encoded with
+     * @param _version ID3v2 version the frame was originally encoded with
      */
-    public static fromFieldBytes(header: Id3v2FrameHeader, fieldBytes: ByteVector, version: number): TermsOfUseFrame {
+    public static fromFieldBytes(header: FrameHeader, fieldBytes: ByteVector, _version: Id3v2Version): TermsOfUseFrame {
         Guards.truthy(header, "header");
         Guards.truthy(fieldBytes, "fieldBytes");
-        Guards.byte(version, "version");
 
         if (fieldBytes.length < 4) {
             throw new CorruptFileError("Terms of use frame must contain at least 4 bytes.");
@@ -54,7 +54,7 @@ export default class TermsOfUseFrame extends Frame {
      *     defaults to {@link Id3v2Settings.defaultEncoding}
      */
     public static fromFields(text?: string, language?: string, textEncoding?: StringType): TermsOfUseFrame {
-        const f = new TermsOfUseFrame(new Id3v2FrameHeader(FrameIdentifiers.USER));
+        const f = new TermsOfUseFrame(new FrameHeader(FrameIdentifiers.USER));
         f._language = language ?? "XXX"; // @TODO: Should this be "unk"?
         f._text = text ?? "";
         f._textEncoding = textEncoding ?? Id3v2Settings.defaultEncoding;
@@ -125,7 +125,7 @@ export default class TermsOfUseFrame extends Frame {
     // #region Protected Methods
 
     /** @inheritDoc */
-    protected renderFields(version: number): ByteVector {
+    protected renderFields(version: Id3v2Version): ByteVector {
         const encoding = Frame.correctEncoding(this.textEncoding, version);
 
         return ByteVector.concatenate(

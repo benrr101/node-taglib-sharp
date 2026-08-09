@@ -1,13 +1,13 @@
 import ApeTag from "../ape/apeTag";
 import CombinedTag from "../combinedTag";
 import Id3v2Tag from "../id3v2/id3v2Tag";
+import Id3v2TagHeader from "../id3v2/tagHeader";
 import Id3v2Settings from "../id3v2/id3v2Settings";
 import TagParser from "./tagParsers";
 import {ApeTagFooter} from "../ape/apeTagFooter";
 import {ByteVector} from "../byteVector";
 import {CorruptFileError, UnsupportedFormatError} from "../errors";
 import {File, ReadStyle} from "../file";
-import {Id3v2TagHeader} from "../id3v2/id3v2TagHeader";
 import {Tag, TagTypes} from "../tag";
 import {Guards} from "../utils";
 
@@ -128,6 +128,7 @@ class StartTagParser extends TagParser {
                 }
             }
         } catch (e) {
+            // @TODO: Maybe we should have an "invalid tag" type.
             if (!(e instanceof CorruptFileError)) {
                 throw e;
             }

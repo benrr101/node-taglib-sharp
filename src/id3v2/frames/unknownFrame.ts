@@ -1,14 +1,15 @@
 import Frame from "./frame";
+import FrameHeader from "./frameHeader";
 import {ByteVector} from "../../byteVector";
-import {Id3v2FrameHeader} from "./frameHeader";
 import {FrameIdentifier} from "../frameIdentifiers";
 import {ArrayUtils, Guards} from "../../utils";
+import {Id3v2Version} from "../enums";
 
 /**
  * Fallback type when no other frame class works for a given frame.
  */
 export default class UnknownFrame extends Frame {
-    private constructor(header: Id3v2FrameHeader) {
+    private constructor(header: FrameHeader) {
         super(header);
     }
 
@@ -16,12 +17,11 @@ export default class UnknownFrame extends Frame {
      * Constructs and initialized a new instance by storing the body bytes.
      * @param header Header of the frame
      * @param fieldBytes Bytes that contain the body of the frame
-     * @param version ID3v2 version the frame was originally encoded with
+     * @param _version ID3v2 version the frame was originally encoded with
      */
-    public static fromFieldBytes(header: Id3v2FrameHeader, fieldBytes: ByteVector, version: number): UnknownFrame {
+    public static fromFieldBytes(header: FrameHeader, fieldBytes: ByteVector, _version: Id3v2Version): UnknownFrame {
         Guards.truthy(header, "header");
         Guards.truthy(fieldBytes, "fieldBytes");
-        Guards.byte(version, "version");
 
         const frame = new UnknownFrame(header);
         frame.data = fieldBytes.toByteVector();
@@ -37,7 +37,7 @@ export default class UnknownFrame extends Frame {
     public static fromFields(identifier: FrameIdentifier, data?: ByteVector): UnknownFrame {
         Guards.truthy(identifier, "identifier");
 
-        const frame = new UnknownFrame(new Id3v2FrameHeader(identifier));
+        const frame = new UnknownFrame(new FrameHeader(identifier));
 
         frame.data = data ?? ByteVector.empty();
         return frame;

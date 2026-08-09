@@ -1,9 +1,10 @@
 import Frame from "./frame";
+import FrameHeader from "./frameHeader";
 import Id3v2Settings from "../id3v2Settings";
 import {ByteVector, StringType} from "../../byteVector";
-import {Id3v2FrameHeader} from "./frameHeader";
 import {FrameIdentifiers} from "../frameIdentifiers";
 import {ArrayUtils, Guards} from "../../utils";
+import {Id3v2Version} from "../enums";
 
 /**
  * Provides support for ID3v2 User URL Link frames (WXXX).
@@ -15,7 +16,7 @@ export default class UserUrlLinkFrame extends Frame {
 
     // #region Constructors
 
-    private constructor(header: Id3v2FrameHeader) {
+    private constructor(header: FrameHeader) {
         super(header);
     }
 
@@ -23,12 +24,15 @@ export default class UserUrlLinkFrame extends Frame {
      * Constructs and initializes a new instance by parsing the fields from the field bytes.
      * @param header Header of the frame
      * @param fieldBytes Bytes that contain the fields of the frame
-     * @param version ID3v2 version the frame was originally encoded with
+     * @param _version ID3v2 version the frame was originally encoded with
      */
-    public static fromFieldBytes(header: Id3v2FrameHeader, fieldBytes: ByteVector, version: number): UserUrlLinkFrame {
+    public static fromFieldBytes(
+        header: FrameHeader,
+        fieldBytes: ByteVector,
+        _version: Id3v2Version
+    ): UserUrlLinkFrame {
         Guards.truthy(header, "header");
         Guards.truthy(fieldBytes, "fieldBytes");
-        Guards.byte(version, "version");
 
         if (fieldBytes.length < 3) {
             throw new Error("User URL link frame is smaller than minimum size.");
@@ -80,7 +84,7 @@ export default class UserUrlLinkFrame extends Frame {
      * @param url Optional, URL to store in the frame. If omitted, defaults to `""`.
      */
     public static fromFields(description?: string, url?: string): UserUrlLinkFrame {
-        const frame = new UserUrlLinkFrame(new Id3v2FrameHeader(FrameIdentifiers.WXXX));
+        const frame = new UserUrlLinkFrame(new FrameHeader(FrameIdentifiers.WXXX));
         frame._description = description ?? "";
         frame._url = url ?? "";
         return frame;
@@ -141,7 +145,7 @@ export default class UserUrlLinkFrame extends Frame {
         return `[${this._description}] ${this._url}`;
     }
 
-    protected renderFields(version: number): ByteVector {
+    protected renderFields(version: Id3v2Version): ByteVector {
         if (!this._description && !this._url) {
             return ByteVector.empty();
         }

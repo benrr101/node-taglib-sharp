@@ -1,9 +1,10 @@
 import Frame from "./frame";
+import FrameHeader from "./frameHeader";
 import {ByteVector, StringType} from "../../byteVector";
 import {CorruptFileError} from "../../errors";
-import {Id3v2FrameHeader} from "./frameHeader";
 import {FrameIdentifiers} from "../frameIdentifiers";
 import {ArrayUtils, Guards} from "../../utils";
+import {Id3v2Version} from "../enums";
 
 /**
  * Implements support for ID3v2 Unique File Identifier (UFID) frames.
@@ -14,7 +15,7 @@ export default class UniqueFileIdentifierFrame extends Frame {
 
     // #region Constructors
 
-    private constructor(header: Id3v2FrameHeader) {
+    private constructor(header: FrameHeader) {
         super(header);
     }
 
@@ -22,16 +23,15 @@ export default class UniqueFileIdentifierFrame extends Frame {
      * Constructs and initializes a new instance by parsing the fields from the field bytes.
      * @param header Header of the frame
      * @param fieldBytes Bytes that contain the fields of the frame
-     * @param version ID3v2 version the frame was originally encoded with
+     * @param _version ID3v2 version the frame was originally encoded with
      */
     public static fromFieldBytes(
-        header: Id3v2FrameHeader,
+        header: FrameHeader,
         fieldBytes: ByteVector,
-        version: number
+        _version: Id3v2Version
     ): UniqueFileIdentifierFrame {
         Guards.truthy(header, "header");
         Guards.truthy(fieldBytes, "fieldBytes");
-        Guards.byte(version, "version");
 
         // Owner identifier        <text string> $00
         // Identifier              <up to 64 bytes binary data>
@@ -61,7 +61,7 @@ export default class UniqueFileIdentifierFrame extends Frame {
             throw new Error("Argument out of range: Identifier cannot be longer than 64 bytes");
         }
 
-        const frame = new UniqueFileIdentifierFrame(new Id3v2FrameHeader(FrameIdentifiers.UFID));
+        const frame = new UniqueFileIdentifierFrame(new FrameHeader(FrameIdentifiers.UFID));
         frame._owner = owner ?? "";
         frame._identifier = identifier ?? ByteVector.empty();
 
@@ -103,7 +103,7 @@ export default class UniqueFileIdentifierFrame extends Frame {
 
     /** @inheritDoc */
     public clone(): Frame {
-        const frame = new UniqueFileIdentifierFrame(new Id3v2FrameHeader(FrameIdentifiers.UFID));
+        const frame = new UniqueFileIdentifierFrame(new FrameHeader(FrameIdentifiers.UFID));
         frame._owner = this._owner;
         frame._identifier = this._identifier?.toByteVector();
         return frame;
