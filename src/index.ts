@@ -75,6 +75,7 @@ export {
     ChannelType as Id3v2RelativeVolumeFrameChannelType,
     EventType as Id3v2EventType,
     FrameFlags as Id3v2FrameFlags,
+    Id3v2Version,
     SynchronizedTextType as Id3v2SynchronizedTextType,
     TagFlags as Id3v2TagHeaderFlags,
     TimestampFormat as Id3v2TimestampFormat

@@ -312,10 +312,10 @@ const assertFrame = (frame: UrlLinkFrame, identifier: FrameIdentifier, text: str
         assert.isOk(result);
 
         const expectedBytes = ByteVector.concatenate(
-            FrameIdentifiers.WCOM.render(Id3v2Version.V24),
-            ByteVector.fromUint(Id3v2Version.V23),
-            ByteVector.fromUshort(FrameFlags.None),
-            ByteVector.fromString("foo", StringType.Latin1)
+            FrameIdentifiers.WCOM.render(Id3v2Version.V24),  // Frame identifier
+            ByteVector.fromUint(3),                          // Frame size
+            ByteVector.fromUshort(FrameFlags.None),          // Frame flags
+            ByteVector.fromString("foo", StringType.Latin1)  // URL
         );
         Testers.bvEqual(result, expectedBytes);
     }

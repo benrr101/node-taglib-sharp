@@ -90,7 +90,7 @@
 - [Id3v2SynchronizedLyricsFrame](classes/Id3v2SynchronizedLyricsFrame.md)
 - [Id3v2Tag](classes/Id3v2Tag.md)
 - [Id3v2TagFooter](classes/Id3v2TagFooter.md)
-- [TagHeader](classes/Id3v2TagHeader.md)
+- [Id3v2TagHeader](classes/Id3v2TagHeader.md)
 - [Id3v2TermsOfUseFrame](classes/Id3v2TermsOfUseFrame.md)
 - [Id3v2TextInformationFrame](classes/Id3v2TextInformationFrame.md)
 - [Id3v2UniqueFileIdentifierFrame](classes/Id3v2UniqueFileIdentifierFrame.md)
