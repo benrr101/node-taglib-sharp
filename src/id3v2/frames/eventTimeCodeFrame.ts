@@ -93,7 +93,7 @@ export class EventTimeCodeFrame extends Frame {
      * Constructs and initializes a new instance by parsing the fields from the field bytes.
      * @param header Header of the frame
      * @param fieldBytes Bytes that contain the fields of the frame
-     * @param _version
+     * @param _version Version that the frame was originally encoded
      */
     public static fromFieldBytes(
         header: FrameHeader,

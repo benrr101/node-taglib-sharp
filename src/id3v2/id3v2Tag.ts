@@ -45,7 +45,7 @@ export default class Id3v2Tag extends Tag {
      */
     public static fromEmpty(): Id3v2Tag {
         const tag = new Id3v2Tag();
-        tag._header = new TagHeader(0, 0, TagFlags.None, 0);
+        tag._header = new TagHeader(Id3v2Settings.defaultVersion, 0, TagFlags.None, 0);
         return tag;
     }
 
@@ -192,7 +192,7 @@ export default class Id3v2Tag extends Tag {
         this._header.majorVersion = value;
 
         // Migrate any incompatible frames that have direct migrations
-        const v23ToV4 = (originalVersion === Id3v2Version.V22 || originalVersion== Id3v2Version.V23) &&
+        const v23ToV4 = (originalVersion === Id3v2Version.V22 || originalVersion === Id3v2Version.V23) &&
             value === Id3v2Version.V24;
         const v4ToV23 = originalVersion === Id3v2Version.V24 &&
             (value === Id3v2Version.V22 || value === Id3v2Version.V23);

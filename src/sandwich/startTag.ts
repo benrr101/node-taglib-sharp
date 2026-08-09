@@ -128,6 +128,7 @@ class StartTagParser extends TagParser {
                 }
             }
         } catch (e) {
+            // @TODO: Maybe we should have an "invalid tag" type.
             if (!(e instanceof CorruptFileError)) {
                 throw e;
             }

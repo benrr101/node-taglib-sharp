@@ -9,7 +9,7 @@ import {ApeTagFooter} from "../ape/apeTagFooter";
 import {ByteVector} from "../byteVector";
 import {CorruptFileError, UnsupportedFormatError} from "../errors";
 import {File, ReadStyle} from "../file";
-import {TagFlags as Id3v2TagFlags} from "../id3v2/enums";
+import {Id3v2Version, TagFlags as Id3v2TagFlags} from "../id3v2/enums";
 import {Tag, TagTypes} from "../tag";
 import {Guards} from "../utils";
 
@@ -56,7 +56,7 @@ export default class EndTag extends CombinedTag {
                 // ID3v2 tags must be told to write a footer
                 const id3v2Tag = Id3v2Tag.fromEmpty();
                 // @TODO: have default version be configurable
-                id3v2Tag.version = 4;
+                id3v2Tag.version = Id3v2Version.V24;
                 id3v2Tag.flags |= Id3v2TagFlags.FooterPresent;
                 tag = id3v2Tag;
                 break;
